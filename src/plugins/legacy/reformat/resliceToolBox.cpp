@@ -124,14 +124,14 @@ resliceToolBox::resliceToolBox (QWidget *parent) : medAbstractSelectableToolBox 
     connect(d->b_startReslice,SIGNAL(clicked()),this,SLOT(startReformat()));
     connect(d->b_stopReslice,SIGNAL(clicked()),this,SLOT(stopReformat()));
 
-    d->resliceViewer  = 0;
-    d->currentView     = 0;
+    d->resliceViewer = nullptr;
+    d->currentView   = nullptr;
 }
 resliceToolBox::~resliceToolBox()
 {
     delete d->resliceViewer;
     d->resliceViewer = nullptr;
-    d->currentView = 0;
+    d->currentView = nullptr;
 
     delete d;
     d = nullptr;
@@ -171,7 +171,7 @@ void resliceToolBox::startReformat()
             d->resliceViewer->setToolBox(this);
             getWorkspace()->tabbedViewContainers()->setAcceptDrops(false);
             connect(d->resliceViewer,SIGNAL(imageReformatedGenerated()),this,SLOT(saveReformatedImage()));
-            medViewContainer * container = getWorkspace()->tabbedViewContainers()->insertNewTab(0,"Reslice");
+            medViewContainer * container = getWorkspace()->tabbedViewContainers()->insertNewTab(0, "Reslice");
             getWorkspace()->tabbedViewContainers()->setCurrentIndex(0);
             container->setDefaultWidget(d->resliceViewer->viewWidget());
             connect(container, SIGNAL(viewRemoved()),this, SLOT(stopReformat()), Qt::UniqueConnection);
@@ -240,7 +240,7 @@ void resliceToolBox::updateView()
 
     if (view && d->currentView!= view)
     {
-        medAbstractLayeredView * layeredView = qobject_cast<medAbstractLayeredView*>(view);
+        medAbstractLayeredView *layeredView = qobject_cast<medAbstractLayeredView*>(view);
         if (dynamic_cast<medAbstractImageData*>(layeredView->layerData(layeredView->currentLayer())))
         {
             d->currentView = layeredView;

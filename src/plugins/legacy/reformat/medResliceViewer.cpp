@@ -120,7 +120,9 @@ public:
 medResliceViewer::medResliceViewer(medAbstractView *view, QWidget *parent): medAbstractView(parent)
 {
     if (!view)
+    {
         return;
+    }
 
     inputData = static_cast<medAbstractLayeredView*>(view)->layerData(0);
     view3d = static_cast<medVtkViewBackend*>(view->backend())->view3D;
@@ -288,7 +290,7 @@ void medResliceViewer::thickMode(int val)
 {
     for (int i = 0; i < 3; i++)
     {
-        //TODO : set the axes to the reslicecursorwidget vtkimageReslice .... this will propably solve the problem of disappearance.
+        //TODO: set the axes to the reslicecursorwidget vtkimageReslice .... this will propably solve the problem of disappearance.
         riw[i]->SetThickMode(val);
         riw[i]->GetRenderer()->ResetCamera();
         riw[i]->Render();
@@ -428,7 +430,7 @@ void medResliceViewer::thickSlabChanged(double val)
             {
                 riw[0]->GetResliceCursor()->SetThickness(val,y,z); //the three windows share the same reslice cursor
             }
-            outputSpacing[0]=val;
+            outputSpacing[0] = val;
         }
 
         if (spinBoxSender->accessibleName()=="SpacingY")
@@ -437,7 +439,7 @@ void medResliceViewer::thickSlabChanged(double val)
             {
                 riw[0]->GetResliceCursor()->SetThickness(x,val,z); //the three windows share the same reslice cursor
             }
-            outputSpacing[1]=val;
+            outputSpacing[1] = val;
         }
 
         if (spinBoxSender->accessibleName()=="SpacingZ")
@@ -446,7 +448,7 @@ void medResliceViewer::thickSlabChanged(double val)
             {
                 riw[0]->GetResliceCursor()->SetThickness(x,y,val); //the three windows share the same reslice cursor
             }
-            outputSpacing[2]=val;
+            outputSpacing[2] = val;
         }
         this->render();
     }
@@ -454,15 +456,16 @@ void medResliceViewer::thickSlabChanged(double val)
 
 void medResliceViewer::extentChanged(int val)
 {
+    Q_UNUSED(val)
     medSliderSpinboxPair *pairSender = qobject_cast<medSliderSpinboxPair*>(QObject::sender());
 
     if (pairSender)
     {
-        if (pairSender->accessibleName()=="fromSlice")
+        if (pairSender->accessibleName() == "fromSlice")
         {
             fromSlice = pairSender->value();
         }
-        if (pairSender->accessibleName()=="toSlice")
+        if (pairSender->accessibleName() == "toSlice")
         {
             toSlice = pairSender->value();
         }
@@ -575,6 +578,7 @@ void medResliceViewer::calculateResliceMatrix(vtkMatrix4x4* result)
     switch (selectedView)
     {
         case 0:
+        {
             outputX = resliceY;
             outputY = resliceZ;
             outputZ = resliceX;
@@ -582,7 +586,9 @@ void medResliceViewer::calculateResliceMatrix(vtkMatrix4x4* result)
             outputOrigin[1] = resliceOrigin[2];
             outputOrigin[2] = resliceOrigin[0];
             break;
+        }
         case 1:
+        {
             outputX = resliceZ;
             outputY = resliceX;
             outputZ = resliceY;
@@ -590,7 +596,9 @@ void medResliceViewer::calculateResliceMatrix(vtkMatrix4x4* result)
             outputOrigin[1] = resliceOrigin[0];
             outputOrigin[2] = resliceOrigin[1];
             break;
+        }
         default:
+        {
             outputX = resliceX;
             outputY = resliceY;
             outputZ = resliceZ;
@@ -598,6 +606,7 @@ void medResliceViewer::calculateResliceMatrix(vtkMatrix4x4* result)
             outputOrigin[1] = resliceOrigin[1];
             outputOrigin[2] = resliceOrigin[2];
             break;
+        }
     }
 
     result->Identity();
@@ -689,7 +698,7 @@ int medResliceViewer::findMovingPlaneIndex()
 
     for (int i = 0; i < 3; i++)
     {
-        vtkPlane* plane = getResliceImageViewer(0)->GetResliceCursor()->GetPlane(i);
+        vtkPlane *plane = getResliceImageViewer(0)->GetResliceCursor()->GetPlane(i);
         double *currentNormal = plane->GetNormal();
         double normalDifference = 0;
         for (int j = 0; j < 3; j++)
@@ -758,7 +767,7 @@ void medResliceViewer::generateOutput(vtkImageReslice* reslicer, QString destTyp
 
 void medResliceViewer::applyResamplingPix()
 {
-    resampleProcess* resamplePr = new resampleProcess();
+    resampleProcess *resamplePr = new resampleProcess();
     resamplePr->setInput(outputData);
     resamplePr->setParameter(outputSpacing[0],0);
     resamplePr->setParameter(outputSpacing[1],1);
