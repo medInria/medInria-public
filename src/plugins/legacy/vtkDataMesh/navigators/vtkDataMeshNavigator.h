@@ -43,10 +43,16 @@ public slots:
     void updateWidgets();
 
     void enableDepthPeeling(bool);
+    void setBackgroundColor(const QString &color);
+
+protected slots:
+    void setBackgroundColor(QColor color);
 
 protected:
     virtual QWidget * buildToolBoxWidget();
     virtual QWidget * buildToolBarWidget();
+
+    QStringList createColorList();
 
 private:
     vtkDataMeshNavigatorPrivate *d;
