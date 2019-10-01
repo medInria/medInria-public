@@ -2,7 +2,7 @@
 
  medInria
 
- Copyright (c) INRIA 2013 - 2018. All rights reserved.
+ Copyright (c) INRIA 2013 - 2019. All rights reserved.
  See LICENSE.txt for details.
  
   This software is distributed WITHOUT ANY WARRANTY; without even
@@ -42,7 +42,7 @@ medSplashScreen::medSplashScreen(const QPixmap& thePixmap)
 medSplashScreen::~medSplashScreen()
 {
     delete d;
-    d = NULL;
+    d = nullptr;
 }
 
 ////////////////////////////////////////////////////////////////////////////
@@ -58,13 +58,12 @@ void medSplashScreen::showMessage(const QString& message)
     const dtkPlugin* plugin = medPluginManager::instance()->plugin(message);
     if (plugin)
     {
-        d->message = plugin->description();
-        //in case descriptions have several lines (html or plain text)
-        d->message = d->message.section('\n',0,0);
-        d->message = d->message.section("<br/>",0,0);
+        d->message = plugin->name();
     }
     else
+    {
         d->message = message;
+    }
 
     repaint();
 }

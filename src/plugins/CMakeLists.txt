@@ -53,6 +53,9 @@ set(PLUGIN_LIST
   legacy/medMaskApplication                                              ON
   legacy/medBinaryOperation                                              ON
   legacy/manualRegistration                                              ON
+  legacy/polygonRoi                                                      ON
+  legacy/mscAlgorithmPaint                                               ON
+  legacy/variationalSegmentation                                         ON
   process/arithmetic_operation                                           ON
   process/bias_correction                                                ON
   process/dwi_basic_thresholding                                         ON

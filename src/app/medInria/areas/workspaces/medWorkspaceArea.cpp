@@ -2,7 +2,7 @@
 
  medInria
 
- Copyright (c) INRIA 2013 - 2018. All rights reserved.
+ Copyright (c) INRIA 2013 - 2019. All rights reserved.
  See LICENSE.txt for details.
  
   This software is distributed WITHOUT ANY WARRANTY; without even
@@ -55,11 +55,11 @@
 
 medWorkspaceArea::medWorkspaceArea(QWidget *parent) : QWidget(parent), d(new medWorkspaceAreaPrivate)
 {
-    d->selectionToolBox = NULL;
+    d->selectionToolBox = nullptr;
 
     // -- Internal logic
     d->currentWorkspaceName = "";
-    d->currentWorkspace = 0;
+    d->currentWorkspace = nullptr;
 
     d->splitter = new QSplitter(this);
     // needed to restore state.
@@ -216,17 +216,20 @@ void medWorkspaceArea::setupWorkspace(const QString &id)
     if (d->workspaces.contains(id))
         return;
 
-    medAbstractWorkspaceLegacy *workspace = NULL;
+    medAbstractWorkspaceLegacy *workspace = nullptr;
 
     workspace = medWorkspaceFactory::instance()->createWorkspace(id, this);
     if (workspace)
+    {
         d->workspaces.insert(id, workspace);
+    }
     else
     {
-        dtkWarn()<< "Workspace " << id << " couldn't be created";
+        qWarning()<< "Workspace " << id << " couldn't be created";
         return;
     }
     workspace->setupTabbedViewContainer();
+    workspace->setInitialGroups();
 }
 
 void medWorkspaceArea::addDatabaseView(medDatabaseDataSource* dataSource)

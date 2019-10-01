@@ -31,4 +31,4 @@ medAbstractData *medAbstractDataFactory::create(const QString& type)
     return dynamic_cast<medAbstractData *>(data);
 }
 
-medAbstractDataFactory *medAbstractDataFactory::s_instance = NULL;
+medAbstractDataFactory *medAbstractDataFactory::s_instance = nullptr;

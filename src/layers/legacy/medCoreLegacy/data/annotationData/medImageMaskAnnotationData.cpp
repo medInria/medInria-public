@@ -2,7 +2,7 @@
 
  medInria
 
- Copyright (c) INRIA 2013 - 2018. All rights reserved.
+ Copyright (c) INRIA 2013 - 2019. All rights reserved.
  See LICENSE.txt for details.
  
   This software is distributed WITHOUT ANY WARRANTY; without even
@@ -11,13 +11,18 @@
 
 =========================================================================*/
 
-#include <medImageMaskAnnotationData.h>
-#include <QtWidgets>
 #include <medAbstractImageData.h>
+#include <medImageMaskAnnotationData.h>
 
 medImageMaskAnnotationData::medImageMaskAnnotationData() :
     medAnnotationData()
 {
+}
+
+medImageMaskAnnotationData::medImageMaskAnnotationData(const medImageMaskAnnotationData &other)
+    : medAnnotationData(other)
+{
+    this->m_maskData = dynamic_cast<medAbstractImageData*>(other.m_maskData->clone());
 }
 
 medImageMaskAnnotationData::~medImageMaskAnnotationData()
@@ -54,7 +59,6 @@ void * medImageMaskAnnotationData::data( void )
 
 void medImageMaskAnnotationData::setData( void* data )
 {
-    // 
     QObject * obj = reinterpret_cast<QObject*>(data);
     this->setMaskData( qobject_cast<medAbstractImageData *>(obj) );
 }

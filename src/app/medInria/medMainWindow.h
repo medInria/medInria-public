@@ -73,17 +73,15 @@ private slots:
     void captureScreenshot();
 
     void switchToBrowserArea();
+    void switchToSearchArea();
     void switchToWorkspaceArea();
     void switchToHomepageArea();
     void switchToComposerArea();
-
 
     void toggleQuickAccessVisibility();
     void hideQuickAccess();
     void showShortcutAccess();
     void hideShortcutAccess();
-
-
 
     void availableSpaceOnStatusBar();
 
@@ -115,7 +113,7 @@ private slots:
 protected:
     void closeEvent(QCloseEvent *event);
     void mousePressEvent(QMouseEvent * event);
-    int saveModified();
+    int saveModifiedAndOrValidateClosing();
     bool event(QEvent * e);
     void dragEnterEvent(QDragEnterEvent *event);
     void dragLeaveEvent(QDragLeaveEvent *event);

@@ -117,9 +117,9 @@ set(PLUGINS "\${CMAKE_INSTALL_PREFIX}/plugins/")
 set(PLUGINS_LEGACY "\${CMAKE_INSTALL_PREFIX}/plugins_legacy/")
 
 install(CODE "
-file(INSTALL ${medInria_DIR}/bin/Release/ DESTINATION \${CMAKE_INSTALL_PREFIX}/bin\)
-file(INSTALL ${medInria_DIR}/bin/plugins/Release/ DESTINATION \${CMAKE_INSTALL_PREFIX}/plugins\)
-file(INSTALL ${medInria_DIR}/bin/plugins_legacy/Release/ DESTINATION \${CMAKE_INSTALL_PREFIX}/plugins_legacy\)
+file(INSTALL ${medInria_DIR}/Release/bin/ DESTINATION \${CMAKE_INSTALL_PREFIX}/bin\)
+file(INSTALL ${medInria_DIR}/Release/bin/plugins/ DESTINATION \${CMAKE_INSTALL_PREFIX}/plugins\)
+file(INSTALL ${medInria_DIR}/Release/bin/plugins_legacy/ DESTINATION \${CMAKE_INSTALL_PREFIX}/plugins_legacy\)
 file(INSTALL ${QT_PLUGINS_DIR}/imageformats DESTINATION \${CMAKE_INSTALL_PREFIX}/bin)
 file(INSTALL ${QT_PLUGINS_DIR}/platforms DESTINATION \${CMAKE_INSTALL_PREFIX}/bin)
 file(INSTALL \${PLUGINS} DESTINATION \${CMAKE_INSTALL_PREFIX}/plugins )

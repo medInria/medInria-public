@@ -11,9 +11,7 @@
 #
 ################################################################################
 
-macro(set_exe_install_rules
-  target
-  )
+macro(set_exe_install_rules target)
 
 ################################################################################
 #
@@ -21,10 +19,16 @@ macro(set_exe_install_rules
 # set rules for the executable designed by the target
 #
 ################################################################################
+get_property(GENERATOR_MULTI_CONFIG GLOBAL PROPERTY GENERATOR_IS_MULTI_CONFIG)
 
-set_target_properties(${target} PROPERTIES
-  RUNTIME_OUTPUT_DIRECTORY ${CMAKE_BINARY_DIR}/bin/
-  )
+if(${GENERATOR_MULTI_CONFIG})
+  set_target_properties( ${target} PROPERTIES RUNTIME_OUTPUT_DIRECTORY_DEBUG          ${CMAKE_BINARY_DIR}/${platformType}Debug/bin)
+  set_target_properties( ${target} PROPERTIES RUNTIME_OUTPUT_DIRECTORY_RELEASE        ${CMAKE_BINARY_DIR}/${platformType}Release/bin)
+  set_target_properties( ${target} PROPERTIES RUNTIME_OUTPUT_DIRECTORY_MINSIZEREL     ${CMAKE_BINARY_DIR}/${platformType}MinSizeRel/bin)
+  set_target_properties( ${target} PROPERTIES RUNTIME_OUTPUT_DIRECTORY_RELWITHDEBINFO ${CMAKE_BINARY_DIR}/${platformType}RelWithDebInfo/bin)
+else()
+  set_target_properties( ${target} PROPERTIES RUNTIME_OUTPUT_DIRECTORY                ${CMAKE_BINARY_DIR}/bin)
+endif()
 
 install(TARGETS ${target}
   RUNTIME DESTINATION bin
@@ -36,7 +40,7 @@ install(TARGETS ${target}
 ## #############################################################################
 
 if (APPLE)
-    set(MACOSX_BUNDLE_BUNDLE_NAME
+  set(MACOSX_BUNDLE_BUNDLE_NAME
     ${target}
     )
   set(MACOSX_BUNDLE_ICON_FILE

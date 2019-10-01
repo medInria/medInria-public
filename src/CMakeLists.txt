@@ -98,7 +98,6 @@ include(set_exe_install_rules)
 include(set_lib_install_rules)
 include(set_lib_properties_variables)
 include(set_plugin_install_rules)
-include(set_plugin_install_rules_legacy)
 
 include(add_plugins)
 if(APPLE)
@@ -135,8 +134,6 @@ if(NOT ${CMAKE_BUILD_TYPE} STREQUAL "Debug")
   add_definitions(-DQT_NO_DEBUG)
 endif()
 
-add_definitions(-DITK_LEGACY_REMOVE)
-
 ## #############################################################################
 ## Windows specificity
 ## #############################################################################
@@ -158,6 +155,7 @@ if(${PROJECT_NAME}_BUILD_DOCUMENTATION)
   add_subdirectory(doc)
 endif()
 
+set_property(DIRECTORY ${CMAKE_CURRENT_SOURCE_DIR} PROPERTY VS_STARTUP_PROJECT medInria)
 
 ################################################################################
 # Setup Configuration files

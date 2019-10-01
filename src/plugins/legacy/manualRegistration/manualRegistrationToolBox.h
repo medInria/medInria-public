@@ -13,9 +13,9 @@
 
 #pragma once
 
-#include "manualRegistrationPluginExport.h"
+#include <manualRegistrationPluginExport.h>
 
-#include <medRegistrationAbstractToolBox.h>
+#include <medAbstractSelectableToolBox.h>
 #include <medTabbedViewContainers.h>
 
 class manualRegistrationToolBoxPrivate;
@@ -28,15 +28,15 @@ class manualRegistrationToolBoxPrivate;
  * "computeRegistrationButton" : QPushButton\n
  * "resetButton" : QPushButton
  */
-class MANUALREGISTRATIONPLUGIN_EXPORT manualRegistrationToolBox : public medRegistrationAbstractToolBox
+class MANUALREGISTRATIONPLUGIN_EXPORT manualRegistrationToolBox : public medAbstractSelectableToolBox
 {
     Q_OBJECT
     MED_TOOLBOX_INTERFACE("Manual Registration",
                           "Register two images manually.",
-                          <<"registration")
+                          <<"Registration")
 
 public:
-    manualRegistrationToolBox(QWidget *parent = 0);
+    manualRegistrationToolBox(QWidget *parent = nullptr);
     ~manualRegistrationToolBox();
     
     medAbstractData* processOutput();

@@ -18,10 +18,10 @@
 
 #include <medDataManager.h>
 #include <medDropSite.h>
-#include <medFilteringSelectorToolBox.h>
 #include <medMessageController.h>
 #include <medPluginManager.h>
 #include <medRunnableProcess.h>
+#include <medSelectorToolBox.h>
 #include <medToolBoxFactory.h>
 
 class medMaskApplicationToolBoxPrivate
@@ -36,7 +36,7 @@ public:
 };
 
 medMaskApplicationToolBox::medMaskApplicationToolBox(QWidget *parent) :
-    medFilteringAbstractToolBox(parent), d(new medMaskApplicationToolBoxPrivate)
+    medAbstractSelectableToolBox(parent), d(new medMaskApplicationToolBoxPrivate)
 {
     QWidget *widget = new QWidget(this);
     this->addWidget(widget);
@@ -100,7 +100,7 @@ medAbstractData* medMaskApplicationToolBox::processOutput()
 
 void medMaskApplicationToolBox::run()
 {
-    if (d->mask && this->parentToolBox()->data())
+    if (d->mask && this->selectorToolBox()->data())
     {
         this->setToolBoxOnWaitStatus();
 
@@ -109,7 +109,7 @@ void medMaskApplicationToolBox::run()
             d->process = new medMaskApplication;
         }
         d->process->setInput(d->mask, 0);
-        d->process->setInput(this->parentToolBox()->data(), 1);
+        d->process->setInput(this->selectorToolBox()->data(), 1);
         d->process->setParameter(d->backgroundSpinBox->value());
 
         medRunnableProcess *runProcess = new medRunnableProcess;

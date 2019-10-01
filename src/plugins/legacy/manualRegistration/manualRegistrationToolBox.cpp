@@ -60,7 +60,8 @@ public:
     dtkSmartPointer<medAbstractData> output;
 };
 
-manualRegistrationToolBox::manualRegistrationToolBox(QWidget *parent) : medRegistrationAbstractToolBox(parent), d(new manualRegistrationToolBoxPrivate)
+manualRegistrationToolBox::manualRegistrationToolBox(QWidget *parent)
+    : medAbstractSelectableToolBox(parent), d(new manualRegistrationToolBoxPrivate)
 {
     QWidget* widget = new QWidget(this);
 
@@ -189,10 +190,10 @@ void manualRegistrationToolBox::startManualRegistration()
         return;
     }
 
-    medTabbedViewContainers* tabContainers = getWorkspace()->tabbedViewContainers();
+    medTabbedViewContainers *tabContainers = getWorkspace()->tabbedViewContainers();
     d->regOn = true;
 
-    medRegistrationSelectorToolBox* toolbox = this->parentToolBox();
+    medRegistrationSelectorToolBox *toolbox = dynamic_cast<medRegistrationSelectorToolBox*>(selectorToolBox());
     if (toolbox)
     {
         dtkSmartPointer<medAbstractData> fixedData(toolbox->fixedData());
@@ -250,7 +251,7 @@ void manualRegistrationToolBox::stopManualRegistration()
     d->bottomContainer = nullptr;
     displayButtons(false);
 
-    if(!this->parentToolBox())
+    if(!this->selectorToolBox())
     {
         medTabbedViewContainers* tabContainers = getWorkspace()->tabbedViewContainers();
         tabContainers->setCurrentIndex(0);
@@ -260,7 +261,7 @@ void manualRegistrationToolBox::stopManualRegistration()
 
 void manualRegistrationToolBox::synchroniseMovingFuseView()
 {
-    if(!this->parentToolBox()) // does not exist in Pipelines
+    if(!this->selectorToolBox()) // does not exist in Pipelines
     {
         // This method will resynchronise the lut and window level
         medAbstractImageView* viewMoving = qobject_cast<medAbstractImageView*>(d->rightContainer->view());
@@ -340,7 +341,7 @@ void manualRegistrationToolBox::computeRegistration()
 
             d->process = dynamic_cast<medAbstractRegistrationProcess*> (dtkAbstractProcessFactory::instance()->create("manualRegistration"));
 
-            medRegistrationSelectorToolBox* toolbox = this->parentToolBox();
+            medRegistrationSelectorToolBox *toolbox = dynamic_cast<medRegistrationSelectorToolBox*>(selectorToolBox());
             if(toolbox) // toolbox empty in Pipelines and not Registration workspace
             {
                 toolbox->setProcess(d->process);

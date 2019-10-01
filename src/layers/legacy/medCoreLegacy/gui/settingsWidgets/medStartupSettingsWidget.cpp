@@ -2,7 +2,7 @@
 
  medInria
 
- Copyright (c) INRIA 2013 - 2018. All rights reserved.
+ Copyright (c) INRIA 2013 - 2019. All rights reserved.
  See LICENSE.txt for details.
 
   This software is distributed WITHOUT ANY WARRANTY; without even
@@ -76,6 +76,8 @@ medStartupSettingsWidget::medStartupSettingsWidget(QWidget *parent) : medSetting
     if (d->m_iGenericWorkspaceIndex!=-1)d->m_iGenericWorkspaceIndex += 3;
 
     d->defaultStartingArea = new QComboBox(this);
+    d->defaultStartingArea->addItem(tr("Search"));
+    d->defaultStartingArea->setItemData(0, 0, Qt::UserRole - 1); // Search is disabled
     d->defaultStartingArea->addItem(tr("Homepage"));
     d->defaultStartingArea->addItem(tr("Browser"));
     d->defaultStartingArea->addItem(tr("Composer"));
@@ -106,7 +108,8 @@ void medStartupSettingsWidget::read()
     medSettingsManager *mnger = medSettingsManager::instance();
     d->startInFullScreen->setChecked(mnger->value("startup", "fullscreen").toBool());
     d->genericWorkspaceEnabled->setChecked(mnger->value("startup", "genericWorkspace", false).toBool());
-    //if nothing is configured then Browser is the default area
+
+    //if nothing is configured then Homepage is the default area
     QString osDefaultStartingAreaName = mnger->value("startup", "default_starting_area", "Homepage").toString();
 
     int i = 0;

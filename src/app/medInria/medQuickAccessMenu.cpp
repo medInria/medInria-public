@@ -2,7 +2,7 @@
 
  medInria
 
- Copyright (c) INRIA 2013 - 2018. All rights reserved.
+ Copyright (c) INRIA 2013 - 2019. All rights reserved.
  See LICENSE.txt for details.
 
   This software is distributed WITHOUT ANY WARRANTY; without even
@@ -29,9 +29,23 @@ int retrieveDefaultWorkSpace()
     medWorkspaceFactory::Details *poDetail = nullptr;
     QList<medWorkspaceFactory::Details*> oListOfWorkspaceDetails = medWorkspaceFactory::instance()->workspaceDetailsSortedByName(true);
     QVariant oStartupWorkspace = medSettingsManager::instance()->value("startup", "default_starting_area");
-    if (oStartupWorkspace.toString() == "Homepage") iRes = 0;
-    else if (oStartupWorkspace.toString() == "Browser") iRes = 1;
-    else if (oStartupWorkspace.toString() == "Composer") iRes = 2;
+
+    if (oStartupWorkspace.toString() == "Search")
+    {
+        iRes = 1; // "Search" should not be the startup area. Default is Homepage.
+    }
+    if (oStartupWorkspace.toString() == "Homepage")
+    {
+        iRes = 1;
+    }
+    else if (oStartupWorkspace.toString() == "Browser")
+    {
+        iRes = 2;
+    }
+    else if (oStartupWorkspace.toString() == "Composer")
+    {
+        iRes = 3;
+    }
     else
     {
         for (int i = 0; i < oListOfWorkspaceDetails.size() && !bMatch; ++i)
@@ -40,7 +54,7 @@ int retrieveDefaultWorkSpace()
             bMatch = poDetail->name == oStartupWorkspace.toString();
             if (bMatch)
             {
-                iRes = i+3;
+                iRes = i+4;
             }
         }
     }
@@ -176,23 +190,29 @@ void medQuickAccessMenu::switchToCurrentlySelected()
 
     if (currentSelected == 0)
     {
-        emit homepageSelected();
+        emit searchSelected();
         return;
     }
 
     if (currentSelected == 1)
     {
-        emit browserSelected();
+        emit homepageSelected();
         return;
     }
 
     if (currentSelected == 2)
     {
+        emit browserSelected();
+        return;
+    }
+
+    if (currentSelected == 3)
+    {
         emit composerSelected();
         return;
     }
 
-    if (currentSelected >= 3)
+    if (currentSelected >= 4)
     {
         emit workspaceSelected(buttonsList[currentSelected]->identifier());
         return;
@@ -334,7 +354,31 @@ void medQuickAccessMenu::createVerticalQuickAccessMenu()
     workspaceButtonsLayout->setMargin(0);
     workspaceButtonsLayout->setSpacing ( 0 );
 
-    //Setup quick access menu title
+    //Setup quick access menu title for toolbox tools
+    QLabel *toolboxeSearchLabel = new QLabel ( tr("<b>Search a toolbox</b>") );
+    toolboxeSearchLabel->setMaximumWidth(300);
+    toolboxeSearchLabel->setFixedHeight(25);
+    toolboxeSearchLabel->setAlignment(Qt::AlignCenter);
+    toolboxeSearchLabel->setTextFormat(Qt::RichText);
+    toolboxeSearchLabel->setObjectName("quickAccessMenuHeader"); // See qss file, dedicated format
+    workspaceButtonsLayout->addWidget(toolboxeSearchLabel);
+
+    //Find a toolbox
+    medHomepagePushButton *searchButton = new medHomepagePushButton ( this );
+    searchButton->setText("Search");
+    searchButton->setIdentifier("Search");
+    searchButton->setIcon(QIcon(":icons/magnifier.png"));
+    searchButton->setFixedHeight(40);
+    searchButton->setMaximumWidth(250);
+    searchButton->setMinimumWidth(250);
+    searchButton->setStyleSheet("border: 0px;");
+    searchButton->setFocusPolicy(Qt::NoFocus);
+    searchButton->setCursor(Qt::PointingHandCursor);
+    workspaceButtonsLayout->addWidget(searchButton);
+    QObject::connect ( searchButton, SIGNAL ( clicked() ), this, SIGNAL ( searchSelected() ) );
+    buttonsList.push_back(searchButton);
+
+    //Setup quick access menu title for workspace
     QLabel *workspaceLabel = new QLabel ( tr("<b>Switch to workspaces</b>") );
     workspaceLabel->setMaximumWidth(300);
     workspaceLabel->setFixedHeight(25);
@@ -501,3 +545,14 @@ void medQuickAccessMenu::createHorizontalQuickAccessMenu()
     this->setLayout(mainWidgetLayout);
 }
 
+void medQuickAccessMenu::manuallyClickOnWorkspaceButton(QString workspaceName)
+{
+    for (int i = 0;i < buttonsList.size();++i)
+    {
+        if (buttonsList[i]->text() == workspaceName)
+        {
+            buttonsList[i]->click();
+            break;
+        }
+    }
+}
