@@ -65,6 +65,8 @@ public:
     virtual QList<medAbstractParameterL*> linkableParameters();
     virtual QList<medAbstractParameterL*> linkableParameters(unsigned int layer);
 
+    virtual void resetCameraOnLayer(int layer);
+
 public slots:
     void setDataList(QList<medDataIndex> dataList);
     void removeLayer();

@@ -138,9 +138,8 @@ class vtkImageAlgorithm;
 class MEDVTKINRIA_EXPORT vtkImageView : public vtkObject
 {
 public:
-    vtkTypeMacro(vtkImageView, vtkObject);
+    vtkTypeMacro(vtkImageView, vtkObject)
     void PrintSelf (ostream& os, vtkIndent indent);
-
 
     vtkMTimeType GetMTime();
 
@@ -164,7 +163,6 @@ public:
     };
     //ETX
 
-
     virtual void Render();
 
 
@@ -172,17 +170,15 @@ public:
     virtual medVtkImageInfo* GetMedVtkImageInfo(int layer = 0) const = 0;
 
     // Get the internal render window, renderer, image map and interactor instances.
-    vtkGetObjectMacro(RenderWindow,    vtkRenderWindow);
+    vtkGetObjectMacro(RenderWindow,    vtkRenderWindow)
     virtual vtkRenderer * GetRenderer() const{return Renderer;}
-    vtkGetObjectMacro(OverlayRenderer, vtkRenderer);
-    vtkGetObjectMacro(InteractorStyle, vtkInteractorStyle);
-    vtkGetObjectMacro(Interactor,      vtkRenderWindowInteractor);
-
+    vtkGetObjectMacro(OverlayRenderer, vtkRenderer)
+    vtkGetObjectMacro(InteractorStyle, vtkInteractorStyle)
+    vtkGetObjectMacro(Interactor,      vtkRenderWindowInteractor)
 
     virtual void SetRenderWindow (vtkRenderWindow *arg);
     virtual void SetRenderer     (vtkRenderer *arg); // LAYER
     virtual void SetOverlayRenderer (vtkRenderer *arg);
-
 
     virtual void SetupInteractor           (vtkRenderWindowInteractor* arg);
     virtual void SetRenderWindowInteractor (vtkRenderWindowInteractor* arg) { this->SetupInteractor (arg); }
@@ -194,7 +190,7 @@ public:
     virtual void UnInstallInteractor() = 0;
 
     // Attach a specific interactor style to this view.
-    vtkSetObjectMacro(InteractorStyle, vtkInteractorStyle);
+    vtkSetObjectMacro(InteractorStyle, vtkInteractorStyle)
 
     /**
      The corner annotation gather information related to the image.
@@ -202,13 +198,13 @@ public:
      Access and change the values with GetCornerAnnotation()->SetText(n, const char*).
      n begins down-right and increases anti-clockwise.
     */
-    vtkGetObjectMacro (CornerAnnotation, vtkImageViewCornerAnnotation);
+    vtkGetObjectMacro (CornerAnnotation, vtkImageViewCornerAnnotation)
 
     /**
      Get the scalar bar actor. This instance follows the color window/level
      of the viewer.
     */
-    vtkGetObjectMacro (ScalarBar, vtkScalarBarActor);
+    vtkGetObjectMacro (ScalarBar, vtkScalarBarActor)
 
     /**
      The OrientationMatrix instance (GetOrientationMatrix()) is a very important
@@ -227,9 +223,9 @@ public:
      provide this origin information in the OrientationMatrix.
 
     */
-    vtkGetObjectMacro (OrientationMatrix, vtkMatrix4x4); // LAYER
+    vtkGetObjectMacro (OrientationMatrix, vtkMatrix4x4) // LAYER
     virtual void SetOrientationMatrix (vtkMatrix4x4* matrix); // LAYER
-    vtkGetObjectMacro (InvertOrientationMatrix, vtkMatrix4x4); // LAYER
+    vtkGetObjectMacro (InvertOrientationMatrix, vtkMatrix4x4) // LAYER
 
 
     virtual void SetTransferFunctions (vtkColorTransferFunction *color,
@@ -275,7 +271,7 @@ public:
      The TextProperty instance (GetTextProperty()) describes the font and
      other settings of the CornerAnnotation instance (GetCornerAnnotation())
     */
-    vtkGetObjectMacro (TextProperty, vtkTextProperty);
+    vtkGetObjectMacro (TextProperty, vtkTextProperty)
     virtual void SetTextProperty (vtkTextProperty* textproperty);
 
     /**
@@ -297,7 +293,7 @@ public:
      Get the current position in world coordinate of
      the lastly clicked point.
     */
-    vtkGetVector3Macro (CurrentPoint, double);
+    vtkGetVector3Macro (CurrentPoint, double)
 
     /**
      Get/Update the current position of the cursor
@@ -305,7 +301,7 @@ public:
      This framework is only used in vtkViewImage2D to
      update corner annotations and cursor position.
     */
-    vtkGetVector3Macro (CursorPosition, double);
+    vtkGetVector3Macro (CursorPosition, double)
     virtual void UpdateCursorPosition (double pos[3]);
 
 
@@ -352,6 +348,13 @@ public:
 
     virtual void ResetCamera();
 
+    /**
+     * @brief ResetCamera resets the camera onto
+     * the parameter dataset
+     * @param dataSetToFocusOn
+     */
+    virtual void ResetCamera(vtkDataSet *dataSetToFocusOn);
+
     virtual void SetColorWindow(double s);
     virtual void SetColorWindow(double s,int layer);
     virtual void StoreColorWindow(double s,int layer) = 0;
@@ -383,7 +386,7 @@ public:
     /**
     * Show/Hide the annotations.
     */
-    vtkGetMacro (ShowAnnotations, int);
+    vtkGetMacro (ShowAnnotations, int)
 
     /**
     * Show/Hide the annotations.
@@ -393,14 +396,14 @@ public:
     /**
     * Show/Hide the annotations.
     */
-    vtkBooleanMacro (ShowAnnotations, int);
+    vtkBooleanMacro (ShowAnnotations, int)
 
     /**
     * Show/Hide the scalarbar.
     */
-    vtkGetMacro (ShowScalarBar, int);
+    vtkGetMacro (ShowScalarBar, int)
     virtual void SetShowScalarBar (int);
-    vtkBooleanMacro (ShowScalarBar, int);
+    vtkBooleanMacro (ShowScalarBar, int)
 
 
     virtual int* GetPosition() const;
@@ -461,17 +464,17 @@ public:
      ******************************
    */
 
-    virtual vtkActor* AddDataSet (vtkPointSet* arg, vtkProperty* prop = NULL) = 0;
+    virtual vtkActor* AddDataSet (vtkPointSet* arg, vtkProperty* prop = nullptr) = 0;
 
     virtual void RemoveDataSet (vtkPointSet *arg);
 
     vtkProp3D* FindDataSetActor (vtkDataSet* arg);
     vtkDataSet* FindActorDataSet (vtkProp3D* arg);
 
-    vtkGetObjectMacro (DataSetCollection, vtkDataSetCollection);
-    vtkGetObjectMacro (DataSetActorCollection, vtkProp3DCollection);
+    vtkGetObjectMacro (DataSetCollection, vtkDataSetCollection)
+    vtkGetObjectMacro (DataSetActorCollection, vtkProp3DCollection)
 
-    vtkGetMacro(IsInteractorInstalled, int);
+    vtkGetMacro(IsInteractorInstalled, int)
 
     virtual vtkAlgorithm* Get2DDisplayMapperInputAlgorithm () const;
     virtual vtkAlgorithm* Get2DDisplayMapperInputAlgorithm(int layer) const;

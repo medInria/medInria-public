@@ -441,3 +441,8 @@ QList<medAbstractParameterL*> medAbstractLayeredView::linkableParameters(unsigne
 {
     return interactorsParameters(layer);
 }
+
+void medAbstractLayeredView::resetCameraOnLayer(int layer)
+{
+    // base class does nothing for now.
+}

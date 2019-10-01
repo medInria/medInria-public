@@ -36,6 +36,7 @@
 #include <vtkInriaInteractorStyleRubberBandZoom.h>
 #include <vtkMatrix4x4.h>
 #include <vtkMath.h>
+#include <vtkMetaDataSet.h>
 
 #include <medViewFactory.h>
 #include <medVtkViewBackend.h>
@@ -544,4 +545,23 @@ void medVtkView::setOffscreenRendering(bool isOffscreen)
 void medVtkView::resetKeyboardInteractionModifier()
 {
     d->rubberBandZoomParameter->setValue(false);
+}
+
+void medVtkView::resetCameraOnLayer(int layer)
+{
+    medAbstractData *data = layerData(layer);
+    if (data && (data->identifier() == "vtkDataMesh" || data->identifier() == "EPMap"))
+    {
+        vtkMetaDataSet *metaDataSet = static_cast<vtkMetaDataSet*>(data->data());
+        vtkDataSet *arg = metaDataSet->GetDataSet();
+        if(this->is2D())
+        {
+            d->view2d->ResetCamera(arg);
+        }
+        else
+        {
+            d->view3d->ResetCamera(arg);
+        }
+        this->render();
+    }
 }
