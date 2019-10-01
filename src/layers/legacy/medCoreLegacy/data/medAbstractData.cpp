@@ -45,6 +45,7 @@ medAbstractData::medAbstractData( medAbstractData *parent )
 }
 
 medAbstractData::medAbstractData(const medAbstractData &other)
+
     : dtkAbstractData(other),
       d(new medAbstractDataPrivate())
 {

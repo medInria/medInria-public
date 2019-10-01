@@ -78,7 +78,9 @@ public:
     vtkMetaDataSet* metaDataSet;
     ActorSmartPointer actor2d;
     ActorSmartPointer actor3d;
-    PropertySmartPointer actorProperty;
+    PropertySmartPointer actorProperty2D;
+    PropertySmartPointer actorProperty3D;
+
     LutPair lut;
     AttributeSmartPointer attribute;
     double imageBounds[6];
@@ -111,12 +113,12 @@ vtkDataMeshInteractor::vtkDataMeshInteractor(medAbstractView *parent):
     for (int i=0; i<6; i++)
         d->imageBounds[i] = 0;
 
-    d->attributesParam = NULL;
-    d->LUTParam = NULL;
-    d->edgeVisibleParam = NULL;
-    d->colorParam = NULL;
-    d->renderingParam = NULL;
-    d->slicingParameter = NULL;
+    d->attributesParam = nullptr;
+    d->LUTParam = nullptr;
+    d->edgeVisibleParam = nullptr;
+    d->colorParam = nullptr;
+    d->renderingParam = nullptr;
+    d->slicingParameter = nullptr;
     d->minIntensityParameter = 0;
     d->maxIntensityParameter = 0;
     d->poLutWidget = nullptr;
@@ -126,7 +128,7 @@ vtkDataMeshInteractor::vtkDataMeshInteractor(medAbstractView *parent):
 vtkDataMeshInteractor::~vtkDataMeshInteractor()
 {
     delete d;
-    d = NULL;
+    d = nullptr;
 }
 
 
@@ -169,7 +171,7 @@ void vtkDataMeshInteractor::setInputData(medAbstractData *data)
     vtkMetaDataSet * mesh = dynamic_cast<vtkMetaDataSet*>((vtkDataObject *)(data->data()));
 
     d->metaDataSet = mesh;
-    d->lut = LutPair(NULL, "Default");
+    d->lut = LutPair(nullptr, "Default");
 
     updatePipeline();
 
@@ -270,7 +272,8 @@ void vtkDataMeshInteractor::setupParameters()
 
 void vtkDataMeshInteractor::setOpacity(double value)
 {
-    d->actorProperty->SetOpacity(value);
+    d->actorProperty2D->SetOpacity(value);
+    d->actorProperty3D->SetOpacity(value);
 
     d->view->render();
 }
@@ -287,7 +290,8 @@ void vtkDataMeshInteractor::setVisibility(bool visible)
 void vtkDataMeshInteractor::setEdgeVisibility(bool visible)
 {
     int v = (visible) ? 1 : 0;
-    d->actorProperty->SetEdgeVisibility(v);
+    d->actorProperty2D->SetEdgeVisibility(v);
+    d->actorProperty3D->SetEdgeVisibility(v);
 
     d->view->render();
 }
@@ -295,7 +299,7 @@ void vtkDataMeshInteractor::setEdgeVisibility(bool visible)
 
 bool vtkDataMeshInteractor::edgeVisibility() const
 {
-    return (d->actorProperty->GetEdgeVisibility() == 1);
+    return (d->actorProperty3D->GetEdgeVisibility() == 1);
 }
 
 
@@ -306,7 +310,8 @@ void vtkDataMeshInteractor::setColor(QColor color)
 
     double r,g,b;
     color.getRgbF(&r, &g, &b);
-    d->actorProperty->SetColor(r, g, b);
+    d->actorProperty2D->SetColor(r, g, b);
+    d->actorProperty3D->SetColor(r, g, b);
 
     d->view->render();
 }
@@ -319,7 +324,7 @@ void vtkDataMeshInteractor::setColor(const QString &color)
 QColor vtkDataMeshInteractor::color() const
 {
     double r,g,b;
-    d->actorProperty->GetColor(r, g, b);
+    d->actorProperty3D->GetColor(r, g, b);
     return QColor::fromRgbF(r, b, g);
 }
 
@@ -328,11 +333,20 @@ void vtkDataMeshInteractor::setRenderingType(const QString & type)
 {
     QString value = type.toLower();
     if (value == "wireframe")
-        d->actorProperty->SetRepresentationToWireframe ();
+    {
+        d->actorProperty2D->SetRepresentationToWireframe ();
+        d->actorProperty3D->SetRepresentationToWireframe ();
+    }
     else if (value == "surface")
-        d->actorProperty->SetRepresentationToSurface ();
+    {
+        d->actorProperty2D->SetRepresentationToSurface ();
+        d->actorProperty3D->SetRepresentationToSurface ();
+    }
     else if (value == "points")
-        d->actorProperty->SetRepresentationToPoints ();
+    {
+        d->actorProperty2D->SetRepresentationToPoints ();
+        d->actorProperty3D->SetRepresentationToPoints ();
+    }
 
     d->view->render();
 }
@@ -340,7 +354,7 @@ void vtkDataMeshInteractor::setRenderingType(const QString & type)
 
 QString vtkDataMeshInteractor::renderingType() const
 {
-    return QString::fromStdString(d->actorProperty->GetRepresentationAsString()).toLower();
+    return QString::fromStdString(d->actorProperty3D->GetRepresentationAsString()).toLower();
 }
 
 
@@ -350,7 +364,7 @@ void vtkDataMeshInteractor::setAttribute(const QString & attributeName)
     if ( ! pointSet )
         return;
 
-    vtkDataSetAttributes * attributes = NULL;
+    vtkDataSetAttributes * attributes = nullptr;
     vtkMapper * mapper2d = d->actor2d->GetMapper();
     vtkMapper * mapper3d = d->actor3d->GetMapper();
     if (pointSet->GetPointData()->HasArray(qPrintable(attributeName)))
@@ -414,7 +428,7 @@ void vtkDataMeshInteractor::setAttribute(const QString & attributeName)
         if(d->colorParam)
             d->colorParam->show();
 
-        d->attribute = NULL;
+        d->attribute = nullptr;
         mapper2d->SetScalarVisibility(0);
         mapper3d->SetScalarVisibility(0);
     }
@@ -455,7 +469,7 @@ QString vtkDataMeshInteractor::attribute() const
 
 void vtkDataMeshInteractor::setLut(const QString & lutName)
 {
-    vtkLookupTable * lut = NULL;
+    vtkLookupTable * lut = nullptr;
 
     if (lutName != "Default")
         lut = vtkLookupTableManager::GetLookupTable(lutName.toStdString());
@@ -485,9 +499,13 @@ void vtkDataMeshInteractor::updatePipeline ()
             d->actor2d = d->view2d->AddDataSet(pointSet);
             d->actor3d = d->view3d->AddDataSet(pointSet);
 
-            d->actorProperty = vtkDataMeshInteractorPrivate::PropertySmartPointer::New();
-            d->actor2d->SetProperty( d->actorProperty );
-            d->actor3d->SetProperty( d->actorProperty );
+            d->actorProperty2D = vtkDataMeshInteractorPrivate::PropertySmartPointer::New();
+            d->actorProperty3D = vtkDataMeshInteractorPrivate::PropertySmartPointer::New();
+
+            d->actorProperty2D->SetLighting(false);
+            d->actorProperty2D->SetLineWidth(3.0);
+            d->actor2d->SetProperty(d->actorProperty2D);
+            d->actor3d->SetProperty(d->actorProperty3D);
 
             d->view2d->UpdateBounds(pointSet->GetBounds(), d->view->layer(this->inputData()));
         }
@@ -548,6 +566,11 @@ void vtkDataMeshInteractor::removeData()
         {
             d->view2d->RemoveDataSet(pointSet);
             d->view3d->RemoveDataSet(pointSet);
+            d->metaDataSet->RemoveActor(d->actor2d);
+            d->metaDataSet->RemoveActor(d->actor3d);
+            d->actor2d = nullptr;
+            d->actor3d = nullptr;
+
             d->view->render();
         }
     }
