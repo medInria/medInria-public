@@ -60,14 +60,17 @@ resampleProcess::~resampleProcess(void)
     delete d;
     d = nullptr;
 }
+
 bool resampleProcess::registered(void)
 {
     return dtkAbstractProcessFactory::instance()->registerProcessType("resampleProcess", createResampleProcess);
 }
+
 QString resampleProcess::description(void) const
 {
     return "resampleProcess";
 }
+
 void resampleProcess::setInput ( medAbstractData *data)
 {
     if ( data )
@@ -86,13 +89,13 @@ void resampleProcess::setParameter ( double data, int channel)
     switch (channel)
     {
     case 0:
-        d->dimX = (int)data;
+        d->dimX = static_cast<int>(data);
         break;
     case 1:
-        d->dimY = (int)data;
+        d->dimY = static_cast<int>(data);
         break;
     case 2:
-        d->dimZ = (int)data;
+        d->dimZ = static_cast<int>(data);
         break;
     case 3:
         d->spacingX = data;
@@ -136,16 +139,16 @@ int resampleProcess::resample(medAbstractData* inputData)
 
     typename ResampleFilterType::Pointer resampleFilter = ResampleFilterType::New();
     
-    //// Fetch original image size.
+    // Fetch original image size.
     const typename ImageType::RegionType& inputRegion = inputImage->GetLargestPossibleRegion();
     const typename ImageType::SizeType& vnInputSize = inputRegion.GetSize();
     unsigned int nOldX = vnInputSize[0];
     unsigned int nOldY = vnInputSize[1];
     unsigned int nOldZ = vnInputSize[2];
 
-    //// Fetch original image spacing.
+    // Fetch original image spacing.
     const typename ImageType::SpacingType& vfInputSpacing = inputImage->GetSpacing();
-    double vfOutputSpacing[3]={d->spacingX,d->spacingY,d->spacingZ};
+    double vfOutputSpacing[3] = {d->spacingX,d->spacingY,d->spacingZ};
     if (d->dimX || d->dimY || d->dimZ)
     {
         vfOutputSpacing[0] = vfInputSpacing[0] * (double) nOldX / (double) d->dimX;
@@ -170,6 +173,7 @@ int resampleProcess::resample(medAbstractData* inputData)
     resampleFilter->SetOutputOrigin( inputImage->GetOrigin() );
     resampleFilter->SetOutputDirection(inputImage->GetDirection() );
     resampleFilter->UpdateLargestPossibleRegion();
+
     d->output = medAbstractDataFactory::instance()->create(inputData->identifier());
     d->output->setData(resampleFilter->GetOutput());
 
@@ -180,7 +184,7 @@ int resampleProcess::resample(medAbstractData* inputData)
 
 medAbstractData * resampleProcess::output ( void )
 {
-    return ( d->output );
+    return d->output;
 }
 
 // /////////////////////////////////////////////////////////////////

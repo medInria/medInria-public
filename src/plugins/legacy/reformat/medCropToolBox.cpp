@@ -43,19 +43,18 @@ class medCropCallback;
 class medCropToolBoxPrivate
 {
 public:
-    medAbstractLayeredView* view;
-    vtkImageView2D* view2D;
-    vtkImageView3D* view3D;
-    QPushButton* applyButton;
-    QPushButton* saveButton;
+    medAbstractLayeredView *view;
+    vtkImageView2D *view2D;
+    vtkImageView3D *view3D;
+    QPushButton *applyButton;
+    QPushButton *saveButton;
     vtkSmartPointer<vtkBorderWidget> borderWidget;
     int currentOrientation;
     QList<dtkSmartPointer<medAbstractData> > outputData;
     vtkSmartPointer<medCropCallback> cropCallback;
-    vtkMatrix4x4* orientationMatrix;
+    vtkMatrix4x4 *orientationMatrix;
     vtkSmartPointer<vtkMatrix4x4> inverseOrientationMatrix;
 
-    
     void updateBorderWidgetIfVisible();
     void updateCurrentOrientation();
     void updateBoxWidgetFromBorderWidget();
@@ -78,7 +77,7 @@ class medCropCallback : public vtkCommand
 
 public:
 
-    medCropToolBox* toolBox;
+    medCropToolBox *toolBox;
 
     static medCropCallback *New()
     {
@@ -133,9 +132,9 @@ medCropToolBox::medCropToolBox(QWidget* parent)
     d->cropCallback = vtkSmartPointer<medCropCallback>::New();
     d->cropCallback->toolBox = this;
 
-    d->view = 0;
-    d->view2D = 0;
-    d->view3D = 0;
+    d->view   = nullptr;
+    d->view2D = nullptr;
+    d->view3D = nullptr;
 }
 
 medCropToolBox::~medCropToolBox()
@@ -169,9 +168,9 @@ void medCropToolBox::handleCameraMoveEvent()
 
 void medCropToolBox::updateView()
 {
-    medViewContainer* currentContainer = this->getWorkspace()->tabbedViewContainers()->getFirstSelectedContainer();
+    medViewContainer *currentContainer = this->getWorkspace()->tabbedViewContainers()->getFirstSelectedContainer();
     medAbstractView *viewNotLayered = this->getWorkspace()->tabbedViewContainers()->getFirstSelectedContainerView();
-    medAbstractLayeredView* view = qobject_cast<medAbstractLayeredView*>(viewNotLayered);
+    medAbstractLayeredView *view = qobject_cast<medAbstractLayeredView*>(viewNotLayered);
 
     if (view)
     {
@@ -201,9 +200,9 @@ void medCropToolBox::updateView()
     }
     else
     {
-        d->view = 0;
-        d->view2D = 0;
-        d->view3D = 0;
+        d->view   = nullptr;
+        d->view2D = nullptr;
+        d->view3D = nullptr;
     }
 }
 
@@ -243,7 +242,7 @@ void medCropToolBox::clear()
     setEnable(false);
 
     // allow to split container in other toolboxes
-    medViewContainer* currentContainer = this->getWorkspace()->tabbedViewContainers()->getFirstSelectedContainer();
+    medViewContainer *currentContainer = this->getWorkspace()->tabbedViewContainers()->getFirstSelectedContainer();
     if (currentContainer)
     {
         currentContainer->setUserSplittable(true);
@@ -371,7 +370,7 @@ void medCropToolBoxPrivate::getMinAndMaxBoxCorners(double* minCorner, double* ma
 
 void medCropToolBoxPrivate::worldToNormalizedViewport(double* worldPoint, double* viewportPoint)
 {
-    vtkRenderer* renderer = borderWidget->GetCurrentRenderer();
+    vtkRenderer *renderer = borderWidget->GetCurrentRenderer();
 
     if (renderer)
     {
@@ -386,7 +385,7 @@ void medCropToolBoxPrivate::worldToNormalizedViewport(double* worldPoint, double
 
 void medCropToolBoxPrivate::normalizedViewportToWorld(double* viewportPoint, double* worldPoint)
 {
-    vtkRenderer* renderer = borderWidget->GetCurrentRenderer();
+    vtkRenderer *renderer = borderWidget->GetCurrentRenderer();
     double homogeneousVector[4];
 
     if (renderer)
@@ -438,7 +437,7 @@ void medCropToolBoxPrivate::generateOutput()
     for (unsigned int layer = 0; layer < view->layersCount(); layer++)
     {
         medAbstractData* imageData = view->layerData(layer);
-        medAbstractData* output = NULL;
+        medAbstractData* output = nullptr;
 
         if (DISPATCH_ON_3D_PIXEL_TYPE(&medCropToolBoxPrivate::extractCroppedImage, this, imageData, minIndices, maxIndices, &output) == DTK_SUCCEED)
         {
@@ -489,7 +488,7 @@ int medCropToolBoxPrivate::extractCroppedImage(medAbstractData* input, int* minI
     medUtilities::setDerivedMetaData(*output, input, "cropped");
     medUtilitiesITK::updateMetadata<ImageType>(*output);
 
-    return DTK_SUCCEED;
+    return medAbstractProcessLegacy::SUCCESS;
 }
 
 void medCropToolBoxPrivate::replaceViewWithOutputData(medAbstractWorkspaceLegacy &workspace)
@@ -502,7 +501,9 @@ void medCropToolBoxPrivate::replaceViewWithOutputData(medAbstractWorkspaceLegacy
         viewContainer->removeView();
         viewContainer->setMultiLayered(true);
         viewContainer->addData(outputData[0]);
+
         medAbstractLayeredView* newView = qobject_cast<medAbstractLayeredView*>(viewContainer->view());
+
         for (int layer = 1; layer < outputData.length(); layer++)
         {
             newView->addLayer(outputData[layer]);
@@ -512,7 +513,7 @@ void medCropToolBoxPrivate::replaceViewWithOutputData(medAbstractWorkspaceLegacy
 
 void medCropToolBoxPrivate::importOutput()
 {
-    foreach (medAbstractData* output, outputData)
+    foreach (medAbstractData *output, outputData)
     {
         medDataManager::instance()->importData(output, false);
     }
