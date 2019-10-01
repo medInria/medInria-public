@@ -33,7 +33,7 @@ class MEDVTKINRIA_EXPORT medClutEditorToolBox : public medToolBox
 {
     Q_OBJECT
     MED_TOOLBOX_INTERFACE("medClutEditorToolBox",
-                          "Displays an interactive histogram",
+                          "Display an interactive histogram",
                           << "")
 
 public:
@@ -45,8 +45,8 @@ public:
     void setView(medAbstractView *view);
     void applyTable(medAbstractView *view);
     void setColorLookupTable (medAbstractView* view, QList<double> scalars, QList<QColor> colors );
-	void clear();
-    void getTransferFunctions ( QList<double> & scalars, QList<QColor> & colors );
+    void clear();
+    void getTransferFunctions ( QList<double> &scalars, QList<QColor> &colors );
     void forceLayer(int layer);
     medClutEditorScene * getScene();
     void addVertex(QPointF value, QColor color);

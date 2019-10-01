@@ -1,15 +1,18 @@
 /*=========================================================================
 
-medInria
+ medInria
 
-Copyright (c) INRIA 2013 - 2019. All rights reserved.
-See LICENSE.txt for details.
+ Copyright (c) INRIA 2013 - 2019. All rights reserved.
+ See LICENSE.txt for details.
 
-This software is distributed WITHOUT ANY WARRANTY; without even
-the implied warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR
-PURPOSE.
+  This software is distributed WITHOUT ANY WARRANTY; without even
+  the implied warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR
+  PURPOSE.
 
 =========================================================================*/
+
+#include <limits>
+#include <math.h>
 
 #include <dtkCoreSupport/dtkAbstractView.h>
 
@@ -22,9 +25,6 @@ PURPOSE.
 #include <medSaveLUTDialog.h>
 #include <medStorage.h>
 #include <medXMLToLUTReader.h>
-
-#include <limits>
-#include <math.h>
 
 // /////////////////////////////////////////////////////////////////
 // medClutEditorVertex
@@ -71,13 +71,13 @@ medClutEditorVertex::medClutEditorVertex(QPointF value, QPointF coord,
 
     // Set Value Action
     d->setValueAction = new QWidgetAction(this);
-    QLabel* setValueLabel = new QLabel("Set value: ");
+    QLabel* setValueLabel = new QLabel("Set value ");
     d->setValueSpinBox = new QDoubleSpinBox;
     d->setValueSpinBox->setMaximum(10000);
     d->setValueSpinBox->setMinimum(-10000);
-    d->setValueSpinBox->setValue((double)this->value().x());
+    d->setValueSpinBox->setValue(static_cast<double>(this->value().x()));
     connect(d->setValueSpinBox, SIGNAL(editingFinished()), this, SLOT(setValue()));
-    QHBoxLayout* setValueLayout = new QHBoxLayout;
+    QHBoxLayout *setValueLayout = new QHBoxLayout;
     setValueLayout->addWidget(setValueLabel);
     setValueLayout->addWidget(d->setValueSpinBox);
     QWidget *setValueWidget = new QWidget;
@@ -161,7 +161,7 @@ void medClutEditorVertex::setValue()
         d->setValueSpinBox->blockSignals(true);
         double newValue = d->setValueSpinBox->value();
         double value = this->value().x();
-        float amount = (float)newValue - (float)value;
+        float amount = static_cast<float>(newValue - value);
         this->shiftValue(amount);
         if ( medClutEditorTable *table =
              dynamic_cast< medClutEditorTable * >( this->parentItem() ) )
@@ -171,7 +171,6 @@ void medClutEditorVertex::setValue()
         d->setValueSpinBox->blockSignals(false);
     }
 }
-
 
 void medClutEditorVertex::interpolate( medClutEditorVertex * prev,
                                        medClutEditorVertex * next )
@@ -369,7 +368,7 @@ void medClutEditorVertex::mouseMoveEvent(QGraphicsSceneMouseEvent *event)
         table->triggerVertexMoving();
     }
 
-    d->setValueSpinBox->setValue((double)this->value().x());
+    d->setValueSpinBox->setValue(static_cast<double>(this->value().x()));
 
     this->updateValue();
 }
@@ -493,8 +492,9 @@ QHash<medClutEditorVertex *, medClutEditorVertex *> *
 medClutEditorTable::calculateCoupledVertices(QList<medClutEditorVertex *>list)
 {
     QHash<medClutEditorVertex *, medClutEditorVertex *> *hash = new QHash<medClutEditorVertex *, medClutEditorVertex *>();
-    float epsilon = (float)0.0001;
-    for (int i=0; i<list.size();i++)
+    float epsilon = static_cast<float>(0.0001);
+
+    for (int i=0; i<list.size(); i++)
     {
         if( i==0 )
         {
@@ -503,7 +503,7 @@ medClutEditorTable::calculateCoupledVertices(QList<medClutEditorVertex *>list)
         else
         {
             QPointF value, position;
-            medClutEditorVertex * coupledVertex;
+            medClutEditorVertex *coupledVertex;
 
             if(!d->LUTinverted)
             {
@@ -611,7 +611,7 @@ void medClutEditorTable::constrainMoveSelection( medClutEditorVertex * driver,
             dynamic_cast< medClutEditorScene * >( this->scene() );
     QRectF box = scene->plotArea();
 
-    foreach (medClutEditorVertex * vertex, d->principalVertices)
+    foreach (medClutEditorVertex *vertex, d->principalVertices)
     {
         QRectF limits = box;
         if ( vertex->isSelected() )
@@ -732,7 +732,7 @@ void medClutEditorTable::setSelectedAllVertices( bool isSelected )
 void medClutEditorTable::deleteSelection()
 {
     int nSelected = 0;
-    foreach( medClutEditorVertex * vertex, d->principalVertices )
+    foreach( medClutEditorVertex *vertex, d->principalVertices )
     {
         if ( vertex->isSelected() )
         {
@@ -751,7 +751,7 @@ void medClutEditorTable::deleteSelection()
     QList<medClutEditorVertex *> remaining;
     while ( !d->principalVertices.isEmpty() )
     {
-        medClutEditorVertex * vertex = d->principalVertices.takeFirst();
+        medClutEditorVertex *vertex = d->principalVertices.takeFirst();
         if ( vertex->isSelected() )
         {
             delete vertex;
@@ -770,7 +770,7 @@ void medClutEditorTable::deleteSelection()
 
 void medClutEditorTable::deleteAllVertices()
 {
-    foreach( medClutEditorVertex * vertex, d->verticesToDisplay )
+    foreach( medClutEditorVertex *vertex, d->verticesToDisplay )
     {
         delete vertex;
     }
