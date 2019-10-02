@@ -30,7 +30,7 @@ public:
 public slots:
     //! Input data to the plugin is set through here
     void setInput(medAbstractData *data);
-    void setInput(medAbstractData *data , int channel);
+    void setInput(medAbstractData *data, int channel);
 
     //! Parameters are set through here, channel allows to handle multiple parameters
     void setParameter(double data, int channel);

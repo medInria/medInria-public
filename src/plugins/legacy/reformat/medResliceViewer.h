@@ -20,7 +20,7 @@
 
 #include <QFrame>
 #include <QHBoxLayout>
-#include <QVTKWidget.h>
+#include <QVTKOpenGLWidget.h>
 
 #include <resliceToolBox.h>
 
@@ -35,7 +35,7 @@ public:
     QVTKFrame(QWidget *parent) : QFrame(parent)
     {
         QHBoxLayout *layout = new QHBoxLayout(this);
-        view = new QVTKWidget(this);
+        view = new QVTKOpenGLWidget(this);
         layout->addWidget(view);
         this->setLayout(layout);
     }
@@ -45,13 +45,13 @@ public:
         delete view;
     }
 
-    QVTKWidget * getView()
+    QVTKOpenGLWidget * getView()
     {
         return view;
     }
 
 private:
-    QVTKWidget *view;
+    QVTKOpenGLWidget *view;
 
 };
 
@@ -112,7 +112,7 @@ protected:
     vtkSmartPointer<vtkImagePlaneWidget> planeWidget[3];
     double planeNormal[3][3];
     QWidget *viewBody;
-    QVTKWidget *views[4];
+    QVTKOpenGLWidget *views[4];
     QVTKFrame *frames[4];
     dtkSmartPointer<medAbstractData> inputData;
     double *outputSpacing;
