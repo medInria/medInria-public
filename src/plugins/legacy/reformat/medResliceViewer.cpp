@@ -200,7 +200,7 @@ medResliceViewer::medResliceViewer(medAbstractView *view, QWidget *parent): medA
 
         rep->GetResliceCursorActor()->GetCursorAlgorithm()->SetReslicePlaneNormal(i);
 
-        riw[i]->SetInputData(view3d->GetInputAlgorithm(view3d->GetCurrentLayer())->GetOutput());
+        riw[i]->SetInputConnection(view3d->GetInputAlgorithm(view3d->GetCurrentLayer())->GetOutputPort());
         riw[i]->SetSliceOrientation(i);
         riw[i]->SetResliceModeToOblique();
     }
@@ -368,7 +368,7 @@ void medResliceViewer::saveImage()
     calculateResliceMatrix(resliceMatrix);
 
     vtkImageReslice *reslicerTop = vtkImageReslice::New();
-    reslicerTop->SetInputData(view3d->GetInputAlgorithm(view3d->GetCurrentLayer())->GetOutput());
+    reslicerTop->SetInputConnection(view3d->GetInputAlgorithm(view3d->GetCurrentLayer())->GetOutputPort());
     reslicerTop->AutoCropOutputOn();
     reslicerTop->SetResliceAxes(resliceMatrix);
     reslicerTop->SetBackgroundLevel(riw[0]->GetInput()->GetScalarRange()[0]);
