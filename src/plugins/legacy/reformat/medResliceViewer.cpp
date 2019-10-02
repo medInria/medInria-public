@@ -187,7 +187,7 @@ medResliceViewer::medResliceViewer(medAbstractView *view, QWidget *parent): medA
 
         rep->GetResliceCursorActor()->GetCursorAlgorithm()->SetReslicePlaneNormal(i);
 
-        riw[i]->SetInputData(view3d->GetInputAlgorithm(view3d->GetCurrentLayer())->GetOutput());
+        riw[i]->SetInputConnection(view3d->GetInputAlgorithm(view3d->GetCurrentLayer())->GetOutputPort());
         riw[i]->SetSliceOrientation(i);
         riw[i]->SetResliceModeToOblique();
     }
@@ -220,7 +220,7 @@ medResliceViewer::medResliceViewer(medAbstractView *view, QWidget *parent): medA
         planeWidget[i]->SetTexturePlaneProperty(ipwProp);
         planeWidget[i]->TextureInterpolateOff();
         planeWidget[i]->SetResliceInterpolateToLinear();
-        planeWidget[i]->SetInputData(view3d->GetInputAlgorithm(view3d->GetCurrentLayer())->GetOutput());
+        planeWidget[i]->SetInputConnection(view3d->GetInputAlgorithm(view3d->GetCurrentLayer())->GetOutputPort());
         planeWidget[i]->SetPlaneOrientation(i);
         planeWidget[i]->SetSliceIndex(imageDims[i]/2);
         planeWidget[i]->DisplayTextOn();
@@ -364,7 +364,7 @@ void medResliceViewer::saveImage()
     calculateResliceMatrix(resliceMatrix);
 
     vtkImageReslice *reslicerTop = vtkImageReslice::New();
-    reslicerTop->SetInputData(view3d->GetInputAlgorithm(view3d->GetCurrentLayer())->GetOutput());
+    reslicerTop->SetInputConnection(view3d->GetInputAlgorithm(view3d->GetCurrentLayer())->GetOutputPort());
     reslicerTop->AutoCropOutputOn();
     reslicerTop->SetResliceAxes(resliceMatrix);
     reslicerTop->SetBackgroundLevel(riw[0]->GetInput()->GetScalarRange()[0]); // todo: set the background value in an automatic way.
@@ -474,7 +474,7 @@ void medResliceViewer::extentChanged(int val)
 
 bool medResliceViewer::eventFilter(QObject *object, QEvent *event)
 {
-    if (!qobject_cast<QVTKWidget*>(object))
+    if (!qobject_cast<QVTKOpenGLWidget*>(object))
     {
         return true;
     }
