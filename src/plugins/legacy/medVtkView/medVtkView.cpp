@@ -133,7 +133,7 @@ medVtkView::medVtkView(QObject* parent): medAbstractImageView(parent),
     d->viewWidget->setEnableHiDPI(true);
     d->viewWidget->SetRenderWindow(d->renWin);
 
-    // Event filter used to know if the view is selecetd or not
+    // Event filter used to know if the view is selected or not
     d->viewWidget->installEventFilter(this);
     d->viewWidget->setFocusPolicy(Qt::ClickFocus );
     d->viewWidget->setCursor(QCursor(Qt::CrossCursor));

@@ -167,7 +167,8 @@ void resliceToolBox::startReformat()
             d->reformatOptions->show();
             d->b_startReslice->hide();
 
-            d->resliceViewer = new medResliceViewer(d->currentView,getWorkspace()->tabbedViewContainers());
+            d->resliceViewer = new medResliceViewer(d->currentView,
+                                                    getWorkspace()->tabbedViewContainers());
             d->resliceViewer->setToolBox(this);
             getWorkspace()->tabbedViewContainers()->setAcceptDrops(false);
             connect(d->resliceViewer,SIGNAL(imageReformatedGenerated()),this,SLOT(saveReformatedImage()));

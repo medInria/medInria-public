@@ -35,7 +35,10 @@ public:
     QVTKFrame(QWidget *parent) : QFrame(parent)
     {
         QHBoxLayout *layout = new QHBoxLayout(this);
+
         view = new QVTKOpenGLWidget(this);
+        view->setEnableHiDPI(true);
+
         layout->addWidget(view);
         this->setLayout(layout);
     }
