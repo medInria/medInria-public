@@ -135,8 +135,10 @@ medResliceViewer::medResliceViewer(medAbstractView *view, QWidget *parent): medA
         return;
     }
 
-    inputData = static_cast<medAbstractLayeredView*>(view)->layerData(0);
-    view3d = static_cast<medVtkViewBackend*>(view->backend())->view3D;
+    view3d    = static_cast<medVtkViewBackend*>(view->backend())->view3D;
+    inputData = static_cast<medAbstractLayeredView*>(view)->layerData(view3d->GetCurrentLayer());
+
+    selectedView = 2;
 
     int *imageDims = view3d->GetMedVtkImageInfo()->dimensions;
     outputSpacing  = view3d->GetMedVtkImageInfo()->spacing;
@@ -200,7 +202,7 @@ medResliceViewer::medResliceViewer(medAbstractView *view, QWidget *parent): medA
     {
         vtkResliceCursorLineRepresentation *rep = vtkResliceCursorLineRepresentation::SafeDownCast(
                     riw[i]->GetResliceCursorWidget()->GetRepresentation());
-        riw[i]->SetResliceCursor(riw[0]->GetResliceCursor());
+        riw[i]->SetResliceCursor(riw[selectedView]->GetResliceCursor());
 
         rep->GetResliceCursorActor()->GetCursorAlgorithm()->SetReslicePlaneNormal(i);
 
@@ -211,6 +213,7 @@ medResliceViewer::medResliceViewer(medAbstractView *view, QWidget *parent): medA
 
     vtkSmartPointer<vtkCellPicker> picker = vtkSmartPointer<vtkCellPicker>::New();
     picker->SetTolerance(0.005);
+
     vtkSmartPointer<vtkProperty> ipwProp = vtkSmartPointer<vtkProperty>::New();
 
     vtkSmartPointer<vtkRenderer> ren = vtkSmartPointer<vtkRenderer>::New();
@@ -223,13 +226,12 @@ medResliceViewer::medResliceViewer(medAbstractView *view, QWidget *parent): medA
     for (int i = 0; i < 3; i++)
     {
         planeWidget[i] = vtkSmartPointer<vtkImagePlaneWidget>::New();
-        planeWidget[i]->SetInteractor( iren );
+        planeWidget[i]->SetInteractor(iren);
         planeWidget[i]->SetPicker(picker);
         planeWidget[i]->RestrictPlaneToVolumeOn();
         double color[3] = {0, 0, 0};
         color[i] = 1;
         planeWidget[i]->GetPlaneProperty()->SetColor(color);
-
         color[0] /= 4.0;
         color[1] /= 4.0;
         color[2] /= 4.0;
@@ -263,14 +265,13 @@ medResliceViewer::medResliceViewer(medAbstractView *view, QWidget *parent): medA
         riw[i]->GetInteractorStyle()->AddObserver(vtkCommand::MouseMoveEvent, cbk);
 
         // Make them all share the same color map.
-        riw[i]->SetLookupTable(riw[0]->GetLookupTable());
+        riw[i]->SetLookupTable(riw[selectedView]->GetLookupTable());
         riw[i]->SetColorLevel(view3d->GetColorLevel());
         riw[i]->SetColorWindow(view3d->GetColorWindow());
-        planeWidget[i]->GetColorMap()->SetLookupTable(riw[0]->GetLookupTable());
+        planeWidget[i]->GetColorMap()->SetLookupTable(riw[selectedView]->GetLookupTable());
         planeWidget[i]->SetColorMap(riw[i]->GetResliceCursorWidget()->GetResliceCursorRepresentation()->GetColorMap());
     }
 
-    resetViews();
     applyRadiologicalConvention();
     updatePlaneNormals();
 
@@ -283,8 +284,6 @@ medResliceViewer::medResliceViewer(medAbstractView *view, QWidget *parent): medA
     views[2]->show();
 
     this->render();
-
-    selectedView = 2;
 
     this->initialiseNavigators();
 }
@@ -312,9 +311,7 @@ void medResliceViewer::thickMode(int val)
 {
     for (int i = 0; i < 3; i++)
     {
-        //TODO: set the axes to the reslicecursorwidget vtkimageReslice .... this will propably solve the problem of disappearance.
         riw[i]->SetThickMode(val);
-        riw[i]->GetRenderer()->ResetCamera();
         riw[i]->Render();
     }
 }
@@ -361,14 +358,27 @@ void medResliceViewer::reset()
 
 void medResliceViewer::resetViews()
 {
+    // Reset the reslice image views
     for (int i = 0; i < 3; i++)
     {
-        riw[i]->GetRenderer()->ResetCamera();
+        riw[i]->Reset();
     }
 
-    riw[0]->GetRenderer()->GetActiveCamera()->SetViewUp(0, 0, 1);
-    riw[1]->GetRenderer()->GetActiveCamera()->SetViewUp(0, 0, 1);
-    riw[2]->GetRenderer()->GetActiveCamera()->SetViewUp(0, -1, 0);
+    // Also sync the Image plane widget on the 3D top right view with any
+    // changes to the reslice cursor.
+    for (int i = 0; i < 3; i++)
+    {
+        vtkPlaneSource *ps = static_cast< vtkPlaneSource * >(
+                    planeWidget[i]->GetPolyDataAlgorithm());
+        ps->SetNormal(riw[0]->GetResliceCursor()->GetPlane(i)->GetNormal());
+        ps->SetCenter(riw[0]->GetResliceCursor()->GetPlane(i)->GetOrigin());
+
+        // If the reslice plane has modified, update it on the 3D widget
+        this->planeWidget[i]->UpdatePlacement();
+    }
+
+    // Render in response to changes.
+    this->render();
 }
 
 void medResliceViewer::render()
