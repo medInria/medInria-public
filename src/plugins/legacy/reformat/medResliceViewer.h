@@ -18,8 +18,6 @@
 
 #include <medAbstractView.h>
 
-#include <QFrame>
-#include <QHBoxLayout>
 #include <QVTKOpenGLWidget.h>
 
 #include <resliceToolBox.h>
@@ -29,40 +27,10 @@
 #include <vtkResliceImageViewer.h>
 #include <vtkSmartPointer.h>
 
-class QVTKFrame : public QFrame
-{
-public:
-    QVTKFrame(QWidget *parent) : QFrame(parent)
-    {
-        QHBoxLayout *layout = new QHBoxLayout(this);
-
-        view = new QVTKOpenGLWidget(this);
-        view->setEnableHiDPI(true);
-
-        layout->addWidget(view);
-        this->setLayout(layout);
-    }
-
-    ~QVTKFrame()
-    {
-        delete view;
-    }
-
-    QVTKOpenGLWidget * getView()
-    {
-        return view;
-    }
-
-private:
-    QVTKOpenGLWidget *view;
-
-};
-
 class medResliceCursorCallback;
 
 class medResliceViewer : public medAbstractView
 {
-
     friend class medResliceCursorCallback;
 
     Q_OBJECT
@@ -116,7 +84,6 @@ protected:
     double planeNormal[3][3];
     QWidget *viewBody;
     QVTKOpenGLWidget *views[4];
-    QVTKFrame *frames[4];
     dtkSmartPointer<medAbstractData> inputData;
     double *outputSpacing;
     unsigned char selectedView;

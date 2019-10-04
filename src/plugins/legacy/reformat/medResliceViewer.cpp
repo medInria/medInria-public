@@ -50,82 +50,79 @@ public:
         return new medResliceCursorCallback;
     }
 
-    void Execute( vtkObject *caller, unsigned long ev,
-                  void *callData ) override
+    void Execute(vtkObject *caller, unsigned long ev, void *callData )
     {
-
-        if (ev == vtkResliceCursorWidget::WindowLevelEvent ||
-                ev == vtkCommand::WindowLevelEvent ||
-                ev == vtkResliceCursorWidget::ResliceThicknessChangedEvent)
+        switch (ev)
         {
-            // Render everything
-            for (int i = 0; i < 3; i++)
+            case vtkResliceCursorWidget::ResliceAxesChangedEvent:
             {
-                this->RCW[i]->Render();
+                reformatViewer->ensureOrthogonalPlanes();
+                break;
             }
-            this->IPW[0]->GetInteractor()->GetRenderWindow()->Render();
-            return;
+            case vtkResliceCursorWidget::ResetCursorEvent:
+            {
+                reformatViewer->resetViews();
+                reformatViewer->applyRadiologicalConvention();
+                break;
+            }
         }
 
-        vtkImagePlaneWidget* ipw =
-                dynamic_cast< vtkImagePlaneWidget* >( caller );
+        vtkImagePlaneWidget *ipw = dynamic_cast< vtkImagePlaneWidget* >(caller);
         if (ipw)
         {
-            double* wl = static_cast<double*>( callData );
+            double *wl = static_cast<double*>(callData);
 
-            if ( ipw == this->IPW[0] )
+            if (ipw == reformatViewer->getImagePlaneWidget(0))
             {
-                this->IPW[1]->SetWindowLevel(wl[0],wl[1],1);
-                this->IPW[2]->SetWindowLevel(wl[0],wl[1],1);
+                reformatViewer->getImagePlaneWidget(1)->SetWindowLevel(wl[0],wl[1],1);
+                reformatViewer->getImagePlaneWidget(2)->SetWindowLevel(wl[0],wl[1],1);
             }
-            else if( ipw == this->IPW[1] )
+            else if(ipw == reformatViewer->getImagePlaneWidget(1))
             {
-                this->IPW[0]->SetWindowLevel(wl[0],wl[1],1);
-                this->IPW[2]->SetWindowLevel(wl[0],wl[1],1);
+                reformatViewer->getImagePlaneWidget(0)->SetWindowLevel(wl[0],wl[1],1);
+                reformatViewer->getImagePlaneWidget(2)->SetWindowLevel(wl[0],wl[1],1);
             }
-            else if (ipw == this->IPW[2])
+            else if (ipw == reformatViewer->getImagePlaneWidget(2))
             {
-                this->IPW[0]->SetWindowLevel(wl[0],wl[1],1);
-                this->IPW[1]->SetWindowLevel(wl[0],wl[1],1);
+                reformatViewer->getImagePlaneWidget(0)->SetWindowLevel(wl[0],wl[1],1);
+                reformatViewer->getImagePlaneWidget(1)->SetWindowLevel(wl[0],wl[1],1);
             }
         }
 
-        vtkResliceCursorWidget *rcw = dynamic_cast<
-                vtkResliceCursorWidget * >(caller);
+        vtkResliceCursorWidget *rcw = dynamic_cast<vtkResliceCursorWidget*>(caller);
         if (rcw)
         {
-            vtkResliceCursorLineRepresentation *rep = dynamic_cast<
-                    vtkResliceCursorLineRepresentation * >(rcw->GetRepresentation());
+            vtkResliceCursorLineRepresentation *rep = dynamic_cast<vtkResliceCursorLineRepresentation*>(rcw->GetRepresentation());
             // Although the return value is not used, we keep the get calls
             // in case they had side-effects
             rep->GetResliceCursorActor()->GetCursorAlgorithm()->GetResliceCursor();
+
             for (int i = 0; i < 3; i++)
             {
-                vtkPlaneSource *ps = static_cast< vtkPlaneSource * >(
-                            this->IPW[i]->GetPolyDataAlgorithm());
-                ps->SetOrigin(this->RCW[i]->GetResliceCursorRepresentation()->
-                              GetPlaneSource()->GetOrigin());
-                ps->SetPoint1(this->RCW[i]->GetResliceCursorRepresentation()->
-                              GetPlaneSource()->GetPoint1());
-                ps->SetPoint2(this->RCW[i]->GetResliceCursorRepresentation()->
-                              GetPlaneSource()->GetPoint2());
+                vtkPlaneSource *ps = static_cast< vtkPlaneSource * >(reformatViewer->getImagePlaneWidget(i)->GetPolyDataAlgorithm());
+                ps->SetOrigin(reformatViewer->getResliceImageViewer(i)->GetResliceCursorWidget()
+                              ->GetResliceCursorRepresentation()->GetPlaneSource()->GetOrigin());
+                ps->SetPoint1(reformatViewer->getResliceImageViewer(i)->GetResliceCursorWidget()
+                              ->GetResliceCursorRepresentation()->GetPlaneSource()->GetPoint1());
+                ps->SetPoint2(reformatViewer->getResliceImageViewer(i)->GetResliceCursorWidget()
+                              ->GetResliceCursorRepresentation()->GetPlaneSource()->GetPoint2());
 
                 // If the reslice plane has modified, update it on the 3D widget
-                this->IPW[i]->UpdatePlacement();
+                reformatViewer->getImagePlaneWidget(i)->UpdatePlacement();
             }
         }
 
         // Render everything
         for (int i = 0; i < 3; i++)
         {
-            this->RCW[i]->Render();
+            reformatViewer->getResliceImageViewer(i)->GetResliceCursorWidget()->Render();
         }
-        this->IPW[0]->GetInteractor()->GetRenderWindow()->Render();
+        reformatViewer->getImagePlaneWidget(0)->GetInteractor()->GetRenderWindow()->Render();
     }
 
-    void vtkResliceCursorCallback() {}
-    vtkImagePlaneWidget* IPW[3];
-    vtkResliceCursorWidget *RCW[3];
+    medResliceCursorCallback() {}
+
+    medResliceViewer *reformatViewer;
 };
 
 medResliceViewer::medResliceViewer(medAbstractView *view, QWidget *parent): medAbstractView(parent)
@@ -145,44 +142,36 @@ medResliceViewer::medResliceViewer(medAbstractView *view, QWidget *parent): medA
 
     viewBody = new QWidget(parent);
 
+    // Build reslice viewers
     for (int i = 0; i < 3; i++)
     {
         riw[i] = vtkSmartPointer<vtkResliceImageViewer>::New();
         vtkNew<vtkGenericOpenGLRenderWindow> renderWindow;
         riw[i]->SetRenderWindow(renderWindow);
+        riw[i]->GetRenderer()->SetBackground(0,0,0); // black background
     }
 
+    // Build views
     for (int i = 0; i < 4; i++)
     {
-        frames[i] = new QVTKFrame(viewBody);
-        views[i] = frames[i]->getView();
-        views[i]->setSizePolicy ( QSizePolicy::Minimum, QSizePolicy::Minimum );
-
-        // Color border of these views
-        if (i==0)
-        {
-            frames[i]->setStyleSheet("* {border : 1px solid #FF0000;}");
-        }
-        else if (i==1)
-        {
-            frames[i]->setStyleSheet("* {border : 1px solid #00FF00;}");
-        }
-        else if (i==2)
-        {
-            frames[i]->setStyleSheet("* {border : 1px solid #0000FF;}");
-        }
-
+        views[i] = new QVTKOpenGLWidget();
+        views[i]->setEnableHiDPI(true);
+        views[i]->setSizePolicy(QSizePolicy::Minimum, QSizePolicy::Minimum);
         views[i]->installEventFilter(this);
     }
 
     // Position of the new views in tab
     QGridLayout *gridLayout = new QGridLayout(parent);
-    gridLayout->addWidget(frames[2], 0, 0);
-    gridLayout->addWidget(frames[3], 0, 1);
-    gridLayout->addWidget(frames[1], 1, 0);
-    gridLayout->addWidget(frames[0], 1, 1);
+    gridLayout->addWidget(views[2], 0, 0);
+    gridLayout->addWidget(views[3], 0, 1);
+    gridLayout->addWidget(views[1], 1, 0);
+    gridLayout->addWidget(views[0], 1, 1);
     gridLayout->setColumnStretch(0, 0);
     gridLayout->setColumnStretch(1, 0);
+    gridLayout->setColumnMinimumWidth(0, imageDims[0]);
+    gridLayout->setColumnMinimumWidth(1, imageDims[0]);
+    gridLayout->setRowMinimumHeight(0, imageDims[1]);
+    gridLayout->setRowMinimumHeight(1, imageDims[1]);
     gridLayout->setRowStretch(0, 0);
     gridLayout->setRowStretch(1, 0);
     viewBody->setLayout(gridLayout);
@@ -197,6 +186,11 @@ medResliceViewer::medResliceViewer(medAbstractView *view, QWidget *parent): medA
     views[2]->SetRenderWindow(riw[2]->GetRenderWindow());
     riw[2]->SetupInteractor(views[2]->GetRenderWindow()->GetInteractor());
 
+    vtkSmartPointer<vtkRenderer> ren = vtkSmartPointer<vtkRenderer>::New();
+    vtkNew<vtkGenericOpenGLRenderWindow> renderWindow;
+    views[3]->SetRenderWindow(renderWindow);
+    views[3]->GetRenderWindow()->AddRenderer(ren);
+
     // Make them all share the same reslice cursor object.
     for (int i = 0; i < 3; i++)
     {
@@ -208,7 +202,7 @@ medResliceViewer::medResliceViewer(medAbstractView *view, QWidget *parent): medA
 
         riw[i]->SetInputData(view3d->GetInputAlgorithm(view3d->GetCurrentLayer())->GetOutput());
         riw[i]->SetSliceOrientation(i);
-        riw[i]->SetResliceModeToAxisAligned();
+        riw[i]->SetResliceModeToOblique();
     }
 
     vtkSmartPointer<vtkCellPicker> picker = vtkSmartPointer<vtkCellPicker>::New();
@@ -216,26 +210,20 @@ medResliceViewer::medResliceViewer(medAbstractView *view, QWidget *parent): medA
 
     vtkSmartPointer<vtkProperty> ipwProp = vtkSmartPointer<vtkProperty>::New();
 
-    vtkSmartPointer<vtkRenderer> ren = vtkSmartPointer<vtkRenderer>::New();
-    vtkNew<vtkGenericOpenGLRenderWindow> renderWindow;
-    views[3]->SetRenderWindow(renderWindow);
-    views[3]->GetRenderWindow()->AddRenderer(ren);
-
     vtkRenderWindowInteractor *iren = views[3]->GetInteractor();
 
+    // Build planes on views
     for (int i = 0; i < 3; i++)
     {
         planeWidget[i] = vtkSmartPointer<vtkImagePlaneWidget>::New();
         planeWidget[i]->SetInteractor(iren);
         planeWidget[i]->SetPicker(picker);
         planeWidget[i]->RestrictPlaneToVolumeOn();
+
+        // Plane colors
         double color[3] = {0, 0, 0};
         color[i] = 1;
         planeWidget[i]->GetPlaneProperty()->SetColor(color);
-        color[0] /= 4.0;
-        color[1] /= 4.0;
-        color[2] /= 4.0;
-        riw[i]->GetRenderer()->SetBackground(color);
 
         planeWidget[i]->SetTexturePlaneProperty(ipwProp);
         planeWidget[i]->TextureInterpolateOff();
@@ -245,18 +233,15 @@ medResliceViewer::medResliceViewer(medAbstractView *view, QWidget *parent): medA
         planeWidget[i]->SetSliceIndex(imageDims[i]/2);
         planeWidget[i]->DisplayTextOn();
         planeWidget[i]->SetDefaultRenderer(ren);
-        planeWidget[i]->SetWindowLevel(1358, -27);
         planeWidget[i]->On();
         planeWidget[i]->InteractionOn();
     }
 
     vtkSmartPointer<medResliceCursorCallback> cbk = vtkSmartPointer<medResliceCursorCallback>::New();
+    cbk->reformatViewer = this;
 
     for (int i = 0; i < 3; i++)
     {
-        cbk->IPW[i] = planeWidget[i];
-        cbk->RCW[i] = riw[i]->GetResliceCursorWidget();
-
         riw[i]->GetResliceCursorWidget()->AddObserver(vtkResliceCursorWidget::ResliceAxesChangedEvent, cbk);
         riw[i]->GetResliceCursorWidget()->AddObserver(vtkResliceCursorWidget::WindowLevelEvent, cbk);
         riw[i]->GetResliceCursorWidget()->AddObserver(vtkResliceCursorWidget::ResliceThicknessChangedEvent, cbk);
@@ -272,6 +257,7 @@ medResliceViewer::medResliceViewer(medAbstractView *view, QWidget *parent): medA
         planeWidget[i]->SetColorMap(riw[i]->GetResliceCursorWidget()->GetResliceCursorRepresentation()->GetColorMap());
     }
 
+    resetViews();
     applyRadiologicalConvention();
     updatePlaneNormals();
 
@@ -282,8 +268,6 @@ medResliceViewer::medResliceViewer(medAbstractView *view, QWidget *parent): medA
     views[0]->show();
     views[1]->show();
     views[2]->show();
-
-    this->render();
 
     this->initialiseNavigators();
 }
@@ -312,6 +296,7 @@ void medResliceViewer::thickMode(int val)
     for (int i = 0; i < 3; i++)
     {
         riw[i]->SetThickMode(val);
+        riw[i]->GetRenderer()->ResetCamera();
         riw[i]->Render();
     }
 }
@@ -358,27 +343,14 @@ void medResliceViewer::reset()
 
 void medResliceViewer::resetViews()
 {
-    // Reset the reslice image views
     for (int i = 0; i < 3; i++)
     {
-        riw[i]->Reset();
+        riw[i]->GetRenderer()->ResetCamera();
     }
 
-    // Also sync the Image plane widget on the 3D top right view with any
-    // changes to the reslice cursor.
-    for (int i = 0; i < 3; i++)
-    {
-        vtkPlaneSource *ps = static_cast< vtkPlaneSource * >(
-                    planeWidget[i]->GetPolyDataAlgorithm());
-        ps->SetNormal(riw[0]->GetResliceCursor()->GetPlane(i)->GetNormal());
-        ps->SetCenter(riw[0]->GetResliceCursor()->GetPlane(i)->GetOrigin());
-
-        // If the reslice plane has modified, update it on the 3D widget
-        this->planeWidget[i]->UpdatePlacement();
-    }
-
-    // Render in response to changes.
-    this->render();
+    riw[0]->GetRenderer()->GetActiveCamera()->SetViewUp(0, 0, 1);
+    riw[1]->GetRenderer()->GetActiveCamera()->SetViewUp(0, 0, 1);
+    riw[2]->GetRenderer()->GetActiveCamera()->SetViewUp(0, -1, 0);
 }
 
 void medResliceViewer::render()
@@ -386,9 +358,8 @@ void medResliceViewer::render()
     for (int i = 0; i < 3; i++)
     {
         riw[i]->Render();
+        views[i]->GetRenderWindow()->Render();
     }
-
-    views[3]->GetRenderWindow()->Render();
 }
 
 void medResliceViewer::saveImage()
@@ -400,10 +371,9 @@ void medResliceViewer::saveImage()
     reslicerTop->SetInputConnection(view3d->GetInputAlgorithm(view3d->GetCurrentLayer())->GetOutputPort());
     reslicerTop->AutoCropOutputOn();
     reslicerTop->SetResliceAxes(resliceMatrix);
-    reslicerTop->SetBackgroundLevel(riw[0]->GetInput()->GetScalarRange()[0]); // todo: set the background value in an automatic way.
+    reslicerTop->SetBackgroundLevel(riw[0]->GetInput()->GetScalarRange()[0]);
 
     // Apply resampling in mm
-
     if (reformaTlbx->findChild<QComboBox*>("bySpacingOrDimension")->currentText() == "Spacing")
     {
         reslicerTop->SetOutputSpacing(outputSpacing);
@@ -411,7 +381,7 @@ void medResliceViewer::saveImage()
     reslicerTop->SetInterpolationModeToLinear();
 
     // Apply orientation changes
-    switch (view3d->GetMedVtkImageInfo()->scalarType)
+    switch (reslicerTop->GetOutput()->GetScalarType())
     {
         case VTK_CHAR:
             generateOutput<char>(reslicerTop, "itkDataImageChar3");
@@ -518,36 +488,12 @@ bool medResliceViewer::eventFilter(QObject *object, QEvent *event)
         {
             if (views[i]==object)
             {
-                if (i==0)
-                {
-                    frames[i]->setStyleSheet("QFrame {border : 5px solid #FF0000;}");
-                }
-                else if (i==1)
-                {
-                    frames[i]->setStyleSheet("QFrame {border : 5px solid #00FF00;}");
-                }
-                else if (i==2)
-                {
-                    frames[i]->setStyleSheet("QFrame {border : 5px solid #0000FF;}");
-                }
-
-                if (selectedView==0)
-                {
-                    frames[0]->setStyleSheet("* {border : 1px solid #FF0000;}");
-                }
-                else if (selectedView==1)
-                {
-                    frames[1]->setStyleSheet("* {border : 1px solid #00FF00;}");
-                }
-                else if (selectedView==2)
-                {
-                    frames[2]->setStyleSheet("* {border : 1px solid #0000FF;}");
-                }
                 selectedView = i;
             }
         }
         return false;
     }
+
     if (event->type() == QEvent::FocusOut)
     {
         return false;
@@ -775,7 +721,6 @@ void medResliceViewer::generateOutput(vtkImageReslice* reslicer, QString destTyp
     typename FilterType::Pointer filter = FilterType::New();
     filter->SetInput(reslicer->GetOutput());
     filter->Update();
-    filter->GetOutput()->Update();
 
     outputData = medAbstractDataFactory::instance()->createSmartPointer(destType);
     outputData->setData(filter->GetOutput());
@@ -802,9 +747,9 @@ void medResliceViewer::applyResamplingPix()
 {
     resampleProcess *resamplePr = new resampleProcess();
     resamplePr->setInput(outputData);
-    resamplePr->setParameter(outputSpacing[0],0);
-    resamplePr->setParameter(outputSpacing[1],1);
-    resamplePr->setParameter(outputSpacing[2],2);
+    resamplePr->setParameter(outputSpacing[0], 0);
+    resamplePr->setParameter(outputSpacing[1], 1);
+    resamplePr->setParameter(outputSpacing[2], 2);
     resamplePr->update();
 
     outputData = resamplePr->output();

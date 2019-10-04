@@ -217,7 +217,6 @@ void resliceToolBox::stopReformat()
             getWorkspace()->tabbedViewContainers()->getFirstSelectedContainer()->addData(d->currentView->layerData(0));
         }
 
-        processOutput();
         disconnect(d->resliceViewer);
         delete d->resliceViewer;
 
