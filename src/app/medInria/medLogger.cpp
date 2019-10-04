@@ -1,15 +1,5 @@
 #include "medLogger.h"
-/*
-#include <fstream>
-#if __has_include(<filesystem>)
-  #include <filesystem>
-  namespace fs = std::filesystem;
-#else
-  #include <experimental/filesystem>
-  namespace fs = std::experimental::filesystem;
-#endif*/
 
-#include <fstream>
 #include <QTextStream>
 
 class medLoggerPrivate
@@ -122,69 +112,9 @@ void medLogger::truncateLogFileIfHeavy()
 
     // Over 5Mo, the file is truncated from the beginning (old lines are discarded)
     if (filesize > d->maxLogSize)
-    {
-        
+    {        
         QString path = dtkLogPath(qApp);
 
-        // ////////////////////////////////////////////////////////////////////
-        // Modern C++/Qt implementation 
-        // ////////////////////////////////////////////////////////////////////
-        /*
-        fs::path fpath = path.toStdString();
-
-        std::ifstream fin;
-        fin.open(fpath);
-        fin.seekg(filesize - d->minLogSize); // file is going to be cut to minLogSize size
-
-        std::string keptText;
-        std::string line;
-        while (getline(fin, line))
-        {
-            keptText += line; //TODO redo with stringstream because it's very poor programing with string
-            keptText += "\n";
-        }
-
-        fin.close();
-        fs::remove(fpath);
-
-        std::ofstream newLogFile;
-        newLogFile.open(fpath);
-        newLogFile << keptText;
-        newLogFile.close();
-        */
-        
-
-
-        // ////////////////////////////////////////////////////////////////////
-        // Simple C++/Qt implementation 
-        // ////////////////////////////////////////////////////////////////////
-        /*QFile inFile(path);
-        inFile.open(QFile::ReadOnly);
-        std::ifstream fin = std::ifstream(::_fdopen(inFile.handle(), "r"));
-
-        fin.seekg(filesize - d->minLogSize); // file is going to be cut to minLogSize size
-
-        std::string keptText;
-        std::string line;
-        while (getline(fin,line))
-        {
-            keptText += line; //TODO redo with stringstream because it's very poor programing with string
-            keptText += "\n";
-        }
-        inFile.remove();
-        inFile.close();
-
-        QFile outFile(path);
-        outFile.open(QFile::WriteOnly);
-        std::ofstream newLogFile(::_fdopen(outFile.handle(), "w"));
-        newLogFile << keptText;
-        outFile.close();*/
-        
-
-        
-        // ////////////////////////////////////////////////////////////////////
-        // Pure Qt implementation 
-        // ////////////////////////////////////////////////////////////////////
         QFile inFile(path);
         inFile.open(QFile::ReadOnly);
         inFile.seek(filesize - d->minLogSize); // file is going to be cut to minLogSize size
