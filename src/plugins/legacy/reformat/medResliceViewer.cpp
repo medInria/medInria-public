@@ -368,17 +368,18 @@ void medResliceViewer::saveImage()
     calculateResliceMatrix(resliceMatrix);
 
     vtkImageReslice *reslicerTop = vtkImageReslice::New();
-    reslicerTop->SetInputConnection(view3d->GetInputAlgorithm(view3d->GetCurrentLayer())->GetOutputPort());
+    reslicerTop->SetInputData(view3d->GetInputAlgorithm(view3d->GetCurrentLayer())->GetOutput());
     reslicerTop->AutoCropOutputOn();
     reslicerTop->SetResliceAxes(resliceMatrix);
     reslicerTop->SetBackgroundLevel(riw[0]->GetInput()->GetScalarRange()[0]);
+    reslicerTop->SetInterpolationModeToLinear();
 
     // Apply resampling in mm
     if (reformaTlbx->findChild<QComboBox*>("bySpacingOrDimension")->currentText() == "Spacing")
     {
         reslicerTop->SetOutputSpacing(outputSpacing);
     }
-    reslicerTop->SetInterpolationModeToLinear();
+    reslicerTop->Update();
 
     // Apply orientation changes
     switch (reslicerTop->GetOutput()->GetScalarType())
