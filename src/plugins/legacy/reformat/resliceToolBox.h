@@ -27,7 +27,7 @@ class resliceToolBoxPrivate;
  * "SpacingX" : QDoubleSpinBox\n
  * "SpacingY" : QDoubleSpinBox\n
  * "SpacingZ" : QDoubleSpinBox\n
- * "help0" : QLabel
+ * "helpBegin" : QLabel
  */
 class REFORMATPLUGIN_EXPORT resliceToolBox : public medAbstractSelectableToolBox
 {
