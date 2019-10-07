@@ -105,7 +105,7 @@ resliceToolBox::resliceToolBox (QWidget *parent) : medAbstractSelectableToolBox 
     spinBoxes->setLayout(spacingSpinBoxLayout);
 
     QVBoxLayout *resliceToolBoxLayout =  new QVBoxLayout(resliceToolBoxBody);
-    d->helpBegin = new QLabel("Drop a data in the view and click on 'Start Reslice'", resliceToolBoxBody);
+    d->helpBegin = new QLabel("Drop a data in the view and click on 'Start Reslice'.", resliceToolBoxBody);
     d->helpBegin->setObjectName("helpBegin");
     d->helpBegin->setStyleSheet("font: italic");
     resliceToolBoxLayout->addWidget(d->helpBegin);
