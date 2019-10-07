@@ -58,17 +58,17 @@ public:
     void updateBorderWidgetIfVisible();
     void updateCurrentOrientation();
     void updateBoxWidgetFromBorderWidget();
-    void adjustBoxCornersToAnnulPlaceFactor(double* maxBoxCorner, double* minBoxCorner);
+    void adjustBoxCornersToAnnulPlaceFactor(double *maxBoxCorner, double *minBoxCorner);
     void updateBorderWidgetFromBoxWidget();
-    void setBorderFromWorldPoints(double* worldPoint1, double* worldPoint2);
-    void getMinAndMaxBoxCorners(double* minCorner, double* maxCorner);
-    void worldToNormalizedViewport(double* worldPoint, double* viewportPoint);
-    void normalizedViewportToWorld(double* viewportPoint, double* worldPoint);
-    void applyOrientationMatrix(double* worldPointIn, double* WorldPointOut);
-    void applyInverseOrientationMatrix(double* worldPointIn, double* worldPointOut);
+    void setBorderFromWorldPoints(double *worldPoint1, double *worldPoint2);
+    void getMinAndMaxBoxCorners(double *minCorner, double *maxCorner);
+    void worldToNormalizedViewport(double *worldPoint, double *viewportPoint);
+    void normalizedViewportToWorld(double *viewportPoint, double *worldPoint);
+    void applyOrientationMatrix(double *worldPointIn, double *WorldPointOut);
+    void applyInverseOrientationMatrix(double *worldPointIn, double *worldPointOut);
     void generateOutput();
-    template <typename ImageType> int extractCroppedImage(medAbstractData* input, int* minIndices, int* maxIndices, medAbstractData** output);
-    void replaceViewWithOutputData(medAbstractWorkspaceLegacy& workspace);
+    template <typename ImageType> int extractCroppedImage(medAbstractData *input, int *minIndices, int *maxIndices, medAbstractData **output);
+    void replaceViewWithOutputData(medAbstractWorkspaceLegacy &workspace);
     void importOutput();
 };
 
@@ -98,7 +98,6 @@ public:
             }
         }
     }
-
 };
 
 bool medCropToolBox::registered()
@@ -114,18 +113,27 @@ medCropToolBox::medCropToolBox(QWidget* parent)
     d->borderWidget->SelectableOff();
     static_cast<vtkBorderRepresentation*>(d->borderWidget->GetRepresentation())->GetBorderProperty()->SetColor(0,1,0);
 
-    d->applyButton = new QPushButton(applyButtonName, this);
-    d->applyButton->setObjectName(applyButtonName);
-
-    d->saveButton = new QPushButton(saveButtonName, this);
-    d->saveButton->setObjectName(saveButtonName);
-
-    QWidget* cropToolBoxBody = new QWidget(this);
-    QVBoxLayout* cropToolBoxLayout = new QVBoxLayout(cropToolBoxBody);
+    QWidget *cropToolBoxBody = new QWidget(this);
+    QVBoxLayout *cropToolBoxLayout = new QVBoxLayout(cropToolBoxBody);
     cropToolBoxBody->setLayout(cropToolBoxLayout);
     addWidget(cropToolBoxBody);
+
+    QLabel* help = new QLabel("Drop a data in the view, adapt the cropping box:\n"
+                             "you can resize the box and change the data orientation.\n"
+                             "Then, apply the transformation and save the result.");
+    help->setStyleSheet("font: italic");
+    help->setWordWrap(true);
+    cropToolBoxLayout->addWidget(help);
+
+    d->applyButton = new QPushButton(applyButtonName, this);
+    d->applyButton->setToolTip("Apply the crop to the data and display the result");
+    d->applyButton->setObjectName(applyButtonName);
     cropToolBoxLayout->addWidget(d->applyButton);
     connect(d->applyButton, SIGNAL(clicked()), this, SLOT(applyCrop()));
+
+    d->saveButton = new QPushButton(saveButtonName, this);
+    d->saveButton->setToolTip("Save the current cropped data in the database");
+    d->saveButton->setObjectName(saveButtonName);
     cropToolBoxLayout->addWidget(d->saveButton);
     connect(d->saveButton, SIGNAL(clicked()), this, SLOT(saveCrop()));
 
@@ -169,7 +177,7 @@ void medCropToolBox::handleCameraMoveEvent()
 void medCropToolBox::updateView()
 {
     medViewContainer *currentContainer = this->getWorkspace()->tabbedViewContainers()->getFirstSelectedContainer();
-    medAbstractView *viewNotLayered = this->getWorkspace()->tabbedViewContainers()->getFirstSelectedContainerView();
+    medAbstractView *viewNotLayered    = this->getWorkspace()->tabbedViewContainers()->getFirstSelectedContainerView();
     medAbstractLayeredView *view = qobject_cast<medAbstractLayeredView*>(viewNotLayered);
 
     if (view)
@@ -307,7 +315,7 @@ void medCropToolBoxPrivate::updateBoxWidgetFromBorderWidget()
     view3D->GetBoxWidget()->PlaceWidget(minBoxCorner[0], maxBoxCorner[0], minBoxCorner[1], maxBoxCorner[1], minBoxCorner[2], maxBoxCorner[2]);
 }
 
-void medCropToolBoxPrivate::adjustBoxCornersToAnnulPlaceFactor(double* maxBoxCorner, double* minBoxCorner)
+void medCropToolBoxPrivate::adjustBoxCornersToAnnulPlaceFactor(double *maxBoxCorner, double *minBoxCorner)
 {
     double center[3];
     double placeFactor = view3D->GetBoxWidget()->GetPlaceFactor();
@@ -329,7 +337,7 @@ void medCropToolBoxPrivate::updateBorderWidgetFromBoxWidget()
     borderWidget->GetBorderRepresentation()->Modified();
 }
 
-void medCropToolBoxPrivate::setBorderFromWorldPoints(double* worldPoint1, double* worldPoint2)
+void medCropToolBoxPrivate::setBorderFromWorldPoints(double *worldPoint1, double *worldPoint2)
 {
     double orientatedWorldPoint1[3], orientatedWorldPoint2[3], viewportPoint1[3], viewportPoint2[3];
 
@@ -351,9 +359,9 @@ void medCropToolBoxPrivate::setBorderFromWorldPoints(double* worldPoint1, double
     borderWidget->GetBorderRepresentation()->SetPosition2(viewportPoint2[0] - viewportPoint1[0], viewportPoint2[1] - viewportPoint1[1]);
 }
 
-void medCropToolBoxPrivate::getMinAndMaxBoxCorners(double* minCorner, double* maxCorner)
+void medCropToolBoxPrivate::getMinAndMaxBoxCorners(double *minCorner, double *maxCorner)
 {
-    vtkPolyData* polyData = vtkPolyData::New();
+    vtkPolyData *polyData = vtkPolyData::New();
     view3D->GetBoxWidget()->GetPolyData(polyData);
     polyData->GetPoint(0, minCorner);
     polyData->GetPoint(6, maxCorner);
@@ -368,7 +376,7 @@ void medCropToolBoxPrivate::getMinAndMaxBoxCorners(double* minCorner, double* ma
     }
 }
 
-void medCropToolBoxPrivate::worldToNormalizedViewport(double* worldPoint, double* viewportPoint)
+void medCropToolBoxPrivate::worldToNormalizedViewport(double *worldPoint, double *viewportPoint)
 {
     vtkRenderer *renderer = borderWidget->GetCurrentRenderer();
 
@@ -377,13 +385,13 @@ void medCropToolBoxPrivate::worldToNormalizedViewport(double* worldPoint, double
         renderer->SetWorldPoint(worldPoint);
         renderer->WorldToDisplay();
         renderer->GetDisplayPoint(viewportPoint);
-        renderer->DisplayToNormalizedDisplay(viewportPoint[0], viewportPoint[1]);
-        renderer->NormalizedDisplayToViewport(viewportPoint[0], viewportPoint[1]);
+        renderer->DisplayToNormalizedDisplay  (viewportPoint[0], viewportPoint[1]);
+        renderer->NormalizedDisplayToViewport (viewportPoint[0], viewportPoint[1]);
         renderer->ViewportToNormalizedViewport(viewportPoint[0], viewportPoint[1]);
     }
 }
 
-void medCropToolBoxPrivate::normalizedViewportToWorld(double* viewportPoint, double* worldPoint)
+void medCropToolBoxPrivate::normalizedViewportToWorld(double *viewportPoint, double *worldPoint)
 {
     vtkRenderer *renderer = borderWidget->GetCurrentRenderer();
     double homogeneousVector[4];
@@ -392,8 +400,8 @@ void medCropToolBoxPrivate::normalizedViewportToWorld(double* viewportPoint, dou
     {
         std::copy(viewportPoint, viewportPoint + 3, homogeneousVector);
         renderer->NormalizedViewportToViewport(homogeneousVector[0], homogeneousVector[1]);
-        renderer->ViewportToNormalizedDisplay(homogeneousVector[0], homogeneousVector[1]);
-        renderer->NormalizedDisplayToDisplay(homogeneousVector[0], homogeneousVector[1]);
+        renderer->ViewportToNormalizedDisplay (homogeneousVector[0], homogeneousVector[1]);
+        renderer->NormalizedDisplayToDisplay  (homogeneousVector[0], homogeneousVector[1]);
         renderer->SetDisplayPoint(homogeneousVector);
         renderer->DisplayToWorld();
         renderer->GetWorldPoint(homogeneousVector);
@@ -401,7 +409,7 @@ void medCropToolBoxPrivate::normalizedViewportToWorld(double* viewportPoint, dou
     }
 }
 
-void medCropToolBoxPrivate::applyOrientationMatrix(double* worldPointIn, double* worldPointOut)
+void medCropToolBoxPrivate::applyOrientationMatrix(double *worldPointIn, double *worldPointOut)
 {
     double homogeneousVector[4];
 
@@ -411,7 +419,7 @@ void medCropToolBoxPrivate::applyOrientationMatrix(double* worldPointIn, double*
     std::copy(homogeneousVector, homogeneousVector + 3, worldPointOut);
 }
 
-void medCropToolBoxPrivate::applyInverseOrientationMatrix(double* worldPointIn, double* worldPointOut)
+void medCropToolBoxPrivate::applyInverseOrientationMatrix(double *worldPointIn, double *worldPointOut)
 {
     double homogeneousVector[4];
 
@@ -436,17 +444,19 @@ void medCropToolBoxPrivate::generateOutput()
 
     for (unsigned int layer = 0; layer < view->layersCount(); layer++)
     {
-        medAbstractData* imageData = view->layerData(layer);
-        medAbstractData* output = nullptr;
+        medAbstractData *imageData = view->layerData(layer);
+        medAbstractData *output = nullptr;
 
-        if (DISPATCH_ON_3D_PIXEL_TYPE(&medCropToolBoxPrivate::extractCroppedImage, this, imageData, minIndices, maxIndices, &output) == DTK_SUCCEED)
+        if (DISPATCH_ON_3D_PIXEL_TYPE(&medCropToolBoxPrivate::extractCroppedImage,
+                                      this, imageData, minIndices, maxIndices, &output)
+                == medAbstractProcessLegacy::SUCCESS)
         {
             outputData.append(output);
         }
         else
         {
-            medMessageController::instance()->showError("Drop a 3D volume in the view",3000);
-            qDebug()<<"medCropToolBoxPrivate::generateOutput id "<<imageData->identifier();
+            medMessageController::instance()->showError("Drop a 3D volume in the view", 3000);
+            qDebug()<<__FILE__<<":"<<__LINE__<<imageData->identifier();
         }
     }
 }
@@ -468,12 +478,12 @@ int medCropToolBoxPrivate::extractCroppedImage(medAbstractData* input, int* minI
         {
             std::swap(minIndices[i], maxIndices[i]);
         }
-        if (maxIndices[i] < 0 || minIndices[i] >= (int)imageSize[i])
+        if (maxIndices[i] < 0 || minIndices[i] >= static_cast<int>(imageSize[i]))
         {
             return 0;
         }
         desiredStart[i] = std::max(minIndices[i], 0);
-        desiredSize[i] = std::min(maxIndices[i] + 1, (int)imageSize[i]) - desiredStart[i];
+        desiredSize[i] = std::min(maxIndices[i] + 1, static_cast<int>(imageSize[i])) - desiredStart[i];
     }
 
     typename ImageType::RegionType desiredRegion(desiredStart, desiredSize);
@@ -495,14 +505,14 @@ void medCropToolBoxPrivate::replaceViewWithOutputData(medAbstractWorkspaceLegacy
 {
     if (outputData.length() >= 0)
     {
-        medTabbedViewContainers* tabbedViewContainers = workspace.tabbedViewContainers();
-        medViewContainer* viewContainer = tabbedViewContainers->containersInTab(tabbedViewContainers->currentIndex()).at(0);
+        medTabbedViewContainers *tabbedViewContainers = workspace.tabbedViewContainers();
+        medViewContainer *viewContainer = tabbedViewContainers->containersInTab(tabbedViewContainers->currentIndex()).at(0);
 
         viewContainer->removeView();
         viewContainer->setMultiLayered(true);
         viewContainer->addData(outputData[0]);
 
-        medAbstractLayeredView* newView = qobject_cast<medAbstractLayeredView*>(viewContainer->view());
+        medAbstractLayeredView *newView = qobject_cast<medAbstractLayeredView*>(viewContainer->view());
 
         for (int layer = 1; layer < outputData.length(); layer++)
         {
