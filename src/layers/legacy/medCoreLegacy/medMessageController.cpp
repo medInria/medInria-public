@@ -78,7 +78,7 @@ medMessageInfo::medMessageInfo(
         medMessage(parent,text, timeout)
 {
     icon->setPixmap(QPixmap(":/icons/information.png"));
-    this->setFixedWidth(200);
+    this->setFixedWidth(500);
 }
 
 medMessageInfo::~medMessageInfo(void)
@@ -95,7 +95,7 @@ medMessageError::medMessageError(
         medMessage(parent, text, timeout)
 {
     icon->setPixmap(QPixmap(":/icons/exclamation.png"));
-    this->setFixedWidth(350);
+    this->setFixedWidth(500);
 }
 
 medMessageError::~medMessageError(void)
@@ -152,7 +152,7 @@ void medMessageProgress::failure(void)
 void medMessageProgress::associateTimer(void)
 {
     this->timer = new QTimer(this);
-    timeout = 2000;
+    timeout = 1000;
     connect(timer, SIGNAL(timeout()), this, SLOT(remove()));
 }
 

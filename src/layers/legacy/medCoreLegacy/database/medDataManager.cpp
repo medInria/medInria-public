@@ -372,17 +372,20 @@ void medDataManager::garbageCollect()
     }
 }
 
-
 QUuid medDataManager::makePersistent(medAbstractData* data)
 {
     if (!data)
+    {
         return QUuid();
+    }
 
     Q_D(medDataManager);
 
     // If already persistent
     if (data->dataIndex().dataSourceId() == d->dbController->dataSourceId())
+    {
         return QUuid();
+    }
 
     QUuid jobUuid;
 

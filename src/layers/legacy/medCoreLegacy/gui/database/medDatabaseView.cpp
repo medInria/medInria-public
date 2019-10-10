@@ -438,8 +438,8 @@ void medDatabaseView::onSaveSelectedItemRequested(void)
         // Copy the data index, because the data item may cease to be valid.
         medDataIndex index = item->dataIndex();
         medDataManager::instance()->makePersistent(medDataManager::instance()->retrieveData(index));
-        dtkDebug() << "DEBUG : onMenuSaveClicked() after storeNonPersistentSingleDataToDatabase";
-        dtkDebug() << "DEBUG : index" << index;
+        qDebug() << "onMenuSaveClicked() after storeNonPersistentSingleDataToDatabase";
+        qDebug() << "index" << index;
     }
 }
 

@@ -13,6 +13,7 @@
 
 #pragma once
 
+#include <medComboBox.h>
 #include <medCoreLegacyExport.h>
 #include <medToolBox.h>
 
@@ -40,7 +41,7 @@ public:
     /**
      * @brief returns the comboBox
      */
-    QComboBox* comboBox();
+    medComboBox* comboBox();
 
     int getIndexOfToolBox(const QString &toolboxName);
 

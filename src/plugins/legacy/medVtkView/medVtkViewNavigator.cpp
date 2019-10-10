@@ -385,12 +385,14 @@ QWidget* medVtkViewNavigator::buildToolBoxWidget()
     showOptionsLayout->addWidget(d->showRulerParameter->getCheckBox());
     showOptionsLayout->addWidget(d->showAnnotationParameter->getCheckBox());
     showOptionsLayout->addWidget(d->showScalarBarParameter->getCheckBox());
+    showOptionsLayout->setContentsMargins(0, 0, 0, 10);
 
     QVBoxLayout* layout = new QVBoxLayout(toolBoxWidget);
     layout->addWidget(d->orientationParameter->getLabel());
     layout->addWidget(d->orientationParameter->getPushButtonGroup());
     layout->addWidget(d->showOptionsWidget);
     layout->addWidget(this->timeLineParameter()->getWidget());
+    layout->setContentsMargins(0, 0, 0, 0);
 
     return toolBoxWidget;
 }
@@ -645,6 +647,7 @@ void medVtkViewNavigator::changeOrientation(medImageView::Orientation orientatio
     }
     d->currentView->SetRenderWindow(renWin);
     d->currentView->SetCurrentPoint(pos);
+    d->currentView->GlobalWarningDisplayOff();
     d->currentView->Render();
 
     d->orientation = orientation;
