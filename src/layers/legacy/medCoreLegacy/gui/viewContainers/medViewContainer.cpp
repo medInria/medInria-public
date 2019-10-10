@@ -912,6 +912,7 @@ void medViewContainer::droppedDataReady(medDataIndex index, QUuid uuid)
 {
     bool bFind = false;
     int i = 0;
+
     while (!bFind && i < static_cast<int>(d->oQuuidVect.size()))
     {
         if (!d->oQuuidVect[i].second)

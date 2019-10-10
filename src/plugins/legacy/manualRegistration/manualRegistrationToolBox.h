@@ -24,7 +24,7 @@ class manualRegistrationToolBoxPrivate;
  *
  * This toolbox has several named widgets which can be accessed in python pipelines:\n\n
  * "startManualRegistrationButton" : QPushButton\n
- * "transformType" : medComboBox\n
+ * "transformType" : QComboBox\n
  * "computeRegistrationButton" : QPushButton\n
  * "resetButton" : QPushButton
  */

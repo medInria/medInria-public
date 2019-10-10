@@ -20,7 +20,7 @@
 class medSelectorToolBoxPrivate
 {
 public:
-    QComboBox *chooseComboBox;
+    medComboBox *chooseComboBox;
     medAbstractSelectableToolBox *currentToolBox;
     QHash<QString, medAbstractSelectableToolBox*> toolBoxes;
     QVBoxLayout *mainLayout;
@@ -33,7 +33,7 @@ medSelectorToolBox::medSelectorToolBox(QWidget *parent, QString tlbxId)
 {
     d->currentToolBox = nullptr;
 
-    d->chooseComboBox = new QComboBox;
+    d->chooseComboBox = new medComboBox;
     d->chooseComboBox->addItem("* Choose a toolbox *");
     d->chooseComboBox->setToolTip(tr("Choose a toolbox in the list"));
     d->chooseComboBox->setItemData(0, "Choose a toolbox", Qt::ToolTipRole);
@@ -168,7 +168,7 @@ medAbstractData* medSelectorToolBox::data()
     return d->inputData;
 }
 
-QComboBox *medSelectorToolBox::comboBox()
+medComboBox *medSelectorToolBox::comboBox()
 {
     return d->chooseComboBox;
 }

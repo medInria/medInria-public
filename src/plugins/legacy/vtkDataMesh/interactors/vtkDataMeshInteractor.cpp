@@ -499,6 +499,9 @@ void vtkDataMeshInteractor::updatePipeline ()
             d->actor2d = d->view2d->AddDataSet(pointSet);
             d->actor3d = d->view3d->AddDataSet(pointSet);
 
+            d->metaDataSet->AddActor(d->actor2d);
+            d->metaDataSet->AddActor(d->actor3d);
+
             d->actorProperty2D = vtkDataMeshInteractorPrivate::PropertySmartPointer::New();
             d->actorProperty3D = vtkDataMeshInteractorPrivate::PropertySmartPointer::New();
 

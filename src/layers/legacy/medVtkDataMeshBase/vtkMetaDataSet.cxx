@@ -29,7 +29,7 @@
 #include <vtksys/SystemTools.hxx>
 
 //----------------------------------------------------------------------------
-vtkStandardNewMacro( vtkMetaDataSet );
+vtkStandardNewMacro( vtkMetaDataSet )
 
 //----------------------------------------------------------------------------
 vtkMetaDataSet::vtkMetaDataSet()
