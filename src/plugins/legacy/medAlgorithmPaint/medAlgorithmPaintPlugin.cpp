@@ -11,10 +11,10 @@
 
 =========================================================================*/
 
-#include <mscAlgorithmPaintPlugin.h>
-#include <mscAlgorithmPaintToolBox.h>
+#include <medAlgorithmPaintPlugin.h>
+#include <medAlgorithmPaintToolBox.h>
 
-namespace msc
+namespace med
 {
 
 AlgorithmPaintPlugin::AlgorithmPaintPlugin(QObject *parent) : medPluginLegacy(parent)
@@ -45,7 +45,7 @@ QString AlgorithmPaintPlugin::description() const
 
 QString AlgorithmPaintPlugin::version() const
 {
-    return MSCALGORITHMPAINT_VERSION;
+    return MEDALGORITHMPAINT_VERSION;
 }
 
 QStringList AlgorithmPaintPlugin::types() const

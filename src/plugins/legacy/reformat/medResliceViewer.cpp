@@ -18,10 +18,10 @@
 #include <medAbstractDataFactory.h>
 #include <medAbstractLayeredView.h>
 #include <medSliderSpinboxPair.h>
+#include <medTransform.h>
 #include <medUtilities.h>
 #include <medUtilitiesITK.h>
 #include <medVtkViewBackend.h>
-#include <mscTransform.h>
 
 #include <vtkCamera.h>
 #include <vtkCellPicker.h>
@@ -761,13 +761,13 @@ template <typename DATA_TYPE>
 void medResliceViewer::compensateForRadiologicalView(itk::Image<DATA_TYPE, 3>* outputImage)
 {
     vtkSmartPointer<vtkMatrix4x4> transformMatrix = vtkSmartPointer<vtkMatrix4x4>::New();
-    mscTransform::getTransform(*outputImage, *transformMatrix);
+    medTransform::getTransform(*outputImage, *transformMatrix);
     for (int i = 0; i < 3; i++)
     {
         transformMatrix->SetElement(i, 1, -transformMatrix->GetElement(i, 1));
         transformMatrix->SetElement(i, 2, -transformMatrix->GetElement(i, 2));
     }
-    mscTransform::setTransform(*outputImage, *transformMatrix);
+    medTransform::setTransform(*outputImage, *transformMatrix);
 }
 
 /*
@@ -789,8 +789,8 @@ void medResliceViewer::correctOutputTransform(itk::Image<DATA_TYPE, 3>* outputIm
 
     vtkSmartPointer<vtkMatrix4x4> inputTransformMatrix = vtkSmartPointer<vtkMatrix4x4>::New();
     vtkSmartPointer<vtkMatrix4x4> outputInverseTransformMatrix = vtkSmartPointer<vtkMatrix4x4>::New();
-    mscTransform::getTransform<DATA_TYPE>(*inputImage, *inputTransformMatrix);
-    mscTransform::getTransform<DATA_TYPE>(*outputImage, *outputInverseTransformMatrix);
+    medTransform::getTransform<DATA_TYPE>(*inputImage, *inputTransformMatrix);
+    medTransform::getTransform<DATA_TYPE>(*outputImage, *outputInverseTransformMatrix);
     outputInverseTransformMatrix->Invert();
 
     double inputCenter[3], outputCenter[3];
@@ -805,7 +805,7 @@ void medResliceViewer::correctOutputTransform(itk::Image<DATA_TYPE, 3>* outputIm
     transform->Translate(inputCenter[0], inputCenter[1], inputCenter[2]);
     transform->Concatenate(inputTransformMatrix);
 
-    mscTransform::applyTransform<DATA_TYPE>(*outputImage, *transform->GetMatrix());
+    medTransform::applyTransform<DATA_TYPE>(*outputImage, *transform->GetMatrix());
 }
 
 template <typename DATA_TYPE>

@@ -10,8 +10,8 @@ the implied warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR
 PURPOSE.
 
 =========================================================================*/
-#ifndef mscSearchToolboxDialog_H
-#define mscSearchToolboxDialog_H
+#ifndef medSearchToolboxDialog_H
+#define medSearchToolboxDialog_H
 
 #include <QDialog>
 #include <QTreeWidget>
@@ -19,12 +19,12 @@ PURPOSE.
 class QLineEdit;
 class QPushButton;
 
-class mscSearchToolboxDialog : public QDialog
+class medSearchToolboxDialog : public QDialog
 {
     Q_OBJECT
 
 public:
-    mscSearchToolboxDialog(QWidget *parent, QHash<QString, QStringList> toolboxDataHash);
+    medSearchToolboxDialog(QWidget *parent, QHash<QString, QStringList> toolboxDataHash);
     QStringList getFindText();
 
 protected slots:

@@ -11,8 +11,6 @@
 
 =========================================================================*/
 
-#include "mscAlgorithmPaintToolBox.h"
-
 #include <dtkCoreSupport/dtkAbstractProcessFactory.h>
 
 #include <itkConnectedThresholdImageFilter.h>
@@ -32,6 +30,7 @@
 #include <medAbstractLayeredView.h>
 #include <medAbstractParameterL.h>
 #include <medAbstractProcessLegacy.h>
+#include <medAlgorithmPaintToolBox.h>
 #include <medDataManager.h>
 #include <medMetaDataKeys.h>
 #include <medMessageController.h>
@@ -45,7 +44,7 @@
 
 #include <vnl/vnl_cross.h>
 
-namespace msc
+namespace med
 {
 
 class ClickAndMoveEventFilter : public medViewEventFilter
@@ -1587,7 +1586,7 @@ void AlgorithmPaintToolBox::undo()
         currentSlice->Allocate();
         copySliceFromMask3D(currentSlice, planeIndex, direction, idSlice, false);
         pasteSliceToMask3D(prev->getSlice(), planeIndex, direction, idSlice, false);
-        list.insert(new mscPaintBrush(currentSlice, idSlice, prev->isMasterRoi(), prev->getLabel() ));
+        list.insert(new medPaintBrush(currentSlice, idSlice, prev->isMasterRoi(), prev->getLabel() ));
 
         for (auto& pB : setOfPaintBrushRois)
         {
@@ -1671,7 +1670,7 @@ void AlgorithmPaintToolBox::redo()
         currentSlice->Allocate();
         copySliceFromMask3D(currentSlice,planeIndex,direction,idSlice, false);
         pasteSliceToMask3D(next->getSlice(),nextState.second,direction,idSlice, false);
-        list.insert(new mscPaintBrush(currentSlice, idSlice, next->isMasterRoi(), next->getLabel() ));
+        list.insert(new medPaintBrush(currentSlice, idSlice, next->isMasterRoi(), next->getLabel() ));
 
         if (slicingParameter)
         {
@@ -1744,7 +1743,7 @@ void AlgorithmPaintToolBox::addSliceToStack(medAbstractView *view, const unsigne
         currentSlice->SetRegions(region);
         currentSlice->Allocate();
         copySliceFromMask3D(currentSlice,planeIndex,direction,idSlice);
-        setOfUndoRois.insert(new mscPaintBrush(currentSlice, idSlice, isMaster, m_strokeLabelSpinBox->value()));
+        setOfUndoRois.insert(new medPaintBrush(currentSlice, idSlice, isMaster, m_strokeLabelSpinBox->value()));
 
         slicingParameter->getSlider()->addTick(idSlice);
         slicingParameter->getSlider()->update();

@@ -11,7 +11,7 @@
 #
 ################################################################################
 
-set(TARGET_NAME mscAlgorithmPaint)
+set(TARGET_NAME medAlgorithmPaint)
 
 ## #############################################################################
 ## Setup version numbering

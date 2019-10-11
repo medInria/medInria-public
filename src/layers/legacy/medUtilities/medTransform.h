@@ -12,7 +12,7 @@ class vtkMatrix4x4;
 class vtkMetaDataSet;
 class vtkTransform;
 
-namespace mscTransform
+namespace medTransform
 {
 
 void convert(const QMatrix4x4& source, vtkMatrix4x4& target);

@@ -13,11 +13,11 @@
 #pragma once
 
 #ifdef WIN32
-   #ifdef mscAlgorithmPaint_EXPORTS
-       #define MSCALGORITHMPAINT_EXPORT __declspec(dllexport)
+   #ifdef medAlgorithmPaint_EXPORTS
+       #define MEDALGORITMPAINT_EXPORT __declspec(dllexport)
    #else
-       #define MSCALGORITHMPAINT_EXPORT __declspec(dllimport)
+       #define MEDALGORITMPAINT_EXPORT __declspec(dllimport)
    #endif
 #else
-   #define MSCALGORITHMPAINT_EXPORT
+   #define MEDALGORITMPAINT_EXPORT
 #endif

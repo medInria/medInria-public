@@ -16,23 +16,22 @@
 #include <QDialog>
 
 class medAbstractDatabaseItem;
-class mscDatabaseMetadataItemDialogPrivate;
+class medDatabaseMetadataItemDialogPrivate;
 
 /**
  * @brief Dialog displaying metadata from the selected data
  */
-class mscDatabaseMetadataItemDialog: public QDialog
+class medDatabaseMetadataItemDialog: public QDialog
 {
     Q_OBJECT
 
 public:
-    mscDatabaseMetadataItemDialog(QList<QString> keyList, QList<QVariant> metadataList, QWidget* parent);
+    medDatabaseMetadataItemDialog(QList<QString> keyList, QList<QVariant> metadataList, QWidget* parent);
 
-    virtual ~mscDatabaseMetadataItemDialog();
+    virtual ~medDatabaseMetadataItemDialog();
 
 private:
-
-    mscDatabaseMetadataItemDialogPrivate *d;
+    medDatabaseMetadataItemDialogPrivate *d;
 };
 
 
