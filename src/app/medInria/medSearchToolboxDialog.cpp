@@ -10,14 +10,14 @@ the implied warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR
 PURPOSE.
 
 =========================================================================*/
-#include <mscSearchToolboxDialog.h>
+#include <medSearchToolboxDialog.h>
 
 #include <QHeaderView>
 #include <QLabel>
 #include <QLineEdit>
 #include <QVBoxLayout>
 
-mscSearchToolboxDialog::mscSearchToolboxDialog(QWidget *parent, QHash<QString, QStringList> toolboxDataHash)
+medSearchToolboxDialog::medSearchToolboxDialog(QWidget *parent, QHash<QString, QStringList> toolboxDataHash)
     : QDialog(parent)
 {
     findText.clear();
@@ -88,7 +88,7 @@ mscSearchToolboxDialog::mscSearchToolboxDialog(QWidget *parent, QHash<QString, Q
     connect(tree, SIGNAL(itemDoubleClicked(QTreeWidgetItem*, int)), this, SLOT(searchItemDoubleClicked(QTreeWidgetItem*, int)));
 }
 
-void mscSearchToolboxDialog::searchTextChanged(const QString& text)
+void medSearchToolboxDialog::searchTextChanged(const QString& text)
 {
     // List of items which match the search text
     QList<QTreeWidgetItem*> clist = tree->findItems(text, Qt::MatchContains|Qt::MatchRecursive, 0);
@@ -108,7 +108,7 @@ void mscSearchToolboxDialog::searchTextChanged(const QString& text)
     }
 }
 
-void mscSearchToolboxDialog::searchItemDoubleClicked(QTreeWidgetItem* item, int column)
+void medSearchToolboxDialog::searchItemDoubleClicked(QTreeWidgetItem* item, int column)
 {
     Q_UNUSED(column);
     QStringList res;
@@ -120,7 +120,7 @@ void mscSearchToolboxDialog::searchItemDoubleClicked(QTreeWidgetItem* item, int 
     accept();
 }
 
-QStringList mscSearchToolboxDialog::getFindText()
+QStringList medSearchToolboxDialog::getFindText()
 {
     return findText;
 }

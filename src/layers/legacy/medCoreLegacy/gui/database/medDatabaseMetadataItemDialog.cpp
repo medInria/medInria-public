@@ -11,9 +11,8 @@
 
 =========================================================================*/
 
-#include "mscDatabaseMetadataItemDialog.h"
-
 #include <medAbstractDatabaseItem.h>
+#include <medDatabaseMetadataItemDialog.h>
 #include <medDataIndex.h>
 
 #include <QHBoxLayout>
@@ -21,14 +20,14 @@
 #include <QLabel>
 #include <QTreeWidget>
 
-class mscDatabaseMetadataItemDialogPrivate
+class medDatabaseMetadataItemDialogPrivate
 {
 public:
     QTreeWidget* tree;
 };
 
-mscDatabaseMetadataItemDialog::mscDatabaseMetadataItemDialog(QList<QString> keyList, QList<QVariant> metadataList, QWidget *parent):
-    QDialog(parent, Qt::Dialog | Qt::WindowCloseButtonHint), d (new mscDatabaseMetadataItemDialogPrivate)
+medDatabaseMetadataItemDialog::medDatabaseMetadataItemDialog(QList<QString> keyList, QList<QVariant> metadataList, QWidget *parent):
+    QDialog(parent, Qt::Dialog | Qt::WindowCloseButtonHint), d (new medDatabaseMetadataItemDialogPrivate)
 {
     QVBoxLayout *dialogLayout = new QVBoxLayout;
     setLayout(dialogLayout);
@@ -83,7 +82,7 @@ mscDatabaseMetadataItemDialog::mscDatabaseMetadataItemDialog(QList<QString> keyL
     d->tree->sortByColumn(0, Qt::AscendingOrder);
 }
 
-mscDatabaseMetadataItemDialog::~mscDatabaseMetadataItemDialog()
+medDatabaseMetadataItemDialog::~medDatabaseMetadataItemDialog()
 {
     delete d;
 }

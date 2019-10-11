@@ -25,6 +25,7 @@
 #include <medMainWindow.h>
 #include <medQuickAccessMenu.h>
 #include <medSaveModifiedDialog.h>
+#include <medSearchToolboxDialog.h>
 #include <medSelectorToolBox.h>
 #include <medSelectorWorkspace.h>
 #include <medSettingsEditor.h>
@@ -35,7 +36,6 @@
 #include <medVisualizationWorkspace.h>
 #include <medWorkspaceArea.h>
 #include <medWorkspaceFactory.h>
-#include <mscSearchToolboxDialog.h>
 
 #include <QtGui>
 #include <QtWidgets>
@@ -562,7 +562,7 @@ void medMainWindow::switchToSearchArea()
             }
         }
     }
-    mscSearchToolboxDialog dialog(this, toolboxDataHash);
+    medSearchToolboxDialog dialog(this, toolboxDataHash);
 
     if (dialog.exec() == QDialog::Accepted)
     {

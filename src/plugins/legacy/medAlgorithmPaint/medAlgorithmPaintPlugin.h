@@ -13,15 +13,15 @@
 #pragma once
 
 #include <medPluginLegacy.h>
-#include <mscAlgorithmPaintPluginExport.h>
+#include <medAlgorithmPaintPluginExport.h>
 
-namespace msc
+namespace med
 {
 
-class MSCALGORITHMPAINT_EXPORT AlgorithmPaintPlugin : public medPluginLegacy
+class MEDALGORITMPAINT_EXPORT AlgorithmPaintPlugin : public medPluginLegacy
 {
     Q_OBJECT
-    Q_PLUGIN_METADATA(IID "fr.inria.mscAlgorithmPaintPlugin" FILE "mscAlgorithmPaintPlugin.json")
+    Q_PLUGIN_METADATA(IID "fr.inria.medAlgorithmPaintPlugin" FILE "medAlgorithmPaintPlugin.json")
     Q_INTERFACES(dtkPlugin)
 
 public:

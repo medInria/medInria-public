@@ -54,7 +54,7 @@ set(PLUGIN_LIST
   legacy/medBinaryOperation                                              ON
   legacy/manualRegistration                                              ON
   legacy/polygonRoi                                                      ON
-  legacy/mscAlgorithmPaint                                               ON
+  legacy/medAlgorithmPaint                                               ON
   legacy/variationalSegmentation                                         ON
   legacy/voiCutter                                                       ON
   legacy/reformat                                                        ON

@@ -11,8 +11,7 @@
 
 =========================================================================*/
 
-#include "mscDatabaseMetadataItemDialog.h"
-
+#include <medDatabaseMetadataItemDialog.h>
 #include <medDatabaseView.h>
 #include <medDataManager.h>
 #include <medAbstractDatabaseItem.h>
@@ -662,7 +661,7 @@ void medDatabaseView::onMetadataRequested(void)
             }
 
             // Create the information dialog
-            mscDatabaseMetadataItemDialog metadataDialog(keyList, metadataList, this);
+            medDatabaseMetadataItemDialog metadataDialog(keyList, metadataList, this);
             metadataDialog.exec();
         }
     }

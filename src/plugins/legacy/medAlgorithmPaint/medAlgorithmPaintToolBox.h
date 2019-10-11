@@ -12,8 +12,8 @@
 =========================================================================*/
 #pragma once
 
-#include <mscAlgorithmPaintPluginExport.h>
-#include <mscPaintBrush.h>
+#include <medAlgorithmPaintPluginExport.h>
+#include <medPaintBrush.h>
 
 #include <medAbstractData.h>
 #include <medAbstractSelectableToolBox.h>
@@ -32,14 +32,14 @@ class medAnnotationData;
 class dtkAbstractProcessFactory;
 class medSeedPointAnnotationData;
 
-namespace msc
+namespace med
 {
 
 class ClickAndMoveEventFilter;
 
 struct PaintBrushObjComparator
 {
-    bool operator()(mscPaintBrush *lhs, mscPaintBrush *rhs) const
+    bool operator()(medPaintBrush *lhs, medPaintBrush *rhs) const
     {
         return lhs->getIdSlice() < rhs->getIdSlice();
     }
@@ -76,7 +76,7 @@ typedef itk::ImageRegionIterator <Mask2dFloatType> Mask2dFloatIterator;
 * "saveButton" : QPushButton\n
 * "clearMaskButton" : QPushButton
 */
-class MSCALGORITHMPAINT_EXPORT AlgorithmPaintToolBox : public medAbstractSelectableToolBox
+class MEDALGORITMPAINT_EXPORT AlgorithmPaintToolBox : public medAbstractSelectableToolBox
 {
     Q_OBJECT
     MED_TOOLBOX_INTERFACE("Paint Segmentation",
@@ -84,7 +84,7 @@ class MSCALGORITHMPAINT_EXPORT AlgorithmPaintToolBox : public medAbstractSelecta
                           <<"Segmentation")
 public:
 
-    typedef std::set<dtkSmartPointer<mscPaintBrush>, PaintBrushObjComparator> PaintBrushSet;
+    typedef std::set<dtkSmartPointer<medPaintBrush>, PaintBrushObjComparator> PaintBrushSet;
     typedef QPair<PaintBrushSet,unsigned char> PairListSlicePlaneId;
     PaintBrushSet setOfPaintBrushRois;
 

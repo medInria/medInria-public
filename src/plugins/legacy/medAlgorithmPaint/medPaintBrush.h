@@ -12,26 +12,26 @@
 =========================================================================*/
 #pragma once
 
-#include "mscAlgorithmPaintPluginExport.h"
-
 #include <itkImage.h>
-#include <medAbstractRoi.h>
 
-namespace msc
+#include <medAbstractRoi.h>
+#include <medAlgorithmPaintPluginExport.h>
+
+namespace med
 {
 
-class mscPaintBrushPrivate;
+class medPaintBrushPrivate;
 
 typedef itk::Image <unsigned char, 2> Mask2dType;
 
-class MSCALGORITHMPAINT_EXPORT mscPaintBrush : public medAbstractRoi
+class MEDALGORITMPAINT_EXPORT medPaintBrush : public medAbstractRoi
 {
     Q_OBJECT
 
 public:
-    mscPaintBrush(Mask2dType::Pointer slice, int id, bool isMaster, int label, medAbstractRoi* parent = nullptr);
+    medPaintBrush(Mask2dType::Pointer slice, int id, bool isMaster, int label, medAbstractRoi* parent = nullptr);
 
-    virtual ~mscPaintBrush();
+    virtual ~medPaintBrush();
 
     void Off() override;
 
@@ -70,7 +70,7 @@ public:
     int getLabel();
 
 private:
-    mscPaintBrushPrivate* d;
+    medPaintBrushPrivate* d;
     void setRightColor() override;
 };
 }

@@ -17,12 +17,12 @@
 #include <itkRGBPixel.h>
 #include <itkScalarToRGBColormapImageFilter.h>
 
-#include <mscPaintBrush.h>
+#include <medPaintBrush.h>
 
-namespace msc
+namespace med
 {
 
-class mscPaintBrushPrivate
+class medPaintBrushPrivate
 {
 public:
     Mask2dType::Pointer slice;
@@ -30,8 +30,8 @@ public:
     int label;
 };
 
-mscPaintBrush::mscPaintBrush(Mask2dType::Pointer slice, int id, bool isMaster, int label, medAbstractRoi* parent)
-    : medAbstractRoi(parent), d(new mscPaintBrushPrivate)
+medPaintBrush::medPaintBrush(Mask2dType::Pointer slice, int id, bool isMaster, int label, medAbstractRoi* parent)
+    : medAbstractRoi(parent), d(new medPaintBrushPrivate)
 {
     setIdSlice(id);
     d->slice = slice;
@@ -39,102 +39,102 @@ mscPaintBrush::mscPaintBrush(Mask2dType::Pointer slice, int id, bool isMaster, i
     d->label = label;
 }
 
-mscPaintBrush::~mscPaintBrush()
+medPaintBrush::~medPaintBrush()
 {
     delete d;
     d = nullptr;
 }
 
-Mask2dType::Pointer mscPaintBrush::getSlice()
+Mask2dType::Pointer medPaintBrush::getSlice()
 {
     return d->slice;
 }
 
-void mscPaintBrush::setRightColor()
+void medPaintBrush::setRightColor()
 {
 }
 
-void mscPaintBrush::Off()
-{
-
-}
-
-void mscPaintBrush::On()
+void medPaintBrush::Off()
 {
 
 }
 
-bool mscPaintBrush::isVisible()
+void medPaintBrush::On()
+{
+
+}
+
+bool medPaintBrush::isVisible()
 {
     return false;
 }
 
-void mscPaintBrush::forceInvisibilityOn()
+void medPaintBrush::forceInvisibilityOn()
 {
 
 }
 
-void mscPaintBrush::forceInvisibilityOff()
+void medPaintBrush::forceInvisibilityOff()
 {
 
 }
 
-QString mscPaintBrush::info()
+QString medPaintBrush::info()
 {
     return QString();
 }
 
-QString mscPaintBrush::type()
+QString medPaintBrush::type()
 {
     return QString();
 }
 
-void mscPaintBrush::computeRoiStatistics()
+void medPaintBrush::computeRoiStatistics()
 {
 
 }
 
-bool mscPaintBrush::canRedo()
-{
-    return false;
-}
-
-bool mscPaintBrush::canUndo()
+bool medPaintBrush::canRedo()
 {
     return false;
 }
 
-void mscPaintBrush::undo()
-{
-
-}
-
-void mscPaintBrush::redo()
-{
-
-}
-
-void mscPaintBrush::saveState()
-{
-
-}
-
-bool mscPaintBrush::copyROI(medAbstractView *view)
+bool medPaintBrush::canUndo()
 {
     return false;
 }
 
-medAbstractRoi *mscPaintBrush::getCopy(medAbstractView *view)
+void medPaintBrush::undo()
+{
+
+}
+
+void medPaintBrush::redo()
+{
+
+}
+
+void medPaintBrush::saveState()
+{
+
+}
+
+bool medPaintBrush::copyROI(medAbstractView *view)
+{
+    return false;
+}
+
+medAbstractRoi *medPaintBrush::getCopy(medAbstractView *view)
 {
     return nullptr;
 }
 
-QList<medAbstractRoi *> *mscPaintBrush::interpolate(medAbstractRoi *roi)
+QList<medAbstractRoi *> *medPaintBrush::interpolate(medAbstractRoi *roi)
 {
     return nullptr;
 }
 
-int mscPaintBrush::getLabel()
+int medPaintBrush::getLabel()
 {
     return d->label;
 }
