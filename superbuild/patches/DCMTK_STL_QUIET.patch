@@ -1,0 +1,97 @@
+From 2e3844ac46188756b3101871c8bf03446cf2fde1 Mon Sep 17 00:00:00 2001
+From: Mathilde Merle <mathilde.merle@ihu-liryc.fr>
+Date: Mon, 14 Oct 2019 16:54:37 +0200
+Subject: [PATCH] DCMTK_STL_QUIET
+
+---
+ CMake/GenerateDCMTKConfigure.cmake |  4 ++--
+ dcmdata/libsrc/dcelem.cc           |  8 ++++----
+ dcmdata/libsrc/dcitem.cc           | 10 +++++-----
+ 3 files changed, 11 insertions(+), 11 deletions(-)
+
+diff --git a/CMake/GenerateDCMTKConfigure.cmake b/CMake/GenerateDCMTKConfigure.cmake
+index 19fb179a6..2512eab89 100755
+--- a/CMake/GenerateDCMTKConfigure.cmake
++++ b/CMake/GenerateDCMTKConfigure.cmake
+@@ -571,8 +571,8 @@ ENDIF(WIN32 AND NOT CYGWIN)
+   CHECK_FUNCTIONWITHHEADER_EXISTS(isinf "${HEADERS}" HAVE_PROTOTYPE_ISINF)
+   CHECK_FUNCTIONWITHHEADER_EXISTS(isnan "${HEADERS}" HAVE_PROTOTYPE_ISNAN)
+   CHECK_FUNCTIONWITHHEADER_EXISTS(finite "${HEADERS}" HAVE_PROTOTYPE_FINITE)
+-  CHECK_FUNCTIONWITHHEADER_EXISTS(std::isinf "${HEADERS}" HAVE_PROTOTYPE_STD__ISINF)
+-  CHECK_FUNCTIONWITHHEADER_EXISTS(std::isnan "${HEADERS}" HAVE_PROTOTYPE_STD__ISNAN)
++  CHECK_FUNCTIONWITHHEADER_EXISTS("std::isinf(0.)" "${HEADERS}" HAVE_PROTOTYPE_STD__ISINF)
++  CHECK_FUNCTIONWITHHEADER_EXISTS("std::isnan(0.)" "${HEADERS}" HAVE_PROTOTYPE_STD__ISNAN)
+   CHECK_FUNCTIONWITHHEADER_EXISTS(std::finite "${HEADERS}" HAVE_PROTOTYPE_STD__FINITE)
+   CHECK_FUNCTIONWITHHEADER_EXISTS(flock "${HEADERS}" HAVE_PROTOTYPE_FLOCK)
+   CHECK_FUNCTIONWITHHEADER_EXISTS(gethostbyname "${HEADERS}" HAVE_PROTOTYPE_GETHOSTBYNAME)
+diff --git a/dcmdata/libsrc/dcelem.cc b/dcmdata/libsrc/dcelem.cc
+index 840e6aae2..628c9231c 100644
+--- a/dcmdata/libsrc/dcelem.cc
++++ b/dcmdata/libsrc/dcelem.cc
+@@ -1155,8 +1155,8 @@ OFCondition DcmElement::read(DcmInputStream &inStream,
+                 fLoadValue = inStream.newFactory();
+                 /* Print an error message when too few bytes are available in the file in order to
+                  * distinguish this problem from any other generic "InvalidStream" problem. */
+-                DCMDATA_ERROR("DcmElement: " << getTagName() << " " << getTag()
+-                    << " larger (" << getLengthField() << ") than remaining bytes in file");
++                //DCMDATA_ERROR("DcmElement: " << getTagName() << " " << getTag()
++                //    << " larger (" << getLengthField() << ") than remaining bytes in file");
+             }
+         }
+         /* if we did not encounter the end of the stream and no error occurred so far, go ahead */
+@@ -1189,8 +1189,8 @@ OFCondition DcmElement::read(DcmInputStream &inStream,
+                                 errorFlag = EC_StreamNotifyClient;
+                             /* Print an error message when too few bytes are available in the file in order to
+                              * distinguish this problem from any other generic "InvalidStream" problem. */
+-                            DCMDATA_ERROR("DcmElement: " << getTagName() << " " << getTag()
+-                                << " larger (" << getLengthField() << ") than remaining bytes in file");
++                            //DCMDATA_ERROR("DcmElement: " << getTagName() << " " << getTag()
++                            //    << " larger (" << getLengthField() << ") than remaining bytes in file");
+                         }
+                     }
+                 }
+diff --git a/dcmdata/libsrc/dcitem.cc b/dcmdata/libsrc/dcitem.cc
+index a357b66b1..4434e5d75 100644
+--- a/dcmdata/libsrc/dcitem.cc
++++ b/dcmdata/libsrc/dcitem.cc
+@@ -1118,7 +1118,7 @@ OFCondition DcmItem::readTagAndLength(DcmInputStream &inStream,
+     /* if the value in length is odd, print an error message */
+     if ( (valueLength & 1) && (valueLength != DCM_UndefinedLength) )
+     {
+-        DCMDATA_WARN("DcmItem: Length of element " << newTag << " is odd");
++        //DCMDATA_WARN("DcmItem: Length of element " << newTag << " is odd");
+     }
+ 
+ 
+@@ -1210,8 +1210,8 @@ OFCondition DcmItem::readSubElement(DcmInputStream &inStream,
+         if (temp_error.bad())
+         {
+             // produce diagnostics
+-            DCMDATA_WARN("DcmItem: Element " << newTag
+-                << " found twice in one data set or item, ignoring second entry");
++            //DCMDATA_WARN("DcmItem: Element " << newTag
++            //    << " found twice in one data set or item, ignoring second entry");
+             delete subElem;
+         }
+     }
+@@ -1723,7 +1723,7 @@ OFCondition DcmItem::insert(DcmElement *elem,
+                     if (elem != OFstatic_cast(DcmElement *, elementList->seek(ELP_last)))
+                     {
+                         // produce diagnostics
+-                        DCMDATA_WARN("DcmItem: Dataset not in ascending tag order, at element " << elem->getTag());
++                        //DCMDATA_WARN("DcmItem: Dataset not in ascending tag order, at element " << elem->getTag());
+                     }
+                 }
+                 /* dump some information if required */
+@@ -1752,7 +1752,7 @@ OFCondition DcmItem::insert(DcmElement *elem,
+                     if (elem != OFstatic_cast(DcmElement *, elementList->seek(ELP_last)))
+                     {
+                         // produce diagnostics
+-                        DCMDATA_WARN("DcmItem: Dataset not in ascending tag order, at element " << elem->getTag());
++                        //DCMDATA_WARN("DcmItem: Dataset not in ascending tag order, at element " << elem->getTag());
+                     }
+                 }
+                 /* dump some information if required */
+-- 
+2.17.1
+

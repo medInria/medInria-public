@@ -191,6 +191,7 @@ void medAbstractDatabaseImporter::importFile ( void )
     QString currentSeriesId = "";
 
     bool atLeastOneImportSucceeded = false;
+    bool atLeastOneImportError = false;
 
     foreach ( QString file, fileList )
     {
@@ -207,13 +208,16 @@ void medAbstractDatabaseImporter::importFile ( void )
             dtkSmartPointer<medAbstractData> medData;
 
             // 2.1) Try reading file information, just the header not the whole file
-
             bool readOnlyImageInformation = true;
             medData = tryReadImages ( QStringList ( fileInfo.filePath() ), readOnlyImageInformation );
 
             if ( !medData )
             {
-                qWarning() << "Reader was unable to read: " << fileInfo.filePath();
+                if (!atLeastOneImportError)
+                {
+                    qWarning() << "Reader was unable to read at least: " << fileInfo.filePath();
+                    atLeastOneImportError = true;
+                }
                 continue;
             }
 
@@ -310,7 +314,6 @@ void medAbstractDatabaseImporter::importFile ( void )
 
     // 3) Re-read selected files and re-populate them with missing metadata
     //    then write them to medInria db and populate db tables
-
     QMap<QString, QStringList>::const_iterator it = imagesGroupedByVolume.begin();
     QMap<QString, QString>::const_iterator  itPat = imagesGroupedByPatient.begin();
     QMap<QString, QString>::const_iterator  itSer = imagesGroupedBySeriesId.begin();
@@ -740,7 +743,6 @@ dtkSmartPointer<dtkAbstractDataReader> medAbstractDatabaseImporter::getSuitableR
         }
     }
 
-    qWarning() << "No suitable reader found!";
     return nullptr;
 }
 
@@ -820,17 +822,18 @@ medAbstractData* medAbstractDatabaseImporter::tryReadImages ( const QStringList&
     {
         bool readSuccessful = false;
         if ( readOnlyImageInformation )
+        {
             readSuccessful = dataReader->readInformation ( filesPaths );
+        }
         else
+        {
             readSuccessful = dataReader->read ( filesPaths );
+        }
 
         if (readSuccessful)
+        {
             medData = dynamic_cast<medAbstractData*>(dataReader->data());
-    }
-    else
-    {
-        // we take the first one for debugging just for simplicity
-        qWarning() << "No suitable reader found for file: " << filesPaths[0] << ". Unable to import!";
+        }
     }
 
     return medData;
