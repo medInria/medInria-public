@@ -37,8 +37,8 @@ public:
     typedef itk::SmartPointer<Self>        Pointer;
     typedef itk::SmartPointer<const Self>  ConstPointer;
 
-    itkTypeMacro(DCMTKDataImageReaderCommand,Command);
-    itkNewMacro(Self);
+    itkTypeMacro(DCMTKDataImageReaderCommand,Command)
+    itkNewMacro(Self)
 
     void Execute(Object *caller,const EventObject &event);
     void Execute(const Object *caller,const EventObject &event);
@@ -46,8 +46,8 @@ public:
     void SetDataImageReader(dtkAbstractDataReader* reader) { m_Reader = reader; }
 
 protected:
-    DCMTKDataImageReaderCommand(){ m_Reader = 0; };
-    virtual ~DCMTKDataImageReaderCommand(){};
+    DCMTKDataImageReaderCommand(){ m_Reader = nullptr; }
+    virtual ~DCMTKDataImageReaderCommand(){}
 
 private:
     dtkAbstractDataReader* m_Reader;
@@ -275,24 +275,25 @@ bool itkDCMTKDataImageReader::readInformation (const QStringList& paths)
         filenames.push_back(paths[i].toLocal8Bit().constData());
 
     d->io->SetFileNames(filenames);
-    try {
+    try
+    {
         d->io->ReadImageInformation();
     }
-    catch (itk::ExceptionObject &e) {
+    catch (itk::ExceptionObject &e)
+    {
         qDebug() << e.GetDescription();
         return false;
     }
 
     medAbstractData* medData = dynamic_cast<medAbstractData*>(this->data());
 
-    if (!medData) {
-
+    if (!medData)
+    {
         std::ostringstream imagetypestring;
         imagetypestring << "itkDataImage";
 
-
-        if (d->io->GetPixelType() == itk::ImageIOBase::SCALAR) {
-
+        if (d->io->GetPixelType() == itk::ImageIOBase::SCALAR)
+        {
             switch (d->io->GetComponentType())
             {
             case itk::ImageIOBase::UCHAR:
@@ -335,10 +336,11 @@ bool itkDCMTKDataImageReader::readInformation (const QStringList& paths)
             if (medData)
                 this->setData(medData);
         }
-        else if (d->io->GetPixelType()==itk::ImageIOBase::RGB) {
+        else if (d->io->GetPixelType()==itk::ImageIOBase::RGB)
+        {
 
-            switch (d->io->GetComponentType()) {
-
+            switch (d->io->GetComponentType())
+            {
             case itk::ImageIOBase::UCHAR:
                 medData = medAbstractDataFactory::instance()->create("itkDataImageRGB3");
 
@@ -351,7 +353,8 @@ bool itkDCMTKDataImageReader::readInformation (const QStringList& paths)
                 return false;
             }
         }
-        else {
+        else
+        {
             qDebug() << "Unsupported pixel type";
             return false;
         }
@@ -442,10 +445,10 @@ bool itkDCMTKDataImageReader::readInformation (const QStringList& paths)
         medData->setMetaData(medMetaDataKeys::FlipAngle.key(),      d->io->GetFlipAngle().c_str());
         medData->setMetaData(medMetaDataKeys::EchoTime.key(),       d->io->GetEchoTime().c_str());
         medData->setMetaData(medMetaDataKeys::RepetitionTime.key(), d->io->GetRepetitionTime().c_str());
-
     }
-    else {
-        qDebug() << "Unsupported pixel type";
+    else
+    {
+        qDebug() << "data is empty";
         return false;
     }
 

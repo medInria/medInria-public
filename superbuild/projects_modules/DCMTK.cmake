@@ -86,7 +86,7 @@ set(cmake_args
 ## Check if patch has to be applied
 ## #############################################################################
   
-ep_GeneratePatchCommand(DCMTK DCMTK_PATCH_COMMAND DCMTK_STL.patch)
+ep_GeneratePatchCommand(DCMTK DCMTK_PATCH_COMMAND DCMTK_STL_QUIET.patch)
 
 ## #############################################################################
 ## Add external-project

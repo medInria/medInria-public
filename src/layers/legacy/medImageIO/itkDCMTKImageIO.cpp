@@ -79,7 +79,8 @@ bool DCMTKImageIO::CanReadFile(const char* filename)
 {
     DcmFileFormat dicomFile;
     OFCondition condition = dicomFile.loadFile( filename );
-    if ( !condition.good() ) {
+    if ( !condition.good() )
+    {
         return false;
     }
 
@@ -100,13 +101,16 @@ bool DCMTKImageIO::CanReadFile(const char* filename)
 
     searchKey.set(group, elem);
     if (dicomFile.search(searchKey, stack, ESM_fromHere, OFTrue) != EC_Normal)
+    {
         return false;
-
+    }
     group = 0x0028; // pixel type
     elem  = 0x0100; // pixel type
     searchKey.set(group, elem);
     if (dicomFile.search(searchKey, stack, ESM_fromHere, OFTrue) != EC_Normal)
+    {
         return false;
+    }
 
     return true;
 }
@@ -319,23 +323,18 @@ void DCMTKImageIO::ReadImageInformation()
 
 }
 
-
 bool DCMTKImageIO::CanWriteFile( const char* filename)
 {
     return false;
 }
 
-
 void DCMTKImageIO::WriteImageInformation()
 {
 }
 
-
-
 void DCMTKImageIO::Write(const void* buffer)
 {
 }
-
 
 void DCMTKImageIO::DetermineNumberOfPixelComponents()
 {
@@ -1032,7 +1031,6 @@ DCMTKImageIO
 
 void DCMTKImageIO::ReadHeader(const std::string& name, const int& fileIndex, const int& fileCount )
 {
-
     DcmFileFormat dicomFile;
     OFCondition condition = dicomFile.loadFile( name.c_str() );
 
