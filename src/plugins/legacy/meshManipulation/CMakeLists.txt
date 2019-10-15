@@ -31,10 +31,11 @@ set(CMAKE_INCLUDE_CURRENT_DIR TRUE)
 find_package(dtk REQUIRED)
 include_directories(${dtk_INCLUDE_DIRS})
 
-find_package(ITK REQUIRED)
+find_package(ITK REQUIRED COMPONENTS ITKCommon)
 include(${ITK_USE_FILE})
 
-find_package(VTK REQUIRED)
+find_package(VTK REQUIRED COMPONENTS vtkCommonCore vtkRenderingCore vtkInteractionStyle
+                                     vtkInteractionWidgets)
 include(${VTK_USE_FILE})
 
 ## #############################################################################
