@@ -263,8 +263,6 @@ bool itkDCMTKDataImageReader::readInformation (const QString& path)
     QStringList paths;
     paths << path;
     return readInformation ( paths );
-
-    return false;
 }
 
 bool itkDCMTKDataImageReader::readInformation (const QStringList& paths)
