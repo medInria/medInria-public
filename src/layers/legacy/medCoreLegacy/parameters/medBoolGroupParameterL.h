@@ -29,7 +29,7 @@ class MEDCORELEGACY_EXPORT medBoolGroupParameterL : public medAbstractGroupParam
     Q_OBJECT
 
 public:
-    medBoolGroupParameterL(QString name = "Unknow bool group parameter", QObject* parent = 0);
+    medBoolGroupParameterL(QString name = "Unknown bool group parameter", QObject* parent = nullptr);
     virtual ~medBoolGroupParameterL();
 
     void setPushButtonDirection(QBoxLayout::Direction direction);
