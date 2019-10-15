@@ -17,6 +17,9 @@
 
 #include <medCoreLegacyExport.h>
 
+/**
+ * @brief The medComboBox class is based on QComboBox. It deactivates the wheelEvent.
+ */
 class MEDCORELEGACY_EXPORT medComboBox: public QComboBox
 {
 
