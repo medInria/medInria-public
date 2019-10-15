@@ -80,7 +80,7 @@ public slots:
 
     void setSelected(bool selected);
     void setUnSelected(bool unSelected);
-    void toggleMaximized();
+    void toggleMaximized(bool checked);
     void setUserSplittable(bool splittable);
     void setClosingMode(enum ClosingMode mode);
     void setMultiLayered(bool multiLayer);
@@ -106,7 +106,7 @@ signals:
     void viewContentChanged();
     void dataAdded(medAbstractData *);
     void viewRemoved();
-
+    void requestFourSplit();
 
 protected:
     void focusInEvent(QFocusEvent *event);
