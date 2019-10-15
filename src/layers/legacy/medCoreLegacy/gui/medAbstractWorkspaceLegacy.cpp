@@ -570,7 +570,6 @@ void medAbstractWorkspaceLegacy::removeLayer()
     if (layerView->layersCount() == 0)
     {
         delete(layerView);
-        //this->updateLayersToolBox();
     }
 }
 
