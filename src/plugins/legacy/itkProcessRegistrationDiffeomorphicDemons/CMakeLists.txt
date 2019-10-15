@@ -36,7 +36,6 @@ include(${RPI_USE_FILE})
 find_package(ITK REQUIRED COMPONENTS ITKCommon ITKIOTransformBase ITKIOTransformInsightLegacy ITKTransform ITKTransformFactory ITKRegistrationCommon ITKIOMeta ITKIOImageBase ITKPDEDeformableRegistration ITKIOTransformBase)
 include(${ITK_USE_FILE})
 
-
 ## #############################################################################
 ## List Sources
 ## #############################################################################
