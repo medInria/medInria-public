@@ -13,13 +13,16 @@
 
 #pragma once
 
+#include <medCoreLegacyExport.h>
+
 #include <medClutEditor.h>
 #include <qiodevice.h>
 #include <qstring.h>
 
 class medLUTToXMLWriterPrivate;
 
-class medLUTToXMLWriter {
+class MEDCORELEGACY_EXPORT medLUTToXMLWriter
+{
 public:
     medLUTToXMLWriter(const QList<medClutEditorTable*> & tables);
     ~medLUTToXMLWriter();
