@@ -28,23 +28,20 @@ class medAbstractImageView;
 
 class medClutEditorVertexPrivate;
 
-// TODO use QGraphicsObjactItem noobs.
-class medClutEditorVertex : public QObject, public QGraphicsItem
+// TODO use QGraphicsObjectItem noobs.
+class MEDCORELEGACY_EXPORT medClutEditorVertex : public QObject, public QGraphicsItem
 {
     Q_OBJECT
 
 public:
-    medClutEditorVertex(QPointF value, QPointF coord, QColor color = Qt::white,
-            QGraphicsItem *parent = nullptr);
-    medClutEditorVertex( const medClutEditorVertex & other,
-                         QGraphicsItem *parent = nullptr);
+    medClutEditorVertex(QPointF value, QPointF coord, QColor color = Qt::white, QGraphicsItem *parent = nullptr);
+    medClutEditorVertex( const medClutEditorVertex & other, QGraphicsItem *parent = nullptr);
     ~medClutEditorVertex();
 
     const QPointF & value() const;
     void shiftValue( qreal amount, bool forceConstraints = true );
 
-    void paint(QPainter *painter, const QStyleOptionGraphicsItem *option,
-               QWidget *widget = nullptr);
+    void paint(QPainter *painter, const QStyleOptionGraphicsItem *option, QWidget *widget = nullptr);
 
     QRectF boundingRect() const;
     QColor color() const;
@@ -53,16 +50,14 @@ public:
 
     void initiateMove();
     void finalizeMove();
-    void forceGeometricalConstraints( const QRectF & limits,
-                      bool inManhattan = false );
+    void forceGeometricalConstraints( const QRectF & limits, bool inManhattan = false );
 
     void interpolate( medClutEditorVertex * pred, medClutEditorVertex * next );
 
     void updateCoordinates();
     void updateValue();
 
-    static bool LessThan(const medClutEditorVertex *v1,
-                         const medClutEditorVertex *v2)
+    static bool LessThan(const medClutEditorVertex *v1, const medClutEditorVertex *v2)
     {
         return (v1->x() < v2->x());
     }
@@ -88,7 +83,7 @@ private :
 // /////////////////////////////////////////////////////////////////
 class medClutEditorTablePrivate;
 
-class medClutEditorTable : public QObject, public QGraphicsItem
+class MEDCORELEGACY_EXPORT medClutEditorTable : public QObject, public QGraphicsItem
 {
     Q_OBJECT
 
@@ -163,7 +158,7 @@ private:
 // /////////////////////////////////////////////////////////////////
 class medClutEditorHistogramPrivate;
 
-class medClutEditorHistogram : public QGraphicsItem
+class MEDCORELEGACY_EXPORT medClutEditorHistogram : public QGraphicsItem
 {
 public:
      medClutEditorHistogram(QGraphicsItem *parent = nullptr);
@@ -198,7 +193,7 @@ private:
 class medClutEditorView;
 class medClutEditorScenePrivate;
 
-class medClutEditorScene : public QGraphicsScene
+class MEDCORELEGACY_EXPORT medClutEditorScene : public QGraphicsScene
 {
 public:
      medClutEditorScene(QObject *parent = nullptr);
@@ -228,7 +223,7 @@ private:
 // medClutEditorView
 // /////////////////////////////////////////////////////////////////
 
-class medClutEditorView : public QGraphicsView
+class MEDCORELEGACY_EXPORT medClutEditorView : public QGraphicsView
 {
 public:
      medClutEditorView(QWidget *parent = nullptr);

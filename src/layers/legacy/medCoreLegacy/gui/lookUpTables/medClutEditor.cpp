@@ -684,8 +684,7 @@ void medClutEditorTable::updateCoordinates()
     }
 }
 
-void medClutEditorTable::addVertex( medClutEditorVertex *vertex,
-                                    bool interpolate )
+void medClutEditorTable::addVertex( medClutEditorVertex *vertex, bool interpolate )
 {
     d->principalVertices<< vertex;
     d->verticesToDisplay<< vertex;
