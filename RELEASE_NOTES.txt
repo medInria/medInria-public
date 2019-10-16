@@ -1,3 +1,37 @@
+medInria v3.1:
+- Create Meshing workspace with 4 toolboxes: Create Mesh from Mask, Mesh Manipulation, Mesh Mapping and Remeshing
+- Create Reformat workspace with 2 toolboxes: Cropping and Reslice
+- Create Filtering Legacy workspace with 2 toolboxes: Binary Operation and Mask Application
+- Segmentation workspace, add new toolboxes: VOI Cutter, Variational Segmentation and Polygon ROI
+- Registration workspace, add a new toolbox: Manual Registration
+- Paint toolbox in Segmentation is updated, can do region growing algorithm
+- A log system has been added, you can find the log file on homepage -> Logs
+- Histogram in views Tools button
+- Possibility to open a study, dropping it in a view
+- Reset camera on layer double click
+- 3D orientation, change the color of the background
+- Browser -> File System, path saved each time you open a directory
+- Improve visibility of 2D meshes
+- Pop-up to validate application exit: avoid misclicks
+- Search toolbox tool in the quick access menu to find toolboxes
+- Standardize Selector workspaces (with a selector combobox of toolboxes)
+- Filter tool added on the top on database column in workspaces
+- Right-click on a data in the database: Metadata tool lists the data metadata
+- Possibility to rename data in database column with the OS shortcut (ex. F2 on Linux)
+- Clarify the use of Load/Import data which become Temporary Import/Import
+- Remove homepage animation
+- Improve Mouse Interaction/View settings/Layer settings ergonomy
+- Fix a synchronisation bug between views
+- Fix a 4-split views bug with scrolling, button in view Tools button
+- Fix command-line bugs
+- Fix import errors of DICOM and mha
+- Fix hidden layer visibility when add a new data in a view
+- Fix Composer button, and Diffusion toolboxes sizes
+- Fix memory leak with meshes after view closing
+- Fix thumbnail size
+- Fix the slice number and location on the view when the orientation changes
+- Improve packaging
+
 medInria v3.0:
 - Switch Qt backend to Qt 5.x
 - Switch VTK to version 8.1, including a switch to OpenGL2 backend
