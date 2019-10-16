@@ -1,4 +1,6 @@
 medInria v3.1:
+- Switch ITK to version 5.0.0
+- Switch VTK to version 8.1.2
 - Create Meshing workspace with 4 toolboxes: Create Mesh from Mask, Mesh Manipulation, Mesh Mapping and Remeshing
 - Create Reformat workspace with 2 toolboxes: Cropping and Reslice
 - Create Filtering Legacy workspace with 2 toolboxes: Binary Operation and Mask Application
