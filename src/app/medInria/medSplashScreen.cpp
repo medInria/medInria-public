@@ -14,8 +14,10 @@
 #include <medSplashScreen.h>
 #include <dtkCoreSupport/dtkPlugin.h>
 #include <medPluginManager.h>
+#include <medSettingsManager.h>
 
-class medSplashScreenPrivate {
+class medSplashScreenPrivate
+{
 public:
     QPixmap  pixmap;
     QString  message;
@@ -34,10 +36,28 @@ medSplashScreen::medSplashScreen(const QPixmap& thePixmap)
     d->alignment = Qt::AlignBottom|Qt::AlignLeft;
     setAttribute(Qt::WA_TranslucentBackground);
     setFixedSize(d->pixmap.size());
-    QRect r(0, 0, d->pixmap.size().width(), d->pixmap.size().height());
-    move(QApplication::desktop()->screenGeometry().center() - r.center());
-}
 
+    QRect r(0, 0, d->pixmap.size().width(), d->pixmap.size().height());
+
+    // Get back the previous screen used to display the application
+    medSettingsManager *manager = medSettingsManager::instance();
+    int currentScreen = 0;
+
+    QVariant currentScreenQV = manager->value("medMainWindow", "currentScreen");
+    if (!currentScreenQV.isNull())
+    {
+        currentScreen = currentScreenQV.toInt();
+
+        // If the previous used screen has been removed, initialization
+        if (currentScreen >= QApplication::desktop()->screenCount())
+        {
+            currentScreen = 0;
+        }
+    }
+
+    // Move the Spla
+    move(QApplication::desktop()->screenGeometry(currentScreen).center() - r.center());
+}
 
 medSplashScreen::~medSplashScreen()
 {

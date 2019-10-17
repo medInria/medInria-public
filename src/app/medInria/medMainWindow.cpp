@@ -302,6 +302,9 @@ void medMainWindow::saveSettings()
         medSettingsManager * mnger = medSettingsManager::instance();
         mnger->setValue("medMainWindow", "state", this->saveState());
         mnger->setValue("medMainWindow", "geometry", this->saveGeometry());
+
+        // Keep the current screen for multiple-screens display
+        mnger->setValue("medMainWindow", "currentScreen", QApplication::desktop()->screenNumber(this));
     }
 }
 
