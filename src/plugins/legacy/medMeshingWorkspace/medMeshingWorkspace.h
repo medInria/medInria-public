@@ -27,7 +27,6 @@ public:
     medMeshingWorkspace(QWidget *parent);
 
     static bool isUsable();
-
     static bool registered();
 };
 

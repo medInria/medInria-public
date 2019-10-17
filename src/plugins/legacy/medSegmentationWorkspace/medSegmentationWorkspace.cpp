@@ -16,6 +16,7 @@
 #include <medSelectorToolBox.h>
 #include <medTabbedViewContainers.h>
 #include <medToolBoxFactory.h>
+#include <medWorkspaceFactory.h>
 
 medSegmentationWorkspace::medSegmentationWorkspace(QWidget *parent)
     : medSelectorWorkspace(parent, staticName())
@@ -28,4 +29,9 @@ bool medSegmentationWorkspace::isUsable()
 {
     medToolBoxFactory *tbFactory = medToolBoxFactory::instance();
     return (tbFactory->toolBoxesFromCategory("Segmentation").size()!=0);
+}
+
+bool medSegmentationWorkspace::registered()
+{
+    return medWorkspaceFactory::instance()->registerWorkspace <medSegmentationWorkspace>();
 }

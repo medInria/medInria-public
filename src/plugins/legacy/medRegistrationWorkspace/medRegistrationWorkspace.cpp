@@ -22,6 +22,7 @@
 #include <medToolBoxFactory.h>
 #include <medViewContainer.h>
 #include <medViewParameterGroupL.h>
+#include <medWorkspaceFactory.h>
 
 class medRegistrationWorkspacePrivate
 {
@@ -137,6 +138,11 @@ bool medRegistrationWorkspace::isUsable()
 {
     medToolBoxFactory * tbFactory = medToolBoxFactory::instance();
     return (tbFactory->toolBoxesFromCategory("Registration").size()!=0);
+}
+
+bool medRegistrationWorkspace::registered()
+{
+    return medWorkspaceFactory::instance()->registerWorkspace <medRegistrationWorkspace>();
 }
 
 void medRegistrationWorkspace::updateFromFixedContainer()

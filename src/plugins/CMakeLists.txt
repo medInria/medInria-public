@@ -50,6 +50,9 @@ set(PLUGIN_LIST
   legacy/undoRedoRegistration                                            ON
   legacy/itkProcessRegistrationDiffeomorphicDemons                       ON
   legacy/medVtkView                                                      ON
+  legacy/medFilteringWorkspaceL                                          ON
+  legacy/medSegmentationWorkspace                                        ON
+  legacy/medRegistrationWorkspace                                        ON
   legacy/medMaskApplication                                              ON
   legacy/medBinaryOperation                                              ON
   legacy/manualRegistration                                              ON

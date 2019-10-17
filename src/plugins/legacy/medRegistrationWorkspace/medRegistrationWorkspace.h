@@ -16,12 +16,13 @@
 #include <QtCore>
 
 #include <medSelectorWorkspace.h>
+#include <medRegistrationWorkspacePluginExport.h>
 
 class medTabbedViewContainers;
 class medRegistrationWorkspacePrivate;
 class medAbstractData;
 
-class medRegistrationWorkspace : public medSelectorWorkspace
+class MEDREGISTRATIONWORKSPACEPLUGIN_EXPORT medRegistrationWorkspace : public medSelectorWorkspace
 {
     Q_OBJECT
     MED_WORKSPACE_INTERFACE("Registration",
@@ -40,6 +41,8 @@ public:
     ~medRegistrationWorkspace();
 
     static bool isUsable();
+    static bool registered();
+
     void setupTabbedViewContainer();
     void setInitialGroups() override;
 

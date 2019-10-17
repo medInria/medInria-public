@@ -21,6 +21,7 @@
 #include <medTabbedViewContainers.h>
 #include <medToolBoxFactory.h>
 #include <medViewContainer.h>
+#include <medWorkspaceFactory.h>
 
 class medFilteringWorkspaceLPrivate
 {
@@ -155,6 +156,11 @@ bool medFilteringWorkspaceL::isUsable()
 {
     medToolBoxFactory * tbFactory = medToolBoxFactory::instance();
     return (tbFactory->toolBoxesFromCategory("Filtering Legacy").size()!=0);
+}
+
+bool medFilteringWorkspaceL::registered()
+{
+    return medWorkspaceFactory::instance()->registerWorkspace <medFilteringWorkspaceL>();
 }
 
 void medFilteringWorkspaceL::open(const medDataIndex &index)

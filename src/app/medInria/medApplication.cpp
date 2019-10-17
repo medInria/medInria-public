@@ -20,14 +20,11 @@
 #include <medDatabaseController.h>
 #include <medDiffusionWorkspace.h>
 #include <medFilteringWorkspace.h>
-#include <medFilteringWorkspaceL.h>
 #include <medGenericWorkspace.h>
 #include <medLogger.h>
 #include <medMainWindow.h>
 #include <medPluginManager.h>
-#include <medRegistrationWorkspace.h>
 #include <medSeedPointAnnotationData.h>
-#include <medSegmentationWorkspace.h>
 #include <medSettingsManager.h>
 #include <medSettingsWidgetFactory.h>
 #include <medStartupSettingsWidget.h>
@@ -134,14 +131,10 @@ void medApplication::initialize()
     // Registering different workspaces
     medWorkspaceFactory * viewerWSpaceFactory = medWorkspaceFactory::instance();
     viewerWSpaceFactory->registerWorkspace<medVisualizationWorkspace>();
-    viewerWSpaceFactory->registerWorkspace<medRegistrationWorkspace>();
     viewerWSpaceFactory->registerWorkspace<medDiffusionWorkspace>();
     viewerWSpaceFactory->registerWorkspace<medFilteringWorkspace>();
-    viewerWSpaceFactory->registerWorkspace<medFilteringWorkspaceL>();
-    viewerWSpaceFactory->registerWorkspace<medSegmentationWorkspace>();
 
     bool genericWorkpace = medSettingsManager::instance()->value("startup", "genericWorkspace", false).toBool();
-
     viewerWSpaceFactory->registerWorkspace<medGenericWorkspace>(genericWorkpace);
 
     //Register settingsWidgets

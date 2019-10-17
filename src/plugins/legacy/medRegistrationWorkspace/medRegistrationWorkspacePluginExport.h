@@ -13,11 +13,11 @@
 #pragma once
 
 #ifdef WIN32
-    #ifdef medMeshingWorkspacePlugin_EXPORTS
-        #define MEDMESHINGWORKSPACEPLUGIN_EXPORT __declspec(dllexport) 
+    #ifdef medRegistrationWorkspacePlugin_EXPORTS
+        #define MEDREGISTRATIONWORKSPACEPLUGIN_EXPORT __declspec(dllexport)
     #else
-        #define MEDMESHINGWORKSPACEPLUGIN_EXPORT __declspec(dllimport) 
+        #define MEDREGISTRATIONWORKSPACEPLUGIN_EXPORT __declspec(dllimport)
     #endif
 #else
-    #define MEDMESHINGWORKSPACEPLUGIN_EXPORT
+    #define MEDREGISTRATIONWORKSPACEPLUGIN_EXPORT
 #endif

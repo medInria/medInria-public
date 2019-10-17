@@ -14,6 +14,7 @@
 #pragma once
 
 #include <QtCore>
+#include <medFilteringWorkspaceLPluginExport.h>
 #include <medSelectorWorkspace.h>
 
 class medFilteringWorkspaceLPrivate;
@@ -24,7 +25,7 @@ class dtkAbstractView;
 /**
  * @brief Workspace providing a comparative display of the input and output of image-to-image filtering process plugins
  */
-class medFilteringWorkspaceL : public medSelectorWorkspace
+class MEDFILTERINGWORKSPACELPLUGIN_EXPORT medFilteringWorkspaceL : public medSelectorWorkspace
 {
     Q_OBJECT
     MED_WORKSPACE_INTERFACE("Filtering Legacy",
@@ -35,6 +36,7 @@ public:
     ~medFilteringWorkspaceL();
 
     static bool isUsable();
+    static bool registered();
 
     void setupTabbedViewContainer();
 
