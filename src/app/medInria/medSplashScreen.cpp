@@ -55,7 +55,7 @@ medSplashScreen::medSplashScreen(const QPixmap& thePixmap)
         }
     }
 
-    // Move the Spla
+    // Move the Splash screen at the center of the chosen screen
     move(QApplication::desktop()->screenGeometry(currentScreen).center() - r.center());
 }
 
