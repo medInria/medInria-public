@@ -22,6 +22,9 @@
         <file>icons/workspace_Filtering.png</file>
         <file>icons/workspace_Segmentation.png</file>
         <file>icons/workspace_Generic.png</file>
+        <file>icons/workspace_Filtering Legacy.png</file>
+        <file>icons/workspace_Meshing.png</file>
+        <file>icons/workspace_Reformat.png</file>
         <file>icons/folder.png</file>
         <file>icons/home.png</file>
         <file>icons/composer.png</file>

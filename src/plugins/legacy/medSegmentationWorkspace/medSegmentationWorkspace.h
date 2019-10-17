@@ -13,13 +13,14 @@
 
 #pragma once
 
+#include <medSegmentationWorkspacePluginExport.h>
 #include <medSelectorWorkspace.h>
 
 /**
  * class medSegmentationWorkspace
  * Defines the segmentation workspace.
  */
-class medSegmentationWorkspace : public medSelectorWorkspace
+class MEDSEGMENTATIONWORKSPACEPLUGIN_EXPORT medSegmentationWorkspace : public medSelectorWorkspace
 {
     Q_OBJECT
     MED_WORKSPACE_INTERFACE("Segmentation",
@@ -29,6 +30,5 @@ public:
     medSegmentationWorkspace(QWidget *parent);
 
     static bool isUsable();
+    static bool registered();
 };
-
-
