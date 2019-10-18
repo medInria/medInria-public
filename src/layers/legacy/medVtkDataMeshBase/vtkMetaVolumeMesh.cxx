@@ -32,8 +32,7 @@
 
 #include <vtkErrorCode.h>
 
-
-
+#include <QDebug>
 
 //----------------------------------------------------------------------------
 vtkStandardNewMacro( vtkMetaVolumeMesh );
@@ -112,36 +111,33 @@ void vtkMetaVolumeMesh::ReadVtkFile (const char* filename)
 //----------------------------------------------------------------------------
 void vtkMetaVolumeMesh::Read (const char* filename)
 {
-  
-  unsigned long format = vtkMetaVolumeMesh::CanReadFile (filename);
+    unsigned long format = vtkMetaVolumeMesh::CanReadFile (filename);
 
-  try
-  {
-    
-    std::cout << "Reading " << filename << "... ";
-    switch (format)
+    try
     {
-	case vtkMetaVolumeMesh::FILE_IS_VTK :
-	  this->ReadVtkFile (filename);
-	  break;
-	case vtkMetaVolumeMesh::FILE_IS_MESH :
-	  this->ReadMeshFile (filename);
-	  break; 
-	case vtkMetaVolumeMesh::FILE_IS_GMESH :
-	  this->ReadGMeshFile (filename);
-	  break; 
-	default :
-	  vtkErrorMacro(<<"unknown dataset type : "<<filename<<endl);
-	  throw vtkErrorCode::UnrecognizedFileTypeError;
+        qDebug() << "Reading: " << filename;
+        switch (format)
+        {
+            case vtkMetaVolumeMesh::FILE_IS_VTK :
+                this->ReadVtkFile (filename);
+                break;
+            case vtkMetaVolumeMesh::FILE_IS_MESH :
+                this->ReadMeshFile (filename);
+                break;
+            case vtkMetaVolumeMesh::FILE_IS_GMESH :
+                this->ReadGMeshFile (filename);
+                break;
+            default :
+                vtkErrorMacro(<<"unknown dataset type : "<<filename<<endl);
+                throw vtkErrorCode::UnrecognizedFileTypeError;
+        }
     }
-    std::cout << "done." << std::endl;
-  }
-  catch (vtkErrorCode::ErrorIds error)
-  {
-    throw error;
-  }
-  
-  this->SetFilePath (filename);  
+    catch (vtkErrorCode::ErrorIds error)
+    {
+        throw error;
+    }
+
+    this->SetFilePath (filename);
 }
 
 
@@ -185,16 +181,15 @@ void vtkMetaVolumeMesh::WriteVtkFile (const char* filename)
 //----------------------------------------------------------------------------
 void vtkMetaVolumeMesh::Write (const char* filename)
 {
-  try
-  {
-    std::cout << "writing " << filename << "... ";
-    this->WriteVtkFile (filename);
-    std::cout << "done." << std::endl;
-  }
-  catch (vtkErrorCode::ErrorIds error)
-  {
-    throw error;
-  }
+    try
+    {
+        qDebug() << "Writing: " << filename;
+        this->WriteVtkFile (filename);
+    }
+    catch (vtkErrorCode::ErrorIds error)
+    {
+        throw error;
+    }
 }
 
 
