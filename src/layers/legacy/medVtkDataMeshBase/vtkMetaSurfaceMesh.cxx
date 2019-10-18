@@ -46,6 +46,7 @@
 
 #include <vtkErrorCode.h>
 
+#include <QDebug>
 
 //----------------------------------------------------------------------------
 vtkStandardNewMacro( vtkMetaSurfaceMesh );
@@ -169,40 +170,34 @@ void vtkMetaSurfaceMesh::ReadOBJFile (const char* filename)
 //----------------------------------------------------------------------------
 void vtkMetaSurfaceMesh::Read (const char* filename)
 {
-
-  try
-  {
-    
-    std::cout << "Reading : " << filename <<"... ";
-    switch (vtkMetaSurfaceMesh::CanReadFile (filename))
+    try
     {
-	case vtkMetaSurfaceMesh::FILE_IS_VTK :
-	  this->ReadVtkFile (filename);
-	  break;
-    case vtkMetaSurfaceMesh::FILE_IS_VTP :
-      this->ReadVtpFile (filename);
-      break;
-	case vtkMetaSurfaceMesh::FILE_IS_MESH :
-	  this->ReadMeshFile (filename);
-	  break;
-	case vtkMetaSurfaceMesh::FILE_IS_OBJ :
-	  this->ReadOBJFile (filename);
-	  break;
-	default :
-	  vtkErrorMacro(<<"unknown dataset type : "<<filename<<endl);
-	  throw vtkErrorCode::UnrecognizedFileTypeError;
+        qDebug() << "Reading: " << filename;
+        switch (vtkMetaSurfaceMesh::CanReadFile (filename))
+        {
+            case vtkMetaSurfaceMesh::FILE_IS_VTK :
+                this->ReadVtkFile (filename);
+                break;
+            case vtkMetaSurfaceMesh::FILE_IS_VTP :
+                this->ReadVtpFile (filename);
+                break;
+            case vtkMetaSurfaceMesh::FILE_IS_MESH :
+                this->ReadMeshFile (filename);
+                break;
+            case vtkMetaSurfaceMesh::FILE_IS_OBJ :
+                this->ReadOBJFile (filename);
+                break;
+            default :
+                vtkErrorMacro(<<"unknown dataset type : "<<filename<<endl);
+                throw vtkErrorCode::UnrecognizedFileTypeError;
+        }
     }
-    std::cout << "done." << std::endl;
-    
-  }
-  catch (vtkErrorCode::ErrorIds error)
-  {
-    throw error;
-    
-  }
-  
+    catch (vtkErrorCode::ErrorIds error)
+    {
+        throw error;
+    }
 
-  this->SetFilePath (filename);  
+    this->SetFilePath (filename);
 }
 
 
@@ -282,23 +277,23 @@ void vtkMetaSurfaceMesh::WriteOBJFile (const char* filename)
 //----------------------------------------------------------------------------
 void vtkMetaSurfaceMesh::Write (const char* filename)
 {
-  try
-  {
-    std::cout<<"writing "<<filename<<"... ";
-      
-      if (vtkMetaSurfaceMesh::IsVtpExtension(vtksys::SystemTools::GetFilenameLastExtension(filename).c_str()))
-          this->WriteVtpFile (filename);
-      else
-          this->WriteVtkFile (filename);
-      
-    std::cout<<"done."<<std::endl;
-  }
-  catch (vtkErrorCode::ErrorIds error)
-  {
-    throw error;
-  }
-  this->SetFilePath (filename);
-
+    try
+    {
+        qDebug()<<"Writing: "<<filename;
+        if (vtkMetaSurfaceMesh::IsVtpExtension(vtksys::SystemTools::GetFilenameLastExtension(filename).c_str()))
+        {
+            this->WriteVtpFile (filename);
+        }
+        else
+        {
+            this->WriteVtkFile (filename);
+        }
+    }
+    catch (vtkErrorCode::ErrorIds error)
+    {
+        throw error;
+    }
+    this->SetFilePath (filename);
 }
 
 bool vtkMetaSurfaceMesh::IsVtpExtension (const char* ext)
