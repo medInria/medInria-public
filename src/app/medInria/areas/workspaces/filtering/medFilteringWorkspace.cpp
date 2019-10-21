@@ -451,7 +451,9 @@ void medFilteringWorkspace::setProcessType(int index)
     d->arithmeticsVector.clear();
 
     if (index == 0)
-    return;
+    {
+        return;
+    }
 
     switch (tProc)
     {
