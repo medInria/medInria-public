@@ -354,8 +354,9 @@ class medFilteringWorkspacePrivate
 public:
     int iProcessSelection;
 
-    QComboBox *processTypeComboBox;
-    QComboBox *processSelectorComboBox;
+    QComboBox   *processTypeComboBox;
+    QComboBox   *processSelectorComboBox;
+    QPushButton *poCreateFilterButton;
 
     medToolBox *workspaceToolBox;
     medToolBox *FiltersParamToolBox;
@@ -402,10 +403,11 @@ medFilteringWorkspace::medFilteringWorkspace(QWidget *parent): medAbstractWorksp
 
     QWidget *poDummyWidget4MarginOfCreateButton = new QWidget();
     QGridLayout *poDummyCreatButtonLayout = new QGridLayout();
-    QPushButton *poCreateFilterButton = new QPushButton("Create filter");
+    d->poCreateFilterButton = new QPushButton("Create filter");
+    d->poCreateFilterButton->setEnabled(false);
     poDummyWidget4MarginOfCreateButton->setLayout(poDummyCreatButtonLayout);
-    poDummyCreatButtonLayout->addWidget(poCreateFilterButton);
-    connect(poCreateFilterButton, SIGNAL(clicked()), this, SLOT(createFilterEnvironment()));
+    poDummyCreatButtonLayout->addWidget(d->poCreateFilterButton);
+    connect(d->poCreateFilterButton, SIGNAL(clicked()), this, SLOT(createFilterEnvironment()));
 
     d->workspaceToolBox = new medToolBox;
     d->workspaceToolBox->setTitle("Process controller");
@@ -436,8 +438,7 @@ void medFilteringWorkspace::setupTabbedViewContainer()
 
 void medFilteringWorkspace::setProcessType(int index)
 {
-    if (index == 0)
-        return;
+    setProcessSelection(0);
 
     ProcessTypes tProc = (ProcessTypes)index;
 
@@ -448,6 +449,11 @@ void medFilteringWorkspace::setProcessType(int index)
     d->singleFiltersVector.clear();
     d->morphoMathsVector.clear();
     d->arithmeticsVector.clear();
+
+    if (index == 0)
+    {
+        return;
+    }
 
     switch (tProc)
     {
@@ -838,8 +844,9 @@ void medFilteringWorkspace::setProcessType(int index)
 }
 
 void medFilteringWorkspace::setProcessSelection(int index)
-{
+{    
     d->iProcessSelection = index;
+    d->poCreateFilterButton->setEnabled(d->iProcessSelection != 0);
 }
 
 /**
