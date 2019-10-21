@@ -31,10 +31,12 @@ medSplashScreen::medSplashScreen(const QPixmap& thePixmap)
     : QWidget(0, Qt::SplashScreen |Qt::FramelessWindowHint|Qt::WindowStaysOnTopHint)
     , d(new medSplashScreenPrivate)
 {
+    // Graphic
     d->pixmap = thePixmap;
-    d->color = Qt::white; // TODO get from QSS
+    d->color = Qt::white;
+
+    // Geometry
     d->alignment = Qt::AlignBottom|Qt::AlignLeft;
-    setAttribute(Qt::WA_TranslucentBackground);
     setFixedSize(d->pixmap.size());
 
     QRect r(0, 0, d->pixmap.size().width(), d->pixmap.size().height());
@@ -78,11 +80,11 @@ void medSplashScreen::showMessage(const QString& message)
     const dtkPlugin* plugin = medPluginManager::instance()->plugin(message);
     if (plugin)
     {
-        d->message = plugin->name();
+        d->message = QString("Loading: ") + plugin->name();
     }
     else
     {
-        d->message = message;
+        d->message = QString("Loading: ") + message;
     }
 
     repaint();
@@ -98,7 +100,8 @@ void medSplashScreen::repaint()
 void medSplashScreen::finish(QWidget *mainWin)
 
 {
-    if (mainWin) {
+    if (mainWin)
+    {
 #if defined(Q_OS_X11)
         extern void qt_x11_wait_for_window_manager(QWidget *mainWin);
         qt_x11_wait_for_window_manager(mainWin);
@@ -111,7 +114,10 @@ void medSplashScreen::finish(QWidget *mainWin)
 void medSplashScreen::paintEvent(QPaintEvent* pe)
 {
     QRect aTextRect(rect());
-    aTextRect.setRect(aTextRect.x() + 5, aTextRect.y() + 5, aTextRect.width() - 10, aTextRect.height() - 10);
+    aTextRect.setRect(aTextRect.x() + 120,
+                      aTextRect.y() + 5,
+                      aTextRect.width() - 10,
+                      aTextRect.height() - 10);
 
     QPainter aPainter(this);
     aPainter.drawPixmap(rect(), d->pixmap);
