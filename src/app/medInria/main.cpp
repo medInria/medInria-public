@@ -92,7 +92,7 @@ int main(int argc,char* argv[])
     // Qt doc, otherwise there are some edge cases where the style is not fully applied
     //QApplication::setStyle("plastique");
     medApplication application(argc,argv);
-    medSplashScreen splash(QPixmap(":/pixmaps/medInria-splash.png"));
+    medSplashScreen splash(QPixmap(":/pixmaps/medInria-logo-homepage.png"));
 
     setlocale(LC_NUMERIC, "C");
     QLocale::setDefault(QLocale("C"));
