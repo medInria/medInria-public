@@ -28,7 +28,7 @@ class MEDBINARYOPERATIONPLUGIN_EXPORT medBinaryOperationToolBox : public medAbst
     Q_OBJECT
     MED_TOOLBOX_INTERFACE("Binary Operation",
                           "Compute binary operations between masks (OR, AND, XOR, etc.).",
-                          <<"Filtering Legacy")
+                          <<"Filtering")
     
 public:
     medBinaryOperationToolBox(QWidget *parent = nullptr);

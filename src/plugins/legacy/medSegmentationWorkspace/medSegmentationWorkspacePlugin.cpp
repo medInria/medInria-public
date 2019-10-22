@@ -29,7 +29,7 @@ bool medSegmentationWorkspacePlugin::initialize()
 
 QString medSegmentationWorkspacePlugin::name() const
 {
-    return "Meshing Workspace";
+    return "Segmentation Workspace";
 }
 
 QString medSegmentationWorkspacePlugin::version() const
