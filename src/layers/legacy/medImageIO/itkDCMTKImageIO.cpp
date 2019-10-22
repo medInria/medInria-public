@@ -294,7 +294,7 @@ void DCMTKImageIO::ReadImageInformation()
     double startSlice = this->GetZPositionForImage ( startIndex );
     double endSlice   = this->GetZPositionForImage ( endIndex );
 
-    int sliceDirection = endSlice>startSlice?locSign:-locSign;
+    int sliceDirection = endSlice>=startSlice?locSign:-locSign;
 
     /**
        Now order filenames such that we can read them sequentially and build the 3D/4D volume.
