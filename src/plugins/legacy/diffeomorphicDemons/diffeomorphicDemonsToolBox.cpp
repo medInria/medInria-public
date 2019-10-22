@@ -11,8 +11,8 @@
 
 =========================================================================*/
 
-#include "itkProcessRegistrationDiffeomorphicDemons.h"
-#include "itkProcessRegistrationDiffeomorphicDemonsToolBox.h"
+#include "diffeomorphicDemons.h"
+#include "diffeomorphicDemonsToolBox.h"
 
 #include <dtkCoreSupport/dtkAbstractProcessFactory.h>
 #include <dtkCoreSupport/dtkSmartPointer.h>
@@ -24,28 +24,28 @@
 
 #include <rpiCommonTools.hxx>
 
-class itkProcessRegistrationDiffeomorphicDemonsToolBoxPrivate
+class diffeomorphicDemonsToolBoxPrivate
 {
 public:
 
-    QComboBox * updateRuleBox;
-    QComboBox * gradientTypeBox;
-    QDoubleSpinBox * maxStepLengthBox;
-    QDoubleSpinBox * disFieldStdDevBox;
-    QDoubleSpinBox * updateFieldStdDevBox;
-    QCheckBox * useHistogramBox;
-    QLineEdit * iterationsBox;
+    QComboBox *updateRuleBox;
+    QComboBox *gradientTypeBox;
+    QDoubleSpinBox *maxStepLengthBox;
+    QDoubleSpinBox *disFieldStdDevBox;
+    QDoubleSpinBox *updateFieldStdDevBox;
+    QCheckBox *useHistogramBox;
+    QLineEdit *iterationsBox;
     medAbstractRegistrationProcess *process;
 };
 
-itkProcessRegistrationDiffeomorphicDemonsToolBox::itkProcessRegistrationDiffeomorphicDemonsToolBox(QWidget *parent)
-    : medAbstractSelectableToolBox(parent), d(new itkProcessRegistrationDiffeomorphicDemonsToolBoxPrivate)
+diffeomorphicDemonsToolBox::diffeomorphicDemonsToolBox(QWidget *parent)
+    : medAbstractSelectableToolBox(parent), d(new diffeomorphicDemonsToolBoxPrivate)
 {
-    QWidget* widget = new QWidget(this);
+    QWidget *widget = new QWidget(this);
 
-    QVBoxLayout* layout = new QVBoxLayout();
+    QVBoxLayout *layout = new QVBoxLayout();
 
-    QLabel* explanation = new QLabel("Drop 2 datasets with same size and spacing.\n");
+    QLabel *explanation = new QLabel("Drop 2 datasets with same size and spacing.\n");
     explanation->setSizePolicy(QSizePolicy::Ignored, QSizePolicy::Preferred);
     explanation->setWordWrap(true);
     layout->addWidget(explanation);
@@ -88,9 +88,9 @@ itkProcessRegistrationDiffeomorphicDemonsToolBox::itkProcessRegistrationDiffeomo
     updateRules<< tr("Diffeomorphic") << tr ("Additive") << tr("Compositive");
     d->updateRuleBox->addItems(updateRules);
     //WARNING IF YOU CHANGE THE ORDER OF THE ITEMS, CHANGE TOOLTIPS also!!!
-    d->updateRuleBox->setItemData(0,"s <- s o exp(u)",Qt::ToolTipRole);
-    d->updateRuleBox->setItemData(1,"s <- s + u",Qt::ToolTipRole);
-    d->updateRuleBox->setItemData(2,"s <- s o (Id+u)",Qt::ToolTipRole);
+    d->updateRuleBox->setItemData(0, "s <- s o exp(u)", Qt::ToolTipRole);
+    d->updateRuleBox->setItemData(1, "s <- s + u",      Qt::ToolTipRole);
+    d->updateRuleBox->setItemData(2, "s <- s o (Id+u)", Qt::ToolTipRole);
 
     d->gradientTypeBox = new QComboBox();
     d->gradientTypeBox->setToolTip(tr(
@@ -100,6 +100,7 @@ itkProcessRegistrationDiffeomorphicDemonsToolBox::itkProcessRegistrationDiffeomo
                  << tr("Warped Moving Image")
                  << tr("Mapped Moving Image");
     d->gradientTypeBox->addItems(gradientTypes);
+
     d->useHistogramBox =  new QCheckBox();
     d->useHistogramBox->setChecked(false);
     d->useHistogramBox->setToolTip(tr(
@@ -107,15 +108,13 @@ itkProcessRegistrationDiffeomorphicDemonsToolBox::itkProcessRegistrationDiffeomo
 
     QFormLayout* formLayout = new QFormLayout();
     formLayout->setRowWrapPolicy(QFormLayout::WrapAllRows);
-    formLayout->addRow(new QLabel(tr("Iterations per level of res."),this),d->iterationsBox);
-    formLayout->addRow(new QLabel(tr("Update Rule"),this),d->updateRuleBox);
-    formLayout->addRow(new QLabel(tr("Gradient Type"),this),d->gradientTypeBox);
-    formLayout->addRow(new QLabel(tr("Max. Update Step Length"),this),d->maxStepLengthBox);
-    formLayout->addRow(new QLabel(tr("Update Field Std. Deviation"),this),
-                       d->updateFieldStdDevBox);
-    formLayout->addRow(new QLabel(tr("Displ. Field Std. Deviation"),this),
-                       d->disFieldStdDevBox);
-    formLayout->addRow(new QLabel(tr("Histogram Matching"),this),d->useHistogramBox);
+    formLayout->addRow(new QLabel(tr("Iterations per level of res."),this), d->iterationsBox);
+    formLayout->addRow(new QLabel(tr("Update Rule"),this),                  d->updateRuleBox);
+    formLayout->addRow(new QLabel(tr("Gradient Type"),this),                d->gradientTypeBox);
+    formLayout->addRow(new QLabel(tr("Max. Update Step Length"),this),      d->maxStepLengthBox);
+    formLayout->addRow(new QLabel(tr("Update Field Std. Deviation"),this),  d->updateFieldStdDevBox);
+    formLayout->addRow(new QLabel(tr("Displ. Field Std. Deviation"),this),  d->disFieldStdDevBox);
+    formLayout->addRow(new QLabel(tr("Histogram Matching"),this),           d->useHistogramBox);
     layout->addLayout(formLayout);
 
     // Run button
@@ -129,36 +128,35 @@ itkProcessRegistrationDiffeomorphicDemonsToolBox::itkProcessRegistrationDiffeomo
     connect(runButton, SIGNAL(clicked()), this, SLOT(run()));
 }
 
-itkProcessRegistrationDiffeomorphicDemonsToolBox::~itkProcessRegistrationDiffeomorphicDemonsToolBox()
+diffeomorphicDemonsToolBox::~diffeomorphicDemonsToolBox()
 {
     delete d;
 
     d = nullptr;
 }
 
-bool itkProcessRegistrationDiffeomorphicDemonsToolBox::registered()
+bool diffeomorphicDemonsToolBox::registered()
 {
     return medToolBoxFactory::instance()->
-            registerToolBox<itkProcessRegistrationDiffeomorphicDemonsToolBox>();
+            registerToolBox<diffeomorphicDemonsToolBox>();
 }
 
-dtkPlugin* itkProcessRegistrationDiffeomorphicDemonsToolBox::plugin()
+dtkPlugin* diffeomorphicDemonsToolBox::plugin()
 {
     medPluginManager* pm = medPluginManager::instance();
     dtkPlugin* plugin = pm->plugin ( "Diffeomorphic Demons" );
     return plugin;
 }
 
-void itkProcessRegistrationDiffeomorphicDemonsToolBox::run()
+void diffeomorphicDemonsToolBox::run()
 {
     medRegistrationSelectorToolBox *toolbox = dynamic_cast<medRegistrationSelectorToolBox*>(selectorToolBox());
 
     if(toolbox) // toolbox empty in Pipelines and not Registration workspace
     {
-        d->process = dynamic_cast<medAbstractRegistrationProcess*> (dtkAbstractProcessFactory::instance()->create("itkProcessRegistrationDiffeomorphicDemons"));
+        d->process = dynamic_cast<medAbstractRegistrationProcess*> (dtkAbstractProcessFactory::instance()->create("diffeomorphicDemons"));
         toolbox->setProcess(d->process);
 
-        //TODO smartPointing have to be managed only in abstract processes -rde
         dtkSmartPointer<medAbstractData> fixedData(toolbox->fixedData());
         dtkSmartPointer<medAbstractData> movingData(toolbox->movingData());
 
@@ -167,8 +165,8 @@ void itkProcessRegistrationDiffeomorphicDemonsToolBox::run()
             this->setToolBoxOnWaitStatus();
 
             // Many choices here
-            itkProcessRegistrationDiffeomorphicDemons *process_Registration =
-                    dynamic_cast<itkProcessRegistrationDiffeomorphicDemons *>(d->process);
+            diffeomorphicDemons *process_Registration =
+                    dynamic_cast<diffeomorphicDemons *>(d->process);
             process_Registration->setDisplacementFieldStandardDeviation(
                         d->disFieldStdDevBox->value());
             process_Registration->setGradientType(d->gradientTypeBox->currentIndex());
@@ -201,7 +199,7 @@ void itkProcessRegistrationDiffeomorphicDemonsToolBox::run()
     }
 }
 
-medAbstractData* itkProcessRegistrationDiffeomorphicDemonsToolBox::processOutput()
+medAbstractData* diffeomorphicDemonsToolBox::processOutput()
 {
     // If called from pipelines, and run() not called before.
     if(!d->process)
