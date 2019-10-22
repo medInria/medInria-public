@@ -197,6 +197,8 @@ medViewContainer::medViewContainer(medViewContainerSplitter *parent): QFrame(par
     d->toolBarMenu->addActions(QList<QAction*>() << d->vSplitAction << d->hSplitAction << d->fourSplitAction);
     d->toolBarMenu->addMenu(d->presetMenu);
     d->toolBarMenu->addSeparator();
+    d->toolBarMenu->addActions(QList<QAction*>() << d->maximizedAction);
+    d->toolBarMenu->addSeparator();
     d->toolBarMenu->addActions(QList<QAction*>() << d->histogramAction);
 
     d->poolIndicator = new medPoolIndicatorL;
