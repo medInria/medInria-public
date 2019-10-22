@@ -13,20 +13,20 @@
 
 #pragma once
 
-#include "itkProcessRegistrationDiffeomorphicDemonsPluginExport.h"
+#include "diffeomorphicDemonsPluginExport.h"
 
 #include <medPluginLegacy.h>
 
-class ITKPROCESSREGISTRATIONDIFFEOMORPHICDEMONSPLUGIN_EXPORT itkProcessRegistrationDiffeomorphicDemonsPluginPrivate;
+class DIFFEOMORPHICDEMONSPLUGIN_EXPORT diffeomorphicDemonsPluginPrivate;
 
-class ITKPROCESSREGISTRATIONDIFFEOMORPHICDEMONSPLUGIN_EXPORT itkProcessRegistrationDiffeomorphicDemonsPlugin : public medPluginLegacy
+class DIFFEOMORPHICDEMONSPLUGIN_EXPORT diffeomorphicDemonsPlugin : public medPluginLegacy
 {
     Q_OBJECT
-    Q_PLUGIN_METADATA(IID "fr.inria.itkProcessRegistrationDiffeomorphicDemonsPlugin" FILE "itkProcessRegistrationDiffeomorphicDemonsPlugin.json")
+    Q_PLUGIN_METADATA(IID "fr.inria.diffeomorphicDemonsPlugin" FILE "diffeomorphicDemonsPlugin.json")
     Q_INTERFACES(dtkPlugin)
 
 public:
-    itkProcessRegistrationDiffeomorphicDemonsPlugin(QObject *parent = 0);
+    diffeomorphicDemonsPlugin(QObject *parent = nullptr);
 
     virtual bool initialize();
 

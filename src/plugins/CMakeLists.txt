@@ -48,7 +48,7 @@ set(PLUGIN_LIST
   legacy/qtdcmDataSource                                                 ON
   legacy/itkDataSHImage                                                  ON
   legacy/undoRedoRegistration                                            ON
-  legacy/itkProcessRegistrationDiffeomorphicDemons                       ON
+  legacy/diffeomorphicDemons                                             ON
   legacy/medVtkView                                                      ON
   legacy/medMaskApplication                                              ON
   legacy/medBinaryOperation                                              ON

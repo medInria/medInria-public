@@ -15,17 +15,17 @@
 
 #include <medAbstractSelectableToolBox.h>
 
-class itkProcessRegistrationDiffeomorphicDemonsToolBoxPrivate;
+class diffeomorphicDemonsToolBoxPrivate;
 
-class itkProcessRegistrationDiffeomorphicDemonsToolBox : public medAbstractSelectableToolBox
+class diffeomorphicDemonsToolBox : public medAbstractSelectableToolBox
 {
     Q_OBJECT
     MED_TOOLBOX_INTERFACE("Diffeomorphic Demons",
                           "Diffeomorphic demons registration using the ITK implementation",
                           <<"Registration")
 public:
-     itkProcessRegistrationDiffeomorphicDemonsToolBox(QWidget *parentToolBox = nullptr);
-    ~itkProcessRegistrationDiffeomorphicDemonsToolBox();
+     diffeomorphicDemonsToolBox(QWidget *parentToolBox = nullptr);
+    ~diffeomorphicDemonsToolBox();
 
     dtkPlugin * plugin() override;
     static bool registered();
@@ -35,7 +35,7 @@ public slots:
     void run();
 
 private:
-    itkProcessRegistrationDiffeomorphicDemonsToolBoxPrivate *d;
+    diffeomorphicDemonsToolBoxPrivate *d;
 };
 
 

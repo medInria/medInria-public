@@ -11,7 +11,7 @@
 #
 ################################################################################
 
-set(TARGET_NAME itkProcessRegistrationDiffeomorphicDemonsPlugin)
+set(TARGET_NAME diffeomorphicDemonsPlugin)
 
 ## #############################################################################
 ## Setup version numbering
@@ -21,7 +21,6 @@ set(${TARGET_NAME}_VERSION ${MEDINRIA_VERSION})
 
 string(TOUPPER ${TARGET_NAME} TARGET_NAME_UP)
 add_definitions(-D${TARGET_NAME_UP}_VERSION="${${TARGET_NAME}_VERSION}")
-
 
 ## #############################################################################
 ## Resolve dependencies
@@ -44,7 +43,6 @@ list_source_files(${TARGET_NAME}
   ${CMAKE_CURRENT_SOURCE_DIR}
   )
 
-
 ## #############################################################################
 ## include directorie.
 ## #############################################################################
@@ -56,7 +54,6 @@ list_header_directories_to_include(${TARGET_NAME}
 include_directories(${${TARGET_NAME}_INCLUDE_DIRS}
   ${MEDINRIA_INCLUDE_DIRS}
   )
-
 
 ## #############################################################################
 ## Precompile headers
@@ -70,8 +67,6 @@ if(MEDINRIA_USE_PRECOMPILED_HEADERS)
     )
 endif()
 
-
-
 ## #############################################################################
 ## add library
 ## #############################################################################
@@ -80,7 +75,6 @@ add_library(${TARGET_NAME} SHARED
   ${${TARGET_NAME}_PCH}
   ${${TARGET_NAME}_CFILES}
   )
-
 
 ## #############################################################################
 ## Link
@@ -96,10 +90,8 @@ target_link_libraries(${TARGET_NAME}
   medRegistration
   )
 
-
 ## #############################################################################
 ## Install rules
 ## #############################################################################
 
 set_plugin_install_rules_legacy(${TARGET_NAME})
-

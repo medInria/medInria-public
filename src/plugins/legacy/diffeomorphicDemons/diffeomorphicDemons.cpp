@@ -11,7 +11,7 @@
 
 =========================================================================*/
 
-#include "itkProcessRegistrationDiffeomorphicDemons.h"
+#include "diffeomorphicDemons.h"
 
 #include <dtkCoreSupport/dtkAbstractProcessFactory.h>
 #include <DiffeomorphicDemons/rpiDiffeomorphicDemons.hxx>
@@ -19,18 +19,16 @@
 #include <rpiCommonTools.hxx>
 
 // /////////////////////////////////////////////////////////////////
-// itkProcessRegistrationDiffeomorphicDemonsDiffeomorphicDemonsPrivate
+// diffeomorphicDemonsDiffeomorphicDemonsPrivate
 // /////////////////////////////////////////////////////////////////
 
-class itkProcessRegistrationDiffeomorphicDemonsPrivate
+class diffeomorphicDemonsPrivate
 {
 public:
-    itkProcessRegistrationDiffeomorphicDemons * proc;
-    template <class PixelType>
-    int update();
-    template < typename TFixedImage, typename TMovingImage >
-    bool write(const QString&);
-    void * registrationMethod ;
+    diffeomorphicDemons *proc;
+    template <class PixelType> int update();
+    template < typename TFixedImage, typename TMovingImage > bool write(const QString&);
+    void *registrationMethod ;
 
     std::vector<unsigned int> iterations;
     unsigned char updateRule;
@@ -42,10 +40,10 @@ public:
 };
 
 // /////////////////////////////////////////////////////////////////
-// itkProcessRegistrationDiffeomorphicDemons
+// diffeomorphicDemons
 // /////////////////////////////////////////////////////////////////
 
-itkProcessRegistrationDiffeomorphicDemons::itkProcessRegistrationDiffeomorphicDemons() : itkProcessRegistration(), d(new itkProcessRegistrationDiffeomorphicDemonsPrivate)
+diffeomorphicDemons::diffeomorphicDemons() : itkProcessRegistration(), d(new diffeomorphicDemonsPrivate)
 {
     d->proc = this;
     d->registrationMethod = nullptr;
@@ -60,7 +58,7 @@ itkProcessRegistrationDiffeomorphicDemons::itkProcessRegistrationDiffeomorphicDe
     this->setProperty("outputFileType", "notText");
 }
 
-itkProcessRegistrationDiffeomorphicDemons::~itkProcessRegistrationDiffeomorphicDemons()
+diffeomorphicDemons::~diffeomorphicDemons()
 {
     d->proc = nullptr;
     typedef itk::Image< float, 3 >  RegImageType;
@@ -70,30 +68,28 @@ itkProcessRegistrationDiffeomorphicDemons::~itkProcessRegistrationDiffeomorphicD
     d = nullptr;
 }
 
-bool itkProcessRegistrationDiffeomorphicDemons::registered()
+bool diffeomorphicDemons::registered()
 {
-    return dtkAbstractProcessFactory::instance()->registerProcessType("itkProcessRegistrationDiffeomorphicDemons",
-                                                                      createitkProcessRegistrationDiffeomorphicDemons);
+    return dtkAbstractProcessFactory::instance()->registerProcessType("diffeomorphicDemons",
+                                                                      creatediffeomorphicDemons);
 }
 
-QString itkProcessRegistrationDiffeomorphicDemons::description() const
+QString diffeomorphicDemons::description() const
 {
-    return "itkProcessRegistrationDiffeomorphicDemons";
+    return "diffeomorphicDemons";
 }
 
-QString itkProcessRegistrationDiffeomorphicDemons::identifier() const
+QString diffeomorphicDemons::identifier() const
 {
-    return "itkProcessRegistrationDiffeomorphicDemons";
+    return "diffeomorphicDemons";
 }
-
 
 // /////////////////////////////////////////////////////////////////
 // Templated Version of update
 // /////////////////////////////////////////////////////////////////
 
-
 template <typename PixelType>
-int itkProcessRegistrationDiffeomorphicDemonsPrivate::update()
+int diffeomorphicDemonsPrivate::update()
 {
     typedef itk::Image< PixelType, 3 >  FixedImageType;
     typedef itk::Image< PixelType, 3 >  MovingImageType;
@@ -107,8 +103,8 @@ int itkProcessRegistrationDiffeomorphicDemonsPrivate::update()
         return testResult;
     }
 
-    FixedImageType* inputFixed  = (FixedImageType*)  proc->fixedImage().GetPointer();
-    FixedImageType* inputMoving = (MovingImageType*) proc->movingImages()[0].GetPointer();
+    FixedImageType *inputFixed  = (FixedImageType*)  proc->fixedImage().GetPointer();
+    FixedImageType *inputMoving = (MovingImageType*) proc->movingImages()[0].GetPointer();
 
     // The output volume is going to located at the origin/direction of the fixed input. Needed for rpi::DiffeomorphicDemons
     typedef itk::ChangeInformationImageFilter< FixedImageType > FilterType;
@@ -120,7 +116,7 @@ int itkProcessRegistrationDiffeomorphicDemonsPrivate::update()
     filter->SetInput(inputMoving);
 
     typedef rpi::DiffeomorphicDemons< RegImageType, RegImageType, TransformScalarType > RegistrationType;
-    RegistrationType * registration = new RegistrationType;
+    RegistrationType *registration = new RegistrationType;
     registrationMethod = registration;
     registration->SetFixedImage(inputFixed);
     registration->SetMovingImage(filter->GetOutput());
@@ -181,7 +177,7 @@ int itkProcessRegistrationDiffeomorphicDemonsPrivate::update()
     }
     time_t t2 = clock();
 
-    qDebug() << "Elasped time: " << (double)(t2-t1)/(double)CLOCKS_PER_SEC;
+    qDebug() << "Elasped time: " << static_cast<double>(t2-t1)/static_cast<double>(CLOCKS_PER_SEC);
 
     emit proc->progressed(80);
 
@@ -209,12 +205,13 @@ int itkProcessRegistrationDiffeomorphicDemonsPrivate::update()
     result->DisconnectPipeline();
 
     if (proc->output())
+    {
         proc->output()->setData (result);
-
+    }
     return medAbstractProcessLegacy::SUCCESS;
 }
 
-medAbstractProcessLegacy::DataError itkProcessRegistrationDiffeomorphicDemons::testInputs()
+medAbstractProcessLegacy::DataError diffeomorphicDemons::testInputs()
 {
     if (d->proc->fixedImage()->GetLargestPossibleRegion().GetSize()
             != d->proc->movingImages()[0]->GetLargestPossibleRegion().GetSize())
@@ -231,7 +228,7 @@ medAbstractProcessLegacy::DataError itkProcessRegistrationDiffeomorphicDemons::t
     return medAbstractProcessLegacy::SUCCESS;
 }
 
-int itkProcessRegistrationDiffeomorphicDemons::update(itkProcessRegistration::ImageType imgType)
+int diffeomorphicDemons::update(itkProcessRegistration::ImageType imgType)
 {
     // Cast has been done in itkProcessRegistration
     if (imgType == itkProcessRegistration::FLOAT)
@@ -242,7 +239,8 @@ int itkProcessRegistrationDiffeomorphicDemons::update(itkProcessRegistration::Im
     return medAbstractProcessLegacy::FAILURE;
 }
 
-itk::Transform<double,3,3>::Pointer itkProcessRegistrationDiffeomorphicDemons::getTransform(){
+itk::Transform<double,3,3>::Pointer diffeomorphicDemons::getTransform()
+{
     typedef float PixelType;
     typedef double TransformScalarType;
     typedef itk::Image< PixelType, 3 > RegImageType;
@@ -252,17 +250,18 @@ itk::Transform<double,3,3>::Pointer itkProcessRegistrationDiffeomorphicDemons::g
     {
         return registration->GetTransformation();
     }
-    else
-        return nullptr;
+
+    return nullptr;
 }
 
-QString itkProcessRegistrationDiffeomorphicDemons::getTitleAndParameters(){
+QString diffeomorphicDemons::getTitleAndParameters()
+{
     typedef float PixelType;
     typedef double TransformScalarType;
     typedef itk::Image< PixelType, 3 > RegImageType;
     //normaly should use long switch cases, but here we know we work with float3 data.
     typedef rpi::DiffeomorphicDemons<RegImageType,RegImageType,TransformScalarType> RegistrationType;
-    RegistrationType * registration = static_cast<RegistrationType *>(d->registrationMethod);
+    RegistrationType *registration = static_cast<RegistrationType *>(d->registrationMethod);
 
     QString titleAndParameters;
     titleAndParameters += "DiffeomorphicDemons\n";
@@ -308,7 +307,7 @@ QString itkProcessRegistrationDiffeomorphicDemons::getTitleAndParameters(){
     return titleAndParameters;
 }
 
-bool itkProcessRegistrationDiffeomorphicDemons::writeTransform(const QString& file)
+bool diffeomorphicDemons::writeTransform(const QString& file)
 {
     typedef float PixelType;
     typedef double TransformScalarType;
@@ -338,49 +337,46 @@ bool itkProcessRegistrationDiffeomorphicDemons::writeTransform(const QString& fi
 // /////////////////////////////////////////////////////////////////
 // Process parameters
 // /////////////////////////////////////////////////////////////////
-void itkProcessRegistrationDiffeomorphicDemons::setUpdateRule(unsigned char updateRule)
+void diffeomorphicDemons::setUpdateRule(unsigned char updateRule)
 {
     d->updateRule = updateRule;
 }
 
-void itkProcessRegistrationDiffeomorphicDemons::setGradientType(unsigned char gradientType)
+void diffeomorphicDemons::setGradientType(unsigned char gradientType)
 {
     d->gradientType = gradientType;
 }
 
-void itkProcessRegistrationDiffeomorphicDemons::setMaximumUpdateLength(float maximumUpdateStepLength)
+void diffeomorphicDemons::setMaximumUpdateLength(float maximumUpdateStepLength)
 {
     d->maximumUpdateStepLength = maximumUpdateStepLength;
 }
 
-void itkProcessRegistrationDiffeomorphicDemons::setUpdateFieldStandardDeviation(float updateFieldStandardDeviation)
+void diffeomorphicDemons::setUpdateFieldStandardDeviation(float updateFieldStandardDeviation)
 {
     d->updateFieldStandardDeviation = updateFieldStandardDeviation;
 }
 
-void itkProcessRegistrationDiffeomorphicDemons::setDisplacementFieldStandardDeviation(float displacementFieldStandardDeviation)
+void diffeomorphicDemons::setDisplacementFieldStandardDeviation(float displacementFieldStandardDeviation)
 {
     d->displacementFieldStandardDeviation = displacementFieldStandardDeviation;
 }
 
-void itkProcessRegistrationDiffeomorphicDemons::setUseHistogramMatching(bool useHistogramMatching)
+void diffeomorphicDemons::setUseHistogramMatching(bool useHistogramMatching)
 {
     d->useHistogramMatching = useHistogramMatching;
 }
 
-void itkProcessRegistrationDiffeomorphicDemons::setNumberOfIterations(std::vector<unsigned int> iterations)
+void diffeomorphicDemons::setNumberOfIterations(std::vector<unsigned int> iterations)
 {
     d->iterations = iterations;
 }
-
-
 
 // /////////////////////////////////////////////////////////////////
 // Type instanciation
 // /////////////////////////////////////////////////////////////////
 
-dtkAbstractProcess *createitkProcessRegistrationDiffeomorphicDemons()
+dtkAbstractProcess *creatediffeomorphicDemons()
 {
-    return new itkProcessRegistrationDiffeomorphicDemons;
+    return new diffeomorphicDemons;
 }
-
