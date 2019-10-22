@@ -29,7 +29,7 @@ bool medFilteringWorkspaceLPlugin::initialize()
 
 QString medFilteringWorkspaceLPlugin::name() const
 {
-    return "Meshing Workspace";
+    return "Filtering Workspace";
 }
 
 QString medFilteringWorkspaceLPlugin::version() const

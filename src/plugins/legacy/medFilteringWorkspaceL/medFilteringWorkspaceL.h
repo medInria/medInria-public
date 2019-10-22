@@ -28,7 +28,7 @@ class dtkAbstractView;
 class MEDFILTERINGWORKSPACELPLUGIN_EXPORT medFilteringWorkspaceL : public medSelectorWorkspace
 {
     Q_OBJECT
-    MED_WORKSPACE_INTERFACE("Filtering Legacy",
+    MED_WORKSPACE_INTERFACE("Filtering",
                             "Workspace to apply filters to images.",
                             "Methodology")
 public:

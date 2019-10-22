@@ -155,7 +155,7 @@ void medFilteringWorkspaceL::importProcessOutput()
 bool medFilteringWorkspaceL::isUsable()
 {
     medToolBoxFactory * tbFactory = medToolBoxFactory::instance();
-    return (tbFactory->toolBoxesFromCategory("Filtering Legacy").size()!=0);
+    return (tbFactory->toolBoxesFromCategory("Filtering").size()!=0);
 }
 
 bool medFilteringWorkspaceL::registered()

@@ -24,9 +24,11 @@ class medFilteringWorkspacePrivate;
 class medFilteringWorkspace : public medAbstractWorkspaceLegacy
 {
     Q_OBJECT
-    MED_WORKSPACE_INTERFACE("Filtering", "Workspace to apply filters to images.", "Methodology")
+    MED_WORKSPACE_INTERFACE("Filtering dtk2",
+                            "Workspace to apply filters to images.",
+                            "Methodology")
 public:
-    medFilteringWorkspace(QWidget *parent = 0);
+    medFilteringWorkspace(QWidget *parent = nullptr);
     ~medFilteringWorkspace();
 
     static bool isUsable();

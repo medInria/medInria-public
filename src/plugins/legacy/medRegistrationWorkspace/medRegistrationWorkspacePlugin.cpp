@@ -29,7 +29,7 @@ bool medRegistrationWorkspacePlugin::initialize()
 
 QString medRegistrationWorkspacePlugin::name() const
 {
-    return "Meshing Workspace";
+    return "Registration Workspace";
 }
 
 QString medRegistrationWorkspacePlugin::version() const
