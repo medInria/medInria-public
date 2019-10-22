@@ -181,6 +181,7 @@ void vtkDataMeshInteractor::setInputData(medAbstractData *data)
 void vtkDataMeshInteractor::setupParameters()
 {
     d->parameters << this->opacityParameter();
+    this->setOpacity(1.0);
 
     if(!(d->metaDataSet->GetType() != vtkMetaDataSet::VTK_META_SURFACE_MESH &&
          d->metaDataSet->GetType() != vtkMetaDataSet::VTK_META_VOLUME_MESH))
@@ -244,7 +245,38 @@ void vtkDataMeshInteractor::setupParameters()
         d->colorParam->addItem(color, medStringListParameterL::createIconFromColor(color));
 
     connect(d->colorParam, SIGNAL(valueChanged(QString)), this, SLOT(setColor(QString)));
-    d->colorParam->setValue("#FFFFFF");
+
+    if (!d->metaDataSet->GetActor(0))
+    {
+        d->colorParam->setValue("#FFFFFF");
+    }
+    else
+    {
+        // color and opacity defined in xml readers
+        double *color = d->metaDataSet->GetActor(0)->GetProperty()->GetColor();
+
+        int final_colors[3];
+        final_colors[0] = static_cast<int>(color[0]*255.0);
+        final_colors[1] = static_cast<int>(color[1]*255.0);
+        final_colors[2] = static_cast<int>(color[2]*255.0);
+
+        // decimal to hex color
+        QString colorHex;
+        colorHex += "#";
+        for (int i=0; i<3; i++)
+        {
+            // Add a "0" to the hex number to follow "RRGGBBAA"
+            if (final_colors[i] < 15)
+            {
+                colorHex += "0";
+            }
+            colorHex += QString::number(final_colors[i], 16).toUpper();
+        }
+        this->setColor(colorHex);
+
+        this->setOpacity(d->metaDataSet->GetActor(0)->GetProperty()->GetOpacity());
+    }
+
     d->parameters << d->colorParam;
 
     d->renderingParam = new medStringListParameterL("Rendering", this);
