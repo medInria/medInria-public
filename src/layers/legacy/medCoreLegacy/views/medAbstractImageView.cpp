@@ -233,17 +233,18 @@ void medAbstractImageView::switchToFourViews()
     foreach(medDataIndex index, this->dataList())
     {
         medAbstractData *data = medDataManager::instance()->retrieveData(index);
-        if (!data)
-            continue;
-
-        topRightContainer->addData(data);
-        bottomLeftContainer->addData(data);
-        bottomRightContainer->addData(data);
+        if (data)
+        {
+            topRightContainer->addData(data);
+            bottomLeftContainer->addData(data);
+            bottomRightContainer->addData(data);
+        }
     }
 
     this->setOrientation(medImageView::VIEW_ORIENTATION_3D);
-    medAbstractImageView *bottomLeftContainerView = dynamic_cast <medAbstractImageView *> (bottomLeftContainer->view());
-    medAbstractImageView *topRightContainerView = dynamic_cast <medAbstractImageView *> (topRightContainer->view());
+
+    medAbstractImageView *bottomLeftContainerView  = dynamic_cast <medAbstractImageView *> (bottomLeftContainer->view());
+    medAbstractImageView *topRightContainerView    = dynamic_cast <medAbstractImageView *> (topRightContainer->view());
     medAbstractImageView *bottomRightContainerView = dynamic_cast <medAbstractImageView *> (bottomRightContainer->view());
 
     bottomLeftContainerView->setOrientation(medImageView::VIEW_ORIENTATION_AXIAL);
@@ -260,12 +261,13 @@ void medAbstractImageView::switchToFourViews()
         linkGroupName = linkGroupBaseName + QString::number(linkGroupNumber);
     }
 
-    medViewParameterGroupL* viewGroup = new medViewParameterGroupL(linkGroupName, this);
+    medViewParameterGroupL *viewGroup = new medViewParameterGroupL(linkGroupName, this);
     viewGroup->addImpactedView(this);
     viewGroup->addImpactedView(topRightContainerView);
     viewGroup->addImpactedView(bottomLeftContainerView);
     viewGroup->addImpactedView(bottomRightContainerView);
     viewGroup->setLinkAllParameters(true);
+    viewGroup->removeParameter("Slicing");
     viewGroup->removeParameter("Orientation");
 
     for (unsigned int i = 0;i < this->layersCount();++i)
@@ -273,6 +275,7 @@ void medAbstractImageView::switchToFourViews()
         QString linkLayerName = linkGroupBaseName + QString::number(linkGroupNumber) + " Layer " + QString::number(i+1);
         medLayerParameterGroupL* layerGroup = new medLayerParameterGroupL(linkLayerName, this);
         layerGroup->setLinkAllParameters(true);
+        layerGroup->removeParameter("Slicing");
         layerGroup->addImpactedlayer(this, this->layerData(i));
         layerGroup->addImpactedlayer(topRightContainerView, topRightContainerView->layerData(i));
         layerGroup->addImpactedlayer(bottomLeftContainerView, bottomLeftContainerView->layerData(i));
@@ -280,11 +283,17 @@ void medAbstractImageView::switchToFourViews()
     }
 
     foreach(medAbstractParameterL* param, this->linkableParameters())
+    {
         param->trigger();
+    }
 
     for (unsigned int i = 0;i < this->layersCount();++i)
+    {
         foreach(medAbstractParameterL* param, this->linkableParameters(i))
+        {
             param->trigger();
+        }
+    }
 
     topLeftContainer->setSelected(true);
 }
