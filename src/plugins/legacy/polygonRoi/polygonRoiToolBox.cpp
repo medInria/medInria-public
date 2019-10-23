@@ -1152,7 +1152,9 @@ void polygonRoiToolBox::clear()
         ListRois *list;
         QList<medSeriesOfRoi*> *listSeries = medRoiManager::instance()->getSeriesOfRoi()->value(currentView);
 
-        if(listSeries != nullptr && listSeries->at(0)->getListOfRois()->size() != 0)
+        if(listSeries != nullptr
+                && listSeries->count() > 0
+                && listSeries->at(0)->getListOfRois()->size() != 0)
         {
             // Get list of Rois
             list = listSeries->at(0)->getListOfRois();
