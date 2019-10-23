@@ -1,9 +1,10 @@
 medInria v3.1:
 - Switch ITK to version 5.0.0
 - Switch VTK to version 8.1.2
-- Create Meshing workspace with 4 toolboxes: Create Mesh from Mask, Mesh Manipulation, Mesh Mapping and Remeshing
+- Create Meshing workspace with 5 toolboxes: Create Mesh from Mask, Mesh Manipulation, Mesh Mapping, Remeshing and Iterative Closest Point
 - Create Reformat workspace with 2 toolboxes: Cropping and Reslice
-- Create Filtering Legacy workspace with 2 toolboxes: Binary Operation and Mask Application
+- Filtering workspace becomes Filtering dtk2
+- Create Filtering workspace with 2 toolboxes: Binary Operation and Mask Application
 - Segmentation workspace, add new toolboxes: VOI Cutter, Variational Segmentation and Polygon ROI
 - Registration workspace, add a new toolbox: Manual Registration
 - Paint toolbox in Segmentation is updated, can do region growing algorithm
@@ -23,7 +24,9 @@ medInria v3.1:
 - Clarify the use of Load/Import data which become Temporary Import/Import
 - Remove homepage animation
 - Improve Mouse Interaction/View settings/Layer settings ergonomy
+- Fix Dicom import with non axial acquisition
 - Fix a synchronisation bug between views
+- Fix a 4-split bug with the slicing
 - Fix a 4-split views bug with scrolling, button in view Tools button
 - Fix command-line bugs
 - Fix import errors of DICOM and mha
