@@ -1160,11 +1160,13 @@ void polygonRoiToolBox::clear()
             list = listSeries->at(0)->getListOfRois();
             DeleteSeveralRoisCommand * deleteCommand = new DeleteSeveralRoisCommand(currentView,*list,"Polygon rois","deleteSeveralRois");
             medRoiManager::instance()->addToUndoRedoStack(deleteCommand);
-
-            m_maskData = nullptr;
-            disableButtons();
         }
+
+        currentView = nullptr;
     }
+
+    m_maskData = nullptr;
+    disableButtons();
 }
 
 void polygonRoiToolBox::buttonsStateAtDataOpeningBeforeROI()
