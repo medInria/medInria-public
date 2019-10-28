@@ -38,10 +38,8 @@ if (NOT USE_SYSTEM_${ep})
 ## Set up versioning control
 ## #############################################################################
 
-if (NOT DEFINED ${ep}_SOURCE_DIR)
-    set(git_url ${GITHUB_PREFIX}Kitware/VTK.git)
-    set(git_tag v8.1.2)
-endif()
+set(git_url ${GITHUB_PREFIX}Kitware/VTK.git)
+set(git_tag v8.2.0)
 
 ## #############################################################################
 ## Add specific cmake arguments for configuration step of the project
@@ -112,12 +110,15 @@ if(${USE_FFmpeg})
     )
 endif()
 
+<<<<<<< HEAD
 ## #############################################################################
 ## Check if patch has to be applied
 ## #############################################################################
 
 ep_GeneratePatchCommand(${ep} ${ep}_PATCH_COMMAND VTK.patch)
 
+=======
+>>>>>>> [Cropping] debug cursor VTK bug, switch to VTK 8.2.0
 ## #############################################################################
 ## Add external-project
 ## #############################################################################
