@@ -14,7 +14,7 @@
 #pragma once
 
 #ifdef WIN32
-    #ifdef DiffeomorphicDemonsPlugin_EXPORTS
+    #ifdef diffeomorphicDemonsPlugin_EXPORTS
         #define DIFFEOMORPHICDEMONSPLUGIN_EXPORT __declspec(dllexport)
     #else
         #define DIFFEOMORPHICDEMONSPLUGIN_EXPORT __declspec(dllimport)
