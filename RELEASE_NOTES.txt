@@ -4,7 +4,7 @@ medInria v3.1:
 - Create Meshing workspace with 5 toolboxes: Create Mesh from Mask, Mesh Manipulation, Mesh Mapping, Remeshing and Iterative Closest Point
 - Create Reformat workspace with 2 toolboxes: Cropping and Reslice
 - Filtering workspace becomes Filtering dtk2
-- Create Filtering workspace with 2 toolboxes: Binary Operation and Mask Application
+- Create Filtering workspace with 5 toolboxes: Binary Operation, ITK Basic Filters, Mask Application, Morphological Filters and N4 Bias Correction
 - Segmentation workspace, add new toolboxes: VOI Cutter, Variational Segmentation and Polygon ROI
 - Registration workspace, add a new toolbox: Manual Registration
 - Paint toolbox in Segmentation is updated, can do region growing algorithm
