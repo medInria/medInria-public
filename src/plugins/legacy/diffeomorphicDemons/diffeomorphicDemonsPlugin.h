@@ -39,5 +39,3 @@ public:
     virtual QStringList contributors() const;
     virtual QStringList types() const;
 };
-
-
