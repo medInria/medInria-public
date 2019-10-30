@@ -179,7 +179,7 @@ polygonRoiToolBox::polygonRoiToolBox(QWidget *parent ) :
     QWidget *displayWidget = new QWidget(this);
     this->addWidget(displayWidget);
 
-    QVBoxLayout * layout = new QVBoxLayout();
+    QVBoxLayout *layout = new QVBoxLayout();
     displayWidget->setLayout(layout);
 
     addNewCurve = new QPushButton(tr("Closed Polygon"));
@@ -211,13 +211,13 @@ polygonRoiToolBox::polygonRoiToolBox(QWidget *parent ) :
 
     currentView = nullptr;
 
-    QHBoxLayout * ButtonLayout0 = new QHBoxLayout();
+    QHBoxLayout *ButtonLayout0 = new QHBoxLayout();
     layout->addLayout( ButtonLayout0 );
     ButtonLayout0->addWidget(addNewCurve);
     ButtonLayout0->addWidget(interpolate);
     ButtonLayout0->addWidget(extractRoiButton);
 
-    QHBoxLayout * ButtonLayout1 = new QHBoxLayout();
+    QHBoxLayout *ButtonLayout1 = new QHBoxLayout();
     layout->addLayout( ButtonLayout1 );
     ButtonLayout1->addWidget(repulsorTool);
     ButtonLayout1->addWidget(generateBinaryImage_button);
@@ -225,7 +225,7 @@ polygonRoiToolBox::polygonRoiToolBox(QWidget *parent ) :
     hashViewObserver = new QHash<medAbstractView*,contourWidgetObserver*>();
 
     // How to use
-    QLabel* explanation = new QLabel(tr("Define a ROI: choose 'Closed Polygon' and click on the data set.\n")
+    QLabel *explanation = new QLabel(tr("Define a ROI: choose 'Closed Polygon' and click on the data set.\n")
                                      + tr("Remove a landmark: put the cursor on it and SUPPR.\n")
                                      + tr("Undo action: CTRL/CMD + z.\n")
                                      + tr("Redo action: CTRL/CMD + y.\n")
@@ -1322,7 +1322,6 @@ void polygonRoiToolBox::extractROI()
             vtkSmartPointer<vtkPoints>  bufferPoints = vtkPoints::New();
             for (unsigned int sl=0 ; sl<size[2] ; sl++) // go through slices
             {
-                vtkPolyData *poly = vtkPolyData::New();
                 bufferPoints->Reset();
                 bool isEmpty = true;
 
@@ -1341,20 +1340,35 @@ void polygonRoiToolBox::extractROI()
                         }
                     }
                     if (!isEmpty)
+                    {
                         break;
+                    }
                 }
                 if (!isEmpty)
                 {
-                    //contour indices are added into bufferPoints
+                    // Contour indices are added into bufferPoints
                     getContourIndices(view2d, contourImage, px, bufferPoints);
 
-                    vtkPoints *polyPoints =vtkPoints::New();
+                    vtkPoints *polyPoints = vtkPoints::New();
                     polyPoints->DeepCopy(bufferPoints);
-                    poly->SetPoints(polyPoints);
 
-                    polygonRoi *polyRoi = new polygonRoi(view2d);
-                    vtkContourWidget * contour = polyRoi->getContour();
-                    // Points decimation // TODO put this in generateIntermediateCurves
+                    // Create a cell array to connect the points into meaningful geometry
+                    int numPts = polyPoints->GetNumberOfPoints();
+                    vtkIdType* vertexIndices = new vtkIdType[numPts+1];
+                    for (int i = 0; i < numPts; i++)
+                    {
+                        vertexIndices[i] = static_cast<vtkIdType>(i);
+                    }
+                    // Set the last vertex to 0; thus closing the circle.
+                    vertexIndices[numPts] = 0;
+                    vtkSmartPointer<vtkCellArray> lines = vtkSmartPointer<vtkCellArray>::New();
+                    lines->InsertNextCell(numPts+1, vertexIndices);
+
+                    vtkPolyData *poly = vtkPolyData::New();
+                    poly->SetPoints(polyPoints);
+                    poly->SetLines(lines);
+
+                    // Points decimation
                     int nbPointsPoly = poly->GetNumberOfPoints();
                     vtkPoints *points = poly->GetPoints();
                     vtkPoints *decimatedPoints = vtkPoints::New();
@@ -1367,6 +1381,9 @@ void polygonRoiToolBox::extractROI()
                         }
                     }
                     poly->SetPoints(decimatedPoints);
+
+                    polygonRoi *polyRoi = new polygonRoi(view2d);
+                    vtkContourWidget *contour = polyRoi->getContour();
                     contour->Initialize(poly);
 
                     vtkContourRepresentation *contourRep = contour->GetContourRepresentation();
@@ -1374,10 +1391,10 @@ void polygonRoiToolBox::extractROI()
 
                     if (!viewsPlaneIndex.contains(currentView))
                     {
-                        QList<int> *planeIndexes=new QList<int>();
+                        QList<int> *planeIndexes = new QList<int>();
                         for (int i = 0; i < 3; i++)
                         {
-                            planeIndexes->append(0); // fill the list with 0;
+                            planeIndexes->append(0); // fill the list with 0
                         }
                         viewsPlaneIndex.insert(currentView,planeIndexes);
                     }
@@ -1387,11 +1404,11 @@ void polygonRoiToolBox::extractROI()
                     polyRoi->setMasterRoi(false);
                     polyRoi->forceVisibilityOff();
 
+                    // Save PlaneIndex for this view and orientation
                     AddRoiCommand *command = new AddRoiCommand(currentView, polyRoi,"Polygon rois","NewRois");
                     medRoiManager::instance()->addToUndoRedoStack(command);
                     QList<int> *planeIndexes= viewsPlaneIndex.value(currentView);
                     planeIndexes->replace(view2d->GetViewOrientation(),computePlaneIndex());
-                    // save PlaneIndex for this view and orientation TODO : improve this so that we do it only once for each orientation
 
                     buttonsStateWhenROI();
                 }

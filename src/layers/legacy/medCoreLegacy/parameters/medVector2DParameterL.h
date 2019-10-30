@@ -23,7 +23,7 @@ class QVector2D;
 class MEDCORELEGACY_EXPORT medVector2DParameterL : public medAbstractVector2DParameterL
 {
 public:
-    medVector2DParameterL(QString name = "Unknow Vector 2D parameter", QObject* parent = 0);
+    medVector2DParameterL(QString name = "Unknown Vector 2D parameter", QObject* parent = 0);
     virtual ~medVector2DParameterL();
 
     virtual QWidget* getWidget();

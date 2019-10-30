@@ -26,7 +26,7 @@ class MEDCORELEGACY_EXPORT medTriggerParameterL : public medAbstractTriggerParam
     Q_OBJECT
 
 public:
-    medTriggerParameterL(QString name = "Unknow trigger parameter", QObject* parent = 0);
+    medTriggerParameterL(QString name = "Unknown trigger parameter", QObject* parent = 0);
     virtual ~medTriggerParameterL();
 
     void setButtonIcon(QIcon& icon);

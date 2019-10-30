@@ -23,7 +23,7 @@ class QVector3D;
 class MEDCORELEGACY_EXPORT medVector3DParameterL : public medAbstractVector3DParameterL
 {
 public:
-    medVector3DParameterL(QString name = "Unknow Vector 3D parameter", QObject* parent = 0);
+    medVector3DParameterL(QString name = "Unknown Vector 3D parameter", QObject* parent = 0);
     virtual ~medVector3DParameterL();
 
     virtual QWidget* getWidget();

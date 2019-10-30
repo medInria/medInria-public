@@ -236,7 +236,8 @@ void polygonRoi::showOrHide()
         return;
     }
 
-    if (getIdSlice() == (unsigned int)d->view->GetSlice() && getOrientation() == (unsigned char)d->view->GetViewOrientation())
+    if (getIdSlice() == static_cast<unsigned int>(d->view->GetSlice() )
+            && getOrientation() == static_cast<unsigned char>(d->view->GetViewOrientation()))
     {
         On();
     }

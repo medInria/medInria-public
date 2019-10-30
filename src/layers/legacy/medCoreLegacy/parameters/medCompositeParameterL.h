@@ -26,7 +26,7 @@ class MEDCORELEGACY_EXPORT medCompositeParameterL : public medAbstractParameterL
     Q_OBJECT
 
 public:
-    medCompositeParameterL(QString name = "Unknow composite parameter", QObject* parent = 0);
+    medCompositeParameterL(QString name = "Unknown composite parameter", QObject* parent = 0);
     virtual ~medCompositeParameterL();
 
     virtual QWidget* getWidget();
