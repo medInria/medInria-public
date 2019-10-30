@@ -20,6 +20,10 @@
 #include <medSelectorToolBox.h>
 #include <medToolBoxFactory.h>
 
+#include <string>
+#include <sstream>
+#include <iostream>
+
 class medN4BiasCorrectionToolBoxPrivate
 {
 public:    
