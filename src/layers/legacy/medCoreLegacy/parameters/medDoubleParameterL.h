@@ -28,7 +28,7 @@ class MEDCORELEGACY_EXPORT medDoubleParameterL : public medAbstractDoubleParamet
     Q_OBJECT
 
 public:
-    medDoubleParameterL(QString name = "Unknow double parameter", QObject* parent = 0);
+    medDoubleParameterL(QString name = "Unknown double parameter", QObject* parent = 0);
     virtual ~medDoubleParameterL();
 
     void setRange(double min, double max);

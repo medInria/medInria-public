@@ -29,7 +29,7 @@ class MEDCORELEGACY_EXPORT medAbstractParameterL : public QObject
 
 public:
 
-    medAbstractParameterL(QString name = "unknown parameter", QObject* parent = 0);
+    medAbstractParameterL(QString name = "Unknown parameter", QObject* parent = 0);
     virtual ~medAbstractParameterL();
 
     QString name() const;

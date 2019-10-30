@@ -27,7 +27,7 @@ class MEDCORELEGACY_EXPORT medTimeLineParameterL : public medAbstractGroupParame
     Q_OBJECT
 
 public:
-    medTimeLineParameterL(QString name = "Unknow timeLine parameter", QObject* parent = 0);
+    medTimeLineParameterL(QString name = "Unknown timeLine parameter", QObject* parent = 0);
     virtual ~medTimeLineParameterL();
 
     void clear();

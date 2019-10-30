@@ -29,7 +29,7 @@ class MEDCORELEGACY_EXPORT medBoolParameterL : public medAbstractBoolParameterL
     Q_OBJECT
 
 public:
-    medBoolParameterL(QString name = "Unknow bool parameter", QObject* parent = 0);
+    medBoolParameterL(QString name = "Unknown bool parameter", QObject* parent = 0);
     virtual ~medBoolParameterL();
 
     void setIcon(QIcon icon);
