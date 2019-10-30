@@ -151,8 +151,8 @@ public:
         
         if( splineDistance )
         {
-            unsigned long lowerBound[InputImageType::ImageDimension];
-            unsigned long upperBound[InputImageType::ImageDimension];
+            itk::SizeValueType lowerBound[InputImageType::ImageDimension];
+            itk::SizeValueType upperBound[InputImageType::ImageDimension];
 
             for( unsigned int i = 0; i < 3; i++ )
             {
