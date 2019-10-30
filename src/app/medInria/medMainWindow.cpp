@@ -94,15 +94,15 @@ medMainWindow::medMainWindow ( QWidget *parent ) : QMainWindow ( parent ), d ( n
     QApplication::setPalette(p);
 
     //  To avoid strange behaviours with the homepageshifter
-    this->setMinimumHeight ( 600 );
-    this->setMinimumWidth ( 800 );
+    this->setMinimumHeight(700);
+    this->setMinimumWidth(950);
 
     d->closeEventProcessed = false;
 
     //  Setting up widgets
 
-    d->settingsEditor = NULL;
-    d->currentArea = NULL;
+    d->settingsEditor = nullptr;
+    d->currentArea = nullptr;
 
     //  Browser area.
     d->browserArea = new medBrowserArea(this);
