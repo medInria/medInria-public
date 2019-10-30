@@ -1667,10 +1667,9 @@ void vtkImageView2D::UnInstallInteractor()
    }
 
 
-  for (std::list<vtkDataSet2DWidget*>::iterator it = this->DataSetWidgets.begin();
-      it!=this->DataSetWidgets.end(); ++it )
+  for (std::list<vtkDataSet2DWidget*>::iterator it = this->DataSetWidgets.begin(); it!=this->DataSetWidgets.end(); ++it )
   {
-    (*it)->SetImageView(0);
+    (*it)->SetImageView(nullptr);
     (*it)->Off();
   }
 
@@ -1684,20 +1683,24 @@ void vtkImageView2D::UnInstallInteractor()
 */
 void vtkImageView2D::SetInterpolate(int val, int layer)
 {
-  if (!this->HasLayer (layer))
-    return;
-  this->GetImage2DDisplayForLayer(layer)->GetImageActor()->SetInterpolate (val);
-  this->qtSignalHandler->emitInterpolate((bool)val, layer);
-  this->Modified();
+    if (this->HasLayer(layer))
+    {
+        this->GetImage2DDisplayForLayer(layer)->GetImageActor()->SetInterpolate (val);
+        this->qtSignalHandler->emitInterpolate((bool)val, layer);
+        this->Modified();
+    }
 }
 
 //----------------------------------------------------------------------------
 int vtkImageView2D::GetInterpolate(int layer) const
 {
-  if (this->HasLayer (layer))
-    return this->GetImage2DDisplayForLayer(layer)->GetImageActor()->GetInterpolate();
+    int iRes = 0;
+    if (this->HasLayer(layer))
+    {
+        iRes = this->GetImage2DDisplayForLayer(layer)->GetImageActor()->GetInterpolate();
+    }
 
-  return 0;
+  return iRes;
 }
 
 ////----------------------------------------------------------------------------
@@ -2091,7 +2094,7 @@ void vtkImageView2D::UpdateBounds (const double bounds[6], int layer, vtkMatrix4
     {
         m_vtkImageFromBoundsSourceGenerator = vtkImageFromBoundsSource::New();
         unsigned int imSize [3];
-        if( imageSize != 0 )
+        if( imageSize != nullptr )
         {
             imSize[0] = imageSize[0];
             imSize[1] = imageSize[1];
@@ -2200,37 +2203,84 @@ void vtkImageView2D::AddLayer(int layer)
 
 //----------------------------------------------------------------------------
 void vtkImageView2D::RemoveLayer(int layer)
-{
-  vtkImageView::RemoveLayer(layer);
+{  
+    if (this->HasLayer(layer))
+    {
 
-  if (!this->HasLayer(layer))
-    return;
+        // ////////////////////////////////////////////////////////////////////////
+        // Save image informations of layer 0
+        double  bounds[6];
+        vtkMatrix4x4 *matrix  = nullptr;
+        int    *imageSize     = nullptr;
+        double *imageSpacing  = nullptr;
+        double *imageOrigin   = nullptr;    
+    
+        medVtkImageInfo   sImgInfo;
+        medVtkImageInfo* psImgInfo  = GetMedVtkImageInfo();
+        GetInputBounds(bounds);
+  
+        if (psImgInfo)
+        {
+            sImgInfo = *psImgInfo;
 
-  vtkRenderer *renderer = this->GetRendererForLayer(layer);
+            matrix = GetOrientationMatrix();
+            imageSize = sImgInfo.dimensions;
+            imageSpacing = sImgInfo.spacing;
+            imageOrigin = sImgInfo.origin;
+        }
 
-  if (renderer && this->GetRenderWindow())
-  {
-    renderer->RemoveAllViewProps();
-    renderer->Render();
-    this->GetRenderWindow()->RemoveRenderer(renderer);
-    this->Modified();
-  }
 
-  // Delete is handled by SmartPointers.
-  this->LayerInfoVec.erase(this->LayerInfoVec.begin() + layer);
+        // ////////////////////////////////////////////////////////////////////////
+        // Remove layer
+        vtkRenderer *renderer = this->GetRendererForLayer(layer);
+        vtkImageView::RemoveLayer(layer);
+        if (renderer && this->GetRenderWindow())
+        { 
+            renderer->RemoveAllViewProps();
+            renderer->Render();
+            for (auto poWidget : this->DataSetWidgets)
+            {
+                poWidget->SetImageView(nullptr);
+                poWidget->Off();
+            }
+            this->GetRenderWindow()->RemoveRenderer(renderer);
+            this->Modified();
+        }
 
-  if(this->LayerInfoVec.size() == 0)
-  {
-      AddLayer(0);
-  }
+        // Delete is handled by SmartPointers.
+        this->LayerInfoVec.erase(this->LayerInfoVec.begin() + layer);
 
-  // Make contiguous
-  for ( size_t i(0); i<this->LayerInfoVec.size(); ++i )
-  {
-      if( this->LayerInfoVec[i].Renderer )
-        this->LayerInfoVec[i].Renderer->SetLayer(static_cast<int>(i));
-      this->SetCurrentLayer(static_cast<int>(i));
-  }
+  
+        // ////////////////////////////////////////////////////////////////////////
+        // Rebuild a layer if necessary
+        if (this->LayerInfoVec.size() == 0 )
+        {
+            AddLayer(0);
+            if (!this->DataSetWidgets.empty())
+            {
+                for (auto poWidget : this->DataSetWidgets)
+                {
+                    poWidget->SetImageView(this);
+                    poWidget->On();
+                    this->UpdateBounds(poWidget->GetSource()->GetBounds(), 0, matrix, imageSize, imageSpacing, imageOrigin);
+                    this->Modified();
+                    // If this is the first widget to be added, reset camera
+                    if ((!this->GetMedVtkImageInfo() || !this->GetMedVtkImageInfo()->initialized) && (this->DataSetWidgets.size() == 1))
+                    {
+                        //this->ResetCamera(poWidget->GetSource());
+                    }
+                }          
+            }
+        }
+
+        // Make contiguous
+        for ( size_t i(0); i<this->LayerInfoVec.size(); ++i )
+        {
+            if( this->LayerInfoVec[i].Renderer )
+                this->LayerInfoVec[i].Renderer->SetLayer(static_cast<int>(i));
+            this->SetCurrentLayer(static_cast<int>(i));
+        }
+    }
 }
 
 //----------------------------------------------------------------------------
