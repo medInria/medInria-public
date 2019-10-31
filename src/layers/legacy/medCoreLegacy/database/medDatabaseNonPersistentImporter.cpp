@@ -309,21 +309,15 @@ QString medDatabaseNonPersistentImporter::ensureUniqueSeriesName ( const QString
             seriesNames << sname;
     }
 
+    QString originalSeriesName = seriesName;
     QString newSeriesName = seriesName;
+
     int suffix = 0;
-
-    if (seriesName == "")
-    {
-        newSeriesName = "UnnamedSeries";
-    }
-
-    QString originalSeriesName = newSeriesName;
-
     while (seriesNames.contains(newSeriesName))
     {
         // it exist
         suffix++;
-        newSeriesName = originalSeriesName + " (copy " + QString::number(suffix) + ")";
+        newSeriesName = originalSeriesName + "_" + QString::number(suffix);
     }
 
     return newSeriesName;

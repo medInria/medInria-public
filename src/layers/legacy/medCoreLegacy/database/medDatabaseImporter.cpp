@@ -524,7 +524,7 @@ void medDatabaseImporter::createMissingImages ( medAbstractData* medData, QSqlDa
 
                 if ( !query.exec() )
                 {
-                    dtkDebug() << DTK_COLOR_FG_RED << query.lastError() << DTK_NO_COLOR;
+                    qDebug() << DTK_COLOR_FG_RED << query.lastError() << DTK_NO_COLOR;
                 }
             }
         }
@@ -558,21 +558,15 @@ QString medDatabaseImporter::ensureUniqueSeriesName ( const QString seriesName )
         seriesNames << sname;
     }
 
+    QString originalSeriesName = seriesName;
     QString newSeriesName = seriesName;
+
     int suffix = 0;
-
-    if (seriesName == "")
-    {
-        newSeriesName = "UnnamedSeries";
-    }
-
-    QString originalSeriesName = newSeriesName;
-
     while (seriesNames.contains(newSeriesName))
     {
         // it exist
         suffix++;
-        newSeriesName = originalSeriesName + " (copy " + QString::number(suffix) + ")";
+        newSeriesName = originalSeriesName + "_" + QString::number(suffix);
     }
 
     return newSeriesName;
