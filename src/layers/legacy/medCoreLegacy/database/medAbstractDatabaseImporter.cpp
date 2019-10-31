@@ -222,7 +222,7 @@ void medAbstractDatabaseImporter::importFile ( void )
             }
 
             // 2.2) Fill missing metadata
-            populateMissingMetadata ( medData, medMetaDataKeys::SeriesID.getFirstValue(medData));
+            populateMissingMetadata ( medData, med::smartBaseName(fileInfo.fileName()));
             QString patientName = medMetaDataKeys::PatientName.getFirstValue(medData).simplified();
             QString birthDate = medMetaDataKeys::BirthDate.getFirstValue(medData);
             tmpPatientId = patientName + birthDate;
@@ -357,8 +357,9 @@ void medAbstractDatabaseImporter::importFile ( void )
         if ( imagemedData )
         {
             // 3.3) a) re-populate missing metadata
-            // if there is no SeriesDescription, we use the tag Series Instance UID (specific and required)
-            populateMissingMetadata ( imagemedData, medMetaDataKeys::SeriesDicomID.getFirstValue(imagemedData));
+            // as files might be aggregated we use the aggregated file name as SeriesDescription (if not provided, of course)
+            QFileInfo imagefileInfo ( filesPaths[0] );
+            populateMissingMetadata ( imagemedData, med::smartBaseName(imagefileInfo.fileName()) );
             imagemedData->setMetaData ( medMetaDataKeys::PatientID.key(), QStringList() << patientID );
             imagemedData->setMetaData ( medMetaDataKeys::SeriesID.key(), QStringList() << seriesID );
 
