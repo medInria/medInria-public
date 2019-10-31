@@ -1846,25 +1846,6 @@ void vtkImageView2D::SetInput(vtkAlgorithmOutput* pi_poVtkAlgoOutput, vtkMatrix4
     this->ShowRulerWidgetOff();
     this->ShowRulerWidgetOn();
   }
-
-
-  /*if (m_vtkImageFromBoundsSourceGenerator && GetNumberOfLayers() == 2)
-  {
-      RemoveLayer(0);
-      for (auto poWidget : this->DataSetWidgets)
-      {
-          poWidget->SetImageView(this);
-          poWidget->On();
-          this->UpdateBounds(poWidget->GetSource()->GetBounds(), 0, nullptr, nullptr, nullptr, nullptr);
-          this->Modified();
-          // If this is the first widget to be added, reset camera
-          if ((!this->GetMedVtkImageInfo() || !this->GetMedVtkImageInfo()->initialized) && (this->DataSetWidgets.size() == 1))
-          {
-              this->ResetCamera(poWidget->GetSource());
-          }
-      }
-      m_vtkImageFromBoundsSourceGenerator = nullptr;
-  }*/
 }
 
 void vtkImageView2D::SetInput (vtkActor *actor, int layer, vtkMatrix4x4 *matrix, const int imageSize[], const double imageSpacing[], const double imageOrigin[])
