@@ -14,39 +14,39 @@
 set(medInria_VERSION @medInria_VERSION@)
 
 add_library(medCore UNKNOWN IMPORTED)
-find_library(medCore_LIBRARY NAMES medCore PATHS @medCore_LIBRARY_DIR@ @medCore_LIBRARY_DIR@/@CMAKE_BUILD_TYPE@)
+find_library(medCore_LIBRARY NAMES medCore PATHS @medCore_LIBRARY_DIR_DEBUG@ @medCore_LIBRARY_DIR_RELEASE@ @medCore_LIBRARY_DIR_MINSIZEREL@ @medCore_LIBRARY_DIR_RELWITHDEBINFO@)
 set_target_properties(medCore PROPERTIES INTERFACE_INCLUDE_DIRECTORIES "@medCore_INCLUDE_DIRS@" IMPORTED_LOCATION ${medCore_LIBRARY})
 
 add_library(medCoreLegacy UNKNOWN IMPORTED)
-find_library(medCoreLegacy_LIBRARY NAMES medCoreLegacy PATHS @medCoreLegacy_LIBRARY_DIR@ @medCoreLegacy_LIBRARY_DIR@/@CMAKE_BUILD_TYPE@)
+find_library(medCoreLegacy_LIBRARY NAMES medCoreLegacy PATHS @medCoreLegacy_LIBRARY_DIR_DEBUG@ @medCoreLegacy_LIBRARY_DIR_RELEASE@ @medCoreLegacy_LIBRARY_DIR_MINSIZEREL@ @medCoreLegacy_LIBRARY_DIR_RELWITHDEBINFO@)
 set_target_properties(medCoreLegacy PROPERTIES INTERFACE_INCLUDE_DIRECTORIES "@medCoreLegacy_INCLUDE_DIRS@" IMPORTED_LOCATION ${medCoreLegacy_LIBRARY})
 
 add_library(medLog UNKNOWN IMPORTED)
-find_library(medLog_LIBRARY NAMES medLog PATHS @medLog_LIBRARY_DIR@ @medLog_LIBRARY_DIR@/@CMAKE_BUILD_TYPE@)
+find_library(medLog_LIBRARY NAMES medLog PATHS @medLog_LIBRARY_DIR_DEBUG@ @medLog_LIBRARY_DIR_RELEASE@ @medLog_LIBRARY_DIR_MINSIZEREL@ @medLog_LIBRARY_DIR_RELWITHDEBINFO@)
 set_target_properties(medLog PROPERTIES INTERFACE_INCLUDE_DIRECTORIES "@medLog_INCLUDE_DIRS@" IMPORTED_LOCATION ${medLog_LIBRARY})
 
 add_library(medRegistration UNKNOWN IMPORTED)
-find_library(medRegistration_LIBRARY NAMES medRegistration PATHS @medRegistration_LIBRARY_DIR@ @medRegistration_LIBRARY_DIR@/@CMAKE_BUILD_TYPE@)
+find_library(medRegistration_LIBRARY NAMES medRegistration PATHS @medRegistration_LIBRARY_DIR_DEBUG@ @medRegistration_LIBRARY_DIR_RELEASE@ @medRegistration_LIBRARY_DIR_MINSIZEREL@ @medRegistration_LIBRARY_DIR_RELWITHDEBINFO@)
 set_target_properties(medRegistration PROPERTIES INTERFACE_INCLUDE_DIRECTORIES "@medRegistration_INCLUDE_DIRS@" IMPORTED_LOCATION ${medRegistration_LIBRARY})
 
 add_library(medImageIO UNKNOWN IMPORTED)
-find_library(medImageIO_LIBRARY NAMES medImageIO PATHS @medImageIO_LIBRARY_DIR@ @medImageIO_LIBRARY_DIR@/@CMAKE_BUILD_TYPE@)
+find_library(medImageIO_LIBRARY NAMES medImageIO PATHS @medImageIO_LIBRARY_DIR_DEBUG@ @medImageIO_LIBRARY_DIR_RELEASE@ @medImageIO_LIBRARY_DIR_MINSIZEREL@ @medImageIO_LIBRARY_DIR_RELWITHDEBINFO@)
 set_target_properties(medImageIO PROPERTIES INTERFACE_INCLUDE_DIRECTORIES "@medImageIO_INCLUDE_DIRS@" IMPORTED_LOCATION ${medImageIO_LIBRARY})
 
 add_library(medVtkInria UNKNOWN IMPORTED)
-find_library(medVtkInria_LIBRARY NAMES medVtkInria PATHS @medVtkInria_LIBRARY_DIR@ @medVtkInria_LIBRARY_DIR@/@CMAKE_BUILD_TYPE@)
+find_library(medVtkInria_LIBRARY NAMES medVtkInria PATHS @medVtkInria_LIBRARY_DIR_DEBUG@ @medVtkInria_LIBRARY_DIR_RELEASE@ @medVtkInria_LIBRARY_DIR_MINSIZEREL@ @medVtkInria_LIBRARY_DIR_RELWITHDEBINFO@)
 set_target_properties(medVtkInria PROPERTIES INTERFACE_INCLUDE_DIRECTORIES "@medVtkInria_INCLUDE_DIRS@" IMPORTED_LOCATION ${medVtkInria_LIBRARY})
 
 add_library(medWidgets UNKNOWN IMPORTED)
-find_library(medWidgets_LIBRARY NAMES medWidgets PATHS @medWidgets_LIBRARY_DIR@ @medWidgets_LIBRARY_DIR@/@CMAKE_BUILD_TYPE@)
+find_library(medWidgets_LIBRARY NAMES medWidgets PATHS @medWidgets_LIBRARY_DIR_DEBUG@ @medWidgets_LIBRARY_DIR_RELEASE@ @medWidgets_LIBRARY_DIR_MINSIZEREL@ @medWidgets_LIBRARY_DIR_RELWITHDEBINFO@)
 set_target_properties(medWidgets PROPERTIES INTERFACE_INCLUDE_DIRECTORIES "@medWidgets_INCLUDE_DIRS@" IMPORTED_LOCATION ${medWidgets_LIBRARY})
 
 add_library(medUtilities UNKNOWN IMPORTED)
-find_library(medUtilities_LIBRARY NAMES medUtilities PATHS @medUtilities_LIBRARY_DIR@ @medUtilities_LIBRARY_DIR@/@CMAKE_BUILD_TYPE@)
+find_library(medUtilities_LIBRARY NAMES medUtilities PATHS @medUtilities_LIBRARY_DIR_DEBUG@ @medUtilities_LIBRARY_DIR_RELEASE@ @medUtilities_LIBRARY_DIR_MINSIZEREL@ @medUtilities_LIBRARY_DIR_RELWITHDEBINFO@)
 set_target_properties(medUtilities PROPERTIES INTERFACE_INCLUDE_DIRECTORIES "@medUtilities_INCLUDE_DIRS@" IMPORTED_LOCATION ${medUtilities_LIBRARY})
 
 add_library(medVtkDataMeshBase UNKNOWN IMPORTED)
-find_library(medVtkDataMeshBase_LIBRARY NAMES medVtkDataMeshBase PATHS @medVtkDataMeshBase_LIBRARY_DIR@ @medVtkDataMeshBase_LIBRARY_DIR@/@CMAKE_BUILD_TYPE@)
+find_library(medVtkDataMeshBase_LIBRARY NAMES medVtkDataMeshBase PATHS @medVtkDataMeshBase_LIBRARY_DIR_DEBUG@ @medVtkDataMeshBase_LIBRARY_DIR_RELEASE@ @medVtkDataMeshBase_LIBRARY_DIR_MINSIZEREL@ @medVtkDataMeshBase_LIBRARY_DIR_RELWITHDEBINFO@)
 set_target_properties(medVtkDataMeshBase PROPERTIES INTERFACE_INCLUDE_DIRECTORIES "@medVtkDataMeshBase_INCLUDE_DIRS@" IMPORTED_LOCATION ${medVtkDataMeshBase_LIBRARY})
 
 set(medInria_CMAKE_DIR @medInria_CMAKE_DIR@)
