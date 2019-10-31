@@ -101,6 +101,7 @@ vtkImageView2D::vtkImageView2D()
   this->SlicePlane          = vtkPolyData::New();
   this->Command             = vtkImageView2DCommand::New();
   this->OrientationAnnotation = vtkOrientationAnnotation::New();
+  this->m_vtkImageFromBoundsSourceGenerator = nullptr;
 
   this->CurrentLayer = 0;
 
@@ -278,13 +279,27 @@ vtkMTimeType vtkImageView2D::GetMTime()
 //----------------------------------------------------------------------------
 void vtkImageView2D::GetSliceRange(int &min, int &max) const
 {
-  if (this->GetMedVtkImageInfo()->initialized)
-  {
-      this->Get2DDisplayMapperInputAlgorithm()->UpdateInformation();
-      int* w_ext = this->Get2DDisplayMapperInputAlgorithm()->GetOutputInformation(0)->Get(vtkStreamingDemandDrivenPipeline::WHOLE_EXTENT());
-      min = w_ext[this->SliceOrientation * 2];
-      max = w_ext[this->SliceOrientation * 2 + 1];
-  }
+    if (this->GetMedVtkImageInfo()->initialized)
+    {            
+        min = 0;
+        max = 0;
+        
+        this->Get2DDisplayMapperInputAlgorithm()->UpdateInformation();
+        auto pAlgo = this->Get2DDisplayMapperInputAlgorithm();
+        if (pAlgo != nullptr)
+        {
+            auto pInfo = pAlgo->GetOutputInformation(0);
+           if (pInfo != nullptr)
+           {
+               int* w_ext = pInfo->Get(vtkStreamingDemandDrivenPipeline::WHOLE_EXTENT());
+               if (w_ext != nullptr)
+               {
+                   min = w_ext[this->SliceOrientation * 2];
+                   max = w_ext[this->SliceOrientation * 2 + 1];
+               }
+           }           
+        }
+    }
 }
 
 //----------------------------------------------------------------------------
@@ -1831,6 +1846,25 @@ void vtkImageView2D::SetInput(vtkAlgorithmOutput* pi_poVtkAlgoOutput, vtkMatrix4
     this->ShowRulerWidgetOff();
     this->ShowRulerWidgetOn();
   }
+
+
+  /*if (m_vtkImageFromBoundsSourceGenerator && GetNumberOfLayers() == 2)
+  {
+      RemoveLayer(0);
+      for (auto poWidget : this->DataSetWidgets)
+      {
+          poWidget->SetImageView(this);
+          poWidget->On();
+          this->UpdateBounds(poWidget->GetSource()->GetBounds(), 0, nullptr, nullptr, nullptr, nullptr);
+          this->Modified();
+          // If this is the first widget to be added, reset camera
+          if ((!this->GetMedVtkImageInfo() || !this->GetMedVtkImageInfo()->initialized) && (this->DataSetWidgets.size() == 1))
+          {
+              this->ResetCamera(poWidget->GetSource());
+          }
+      }
+      m_vtkImageFromBoundsSourceGenerator = nullptr;
+  }*/
 }
 
 void vtkImageView2D::SetInput (vtkActor *actor, int layer, vtkMatrix4x4 *matrix, const int imageSize[], const double imageSpacing[], const double imageOrigin[])
@@ -2256,20 +2290,17 @@ void vtkImageView2D::RemoveLayer(int layer)
         if (this->LayerInfoVec.size() == 0 )
         {
             AddLayer(0);
-            if (!this->DataSetWidgets.empty())
+            for (auto poWidget : this->DataSetWidgets)
             {
-                for (auto poWidget : this->DataSetWidgets)
+                poWidget->SetImageView(this);
+                poWidget->On();
+                this->UpdateBounds(poWidget->GetSource()->GetBounds(), 0, matrix, imageSize, imageSpacing, imageOrigin);
+                this->Modified();
+                // If this is the first widget to be added, reset camera
+                if ((!this->GetMedVtkImageInfo() || !this->GetMedVtkImageInfo()->initialized) && (this->DataSetWidgets.size() == 1))
                 {
-                    poWidget->SetImageView(this);
-                    poWidget->On();
-                    this->UpdateBounds(poWidget->GetSource()->GetBounds(), 0, matrix, imageSize, imageSpacing, imageOrigin);
-                    this->Modified();
-                    // If this is the first widget to be added, reset camera
-                    if ((!this->GetMedVtkImageInfo() || !this->GetMedVtkImageInfo()->initialized) && (this->DataSetWidgets.size() == 1))
-                    {
-                        //this->ResetCamera(poWidget->GetSource());
-                    }
-                }          
+                    this->ResetCamera(poWidget->GetSource());
+                }
             }
         }
 

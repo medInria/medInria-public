@@ -1112,29 +1112,6 @@ void vtkImageView3D::RemoveLayer (int layer)
     if (this->HasLayer(layer))
     {
         // ////////////////////////////////////////////////////////////////////////
-        // Save image informations of layer 0
-        double  bounds[6];
-        vtkMatrix4x4 *matrix = nullptr;
-        int    *imageSize = nullptr;
-        double *imageSpacing = nullptr;
-        double *imageOrigin = nullptr;
-
-        medVtkImageInfo   sImgInfo;
-        medVtkImageInfo* psImgInfo = GetMedVtkImageInfo();
-        GetInputBounds(bounds);
-
-        if (psImgInfo)
-        {
-            sImgInfo = *psImgInfo;
-
-            matrix = GetOrientationMatrix();
-            imageSize = sImgInfo.dimensions;
-            imageSpacing = sImgInfo.spacing;
-            imageOrigin = sImgInfo.origin;
-        }
-
-
-        // ////////////////////////////////////////////////////////////////////////
         // Remove layer
         vtkRenderer *renderer = this->Renderer;
         vtkImageView::RemoveLayer(layer);
@@ -1170,21 +1147,7 @@ void vtkImageView3D::RemoveLayer (int layer)
                 this->Renderer->AddViewProp(pActor);
                 pActor->VisibilityOn();
                 this->Modified();
-                // If this is the first widget to be added, reset camera
-                if (bRestCam)
-                {
-                    auto pArg = FindActorDataSet(pActor);
-                    if (pArg)
-                    {
-                        this->ResetCamera(pArg);
-                        bRestCam = false;
-                    }
-                }
             }
-            vtkMatrix4x4 *identity = vtkMatrix4x4::New();
-            identity->Identity();
-            this->SetOrientationMatrix(identity);
-            identity->Delete();
         }
     }    
 }
