@@ -97,6 +97,7 @@ public:
     
     QList <medAbstractParameterL*> parameters;
 
+    QPointer<QWidget> toolbar;
     medIntParameterL *slicingParameter;
 };
 
@@ -118,12 +119,14 @@ vtkDataMeshInteractor::vtkDataMeshInteractor(medAbstractView *parent):
     d->edgeVisibleParam = nullptr;
     d->colorParam = nullptr;
     d->renderingParam = nullptr;
-    d->slicingParameter = nullptr;
     d->minIntensityParameter = 0;
     d->maxIntensityParameter = 0;
     d->poLutWidget = nullptr;
-}
 
+    d->slicingParameter = new medIntParameterL("Slicing", this);
+    d->slicingParameter->getSlider()->setOrientation(Qt::Horizontal);
+    connect(d->slicingParameter, SIGNAL(valueChanged(int)), this, SLOT(moveToSlice(int)));
+}
 
 vtkDataMeshInteractor::~vtkDataMeshInteractor()
 {
@@ -287,8 +290,6 @@ void vtkDataMeshInteractor::setupParameters()
     d->renderingParam->setValue("Surface");
     d->parameters << d->renderingParam;
 
-    d->slicingParameter = new medIntParameterL("Slicing", this);
-    connect(d->slicingParameter, SIGNAL(valueChanged(int)), this, SLOT(moveToSlice(int)));
     connect(d->view->positionBeingViewedParameter(), SIGNAL(valueChanged(QVector3D)), this, SLOT(updateSlicingParam()));
 
     d->parameters << this->visibilityParameter();
@@ -670,8 +671,11 @@ QWidget* vtkDataMeshInteractor::buildToolBoxWidget()
 
 QWidget* vtkDataMeshInteractor::buildToolBarWidget()
 {
+    d->toolbar = new QWidget();
+    QHBoxLayout* toolbarLayout = new QHBoxLayout(d->toolbar);
     d->slicingParameter->getSlider()->setOrientation(Qt::Horizontal);
-    return d->slicingParameter->getSlider();
+    toolbarLayout->addWidget(d->slicingParameter->getSlider());
+    return d->toolbar;
 }
 
 QList<medAbstractParameterL*> vtkDataMeshInteractor::linkableParameters()
@@ -696,12 +700,17 @@ void vtkDataMeshInteractor::setUpViewForThumbnail()
 
 void vtkDataMeshInteractor::updateWidgets()
 {
-    if(!d->view->is2D())
-        d->slicingParameter->getSlider()->setEnabled(false);
-    else
+    if (!d->toolbar.isNull())
     {
-        d->slicingParameter->getSlider()->setEnabled(true);
-        this->updateSlicingParam();
+        if(!d->view->is2D())
+        {
+            d->slicingParameter->hide();
+        }
+        else
+        {
+            d->slicingParameter->show();
+            this->updateSlicingParam();
+        }
     }
 }
 

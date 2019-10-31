@@ -22,6 +22,7 @@
 #include <medVtkViewBackend.h>
 #include <medViewFactory.h>
 #include <medAbstractImageData.h>
+#include <medIntParameterL.h>
 #include <medDoubleParameterL.h>
 
 #include <QVBoxLayout>
@@ -40,6 +41,7 @@ public:
     vtkImageView3D *view3d;
     medAbstractImageData *imageData;
 
+    medIntParameterL *slicingParameter;
 };
 
 
@@ -51,6 +53,8 @@ medVtkViewItkDataImage4DInteractor::medVtkViewItkDataImage4DInteractor(medAbstra
     medVtkViewBackend* backend = static_cast<medVtkViewBackend*>(parent->backend());
     d->view2d = backend->view2D;
     d->view3d = backend->view3D;
+
+    d->slicingParameter = nullptr;
 }
 
 medVtkViewItkDataImage4DInteractor::~medVtkViewItkDataImage4DInteractor()
@@ -122,6 +126,8 @@ void medVtkViewItkDataImage4DInteractor::setInputData(medAbstractData *data)
             double* range = m_poConv->getCurrentScalarRange();
             d->view2d->SetColorRange(range);
             this->initWindowLevelParameters(range);
+
+            createSlicingParam();
 
             if(d->view->layer(d->imageData) == 0)
             {
