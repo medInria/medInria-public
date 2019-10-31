@@ -963,7 +963,7 @@ unsigned int vtkImageView3D::GetCroppingMode()
 
 //----------------------------------------------------------------------------
 /**
- The worldb is not always what we think it is ...
+ The world is not always what we think it is ...
 
  Use this method to move the viewer slice such that the position
  (in world coordinates) given by the arguments is contained by
