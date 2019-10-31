@@ -219,6 +219,8 @@ void VarSegToolBox::applyMaskToImage()
 {
     if (d->currentView)
     {
+        addBinaryImage();
+
         this->setToolBoxOnWaitStatus();
 
         d->process = qobject_cast<medAbstractProcessLegacy*>(dtkAbstractProcessFactory::instance()->create("medMaskApplication"));
@@ -481,7 +483,7 @@ void VarSegToolBox::endSegmentation()
         enableButtons(false);
 
         medAbstractView *view = this->getWorkspace()->tabbedViewContainers()->getFirstSelectedContainerView();
-        if (view)
+        if (view && (view->count()>0))
         {
             view->render();
         }

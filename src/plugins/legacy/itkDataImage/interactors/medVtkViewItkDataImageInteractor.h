@@ -45,6 +45,8 @@ public:
     virtual QString preset() const;
     virtual QStringList handled() const;
 
+    void createSlicingParam();
+
 public slots:
     virtual void setOpacity (double opacity);
     void moveToSlice(int slice);
