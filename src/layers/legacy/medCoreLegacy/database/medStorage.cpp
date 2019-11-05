@@ -60,8 +60,8 @@ QString medStorage::dataLocation(void)
         {
 #ifdef Q_OS_MAC
             vDbLoc = QStandardPaths::writableLocation(QStandardPaths::GenericDataLocation)
-                .remove(QCoreApplication::applicationName())
-                .append(QCoreApplication::applicationName());
+                    + "/" + QCoreApplication::organizationName()
+                    + "/" + QCoreApplication::applicationName();
 #else
             vDbLoc = QStandardPaths::writableLocation(QStandardPaths::GenericDataLocation)
                     + "/data/" + QCoreApplication::organizationName()
