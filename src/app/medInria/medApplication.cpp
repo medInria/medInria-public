@@ -117,13 +117,12 @@ void medApplication::open(QString path)
 
 void medApplication::initialize()
 {
-    qRegisterMetaType<QUuid>("QUuid");
-    //    qRegisterMetaType<medAbstractImageData>("medAbstractImageData");
+    qRegisterMetaType<medDataIndex>("medDataIndex");
 
     //  Setting up database connection
     if ( ! medDatabaseController::instance()->createConnection())
     {
-        dtkDebug() << "Unable to create a connection to the database";
+        qDebug() << "Unable to create a connection to the database";
     }
 
     medDataManager::initialize();
@@ -143,8 +142,6 @@ void medApplication::initialize()
     settingsWidgetFactory->registerSettingsWidget<medDatabaseSettingsWidget>();
 
     //Register annotations
-    //TODO there is obviously something that have to be done here. - RDE
-    //TODO I did something... was it enough ? - Flo
     medAbstractDataFactory * datafactory = medAbstractDataFactory::instance();
     datafactory->registerDataType<medSeedPointAnnotationData>();
 

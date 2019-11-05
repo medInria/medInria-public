@@ -68,8 +68,6 @@ void forceShow(medMainWindow& mainwindow )
 
 int main(int argc,char* argv[])
 {
-    qRegisterMetaType<medDataIndex>("medDataIndex");
-
     // Setup openGL surface compatible with QVTKOpenGLWidget,
     // required by medVtkView
     QSurfaceFormat fmt;
