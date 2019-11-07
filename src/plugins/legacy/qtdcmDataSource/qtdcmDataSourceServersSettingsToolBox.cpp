@@ -14,6 +14,7 @@
 #include <qtdcmDataSourceServersSettingsToolBox.h>
 
 #include <QtDcmServersDicomSettingsWidget.h>
+#include <QtDcmPreferences.h>
 
 class qtdcmDataSourceServersSettingsToolBoxPrivate
 {
@@ -66,10 +67,11 @@ qtdcmDataSourceServersSettingsToolBox::~qtdcmDataSourceServersSettingsToolBox()
 
 QtDcmServersDicomSettingsWidget* qtdcmDataSourceServersSettingsToolBox::getServersDicomSettingsWidget()
 {
-  return d->serversSettingsWidget;
+    return d->serversSettingsWidget;
 }
 
 void qtdcmDataSourceServersSettingsToolBox::onSaveServersSettings()
 {
-  d->serversSettingsWidget->updatePreferences();
+    d->serversSettingsWidget->updatePreferences();
+    QtDcmPreferences::instance()->writeSettings();
 }
