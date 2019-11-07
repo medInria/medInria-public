@@ -19,7 +19,6 @@ set(${TARGET_NAME}_QRC
   PARENT_SCOPE
   )
 
-
 file(GLOB ${TARGET_NAME}_QSS
   *.qss
   )
@@ -27,3 +26,13 @@ set(${TARGET_NAME}_QSS
   ${${TARGET_NAME}_QSS}
   PARENT_SCOPE
   )
+
+file(GLOB ${TARGET_NAME}_HTML
+  *.html
+  )
+set(${TARGET_NAME}_HTML
+  ${${TARGET_NAME}_HTML}
+  PARENT_SCOPE
+  )
+
+
