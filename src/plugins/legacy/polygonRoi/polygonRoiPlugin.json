@@ -1,5 +1,5 @@
 {
-            "name" : "medSegmentationPlugin",
+            "name" : "polygonRoiPlugin",
          "version" : "0.0.1", 	
     "dependencies" : []
 }
