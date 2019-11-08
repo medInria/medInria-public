@@ -1,0 +1,11 @@
+--- /Users/neb1/Downloads/gVirtualXRay-1.0.0-Source/include/gVirtualXRay/PolygonMesh.h	2014-12-17 11:54:26.000000000 +0100
++++ gVirtualXRay-1.0.0-Source/include/gVirtualXRay/PolygonMesh.h	2019-02-13 09:25:12.000000000 +0100
+@@ -361,6 +361,8 @@
+ 	void translate(const VEC3& aTranslationVector);
+     
+     
++        void rotate( const MATRIX4 &);
++
+ 	//--------------------------------------------------------------------------
+ 	///	Accessor on the number of faces.
+ 	/**

@@ -1,0 +1,41 @@
+--- /home/simric/tmp/PoissonRecon/PNG/Makefile	2019-09-06 11:26:18.762195761 +0200
++++ PNG/Makefile	2019-09-05 10:39:46.158162621 +0200
+@@ -1,11 +1,10 @@
+ PNG_TARGET=libmypng.a
+ PNG_SOURCE=png.c pngerror.c pnggccrd.c pngget.c pngmem.c pngpread.c pngread.c pngrio.c pngrtran.c pngrutil.c pngset.c pngtest.c pngtrans.c pngvcrd.c pngwio.c pngwrite.c pngwtran.c pngwutil.c
+ 
+-COMPILER = gcc
+-#COMPILER = clang
+-
+-CFLAGS += -Wno-deprecated -Wno-write-strings
++#COMPILER = gcc
++COMPILER = clang
+ 
++CFLAGS += -Wno-deprecated -Wno-write-strings -fPIC
+ CFLAGS_DEBUG = -DDEBUG -g3
+ LFLAGS_DEBUG =
+ 
+@@ -19,9 +18,9 @@
+ ifeq ($(COMPILER),gcc)
+ 	CC=gcc
+ 	CXX=g++
+-else
+-	CC=clang-3.8
+-	CXX=clang++-3.8
++#else
++#	CC=clang-3.8
++#	CXX=clang++-3.8
+ #	CC=clang-3.5
+ #	CXX=clang++-3.5
+ endif
+@@ -57,8 +56,8 @@
+ 	ar rcs $(BIN)$(PNG_TARGET) $(PNG_OBJECTS)
+ 
+ $(BIN)%.o: $(SRC)%.c
+-	$(CC) -c -o $@ -I$(INCLUDE) $<
++	$(CC) -c -fPIC -o $@ -I$(INCLUDE) $<
+ 
+ $(BIN)%.o: $(SRC)%.cpp
+-	$(CXX) -c -o $@ $(CFLAGS) -I$(INCLUDE) $<
++	$(CXX) -c -fPIC -o $@ $(CFLAGS) -I$(INCLUDE) $<
+ 
