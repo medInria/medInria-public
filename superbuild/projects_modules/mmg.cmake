@@ -10,7 +10,6 @@ list(APPEND ${ep}_dependencies
   ""
   )
   
-  
 ## #############################################################################
 ## Prepare the project
 ## ############################################################################# 
@@ -21,7 +20,6 @@ EP_Initialisation(${ep}
   REQUIRED_FOR_PLUGINS OFF
   )
 
-
 if (NOT USE_SYSTEM_${ep})
 
 ## #############################################################################
@@ -30,7 +28,6 @@ if (NOT USE_SYSTEM_${ep})
 
 set(git_url ${GITHUB_PREFIX}MmgTools/mmg.git)
 set(git_tag master)
-
 
 ## #############################################################################
 ## Add specific cmake arguments for configuration step of the project

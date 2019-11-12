@@ -28,7 +28,7 @@ if (NOT USE_SYSTEM_${ep})
 set(git_url ${GITHUB_PREFIX}eigenteam/eigen-git-mirror)
 if(WIN32)
   set(git_tag 9e97af7de76716c99abdbfd4a4acb182ef098808)
-else(WIN32)
+else()
   set(git_tag master)
 endif(WIN32)
 
@@ -46,12 +46,9 @@ ExternalProject_Add(${ep}
   CMAKE_GENERATOR ${gen}
   CMAKE_GENERATOR_PLATFORM ${CMAKE_GENERATOR_PLATFORM}
   DEPENDS ${${ep}_dependencies}
-  #CONFIGURE_COMMAND ${CMAKE_COMMAND} -E echo "Configure step not required by Eigen."
-  #no update, build or install command
   UPDATE_COMMAND ""
   BUILD_COMMAND ""
   INSTALL_COMMAND ""
-  #EXCLUDE_FROM_ALL TRUE
 )
 
 ## #############################################################################
@@ -60,12 +57,6 @@ ExternalProject_Add(${ep}
 ExternalProject_Get_Property(${ep} binary_dir)
 set(${ep}_DIR ${binary_dir} PARENT_SCOPE)
 
-## #############################################################################
-## Add custom targets
-## #############################################################################
-
-#EP_AddCustomTargets(${ep})
-
-endif() #NOT USE_SYSTEM_ep
+endif() 
 
 endfunction()

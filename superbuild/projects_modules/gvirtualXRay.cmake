@@ -55,7 +55,6 @@ set(cmake_args
 -DZLIB_INCLUDE_DIR=/usr/include/
 -U HAS_ITK
 -DITK_DIR=/  
-#-DGLEW_LIBRARY="${CMAKE_CURRENT_SOURCE_DIR}/build/glew/build/lib/libGLEW.${LIB_EXT}"
 -DXCOM_PATH=${EP_PATH_SOURCE}/../build/XCOM
 -DCMAKE_INSTALL_PREFIX:PATH=${EP_PATH_SOURCE}/../build/gvirtualXRay
 )
@@ -67,7 +66,6 @@ if(UNIX)
             -DGLEW_LIBRARY_DIR="${EP_PATH_SOURCE}/../build/glew/build/lib/"
 	    -DCMAKE_BUILD_TYPE=RELEASE
             -DZLIB_LIBRARY_RELEASE="/lib/x86_64-linux-gnu/libz.so.1"
-	    #-DGLEW_LIBRARY="/home/simric/music/build/glew/build/lib/libGLEW.so"
 	    -DZLIB_LIBRARY_DEBUG="/lib/x86_64-linux-gnu/libz.so.1")
  else() 
 	set(cmake_args ${cmake_args}
@@ -128,13 +126,8 @@ ExternalProject_Add(gvirtualXRay
 ExternalProject_Get_Property(${ep} binary_dir)
 set(${ep}_DIR ${binary_dir} PARENT_SCOPE)
 
-## #############################################################################
-## Add custom targets
-## #############################################################################
+endif()
 
-
-
-endif() #NOT USE_SYSTEM_ep
 
 endfunction()
 

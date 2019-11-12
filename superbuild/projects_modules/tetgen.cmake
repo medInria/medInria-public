@@ -10,7 +10,6 @@ list(APPEND ${ep}_dependencies
   ""
   )
   
-  
 ## #############################################################################
 ## Prepare the project
 ## ############################################################################# 
@@ -21,7 +20,6 @@ EP_Initialisation(${ep}
   REQUIRED_FOR_PLUGINS OFF
   )
 
-
 if (NOT USE_SYSTEM_${ep})
 
 ## #############################################################################
@@ -30,8 +28,6 @@ if (NOT USE_SYSTEM_${ep})
 
 set(git_url ${GITHUB_PREFIX}ufz/tetgen.git)
 set(git_tag master)
-
-
 
 ## #############################################################################
 ## Add specific cmake arguments for configuration step of the project
@@ -50,7 +46,6 @@ set(cmake_args
 	-DCMAKE_INSTALL_PREFIX:PATH=<INSTALL_DIR>
 	-DCMAKE_BUILD_TYPE=${CMAKE_BUILD_TYPE}
   )
-
 
 ## #############################################################################
 ## Add external-project
@@ -73,7 +68,6 @@ ExternalProject_Add(${ep}
   INSTALL_COMMAND ""
   UPDATE_COMMAND ""
   )
-
 
 ## #############################################################################
 ## Set variable to provide infos about the project

@@ -40,12 +40,7 @@ ExternalProject_Add(xcom
 ## #############################################################################
 ExternalProject_Get_Property(${ep} binary_dir)
 set(${ep}_DIR ${binary_dir} PARENT_SCOPE)
-## #############################################################################
-## Add custom targets
-## #############################################################################
 
 endif() #NOT USE_SYSTEM_ep
 
 endfunction()
-
-

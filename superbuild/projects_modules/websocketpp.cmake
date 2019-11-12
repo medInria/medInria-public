@@ -16,7 +16,6 @@ EP_Initialisation(${ep}
   REQUIRED_FOR_PLUGINS ON
   )
 
-
 if (NOT USE_SYSTEM_${ep})
 
 ## #############################################################################
@@ -38,14 +37,8 @@ ExternalProject_Add(${ep}
   CMAKE_GENERATOR_PLATFORM ${CMAKE_GENERATOR_PLATFORM}
   CMAKE_ARGS ${cmake_args}
   DEPENDS ${${ep}_dependencies}
-#  CONFIGURE_COMMAND ${CMAKE_COMMAND} -E echo "Configure step not required by Websocketpp"
-# no update, build or install command
-  #UPDATE_COMMAND true
-  #BUILD_COMMAND true
   INSTALL_COMMAND ""
-  #EXCLUDE_FROM_ALL TRUE
   )
-
 
 ## #############################################################################
 ## Set variable to provide infos about the project
@@ -59,7 +52,6 @@ set(${ep}_DIR ${binary_dir} PARENT_SCOPE)
 ## #############################################################################
 
 #EP_AddCustomTargets(${ep})
-
 
 endif() #NOT USE_SYSTEM_ep
 

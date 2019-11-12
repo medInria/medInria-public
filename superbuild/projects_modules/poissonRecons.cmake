@@ -20,7 +20,6 @@ EP_Initialisation(${ep}
   REQUIRED_FOR_PLUGINS ON
   )
 
-
 if (NOT USE_SYSTEM_${ep})
 
 ## #############################################################################
@@ -54,7 +53,6 @@ ExternalProject_Add(${ep}
   UPDATE_COMMAND ""
   BUILD_COMMAND cd ${EP_PATH_SOURCE}/${ep}/poisson/PNG   &&  make  
   INSTALL_COMMAND ""
-  #EXCLUDE_FROM_ALL TRUE
 )
 
 ## #############################################################################
@@ -62,7 +60,6 @@ ExternalProject_Add(${ep}
 ## #############################################################################
 ExternalProject_Get_Property(${ep} binary_dir)
 set(${ep}_DIR ${binary_dir} PARENT_SCOPE)
-
 
 endif() #NOT USE_SYSTEM_ep
 

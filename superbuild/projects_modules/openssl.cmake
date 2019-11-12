@@ -20,13 +20,6 @@ EP_Initialisation(${ep}
   )
 
 if (NOT USE_SYSTEM_${ep})
-## #############################################################################
-## Set directories
-## #############################################################################
-
-#EP_SetDirectories(${ep}
-#  EP_DIRECTORIES ep_dirs
-#  )
 
 ## #############################################################################
 ## Define repository where get the sources
@@ -34,7 +27,6 @@ if (NOT USE_SYSTEM_${ep})
 set(git_url ${GITHUB_PREFIX}openssl/openssl.git)
 set(git_tag OpenSSL_1_1_1b)
 ##set(git_tag OpenSSL_1_1_1)
-## #############################################################################
 ## #############################################################################
 ## Add specific cmake arguments for configuration step of the project
 ## #############################################################################
@@ -67,11 +59,6 @@ endif(APPLE)
 ## Add external-project
 ## #############################################################################
 
-message(------------------------------------------------------------)
-message(cmakesourcedir ${CMAKE_SOURCE_DIR}) 
-message(cmakecurrentsourcedir   ${CMAKE_CURRENT_SOURCE_DIR}) 
-message(------------------------------------------------------------)
-
 ExternalProject_Add(${ep}
   PREFIX ${EP_PATH_SOURCE}
   SOURCE_DIR ${EP_PATH_SOURCE}/${ep}
@@ -81,13 +68,10 @@ ExternalProject_Add(${ep}
   CMAKE_GENERATOR_PLATFORM ${CMAKE_GENERATOR_PLATFORM}
   CMAKE_ARGS ${cmake_args}
   DEPENDS ${${ep}_dependencies}
-  #CONFIGURE_COMMAND cd  ${CMAKE_CURRENT_SOURCE_DIR}/openssl &&  ./Configure no-zlib  shared --prefix=${CMAKE_CURRENT_SOURCE_DIR}/build/openssl/build --openssldir=${CMAKE_CURRENT_SOURCE_DIR}/build/openssl/build darwin64-x86_64-cc  && cd ${CMAKE_CURRENT_SOURCE_DIR} 
 
   CONFIGURE_COMMAND cd  ${EP_PATH_SOURCE}/openssl &&  
                     ./config no-zlib  shared --prefix=${EP_PATH_SOURCE}/../build/openssl/  --openssldir=${EP_PATH_SOURCE}/../build/openssl/  && cd ${EP_PATH_SOURCE}  
   BUILD_COMMAND cd ${EP_PATH_SOURCE}/openssl/ &&  make install  ## might have to put 
-  ## should depend on the OS (Configure for Windows, ...) 
-  #BUILD_COMMAND cd ${CMAKE_CURRENT_SOURCE_DIR}/openssl/ &&  make install_sw  ## might have to put 
   INSTALL_COMMAND ""
   UPDATE_COMMAND ""
   )
@@ -99,13 +83,6 @@ ExternalProject_Add(${ep}
 
 ExternalProject_Get_Property(${ep} binary_dir)
 set(${ep}_DIR ${binary_dir} PARENT_SCOPE)
-
-## #############################################################################
-## Add custom targets
-## #############################################################################
-
-#EP_AddCustomTargets(${ep})
-
 
 endif() #NOT USE_SYSTEM_ep
 

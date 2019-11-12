@@ -16,23 +16,13 @@ EP_Initialisation(${ep}
   )
 
 if (NOT USE_SYSTEM_${ep})
-## #############################################################################
-## Set directories
-## #############################################################################
-
-#EP_SetDirectories(${ep}
-#  EP_DIRECTORIES ep_dirs
-#  )
 
 ## #############################################################################
 ## Define repository where get the sources
 ## #############################################################################
 
 set(git_url ${GITHUB_PREFIX}danielaparker/jsoncons.git)
-## set(git_tag master)
 set(git_tag 0.118.0)
-
-
 
 ## #############################################################################
 ## Add external-project
@@ -49,21 +39,13 @@ ExternalProject_Add(${ep}
   CMAKE_GENERATOR ${gen}
   CMAKE_GENERATOR_PLATFORM ${CMAKE_GENERATOR_PLATFORM}
   DEPENDS ${${ep}_dependencies}
-  #CONFIGURE_COMMAND ${CMAKE_COMMAND} -E echo "Configure step not required by Jsoncons."
-  #UPDATE_COMMAND true
-  #BUILD_COMMAND true
   INSTALL_COMMAND ""
-  #EXCLUDE_FROM_ALL TRUE
   )
 ## #############################################################################
 ## Set variable to provide infos about the project
 ## #############################################################################
 ExternalProject_Get_Property(${ep} binary_dir)
 set(${ep}_DIR ${binary_dir} PARENT_SCOPE)
-## #############################################################################
-## Add custom targets
-## #############################################################################
-#EP_AddCustomTargets(${ep})
 
 endif() #NOT USE_SYSTEM_ep
 

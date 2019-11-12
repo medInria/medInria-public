@@ -37,13 +37,11 @@ if (UNIX OR APPLE)
   set(${ep}_cxx_flags "${${ep}_cxx_flags}")
 endif()
 
-set(cmake_args
-        ${ep_common_cache_args}
-        -DCMAKE_C_FLAGS:STRING=${${ep}_c_flags}
+set(cmake_args ${ep_common_cache_args}
+	-DCMAKE_C_FLAGS:STRING=${${ep}_c_flags}
         -DCMAKE_CXX_FLAGS:STRING=${${ep}_cxx_flags}
-    -DCMAKE_SHARED_LINKER_FLAGS:STRING=${${ep}_shared_linker_flags}
-    -DCMAKE_INSTALL_PREFIX:PATH=${EP_PATH_SOURCE}/../build/glew/
-  )
+    	-DCMAKE_SHARED_LINKER_FLAGS:STRING=${${ep}_shared_linker_flags}
+    	-DCMAKE_INSTALL_PREFIX:PATH=${EP_PATH_SOURCE}/../build/glew/)
 
 if(APPLE)
   set (cmake_args
@@ -87,7 +85,7 @@ ExternalProject_Add(${ep}
 ExternalProject_Get_Property(${ep} binary_dir)
 set(${ep}_DIR ${binary_dir} PARENT_SCOPE)
 
-endif() #NOT USE_SYSTEM_ep
+endif() 
 
 endfunction()
 
