@@ -56,7 +56,7 @@ set(cmake_args
 -U HAS_ITK
 -DITK_DIR=/  
 #-DGLEW_LIBRARY="${CMAKE_CURRENT_SOURCE_DIR}/build/glew/build/lib/libGLEW.${LIB_EXT}"
--DXCOM_PATH=${EP_PATH_SOURCE}/xcom/lib/Xray/data/xcom
+-DXCOM_PATH=${EP_PATH_SOURCE}/../build/XCOM
 -DCMAKE_INSTALL_PREFIX:PATH=${EP_PATH_SOURCE}/../build/gvirtualXRay
 )
 

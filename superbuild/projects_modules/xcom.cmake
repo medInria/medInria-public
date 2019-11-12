@@ -17,23 +17,19 @@ EP_Initialisation(${ep}
   )
 if (NOT USE_SYSTEM_${ep})
 ## #############################################################################
-## Define repository where get the sources
-## #############################################################################
-set(git_url ${GITHUB_PREFIX}bruceravel/demeter)
-## set(git_tag master)
-set(git_tag 0.9.26)
-## #############################################################################
 ## Add external-project
 ## #############################################################################
 ExternalProject_Add(xcom
   PREFIX ${EP_PATH_SOURCE}
   SOURCE_DIR ${EP_PATH_SOURCE}/${ep}
-  GIT_REPOSITORY ${git_url}
-  GIT_TAG ${git_tag}
+  DOWNLOAD_COMMAND curl -Lo xcom.tar.gz https://physics.nist.gov/PhysRefData/Xcom/XCOM.tar.gz
   CMAKE_GENERATOR ${gen}
   CMAKE_GENERATOR_PLATFORM ${CMAKE_GENERATOR_PLATFORM}
   DEPENDS ${${ep}_dependencies}
+  PATCH_COMMAND   tar xvzf ${EP_PATH_SOURCE}/src/xcom.tar.gz -C ${EP_PATH_SOURCE}/../build/  
+
   CONFIGURE_COMMAND ${CMAKE_COMMAND} -E echo "Configure step not required by Jsoncons."
+
 # no update, build or install command
   UPDATE_COMMAND ""
   BUILD_COMMAND ""
