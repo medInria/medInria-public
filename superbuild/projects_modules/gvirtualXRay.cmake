@@ -55,6 +55,7 @@ set(cmake_args
 -DZLIB_INCLUDE_DIR=/usr/include/
 -U HAS_ITK
 -DITK_DIR=/  
+#-DGLEW_LIBRARY="${CMAKE_CURRENT_SOURCE_DIR}/build/glew/build/lib/libGLEW.${LIB_EXT}"
 -DXCOM_PATH=${EP_PATH_SOURCE}/../build/XCOM
 -DCMAKE_INSTALL_PREFIX:PATH=${EP_PATH_SOURCE}/../build/gvirtualXRay
 )
@@ -66,6 +67,7 @@ if(UNIX)
             -DGLEW_LIBRARY_DIR="${EP_PATH_SOURCE}/../build/glew/build/lib/"
 	    -DCMAKE_BUILD_TYPE=RELEASE
             -DZLIB_LIBRARY_RELEASE="/lib/x86_64-linux-gnu/libz.so.1"
+	    #-DGLEW_LIBRARY="/home/simric/music/build/glew/build/lib/libGLEW.so"
 	    -DZLIB_LIBRARY_DEBUG="/lib/x86_64-linux-gnu/libz.so.1")
  else() 
 	set(cmake_args ${cmake_args}
@@ -93,6 +95,7 @@ set(patch_dir ${EP_PATH_SOURCE}/../../medInria-public/superbuild/patches)
 set(source_dir ${EP_PATH_SOURCE}/gVirtualXRay-1.0.0-Source)
 set(build_dir ${EP_PATH_SOURCE}/../build/gvirtualXRay)  
 
+message("dfmldf" ${build_dir})
 
 ExternalProject_Add(gvirtualXRay
         PREFIX ${EP_PATH_SOURCE}
@@ -102,9 +105,9 @@ ExternalProject_Add(gvirtualXRay
         CMAKE_ARGS ${cmake_args}
 
 	DEPENDS ${${ep}_dependencies} 
-	DOWNLOAD_COMMAND curl -Lo gVirtualXRay-1.0.0-Source.zip https://sourceforge.net/projects/gvirtualxray/files/1.0/gVirtualXRay-1.0.0-Source.zip/download
-	DOWNLOAD_NAME	gVirtualXRay-1.0.0-Source.zip
-	PATCH_COMMAND 	unzip   ${EP_PATH_SOURCE}/src/gVirtualXRay-1.0.0-Source.zip -d ${EP_PATH_SOURCE}/ && 
+	DOWNLOAD_COMMAND curl -Lo gVirtualXRay-1.0.0.zip https://sourceforge.net/projects/gvirtualxray/files/1.0/gVirtualXRay-1.0.0-Source.zip/download
+	DOWNLOAD_NAME	gVirtualXRay-1.0.0.zip
+	PATCH_COMMAND 	unzip   ${EP_PATH_SOURCE}/src/gVirtualXRay-1.0.0.zip -d ${EP_PATH_SOURCE}/ && 
 	                cd ${source_dir} && 
 			patch ./cmake/CMakeLists.txt < ${patch_dir}/patchgVirtualXRay.txt  &&  
 			patch -i ${patch_dir}/polygonMeshHeaderPatch.txt  ${source_dir}/include/gVirtualXRay/PolygonMesh.h && 
@@ -126,8 +129,7 @@ ExternalProject_Add(gvirtualXRay
 ExternalProject_Get_Property(${ep} binary_dir)
 set(${ep}_DIR ${binary_dir} PARENT_SCOPE)
 
-endif()
-
+endif() #NOT USE_SYSTEM_ep
 
 endfunction()
 

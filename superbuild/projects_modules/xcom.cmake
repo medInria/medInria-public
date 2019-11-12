@@ -27,10 +27,7 @@ ExternalProject_Add(xcom
   CMAKE_GENERATOR_PLATFORM ${CMAKE_GENERATOR_PLATFORM}
   DEPENDS ${${ep}_dependencies}
   PATCH_COMMAND   tar xvzf ${EP_PATH_SOURCE}/src/xcom.tar.gz -C ${EP_PATH_SOURCE}/../build/  
-
   CONFIGURE_COMMAND ${CMAKE_COMMAND} -E echo "Configure step not required by Jsoncons."
-
-# no update, build or install command
   UPDATE_COMMAND ""
   BUILD_COMMAND ""
   INSTALL_COMMAND ""
@@ -40,7 +37,12 @@ ExternalProject_Add(xcom
 ## #############################################################################
 ExternalProject_Get_Property(${ep} binary_dir)
 set(${ep}_DIR ${binary_dir} PARENT_SCOPE)
+## #############################################################################
+## Add custom targets
+## #############################################################################
 
 endif() #NOT USE_SYSTEM_ep
 
 endfunction()
+
+
