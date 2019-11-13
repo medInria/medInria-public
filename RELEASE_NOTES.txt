@@ -22,14 +22,18 @@ medInria v3.1:
 - Right-click on a data in the database: Metadata tool lists the data metadata
 - Possibility to rename data in database column with the OS shortcut (ex. F2 on Linux)
 - Clarify the use of Load/Import data which become Temporary Import/Import
-- Remove homepage animation
+- Remove homepage animation, and update minimum size of the application
+- Splash screen design updated, and fix transparency problem on some computers
 - Improve Mouse Interaction/View settings/Layer settings ergonomy
+- Fix Tensor view crash, and mesh + data display in view
+- Fix save and load settings for PACS system
 - Fix Dicom import with non axial acquisition
 - Fix a synchronisation bug between views
 - Fix a 4-split bug with the slicing
 - Fix a 4-split views bug with scrolling, button in view Tools button
 - Fix command-line bugs
 - Fix import errors of DICOM and mha
+- Fix default database path
 - Fix hidden layer visibility when add a new data in a view
 - Fix Composer button, and Diffusion toolboxes sizes
 - Fix memory leak with meshes after view closing
