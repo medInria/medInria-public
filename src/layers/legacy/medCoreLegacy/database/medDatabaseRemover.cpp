@@ -315,7 +315,7 @@ void medDatabaseRemover::removeThumbnailIfNeeded(QSqlQuery query)
     {
         bool res = seriesFi.dir().rmdir ( seriesFi.absolutePath() ); // only removes if empty
 
-        // the serie's directory has been deleted, let's check if the patient directory is empty
+        // the series's directory has been deleted, let's check if the patient directory is empty
         // this can happen after moving series
         if(res)
         {

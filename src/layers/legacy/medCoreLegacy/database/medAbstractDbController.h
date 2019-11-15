@@ -61,5 +61,5 @@ public slots:
     virtual bool contains(const medDataIndex& index) const = 0;
 
     virtual QList<medDataIndex> moveStudy(const medDataIndex& indexStudy, const medDataIndex& toPatient) =  0;
-    virtual medDataIndex moveSeries(const medDataIndex& indexSerie, const medDataIndex& toStudy) =  0;
+    virtual medDataIndex moveSeries(const medDataIndex& indexSeries, const medDataIndex& toStudy) =  0;
 };

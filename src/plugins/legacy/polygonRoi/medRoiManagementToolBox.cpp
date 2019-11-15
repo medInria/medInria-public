@@ -248,16 +248,16 @@ void medRoiManagementToolBox::updateDisplay()
 
                     if(list->size() > 0)
                     {
-                        QTreeWidgetItem *serieItem = new QTreeWidgetItem(d->ListAllRois);
+                        QTreeWidgetItem *seriesItem = new QTreeWidgetItem(d->ListAllRois);
                         medRoiItemWidget *widget = new medRoiItemWidget(manager->getSeriesOfRoi()->value(d->currentView)->at(k)->getName(),PairInd(k,UINT_MAX));
                         connect(widget, SIGNAL(deleteWidget(PairInd)), this, SLOT(deleteRoi(PairInd)));
-                        serieItem->setSizeHint(0, widget->sizeHint());
-                        d->ListAllRois->insertTopLevelItem(k, serieItem);
-                        d->ListAllRois->setItemWidget(serieItem, 0, widget);
+                        seriesItem->setSizeHint(0, widget->sizeHint());
+                        d->ListAllRois->insertTopLevelItem(k, seriesItem);
+                        d->ListAllRois->setItemWidget(seriesItem, 0, widget);
 
                         for(unsigned int i=0; i<(unsigned int)list->size(); i++)
                         {
-                            QTreeWidgetItem *item = new QTreeWidgetItem(serieItem);
+                            QTreeWidgetItem *item = new QTreeWidgetItem(seriesItem);
                             medRoiItemWidget *widget = new medRoiItemWidget(QString::number(i+1) +  ". "  + list->at(i)->type() + " - " + list->at(i)->info(),PairInd(k,i));
                             connect(widget, SIGNAL(deleteWidget(PairInd)), this, SLOT(deleteRoi(PairInd)));
                             item->setSizeHint(0, widget->sizeHint());
