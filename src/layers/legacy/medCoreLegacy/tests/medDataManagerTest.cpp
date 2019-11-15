@@ -611,7 +611,7 @@ void medDataManagerTestObject::testMoveStudy(void)
     
 }
 
-void medDataManagerTestObject::testMoveSerie(void)
+void medDataManagerTestObject::testMoveSeries(void)
 {
     //let's clean up everything
     testRemoveData();
@@ -651,7 +651,7 @@ void medDataManagerTestObject::testMoveSerie(void)
         dtkSmartPointer<medAbstractData> originalData = medDataManager::instance()->data( serie1 );
         QString originalPatientName = medMetaDataKeys::PatientName.getFirstValue(originalData);
         
-        medDataIndex newIndex = medDataManager::instance()->moveSerie(serie1, study2);
+        medDataIndex newIndex = medDataManager::instance()->moveSeries(serie1, study2);
 
         IndexList study1Series = controller->series(study1);
         IndexList study2Series = controller->series(study2);
