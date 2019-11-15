@@ -317,10 +317,10 @@ QList<medDataIndex> medDataManager::moveStudy(const medDataIndex& indexStudy, co
 }
 
 
-medDataIndex medDataManager::moveSerie(const medDataIndex& indexSerie, const medDataIndex& toStudy)
+medDataIndex medDataManager::moveSeries(const medDataIndex& indexSeries, const medDataIndex& toStudy)
 {
     Q_D(medDataManager);
-    medAbstractDbController * dbc = d->controllerForDataSource(indexSerie.dataSourceId());
+    medAbstractDbController * dbc = d->controllerForDataSource(indexSeries.dataSourceId());
     if (!dbc) {
         return medDataIndex();
     }
@@ -330,7 +330,7 @@ medDataIndex medDataManager::moveSerie(const medDataIndex& indexSerie, const med
     if(dbc->dataSourceId() != toStudy.dataSourceId()) {
         qWarning() << "medDataManager: Moving data accross controllers is not supported.";
     } else {
-        newIndex = dbc->moveSerie(indexSerie,toStudy);
+        newIndex = dbc->moveSeries(indexSeries,toStudy);
     }
 
     return newIndex;

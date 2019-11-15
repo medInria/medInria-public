@@ -491,7 +491,7 @@ bool medDatabaseModel::dropMimeData(const QMimeData *data, Qt::DropAction action
 
         if( originDataIndex.isValidForSeries()) {
             if ( destinationDataIndex.isValidForSeries() || destinationDataIndex.isValidForStudy()) {
-                newIndexList << medDataManager::instance()->moveSerie(originDataIndex, destinationDataIndex);
+                newIndexList << medDataManager::instance()->moveSeries(originDataIndex, destinationDataIndex);
             }
         }
         else if( originDataIndex.isValidForStudy() && destinationDataIndex.isValidForPatient()) {
@@ -596,7 +596,7 @@ void medDatabaseModel::populate(medAbstractDatabaseItem *root)
                 if(!d->justBringStudies)
                 {
                     // Iterate over series for this study
-                    foreach( const medDataIndex& serie, seriesForSource )
+                    foreach( const medDataIndex& series, seriesForSource )
                     {
 
                         QList<QVariant> seData = d->seDefaultData;
@@ -605,13 +605,13 @@ void medDatabaseModel::populate(medAbstractDatabaseItem *root)
                             QVariant attribute = d->seAttributes[i];
                             if ( !attribute.isNull() )
                             {
-                                QString value =  dbc->metaData(serie, attribute.toString() );
+                                QString value =  dbc->metaData(series, attribute.toString() );
                                 QVariant data = convertQStringToQVariant(attribute.toString(),value);
                                 if ( data.isValid() )
                                     seData[i] = data;
                             }
                         }
-                        medAbstractDatabaseItem *seItem = new medDatabaseItem(serie, d->seAttributes, seData, stItem);
+                        medAbstractDatabaseItem *seItem = new medDatabaseItem(series, d->seAttributes, seData, stItem);
 
                         stItem->append(seItem);
                     } // foreach series
@@ -630,7 +630,7 @@ void medDatabaseModel::update(const medDataIndex& dataIndex)
 {
     if(dataIndex.isValidForSeries())
     {
-        updateSerie(dataIndex);
+        updateSeries(dataIndex);
     }
     else if(dataIndex.isValidForStudy())
     {
@@ -642,12 +642,12 @@ void medDatabaseModel::update(const medDataIndex& dataIndex)
     }
 }
 
-void medDatabaseModel::updateSerie(const medDataIndex& dataIndex)
+void medDatabaseModel::updateSeries(const medDataIndex& dataIndex)
 {
     // different cases:
-    //    - the serie is not present in the db, we have to remove it from the model
-    //    - the serie is present but there is no item: we need to create one
-    //    - the serie is present and there is an item: we need to update the data
+    //    - the series is not present in the db, we have to remove it from the model
+    //    - the series is present but there is no item: we need to create one
+    //    - the series is present and there is an item: we need to update the data
 
     QModelIndex index = d->medIndexMap[dataIndex];
     medAbstractDatabaseItem *item = static_cast<medAbstractDatabaseItem *>(index.internalPointer());
@@ -665,7 +665,7 @@ void medDatabaseModel::updateSerie(const medDataIndex& dataIndex)
             medAbstractDatabaseItem *parent = item->parent();
             if(!parent)
             {
-                dtkWarn() << "A problem occured while updating the serie " << dataIndex.asString();
+                qWarning() << "A problem occured while updating the series " << dataIndex.asString();
             }
             else
             {
@@ -710,7 +710,7 @@ void medDatabaseModel::updateSerie(const medDataIndex& dataIndex)
 
             medAbstractDatabaseItem *stItem = static_cast<medAbstractDatabaseItem *>(stIndex.internalPointer());
 
-            //in some cases (when importing for example), a serie is being created while there is no study item)
+            //in some cases (when importing for example), a series is being created while there is no study item)
             if(!stItem)
             {
                 updateStudy(stDataIndex, false);
@@ -718,7 +718,7 @@ void medDatabaseModel::updateSerie(const medDataIndex& dataIndex)
                 stItem = static_cast<medAbstractDatabaseItem *>(stIndex.internalPointer());
                 if(!stItem)
                 {
-                    dtkWarn() << "A problem occured while updating the serie " << dataIndex.asString();
+                    qWarning() << "A problem occured while updating the series " << dataIndex.asString();
                 }
             }
 
@@ -759,9 +759,10 @@ void medDatabaseModel::updateStudy(const medDataIndex& dataIndex, bool updateChi
         {
             QModelIndex parentIndex = index.parent();
             QList<medDataIndex> series = dbc->series(dataIndex);
-            foreach(medDataIndex serie, series)
-                updateSerie(serie);
-
+            foreach(medDataIndex currentSeries, series)
+            {
+                updateSeries(currentSeries);
+            }
             emit layoutAboutToBeChanged();
 
             changePersistenIndexAndSubIndex(index);
@@ -773,7 +774,7 @@ void medDatabaseModel::updateStudy(const medDataIndex& dataIndex, bool updateChi
 
             if(!parent)
             {
-                dtkWarn() << "A problem occured while updating the serie " << dataIndex.asString();
+                qWarning() << "A problem occured while updating the series " << dataIndex.asString();
             }
             else
             {
@@ -820,7 +821,7 @@ void medDatabaseModel::updateStudy(const medDataIndex& dataIndex, bool updateChi
 
             medAbstractDatabaseItem *ptItem = static_cast<medAbstractDatabaseItem *>(ptIndex.internalPointer());
 
-            //in some cases (when importing for example), a serie is being created while there is no study or patient item)
+            //in some cases (when importing for example), a series is being created while there is no study or patient item)
             if(!ptItem)
             {
                 updatePatient(ptDataIndex, false);
@@ -828,7 +829,7 @@ void medDatabaseModel::updateStudy(const medDataIndex& dataIndex, bool updateChi
                 ptItem = static_cast<medAbstractDatabaseItem *>(ptIndex.internalPointer());
                 if(!ptItem)
                 {
-                    dtkWarn() << "A problem occured while updating the serie " << dataIndex.asString();
+                    qWarning() << "A problem occured while updating the series " << dataIndex.asString();
                 }
             }
             if(ptItem)
@@ -850,8 +851,10 @@ void medDatabaseModel::updateStudy(const medDataIndex& dataIndex, bool updateChi
         if(updateChildren)
         {
             QList<medDataIndex> series = dbc->series(dataIndex);
-            foreach(medDataIndex serie, series)
-                updateSerie(serie);
+            foreach(medDataIndex currentSeries, series)
+            {
+                updateSeries(currentSeries);
+            }
         }
     }
 
@@ -871,7 +874,7 @@ void medDatabaseModel::updatePatient(const medDataIndex& dataIndex, bool updateC
             medAbstractDatabaseItem *parent = item->parent();
             if(!parent)
             {
-                dtkWarn() << "A problem occured while updating the serie " << dataIndex.asString();
+                qWarning() << "A problem occured while updating the series " << dataIndex.asString();
             }
             else
             {
@@ -951,7 +954,7 @@ QStringList medDatabaseModel::columnNames() const
             ret.append(QString());
 
         int i=0;
-        ret[i++] = tr("Patient / Study / Serie");
+        ret[i++] = tr("Patient / Study / Series");
         ret[i++] = tr("Date of birth");
         ret[i++] = tr("Gender");
         ret[i++] = tr("Slice Count");

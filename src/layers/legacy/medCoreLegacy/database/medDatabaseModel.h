@@ -76,7 +76,7 @@ public slots:
     void update(const medDataIndex&);
 
 private:
-    void updateSerie(const medDataIndex&);
+    void updateSeries(const medDataIndex&);
     void updateStudy(const medDataIndex&, bool updateChildren = true);
     void updatePatient(const medDataIndex&, bool updateChildren = true);
     QVariant convertQStringToQVariant(QString key, QString value);

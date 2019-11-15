@@ -278,18 +278,11 @@ void medDatabaseRemover::removePatient ( int patientDbId )
     EXEC_QUERY ( query );
     if ( query.next() )
     {
-        QString thumbnail = query.value ( 0 ).toString();
-        this->removeFile ( thumbnail );
+        removeThumbnailIfNeeded(query);
         patientId = query.value ( 1 ).toString();
     }
     if( removeTableRow ( d->T_PATIENT, patientDbId ) )
         emit removed(medDataIndex(1, patientDbId, -1, -1, -1));
-
-    medDatabaseController * dbi = medDatabaseController::instance();
-    QDir patientDir ( medStorage::dataLocation() + "/" + dbi->stringForPath ( patientId ) );
-
-    if ( patientDir.exists() )
-        patientDir.rmdir ( patientDir.path() ); // only removes if empty
 }
 
 bool medDatabaseRemover::removeTableRow ( const QString &table, int id )

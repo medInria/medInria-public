@@ -56,7 +56,7 @@ private slots:
     void testStoreNonPersistentSingleDataToDatabase(void);
     void testRemoveData(void);
     void testMoveStudy(void);
-    void testMoveSerie(void);
+    void testMoveSeries(void);
   
 private slots:
     void onDataAdded(const medDataIndex& index);

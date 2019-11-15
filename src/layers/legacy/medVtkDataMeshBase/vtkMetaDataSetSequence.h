@@ -22,10 +22,10 @@
 
 /**
    \class vtkMetaDataSetSequence vtkMetaDataSetSequence.h "vtkMetaDataSetSequence.h"
-   \brief usefull class to handle a sequence (serie) of vtkMetaDataSet
+   \brief usefull class to handle a sequence (series) of vtkMetaDataSet
    \author Nicolas Toussaint
    
-   This class is a powerfull vtk Addon class that helps handling a serie of vtkDataSets.
+   This class is a powerfull vtk Addon class that helps handling a series of vtkDataSets.
    
    vtkMetaDataSet has a flag of time, that allows this class to handle a sequence
    of different vtkMetaDataSet (of the same type), the output dataset (got from GetDataSet())
