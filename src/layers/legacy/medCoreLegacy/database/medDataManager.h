@@ -60,7 +60,7 @@ public:
     // ------------------------- To be moved elsewhere -----------------------
 
     QList<medDataIndex> moveStudy(const medDataIndex& indexStudy, const medDataIndex& toPatient);
-    medDataIndex moveSerie(const medDataIndex& indexSerie, const medDataIndex& toStudy);
+    medDataIndex moveSeries(const medDataIndex& indexSeries, const medDataIndex& toStudy);
 
     // ------------------------- Compatibility code, to be removed -----------
 

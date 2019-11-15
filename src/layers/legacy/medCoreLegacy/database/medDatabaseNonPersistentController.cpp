@@ -38,7 +38,7 @@ class medDatabaseNonPersistentControllerPrivate
 public:
     int patientIndex;
     int studyIndex;
-    int serieIndex;
+    int seriesIndex;
     int imageIndex;
     typedef QMap<medDataIndex, medDatabaseNonPersistentItem *> DataHashMapType;
     DataHashMapType items;
@@ -76,9 +76,9 @@ int medDatabaseNonPersistentController::studyId(bool increment)
 int medDatabaseNonPersistentController::seriesId(bool increment)
 {
     if (increment)
-        return d->serieIndex++;
+        return d->seriesIndex++;
     else
-        return d->serieIndex;
+        return d->seriesIndex;
 }
 
 int medDatabaseNonPersistentController::imageId(bool increment)
@@ -125,7 +125,7 @@ medDatabaseNonPersistentController::medDatabaseNonPersistentController(void): d(
 {
     d->patientIndex = nonPersistentDataStartingIndex();
     d->studyIndex = nonPersistentDataStartingIndex();
-    d->serieIndex = nonPersistentDataStartingIndex();
+    d->seriesIndex = nonPersistentDataStartingIndex();
     d->imageIndex = nonPersistentDataStartingIndex();
 }
 
@@ -170,7 +170,7 @@ void medDatabaseNonPersistentController::removeAll()
     d->items.clear();
     d->patientIndex = nonPersistentDataStartingIndex();
     d->studyIndex = nonPersistentDataStartingIndex();
-    d->serieIndex = nonPersistentDataStartingIndex();
+    d->seriesIndex = nonPersistentDataStartingIndex();
     d->imageIndex = nonPersistentDataStartingIndex();
 }
 
@@ -195,9 +195,14 @@ void medDatabaseNonPersistentController::remove(const medDataIndex &index)
     }
 
     if( index.isValidForSeries() && series(index).isEmpty() )
+    {
         remove(medDataIndex(index.dataSourceId(), index.patientId(), index.isValidForStudy(), -1, -1));
+
+    }
     else if( index.isValidForStudy() && series(index).isEmpty() )
+    {
         remove(medDataIndex(index.dataSourceId(), index.patientId(), -1, -1, -1));
+    }
 
     emit dataRemoved(index);
 }
@@ -257,7 +262,7 @@ QList<medDataIndex> medDatabaseNonPersistentController::studies( const medDataIn
 
     if ( !index.isValidForPatient() )
     {
-        dtkWarn() << "invalid index passed";
+        qWarning() << "invalid index passed (not patient)";
         return ret;
     }
 
@@ -284,7 +289,7 @@ QList<medDataIndex> medDatabaseNonPersistentController::series( const medDataInd
 
     if ( !index.isValidForStudy() )
     {
-        dtkWarn() << "invalid index passed";
+        qWarning() << "invalid index passed (not study)";
         return ret;
     }
 
@@ -312,7 +317,7 @@ QList<medDataIndex> medDatabaseNonPersistentController::images( const medDataInd
 
     if ( !index.isValidForSeries() )
     {
-        dtkWarn() << "invalid index passed";
+        qWarning() << "invalid index passed (not series)";
         return ret;
     }
 
@@ -463,16 +468,16 @@ QList<medDataIndex> medDatabaseNonPersistentController::moveStudy(const medDataI
     // we also have to update the series of the study
     QList<medDataIndex> seriesIndexList = series(indexStudy);
 
-    foreach(medDataIndex serie, seriesIndexList)
+    foreach(medDataIndex series, seriesIndexList)
     {
-        dataStudy = retrieve(serie);
+        dataStudy = retrieve(series);
 
         if(dataStudy!=NULL)
         {
-            medDataIndex newSerieIndex = moveSerie(serie, newIndex);
+            medDataIndex newSeriesIndex = moveSeries(series, newIndex);
 
-            if(newSerieIndex.isValid())
-                newIndexList << newSerieIndex;
+            if(newSeriesIndex.isValid())
+                newIndexList << newSeriesIndex;
         }
     }
 
@@ -489,26 +494,26 @@ QList<medDataIndex> medDatabaseNonPersistentController::moveStudy(const medDataI
     return newIndexList;
 }
 
-medDataIndex medDatabaseNonPersistentController::moveSerie(const medDataIndex& indexSerie, const medDataIndex& toStudy)
+medDataIndex medDatabaseNonPersistentController::moveSeries(const medDataIndex& indexSeries, const medDataIndex& toStudy)
 {
-    medDataIndex newIndex(indexSerie);
+    medDataIndex newIndex(indexSeries);
     newIndex.setStudyId(toStudy.studyId());
     newIndex.setPatientId(toStudy.patientId());
 
-    if(indexSerie == newIndex)
+    if(indexSeries == newIndex)
     {
-        //the serie is being moved to the same study, nothing to do
-        return indexSerie;
+        //the series is being moved to the same study, nothing to do
+        return indexSeries;
     }
 
-    // we need to update metadatas (patient, study) of the serie to move
-    medAbstractData *dataSerie = retrieve(indexSerie);
+    // we need to update metadatas (patient, study) of the series to move
+    medAbstractData *dataSeries = retrieve(indexSeries);
 
     //retrieve destination study information
     medAbstractData *dataStudy = retrieve(toStudy);
 
-    medDatabaseNonPersistentItem * serieItem = NULL;
-    serieItem = d->items.find(indexSerie).value();
+    medDatabaseNonPersistentItem * seriesItem = NULL;
+    seriesItem = d->items.find(indexSeries).value();
 
     if(dataStudy == NULL)
     {
@@ -519,36 +524,36 @@ medDataIndex medDatabaseNonPersistentController::moveSerie(const medDataIndex& i
         else return newIndex;
     }
 
-    if(dataSerie && serieItem)
+    if(dataSeries && seriesItem)
     {
-        dataSerie->setMetaData ( medMetaDataKeys::PatientName.key(),
+        dataSeries->setMetaData ( medMetaDataKeys::PatientName.key(),
                                  QStringList() <<  dataStudy->metadata( medMetaDataKeys::PatientName.key()) );
-        dataSerie->setMetaData ( medMetaDataKeys::PatientID.key(),
+        dataSeries->setMetaData ( medMetaDataKeys::PatientID.key(),
                                  QStringList() <<  dataStudy->metadata( medMetaDataKeys::PatientID.key()) );
-        dataSerie->setMetaData ( medMetaDataKeys::BirthDate.key(),
+        dataSeries->setMetaData ( medMetaDataKeys::BirthDate.key(),
                                  QStringList() <<  dataStudy->metadata( medMetaDataKeys::BirthDate.key()) );
-        dataSerie->setMetaData ( medMetaDataKeys::StudyDescription.key(),
+        dataSeries->setMetaData ( medMetaDataKeys::StudyDescription.key(),
                                  QStringList() <<  dataStudy->metadata( medMetaDataKeys::StudyDescription.key()) );
-        dataSerie->setMetaData ( medMetaDataKeys::StudyID.key(),
+        dataSeries->setMetaData ( medMetaDataKeys::StudyID.key(),
                                  QStringList() <<  dataStudy->metadata( medMetaDataKeys::StudyID.key()) );
-        dataSerie->setMetaData ( medMetaDataKeys::StudyDicomID.key(),
+        dataSeries->setMetaData ( medMetaDataKeys::StudyDicomID.key(),
                                  QStringList() <<  dataStudy->metadata( medMetaDataKeys::StudyDicomID.key()) );
 
-        serieItem->setName(dataStudy->metadata( medMetaDataKeys::PatientName.key()));
-        serieItem->setPatientId(dataStudy->metadata( medMetaDataKeys::PatientID.key()));
-        serieItem->setBirthdate(dataStudy->metadata( medMetaDataKeys::BirthDate.key()));
-        serieItem->setStudyName(dataStudy->metadata( medMetaDataKeys::StudyDescription.key()));
-        serieItem->setStudyId(dataStudy->metadata( medMetaDataKeys::StudyID.key()));
+        seriesItem->setName(dataStudy->metadata( medMetaDataKeys::PatientName.key()));
+        seriesItem->setPatientId(dataStudy->metadata( medMetaDataKeys::PatientID.key()));
+        seriesItem->setBirthdate(dataStudy->metadata( medMetaDataKeys::BirthDate.key()));
+        seriesItem->setStudyName(dataStudy->metadata( medMetaDataKeys::StudyDescription.key()));
+        seriesItem->setStudyId(dataStudy->metadata( medMetaDataKeys::StudyID.key()));
     }
 
-    insert(newIndex, d->items[indexSerie]);
+    insert(newIndex, d->items[indexSeries]);
 
     typedef medDatabaseNonPersistentControllerPrivate::DataHashMapType DataHashMapType;
-    DataHashMapType::iterator itemIt(d->items.find(indexSerie));
+    DataHashMapType::iterator itemIt(d->items.find(indexSeries));
     d->items.erase(itemIt);
 
-    emit metadataModified(indexSerie); // to signal the serie has been removed
-    emit metadataModified(newIndex); // to signal the serie has been added
+    emit metadataModified(indexSeries); // to signal the series has been removed
+    emit metadataModified(newIndex); // to signal the series has been added
 
     return newIndex;
 }

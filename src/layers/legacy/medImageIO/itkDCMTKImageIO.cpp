@@ -225,7 +225,7 @@ void DCMTKImageIO::ReadImageInformation()
                 std::istringstream is_stream ( instanceNumberString.c_str() );
                 is_stream >> instanceNumber;
             }
-            // else, we assume all files have the same instance number (0), i.e.: the serie has only one volume
+            // else, we assume all files have the same instance number (0), i.e.: the series has only one volume
 
             instanceNumberToNameMap[instanceNumber].push_back( n->second );
         }

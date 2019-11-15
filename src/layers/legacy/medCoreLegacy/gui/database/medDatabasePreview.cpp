@@ -293,11 +293,11 @@ void medDatabasePreview::showStudyPreview(const medDataIndex &index)
     QList<medDataIndex> seriesIndex = dbc->series(index);
     QList<QPair<medDataIndex,QString> > seriesDescriptionDataIndexPairList;
 
-    foreach (medDataIndex serieIndex, seriesIndex)
+    foreach (medDataIndex currentSeriesIndex, seriesIndex)
     {
-        d->staticScene->addImage(serieIndex);
-        QString seriesDescription = dbc->metaData(serieIndex, medMetaDataKeys::SeriesDescription);
-        seriesDescriptionDataIndexPairList.append(qMakePair(serieIndex, seriesDescription));
+        d->staticScene->addImage(currentSeriesIndex);
+        QString seriesDescription = dbc->metaData(currentSeriesIndex, medMetaDataKeys::SeriesDescription);
+        seriesDescriptionDataIndexPairList.append(qMakePair(currentSeriesIndex, seriesDescription));
     }
 
     d->dynamicScene = new medDatabasePreviewDynamicScene(seriesDescriptionDataIndexPairList);

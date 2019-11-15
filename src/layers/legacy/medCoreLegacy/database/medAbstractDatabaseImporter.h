@@ -48,7 +48,6 @@ public:
 
     ~medAbstractDatabaseImporter ( void );
 
-
 signals:
     /**
      * This signal is emitted after a successful import/index.
@@ -66,7 +65,6 @@ signals:
 
 public slots:
     void onCancel ( QObject* );
-
 
 protected:
     virtual void internalRun ( void ) ;
@@ -97,7 +95,6 @@ protected:
 
     void importData();
     void importFile();
-
 
     /**
     * Finds if parameter @seriesName is already being used in the database
@@ -131,12 +128,5 @@ protected:
     **/
     virtual medDataIndex populateDatabaseAndGenerateThumbnails ( medAbstractData* medData, QString pathToStoreThumbnails ) = 0;
 
-
-
-
     medAbstractDatabaseImporterPrivate *d;
-
-
 };
-
-

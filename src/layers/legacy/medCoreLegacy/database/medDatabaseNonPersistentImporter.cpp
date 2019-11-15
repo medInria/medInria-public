@@ -159,7 +159,7 @@ medDataIndex medDatabaseNonPersistentImporter::populateDatabaseAndGenerateThumbn
     QString seriesName = medMetaDataKeys::SeriesDescription.getFirstValue(data);
 
 
-    if( studyName!="EmptyStudy" || seriesName!="EmptySerie" )
+    if( studyName!="EmptyStudy" || seriesName!="EmptySeries" )
     {
         // check if study is already in the persistent database
         databaseIndex = medDatabaseController::instance()->indexForStudy ( patientName, studyName );
@@ -213,7 +213,7 @@ medDataIndex medDatabaseNonPersistentImporter::populateDatabaseAndGenerateThumbn
     }
 
 
-    if(seriesName != "EmptySerie")
+    if(seriesName != "EmptySeries")
     {
         index = medDataIndex ( npdc->dataSourceId(), patientDbId, studyDbId, npdc->seriesId ( true ), -1 );
 

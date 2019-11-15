@@ -683,10 +683,10 @@ QList<medDataIndex> medDatabaseController::moveStudy( const medDataIndex& indexS
 
             // and update patient id in series indexes
             QList<medDataIndex> seriesIndexList = series(indexStudy);
-            foreach(medDataIndex newSerieIndex, seriesIndexList)
+            foreach(medDataIndex newSeriesIndex, seriesIndexList)
             {
-                newSerieIndex.setPatientId(toPatient.patientId());
-                newIndexList << newSerieIndex;
+                newSeriesIndex.setPatientId(toPatient.patientId());
+                newIndexList << newSeriesIndex;
             }
         }
     }
@@ -700,35 +700,35 @@ QList<medDataIndex> medDatabaseController::moveStudy( const medDataIndex& indexS
 }
 
 /**
- * Moves serie from one study to another and returns the new index of the serie
- * @param const medDataIndex & indexSerie The data index of the serie to be moved
- * @param const medDataIndex & toStudy The data index to move the serie to.
+ * Moves series from one study to another and returns the new index of the series
+ * @param const medDataIndex & indexSeries The data index of the series to be moved
+ * @param const medDataIndex & toStudy The data index to move the series to.
  */
-medDataIndex medDatabaseController::moveSerie( const medDataIndex& indexSerie, const medDataIndex& toStudy)
+medDataIndex medDatabaseController::moveSeries( const medDataIndex& indexSeries, const medDataIndex& toStudy)
 {
     QSqlQuery query(this->database());
 
     bool result = false;
     medDataIndex newIndex;
 
-    if(indexSerie.isValidForSeries() && toStudy.isValidForStudy())
+    if(indexSeries.isValidForSeries() && toStudy.isValidForStudy())
     {
-        query.prepare("UPDATE series SET study=:studyId  WHERE id=:serieId");
+        query.prepare("UPDATE series SET study=:studyId  WHERE id=:seriesId");
         query.bindValue(":studyId", toStudy.studyId());
-        query.bindValue(":serieId", indexSerie.seriesId());
+        query.bindValue(":seriesId", indexSeries.seriesId());
 
         result = EXEC_QUERY(query);
 
         if(result)
         {
-            newIndex = indexSerie;
+            newIndex = indexSeries;
             newIndex.setPatientId(toStudy.patientId());
             newIndex.setStudyId(toStudy.studyId());
         }
     }
 
-    emit metadataModified(indexSerie); // to signal the serie has been removed
-    emit metadataModified(newIndex);   // to signal the serie has been added
+    emit metadataModified(indexSeries); // to signal the series has been removed
+    emit metadataModified(newIndex);   // to signal the series has been added
 
     return newIndex;
 }
@@ -859,7 +859,7 @@ QList<medDataIndex> medDatabaseController::studies( const medDataIndex& index ) 
 
     if ( !index.isValidForPatient() )
     {
-        qWarning() << "invalid index passed";
+        qWarning() << "invalid index passed (not patient)";
         return ret;
     }
 
@@ -900,14 +900,14 @@ QList<medDataIndex> medDatabaseController::series( const medDataIndex& index) co
     return ret;
 }
 
-/** Enumerate all images for given serie*/
+/** Enumerate all images for given series */
 QList<medDataIndex> medDatabaseController::images( const medDataIndex& index) const
 {
     QList<medDataIndex> ret;
 
     if ( !index.isValidForSeries() )
     {
-        qWarning() << "invalid index passed";
+        qWarning() << "invalid index passed (not series)";
         return ret;
     }
 
