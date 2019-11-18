@@ -2,7 +2,7 @@
 
  medInria
 
- Copyright (c) INRIA 2013 - 2018. All rights reserved.
+ Copyright (c) INRIA 2013 - 2019. All rights reserved.
  See LICENSE.txt for details.
 
   This software is distributed WITHOUT ANY WARRANTY; without even
@@ -16,8 +16,8 @@
 #include <QSqlDatabase>
 #include <QSqlQuery>
 
-#include <medCoreLegacyExport.h>
 #include <medAbstractDbController.h>
+#include <medCoreLegacyExport.h>
 
 #define EXEC_QUERY(q) medDatabaseController::instance()->execQuery(q, __FILE__ , __LINE__ )
 
@@ -44,15 +44,11 @@ public:
     medDataIndex indexForPatient(int id);
     medDataIndex indexForStudy  (int id);
     medDataIndex indexForSeries (int id);
-    medDataIndex indexForImage  (int id);
-
 
     medDataIndex indexForPatient (const QString &patientName);
     medDataIndex indexForStudy   (const QString &patientName, const QString &studyName);
     medDataIndex indexForSeries  (const QString &patientName, const QString &studyName,
                                   const QString &seriesName);
-    medDataIndex indexForImage   (const QString &patientName, const QString &studyName,
-                                  const QString &seriesName,  const QString &imageName);
 
     QString stringForPath(const QString & name) const;
 
@@ -99,10 +95,11 @@ protected slots:
 private:
     medDatabaseController();
 
-    void createPatientTable();
-    void   createStudyTable();
-    void  createSeriesTable();
-    void   createImageTable();
+    bool createPatientTable();
+    bool   createStudyTable();
+    bool  createSeriesTable();
+
+    bool updateFromNoVersionToVersion1();
 
     QSqlDatabase m_database;
 

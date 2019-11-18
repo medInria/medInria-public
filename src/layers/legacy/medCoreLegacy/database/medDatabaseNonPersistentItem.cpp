@@ -2,7 +2,7 @@
 
  medInria
 
- Copyright (c) INRIA 2013 - 2018. All rights reserved.
+ Copyright (c) INRIA 2013 - 2019. All rights reserved.
  See LICENSE.txt for details.
 
   This software is distributed WITHOUT ANY WARRANTY; without even
@@ -13,13 +13,10 @@
 
 #include <medDatabaseNonPersistentItem.h>
 #include <medDatabaseNonPersistentItem_p.h>
-
 #include <medMetaDataKeys.h>
-
 
 medDatabaseNonPersistentItem::medDatabaseNonPersistentItem(void) : QObject(), d(new medDatabaseNonPersistentItemPrivate)
 {
-    //d->data = NULL;
 }
 
 medDatabaseNonPersistentItem::~medDatabaseNonPersistentItem(void)
@@ -152,7 +149,6 @@ medAbstractData *medDatabaseNonPersistentItem::data(void)
 {
     return d->data;
 }
-
 
 bool medDatabaseNonPersistentItem::Match(medAbstractData *medData)
 {

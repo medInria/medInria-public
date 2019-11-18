@@ -2,7 +2,7 @@
 
  medInria
 
- Copyright (c) INRIA 2013 - 2018. All rights reserved.
+ Copyright (c) INRIA 2013 - 2019. All rights reserved.
  See LICENSE.txt for details.
 
   This software is distributed WITHOUT ANY WARRANTY; without even
@@ -11,23 +11,21 @@
 
 =========================================================================*/
 
-#include <medDatabaseNonPersistentItem.h>
-#include <medDatabaseNonPersistentItem_p.h>
-#include <medDatabaseNonPersistentController.h>
-#include <medDatabaseNonPersistentImporter.h>
-
-#include <medDataIndex.h>
-#include <medMessageController.h>
-#include <medJobManagerL.h>
-
-#include <medMetaDataKeys.h>
-
-#include <medAbstractDataFactory.h>
 #include <dtkCoreSupport/dtkAbstractDataReader.h>
 #include <dtkCoreSupport/dtkAbstractDataWriter.h>
-#include <medAbstractData.h>
 
 #include <QtCore/QHash>
+
+#include <medAbstractData.h>
+#include <medAbstractDataFactory.h>
+#include <medDatabaseNonPersistentController.h>
+#include <medDatabaseNonPersistentItem.h>
+#include <medDatabaseNonPersistentItem_p.h>
+#include <medDatabaseNonPersistentImporter.h>
+#include <medDataIndex.h>
+#include <medMessageController.h>
+#include <medMetaDataKeys.h>
+#include <medJobManagerL.h>
 
 // /////////////////////////////////////////////////////////////////
 // medDatabaseNonPersitentControllerPrivate
@@ -197,7 +195,6 @@ void medDatabaseNonPersistentController::remove(const medDataIndex &index)
     if( index.isValidForSeries() && series(index).isEmpty() )
     {
         remove(medDataIndex(index.dataSourceId(), index.patientId(), index.isValidForStudy(), -1, -1));
-
     }
     else if( index.isValidForStudy() && series(index).isEmpty() )
     {
@@ -402,7 +399,6 @@ bool medDatabaseNonPersistentController::isPersistent( ) const
 {
     return false;
 }
-
 
 QList<medDataIndex> medDatabaseNonPersistentController::moveStudy(const medDataIndex& indexStudy, const medDataIndex& toPatient)
 {

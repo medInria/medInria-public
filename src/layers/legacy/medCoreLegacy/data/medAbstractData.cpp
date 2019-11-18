@@ -188,20 +188,26 @@ void medAbstractData::invokeModified()
     emit dataModified(this);
 }
 
-QImage& medAbstractData::thumbnail()
+QImage medAbstractData::generateThumbnail(QSize size)
 {
-    if(d->thumbnail == QImage())
+    QImage thumbnail;
+    if (QThread::currentThread() != QApplication::instance()->thread())
     {
-        if (QThread::currentThread() != QApplication::instance()->thread())
-            QMetaObject::invokeMethod(this, "generateThumbnail", Qt::BlockingQueuedConnection);
-        else
-            this->generateThumbnail();
+        QMetaObject::invokeMethod(this,
+                                  "generateThumbnailInGuiThread",
+                                  Qt::BlockingQueuedConnection,
+                                  Q_RETURN_ARG(QImage, thumbnail),
+                                  Q_ARG(QSize, size));
+    }
+    else
+    {
+        thumbnail = this->generateThumbnailInGuiThread(size);
     }
 
-    return d->thumbnail;
+    return thumbnail;
 }
 
-void medAbstractData::generateThumbnail()
+QImage medAbstractData::generateThumbnailInGuiThread(QSize size)
 {
     // Hack: some drivers crash on offscreen rendering, so we detect which one
     // we're currently using, and if it is one of the crashy ones, render to a
@@ -258,7 +264,5 @@ void medAbstractData::generateThumbnail()
     view->addLayer(this);
 
     // We're rendering here, to the temporary window, and will then use the resulting image
-    d->thumbnail = view->generateThumbnail(med::defaultThumbnailSize);
+    return view->generateThumbnail(size);
 }
-
-

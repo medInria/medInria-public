@@ -2,7 +2,7 @@
 
  medInria
 
- Copyright (c) INRIA 2013 - 2018. All rights reserved.
+ Copyright (c) INRIA 2013 - 2019. All rights reserved.
  See LICENSE.txt for details.
 
   This software is distributed WITHOUT ANY WARRANTY; without even
@@ -11,20 +11,19 @@
 
 =========================================================================*/
 
-#include <medAbstractDatabaseImporter.h>
-
-#include <medAbstractImageData.h>
-
-#include <medAbstractDataFactory.h>
 #include <dtkCoreSupport/dtkAbstractDataReader.h>
 #include <dtkCoreSupport/dtkAbstractDataWriter.h>
-#include <medAbstractData.h>
 #include <dtkCoreSupport/dtkGlobal.h>
 #include <dtkLog/dtkLog.h>
+
+#include <medAbstractData.h>
+#include <medAbstractDatabaseImporter.h>
+#include <medAbstractDataFactory.h>
+#include <medAbstractImageData.h>
 #include <medDatabaseController.h>
+#include <medGlobalDefs.h>
 #include <medMetaDataKeys.h>
 #include <medStorage.h>
-#include <medGlobalDefs.h>
 
 class medAbstractDatabaseImporterPrivate
 {
@@ -282,15 +281,9 @@ void medAbstractDatabaseImporter::importFile ( void )
             imageFileName = imageFileName + futureExtension;
 
             // 2.3) c) Add the image to a map for writing them all in medInria's database in a posterior step
-
-            // First check if patient/study/series/image path already exists in the database
-            // Should we emit a message otherwise ??? TO
-            if ( !checkIfExists ( medData, fileInfo.fileName() ) )
-            {
-                imagesGroupedByVolume[imageFileName] << fileInfo.filePath();
-                imagesGroupedByPatient[imageFileName] = patientID;
-                imagesGroupedBySeriesId[imageFileName] = currentSeriesId;
-            }
+            imagesGroupedByVolume[imageFileName] << fileInfo.filePath();
+            imagesGroupedByPatient[imageFileName] = patientID;
+            imagesGroupedBySeriesId[imageFileName] = currentSeriesId;
         }
         else
         {
@@ -505,9 +498,8 @@ void medAbstractDatabaseImporter::importData()
          thumb_dir = seriesInfo.dir().path() + "/" + seriesInfo.completeBaseName() + "/";
     }
 
-
     // Now, populate the database
-   medDataIndex index = this->populateDatabaseAndGenerateThumbnails (  d->data, thumb_dir );
+    medDataIndex index = this->populateDatabaseAndGenerateThumbnails (  d->data, thumb_dir );
 
     emit progress(this, 100);
     emit success(this);
@@ -682,38 +674,25 @@ void medAbstractDatabaseImporter::populateMissingMetadata ( medAbstractData* med
 * @param pathToStoreThumbnails - path where the thumbnails will be stored
 * @return a list of the thumbnails paths
 **/
-QStringList medAbstractDatabaseImporter::generateThumbnails ( medAbstractData* medData, QString pathToStoreThumbnails )
+QString medAbstractDatabaseImporter::generateThumbnail ( medAbstractData* medData, QString pathToStoreThumbnail )
 {
-    QList<QImage> thumbnails = medData->thumbnails();
+    QImage thumbnail = medData->generateThumbnail(med::defaultThumbnailSize);
+    QString thumbnailPath = pathToStoreThumbnail + "thumbnail.png";
+    QString fullThumbnailPath = medStorage::dataLocation() + thumbnailPath;
 
-    QStringList thumbPaths;
-
-    if ( !medStorage::mkpath ( medStorage::dataLocation() + pathToStoreThumbnails ) )
+    if ( ! medStorage::mkpath ( medStorage::dataLocation() + pathToStoreThumbnail ) )
     {
-        qDebug() << "Cannot create directory: " << pathToStoreThumbnails;
+        qWarning("medAbstractDatabaseImporter: Cannot create directory: %s", qPrintable(pathToStoreThumbnail));
     }
 
-    for ( int i=0; i < thumbnails.count(); i++ )
+    if ( ! thumbnail.save ( fullThumbnailPath, "PNG" ))
     {
-        QString thumb_name = pathToStoreThumbnails + QString().setNum ( i ) + ".png";
-        thumbnails[i].save ( medStorage::dataLocation() + thumb_name, "PNG" );
-        thumbPaths << thumb_name;
+        qWarning("medAbstractDatabaseImporter: Saving thumbnail to %s failed.", qPrintable(fullThumbnailPath));
     }
 
-    QImage refThumbnail = medData->thumbnail(); // representative thumbnail for PATIENT/STUDY/SERIES
-    QString refThumbPath = pathToStoreThumbnails + "ref.png";
-    QString refThumbFullPath = medStorage::dataLocation() + refThumbPath;
-    refThumbnail.save ( refThumbFullPath, "PNG" );
+    medData->addMetaData ( medMetaDataKeys::ThumbnailPath.key(), thumbnailPath );
 
-    medData->setMetaData ( medMetaDataKeys::ThumbnailPath.key(), refThumbPath );
-
-    // No multiple thumbnails
-    if (thumbPaths.count() == 0)
-    {
-        thumbPaths << refThumbPath;
-    }
-
-    return thumbPaths;
+    return thumbnailPath;
 }
 
 //-----------------------------------------------------------------------------------------------------------

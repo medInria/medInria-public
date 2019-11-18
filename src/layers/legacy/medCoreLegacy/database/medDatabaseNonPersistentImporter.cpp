@@ -11,23 +11,21 @@
 
 =========================================================================*/
 
-#include <medDatabaseNonPersistentController.h>
-#include <medDatabaseController.h>
-#include <medDatabaseNonPersistentItem.h>
-#include <medDatabaseNonPersistentItem_p.h>
-#include <medDatabaseNonPersistentImporter.h>
-
-#include <medAbstractImageData.h>
-#include <medMetaDataKeys.h>
-
-#include <medAbstractDataFactory.h>
 #include <dtkCoreSupport/dtkAbstractDataReader.h>
 #include <dtkCoreSupport/dtkAbstractDataWriter.h>
-#include <medAbstractData.h>
 #include <dtkCoreSupport/dtkGlobal.h>
 #include <dtkLog/dtkLog.h>
 
-
+#include <medDatabaseController.h>
+#include <medAbstractData.h>
+#include <medAbstractDataFactory.h>
+#include <medAbstractImageData.h>
+#include <medDatabaseNonPersistentController.h>
+#include <medDatabaseNonPersistentItem.h>
+#include <medDatabaseNonPersistentItem_p.h>
+#include <medDatabaseNonPersistentImporter.h>
+#include <medGlobalDefs.h>
+#include <medMetaDataKeys.h>
 
 medDatabaseNonPersistentImporter::medDatabaseNonPersistentImporter (const QString& file, const QUuid& uuid )
 : medAbstractDatabaseImporter(file, uuid, true)
@@ -150,14 +148,11 @@ medDataIndex medDatabaseNonPersistentImporter::populateDatabaseAndGenerateThumbn
         npdc->insert ( index, patientItem );
     }
 
-
     int     studyDbId   = -1;
     QString studyName = medMetaDataKeys::StudyDescription.getFirstValue(data);
     QString studyId = medMetaDataKeys::StudyID.getFirstValue(data);
     QString studyUid = medMetaDataKeys::StudyDicomID.getFirstValue(data);
-
     QString seriesName = medMetaDataKeys::SeriesDescription.getFirstValue(data);
-
 
     if( studyName!="EmptyStudy" || seriesName!="EmptySeries" )
     {
@@ -212,7 +207,6 @@ medDataIndex medDatabaseNonPersistentImporter::populateDatabaseAndGenerateThumbn
         }
     }
 
-
     if(seriesName != "EmptySeries")
     {
         index = medDataIndex ( npdc->dataSourceId(), patientDbId, studyDbId, npdc->seriesId ( true ), -1 );
@@ -240,7 +234,7 @@ medDataIndex medDatabaseNonPersistentImporter::populateDatabaseAndGenerateThumbn
         item->d->seriesName = seriesName;
         item->d->seriesId = seriesId;
         item->d->file = file();
-        item->d->thumb = data->thumbnail();
+        item->d->thumb = data->generateThumbnail(med::defaultThumbnailSize);
         item->d->index = index;
         item->d->data = data;
         item->d->orientation = orientation;
@@ -258,35 +252,6 @@ medDataIndex medDatabaseNonPersistentImporter::populateDatabaseAndGenerateThumbn
     return index;
 }
 
-
-//-----------------------------------------------------------------------------------------------------------
-/**
-* Checks if the image which was used to create the medData object
-* passed as parameter already exists in the database
-* @param medData - a @medAbstractData object created from the original image
-* @param imageName - the name of the image we are looking for
-* @return true if already exists, false otherwise
-**/
-bool medDatabaseNonPersistentImporter::checkIfExists ( medAbstractData* medData, QString imageName )
-{
-    bool imageExists = false;
-
-    QPointer<medDatabaseNonPersistentController> npdc =
-            medDatabaseNonPersistentController::instance();
-
-    QList<medDatabaseNonPersistentItem*> items = npdc->items();
-
-    foreach(medDatabaseNonPersistentItem* item, items)
-    {
-        imageExists = item->file() == imageName;
-        if (imageExists)
-            break;
-    }
-
-    return imageExists;
-}
-
-//-----------------------------------------------------------------------------------------------------------
 /**
 * Finds if parameter @seriesName is already being used in the database
 * if is not, it returns @seriesName unchanged

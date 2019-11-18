@@ -2,7 +2,7 @@
 
  medInria
 
- Copyright (c) INRIA 2013 - 2018. All rights reserved.
+ Copyright (c) INRIA 2013 - 2019. All rights reserved.
  See LICENSE.txt for details.
 
   This software is distributed WITHOUT ANY WARRANTY; without even
@@ -50,12 +50,4 @@ public:
     medDataIndex populateDatabaseAndGenerateThumbnails ( medAbstractData* medData, QString pathToStoreThumbnails );
 
     QString ensureUniqueSeriesName ( const QString seriesName );
-
-    bool checkIfExists ( medAbstractData* medData, QString imageName );
-
-private:
-
 };
-
-
-

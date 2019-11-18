@@ -2,7 +2,7 @@
 
  medInria
 
- Copyright (c) INRIA 2013 - 2018. All rights reserved.
+ Copyright (c) INRIA 2013 - 2019. All rights reserved.
  See LICENSE.txt for details.
  
   This software is distributed WITHOUT ANY WARRANTY; without even
@@ -18,16 +18,14 @@
 #include <dtkCoreSupport/dtkGlobal.h>
 #include <dtkLog>
 
+#include <medAbstractDatabaseItem.h>
+#include <medAbstractDbController.h>
 #include <medDatabaseController.h>
 #include <medDatabaseItem.h>
 #include <medDatabaseModel.h>
 #include <medDatabaseNonPersistentController.h>
-
-#include <medAbstractDbController.h>
 #include <medDataManager.h>
 #include <medMetaDataKeys.h>
-#include <medAbstractDatabaseItem.h>
-
 
 // /////////////////////////////////////////////////////////////////
 // medDatabaseModelPrivate
@@ -44,8 +42,8 @@ public:
     medAbstractDatabaseItem *root;
 
     QList<QVariant> ptAttributes;  // Attributes displayed on Patient rows
-    QList<QVariant> stAttributes;  // Attributes displayed on studies rows
-    QList<QVariant> seAttributes;  // Attributes displayed on series rows.
+    QList<QVariant> stAttributes;  // Attributes displayed on Studies rows
+    QList<QVariant> seAttributes;  // Attributes displayed on Series rows.
 
     QList<QVariant> ptDefaultData;
     QList<QVariant> stDefaultData;
@@ -623,9 +621,6 @@ void medDatabaseModel::populate(medAbstractDatabaseItem *root)
     } // foreach dataSource
 }
 
-
-
-
 void medDatabaseModel::update(const medDataIndex& dataIndex)
 {
     if(dataIndex.isValidForSeries())
@@ -1021,4 +1016,3 @@ void medDatabaseModel::changePersistenIndexAndSubIndex(QModelIndex index)
         changePersistentIndex(tempIndex, QModelIndex());
     }
 }
-

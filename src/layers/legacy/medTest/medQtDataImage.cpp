@@ -2,9 +2,9 @@
 
  medInria
 
- Copyright (c) INRIA 2013 - 2018. All rights reserved.
+ Copyright (c) INRIA 2013 - 2019. All rights reserved.
  See LICENSE.txt for details.
- 
+
   This software is distributed WITHOUT ANY WARRANTY; without even
   the implied warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR
   PURPOSE.
@@ -22,7 +22,6 @@ class medQtDataImagePrivate
 {
 public:
     QVector<QImage> images;
-    bool thumbnailValid;
 
     int sizeX;
     int sizeY;
@@ -32,7 +31,6 @@ public:
 medQtDataImage::medQtDataImage() :
     d(new medQtDataImagePrivate)
 {
-    d->thumbnailValid = false;
     d->imageFormat = QImage::Format_Invalid;
 }
 
@@ -45,7 +43,6 @@ medQtDataImage::~medQtDataImage()
 void medQtDataImage::setData( void* data )
 {
     d->images.clear();
-    d->thumbnailValid = false;
 
     if ( !data )
         return;
@@ -60,7 +57,6 @@ void medQtDataImage::setData( void* data )
 
 void medQtDataImage::setData( void* data, int channel )
 {
-    d->thumbnailValid = false;
     if ( !data || (channel < 0) )
         return;
 
@@ -103,35 +99,12 @@ void * medQtDataImage::data( int channel )
     return &(d->images[channel]);
 }
 
-QImage & medQtDataImage::thumbnail( void )
+QImage medQtDataImage::generateThumbnailInGuiThread(QSize size)
 {
-    if ( !d->thumbnailValid )
-        this->generateThumbnails();
-
-    return this->medAbstractImageData::thumbnails()[0];
-}
-
-QList<QImage>& medQtDataImage::thumbnails( void )
-{
-    if ( !d->thumbnailValid )
-        this->generateThumbnails();
-
-    return this->medAbstractImageData::thumbnails();
-}
-
-void medQtDataImage::generateThumbnails()
-{
-    QImage refImage;
-    if ( this->medAbstractImageData::thumbnails().isEmpty() ) {
-        refImage = this->medAbstractImageData::thumbnail();
-    } else {
-        refImage = this->medAbstractImageData::thumbnails()[0];
-    }
-    const int sx = refImage.width();
-    const int sy = refImage.height();
+    const int sx = size.width();
+    const int sy = size.height();
 
     int mid = d->images.size() / 2;
-    this->medAbstractImageData::thumbnails().clear();
 
     const QImage & unscaledImage = d->images[mid];
     QImage scaledImage;
@@ -140,8 +113,7 @@ void medQtDataImage::generateThumbnails()
     } else {
         scaledImage = unscaledImage.scaledToWidth(sx);
     }
-    this->medAbstractImageData::thumbnails().push_back(scaledImage);
-    d->thumbnailValid = true;
+    return scaledImage;
 }
 
 bool medQtDataImage::registered()
