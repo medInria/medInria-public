@@ -21,9 +21,7 @@ find_package(Qt5 REQUIRED COMPONENTS
   Gui
   Network
   OpenGL
-  Sql                                                                                                                                                                                                                                       
-  Widgets                                                                                                                                                                                                                                       
-  Xml
+  Sql                                                                                                                               Widgets                                                                                                                           Xml
   Test
   Quick
   )
@@ -64,16 +62,13 @@ list(APPEND external_projects
   dtk
   LogDemons
   jsoncons
-  glew
   asio
   websocketpp
   eigen
-  xcom 
   gvirtualXRay
   qwt 
   mmg 
   tetgen
-  #poisson
   #openssl
 )
 
