@@ -2,7 +2,7 @@
 
  medInria
 
- Copyright (c) INRIA 2013 - 2018. All rights reserved.
+ Copyright (c) INRIA 2013 - 2019. All rights reserved.
  See LICENSE.txt for details.
 
   This software is distributed WITHOUT ANY WARRANTY; without even
@@ -16,9 +16,8 @@
 #include <QtSql/QSqlDatabase>
 
 #include <medAbstractDatabaseImporter.h>
-#include <medDataIndex.h>
-
 #include <medCoreLegacyExport.h>
+#include <medDataIndex.h>
 
 class medAbstractData;
 
@@ -42,23 +41,14 @@ public:
     medDatabaseImporter ( medAbstractData* medData, const QUuid& callerUuid );
     ~medDatabaseImporter ( void );
 
-
 private:
-
     QString ensureUniqueSeriesName ( const QString seriesName );
 
-    bool checkIfExists ( medAbstractData* medData, QString imageName );
-
-    medDataIndex populateDatabaseAndGenerateThumbnails ( medAbstractData* medData, QString pathToStoreThumbnails );
+    medDataIndex populateDatabaseAndGenerateThumbnails ( medAbstractData* medData, QString pathToStoreThumbnail );
 
     int getOrCreatePatient ( const medAbstractData* medData, QSqlDatabase db );
     int getOrCreateStudy ( const medAbstractData* medData, QSqlDatabase db, int patientId );
     int getOrCreateSeries ( const medAbstractData* medData, QSqlDatabase db, int studyId );
 
-    void createMissingImages ( medAbstractData* medData, QSqlDatabase db, int seriesId, QStringList thumbPaths );
-
     QString getPatientID(QString patientName, QString birthDate);
-
 };
-
-

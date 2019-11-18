@@ -2,7 +2,7 @@
 
  medInria
 
- Copyright (c) INRIA 2013 - 2018. All rights reserved.
+ Copyright (c) INRIA 2013 - 2019. All rights reserved.
  See LICENSE.txt for details.
 
   This software is distributed WITHOUT ANY WARRANTY; without even
@@ -13,19 +13,17 @@
 
 #pragma once
 
-#include <medAbstractDbController.h>
-#include <medDataIndex.h>
-
 #include <QtCore/QObject>
 #include <QtCore/QList>
 
+#include <medAbstractDbController.h>
 #include <medCoreLegacyExport.h>
+#include <medDataIndex.h>
 
 class medAbstractData;
 class medDatabaseNonPersistentItem;
 class medDatabaseNonPersistentControllerPrivate;
 class medImportJobWatcher;
-
 
 class MEDCORELEGACY_EXPORT medDatabaseNonPersistentController: public medAbstractDbController
 {
@@ -86,5 +84,3 @@ private:
     medDatabaseNonPersistentControllerPrivate *d;
     static medDatabaseNonPersistentController* s_instance;
 };
-
-

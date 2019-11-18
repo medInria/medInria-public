@@ -45,7 +45,7 @@ public:
 
     medAbstractData *convert(const QString &type);
 
-    virtual QImage& thumbnail();
+    virtual QImage generateThumbnail(QSize size);
 
 public slots:
 
@@ -53,7 +53,6 @@ public slots:
     void addAttachedData( medAttachedData * data );
     void removeAttachedData( medAttachedData * data );
     void invokeModified();
-    void generateThumbnail();
 
 signals:
 
@@ -66,6 +65,9 @@ signals:
     //! Signal emitted when the data contents have been altered.
     void dataModified(medAbstractData *);
 
+protected slots:
+
+    virtual QImage generateThumbnailInGuiThread(QSize size);
 
     /*=========================================================================
                  NOT IMPLEMENTED ON PURPOSE
@@ -79,6 +81,8 @@ private:
     using dtkAbstractData::setParameter;
     using dtkAbstractData::toVariant;
     using dtkAbstractData::fromVariant;
+    using dtkAbstractData::thumbnail;
+    using dtkAbstractData::thumbnails;
 
 private:
     medAbstractDataPrivate* d;

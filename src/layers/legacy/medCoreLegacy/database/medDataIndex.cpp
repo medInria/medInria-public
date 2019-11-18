@@ -2,7 +2,7 @@
 
  medInria
 
- Copyright (c) INRIA 2013 - 2018. All rights reserved.
+ Copyright (c) INRIA 2013 - 2019. All rights reserved.
  See LICENSE.txt for details.
  
   This software is distributed WITHOUT ANY WARRANTY; without even
@@ -12,7 +12,6 @@
 =========================================================================*/
 
 #include <medDataIndex.h>
-
 
 medDataIndex::medDataIndex(int dataSourceId, int patientId, int studyId, int seriesId, int imageId)
     : m_dataSourceId(dataSourceId),
@@ -41,7 +40,6 @@ medDataIndex::medDataIndex()
     m_imageId(NOT_VALID)
 {
 }
-
 
 medDataIndex::~medDataIndex(void)
 {
@@ -180,10 +178,6 @@ medDataIndex medDataIndex::makeSeriesIndex( int sourceId, int patientId, int stu
 {
     return medDataIndex(sourceId, patientId, studyId, seriesId, NOT_VALID); 
 }
-
-
-
-
 
 // /////////////////////////////////////////////////////////////////
 // Convenience operators

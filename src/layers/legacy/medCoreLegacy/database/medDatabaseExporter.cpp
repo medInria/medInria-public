@@ -2,7 +2,7 @@
 
  medInria
 
- Copyright (c) INRIA 2013 - 2018. All rights reserved.
+ Copyright (c) INRIA 2013 - 2019. All rights reserved.
  See LICENSE.txt for details.
 
   This software is distributed WITHOUT ANY WARRANTY; without even
@@ -11,11 +11,11 @@
 
 =========================================================================*/
 
-#include <medDatabaseExporter.h>
+#include <dtkCoreSupport/dtkAbstractDataWriter.h>
 
 #include <medAbstractData.h>
-#include <dtkCoreSupport/dtkAbstractDataWriter.h>
 #include <medAbstractDataFactory.h>
+#include <medDatabaseExporter.h>
 
 class medDatabaseExporterPrivate
 {
@@ -32,11 +32,11 @@ medDatabaseExporter::medDatabaseExporter(medAbstractData * data, const QString &
     d->writer   = writer;
 }
 
-medDatabaseExporter::~medDatabaseExporter(void)
+medDatabaseExporter::~medDatabaseExporter()
 {
     delete d;
 
-    d = NULL;
+    d = nullptr;
 }
 
 /**
@@ -45,7 +45,7 @@ medDatabaseExporter::~medDatabaseExporter(void)
  * @param void
  * @todo enrich the signals in the exporter (the writer progress signal is not forwarded to the explorer)
 */
-void medDatabaseExporter::internalRun(void)
+void medDatabaseExporter::internalRun()
 {
     if (!d->data)
     {
@@ -60,7 +60,6 @@ void medDatabaseExporter::internalRun(void)
 
     dtkAbstractDataWriter * dataWriter = medAbstractDataFactory::instance()->writer(d->writer);
     dataWriter->setData(d->data);
-
 
     if ( ! dataWriter->canWrite(d->filename) || ! dataWriter->write(d->filename)) {
 

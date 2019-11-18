@@ -2,7 +2,7 @@
 
  medInria
 
- Copyright (c) INRIA 2013 - 2018. All rights reserved.
+ Copyright (c) INRIA 2013 - 2019. All rights reserved.
  See LICENSE.txt for details.
  
   This software is distributed WITHOUT ANY WARRANTY; without even
@@ -15,14 +15,13 @@
 
 #include <QtCore/QCoreApplication>
 #include <QtCore/QDir>
-
 #include <QtGui/QDesktopServices>
 
 #include <dtkLog>
 
 #include <medSettingsManager.h>
 
-QString medStorage::m_dataLocation = NULL;
+QString medStorage::m_dataLocation = nullptr;
 
 medStorage::medStorage(void)
 {
@@ -188,4 +187,3 @@ bool medStorage::removeDir(QString dirName)
     }
     return result;
 }
-

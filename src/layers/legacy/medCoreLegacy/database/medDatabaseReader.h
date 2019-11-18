@@ -2,7 +2,7 @@
 
  medInria
 
- Copyright (c) INRIA 2013 - 2018. All rights reserved.
+ Copyright (c) INRIA 2013 - 2019. All rights reserved.
  See LICENSE.txt for details.
 
   This software is distributed WITHOUT ANY WARRANTY; without even
@@ -13,8 +13,9 @@
 
 #pragma once
 
-#include <QtCore/QObject>
 #include <dtkCoreSupport/dtkSmartPointer.h>
+
+#include <QtCore/QObject>
 
 #include <medCoreLegacyExport.h>
 
@@ -37,8 +38,7 @@ public:
     qint64 getDataSize();
 
 protected:
-    medAbstractData* readFile(QString filename);
-    medAbstractData* readFile(const QStringList filenames );
+    medAbstractData* readFile(const QStringList& filenames);
 
 signals:
     void success(QObject *);
@@ -48,5 +48,3 @@ signals:
 private:
     medDatabaseReaderPrivate *d;
 };
-
-

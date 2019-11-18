@@ -2,7 +2,7 @@
 
  medInria
 
- Copyright (c) INRIA 2013 - 2018. All rights reserved.
+ Copyright (c) INRIA 2013 - 2019. All rights reserved.
  See LICENSE.txt for details.
 
   This software is distributed WITHOUT ANY WARRANTY; without even
@@ -11,17 +11,16 @@
 
 =========================================================================*/
 
-#include <medDataManager.h>
-
 #include <QDebug>
 
 #include <medAbstractDataFactory.h>
 #include <medDatabaseController.h>
 #include <medDatabaseNonPersistentController.h>
-#include <medMessageController.h>
-#include <medJobManagerL.h>
-#include <medPluginManager.h>
+#include <medDataManager.h>
 #include <medGlobalDefs.h>
+#include <medJobManagerL.h>
+#include <medMessageController.h>
+#include <medPluginManager.h>
 
 /* THESE CLASSES NEED TO BE THREAD-SAFE, don't forget to lock the mutex in the
  * methods below that access state.
@@ -82,12 +81,10 @@ void medDataManager::initialize()
     }
 }
 
-
 medDataManager * medDataManager::instance()
 {
     return s_instance;
 }
-
 
 medAbstractData* medDataManager::retrieveData(const medDataIndex& index)
 {
@@ -119,7 +116,6 @@ medAbstractData* medDataManager::retrieveData(const medDataIndex& index)
     return NULL;
 }
 
-
 QUuid medDataManager::importData(medAbstractData *data, bool persistent)
 {
     if (!data)
@@ -131,7 +127,6 @@ QUuid medDataManager::importData(medAbstractData *data, bool persistent)
     controller->importData(data, uuid);
     return uuid;
 }
-
 
 QUuid medDataManager::importPath(const QString& dataPath, bool indexWithoutCopying, bool persistent)
 {
@@ -260,7 +255,6 @@ void medDataManager::exportData(medAbstractData* data)
     delete exportDialog;
 }
 
-
 void medDataManager::exportDataToPath(medAbstractData *data, const QString & filename, const QString & writer)
 {
     medDatabaseExporter *exporter = new medDatabaseExporter (data, filename, writer);
@@ -315,7 +309,6 @@ QList<medDataIndex> medDataManager::moveStudy(const medDataIndex& indexStudy, co
 
     return newIndexList;
 }
-
 
 medDataIndex medDataManager::moveSeries(const medDataIndex& indexSeries, const medDataIndex& toStudy)
 {
@@ -438,7 +431,6 @@ bool medDataManager::setMetadata(const medDataIndex& index, const QString& key, 
     return false;
 }
 
-
 void medDataManager::removeData(const medDataIndex& index)
 {
     Q_D(medDataManager);
@@ -465,7 +457,8 @@ QPixmap medDataManager::thumbnail(const medDataIndex & index)
 
     QPixmap pix;
     // dbc is NULL when called from the importer, as data is not imported yet
-    if (dbc) {
+    if (dbc)
+    {
         pix = dbc->thumbnail(index);
     }
 
@@ -514,7 +507,6 @@ medDataManager::medDataManager() : d_ptr(new medDataManagerPrivate(this))
     connect(medPluginManager::instance(), SIGNAL(allPluginsLoaded()), this, SLOT(setWriterPriorities()));
     connect(this, SIGNAL(dataImported(medDataIndex,QUuid)), this, SLOT(removeFromNonPersistent(medDataIndex,QUuid)));
 }
-
 
 medDataManager::~medDataManager()
 {

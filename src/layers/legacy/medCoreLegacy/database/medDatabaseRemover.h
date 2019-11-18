@@ -2,7 +2,7 @@
 
  medInria
 
- Copyright (c) INRIA 2013 - 2018. All rights reserved.
+ Copyright (c) INRIA 2013 - 2019. All rights reserved.
  See LICENSE.txt for details.
 
   This software is distributed WITHOUT ANY WARRANTY; without even
@@ -13,11 +13,12 @@
 
 #pragma once
 
+#include <QSqlQuery>
+#include <QtCore/QObject>
+
 #include <medCoreLegacyExport.h>
 #include <medDataIndex.h>
 #include <medJobItemL.h>
-#include <QtCore/QObject>
-#include <QSqlQuery>
 
 class medDatabaseRemoverPrivate;
 
@@ -47,9 +48,6 @@ public slots:
 protected:
     virtual void internalRun();
 
-    void removeImage( int patientId, int studyId, int seriesId, int imageId);
-
-    bool isSeriesEmpty( int seriesId );
     void removeSeries( int patientId, int studyId, int seriesId );
 
     bool isStudyEmpty( int studyId );

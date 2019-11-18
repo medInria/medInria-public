@@ -2,7 +2,7 @@
 
  medInria
 
- Copyright (c) INRIA 2013 - 2018. All rights reserved.
+ Copyright (c) INRIA 2013 - 2019. All rights reserved.
  See LICENSE.txt for details.
 
   This software is distributed WITHOUT ANY WARRANTY; without even
@@ -13,13 +13,13 @@
 
 #pragma once
 
-#include <medDataIndex.h>
-
-#include <medAbstractData.h>
 #include <dtkCoreSupport/dtkSmartPointer.h>
 
 #include <QtCore/QString>
 #include <QtGui/QImage>
+
+#include <medAbstractData.h>
+#include <medDataIndex.h>
 
 class medAbstractData;
 
@@ -48,5 +48,3 @@ public:
 
     dtkSmartPointer<medAbstractData> data;
 };
-
-

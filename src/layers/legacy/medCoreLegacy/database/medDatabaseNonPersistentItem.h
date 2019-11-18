@@ -2,7 +2,7 @@
 
  medInria
 
- Copyright (c) INRIA 2013 - 2018. All rights reserved.
+ Copyright (c) INRIA 2013 - 2019. All rights reserved.
  See LICENSE.txt for details.
 
   This software is distributed WITHOUT ANY WARRANTY; without even
@@ -13,15 +13,13 @@
 
 #pragma once
 
-#include <medDataIndex.h>
-
 #include <QtCore/QObject>
 #include <QtCore/QList>
 
 #include <medCoreLegacyExport.h>
+#include <medDataIndex.h>
 
 class medAbstractData;
-
 class medDatabaseNonPersistentItemPrivate;
 
 class MEDCORELEGACY_EXPORT medDatabaseNonPersistentItem : public QObject
@@ -54,7 +52,6 @@ public:
 
     medAbstractData *data(void);
 
-
     void setName(const QString& );
     void setBirthdate(const QString& );
     void setPatientId(const QString& );
@@ -80,4 +77,3 @@ private:
 private:
     medDatabaseNonPersistentItemPrivate *d;
 };
-

@@ -2,7 +2,7 @@
 
  medInria
 
- Copyright (c) INRIA 2013 - 2018. All rights reserved.
+ Copyright (c) INRIA 2013 - 2019. All rights reserved.
  See LICENSE.txt for details.
  
   This software is distributed WITHOUT ANY WARRANTY; without even
@@ -11,13 +11,13 @@
 
 =========================================================================*/
 
-#include <medDataIndex.h>
 #include <medDatabaseItem.h>
+#include <medDataIndex.h>
 
 class medDatabaseItemPrivate
 {
 public:
-          medDatabaseItem * parentItem;
+    medDatabaseItem * parentItem;
     QList<medDatabaseItem *> childItems;
 
     QList<QVariant> attrData;
@@ -38,7 +38,7 @@ medDatabaseItem::~medDatabaseItem(void)
     qDeleteAll(d->childItems);
     d->childItems.clear();
     delete d;
-    d = NULL;
+    d = nullptr;
 }
 
 medAbstractDatabaseItem *medDatabaseItem::child(int row)
@@ -226,5 +226,4 @@ int medDatabaseItem::rowOf(medAbstractDatabaseItem *child) const
         row = -1;
     
     return row;
-    
 }
