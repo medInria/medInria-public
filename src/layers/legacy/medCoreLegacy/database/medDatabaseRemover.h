@@ -58,7 +58,7 @@ protected:
 
     void removeFile( const QString & filename );
     void removeThumbnailIfNeeded(QSqlQuery query);
-    void removeDataFile( const medDataIndex &index, const QString & filename );
+    void removeDataFile(const QString & filename );
     bool removeTableRow( const QString &table, int id );
 
 private:

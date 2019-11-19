@@ -53,8 +53,7 @@ medDatabaseRemover::medDatabaseRemover ( const medDataIndex &index_ ) : medJobIt
 medDatabaseRemover::~medDatabaseRemover()
 {
     delete d;
-
-    d = NULL;
+    d = nullptr;
 }
 
 void medDatabaseRemover::internalRun()
@@ -62,6 +61,7 @@ void medDatabaseRemover::internalRun()
     QSqlDatabase db( d->db );
     QSqlQuery ptQuery ( db );
 
+    // Is Patient
     const medDataIndex index = d->index;
     if ( index.isValidForPatient() )
     {
@@ -82,6 +82,7 @@ void medDatabaseRemover::internalRun()
         int patientDbId = ptQuery.value ( 0 ).toInt();
         QSqlQuery stQuery ( db );
 
+        // Is Study
         if ( index.isValidForStudy() )
         {
             stQuery.prepare ( "SELECT id FROM " + d->T_STUDY + " WHERE id = :id AND patient = :patient" );
@@ -102,6 +103,7 @@ void medDatabaseRemover::internalRun()
             int studyDbId = stQuery.value ( 0 ).toInt();
             QSqlQuery seQuery ( db );
 
+            // Is Series
             if ( index.isValidForSeries() )
             {
                 seQuery.prepare ( "SELECT id FROM " + d->T_SERIES + " WHERE id = :id AND study = :study" );
@@ -120,15 +122,26 @@ void medDatabaseRemover::internalRun()
                     break;
 
                 int seriesDbId = seQuery.value ( 0 ).toInt();
+
+                // Remove Series
                 this->removeSeries ( patientDbId, studyDbId, seriesDbId );
+
                 emit progress (this, 50 );
             } // seQuery.next
+
+            // After removal of series, test if study is empty, and remove it if it is
             if ( this->isStudyEmpty ( studyDbId ) )
+            {
                 this->removeStudy ( patientDbId, studyDbId );
+            }
 
         } // stQuery.next
+
+        // After removal of study, test if patient is empty, and remove it if it is
         if ( this->isPatientEmpty ( patientDbId ) )
+        {
             this->removePatient ( patientDbId );
+        }
 
     } // ptQuery.next
     emit progress (this, 100 );
@@ -156,8 +169,9 @@ void medDatabaseRemover::removeSeries ( int patientDbId, int studyDbId, int seri
 
         // if path is empty then it was an indexed series
         if ( !path.isNull() && !path.isEmpty() )
-            this->removeDataFile ( medDataIndex::makeSeriesIndex ( d->index.dataSourceId(), patientDbId, studyDbId, seriesDbId ) , path );
-
+        {
+            this->removeDataFile(path);
+        }
         removeThumbnailIfNeeded(query);
     }
 
@@ -280,7 +294,7 @@ void medDatabaseRemover::onCancel ( QObject* )
 }
 
 //! Remove a data image file. Includes special cases for some file types.
-void medDatabaseRemover::removeDataFile ( const medDataIndex &index, const QString & filename )
+void medDatabaseRemover::removeDataFile(const QString & filename)
 {
     QFileInfo fi ( filename );
     const QString suffix = fi.suffix();
