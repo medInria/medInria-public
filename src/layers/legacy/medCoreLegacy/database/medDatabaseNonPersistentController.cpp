@@ -113,8 +113,8 @@ int medDatabaseNonPersistentController::nonPersistentDataStartingIndex() const
 medDatabaseNonPersistentController::medDatabaseNonPersistentController(): d(new medDatabaseNonPersistentControllerPrivate)
 {
     d->patientIndex = nonPersistentDataStartingIndex();
-    d->studyIndex = nonPersistentDataStartingIndex();
-    d->seriesIndex = nonPersistentDataStartingIndex();
+    d->studyIndex   = nonPersistentDataStartingIndex();
+    d->seriesIndex  = nonPersistentDataStartingIndex();
 }
 
 medDatabaseNonPersistentController::~medDatabaseNonPersistentController(void)
@@ -151,18 +151,23 @@ void medDatabaseNonPersistentController::importData(medAbstractData *data,
 
 void medDatabaseNonPersistentController::removeAll()
 {
+    qDebug()<<"### medDatabaseNonPersistentController::removeAll";
+
     // objects are reference counted.
     // We could check if the item is still in use... but we just remove our reference here.
     qDeleteAll(d->items);
 
     d->items.clear();
     d->patientIndex = nonPersistentDataStartingIndex();
-    d->studyIndex = nonPersistentDataStartingIndex();
-    d->seriesIndex = nonPersistentDataStartingIndex();
+    d->studyIndex   = nonPersistentDataStartingIndex();
+    d->seriesIndex  = nonPersistentDataStartingIndex();
 }
 
 void medDatabaseNonPersistentController::remove(const medDataIndex &index)
 {
+    qDebug()<<"### ------------------------------------------";
+    qDebug()<<"### medDatabaseNonPersistentController::remove";
+
     typedef medDatabaseNonPersistentControllerPrivate::DataHashMapType DataHashMapType;
     typedef QList<medDataIndex> medDataIndexList;
     medDataIndexList indexesToRemove;
@@ -171,26 +176,40 @@ void medDatabaseNonPersistentController::remove(const medDataIndex &index)
     {
         if (medDataIndex::isMatch( it.key(), index))
         {
+            qDebug()<<"### medDatabaseNonPersistentController::remove matched "<<it.key().asString();
             indexesToRemove.push_back(it.key());
         }
     }
+    qDebug()<<"### medDatabaseNonPersistentController::remove indexNumber "<<indexesToRemove.count();
 
-    for (medDataIndexList::const_iterator it(indexesToRemove.begin()); it != indexesToRemove.end(); ++it)
+    if (!indexesToRemove.isEmpty())
     {
-        DataHashMapType::iterator itemIt(d->items.find(*it));
-        delete itemIt.value();
-        d->items.erase(itemIt);
+        for (medDataIndexList::const_iterator it(indexesToRemove.begin()); it != indexesToRemove.end(); ++it)
+        {
+            DataHashMapType::iterator itemIt(d->items.find(*it));
+            delete itemIt.value();
+            d->items.erase(itemIt);
+        }
     }
+
+    qDebug()<<"### medDatabaseNonPersistentController::remove series count "<<series(index).count();
+    qDebug()<<"### medDatabaseNonPersistentController::remove studies count "<<studies(index).count();
+    qDebug()<<"### medDatabaseNonPersistentController::remove total patients count "<<patients().count();
 
     if( index.isValidForSeries() && series(index).isEmpty() )
     {
+        qDebug()<<"### medDatabaseNonPersistentController::remove ok series and empty";
+        // If the study is empty, remove it
         remove(medDataIndex(index.dataSourceId(), index.patientId(), index.isValidForStudy(), -1));
     }
-    else if( index.isValidForStudy() && series(index).isEmpty() )
+    else if( index.isValidForStudy() && studies(index).isEmpty() )
     {
+        qDebug()<<"### medDatabaseNonPersistentController::remove ok study and empty";
+        // If there are no studies in this patient anymore, remove it
         remove(medDataIndex(index.dataSourceId(), index.patientId(), -1, -1));
     }
 
+    qDebug()<<"### medDatabaseNonPersistentController::remove emit";
     emit dataRemoved(index);
 }
 
@@ -243,6 +262,11 @@ QList<medDataIndex> medDatabaseNonPersistentController::patients() const
     return ret;
 }
 
+/**
+ * @brief medDatabaseNonPersistentController::studies
+ * @param index of a series, study or patient
+ * @return the number of studies of the index patient
+ */
 QList<medDataIndex> medDatabaseNonPersistentController::studies( const medDataIndex& index ) const
 {
     QList<medDataIndex> ret;
@@ -255,18 +279,36 @@ QList<medDataIndex> medDatabaseNonPersistentController::studies( const medDataIn
 
     typedef medDatabaseNonPersistentControllerPrivate::DataHashMapType MapType;
     // First which does not compare less then given index -> first study for this patient.
-    MapType::const_iterator it(d->items.lowerBound(medDataIndex::makePatientIndex(this->dataSourceId(), index.patientId())));
-    int prevId = -1;
-    for ( ; it != d->items.end() ; ++it)
+    //MapType::const_iterator it(d->items.lowerBound(medDataIndex::makePatientIndex(this->dataSourceId(), index.patientId())));
+    //int previousStudyId = -1;
+    //for ( ; it != d->items.end() ; ++it)
+
+    // For each temporary index
+    for (MapType::const_iterator it(d->items.begin()); it != d->items.end(); ++it)
     {
-        if ( it.key().patientId() != index.patientId() )
-            break;
-        int currId = it.key().studyId();
-        if ( currId != prevId ) {
-            ret.push_back(medDataIndex::makeStudyIndex(this->dataSourceId(), index.patientId(), currId));
-            prevId = currId;
+        if ( it.key().patientId() == index.patientId() )
+        {
+            //int currentStudyId = it.key().studyId();
+            //if ( currentStudyId != previousStudyId )
+            medDataIndex currentStudyIndex = medDataIndex::makeStudyIndex(this->dataSourceId(), index.patientId(), it.key().studyId());
+
+            // Patients are only valid for patients, Studies for patients and studies, and Series for patients, studies and series
+            if (currentStudyIndex.isValidForPatient()
+                    && currentStudyIndex.isValidForStudy()
+                    && !currentStudyIndex.isValidForSeries())
+            {
+                qDebug()<<"### medDatabaseNonPersistentController::studies OK STUDY";
+                if (!ret.contains(currentStudyIndex))
+                {
+                    qDebug()<<"### medDatabaseNonPersistentController::studies new Study";
+                    ret.push_back(currentStudyIndex);
+                    //ret.push_back(medDataIndex::makeStudyIndex(this->dataSourceId(), index.patientId(), currentStudyId));
+                    //previousStudyId = currentStudyId; // Avoid multiple same study
+                }
+            }
         }
     }
+
     return ret;
 }
 
