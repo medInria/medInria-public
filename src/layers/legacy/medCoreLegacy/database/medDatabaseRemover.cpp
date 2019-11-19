@@ -176,7 +176,7 @@ void medDatabaseRemover::removeSeries ( int patientDbId, int studyDbId, int seri
     }
 
     if( removeTableRow ( d->T_SERIES, seriesDbId ) )
-        emit removed(medDataIndex(1, patientDbId, studyDbId, seriesDbId, -1));
+        emit removed(medDataIndex(1, patientDbId, studyDbId, seriesDbId));
 }
 
 bool medDatabaseRemover::isStudyEmpty ( int studyDbId )
@@ -210,7 +210,7 @@ void medDatabaseRemover::removeStudy ( int patientDbId, int studyDbId )
     }
 
     if( removeTableRow ( d->T_STUDY, studyDbId ) )
-        emit removed(medDataIndex(1, patientDbId, studyDbId, -1, -1));
+        emit removed(medDataIndex(1, patientDbId, studyDbId, -1));
 }
 
 bool medDatabaseRemover::isPatientEmpty ( int patientDbId )
@@ -240,7 +240,7 @@ void medDatabaseRemover::removePatient ( int patientDbId )
         patientId = query.value ( 1 ).toString();
     }
     if( removeTableRow ( d->T_PATIENT, patientDbId ) )
-        emit removed(medDataIndex(1, patientDbId, -1, -1, -1));
+        emit removed(medDataIndex(1, patientDbId, -1, -1));
 }
 
 bool medDatabaseRemover::removeTableRow ( const QString &table, int id )

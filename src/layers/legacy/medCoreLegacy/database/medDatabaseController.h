@@ -59,7 +59,7 @@ public:
     virtual QList<medDataIndex> patients() const;
     virtual QList<medDataIndex> studies(const medDataIndex& index ) const;
     virtual QList<medDataIndex> series(const medDataIndex& index) const;
-    virtual QList<medDataIndex> images(const medDataIndex& index ) const;
+
     virtual QPixmap thumbnail(const medDataIndex& index) const;
 
     virtual QString metaData(const medDataIndex& index,const QString& key) const;
