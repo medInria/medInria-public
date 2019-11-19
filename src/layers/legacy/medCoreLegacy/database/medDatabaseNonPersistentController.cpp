@@ -37,7 +37,6 @@ public:
     int patientIndex;
     int studyIndex;
     int seriesIndex;
-    int imageIndex;
     typedef QMap<medDataIndex, medDatabaseNonPersistentItem *> DataHashMapType;
     DataHashMapType items;
 };
@@ -79,14 +78,6 @@ int medDatabaseNonPersistentController::seriesId(bool increment)
         return d->seriesIndex;
 }
 
-int medDatabaseNonPersistentController::imageId(bool increment)
-{
-    if (increment)
-        return d->imageIndex++;
-    else
-        return d->imageIndex;
-}
-
 QList<medDatabaseNonPersistentItem *> medDatabaseNonPersistentController::items(void)
 {
     return d->items.values();
@@ -114,17 +105,16 @@ void medDatabaseNonPersistentController::importPath(const QString& file,const QU
     QThreadPool::globalInstance()->start(importer);
 }
 
-int medDatabaseNonPersistentController::nonPersistentDataStartingIndex(void) const
+int medDatabaseNonPersistentController::nonPersistentDataStartingIndex() const
 {
     return 100000000;
 }
 
-medDatabaseNonPersistentController::medDatabaseNonPersistentController(void): d(new medDatabaseNonPersistentControllerPrivate)
+medDatabaseNonPersistentController::medDatabaseNonPersistentController(): d(new medDatabaseNonPersistentControllerPrivate)
 {
     d->patientIndex = nonPersistentDataStartingIndex();
     d->studyIndex = nonPersistentDataStartingIndex();
     d->seriesIndex = nonPersistentDataStartingIndex();
-    d->imageIndex = nonPersistentDataStartingIndex();
 }
 
 medDatabaseNonPersistentController::~medDatabaseNonPersistentController(void)
@@ -169,9 +159,7 @@ void medDatabaseNonPersistentController::removeAll()
     d->patientIndex = nonPersistentDataStartingIndex();
     d->studyIndex = nonPersistentDataStartingIndex();
     d->seriesIndex = nonPersistentDataStartingIndex();
-    d->imageIndex = nonPersistentDataStartingIndex();
 }
-
 
 void medDatabaseNonPersistentController::remove(const medDataIndex &index)
 {
@@ -179,8 +167,10 @@ void medDatabaseNonPersistentController::remove(const medDataIndex &index)
     typedef QList<medDataIndex> medDataIndexList;
     medDataIndexList indexesToRemove;
 
-    for (DataHashMapType::const_iterator it(d->items.begin()); it != d->items.end(); ++it ) {
-        if (medDataIndex::isMatch( it.key(), index)) {
+    for (DataHashMapType::const_iterator it(d->items.begin()); it != d->items.end(); ++it )
+    {
+        if (medDataIndex::isMatch( it.key(), index))
+        {
             indexesToRemove.push_back(it.key());
         }
     }
@@ -194,11 +184,11 @@ void medDatabaseNonPersistentController::remove(const medDataIndex &index)
 
     if( index.isValidForSeries() && series(index).isEmpty() )
     {
-        remove(medDataIndex(index.dataSourceId(), index.patientId(), index.isValidForStudy(), -1, -1));
+        remove(medDataIndex(index.dataSourceId(), index.patientId(), index.isValidForStudy(), -1));
     }
     else if( index.isValidForStudy() && series(index).isEmpty() )
     {
-        remove(medDataIndex(index.dataSourceId(), index.patientId(), -1, -1, -1));
+        remove(medDataIndex(index.dataSourceId(), index.patientId(), -1, -1));
     }
 
     emit dataRemoved(index);
@@ -302,34 +292,6 @@ QList<medDataIndex> medDatabaseNonPersistentController::series( const medDataInd
         int currId = it.key().seriesId();
         if ( currId != prevId ) {
             ret.push_back(medDataIndex::makeSeriesIndex(this->dataSourceId(), index.patientId(), index.studyId(), currId));
-            prevId = currId;
-        }
-    }
-    return ret;
-}
-
-QList<medDataIndex> medDatabaseNonPersistentController::images( const medDataIndex& index ) const
-{
-    QList<medDataIndex> ret;
-
-    if ( !index.isValidForSeries() )
-    {
-        qWarning() << "invalid index passed (not series)";
-        return ret;
-    }
-
-    typedef medDatabaseNonPersistentControllerPrivate::DataHashMapType MapType;
-    // First which does not compare less then given index -> first series for this patient.
-    MapType::const_iterator it(d->items.lowerBound(medDataIndex::makeSeriesIndex(this->dataSourceId(), index.patientId(), index.studyId(), index.seriesId())));
-    int prevId = -1;
-    for ( ; it != d->items.end(); ++it)
-    {
-        if ( it.key().patientId() != index.patientId() || it.key().studyId() != index.studyId() || it.key().seriesId() != index.seriesId())
-            break;
-
-        int currId = it.key().seriesId();
-        if ( currId != prevId ) {
-            ret.push_back(medDataIndex(this->dataSourceId(), index.patientId(), index.studyId(), index.seriesId(), currId));
             prevId = currId;
         }
     }

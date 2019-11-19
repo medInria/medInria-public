@@ -79,7 +79,6 @@ void medAbstractData::setDataIndex( const medDataIndex& index )
     d->index.setPatientId(index.patientId());
     d->index.setStudyId(index.studyId());
     d->index.setSeriesId(index.seriesId());
-    d->index.setImageId(index.imageId());
 }
 
 /**

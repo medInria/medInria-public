@@ -133,7 +133,7 @@ medDataIndex medDatabaseNonPersistentImporter::populateDatabaseAndGenerateThumbn
     {
         // create an item for patient
         patientItem = new medDatabaseNonPersistentItem;
-        index = medDataIndex ( npdc->dataSourceId(), patientDbId, -1, -1, -1 );
+        index = medDataIndex ( npdc->dataSourceId(), patientDbId, -1, -1 );
 
         medAbstractData *medData = new medAbstractData();
         medData->setMetaData ( medMetaDataKeys::PatientName.key(), QStringList() <<  patientName );
@@ -184,7 +184,7 @@ medDataIndex medDatabaseNonPersistentImporter::populateDatabaseAndGenerateThumbn
         {
             // create an item for study
             studyItem = new medDatabaseNonPersistentItem;
-            index = medDataIndex ( npdc->dataSourceId(), patientDbId, studyDbId, -1, -1 );
+            index = medDataIndex ( npdc->dataSourceId(), patientDbId, studyDbId, -1 );
 
             medAbstractData *medData = new medAbstractData();
 
@@ -209,7 +209,7 @@ medDataIndex medDatabaseNonPersistentImporter::populateDatabaseAndGenerateThumbn
 
     if(seriesName != "EmptySeries")
     {
-        index = medDataIndex ( npdc->dataSourceId(), patientDbId, studyDbId, npdc->seriesId ( true ), -1 );
+        index = medDataIndex ( npdc->dataSourceId(), patientDbId, studyDbId, npdc->seriesId ( true ) );
 
         QString seriesId = medMetaDataKeys::SeriesID.getFirstValue(data);
         QString seriesUid = medMetaDataKeys::SeriesDicomID.getFirstValue(data);

@@ -35,7 +35,6 @@ public:
     virtual QList<medDataIndex> patients() const = 0;
     virtual QList<medDataIndex> studies(const medDataIndex& index ) const = 0;
     virtual QList<medDataIndex> series(const medDataIndex& index) const = 0;
-    virtual QList<medDataIndex> images(const medDataIndex& index) const = 0;
 
     virtual QPixmap thumbnail(const medDataIndex& index) const = 0;
 

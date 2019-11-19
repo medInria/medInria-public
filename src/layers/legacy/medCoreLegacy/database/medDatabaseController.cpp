@@ -199,7 +199,7 @@ medDataIndex medDatabaseController::indexForPatient(int id)
 }
 
 /**
-* Returns the index of a data given patient, study, series and image name
+* Returns the index of a data given patient, study, and series name
 */
 medDataIndex medDatabaseController::indexForPatient (const QString &patientName)
 {
@@ -915,30 +915,6 @@ QList<medDataIndex> medDatabaseController::series( const medDataIndex& index) co
     return ret;
 }
 
-/** Enumerate all images for given series */
-QList<medDataIndex> medDatabaseController::images( const medDataIndex& index) const
-{
-    QList<medDataIndex> ret;
-
-    if ( !index.isValidForSeries() )
-    {
-        qWarning() << "invalid index passed (not series)";
-        return ret;
-    }
-
-    QSqlQuery query(this->database());
-    query.prepare("SELECT id FROM image WHERE series = :seriesId");
-    query.bindValue(":seriesId", index.seriesId());
-    EXEC_QUERY(query);
-#if QT_VERSION > 0x0406FF
-    ret.reserve( query.size() );
-#endif
-    while( query.next() ){
-        ret.push_back( medDataIndex(this->dataSourceId(), index.patientId(), index.studyId(), index.seriesId(), query.value(0).toInt()));
-    }
-    return ret;
-}
-
 QPixmap medDatabaseController::thumbnail(const medDataIndex &index) const
 {
     QString thumbpath = this->metaData(index, medMetaDataKeys::ThumbnailPath.key());
@@ -986,7 +962,6 @@ bool medDatabaseController::contains(const medDataIndex &index) const
         QVariant patientId = index.patientId();
         QVariant studyId = index.studyId();
         QVariant seriesId = index.seriesId();
-        QVariant imageId = index.imageId();
 
         QSqlQuery query(this->database());
         QString fromRequest = "SELECT * FROM patient";
@@ -1000,11 +975,6 @@ bool medDatabaseController::contains(const medDataIndex &index) const
             {
                 fromRequest += " INNER JOIN series ON (study.id = series.study)";
                 whereRequest +=  " AND series.id = :seID";
-                if (imageId != -1)
-                {
-                    fromRequest += " INNER JOIN image ON (series.id = image.series)";
-                    whereRequest +=  " AND image.id = :imID";
-                }
             }
         }
         QString request = fromRequest + whereRequest;
@@ -1015,8 +985,6 @@ bool medDatabaseController::contains(const medDataIndex &index) const
             query.bindValue(":stID", studyId);
         if (seriesId != -1)
             query.bindValue(":seID", seriesId);
-        if (imageId != -1)
-            query.bindValue(":imID", imageId);
 
         if(!EXEC_QUERY(query))
         {

@@ -23,7 +23,7 @@ class QMimeData;
  *  \brief  A small class to uniquely identify data stored in the medInria datasources.
  *  The class contains 5 integer values :
  *  dataSourceId : Identifies the data source (see @medDataManager)
- *  patientId, studyId, seriesId,imageId identify the data within the source.
+ *  patientId, studyId, seriesId identify the data within the source.
  *
  *  The integer value NOT_VALID is reserved to indicate unset or invalid data.
  *  */
@@ -32,7 +32,7 @@ class MEDCORELEGACY_EXPORT medDataIndex
 public:
     enum {NOT_VALID = -1 };
 
-     medDataIndex(int dataSourceId, int patientId, int studyId, int seriesId, int imageId);
+     medDataIndex(int dataSourceId, int patientId, int studyId, int seriesId);
      medDataIndex();
      medDataIndex(const medDataIndex& index);
     ~medDataIndex();
@@ -41,7 +41,6 @@ public:
     bool isValidForPatient() const;
     bool isValidForStudy() const;
     bool isValidForSeries() const;
-    bool isValidForImage() const;
 
     QString asString() const;
 
@@ -49,13 +48,11 @@ public:
     void setPatientId (int id) { m_patientId = id; }
     void setStudyId   (int id) { m_studyId = id; }
     void setSeriesId  (int id) { m_seriesId = id; }
-    void setImageId   (int id) { m_imageId = id; }
 
     int dataSourceId() const { return m_dataSourceId; }
     int patientId() const { return m_patientId; }
     int   studyId() const { return m_studyId; }
     int  seriesId() const { return m_seriesId; }
-    int   imageId() const { return m_imageId; }
 
     medDataIndex& operator=(const medDataIndex& index);
 
@@ -80,7 +77,6 @@ private:
     int m_patientId;
     int m_studyId;
     int m_seriesId;
-    int m_imageId;
 };
 
 // /////////////////////////////////////////////////////////////////

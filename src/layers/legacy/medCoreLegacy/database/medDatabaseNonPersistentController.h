@@ -36,7 +36,6 @@ public:
     int patientId(bool increment=false);
     int   studyId(bool increment=false);
     int  seriesId(bool increment=false);
-    int   imageId(bool increment=false);
 
     int nonPersistentDataStartingIndex() const;
 
@@ -54,7 +53,6 @@ public:
     virtual QList<medDataIndex> patients() const;
     virtual QList<medDataIndex> studies(const medDataIndex& index ) const;
     virtual QList<medDataIndex> series(const medDataIndex& index ) const;
-    virtual QList<medDataIndex> images(const medDataIndex& index ) const;
 
     virtual QPixmap thumbnail(const medDataIndex &index) const;
 
