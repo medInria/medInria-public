@@ -178,7 +178,9 @@ bool medAnnotationInteractor::SetViewInput(medAbstractData *data)
         {
             vtkAlgorithmOutput *poVtkAlgoOutputPort = nullptr;
             vtkMatrix4x4 *poMatrix = nullptr;
+            auto *poOldConv = m_poConv;
             m_poConv = new vtkItkConversion<unsigned char, 3>();
+            delete poOldConv;
             bRes = m_poConv->SetITKInput(image);
             if (bRes)
             {
