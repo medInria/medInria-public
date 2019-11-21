@@ -95,6 +95,7 @@ medVtkViewItkDataImageInteractor::medVtkViewItkDataImageInteractor(medAbstractVi
 
 medVtkViewItkDataImageInteractor::~medVtkViewItkDataImageInteractor()
 {
+    delete m_poConv;
     delete d;
     d = nullptr;
 }
@@ -197,8 +198,10 @@ bool medVtkViewItkDataImageInteractor::SetViewInput(medAbstractData* data, int l
 {
     bool bRes = true;
 
+    auto *poOldConv = m_poConv;
     m_poConv = vtkItkConversionInterface::createInstance(data);
-
+    delete poOldConv;
+    
     if (m_poConv)
     {
         itk::DataObject::Pointer image = (itk::DataObject*)(data->data());
