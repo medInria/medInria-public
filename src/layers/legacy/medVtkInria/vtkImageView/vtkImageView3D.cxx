@@ -466,7 +466,7 @@ void vtkImageView3D::UnInstallInteractor()
 //----------------------------------------------------------------------------
 void vtkImageView3D::SetInput(vtkAlgorithmOutput* pi_poVtkAlgoOutput, vtkMatrix4x4 *matrix /*= 0*/, int layer /*= 0*/)
 {
-    vtkImageData *vtkImgTmp = ((vtkImageAlgorithm*)pi_poVtkAlgoOutput->GetProducer())->GetOutput();
+  vtkImageData *vtkImgTmp = ((vtkImageAlgorithm*)pi_poVtkAlgoOutput->GetProducer())->GetOutput();
   if(layer==0)
   {
     if (this->GetMedVtkImageInfo() && this->GetMedVtkImageInfo()->initialized)
@@ -673,6 +673,8 @@ void vtkImageView3D::InternalUpdate()
     this->PlaneWidget->SetInputConnection(appender->GetOutputPort());
     this->PlaneWidget->PlaceWidget(bounds);
     this->UpdateDisplayExtent();
+
+    appender->Delete();
 }
 
 //----------------------------------------------------------------------------
