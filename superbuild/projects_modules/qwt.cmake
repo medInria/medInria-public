@@ -35,7 +35,7 @@ set(git_tag qwt-6.2)
 set(${ep}_cxx_flags "${${ep}_cxx_flags} -Wall -std=c++11")
 set(${ep}_c_flags "${${ep}_c_flags} -Wall")
 
-find_package(Qt5)
+find_package(Qt5 REQUIRED Core)
 
 set (MAKE_PROGRAM ${CMAKE_MAKE_PROGRAM})
 if(WIN32)
@@ -43,11 +43,6 @@ if(WIN32)
 endif(WIN32)
 
 get_target_property (QT_QMAKE_EXECUTABLE Qt5::qmake IMPORTED_LOCATION)
-
-message("qt 5 var" ${Qt5_DIR})
-message("qwt install" ${QWT_INSTALL_PREFIX})
-message("qmake " ${QT_QMAKE_EXECUTABLE})
-message("make "  ${MAKE_PROGRAM}) 
 
 set(QWT_INSTALL_PREFIX ${EP_PATH_SOURCE}/../build/qwt)
 
@@ -69,6 +64,8 @@ ep_GeneratePatchCommand(${ep} QWT_PATCH_COMMAND qwt-6.2.patch)
 ExternalProject_Add(${ep}
   PREFIX ${EP_PATH_SOURCE}
   SOURCE_DIR ${EP_PATH_SOURCE}/${ep}
+  TMP_DIR ${tmp_path}
+  STAMP_DIR ${stamp_path}
   GIT_REPOSITORY ${git_url}
   GIT_TAG ${git_tag}
   CMAKE_GENERATOR ${gen}
