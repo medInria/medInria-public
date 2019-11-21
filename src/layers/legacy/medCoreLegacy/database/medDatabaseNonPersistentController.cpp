@@ -45,7 +45,7 @@ public:
 // medDatabaseNonPersitentController
 // /////////////////////////////////////////////////////////////////
 
-medDatabaseNonPersistentController*  medDatabaseNonPersistentController::s_instance = NULL;
+medDatabaseNonPersistentController*  medDatabaseNonPersistentController::s_instance = nullptr;
 
 medDatabaseNonPersistentController* medDatabaseNonPersistentController::instance() {
     if ( ! s_instance) {
@@ -122,7 +122,7 @@ medDatabaseNonPersistentController::~medDatabaseNonPersistentController(void)
     qDeleteAll(d->items);
 
     delete d;
-    d = NULL;
+    d = nullptr;
 }
 
 bool medDatabaseNonPersistentController::isConnected() const
@@ -151,8 +151,6 @@ void medDatabaseNonPersistentController::importData(medAbstractData *data,
 
 void medDatabaseNonPersistentController::removeAll()
 {
-    qDebug()<<"### medDatabaseNonPersistentController::removeAll";
-
     // objects are reference counted.
     // We could check if the item is still in use... but we just remove our reference here.
     qDeleteAll(d->items);
@@ -165,52 +163,82 @@ void medDatabaseNonPersistentController::removeAll()
 
 void medDatabaseNonPersistentController::remove(const medDataIndex &index)
 {
-    qDebug()<<"### ------------------------------------------";
-    qDebug()<<"### medDatabaseNonPersistentController::remove";
-
     typedef medDatabaseNonPersistentControllerPrivate::DataHashMapType DataHashMapType;
     typedef QList<medDataIndex> medDataIndexList;
     medDataIndexList indexesToRemove;
 
-    for (DataHashMapType::const_iterator it(d->items.begin()); it != d->items.end(); ++it )
+    // Main index to remove
+    if (d->items.contains(index))
     {
-        if (medDataIndex::isMatch( it.key(), index))
+        indexesToRemove.push_back(index);
+    }
+
+    // If the index to remove is not a series, it's needed to remove series/study children also
+    if (!index.isValidForSeries())
+    {
+        if (index.isValidForStudy())
         {
-            qDebug()<<"### medDatabaseNonPersistentController::remove matched "<<it.key().asString();
-            indexesToRemove.push_back(it.key());
+            for (DataHashMapType::const_iterator it(d->items.begin()); it != d->items.end(); ++it )
+            {
+                // Add series children indexes to the list to remove
+                medDataIndex currentTemporaryIndex = it.key();
+                if (currentTemporaryIndex.patientId() == index.patientId()
+                        && currentTemporaryIndex.studyId()   == index.studyId()
+                        && !indexesToRemove.contains(it.key()))
+                {
+                    indexesToRemove.push_back(it.key());
+                }
+            }
+        }
+        else if (index.isValidForPatient())
+        {
+            for (DataHashMapType::const_iterator it(d->items.begin()); it != d->items.end(); ++it )
+            {
+                // Add studies children indexes to the list to remove
+                medDataIndex currentTemporaryIndex = it.key();
+                if (currentTemporaryIndex.patientId() == index.patientId()
+                        && !indexesToRemove.contains(it.key()))
+                {
+                    indexesToRemove.push_back(it.key());
+                }
+            }
         }
     }
-    qDebug()<<"### medDatabaseNonPersistentController::remove indexNumber "<<indexesToRemove.count();
 
     if (!indexesToRemove.isEmpty())
     {
+        // Remove each index from the list
         for (medDataIndexList::const_iterator it(indexesToRemove.begin()); it != indexesToRemove.end(); ++it)
         {
             DataHashMapType::iterator itemIt(d->items.find(*it));
             delete itemIt.value();
             d->items.erase(itemIt);
         }
-    }
 
-    qDebug()<<"### medDatabaseNonPersistentController::remove series count "<<series(index).count();
-    qDebug()<<"### medDatabaseNonPersistentController::remove studies count "<<studies(index).count();
-    qDebug()<<"### medDatabaseNonPersistentController::remove total patients count "<<patients().count();
-
-    if( index.isValidForSeries() && series(index).isEmpty() )
-    {
-        qDebug()<<"### medDatabaseNonPersistentController::remove ok series and empty";
-        // If the study is empty, remove it
-        remove(medDataIndex(index.dataSourceId(), index.patientId(), index.isValidForStudy(), -1));
+        // Patients are only valid for patients, Studies for patients and studies, and Series for patients, studies and series
+        if( index.isValidForSeries() && series(index).isEmpty() )
+        {
+            // If the study is empty, remove it
+            emit dataRemoved(index);
+            remove(medDataIndex(index.dataSourceId(),
+                                index.patientId(),
+                                index.studyId(),
+                                medDataIndex::NOT_VALID));
+        }
+        else if( index.isValidForStudy() && studies(index).isEmpty() )
+        {
+            emit dataRemoved(index);
+            // If there are no studies in this patient anymore, remove it
+            remove(medDataIndex(index.dataSourceId(),
+                                index.patientId(),
+                                medDataIndex::NOT_VALID,
+                                medDataIndex::NOT_VALID));
+        }
+        else
+        {
+            emit dataRemoved(index);
+        }
     }
-    else if( index.isValidForStudy() && studies(index).isEmpty() )
-    {
-        qDebug()<<"### medDatabaseNonPersistentController::remove ok study and empty";
-        // If there are no studies in this patient anymore, remove it
-        remove(medDataIndex(index.dataSourceId(), index.patientId(), -1, -1));
-    }
-
-    qDebug()<<"### medDatabaseNonPersistentController::remove emit";
-    emit dataRemoved(index);
 }
 
 QList<medDataIndex> medDatabaseNonPersistentController::availableItems() const
@@ -220,8 +248,6 @@ QList<medDataIndex> medDatabaseNonPersistentController::availableItems() const
 
 bool medDatabaseNonPersistentController::contains( const medDataIndex& index ) const
 {
-    //does not work since we can share patient Id with the persistent one.
-    //return index.patientId() >= this->nonPersistentDataStartingIndex();
     if (d->items.contains(index))
         return true;
     //we may not have a complete match, but we may contain it
@@ -245,6 +271,11 @@ int medDatabaseNonPersistentController::dataSourceId() const
     return 2;
 }
 
+/**
+ * @brief medDatabaseNonPersistentController::patients
+ * @param none
+ * @return each temporary patient index
+ */
 QList<medDataIndex> medDatabaseNonPersistentController::patients() const
 {
     QList<medDataIndex> ret;
@@ -254,7 +285,8 @@ QList<medDataIndex> medDatabaseNonPersistentController::patients() const
     for (MapType::const_iterator it(d->items.begin()); it != d->items.end(); ++it)
     {
         int currId = it.key().patientId();
-        if ( currId != prevId ) {
+        if ( currId != prevId )
+        {
             ret.push_back(medDataIndex::makePatientIndex(dataSourceId(),currId));
             prevId = currId;
         }
@@ -265,7 +297,7 @@ QList<medDataIndex> medDatabaseNonPersistentController::patients() const
 /**
  * @brief medDatabaseNonPersistentController::studies
  * @param index of a series, study or patient
- * @return the number of studies of the index patient
+ * @return each temporary study of the index's patient
  */
 QList<medDataIndex> medDatabaseNonPersistentController::studies( const medDataIndex& index ) const
 {
@@ -278,33 +310,22 @@ QList<medDataIndex> medDatabaseNonPersistentController::studies( const medDataIn
     }
 
     typedef medDatabaseNonPersistentControllerPrivate::DataHashMapType MapType;
-    // First which does not compare less then given index -> first study for this patient.
-    //MapType::const_iterator it(d->items.lowerBound(medDataIndex::makePatientIndex(this->dataSourceId(), index.patientId())));
-    //int previousStudyId = -1;
-    //for ( ; it != d->items.end() ; ++it)
+    QList<int> studyIdFoundList;
 
     // For each temporary index
     for (MapType::const_iterator it(d->items.begin()); it != d->items.end(); ++it)
     {
+        // If we're in the right index's patient
         if ( it.key().patientId() == index.patientId() )
         {
-            //int currentStudyId = it.key().studyId();
-            //if ( currentStudyId != previousStudyId )
-            medDataIndex currentStudyIndex = medDataIndex::makeStudyIndex(this->dataSourceId(), index.patientId(), it.key().studyId());
+            int currentStudyId = it.key().studyId();
 
-            // Patients are only valid for patients, Studies for patients and studies, and Series for patients, studies and series
-            if (currentStudyIndex.isValidForPatient()
-                    && currentStudyIndex.isValidForStudy()
-                    && !currentStudyIndex.isValidForSeries())
+            // Get each study of this patient
+            if (currentStudyId != medDataIndex::NOT_VALID
+                    && !studyIdFoundList.contains(currentStudyId))
             {
-                qDebug()<<"### medDatabaseNonPersistentController::studies OK STUDY";
-                if (!ret.contains(currentStudyIndex))
-                {
-                    qDebug()<<"### medDatabaseNonPersistentController::studies new Study";
-                    ret.push_back(currentStudyIndex);
-                    //ret.push_back(medDataIndex::makeStudyIndex(this->dataSourceId(), index.patientId(), currentStudyId));
-                    //previousStudyId = currentStudyId; // Avoid multiple same study
-                }
+                studyIdFoundList.push_back(currentStudyId);
+                ret.push_back(medDataIndex::makeStudyIndex(this->dataSourceId(), index.patientId(), currentStudyId));
             }
         }
     }
@@ -312,6 +333,11 @@ QList<medDataIndex> medDatabaseNonPersistentController::studies( const medDataIn
     return ret;
 }
 
+/**
+ * @brief medDatabaseNonPersistentController::series
+ * @param index of a series or study
+ * @return each series of the study of the index
+ */
 QList<medDataIndex> medDatabaseNonPersistentController::series( const medDataIndex& index ) const
 {
     QList<medDataIndex> ret;
@@ -337,6 +363,7 @@ QList<medDataIndex> medDatabaseNonPersistentController::series( const medDataInd
             prevId = currId;
         }
     }
+
     return ret;
 }
 
@@ -353,7 +380,7 @@ QString medDatabaseNonPersistentController::metaData( const medDataIndex& index,
     typedef medDatabaseNonPersistentControllerPrivate::DataHashMapType MapType;
 
     MapType::const_iterator it(d->items.find(index));
-    if (it != d->items.end()  && it.value()!=NULL ) {
+    if (it != d->items.end()  && it.value()!=nullptr ) {
         medAbstractData *data = it.value()->data();
         if (data &&  data->hasMetaData(key) )
             return data->metadata(key);
@@ -361,7 +388,7 @@ QString medDatabaseNonPersistentController::metaData( const medDataIndex& index,
         // Cannot find an exact match for the given index. Find first data that may match
         // using ordered map.
         it = d->items.lowerBound( index );
-        if (it != d->items.end() && medDataIndex::isMatch( it.key(), index) && it.value()!=NULL ) {
+        if (it != d->items.end() && medDataIndex::isMatch( it.key(), index) && it.value()!=nullptr ) {
             medAbstractData *data = it.value()->data();
             if (data &&  data->hasMetaData(key) )
                 return data->metadata(key);
@@ -416,7 +443,7 @@ QList<medDataIndex> medDatabaseNonPersistentController::moveStudy(const medDataI
         return newIndexList;
     }
 
-    medDatabaseNonPersistentItem * studyItem = NULL;
+    medDatabaseNonPersistentItem * studyItem = nullptr;
 
     studyItem = d->items.find(indexStudy).value();
 
@@ -426,7 +453,7 @@ QList<medDataIndex> medDatabaseNonPersistentController::moveStudy(const medDataI
     //retrieve destination patient information
     medAbstractData *dataPatient = retrieve(toPatient);
 
-    if(dataPatient==NULL)
+    if(dataPatient==nullptr)
     {
         // let's try to get patient information from its series
         QList<medDataIndex> studiesIndexList = studies(toPatient);
@@ -440,13 +467,13 @@ QList<medDataIndex> medDatabaseNonPersistentController::moveStudy(const medDataI
                 break;
             }
         }
-        if( dataPatient == NULL )
+        if( dataPatient == nullptr )
             return newIndexList;
     }
 
     medAbstractData *dataStudy = retrieve(indexStudy);
 
-    if(dataStudy!=NULL)
+    if(dataStudy!=nullptr)
     {
         //update metadata
         dataStudy->setMetaData ( medMetaDataKeys::PatientName.key(),
@@ -472,7 +499,7 @@ QList<medDataIndex> medDatabaseNonPersistentController::moveStudy(const medDataI
     {
         dataStudy = retrieve(series);
 
-        if(dataStudy!=NULL)
+        if(dataStudy!=nullptr)
         {
             medDataIndex newSeriesIndex = moveSeries(series, newIndex);
 
@@ -512,10 +539,10 @@ medDataIndex medDatabaseNonPersistentController::moveSeries(const medDataIndex& 
     //retrieve destination study information
     medAbstractData *dataStudy = retrieve(toStudy);
 
-    medDatabaseNonPersistentItem * seriesItem = NULL;
+    medDatabaseNonPersistentItem * seriesItem = nullptr;
     seriesItem = d->items.find(indexSeries).value();
 
-    if(dataStudy == NULL)
+    if(dataStudy == nullptr)
     {
         // let's try to get study information from its series
         QList<medDataIndex> seriesIndexList = series(toStudy);
@@ -564,8 +591,8 @@ medAbstractData* medDatabaseNonPersistentController::retrieve(const medDataIndex
     medDatabaseNonPersistentControllerPrivate::DataHashMapType::const_iterator it( d->items.find(index) );
 
     // Is item in our table ? if not, return null.
-    if ( it == d->items.end() || it.value() == NULL )
-        return NULL;
+    if ( it == d->items.end() || it.value() == nullptr )
+        return nullptr;
 
     medAbstractData* retreivedData(it.value()->data());
 

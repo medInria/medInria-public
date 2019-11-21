@@ -254,16 +254,19 @@ QModelIndex medDatabaseModel::parent(const QModelIndex& index) const
         return QModelIndex();
 
     medAbstractDatabaseItem *child = static_cast<medAbstractDatabaseItem *>(index.internalPointer());
-    medAbstractDatabaseItem *parent = child->parent();
+    if (child)
+    {
+        medAbstractDatabaseItem *parent = child->parent();
 
-    if (parent == d->root)
-        return QModelIndex();
+        if (parent == d->root)
+            return QModelIndex();
 
-    QModelIndex newIndex =  createIndex(parent->row(), 0, parent);
-    d->medIndexMap[parent->dataIndex()] = newIndex;
+        QModelIndex newIndex =  createIndex(parent->row(), 0, parent);
+        d->medIndexMap[parent->dataIndex()] = newIndex;
 
-    return newIndex;
-
+        return newIndex;
+    }
+    return QModelIndex();
 }
 
 //! Get item flags for a model index.
@@ -623,6 +626,7 @@ void medDatabaseModel::populate(medAbstractDatabaseItem *root)
 
 void medDatabaseModel::update(const medDataIndex& dataIndex)
 {
+    // Patients are only valid for patients, Studies for patients and studies, and Series for patients, studies and series
     if(dataIndex.isValidForSeries())
     {
         updateSeries(dataIndex);
@@ -652,32 +656,36 @@ void medDatabaseModel::updateSeries(const medDataIndex& dataIndex)
     {
         if(item)
         {
-            // data is not present in the database anymore,
-            QModelIndex parentIndex = index.parent();
-            medDataIndex stDataIndex(dataIndex);
-            stDataIndex.setSeriesId(-1);
-
-            medAbstractDatabaseItem *parent = item->parent();
-            if(!parent)
+            if (d->medIndexMap.contains(dataIndex) && index.isValid())
             {
-                qWarning() << "A problem occured while updating the series " << dataIndex.asString();
-            }
-            else
-            {
-                emit layoutAboutToBeChanged();
-                changePersistenIndexAndSubIndex(index);
-                parent->removeChildren(/*index.row()*/parent->rowOf(item), 1);
-                d->medIndexMap.remove(dataIndex);
+                QModelIndex parentIndex = index.parent();
 
-                emit layoutChanged();
-                emit dataChanged(parentIndex, parentIndex);
+                // data is not present in the database anymore,
+                medDataIndex stDataIndex(dataIndex);
+                stDataIndex.setSeriesId(-1);
+
+                medAbstractDatabaseItem *parent = item->parent();
+                if(!parent)
+                {
+                    qWarning() << "A problem occured while updating the series " << dataIndex.asString();
+                }
+                else
+                {
+                    emit layoutAboutToBeChanged();
+                    changePersistenIndexAndSubIndex(index);
+                    parent->removeChildren(/*index.row()*/parent->rowOf(item), 1);
+                    d->medIndexMap.remove(dataIndex);
+
+                    emit layoutChanged();
+                    if (parentIndex.isValid())
+                    {
+                        emit dataChanged(parentIndex, parentIndex);
+                    }
+                }
             }
         }
-
-        return;
     }
-
-    if(dataIndex.isValidForSeries())
+    else if(dataIndex.isValidForSeries())
     {
         QList<QVariant> seData = d->seDefaultData;
         for (int i(0); i<d->DataCount; ++i)
@@ -733,8 +741,6 @@ void medDatabaseModel::updateSeries(const medDataIndex& dataIndex)
              emit dataChanged(newIndex, newIndex);
         }
     }
-
-    return;
 }
 
 void medDatabaseModel::updateStudy(const medDataIndex& dataIndex, bool updateChildren)
@@ -754,10 +760,15 @@ void medDatabaseModel::updateStudy(const medDataIndex& dataIndex, bool updateChi
         {
             QModelIndex parentIndex = index.parent();
             QList<medDataIndex> series = dbc->series(dataIndex);
-            foreach(medDataIndex currentSeries, series)
+
+            if (series.count() > 0)
             {
-                updateSeries(currentSeries);
+                foreach(medDataIndex currentSeries, series)
+                {
+                    updateSeries(currentSeries);
+                }
             }
+
             emit layoutAboutToBeChanged();
 
             changePersistenIndexAndSubIndex(index);
@@ -781,11 +792,8 @@ void medDatabaseModel::updateStudy(const medDataIndex& dataIndex, bool updateChi
 
             emit dataChanged(parentIndex, parentIndex);
         }
-
-        return;
     }
-
-    if(dataIndex.isValidForStudy())
+    else if(dataIndex.isValidForStudy())
     {
         QList<QVariant> stData = d->stDefaultData;
         for (int i(0); i<d->DataCount; ++i)
@@ -852,8 +860,6 @@ void medDatabaseModel::updateStudy(const medDataIndex& dataIndex, bool updateChi
             }
         }
     }
-
-     return;
 }
 
 void medDatabaseModel::updatePatient(const medDataIndex& dataIndex, bool updateChildren)
@@ -895,11 +901,8 @@ void medDatabaseModel::updatePatient(const medDataIndex& dataIndex, bool updateC
                 emit layoutChanged();
             }
         }
-
-        return;
     }
-
-    if(dataIndex.isValidForPatient())
+    else if(dataIndex.isValidForPatient())
     {
         QList<QVariant> ptData = d->ptDefaultData;
         for (int i(0); i<d->DataCount; ++i)
@@ -930,7 +933,6 @@ void medDatabaseModel::updatePatient(const medDataIndex& dataIndex, bool updateC
             emit layoutChanged();
             emit dataChanged(newIndex,newIndex);
         }
-
     }
 }
 
