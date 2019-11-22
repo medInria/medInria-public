@@ -152,13 +152,14 @@ bool medDatabaseController::createConnection(void)
         this->m_database = QSqlDatabase::addDatabase("QSQLITE");
     this->m_database.setDatabaseName(medStorage::dataLocation() + "/" + "db");
 
-    if (!m_database.open()) {
-        qDebug() << DTK_COLOR_FG_RED << "Cannot open database: Unable to establish a database connection." << DTK_NO_COLOR;
+    if (!m_database.open())
+    {
+        qDebug() << DTK_COLOR_FG_RED << "Cannot open database: unable to establish a database connection." << DTK_NO_COLOR;
         return false;
     }
     else
     {
-        qDebug() << "Database opened at: " << m_database.databaseName();
+        qDebug() << "Database opened at: " << qPrintable(m_database.databaseName());
         d->isConnected = true;
     }
 

@@ -2,7 +2,7 @@
 
  medInria
 
- Copyright (c) INRIA 2013 - 2018. All rights reserved.
+ Copyright (c) INRIA 2013 - 2019. All rights reserved.
  See LICENSE.txt for details.
 
   This software is distributed WITHOUT ANY WARRANTY; without even
@@ -14,7 +14,6 @@
 #include <medPluginManager.h>
 
 #include <dtkCoreSupport/dtkPlugin.h>
-
 
 class medPluginManagerPrivate
 {
@@ -30,10 +29,12 @@ public:
  * @param void
  * @return medPluginManager * a pointer to an instance of the singleton.
 */
-medPluginManager *medPluginManager::instance(void)
+medPluginManager *medPluginManager::instance()
 {
     if(!s_instance)
+    {
         s_instance = new medPluginManager;
+    }
     return s_instance;
 }
 
@@ -64,7 +65,7 @@ void medPluginManager::uninitialize()
  *
  * @param void
 */
-void medPluginManager::readSettings(void)
+void medPluginManager::readSettings()
 {
     QDir plugins_dir;
     QString defaultPath;
@@ -89,7 +90,7 @@ void medPluginManager::readSettings(void)
         setPath(defaultPath);
     }
 
-    if(!QDir(path()).exists())
+    if(path().isEmpty())
     {
         qWarning() << "Your config does not seem to be set correctly.";
         qWarning() << "Please set "                  << QString(PLUGIN_PATH_VAR_NAME);
@@ -107,8 +108,9 @@ void medPluginManager::readSettings(void)
 QStringList medPluginManager::handlers(const QString& category)
 {
     if (d->handlers.contains(category))
+    {
         return d->handlers.value(category);
-
+    }
     return QStringList();
 }
 
@@ -119,17 +121,21 @@ QStringList medPluginManager::handlers(const QString& category)
 */
 void medPluginManager::onPluginLoaded(const QString& name)
 {
-    dtkDebug() << " Loading plugin : " << name;
+    qDebug() << " Loading plugin: " << qPrintable(name);
 
     dtkPlugin *plug = plugin(name);
 
     QStringList categories;
 
     if (plug->hasMetaData("category"))
+    {
         categories = plug->metaDataValues("category");
+    }
 
     foreach(QString category, categories)
+    {
         d->handlers[category] << plug->types();
+    }
 }
 
 /**
@@ -152,7 +158,7 @@ medPluginManager::medPluginManager(void) : dtkPluginManager(), d(new medPluginMa
 medPluginManager::~medPluginManager(void)
 {
     delete d;
-    d = NULL;
+    d = nullptr;
 }
 
 medPluginManager *medPluginManager::s_instance = NULL;
@@ -160,8 +166,8 @@ medPluginManager *medPluginManager::s_instance = NULL;
 
 void medPluginManager::onLoadError(const QString &errorMessage)
 {
-    dtkDebug() << "add error message to pluginManager:";
-    dtkDebug() << "\t" << errorMessage;
+    qDebug() << "add error message to pluginManager:";
+    qDebug() << "\t" << errorMessage;
     d->loadErrors << errorMessage;
 }
 
