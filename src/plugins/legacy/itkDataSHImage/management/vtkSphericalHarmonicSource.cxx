@@ -241,7 +241,8 @@ RequestData(vtkInformation *vtkNotUsed(request),vtkInformationVector **vtkNotUse
     return 1;
 }
 
-void vtkSphericalHarmonicSource::PrintSelf(ostream& os,vtkIndent indent) {
+void vtkSphericalHarmonicSource::PrintSelf(ostream& os,vtkIndent indent)
+{
     Superclass::PrintSelf(os,indent);
 
     os << indent << "Tessellation Order: " << Tesselation << std::endl;
@@ -253,11 +254,14 @@ void vtkSphericalHarmonicSource::PrintSelf(ostream& os,vtkIndent indent) {
        << NumberOfSphericalHarmonics << std::endl;
     os << indent << "SH Basis: " << NumberOfSphericalHarmonics << "x"
        << sphereT->GetOutput()->GetNumberOfPoints() << std::endl;
+
     os << indent << "SH Coefficients:" << std::endl << '[';
     for (int i=0;i<NumberOfSphericalHarmonics;++i)
+    {
         os << indent << SphericalHarmonics[i] << " ";
-        os << indent << ']' << std::endl;
     }
+    os << indent << ']' << std::endl;
+}
 
 int vtkSphericalHarmonicSource::RequestInformation(vtkInformation*,vtkInformationVector**,vtkInformationVector *outputVector) {
     // Get the info object

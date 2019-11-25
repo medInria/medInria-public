@@ -1143,7 +1143,7 @@ void vtkImageView3D::RemoveLayer (int layer)
         if (this->LayerInfoVec.size() == 0)
         {
             AddLayer(0);
-            bool bRestCam = true;
+
             for (auto pActor : vActorsBackup)
             {
                 this->Renderer->AddViewProp(pActor);
