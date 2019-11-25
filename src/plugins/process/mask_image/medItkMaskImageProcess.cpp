@@ -161,7 +161,7 @@ medAbstractJob::medJobExitStatus medItkMaskImageProcess::_run()
         typedef itk::ImageRegionIterator<MaskType> MaskIteratorType;
         typedef itk::ImageRegionConstIterator<SmallMaskType> SmallMaskIteratorType;
         MaskIteratorType completeMaskIt(ma, ma->GetLargestPossibleRegion());
-        for(int i = 0; i < ma->GetLargestPossibleRegion().GetSize()[Dimension - 1]; ++i)
+        for(int i = 0; i < static_cast<int>(ma->GetLargestPossibleRegion().GetSize()[Dimension - 1]); ++i)
         {
             SmallMaskIteratorType smallMaskIt(sma, sma->GetLargestPossibleRegion());
             while(!smallMaskIt.IsAtEnd())

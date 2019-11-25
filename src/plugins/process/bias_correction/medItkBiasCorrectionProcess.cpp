@@ -233,7 +233,7 @@ template <class inputType, unsigned int Dimension> medAbstractJob::medJobExitSta
 
     std::vector<unsigned int> oMaxNumbersIterationsVector(oListValue.size());
     std::vector<float> oInitialMeshResolutionVect(Dimension);
-    for (int i=0; i<oMaxNumbersIterationsVector.size(); ++i)
+    for (int i=0; i < static_cast<int>(oMaxNumbersIterationsVector.size()); ++i)
     {
        oMaxNumbersIterationsVector[i] = (unsigned int)oListValue[i].toInt();
     }
@@ -283,7 +283,7 @@ template <class inputType, unsigned int Dimension> medAbstractJob::medJobExitSta
     ABORT_CHECKING(m_bAborting);
     typename BiasFilter::VariableSizeArrayType itkTabMaximumIterations;
     itkTabMaximumIterations.SetSize(oMaxNumbersIterationsVector.size());
-    for (int i = 0; i < oMaxNumbersIterationsVector.size(); ++i)
+    for (int i = 0; i < static_cast<int>(oMaxNumbersIterationsVector.size()); ++i)
     {
         itkTabMaximumIterations[i] = oMaxNumbersIterationsVector[i];
     }

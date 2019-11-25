@@ -428,7 +428,7 @@ medFilteringWorkspace::medFilteringWorkspace(QWidget *parent): medAbstractWorksp
 medFilteringWorkspace::~medFilteringWorkspace()
 {
     delete d;
-    d = NULL;
+    d = nullptr;
 }
 
 void medFilteringWorkspace::setupTabbedViewContainer()
@@ -917,7 +917,7 @@ void medFilteringWorkspace::createFilterEnvironment()
     QWidget *poToolBoxWidget = poPresenter->buildToolBoxWidget();
 
     d->oProcessTab.push_back({ poProcess, poPresenter, poToolBoxWidget });
-    if (d->iCurrentTab >= 0 && d->iCurrentTab < d->oProcessTab.size())
+    if (d->iCurrentTab >= 0 && d->iCurrentTab < static_cast<int>(d->oProcessTab.size()))
     {
         d->oProcessTab[d->iCurrentTab].toolBox->hide();
     }
@@ -927,9 +927,13 @@ void medFilteringWorkspace::createFilterEnvironment()
     d->iCurrentTab = d->oProcessTab.size()-1;
 
     if (this->tabbedViewContainers()->currentWidget() == 0)
+    {
         this->tabbedViewContainers()->setSplitter(this->tabbedViewContainers()->currentIndex(), poPresenter->buildViewContainerSplitter());
+    }
     else
+    {
         this->tabbedViewContainers()->setSplitter(this->tabbedViewContainers()->count(), poPresenter->buildViewContainerSplitter());
+    }
 }
 
 void medFilteringWorkspace::setCurrentTab(int index)
@@ -938,8 +942,11 @@ void medFilteringWorkspace::setCurrentTab(int index)
     {
         stProcessAndToolBox stTmp = d->oProcessTab[index];
         d->FiltersParamToolBox->setTitle(QString("Parameters of ") + stTmp.process->caption());
-        if (d->iCurrentTab < d->oProcessTab.size())
+
+        if (d->iCurrentTab < static_cast<int>(d->oProcessTab.size()))
+        {
             d->oProcessTab[d->iCurrentTab].toolBox->hide();
+        }
         stTmp.toolBox->show();
         d->iCurrentTab = index;
     }
