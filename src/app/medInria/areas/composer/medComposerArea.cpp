@@ -228,6 +228,13 @@ medComposerArea::medComposerArea(QWidget *parent) : QWidget(parent), d(new medCo
     mainToolBar->setToolButtonStyle(Qt::ToolButtonTextUnderIcon);
     mainToolBar->setIconSize(QSize(32, 32));
 
+    QMenu *menu_bar = new QMenu();
+    QToolButton* menuButton = new QToolButton();
+    menuButton->setText("Composer Menu "); // Empty character at the end of this text to leave room for arrow
+    menuButton->setMenu(menu_bar);
+    menuButton->setPopupMode(QToolButton::InstantPopup);
+    mainToolBar->addWidget(menuButton);
+
     QAction *run_action = mainToolBar->addAction(QIcon(":dtkVisualProgramming/pixmaps/dtkCreatorToolbarButton_Run_Active.png"), "Run");
     run_action->setShortcut(Qt::ControlModifier + Qt::ShiftModifier + Qt::Key_R);
 
@@ -290,9 +297,7 @@ medComposerArea::medComposerArea(QWidget *parent) : QWidget(parent), d(new medCo
     mainToolBar->addWidget(new dtkSpacer(this));
     mainToolBar->addWidget(buttons);
 
-    medMainWindow *mainWindow = qobject_cast <medMainWindow *> (parent);
-    QMenuBar *menu_bar = mainWindow->menuBar();
-
+    // Menu
     d->recent_compositions_menu = new dtkRecentFilesMenu("Open recent...", this);
 
     d->composition_menu = menu_bar->addMenu("Composition");
