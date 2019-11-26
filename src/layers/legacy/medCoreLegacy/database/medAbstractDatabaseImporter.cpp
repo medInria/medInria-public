@@ -431,10 +431,15 @@ void medAbstractDatabaseImporter::importData()
         return;
     }
 
-    populateMissingMetadata(d->data, "EmptySeries");
+    // Update name of the series if a permanent data has this name already
+    QString seriesDescription = d->data->metadata(medMetaDataKeys::SeriesDescription.key());
+    QString newSeriesDescription = ensureUniqueSeriesName(seriesDescription);
+    d->data->setMetaData(medMetaDataKeys::SeriesDescription.key(), QStringList() << newSeriesDescription );
 
     if ( !d->data->hasMetaData ( medMetaDataKeys::FilePaths.key() ) )
+    {
          d->data->addMetaData ( medMetaDataKeys::FilePaths.key(), QStringList() << "data created internally" );
+    }
 
     // Information about the app and version of the application
     QString attachedInfoApp = QString("generated with " +
@@ -533,7 +538,6 @@ void medAbstractDatabaseImporter::populateMissingMetadata ( medAbstractData* med
         qWarning() << "data invalid";
         return;
     }
-
 
     QString newSeriesDescription;
     // check if image have basic information like patient, study, etc.
