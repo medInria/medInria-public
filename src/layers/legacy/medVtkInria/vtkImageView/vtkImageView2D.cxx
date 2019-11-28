@@ -280,7 +280,7 @@ vtkMTimeType vtkImageView2D::GetMTime()
 void vtkImageView2D::GetSliceRange(int &min, int &max) const
 {
     if (this->GetMedVtkImageInfo()->initialized)
-    {            
+    {
         min = 0;
         max = 0;
         
@@ -297,7 +297,7 @@ void vtkImageView2D::GetSliceRange(int &min, int &max) const
                    min = w_ext[this->SliceOrientation * 2];
                    max = w_ext[this->SliceOrientation * 2 + 1];
                }
-           }           
+           }
         }
     }
 }

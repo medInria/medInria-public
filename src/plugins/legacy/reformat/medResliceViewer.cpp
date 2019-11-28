@@ -346,12 +346,24 @@ void medResliceViewer::resetViews()
 {
     for (int i = 0; i < 3; i++)
     {
-        riw[i]->GetRenderer()->ResetCamera();
-    }
+        if (riw[i]->GetRenderer())
+        {
+            riw[i]->GetRenderer()->ResetCamera();
 
-    riw[0]->GetRenderer()->GetActiveCamera()->SetViewUp(0, 0, 1);
-    riw[1]->GetRenderer()->GetActiveCamera()->SetViewUp(0, 0, 1);
-    riw[2]->GetRenderer()->GetActiveCamera()->SetViewUp(0, -1, 0);
+            switch(i)
+            {
+                case 0:
+                    riw[i]->GetRenderer()->GetActiveCamera()->SetViewUp(0, 0, 1);
+                    break;
+                case 1:
+                    riw[i]->GetRenderer()->GetActiveCamera()->SetViewUp(0, 0, 1);
+                    break;
+                case 2:
+                    riw[i]->GetRenderer()->GetActiveCamera()->SetViewUp(0, -1, 0);
+                    break;
+            }
+        }
+    }
 }
 
 void medResliceViewer::render()
@@ -505,15 +517,11 @@ bool medResliceViewer::eventFilter(QObject *object, QEvent *event)
 
 vtkResliceImageViewer* medResliceViewer::getResliceImageViewer(int i)
 {
-    assert(0 <= i <= 3);
-
     return riw[i];
 }
 
 vtkImagePlaneWidget* medResliceViewer::getImagePlaneWidget(int i)
 {
-    assert(0 <= i <= 3);
-
     return planeWidget[i];
 }
 
