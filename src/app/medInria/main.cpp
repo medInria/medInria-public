@@ -117,21 +117,32 @@ int main(int argc,char* argv[])
     medSettingsManager* mnger = medSettingsManager::instance();
 
     QStringList posargs;
-    for (int i=1;i<application.arguments().size();++i) {
+    for (int i=1;i<application.arguments().size();++i)
+    {
         const QString arg = application.arguments().at(i);
-        if (arg.startsWith("--")) {
+        if (arg.startsWith("--"))
+        {
             bool valid_option = false;
-            const QStringList options = (QStringList()
-                    << "--fullscreen"
-                    << "--no-fullscreen"
-                    << "--wall"
-                    << "--tracker"
-                    << "--stereo"
-                    << "--view");
+            const QStringList options =
+                    (QStringList()
+                     << "--fullscreen"
+                     << "--no-fullscreen"
+                     << "--wall"
+                     << "--tracker"
+                     << "--stereo"
+                     << "--view"
+                     << "--debug");
             for (QStringList::const_iterator opt=options.constBegin();opt!=options.constEnd();++opt)
+            {
                 if (arg.startsWith(*opt))
+                {
                     valid_option = true;
-            if (!valid_option) { qDebug() << "Ignoring unknown option " << arg; }
+                }
+            }
+            if (!valid_option)
+            {
+                qDebug() << "Ignoring unknown option " << arg;
+            }
             continue;
         }
         posargs.append(arg);
