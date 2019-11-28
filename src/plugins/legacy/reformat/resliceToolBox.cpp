@@ -170,38 +170,46 @@ void resliceToolBox::startReformat()
     {
         medAbstractData* data = d->currentView->layerData(d->currentView->currentLayer());
         bool is3D = false;
-        if ((data->identifier().contains("itkDataImage"))
-                && (dynamic_cast<medAbstractImageData *>(data)->Dimension() == 3))
+
+        if (data->identifier().contains("itkDataImage") &&
+                !data->identifier().contains("Vector"))
         {
-            is3D = true;
-        }
+            if (dynamic_cast<medAbstractImageData *>(data)->Dimension() == 3)
+            {
+                is3D = true;
+            }
 
-        if (d->currentView->layersCount() && is3D)
-        {
-            d->helpBegin->hide();
-            d->reformatOptions->show();
-            d->b_startReslice->hide();
+            if (d->currentView->layersCount() && is3D)
+            {
+                d->helpBegin->hide();
+                d->reformatOptions->show();
+                d->b_startReslice->hide();
 
-            d->resliceViewer = new medResliceViewer(d->currentView,
-                                                    getWorkspace()->tabbedViewContainers());
-            d->resliceViewer->setToolBox(this);
-            getWorkspace()->tabbedViewContainers()->setAcceptDrops(false);
-            connect(d->resliceViewer,SIGNAL(imageReformatedGenerated()),this,SLOT(saveReformatedImage()));
-            medViewContainer * container = getWorkspace()->tabbedViewContainers()->insertNewTab(0, "Reslice");
-            getWorkspace()->tabbedViewContainers()->setCurrentIndex(0);
-            container->setDefaultWidget(d->resliceViewer->viewWidget());
-            connect(container, SIGNAL(viewRemoved()),this, SLOT(stopReformat()), Qt::UniqueConnection);
+                d->resliceViewer = new medResliceViewer(d->currentView,
+                                                        getWorkspace()->tabbedViewContainers());
+                d->resliceViewer->setToolBox(this);
+                getWorkspace()->tabbedViewContainers()->setAcceptDrops(false);
+                connect(d->resliceViewer,SIGNAL(imageReformatedGenerated()),this,SLOT(saveReformatedImage()));
+                medViewContainer * container = getWorkspace()->tabbedViewContainers()->insertNewTab(0, "Reslice");
+                getWorkspace()->tabbedViewContainers()->setCurrentIndex(0);
+                container->setDefaultWidget(d->resliceViewer->viewWidget());
+                connect(container, SIGNAL(viewRemoved()),this, SLOT(stopReformat()), Qt::UniqueConnection);
 
-            connect(d->spacingX, SIGNAL(valueChanged(double)), d->resliceViewer, SLOT(thickSlabChanged(double)));
-            connect(d->spacingY, SIGNAL(valueChanged(double)), d->resliceViewer, SLOT(thickSlabChanged(double)));
-            connect(d->spacingZ, SIGNAL(valueChanged(double)), d->resliceViewer, SLOT(thickSlabChanged(double)));
-            connect(d->b_saveImage, SIGNAL(clicked()), d->resliceViewer, SLOT(saveImage()));
+                connect(d->spacingX, SIGNAL(valueChanged(double)), d->resliceViewer, SLOT(thickSlabChanged(double)));
+                connect(d->spacingY, SIGNAL(valueChanged(double)), d->resliceViewer, SLOT(thickSlabChanged(double)));
+                connect(d->spacingZ, SIGNAL(valueChanged(double)), d->resliceViewer, SLOT(thickSlabChanged(double)));
+                connect(d->b_saveImage, SIGNAL(clicked()), d->resliceViewer, SLOT(saveImage()));
 
-            d->reformatedImage = nullptr;
+                d->reformatedImage = nullptr;
 
-            // close the initial tab which is not needed anymore
-            getWorkspace()->tabbedViewContainers()->removeTab(1);
-            updateView();
+                // close the initial tab which is not needed anymore
+                getWorkspace()->tabbedViewContainers()->removeTab(1);
+                updateView();
+            }
+            else
+            {
+                medMessageController::instance()->showError(tr("Drop a 3D volume in the view"), 3000);
+            }
         }
         else
         {
