@@ -95,12 +95,16 @@ int main(int argc,char* argv[])
     setlocale(LC_NUMERIC, "C");
     QLocale::setDefault(QLocale("C"));
 
-    if (dtkApplicationArgumentsContain(&application, "-h") || dtkApplicationArgumentsContain(&application, "--help")) {
-        qDebug() << "Usage: medInria [--fullscreen|--no-fullscreen] [--stereo] "
-        #ifdef ACTIVATE_WALL_OPTION
-        "[--wall] [--tracker=URL] "
-        #endif
-        "[--view] [files]]";
+    if (dtkApplicationArgumentsContain(&application, "-h") || dtkApplicationArgumentsContain(&application, "--help"))
+    {
+        qDebug() << "Usage: medInria "
+                    "[--fullscreen|--no-fullscreen] "
+                    "[--stereo] "
+                    "[--debug] "
+            #ifdef ACTIVATE_WALL_OPTION
+                    "[[--wall] [--tracker=URL]] "
+            #endif
+                    "[[--view] [files]]";
         return 1;
     }
 
