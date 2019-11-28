@@ -51,8 +51,6 @@ set(${ep}_DIR ${binary_dir} PARENT_SCOPE)
 ## Add custom targets
 ## #############################################################################
 
-#EP_AddCustomTargets(${ep})
-
 endif() #NOT USE_SYSTEM_ep
 
 endfunction()

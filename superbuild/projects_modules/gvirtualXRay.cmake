@@ -80,7 +80,6 @@ if(APPLE)
   -DCMAKE_MACOSX_RPATH=OFF)
 endif(APPLE)
 
-## cd ${CMAKE_CURRENT_SOURCE_DIR}/build/gvirtualXRay-prefix 
 set(patch_dir ${EP_PATH_SOURCE}/../../medInria-public/superbuild/patches)
 set(source_dir ${EP_PATH_SOURCE}/gvxr)
 set(build_dir ${EP_PATH_SOURCE}/../build/gvxr)

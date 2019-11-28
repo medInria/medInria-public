@@ -11,7 +11,7 @@ function(music_plugins_project)
         tetgen
         eigen
         qwt
-    	gvirtualXRay
+        gvirtualXRay
         )
 
     EP_Initialisation(${external_project}
