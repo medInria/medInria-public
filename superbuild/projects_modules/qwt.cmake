@@ -16,7 +16,8 @@ EP_Initialisation(${ep}
   USE_SYSTEM OFF 
   BUILD_SHARED_LIBS ON
   REQUIRED_FOR_PLUGINS OFF
-  )
+)
+
 if (NOT USE_SYSTEM_${ep})
 
 ## #############################################################################
@@ -38,22 +39,19 @@ set(${ep}_c_flags "${${ep}_c_flags} -Wall")
 find_package(Qt5 REQUIRED Core)
 
 set (MAKE_PROGRAM ${CMAKE_MAKE_PROGRAM})
-if(WIN32)
-  set (MAKE_PROGRAM nmake)
-endif(WIN32)
 
 get_target_property (QT_QMAKE_EXECUTABLE Qt5::qmake IMPORTED_LOCATION)
 
 set(QWT_INSTALL_PREFIX ${EP_PATH_SOURCE}/../build/qwt)
 
 set(cmake_args
-	${ep_common_cache_args}
-	-DCMAKE_C_FLAGS:STRING=${${ep}_c_flags}
-	-DCMAKE_CXX_FLAGS:STRING=${${ep}_cxx_flags}
-    -DCMAKE_SHARED_LINKER_FLAGS:STRING=${${ep}_shared_linker_flags}
-    -DCMAKE_INSTALL_PREFIX:PATH=${EP_PATH_SOURCE}/../build/qwt 
-    -DQT_QMAKE_EXECUTABLE:FILEPATH=${QT_QMAKE_EXECUTABLE}
-  )
+  ${ep_common_cache_args}
+  -DCMAKE_C_FLAGS:STRING=${${ep}_c_flags}
+  -DCMAKE_CXX_FLAGS:STRING=${${ep}_cxx_flags}
+  -DCMAKE_SHARED_LINKER_FLAGS:STRING=${${ep}_shared_linker_flags}
+  -DCMAKE_INSTALL_PREFIX:PATH=${EP_PATH_SOURCE}/../build/qwt
+  -DQT_QMAKE_EXECUTABLE:FILEPATH=${QT_QMAKE_EXECUTABLE}
+)
 
 ep_GeneratePatchCommand(${ep} QWT_PATCH_COMMAND qwt-6.2.patch)
 
@@ -77,14 +75,14 @@ ExternalProject_Add(${ep}
   BUILD_COMMAND cd ${EP_PATH_SOURCE}/../build/${ep} && make sub-src    
   UPDATE_COMMAND ""
   INSTALL_COMMAND ""
-  )
+)
 
 ## #############################################################################
 ## Set variable to provide infos about the project
 ## #############################################################################
 
 ExternalProject_Get_Property(${ep} binary_dir)
-set(${ep}_DIR ${binary_dir} PARENT_SCOPE)
+set(${ep}_DIR ${binary_dir} PARENT_SCOPE)
 
 endif() #NOT USE_SYSTEM_ep
 

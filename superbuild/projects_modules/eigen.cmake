@@ -26,11 +26,7 @@ if (NOT USE_SYSTEM_${ep})
 ## #############################################################################
 
 set(git_url ${GITHUB_PREFIX}eigenteam/eigen-git-mirror)
-if(WIN32)
-  set(git_tag 9e97af7de76716c99abdbfd4a4acb182ef098808)
-else()
-  set(git_tag master)
-endif(WIN32)
+set(git_tag master)
 
 ## #############################################################################
 ## Add external-project

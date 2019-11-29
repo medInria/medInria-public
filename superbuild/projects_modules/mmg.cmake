@@ -6,9 +6,7 @@ set(ep mmg)
 ## List the dependencies of the project
 ## #############################################################################
 
-list(APPEND ${ep}_dependencies
-  ""
-  )
+list(APPEND ${ep}_dependencies "")
   
 ## #############################################################################
 ## Prepare the project
@@ -60,7 +58,6 @@ set(cmake_args
 ## #############################################################################
 set(source_dir ${EP_PATH_SOURCE}/mmg)
 set(build_dir ${EP_PATH_SOURCE}/../build/mmg)
-
 
 ExternalProject_Add(${ep}
   PREFIX ${EP_PATH_SOURCE}

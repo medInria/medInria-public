@@ -26,7 +26,6 @@ if (NOT USE_SYSTEM_${ep})
 ## #############################################################################
 set(git_url ${GITHUB_PREFIX}openssl/openssl.git)
 set(git_tag OpenSSL_1_1_1b)
-##set(git_tag OpenSSL_1_1_1)
 ## #############################################################################
 ## Add specific cmake arguments for configuration step of the project
 ## #############################################################################
@@ -78,7 +77,6 @@ ExternalProject_Add(${ep}
   INSTALL_COMMAND ""
   UPDATE_COMMAND ""
   )
-
 
 ## #############################################################################
 ## Set variable to provide infos about the project
