@@ -173,6 +173,19 @@ void voiCutterToolBox::updateView()
     {
         d->currentView = qobject_cast<medAbstractImageView*>(view);
 
+        // Toolbox does not work with meshes or vector images
+        for (unsigned int i=0; i<d->currentView->layersCount(); ++i)
+        {
+            medAbstractData *data = d->currentView->layerData(i);
+            if(!data || data->identifier().contains("vtkDataMesh")
+                    || data->identifier().contains("itkDataImageVector"))
+            {
+                handleDisplayError(medAbstractProcessLegacy::DIMENSION_3D);
+                d->currentView = nullptr;
+                return;
+            }
+        }
+
         d->mode3DParam = 0;
         d->orientation3DParam = 0;
         QList<medAbstractParameterL*> primaryParams = view->linkableParameters();

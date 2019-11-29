@@ -346,24 +346,12 @@ void medResliceViewer::resetViews()
 {
     for (int i = 0; i < 3; i++)
     {
-        if (riw[i]->GetRenderer())
-        {
-            riw[i]->GetRenderer()->ResetCamera();
-
-            switch(i)
-            {
-                case 0:
-                    riw[i]->GetRenderer()->GetActiveCamera()->SetViewUp(0, 0, 1);
-                    break;
-                case 1:
-                    riw[i]->GetRenderer()->GetActiveCamera()->SetViewUp(0, 0, 1);
-                    break;
-                case 2:
-                    riw[i]->GetRenderer()->GetActiveCamera()->SetViewUp(0, -1, 0);
-                    break;
-            }
-        }
+        riw[i]->GetRenderer()->ResetCamera();
     }
+
+    riw[0]->GetRenderer()->GetActiveCamera()->SetViewUp(0, 0, 1);
+    riw[1]->GetRenderer()->GetActiveCamera()->SetViewUp(0, 0, 1);
+    riw[2]->GetRenderer()->GetActiveCamera()->SetViewUp(0, -1, 0);
 }
 
 void medResliceViewer::render()

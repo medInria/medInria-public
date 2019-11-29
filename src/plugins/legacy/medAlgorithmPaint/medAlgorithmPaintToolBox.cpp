@@ -728,14 +728,15 @@ void AlgorithmPaintToolBox::updateView()
         medAbstractImageView *v = qobject_cast<medAbstractImageView*>(view);
         if (v)
         {
-            // AlgorithmPaintToolBox does not work with meshes
-            for (unsigned int i=0 ; i<v->layersCount() ; ++i)
+            // Toolbox does not work with meshes or vector images
+            for (unsigned int i=0; i<v->layersCount(); ++i)
             {
                 medAbstractData *data = v->layerData(i);
-                if(!data || data->identifier().contains("vtkDataMesh"))
+                if(!data || data->identifier().contains("vtkDataMesh")
+                        || data->identifier().contains("itkDataImageVector"))
                 {
-                    handleDisplayError(medAbstractProcessLegacy::NO_MESH);
-                    return ;
+                    handleDisplayError(medAbstractProcessLegacy::DIMENSION_3D);
+                    return;
                 }
             }
             setButtonsDisabled(false);

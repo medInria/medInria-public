@@ -298,13 +298,14 @@ void polygonRoiToolBox::updateView()
 
     if (view)
     {
-        // polygonRoiToolBox do not use meshes
-        for (unsigned int i=0 ; i<v->layersCount() ; ++i)
+        // Toolbox does not work with meshes or vector images
+        for (unsigned int i=0; i<v->layersCount(); ++i)
         {
             medAbstractData *data = v->layerData(i);
-            if(!data || data->identifier().contains("vtkDataMesh"))
+            if(!data || data->identifier().contains("vtkDataMesh")
+                    || data->identifier().contains("itkDataImageVector"))
             {
-                handleDisplayError(medAbstractProcessLegacy::NO_MESH);
+                handleDisplayError(medAbstractProcessLegacy::DIMENSION_3D);
                 return;
             }
         }

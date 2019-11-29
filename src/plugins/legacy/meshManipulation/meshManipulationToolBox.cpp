@@ -11,6 +11,7 @@
 
 =========================================================================*/
 #include <medAbstractDataFactory.h>
+#include <medAbstractProcessLegacy.h>
 #include <medDataManager.h>
 #include <meshManipulationToolBox.h>
 #include <medPluginManager.h>
@@ -150,6 +151,18 @@ void meshManipulationToolBox::updateView()
         }
         else
         {
+            // Toolbox only works with meshes
+            for (unsigned int i=0; i<view3d->layersCount(); ++i)
+            {
+                medAbstractData *data = view3d->layerData(i);
+                if(!data || !data->identifier().contains("vtkDataMesh"))
+                {
+                    handleDisplayError(medAbstractProcessLegacy::MESH_3D);
+                    _view = nullptr;
+                    return;
+                }
+            }
+
             _view = view3d;
 
             connect(this->getWorkspace(), SIGNAL(layerSelectionChanged(QList<int>)),

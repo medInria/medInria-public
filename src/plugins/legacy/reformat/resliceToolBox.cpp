@@ -171,6 +171,7 @@ void resliceToolBox::startReformat()
         medAbstractData* data = d->currentView->layerData(d->currentView->currentLayer());
         bool is3D = false;
 
+        // Toolbox does not work with meshes or vector images
         if (data->identifier().contains("itkDataImage") &&
                 !data->identifier().contains("Vector"))
         {
