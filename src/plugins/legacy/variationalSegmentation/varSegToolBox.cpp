@@ -274,6 +274,19 @@ void VarSegToolBox::updateView()
         // if the segmentation is activated we do not change the currentView.
         // The currentView is supposed to be the view in which the segmentation is being done.
         d->currentView = layeredView;
+
+        // Toolbox does not work with meshes or vector images
+        for (unsigned int i=0; i<d->currentView->layersCount(); ++i)
+        {
+            medAbstractData *data = d->currentView->layerData(i);
+            if(!data || data->identifier().contains("vtkDataMesh")
+                    || data->identifier().contains("itkDataImageVector"))
+            {
+                handleDisplayError(medAbstractProcessLegacy::DIMENSION_3D);
+                d->currentView = nullptr;
+                return;
+            }
+        }
     }
 }
 
