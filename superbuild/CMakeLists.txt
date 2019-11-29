@@ -86,12 +86,11 @@ endif()
 
 unset(CMAKE_BUILD_TYPE CACHE)
 
-set(CMAKE_BUILD_TYPE_medInria  RelWithDebInfo CACHE STRING "Build type configuration specific to medInria.")
-
-set(CMAKE_BUILD_TYPE_externals RelWithDebInfo CACHE STRING "Build type configuration for externals projects libraries.")
+set(CMAKE_BUILD_TYPE_medInria  Release CACHE STRING "Build type configuration specific to medInria.")
+set(CMAKE_BUILD_TYPE_externals Debug   CACHE STRING "Build type configuration for externals projects libraries.")
 
 ## #############################################################################
-## medInria dirs.
+## medInria dirs
 ## #############################################################################
 
 set(medInria_SOURCE_DIR ${CMAKE_SOURCE_DIR}/src)
