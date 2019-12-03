@@ -88,6 +88,7 @@ protected:
     double *outputSpacing;
     unsigned char selectedView;
     vtkImageView3D *view3d;
+    vtkSmartPointer<vtkImageData> vtkViewData;
     dtkSmartPointer<medAbstractData> outputData;
     int fromSlice, toSlice;
     resliceToolBox *reformaTlbx;

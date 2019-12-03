@@ -143,6 +143,10 @@ medResliceViewer::medResliceViewer(medAbstractView *view, QWidget *parent): medA
 
     viewBody = new QWidget(parent);
 
+    // Copy of the current data. We're going to work on it
+    vtkViewData = vtkSmartPointer<vtkImageData>::New();
+    vtkViewData->DeepCopy(view3d->GetInputAlgorithm(view3d->GetCurrentLayer())->GetOutput());
+
     // Build reslice viewers
     for (int i = 0; i < 3; i++)
     {
@@ -201,7 +205,7 @@ medResliceViewer::medResliceViewer(medAbstractView *view, QWidget *parent): medA
 
         rep->GetResliceCursorActor()->GetCursorAlgorithm()->SetReslicePlaneNormal(i);
 
-        riw[i]->SetInputConnection(view3d->GetInputAlgorithm(view3d->GetCurrentLayer())->GetOutputPort());
+        riw[i]->SetInputData(vtkViewData);
         riw[i]->SetSliceOrientation(i);
         riw[i]->SetResliceModeToOblique();
     }
@@ -229,7 +233,7 @@ medResliceViewer::medResliceViewer(medAbstractView *view, QWidget *parent): medA
         planeWidget[i]->SetTexturePlaneProperty(ipwProp);
         planeWidget[i]->TextureInterpolateOff();
         planeWidget[i]->SetResliceInterpolateToLinear();
-        planeWidget[i]->SetInputConnection(view3d->GetInputAlgorithm(view3d->GetCurrentLayer())->GetOutputPort());
+        planeWidget[i]->SetInputData(vtkViewData);
         planeWidget[i]->SetPlaneOrientation(i);
         planeWidget[i]->SetSliceIndex(imageDims[i]/2);
         planeWidget[i]->DisplayTextOn();
@@ -280,6 +284,7 @@ medResliceViewer::~medResliceViewer()
         riw[i] = nullptr;
         planeWidget[i] = nullptr;
     }
+    vtkViewData = nullptr;
 }
 
 QString medResliceViewer::identifier() const
@@ -369,7 +374,7 @@ void medResliceViewer::saveImage()
     calculateResliceMatrix(resliceMatrix);
 
     vtkImageReslice *reslicerTop = vtkImageReslice::New();
-    reslicerTop->SetInputConnection(view3d->GetInputAlgorithm(view3d->GetCurrentLayer())->GetOutputPort());
+    reslicerTop->SetInputData(vtkViewData);
     reslicerTop->AutoCropOutputOn();
     reslicerTop->SetResliceAxes(resliceMatrix);
     reslicerTop->SetBackgroundLevel(riw[0]->GetInput()->GetScalarRange()[0]);
@@ -383,7 +388,7 @@ void medResliceViewer::saveImage()
     reslicerTop->Update();
 
     // Apply orientation changes
-    switch (reslicerTop->GetOutput()->GetScalarType())
+    switch (vtkViewData->GetScalarType())
     {
         case VTK_CHAR:
             generateOutput<char>(reslicerTop, "itkDataImageChar3");
