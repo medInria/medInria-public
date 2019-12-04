@@ -324,20 +324,18 @@ void medVtkViewItkDataImageInteractor::initWindowLevelParameters(double *range)
     d->maxIntensityParameter = new medDoubleParameterL("Max Intensity", this);
     connect(d->maxIntensityParameter, SIGNAL(valueChanged(double)), this, SLOT(setWindowLevelFromMinMax()));
 
+    d->intensityStep = (levelMax - levelMin) / 100;
+    d->minIntensityParameter->setSingleStep(d->intensityStep);
+    d->maxIntensityParameter->setSingleStep(d->intensityStep);
+
     if(d->isFloatImage)
     {
-        d->intensityStep = qMin(0.1,(levelMax-levelMin) / 1000);
-        d->minIntensityParameter->setSingleStep(d->intensityStep);
-        d->minIntensityParameter->setDecimals(6);
-        d->maxIntensityParameter->setSingleStep(d->intensityStep);
-        d->maxIntensityParameter->setDecimals(6);
+        d->minIntensityParameter->setDecimals(2);
+        d->maxIntensityParameter->setDecimals(2);
     }
     else
     {
-        d->intensityStep= 1;
-        d->minIntensityParameter->setSingleStep(d->intensityStep);
         d->minIntensityParameter->setDecimals(0);
-        d->maxIntensityParameter->setSingleStep(d->intensityStep);
         d->maxIntensityParameter->setDecimals(0);
     }
 
@@ -531,14 +529,21 @@ void medVtkViewItkDataImageInteractor::setWindowLevelFromMinMax()
     this->windowLevelParameter()->blockSignals(true);
 
     if(d->view2d->GetColorWindow(d->view->layer(d->imageData)) != window)
+    {
         d->view2d->SetColorWindow(window, d->view->layer(d->imageData));
+    }
     if(d->view3d->GetColorWindow(d->view->layer(d->imageData)) != window)
+    {
         d->view3d->SetColorWindow(window, d->view->layer(d->imageData));
+    }
     if(d->view2d->GetColorLevel(d->view->layer(d->imageData)) != level)
+    {
         d->view2d->SetColorLevel(level, d->view->layer(d->imageData));
+    }
     if(d->view3d->GetColorLevel(d->view->layer(d->imageData)) != level)
+    {
         d->view3d->SetColorLevel(level, d->view->layer(d->imageData));
-
+    }
     this->windowLevelParameter()->blockSignals(false);
 }
 

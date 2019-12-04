@@ -110,9 +110,13 @@ void medDoubleParameterL::setRange(double min, double max)
         return;
 
     if(d->spinBox)
+    {
         d->spinBox->setRange(min, max);
+    }
     if(d->slider)
+    {
         d->slider->setRange(0,convertToInt(max));
+    }
     updateInternWigets();
 }
 
@@ -120,16 +124,20 @@ void medDoubleParameterL::setSingleStep(double step)
 {
     if(step <= 0)
     {
-        dtkWarn() << "Attempt to set a step <= 0 to medDoubleParameterL";
+        qWarning() << "Attempt to set a step <= 0 to medDoubleParameterL";
         return;
     }
 
     d->step = step;
 
     if(d->spinBox)
+    {
         d->spinBox->setSingleStep(step);
+    }
     if(d->slider)
+    {
         d->slider->setSingleStep(convertToInt(step));
+    }
 }
 
 void medDoubleParameterL::setDecimals(unsigned int decimals)
@@ -137,7 +145,9 @@ void medDoubleParameterL::setDecimals(unsigned int decimals)
     d->decimals = decimals;
 
     if(d->spinBox)
+    {
         d->spinBox->setDecimals(decimals);
+    }
 }
 
 QDoubleSpinBox* medDoubleParameterL::getSpinBox()
@@ -214,13 +224,13 @@ QWidget* medDoubleParameterL::getWidget()
 void medDoubleParameterL::removeInternSpinBox()
 {
     this->removeFromInternWidgets(d->spinBox);
-    d->spinBox = NULL;
+    d->spinBox = nullptr;
 }
 
 void medDoubleParameterL::removeInternSlider()
 {
     this->removeFromInternWidgets(d->slider);
-    d->slider = NULL;
+    d->slider = nullptr;
 }
 
 int medDoubleParameterL::convertToInt(double value)
@@ -230,6 +240,6 @@ int medDoubleParameterL::convertToInt(double value)
 
 void medDoubleParameterL::setIntValue(int value)
 {
-    double dValue = (double)value*d->step + d->min;
+    double dValue = static_cast<double>(value)*d->step + d->min;
     setValue(dValue);
 }
