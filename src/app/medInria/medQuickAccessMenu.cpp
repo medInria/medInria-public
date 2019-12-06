@@ -23,7 +23,8 @@ Qt::Key OSIndependentControlKey = Qt::Key_Control;
 
 int retrieveDefaultWorkSpace()
 {
-    int iRes = 0;
+    int homepageDefaultWorkspaceNumber = 1;
+    int iRes = homepageDefaultWorkspaceNumber;
 
     bool bMatch = false;
     medWorkspaceFactory::Details *poDetail = nullptr;
@@ -32,11 +33,11 @@ int retrieveDefaultWorkSpace()
 
     if (oStartupWorkspace.toString() == "Search")
     {
-        iRes = 1; // "Search" should not be the startup area. Default is Homepage.
+        iRes = homepageDefaultWorkspaceNumber; // "Search" should not be the startup area. Default is Homepage.
     }
     if (oStartupWorkspace.toString() == "Homepage")
     {
-        iRes = 1;
+        iRes = homepageDefaultWorkspaceNumber;
     }
     else if (oStartupWorkspace.toString() == "Browser")
     {
