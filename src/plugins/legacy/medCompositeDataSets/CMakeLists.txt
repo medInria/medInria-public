@@ -43,19 +43,14 @@ include(${TTK_USE_FILE})
 ## #################################################################
 ## Input
 ## #################################################################
-
-set(${PROJECT_NAME}_HEADERS_MOC
+set(${PROJECT_NAME}_HEADERS
+  medCompositeDataSetsBase.h
+  dirTools.h
   DiffusionSequenceWidget.h
   medCompositeDataSetsPlugin.h
   medCompositeDataSetsReader.h
   medCompositeDataSetsWriter.h
-  medDiffusionSequenceCompositeDataToolBox.h
-)
-
-set(${PROJECT_NAME}_HEADERS
-  medCompositeDataSetsBase.h
-  dirTools.h
-  ${${PROJECT_NAME}_HEADERS_MOC})
+  medDiffusionSequenceCompositeDataToolBox.h)
 
 set(${PROJECT_NAME}_SOURCES
   dirTools.cpp
@@ -69,10 +64,7 @@ set(${PROJECT_NAME}_SOURCES
 ## Build rules
 ## #################################################################
 
-qt4_wrap_cpp(${PROJECT_NAME}_SOURCES_MOC ${${PROJECT_NAME}_HEADERS_MOC})
-
 add_library(${PROJECT_NAME} SHARED
-  ${${PROJECT_NAME}_SOURCES_MOC}
   ${${PROJECT_NAME}_SOURCES}
   ${${PROJECT_NAME}_HEADERS})
 
@@ -88,16 +80,6 @@ target_link_libraries(${PROJECT_NAME}
 )
 #not useful if plugin in the medInria-plugins directory
 dtk_build_doc(medCompositeDataSetsPlugin)
-
-#add_executable(test test.C)
-#target_link_libraries(test medCompositeDataSetsPlugin ${QT_LIBRARIES} dtkCore dtkLog dtkZip medCore)
-
-## #################################################################
-## Source file layout in development environments like Visual Studio
-## #################################################################
-
-source_group("Header Files" REGULAR_EXPRESSION .*\\.h\$)
-source_group("Generated Files" FILES ${${PROJECT_NAME}_SOURCES_MOC})
 
 ## #################################################################
 ## Install rules

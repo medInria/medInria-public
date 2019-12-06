@@ -80,7 +80,7 @@ if (NOT PRIVATE_PLUGINS_LEGACY_DIRS STREQUAL "")
         file(TO_CMAKE_PATH ${pluginpath} pluginpath)
 # Add an extra slash, otherwise we copy the folder, not its content
         set(pluginpath "${pluginpath}/")
-    	message("Adding ${pluginpath} to the private plugins dirs...")
+        message("Adding ${pluginpath} to the private plugins dirs...")
         install(DIRECTORY ${pluginpath} DESTINATION plugins_legacy COMPONENT Runtime FILES_MATCHING PATTERN "*${CMAKE_SHARED_LIBRARY_SUFFIX}")
     endforeach()
 endif()
@@ -99,6 +99,9 @@ endif()
 set(APP "\${CMAKE_INSTALL_PREFIX}/bin/medInria.exe")
 set(QT_BINARY_DIR "${Qt5_DIR}/../../../bin")
 set(QT_PLUGINS_DIR "${Qt5_DIR}/../../../plugins")
+set(MEDINRIA_FILES "${medInria_DIR}/Release/bin")
+set(PLUGINS_FILES "${medInria_DIR}/Release/bin/plugins")
+set(PLUGINS_LEGACY_FILES "${medInria_DIR}/Release/bin/plugins_legacy")
 
 list(APPEND 
   libSearchDirs 
@@ -113,19 +116,19 @@ list(APPEND
   ${CMAKE_INSTALL_PREFIX}/bin
   )
   
-set(PLUGINS "\${CMAKE_INSTALL_PREFIX}/plugins/")
-set(PLUGINS_LEGACY "\${CMAKE_INSTALL_PREFIX}/plugins_legacy/")
+#set(PLUGINS "\${CMAKE_INSTALL_PREFIX}/plugins/")
+#set(PLUGINS_LEGACY "\${CMAKE_INSTALL_PREFIX}/plugins_legacy/")
 
 install(CODE "
-file(INSTALL ${medInria_DIR}/Release/bin/ DESTINATION \${CMAKE_INSTALL_PREFIX}/bin\)
-file(INSTALL ${medInria_DIR}/Release/bin/plugins/ DESTINATION \${CMAKE_INSTALL_PREFIX}/plugins\)
-file(INSTALL ${medInria_DIR}/Release/bin/plugins_legacy/ DESTINATION \${CMAKE_INSTALL_PREFIX}/plugins_legacy\)
-file(INSTALL ${QT_PLUGINS_DIR}/imageformats DESTINATION \${CMAKE_INSTALL_PREFIX}/bin)
-file(INSTALL ${QT_PLUGINS_DIR}/platforms DESTINATION \${CMAKE_INSTALL_PREFIX}/bin)
-file(INSTALL \${PLUGINS} DESTINATION \${CMAKE_INSTALL_PREFIX}/plugins )
-file(INSTALL \${PLUGINS_LEGACY} DESTINATION \${CMAKE_INSTALL_PREFIX}/plugins_legacy )
-file(INSTALL ${QT_PLUGINS_DIR}/sqldrivers/qsqlite.dll DESTINATION \${CMAKE_INSTALL_PREFIX}/bin/sqldrivers\)
-file(INSTALL ${QT_BINARY_DIR}/Qt5Svg.dll DESTINATION \${CMAKE_INSTALL_PREFIX}/bin)
+file(INSTALL ${MEDINRIA_FILES}/                       DESTINATION \${CMAKE_INSTALL_PREFIX}/bin/            FILES_MATCHING PATTERN \"*${CMAKE_EXECUTABLE_SUFFIX}\")
+file(INSTALL ${MEDINRIA_FILES}/                       DESTINATION \${CMAKE_INSTALL_PREFIX}/bin/            FILES_MATCHING PATTERN \"*${CMAKE_SHARED_LIBRARY_SUFFIX}\")
+#file(INSTALL ${PLUGINS_FILES}/                       DESTINATION \${CMAKE_INSTALL_PREFIX}/plugins/        FILES_MATCHING PATTERN \"*${CMAKE_SHARED_LIBRARY_SUFFIX}\")
+#file(INSTALL ${PLUGINS_LEGACY_FILES}/                DESTINATION \${CMAKE_INSTALL_PREFIX}/plugins_legacy/ FILES_MATCHING PATTERN \"*${CMAKE_SHARED_LIBRARY_SUFFIX}\")
+file(INSTALL ${QT_PLUGINS_DIR}/imageformats/          DESTINATION \${CMAKE_INSTALL_PREFIX}/bin             FILES_MATCHING PATTERN \"*${CMAKE_SHARED_LIBRARY_SUFFIX}\")
+file(INSTALL ${QT_PLUGINS_DIR}/platforms/             DESTINATION \${CMAKE_INSTALL_PREFIX}/bin             FILES_MATCHING PATTERN \"*${CMAKE_SHARED_LIBRARY_SUFFIX}\")
+file(INSTALL ${QT_PLUGINS_DIR}/sqldrivers/qsqlite.dll DESTINATION \${CMAKE_INSTALL_PREFIX}/bin/sqldrivers/ FILES_MATCHING PATTERN \"*${CMAKE_SHARED_LIBRARY_SUFFIX}\")
+file(INSTALL ${QT_BINARY_DIR}/Qt5Svg.dll              DESTINATION \${CMAKE_INSTALL_PREFIX}/bin             FILES_MATCHING PATTERN \"*${CMAKE_SHARED_LIBRARY_SUFFIX}\")
+
 file(GLOB_RECURSE PLUGINS
     \${CMAKE_INSTALL_PREFIX}/plugins/*${CMAKE_SHARED_LIBRARY_SUFFIX}
     \${CMAKE_INSTALL_PREFIX}/plugins_legacy/*${CMAKE_SHARED_LIBRARY_SUFFIX}\)

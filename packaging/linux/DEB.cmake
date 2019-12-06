@@ -12,7 +12,7 @@
 ################################################################################
 
 
-set(CPACK_DEBIAN_PACKAGE_DEPENDS "libqt4-sql-sqlite, libqt4-webkit")
+set(CPACK_DEBIAN_PACKAGE_DEPENDS "libqt5-sql-sqlite, libqt5-webkit")
 
 # TODO: Remove this when we will not support old ubuntu distribs.
 
