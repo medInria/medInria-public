@@ -510,40 +510,35 @@ void medVtkViewItkDataImageInteractor::setWindowLevelFromMinMax()
     if(!sender)
         return;
 
-    if( sender == d->minIntensityParameter && d->minIntensityParameter->value() >= d->maxIntensityParameter->value() )
+    double minIntensityValue = d->minIntensityParameter->value();
+    double maxIntensityValue = d->maxIntensityParameter->value();
+
+    if( sender == d->minIntensityParameter && minIntensityValue >= maxIntensityValue )
     {
         d->maxIntensityParameter->blockSignals(true);
-        d->maxIntensityParameter->setValue(d->minIntensityParameter->value() + d->intensityStep);
+        d->maxIntensityParameter->setValue(minIntensityValue + d->intensityStep);
         d->maxIntensityParameter->blockSignals(false);
     }
-    else if( sender == d->maxIntensityParameter && d->maxIntensityParameter->value() <= d->minIntensityParameter->value() )
+    else if( sender == d->maxIntensityParameter && maxIntensityValue <= minIntensityValue )
     {
         d->minIntensityParameter->blockSignals(true);
-        d->minIntensityParameter->setValue(d->maxIntensityParameter->value() - d->intensityStep);
+        d->minIntensityParameter->setValue(maxIntensityValue - d->intensityStep);
         d->minIntensityParameter->blockSignals(false);
     }
 
-    double level = 0.5 * (d->maxIntensityParameter->value() - d->minIntensityParameter->value()) + d->minIntensityParameter->value();
-    double window = d->maxIntensityParameter->value() - d->minIntensityParameter->value();
+    double minIntensityValueUpdated = d->minIntensityParameter->value();
+    double maxIntensityValueUpdated = d->maxIntensityParameter->value();
+
+    double level = 0.5 * (maxIntensityValueUpdated - minIntensityValueUpdated) + minIntensityValueUpdated;
+    double window = maxIntensityValueUpdated - minIntensityValueUpdated;
 
     this->windowLevelParameter()->blockSignals(true);
 
-    if(d->view2d->GetColorWindow(d->view->layer(d->imageData)) != window)
-    {
-        d->view2d->SetColorWindow(window, d->view->layer(d->imageData));
-    }
-    if(d->view3d->GetColorWindow(d->view->layer(d->imageData)) != window)
-    {
-        d->view3d->SetColorWindow(window, d->view->layer(d->imageData));
-    }
-    if(d->view2d->GetColorLevel(d->view->layer(d->imageData)) != level)
-    {
-        d->view2d->SetColorLevel(level, d->view->layer(d->imageData));
-    }
-    if(d->view3d->GetColorLevel(d->view->layer(d->imageData)) != level)
-    {
-        d->view3d->SetColorLevel(level, d->view->layer(d->imageData));
-    }
+    unsigned int layer = d->view->layer(d->imageData);
+
+    d->view2d->SetColorWindowLevel(window, level, layer);
+    d->view3d->SetColorWindowLevel(window, level, layer);
+
     this->windowLevelParameter()->blockSignals(false);
 }
 

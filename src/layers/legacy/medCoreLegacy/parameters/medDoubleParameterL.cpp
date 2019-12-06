@@ -16,10 +16,10 @@
 #include <QDoubleSpinBox>
 #include <QSlider>
 #include <QLabel>
+
 #include <dtkLog>
 
 #include <cmath>
-
 #include <iomanip>
 #include <sstream>
 
@@ -40,7 +40,6 @@ public:
     double max;
     double step;
     int decimals;
-
     medDoubleSpinBox *spinBox;
     QSlider *slider;
     QLabel *valueLabel;
@@ -58,9 +57,9 @@ medDoubleParameterL::medDoubleParameterL(QString name, QObject *parent):
     d->min = 0;
     d->max = 0;
     m_value = 0;
-    d->spinBox = NULL;
-    d->slider = NULL;
-    d->valueLabel = NULL;
+    d->spinBox = nullptr;
+    d->slider = nullptr;
+    d->valueLabel = nullptr;
     d->step = 0.1;
     d->decimals = -1;
 }
@@ -72,33 +71,48 @@ medDoubleParameterL::~medDoubleParameterL()
 
 void medDoubleParameterL::setValue(double value)
 {
-    if(m_value == value)
-        return;
+    if(m_value != value)
+    {
+        if(d->min == d->max)
+        {
+            m_value = value;
+        }
+        else if(value < d->min)
+        {
+            m_value = d->min;
+        }
+        else if(value > d->max)
+        {
+            m_value = d->max;
+        }
+        else
+        {
+            m_value = value;
+        }
 
-    if(d->min == d->max)
-       m_value = value;
-    else if(value < d->min)
-        m_value = d->min;
-    else if(value > d->max)
-        m_value = d->max;
-    else m_value = value;
+        //  update intern widget
+        this->blockInternWidgetsSignals(true);
+        this->updateInternWigets();
+        this->blockInternWidgetsSignals(false);
 
-    //  update intern widget
-    this->blockInternWidgetsSignals(true);
-    this->updateInternWigets();
-    this->blockInternWidgetsSignals(false);
-
-    emit valueChanged(m_value);
+        emit valueChanged(m_value);
+    }
 }
 
 void medDoubleParameterL::updateInternWigets()
 {
     if(d->spinBox)
+    {
         d->spinBox->setValue(m_value);
+    }
     if(d->slider)
+    {
         d->slider->setValue(convertToInt(m_value));
+    }
     if(d->valueLabel)
+    {
         d->valueLabel->setText(QString::number(m_value, 'f', 2));
+    }
 }
 
 void medDoubleParameterL::setRange(double min, double max)
@@ -172,7 +186,9 @@ QDoubleSpinBox* medDoubleParameterL::getSpinBox()
                 multipliedStep *= 10;
                 int testNumber = floor(multipliedStep);
                 if (testNumber > 0)
+                {
                     nullDecimal = false;
+                }
             }
         }
 
@@ -196,8 +212,8 @@ QSlider* medDoubleParameterL::getSlider()
         d->slider->setStyleSheet("QSlider::handle:horizontal {width: 15px;}");
 
         this->addToInternWidgets(d->slider);
-        connect(d->slider, SIGNAL(destroyed()), this, SLOT(removeInternSlider()));
-        connect(d->slider, SIGNAL(valueChanged(int)), this, SLOT(setIntValue(int)));
+        connect(d->slider, SIGNAL(destroyed()),       this, SLOT(removeInternSlider()));
+        connect(d->slider, SIGNAL(valueChanged(int)), this, SLOT(setSliderIntValue(int)));
     }
     return d->slider;
 }
@@ -238,8 +254,10 @@ int medDoubleParameterL::convertToInt(double value)
     return (value-d->min)/d->step;
 }
 
-void medDoubleParameterL::setIntValue(int value)
+void medDoubleParameterL::setSliderIntValue(int value)
 {
-    double dValue = static_cast<double>(value)*d->step + d->min;
+    double currentDoubleValue = static_cast<double>(value);
+    double dValue = currentDoubleValue * d->step + d->min;
     setValue(dValue);
 }
+

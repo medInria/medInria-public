@@ -51,7 +51,7 @@ private slots:
     void removeInternSpinBox();
     void removeInternSlider();
 
-    void setIntValue(int);
+    void setSliderIntValue(int value);
 
 private:
     int convertToInt(double value);

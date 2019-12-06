@@ -930,7 +930,7 @@ void vtkImageView::SetColorWindow(double s,int layer)
     this->StoreColorWindow(s,layer);
     this->SetTransferFunctionRangeFromWindowSettings(layer);
 
-    this->InvokeEvent (vtkImageView::WindowLevelChangedEvent, NULL);
+    this->InvokeEvent (vtkImageView::WindowLevelChangedEvent, nullptr);
 }
 
 //----------------------------------------------------------------------------
@@ -942,7 +942,7 @@ void vtkImageView::SetColorLevel(double s,int layer)
     this->StoreColorLevel (s, layer);
     this->SetTransferFunctionRangeFromWindowSettings(layer);
 
-    this->InvokeEvent (vtkImageView::WindowLevelChangedEvent, NULL);
+    this->InvokeEvent (vtkImageView::WindowLevelChangedEvent, nullptr);
 }
 
 void vtkImageView::SetColorWindowLevel(double w, double l)
@@ -954,14 +954,14 @@ void vtkImageView::SetColorWindowLevel(double w, double l)
 void vtkImageView::SetColorWindowLevel(double w, double l, int layer)
 {
     if (w == this->GetColorWindow(layer) && l == this->GetColorLevel(layer))
+    {
         return;
-
+    }
     this->StoreColorWindow(w,layer);
     this->StoreColorLevel (l, layer);
     this->SetTransferFunctionRangeFromWindowSettings(layer);
 
-    this->InvokeEvent (vtkImageView::WindowLevelChangedEvent, NULL);
-
+    this->InvokeEvent (vtkImageView::WindowLevelChangedEvent, nullptr);
 }
 
 /**
