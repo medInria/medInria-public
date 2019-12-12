@@ -515,13 +515,6 @@ bool medDatabaseController::updateFromNoVersionToVersion1()
         return false;
     }
 
-    int version = q.value(0).toInt();
-    if (version >= 1)
-    {
-        // nothing to do, up to date
-        return true;
-    }
-
     if ( ! q.exec("BEGIN EXCLUSIVE TRANSACTION"))
     {
         qWarning("medDatabaseController: Could not begin transaction.");
@@ -550,37 +543,42 @@ bool medDatabaseController::updateFromNoVersionToVersion1()
         }
     }
 
-    // Migrate path and isIndexed fields from table `image` to `series`
-    if ( ! q.exec("SELECT id,path FROM image WHERE isIndexed == 'true'"))
+    // If the image column does not exist, the database is already a new version,
+    // and user_version should be set without trying to access the image column from old versions.
+    if (q.value(0).toString().indexOf("image") != -1)
     {
-        qWarning("medDatabaseController: getting a list of path from the `image` table failed.");
-        qDebug() << q.lastError();
-        return false;
-    }
-    QHash<int, QStringList> imagePaths;
-    while(q.next())
-    {
-        imagePaths[q.value(0).toInt()] += q.value(0).toString();
-    }
-    foreach(int id, imagePaths.keys())
-    {
-        q.prepare("UPDATE series SET path==:paths,isIndexed='true' WHERE id==:seriesId");
-        q.bindValue(":paths", imagePaths[id].join(";"));
-        q.bindValue(":seriesId", id);
-        if (! q.exec())
+        // Migrate path and isIndexed fields from table `image` to `series`
+        if ( ! q.exec("SELECT id,path FROM image WHERE isIndexed == 'true'"))
         {
-            qWarning("medDatabaseController: updating the `series` table failed for id %d.", id);
+            qWarning("medDatabaseController: getting a list of path from the `image` table failed.");
             qDebug() << q.lastError();
             return false;
         }
-    }
+        QHash<int, QStringList> imagePaths;
+        while(q.next())
+        {
+            imagePaths[q.value(0).toInt()] += q.value(0).toString();
+        }
+        foreach(int id, imagePaths.keys())
+        {
+            q.prepare("UPDATE series SET path==:paths,isIndexed='true' WHERE id==:seriesId");
+            q.bindValue(":paths", imagePaths[id].join(";"));
+            q.bindValue(":seriesId", id);
+            if (! q.exec())
+            {
+                qWarning("medDatabaseController: updating the `series` table failed for id %d.", id);
+                qDebug() << q.lastError();
+                return false;
+            }
+        }
 
-    // Delete table `image`
-    if ( ! q.exec("DROP TABLE image"))
-    {
-        qWarning("medDatabaseController: could not drop table `image`.");
-        qDebug() << q.lastError();
-        return false;
+        // Delete table `image`
+        if ( ! q.exec("DROP TABLE image"))
+        {
+            qWarning("medDatabaseController: could not drop table `image`.");
+            qDebug() << q.lastError();
+            return false;
+        }
     }
 
     // finally, update DB version

@@ -96,12 +96,12 @@ medAbstractData* medDatabaseReader::run()
     studyUid = query.value ( 1 ).toString();
     studyId = query.value ( 2 ).toString();
 
-    query.prepare ( "SELECT name, uid, orientation, seriesNumber, sequenceName, sliceThickness, rows, columns, \
-                     description, protocol, comments, status, acquisitiondate, importationdate, referee,       \
-                     institution, report, modality, seriesId, \
-                     origin, flipAngle, echoTime, repetitionTime, acquisitionTime, \
-                     path, thumbnail, isIndexed \
-                     FROM series WHERE id = :id" );
+    query.prepare ( "SELECT name, uid, orientation, seriesNumber, sequenceName, sliceThickness, rows, columns, "
+                    "description, protocol, comments, status, acquisitiondate, importationdate, referee, "
+                    "institution, report, modality, seriesId, "
+                    "origin, flipAngle, echoTime, repetitionTime, acquisitionTime, "
+                    "path, thumbnail, isIndexed "
+                    "FROM series WHERE id = :id" );
     query.bindValue ( ":id", seriesDbId );
 
     if ( !query.exec() )
