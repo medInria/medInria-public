@@ -39,7 +39,7 @@ public:
 
 public slots:
     void onSaveLocalSettings();
-    void onSerieMoved(QString directory);
+    void onImportFinished(QString directory);
 
 private:
     qtdcmDataSourcePrivate *d;
