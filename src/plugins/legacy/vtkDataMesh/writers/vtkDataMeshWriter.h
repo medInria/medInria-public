@@ -14,18 +14,16 @@
 #pragma once
 
 #include "vtkDataMeshPluginExport.h"
-
-#include <dtkCoreSupport/dtkAbstractDataWriter.h>
+#include "vtkDataMeshWriterBase.h"
 
 class vtkDataSetWriter;
 
-class VTKDATAMESHPLUGIN_EXPORT vtkDataMeshWriter : public dtkAbstractDataWriter
+class VTKDATAMESHPLUGIN_EXPORT vtkDataMeshWriter : public vtkDataMeshWriterBase
 {
     Q_OBJECT
 
 public:
-             vtkDataMeshWriter();
-    virtual ~vtkDataMeshWriter();
+    vtkDataMeshWriter();
 
     virtual QStringList handled() const;
     static  QStringList s_handled();
@@ -40,7 +38,6 @@ public:
 
 public slots:
     bool write    (const QString& path);
-    bool canWrite (const QString& path);
 
 private:
     static const char ID[];

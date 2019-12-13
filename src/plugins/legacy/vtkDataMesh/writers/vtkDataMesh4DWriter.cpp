@@ -11,20 +11,18 @@
 
 =========================================================================*/
 
-#include <vtkDataMesh4DWriter.h>
+#include "vtkDataMesh4DWriter.h"
 
-#include <medAbstractDataFactory.h>
 #include <medAbstractData.h>
-#include <dtkLog/dtkLog.h>
+#include <medAbstractDataFactory.h>
 
-#include <vtkDataManagerWriter.h>
 #include <vtkDataManager.h>
+#include <vtkDataManagerWriter.h>
 #include <vtkMetaDataSetSequence.h>
-
 
 const char vtkDataMesh4DWriter::ID[] = "vtkDataMesh4DWriter";
 
-vtkDataMesh4DWriter::vtkDataMesh4DWriter()
+vtkDataMesh4DWriter::vtkDataMesh4DWriter() : vtkDataMeshWriterBase()
 {
   this->writer = vtkDataManagerWriter::New();
 }
@@ -44,43 +42,47 @@ QStringList vtkDataMesh4DWriter::s_handled()
     return QStringList() << "vtkDataMesh4D";
 }
 
-bool vtkDataMesh4DWriter::canWrite(const QString& path)
-{
-    if ( ! this->data())
+bool vtkDataMesh4DWriter::write(const QString& path)
+{ 
+    if (!this->data())
+    {
+        return false;
+    }
+
+    qDebug() << "Can write with: " << this->identifier();
+
+    medAbstractData *medData = dynamic_cast<medAbstractData*>(this->data());
+
+    if(medData->identifier()!="vtkDataMesh4D")
+    {
+        return false;
+    }
+
+    vtkMetaDataSetSequence* sequence = dynamic_cast< vtkMetaDataSetSequence* >( (vtkObject*)(this->data()->output()));
+    if (!sequence)
         return false;
 
-    return dynamic_cast<vtkMetaDataSetSequence*>((vtkObject*)(this->data()->data()));
-}
+    foreach (vtkMetaDataSet* dataSet, sequence->GetMetaDataSetList())
+    {
+        addMetaDataAsFieldData(dataSet);
+    }
 
-bool vtkDataMesh4DWriter::write(const QString& path)
-{
-  if (!this->data())
-    return false;
+    vtkDataManager* manager = vtkDataManager::New();
+    manager->AddMetaDataSet (sequence);
 
-  dtkDebug() << "Can write with: " << this->identifier();
+    this->writer->SetFileName(path.toLatin1().constData());
+    this->writer->SetInput (manager);
+    // this->writer->SetFileTypeToBinary();
+    this->writer->Update();
 
-  medAbstractData *medData = dynamic_cast<medAbstractData*>(this->data());
+    foreach (vtkMetaDataSet* dataSet, sequence->GetMetaDataSetList())
+    {
+        clearMetaDataFieldData(dataSet);
+    }
 
-  if(medData->identifier()!="vtkDataMesh4D")
-  {
-    return false;
-  }
+    manager->Delete();
 
-  vtkMetaDataSetSequence* sequence = dynamic_cast< vtkMetaDataSetSequence* >( (vtkObject*)(this->data()->output()));
-  if (!sequence)
-    return false;
-
-  vtkDataManager* manager = vtkDataManager::New();
-  manager->AddMetaDataSet (sequence);
-
-  this->writer->SetFileName(path.toLatin1().constData());
-  this->writer->SetInput (manager);
-  // this->writer->SetFileTypeToBinary();
-  this->writer->Update();
-
-  manager->Delete();
-
-  return true;
+    return true;
 }
 
 QString vtkDataMesh4DWriter::description() const
