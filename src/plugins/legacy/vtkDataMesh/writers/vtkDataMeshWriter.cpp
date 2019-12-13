@@ -11,22 +11,14 @@
 
 =========================================================================*/
 
-#include <vtkDataMeshWriter.h>
+#include "vtkDataMeshWriter.h"
 
-#include <medAbstractDataFactory.h>
 #include <medAbstractData.h>
-#include <dtkLog/dtkLog.h>
-
-#include <vtkMetaDataSet.h>
-
+#include <medAbstractDataFactory.h>
 
 const char vtkDataMeshWriter::ID[] = "vtkDataMeshWriter";
 
-vtkDataMeshWriter::vtkDataMeshWriter()
-{
-}
-
-vtkDataMeshWriter::~vtkDataMeshWriter()
+vtkDataMeshWriter::vtkDataMeshWriter() : vtkDataMeshWriterBase()
 {
 }
 
@@ -40,35 +32,45 @@ QStringList vtkDataMeshWriter::s_handled()
     return QStringList() << "vtkDataMesh";
 }
 
-bool vtkDataMeshWriter::canWrite(const QString& /*path*/)
-{
-    if ( ! this->data())
-        return false;
-
-    return dynamic_cast<vtkMetaDataSet*>((vtkObject*)(this->data()->data()));
-}
-
 bool vtkDataMeshWriter::write(const QString& path)
 {
-  if (!this->data())
-    return false;
+    if (!this->data())
+    {
+        return false;
+    }
 
-  dtkDebug() << "Can write with: " << this->identifier();
+    qDebug() << "Can write with: " << this->identifier();
 
-  medAbstractData * medData = dynamic_cast<medAbstractData*>(this->data());
+    medAbstractData * medData = dynamic_cast<medAbstractData*>(this->data());
 
-  if(medData->identifier() != "vtkDataMesh")
-  {
-    return false;
-  }
+    if(medData->identifier() != "vtkDataMesh")
+    {
+        return false;
+    }
 
-  vtkMetaDataSet * mesh = dynamic_cast< vtkMetaDataSet*>( (vtkObject*)(this->data()->data()));
-  if (!mesh)
-    return false;
+    vtkMetaDataSet * mesh = dynamic_cast< vtkMetaDataSet*>( (vtkObject*)(this->data()->data()));
+    if (!mesh)
+    {
+        return false;
+    }
+    addMetaDataAsFieldData(mesh);
 
-  mesh->Write(path.toLocal8Bit().constData());
+    try
+    {
+        setlocale(LC_NUMERIC, "C");
+        QLocale::setDefault(QLocale("C"));
 
-  return true;
+        mesh->Write(path.toLocal8Bit().constData());
+        clearMetaDataFieldData(mesh);
+    }
+    catch (...)
+    {
+        qDebug() << metaObject()->className() << ": error writing to " << path;
+        clearMetaDataFieldData(mesh);
+        return false;
+    }
+
+    return true;
 }
 
 QString vtkDataMeshWriter::description() const
