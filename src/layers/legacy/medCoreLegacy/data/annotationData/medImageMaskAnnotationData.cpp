@@ -13,6 +13,7 @@
 
 #include <medAbstractImageData.h>
 #include <medImageMaskAnnotationData.h>
+#include <QColor>
 
 medImageMaskAnnotationData::medImageMaskAnnotationData() :
     medAnnotationData()
