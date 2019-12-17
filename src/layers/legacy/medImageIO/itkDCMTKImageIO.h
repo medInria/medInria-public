@@ -171,6 +171,15 @@ protected:
 
     void DetermineNumberOfPixelComponents();
     void DeterminePixelType();
+
+    struct pair_comparator
+    {
+        bool operator()(std::pair <unsigned int, double> &lhs, std::pair <unsigned int, double> &rhs) const
+        {
+            return lhs.second < rhs.second;
+        }
+    };
+
     void DetermineSpacing();
     void DetermineDimensions();
     void DetermineOrigin();
