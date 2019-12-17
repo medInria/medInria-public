@@ -38,7 +38,7 @@ if (NOT USE_SYSTEM_${ep})
 ## Set up versioning control.
 ## #############################################################################
 
-set(git_url git@github.com:Kitware/VTK.git)
+set(git_url ${GITHUB_PREFIX}Kitware/VTK.git)
 set(git_tag v8.1.2)
 
 ## #############################################################################
