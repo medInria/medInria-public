@@ -168,6 +168,22 @@ void DCMTKImageIO::ReadImageInformation()
 
     for (NameSetType::const_iterator it = fileNamesSet.begin(); it!= fileNamesSet.end(); it++)
     {
+        if (fileIndex == 0)
+            b = this->GetSliceLocation(imagePositions[fileIndex]);
+        else
+        {
+            double testLocation = this->GetSliceLocation(imagePositions[fileIndex]);
+            if (testLocation < b)
+                b = testLocation;
+        }
+
+        ++fileIndex;
+    }
+
+    fileIndex = 0;
+
+    for (NameSetType::const_iterator it = fileNamesSet.begin(); it!= fileNamesSet.end(); it++)
+    {
         try
         {
             if (imagePositions.size() > 0) {
@@ -181,18 +197,11 @@ void DCMTKImageIO::ReadImageInformation()
             //                                                              x is slice index (not used, just for explanation)
             //Prevents from some sorting issues (sequences not being recognized because of tiny sliceLocation difference)
 
-            if(fileIndex == 0)
-            {
-                b = sliceLocation;
-            }
-            else
-            {
-                double a = m_Spacing[2];
-                double aX = sliceLocation - b;
+            double a = m_Spacing[2];
+            double aX = sliceLocation - b;
 
-                aX = floor(aX/a + 0.5)*a;
-                sliceLocation = aX + b;
-            }
+            aX = std::round(aX / a) * a;
+            sliceLocation = aX + b;
 
             m_LocationSet.insert( sliceLocation );
             m_LocationToFilenamesMap.insert( std::pair< double, std::string >(sliceLocation, *it ) );
@@ -445,6 +454,13 @@ void DCMTKImageIO::DetermineSpacing()
        Average it over all slices, use a 10% margin to distinguish between volumes in case of 4D images.
      */
     const StringVectorType &imagePositions = this->GetMetaDataValueVectorString("(0020,0032)");
+
+    std::vector < std::pair <unsigned int, double> > imageSliceLocations(imagePositions.size());
+    for (unsigned int i=0; i<imagePositions.size(); i++)
+        imageSliceLocations[i] = std::make_pair(i,this->GetSliceLocation(imagePositions[i]));
+
+    std::sort(imageSliceLocations.begin(),imageSliceLocations.end(),pair_comparator());
+
     if( imagePositions.size()>1 )
     {
         std::vector<double> gaps (imagePositions.size()-1, 0.0);
@@ -457,13 +473,13 @@ void DCMTKImageIO::DetermineSpacing()
         double ref_gap = MAXIMUM_GAP; // choose ref_gap as minimum gap between slices
         for (unsigned int i=1; i<imagePositions.size(); i++)
         {
-            std::istringstream is_stream1( imagePositions[i-1].c_str() );
+            std::istringstream is_stream1( imagePositions[imageSliceLocations[i-1].first].c_str() );
             vnl_vector<double> pos1 (3);
             is_stream1 >> pos1[0];
             is_stream1 >> pos1[1];
             is_stream1 >> pos1[2];
 
-            std::istringstream is_stream2( imagePositions[i].c_str() );
+            std::istringstream is_stream2( imagePositions[imageSliceLocations[i].first].c_str() );
             vnl_vector<double> pos2 (3);
             is_stream2 >> pos2[0];
             is_stream2 >> pos2[1];
