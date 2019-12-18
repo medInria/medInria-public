@@ -994,22 +994,6 @@ QString medViewContainer::saveScene()
             layeredViewInfo.setAttribute("id",layeredView->identifier());
             root.appendChild(layeredViewInfo);
 
-            // Patient informations added in the xml file
-            QDomElement patientInfo = doc.createElement("patient");
-
-            medAbstractData* dataset = layeredView->layerData(0);
-
-            addMetadataToQDomElement(dataset, patientInfo, medMetaDataKeys::PatientName.key());
-            addMetadataToQDomElement(dataset, patientInfo, medMetaDataKeys::PatientID.key());
-            addMetadataToQDomElement(dataset, patientInfo, medMetaDataKeys::BirthDate.key());
-            addMetadataToQDomElement(dataset, patientInfo, medMetaDataKeys::Gender.key());
-            addMetadataToQDomElement(dataset, patientInfo, medMetaDataKeys::StudyDescription.key());
-
-            if (patientInfo.hasAttributes())
-            {
-                root.appendChild(patientInfo);
-            }
-
             layeredView->write(generatedPath);
             workingDir.cdUp();
 
