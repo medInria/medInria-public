@@ -40,7 +40,13 @@ if (NOT USE_SYSTEM_${ep})
 ## #############################################################################
 
 set(git_url git://git.dcmtk.org/dcmtk.git)
-set(git_tag DCMTK-3.6.5)
+set(git_tag DCMTK-3.6.2)
+
+## #############################################################################
+## Check if patch has to be applied
+## #############################################################################
+  
+ep_GeneratePatchCommand(DCMTK DCMTK_PATCH_COMMAND DCMTK_STL_QUIET.patch)
 
 ## #############################################################################
 ## Add specific cmake arguments for configuration step of the project
