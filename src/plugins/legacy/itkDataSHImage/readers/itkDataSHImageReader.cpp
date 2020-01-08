@@ -71,7 +71,7 @@ bool itkDataSHImageReader::canRead (const QStringList &paths)
 bool itkDataSHImageReader::canRead (const QString &path)
 {
     itk::ImageIOBase::Pointer imageIO = itk::ImageIOFactory::CreateImageIO(path.toLatin1().constData(),
-                                                                           itk::ImageIOFactory::ReadMode);
+                                                                           itk::ImageIOFactory::FileModeEnum::ReadMode);
 
     if (!imageIO.IsNull()) {
         if (!imageIO->CanReadFile ( path.toLatin1().constData() ))
@@ -104,7 +104,7 @@ bool itkDataSHImageReader::readInformation (const QStringList &paths)
 bool itkDataSHImageReader::readInformation (const QString &path)
 {
     itk::ImageIOBase::Pointer imageIO = itk::ImageIOFactory::CreateImageIO(path.toLatin1().constData(),
-                                                                           itk::ImageIOFactory::ReadMode);
+                                                                           itk::ImageIOFactory::FileModeEnum::ReadMode);
     
     imageIO->SetFileName ( path.toLatin1().constData() );
     try {
