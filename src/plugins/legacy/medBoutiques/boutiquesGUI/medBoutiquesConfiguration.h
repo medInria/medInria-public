@@ -17,7 +17,7 @@
 
 
 #ifndef Q_OS_WIN
-#define PYTHON_PATH "python"
+#define PYTHON_PATH "python3"
 #else
 #define PYTHON_PATH "python/python.exe"
 #endif
