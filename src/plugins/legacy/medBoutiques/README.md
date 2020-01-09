@@ -4,28 +4,39 @@ A GUI to execute boutiques tools in medInria.
 
 ## Requirements
 
+ - Python 3
+ - BoutiquesGUI-Data (download it [from the latest release](https://github.com/fli-iam/medinria-boutiques/releases), see the *Installation of `BoutiquesGUI-Data`* section below)
  - Docker or Singularity
 
 ## Directory structure
 
 The required data and executables lie in the `BoutiquesGUI-Data` which must be located beside the medInria executable:
 
- - `boutiques/`: contains boutiques for python2.7 and python3, and the command line tool bosh,
- - `python/`: contains the python executable for windows (python2.7 is installed by default on Ubuntu and OS X),
+ - `boutiques/`: contains boutiques for python3 and the command line tool bosh,
+ - `python/`: contains the python executable for windows,
  - `boutiques-gui-settings.json`: the boutiques gui settings,
  - `vc_redist.x86.exe`: the Visual C++ Redistributable for Visual Studio 2015, 2017 and 2019 installer ; required to run python.exe (python3) on windows. 
+
+## Installation of `BoutiquesGUI-Data`
+
+ - Download [the latest linux release of boutiques](https://github.com/fli-iam/medinria-boutiques/releases) to get the required *BoutiquesGUI-Data* directory, even if you use OS X or Windows (you will only need the *BoutiquesGUI-Data* directory inside *linux-x86_64.zip*).
+ - Put the *BoutiquesGUI-Data* directory  beside the medInria executable (for example in `medInria-build/bin/`)
+ - (Optional) Make sure boutiques works with Python 3:
+   - In the `BoutiquesGUI-Data/` directory, test boutiques (it should return a list of tools): 
+     - under Linux and OS X: `python3 boutiques/bosh.py search bet`
+     - under Windows: `python/python.exe boutiques/bosh.py search bet`
 
 ## Running medBoutiques for the first time
 
 On Windows, BoutiquesGUI will try to execute python3 (`BoutiquesGUI-Data/python/python.exe`) ; if it fails it will try to silently install Visual C++ Redistributable for Visual Studio 2015, 2017 and 2019 (with `BoutiquesGUI-Data/vc_redist.x86.exe`). After the installation, BoutiquesGUI will retry to run python3 ; a message will ask the user to install python3 (in `BoutiquesGUI-Data/python/python.exe`) it fails again.
 
-On Linux, BoutiquesGUI checks that the `python` command works ; if not, a message asks the user to install it manually.
+On Linux and mac, BoutiquesGUI checks that the `python3` command works ; if not, a message asks the user to install it manually.
 
 Then, on all platforms, BoutiquesGUI checks that Docker is installed (by checking the return result of the `docker` command). If not, a message asks the user to install it manually. 
 
 If everything works properly (both `python` and `docker` can be executed), BoutiquesGUI writes the property `installed: true` to the settings (`BoutiquesGUI-Data/boutiques-gui-settings.json`) ; the install checks will be ignored for the next times.
 
-BoutiquesGUI will run `boutiques/bosh.py` (the boutiques command line tool), which will in turn run `boutiques` for python3 if launched with python3 (`boutiques/boutiques-python3`), or python2 otherwise.
+BoutiquesGUI will run `boutiques/bosh.py` (the boutiques command line tool) with python3, which will in turn run `boutiques`.
 
 ## Database
 
