@@ -26,6 +26,27 @@ The required data and executables lie in the `BoutiquesGUI-Data` which must be l
      - under Linux and OS X: `python3 boutiques/bosh.py search bet`
      - under Windows: `python/python.exe boutiques/bosh.py search bet`
 
+### Developer note: boutiques library installation
+
+This is how to install the boutiques library along with its dependencies in the `BoutiquesGUI-Data` directory (this process should not be necessary as boutiques is already installed in the `BoutiquesGUI-Data/` directory of the release): 
+
+ - From the location of your choice, create a python 3 virtual environment: `python3 -m venv boutiques` (this temporary environment is only used to install boutiques in an isolated environment)
+ - Go to this virtual environment and activate it: `cd boutiques & source bin/activate`
+ - Install boutiques in a target directory: `pip install --target=boutiques boutiques`. This will install boutiques along with all its dependencies in the `boutiques` directory in the `boutiques` virtual env.
+ - Move the `boutiques` directory (of the `boutiques` virtual env, that is `boutiques/boutiques`) in the `BoutiquesGUI-Data` directory.
+ - You can now delete the boutiques virtual environment. 
+ - Create a `bosh.py` file in the `boutiques` directory containing the following code:
+```
+import sys
+
+if __name__ == '__main__':
+
+  from boutiques.bosh import bosh
+  sys.argv[0] = 'bosh'
+  sys.exit(bosh())
+```
+ - When python runs `bosh.py` (for example `python3 path/to/bosh.py`), all libraries which lie beside `bosh.py` (that is all boutiques dependencies) are imported. 
+
 ## Running medBoutiques for the first time
 
 On Windows, BoutiquesGUI will try to execute python3 (`BoutiquesGUI-Data/python/python.exe`) ; if it fails it will try to silently install Visual C++ Redistributable for Visual Studio 2015, 2017 and 2019 (with `BoutiquesGUI-Data/vc_redist.x86.exe`). After the installation, BoutiquesGUI will retry to run python3 ; a message will ask the user to install python3 (in `BoutiquesGUI-Data/python/python.exe`) it fails again.
