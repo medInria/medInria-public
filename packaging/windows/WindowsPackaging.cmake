@@ -95,17 +95,19 @@ if (NOT EXTERNAL_PROJECT_PLUGINS_LEGACY_DIRS STREQUAL "")
     endforeach()
 endif()
 
-#${CMAKE_CFG_INTDIR}
+
+
 set(APP "\${CMAKE_INSTALL_PREFIX}/bin/medInria.exe")
 set(QT_BINARY_DIR "${Qt5_DIR}/../../../bin")
 set(QT_PLUGINS_DIR "${Qt5_DIR}/../../../plugins")
 set(MEDINRIA_FILES "${medInria_DIR}/Release/bin")
-set(PLUGINS_FILES "${medInria_DIR}/Release/bin/plugins")
-set(PLUGINS_LEGACY_FILES "${medInria_DIR}/Release/bin/plugins_legacy")
 
 list(APPEND 
   libSearchDirs 
-  ${QT_PLUGINS_DIR}/* ${QT_BINARY_DIR} 
+  ${QT_PLUGINS_DIR}/imageformats
+  ${QT_PLUGINS_DIR}/platforms
+  ${QT_BINARY_DIR}/sqldrivers
+  ${QT_BINARY_DIR}
   ${ITK_DIR}/bin/Release 
   ${DCMTK_DIR}/bin/Release 
   ${VTK_DIR}/bin/Release 
@@ -113,21 +115,50 @@ list(APPEND
   ${TTK_DIR}/bin/Release 
   ${dtk_DIR}/bin/Release 
   ${RPI_DIR}/bin/Release 
-  ${CMAKE_INSTALL_PREFIX}/bin
   )
 
 install(CODE "
-file(INSTALL ${MEDINRIA_FILES}/                       DESTINATION \${CMAKE_INSTALL_PREFIX}/bin/            FILES_MATCHING PATTERN \"*${CMAKE_EXECUTABLE_SUFFIX}\")
-file(INSTALL ${MEDINRIA_FILES}/                       DESTINATION \${CMAKE_INSTALL_PREFIX}/bin/            FILES_MATCHING PATTERN \"*${CMAKE_SHARED_LIBRARY_SUFFIX}\")
-file(INSTALL ${QT_PLUGINS_DIR}/imageformats/          DESTINATION \${CMAKE_INSTALL_PREFIX}/bin             FILES_MATCHING PATTERN \"*${CMAKE_SHARED_LIBRARY_SUFFIX}\")
-file(INSTALL ${QT_PLUGINS_DIR}/platforms/             DESTINATION \${CMAKE_INSTALL_PREFIX}/bin             FILES_MATCHING PATTERN \"*${CMAKE_SHARED_LIBRARY_SUFFIX}\")
-file(INSTALL ${QT_PLUGINS_DIR}/sqldrivers/qsqlite.dll DESTINATION \${CMAKE_INSTALL_PREFIX}/bin/sqldrivers/ FILES_MATCHING PATTERN \"*${CMAKE_SHARED_LIBRARY_SUFFIX}\")
-file(INSTALL ${QT_BINARY_DIR}/Qt5Svg.dll              DESTINATION \${CMAKE_INSTALL_PREFIX}/bin             FILES_MATCHING PATTERN \"*${CMAKE_SHARED_LIBRARY_SUFFIX}\")
-file(INSTALL ${QtDCM_DIR}/bin/Release/qtdcm.dll       DESTINATION \${CMAKE_INSTALL_PREFIX}/bin             FILES_MATCHING PATTERN \"*${CMAKE_SHARED_LIBRARY_SUFFIX}\")
 
-file(GLOB_RECURSE PLUGINS
+file(GLOB_RECURSE itk_files LIST_DIRECTORIES true \"${ITK_DIR}/bin/*.dll\")
+file(GLOB_RECURSE vtk_files LIST_DIRECTORIES true \"${VTK_DIR}/bin/*.dll\")
+file(GLOB_RECURSE dtk_files LIST_DIRECTORIES true \"${dtk_DIR}/bin/*.dll\")
+file(GLOB_RECURSE dcm_files LIST_DIRECTORIES true \"${QtDCM_DIR}/bin/*.dll\")
+file(GLOB_RECURSE qt5_files LIST_DIRECTORIES true \"${QT_BINARY_DIR}/*.dll\")
+list(APPEND files \${itk_files})
+list(APPEND files \${vtk_files})
+list(APPEND files \${dtk_files})
+list(APPEND files \${dcm_files})
+list(APPEND files \${qt5_files})
+
+foreach(file \${files})
+  get_filename_component(file2delete \${file} NAME)
+  message(\"\${file}\\n----->\${file2delete}\")
+  if(EXISTS \"${MEDINRIA_FILES}/\${file2delete}\")
+    file(REMOVE \"${MEDINRIA_FILES}/\${file2delete}\")
+  endif()
+endforeach()
+
+file(INSTALL ${MEDINRIA_FILES}/                         DESTINATION \${CMAKE_INSTALL_PREFIX}/bin/              FILES_MATCHING PATTERN \"*${CMAKE_EXECUTABLE_SUFFIX}\")
+file(INSTALL ${MEDINRIA_FILES}/                         DESTINATION \${CMAKE_INSTALL_PREFIX}/bin/              FILES_MATCHING PATTERN \"*${CMAKE_SHARED_LIBRARY_SUFFIX}\")
+file(INSTALL ${QT_PLUGINS_DIR}/imageformats/qgif.dll    DESTINATION \${CMAKE_INSTALL_PREFIX}/bin/imageformats/ FILES_MATCHING PATTERN \"*${CMAKE_SHARED_LIBRARY_SUFFIX}\")
+file(INSTALL ${QT_PLUGINS_DIR}/imageformats/qicns.dll   DESTINATION \${CMAKE_INSTALL_PREFIX}/bin/imageformats/ FILES_MATCHING PATTERN \"*${CMAKE_SHARED_LIBRARY_SUFFIX}\")
+file(INSTALL ${QT_PLUGINS_DIR}/imageformats/qico.dll    DESTINATION \${CMAKE_INSTALL_PREFIX}/bin/imageformats/ FILES_MATCHING PATTERN \"*${CMAKE_SHARED_LIBRARY_SUFFIX}\")
+file(INSTALL ${QT_PLUGINS_DIR}/imageformats/qjpeg.dll   DESTINATION \${CMAKE_INSTALL_PREFIX}/bin/imageformats/ FILES_MATCHING PATTERN \"*${CMAKE_SHARED_LIBRARY_SUFFIX}\")
+file(INSTALL ${QT_PLUGINS_DIR}/imageformats/qsvg.dll    DESTINATION \${CMAKE_INSTALL_PREFIX}/bin/imageformats/ FILES_MATCHING PATTERN \"*${CMAKE_SHARED_LIBRARY_SUFFIX}\")
+file(INSTALL ${QT_PLUGINS_DIR}/imageformats/qtga.dll    DESTINATION \${CMAKE_INSTALL_PREFIX}/bin/imageformats/ FILES_MATCHING PATTERN \"*${CMAKE_SHARED_LIBRARY_SUFFIX}\") #is it realy used
+file(INSTALL ${QT_PLUGINS_DIR}/imageformats/qtiff.dll   DESTINATION \${CMAKE_INSTALL_PREFIX}/bin/imageformats/ FILES_MATCHING PATTERN \"*${CMAKE_SHARED_LIBRARY_SUFFIX}\")
+file(INSTALL ${QT_PLUGINS_DIR}/imageformats/qwbmp.dll   DESTINATION \${CMAKE_INSTALL_PREFIX}/bin/imageformats/ FILES_MATCHING PATTERN \"*${CMAKE_SHARED_LIBRARY_SUFFIX}\") #is it realy used
+file(INSTALL ${QT_PLUGINS_DIR}/imageformats/qwebp.dll   DESTINATION \${CMAKE_INSTALL_PREFIX}/bin/imageformats/ FILES_MATCHING PATTERN \"*${CMAKE_SHARED_LIBRARY_SUFFIX}\") #is it realy used
+file(INSTALL ${QT_PLUGINS_DIR}/platforms/qdirect2d.dll  DESTINATION \${CMAKE_INSTALL_PREFIX}/bin/platforms/    FILES_MATCHING PATTERN \"*${CMAKE_SHARED_LIBRARY_SUFFIX}\") #is it realy used
+file(INSTALL ${QT_PLUGINS_DIR}/platforms/qminimal.dll   DESTINATION \${CMAKE_INSTALL_PREFIX}/bin/platforms/    FILES_MATCHING PATTERN \"*${CMAKE_SHARED_LIBRARY_SUFFIX}\")
+file(INSTALL ${QT_PLUGINS_DIR}/platforms/qoffscreen.dll DESTINATION \${CMAKE_INSTALL_PREFIX}/bin/platforms/    FILES_MATCHING PATTERN \"*${CMAKE_SHARED_LIBRARY_SUFFIX}\") #is it realy used
+file(INSTALL ${QT_PLUGINS_DIR}/platforms/qwindows.dll   DESTINATION \${CMAKE_INSTALL_PREFIX}/bin/platforms/    FILES_MATCHING PATTERN \"*${CMAKE_SHARED_LIBRARY_SUFFIX}\")
+file(INSTALL ${QT_PLUGINS_DIR}/sqldrivers/qsqlite.dll   DESTINATION \${CMAKE_INSTALL_PREFIX}/bin/sqldrivers/   FILES_MATCHING PATTERN \"*${CMAKE_SHARED_LIBRARY_SUFFIX}\")
+
+file(GLOB_RECURSE MED_LIBRARIES
+    \${CMAKE_INSTALL_PREFIX}/bin/*${CMAKE_SHARED_LIBRARY_SUFFIX}
     \${CMAKE_INSTALL_PREFIX}/plugins/*${CMAKE_SHARED_LIBRARY_SUFFIX}
     \${CMAKE_INSTALL_PREFIX}/plugins_legacy/*${CMAKE_SHARED_LIBRARY_SUFFIX}\)
 include(BundleUtilities)
-fixup_bundle(\"${APP}\"   \"\${PLUGINS}\"   \"${libSearchDirs}\")
+fixup_bundle(\"${APP}\"   \"\${MED_LIBRARIES}\"   \"${libSearchDirs};\${CMAKE_INSTALL_PREFIX}/bin\")
 " COMPONENT Runtime)
