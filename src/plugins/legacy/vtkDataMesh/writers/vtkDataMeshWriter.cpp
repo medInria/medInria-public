@@ -75,7 +75,7 @@ bool vtkDataMeshWriter::write(const QString& path)
 
 QString vtkDataMeshWriter::description() const
 {
-    return tr( "VTK Mesh Writer" );
+    return tr( "VTK with metadata Mesh Writer" );
 }
 
 QString vtkDataMeshWriter::identifier() const
