@@ -24,12 +24,12 @@ const char vtkDataMesh4DWriter::ID[] = "vtkDataMesh4DWriter";
 
 vtkDataMesh4DWriter::vtkDataMesh4DWriter() : vtkDataMeshWriterBase()
 {
-  this->writer = vtkDataManagerWriter::New();
+    this->writer = vtkDataManagerWriter::New();
 }
 
 vtkDataMesh4DWriter::~vtkDataMesh4DWriter()
 {
-  this->writer->Delete();
+    this->writer->Delete();
 }
 
 QStringList vtkDataMesh4DWriter::handled() const
@@ -60,7 +60,9 @@ bool vtkDataMesh4DWriter::write(const QString& path)
 
     vtkMetaDataSetSequence* sequence = dynamic_cast< vtkMetaDataSetSequence* >( (vtkObject*)(this->data()->output()));
     if (!sequence)
+    {
         return false;
+    }
 
     foreach (vtkMetaDataSet* dataSet, sequence->GetMetaDataSetList())
     {
@@ -87,7 +89,7 @@ bool vtkDataMesh4DWriter::write(const QString& path)
 
 QString vtkDataMesh4DWriter::description() const
 {
-    return tr( "VTK 4D Mesh Writer" );
+    return tr( "VTK with metadata 4D Mesh Writer" );
 }
 
 QString vtkDataMesh4DWriter::identifier() const
@@ -111,7 +113,5 @@ QStringList vtkDataMesh4DWriter::supportedFileExtensions() const
 
 dtkAbstractDataWriter *createVtkDataMesh4DWriter()
 {
-  return new vtkDataMesh4DWriter;
+    return new vtkDataMesh4DWriter;
 }
-
-

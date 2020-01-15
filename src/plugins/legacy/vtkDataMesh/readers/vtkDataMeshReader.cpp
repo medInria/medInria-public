@@ -59,7 +59,7 @@ bool vtkDataMeshReader::read(const QString& path)
     readInformation(path);
     setProgress(50);
 
-    qDebug() << "Can read with: " << this->identifier();
+    qDebug().noquote() << "Can read with: " << this->identifier();
 
     if (medAbstractData * medData = dynamic_cast<medAbstractData*>(data()))
     {
