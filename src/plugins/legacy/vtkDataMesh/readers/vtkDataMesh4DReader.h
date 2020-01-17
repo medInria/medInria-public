@@ -2,9 +2,9 @@
 
  medInria
 
- Copyright (c) INRIA 2013 - 2018. All rights reserved.
+ Copyright (c) INRIA 2013 - 2019. All rights reserved.
  See LICENSE.txt for details.
- 
+
   This software is distributed WITHOUT ANY WARRANTY; without even
   the implied warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR
   PURPOSE.
@@ -14,10 +14,10 @@
 #pragma once
 
 #include "vtkDataMeshPluginExport.h"
+#include "vtkDataMeshReaderBase.h"
 
-#include <dtkCoreSupport/dtkAbstractDataReader.h>
+#include <vtkMetaDataSet.h>
 
-class vtkDataSetReader;
 class vtkDataManagerReader;
 
 /**
@@ -37,7 +37,8 @@ class vtkDataManagerReader;
     \author Nicolas Toussaint
 */
 
-class VTKDATAMESHPLUGIN_EXPORT vtkDataMesh4DReader: public dtkAbstractDataReader {
+class VTKDATAMESHPLUGIN_EXPORT vtkDataMesh4DReader: public vtkDataMeshReaderBase
+{
     Q_OBJECT
 
 public:
@@ -50,20 +51,13 @@ public:
 
 public slots:
     virtual bool canRead(const QString& path);
-    virtual bool canRead(const QStringList& paths);
-
     virtual bool readInformation(const QString& path);
-    virtual bool readInformation(const QStringList& paths);
-
     virtual bool read(const QString& path);
-    virtual bool read(const QStringList& paths);
-
-    virtual void setProgress(int value);
 
     virtual QString identifier()  const;
     virtual QString description() const;
 
-    static bool registered();	
+    static bool registered();
 
 protected:
 
@@ -72,9 +66,7 @@ protected:
 private:
 
     static const char ID[];
+    bool extractMetaData(vtkMetaDataSet *dataSet);
 };
 
 dtkAbstractDataReader *createVtkDataMesh4DReader();
-
-
-

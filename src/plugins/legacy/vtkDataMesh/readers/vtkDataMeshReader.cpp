@@ -2,76 +2,71 @@
 
  medInria
 
- Copyright (c) INRIA 2013 - 2018. All rights reserved.
+ Copyright (c) INRIA 2013 - 2019. All rights reserved.
  See LICENSE.txt for details.
- 
+
   This software is distributed WITHOUT ANY WARRANTY; without even
   the implied warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR
   PURPOSE.
 
 =========================================================================*/
 
-#include <vtkDataMeshReader.h>
+#include "vtkDataMeshReader.h"
 
 #include <medAbstractData.h>
 #include <medAbstractDataFactory.h>
+#include <medMetaDataKeys.h>
 
+#include <vtkErrorCode.h>
 #include <vtkMetaVolumeMesh.h>
 #include <vtkMetaSurfaceMesh.h>
+#include <vtkPolyDataReader.h>
 #include <vtkSmartPointer.h>
 
 const char vtkDataMeshReader::ID[] = "vtkDataMeshReader";
 
-vtkDataMeshReader::vtkDataMeshReader() : dtkAbstractDataReader() {
+vtkDataMeshReader::vtkDataMeshReader() : vtkDataMeshReaderBase()
+{
 }
 
-vtkDataMeshReader::~vtkDataMeshReader() {
-}
-
-QStringList vtkDataMeshReader::handled() const {
+QStringList vtkDataMeshReader::handled() const
+{
     return QStringList() << "vtkDataMesh";
 }
 
-QStringList vtkDataMeshReader::s_handled() {
+QStringList vtkDataMeshReader::s_handled()
+{
     return QStringList() << "vtkDataMesh";
 }
 
-bool vtkDataMeshReader::canRead(const QString& path) {
+bool vtkDataMeshReader::canRead(const QString& path)
+{
     return (vtkMetaVolumeMesh::CanReadFile(path.toLocal8Bit().constData()) != 0) ||
            (vtkMetaSurfaceMesh::CanReadFile(path.toLocal8Bit().constData()) != 0);
 }
 
-bool vtkDataMeshReader::canRead(const QStringList& paths){
-    if (paths.empty())
-        return false;
-    return canRead(paths.first().toLocal8Bit().constData());
-}
-
-bool vtkDataMeshReader::readInformation(const QString& path) {
+bool vtkDataMeshReader::readInformation(const QString& path)
+{
     medAbstractData *medData = medAbstractDataFactory::instance()->create("vtkDataMesh");
     this->setData(medData);
-    medData->addMetaData("FilePath", QStringList() << path); // useful ?
     
     return true;
 }
 
-bool vtkDataMeshReader::readInformation(const QStringList& paths) {
-    if (paths.empty())
-        return false;
-    return readInformation(paths.first().toLocal8Bit().constData());
-}
-
-bool vtkDataMeshReader::read(const QString& path) {
+bool vtkDataMeshReader::read(const QString& path)
+{
     setProgress(0);
     readInformation(path);
     setProgress(50);
 
-    qDebug() << "Can read with: " << identifier();
+    qDebug().noquote() << "Can read with: " << this->identifier();
 
     if (medAbstractData * medData = dynamic_cast<medAbstractData*>(data()))
     {
         if (!(medData->identifier() == "vtkDataMesh"))
+        {
             return false;
+        }
 
         vtkSmartPointer<vtkMetaDataSet> dataSet = nullptr;
         if (vtkMetaVolumeMesh::CanReadFile(path.toLocal8Bit().constData()) != 0)
@@ -84,47 +79,108 @@ bool vtkDataMeshReader::read(const QString& path) {
         }
         else
         {
-            qDebug() << "Loading the vtkDataMesh failed, it's neither a surface nor a volume mesh!";
+            qDebug() << metaObject()->className() << ": loading " << path << " failed, not a surface or volume mesh";
             return false;
         }
 
         try
         {
             dataSet->Read(path.toLocal8Bit().constData());
-        } catch (...)
+            medData->setData(dataSet);
+
+            if (!extractMetaData(path, dataSet))
+            {
+                qDebug() << metaObject()->className() << ": no metadata found in " << path;
+            }
+        }
+        catch (vtkErrorCode::ErrorIds error)
         {
-            qDebug() << "Loading the vtkDataMesh failed, error while parsing!";
+            qDebug() << metaObject()->className() << ": " << vtkErrorCode::GetStringFromErrorCode(error);
+            return false;
+        }
+        catch (...)
+        {
+            qDebug() << metaObject()->className() << ": error reading " << path;;
             return false;
         }
 
-        medData->setData(dataSet);
+        // Use filename as series description if no meta data could be found
+        if (medData->metadata(medMetaDataKeys::SeriesDescription.key()).isEmpty())
+        {
+            QFileInfo file(path);
+            medData->setMetaData(medMetaDataKeys::SeriesDescription.key(), file.baseName());
+        }
+
+        setProgress(100);
+        return true;
+    }
+    else
+    {
+        return false;
+    }
+}
+
+bool vtkDataMeshReader::extractMetaData(QString path, vtkMetaDataSet* dataSet)
+{
+    if (extractMetaDataFromFieldData(dataSet) || extractMetaDataFromHeader(path, dataSet) || extractCartoMetaData(dataSet))
+    {
+        return true;
+    }
+    else
+    {
+        return false;
+    }
+}
+
+// A previous version of vtkDataMeshWriter stored metadata in the header
+bool vtkDataMeshReader::extractMetaDataFromHeader(QString path, vtkMetaDataSet* dataSet)
+{
+    QString header;
+    vtkSmartPointer<vtkPolyDataReader> reader = vtkPolyDataReader::New();
+    reader->SetFileName(path.toLocal8Bit().constData());
+    reader->Update();
+    header = reader->GetHeader();
+    QStringList headerElements = header.split("\t");
+
+    for (int i = 0; i < headerElements.count() - 1; i += 2)
+    {
+        data()->setMetaData(headerElements.at(i), headerElements.at(i + 1));
     }
 
-    setProgress(100);
-    return true;
+    return headerElements.count() >= 2;
 }
 
-bool vtkDataMeshReader::read(const QStringList& paths) {
-    if (paths.empty())
+// For CARTO files the patient name and ID is stored in the header and retrieved by vtkMetaSurfaceMesh::ReadVtkFile
+bool vtkDataMeshReader::extractCartoMetaData(vtkMetaDataSet* dataSet)
+{
+    std::string patientName, patientID;
+
+    if (dataSet->GetMetaData("PatientName", patientName) && dataSet->GetMetaData("PatientID", patientID))
+    {
+        data()->setMetaData(medMetaDataKeys::PatientName.key(), QString::fromStdString(patientName));
+        data()->setMetaData(medMetaDataKeys::PatientID.key(), QString::fromStdString(patientID));
+        return true;
+    }
+    else
+    {
         return false;
-    return read(paths.first().toLocal8Bit().constData());
+    }
 }
 
-void vtkDataMeshReader::setProgress(int value) {
-    emit progressed(value);
-}
-
-bool vtkDataMeshReader::registered() {
+bool vtkDataMeshReader::registered()
+{
     return medAbstractDataFactory::instance()->registerDataReaderType(ID,
                                     vtkDataMeshReader::s_handled(),
                                     createVtkDataMeshReader);
 }
 
-QString vtkDataMeshReader::identifier() const {
+QString vtkDataMeshReader::identifier() const
+{
     return ID;
 }
 
-QString vtkDataMeshReader::description() const {
+QString vtkDataMeshReader::description() const
+{
     return "Reader for vtk meshes";
 }
 
@@ -132,7 +188,8 @@ QString vtkDataMeshReader::description() const {
 // Type instantiation
 // /////////////////////////////////////////////////////////////////
 
-dtkAbstractDataReader *createVtkDataMeshReader() {
+dtkAbstractDataReader *createVtkDataMeshReader()
+{
     return new vtkDataMeshReader;
 }
 

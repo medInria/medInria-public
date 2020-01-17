@@ -2,7 +2,7 @@
 
  medInria
 
- Copyright (c) INRIA 2013 - 2018. All rights reserved.
+ Copyright (c) INRIA 2013 - 2019. All rights reserved.
  See LICENSE.txt for details.
  
   This software is distributed WITHOUT ANY WARRANTY; without even
@@ -11,27 +11,25 @@
 
 =========================================================================*/
 
-#include <vtkDataMesh4DWriter.h>
+#include "vtkDataMesh4DWriter.h"
 
-#include <medAbstractDataFactory.h>
 #include <medAbstractData.h>
-#include <dtkLog/dtkLog.h>
+#include <medAbstractDataFactory.h>
 
-#include <vtkDataManagerWriter.h>
 #include <vtkDataManager.h>
+#include <vtkDataManagerWriter.h>
 #include <vtkMetaDataSetSequence.h>
-
 
 const char vtkDataMesh4DWriter::ID[] = "vtkDataMesh4DWriter";
 
-vtkDataMesh4DWriter::vtkDataMesh4DWriter()
+vtkDataMesh4DWriter::vtkDataMesh4DWriter() : vtkDataMeshWriterBase()
 {
-  this->writer = vtkDataManagerWriter::New();
+    this->writer = vtkDataManagerWriter::New();
 }
 
 vtkDataMesh4DWriter::~vtkDataMesh4DWriter()
 {
-  this->writer->Delete();
+    this->writer->Delete();
 }
 
 QStringList vtkDataMesh4DWriter::handled() const
@@ -44,48 +42,54 @@ QStringList vtkDataMesh4DWriter::s_handled()
     return QStringList() << "vtkDataMesh4D";
 }
 
-bool vtkDataMesh4DWriter::canWrite(const QString& path)
-{
-    if ( ! this->data())
-        return false;
-
-    return dynamic_cast<vtkMetaDataSetSequence*>((vtkObject*)(this->data()->data()));
-}
-
 bool vtkDataMesh4DWriter::write(const QString& path)
-{
-  if (!this->data())
-    return false;
+{ 
+    if (!this->data())
+    {
+        return false;
+    }
 
-  dtkDebug() << "Can write with: " << this->identifier();
+    qDebug() << "Can write with: " << this->identifier();
 
-  medAbstractData *medData = dynamic_cast<medAbstractData*>(this->data());
+    medAbstractData *medData = dynamic_cast<medAbstractData*>(this->data());
 
-  if(medData->identifier()!="vtkDataMesh4D")
-  {
-    return false;
-  }
+    if(medData->identifier()!="vtkDataMesh4D")
+    {
+        return false;
+    }
 
-  vtkMetaDataSetSequence* sequence = dynamic_cast< vtkMetaDataSetSequence* >( (vtkObject*)(this->data()->output()));
-  if (!sequence)
-    return false;
+    vtkMetaDataSetSequence* sequence = dynamic_cast< vtkMetaDataSetSequence* >( (vtkObject*)(this->data()->output()));
+    if (!sequence)
+    {
+        return false;
+    }
 
-  vtkDataManager* manager = vtkDataManager::New();
-  manager->AddMetaDataSet (sequence);
+    foreach (vtkMetaDataSet* dataSet, sequence->GetMetaDataSetList())
+    {
+        addMetaDataAsFieldData(dataSet);
+    }
 
-  this->writer->SetFileName(path.toLatin1().constData());
-  this->writer->SetInput (manager);
-  // this->writer->SetFileTypeToBinary();
-  this->writer->Update();
+    vtkDataManager* manager = vtkDataManager::New();
+    manager->AddMetaDataSet (sequence);
 
-  manager->Delete();
+    this->writer->SetFileName(path.toLatin1().constData());
+    this->writer->SetInput (manager);
+    // this->writer->SetFileTypeToBinary();
+    this->writer->Update();
 
-  return true;
+    foreach (vtkMetaDataSet* dataSet, sequence->GetMetaDataSetList())
+    {
+        clearMetaDataFieldData(dataSet);
+    }
+
+    manager->Delete();
+
+    return true;
 }
 
 QString vtkDataMesh4DWriter::description() const
 {
-    return tr( "VTK 4D Mesh Writer" );
+    return tr( "VTK with metadata 4D Mesh Writer" );
 }
 
 QString vtkDataMesh4DWriter::identifier() const
@@ -109,7 +113,5 @@ QStringList vtkDataMesh4DWriter::supportedFileExtensions() const
 
 dtkAbstractDataWriter *createVtkDataMesh4DWriter()
 {
-  return new vtkDataMesh4DWriter;
+    return new vtkDataMesh4DWriter;
 }
-
-
