@@ -69,6 +69,7 @@ set(PLUGIN_LIST
   legacy/meshManipulation                                                ON
   legacy/iterativeClosestPoint                                           ON
   legacy/itkFilters                                                      ON
+  legacy/medBoutiques                                                    ON
   process/arithmetic_operation                                           ON
   process/bias_correction                                                ON
   process/dwi_basic_thresholding                                         ON
