@@ -2,7 +2,7 @@
 
  medInria
 
- Copyright (c) INRIA 2013 - 2019. All rights reserved.
+ Copyright (c) INRIA 2013 - 2020. All rights reserved.
  See LICENSE.txt for details.
 
   This software is distributed WITHOUT ANY WARRANTY; without even
@@ -26,11 +26,14 @@ vtkDataMeshWriterBase::vtkDataMeshWriterBase() : dtkAbstractDataWriter()
 
 bool vtkDataMeshWriterBase::canWrite(const QString& /*path*/)
 {
-    if (!this->data())
+    bool result = false;
+
+    if (this->data())
     {
-        return false;
+        result = dynamic_cast<vtkMetaDataSet*>((vtkObject*)(this->data()->data()));
     }
-    return dynamic_cast<vtkMetaDataSet*>((vtkObject*)(this->data()->data()));
+
+    return result;
 }
 
 void vtkDataMeshWriterBase::addMetaDataAsFieldData(vtkMetaDataSet* dataSet)

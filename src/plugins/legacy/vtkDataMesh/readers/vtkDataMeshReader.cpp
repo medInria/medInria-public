@@ -2,7 +2,7 @@
 
  medInria
 
- Copyright (c) INRIA 2013 - 2019. All rights reserved.
+ Copyright (c) INRIA 2013 - 2020. All rights reserved.
  See LICENSE.txt for details.
 
   This software is distributed WITHOUT ANY WARRANTY; without even
@@ -122,14 +122,14 @@ bool vtkDataMeshReader::read(const QString& path)
 
 bool vtkDataMeshReader::extractMetaData(QString path, vtkMetaDataSet* dataSet)
 {
+    bool result = false;
+
     if (extractMetaDataFromFieldData(dataSet) || extractMetaDataFromHeader(path, dataSet) || extractCartoMetaData(dataSet))
     {
-        return true;
+        result = true;
     }
-    else
-    {
-        return false;
-    }
+
+    return result;
 }
 
 // A previous version of vtkDataMeshWriter stored metadata in the header
@@ -155,16 +155,17 @@ bool vtkDataMeshReader::extractCartoMetaData(vtkMetaDataSet* dataSet)
 {
     std::string patientName, patientID;
 
+    bool result = false;
+
     if (dataSet->GetMetaData("PatientName", patientName) && dataSet->GetMetaData("PatientID", patientID))
     {
         data()->setMetaData(medMetaDataKeys::PatientName.key(), QString::fromStdString(patientName));
         data()->setMetaData(medMetaDataKeys::PatientID.key(), QString::fromStdString(patientID));
-        return true;
+
+        result = true;
     }
-    else
-    {
-        return false;
-    }
+
+    return result;
 }
 
 bool vtkDataMeshReader::registered()

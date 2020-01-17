@@ -25,6 +25,7 @@ public:
     static const QString metaDataFieldPrefix;
 
     vtkDataMeshWriterBase();
+    ~vtkDataMeshWriterBase() override = default;
 
 public slots:
     bool canWrite (const QString& path);
