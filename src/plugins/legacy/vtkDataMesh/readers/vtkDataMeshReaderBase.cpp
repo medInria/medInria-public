@@ -2,7 +2,7 @@
 
  medInria
 
- Copyright (c) INRIA 2013 - 2019. All rights reserved.
+ Copyright (c) INRIA 2013 - 2020. All rights reserved.
  See LICENSE.txt for details.
 
   This software is distributed WITHOUT ANY WARRANTY; without even
@@ -27,29 +27,38 @@ vtkDataMeshReaderBase::vtkDataMeshReaderBase() : dtkAbstractDataReader()
 
 bool vtkDataMeshReaderBase::canRead(const QStringList& paths)
 {
-    if (paths.empty())
+    bool result = false;
+
+    if (!paths.empty())
     {
-        return false;
+        result = canRead(paths.first().toLocal8Bit().constData());
     }
-    return canRead(paths.first().toLocal8Bit().constData());
+
+    return result;
 }
 
 bool vtkDataMeshReaderBase::readInformation(const QStringList& paths)
 {
-    if (paths.empty())
+    bool result = false;
+
+    if (!paths.empty())
     {
-        return false;
+        result = readInformation(paths.first().toLocal8Bit().constData());
     }
-    return readInformation(paths.first().toLocal8Bit().constData());
+
+    return result;
 }
 
 bool vtkDataMeshReaderBase::read(const QStringList& paths)
 {
-    if (paths.empty())
+    bool result = false;
+
+    if (!paths.empty())
     {
-        return false;
+        result = read(paths.first().toLocal8Bit().constData());
     }
-    return read(paths.first().toLocal8Bit().constData());
+
+    return result;
 }
 
 bool vtkDataMeshReaderBase::extractMetaDataFromFieldData(vtkMetaDataSet* dataSet)

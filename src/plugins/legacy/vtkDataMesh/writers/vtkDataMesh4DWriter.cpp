@@ -2,7 +2,7 @@
 
  medInria
 
- Copyright (c) INRIA 2013 - 2019. All rights reserved.
+ Copyright (c) INRIA 2013 - 2020. All rights reserved.
  See LICENSE.txt for details.
  
   This software is distributed WITHOUT ANY WARRANTY; without even
@@ -49,7 +49,7 @@ bool vtkDataMesh4DWriter::write(const QString& path)
         return false;
     }
 
-    qDebug() << "Can write with: " << this->identifier();
+    qDebug().noquote() << "Can write with: " << this->identifier();
 
     medAbstractData *medData = dynamic_cast<medAbstractData*>(this->data());
 

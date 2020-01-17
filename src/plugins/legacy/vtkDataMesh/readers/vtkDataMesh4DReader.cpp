@@ -2,7 +2,7 @@
 
  medInria
 
- Copyright (c) INRIA 2013 - 2019. All rights reserved.
+ Copyright (c) INRIA 2013 - 2020. All rights reserved.
  See LICENSE.txt for details.
 
   This software is distributed WITHOUT ANY WARRANTY; without even
@@ -116,14 +116,14 @@ bool vtkDataMesh4DReader::read (const QString& path)
 
 bool vtkDataMesh4DReader::extractMetaData(vtkMetaDataSet* dataSet)
 {
+    bool result = false;
+
     if (extractMetaDataFromFieldData(dataSet))
     {
-        return true;
+        result = true;
     }
-    else
-    {
-        return false;
-    }
+
+    return result;
 }
 
 bool vtkDataMesh4DReader::registered()
