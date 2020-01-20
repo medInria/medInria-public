@@ -13,7 +13,7 @@
 
 #pragma once
 
-#include <medFilteringAbstractToolBox.h>
+#include <medAbstractSelectableToolBox.h>
 #include <medDataIndex.h>
 #include "boutiquesGUI/medBoutiquesSearchToolsWidget.h"
 #include "boutiquesGUI/medBoutiquesInvocationWidget.h"
@@ -22,10 +22,10 @@
 
 class medBoutiquesToolBoxPrivate;
 
-class medBoutiquesToolBox : public medFilteringAbstractToolBox
+class medBoutiquesToolBox : public medAbstractSelectableToolBox
 {
     Q_OBJECT
-    MED_TOOLBOX_INTERFACE("medBoutiques", "Boutiques in medInria", << "filtering")
+    MED_TOOLBOX_INTERFACE("medBoutiques", "Boutiques in medInria", << "Filtering")
 
 public:
      medBoutiquesToolBox(QWidget *parentToolBox = nullptr);

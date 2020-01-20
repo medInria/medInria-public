@@ -31,8 +31,8 @@
 #include <medPluginManager.h>
 
 #include <medToolBoxFactory.h>
-#include <medFilteringSelectorToolBox.h>
-#include <medFilteringAbstractToolBox.h>
+#include <medAbstractSelectableToolBox.h>
+#include <medSelectorToolBox.h>
 #include <medProgressionStack.h>
 #include <medDataManager.h>
 
@@ -54,7 +54,7 @@ public:
     QList<QUuid> expectedUuids;
 };
 
-medBoutiquesToolBox::medBoutiquesToolBox(QWidget *parent) : medFilteringAbstractToolBox(parent), d(new medBoutiquesToolBoxPrivate)
+medBoutiquesToolBox::medBoutiquesToolBox(QWidget *parent) : medAbstractSelectableToolBox(parent), d(new medBoutiquesToolBoxPrivate)
 {
     // Check if the plugin was installed ("installed" is true in the settings)
     // Install if necessary: check that the commands "python" and "docker" work properly
@@ -115,10 +115,10 @@ medAbstractData* medBoutiquesToolBox::processOutput()
 
 medAbstractData* medBoutiquesToolBox::getInput()
 {
-     if(!this->parentToolBox())
+     if(!this->selectorToolBox())
          return nullptr;
 
-     return this->parentToolBox()->data();
+     return this->selectorToolBox()->data();
 }
 
 dtkPlugin* medBoutiquesToolBox::plugin()

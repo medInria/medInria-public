@@ -32,7 +32,7 @@ public:
 // medBoutiquesPlugin
 // /////////////////////////////////////////////////////////////////
 
-medBoutiquesPlugin::medBoutiquesPlugin(QObject *parent) : dtkPlugin(parent), d(new medBoutiquesPluginPrivate)
+medBoutiquesPlugin::medBoutiquesPlugin(QObject *parent) : medPluginLegacy(parent), d(new medBoutiquesPluginPrivate)
 {
 
 }
