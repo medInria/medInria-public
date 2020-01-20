@@ -13,13 +13,13 @@
 
 #pragma once
 
-#include <dtkCoreSupport/dtkPlugin.h>
+#include <medPluginLegacy.h>
 
 #include <medBoutiquesPluginExport.h>
 
 class MEDBOUTIQUESPLUGIN_EXPORT medBoutiquesPluginPrivate;
 
-class MEDBOUTIQUESPLUGIN_EXPORT medBoutiquesPlugin : public dtkPlugin
+class MEDBOUTIQUESPLUGIN_EXPORT medBoutiquesPlugin : public medPluginLegacy
 {
     Q_OBJECT
     Q_PLUGIN_METADATA(IID "fr.inria.medBoutiquesPlugin" FILE "medBoutiquesPlugin.json")
