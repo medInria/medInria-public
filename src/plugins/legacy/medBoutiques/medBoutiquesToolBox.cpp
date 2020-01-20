@@ -141,7 +141,8 @@ void medBoutiquesToolBox::executionSuccess(const QString &outputFileName)
 
 void medBoutiquesToolBox::open_waitForImportedSignal(medDataIndex index, QUuid uuid)
 {
-    if(d->expectedUuids.contains(uuid)) {
+    if(d->expectedUuids.contains(uuid))
+    {
         d->expectedUuids.removeAll(uuid);
         disconnect(medDataManager::instance(), SIGNAL(dataImported(medDataIndex,QUuid)), this, SLOT(open_waitForImportedSignal(medDataIndex,QUuid)));
         if (index.isValid()) {

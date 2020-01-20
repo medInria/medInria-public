@@ -25,8 +25,8 @@ class MEDBOUTIQUESPLUGIN_EXPORT medBoutiques : public dtkAbstractProcess
     Q_OBJECT
 
 public:
-             medBoutiques();
-    virtual ~medBoutiques();
+             medBoutiques() = default;
+    virtual ~medBoutiques() = default;
 
     virtual QString description() const;
 

@@ -34,8 +34,8 @@ class medBoutiquesAbstractFileHandler : public QObject
     Q_OBJECT
 
 public:
-    medBoutiquesAbstractFileHandler();
-    virtual ~medBoutiquesAbstractFileHandler();
+    medBoutiquesAbstractFileHandler() = default;
+    virtual ~medBoutiquesAbstractFileHandler() = default;
 
     virtual void checkAcceptDragEvent(QDragEnterEvent *event) = 0;
     virtual QString createTemporaryInputFileForMimeData(const QMimeData *mimeData) = 0;

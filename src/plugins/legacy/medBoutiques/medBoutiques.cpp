@@ -24,14 +24,6 @@
 // medBoutiques
 // /////////////////////////////////////////////////////////////////
 
-medBoutiques::medBoutiques() : dtkAbstractProcess()
-{
-}
-
-medBoutiques::~medBoutiques()
-{
-}
-
 bool medBoutiques::registered()
 {
     return dtkAbstractProcessFactory::instance()->registerProcessType("medBoutiques", createmedBoutiques);

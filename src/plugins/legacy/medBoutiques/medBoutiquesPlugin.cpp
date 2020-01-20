@@ -46,11 +46,13 @@ medBoutiquesPlugin::~medBoutiquesPlugin()
 
 bool medBoutiquesPlugin::initialize()
 {
-    if(!medBoutiques::registered()) {
+    if(!medBoutiques::registered())
+    {
         dtkWarn() << "Unable to register medBoutiques type";
     }
 
-    if(!medBoutiquesToolBox::registered()) {
+    if(!medBoutiquesToolBox::registered())
+    {
         dtkWarn() << "Unable to register medBoutiques toolbox";
     }
 

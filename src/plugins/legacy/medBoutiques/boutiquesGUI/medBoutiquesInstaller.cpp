@@ -11,7 +11,9 @@ void medBoutiquesInstaller::checkBoutiquesInstallation(QWidget *parent)
         // If can't open the settings: install boutiques
         file.close();
         medBoutiquesInstaller::installBoutiques(parent);
-    } else {
+    }
+    else
+    {
         QJsonDocument jsonDocument(QJsonDocument::fromJson(file.readAll()));
         QJsonObject settings = jsonDocument.object();
 
@@ -74,7 +76,8 @@ void medBoutiquesInstaller::installBoutiques(QWidget *parent, QJsonObject *setti
 {
     bool pythonAndDockerAreWorking = true;
 
-    if (QSysInfo::productType() == "winrt" || QSysInfo::productType() == "windows") {
+    if (QSysInfo::productType() == "winrt" || QSysInfo::productType() == "windows")
+    {
 
         // On Windows:
 
@@ -100,7 +103,9 @@ void medBoutiquesInstaller::installBoutiques(QWidget *parent, QJsonObject *setti
             }
         }
 
-    } else {
+    }
+    else
+    {
         // On Linux:
 
         if(!medBoutiquesInstaller::isPythonWorking(parent))
