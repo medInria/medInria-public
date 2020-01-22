@@ -158,9 +158,10 @@ int medDatabaseImporter::getOrCreateStudy ( const medAbstractData* medData, QSql
     QSqlQuery query ( db );
 
     QString studyName   = medMetaDataKeys::StudyDescription.getFirstValue(medData).simplified();
-    QString studyUid    = medMetaDataKeys::StudyDicomID.getFirstValue(medData);
-    QString studyId     = medMetaDataKeys::StudyID.getFirstValue(medData);
-    QString seriesName   = medMetaDataKeys::SeriesDescription.getFirstValue(medData).simplified();
+    QString studyUid    = medMetaDataKeys::StudyInstanceUID.getFirstValue(medData);
+    QString studyId    = medMetaDataKeys::StudyID.getFirstValue(medData);
+
+    QString serieName   = medMetaDataKeys::SeriesDescription.getFirstValue(medData).simplified();
 
     if( studyName=="EmptyStudy" && seriesName=="EmptySeries" )
         return studyDbId;
@@ -211,7 +212,7 @@ int medDatabaseImporter::getOrCreateSeries ( const medAbstractData* medData, QSq
     QSqlQuery query ( db );
 
     QString seriesName     = medMetaDataKeys::SeriesDescription.getFirstValue(medData).simplified();
-    QString seriesUid      = medMetaDataKeys::SeriesDicomID.getFirstValue(medData);
+    QString seriesUid      = medMetaDataKeys::SeriesInstanceUID.getFirstValue(medData);
     QString seriesId       = medMetaDataKeys::SeriesID.getFirstValue(medData);
 
     QString orientation    = medMetaDataKeys::Orientation.getFirstValue(medData);

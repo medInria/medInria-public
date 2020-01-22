@@ -66,6 +66,7 @@
 #include <itkGiplDataImageWriter.h>
 #include <itkVTKDataImageWriter.h>
 #include <itkGISDataImageWriter.h>
+#include <itkDicomDataImageWriter.h>
 
 #include <dtkLog/dtkLog.h>
 #include <itkLogForwarder.h>
@@ -161,6 +162,7 @@ bool itkDataImagePlugin::initialize()
     if (!itkGiplDataImageWriter::registered())       { dtkWarn() << "Unable to register itkGiplDataImageWriter type";       }
     if (!itkVTKDataImageWriter::registered())        { dtkWarn() << "Unable to register itkVTKDataImageWriter type";        }
     if (!itkGISDataImageWriter::registered())        { dtkWarn() << "Unable to register itkGISDataImageWriter type"; }
+    if (!itkDicomDataImageWriter::registered())      { dtkWarn() << "Unable to register itkDicomDataImageWriter type"; }
 
     return true;
 }

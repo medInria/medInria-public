@@ -66,7 +66,7 @@ void medDatabaseControllerPrivate::buildMetaDataLookup()
 //Study Data
     metaDataLookup.insert(medMetaDataKeys::StudyDescription.key(),
         TableEntryList() << TableEntry(T_study, "name") );
-    metaDataLookup.insert(medMetaDataKeys::StudyDicomID.key(),
+    metaDataLookup.insert(medMetaDataKeys::StudyInstanceUID.key(),
         TableEntryList() << TableEntry(T_study, "uid") );
     metaDataLookup.insert(medMetaDataKeys::StudyID.key(),
         TableEntryList() << TableEntry(T_study, "studyId") );
@@ -77,7 +77,7 @@ void medDatabaseControllerPrivate::buildMetaDataLookup()
         TableEntryList() << TableEntry(T_series, "name") );
     metaDataLookup.insert(medMetaDataKeys::Size.key(),
         TableEntryList() << TableEntry(T_series, "size") );
-    metaDataLookup.insert(medMetaDataKeys::SeriesDicomID.key(),
+    metaDataLookup.insert(medMetaDataKeys::SeriesInstanceUID.key(),
         TableEntryList() << TableEntry(T_series, "uid") );
     metaDataLookup.insert(medMetaDataKeys::SeriesID.key(),
         TableEntryList() << TableEntry(T_series, "seriesId") );
