@@ -1740,8 +1740,8 @@ void vtkImageView2D::SetFirstLayer(vtkAlgorithmOutput *pi_poInputAlgoImg, vtkMat
         if( layer > 0 )
           this->AddLayer(layer);
 
-        this->GetImage2DDisplayForLayer(layer)->SetInput(pi_poInputAlgoImg);
         this->Superclass::SetInput (pi_poInputAlgoImg, matrix, 0);
+        this->GetImage2DDisplayForLayer(layer)->SetInput(m_poInternalImageFromInput);
         this->GetWindowLevel(layer)->SetInputConnection(pi_poInputAlgoImg);
         double *range = this->GetImage2DDisplayForLayer(layer)->GetMedVtkImageInfo()->scalarRange;
         this->SetColorRange(range,layer);
@@ -1807,16 +1807,8 @@ void vtkImageView2D::SetInput(vtkAlgorithmOutput* pi_poVtkAlgoOutput, vtkMatrix4
           return;
       }
 
-      // determine the scalar range. Copy the update extent to match the input's one
-      //double range[2];
-      //TODO GPR: to check
-      //reslicedImage->UpdateExtent (this->GetInput()->GetUpdateExtent());
-      //reslicedImage->PropagateUpdateExtent();
-      //reslicedImage->Update();
-      //reslicedImage->GetScalarRange(range);
-
       vtkImage2DDisplay * imageDisplay = this->GetImage2DDisplayForLayer(layer);
-      imageDisplay->SetInput(reslicerOutputPort);
+      imageDisplay->SetInput(((vtkImageAlgorithm*)reslicerOutputPort->GetProducer())->GetOutput());
       imageDisplay->GetImageActor()->SetUserMatrix (this->OrientationMatrix);
       this->SetColorRange(imageDisplay->GetMedVtkImageInfo()->scalarRange, layer);
   }

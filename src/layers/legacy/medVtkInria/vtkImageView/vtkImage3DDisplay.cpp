@@ -6,7 +6,6 @@ vtkStandardNewMacro(vtkImage3DDisplay);
 
 vtkImage3DDisplay::vtkImage3DDisplay()
 {
-    //this->InputImageOld = 0;
     this->InputConnection = 0;
     this->Opacity = 1.0;
     this->Visibility = 1;
@@ -43,7 +42,6 @@ void vtkImage3DDisplay::SetInputConnection(vtkAlgorithmOutput* pi_poVtkAlgoPort)
             m_sVtkImageInfo.scalarType = poVtkImgTmp->GetScalarType();
             m_sVtkImageInfo.nbScalarComponent = poVtkImgTmp->GetNumberOfScalarComponents();
             m_sVtkImageInfo.initialized = true;
-
         } 
         else
         {

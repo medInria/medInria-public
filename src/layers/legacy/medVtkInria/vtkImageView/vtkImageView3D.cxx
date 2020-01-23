@@ -607,21 +607,11 @@ void vtkImageView3D::InternalUpdate()
     }
     appender->Update();
     appender->GetOutput();
-    // hack: modify the input MTime such that it is higher
-    // than the VolumeMapper's one to force it to refresh
-    // (see vtkSmartVolumeMapper::ConnectMapperInput(vtkVolumeMapper *m))
-    /*
-    if (this->VolumeMapper->GetInput())
-    {
-        unsigned long mtime = this->VolumeMapper->GetInput()->GetMTime();
-        while (input->GetMTime()<=mtime)
-            input->Modified();
-    }
-    */
+
     this->VolumeMapper->SetInputConnection( appender->GetOutputPort());
     this->VolumeMapper->Update();
     this->VolumeMapper->Modified();
-    //appender->Delete();
+
     // If an image is already of type unsigned char, there is no need to
     // map it through a lookup table
     if ( !multiLayers && multichannelInput )
@@ -879,30 +869,6 @@ void vtkImageView3D::SetRenderingMode(int arg)
     item = this->ExtraPlaneCollection->GetNextProp3D();
   }
 }
-
-// //---------------------------------------------------------------------------
-// void vtkImageView3D::SetUseVRQuality (bool on)
-// {
-//   this->VolumeMapper->SetUseVRQuality( on );
-// }
-
-// //---------------------------------------------------------------------------
-// bool vtkImageView3D::GetUseVRQuality ()
-// {
-//   return this->VolumeMapper->GetUseVRQuality();
-// }
-
-// //---------------------------------------------------------------------------
-// void vtkImageView3D::SetVRQuality (float vrq)
-// {
-//   this->VolumeMapper->SetVRQuality( vrq );
-// }
-
-// //---------------------------------------------------------------------------
-// float vtkImageView3D::GetVRQuality ()
-// {
-//   return this->VolumeMapper->GetVRQuality();
-// }
 
 //---------------------------------------------------------------------------
 void vtkImageView3D::SetOrientationMarker(vtkActor *actor)
