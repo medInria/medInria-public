@@ -477,7 +477,7 @@ void vtkImageView3D::SetInput(vtkAlgorithmOutput* pi_poVtkAlgoOutput, vtkMatrix4
     if(pi_poVtkAlgoOutput)
     {
         this->Superclass::SetInput (pi_poVtkAlgoOutput, matrix, layer);
-        this->GetImage3DDisplayForLayer(0)->SetInputConnection(pi_poVtkAlgoOutput);
+        this->GetImage3DDisplayForLayer(0)->SetInputData(m_poInternalImageFromInput);
 
         double *range = vtkImgTmp->GetScalarRange();
         this->SetColorRange(range,0);
@@ -548,7 +548,7 @@ void vtkImageView3D::SetInput(vtkAlgorithmOutput* pi_poVtkAlgoOutput, vtkMatrix4
 
     this->AddLayer (layer);
 
-    this->GetImage3DDisplayForLayer(layer)->SetInputConnection (poVtkAlgoOutputTmp);
+    this->GetImage3DDisplayForLayer(layer)->SetInputProducer(poVtkAlgoOutputTmp);
 
     // set default display properties
     this->VolumeProperty->SetShade(layer, 1);
@@ -598,7 +598,7 @@ void vtkImageView3D::InternalUpdate()
         {
             if (!it->ImageDisplay->GetVtkImageInfo() || !it->ImageDisplay->GetVtkImageInfo()->initialized)
                 continue;
-            appender->AddInputConnection(it->ImageDisplay->GetOutputPort());
+            appender->AddInputConnection(it->ImageDisplay->GetInputProducer()->GetOutputPort());
         }
         if (this->LayerInfoVec.size()>1)
         {

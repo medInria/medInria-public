@@ -8,7 +8,7 @@ vtkStandardNewMacro(vtkImage2DDisplay);
 
 vtkImage2DDisplay::vtkImage2DDisplay()
 {
-    this->InputProducer     = 0;
+    this->InputProducer     = nullptr;
     this->ImageActor        = vtkImageActor::New();
     this->WindowLevel       = vtkImageMapToColors::New();
     this->WindowLevel->SetOutputFormatToRGBA();
@@ -63,7 +63,7 @@ vtkImage2DDisplay::~vtkImage2DDisplay()
 }*/
 
 
-void vtkImage2DDisplay::SetInput(vtkImageData *pi_poVtkImage)
+void vtkImage2DDisplay::SetInputData(vtkImageData *pi_poVtkImage)
 {
     if (pi_poVtkImage)
     {
@@ -92,9 +92,9 @@ void vtkImage2DDisplay::SetInput(vtkImageData *pi_poVtkImage)
     }
 }
 
-void vtkImage2DDisplay::SetInputProducer(vtkImageAlgorithm *inputImageAlgorithm)
+void vtkImage2DDisplay::SetInputProducer(vtkAlgorithmOutput *pi_poAlgorithmOutput)
 {
-    InputProducer = inputImageAlgorithm;
+    InputProducer = static_cast<vtkImageAlgorithm*>(pi_poAlgorithmOutput->GetProducer());
 }
 
 vtkLookupTable*vtkImage2DDisplay::GetLookupTable() const
