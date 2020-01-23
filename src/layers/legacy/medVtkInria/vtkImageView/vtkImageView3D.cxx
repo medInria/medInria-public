@@ -476,6 +476,7 @@ void vtkImageView3D::SetInput(vtkAlgorithmOutput* pi_poVtkAlgoOutput, vtkMatrix4
 
     if(pi_poVtkAlgoOutput)
     {
+        this->GetImage3DDisplayForLayer(0)->SetInputProducer(pi_poVtkAlgoOutput);
         this->Superclass::SetInput (pi_poVtkAlgoOutput, matrix, layer);
         this->GetImage3DDisplayForLayer(0)->SetInputData(m_poInternalImageFromInput);
 
