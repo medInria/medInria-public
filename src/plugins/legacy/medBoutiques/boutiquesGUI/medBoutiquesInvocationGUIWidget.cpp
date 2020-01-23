@@ -361,7 +361,8 @@ void medBoutiquesInvocationGUIWidget::parseDescriptor(QJsonObject *invocationJSO
             InputObject &inputObject = it->second;
             inputObject.group = &groupObject;
             const QJsonValue &isOptional = inputObject.description["optional"];
-            if(isOptional.isNull() || (isOptional.isBool() && !isOptional.toBool()) ) {
+            if(isOptional.isNull() || (isOptional.isBool() && !isOptional.toBool()) )
+            {
                 groupIsOptional = false;
             }
         }
@@ -583,11 +584,13 @@ void medBoutiquesInvocationGUIWidget::parseDescriptor(QJsonObject *invocationJSO
                     {
                         // Set the minimum and maximum, set value and connect to valueChanged signal
                         QSpinBox *spinBox = new QSpinBox();
-                        if(inputObject.description["minimum"].isDouble()) {
+                        if(inputObject.description["minimum"].isDouble())
+                        {
                             int exclusiveOffset = inputObject.description["exclusive-minimum"].toBool() ? 1 : 0;
                             spinBox->setMinimum(inputObject.description["minimum"].toInt() + exclusiveOffset);
                         }
-                        if(inputObject.description["maximum"].isDouble()) {
+                        if(inputObject.description["maximum"].isDouble())
+                        {
                             int exclusiveOffset = inputObject.description["exclusive-maximum"].toBool() ? 1 : 0;
                             spinBox->setMaximum(inputObject.description["maximum"].toInt() - exclusiveOffset);
                         }
@@ -600,11 +603,13 @@ void medBoutiquesInvocationGUIWidget::parseDescriptor(QJsonObject *invocationJSO
                     {
                         // Set the minimum and maximum, set value and connect to valueChanged signal
                         QDoubleSpinBox *spinBox = new QDoubleSpinBox();
-                        if(inputObject.description["minimum"].isDouble()) {
+                        if(inputObject.description["minimum"].isDouble())
+                        {
                             double exclusiveOffset = inputObject.description["exclusive-minimum"].toBool() ? 0.0001 : 0.0;
                             spinBox->setMinimum(inputObject.description["minimum"].toDouble() + exclusiveOffset);
                         }
-                        if(inputObject.description["maximum"].isDouble()) {
+                        if(inputObject.description["maximum"].isDouble())
+                        {
                             double exclusiveOffset = inputObject.description["exclusive-maximum"].toBool() ? 0.0001 : 0.0;
                             spinBox->setMaximum(inputObject.description["maximum"].toDouble() - exclusiveOffset);
                         }

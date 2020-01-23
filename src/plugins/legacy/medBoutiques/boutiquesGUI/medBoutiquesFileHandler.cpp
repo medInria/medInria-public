@@ -84,7 +84,8 @@ QList<FormatObject> medBoutiquesFileHandler::getFileFormatsForData(medAbstractDa
     }
 
     // Warn user if no compatible writer, and return an empty list
-    if (possibleWriters.isEmpty()) {
+    if (possibleWriters.isEmpty())
+    {
         medMessageController::instance()->showError("Sorry, we have no exporter for this format.");
         return fileFormats;
     }
@@ -161,6 +162,7 @@ QString medBoutiquesFileHandler::createTemporaryInputFileForMimeData(const QMime
     if (index.isValidForSeries())
     {
         medAbstractData *data = medDataManager::instance()->retrieveData(index);
+
         const FormatAndExtension &formatAndExtension = this->getFormatAndExtensionForData(data);
         return this->createTemporaryInputFile(data, formatAndExtension.type, formatAndExtension.extension);
     }
@@ -174,6 +176,10 @@ QString medBoutiquesFileHandler::createTemporaryInputFileForCurrentInput()
     return this->createTemporaryInputFile(nullptr, "Type 1", ".ext1");
 #else
     medAbstractData *data = toolbox->getInput();
+    if(data == nullptr) {
+        QMessageBox::warning(nullptr, "No input selected", "There is no file opened as input filter. Select an input file for the filter (on the left panel), it will then be usable as an input for the Boutiques tool.");
+        return "";
+    }
     const FormatAndExtension &formatAndExtension = this->getFormatAndExtensionForData(data);
     return this->createTemporaryInputFile(data, formatAndExtension.type, formatAndExtension.extension);
 #endif
@@ -329,7 +335,8 @@ QString medBoutiquesFileHandler::createTemporaryInputFile(medAbstractData *data,
 {
     Q_UNUSED(data)
     QTemporaryFile file(BoutiquesPaths::BoutiquesTemp().absoluteFilePath("XXXXXX_" + chosenType + chosenExtension));
-    if (!chosenType.isEmpty() && file.open()) {
+    if (!chosenType.isEmpty() && file.open())
+    {
         temporaryFiles.push_back(QDir::temp().absoluteFilePath(file.fileName()));
         QString absoluteFilePath = QFileInfo(file).absoluteFilePath();
 #ifndef BOUTIQUE_GUI_STANDALONE

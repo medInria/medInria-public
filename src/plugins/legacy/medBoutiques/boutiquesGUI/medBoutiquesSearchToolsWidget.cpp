@@ -194,7 +194,8 @@ void medBoutiquesSearchToolsWidget::selectionChanged()
 {
     // Display a short description when a tool is selected
     ToolDescription *tool = this->getSelectedTool();
-    if(tool == nullptr) {
+    if(tool == nullptr)
+    {
         return;
     }
     const QJsonObject &jsonObject = this->getToolDescriptor(tool->id);
@@ -280,7 +281,8 @@ void medBoutiquesSearchToolsWidget::prettyPrint()
 {
     // Pretty print the tool help when a tool is selected
     ToolDescription *tool = this->getSelectedTool();
-    if(tool == nullptr) {
+    if(tool == nullptr)
+    {
         return;
     }
 
