@@ -66,7 +66,7 @@ public:
 
     // Rendeing Modes available.
     // PLANAR_RENDERING will render every vtkImageActor instance added with Add2DPhantom()
-    // whereas VOLUME_RENDERING will render the volume added with SetInput().
+    // whereas VOLUME_RENDERING will render the volume added with SetInputData().
     //BTX
     enum RenderingModeIds
     {

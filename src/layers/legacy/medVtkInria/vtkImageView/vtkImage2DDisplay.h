@@ -30,9 +30,9 @@ public:
 
   //virtual void SetInput(vtkAlgorithmOutput*  pi_poVtkAlgoPort);
 
-  virtual void SetInput(vtkImageData *pi_poVtkImage);
+  virtual void SetInputData(vtkImageData *pi_poVtkImage);
 
-  void SetInputProducer(vtkImageAlgorithm *inputImageAlgorithm);
+  void SetInputProducer(vtkAlgorithmOutput *pi_poAlgorithmOutput);
 
   virtual vtkLookupTable * GetLookupTable() const;
 
