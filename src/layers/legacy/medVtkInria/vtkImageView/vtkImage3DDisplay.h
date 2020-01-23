@@ -1,10 +1,12 @@
 #pragma once
-#include <vtkAlgorithmOutput.h>
-#include <vtkLookupTable.h>
-#include <vtkSetGet.h>
 #include "medVtkImageInfo.h"
 
+#include <vtkAlgorithmOutput.h>
+#include <vtkImageAlgorithm.h>
 #include <vtkImageData.h>
+#include <vtkLookupTable.h>
+#include <vtkSetGet.h>
+
 
 class vtkImage3DDisplay : public vtkObject
 {
@@ -15,7 +17,9 @@ public:
 
     //vtkSetObjectMacro(InputConnection, vtkAlgorithmOutput);
 
-    virtual void SetInputConnection(vtkAlgorithmOutput*  pi_poVtkAlgoPort);
+    //virtual void SetInputConnection(vtkAlgorithmOutput*  pi_poVtkAlgoPort);
+    virtual void SetInputData(vtkImageData *pi_poVtkImage);
+    void SetInputProducer(vtkAlgorithmOutput *pi_poAlgorithmOutput);
     virtual medVtkImageInfo* GetVtkImageInfo();
 
     virtual bool isInputSet();
@@ -38,7 +42,8 @@ public:
     vtkSetMacro(ColorLevel, double);
     vtkGetMacro(ColorLevel, double);
 
-    vtkAlgorithmOutput* GetOutputPort();
+    //vtkAlgorithmOutput* GetOutputPort();
+    virtual vtkImageAlgorithm* GetInputProducer() const { return this->InputProducer; }
 
 protected:
     vtkImage3DDisplay();
@@ -46,7 +51,8 @@ protected:
 
 private:
     //vtkSmartPointer<vtkImageData>               InputImageOld;
-    vtkSmartPointer<vtkAlgorithmOutput>         InputConnection;
+    //vtkSmartPointer<vtkAlgorithmOutput>         InputConnection;
+    vtkSmartPointer<vtkImageAlgorithm>            InputProducer;
     double Opacity;
     int Visibility;
     double ColorWindow;

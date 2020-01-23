@@ -1577,7 +1577,7 @@ void vtkImageView2D::UnInstallPipeline()
   {
     //this->GetRenderer()->RemoveViewProp ( this->ImageActor );
     this->GetRenderer()->RemoveViewProp ( this->OrientationAnnotation );
-    //this->ImageActor->SetInput (nullptr);
+    //this->ImageActor->SetInputData (nullptr);
   }
 
   if( this->InteractorStyle )
@@ -1742,11 +1742,11 @@ void vtkImageView2D::SetFirstLayer(vtkAlgorithmOutput *pi_poInputAlgoImg, vtkMat
         {
             this->AddLayer(layer);
         }
-        vtkImageAlgorithm *inputImageAlgorithm = static_cast<vtkImageAlgorithm*>(pi_poInputAlgoImg->GetProducer());
-        this->GetImage2DDisplayForLayer(layer)->SetInputProducer(inputImageAlgorithm);
+        
+        this->GetImage2DDisplayForLayer(layer)->SetInputProducer(pi_poInputAlgoImg);
 
         this->Superclass::SetInput (pi_poInputAlgoImg, matrix, 0);
-        this->GetImage2DDisplayForLayer(layer)->SetInput(m_poInternalImageFromInput);
+        this->GetImage2DDisplayForLayer(layer)->SetInputData(m_poInternalImageFromInput);
         this->GetWindowLevel(layer)->SetInputConnection(pi_poInputAlgoImg);
         double *range = this->GetImage2DDisplayForLayer(layer)->GetMedVtkImageInfo()->scalarRange;
         this->SetColorRange(range,layer);
@@ -1813,7 +1813,7 @@ void vtkImageView2D::SetInput(vtkAlgorithmOutput* pi_poVtkAlgoOutput, vtkMatrix4
       }
 
       vtkImage2DDisplay * imageDisplay = this->GetImage2DDisplayForLayer(layer);
-      imageDisplay->SetInput(((vtkImageAlgorithm*)reslicerOutputPort->GetProducer())->GetOutput());
+      imageDisplay->SetInputData(((vtkImageAlgorithm*)reslicerOutputPort->GetProducer())->GetOutput());
       imageDisplay->GetImageActor()->SetUserMatrix (this->OrientationMatrix);
       this->SetColorRange(imageDisplay->GetMedVtkImageInfo()->scalarRange, layer);
   }
