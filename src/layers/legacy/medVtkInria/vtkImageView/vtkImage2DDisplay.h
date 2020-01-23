@@ -32,6 +32,8 @@ public:
 
   virtual void SetInput(vtkImageData *pi_poVtkImage);
 
+  void SetInputProducer(vtkImageAlgorithm *inputImageAlgorithm);
+
   virtual vtkLookupTable * GetLookupTable() const;
 
   virtual vtkImageActor* GetImageActor() { return this->ImageActor; }

@@ -1737,8 +1737,13 @@ void vtkImageView2D::SetFirstLayer(vtkAlgorithmOutput *pi_poInputAlgoImg, vtkMat
 {
     if(pi_poInputAlgoImg)
     {
+        // If the image is not the first one --> verif
         if( layer > 0 )
-          this->AddLayer(layer);
+        {
+            this->AddLayer(layer);
+        }
+        vtkImageAlgorithm *inputImageAlgorithm = static_cast<vtkImageAlgorithm*>(pi_poInputAlgoImg->GetProducer());
+        this->GetImage2DDisplayForLayer(layer)->SetInputProducer(inputImageAlgorithm);
 
         this->Superclass::SetInput (pi_poInputAlgoImg, matrix, 0);
         this->GetImage2DDisplayForLayer(layer)->SetInput(m_poInternalImageFromInput);
@@ -1790,7 +1795,7 @@ void vtkImageView2D::SetInput(vtkAlgorithmOutput* pi_poVtkAlgoOutput, vtkMatrix4
   {
       SetFirstLayer( pi_poVtkAlgoOutput, matrix, layer);
   }
-  else // layer >0
+  else // layer > 0
   {
       this->AddLayer(layer);
 
