@@ -2,7 +2,7 @@
 
  medInria
 
- Copyright (c) INRIA 2013 - 2018. All rights reserved.
+ Copyright (c) INRIA 2013 - 2020. All rights reserved.
  See LICENSE.txt for details.
 
   This software is distributed WITHOUT ANY WARRANTY; without even
@@ -11,83 +11,40 @@
 
 =========================================================================*/
 
+#include "vtkImage2DDisplay.h"
 #include "vtkImageView2D.h"
 
-#include "vtkBoundingBox.h"
-#include "vtkCamera.h"
-#include "vtkCommand.h"
-#include "vtkImageActor.h"
-#include "vtkImageData.h"
-#include "vtkImageMapToColors.h"
-#include "vtkObjectFactory.h"
-#include "vtkRenderWindow.h"
-#include "vtkRenderWindowInteractor.h"
-#include "vtkRenderer.h"
-#include "vtkMatrix4x4.h"
-#include "vtkTransform.h"
-#include "vtkScalarBarActor.h"
-#include "vtkCornerAnnotation.h"
-#include "vtkTextProperty.h"
-#include "vtkLookupTable.h"
-#include "vtkMath.h"
-#include "vtkPlane.h"
-#include "vtkCutter.h"
-#include "vtkActor.h"
-#include "vtkPolyDataMapper.h"
-#include "vtkProp3DCollection.h"
-#include "vtkDataSetCollection.h"
-#include "vtkPoints.h"
-#include "vtkIdList.h"
-#include "vtkOutlineSource.h"
-#include "vtkMatrixToLinearTransform.h"
-#include "vtkPointData.h"
-#include "vtkUnsignedCharArray.h"
-#include "vtkIntArray.h"
-#include "vtkImageAccumulate.h"
-#include "vtkCoordinate.h"
-#include "vtkTextActor.h"
-#include "vtkAxisActor2D.h"
-#include "vtkProperty.h"
-#include <vtkOrientationAnnotation.h>
-#include <vtkImageView2DCommand.h>
-#include <vtkProperty2D.h>
-#include <vtkSmartPointer.h>
-#include <vtkAxisActor2D.h>
-#include <vtkAxes2DWidget.h>
-#include <vtkRulerWidget.h>
-#include "vtkDistanceWidget.h"
-#include "vtkDistanceRepresentation2D.h"
-#include "vtkAngleWidget.h"
-#include "vtkAngleRepresentation2D.h"
-#include "vtkLeaderActor2D.h"
-#include "vtkProperty2D.h"
-#include <vtkPointHandleRepresentation2D.h>
-#include <vtkDataSet2DWidget.h>
-#include <vtkImageViewCornerAnnotation.h>
-#include <vtkImageCast.h>
-#include <vtkColorTransferFunction.h>
-#include <vtkPiecewiseFunction.h>
-#include <vtkImageReslice.h>
-#include <vtkInformation.h>
-#include <vtkStreamingDemandDrivenPipeline.h>
-
-#include <vtkTextActor3D.h>
-#include <vtkImageMapper3D.h>
-
-#include <vector>
-#include <string>
-#include <sstream>
-#include <cmath>
-
-#include <vtkImageFromBoundsSource.h>
-#include <vtkRendererCollection.h>
-#include "vtkImage2DDisplay.h"
-
-#include <vtkImageAlgorithm.h>
 #include <vtkAlgorithmOutput.h>
+#include <vtkAngleWidget.h>
+#include <vtkAngleRepresentation2D.h>
+#include <vtkAxes2DWidget.h>
+#include <vtkAxisActor2D.h>
+#include <vtkCamera.h>
+#include <vtkDataSet2DWidget.h>
+#include <vtkDataSetCollection.h>
+#include <vtkDistanceWidget.h>
+#include <vtkDistanceRepresentation2D.h>
+#include <vtkImageView2DCommand.h>
+#include <vtkImageViewCornerAnnotation.h>
+#include <vtkInformation.h>
+#include <vtkLeaderActor2D.h>
+#include <vtkMatrixToLinearTransform.h>
+#include <vtkOrientationAnnotation.h>
+#include <vtkPlane.h>
+#include <vtkPointData.h>
+#include <vtkPointSet.h>
+#include <vtkPolyData.h>
+#include <vtkProp3DCollection.h>
+#include <vtkProperty2D.h>
+#include <vtkRenderer.h>
+#include <vtkRenderWindow.h>
+#include <vtkRenderWindowInteractor.h>
+#include <vtkRulerWidget.h>
+#include <vtkScalarBarActor.h>
+#include <vtkStreamingDemandDrivenPipeline.h>
+#include <vtkTransform.h>
 
-
-vtkStandardNewMacro(vtkImageView2D);
+vtkStandardNewMacro(vtkImageView2D)
 
 //----------------------------------------------------------------------------
 vtkImageView2D::vtkImageView2D()
@@ -1718,12 +1675,6 @@ int vtkImageView2D::GetInterpolate(int layer) const
   return iRes;
 }
 
-////----------------------------------------------------------------------------
-//void vtkImageView2D::SetTransferFunctions(vtkColorTransferFunction* color, vtkPiecewiseFunction *opacity)
-//{
-//    this->SetTransferFunctions (color, opacity, CurrentLayer);
-//}
-
 //----------------------------------------------------------------------------
 void vtkImageView2D::ApplyColorTransferFunction(vtkScalarsToColors * colors, int layer)
 {
@@ -1735,23 +1686,9 @@ void vtkImageView2D::ApplyColorTransferFunction(vtkScalarsToColors * colors, int
 
 void vtkImageView2D::SetFirstLayer(vtkAlgorithmOutput *pi_poInputAlgoImg, vtkMatrix4x4 *matrix, int layer)
 {
-    if(pi_poInputAlgoImg)
-    {
-        // If the image is not the first one --> verif
-        if( layer > 0 )
-        {
-            this->AddLayer(layer);
-        }
-        
-        this->GetImage2DDisplayForLayer(layer)->SetInputProducer(pi_poInputAlgoImg);
-
-        this->Superclass::SetInput (pi_poInputAlgoImg, matrix, 0);
-        this->GetImage2DDisplayForLayer(layer)->SetInputData(m_poInternalImageFromInput);
-        this->GetWindowLevel(layer)->SetInputConnection(pi_poInputAlgoImg);
-        double *range = this->GetImage2DDisplayForLayer(layer)->GetMedVtkImageInfo()->scalarRange;
-        this->SetColorRange(range,layer);
-        this->Reset();
-    }
+    this->GetImage2DDisplayForLayer(layer)->SetInputProducer(pi_poInputAlgoImg);
+    this->Superclass::SetInput (pi_poInputAlgoImg, matrix, 0);
+    this->GetImage2DDisplayForLayer(layer)->SetInputData(m_poInternalImageFromInput);
 }
 
 /**
@@ -1789,60 +1726,56 @@ int vtkImageView2D::GetFirstLayer() const
 /** Set/Get the input image to the viewer. */
 void vtkImageView2D::SetInput(vtkAlgorithmOutput* pi_poVtkAlgoOutput, vtkMatrix4x4 *matrix /*= 0*/, int layer /*= 0*/)
 {
-  vtkRenderer *renderer = 0;
+    if (pi_poVtkAlgoOutput)
+    {
+        if (layer == 0 || IsFirstLayer(layer))
+        {
+            SetFirstLayer(pi_poVtkAlgoOutput, matrix, layer);
+        }
+        else // layer > 0
+        {
+            this->AddLayer(layer);
 
-  if ( layer == 0 || IsFirstLayer(layer))
-  {
-      SetFirstLayer( pi_poVtkAlgoOutput, matrix, layer);
-  }
-  else // layer > 0
-  {
-      this->AddLayer(layer);
+            vtkAlgorithmOutput *reslicerOutputPort = this->ResliceImageToInput(pi_poVtkAlgoOutput, matrix);
+            if (!reslicerOutputPort)
+            {
+                vtkErrorMacro (<< "Could not reslice image to input");
+                return;
+            }
 
-      if (!this->GetMedVtkImageInfo() || !this->GetMedVtkImageInfo()->initialized)
-      {
-          vtkErrorMacro (<< "Set input prior to adding layers");
-          return;
-      }
+            vtkImage2DDisplay * imageDisplay = this->GetImage2DDisplayForLayer(layer);
+            imageDisplay->SetInputProducer(reslicerOutputPort);
+            imageDisplay->SetInputData(static_cast<vtkImageAlgorithm*>(reslicerOutputPort->GetProducer())->GetOutput());
+            imageDisplay->GetImageActor()->SetUserMatrix (this->OrientationMatrix);
+            this->SetColorRange(imageDisplay->GetMedVtkImageInfo()->scalarRange, layer);
+        }
 
-      vtkAlgorithmOutput *reslicerOutputPort = this->ResliceImageToInput(pi_poVtkAlgoOutput, matrix);
-      if (!reslicerOutputPort)
-      {
-          vtkErrorMacro (<< "Could not reslice image to input");
-          return;
-      }
+        this->LayerInfoVec[layer].ImageAlgo = static_cast<vtkImageAlgorithm*>(pi_poVtkAlgoOutput->GetProducer());
 
-      vtkImage2DDisplay * imageDisplay = this->GetImage2DDisplayForLayer(layer);
-      imageDisplay->SetInputData(((vtkImageAlgorithm*)reslicerOutputPort->GetProducer())->GetOutput());
-      imageDisplay->GetImageActor()->SetUserMatrix (this->OrientationMatrix);
-      this->SetColorRange(imageDisplay->GetMedVtkImageInfo()->scalarRange, layer);
-  }
+        vtkRenderer *renderer = this->GetRendererForLayer(layer);
+        if (renderer)
+        {
+            renderer->AddViewProp (this->GetImage2DDisplayForLayer(layer)->GetImageActor());
 
-  renderer = this->GetRendererForLayer(layer);
-  this->LayerInfoVec[layer].ImageAlgo = (vtkImageAlgorithm*)pi_poVtkAlgoOutput->GetProducer();
-  if (!renderer)
-    return;
+            this->SetCurrentLayer(layer);
+            this->Slice = this->GetSliceForWorldCoordinates (this->CurrentPoint);
+            this->UpdateDisplayExtent();
+            this->UpdateSlicePlane();
+            this->InvokeEvent (vtkImageView2D::SliceChangedEvent);
 
-  if ( this->GetImage2DDisplayForLayer(layer) )
-    renderer->AddViewProp (this->GetImage2DDisplayForLayer(layer)->GetImageActor());
+            // So ugly to do it, for each new layer,
+            // but it 's the only way i found so far to get the annotation correctly rendered ... - RDE
+            renderer->AddViewProp(this->CornerAnnotation);
+            renderer->AddViewProp(this->ScalarBar);
+            renderer->AddViewProp(this->OrientationAnnotation);
 
-  this->SetCurrentLayer(layer);
-  this->Slice = this->GetSliceForWorldCoordinates (this->CurrentPoint);
-  this->UpdateDisplayExtent();
-  this->UpdateSlicePlane();
-  this->InvokeEvent (vtkImageView2D::SliceChangedEvent);
-
-  // So ugly to do it, for each new layer,
-  // but it 's the only way i found so far to get the annotation correctly rendered ... - RDE
-  renderer->AddViewProp(this->CornerAnnotation);
-  renderer->AddViewProp(this->ScalarBar);
-  renderer->AddViewProp(this->OrientationAnnotation);
-
-  if(this->ShowRulerWidget)
-  {
-    this->ShowRulerWidgetOff();
-    this->ShowRulerWidgetOn();
-  }
+            if(this->ShowRulerWidget)
+            {
+                this->ShowRulerWidgetOff();
+                this->ShowRulerWidgetOn();
+            }
+        }
+    }
 }
 
 void vtkImageView2D::SetInput (vtkActor *actor, int layer, vtkMatrix4x4 *matrix, const int imageSize[], const double imageSpacing[], const double imageOrigin[])
@@ -1876,7 +1809,6 @@ void vtkImageView2D::SetInput (vtkActor *actor, int layer, vtkMatrix4x4 *matrix,
     this->SetCurrentLayer(layer);
     this->Slice = this->GetSliceForWorldCoordinates (this->CurrentPoint);
     this->UpdateDisplayExtent();
-    // this->UpdateCenter();
     this->UpdateSlicePlane();
     this->InvokeEvent (vtkImageView2D::SliceChangedEvent);
 
@@ -1921,7 +1853,7 @@ vtkImageActor *vtkImageView2D::GetImageActor(int layer) const
 //----------------------------------------------------------------------------
 medVtkImageInfo* vtkImageView2D::GetMedVtkImageInfo(int layer) const
 {
-    medVtkImageInfo* psRes = nullptr;
+    medVtkImageInfo *imageInfo = nullptr;
 
     if (layer == 0)
     {
@@ -1929,10 +1861,10 @@ medVtkImageInfo* vtkImageView2D::GetMedVtkImageInfo(int layer) const
     }
     if (this->HasLayer(layer))
     {
-        psRes = this->GetImage2DDisplayForLayer(layer)->GetMedVtkImageInfo();
+        imageInfo = this->GetImage2DDisplayForLayer(layer)->GetMedVtkImageInfo();
     }
 
-    return psRes;
+    return imageInfo;
 }
 
 //----------------------------------------------------------------------------

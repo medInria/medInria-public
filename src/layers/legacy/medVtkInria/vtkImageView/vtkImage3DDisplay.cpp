@@ -12,10 +12,11 @@
 =========================================================================*/
 
 #include "vtkImage3DDisplay.h"
-#include <vtkImageData.h>
-#include <vtkImageAlgorithm.h>
 
-vtkStandardNewMacro(vtkImage3DDisplay);
+#include <vtkImageAlgorithm.h>
+#include <vtkImageData.h>
+
+vtkStandardNewMacro(vtkImage3DDisplay)
 
 vtkImage3DDisplay::vtkImage3DDisplay()
 {
@@ -35,40 +36,6 @@ vtkImage3DDisplay::~vtkImage3DDisplay()
         this->LookupTable->Delete();
     }
 }
-
-/*
-void vtkImage3DDisplay::SetInputConnection(vtkAlgorithmOutput* pi_poVtkAlgoPort)
-{
-    if (pi_poVtkAlgoPort)
-    {
-        if (pi_poVtkAlgoPort->GetProducer() && pi_poVtkAlgoPort->GetProducer()->IsA("vtkImageAlgorithm"))
-        {
-            this->InputConnection = pi_poVtkAlgoPort;
-            vtkImageAlgorithm* poVtkImgAlgoTmp = static_cast<vtkImageAlgorithm*>(pi_poVtkAlgoPort->GetProducer());
-            vtkImageData* poVtkImgTmp = poVtkImgAlgoTmp->GetOutput();
-
-            m_sVtkImageInfo.SetSpacing(poVtkImgTmp->GetSpacing());
-            m_sVtkImageInfo.SetOrigin(poVtkImgTmp->GetOrigin());
-            m_sVtkImageInfo.SetScalarRange(poVtkImgTmp->GetScalarRange());
-            m_sVtkImageInfo.SetExtent(poVtkImgTmp->GetExtent());
-            m_sVtkImageInfo.SetDimensions(poVtkImgTmp->GetDimensions());
-            m_sVtkImageInfo.scalarType = poVtkImgTmp->GetScalarType();
-            m_sVtkImageInfo.nbScalarComponent = poVtkImgTmp->GetNumberOfScalarComponents();
-            m_sVtkImageInfo.initialized = true;
-        }
-        else
-        {
-            vtkErrorMacro(<< "Set input prior to adding layers");
-        }
-    }
-    else
-    {
-        memset(&m_sVtkImageInfo, 0, sizeof(m_sVtkImageInfo));
-        this->InputConnection = nullptr;
-    }
-}
-*/
-
 
 void vtkImage3DDisplay::SetInputData(vtkImageData *pi_poVtkImage)
 {
@@ -94,7 +61,7 @@ void vtkImage3DDisplay::SetInputProducer(vtkAlgorithmOutput *pi_poAlgorithmOutpu
     InputProducer = static_cast<vtkImageAlgorithm*>(pi_poAlgorithmOutput->GetProducer());
 }
 
-medVtkImageInfo* vtkImage3DDisplay::GetVtkImageInfo()
+medVtkImageInfo* vtkImage3DDisplay::GetMedVtkImageInfo()
 {
     return &m_sVtkImageInfo;
 }
@@ -108,8 +75,3 @@ vtkLookupTable* vtkImage3DDisplay::GetLookupTable()
 {
     return this->LookupTable;
 }
-
-/*vtkAlgorithmOutput* vtkImage3DDisplay::GetOutputPort()
-{
-    return this->InputConnection;
-}*/

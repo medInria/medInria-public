@@ -14,18 +14,12 @@
 
 #include <medVtkInriaExport.h>
 
-#include <vector>
-
 #include <vtkImageView.h>
-#include <vtkOrientedBoxWidget.h>
-
-#include <vtkPlaneWidget.h>
-#include <vtkVolume.h>
 #include <vtkImageView3DCroppingBoxCallback.h>
 #include <vtkOrientationMarkerWidget.h>
+#include <vtkOrientedBoxWidget.h>
+#include <vtkPlaneWidget.h>
 #include <vtkVolumeProperty.h>
-#include <vtkSmartPointer.h>
-
 
 class vtkVolume;
 class vtkPiecewiseFunction;
@@ -51,7 +45,7 @@ class vtkProp3DCollection;
 
    This class allows to view 3D images. Images have to be
    vtkImageData.
-   volume rendering and mulptiplane reconstructions are provided
+   volume rendering and multiplane reconstructions are provided
    remote plan can also be used, so can be an orientation cube, ...
 */
 
@@ -64,7 +58,7 @@ public:
 
     vtkMTimeType GetMTime();
 
-    // Rendeing Modes available.
+    // Rendering Modes available.
     // PLANAR_RENDERING will render every vtkImageActor instance added with Add2DPhantom()
     // whereas VOLUME_RENDERING will render the volume added with SetInputData().
     //BTX
@@ -147,6 +141,7 @@ public:
     virtual unsigned int GetCroppingMode ();
 
     virtual void SetInput (vtkAlgorithmOutput* pi_poVtkAlgoOutput, vtkMatrix4x4 *matrix = nullptr, int layer = 0);
+    void SetFirstLayer(vtkAlgorithmOutput *pi_poInputAlgoImg, vtkMatrix4x4 *matrix = nullptr, int layer = 0);
 
     virtual void SetOrientationMatrix (vtkMatrix4x4* matrix);
 
@@ -168,7 +163,6 @@ public:
 
     virtual void SetVisibility(int visibility, int layer);
     virtual int  GetVisibility(int layer) const;
-
 
     virtual void SetShowActorX (unsigned int);
     vtkGetMacro (ShowActorX, unsigned int);
@@ -278,9 +272,9 @@ protected:
     unsigned int ShowActorY;
     unsigned int ShowActorZ;
 
-    int          LastNodeIndex;
+    int LastNodeIndex;
 
-    int          CroppingMode;
+    int  CroppingMode;
 
     double Opacity;
     int Visibility;
