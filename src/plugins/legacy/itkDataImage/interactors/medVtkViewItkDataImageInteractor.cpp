@@ -193,7 +193,6 @@ void medVtkViewItkDataImageInteractor::removeData()
     d->view3d->RemoveLayer(d->view->layer(d->imageData));
 }
 
-
 bool medVtkViewItkDataImageInteractor::SetViewInput(medAbstractData* data, int layer)
 {
     bool bRes = true;
