@@ -143,13 +143,17 @@ vtkMTimeType vtkImageView3D::GetMTime()
 
   const int numObjects = sizeof(objectsToInclude) / sizeof(vtkObject *);
 
-  for ( int i(0); i<numObjects; ++i ) {
-    vtkObject * object = objectsToInclude[i];
-    if (object) {
-      const vtkMTimeType testMtime = object->GetMTime();
-      if ( testMtime > mTime )
-    mTime = testMtime;
-    }
+  for ( int i(0); i<numObjects; ++i )
+  {
+      vtkObject * object = objectsToInclude[i];
+      if (object)
+      {
+          const vtkMTimeType testMtime = object->GetMTime();
+          if ( testMtime > mTime )
+          {
+              mTime = testMtime;
+          }
+      }
   }
 
   this->ExtraPlaneCollection->InitTraversal();
@@ -505,26 +509,14 @@ void vtkImageView3D::InternalUpdate()
     bool multichannelInput = (this->m_poInternalImageFromInput->GetScalarType() == VTK_UNSIGNED_CHAR &&
                               (this->m_poInternalImageFromInput->GetNumberOfScalarComponents() == 3 ||
                                this->m_poInternalImageFromInput->GetNumberOfScalarComponents() == 4 ));
-    if(this->GetMedVtkImageInfo() == nullptr || !this->GetMedVtkImageInfo()->initialized)
-    {
-        this->Renderer->RemoveAllViewProps();
-        //TODO apparently RemoveAllViewProps() is not enough, though it should be
-        this->ActorX->GetMapper()->SetInputConnection(nullptr);
-        this->ActorY->GetMapper()->SetInputConnection(nullptr);
-        this->ActorZ->GetMapper()->SetInputConnection(nullptr);
-        this->Render();
-        return;
-    }
+
     vtkImageAppendComponents *appender = vtkImageAppendComponents::New();
     if (this->LayerInfoVec.size()>0 && !multichannelInput)
     {
         // append all scalar buffer into the same image
-        for( LayerInfoVecType::const_iterator it = this->LayerInfoVec.begin();
-             it!=this->LayerInfoVec.end(); ++it)
+        for (auto it : this->LayerInfoVec)
         {
-            if (!it->ImageDisplay->GetMedVtkImageInfo() || !it->ImageDisplay->GetMedVtkImageInfo()->initialized)
-                continue;
-            appender->AddInputConnection(it->ImageDisplay->GetInputProducer()->GetOutputPort());
+            appender->AddInputConnection(it.ImageDisplay->GetInputProducer()->GetOutputPort());
         }
         if (this->LayerInfoVec.size()>1)
         {
