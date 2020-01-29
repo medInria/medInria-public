@@ -196,11 +196,10 @@ void medVtkFibersDataInteractorPrivate::setROI (medAbstractData *data)
 
     roiManager->SetInput (converter->GetOutput());
     roiManager->SetDirectionMatrix (matrix2);
-
-    // manager->GetROILimiter()->Update();
     roiManager->GenerateData();
 
-    qSort(labels);
+    std::sort(labels.begin(), labels.end());
+
     roiLabels.clear();
 
     if (roiComboBox)

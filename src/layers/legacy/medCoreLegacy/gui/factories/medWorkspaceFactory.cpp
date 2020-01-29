@@ -106,7 +106,8 @@ QList<medWorkspaceFactory::Details *> medWorkspaceFactory::workspaceDetailsSorte
         filteredDetails = details;
 
     QList<medWorkspaceFactory::Details*> detailsList = filteredDetails.values();
-    qSort(detailsList.begin(),detailsList.end(), wsDetailsSortByName);
+    std::sort(detailsList.begin(),detailsList.end(), wsDetailsSortByName);
+
     return detailsList;
 }
 

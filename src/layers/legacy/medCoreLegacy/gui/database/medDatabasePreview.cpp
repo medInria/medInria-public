@@ -178,15 +178,14 @@ medDatabasePreviewDynamicScene::medDatabasePreviewDynamicScene(const QList<QPair
     d(new medDatabasePreviewDynamicScenePrivate)
 {
     d->seriesDescriptionDataIndexPairList = seriesDescriptionDataIndexList;
-    qSort(d->seriesDescriptionDataIndexPairList.begin(), d->seriesDescriptionDataIndexPairList.end(), &stringMedDataIndexPairLessThan);
+    std::sort(d->seriesDescriptionDataIndexPairList.begin(), d->seriesDescriptionDataIndexPairList.end(), &stringMedDataIndexPairLessThan);
 }
 
 medDatabasePreviewDynamicScene::~medDatabasePreviewDynamicScene()
 {
     delete d;
-    d = NULL;
+    d = nullptr;
 }
-
 
 void medDatabasePreviewDynamicScene::previewMouseMoveEvent(QMouseEvent *event, int width)
 {

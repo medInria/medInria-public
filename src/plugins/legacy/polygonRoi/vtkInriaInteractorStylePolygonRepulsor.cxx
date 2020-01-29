@@ -126,7 +126,7 @@ void vtkInriaInteractorStylePolygonRepulsor::OnLeftButtonDown()
         }
         if (!DistanceList.isEmpty())
         {
-            qSort(DistanceList);
+            std::sort(DistanceList.begin(), DistanceList.end());
 
             //-------------------------------------------COMPUTE RADIUS--------------------------------------------------------------//
             this->Radius = (int)((DistanceList[0]+0.5)*0.8); 

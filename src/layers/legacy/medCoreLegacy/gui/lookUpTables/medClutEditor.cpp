@@ -556,8 +556,7 @@ void medClutEditorTable::updateVerticesToDisplay()
         d->verticesToDisplay = d->principalVertices;
     }
 
-    qSort( d->verticesToDisplay.begin(), d->verticesToDisplay.end(),
-           medClutEditorVertex::LessThan );
+    std::sort(d->verticesToDisplay.begin(), d->verticesToDisplay.end(), medClutEditorVertex::LessThan);
     this->update();
 }
 
@@ -694,8 +693,7 @@ void medClutEditorTable::addVertex( medClutEditorVertex *vertex, bool interpolat
         vertex->setParentItem( this );
     }
 
-    qSort( d->principalVertices.begin(), d->principalVertices.end(),
-           medClutEditorVertex::LessThan );
+    std::sort(d->principalVertices.begin(), d->principalVertices.end(), medClutEditorVertex::LessThan);
 
     if (interpolate)
     {
@@ -894,8 +892,7 @@ void medClutEditorTable::setTransferFunction( QList<double> &scalars,
         this->addVertex(new medClutEditorVertex( value, coord, colors.at( i ), this ));
     }
 
-    qSort( d->principalVertices.begin(), d->principalVertices.end(),
-           medClutEditorVertex::LessThan );
+    std::sort(d->principalVertices.begin(), d->principalVertices.end(), medClutEditorVertex::LessThan);
 
     scene->adjustRange();
 }
