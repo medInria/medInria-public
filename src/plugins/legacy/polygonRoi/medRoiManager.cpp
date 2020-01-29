@@ -120,7 +120,8 @@ void medRoiManager::sortListOfRois(QString seriesName)
                 break;
             }
         }
-        qSort(listOfRois->begin(), listOfRois->end(), sliceIndexLessThan);
+
+        std::sort(listOfRois->begin(), listOfRois->end(), sliceIndexLessThan);
     }
 }
 

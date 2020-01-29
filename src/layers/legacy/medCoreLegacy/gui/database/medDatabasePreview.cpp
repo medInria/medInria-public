@@ -176,7 +176,7 @@ medDatabasePreviewDynamicScene::medDatabasePreviewDynamicScene(const QList<QPair
     d(new medDatabasePreviewDynamicScenePrivate)
 {
     d->seriesDescriptionDataIndexPairList = seriesDescriptionDataIndexList;
-    qSort(d->seriesDescriptionDataIndexPairList.begin(), d->seriesDescriptionDataIndexPairList.end(), &stringMedDataIndexPairLessThan);
+    std::sort(d->seriesDescriptionDataIndexPairList.begin(), d->seriesDescriptionDataIndexPairList.end(), &stringMedDataIndexPairLessThan);
 }
 
 medDatabasePreviewDynamicScene::~medDatabasePreviewDynamicScene()

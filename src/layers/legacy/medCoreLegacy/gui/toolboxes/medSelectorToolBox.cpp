@@ -55,7 +55,7 @@ medSelectorToolBox::medSelectorToolBox(QWidget *parent, QString tlbxId)
 
     // Sort toolboxes names alphabetically
     QList<QString> names = toolboxDataHash.keys();
-    qSort(names.begin(), names.end());
+    std::sort(names.begin(), names.end());
 
     int i = 1; // toolboxes positions
     foreach( QString name, names )
