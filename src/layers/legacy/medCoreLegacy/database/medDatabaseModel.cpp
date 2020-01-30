@@ -2,7 +2,7 @@
 
  medInria
 
- Copyright (c) INRIA 2013 - 2019. All rights reserved.
+ Copyright (c) INRIA 2013 - 2020. All rights reserved.
  See LICENSE.txt for details.
  
   This software is distributed WITHOUT ANY WARRANTY; without even
@@ -10,13 +10,6 @@
   PURPOSE.
 
 =========================================================================*/
-
-#include <QtGui>
-#include <QtCore>
-#include <QtSql/QtSql>
-
-#include <dtkCoreSupport/dtkGlobal.h>
-#include <dtkLog>
 
 #include <medAbstractDatabaseItem.h>
 #include <medAbstractDbController.h>
@@ -354,7 +347,7 @@ bool medDatabaseModel::setData(const QModelIndex& index, const QVariant& value, 
 
     if ( !result )
     {
-        dtkDebug() << "Could not set data for index " << dataIndex.asString();
+        qDebug() << "Could not set data for index " << dataIndex.asString();
     }
     else
     {

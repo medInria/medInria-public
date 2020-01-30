@@ -2,7 +2,7 @@
 
  medInria
 
- Copyright (c) INRIA 2013 - 2018. All rights reserved.
+ Copyright (c) INRIA 2013 - 2020. All rights reserved.
  See LICENSE.txt for details.
  
   This software is distributed WITHOUT ANY WARRANTY; without even
@@ -21,11 +21,8 @@ class MEDPACS_EXPORT medAbstractPacsFindScu : public medAbstractPacsBaseScu
     Q_OBJECT
 
 public:
-             medAbstractPacsFindScu();
-    virtual ~medAbstractPacsFindScu();
+    medAbstractPacsFindScu() = default;
+    ~medAbstractPacsFindScu() = default;
 
     virtual int  sendFindRequest(const char* peerTitle, const char* peerIP, unsigned int peerPort, const char* ourTitle, const char* ourIP, unsigned int ourPort);
-
 };
-
-

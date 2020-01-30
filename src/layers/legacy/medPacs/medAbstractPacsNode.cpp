@@ -2,7 +2,7 @@
 
  medInria
 
- Copyright (c) INRIA 2013 - 2018. All rights reserved.
+ Copyright (c) INRIA 2013 - 2020. All rights reserved.
  See LICENSE.txt for details.
  
   This software is distributed WITHOUT ANY WARRANTY; without even
@@ -17,16 +17,6 @@
 
 #include <QtCore>
 
-medAbstractPacsNode::medAbstractPacsNode( void )
-{
-
-}
-
-medAbstractPacsNode::~medAbstractPacsNode( void )
-{
-
-}
-
 QVector<medAbstractPacsResultDataset*> medAbstractPacsNode::getResultDatasetContainer()
 {
     DTK_DEFAULT_IMPLEMENTATION;
@@ -36,19 +26,18 @@ QVector<medAbstractPacsResultDataset*> medAbstractPacsNode::getResultDatasetCont
 
 void medAbstractPacsNode::setTitle( QString title )
 {
-    DTK_UNUSED(title);
+    Q_UNUSED(title);
     DTK_DEFAULT_IMPLEMENTATION;
 }
 
 void medAbstractPacsNode::setIp( QString ip )
 {
-    DTK_UNUSED(ip);
+    Q_UNUSED(ip);
     DTK_DEFAULT_IMPLEMENTATION;
 }
 
 void medAbstractPacsNode::setPort( unsigned int port )
 {
-    DTK_UNUSED(port);
+    Q_UNUSED(port);
     DTK_DEFAULT_IMPLEMENTATION;
 }
-

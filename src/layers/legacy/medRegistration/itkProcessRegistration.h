@@ -2,7 +2,7 @@
 
  medInria
 
- Copyright (c) INRIA 2013 - 2018. All rights reserved.
+ Copyright (c) INRIA 2013 - 2020. All rights reserved.
  See LICENSE.txt for details.
  
   This software is distributed WITHOUT ANY WARRANTY; without even
@@ -206,9 +206,3 @@ protected :
 private:
     itkProcessRegistrationPrivate *d;
 };
-
-//Implement this function only in actual implementation of registration Plugins
-// This class is abstracted, so we won't register it in the factory.
-//dtkAbstractProcess *createItkProcessRegistration();
-
-

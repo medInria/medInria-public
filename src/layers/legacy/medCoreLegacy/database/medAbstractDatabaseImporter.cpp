@@ -2,7 +2,7 @@
 
  medInria
 
- Copyright (c) INRIA 2013 - 2019. All rights reserved.
+ Copyright (c) INRIA 2013 - 2020. All rights reserved.
  See LICENSE.txt for details.
 
   This software is distributed WITHOUT ANY WARRANTY; without even
@@ -13,8 +13,6 @@
 
 #include <dtkCoreSupport/dtkAbstractDataReader.h>
 #include <dtkCoreSupport/dtkAbstractDataWriter.h>
-#include <dtkCoreSupport/dtkGlobal.h>
-#include <dtkLog/dtkLog.h>
 
 #include <medAbstractData.h>
 #include <medAbstractDatabaseImporter.h>

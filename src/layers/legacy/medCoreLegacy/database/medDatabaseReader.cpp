@@ -2,7 +2,7 @@
 
  medInria
 
- Copyright (c) INRIA 2013 - 2019. All rights reserved.
+ Copyright (c) INRIA 2013 - 2020. All rights reserved.
  See LICENSE.txt for details.
 
   This software is distributed WITHOUT ANY WARRANTY; without even
@@ -12,9 +12,6 @@
 =========================================================================*/
 
 #include <dtkCoreSupport/dtkAbstractDataReader.h>
-#include <dtkCoreSupport/dtkAbstractDataWriter.h>
-#include <dtkCoreSupport/dtkGlobal.h>
-#include <dtkLog>
 
 #include <QtSql/QSqlError>
 
@@ -41,10 +38,10 @@ medDatabaseReader::~medDatabaseReader()
 {
     delete d;
 
-    d = NULL;
+    d = nullptr;
 }
 
-#define FAILURE(msg) do {qDebug() <<  "medDatabaseReader::run: "<<(msg);emit failure(this);return NULL;} while(0)
+#define FAILURE(msg) do {qDebug() <<  "medDatabaseReader::run: "<<(msg);emit failure(this);return nullptr;} while(0)
 
 medAbstractData* medDatabaseReader::run()
 {
@@ -214,7 +211,7 @@ medAbstractData* medDatabaseReader::run()
 
 medAbstractData *medDatabaseReader::readFile( const QStringList& filenames )
 {
-    medAbstractData *medData = NULL;
+    medAbstractData *medData = nullptr;
 
     QList<QString> readers = medAbstractDataFactory::instance()->readers();
 

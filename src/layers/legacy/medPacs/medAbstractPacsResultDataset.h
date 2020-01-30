@@ -2,7 +2,7 @@
 
  medInria
 
- Copyright (c) INRIA 2013 - 2018. All rights reserved.
+ Copyright (c) INRIA 2013 - 2020. All rights reserved.
  See LICENSE.txt for details.
  
   This software is distributed WITHOUT ANY WARRANTY; without even
@@ -24,8 +24,8 @@ class MEDPACS_EXPORT medAbstractPacsResultDataset : public QObject
     Q_OBJECT
 
 public:
-             medAbstractPacsResultDataset();
-    virtual ~medAbstractPacsResultDataset();
+    medAbstractPacsResultDataset() = default;
+    ~medAbstractPacsResultDataset() = default;
 
     virtual const char* getStudyInstanceUID();
 
@@ -36,7 +36,4 @@ public:
     virtual QVector<medAbstractPacsKey*> getKeyContainer();
 
     virtual const char* findKeyValue(int group, int elem);
-
 };
-
-

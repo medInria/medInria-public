@@ -2,7 +2,7 @@
 
  medInria
 
- Copyright (c) INRIA 2013 - 2018. All rights reserved.
+ Copyright (c) INRIA 2013 - 2020. All rights reserved.
  See LICENSE.txt for details.
  
   This software is distributed WITHOUT ANY WARRANTY; without even
@@ -17,22 +17,11 @@
 
 #include <QtCore>
 
-medAbstractPacsBaseScu::medAbstractPacsBaseScu(void)
-{
-
-}
-
-medAbstractPacsBaseScu::~medAbstractPacsBaseScu(void)
-{
-
-}
- 
-
 bool medAbstractPacsBaseScu::addQueryAttribute(int group, int elem, const char* value)
 {
-    DTK_UNUSED(group);
-    DTK_UNUSED(elem);
-    DTK_UNUSED(value);
+    Q_UNUSED(group);
+    Q_UNUSED(elem);
+    Q_UNUSED(value);
     
     DTK_DEFAULT_IMPLEMENTATION;
 
@@ -41,7 +30,7 @@ bool medAbstractPacsBaseScu::addQueryAttribute(int group, int elem, const char* 
 
 void medAbstractPacsBaseScu::setQueryLevel( eQueryLevel level )
 {
-    DTK_UNUSED(level);
+    Q_UNUSED(level);
 
     DTK_DEFAULT_IMPLEMENTATION;
 }
@@ -57,5 +46,3 @@ QVector<medAbstractPacsNode*> medAbstractPacsBaseScu::getNodeContainer( void )
 
     return QVector<medAbstractPacsNode*>();
 }
-
-

@@ -2,7 +2,7 @@
 
  medInria
 
- Copyright (c) INRIA 2013 - 2018. All rights reserved.
+ Copyright (c) INRIA 2013 - 2020. All rights reserved.
  See LICENSE.txt for details.
 
   This software is distributed WITHOUT ANY WARRANTY; without even
@@ -28,9 +28,9 @@ public:
     typedef std::type_info PixId;
     typedef std::vector < std::vector <double> > MatrixType;
 
-             medAbstractImageData();
-             medAbstractImageData(const medAbstractImageData& other);
-    virtual ~medAbstractImageData();
+    medAbstractImageData();
+    medAbstractImageData(const medAbstractImageData& other);
+    ~medAbstractImageData() = default;
 
     void *image();
 
