@@ -2,7 +2,7 @@
 
  medInria
 
- Copyright (c) INRIA 2013 - 2018. All rights reserved.
+ Copyright (c) INRIA 2013 - 2020. All rights reserved.
  See LICENSE.txt for details.
  
   This software is distributed WITHOUT ANY WARRANTY; without even
@@ -17,21 +17,11 @@
 
 #include <QtCore>
 
-medAbstractPacsStoreScp::medAbstractPacsStoreScp( void )
-{
-
-}
-
-medAbstractPacsStoreScp::~medAbstractPacsStoreScp( void )
-{
-
-}
-
 int medAbstractPacsStoreScp::start( const char* ourTitle, const char* ourIP, unsigned int ourPort )
 {
-    DTK_UNUSED(ourTitle);
-    DTK_UNUSED(ourIP);
-    DTK_UNUSED(ourPort);
+    Q_UNUSED(ourTitle);
+    Q_UNUSED(ourIP);
+    Q_UNUSED(ourPort);
 
     DTK_DEFAULT_IMPLEMENTATION;
 
@@ -45,7 +35,6 @@ void medAbstractPacsStoreScp::stop()
 
 bool medAbstractPacsStoreScp::setStorageDirectory( const char* directory )
 {
-    DTK_UNUSED(directory);
+    Q_UNUSED(directory);
     return false;
-
 }

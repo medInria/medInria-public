@@ -30,8 +30,8 @@ class MEDCORELEGACY_EXPORT medMessage : public QWidget
     Q_OBJECT
 
 public:
-     medMessage(QWidget *parent = 0, const QString& text=NULL, unsigned int timeout=0);
-    ~medMessage();
+     medMessage(QWidget *parent = 0, const QString& text=nullptr, unsigned int timeout=0);
+    ~medMessage() = default;
     void startTimer();
     void stopTimer();
 
@@ -60,7 +60,7 @@ class medMessageInfo : public medMessage
 public:
      medMessageInfo(const QString& text, QWidget *parent = 0,
                                      unsigned int timeout=0);
-    ~medMessageInfo();
+    ~medMessageInfo() = default;
 };
 
 // /////////////////////////////////////////////////////////////////
@@ -73,7 +73,7 @@ class medMessageError : public medMessage
 public:
      medMessageError(const QString& text, QWidget *parent = 0,
                                       unsigned int timeout=0);
-    ~medMessageError();
+    ~medMessageError() = default;
 };
 
 // /////////////////////////////////////////////////////////////////
@@ -87,7 +87,7 @@ class MEDCORELEGACY_EXPORT medMessageProgress : public medMessage
 
 public:
      medMessageProgress(const QString& text, QWidget *parent = 0);
-    ~medMessageProgress();
+    ~medMessageProgress() = default;
     void associateTimer();
     void paintEvent ( QPaintEvent * event );
 
@@ -126,7 +126,7 @@ signals:
 
 protected:
      medMessageController();
-    ~medMessageController();
+    ~medMessageController() = default;
 
 protected:
     static medMessageController *s_instance;

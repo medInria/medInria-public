@@ -2,7 +2,7 @@
 
  medInria
 
- Copyright (c) INRIA 2013 - 2018. All rights reserved.
+ Copyright (c) INRIA 2013 - 2020. All rights reserved.
  See LICENSE.txt for details.
  
   This software is distributed WITHOUT ANY WARRANTY; without even
@@ -13,7 +13,6 @@
 
 #include "medFileSystemDataSource.h"
 
-#include <dtkCoreSupport/dtkGlobal.h>
 #include <dtkGuiSupport/dtkFinder.h>
 
 #include <medActionsToolBox.h>
@@ -164,7 +163,7 @@ medFileSystemDataSource::medFileSystemDataSource( QWidget* parent ): medAbstract
 medFileSystemDataSource::~medFileSystemDataSource()
 {
     delete d;
-    d = NULL;
+    d = nullptr;
 }
 
 QWidget* medFileSystemDataSource::mainViewWidget()

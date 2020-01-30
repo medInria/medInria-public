@@ -2,7 +2,7 @@
 
  medInria
 
- Copyright (c) INRIA 2013 - 2018. All rights reserved.
+ Copyright (c) INRIA 2013 - 2020. All rights reserved.
  See LICENSE.txt for details.
  
   This software is distributed WITHOUT ANY WARRANTY; without even
@@ -16,12 +16,6 @@
 #include <QtGui>
 
 // /////////////////////////////////////////////////////////////////
-// medAbstractImageDataPrivate
-// /////////////////////////////////////////////////////////////////
-
-//  Unneeded in this case.
-
-// /////////////////////////////////////////////////////////////////
 // medAbstractImageData
 // /////////////////////////////////////////////////////////////////
 
@@ -32,10 +26,6 @@ medAbstractImageData::medAbstractImageData(void) : medAbstractData()
 }
 
 medAbstractImageData::medAbstractImageData(const medAbstractImageData& other): medAbstractData(other)
-{
-}
-
-medAbstractImageData::~medAbstractImageData(void)
 {
 }
 
@@ -110,7 +100,7 @@ int medAbstractImageData::maxRangeValue(void)
 int medAbstractImageData::scalarValueCount(int value)
 {
     DTK_DEFAULT_IMPLEMENTATION;
-    DTK_UNUSED(value);
+    Q_UNUSED(value);
 
     return 0;
 }

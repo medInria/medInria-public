@@ -2,7 +2,7 @@
 
  medInria
 
- Copyright (c) INRIA 2013 - 2018. All rights reserved.
+ Copyright (c) INRIA 2013 - 2020. All rights reserved.
  See LICENSE.txt for details.
  
   This software is distributed WITHOUT ANY WARRANTY; without even
@@ -24,8 +24,8 @@ class MEDPACS_EXPORT medAbstractPacsBaseScu : public QObject
     Q_OBJECT
     
 public:
-             medAbstractPacsBaseScu();
-    virtual ~medAbstractPacsBaseScu();
+    medAbstractPacsBaseScu() = default;
+    ~medAbstractPacsBaseScu() = default;
 
    /**
     * Enum defining the query level (search hierarchy)
@@ -45,5 +45,3 @@ public:
     virtual QVector<medAbstractPacsNode*> getNodeContainer();
 
 };
-
-
