@@ -44,6 +44,8 @@
 #include <vtkStreamingDemandDrivenPipeline.h>
 #include <vtkTransform.h>
 
+#include <sstream>
+
 vtkStandardNewMacro(vtkImageView2D)
 
 //----------------------------------------------------------------------------
