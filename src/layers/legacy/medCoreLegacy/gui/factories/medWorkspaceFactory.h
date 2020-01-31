@@ -1,8 +1,9 @@
+#pragma once
 /*=========================================================================
 
  medInria
 
- Copyright (c) INRIA 2013 - 2018. All rights reserved.
+ Copyright (c) INRIA 2013 - 2020. All rights reserved.
  See LICENSE.txt for details.
 
   This software is distributed WITHOUT ANY WARRANTY; without even
@@ -10,8 +11,6 @@
   PURPOSE.
 
 =========================================================================*/
-
-#pragma once
 
 #include <dtkCoreSupport/dtkAbstractFactory.h>
 
@@ -44,7 +43,7 @@ public:
                 QString description_,
                 QString category_,
                 medWorkspaceCreator creator_,
-                medWorkspaceIsUsable isUsable_ = NULL,
+                medWorkspaceIsUsable isUsable_ = nullptr,
                 bool isActive_ = true)
             : identifier(id_)
             , name(name_)

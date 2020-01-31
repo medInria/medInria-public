@@ -2,7 +2,7 @@
 
  medInria
 
- Copyright (c) INRIA 2013 - 2018. All rights reserved.
+ Copyright (c) INRIA 2013 - 2020. All rights reserved.
  See LICENSE.txt for details.
 
   This software is distributed WITHOUT ANY WARRANTY; without even
@@ -16,7 +16,7 @@
 namespace medCore
 {
 
-DTK_DEFINE_LAYER_MANAGER;
+DTK_DEFINE_LAYER_MANAGER
 
 namespace pluginManager
 {
@@ -48,7 +48,7 @@ DTK_DEFINE_CONCEPT(medAbstractTractographyProcess,tractography,medCore)
 DTK_DEFINE_CONCEPT(medAbstractMaskImageProcess,maskImage,medCore)
 DTK_DEFINE_CONCEPT(medAbstractDataConverter,dataConverter,medCore)
 
-// arithimetic
+// arithmetic
 namespace arithmeticOperation
 {
     namespace _private

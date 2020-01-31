@@ -2,7 +2,7 @@
 
  medInria
 
- Copyright (c) INRIA 2013 - 2018. All rights reserved.
+ Copyright (c) INRIA 2013 - 2020. All rights reserved.
  See LICENSE.txt for details.
  
   This software is distributed WITHOUT ANY WARRANTY; without even
@@ -24,14 +24,14 @@ public:
 
 medCompositeDataSetImporterAbstractToolBox::medCompositeDataSetImporterAbstractToolBox(QWidget *parent): medToolBox(parent), d(new medCompositeDataSetImporterAbstractToolBoxPrivate)
 {
-    d->parent  = NULL;
+    d->parent  = nullptr;
 }
 
 medCompositeDataSetImporterAbstractToolBox::~medCompositeDataSetImporterAbstractToolBox(void)
 {
     delete d;
 
-    d = NULL;
+    d = nullptr;
 }
 
 void medCompositeDataSetImporterAbstractToolBox::setCompositeDataSetImporterToolBox(medCompositeDataSetImporterSelectorToolBox *toolbox)
@@ -47,5 +47,5 @@ medCompositeDataSetImporterSelectorToolBox *medCompositeDataSetImporterAbstractT
 medAbstractData *medCompositeDataSetImporterAbstractToolBox::output() const
 {
     DTK_DEFAULT_IMPLEMENTATION;
-    return NULL;
+    return nullptr;
 }

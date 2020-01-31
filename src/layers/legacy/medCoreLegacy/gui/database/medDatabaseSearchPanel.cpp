@@ -2,7 +2,7 @@
 
  medInria
 
- Copyright (c) INRIA 2013 - 2018. All rights reserved.
+ Copyright (c) INRIA 2013 - 2020. All rights reserved.
  See LICENSE.txt for details.
 
   This software is distributed WITHOUT ANY WARRANTY; without even
@@ -52,7 +52,6 @@ EditCombo::~EditCombo()
     emit textChanged("", this->column);
 }
 
-
 medDatabaseSearchPanel::medDatabaseSearchPanel( QWidget *parent /*= 0*/ ) : medToolBox(parent), d(new medDatabaseSearchPanelPrivate)
 {
     d->page = new QWidget(this);
@@ -94,7 +93,7 @@ medDatabaseSearchPanel::medDatabaseSearchPanel( QWidget *parent /*= 0*/ ) : medT
 medDatabaseSearchPanel::~medDatabaseSearchPanel()
 {
     delete d;
-    d = NULL;
+    d = nullptr;
 }
 
 void medDatabaseSearchPanel::setColumnNames( const QStringList &columns )
@@ -141,4 +140,3 @@ void medDatabaseSearchPanel::removeBox()
     d->stack.pop_back();
     d->columnsInUse.pop_back();
 }
-

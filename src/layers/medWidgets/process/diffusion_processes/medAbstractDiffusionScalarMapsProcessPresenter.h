@@ -1,8 +1,9 @@
+#pragma once
 /*=========================================================================
 
  medInria
 
- Copyright (c) INRIA 2013 - 2018. All rights reserved.
+ Copyright (c) INRIA 2013 - 2020. All rights reserved.
  See LICENSE.txt for details.
 
   This software is distributed WITHOUT ANY WARRANTY; without even
@@ -11,12 +12,9 @@
 
 =========================================================================*/
 
-#pragma once
-
 #include <medAbstractProcessPresenter.h>
 #include <medAbstractDiffusionScalarMapsProcess.h>
 #include <medProcessPresenterFactory.h>
-
 #include <medWidgetsExport.h>
 
 class QWidget;
@@ -32,7 +30,7 @@ class MEDWIDGETS_EXPORT medAbstractDiffusionScalarMapsProcessPresenter : public 
     Q_OBJECT
 
 public:
-    medAbstractDiffusionScalarMapsProcessPresenter(medAbstractDiffusionScalarMapsProcess *parent = NULL);
+    medAbstractDiffusionScalarMapsProcessPresenter(medAbstractDiffusionScalarMapsProcess *parent = nullptr);
     virtual ~medAbstractDiffusionScalarMapsProcessPresenter();
 
     virtual QWidget *buildToolBoxWidget();
@@ -41,7 +39,6 @@ public:
     const QScopedPointer<medAbstractDiffusionScalarMapsProcessPresenterPrivate> d;
 
 private slots:
-    // TODO RDE - have to be moved later.
     void _importOutput(medAbstractJob::medJobExitStatus jobExitStatus);
 
     void _setInputFromContainer(medAbstractData *data);

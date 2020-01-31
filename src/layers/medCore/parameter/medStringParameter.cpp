@@ -2,7 +2,7 @@
 
  medInria
 
- Copyright (c) INRIA 2013 - 2018. All rights reserved.
+ Copyright (c) INRIA 2013 - 2020. All rights reserved.
  See LICENSE.txt for details.
 
   This software is distributed WITHOUT ANY WARRANTY; without even
@@ -42,7 +42,7 @@ void medStringParameter::setValue( QString const& value)
     {
        int i = -1;
        QString tmpVal = value;
-       if (d->poValidator == NULL || d->poValidator->validate(tmpVal, i) == QValidator::Acceptable)
+       if (d->poValidator == nullptr || d->poValidator->validate(tmpVal, i) == QValidator::Acceptable)
        {
           d->value = value;
           emit valueChanged(d->value);
@@ -66,7 +66,6 @@ void medStringParameter::setValidator(QValidator *pi_poValidator)
       emit validatorChanged(d->poValidator);
    }
 }
-
 
 QValidator *medStringParameter::getValidator() const
 {

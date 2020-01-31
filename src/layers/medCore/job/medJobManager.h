@@ -1,8 +1,9 @@
+#pragma once
 /*=========================================================================
 
  medInria
 
- Copyright (c) INRIA 2013 - 2018. All rights reserved.
+ Copyright (c) INRIA 2013 - 2020. All rights reserved.
  See LICENSE.txt for details.
 
   This software is distributed WITHOUT ANY WARRANTY; without even
@@ -10,8 +11,6 @@
   PURPOSE.
 
 =========================================================================*/
-
-#pragma once
 
 #include <QObject>
 #include <QRunnable>
@@ -27,7 +26,7 @@ class MEDCORE_EXPORT medJobManager: public QObject
     Q_OBJECT
 
 private:
-    medJobManager(QObject *parent = NULL);
+    medJobManager(QObject *parent = nullptr);
     ~medJobManager();
     static medJobManager *s_instance;
 

@@ -1,8 +1,9 @@
+#pragma once
 /*=========================================================================
 
  medInria
 
- Copyright (c) INRIA 2013 - 2018. All rights reserved.
+ Copyright (c) INRIA 2013 - 2020. All rights reserved.
  See LICENSE.txt for details.
 
   This software is distributed WITHOUT ANY WARRANTY; without even
@@ -11,12 +12,9 @@
 
 =========================================================================*/
 
-#pragma once
-
+#include <medAbstractArithmeticOperationProcess.h>
 #include <medAbstractProcessPresenter.h>
 #include <medProcessPresenterFactory.h>
-#include <medAbstractArithmeticOperationProcess.h>
-
 #include <medWidgetsExport.h>
 
 class QWidget;
@@ -31,7 +29,7 @@ class MEDWIDGETS_EXPORT medAbstractArithmeticOperationProcessPresenter : public 
     Q_OBJECT
 
 public:
-    medAbstractArithmeticOperationProcessPresenter(medAbstractArithmeticOperationProcess *parent = NULL);
+    medAbstractArithmeticOperationProcessPresenter(medAbstractArithmeticOperationProcess *parent = nullptr);
     virtual ~medAbstractArithmeticOperationProcessPresenter();
 
     virtual QWidget *buildToolBoxWidget();

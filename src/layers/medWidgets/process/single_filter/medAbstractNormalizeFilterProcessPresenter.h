@@ -1,8 +1,9 @@
+#pragma once
 /*=========================================================================
 
  medInria
 
- Copyright (c) INRIA 2013 - 2018. All rights reserved.
+ Copyright (c) INRIA 2013 - 2020. All rights reserved.
  See LICENSE.txt for details.
 
   This software is distributed WITHOUT ANY WARRANTY; without even
@@ -11,12 +12,9 @@
 
 =========================================================================*/
 
-#pragma once
-
+#include <medAbstractNormalizeFilterProcess.h>
 #include <medAbstractSingleFilterOperationProcessPresenter.h>
 #include <medProcessPresenterFactory.h>
-#include <medAbstractNormalizeFilterProcess.h>
-
 #include <medWidgetsExport.h>
 
 class MEDWIDGETS_EXPORT medAbstractNormalizeFilterProcessPresenter: public medAbstractSingleFilterOperationProcessPresenter

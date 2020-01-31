@@ -1,8 +1,9 @@
+#pragma once
 /*=========================================================================
 
  medInria
 
- Copyright (c) INRIA 2013 - 2018. All rights reserved.
+ Copyright (c) INRIA 2013 - 2020. All rights reserved.
  See LICENSE.txt for details.
 
   This software is distributed WITHOUT ANY WARRANTY; without even
@@ -11,12 +12,9 @@
 
 =========================================================================*/
 
-#pragma once
-
 #include <medAbstractProcessPresenter.h>
 #include <medAbstractMaskImageProcess.h>
 #include <medProcessPresenterFactory.h>
-
 #include <medWidgetsExport.h>
 
 class QWidget;
@@ -31,7 +29,7 @@ class MEDWIDGETS_EXPORT medAbstractMaskImageProcessPresenter : public medAbstrac
     Q_OBJECT
 
 public:
-    medAbstractMaskImageProcessPresenter(medAbstractMaskImageProcess *parent = NULL);
+    medAbstractMaskImageProcessPresenter(medAbstractMaskImageProcess *parent = nullptr);
     virtual ~medAbstractMaskImageProcessPresenter();
 
     virtual QWidget *buildToolBoxWidget();
@@ -40,7 +38,6 @@ public:
     const QScopedPointer<medAbstractMaskImageProcessPresenterPrivate> d;
 
 private slots:
-    // TODO RDE - have to be moved later.
     void _importOutput(medAbstractJob::medJobExitStatus jobExitStatus);
     void _setInputFromContainer(medAbstractData *data);
     void _setMaskFromContainer(medAbstractData *data);
@@ -50,4 +47,3 @@ signals:
 };
 
 MED_DECLARE_PROCESS_PRESENTER_FACTORY(medAbstractMaskImageProcess, MEDWIDGETS_EXPORT)
-

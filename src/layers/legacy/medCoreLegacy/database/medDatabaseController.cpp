@@ -2,7 +2,7 @@
 
  medInria
 
- Copyright (c) INRIA 2013 - 2019. All rights reserved.
+ Copyright (c) INRIA 2013 - 2020. All rights reserved.
  See LICENSE.txt for details.
 
   This software is distributed WITHOUT ANY WARRANTY; without even
@@ -129,7 +129,7 @@ void medDatabaseControllerPrivate::buildMetaDataLookup()
         TableEntryList() << TableEntry(T_series, "acquisitionTime") );
 }
 
-medDatabaseController * medDatabaseController::s_instance = NULL;
+medDatabaseController * medDatabaseController::s_instance = nullptr;
 
 medDatabaseController* medDatabaseController::instance() {
     if ( ! s_instance) {
@@ -137,7 +137,6 @@ medDatabaseController* medDatabaseController::instance() {
     }
     return s_instance;
 }
-
 
 const QSqlDatabase& medDatabaseController::database(void) const
 {

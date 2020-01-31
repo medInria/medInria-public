@@ -1,8 +1,9 @@
+#pragma once
 /*=========================================================================
 
  medInria
 
- Copyright (c) INRIA 2013 - 2018. All rights reserved.
+ Copyright (c) INRIA 2013 - 2020. All rights reserved.
  See LICENSE.txt for details.
 
   This software is distributed WITHOUT ANY WARRANTY; without even
@@ -11,13 +12,10 @@
 
 =========================================================================*/
 
-#pragma once
-
 #include <medAbstractSingleFilterOperationDoubleProcess.h>
+#include <medCoreExport.h>
 
 #include <dtkCore>
-
-#include <medCoreExport.h>
 
 class MEDCORE_EXPORT medAbstractSubtractFilterProcess: public medAbstractSingleFilterOperationDoubleProcess
 {

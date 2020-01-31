@@ -11,8 +11,8 @@
 
 =========================================================================*/
 
-#include <medDoubleParameter.h>
 #include <medAbstractAddFilterProcess.h>
+#include <medDoubleParameter.h>
 
 medAbstractAddFilterProcess::medAbstractAddFilterProcess(QObject *parent)
     : medAbstractSingleFilterOperationDoubleProcess(parent)

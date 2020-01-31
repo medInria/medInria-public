@@ -2,7 +2,7 @@
 
  medInria
 
- Copyright (c) INRIA 2013 - 2018. All rights reserved.
+ Copyright (c) INRIA 2013 - 2020. All rights reserved.
  See LICENSE.txt for details.
 
   This software is distributed WITHOUT ANY WARRANTY; without even
@@ -50,6 +50,7 @@ medAbstractMorphomathOperationProcessPresenter::medAbstractMorphomathOperationPr
 
 medAbstractMorphomathOperationProcessPresenter::~medAbstractMorphomathOperationProcessPresenter()
 {
+
 }
 
 QWidget *medAbstractMorphomathOperationProcessPresenter::buildToolBoxWidget()
@@ -91,7 +92,6 @@ medViewContainerSplitter *medAbstractMorphomathOperationProcessPresenter::buildV
     connect(inputContainer, &medViewContainer::dataAdded,
             this, &medAbstractMorphomathOperationProcessPresenter::_setInputFromContainer);
 
-
     connect(this, SIGNAL(_outputImported(medAbstractData*)),
             outputContainer, SLOT(addData(medAbstractData*)),
             Qt::QueuedConnection);
@@ -99,12 +99,10 @@ medViewContainerSplitter *medAbstractMorphomathOperationProcessPresenter::buildV
     return splitter;
 }
 
-
 void medAbstractMorphomathOperationProcessPresenter::_setInputFromContainer(medAbstractData *data)
 {
     d->process->setInput(qobject_cast<medAbstractImageData *>(data));
 }
-
 
 void medAbstractMorphomathOperationProcessPresenter::_importOutput(medAbstractJob::medJobExitStatus jobExitStatus)
 {

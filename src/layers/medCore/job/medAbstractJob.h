@@ -1,8 +1,9 @@
+#pragma once
 /*=========================================================================
 
  medInria
 
- Copyright (c) INRIA 2013 - 2018. All rights reserved.
+ Copyright (c) INRIA 2013 - 2020. All rights reserved.
  See LICENSE.txt for details.
 
   This software is distributed WITHOUT ANY WARRANTY; without even
@@ -11,13 +12,9 @@
 
 =========================================================================*/
 
-#pragma once
-
 #include <QObject>
 
 #include <medCoreExport.h>
-
-
 
 class medIntParameter;
 
@@ -36,7 +33,7 @@ public:
     Q_ENUMS(medJobExitStatus)
 
 
-    medAbstractJob(QObject *parent = NULL);
+    medAbstractJob(QObject *parent = nullptr);
     virtual ~medAbstractJob();
 
     virtual QString caption() const = 0;
@@ -60,5 +57,4 @@ signals:
 
 private:
     const QScopedPointer<medAbstractJobPrivate> d;
-
 };

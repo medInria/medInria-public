@@ -2,7 +2,7 @@
 
  medInria
 
- Copyright (c) INRIA 2013 - 2018. All rights reserved.
+ Copyright (c) INRIA 2013 - 2020. All rights reserved.
  See LICENSE.txt for details.
  
   This software is distributed WITHOUT ANY WARRANTY; without even
@@ -12,7 +12,6 @@
 =========================================================================*/
 
 #include <medGroupBox.h>
-
 
 class medGroupBoxPrivate
 {
@@ -27,23 +26,19 @@ medGroupBox::medGroupBox(QWidget *parent) :
     d->collapsible = false;
     d->collapsed = false;
 
-
     connect(this, SIGNAL(toggled(bool)), this, SLOT(setExpanded(bool)));
-
 }
 
 medGroupBox::~medGroupBox()
 {
     delete d;
-    d = NULL;
+    d = nullptr;
 }
 
 bool medGroupBox::isCollapsible()
 {
     return d->collapsible;
 }
-
-
 
 void medGroupBox::setCollapsible(bool collapsible)
 {
@@ -92,4 +87,3 @@ void medGroupBox::childEvent(QChildEvent *event)
             widget->hide();
     }
 }
-
