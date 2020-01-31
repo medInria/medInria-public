@@ -2,7 +2,7 @@
 
  medInria
 
- Copyright (c) INRIA 2013 - 2018. All rights reserved.
+ Copyright (c) INRIA 2013 - 2020. All rights reserved.
  See LICENSE.txt for details.
  
   This software is distributed WITHOUT ANY WARRANTY; without even
@@ -22,12 +22,10 @@ class MEDPACS_EXPORT medAbstractPacsKey : public QObject
     Q_OBJECT
 
 public:
-   medAbstractPacsKey();
-   virtual ~medAbstractPacsKey();
+   medAbstractPacsKey() = default;
+   ~medAbstractPacsKey() override = default;
     
    int group;
    int elem;
    QString value;
-
 };
-

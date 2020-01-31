@@ -23,7 +23,7 @@ class MEDPACS_EXPORT medAbstractPacsStoreScu : public medAbstractPacsBaseScu
 
 public:
     medAbstractPacsStoreScu() = default;
-    ~medAbstractPacsStoreScu() = default;
+    ~medAbstractPacsStoreScu() override = default;
 
     virtual int  sendStoreRequest(const char* peerTitle, const char* peerIP, unsigned int peerPort, const char* ourTitle, const char* ourIP, unsigned int ourPort);
 };

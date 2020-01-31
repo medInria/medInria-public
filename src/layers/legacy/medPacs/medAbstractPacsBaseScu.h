@@ -25,7 +25,7 @@ class MEDPACS_EXPORT medAbstractPacsBaseScu : public QObject
     
 public:
     medAbstractPacsBaseScu() = default;
-    ~medAbstractPacsBaseScu() = default;
+    ~medAbstractPacsBaseScu() override = default;
 
    /**
     * Enum defining the query level (search hierarchy)

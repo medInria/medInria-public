@@ -30,7 +30,7 @@ public:
 
     medAbstractImageData();
     medAbstractImageData(const medAbstractImageData& other);
-    ~medAbstractImageData() = default;
+    ~medAbstractImageData() override = default;
 
     void *image();
 

@@ -25,7 +25,7 @@ class MEDPACS_EXPORT medAbstractPacsNode : public QObject
     
 public:
     medAbstractPacsNode() = default;
-    ~medAbstractPacsNode() = default;
+    ~medAbstractPacsNode() override = default;
 
     virtual void setTitle(QString title);
     

@@ -46,8 +46,8 @@ class MEDCORELEGACY_EXPORT medJobItemL :  public QObject, public QRunnable
     Q_OBJECT
 
 public:
-             medJobItemL();
-    virtual ~medJobItemL();
+    medJobItemL();
+    ~medJobItemL() override;
 
     virtual void run();
 
