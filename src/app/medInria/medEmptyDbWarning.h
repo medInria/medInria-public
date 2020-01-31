@@ -1,8 +1,9 @@
+#pragma once
 /*=========================================================================
 
  medInria
 
- Copyright (c) INRIA 2013 - 2018. All rights reserved.
+ Copyright (c) INRIA 2013 - 2020. All rights reserved.
  See LICENSE.txt for details.
  
   This software is distributed WITHOUT ANY WARRANTY; without even
@@ -11,12 +12,9 @@
 
 =========================================================================*/
 
-#pragma once
-
 #include <QDialog>
 
 class medEmptyDbWarningPrivate;
-
 
 /**
  * @brief Shows a warning dialog box telling the user there is no data in the DB.
@@ -32,9 +30,10 @@ class medEmptyDbWarningPrivate;
 class medEmptyDbWarning : public QDialog
 {
     Q_OBJECT
+
 public:
 
-    explicit medEmptyDbWarning(QWidget *parent = 0);
+    explicit medEmptyDbWarning(QWidget *parent = nullptr);
 
     virtual ~medEmptyDbWarning();
 signals:
@@ -48,7 +47,5 @@ public slots:
     void reject();
 
 private:
-    medEmptyDbWarningPrivate* d; /**< TODO */
+    medEmptyDbWarningPrivate* d;
 };
-
-

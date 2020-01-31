@@ -44,7 +44,7 @@ void medTractographyProcessNode::run()
 {
     if (d->input.isEmpty())
     {
-        dtkDebug() << Q_FUNC_INFO << "Missing inputs. Aborting.";
+        qDebug() << Q_FUNC_INFO << "Missing inputs. Aborting.";
         return;
     }
 

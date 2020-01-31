@@ -2,7 +2,7 @@
 
  medInria
 
- Copyright (c) INRIA 2013 - 2018. All rights reserved.
+ Copyright (c) INRIA 2013 - 2020. All rights reserved.
  See LICENSE.txt for details.
 
   This software is distributed WITHOUT ANY WARRANTY; without even
@@ -269,7 +269,7 @@ int main(int argc,char* argv[])
 
     forceShow(*mainwindow);
 
-    dtkInfo() << "### Application is running...";
+    qInfo() << "### Application is running...";
 
     //  Start main loop.
     const int status = application.exec();

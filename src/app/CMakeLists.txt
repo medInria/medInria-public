@@ -12,5 +12,3 @@
 ################################################################################
 
 add_subdirectory(medInria)
-#add_subdirectory(medPluginGenerator)
-

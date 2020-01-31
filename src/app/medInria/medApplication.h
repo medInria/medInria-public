@@ -1,3 +1,4 @@
+#pragma once
 /*=========================================================================
 
  medInria
@@ -11,7 +12,6 @@
 
 =========================================================================*/
 
-#pragma once
 #include <QtSingleApplication>
 #include <medDataIndex.h>
 
@@ -44,5 +44,3 @@ protected:
 private:
     medApplicationPrivate *d;
 };
-
-

@@ -45,7 +45,7 @@ void medMaskImageProcessNode::run()
 {
     if (d->input.isEmpty() || d->mask.isEmpty())
     {
-        dtkDebug() << Q_FUNC_INFO << "Missing inputs. Aborting.";
+        qDebug() << Q_FUNC_INFO << "Missing inputs. Aborting.";
         return;
     }
 

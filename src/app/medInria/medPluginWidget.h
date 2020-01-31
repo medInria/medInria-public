@@ -1,8 +1,9 @@
+#pragma once
 /*=========================================================================
 
  medInria
 
- Copyright (c) INRIA 2013 - 2018. All rights reserved.
+ Copyright (c) INRIA 2013 - 2020. All rights reserved.
  See LICENSE.txt for details.
  
   This software is distributed WITHOUT ANY WARRANTY; without even
@@ -11,9 +12,8 @@
 
 =========================================================================*/
 
-#pragma once
-
 #include <QTabWidget>
+
 class QTreeWidgetItem;
 class medPluginWidgetPrivate;
 
@@ -21,7 +21,7 @@ class medPluginWidget : public QTabWidget
 {
     Q_OBJECT
 public:
-    explicit medPluginWidget(QWidget *parent = 0);
+    explicit medPluginWidget(QWidget *parent = nullptr);
     ~medPluginWidget();
 
 signals:
@@ -35,5 +35,3 @@ protected:
 private:
     medPluginWidgetPrivate * d;
 };
-
-
