@@ -29,7 +29,6 @@ public:
      medPacsMover(const QVector<medMoveCommandItem>& cmdList);
     ~medPacsMover();
 
-
     void doQueuedMove();
 
 signals:

@@ -22,7 +22,7 @@ class MEDPACS_EXPORT medAbstractPacsStoreScp : public QObject
 
 public:
     medAbstractPacsStoreScp() = default;
-    ~medAbstractPacsStoreScp() = default;
+    ~medAbstractPacsStoreScp() override = default;
 
     virtual  int start(const char* ourTitle, const char* ourIP, unsigned int ourPort);
 

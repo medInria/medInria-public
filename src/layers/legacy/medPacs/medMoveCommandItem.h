@@ -2,7 +2,7 @@
 
  medInria
 
- Copyright (c) INRIA 2013 - 2018. All rights reserved.
+ Copyright (c) INRIA 2013 - 2020. All rights reserved.
  See LICENSE.txt for details.
  
   This software is distributed WITHOUT ANY WARRANTY; without even
@@ -20,10 +20,10 @@ struct medMoveCommandItem
     QString query;
     QString sourceTitle;
     QString sourceIp;
-    int sourcePort;;
+    int sourcePort;
     QString targetTitle;
     QString targetIp;
-    int targetPort;;
+    int targetPort;
 
     operator QVariant() const
     {

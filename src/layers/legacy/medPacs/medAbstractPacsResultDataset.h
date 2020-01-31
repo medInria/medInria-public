@@ -25,7 +25,7 @@ class MEDPACS_EXPORT medAbstractPacsResultDataset : public QObject
 
 public:
     medAbstractPacsResultDataset() = default;
-    ~medAbstractPacsResultDataset() = default;
+    ~medAbstractPacsResultDataset() override = default;
 
     virtual const char* getStudyInstanceUID();
 
