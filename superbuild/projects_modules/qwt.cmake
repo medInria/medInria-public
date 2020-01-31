@@ -25,7 +25,7 @@ if (NOT USE_SYSTEM_${ep})
 ## #############################################################################
 
 set(git_url ${GITHUB_PREFIX}osakared/qwt.git)
-set(git_tag qwt-6.2)
+set(git_tag trunk)
 
 ## #############################################################################
 ## Add specific cmake arguments for configuration step of the project
@@ -53,15 +53,17 @@ set(cmake_args
   -DQT_QMAKE_EXECUTABLE:FILEPATH=${QT_QMAKE_EXECUTABLE}
 )
 
-ep_GeneratePatchCommand(${ep} QWT_PATCH_COMMAND qwt-6.2.patch)
+ep_GeneratePatchCommand(${ep} QWT_PATCH_COMMAND qwt-6.3.patch)
 
 ## #############################################################################
 ## Add external-project
 ## #############################################################################
+epComputPath(${ep})
 
 ExternalProject_Add(${ep}
   PREFIX ${EP_PATH_SOURCE}
   SOURCE_DIR ${EP_PATH_SOURCE}/${ep}
+  BINARY_DIR ${build_path}
   TMP_DIR ${tmp_path}
   STAMP_DIR ${stamp_path}
   GIT_REPOSITORY ${git_url}
@@ -71,8 +73,8 @@ ExternalProject_Add(${ep}
   CMAKE_ARGS ${cmake_args}
   DEPENDS ${${ep}_dependencies}
   PATCH_COMMAND ${QWT_PATCH_COMMAND}
-  CONFIGURE_COMMAND  mkdir -p ${EP_PATH_SOURCE}/../build/${ep} && cd ${EP_PATH_SOURCE}/../build/${ep}   && ${QT_QMAKE_EXECUTABLE} ${SPEC} <SOURCE_DIR>/qwt.pro
-  BUILD_COMMAND cd ${EP_PATH_SOURCE}/../build/${ep} && make sub-src    
+  CONFIGURE_COMMAND ${QT_QMAKE_EXECUTABLE} ${SPEC} <SOURCE_DIR>/qwt/qwt.pro
+  BUILD_COMMAND ${MAKE_PROGRAM} sub-src
   UPDATE_COMMAND ""
   INSTALL_COMMAND ""
 )
