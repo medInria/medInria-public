@@ -1,8 +1,9 @@
+#pragma once
 /*=========================================================================
 
  medInria
 
- Copyright (c) INRIA 2013 - 2018. All rights reserved.
+ Copyright (c) INRIA 2013 - 2020. All rights reserved.
  See LICENSE.txt for details.
  
   This software is distributed WITHOUT ANY WARRANTY; without even
@@ -10,8 +11,6 @@
   PURPOSE.
 
 =========================================================================*/
-
-#pragma once
 
 #include <medAbstractDataSource.h>
 #include <medMoveCommandItem.h>
@@ -28,7 +27,7 @@ class medPacsDataSource : public medAbstractDataSource
     Q_OBJECT
 public:
 
-    medPacsDataSource(QWidget* parent = 0);
+    medPacsDataSource(QWidget* parent = nullptr);
     ~medPacsDataSource();
 
     QWidget* mainViewWidget();
@@ -46,7 +45,4 @@ private slots:
 
 private:
     medPacsDataSourcePrivate* d;
-
 };
-
-

@@ -2,7 +2,7 @@
 
  medInria
 
- Copyright (c) INRIA 2013 - 2018. All rights reserved.
+ Copyright (c) INRIA 2013 - 2020. All rights reserved.
  See LICENSE.txt for details.
 
   This software is distributed WITHOUT ANY WARRANTY; without even
@@ -57,9 +57,9 @@ medApplication::medApplication(int & argc, char**argv) :
 
     medLogger::initialize();
 
-    dtkInfo() << "####################################";
-    dtkInfo() << "Version: "    << MEDINRIA_VERSION;
-    dtkInfo() << "Build Date: " << MEDINRIA_BUILD_DATE;
+    qInfo() << "####################################";
+    qInfo() << "Version: "    << MEDINRIA_VERSION;
+    qInfo() << "Build Date: " << MEDINRIA_BUILD_DATE;
 
     QApplication::setStyle(QStyleFactory::create("fusion"));
     medStyleSheetParser parser(dtkReadFile(":/medInria.qss"));
@@ -71,7 +71,7 @@ medApplication::medApplication(int & argc, char**argv) :
 medApplication::~medApplication(void)
 {
     delete d;
-    d = NULL;
+    d = nullptr;
 }
 
 bool medApplication::event(QEvent *event)

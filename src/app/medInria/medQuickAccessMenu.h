@@ -1,8 +1,9 @@
+#pragma once
 /*=========================================================================
 
  medInria
 
- Copyright (c) INRIA 2013 - 2019. All rights reserved.
+ Copyright (c) INRIA 2013 - 2020. All rights reserved.
  See LICENSE.txt for details.
 
   This software is distributed WITHOUT ANY WARRANTY; without even
@@ -10,8 +11,6 @@
   PURPOSE.
 
 =========================================================================*/
-
-#pragma once
 
 #include <medCoreExport.h>
 #include <medHomepageButton.h>
@@ -21,8 +20,9 @@
 class medQuickAccessMenu : public QWidget
 {
   Q_OBJECT
+
 public:
-    medQuickAccessMenu ( bool vertical, QWidget* parent = 0, Qt::WindowFlags f = 0 );
+    medQuickAccessMenu ( bool vertical, QWidget* parent = nullptr, Qt::WindowFlags f = 0 );
 
     void reset(bool optimizeLayout);
 
@@ -64,5 +64,3 @@ private:
     //! Frame for alt-tab like shortcut access menu
     QFrame *backgroundFrame;
 };
-
-
