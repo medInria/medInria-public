@@ -2,7 +2,7 @@
 
  medInria
 
- Copyright (c) INRIA 2013 - 2018. All rights reserved.
+ Copyright (c) INRIA 2013 - 2020. All rights reserved.
  See LICENSE.txt for details.
 
   This software is distributed WITHOUT ANY WARRANTY; without even
@@ -20,11 +20,11 @@
 
 #include <medAbstractJob.h>
 
-medJobManager* medJobManager::s_instance = NULL;
+medJobManager* medJobManager::s_instance = nullptr;
 
 medJobManager* medJobManager::instance()
 {
-    if(s_instance == NULL)
+    if(s_instance == nullptr)
         s_instance = new medJobManager(QApplication::instance());
         // delete is delegate to the QApplication instance.
     return s_instance;
@@ -75,7 +75,7 @@ void medJobManager::startJobInThread(medAbstractJob *job)
 }
 
 medJobRunner::medJobRunner(medAbstractJob *job)
-    : QObject(NULL)
+    : QObject(nullptr)
 {
     m_job = job;
 }
@@ -89,14 +89,14 @@ void medJobRunner::run()
         jobExitStatus = m_job->run();
         if(jobExitStatus == medAbstractJob::MED_JOB_EXIT_CANCELLED)
         {
-            dtkDebug() << "job aborted (cancelled)"
+            qDebug() << "job aborted (cancelled)"
                        << m_job->caption() << m_job;
         }
     }
     catch(std::exception &err)
     {
         QString errorMessage = QString::fromLatin1(err.what());
-        dtkWarn() << "Error occured while runing job"
+        qWarning() << "Error occured while running job"
                   << m_job->caption() << m_job
                   << "\n\t" <<errorMessage;
 
@@ -104,7 +104,7 @@ void medJobRunner::run()
     }
     catch(...)
     {
-        dtkWarn() << "Error occured while runing job"
+        qWarning() << "Error occured while running job"
                   << m_job->caption() << m_job;
     }
     emit m_job->finished(jobExitStatus);

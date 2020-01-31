@@ -1,8 +1,9 @@
+#pragma once
 /*=========================================================================
 
  medInria
 
- Copyright (c) INRIA 2013 - 2018. All rights reserved.
+ Copyright (c) INRIA 2013 - 2020. All rights reserved.
  See LICENSE.txt for details.
 
   This software is distributed WITHOUT ANY WARRANTY; without even
@@ -11,17 +12,15 @@
 
 =========================================================================*/
 
-#pragma once
-
 #include <dtkCoreSupport/dtkSmartPointer.h>
 #include <dtkCoreSupport/dtkAbstractDataReader.h>
 #include <dtkCoreSupport/dtkAbstractDataWriter.h>
-#include <medAbstractData.h>
 
+#include <medAbstractData.h>
 #include <medCoreLegacyExport.h>
 
-struct MEDCORELEGACY_EXPORT medDataReaderWriter {
-
+struct MEDCORELEGACY_EXPORT medDataReaderWriter
+{
     typedef dtkSmartPointer<dtkAbstractDataReader> Reader;
     typedef dtkSmartPointer<dtkAbstractDataWriter> Writer;
 
@@ -30,6 +29,4 @@ struct MEDCORELEGACY_EXPORT medDataReaderWriter {
 
     static medAbstractData *read(const QString& path);
     static bool write(const QString& path,medAbstractData* data);
-    };
-
-
+};

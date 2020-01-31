@@ -1,8 +1,9 @@
+#pragma once
 /*=========================================================================
 
  medInria
 
- Copyright (c) INRIA 2013 - 2018. All rights reserved.
+ Copyright (c) INRIA 2013 - 2020. All rights reserved.
  See LICENSE.txt for details.
 
   This software is distributed WITHOUT ANY WARRANTY; without even
@@ -11,24 +12,21 @@
 
 =========================================================================*/
 
-#pragma once
-
 #include <medAbstractProcess.h>
+#include <medCoreExport.h>
 
 #include <dtkCore>
 
-#include <medCoreExport.h>
-
 class medAbstractFibersData;
 class medAbstractDiffusionModelImageData;
-
 class medAbstractTractographyProcessPrivate;
+
 class MEDCORE_EXPORT medAbstractTractographyProcess : public medAbstractProcess
 {
     Q_OBJECT
 
 public:
-    medAbstractTractographyProcess(QObject *parent = NULL);
+    medAbstractTractographyProcess(QObject *parent = nullptr);
     virtual ~medAbstractTractographyProcess();
 
     void setInput(medAbstractDiffusionModelImageData* data);

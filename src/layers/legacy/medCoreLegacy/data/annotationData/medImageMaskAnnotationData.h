@@ -1,8 +1,9 @@
+#pragma once
 /*=========================================================================
 
  medInria
 
- Copyright (c) INRIA 2013 - 2019. All rights reserved.
+ Copyright (c) INRIA 2013 - 2020. All rights reserved.
  See LICENSE.txt for details.
 
   This software is distributed WITHOUT ANY WARRANTY; without even
@@ -11,14 +12,11 @@
 
 =========================================================================*/
 
-#pragma once
-
 #include <medAnnotationData.h>
 #include <medAbstractImageData.h>
+#include <medCoreLegacyExport.h>
 
 #include <dtkCoreSupport/dtkSmartPointer.h>
-
-#include <medCoreLegacyExport.h>
 
 /**
  * Implementation of an overlay image to be used to mark voxels as inside, outside or unknown.
@@ -56,6 +54,3 @@ protected:
     ColorMapType m_colorMap;
     dtkSmartPointer<medAbstractImageData> m_maskData;
 };
-
-
-

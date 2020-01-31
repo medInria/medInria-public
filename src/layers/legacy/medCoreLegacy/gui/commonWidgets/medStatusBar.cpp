@@ -2,7 +2,7 @@
 
  medInria
 
- Copyright (c) INRIA 2013 - 2018. All rights reserved.
+ Copyright (c) INRIA 2013 - 2020. All rights reserved.
  See LICENSE.txt for details.
  
   This software is distributed WITHOUT ANY WARRANTY; without even
@@ -23,7 +23,7 @@ public:
 
 medStatusBar::medStatusBar ( QWidget* parent ) : QStatusBar ( parent ), d ( new medStatusBarPrivate )
 {
-    d->statusBarLayout = NULL;
+    d->statusBarLayout = nullptr;
     this->statusBarWidth = this->size().width();
     this->availableSpace = -1; //value before initialization (after, always positive)
 }
@@ -31,7 +31,7 @@ medStatusBar::medStatusBar ( QWidget* parent ) : QStatusBar ( parent ), d ( new 
 medStatusBar::~medStatusBar()
 {
     delete d;
-    d= NULL;
+    d = nullptr;
 }
 
 /**
@@ -70,7 +70,6 @@ int medStatusBar::getAvailableSpace()
 {
     return this->availableSpace;
 }
-
 
 /**
  * Initialize availableSpace

@@ -1,8 +1,9 @@
+#pragma once
 /*=========================================================================
 
  medInria
 
- Copyright (c) INRIA 2013 - 2018. All rights reserved.
+ Copyright (c) INRIA 2013 - 2020. All rights reserved.
  See LICENSE.txt for details.
 
   This software is distributed WITHOUT ANY WARRANTY; without even
@@ -10,8 +11,6 @@
   PURPOSE.
 
 =========================================================================*/
-
-#pragma once
 
 #include <medAbstractSingleFilterOperationProcessPresenter.h>
 #include <medAbstractSingleFilterOperationDoubleProcess.h>
@@ -30,7 +29,7 @@ class MEDWIDGETS_EXPORT medAbstractSingleFilterOperationDoubleProcessPresenter :
     Q_OBJECT
 
 public:
-    medAbstractSingleFilterOperationDoubleProcessPresenter(medAbstractSingleFilterOperationDoubleProcess *parent = NULL);
+    medAbstractSingleFilterOperationDoubleProcessPresenter(medAbstractSingleFilterOperationDoubleProcess *parent = nullptr);
     virtual ~medAbstractSingleFilterOperationDoubleProcessPresenter();
 
     virtual QWidget *buildToolBoxWidget();

@@ -80,6 +80,3 @@ void medSeedPointAnnotationData::setNumberOfSeeds( int num )
         emit dataModified(this);
     }
 }
-
-
-

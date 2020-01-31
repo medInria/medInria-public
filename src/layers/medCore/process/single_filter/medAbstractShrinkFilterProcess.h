@@ -1,8 +1,9 @@
+#pragma once
 /*=========================================================================
 
  medInria
 
- Copyright (c) INRIA 2013 - 2018. All rights reserved.
+ Copyright (c) INRIA 2013 - 2020. All rights reserved.
  See LICENSE.txt for details.
 
   This software is distributed WITHOUT ANY WARRANTY; without even
@@ -11,24 +12,21 @@
 
 =========================================================================*/
 
-#pragma once
-
 #include <medAbstractSingleFilterOperationProcess.h>
+#include <medCoreExport.h>
 
 #include <dtkCore>
 
-#include <medCoreExport.h>
-
 class medAbstractImageData;
 class medIntParameter;
-
 class medAbstractShrinkFilterProcessPrivate;
+
 class MEDCORE_EXPORT medAbstractShrinkFilterProcess : public medAbstractSingleFilterOperationProcess
 {
     Q_OBJECT
 
 public:
-    medAbstractShrinkFilterProcess(QObject *parent = NULL);
+    medAbstractShrinkFilterProcess(QObject *parent = nullptr);
     virtual ~medAbstractShrinkFilterProcess();
 
     virtual medIntParameter* shrinkFactor1();

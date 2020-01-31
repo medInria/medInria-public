@@ -1,8 +1,9 @@
+#pragma once
 /*=========================================================================
 
  medInria
 
- Copyright (c) INRIA 2013 - 2018. All rights reserved.
+ Copyright (c) INRIA 2013 - 2020. All rights reserved.
  See LICENSE.txt for details.
 
   This software is distributed WITHOUT ANY WARRANTY; without even
@@ -11,11 +12,8 @@
 
 =========================================================================*/
 
-#pragma once
-
-#include <medToolBox.h>
-
 #include <medCoreLegacyExport.h>
+#include <medToolBox.h>
 
 class medCompositeDataSetImporterSelectorToolBoxPrivate;
 
@@ -24,7 +22,7 @@ class MEDCORELEGACY_EXPORT medCompositeDataSetImporterSelectorToolBox : public m
     Q_OBJECT
 
 public:
-     medCompositeDataSetImporterSelectorToolBox(QWidget *parent = 0);
+     medCompositeDataSetImporterSelectorToolBox(QWidget *parent = nullptr);
     ~medCompositeDataSetImporterSelectorToolBox();
 
     virtual void initialize();
@@ -51,7 +49,6 @@ signals:
     */
     void showInfo(const QString& text,unsigned int timeout=0);
 
-
 public slots:
     virtual void onImportClicked();
     virtual void onLoadClicked();
@@ -61,10 +58,7 @@ public slots:
  protected:
     virtual bool import();
 
-
  private:
     medCompositeDataSetImporterSelectorToolBoxPrivate* d;
 
 };
-
-

@@ -2,7 +2,7 @@
 
  medInria
 
- Copyright (c) INRIA 2013 - 2018. All rights reserved.
+ Copyright (c) INRIA 2013 - 2020. All rights reserved.
  See LICENSE.txt for details.
  
   This software is distributed WITHOUT ANY WARRANTY; without even
@@ -12,7 +12,6 @@
 =========================================================================*/
 
 #include <medDatabaseEditItemDialog.h>
-
 #include <medDataIndex.h>
 #include <medAbstractDatabaseItem.h>
 
@@ -29,7 +28,6 @@ public:
 
     QRadioButton *persistentRadioBt;
 };
-
 
 medDatabaseEditItemDialog::medDatabaseEditItemDialog(QList<QString> attributes, QList<QVariant> dataList, QWidget *parent,  bool displayPersistency, bool persistent): QDialog(parent,
             Qt::Dialog | Qt::WindowCloseButtonHint), d (new medDatabaseEditItemDialogPrivate)
@@ -73,9 +71,9 @@ medDatabaseEditItemDialog::medDatabaseEditItemDialog(QList<QString> attributes, 
         if(attrib.isEmpty())
             continue;
         
-        QLineEdit *textEdit = NULL;
-        QSpinBox *spinbox = NULL;
-        QDateEdit *dateEdit = NULL;
+        QLineEdit *textEdit = nullptr;
+        QSpinBox *spinbox = nullptr;
+        QDateEdit *dateEdit = nullptr;
 
         switch(data.type())
         {
@@ -126,9 +124,8 @@ medDatabaseEditItemDialog::medDatabaseEditItemDialog(QList<QString> attributes, 
 medDatabaseEditItemDialog::~medDatabaseEditItemDialog()
 {
     delete d;
-    d = NULL;
+    d = nullptr;
 }
-
 
 void medDatabaseEditItemDialog::setValue(const QString & text)
 {

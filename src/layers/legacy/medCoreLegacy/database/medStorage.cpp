@@ -2,7 +2,7 @@
 
  medInria
 
- Copyright (c) INRIA 2013 - 2019. All rights reserved.
+ Copyright (c) INRIA 2013 - 2020. All rights reserved.
  See LICENSE.txt for details.
  
   This software is distributed WITHOUT ANY WARRANTY; without even
@@ -23,11 +23,11 @@
 
 QString medStorage::m_dataLocation = nullptr;
 
-medStorage::medStorage(void)
+medStorage::medStorage()
 {
 }
 
-medStorage::~medStorage(void)
+medStorage::~medStorage()
 {
 }
 
@@ -41,12 +41,12 @@ bool medStorage::rmpath(const QString& dirPath)
     QDir dir; return(dir.rmpath(dirPath));
 }
 
-QString medStorage::dataLocation(void)
+QString medStorage::dataLocation()
 {
     QString vDbLoc;
 
     // first check if someone set the data location, then try to pull the actual database
-    if (m_dataLocation != NULL)
+    if (m_dataLocation != nullptr)
     {
         return m_dataLocation;
     }
@@ -72,7 +72,7 @@ QString medStorage::dataLocation(void)
     return vDbLoc;
 }
 
-QString medStorage::configLocation(void)
+QString medStorage::configLocation()
 {
 #ifdef Q_OS_MAC
     return(QDir::homePath() + "/Library/Preferences/" + "com" + "." + QCoreApplication::organizationName() + "." + QCoreApplication::applicationName() + "." + "plist");
@@ -84,9 +84,13 @@ QString medStorage::configLocation(void)
 void medStorage::setDataLocation( QString newLocation)
 {
     // return without writing if the location ist the same
-    if(m_dataLocation != NULL)
+    if(m_dataLocation != nullptr)
+    {
         if(m_dataLocation.compare(newLocation) == 0)
+        {
             return;
+        }
+    }
 
     m_dataLocation = newLocation;
 
@@ -122,8 +126,9 @@ bool medStorage::createDestination(QStringList sourceList, QStringList& destList
 {
     bool res = true;
 
-    if (!QDir(destDir).entryInfoList(QDir::NoDotAndDotDot | QDir::Dirs | QDir::Files).isEmpty()) {
-        dtkWarn() << "Directory not empty: " << destDir;
+    if (!QDir(destDir).entryInfoList(QDir::NoDotAndDotDot | QDir::Dirs | QDir::Files).isEmpty())
+    {
+        qWarning() << "Directory not empty: " << destDir;
         return false;
     }
 
@@ -137,8 +142,9 @@ bool medStorage::createDestination(QStringList sourceList, QStringList& destList
         QFileInfo completeFile (destination);
         QDir fileInfo(completeFile.path());
 
-        if (!fileInfo.exists() && !medStorage::mkpath (fileInfo.path())) {
-            dtkWarn() << "Cannot create directory: " << fileInfo.path();
+        if (!fileInfo.exists() && !medStorage::mkpath (fileInfo.path()))
+        {
+            qWarning() << "Cannot create directory: " << fileInfo.path();
             res = false;
         }
 
@@ -156,8 +162,9 @@ bool medStorage::copyFiles(QStringList sourceList, QStringList destList)
     // just copy not using a dialog
     for (int i = 0; i < sourceList.count(); i++) {
         // coping
-        if (!QFile::copy(sourceList.at(i), destList.at(i))) {
-            dtkWarn() << "[Failure] copying file: " << sourceList.at(i) << " to " << destList.at(i);
+        if (!QFile::copy(sourceList.at(i), destList.at(i)))
+        {
+            qWarning() << "[Failure] copying file: " << sourceList.at(i) << " to " << destList.at(i);
             return false;
         }
     }

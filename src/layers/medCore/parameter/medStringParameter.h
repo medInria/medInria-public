@@ -1,8 +1,9 @@
+#pragma once
 /*=========================================================================
 
  medInria
 
- Copyright (c) INRIA 2013 - 2018. All rights reserved.
+ Copyright (c) INRIA 2013 - 2020. All rights reserved.
  See LICENSE.txt for details.
 
   This software is distributed WITHOUT ANY WARRANTY; without even
@@ -10,8 +11,6 @@
   PURPOSE.
 
 =========================================================================*/
-
-#pragma once
 
 #include <medAbstractParameter.h>
 #include <QValidator>
@@ -22,7 +21,7 @@ class MEDCORE_EXPORT medStringParameter : public medAbstractParameter
     Q_OBJECT
 
 public:
-    medStringParameter(const QString & name, QObject *parent = NULL);
+    medStringParameter(const QString & name, QObject *parent = nullptr);
     virtual ~medStringParameter();
 
     virtual medParameterType type() const {return medParameterType::MED_PARAMETER_STRING;}

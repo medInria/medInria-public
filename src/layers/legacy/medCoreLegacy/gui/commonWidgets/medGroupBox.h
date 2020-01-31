@@ -1,8 +1,9 @@
+#pragma once
 /*=========================================================================
 
  medInria
 
- Copyright (c) INRIA 2013 - 2018. All rights reserved.
+ Copyright (c) INRIA 2013 - 2020. All rights reserved.
  See LICENSE.txt for details.
 
   This software is distributed WITHOUT ANY WARRANTY; without even
@@ -10,8 +11,6 @@
   PURPOSE.
 
 =========================================================================*/
-
-#pragma once
 
 #include <QGroupBox>
 #include <QChildEvent>
@@ -31,14 +30,12 @@ class MEDCORELEGACY_EXPORT medGroupBox : public QGroupBox
     Q_PROPERTY(bool collapsible READ isCollapsible WRITE setCollapsible)
 
 public:
-    explicit medGroupBox(QWidget *parent = 0);
+    explicit medGroupBox(QWidget *parent = nullptr);
     ~medGroupBox();
     bool isCollapsible();
     void setCollapsible(bool collapsible);
     bool isCollapsed();
     bool isExpanded();
-
-signals:
 
 public slots:
     void setCollapsed(bool collapse);
@@ -50,5 +47,3 @@ protected:
 private:
     medGroupBoxPrivate * d;
 };
-
-

@@ -2,7 +2,7 @@
 
  medInria
 
- Copyright (c) INRIA 2013 - 2018. All rights reserved.
+ Copyright (c) INRIA 2013 - 2020. All rights reserved.
  See LICENSE.txt for details.
  
   This software is distributed WITHOUT ANY WARRANTY; without even
@@ -38,7 +38,7 @@ medAbstractFibersData::medAbstractFibersData(const  medAbstractFibersData& other
 medAbstractFibersData::~medAbstractFibersData(void)
 {
     delete d;
-    d = NULL;
+    d = nullptr;
 }
 
 void *medAbstractFibersData::fibers(void)

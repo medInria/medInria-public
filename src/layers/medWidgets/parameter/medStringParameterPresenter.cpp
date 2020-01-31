@@ -2,7 +2,7 @@
 
  medInria
 
- Copyright (c) INRIA 2013 - 2018. All rights reserved.
+ Copyright (c) INRIA 2013 - 2020. All rights reserved.
  See LICENSE.txt for details.
 
   This software is distributed WITHOUT ANY WARRANTY; without even
@@ -11,13 +11,12 @@
 
 =========================================================================*/
 
+#include <medStringParameter.h>
 #include <medStringParameterPresenter.h>
 
 #include <QWidget>
 #include <QLineEdit>
 #include <QValidator>
-
-#include <medStringParameter.h>
 
 class medStringParameterPresenterPrivate
 {

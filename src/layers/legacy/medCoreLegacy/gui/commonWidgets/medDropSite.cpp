@@ -12,7 +12,6 @@
 =========================================================================*/
 
 #include <medDataIndex.h>
-
 #include <medDropSite.h>
 
 #include <QtGui>

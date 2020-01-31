@@ -13,7 +13,6 @@
 
 #include <medSettingsEditor.h>
 
-
 #include <QtGui>
 #include <QWidget>
 
@@ -23,8 +22,8 @@
 #include <medSettingsWidget.h>
 #include <medSettingsWidgetFactory.h>
 
-class medSettingsEditorPrivate {
-
+class medSettingsEditorPrivate
+{
 public:
 
   // methods
@@ -62,7 +61,6 @@ medSettingsEditor::~medSettingsEditor()
 {
     delete d;
 }
-
 
 void medSettingsEditorPrivate::read()
 {

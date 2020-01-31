@@ -2,7 +2,7 @@
 
  medInria
 
- Copyright (c) INRIA 2013 - 2018. All rights reserved.
+ Copyright (c) INRIA 2013 - 2020. All rights reserved.
  See LICENSE.txt for details.
 
   This software is distributed WITHOUT ANY WARRANTY; without even
@@ -49,6 +49,7 @@ medAbstractSingleFilterOperationProcessPresenter::medAbstractSingleFilterOperati
 
 medAbstractSingleFilterOperationProcessPresenter::~medAbstractSingleFilterOperationProcessPresenter()
 {
+
 }
 
 medIntParameterPresenter *medAbstractSingleFilterOperationProcessPresenter::progressionPresenter()
@@ -99,12 +100,10 @@ medViewContainerSplitter *medAbstractSingleFilterOperationProcessPresenter::buil
     return splitter;
 }
 
-
 void medAbstractSingleFilterOperationProcessPresenter::_setInputFromContainer(medAbstractData *data)
 {
     d->process->setInput(qobject_cast<medAbstractImageData *>(data));
 }
-
 
 void medAbstractSingleFilterOperationProcessPresenter::_importOutput(medAbstractJob::medJobExitStatus jobExitStatus)
 {

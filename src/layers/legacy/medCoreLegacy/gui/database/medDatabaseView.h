@@ -1,8 +1,9 @@
+#pragma once
 /*=========================================================================
 
  medInria
 
- Copyright (c) INRIA 2013 - 2018. All rights reserved.
+ Copyright (c) INRIA 2013 - 2020. All rights reserved.
  See LICENSE.txt for details.
 
   This software is distributed WITHOUT ANY WARRANTY; without even
@@ -10,8 +11,6 @@
   PURPOSE.
 
 =========================================================================*/
-
-#pragma once
 
 #include <QtGui>
 #include <QtWidgets>
@@ -28,7 +27,7 @@ class MEDCORELEGACY_EXPORT medDatabaseView : public QTreeView
     Q_OBJECT
 
 public:
-     medDatabaseView(QWidget *parent = 0);
+     medDatabaseView(QWidget *parent = nullptr);
     ~medDatabaseView();
 
     void setModel(QAbstractItemModel *model);

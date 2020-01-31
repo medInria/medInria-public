@@ -1,8 +1,9 @@
+#pragma once
 /*=========================================================================
 
  medInria
 
- Copyright (c) INRIA 2013 - 2018. All rights reserved.
+ Copyright (c) INRIA 2013 - 2020. All rights reserved.
  See LICENSE.txt for details.
 
   This software is distributed WITHOUT ANY WARRANTY; without even
@@ -10,8 +11,6 @@
   PURPOSE.
 
 =========================================================================*/
-
-#pragma once
 
 #include <QObject>
 
@@ -31,7 +30,7 @@ class MEDCORE_EXPORT medAbstractParameter : public QObject
     Q_OBJECT
 
 public:
-    medAbstractParameter(QString const& id, QObject* parent = NULL);
+    medAbstractParameter(QString const& id, QObject* parent = nullptr);
     virtual ~medAbstractParameter();
 
     QString id() const;

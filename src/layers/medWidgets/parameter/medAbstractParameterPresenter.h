@@ -1,8 +1,9 @@
+#pragma once
 /*=========================================================================
 
  medInria
 
- Copyright (c) INRIA 2013 - 2018. All rights reserved.
+ Copyright (c) INRIA 2013 - 2020. All rights reserved.
  See LICENSE.txt for details.
 
   This software is distributed WITHOUT ANY WARRANTY; without even
@@ -10,8 +11,6 @@
   PURPOSE.
 
 =========================================================================*/
-
-#pragma once
 
 #include <QObject>
 
@@ -27,7 +26,7 @@ class MEDWIDGETS_EXPORT medAbstractParameterPresenter : public QObject
     Q_OBJECT
 
 public:
-    medAbstractParameterPresenter(medAbstractParameter *parent = NULL);
+    medAbstractParameterPresenter(medAbstractParameter *parent = nullptr);
     virtual ~medAbstractParameterPresenter();
 
     virtual QWidget *buildWidget() = 0;

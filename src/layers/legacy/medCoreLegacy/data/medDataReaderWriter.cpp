@@ -2,7 +2,7 @@
 
  medInria
 
- Copyright (c) INRIA 2013 - 2018. All rights reserved.
+ Copyright (c) INRIA 2013 - 2020. All rights reserved.
  See LICENSE.txt for details.
  
   This software is distributed WITHOUT ANY WARRANTY; without even
@@ -74,7 +74,7 @@ medAbstractData *medDataReaderWriter::read(const QString& path) {
         dreader->read(path);
         return dynamic_cast<medAbstractData*>(dreader->data());
     }
-    return NULL;
+    return nullptr;
 }
 
 bool medDataReaderWriter::write(const QString& path,medAbstractData* data) {

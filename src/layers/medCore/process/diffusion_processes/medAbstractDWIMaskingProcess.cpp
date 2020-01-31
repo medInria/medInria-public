@@ -2,7 +2,7 @@
 
  medInria
 
- Copyright (c) INRIA 2013 - 2018. All rights reserved.
+ Copyright (c) INRIA 2013 - 2020. All rights reserved.
  See LICENSE.txt for details.
 
   This software is distributed WITHOUT ANY WARRANTY; without even
@@ -26,8 +26,8 @@ public:
 medAbstractDWIMaskingProcess::medAbstractDWIMaskingProcess(QObject *parent)
     : medAbstractProcess(parent), d(new medAbstractDWIMaskingProcessPrivate)
 {
-    d->input = NULL;
-    d->output = NULL;
+    d->input = nullptr;
+    d->output = nullptr;
 }
 
 medAbstractDWIMaskingProcess::~medAbstractDWIMaskingProcess()
@@ -37,13 +37,10 @@ medAbstractDWIMaskingProcess::~medAbstractDWIMaskingProcess()
 
 void medAbstractDWIMaskingProcess::setInput(medAbstractImageData *data)
 {
-    if (!data)
-        return;
-
-    if (data->Dimension() != 4)
-        return;
-
-    d->input = data;
+    if (data && (data->Dimension() == 4))
+    {
+        d->input = data;
+    }
 }
 
 medAbstractImageData* medAbstractDWIMaskingProcess::input() const

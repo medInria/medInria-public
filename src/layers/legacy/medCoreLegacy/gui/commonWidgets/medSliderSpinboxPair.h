@@ -1,8 +1,9 @@
+#pragma once
 /*=========================================================================
 
  medInria
 
- Copyright (c) INRIA 2013 - 2018. All rights reserved.
+ Copyright (c) INRIA 2013 - 2020. All rights reserved.
  See LICENSE.txt for details.
 
   This software is distributed WITHOUT ANY WARRANTY; without even
@@ -11,19 +12,18 @@
 
 =========================================================================*/
 
-#pragma once
-
 #include <QtGui>
 
 #include <medCoreLegacyExport.h>
 
-class MEDCORELEGACY_EXPORT medSliderSpinboxPair: public QWidget {
-
+class MEDCORELEGACY_EXPORT medSliderSpinboxPair: public QWidget
+{
     Q_OBJECT
 
 public:
 
-    medSliderSpinboxPair(QWidget* parent=0): QWidget(parent) {
+    medSliderSpinboxPair(QWidget* parent = nullptr): QWidget(parent)
+    {
         slider  = new QSlider(Qt::Horizontal,this);
         spinbox = new QSpinBox(this);
 
@@ -38,12 +38,14 @@ public:
         connect(spinbox,SIGNAL(editingFinished()),this,SLOT(onValueChanged()));
     }
 
-    void setMinimum(const int min) {
+    void setMinimum(const int min)
+    {
         slider->setMinimum(min);
         spinbox->setMinimum(min);
     }
 
-    void setMaximum(const int max) {
+    void setMaximum(const int max)
+    {
         slider->setMaximum(max);
         spinbox->setMaximum(max);
     }
@@ -56,7 +58,8 @@ signals:
 
 public slots:
 
-    void setValue(int value) {
+    void setValue(int value)
+    {
         slider->blockSignals(true);
         spinbox->blockSignals(true);
         slider->setValue(value);
@@ -68,8 +71,8 @@ public slots:
 
 protected slots:
 
-    void onValueChanged() {
-
+    void onValueChanged()
+    {
         slider->blockSignals(true);
         spinbox->blockSignals(true);
         if (sender()==slider)
@@ -89,13 +92,14 @@ private:
 
 
 
-class medDoubleSliderSpinboxPair: public QWidget {
-
+class medDoubleSliderSpinboxPair: public QWidget
+{
     Q_OBJECT
 
 public:
 
-    medDoubleSliderSpinboxPair(QWidget* parent=0): QWidget(parent) {
+    medDoubleSliderSpinboxPair(QWidget* parent = nullptr): QWidget(parent)
+    {
         slider  = new QSlider(Qt::Horizontal,this);
         spinbox = new QDoubleSpinBox(this);
 
@@ -110,12 +114,14 @@ public:
         connect(spinbox,SIGNAL(editingFinished()),this,SLOT(onValueChanged()));
     }
 
-    void setMinimum(const double min) {
+    void setMinimum(const double min)
+    {
         slider->setMinimum(min);
         spinbox->setMinimum(min);
     }
 
-    void setMaximum(const double max) {
+    void setMaximum(const double max)
+    {
         slider->setMaximum(max);
         spinbox->setMaximum(max);
     }
@@ -128,7 +134,8 @@ signals:
 
 public slots:
 
-    void setValue(double value) {
+    void setValue(double value)
+    {
         slider->blockSignals(true);
         spinbox->blockSignals(true);
         slider->setValue(value);
@@ -140,8 +147,8 @@ public slots:
 
 protected slots:
 
-    void onValueChanged() {
-
+    void onValueChanged()
+    {
         slider->blockSignals(true);
         spinbox->blockSignals(true);
         if (sender()==slider)

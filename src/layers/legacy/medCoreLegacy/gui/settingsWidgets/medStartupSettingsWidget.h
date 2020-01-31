@@ -1,8 +1,9 @@
+#pragma once
 /*=========================================================================
 
  medInria
 
- Copyright (c) INRIA 2013 - 2018. All rights reserved.
+ Copyright (c) INRIA 2013 - 2020. All rights reserved.
  See LICENSE.txt for details.
 
   This software is distributed WITHOUT ANY WARRANTY; without even
@@ -11,12 +12,10 @@
 
 =========================================================================*/
 
-#pragma once
-
-#include <medSettingsWidget.h>
-#include <QWidget>
-
 #include <medCoreLegacyExport.h>
+#include <medSettingsWidget.h>
+
+#include <QWidget>
 
 class medStartupSettingsWidgetPrivate;
 
@@ -26,9 +25,7 @@ class MEDCORELEGACY_EXPORT medStartupSettingsWidget : public medSettingsWidget
     MED_SETTINGS_INTERFACE("Start Up", "Startup settings")
 
 public :
-        medStartupSettingsWidget(QWidget *parent = 0);
-
-signals:
+        medStartupSettingsWidget(QWidget *parent = nullptr);
 
 public slots:
     void read();
@@ -43,6 +40,3 @@ private:
 private slots:
     void genericWorkspaceState(int pi_iState);
 };
-
-
-

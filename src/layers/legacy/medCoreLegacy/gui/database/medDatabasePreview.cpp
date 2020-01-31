@@ -38,7 +38,6 @@ public:
     medDataIndex currentDataIndex;
 };
 
-
 medDatabasePreviewStaticScene::medDatabasePreviewStaticScene(QObject *parent):
     d(new medDatabasePreviewStaticScenePrivate)
 {
@@ -54,7 +53,7 @@ medDatabasePreviewStaticScene::medDatabasePreviewStaticScene(QObject *parent):
 medDatabasePreviewStaticScene::~medDatabasePreviewStaticScene()
 {
     delete d;
-    d = NULL;
+    d = nullptr;
 }
 
 void medDatabasePreviewStaticScene::setImage(const medDataIndex &index)
@@ -133,7 +132,6 @@ medDataIndex& medDatabasePreviewStaticScene::currentDataIndex() const
     return d->currentDataIndex;
 }
 
-
 void medDatabasePreviewStaticScene::mouseDoubleClickEvent(QGraphicsSceneMouseEvent *event)
 {
     if(!d->isMulti)
@@ -184,9 +182,8 @@ medDatabasePreviewDynamicScene::medDatabasePreviewDynamicScene(const QList<QPair
 medDatabasePreviewDynamicScene::~medDatabasePreviewDynamicScene()
 {
     delete d;
-    d = NULL;
+    d = nullptr;
 }
-
 
 void medDatabasePreviewDynamicScene::previewMouseMoveEvent(QMouseEvent *event, int width)
 {
