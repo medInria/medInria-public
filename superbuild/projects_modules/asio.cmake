@@ -25,11 +25,12 @@ if (NOT USE_SYSTEM_${ep})
 ###############################################################################
 
 set(git_url ${GITHUB_PREFIX}chriskohlhoff/asio.git)
-set(git_tag asio-1-12-0)
+set(git_tag master)
 
 ## #############################################################################
 ## Add external-project
 ## #############################################################################
+epComputPath(${ep})
 ExternalProject_Add(${ep}
   PREFIX ${EP_PATH_SOURCE}
   SOURCE_DIR ${EP_PATH_SOURCE}/${ep}  

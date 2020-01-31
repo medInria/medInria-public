@@ -31,6 +31,7 @@ set(git_tag master)
 ## #############################################################################
 ## Add external-project
 ## #############################################################################
+epComputPath(${ep})
 ExternalProject_Add(${ep}
   PREFIX ${EP_PATH_SOURCE}
   SOURCE_DIR ${EP_PATH_SOURCE}/${ep}
