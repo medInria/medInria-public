@@ -2,7 +2,7 @@
 
  medInria
 
- Copyright (c) INRIA 2013 - 2018. All rights reserved.
+ Copyright (c) INRIA 2013 - 2020. All rights reserved.
  See LICENSE.txt for details.
  
   This software is distributed WITHOUT ANY WARRANTY; without even
@@ -14,7 +14,7 @@
 #include <medJobManagerL.h>
 #include <medJobItemL.h>
 
-medJobManagerL *medJobManagerL::s_instance = NULL;
+medJobManagerL *medJobManagerL::s_instance = nullptr;
 
 class medJobManagerLPrivate
 {
@@ -40,7 +40,7 @@ medJobManagerL::~medJobManagerL( void )
 {
     delete d;
 
-    d = NULL;
+    d = nullptr;
 }
 
 bool medJobManagerL::registerJobItem( medJobItemL* item, QString jobName)

@@ -71,13 +71,13 @@ medAbstractView::medAbstractView(QObject* parent) :d (new medAbstractViewPrivate
     this->setParent(parent);
     d->closable = true;
 
-    d->data = NULL;
-    d->primaryInteractor = NULL;
-    d->primaryNavigator = NULL;
+    d->data = nullptr;
+    d->primaryInteractor = nullptr;
+    d->primaryNavigator = nullptr;
 
-    d->toolBarWidget = NULL;
-    d->navigatorWidget = NULL;
-    d->mouseInteractionWidget = NULL;
+    d->toolBarWidget = nullptr;
+    d->navigatorWidget = nullptr;
+    d->mouseInteractionWidget = nullptr;
 
     d->undoStack = new QUndoStack(this);
 }
@@ -86,7 +86,7 @@ medAbstractView::~medAbstractView( void )
 {
     emit closed();
     delete d;
-    d = NULL;
+    d = nullptr;
 }
 
 /**
@@ -111,7 +111,7 @@ void medAbstractView::addData(medAbstractData *data)
     bool initSuccess = this->initialiseInteractors(data);
     if(!initSuccess)
     {
-        d->data = NULL;
+        d->data = nullptr;
         return;
     }
 
@@ -124,13 +124,13 @@ void medAbstractView::addData(medAbstractData *data)
 void medAbstractView::clear()
 {
     this->removeInteractors(d->data);
-    d->data = NULL;
+    d->data = nullptr;
 }
 
 void medAbstractView::removeInteractors(medAbstractData *data)
 {
     delete d->primaryInteractor;
-    d->primaryInteractor = NULL;
+    d->primaryInteractor = nullptr;
     d->extraInteractors.clear();
 }
 
@@ -268,7 +268,7 @@ medDoubleParameterL* medAbstractView::zoomParameter()
     medAbstractViewNavigator* pNavigator = this->primaryNavigator();
     if(!pNavigator)
     {
-        return NULL;
+        return nullptr;
     }
 
     return pNavigator->zoomParameter();
@@ -279,7 +279,7 @@ medAbstractVector2DParameterL* medAbstractView::panParameter()
     medAbstractViewNavigator* pNavigator = this->primaryNavigator();
     if(!pNavigator)
     {
-        return NULL;
+        return nullptr;
     }
 
     return pNavigator->panParameter();
@@ -441,7 +441,6 @@ QWidget* medAbstractView::mouseInteractionWidget()
 
     return d->mouseInteractionWidget;
 }
-
 
 QUndoStack* medAbstractView::undoStack() const
 {

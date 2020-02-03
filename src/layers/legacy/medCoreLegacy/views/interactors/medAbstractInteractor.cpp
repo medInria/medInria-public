@@ -2,7 +2,7 @@
 
  medInria
 
- Copyright (c) INRIA 2013 - 2018. All rights reserved.
+ Copyright (c) INRIA 2013 - 2020. All rights reserved.
  See LICENSE.txt for details.
 
   This software is distributed WITHOUT ANY WARRANTY; without even
@@ -12,9 +12,7 @@
 =========================================================================*/
 
 #include <medAbstractInteractor.h>
-
 #include <medAbstractView.h>
-
 
 /**
 * @fn QWidget* medAbstractInteractor::buildToolBoxWidget()
@@ -53,9 +51,9 @@ medAbstractInteractor::medAbstractInteractor(medAbstractView *parent):
     d(new medAbstractInteractorPrivate)
 {
     setParent(parent);
-    d->toolBarWidget = NULL;
-    d->toolBoxWidget = NULL;
-    d->layerWidget = NULL;
+    d->toolBarWidget = nullptr;
+    d->toolBoxWidget = nullptr;
+    d->layerWidget = nullptr;
 }
 
 medAbstractInteractor::~medAbstractInteractor()

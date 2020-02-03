@@ -1,8 +1,9 @@
+#pragma once
 /*=========================================================================
 
  medInria
 
- Copyright (c) INRIA 2013 - 2018. All rights reserved.
+ Copyright (c) INRIA 2013 - 2020. All rights reserved.
  See LICENSE.txt for details.
  
   This software is distributed WITHOUT ANY WARRANTY; without even
@@ -10,8 +11,6 @@
   PURPOSE.
 
 =========================================================================*/
-
-#pragma once
 
 #include <medVtkInriaExport.h>
 #include <vtkObject.h>
@@ -36,7 +35,7 @@ public:
 
   // Description:
   // Standard VTK class macros.
-  vtkTypeMacro(vtkDataSet2DWidget,vtkObject);
+  vtkTypeMacro(vtkDataSet2DWidget,vtkObject)
   void PrintSelf(ostream& os, vtkIndent indent);
 
   // Description:
@@ -53,13 +52,13 @@ public:
   void Off() {this->SetEnabled(0);}
   
   void SetImageView (vtkImageView2D* arg);
-  vtkGetObjectMacro (ImageView, vtkImageView2D);
+  vtkGetObjectMacro (ImageView, vtkImageView2D)
 
   void SetSource (vtkPointSet* arg);
-  vtkGetObjectMacro (Source, vtkPointSet);
+  vtkGetObjectMacro (Source, vtkPointSet)
   
-  vtkGetObjectMacro (Actor, vtkActor);
-  vtkGetObjectMacro (ImplicitPlane, vtkPlane);
+  vtkGetObjectMacro (Actor, vtkActor)
+  vtkGetObjectMacro (ImplicitPlane, vtkPlane)
   
 protected:
   vtkDataSet2DWidget();
@@ -81,9 +80,6 @@ private:
   void operator=(const vtkDataSet2DWidget&);  //Not implemented
 };
 
-
-
-
 //BTX
 class MEDVTKINRIA_EXPORT vtkDataSet2DWidgetCommand : public vtkCommand
 {
@@ -91,7 +87,7 @@ class MEDVTKINRIA_EXPORT vtkDataSet2DWidgetCommand : public vtkCommand
  public:
 
   static vtkDataSet2DWidgetCommand *New()
-    {return new vtkDataSet2DWidgetCommand;};
+    {return new vtkDataSet2DWidgetCommand;}
 
   // Description:
   // Satisfy the superclass API for callbacks. Recall that the caller is
@@ -112,14 +108,10 @@ class MEDVTKINRIA_EXPORT vtkDataSet2DWidgetCommand : public vtkCommand
     this->Widget = 0;
   }
   
-  ~vtkDataSet2DWidgetCommand(){};
+  ~vtkDataSet2DWidgetCommand(){}
 
  private:
 
   vtkDataSet2DWidget* Widget;
 };
 //ETX
-
-
-
-

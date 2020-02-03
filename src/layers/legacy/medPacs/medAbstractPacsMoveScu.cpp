@@ -16,7 +16,8 @@
 
 #include <dtkCoreSupport/dtkGlobal.h>
 
-int medAbstractPacsMoveScu::sendMoveRequest( const char* peerTitle, const char* peerIP, unsigned int peerPort, const char* ourTitle, const char* ourIP, unsigned int ourPort )
+int medAbstractPacsMoveScu::sendMoveRequest( const char* peerTitle, const char* peerIP, unsigned int peerPort,
+                                             const char* ourTitle, const char* ourIP, unsigned int ourPort )
 {
     Q_UNUSED(peerTitle);
     Q_UNUSED(peerIP);

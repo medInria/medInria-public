@@ -1,8 +1,9 @@
+#pragma once
 /*=========================================================================
 
  medInria
 
- Copyright (c) INRIA 2013 - 2018. All rights reserved.
+ Copyright (c) INRIA 2013 - 2020. All rights reserved.
  See LICENSE.txt for details.
 
   This software is distributed WITHOUT ANY WARRANTY; without even
@@ -11,11 +12,9 @@
 
 =========================================================================*/
 
-#pragma once
-
 #include <dtkCoreSupport/dtkAbstractProcess.h>
-#include <medAbstractData.h>
 
+#include <medAbstractData.h>
 #include <medCoreLegacyExport.h>
 
 /**
@@ -61,10 +60,6 @@ private:
     using dtkAbstractProcess::write;
     using dtkAbstractProcess::setInput;
     using dtkAbstractProcess::setData;
-    //TODO rename our output methode
-    //using dtkAbstractProcess::output;
     using dtkAbstractProcess::data;
     using dtkAbstractProcess::channelCount;
 };
-
-

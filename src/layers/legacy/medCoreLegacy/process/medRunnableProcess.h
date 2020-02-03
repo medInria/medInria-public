@@ -1,8 +1,9 @@
+#pragma once
 /*=========================================================================
 
  medInria
 
- Copyright (c) INRIA 2013 - 2018. All rights reserved.
+ Copyright (c) INRIA 2013 - 2020. All rights reserved.
  See LICENSE.txt for details.
 
   This software is distributed WITHOUT ANY WARRANTY; without even
@@ -11,11 +12,8 @@
 
 =========================================================================*/
 
-#pragma once
-
-#include <medJobItemL.h>
-
 #include <medCoreLegacyExport.h>
+#include <medJobItemL.h>
 
 class medRunnableProcessPrivate;
 class dtkAbstractProcess;
@@ -38,7 +36,6 @@ public:
      medRunnableProcess();
     ~medRunnableProcess();
 
-
     void setProcess (dtkAbstractProcess *proc);
     dtkAbstractProcess * getProcess();
 
@@ -46,7 +43,6 @@ public slots:
     virtual void onSuccess();
     virtual void onFailure();
     virtual void onProgressed (int);
-
     virtual void onCancel (QObject*);
 
 protected:
@@ -55,5 +51,3 @@ protected:
 private:
     medRunnableProcessPrivate *d;
 };
-
-

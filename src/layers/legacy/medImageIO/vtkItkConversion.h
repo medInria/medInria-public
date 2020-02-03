@@ -3,7 +3,7 @@
 
 medInria
 
-Copyright (c) INRIA 2013 - 2018. All rights reserved.
+Copyright (c) INRIA 2013 - 2020. All rights reserved.
 See LICENSE.txt for details.
 
 This software is distributed WITHOUT ANY WARRANTY; without even
@@ -34,7 +34,7 @@ class medAbstractData;
 class MEDIMAGEIO_EXPORT vtkItkConversionInterface
 {
 public:
-    virtual ~vtkItkConversionInterface() {};
+    virtual ~vtkItkConversionInterface() {}
 
     virtual bool SetITKInput(itk::DataObject::Pointer pi_input) = 0;
     virtual bool GetConversion(vtkAlgorithmOutput *& po_poAlgoOut, vtkMatrix4x4  *&po_poMatrix) = 0;
@@ -50,7 +50,7 @@ public:
     static vtkItkConversionInterface * createInstance(medAbstractData* pi_poData);
 
 protected:
-    vtkItkConversionInterface() {};
+    vtkItkConversionInterface() {}
 };
 
 

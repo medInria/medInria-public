@@ -3,7 +3,7 @@
 
  medInria
 
- Copyright (c) INRIA 2013 - 2018. All rights reserved.
+ Copyright (c) INRIA 2013 - 2020. All rights reserved.
  See LICENSE.txt for details.
 
   This software is distributed WITHOUT ANY WARRANTY; without even
@@ -48,7 +48,7 @@ public:
     };
 
 public:
-    medViewContainer(medViewContainerSplitter* parent = 0);
+    medViewContainer(medViewContainerSplitter* parent = nullptr);
     ~medViewContainer();
 
     medAbstractView* view() const;
@@ -97,6 +97,9 @@ public slots:
 
     void checkIfStillDeserveToLiveContainer();
 
+    void clickHistoAction(bool checked);
+    QAction *histogramAction();
+
 signals:
     void maximized(QUuid uuid, bool maximized);
     void maximized(bool maximized);
@@ -111,10 +114,6 @@ signals:
     void dataAdded(medAbstractData *);
     void viewRemoved();
     void requestFourSplit();
-
-public slots:
-    void clickHistoAction(bool checked);
-    QAction *histogramAction();
 
 protected:
     void focusInEvent(QFocusEvent *event);

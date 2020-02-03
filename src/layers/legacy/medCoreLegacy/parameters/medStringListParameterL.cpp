@@ -2,7 +2,7 @@
 
  medInria
 
- Copyright (c) INRIA 2013 - 2018. All rights reserved.
+ Copyright (c) INRIA 2013 - 2020. All rights reserved.
  See LICENSE.txt for details.
 
   This software is distributed WITHOUT ANY WARRANTY; without even
@@ -31,7 +31,7 @@ medStringListParameterL::medStringListParameterL(QString name, QObject* parent):
     medAbstractStringParameterL(name, parent),
     d(new medStringListParameterLPrivate)
 {
-    d->comboBox = NULL;
+    d->comboBox = nullptr;
 }
 
 medStringListParameterL::~medStringListParameterL()
@@ -124,7 +124,7 @@ QWidget* medStringListParameterL::getWidget()
 void medStringListParameterL::removeInternComboBox()
 {
     this->removeFromInternWidgets(d->comboBox);
-    d->comboBox = NULL;
+    d->comboBox = nullptr;
 }
 
 QIcon medStringListParameterL::createIconFromColor(const QString &colorName)

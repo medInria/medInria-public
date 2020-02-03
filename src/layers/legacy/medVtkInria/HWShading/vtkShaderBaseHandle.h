@@ -1,3 +1,4 @@
+#pragma once
 /*============================================================================
 
 The Hardware Shading (HWShading) module is protected by the
@@ -26,8 +27,6 @@ PURPOSE.  See the above copyright notices for more information.
  * - Removed glDelete() function. Now implemented in vtkShaderObject
  *   and vtkBMIAShaderProgram as DeleteGlShader() and DeleteGlProgram().
  */
-
-#pragma once
 
 #include <medVtkInriaExport.h>
 

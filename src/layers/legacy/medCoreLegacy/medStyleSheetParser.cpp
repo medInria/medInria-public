@@ -2,7 +2,7 @@
 
  medInria
 
- Copyright (c) INRIA 2013 - 2018. All rights reserved.
+ Copyright (c) INRIA 2013 - 2020. All rights reserved.
  See LICENSE.txt for details.
  
   This software is distributed WITHOUT ANY WARRANTY; without even
@@ -27,11 +27,14 @@
 
 inline void deref(int index, QString & s, const QRegExp & regex, const QHash<QString, QString> & vars, int lineCount) {
     QString varName = regex.cap(1).isEmpty() ? regex.cap(2) : regex.cap(1);
-    if (vars.contains(varName)) {
+    if (vars.contains(varName))
+    {
         s.replace(index, regex.matchedLength(), vars[varName]);
-    } else {
+    }
+    else
+    {
         s.replace(index, regex.matchedLength(), "");
-        dtkWarn() << "Unknown variable name line " << lineCount << " :" << varName;
+        qWarning() << "Unknown variable name line " << lineCount << " :" << varName;
     }
 }
 
@@ -105,7 +108,6 @@ medStyleSheetParser::medStyleSheetParser(QString qss) {
     }
     output.chop(1); // remove last \n
 }
-
 
 QString medStyleSheetParser::result() const {
     return output;

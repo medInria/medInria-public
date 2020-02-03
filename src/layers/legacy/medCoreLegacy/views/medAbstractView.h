@@ -1,8 +1,9 @@
+#pragma once
 /*=========================================================================
 
  medInria
 
- Copyright (c) INRIA 2013 - 2018. All rights reserved.
+ Copyright (c) INRIA 2013 - 2020. All rights reserved.
  See LICENSE.txt for details.
 
   This software is distributed WITHOUT ANY WARRANTY; without even
@@ -10,8 +11,6 @@
   PURPOSE.
 
 =========================================================================*/
-
-#pragma once
 
 #include <dtkCoreSupport/dtkAbstractView.h>
 
@@ -38,7 +37,6 @@ class QUndoStack;
 class medViewBackend {
 };
 
-
 /**
  * @class medAbstractView
  * @brief Base class for view types in medInria
@@ -50,7 +48,7 @@ class MEDCORELEGACY_EXPORT medAbstractView: public dtkAbstractView
     Q_OBJECT
 
 public:
-    medAbstractView(QObject* parent = 0);
+    medAbstractView(QObject* parent = nullptr);
     virtual ~medAbstractView();
 
     virtual void addData(medAbstractData* data);
@@ -89,7 +87,6 @@ signals:
      * @param selected
      */
     void selectedRequest(bool selected);
-
 
 protected:
     virtual medAbstractViewInteractor* primaryInteractor(medAbstractData* data);
@@ -159,5 +156,3 @@ private:
     using dtkAbstractView::setLowerRight;
     using dtkAbstractView::widget;
 };
-
-

@@ -17,7 +17,6 @@
 
 #include <medCoreLegacyExport.h>
 
-class medToolBoxTabPrivate;
 
 class MEDCORELEGACY_EXPORT medToolBoxTab : public QTabWidget
 {
@@ -27,9 +26,4 @@ class MEDCORELEGACY_EXPORT medToolBoxTab : public QTabWidget
 public:
      medToolBoxTab(QWidget *parent = nullptr);
     ~medToolBoxTab();
-
-private:
-    medToolBoxTabPrivate *d;
 };
-
-

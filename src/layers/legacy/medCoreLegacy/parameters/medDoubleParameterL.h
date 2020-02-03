@@ -1,8 +1,9 @@
+#pragma once
 /*=========================================================================
 
  medInria
 
- Copyright (c) INRIA 2013 - 2018. All rights reserved.
+ Copyright (c) INRIA 2013 - 2020. All rights reserved.
  See LICENSE.txt for details.
 
   This software is distributed WITHOUT ANY WARRANTY; without even
@@ -11,10 +12,7 @@
 
 =========================================================================*/
 
-#pragma once
-
 #include <medAbstractParameterL.h>
-
 #include <medCoreLegacyExport.h>
 
 class QWidget;
@@ -28,7 +26,7 @@ class MEDCORELEGACY_EXPORT medDoubleParameterL : public medAbstractDoubleParamet
     Q_OBJECT
 
 public:
-    medDoubleParameterL(QString name = "Unknown double parameter", QObject* parent = 0);
+    medDoubleParameterL(QString name = "Unknown double parameter", QObject* parent = nullptr);
     virtual ~medDoubleParameterL();
 
     void setRange(double min, double max);
@@ -56,6 +54,5 @@ private slots:
 private:
     int convertToInt(double value);
 
-private:
     medDoubleParameterLPrivate* d;
 };

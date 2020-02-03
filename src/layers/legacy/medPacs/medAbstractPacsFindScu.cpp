@@ -15,7 +15,8 @@
 
 #include <dtkCoreSupport/dtkGlobal.h>
 
-int medAbstractPacsFindScu::sendFindRequest(const char* peerTitle, const char* peerIP, unsigned int peerPort, const char* ourTitle, const char* ourIP, unsigned int ourPort)
+int medAbstractPacsFindScu::sendFindRequest(const char* peerTitle, const char* peerIP, unsigned int peerPort,
+                                            const char* ourTitle, const char* ourIP, unsigned int ourPort)
 {
     Q_UNUSED(peerTitle);
     Q_UNUSED(peerIP);

@@ -1,8 +1,9 @@
+#pragma once
 /*=========================================================================
 
  medInria
 
- Copyright (c) INRIA 2013 - 2018. All rights reserved.
+ Copyright (c) INRIA 2013 - 2020. All rights reserved.
  See LICENSE.txt for details.
 
   This software is distributed WITHOUT ANY WARRANTY; without even
@@ -11,12 +12,9 @@
 
 =========================================================================*/
 
-#pragma once
-
 #include <medAbstractLayeredViewInteractor.h>
-#include <medImageViewEnum.h>
-
 #include <medCoreLegacyExport.h>
+#include <medImageViewEnum.h>
 
 class medAbstractImageView;
 class medDoubleParameterL;
@@ -28,7 +26,7 @@ class MEDCORELEGACY_EXPORT medAbstractImageViewInteractor : public medAbstractLa
     Q_OBJECT
 
 public:
-             medAbstractImageViewInteractor(medAbstractView* parent);
+    medAbstractImageViewInteractor(medAbstractView* parent);
     virtual ~medAbstractImageViewInteractor();
 
     virtual medDoubleParameterL* opacityParameter();

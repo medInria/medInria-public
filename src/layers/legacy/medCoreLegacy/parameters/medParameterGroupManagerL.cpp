@@ -2,7 +2,7 @@
 
  medInria
 
- Copyright (c) INRIA 2013 - 2018. All rights reserved.
+ Copyright (c) INRIA 2013 - 2020. All rights reserved.
  See LICENSE.txt for details.
 
   This software is distributed WITHOUT ANY WARRANTY; without even
@@ -11,15 +11,13 @@
 
 =========================================================================*/
 
-#include <medParameterGroupManagerL.h>
-
 #include <medAbstractParameterGroupL.h>
-#include <medViewParameterGroupL.h>
+#include <medAbstractWorkspaceLegacy.h>
 #include <medLayerParameterGroupL.h>
+#include <medParameterGroupManagerL.h>
+#include <medViewParameterGroupL.h>
 
 #include <QApplication>
-#include <medAbstractWorkspaceLegacy.h>
-
 
 class medParameterGroupManagerLPrivate
 {
@@ -46,7 +44,7 @@ medParameterGroupManagerL::medParameterGroupManagerL(void) : d(new medParameterG
 medParameterGroupManagerL::~medParameterGroupManagerL(void)
 {
     delete d;
-    d = NULL;
+    d = nullptr;
 }
 
 void medParameterGroupManagerL::registerNewGroup(medAbstractParameterGroupL* group)
@@ -166,4 +164,4 @@ void medParameterGroupManagerL::setCurrentWorkspace(QString workspace)
     d->currentWorkspace = workspace;
 }
 
-medParameterGroupManagerL *medParameterGroupManagerL::s_instance = NULL;
+medParameterGroupManagerL *medParameterGroupManagerL::s_instance = nullptr;

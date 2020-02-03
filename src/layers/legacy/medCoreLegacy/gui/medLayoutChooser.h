@@ -1,8 +1,9 @@
+#pragma once
 /*=========================================================================
 
  medInria
 
- Copyright (c) INRIA 2013 - 2018. All rights reserved.
+ Copyright (c) INRIA 2013 - 2020. All rights reserved.
  See LICENSE.txt for details.
 
   This software is distributed WITHOUT ANY WARRANTY; without even
@@ -10,8 +11,6 @@
   PURPOSE.
 
 =========================================================================*/
-
-#pragma once
 
 #include <QTableWidget>
 
@@ -24,7 +23,7 @@ class MEDCORELEGACY_EXPORT medLayoutChooser : public QTableWidget
     Q_OBJECT
 
 public:
-     medLayoutChooser(QWidget *parent = 0);
+     medLayoutChooser(QWidget *parent = nullptr);
     ~medLayoutChooser();
 
     QSize sizeHint() const;
@@ -40,5 +39,3 @@ protected:
 private:
     medLayoutChooserPrivate *d;
 };
-
-

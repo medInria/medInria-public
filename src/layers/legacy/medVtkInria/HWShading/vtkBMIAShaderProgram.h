@@ -1,3 +1,4 @@
+#pragma once
 /*============================================================================
 
 The Hardware Shading (HWShading) module is protected by the
@@ -47,8 +48,6 @@ PURPOSE.  See the above copyright notices for more information.
  * - Added Activate() and Deactivate() functions. vtkShaderManager class
  *   is now no longer needed for activating a shader program.
  */
-
-#pragma once
 
 #include <medVtkInriaExport.h>
 

@@ -1,3 +1,4 @@
+#pragma once
 /*=========================================================================
 
  medInria
@@ -11,9 +12,8 @@
 
 =========================================================================*/
 
-#pragma once
-
 #include <QtCore/QObject>
+
 #include <medPacsExport.h>
 
 class MEDPACS_EXPORT medAbstractPacsStoreScp : public QObject

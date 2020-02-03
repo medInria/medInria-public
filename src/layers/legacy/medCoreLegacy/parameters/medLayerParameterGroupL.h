@@ -1,8 +1,9 @@
+#pragma once
 /*=========================================================================
 
  medInria
 
- Copyright (c) INRIA 2013 - 2018. All rights reserved.
+ Copyright (c) INRIA 2013 - 2020. All rights reserved.
  See LICENSE.txt for details.
 
   This software is distributed WITHOUT ANY WARRANTY; without even
@@ -11,11 +12,8 @@
 
 =========================================================================*/
 
-#pragma once
-
 #include <medAbstractParameterGroupL.h>
 #include <medAbstractData.h>
-
 #include <medCoreLegacyExport.h>
 
 class medLayerParameterGroupLL;
@@ -25,7 +23,7 @@ class MEDCORELEGACY_EXPORT medLayerParameterGroupL : public medAbstractParameter
     Q_OBJECT
 
 public:
-    medLayerParameterGroupL(QString name = "", QObject *parent = 0, QString workspace = "");
+    medLayerParameterGroupL(QString name = "", QObject *parent = nullptr, QString workspace = "");
     virtual ~medLayerParameterGroupL();
 
     void addImpactedlayer(medAbstractLayeredView *view, medAbstractData* layerData);
@@ -44,5 +42,3 @@ private slots:
 private:
     medLayerParameterGroupLL *d;
 };
-
-

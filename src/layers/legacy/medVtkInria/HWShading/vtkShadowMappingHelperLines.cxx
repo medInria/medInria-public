@@ -32,8 +32,7 @@ PURPOSE.  See the above copyright notices for more information.
 #include "BuildShadowMapLinesVertexText.h"
 #include "BuildShadowMapLinesFragmentText.h"
 
-
-vtkStandardNewMacro(vtkShadowMappingHelperLines);
+vtkStandardNewMacro(vtkShadowMappingHelperLines)
 
 vtkShadowMappingHelperLines::vtkShadowMappingHelperLines()
 {
@@ -44,14 +43,13 @@ vtkShadowMappingHelperLines::vtkShadowMappingHelperLines()
   frag->SetSourceText(BuildShadowMapLinesFragmentText);
   prog->AddShaderObject(vert);
   prog->AddShaderObject(frag);
-  vert->Delete(); vert = NULL;
-  frag->Delete(); frag = NULL;
+  vert->Delete(); vert = nullptr;
+  frag->Delete(); frag = nullptr;
   this->SetShaderProgram(prog);
-  prog->Delete(); prog = NULL;
+  prog->Delete(); prog = nullptr;
 }
 
 vtkShadowMappingHelperLines::~vtkShadowMappingHelperLines()
 {
   // nothing to do.
 }
-

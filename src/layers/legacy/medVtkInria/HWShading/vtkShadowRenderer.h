@@ -1,3 +1,4 @@
+#pragma once
 /*============================================================================
 
 The Hardware Shading (HWShading) module is protected by the
@@ -29,16 +30,12 @@ PURPOSE.  See the above copyright notices for more information.
  * - Removed #include <GL/glew.h>
  */
 
-#pragma once
-
 #include <medVtkInriaExport.h>
 
 #include <vtkOpenGLRenderer.h>
 #include <vtkTimeStamp.h>
 
 class vtkCamera;
-
-//class vtkShadowMappingSP;
 class vtkBMIAShaderProgram;
 class vtkUniformSampler;
 class vtkShadowMappingHelper;
@@ -48,21 +45,21 @@ class vtkShadowMappingHelper;
  * WARNING: glewInit() must be called after the render window was
  * initialized and before this renderer renders.
  */
-class MEDVTKINRIA_EXPORT vtkShadowRenderer : public vtkOpenGLRenderer {
-
+class MEDVTKINRIA_EXPORT vtkShadowRenderer : public vtkOpenGLRenderer
+{
 public:
   static vtkShadowRenderer* New();
-  vtkTypeMacro(vtkShadowRenderer, vtkOpenGLRenderer);
+  vtkTypeMacro(vtkShadowRenderer, vtkOpenGLRenderer)
 
   /**
    * Get/Set the rendering of shadows by this renderer.
    */
-  vtkSetMacro(RenderShadows, bool);
-  vtkGetMacro(RenderShadows, bool);
-  vtkBooleanMacro(RenderShadows, bool);
-  void SetShadows(bool shadows) { this->SetRenderShadows(shadows); };
-  bool GetShadows() { return this->GetRenderShadows(); };
-  vtkBooleanMacro(Shadows, bool);
+  vtkSetMacro(RenderShadows, bool)
+  vtkGetMacro(RenderShadows, bool)
+  vtkBooleanMacro(RenderShadows, bool)
+  void SetShadows(bool shadows) { this->SetRenderShadows(shadows); }
+  bool GetShadows() { return this->GetRenderShadows(); }
+  vtkBooleanMacro(Shadows, bool)
 
   /**
    * Specifies whether the shadow map must be drawn on the screen or
@@ -70,18 +67,15 @@ public:
    * is true. If RenderShadows is false, the scene is always drawn with
    * no shadows, and no shadowmap is generated or displayed.
    */
-  vtkSetMacro(ShowShadowMap, bool);
-  vtkGetMacro(ShowShadowMap, bool);
-  vtkBooleanMacro(ShowShadowMap, bool);
+  vtkSetMacro(ShowShadowMap, bool)
+  vtkGetMacro(ShowShadowMap, bool)
+  vtkBooleanMacro(ShowShadowMap, bool)
 
-  // TODO: make this protected? it's protected in vtkShadowRenderer
-  // from Sandia.. why?
   virtual void DeviceRender();
 
 protected:
   vtkShadowRenderer();
   ~vtkShadowRenderer();
-
   
 private:
   /**
@@ -118,7 +112,6 @@ private:
   /**
    * Shader program used for the shadow mapping.
    */
-//  vtkShadowMappingSP* ShadowMappingSP;
   vtkBMIAShaderProgram* ShadowMappingSP;
 
   /**
@@ -135,5 +128,3 @@ private:
   bool ShowShadowMap;
 
 };
-
-

@@ -1,10 +1,23 @@
+/*=========================================================================
+
+ medInria
+
+ Copyright (c) INRIA 2013 - 2020. All rights reserved.
+ See LICENSE.txt for details.
+
+  This software is distributed WITHOUT ANY WARRANTY; without even
+  the implied warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR
+  PURPOSE.
+
+=========================================================================*/
+
 #include "vtkImage2DDisplay.h"
 #include <vtkImageMapper3D.h>
 #include <vtkImageProperty.h>
 #include <vtkImageAlgorithm.h>
 #include <vtkAlgorithmOutput.h>
 
-vtkStandardNewMacro(vtkImage2DDisplay);
+vtkStandardNewMacro(vtkImage2DDisplay)
 
 vtkImage2DDisplay::vtkImage2DDisplay()
 {
@@ -14,8 +27,8 @@ vtkImage2DDisplay::vtkImage2DDisplay()
     this->WindowLevel->SetOutputFormatToRGBA();
     this->ColorWindow       = 1e-3 * VTK_DOUBLE_MAX;
     this->ColorLevel        = 0;
-    this->ColorTransferFunction   = NULL;
-    this->OpacityTransferFunction = NULL;
+    this->ColorTransferFunction   = nullptr;
+    this->OpacityTransferFunction = nullptr;
     this->UseLookupTable    = false;
 }
 

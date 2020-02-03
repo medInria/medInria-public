@@ -1,8 +1,9 @@
+#pragma once
 /*=========================================================================
 
  medInria
 
- Copyright (c) INRIA 2013 - 2018. All rights reserved.
+ Copyright (c) INRIA 2013 - 2020. All rights reserved.
  See LICENSE.txt for details.
 
   This software is distributed WITHOUT ANY WARRANTY; without even
@@ -11,18 +12,14 @@
 
 =========================================================================*/
 
-#pragma once
-
 #include <dtkCoreSupport/dtkAbstractViewNavigator.h>
 
-#include <medImageViewEnum.h>
-
 #include <medCoreLegacyExport.h>
+#include <medImageViewEnum.h>
 
 class medAbstractView;
 class medAbstractParameterL;
 class medBoolParameterL;
-
 
 class medAbstractNavigatorPrivate;
 class MEDCORELEGACY_EXPORT medAbstractNavigator : public dtkAbstractViewNavigator
@@ -30,7 +27,7 @@ class MEDCORELEGACY_EXPORT medAbstractNavigator : public dtkAbstractViewNavigato
     Q_OBJECT
 
 public:
-             medAbstractNavigator(medAbstractView* parent);
+    medAbstractNavigator(medAbstractView* parent);
     virtual ~medAbstractNavigator();
 
 public:
@@ -71,5 +68,4 @@ private:
     using dtkAbstractViewNavigator::enabled;
     using dtkAbstractViewNavigator::enable;
     using dtkAbstractViewNavigator::disable;
-
 };

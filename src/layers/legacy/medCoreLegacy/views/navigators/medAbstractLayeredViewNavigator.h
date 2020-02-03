@@ -1,8 +1,9 @@
+#pragma once
 /*=========================================================================
 
  medInria
 
- Copyright (c) INRIA 2013 - 2018. All rights reserved.
+ Copyright (c) INRIA 2013 - 2020. All rights reserved.
  See LICENSE.txt for details.
 
   This software is distributed WITHOUT ANY WARRANTY; without even
@@ -11,10 +12,7 @@
 
 =========================================================================*/
 
-#pragma once
-
 #include <medAbstractViewNavigator.h>
-
 #include <medCoreLegacyExport.h>
 
 class MEDCORELEGACY_EXPORT medAbstractLayeredViewNavigator : public medAbstractViewNavigator
@@ -22,6 +20,6 @@ class MEDCORELEGACY_EXPORT medAbstractLayeredViewNavigator : public medAbstractV
     Q_OBJECT
 
 public:
-             medAbstractLayeredViewNavigator(medAbstractView* parent);
+    medAbstractLayeredViewNavigator(medAbstractView* parent);
     virtual ~medAbstractLayeredViewNavigator();
 };

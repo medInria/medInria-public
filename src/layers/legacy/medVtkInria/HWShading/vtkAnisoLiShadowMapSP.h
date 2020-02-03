@@ -1,3 +1,4 @@
+#pragma once
 /*============================================================================
 
 The Hardware Shading (HWShading) module is protected by the
@@ -28,8 +29,6 @@ PURPOSE.  See the above copyright notices for more information.
  * 2005-12-08	Tim Peeters
  * - Added support for parameters {Ambient,Diffuse,Specular}ContributionShadow.
  */
-
-#pragma once
 
 #include <vtkAnisotropicLightingSP.h>
 

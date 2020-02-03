@@ -1,8 +1,9 @@
+#pragma once
 /*=========================================================================
 
  medInria
 
- Copyright (c) INRIA 2013 - 2019. All rights reserved.
+ Copyright (c) INRIA 2013 - 2020. All rights reserved.
  See LICENSE.txt for details.
 
   This software is distributed WITHOUT ANY WARRANTY; without even
@@ -11,13 +12,12 @@
 
 =========================================================================*/
 
-#pragma once
-
 #include <QtCore>
 #include <QtGui>
-#include <medProgressionStack.h>
 
 #include <medCoreLegacyExport.h>
+#include <medProgressionStack.h>
+
 class QUuid;
 class QListWidgetItem;
 class QAction;
@@ -130,7 +130,6 @@ private:
     QWidget* buildViewLinkMenu();
     QWidget* buildLayerLinkMenu(QList<QListWidgetItem*>);
 
-private:
     medAbstractWorkspaceLegacyPrivate *d;
 };
 

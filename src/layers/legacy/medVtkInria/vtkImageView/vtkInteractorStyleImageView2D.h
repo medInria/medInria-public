@@ -1,8 +1,9 @@
+#pragma once
 /*=========================================================================
 
  medInria
 
- Copyright (c) INRIA 2013 - 2018. All rights reserved.
+ Copyright (c) INRIA 2013 - 2020. All rights reserved.
  See LICENSE.txt for details.
  
   This software is distributed WITHOUT ANY WARRANTY; without even
@@ -10,8 +11,6 @@
   PURPOSE.
 
 =========================================================================*/
-
-#pragma once
 
 #include <medVtkInriaExport.h>
 
@@ -38,8 +37,7 @@ class MEDVTKINRIA_EXPORT vtkInteractorStyleImageView2D : public vtkInteractorSty
 {
  public:
   static vtkInteractorStyleImageView2D *New();
-  vtkTypeMacro (vtkInteractorStyleImageView2D, vtkInteractorStyleImage);
-
+  vtkTypeMacro (vtkInteractorStyleImageView2D, vtkInteractorStyleImage)
  
   //BTX
   enum InteractionTypeIds
@@ -53,16 +51,16 @@ class MEDVTKINRIA_EXPORT vtkInteractorStyleImageView2D : public vtkInteractorSty
   };
   //ETX
 
-  vtkSetClampMacro (LeftButtonInteraction, int, InteractionTypeNull, InteractionTypePan);
-  vtkGetMacro (LeftButtonInteraction, int);
-  vtkSetClampMacro (RightButtonInteraction, int, InteractionTypeNull, InteractionTypePan);
-  vtkGetMacro (RightButtonInteraction, int);
-  vtkSetClampMacro (MiddleButtonInteraction, int, InteractionTypeNull, InteractionTypePan);
-  vtkGetMacro (MiddleButtonInteraction, int);  
-  vtkSetClampMacro (WheelButtonInteraction, int, InteractionTypeNull, InteractionTypePan);
-  vtkGetMacro (WheelButtonInteraction, int);  
-  vtkSetClampMacro (KeyboardInteraction, int, InteractionTypeNull, InteractionTypePan);
-  vtkGetMacro (KeyboardInteraction, int);  
+  vtkSetClampMacro (LeftButtonInteraction, int, InteractionTypeNull, InteractionTypePan)
+  vtkGetMacro (LeftButtonInteraction, int)
+  vtkSetClampMacro (RightButtonInteraction, int, InteractionTypeNull, InteractionTypePan)
+  vtkGetMacro (RightButtonInteraction, int)
+  vtkSetClampMacro (MiddleButtonInteraction, int, InteractionTypeNull, InteractionTypePan)
+  vtkGetMacro (MiddleButtonInteraction, int)
+  vtkSetClampMacro (WheelButtonInteraction, int, InteractionTypeNull, InteractionTypePan)
+  vtkGetMacro (WheelButtonInteraction, int)
+  vtkSetClampMacro (KeyboardInteraction, int, InteractionTypeNull, InteractionTypePan)
+  vtkGetMacro (KeyboardInteraction, int)
   
   virtual void OnMouseMove();
   virtual void OnLeftButtonDown();
@@ -88,8 +86,8 @@ class MEDVTKINRIA_EXPORT vtkInteractorStyleImageView2D : public vtkInteractorSty
 	
   virtual void DefaultMoveAction();
   
-  vtkGetMacro (SliceStep, int);
-  vtkGetVector2Macro (RequestedPosition, int);
+  vtkGetMacro (SliceStep, int)
+  vtkGetVector2Macro (RequestedPosition, int)
   
 protected:
   vtkInteractorStyleImageView2D();
@@ -102,13 +100,9 @@ protected:
   vtkInteractorStyleImageView2D(const vtkInteractorStyleImageView2D&);  // Not implemented.
   void operator=(const vtkInteractorStyleImageView2D&);  // Not implemented.
 
-
   int LeftButtonInteraction;
   int RightButtonInteraction;
   int MiddleButtonInteraction;
   int WheelButtonInteraction;
-  int KeyboardInteraction;
-  
+  int KeyboardInteraction;  
 };
-
-

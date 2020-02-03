@@ -1,3 +1,4 @@
+#pragma once
 /*============================================================================
 
 The Hardware Shading (HWShading) module is protected by the
@@ -22,8 +23,6 @@ PURPOSE.  See the above copyright notices for more information.
  * - First version
  */
 
-#pragma once
-
 #include <medVtkInriaExport.h>
 
 #include <vtkBMIAShaderProgram.h>
@@ -35,11 +34,11 @@ class vtkFragmentShader;
  * Shader program that renders a scene with shadows. A shadow map must
  * have been generated and supplied to this shader program.
  */
-class MEDVTKINRIA_EXPORT vtkShadowMappingSP : public vtkBMIAShaderProgram {
-
+class MEDVTKINRIA_EXPORT vtkShadowMappingSP : public vtkBMIAShaderProgram
+{
 public:
   static vtkShadowMappingSP* New();
-  vtkTypeMacro(vtkShadowMappingSP, vtkBMIAShaderProgram);
+  vtkTypeMacro(vtkShadowMappingSP, vtkBMIAShaderProgram)
 
 protected:
   vtkShadowMappingSP();
@@ -51,5 +50,3 @@ private:
   vtkFragmentShader* SpotlightFuncShader;
 
 }; // class vtkShadowMappingSP
-
-

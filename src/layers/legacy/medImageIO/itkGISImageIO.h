@@ -1,8 +1,9 @@
+#pragma once
 /*=========================================================================
 
  medInria
 
- Copyright (c) INRIA 2013 - 2018. All rights reserved.
+ Copyright (c) INRIA 2013 - 2020. All rights reserved.
  See LICENSE.txt for details.
  
   This software is distributed WITHOUT ANY WARRANTY; without even
@@ -10,8 +11,6 @@
   PURPOSE.
 
 =========================================================================*/
-
-#pragma once
 
 #ifdef _MSC_VER
 #pragma warning ( disable : 4786 )
@@ -23,7 +22,7 @@
 
 #include <medImageIOExport.h>
 
-namespace itk //TODO no namespace please ! (and no class name prifixed with other librarie pefix)
+namespace itk
 {
 
   class MEDIMAGEIO_EXPORT GISImageIO : public ImageIOBase
@@ -35,8 +34,8 @@ namespace itk //TODO no namespace please ! (and no class name prifixed with othe
     typedef SmartPointer<Self> Pointer;
     typedef SmartPointer<const Self> ConstPointer;
 
-    itkNewMacro (Self);
-    itkTypeMacro(GISImageIO, ImageIOBase);
+    itkNewMacro (Self)
+    itkTypeMacro(GISImageIO, ImageIOBase)
 
     /*-------- This part of the interfaces deals with reading data. ----- */
 
@@ -65,7 +64,7 @@ namespace itk //TODO no namespace please ! (and no class name prifixed with othe
 
   GISImageIO();
   ~GISImageIO();
-  void PrintSelf(std::ostream& os, Indent indent) const {};
+  void PrintSelf(std::ostream& os, Indent indent) const {}
 
   private:
   GISImageIO(const Self&);
@@ -76,9 +75,4 @@ namespace itk //TODO no namespace please ! (and no class name prifixed with othe
   bool m_IsBinary;
   
   };
-
-
 } // end of namespace
-
-
-

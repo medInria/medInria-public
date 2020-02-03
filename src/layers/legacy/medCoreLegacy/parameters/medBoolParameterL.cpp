@@ -2,7 +2,7 @@
 
  medInria
 
- Copyright (c) INRIA 2013 - 2018. All rights reserved.
+ Copyright (c) INRIA 2013 - 2020. All rights reserved.
  See LICENSE.txt for details.
 
   This software is distributed WITHOUT ANY WARRANTY; without even
@@ -41,9 +41,9 @@ medBoolParameterL::medBoolParameterL(QString name, QObject* parent):
     d(new medBoolParameterLPrivate)
 {
     m_value = false;
-    d->pushButton = NULL;
-    d->checkBox = NULL;
-    d->radioButton = NULL;
+    d->pushButton = nullptr;
+    d->checkBox = nullptr;
+    d->radioButton = nullptr;
     d->text = QString();
     d->icon = QIcon();
     d->iconSize = QSize(15,15);
@@ -160,18 +160,18 @@ QWidget* medBoolParameterL::getWidget()
 void medBoolParameterL::removeInternPushButton()
 {
     this->removeFromInternWidgets(d->pushButton);
-    d->pushButton = NULL;
+    d->pushButton = nullptr;
 }
 
 void medBoolParameterL::removeInternCheckBox()
 {
     this->removeFromInternWidgets(d->checkBox);
-    d->checkBox = NULL;
+    d->checkBox = nullptr;
 }
 
 void medBoolParameterL::removeInternRadioButton()
 {
     this->removeFromInternWidgets(d->radioButton);
-    d->radioButton = NULL;
+    d->radioButton = nullptr;
 }
 

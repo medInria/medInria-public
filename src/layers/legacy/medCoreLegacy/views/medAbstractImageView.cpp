@@ -2,7 +2,7 @@
 
  medInria
 
- Copyright (c) INRIA 2013 - 2018. All rights reserved.
+ Copyright (c) INRIA 2013 - 2020. All rights reserved.
  See LICENSE.txt for details.
 
   This software is distributed WITHOUT ANY WARRANTY; without even
@@ -152,12 +152,11 @@ bool medAbstractImageView::initialiseInteractors(medAbstractData *data)
 {
     // primary
 
-
     medViewFactory* factory = medViewFactory::instance();
     QStringList primaryInt = factory->interactorsAbleToHandle(this->identifier(), data->identifier());
     if(primaryInt.isEmpty())
     {
-        dtkWarn() << "Unable to find any primary interactor for: " << this->identifier() << "and" << data->identifier();
+        qWarning() << "Unable to find any primary interactor for: " << this->identifier() << "and" << data->identifier();
         return false;
     }
     else
@@ -194,7 +193,7 @@ bool medAbstractImageView::initialiseNavigators()
     QStringList primaryNav = factory->navigatorsAbleToHandle(this->identifier());
     if(primaryNav.isEmpty())
     {
-        dtkWarn() << "Unable to find any primary navigator for: " << this->identifier();
+        qWarning() << "Unable to find any primary navigator for: " << this->identifier();
         return false;
     }
     else
@@ -317,7 +316,7 @@ medCompositeParameterL *medAbstractImageView::cameraParameter()
     medAbstractImageViewNavigator* pNavigator = this->primaryNavigator();
     if(!pNavigator)
     {
-        return NULL;
+        return nullptr;
     }
 
     return pNavigator->cameraParameter();

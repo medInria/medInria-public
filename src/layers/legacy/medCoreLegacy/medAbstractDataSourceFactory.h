@@ -1,8 +1,9 @@
+#pragma once
 /*=========================================================================
 
  medInria
 
- Copyright (c) INRIA 2013 - 2018. All rights reserved.
+ Copyright (c) INRIA 2013 - 2020. All rights reserved.
  See LICENSE.txt for details.
 
   This software is distributed WITHOUT ANY WARRANTY; without even
@@ -11,9 +12,8 @@
 
 =========================================================================*/
 
-#pragma once
-
 #include <dtkCoreSupport/dtkAbstractFactory.h>
+
 #include <QtCore>
 
 #include <medCoreLegacyExport.h>
@@ -46,7 +46,8 @@ public:
 
 public slots:
     /** Method to instantiate a plugin */
-    medAbstractDataSource *create(QString type,QWidget* parent = NULL);
+    medAbstractDataSource *create(QString type,QWidget* parent = nullptr);
+
 protected:
     medAbstractDataSourceFactory();
     ~medAbstractDataSourceFactory();
@@ -56,5 +57,3 @@ private:
 
     medAbstractDataSourceFactoryPrivate *d;
 };
-
-

@@ -2,7 +2,7 @@
 
  medInria
 
- Copyright (c) INRIA 2013 - 2018. All rights reserved.
+ Copyright (c) INRIA 2013 - 2020. All rights reserved.
  See LICENSE.txt for details.
  
   This software is distributed WITHOUT ANY WARRANTY; without even
@@ -33,7 +33,7 @@ medAbstractParameterL::medAbstractParameterL(QString name, QObject *parent):
     d(new medAbstractParameterLPrivate)
 {
     this->setParent(parent);
-    d->label = NULL;
+    d->label = nullptr;
     d->toolTip = QString();
     this->setName(name);
     d->hide = false;
