@@ -2,7 +2,7 @@
 
  medInria
 
- Copyright (c) INRIA 2013 - 2018. All rights reserved.
+ Copyright (c) INRIA 2013 - 2020. All rights reserved.
  See LICENSE.txt for details.
  
   This software is distributed WITHOUT ANY WARRANTY; without even
@@ -26,7 +26,7 @@
 
 itkDataTensorImageWriterBase::itkDataTensorImageWriterBase() : dtkAbstractDataWriter()
 {
-    this->io = 0;
+    this->io = nullptr;
 }
 
 itkDataTensorImageWriterBase::~itkDataTensorImageWriterBase()
@@ -83,15 +83,14 @@ bool itkDataTensorImageWriterBase::write(const QString& path)
             float dummy = 0;
             write(path, dummy);
         }
-
         else if(medData->identifier()=="itkDataTensorImageDouble3") {
 
             double dummy = 0;
             write(path, dummy);
         }
-
-        else {
-            dtkWarn() << "Unrecognized pixel type";
+        else
+        {
+            qWarning() << "Unrecognized pixel type";
             return false;
         }
     }
@@ -151,11 +150,13 @@ bool itkDataTensorImageWriterBase::write(const QString& path, PixelType dummyArg
     ImageFileWriterPointer myWriter = itk::ImageFileWriter<VectorImageType>::New();
     myWriter->SetFileName(path.toLatin1().constData());
     myWriter->SetInput(myTensorImage);
-    try {
+    try
+    {
         myWriter->Write();
     }
-    catch(itk::ExceptionObject &e) {
-        dtkDebug() << e.GetDescription();
+    catch(itk::ExceptionObject &e)
+    {
+        qDebug() << e.GetDescription();
         return false;
     }
 

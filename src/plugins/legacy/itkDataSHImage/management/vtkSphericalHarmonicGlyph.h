@@ -3,7 +3,7 @@
 
  medInria
 
- Copyright (c) INRIA 2013 - 2018. All rights reserved.
+ Copyright (c) INRIA 2013 - 2020. All rights reserved.
  See LICENSE.txt for details.
  
   This software is distributed WITHOUT ANY WARRANTY; without even
@@ -18,13 +18,13 @@
 
 #include <vtkSphericalHarmonicSource.h>
 
-
-class vtkSphericalHarmonicGlyph: public vtkPolyDataAlgorithm {
+class vtkSphericalHarmonicGlyph: public vtkPolyDataAlgorithm
+{
 public:
 
     enum { COLOR_BY_SCALARS, COLOR_BY_DIRECTIONS };
 
-    vtkTypeMacro(vtkSphericalHarmonicGlyph,vtkPolyDataAlgorithm);
+    vtkTypeMacro(vtkSphericalHarmonicGlyph,vtkPolyDataAlgorithm)
     void PrintSelf(ostream& os,vtkIndent indent);
 
     /** Construct object with scale factor 1.0. Glyphs are colored with input
@@ -41,8 +41,6 @@ public:
      *  spherical function at every point.*/
 
     void SetSphericalHarmonicSource(vtkSphericalHarmonicSource* shs) { this->SphericalHarmonicSource = shs; shs->Register(this);}
-
-    //vtkSetObjectMacro (SphericalHarmonicSource,vtkSphericalHarmonicSource);
 
     static const char* GetSphericalHarmonicCoefficientsArrayName() { return "sh_coeff"; }
 
@@ -65,22 +63,22 @@ public:
     /** Specify scale factor to scale object by. (Scale factor always affects
      *  output even if scaling is off.)*/
 
-    vtkSetMacro(ScaleFactor,double);
-    vtkGetMacro(ScaleFactor,double);
+    vtkSetMacro(ScaleFactor,double)
+    vtkGetMacro(ScaleFactor,double)
 
     /** Turn on/off coloring of glyph with input scalar data or directions. If
      *  false, or input scalar data not present, then the scalars from the
      *  source object are passed through the filter.*/
 
-    vtkSetMacro(ColorGlyphs,bool);
-    vtkGetMacro(ColorGlyphs,bool);
-    vtkBooleanMacro(ColorGlyphs,bool);
+    vtkSetMacro(ColorGlyphs,bool)
+    vtkGetMacro(ColorGlyphs,bool)
+    vtkBooleanMacro(ColorGlyphs,bool)
 
     /** Get/set the transformation matrix that is used to display the glyphs
      *  according to the image coordinate system*/
 
-    vtkSetObjectMacro(TMatrix,vtkMatrix4x4);
-    vtkGetObjectMacro(TMatrix,vtkMatrix4x4);
+    vtkSetObjectMacro(TMatrix,vtkMatrix4x4)
+    vtkGetObjectMacro(TMatrix,vtkMatrix4x4)
 
     /** Set the color mode to be used for the glyphs. This can be set to use the
       *  input scalars (default) or to use the directions at the point. If
@@ -89,8 +87,8 @@ public:
       *  color corresponding to the largest direction is chosen. The recognized
       *  values are: COLOR_BY_SCALARS = 0 (default) COLOR_BY_EIGENVALUES = 1*/
 
-    vtkSetClampMacro(ColorMode,int,COLOR_BY_SCALARS,COLOR_BY_DIRECTIONS);
-    vtkGetMacro(ColorMode, int);
+    vtkSetClampMacro(ColorMode,int,COLOR_BY_SCALARS,COLOR_BY_DIRECTIONS)
+    vtkGetMacro(ColorMode, int)
     void SetColorModeToScalars()    { this->SetColorMode(COLOR_BY_SCALARS);    }
     void SetColorModeToDirections() { this->SetColorMode(COLOR_BY_DIRECTIONS); }
 
@@ -121,5 +119,3 @@ private:
     vtkSphericalHarmonicGlyph(const vtkSphericalHarmonicGlyph&);  // Not implemented.
     void operator=(const vtkSphericalHarmonicGlyph&);  // Not implemented.
 };
-
-

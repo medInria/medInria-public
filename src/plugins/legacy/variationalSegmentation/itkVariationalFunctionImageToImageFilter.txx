@@ -1,3 +1,4 @@
+#pragma once
 /*=========================================================================
 
 Program:   vtkINRIA3D
@@ -12,8 +13,6 @@ the implied warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR
 PURPOSE.  See the above copyright notices for more information.
 
 =========================================================================*/
-#ifndef _itkVariationalFunctionImageToImageFilter_txx
-#define _itkVariationalFunctionImageToImageFilter_txx
 
 #include <itkVariationalFunctionImageToImageFilter.h>
 #include <itkImageRegionIterator.h>
@@ -190,5 +189,3 @@ VariationalFunctionImageToImageFilter<TInputImage>
 }
 
 } // end namespace itk
-
-#endif

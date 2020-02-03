@@ -1,8 +1,9 @@
+#pragma once
 /*=========================================================================
 
  medInria
 
- Copyright (c) INRIA 2013 - 2018. All rights reserved.
+ Copyright (c) INRIA 2013 - 2020. All rights reserved.
  See LICENSE.txt for details.
  
   This software is distributed WITHOUT ANY WARRANTY; without even
@@ -15,30 +16,36 @@
 
 class dtkAbstractDataReader;
 
-namespace itk {
-
-  class DataImageReaderCommand: public Command {
-  public:
+namespace itk
+{
+class DataImageReaderCommand: public Command
+{
+public:
 
     typedef DataImageReaderCommand         Self;
     typedef Command                        Superclass;
     typedef itk::SmartPointer<Self>        Pointer;
     typedef itk::SmartPointer<const Self>  ConstPointer;
     
-    itkTypeMacro( DataImageReaderCommand, Command );
-    itkNewMacro (Self);
+    itkTypeMacro( DataImageReaderCommand, Command )
+    itkNewMacro (Self)
     
     void Execute(Object *caller, const EventObject &event);
     void Execute(const Object *caller, const EventObject &event);
     
     void SetDataImageReader (dtkAbstractDataReader* reader)
-    { m_Reader = reader; }
+    {
+        m_Reader = reader;
+    }
 
-  protected:
-    DataImageReaderCommand(){ m_Reader = 0; };
-    virtual ~DataImageReaderCommand(){};
+protected:
+    DataImageReaderCommand()
+    {
+        m_Reader = nullptr;
+    }
+    virtual ~DataImageReaderCommand(){}
     
-  private:
+private:
     dtkAbstractDataReader* m_Reader;
-  };
+};
 }

@@ -1,17 +1,16 @@
+#pragma once
 /*=========================================================================
 
  medInria
 
- Copyright (c) INRIA 2013 - 2018. All rights reserved.
+ Copyright (c) INRIA 2013 - 2020. All rights reserved.
  See LICENSE.txt for details.
- 
+
   This software is distributed WITHOUT ANY WARRANTY; without even
   the implied warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR
   PURPOSE.
 
 =========================================================================*/
-
-#pragma once
 
 #include <vtkOrientedPolygonalHandleRepresentation3D.h>
 #include <vtkSmartPointer.h>
@@ -20,10 +19,11 @@ class vtkPolyData;
 class vtkPolyDataMapper2D;
 class vtkActor2D;
 
-class medVtkSeedPointHandle : public vtkOrientedPolygonalHandleRepresentation3D {
+class medVtkSeedPointHandle : public vtkOrientedPolygonalHandleRepresentation3D
+{
 public:
     void PrintSelf(ostream& os, vtkIndent indent);
-    vtkTypeMacro(medVtkSeedPointHandle,vtkOrientedPolygonalHandleRepresentation3D);
+    vtkTypeMacro(medVtkSeedPointHandle,vtkOrientedPolygonalHandleRepresentation3D)
 
     // Description:
     // Creates an actor2D with the following defaults: 
@@ -34,8 +34,8 @@ public:
     virtual ~medVtkSeedPointHandle();
 
     //! Get set the radius of the displayed item
-    vtkSetMacro(SizeInDisplayUnits,double);
-    vtkGetMacro(SizeInDisplayUnits,double);
+    vtkSetMacro(SizeInDisplayUnits,double)
+    vtkGetMacro(SizeInDisplayUnits,double)
 
     // Description:
     // Methods to make this class behave as a vtkProp.
@@ -56,8 +56,4 @@ protected:
 
 private:
     double SizeInDisplayUnits;
-
 };
-
-
-

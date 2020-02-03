@@ -2,7 +2,7 @@
 
  medInria
 
- Copyright (c) INRIA 2013 - 2018. All rights reserved.
+ Copyright (c) INRIA 2013 - 2020. All rights reserved.
  See LICENSE.txt for details.
 
   This software is distributed WITHOUT ANY WARRANTY; without even
@@ -61,7 +61,7 @@ int vtkVectorOrienter::RequestData(
     double inV[4];
 
     vtkIdType ptId, numPts;
-    vtkDoubleArray *newVectors=NULL;
+    vtkDoubleArray *newVectors = nullptr;
 
     // First, copy the input to the output as a starting point
     output->CopyStructure( input );
@@ -121,9 +121,7 @@ int vtkVectorOrienter::RequestData(
     matrixT->Delete();
 
     return 1;
-
 }
-
 
 void vtkVectorOrienter::SetVOI(const int& imin,const int& imax,
                                const int& jmin,const int& jmax,

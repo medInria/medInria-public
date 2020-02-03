@@ -1,18 +1,16 @@
+#pragma once
 /*=========================================================================
 
- medInria
+medInria
 
- Copyright (c) INRIA 2013 - 2018. All rights reserved.
- See LICENSE.txt for details.
- 
-  This software is distributed WITHOUT ANY WARRANTY; without even
-  the implied warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR
-  PURPOSE.
+Copyright (c) INRIA 2013 - 2020. All rights reserved.
+See LICENSE.txt for details.
+
+This software is distributed WITHOUT ANY WARRANTY; without even
+the implied warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR
+PURPOSE.
 
 =========================================================================*/
-
-#pragma once
-
 
 #include <vtkObject.h>
 
@@ -24,7 +22,6 @@
 
 class vtkMetaDataSet;
 class vtkMetaDataSetSequence;
-
 
 /**
    \class vtkDataManager vtkDataManager.h "vtkDataManager.h"
@@ -211,7 +208,3 @@ class VTKDATAMESHPLUGIN_EXPORT vtkDataManager: public vtkObject
   std::vector<vtkMetaDataSet*> MetaDataSetList;
   //ETX
 };
-
-
-
-

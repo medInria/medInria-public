@@ -2,7 +2,7 @@
 
  medInria
 
- Copyright (c) INRIA 2013 - 2018. All rights reserved.
+ Copyright (c) INRIA 2013 - 2020. All rights reserved.
  See LICENSE.txt for details.
  
   This software is distributed WITHOUT ANY WARRANTY; without even
@@ -59,22 +59,22 @@ vtkDataMeshPlugin::vtkDataMeshPlugin(QObject *parent) : dtkPlugin(parent), d(new
 vtkDataMeshPlugin::~vtkDataMeshPlugin()
 {
     delete d;
-    d = NULL;
+    d = nullptr;
 }
 
 bool vtkDataMeshPlugin::initialize()
 {
-  if ( ! vtkDataMesh::registered()) { dtkWarn() << "Unable to register vtkDataMesh type"; }
-  if ( ! vtkDataMesh4D::registered()) { dtkWarn() << "Unable to register vtkDataMesh4D type"; }
-  if ( ! vtkDataMeshInteractor::registered()) { dtkWarn() << "Unable to register vtkDataMeshInteractor type"; }
-  if ( ! vtkDataMesh4DInteractor::registered()) { dtkWarn() << "Unable to register vtkDataMesh4DInteractor type"; }
-  if ( ! vtkDataMeshNavigator::registered()) { dtkWarn() << "Unable to register vtkDataMeshNavigator type"; }
+  if ( ! vtkDataMesh::registered()) { qWarning() << "Unable to register vtkDataMesh type"; }
+  if ( ! vtkDataMesh4D::registered()) { qWarning() << "Unable to register vtkDataMesh4D type"; }
+  if ( ! vtkDataMeshInteractor::registered()) { qWarning() << "Unable to register vtkDataMeshInteractor type"; }
+  if ( ! vtkDataMesh4DInteractor::registered()) { qWarning() << "Unable to register vtkDataMesh4DInteractor type"; }
+  if ( ! vtkDataMeshNavigator::registered()) { qWarning() << "Unable to register vtkDataMeshNavigator type"; }
   
-  if ( ! vtkDataMeshReader::registered())   { dtkWarn() << "Unable to register vtkDataMeshReader type"; }
-  if ( ! vtkDataMesh4DReader::registered()) { dtkWarn() << "Unable to register vtkDataMesh4DReader type"; }
+  if ( ! vtkDataMeshReader::registered())   { qWarning() << "Unable to register vtkDataMeshReader type"; }
+  if ( ! vtkDataMesh4DReader::registered()) { qWarning() << "Unable to register vtkDataMesh4DReader type"; }
   
-  if ( ! vtkDataMeshWriter::registered())   { dtkWarn() << "Unable to register vtkDataMeshWriter type"; }
-  if ( ! vtkDataMesh4DWriter::registered()) { dtkWarn() << "Unable to register vtkDataMesh4DWriter type"; }
+  if ( ! vtkDataMeshWriter::registered())   { qWarning() << "Unable to register vtkDataMeshWriter type"; }
+  if ( ! vtkDataMesh4DWriter::registered()) { qWarning() << "Unable to register vtkDataMesh4DWriter type"; }
   
   return true;
 }
@@ -112,5 +112,3 @@ QStringList vtkDataMeshPlugin::types() const
                        << "vtkDataMeshWriter"
                        << "vtkDataMesh4DWriter";
 }
-
-////Q_EXPORT_PLUGIN2(vtkDataMeshPlugin, vtkDataMeshPlugin)

@@ -1,8 +1,9 @@
+#pragma once
 /*=========================================================================
 
  medInria
 
- Copyright (c) INRIA 2013 - 2018. All rights reserved.
+ Copyright (c) INRIA 2013 - 2020. All rights reserved.
  See LICENSE.txt for details.
  
   This software is distributed WITHOUT ANY WARRANTY; without even
@@ -10,8 +11,6 @@
   PURPOSE.
 
 =========================================================================*/
-
-#pragma once
 
 #include <medAbstractImageViewInteractor.h>
 #include <itkDataSHImagePluginExport.h>
@@ -32,7 +31,6 @@ class dtkAbstractView;
  */
 class ITKDATASHIMAGEPLUGIN_EXPORT itkDataSHImageVtkViewInteractor: public medAbstractImageViewInteractor
 {
-
     Q_OBJECT
 
 public:
@@ -103,14 +101,8 @@ public slots:
 
     void setNormalization (const bool Norma);
 
-    //    /** A new eigenvector for mapping the color mode is set */
-    //    void onEigenVectorPropertySet (int eigenVector);
-
     /** Glyph resolution changed */
     void setGlyphResolution (int glyphResolution);
-
-    //    /** Background color reverted */
-    //    void onReverseBackgroundColorPropertySet (bool isWhite);
 
     /** Scaling changed */
     void setScale (double scale);
@@ -136,11 +128,9 @@ public slots:
     /** Change the position of the slices */
     void setPosition(const QVector3D& position);
 
-
     void setMajorScaling(int majorScalingExponent);
     void setMinorScaling(int minorScaling);
     void setScale(int minorScale, int majorScaleExponent);
-
 
     void setOpacity(double opacity);
     void setVisibility(bool visibility);

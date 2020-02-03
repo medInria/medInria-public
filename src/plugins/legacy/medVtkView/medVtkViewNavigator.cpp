@@ -2,7 +2,7 @@
 
  medInria
 
- Copyright (c) INRIA 2013 - 2018. All rights reserved.
+ Copyright (c) INRIA 2013 - 2020. All rights reserved.
  See LICENSE.txt for details.
 
   This software is distributed WITHOUT ANY WARRANTY; without even
@@ -99,8 +99,8 @@ medVtkViewNavigator::medVtkViewNavigator(medAbstractView *parent) :
     d->view2d = backend->view2D;
     d->view3d = backend->view3D;
 
-    d->currentView = NULL;
-    d->showOptionsWidget = NULL;
+    d->currentView = nullptr;
+    d->showOptionsWidget = nullptr;
 
     d->renderer2d = d->view2d->GetRenderer();
     d->renderer3d = d->view3d->GetRenderer();
@@ -194,11 +194,8 @@ medVtkViewNavigator::medVtkViewNavigator(medAbstractView *parent) :
                     << this->positionBeingViewedParameter()
                     << this->timeLineParameter();
 
-
-    //TODO GPR-RDE: better solution?
     connect(this, SIGNAL(orientationChanged()),
             dynamic_cast<medAbstractImageView*>(parent), SIGNAL(orientationChanged()));
-
 }
 
 medVtkViewNavigator::~medVtkViewNavigator()
@@ -460,7 +457,7 @@ void medVtkViewNavigator::setCamera(QHash<QString,QVariant> cameraOptions)
 {
     if(cameraOptions.count() != 4)
     {
-        dtkWarn() << "Camera options are incorrect.";
+        qWarning() << "Camera options are incorrect.";
         return;
     }
 
@@ -542,7 +539,6 @@ void medVtkViewNavigator::set3d(bool o3d)
         this->changeOrientation(medImageView::VIEW_ORIENTATION_3D);
 }
 
-
 void medVtkViewNavigator::showAxes(bool show)
 {
     d->view2d->SetShowImageAxis(show);
@@ -584,13 +580,13 @@ void medVtkViewNavigator::changeOrientation(medImageView::Orientation orientatio
     this->cameraParameter()->blockSignals(true);
 
     double pos[3];
-    vtkRenderWindow * renWin = 0;
+    vtkRenderWindow * renWin = nullptr;
     if(d->currentView)
     {
         d->currentView->GetCurrentPoint(pos);
         d->currentView->UnInstallInteractor();
         renWin = d->currentView->GetRenderWindow();
-        d->currentView->SetRenderWindow(NULL);
+        d->currentView->SetRenderWindow(nullptr);
     }
 
     switch(orientation)

@@ -2,7 +2,7 @@
 
  medInria
 
- Copyright (c) INRIA 2013 - 2018. All rights reserved.
+ Copyright (c) INRIA 2013 - 2020. All rights reserved.
  See LICENSE.txt for details.
  
   This software is distributed WITHOUT ANY WARRANTY; without even
@@ -55,9 +55,6 @@ bool medVtkFibersDataWriter::write(const QString& path)
   vtkFiberDataSet *dataset = static_cast<vtkFiberDataSet*>(this->data()->data());
   if (!dataset)
       return false;
-
-  //TODO GPR: to check
-  //dataset->Update();
   
   vtkXMLFiberDataSetWriter *writer = vtkXMLFiberDataSetWriter::New();
   writer->SetFileName ( path.toLatin1().constData() );

@@ -1,17 +1,16 @@
+#pragma once
 /*=========================================================================
 
- medInria
+medInria
 
- Copyright (c) INRIA 2013 - 2018. All rights reserved.
- See LICENSE.txt for details.
- 
-  This software is distributed WITHOUT ANY WARRANTY; without even
-  the implied warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR
-  PURPOSE.
+Copyright (c) INRIA 2013 - 2020. All rights reserved.
+See LICENSE.txt for details.
+
+This software is distributed WITHOUT ANY WARRANTY; without even
+the implied warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR
+PURPOSE.
 
 =========================================================================*/
-
-#pragma once
 
 #include <dtkCoreSupport/dtkPlugin.h>
 
@@ -26,7 +25,7 @@ class UNDOREDOREGISTRATIONPLUGIN_EXPORT undoRedoRegistrationPlugin : public dtkP
     Q_INTERFACES(dtkPlugin)
     
 public:
-    undoRedoRegistrationPlugin(QObject *parent = 0);
+    undoRedoRegistrationPlugin(QObject *parent = nullptr);
     ~undoRedoRegistrationPlugin(void);
     
     virtual bool initialize(void);
@@ -47,5 +46,3 @@ public:
 private:
     undoRedoRegistrationPluginPrivate *d;
 };
-
-

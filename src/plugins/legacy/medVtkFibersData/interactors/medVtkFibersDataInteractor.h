@@ -1,17 +1,16 @@
+#pragma once
 /*=========================================================================
 
  medInria
 
- Copyright (c) INRIA 2013 - 2018. All rights reserved.
+ Copyright (c) INRIA 2013 - 2020. All rights reserved.
  See LICENSE.txt for details.
- 
+
   This software is distributed WITHOUT ANY WARRANTY; without even
   the implied warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR
   PURPOSE.
 
 =========================================================================*/
-
-#pragma once
 
 #include <medAbstractImageViewInteractor.h>
 
@@ -43,7 +42,7 @@ class MEDVTKFIBERSDATAPLUGIN_EXPORT medVtkFibersDataInteractor: public medAbstra
     Q_OBJECT
 
 public:
-    medVtkFibersDataInteractor(medAbstractView *parent = NULL);
+    medVtkFibersDataInteractor(medAbstractView *parent = nullptr);
     virtual ~medVtkFibersDataInteractor();
 
     virtual QString description() const;
@@ -225,5 +224,3 @@ private slots:
 private:
     medVtkFibersDataInteractorPrivate *d;
 };
-
-

@@ -2,7 +2,7 @@
 
  medInria
 
- Copyright (c) INRIA 2013 - 2018. All rights reserved.
+ Copyright (c) INRIA 2013 - 2020. All rights reserved.
  See LICENSE.txt for details.
  
   This software is distributed WITHOUT ANY WARRANTY; without even
@@ -54,25 +54,29 @@ medVtkFibersDataPlugin::~medVtkFibersDataPlugin()
 {
     delete d;
 
-    d = NULL;
+    d = nullptr;
 }
 
 bool medVtkFibersDataPlugin::initialize()
 {
-    if (!medVtkFibersData::registered()) {
-        dtkWarn() << "Unable to register medVtkFibersData type";
+    if (!medVtkFibersData::registered())
+    {
+        qWarning() << "Unable to register medVtkFibersData type";
     }
 
-    if (!medVtkFibersDataWriter::registered()) {
-        dtkWarn() << "Unable to register medVtkFibersDataWriter type";
+    if (!medVtkFibersDataWriter::registered())
+    {
+        qWarning() << "Unable to register medVtkFibersDataWriter type";
     }
 
-    if (!medVtkFibersDataReader::registered()) {
-        dtkWarn() << "Unable to register medVtkFibersDataReader type";
+    if (!medVtkFibersDataReader::registered())
+    {
+        qWarning() << "Unable to register medVtkFibersDataReader type";
     }
 
-    if (!medVtkFibersDataInteractor::registered()) {
-        dtkWarn() << "Unable to register medVtkFibersDataInteractor";
+    if (!medVtkFibersDataInteractor::registered())
+    {
+        qWarning() << "Unable to register medVtkFibersDataInteractor";
     }
 
     return true;
@@ -111,5 +115,3 @@ QStringList medVtkFibersDataPlugin::types() const
                          << "medVtkFibersDataWriter"
                          << "medVtkFibersDataReader";
 }
-
-////Q_EXPORT_PLUGIN2(medVtkFibersDataPlugin, medVtkFibersDataPlugin)

@@ -2,7 +2,7 @@
 
 medInria
 
-Copyright (c) INRIA 2013 - 2018. All rights reserved.
+Copyright (c) INRIA 2013 - 2020. All rights reserved.
 See LICENSE.txt for details.
 
 This software is distributed WITHOUT ANY WARRANTY; without even
@@ -10,6 +10,7 @@ the implied warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR
 PURPOSE.
 
 =========================================================================*/
+
 #include "vtkFiberPickerCallback.h"
 #include <vtkCellPicker.h>
 #include <vtkAlgorithmOutput.h>
@@ -41,7 +42,7 @@ void vtkFiberPickerCallback::Execute(vtkObject *caller, unsigned long event, voi
     }
 
     int cellid = picker->GetCellId();
-    picker->SetPath (NULL); // to prevent a bounding box to appear
+    picker->SetPath (nullptr); // to prevent a bounding box to appear
 
     if( cellid < 0 )
     {

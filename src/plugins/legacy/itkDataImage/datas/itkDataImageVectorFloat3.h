@@ -1,8 +1,9 @@
+#pragma once
 /*=========================================================================
 
  medInria
 
- Copyright (c) INRIA 2013 - 2018. All rights reserved.
+ Copyright (c) INRIA 2013 - 2020. All rights reserved.
  See LICENSE.txt for details.
  
   This software is distributed WITHOUT ANY WARRANTY; without even
@@ -11,8 +12,6 @@
 
 =========================================================================*/
 
-#pragma once
-
 #include <itkVector.h>
 #include <itkDataImage.h>
 #include <itkDataImagePluginExport.h>
@@ -20,5 +19,3 @@
 extern const char itkDataImageVectorFloat3Name[] = "itkDataImageVectorFloat3";
 typedef itk::Vector<float,3>        FloatVectorType;
 typedef ITKDATAIMAGEPLUGIN_EXPORT itkDataImage<3,itk::Vector<float,3>,itkDataImageVectorFloat3Name> itkDataImageVectorFloat3;
-
-

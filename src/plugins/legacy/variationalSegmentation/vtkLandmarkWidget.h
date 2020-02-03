@@ -1,17 +1,16 @@
+#pragma once
 /*=========================================================================
 
- medInria
+medInria
 
- Copyright (c) INRIA 2013 - 2019. All rights reserved.
- See LICENSE.txt for details.
+Copyright (c) INRIA 2013 - 2020. All rights reserved.
+See LICENSE.txt for details.
 
-  This software is distributed WITHOUT ANY WARRANTY; without even
-  the implied warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR
-  PURPOSE.
+This software is distributed WITHOUT ANY WARRANTY; without even
+the implied warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR
+PURPOSE.
 
 =========================================================================*/
-#ifndef _vtk_LandmarkWidget_h_
-#define _vtk_LandmarkWidget_h_
 
 #include <vtkCommand.h>
 #include <vtkHandleWidget.h>
@@ -112,7 +111,3 @@ private:
     vtkLandmarkWidget *BigBrother;
     QList<vtkLandmarkWidget*> *LittleBrothers;
 };
-
-//ETX
-
-#endif //_vtk_LandmarkWidget_h_

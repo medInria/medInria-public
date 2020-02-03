@@ -1,8 +1,9 @@
+#pragma once
 /*=========================================================================
 
  medInria
 
- Copyright (c) INRIA 2013 - 2018. All rights reserved.
+ Copyright (c) INRIA 2013 - 2020. All rights reserved.
  See LICENSE.txt for details.
  
   This software is distributed WITHOUT ANY WARRANTY; without even
@@ -10,8 +11,6 @@
   PURPOSE.
 
 =========================================================================*/
-
-#pragma once
 
 #include <dtkCoreSupport/dtkPlugin.h>
 
@@ -26,7 +25,7 @@ class ITKDATATENSORIMAGEPLUGIN_EXPORT itkDataTensorImagePlugin : public dtkPlugi
     Q_INTERFACES(dtkPlugin)
 
 public:
-     itkDataTensorImagePlugin(QObject *parent = 0);
+     itkDataTensorImagePlugin(QObject *parent = nullptr);
     ~itkDataTensorImagePlugin();
 
     virtual bool initialize();
@@ -42,5 +41,3 @@ public:
 private:
      itkDataTensorImagePluginPrivate *d;
 };
-
-

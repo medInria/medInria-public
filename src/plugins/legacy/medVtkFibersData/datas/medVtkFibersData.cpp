@@ -2,7 +2,7 @@
 
  medInria
 
- Copyright (c) INRIA 2013 - 2018. All rights reserved.
+ Copyright (c) INRIA 2013 - 2020. All rights reserved.
  See LICENSE.txt for details.
  
   This software is distributed WITHOUT ANY WARRANTY; without even
@@ -43,13 +43,13 @@ public:
 
 medVtkFibersData::medVtkFibersData() : medAbstractFibersData(), d(new medVtkFibersDataPrivate)
 {
-    d->data = 0;
+    d->data = nullptr;
 }
 
 medVtkFibersData::~medVtkFibersData()
 {
     delete d;
-    d = 0;
+    d = nullptr;
 }
 
 bool medVtkFibersData::registered()

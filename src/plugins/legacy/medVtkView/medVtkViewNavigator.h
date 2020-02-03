@@ -1,17 +1,16 @@
+#pragma once
 /*=========================================================================
 
- medInria
+medInria
 
- Copyright (c) INRIA 2013 - 2018. All rights reserved.
- See LICENSE.txt for details.
+Copyright (c) INRIA 2013 - 2020. All rights reserved.
+See LICENSE.txt for details.
 
-  This software is distributed WITHOUT ANY WARRANTY; without even
-  the implied warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR
-  PURPOSE.
+This software is distributed WITHOUT ANY WARRANTY; without even
+the implied warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR
+PURPOSE.
 
 =========================================================================*/
-
-#pragma once
 
 #include <medAbstractImageViewNavigator.h>
 #include <medImageViewEnum.h>
@@ -26,7 +25,7 @@ class MEDVTKVIEWPLUGIN_EXPORT medVtkViewNavigator : public medAbstractImageViewN
     Q_OBJECT
 
 public:
-             medVtkViewNavigator(medAbstractView* parent);
+    medVtkViewNavigator(medAbstractView* parent);
     virtual ~medVtkViewNavigator();
 
     virtual QString  identifier() const;
