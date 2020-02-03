@@ -3,7 +3,7 @@
 
  medInria
 
- Copyright (c) INRIA 2013 - 2018. All rights reserved.
+ Copyright (c) INRIA 2013 - 2020. All rights reserved.
  See LICENSE.txt for details.
  
   This software is distributed WITHOUT ANY WARRANTY; without even
@@ -18,7 +18,7 @@
 class vtkImageData;
 class vtkMatrix4x4;
 
-namespace itk //TODO no namespace please ! (and no class name prifixed with other librarie pefix)
+namespace itk
 {
 
 /** \class ITKSphericalHarmonicToVTKFilter
@@ -45,10 +45,10 @@ public:
   typedef SmartPointer<const Self>                             ConstPointer;
 
   /** Method for creation through the object factory. */
-  itkNewMacro(Self);
+  itkNewMacro(Self)
 
   /** Run-time type information (and related methods). */
-  itkTypeMacro(SphericalHarmonicITKToVTKFilter, ImageToImageFilter);
+  itkTypeMacro(SphericalHarmonicITKToVTKFilter, ImageToImageFilter)
 
   /** Return the input (no ITK filtering is performed on the input
      *  image) */

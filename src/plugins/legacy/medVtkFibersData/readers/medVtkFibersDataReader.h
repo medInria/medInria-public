@@ -1,24 +1,24 @@
+#pragma once
 /*=========================================================================
 
- medInria
+medInria
 
- Copyright (c) INRIA 2013 - 2018. All rights reserved.
- See LICENSE.txt for details.
- 
-  This software is distributed WITHOUT ANY WARRANTY; without even
-  the implied warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR
-  PURPOSE.
+Copyright (c) INRIA 2013 - 2020. All rights reserved.
+See LICENSE.txt for details.
+
+This software is distributed WITHOUT ANY WARRANTY; without even
+the implied warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR
+PURPOSE.
 
 =========================================================================*/
-
-#pragma once
 
 #include <dtkCoreSupport/dtkAbstractDataReader.h>
 #include <medVtkFibersDataPluginExport.h>
 
 class medVtkFibersDataReaderPrivate;
 
-class MEDVTKFIBERSDATAPLUGIN_EXPORT medVtkFibersDataReader: public dtkAbstractDataReader {
+class MEDVTKFIBERSDATAPLUGIN_EXPORT medVtkFibersDataReader: public dtkAbstractDataReader
+{
     Q_OBJECT
 
 public:
@@ -52,5 +52,3 @@ private:
 };
 
 dtkAbstractDataReader *create_medVtkFibersDataReader();
-
-

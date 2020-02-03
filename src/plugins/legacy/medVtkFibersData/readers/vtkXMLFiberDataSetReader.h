@@ -1,17 +1,17 @@
+#pragma once
 /*=========================================================================
 
- medInria
+medInria
 
- Copyright (c) INRIA 2013 - 2018. All rights reserved.
- See LICENSE.txt for details.
- 
-  This software is distributed WITHOUT ANY WARRANTY; without even
-  the implied warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR
-  PURPOSE.
+Copyright (c) INRIA 2013 - 2020. All rights reserved.
+See LICENSE.txt for details.
+
+This software is distributed WITHOUT ANY WARRANTY; without even
+the implied warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR
+PURPOSE.
 
 =========================================================================*/
 
-#pragma once
 #include <medVtkFibersDataPluginExport.h>
 #include <vtkXMLCompositeDataReader.h>
 
@@ -22,7 +22,7 @@ class MEDVTKFIBERSDATAPLUGIN_EXPORT vtkXMLFiberDataSetReader : public vtkXMLComp
 {
 public:
     static vtkXMLFiberDataSetReader* New();
-    vtkTypeMacro(vtkXMLFiberDataSetReader,vtkXMLCompositeDataReader);
+    vtkTypeMacro(vtkXMLFiberDataSetReader,vtkXMLCompositeDataReader)
     void PrintSelf(ostream& os, vtkIndent indent);
 
     // Description:
@@ -56,5 +56,3 @@ private:
     vtkXMLFiberDataSetReader(const vtkXMLFiberDataSetReader&);  // Not implemented.
     void operator=(const vtkXMLFiberDataSetReader&);  // Not implemented.
 };
-
-

@@ -2,7 +2,7 @@
 
  medInria
 
- Copyright (c) INRIA 2013 - 2018. All rights reserved.
+ Copyright (c) INRIA 2013 - 2020. All rights reserved.
  See LICENSE.txt for details.
 
   This software is distributed WITHOUT ANY WARRANTY; without even
@@ -67,14 +67,12 @@ struct vtkDataManagerReaderInternals
 vtkDataManagerReader::vtkDataManagerReader()
 {
     this->Internal = new vtkDataManagerReaderInternals;
-//   this->MultiGroup = vtkMultiGroupDataSet::New();
     this->Output = vtkDataManager::New();
 }
 
 //----------------------------------------------------------------------------
 vtkDataManagerReader::~vtkDataManagerReader()
 {
-//   this->MultiGroup->Delete();
     this->Output->Delete();
 
     delete this->Internal;

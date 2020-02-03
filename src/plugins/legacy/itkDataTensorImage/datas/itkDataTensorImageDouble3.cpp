@@ -2,7 +2,7 @@
 
  medInria
 
- Copyright (c) INRIA 2013 - 2018. All rights reserved.
+ Copyright (c) INRIA 2013 - 2020. All rights reserved.
  See LICENSE.txt for details.
  
   This software is distributed WITHOUT ANY WARRANTY; without even
@@ -43,14 +43,13 @@ public:
 
 itkDataTensorImageDouble3::itkDataTensorImageDouble3() : medAbstractTypedDiffusionModelImageData<3,double>(), d(new itkDataTensorImageDouble3Private)
 {
-    d->tensors = 0;
-
+    d->tensors = nullptr;
 }
 
 itkDataTensorImageDouble3::~itkDataTensorImageDouble3()
 {
     delete d;
-    d = 0;
+    d = nullptr;
 }
 
 bool itkDataTensorImageDouble3::registered()
@@ -72,11 +71,14 @@ void itkDataTensorImageDouble3::setData(void *data)
 {
     typedef itkDataTensorImageDouble3Private::TensorImageType TensorImageType;
 
-    if( TensorImageType* tensors = dynamic_cast<TensorImageType*>( (itk::Object*)(data) ) ){
+    if( TensorImageType* tensors = dynamic_cast<TensorImageType*>( (itk::Object*)(data) ) )
+    {
         d->tensors = tensors;
     }
     else
-      dtkDebug() << "Cannot cast pointer to correct tensor type";
+    {
+        qDebug() << "Cannot cast pointer to correct tensor type";
+    }
 }
 
 int itkDataTensorImageDouble3::xDimension()

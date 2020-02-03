@@ -60,7 +60,6 @@ public:
 
 =========================================================================*/
 
-
 medVtkViewItkDataImageNavigator::medVtkViewItkDataImageNavigator(medAbstractView* parent):
     medAbstractNavigator(parent), d(new medVtkViewItkDataImageNavigatorPrivate)
 {

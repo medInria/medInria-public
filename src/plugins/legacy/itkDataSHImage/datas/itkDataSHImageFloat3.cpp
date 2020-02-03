@@ -2,7 +2,7 @@
 
  medInria
 
- Copyright (c) INRIA 2013 - 2018. All rights reserved.
+ Copyright (c) INRIA 2013 - 2020. All rights reserved.
  See LICENSE.txt for details.
  
   This software is distributed WITHOUT ANY WARRANTY; without even
@@ -41,13 +41,13 @@ public:
 
 itkDataSHImageFloat3::itkDataSHImageFloat3(): medAbstractTypedDiffusionModelImageData<3,float>(), d(new itkDataSHImageFloat3Private)
 {
-    d->shs = 0;
+    d->shs = nullptr;
 }
 
 itkDataSHImageFloat3::~itkDataSHImageFloat3()
 {
     delete d;
-    d = 0;
+    d = nullptr;
 }
 
 bool itkDataSHImageFloat3::registered()
@@ -69,11 +69,14 @@ void itkDataSHImageFloat3::setData(void *data)
 {
     typedef itkDataSHImageFloat3Private::SHImageType SHImageType;
 
-    if( SHImageType* shs = dynamic_cast<SHImageType*>( (itk::Object*)(data) ) ){
+    if( SHImageType* shs = dynamic_cast<SHImageType*>( (itk::Object*)(data) ) )
+    {
         d->shs = shs;
     }
     else
-      dtkDebug() << "Cannot cast pointer to correct SH float type";
+    {
+        qDebug() << "Cannot cast pointer to correct SH float type";
+    }
 }
 
 int itkDataSHImageFloat3::xDimension()

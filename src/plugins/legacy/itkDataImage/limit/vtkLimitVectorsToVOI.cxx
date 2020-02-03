@@ -2,7 +2,7 @@
 
  medInria
 
- Copyright (c) INRIA 2013 - 2018. All rights reserved.
+ Copyright (c) INRIA 2013 - 2020. All rights reserved.
  See LICENSE.txt for details.
  
   This software is distributed WITHOUT ANY WARRANTY; without even
@@ -25,206 +25,100 @@
 #include <vtkCellData.h>
 #include <vtkCell.h>
 
-
-
-vtkStandardNewMacro(vtkLimitVectorsToVOI);
+vtkStandardNewMacro(vtkLimitVectorsToVOI)
 
 vtkLimitVectorsToVOI::vtkLimitVectorsToVOI()
 {
-  m_XMin = 0;
-  m_XMax = -1;
-  m_YMin = 0;
-  m_YMax = -1;
-  m_ZMin = 0;
-  m_ZMax = -1;
+    m_XMin = 0;
+    m_XMax = -1;
+    m_YMin = 0;
+    m_YMax = -1;
+    m_ZMin = 0;
+    m_ZMax = -1;
 }
-
 
 void vtkLimitVectorsToVOI::SetVOI (const int &xmin, const int &xmax, const int &ymin,
-                                  const int &ymax, const int &zmin, const int &zmax)
+                                   const int &ymax, const int &zmin, const int &zmax)
 {
-  m_XMin = xmin;
-  m_XMax = xmax;
-  m_YMin = ymin;
-  m_YMax = ymax;
-  m_ZMin = zmin;
-  m_ZMax = zmax;
-  this->Modified();
+    m_XMin = xmin;
+    m_XMax = xmax;
+    m_YMin = ymin;
+    m_YMax = ymax;
+    m_ZMin = zmin;
+    m_ZMax = zmax;
+    this->Modified();
 }
-
 
 int vtkLimitVectorsToVOI::RequestData (vtkInformation *vtkNotUsed(request),
                                        vtkInformationVector **inputVector,
                                        vtkInformationVector *outputVector)
 {
+    // get the info objects
+    vtkInformation *inInfo = inputVector[0]->GetInformationObject(0);
+    vtkInformation *outInfo = outputVector->GetInformationObject(0);
 
-  // get the info objects
-  vtkInformation *inInfo = inputVector[0]->GetInformationObject(0);
-  vtkInformation *outInfo = outputVector->GetInformationObject(0);
+    // get the input and ouptut
+    vtkUnstructuredGrid *input =  vtkUnstructuredGrid::SafeDownCast(inInfo->Get(vtkDataObject::DATA_OBJECT()));
+    vtkUnstructuredGrid *output = vtkUnstructuredGrid::SafeDownCast(outInfo->Get(vtkDataObject::DATA_OBJECT()));
 
-  
-  // get the input and ouptut
-  vtkUnstructuredGrid *input =  vtkUnstructuredGrid::SafeDownCast(inInfo->Get(vtkDataObject::DATA_OBJECT()));
-  vtkUnstructuredGrid *output = vtkUnstructuredGrid::SafeDownCast(outInfo->Get(vtkDataObject::DATA_OBJECT()));
-  
-  output->Initialize();
-  //output->Allocate();
+    output->Initialize();
 
-  vtkPoints* points = input->GetPoints();
-  //newpoints->DeepCopy(points);
-  // double zero[3] = {0,0,0 };
+    vtkPoints* points = input->GetPoints();
 
-//   bool is_in_points = true;
-  vtkDoubleArray* vectors = vtkDoubleArray::SafeDownCast (input->GetPointData()->GetVectors());
-  vtkUnsignedCharArray* colors = vtkUnsignedCharArray::SafeDownCast (input->GetPointData()->GetScalars());
-//   if (!vectors)
-//   {
-//     vectors = vtkDoubleArray::SafeDownCast (input->GetCellData()->GetVectors());
-//     colors = vtkUnsignedCharArray::SafeDownCast (input->GetCellData()->GetScalars());
-//     is_in_points = false;
-//   }
-  
-//   if (!vectors || !colors)
-//   {
-//     return 0;
-//   }
-  
-  vtkDoubleArray*      newvectors = vtkDoubleArray::New();
-  vtkUnsignedCharArray* newcolors = vtkUnsignedCharArray::New();
-  vtkPoints* newpoints = vtkPoints::New();
-  vtkCellArray* newcells = vtkCellArray::New();
-  
-  newvectors->SetNumberOfComponents(3);
-  newcolors->SetNumberOfComponents(3);
-  
-  
-  
+    vtkDoubleArray* vectors = vtkDoubleArray::SafeDownCast (input->GetPointData()->GetVectors());
+    vtkUnsignedCharArray* colors = vtkUnsignedCharArray::SafeDownCast (input->GetPointData()->GetScalars());
+    vtkDoubleArray*      newvectors = vtkDoubleArray::New();
+    vtkUnsignedCharArray* newcolors = vtkUnsignedCharArray::New();
+    vtkPoints* newpoints = vtkPoints::New();
+    vtkCellArray* newcells = vtkCellArray::New();
 
-//   if (is_in_points)
-//   {
+    newvectors->SetNumberOfComponents(3);
+    newcolors->SetNumberOfComponents(3);
+
     int i=0;
     int npts = 0;
     npts = input->GetNumberOfPoints();
     
     while(i<npts)
     {
-      double vector[3];
-      unsigned char color[3];
-      double* pt;
-      
-      pt = points->GetPoint (i);
-      if (vectors)
-    vectors->GetTypedTuple (i, vector);
-      if (colors)
-    colors->GetTypedTuple (i, color);
-      
-      if(pt[0]>m_XMin && pt[0]<m_XMax &&
-	 pt[1]>m_YMin && pt[1]<m_YMax &&
-	 pt[2]>m_ZMin && pt[2]<m_ZMax )
-      {
-	newpoints->InsertNextPoint(pt);
-	if (vectors)
-      newvectors->InsertNextTypedTuple (vector);
-	if (colors)
-      newcolors->InsertNextTypedTuple (color);
-      }
-      
-      i++;
+        double vector[3];
+        unsigned char color[3];
+        double* pt;
+
+        pt = points->GetPoint (i);
+        if (vectors)
+            vectors->GetTypedTuple (i, vector);
+        if (colors)
+            colors->GetTypedTuple (i, color);
+
+        if(pt[0]>m_XMin && pt[0]<m_XMax &&
+                pt[1]>m_YMin && pt[1]<m_YMax &&
+                pt[2]>m_ZMin && pt[2]<m_ZMax )
+        {
+            newpoints->InsertNextPoint(pt);
+            if (vectors)
+                newvectors->InsertNextTypedTuple (vector);
+            if (colors)
+                newcolors->InsertNextTypedTuple (color);
+        }
+
+        i++;
     }
 
     if (vectors)
-      output->GetPointData()->SetVectors ( newvectors );
+    {
+        output->GetPointData()->SetVectors ( newvectors );
+    }
     if (colors)
-      output->GetPointData()->SetScalars ( newcolors );
+    {
+        output->GetPointData()->SetScalars ( newcolors );
+    }
     output->SetPoints ( newpoints );
-//   }
-//   else
-//   {
-//     i=0;
-//     npts = 0;
-//     npts = input->GetCells()->GetNumberOfCells();
-//     int* typearray = new int[npts];
-    
-//     while(i<npts)
-//     {
-//       vtkCell* cell;
-//       double vector[3];
-//       unsigned char color[3];
-//       double* bounds;
-//       double* point;
-      
-//       vectors->GetTypedTuple (i, vector);
-//       colors->GetTypedTuple (i, color);
-//       cell = input->GetCell (i);
-//       bounds = cell->GetBounds();
-//       typearray[i] = input->GetCellType (i);
-//       point = input->GetPoint (cell->GetPointId (0));
-      
-//       //      std::cout<<""<<std::endl;
-      
-//       if(bounds[0]>m_XMin && bounds[1]<m_XMax &&
-// 	 bounds[2]>m_YMin && bounds[3]<m_YMax &&
-// 	 bounds[4]>m_ZMin && bounds[5]<m_ZMax )
-//       {
-// 	newcells->InsertNextCell (cell);
-// 	newvectors->InsertNextTypedTuple (vector);
-// 	newcolors->InsertNextTypedTuple (color);
-// 	newpoints->InsertNextPoint(point);
-//       }
-      
-//       i++;
-//     }
-//     output->SetCells (typearray, newcells);
-//     output->GetCellData()->SetVectors ( newvectors );
-//     output->GetCellData()->SetScalars ( newcolors );
-//     output->SetPoints ( newpoints );
-    
-//     delete [] typearray;
-    
-//   }
-  
 
-  
-  
- 
-  newpoints->Delete();  
-  newvectors->Delete();
-  newcolors->Delete();
-  newcells->Delete();
-  
-  
+    newpoints->Delete();
+    newvectors->Delete();
+    newcolors->Delete();
+    newcells->Delete();
 
-  
-//   vtkCellArray* lines = input->GetLines();
-//   if( lines==0 )
-//     return 0;
-//   lines->InitTraversal();
-
-
-//   int npt, *pto;
-//   int test = lines->GetNextCell (npt, pto);
-  
-//   while( test!=0 )
-//   {
-//     for( int i=0; i<npt; )
-//     {
-//       double* pt = points->GetPoint (pto[i]);
-//       if( pt[0]>m_XMin && pt[0]<m_XMax &&
-//           pt[1]>m_YMin && pt[1]<m_YMax &&
-//           pt[2]>m_ZMin && pt[2]<m_ZMax )
-//       {
-//         output->InsertNextCell (VTK_POLY_LINE, npt, pto);
-//         break;
-//       }
-
-//       for(int j=0;j<2;j++)
-//         i++;
-//     }
-    
-//     test = lines->GetNextCell (npt, pto);
-//   }
-
-
-  return 1;
-  
+    return 1;
 }

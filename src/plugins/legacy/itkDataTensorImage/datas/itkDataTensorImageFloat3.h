@@ -1,8 +1,9 @@
+#pragma once
 /*=========================================================================
 
  medInria
 
- Copyright (c) INRIA 2013 - 2018. All rights reserved.
+ Copyright (c) INRIA 2013 - 2020. All rights reserved.
  See LICENSE.txt for details.
  
   This software is distributed WITHOUT ANY WARRANTY; without even
@@ -10,8 +11,6 @@
   PURPOSE.
 
 =========================================================================*/
-
-#pragma once
 
 #include <medAbstractTypedDiffusionModelImageData.h>
 
@@ -25,7 +24,7 @@ class ITKDATATENSORIMAGEPLUGIN_EXPORT itkDataTensorImageFloat3 : public medAbstr
     MED_DATA_INTERFACE("ITK Tensor Image (float3)",
                        "ITK Tensor Image (float3)")
 public:
-             itkDataTensorImageFloat3();
+    itkDataTensorImageFloat3();
     virtual ~itkDataTensorImageFloat3();
 
     static bool registered();
@@ -45,5 +44,3 @@ public:
 private:
     itkDataTensorImageFloat3Private *d;
 };
-
-

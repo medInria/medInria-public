@@ -2,7 +2,7 @@
 
  medInria
 
- Copyright (c) INRIA 2013 - 2018. All rights reserved.
+ Copyright (c) INRIA 2013 - 2020. All rights reserved.
  See LICENSE.txt for details.
  
   This software is distributed WITHOUT ANY WARRANTY; without even
@@ -102,65 +102,65 @@ itkDataImagePlugin::~itkDataImagePlugin()
 {
     delete d;
 
-    d = NULL;
+    d = nullptr;
 }
 
 bool itkDataImagePlugin::initialize()
 {
-    if(!itkDataImageChar3::registered()) { dtkWarn() << "Unable to register itkDataImageChar3 type"; }
-    if(!itkDataImageChar4::registered()) { dtkWarn() << "Unable to register itkDataImageChar4 type"; }
-    if(!itkDataImageInt4::registered()) { dtkWarn() << "Unable to register itkDataImageInt4 type"; }
-    if(!itkDataImageLong4::registered()) { dtkWarn() << "Unable to register itkDataImageLong4 type"; }
-    if(!itkDataImageUChar4::registered()) { dtkWarn() << "Unable to register itkDataImageUChar4 type"; }
-    if(!itkDataImageUChar3::registered()) { dtkWarn() << "Unable to register itkDataImageUChar3 type"; }
-    if(!itkDataImageShort3::registered()) { dtkWarn() << "Unable to register itkDataImageShort3 type"; }
-    if(!itkDataImageShort4::registered()) { dtkWarn() << "Unable to register itkDataImageShort4 type"; }
-    if(!itkDataImageUShort3::registered()) { dtkWarn() << "Unable to register itkDataImageUShort3 type"; }
-    if(!itkDataImageUShort4::registered()) { dtkWarn() << "Unable to register itkDataImageUShort4 type"; }
-    if(!itkDataImageUInt4::registered()) { dtkWarn() << "Unable to register itkDataImageUInt4 type"; }
-    if(!itkDataImageULong4::registered()) { dtkWarn() << "Unable to register itkDataImageULong4 type"; }
-    if(!itkDataImageInt3::registered()) { dtkWarn() << "Unable to register itkDataImageInt3 type"; }
-    if(!itkDataImageUInt3::registered()) { dtkWarn() << "Unable to register itkDataImageUInt3 type"; }
-    if(!itkDataImageLong3::registered()) { dtkWarn() << "Unable to register itkDataImageLong3 type"; }
-    if(!itkDataImageULong3::registered()) { dtkWarn() << "Unable to register itkDataImageULong3 type"; }
-    if(!itkDataImageFloat3::registered()) { dtkWarn() << "Unable to register itkDataImageFloat3 type"; }
-    if(!itkDataImageFloat4::registered()) { dtkWarn() << "Unable to register itkDataImageFloat4 type"; }
-    if(!itkDataImageDouble3::registered()) { dtkWarn() << "Unable to register itkDataImageDouble3 type"; }
-    if(!itkDataImageDouble4::registered()) { dtkWarn() << "Unable to register itkDataImageDouble4 type"; }
-    if(!itkDataImageVectorUChar3::registered()) { dtkWarn() << "Unable to register itkDataImageVectorUChar3 type"; }
-    if(!itkDataImageVectorFloat3::registered()) { dtkWarn() << "Unable to register itkDataImageVectorFloat3 type"; }
-    if(!itkDataImageVectorDouble3::registered()) { dtkWarn() << "Unable to register itkDataImageVectorDouble3 type"; }
-    if(!itkDataImageRGB3::registered()) { dtkWarn() << "Unable to register itkDataImageRGB3 type"; }
-    if(!itkDataImageRGBA3::registered()) { dtkWarn() << "Unable to register itkDataImageRGBA3 type"; }
+    if(!itkDataImageChar3::registered()) { qWarning() << "Unable to register itkDataImageChar3 type"; }
+    if(!itkDataImageChar4::registered()) { qWarning() << "Unable to register itkDataImageChar4 type"; }
+    if(!itkDataImageInt4::registered()) { qWarning() << "Unable to register itkDataImageInt4 type"; }
+    if(!itkDataImageLong4::registered()) { qWarning() << "Unable to register itkDataImageLong4 type"; }
+    if(!itkDataImageUChar4::registered()) { qWarning() << "Unable to register itkDataImageUChar4 type"; }
+    if(!itkDataImageUChar3::registered()) { qWarning() << "Unable to register itkDataImageUChar3 type"; }
+    if(!itkDataImageShort3::registered()) { qWarning() << "Unable to register itkDataImageShort3 type"; }
+    if(!itkDataImageShort4::registered()) { qWarning() << "Unable to register itkDataImageShort4 type"; }
+    if(!itkDataImageUShort3::registered()) { qWarning() << "Unable to register itkDataImageUShort3 type"; }
+    if(!itkDataImageUShort4::registered()) { qWarning() << "Unable to register itkDataImageUShort4 type"; }
+    if(!itkDataImageUInt4::registered()) { qWarning() << "Unable to register itkDataImageUInt4 type"; }
+    if(!itkDataImageULong4::registered()) { qWarning() << "Unable to register itkDataImageULong4 type"; }
+    if(!itkDataImageInt3::registered()) { qWarning() << "Unable to register itkDataImageInt3 type"; }
+    if(!itkDataImageUInt3::registered()) { qWarning() << "Unable to register itkDataImageUInt3 type"; }
+    if(!itkDataImageLong3::registered()) { qWarning() << "Unable to register itkDataImageLong3 type"; }
+    if(!itkDataImageULong3::registered()) { qWarning() << "Unable to register itkDataImageULong3 type"; }
+    if(!itkDataImageFloat3::registered()) { qWarning() << "Unable to register itkDataImageFloat3 type"; }
+    if(!itkDataImageFloat4::registered()) { qWarning() << "Unable to register itkDataImageFloat4 type"; }
+    if(!itkDataImageDouble3::registered()) { qWarning() << "Unable to register itkDataImageDouble3 type"; }
+    if(!itkDataImageDouble4::registered()) { qWarning() << "Unable to register itkDataImageDouble4 type"; }
+    if(!itkDataImageVectorUChar3::registered()) { qWarning() << "Unable to register itkDataImageVectorUChar3 type"; }
+    if(!itkDataImageVectorFloat3::registered()) { qWarning() << "Unable to register itkDataImageVectorFloat3 type"; }
+    if(!itkDataImageVectorDouble3::registered()) { qWarning() << "Unable to register itkDataImageVectorDouble3 type"; }
+    if(!itkDataImageRGB3::registered()) { qWarning() << "Unable to register itkDataImageRGB3 type"; }
+    if(!itkDataImageRGBA3::registered()) { qWarning() << "Unable to register itkDataImageRGBA3 type"; }
 
-    if(!medVtkViewItkDataImageInteractor::registered()) { dtkWarn() << "Unable to register medVtkViewItkDataImageInteractor"; }
-    if(!medVtkViewItkDataImage4DInteractor::registered()) { dtkWarn() << "Unable to register medVtkViewItkDataImage4DInteractor"; }
-    if(!medVtkViewItkVectorFieldInteractor::registered()) { dtkWarn() << "Unable to register medVtkViewItkVectorFieldInteractor"; }
+    if(!medVtkViewItkDataImageInteractor::registered()) { qWarning() << "Unable to register medVtkViewItkDataImageInteractor"; }
+    if(!medVtkViewItkDataImage4DInteractor::registered()) { qWarning() << "Unable to register medVtkViewItkDataImage4DInteractor"; }
+    if(!medVtkViewItkVectorFieldInteractor::registered()) { qWarning() << "Unable to register medVtkViewItkVectorFieldInteractor"; }
 
-    if(!medVtkViewItkDataImageNavigator::registered()) { dtkWarn() << "Unable to register medVtkViewItkDataImageNavigator"; }
+    if(!medVtkViewItkDataImageNavigator::registered()) { qWarning() << "Unable to register medVtkViewItkDataImageNavigator"; }
 
-    if (!itkMetaDataImageReader::registered())       { dtkWarn() << "Unable to register itkMetaDataImageReader type";       }
+    if (!itkMetaDataImageReader::registered())       { qWarning() << "Unable to register itkMetaDataImageReader type";       }
 #ifdef ITK_USE_SYSTEM_GDCM
-    if (!itkGDCMDataImageReader::registered())       { dtkWarn() << "Unable to register  itkGDCMDataImageReader type";      }
+    if (!itkGDCMDataImageReader::registered())       { qWarning() << "Unable to register  itkGDCMDataImageReader type";      }
 #endif
-    if (!itkNiftiDataImageReader::registered())      { dtkWarn() << "Unable to register itkNiftiDataImageReader type";      }
-    if (!itkNrrdDataImageReader::registered())       { dtkWarn() << "Unable to register itkNrrdDataImageReader type";       }
-    if (!itkGiplDataImageReader::registered())       { dtkWarn() << "Unable to register itkGiplDataImageReader type";       }
-    if (!itkVTKDataImageReader::registered())        { dtkWarn() << "Unable to register itkVTKDataImageReader type";        }
-    if (!itkPNGDataImageReader::registered())        { dtkWarn() << "Unable to register itkPNGDataImageReader type";        }
-    if (!itkBMPDataImageReader::registered())        { dtkWarn() << "Unable to register itkBMPDataImageReader type";        }
-    if (!itkJPEGDataImageReader::registered())       { dtkWarn() << "Unable to register itkJPEGDataImageReader type";       }
-    if (!itkTIFFDataImageReader::registered())       { dtkWarn() << "Unable to register itkTIFFDataImageReader type";       }
-    if (!itkPhilipsRECDataImageReader::registered()) { dtkWarn() << "Unable to register itkPhilipsRECDataImageReader type"; }
-    if (!itkGISDataImageReader::registered())        { dtkWarn() << "Unable to register itkGISDataImageReader type"; }
-    if (!itkDCMTKDataImageReader::registered())      { dtkWarn() << "Unable to register itkDCMTKDataImageReader type"; }
+    if (!itkNiftiDataImageReader::registered())      { qWarning() << "Unable to register itkNiftiDataImageReader type";      }
+    if (!itkNrrdDataImageReader::registered())       { qWarning() << "Unable to register itkNrrdDataImageReader type";       }
+    if (!itkGiplDataImageReader::registered())       { qWarning() << "Unable to register itkGiplDataImageReader type";       }
+    if (!itkVTKDataImageReader::registered())        { qWarning() << "Unable to register itkVTKDataImageReader type";        }
+    if (!itkPNGDataImageReader::registered())        { qWarning() << "Unable to register itkPNGDataImageReader type";        }
+    if (!itkBMPDataImageReader::registered())        { qWarning() << "Unable to register itkBMPDataImageReader type";        }
+    if (!itkJPEGDataImageReader::registered())       { qWarning() << "Unable to register itkJPEGDataImageReader type";       }
+    if (!itkTIFFDataImageReader::registered())       { qWarning() << "Unable to register itkTIFFDataImageReader type";       }
+    if (!itkPhilipsRECDataImageReader::registered()) { qWarning() << "Unable to register itkPhilipsRECDataImageReader type"; }
+    if (!itkGISDataImageReader::registered())        { qWarning() << "Unable to register itkGISDataImageReader type"; }
+    if (!itkDCMTKDataImageReader::registered())      { qWarning() << "Unable to register itkDCMTKDataImageReader type"; }
 
-    if (!itkMetaDataImageWriter::registered())       { dtkWarn() << "Unable to register itkMetaDataImageWriter type";       }
-    if (!itkNiftiDataImageWriter::registered())      { dtkWarn() << "Unable to register itkNiftiDataImageWriter type";      }
-    if (!itkNrrdDataImageWriter::registered())       { dtkWarn() << "Unable to register itkNrrdDataImageWriter type";       }
-    if (!itkGiplDataImageWriter::registered())       { dtkWarn() << "Unable to register itkGiplDataImageWriter type";       }
-    if (!itkVTKDataImageWriter::registered())        { dtkWarn() << "Unable to register itkVTKDataImageWriter type";        }
-    if (!itkGISDataImageWriter::registered())        { dtkWarn() << "Unable to register itkGISDataImageWriter type"; }
+    if (!itkMetaDataImageWriter::registered())       { qWarning() << "Unable to register itkMetaDataImageWriter type";       }
+    if (!itkNiftiDataImageWriter::registered())      { qWarning() << "Unable to register itkNiftiDataImageWriter type";      }
+    if (!itkNrrdDataImageWriter::registered())       { qWarning() << "Unable to register itkNrrdDataImageWriter type";       }
+    if (!itkGiplDataImageWriter::registered())       { qWarning() << "Unable to register itkGiplDataImageWriter type";       }
+    if (!itkVTKDataImageWriter::registered())        { qWarning() << "Unable to register itkVTKDataImageWriter type";        }
+    if (!itkGISDataImageWriter::registered())        { qWarning() << "Unable to register itkGISDataImageWriter type"; }
 
     return true;
 }
@@ -218,5 +218,3 @@ QStringList itkDataImagePlugin::types() const
             << "itkDataImageRGB3"
             << "itkDataImageRGBA3";
 }
-
-////Q_EXPORT_PLUGIN2(itkDataImagePlugin, itkDataImagePlugin)

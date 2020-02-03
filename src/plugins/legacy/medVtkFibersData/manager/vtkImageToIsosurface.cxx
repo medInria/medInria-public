@@ -2,7 +2,7 @@
 
  medInria
 
- Copyright (c) INRIA 2013 - 2018. All rights reserved.
+ Copyright (c) INRIA 2013 - 2020. All rights reserved.
  See LICENSE.txt for details.
  
   This software is distributed WITHOUT ANY WARRANTY; without even
@@ -22,7 +22,7 @@
 #include <cmath>
 
 
-vtkStandardNewMacro(vtkImageToIsosurface);
+vtkStandardNewMacro(vtkImageToIsosurface)
 
 vtkImageToIsosurface::vtkImageToIsosurface()
 {
@@ -42,20 +42,15 @@ vtkImageToIsosurface::vtkImageToIsosurface()
   this->Thresholder->SetInputConnection   (this->Caster->GetOutputPort());
   this->ContourFilter->SetInputConnection (this->Thresholder->GetOutputPort());
 
-  //this->Smoother->FeatureEdgeSmoothingOn();
   this->Smoother->SetNumberOfIterations(200);
-  //this->Smoother->SetInput ( this->Decimate->GetOutput() );
   this->Smoother->SetInputConnection (this->ContourFilter->GetOutputPort());
-  
-  //this->Decimate->SetInput ( this->ContourFilter->GetOutput() );
+
   this->Decimate->SetInputConnection ( this->Smoother->GetOutputPort() );
   this->Decimate->SetTargetReduction(0.9);
-  //this->Decimate->PreserveTopologyOn();
 
   this->Normals->SetInputConnection (this->Decimate->GetOutputPort());
 
   this->Mapper->SetInputConnection (this->Normals->GetOutputPort());
-  //this->Mapper->SetInput (this->Smoother->GetOutput());
     
   this->Actor->GetProperty()->SetAmbient (0.1);
   this->Actor->GetProperty()->SetDiffuse (0.6);
@@ -90,9 +85,7 @@ void vtkImageToIsosurface::Update()
 
   // compute data
   this->Caster->SetInputData (Input);
-  
-  //this->ContourFilter->Update();
-  //this->Decimate->Update();
+
   this->Mapper->Update();
   
   this->Actor->SetMapper ( this->Mapper );

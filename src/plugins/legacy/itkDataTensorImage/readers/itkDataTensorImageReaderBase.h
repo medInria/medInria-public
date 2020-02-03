@@ -1,8 +1,9 @@
+#pragma once
 /*=========================================================================
 
  medInria
 
- Copyright (c) INRIA 2013 - 2018. All rights reserved.
+ Copyright (c) INRIA 2013 - 2020. All rights reserved.
  See LICENSE.txt for details.
  
   This software is distributed WITHOUT ANY WARRANTY; without even
@@ -10,8 +11,6 @@
   PURPOSE.
 
 =========================================================================*/
-
-#pragma once
 
 #include <dtkCoreSupport/dtkAbstractDataReader.h>
 
@@ -23,7 +22,7 @@ class ITKDATATENSORIMAGEPLUGIN_EXPORT itkDataTensorImageReaderBase : public dtkA
     Q_OBJECT
 
 public:
-             itkDataTensorImageReaderBase();
+    itkDataTensorImageReaderBase();
     virtual ~itkDataTensorImageReaderBase();
 
     virtual QStringList handled() const;
@@ -43,5 +42,3 @@ public slots:
 protected:
     itk::ImageIOBase::Pointer io;
 };
-
-

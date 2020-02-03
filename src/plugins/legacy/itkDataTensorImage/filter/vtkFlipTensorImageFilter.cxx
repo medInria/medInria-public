@@ -2,7 +2,7 @@
 
  medInria
 
- Copyright (c) INRIA 2013 - 2018. All rights reserved.
+ Copyright (c) INRIA 2013 - 2020. All rights reserved.
  See LICENSE.txt for details.
  
   This software is distributed WITHOUT ANY WARRANTY; without even
@@ -22,20 +22,17 @@
 #include "vtkDoubleArray.h"
 
 
-vtkStandardNewMacro (vtkFlipTensorImageFilter);
+vtkStandardNewMacro (vtkFlipTensorImageFilter)
 
 vtkFlipTensorImageFilter::vtkFlipTensorImageFilter()
 {
-  FlipX=0;
-  FlipY=0;
-  FlipZ=0;
+  FlipX = false;
+  FlipY = false;
+  FlipZ = false;
 }
-
 
 vtkFlipTensorImageFilter::~vtkFlipTensorImageFilter()
 {}
-
-
 
 int vtkFlipTensorImageFilter::RequestData(vtkInformation *vtkNotUsed(request), 
                                           vtkInformationVector **inputVector, 
@@ -57,7 +54,7 @@ int vtkFlipTensorImageFilter::RequestData(vtkInformation *vtkNotUsed(request),
   vtkPointData *pd = input->GetPointData();
   vtkPointData *outPD = output->GetPointData();
   vtkIdType ptId, numPts;
-  vtkDoubleArray *newTensors=NULL;
+  vtkDoubleArray *newTensors = nullptr;
   
   // First, copy the input to the output as a starting point
   output->CopyStructure( input );

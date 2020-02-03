@@ -1,8 +1,9 @@
+#pragma once
 /*=========================================================================
 
  medInria
 
- Copyright (c) INRIA 2013 - 2018. All rights reserved.
+ Copyright (c) INRIA 2013 - 2020. All rights reserved.
  See LICENSE.txt for details.
  
   This software is distributed WITHOUT ANY WARRANTY; without even
@@ -11,12 +12,11 @@
 
 =========================================================================*/
 
-#pragma once
-
 #include <itkDataImageWriterBase.h>
 #include <itkDataImagePluginExport.h>
 
-class ITKDATAIMAGEPLUGIN_EXPORT itkNrrdDataImageWriter: public itkDataImageWriterBase {
+class ITKDATAIMAGEPLUGIN_EXPORT itkNrrdDataImageWriter: public itkDataImageWriterBase
+{
 public:
     itkNrrdDataImageWriter();
     virtual ~itkNrrdDataImageWriter();
@@ -30,4 +30,3 @@ public:
 
     static dtkAbstractDataWriter * create();
 };
-

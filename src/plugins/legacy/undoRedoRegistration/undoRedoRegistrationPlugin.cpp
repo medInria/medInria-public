@@ -2,7 +2,7 @@
 
  medInria
 
- Copyright (c) INRIA 2013 - 2018. All rights reserved.
+ Copyright (c) INRIA 2013 - 2020. All rights reserved.
  See LICENSE.txt for details.
  
   This software is distributed WITHOUT ANY WARRANTY; without even
@@ -48,8 +48,8 @@ undoRedoRegistrationPlugin::~undoRedoRegistrationPlugin(void)
 
 bool undoRedoRegistrationPlugin::initialize(void)
 {
-    if (!undoRedoRegistration::registered())        { dtkWarn() << "Unable to register undoRedoRegistration type";    }
-    if (!undoRedoRegistrationToolBox::registered()) { dtkWarn() << "Unable to register undoRedoRegistration toolbox"; }
+    if (!undoRedoRegistration::registered())        { qWarning() << "Unable to register undoRedoRegistration type";    }
+    if (!undoRedoRegistrationToolBox::registered()) { qWarning() << "Unable to register undoRedoRegistration toolbox"; }
     
     return true;
 }
@@ -110,5 +110,3 @@ QStringList undoRedoRegistrationPlugin::dependencies(void) const
 {
     return QStringList();
 }
-
-//Q_EXPORT_PLUGIN2(undoRedoRegistrationPlugin, undoRedoRegistrationPlugin)

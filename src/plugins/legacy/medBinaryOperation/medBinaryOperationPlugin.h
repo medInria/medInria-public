@@ -1,17 +1,16 @@
+#pragma once
 /*=========================================================================
 
  medInria
 
- Copyright (c) INRIA 2013 - 2019. All rights reserved.
+ Copyright (c) INRIA 2013 - 2020. All rights reserved.
  See LICENSE.txt for details.
- 
+
   This software is distributed WITHOUT ANY WARRANTY; without even
   the implied warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR
   PURPOSE.
 
 =========================================================================*/
-
-#pragma once
 
 #include "medBinaryOperationPluginExport.h"
 
@@ -24,7 +23,7 @@ class MEDBINARYOPERATIONPLUGIN_EXPORT medBinaryOperationPlugin : public medPlugi
     Q_INTERFACES(dtkPlugin)
     
 public:
-    medBinaryOperationPlugin(QObject *parent = 0);
+    medBinaryOperationPlugin(QObject *parent = nullptr);
     virtual bool initialize();
     
     virtual QString name() const;

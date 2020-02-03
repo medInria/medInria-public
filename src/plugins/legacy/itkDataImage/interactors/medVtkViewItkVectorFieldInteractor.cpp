@@ -2,7 +2,7 @@
 
  medInria
 
- Copyright (c) INRIA 2013 - 2018. All rights reserved.
+ Copyright (c) INRIA 2013 - 2020. All rights reserved.
  See LICENSE.txt for details.
  
   This software is distributed WITHOUT ANY WARRANTY; without even
@@ -77,8 +77,7 @@ medVtkViewItkVectorFieldInteractor::medVtkViewItkVectorFieldInteractor(medAbstra
     medAbstractImageViewInteractor(parent),
     d(new medVtkViewItkVectorFieldInteractorPrivate)
 {
-    d->data    = 0;
-
+    d->data = nullptr;
     d->view = dynamic_cast<medAbstractImageView*>(parent);
 
     medVtkViewBackend* backend = static_cast<medVtkViewBackend*>(parent->backend());
@@ -101,7 +100,7 @@ medVtkViewItkVectorFieldInteractor::medVtkViewItkVectorFieldInteractor(medAbstra
 medVtkViewItkVectorFieldInteractor::~medVtkViewItkVectorFieldInteractor()
 {
     delete d;
-    d = 0;
+    d = nullptr;
 }
 
 QString medVtkViewItkVectorFieldInteractor::description() const
@@ -180,7 +179,6 @@ void medVtkViewItkVectorFieldInteractor::setInputData(medAbstractData *data)
         vtkImageData *vtkImage = d->floatFilter->GetOutput();
         d->manager->SetInput(vtkImage);
     }
-
     else if( identifier.compare("itkDataImageVectorDouble3") == 0 )
     {
         typedef    itk::Vector< double, 3 >    InputPixelType;
@@ -274,25 +272,6 @@ void medVtkViewItkVectorFieldInteractor::setupParameters()
     connect(sampleRateControl,SIGNAL(valueChanged(int)),this,SLOT(setSampleRate(int)));
     connect(colorMode, SIGNAL(valueChanged(QString)), this, SLOT(setColorMode(QString)));
     connect(projection, SIGNAL(valueChanged(bool)), this, SLOT(setProjection(bool)));
-
-
-    //TODO - should be done automatically from vtkImageView - RDE
-//    if(d->view->layer(d->data) == 0)
-//    {
-//        switch(d->view2d->GetSliceOrientation())
-//        {
-//        case 0:
-//            d->view->setOrientation(medImageView::VIEW_ORIENTATION_AXIAL);
-//            break;
-//        case 1:
-//            d->view->setOrientation(medImageView::VIEW_ORIENTATION_CORONAL);
-//            break;
-//        case 2:
-//            d->view->setOrientation(medImageView::VIEW_ORIENTATION_SAGITTAL);
-//            break;
-//        }
-//    }
-
     connect(d->slicingParameter, SIGNAL(valueChanged(int)), this, SLOT(moveToSlice(int)));
     connect(d->view->positionBeingViewedParameter(), SIGNAL(valueChanged(QVector3D)), this, SLOT(updateSlicingParam()));
     connect(d->view, SIGNAL(orientationChanged()), this, SLOT(updatePlaneVisibility()));
@@ -300,10 +279,8 @@ void medVtkViewItkVectorFieldInteractor::setupParameters()
     this->updateWidgets();
 }
 
-
 void medVtkViewItkVectorFieldInteractor::setWindowLevel(QHash<QString,QVariant>)
 {
-    //TODO
 }
 
 void medVtkViewItkVectorFieldInteractor::setOpacity(double opacity)
@@ -324,7 +301,6 @@ void medVtkViewItkVectorFieldInteractor::setVisibility(bool visibility)
     this->update();
 }
 
-
 void medVtkViewItkVectorFieldInteractor::setScale(double scale)
 {
     d->manager->SetGlyphScale((float)scale);
@@ -339,19 +315,23 @@ void medVtkViewItkVectorFieldInteractor::setSampleRate(int sampleRate)
 
 void medVtkViewItkVectorFieldInteractor::setColorMode(QString mode)
 {
-    if(mode == "Vector Magnitude") {
+    if(mode == "Vector Magnitude")
+    {
         d->manager->SetColorMode(vtkVectorVisuManager::ColorByVectorMagnitude);
-    } else if(mode == "Vector Direction") {
+    }
+    else if(mode == "Vector Direction")
+    {
         d->manager->SetColorMode(vtkVectorVisuManager::ColorByVectorDirection);
-    } else {
-        QColor color(mode.toLower()); // not great...
+    }
+    else
+    {
+        QColor color(mode.toLower());
         double colorF[3]; color.getRgbF(&(colorF[0]), &(colorF[1]), &(colorF[2]));
         d->manager->SetUserColor(colorF);
         d->manager->SetColorMode(vtkVectorVisuManager::ColorByUserColor);
     }
     this->update();
 }
-
 
 void medVtkViewItkVectorFieldInteractor::setProjection(bool enable)
 {
@@ -396,7 +376,6 @@ void medVtkViewItkVectorFieldInteractor::setShowSagittal(bool show)
     this->update();
 }
 
-
 void medVtkViewItkVectorFieldInteractor::setUpViewForThumbnail()
 {
     d->view2d->Reset();
@@ -408,11 +387,8 @@ void medVtkViewItkVectorFieldInteractor::setUpViewForThumbnail()
     d->view2d->ShowRulerWidgetOff();
 }
 
-
 void medVtkViewItkVectorFieldInteractor::moveToSlice(int slice)
 {
-    // TODO find a way to get woorldCoordinate for slice from vtkInria.
-    //  instead of moving to the slice corresponding on the first layer dropped.
     if(d->view->is2D() && slice != d->view2d->GetSlice())
     {
         d->view2d->SetSlice(slice);
@@ -476,20 +452,6 @@ void medVtkViewItkVectorFieldInteractor::updateSlicingParam()
     if(!d->view->is2D())
         return;
 
-    //TODO Should be set according to the real number of slice of this data and
-    // not according to vtkInria (ie. first layer dropped) - RDE
-
-    // slice orientation may differ from view orientation. Adapt slider range accordingly.
-//    int orientationId = d->view2d->GetSliceOrientation();
-//    int *dim = d->manager->GetInput()->GetDimensions();
-
-//    if (orientationId==vtkImageView2D::SLICE_ORIENTATION_XY)
-//        d->slicingParameter->setRange(0, dim[2] - 1);
-//    else if (orientationId==vtkImageView2D::SLICE_ORIENTATION_XZ)
-//        d->slicingParameter->setRange (0, dim[1] - 1);
-//    else if (orientationId==vtkImageView2D::SLICE_ORIENTATION_YZ)
-//        d->slicingParameter->setRange (0, dim[0] - 1);
-
     d->slicingParameter->blockSignals(true);
     d->slicingParameter->setRange(d->view2d->GetSliceMin(), d->view2d->GetSliceMax());
     d->slicingParameter->blockSignals(false);
@@ -499,38 +461,4 @@ void medVtkViewItkVectorFieldInteractor::updateSlicingParam()
 
 void medVtkViewItkVectorFieldInteractor::updatePlaneVisibility()
 {
-
-    //TODO make it work even if the SLICE_ORIENTATION is not X/Y
-    //     (ie the acquisition orientation of the image is something else than axial)
-    //     - RDE
-
-//    switch(d->view->orientation())
-//    {
-//        case medImageView::VIEW_ORIENTATION_3D:
-//        d->manager->SetAxialSliceVisibility(0);
-//        d->manager->SetCoronalSliceVisibility(0);
-//        d->manager->SetSagittalSliceVisibility(1);
-//        d->manager->SetProjection(false);
-//        break;
-//    case medImageView::VIEW_ORIENTATION_AXIAL:
-//        d->manager->SetAxialSliceVisibility(1);
-//        d->manager->SetCoronalSliceVisibility(1);
-//        d->manager->SetSagittalSliceVisibility(1);
-//        d->manager->SetProjection(true);
-//        break;
-//    case medImageView::VIEW_ORIENTATION_CORONAL:
-//        d->manager->SetAxialSliceVisibility(1);
-//        d->manager->SetCoronalSliceVisibility(1);
-//        d->manager->SetSagittalSliceVisibility(1);
-//        d->manager->SetProjection(true);
-//        break;
-//    case medImageView::VIEW_ORIENTATION_SAGITTAL:
-//        d->manager->SetAxialSliceVisibility(1);
-//        d->manager->SetCoronalSliceVisibility(1);
-//        d->manager->SetSagittalSliceVisibility(1);
-//        d->manager->SetProjection(true);
-//        break;
-//    }
-
-//    this->update();
 }

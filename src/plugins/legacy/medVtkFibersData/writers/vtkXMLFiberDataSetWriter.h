@@ -1,17 +1,16 @@
+#pragma once
 /*=========================================================================
 
- medInria
+medInria
 
- Copyright (c) INRIA 2013 - 2018. All rights reserved.
- See LICENSE.txt for details.
- 
-  This software is distributed WITHOUT ANY WARRANTY; without even
-  the implied warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR
-  PURPOSE.
+Copyright (c) INRIA 2013 - 2020. All rights reserved.
+See LICENSE.txt for details.
+
+This software is distributed WITHOUT ANY WARRANTY; without even
+the implied warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR
+PURPOSE.
 
 =========================================================================*/
-
-#pragma once
 
 #include <vtkXMLCompositeDataWriter.h>
 #include <medVtkFibersDataPluginExport.h>
@@ -20,13 +19,15 @@ class MEDVTKFIBERSDATAPLUGIN_EXPORT vtkXMLFiberDataSetWriter : public vtkXMLComp
 {
 public:
   static vtkXMLFiberDataSetWriter* New();
-  vtkTypeMacro(vtkXMLFiberDataSetWriter, vtkXMLCompositeDataWriter);
+  vtkTypeMacro(vtkXMLFiberDataSetWriter, vtkXMLCompositeDataWriter)
   void PrintSelf(ostream& os, vtkIndent indent);
 
   // Description:
   // Get the default file extension for files written by this writer.
   virtual const char* GetDefaultFileExtension()
-    { return "fds"; }
+  {
+      return "fds";
+  }
 
 //BTX
 protected:
