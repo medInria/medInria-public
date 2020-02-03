@@ -2,7 +2,7 @@
 
  medInria
 
- Copyright (c) INRIA 2013 - 2018. All rights reserved.
+ Copyright (c) INRIA 2013 - 2020. All rights reserved.
  See LICENSE.txt for details.
  
   This software is distributed WITHOUT ANY WARRANTY; without even
@@ -32,7 +32,7 @@ medRunnableProcess::medRunnableProcess(void): medJobItemL(), d (new medRunnableP
 medRunnableProcess::~medRunnableProcess()
 {
     delete d;
-    d = NULL;
+    d = nullptr;
 }
 
 /**
@@ -101,8 +101,8 @@ void medRunnableProcess::onProgressed (int value)
 */
 void medRunnableProcess::onCancel (QObject *sender)
 {
-    if (d->process) {
-        //d->process->onCanceled();
+    if (d->process)
+    {
         d->process->cancel();
     }
 

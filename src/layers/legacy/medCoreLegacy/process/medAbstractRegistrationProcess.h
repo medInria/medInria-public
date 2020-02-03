@@ -1,8 +1,9 @@
+#pragma once
 /*=========================================================================
 
  medInria
 
- Copyright (c) INRIA 2013 - 2018. All rights reserved.
+ Copyright (c) INRIA 2013 - 2020. All rights reserved.
  See LICENSE.txt for details.
 
   This software is distributed WITHOUT ANY WARRANTY; without even
@@ -11,10 +12,7 @@
 
 =========================================================================*/
 
-#pragma once
-
 #include <medAbstractProcessLegacy.h>
-
 #include <medCoreLegacyExport.h>
 
 class medAbstractData;
@@ -24,7 +22,7 @@ class MEDCORELEGACY_EXPORT medAbstractRegistrationProcess : public medAbstractPr
     Q_OBJECT
 
 public:
-    medAbstractRegistrationProcess(medAbstractProcessLegacy *parent = NULL);
+    medAbstractRegistrationProcess(medAbstractProcessLegacy *parent = nullptr);
     virtual ~medAbstractRegistrationProcess();
 
 public:
@@ -32,5 +30,4 @@ public:
     virtual bool setMovingInput(medAbstractData *data) = 0;
     virtual bool write(const QString &file) = 0;
     virtual bool write(const QStringList& files) = 0;
-
 };

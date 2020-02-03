@@ -1,8 +1,9 @@
+#pragma once
 /*=========================================================================
 
  medInria
 
- Copyright (c) INRIA 2013 - 2018. All rights reserved.
+ Copyright (c) INRIA 2013 - 2020. All rights reserved.
  See LICENSE.txt for details.
  
   This software is distributed WITHOUT ANY WARRANTY; without even
@@ -11,8 +12,6 @@
 
 =========================================================================*/
 
-#pragma once
-
 #include <cstddef> // For ITK 3.20 that does not define correctly ptrdiff_t
 
 #include <itkObjectFactoryBase.h>
@@ -20,7 +19,7 @@
 
 #include <medImageIOExport.h>
 
-namespace itk //TODO no namespace please ! (and no class name prifixed with other librarie pefix)
+namespace itk
 {
 /** \class GISImageIOFactory
  * \brief Create instances of GISImageIO objects using an object factory.
@@ -39,10 +38,10 @@ public:
   virtual const char* GetDescription() const;
   
   /** Method for class instantiation. */
-  itkFactorylessNewMacro(Self);
+  itkFactorylessNewMacro(Self)
 
   /** Run-time type information (and related methods). */
-  itkTypeMacro(GISImageIOFactory, ObjectFactoryBase);
+  itkTypeMacro(GISImageIOFactory, ObjectFactoryBase)
 
   /** Register one factory of this type  */
   static void RegisterOneFactory()
@@ -58,10 +57,5 @@ protected:
 private:
   GISImageIOFactory(const Self&); //purposely not implemented
   void operator=(const Self&); //purposely not implemented
-
 };
-  
-  
 } // end namespace itk
-
-

@@ -1,8 +1,9 @@
+#pragma once
 /*=========================================================================
 
  medInria
 
- Copyright (c) INRIA 2013 - 2018. All rights reserved.
+ Copyright (c) INRIA 2013 - 2020. All rights reserved.
  See LICENSE.txt for details.
  
   This software is distributed WITHOUT ANY WARRANTY; without even
@@ -11,15 +12,14 @@
 
 =========================================================================*/
 
-#pragma once
-
 #include <dtkCoreSupport/dtkAbstractDataWriter.h>
 
 #include <medImageIOExport.h>
 
 #include <itkImageIOBase.h>
 
-class MEDIMAGEIO_EXPORT itkDataImageWriterBase: public dtkAbstractDataWriter {
+class MEDIMAGEIO_EXPORT itkDataImageWriterBase: public dtkAbstractDataWriter
+{
     Q_OBJECT
 
 public:
@@ -46,5 +46,3 @@ private:
     template <unsigned DIM,typename T>
     bool write_image(const QString& path,const char* type);
 };
-
-

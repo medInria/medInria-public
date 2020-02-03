@@ -34,7 +34,7 @@ PURPOSE.  See the above copyright notices for more information.
 
 vtkShaderUniform::vtkShaderUniform()
 {
-  this->Name = NULL;
+  this->Name = nullptr;
 }
 
 vtkShaderUniform::~vtkShaderUniform()
@@ -42,7 +42,7 @@ vtkShaderUniform::~vtkShaderUniform()
   if (this->Name)
     {
     delete [] this->Name;
-    this->Name = NULL;
+    this->Name = nullptr;
     }
 }
 

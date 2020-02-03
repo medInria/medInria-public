@@ -1,8 +1,9 @@
+#pragma once
 /*=========================================================================
 
  medInria
 
- Copyright (c) INRIA 2013 - 2018. All rights reserved.
+ Copyright (c) INRIA 2013 - 2020. All rights reserved.
  See LICENSE.txt for details.
  
   This software is distributed WITHOUT ANY WARRANTY; without even
@@ -10,8 +11,6 @@
   PURPOSE.
 
 =========================================================================*/
-
-#pragma once
 
 #include "medVtkDataMeshBaseExport.h"
 
@@ -46,7 +45,7 @@ class MEDVTKDATAMESHBASE_EXPORT vtkMetaDataSetSequence: public vtkMetaDataSet
  public:
 
   static vtkMetaDataSetSequence* New();
-  vtkTypeMacro(vtkMetaDataSetSequence,vtkMetaDataSet);
+  vtkTypeMacro(vtkMetaDataSetSequence,vtkMetaDataSet)
   virtual void PrintSelf(ostream& os, vtkIndent indent);
 
   virtual vtkMetaDataSetSequence* Clone() override;
@@ -114,7 +113,6 @@ class MEDVTKDATAMESHBASE_EXPORT vtkMetaDataSetSequence: public vtkMetaDataSet
      Not very usefull as soon as the duration is computed from
      the different time flags of the list of vtkMetaDataSet
   */
-  //vtkSetMacro (SequenceDuration, double);
   void SetSequenceDuration(double s)
   {
     this->SequenceDuration = s;
@@ -123,7 +121,7 @@ class MEDVTKDATAMESHBASE_EXPORT vtkMetaDataSetSequence: public vtkMetaDataSet
   /**
      Access to some variables : SequenceDuration
   */
-  vtkGetMacro (SequenceDuration, double);
+  vtkGetMacro (SequenceDuration, double)
 
   virtual const char* GetDataSetType() const
   {
@@ -198,8 +196,8 @@ class MEDVTKDATAMESHBASE_EXPORT vtkMetaDataSetSequence: public vtkMetaDataSet
   */
   vtkDoubleArray* GenerateMetaDataTimeTable(const char* metadatakey);
 
-  vtkGetMacro(ParseAttributes, bool);
-  vtkSetMacro(ParseAttributes, bool);
+  vtkGetMacro(ParseAttributes, bool)
+  vtkSetMacro(ParseAttributes, bool)
 
   /**
      Copy some informations from a given metadataset
@@ -210,7 +208,7 @@ class MEDVTKDATAMESHBASE_EXPORT vtkMetaDataSetSequence: public vtkMetaDataSet
 
   virtual double* GetCurrentScalarRange();
 
-  vtkGetMacro (CurrentId, int);
+  vtkGetMacro (CurrentId, int)
   
 protected:
   vtkMetaDataSetSequence();
@@ -239,6 +237,3 @@ protected:
   bool   SameGeometryFlag;
   bool  ParseAttributes;
 };
-
-
-

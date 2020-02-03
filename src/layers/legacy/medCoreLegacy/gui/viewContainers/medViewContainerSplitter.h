@@ -12,7 +12,6 @@
 
 =========================================================================*/
 
-
 #include <QSplitter>
 
 #include <medCoreLegacyExport.h>
@@ -25,7 +24,7 @@ class MEDCORELEGACY_EXPORT medViewContainerSplitter: public QSplitter
 {
     Q_OBJECT
 public:
-    medViewContainerSplitter(QWidget* parent = 0);
+    medViewContainerSplitter(QWidget* parent = nullptr);
     virtual ~medViewContainerSplitter();
 
     QList<medViewContainer*> containers();

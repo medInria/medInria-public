@@ -1,8 +1,9 @@
+#pragma once
 /*=========================================================================
 
  medInria
 
- Copyright (c) INRIA 2013 - 2018. All rights reserved.
+ Copyright (c) INRIA 2013 - 2020. All rights reserved.
  See LICENSE.txt for details.
  
   This software is distributed WITHOUT ANY WARRANTY; without even
@@ -16,7 +17,8 @@
 
 #include <medLogExport.h>
 
-namespace itk {
+namespace itk
+{
 
 /**
 * @class itk::LogForwarder
@@ -33,11 +35,10 @@ public:
   typedef SmartPointer<Self>        Pointer;
 
   /** Method for creation through the object factory. */
-  itkNewMacro(Self);
+  itkNewMacro(Self)
 
   /** Run-time type information (and related methods). */
-  itkTypeMacro(LogForwarder, OutputWindow);
-
+  itkTypeMacro(LogForwarder, OutputWindow)
 
   /** Send a string to display. */
   void DisplayText(const char*);
@@ -46,14 +47,13 @@ public:
   void DisplayErrorText(const char *t);
 
   /** Send a string as a warning message to dtkLogger. */
-  void DisplayWarningText(const char *t);;
+  void DisplayWarningText(const char *t);
 
   /** Send a string as a message to dtkLogger.  */
   void DisplayGenericOutputText(const char *t);
 
   /** Send a string as a debug message to dtkLogger. */
-  void DisplayDebugText(const char *t);;
-
+  void DisplayDebugText(const char *t);
 
 protected:
   LogForwarder();

@@ -1,3 +1,4 @@
+#pragma once
 /*============================================================================
 
 The Hardware Shading (HWShading) module is protected by the
@@ -21,8 +22,6 @@ PURPOSE.  See the above copyright notices for more information.
  * - First version
  */
 
-#pragma once
-
 #include <medVtkInriaExport.h>
 
 #include <vtkShaderUniform.h>
@@ -34,10 +33,10 @@ class MEDVTKINRIA_EXPORT vtkUniformVec2: public vtkShaderUniform
 {
 public:
   static vtkUniformVec2* New();
-  vtkTypeMacro(vtkUniformVec2, vtkShaderUniform);
+  vtkTypeMacro(vtkUniformVec2, vtkShaderUniform)
 
-  vtkSetVector2Macro(Value, float);
-  vtkGetVector2Macro(Value, float);
+  vtkSetVector2Macro(Value, float)
+  vtkGetVector2Macro(Value, float)
 
 protected:
   vtkUniformVec2();
@@ -48,5 +47,3 @@ protected:
 private:
   float Value[2];
 };
-
-

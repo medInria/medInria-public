@@ -2,7 +2,7 @@
 
  medInria
 
- Copyright (c) INRIA 2013 - 2018. All rights reserved.
+ Copyright (c) INRIA 2013 - 2020. All rights reserved.
  See LICENSE.txt for details.
 
   This software is distributed WITHOUT ANY WARRANTY; without even
@@ -11,20 +11,19 @@
 
 =========================================================================*/
 
-#include <medAbstractLayeredView.h>
-
 #include <dtkCoreSupport/dtkSmartPointer.h>
-#include <medDataManager.h>
 
 #include <medAbstractData.h>
+#include <medAbstractLayeredView.h>
 #include <medAbstractLayeredViewInteractor.h>
-#include <medViewFactory.h>
-#include <medStringListParameterL.h>
 #include <medBoolGroupParameterL.h>
+#include <medDataIndex.h>
 #include <medDataListParameterL.h>
+#include <medDataManager.h>
 #include <medLayerParameterGroupL.h>
 #include <medParameterGroupManagerL.h>
-#include <medDataIndex.h>
+#include <medStringListParameterL.h>
+#include <medViewFactory.h>
 
 class medAbstractLayeredViewPrivate
 {
@@ -46,7 +45,7 @@ public:
 
 medAbstractLayeredView::medAbstractLayeredView(QObject *parent) : medAbstractView(parent), d (new medAbstractLayeredViewPrivate)
 {
-    d->primaryNavigator = NULL;
+    d->primaryNavigator = nullptr;
     d->currentLayer = 0;
 
     d->dataListParameter = new medDataListParameterL("DataList",this);
@@ -88,7 +87,7 @@ bool medAbstractLayeredView::initialiseInteractors(medAbstractData *data)
     QStringList primaryInt = factory->interactorsAbleToHandle(this->identifier(), data->identifier());
     if(primaryInt.isEmpty())
     {
-        dtkWarn() << "Unable to find any primary interactor for: " << this->identifier() << "and" << data->identifier();
+        qWarning() << "Unable to find any primary interactor for: " << this->identifier() << "and" << data->identifier();
         return false;
     }
     else
@@ -124,7 +123,7 @@ bool medAbstractLayeredView::initialiseNavigators()
     QStringList primaryNav = factory->navigatorsAbleToHandle(this->identifier());
     if(primaryNav.isEmpty())
     {
-        dtkWarn() << "Unable to find any primary navigator for: " << this->identifier();
+        qWarning() << "Unable to find any primary navigator for: " << this->identifier();
         return false;
 
     }
@@ -153,7 +152,7 @@ bool medAbstractLayeredView::initialiseNavigators()
 medAbstractLayeredViewInteractor* medAbstractLayeredView::primaryInteractor(medAbstractData* data)
 {
     if(d->primaryInteractorsHash.isEmpty())
-        return NULL;
+        return nullptr;
 
     return d->primaryInteractorsHash.value(data);
 }
@@ -307,13 +306,13 @@ void medAbstractLayeredView::insertLayer(unsigned int layer, medAbstractData *da
 {
     if(!data)
     {
-        dtkWarn() << "Attempt to add a NULL data to the view: " << this;
+        qWarning() << "Attempt to add a NULL data to the view: " << this;
         return;
     }
 
     if ( this->contains(data))
     {
-        dtkDebug() << "Attempt to add twice the same data to the view: " << this;
+        qDebug() << "Attempt to add twice the same data to the view: " << this;
         return;
     }
 
@@ -337,8 +336,8 @@ medAbstractData * medAbstractLayeredView::layerData(unsigned int layer) const
 {
     if (layer >= (unsigned int)d->layersDataList.size())
     {
-        dtkWarn() << "Unable to retrieve data at layer:" <<layer << "from: "<< this->description();
-        return NULL;
+        qWarning() << "Unable to retrieve data at layer:" <<layer << "from: "<< this->description();
+        return nullptr;
     }
     return d->layersDataList[layer];
 }
@@ -374,7 +373,7 @@ medAbstractBoolParameterL* medAbstractLayeredView::visibilityParameter(unsigned 
     medAbstractLayeredViewInteractor* pInteractor = this->primaryInteractor(layer);
     if(!pInteractor)
     {
-        return NULL;
+        return nullptr;
     }
 
     return pInteractor->visibilityParameter();

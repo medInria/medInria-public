@@ -1,8 +1,9 @@
+#pragma once
 /*=========================================================================
 
  medInria
 
- Copyright (c) INRIA 2013 - 2018. All rights reserved.
+ Copyright (c) INRIA 2013 - 2020. All rights reserved.
  See LICENSE.txt for details.
 
   This software is distributed WITHOUT ANY WARRANTY; without even
@@ -11,9 +12,8 @@
 
 =========================================================================*/
 
-#pragma once
-
 #include <medLogExport.h>
+
 #include <vtkOutputWindow.h>
 
 /**
@@ -26,25 +26,25 @@ class MEDLOG_EXPORT vtkLogForwarder : public vtkOutputWindow
 public:
     static vtkLogForwarder *New();
 
-    vtkTypeMacro(vtkLogForwarder,vtkOutputWindow);
+    vtkTypeMacro(vtkLogForwarder,vtkOutputWindow)
 
     void PrintSelf(ostream& os, vtkIndent indent);
 
     /**
     * overrides error logging method and redirects it
-    * @param txt – error log text
+    * @param txt : error log text
     */
     void DisplayErrorText(const char *txt);
 
     /**
     * overrides warning logging method and redirects it
-    * @param txt – error log text
+    * @param txt : error log text
     */
     void DisplayWarningText(const char *txt);
 
     /**
     * overrides debug logging method and redirects it
-    * @param txt – error log text
+    * @param txt : error log text
     */
     void DisplayDebugText(const char *txt);
 
@@ -52,5 +52,3 @@ protected:
      vtkLogForwarder();
     ~vtkLogForwarder();
 };
-
-

@@ -1,8 +1,9 @@
+#pragma once
 /*=========================================================================
 
  medInria
 
- Copyright (c) INRIA 2013 - 2018. All rights reserved.
+ Copyright (c) INRIA 2013 - 2020. All rights reserved.
  See LICENSE.txt for details.
  
   This software is distributed WITHOUT ANY WARRANTY; without even
@@ -10,8 +11,6 @@
   PURPOSE.
 
 =========================================================================*/
-
-#pragma once
 
 #include <medVtkInriaExport.h>
 
@@ -21,7 +20,7 @@ class MEDVTKINRIA_EXPORT vtkImageFromBoundsSource : public vtkImageAlgorithm
 {
 public:
   static vtkImageFromBoundsSource *New();
-  vtkTypeMacro(vtkImageFromBoundsSource,vtkImageAlgorithm);
+  vtkTypeMacro(vtkImageFromBoundsSource,vtkImageAlgorithm)
   void PrintSelf(ostream& os, vtkIndent indent);   
   
   // Description:
@@ -31,7 +30,6 @@ public:
                             double minZ, double maxZ);
   void GetOutputImageBounds(double extent[6]);
   double *GetOutputImageBounds() {return this->OutputImageBounds;}
-
 
   void SetOutputImageSize (const unsigned int* size)
   {
@@ -72,12 +70,13 @@ public:
       this->OutValueSet = 1;
   }
 
-  vtkGetMacro(OutValue,double);
+  vtkGetMacro(OutValue,double)
   
   // Description:
   // Set what type of scalar data this source should generate.
-  vtkSetMacro(OutputScalarType,int);
-  vtkGetMacro(OutputScalarType,int);
+  vtkSetMacro(OutputScalarType,int)
+  vtkGetMacro(OutputScalarType,int)
+
   void SetOutputScalarTypeTodouble()
     {this->SetOutputScalarType(VTK_FLOAT);}
   void SetOutputScalarTypeToDouble()
@@ -85,7 +84,7 @@ public:
   void SetOutputScalarTypeToLong()
     {this->SetOutputScalarType(VTK_LONG);}
   void SetOutputScalarTypeToUnsignedLong()
-    {this->SetOutputScalarType(VTK_UNSIGNED_LONG);};
+    {this->SetOutputScalarType(VTK_UNSIGNED_LONG);}
   void SetOutputScalarTypeToInt()
     {this->SetOutputScalarType(VTK_INT);}
   void SetOutputScalarTypeToUnsignedInt()
@@ -131,8 +130,3 @@ private:
   vtkImageFromBoundsSource(const vtkImageFromBoundsSource&);  // Not implemented.
   void operator=(const vtkImageFromBoundsSource&);  // Not implemented.
 };
-
-
-
-
-

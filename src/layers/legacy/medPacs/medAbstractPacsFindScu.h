@@ -1,3 +1,4 @@
+#pragma once
 /*=========================================================================
 
  medInria
@@ -11,8 +12,6 @@
 
 =========================================================================*/
 
-#pragma once
-
 #include <medAbstractPacsBaseScu.h>
 #include <medPacsExport.h>
 
@@ -24,5 +23,6 @@ public:
     medAbstractPacsFindScu() = default;
     ~medAbstractPacsFindScu() override = default;
 
-    virtual int  sendFindRequest(const char* peerTitle, const char* peerIP, unsigned int peerPort, const char* ourTitle, const char* ourIP, unsigned int ourPort);
+    virtual int  sendFindRequest(const char* peerTitle, const char* peerIP, unsigned int peerPort,
+                                 const char* ourTitle, const char* ourIP, unsigned int ourPort);
 };

@@ -1,3 +1,4 @@
+#pragma once
 /*============================================================================
 
 The Hardware Shading (HWShading) module is protected by the
@@ -21,8 +22,6 @@ PURPOSE.  See the above copyright notices for more information.
  * - First version
  */
 
-#pragma once
-
 #include <medVtkInriaExport.h>
 
 #include <vtkCollection.h>
@@ -32,7 +31,7 @@ class MEDVTKINRIA_EXPORT vtkShaderUniformCollection : public vtkCollection
 {
 public:
   static vtkShaderUniformCollection* New();
-  vtkTypeMacro (vtkShaderUniformCollection, vtkCollection);
+  vtkTypeMacro (vtkShaderUniformCollection, vtkCollection)
   
   /**
    * Add a ShaderObject to the list
@@ -40,7 +39,7 @@ public:
   void AddItem(vtkShaderUniform* su)
     {
     this->vtkCollection::AddItem((vtkObject*)su);
-    };
+    }
 
   /**
    * Get the next ShaderUniform in the list. Return NULL when at the end of the 
@@ -49,7 +48,7 @@ public:
   vtkShaderUniform *GetNextItem()
     {
     return static_cast<vtkShaderUniform *>(this->GetNextItemAsObject());
-    };
+    }
 
   /**
    * Get the ith shader object from the list.
@@ -57,16 +56,13 @@ public:
   vtkShaderUniform* GetItem(int i)
     {
     return static_cast<vtkShaderUniform *>(this->GetItemAsObject(i));
-    };
+    }
 
 protected:
-  vtkShaderUniformCollection() {};
-  ~vtkShaderUniformCollection() {};
+  vtkShaderUniformCollection() {}
+  ~vtkShaderUniformCollection() {}
 
 private:
   // hide the standard AddItem from the user and the compiler.
-  void AddItem(vtkObject *o) { this->vtkCollection::AddItem(o); };
-
+  void AddItem(vtkObject *o) { this->vtkCollection::AddItem(o); }
 };
-
-

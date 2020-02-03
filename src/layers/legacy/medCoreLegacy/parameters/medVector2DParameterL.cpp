@@ -2,7 +2,7 @@
 
  medInria
 
- Copyright (c) INRIA 2013 - 2018. All rights reserved.
+ Copyright (c) INRIA 2013 - 2020. All rights reserved.
  See LICENSE.txt for details.
 
   This software is distributed WITHOUT ANY WARRANTY; without even
@@ -14,20 +14,13 @@
 #include "medVector2DParameterL.h"
 #include <QVector2D>
 
-class medVector2DParameterLPrivate
-{
-public:
-
-};
-
 medVector2DParameterL::medVector2DParameterL(QString name, QObject *parent)
-    : medAbstractVector2DParameterL(name, parent), d(new medVector2DParameterLPrivate)
+    : medAbstractVector2DParameterL(name, parent)
 {
 }
 
 medVector2DParameterL::~medVector2DParameterL()
 {
-    delete d;
 }
 
 QWidget* medVector2DParameterL::getWidget()

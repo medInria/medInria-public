@@ -1,3 +1,4 @@
+#pragma once
 /*============================================================================
 
 The Hardware Shading (HWShading) module is protected by the
@@ -27,15 +28,12 @@ PURPOSE.  See the above copyright notices for more information.
  * - Renamed glSpecificUniform() to SetGlUniformSpecific()
  */
 
-#pragma once
-
 #include <medVtkInriaExport.h>
 
 #include <vtkShaderBaseHandle.h>
 #include <vtkObjectFactory.h>
 
 #include <vtk_glew.h> // for vtkgl::GLchar
-
 
 /**
  * Representation of a uniform variable for GLSL.
@@ -49,15 +47,15 @@ class MEDVTKINRIA_EXPORT vtkShaderUniform : public vtkShaderBaseHandle
 {
 public:
 
-  vtkTypeMacro (vtkShaderUniform, vtkShaderBaseHandle);
+  vtkTypeMacro (vtkShaderUniform, vtkShaderBaseHandle)
   /**
    * Set/Get the name of the uniform. This must be a null-terminated string.
    * The array element operator ``[]'' and the structure field operator ``.''
    * may be used in the name to select elements of an array or fields of a
    * structure. White spaces are not allowed.
    */
-  vtkSetStringMacro(Name);
-  vtkGetStringMacro(Name);
+  vtkSetStringMacro(Name)
+  vtkGetStringMacro(Name)
 
   /**
    * Pass this uniform to the shader.
@@ -69,8 +67,6 @@ public:
 protected:
   vtkShaderUniform();
   ~vtkShaderUniform();
-
-  //vtkGetMacro(Location, GLint);
 
   /**
    * Type-specific setting of uniform. Must be implemented in subclasses.
@@ -88,5 +84,4 @@ private:
    * The name associated with this uniform.
    */
     GLchar* Name;
-
 };

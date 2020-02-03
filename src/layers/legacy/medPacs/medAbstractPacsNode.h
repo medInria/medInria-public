@@ -1,3 +1,4 @@
+#pragma once
 /*=========================================================================
 
  medInria
@@ -11,10 +12,9 @@
 
 =========================================================================*/
 
-#pragma once
-
 #include <QtCore/QObject>
 #include <QVector>
+
 #include <medPacsExport.h>
 
 class medAbstractPacsResultDataset;

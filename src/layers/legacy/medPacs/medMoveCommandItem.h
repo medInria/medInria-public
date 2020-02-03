@@ -1,3 +1,4 @@
+#pragma once
 /*=========================================================================
 
  medInria
@@ -11,7 +12,8 @@
 
 =========================================================================*/
 
-#pragma once
+#include <QString>
+#include <QVariant>
 
 struct medMoveCommandItem
 {
@@ -30,6 +32,7 @@ struct medMoveCommandItem
         return QVariant::fromValue(*this);
     }
 };
-Q_DECLARE_METATYPE(medMoveCommandItem);
+
+Q_DECLARE_METATYPE(medMoveCommandItem)
 
 

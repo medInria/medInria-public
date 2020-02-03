@@ -1,3 +1,4 @@
+#pragma once
 /*=========================================================================
 
  medInria
@@ -11,9 +12,8 @@
 
 =========================================================================*/
 
-#pragma once
-
 #include <QtCore/QObject>
+
 #include <medPacsExport.h>
 #include <medAbstractPacsBaseScu.h>
 
@@ -25,5 +25,6 @@ public:
     medAbstractPacsStoreScu() = default;
     ~medAbstractPacsStoreScu() override = default;
 
-    virtual int  sendStoreRequest(const char* peerTitle, const char* peerIP, unsigned int peerPort, const char* ourTitle, const char* ourIP, unsigned int ourPort);
+    virtual int  sendStoreRequest(const char* peerTitle, const char* peerIP, unsigned int peerPort,
+                                  const char* ourTitle, const char* ourIP, unsigned int ourPort);
 };

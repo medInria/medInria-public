@@ -13,22 +13,11 @@
 
 #include <medToolBoxTab.h>
 
-class medToolBoxTabPrivate
-{
-public:
-};
-
-medToolBoxTab::medToolBoxTab(QWidget *parent) : QTabWidget(parent), d(new medToolBoxTabPrivate)
+medToolBoxTab::medToolBoxTab(QWidget *parent) : QTabWidget(parent)
 {
     this->setSizePolicy(QSizePolicy::Expanding, QSizePolicy::Fixed);
 }
 
-medToolBoxTab::~medToolBoxTab(void)
+medToolBoxTab::~medToolBoxTab()
 {
-    delete d;
-
-    d = nullptr;
 }
-
-
-

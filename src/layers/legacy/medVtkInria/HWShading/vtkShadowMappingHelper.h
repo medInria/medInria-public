@@ -1,3 +1,4 @@
+#pragma once
 /*============================================================================
 
 The Hardware Shading (HWShading) module is protected by the
@@ -32,8 +33,6 @@ PURPOSE.  See the above copyright notices for more information.
  *   GLdouble StoredTextureMatrix[16] variable.
  */
 
-#pragma once
-
 #include <medVtkInriaExport.h>
 
 #include <vtkObject.h>
@@ -50,18 +49,19 @@ class vtkBMIAShaderProgram;
  * and rendering to the shadow map. The actual rendering must be done in a
  * seperate class (such as vtkShadowRenderer).
  */
-class MEDVTKINRIA_EXPORT vtkShadowMappingHelper : public vtkObject {
+class MEDVTKINRIA_EXPORT vtkShadowMappingHelper : public vtkObject
+{
 
 public:
   static vtkShadowMappingHelper* New();
-  vtkTypeMacro (vtkShadowMappingHelper, vtkObject);
+  vtkTypeMacro (vtkShadowMappingHelper, vtkObject)
   
   /**
    * Initialize texture for storing&reading shadow map
    */
   void InitializeShadowMap();
 
-  vtkGetMacro(ShadowTextureInitialized, bool);
+  vtkGetMacro(ShadowTextureInitialized, bool)
 
   /**
    * The functions to call before and after rendering of the scene to the
@@ -71,22 +71,22 @@ public:
   void PreShadowMapRender(vtkCamera* lightCamera);
   void PostShadowMapRender();
 
-  vtkGetObjectMacro(ShadowMapSampler, vtkUniformSampler);
+  vtkGetObjectMacro(ShadowMapSampler, vtkUniformSampler)
 
   // TODO: change the implementation of the stuff below.
   // if the shadow map width or height is changed, the shadow map must be
   // initialized again!!!
   // XXX: perhaps just set ShadowTextureInitialized to false. and make sure
   // the old shadow map is thrown away.
-  vtkSetClampMacro(ShadowMapWidth, GLuint, 2, 2096);
-  vtkSetClampMacro(ShadowMapHeight, GLuint, 2, 2096);
+  vtkSetClampMacro(ShadowMapWidth, GLuint, 2, 2096)
+  vtkSetClampMacro(ShadowMapHeight, GLuint, 2, 2096)
 
   /**
    * Can be used to replace the shader program used to render
    * the shadow map.
    */
   void SetShaderProgram(vtkBMIAShaderProgram* program);
-  vtkGetObjectMacro(ShaderProgram, vtkBMIAShaderProgram);
+  vtkGetObjectMacro(ShaderProgram, vtkBMIAShaderProgram)
 
   /**
    * Set-up the texture matrix such that the texture matrix can be used for
@@ -146,5 +146,3 @@ private:
   vtkUniformSampler* ShadowMapSampler;
 
 }; // class vtkShadowMappingHelper
-
-

@@ -2,7 +2,7 @@
 
  medInria
 
- Copyright (c) INRIA 2013 - 2018. All rights reserved.
+ Copyright (c) INRIA 2013 - 2020. All rights reserved.
  See LICENSE.txt for details.
  
   This software is distributed WITHOUT ANY WARRANTY; without even
@@ -42,7 +42,7 @@ medSettingsManager::medSettingsManager( void ): d(new medSettingsManagerPrivate)
 medSettingsManager::~medSettingsManager( void )
 {
     delete d;
-    d = NULL;
+    d = nullptr;
 }
 
 /**
@@ -80,7 +80,7 @@ QVariant medSettingsManager::value( const QString & section, const QString & key
     // write default value so we can share it
     if (!valuePresent)
     {
-        dtkDebug() << "writing default value for section: " << section << " key: " << key << "value: " << defaultValue;
+        qDebug() << "writing default value for section: " << section << " key: " << key << "value: " << defaultValue;
         setValue(section, key, result);
     }
 
@@ -127,4 +127,4 @@ void medSettingsManager::remove (const QString & section, const QString & key)
     d->settings.endGroup();
 }
 
-medSettingsManager *medSettingsManager::s_instance = NULL;
+medSettingsManager *medSettingsManager::s_instance = nullptr;

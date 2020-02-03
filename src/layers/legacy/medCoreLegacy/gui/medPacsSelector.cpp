@@ -2,7 +2,7 @@
 
  medInria
 
- Copyright (c) INRIA 2013 - 2018. All rights reserved.
+ Copyright (c) INRIA 2013 - 2020. All rights reserved.
  See LICENSE.txt for details.
  
   This software is distributed WITHOUT ANY WARRANTY; without even
@@ -39,7 +39,7 @@ medPacsSelector::medPacsSelector( QWidget *parent /*= 0*/ ): d(new medToolBoxPac
 medPacsSelector::~medPacsSelector( void )
 {
     delete d;
-    d = NULL;
+    d = nullptr;
 }
 
 void medPacsSelector::readSettings( void )
@@ -54,7 +54,6 @@ void medPacsSelector::readSettings( void )
     settings.endGroup();
 
     fillWidget(nodes);
-
 }
 
 void medPacsSelector::fillWidget( QList<QVariant> nodes )

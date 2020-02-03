@@ -1,8 +1,9 @@
+#pragma once
 /*=========================================================================
 
  medInria
 
- Copyright (c) INRIA 2013 - 2018. All rights reserved.
+ Copyright (c) INRIA 2013 - 2020. All rights reserved.
  See LICENSE.txt for details.
 
   This software is distributed WITHOUT ANY WARRANTY; without even
@@ -11,13 +12,10 @@
 
 =========================================================================*/
 
-#pragma once
-
 #include <medAbstractParameterL.h>
+#include <medCoreLegacyExport.h>
 
 #include <QVariant>
-
-#include <medCoreLegacyExport.h>
 
 class medCompositeParameterLPrivate;
 
@@ -26,7 +24,7 @@ class MEDCORELEGACY_EXPORT medCompositeParameterL : public medAbstractParameterL
     Q_OBJECT
 
 public:
-    medCompositeParameterL(QString name = "Unknown composite parameter", QObject* parent = 0);
+    medCompositeParameterL(QString name = "Unknown composite parameter", QObject* parent = nullptr);
     virtual ~medCompositeParameterL();
 
     virtual QWidget* getWidget();
@@ -60,5 +58,3 @@ private slots:
 private:
     medCompositeParameterLPrivate* d;
 };
-
-

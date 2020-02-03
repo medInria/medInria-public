@@ -1,8 +1,9 @@
+#pragma once
 /*=========================================================================
 
  medInria
 
- Copyright (c) INRIA 2013 - 2018. All rights reserved.
+ Copyright (c) INRIA 2013 - 2020. All rights reserved.
  See LICENSE.txt for details.
 
   This software is distributed WITHOUT ANY WARRANTY; without even
@@ -11,25 +12,22 @@
 
 =========================================================================*/
 
-#pragma once
-
 #include <QtGui>
 #include <QtWidgets>
 
 #include <medAbstractParameterGroupL.h>
-
 #include <medCoreLegacyExport.h>
 
 class medLinkMenuPrivate;
-
 
 class MEDCORELEGACY_EXPORT medLinkMenu : public QPushButton
 {
     Q_OBJECT
 
 public:
-    medLinkMenu(QWidget * parent = 0);
+    medLinkMenu(QWidget * parent = nullptr);
     virtual ~medLinkMenu();
+
     void setAvailableParameters(QStringList parameters);
     void addGroup(medAbstractParameterGroupL * group, bool selected = false);
     void setGroups(QList<medAbstractParameterGroupL *> groups);
@@ -47,7 +45,6 @@ signals:
     void groupDeleted(QString groupName);
 
     void groupColorChangeRequest(QString groupName, QColor color);
-
 
 private slots:
     void showPopup();
@@ -83,7 +80,6 @@ private:
     void addPresetItem(QString preset);
     void addRemovePresetButton(QListWidgetItem* item);
 
-private:
     medLinkMenuPrivate *d;
 };
 
@@ -93,7 +89,7 @@ class medListItemWidget : public QWidget
     Q_OBJECT
 
 public:
-    medListItemWidget(QWidget *parent = 0);
+    medListItemWidget(QWidget *parent = nullptr);
 
 public:
     void enterEvent(QEvent *);
@@ -110,7 +106,7 @@ class medGroupWidget : public medListItemWidget
     Q_OBJECT
 
 public:
-    medGroupWidget(QString groupName, QWidget *parent = 0);
+    medGroupWidget(QString groupName, QWidget *parent = nullptr);
     void setColor(QColor color);
 
 signals:
@@ -132,11 +128,7 @@ class medLeftArrow : public QWidget
     Q_OBJECT
 
 public:
-    medLeftArrow(QWidget * parent = 0): QWidget(parent){ this->setFixedSize(15,15);}
+    medLeftArrow(QWidget * parent = nullptr): QWidget(parent){ this->setFixedSize(15,15);}
 
     void paintEvent(QPaintEvent*);
 };
-
-
-
-

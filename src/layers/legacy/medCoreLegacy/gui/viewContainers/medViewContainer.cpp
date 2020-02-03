@@ -2,7 +2,7 @@
 
  medInria
 
- Copyright (c) INRIA 2013 - 2018. All rights reserved.
+ Copyright (c) INRIA 2013 - 2020. All rights reserved.
  See LICENSE.txt for details.
 
   This software is distributed WITHOUT ANY WARRANTY; without even
@@ -473,8 +473,7 @@ void medViewContainer::setSelected(bool selec)
         {
             this->setSelected(!selec);
         }
-        //clear focus in order to select/unselect successively twice the same container
-        //this->clearFocus();
+
         return;
     }
 
@@ -488,13 +487,11 @@ void medViewContainer::setSelected(bool selec)
         emit containerUnSelected(d->uuid);
         this->unHighlight();
     }
-    //clear focus in order to select/unselect successively twice the same container
-    //this->clearFocus();
 }
 
 void medViewContainer::highlight(QString color)
 {
-    // TODO: recomputeStyleSheet deosn't seem to work here
+    // TODO: recomputeStyleSheet doesn't seem to work here
     // temporary setStyleSheet to update the border color
     QString styleSheet = "medViewContainer {border:1px solid " + color + ";}";
     this->setStyleSheet(styleSheet);
@@ -659,7 +656,6 @@ void medViewContainer::dropEvent(QDropEvent *event)
         dropEventFromDataBase(event);
     }
 }
-
 
 bool medViewContainer::dropEventFromDataBase(QDropEvent * event)
 {

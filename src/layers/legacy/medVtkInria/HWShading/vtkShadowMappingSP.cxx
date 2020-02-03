@@ -55,8 +55,8 @@ vtkShadowMappingSP::vtkShadowMappingSP()
 
 vtkShadowMappingSP::~vtkShadowMappingSP()
 {
-  this->VertexShader->Delete(); this->VertexShader = NULL;
-  this->FragmentShader->Delete(); this->FragmentShader = NULL;
-  this->SpotlightFuncShader->Delete(); this->SpotlightFuncShader = NULL;
+  this->VertexShader->Delete(); this->VertexShader = nullptr;
+  this->FragmentShader->Delete(); this->FragmentShader = nullptr;
+  this->SpotlightFuncShader->Delete(); this->SpotlightFuncShader = nullptr;
 }
 
