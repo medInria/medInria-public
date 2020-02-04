@@ -300,7 +300,7 @@ void vtkTensorVisuManager::SetMaxGlyphSize(const float& f)
 
 void vtkTensorVisuManager::SetInput(vtkStructuredPoints* data, vtkMatrix4x4 *matrix)
 {
-    if( !data ) // OTHERS THING TO CHECK!
+    if( !data )
     {
         std::cerr << "Error: null data." << std::endl;
         return;
