@@ -122,7 +122,7 @@ protected:
                            QString description,
                            QString category,
                            medWorkspaceCreator creator,
-                           medWorkspaceIsUsable isUsable=NULL, bool isActive=true);
+                           medWorkspaceIsUsable isUsable = nullptr, bool isActive = true);
 
      medWorkspaceFactory();
     virtual ~medWorkspaceFactory();

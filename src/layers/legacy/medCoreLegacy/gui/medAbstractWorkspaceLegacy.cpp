@@ -670,7 +670,7 @@ QWidget* medAbstractWorkspaceLegacy::buildViewLinkMenu()
     connect(d->viewLinkMenu, SIGNAL(groupDeleted(QString)), this, SLOT(removeViewGroup(QString)));
     connect(d->viewLinkMenu, SIGNAL(groupColorChangeRequest(QString,QColor)), this, SLOT(changeViewGroupColor(QString, QColor)));
 
-    medAbstractView* view = NULL;
+    medAbstractView* view = nullptr;
     QStringList viewType;
     QList<medAbstractView*> views;
     QList<medAbstractParameterL*>  viewsParams;
@@ -821,7 +821,7 @@ QWidget* medAbstractWorkspaceLegacy::buildLayerLinkMenu(QList<QListWidgetItem*> 
 
 void medAbstractWorkspaceLegacy::addViewstoGroup(QString group)
 {
-    medAbstractView* view = NULL;
+    medAbstractView* view = nullptr;
 
     medViewParameterGroupL *paramGroup = medParameterGroupManagerL::instance()->viewGroup(group, this->identifier());
 
@@ -830,16 +830,16 @@ void medAbstractWorkspaceLegacy::addViewstoGroup(QString group)
         medViewContainer *container = medViewContainerManager::instance()->container(uuid);
         view = container->view();
 
-        if(!view)
-            continue;
-
-        paramGroup->addImpactedView(view);
+        if(view)
+        {
+            paramGroup->addImpactedView(view);
+        }
     }
 }
 
 void medAbstractWorkspaceLegacy::removeViewsFromGroup(QString group)
 {
-    medAbstractView* view = NULL;
+    medAbstractView* view = nullptr;
 
     medViewParameterGroupL *paramGroup = medParameterGroupManagerL::instance()->viewGroup(group, this->identifier());
 
@@ -848,10 +848,10 @@ void medAbstractWorkspaceLegacy::removeViewsFromGroup(QString group)
         medViewContainer *container = medViewContainerManager::instance()->container(uuid);
         view = container->view();
 
-        if(!view)
-            continue;
-
-        paramGroup->removeImpactedView(view);
+        if(view)
+        {
+            paramGroup->removeImpactedView(view);
+        }
     }
 }
 

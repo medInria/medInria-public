@@ -306,7 +306,7 @@ void medAbstractLayeredView::insertLayer(unsigned int layer, medAbstractData *da
 {
     if(!data)
     {
-        qWarning() << "Attempt to add a NULL data to the view: " << this;
+        qWarning() << "Attempt to add a null data to the view: " << this;
         return;
     }
 

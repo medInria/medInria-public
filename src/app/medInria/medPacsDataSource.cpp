@@ -71,12 +71,9 @@ medPacsDataSource::medPacsDataSource(QWidget* parent) : medAbstractDataSource(pa
 
 medPacsDataSource::~medPacsDataSource()
 {
-    //I don't know what happens if the browser destroys pacsWidget before
-    //destroying medPacsDataSource...
-    //we can delete the pacsdatasource without destroying the parent.
     d->pacsWidget->deleteLater();
     delete d;
-    d = NULL;
+    d = nullptr;
 }
 
 QWidget* medPacsDataSource::mainViewWidget()

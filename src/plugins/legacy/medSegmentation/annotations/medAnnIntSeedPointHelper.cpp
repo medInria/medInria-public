@@ -106,7 +106,8 @@ medAnnIntSeedPointHelper::medAnnIntSeedPointHelper(medAnnotationInteractor * ann
 
 medAnnIntSeedPointHelper::~medAnnIntSeedPointHelper()
 {
-    delete d; d = NULL;
+    delete d;
+    d = nullptr;
 }
 
 bool medAnnIntSeedPointHelper::addAnnotation( medAnnotationData* annData )

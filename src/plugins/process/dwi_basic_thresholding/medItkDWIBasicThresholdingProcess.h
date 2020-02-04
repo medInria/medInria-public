@@ -26,7 +26,7 @@ class MEDITKDWIBASICTHRESHOLDINGPROCESSPLUGIN_EXPORT medItkDWIBasicThresholdingP
 {
     Q_OBJECT
 public:
-    medItkDWIBasicThresholdingProcess(QObject* parent = NULL);
+    medItkDWIBasicThresholdingProcess(QObject* parent = nullptr);
     ~medItkDWIBasicThresholdingProcess();
 
     virtual void setInput(medAbstractImageData* data);

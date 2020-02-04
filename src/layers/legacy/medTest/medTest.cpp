@@ -52,14 +52,7 @@ namespace medTest
 
     dtkSmartPointer<medAbstractData> readData (const QString &file)
     {
-        /*
-        medSynchronousDbImporter importer (file);
-        importer.setTimeout(0);
-        medDataIndex index = importer.synchImport();
-
-        return medDataManager::instance()->data(index);
-        */
-		return NULL;
+        return nullptr;
     }
 
 } // end of namespace

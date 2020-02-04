@@ -137,7 +137,7 @@ void vtkAxes2DWidget::SetRenderWindow(vtkRenderWindow *arg)
     if (this->RenderWindow && arg!=this->RenderWindow)
     {
         this->RenderWindow->RemoveRenderer(this->Renderer);
-        this->Renderer->SetRenderWindow(NULL);
+        this->Renderer->SetRenderWindow(nullptr);
     }
 
     vtkSetObjectBodyMacro (RenderWindow, vtkRenderWindow, arg);

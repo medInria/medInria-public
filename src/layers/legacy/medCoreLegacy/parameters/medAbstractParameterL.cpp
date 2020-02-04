@@ -99,7 +99,7 @@ void medAbstractParameterL::hide()
 void medAbstractParameterL::removeInternLabel()
 {
     this->removeFromInternWidgets(d->label);
-    d->label = NULL;
+    d->label = nullptr;
 }
 
 void medAbstractParameterL::addToInternWidgets(QWidget *widget)

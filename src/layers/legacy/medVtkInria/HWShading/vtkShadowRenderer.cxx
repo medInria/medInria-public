@@ -76,11 +76,11 @@ vtkShadowRenderer::vtkShadowRenderer()
 
 vtkShadowRenderer::~vtkShadowRenderer()
 {
-  this->ShadowMappingHelper->Delete();
-  this->ShadowMappingHelper = NULL;
+    this->ShadowMappingHelper->Delete();
+    this->ShadowMappingHelper = nullptr;
 
-  this->ShadowMappingSP->Delete();
-  this->ShadowMappingSP = NULL;
+    this->ShadowMappingSP->Delete();
+    this->ShadowMappingSP = nullptr;
 }
 
 void vtkShadowRenderer::DeviceRender()
@@ -142,17 +142,9 @@ void vtkShadowRenderer::InitializeShadowMap()
   this->ShadowMappingHelper->InitializeShadowMap();
 }
 
-// TODO: speed this up. Generation of shadow map is too slow. This can
-// be tested by making the call to RegenerateShadowMap in DeviceRender()
-// unconditional.
 void vtkShadowRenderer::RegenerateShadowMap()
 {
   vtkDebugMacro(<<"Create camera from light");
-  // NOTE: This is also not needed if the shader renders from the light
-  // point of view anyway instead of from a camera.
-  //vtkCamera* lightCam = this->CreateLightCamera();
-  //vtkCamera* light_cam = this->GetActiveCamera();
-  //assert(light_cam);
 
   vtkCamera* light_cam = vtkCamera::New();
   vtkCamera* view_cam = this->GetActiveCamera();
@@ -175,10 +167,9 @@ void vtkShadowRenderer::RegenerateShadowMap()
   // Zoom out
   light_cam->Zoom(.8);
 
-
-  //this->ShadowMappingHelper->RegenerateShadowMap(this);
   this->ShadowMappingHelper->PreShadowMapRender(light_cam);
-  light_cam->Delete(); light_cam = NULL;
+  light_cam->Delete();
+  light_cam = nullptr;
   this->UpdateGeometry();
   this->ShadowMappingHelper->PostShadowMapRender();
 
@@ -273,7 +264,6 @@ void vtkShadowRenderer::RenderWithShadows()
     }
 
   vtkMatrix4x4* viewTransformMatrix = cam->GetViewTransformMatrix();
-  //vtkTransform* viewTransform = cam->GetViewTransformObject();
   vtkMatrix4x4* inverseViewTransformMatrix = vtkMatrix4x4::New();
   inverseViewTransformMatrix->DeepCopy(viewTransformMatrix);
   inverseViewTransformMatrix->Invert();
@@ -283,9 +273,9 @@ void vtkShadowRenderer::RenderWithShadows()
   glMultMatrixd(inverseViewTransformMatrix->Element[0]);
 
   inverseViewTransformMatrix->Delete();
-  inverseViewTransformMatrix = NULL;
-  viewTransformMatrix = NULL;
-  cam = NULL;
+  inverseViewTransformMatrix = nullptr;
+  viewTransformMatrix = nullptr;
+  cam = nullptr;
 
   // set matrix mode for actors
   glMatrixMode(GL_MODELVIEW);

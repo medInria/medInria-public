@@ -43,7 +43,7 @@ undoRedoRegistrationPlugin::~undoRedoRegistrationPlugin(void)
 {
     delete d;
     
-    d = NULL;
+    d = nullptr;
 }
 
 bool undoRedoRegistrationPlugin::initialize(void)

@@ -42,13 +42,13 @@ public:
     }
 
   /**
-   * Get the next ShaderObject in the list. Return NULL when at the end of the 
+   * Get the next ShaderObject in the list. Return null when at the end of the
    * list.
    */
   vtkShaderObject *GetNextItem()
-    {
-    return static_cast<vtkShaderObject *>(this->GetNextItemAsObject());
-    }
+  {
+      return static_cast<vtkShaderObject *>(this->GetNextItemAsObject());
+  }
 
   /**
    * Get the ith shader object from the list.

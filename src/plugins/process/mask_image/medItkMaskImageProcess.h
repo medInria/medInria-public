@@ -36,7 +36,7 @@ public:
     }
 
 
-    medItkMaskImageProcess(QObject* parent = NULL);
+    medItkMaskImageProcess(QObject* parent = nullptr);
     ~medItkMaskImageProcess();
 
     virtual medAbstractJob::medJobExitStatus run();

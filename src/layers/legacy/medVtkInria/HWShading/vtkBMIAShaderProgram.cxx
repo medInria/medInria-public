@@ -74,9 +74,9 @@ vtkBMIAShaderProgram::~vtkBMIAShaderProgram()
 void vtkBMIAShaderProgram::AddShaderObject(vtkShaderObject* object)
 {
     vtkDebugMacro(<<"Adding shader object "<<object);
-    if (object == NULL)
+    if (object == nullptr)
     {
-        vtkDebugMacro(<<"Don't add NULL shader objects!");
+        vtkDebugMacro(<<"Don't add null shader objects!");
         return;
     }
     this->ShaderObjects->AddItem(object);
@@ -91,9 +91,9 @@ void vtkBMIAShaderProgram::RemoveShaderObject(vtkShaderObject* object)
 
 void vtkBMIAShaderProgram::AddShaderUniform(vtkShaderUniform* uniform)
 {
-    if (uniform == NULL)
+    if (uniform == nullptr)
     {
-        vtkDebugMacro(<<"Not adding the uniform with value NULL.");
+        vtkDebugMacro(<<"Not adding the uniform with value null.");
         return;
     }
     this->ShaderUniforms->AddItem(uniform);
@@ -113,13 +113,13 @@ vtkMTimeType vtkBMIAShaderProgram::GetMTime()
 
     this->ShaderObjects->InitTraversal();
     vtkShaderObject* object = this->ShaderObjects->GetNextItem();
-    while (object != NULL)
+
+    while (object != nullptr)
     {
         time = object->GetMTime();
         mTime = ( time > mTime ? time : mTime );
         object = this->ShaderObjects->GetNextItem();
     }
-    //object == NULL
 
     return mTime;
 }
@@ -196,10 +196,9 @@ bool vtkBMIAShaderProgram::AttachGlShader(vtkShaderObject* object)
         return false;
     }
 
-    if (object == NULL)
+    if (object == nullptr)
     {
-        vtkWarningMacro(<<"Cannot attach a NULL shader object!");
-        //return true; // why not continue with the other shader programs?
+        vtkWarningMacro(<<"Cannot attach a null shader object!");
         return false;
     }
 
@@ -207,7 +206,6 @@ bool vtkBMIAShaderProgram::AttachGlShader(vtkShaderObject* object)
     object->Compile();
 
     glAttachShader(this->GetHandle(), object->GetHandle());
-    // TODO: check whether the attaching was successful?
 
     return true;
 }
@@ -221,10 +219,10 @@ bool vtkBMIAShaderProgram::DetachGlShader(vtkShaderObject* object)
         return false;
     }
 
-    if (object == NULL)
+    if (object == nullptr)
     {
-        vtkWarningMacro(<<"Cannot detach a NULL shader object!");
-        return false; // or true, if glAttach(NULL) does this.
+        vtkWarningMacro(<<"Cannot detach a null shader object!");
+        return false;
     }
 
     if (object->GetHandleValid())
@@ -233,7 +231,7 @@ bool vtkBMIAShaderProgram::DetachGlShader(vtkShaderObject* object)
         return true;
     }
     else
-    { // !object->GetHandleValid()
+    {
         vtkErrorMacro(<<"Trying to detach a shader object that does not"
                       <<" have a handle!");
         return false;
@@ -249,9 +247,9 @@ bool vtkBMIAShaderProgram::AttachAllGlShaders(vtkShaderObjectCollection* objects
         return false;
     }
 
-    if (objects == NULL)
+    if (objects == nullptr)
     {
-        vtkErrorMacro(<<"Don't call glAttachAll(NULL)!");
+        vtkErrorMacro(<<"Don't call glAttachAll(nullptr)!");
         return false;
     }
 
@@ -264,12 +262,12 @@ bool vtkBMIAShaderProgram::AttachAllGlShaders(vtkShaderObjectCollection* objects
     bool result = true;
     this->ShaderObjects->InitTraversal();
     vtkShaderObject* object = this->ShaderObjects->GetNextItem();
-    while (object != NULL)
+
+    while (object != nullptr)
     {
         result = (result && this->AttachGlShader(object));
         object = this->ShaderObjects->GetNextItem();
     }
-    //object == NULL
 
     return result;
 }
@@ -283,21 +281,21 @@ bool vtkBMIAShaderProgram::DetachAllGlShaders(vtkShaderObjectCollection* objects
         return false;
     }
 
-    if (objects == NULL)
+    if (objects == nullptr)
     {
-        vtkErrorMacro(<<"Don't call glDetachAll(NULL)!");
+        vtkErrorMacro(<<"Don't call glDetachAll(nullptr)!");
         return false;
     }
 
     bool result = true;
     this->ShaderObjects->InitTraversal();
     vtkShaderObject* object = this->ShaderObjects->GetNextItem();
-    while (object != NULL)
+
+    while (object != nullptr)
     {
         result = (this->DetachGlShader(object) && result);
         object = this->ShaderObjects->GetNextItem();
     }
-    // object == NULL
 
     return result;
 }
@@ -327,7 +325,7 @@ bool vtkBMIAShaderProgram::LinkGlProgram()
         else // InfoLogLength != 0
         {
             GLchar* InfoLog = (GLchar *)malloc(InfoLogLength);
-            if (InfoLog == NULL)
+            if (InfoLog == nullptr)
             {
                 vtkWarningMacro(<<"Could not allocate InfoLog buffer!");
                 return false;
@@ -337,8 +335,11 @@ bool vtkBMIAShaderProgram::LinkGlProgram()
             vtkWarningMacro("Shader InfoLog for shader with handle "<<handle<<":\n"<<InfoLog);
             free(InfoLog);
         }
-        //this->Validate();
-        if (success != GL_TRUE) return false;
+
+        if (success != GL_TRUE)
+        {
+            return false;
+        }
     }
     vtkDebugMacro(<<"Linking of shader program succeeded.");
 
@@ -356,9 +357,9 @@ bool vtkBMIAShaderProgram::SetAllGlUniforms(vtkShaderUniformCollection* uniforms
         return false;
     }
 
-    if (uniforms == NULL)
+    if (uniforms == nullptr)
     {
-        vtkErrorMacro(<<"Don't call glUniformAll(NULL)!");
+        vtkErrorMacro(<<"Don't call glUniformAll(nullptr)!");
         return false;
     }
 
@@ -371,14 +372,13 @@ bool vtkBMIAShaderProgram::SetAllGlUniforms(vtkShaderUniformCollection* uniforms
     bool result = true;
     this->ShaderUniforms->InitTraversal();
     vtkShaderUniform* uniform = this->ShaderUniforms->GetNextItem();
-    while (uniform != NULL)
+
+    while (uniform != nullptr)
     {
         vtkDebugMacro("Handling uniform "<<uniform<<"...");
-        //uniform->DebugOn();
         result = (this->SetGlUniform(uniform) && result);
         uniform = this->ShaderUniforms->GetNextItem();
     }
-    /* uniform == NULL */
 
     return result;
 }
@@ -387,10 +387,10 @@ bool vtkBMIAShaderProgram::SetGlUniform(vtkShaderUniform* uniform)
 {
     if (!uniform)
     {
-        vtkErrorMacro(<<"Don't call glUniform with parameter NULL!");
+        vtkErrorMacro(<<"Don't call glUniform with parameter null!");
         return false;
     }
-    //uniform->DebugOn();
+
     uniform->SetHandle(this->GetHandle());
     return uniform->SetGlUniform();
 }
@@ -436,7 +436,7 @@ bool vtkBMIAShaderProgram::Validate()
         else // InfoLogLength != 0
         {
             GLchar* InfoLog = (GLchar *)malloc(InfoLogLength);
-            if (InfoLog == NULL)
+            if (InfoLog == nullptr)
             {
                 vtkWarningMacro(<<"Could not allocate InfoLog buffer!");
                 return false;

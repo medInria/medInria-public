@@ -378,7 +378,7 @@ void DCMTKImageIO::DetermineNumberOfPixelComponents()
 void DCMTKImageIO::DeterminePixelType()
 {
     DicomImage *image = new DicomImage(m_FileName.c_str(), CIF_UseAbsolutePixelRange);
-    if (image != NULL)
+    if (image != nullptr)
     {
         if (image->getStatus() == EIS_Normal)
         {

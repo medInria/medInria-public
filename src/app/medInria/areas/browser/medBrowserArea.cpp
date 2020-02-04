@@ -93,10 +93,10 @@ medBrowserArea::medBrowserArea(QWidget *parent) : QWidget(parent), d(new medBrow
         addDataSource(dataSource);
  }
 
-medBrowserArea::~medBrowserArea(void)
+medBrowserArea::~medBrowserArea()
 {
     delete d;
-    d = NULL;
+    d = nullptr;
 }
 
 void medBrowserArea::onSourceIndexChanged(int index)

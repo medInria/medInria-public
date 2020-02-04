@@ -147,7 +147,7 @@ void medViewEventFilter::installOnView( medAbstractView * view )
 {
     if ( !view )
     {
-        qWarning() << "medViewEventFilter::installOnView : View is NULL";
+        qWarning() << "medViewEventFilter::installOnView : view is null";
         return;
     }
 

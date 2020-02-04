@@ -110,22 +110,18 @@ void vtkShaderObject::Compile()
 
 bool vtkShaderObject::SetGlShaderSource()
 {
-  if (this->SourceText == nullptr)
+    if (this->SourceText == nullptr)
     {
-    vtkWarningMacro(<<"No source text was specified!");
-    return false;
-    // OR: just compile and have an empty shader object?
+        vtkWarningMacro(<<"No source text was specified!");
+        return false;
     }
 
-  const char* text = this->SourceText;
-  //glShaderSource(this->GetHandle(), 1, &text, NULL);
-  glShaderSource(this->GetHandle(), 1, &text, nullptr);
+    const char* text = this->SourceText;
+    glShaderSource(this->GetHandle(), 1, &text, nullptr);
 
-  // XXX: I think/assume text only copies the pointer to SourceText,
-  // so it does not need to be deleted here.
-  text = nullptr;
+    text = nullptr;
 
-  return true;
+    return true;
 }
 
 bool vtkShaderObject::CompileGlShader()

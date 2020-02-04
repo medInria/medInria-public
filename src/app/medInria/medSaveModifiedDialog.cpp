@@ -118,7 +118,7 @@ medSaveModifiedDialog::medSaveModifiedDialog(QWidget *parent) : QDialog(parent),
 medSaveModifiedDialog::~medSaveModifiedDialog()
 {
     delete d;
-    d = NULL;
+    d = nullptr;
 }
 
 void medSaveModifiedDialog::saveAndQuit()

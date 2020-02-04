@@ -43,8 +43,7 @@ LabelMapType::Pointer medPaintCommandManager::labelMap(MaskType* mask)
     return labelMaps[mask];
 }
 
-medPaintCommandManager *medPaintCommandManager::s_instance = NULL;
-
+medPaintCommandManager *medPaintCommandManager::s_instance = nullptr;
 
 //-------------------------------------------------------------------------
 

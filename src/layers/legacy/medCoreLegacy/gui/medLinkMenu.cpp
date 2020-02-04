@@ -526,7 +526,7 @@ void medLinkMenu::deleteGroup()
     d->groupList->blockSignals(true);
 
     medGroupWidget *w = dynamic_cast<medGroupWidget*>(this->sender());
-    QListWidgetItem *itemToRemove = NULL;
+    QListWidgetItem *itemToRemove = nullptr;
 
     for(int i=0; i<d->groupList->count(); i++)
     {
@@ -762,7 +762,7 @@ void medLinkMenu::deletePreset()
     QWidget *deleteButton = dynamic_cast<QWidget*>(this->sender());
     QWidget *itemWidget = deleteButton->parentWidget();
 
-    QListWidgetItem *itemToRemove = NULL;
+    QListWidgetItem *itemToRemove = nullptr;
 
     for(int i=0; i<d->presetList->count(); i++)
     {

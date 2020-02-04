@@ -303,7 +303,7 @@ class MEDVTKDATAMESHBASE_EXPORT vtkMetaDataSet: public vtkDataObject
   }
   /**
      Returns the vtkDataArray contained in the DataSet or in metadataset, named name
-     returns NULL if not found
+     returns null if not found
   */
   virtual vtkDataArray* GetArray (const char* name);
 

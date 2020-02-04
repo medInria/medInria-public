@@ -23,7 +23,7 @@ class MEDCORE_EXPORT medAbstractArea : public QWidget
     Q_OBJECT
 
 public:
-    medAbstractArea(QWidget* parent = NULL);
+    medAbstractArea(QWidget* parent = nullptr);
     virtual ~medAbstractArea();
 
     virtual QString title() const = 0;

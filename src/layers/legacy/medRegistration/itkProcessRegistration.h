@@ -112,7 +112,7 @@ public:
      * It uses the itkImageBase class to avoid a templated method.
      * Using the fixedImageType() method will give the type necessary for a down cast.
      *
-     * @return itk::ImageBase<int> NULL if none is set yet.
+     * @return itk::ImageBase<int> null if none is set yet.
     */
     itk::ImageBase<3>::Pointer fixedImage();
 
@@ -122,7 +122,7 @@ public:
      * it uses the itkImageBase class to avoid a templated method.
      * Using the movingImageType() method will give the type necessary for a down cast.
      *
-     * @return itk::ImageBase<int> NULL if none is set yet.
+     * @return itk::ImageBase<int> null if none is set yet.
     */
     QVector<itk::ImageBase<3>::Pointer> movingImages();
 

@@ -501,7 +501,7 @@ void medDatabaseView::onCreatePatientRequested(void)
 }
 
 /** Creates a new study */
-void medDatabaseView::onCreateStudyRequested(void)
+void medDatabaseView::onCreateStudyRequested()
 {
     QModelIndexList indexes = this->selectedIndexes();
     if(!indexes.count())
@@ -509,7 +509,7 @@ void medDatabaseView::onCreateStudyRequested(void)
 
     QModelIndex index = indexes.at(0);
 
-    medAbstractDatabaseItem *item = NULL;
+    medAbstractDatabaseItem *item = nullptr;
 
     if(QSortFilterProxyModel *proxy = dynamic_cast<QSortFilterProxyModel *>(this->model()))
         item = static_cast<medAbstractDatabaseItem *>(proxy->mapToSource(index).internalPointer());
@@ -558,7 +558,7 @@ void medDatabaseView::onCreateStudyRequested(void)
 }
 
 /** Edits selected item */
-void medDatabaseView::onEditRequested(void)
+void medDatabaseView::onEditRequested()
 {
     QModelIndexList indexes = this->selectedIndexes();
     if(!indexes.count())
@@ -566,7 +566,7 @@ void medDatabaseView::onEditRequested(void)
 
     QModelIndex index = indexes.at(0);
 
-    medAbstractDatabaseItem *item = NULL;
+    medAbstractDatabaseItem *item = nullptr;
 
     if(QSortFilterProxyModel *proxy = dynamic_cast<QSortFilterProxyModel *>(this->model()))
         item = static_cast<medAbstractDatabaseItem *>(proxy->mapToSource(index).internalPointer());
