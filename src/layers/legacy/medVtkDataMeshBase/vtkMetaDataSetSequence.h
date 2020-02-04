@@ -179,7 +179,7 @@ class MEDVTKDATAMESHBASE_EXPORT vtkMetaDataSetSequence: public vtkMetaDataSet
   /**
      Generate a array of size [number of frames] containing the value of an attribute
      (given with its name) at a certain position (given by the id of the point/cell to follow). 
-     Return object is NULL when the attribute is not found in the frames, or when the point/cell id
+     Return object is null when the attribute is not found in the frames, or when the point/cell id
      is not valid. 
      If succeeded this methods creates a new instance of vtkDoubleArray. Please make sure you
      delete the object after using it.
@@ -189,7 +189,7 @@ class MEDVTKDATAMESHBASE_EXPORT vtkMetaDataSetSequence: public vtkMetaDataSet
      Generate a array of size [number of frames] containing the value of an attribute
      contained in the MetaDataDictionary of the frames. The metadata is found by its key
      and has to be in double format. 
-     Return object is NULL when the metadata is not found in the frames, or when
+     Return object is null when the metadata is not found in the frames, or when
      the metadata is not a double expression. 
      If succeeded this methods creates a new instance of vtkDoubleArray. Please make sure you
      delete the object after using it.

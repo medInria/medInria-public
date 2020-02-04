@@ -42,13 +42,13 @@ public:
     }
 
   /**
-   * Get the next ShaderUniform in the list. Return NULL when at the end of the 
+   * Get the next ShaderUniform in the list. Return null when at the end of the
    * list.
    */
   vtkShaderUniform *GetNextItem()
-    {
-    return static_cast<vtkShaderUniform *>(this->GetNextItemAsObject());
-    }
+  {
+      return static_cast<vtkShaderUniform *>(this->GetNextItemAsObject());
+  }
 
   /**
    * Get the ith shader object from the list.

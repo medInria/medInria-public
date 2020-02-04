@@ -90,22 +90,27 @@ std::vector< std::string > vtkTransferFunctionPresets::GetAvailablePresets()
 }
 
 void vtkTransferFunctionPresets::GetTransferFunction(
-  const std::string & name,
-  vtkColorTransferFunction * rgb,
-  vtkPiecewiseFunction * alpha )
+        const std::string & name,
+        vtkColorTransferFunction * rgb,
+        vtkPiecewiseFunction * alpha )
 {
-  if ( rgb == NULL )
+  if ( rgb == nullptr )
+  {
     rgb = vtkColorTransferFunction::New();
+  }
   else
+  {
     rgb->RemoveAllPoints();
+  }
 
-  if ( alpha == NULL )
-    alpha = vtkPiecewiseFunction::New();
+  if ( alpha == nullptr )
+  {
+      alpha = vtkPiecewiseFunction::New();
+  }
   else
+  {
     alpha->RemoveAllPoints();
-
-  // rgb->ClampingOff();
-  // alpha->ClampingOff();
+  }
 
   typedef vtkTransferFunctionPresets Self;
   if ( name == "Default" )
@@ -142,8 +147,6 @@ void vtkTransferFunctionPresets::GetTransferFunction(
     Self::GetGreenBlackAlphaTransferFunction( rgb, alpha );
   else if ( name == "Blue Black Alpha" )
     Self::GetBlueBlackAlphaTransferFunction( rgb, alpha );
-  // else if ( name == "Segmentation" )
-  //   Self::GetROITransferFunction( rgb, alpha );
   else if ( name == "Muscles & Bones" )
     Self::GetVRMusclesBonesTransferFunction( rgb, alpha );
   else if ( name == "Bones" )

@@ -145,7 +145,7 @@ medComposerArea::medComposerArea(QWidget *parent) : QWidget(parent), d(new medCo
         d->composer->factory()->extend(ext);
     }
 
-    d->controls = NULL;
+    d->controls = nullptr;
 
     d->editor = new dtkComposerSceneNodeEditor(this);
     d->editor->setScene(d->composer->scene());

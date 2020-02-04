@@ -59,7 +59,9 @@ QWidget* medDiffusionScalarMapsProcessNode::editor()
 {
     medAbstractProcess* process = this->object();
     if (!process)
-        return NULL;
+    {
+        return nullptr;
+    }
     medAbstractProcessPresenter* presenter = medWidgets::diffusionScalarMaps::presenterFactory().create(process);
     return presenter->buildToolBoxWidget();
 }

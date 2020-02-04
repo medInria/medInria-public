@@ -86,13 +86,14 @@ QList<QString> medToolBoxFactory::toolBoxesFromCategory(
 }
 
 medToolBox *medToolBoxFactory::createToolBox(QString identifier,
-                                                         QWidget *parent)
+                                             QWidget *parent)
 {
     if(!d->creators.contains(identifier))
-        return NULL;
+    {
+        return nullptr;
+    }
 
-    medToolBox *toolbox =
-            (d->creators[identifier])->creator(parent);
+    medToolBox *toolbox = (d->creators[identifier])->creator(parent);
 
     return toolbox;
 }

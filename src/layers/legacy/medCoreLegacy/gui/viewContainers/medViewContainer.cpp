@@ -573,7 +573,7 @@ void medViewContainer::removeView()
         emit dataAdded(nullptr);
         delete d->view;
     }
-    // removeInternView should be called, so no need to set d->view to NULL
+    // removeInternView should be called, so no need to set d->view to null
     // or whatever else
 }
 

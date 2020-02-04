@@ -212,13 +212,15 @@ public:
 
 medDatabasePreview::medDatabasePreview(QWidget *parent): d(new medDatabasePreviewPrivate)
 {
+    Q_UNUSED(parent)
+
     this->setMouseTracking(true);
 
     QGraphicsScene *scene = new QGraphicsScene;
     this->setScene(scene);
 
-    d->dynamicScene = NULL;
-    d->staticScene = NULL;
+    d->dynamicScene = nullptr;
+    d->staticScene = nullptr;
 
     QGraphicsPixmapItem *pixmap = new QGraphicsPixmapItem;
     pixmap->setPixmap(QPixmap(":/pixmaps/default_thumbnail.png"));
@@ -241,7 +243,7 @@ medDatabasePreview::medDatabasePreview(QWidget *parent): d(new medDatabasePrevie
 medDatabasePreview::~medDatabasePreview()
 {
     delete d;
-    d = NULL;
+    d = nullptr;
 }
 
 

@@ -111,11 +111,11 @@ medWorkspaceArea::medWorkspaceArea(QWidget *parent) : QWidget(parent), d(new med
     }
 }
 
-medWorkspaceArea::~medWorkspaceArea(void)
+medWorkspaceArea::~medWorkspaceArea()
 {
     medSettingsManager::instance()->setValue("workspaceAreaSplitter", "state", d->splitter->saveState());
     delete d;
-    d = NULL;
+    d = nullptr;
 }
 
 QPixmap medWorkspaceArea::grabScreenshot()

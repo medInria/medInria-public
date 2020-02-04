@@ -68,7 +68,7 @@ void vtkOrientedBoxWidget::SetOrientationMatrix(vtkMatrix4x4* matrix)
   if (this->OrientationMatrix)
   {
     this->OrientationMatrix->UnRegister (this);
-    this->OrientationMatrix = NULL;
+    this->OrientationMatrix = nullptr;
   }
 
   this->OrientationMatrix = matrix;
@@ -77,7 +77,6 @@ void vtkOrientedBoxWidget::SetOrientationMatrix(vtkMatrix4x4* matrix)
   {
     this->OrientationMatrix->Register(this);
   }
-
 
   // move all the actors according to the user-matrix
   this->HexActor->SetUserMatrix (matrix);
@@ -203,6 +202,6 @@ void vtkOrientedBoxWidget::OnMouseMove()
 
   // Interact, if desired
   this->EventCallbackCommand->SetAbortFlag(1);
-  this->InvokeEvent(vtkCommand::InteractionEvent, NULL);
+  this->InvokeEvent(vtkCommand::InteractionEvent, nullptr);
   this->Interactor->Render();
 }

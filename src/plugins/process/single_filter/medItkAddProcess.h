@@ -32,7 +32,7 @@ public:
         source->progression()->setValue(processObject->GetProgress() * 100);
     }
 
-    medItkAddProcess(QObject* parent = NULL);
+    medItkAddProcess(QObject* parent = nullptr);
     ~medItkAddProcess();
 
     virtual medAbstractJob::medJobExitStatus run();

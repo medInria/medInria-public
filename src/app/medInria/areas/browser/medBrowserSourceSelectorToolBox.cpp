@@ -31,10 +31,10 @@ medBrowserSourceSelectorToolBox::medBrowserSourceSelectorToolBox(QWidget *parent
     this->setTabWidget(d->tab);
 }
 
-medBrowserSourceSelectorToolBox::~medBrowserSourceSelectorToolBox(void)
+medBrowserSourceSelectorToolBox::~medBrowserSourceSelectorToolBox()
 {
     delete d;
-    d = NULL;
+    d = nullptr;
 }
 
 void medBrowserSourceSelectorToolBox::addTab(QString tabName, QWidget *widget, QString description)
@@ -48,5 +48,3 @@ void medBrowserSourceSelectorToolBox::setCurrentTab(int current)
 {
 	d->tab->setCurrentIndex(current);
 }
-
-

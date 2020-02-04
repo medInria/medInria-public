@@ -250,8 +250,8 @@ vtkTessellatedSphereSource::RequestData(vtkInformation *vtkNotUsed(request),vtkI
     vtkCellArray* m_triangles = vtkCellArray::New();
     initializeTesselation(m_vertices, m_triangles);
 
-    vtkCellArray *tempTriangles = NULL;
-    vtkPoints *tempVertices = NULL;
+    vtkCellArray *tempTriangles = nullptr;
+    vtkPoints *tempVertices = nullptr;
 
     for (unsigned level=0;level<Resolution;++level) {
 

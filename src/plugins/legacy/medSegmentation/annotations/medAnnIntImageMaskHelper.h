@@ -14,10 +14,8 @@
 
 #include <medAnnotationInteractor.h>
 
-class medAnnIntImageMaskHelperPrivate;
-
-class medAnnIntImageMaskHelper : public msegAnnIntHelper {
-
+class medAnnIntImageMaskHelper : public msegAnnIntHelper
+{
 public:
     medAnnIntImageMaskHelper(medAnnotationInteractor * annInt);
     virtual ~medAnnIntImageMaskHelper();
@@ -29,10 +27,4 @@ public:
 
 private:
     void setColorLookupTable ( QList<double> scalars, QList<QColor> colors );
-
-private:
-    medAnnIntImageMaskHelperPrivate * d;
 };
-
-
-

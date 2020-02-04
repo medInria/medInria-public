@@ -109,7 +109,7 @@ class MEDVTKINRIA_EXPORT vtkImageView2D : public vtkImageView
 {
 public:
     static vtkImageView2D *New();
-    vtkTypeMacro (vtkImageView2D, vtkImageView);
+    vtkTypeMacro (vtkImageView2D, vtkImageView)
     void PrintSelf(ostream& os, vtkIndent indent);
 
     vtkMTimeType GetMTime();
@@ -130,19 +130,16 @@ public:
 
     // Description:
     // Set/Get the input image to the viewer.
-    virtual void SetInput (vtkAlgorithmOutput* pi_poVtkAlgoOutput, vtkMatrix4x4 *matrix = 0, int layer = 0);
-    virtual void SetInput (vtkActor *actor, int layer = 0, vtkMatrix4x4 *matrix = 0, const int imageSize[3] = 0, const double imageSpacing[] = 0, const double imageOrigin[] = 0);
-
+    virtual void SetInput (vtkAlgorithmOutput* pi_poVtkAlgoOutput, vtkMatrix4x4 *matrix = nullptr, int layer = 0);
+    virtual void SetInput (vtkActor *actor, int layer = 0, vtkMatrix4x4 *matrix = nullptr,
+                           const int imageSize[3] = 0, const double imageSpacing[] = 0, const double imageOrigin[] = 0);
 
     void RemoveLayerActor(vtkActor *actor, int layer = 0);
     
-    //int AddInput (vtkImageData *image, vtkMatrix4x4 *matrix);
-
-    virtual vtkActor* AddDataSet (vtkPointSet* arg, vtkProperty* prop = NULL);
+    virtual vtkActor* AddDataSet (vtkPointSet* arg, vtkProperty* prop = nullptr);
     virtual void RemoveDataSet (vtkPointSet *arg);
 
     medVtkImageInfo* GetMedVtkImageInfo(int layer = 0) const;
-
 
     virtual void InstallInteractor();
     virtual void UnInstallInteractor();

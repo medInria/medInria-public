@@ -93,9 +93,12 @@ QList<medLayerParameterGroupL*> medParameterGroupManagerL::layerGroups(QString w
 
 medViewParameterGroupL* medParameterGroupManagerL::viewGroup(QString groupName, QString workspace)
 {
-    medViewParameterGroupL* result = NULL;
+    medViewParameterGroupL* result = nullptr;
+
     if(workspace == "")
+    {
         workspace = d->currentWorkspace;
+    }
 
     foreach(medViewParameterGroupL* viewGroup, d->viewGroups.values(workspace))
     {
@@ -111,9 +114,12 @@ medViewParameterGroupL* medParameterGroupManagerL::viewGroup(QString groupName, 
 
 medLayerParameterGroupL* medParameterGroupManagerL::layerGroup(QString groupName, QString workspace)
 {
-    medLayerParameterGroupL* result = NULL;
+    medLayerParameterGroupL* result = nullptr;
+
     if(workspace == "")
+    {
         workspace = d->currentWorkspace;
+    }
 
     foreach(medLayerParameterGroupL* layerGroup, d->layerGroups.values(workspace))
     {

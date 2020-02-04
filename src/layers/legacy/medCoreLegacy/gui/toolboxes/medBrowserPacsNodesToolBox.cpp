@@ -77,12 +77,12 @@ medBrowserPacsNodesToolBox::medBrowserPacsNodesToolBox(QWidget *parent) : medToo
     this->readSettings();
 }
 
-medBrowserPacsNodesToolBox::~medBrowserPacsNodesToolBox(void)
+medBrowserPacsNodesToolBox::~medBrowserPacsNodesToolBox()
 {
     this->writeSettings();
     delete d;
 
-    d = NULL;
+    d = nullptr;
 }
 
 void medBrowserPacsNodesToolBox::readSettings(void)

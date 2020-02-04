@@ -35,7 +35,7 @@
 
 vtkImageView2DCommand::vtkImageView2DCommand()
 {
-    this->Viewer = NULL;
+    this->Viewer = nullptr;
 }
 
 vtkImageView2DCommand::~vtkImageView2DCommand()

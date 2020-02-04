@@ -110,29 +110,29 @@ vtkAnisotropicLightingSP::vtkAnisotropicLightingSP()
 
 vtkAnisotropicLightingSP::~vtkAnisotropicLightingSP()
 {
-  this->SpecularPowerUniform->Delete();
-  this->SpecularPowerUniform = NULL;
-  this->DiffuseContributionUniform->Delete();
-  this->DiffuseContributionUniform = NULL;
-  this->SpecularContributionUniform->Delete();
-  this->SpecularContributionUniform = NULL;
-  this->AmbientContributionUniform->Delete();
-  this->AmbientContributionUniform = NULL;
-  this->RGBColoringUniform->Delete();
-  this->RGBColoringUniform = NULL;
-  this->ToneShadingUniform->Delete();
-  this->ToneShadingUniform = NULL;
-  this->WarmColorUniform->Delete();
-  this->WarmColorUniform = NULL;
-  this->CoolColorUniform->Delete();
-  this->CoolColorUniform = NULL;
+    this->SpecularPowerUniform->Delete();
+    this->SpecularPowerUniform = nullptr;
+    this->DiffuseContributionUniform->Delete();
+    this->DiffuseContributionUniform = nullptr;
+    this->SpecularContributionUniform->Delete();
+    this->SpecularContributionUniform = nullptr;
+    this->AmbientContributionUniform->Delete();
+    this->AmbientContributionUniform = nullptr;
+    this->RGBColoringUniform->Delete();
+    this->RGBColoringUniform = nullptr;
+    this->ToneShadingUniform->Delete();
+    this->ToneShadingUniform = nullptr;
+    this->WarmColorUniform->Delete();
+    this->WarmColorUniform = nullptr;
+    this->CoolColorUniform->Delete();
+    this->CoolColorUniform = nullptr;
 
-  this->VertexShader->Delete();
-  this->VertexShader = NULL;
-  this->FragmentShader->Delete();
-  this->FragmentShader = NULL;
-  this->ShaderFunctions->Delete();
-  this->ShaderFunctions = NULL;
+    this->VertexShader->Delete();
+    this->VertexShader = nullptr;
+    this->FragmentShader->Delete();
+    this->FragmentShader = nullptr;
+    this->ShaderFunctions->Delete();
+    this->ShaderFunctions = nullptr;
 }
 
 void vtkAnisotropicLightingSP::SetSpecularPower(float power)

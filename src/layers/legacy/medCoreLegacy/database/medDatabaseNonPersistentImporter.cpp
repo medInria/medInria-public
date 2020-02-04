@@ -153,7 +153,7 @@ medDataIndex medDatabaseNonPersistentImporter::populateDatabaseAndGenerateThumbn
     {
         // check if study is already in the persistent database
         databaseIndex = medDatabaseController::instance()->indexForStudy ( patientName, studyName );
-        medDatabaseNonPersistentItem *studyItem = NULL;
+        medDatabaseNonPersistentItem *studyItem = nullptr;
 
         if ( databaseIndex.isValid() )
         {
