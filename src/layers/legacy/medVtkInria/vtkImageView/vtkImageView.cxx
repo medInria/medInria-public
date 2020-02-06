@@ -54,12 +54,6 @@
 #define snprintf _snprintf_s
 #endif
 
-
-//vtkStandardNewMacro(vtkImageView); // pure virtual class
-
-
-// Enumeration for the supported pixel types
-// NT: why not using the vtk IO definitions ?
 namespace {
 enum ImageViewType {
     IMAGE_VIEW_NONE = 0,
@@ -237,8 +231,6 @@ vtkMTimeType vtkImageView::GetMTime()
 /** Attach an interactor for the internal render window. */
 void vtkImageView::SetupInteractor(vtkRenderWindowInteractor *arg)
 {
-    //this->UnInstallPipeline();
-
     vtkSetObjectBodyMacro (Interactor, vtkRenderWindowInteractor, arg);
 
     this->InstallPipeline();
@@ -248,8 +240,6 @@ void vtkImageView::SetupInteractor(vtkRenderWindowInteractor *arg)
 /** Set your own renderwindow and renderer */
 void vtkImageView::SetRenderWindow(vtkRenderWindow *arg)
 {
-    //this->UnInstallPipeline();
-
     vtkSetObjectBodyMacro (RenderWindow, vtkRenderWindow, arg);
 
     if (this->RenderWindow && this->RenderWindow->GetInteractor())
@@ -262,8 +252,6 @@ void vtkImageView::SetRenderWindow(vtkRenderWindow *arg)
 //----------------------------------------------------------------------------
 void vtkImageView::SetRenderer(vtkRenderer *arg)
 {
-    //this->UnInstallPipeline();
-
     vtkSetObjectBodyMacro (Renderer, vtkRenderer, arg);
 
     this->InstallPipeline();
@@ -328,15 +316,16 @@ vtkAlgorithmOutput* vtkImageView::ResliceImageToInput(vtkAlgorithmOutput* pi_poV
 {
     vtkAlgorithmOutput *poResOutput = nullptr;
     vtkImageData* image = ((vtkImageAlgorithm*)pi_poVtkAlgoPort->GetProducer())->GetOutput();
+
     if (!pi_poVtkAlgoPort || !this->GetMedVtkImageInfo() || !this->GetMedVtkImageInfo()->initialized)
     {
         return nullptr;
     }
 
     if ( pi_poVtkAlgoPort &&
-         this->Compare(image->GetOrigin(),      this->GetMedVtkImageInfo()->origin, 3) &&
-         this->Compare(image->GetSpacing(),     this->GetMedVtkImageInfo()->spacing, 3) &&
-         this->Compare(image->GetExtent(), this->GetMedVtkImageInfo()->extent, 6) &&
+         this->Compare(image->GetOrigin(),  this->GetMedVtkImageInfo()->origin, 3) &&
+         this->Compare(image->GetSpacing(), this->GetMedVtkImageInfo()->spacing, 3) &&
+         this->Compare(image->GetExtent(),  this->GetMedVtkImageInfo()->extent, 6) &&
          (matrix && this->Compare(matrix, this->OrientationMatrix)) )
     {
         poResOutput = pi_poVtkAlgoPort;
