@@ -54,12 +54,6 @@
 #define snprintf _snprintf_s
 #endif
 
-
-//vtkStandardNewMacro(vtkImageView); // pure virtual class
-
-
-// Enumeration for the supported pixel types
-// NT: why not using the vtk IO definitions ?
 namespace {
 enum ImageViewType {
     IMAGE_VIEW_NONE = 0,
@@ -204,7 +198,6 @@ vtkImageView::~vtkImageView()
     }
     if (this->m_poInternalImageFromInput)
     {
-        //this->m_poInternalImageFromInput->Delete();
         this->m_poInternalImageFromInput = nullptr;
         this->m_poInputVtkAlgoOutput = nullptr;
     }
@@ -238,8 +231,6 @@ vtkMTimeType vtkImageView::GetMTime()
 /** Attach an interactor for the internal render window. */
 void vtkImageView::SetupInteractor(vtkRenderWindowInteractor *arg)
 {
-    //this->UnInstallPipeline();
-
     vtkSetObjectBodyMacro (Interactor, vtkRenderWindowInteractor, arg);
 
     this->InstallPipeline();
@@ -249,8 +240,6 @@ void vtkImageView::SetupInteractor(vtkRenderWindowInteractor *arg)
 /** Set your own renderwindow and renderer */
 void vtkImageView::SetRenderWindow(vtkRenderWindow *arg)
 {
-    //this->UnInstallPipeline();
-
     vtkSetObjectBodyMacro (RenderWindow, vtkRenderWindow, arg);
 
     if (this->RenderWindow && this->RenderWindow->GetInteractor())
@@ -263,8 +252,6 @@ void vtkImageView::SetRenderWindow(vtkRenderWindow *arg)
 //----------------------------------------------------------------------------
 void vtkImageView::SetRenderer(vtkRenderer *arg)
 {
-    //this->UnInstallPipeline();
-
     vtkSetObjectBodyMacro (Renderer, vtkRenderer, arg);
 
     this->InstallPipeline();
@@ -327,16 +314,18 @@ bool vtkImageView::Compare(vtkMatrix4x4 *mat1, vtkMatrix4x4 *mat2)
 */
 vtkAlgorithmOutput* vtkImageView::ResliceImageToInput(vtkAlgorithmOutput* pi_poVtkAlgoPort, vtkMatrix4x4 *matrix)
 {
-    vtkAlgorithmOutput *poResOutput = 0;
+    vtkAlgorithmOutput *poResOutput = nullptr;
     vtkImageData* image = ((vtkImageAlgorithm*)pi_poVtkAlgoPort->GetProducer())->GetOutput();
-    if (!pi_poVtkAlgoPort || !this->GetMedVtkImageInfo() || !this->GetMedVtkImageInfo()->initialized)
-        return NULL;
 
+    if (!pi_poVtkAlgoPort || !this->GetMedVtkImageInfo() || !this->GetMedVtkImageInfo()->initialized)
+    {
+        return nullptr;
+    }
 
     if ( pi_poVtkAlgoPort &&
-         this->Compare(image->GetOrigin(),      this->GetMedVtkImageInfo()->origin, 3) &&
-         this->Compare(image->GetSpacing(),     this->GetMedVtkImageInfo()->spacing, 3) &&
-         this->Compare(image->GetExtent(), this->GetMedVtkImageInfo()->extent, 6) &&
+         this->Compare(image->GetOrigin(),  this->GetMedVtkImageInfo()->origin, 3) &&
+         this->Compare(image->GetSpacing(), this->GetMedVtkImageInfo()->spacing, 3) &&
+         this->Compare(image->GetExtent(),  this->GetMedVtkImageInfo()->extent, 6) &&
          (matrix && this->Compare(matrix, this->OrientationMatrix)) )
     {
         poResOutput = pi_poVtkAlgoPort;
@@ -877,8 +866,6 @@ void vtkImageView::SetWindowSettingsFromTransferFunction(int layer)
     if ( touched )
     {
         this->SetColorRange( targetRange, layer );
-        //TODO call Modified on the right object
-        //    this->GetWindowLevel(layer)->Modified();
         this->ScalarBar->Modified();
     }
 }

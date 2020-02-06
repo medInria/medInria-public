@@ -169,28 +169,31 @@ void medVtkViewItkDataImageInteractor::setInputData(medAbstractData *data)
 {
     medAbstractInteractor::setInputData(data);
     d->imageData = dynamic_cast<medAbstractImageData *>(data);
-    if(!d->imageData)
-        return;
-
-    if (!SetViewInput (data, d->view->layer(data)))
+    if(d->imageData)
     {
-        qDebug() << "Unable to add data: " << data->identifier() << " to view " << this->identifier();
-        return;
+        if (!SetViewInput (data, d->view->layer(data)))
+        {
+            qDebug() << "Unable to add data: " << data->identifier() << " to view " << this->identifier();
+            return;
+        }
+
+        if( d->imageData->PixelType() == typeid(double) || d->imageData->PixelType() == typeid(float) )
+        {
+            d->isFloatImage = true;
+        }
+
+        initParameters(d->imageData);
+
+        double* range = d->view2d->GetScalarRange(d->view->layer(d->imageData));
+        this->initWindowLevelParameters(range);
     }
-
-    if( d->imageData->PixelType() == typeid(double) || d->imageData->PixelType() == typeid(float) )
-        d->isFloatImage = true;
-
-    initParameters(d->imageData);
-
-    double* range = d->view2d->GetScalarRange(d->view->layer(d->imageData));
-    this->initWindowLevelParameters(range);
 }
 
 void medVtkViewItkDataImageInteractor::removeData()
 {
-    d->view2d->RemoveLayer(d->view->layer(d->imageData));
-    d->view3d->RemoveLayer(d->view->layer(d->imageData));
+    unsigned int imageLayer = d->view->layer(d->imageData);
+    d->view2d->RemoveLayer(imageLayer);
+    d->view3d->RemoveLayer(imageLayer);
 }
 
 bool medVtkViewItkDataImageInteractor::SetViewInput(medAbstractData* data, int layer)
@@ -229,8 +232,6 @@ bool medVtkViewItkDataImageInteractor::SetViewInput(medAbstractData* data, int l
 
 void medVtkViewItkDataImageInteractor::initParameters(medAbstractImageData* data)
 {
-    d->imageData = data;
-
     d->lutParam = new medStringListParameterL("Lut", this);
     QStringList luts = QStringList() << "Default" << "Black & White" << "Black & White Inversed"
                                      << "Spectrum" << "Hot Metal" << "Hot Green"
@@ -314,16 +315,14 @@ void medVtkViewItkDataImageInteractor::initWindowLevelParameters(double *range)
     double levelMin = range[0] - halfWidth;
     double levelMax = range[1] + halfWidth;
 
+    d->intensityStep = (levelMax - levelMin) / 100;
+
     this->windowLevelParameter()->addVariant("Window", QVariant(window), QVariant(windowMin), QVariant(windowMax));
-    this->windowLevelParameter()->addVariant("Level", QVariant(level), QVariant(levelMin), QVariant(levelMax));
+    this->windowLevelParameter()->addVariant("Level",  QVariant(level),  QVariant(levelMin),  QVariant(levelMax));
 
     d->minIntensityParameter = new medDoubleParameterL("Min Intensity", this);
-    connect(d->minIntensityParameter, SIGNAL(valueChanged(double)), this, SLOT(setWindowLevelFromMinMax()));
-
     d->maxIntensityParameter = new medDoubleParameterL("Max Intensity", this);
-    connect(d->maxIntensityParameter, SIGNAL(valueChanged(double)), this, SLOT(setWindowLevelFromMinMax()));
 
-    d->intensityStep = (levelMax - levelMin) / 100;
     d->minIntensityParameter->setSingleStep(d->intensityStep);
     d->maxIntensityParameter->setSingleStep(d->intensityStep);
 
@@ -340,32 +339,36 @@ void medVtkViewItkDataImageInteractor::initWindowLevelParameters(double *range)
 
     d->minIntensityParameter->setRange(levelMin, levelMax);
     d->maxIntensityParameter->setRange(levelMin, levelMax);
-
     d->minIntensityParameter->setValue(range[0]);
     d->maxIntensityParameter->setValue(range[1]);
 
-    d->view->render();
+    connect(d->minIntensityParameter, SIGNAL(valueChanged(double)), this, SLOT(setWindowLevelFromMinMax()));
+    connect(d->maxIntensityParameter, SIGNAL(valueChanged(double)), this, SLOT(setWindowLevelFromMinMax()));
 }
 
 void medVtkViewItkDataImageInteractor::setOpacity(double opacity)
 {
-    d->view3d->SetOpacity (opacity, d->view->layer(d->imageData));
-    d->view2d->SetOpacity (opacity, d->view->layer(d->imageData));
+    unsigned int imageLayer = d->view->layer(d->imageData);
+
+    d->view3d->SetOpacity (opacity, imageLayer);
+    d->view2d->SetOpacity (opacity, imageLayer);
 
     update();
 }
 
 void medVtkViewItkDataImageInteractor::setVisibility(bool visible)
 {
+    unsigned int imageLayer = d->view->layer(d->imageData);
+
     if(visible)
     {
-        d->view2d->SetVisibility(1, d->view->layer(d->imageData));
-        d->view3d->SetVisibility(1, d->view->layer(d->imageData));
+        d->view2d->SetVisibility(1, imageLayer);
+        d->view3d->SetVisibility(1, imageLayer);
     }
     else
     {
-        d->view2d->SetVisibility(0, d->view->layer(d->imageData));
-        d->view3d->SetVisibility(0, d->view->layer(d->imageData));
+        d->view2d->SetVisibility(0, imageLayer);
+        d->view3d->SetVisibility(0, imageLayer);
     }
 
     update();
@@ -378,6 +381,8 @@ QString medVtkViewItkDataImageInteractor::lut() const
 
 void medVtkViewItkDataImageInteractor::setLut(QString value)
 {
+    unsigned int imageLayer = d->view->layer(d->imageData);
+
     typedef vtkTransferFunctionPresets Presets;
     vtkColorTransferFunction * rgb   = vtkColorTransferFunction::New();
     vtkPiecewiseFunction     * alpha = vtkPiecewiseFunction::New();
@@ -385,13 +390,14 @@ void medVtkViewItkDataImageInteractor::setLut(QString value)
     Presets::GetTransferFunction(value.toStdString(), rgb, alpha );
 
     vtkLookupTable *lut = vtkLookupTableManager::GetLookupTable(value.toStdString());
-    d->view3d->SetTransferFunctions(rgb, alpha, d->view->layer(d->imageData));
-    d->view3d->SetLookupTable(lut, d->view->layer(d->imageData));
+    d->view3d->SetTransferFunctions(rgb, alpha, imageLayer);
+    d->view3d->SetLookupTable(lut, imageLayer);
 
-    if (d->view->layer(d->imageData) == 0)
+    if (imageLayer == 0)
+    {
         lut = vtkLookupTableManager::removeLUTAlphaChannel(lut);
-
-    d->view2d->SetLookupTable(lut, d->view->layer(d->imageData));
+    }
+    d->view2d->SetLookupTable(lut, imageLayer);
 
     rgb->Delete();
     alpha->Delete();
@@ -476,13 +482,13 @@ QWidget* medVtkViewItkDataImageInteractor::buildToolBoxWidget()
 {
     QWidget *toolbox = new QWidget;
     QFormLayout *layout = new QFormLayout(toolbox);
-
     QHBoxLayout *minLayout = new QHBoxLayout;
+    QHBoxLayout *maxLayout = new QHBoxLayout;
+
     d->minIntensityParameter->getSlider()->setOrientation(Qt::Horizontal);
     minLayout->addWidget(d->minIntensityParameter->getSlider());
     minLayout->addWidget(d->minIntensityParameter->getSpinBox());
 
-    QHBoxLayout *maxLayout = new QHBoxLayout;
     d->maxIntensityParameter->getSlider()->setOrientation(Qt::Horizontal);
     maxLayout->addWidget(d->maxIntensityParameter->getSlider());
     maxLayout->addWidget(d->maxIntensityParameter->getSpinBox());
@@ -491,7 +497,6 @@ QWidget* medVtkViewItkDataImageInteractor::buildToolBoxWidget()
     layout->addRow(d->maxIntensityParameter->getLabel(), maxLayout);
     layout->addRow(d->lutParam->getLabel(), d->lutParam->getComboBox());
     layout->addRow(d->presetParam->getLabel(), d->presetParam->getComboBox());
-
     layout->addRow(d->enableInterpolation->getLabel(), d->enableInterpolation->getWidget());
 
     return toolbox;
@@ -499,46 +504,34 @@ QWidget* medVtkViewItkDataImageInteractor::buildToolBoxWidget()
 
 QWidget* medVtkViewItkDataImageInteractor::buildLayerWidget()
 {
-        this->opacityParameter()->getSlider()->setOrientation(Qt::Horizontal);
-        return this->opacityParameter()->getSlider();
+    this->opacityParameter()->getSlider()->setOrientation(Qt::Horizontal);
+    return this->opacityParameter()->getSlider();
 }
 
 void medVtkViewItkDataImageInteractor::setWindowLevelFromMinMax()
 {
+    qDebug()<<"### medVtkViewItkDataImageInteractor::setWindowLevelFromMinMax";
     medDoubleParameterL *sender = dynamic_cast<medDoubleParameterL *>(this->sender());
-    if(!sender)
-        return;
 
-    double minIntensityValue = d->minIntensityParameter->value();
-    double maxIntensityValue = d->maxIntensityParameter->value();
-
-    if( sender == d->minIntensityParameter && minIntensityValue >= maxIntensityValue )
+    if(sender)
     {
-        d->maxIntensityParameter->blockSignals(true);
-        d->maxIntensityParameter->setValue(minIntensityValue + d->intensityStep);
-        d->maxIntensityParameter->blockSignals(false);
+        double minIntensity = d->minIntensityParameter->value();
+        double maxIntensity = d->maxIntensityParameter->value();
+
+        double level = 0.5 * (maxIntensity - minIntensity) + minIntensity;
+        double window = maxIntensity - minIntensity;
+
+        //--- block
+        this->windowLevelParameter()->blockSignals(true);
+
+        unsigned int imageLayer = d->view->layer(d->imageData);
+
+        d->view2d->SetColorWindowLevel(window, level, imageLayer);
+        d->view3d->SetColorWindowLevel(window, level, imageLayer);
+
+        this->windowLevelParameter()->blockSignals(false);
+        //--- end block
     }
-    else if( sender == d->maxIntensityParameter && maxIntensityValue <= minIntensityValue )
-    {
-        d->minIntensityParameter->blockSignals(true);
-        d->minIntensityParameter->setValue(maxIntensityValue - d->intensityStep);
-        d->minIntensityParameter->blockSignals(false);
-    }
-
-    double minIntensityValueUpdated = d->minIntensityParameter->value();
-    double maxIntensityValueUpdated = d->maxIntensityParameter->value();
-
-    double level = 0.5 * (maxIntensityValueUpdated - minIntensityValueUpdated) + minIntensityValueUpdated;
-    double window = maxIntensityValueUpdated - minIntensityValueUpdated;
-
-    this->windowLevelParameter()->blockSignals(true);
-
-    unsigned int layer = d->view->layer(d->imageData);
-
-    d->view2d->SetColorWindowLevel(window, level, layer);
-    d->view3d->SetColorWindowLevel(window, level, layer);
-
-    this->windowLevelParameter()->blockSignals(false);
 }
 
 void medVtkViewItkDataImageInteractor::updateInterpolateStatus(bool pi_bStatus, int pi_iLayer)
@@ -553,29 +546,35 @@ void medVtkViewItkDataImageInteractor::setWindowLevel(QHash<QString, QVariant> v
 {
     if(values.size() != 2 )
     {
-        dtkWarn() << "Window/Level parameters are incorrect";
+        qWarning() << "Window/Level parameters are incorrect";
         return;
     }
 
     double w = values["Window"].toDouble();
     double l = values["Level"].toDouble();
     if(w != w || l != l) // NaN values
+    {
         return;
+    }
 
-    if (d->view2d->GetColorWindow(d->view->layer(d->imageData)) != w)
-        d->view2d->SetColorWindow(w, d->view->layer(d->imageData));
+    unsigned int imageLayer = d->view->layer(d->imageData);
 
-
-    if (d->view3d->GetColorWindow(d->view->layer(d->imageData)) != w)
-        d->view3d->SetColorWindow(w, d->view->layer(d->imageData));
-
-    if (d->view2d->GetColorLevel(d->view->layer(d->imageData)) != l)
-        d->view2d->SetColorLevel(l, d->view->layer(d->imageData));
-
-
-    if (d->view3d->GetColorLevel(d->view->layer(d->imageData)) != l)
-        d->view3d->SetColorLevel(l, d->view->layer(d->imageData));
-
+    if (d->view2d->GetColorWindow(imageLayer) != w)
+    {
+        d->view2d->SetColorWindow(w, imageLayer);
+    }
+    if (d->view3d->GetColorWindow(imageLayer) != w)
+    {
+        d->view3d->SetColorWindow(w, imageLayer);
+    }
+    if (d->view2d->GetColorLevel(imageLayer) != l)
+    {
+        d->view2d->SetColorLevel(l, imageLayer);
+    }
+    if (d->view3d->GetColorLevel(imageLayer) != l)
+    {
+        d->view3d->SetColorLevel(l, imageLayer);
+    }
 
     d->minIntensityParameter->blockSignals(true);
     d->maxIntensityParameter->blockSignals(true);
@@ -589,8 +588,6 @@ void medVtkViewItkDataImageInteractor::setWindowLevel(QHash<QString, QVariant> v
 
 void medVtkViewItkDataImageInteractor::moveToSlice(int slice)
 {
-    //TODO find a way to get woorldCoordinate for slice from vtkInria.
-    // instead of moving to the slice corresponding on the first layer dropped.
     if(d->view->is2D() && slice != d->view2d->GetSlice())
     {
         d->view2d->SetSlice(slice);
@@ -635,11 +632,13 @@ void medVtkViewItkDataImageInteractor::setUpViewForThumbnail()
 
 void medVtkViewItkDataImageInteractor::updateImageViewInternalLayer()
 {
-    if( d->view->layer(d->imageData) != d->view->currentLayer() )
-        return;
+    unsigned int imageLayer = d->view->layer(d->imageData);
 
-    d->view2d->SetCurrentLayer(d->view->layer(d->imageData));
-    d->view3d->SetCurrentLayer(d->view->layer(d->imageData));
+    if( imageLayer == d->view->currentLayer() )
+    {
+        d->view2d->SetCurrentLayer(imageLayer);
+        d->view3d->SetCurrentLayer(imageLayer);
+    }
 }
 
 void medVtkViewItkDataImageInteractor::createSlicingParam()
@@ -679,8 +678,9 @@ void medVtkViewItkDataImageInteractor::updateSlicingParam()
 void medVtkViewItkDataImageInteractor::enableWindowLevel(bool enable)
 {
     if(enable)
+    {
         d->view2d->SetLeftButtonInteractionStyle ( vtkInteractorStyleImageView2D::InteractionTypeWindowLevel );
-
+    }
 }
 
 void medVtkViewItkDataImageInteractor::interpolation(bool pi_bActive)
