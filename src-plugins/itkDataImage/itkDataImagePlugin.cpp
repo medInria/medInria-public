@@ -66,6 +66,7 @@
 #include <itkGiplDataImageWriter.h>
 #include <itkVTKDataImageWriter.h>
 #include <itkGISDataImageWriter.h>
+#include <itkDicomDataImageWriter.h>
 
 #include <dtkLog/dtkLog.h>
 #include <itkLogForwarder.h>
@@ -152,15 +153,16 @@ bool itkDataImagePlugin::initialize()
     if (!itkJPEGDataImageReader::registered())       { dtkWarn() << "Unable to register itkJPEGDataImageReader type";       }
     if (!itkTIFFDataImageReader::registered())       { dtkWarn() << "Unable to register itkTIFFDataImageReader type";       }
     if (!itkPhilipsRECDataImageReader::registered()) { dtkWarn() << "Unable to register itkPhilipsRECDataImageReader type"; }
-    if (!itkGISDataImageReader::registered())        { dtkWarn() << "Unable to register itkGISDataImageReader type"; }
-    if (!itkDCMTKDataImageReader::registered())      { dtkWarn() << "Unable to register itkDCMTKDataImageReader type"; }
+    if (!itkGISDataImageReader::registered())        { dtkWarn() << "Unable to register itkGISDataImageReader type";        }
+    if (!itkDCMTKDataImageReader::registered())      { dtkWarn() << "Unable to register itkDCMTKDataImageReader type";      }
 
     if (!itkMetaDataImageWriter::registered())       { dtkWarn() << "Unable to register itkMetaDataImageWriter type";       }
     if (!itkNiftiDataImageWriter::registered())      { dtkWarn() << "Unable to register itkNiftiDataImageWriter type";      }
     if (!itkNrrdDataImageWriter::registered())       { dtkWarn() << "Unable to register itkNrrdDataImageWriter type";       }
     if (!itkGiplDataImageWriter::registered())       { dtkWarn() << "Unable to register itkGiplDataImageWriter type";       }
     if (!itkVTKDataImageWriter::registered())        { dtkWarn() << "Unable to register itkVTKDataImageWriter type";        }
-    if (!itkGISDataImageWriter::registered())        { dtkWarn() << "Unable to register itkGISDataImageWriter type"; }
+    if (!itkGISDataImageWriter::registered())        { dtkWarn() << "Unable to register itkGISDataImageWriter type";        }
+    if (!itkDicomDataImageWriter::registered())      { dtkWarn() << "Unable to register itkDicomDataImageWriter type";      }
 
     return true;
 }

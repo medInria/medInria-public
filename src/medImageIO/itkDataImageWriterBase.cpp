@@ -145,7 +145,6 @@ bool itkDataImageWriterBase::write(const QString& path)
         return false;
     }
 
-
     return true;
 }
 

@@ -32,7 +32,7 @@ namespace medMetaDataKeys {
 
     // STUDY
     MEDCORE_EXPORT const Key StudyID("StudyID", "Study ID");
-    MEDCORE_EXPORT const Key StudyDicomID("StudyDicomID", "Study Dicom ID");
+    MEDCORE_EXPORT const Key StudyInstanceUID("StudyInstanceUID", "Study Instance UID");
     MEDCORE_EXPORT const Key StudyDescription("StudyDescription", "Study Description");
     MEDCORE_EXPORT const Key Institution("Institution");
     MEDCORE_EXPORT const Key Referee("Referee");
@@ -41,7 +41,7 @@ namespace medMetaDataKeys {
 
     // SERIES
     MEDCORE_EXPORT const Key SeriesID("SeriesID", "Series ID");
-    MEDCORE_EXPORT const Key SeriesDicomID("SeriesDicomID", "Series Dicom ID");
+    MEDCORE_EXPORT const Key SeriesInstanceUID("SeriesInstanceUID", "Series Instance UID");
     MEDCORE_EXPORT const Key SeriesNumber("SeriesNumber", "Series Number");
     MEDCORE_EXPORT const Key Modality("Modality");
     MEDCORE_EXPORT const Key Performer("Performer");
@@ -53,7 +53,6 @@ namespace medMetaDataKeys {
     MEDCORE_EXPORT const Key SeriesThumbnail("SeriesThumbnail", "Series Thumbnail");
 
     // IMAGE
-
     MEDCORE_EXPORT const Key SOPInstanceUID("SOPInstanceUID", "SOP Instance UID");
     MEDCORE_EXPORT const Key Columns("Columns","Columns",QVariant::UInt);
     MEDCORE_EXPORT const Key Rows("Rows","Rows",QVariant::UInt);

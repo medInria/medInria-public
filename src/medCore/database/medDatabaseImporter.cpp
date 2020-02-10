@@ -108,7 +108,7 @@ bool medDatabaseImporter::checkIfExists ( medAbstractData* medData, QString imag
         // if patient already exists we now verify the study
 
         QString studyName = medMetaDataKeys::StudyDescription.getFirstValue(medData);
-        QString studyUid  = medMetaDataKeys::StudyDicomID.getFirstValue(medData);
+        QString studyUid  = medMetaDataKeys::StudyInstanceUID.getFirstValue(medData);
 
         query.prepare ( "SELECT id FROM study WHERE patient = :patient AND name = :name AND uid = :studyID" );
         query.bindValue ( ":patient", patientDbId );
@@ -123,7 +123,7 @@ bool medDatabaseImporter::checkIfExists ( medAbstractData* medData, QString imag
             QVariant studyDbId = query.value ( 0 );
             // both patient and study exists, let's check series
             QString seriesName  = medMetaDataKeys::SeriesDescription.getFirstValue(medData);
-            QString seriesUid = medMetaDataKeys::SeriesDicomID.getFirstValue(medData);
+            QString seriesUid = medMetaDataKeys::SeriesInstanceUID.getFirstValue(medData);
             QString orientation = medMetaDataKeys::Orientation.getFirstValue(medData); // orientation sometimes differ by a few digits, thus this is not reliable
             QString seriesNumber = medMetaDataKeys::SeriesNumber.getFirstValue(medData);
             QString sequenceName = medMetaDataKeys::SequenceName.getFirstValue(medData);
@@ -250,7 +250,7 @@ int medDatabaseImporter::getOrCreateStudy ( const medAbstractData* medData, QSql
     QSqlQuery query ( db );
 
     QString studyName   = medMetaDataKeys::StudyDescription.getFirstValue(medData).simplified();
-    QString studyUid    = medMetaDataKeys::StudyDicomID.getFirstValue(medData);
+    QString studyUid    = medMetaDataKeys::StudyInstanceUID.getFirstValue(medData);
     QString studyId    = medMetaDataKeys::StudyID.getFirstValue(medData);
 
     QString serieName   = medMetaDataKeys::SeriesDescription.getFirstValue(medData).simplified();
@@ -301,7 +301,7 @@ int medDatabaseImporter::getOrCreateSeries ( const medAbstractData* medData, QSq
     QSqlQuery query ( db );
 
     QString seriesName     = medMetaDataKeys::SeriesDescription.getFirstValue(medData).simplified();
-    QString seriesUid      = medMetaDataKeys::SeriesDicomID.getFirstValue(medData);
+    QString seriesUid      = medMetaDataKeys::SeriesInstanceUID.getFirstValue(medData);
     QString seriesId       = medMetaDataKeys::SeriesID.getFirstValue(medData);
 
     QString orientation    = medMetaDataKeys::Orientation.getFirstValue(medData);

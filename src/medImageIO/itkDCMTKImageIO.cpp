@@ -851,9 +851,15 @@ std::string DCMTKImageIO::GetPatientAge() const
     return name;
 }
 
-std::string DCMTKImageIO::GetStudyID() const
+std::string DCMTKImageIO::GetStudyInstanceUID() const
 {
     std::string name = this->GetMetaDataValueString ( "(0020,000d)", 0 );
+    return name;
+}
+
+std::string DCMTKImageIO::GetStudyID() const
+{
+    std::string name = this->GetMetaDataValueString ( "(0020,0010)", 0 );
     return name;
 }
 
@@ -929,7 +935,7 @@ std::string DCMTKImageIO::GetScanOptions() const
     return name;
 }
 
-std::string DCMTKImageIO::GetSeriesID() const
+std::string DCMTKImageIO::GetSeriesInstanceUID() const
 {
     std::string name = this->GetMetaDataValueString ( "(0020,000e)", 0 );
     return name;
