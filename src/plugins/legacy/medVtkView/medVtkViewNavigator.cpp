@@ -75,6 +75,7 @@ class medVtkViewNavigatorPrivate
     medBoolParameterL *showRulerParameter;
     medBoolParameterL *showAnnotationParameter;
     medBoolParameterL *showScalarBarParameter;
+    medBoolParameterL *showAnnotatedCubeParameter;
     
     QPushButton *fourImageSplitterButton;
 
@@ -147,22 +148,26 @@ medVtkViewNavigator::medVtkViewNavigator(medAbstractView *parent) :
     d->showRulerParameter = new medBoolParameterL("Ruler", this);
     d->showAnnotationParameter = new medBoolParameterL("Annotations", this);
     d->showScalarBarParameter = new medBoolParameterL("Scalar Bar", this);
+    d->showAnnotatedCubeParameter = new medBoolParameterL("Annotated Cube", this);
 
     d->showAxesParameter->setText("Axes");
     d->showRulerParameter->setText("Ruler");
     d->showAnnotationParameter->setText("Annotations");
     d->showScalarBarParameter->setText("Scalar Bar");
+    d->showAnnotatedCubeParameter->setText("Annotated Cube");
 
     connect(d->showAxesParameter, SIGNAL(valueChanged(bool)), this, SLOT(showAxes(bool)));
     connect(d->showRulerParameter, SIGNAL(valueChanged(bool)), this, SLOT(showRuler(bool)));
     connect(d->showAnnotationParameter, SIGNAL(valueChanged(bool)), this, SLOT(showAnnotations(bool)));
     connect(d->showScalarBarParameter, SIGNAL(valueChanged(bool)), this, SLOT(showScalarBar(bool)));
+    connect(d->showAnnotatedCubeParameter, SIGNAL(valueChanged(bool)), this, SLOT(showAnnotatedCube(bool)));
 
     d->showAxesParameter->setValue(false);
     d->showRulerParameter->setValue(true);
     d->showAnnotationParameter->setValue(true);
     d->showScalarBarParameter->setValue(false);
-    
+    d->showAnnotatedCubeParameter->setValue(true);
+
     d->enableZooming = new medBoolParameterL("Zooming", this);
     d->enableZooming->setIcon(QIcon (":/icons/magnify.png"));
     d->enableZooming->setToolTip(tr("Zooming"));
@@ -191,11 +196,16 @@ medVtkViewNavigator::medVtkViewNavigator(medAbstractView *parent) :
                     << d->showRulerParameter
                     << d->showAnnotationParameter
                     << d->showScalarBarParameter
+                    << d->showAnnotatedCubeParameter
                     << this->positionBeingViewedParameter()
                     << this->timeLineParameter();
 
     connect(this, SIGNAL(orientationChanged()),
             dynamic_cast<medAbstractImageView*>(parent), SIGNAL(orientationChanged()));
+
+    // these parameters are always shown
+    d->showScalarBarParameter->show();
+    d->showAnnotationParameter->show();
 }
 
 medVtkViewNavigator::~medVtkViewNavigator()
@@ -382,6 +392,7 @@ QWidget* medVtkViewNavigator::buildToolBoxWidget()
     showOptionsLayout->addWidget(d->showRulerParameter->getCheckBox());
     showOptionsLayout->addWidget(d->showAnnotationParameter->getCheckBox());
     showOptionsLayout->addWidget(d->showScalarBarParameter->getCheckBox());
+    showOptionsLayout->addWidget(d->showAnnotatedCubeParameter->getCheckBox());
     showOptionsLayout->setContentsMargins(0, 0, 0, 10);
 
     QVBoxLayout* layout = new QVBoxLayout(toolBoxWidget);
@@ -566,6 +577,11 @@ void medVtkViewNavigator::showScalarBar(bool show)
     d->currentView->Render();
 }
 
+void medVtkViewNavigator::showAnnotatedCube(bool show)
+{
+    d->view3d->SetShowCube(static_cast<int>(show));
+    d->currentView->Render();
+}
 
 /*=========================================================================
 
@@ -607,7 +623,6 @@ void medVtkViewNavigator::changeOrientation(medImageView::Orientation orientatio
         cam["Camera Focal"] = QVariant(focal);
         cam["Parallel Scale"] = QVariant(ps);
 
-
         if(d->parent->cameraParameter())
             d->parent->cameraParameter()->setValues(cam);
     }
@@ -630,17 +645,17 @@ void medVtkViewNavigator::changeOrientation(medImageView::Orientation orientatio
 
     // hack - if we have transitioned to 3d view, and do not have any image data, grab it from 2d and make it invisible.
     // This is to fix poor performance in vtk 6.2 and a crash in 6.3 caused by a lack of extent data for the renderer
-    if (d->currentView == d->view3d && (!d->currentView->GetMedVtkImageInfo() || !d->currentView->GetMedVtkImageInfo()->initialized))
-    {
-        if (d->view2d->GetMedVtkImageInfo() && d->view2d->GetMedVtkImageInfo()->initialized)
-        {
-            d->view3d->GetActorX()->SetOpacity(0.0);
-            d->view3d->GetActorY()->SetOpacity(0.0);
-            d->view3d->GetActorZ()->SetOpacity(0.0);
-            d->currentView->SetInput(d->view2d->Get2DDisplayMapperInputAlgorithm(0)->GetInputConnection(0,0), d->view2d->GetOrientationMatrix());
-            d->currentView->ResetCamera();
-        }
-    }
+//    if (d->currentView == d->view3d && (!d->currentView->GetMedVtkImageInfo() || !d->currentView->GetMedVtkImageInfo()->initialized))
+//    {
+//        if (d->view2d->GetMedVtkImageInfo() && d->view2d->GetMedVtkImageInfo()->initialized)
+//        {
+//            d->view3d->GetActorX()->SetOpacity(0.0);
+//            d->view3d->GetActorY()->SetOpacity(0.0);
+//            d->view3d->GetActorZ()->SetOpacity(0.0);
+//            d->currentView->SetInput(d->view2d->Get2DDisplayMapperInputAlgorithm(0)->GetInputConnection(0,0), d->view2d->GetOrientationMatrix());
+//            d->currentView->ResetCamera();
+//        }
+//    }
     d->currentView->SetRenderWindow(renWin);
     d->currentView->SetCurrentPoint(pos);
     d->currentView->GlobalWarningDisplayOff();
@@ -660,15 +675,13 @@ void medVtkViewNavigator::updateWidgets()
     {
         d->showAxesParameter->hide();
         d->showRulerParameter->hide();
-        d->showAnnotationParameter->hide();
-        d->showScalarBarParameter->hide();
+        d->showAnnotatedCubeParameter->show();
     }
     else
     {
         d->showAxesParameter->show();
         d->showRulerParameter->show();
-        d->showAnnotationParameter->show();
-        d->showScalarBarParameter->show();
+        d->showAnnotatedCubeParameter->hide();
     }
 }
 

@@ -46,6 +46,12 @@ public:
 
     void createSlicingParam();
 
+    /**
+     * @brief getCurrentLayer return the current layer number in the view
+     * @return unsigned int current number
+     */
+    unsigned int getCurrentLayer();
+
 public slots:
     virtual void setOpacity (double opacity);
     void moveToSlice(int slice);

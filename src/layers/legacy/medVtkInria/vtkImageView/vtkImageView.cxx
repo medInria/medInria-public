@@ -125,8 +125,6 @@ vtkImageView::vtkImageView()
     this->ScalarBar->PickableOff();
     this->ScalarBar->VisibilityOn();
 
-
-
     for(int i=0; i<3; i++)
         this->CurrentPoint[i] = 0.0; //VTK_DOUBLE_MIN;
 
@@ -150,7 +148,6 @@ vtkImageView::vtkImageView()
     this->LookupTable->SetAlphaRange (0, 1);
     this->LookupTable->Build();
 }
-
 
 vtkImageView::~vtkImageView()
 {
@@ -231,6 +228,8 @@ vtkMTimeType vtkImageView::GetMTime()
 /** Attach an interactor for the internal render window. */
 void vtkImageView::SetupInteractor(vtkRenderWindowInteractor *arg)
 {
+    this->UnInstallPipeline();
+
     vtkSetObjectBodyMacro (Interactor, vtkRenderWindowInteractor, arg);
 
     this->InstallPipeline();
@@ -240,6 +239,8 @@ void vtkImageView::SetupInteractor(vtkRenderWindowInteractor *arg)
 /** Set your own renderwindow and renderer */
 void vtkImageView::SetRenderWindow(vtkRenderWindow *arg)
 {
+    this->UnInstallPipeline();
+
     vtkSetObjectBodyMacro (RenderWindow, vtkRenderWindow, arg);
 
     if (this->RenderWindow && this->RenderWindow->GetInteractor())
@@ -252,6 +253,8 @@ void vtkImageView::SetRenderWindow(vtkRenderWindow *arg)
 //----------------------------------------------------------------------------
 void vtkImageView::SetRenderer(vtkRenderer *arg)
 {
+    this->UnInstallPipeline();
+
     vtkSetObjectBodyMacro (Renderer, vtkRenderer, arg);
 
     this->InstallPipeline();
@@ -422,16 +425,19 @@ void vtkImageView::InstallPipeline()
 //----------------------------------------------------------------------------
 void vtkImageView::UnInstallPipeline()
 {
+    std::cout<<"### vtkImageView::UnInstallPipeline"<<std::endl;
     this->UnInstallInteractor();
 
     if (this->GetRenderer())
     {
+        std::cout<<"### vtkImageView::UnInstallPipeline A"<<std::endl;
         this->GetRenderer()->RemoveViewProp(this->CornerAnnotation);
         this->GetRenderer()->RemoveViewProp(this->ScalarBar);
     }
 
     if (this->RenderWindow && this->GetRenderer())
     {
+        std::cout<<"### vtkImageView::UnInstallPipeline B"<<std::endl;
         this->RenderWindow->RemoveRenderer(this->GetRenderer());
     }
 }
@@ -970,7 +976,6 @@ void vtkImageView::GetColorRange( double r[2] )
     this->GetColorRange(r, currentLayer);
 }
 
-
 void vtkImageView::GetColorRange(double r[], int layer)
 {
     r[0] = this->GetColorLevel(layer) - 0.5 * this->GetColorWindow(layer);
@@ -1299,9 +1304,6 @@ void vtkImageView::ResetCamera()
 {
     if (this->GetRenderer())
     {
-        //  ResetCamera calls ResetCameraClippingRange anyway...
-        //      this->GetRenderer()->ResetCameraClippingRange();
-
         if ( this->GetMedVtkImageInfo () )
         {
             double bounds [6];
@@ -1446,9 +1448,7 @@ void vtkImageView::Reset()
 {
     this->ResetCurrentPoint();
     this->ResetWindowLevel();
-    // this->SetColorWindow (VTK_DOUBLE_MAX); // NT: ?? --> when i press reset I would like the windowlevels to be "reset" ?
     this->ResetCamera();
-
 }
 
 //----------------------------------------------------------------------------

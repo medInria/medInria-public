@@ -95,6 +95,8 @@ void medDoubleParameterL::setValue(double value)
         this->updateInternWigets();
         this->blockInternWidgetsSignals(false);
 
+        // If widgets from medDoubleParameterL is changed manually,
+        // this signal will be caught by medVtkViewItkDataImageInteractor
         emit valueChanged(m_value);
     }
 }

@@ -936,6 +936,8 @@ the CornerAnnotation are modified.
 */
 void vtkImageView2D::SetAnnotationsFromOrientation()
 {
+    std::cout<<"### vtkImageView2D::SetAnnotationsFromOrientation"<<std::endl;
+
   // This method has to be called after the camera
   // has been set according to orientation and convention.
   // We rely on the camera settings to compute the oriention
@@ -1480,7 +1482,6 @@ void vtkImageView2D::InstallPipeline()
 
   if (this->GetRenderer())
   {
-    //this->GetRenderer()->AddViewProp( this->ImageActor );
     this->GetRenderer()->AddViewProp( this->OrientationAnnotation );
     this->GetRenderer()->GetActiveCamera()->ParallelProjectionOn();
   }
@@ -1532,18 +1533,20 @@ home made InteractorStyle, and make it observe all events we need
 */
 void vtkImageView2D::UnInstallPipeline()
 {
-  if ( this->GetRenderer() )
-  {
-      this->GetRenderer()->RemoveViewProp ( this->OrientationAnnotation );
-  }
+    std::cout<<"### --- vtkImageView2D::UnInstallPipeline"<<std::endl;
+    if ( this->GetRenderer() )
+    {
+        std::cout<<"### --- vtkImageView2D::UnInstallPipeline A"<<std::endl;
+        this->GetRenderer()->RemoveViewProp ( this->OrientationAnnotation );
+    }
 
-  if( this->InteractorStyle )
-  {
-    this->InteractorStyle->RemoveObserver ( this->Command );
-  }
+    if( this->InteractorStyle )
+    {
+        std::cout<<"### --- vtkImageView2D::UnInstallPipeline B"<<std::endl;
+        this->InteractorStyle->RemoveObserver ( this->Command );
+    }
 
-
-  this->Superclass::UnInstallPipeline();
+    this->Superclass::UnInstallPipeline();
 }
 
 //----------------------------------------------------------------------------
@@ -1567,14 +1570,13 @@ void vtkImageView2D::InstallInteractor()
 
   if (this->RenderWindow)
   {
-
-    for (LayerInfoVecType::iterator it = this->LayerInfoVec.begin(); it!=this->LayerInfoVec.end(); ++it)
-    {
-      if (vtkRenderer *renderer = it->Renderer)
+      for (auto it : LayerInfoVec)
       {
-        this->RenderWindow->AddRenderer(renderer);
+          if (vtkRenderer *renderer = it.Renderer)
+          {
+              this->RenderWindow->AddRenderer(renderer);
+          }
       }
-    }
   }
 
   this->Axes2DWidget->SetImageView (this);
@@ -1605,36 +1607,36 @@ void vtkImageView2D::InstallInteractor()
 //----------------------------------------------------------------------------
 void vtkImageView2D::UnInstallInteractor()
 {
-  this->RulerWidget->SetInteractor ( nullptr );
-  this->DistanceWidget->SetInteractor ( nullptr );
-  this->AngleWidget->SetInteractor ( nullptr );
-  this->Axes2DWidget->SetImageView ( nullptr );
+    std::cout<<"### vtkImageView2D::UnInstallInteractor"<<std::endl;
+    this->RulerWidget->SetInteractor ( nullptr );
+    this->DistanceWidget->SetInteractor ( nullptr );
+    this->AngleWidget->SetInteractor ( nullptr );
+    this->Axes2DWidget->SetImageView ( nullptr );
 
-  if (this->Interactor)
-  {
-    this->Interactor->SetRenderWindow (nullptr);
-    this->Interactor->SetInteractorStyle (nullptr);
-  }
+    if (this->Interactor)
+    {
+        this->Interactor->SetRenderWindow (nullptr);
+        this->Interactor->SetInteractorStyle (nullptr);
+    }
 
-  if (this->RenderWindow)
-   {
-     for (LayerInfoVecType::iterator it = this->LayerInfoVec.begin(); it!=this->LayerInfoVec.end(); ++it)
-     {
-      if (vtkRenderer *renderer = it->Renderer)
-       {
-        this->RenderWindow->RemoveRenderer(renderer);
-       }
-     }
-   }
+    if (this->RenderWindow)
+    {
+        for (auto it : LayerInfoVec)
+        {
+            if (vtkRenderer *renderer = it.Renderer)
+            {
+                this->RenderWindow->RemoveRenderer(renderer);
+            }
+        }
+    }
 
+    for (std::list<vtkDataSet2DWidget*>::iterator it = this->DataSetWidgets.begin(); it!=this->DataSetWidgets.end(); ++it )
+    {
+        (*it)->SetImageView(nullptr);
+        (*it)->Off();
+    }
 
-  for (std::list<vtkDataSet2DWidget*>::iterator it = this->DataSetWidgets.begin(); it!=this->DataSetWidgets.end(); ++it )
-  {
-    (*it)->SetImageView(nullptr);
-    (*it)->Off();
-  }
-
-  this->IsInteractorInstalled = 0;
+    this->IsInteractorInstalled = 0;
 }
 
 //----------------------------------------------------------------------------
@@ -1724,17 +1726,20 @@ void vtkImageView2D::SetInput(vtkAlgorithmOutput* pi_poVtkAlgoOutput, vtkMatrix4
         }
         else // layer > 0
         {
-            this->AddLayer(layer);
-            pi_poVtkAlgoOutput = this->ResliceImageToInput(pi_poVtkAlgoOutput, matrix);
-            this->SetInputLayer(pi_poVtkAlgoOutput, matrix, layer);
+            SetInputLayer(pi_poVtkAlgoOutput, matrix, layer);
         }
-        this->SetInputEnd(pi_poVtkAlgoOutput, layer);
+
+        SetInputEnd(pi_poVtkAlgoOutput, layer);
     }
 }
 
 void vtkImageView2D::SetInputLayer(vtkAlgorithmOutput* pi_poVtkAlgoOutput, vtkMatrix4x4 *matrix /*= 0*/, int layer /*= 0*/)
 {
     // layer > 0
+
+    this->AddLayer(layer);
+    pi_poVtkAlgoOutput = this->ResliceImageToInput(pi_poVtkAlgoOutput, matrix);
+
     vtkImage2DDisplay *imageDisplay = this->GetImage2DDisplayForLayer(layer);
     imageDisplay->SetInputProducer(pi_poVtkAlgoOutput);
     imageDisplay->SetInputData(static_cast<vtkImageAlgorithm*>(pi_poVtkAlgoOutput->GetProducer())->GetOutput());
@@ -1819,11 +1824,9 @@ void vtkImageView2D::RemoveLayerActor(vtkActor *actor, int layer)
     this->SetCurrentLayer(layer);
     this->Slice = this->GetSliceForWorldCoordinates (this->CurrentPoint);
     this->UpdateDisplayExtent();
-    // this->UpdateCenter();
     this->UpdateSlicePlane();
     this->InvokeEvent (vtkImageView2D::SliceChangedEvent);
 }
-
 
 //----------------------------------------------------------------------------
 /**
