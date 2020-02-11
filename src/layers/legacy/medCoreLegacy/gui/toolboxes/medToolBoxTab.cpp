@@ -27,7 +27,7 @@ medToolBoxTab::~medToolBoxTab(void)
 {
     delete d;
 
-    d = unllptr;
+    d = nullptr;
 }
 
 
