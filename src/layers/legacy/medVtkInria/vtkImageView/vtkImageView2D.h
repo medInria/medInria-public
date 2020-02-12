@@ -132,7 +132,7 @@ public:
     // Set/Get the input image to the viewer.
     virtual void SetInput (vtkAlgorithmOutput* pi_poVtkAlgoOutput, vtkMatrix4x4 *matrix = nullptr, int layer = 0);
     virtual void SetInput (vtkActor *actor, int layer = 0, vtkMatrix4x4 *matrix = nullptr,
-                           const int imageSize[3] = 0, const double imageSpacing[] = 0, const double imageOrigin[] = 0);
+                           const int imageSize[3] = nullptr, const double imageSpacing[] = nullptr, const double imageOrigin[] = nullptr);
 
     void RemoveLayerActor(vtkActor *actor, int layer = 0);
     
