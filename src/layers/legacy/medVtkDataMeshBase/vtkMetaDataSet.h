@@ -97,11 +97,7 @@ class MEDVTKDATAMESHBASE_EXPORT vtkMetaDataSet: public vtkDataObject
   */
   template <class type> inline bool GetMetaData (std::string key, type &ret)
   {
-      if(!itk::ExposeMetaData<type>(this->MetaDataDictionary, key, ret))
-      {
-          return false;
-      }
-      return true;
+      return itk::ExposeMetaData<type>(this->MetaDataDictionary, key, ret);
   }
 
   std::vector<std::string> GetMetaDataKeyList()
