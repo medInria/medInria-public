@@ -154,7 +154,7 @@ void DCMTKImageIO::ReadImageInformation()
         ++fileIndex;
     }
 
-    /** Spacing between slices calculation (needs the dictionnary to be filled)*/
+    /** Spacing between slices calculation (needs the dictionary to be filled)*/
 
     /*** We first need the spacing between the slices*/
     this->DetermineOrientation();
