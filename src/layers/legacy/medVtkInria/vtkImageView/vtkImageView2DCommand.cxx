@@ -45,7 +45,7 @@ vtkImageView2DCommand::~vtkImageView2DCommand()
 void
 vtkImageView2DCommand::Execute(vtkObject*    caller,
                                unsigned long event,
-                               void*         callData)
+                               void*         /*callData*/)
 {
     vtkInteractorStyleImageView2D *isi =
             static_cast<vtkInteractorStyleImageView2D *>(caller);
@@ -178,27 +178,4 @@ vtkImageView2DCommand::Execute(vtkObject*    caller,
     {
         this->Viewer->Modified();
     }
-
-    // Start Slice Move
-//    else if (event == vtkImageView2DCommand::StartTimeChangeEvent)
-//    {
-//        return;
-//    }
-
-//    // End Slice Move
-//    else if (event == vtkImageView2DCommand::EndTimeChangeEvent)
-//    {
-//        return;
-//    }
-//    // Start Slice Move
-//    else if (event == vtkImageView2DCommand::StartSliceMoveEvent)
-//    {
-//        return;
-//    }
-
-//    // End Slice Move
-//    else if (event == vtkImageView2DCommand::EndSliceMoveEvent)
-//    {
-//        return;
-//    }
 }

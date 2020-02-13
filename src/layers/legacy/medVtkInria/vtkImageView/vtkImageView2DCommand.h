@@ -64,7 +64,7 @@ class MEDVTKINRIA_EXPORT vtkImageView2DCommand : public vtkCommand
   // the instance invoking the event; eid is the event id (see
   // vtkCommand.h); and calldata is information sent when the callback
   // was invoked (e.g., progress value in the vtkCommand::ProgressEvent).
-  virtual void Execute(vtkObject *caller,unsigned long event, void *vtkNotUsed(callData));
+  virtual void Execute(vtkObject *caller, unsigned long event, void *);
 
   virtual void SetViewer(vtkImageView2D *viewer)
   { this->Viewer = viewer; }
