@@ -80,8 +80,8 @@ void vtkImageViewCornerAnnotation::TextReplace(vtkImageActor *ia,
         window *= this->LevelScale;
         level = this->ImageView->GetColorLevel();
         level = level * this->LevelScale + this->LevelShift;
-        windowi = (long int)window;
-        leveli = (long int)level;
+        windowi = static_cast<long int>(window);
+        leveli = static_cast<long int>(level);
 
         wl_input = this->ImageView->GetMedVtkImageInfo();
         cam = this->ImageView->GetRenderer() ? this->ImageView->GetRenderer()->GetActiveCamera() : nullptr;
@@ -117,11 +117,15 @@ void vtkImageViewCornerAnnotation::TextReplace(vtkImageActor *ia,
             for (unsigned int i=0; i<3; i++)
             {
                 if (dotX <= std::fabs (Xaxis[i]))
-                { dotX = std::fabs (Xaxis[i]);
-                  idX = i; }
+                {
+                    dotX = std::fabs (Xaxis[i]);
+                    idX = i;
+                }
                 if (dotY <= std::fabs (Yaxis[i]))
-                { dotY = std::fabs (Yaxis[i]);
-                  idY = i; }
+                {
+                    dotY = std::fabs (Yaxis[i]);
+                    idY = i;
+                }
             }
             if (view2d)
                 idZ = view2d->GetSliceOrientation();

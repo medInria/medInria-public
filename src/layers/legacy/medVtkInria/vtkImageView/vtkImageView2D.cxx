@@ -936,8 +936,6 @@ the CornerAnnotation are modified.
 */
 void vtkImageView2D::SetAnnotationsFromOrientation()
 {
-    std::cout<<"### vtkImageView2D::SetAnnotationsFromOrientation"<<std::endl;
-
   // This method has to be called after the camera
   // has been set according to orientation and convention.
   // We rely on the camera settings to compute the oriention
@@ -948,7 +946,6 @@ void vtkImageView2D::SetAnnotationsFromOrientation()
   vtkCamera *cam = this->GetRenderer() ? this->GetRenderer()->GetActiveCamera() : nullptr;
   if (cam)
   {
-
     std::string matrix[3][2];
     matrix[0][0] = "R";matrix[0][1] = "L";
     matrix[1][0] = "A";matrix[1][1] = "P";
@@ -963,11 +960,9 @@ void vtkImageView2D::SetAnnotationsFromOrientation()
 
     unsigned int id1 = 0;
     unsigned int id2 = 0;
-    //Ben: I removed id3 and dot3 since they are not used: fewer gcc warnings
-//    unsigned int id3 = 0;
+
     double dot1 = 0;
     double dot2 = 0;
-//    double dot3 = 0;
 
     for (unsigned int i=0; i<3; i++)
     {
@@ -981,11 +976,6 @@ void vtkImageView2D::SetAnnotationsFromOrientation()
         dot2 = std::abs (rightvector[i]);
         id2 = i;
       }
-//      if (dot3 <= std::abs (normal[i]))
-//      {
-//        dot3 = std::abs (normal[i]);
-//        id3 = i;
-//      }
     }
 
     if (viewup[id1] > 0)
@@ -1533,16 +1523,13 @@ home made InteractorStyle, and make it observe all events we need
 */
 void vtkImageView2D::UnInstallPipeline()
 {
-    std::cout<<"### --- vtkImageView2D::UnInstallPipeline"<<std::endl;
     if ( this->GetRenderer() )
     {
-        std::cout<<"### --- vtkImageView2D::UnInstallPipeline A"<<std::endl;
         this->GetRenderer()->RemoveViewProp ( this->OrientationAnnotation );
     }
 
     if( this->InteractorStyle )
     {
-        std::cout<<"### --- vtkImageView2D::UnInstallPipeline B"<<std::endl;
         this->InteractorStyle->RemoveObserver ( this->Command );
     }
 
@@ -1607,7 +1594,6 @@ void vtkImageView2D::InstallInteractor()
 //----------------------------------------------------------------------------
 void vtkImageView2D::UnInstallInteractor()
 {
-    std::cout<<"### vtkImageView2D::UnInstallInteractor"<<std::endl;
     this->RulerWidget->SetInteractor ( nullptr );
     this->DistanceWidget->SetInteractor ( nullptr );
     this->AngleWidget->SetInteractor ( nullptr );

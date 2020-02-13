@@ -376,7 +376,6 @@ void vtkImageView3D::InstallPipeline()
 //----------------------------------------------------------------------------
 void vtkImageView3D::UnInstallPipeline()
 {
-    std::cout<<"### vtkImageView3D::UnInstallPipeline"<<std::endl;
   if (this->Renderer)
   {
     this->Renderer->RemoveViewProp (this->ActorX);
@@ -415,19 +414,12 @@ void vtkImageView3D::InstallInteractor()
 //----------------------------------------------------------------------------
 void vtkImageView3D::UnInstallInteractor()
 {
-    std::cout<<"### vtkImageView3D::UnInstallInteractor"<<std::endl;
     this->BoxWidget->SetInteractor (nullptr);
     this->PlaneWidget->SetInteractor (nullptr);
     this->Marker->SetInteractor (nullptr);
 
     if (this->Interactor)
     {
-//        auto poRenderer = this->Interactor->GetRenderWindow()->GetRenderers()->GetFirstRenderer();
-//        while (poRenderer)
-//        {
-//            this->RenderWindow->RemoveRenderer(poRenderer);
-//            poRenderer = this->Interactor->GetRenderWindow()->GetRenderers()->GetFirstRenderer();
-//        }
         this->Interactor->SetRenderWindow (nullptr);
         this->Interactor->SetInteractorStyle (nullptr);
     }

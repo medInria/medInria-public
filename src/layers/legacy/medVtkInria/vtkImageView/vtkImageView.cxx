@@ -425,23 +425,19 @@ void vtkImageView::InstallPipeline()
 //----------------------------------------------------------------------------
 void vtkImageView::UnInstallPipeline()
 {
-    std::cout<<"### vtkImageView::UnInstallPipeline"<<std::endl;
     this->UnInstallInteractor();
 
     if (this->GetRenderer())
     {
-        std::cout<<"### vtkImageView::UnInstallPipeline A"<<std::endl;
         this->GetRenderer()->RemoveViewProp(this->CornerAnnotation);
         this->GetRenderer()->RemoveViewProp(this->ScalarBar);
     }
 
     if (this->RenderWindow && this->GetRenderer())
     {
-        std::cout<<"### vtkImageView::UnInstallPipeline B"<<std::endl;
         this->RenderWindow->RemoveRenderer(this->GetRenderer());
     }
 }
-
 
 //----------------------------------------------------------------------------
 /**
@@ -1762,6 +1758,8 @@ void vtkImageView::SetCurrentLayer(int layer)
         }
         this->ScalarBar->Modified();
         this->Modified();
+
+        this->Render();
     }
 }
 
