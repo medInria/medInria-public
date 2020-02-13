@@ -643,19 +643,6 @@ void medVtkViewNavigator::changeOrientation(medImageView::Orientation orientatio
         break;
     }
 
-    // hack - if we have transitioned to 3d view, and do not have any image data, grab it from 2d and make it invisible.
-    // This is to fix poor performance in vtk 6.2 and a crash in 6.3 caused by a lack of extent data for the renderer
-//    if (d->currentView == d->view3d && (!d->currentView->GetMedVtkImageInfo() || !d->currentView->GetMedVtkImageInfo()->initialized))
-//    {
-//        if (d->view2d->GetMedVtkImageInfo() && d->view2d->GetMedVtkImageInfo()->initialized)
-//        {
-//            d->view3d->GetActorX()->SetOpacity(0.0);
-//            d->view3d->GetActorY()->SetOpacity(0.0);
-//            d->view3d->GetActorZ()->SetOpacity(0.0);
-//            d->currentView->SetInput(d->view2d->Get2DDisplayMapperInputAlgorithm(0)->GetInputConnection(0,0), d->view2d->GetOrientationMatrix());
-//            d->currentView->ResetCamera();
-//        }
-//    }
     d->currentView->SetRenderWindow(renWin);
     d->currentView->SetCurrentPoint(pos);
     d->currentView->GlobalWarningDisplayOff();

@@ -435,7 +435,7 @@ void vtkImageView3D::SetInput(vtkAlgorithmOutput* pi_poVtkAlgoOutput, vtkMatrix4
             SetFirstLayer(pi_poVtkAlgoOutput, matrix, layer);
         }
 
-        this->test3D(pi_poVtkAlgoOutput, matrix, layer);
+        this->test3D();
 
         if (layer > 0 && layer < 4)
         {
