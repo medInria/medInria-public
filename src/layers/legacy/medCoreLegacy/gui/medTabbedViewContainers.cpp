@@ -159,7 +159,10 @@ QList<medAbstractView*> medTabbedViewContainers::viewsInTab(int index)
     QList<medViewContainer*> containers = splitter->containers();
     foreach(medViewContainer *container, containers)
     {
-        views << container->view();
+        if(container->view())
+        {
+            views << container->view();
+        }
     }
 
     return views;

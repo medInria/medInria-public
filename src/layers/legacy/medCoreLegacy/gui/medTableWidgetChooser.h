@@ -14,23 +14,24 @@
 #pragma once
 
 #include <QTableWidget>
-
+#include <QTableWidgetItem>
 #include <medCoreLegacyExport.h>
+#include <medImageViewEnum.h>
+class medTableWidgetChooserPrivate;
 
-class medLayoutChooserPrivate;
-
-class MEDCORELEGACY_EXPORT medLayoutChooser : public QTableWidget
+class MEDCORELEGACY_EXPORT medTableWidgetChooser : public QTableWidget
 {
     Q_OBJECT
 
 public:
-     medLayoutChooser(QWidget *parent = 0);
-    ~medLayoutChooser();
+     medTableWidgetChooser(QWidget *parent = 0, int rowCount = 5, int colCount = 5, int sideSize = 30);
+    ~medTableWidgetChooser();
 
     QSize sizeHint() const;
     int sizeHintForRow(int row) const;
     int sizeHintForColumn(int column) const;
 
+    void setSideSize(int size);
 signals:
     void selected(unsigned int rows, unsigned int cols);
 
@@ -38,7 +39,15 @@ protected:
     void mouseReleaseEvent(QMouseEvent *event);
 
 private:
-    medLayoutChooserPrivate *d;
+    medTableWidgetChooserPrivate *d;
 };
 
 
+class MEDCORELEGACY_EXPORT medTableWidgetItem : public QTableWidgetItem
+{
+public:
+    medTableWidgetItem(const QIcon &icon, const QString &text, int type = Type):QTableWidgetItem(icon, text, type){}
+    medImageView::Orientation orientation();
+
+    enum ItemType { AxialType = UserType, CoronalType, SagittalType, ThreeDimType};
+};
