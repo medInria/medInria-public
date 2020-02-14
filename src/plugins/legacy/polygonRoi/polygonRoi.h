@@ -17,6 +17,10 @@
 #include <polygonRoiPluginExport.h>
 #include <vtkContourWidget.h>
 #include <vtkImageView2D.h>
+#include <medImageViewEnum.h>
+#include <medAbstractImageView.h>
+
+enum class CURSORSTATE { NONE, FIRST_CLICK, ROI_CLOSED, SLICE_CHANGED, CONTINUE  };
 
 class polygonRoiPrivate;
 class BezierRoiObserver;
@@ -28,10 +32,11 @@ class POLYGONROIPLUGIN_EXPORT polygonRoi : public medAbstractRoi
     Q_OBJECT
 
 public:
-    polygonRoi(vtkImageView2D *view, medAbstractRoi *parent = nullptr );
+    polygonRoi(vtkImageView2D *view, QColor color, medAbstractRoi *parent = nullptr );
     virtual ~polygonRoi();
 
     vtkContourWidget * getContour();
+    QPair<vtkPolyData *, vtkProperty *> getPoly();
     vtkImageView2D * getView();
 
     void lockObserver(bool val);
@@ -53,6 +58,9 @@ public:
     virtual bool canRedo(){return true;}
     virtual bool canUndo(){return true;}
     
+    void addViewToList(medAbstractImageView *viewToAdd, medImageView::Orientation orientation);
+    void addDataSet();
+    void activate();
 public slots:
     
     void showOrHide();
@@ -62,7 +70,10 @@ public slots:
     virtual bool copyROI(medAbstractView *view);
     virtual medAbstractRoi * getCopy(medAbstractView *view);
     virtual QList<medAbstractRoi*> * interpolate(medAbstractRoi *roi);
-    
+
+signals:
+    void updateCursorState(CURSORSTATE state);
+    void interpolate();
 private:
     polygonRoiPrivate *d;
     friend class PolygonRoiObserver;

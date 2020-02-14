@@ -39,7 +39,7 @@
 #include <medSettingsManager.h>
 #include <medAbstractInteractor.h>
 #include <medPoolIndicatorL.h>
-#include <medLayoutChooser.h>
+#include <medTableWidgetChooser.h>
 
 class medViewContainerPrivate
 {
@@ -66,7 +66,7 @@ public:
     QMenu *toolBarMenu;
     QPushButton *menuButton;
 
-    medLayoutChooser *presetLayoutChooser;
+    medTableWidgetChooser *presetLayoutChooser;
     QMenu* presetMenu;
 
     QAction *openAction;
@@ -182,7 +182,7 @@ medViewContainer::medViewContainer(medViewContainerSplitter *parent): QFrame(par
     d->presetMenu->setToolTip(tr("Split into presets"));
     d->presetMenu->setIcon(QIcon(":/icons/splitPresets.png"));
 
-    d->presetLayoutChooser = new medLayoutChooser(this);
+    d->presetLayoutChooser = new medTableWidgetChooser(this);
     connect(d->presetLayoutChooser, SIGNAL(selected(unsigned int,unsigned int)), this, SLOT(splitContainer(unsigned int,unsigned int)));
 
     QVBoxLayout *presetMenuLayout = new QVBoxLayout;

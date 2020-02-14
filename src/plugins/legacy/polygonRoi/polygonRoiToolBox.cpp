@@ -17,6 +17,7 @@
 #include <itkImageRegionIterator.h>
 #include <itkMinimumMaximumImageCalculator.h>
 #include <itkSliceBySliceImageFilter.h>
+#include <vtkPolyDataMapper.h>
 
 #include <medAbstractDataFactory.h>
 #include <medAbstractImageData.h>
@@ -27,36 +28,184 @@
 #include <medPluginManager.h>
 #include <medRoiManagementToolBox.h>
 #include <medTabbedViewContainers.h>
+#include <medTransform.h>
 #include <medToolBox.h>
 #include <medToolBoxFactory.h>
 #include <medToolBoxHeader.h>
 #include <medUtilities.h>
 #include <medVtkViewBackend.h>
+#include <vtkCleanPolyData.h>
+#include <vtkPointData.h>
 
+#include <medPolygonAnnotationData.h>
+#include <medViewContainer.h>
+#include <medViewContainerManager.h>
+#include <medViewContainerSplitter.h>
+#include <medViewFactory.h>
+#include <vtkActor.h>
+#include <vtkAppendPolyData.h>
 #include <vtkCellArray.h>
 #include <vtkContourRepresentation.h>
 #include <vtkContourWidget.h>
+#include <vtkFillHolesFilter.h>
 #include <vtkImageActor.h>
 #include <vtkImageView2D.h>
 #include <vtkMatrix4x4.h>
+#include <vtkMetaSurfaceMesh.h>
 #include <vtkParametricSpline.h>
 #include <vtkPolyData.h>
+#include <vtkXMLPolyDataWriter.h>
 #include <vtkPolyLine.h>
 #include <vtkPolygon.h>
+#include <vtkProperty.h>
+#include <vtkRenderer.h>
 #include <vtkSmartPointer.h>
-
+#include <medTableWidgetChooser.h>
+#include <vtkWidgetEvent.h>
+#include <vtkContourWidget.h>
 
 const char *polygonRoiToolBox::generateBinaryImageButtonName = "generateBinaryImageButton";
 
-class contourWidgetObserver : public vtkCommand
+PolygonEventFilter::PolygonEventFilter() :
+        medViewEventFilter(), currentLabel(0), cursorState(CURSORSTATE::FIRST_CLICK), savedLabel(0)
+{
+
+}
+
+void PolygonEventFilter::removeInteraction()
+{
+    removeFromAllViews();
+    //delete viewEventFilter;
+    //viewEventFilter = nullptr;
+    for (medLabelManager *manager : managers)
+    {
+        manager->removeEvent();
+    }
+    cursorState = CURSORSTATE::CONTINUE;
+}
+
+bool PolygonEventFilter::mousePressEvent(medAbstractView * view, QMouseEvent *mouseEvent)
+{
+    vtkImageView2D *view2d = static_cast<medVtkViewBackend*>(view->backend())->view2D;
+//    QString state;
+//    if (cursorState==CURSORSTATE::NONE)
+//        state = "none";
+//    else if (cursorState==CURSORSTATE::FIRST_CLICK)
+//        state = "first click";
+//    else if (cursorState==CURSORSTATE::ROI_CLOSED)
+//        state = "roi closed";
+//    else if (cursorState==CURSORSTATE::SLICE_CHANGED)
+//        state = "slice changed";
+//    else if (cursorState==CURSORSTATE::CONTINUE)
+//        state = "continue";
+//    qDebug()<<"mouse press with state : "<<state<<" and currentLabel : "<<currentLabel;
+//    qDebug()<<"roi manager size "<<managers.size();
+//    for (medLabelManager *manager : managers)
+//    {
+//        qDebug()<<"label : "<<manager->getLabel()<<" and number of rois "<<manager->getRois().size();
+//        for (polygonRoi *r : manager->getRois())
+//        {
+//            if (r->isMasterRoi())
+//            qDebug()<<"   in slice "<<r->getIdSlice();
+//        }
+//    }
+
+    switch (cursorState)
+    {
+    case CURSORSTATE::FIRST_CLICK:
+    {
+        medLabelManager * manager = new medLabelManager(view, currentLabel, this);
+        savedLabel = currentLabel;
+        currentLabel++;
+        managers.append(manager);
+        cursorState = CURSORSTATE::NONE;
+        break;
+    }
+    case CURSORSTATE::ROI_CLOSED:
+    {
+        medLabelManager *newManager = nullptr;
+        for (medLabelManager *manager : managers)
+        {
+            if (manager->roiAlreadyInSlice(view2d->GetSlice(), view2d->GetViewOrientation()))
+            {
+                newManager = new medLabelManager(view, currentLabel, this);
+                managers.append(newManager);
+                savedLabel = currentLabel;
+                currentLabel++;
+                cursorState = CURSORSTATE::NONE;
+                return false;
+            }
+        }
+        break;
+    }
+    case CURSORSTATE::SLICE_CHANGED:
+    {
+        medLabelManager *newManager = nullptr;
+        for (medLabelManager *manager : managers)
+        {
+            if (manager->roiAlreadyInSlice(view2d->GetSlice(), view2d->GetViewOrientation()))
+            {
+                newManager = new medLabelManager(view, currentLabel, this);
+                managers.append(newManager);
+                savedLabel = currentLabel;
+                currentLabel++;
+                cursorState = CURSORSTATE::NONE;
+                return false;
+            }
+        }
+        for (medLabelManager *manager : managers)
+        {
+//            qDebug()<<"manager with label "<<manager->getLabel();
+            if (manager->getLabel() == savedLabel)
+            {
+                newManager = manager;
+            }
+        }
+        if (!newManager)
+        {
+            qDebug()<<"ERRRRROR";
+            exit(-1);
+        }
+        newManager->appendRoi();
+        cursorState = CURSORSTATE::NONE;
+        break;
+    }
+    case CURSORSTATE::CONTINUE:
+    {
+        for (medLabelManager *manager : managers)
+        {
+            polygonRoi *roi = manager->openRoiInSlice(view2d->GetSlice(), view2d->GetViewOrientation());
+            if ( roi != nullptr)
+            {
+                roi->getContour()->SetWidgetState(vtkContourWidget::Define);
+
+                roi->getContour()->InvokeEvent(vtkCommand::PlacePointEvent);
+                cursorState = CURSORSTATE::NONE;
+                savedLabel = currentLabel;
+                currentLabel = manager->getLabel() + 1;
+                return false;
+            }
+        }
+        break;
+    }
+    case CURSORSTATE::NONE:
+    default:
+    {
+        return false;
+    }
+    }
+    return false;
+}
+
+
+
+class contourWidgetListener : public vtkCommand
 {
 public:
     typedef QPair<unsigned int,unsigned int> PlaneIndexSlicePair;
 
-    static contourWidgetObserver* New()
-    {
-        return new contourWidgetObserver;
-    }
+    contourWidgetListener();
+    ~contourWidgetListener();
 
     void Execute ( vtkObject *caller, unsigned long event, void *callData );
 
@@ -95,8 +244,6 @@ public:
     }
 
 protected:
-    contourWidgetObserver();
-    ~contourWidgetObserver();
 
 private:
     int m_lock;
@@ -106,7 +253,7 @@ private:
     polygonRoi *currentPolygonRoi;
 };
 
-contourWidgetObserver::contourWidgetObserver()
+contourWidgetListener::contourWidgetListener()
 {
     this->m_lock = 0;
     this->view = nullptr;
@@ -115,10 +262,16 @@ contourWidgetObserver::contourWidgetObserver()
     this->currentPolygonRoi = nullptr;
 }
 
-contourWidgetObserver::~contourWidgetObserver(){}
+contourWidgetListener::~contourWidgetListener(){}
 
-void contourWidgetObserver::Execute ( vtkObject *caller, unsigned long event, void *callData )
+void contourWidgetListener::Execute ( vtkObject *caller, unsigned long event, void *callData )
 {
+    qDebug()<<"event caught with caller "<<caller<<"event "<<event<<" and callData "<<callData;
+    if (event == vtkCommand::StartInteractionEvent)
+        qDebug()<<"start";
+    if (event == vtkCommand::EndInteractionEvent)
+        qDebug()<<"end";
+    return;
     if ( this->m_lock )
     {
         return;
@@ -129,53 +282,55 @@ void contourWidgetObserver::Execute ( vtkObject *caller, unsigned long event, vo
         return;
     }
 
-    if (event == vtkCommand::StartInteractionEvent)
-    {
-        if (currentPolygonRoi)
-        {
-            if(!toolBox->addNewCurve->isChecked())
-            {
-                currentPolygonRoi->forceInvisibilityOn(); // should be a delete but does not work yet !! TODO : solve this !
-                currentPolygonRoi = nullptr;
-                return;
-            }
+//    if (event == vtkCommand::StartInteractionEvent)
+//    {
+//        if (currentPolygonRoi)
+//        {
+//            if(!toolBox->addNewCurve->isChecked())
+//            {
+//                currentPolygonRoi->forceInvisibilityOn(); // should be a delete but does not work yet !! TODO : solve this !
+//                currentPolygonRoi = nullptr;
+//                return;
+//            }
 
-            if (!toolBox->viewsPlaneIndex.contains(toolBox->currentView))
-            {
-                QList<int> * planeIndexes = new QList<int>();
-                for(int i=0; i<3; i++)
-                {
-                    planeIndexes->append(0);
-                } // fill the list with 0;
-                toolBox->viewsPlaneIndex.insert(toolBox->currentView,planeIndexes);
-            }
+//            if (!toolBox->viewsPlaneIndex.contains(toolBox->currentView))
+//            {
+//                QList<int> * planeIndexes = new QList<int>();
+//                for(int i=0; i<3; i++)
+//                {
+//                    planeIndexes->append(0);
+//                } // fill the list with 0;
+//                toolBox->viewsPlaneIndex.insert(toolBox->currentView,planeIndexes);
+//            }
 
-            currentPolygonRoi->setIdSlice(view->GetSlice());
-            currentPolygonRoi->setOrientation(view->GetViewOrientation());
-            currentPolygonRoi->forceVisibilityOff();
+//            currentPolygonRoi->setIdSlice(view->GetSlice());
+//            currentPolygonRoi->setOrientation(view->GetViewOrientation());
+//            currentPolygonRoi->forceVisibilityOff();
 
-            roiToBeClosed = currentPolygonRoi;
-            currentPolygonRoi = nullptr;
-        }
-    }
+//            roiToBeClosed = currentPolygonRoi;
+//            currentPolygonRoi = nullptr;
+//        }
+//    }
 
-    // ROI added in medRoiManagementToolBox even if not closed, or just a point
-    QList<int> * planeIndexes = toolBox->viewsPlaneIndex.value(toolBox->currentView);
-    AddRoiCommand * command = new AddRoiCommand(toolBox->currentView, roiToBeClosed, "Polygon rois", "NewRoi");
-    medRoiManager::instance()->addToUndoRedoStack(command);
-    planeIndexes->replace(view->GetViewOrientation(), toolBox->computePlaneIndex()); // save PlaneIndex for this view and orientation TODO : improve this so that we do it only once for each orientation
+//    // ROI added in medRoiManagementToolBox even if not closed, or just a point
+//    QList<int> * planeIndexes = toolBox->viewsPlaneIndex.value(toolBox->currentView);
+//    AddRoiCommand * command = new AddRoiCommand(toolBox->currentView, roiToBeClosed, "Polygon rois", "NewRoi");
+//    medRoiManager::instance()->addToUndoRedoStack(command);
+//    planeIndexes->replace(view->GetViewOrientation(), toolBox->computePlaneIndex()); // save PlaneIndex for this view and orientation TODO : improve this so that we do it only once for each orientation
 
-    roiToBeClosed->getContour()->RemoveObserver(this);
-    toolBox->onAddNewCurve();
-    roiToBeClosed = nullptr;
+//    roiToBeClosed->getContour()->RemoveObserver(this);
+//    //toolBox->onAddNewCurve();
+//    roiToBeClosed = nullptr;
 
-    // after first polygonROI created, interpolation and save are enabled
-    toolBox->buttonsStateWhenROI();
+//    // after first polygonROI created, interpolation and save are enabled
+//    toolBox->buttonsStateWhenROI();
 }
 
 polygonRoiToolBox::polygonRoiToolBox(QWidget *parent ) :
-    medAbstractSelectableToolBox(parent)
+    medAbstractSelectableToolBox(parent), viewEventFilter(nullptr)
 {
+    contourObserver = nullptr;
+//    cursorState = CURSORSTATE::FIRST_CLICK;
     QWidget *displayWidget = new QWidget(this);
     this->addWidget(displayWidget);
 
@@ -186,7 +341,7 @@ polygonRoiToolBox::polygonRoiToolBox(QWidget *parent ) :
     addNewCurve->setToolTip(tr("Activate closed polygon mode"));
     addNewCurve->setCheckable(true);
     addNewCurve->setObjectName("closedPolygonButton");
-    connect(addNewCurve,SIGNAL(toggled(bool)),this,SLOT(onAddNewCurve()));
+    connect(addNewCurve,SIGNAL(toggled(bool)),this,SLOT(clickClosePolygon(bool)));
 
     interpolate = new QPushButton("Interpolate",this);
     interpolate->setToolTip("Interpolate between green master ROIs");
@@ -209,6 +364,12 @@ polygonRoiToolBox::polygonRoiToolBox(QWidget *parent ) :
     generateBinaryImage_button->setObjectName(generateBinaryImageButtonName);
     connect(generateBinaryImage_button,SIGNAL(clicked()),this,SLOT(generateAndSaveBinaryImage()));
 
+    splitViewButton = new QPushButton(tr("Split View"));
+    splitViewButton->setToolTip("View Polygon in other views");
+    splitViewButton->setObjectName("SplitView");
+//    connect(splitViewButton,SIGNAL(clicked()),this,SLOT(splitView()));
+//    connect(splitViewButton,SIGNAL(clicked()),this,SLOT(updateTableWidgetView()));
+
     currentView = nullptr;
 
     QHBoxLayout *ButtonLayout0 = new QHBoxLayout();
@@ -221,8 +382,20 @@ polygonRoiToolBox::polygonRoiToolBox(QWidget *parent ) :
     layout->addLayout( ButtonLayout1 );
     ButtonLayout1->addWidget(repulsorTool);
     ButtonLayout1->addWidget(generateBinaryImage_button);
+    ButtonLayout1->addWidget(splitViewButton);
 
-    hashViewObserver = new QHash<medAbstractView*,contourWidgetObserver*>();
+    tableViewChooser = new medTableWidgetChooser(this, 1, 3, 50);
+    // Mandatory : Qt bug ? : Without the lines below, the size of the table View is not as expected
+    QSize size = tableViewChooser->sizeHint();
+    qDebug()<<"size === "<<size.width()  <<" ;;; "<<size.height();
+    tableViewChooser->setFixedHeight(size.height()-1);
+    tableViewChooser->setFixedWidth(size.width()-1);
+    tableViewChooser->setIconSize(QSize(size.height()-1,size.height()-1));
+
+    connect(tableViewChooser, SIGNAL(selected(unsigned int,unsigned int)), this, SLOT(updateTableWidgetView(unsigned int,unsigned int)));
+    layout->addWidget(tableViewChooser);
+
+    hashViewObserver = new QHash<medAbstractView*,contourWidgetListener*>();
 
     // How to use
     QLabel *explanation = new QLabel(tr("Define a ROI: choose 'Closed Polygon' and click on the data set.\n")
@@ -255,12 +428,12 @@ polygonRoiToolBox::polygonRoiToolBox(QWidget *parent ) :
     disableButtons();
 
     // Add Roi Management Toolbox
-    roiManagementToolBox = medToolBoxFactory::instance()->createToolBox("medRoiManagementToolBox");
-    roiManagementToolBox->header()->hide();
-    this->addWidget(roiManagementToolBox);
+//    roiManagementToolBox = medToolBoxFactory::instance()->createToolBox("medRoiManagementToolBox");
+//    roiManagementToolBox->header()->hide();
+//    this->addWidget(roiManagementToolBox);
 
-    // initialise buttons if every ROI have been deleted through medRoiManager
-    connect(medRoiManager::instance(), SIGNAL(allRoisDeleted()), this, SLOT(buttonsStateAtDataOpeningBeforeROI()));
+//    // initialise buttons if every ROI have been deleted through medRoiManager
+//    connect(medRoiManager::instance(), SIGNAL(allRoisDeleted()), this, SLOT(buttonsStateAtDataOpeningBeforeROI()));
 }
 
 polygonRoiToolBox::~polygonRoiToolBox()
@@ -291,11 +464,11 @@ medAbstractData *polygonRoiToolBox::processOutput()
 
 void polygonRoiToolBox::updateView()
 {
+    qDebug()<<"polygonRoiToolBox::updateView ";
     disableButtons();
 
     medAbstractView *view = this->getWorkspace()->tabbedViewContainers()->getFirstSelectedContainerView();
     medAbstractImageView *v = qobject_cast<medAbstractImageView*>(view);
-
     if (view)
     {
         // Toolbox does not work with meshes or vector images
@@ -323,9 +496,9 @@ void polygonRoiToolBox::updateView()
             currentView = v;
 
             // Handle new events with Roi management
-            roiManagementToolBox->setWorkspace(getWorkspace());
-            medRoiManager::instance()->setCurrentView(currentView);
-            roiManagementToolBox->updateView();
+//            roiManagementToolBox->setWorkspace(getWorkspace());
+//            medRoiManager::instance()->setCurrentView(currentView);
+//            roiManagementToolBox->updateView();
 
             if(interactorStyleRepulsor != nullptr)
             {
@@ -335,16 +508,18 @@ void polygonRoiToolBox::updateView()
             {
                 repulsorTool->setChecked(true);
             }
-            if (!hashViewObserver->contains(currentView))
-            {
-                contourWidgetObserver * observer = contourWidgetObserver::New();
-                observer->setView(static_cast<medVtkViewBackend*>(currentView->backend())->view2D);
-                observer->setToolBox(this);
-                hashViewObserver->insert(currentView,observer);
-            }
+//            if (!hashViewObserver->contains(currentView))
+//            {
+//                contourWidgetListener * observer = contourWidgetListener::New();
+//                observer->setView(static_cast<medVtkViewBackend*>(currentView->backend())->view2D);
+//                observer->setToolBox(this);
+//                hashViewObserver->insert(currentView,observer);
+//            }
 
             connect(currentView, SIGNAL(closed()), this, SLOT(onViewClosed()), Qt::UniqueConnection);
             connect(currentView, SIGNAL(layerRemoved(unsigned int)), this, SLOT(onLayerClosed()), Qt::UniqueConnection);
+            updateTableWidgetItems();
+            connect(view, SIGNAL(orientationChanged()), this, SLOT(updateTableWidgetItems()), Qt::UniqueConnection);
         }
     }
 }
@@ -383,30 +558,58 @@ void polygonRoiToolBox::onLayerClosed()
     }
 }
 
-void polygonRoiToolBox::onAddNewCurve()
+void polygonRoiToolBox::addViewsToRoi(polygonRoi *roi)
 {
-    if (currentView)
+    medTabbedViewContainers *containers = this->getWorkspace()->tabbedViewContainers();
+    QList<medViewContainer*> containersInTabSelected = containers->containersInTab(containers->currentIndex());
+    if (containersInTabSelected.size() > 1)
     {
-        if (!hashViewObserver->contains(currentView) || !hashViewObserver->value(currentView)->getCurrentPolygonRoi())
+        for (medViewContainer* container : containersInTabSelected)
         {
-            if (repulsorTool->isChecked() && addNewCurve->isChecked())
+            if (container->view() != nullptr && container->view() != currentView)
             {
-                repulsorTool->setChecked(false);
+                medAbstractImageView* viewToAdd = dynamic_cast<medAbstractImageView*>(container->view());
+                if (roi)
+                {
+                    roi->addViewToList(viewToAdd, viewToAdd->orientation());
+                    roi->addDataSet();
+                }
             }
-
-            vtkImageView2D *view2d = static_cast<medVtkViewBackend*>(currentView->backend())->view2D;
-
-            polygonRoi *roi = new polygonRoi(view2d);
-
-            vtkContourWidget *currentContour = roi->getContour();
-
-            contourWidgetObserver *observer = hashViewObserver->value(currentView);
-            observer->setCurrentPolygonRoi(roi);
-            currentContour->AddObserver(vtkCommand::StartInteractionEvent,observer); // todo put this observer in polygonRoi manage the adding to the roimanagementtoolbox through it and
-            currentContour->AddObserver(vtkCommand::EndInteractionEvent,observer);
-
-            roi->forceVisibilityOn();
         }
+    }
+}
+
+void polygonRoiToolBox::clickClosePolygon(bool state)
+{
+    if (!currentView)
+    {
+        qDebug()<<"no view in container";
+        return;
+    }
+    vtkImageView2D *view2d = static_cast<medVtkViewBackend*>(currentView->backend())->view2D;
+
+    if (state)
+    {
+
+        if (!viewEventFilter)
+        {
+            viewEventFilter = new PolygonEventFilter();
+        }
+        medViewContainer* container = nullptr;
+        foreach (QUuid uuid, this->getWorkspace()->tabbedViewContainers()->containersSelected())
+        {
+            container = medViewContainerManager::instance()->container(uuid);
+            if(container)
+            {
+                viewEventFilter->installOnView(container->view());
+            }
+        }
+//        setCursorState(cursorState);
+
+    }
+    else
+    {
+        viewEventFilter->removeInteraction();
     }
 }
 
@@ -446,20 +649,20 @@ void polygonRoiToolBox::activateRepulsor()
 
 QList<medSeriesOfRoi*> * polygonRoiToolBox::getListOfView(medAbstractView *view)
 {
-    return medRoiManager::instance()->getSeriesOfRoi()->value(view);
+//    return medRoiManager::instance()->getSeriesOfRoi()->value(view);
 }
 
 void polygonRoiToolBox::copyContours()
 {
-    medRoiManager * manager = medRoiManager::instance();
-    manager->setCurrentView(currentView);
-    manager->copy();
+//    medRoiManager * manager = medRoiManager::instance();
+//    manager->setCurrentView(currentView);
+//    manager->copy();
 }
 void polygonRoiToolBox::pasteContours()
 {
-    medRoiManager * manager = medRoiManager::instance();
-    manager->setCurrentView(currentView);
-    manager->paste();
+//    medRoiManager * manager = medRoiManager::instance();
+//    manager->setCurrentView(currentView);
+//    manager->paste();
 }
 
 void polygonRoiToolBox::undo()
@@ -468,9 +671,9 @@ void polygonRoiToolBox::undo()
     {
         return;
     }
-    medRoiManager::instance()->setCurrentView(currentView);
-    medRoiManager::instance()->undo();
-    currentView->render();
+//    medRoiManager::instance()->setCurrentView(currentView);
+//    medRoiManager::instance()->undo();
+//    currentView->render();
 }
 
 void polygonRoiToolBox::redo()
@@ -479,9 +682,9 @@ void polygonRoiToolBox::redo()
     {
         return;
     }
-    medRoiManager::instance()->setCurrentView(currentView);
-    medRoiManager::instance()->redo();
-    currentView->render();
+//    medRoiManager::instance()->setCurrentView(currentView);
+//    medRoiManager::instance()->redo();
+//    currentView->render();
 }
 
 void polygonRoiToolBox::reorderPolygon(vtkPolyData *poly)
@@ -629,192 +832,653 @@ QList<vtkPolyData* > polygonRoiToolBox::generateIntermediateCurves(vtkSmartPoint
 
 polygonRoiToolBox::ListRois polygonRoiToolBox::interpolateBetween2Polygon(const QList<polygonRoi*> &rois, int firstIndex)
 {
-    ListRois outputRois;
+//    ListRois outputRois;
 
-    polygonRoi * polyRoi;
-    vtkContourRepresentation* contour;
+//    polygonRoi * polyRoi;
+//    vtkContourRepresentation* contour;
 
-    // Contour first ROI
-    polyRoi = rois.at(firstIndex);
-    contour = polyRoi->getContour()->GetContourRepresentation();
-    vtkSmartPointer<vtkPolyData> curveMin = contour->GetContourRepresentationAsPolyData();
-    int curveMinNbNode = contour->GetNumberOfNodes();
-    int minSlice = rois.at(firstIndex)->getIdSlice();
+//    // Contour first ROI
+//    polyRoi = rois.at(firstIndex);
+//    contour = polyRoi->getContour()->GetContourRepresentation();
+//    vtkSmartPointer<vtkPolyData> curveMin = contour->GetContourRepresentationAsPolyData();
+//    int curveMinNbNode = contour->GetNumberOfNodes();
+//    int minSlice = rois.at(firstIndex)->getIdSlice();
 
-    // Contour second ROI
-    polyRoi = rois.at(firstIndex+1);
-    contour = polyRoi->getContour()->GetContourRepresentation();
-    vtkSmartPointer<vtkPolyData> curveMax = contour->GetContourRepresentationAsPolyData();
-    int curveMaxNbNode = contour->GetNumberOfNodes();
-    int maxSlice = rois.at(firstIndex+1)->getIdSlice();
+//    // Contour second ROI
+//    polyRoi = rois.at(firstIndex+1);
+//    contour = polyRoi->getContour()->GetContourRepresentation();
+//    vtkSmartPointer<vtkPolyData> curveMax = contour->GetContourRepresentationAsPolyData();
 
-    // Compute intermediate ROIs between two successive ROIs
-    QList<vtkPolyData *> listPolyData = generateIntermediateCurves(curveMax,curveMin,maxSlice-minSlice-1);
-    double number = ceil(1.5 * (double)(curveMinNbNode));
-    if (curveMaxNbNode > curveMinNbNode)
+//    int curveMaxNbNode = contour->GetNumberOfNodes();
+//    int maxSlice = rois.at(firstIndex+1)->getIdSlice();
+
+//    // Compute intermediate ROIs between two successive ROIs
+//    QList<vtkPolyData *> listPolyData = generateIntermediateCurves(curveMax,curveMin,maxSlice-minSlice-1);
+//    double number = ceil(1.8 * (double)(curveMinNbNode));
+//    if (curveMaxNbNode > curveMinNbNode)
+//    {
+//        number = ceil(1.8 * (double)(curveMaxNbNode));
+//    }
+
+//    vtkImageView2D *view2d = static_cast<medVtkViewBackend*>(currentView->backend())->view2D;
+
+//    for (int i = minSlice+1;i<maxSlice;i++)
+//    {
+//        polygonRoi *polyRoi = new polygonRoi(view2d);
+//        vtkContourWidget *contour = polyRoi->getContour();
+//        contour->SetEnabled(true);
+
+//        int nbPointsPoly = listPolyData[i-(minSlice+1)]->GetNumberOfPoints();
+//        int divPoly = (int)floor((double)nbPointsPoly/number);
+//        int pointToRemove = 0;
+//        contour->Initialize(listPolyData[i-(minSlice+1)]);
+//        for (int k = 0; k<nbPointsPoly; k++)
+//        {
+//            if (k%5==0)
+//            {
+//                pointToRemove++;
+//            }
+//            else
+//            {
+//                contour->GetContourRepresentation()->DeleteNthNode(pointToRemove);
+//            }
+//        }
+
+//        vtkContourRepresentation *contourRep = contour->GetContourRepresentation();
+
+//        contourRep->SetClosedLoop(1);
+
+//        polyRoi->setIdSlice(i);
+//        polyRoi->setMasterRoi(false);
+//        addViewsToRoi(polyRoi);
+
+//        outputRois.append(polyRoi);
+//    }
+
+//    return outputRois;
+}
+
+void polygonRoiToolBox::updateTableWidgetView(unsigned int row, unsigned int col)
+{
+    medTabbedViewContainers *containers = this->getWorkspace()->tabbedViewContainers();
+    QList<medViewContainer*> containersInTabSelected = containers->containersInTab(containers->currentIndex());
+    if (containersInTabSelected.size() != 1)
     {
-        number = ceil(1.5 * (double)(curveMaxNbNode));
+
+        qDebug()<<"Operation not permitted";
+        return;
+    }
+    medViewContainer* mainContainer = containersInTabSelected.at(0);
+    medAbstractImageView* mainView = dynamic_cast<medAbstractImageView *> (mainContainer->view());
+    medAbstractData* data = mainView->layerData(0);
+    if (mainView != currentView)
+    {
+        qDebug()<<"????";
     }
 
-    vtkImageView2D *view2d = static_cast<medVtkViewBackend*>(currentView->backend())->view2D;
 
-    for (int i = minSlice+1;i<maxSlice;i++)
+    medViewContainer *previousContainer;
+    medViewContainer* container;
+    for (int nbItem = 0; nbItem<tableViewChooser->selectedItems().size(); nbItem++)
     {
-        polygonRoi *polyRoi = new polygonRoi(view2d);
-        vtkContourWidget *contour = polyRoi->getContour();
-        contour->SetEnabled(true);
-
-        // Points decimation // TODO put this in generateIntermediateCurves
-        int nbPointsPoly = listPolyData[i-(minSlice+1)]->GetNumberOfPoints();
-        int divPoly = (int)floor((double)nbPointsPoly/number);
-        vtkPoints * points = listPolyData[i-(minSlice+1)]->GetPoints();
-        vtkPoints * decimatedPoints = vtkPoints::New();
-
-        for (int k = nbPointsPoly-1; k>=0; k--)
+        if (nbItem == 0)
         {
-            if (k%divPoly==0)
-            {
-                decimatedPoints->InsertNextPoint(points->GetPoint(k));
-            }
+            container = mainContainer->splitVertically();
+            previousContainer = container;
         }
-        listPolyData[i-(minSlice+1)]->SetPoints(decimatedPoints);
+        else if (nbItem == 1)
+        {
+            container = previousContainer->splitHorizontally();
+        }
+        else if (nbItem == 2)
+        {
+            container = mainContainer->splitHorizontally();
+        }
+        else
+        {
+            qDebug()<<"ERROR";
+            return;
+        }
+        container->addData(data);
+        medAbstractImageView* view = dynamic_cast<medAbstractImageView *> (container->view());
 
-        contour->Initialize(listPolyData[i-(minSlice+1)]);
+        medTableWidgetItem * item = dynamic_cast<medTableWidgetItem*>(tableViewChooser->selectedItems().at(nbItem));
+        view->setOrientation(dynamic_cast<medTableWidgetItem*>(item)->orientation());
 
-        vtkContourRepresentation *contourRep = contour->GetContourRepresentation();
+//        if ( !medRoiManager::instance()->getSeriesOfRoi() || medRoiManager::instance()->getSeriesOfRoi()->empty() )
+//        {
+//            continue;
+//        }
+//        QList<medSeriesOfRoi*> *listSeries = medRoiManager::instance()->getSeriesOfRoi()->value(mainView);
+//        // Get list of Rois
+//        ListRois *list = listSeries->at(0)->getListOfRois();
+//        if (list && !list->isEmpty())
+//        {
+//            for(int i=0; i<list->size(); i++)
+//            {
+//                polygonRoi *polyRoi = dynamic_cast<polygonRoi*>(list->at(i));  // TODO : need to test if the cast goes well we cannot be sure that the Rois are polygonRoi
+//                polyRoi->addViewToList(view, dynamic_cast<medTableWidgetItem*>(item)->orientation());
+//                polyRoi->addDataSet();
+//            }
+//        }
+    }
+}
 
-        int nbPoints = contourRep->GetNumberOfNodes();
 
-        contourRep->DeleteNthNode(nbPoints-1); // delete the last node, no need for that normally
-        contourRep->SetClosedLoop(1);
-
-        polyRoi->setIdSlice(i);
-        polyRoi->setMasterRoi(false);
-
-        outputRois.append(polyRoi);
+void polygonRoiToolBox::updateTableWidgetItems()
+{
+    medTabbedViewContainers *containers = this->getWorkspace()->tabbedViewContainers();
+    if (!containers)
+    {
+        qDebug()<<"No container.";
+        return;
+    }
+    QList<medViewContainer*> containersInTabSelected = containers->containersInTab(containers->currentIndex());
+    if ( containersInTabSelected.size() != 1 )
+    {
+        //qDebug()<<"Too many container.";
+        return;
     }
 
-    return outputRois;
+    medTableWidgetItem *firstOrientation;
+    medTableWidgetItem *secondOrientation;
+    medTableWidgetItem *thirdOrientation;
+    if (currentView)
+    {
+
+        switch(currentView->orientation())
+        {
+        case medImageView::VIEW_ORIENTATION_AXIAL:
+            firstOrientation = new medTableWidgetItem(QIcon(":/icons/CoronalIcon.png"),
+                                                      QString("Coronal view"),
+                                                      medTableWidgetItem::CoronalType);
+            secondOrientation = new medTableWidgetItem(QIcon(":/icons/SagittalIcon.png"),
+                                                       QString("Sagittal view"),
+                                                       medTableWidgetItem::SagittalType);
+            thirdOrientation = new medTableWidgetItem(QIcon(":/icons/3DIcon.png"),
+                                                      QString("3d view"),
+                                                      medTableWidgetItem::ThreeDimType);
+
+        break;
+
+        case medImageView::VIEW_ORIENTATION_CORONAL:
+            firstOrientation = new medTableWidgetItem(QIcon(":/icons/AxialIcon.png"),
+                                                      QString("Axial view"),
+                                                      medTableWidgetItem::AxialType);
+            secondOrientation =  new medTableWidgetItem(QIcon(":/icons/SagittalIcon.png"),
+                                                        QString("Sagittal view"),
+                                                        medTableWidgetItem::SagittalType);
+            thirdOrientation = new medTableWidgetItem(QIcon(":/icons/3DIcon.png"),
+                                                      QString("3d view"),
+                                                      medTableWidgetItem::ThreeDimType);
+
+        break;
+
+        case medImageView::VIEW_ORIENTATION_SAGITTAL:
+            firstOrientation = new medTableWidgetItem(QIcon(":/icons/AxialIcon.png"),
+                                                      QString("Axial view"),
+                                                      medTableWidgetItem::AxialType);
+            secondOrientation = new medTableWidgetItem(QIcon(":/icons/CoronalIcon.png"),
+                                                       QString("Coronal view"),
+                                                       medTableWidgetItem::CoronalType);
+            thirdOrientation = new medTableWidgetItem(QIcon(":/icons/3DIcon.png"),
+                                                      QString("3d view"),
+                                                      medTableWidgetItem::ThreeDimType);
+
+        break;
+
+
+        case medImageView::VIEW_ORIENTATION_3D:
+            firstOrientation = new medTableWidgetItem(QIcon(":/icons/AxialIcon.png"),
+                                                      QString("Axial view"),
+                                                      medTableWidgetItem::AxialType);
+            secondOrientation = new medTableWidgetItem(QIcon(":/icons/CoronalIcon.png"),
+                                                       QString("Coronal view"),
+                                                       medTableWidgetItem::CoronalType);
+            thirdOrientation = new medTableWidgetItem(QIcon(":/icons/SagittalIcon.png"),
+                                                      QString("Sagittal view"),
+                                                      medTableWidgetItem::SagittalType);
+
+        break;
+
+        case medImageView::VIEW_ALL_ORIENTATION:
+        default:
+            qDebug()<<"Unexpected Case";
+            return;
+        }
+
+    }
+    else
+    {
+        firstOrientation = new medTableWidgetItem(QIcon(":/icons/AxialIcon.png"),
+                                                  QString("Axial view"),
+                                                  medTableWidgetItem::AxialType);
+        secondOrientation = new medTableWidgetItem(QIcon(":/icons/CoronalIcon.png"),
+                                                   QString("Coronal view"),
+                                                   medTableWidgetItem::CoronalType);
+        thirdOrientation = new medTableWidgetItem(QIcon(":/icons/SagittalIcon.png"),
+                                                  QString("Sagittal view"),
+                                                  medTableWidgetItem::SagittalType);
+    }
+    tableViewChooser->setItem(0, 0,firstOrientation);
+    tableViewChooser->setItem(0, 1,secondOrientation);
+    tableViewChooser->setItem(0, 2,thirdOrientation);
+
+    return;
+
+}
+
+
+void polygonRoiToolBox::splitView()
+{
+//    if (currentView)
+//    {
+//        this->setToolBoxOnWaitStatusForNonRunnableProcess();
+//        vtkImageView2D *view2d = static_cast<medVtkViewBackend*>(currentView->backend())->view2D;
+
+//        typedef QList<medSeriesOfRoi*> ListOfSeriesOfRois;
+//        ListOfSeriesOfRois *listSeries = medRoiManager::instance()->getSeriesOfRoi()->value(currentView);
+//        // Get list of Rois
+//        ListRois *list = listSeries->at(0)->getListOfRois();
+//        if (list && !list->isEmpty())
+//        {
+//            medAbstractImageView *topRightContainerView  = nullptr;
+//            medAbstractImageView *bottomRightContainerView  = nullptr;
+//            medViewContainer *bottomRightContainer = nullptr;
+//            medAbstractImageView *bottomLeftContainerView  = nullptr;
+//            medViewContainer *bottomLeftContainer = nullptr;
+
+//            medViewContainer *leftContainer = dynamic_cast <medViewContainer *> (currentView->parent());
+//            medViewContainer *topRightContainer = leftContainer->splitVertically();
+
+//            medAbstractData* data = currentView->layerData(0);
+//            topRightContainer->addData(data);
+//            topRightContainerView = dynamic_cast <medAbstractImageView *> (topRightContainer->view());
+//            topRightContainerView->setOrientation(medImageView::VIEW_ORIENTATION_AXIAL);
+//            bottomRightContainer = topRightContainer->splitHorizontally();
+//            bottomRightContainer->addData(topRightContainerView->layerData(0));
+//            bottomRightContainerView = dynamic_cast <medAbstractImageView *> (bottomRightContainer->view());
+//            bottomRightContainerView->setOrientation(medImageView::VIEW_ORIENTATION_CORONAL);
+
+//            bottomLeftContainer = leftContainer->splitHorizontally();
+//            bottomLeftContainer->addData(topRightContainerView->layerData(0));
+//            bottomLeftContainerView = dynamic_cast <medAbstractImageView *> (bottomLeftContainer->view());
+//            bottomLeftContainerView->setOrientation(medImageView::VIEW_ORIENTATION_3D);
+
+
+//            QList<QPair<vtkPolyData *,PlaneIndexSlicePair> > listPolyData = QList<QPair<vtkPolyData *,PlaneIndexSlicePair> >();
+
+//            for(int i=0; i<list->size(); i++)
+//            {
+//                polygonRoi *polyRoi = dynamic_cast<polygonRoi*>(list->at(i));  // TODO : need to test if the cast goes well we cannot be sure that the Rois are polygonRoi
+//                vtkContourWidget *contour =  polyRoi->getContour();
+//                unsigned int orientationOfRoi = polyRoi->getOrientation();
+//                unsigned int idSlice = polyRoi->getIdSlice();
+//                if (viewsPlaneIndex.empty())
+//                {
+//                    return;
+//                }
+//                unsigned char planeIndex = viewsPlaneIndex.value(leftContainer->view())->at(orientationOfRoi);
+//                vtkContourRepresentation *contourRep = contour->GetContourRepresentation();
+//                view2d->SetViewOrientation(orientationOfRoi); // we set the view Orientation to the orientation of the ROI, to retreive the polyData with world coordinates based on the display from the orientation.
+//                //listPolyData.append(QPair<vtkPolyData*,PlaneIndexSlicePair>(contourRep->GetContourRepresentationAsPolyData(),PlaneIndexSlicePair(idSlice,planeIndex)));
+//                vtkSmartPointer<vtkPolyData> polyDataRoi = contourRep->GetContourRepresentationAsPolyData();
+//                double pos[3];
+//                //vtkPolygon *polygon = vtkPolygon::New();
+//                //vtkPoints *points = vtkPoints::New();
+
+//                const int nb = polyDataRoi->GetNumberOfPoints();
+
+//                vtkIdType ids[1000];
+//                double imagePreviousPoint[3] ={0,0,0};
+//                unsigned int nbPoint = 0;
+
+//                unsigned int x1=0, y1=0, z1=0;
+//                switch (planeIndex)
+//                {
+//                    case 0 :
+//                    {
+//                        x1=1;
+//                        y1=2;
+//                        z1=0;
+//                        break;
+//                    }
+//                    case 1 :
+//                    {
+//                        x1=0;
+//                        y1=2;
+//                        z1=1;
+//                        break;
+//                    }
+//                    case 2 :
+//                    {
+//                        x1=0;
+//                        y1=1;
+//                        z1=2;
+//                        break;
+//                    }
+//                }
+//                vtkPolygon *polygon = vtkPolygon::New();
+//                vtkPoints *points = vtkPoints::New();
+
+//                for(int j=0; j<nb; j++)
+//                {
+//                    double *point = polyDataRoi->GetPoint(j);
+
+//                    int imagePoint[3];
+//                    double imagePointDouble[3];
+
+//                    view2d->GetImageCoordinatesFromWorldCoordinates(point,imagePoint);
+
+//                    imagePointDouble[x1]= (double)imagePoint[x1];
+//                    imagePointDouble[y1]= (double)imagePoint[y1];
+
+//                    imagePointDouble[z1]= (double)idSlice;
+
+//                    if (imagePointDouble[x1] == imagePreviousPoint[x1] && imagePointDouble[y1] == imagePreviousPoint[y1] && imagePointDouble[z1] == imagePreviousPoint[z1])
+//                    {
+//                        continue;
+//                    }
+
+//                    points->InsertNextPoint(imagePointDouble);
+
+//                    ids[nbPoint]=nbPoint;
+//                    nbPoint++;
+
+//                    imagePreviousPoint[x1] = imagePointDouble[x1];
+//                    imagePreviousPoint[y1] = imagePointDouble[y1];
+//                    imagePreviousPoint[z1] = imagePointDouble[z1];
+
+//                 }
+
+//                polygon->Initialize(points->GetNumberOfPoints(), ids, points);
+//                //polygons->InsertNextCell(polygon);
+//                vtkSmartPointer<vtkCellArray> cells = vtkSmartPointer<vtkCellArray>::New();
+//                cells->InsertNextCell(polygon);
+//                polyDataRoi->SetPolys(cells);
+////                vtkSmartPointer<vtkPolyData> polydata = vtkSmartPointer<vtkPolyData>::New();
+////                polydata->SetLines(lines);
+////                polydata->SetPoints(points);
+
+//                vtkSmartPointer<vtkPolyDataMapper> mapper = vtkSmartPointer<vtkPolyDataMapper>::New();
+//                mapper->SetInputData(polyDataRoi);
+
+//                vtkActor* actor = vtkActor::New();
+//                actor->SetMapper(mapper);
+//                actor->GetProperty()->SetLighting(false);
+//                actor->GetProperty()->SetColor(0.,1.,0.);
+//                actor->GetProperty()->SetLineWidth(1.);
+//                actor->GetProperty()->SetPointSize(1.);
+//                actor->GetProperty()->SetEdgeColor(0.,1.,0.);
+//                vtkSmartPointer<vtkProperty> prop = vtkSmartPointer<vtkProperty>::New();
+//                prop->SetColor(0.,1.,0.);
+//                prop->SetLighting(false);
+//                prop->SetLineWidth(1.);
+//                prop->SetPointSize(1.);
+//                prop->SetInterpolationToFlat();
+//                prop->SetVertexColor(0., 0., 1.);
+//                //actors.append(actor);
+
+//                vtkImageView2D* topRightView2D = static_cast<medVtkViewBackend*>(topRightContainerView->backend())->view2D;
+//                vtkImageView2D* botRightView2D = static_cast<medVtkViewBackend*>(bottomRightContainerView->backend())->view2D;
+//                vtkImageView3D* botLeftView3D = static_cast<medVtkViewBackend*>(bottomLeftContainerView->backend())->view3D;
+//                //topView2D->GetRenderer()->AddActor(actor);
+//                //botView2D->GetRenderer()->AddActor(actor);
+//                topRightView2D->AddDataSet(polyDataRoi, prop);
+//                botRightView2D->AddDataSet(polyDataRoi, prop);
+//                botLeftView3D->AddDataSet(polyDataRoi, prop);
+//                //write the polydata to a file
+////                vtkSmartPointer<vtkXMLPolyDataWriter> writer = vtkSmartPointer<vtkXMLPolyDataWriter>::New();
+////                QString fileName = "/Users/julien.castelneau/Downloads/test_polygonRoi" + QString::number(i) + ".vtp";
+////                writer->SetFileName ( fileName.toStdString().c_str() );
+////                writer->SetInputData(polyDataRoi);
+////                writer->Write();
+////                writer->Update();
+
+
+
+
+//            }
+
+
+////            medAbstractImageView *topRightContainerView  = nullptr;
+////            medAbstractImageView *bottomRightContainerView  = nullptr;
+////            medViewContainer *bottomRightContainer = nullptr;
+
+////            medViewContainer *leftContainer = dynamic_cast <medViewContainer *> (currentView->parent());
+////            qDebug()<<"leftContainer "<<leftContainer;
+////            medViewContainer *topRightContainer = leftContainer->splitVertically();
+////            medAbstractData* data = currentView->layerData(0);
+////            topRightContainer->addData(data);
+////            topRightContainerView = dynamic_cast <medAbstractImageView *> (topRightContainer->view());
+////            topRightContainerView->setOrientation(medImageView::VIEW_ORIENTATION_AXIAL);
+////            bottomRightContainer = topRightContainer->splitHorizontally();
+////            bottomRightContainer->addData(topRightContainerView->layerData(0));
+////            bottomRightContainerView = dynamic_cast <medAbstractImageView *> (bottomRightContainer->view());
+////            bottomRightContainerView->setOrientation(medImageView::VIEW_ORIENTATION_CORONAL);
+
+////            vtkImageView2D* topView2D = static_cast<medVtkViewBackend*>(topRightContainerView->backend())->view2D;
+////            vtkImageView2D* botView2D = static_cast<medVtkViewBackend*>(bottomRightContainerView->backend())->view2D;
+////            foreach(vtkActor* actor, actors )
+////            {
+////                qDebug()<<"actor "<<actor;
+////                topView2D->GetRenderer()->AddActor(actor);
+////                botView2D->GetRenderer()->AddActor(actor);
+////            }
+
+////            view2d->SetViewOrientation(orientation);
+
+////            QList<QPair<vtkPolygon*,PlaneIndexSlicePair> > listPolygon = createImagePolygons(listPolyData);
+
+
+
+////            for(int i=0; i<list->size(); i++)
+////            {
+////                polygonRoi *polyRoi = dynamic_cast<polygonRoi*>(list->at(i));
+////                if (polyRoi->getOrientation() == orientation)
+////                {
+////                    vtkContourRepresentation* contour = polyRoi->getContour()->GetContourRepresentation();
+////                    vtkSmartPointer<vtkPolyData> polyDataRoi = contour->GetContourRepresentationAsPolyData();
+////                    vtkSmartPointer<vtkFillHolesFilter> fillHoles = vtkSmartPointer<vtkFillHolesFilter>::New();
+////                    fillHoles->SetInputData(polyDataRoi);
+////                    fillHoles->SetHoleSize(1.e15);
+
+////                    fillHoles->Update();
+////                    vtkSmartPointer<vtkPolyDataMapper> mapper = vtkSmartPointer<vtkPolyDataMapper>::New();
+////                    mapper->SetInputData(polyDataRoi);
+////                    vtkSmartPointer<vtkActor> actor = vtkSmartPointer<vtkActor>::New();
+////                    actor->SetMapper(mapper);
+////                    actor->GetProperty()->SetLighting(false);
+////                    actor->GetProperty()->SetColor(0.,1.,0.);
+////                    actor->GetProperty()->SetLineWidth(10.);
+////                    actor->GetProperty()->SetPointSize(10.);
+////                    vtkImageView2D* view2D = static_cast<medVtkViewBackend*>(topRightContainerView->backend())->view2D;
+////                    view2D->GetRenderer()->AddActor(actor);
+////                    //write the polydata to a file
+////                    vtkSmartPointer<vtkXMLPolyDataWriter> writer = vtkSmartPointer<vtkXMLPolyDataWriter>::New();
+////                    QString fileName = "/Users/julien.castelneau/Downloads/test_polygonRoi" + QString::number(i) + ".vtp";
+////                    writer->SetFileName ( fileName.toStdString().c_str() );
+////                    writer->SetInputData(polyDataRoi);
+////                    writer->Write();
+////                    writer->Update();
+////                     //appendFilter->AddInputData(mapper);
+////                }
+////            }
+//            //topRightContainerView->addData(data);
+
+//            // Remove any duplicate points.
+////            vtkSmartPointer<vtkCleanPolyData> cleanFilter = vtkSmartPointer<vtkCleanPolyData>::New();
+////            cleanFilter->SetInputConnection(appendFilter->GetOutputPort());
+////            cleanFilter->Update();
+
+////            //Create a mapper and actor
+//////            vtkSmartPointer<vtkNamedColors> colors =
+//////              vtkSmartPointer<vtkNamedColors>::New();
+
+///*            vtkSmartPointer<vtkPolyDataMapper> mapper = vtkSmartPointer<vtkPolyDataMapper>::New();
+//            mapper->SetInputConnection(appendFilter->GetOutputPort());
+
+
+//            medPolyData = medAbstractDataFactory::instance()->createSmartPointer("vtkDataMesh");
+//            vtkMetaSurfaceMesh* mesh = vtkMetaSurfaceMesh::New();
+//            mesh->SetDataSet(mapper->GetInput());
+//            medPolyData->setData(mesh);
+//            topRightContainer->addData(medPolyData);
+//            qDebug()<<"topRightContainer "<<topRightContainer;
+//            //medViewContainerSplitter *leftContainerSplitter = dynamic_cast <medViewContainerSplitter *> (leftContainer->parent());
+//            //leftContainerSplitter->adjustContainersSize();
+//            medAbstractImageView* topRightContainerView = dynamic_cast <medAbstractImageView *> (topRightContainer->view());
+//            topRightContainerView->setOrientation(medImageView::VIEW_ORIENTATION_AXIAL);
+//*/
+////            //currentView->addData(medPolyData);
+/////            polyAnnData = new medPolygonAnnotationData;
+////            polyAnnData->setPolygon(rois);
+////            if (currentView->layerData(0) != nullptr)
+////            {
+////                qDebug()<<"addAttacheddata "<<polyAnnData<<"to data "<<currentView->layerData(0);
+////                currentView->layerData(0)->addAttachedData(polyAnnData);
+////            }
+////            else
+////                qDebug()<<"data is "<<currentView->layerData(0);
+//        }
+//        this->setToolBoxOnReadyToUse();
+
+////        generateBinaryImage();
+////        generateAndSaveBinaryImage();
+////        m_maskAnnotationData = new medImageMaskAnnotationData;
+////        m_maskAnnotationData->setMaskData(qobject_cast<medAbstractImageData*>(m_maskData));
+////        if (currentView->layerData(0) != nullptr)
+////        {
+////            qDebug()<<"addAttacheddata "<<m_maskAnnotationData<<"to data "<<currentView->layerData(0);
+////            currentView->layerData(0)->addAttachedData(m_maskAnnotationData);
+////        }
+////        else
+////            qDebug()<<"data is "<<currentView->layerData(0);
+
+
+
+//    }
+
 }
 
 void polygonRoiToolBox::interpolateCurve()
 {
-    if (currentView)
-    {
-        this->setToolBoxOnWaitStatusForNonRunnableProcess();
+//    if (currentView)
+//    {
+//        this->setToolBoxOnWaitStatusForNonRunnableProcess();
 
-        vtkImageView2D *view2d = static_cast<medVtkViewBackend*>(currentView->backend())->view2D;
+//        vtkImageView2D *view2d = static_cast<medVtkViewBackend*>(currentView->backend())->view2D;
 
-        typedef QList<medSeriesOfRoi*> ListOfSeriesOfRois;
-        ListRois *list;
-        ListOfSeriesOfRois *listSeries = medRoiManager::instance()->getSeriesOfRoi()->value(currentView);
+//        typedef QList<medSeriesOfRoi*> ListOfSeriesOfRois;
+//        ListRois *list;
+//        ListOfSeriesOfRois *listSeries = medRoiManager::instance()->getSeriesOfRoi()->value(currentView);
 
-        // Get list of Rois
-        list = listSeries->at(0)->getListOfRois();
-        if (list && !list->isEmpty())
-        {
-            int orientation = view2d->GetViewOrientation();
+//        // Get list of Rois
+//        list = listSeries->at(0)->getListOfRois();
+//        if (list && !list->isEmpty())
+//        {
+//            int orientation = view2d->GetViewOrientation();
 
-            QList<polygonRoi*> rois;
-            QList<polygonRoi*> masterRois;
-            QList<unsigned int> masterRoisIndexes;
+//            QList<polygonRoi*> rois;
+//            QList<polygonRoi*> masterRois;
+//            QList<unsigned int> masterRoisIndexes;
 
-            for(int i=0; i<list->size(); i++)
-            {
-                polygonRoi *polyRoi = dynamic_cast<polygonRoi*>(list->at(i)); // TODO : need to test if the cast goes well we cannot be sure that the Rois are polygonRoi
-                if(!polyRoi->getContour()->GetContourRepresentation()->GetClosedLoop())
-                {
-                    displayMessageError("Non-closed polygon at slice: " + QString::number(polyRoi->getIdSlice()+1) + ". Operation aborted");
-                    this->setToolBoxOnReadyToUse();
-                    return;
-                }
-                if (polyRoi->getOrientation() == orientation)
-                {
-                    rois.append(polyRoi);
-                    if(polyRoi->isMasterRoi())
-                    {
-                        masterRois.append(polyRoi);
-                        masterRoisIndexes.append(i);//remember master ROIs positions
-                    }
-                }
-            }
+//            for(int i=0; i<list->size(); i++)
+//            {
+//                polygonRoi *polyRoi = dynamic_cast<polygonRoi*>(list->at(i)); // TODO : need to test if the cast goes well we cannot be sure that the Rois are polygonRoi
+//                if(!polyRoi->getContour()->GetContourRepresentation()->GetClosedLoop())
+//                {
+//                    displayMessageError("Non-closed polygon at slice: " + QString::number(polyRoi->getIdSlice()+1) + ". Operation aborted");
+//                    this->setToolBoxOnReadyToUse();
+//                    return;
+//                }
+//                if (polyRoi->getOrientation() == orientation)
+//                {
+//                    rois.append(polyRoi);
+//                    if(polyRoi->isMasterRoi())
+//                    {
+//                        masterRois.append(polyRoi);
+//                        masterRoisIndexes.append(i);//remember master ROIs positions
+//                    }
+//                }
+//            }
 
-            if(masterRois.size() >= 2)
-            {
-                //Let's remove the undesired ROIs
-                ListRois roisToBeRemoved;
-                for (unsigned int i=masterRoisIndexes.first(); i<=masterRoisIndexes.last(); i++)
-                {
-                    if(!rois.at(i)->isMasterRoi()) //master ROIs shouldn't be removed
-                    {
-                        roisToBeRemoved.append(rois.at(i));
-                    }
-                }
+//            if(masterRois.size() >= 2)
+//            {
+//                //Let's remove the undesired ROIs
+//                ListRois roisToBeRemoved;
+//                for (unsigned int i=masterRoisIndexes.first(); i<=masterRoisIndexes.last(); i++)
+//                {
+//                    if(!rois.at(i)->isMasterRoi()) //master ROIs shouldn't be removed
+//                    {
+//                        roisToBeRemoved.append(rois.at(i));
+//                    }
+//                }
 
-                DeleteSeveralRoisCommand *deleteCommand = new DeleteSeveralRoisCommand(currentView,roisToBeRemoved,"Polygon rois","deleteSeveralRois");
-                medRoiManager::instance()->addToUndoRedoStack(deleteCommand);
+//                DeleteSeveralRoisCommand *deleteCommand = new DeleteSeveralRoisCommand(currentView,roisToBeRemoved,"Polygon rois","deleteSeveralRois");
+//                medRoiManager::instance()->addToUndoRedoStack(deleteCommand);
 
 
-                // Compute interpolation between master ROIs
-                ListRois interpolationOutput;
-                for(int i=0 ; i<masterRois.size()-1 ; i++)
-                {
-                    ListRois outputRois = interpolateBetween2Polygon(masterRois, i);
-                    interpolationOutput.append(outputRois);
-                }
+//                // Compute interpolation between master ROIs
+//                ListRois interpolationOutput;
+//                for(int i=0 ; i<masterRois.size()-1 ; i++)
+//                {
+//                    ListRois outputRois = interpolateBetween2Polygon(masterRois, i);
+//                    interpolationOutput.append(outputRois);
+//                }
 
-                // Send signal of new Rois to medRoiManager
-                AddSeveralRoisCommand *command = new AddSeveralRoisCommand(currentView, interpolationOutput, "Polygon rois", "NewRois");
-                medRoiManager::instance()->addToUndoRedoStack(command);
-            }
-            else
-            {
-                displayMessageError("Interpolate needs at least 2 master ROIs");
-            }
-        }
+//                // Send signal of new Rois to medRoiManager
+//                AddSeveralRoisCommand *command = new AddSeveralRoisCommand(currentView, interpolationOutput, "Polygon rois", "NewRois");
+//                medRoiManager::instance()->addToUndoRedoStack(command);
+//            }
+//            else
+//            {
+//                displayMessageError("Interpolate needs at least 2 master ROIs");
+//            }
+//        }
 
-        this->setToolBoxOnReadyToUse();
-    }
+//        this->setToolBoxOnReadyToUse();
+//    }
 }
 
 void polygonRoiToolBox::generateBinaryImage()
 {
-    if (currentView)
-    {
-        vtkImageView2D *view2d = static_cast<medVtkViewBackend*>(currentView->backend())->view2D;
+//    if (currentView)
+//    {
+//        vtkImageView2D *view2d = static_cast<medVtkViewBackend*>(currentView->backend())->view2D;
 
-        QList<medSeriesOfRoi*> *listROI = getListOfView(currentView);
-        if (!listROI || listROI->isEmpty())
-        {
-            return; // check if ROI or not
-        }
+//        QList<medSeriesOfRoi*> *listROI = getListOfView(currentView);
+//        if (!listROI || listROI->isEmpty())
+//        {
+//            return; // check if ROI or not
+//        }
 
-        ListRois *list = listROI->at(0)->getListOfRois();
+//        ListRois *list = listROI->at(0)->getListOfRois();
 
-        QList<QPair<vtkPolyData *,PlaneIndexSlicePair> > listPolyData = QList<QPair<vtkPolyData *,PlaneIndexSlicePair> >();
+//        QList<QPair<vtkPolyData *,PlaneIndexSlicePair> > listPolyData = QList<QPair<vtkPolyData *,PlaneIndexSlicePair> >();
 
-        int orientation = view2d->GetViewOrientation();
+//        int orientation = view2d->GetViewOrientation();
 
-        for(int i=0; i<list->size(); i++)
-        {
-            polygonRoi *polyRoi = dynamic_cast<polygonRoi*>(list->at(i));  // TODO : need to test if the cast goes well we cannot be sure that the Rois are polygonRoi
-            vtkContourWidget *contour =  polyRoi->getContour();
-            unsigned int orientationOfRoi = polyRoi->getOrientation();
-            unsigned int idSlice = polyRoi->getIdSlice();
-            if (viewsPlaneIndex.empty())
-            {
-                return;
-            }
-            unsigned char planeIndex = viewsPlaneIndex.value(currentView)->at(orientationOfRoi);
-            vtkContourRepresentation *contourRep = contour->GetContourRepresentation();
-            view2d->SetViewOrientation(orientationOfRoi); // we set the view Orientation to the orientation of the ROI, to retreive the polyData with world coordinates based on the display from the orientation.
-            listPolyData.append(QPair<vtkPolyData*,PlaneIndexSlicePair>(contourRep->GetContourRepresentationAsPolyData(),PlaneIndexSlicePair(idSlice,planeIndex)));
-        }
-        view2d->SetViewOrientation(orientation);
+//        for(int i=0; i<list->size(); i++)
+//        {
+//            polygonRoi *polyRoi = dynamic_cast<polygonRoi*>(list->at(i));  // TODO : need to test if the cast goes well we cannot be sure that the Rois are polygonRoi
+//            vtkContourWidget *contour =  polyRoi->getContour();
+//            unsigned int orientationOfRoi = polyRoi->getOrientation();
+//            unsigned int idSlice = polyRoi->getIdSlice();
+//            if (viewsPlaneIndex.empty())
+//            {
+//                return;
+//            }
+//            unsigned char planeIndex = viewsPlaneIndex.value(currentView)->at(orientationOfRoi);
+//            vtkContourRepresentation *contourRep = contour->GetContourRepresentation();
+//            view2d->SetViewOrientation(orientationOfRoi); // we set the view Orientation to the orientation of the ROI, to retreive the polyData with world coordinates based on the display from the orientation.
+//            listPolyData.append(QPair<vtkPolyData*,PlaneIndexSlicePair>(contourRep->GetContourRepresentationAsPolyData(),PlaneIndexSlicePair(idSlice,planeIndex)));
+//        }
+//        view2d->SetViewOrientation(orientation);
 
-        QList<QPair<vtkPolygon*,PlaneIndexSlicePair> > listPolygon = createImagePolygons(listPolyData);
-        binaryImageFromPolygon(listPolygon);
-    }
+//        QList<QPair<vtkPolygon*,PlaneIndexSlicePair> > listPolygon = createImagePolygons(listPolyData);
+//        binaryImageFromPolygon(listPolygon);
+//    }
 }
 
 void polygonRoiToolBox::generateAndSaveBinaryImage()
@@ -1139,6 +1803,8 @@ void polygonRoiToolBox::disableButtons()
     generateBinaryImage_button->setEnabled(false);
     interpolate->setEnabled(false);
     extractRoiButton->setEnabled(false);
+    //tableViewChooser->setEnabled(false);
+    //splitViewButton->setEnabled(false);
 }
 
 void polygonRoiToolBox::clear()
@@ -1151,17 +1817,17 @@ void polygonRoiToolBox::clear()
         roiManagementToolBox->updateView();
 
         ListRois *list;
-        QList<medSeriesOfRoi*> *listSeries = medRoiManager::instance()->getSeriesOfRoi()->value(currentView);
+//        QList<medSeriesOfRoi*> *listSeries = medRoiManager::instance()->getSeriesOfRoi()->value(currentView);
 
-        if(listSeries != nullptr
-                && listSeries->count() > 0
-                && listSeries->at(0)->getListOfRois()->size() != 0)
-        {
-            // Get list of Rois
-            list = listSeries->at(0)->getListOfRois();
-            DeleteSeveralRoisCommand * deleteCommand = new DeleteSeveralRoisCommand(currentView,*list,"Polygon rois","deleteSeveralRois");
-            medRoiManager::instance()->addToUndoRedoStack(deleteCommand);
-        }
+//        if(listSeries != nullptr
+//                && listSeries->count() > 0
+//                && listSeries->at(0)->getListOfRois()->size() != 0)
+//        {
+//            // Get list of Rois
+//            list = listSeries->at(0)->getListOfRois();
+//            DeleteSeveralRoisCommand * deleteCommand = new DeleteSeveralRoisCommand(currentView,*list,"Polygon rois","deleteSeveralRois");
+//            medRoiManager::instance()->addToUndoRedoStack(deleteCommand);
+//        }
 
         currentView = nullptr;
     }
@@ -1183,6 +1849,7 @@ void polygonRoiToolBox::buttonsStateWhenROI()
     extractRoiButton->setEnabled(true);
     repulsorTool->setEnabled(true);
     interpolate->setEnabled(true);
+    splitViewButton->setEnabled(true);
     generateBinaryImage_button->setEnabled(true);
 }
 
@@ -1303,125 +1970,125 @@ void polygonRoiToolBox::showExtractROIWarningPopUp()
 
 void polygonRoiToolBox::extractROI()
 {
-    this->setToolBoxOnWaitStatusForNonRunnableProcess();
+//    this->setToolBoxOnWaitStatusForNonRunnableProcess();
 
-    medAbstractImageData *input = qobject_cast<medAbstractImageData*>(currentView->layerData(currentView->currentLayer()));
+//    medAbstractImageData *input = qobject_cast<medAbstractImageData*>(currentView->layerData(currentView->currentLayer()));
 
-    UChar3ImageType::Pointer img = castToUChar3(input);
+//    UChar3ImageType::Pointer img = castToUChar3(input);
 
-    if (img)
-    {
-        UChar3ImageType::Pointer contourImage = extract2dContour(img);
+//    if (img)
+//    {
+//        UChar3ImageType::Pointer contourImage = extract2dContour(img);
 
-        if (contourImage)
-        {
-            UChar3ImageType::SizeType size = contourImage->GetLargestPossibleRegion().GetSize();
-            UChar3ImageType::IndexType px;
+//        if (contourImage)
+//        {
+//            UChar3ImageType::SizeType size = contourImage->GetLargestPossibleRegion().GetSize();
+//            UChar3ImageType::IndexType px;
 
-            vtkImageView2D *view2d = static_cast<medVtkViewBackend*>(currentView->backend())->view2D;
+//            vtkImageView2D *view2d = static_cast<medVtkViewBackend*>(currentView->backend())->view2D;
 
-            vtkSmartPointer<vtkPoints>  bufferPoints = vtkPoints::New();
-            for (unsigned int sl=0 ; sl<size[2] ; sl++) // go through slices
-            {
-                bufferPoints->Reset();
-                bool isEmpty = true;
+//            vtkSmartPointer<vtkPoints>  bufferPoints = vtkPoints::New();
+//            for (unsigned int sl=0 ; sl<size[2] ; sl++) // go through slices
+//            {
+//                bufferPoints->Reset();
+//                bool isEmpty = true;
 
-                for (unsigned int y=0 ; y<size[1] ; y++)
-                {
-                    for (unsigned int x=0 ; x<size[0] ; x++)
-                    {
-                        px[0] = x;
-                        px[1] = y;
-                        px[2] = sl;
-                        if (contourImage->GetPixel(px) != 0)
-                        {
-                            addPointToBuffer(view2d, bufferPoints, px);
-                            isEmpty = false;
-                            break;
-                        }
-                    }
-                    if (!isEmpty)
-                    {
-                        break;
-                    }
-                }
-                if (!isEmpty)
-                {
-                    // Contour indices are added into bufferPoints
-                    getContourIndices(view2d, contourImage, px, bufferPoints);
+//                for (unsigned int y=0 ; y<size[1] ; y++)
+//                {
+//                    for (unsigned int x=0 ; x<size[0] ; x++)
+//                    {
+//                        px[0] = x;
+//                        px[1] = y;
+//                        px[2] = sl;
+//                        if (contourImage->GetPixel(px) != 0)
+//                        {
+//                            addPointToBuffer(view2d, bufferPoints, px);
+//                            isEmpty = false;
+//                            break;
+//                        }
+//                    }
+//                    if (!isEmpty)
+//                    {
+//                        break;
+//                    }
+//                }
+//                if (!isEmpty)
+//                {
+//                    // Contour indices are added into bufferPoints
+//                    getContourIndices(view2d, contourImage, px, bufferPoints);
 
-                    vtkPoints *polyPoints = vtkPoints::New();
-                    polyPoints->DeepCopy(bufferPoints);
+//                    vtkPoints *polyPoints = vtkPoints::New();
+//                    polyPoints->DeepCopy(bufferPoints);
 
-                    // Create a cell array to connect the points into meaningful geometry
-                    int numPts = polyPoints->GetNumberOfPoints();
-                    vtkIdType* vertexIndices = new vtkIdType[numPts+1];
-                    for (int i = 0; i < numPts; i++)
-                    {
-                        vertexIndices[i] = static_cast<vtkIdType>(i);
-                    }
-                    // Set the last vertex to 0; thus closing the circle.
-                    vertexIndices[numPts] = 0;
-                    vtkSmartPointer<vtkCellArray> lines = vtkSmartPointer<vtkCellArray>::New();
-                    lines->InsertNextCell(numPts+1, vertexIndices);
+//                    // Create a cell array to connect the points into meaningful geometry
+//                    int numPts = polyPoints->GetNumberOfPoints();
+//                    vtkIdType* vertexIndices = new vtkIdType[numPts+1];
+//                    for (int i = 0; i < numPts; i++)
+//                    {
+//                        vertexIndices[i] = static_cast<vtkIdType>(i);
+//                    }
+//                    // Set the last vertex to 0; thus closing the circle.
+//                    vertexIndices[numPts] = 0;
+//                    vtkSmartPointer<vtkCellArray> lines = vtkSmartPointer<vtkCellArray>::New();
+//                    lines->InsertNextCell(numPts+1, vertexIndices);
 
-                    vtkPolyData *poly = vtkPolyData::New();
-                    poly->SetPoints(polyPoints);
-                    poly->SetLines(lines);
+//                    vtkPolyData *poly = vtkPolyData::New();
+//                    poly->SetPoints(polyPoints);
+//                    poly->SetLines(lines);
 
-                    // Points decimation
-                    int nbPointsPoly = poly->GetNumberOfPoints();
-                    vtkPoints *points = poly->GetPoints();
-                    vtkPoints *decimatedPoints = vtkPoints::New();
+//                    // Points decimation
+//                    int nbPointsPoly = poly->GetNumberOfPoints();
+//                    vtkPoints *points = poly->GetPoints();
+//                    vtkPoints *decimatedPoints = vtkPoints::New();
 
-                    for (int k = nbPointsPoly-1; k >= 0; k--)
-                    {
-                        if (k % HANDLE_PERIOD == 0) //one handle every HANDLE_PERIOD points
-                        {
-                            decimatedPoints->InsertNextPoint(points->GetPoint(k));
-                        }
-                    }
-                    poly->SetPoints(decimatedPoints);
+//                    for (int k = nbPointsPoly-1; k >= 0; k--)
+//                    {
+//                        if (k % HANDLE_PERIOD == 0) //one handle every HANDLE_PERIOD points
+//                        {
+//                            decimatedPoints->InsertNextPoint(points->GetPoint(k));
+//                        }
+//                    }
+//                    poly->SetPoints(decimatedPoints);
 
-                    polygonRoi *polyRoi = new polygonRoi(view2d);
-                    vtkContourWidget *contour = polyRoi->getContour();
-                    contour->Initialize(poly);
+//                    polygonRoi *polyRoi = new polygonRoi(view2d);
+//                    vtkContourWidget *contour = polyRoi->getContour();
+//                    contour->Initialize(poly);
 
-                    vtkContourRepresentation *contourRep = contour->GetContourRepresentation();
-                    contourRep->SetClosedLoop(1);
+//                    vtkContourRepresentation *contourRep = contour->GetContourRepresentation();
+//                    contourRep->SetClosedLoop(1);
 
-                    if (!viewsPlaneIndex.contains(currentView))
-                    {
-                        QList<int> *planeIndexes = new QList<int>();
-                        for (int i = 0; i < 3; i++)
-                        {
-                            planeIndexes->append(0); // fill the list with 0
-                        }
-                        viewsPlaneIndex.insert(currentView,planeIndexes);
-                    }
+//                    if (!viewsPlaneIndex.contains(currentView))
+//                    {
+//                        QList<int> *planeIndexes = new QList<int>();
+//                        for (int i = 0; i < 3; i++)
+//                        {
+//                            planeIndexes->append(0); // fill the list with 0
+//                        }
+//                        viewsPlaneIndex.insert(currentView,planeIndexes);
+//                    }
 
-                    polyRoi->setIdSlice(sl);
-                    polyRoi->setOrientation(view2d->GetViewOrientation());
-                    polyRoi->setMasterRoi(false);
-                    polyRoi->forceVisibilityOff();
+//                    polyRoi->setIdSlice(sl);
+//                    polyRoi->setOrientation(view2d->GetViewOrientation());
+//                    polyRoi->setMasterRoi(false);
+//                    polyRoi->forceVisibilityOff();
 
-                    // Save PlaneIndex for this view and orientation
-                    AddRoiCommand *command = new AddRoiCommand(currentView, polyRoi,"Polygon rois","NewRois");
-                    medRoiManager::instance()->addToUndoRedoStack(command);
-                    QList<int> *planeIndexes= viewsPlaneIndex.value(currentView);
-                    planeIndexes->replace(view2d->GetViewOrientation(),computePlaneIndex());
+//                    // Save PlaneIndex for this view and orientation
+//                    AddRoiCommand *command = new AddRoiCommand(currentView, polyRoi,"Polygon rois","NewRois");
+//                    medRoiManager::instance()->addToUndoRedoStack(command);
+//                    QList<int> *planeIndexes= viewsPlaneIndex.value(currentView);
+//                    planeIndexes->replace(view2d->GetViewOrientation(),computePlaneIndex());
 
-                    buttonsStateWhenROI();
-                }
-            }
-        }
-        else
-        {
-            showExtractROIWarningPopUp();
-        }
-    }
+//                    buttonsStateWhenROI();
+//                }
+//            }
+//        }
+//        else
+//        {
+//            showExtractROIWarningPopUp();
+//        }
+//    }
 
-    this->setToolBoxOnReadyToUse();
+//    this->setToolBoxOnReadyToUse();
 }
 
 void polygonRoiToolBox::addPointToBuffer(vtkImageView2D *view2d, vtkSmartPointer<vtkPoints> bufferPoints, itk::ImageBase<3>::IndexType point)
