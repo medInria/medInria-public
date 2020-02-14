@@ -25,10 +25,10 @@ bool polygonRoiPlugin::initialize()
      {
          qDebug() << "Unable to register polygonRoiToolBox";
      }
-     if(!medRoiManagementToolBox::registered())
-     {
-         qDebug() << "Unable to register medRoiManagementToolBox";
-     }
+//     if(!medRoiManagementToolBox::registered())
+//     {
+//         qDebug() << "Unable to register medRoiManagementToolBox";
+//     }
     return true;
 }
 
