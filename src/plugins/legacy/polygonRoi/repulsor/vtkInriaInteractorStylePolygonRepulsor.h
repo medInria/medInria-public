@@ -14,6 +14,8 @@ PURPOSE.
 
 #include "medTagRoiManager.h"
 
+#include "medTagRoiManager.h"
+
 #include <medAbstractView.h>
 
 #include <polygonRoi.h>

@@ -37,11 +37,11 @@ EP_Initialisation(${ep}
 if (NOT USE_SYSTEM_${ep})
 
 ## #############################################################################
-## Set up versioning control
+## Set up versioning control.
 ## #############################################################################
 
 set(git_url ${GITHUB_PREFIX}medInria/qtdcm.git)
-set(git_tag APHP)
+set(git_tag APHP) 
 
 ## #############################################################################
 ## Add specific cmake arguments for configuration step of the project
@@ -71,18 +71,15 @@ set(cmake_args
   -DCMAKE_CXX_FLAGS=${${ep}_cxx_flags}
   -DCMAKE_SHARED_LINKER_FLAGS=${${ep}_shared_linker_flags}  
   -DCMAKE_INSTALL_PREFIX=<INSTALL_DIR>
+  -DCMAKE_INSTALL_PREFIX=<INSTALL_DIR>
   -DBUILD_SHARED_LIBS=${BUILD_SHARED_LIBS_${ep}}
+  -DQt5_DIR=${Qt5_DIR}
+  -DITK_DIR:FILEPATH=${ITK_DIR}
+  -DDCMTK_DIR:FILEPATH=${DCMTK_DIR}
   -DDCMTK_FIND_PACKAGE_USE_CONFIG_ONLY=ON
   -DDCMTK_WIDE_CHAR_FILE_IO_FUNCTIONS:BOOL=${DCMTK_WIDE_CHAR_FILE_IO_FUNCTIONS}
   )
-  
-set(cmake_cache_args
-  -DQt5_DIR:FILEPATH=${Qt5_DIR}
-  -DITK_DIR:FILEPATH=${ITK_DIR}
-  -DDCMTK_DIR:FILEPATH=${DCMTK_DIR}
-  )
 
-  
 ## #############################################################################
 ## Add external-project
 ## #############################################################################
@@ -101,7 +98,6 @@ ExternalProject_Add(${ep}
   CMAKE_GENERATOR ${gen}
   CMAKE_GENERATOR_PLATFORM ${CMAKE_GENERATOR_PLATFORM}
   CMAKE_ARGS ${cmake_args}
-  CMAKE_CACHE_ARGS ${cmake_cache_args}
   DEPENDS ${${ep}_dependencies}
   INSTALL_COMMAND ""
   BUILD_ALWAYS 1

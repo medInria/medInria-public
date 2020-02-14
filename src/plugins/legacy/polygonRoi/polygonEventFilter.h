@@ -135,5 +135,4 @@ private:
     medTagRoiManager *findManagerWithColor(QColor color);
     void createNewManager(medTagContours tagContours);
     medTagRoiManager *createManager();
-    void activateContour(double *mousePosition);
 };

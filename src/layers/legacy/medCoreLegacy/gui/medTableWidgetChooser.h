@@ -1,9 +1,8 @@
-#pragma once
 /*=========================================================================
 
  medInria
 
- Copyright (c) INRIA 2013 - 2020. All rights reserved.
+ Copyright (c) INRIA 2013 - 2018. All rights reserved.
  See LICENSE.txt for details.
 
   This software is distributed WITHOUT ANY WARRANTY; without even
@@ -11,6 +10,8 @@
   PURPOSE.
 
 =========================================================================*/
+
+#pragma once
 
 #include <QTableWidget>
 #include <QTableWidgetItem>
@@ -23,7 +24,7 @@ class MEDCORELEGACY_EXPORT medTableWidgetChooser : public QTableWidget
     Q_OBJECT
 
 public:
-     medTableWidgetChooser(QWidget *parent = nullptr, int rowCount = 5, int colCount = 5, int sideSize = 30);
+     medTableWidgetChooser(QWidget *parent = 0, int rowCount = 5, int colCount = 5, int sideSize = 30);
     ~medTableWidgetChooser();
 
     QSize sizeHint() const;
@@ -40,6 +41,7 @@ protected:
 private:
     medTableWidgetChooserPrivate *d;
 };
+
 
 class MEDCORELEGACY_EXPORT medTableWidgetItem : public QTableWidgetItem
 {

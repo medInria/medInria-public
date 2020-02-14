@@ -25,8 +25,6 @@
 #include <vtkMetaSurfaceMesh.h>
 
 // Qt
-#include <QApplication>
-#include <QDesktopWidget>
 #include <QGuiApplication>
 #include <QLineEdit>
 #include <QScreen>
@@ -157,10 +155,6 @@ bool polygonEventFilter::eventFilter(QObject *obj, QEvent *event)
         {
             deleteNode(savedMousePosition);
         }
-        if ( keyEvent->key() == Qt::Key::Key_A )
-        {
-            activateContour(savedMousePosition);
-        }
         if ( keyEvent->key() == Qt::Key::Key_Right )
         {
             if (currentView && currentView->backend())
@@ -224,10 +218,8 @@ bool polygonEventFilter::mouseReleaseEvent(medAbstractView *view, QMouseEvent *m
 
 bool polygonEventFilter::mouseMoveEvent(medAbstractView *view, QMouseEvent *mouseEvent)
 {
-    int devicePixelRatio = medUtilities::getDevicePixelRatio(mouseEvent);
-
-    savedMousePosition[0] = mouseEvent->x()*devicePixelRatio;
-    savedMousePosition[1] = (currentView->viewWidget()->height()-mouseEvent->y()-1)*devicePixelRatio;
+    savedMousePosition[0] = mouseEvent->x()*QGuiApplication::screenAt(mouseEvent->globalPos())->devicePixelRatio();
+    savedMousePosition[1] = (currentView->viewWidget()->height()-mouseEvent->y()-1)*QGuiApplication::screenAt(mouseEvent->globalPos())->devicePixelRatio();
 
     if (activeManager)
     {
@@ -314,6 +306,9 @@ bool polygonEventFilter::leftButtonBehaviour(medAbstractView *view, QMouseEvent 
     }
     case CURSORSTATE::CS_REPULSOR:
     {
+        double mousePos[2];
+        mousePos[0] = mouseEvent->x()*QGuiApplication::screenAt(mouseEvent->globalPos())->devicePixelRatio();
+        mousePos[1] = (currentView->viewWidget()->height()-mouseEvent->y()-1)*QGuiApplication::screenAt(mouseEvent->globalPos())->devicePixelRatio();
         if (!activeManager)
         {
             emit sendErrorMessage(QString("Select a label in list to be able to use repulsor tool."));
@@ -419,7 +414,7 @@ medTagRoiManager *polygonEventFilter::getClosestManager(double *mousePos)
 
 QMenu *polygonEventFilter::changeLabelActions(medTagRoiManager* closestManager)
 {
-    QMenu *changeMenu = new QMenu("Change Label");
+    QMenu *changeMenu = new QMenu("Change Label:");
     for (medTagRoiManager *manager : managers)
     {
         if (manager!= closestManager && !manager->existingRoiInSlice())
@@ -447,16 +442,15 @@ QMenu *polygonEventFilter::changeLabelActions(medTagRoiManager* closestManager)
 bool polygonEventFilter::rightButtonBehaviour(medAbstractView *view, QMouseEvent *mouseEvent)
 {
     QMenu mainMenu(currentView->viewWidget());
-
-    int devicePixelRatio = medUtilities::getDevicePixelRatio(mouseEvent);
-
+    QList<QColor> colorsToExclude;
+    QStringList namesToExclude;
     double mousePos[2];
-    mousePos[0] = mouseEvent->x()*devicePixelRatio;
-    mousePos[1] = (currentView->viewWidget()->height()-mouseEvent->y()-1)*devicePixelRatio;
+    mousePos[0] = mouseEvent->x()*QGuiApplication::screenAt(mouseEvent->globalPos())->devicePixelRatio();
+    mousePos[1] = (currentView->viewWidget()->height()-mouseEvent->y()-1)*QGuiApplication::screenAt(mouseEvent->globalPos())->devicePixelRatio();
     medTagRoiManager * closestManager = getClosestManager(mousePos);
 
-    QMenu *roiManagementMenu = new QMenu("Remove");
-    QMenu *saveMenu = new QMenu("Save as");
+    QMenu *roiManagementMenu = new QMenu("Remove: ");
+    QMenu *saveMenu = new QMenu("Save as: ");
     QMenu *changeMenu = nullptr;
     QWidgetAction *renameManagerAction = new QWidgetAction(&mainMenu);
     QAction *copyContourAction = new QAction("Copy", &mainMenu);
@@ -828,16 +822,12 @@ void polygonEventFilter::receiveDatasFromToolbox(QList<medContourSharedInfo> inf
 
 void polygonEventFilter::receiveActivationState(medContourSharedInfo info)
 {
-    activeManager = nullptr;
     medTagRoiManager *manager = findManagerWithColor(info.getColor());
     if (manager)
     {
         activeManager = manager;
+        enableActiveManagerIfExists();
     }
-    activeColor = info.getColor();
-    activeName = info.getName();
-    scoreState = info.hasScore();
-    enableActiveManagerIfExists();
 }
 
 void polygonEventFilter::receiveContourState(medContourSharedInfo info)
@@ -867,9 +857,7 @@ void polygonEventFilter::receiveContourState(medContourSharedInfo info)
                 manager->changeContoursColor(color);
             }
         }
-        if (currentView &&
-                manager->getName() != "WG (whole gland)" &&
-                manager->getName() != "TZ (transitional zone)")
+        if (currentView)
         {
             vtkImageView2D *view2D =  static_cast<medVtkViewBackend*>(currentView->backend())->view2D;
 
@@ -1031,6 +1019,7 @@ void polygonEventFilter::loadContours(medTagContours tagContours, QColor color)
 
     activeName = tagContours.getLabelName();
     activeColor = color;
+    qDebug()<<"create manager with name "<<activeName<<" and color "<<activeColor.toRgb();
     if (findManagerWithColor(color) != nullptr)
     {
         emit sendErrorMessage(QString("loadContours - contour with color %1 already exists").arg(color.toRgb().name()));
@@ -1040,6 +1029,7 @@ void polygonEventFilter::loadContours(medTagContours tagContours, QColor color)
     mgr->loadContours(tagContours.getContourNodes());
     if (tagContours.getScore() != QString())
     {
+        QColor col = QColor::Invalid;
         for (QPair<QString, QColor> pirad : pirads)
         {
             if (pirad.first == tagContours.getScore())
@@ -1105,18 +1095,6 @@ void polygonEventFilter::deleteNode(double *mousePosition)
         deleteNode(closestManager, mousePosition);
     }
 
-}
-
-void polygonEventFilter::activateContour( double *mousePosition)
-{
-    medTagRoiManager *closestManager = getClosestManager(mousePosition);
-    if (closestManager && closestManager->getMinimumDistanceFromNodesToMouse(mousePosition, true) < 10. )
-    {
-        activeManager = closestManager;
-        enableActiveManagerIfExists();
-        medContourSharedInfo info = medContourSharedInfo(activeManager->getName(), activeManager->getColor(), true);
-        emit sendContourInfoToListWidget(info);
-    }
 }
 
 void polygonEventFilter::switchContourColor(double *mousePosition)

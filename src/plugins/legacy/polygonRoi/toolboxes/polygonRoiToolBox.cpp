@@ -45,27 +45,22 @@ polygonRoiToolBox::polygonRoiToolBox(QWidget *parent ) :
     displayWidget->setLayout(layout);
 
     activateTBButton = new QPushButton(tr("Activate Toolbox"));
-    activateTBButton->setToolTip(tr("Activate closed polygon mode. You should only have one view."));
+    activateTBButton->setToolTip(tr("Activate closed polygon mode"));
     activateTBButton->setCheckable(true);
     activateTBButton->setObjectName("closedPolygonButton");
     connect(activateTBButton,SIGNAL(toggled(bool)),this,SLOT(clickClosePolygon(bool)));
 
-    interpolate = new QCheckBox(tr("Interpolate between contours"));
+    interpolate = new QCheckBox(tr("interpolate"));
     interpolate->setToolTip("Interpolate between master ROIs");
     interpolate->setObjectName("interpolateButton");
     interpolate->setChecked(true);
     connect(interpolate,SIGNAL(clicked(bool)) ,this,SLOT(interpolateCurve(bool)));
 
-    QHBoxLayout *repulsorLayout = new QHBoxLayout();
-    QLabel *repulsorLabel = new QLabel("Correct contours");
-    repulsorLayout->addWidget(repulsorLabel);
-
     repulsorTool = new QPushButton(tr("Repulsor"));
-    repulsorTool->setToolTip(tr("Activate Repulsor"));
+    repulsorTool->setToolTip(tr("Activate repulsor"));
     repulsorTool->setObjectName("repulsorTool");
     repulsorTool->setCheckable(true);
     connect(repulsorTool,SIGNAL(clicked(bool)),this,SLOT(activateRepulsor(bool)));
-    repulsorLayout->addWidget(repulsorTool);
 
     currentView = nullptr;
 
@@ -80,22 +75,25 @@ polygonRoiToolBox::polygonRoiToolBox(QWidget *parent ) :
     connect(activateTBButton,SIGNAL(toggled(bool)),managementToolBox,SLOT(clickActivationButton(bool)), Qt::UniqueConnection);
     connect(this, SIGNAL(currentLabelsDisplayed()), managementToolBox, SLOT(showCurrentLabels()), Qt::UniqueConnection);
 
-    QVBoxLayout *contoursActionLayout = new QVBoxLayout();
+    QHBoxLayout *contoursActionLayout = new QHBoxLayout();
     layout->addLayout( contoursActionLayout );
     contoursActionLayout->addWidget(interpolate);
-    contoursActionLayout->addLayout(repulsorLayout);
+    contoursActionLayout->addWidget(repulsorTool);
 
-    tableViewChooser = new medTableWidgetChooser(this, 1, 3, 75);
+    tableViewChooser = new medTableWidgetChooser(this, 1, 3, 50);
+    // Mandatory : Qt bug ? : Without the lines below, the size of the table View is not as expected
     QSize size = tableViewChooser->sizeHint();
-    tableViewChooser->setIconSize(QSize(size.height(),size.height()));
+    tableViewChooser->setFixedHeight(size.height()-1);
+    tableViewChooser->setFixedWidth(size.width()-1);
+    tableViewChooser->setIconSize(QSize(size.height()-1,size.height()-1));
     connect(tableViewChooser, SIGNAL(selected(unsigned int,unsigned int)), this, SLOT(updateTableWidgetView(unsigned int,unsigned int)));
 
     QHBoxLayout *tableViewLayout = new QHBoxLayout();
     layout->addLayout( tableViewLayout );
-    tableViewLayout->addWidget(tableViewChooser, 0, Qt::AlignHCenter);
+    tableViewLayout->addWidget(tableViewChooser);
 
     QLabel *saveLabel = new QLabel("Save segmentations as:");
-    QHBoxLayout *saveButtonsLayout = new QHBoxLayout();
+    QVBoxLayout *saveButtonsLayout = new QVBoxLayout();
     saveBinaryMaskButton = new QPushButton(tr("Mask(s)"));
     saveBinaryMaskButton->setToolTip("Import the current mask to the non persistent database");
     saveBinaryMaskButton->setObjectName(generateBinaryImageButtonName);
@@ -110,21 +108,21 @@ polygonRoiToolBox::polygonRoiToolBox(QWidget *parent ) :
     connect(saveContourButton, SIGNAL(clicked()), this, SLOT(saveContours()));
     saveButtonsLayout->addWidget(saveContourButton);
 
-    QVBoxLayout *saveLayout = new QVBoxLayout();
+    QHBoxLayout *saveLayout = new QHBoxLayout();
     layout->addLayout( saveLayout);
     saveLayout->addWidget(saveLabel);
     saveLayout->addLayout(saveButtonsLayout);
 
     // How to use
     QString underlineStyle = "<br><br><span style=\" text-decoration: underline;\">%1</span>";
-    QLabel *explanation = new QLabel(QString(underlineStyle).arg("Define a Contour") + ": activate the toolbox, then click on the data set"
-                                     + QString(underlineStyle).arg("Define new Label") + ": right-click on the image then choose color"
-                                     + QString(underlineStyle).arg("Rename a Label") + ": put the cursor on a node then right-click and set a new label name"
-                                     + QString(underlineStyle).arg("Remove node/contour/label") + ": backSpace or put the cursor on a node then right-click and choose menu \"Remove\""
-                                     + QString(underlineStyle).arg("Save segmentation") + ": put the cursor on a node then right-click and choose menu \"Save\""
-                                     + QString(underlineStyle).arg("Copy ROIs in current slice") + ": CTRL/CMD + C or put the cursor on a node then right-click and choose menu \"Copy\""
-                                     + QString(underlineStyle).arg("Paste ROIs") + ": CTRL/CMD + V."
-                                     + QString(underlineStyle).arg("Change current label") + ": put the cursor on a node then right-click and choose menu \"Change label\".");
+    QLabel *explanation = new QLabel(QString(underlineStyle).arg("Define a Contour: ") + " Activate the toolbox, then click on the data set."
+                                     + QString(underlineStyle).arg("Define new Label: ") + " Right-click on the image then choose color"
+                                     + QString(underlineStyle).arg("Rename a Label: ") + " Put the cursor on a node then right-click and set a new label name"
+                                     + QString(underlineStyle).arg("Remove node/contour/label: ") + " BackSpace or put the cursor on a node then right-click and choose menu\"Remove ...\"."
+                                     + QString(underlineStyle).arg("Save segmentation: ") + " Put the cursor on a node then right-click and choose menu \"Save ...\"."
+                                     + QString(underlineStyle).arg("Copy ROIs in current slice: ") + " CTRL/CMD + c. or put the cursor on a node then right-click and choose menu\"Copy ...\""
+                                     + QString(underlineStyle).arg("Paste ROIs:") + " CTRL/CMD + v."
+                                     + QString(underlineStyle).arg("Change current label:") + " Put the cursor on a node then right-click and choose menu \"Change label ...\".");
 
     explanation->setSizePolicy(QSizePolicy::Ignored, QSizePolicy::Preferred);
     explanation->setWordWrap(true);
@@ -153,6 +151,11 @@ dtkPlugin* polygonRoiToolBox::plugin()
 
 medAbstractData *polygonRoiToolBox::processOutput()
 {
+//    if (!m_maskData)
+//    {
+//        //generateBinaryImage();
+//    }
+//    return m_maskData; // return output data
     return nullptr;
 }
 
@@ -233,7 +236,6 @@ void polygonRoiToolBox::updateView()
                 emit currentLabelsDisplayed();
 
                 updateTableWidgetItems();
-
                 connect(currentView, SIGNAL(layerRemoved(uint)), this, SLOT(onLayerClosed(uint)), Qt::UniqueConnection);
                 connect(view, SIGNAL(orientationChanged()), this, SLOT(updateTableWidgetItems()), Qt::UniqueConnection);
                 connect(view, SIGNAL(orientationChanged()), this, SLOT(manageTick()), Qt::UniqueConnection);
@@ -254,7 +256,7 @@ void polygonRoiToolBox::onLayerClosed(uint index)
             viewEventFilter->removeFromAllViews();
             viewEventFilter->reset();
         }
-
+        clear();
         medTabbedViewContainers *tabs = this->getWorkspace()->tabbedViewContainers();
         if (tabs)
         {
@@ -270,8 +272,6 @@ void polygonRoiToolBox::onLayerClosed(uint index)
                 }
             }
         }
-
-        clear();
     }
 }
 
@@ -280,7 +280,6 @@ void polygonRoiToolBox::clickClosePolygon(bool state)
     if (!currentView)
     {
         activateTBButton->setChecked(false);
-        activateTBButton->setText("Activate Toolbox");
         qDebug()<<metaObject()->className()<<":: clickClosePolygon - no view in container.";
         return;
     }
@@ -322,8 +321,7 @@ void polygonRoiToolBox::clickClosePolygon(bool state)
         {
             viewEventFilter->activateRepulsor(state);
         }
-        connect(viewEventFilter, SIGNAL(clearLastAlternativeView()), this, SLOT(resetToolboxBehaviour()), Qt::UniqueConnection);
-        activateTBButton->setText("Deactivate Toolbox");
+        connect(viewEventFilter, SIGNAL(clearLastAlternativeView()), this, SLOT(resetToolboxBehaviour()));
     }
     else
     {
@@ -331,7 +329,7 @@ void polygonRoiToolBox::clickClosePolygon(bool state)
         repulsorTool->setEnabled(state);
         emit deactivateContours();
         viewEventFilter->Off();
-        activateTBButton->setText("Activate Toolbox");
+
     }
 }
 
@@ -393,11 +391,7 @@ void polygonRoiToolBox::updateTableWidgetView(unsigned int row, unsigned int col
         return;
     }
     medViewContainer* mainContainer = containersInTabSelected.at(0);
-
-    // In multi container mode, the main container is locked.
-    // The split containers are by default in CLOSE_VIEW
-    mainContainer->setClosingMode(medViewContainer::CLOSE_BUTTON_HIDDEN);
-
+    mainContainer->setClosingMode(medViewContainer::CLOSE_VIEW);
     mainContainerUUID = mainContainer->uuid();
     medAbstractImageView* mainView = dynamic_cast<medAbstractImageView *> (mainContainer->view());
     if (!mainView)
@@ -438,15 +432,13 @@ void polygonRoiToolBox::updateTableWidgetView(unsigned int row, unsigned int col
             handleDisplayError(medAbstractProcessLegacy::FAILURE);
             return;
         }
-        for (unsigned int i=0; i<mainView->layersCount(); i++)
+        for (int i=0; i<mainView->layersCount(); i++)
         {
             container->addData(mainView->layerData(i));
         }
 
-        // Closing behavior of the non-main view
         medAbstractImageView* view = static_cast<medAbstractImageView *> (container->view());
-        connect(view, &medAbstractImageView::closed, this, [this]()
-        {
+        connect(view, &medAbstractImageView::closed, [this, mainContainer](){
             if (viewEventFilter)
             {
                 viewEventFilter->clearAlternativeView();
@@ -454,13 +446,6 @@ void polygonRoiToolBox::updateTableWidgetView(unsigned int row, unsigned int col
                 if (tabs)
                 {
                     QList<medViewContainer*> containersInTab = tabs->containersInTab(tabs->currentIndex());
-
-                    // This code seems obsolete:
-                    // This connect is called only at the closing of the second view (split view).
-                    // When a split view is created, the main view is locked, it cannot be removed.
-                    // This code enables the repulsor and split buttons when the second view is removed.
-                    // However, without this code, the repulsor and split buttons are already well set at 
-                    //the closing of the second view.
                     if (containersInTab.size()==1 && containersInTab.at(0)->uuid()==mainContainerUUID)
                     {
                         if (activateTBButton->isEnabled())
@@ -469,14 +454,10 @@ void polygonRoiToolBox::updateTableWidgetView(unsigned int row, unsigned int col
                             tableViewChooser->setEnabled(true);
                         }
                     }
-
-                    containersInTab.at(0)->setSelected(true);
-                    // Once the alternate container is closed, the main one is allowed to be closed
-                    containersInTab.at(0)->setClosingMode(medViewContainer::CLOSE_VIEW);
                 }
+                mainContainer->setSelected(true);
             }
         });
-
         viewEventFilter->installOnView(view);
         viewEventFilter->clearCopiedContours();
         connect(container, &medViewContainer::containerSelected, [=](){
@@ -689,46 +670,12 @@ void polygonRoiToolBox::saveContours()
 
 void polygonRoiToolBox::clear()
 {
-    disableButtons();
-    activateTBButton->setText("Activate Toolbox");
-
-    // Remove ROI and ticks
-    if (viewEventFilter)
-    {
-        viewEventFilter->reset();
-        viewEventFilter->updateView(currentView);
-        manageTick();
-        viewEventFilter->clearAlternativeView();
-    }
-
     managementToolBox->clear();
-
-    // Switching to a new toolbox, we can reset the main container behavior
-    medTabbedViewContainers *tabs = getWorkspace()->tabbedViewContainers();
-    QList<medViewContainer*> containersInTabSelected = tabs->containersInTab(tabs->currentIndex());
-    if (containersInTabSelected.size() > 1)
-    {
-        medViewContainer* mainContainer = containersInTabSelected.at(0);
-        mainContainer->setClosingMode(medViewContainer::CLOSE_VIEW);
-       
-        // If we switch to an other toolbox, we want to remove the split views
-        containersInTabSelected.at(1)->setClosingMode(medViewContainer::CLOSE_BUTTON_HIDDEN);
-        containersInTabSelected.at(1)->removeView();
-        containersInTabSelected.at(1)->checkIfStillDeserveToLiveContainer();
-    }
+    medToolBox::clear();
 
     if(currentView)
     {
         currentView = nullptr;
     }
-
-    // If every view of the container has been closed, we need to check if the view needs to be reset
-    if (containersInTabSelected.size() == 1)
-    {
-        auto view = containersInTabSelected.at(0)->view();
-        if (view && dynamic_cast<medAbstractLayeredView*>(view)->layersCount() == 0)
-        {
-            containersInTabSelected.at(0)->checkIfStillDeserveToLiveContainer();
-        }
-    }
+    disableButtons();
 }

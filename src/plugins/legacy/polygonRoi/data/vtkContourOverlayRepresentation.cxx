@@ -210,7 +210,61 @@ int vtkContourOverlayRepresentation::AddNodeOnContour( int X, int Y )
     return result;
 }
 
-int vtkContourOverlayRepresentation::AddNodeAtDisplayPosition(int X, int Y)
+int vtkContourOverlayRepresentation::AddNodeOnContourAtIndex(int X, int Y, int idx)
+{
+    double worldPos[3];
+    double worldOrient[9] = {1.0,0.0,0.0,
+                             0.0,1.0,0.0,
+                             0.0,0.0,1.0};
+
+    // Compute the world position from the display position
+    // based on the concrete representation's constraints
+    // If this is not a valid display location return 0
+    double displayPos[2];
+    displayPos[0] = X;
+    displayPos[1] = Y;
+    if ( !this->PointPlacer->ComputeWorldPosition( this->Renderer,
+                                                   displayPos, worldPos,
+                                                   worldOrient) )
+    {
+        return 0;
+    }
+
+    double pos[3];
+
+    if ( !this->PointPlacer->ComputeWorldPosition( this->Renderer,
+                                                   displayPos,
+                                                   pos,
+                                                   worldPos,
+                                                   worldOrient) )
+    {
+        return 0;
+    }
+
+    // Add a new point at this position
+    vtkContourRepresentationNode *node = new vtkContourRepresentationNode;
+    node->WorldPosition[0] = worldPos[0];
+    node->WorldPosition[1] = worldPos[1];
+    node->WorldPosition[2] = worldPos[2];
+    node->Selected = 0;
+
+    this->GetRendererComputedDisplayPositionFromWorldPosition(
+                worldPos, worldOrient, node->NormalizedDisplayPosition );
+    this->Renderer->DisplayToNormalizedDisplay(
+                node->NormalizedDisplayPosition[0],
+            node->NormalizedDisplayPosition[1] );
+
+    memcpy(node->WorldOrientation, worldOrient, 9*sizeof(double) );
+
+    this->Internal->Nodes.insert(this->Internal->Nodes.begin() + idx, node);
+
+    this->UpdateLines( idx );
+    this->NeedToRender = 1;
+    this->needToSaveState = true;
+    return 1;
+}
+
+int vtkContourOverlayRepresentation::AddNodeAtDisplayPosition( int X, int Y )
 {
     int result = Superclass::AddNodeAtDisplayPosition(X,Y);
     if (result)
@@ -219,34 +273,6 @@ int vtkContourOverlayRepresentation::AddNodeAtDisplayPosition(int X, int Y)
     }
     this->InvokeEvent(vtkCommand::PlacePointEvent);
     return result;
-}
-
-int vtkContourOverlayRepresentation::AddNodeAtDisplayPosition(double displayPos[2])
-{
-    double worldPos[4];
-    double worldOrient[9] = {1.0,0.0,0.0,
-                             0.0,1.0,0.0,
-                             0.0,0.0,1.0};
-
-    // Compute the world position from the display position
-    // based on the concrete representation's constraints
-    // If this is not a valid display location return 0
-    if ( !this->PointPlacer->ComputeWorldPosition( this->Renderer,
-                                                   displayPos, worldPos,
-                                                   worldOrient) )
-    {
-        return 0;
-    }
-
-    // this is a hack: the previous method call should be able to compute
-    // the correct world position. The problem is it uses the camera's
-    // focal point, which is not correctly updated in at least one case:
-    // when the views are linked and the 'current point' is changed
-    // by double-clicking.
-    vtkInteractorObserver::ComputeDisplayToWorld(this->Renderer, displayPos[0], displayPos[1], 0.0, worldPos);
-
-    this->AddNodeAtPositionInternal( worldPos, worldOrient, displayPos );
-    return 1;
 }
 
 int vtkContourOverlayRepresentation::GetNthNodeWorldPosition(int n, double worldPos[])

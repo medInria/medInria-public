@@ -9,9 +9,6 @@ medContourSharedInfo::medContourSharedInfo(QString name, QColor color, bool sele
     secondName = QString();
     secondColor = QColor::Invalid;
     changeName = false;
-    updateColor = false;
-    checked = false;
-    updateDesc = false;
 }
 
 void medContourSharedInfo::setAdditionalNameAndColor(QString name, QColor color)

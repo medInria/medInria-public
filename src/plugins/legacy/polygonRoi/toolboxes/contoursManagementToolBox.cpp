@@ -98,6 +98,8 @@ bool contoursManagementToolBox::registered()
 
 void contoursManagementToolBox::clear()
 {
+    medToolBox::clear();
+
     currentView = nullptr;
 
     QListWidget *widget = labels.at(0);
@@ -238,7 +240,7 @@ bool contoursManagementToolBox::loadUrologyContours(QListWidget *widget, QVector
             {
                 itemFound = true;
                 color = item->icon().pixmap(QSize(20,20)).toImage().pixelColor(0,0);
-                if (tagContours.isTarget() && tagContours.getScore()!=QString())
+                if (tagContours.isTarget())
                 {
                     QString name = QString("%1 - %2").arg(tagContours.getLabelName()).arg(tagContours.getScore());
                     item->setText(name);
@@ -724,22 +726,14 @@ void contoursManagementToolBox::removeLabelNameInList()
     for (int row = 0; row<widget->count(); row++)
     {
         QListWidgetItem *item = widget->item(row);
-        if (item->isSelected())
+        if (item->isSelected() && row > minRowNumber)
         {
             QString name = item->text();
             name = name.remove(QRegExp(" - PIRADS[0-9]"));
             QColor col = item->icon().pixmap(QSize(20,20)).toImage().pixelColor(0,0);
             medContourSharedInfo info = medContourSharedInfo(name, col);
             emit labelToDelete(info);
-            if (row > minRowNumber)
-            {
-                widget->takeItem(row);
-            }
-            else
-            {
-                info.setScoreInfo(item->flags().testFlag(Qt::ItemIsUserCheckable));
-                emit sendActivationState(info);
-            }
+            widget->takeItem(row);
         }
     }
     widget->setMaximumHeight((20*widget->count())+5);
@@ -762,7 +756,7 @@ void contoursManagementToolBox::switchTargetState(bool state)
             if (item->isSelected() && row > 3)
             {
                 bool itemCheckable = item->flags().testFlag(Qt::ItemIsUserCheckable);
-                QString name = "unamed";
+                QString name;
                 QColor color;
                 if (itemCheckable && !state)
                 {
@@ -884,7 +878,6 @@ void contoursManagementToolBox::receiveContoursDatasFromView(medContourSharedInf
                 item->setCheckState(Qt::Unchecked);
             }
             medContourSharedInfo activationInfo = medContourSharedInfo(itemName, itemColor);
-            activationInfo.setScoreInfo(item->flags().testFlag(Qt::ItemIsUserCheckable));
             emit sendActivationState(activationInfo);
         }
 
@@ -917,11 +910,7 @@ void contoursManagementToolBox::onContoursSaved(medAbstractImageView *view, vtkM
     medAbstractData * input = view->layerData(0);
     medAbstractImageData *inputData = qobject_cast<medAbstractImageData*>(input);
     QString desc;
-    if (contoursData.size()==0)
-    {
-        return;
-    }
-    else if (contoursData.size()==1)
+    if (contoursData.size()==1)
     {
         desc = QString("contour %1").arg(contoursData[0].getLabelName());
         contoursData[0].setSpecialityIndex(specialities->currentIndex());
