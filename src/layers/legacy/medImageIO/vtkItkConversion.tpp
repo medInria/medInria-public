@@ -110,7 +110,7 @@ bool vtkItkConversion<volumeType, imageDim>::GetConversion(vtkAlgorithmOutput *&
 /**
 * @brief  This internal function register into the good variable member the input image.
 * @param  pi_spInputImage [in] smart pointer on the itk input image.
-* @return True if succed. False in other cases.
+* @return True if succeed. False in other cases.
 */
 template <typename volumeType, unsigned int imageDim>
 bool vtkItkConversion<volumeType, imageDim>::initializeImage(typename itk::ImageBase<imageDim>::Pointer &pi_spInputImage)

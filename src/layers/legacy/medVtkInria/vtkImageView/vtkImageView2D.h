@@ -18,7 +18,6 @@
 
 #include <vtkImageView.h>
 #include <vtkInteractorStyleImageView2D.h>
-
 #include <vtkSmartPointer.h>
 
 #include <vector>
@@ -58,7 +57,7 @@ class vtkImageAlgorithm;
 
 
  A) SLICE_ORIENTATION enum
- the slice orientation enum has changed to match VTK : XY / XZ / YZ
+ the slice orientation enum has changed to match VTK: XY / XZ / YZ
  The axis enum is therefore of no need.
 
  B) The ImageToColor instance has been moved to ImageView (see vtkImageView.h)
@@ -66,7 +65,7 @@ class vtkImageAlgorithm;
  C) Orientation and Convention systems have been put in place,
  thus replacing the DirectionMatrix system
 
- D) The Zoom / Pan differentiation : is it needed ?
+ D) The Zoom / Pan differentiation: is it needed ?
 
  E) again here Visibility --> Show
 
@@ -76,7 +75,7 @@ class vtkImageAlgorithm;
  of the overall code. So I put it back.
  One thing remains though. Pierre differentiated the Zoom event from the Pan event,
  thus authorizing sync. of one and not the other. In the system I propose there is
- no differentiation, they are gathered in the CameraMove event. to be discussed.
+ no differentiation, they are gathered in the CameraMove event. To be discussed.
 
  G) All mouse interactions have thus been put in place.
 
@@ -148,7 +147,7 @@ public:
 
     /**
    Description:
-   The orientation of the view is a abstract representation of the object
+   The orientation of the view is an abstract representation of the object
    we are looking at. It results from the acquisition plane. Setting the View
    Orientation by calling SetViewOrientation() will imply the view to set its
    inner "slice" orientation. (slice orientation == 2 means plane of acquisition.)
@@ -438,8 +437,6 @@ protected:
     // Get layer specific renderer.
     vtkImage2DDisplay * GetImage2DDisplayForLayer(int layer) const;
     vtkRenderer * GetRendererForLayer(int layer) const;
-
-
 
     //BTX
     std::list<vtkDataSet2DWidget*>::iterator FindDataSetWidget(vtkPointSet* arg);

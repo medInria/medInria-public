@@ -13,14 +13,9 @@
 =========================================================================*/
 
 #include <vtkImageData.h>
-#include <vtkImageActor.h>
 #include <vtkImageMapToColors.h>
 #include <vtkLookupTable.h>
-#include <vtkColorTransferFunction.h>
 #include <vtkPiecewiseFunction.h>
-#include <vtkSetGet.h>
-#include "medVtkImageInfo.h"
-
 
 class vtkImage2DDisplay : public vtkObject
 {
@@ -28,7 +23,9 @@ public:
   static vtkImage2DDisplay * New();
   vtkTypeMacro (vtkImage2DDisplay, vtkObject);
 
-  virtual void SetInput(vtkAlgorithmOutput*  pi_poVtkAlgoPort);
+  virtual void SetInputData(vtkImageData *pi_poVtkImage);
+
+  void SetInputProducer(vtkAlgorithmOutput *pi_poAlgorithmOutput);
 
   virtual vtkLookupTable * GetLookupTable() const;
 
@@ -56,7 +53,7 @@ public:
 
 protected:
   vtkImage2DDisplay();
-  ~vtkImage2DDisplay();
+  ~vtkImage2DDisplay() = default;
 
 private:
   vtkSmartPointer<vtkImageMapToColors>        WindowLevel;

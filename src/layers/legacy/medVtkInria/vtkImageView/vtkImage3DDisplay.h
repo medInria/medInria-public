@@ -13,11 +13,10 @@
 =========================================================================*/
 
 #include <vtkAlgorithmOutput.h>
+#include <vtkImageAlgorithm.h>
+#include <vtkImageData.h>
 #include <vtkLookupTable.h>
 #include <vtkSetGet.h>
-#include "medVtkImageInfo.h"
-
-#include <vtkImageData.h>
 
 class vtkImage3DDisplay : public vtkObject
 {
@@ -26,10 +25,9 @@ public:
 
     vtkTypeMacro (vtkImage3DDisplay, vtkObject);
 
-    //vtkSetObjectMacro(InputConnection, vtkAlgorithmOutput);
-
-    virtual void SetInputConnection(vtkAlgorithmOutput*  pi_poVtkAlgoPort);
-    virtual medVtkImageInfo* GetVtkImageInfo();
+    virtual void SetInputData(vtkImageData *pi_poVtkImage);
+    void SetInputProducer(vtkAlgorithmOutput *pi_poAlgorithmOutput);
+    virtual medVtkImageInfo* GetMedVtkImageInfo();
 
     virtual bool isInputSet();
 
@@ -51,15 +49,14 @@ public:
     vtkSetMacro(ColorLevel, double);
     vtkGetMacro(ColorLevel, double);
 
-    vtkAlgorithmOutput* GetOutputPort();
+    virtual vtkImageAlgorithm* GetInputProducer() const { return this->InputProducer; }
 
 protected:
     vtkImage3DDisplay();
     ~vtkImage3DDisplay();
 
 private:
-    //vtkSmartPointer<vtkImageData>               InputImageOld;
-    vtkSmartPointer<vtkAlgorithmOutput>         InputConnection;
+    vtkSmartPointer<vtkImageAlgorithm> InputProducer;
     double Opacity;
     int Visibility;
     double ColorWindow;

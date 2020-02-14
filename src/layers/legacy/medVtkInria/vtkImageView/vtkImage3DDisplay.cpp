@@ -12,15 +12,15 @@
 =========================================================================*/
 
 #include "vtkImage3DDisplay.h"
-#include <vtkImageData.h>
-#include <vtkImageAlgorithm.h>
 
-vtkStandardNewMacro(vtkImage3DDisplay);
+#include <vtkImageAlgorithm.h>
+#include <vtkImageData.h>
+
+vtkStandardNewMacro(vtkImage3DDisplay)
 
 vtkImage3DDisplay::vtkImage3DDisplay()
 {
-    //this->InputImageOld = 0;
-    this->InputConnection = 0;
+    this->InputProducer = nullptr;
     this->Opacity = 1.0;
     this->Visibility = 1;
     this->ColorWindow = 1e-3 * VTK_DOUBLE_MAX;
@@ -37,40 +37,31 @@ vtkImage3DDisplay::~vtkImage3DDisplay()
     }
 }
 
-
-void vtkImage3DDisplay::SetInputConnection(vtkAlgorithmOutput* pi_poVtkAlgoPort)
-{    
-    if (pi_poVtkAlgoPort)
+void vtkImage3DDisplay::SetInputData(vtkImageData *pi_poVtkImage)
+{
+    if (pi_poVtkImage)
     {
-        if (pi_poVtkAlgoPort->GetProducer() && pi_poVtkAlgoPort->GetProducer()->IsA("vtkImageAlgorithm"))
-        {
-            this->InputConnection = pi_poVtkAlgoPort;
-            vtkImageAlgorithm* poVtkImgAlgoTmp = static_cast<vtkImageAlgorithm*>(pi_poVtkAlgoPort->GetProducer());
-            vtkImageData* poVtkImgTmp = poVtkImgAlgoTmp->GetOutput();
-
-            m_sVtkImageInfo.SetSpacing(poVtkImgTmp->GetSpacing());
-            m_sVtkImageInfo.SetOrigin(poVtkImgTmp->GetOrigin());
-            m_sVtkImageInfo.SetScalarRange(poVtkImgTmp->GetScalarRange());
-            m_sVtkImageInfo.SetExtent(poVtkImgTmp->GetExtent());
-            m_sVtkImageInfo.SetDimensions(poVtkImgTmp->GetDimensions());
-            m_sVtkImageInfo.scalarType = poVtkImgTmp->GetScalarType();
-            m_sVtkImageInfo.nbScalarComponent = poVtkImgTmp->GetNumberOfScalarComponents();
-            m_sVtkImageInfo.initialized = true;
-
-        } 
-        else
-        {
-            vtkErrorMacro(<< "Set input prior to adding layers");
-        }
-    } 
+        m_sVtkImageInfo.SetSpacing(pi_poVtkImage->GetSpacing());
+        m_sVtkImageInfo.SetOrigin(pi_poVtkImage->GetOrigin());
+        m_sVtkImageInfo.SetScalarRange(pi_poVtkImage->GetScalarRange());
+        m_sVtkImageInfo.SetExtent(pi_poVtkImage->GetExtent());
+        m_sVtkImageInfo.SetDimensions(pi_poVtkImage->GetDimensions());
+        m_sVtkImageInfo.scalarType = pi_poVtkImage->GetScalarType();
+        m_sVtkImageInfo.nbScalarComponent = pi_poVtkImage->GetNumberOfScalarComponents();
+        m_sVtkImageInfo.initialized = true;
+    }
     else
     {
         memset(&m_sVtkImageInfo, 0, sizeof(m_sVtkImageInfo));
-        this->InputConnection = nullptr;
     }
 }
 
-medVtkImageInfo* vtkImage3DDisplay::GetVtkImageInfo()
+void vtkImage3DDisplay::SetInputProducer(vtkAlgorithmOutput *pi_poAlgorithmOutput)
+{
+    InputProducer = static_cast<vtkImageAlgorithm*>(pi_poAlgorithmOutput->GetProducer());
+}
+
+medVtkImageInfo* vtkImage3DDisplay::GetMedVtkImageInfo()
 {
     return &m_sVtkImageInfo;
 }
@@ -83,9 +74,4 @@ bool vtkImage3DDisplay::isInputSet()
 vtkLookupTable* vtkImage3DDisplay::GetLookupTable()
 {
     return this->LookupTable;
-}
-
-vtkAlgorithmOutput* vtkImage3DDisplay::GetOutputPort()
-{
-    return this->InputConnection;
 }

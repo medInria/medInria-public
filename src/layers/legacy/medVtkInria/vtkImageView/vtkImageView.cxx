@@ -377,9 +377,9 @@ vtkAlgorithmOutput* vtkImageView::ResliceImageToInput(vtkAlgorithmOutput* pi_poV
 /**  Set the input image to the viewer. */
 void vtkImageView::SetInput(vtkAlgorithmOutput* pi_poVtkAlgoOutput, vtkMatrix4x4 *matrix /*= 0*/, int layer /*= 0*/)
 {
-    //vtkSetObjectBodyMacro (Input, vtkImageData, arg);
     m_poInputVtkAlgoOutput = pi_poVtkAlgoOutput;
-    m_poInternalImageFromInput = ((vtkImageAlgorithm*)pi_poVtkAlgoOutput->GetProducer())->GetOutput();
+    m_poInternalImageFromInput = static_cast<vtkImageAlgorithm*>(pi_poVtkAlgoOutput->GetProducer())->GetOutput();
+
     if (pi_poVtkAlgoOutput)
     {
        this->WindowLevel->SetInputConnection(pi_poVtkAlgoOutput);
