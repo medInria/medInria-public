@@ -84,7 +84,7 @@ vtkFiberDataSetManager::~vtkFiberDataSetManager()
   d->FiberBundlePipelineList.clear();
 
   delete d;
-  d = NULL;
+  d = nullptr;
 }
 
 void vtkFiberDataSetManager::Enable()
@@ -421,7 +421,7 @@ vtkActor *vtkFiberDataSetManager::GetBundleActor(const std::string &name)
     {
         return (it->second)->Actor;
     }
-    return NULL;
+    return nullptr;
 }
 
 void vtkFiberDataSetManager::ShowAllBundles()

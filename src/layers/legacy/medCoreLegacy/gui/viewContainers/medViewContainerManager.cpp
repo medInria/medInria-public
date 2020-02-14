@@ -2,7 +2,7 @@
 
  medInria
 
- Copyright (c) INRIA 2013 - 2018. All rights reserved.
+ Copyright (c) INRIA 2013 - 2020. All rights reserved.
  See LICENSE.txt for details.
  
   This software is distributed WITHOUT ANY WARRANTY; without even
@@ -40,7 +40,7 @@ medViewContainerManager::medViewContainerManager(void) : d(new medViewContainerM
 medViewContainerManager::~medViewContainerManager(void)
 {
     delete d;
-    d = NULL;
+    d = nullptr;
 }
 
 void medViewContainerManager::registerNewContainer(medViewContainer* newContainer)
@@ -60,4 +60,4 @@ medViewContainer* medViewContainerManager::container(QUuid uuid) const
     return d->containers.value(uuid);
 }
 
-medViewContainerManager *medViewContainerManager::s_instance = NULL;
+medViewContainerManager *medViewContainerManager::s_instance = nullptr;

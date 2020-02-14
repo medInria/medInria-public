@@ -1,17 +1,16 @@
+#pragma once
 /*=========================================================================
 
- medInria
+medInria
 
- Copyright (c) INRIA 2013 - 2018. All rights reserved.
- See LICENSE.txt for details.
- 
-  This software is distributed WITHOUT ANY WARRANTY; without even
-  the implied warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR
-  PURPOSE.
+Copyright (c) INRIA 2013 - 2020. All rights reserved.
+See LICENSE.txt for details.
+
+This software is distributed WITHOUT ANY WARRANTY; without even
+the implied warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR
+PURPOSE.
 
 =========================================================================*/
-
-#pragma once
 
 #include <vtkMultiBlockDataSet.h>
 #include <medVtkFibersDataPluginExport.h>
@@ -28,7 +27,7 @@ class MEDVTKFIBERSDATAPLUGIN_EXPORT vtkFiberDataSet : public vtkMultiBlockDataSe
 {
  public:
   static vtkFiberDataSet *New();
-  vtkTypeMacro(vtkFiberDataSet, vtkMultiBlockDataSet);
+  vtkTypeMacro(vtkFiberDataSet, vtkMultiBlockDataSet)
 
   struct vtkFiberBundleType
   {
@@ -39,7 +38,6 @@ class MEDVTKFIBERSDATAPLUGIN_EXPORT vtkFiberDataSet : public vtkMultiBlockDataSe
     double       Blue;
     vtkFiberBundleType(): Id (-1), Bundle (0), Red (0.0), Green (0.0), Blue (0.0) {}
   };
-  
   
   /**
      Store bundle as a map of string (name) whose value is BundleType struct.
@@ -72,7 +70,4 @@ class MEDVTKFIBERSDATAPLUGIN_EXPORT vtkFiberDataSet : public vtkMultiBlockDataSe
   
  private:
   vtkFiberBundleListType Bundles;
-  
-  
 };
-

@@ -1,8 +1,9 @@
+#pragma once
 /*=========================================================================
 
  medInria
 
- Copyright (c) INRIA 2013 - 2018. All rights reserved.
+ Copyright (c) INRIA 2013 - 2020. All rights reserved.
  See LICENSE.txt for details.
 
   This software is distributed WITHOUT ANY WARRANTY; without even
@@ -10,8 +11,6 @@
   PURPOSE.
 
 =========================================================================*/
-
-#pragma once
 
 #include <QStatusBar>
 #include <QWidget>
@@ -32,7 +31,7 @@ class MEDCORELEGACY_EXPORT medStatusBar : public QStatusBar
     Q_OBJECT
 public:
 
-    medStatusBar ( QWidget * parent = 0 );
+    medStatusBar ( QWidget * parent = nullptr );
     ~medStatusBar();
 
     void setStatusBarLayout ( QBoxLayout * layout );
@@ -64,5 +63,3 @@ private:
     QList<medMessage *> hiddenMessageList; // storing messages waiting to be displayed
     QList<medMessage *> messageList;    // storing displayed messages
 };
-
-

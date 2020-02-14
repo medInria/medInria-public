@@ -2,7 +2,7 @@
 
  medInria
 
- Copyright (c) INRIA 2013 - 2018. All rights reserved.
+ Copyright (c) INRIA 2013 - 2020. All rights reserved.
  See LICENSE.txt for details.
  
   This software is distributed WITHOUT ANY WARRANTY; without even
@@ -13,7 +13,6 @@
 
 #include <medViewFactory.h>
 
-
 medViewFactory *medViewFactory::instance(void)
 {
     if(!s_instance)
@@ -21,7 +20,6 @@ medViewFactory *medViewFactory::instance(void)
 
     return s_instance;
 }
-
 
 class medViewFactoryPrivate
 {
@@ -33,7 +31,7 @@ class medViewFactoryPrivate
 
     typedef QHash <QString, QStringList>        identifierHandledTypeHash;
 
-    public:
+public:
 
     viewIdCreatorHash         viewCreators;
     navigatorIdCreatorHash    navigatorCreators;
@@ -62,9 +60,8 @@ medViewFactory::~medViewFactory()
 
 medAbstractNavigator* medViewFactory::createAdditionalNavigator(QString identifier, medAbstractView *parent)
 {
-
-    medAbstractNavigator* navigator = NULL;
-    addNavigatorCreator c = NULL;
+    medAbstractNavigator* navigator = nullptr;
+    addNavigatorCreator c = nullptr;
     c = d->addNavigatorCreators.value(identifier);
     if(c)
         navigator = (c)(parent);
@@ -74,8 +71,8 @@ medAbstractNavigator* medViewFactory::createAdditionalNavigator(QString identifi
 
 medAbstractInteractor*  medViewFactory::createAdditionalInteractor(QString identifier, medAbstractView *parent)
 {
-    medAbstractInteractor* interactor = NULL;
-    addInteractorCreator c = NULL;
+    medAbstractInteractor* interactor = nullptr;
+    addInteractorCreator c = nullptr;
     c = d->addInteractorCreators.value(identifier);
     if(c)
         interactor = (c)(parent);
@@ -85,7 +82,6 @@ medAbstractInteractor*  medViewFactory::createAdditionalInteractor(QString ident
 
 //--------------------------------------------------------------------------
 //  register
-
 
 bool medViewFactory::registerView(QString identifier, QStringList typeHandled, viewCreator creator)
 {
@@ -252,12 +248,7 @@ QStringList medViewFactory::additionalInteractorsAbleToHandle(const QString view
     return interactors;
 }
 
-
 //--------------------------------------------------------------------------
 //  construc / destruct factory
 
-
-medViewFactory *medViewFactory::s_instance = NULL;
-
-
-
+medViewFactory *medViewFactory::s_instance = nullptr;

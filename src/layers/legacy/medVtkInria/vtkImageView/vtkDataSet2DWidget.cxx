@@ -169,29 +169,30 @@ void vtkDataSet2DWidgetCommand::Execute(vtkObject *caller,
 				     unsigned long event,
 				     void *callData)
 {
+    if (event == vtkImageView2D::SliceChangedEvent ||
+            event == vtkImageView2D::CurrentPointChangedEvent )
+    {
+        if (!this->Widget || !this->Widget->GetImageView())
+        {
+            return;
+        }
+        this->Widget->GetImplicitPlane()->SetOrigin (this->Widget->GetImageView()->GetCurrentPoint());
+    }
 
-  if (event == vtkImageView2D::SliceChangedEvent ||
-      event == vtkImageView2D::CurrentPointChangedEvent )
-  {
-    if (!this->Widget || !this->Widget->GetImageView())
-      return;
-    
-    this->Widget->GetImplicitPlane()->SetOrigin (this->Widget->GetImageView()->GetCurrentPoint());
-  }
-  
-  if (event == vtkImageView2D::OrientationChangedEvent)
-  {
-    if (!this->Widget)
-      return;
-    vtkImageView2D *view = vtkImageView2D::SafeDownCast(caller);
-    if (!view)
-      return;    
-    vtkRenderer* renderer = view->GetRenderer();
-    vtkCamera *cam = renderer ? renderer->GetActiveCamera() : NULL;
-    if (!cam)
-      return;
-
-    this->Widget->GetImplicitPlane()->SetNormal (cam->GetViewPlaneNormal());
-  }
-  
+    if (event == vtkImageView2D::OrientationChangedEvent)
+    {
+        if (this->Widget)
+        {
+            vtkImageView2D *view = vtkImageView2D::SafeDownCast(caller);
+            if (view)
+            {
+                vtkRenderer* renderer = view->GetRenderer();
+                vtkCamera *cam = renderer ? renderer->GetActiveCamera() : nullptr;
+                if (cam)
+                {
+                    this->Widget->GetImplicitPlane()->SetNormal (cam->GetViewPlaneNormal());
+                }
+            }
+        }
+    }
 }

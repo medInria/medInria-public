@@ -1,3 +1,4 @@
+#pragma once
 /*============================================================================
 
 The Hardware Shading (HWShading) module is protected by the
@@ -21,8 +22,6 @@ PURPOSE.  See the above copyright notices for more information.
  * - First version
  */
 
-#pragma once
-
 #include <medVtkInriaExport.h>
 
 #include <vtkUniform.h>
@@ -43,7 +42,7 @@ class MEDVTKINRIA_EXPORT vtkUniformSampler : public vtkUniform<int>
 {
 public:
   static vtkUniformSampler* New();
-  vtkTypeMacro(vtkUniformSampler, vtkUniform<int>);
+  vtkTypeMacro(vtkUniformSampler, vtkUniform<int>)
 
 protected:
   vtkUniformSampler();
@@ -52,5 +51,3 @@ protected:
 private:
 
 };
-
-

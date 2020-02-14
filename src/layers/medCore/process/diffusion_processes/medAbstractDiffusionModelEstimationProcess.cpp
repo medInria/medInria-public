@@ -2,7 +2,7 @@
 
  medInria
 
- Copyright (c) INRIA 2013 - 2018. All rights reserved.
+ Copyright (c) INRIA 2013 - 2020. All rights reserved.
  See LICENSE.txt for details.
 
   This software is distributed WITHOUT ANY WARRANTY; without even
@@ -33,8 +33,8 @@ public:
 medAbstractDiffusionModelEstimationProcess::medAbstractDiffusionModelEstimationProcess(QObject *parent)
     : medAbstractProcess(parent), d(new medAbstractDiffusionModelEstimationProcessPrivate)
 {
-    d->input = NULL;
-    d->output = NULL;
+    d->input = nullptr;
+    d->output = nullptr;
 
     d->gradientsInImageCoordinates = new medBoolParameter("grad_coords",this);
     d->gradientsInImageCoordinates->setCaption("Gradients in image coordinates");
@@ -44,6 +44,7 @@ medAbstractDiffusionModelEstimationProcess::medAbstractDiffusionModelEstimationP
 
 medAbstractDiffusionModelEstimationProcess::~medAbstractDiffusionModelEstimationProcess()
 {
+
 }
 
 void medAbstractDiffusionModelEstimationProcess::setInput(medAbstractImageData *data)

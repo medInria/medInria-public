@@ -2,7 +2,7 @@
 
  medInria
 
- Copyright (c) INRIA 2013 - 2018. All rights reserved.
+ Copyright (c) INRIA 2013 - 2020. All rights reserved.
  See LICENSE.txt for details.
  
   This software is distributed WITHOUT ANY WARRANTY; without even
@@ -40,13 +40,13 @@ public:
 
 itkDataSHImageDouble3::itkDataSHImageDouble3(): medAbstractTypedDiffusionModelImageData<3,double>(), d(new itkDataSHImageDouble3Private)
 {
-    d->shs = 0;
+    d->shs = nullptr;
 }
 
 itkDataSHImageDouble3::~itkDataSHImageDouble3()
 {
     delete d;
-    d = 0;
+    d = nullptr;
 }
 
 bool itkDataSHImageDouble3::registered()
@@ -68,11 +68,14 @@ void itkDataSHImageDouble3::setData(void *data)
 {
     typedef itkDataSHImageDouble3Private::SHImageType SHImageType;
 
-    if( SHImageType* shs = dynamic_cast<SHImageType*>( (itk::Object*)(data) ) ){
+    if( SHImageType* shs = dynamic_cast<SHImageType*>( (itk::Object*)(data) ) )
+    {
         d->shs = shs;
     }
     else
-      dtkDebug() << "Cannot cast pointer to correct SH double type";
+    {
+        qDebug() << "Cannot cast pointer to correct SH double type";
+    }
 }
 
 int itkDataSHImageDouble3::xDimension()

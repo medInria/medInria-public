@@ -2,7 +2,7 @@
 
  medInria
 
- Copyright (c) INRIA 2013 - 2019. All rights reserved.
+ Copyright (c) INRIA 2013 - 2020. All rights reserved.
  See LICENSE.txt for details.
  
   This software is distributed WITHOUT ANY WARRANTY; without even
@@ -14,13 +14,8 @@
 #include "medWorkspaceArea.h"
 #include "medWorkspaceArea_p.h"
 
-
 #include <medAbstractDataFactory.h>
 #include <medAbstractData.h>
-#include <dtkCoreSupport/dtkGlobal.h>
-
-#include <dtkVrSupport/dtkVrHeadRecognizer.h>
-#include <dtkVrSupport/dtkVrGestureRecognizer.h>
 
 #include <medAbstractDbController.h>
 #include <medSettingsManager.h>
@@ -116,11 +111,11 @@ medWorkspaceArea::medWorkspaceArea(QWidget *parent) : QWidget(parent), d(new med
     }
 }
 
-medWorkspaceArea::~medWorkspaceArea(void)
+medWorkspaceArea::~medWorkspaceArea()
 {
     medSettingsManager::instance()->setValue("workspaceAreaSplitter", "state", d->splitter->saveState());
     delete d;
-    d = NULL;
+    d = nullptr;
 }
 
 QPixmap medWorkspaceArea::grabScreenshot()

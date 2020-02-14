@@ -1,8 +1,9 @@
+#pragma once
 /*=========================================================================
 
  medInria
 
- Copyright (c) INRIA 2013 - 2019. All rights reserved.
+ Copyright (c) INRIA 2013 - 2020. All rights reserved.
  See LICENSE.txt for details.
 
   This software is distributed WITHOUT ANY WARRANTY; without even
@@ -10,8 +11,6 @@
   PURPOSE.
 
 =========================================================================*/
-
-#pragma once
 
 #include <QtCore/QAbstractItemModel>
 #include <QtGui>
@@ -27,7 +26,7 @@ class MEDCORELEGACY_EXPORT medDatabaseModel : public QAbstractItemModel
     Q_OBJECT
 
 public:
-     medDatabaseModel(QObject *parent = 0, bool justBringStudies = false);
+     medDatabaseModel(QObject *parent = nullptr, bool justBringStudies = false);
     ~medDatabaseModel();
 
     int rowCount(const QModelIndex& parent = QModelIndex()) const;
@@ -72,6 +71,7 @@ protected:
 
 private:
     medDatabaseModelPrivate *d;
+
 public slots:
     void update(const medDataIndex&);
 

@@ -2,7 +2,7 @@
 
  medInria
 
- Copyright (c) INRIA 2013 - 2018. All rights reserved.
+ Copyright (c) INRIA 2013 - 2020. All rights reserved.
  See LICENSE.txt for details.
  
   This software is distributed WITHOUT ANY WARRANTY; without even
@@ -11,10 +11,8 @@
 
 =========================================================================*/
 
-#include <medAbstractViewNavigator.h>
-
 #include <medAbstractView.h>
-
+#include <medAbstractViewNavigator.h>
 #include <medDoubleParameterL.h>
 #include <medVector2DParameterL.h>
 
@@ -30,8 +28,8 @@ medAbstractViewNavigator::medAbstractViewNavigator(medAbstractView* parent):
     medAbstractNavigator(parent), d(new medAbstractViewNavigatorPrivate)
 {
     d->view = parent;
-    d->zoomParameter = NULL;
-    d->panParameter = NULL;
+    d->zoomParameter = nullptr;
+    d->panParameter = nullptr;
 }
 
 medAbstractViewNavigator::~medAbstractViewNavigator()

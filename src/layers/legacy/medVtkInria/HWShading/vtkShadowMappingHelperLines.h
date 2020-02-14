@@ -1,3 +1,4 @@
+#pragma once
 /*============================================================================
 
 The Hardware Shading (HWShading) module is protected by the
@@ -22,8 +23,6 @@ PURPOSE.  See the above copyright notices for more information.
  * - First version
  */
 
-#pragma once
-
 #include <vtkShadowMappingHelper.h>
 
 #include <medVtkInriaExport.h>
@@ -36,13 +35,12 @@ class MEDVTKINRIA_EXPORT vtkShadowMappingHelperLines : public vtkShadowMappingHe
 {
 public:
   static vtkShadowMappingHelperLines* New();
-  vtkTypeMacro (vtkShadowMappingHelperLines, vtkShadowMappingHelper);
+  vtkTypeMacro (vtkShadowMappingHelperLines, vtkShadowMappingHelper)
   
 protected:
   vtkShadowMappingHelperLines();
   ~vtkShadowMappingHelperLines();
+
 private:
 
 }; // class vtkShadowMappingHelperLines
-
-

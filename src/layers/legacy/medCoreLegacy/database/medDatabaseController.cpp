@@ -2,7 +2,7 @@
 
  medInria
 
- Copyright (c) INRIA 2013 - 2019. All rights reserved.
+ Copyright (c) INRIA 2013 - 2020. All rights reserved.
  See LICENSE.txt for details.
 
   This software is distributed WITHOUT ANY WARRANTY; without even
@@ -129,7 +129,7 @@ void medDatabaseControllerPrivate::buildMetaDataLookup()
         TableEntryList() << TableEntry(T_series, "acquisitionTime") );
 }
 
-medDatabaseController * medDatabaseController::s_instance = NULL;
+medDatabaseController * medDatabaseController::s_instance = nullptr;
 
 medDatabaseController* medDatabaseController::instance() {
     if ( ! s_instance) {
@@ -137,7 +137,6 @@ medDatabaseController* medDatabaseController::instance() {
     }
     return s_instance;
 }
-
 
 const QSqlDatabase& medDatabaseController::database(void) const
 {
@@ -423,41 +422,41 @@ bool medDatabaseController::createSeriesTable()
 {
     QSqlQuery query(this->database());
 
-    return query.prepare(
-                   "CREATE TABLE IF NOT EXISTS series ("
-                   " id       INTEGER      PRIMARY KEY,"
-                   " study    INTEGER," // FOREIGN KEY
-                   " size     INTEGER,"
-                   " name            TEXT,"
-                   " path            TEXT,"
-                   " uid             TEXT,"
-                   " seriesId        TEXT,"
-                   " orientation     TEXT,"
-                   " seriesNumber    TEXT,"
-                   " sequenceName    TEXT,"
-                   " sliceThickness  TEXT,"
-                   " rows            TEXT,"
-                   " columns         TEXT,"
-                   " thumbnail       TEXT,"
-                   " age             TEXT,"
-                   " description     TEXT,"
-                   " modality        TEXT,"
-                   " protocol        TEXT,"
-                   " comments        TEXT,"
-                   " status          TEXT,"
-                   " acquisitiondate TEXT,"
-                   " importationdate TEXT,"
-                   " referee         TEXT,"
-                   " performer       TEXT,"
-                   " institution     TEXT,"
-                   " report          TEXT,"
-                   " origin          TEXT,"
-                   " flipAngle       TEXT,"
-                   " echoTime        TEXT,"
-                   " repetitionTime  TEXT,"
-                   " acquisitionTime TEXT"
-                   ");"
-                   ) && EXEC_QUERY(query);
+    query.prepare(
+                "CREATE TABLE IF NOT EXISTS series ("
+                " id       INTEGER      PRIMARY KEY,"
+                " study    INTEGER," // FOREIGN KEY
+                " size     INTEGER,"
+                " name            TEXT,"
+                " path            TEXT,"
+                " uid             TEXT,"
+                " seriesId        TEXT,"
+                " orientation     TEXT,"
+                " seriesNumber    TEXT,"
+                " sequenceName    TEXT,"
+                " sliceThickness  TEXT,"
+                " rows            TEXT,"
+                " columns         TEXT,"
+                " thumbnail       TEXT,"
+                " age             TEXT,"
+                " description     TEXT,"
+                " modality        TEXT,"
+                " protocol        TEXT,"
+                " comments        TEXT,"
+                " status          TEXT,"
+                " acquisitiondate TEXT,"
+                " importationdate TEXT,"
+                " referee         TEXT,"
+                " performer       TEXT,"
+                " institution     TEXT,"
+                " report          TEXT,"
+                " origin          TEXT,"
+                " flipAngle       TEXT,"
+                " echoTime        TEXT,"
+                " repetitionTime  TEXT,"
+                " acquisitionTime TEXT"
+                ");"
+                ) && EXEC_QUERY(query);
 
     // Get all the information about the table columns
     query.prepare("PRAGMA table_info(series)");
@@ -471,6 +470,8 @@ bool medDatabaseController::createSeriesTable()
     this->addTextColumnToSeriesTableIfNeeded(query, "echoTime");
     this->addTextColumnToSeriesTableIfNeeded(query, "repetitionTime");
     this->addTextColumnToSeriesTableIfNeeded(query, "acquisitionTime");
+
+    return true;
 }
 
 void medDatabaseController::addTextColumnToSeriesTableIfNeeded(QSqlQuery query, QString columnName)

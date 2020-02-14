@@ -1,8 +1,9 @@
+#pragma once
 /*=========================================================================
 
  medInria
 
- Copyright (c) INRIA 2013 - 2018. All rights reserved.
+ Copyright (c) INRIA 2013 - 2020. All rights reserved.
  See LICENSE.txt for details.
 
   This software is distributed WITHOUT ANY WARRANTY; without even
@@ -10,8 +11,6 @@
   PURPOSE.
 
 =========================================================================*/
-
-#pragma once
 
 #include <QWidget>
 #include <QTabWidget>
@@ -35,7 +34,7 @@ class MEDCORELEGACY_EXPORT medSettingsEditor : public QWidget
 
 public:
 
-    medSettingsEditor(QWidget *parent = 0, bool useAdvancedWidget = false);
+    medSettingsEditor(QWidget *parent = nullptr, bool useAdvancedWidget = false);
     ~medSettingsEditor();
 
     virtual void initialize();
@@ -51,7 +50,7 @@ signals:
      * @param text The error message.
      * @param timeout The timeout before the message disapears.
     */
-    void showError(const QString& text,unsigned int timeout=0);
+    void showError(const QString& text, unsigned int timeout=0);
 
     /**
      * @brief Emits an info message for the medMessageController to display.
@@ -61,7 +60,7 @@ signals:
      * @param text The error message.
      * @param timeout The timeout before the message disapears.
     */
-    void showInfo(const QString& text,unsigned int timeout=0);
+    void showInfo(const QString& text, unsigned int timeout=0);
 
     /**
     * Emitted if the dialog should disappear
@@ -80,8 +79,6 @@ protected:
     virtual bool save();
 
 private:
-  medSettingsEditorPrivate *d; /**< TODO */
+  medSettingsEditorPrivate *d;
 
 };
-
-

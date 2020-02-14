@@ -2,7 +2,7 @@
 
  medInria
 
- Copyright (c) INRIA 2013 - 2018. All rights reserved.
+ Copyright (c) INRIA 2013 - 2020. All rights reserved.
  See LICENSE.txt for details.
 
   This software is distributed WITHOUT ANY WARRANTY; without even
@@ -16,12 +16,9 @@
 #include <medDatabaseView.h>
 #include <medDatabasePreview.h>
 #include <medDatabaseSearchPanel.h>
-
 #include <medDataIndex.h>
 
-
 #include <QVBoxLayout>
-
 
 class medDatabaseCompactWidgetPrivate
 {
@@ -33,7 +30,6 @@ public:
     medToolBox* databaseToolBox;
 };
 
-
 medDatabaseCompactWidget::medDatabaseCompactWidget(QWidget *parent): d(new medDatabaseCompactWidgetPrivate)
 {
     this->setContentsMargins(0,0,0,0);
@@ -43,13 +39,11 @@ medDatabaseCompactWidget::medDatabaseCompactWidget(QWidget *parent): d(new medDa
     d->databaseToolBox = nullptr;
 }
 
-
 medDatabaseCompactWidget::~medDatabaseCompactWidget()
 {
     delete d;
     d = nullptr;
 }
-
 
 void medDatabaseCompactWidget::resizeEvent(QResizeEvent *event)
 {

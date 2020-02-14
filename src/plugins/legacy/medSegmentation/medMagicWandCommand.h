@@ -1,8 +1,9 @@
+#pragma once
 /*=========================================================================
 
  medInria
 
- Copyright (c) INRIA 2013 - 2018. All rights reserved.
+ Copyright (c) INRIA 2013 - 2020. All rights reserved.
  See LICENSE.txt for details.
 
   This software is distributed WITHOUT ANY WARRANTY; without even
@@ -11,11 +12,8 @@
 
 =========================================================================*/
 
-#pragma once
-
 #include <medAbstractPaintCommand.h>
 #include <QtCore>
-
 
 class medMagicWandCommandPrivate;
 
@@ -27,7 +25,7 @@ class medAbstractData;
 class MEDVIEWSEGMENTATIONPLUGIN_EXPORT medMagicWandCommand : public medAbstractPaintCommand
 {
 public:
-    medMagicWandCommand( medPaintCommandOptions *options,  bool run3D, QUndoCommand *parent = 0);
+    medMagicWandCommand( medPaintCommandOptions *options,  bool run3D, QUndoCommand *parent = nullptr);
     virtual ~medMagicWandCommand();
 
     virtual void undo();

@@ -1,8 +1,9 @@
+#pragma once
 /*=========================================================================
 
  medInria
 
- Copyright (c) INRIA 2013 - 2018. All rights reserved.
+ Copyright (c) INRIA 2013 - 2020. All rights reserved.
  See LICENSE.txt for details.
  
   This software is distributed WITHOUT ANY WARRANTY; without even
@@ -11,14 +12,12 @@
 
 =========================================================================*/
 
-#pragma once
-
 #include <medAbstractRegistrationProcess.h>
 #include <medAbstractData.h>
-#include <itkImage.h>
-#include <itkTransform.h>
 #include <medRegistrationExport.h>
 
+#include <itkImage.h>
+#include <itkTransform.h>
 
 class itkProcessRegistrationPrivate;
 
@@ -113,7 +112,7 @@ public:
      * It uses the itkImageBase class to avoid a templated method.
      * Using the fixedImageType() method will give the type necessary for a down cast.
      *
-     * @return itk::ImageBase<int> NULL if none is set yet.
+     * @return itk::ImageBase<int> null if none is set yet.
     */
     itk::ImageBase<3>::Pointer fixedImage();
 
@@ -123,7 +122,7 @@ public:
      * it uses the itkImageBase class to avoid a templated method.
      * Using the movingImageType() method will give the type necessary for a down cast.
      *
-     * @return itk::ImageBase<int> NULL if none is set yet.
+     * @return itk::ImageBase<int> null if none is set yet.
     */
     QVector<itk::ImageBase<3>::Pointer> movingImages();
 
@@ -206,9 +205,3 @@ protected :
 private:
     itkProcessRegistrationPrivate *d;
 };
-
-//Implement this function only in actual implementation of registration Plugins
-// This class is abstracted, so we won't register it in the factory.
-//dtkAbstractProcess *createItkProcessRegistration();
-
-

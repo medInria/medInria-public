@@ -2,7 +2,7 @@
 
  medInria
 
- Copyright (c) INRIA 2013 - 2018. All rights reserved.
+ Copyright (c) INRIA 2013 - 2020. All rights reserved.
  See LICENSE.txt for details.
 
   This software is distributed WITHOUT ANY WARRANTY; without even
@@ -29,8 +29,8 @@ public:
 medAbstractMorphomathOperationProcess::medAbstractMorphomathOperationProcess(QObject *parent)
     : medAbstractProcess(parent), d(new medAbstractMorphomathOperationProcessPrivate)
 {
-    d->input = NULL;
-    d->output = NULL;
+    d->input = nullptr;
+    d->output = nullptr;
 
     d->kernelRadius = new medIntParameter("kernel_radius", this);
     d->kernelRadius->setCaption("Kernel radius");

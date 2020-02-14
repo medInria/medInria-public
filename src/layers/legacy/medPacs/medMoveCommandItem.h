@@ -1,8 +1,9 @@
+#pragma once
 /*=========================================================================
 
  medInria
 
- Copyright (c) INRIA 2013 - 2018. All rights reserved.
+ Copyright (c) INRIA 2013 - 2020. All rights reserved.
  See LICENSE.txt for details.
  
   This software is distributed WITHOUT ANY WARRANTY; without even
@@ -11,7 +12,8 @@
 
 =========================================================================*/
 
-#pragma once
+#include <QString>
+#include <QVariant>
 
 struct medMoveCommandItem
 {
@@ -20,16 +22,17 @@ struct medMoveCommandItem
     QString query;
     QString sourceTitle;
     QString sourceIp;
-    int sourcePort;;
+    int sourcePort;
     QString targetTitle;
     QString targetIp;
-    int targetPort;;
+    int targetPort;
 
     operator QVariant() const
     {
         return QVariant::fromValue(*this);
     }
 };
-Q_DECLARE_METATYPE(medMoveCommandItem);
+
+Q_DECLARE_METATYPE(medMoveCommandItem)
 
 

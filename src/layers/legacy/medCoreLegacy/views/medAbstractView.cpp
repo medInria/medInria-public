@@ -2,7 +2,7 @@
 
  medInria
 
- Copyright (c) INRIA 2013 - 2018. All rights reserved.
+ Copyright (c) INRIA 2013 - 2020. All rights reserved.
  See LICENSE.txt for details.
 
   This software is distributed WITHOUT ANY WARRANTY; without even
@@ -17,15 +17,14 @@
 #include <QUndoStack>
 #include <QMouseEvent>
 
-#include <medAbstractData.h>
 #include <dtkCoreSupport/dtkSmartPointer>
 
+#include <medAbstractData.h>
 #include <medAbstractNavigator.h>
 #include <medAbstractViewNavigator.h>
-#include <medViewFactory.h>
-#include <medStringListParameterL.h>
 #include <medBoolGroupParameterL.h>
-
+#include <medStringListParameterL.h>
+#include <medViewFactory.h>
 
 /**
  * @fn QWidget* medAbstractView::viewWidget()
@@ -72,13 +71,13 @@ medAbstractView::medAbstractView(QObject* parent) :d (new medAbstractViewPrivate
     this->setParent(parent);
     d->closable = true;
 
-    d->data = NULL;
-    d->primaryInteractor = NULL;
-    d->primaryNavigator = NULL;
+    d->data = nullptr;
+    d->primaryInteractor = nullptr;
+    d->primaryNavigator = nullptr;
 
-    d->toolBarWidget = NULL;
-    d->navigatorWidget = NULL;
-    d->mouseInteractionWidget = NULL;
+    d->toolBarWidget = nullptr;
+    d->navigatorWidget = nullptr;
+    d->mouseInteractionWidget = nullptr;
 
     d->undoStack = new QUndoStack(this);
 }
@@ -87,7 +86,7 @@ medAbstractView::~medAbstractView( void )
 {
     emit closed();
     delete d;
-    d = NULL;
+    d = nullptr;
 }
 
 /**
@@ -97,13 +96,13 @@ void medAbstractView::addData(medAbstractData *data)
 {
     if(!data)
     {
-        dtkWarn() << "Attempt to add a NULL data to the view: " << this;
+        qWarning() << "Attempt to add a null data to the view: " << this;
         return;
     }
 
     if(data == d->data)
     {
-        dtkDebug() << "Attempt to set twice the same data to the view: " << this;
+        qDebug() << "Attempt to set twice the same data to the view: " << this;
         return;
     }
 
@@ -112,7 +111,7 @@ void medAbstractView::addData(medAbstractData *data)
     bool initSuccess = this->initialiseInteractors(data);
     if(!initSuccess)
     {
-        d->data = NULL;
+        d->data = nullptr;
         return;
     }
 
@@ -125,13 +124,13 @@ void medAbstractView::addData(medAbstractData *data)
 void medAbstractView::clear()
 {
     this->removeInteractors(d->data);
-    d->data = NULL;
+    d->data = nullptr;
 }
 
 void medAbstractView::removeInteractors(medAbstractData *data)
 {
     delete d->primaryInteractor;
-    d->primaryInteractor = NULL;
+    d->primaryInteractor = nullptr;
     d->extraInteractors.clear();
 }
 
@@ -142,7 +141,7 @@ bool medAbstractView::initialiseInteractors(medAbstractData *data)
     QStringList primaryInt = factory->interactorsAbleToHandle(this->identifier(), data->identifier());
     if(primaryInt.isEmpty())
     {
-        dtkWarn() << "Unable to find any primary interactor for: " << this->identifier() << "and" << data->identifier();
+        qWarning() << "Unable to find any primary interactor for: " << this->identifier() << "and" << data->identifier();
         return false;
     }
     else
@@ -177,7 +176,7 @@ bool medAbstractView::initialiseNavigators()
     QStringList primaryNav = factory->navigatorsAbleToHandle(this->identifier());
     if(primaryNav.isEmpty())
     {
-        dtkWarn() << "Unable to find any primary navigator for: " << this->identifier();
+        qWarning() << "Unable to find any primary navigator for: " << this->identifier();
         return false;
     }
     else
@@ -202,13 +201,13 @@ bool medAbstractView::initialiseNavigators()
 
 medAbstractViewInteractor* medAbstractView::primaryInteractor(medAbstractData* data)
 {
-    DTK_UNUSED(data);
+    Q_UNUSED(data);
     return d->primaryInteractor;
 }
 
 QList<medAbstractInteractor*> medAbstractView::extraInteractors(medAbstractData* data)
 {
-    DTK_UNUSED(data);
+    Q_UNUSED(data);
     return d->extraInteractors;
 }
 
@@ -269,7 +268,7 @@ medDoubleParameterL* medAbstractView::zoomParameter()
     medAbstractViewNavigator* pNavigator = this->primaryNavigator();
     if(!pNavigator)
     {
-        return NULL;
+        return nullptr;
     }
 
     return pNavigator->zoomParameter();
@@ -280,7 +279,7 @@ medAbstractVector2DParameterL* medAbstractView::panParameter()
     medAbstractViewNavigator* pNavigator = this->primaryNavigator();
     if(!pNavigator)
     {
-        return NULL;
+        return nullptr;
     }
 
     return pNavigator->panParameter();
@@ -315,7 +314,7 @@ void medAbstractView::setUpViewForThumbnail()
     if(!primaryInteractor)
     {
         QString msg = "Unable to find any current primary interactor for view "  + this->identifier();
-        dtkWarn() << msg;
+        qWarning() << msg;
     }
 
     else
@@ -442,7 +441,6 @@ QWidget* medAbstractView::mouseInteractionWidget()
 
     return d->mouseInteractionWidget;
 }
-
 
 QUndoStack* medAbstractView::undoStack() const
 {

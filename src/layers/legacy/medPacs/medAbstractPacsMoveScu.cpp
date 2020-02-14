@@ -2,7 +2,7 @@
 
  medInria
 
- Copyright (c) INRIA 2013 - 2018. All rights reserved.
+ Copyright (c) INRIA 2013 - 2020. All rights reserved.
  See LICENSE.txt for details.
  
   This software is distributed WITHOUT ANY WARRANTY; without even
@@ -16,40 +16,31 @@
 
 #include <dtkCoreSupport/dtkGlobal.h>
 
-int medAbstractPacsMoveScu::sendMoveRequest( const char* peerTitle, const char* peerIP, unsigned int peerPort, const char* ourTitle, const char* ourIP, unsigned int ourPort )
+int medAbstractPacsMoveScu::sendMoveRequest( const char* peerTitle, const char* peerIP, unsigned int peerPort,
+                                             const char* ourTitle, const char* ourIP, unsigned int ourPort )
 {
-    DTK_UNUSED(peerTitle);
-    DTK_UNUSED(peerIP);
-    DTK_UNUSED(peerPort);
-    DTK_UNUSED(ourTitle);
-    DTK_UNUSED(ourIP);
-    DTK_UNUSED(ourPort);
+    Q_UNUSED(peerTitle);
+    Q_UNUSED(peerIP);
+    Q_UNUSED(peerPort);
+    Q_UNUSED(ourTitle);
+    Q_UNUSED(ourIP);
+    Q_UNUSED(ourPort);
 
     DTK_DEFAULT_IMPLEMENTATION;
 
     return 0;
 }
 
-medAbstractPacsMoveScu::medAbstractPacsMoveScu( void )
-{
-
-}
-
-medAbstractPacsMoveScu::~medAbstractPacsMoveScu( void )
-{
-
-}
-
 void medAbstractPacsMoveScu::useBuildInStoreSCP( bool flag )
 {
-    DTK_UNUSED(flag);
+    Q_UNUSED(flag);
 
     DTK_DEFAULT_IMPLEMENTATION;
 }
 
 bool medAbstractPacsMoveScu::setStorageDirectory( const char* directory )
 {
-    DTK_UNUSED(directory);
+    Q_UNUSED(directory);
 
     DTK_DEFAULT_IMPLEMENTATION;
 
@@ -58,11 +49,11 @@ bool medAbstractPacsMoveScu::setStorageDirectory( const char* directory )
 
 bool medAbstractPacsMoveScu::addRequestToQueue( int group, int elem, const char* query, medAbstractPacsNode& moveSource, medAbstractPacsNode& moveTarget)
 {
-    DTK_UNUSED(group);
-    DTK_UNUSED(elem);
-    DTK_UNUSED(query);
-    DTK_UNUSED(moveSource);
-    DTK_UNUSED(moveTarget);
+    Q_UNUSED(group);
+    Q_UNUSED(elem);
+    Q_UNUSED(query);
+    Q_UNUSED(moveSource);
+    Q_UNUSED(moveTarget);
 
     DTK_DEFAULT_IMPLEMENTATION;
 

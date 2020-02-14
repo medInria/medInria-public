@@ -2,7 +2,7 @@
 
  medInria
 
- Copyright (c) INRIA 2013 - 2018. All rights reserved.
+ Copyright (c) INRIA 2013 - 2020. All rights reserved.
  See LICENSE.txt for details.
  
   This software is distributed WITHOUT ANY WARRANTY; without even
@@ -15,15 +15,15 @@
 #include <vtkObjectFactory.h>
 #include <vtkMath.h>
 
+vtkStandardNewMacro(vtkSphericalHarmonicManager)
 
-vtkStandardNewMacro(vtkSphericalHarmonicManager);
+vtkSphericalHarmonicManager::vtkSphericalHarmonicManager()
+{
+    RenderWindowInteractor = nullptr;
 
-vtkSphericalHarmonicManager::vtkSphericalHarmonicManager() {
-    RenderWindowInteractor = 0;
-
-    Input    = 0;
-    DirectionMatrix = 0;
-    Renderer = 0;
+    Input    = nullptr;
+    DirectionMatrix = nullptr;
+    Renderer = nullptr;
 
     SHVisuManagerAxial    = vtkSphericalHarmonicVisuManager::New();
     SHVisuManagerSagittal = vtkSphericalHarmonicVisuManager::New();
@@ -62,8 +62,10 @@ vtkSphericalHarmonicManager::~vtkSphericalHarmonicManager() {
 void
 vtkSphericalHarmonicManager::SetRenderWindowInteractor(vtkRenderWindowInteractor* rwin,vtkRenderer* ren) {
 
-    if (rwin!=RenderWindowInteractor) {
-        if (RenderWindowInteractor!=NULL) {
+    if (rwin!=RenderWindowInteractor)
+    {
+        if (RenderWindowInteractor != nullptr)
+        {
             Initialize();
             RenderWindowInteractor->UnRegister(this);
         }
@@ -276,9 +278,12 @@ void vtkSphericalHarmonicManager::ColorGlyphs(const bool a) {
     SHVisuManagerCoronal ->ColorGlyphs(a);
 }
 
-void vtkSphericalHarmonicManager::GetSphericalHarmonicDimensions(int * dims) {
-    if (Input!=0)
+void vtkSphericalHarmonicManager::GetSphericalHarmonicDimensions(int * dims)
+{
+    if (Input != nullptr)
+    {
         Input->GetDimensions(dims);
+    }
 }
 
 void vtkSphericalHarmonicManager::SetAxialSliceVisibility(const int i) {

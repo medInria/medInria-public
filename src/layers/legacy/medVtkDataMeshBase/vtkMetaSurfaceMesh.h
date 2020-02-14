@@ -1,8 +1,9 @@
+#pragma once
 /*=========================================================================
 
  medInria
 
- Copyright (c) INRIA 2013 - 2018. All rights reserved.
+ Copyright (c) INRIA 2013 - 2020. All rights reserved.
  See LICENSE.txt for details.
  
   This software is distributed WITHOUT ANY WARRANTY; without even
@@ -10,8 +11,6 @@
   PURPOSE.
 
 =========================================================================*/
-
-#pragma once
 
 #include "medVtkDataMeshBaseExport.h"
 
@@ -44,7 +43,7 @@ class MEDVTKDATAMESHBASE_EXPORT vtkMetaSurfaceMesh: public vtkMetaDataSet
  public:
 
   static vtkMetaSurfaceMesh* New();
-  vtkTypeMacro(vtkMetaSurfaceMesh,vtkMetaDataSet);
+  vtkTypeMacro(vtkMetaSurfaceMesh,vtkMetaDataSet)
 
   virtual vtkMetaSurfaceMesh* Clone() override;
 
@@ -112,6 +111,3 @@ private:
   void operator=(const vtkMetaSurfaceMesh&);        // Not implemented.
 
 };
-
-
-

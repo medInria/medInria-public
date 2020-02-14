@@ -1,8 +1,9 @@
+#pragma once
 /*=========================================================================
 
  medInria
 
- Copyright (c) INRIA 2013 - 2018. All rights reserved.
+ Copyright (c) INRIA 2013 - 2020. All rights reserved.
  See LICENSE.txt for details.
 
   This software is distributed WITHOUT ANY WARRANTY; without even
@@ -11,14 +12,11 @@
 
 =========================================================================*/
 
-#pragma once
-
 #include <QObject>
 
-#include <medWidgetsExport.h>
 #include <medAbstractProcess.h>
-
 #include <medProcessPresenterFactory.h>
+#include <medWidgetsExport.h>
 
 class QWidget;
 class QPushButton;
@@ -30,7 +28,7 @@ class MEDWIDGETS_EXPORT medAbstractProcessPresenter : public QObject
     Q_OBJECT
 
 public:
-    medAbstractProcessPresenter(medAbstractProcess *parent = NULL);
+    medAbstractProcessPresenter(medAbstractProcess *parent = nullptr);
     virtual ~medAbstractProcessPresenter();
 
     virtual medAbstractProcess *process() const = 0;

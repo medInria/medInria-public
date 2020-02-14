@@ -2,7 +2,7 @@
 
  medInria
 
- Copyright (c) INRIA 2013 - 2018. All rights reserved.
+ Copyright (c) INRIA 2013 - 2020. All rights reserved.
  See LICENSE.txt for details.
 
   This software is distributed WITHOUT ANY WARRANTY; without even
@@ -61,9 +61,7 @@ medTabbedViewContainers::medTabbedViewContainers(medAbstractWorkspaceLegacy* own
     
     // ///////////////////////////////////////////////////////////////////////
     // Connect for creation and remove tab
-    //connect(this, SIGNAL(tabBarDoubleClicked(int)), this, SLOT(tabBarDoubleClickedHandler(int)));
     connect(d->addTabButton, SIGNAL(clicked()),    this, SLOT(addContainerInTabUnNamed()));
-    //connect(this, SIGNAL(tabCloseRequested(int)), this, SLOT(disconnectTabFromSplitter(int)));
     connect(this, SIGNAL(tabCloseRequested(int)),  this, SLOT(closeTab(int)));
     connect(d->closeShortcut, SIGNAL(activated()), this, SLOT(closeCurrentTab()));
 
@@ -378,8 +376,6 @@ void medTabbedViewContainers::connectContainerSelectedForCurrentTab()
     emit containersSelectedChanged();
 }
 
-
-
 void medTabbedViewContainers::minimizeOtherContainers(QUuid containerMaximized, bool maximized)
 {
     medViewContainerSplitter *splitter = static_cast<medRootContainer*>(this->widget(this->currentIndex()))->getSplitter();
@@ -393,7 +389,6 @@ void medTabbedViewContainers::minimizeOtherContainers(QUuid containerMaximized, 
     if(maximized)
     {
         medViewContainer *container = medViewContainerManager::instance()->container(containerMaximized);
-        //container->show();
 
         QWidget *parent = container->parentWidget();
 
@@ -425,13 +420,23 @@ void medTabbedViewContainers::minimizeSplitterContainers(QUuid containerMaximize
             if(container->uuid() != containerMaximized)
             {
                 if(maximized)
+                {
                     container->hide();
-                else container->show();
+                }
+                else
+                {
+                    container->show();
+                }
             }
         }
     }
 
     if(maximized)
+    {
         splitter->hide();
-    else splitter->show();
+    }
+    else
+    {
+        splitter->show();
+    }
 }

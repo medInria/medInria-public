@@ -2,7 +2,7 @@
 
  medInria
 
- Copyright (c) INRIA 2013 - 2018. All rights reserved.
+ Copyright (c) INRIA 2013 - 2020. All rights reserved.
  See LICENSE.txt for details.
 
   This software is distributed WITHOUT ANY WARRANTY; without even
@@ -44,7 +44,6 @@ void medIntParameter::setValue(int value)
 {
     if(value != d->value)
     {
-        // TODO RDE - Those tests sound bad.
         if(value < d->min)
             d->value = d->min;
         else if(value > d->max)
@@ -60,7 +59,7 @@ void medIntParameter::setRange(int min, int max)
 {
     if(min >= max)
     {
-        dtkDebug() << "attemp to set invalid range to "
+        qDebug() << "attempt to set invalid range to "
                    << this->caption() << this->id() << this;
     }
     else

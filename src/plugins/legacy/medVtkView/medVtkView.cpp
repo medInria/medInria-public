@@ -2,7 +2,7 @@
 
  medInria
 
- Copyright (c) INRIA 2013 - 2018. All rights reserved.
+ Copyright (c) INRIA 2013 - 2020. All rights reserved.
  See LICENSE.txt for details.
 
   This software is distributed WITHOUT ANY WARRANTY; without even
@@ -53,11 +53,6 @@
 #include <medParameterPoolManagerL.h>
 #include <medSettingsManager.h>
 
-//// declare x11-specific function to prevent the window manager breaking thumbnail generation
-//#ifdef Q_OS_X11
-//void qt_x11_wait_for_window_manager(QWidget*);
-//#endif
-
 class medVtkViewPrivate
 {
 public:
@@ -86,11 +81,11 @@ medVtkView::medVtkView(QObject* parent): medAbstractImageView(parent),
     d(new medVtkViewPrivate)
 {
     // setup initial internal state of the view
-    d->currentView = NULL;
-    d->interactorStyle2D = NULL;
+    d->currentView = nullptr;
+    d->interactorStyle2D = nullptr;
 
     // construct render window
-        // renWin
+    // renWin
     d->renWin = vtkGenericOpenGLRenderWindow::New();
     d->renWin->StereoCapableWindowOn();
     d->renWin->SetStereoTypeToCrystalEyes();
@@ -101,7 +96,7 @@ medVtkView::medVtkView(QObject* parent): medAbstractImageView(parent),
         d->renWin->SetStereoRender(1);
 
     // construct views
-        // view2d
+    // view2d
     d->view2d = vtkImageView2D::New();
     d->view2d->SetBackground(0.0, 0.0, 0.0);
     d->view2d->SetLeftButtonInteractionStyle(vtkInteractorStyleImageView2D::InteractionTypeZoom);
@@ -113,7 +108,8 @@ medVtkView::medVtkView(QObject* parent): medAbstractImageView(parent),
     d->view2d->ShowScalarBarOff();
     d->view2d->ShowRulerWidgetOn();
     d->interactorStyle2D = d->view2d->GetInteractorStyle(); // save interactorStyle
-        // view3d.
+
+    // view3d.
     d->view3d = vtkImageView3D::New();
     d->view3d->SetShowBoxWidget(0);
     d->view3d->SetCroppingModeToOff();
@@ -302,7 +298,6 @@ QVector3D medVtkView::mapDisplayToWorldCoordinates(const QPointF & scenePoint)
     if (this->is2D())
     {
         // Project the point into the view plane.
-        //vtkCamera * cam = ren->GetActiveCamera();
         double pointInDisplayPlane[3];
 
         d->view2d->GetCurrentPoint(pointInDisplayPlane);
@@ -448,20 +443,11 @@ QImage medVtkView::buildThumbnail(const QSize &size)
     this->blockSignals(true);//we dont want to send things that would ending up on updating some gui things or whatever. - RDE
     int w(size.width()), h(size.height());
 
-//    // will cause crashes if any calls to renWin->Render() happened before this line
+    // will cause crashes if any calls to renWin->Render() happened before this line
     d->viewWidget->resize(w,h);
     d->viewWidget->show();
     d->renWin->SetSize(w,h);
     render();
-
-////#ifdef Q_OS_X11
-////    // X11 likes to animate window creation, which means by the time we grab the
-////    // widget, it might not be fully ready yet, in which case we get artefacts.
-////    // Only necessary if rendering to an actual screen window.
-////    if(d->renWin->GetOffScreenRendering() == 0) {
-////        qt_x11_wait_for_window_manager(d->viewWidget);
-////    }
-////#endif
 
     QImage thumbnail = d->viewWidget->grabFramebuffer();
     d->viewWidget->hide();

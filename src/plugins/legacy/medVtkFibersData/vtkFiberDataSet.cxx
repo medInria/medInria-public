@@ -2,7 +2,7 @@
 
  medInria
 
- Copyright (c) INRIA 2013 - 2018. All rights reserved.
+ Copyright (c) INRIA 2013 - 2020. All rights reserved.
  See LICENSE.txt for details.
  
   This software is distributed WITHOUT ANY WARRANTY; without even
@@ -18,7 +18,7 @@
 #include <vtkInformation.h>
 
 
-vtkStandardNewMacro(vtkFiberDataSet);
+vtkStandardNewMacro(vtkFiberDataSet)
 
 vtkFiberDataSet::vtkFiberDataSet()
 {
@@ -26,13 +26,6 @@ vtkFiberDataSet::vtkFiberDataSet()
 
 vtkFiberDataSet::~vtkFiberDataSet()
 {
-  /*
-  vtkFiberBundleListType::iterator it = this->Bundles.begin();
-  while (it!=this->Bundles.end())
-  {
-    (*it).second.Bundle->Delete();
-  }
-  */
 }
 
 void vtkFiberDataSet::SetFibers (vtkPolyData *fibers)
@@ -67,15 +60,7 @@ void vtkFiberDataSet::AddBundle (const std::string &name, vtkPolyData *bundle, d
   this->Bundles[name].Red    = color[0];
   this->Bundles[name].Green  = color[1];
   this->Bundles[name].Blue   = color[2];
-
-  /*
-  if (vtkInformation *info = this->GetMetaData (id))
-  {
-    info->AppendUnique ("Name", name.c_str());
-  }
-  */
 }
-
 
 void vtkFiberDataSet::ChangeBundleName (const std::string &oldName, const std::string &newName)
 {
@@ -150,5 +135,4 @@ void vtkFiberDataSet::GetBundleColor (const std::string &name, double color[3])
   color[1] = this->Bundles[name].Green;
   color[2] = this->Bundles[name].Blue;
 }
-
  

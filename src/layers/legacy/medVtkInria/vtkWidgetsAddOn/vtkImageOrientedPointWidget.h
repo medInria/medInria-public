@@ -1,8 +1,9 @@
+#pragma once
 /*=========================================================================
 
  medInria
 
- Copyright (c) INRIA 2013 - 2018. All rights reserved.
+ Copyright (c) INRIA 2013 - 2020. All rights reserved.
  See LICENSE.txt for details.
  
   This software is distributed WITHOUT ANY WARRANTY; without even
@@ -10,8 +11,6 @@
   PURPOSE.
 
 =========================================================================*/
-
-#pragma once
 
 #include <medVtkInriaExport.h>
 
@@ -37,8 +36,6 @@ class vtkTransformPolyDataFilter;
 #define VTK_ITW_SNAP_CELLS    0
 #define VTK_ITW_SNAP_POINTS   1
 
-
-
 /**
    \class vtkImageOrientedPointWidget vtkImageOrientedPointWidget.h "vtkImageOrientedPointWidget.h"
    \brief 3D widget for registering purposes
@@ -53,7 +50,7 @@ public:
   // Description:
   // Instantiate the object.
   static vtkImageOrientedPointWidget *New();
-  vtkTypeMacro(vtkImageOrientedPointWidget,vtk3DWidget);
+  vtkTypeMacro(vtkImageOrientedPointWidget,vtk3DWidget)
   void PrintSelf(ostream& os, vtkIndent indent);
 
   // Description:
@@ -70,19 +67,19 @@ public:
   // Set/Get the handle properties (the 2D glyphs are the handles). The
   // properties of the handles when selected and normal can be manipulated.
   virtual void SetHandleProperty1(vtkProperty*);
-  vtkGetObjectMacro(HandleProperty1, vtkProperty);
+  vtkGetObjectMacro(HandleProperty1, vtkProperty)
   virtual void SetHandleProperty2(vtkProperty*);
-  vtkGetObjectMacro(HandleProperty2, vtkProperty);
+  vtkGetObjectMacro(HandleProperty2, vtkProperty)
   virtual void SetSelectedHandleProperty(vtkProperty*);
-  vtkGetObjectMacro(SelectedHandleProperty, vtkProperty);
+  vtkGetObjectMacro(SelectedHandleProperty, vtkProperty)
 
   // Description:
   // Set/Get the line properties. The properties of the line when selected
   // and unselected can be manipulated.
   virtual void SetLineProperty(vtkProperty*);
-  vtkGetObjectMacro(LineProperty, vtkProperty);
+  vtkGetObjectMacro(LineProperty, vtkProperty)
   virtual void SetSelectedLineProperty(vtkProperty*);
-  vtkGetObjectMacro(SelectedLineProperty, vtkProperty);
+  vtkGetObjectMacro(SelectedLineProperty, vtkProperty)
 
   // Description:
   // Set the prop, usually a vtkImageActor, to trace over.
@@ -90,17 +87,17 @@ public:
 
   // Description:
   // Force handles to be on a specific ortho plane.
-  vtkSetMacro(ProjectToPlane,int);
-  vtkGetMacro(ProjectToPlane,int);
-  vtkBooleanMacro(ProjectToPlane,int);
+  vtkSetMacro(ProjectToPlane,int)
+  vtkGetMacro(ProjectToPlane,int)
+  vtkBooleanMacro(ProjectToPlane,int)
 
   // Description:
   // Set the projection normal.  The normal in SetProjectionNormal is 0,1,2
   // for YZ,XZ,XY planes respectively.  Since the handles are 2D glyphs, it is
   // necessary to specify a plane on which to generate them, even though
   // ProjectToPlane may be turned off.
-  vtkSetClampMacro(ProjectionNormal,int,VTK_ITW_PROJECTION_YZ,VTK_ITW_PROJECTION_XY);
-  vtkGetMacro(ProjectionNormal,int);
+  vtkSetClampMacro(ProjectionNormal,int,VTK_ITW_PROJECTION_YZ,VTK_ITW_PROJECTION_XY)
+  vtkGetMacro(ProjectionNormal,int)
   void SetProjectionNormalToXAxes()
     { this->SetProjectionNormal(0); }
   void SetProjectionNormalToYAxes()
@@ -115,27 +112,27 @@ public:
   // the position is within the bounds of either the underlying image data or
   // the prop on which tracing is performed.
   void SetProjectionPosition(double position);
-  vtkGetMacro(ProjectionPosition,double);
+  vtkGetMacro(ProjectionPosition,double)
 
    // Description:
   // Force snapping to image data while tracing.
   void SetSnapToImage(int snap);
-  vtkGetMacro(SnapToImage,int);
-  vtkBooleanMacro(SnapToImage,int);
+  vtkGetMacro(SnapToImage,int)
+  vtkBooleanMacro(SnapToImage,int)
 
   // Description:
   // In concert with a CaptureRadius value, automatically
   // form a closed path by connecting first to last path points.
-  vtkSetMacro(AutoClose,int);
-  vtkGetMacro(AutoClose,int);
-  vtkBooleanMacro(AutoClose,int);
+  vtkSetMacro(AutoClose,int)
+  vtkGetMacro(AutoClose,int)
+  vtkBooleanMacro(AutoClose,int)
 
   // Description:
   // Set/Get the capture radius for automatic path closing.  For image
   // data, capture radius should be half the distance between voxel/pixel
   // centers.
-  vtkSetMacro(CaptureRadius,double);
-  vtkGetMacro(CaptureRadius,double);
+  vtkSetMacro(CaptureRadius,double)
+  vtkGetMacro(CaptureRadius,double)
 
   // Description:
   // Grab the points and lines that define the traced path. These point values
@@ -151,8 +148,8 @@ public:
   // Description:
   // Set/Get the type of snapping to image data: center of a pixel/voxel or
   // nearest point defining a pixel/voxel.
-  vtkSetClampMacro(ImageSnapType,int,VTK_ITW_SNAP_CELLS,VTK_ITW_SNAP_POINTS);
-  vtkGetMacro(ImageSnapType,int);
+  vtkSetClampMacro(ImageSnapType,int,VTK_ITW_SNAP_CELLS,VTK_ITW_SNAP_POINTS)
+  vtkGetMacro(ImageSnapType,int)
 
   // Description:
   // Set/Get the handle position in terms of a zero-based array of handles.
@@ -163,13 +160,13 @@ public:
 
   // Description:
   // Get the number of handles.
-  vtkGetMacro(NumberOfHandles,int);
+  vtkGetMacro(NumberOfHandles,int)
 
   // Description:
   // Enable/disable mouse interaction when the widget is visible.
   void SetInteraction(int interact);
-  vtkGetMacro(Interaction,int);
-  vtkBooleanMacro(Interaction,int);
+  vtkGetMacro(Interaction,int)
+  vtkBooleanMacro(Interaction,int)
 
   // Description:
   // Initialize the widget with a set of points and generate
@@ -313,5 +310,3 @@ private:
   vtkImageOrientedPointWidget(const vtkImageOrientedPointWidget&);  //Not implemented
   void operator=(const vtkImageOrientedPointWidget&);  //Not implemented
 };
-
-

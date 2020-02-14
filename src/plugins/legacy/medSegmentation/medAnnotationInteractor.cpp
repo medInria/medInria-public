@@ -78,7 +78,7 @@ medAnnotationInteractor::medAnnotationInteractor(medAbstractView *parent):
     d->view2d = backend->view2D;
     d->view3d = backend->view3D;
 
-    d->imageData = NULL;
+    d->imageData = nullptr;
 
     d->slicingParameter = new medIntParameterL("Slicing", this);
     connect(d->slicingParameter, SIGNAL(valueChanged(int)), this, SLOT(moveToSlice(int)));
@@ -90,7 +90,7 @@ medAnnotationInteractor::~medAnnotationInteractor()
 {
     qDeleteAll(d->helpers);
     delete d;
-    d = NULL;
+    d = nullptr;
     delete(m_poConv);
     m_poConv = nullptr;
 }
@@ -364,8 +364,7 @@ QWidget* medAnnotationInteractor::buildToolBarWidget()
 
 QWidget* medAnnotationInteractor::buildToolBoxWidget()
 {
-
-    return NULL;
+    return nullptr;
 }
 
 QWidget* medAnnotationInteractor::buildLayerWidget()

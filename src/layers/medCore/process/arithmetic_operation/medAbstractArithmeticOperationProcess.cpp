@@ -2,7 +2,7 @@
 
  medInria
 
- Copyright (c) INRIA 2013 - 2018. All rights reserved.
+ Copyright (c) INRIA 2013 - 2020. All rights reserved.
  See LICENSE.txt for details.
 
   This software is distributed WITHOUT ANY WARRANTY; without even
@@ -27,9 +27,9 @@ public:
 medAbstractArithmeticOperationProcess::medAbstractArithmeticOperationProcess(QObject *parent): medAbstractProcess(parent),
     d(new medAbstractArithmeticOperationProcessPrivate)
 {
-    d->input1 = NULL;
-    d->input2 = NULL;
-    d->output = NULL;
+    d->input1 = nullptr;
+    d->input2 = nullptr;
+    d->output = nullptr;
 }
 
 medAbstractArithmeticOperationProcess::~medAbstractArithmeticOperationProcess()
@@ -74,11 +74,9 @@ void medAbstractArithmeticOperationProcess::setOutput(medAbstractImageData *data
 
     foreach ( QString property, d->input1->propertyList() )
         d->output->addProperty ( property,d->input1->propertyValues ( property ) );
-
 }
 
 medAbstractImageData* medAbstractArithmeticOperationProcess::output() const
 {
     return d->output;
 }
-

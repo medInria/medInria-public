@@ -27,11 +27,9 @@ itkMetaDataTensorImageWriter::itkMetaDataTensorImageWriter() : itkDataTensorImag
     this->io = itk::MetaImageIO::New();
 }
 
-
 itkMetaDataTensorImageWriter::~itkMetaDataTensorImageWriter()
 {
 }
-
 
 bool itkMetaDataTensorImageWriter::registered()
 {
@@ -59,4 +57,3 @@ dtkAbstractDataWriter * itkMetaDataTensorImageWriter::create()
 {
     return new itkMetaDataTensorImageWriter;
 }
-

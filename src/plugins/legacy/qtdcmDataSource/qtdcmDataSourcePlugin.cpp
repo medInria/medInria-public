@@ -2,7 +2,7 @@
 
  medInria
 
- Copyright (c) INRIA 2013 - 2018. All rights reserved.
+ Copyright (c) INRIA 2013 - 2020. All rights reserved.
  See LICENSE.txt for details.
  
   This software is distributed WITHOUT ANY WARRANTY; without even
@@ -17,34 +17,21 @@
 #include <dtkLog/dtkLog.h>
 
 // /////////////////////////////////////////////////////////////////
-// qtdcmDataSourcePluginPrivate
-// /////////////////////////////////////////////////////////////////
-
-class qtdcmDataSourcePluginPrivate
-{
-public:
-    // Class variables go here.
-};
-
-// /////////////////////////////////////////////////////////////////
 // qtdcmDataSourcePlugin
 // /////////////////////////////////////////////////////////////////
 
-qtdcmDataSourcePlugin::qtdcmDataSourcePlugin ( QObject *parent ) : dtkPlugin ( parent ), d ( new qtdcmDataSourcePluginPrivate )
+qtdcmDataSourcePlugin::qtdcmDataSourcePlugin ( QObject *parent ) : dtkPlugin ( parent )
 {
 
 }
 
 qtdcmDataSourcePlugin::~qtdcmDataSourcePlugin()
 {
-    delete d;
-
-    d = NULL;
 }
 
 bool qtdcmDataSourcePlugin::initialize()
 {
-    if ( !qtdcmDataSource::registered() ) { dtkWarn() << "Unable to register qtdcmDataSource type"; }
+    if ( !qtdcmDataSource::registered() ) { qWarning() << "Unable to register qtdcmDataSource type"; }
 
     return true;
 }
@@ -99,5 +86,3 @@ QStringList qtdcmDataSourcePlugin::types() const
 {
     return QStringList() << "qtdcmDataSource";
 }
-
-//Q_EXPORT_PLUGIN2 ( qtdcmDataSourcePlugin, qtdcmDataSourcePlugin )

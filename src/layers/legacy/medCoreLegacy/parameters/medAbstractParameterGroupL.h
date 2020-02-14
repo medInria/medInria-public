@@ -1,8 +1,9 @@
+#pragma once
 /*=========================================================================
 
  medInria
 
- Copyright (c) INRIA 2013 - 2018. All rights reserved.
+ Copyright (c) INRIA 2013 - 2020. All rights reserved.
  See LICENSE.txt for details.
 
   This software is distributed WITHOUT ANY WARRANTY; without even
@@ -10,8 +11,6 @@
   PURPOSE.
 
 =========================================================================*/
-
-#pragma once
 
 #include <QtCore>
 #include <medCoreLegacyExport.h>
@@ -25,7 +24,7 @@ class MEDCORELEGACY_EXPORT medAbstractParameterGroupL : public QObject
     Q_OBJECT
 
 public:
-    medAbstractParameterGroupL(QString name = "", QObject *parent = 0, QString workspace = "");
+    medAbstractParameterGroupL(QString name = "", QObject *parent = nullptr, QString workspace = "");
     virtual ~medAbstractParameterGroupL();
 
     void setName(QString name);
@@ -56,4 +55,3 @@ signals:
 private:
     medAbstractParameterGroupLPrivate *d;
 };
-

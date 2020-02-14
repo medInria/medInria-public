@@ -1,22 +1,20 @@
+#pragma once
 /*=========================================================================
 
- medInria
+medInria
 
- Copyright (c) INRIA 2013 - 2018. All rights reserved.
- See LICENSE.txt for details.
+Copyright (c) INRIA 2013 - 2020. All rights reserved.
+See LICENSE.txt for details.
 
-  This software is distributed WITHOUT ANY WARRANTY; without even
-  the implied warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR
-  PURPOSE.
+This software is distributed WITHOUT ANY WARRANTY; without even
+the implied warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR
+PURPOSE.
 
 =========================================================================*/
-
-#pragma once
 
 #include "vtkDataMeshPluginExport.h"
 
 #include <medAbstractMeshData.h>
-#include <dtkCoreSupport/dtkGlobal.h>
 
 class vtkDataMeshPrivate;
 
@@ -47,10 +45,6 @@ class VTKDATAMESHPLUGIN_EXPORT vtkDataMesh : public medAbstractMeshData
 
     int countVertices();
     int countEdges();
-
-
- public:
-    // derived from medAbstractImageData
 
  private:
 

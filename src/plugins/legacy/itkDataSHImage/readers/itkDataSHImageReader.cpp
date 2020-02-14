@@ -2,7 +2,7 @@
 
  medInria
 
- Copyright (c) INRIA 2013 - 2018. All rights reserved.
+ Copyright (c) INRIA 2013 - 2020. All rights reserved.
  See LICENSE.txt for details.
  
   This software is distributed WITHOUT ANY WARRANTY; without even
@@ -78,11 +78,13 @@ bool itkDataSHImageReader::canRead (const QString &path)
             return false;
 
         imageIO->SetFileName (path.toLatin1().constData());
-        try {
+        try
+        {
             imageIO->ReadImageInformation();
         }
-        catch (itk::ExceptionObject &e) {
-            dtkDebug() << e.GetDescription();
+        catch (itk::ExceptionObject &e)
+        {
+            qDebug() << e.GetDescription();
             return false;
         }
         if (imageIO->GetNumberOfComponents/*PerPixel*/() != 15 && imageIO->GetNumberOfComponents/*PerPixel*/() != 28)
@@ -107,11 +109,13 @@ bool itkDataSHImageReader::readInformation (const QString &path)
                                                                            itk::ImageIOFactory::ReadMode);
     
     imageIO->SetFileName ( path.toLatin1().constData() );
-    try {
+    try
+    {
         imageIO->ReadImageInformation();
     }
-    catch (itk::ExceptionObject &e) {
-        dtkDebug() << e.GetDescription();
+    catch (itk::ExceptionObject &e)
+    {
+        qDebug() << e.GetDescription();
         return false;
     }
     
@@ -120,8 +124,6 @@ bool itkDataSHImageReader::readInformation (const QString &path)
     if (!medData) {
 
         switch (imageIO->GetComponentType()) {
-        //            dtkDebug() << imageIO->GetPixelTypeAsString() << imageIO->GetComponentTypeAsString();
-
         case itk::ImageIOBase::FLOAT:
             medData = medAbstractDataFactory::instance()->create ("itkDataSHImageFloat3");
             if (medData)
@@ -135,7 +137,7 @@ bool itkDataSHImageReader::readInformation (const QString &path)
 			break;
 
 	    default:
-	        dtkDebug() << "Unsupported component type";
+            qDebug() << "Unsupported component type";
 			return false ;
 		}
     }
@@ -157,7 +159,7 @@ bool itkDataSHImageReader::read (const QString &path)
 {
     this->readInformation ( path );
 	
-    dtkDebug() << "Read with: " << this->description();
+    qDebug() << "Read with: " << this->description();
 
     if (medAbstractData *medData = dynamic_cast<medAbstractData*>(this->data()) ) {
 
@@ -170,11 +172,13 @@ bool itkDataSHImageReader::read (const QString &path)
 
             ReaderType::Pointer reader = ReaderType::New();
             reader->SetFileName ( path.toLatin1().constData() );
-            try {
+            try
+            {
                 reader->Update();
             }
-            catch (itk::ExceptionObject &e) {
-                dtkDebug() << e.GetDescription();
+            catch (itk::ExceptionObject &e)
+            {
+                qDebug() << e.GetDescription();
                 return false;
             }
             image = reader->GetOutput();
@@ -189,24 +193,28 @@ bool itkDataSHImageReader::read (const QString &path)
 
             ReaderType::Pointer reader = ReaderType::New();
             reader->SetFileName ( path.toLatin1().constData() );
-            try {
+            try
+            {
                 reader->Update();
             }
-            catch (itk::ExceptionObject &e) {
-                dtkDebug() << e.GetDescription();
+            catch (itk::ExceptionObject &e)
+            {
+                qDebug() << e.GetDescription();
                 return false;
             }
             image = reader->GetOutput();
             medData->setData (image);
 
         }
-        else {
-            dtkDebug() << "Unsupported data type";
+        else
+        {
+            qDebug() << "Unsupported data type";
             return false;
         }
     }
-    else {
-        dtkDebug() << "No data set or could not create one";
+    else
+    {
+        qDebug() << "No data set or could not create one";
         return false;
     }
 

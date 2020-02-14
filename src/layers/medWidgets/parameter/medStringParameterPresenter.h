@@ -1,8 +1,9 @@
+#pragma once
 /*=========================================================================
 
  medInria
 
- Copyright (c) INRIA 2013 - 2018. All rights reserved.
+ Copyright (c) INRIA 2013 - 2020. All rights reserved.
  See LICENSE.txt for details.
 
   This software is distributed WITHOUT ANY WARRANTY; without even
@@ -11,16 +12,13 @@
 
 =========================================================================*/
 
-#pragma once
-
 #include <medAbstractParameterPresenter.h>
-
 #include <medStringParameter.h>
 
 class QWidget;
 class QLineEdit;
-
 class medStringParameterPresenterPrivate;
+
 class MEDWIDGETS_EXPORT medStringParameterPresenter : public medAbstractParameterPresenter
 {
     Q_OBJECT

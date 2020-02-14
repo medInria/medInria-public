@@ -25,7 +25,9 @@ QWidget* medInvertFilterProcessNode::editor()
 {
     medAbstractProcess* process = this->object();
     if (!process)
-        return NULL;
+    {
+        return nullptr;
+    }
     medAbstractProcessPresenter* presenter = medWidgets::singleFilterOperation::invertFilter::presenterFactory().create(process);
     return presenter->buildToolBoxWidget();
 }

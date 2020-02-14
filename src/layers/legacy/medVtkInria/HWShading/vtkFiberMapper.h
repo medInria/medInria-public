@@ -1,3 +1,4 @@
+#pragma once
 /*============================================================================
 
 The Hardware Shading (HWShading) module is protected by the
@@ -54,8 +55,6 @@ PURPOSE.  See the above copyright notices for more information.
  * 2006-12-26	Tim Peeters
  * - Add support for tone shading.
  */
-
-#pragma once
 
 #include <medVtkInriaExport.h>
 

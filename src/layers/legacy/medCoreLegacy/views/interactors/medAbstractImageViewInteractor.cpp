@@ -2,7 +2,7 @@
 
  medInria
 
- Copyright (c) INRIA 2013 - 2018. All rights reserved.
+ Copyright (c) INRIA 2013 - 2020. All rights reserved.
  See LICENSE.txt for details.
 
   This software is distributed WITHOUT ANY WARRANTY; without even
@@ -12,9 +12,7 @@
 =========================================================================*/
 
 #include <medAbstractImageViewInteractor.h>
-
 #include <medAbstractImageView.h>
-
 #include <medDoubleParameterL.h>
 #include <medCompositeParameterL.h>
 
@@ -30,8 +28,8 @@ medAbstractImageViewInteractor::medAbstractImageViewInteractor(medAbstractView *
     medAbstractLayeredViewInteractor(parent), d(new medAbstractImageViewInteractorPrivate)
 {
     d->view = dynamic_cast<medAbstractImageView *>(parent);
-    d->opacityParameter = NULL;
-    d->windowLevelParameter = NULL;
+    d->opacityParameter = nullptr;
+    d->windowLevelParameter = nullptr;
 
     connect(d->view, SIGNAL(currentTimeChanged(double)), this, SLOT(setCurrentTime(double)));
 }
@@ -40,7 +38,6 @@ medAbstractImageViewInteractor::~medAbstractImageViewInteractor()
 {
     delete d;
 }
-
 
 medDoubleParameterL* medAbstractImageViewInteractor::opacityParameter()
 {
@@ -73,5 +70,5 @@ medCompositeParameterL* medAbstractImageViewInteractor::windowLevelParameter()
 */
 void medAbstractImageViewInteractor::setCurrentTime(double time)
 {
-    dtkDebug() << "No implementation of setCurrentTime(const double &time) for" << this->identifier();
+    qDebug() << "No implementation of setCurrentTime(const double &time) for" << this->identifier();
 }

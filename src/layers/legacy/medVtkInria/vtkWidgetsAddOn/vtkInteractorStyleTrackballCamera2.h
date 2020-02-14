@@ -1,8 +1,9 @@
+#pragma once
 /*=========================================================================
 
  medInria
 
- Copyright (c) INRIA 2013 - 2018. All rights reserved.
+ Copyright (c) INRIA 2013 - 2020. All rights reserved.
  See LICENSE.txt for details.
  
   This software is distributed WITHOUT ANY WARRANTY; without even
@@ -10,8 +11,6 @@
   PURPOSE.
 
 =========================================================================*/
-
-#pragma once
 
 // This class behaves like vtkInteractorStyleTrackballCamera except that the right click
 // is canceled (no effect). This is particularly usefull when one wants a menu to popup
@@ -27,7 +26,7 @@ class MEDVTKINRIA_EXPORT vtkInteractorStyleTrackballCamera2 : public vtkInteract
 {
  public:
   static vtkInteractorStyleTrackballCamera2 *New();
-  vtkTypeMacro(vtkInteractorStyleTrackballCamera2,vtkInteractorStyleTrackballCamera);
+  vtkTypeMacro(vtkInteractorStyleTrackballCamera2,vtkInteractorStyleTrackballCamera)
 
   virtual void OnLeftButtonDown();
   virtual void OnMouseWheelForward();
@@ -49,7 +48,3 @@ class MEDVTKINRIA_EXPORT vtkInteractorStyleTrackballCamera2 : public vtkInteract
   vtkInteractorStyleTrackballCamera2(const vtkInteractorStyleTrackballCamera2&);  // Not implemented.
   void operator=(const vtkInteractorStyleTrackballCamera2&);  // Not implemented.
 };
-
-
-
-

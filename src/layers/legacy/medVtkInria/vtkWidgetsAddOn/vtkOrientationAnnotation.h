@@ -1,8 +1,9 @@
+#pragma once
 /*=========================================================================
 
  medInria
 
- Copyright (c) INRIA 2013 - 2018. All rights reserved.
+ Copyright (c) INRIA 2013 - 2020. All rights reserved.
  See LICENSE.txt for details.
  
   This software is distributed WITHOUT ANY WARRANTY; without even
@@ -11,8 +12,6 @@
 
 =========================================================================*/
 
-#pragma once
-
 #include <medVtkInriaExport.h>
 
 #include <vtkCornerAnnotation.h>
@@ -20,7 +19,7 @@
 class MEDVTKINRIA_EXPORT vtkOrientationAnnotation : public vtkCornerAnnotation
 {
 public:
-  vtkTypeMacro(vtkOrientationAnnotation,vtkCornerAnnotation);
+  vtkTypeMacro(vtkOrientationAnnotation,vtkCornerAnnotation)
 
   // Description:
   // Instantiate object with a rectangle in normaled view coordinates
@@ -40,9 +39,3 @@ private:
   vtkOrientationAnnotation(const vtkOrientationAnnotation&);  // Not implemented.
   void operator=(const vtkOrientationAnnotation&);  // Not implemented.
 };
-
-
-
-
-
-

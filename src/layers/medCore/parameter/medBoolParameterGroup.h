@@ -1,8 +1,9 @@
+#pragma once
 /*=========================================================================
 
  medInria
 
- Copyright (c) INRIA 2013 - 2018. All rights reserved.
+ Copyright (c) INRIA 2013 - 2020. All rights reserved.
  See LICENSE.txt for details.
 
   This software is distributed WITHOUT ANY WARRANTY; without even
@@ -10,8 +11,6 @@
   PURPOSE.
 
 =========================================================================*/
-
-#pragma once
 
 #include <QObject>
 #include <medCoreExport.h>
@@ -24,7 +23,7 @@ class MEDCORE_EXPORT medBoolParameterGroup : public QObject
     Q_OBJECT
 
 public:
-    medBoolParameterGroup(QObject *parent = NULL);
+    medBoolParameterGroup(QObject *parent = nullptr);
     virtual ~medBoolParameterGroup();
 
     void addBoolParameter(medBoolParameter *param);

@@ -2,7 +2,7 @@
 
  medInria
 
- Copyright (c) INRIA 2013 - 2018. All rights reserved.
+ Copyright (c) INRIA 2013 - 2020. All rights reserved.
  See LICENSE.txt for details.
  
   This software is distributed WITHOUT ANY WARRANTY; without even
@@ -11,25 +11,15 @@
 
 =========================================================================*/
 
+#include <medAbstractData.h>
+#include <medAbstractView.h>
 #include <medViewEventFilter.h>
 
-#include <medAbstractView.h>
-
-#include <medAbstractData.h>
 #include <dtkLog/dtkLog.h>
 
 #include <QObject>
 #include <QEvent>
 #include <QGraphicsSceneMouseEvent>
-
-// /////////////////////////////////////////////////////////////////
-// medViewSegmentationPrivate
-// /////////////////////////////////////////////////////////////////
-
-class medViewSegmentationPrivate
-{
-public:
-};
 
 // /////////////////////////////////////////////////////////////////
 // View
@@ -103,9 +93,10 @@ bool medViewEventFilter::eventFilter( QObject *obj, QEvent *event )
 {
     FilterObjToViewType::const_iterator it( m_filterObjToView.find( obj ) );
 
-    medAbstractView * view = NULL;
-    if ( it == m_filterObjToView.end()) {
-        dtkWarn() <<  __FILE__ << __LINE__ << " : Filtering events on unknown QObject";
+    medAbstractView * view = nullptr;
+    if ( it == m_filterObjToView.end())
+    {
+        qWarning() <<  __FILE__ << __LINE__ << " : Filtering events on unknown QObject";
         return false;
     }
     view = it.value();
@@ -154,13 +145,15 @@ bool medViewEventFilter::eventFilter( QObject *obj, QEvent *event )
 //! Installs the eventFilter(this) in the given view
 void medViewEventFilter::installOnView( medAbstractView * view )
 {
-    if ( !view ) {
-        dtkWarn() << "medViewEventFilter::installOnView : View is NULL";
+    if ( !view )
+    {
+        qWarning() << "medViewEventFilter::installOnView : view is null";
         return;
     }
 
-    if (m_views.contains(view)) {
-        dtkWarn() << "Installing View when it has already been installed";
+    if (m_views.contains(view))
+    {
+        qWarning() << "Installing View when it has already been installed";
         return;
     }
 
@@ -206,6 +199,3 @@ void medViewEventFilter::onViewDestroyed( QObject* obj)
     medAbstractView*view = static_cast<medAbstractView*>(obj);
     m_views.remove(view);
 }
-
-
-

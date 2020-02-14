@@ -1,8 +1,9 @@
+#pragma once
 /*=========================================================================
 
  medInria
 
- Copyright (c) INRIA 2013 - 2018. All rights reserved.
+ Copyright (c) INRIA 2013 - 2020. All rights reserved.
  See LICENSE.txt for details.
 
   This software is distributed WITHOUT ANY WARRANTY; without even
@@ -10,8 +11,6 @@
   PURPOSE.
 
 =========================================================================*/
-
-#pragma once
 
 #include <QStringList>
 #include <QHash>
@@ -49,7 +48,7 @@ private:
 #define MED_DECLARE_PROCESS_PRESENTER_CREATOR(ProcessAbstractType, ProcessType) \
 inline ProcessAbstractType##Presenter* ProcessType##PresenterCreator(medAbstractProcess* abstractProcess) \
 { \
-    ProcessAbstractType##Presenter *presenter = NULL; \
+    ProcessAbstractType##Presenter *presenter = nullptr; \
     if(ProcessType *process = qobject_cast<ProcessType *>(abstractProcess)) \
         presenter = new ProcessType##Presenter(process); \
     return presenter; \

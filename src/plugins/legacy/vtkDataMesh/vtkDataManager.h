@@ -1,18 +1,16 @@
+#pragma once
 /*=========================================================================
 
- medInria
+medInria
 
- Copyright (c) INRIA 2013 - 2018. All rights reserved.
- See LICENSE.txt for details.
- 
-  This software is distributed WITHOUT ANY WARRANTY; without even
-  the implied warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR
-  PURPOSE.
+Copyright (c) INRIA 2013 - 2020. All rights reserved.
+See LICENSE.txt for details.
+
+This software is distributed WITHOUT ANY WARRANTY; without even
+the implied warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR
+PURPOSE.
 
 =========================================================================*/
-
-#pragma once
-
 
 #include <vtkObject.h>
 
@@ -24,7 +22,6 @@
 
 class vtkMetaDataSet;
 class vtkMetaDataSetSequence;
-
 
 /**
    \class vtkDataManager vtkDataManager.h "vtkDataManager.h"
@@ -49,19 +46,19 @@ class VTKDATAMESHPLUGIN_EXPORT vtkDataManager: public vtkObject
 
   /**
      Primary method to get a metadataset of the manager from its index.
-     returns NULL object if out of range.
+     returns null object if out of range.
   */
   virtual vtkMetaDataSet* GetMetaDataSet    (unsigned int i) const;
   /**
      Secondary method to get a metadataset of the manager
      from the metadataset's name.
-     returns NULL object if the name is not referenced in datamanager.
+     returns null object if the name is not referenced in datamanager.
   */
   virtual vtkMetaDataSet* GetMetaDataSet    (const char* name) const;
   /**
      Secondary method to get a metadataset of the manager
      from the metadataset's tag.
-     returns NULL object if the name is not referenced in datamanager.
+     returns null object if the name is not referenced in datamanager.
   */
   virtual vtkMetaDataSet* GetMetaDataSetFromTag (const char* tag) const;
 
@@ -79,9 +76,9 @@ class VTKDATAMESHPLUGIN_EXPORT vtkDataManager: public vtkObject
   virtual void RemoveMetaDataSet ( vtkMetaDataSet* metadataset);
   /**
      Only method to get a sequence of the manager from its index.
-     returns NULL pointer if out of range.
+     returns null pointer if out of range.
   */
-  virtual vtkMetaDataSet* ReadFile (const char* filename, const char* name = NULL, bool forsequence = false);
+  virtual vtkMetaDataSet* ReadFile (const char* filename, const char* name = nullptr, bool forsequence = false);
   /**
      Call this method to scan an entire directory.
      This will add every dataset that is readable in the manager.
@@ -177,8 +174,7 @@ class VTKDATAMESHPLUGIN_EXPORT vtkDataManager: public vtkObject
      to be used when adding a metadataset. Use this method to avoid two
      metadatasets with the same name.
   */
-  virtual const char* CreateDefaultName (unsigned int type, const char* filename = NULL);
-
+  virtual const char* CreateDefaultName (unsigned int type, const char* filename = nullptr);
 
   /**
      Duplicate a metadataset from a metadataset,
@@ -211,7 +207,3 @@ class VTKDATAMESHPLUGIN_EXPORT vtkDataManager: public vtkObject
   std::vector<vtkMetaDataSet*> MetaDataSetList;
   //ETX
 };
-
-
-
-

@@ -47,6 +47,7 @@ medAbstractArithmeticOperationProcessPresenter::medAbstractArithmeticOperationPr
 
 medAbstractArithmeticOperationProcessPresenter::~medAbstractArithmeticOperationProcessPresenter()
 {
+
 }
 
 QWidget *medAbstractArithmeticOperationProcessPresenter::buildToolBoxWidget()

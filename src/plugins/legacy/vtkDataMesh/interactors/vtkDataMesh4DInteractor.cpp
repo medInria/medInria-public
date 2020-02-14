@@ -2,7 +2,7 @@
 
  medInria
 
- Copyright (c) INRIA 2013 - 2018. All rights reserved.
+ Copyright (c) INRIA 2013 - 2020. All rights reserved.
  See LICENSE.txt for details.
 
   This software is distributed WITHOUT ANY WARRANTY; without even
@@ -40,7 +40,7 @@ vtkDataMesh4DInteractor::vtkDataMesh4DInteractor(medAbstractView* parent): vtkDa
     d(new vtkDataMesh4DInteractorPrivate)
 {
     d->view = dynamic_cast<medAbstractImageView *>(parent);
-    d->data = NULL;
+    d->data = nullptr;
 }
 
 vtkDataMesh4DInteractor::~vtkDataMesh4DInteractor()

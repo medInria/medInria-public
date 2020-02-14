@@ -2,7 +2,7 @@
 
  medInria
 
- Copyright (c) INRIA 2013 - 2018. All rights reserved.
+ Copyright (c) INRIA 2013 - 2020. All rights reserved.
  See LICENSE.txt for details.
 
   This software is distributed WITHOUT ANY WARRANTY; without even
@@ -19,10 +19,9 @@
 
 #include <medAbstractParameterL.h>
 #include <medCompositeParameterL.h>
+#include <medDataIndex.h>
 #include <medDataListParameterL.h>
 #include <medStringListParameterL.h>
-
-#include <medDataIndex.h>
 
 class medParameterPoolLPrivate
 {
@@ -30,8 +29,6 @@ public:
     QMultiHash<QString, medAbstractParameterL*> pool;
     QString name;
     QColor color;
-
-    //~medParameterPoolLPrivate() {pool.clear();}
 };
 
 medParameterPoolL::medParameterPoolL(QObject* parent): d(new medParameterPoolLPrivate)

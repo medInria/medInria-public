@@ -1,8 +1,9 @@
+#pragma once
 /*=========================================================================
 
  medInria
 
- Copyright (c) INRIA 2013 - 2018. All rights reserved.
+ Copyright (c) INRIA 2013 - 2020. All rights reserved.
  See LICENSE.txt for details.
 
   This software is distributed WITHOUT ANY WARRANTY; without even
@@ -11,13 +12,10 @@
 
 =========================================================================*/
 
-#pragma once
-
 #include <QLabel>
 
-#include <medDataIndex.h>
-
 #include <medCoreLegacyExport.h>
+#include <medDataIndex.h>
 
 class medDropSitePrivate;
 
@@ -26,7 +24,7 @@ class MEDCORELEGACY_EXPORT medDropSite : public QLabel
     Q_OBJECT
 
 public:
-     medDropSite(QWidget *parent = 0);
+     medDropSite(QWidget *parent = nullptr);
     ~medDropSite();
 
     QSize sizeHint() const;
@@ -61,5 +59,3 @@ protected:
 private:
     medDropSitePrivate *d;
 };
-
-

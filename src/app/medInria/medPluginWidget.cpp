@@ -2,7 +2,7 @@
 
  medInria
 
- Copyright (c) INRIA 2013 - 2018. All rights reserved.
+ Copyright (c) INRIA 2013 - 2020. All rights reserved.
  See LICENSE.txt for details.
  
   This software is distributed WITHOUT ANY WARRANTY; without even
@@ -12,7 +12,6 @@
 =========================================================================*/
 
 #include <medPluginWidget.h>
-
 #include <medPluginManager.h>
 
 #include <medAbstractDataFactory.h>
@@ -167,8 +166,6 @@ medPluginWidget::medPluginWidget(QWidget *parent) :
     //Initialise the tree Widget
     d->pluginsTree = new QTreeWidget(this);
     d->pluginsTree->setFrameStyle(QFrame::NoFrame);
-    //d->pluginsTree->setMinimumWidth(700);
-
     d->pluginsTree->setAttribute(Qt::WA_MacShowFocusRect, false);
     d->pluginsTree->setUniformRowHeights(true);
     d->pluginsTree->setAlternatingRowColors(true);
@@ -190,7 +187,6 @@ medPluginWidget::medPluginWidget(QWidget *parent) :
     //Initialise the error Tree
     d->errorTree = new QTreeWidget(this);
     d->errorTree->setFrameStyle(QFrame::NoFrame);
-    //d->errorTree->setMinimumWidth(700);
     d->errorTree->setAttribute(Qt::WA_MacShowFocusRect, false);
     d->errorTree->setAlternatingRowColors(true);
     d->errorTree->setSortingEnabled(true);
@@ -207,11 +203,7 @@ medPluginWidget::medPluginWidget(QWidget *parent) :
 
     //Initialise list of types
     d->typesTree = new QTreeWidget(this);
-
-
     d->typesTree->setFrameStyle(QFrame::NoFrame);
-    //d->typesTree->setMinimumWidth(700);
-
     d->typesTree->setAttribute(Qt::WA_MacShowFocusRect, false);
     d->typesTree->setUniformRowHeights(true);
     d->typesTree->setAlternatingRowColors(true);
@@ -219,15 +211,11 @@ medPluginWidget::medPluginWidget(QWidget *parent) :
     d->typesTree->setSortingEnabled(true);
     d->typesTree->setSelectionBehavior(QAbstractItemView::SelectRows);
     d->typesTree->setSelectionMode(QAbstractItemView::SingleSelection);
-    //d->typesTree->header()->setStretchLastSection(true);
     d->typesTree->setSizePolicy(QSizePolicy::Expanding,QSizePolicy::Expanding);
     d->typesTree->setColumnCount(2);
     QStringList typesTreeColumns;
     typesTreeColumns << tr("Category") << tr("Name");// << tr("Plugin");
     d->typesTree->setHeaderLabels(typesTreeColumns);
-
-    //connect(d->typesTree,SIGNAL(itemActivated(QTreeWidgetItem*,int)),
-    //        this, SLOT(onTypesTreeItemActivated(QTreeWidgetItem*,int)));
 
     this->addTab(d->pluginsTree,tr("Loaded Plugins"));
     this->addTab(d->typesTree,tr("Loaded types"));
@@ -238,7 +226,7 @@ medPluginWidget::medPluginWidget(QWidget *parent) :
 medPluginWidget::~medPluginWidget()
 {
     delete d;
-    d = NULL;
+    d = nullptr;
 }
 
 void medPluginWidget::reset()

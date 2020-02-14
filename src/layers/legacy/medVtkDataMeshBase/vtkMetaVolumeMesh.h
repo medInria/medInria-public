@@ -1,8 +1,9 @@
+#pragma once
 /*=========================================================================
 
  medInria
 
- Copyright (c) INRIA 2013 - 2018. All rights reserved.
+ Copyright (c) INRIA 2013 - 2020. All rights reserved.
  See LICENSE.txt for details.
  
   This software is distributed WITHOUT ANY WARRANTY; without even
@@ -11,14 +12,11 @@
 
 =========================================================================*/
 
-#pragma once
-
 #include "medVtkDataMeshBaseExport.h"
 
 #include <vtkMetaDataSet.h>
 
 class vtkUnstructuredGrid;
-
 
 /**
    \class vtkMetaVolumeMesh vtkMetaVolumeMesh.h "vtkMetaVolumeMesh.h"
@@ -39,7 +37,7 @@ class MEDVTKDATAMESHBASE_EXPORT vtkMetaVolumeMesh: public vtkMetaDataSet
  public:
 
   static vtkMetaVolumeMesh* New();
-  vtkTypeMacro(vtkMetaVolumeMesh,vtkMetaDataSet);
+  vtkTypeMacro(vtkMetaVolumeMesh,vtkMetaDataSet)
 
   virtual vtkMetaVolumeMesh* Clone() override;
 
@@ -59,7 +57,6 @@ class MEDVTKDATAMESHBASE_EXPORT vtkMetaVolumeMesh: public vtkMetaDataSet
   virtual void Write (const char* filename);
   
   vtkUnstructuredGrid* GetUnstructuredGrid() const;
-
   
   static bool         IsVtkExtension (const char* ext);
   static bool         IsMeshExtension (const char* ext);
@@ -82,11 +79,7 @@ protected:
   virtual void ReadGMeshFile(const char* filename);
   virtual void WriteVtkFile (const char* filename);
 
-
 private:
   void operator=(const vtkMetaVolumeMesh&);        // Not implemented.
 
 };
-
-
-

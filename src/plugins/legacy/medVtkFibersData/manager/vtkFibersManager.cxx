@@ -2,7 +2,7 @@
 
  medInria
 
- Copyright (c) INRIA 2013 - 2018. All rights reserved.
+ Copyright (c) INRIA 2013 - 2020. All rights reserved.
  See LICENSE.txt for details.
  
   This software is distributed WITHOUT ANY WARRANTY; without even
@@ -64,9 +64,9 @@ int vtkFibersManager::vtkFiberRenderingStyle = 0;
 
 vtkFibersManager::vtkFibersManager()
 {
-  this->Input                  = 0;  
-  this->RenderWindowInteractor = 0;
-  this->Renderer               = 0;
+  this->Input                  = nullptr;
+  this->RenderWindowInteractor = nullptr;
+  this->Renderer               = nullptr;
 
   this->BoxWidget    = vtkBoxWidget::New();  
   this->Squeezer     = vtkMaskPolyData::New();
@@ -178,7 +178,7 @@ vtkFibersManager::~vtkFibersManager()
   this->RibbonFilter->Delete();
   this->HelpMessage->Delete();
 
-  this->Actor->SetMapper(NULL);
+  this->Actor->SetMapper(nullptr);
   
   this->Mapper->Delete();
   this->Actor->Delete();
@@ -232,7 +232,7 @@ void vtkFibersManager::SetRenderWindowInteractor (vtkRenderWindowInteractor* rwi
 {
   if( rwin != this->RenderWindowInteractor )
   {
-    if( this->RenderWindowInteractor != NULL )
+    if( this->RenderWindowInteractor != nullptr )
     {
       this->Disable();
       this->RenderWindowInteractor->UnRegister (this);
@@ -286,7 +286,7 @@ void vtkFibersManager::SetInput(vtkPolyData* input)
   
   this->PickerCallback->SetFiberImage ( this->GetInput() );
   
-  this->Callback->Execute (this->BoxWidget, 0, NULL);
+  this->Callback->Execute (this->BoxWidget, 0, nullptr);
   
   int totalLines = this->Callback->GetOutput()->GetNumberOfLines();
   double ratio = (double)totalLines/(double)(this->MaximumNumberOfFibers);
@@ -328,7 +328,7 @@ void vtkFibersManager::Reset()
   
   this->Callback->GetFiberLimiter()->SetInputConnection ( this->Callback->GetROIFiberLimiter()->GetOutputPort() );
   
-  this->Callback->Execute (this->BoxWidget, 0, NULL);
+  this->Callback->Execute (this->BoxWidget, 0, nullptr);
 }
 
 void vtkFibersManager::SetVisibility (bool isVisible)
@@ -674,5 +674,4 @@ void vtkFibersManager::Execute()
   this->Callback->GetROIFiberLimiter()->Modified();
   this->Callback->GetFiberLimiter()->Modified();
   this->Callback->GetFiberLimiter()->Update();
-  //m_Callback->Execute(m_BoxWidget, 0, 0);
 }

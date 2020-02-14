@@ -44,7 +44,7 @@ void medTractographyProcessNode::run()
 {
     if (d->input.isEmpty())
     {
-        dtkDebug() << Q_FUNC_INFO << "Missing inputs. Aborting.";
+        qDebug() << Q_FUNC_INFO << "Missing inputs. Aborting.";
         return;
     }
 
@@ -61,7 +61,9 @@ QWidget* medTractographyProcessNode::editor()
 {
     medAbstractProcess* process = this->object();
     if (!process)
-        return NULL;
+    {
+        return nullptr;
+    }
     medAbstractProcessPresenter* presenter = medWidgets::tractography::presenterFactory().create(process);
     return presenter->buildToolBoxWidget();
 }

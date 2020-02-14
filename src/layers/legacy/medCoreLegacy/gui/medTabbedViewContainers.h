@@ -3,7 +3,7 @@
 
  medInria
 
- Copyright (c) INRIA 2013 - 2018. All rights reserved.
+ Copyright (c) INRIA 2013 - 2020. All rights reserved.
  See LICENSE.txt for details.
 
   This software is distributed WITHOUT ANY WARRANTY; without even
@@ -35,7 +35,7 @@ class MEDCORELEGACY_EXPORT medTabbedViewContainers : public QTabWidget
     Q_OBJECT
 
 public:
-     medTabbedViewContainers(medAbstractWorkspaceLegacy* owningWorkspace, QWidget *parent = 0);
+     medTabbedViewContainers(medAbstractWorkspaceLegacy* owningWorkspace, QWidget *parent = nullptr);
     ~medTabbedViewContainers();
 
     void lockTabs();
@@ -45,8 +45,8 @@ public:
     QList<QUuid> containersSelected();
     QList<medAbstractView*> viewsInTab(int index = 0);
     QList<medViewContainer*> containersInTab(int index = 0);
+
     void setKeepLeastOne(bool pi_bVal);
-    // TODO mutualize all of this
     void setSplitter(int index, medViewContainerSplitter* splitter);
 
     medViewContainer* getFirstSelectedContainer();
@@ -58,8 +58,6 @@ public slots:
     medViewContainer* insertNewTab(int index, const QString &name);
     void closeCurrentTab();
     void closeTab(int index);
-
-protected:
 
 private slots :
     void tabBarDoubleClickedHandler(int  index);
@@ -73,12 +71,11 @@ private slots :
     void connectContainerSelectedForCurrentTab();
     void minimizeOtherContainers(QUuid containerMaximized, bool maximized);
 
-private:
-    void minimizeSplitterContainers(QUuid containerMaximized, bool maximized, medViewContainerSplitter *splitter);
-
 signals:
     void containersSelectedChanged();
 
 private:
+    void minimizeSplitterContainers(QUuid containerMaximized, bool maximized, medViewContainerSplitter *splitter);
+
     medTabbedViewContainersPrivate *d;
 };

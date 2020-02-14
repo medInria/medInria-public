@@ -1,8 +1,9 @@
+#pragma once
 /*=========================================================================
 
  medInria
 
- Copyright (c) INRIA 2013 - 2019. All rights reserved.
+ Copyright (c) INRIA 2013 - 2020. All rights reserved.
  See LICENSE.txt for details.
 
   This software is distributed WITHOUT ANY WARRANTY; without even
@@ -10,8 +11,6 @@
   PURPOSE.
 
 =========================================================================*/
-
-#pragma once
 
 #include "medCoreLegacyExport.h"
 
@@ -22,7 +21,7 @@ class MEDCORELEGACY_EXPORT medPluginLegacy : public dtkPlugin
     Q_OBJECT
 
 public:
-    medPluginLegacy(QObject* parent = 0);
+    medPluginLegacy(QObject* parent = nullptr);
 
     /**
      * @brief name() fills the header widget in the "i" information pop-up.
@@ -91,5 +90,3 @@ public:
      */
     virtual QStringList types() const;
 };
-
-

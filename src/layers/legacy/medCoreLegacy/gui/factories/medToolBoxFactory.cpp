@@ -2,7 +2,7 @@
 
  medInria
 
- Copyright (c) INRIA 2013 - 2018. All rights reserved.
+ Copyright (c) INRIA 2013 - 2020. All rights reserved.
  See LICENSE.txt for details.
  
   This software is distributed WITHOUT ANY WARRANTY; without even
@@ -13,8 +13,6 @@
 
 #include <medToolBox.h>
 #include <medToolBoxFactory.h>
-
-
 
 class medToolBoxFactoryPrivate
 {
@@ -88,13 +86,14 @@ QList<QString> medToolBoxFactory::toolBoxesFromCategory(
 }
 
 medToolBox *medToolBoxFactory::createToolBox(QString identifier,
-                                                         QWidget *parent)
+                                             QWidget *parent)
 {
     if(!d->creators.contains(identifier))
-        return NULL;
+    {
+        return nullptr;
+    }
 
-    medToolBox *toolbox =
-            (d->creators[identifier])->creator(parent);
+    medToolBox *toolbox = (d->creators[identifier])->creator(parent);
 
     return toolbox;
 }
@@ -144,15 +143,12 @@ medToolBoxFactory::~medToolBoxFactory(void)
     foreach (medToolBoxDetails * detail, d->creators.values())
     {
         delete detail;
-        detail = NULL;
+        detail = nullptr;
     }
 
     delete d;
 
-    d = NULL;
+    d = nullptr;
 }
 
-medToolBoxFactory *medToolBoxFactory::s_instance = NULL;
-
-
-
+medToolBoxFactory *medToolBoxFactory::s_instance = nullptr;

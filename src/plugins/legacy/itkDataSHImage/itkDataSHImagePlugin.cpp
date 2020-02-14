@@ -2,7 +2,7 @@
 
  medInria
 
- Copyright (c) INRIA 2013 - 2018. All rights reserved.
+ Copyright (c) INRIA 2013 - 2020. All rights reserved.
  See LICENSE.txt for details.
  
   This software is distributed WITHOUT ANY WARRANTY; without even
@@ -46,16 +46,17 @@ itkDataSHImagePlugin::itkDataSHImagePlugin(QObject *parent): dtkPlugin(parent),d
 
 itkDataSHImagePlugin::~itkDataSHImagePlugin() {
     delete d;
-    d = NULL;
+    d = nullptr;
 }
 
-bool itkDataSHImagePlugin::initialize() {
-    if (!itkDataSHImageDouble3::registered()) { dtkWarn() << "Unable to register itkDataSHImageDouble3 type"; }
-    if (!itkDataSHImageFloat3::registered())  { dtkWarn() << "Unable to register itkDataSHImageFloat3 type";  }
-    if (!itkDataSHImageVtkViewInteractor::registered())  { dtkWarn() << "Unable to register itkDataSHImageVtkViewInteractor type";  }
+bool itkDataSHImagePlugin::initialize()
+{
+    if (!itkDataSHImageDouble3::registered()) { qWarning() << "Unable to register itkDataSHImageDouble3 type"; }
+    if (!itkDataSHImageFloat3::registered())  { qWarning() << "Unable to register itkDataSHImageFloat3 type";  }
+    if (!itkDataSHImageVtkViewInteractor::registered())  { qWarning() << "Unable to register itkDataSHImageVtkViewInteractor type";  }
 
-    if (!itkDataSHImageReader::registered())  { dtkWarn() << "Unable to register itkDataSHImageReader type";  }
-    if (!itkMetaDataSHImageWriter::registered())  { dtkWarn() << "Unable to register itkMetaDataSHImageWriter type"; }
+    if (!itkDataSHImageReader::registered())  { qWarning() << "Unable to register itkDataSHImageReader type";  }
+    if (!itkMetaDataSHImageWriter::registered())  { qWarning() << "Unable to register itkMetaDataSHImageWriter type"; }
 
     return true;
 }
@@ -102,5 +103,3 @@ QStringList itkDataSHImagePlugin::types() const {
                          << "itkDataSHImageReader"
                          << "itkMetaDataSHImageWriter";
 }
-
-//Q_EXPORT_PLUGIN2(itkDataSHImagePlugin, itkDataSHImagePlugin)

@@ -2,7 +2,7 @@
 
  medInria
 
- Copyright (c) INRIA 2013 - 2019. All rights reserved.
+ Copyright (c) INRIA 2013 - 2020. All rights reserved.
  See LICENSE.txt for details.
 
   This software is distributed WITHOUT ANY WARRANTY; without even
@@ -11,15 +11,10 @@
 
 =========================================================================*/
 
-#include <dtkCoreSupport/dtkAbstractDataReader.h>
-#include <dtkCoreSupport/dtkAbstractDataWriter.h>
-#include <dtkCoreSupport/dtkGlobal.h>
-#include <dtkLog/dtkLog.h>
-
-#include <medDatabaseController.h>
 #include <medAbstractData.h>
 #include <medAbstractDataFactory.h>
 #include <medAbstractImageData.h>
+#include <medDatabaseController.h>
 #include <medDatabaseNonPersistentController.h>
 #include <medDatabaseNonPersistentItem.h>
 #include <medDatabaseNonPersistentItem_p.h>
@@ -158,7 +153,7 @@ medDataIndex medDatabaseNonPersistentImporter::populateDatabaseAndGenerateThumbn
     {
         // check if study is already in the persistent database
         databaseIndex = medDatabaseController::instance()->indexForStudy ( patientName, studyName );
-        medDatabaseNonPersistentItem *studyItem = NULL;
+        medDatabaseNonPersistentItem *studyItem = nullptr;
 
         if ( databaseIndex.isValid() )
         {

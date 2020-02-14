@@ -2,7 +2,7 @@
 
  medInria
 
- Copyright (c) INRIA 2013 - 2018. All rights reserved.
+ Copyright (c) INRIA 2013 - 2020. All rights reserved.
  See LICENSE.txt for details.
  
   This software is distributed WITHOUT ANY WARRANTY; without even
@@ -17,9 +17,6 @@
 
 #include <QtGui>
 #include <QtWidgets>
-
-#include <dtkCoreSupport/dtkGlobal.h>
-#include <dtkGuiSupport/dtkFinder.h>
 
 #include <medMessageController.h>
 #include <medJobManagerL.h>
@@ -96,10 +93,10 @@ medBrowserArea::medBrowserArea(QWidget *parent) : QWidget(parent), d(new medBrow
         addDataSource(dataSource);
  }
 
-medBrowserArea::~medBrowserArea(void)
+medBrowserArea::~medBrowserArea()
 {
     delete d;
-    d = NULL;
+    d = nullptr;
 }
 
 void medBrowserArea::onSourceIndexChanged(int index)

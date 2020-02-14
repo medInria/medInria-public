@@ -2,7 +2,7 @@
 
  medInria
 
- Copyright (c) INRIA 2013 - 2018. All rights reserved.
+ Copyright (c) INRIA 2013 - 2020. All rights reserved.
  See LICENSE.txt for details.
  
   This software is distributed WITHOUT ANY WARRANTY; without even
@@ -10,8 +10,6 @@
   PURPOSE.
 
 =========================================================================*/
-
-#include <dtkCoreSupport/dtkGlobal.h>
 
 #include <medMessageController.h>
 
@@ -28,6 +26,7 @@ medMessage::medMessage( QWidget *parent,
     this->timeout = timeout;
 
     this->setFixedWidth(400);
+
     icon = new QLabel(this);
 
     info = new QLabel(this);
@@ -40,15 +39,10 @@ medMessage::medMessage( QWidget *parent,
     layout->addWidget(icon);
     layout->addWidget(info);
 
-
     this->timer = new QTimer(this);
     connect(timer, SIGNAL(timeout()), this, SLOT(remove()));
 
     this->setLayout(layout);
-}
-
-medMessage::~medMessage(void)
-{
 }
 
 void medMessage::startTimer()
@@ -68,7 +62,6 @@ void medMessage::remove()
     medMessageController::instance()->remove(this);
 }
 
-
 // /////////////////////////////////////////////////////////////////
 // medMessageInfo
 // /////////////////////////////////////////////////////////////////
@@ -81,11 +74,6 @@ medMessageInfo::medMessageInfo(
     this->setFixedWidth(500);
 }
 
-medMessageInfo::~medMessageInfo(void)
-{
-
-}
-
 // /////////////////////////////////////////////////////////////////
 // medMessageError
 // /////////////////////////////////////////////////////////////////
@@ -96,11 +84,6 @@ medMessageError::medMessageError(
 {
     icon->setPixmap(QPixmap(":/icons/exclamation.png"));
     this->setFixedWidth(500);
-}
-
-medMessageError::~medMessageError(void)
-{
-
 }
 
 // /////////////////////////////////////////////////////////////////
@@ -117,10 +100,6 @@ medMessageProgress::medMessageProgress(
     progress->setMaximum(100);
     progress->setValue(100);
     this->layout()->addWidget(progress);
-}
-
-medMessageProgress::~medMessageProgress(void)
-{
 }
 
 void medMessageProgress::setProgress(int value)
@@ -168,7 +147,6 @@ void medMessageProgress::paintEvent ( QPaintEvent * event)
 // medMessageController
 // /////////////////////////////////////////////////////////////////
 
-
 medMessageController *medMessageController::instance(void)
 {
     if(!s_instance)
@@ -206,19 +184,20 @@ void medMessageController::showError(const QString& text,unsigned int timeout)
 
 medMessageProgress* medMessageController::showProgress(const QString& text)
 {
-    if (dynamic_cast<QApplication *>(QCoreApplication::instance())) {
+    if (dynamic_cast<QApplication *>(QCoreApplication::instance()))
+    {
         // GUI
         medMessageProgress *message = new medMessageProgress(text);
 
         emit addMessage(message);
         return message;
     } 
-    return 0;
+    return nullptr;
 }
 
 void medMessageController::remove(medMessage *message)
 {
-    if(message != NULL)
+    if(message != nullptr)
     {
         emit removeMessage(message);
         message->deleteLater();
@@ -229,8 +208,4 @@ medMessageController::medMessageController(void) : QObject()
 {
 }
 
-medMessageController::~medMessageController(void)
-{
-}
-
-medMessageController *medMessageController::s_instance = NULL;
+medMessageController *medMessageController::s_instance = nullptr;

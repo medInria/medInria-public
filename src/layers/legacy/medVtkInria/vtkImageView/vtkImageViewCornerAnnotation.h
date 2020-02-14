@@ -1,8 +1,9 @@
+#pragma once
 /*=========================================================================
 
  medInria
 
- Copyright (c) INRIA 2013 - 2018. All rights reserved.
+ Copyright (c) INRIA 2013 - 2020. All rights reserved.
  See LICENSE.txt for details.
  
   This software is distributed WITHOUT ANY WARRANTY; without even
@@ -11,14 +12,11 @@
 
 =========================================================================*/
 
-#pragma once
-
 #include <vtkCornerAnnotation.h>
 
 #include <medVtkInriaExport.h>
 
 class vtkImageView;
-
 
 /**
    Notes on Nicolas Toussaint changes
@@ -29,28 +27,21 @@ class vtkImageView;
 
 */
 
-/**
-   flags :
-
-
-*/
-
 
 class MEDVTKINRIA_EXPORT vtkImageViewCornerAnnotation : public vtkCornerAnnotation
 {
 
  public:
-  vtkTypeMacro(vtkImageViewCornerAnnotation, vtkCornerAnnotation);
+  vtkTypeMacro(vtkImageViewCornerAnnotation, vtkCornerAnnotation)
   static vtkImageViewCornerAnnotation *New();
 
 
   void SetImageView (vtkImageView* arg)
   { this->ImageView = arg; }
-  vtkGetObjectMacro (ImageView, vtkImageView);
+  vtkGetObjectMacro (ImageView, vtkImageView)
   // Description:
   //Draw the scalar bar and annotation text to the screen.
   int RenderOpaqueGeometry(vtkViewport* viewport);
-
 
  protected:
   vtkImageViewCornerAnnotation();
@@ -63,9 +54,4 @@ class MEDVTKINRIA_EXPORT vtkImageViewCornerAnnotation : public vtkCornerAnnotati
   void operator=(const vtkImageViewCornerAnnotation&);  // Not implemented.
 
   vtkImageView *ImageView;
-
-
 };
-
-
-

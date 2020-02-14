@@ -1,3 +1,4 @@
+#pragma once
 /*=========================================================================
 
  medInria
@@ -10,9 +11,6 @@
   PURPOSE.
 
 =========================================================================*/
-#pragma once
-
-#include <medVtkImageInfo.h>
 
 #include <vtkAlgorithmOutput.h>
 #include <vtkImageAlgorithm.h>

@@ -23,63 +23,52 @@
 class MEDVTKFIBERSDATAPLUGIN_EXPORT vtkLimitFibersToROI: public vtkPolyDataAlgorithm
 {
 
- public:
-  static vtkLimitFibersToROI *New();
-  vtkTypeMacro(vtkLimitFibersToROI, vtkPolyDataAlgorithm);
+public:
+    static vtkLimitFibersToROI *New();
+    vtkTypeMacro(vtkLimitFibersToROI, vtkPolyDataAlgorithm)
 
-  vtkSetObjectMacro (MaskImage,  vtkImageData);
-  vtkGetObjectMacro (MaskImage,  vtkImageData);
+    vtkSetObjectMacro (MaskImage,  vtkImageData)
+    vtkGetObjectMacro (MaskImage,  vtkImageData)
 
-  vtkSetObjectMacro (DirectionMatrix,  vtkMatrix4x4);
-  vtkGetObjectMacro (DirectionMatrix,  vtkMatrix4x4);
-  
-  void PrintSelf (ostream& os, vtkIndent indent){};
+    vtkSetObjectMacro (DirectionMatrix,  vtkMatrix4x4)
+    vtkGetObjectMacro (DirectionMatrix,  vtkMatrix4x4)
 
+    void PrintSelf (ostream& os, vtkIndent indent){}
 
-  /**
+    /**
      Set the BooleanOperationVector array. The length of BooleanOperationVector
      must be equal to the maximum value of the MaskImage. Values must be either
      0 (NOT), 1 (AND).
    */
-  void SetBooleanOperationVector (int vec[256])
-  {
-    for( unsigned int i=0; i<256; i++)
+    void SetBooleanOperationVector (int vec[256])
     {
-      this->BooleanOperationVector[i] = vec[i];
+        for( unsigned int i=0; i<256; i++)
+        {
+            this->BooleanOperationVector[i] = vec[i];
+        }
+        this->Modified();
     }
-    this->Modified();
-  }
 
-  void SetBooleanOperation (int id, int value);
+    void SetBooleanOperation (int id, int value);
 
-  int* GetBooleanOperationVector()
-  {
-    return this->BooleanOperationVector;
-  }
-  
-  
-  
-    
- protected:
-  vtkLimitFibersToROI();
-  ~vtkLimitFibersToROI();
-  
-  // Usual data generation method
-  int RequestData (vtkInformation *,vtkInformationVector **,vtkInformationVector *);
-  
+    int* GetBooleanOperationVector()
+    {
+        return this->BooleanOperationVector;
+    }
 
- private:
-  vtkLimitFibersToROI (const vtkLimitFibersToROI&);
-  void operator=(const vtkLimitFibersToROI&);
-  
-  vtkImageData* MaskImage;
-  vtkMatrix4x4* DirectionMatrix;
+protected:
+    vtkLimitFibersToROI();
+    ~vtkLimitFibersToROI();
 
-  int BooleanOperationVector[256];
- 
-  
+    // Usual data generation method
+    int RequestData (vtkInformation *,vtkInformationVector **,vtkInformationVector *);
+
+private:
+    vtkLimitFibersToROI (const vtkLimitFibersToROI&);
+    void operator=(const vtkLimitFibersToROI&);
+
+    vtkImageData* MaskImage;
+    vtkMatrix4x4* DirectionMatrix;
+
+    int BooleanOperationVector[256];
 };
-
-
-
-

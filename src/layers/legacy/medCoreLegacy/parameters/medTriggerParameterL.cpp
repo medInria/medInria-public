@@ -2,7 +2,7 @@
 
  medInria
 
- Copyright (c) INRIA 2013 - 2018. All rights reserved.
+ Copyright (c) INRIA 2013 - 2020. All rights reserved.
  See LICENSE.txt for details.
 
   This software is distributed WITHOUT ANY WARRANTY; without even
@@ -32,7 +32,7 @@ medTriggerParameterL::medTriggerParameterL(QString name, QObject *parent):
     medAbstractTriggerParameterL(name, parent),
     d(new medTriggerParameterLPrivate)
 {
-     d->pushButton = NULL;
+     d->pushButton = nullptr;
      d->text = QString();
      d->icon = QIcon();
      d->iconSize = QSize(15,15);
@@ -98,5 +98,5 @@ QWidget* medTriggerParameterL::getWidget()
 void medTriggerParameterL::removeInternPushButton()
 {
     this->removeFromInternWidgets(d->pushButton);
-    d->pushButton = NULL;
+    d->pushButton = nullptr;
 }

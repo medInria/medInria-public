@@ -1,17 +1,16 @@
+#pragma once
 /*=========================================================================
 
- medInria
+medInria
 
- Copyright (c) INRIA 2013 - 2019. All rights reserved.
- See LICENSE.txt for details.
+Copyright (c) INRIA 2013 - 2020. All rights reserved.
+See LICENSE.txt for details.
 
-  This software is distributed WITHOUT ANY WARRANTY; without even
-  the implied warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR
-  PURPOSE.
+This software is distributed WITHOUT ANY WARRANTY; without even
+the implied warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR
+PURPOSE.
 
 =========================================================================*/
-#ifndef POLYGONROIPLUGINEXPORT_H
-#define POLYGONROIPLUGINEXPORT_H
 
 #ifdef WIN32
     #ifdef polygonRoiPlugin_EXPORTS
@@ -21,6 +20,4 @@
     #endif
 #else
     #define POLYGONROIPLUGIN_EXPORT
-#endif
-
 #endif

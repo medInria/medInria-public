@@ -2,7 +2,7 @@
 
  medInria
 
- Copyright (c) INRIA 2013 - 2018. All rights reserved.
+ Copyright (c) INRIA 2013 - 2020. All rights reserved.
  See LICENSE.txt for details.
  
   This software is distributed WITHOUT ANY WARRANTY; without even
@@ -49,19 +49,19 @@ medToolBoxContainer::medToolBoxContainer(QWidget *parent) : QScrollArea(parent),
 medToolBoxContainer::~medToolBoxContainer(void)
 {
     delete d;
-    d = NULL;
+    d = nullptr;
 }
 
 void medToolBoxContainer::insertToolBox(int index, medToolBox* toolBox)
 {
-    if (!toolBox)
-        return;
-
-    d->toolboxes.insert(index, toolBox);
-    toolBox->setParent(d->container);
-    d->layout->setStretch(d->layout->count()-1, 0);
-    d->layout->insertWidget(index, toolBox, 0, Qt::AlignTop);
-    d->layout->addStretch(1);
+    if (toolBox)
+    {
+        d->toolboxes.insert(index, toolBox);
+        toolBox->setParent(d->container);
+        d->layout->setStretch(d->layout->count()-1, 0);
+        d->layout->insertWidget(index, toolBox, 0, Qt::AlignTop);
+        d->layout->addStretch(1);
+    }
 }
 
 void medToolBoxContainer::addToolBox(medToolBox *toolBox)
@@ -75,11 +75,12 @@ void medToolBoxContainer::removeToolBox(medToolBox *toolBox)
     d->layout->removeWidget(toolBox);
 }
 
-
 void medToolBoxContainer::clear()
 {
     for (int i=0; i<=d->layout->count(); i++)
+    {
         d->layout->setStretch (i, 0);
+    }
 
     foreach(medToolBox *tb, d->toolboxes)
     {

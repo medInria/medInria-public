@@ -1,3 +1,4 @@
+#pragma once
 /*============================================================================
 
 The Hardware Shading (HWShading) module is protected by the
@@ -24,8 +25,6 @@ PURPOSE.  See the above copyright notices for more information.
  * - Renamed glSpecificUniform() to SetGlUniformSpecific().
  */
 
-#pragma once
-
 #include <medVtkInriaExport.h>
 
 #include <vtkShaderUniform.h>
@@ -37,11 +36,11 @@ class MEDVTKINRIA_EXPORT vtkUniformBool: public vtkShaderUniform
 {
 public:
   static vtkUniformBool* New();
-  vtkTypeMacro(vtkUniformBool, vtkShaderUniform);
+  vtkTypeMacro(vtkUniformBool, vtkShaderUniform)
 
-  vtkSetMacro(Value, bool);
-  vtkGetMacro(Value, bool);
-  vtkBooleanMacro(Value, bool);
+  vtkSetMacro(Value, bool)
+  vtkGetMacro(Value, bool)
+  vtkBooleanMacro(Value, bool)
 
 protected:
   vtkUniformBool();
@@ -52,5 +51,3 @@ protected:
 private:
   bool Value;
 };
-
-

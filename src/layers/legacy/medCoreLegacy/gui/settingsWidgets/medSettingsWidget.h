@@ -1,8 +1,9 @@
+#pragma once
 /*=========================================================================
 
  medInria
 
- Copyright (c) INRIA 2013 - 2018. All rights reserved.
+ Copyright (c) INRIA 2013 - 2020. All rights reserved.
  See LICENSE.txt for details.
 
   This software is distributed WITHOUT ANY WARRANTY; without even
@@ -10,8 +11,6 @@
   PURPOSE.
 
 =========================================================================*/
-
-#pragma once
 
 #include <QWidget>
 
@@ -30,7 +29,7 @@ class MEDCORELEGACY_EXPORT medSettingsWidget : public QWidget
     Q_OBJECT
 public:
 
-    explicit medSettingsWidget(QWidget *parent = 0);
+    explicit medSettingsWidget(QWidget *parent = nullptr);
 
     virtual QString identifier() const = 0;
     virtual QString name() const = 0;
@@ -66,7 +65,7 @@ protected:
     void setTabName(QString section);
 
 private:
-    medSettingsWidgetPrivate *d; /**< TODO */
+    medSettingsWidgetPrivate *d;
 };
 
 #define MED_SETTINGS_INTERFACE(_name,_desc) \

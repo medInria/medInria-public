@@ -1,8 +1,9 @@
+#pragma once
 /*=========================================================================
 
  medInria
 
- Copyright (c) INRIA 2013 - 2018. All rights reserved.
+ Copyright (c) INRIA 2013 - 2020. All rights reserved.
  See LICENSE.txt for details.
 
   This software is distributed WITHOUT ANY WARRANTY; without even
@@ -11,20 +12,16 @@
 
 =========================================================================*/
 
-#pragma once
 #include <medAbstractSingleFilterOperationProcess.h>
+#include <medCoreExport.h>
 
 #include <dtkCore>
-
-#include <medCoreExport.h>
 
 class MEDCORE_EXPORT medAbstractSymmetryPlaneAlignmentProcess: public medAbstractSingleFilterOperationProcess
 {
     Q_OBJECT
 public:
     medAbstractSymmetryPlaneAlignmentProcess(QObject *parent): medAbstractSingleFilterOperationProcess(parent) {}
-
-    // TO DO: when registration transforms are available, add transform output
 
 protected:
     virtual QString outputNameAddon() const {return "symmetry aligned";}

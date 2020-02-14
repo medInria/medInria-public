@@ -1,17 +1,16 @@
+#pragma once
 /*=========================================================================
 
- medInria
+medInria
 
- Copyright (c) INRIA 2013 - 2019. All rights reserved.
- See LICENSE.txt for details.
+Copyright (c) INRIA 2013 - 2020. All rights reserved.
+See LICENSE.txt for details.
 
-  This software is distributed WITHOUT ANY WARRANTY; without even
-  the implied warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR
-  PURPOSE.
+This software is distributed WITHOUT ANY WARRANTY; without even
+the implied warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR
+PURPOSE.
 
 =========================================================================*/
-
-#pragma once
 
 #include "vtkDataMeshPluginExport.h"
 #include "vtkDataMeshReaderBase.h"
@@ -24,28 +23,26 @@ class VTKDATAMESHPLUGIN_EXPORT vtkDataMeshReader: public vtkDataMeshReaderBase
 
 public:
     vtkDataMeshReader();
+    ~vtkDataMeshReader() override = default;
 
-    virtual QStringList handled() const;
-
+    QStringList handled() const override;
     static QStringList s_handled();
 
 public slots:
+    bool canRead(const QString& path) override;
+    bool readInformation(const QString& path) override;
+    bool read(const QString& path) override;
 
-    virtual bool canRead(const QString& path);
-    virtual bool readInformation(const QString& path);
-    virtual bool read(const QString& path);
-
-    virtual QString identifier()  const;
-    virtual QString description() const;
+    QString identifier()  const override;
+    QString description() const override;
 
     static bool registered();
 
 private:
-
     static const char ID[];
-    bool extractMetaData(QString path, vtkMetaDataSet* dataSet);
-    bool extractMetaDataFromHeader(QString path, vtkMetaDataSet* dataSet);
-    bool extractCartoMetaData(vtkMetaDataSet* dataSet);
+    bool extractMetaData(QString path, vtkMetaDataSet *dataSet);
+    bool extractMetaDataFromHeader(QString path, vtkMetaDataSet *dataSet);
+    bool extractCartoMetaData(vtkMetaDataSet *dataSet);
 };
 
 dtkAbstractDataReader *createVtkDataMeshReader();

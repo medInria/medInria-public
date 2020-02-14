@@ -3,7 +3,7 @@
 
  medInria
 
- Copyright (c) INRIA 2013 - 2018. All rights reserved.
+ Copyright (c) INRIA 2013 - 2020. All rights reserved.
  See LICENSE.txt for details.
  
   This software is distributed WITHOUT ANY WARRANTY; without even
@@ -11,7 +11,6 @@
   PURPOSE.
 
 =========================================================================*/
-
 
 #include <medVtkInriaExport.h>
 #include <vtkObject.h>
@@ -28,7 +27,6 @@ class vtkPoints;
 class vtkRenderer;
 class vtkRenderWindow;
 
-
 class MEDVTKINRIA_EXPORT vtkAxes2DWidget : public vtkObject
 {
 public:
@@ -38,7 +36,7 @@ public:
 
   // Description:
   // Standard VTK class macros.
-  vtkTypeMacro(vtkAxes2DWidget,vtkObject);
+  vtkTypeMacro(vtkAxes2DWidget,vtkObject)
   void PrintSelf(ostream& os, vtkIndent indent);
 
   // Description:
@@ -55,12 +53,12 @@ public:
   void Off() {this->SetEnabled(0);}
   
   void SetImageView (vtkImageView2D* arg);
-  vtkGetObjectMacro (ImageView, vtkImageView2D);
+  vtkGetObjectMacro (ImageView, vtkImageView2D)
 
   void SetRenderWindow (vtkRenderWindow *arg);
-  vtkGetObjectMacro (RenderWindow, vtkRenderWindow);
+  vtkGetObjectMacro (RenderWindow, vtkRenderWindow)
 
-  vtkGetObjectMacro (ColorArray, vtkUnsignedCharArray);
+  vtkGetObjectMacro (ColorArray, vtkUnsignedCharArray)
   void ComputeLyingPoints (double* pos);
   void ComputePlanes();
   
@@ -90,17 +88,13 @@ private:
   void operator=(const vtkAxes2DWidget&);  //Not implemented
 };
 
-
-
-
 //BTX
 class MEDVTKINRIA_EXPORT vtkAxes2DWidgetCommand : public vtkCommand
 {
-
  public:
 
   static vtkAxes2DWidgetCommand *New()
-    {return new vtkAxes2DWidgetCommand;};
+    {return new vtkAxes2DWidgetCommand;}
 
   // Description:
   // Satisfy the superclass API for callbacks. Recall that the caller is
@@ -119,14 +113,10 @@ class MEDVTKINRIA_EXPORT vtkAxes2DWidgetCommand : public vtkCommand
     this->Widget = 0;
   }
   
-  ~vtkAxes2DWidgetCommand(){};
+  ~vtkAxes2DWidgetCommand(){}
 
  private:
 
   vtkAxes2DWidget* Widget;
 };
 //ETX
-
-
-
-

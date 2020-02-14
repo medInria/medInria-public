@@ -1,8 +1,9 @@
+#pragma once
 /*=========================================================================
 
  medInria
 
- Copyright (c) INRIA 2013 - 2018. All rights reserved.
+ Copyright (c) INRIA 2013 - 2020. All rights reserved.
  See LICENSE.txt for details.
  
   This software is distributed WITHOUT ANY WARRANTY; without even
@@ -10,8 +11,6 @@
   PURPOSE.
 
 =========================================================================*/
-
-#pragma once
 
 #include <medCoreLegacyExport.h>
 
@@ -22,12 +21,7 @@ class MEDCORELEGACY_EXPORT medSaveLUTDialog : public QInputDialog
 {
     Q_OBJECT
 public:
-    medSaveLUTDialog(const QString & name="Unknown",QWidget *parent = 0);
-
-signals:
-
-public slots:
-
+    medSaveLUTDialog(const QString & name="Unknown",QWidget *parent = nullptr);
 };
 
 

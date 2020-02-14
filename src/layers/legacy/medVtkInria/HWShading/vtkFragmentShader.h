@@ -1,3 +1,4 @@
+#pragma once
 /*============================================================================
 
 The Hardware Shading (HWShading) module is protected by the
@@ -24,8 +25,6 @@ PURPOSE.  See the above copyright notices for more information.
  * 2005-06-06	Tim Peeters
  * - Renamed glCreateObject() to CreateGlShader()
  */
-
-#pragma once
 
 #include <medVtkInriaExport.h>
 

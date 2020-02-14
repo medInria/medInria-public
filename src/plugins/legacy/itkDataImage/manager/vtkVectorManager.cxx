@@ -2,7 +2,7 @@
 
  medInria
 
- Copyright (c) INRIA 2013 - 2018. All rights reserved.
+ Copyright (c) INRIA 2013 - 2020. All rights reserved.
  See LICENSE.txt for details.
  
   This software is distributed WITHOUT ANY WARRANTY; without even
@@ -16,23 +16,21 @@
 #include <vtkObjectFactory.h>
 #include <vtkMath.h>
 
-
 vtkStandardNewMacro(vtkVectorManager)
-
 
 vtkVectorManager::vtkVectorManager()
 {
-    this->RenderWindowInteractor = 0;
+    this->RenderWindowInteractor = nullptr;
 
-    this->Input = 0;
+    this->Input = nullptr;
 
-    this->Renderer = 0;
+    this->Renderer = nullptr;
 
     this->VectorVisuManagerAxial    = vtkVectorVisuManager::New();
     this->VectorVisuManagerSagittal = vtkVectorVisuManager::New();
     this->VectorVisuManagerCoronal  = vtkVectorVisuManager::New();
 
-    this->DirectionMatrix = 0;
+    this->DirectionMatrix = nullptr;
 
     this->PhysicalToVoxelCoordinatesTransformMatrix = vtkMatrix4x4::New();
     this->PhysicalToVoxelCoordinatesTransformMatrix->Identity();
@@ -62,8 +60,9 @@ vtkVectorManager::~vtkVectorManager()
     this->VectorVisuManagerCoronal->Delete();
 
     if (this->DirectionMatrix)
-      this->DirectionMatrix->Delete();
-
+    {
+        this->DirectionMatrix->Delete();
+    }
     this->PhysicalToVoxelCoordinatesTransformMatrix->Delete();
 
 }
@@ -73,7 +72,7 @@ void vtkVectorManager::SetRenderWindowInteractor (vtkRenderWindowInteractor* rwi
     if( rwin != this->RenderWindowInteractor )
     {
 
-        if( this->RenderWindowInteractor != NULL )
+        if( this->RenderWindowInteractor != nullptr )
         {
             this->Initialize();
             this->RenderWindowInteractor->UnRegister (this);
@@ -123,7 +122,6 @@ void vtkVectorManager::Initialize()
     }
 }
 
-
 void vtkVectorManager::SetCurrentPosition (const int& X, const int& Y, const int& Z)
 {
     if( !this->Input )
@@ -148,12 +146,10 @@ void vtkVectorManager::SetCurrentPosition (const int& X, const int& Y, const int
     this->CurrentPosition[2] = Z;
 }
 
-
 void vtkVectorManager::SetCurrentPosition (int pos[3])
 {
     this->SetCurrentPosition (pos[0], pos[1], pos[2]);
 }
-
 
 void vtkVectorManager::SetCurrentPosition (const double& X, const double& Y, const double& Z)
 {
@@ -176,12 +172,10 @@ void vtkVectorManager::SetCurrentPosition (const double& X, const double& Y, con
     this->SetCurrentPosition(vox_pos[0], vox_pos[1], vox_pos[2]);
 }
 
-
 void vtkVectorManager::SetCurrentPosition (const double pos[3])
 {
     this->SetCurrentPosition (pos[0], pos[1], pos[2]);
 }
-
 
 void vtkVectorManager::ResetPosition()
 {
@@ -198,7 +192,6 @@ void vtkVectorManager::ResetPosition()
 
     this->SetCurrentPosition (X,Y,Z);
 }
-
 
 void vtkVectorManager::Update()
 {
@@ -240,14 +233,13 @@ void vtkVectorManager::Update()
 
 void vtkVectorManager::SetDirectionMatrix(vtkMatrix4x4 *mat)
 {
-    if (!mat)
-        return;
+    if (mat)
+    {
+        vtkSetObjectBodyMacro(DirectionMatrix, vtkMatrix4x4, mat);
 
-    vtkSetObjectBodyMacro(DirectionMatrix, vtkMatrix4x4, mat);
-
-    vtkMatrix4x4::Invert(this->DirectionMatrix, this->PhysicalToVoxelCoordinatesTransformMatrix);
+        vtkMatrix4x4::Invert(this->DirectionMatrix, this->PhysicalToVoxelCoordinatesTransformMatrix);
+    }
 }
-
 
 void vtkVectorManager::SetGlyphScale (const float& f)
 {
@@ -255,7 +247,6 @@ void vtkVectorManager::SetGlyphScale (const float& f)
   this->VectorVisuManagerSagittal->SetGlyphScale (f);
   this->VectorVisuManagerCoronal ->SetGlyphScale (f);
 }
-
 
 void vtkVectorManager::SetSampleRate (const int& n1,const int& n2, const int& n3)
 {
@@ -299,4 +290,3 @@ void vtkVectorManager::SetProjection(bool enable)
     this->VectorVisuManagerSagittal->SetProjection(enable);
     this->VectorVisuManagerCoronal ->SetProjection(enable);
 }
-

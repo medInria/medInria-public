@@ -1,8 +1,9 @@
+#pragma once
 /*=========================================================================
 
  medInria
 
- Copyright (c) INRIA 2013 - 2018. All rights reserved.
+ Copyright (c) INRIA 2013 - 2020. All rights reserved.
  See LICENSE.txt for details.
 
   This software is distributed WITHOUT ANY WARRANTY; without even
@@ -11,10 +12,7 @@
 
 =========================================================================*/
 
-#pragma once
-
 #include <medAbstractData.h>
-
 #include <medCoreLegacyExport.h>
 
 class MEDCORELEGACY_EXPORT medAbstractMaskData : public medAbstractData
@@ -22,12 +20,9 @@ class MEDCORELEGACY_EXPORT medAbstractMaskData : public medAbstractData
     Q_OBJECT
 
 public:
-             medAbstractMaskData();
-             medAbstractMaskData(const  medAbstractMaskData& other);
+    medAbstractMaskData();
+    medAbstractMaskData(const  medAbstractMaskData& other);
     virtual ~medAbstractMaskData();
-
-
-private:
 };
 
 

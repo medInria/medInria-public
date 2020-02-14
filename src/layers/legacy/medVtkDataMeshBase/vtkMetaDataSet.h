@@ -3,7 +3,7 @@
 
  medInria
 
- Copyright (c) INRIA 2013 - 2018. All rights reserved.
+ Copyright (c) INRIA 2013 - 2020. All rights reserved.
  See LICENSE.txt for details.
 
   This software is distributed WITHOUT ANY WARRANTY; without even
@@ -51,13 +51,12 @@ class vtkScalarsToColors;
 class vtkPolyData;
 class vtkLookupTable;
 
-
 class MEDVTKDATAMESHBASE_EXPORT vtkMetaDataSet: public vtkDataObject
 {
  public:
 
   static vtkMetaDataSet* New();
-  vtkTypeMacro(vtkMetaDataSet,vtkDataObject);
+  vtkTypeMacro(vtkMetaDataSet,vtkDataObject)
   virtual void PrintSelf(ostream& os, vtkIndent indent);
 
   virtual vtkMetaDataSet* Clone();
@@ -89,7 +88,6 @@ class MEDVTKDATAMESHBASE_EXPORT vtkMetaDataSet: public vtkDataObject
       itk::EncapsulateMetaData<type>(this->MetaDataDictionary, key, (type)value);
     else
       itk::EncapsulateMetaData<type>(this->MetaDataDictionary, key, (type)value);
-
   }
 
   /**
@@ -99,15 +97,8 @@ class MEDVTKDATAMESHBASE_EXPORT vtkMetaDataSet: public vtkDataObject
   */
   template <class type> inline bool GetMetaData (std::string key, type &ret)
   {
-
-    //type toret;//=vtkMetaDataSet::VTK_META_UNKNOWN; // to be implemanted with good template
-    bool valid = itk::ExposeMetaData<type>(this->MetaDataDictionary, key, ret);
-    //ret = toret;
-    if(!valid)
-      return false;
-    return true;
+      return itk::ExposeMetaData<type>(this->MetaDataDictionary, key, ret);
   }
-
 
   std::vector<std::string> GetMetaDataKeyList()
   {
@@ -116,8 +107,6 @@ class MEDVTKDATAMESHBASE_EXPORT vtkMetaDataSet: public vtkDataObject
 
     return ret;
   }
-
-
 
   //ETX
 
@@ -139,14 +128,14 @@ class MEDVTKDATAMESHBASE_EXPORT vtkMetaDataSet: public vtkDataObject
   /**
      Get the dataset associated with the metadataset
   */
-  vtkGetObjectMacro (DataSet, vtkDataSet);
+  vtkGetObjectMacro (DataSet, vtkDataSet)
   /**
      Get the type of the metadataset :
       vtkMetaDataSet::VTK_META_IMAGE_DATA, vtkMetaDataSet::VTK_META_SURFACE_MESH,
       vtkMetaDataSet::VTK_META_VOLUME_MESH, or vtkMetaDataSet::VTK_META_UNKNOWN
   */
-  vtkGetMacro (Type, unsigned int);
-  vtkSetMacro (Type, unsigned int);
+  vtkGetMacro (Type, unsigned int)
+  vtkSetMacro (Type, unsigned int)
 
 
   /**
@@ -155,8 +144,8 @@ class MEDVTKDATAMESHBASE_EXPORT vtkMetaDataSet: public vtkDataObject
      vtkProperty for vtkMetaSurfaceMesh
      vtkVolumeProperty for vtkMetaImageData
   */
-  vtkGetObjectMacro(Property, vtkObject);
-  vtkSetObjectMacro(Property, vtkObject);
+  vtkGetObjectMacro(Property, vtkObject)
+  vtkSetObjectMacro(Property, vtkObject)
 
   /**
  Access to the visualization property of the metadataset
@@ -214,13 +203,13 @@ class MEDVTKDATAMESHBASE_EXPORT vtkMetaDataSet: public vtkDataObject
   /**
      Internal use only
   */
-  vtkGetMacro(PickedPointId, int);
-  vtkSetMacro(PickedPointId, int);
+  vtkGetMacro(PickedPointId, int)
+  vtkSetMacro(PickedPointId, int)
   /**
      Internal use only
   */
-  vtkGetMacro(PickedCellId, int);
-  vtkSetMacro(PickedCellId, int);
+  vtkGetMacro(PickedCellId, int)
+  vtkSetMacro(PickedCellId, int)
   /**
      Get/Set methods fot the metadataset name
   */
@@ -314,7 +303,7 @@ class MEDVTKDATAMESHBASE_EXPORT vtkMetaDataSet: public vtkDataObject
   }
   /**
      Returns the vtkDataArray contained in the DataSet or in metadataset, named name
-     returns NULL if not found
+     returns null if not found
   */
   virtual vtkDataArray* GetArray (const char* name);
 
@@ -351,7 +340,7 @@ class MEDVTKDATAMESHBASE_EXPORT vtkMetaDataSet: public vtkDataObject
   /**
      Get the currently used scalar array for visualization
   */
-  vtkGetObjectMacro (CurrentScalarArray, vtkDataArray);
+  vtkGetObjectMacro (CurrentScalarArray, vtkDataArray)
   void SetCurrentActiveArray (vtkDataArray* array)
   {
     this->CurrentScalarArray = array;
@@ -367,14 +356,14 @@ class MEDVTKDATAMESHBASE_EXPORT vtkMetaDataSet: public vtkDataObject
      Description:
      Lock/Unlock flag
   */
-  vtkGetMacro(Lock, int);
-  vtkSetClampMacro(Lock, int, 0, 1);
-  vtkBooleanMacro(Lock, int);
+  vtkGetMacro(Lock, int)
+  vtkSetClampMacro(Lock, int, 0, 1)
+  vtkBooleanMacro(Lock, int)
 
 
-  virtual void CreateWirePolyData(){};
+  virtual void CreateWirePolyData(){}
 
-  vtkGetObjectMacro (WirePolyData, vtkPolyData);
+  vtkGetObjectMacro (WirePolyData, vtkPolyData)
   void SetWirePolyData(vtkPolyData* data);
 
  protected:

@@ -1,17 +1,16 @@
+#pragma once
 /*=========================================================================
 
- medInria
+medInria
 
- Copyright (c) INRIA 2013 - 2019. All rights reserved.
- See LICENSE.txt for details.
+Copyright (c) INRIA 2013 - 2020. All rights reserved.
+See LICENSE.txt for details.
 
-  This software is distributed WITHOUT ANY WARRANTY; without even
-  the implied warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR
-  PURPOSE.
+This software is distributed WITHOUT ANY WARRANTY; without even
+the implied warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR
+PURPOSE.
 
 =========================================================================*/
-#pragma once
-
 #include "vtkDataMeshPluginExport.h"
 
 #include <dtkCoreSupport/dtkAbstractDataReader.h>
@@ -27,16 +26,16 @@ public:
 
 public slots:
 
-    virtual bool canRead        (const QStringList& paths);
-    virtual bool readInformation(const QStringList& paths);
-    virtual bool read           (const QStringList& paths);
+    bool canRead        (const QStringList& paths) override;
+    bool readInformation(const QStringList& paths) override;
+    bool read           (const QStringList& paths) override;
 
-    virtual void setProgress(int value);
+    void setProgress(int value) override;
 
     bool extractMetaDataFromFieldData(vtkMetaDataSet* dataSet);
 
     // Functions needed to be declared in child classes
-    virtual bool canRead        (const QString& path){return false;}
-    virtual bool readInformation(const QString& path){return false;}
-    virtual bool read           (const QString& path){return false;}
+    bool canRead        (const QString& path) override {return false;}
+    bool readInformation(const QString& path) override {return false;}
+    bool read           (const QString& path) override {return false;}
 };

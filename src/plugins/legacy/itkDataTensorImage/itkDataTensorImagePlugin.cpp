@@ -2,7 +2,7 @@
 
  medInria
 
- Copyright (c) INRIA 2013 - 2018. All rights reserved.
+ Copyright (c) INRIA 2013 - 2020. All rights reserved.
  See LICENSE.txt for details.
  
   This software is distributed WITHOUT ANY WARRANTY; without even
@@ -63,22 +63,22 @@ itkDataTensorImagePlugin::~itkDataTensorImagePlugin()
 {
     delete d;
 
-    d = NULL;
+    d = nullptr;
 }
 
 bool itkDataTensorImagePlugin::initialize()
 {
-    if (!itkDataTensorImageDouble3::registered()) { dtkWarn() << "Unable to register itkDataTensorImageDouble3 type"; }
-    if (!itkDataTensorImageFloat3::registered())  { dtkWarn() << "Unable to register itkDataTensorImageFloat3 type";  }
-    if (!itkDataTensorImageVtkViewInteractor::registered())  { dtkWarn() << "Unable to register itkDataTensorImageVtkViewInteractor type";  }
+    if (!itkDataTensorImageDouble3::registered()) { qWarning() << "Unable to register itkDataTensorImageDouble3 type"; }
+    if (!itkDataTensorImageFloat3::registered())  { qWarning() << "Unable to register itkDataTensorImageFloat3 type";  }
+    if (!itkDataTensorImageVtkViewInteractor::registered())  { qWarning() << "Unable to register itkDataTensorImageVtkViewInteractor type";  }
 
-    if (!itkMetaDataTensorImageWriter::registered())  { dtkWarn() << "Unable to register itkMetaDataTensorImageWriter type";  }
-    if (!itkNiftiDataTensorImageWriter::registered()) { dtkWarn() << "Unable to register itkNiftiDataTensorImageWriter type"; }
-    if (!itkNrrdDataTensorImageWriter::registered())  { dtkWarn() << "Unable to register itkNrrdDataTensorImageWriter type";  }
+    if (!itkMetaDataTensorImageWriter::registered())  { qWarning() << "Unable to register itkMetaDataTensorImageWriter type";  }
+    if (!itkNiftiDataTensorImageWriter::registered()) { qWarning() << "Unable to register itkNiftiDataTensorImageWriter type"; }
+    if (!itkNrrdDataTensorImageWriter::registered())  { qWarning() << "Unable to register itkNrrdDataTensorImageWriter type";  }
 
-    if (!itkMetaDataTensorImageReader::registered())  { dtkWarn() << "Unable to register itkMetaDataTensorImageReader type";  }
-    if (!itkNiftiDataTensorImageReader::registered()) { dtkWarn() << "Unable to register itkNiftiDataTensorImageReader type"; }
-    if (!itkNrrdDataTensorImageReader::registered())  { dtkWarn() << "Unable to register itkNrrdDataTensorImageReader type";  }
+    if (!itkMetaDataTensorImageReader::registered())  { qWarning() << "Unable to register itkMetaDataTensorImageReader type";  }
+    if (!itkNiftiDataTensorImageReader::registered()) { qWarning() << "Unable to register itkNiftiDataTensorImageReader type"; }
+    if (!itkNrrdDataTensorImageReader::registered())  { qWarning() << "Unable to register itkNrrdDataTensorImageReader type";  }
 
     return true;
 }
@@ -120,5 +120,3 @@ QStringList itkDataTensorImagePlugin::types() const
                          << "itkNiftiDataTensorImageReader"
                          << "itkNrrdDataTensorImageReader";
 }
-
-//Q_EXPORT_PLUGIN2(itkDataTensorImagePlugin, itkDataTensorImagePlugin)

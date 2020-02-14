@@ -1,8 +1,9 @@
+#pragma once
 /*=========================================================================
 
  medInria
 
- Copyright (c) INRIA 2013 - 2018. All rights reserved.
+ Copyright (c) INRIA 2013 - 2020. All rights reserved.
  See LICENSE.txt for details.
 
   This software is distributed WITHOUT ANY WARRANTY; without even
@@ -11,15 +12,13 @@
 
 =========================================================================*/
 
-#pragma once
-
 #include <vector>
 #include <medAbstractData.h>
 
 #include <medCoreLegacyExport.h>
 
-namespace medMetaDataKeys {
-
+namespace medMetaDataKeys
+{
     /**
     * @class Key
     * @author John Stark, modified by papadop
@@ -71,9 +70,8 @@ namespace medMetaDataKeys {
                 if( (*it)->key() == name )
                     return *it;
             }
-            return NULL;
+            return nullptr;
         }
-
 
     private:
 
@@ -156,7 +154,4 @@ namespace medMetaDataKeys {
     extern MEDCORELEGACY_EXPORT const Key FlipAngle;
     extern MEDCORELEGACY_EXPORT const Key EchoTime;
     extern MEDCORELEGACY_EXPORT const Key RepetitionTime;
-};
-
-
-
+}

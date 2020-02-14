@@ -34,7 +34,7 @@ public:
     }
 
 
-    medItkOpeningImageProcess(QObject* parent = NULL);
+    medItkOpeningImageProcess(QObject* parent = nullptr);
     ~medItkOpeningImageProcess();
 
     virtual medAbstractJob::medJobExitStatus run();

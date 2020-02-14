@@ -2,7 +2,7 @@
 
  medInria
 
- Copyright (c) INRIA 2013 - 2019. All rights reserved.
+ Copyright (c) INRIA 2013 - 2020. All rights reserved.
  See LICENSE.txt for details.
 
   This software is distributed WITHOUT ANY WARRANTY; without even
@@ -10,6 +10,7 @@
   PURPOSE.
 
 =========================================================================*/
+
 #include <vtkCellArray.h>
 #include <vtkCircleActor2D.h>
 #include <vtkInteractorObserver.h>
@@ -105,10 +106,8 @@ void vtkCircleActor2D::PrintSelf(ostream& os, vtkIndent indent)
 //----------------------------------------------------------------------------
 void vtkCircleActor2D::BuildCircle(vtkViewport *viewport)
 {
-    //int centerHaveChanged;
     vtkIdType ptIds[2];
 
-    //centerHaveChanged = 1;
     vtkDebugMacro(<<"Rebuilding Circle");
     
     // Initialize and get important info

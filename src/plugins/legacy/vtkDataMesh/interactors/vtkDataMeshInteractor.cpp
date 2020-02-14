@@ -2,7 +2,7 @@
 
  medInria
 
- Copyright (c) INRIA 2013 - 2018. All rights reserved.
+ Copyright (c) INRIA 2013 - 2020. All rights reserved.
  See LICENSE.txt for details.
 
   This software is distributed WITHOUT ANY WARRANTY; without even
@@ -191,7 +191,7 @@ void vtkDataMeshInteractor::setupParameters()
     {
         d->LUTParam = new medStringListParameterL("LUT", this);
         d->LUTParam->addItem("Default");
-        // TODO some LUT are missing for some attribute - RDE
+
         connect(d->LUTParam, SIGNAL(valueChanged(QString)), this, SLOT(setLut(QString)));
         d->LUTParam->setValue("Default");
         d->parameters << d->LUTParam;
@@ -611,8 +611,6 @@ void vtkDataMeshInteractor::removeData()
 
 void vtkDataMeshInteractor::moveToSlice  (int slice)
 {
-    //TODO find a way to get woorldCoordinate for slice from vtkInria.
-    // instead of moving to the slice corresponding on the first layer dropped.
     if(d->view->is2D() && slice != d->view2d->GetSlice())
     {
         d->view2d->SetSlice(slice);
@@ -622,7 +620,6 @@ void vtkDataMeshInteractor::moveToSlice  (int slice)
 
 void vtkDataMeshInteractor::setWindowLevel (QHash<QString,QVariant>)
 {
-    // TODO
 }
 
 QWidget* vtkDataMeshInteractor::buildLayerWidget()
@@ -716,8 +713,6 @@ void vtkDataMeshInteractor::updateSlicingParam()
 {
     if(!d->view->is2D())
         return;
-    //TODO Should be set according to the real number of slice of this data and
-    // not according to vtkInria (ie. first layer dropped) - RDE
 
     d->slicingParameter->blockSignals(true);
     d->slicingParameter->setRange(d->view2d->GetSliceMin(), d->view2d->GetSliceMax());

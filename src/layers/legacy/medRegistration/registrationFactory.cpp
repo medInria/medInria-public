@@ -2,7 +2,7 @@
 
  medInria
 
- Copyright (c) INRIA 2013 - 2018. All rights reserved.
+ Copyright (c) INRIA 2013 - 2020. All rights reserved.
  See LICENSE.txt for details.
  
   This software is distributed WITHOUT ANY WARRANTY; without even
@@ -37,9 +37,10 @@ registrationFactory * registrationFactory::instance(){
 registrationFactory::registrationFactory( void ): d(new registrationFactoryPrivate()){d->m_Factory = itk::ImageRegistrationFactory<RegImageType>::New();}
 
 
-registrationFactory::~registrationFactory( void ){
+registrationFactory::~registrationFactory( void )
+{
     delete d;
-    d = NULL;
+    d = nullptr;
 }
 
 void registrationFactory::reset()
@@ -71,7 +72,4 @@ unsigned int registrationFactory::addTransformation(itk::Transform<double,3,3>::
     return i;
 }
 
-registrationFactory *registrationFactory::s_instance = NULL;
-
-
-
+registrationFactory *registrationFactory::s_instance = nullptr;

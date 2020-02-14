@@ -46,8 +46,8 @@ public:
 
 medGenericWorkspace::medGenericWorkspace(QWidget *parent): medAbstractWorkspaceLegacy (parent), d(new medGenericWorkspacePrivate)
 {
-    d->presenter = NULL;
-    d->process = NULL;
+    d->presenter = nullptr;
+    d->process = nullptr;
 
     QWidget *processTypeWidget = new QWidget;
     QLabel *processTypeLabel = new QLabel("Process Type", processTypeWidget);
@@ -90,7 +90,7 @@ medGenericWorkspace::medGenericWorkspace(QWidget *parent): medAbstractWorkspaceL
 medGenericWorkspace::~medGenericWorkspace()
 {
     delete d;
-    d = NULL;
+    d = nullptr;
 }
 
 void medGenericWorkspace::setProcessType(int index)

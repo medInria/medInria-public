@@ -2,7 +2,7 @@
 
  medInria
 
- Copyright (c) INRIA 2013 - 2018. All rights reserved.
+ Copyright (c) INRIA 2013 - 2020. All rights reserved.
  See LICENSE.txt for details.
 
   This software is distributed WITHOUT ANY WARRANTY; without even
@@ -67,14 +67,12 @@ struct vtkDataManagerReaderInternals
 vtkDataManagerReader::vtkDataManagerReader()
 {
     this->Internal = new vtkDataManagerReaderInternals;
-//   this->MultiGroup = vtkMultiGroupDataSet::New();
     this->Output = vtkDataManager::New();
 }
 
 //----------------------------------------------------------------------------
 vtkDataManagerReader::~vtkDataManagerReader()
 {
-//   this->MultiGroup->Delete();
     this->Output->Delete();
 
     delete this->Internal;
@@ -188,7 +186,7 @@ vtkDataSet*vtkDataManagerReader::FileToDataSet(const char *type, const std::stri
 //----------------------------------------------------------------------------
 vtkMetaDataSet*vtkDataManagerReader::CreateMetaDataSetFromXMLElement (vtkXMLDataElement *element)
 {
-    vtkMetaDataSet *metadataset = 0;
+    vtkMetaDataSet *metadataset = nullptr;
 
     int type = 0;
     const char *name;
@@ -209,13 +207,13 @@ vtkMetaDataSet*vtkDataManagerReader::CreateMetaDataSetFromXMLElement (vtkXMLData
     if (!element->GetScalarAttribute("type", type))
     {
         vtkErrorMacro (<<"no type for this dataset : cannot handle"<<endl);
-        return NULL;
+        return nullptr;
     }
 
     int numberofnested = element->GetNumberOfNestedElements();
     std::vector<vtkXMLDataElement*> frames;
     std::vector<vtkXMLDataElement*> flags;
-    vtkXMLDataElement *data=NULL;
+    vtkXMLDataElement *data = nullptr;
 
     for(int i=0; i < numberofnested; ++i)
     {
@@ -306,7 +304,7 @@ vtkMetaDataSet*vtkDataManagerReader::CreateMetaDataSetFromXMLElement (vtkXMLData
         if (!output)
         {
             vtkErrorMacro("Output is not a dataset for  " << rname);
-            return NULL;
+            return nullptr;
         }
 
         metadataset->SetDataSet (output);

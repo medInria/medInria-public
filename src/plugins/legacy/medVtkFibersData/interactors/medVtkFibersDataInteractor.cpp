@@ -196,11 +196,10 @@ void medVtkFibersDataInteractorPrivate::setROI (medAbstractData *data)
 
     roiManager->SetInput (converter->GetOutput());
     roiManager->SetDirectionMatrix (matrix2);
-
-    // manager->GetROILimiter()->Update();
     roiManager->GenerateData();
 
-    qSort(labels);
+    std::sort(labels.begin(), labels.end());
+
     roiLabels.clear();
 
     if (roiComboBox)
@@ -228,8 +227,8 @@ void medVtkFibersDataInteractorPrivate::setROI (medAbstractData *data)
 medVtkFibersDataInteractor::medVtkFibersDataInteractor(medAbstractView *parent): medAbstractImageViewInteractor(parent),
     d(new medVtkFibersDataInteractorPrivate)
 {
-    d->data    = NULL;
-    d->dataset = NULL;
+    d->data    = nullptr;
+    d->dataset = nullptr;
     d->view    = dynamic_cast<medAbstractImageView*>(parent);
     medVtkViewBackend* backend = static_cast<medVtkViewBackend*>(parent->backend());
     d->view2d = backend->view2D;
@@ -245,8 +244,8 @@ medVtkFibersDataInteractor::medVtkFibersDataInteractor(medAbstractView *parent):
     d->manager->SetRenderWindowInteractor(d->render->GetInteractor());
     d->roiManager->SetRenderWindowInteractor(d->render->GetInteractor());
 
-    d->toolboxWidget = NULL;
-    d->bundleToolboxWidget = NULL;
+    d->toolboxWidget = nullptr;
+    d->bundleToolboxWidget = nullptr;
 
     d->colorFiberParameter = new medStringListParameterL("colorFiberParameter", this);
     d->colorFiberParameter->setToolTip(tr("Choose the coloring method of the fibers."));
@@ -433,7 +432,7 @@ medVtkFibersDataInteractor::medVtkFibersDataInteractor(medAbstractView *parent):
 medVtkFibersDataInteractor::~medVtkFibersDataInteractor()
 {
     delete d;
-    d = NULL;
+    d = nullptr;
 }
 
 QString medVtkFibersDataInteractor::description() const

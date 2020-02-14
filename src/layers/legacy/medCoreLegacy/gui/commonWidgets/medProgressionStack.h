@@ -1,8 +1,9 @@
+#pragma once
 /*=========================================================================
 
  medInria
 
- Copyright (c) INRIA 2013 - 2018. All rights reserved.
+ Copyright (c) INRIA 2013 - 2020. All rights reserved.
  See LICENSE.txt for details.
 
   This software is distributed WITHOUT ANY WARRANTY; without even
@@ -10,8 +11,6 @@
   PURPOSE.
 
 =========================================================================*/
-
-#pragma once
 
 #include <QWidget>
 
@@ -31,7 +30,7 @@ class MEDCORELEGACY_EXPORT medProgressionStack : public QWidget
     Q_OBJECT
 
 public:
-     medProgressionStack(QWidget *parent = 0);
+     medProgressionStack(QWidget *parent = nullptr);
     ~medProgressionStack();
 
     QSize sizeHint() const;
@@ -61,5 +60,3 @@ private:
 
     medProgressionStackPrivate *d;
 };
-
-

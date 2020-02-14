@@ -10,6 +10,7 @@
   PURPOSE.
 
 =========================================================================*/
+
 #include "vtkImage3DDisplay.h"
 
 #include <vtkImageAlgorithm.h>

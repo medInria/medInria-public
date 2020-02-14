@@ -1,8 +1,9 @@
+#pragma once
 /*=========================================================================
 
  medInria
 
- Copyright (c) INRIA 2013 - 2019. All rights reserved.
+ Copyright (c) INRIA 2013 - 2020. All rights reserved.
  See LICENSE.txt for details.
 
   This software is distributed WITHOUT ANY WARRANTY; without even
@@ -10,8 +11,6 @@
   PURPOSE.
 
 =========================================================================*/
-
-#pragma once
 
 #include <QtSql/QSqlDatabase>
 
@@ -39,7 +38,7 @@ class MEDCORELEGACY_EXPORT medDatabaseImporter : public medAbstractDatabaseImpor
 public:
     medDatabaseImporter ( const QString& file, const QUuid& uuid, bool indexWithoutImporting = false);
     medDatabaseImporter ( medAbstractData* medData, const QUuid& callerUuid );
-    ~medDatabaseImporter ( void );
+    ~medDatabaseImporter() override = default;
 
 private:
     QString ensureUniqueSeriesName ( const QString seriesName );

@@ -2,7 +2,7 @@
 
  medInria
 
- Copyright (c) INRIA 2013 - 2019. All rights reserved.
+ Copyright (c) INRIA 2013 - 2020. All rights reserved.
  See LICENSE.txt for details.
 
   This software is distributed WITHOUT ANY WARRANTY; without even
@@ -22,7 +22,7 @@ medDatabaseNonPersistentItem::medDatabaseNonPersistentItem(void) : QObject(), d(
 medDatabaseNonPersistentItem::~medDatabaseNonPersistentItem(void)
 {
     delete d;
-    d = NULL;
+    d = nullptr;
 }
 
 const QString& medDatabaseNonPersistentItem::name(void) const
