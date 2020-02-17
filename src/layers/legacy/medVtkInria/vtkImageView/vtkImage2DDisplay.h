@@ -12,8 +12,6 @@
 
 =========================================================================*/
 
-#include <vtkImageData.h>
-
 #include <medVtkImageInfo.h>
 
 #include <vtkColorTransferFunction.h>
