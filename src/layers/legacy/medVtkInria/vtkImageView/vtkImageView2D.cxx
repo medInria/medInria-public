@@ -115,6 +115,10 @@ vtkImageView2D::vtkImageView2D()
   rep2->GetRay2()->GetProperty()->SetColor (0,1,0);
   rep2->GetArc()->GetProperty()->SetColor (0,1,0);
 
+  // Orientation
+  matrixOrientation[0][0] = "R"; matrixOrientation[0][1] = "L";
+  matrixOrientation[1][0] = "A"; matrixOrientation[1][1] = "P";
+  matrixOrientation[2][0] = "I"; matrixOrientation[2][1] = "S";
   this->SetAnnotationsFromOrientation();
 
   vtkInteractorStyle* style = vtkInteractorStyleImageView2D::New();
@@ -124,7 +128,6 @@ vtkImageView2D::vtkImageView2D()
   this->SetTransferFunctions(nullptr, nullptr, 0);
 
   SetRenderer(this->LayerInfoVec[0].Renderer);
-
 }
 
 //----------------------------------------------------------------------------
@@ -391,23 +394,30 @@ the CornerAnnotation are modified.
 */
 void vtkImageView2D::UpdateOrientation()
 {
-  // Store zoom and pan :
+  // Store zoom and pan
   double zoom = this->GetZoom();
   double pan[2];
   this->GetPan (pan);
+
   // Set the camera according to the orientation
   int axis = this->SetCameraFromOrientation ();
+
   // The ViewOrientation is "estimated" from SliceOrientation
   this->ViewOrientation = axis;
+
   // Change Annotations according to orientation
   this->SetAnnotationsFromOrientation();
+
   // Change axes colors according to orientation
   this->SetSlicePlaneFromOrientation();
+
   // fix some internal camera settings, do not comment
   this->ResetCamera();
+
   // finally update the extent as it might have changed
   this->UpdateDisplayExtent();
-  // Restore zoom and pan :
+
+  // Restore zoom and pan
   this->SetZoom (zoom);
   this->SetPan (pan);
 }
@@ -923,8 +933,13 @@ int vtkImageView2D::SetCameraFromOrientation()
 */
 void vtkImageView2D::SetAnnotationStyle(unsigned int arg)
 {
-  this->AnnotationStyle = arg;
-  this->SetAnnotationsFromOrientation();
+    this->AnnotationStyle = arg;
+    this->SetAnnotationsFromOrientation();
+}
+
+unsigned int vtkImageView2D::GetAnnotationStyle2D()
+{
+    return this->AnnotationStyle;
 }
 
 //----------------------------------------------------------------------------
@@ -936,121 +951,130 @@ the CornerAnnotation are modified.
 */
 void vtkImageView2D::SetAnnotationsFromOrientation()
 {
-  // This method has to be called after the camera
-  // has been set according to orientation and convention.
-  // We rely on the camera settings to compute the oriention
-  // annotations.
+    // This method has to be called after the camera
+    // has been set according to orientation and convention.
+    // We rely on the camera settings to compute the oriention
+    // annotations.
 
-  std::string solution[4]={"L","P","R","A"};
+    std::string solution[4]={"L","P","R","A"};
 
-  vtkCamera *cam = this->GetRenderer() ? this->GetRenderer()->GetActiveCamera() : nullptr;
-  if (cam)
-  {
-    std::string matrix[3][2];
-    matrix[0][0] = "R";matrix[0][1] = "L";
-    matrix[1][0] = "A";matrix[1][1] = "P";
-    matrix[2][0] = "I";matrix[2][1] = "S";
-
-    ///\todo surely there is a simpler way to do all of that !
-
-    double* viewup = cam->GetViewUp();
-    double* normal = cam->GetViewPlaneNormal();
-    double rightvector[3];
-    vtkMath::Cross (normal, viewup, rightvector);
-
-    unsigned int id1 = 0;
-    unsigned int id2 = 0;
-
-    double dot1 = 0;
-    double dot2 = 0;
-
-    for (unsigned int i=0; i<3; i++)
+    vtkCamera *cam = this->GetRenderer() ? this->GetRenderer()->GetActiveCamera() : nullptr;
+    if (cam)
     {
-      if (dot1 <= std::abs (viewup[i]))
-      {
-        dot1 = std::abs (viewup[i]);
-        id1 = i;
-      }
-      if (dot2 <= std::abs (rightvector[i]))
-      {
-        dot2 = std::abs (rightvector[i]);
-        id2 = i;
-      }
+        double* viewup = cam->GetViewUp();
+        double* normal = cam->GetViewPlaneNormal();
+        double rightvector[3];
+        vtkMath::Cross (normal, viewup, rightvector);
+
+        unsigned int id1 = 0;
+        unsigned int id2 = 0;
+
+        double dot1 = 0;
+        double dot2 = 0;
+
+        for (unsigned int i=0; i<3; i++)
+        {
+            if (dot1 <= std::abs (viewup[i]))
+            {
+                dot1 = std::abs (viewup[i]);
+                id1 = i;
+            }
+            if (dot2 <= std::abs (rightvector[i]))
+            {
+                dot2 = std::abs (rightvector[i]);
+                id2 = i;
+            }
+        }
+
+        if (viewup[id1] > 0)
+        {
+            solution[3] = matrixOrientation[id1][0];
+            solution[1] = matrixOrientation[id1][1];
+        }
+        else
+        {
+            solution[3] = matrixOrientation[id1][1];
+            solution[1] = matrixOrientation[id1][0];
+        }
+        if (rightvector[id2] > 0)
+        {
+            solution[0] = matrixOrientation[id2][0];
+            solution[2] = matrixOrientation[id2][1];
+        }
+        else
+        {
+            solution[0] = matrixOrientation[id2][1];
+            solution[2] = matrixOrientation[id2][0];
+        }
     }
 
-    if (viewup[id1] > 0)
+    for (unsigned int i=0; i<4; i++)
     {
-      solution[3] = matrix[id1][0];
-      solution[1] = matrix[id1][1];
-    } else {
-      solution[3] = matrix[id1][1];
-      solution[1] = matrix[id1][0];
+        this->OrientationAnnotation->SetText(i, solution[i].c_str());
     }
-    if (rightvector[id2] > 0)
+
+    std::ostringstream osNW;
+    std::ostringstream osSW;
+    std::ostringstream osSE;
+    std::ostringstream osNE;
+
+    switch(this->AnnotationStyle)
     {
-      solution[0] = matrix[id2][0];
-      solution[2] = matrix[id2][1];
-    } else {
-      solution[0] = matrix[id2][1];
-      solution[2] = matrix[id2][0];
+        case AnnotationStyle2:
+            osNW << "<size>\n"
+                 << "<spacing>\n"
+                 << "<xyz>\n"
+                 << "<value>\n";
+
+            osSW << "<zoom>";
+
+            osNE << "<slice_and_max>\n<window>\n<level>";
+            break;
+
+        case AnnotationStyle1:
+        default:
+            osSW << "<zoom>\n";
+            osSW << "<slice_and_max>\n";
+            osSW<< "<pos_z>";
+
+            osNW<< "<image_size>\n";
+            osNW<< "<voxel_size>\n";
+            osNW<< "<coord_xy>\n";
+            osNW<< "<pos_xy>\n";
+            osNW<< "<window_level>";
+
+            osNE << "<patient>\n<study>\n<series>";
+
+            switch( this->ViewOrientation )
+            {
+                case vtkImageView2D::VIEW_ORIENTATION_AXIAL:
+                default:
+                    osSE << "Axial View";
+                    break;
+                case vtkImageView2D::VIEW_ORIENTATION_CORONAL:
+                    osSE << "Coronal View";
+                    break;
+                case vtkImageView2D::VIEW_ORIENTATION_SAGITTAL:
+                    osSE << "Sagittal View";
+            }
     }
-  }
 
-  for (unsigned int i=0; i<4; i++)
-    this->OrientationAnnotation->SetText (i, solution[i].c_str());
-
-  std::ostringstream osNW;
-  std::ostringstream osSW;
-  std::ostringstream osSE;
-  std::ostringstream osNE;
-
-  switch(this->AnnotationStyle)
-  {
-    case AnnotationStyle2:
-      osNW << "<size>\n"
-      << "<spacing>\n"
-      << "<xyz>\n"
-      << "<value>\n";
-      osSW << "<zoom>";
-      osNE << "<slice_and_max>\n<window>\n<level>";
-      break;
-
-    case AnnotationStyle1:
-    default:
-
-      osSW << "<zoom>\n";
-      osSW << "<slice_and_max>\n";
-      osNW<< "Image size: " << "<size_x>x<size_y>\n";
-      osNW<< "Voxel size: " << "<spacing_x>x<spacing_y>\n";
-      osNW<< "X: " << "<coord_x>" << " px Y: " << "<coord_y>" << " px " << "<value>\n";
-      osNW<< "X: " << "<pos_x>" << " mm Y: " << "<pos_y> mm\n";
-      osSW<< "Location: " << "<pos_z>" << " mm";
-      osNW<< "<window_level>";
-      osNE << "<patient>\n<study>\n<series>";
-
-      switch( this->ViewOrientation )
+    if (osSW.str().size())
     {
-      case vtkImageView2D::VIEW_ORIENTATION_AXIAL:
-          osSE << "Axial View";
-          break;
-      case vtkImageView2D::VIEW_ORIENTATION_CORONAL:
-          osSE << "Coronal View";
-          break;
-      case vtkImageView2D::VIEW_ORIENTATION_SAGITTAL:
-          osSE << "Sagittal View";
-          break;
+        this->GetCornerAnnotation()->SetText (0, osSW.str().c_str());
     }
-      break;
-  }
-
-  if (osNW.str().size())
-    this->GetCornerAnnotation()->SetText (2, osNW.str().c_str());
-  if (osSE.str().size())
-    this->GetCornerAnnotation()->SetText (1, osSE.str().c_str());
-  if (osSW.str().size())
-    this->GetCornerAnnotation()->SetText (0, osSW.str().c_str());
-  if (osNE.str().size())
-    this->GetCornerAnnotation()->SetText (3, osNE.str().c_str());
+    if (osSE.str().size())
+    {
+        this->GetCornerAnnotation()->SetText (1, osSE.str().c_str());
+    }
+    if (osNW.str().size())
+    {
+        this->GetCornerAnnotation()->SetText (2, osNW.str().c_str());
+    }
+    if (osNE.str().size())
+    {
+        this->GetCornerAnnotation()->SetText (3, osNE.str().c_str());
+    }
 }
 
 //----------------------------------------------------------------------------
@@ -1279,7 +1303,7 @@ Reset the camera in a nice way for the 2D view
 void vtkImageView2D::ResetCamera()
 {
   this->Superclass::ResetCamera();
-  // this->SetZoom (1.0); // already called in Superclass method
+
   this->Pan[0] = this->Pan[1] = 0.0;
   this->SetPan (this->Pan); // not sure this is needed
 }
@@ -1510,9 +1534,6 @@ void vtkImageView2D::InstallPipeline()
 
     if( !this->InteractorStyle->HasObserver (vtkImageView2DCommand::CameraZoomEvent, this->Command) )
       this->InteractorStyle->AddObserver (vtkImageView2DCommand::CameraZoomEvent, this->Command, 10);
-
-    // if( !this->InteractorStyle->HasObserver (vtkImageView2DCommand::CameraPanEvent, this->Command) )
-    //   this->InteractorStyle->AddObserver (vtkImageView2DCommand::CameraPanEvent, this->Command, 10);
   }
 }
 
@@ -1730,6 +1751,7 @@ void vtkImageView2D::SetInputLayer(vtkAlgorithmOutput* pi_poVtkAlgoOutput, vtkMa
     imageDisplay->SetInputProducer(pi_poVtkAlgoOutput);
     imageDisplay->SetInputData(static_cast<vtkImageAlgorithm*>(pi_poVtkAlgoOutput->GetProducer())->GetOutput());
     imageDisplay->GetImageActor()->SetUserMatrix (this->OrientationMatrix);
+
     this->SetColorRange(imageDisplay->GetMedVtkImageInfo()->scalarRange, layer);
 }
 

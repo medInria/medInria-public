@@ -346,8 +346,8 @@ public:
     vtkGetMacro (CursorFollowMouse, int);
 
     void SetAnnotationStyle (unsigned int arg);
-    vtkGetMacro (AnnotationStyle, unsigned int);
-
+    vtkGetMacro (AnnotationStyle, unsigned int)
+    unsigned int GetAnnotationStyle2D();
 
     virtual void AddLayer(int);
     virtual void RemoveLayer(int layer);
@@ -448,7 +448,6 @@ protected:
     bool IsFirstLayer(int layer) const;
     int GetFirstLayer() const;
 
-
     int ViewOrientation;
     int ViewConvention;
     int    SliceOrientation;
@@ -459,6 +458,8 @@ protected:
     int ShowImageAxis;
 
     unsigned int AnnotationStyle;
+
+    std::string matrixOrientation[3][2];
 
     int CursorFollowMouse;
     int Slice;
@@ -487,5 +488,4 @@ private:
 
 public:
     vtkImageView2DQtSignals *qtSignalHandler;
-
 };
