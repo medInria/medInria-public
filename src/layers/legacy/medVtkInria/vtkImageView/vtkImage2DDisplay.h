@@ -19,9 +19,6 @@
 #include <vtkColorTransferFunction.h>
 #include <vtkImageActor.h>
 #include <vtkImageData.h>
-#include <vtkImageMapToColors.h>
-#include <vtkLookupTable.h>
-#include <vtkPiecewiseFunction.h>
 
 class vtkImage2DDisplay : public vtkObject
 {

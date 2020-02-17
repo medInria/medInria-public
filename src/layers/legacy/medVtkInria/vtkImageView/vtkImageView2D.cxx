@@ -1712,6 +1712,7 @@ void vtkImageView2D::SetInput(vtkAlgorithmOutput* pi_poVtkAlgoOutput, vtkMatrix4
         }
         else // layer > 0
         {
+<<<<<<< HEAD
             SetInputLayer(pi_poVtkAlgoOutput, matrix, layer);
         }
 

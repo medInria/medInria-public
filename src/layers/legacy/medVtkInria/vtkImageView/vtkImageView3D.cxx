@@ -432,6 +432,7 @@ void vtkImageView3D::SetInput(vtkAlgorithmOutput* pi_poVtkAlgoOutput, vtkMatrix4
     {
         if(layer == 0)
         {
+<<<<<<< HEAD
             SetFirstLayer(pi_poVtkAlgoOutput, matrix, layer);
         }
 
