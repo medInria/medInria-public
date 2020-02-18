@@ -525,8 +525,8 @@ void medVtkViewItkDataImageInteractor::setWindowLevelFromMinMax()
         //--- block
         this->windowLevelParameter()->blockSignals(true);
 
-        // Call function from vtkImageView shared by view2d and view3d
         d->view2d->SetColorWindowLevel(window, level, imageLayer);
+        d->view3d->SetColorWindowLevel(window, level, imageLayer);
 
         this->windowLevelParameter()->blockSignals(false);
         //--- unblock
@@ -598,8 +598,8 @@ void medVtkViewItkDataImageInteractor::moveToSlice(int slice)
 
 void medVtkViewItkDataImageInteractor::update()
 {
-    // Call function from vtkImageView shared by view2d and view3d
     d->view2d->Render();
+    d->view3d->Render();
 }
 
 void medVtkViewItkDataImageInteractor::updateWidgets()
@@ -635,8 +635,8 @@ void medVtkViewItkDataImageInteractor::updateImageViewInternalLayer()
 
     if( imageLayer == d->view->currentLayer() )
     {
-        // Call function from vtkImageView shared by view2d and view3d
         d->view2d->SetCurrentLayer(imageLayer);
+        d->view3d->SetCurrentLayer(imageLayer);
     }
 }
 
