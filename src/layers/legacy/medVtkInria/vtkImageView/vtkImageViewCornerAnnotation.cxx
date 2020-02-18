@@ -230,16 +230,19 @@ void vtkImageViewCornerAnnotation::TextReplace(vtkImageActor *ia,
 
                 // From this app
                 // Image size x/y
-                replaceText = " Image size: " + QString::number(size_x) + "x" + QString::number(size_y);
+                replaceText = " Image size: " + QString::number(size_x) + " x " + QString::number(size_y);
                 textQ.replace("<image_size>", replaceText);
 
                 // Voxel size x/y
-                replaceText = " Voxel size: " + QString::number(spacing_x) + "x" + QString::number(spacing_y) + QString(" mm");
+                replaceText = " Voxel size: " + QString::number(spacing_x) + QString(" mm") + " x "
+                        + QString::number(spacing_y) + QString(" mm");
                 textQ.replace("<voxel_size>", replaceText);
 
                 // Coordinates x/y
-                replaceText = " X: " + QString::number(coord_x) + QString(" px Y: ") + QString::number(coord_y) + QString(" px");
-                textQ.replace("<coord_xy>", replaceText);
+                replaceText = " X: " + QString::number(coord_x) + QString(" px Y: ")
+                        + QString::number(coord_y) + QString(" px")
+                        +  QString(" Value: ") + QString::number(value);
+                textQ.replace("<coord_xy_and_value>", replaceText);
 
                 // Position x/y
                 replaceText = " X: " + QString::number(pos_x) + QString(" mm Y: ") + QString::number(pos_y) + QString(" mm");
@@ -262,11 +265,11 @@ void vtkImageViewCornerAnnotation::TextReplace(vtkImageActor *ia,
                     || isKnownAnnotationStyle == vtkImageView2D::AnnotationStyle2)
             {
                 // Image size x/y, almost equal to <image_size> for AnnotationStyle1
-                replaceText = " image size: " + QString::number(size_x) + "x" + QString::number(size_y);
+                replaceText = " image size: " + QString::number(size_x) + " x " + QString::number(size_y);
                 textQ.replace("<size>", replaceText);
 
                 // Spacing x/y, almost equal to <voxel_size> for AnnotationStyle1
-                replaceText = " spacing: " + QString::number(spacing_x) + "x" + QString::number(spacing_y) + QString(" mm");
+                replaceText = " spacing: " + QString::number(spacing_x) + " x " + QString::number(spacing_y) + QString(" mm");
                 textQ.replace("<spacing>", replaceText);
 
                 // Location x/y/z

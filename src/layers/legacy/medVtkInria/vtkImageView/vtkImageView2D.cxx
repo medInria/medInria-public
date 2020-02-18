@@ -1039,7 +1039,7 @@ void vtkImageView2D::SetAnnotationsFromOrientation()
 
             osNW<< "<image_size>\n";
             osNW<< "<voxel_size>\n";
-            osNW<< "<coord_xy>\n";
+            osNW<< "<coord_xy_and_value>\n";
             osNW<< "<pos_xy>\n";
             osNW<< "<window_level>";
 
