@@ -391,24 +391,26 @@ void vtkImageView3D::UnInstallPipeline()
 //----------------------------------------------------------------------------
 void vtkImageView3D::InstallInteractor()
 {
-  if (this->Interactor && this->InteractorStyle)
-  {
-    this->Interactor->SetInteractorStyle (this->InteractorStyle);
-  }
+    if (this->Interactor)
+    {
+        if (this->InteractorStyle)
+        {
+            this->Interactor->SetInteractorStyle (this->InteractorStyle);
+        }
 
-  if (this->Interactor && this->RenderWindow)
-  {
-    this->Interactor->SetRenderWindow(this->RenderWindow);
+        if (this->RenderWindow)
+        {
+            this->Interactor->SetRenderWindow(this->RenderWindow);
 
-    this->BoxWidget->SetInteractor ( this->Interactor );
-    this->PlaneWidget->SetInteractor ( this->Interactor );
-    this->Marker->SetInteractor ( this->Interactor );
+            this->BoxWidget->SetInteractor ( this->Interactor );
+            this->PlaneWidget->SetInteractor ( this->Interactor );
+            this->Marker->SetInteractor ( this->Interactor );
 
-    this->Marker->On();
-    this->Marker->InteractiveOff ();
-  }
-
-  this->IsInteractorInstalled = 1;
+            this->Marker->On();
+            this->Marker->InteractiveOff ();
+        }
+    }
+    this->IsInteractorInstalled = 1;
 }
 
 //----------------------------------------------------------------------------
@@ -418,12 +420,24 @@ void vtkImageView3D::UnInstallInteractor()
     this->PlaneWidget->SetInteractor (nullptr);
     this->Marker->SetInteractor (nullptr);
 
+    // Happening for instance switching from 2D->3D->2D
     if (this->Interactor)
     {
-        this->Interactor->SetRenderWindow (nullptr);
+        if (this->Interactor->GetRenderWindow())
+        {
+            auto poRenderer = this->Interactor->GetRenderWindow()->GetRenderers()->GetFirstRenderer();
+            while (poRenderer)
+            {
+                this->RenderWindow->RemoveRenderer(poRenderer);
+                poRenderer = this->Interactor->GetRenderWindow()->GetRenderers()->GetFirstRenderer();
+            }
+            this->Interactor->SetRenderWindow (nullptr);
+        }
+
         this->Interactor->SetInteractorStyle (nullptr);
+
+        this->IsInteractorInstalled = 0;
     }
-    this->IsInteractorInstalled = 0;
 }
 
 void vtkImageView3D::SetInput(vtkAlgorithmOutput* pi_poVtkAlgoOutput, vtkMatrix4x4 *matrix /*= 0*/, int layer /*= 0*/)
@@ -435,23 +449,26 @@ void vtkImageView3D::SetInput(vtkAlgorithmOutput* pi_poVtkAlgoOutput, vtkMatrix4
             SetFirstLayer(pi_poVtkAlgoOutput, matrix, layer);
         }
 
-        test3D();
-
-        if (layer > 0 && layer < 4)
+        if (is3D())
         {
-            SetInputLayer(pi_poVtkAlgoOutput, matrix, layer);
+            if (layer > 0 && layer < 4)
+            {
+                SetInputLayer(pi_poVtkAlgoOutput, matrix, layer);
+            }
+            else if (layer >= 4)
+            {
+                vtkErrorMacro( <<"Only 4 layers are supported in 3D fusion" );
+                return;
+            }
+            InternalUpdate();
         }
-        else if (layer >= 4)
-        {
-            vtkErrorMacro( <<"Only 4 layers are supported in 3D fusion" );
-            return;
-        }
-        InternalUpdate();
     }
 }
 
-void vtkImageView3D::test3D()
+bool vtkImageView3D::is3D()
 {
+    bool isTheData3D = true;
+
     int * w_extent = this->GetMedVtkImageInfo()->extent;
     int size [3] = { w_extent [1] - w_extent[0], w_extent [3] - w_extent[2], w_extent [5] - w_extent[4] };
 
@@ -465,7 +482,10 @@ void vtkImageView3D::test3D()
         this->VolumeMapper->SetInputConnection(nullptr);
         this->BoxWidget->SetInputConnection (nullptr);
         this->PlaneWidget->SetInputConnection(nullptr);
+
+        isTheData3D = false;
     }
+    return isTheData3D;
 }
 
 //----------------------------------------------------------------------------

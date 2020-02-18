@@ -514,11 +514,31 @@ void medVtkViewItkDataImageInteractor::setWindowLevelFromMinMax()
 
     if(sender)
     {
-        double minIntensity = d->minIntensityParameter->value();
-        double maxIntensity = d->maxIntensityParameter->value();
+        double minIntensityValue = d->minIntensityParameter->value();
+        double maxIntensityValue = d->maxIntensityParameter->value();
 
-        double level = 0.5 * (maxIntensity - minIntensity) + minIntensity;
-        double window = maxIntensity - minIntensity;
+        if( sender == d->minIntensityParameter && minIntensityValue >= maxIntensityValue )
+        {
+            // If the min parameter is equal or higher than the max parameter,
+            // the max parameter is increased
+            d->maxIntensityParameter->blockSignals(true);
+            d->maxIntensityParameter->setValue(minIntensityValue + d->intensityStep);
+            d->maxIntensityParameter->blockSignals(false);
+        }
+        else if( sender == d->maxIntensityParameter && maxIntensityValue <= minIntensityValue )
+        {
+            // If the max parameter is equal or lower than the min parameter,
+            // the min parameter is increased
+            d->minIntensityParameter->blockSignals(true);
+            d->minIntensityParameter->setValue(maxIntensityValue - d->intensityStep);
+            d->minIntensityParameter->blockSignals(false);
+        }
+
+        double minIntensityValueUpdated = d->minIntensityParameter->value();
+        double maxIntensityValueUpdated = d->maxIntensityParameter->value();
+
+        double level = 0.5 * (maxIntensityValueUpdated - minIntensityValueUpdated) + minIntensityValueUpdated;
+        double window = maxIntensityValueUpdated - minIntensityValueUpdated;
 
         unsigned int imageLayer = getCurrentLayer();
 
@@ -598,8 +618,14 @@ void medVtkViewItkDataImageInteractor::moveToSlice(int slice)
 
 void medVtkViewItkDataImageInteractor::update()
 {
-    // Call function from vtkImageView shared by view2d and view3d
-    d->view2d->Render();
+    if(d->view->is2D())
+    {
+        d->view2d->Render();
+    }
+    else
+    {
+        d->view3d->Render();
+    }
 }
 
 void medVtkViewItkDataImageInteractor::updateWidgets()
@@ -635,8 +661,8 @@ void medVtkViewItkDataImageInteractor::updateImageViewInternalLayer()
 
     if( imageLayer == d->view->currentLayer() )
     {
-        // Call function from vtkImageView shared by view2d and view3d
         d->view2d->SetCurrentLayer(imageLayer);
+        d->view3d->SetCurrentLayer(imageLayer);
     }
 }
 

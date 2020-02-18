@@ -1715,7 +1715,7 @@ void vtkImageView2D::SetInput(vtkAlgorithmOutput* pi_poVtkAlgoOutput, vtkMatrix4
             SetInputLayer(pi_poVtkAlgoOutput, matrix, layer);
         }
 
-        SetInputEnd(pi_poVtkAlgoOutput, layer);
+        SetInputCommon(pi_poVtkAlgoOutput, layer);
     }
 }
 
@@ -1733,7 +1733,7 @@ void vtkImageView2D::SetInputLayer(vtkAlgorithmOutput* pi_poVtkAlgoOutput, vtkMa
     this->SetColorRange(imageDisplay->GetMedVtkImageInfo()->scalarRange, layer);
 }
 
-void vtkImageView2D::SetInputEnd(vtkAlgorithmOutput* pi_poVtkAlgoOutput, int layer /*= 0*/)
+void vtkImageView2D::SetInputCommon(vtkAlgorithmOutput* pi_poVtkAlgoOutput, int layer /*= 0*/)
 {
     this->LayerInfoVec[layer].ImageAlgo = static_cast<vtkImageAlgorithm*>(pi_poVtkAlgoOutput->GetProducer());
 

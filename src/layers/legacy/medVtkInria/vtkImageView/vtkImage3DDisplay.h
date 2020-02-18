@@ -12,7 +12,7 @@
 
 =========================================================================*/
 
-#include "medVtkImageInfo.h"
+#include <medVtkImageInfo.h>
 
 #include <vtkAlgorithmOutput.h>
 #include <vtkImageAlgorithm.h>
