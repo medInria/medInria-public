@@ -61,28 +61,25 @@ vtkImageView2DCommand::Execute(vtkObject*    caller,
     {
         this->Viewer->Reset();
         this->Viewer->Render();
-        return;
     }
+
     // Reset
-    if (event == vtkImageView2DCommand::ResetWindowLevelEvent)
+    else if (event == vtkImageView2DCommand::ResetWindowLevelEvent)
     {
         this->Viewer->ResetWindowLevel();
         this->Viewer->Render();
-        return;
     }
 
     // Start
-    if (event == vtkImageView2DCommand::StartWindowLevelEvent)
+    else if (event == vtkImageView2DCommand::StartWindowLevelEvent)
     {
         this->InitialWindow = this->Viewer->GetColorWindow();
         this->InitialLevel = this->Viewer->GetColorLevel();
-        return;
     }
 
     // Adjust the window level here
-    if (event == vtkImageView2DCommand::WindowLevelEvent)
+    else if (event == vtkImageView2DCommand::WindowLevelEvent)
     {
-
         int *size = this->Viewer->GetRenderWindow()->GetSize();
 
         double* range = this->Viewer->GetMedVtkImageInfo()->scalarRange;
@@ -120,10 +117,9 @@ vtkImageView2DCommand::Execute(vtkObject*    caller,
         }
 
         this->Viewer->SetColorWindowLevel(newWindow, newLevel);
-        return;
     }
 
-    if (event == vtkImageView2DCommand::CharEvent)
+    else if (event == vtkImageView2DCommand::CharEvent)
     {
         vtkRenderWindowInteractor *rwi = this->Viewer->GetRenderWindow()->GetInteractor();
 
@@ -133,72 +129,42 @@ vtkImageView2DCommand::Execute(vtkObject*    caller,
             this->Viewer->SetInterpolate ((this->Viewer->GetInterpolate(iLayer) + 1)%2, iLayer);
             this->Viewer->Render();
         }
-
-        return;
-    }
-
-    // Start Slice Move
-    if (event == vtkImageView2DCommand::StartSliceMoveEvent)
-    {
-        return;
-    }
-
-    // End Slice Move
-    if (event == vtkImageView2DCommand::EndSliceMoveEvent)
-    {
-        return;
     }
 
     // Move Slice
-    if (event == vtkImageView2DCommand::SliceMoveEvent)
+    else if (event == vtkImageView2DCommand::SliceMoveEvent)
     {
         this->Viewer->SetSlice (this->Viewer->GetSlice()+isi->GetSliceStep());
         this->Viewer->Render();
-        return;
-    }
-
-    // Start Slice Move
-    if (event == vtkImageView2DCommand::StartTimeChangeEvent)
-    {
-        return;
-    }
-
-    // End Slice Move
-    if (event == vtkImageView2DCommand::EndTimeChangeEvent)
-    {
-        return;
     }
 
     // Position requested
-    if (event == vtkImageView2DCommand::RequestedPositionEvent)
+    else if (event == vtkImageView2DCommand::RequestedPositionEvent)
     {
         double position[3];
         this->Viewer->GetWorldCoordinatesFromDisplayPosition (isi->GetRequestedPosition (), position);
         this->Viewer->SetCurrentPoint(position);
         this->Viewer->Render();
-        return;
     }
 
     // The cursor left the view, cursor position needs to be reset
-    if (event == vtkCommand::LeaveEvent)
+    else if (event == vtkCommand::LeaveEvent)
     {
         this->Viewer->UpdateCursorPosition(this->Viewer->GetCurrentPoint());
         this->Viewer->Render();
-        return;
     }
 
     // Cursor Position requested
-    if (event == vtkImageView2DCommand::RequestedCursorInformationEvent)
+    else if (event == vtkImageView2DCommand::RequestedCursorInformationEvent)
     {
         double position[3];
         this->Viewer->GetWorldCoordinatesFromDisplayPosition (isi->GetRequestedPosition (), position);
         this->Viewer->vtkImageView::UpdateCursorPosition(position);
         this->Viewer->Render();
-        return;
     }
 
-    // default move : align cursor and update annotation accordingly
-    if( event == vtkImageView2DCommand::DefaultMoveEvent)
+    // default move: align cursor and update annotation accordingly
+    else if( event == vtkImageView2DCommand::DefaultMoveEvent)
     {
         vtkRenderWindowInteractor *rwi = this->Viewer->GetInteractor();
         if (!rwi)
@@ -210,25 +176,17 @@ vtkImageView2DCommand::Execute(vtkObject*    caller,
         this->Viewer->SetCurrentPoint(position);
         if (isi->GetState() == VTKIS_NONE)
             this->Viewer->Render();
-
-        return;
     }
 
     // Zooming
-    if (event == vtkImageView2DCommand::CameraZoomEvent)
+    else if (event == vtkImageView2DCommand::CameraZoomEvent)
     {
         this->Viewer->Modified();
-        return;
     }
 
     // Panning
-    if (event == vtkImageView2DCommand::CameraPanEvent)
+    else if (event == vtkImageView2DCommand::CameraPanEvent)
     {
         this->Viewer->Modified();
-        return;
-
     }
-
 }
-
-

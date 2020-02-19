@@ -29,43 +29,39 @@
 
 #include <cmath>
 
-#ifdef WIN32
-#define snprintf sprintf_s
-#endif
-
-vtkStandardNewMacro(vtkImageViewCornerAnnotation);
+vtkStandardNewMacro(vtkImageViewCornerAnnotation)
 
 vtkImageViewCornerAnnotation::vtkImageViewCornerAnnotation()
 {
     this->ImageView = nullptr;
+    this->view2d = nullptr;
 }
 
 vtkImageViewCornerAnnotation::~vtkImageViewCornerAnnotation() = default;
 
-void vtkImageViewCornerAnnotation::TextReplace(vtkImageActor *ia,
-                                               vtkImageMapToWindowLevelColors *wl)
+void vtkImageViewCornerAnnotation::SetImageView(vtkImageView* arg)
 {
-    int i;
-    char *text = nullptr, *text2 = nullptr;
+    this->ImageView = arg;
+    this->view2d = vtkImageView2D::SafeDownCast (this->ImageView);
+}
+
+void vtkImageViewCornerAnnotation::TextReplace(vtkImageActor *ia,
+                                               vtkImageMapToWindowLevelColors */*wl*/)
+{
     int slice = 0, slice_max = 0;
-    char *rpos = nullptr, *tmp = nullptr;
     double window = 0, level = 0;
     long int windowi = 0, leveli = 0;
     vtkImageData *ia_input = nullptr;
     medVtkImageInfo *wl_input = nullptr;
     vtkCamera *cam = nullptr;
-
-    int input_type_is_float = 0;
-    int size_x = -1, size_y = -1, size_z = -1;
-    double spacing_x = 0.0, spacing_y = 0.0, spacing_z = 0.0;
-    double pos[3]={0.0, 0.0, 0.0};
+    bool input_type_is_float = 0;
+    int size_x = -1, size_y = -1;
+    double spacing_x = 0.0, spacing_y = 0.0;
+    double pos[3] = {0.0, 0.0, 0.0};
     double pos_x = 0.0, pos_y = 0.0, pos_z = 0.0;
-    int coord[3] = { 0, 0, 0 };
-    int coord_x = 0, coord_y = 0, coord_z = 0;
+    int coord[3] = {0, 0, 0};
+    int coord_x = 0, coord_y = 0;
     double value = 0.0, zoom = 100.0;
-    std::string patient_name, study_name, series_name;
-
-    vtkImageView2D *view2d = vtkImageView2D::SafeDownCast (this->ImageView);
 
     if (this->ImageView)
     {
@@ -73,15 +69,13 @@ void vtkImageViewCornerAnnotation::TextReplace(vtkImageActor *ia,
         this->ImageView->GetImageCoordinatesFromWorldCoordinates (pos, coord);
         value = this->ImageView->GetValueAtPosition(pos);
         zoom  = this->ImageView->GetZoom()*100.0;
-        patient_name = this->ImageView->GetPatientName();
-        study_name   = this->ImageView->GetStudyName();
-        series_name  = this->ImageView->GetSeriesName();
+
         window = this->ImageView->GetColorWindow();
         window *= this->LevelScale;
         level = this->ImageView->GetColorLevel();
         level = level * this->LevelScale + this->LevelShift;
-        windowi = (long int)window;
-        leveli = (long int)level;
+        windowi = static_cast<long int>(window);
+        leveli = static_cast<long int>(level);
 
         wl_input = this->ImageView->GetMedVtkImageInfo();
         cam = this->ImageView->GetRenderer() ? this->ImageView->GetRenderer()->GetActiveCamera() : nullptr;
@@ -111,56 +105,62 @@ void vtkImageViewCornerAnnotation::TextReplace(vtkImageActor *ia,
 
             double dotX = 0;
             double dotY = 0;
-            int idX, idY, idZ;
-            idX = idY = idZ = 0;
+            int idX, idY;
+            idX = idY = 0;
 
             for (unsigned int i=0; i<3; i++)
             {
                 if (dotX <= std::fabs (Xaxis[i]))
-                { dotX = std::fabs (Xaxis[i]);
-                  idX = i; }
+                {
+                    dotX = std::fabs (Xaxis[i]);
+                    idX = i;
+                }
                 if (dotY <= std::fabs (Yaxis[i]))
-                { dotY = std::fabs (Yaxis[i]);
-                  idY = i; }
+                {
+                    dotY = std::fabs (Yaxis[i]);
+                    idY = i;
+                }
             }
+
+            int sliceOrientation = 0;
             if (view2d)
-                idZ = view2d->GetSliceOrientation();
+            {
+                sliceOrientation = view2d->GetSliceOrientation();
+            }
 
             input_type_is_float = (wl_input->scalarType == VTK_FLOAT ||
                                    wl_input->scalarType == VTK_DOUBLE);
 
             size_x = wl_input->dimensions[idX];
             size_y = wl_input->dimensions[idY];
-            size_z = wl_input->dimensions[idZ];
 
             spacing_x = wl_input->spacing[idX];
             spacing_y = wl_input->spacing[idY];
-            spacing_z = wl_input->spacing[idZ];
 
             pos_x = pos[idX];
             pos_y = pos[idY];
-            pos_z = pos[idZ];
+            pos_z = pos[sliceOrientation];
 
             coord_x = coord[idX];
             coord_y = coord[idY];
-            coord_z = coord[idZ];
         }
     }
 
     if (view2d && ia)
     {
-        int min, max, orientation;
+        int sliceOrientation = view2d->GetSliceOrientation();
+
+        int min, max;
         double position[3]={0.0, 0.0, 0.0};
 
         view2d->GetSliceRange(min,max);
         slice = view2d->GetSlice() - min +1;
         slice_max = max - min + 1;
 
-        orientation = view2d->GetSliceOrientation();
-        coord[orientation]=slice-1;
+        coord[sliceOrientation]=slice-1;
 
         this->ImageView->GetWorldCoordinatesFromImageCoordinates(coord, position);
-        pos_z = position[orientation];
+        pos_z = position[sliceOrientation];
 
         ia_input = ia->GetInput();
         if (!wl_input && ia_input)
@@ -170,430 +170,186 @@ void vtkImageViewCornerAnnotation::TextReplace(vtkImageActor *ia,
         }
     }
 
-    // search for tokens, replace and then assign to TextMappers
-    for (i = 0; i < 4; i++)
+    int isKnownAnnotationStyle = -1;
+    if (view2d)
     {
-        if (this->CornerText[i] && strlen(this->CornerText[i]))
+        isKnownAnnotationStyle = static_cast<int>(view2d->GetAnnotationStyle2D());
+    }
+
+    // Search for tokens, replace and then assign to TextMappers
+    QString replaceText = "";
+    QString textQ = "";
+
+    if (ia && this->ShowSliceAndImage && this->ImageView)
+    {
+        //---- osSW
+        if (this->CornerText[0] && strlen(this->CornerText[0]))
         {
-            size_t len = strlen(this->CornerText[i]) + 1000;
-            text  = new char[len];
-            text2 = new char[len];
-            strncpy(text, this->CornerText[i], strlen(this->CornerText[i])+1);
+            textQ = this->CornerText[0];
 
-            // now do the replacements
+            // Zoom
+            replaceText = QString::number(zoom);
+            textQ.replace("<zoom>", replaceText);
 
-            rpos = strstr(text, "<image>");
-            while (rpos)
+            // Slice current and max
+            replaceText = " Slice: " + QString::number(slice) + "/" + QString::number(slice_max);
+            textQ.replace("<slice_and_max>", replaceText);
+
+            if (isKnownAnnotationStyle == -1
+                    || isKnownAnnotationStyle == vtkImageView2D::AnnotationStyle1)
             {
-                *rpos = '\0';
-                if (ia && this->ShowSliceAndImage)
-                {
-                    snprintf(text2, len, "%sImage: %i%s", text, slice, rpos+7);
-                }
-                else
-                {
-                    snprintf(text2, len, "%s%s", text, rpos+7);
-                }
-                tmp = text;
-                text = text2;
-                text2 = tmp;
-                rpos = strstr(text, "<image>");
+                // Location
+                replaceText = " Location: " + QString::number(pos_z) + " mm";
+                textQ.replace("<pos_z>", replaceText);
             }
 
-            rpos = strstr(text, "<image_and_max>");
-            while (rpos)
-            {
-                *rpos = '\0';
-                if (ia && this->ShowSliceAndImage)
-                {
-                    snprintf(text2, len, "%sImage: %i / %i%s", text, slice, slice_max, rpos+15);
-                }
-                else
-                {
-                    snprintf(text2, len, "%s%s", text, rpos+15);
-                }
-                tmp = text;
-                text = text2;
-                text2 = tmp;
-                rpos = strstr(text, "<image_and_max>");
-            }
-
-            rpos = strstr(text, "<slice>");
-            while (rpos)
-            {
-                *rpos = '\0';
-                if (ia && this->ShowSliceAndImage)
-                {
-                    snprintf(text2, len, "%sSlice: %i%s", text, slice, rpos+7);
-                }
-                else
-                {
-                    snprintf(text2, len, "%s%s", text, rpos+7);
-                }
-                tmp = text;
-                text = text2;
-                text2 = tmp;
-                rpos = strstr(text, "<slice>");
-            }
-
-            rpos = strstr(text, "<slice_and_max>");
-            while (rpos)
-            {
-                *rpos = '\0';
-                if (ia && this->ShowSliceAndImage)
-                {
-                    snprintf(text2, len, "%sSlice: %i / %i%s", text, slice, slice_max, rpos+15);
-                }
-                else
-                {
-                    snprintf(text2, len, "%s%s", text, rpos+15);
-                }
-                tmp = text;
-                text = text2;
-                text2 = tmp;
-                rpos = strstr(text, "<slice_and_max>");
-            }
-
-            rpos = strstr(text, "<slice_pos>");
-            while (rpos)
-            {
-                *rpos = '\0';
-                if (ia && this->ShowSliceAndImage)
-                {
-                    double *dbounds = ia->GetDisplayBounds();
-                    int *dext = ia->GetDisplayExtent();
-                    double pos;
-                    if (dext[0] == dext[1])
-                    {
-                        pos = dbounds[0];
-                    }
-                    else if (dext[2] == dext[3])
-                    {
-                        pos = dbounds[2];
-                    }
-                    else
-                    {
-                        pos = dbounds[4];
-                    }
-                    snprintf(text2, len, "%s%g%s", text, pos, rpos+11);
-                }
-                else
-                {
-                    snprintf(text2, len, "%s%s", text, rpos+11);
-                }
-                tmp = text;
-                text = text2;
-                text2 = tmp;
-                rpos = strstr(text, "<slice_pos>");
-            }
-
-            rpos = strstr(text, "<window>");
-            while (rpos)
-            {
-                *rpos = '\0';
-                if (this->ImageView)
-                {
-                    if (input_type_is_float)
-                    {
-                        snprintf(text2, len, "%sWindow: %g%s", text, window, rpos+8);
-                    }
-                    else
-                    {
-                        snprintf(text2, len, "%sWindow: %li%s", text, windowi, rpos+8);
-                    }
-                }
-                else
-                {
-                    snprintf(text2, len, "%s%s", text, rpos+8);
-                }
-                tmp = text;
-                text = text2;
-                text2 = tmp;
-                rpos = strstr(text, "<window>");
-            }
-
-            rpos = strstr(text, "<level>");
-            while (rpos)
-            {
-                *rpos = '\0';
-                if (this->ImageView)
-                {
-                    if (input_type_is_float)
-                    {
-                        snprintf(text2, len, "%sLevel: %g%s", text, level, rpos+7);
-                    }
-                    else
-                    {
-                        snprintf(text2, len, "%sLevel: %li%s", text, leveli, rpos+7);
-                    }
-                }
-                else
-                {
-                    snprintf(text2, len, "%s%s", text, rpos+7);
-                }
-                tmp = text;
-                text = text2;
-                text2 = tmp;
-                rpos = strstr(text, "<level>");
-            }
-
-            rpos = strstr(text, "<window_level>");
-            while (rpos)
-            {
-                *rpos = '\0';
-                if (this->ImageView)
-                {
-                    if (input_type_is_float)
-                    {
-                        snprintf(text2, len, "%sWW/WL: %g / %g%s", text, window, level, rpos+14);
-                    }
-                    else
-                    {
-                        snprintf(text2, len, "%sWW/WL: %li / %li%s", text, windowi, leveli, rpos+14);
-                    }
-                }
-                else
-                {
-                    snprintf(text2, len, "%s%s", text, rpos+14);
-                }
-                tmp = text;
-                text = text2;
-                text2 = tmp;
-                rpos = strstr(text, "<window_level>");
-            }
-
-            rpos = strstr(text, "<size_x>");
-            while (rpos)
-            {
-                *rpos = '\0';
-                snprintf(text2, len, "%s%i%s", text, size_x, rpos+8);
-                tmp = text;
-                text = text2;
-                text2 = tmp;
-                rpos = strstr(text, "<size_x>");
-            }
-
-            rpos = strstr(text, "<size_y>");
-            while (rpos)
-            {
-                *rpos = '\0';
-                snprintf(text2, len, "%s%i%s", text, size_y, rpos+8);
-                tmp = text;
-                text = text2;
-                text2 = tmp;
-                rpos = strstr(text, "<size_y>");
-            }
-
-            rpos = strstr(text, "<size_z>");
-            while (rpos)
-            {
-                *rpos = '\0';
-                snprintf(text2, len, "%s%i%s", text, size_z, rpos+8);
-                tmp = text;
-                text = text2;
-                text2 = tmp;
-                rpos = strstr(text, "<size_z>");
-            }
-
-            rpos = strstr(text, "<size>");
-            while (rpos)
-            {
-                *rpos = '\0';
-                snprintf(text2, len, "%simage size: %i x %i%s", text, size_x, size_y, rpos+6);
-                tmp = text;
-                text = text2;
-                text2 = tmp;
-                rpos = strstr(text, "<size>");
-            }
-
-            rpos = strstr(text, "<spacing_x>");
-            while (rpos)
-            {
-                *rpos = '\0';
-                snprintf(text2, len, "%s%3.3g%s", text, spacing_x, rpos+11);
-                tmp = text;
-                text = text2;
-                text2 = tmp;
-                rpos = strstr(text, "<spacing_x>");
-            }
-
-            rpos = strstr(text, "<spacing_y>");
-            while (rpos)
-            {
-                *rpos = '\0';
-                snprintf(text2, len, "%s%3.3g%s", text, spacing_y, rpos+11);
-                tmp = text;
-                text = text2;
-                text2 = tmp;
-                rpos = strstr(text, "<spacing_y>");
-            }
-
-            rpos = strstr(text, "<spacing_z>");
-            while (rpos)
-            {
-                *rpos = '\0';
-                snprintf(text2, len, "%s%3.3g%s", text, spacing_z, rpos+11);
-                tmp = text;
-                text = text2;
-                text2 = tmp;
-                rpos = strstr(text, "<spacing_z>");
-            }
-
-            rpos = strstr(text, "<spacing>");
-            while (rpos)
-            {
-                *rpos = '\0';
-                snprintf(text2, len, "%sspacing: %3.3g x %3.3g mm%s", text, spacing_x, spacing_y, rpos+9);
-                tmp = text;
-                text = text2;
-                text2 = tmp;
-                rpos = strstr(text, "<spacing>");
-            }
-
-            rpos = strstr(text, "<pos_x>");
-            while (rpos)
-            {
-                *rpos = '\0';
-                snprintf(text2, len, "%s%g%s", text, pos_x, rpos+7);
-                tmp = text;
-                text = text2;
-                text2 = tmp;
-                rpos = strstr(text, "<pos_x>");
-            }
-
-            rpos = strstr(text, "<pos_y>");
-            while (rpos)
-            {
-                *rpos = '\0';
-                snprintf(text2, len, "%s%g%s", text, pos_y, rpos+7);
-                tmp = text;
-                text = text2;
-                text2 = tmp;
-                rpos = strstr(text, "<pos_y>");
-            }
-
-            rpos = strstr(text, "<pos_z>");
-            while (rpos)
-            {
-                *rpos = '\0';
-                snprintf(text2, len, "%s%g%s", text, pos_z, rpos+7);
-                tmp = text;
-                text = text2;
-                text2 = tmp;
-                rpos = strstr(text, "<pos_z>");
-            }
-
-            rpos = strstr(text, "<coord_x>");
-            while (rpos)
-            {
-                *rpos = '\0';
-                snprintf(text2, len, "%s%i%s", text, coord_x, rpos+9);
-                tmp = text;
-                text = text2;
-                text2 = tmp;
-                rpos = strstr(text, "<coord_x>");
-            }
-
-            rpos = strstr(text, "<coord_y>");
-            while (rpos)
-            {
-                *rpos = '\0';
-                snprintf(text2, len, "%s%i%s", text, coord_y, rpos+9);
-                tmp = text;
-                text = text2;
-                text2 = tmp;
-                rpos = strstr(text, "<coord_y>");
-            }
-
-            rpos = strstr(text, "<coord_z>");
-            while (rpos)
-            {
-                *rpos = '\0';
-                snprintf(text2, len, "%s%i%s", text, coord_z, rpos+9);
-                tmp = text;
-                text = text2;
-                text2 = tmp;
-                rpos = strstr(text, "<coord_z>");
-            }
-
-            rpos = strstr(text, "<xyz>");
-            while (rpos)
-            {
-                *rpos = '\0';
-                snprintf(text2, len, "%sxyz: %4.4g, %4.4g, %4.4g mm%s", text, pos[0], pos[1], pos[2], rpos+5);
-                tmp = text;
-                text = text2;
-                text2 = tmp;
-                rpos = strstr(text, "<xyz>");
-            }
-
-            rpos = strstr(text, "<value>");
-            while (rpos)
-            {
-                *rpos = '\0';
-                snprintf(text2, len, "%svalue: %4.4g%s", text, value, rpos+7);
-                tmp = text;
-                text = text2;
-                text2 = tmp;
-                rpos = strstr(text, "<value>");
-            }
-
-            rpos = strstr(text, "<zoom>");
-            while (rpos)
-            {
-                *rpos = '\0';
-                snprintf(text2, len, "%szoom: %4.4g%s", text, zoom, rpos+6);
-                tmp = text;
-                text = text2;
-                text2 = tmp;
-                rpos = strstr(text, "<zoom>");
-            }
-
-            rpos = strstr(text, "<patient>");
-            while (rpos)
-            {
-                *rpos = '\0';
-                snprintf(text2, len, "%s%s%s", text, patient_name.c_str(), rpos+9);
-                tmp = text;
-                text = text2;
-                text2 = tmp;
-                rpos = strstr(text, "<patient>");
-            }
-
-            rpos = strstr(text, "<study>");
-            while (rpos)
-            {
-                *rpos = '\0';
-                snprintf(text2, len, "%s%s%s", text, study_name.c_str(), rpos+7);
-                tmp = text;
-                text = text2;
-                text2 = tmp;
-                rpos = strstr(text, "<study>");
-            }
-
-            rpos = strstr(text, "<series>");
-            while (rpos)
-            {
-                *rpos = '\0';
-                snprintf(text2, len, "%s%s%s", text, series_name.c_str(), rpos+8);
-                tmp = text;
-                text = text2;
-                text2 = tmp;
-                rpos = strstr(text, "<series>");
-            }
-
-            this->TextMapper[i]->SetInput(text);
-            delete [] text;
-            delete [] text2;
+            this->TextMapper[0]->SetInput(textQ.toStdString().c_str());
         }
-        else
+
+        //---- osSE
+        // No South Est change, it's done in vtkImageView2D::SetAnnotationsFromOrientation()
+        if (this->CornerText[1] && strlen(this->CornerText[1]))
         {
-            this->TextMapper[i]->SetInput("");
+            textQ = this->CornerText[1];
+            this->TextMapper[1]->SetInput(textQ.toStdString().c_str());
         }
+
+        //---- osNW
+        if (this->CornerText[2] && strlen(this->CornerText[2]))
+        {
+            textQ = this->CornerText[2];
+
+            // AnnotationStyle1
+            if (isKnownAnnotationStyle == -1
+                    || isKnownAnnotationStyle == vtkImageView2D::AnnotationStyle1)
+            {
+                // Tag from VTK
+                // Image
+                replaceText = " Image: " + QString::number(slice);
+                textQ.replace("<image>", replaceText);
+
+                // From this app
+                // Image size x/y
+                replaceText = " Image size: " + QString::number(size_x) + " x " + QString::number(size_y);
+                textQ.replace("<image_size>", replaceText);
+
+                // Voxel size x/y
+                replaceText = " Voxel size: " + QString::number(spacing_x) + QString(" mm") + " x "
+                        + QString::number(spacing_y) + QString(" mm");
+                textQ.replace("<voxel_size>", replaceText);
+
+                // Coordinates x/y
+                replaceText = " X: " + QString::number(coord_x) + QString(" px Y: ")
+                        + QString::number(coord_y) + QString(" px")
+                        +  QString(" Value: ") + QString::number(value);
+                textQ.replace("<coord_xy_and_value>", replaceText);
+
+                // Position x/y
+                replaceText = " X: " + QString::number(pos_x) + QString(" mm Y: ") + QString::number(pos_y) + QString(" mm");
+                textQ.replace("<pos_xy>", replaceText);
+
+                // WW/WL
+                if (input_type_is_float)
+                {
+                    replaceText = " WW/WL: " + QString::number(window) + QString("/") + QString::number(level);
+                }
+                else
+                {
+                    replaceText = " WW/WL: " + QString::number(windowi) + QString("/") + QString::number(leveli);
+                }
+                textQ.replace("<window_level>", replaceText);
+            }
+
+            // AnnotationStyle2
+            if (isKnownAnnotationStyle == -1
+                    || isKnownAnnotationStyle == vtkImageView2D::AnnotationStyle2)
+            {
+                // Image size x/y, almost equal to <image_size> for AnnotationStyle1
+                replaceText = " image size: " + QString::number(size_x) + " x " + QString::number(size_y);
+                textQ.replace("<size>", replaceText);
+
+                // Spacing x/y, almost equal to <voxel_size> for AnnotationStyle1
+                replaceText = " spacing: " + QString::number(spacing_x) + " x " + QString::number(spacing_y) + QString(" mm");
+                textQ.replace("<spacing>", replaceText);
+
+                // Location x/y/z
+                replaceText = " xyz: " +
+                        QString::number(pos[0]) + "," +
+                        QString::number(pos[1]) + "," +
+                        QString::number(pos[2]);
+                textQ.replace("<xyz>", replaceText);
+
+                // Value
+                replaceText = " value: " + QString::number(value);
+                textQ.replace("<value>", replaceText);
+            }
+
+            this->TextMapper[2]->SetInput(textQ.toStdString().c_str());
+        }
+
+        //---- osNE
+        if (this->CornerText[3] && strlen(this->CornerText[3]))
+        {
+            textQ = this->CornerText[3];
+
+            // AnnotationStyle1
+            if (isKnownAnnotationStyle == -1
+                    || isKnownAnnotationStyle == vtkImageView2D::AnnotationStyle1)
+            {
+                // Patient Name
+                textQ.replace("<patient>", this->ImageView->GetPatientName());
+
+                // Study Name
+                textQ.replace("<study>", this->ImageView->GetStudyName());
+
+                // Series Name
+                textQ.replace("<series>", this->ImageView->GetSeriesName());
+
+                // Slice: current and max for AnnotationStyle2
+                replaceText = " Slice: " + QString::number(slice) + "/" + QString::number(slice_max);
+                textQ.replace("<slice_and_max>", replaceText);
+            }
+
+            // AnnotationStyle2
+            if (isKnownAnnotationStyle == -1
+                    || isKnownAnnotationStyle == vtkImageView2D::AnnotationStyle2)
+            {
+                // Window
+                if (input_type_is_float)
+                {
+                    replaceText = QString::number(window);
+                }
+                else
+                {
+                    replaceText = QString::number(windowi);
+                }
+                textQ.replace("<window>", replaceText);
+
+                // Level
+                if (input_type_is_float)
+                {
+                    replaceText = QString::number(level);
+                }
+                else
+                {
+                    replaceText = QString::number(leveli);
+                }
+                textQ.replace("<level>", replaceText);
+            }
+
+            this->TextMapper[3]->SetInput(textQ.toStdString().c_str());
+        }
+    }
+    else
+    {
+        this->TextMapper[0]->SetInput("");
+        this->TextMapper[1]->SetInput("");
+        this->TextMapper[2]->SetInput("");
+        this->TextMapper[3]->SetInput("");
     }
 }
 
-namespace 
+namespace
 {
 // Ported from old vtkTextMapper implementation
     int GetNumberOfLines(const char *str)
@@ -852,4 +608,3 @@ int vtkImageViewCornerAnnotation::RenderOpaqueGeometry(vtkViewport *viewport)
 
     return 1;
 }
-
