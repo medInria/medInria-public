@@ -391,24 +391,25 @@ void vtkImageView3D::UnInstallPipeline()
 //----------------------------------------------------------------------------
 void vtkImageView3D::InstallInteractor()
 {
-  if (this->Interactor && this->InteractorStyle)
-  {
-    this->Interactor->SetInteractorStyle (this->InteractorStyle);
-  }
+    if (this->Interactor)
+    {
+        if (this->InteractorStyle)
+        {
+            this->Interactor->SetInteractorStyle (this->InteractorStyle);
+        }
 
-  if (this->Interactor && this->RenderWindow)
-  {
-    this->Interactor->SetRenderWindow(this->RenderWindow);
+        if (this->RenderWindow)
+        {
+            this->Interactor->SetRenderWindow(this->RenderWindow);
+            this->BoxWidget->SetInteractor ( this->Interactor );
+            this->PlaneWidget->SetInteractor ( this->Interactor );
 
-    this->BoxWidget->SetInteractor ( this->Interactor );
-    this->PlaneWidget->SetInteractor ( this->Interactor );
-    this->Marker->SetInteractor ( this->Interactor );
-
-    this->Marker->On();
-    this->Marker->InteractiveOff ();
-  }
-
-  this->IsInteractorInstalled = 1;
+            this->Marker->SetInteractor ( this->Interactor );
+            this->Marker->On();
+            this->Marker->InteractiveOff ();
+        }
+    }
+    this->IsInteractorInstalled = 1;
 }
 
 //----------------------------------------------------------------------------
@@ -418,18 +419,24 @@ void vtkImageView3D::UnInstallInteractor()
     this->PlaneWidget->SetInteractor (nullptr);
     this->Marker->SetInteractor (nullptr);
 
+    // Happening for instance switching from 2D->3D->2D
     if (this->Interactor)
     {
-        auto poRenderer = this->Interactor->GetRenderWindow()->GetRenderers()->GetFirstRenderer();
-        while (poRenderer)
+        if (this->Interactor->GetRenderWindow())
         {
-            this->RenderWindow->RemoveRenderer(poRenderer);
-            poRenderer = this->Interactor->GetRenderWindow()->GetRenderers()->GetFirstRenderer();
+            auto poRenderer = this->Interactor->GetRenderWindow()->GetRenderers()->GetFirstRenderer();
+            while (poRenderer)
+            {
+                this->RenderWindow->RemoveRenderer(poRenderer);
+                poRenderer = this->Interactor->GetRenderWindow()->GetRenderers()->GetFirstRenderer();
+            }
+            this->Interactor->SetRenderWindow (nullptr);
         }
-        this->Interactor->SetRenderWindow (nullptr);
+
         this->Interactor->SetInteractorStyle (nullptr);
+
+        this->IsInteractorInstalled = 0;
     }
-    this->IsInteractorInstalled = 0;
 }
 
 //----------------------------------------------------------------------------
@@ -439,59 +446,65 @@ void vtkImageView3D::SetInput(vtkAlgorithmOutput* pi_poVtkAlgoOutput, vtkMatrix4
     {
         if(layer == 0)
         {
-            SetFirstLayer( pi_poVtkAlgoOutput, matrix, layer);
+            SetFirstLayer(pi_poVtkAlgoOutput, matrix, layer);
         }
 
-        int * w_extent = this->GetMedVtkImageInfo()->extent;
-        int size [3] = { w_extent [1] - w_extent[0], w_extent [3] - w_extent[2], w_extent [5] - w_extent[4] };
-
-        if ( (size[0] < 2) ||(size[1] < 2) || (size[2] < 2) )
+        if (is3D())
         {
-            vtkWarningMacro ( <<"Cannot do volume rendering for a single slice, skipping"<<endl);
-            this->ActorX->GetMapper()->SetInputConnection (nullptr);
-            this->ActorY->GetMapper()->SetInputConnection (nullptr);
-            this->ActorZ->GetMapper()->SetInputConnection (nullptr);
-
-            this->VolumeMapper->SetInputConnection(nullptr);
-            this->BoxWidget->SetInputConnection (nullptr);
-            this->PlaneWidget->SetInputConnection(nullptr);
-
-            return;
-        }
-
-        if (layer>0 && layer<4)
-        {
-            // reslice input image if needed
-            vtkAlgorithmOutput *poReslicerOutput = this->ResliceImageToInput(pi_poVtkAlgoOutput, matrix);
-            if (!poReslicerOutput)
+            if (layer > 0 && layer < 4)
             {
-                vtkErrorMacro (<< "Could not reslice image to input");
+                SetInputLayer(pi_poVtkAlgoOutput, matrix, layer);
+            }
+            else if (layer >= 4)
+            {
+                vtkErrorMacro( <<"Only 4 layers are supported in 3D fusion" );
                 return;
             }
 
-            vtkAlgorithmOutput *poVtkAlgoOutputTmp = poReslicerOutput;
-            // cast it if needed
-            if (static_cast<vtkImageAlgorithm*>(poReslicerOutput->GetProducer())->GetOutput()->GetScalarType()
-                    != this->GetMedVtkImageInfo()->scalarType)
-            {
-                vtkImageCast *cast = vtkImageCast::New();
-                cast->SetInputConnection(poReslicerOutput);
-                cast->SetOutputScalarType (this->GetMedVtkImageInfo()->scalarType);
-                cast->Update();
-
-                poVtkAlgoOutputTmp = cast->GetOutputPort();
-            }
-
-            this->AddLayer(layer);
-            this->GetImage3DDisplayForLayer(layer)->SetInputProducer(poVtkAlgoOutputTmp);
+            this->InternalUpdate();
         }
-        else if (layer >= 4)
-        {
-            vtkErrorMacro( <<"Only 4 layers are supported in 3D fusion" );
-            return;
-        }
+    }
+}
 
-        this->InternalUpdate();
+bool vtkImageView3D::is3D()
+{
+    bool isTheData3D = true;
+
+    int * w_extent = this->GetMedVtkImageInfo()->extent;
+    int size [3] = { w_extent [1] - w_extent[0], w_extent [3] - w_extent[2], w_extent [5] - w_extent[4] };
+
+    if ( (size[0] < 2) ||(size[1] < 2) || (size[2] < 2) )
+    {
+        vtkWarningMacro ( <<"Cannot do volume rendering for a single slice, skipping"<<endl);
+        this->ActorX->GetMapper()->SetInputConnection (nullptr);
+        this->ActorY->GetMapper()->SetInputConnection (nullptr);
+        this->ActorZ->GetMapper()->SetInputConnection (nullptr);
+
+        this->VolumeMapper->SetInputConnection(nullptr);
+        this->BoxWidget->SetInputConnection (nullptr);
+        this->PlaneWidget->SetInputConnection(nullptr);
+
+        isTheData3D = false;
+    }
+    return isTheData3D;
+}
+
+//----------------------------------------------------------------------------
+void vtkImageView3D::SetInputLayer(vtkAlgorithmOutput* pi_poVtkAlgoOutput, vtkMatrix4x4 *matrix /*= 0*/, int layer /*= 0*/)
+{
+    pi_poVtkAlgoOutput = this->ResliceImageToInput(pi_poVtkAlgoOutput, matrix);
+
+    vtkAlgorithmOutput *poVtkAlgoOutputTmp = pi_poVtkAlgoOutput;
+    // cast it if needed
+    if (static_cast<vtkImageAlgorithm*>(pi_poVtkAlgoOutput->GetProducer())->GetOutput()->GetScalarType()
+            != this->GetMedVtkImageInfo()->scalarType)
+    {
+        vtkImageCast *cast = vtkImageCast::New();
+        cast->SetInputConnection(pi_poVtkAlgoOutput);
+        cast->SetOutputScalarType (this->GetMedVtkImageInfo()->scalarType);
+        cast->Update();
+
+        poVtkAlgoOutputTmp = cast->GetOutputPort();
     }
 }
 

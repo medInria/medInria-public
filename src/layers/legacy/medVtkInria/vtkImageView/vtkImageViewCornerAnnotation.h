@@ -1,3 +1,4 @@
+#pragma once
 /*=========================================================================
 
  medInria
@@ -11,14 +12,12 @@
 
 =========================================================================*/
 
-#pragma once
-
 #include <vtkCornerAnnotation.h>
+#include <vtkImageView2D.h>
 
 #include <medVtkInriaExport.h>
 
 class vtkImageView;
-
 
 /**
    Notes on Nicolas Toussaint changes
@@ -29,43 +28,31 @@ class vtkImageView;
 
 */
 
-/**
-   flags :
-
-
-*/
-
-
 class MEDVTKINRIA_EXPORT vtkImageViewCornerAnnotation : public vtkCornerAnnotation
 {
 
  public:
-  vtkTypeMacro(vtkImageViewCornerAnnotation, vtkCornerAnnotation);
+  vtkTypeMacro(vtkImageViewCornerAnnotation, vtkCornerAnnotation)
   static vtkImageViewCornerAnnotation *New();
 
+  void SetImageView (vtkImageView* arg);
 
-  void SetImageView (vtkImageView* arg)
-  { this->ImageView = arg; }
-  vtkGetObjectMacro (ImageView, vtkImageView);
+   vtkGetObjectMacro (ImageView, vtkImageView)
+
   // Description:
   //Draw the scalar bar and annotation text to the screen.
   int RenderOpaqueGeometry(vtkViewport* viewport);
-
 
  protected:
   vtkImageViewCornerAnnotation();
   ~vtkImageViewCornerAnnotation();
 
-  virtual void TextReplace( vtkImageActor *ia, vtkImageMapToWindowLevelColors *wl);
+  virtual void TextReplace(vtkImageActor *ia, vtkImageMapToWindowLevelColors *);
 
  private:
   vtkImageViewCornerAnnotation(const vtkImageViewCornerAnnotation&);  // Not implemented.
   void operator=(const vtkImageViewCornerAnnotation&);  // Not implemented.
 
   vtkImageView *ImageView;
-
-
+  vtkImageView2D *view2d;
 };
-
-
-
