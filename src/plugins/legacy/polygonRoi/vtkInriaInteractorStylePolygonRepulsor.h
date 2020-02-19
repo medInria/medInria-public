@@ -12,6 +12,8 @@
 =========================================================================*/
 #pragma once
 
+#include "medRoiManager.h"
+
 #include <medAbstractView.h>
 
 #include <polygonRoi.h>
@@ -36,6 +38,7 @@ public:
     virtual void OnLeftButtonDown();
     virtual void OnLeftButtonUp();
     void SetCurrentView(medAbstractView *view);
+    void SetManager(medLabelManager *closestManagerInSlice);
     bool IsInRepulsorDisk(double *pt);
     vtkGetObjectMacro(RepulsorActor,vtkCircleActor2D)
     vtkGetObjectMacro(RepulsorProperty,vtkProperty2D)
@@ -55,6 +58,7 @@ protected:
     vtkCircleActor2D *RepulsorActor;
     vtkProperty2D *RepulsorProperty;
     QList<polygonRoi*> ListPolygonsToSave;
+    medLabelManager* manager;
 
 private:
     vtkInriaInteractorStylePolygonRepulsor(const vtkInriaInteractorStylePolygonRepulsor&);  // Not implemented

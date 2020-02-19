@@ -39,10 +39,6 @@ public:
 
     bool isVisible() override;
 
-    void forceInvisibilityOn() override;
-
-    void forceInvisibilityOff() override;
-
     QString info() override;
 
     QString type() override;

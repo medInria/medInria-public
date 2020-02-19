@@ -44,8 +44,6 @@ public:
     virtual void Off()=0;
     virtual void On()=0;
     virtual bool isVisible()=0;
-    virtual void forceInvisibilityOn()=0;
-    virtual void forceInvisibilityOff()=0;
 
     virtual QString info()=0;
     virtual QString type()=0;

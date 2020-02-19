@@ -20,9 +20,7 @@
 #include <medAbstractSelectableToolBox.h>
 #include <medRoiManager.h>
 #include <medTableWidgetChooser.h>
-#include <medViewEventFilter.h>
 
-#include <medPolygonAnnotationData.h>
 #include <polygonRoi.h>
 #include <polygonRoiPluginExport.h>
 
@@ -35,32 +33,9 @@ class medAbstractData;
 class medAbstractImageView;
 class contourWidgetListener;
 class medAbstractImageData;
-class PolygonEventFilter;
+class polygonEventFilter;
 
 typedef itk::Image<unsigned char, 3> UChar3ImageType;
-
-
-class PolygonEventFilter : public medViewEventFilter
-{
-    Q_OBJECT
-public:
-    PolygonEventFilter();
-
-    virtual bool mousePressEvent(medAbstractView * view, QMouseEvent *mouseEvent);
-public:
-    void removeInteraction();
-
-public slots:
-    void setCursorState(CURSORSTATE state){cursorState = state;}
-
-private:
-    CURSORSTATE cursorState;
-    QList<medLabelManager *> managers;
-    int currentLabel;
-    int savedLabel;
-};
-
-
 
 /*! \brief Toolbox to create, use, interpolate Polygon ROI.
  *
@@ -104,10 +79,9 @@ public slots:
     void onViewClosed();
     void onLayerClosed();
     void clickClosePolygon(bool state);
-    void activateRepulsor();
+    void activateRepulsor(bool state);
     void generateAndSaveBinaryImage();
-    void interpolateCurve();
-    void splitView();
+    void interpolateCurve(bool state);
     void updateTableWidgetView(unsigned int row, unsigned int col);
     void updateTableWidgetItems();
 
@@ -118,33 +92,27 @@ public slots:
     void pasteContours();
     void undo();
     void redo();
-
-    ListRois interpolateBetween2Polygon(const QList<polygonRoi*> &idAndContour, int firstIndex);
-
-
+    void manageTick();
+    void manageRoisVisibility();
 private slots:
 
     void disableButtons();
-    void buttonsStateAtDataOpeningBeforeROI();
     void buttonsStateWhenROI();
 
 protected:
 
     void generateBinaryImage();
     void binaryImageFromPolygon(QList<QPair<vtkPolygon*,PlaneIndexSlicePair> > polys);
-    void reorderPolygon(vtkPolyData * poly);
-    QList<vtkPolyData* > generateIntermediateCurves(vtkSmartPointer<vtkPolyData> curve1,vtkSmartPointer<vtkPolyData> curve2, int nb);
     QList<QPair<vtkPolygon*,PlaneIndexSlicePair> > createImagePolygons(QList<QPair<vtkPolyData*,PlaneIndexSlicePair> > &listPoly);
 
     QList<medSeriesOfRoi*> * getListOfView(medAbstractView *view);
-    void resampleCurve(vtkPolyData *poly, int nbPoints);
     void initializeMaskData( medAbstractData *imageData, medAbstractData *maskData ); // copy of a function in painttoolbox
     int computePlaneIndex();
     void clear();
 
 private:
 
-    PolygonEventFilter *viewEventFilter;
+    polygonEventFilter *viewEventFilter;
 //    CURSORSTATE cursorState;
     medAbstractImageView *currentView;
     medToolBox *roiManagementToolBox;
@@ -152,7 +120,7 @@ private:
     QPushButton *generateBinaryImage_button;
     QPushButton *repulsorTool;
     QPushButton *splitViewButton;
-    QPushButton *interpolate;
+    QCheckBox *interpolate;
     QPushButton *extractRoiButton;
     medTableWidgetChooser* tableViewChooser;
 
@@ -165,14 +133,11 @@ private:
 
     RoiStatistics stats;
 
-    vtkInriaInteractorStylePolygonRepulsor *interactorStyleRepulsor;
-
     friend class contourWidgetListener;
 
     dtkSmartPointer<medAbstractData> m_maskData; // Output
 
     dtkSmartPointer<medImageMaskAnnotationData> m_maskAnnotationData;
-    dtkSmartPointer<medPolygonAnnotationData> polyAnnData;
     dtkSmartPointer<medAbstractData> medPolyData;
 
     UChar3ImageType::Pointer castToUChar3(medAbstractImageData *input);
@@ -180,7 +145,4 @@ private:
     void getContourIndices(vtkImageView2D*, UChar3ImageType::Pointer, UChar3ImageType::IndexType, vtkSmartPointer<vtkPoints>);
 
     static const int HANDLE_PERIOD  = 5;
-
-    QList<QPair<vtkPolyData*, vtkProperty*>> polyDataRois;
-    void addViewsToRoi(polygonRoi *roi);
 };

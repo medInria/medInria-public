@@ -13,7 +13,6 @@
 #include "polygonRoiPlugin.h"
 #include "polygonRoiToolBox.h"
 
-#include <medRoiManagementToolBox.h>
 
 polygonRoiPlugin::polygonRoiPlugin(QObject *parent) : medPluginLegacy(parent)
 {

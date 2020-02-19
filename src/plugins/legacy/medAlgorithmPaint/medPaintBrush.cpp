@@ -69,16 +69,6 @@ bool medPaintBrush::isVisible()
     return false;
 }
 
-void medPaintBrush::forceInvisibilityOn()
-{
-
-}
-
-void medPaintBrush::forceInvisibilityOff()
-{
-
-}
-
 QString medPaintBrush::info()
 {
     return QString();

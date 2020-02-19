@@ -21,31 +21,37 @@
 class medRoiManagerPrivate;
 class medSeriesOfRoi;
 class medLabelManagerPrivate;
-class PolygonEventFilter;
+class polygonEventFilter;
+class medTableWidgetItem;
 
 class POLYGONROIPLUGIN_EXPORT medLabelManager : public QObject
 {
     Q_OBJECT
 
 public:
-    medLabelManager(medAbstractView *view, int label, PolygonEventFilter *eventCursor);
+    medLabelManager(medAbstractView *view, polygonEventFilter *eventCursor, QColor color=Qt::transparent);
 
-    bool roiAlreadyInManager(polygonRoi *roiToCheck, int label, int orientation);
-    bool roiInSlice(polygonRoi *roiToCheck);
-    polygonRoi* openRoiInSlice(int slice, int orientation);
-    bool roiAlreadyInSlice(int slice, int orientation);
+    polygonRoi* roiOpenInSlice();
+    bool roiClosedInSlice();
+    polygonRoi *existingRoiInSlice();
     void appendRoi(polygonRoi *roi);
-    int getLabel();
     QList<polygonRoi *> getRois();
-    void removeEvent();
     QColor getColor();
     void appendRoi();
 
+    void setContourEnabled(bool state);
+    void setEnableInterpolation(bool state);
+
+    void manageTick();
+    void manageVisibility();
+    void updateAlternativeViews(medAbstractImageView *v, medTableWidgetItem *item);
+    bool mouseIsCloseFromContour(double mousePos[2]);
+    double getMinimumDistanceFromNodesToEventPosition(double eventPos[2]);
+    double getMinimumDistanceFromIntermediateNodesToEventPosition(double eventPos[2]);
 public slots:
     void interpolateIfNeeded();
 
 private:
-    bool isSameLabel(int label);
     bool isSameOrientation(int orientation);
     medLabelManagerPrivate* const d;
 
@@ -55,7 +61,7 @@ private:
     void reorderPolygon(vtkPolyData *poly);
     static bool sortRois(const polygonRoi *p1, const polygonRoi *p2);
     void connectRois();
-    void manageVisibility();
+    double getDistance(double mousePos[2], double contourPos[2]);
 };
 
 
