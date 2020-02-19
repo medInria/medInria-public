@@ -12,6 +12,8 @@
 
 =========================================================================*/
 
+#include <medVtkImageInfo.h>
+
 #include <vtkAlgorithmOutput.h>
 #include <vtkImageAlgorithm.h>
 #include <vtkImageData.h>

@@ -501,12 +501,9 @@ protected:
     virtual bool Compare(int *array1,    int *array2,    int size);
     virtual bool Compare(vtkMatrix4x4 *mat1, vtkMatrix4x4 *mat2);
 
-
     virtual vtkAlgorithmOutput* ResliceImageToInput(vtkAlgorithmOutput* pi_poVtkAlgoPort, vtkMatrix4x4 *matrix);
 
     virtual void GetWithinBoundsPosition (double* pos1, double* dos2);
-
-
 
 protected:
     /**

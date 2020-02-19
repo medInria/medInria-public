@@ -54,12 +54,6 @@
 #define snprintf _snprintf_s
 #endif
 
-
-//vtkStandardNewMacro(vtkImageView); // pure virtual class
-
-
-// Enumeration for the supported pixel types
-// NT: why not using the vtk IO definitions ?
 namespace {
 enum ImageViewType {
     IMAGE_VIEW_NONE = 0,
@@ -131,8 +125,6 @@ vtkImageView::vtkImageView()
     this->ScalarBar->PickableOff();
     this->ScalarBar->VisibilityOn();
 
-
-
     for(int i=0; i<3; i++)
         this->CurrentPoint[i] = 0.0; //VTK_DOUBLE_MIN;
 
@@ -156,7 +148,6 @@ vtkImageView::vtkImageView()
     this->LookupTable->SetAlphaRange (0, 1);
     this->LookupTable->Build();
 }
-
 
 vtkImageView::~vtkImageView()
 {
@@ -237,7 +228,7 @@ vtkMTimeType vtkImageView::GetMTime()
 /** Attach an interactor for the internal render window. */
 void vtkImageView::SetupInteractor(vtkRenderWindowInteractor *arg)
 {
-    //this->UnInstallPipeline();
+    this->UnInstallPipeline();
 
     vtkSetObjectBodyMacro (Interactor, vtkRenderWindowInteractor, arg);
 
@@ -248,7 +239,7 @@ void vtkImageView::SetupInteractor(vtkRenderWindowInteractor *arg)
 /** Set your own renderwindow and renderer */
 void vtkImageView::SetRenderWindow(vtkRenderWindow *arg)
 {
-    //this->UnInstallPipeline();
+    this->UnInstallPipeline();
 
     vtkSetObjectBodyMacro (RenderWindow, vtkRenderWindow, arg);
 
@@ -262,7 +253,7 @@ void vtkImageView::SetRenderWindow(vtkRenderWindow *arg)
 //----------------------------------------------------------------------------
 void vtkImageView::SetRenderer(vtkRenderer *arg)
 {
-    //this->UnInstallPipeline();
+    this->UnInstallPipeline();
 
     vtkSetObjectBodyMacro (Renderer, vtkRenderer, arg);
 
@@ -328,15 +319,16 @@ vtkAlgorithmOutput* vtkImageView::ResliceImageToInput(vtkAlgorithmOutput* pi_poV
 {
     vtkAlgorithmOutput *poResOutput = nullptr;
     vtkImageData* image = ((vtkImageAlgorithm*)pi_poVtkAlgoPort->GetProducer())->GetOutput();
+
     if (!pi_poVtkAlgoPort || !this->GetMedVtkImageInfo() || !this->GetMedVtkImageInfo()->initialized)
     {
         return nullptr;
     }
 
     if ( pi_poVtkAlgoPort &&
-         this->Compare(image->GetOrigin(),      this->GetMedVtkImageInfo()->origin, 3) &&
-         this->Compare(image->GetSpacing(),     this->GetMedVtkImageInfo()->spacing, 3) &&
-         this->Compare(image->GetExtent(), this->GetMedVtkImageInfo()->extent, 6) &&
+         this->Compare(image->GetOrigin(),  this->GetMedVtkImageInfo()->origin, 3) &&
+         this->Compare(image->GetSpacing(), this->GetMedVtkImageInfo()->spacing, 3) &&
+         this->Compare(image->GetExtent(),  this->GetMedVtkImageInfo()->extent, 6) &&
          (matrix && this->Compare(matrix, this->OrientationMatrix)) )
     {
         poResOutput = pi_poVtkAlgoPort;
@@ -446,7 +438,6 @@ void vtkImageView::UnInstallPipeline()
         this->RenderWindow->RemoveRenderer(this->GetRenderer());
     }
 }
-
 
 //----------------------------------------------------------------------------
 /**
@@ -981,7 +972,6 @@ void vtkImageView::GetColorRange( double r[2] )
     this->GetColorRange(r, currentLayer);
 }
 
-
 void vtkImageView::GetColorRange(double r[], int layer)
 {
     r[0] = this->GetColorLevel(layer) - 0.5 * this->GetColorWindow(layer);
@@ -1084,64 +1074,7 @@ double vtkImageView::GetValueAtPosition(double worldcoordinates[3], int componen
     this->Get2DDisplayMapperInputAlgorithm()->UpdateInformation();
     vtkImageData* inputImage = poAlgoTmp->GetOutput();
 
-    int* w_extent = this->GetMedVtkImageInfo()->extent;
-    if ((indices[0] < w_extent[0]) ||
-        (indices[0] > w_extent[1]) ||
-        (indices[1] < w_extent[2]) ||
-        (indices[1] > w_extent[3]) ||
-        (indices[2] < w_extent[4]) ||
-        (indices[2] > w_extent[5]))
-    {
-        return 0.0;
-    }
-
-    // Is the requested point in the currently loaded data extent? If not, attempt to update.
-    int* extent = this->GetMedVtkImageInfo()->extent;
-    if ( (indices[0] < extent[0]) ||
-         (indices[0] > extent[1]) ||
-         (indices[1] < extent[2]) ||
-         (indices[1] > extent[3]) ||
-         (indices[2] < extent[4]) ||
-         (indices[2] > extent[5]) )
-    {
-
-        int* u_extent = this->Get2DDisplayMapperInputAlgorithm(layer)->GetUpdateExtent ();
-        if ( (indices[0] < u_extent[0]) ||
-             (indices[0] > u_extent[1]) ||
-             (indices[1] < u_extent[2]) ||
-             (indices[1] > u_extent[3]) ||
-             (indices[2] < u_extent[4]) ||
-             (indices[2] > u_extent[5]) )
-        {
-            int pointExtent [6] = { indices [0], indices [0], indices [1], indices [1], indices [2], indices [2] };
-            this->Get2DDisplayMapperInputAlgorithm(layer)->UpdateExtent(pointExtent);
-            this->Get2DDisplayMapperInputAlgorithm(layer)->Update();
-
-        } 
-        else
-        {
-            this->Get2DDisplayMapperInputAlgorithm(layer)->Update ();
-            int* new_extent = this->GetMedVtkImageInfo()->extent;
-            if ( (indices[0] < new_extent[0]) ||
-                 (indices[0] > new_extent[1]) ||
-                 (indices[1] < new_extent[2]) ||
-                 (indices[1] > new_extent[3]) ||
-                 (indices[2] < new_extent[4]) ||
-                 (indices[2] > new_extent[5]) )
-            {
-                vtkErrorMacro( "data not in slice extent after update" );
-            }
-
-        }
-    }
-    else
-    {
-        // Need to be sure that the input is up to date. Otherwise we may be requesting bad data.
-        this->Get2DDisplayMapperInputAlgorithm(layer)->Update();
-    }
-
     return inputImage->GetScalarComponentAsDouble(indices[0], indices[1], indices[2], component);
-
 }
 
 //----------------------------------------------------------------------------
@@ -1310,9 +1243,6 @@ void vtkImageView::ResetCamera()
 {
     if (this->GetRenderer())
     {
-        //  ResetCamera calls ResetCameraClippingRange anyway...
-        //      this->GetRenderer()->ResetCameraClippingRange();
-
         if ( this->GetMedVtkImageInfo () )
         {
             double bounds [6];
@@ -1457,9 +1387,7 @@ void vtkImageView::Reset()
 {
     this->ResetCurrentPoint();
     this->ResetWindowLevel();
-    // this->SetColorWindow (VTK_DOUBLE_MAX); // NT: ?? --> when i press reset I would like the windowlevels to be "reset" ?
     this->ResetCamera();
-
 }
 
 //----------------------------------------------------------------------------
@@ -1773,6 +1701,8 @@ void vtkImageView::SetCurrentLayer(int layer)
         }
         this->ScalarBar->Modified();
         this->Modified();
+
+        this->Render();
     }
 }
 

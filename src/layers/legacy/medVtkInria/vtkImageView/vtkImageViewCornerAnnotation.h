@@ -13,6 +13,7 @@
 =========================================================================*/
 
 #include <vtkCornerAnnotation.h>
+#include <vtkImageView2D.h>
 
 #include <medVtkInriaExport.h>
 
@@ -35,10 +36,10 @@ class MEDVTKINRIA_EXPORT vtkImageViewCornerAnnotation : public vtkCornerAnnotati
   vtkTypeMacro(vtkImageViewCornerAnnotation, vtkCornerAnnotation)
   static vtkImageViewCornerAnnotation *New();
 
+  void SetImageView (vtkImageView* arg);
 
-  void SetImageView (vtkImageView* arg)
-  { this->ImageView = arg; }
   vtkGetObjectMacro (ImageView, vtkImageView)
+
   // Description:
   //Draw the scalar bar and annotation text to the screen.
   int RenderOpaqueGeometry(vtkViewport* viewport);
@@ -47,11 +48,12 @@ class MEDVTKINRIA_EXPORT vtkImageViewCornerAnnotation : public vtkCornerAnnotati
   vtkImageViewCornerAnnotation();
   ~vtkImageViewCornerAnnotation();
 
-  virtual void TextReplace( vtkImageActor *ia, vtkImageMapToWindowLevelColors *wl);
+  virtual void TextReplace(vtkImageActor *ia, vtkImageMapToWindowLevelColors *);
 
  private:
   vtkImageViewCornerAnnotation(const vtkImageViewCornerAnnotation&);  // Not implemented.
   void operator=(const vtkImageViewCornerAnnotation&);  // Not implemented.
 
   vtkImageView *ImageView;
+  vtkImageView2D *view2d;
 };

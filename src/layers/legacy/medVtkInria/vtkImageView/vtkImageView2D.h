@@ -129,12 +129,14 @@ public:
 
     // Description:
     // Set/Get the input image to the viewer.
-    virtual void SetInput (vtkAlgorithmOutput* pi_poVtkAlgoOutput, vtkMatrix4x4 *matrix = nullptr, int layer = 0);
+    virtual void SetInput      (vtkAlgorithmOutput* pi_poVtkAlgoOutput, vtkMatrix4x4 *matrix = nullptr, int layer = 0);
+    virtual void SetInputLayer (vtkAlgorithmOutput* pi_poVtkAlgoOutput, vtkMatrix4x4 *matrix = nullptr, int layer = 0);
+    virtual void SetInputCommon(vtkAlgorithmOutput* pi_poVtkAlgoOutput, int layer = 0);
     virtual void SetInput (vtkActor *actor, int layer = 0, vtkMatrix4x4 *matrix = nullptr,
                            const int imageSize[3] = nullptr, const double imageSpacing[] = nullptr, const double imageOrigin[] = nullptr);
 
     void RemoveLayerActor(vtkActor *actor, int layer = 0);
-    
+
     virtual vtkActor* AddDataSet (vtkPointSet* arg, vtkProperty* prop = nullptr);
     virtual void RemoveDataSet (vtkPointSet *arg);
 
@@ -344,8 +346,8 @@ public:
     vtkGetMacro (CursorFollowMouse, int);
 
     void SetAnnotationStyle (unsigned int arg);
-    vtkGetMacro (AnnotationStyle, unsigned int);
-
+    vtkGetMacro (AnnotationStyle, unsigned int)
+    unsigned int GetAnnotationStyle2D();
 
     virtual void AddLayer(int);
     virtual void RemoveLayer(int layer);
@@ -446,7 +448,6 @@ protected:
     bool IsFirstLayer(int layer) const;
     int GetFirstLayer() const;
 
-
     int ViewOrientation;
     int ViewConvention;
     int    SliceOrientation;
@@ -457,6 +458,8 @@ protected:
     int ShowImageAxis;
 
     unsigned int AnnotationStyle;
+
+    std::string matrixOrientation[3][2];
 
     int CursorFollowMouse;
     int Slice;
@@ -485,5 +488,4 @@ private:
 
 public:
     vtkImageView2DQtSignals *qtSignalHandler;
-
 };
