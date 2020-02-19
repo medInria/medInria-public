@@ -20,7 +20,7 @@
 #include <medImageViewEnum.h>
 #include <medAbstractImageView.h>
 
-enum class CURSORSTATE { NONE, FIRST_CLICK, ROI_CLOSED, SLICE_CHANGED, CONTINUE  };
+enum class CURSORSTATE { NONE, FIRST_MOUSE_EVENT, MOUSE_EVENT, CONTINUE, REPULSOR  };
 
 class polygonRoiPrivate;
 class BezierRoiObserver;
@@ -38,16 +38,10 @@ public:
     vtkContourWidget * getContour();
     QPair<vtkPolyData *, vtkProperty *> getPoly();
     vtkImageView2D * getView();
-
-    void lockObserver(bool val);
     
     virtual void Off();
     virtual void On();
     virtual bool isVisible();
-    virtual void forceInvisibilityOn();
-    virtual void forceInvisibilityOff();
-    virtual void forceVisibilityOn();
-    virtual void forceVisibilityOff();
 
     virtual QString info();
     virtual QString type();
@@ -60,7 +54,8 @@ public:
     
     void addViewToList(medAbstractImageView *viewToAdd, medImageView::Orientation orientation);
     void addDataSet();
-    void activate();
+    bool isClosed();
+    void setEnabled(bool state);
 public slots:
     
     void showOrHide();

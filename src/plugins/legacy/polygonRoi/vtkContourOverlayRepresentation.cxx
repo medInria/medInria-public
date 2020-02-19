@@ -284,3 +284,8 @@ int vtkContourOverlayRepresentation::GetIntermediatePointWorldPosition(int n, in
 {
     return vtkContourRepresentation::GetIntermediatePointWorldPosition(n, idx, point);
 }
+
+int vtkContourOverlayRepresentation::FindClosestPointOnContour(int X, int Y, double worldPos[], int *idx)
+{
+    return vtkContourRepresentation::FindClosestPointOnContour(X,Y,worldPos,idx);
+}

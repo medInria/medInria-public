@@ -73,6 +73,10 @@ public:
     virtual int AddNodeAtDisplayPosition( int X, int Y );
     virtual int GetNthNodeWorldPosition(int n, double worldPos[3]);
     virtual int GetIntermediatePointWorldPosition(int n, int idx, double point[3]);
+    virtual int FindClosestPointOnContour( int X, int Y,
+                                   double worldPos[3],
+                                   int *idx );
+
 protected:
     vtkContourOverlayRepresentation();
     ~vtkContourOverlayRepresentation();
