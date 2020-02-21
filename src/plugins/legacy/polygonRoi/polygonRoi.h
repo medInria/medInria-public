@@ -19,8 +19,9 @@
 #include <vtkImageView2D.h>
 #include <medImageViewEnum.h>
 #include <medAbstractImageView.h>
+#include <vtkPolygon.h>
 
-enum class CURSORSTATE { NONE, FIRST_MOUSE_EVENT, MOUSE_EVENT, CONTINUE, REPULSOR  };
+enum class CURSORSTATE { NONE, MOUSE_EVENT, CONTINUE, REPULSOR  };
 
 class polygonRoiPrivate;
 class BezierRoiObserver;
@@ -36,7 +37,7 @@ public:
     virtual ~polygonRoi();
 
     vtkContourWidget * getContour();
-    QPair<vtkPolyData *, vtkProperty *> getPoly();
+    QPair<vtkPolyData *, vtkProperty *> createPolydataToAddInViews();
     vtkImageView2D * getView();
     
     virtual void Off();
@@ -47,7 +48,6 @@ public:
     virtual QString type();
     virtual void select();
     virtual void unselect();
-    virtual void computeRoiStatistics();
 
     virtual bool canRedo(){return true;}
     virtual bool canUndo(){return true;}
@@ -56,15 +56,13 @@ public:
     void addDataSet();
     bool isClosed();
     void setEnabled(bool state);
+    vtkSmartPointer<vtkPolygon> createPolygonFromContour();
+    void manageVisibility();
+
 public slots:
-    
-    void showOrHide();
     virtual void undo();
     virtual void redo();
-    virtual void saveState();
-    virtual bool copyROI(medAbstractView *view);
-    virtual medAbstractRoi * getCopy(medAbstractView *view);
-    virtual QList<medAbstractRoi*> * interpolate(medAbstractRoi *roi);
+    virtual void saveState(){}
 
 signals:
     void updateCursorState(CURSORSTATE state);
