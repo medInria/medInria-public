@@ -70,10 +70,8 @@ public:
     dtkPlugin* plugin();
     medAbstractData *processOutput();
     void setCurrentView(medAbstractView *view);
-//    CURSORSTATE getCursorState(){return cursorState;}
 
 public slots:
-//    void setCursorState(CURSORSTATE state){cursorState = state;}
 
     void updateView();
     void onViewClosed();
@@ -85,64 +83,32 @@ public slots:
     void updateTableWidgetView(unsigned int row, unsigned int col);
     void updateTableWidgetItems();
 
-    void showExtractROIWarningPopUp();
-    void extractROI();
-
-    void copyContours(); // For the time these function copy and paste all the contours present on a slice. No selection of a contour is possible.
-    void pasteContours();
-    void undo();
-    void redo();
     void manageTick();
     void manageRoisVisibility();
+    void enableRepulsorButton(bool state);
+    void enableGenerateMaskButton(bool state);
+    void enableTableViewChooser(bool state);
 private slots:
 
     void disableButtons();
-    void buttonsStateWhenROI();
 
 protected:
 
-    void generateBinaryImage();
     void binaryImageFromPolygon(QList<QPair<vtkPolygon*,PlaneIndexSlicePair> > polys);
     QList<QPair<vtkPolygon*,PlaneIndexSlicePair> > createImagePolygons(QList<QPair<vtkPolyData*,PlaneIndexSlicePair> > &listPoly);
 
     QList<medSeriesOfRoi*> * getListOfView(medAbstractView *view);
     void initializeMaskData( medAbstractData *imageData, medAbstractData *maskData ); // copy of a function in painttoolbox
-    int computePlaneIndex();
     void clear();
 
 private:
 
     polygonEventFilter *viewEventFilter;
-//    CURSORSTATE cursorState;
     medAbstractImageView *currentView;
-    medToolBox *roiManagementToolBox;
     QPushButton *addNewCurve;
     QPushButton *generateBinaryImage_button;
     QPushButton *repulsorTool;
-    QPushButton *splitViewButton;
     QCheckBox *interpolate;
     QPushButton *extractRoiButton;
     medTableWidgetChooser* tableViewChooser;
-
-    MapPlaneIndex viewsPlaneIndex;
-
-    QHash<medAbstractView*,contourWidgetListener*> * hashViewObserver;
-    contourWidgetListener* contourObserver;
-
-    QShortcut *undo_shortcut, *redo_shortcut, *copy_shortcut, *paste_shortcut;
-
-    RoiStatistics stats;
-
-    friend class contourWidgetListener;
-
-    dtkSmartPointer<medAbstractData> m_maskData; // Output
-
-    dtkSmartPointer<medImageMaskAnnotationData> m_maskAnnotationData;
-    dtkSmartPointer<medAbstractData> medPolyData;
-
-    UChar3ImageType::Pointer castToUChar3(medAbstractImageData *input);
-    void addPointToBuffer(vtkImageView2D* view2d, vtkSmartPointer<vtkPoints> bufferPoints, itk::ImageBase<3>::IndexType point);
-    void getContourIndices(vtkImageView2D*, UChar3ImageType::Pointer, UChar3ImageType::IndexType, vtkSmartPointer<vtkPoints>);
-
-    static const int HANDLE_PERIOD  = 5;
 };

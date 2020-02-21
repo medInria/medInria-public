@@ -55,7 +55,6 @@ public:
     void setOrientation(unsigned char orientation);
 
     bool isSelected();
-    virtual void computeRoiStatistics() = 0;
     virtual void setRoiStatistics(RoiStatistics s);    
 
     virtual bool canRedo() = 0;
@@ -70,9 +69,6 @@ public slots:
     virtual void undo() = 0;
     virtual void redo() = 0;
     virtual void saveState() = 0;
-    virtual bool copyROI(medAbstractView *) = 0;
-    virtual medAbstractRoi * getCopy(medAbstractView *) = 0;
-    virtual QList<medAbstractRoi*> * interpolate(medAbstractRoi*) = 0;
     
 signals:
     void selected();

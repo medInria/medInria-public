@@ -26,15 +26,33 @@
 #include <medIntParameterL.h>
 #include <vtkRenderWindowInteractor.h>
 #include <vtkRenderer.h>
+#include <vtkAppendPolyData.h>
+#include <medUtilitiesITK.h>
+#include <itkImageBase.h>
+#include <vtkPolyDataToImageStencil.h>
+#include <vtkImageStencil.h>
+#include <vtkImageData.h>
+#include <vtkPointData.h>
+#include <itkVTKImageToImageFilter.h>
+#include <vtkSphereSource.h>
+#include <itkImageFileWriter.h>
+#include <vtkXMLPolyDataWriter.h>
+#include <vtkXMLImageDataWriter.h>
+#include <vtkMatrix4x4.h>
+#include <medAbstractDataFactory.h>
+#include <medUtilities.h>
+#include <medDataManager.h>
 
 class medLabelManagerPrivate
 {
 public:
     medLabelManagerPrivate(){}
     medLabelManagerPrivate(medAbstractView *view, polygonEventFilter *eventCursor, QColor color);
+    ~medLabelManagerPrivate();
 
     QList<polygonRoi*> rois;
     int orientation;
+    int sliceOrientation;
     medAbstractView *view;
     polygonEventFilter *eventCursor;
     QColor color;
@@ -49,10 +67,20 @@ medLabelManagerPrivate::medLabelManagerPrivate(medAbstractView *view, polygonEve
     vtkImageView2D *view2d = static_cast<medVtkViewBackend*>(view->backend())->view2D;
 
     this->orientation = view2d->GetViewOrientation();
+    this->sliceOrientation = view2d->GetSliceOrientation();
     this->color = color;
 
     polygonRoi *roi = new polygonRoi(view2d, color);
     rois.append(roi);
+}
+
+medLabelManagerPrivate::~medLabelManagerPrivate()
+{
+    for (polygonRoi *roi: rois)
+    {
+        delete roi;
+    }
+    rois.clear();
 }
 
 
@@ -60,6 +88,12 @@ medLabelManager::medLabelManager(medAbstractView *view, polygonEventFilter *even
     d(new medLabelManagerPrivate(view, eventCursor, color))
 {
     connectRois();
+    manageTick();
+}
+
+medLabelManager::~medLabelManager()
+{
+    delete d;
 }
 
 void medLabelManager::appendRoi()
@@ -67,6 +101,7 @@ void medLabelManager::appendRoi()
     vtkImageView2D *view2d = static_cast<medVtkViewBackend*>(d->view->backend())->view2D;
     polygonRoi *roi = new polygonRoi(view2d, d->color);
     d->rois.append(roi);
+    manageTick();
     connectRois();
 }
 
@@ -90,10 +125,7 @@ void medLabelManager::setContourEnabled(bool state)
     for (polygonRoi *roi : d->rois)
     {
         roi->setEnabled(state);
-        if (state)
-            roi->On();
-        else
-            roi->Off();
+        manageVisibility();
     }
 }
 
@@ -124,7 +156,13 @@ bool medLabelManager::roiClosedInSlice()
     return false;
 }
 
-void medLabelManager::manageTick()
+bool medLabelManager::isSameSliceOrientation()
+{
+    vtkImageView2D *view2d = static_cast<medVtkViewBackend*>(d->view->backend())->view2D;
+    return (d->sliceOrientation==view2d->GetSliceOrientation());
+}
+
+void medLabelManager::removeAllTick()
 {
     vtkImageView2D *view2d = static_cast<medVtkViewBackend*>(d->view->backend())->view2D;
 
@@ -147,17 +185,322 @@ void medLabelManager::manageTick()
     }
     for (polygonRoi *roi : d->rois)
     {
-        if (view2d->GetViewOrientation() != roi->getOrientation())
-        {
-            slicingParameter->getSlider()->removeTick(roi->getIdSlice());
-        }
-        else
-        {
-            slicingParameter->getSlider()->addTick(roi->getIdSlice());
-        }
+        slicingParameter->getSlider()->removeTick(roi->getIdSlice());
         slicingParameter->getSlider()->update();
     }
-    d->view->render();
+
+}
+
+void medLabelManager::initializeMaskData( medAbstractData * imageData, medAbstractData * maskData )
+{
+    UChar3ImageType::Pointer mask = UChar3ImageType::New();
+    Q_ASSERT(mask->GetImageDimension() == 3);
+
+    medAbstractImageData *mImage = qobject_cast<medAbstractImageData*>(imageData);
+    Q_ASSERT(mImage);
+
+    UChar3ImageType::RegionType region;
+    region.SetSize(0, ( mImage->Dimension() > 0 ? mImage->xDimension() : 1 ) );
+    region.SetSize(1, ( mImage->Dimension() > 1 ? mImage->yDimension() : 1 ) );
+    region.SetSize(2, ( mImage->Dimension() > 2 ? mImage->zDimension() : 1 ) );
+
+    UChar3ImageType::DirectionType direction;
+    UChar3ImageType::SpacingType spacing;
+    UChar3ImageType::PointType origin;
+
+    direction.Fill(0);
+    spacing.Fill(0);
+    origin.Fill(0);
+    for (unsigned int i = 0; i < mask->GetImageDimension(); ++i)
+    {
+        direction(i,i) = 1;
+    }
+
+    unsigned int maxIndex = std::min<unsigned int>(mask->GetImageDimension(),mImage->Dimension());
+
+    switch (mImage->Dimension())
+    {
+        case 2:
+        {
+            itk::ImageBase <2> * imageDataOb = dynamic_cast<itk::ImageBase <2> *>( reinterpret_cast<itk::Object*>(imageData->data()) );
+
+            for (unsigned int i = 0; i < maxIndex; ++i)
+            {
+                for (unsigned int j = 0; j < maxIndex; ++j)
+                {
+                    direction(i,j) = imageDataOb->GetDirection()(i,j);
+                }
+
+                spacing[i] = imageDataOb->GetSpacing()[i];
+                origin[i] = imageDataOb->GetOrigin()[i];
+            }
+
+            break;
+        }
+
+        case 4:
+        {
+            itk::ImageBase <4> * imageDataOb = dynamic_cast<itk::ImageBase <4> *>( reinterpret_cast<itk::Object*>(imageData->data()) );
+
+            for (unsigned int i = 0; i < maxIndex; ++i)
+            {
+                for (unsigned int j = 0; j < maxIndex; ++j)
+                {
+                    direction(i,j) = imageDataOb->GetDirection()(i,j);
+                }
+
+                spacing[i] = imageDataOb->GetSpacing()[i];
+                origin[i] = imageDataOb->GetOrigin()[i];
+            }
+
+            break;
+        }
+
+        case 3:
+        default:
+        {
+            itk::ImageBase <3> *imageDataOb = dynamic_cast<itk::ImageBase <3> *>( reinterpret_cast<itk::Object*>(imageData->data()) );
+
+            for (unsigned int i = 0; i < maxIndex; ++i)
+            {
+                for (unsigned int j = 0; j < maxIndex; ++j)
+                {
+                    direction(i,j) = imageDataOb->GetDirection()(i,j);
+                }
+
+                spacing[i] = imageDataOb->GetSpacing()[i];
+                origin[i] = imageDataOb->GetOrigin()[i];
+            }
+
+            break;
+        }
+    }
+
+    mask->SetOrigin(origin);
+    mask->SetDirection(direction);
+    mask->SetSpacing(spacing);
+    mask->SetLargestPossibleRegion(region);
+    mask->SetBufferedRegion(region);
+    mask->Allocate();
+    mask->FillBuffer(0);
+
+    maskData->setData((QObject*)(mask.GetPointer()));
+}
+
+void medLabelManager::createMaskWithLabel(int label)
+{
+    vtkImageView2D *view2d = static_cast<medVtkViewBackend*>(d->view->backend())->view2D;
+    medAbstractImageView *v = qobject_cast<medAbstractImageView*>(d->view);
+
+    QList<QPair<vtkPolygon *, int>> polygons;
+    for (polygonRoi *roi : d->rois)
+    {
+        vtkContourWidget * contour =  roi->getContour();
+        vtkContourRepresentation * contourRep = contour->GetContourRepresentation();
+        vtkPolyData * polydata = contourRep->GetContourRepresentationAsPolyData();
+
+        vtkPolygon *polygon = vtkPolygon::New();
+        vtkPoints * points = vtkPoints::New();
+
+        std::vector<vtkIdType> vec_ids;
+        double imagePreviousPoint[3] ={0,0,0};
+
+        unsigned int x1=0,y1=0,z1=0;
+        switch (d->sliceOrientation)
+        {
+        case 0 :
+        {
+            x1=1;
+            y1=2;
+            z1=0;
+            break;
+        }
+        case 1 :
+        {
+            x1=0;
+            y1=2;
+            z1=1;
+            break;
+        }
+        case 2 :
+        {
+            x1=0;
+            y1=1;
+            z1=2;
+            break;
+        }
+        }
+
+        for(int j=0;j<polydata->GetNumberOfPoints();j++)
+        {
+            double * point = polydata->GetPoint(j);
+
+            int imagePoint[3];
+            double imagePointDouble[3];
+
+            view2d->GetImageCoordinatesFromWorldCoordinates(point,imagePoint);
+
+            imagePointDouble[x1]= (double)imagePoint[x1];
+            imagePointDouble[y1]= (double)imagePoint[y1];
+
+            imagePointDouble[z1]= (double)roi->getIdSlice();
+
+            if (imagePointDouble[x1]==imagePreviousPoint[x1] && imagePointDouble[y1]==imagePreviousPoint[y1] && imagePointDouble[z1]==imagePreviousPoint[z1])
+            {
+                continue;
+            }
+
+            vec_ids.push_back(points->InsertNextPoint(imagePointDouble));
+
+            imagePreviousPoint[x1] = imagePointDouble[x1];
+            imagePreviousPoint[y1] = imagePointDouble[y1];
+            imagePreviousPoint[z1] = imagePointDouble[z1];
+        }
+
+        polygon->Initialize(points->GetNumberOfPoints(),&vec_ids[0],points);
+
+        polygons.append(QPair<vtkPolygon*,int>(polygon,roi->getIdSlice()));
+    }
+
+    output = medAbstractDataFactory::instance()->create( "itkDataImageUChar3" );
+    medAbstractData * data = v->layerData(0);
+    medAbstractImageData *inputData = qobject_cast<medAbstractImageData*>(data);
+    initializeMaskData(inputData, output);
+    UChar3ImageType::Pointer m_itkMask = dynamic_cast<UChar3ImageType*>( reinterpret_cast<itk::Object*>(output->data()) );
+    for(QPair<vtkPolygon *, int> polygon : polygons)
+    {
+
+        double bounds[6];
+        polygon.first->GetBounds(bounds);
+        unsigned int x=0, y=0, z=0;
+        unsigned int bx=0, by=0;
+        unsigned int dimX=0, dimY=0;
+        switch (d->sliceOrientation)
+        {
+            case 0 :
+            {
+                dimX = inputData->yDimension();
+                dimY = inputData->zDimension();
+                x = 1;
+                y = 2;
+                z = 0;
+                bx = 2;
+                by = 4;
+                break;
+            }
+            case 1 :
+            {
+                dimX = inputData->xDimension();
+                dimY = inputData->zDimension();
+                x = 0;
+                y = 2;
+                z = 1;
+                bx = 0;
+                by = 4;
+                break;
+            }
+            case 2 :
+            {
+                dimX = inputData->xDimension();
+                dimY = inputData->yDimension();
+                x = 0;
+                y = 1;
+                z = 2;
+                bx = 0;
+                by = 2;
+                break;
+            }
+        }
+
+        // Qt rasterization
+        int nbPoints = polygon.first->GetPoints()->GetNumberOfPoints();
+        vtkPoints *pointsArray = polygon.first->GetPoints();
+        QPolygonF polygonF;
+        for(int i=0; i<nbPoints; i++)
+        {
+            polygonF << QPointF(pointsArray->GetPoint(i)[x], pointsArray->GetPoint(i)[y]);
+        }
+
+        QPainterPath path;
+        path.addPolygon(polygonF);
+
+        QBrush brush;
+        brush.setColor(Qt::white);
+        brush.setStyle(Qt::SolidPattern);
+
+        QImage imagePolygon(dimX,dimY,QImage::Format_RGB16);
+        imagePolygon.fill(Qt::black);
+        QPainter painter;
+        painter.begin(&imagePolygon);
+        painter.fillPath(path,brush);
+
+        for(int i=bounds[bx]; i<=bounds[bx+1]; i++)
+        {
+            for(int j=bounds[by]; j<=bounds[by+1]; j++)
+            {
+                QRgb val = imagePolygon.pixel(i,j);
+
+                if (val==qRgb(255,255,255))
+                {
+                    UChar3ImageType::IndexType index;
+                    index[x]=i;
+                    index[y]=j;
+                    index[z]=polygon.second;
+                    m_itkMask->SetPixel(index,label);
+                }
+            }
+        }
+    }
+    QString desc = QString("contour with label ") + QString::number(label);
+    medUtilities::setDerivedMetaData(output, inputData, desc);
+    medDataManager::instance()->importData(output, false);
+    return;
+}
+
+void medLabelManager::SetMasterRoi(bool state)
+{
+    polygonRoi *roi = existingRoiInSlice();
+    roi->setMasterRoi(true);
+}
+
+void medLabelManager::manageTick()
+{
+    vtkImageView2D *view2d = static_cast<medVtkViewBackend*>(d->view->backend())->view2D;
+
+    medIntParameterL *slicingParameter = nullptr;
+    foreach (medAbstractInteractor *interactor, qobject_cast<medAbstractLayeredView*>(d->view)->layerInteractors(0))
+    {
+        if ((interactor->identifier() == "medVtkViewItkDataImageInteractor") ||
+                (interactor->identifier() == "medVtkViewItkDataImage4DInteractor"))
+        {
+            foreach (medAbstractParameterL *parameter, interactor->linkableParameters())
+            {
+                if (parameter->name() == "Slicing")
+                {
+                    slicingParameter = qobject_cast<medIntParameterL*>(parameter);
+                    break;
+                }
+            }
+            break;
+        }
+    }
+    if ( slicingParameter )
+    {
+        slicingParameter->getSlider()->removeAllTicks();
+        for (polygonRoi *roi : d->rois)
+        {
+            if (view2d->GetViewOrientation() != roi->getOrientation())
+            {
+                slicingParameter->getSlider()->removeTick(roi->getIdSlice());
+            }
+            else
+            {
+                slicingParameter->getSlider()->addTick(roi->getIdSlice());
+            }
+            slicingParameter->getSlider()->update();
+        }
+        d->view->render();
+    }
     return;
 }
 
@@ -199,24 +542,9 @@ void medLabelManager::connectRois()
 
 void medLabelManager::manageVisibility()
 {
-    vtkImageView2D *view2d = static_cast<medVtkViewBackend*>(d->view->backend())->view2D;
-
     for (polygonRoi *roi : d->rois)
     {
-        vtkContourOverlayRepresentation *contourRep = dynamic_cast<vtkContourOverlayRepresentation*>(roi->getContour()->GetContourRepresentation());
-        contourRep->GetProperty()->SetPointSize(6);
-        if (view2d->GetViewOrientation() != d->orientation)
-        {
-            contourRep->GetProperty()->SetPointSize(1);
-            roi->On();
-        }
-        else
-        {
-            if (view2d->GetSlice() == roi->getIdSlice())
-                roi->On();
-            else
-                roi->Off();
-        }
+        roi->manageVisibility();
     }
     d->view->render();
 }
@@ -298,12 +626,71 @@ double medLabelManager::getMinimumDistanceFromIntermediateNodesToEventPosition(d
     return minDist;
 }
 
+void medLabelManager::deleteNode(double X, double Y)
+{
+    polygonRoi *roi = existingRoiInSlice();
+    double minDist = DBL_MAX;
+    double contourPos[2];
+    double dist = 0.;
+    double eventPos[2];
+    eventPos[0] = X;
+    eventPos[1] = Y;
+
+    int node = -1;
+    if (roi)
+    {
+        vtkContourOverlayRepresentation *contourRep = dynamic_cast<vtkContourOverlayRepresentation*>(roi->getContour()->GetContourRepresentation());
+        for(int j=0; j<contourRep->GetNumberOfNodes(); j++)
+        {
+            contourRep->GetNthNodeDisplayPosition(j, contourPos);
+            dist = getDistance(eventPos, contourPos);
+            if ( dist < minDist )
+            {
+                minDist = dist;
+                node = j;
+            }
+        }
+        contourRep->DeleteNthNode(node);
+        if (contourRep->GetNumberOfNodes() == 0)
+        {
+            qDebug()<<"rois size 1 "<<d->rois.size();
+            d->rois.removeOne(roi);
+            delete roi;
+            qDebug()<<"rois size 2 "<<d->rois.size();
+            //d->view->render();
+            //return;
+        }
+    }
+    interpolateIfNeeded();
+    d->view->render();
+}
+
+void medLabelManager::deleteContour()
+{
+    polygonRoi *roiToCheck = existingRoiInSlice();
+    if (roiToCheck)
+    {
+        QList<polygonRoi *>::Iterator it = d->rois.begin();
+        while( it != d->rois.end())
+        {
+            polygonRoi *roi = *it;
+            if ( roiToCheck == roi )
+            {
+                it = d->rois.erase(it);
+                delete roi;
+            }
+            else
+            {
+                ++it;
+            }
+        }
+    }
+    interpolateIfNeeded();
+    d->view->render();
+}
+
 double medLabelManager::getDistance(double mousePos[2], double contourPos[2])
 {
-//    qDebug()<<"ratio : "<<QGuiApplication::primaryScreen()->devicePixelRatio();
-//    qDebug()<<"mouse = x : "<<mouseX<<" y : "<<mouseY;
-//    qDebug()<<"node  = x : "<<contourPos[0]<<" y : "<<contourPos[1];
-//    qDebug()<<"distance  : "<<sqrt(pow(mouseX - contourPos[0], 2) + pow(mouseY - contourPos[1], 2));
     return sqrt(pow(mousePos[0] - contourPos[0], 2) + pow(mousePos[1] - contourPos[1], 2));
 }
 
@@ -315,6 +702,8 @@ void medLabelManager::interpolateIfNeeded()
     if (d->rois.size() < 2)
         return;
 
+    removeAllTick();
+
     // TODO : Remove. Find a way to ensure all contour are closed (add pixel tolerance or force close on sliceChangedEvent)
     for (polygonRoi *roi : d->rois)
     {
@@ -325,14 +714,12 @@ void medLabelManager::interpolateIfNeeded()
         }
     }
 
-    QList<polygonRoi *> masterRois;
     QList<polygonRoi *>::Iterator it = d->rois.begin();
     while( it != d->rois.end())
     {
         polygonRoi *roi = *it;
         if ( roi->isMasterRoi() )
         {
-            masterRois.append(roi);
             ++it;
         }
         else
@@ -341,17 +728,20 @@ void medLabelManager::interpolateIfNeeded()
             delete roi;
         }
     }
-
-    std::sort(d->rois.begin(), d->rois.end(), medLabelManager::sortRois);
-
-    QList<polygonRoi *> listOfRois;
-    for (int i=0; i<d->rois.size()-1; i++)
+    qDebug()<<"size of rois "<<d->rois.size();
+    if (d->rois.size() >= 2)
     {
-        polygonRoi *firstRoi = d->rois.at(i);
-        polygonRoi *secondRoi = d->rois.at(i+1);
-        listOfRois.append(interpolateBetween2Slices(firstRoi, secondRoi));
+        std::sort(d->rois.begin(), d->rois.end(), medLabelManager::sortRois);
+
+        QList<polygonRoi *> listOfRois;
+        for (int i=0; i<d->rois.size()-1; i++)
+        {
+            polygonRoi *firstRoi = d->rois.at(i);
+            polygonRoi *secondRoi = d->rois.at(i+1);
+            listOfRois.append(interpolateBetween2Slices(firstRoi, secondRoi));
+        }
+        d->rois.append(listOfRois);
     }
-    d->rois.append(listOfRois);
     connectRois();
     manageVisibility();
     manageTick();
@@ -392,6 +782,7 @@ QList<polygonRoi *> medLabelManager::interpolateBetween2Slices(polygonRoi *first
 
         int nbPointsPoly = listPolyData[i-(minSlice+1)]->GetNumberOfPoints();
         int pointToRemove = 0;
+
         contour->Initialize(listPolyData[i-(minSlice+1)]);
         for (int k = 0; k<nbPointsPoly; k++)
         {
@@ -415,6 +806,13 @@ QList<polygonRoi *> medLabelManager::interpolateBetween2Slices(polygonRoi *first
 
         outputRois.append(polyRoi);
     }
+
+    for (vtkPolyData *pd : listPolyData)
+    {
+        pd->Delete();
+    }
+    listPolyData.clear();
+
     return outputRois;
 }
 
@@ -440,7 +838,7 @@ QList<vtkPolyData* > medLabelManager::generateIntermediateCurves(vtkSmartPointer
     reorderPolygon(startCurve);
     reorderPolygon(endCurve);
 
-    vtkSmartPointer<vtkPoints> bufferPoints = vtkPoints::New();
+    vtkSmartPointer<vtkPoints> bufferPoints = vtkSmartPointer<vtkPoints>::New();
     QList<vtkPolyData*> list;
     for(int i=1; i<=nb; i++)
     {
@@ -478,6 +876,9 @@ QList<vtkPolyData* > medLabelManager::generateIntermediateCurves(vtkSmartPointer
         poly->SetPoints(polyPoints);
         poly->SetLines(cells);
         list.append(poly);
+        cells->Delete();
+        polyLine->Delete();
+        polyPoints->Delete();
     }
     return list;
 }
@@ -559,4 +960,5 @@ void medLabelManager::resampleCurve(vtkPolyData *poly,int nbPoints)
     }
 
     poly->SetPoints(points);
+    points->Delete();
 }

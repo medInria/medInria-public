@@ -14,6 +14,7 @@
 
 #include <polygonRoiPluginExport.h>
 
+#include <itkImage.h>
 #include <medAbstractRoi.h>
 #include <medAbstractView.h>
 #include <polygonRoi.h>
@@ -24,15 +25,19 @@ class medLabelManagerPrivate;
 class polygonEventFilter;
 class medTableWidgetItem;
 
+typedef itk::Image<unsigned char, 3> UChar3ImageType;
+
 class POLYGONROIPLUGIN_EXPORT medLabelManager : public QObject
 {
     Q_OBJECT
 
 public:
     medLabelManager(medAbstractView *view, polygonEventFilter *eventCursor, QColor color=Qt::transparent);
+    ~medLabelManager();
 
     polygonRoi* roiOpenInSlice();
     bool roiClosedInSlice();
+    bool isSameSliceOrientation();
     polygonRoi *existingRoiInSlice();
     void appendRoi(polygonRoi *roi);
     QList<polygonRoi *> getRois();
@@ -48,10 +53,17 @@ public:
     bool mouseIsCloseFromContour(double mousePos[2]);
     double getMinimumDistanceFromNodesToEventPosition(double eventPos[2]);
     double getMinimumDistanceFromIntermediateNodesToEventPosition(double eventPos[2]);
+    void deleteNode(double X, double Y);
+    void deleteContour();
+    void removeAllTick();
+    void createMaskWithLabel(int label);
+    void SetMasterRoi(bool state);
+
 public slots:
     void interpolateIfNeeded();
 
 private:
+    dtkSmartPointer<medAbstractData> output;
     bool isSameOrientation(int orientation);
     medLabelManagerPrivate* const d;
 
@@ -62,6 +74,7 @@ private:
     static bool sortRois(const polygonRoi *p1, const polygonRoi *p2);
     void connectRois();
     double getDistance(double mousePos[2], double contourPos[2]);
+    void initializeMaskData(medAbstractData *imageData, medAbstractData *maskData);
 };
 
 

@@ -79,11 +79,6 @@ QString medPaintBrush::type()
     return QString();
 }
 
-void medPaintBrush::computeRoiStatistics()
-{
-
-}
-
 bool medPaintBrush::canRedo()
 {
     return false;
@@ -107,21 +102,6 @@ void medPaintBrush::redo()
 void medPaintBrush::saveState()
 {
 
-}
-
-bool medPaintBrush::copyROI(medAbstractView *view)
-{
-    return false;
-}
-
-medAbstractRoi *medPaintBrush::getCopy(medAbstractView *view)
-{
-    return nullptr;
-}
-
-QList<medAbstractRoi *> *medPaintBrush::interpolate(medAbstractRoi *roi)
-{
-    return nullptr;
 }
 
 int medPaintBrush::getLabel()

@@ -17,15 +17,21 @@
 #include <QLabel>
 #include <QMenu>
 #include <QPushButton>
-#include <medColorEditor.h>
 #include <medIntParameterL.h>
 #include <medTableWidgetChooser.h>
 #include <medVtkViewBackend.h>
 #include <vtkRenderWindowInteractor.h>
 #include <float.h>
+#include <medDataManager.h>
+#include <medAbstractDataFactory.h>
+#include <medUtilities.h>
+#include <medAbstractImageData.h>
+#include <itkJoinImageFilter.h>
+#include <itkAddImageFilter.h>
+#include <itkComposeImageFilter.h>
 
 polygonEventFilter::polygonEventFilter(medAbstractImageView *view) :
-        medViewEventFilter(), currentView(view), cursorState(CURSORSTATE::FIRST_MOUSE_EVENT), isRepulsorActivated(false)
+        medViewEventFilter(), currentView(view), cursorState(CURSORSTATE::MOUSE_EVENT), isRepulsorActivated(false)
 {
     colorList = QList<QColor>({
         Qt::green,
@@ -41,6 +47,46 @@ polygonEventFilter::polygonEventFilter(medAbstractImageView *view) :
 
     // interactors
     interactorStyleRepulsor = vtkInriaInteractorStylePolygonRepulsor::New();
+    connect(this, SIGNAL(nodeToDelete(medLabelManager*,double, double)), this, SLOT(deletedNode(medLabelManager*,double, double)));
+    connect(this, SIGNAL(contourToDelete(medLabelManager*)), this, SLOT(deletedContour(medLabelManager*)));
+    connect(this, SIGNAL(labelToDelete(medLabelManager*)), this, SLOT(deletedLabel(medLabelManager*)));
+    connect(this, SIGNAL(maskToSave(medLabelManager*)), this, SLOT(savedMask(medLabelManager*)));
+}
+
+polygonEventFilter::~polygonEventFilter()
+{
+    interactorStyleRepulsor->Delete();
+    for (medLabelManager *manager: managers)
+    {
+        delete manager;
+    }
+    managers.clear();
+}
+
+void polygonEventFilter::updateView(medAbstractImageView *view)
+{
+    currentView = view;
+}
+
+bool polygonEventFilter::mouseReleaseEvent(medAbstractView *view, QMouseEvent *mouseEvent)
+{
+    if (isRepulsorActivated)
+    {
+        if (interactorStyleRepulsor != nullptr)
+        {
+            interactorStyleRepulsor->GetManager()->SetMasterRoi(true);
+            interactorStyleRepulsor->GetManager()->interpolateIfNeeded();
+        }
+    }
+}
+
+void polygonEventFilter::removeManagers()
+{
+    for (medLabelManager *manager: managers)
+    {
+        delete manager;
+    }
+    managers.clear();
 
 }
 
@@ -55,38 +101,71 @@ bool polygonEventFilter::mousePressEvent(medAbstractView * view, QMouseEvent *mo
     }
     else if (mouseEvent->button()==Qt::RightButton)
     {
-//        QMenu *menu = new QMenu;
-//        QMenu *subMenu = new QMenu(QString("define label"));
-//        menu->addMenu(subMenu);
-//        QPixmap pixmap(100,100);
-//        pixmap.fill(QColor("red"));
-//        QIcon redIcon(pixmap);
-//        subMenu->addAction(new QAction(redIcon, QString("red"), this));
-////        menu->addAction(new QAction("New",this));
-////        menu->addAction(new QAction("Edit",this));
-////        menu->addAction(new QAction("Delete",this));
-//        vtkImageView2D *view2d = static_cast<medVtkViewBackend*>(view->backend())->view2D;
+        QMenu mainMenu;
+        QList<QColor> colorsToExclude;
+        medLabelManager * closestManager = nullptr;
+        double minDist = DBL_MAX;
+        double dist = 0.;
+        double mousePos[2];
+        mousePos[0] = mouseEvent->x()*QGuiApplication::screenAt(mouseEvent->globalPos())->devicePixelRatio();
+        mousePos[1] = (currentView->viewWidget()->height()-mouseEvent->y()-1)*QGuiApplication::screenAt(mouseEvent->globalPos())->devicePixelRatio();
+        for (medLabelManager *manager : managers)
+        {
+            if ( manager->existingRoiInSlice() )
+            {
+                colorsToExclude.append(manager->getColor());
 
-//        for (medLabelManager *manager : managers)
-//        {
-//            if (manager->existingRoiInSlice())
-//            {
-//                QList<polygonRoi*> rois = manager->getRois();
-//                for (polygonRoi *roi : rois)
-//                {
-//                    for (int i = 0; i< roi->getContour()->GetContourRepresentation()->GetNumberOfNodes(); i++)
-//                    {
-//                        double pos[2];
-//                        roi->getContour()->GetContourRepresentation()->GetNthNodeDisplayPosition(i, pos);
-//                        if ( getDistance(mouseEvent->x(), (view->viewWidget()->height()-mouseEvent->y()-1), pos) <= 10 )
-//                        {
-//                            menu->exec(mouseEvent->globalPos());
-//                            break;
-//                        }
-//                    }
-//                }
-//            }
-//        }
+                dist = manager->getMinimumDistanceFromNodesToEventPosition(mousePos);
+                if ( dist < minDist )
+                {
+                    minDist = dist;
+                    closestManager = manager;
+                }
+            }
+        }
+
+        QList<QColor> colors = updateColors(colorsToExclude);
+        QMenu *labelMenu = updateLabelMenu(colors);
+        QMenu *roiManagementMenu = new QMenu("Delete");
+        if (closestManager && closestManager->getMinimumDistanceFromNodesToEventPosition(mousePos) < 10 )
+        {
+            mainMenu.addMenu(roiManagementMenu);
+            QAction *deleteOneNodeAction = new QAction("One node", roiManagementMenu);
+            connect(deleteOneNodeAction, &QAction::triggered, [=](){
+                emit nodeToDelete(closestManager, mousePos[0], mousePos[1]);
+            });
+            roiManagementMenu->addAction(deleteOneNodeAction);
+
+            QAction *deleteContour = new QAction("Contour", roiManagementMenu);
+            connect(deleteContour, &QAction::triggered, [=](){
+                emit contourToDelete(closestManager);
+            });
+            roiManagementMenu->addAction(deleteContour);
+
+            QAction *deleteLabel = new QAction("Label", roiManagementMenu);
+            connect(deleteLabel, &QAction::triggered, [=](){
+                emit labelToDelete(closestManager);
+            });
+            roiManagementMenu->addAction(deleteLabel);
+
+            QAction *saveMask = new QAction("Save Mask", &mainMenu);
+            connect(saveMask, &QAction::triggered, [=](){
+                emit maskToSave(closestManager);
+            });
+
+            mainMenu.addMenu(roiManagementMenu);
+            mainMenu.addAction(saveMask);
+        }
+        else
+        {
+            labelMenu->setTitle("Label");
+            mainMenu.addMenu(labelMenu);
+        }
+
+
+        mainMenu.exec(mouseEvent->globalPos());
+        delete labelMenu;
+        delete roiManagementMenu;
 
         return true;
     }
@@ -99,38 +178,23 @@ bool polygonEventFilter::leftButtonBehaviour(medAbstractView *view, QMouseEvent 
         cursorState = CURSORSTATE::REPULSOR;
 
     vtkImageView2D *view2d = static_cast<medVtkViewBackend*>(view->backend())->view2D;
-//    QString state;
-//    if (cursorState==CURSORSTATE::NONE)
-//        state = "none";
-//    else if (cursorState==CURSORSTATE::FIRST_CLICK)
-//        state = "first click";
-//    else if (cursorState==CURSORSTATE::ROI_CLOSED)
-//        state = "roi closed";
-//    else if (cursorState==CURSORSTATE::SLICE_CHANGED)
-//        state = "slice changed";
-//    else if (cursorState==CURSORSTATE::CONTINUE)
-//        state = "continue";
-//    qDebug()<<"mouse press with state : "<<state<<" and currentLabel : "<<currentLabel;
-//    qDebug()<<"roi manager size "<<managers.size();
-//    for (medLabelManager *manager : managers)
-//    {
-//        qDebug()<<"label : "<<manager->getLabel()<<" and number of rois "<<manager->getRois().size();
-//        for (polygonRoi *r : manager->getRois())
-//        {
-//            if (r->isMasterRoi())
-//            qDebug()<<"   in slice "<<r->getIdSlice();
-//        }
-//    }
+    QString state;
+    if (cursorState==CURSORSTATE::NONE)
+        state = "none";
+    else if (cursorState==CURSORSTATE::MOUSE_EVENT)
+        state = "slice changed";
+    else if (cursorState==CURSORSTATE::CONTINUE)
+        state = "continue";
+    else if (cursorState==CURSORSTATE::REPULSOR)
+        state = "repulsor";
+    qDebug()<<"mouse press with state : "<<state;
+    qDebug()<<"roi manager size "<<managers.size();
+
+    if (cursorState != CURSORSTATE::NONE)
+        setToolboxButtonsState(true);
 
     switch (cursorState)
     {
-    case CURSORSTATE::FIRST_MOUSE_EVENT:
-    {
-        medLabelManager * manager = new medLabelManager(view, this, colorList[0]);
-        managers.append(manager);
-        cursorState = CURSORSTATE::NONE;
-        break;
-    }
     case CURSORSTATE::MOUSE_EVENT:
     {
         return addPointInContourWithLabel(mouseEvent);
@@ -155,16 +219,11 @@ bool polygonEventFilter::leftButtonBehaviour(medAbstractView *view, QMouseEvent 
     case CURSORSTATE::REPULSOR:
     {
         double mousePos[2];
-        mousePos[0] = mouseEvent->x()*QGuiApplication::primaryScreen()->devicePixelRatio();
-        mousePos[1] = (currentView->viewWidget()->height()-mouseEvent->y()-1)*QGuiApplication::primaryScreen()->devicePixelRatio();
+        mousePos[0] = mouseEvent->x()*QGuiApplication::screenAt(mouseEvent->globalPos())->devicePixelRatio();
+        mousePos[1] = (currentView->viewWidget()->height()-mouseEvent->y()-1)*QGuiApplication::screenAt(mouseEvent->globalPos())->devicePixelRatio();
         medLabelManager * manager = closestManagerInSlice(mousePos);
         if (!manager)
         {
-//            if (interactorStyleRepulsor!=nullptr)
-//            {
-//                interactorStyleRepulsor->Delete();
-//                interactorStyleRepulsor = nullptr;
-//            }
             return false;
 
         }
@@ -189,7 +248,9 @@ bool polygonEventFilter::addPointInContourWithLabel(QMouseEvent *mouseEvent)
 {
     if (managers.size()==0)
     {
-        qDebug()<<"Impossible Case";
+        medLabelManager * manager = new medLabelManager(currentView, this, colorList[0]);
+        managers.append(manager);
+        cursorState = CURSORSTATE::NONE;
         return false;
     }
     else
@@ -198,8 +259,8 @@ bool polygonEventFilter::addPointInContourWithLabel(QMouseEvent *mouseEvent)
         for (medLabelManager *manager : managers)
         {
             double mousePos[2];
-            mousePos[0] = mouseEvent->x()*QGuiApplication::primaryScreen()->devicePixelRatio();
-            mousePos[1] = (currentView->viewWidget()->height()-mouseEvent->y()-1)*QGuiApplication::primaryScreen()->devicePixelRatio();
+            mousePos[0] = mouseEvent->x()*QGuiApplication::screenAt(mouseEvent->globalPos())->devicePixelRatio();
+            mousePos[1] = (currentView->viewWidget()->height()-mouseEvent->y()-1)*QGuiApplication::screenAt(mouseEvent->globalPos())->devicePixelRatio();
             if ( manager->mouseIsCloseFromContour(mousePos) )
             {
                 cursorState = CURSORSTATE::NONE;
@@ -208,13 +269,18 @@ bool polygonEventFilter::addPointInContourWithLabel(QMouseEvent *mouseEvent)
 
             if ( manager->existingRoiInSlice() )
             {
-                if ( manager->roiClosedInSlice() )
+                if ( manager->roiClosedInSlice())
                     colorsToExclude.append(manager->getColor());
                 else
                 {
                     cursorState = CURSORSTATE::NONE;
                     return false;
                 }
+            }
+            else
+            {
+                if (!manager->isSameSliceOrientation())
+                    colorsToExclude.append(manager->getColor());
             }
         }
 
@@ -226,7 +292,9 @@ bool polygonEventFilter::addPointInContourWithLabel(QMouseEvent *mouseEvent)
         else
         {
             QList<QColor> colors = updateColors(colorsToExclude);
-            chooseLabelMenu(colors, mouseEvent);
+            QMenu * menu = updateLabelMenu(colors);
+            menu->exec(mouseEvent->globalPos());
+            delete menu;
         }
         return false;
     }
@@ -247,20 +315,20 @@ void polygonEventFilter::updateLabel(int label)
 
 }
 
-void polygonEventFilter::chooseLabelMenu(QList<QColor> colors, QMouseEvent *mouseEvent)
+QMenu *polygonEventFilter::updateLabelMenu(QList<QColor> colors)
 {
-    QMenu menu;
+    QMenu *menu = new QMenu;
     for (int i = 0; i<colors.size(); i++)
     {
         QPixmap pixmap(50,50);
         pixmap.fill(colors.at(i));
         QIcon icon(pixmap);
-        QAction *action = new QAction(icon, QString::number(colorList.indexOf(colors.at(i))), this);
+        QAction *action = new QAction(icon, QString::number(colorList.indexOf(colors.at(i))), menu);
         connect(action, SIGNAL(triggered()), &signalMapper, SLOT(map()));
         signalMapper.setMapping(action, colorList.indexOf(colors.at(i)));
-        menu.addAction(action);
+        menu->addAction(action);
     }
-    menu.exec(mouseEvent->globalPos());
+    return menu;
 }
 
 QList<QColor> polygonEventFilter::updateColors(QList<QColor> colorsToExclude)
@@ -292,7 +360,6 @@ QList<QColor> polygonEventFilter::getAvailableColors(QList<QColor> colorsToExclu
         {
             colors.removeOne(color);
         }
-
     }
     return colors;
 }
@@ -300,13 +367,14 @@ QList<QColor> polygonEventFilter::getAvailableColors(QList<QColor> colorsToExclu
 void polygonEventFilter::Off()
 {
     removeFromAllViews();
-    //delete viewEventFilter;
-    //viewEventFilter = nullptr;
+    qDebug()<<"managers size "<<managers.size();
     for (medLabelManager *manager : managers)
     {
+        qDebug()<<"mgr "<<manager;
         manager->setContourEnabled(false);
     }
     cursorState = CURSORSTATE::CONTINUE;
+    //sendSignals();
 }
 
 void polygonEventFilter::On()
@@ -315,7 +383,6 @@ void polygonEventFilter::On()
     {
         manager->setContourEnabled(true);
     }
-
 }
 
 void polygonEventFilter::setEnableInterpolation(bool state)
@@ -360,6 +427,15 @@ void polygonEventFilter::activateRepulsor(bool state)
     return;
 }
 
+void polygonEventFilter::generateMask()
+{
+    QList<UChar3ImageType::Pointer> masks;
+    for (medLabelManager *manager : managers)
+    {
+        savedMask(manager);
+    }
+}
+
 void polygonEventFilter::manageTick()
 {
     for (medLabelManager *manager : managers)
@@ -375,6 +451,59 @@ void polygonEventFilter::manageRoisVisibility()
         manager->manageVisibility();
     }
 
+}
+
+void polygonEventFilter::setToolboxButtonsState(bool state)
+{
+    emit enableRepulsor(state);
+    emit enableGenerateMask(state);
+    emit enableViewChooser(state);
+}
+
+void polygonEventFilter::deletedNode(medLabelManager *manager, double X, double Y)
+{
+    manager->deleteNode(X, Y);
+    if ( manager->getRois().empty() )
+    {
+        managers.removeOne(manager);
+        delete manager;
+    }
+    if (managers.empty())
+    {
+        setToolboxButtonsState(false);
+    }
+}
+
+void polygonEventFilter::deletedContour(medLabelManager *manager)
+{
+    manager->deleteContour();
+    if ( manager->getRois().empty() )
+    {
+        managers.removeOne(manager);
+        delete manager;
+    }
+    if (managers.empty())
+    {
+        setToolboxButtonsState(false);
+    }
+}
+
+void polygonEventFilter::deletedLabel(medLabelManager *manager)
+{
+    managers.removeOne(manager);
+    manager->removeAllTick();
+    delete manager;
+    currentView->render();
+    if (managers.empty())
+    {
+        setToolboxButtonsState(false);
+    }
+}
+
+void polygonEventFilter::savedMask(medLabelManager *manager)
+{
+    int label = colorList.indexOf(manager->getColor()) + 1;
+    manager->createMaskWithLabel(label);
 }
 
 medLabelManager *polygonEventFilter::closestManagerInSlice(double mousePos[2])

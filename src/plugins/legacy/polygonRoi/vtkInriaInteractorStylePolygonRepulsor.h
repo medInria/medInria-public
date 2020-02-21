@@ -39,6 +39,7 @@ public:
     virtual void OnLeftButtonUp();
     void SetCurrentView(medAbstractView *view);
     void SetManager(medLabelManager *closestManagerInSlice);
+    medLabelManager *GetManager(){ return manager;}
     bool IsInRepulsorDisk(double *pt);
     vtkGetObjectMacro(RepulsorActor,vtkCircleActor2D)
     vtkGetObjectMacro(RepulsorProperty,vtkProperty2D)
