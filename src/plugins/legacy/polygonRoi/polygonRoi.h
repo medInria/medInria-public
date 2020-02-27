@@ -21,7 +21,7 @@
 #include <medAbstractImageView.h>
 #include <vtkPolygon.h>
 
-enum class CURSORSTATE { NONE, MOUSE_EVENT, CONTINUE, REPULSOR  };
+enum class CURSORSTATE { CS_NONE, CS_MOUSE_EVENT, CS_CONTINUE, CS_REPULSOR  };
 
 class polygonRoiPrivate;
 class BezierRoiObserver;

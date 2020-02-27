@@ -160,6 +160,7 @@ medAbstractData *polygonRoiToolBox::processOutput()
 //        //generateBinaryImage();
 //    }
 //    return m_maskData; // return output data
+    return nullptr;
 }
 
 void polygonRoiToolBox::updateView()
