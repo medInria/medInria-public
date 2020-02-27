@@ -78,14 +78,14 @@ void PolygonRoiObserver::Execute ( vtkObject *caller, unsigned long event, void 
         default:
         {
             roi->manageVisibility();
-            emit roi->updateCursorState(CURSORSTATE::MOUSE_EVENT);
+            emit roi->updateCursorState(CURSORSTATE::CS_MOUSE_EVENT);
             break;
         }
         case vtkCommand::EndInteractionEvent:
         {
             qDebug()<<"end interaction event";
             roi->setMasterRoi(true);
-            emit roi->updateCursorState(CURSORSTATE::MOUSE_EVENT);
+            emit roi->updateCursorState(CURSORSTATE::CS_MOUSE_EVENT);
             emit roi->interpolate();
             break;
         }
@@ -93,7 +93,7 @@ void PolygonRoiObserver::Execute ( vtkObject *caller, unsigned long event, void 
         {
             qDebug()<<"mouse move event";
             roi->setMasterRoi(true);
-            emit roi->updateCursorState(CURSORSTATE::MOUSE_EVENT);
+            emit roi->updateCursorState(CURSORSTATE::CS_MOUSE_EVENT);
             emit roi->interpolate();
             break;
         }

@@ -18,7 +18,7 @@
 #include <medRoiManager.h>
 #include <QSpinBox>
 
-#include <QtGui/qwidgetaction.h>
+#include <qwidgetaction.h>
 
 typedef itk::Image<unsigned char, 3> UChar3ImageType;
 
@@ -30,8 +30,8 @@ class polygonEventFilter : public medViewEventFilter
 public:
     polygonEventFilter(medAbstractImageView *view);
     ~polygonEventFilter();
-    virtual bool mousePressEvent(medAbstractView * view, QMouseEvent *mouseEvent);
-    virtual bool mouseReleaseEvent(medAbstractView * view, QMouseEvent *mouseEvent);
+    bool mousePressEvent(medAbstractView * view, QMouseEvent *mouseEvent) override;
+    bool mouseReleaseEvent(medAbstractView * view, QMouseEvent *mouseEvent) override;
 
     void removeManagers();
     void updateView(medAbstractImageView *view);

@@ -31,7 +31,7 @@
 #include <itkComposeImageFilter.h>
 
 polygonEventFilter::polygonEventFilter(medAbstractImageView *view) :
-        medViewEventFilter(), currentView(view), cursorState(CURSORSTATE::MOUSE_EVENT), isRepulsorActivated(false)
+        medViewEventFilter(), currentView(view), cursorState(CURSORSTATE::CS_MOUSE_EVENT), isRepulsorActivated(false)
 {
     colorList = QList<QColor>({
         Qt::green,
@@ -70,14 +70,19 @@ void polygonEventFilter::updateView(medAbstractImageView *view)
 
 bool polygonEventFilter::mouseReleaseEvent(medAbstractView *view, QMouseEvent *mouseEvent)
 {
+    bool bRes = false;
+
     if (isRepulsorActivated)
     {
         if (interactorStyleRepulsor != nullptr)
         {
             interactorStyleRepulsor->GetManager()->SetMasterRoi(true);
             interactorStyleRepulsor->GetManager()->interpolateIfNeeded();
+            bRes = true;
         }
     }
+
+    return bRes;
 }
 
 void polygonEventFilter::removeManagers()
@@ -175,31 +180,31 @@ bool polygonEventFilter::mousePressEvent(medAbstractView * view, QMouseEvent *mo
 bool polygonEventFilter::leftButtonBehaviour(medAbstractView *view, QMouseEvent *mouseEvent)
 {
     if (isRepulsorActivated)
-        cursorState = CURSORSTATE::REPULSOR;
+        cursorState = CURSORSTATE::CS_REPULSOR;
 
     vtkImageView2D *view2d = static_cast<medVtkViewBackend*>(view->backend())->view2D;
     QString state;
-    if (cursorState==CURSORSTATE::NONE)
+    if (cursorState==CURSORSTATE::CS_NONE)
         state = "none";
-    else if (cursorState==CURSORSTATE::MOUSE_EVENT)
+    else if (cursorState==CURSORSTATE::CS_MOUSE_EVENT)
         state = "slice changed";
-    else if (cursorState==CURSORSTATE::CONTINUE)
+    else if (cursorState==CURSORSTATE::CS_CONTINUE)
         state = "continue";
-    else if (cursorState==CURSORSTATE::REPULSOR)
+    else if (cursorState==CURSORSTATE::CS_REPULSOR)
         state = "repulsor";
     qDebug()<<"mouse press with state : "<<state;
     qDebug()<<"roi manager size "<<managers.size();
 
-    if (cursorState != CURSORSTATE::NONE)
+    if (cursorState != CURSORSTATE::CS_NONE)
         setToolboxButtonsState(true);
 
     switch (cursorState)
     {
-    case CURSORSTATE::MOUSE_EVENT:
+    case CURSORSTATE::CS_MOUSE_EVENT:
     {
         return addPointInContourWithLabel(mouseEvent);
     }
-    case CURSORSTATE::CONTINUE:
+    case CURSORSTATE::CS_CONTINUE:
     {
         for (medLabelManager *manager : managers)
         {
@@ -210,13 +215,13 @@ bool polygonEventFilter::leftButtonBehaviour(medAbstractView *view, QMouseEvent 
                 roi->getContour()->SetWidgetState(vtkContourWidget::Define);
 
                 roi->getContour()->InvokeEvent(vtkCommand::PlacePointEvent);
-                cursorState = CURSORSTATE::NONE;
+                cursorState = CURSORSTATE::CS_NONE;
                 return false;
             }
         }
         return addPointInContourWithLabel(mouseEvent);
     }
-    case CURSORSTATE::REPULSOR:
+    case CURSORSTATE::CS_REPULSOR:
     {
         double mousePos[2];
         mousePos[0] = mouseEvent->x()*QGuiApplication::screenAt(mouseEvent->globalPos())->devicePixelRatio();
@@ -235,7 +240,7 @@ bool polygonEventFilter::leftButtonBehaviour(medAbstractView *view, QMouseEvent 
         interactorStyleRepulsor->SetManager(manager);
         return false;
     }
-    case CURSORSTATE::NONE:
+    case CURSORSTATE::CS_NONE:
     default:
     {
         return false;
@@ -250,7 +255,7 @@ bool polygonEventFilter::addPointInContourWithLabel(QMouseEvent *mouseEvent)
     {
         medLabelManager * manager = new medLabelManager(currentView, this, colorList[0]);
         managers.append(manager);
-        cursorState = CURSORSTATE::NONE;
+        cursorState = CURSORSTATE::CS_NONE;
         return false;
     }
     else
@@ -263,7 +268,7 @@ bool polygonEventFilter::addPointInContourWithLabel(QMouseEvent *mouseEvent)
             mousePos[1] = (currentView->viewWidget()->height()-mouseEvent->y()-1)*QGuiApplication::screenAt(mouseEvent->globalPos())->devicePixelRatio();
             if ( manager->mouseIsCloseFromContour(mousePos) )
             {
-                cursorState = CURSORSTATE::NONE;
+                cursorState = CURSORSTATE::CS_NONE;
                 return false;
             }
 
@@ -273,7 +278,7 @@ bool polygonEventFilter::addPointInContourWithLabel(QMouseEvent *mouseEvent)
                     colorsToExclude.append(manager->getColor());
                 else
                 {
-                    cursorState = CURSORSTATE::NONE;
+                    cursorState = CURSORSTATE::CS_NONE;
                     return false;
                 }
             }
@@ -311,7 +316,7 @@ void polygonEventFilter::updateLabel(int label)
     }
     medLabelManager *newManager = new medLabelManager(currentView, this, colorList.at(label));
     managers.append(newManager);
-    cursorState = CURSORSTATE::NONE;
+    cursorState = CURSORSTATE::CS_NONE;
 
 }
 
@@ -373,7 +378,7 @@ void polygonEventFilter::Off()
         qDebug()<<"mgr "<<manager;
         manager->setContourEnabled(false);
     }
-    cursorState = CURSORSTATE::CONTINUE;
+    cursorState = CURSORSTATE::CS_CONTINUE;
     //sendSignals();
 }
 
@@ -409,7 +414,7 @@ void polygonEventFilter::activateRepulsor(bool state)
     vtkImageView2D *view2D =  static_cast<medVtkViewBackend*>(currentView->backend())->view2D;
     if (state)
     {
-        cursorState = CURSORSTATE::REPULSOR;
+        cursorState = CURSORSTATE::CS_REPULSOR;
         vtkInteractorStyleImageView2D *interactorStyle2D = vtkInteractorStyleImageView2D::SafeDownCast(view2D->GetInteractor()->GetInteractorStyle());
         interactorStyleRepulsor->SetLeftButtonInteraction(interactorStyle2D->GetLeftButtonInteraction());
         view2D->SetInteractorStyle(interactorStyleRepulsor);
@@ -417,7 +422,7 @@ void polygonEventFilter::activateRepulsor(bool state)
     }
     else
     {
-        cursorState = CURSORSTATE::MOUSE_EVENT;
+        cursorState = CURSORSTATE::CS_MOUSE_EVENT;
         vtkInteractorStyleImageView2D *interactorStyle2D = vtkInteractorStyleImageView2D::New();
         interactorStyle2D->SetLeftButtonInteraction(interactorStyleRepulsor->GetLeftButtonInteraction());
         view2D->SetInteractorStyle(interactorStyle2D);
