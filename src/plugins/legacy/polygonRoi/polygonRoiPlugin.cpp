@@ -13,7 +13,6 @@
 #include "polygonRoiPlugin.h"
 #include "polygonRoiToolBox.h"
 
-#include <medRoiManagementToolBox.h>
 
 polygonRoiPlugin::polygonRoiPlugin(QObject *parent) : medPluginLegacy(parent)
 {
@@ -25,10 +24,10 @@ bool polygonRoiPlugin::initialize()
      {
          qDebug() << "Unable to register polygonRoiToolBox";
      }
-     if(!medRoiManagementToolBox::registered())
-     {
-         qDebug() << "Unable to register medRoiManagementToolBox";
-     }
+//     if(!medRoiManagementToolBox::registered())
+//     {
+//         qDebug() << "Unable to register medRoiManagementToolBox";
+//     }
     return true;
 }
 

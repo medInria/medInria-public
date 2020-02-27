@@ -17,6 +17,11 @@
 #include <polygonRoiPluginExport.h>
 #include <vtkContourWidget.h>
 #include <vtkImageView2D.h>
+#include <medImageViewEnum.h>
+#include <medAbstractImageView.h>
+#include <vtkPolygon.h>
+
+enum class CURSORSTATE { NONE, MOUSE_EVENT, CONTINUE, REPULSOR  };
 
 class polygonRoiPrivate;
 class BezierRoiObserver;
@@ -28,41 +33,40 @@ class POLYGONROIPLUGIN_EXPORT polygonRoi : public medAbstractRoi
     Q_OBJECT
 
 public:
-    polygonRoi(vtkImageView2D *view, medAbstractRoi *parent = nullptr );
+    polygonRoi(vtkImageView2D *view, QColor color, medAbstractRoi *parent = nullptr );
     virtual ~polygonRoi();
 
     vtkContourWidget * getContour();
+    QPair<vtkPolyData *, vtkProperty *> createPolydataToAddInViews();
     vtkImageView2D * getView();
-
-    void lockObserver(bool val);
     
     virtual void Off();
     virtual void On();
     virtual bool isVisible();
-    virtual void forceInvisibilityOn();
-    virtual void forceInvisibilityOff();
-    virtual void forceVisibilityOn();
-    virtual void forceVisibilityOff();
 
     virtual QString info();
     virtual QString type();
     virtual void select();
     virtual void unselect();
-    virtual void computeRoiStatistics();
 
     virtual bool canRedo(){return true;}
     virtual bool canUndo(){return true;}
     
+    void addViewToList(medAbstractImageView *viewToAdd, medImageView::Orientation orientation);
+    void addDataSet();
+    bool isClosed();
+    void setEnabled(bool state);
+    vtkSmartPointer<vtkPolygon> createPolygonFromContour();
+    void manageVisibility();
+
 public slots:
-    
-    void showOrHide();
     virtual void undo();
     virtual void redo();
-    virtual void saveState();
-    virtual bool copyROI(medAbstractView *view);
-    virtual medAbstractRoi * getCopy(medAbstractView *view);
-    virtual QList<medAbstractRoi*> * interpolate(medAbstractRoi *roi);
-    
+    virtual void saveState(){}
+
+signals:
+    void updateCursorState(CURSORSTATE state);
+    void interpolate();
 private:
     polygonRoiPrivate *d;
     friend class PolygonRoiObserver;

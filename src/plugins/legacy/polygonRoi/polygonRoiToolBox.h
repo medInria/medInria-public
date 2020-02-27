@@ -19,18 +19,21 @@
 #include <medAbstractRoi.h>
 #include <medAbstractSelectableToolBox.h>
 #include <medRoiManager.h>
+#include <medTableWidgetChooser.h>
 
 #include <polygonRoi.h>
 #include <polygonRoiPluginExport.h>
 
+#include <medImageMaskAnnotationData.h>
 #include <vtkInriaInteractorStylePolygonRepulsor.h>
 #include <vtkPolygon.h>
 #include <vtkRenderWindowInteractor.h>
 
 class medAbstractData;
 class medAbstractImageView;
-class contourWidgetObserver;
+class contourWidgetListener;
 class medAbstractImageData;
+class polygonEventFilter;
 
 typedef itk::Image<unsigned char, 3> UChar3ImageType;
 
@@ -73,68 +76,39 @@ public slots:
     void updateView();
     void onViewClosed();
     void onLayerClosed();
-    void onAddNewCurve();
-    void activateRepulsor();
+    void clickClosePolygon(bool state);
+    void activateRepulsor(bool state);
     void generateAndSaveBinaryImage();
-    void interpolateCurve();
+    void interpolateCurve(bool state);
+    void updateTableWidgetView(unsigned int row, unsigned int col);
+    void updateTableWidgetItems();
 
-    void showExtractROIWarningPopUp();
-    void extractROI();
-
-    void copyContours(); // For the time these function copy and paste all the contours present on a slice. No selection of a contour is possible.
-    void pasteContours();
-    void undo();
-    void redo();
-
-    ListRois interpolateBetween2Polygon(const QList<polygonRoi*> &idAndContour, int firstIndex);
-
+    void manageTick();
+    void manageRoisVisibility();
+    void enableRepulsorButton(bool state);
+    void enableGenerateMaskButton(bool state);
+    void enableTableViewChooser(bool state);
 private slots:
 
     void disableButtons();
-    void buttonsStateAtDataOpeningBeforeROI();
-    void buttonsStateWhenROI();
 
 protected:
 
-    void generateBinaryImage();
     void binaryImageFromPolygon(QList<QPair<vtkPolygon*,PlaneIndexSlicePair> > polys);
-    void reorderPolygon(vtkPolyData * poly);
-    QList<vtkPolyData* > generateIntermediateCurves(vtkSmartPointer<vtkPolyData> curve1,vtkSmartPointer<vtkPolyData> curve2, int nb);
     QList<QPair<vtkPolygon*,PlaneIndexSlicePair> > createImagePolygons(QList<QPair<vtkPolyData*,PlaneIndexSlicePair> > &listPoly);
 
     QList<medSeriesOfRoi*> * getListOfView(medAbstractView *view);
-    void resampleCurve(vtkPolyData *poly, int nbPoints);
     void initializeMaskData( medAbstractData *imageData, medAbstractData *maskData ); // copy of a function in painttoolbox
-    int computePlaneIndex();
     void clear();
 
 private:
 
+    polygonEventFilter *viewEventFilter;
     medAbstractImageView *currentView;
-    medToolBox *roiManagementToolBox;
     QPushButton *addNewCurve;
     QPushButton *generateBinaryImage_button;
     QPushButton *repulsorTool;
-    QPushButton *interpolate;
+    QCheckBox *interpolate;
     QPushButton *extractRoiButton;
-
-    MapPlaneIndex viewsPlaneIndex;
-
-    QHash<medAbstractView*,contourWidgetObserver*> * hashViewObserver;
-
-    QShortcut *undo_shortcut, *redo_shortcut, *copy_shortcut, *paste_shortcut;
-
-    RoiStatistics stats;
-
-    vtkInriaInteractorStylePolygonRepulsor *interactorStyleRepulsor;
-
-    friend class contourWidgetObserver;
-
-    dtkSmartPointer<medAbstractData> m_maskData; // Output
-
-    UChar3ImageType::Pointer castToUChar3(medAbstractImageData *input);
-    void addPointToBuffer(vtkImageView2D* view2d, vtkSmartPointer<vtkPoints> bufferPoints, itk::ImageBase<3>::IndexType point);
-    void getContourIndices(vtkImageView2D*, UChar3ImageType::Pointer, UChar3ImageType::IndexType, vtkSmartPointer<vtkPoints>);
-
-    static const int HANDLE_PERIOD  = 5;
+    medTableWidgetChooser* tableViewChooser;
 };
