@@ -77,8 +77,9 @@ void DCMTKImageIO::PrintSelf (std::ostream& os, Indent indent) const
 
 bool DCMTKImageIO::CanReadFile(const char* filename)
 {
+    OFFilename dcmFileName(filename, OFTrue);
     DcmFileFormat dicomFile;
-    OFCondition condition = dicomFile.loadFile( filename );
+    OFCondition condition = dicomFile.loadFile(dcmFileName);
     if ( !condition.good() )
     {
         return false;
@@ -139,10 +140,8 @@ void DCMTKImageIO::ReadImageInformation()
 
     /** The purpose of the next loop is to parse the DICOM header of each file and to store all
      fields in the Dictionary. */
-    for (NameSetType::const_iterator it = fileNamesSet.begin(); it!=fileNamesSet.end(); it++)
+    for (auto filename: fileNamesSet)
     {
-        std::string filename = *it;
-
         try
         {
             this->ReadHeader( filename, fileIndex, fileCount );
@@ -165,30 +164,37 @@ void DCMTKImageIO::ReadImageInformation()
     double b = 0.0;
     fileIndex =0;
     const StringVectorType &imagePositions = this->GetMetaDataValueVectorString("(0020,0032)");
-
-    for (NameSetType::const_iterator it = fileNamesSet.begin(); it!= fileNamesSet.end(); it++)
+    if (!imagePositions.empty())
     {
-        if (fileIndex == 0)
-            b = this->GetSliceLocation(imagePositions[fileIndex]);
-        else
+        for (auto &elem : fileNamesSet)
         {
-            double testLocation = this->GetSliceLocation(imagePositions[fileIndex]);
-            if (testLocation < b)
-                b = testLocation;
-        }
+            if (fileIndex == 0)
+                b = this->GetSliceLocation(imagePositions[fileIndex]);
+            else
+            {
+                double testLocation = this->GetSliceLocation(imagePositions[fileIndex]);
+                if (testLocation < b)
+                    b = testLocation;
+            }
 
-        ++fileIndex;
+            ++fileIndex;
+        }
     }
+
 
     fileIndex = 0;
 
-    for (NameSetType::const_iterator it = fileNamesSet.begin(); it!= fileNamesSet.end(); it++)
+    //for (NameSetType::const_iterator it = fileNamesSet.begin(); it!= fileNamesSet.end(); it++)
+    for (auto &fileName : fileNamesSet)
     {
         try
         {
-            if (imagePositions.size() > 0) {
+            if (imagePositions.size() > 0) 
+            {
                 sliceLocation = this->GetSliceLocation(imagePositions[fileIndex]);
-            } else {
+            }
+            else
+            {
                 sliceLocation = 0;
             }
 
@@ -204,8 +210,8 @@ void DCMTKImageIO::ReadImageInformation()
             sliceLocation = aX + b;
 
             m_LocationSet.insert( sliceLocation );
-            m_LocationToFilenamesMap.insert( std::pair< double, std::string >(sliceLocation, *it ) );
-            m_FilenameToIndexMap[ *it ] = fileIndex;
+            m_LocationToFilenamesMap.insert( std::pair< double, std::string >(sliceLocation, fileName) );
+            m_FilenameToIndexMap[fileName] = fileIndex;
             ++fileIndex;
         }
         catch (ExceptionObject &e)
@@ -218,13 +224,13 @@ void DCMTKImageIO::ReadImageInformation()
        In the next loop, slices are ordered according to their instance number, in case multiple
        volumes are found.
      */
-    for (SliceLocationSetType::const_iterator l = m_LocationSet.begin(); l!=m_LocationSet.end(); l++)
+    //for (SliceLocationSetType::const_iterator l = m_LocationSet.begin(); l != m_LocationSet.end(); l++)
+    for (auto &l : m_LocationSet)
     {
         // using that intermediate lut for instance number ordering
         IndexToNamesMapType instanceNumberToNameMap;
 
-        for (SliceLocationToNamesMultiMapType::iterator n = m_LocationToFilenamesMap.lower_bound( *l );
-             n!=m_LocationToFilenamesMap.upper_bound( *l ); n++)
+        for (SliceLocationToNamesMultiMapType::iterator n = m_LocationToFilenamesMap.lower_bound( l ); n!=m_LocationToFilenamesMap.upper_bound( l ); n++)
         {
             int instanceNumber = 0;
             std::string instanceNumberString = this->GetMetaDataValueString ("(0020,0013)", m_FilenameToIndexMap[ n->second ]);
@@ -240,13 +246,13 @@ void DCMTKImageIO::ReadImageInformation()
         }
 
         // We erase the filename list corresponding to the given location to fill it with the ordered filenames
-        m_LocationToFilenamesMap.erase( *l );
+        m_LocationToFilenamesMap.erase( l );
 
-        for (IndexToNamesMapType::const_iterator in = instanceNumberToNameMap.begin(); in!=instanceNumberToNameMap.end(); in++)
+        for (auto &in : instanceNumberToNameMap)
         {
-            for (std::list< std::string >::const_iterator fn = in->second.begin(); fn!=in->second.end(); fn++)
+            for (auto &fn : in.second)
             {
-                m_LocationToFilenamesMap.insert( std::pair< double, std::string >( *l, *fn ) );
+                m_LocationToFilenamesMap.insert( std::pair< double, std::string >( l, fn ) );
             }
         }
     }
@@ -255,12 +261,11 @@ void DCMTKImageIO::ReadImageInformation()
     unsigned int sizeZ = m_LocationSet.size();
     unsigned int sizeT = m_LocationToFilenamesMap.count( *m_LocationSet.begin() );
     // check consistency
-    for (SliceLocationSetType::const_iterator it = m_LocationSet.begin();
-         it!=m_LocationSet.end(); it++)
+    for (auto &location : m_LocationSet)
     {
-        if (!( m_LocationToFilenamesMap.count(*it)==sizeT ))
+        if (!( m_LocationToFilenamesMap.count(location)==sizeT ))
         {
-            itkExceptionMacro (<< "Inconsistency in dicom volumes: " << m_LocationToFilenamesMap.count(*it) << " vs. " << sizeT);
+            itkExceptionMacro (<< "Inconsistency in dicom volumes: " << m_LocationToFilenamesMap.count(location) << " vs. " << sizeT);
         }
     }
 
@@ -286,7 +291,7 @@ void DCMTKImageIO::ReadImageInformation()
 
     /**
        Determine the slice ordering. Depending on the sliceLocation and the imagePatientPosition,
-       we may determine if the acquistion was made from feet-to-head or head-to-feet.
+       we may determine if the acquisition was made from feet-to-head or head-to-feet.
      */
 
     SliceLocationSetType::const_iterator l = m_LocationSet.begin();
@@ -310,24 +315,22 @@ void DCMTKImageIO::ReadImageInformation()
      */
     m_OrderedFileNames = StringVectorType ( sizeZ * sizeT );
 
-    int location = 0;
-    int rank     = 0;
+    int iLocation = 0;
+    int iRank     = 0;
 
-    for (l=m_LocationSet.begin(); l!=m_LocationSet.end(); l++)
+    for (auto &location : m_LocationSet)
     {
-        rank = 0;
-
-        for (SliceLocationToNamesMultiMapType::const_iterator n = m_LocationToFilenamesMap.lower_bound( *l );
-             n!=m_LocationToFilenamesMap.upper_bound( *l ); n++)
+        iRank = 0;
+        for (SliceLocationToNamesMultiMapType::const_iterator n = m_LocationToFilenamesMap.lower_bound(location); n!=m_LocationToFilenamesMap.upper_bound(location); n++)
         {
             if( sliceDirection>0 )
-                m_OrderedFileNames[ rank * sizeZ + location ] = n->second;
+                m_OrderedFileNames[iRank * sizeZ + iLocation] = n->second;
             else
-                m_OrderedFileNames[ rank * sizeZ + ( sizeZ - 1 - location ) ] = n->second;
+                m_OrderedFileNames[iRank * sizeZ + ( sizeZ - 1 - iLocation) ] = n->second;
 
-            ++rank;
+            ++iRank;
         }
-        ++location;
+        ++iLocation;
     }
 
 }
@@ -377,12 +380,22 @@ void DCMTKImageIO::DetermineNumberOfPixelComponents()
 
 void DCMTKImageIO::DeterminePixelType()
 {
-    DicomImage *image = new DicomImage(m_FileName.c_str(), CIF_UseAbsolutePixelRange);
-    if (image != NULL)
+    OFFilename dcmFileName(m_FileName, OFTrue);
+    DcmFileFormat dicomFile;
+    OFCondition condition = dicomFile.loadFile(dcmFileName);
+    
+    if (condition.bad())
     {
-        if (image->getStatus() == EIS_Normal)
+        this->SetComponentType(UNKNOWNCOMPONENTTYPE);
+        return;
+    }
+
+    DicomImage image(&dicomFile, EXS_Unknown, CIF_UseAbsolutePixelRange, 0, 0);
+    if (condition.good())
+    {
+        if (image.getStatus() == EIS_Normal)
         {
-            const DiPixel *dmp = image->getInterData();
+            const DiPixel *dmp = image.getInterData();
 
             switch( dmp->getRepresentation() )
             {
@@ -415,9 +428,9 @@ void DCMTKImageIO::DeterminePixelType()
             }
         }
         else
+        {
             this->SetComponentType (UNKNOWNCOMPONENTTYPE);
-
-        delete image;
+        }
     }
 }
 
@@ -456,8 +469,10 @@ void DCMTKImageIO::DetermineSpacing()
     const StringVectorType &imagePositions = this->GetMetaDataValueVectorString("(0020,0032)");
 
     std::vector < std::pair <unsigned int, double> > imageSliceLocations(imagePositions.size());
-    for (unsigned int i=0; i<imagePositions.size(); i++)
+    for (unsigned int i = 0; i < imagePositions.size(); i++)
+    {
         imageSliceLocations[i] = std::make_pair(i,this->GetSliceLocation(imagePositions[i]));
+    }
 
     std::sort(imageSliceLocations.begin(),imageSliceLocations.end(),pair_comparator());
 
@@ -500,10 +515,6 @@ void DCMTKImageIO::DetermineSpacing()
             {
                 total_gap += gaps[i];
                 ++gapCount;
-            }
-            else
-            {
-                ; //itkWarningMacro (<< "Inconsistency in slice spacing: " << ref_gap << " " << gaps[i]);
             }
         }
 
@@ -744,10 +755,12 @@ void DCMTKImageIO::InternalRead (void* buffer, int slice, unsigned long pixelCou
     std::string filename;
     filename = m_OrderedFileNames[slice];
 
+    OFFilename dcmFileName(filename, OFTrue);
     DcmFileFormat dicomFile;
 
-    OFCondition cond = dicomFile.loadFile(filename.c_str(), EXS_Unknown, EGL_noChange, DCM_MaxReadLength, ERM_autoDetect);
-    if (! cond.good()) {
+    OFCondition cond = dicomFile.loadFile(dcmFileName, EXS_Unknown, EGL_noChange, DCM_MaxReadLength, ERM_autoDetect);
+    if (cond.bad())
+    {
         itkExceptionMacro (<< cond.text() );
     }
 
@@ -756,12 +769,14 @@ void DCMTKImageIO::InternalRead (void* buffer, int slice, unsigned long pixelCou
     if( xfer == EXS_JPEG2000LosslessOnly ||
         xfer == EXS_JPEG2000 ||
         xfer == EXS_JPEG2000MulticomponentLosslessOnly ||
-        xfer == EXS_JPEG2000Multicomponent ) {
+        xfer == EXS_JPEG2000Multicomponent )
+    {
         itkExceptionMacro("Jpeg2000 encoding not supported yet.");
     }
 
     size_t length = pixelCount * GetNumberOfComponents();
-    switch( this->GetComponentType() ) {
+    switch( this->GetComponentType() )
+    {
         case CHAR:
             length *= sizeof(char);
             break;
@@ -795,28 +810,32 @@ void DCMTKImageIO::InternalRead (void* buffer, int slice, unsigned long pixelCou
     }
 
     // We use DicomImage as it rescales the raw values properly for visualization
-    DicomImage *image = new DicomImage(filename.c_str(), CIF_UseAbsolutePixelRange | CIF_DecompressCompletePixelData);
+    DicomImage image (&dicomFile, EXS_Unknown, CIF_UseAbsolutePixelRange | CIF_DecompressCompletePixelData);
 
-    if ( ! image || image->getStatus() != EIS_Normal) {
+    if ( image.getStatus() != EIS_Normal)
+    {
         itkExceptionMacro ( << "Image is null or couldn't be loaded" );
     }
 
-    const DiPixel *dmp = image->getInterData();
+    const DiPixel *dmp = image.getInterData();
     if (!dmp) {
         itkExceptionMacro ( << "DiPixel object is null" );
     }
 
     Uint8* destBuffer = static_cast<Uint8*>(buffer);
-    if (!destBuffer) {
+    if (!destBuffer)
+    {
         itkExceptionMacro ( << "Bad copy or dest buffer" );
     }
 
     // If the image has more than one component, the DicomImage stores it as an
     // array of array, each sub-array containing all the pixels for one of the
     // components
-    if (dmp->getPlanes() > 1) {
+    if (dmp->getPlanes() > 1)
+    {
         const Uint8** copyBuffer = (const Uint8 **)dmp->getData();
-        if (!copyBuffer) {
+        if (!copyBuffer)
+        {
             itkExceptionMacro ( << "Bad copy buffer" );
         }
 
@@ -824,21 +843,24 @@ void DCMTKImageIO::InternalRead (void* buffer, int slice, unsigned long pixelCou
         int nbComponents = dmp->getPlanes();
         Uint8* destSliceBuffer = destBuffer+slice*length;
 
-        for (int c = 0; c < nbComponents; ++c) {
-            for(int p = 0; p < nbPixels; ++p) {
+        for (int c = 0; c < nbComponents; ++c)
+        {
+            for(int p = 0; p < nbPixels; ++p)
+            {
                 destSliceBuffer[p*nbComponents+c] = copyBuffer[c][p];
             }
         }
-    } else {
+    }
+    else
+    {
         // If only one component, stored as one big array
         const Uint8* copyBuffer = (const Uint8 *)dmp->getData();
-        if (!copyBuffer) {
+        if (!copyBuffer)
+        {
             itkExceptionMacro ( << "Bad copy buffer" );
         }
         std::memcpy (destBuffer + slice*length, copyBuffer, length);
     }
-
-    delete image;
 }
 
 
@@ -1047,18 +1069,15 @@ DCMTKImageIO
 
 void DCMTKImageIO::ReadHeader(const std::string& name, const int& fileIndex, const int& fileCount )
 {
+    OFFilename dcmFileName(name, OFTrue);
     DcmFileFormat dicomFile;
-    OFCondition condition = dicomFile.loadFile( name.c_str() );
+    OFCondition condition = dicomFile.loadFile(dcmFileName);
 
     // checking that given file is available
     if ( !condition.good() )
     {
         itkExceptionMacro ( << condition.text() );
     }
-
-    // manual call to load data into memory
-    //dicomFile.loadAllDataIntoMemory();
-
 
     // reading meta info
     DcmMetaInfo* metaInfo = dicomFile.getMetaInfo();
@@ -1109,11 +1128,8 @@ inline void DCMTKImageIO::ReadDicomElement(DcmElement* element, const int &fileI
 
     OFString ofstring;
     OFCondition cond = element->getOFStringArray (ofstring, 0);
-    if ( !cond.good() )
+    if ( cond.bad() )
     {
-        //itkWarningMacro ( << "Cannot convert element to string.");
-        //element->print (std::cout);
-        //getchar();
         return;
     }
 
