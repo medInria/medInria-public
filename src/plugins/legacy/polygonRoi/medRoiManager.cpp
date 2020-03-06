@@ -537,6 +537,7 @@ void medLabelManager::connectRois()
     {
         connect(roi, SIGNAL(updateCursorState(CURSORSTATE)), d->eventCursor, SLOT(setCursorState(CURSORSTATE)), Qt::UniqueConnection);
         connect(roi, SIGNAL(interpolate()), this, SLOT(interpolateIfNeeded()), Qt::UniqueConnection);
+        connect(roi, SIGNAL(toggleRepulsorButton(bool)), this, SIGNAL(toggleRepulsorButton(bool)), Qt::UniqueConnection);
     }
 }
 

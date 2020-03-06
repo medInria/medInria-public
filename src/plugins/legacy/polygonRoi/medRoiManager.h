@@ -62,6 +62,9 @@ public:
 public slots:
     void interpolateIfNeeded();
 
+signals:
+    void toggleRepulsorButton(bool state);
+
 private:
     dtkSmartPointer<medAbstractData> output;
     bool isSameOrientation(int orientation);

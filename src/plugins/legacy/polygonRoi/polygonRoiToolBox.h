@@ -91,6 +91,7 @@ public slots:
 private slots:
 
     void disableButtons();
+    void toggleRepulsorButton(bool state);
 
 protected:
 
@@ -109,6 +110,5 @@ private:
     QPushButton *generateBinaryImage_button;
     QPushButton *repulsorTool;
     QCheckBox *interpolate;
-    QPushButton *extractRoiButton;
     medTableWidgetChooser* tableViewChooser;
 };
