@@ -75,10 +75,10 @@ void PolygonRoiObserver::Execute ( vtkObject *caller, unsigned long event, void 
     switch ( event )
     {
         case vtkImageView2D::SliceChangedEvent:
-        default:
         {
             roi->manageVisibility();
-            emit roi->updateCursorState(CURSORSTATE::CS_MOUSE_EVENT);
+            emit roi->updateCursorState(CURSORSTATE::CS_SLICE_CHANGED);
+            emit roi->toggleRepulsorButton(false);
             break;
         }
         case vtkCommand::EndInteractionEvent:
@@ -95,6 +95,10 @@ void PolygonRoiObserver::Execute ( vtkObject *caller, unsigned long event, void 
             roi->setMasterRoi(true);
             emit roi->updateCursorState(CURSORSTATE::CS_MOUSE_EVENT);
             emit roi->interpolate();
+            break;
+        }
+        default:
+        {
             break;
         }
     }

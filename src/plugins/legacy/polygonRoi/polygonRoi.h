@@ -21,7 +21,7 @@
 #include <medAbstractImageView.h>
 #include <vtkPolygon.h>
 
-enum class CURSORSTATE { CS_NONE, CS_MOUSE_EVENT, CS_CONTINUE, CS_REPULSOR  };
+enum class CURSORSTATE { CS_NONE, CS_MOUSE_EVENT, CS_SLICE_CHANGED, CS_CONTINUE, CS_REPULSOR  };
 
 class polygonRoiPrivate;
 class BezierRoiObserver;
@@ -67,6 +67,8 @@ public slots:
 signals:
     void updateCursorState(CURSORSTATE state);
     void interpolate();
+    void toggleRepulsorButton(bool state);
+
 private:
     polygonRoiPrivate *d;
     friend class PolygonRoiObserver;

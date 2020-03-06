@@ -92,7 +92,7 @@ polygonRoiToolBox::polygonRoiToolBox(QWidget *parent ) :
     repulsorTool->setToolTip(tr("Activate repulsor"));
     repulsorTool->setObjectName("repulsorTool");
     repulsorTool->setCheckable(true);
-    connect(repulsorTool,SIGNAL(toggled(bool)),this,SLOT(activateRepulsor(bool)));
+    connect(repulsorTool,SIGNAL(clicked(bool)),this,SLOT(activateRepulsor(bool)));
 
     generateBinaryImage_button = new QPushButton(tr("Save Mask"));
     generateBinaryImage_button->setToolTip("Import the current mask to the non persistent database");
@@ -224,28 +224,27 @@ void polygonRoiToolBox::onLayerClosed()
     addNewCurve->blockSignals(true);
     addNewCurve->setChecked(false);
     addNewCurve->blockSignals(false);
-    if (v && (v->layersCount() > 0))
+    if (!v || (v && v->layersCount()==0))
     {
-        currentView = v;
         if (viewEventFilter)
         {
             viewEventFilter->removeManagers();
         }
         this->clear();
     }
-
 }
 
 void polygonRoiToolBox::clickClosePolygon(bool state)
 {
     if (!currentView)
     {
+        addNewCurve->setChecked(false);
         qDebug()<<"no view in container";
         return;
     }
     vtkImageView2D *view2d = static_cast<medVtkViewBackend*>(currentView->backend())->view2D;
 
-    enableRepulsorButton(state);
+    //enableRepulsorButton(state);
     enableGenerateMaskButton(state);
     enableTableViewChooser(state);
     if (state)
@@ -257,7 +256,9 @@ void polygonRoiToolBox::clickClosePolygon(bool state)
             connect(viewEventFilter, SIGNAL(enableRepulsor(bool)), this, SLOT(enableRepulsorButton(bool)), Qt::UniqueConnection);
             connect(viewEventFilter, SIGNAL(enableGenerateMask(bool)), this, SLOT(enableGenerateMaskButton(bool)), Qt::UniqueConnection);
             connect(viewEventFilter, SIGNAL(enableViewChooser(bool)), this, SLOT(enableTableViewChooser(bool)), Qt::UniqueConnection);
+            connect(viewEventFilter, SIGNAL(toggleRepulsorButton(bool)), this, SLOT(toggleRepulsorButton(bool)), Qt::UniqueConnection);
         }
+        viewEventFilter->updateView(currentView);
         viewEventFilter->On();
         medViewContainer* container = nullptr;
         foreach (QUuid uuid, this->getWorkspace()->tabbedViewContainers()->containersSelected())
@@ -275,10 +276,21 @@ void polygonRoiToolBox::clickClosePolygon(bool state)
     }
 }
 
+void polygonRoiToolBox::toggleRepulsorButton(bool state)
+{
+    if (repulsorTool->isChecked()!=state)
+    {
+        repulsorTool->setChecked(state);
+        activateRepulsor(state);
+    }
+}
+
 void polygonRoiToolBox::activateRepulsor(bool state)
 {
     if (currentView && viewEventFilter)
+    {
         viewEventFilter->activateRepulsor(state);
+    }
 }
 
 void polygonRoiToolBox::manageTick()
@@ -483,6 +495,7 @@ void polygonRoiToolBox::generateAndSaveBinaryImage()
 
 void polygonRoiToolBox::disableButtons()
 {
+    addNewCurve->setEnabled(false);
     repulsorTool->setEnabled(false);
     repulsorTool->setChecked(false);
     generateBinaryImage_button->setEnabled(false);

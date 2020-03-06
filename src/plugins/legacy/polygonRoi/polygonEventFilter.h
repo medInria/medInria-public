@@ -62,6 +62,7 @@ signals:
     void enableRepulsor(bool state);
     void enableGenerateMask(bool state);
     void enableViewChooser(bool state);
+    void toggleRepulsorButton(bool);
 
 private:
     medAbstractImageView *currentView;
@@ -80,4 +81,7 @@ private:
     bool addPointInContourWithLabel(QMouseEvent *mouseEvent);
     medLabelManager *closestManagerInSlice(double mousePos[]);
     void setToolboxButtonsState(bool state);
+    void addManagerToList(int label);
+    bool isContourInSlice();
+    void manageButtonsState();
 };
