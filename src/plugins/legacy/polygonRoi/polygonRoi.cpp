@@ -87,6 +87,7 @@ void PolygonRoiObserver::Execute ( vtkObject *caller, unsigned long event, void 
             roi->setMasterRoi(true);
             emit roi->updateCursorState(CURSORSTATE::CS_MOUSE_EVENT);
             emit roi->interpolate();
+            emit roi->updateRoiInAlternativeViews();
             break;
         }
         case vtkCommand::MouseMoveEvent:
@@ -95,6 +96,7 @@ void PolygonRoiObserver::Execute ( vtkObject *caller, unsigned long event, void 
             roi->setMasterRoi(true);
             emit roi->updateCursorState(CURSORSTATE::CS_MOUSE_EVENT);
             emit roi->interpolate();
+            emit roi->updateRoiInAlternativeViews();
             break;
         }
         default:
@@ -127,7 +129,7 @@ public:
     vtkImageView2D *view;
     PolygonRoiObserver *observer;
     polygonRoi *copyRoi;
-    QList<QPair<medAbstractImageView*, medImageView::Orientation>> alternativeViews;
+    QList<medAbstractImageView*> alternativeViews;
     QColor roiColor;
     bool forceOff;
 };
@@ -208,7 +210,7 @@ vtkSmartPointer<vtkPolygon> polygonRoi::createPolygonFromContour()
     return polygon;
 }
 
-QPair<vtkPolyData*, vtkProperty*> polygonRoi::createPolydataToAddInViews()
+void polygonRoi::createPolydataToAddInViews()
 {
     vtkSmartPointer<vtkPolygon> polygon = createPolygonFromContour();
 
@@ -235,7 +237,7 @@ QPair<vtkPolyData*, vtkProperty*> polygonRoi::createPolydataToAddInViews()
     d->property->SetPointSize(1.);
     d->property->SetInterpolationToFlat();
     d->property->SetVertexColor(0., 0., 1.);
-    return QPair<vtkPolyData*, vtkProperty*>(d->polyData, d->property);
+    return;
 }
 
 vtkContourWidget * polygonRoi::getContour()
@@ -284,6 +286,7 @@ void polygonRoi::manageVisibility()
     }
 
 }
+
 
 vtkImageView2D * polygonRoi::getView()
 {
@@ -355,33 +358,29 @@ void polygonRoi::setRightColor()
     }
 }
 
-void polygonRoi::addViewToList(medAbstractImageView *viewToAdd, medImageView::Orientation orientation)
+void polygonRoi::addViewToList(medAbstractImageView *viewToAdd)
 {
-    d->alternativeViews.append(QPair<medAbstractImageView*, medImageView::Orientation>(viewToAdd, orientation));
+    d->alternativeViews.append(viewToAdd);
 }
 
-void polygonRoi::addDataSet()
+void polygonRoi::addRoiToAlternativeView(medAbstractImageView *view)
 {
-    for (QPair<medAbstractImageView*, medImageView::Orientation> view :  d->alternativeViews)
+    if ( view->orientation() == medImageView::VIEW_ALL_ORIENTATION )
+        return;
+
+    createPolydataToAddInViews();
+
+    if (view->orientation() == medImageView::VIEW_ORIENTATION_3D)
     {
-        if ( view.second == medImageView::VIEW_ALL_ORIENTATION )
-            continue;
-
-        view.first->setOrientation(view.second);
-        QPair<vtkPolyData*, vtkProperty*> poly = createPolydataToAddInViews();
-
-        if (view.second == medImageView::VIEW_ORIENTATION_3D)
-        {
-            vtkImageView3D* view3D = static_cast<medVtkViewBackend*>(view.first->backend())->view3D;
-            view3D->AddDataSet(poly.first, poly.second);
-
-        }
-        else
-        {
-            vtkImageView2D* view2D = static_cast<medVtkViewBackend*>(view.first->backend())->view2D;
-
-            view2D->RemoveDataSet(poly.first);
-            view2D->AddDataSet(poly.first, poly.second);
-        }
+        vtkImageView3D* view3D = static_cast<medVtkViewBackend*>(view->backend())->view3D;
+        view3D->RemoveDataSet(d->polyData);
+        view3D->AddDataSet(d->polyData, d->property);
     }
+    else
+    {
+        vtkImageView2D* view2D = static_cast<medVtkViewBackend*>(view->backend())->view2D;
+        view2D->RemoveDataSet(d->polyData);
+        view2D->AddDataSet(d->polyData, d->property);
+    }
+    return;
 }

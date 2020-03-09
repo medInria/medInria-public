@@ -37,7 +37,7 @@ public:
     virtual ~polygonRoi();
 
     vtkContourWidget * getContour();
-    QPair<vtkPolyData *, vtkProperty *> createPolydataToAddInViews();
+    void createPolydataToAddInViews();
     vtkImageView2D * getView();
     
     virtual void Off();
@@ -52,8 +52,8 @@ public:
     virtual bool canRedo(){return true;}
     virtual bool canUndo(){return true;}
     
-    void addViewToList(medAbstractImageView *viewToAdd, medImageView::Orientation orientation);
-    void addDataSet();
+    void addViewToList(medAbstractImageView *viewToAdd);
+    void addRoiToAlternativeView(medAbstractImageView *view);
     bool isClosed();
     void setEnabled(bool state);
     vtkSmartPointer<vtkPolygon> createPolygonFromContour();
@@ -68,6 +68,7 @@ signals:
     void updateCursorState(CURSORSTATE state);
     void interpolate();
     void toggleRepulsorButton(bool state);
+    void updateRoiInAlternativeViews();
 
 private:
     polygonRoiPrivate *d;

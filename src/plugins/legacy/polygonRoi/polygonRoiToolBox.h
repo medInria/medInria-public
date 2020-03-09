@@ -75,7 +75,7 @@ public slots:
 
     void updateView();
     void onViewClosed();
-    void onLayerClosed();
+    void onLayerClosed(uint index);
     void clickClosePolygon(bool state);
     void activateRepulsor(bool state);
     void generateAndSaveBinaryImage();
@@ -85,14 +85,14 @@ public slots:
 
     void manageTick();
     void manageRoisVisibility();
-    void enableRepulsorButton(bool state);
-    void enableGenerateMaskButton(bool state);
     void enableTableViewChooser(bool state);
+    void resetToolboxBehaviour();
+
 private slots:
 
     void disableButtons();
-    void toggleRepulsorButton(bool state);
-
+    void exportContours();
+//    void importContours();
 protected:
 
     void binaryImageFromPolygon(QList<QPair<vtkPolygon*,PlaneIndexSlicePair> > polys);
@@ -111,4 +111,7 @@ private:
     QPushButton *repulsorTool;
     QCheckBox *interpolate;
     medTableWidgetChooser* tableViewChooser;
+    QPushButton *exportContourButton;
+    QPushButton *importContourButton;
+
 };

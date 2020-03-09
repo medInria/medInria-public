@@ -29,6 +29,7 @@
 #include <itkJoinImageFilter.h>
 #include <itkAddImageFilter.h>
 #include <itkComposeImageFilter.h>
+#include <medViewContainer.h>
 
 polygonEventFilter::polygonEventFilter(medAbstractImageView *view) :
         medViewEventFilter(), currentView(view), cursorState(CURSORSTATE::CS_MOUSE_EVENT), isRepulsorActivated(false)
@@ -82,14 +83,20 @@ bool polygonEventFilter::mouseReleaseEvent(medAbstractView *view, QMouseEvent *m
     return false;
 }
 
-void polygonEventFilter::removeManagers()
+void polygonEventFilter::reset()
 {
     for (medLabelManager *manager: managers)
     {
         delete manager;
     }
     managers.clear();
-
+    cursorState = CURSORSTATE::CS_MOUSE_EVENT;
+    activateRepulsor(false);
+    if (interactorStyleRepulsor)
+    {
+        interactorStyleRepulsor->Delete();
+        interactorStyleRepulsor = nullptr;
+    }
 }
 
 bool polygonEventFilter::mousePressEvent(medAbstractView * view, QMouseEvent *mouseEvent)
@@ -99,7 +106,6 @@ bool polygonEventFilter::mousePressEvent(medAbstractView * view, QMouseEvent *mo
     if (mouseEvent->button()==Qt::LeftButton)
     {
         return leftButtonBehaviour(view, mouseEvent);
-        //manageTick();
     }
     else if (mouseEvent->button()==Qt::RightButton)
     {
@@ -262,9 +268,10 @@ bool polygonEventFilter::leftButtonBehaviour(medAbstractView *view, QMouseEvent 
 
 void polygonEventFilter::addManagerToList(int label)
 {
-    medLabelManager * manager = new medLabelManager(currentView, this, colorList[label]);
+    medLabelManager * manager = new medLabelManager(currentView, this, colorList[label]);    
     managers.append(manager);
     connect(manager, SIGNAL(toggleRepulsorButton(bool)), this, SIGNAL(toggleRepulsorButton(bool)), Qt::UniqueConnection);
+    connect(manager, SIGNAL(updateRoisInAlternativeViews()), this, SLOT(addRoisInAlternativeViews()), Qt::UniqueConnection);
 }
 
 bool polygonEventFilter::addPointInContourWithLabel(QMouseEvent *mouseEvent)
@@ -273,7 +280,6 @@ bool polygonEventFilter::addPointInContourWithLabel(QMouseEvent *mouseEvent)
     if (managers.size()==0)
     {
         addManagerToList(0);
-        //cursorState = CURSORSTATE::CS_NONE;
         return res;
     }
     else
@@ -387,12 +393,11 @@ QList<QColor> polygonEventFilter::getAvailableColors(QList<QColor> colorsToExclu
 void polygonEventFilter::Off()
 {
     removeFromAllViews();
-    qDebug()<<"managers size "<<managers.size();
     for (medLabelManager *manager : managers)
     {
-        qDebug()<<"mgr "<<manager;
         manager->setContourEnabled(false);
     }
+    activateRepulsor(false);
     cursorState = CURSORSTATE::CS_CONTINUE;
 }
 
@@ -413,17 +418,43 @@ void polygonEventFilter::setEnableInterpolation(bool state)
     }
 }
 
-void polygonEventFilter::updateAlternativeViews(medAbstractImageView* view, medTableWidgetItem *item)
+void polygonEventFilter::addAlternativeViews(medAbstractImageView* view)
 {
-    for (medLabelManager *manager : managers)
+    alternativeViews.append(view);
+}
+
+void polygonEventFilter::addRoisInAlternativeViews()
+{
+    for (medAbstractImageView * v : alternativeViews)
     {
-        manager->updateAlternativeViews(view, item);
+        for (medLabelManager *manager : managers)
+        {
+            manager->addRoisInAlternativeViews(v);
+        }
     }
+}
+
+void polygonEventFilter::clearAlternativeViews()
+{
+    alternativeViews.clear();
+}
+
+void polygonEventFilter::removeView()
+{
+    medAbstractView *viewClosed = qobject_cast<medAbstractView*>(QObject::sender());
+    for (medAbstractImageView *v : alternativeViews)
+    {
+        if (viewClosed==v)
+        {
+            alternativeViews.removeOne(v);
+        }
+    }
+    if ( alternativeViews.size()==0 )
+        emit clearLastAlternativeView();
 }
 
 void polygonEventFilter::activateRepulsor(bool state)
 {
-    qDebug()<<"activate repuslosr with state "<<state;
     if ( isRepulsorActivated == state)
         return;
 
@@ -435,6 +466,8 @@ void polygonEventFilter::activateRepulsor(bool state)
     {
         cursorState = CURSORSTATE::CS_REPULSOR;
         vtkInteractorStyleImageView2D *interactorStyle2D = vtkInteractorStyleImageView2D::SafeDownCast(view2D->GetInteractor()->GetInteractorStyle());
+        if (!interactorStyleRepulsor)
+            interactorStyleRepulsor = vtkInriaInteractorStylePolygonRepulsor::New();
         interactorStyleRepulsor->SetLeftButtonInteraction(interactorStyle2D->GetLeftButtonInteraction());
         view2D->SetInteractorStyle(interactorStyleRepulsor);
         view2D->SetupInteractor(view2D->GetInteractor()); // to reinstall vtkImageView2D pipeline
@@ -518,15 +551,15 @@ void polygonEventFilter::deletedLabel(medLabelManager *manager)
 
 void polygonEventFilter::manageButtonsState()
 {
+    isRepulsorActivated = false;
+    cursorState = CURSORSTATE::CS_MOUSE_EVENT;
+    if (!isContourInSlice())
+    {
+        emit toggleRepulsorButton(false);
+    }
     if (managers.empty())
     {
         setToolboxButtonsState(false);
-    }
-    else if (!isContourInSlice())
-    {
-        isRepulsorActivated = false;
-        cursorState = CURSORSTATE::CS_MOUSE_EVENT;
-        emit toggleRepulsorButton(false);
     }
 }
 

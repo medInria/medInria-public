@@ -48,7 +48,6 @@
 #include <vtkContourWidget.h>
 #include <vtkFillHolesFilter.h>
 #include <vtkImageActor.h>
-#include <vtkImageView2D.h>
 #include <vtkMatrix4x4.h>
 #include <vtkMetaSurfaceMesh.h>
 #include <vtkParametricSpline.h>
@@ -119,8 +118,28 @@ polygonRoiToolBox::polygonRoiToolBox(QWidget *parent ) :
     tableViewChooser->setIconSize(QSize(size.height()-1,size.height()-1));
 
     connect(tableViewChooser, SIGNAL(selected(unsigned int,unsigned int)), this, SLOT(updateTableWidgetView(unsigned int,unsigned int)));
-    layout->addWidget(tableViewChooser);
 
+    //layout->addWidget(tableViewChooser);
+
+    exportContourButton = new QPushButton("Export Contour(s)");
+    exportContourButton->setToolTip("Export these contours as an .ctr file loadable only in medInria.");
+    exportContourButton->setMinimumSize(150, 20);
+    exportContourButton->setMaximumSize(150, 20);
+    exportContourButton->setObjectName("exportContourButton");
+    connect(exportContourButton, SIGNAL(clicked()), this, SLOT(exportContours()));
+    importContourButton = new QPushButton("Import Contour(s)");
+    importContourButton->setToolTip("Import contours from an .ctr file.");
+    importContourButton->setMinimumSize(150, 20);
+    importContourButton->setMaximumSize(150, 20);
+    importContourButton->setObjectName("exportContourButton");
+    connect(importContourButton, SIGNAL(clicked()), this, SLOT(importContours()));
+    QVBoxLayout *ButtonLayout3 = new QVBoxLayout();
+    ButtonLayout3->addWidget(exportContourButton);
+    ButtonLayout3->addWidget(importContourButton);
+    QHBoxLayout *ButtonLayout2 = new QHBoxLayout();
+    layout->addLayout( ButtonLayout2);
+    ButtonLayout2->addWidget(tableViewChooser);
+    ButtonLayout2->addLayout(ButtonLayout3);
 
     // How to use
     QLabel *explanation = new QLabel(tr("Define a ROI: choose 'Closed Polygon' and click on the data set.\n")
@@ -132,7 +151,6 @@ polygonRoiToolBox::polygonRoiToolBox(QWidget *parent ) :
 
     // buttons initialisation: view has no data
     disableButtons();
-
 }
 
 polygonRoiToolBox::~polygonRoiToolBox()
@@ -165,6 +183,7 @@ medAbstractData *polygonRoiToolBox::processOutput()
 
 void polygonRoiToolBox::updateView()
 {
+    qDebug()<<"update View";
     medAbstractView *view = this->getWorkspace()->tabbedViewContainers()->getFirstSelectedContainerView();
     medAbstractImageView *v = qobject_cast<medAbstractImageView*>(view);
     if (view)
@@ -180,17 +199,19 @@ void polygonRoiToolBox::updateView()
                 return;
             }
         }
+        addNewCurve->setEnabled(true);
 
         if (currentView != v)
         {
             currentView = v;
             if (viewEventFilter)
+            {
                 viewEventFilter->updateView(currentView);
+            }
 
-            addNewCurve->setEnabled(true);
-            connect(currentView, SIGNAL(closed()), this, SLOT(onViewClosed()), Qt::UniqueConnection);
-            connect(currentView, SIGNAL(layerRemoved(unsigned int)), this, SLOT(onLayerClosed()), Qt::UniqueConnection);
             updateTableWidgetItems();
+            connect(currentView, SIGNAL(closed()), this, SLOT(onViewClosed()), Qt::UniqueConnection);
+            connect(currentView, SIGNAL(layerRemoved(uint)), this, SLOT(onLayerClosed(uint)), Qt::UniqueConnection);
             connect(view, SIGNAL(orientationChanged()), this, SLOT(updateTableWidgetItems()), Qt::UniqueConnection);
             connect(view, SIGNAL(orientationChanged()), this, SLOT(manageTick()), Qt::UniqueConnection);
             connect(view, SIGNAL(orientationChanged()), this, SLOT(manageRoisVisibility()), Qt::UniqueConnection);
@@ -200,24 +221,36 @@ void polygonRoiToolBox::updateView()
 
 void polygonRoiToolBox::onViewClosed()
 {
+    medAbstractView *viewClosed = qobject_cast<medAbstractView*>(QObject::sender());
     medTabbedViewContainers *containers = this->getWorkspace()->tabbedViewContainers();
     if (containers)
     {
-        QList<medViewContainer*> containersInTabSelected = containers->containersInTab(containers->currentIndex());
-        if ( containersInTabSelected.size() == 0 )
+        QList<medAbstractView*> viewsInTabSelected = containers->viewsInTab(containers->currentIndex());
+        QList<medViewContainer*> containersInTab = containers->containersInTab(containers->currentIndex());
+
+        if (viewEventFilter)
         {
-            medAbstractView *viewClosed = qobject_cast<medAbstractView*>(QObject::sender());
+            if (viewClosed == viewEventFilter->getView() )
+            {
+                viewEventFilter->reset();
+                viewEventFilter->clearAlternativeViews();
+            }
+        }
+        if (viewsInTabSelected.size()==0)
+        {
             if (viewClosed == currentView)
             {
                 currentView = nullptr;
             }
             disableButtons();
+            clear();
         }
     }
 }
 
-void polygonRoiToolBox::onLayerClosed()
+void polygonRoiToolBox::onLayerClosed(uint index)
 {
+    qDebug()<<"on layer closed : "<<index;
     medAbstractView *view = this->getWorkspace()->tabbedViewContainers()->getFirstSelectedContainerView();
     medAbstractImageView *v = qobject_cast<medAbstractImageView*>(view);
     // We enter here only if onLayerClosed has not been called during a view removal
@@ -228,7 +261,7 @@ void polygonRoiToolBox::onLayerClosed()
     {
         if (viewEventFilter)
         {
-            viewEventFilter->removeManagers();
+            viewEventFilter->reset();
         }
         this->clear();
     }
@@ -242,10 +275,8 @@ void polygonRoiToolBox::clickClosePolygon(bool state)
         qDebug()<<"no view in container";
         return;
     }
-    vtkImageView2D *view2d = static_cast<medVtkViewBackend*>(currentView->backend())->view2D;
 
-    //enableRepulsorButton(state);
-    enableGenerateMaskButton(state);
+    generateBinaryImage_button->setEnabled(state);
     enableTableViewChooser(state);
     if (state)
     {
@@ -253,35 +284,29 @@ void polygonRoiToolBox::clickClosePolygon(bool state)
         if (!viewEventFilter)
         {
             viewEventFilter = new polygonEventFilter(currentView);
-            connect(viewEventFilter, SIGNAL(enableRepulsor(bool)), this, SLOT(enableRepulsorButton(bool)), Qt::UniqueConnection);
-            connect(viewEventFilter, SIGNAL(enableGenerateMask(bool)), this, SLOT(enableGenerateMaskButton(bool)), Qt::UniqueConnection);
+            connect(viewEventFilter, SIGNAL(enableRepulsor(bool)), repulsorTool, SLOT(setEnabled(bool)), Qt::UniqueConnection);
+            connect(viewEventFilter, SIGNAL(enableGenerateMask(bool)), generateBinaryImage_button, SLOT(setEnabled(bool)), Qt::UniqueConnection);
             connect(viewEventFilter, SIGNAL(enableViewChooser(bool)), this, SLOT(enableTableViewChooser(bool)), Qt::UniqueConnection);
-            connect(viewEventFilter, SIGNAL(toggleRepulsorButton(bool)), this, SLOT(toggleRepulsorButton(bool)), Qt::UniqueConnection);
+            connect(viewEventFilter, SIGNAL(toggleRepulsorButton(bool)), this, SLOT(activateRepulsor(bool)), Qt::UniqueConnection);
         }
         viewEventFilter->updateView(currentView);
         viewEventFilter->On();
-        medViewContainer* container = nullptr;
-        foreach (QUuid uuid, this->getWorkspace()->tabbedViewContainers()->containersSelected())
+        viewEventFilter->installOnView(currentView);
+
+        if ( viewEventFilter->isContourInSlice() )
         {
-            container = medViewContainerManager::instance()->container(uuid);
-            if(container)
+            repulsorTool->setEnabled(state);
+            if (repulsorTool->isChecked())
             {
-                viewEventFilter->installOnView(container->view());
+                viewEventFilter->activateRepulsor(state);
             }
         }
+        connect(viewEventFilter, SIGNAL(clearLastAlternativeView()), this, SLOT(resetToolboxBehaviour()));
     }
     else
     {
+        repulsorTool->setEnabled(state);
         viewEventFilter->Off();
-    }
-}
-
-void polygonRoiToolBox::toggleRepulsorButton(bool state)
-{
-    if (repulsorTool->isChecked()!=state)
-    {
-        repulsorTool->setChecked(state);
-        activateRepulsor(state);
     }
 }
 
@@ -289,8 +314,35 @@ void polygonRoiToolBox::activateRepulsor(bool state)
 {
     if (currentView && viewEventFilter)
     {
-        viewEventFilter->activateRepulsor(state);
+        if (state)
+        {
+            if ( viewEventFilter->isContourInSlice())
+            {
+                viewEventFilter->activateRepulsor(state);
+            }
+            else
+            {
+                repulsorTool->setChecked(false);
+            }
+        }
+        else
+        {
+            repulsorTool->setChecked(false);
+            viewEventFilter->activateRepulsor(state);
+        }
     }
+}
+
+void polygonRoiToolBox::resetToolboxBehaviour()
+{
+//    if (!currentView)
+//        return;
+    medTabbedViewContainers *containers = this->getWorkspace()->tabbedViewContainers();
+    QList<medViewContainer*> containersInTabSelected = containers->containersInTab(containers->currentIndex());
+    if (containersInTabSelected.size() != 1)
+        return;
+    containersInTabSelected[0]->setClosingMode(medViewContainer::CLOSE_CONTAINER);
+    enableTableViewChooser(addNewCurve->isChecked());
 }
 
 void polygonRoiToolBox::manageTick()
@@ -307,22 +359,21 @@ void polygonRoiToolBox::manageRoisVisibility()
 
 void polygonRoiToolBox::updateTableWidgetView(unsigned int row, unsigned int col)
 {
+    if (!viewEventFilter)
+        return;
+
     medTabbedViewContainers *containers = this->getWorkspace()->tabbedViewContainers();
     QList<medViewContainer*> containersInTabSelected = containers->containersInTab(containers->currentIndex());
     if (containersInTabSelected.size() != 1)
     {
 
-        qDebug()<<"Operation not permitted";
         return;
     }
     medViewContainer* mainContainer = containersInTabSelected.at(0);
     medAbstractImageView* mainView = dynamic_cast<medAbstractImageView *> (mainContainer->view());
+    if (!mainView)
+        return;
     medAbstractData* data = mainView->layerData(0);
-    if (mainView != currentView)
-    {
-        qDebug()<<"????";
-    }
-
 
     medViewContainer *previousContainer;
     medViewContainer* container;
@@ -347,33 +398,32 @@ void polygonRoiToolBox::updateTableWidgetView(unsigned int row, unsigned int col
             return;
         }
         container->addData(data);
-        medAbstractImageView* view = dynamic_cast<medAbstractImageView *> (container->view());
 
-        medTableWidgetItem * item = dynamic_cast<medTableWidgetItem*>(tableViewChooser->selectedItems().at(nbItem));
+        connect(container, &medViewContainer::containerSelected, [=](){
+            container->setSelected(false);
+            mainContainer->setSelected(true);
+        });
+        medAbstractImageView* view = static_cast<medAbstractImageView *> (container->view());
+        medTableWidgetItem * item = static_cast<medTableWidgetItem*>(tableViewChooser->selectedItems().at(nbItem));
+        connect(view, SIGNAL(closed()), viewEventFilter, SLOT(removeView()));
+
         view->setOrientation(dynamic_cast<medTableWidgetItem*>(item)->orientation());
-
-        if ( viewEventFilter)
-        {
-            viewEventFilter->updateAlternativeViews(view, item);
-        }
+        viewEventFilter->addAlternativeViews(view);
     }
+    mainContainer->setClosingMode(medViewContainer::CLOSE_BUTTON_HIDDEN);
+    viewEventFilter->addRoisInAlternativeViews();
+
+    tableViewChooser->setEnabled(false);
+    addNewCurve->setChecked(false);
+
+    mainContainer->setSelected(true);
 }
 
 
 void polygonRoiToolBox::updateTableWidgetItems()
 {
-    medTabbedViewContainers *containers = this->getWorkspace()->tabbedViewContainers();
-    if (!containers)
-    {
-        qDebug()<<"No container.";
+    if ( tableViewChooser->selectedItems().size() > 0 )
         return;
-    }
-    QList<medViewContainer*> containersInTabSelected = containers->containersInTab(containers->currentIndex());
-    if ( containersInTabSelected.size() != 1 )
-    {
-        //qDebug()<<"Too many container.";
-        return;
-    }
 
     medTableWidgetItem *firstOrientation;
     medTableWidgetItem *secondOrientation;
@@ -463,20 +513,17 @@ void polygonRoiToolBox::updateTableWidgetItems()
 
 }
 
-
-void polygonRoiToolBox::enableRepulsorButton(bool state)
-{
-    repulsorTool->setEnabled(state);
-}
-
-void polygonRoiToolBox::enableGenerateMaskButton(bool state)
-{
-    generateBinaryImage_button->setEnabled(state);
-}
-
 void polygonRoiToolBox::enableTableViewChooser(bool state)
 {
-    tableViewChooser->setEnabled(state);
+    if (state)
+    {
+        medTabbedViewContainers *containers = this->getWorkspace()->tabbedViewContainers();
+        QList<medViewContainer*> containersInTabSelected = containers->containersInTab(containers->currentIndex());
+        if (containersInTabSelected.size() == 1)
+            tableViewChooser->setEnabled(state);
+    }
+    else
+        tableViewChooser->setEnabled(state);
 }
 
 void polygonRoiToolBox::interpolateCurve(bool state)
@@ -493,13 +540,22 @@ void polygonRoiToolBox::generateAndSaveBinaryImage()
     viewEventFilter->generateMask();
 }
 
+
 void polygonRoiToolBox::disableButtons()
 {
     addNewCurve->setEnabled(false);
+    addNewCurve->setChecked(false);
     repulsorTool->setEnabled(false);
     repulsorTool->setChecked(false);
     generateBinaryImage_button->setEnabled(false);
     tableViewChooser->setEnabled(false);
+
+}
+
+void polygonRoiToolBox::exportContours()
+{
+    //if (viewEventFilter)
+        //viewEventFilter->exportContours();
 }
 
 void polygonRoiToolBox::clear()

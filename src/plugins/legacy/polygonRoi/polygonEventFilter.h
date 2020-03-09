@@ -33,21 +33,26 @@ public:
     bool mousePressEvent(medAbstractView * view, QMouseEvent *mouseEvent) override;
     bool mouseReleaseEvent(medAbstractView * view, QMouseEvent *mouseEvent) override;
 
-    void removeManagers();
+    void reset();
     void updateView(medAbstractImageView *view);
     void Off();
     void On();
     void setEnableInterpolation(bool state);
-    void updateAlternativeViews(medAbstractImageView *view, medTableWidgetItem *item);
+    void addAlternativeViews(medAbstractImageView *view);
     void activateRepulsor(bool state);
     void generateMask();
+    medAbstractImageView *getView(){return currentView;}
+    void clearAlternativeViews();
+    bool isContourInSlice();
+
 public slots:
+    void addRoisInAlternativeViews();
     void setCursorState(CURSORSTATE state){cursorState = state;}
 
     void updateLabel(int label);
     void manageTick();
     void manageRoisVisibility();
-
+    void removeView();
 private slots:
     void deletedNode(medLabelManager *manager, double X, double Y);
     void deletedContour(medLabelManager *manager);
@@ -63,6 +68,7 @@ signals:
     void enableGenerateMask(bool state);
     void enableViewChooser(bool state);
     void toggleRepulsorButton(bool);
+    void clearLastAlternativeView();
 
 private:
     medAbstractImageView *currentView;
@@ -70,6 +76,7 @@ private:
     QList<medLabelManager *> managers;
     QList<QColor> colorList;
     QSignalMapper signalMapper;
+    QList<medAbstractImageView*> alternativeViews;
     bool isRepulsorActivated;
     vtkInriaInteractorStylePolygonRepulsor *interactorStyleRepulsor;
 
@@ -82,6 +89,5 @@ private:
     medLabelManager *closestManagerInSlice(double mousePos[]);
     void setToolboxButtonsState(bool state);
     void addManagerToList(int label);
-    bool isContourInSlice();
     void manageButtonsState();
 };
