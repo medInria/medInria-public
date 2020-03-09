@@ -49,7 +49,6 @@ public:
 
     void manageTick();
     void manageVisibility();
-    void updateAlternativeViews(medAbstractImageView *v, medTableWidgetItem *item);
     bool mouseIsCloseFromContour(double mousePos[2]);
     double getMinimumDistanceFromNodesToEventPosition(double eventPos[2]);
     double getMinimumDistanceFromIntermediateNodesToEventPosition(double eventPos[2]);
@@ -61,8 +60,10 @@ public:
 
 public slots:
     void interpolateIfNeeded();
+    void addRoisInAlternativeViews(medAbstractImageView *v);
 
 signals:
+    void updateRoisInAlternativeViews();
     void toggleRepulsorButton(bool state);
 
 private:

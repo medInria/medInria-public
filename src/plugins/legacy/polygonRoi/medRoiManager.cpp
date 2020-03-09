@@ -468,12 +468,12 @@ void medLabelManager::manageTick()
     vtkImageView2D *view2d = static_cast<medVtkViewBackend*>(d->view->backend())->view2D;
 
     medIntParameterL *slicingParameter = nullptr;
-    foreach (medAbstractInteractor *interactor, qobject_cast<medAbstractLayeredView*>(d->view)->layerInteractors(0))
+    for( auto interactor : qobject_cast<medAbstractLayeredView*>(d->view)->layerInteractors(0))
     {
         if ((interactor->identifier() == "medVtkViewItkDataImageInteractor") ||
                 (interactor->identifier() == "medVtkViewItkDataImage4DInteractor"))
         {
-            foreach (medAbstractParameterL *parameter, interactor->linkableParameters())
+            for (auto parameter : interactor->linkableParameters())
             {
                 if (parameter->name() == "Slicing")
                 {
@@ -538,6 +538,7 @@ void medLabelManager::connectRois()
         connect(roi, SIGNAL(updateCursorState(CURSORSTATE)), d->eventCursor, SLOT(setCursorState(CURSORSTATE)), Qt::UniqueConnection);
         connect(roi, SIGNAL(interpolate()), this, SLOT(interpolateIfNeeded()), Qt::UniqueConnection);
         connect(roi, SIGNAL(toggleRepulsorButton(bool)), this, SIGNAL(toggleRepulsorButton(bool)), Qt::UniqueConnection);
+        connect(roi, SIGNAL(updateRoiInAlternativeViews()), this, SIGNAL(updateRoisInAlternativeViews()));
     }
 }
 
@@ -550,12 +551,11 @@ void medLabelManager::manageVisibility()
     d->view->render();
 }
 
-void medLabelManager::updateAlternativeViews(medAbstractImageView* v, medTableWidgetItem *item)
+void medLabelManager::addRoisInAlternativeViews(medAbstractImageView *v)
 {
-    for (polygonRoi *roi: d->rois)
+    for (polygonRoi *roi : d->rois)
     {
-        roi->addViewToList(v, item->orientation());
-        roi->addDataSet();
+        roi->addRoiToAlternativeView(v);
     }
     v->render();
 }
@@ -729,7 +729,6 @@ void medLabelManager::interpolateIfNeeded()
             delete roi;
         }
     }
-    qDebug()<<"size of rois "<<d->rois.size();
     if (d->rois.size() >= 2)
     {
         std::sort(d->rois.begin(), d->rois.end(), medLabelManager::sortRois);
