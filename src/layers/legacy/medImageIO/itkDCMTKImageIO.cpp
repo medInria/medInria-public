@@ -184,7 +184,6 @@ void DCMTKImageIO::ReadImageInformation()
 
     fileIndex = 0;
 
-    //for (NameSetType::const_iterator it = fileNamesSet.begin(); it!= fileNamesSet.end(); it++)
     for (auto &fileName : fileNamesSet)
     {
         try
@@ -224,7 +223,6 @@ void DCMTKImageIO::ReadImageInformation()
        In the next loop, slices are ordered according to their instance number, in case multiple
        volumes are found.
      */
-    //for (SliceLocationSetType::const_iterator l = m_LocationSet.begin(); l != m_LocationSet.end(); l++)
     for (auto &l : m_LocationSet)
     {
         // using that intermediate lut for instance number ordering
