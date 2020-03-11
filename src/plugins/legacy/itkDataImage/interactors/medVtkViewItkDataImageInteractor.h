@@ -1,8 +1,9 @@
+#pragma once
 /*=========================================================================
 
  medInria
 
- Copyright (c) INRIA 2013 - 2018. All rights reserved.
+ Copyright (c) INRIA 2013 - 2020. All rights reserved.
  See LICENSE.txt for details.
 
   This software is distributed WITHOUT ANY WARRANTY; without even
@@ -10,8 +11,6 @@
   PURPOSE.
 
 =========================================================================*/
-
-#pragma once
 
 #include <medAbstractImageViewInteractor.h>
 
@@ -46,6 +45,12 @@ public:
     virtual QStringList handled() const;
 
     void createSlicingParam();
+
+    /**
+     * @brief getCurrentLayer return the current layer number in the view
+     * @return unsigned int current number
+     */
+    unsigned int getCurrentLayer();
 
 public slots:
     virtual void setOpacity (double opacity);
@@ -85,4 +90,3 @@ private:
     medVtkViewItkDataImageInteractorPrivate * d;
     vtkItkConversionInterface *m_poConv;
 };
-

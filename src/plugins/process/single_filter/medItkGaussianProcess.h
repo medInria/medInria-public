@@ -33,7 +33,7 @@ public:
         source->progression()->setValue(processObject->GetProgress() * 100);
     }
 
-    medItkGaussianProcess(QObject* parent = NULL);
+    medItkGaussianProcess(QObject* parent = nullptr);
     ~medItkGaussianProcess();
 
     virtual medAbstractJob::medJobExitStatus run();

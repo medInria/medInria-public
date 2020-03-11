@@ -1,8 +1,9 @@
+#pragma once
 /*=========================================================================
 
  medInria
 
- Copyright (c) INRIA 2013 - 2018. All rights reserved.
+ Copyright (c) INRIA 2013 - 2020. All rights reserved.
  See LICENSE.txt for details.
 
   This software is distributed WITHOUT ANY WARRANTY; without even
@@ -11,12 +12,9 @@
 
 =========================================================================*/
 
-#pragma once
-
 #include <medAbstractProcessPresenter.h>
 #include <medAbstractDiffusionModelEstimationProcess.h>
 #include <medProcessPresenterFactory.h>
-
 #include <medWidgetsExport.h>
 
 class QWidget;
@@ -31,7 +29,7 @@ class MEDWIDGETS_EXPORT medAbstractDiffusionModelEstimationProcessPresenter : pu
     Q_OBJECT
 
 public:
-    medAbstractDiffusionModelEstimationProcessPresenter(medAbstractDiffusionModelEstimationProcess *parent = NULL);
+    medAbstractDiffusionModelEstimationProcessPresenter(medAbstractDiffusionModelEstimationProcess *parent = nullptr);
     virtual ~medAbstractDiffusionModelEstimationProcessPresenter();
 
     virtual QWidget *buildToolBoxWidget();
@@ -44,7 +42,6 @@ private:
     const QScopedPointer<medAbstractDiffusionModelEstimationProcessPresenterPrivate> d;
 
 private slots:
-    // TODO RDE - have to be moved later.
     void _importOutput(medAbstractJob::medJobExitStatus jobExitStatus);
 
     void _setInputFromContainer(medAbstractData *data);

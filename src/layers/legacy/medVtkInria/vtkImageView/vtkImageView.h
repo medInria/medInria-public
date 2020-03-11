@@ -1,8 +1,9 @@
+#pragma once
 /*=========================================================================
 
  medInria
 
- Copyright (c) INRIA 2013 - 2018. All rights reserved.
+ Copyright (c) INRIA 2013 - 2020. All rights reserved.
  See LICENSE.txt for details.
  
   This software is distributed WITHOUT ANY WARRANTY; without even
@@ -10,8 +11,6 @@
   PURPOSE.
 
 =========================================================================*/
-
-#pragma once
 
 #include <medVtkInriaExport.h>
 
@@ -82,7 +81,7 @@ class vtkImageAlgorithm;
    actor describing the image in the 2D - or 3D - scene. The rotation 3x3 component of this matrix
    has to be orthogonal (no scaling). The offset component may contain the origin information.
    In this case the user will have to make sure that this information is absent from the vtkImageData
-   instance given in SetInput(). For that you can call : view->GetInput()->SetOrigin(0,0,0).
+   instance given in SetInputData(). For that you can call : view->GetInput()->SetOrigin(0,0,0).
 
    \ingroup AdvancedRendering
    \see vtkImageView2D vtkImageViewCollection vtkImageView3D
@@ -216,7 +215,7 @@ public:
      by GetOrigin() on an itk::Image.
 
      CAUTION: if you provide non-zero origin to the viewer vtkImageData input
-     (SetInput()), then don't provide translation to the OrientationMatrix instance,
+     (SetInputData()), then don't provide translation to the OrientationMatrix instance,
      otherwise the information is redundant.
 
      The best behaviour is to force the origin of the vtkImageData input to zero and
@@ -502,12 +501,9 @@ protected:
     virtual bool Compare(int *array1,    int *array2,    int size);
     virtual bool Compare(vtkMatrix4x4 *mat1, vtkMatrix4x4 *mat2);
 
-
     virtual vtkAlgorithmOutput* ResliceImageToInput(vtkAlgorithmOutput* pi_poVtkAlgoPort, vtkMatrix4x4 *matrix);
 
     virtual void GetWithinBoundsPosition (double* pos1, double* dos2);
-
-
 
 protected:
     /**
@@ -527,7 +523,7 @@ protected:
      by GetOrigin() on an itk::Image.
 
      CAUTION: if you provide non-zero origin to the viewer vtkImageData input
-     (SetInput()), then don't provide translation to the OrientationMatrix instance,
+     (SetInputData()), then don't provide translation to the OrientationMatrix instance,
      otherwise the information is redundant.
 
      The best behaviour is to force the origin of the vtkImageData input to zero and

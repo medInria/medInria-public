@@ -1,8 +1,9 @@
+#pragma once
 /*=========================================================================
 
  medInria
 
- Copyright (c) INRIA 2013 - 2018. All rights reserved.
+ Copyright (c) INRIA 2013 - 2020. All rights reserved.
  See LICENSE.txt for details.
 
   This software is distributed WITHOUT ANY WARRANTY; without even
@@ -10,8 +11,6 @@
   PURPOSE.
 
 =========================================================================*/
-
-#pragma once
 
 #include <QObject>
 #include <QColor>
@@ -29,7 +28,7 @@ class MEDCORELEGACY_EXPORT medParameterPoolL : public QObject
     Q_OBJECT
 
 public:
-    medParameterPoolL(QObject* parent = 0);
+    medParameterPoolL(QObject* parent = nullptr);
     virtual ~medParameterPoolL();
 
     void append(medAbstractParameterL *parameter);
@@ -67,9 +66,5 @@ private:
     void connectParam(medAbstractParameterL *parameter);
     void disconnectParam(medAbstractParameterL *parameter);
 
-private:
     medParameterPoolLPrivate *d;
 };
-
-
-

@@ -2,7 +2,7 @@
 
  medInria
 
- Copyright (c) INRIA 2013 - 2018. All rights reserved.
+ Copyright (c) INRIA 2013 - 2020. All rights reserved.
  See LICENSE.txt for details.
 
   This software is distributed WITHOUT ANY WARRANTY; without even
@@ -17,14 +17,11 @@
 
 #include <QtGui>
 #include <QtWidgets>
-#include <dtkCoreSupport/dtkSignalBlocker.h>
 
 #include <medIntParameterL.h>
 #include <medBoolParameterL.h>
 #include <medTriggerParameterL.h>
 #include <medDoubleParameterL.h>
-
-
 
 class medTimeLineParameterLPrivate
 {
@@ -70,9 +67,9 @@ medTimeLineParameterL::medTimeLineParameterL(QString name, QObject *parent):
     medAbstractGroupParameterL(name, parent),
     d(new medTimeLineParameterLPrivate)
 {
-    d->widget = NULL;
-    d->frameLabel = NULL;
-    d->numberOfFramesLabel = NULL;
+    d->widget = nullptr;
+    d->frameLabel = nullptr;
+    d->numberOfFramesLabel = nullptr;
 
     d->speedFactorParameter = new medIntParameterL("Speed", this);
     d->speedFactorParameter->setRange(1,5000);
@@ -375,7 +372,7 @@ void medTimeLineParameterL::updateNumberOfFrameLabel()
 void medTimeLineParameterL::removeInternWidget()
 {
     this->removeFromInternWidgets(d->widget);
-    d->widget = NULL;
+    d->widget = nullptr;
 }
 
 void medTimeLineParameterL::trigger()

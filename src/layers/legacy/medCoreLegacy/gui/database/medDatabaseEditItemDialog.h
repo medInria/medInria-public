@@ -1,8 +1,9 @@
+#pragma once
 /*=========================================================================
 
  medInria
 
- Copyright (c) INRIA 2013 - 2018. All rights reserved.
+ Copyright (c) INRIA 2013 - 2020. All rights reserved.
  See LICENSE.txt for details.
 
   This software is distributed WITHOUT ANY WARRANTY; without even
@@ -11,13 +12,10 @@
 
 =========================================================================*/
 
-#pragma once
-
+#include <medCoreLegacyExport.h>
 #include <medDataIndex.h>
 
 #include <QDialog>
-
-#include <medCoreLegacyExport.h>
 
 class medAbstractDatabaseItem;
 class medDatabaseEditItemDialogPrivate;
@@ -49,10 +47,7 @@ public slots:
 
     void validate();
 
-
 private:
 
     medDatabaseEditItemDialogPrivate *d;
 };
-
-

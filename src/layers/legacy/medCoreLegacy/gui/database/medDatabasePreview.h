@@ -1,8 +1,9 @@
+#pragma once
 /*=========================================================================
 
  medInria
 
- Copyright (c) INRIA 2013 - 2018. All rights reserved.
+ Copyright (c) INRIA 2013 - 2020. All rights reserved.
  See LICENSE.txt for details.
 
   This software is distributed WITHOUT ANY WARRANTY; without even
@@ -10,8 +11,6 @@
   PURPOSE.
 
 =========================================================================*/
-
-#pragma once
 
 #include <QGraphicsView>
 #include <QGraphicsScene>
@@ -27,7 +26,7 @@ class MEDCORELEGACY_EXPORT medDatabasePreviewStaticScene: public QGraphicsScene
 {
     Q_OBJECT
 public:
-    medDatabasePreviewStaticScene(QObject *parent = NULL);
+    medDatabasePreviewStaticScene(QObject *parent = nullptr);
     virtual ~medDatabasePreviewStaticScene();
 
     void addImage(const medDataIndex &index);
@@ -50,7 +49,7 @@ class MEDCORELEGACY_EXPORT medDatabasePreviewDynamicScene: public medDatabasePre
     Q_OBJECT
 public:
     medDatabasePreviewDynamicScene(const QList<QPair<medDataIndex, QString> > & seriesDescriptionDataIndexList,
-                                   QObject * parent = NULL);
+                                   QObject * parent = nullptr);
     virtual ~medDatabasePreviewDynamicScene();
     void previewMouseMoveEvent(QMouseEvent *event, int width);
 
@@ -68,7 +67,7 @@ class MEDCORELEGACY_EXPORT medDatabasePreview: public QGraphicsView
 {
     Q_OBJECT
 public :
-    medDatabasePreview(QWidget *parent = NULL);
+    medDatabasePreview(QWidget *parent = nullptr);
     virtual ~medDatabasePreview();
 
     enum medDataType

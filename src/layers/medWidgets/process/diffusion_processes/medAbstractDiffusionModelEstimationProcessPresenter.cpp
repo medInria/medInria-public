@@ -2,7 +2,7 @@
 
  medInria
 
- Copyright (c) INRIA 2013 - 2018. All rights reserved.
+ Copyright (c) INRIA 2013 - 2020. All rights reserved.
  See LICENSE.txt for details.
 
   This software is distributed WITHOUT ANY WARRANTY; without even
@@ -54,6 +54,7 @@ medAbstractDiffusionModelEstimationProcessPresenter::medAbstractDiffusionModelEs
 
 medAbstractDiffusionModelEstimationProcessPresenter::~medAbstractDiffusionModelEstimationProcessPresenter()
 {
+
 }
 
 void medAbstractDiffusionModelEstimationProcessPresenter::setUseRunControls(bool useRun)

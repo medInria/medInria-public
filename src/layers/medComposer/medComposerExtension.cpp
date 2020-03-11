@@ -13,8 +13,6 @@
 
 #include <medComposerExtension.h>
 
-//include nodes
-
 #include <medAddImageProcessNode.h>
 #include <medSubtractImageProcessNode.h>
 #include <medMultiplyImageProcessNode.h>

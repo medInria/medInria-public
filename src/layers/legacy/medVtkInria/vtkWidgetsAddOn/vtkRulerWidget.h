@@ -1,8 +1,9 @@
+#pragma once
 /*=========================================================================
 
  medInria
 
- Copyright (c) INRIA 2013 - 2018. All rights reserved.
+ Copyright (c) INRIA 2013 - 2020. All rights reserved.
  See LICENSE.txt for details.
 
   This software is distributed WITHOUT ANY WARRANTY; without even
@@ -11,11 +12,8 @@
 
 =========================================================================*/
 
-#pragma once
-
 #include <medVtkInriaExport.h>
 #include <vtkInteractorObserver.h>
-
 
 class vtkRulerWidgetObserver;
 class vtkPolyData;
@@ -27,8 +25,8 @@ class MEDVTKINRIA_EXPORT vtkRulerWidget : public vtkInteractorObserver
 
  public:
   static vtkRulerWidget *New();
-  vtkTypeMacro(vtkRulerWidget, vtkInteractorObserver);
-  void PrintSelf(ostream& os, vtkIndent indent) {};
+  vtkTypeMacro(vtkRulerWidget, vtkInteractorObserver)
+  void PrintSelf(ostream& os, vtkIndent indent) {}
 
   virtual void SetEnabled(int);
 
@@ -54,6 +52,3 @@ class MEDVTKINRIA_EXPORT vtkRulerWidget : public vtkInteractorObserver
   vtkPolyData *OutlineX;
   vtkActor2D  *OutlineXActor;
 };
-
-
-

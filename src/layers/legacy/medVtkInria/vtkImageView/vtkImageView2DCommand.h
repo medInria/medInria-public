@@ -1,8 +1,10 @@
+#pragma once
+
 /*=========================================================================
 
  medInria
 
- Copyright (c) INRIA 2013 - 2018. All rights reserved.
+ Copyright (c) INRIA 2013 - 2020. All rights reserved.
  See LICENSE.txt for details.
  
   This software is distributed WITHOUT ANY WARRANTY; without even
@@ -10,8 +12,6 @@
   PURPOSE.
 
 =========================================================================*/
-
-#pragma once
 
 #include <medVtkInriaExport.h>
 
@@ -64,7 +64,7 @@ class MEDVTKINRIA_EXPORT vtkImageView2DCommand : public vtkCommand
   // the instance invoking the event; eid is the event id (see
   // vtkCommand.h); and calldata is information sent when the callback
   // was invoked (e.g., progress value in the vtkCommand::ProgressEvent).
-  virtual void Execute(vtkObject *caller,unsigned long event, void *vtkNotUsed(callData));
+  virtual void Execute(vtkObject *caller, unsigned long event, void *);
 
   virtual void SetViewer(vtkImageView2D *viewer)
   { this->Viewer = viewer; }

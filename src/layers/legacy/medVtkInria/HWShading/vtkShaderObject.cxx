@@ -38,25 +38,16 @@ PURPOSE.  See the above copyright notices for more information.
  * - Make use of vtkgl header instead of glew.
  *   So, use vtgl::Function() instead of glFunction() for extensions.
  */
-//#define GL_GLEXT_PROTOTYPES 1
-//#include <GL/gl.h>
-//#include "glext-tim.h"
 
 #include "vtkShaderObject.h"
 #include <vtkObjectFactory.h>
 
 #include <vtkIOStream.h>
 
-
-
 vtkShaderObject::vtkShaderObject()
 {
-  //this->SourceFileName = NULL;
-  //this->SourceText = ""; //NULL;
-  this->SourceText = NULL;
-  this->Compiled = false;
-
-  //this.CompileTime = vtkTimeStamp::New();
+    this->SourceText = nullptr;
+    this->Compiled = false;
 }
 
 vtkShaderObject::~vtkShaderObject()
@@ -66,10 +57,10 @@ vtkShaderObject::~vtkShaderObject()
     this->Compiled = false;
     }
 
-  if (this->SourceText != NULL)
+  if (this->SourceText != nullptr)
     {
     delete [] this->SourceText;
-    this->SourceText = NULL;
+    this->SourceText = nullptr;
     }
 
   // check for HandleValid is in DeleteGlShader().
@@ -119,33 +110,22 @@ void vtkShaderObject::Compile()
 
 bool vtkShaderObject::SetGlShaderSource()
 {
-  if (this->SourceText == NULL)
+    if (this->SourceText == nullptr)
     {
-    vtkWarningMacro(<<"No source text was specified!");
-    return false;
-    // OR: just compile and have an empty shader object?
+        vtkWarningMacro(<<"No source text was specified!");
+        return false;
     }
 
-  const char* text = this->SourceText;
-  //glShaderSource(this->GetHandle(), 1, &text, NULL);
-  glShaderSource(this->GetHandle(), 1, &text, NULL);
+    const char* text = this->SourceText;
+    glShaderSource(this->GetHandle(), 1, &text, nullptr);
 
-  // XXX: I think/assume text only copies the pointer to SourceText,
-  // so it does not need to be deleted here.
-  text = NULL;
+    text = nullptr;
 
-  return true;
+    return true;
 }
 
 bool vtkShaderObject::CompileGlShader()
 {
-  // this->GetHandleValid() is checked in this->GetHandle().
-  //if (!this->GetHandleValid())
-  //  {
-  //  vtkWarningMacro(<<"No valid handle. Cancelling compilation.");
-  //  return false;
-  //  }
-
   GLint success;
 
   glCompileShader(this->GetHandle());
@@ -154,7 +134,6 @@ bool vtkShaderObject::CompileGlShader()
   if (success != GL_TRUE)
     {
     vtkWarningMacro(<<"Compilation of shader failed!");
-    // TODO: find out why compilation failed and output that.
     return false;
     }
 
@@ -190,7 +169,6 @@ void vtkShaderObject::ReadSourceTextFromFile(const char* filename)
   is.read (buffer,length);
 
   is.close();
-  //vtkDebugMacro(<<"Last 3 character read are:"<<buffer[length-3]<<buffer[length-2]<<buffer[length-1]);
 
   buffer[length] = '\0'; // seems to help :)
   this->SetSourceText(buffer);
@@ -219,16 +197,12 @@ void vtkShaderObject::PrintShaderInfoLog(GLuint shader)
     GLsizei charsWritten  = 0;
     GLchar *infoLog;
 
-    //printOpenGLError();  // Check for OpenGL errors
-
     glGetShaderiv(shader, GL_INFO_LOG_LENGTH, &infologLength);
-
-    //printOpenGLError();  // Check for OpenGL errors
 
     if (infologLength > 0)
     {
     infoLog = (GLchar *)malloc(infologLength);
-        if (infoLog == NULL)
+        if (infoLog == nullptr)
         {
             printf("ERROR: Could not allocate InfoLog buffer\n");
             exit(1);
@@ -237,5 +211,4 @@ void vtkShaderObject::PrintShaderInfoLog(GLuint shader)
         printf("Shader InfoLog:\n%s\n\n", infoLog);
         free(infoLog);
     }
-    //printOpenGLError();  // Check for OpenGL errors
 }

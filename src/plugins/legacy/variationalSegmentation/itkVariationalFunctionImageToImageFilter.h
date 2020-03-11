@@ -1,3 +1,4 @@
+#pragma once
 /*=========================================================================
 
   Program:   vtkINRIA3D
@@ -12,8 +13,6 @@
   PURPOSE.  See the above copyright notices for more information.
 
   =========================================================================*/
-#ifndef __itkVariationalFunctionImageToImageFilter_h
-#define __itkVariationalFunctionImageToImageFilter_h
 
 #include <itkImageRegionConstIterator.h>
 #include <itkImageRegionIterator.h>
@@ -89,6 +88,4 @@ private:
 
 #ifndef ITK_MANUAL_INSTANTIATION
 #include "itkVariationalFunctionImageToImageFilter.txx"
-#endif
-
 #endif

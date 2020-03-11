@@ -1,17 +1,16 @@
+#pragma once
 /*=========================================================================
 
- medInria
+medInria
 
- Copyright (c) INRIA 2013 - 2018. All rights reserved.
- See LICENSE.txt for details.
- 
-  This software is distributed WITHOUT ANY WARRANTY; without even
-  the implied warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR
-  PURPOSE.
+Copyright (c) INRIA 2013 - 2020. All rights reserved.
+See LICENSE.txt for details.
+
+This software is distributed WITHOUT ANY WARRANTY; without even
+the implied warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR
+PURPOSE.
 
 =========================================================================*/
-
-#pragma once
 
 #include <dtkCoreSupport/dtkPlugin.h>
 
@@ -26,7 +25,7 @@ class MEDVTKVIEWPLUGIN_EXPORT medVtkViewPlugin : public dtkPlugin
     Q_INTERFACES(dtkPlugin)
 
 public:
-     medVtkViewPlugin(QObject *parent = 0);
+     medVtkViewPlugin(QObject *parent = nullptr);
     ~medVtkViewPlugin();
 
     virtual bool initialize();
@@ -47,5 +46,3 @@ public:
 private:
      medVtkViewPluginPrivate *d;
 };
-
-

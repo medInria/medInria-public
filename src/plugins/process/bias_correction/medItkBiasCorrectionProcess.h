@@ -30,7 +30,7 @@ class MEDITKBIASCORRECTIONPROCESSPLUGIN_EXPORT medItkBiasCorrectionProcess: publ
 {
     Q_OBJECT
 public:
-    medItkBiasCorrectionProcess(QObject* parent = NULL);
+    medItkBiasCorrectionProcess(QObject* parent = nullptr);
     ~medItkBiasCorrectionProcess();
 
     virtual medAbstractJob::medJobExitStatus run();

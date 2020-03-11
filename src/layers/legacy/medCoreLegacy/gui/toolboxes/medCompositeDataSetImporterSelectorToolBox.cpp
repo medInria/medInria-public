@@ -46,10 +46,10 @@ medCompositeDataSetImporterSelectorToolBox::medCompositeDataSetImporterSelectorT
     this->initialize();
 }
 
-medCompositeDataSetImporterSelectorToolBox::~medCompositeDataSetImporterSelectorToolBox(void)
+medCompositeDataSetImporterSelectorToolBox::~medCompositeDataSetImporterSelectorToolBox()
 {
     delete d;
-    d = NULL;
+    d = nullptr;
 }
 
 void medCompositeDataSetImporterSelectorToolBoxPrivate::read(QString filename) { }
@@ -181,16 +181,20 @@ bool medCompositeDataSetImporterSelectorToolBox::import()
 }
 
 
-void medCompositeDataSetImporterSelectorToolBox::onCurrentTypeChanged(const int i) {
-
-    medCompositeDataSetImporterAbstractToolBox* toolbox = NULL;
+void medCompositeDataSetImporterSelectorToolBox::onCurrentTypeChanged(const int i)
+{
+    medCompositeDataSetImporterAbstractToolBox* toolbox = nullptr;
     const QString id = d->type->itemData(i).toString();
 
     if (d->toolBoxes.contains(id))
+    {
         toolbox = d->toolBoxes[id];
-    else {
+    }
+    else
+    {
         toolbox = qobject_cast<medCompositeDataSetImporterAbstractToolBox*>(medToolBoxFactory::instance()->createToolBox(id, this));
-        if (toolbox) {
+        if (toolbox)
+        {
             toolbox->header()->hide();
 
             connect (toolbox, SIGNAL (success()), this, SIGNAL (success()));
@@ -200,11 +204,13 @@ void medCompositeDataSetImporterSelectorToolBox::onCurrentTypeChanged(const int 
         }
     }
 
-    if (!toolbox) {
-        if (d->currentToolBox) {
+    if (!toolbox)
+    {
+        if (d->currentToolBox)
+        {
             d->currentToolBox->hide();
             d->customContainerLayout->removeWidget ( d->currentToolBox );
-            d->currentToolBox = 0;
+            d->currentToolBox = nullptr;
         }
         d->reset->hide ();
         d->load->hide ();
@@ -215,10 +221,11 @@ void medCompositeDataSetImporterSelectorToolBox::onCurrentTypeChanged(const int 
     toolbox->setCompositeDataSetImporterToolBox(this);
 
     //get rid of old toolBox
-    if (d->currentToolBox) {
+    if (d->currentToolBox)
+    {
         d->currentToolBox->hide();
         d->customContainerLayout->removeWidget ( d->currentToolBox );
-        d->currentToolBox = 0;
+        d->currentToolBox = nullptr;
     }
 
     toolbox->show();

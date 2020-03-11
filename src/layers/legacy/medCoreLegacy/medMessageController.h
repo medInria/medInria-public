@@ -1,8 +1,9 @@
+#pragma once
 /*=========================================================================
 
  medInria
 
- Copyright (c) INRIA 2013 - 2018. All rights reserved.
+ Copyright (c) INRIA 2013 - 2020. All rights reserved.
  See LICENSE.txt for details.
 
   This software is distributed WITHOUT ANY WARRANTY; without even
@@ -10,8 +11,6 @@
   PURPOSE.
 
 =========================================================================*/
-
-#pragma once
 
 #include <QtCore>
 #include <QtGui>
@@ -30,8 +29,8 @@ class MEDCORELEGACY_EXPORT medMessage : public QWidget
     Q_OBJECT
 
 public:
-     medMessage(QWidget *parent = 0, const QString& text=NULL, unsigned int timeout=0);
-    ~medMessage();
+     medMessage(QWidget *parent = nullptr, const QString& text=nullptr, unsigned int timeout=0);
+    ~medMessage() = default;
     void startTimer();
     void stopTimer();
 
@@ -47,8 +46,6 @@ protected slots:
     void remove();
 };
 
-
-
 // /////////////////////////////////////////////////////////////////
 // medMessageInfo
 // /////////////////////////////////////////////////////////////////
@@ -58,9 +55,9 @@ class medMessageInfo : public medMessage
     Q_OBJECT
 
 public:
-     medMessageInfo(const QString& text, QWidget *parent = 0,
+     medMessageInfo(const QString& text, QWidget *parent = nullptr,
                                      unsigned int timeout=0);
-    ~medMessageInfo();
+    ~medMessageInfo() = default;
 };
 
 // /////////////////////////////////////////////////////////////////
@@ -71,36 +68,33 @@ class medMessageError : public medMessage
 {
     Q_OBJECT
 public:
-     medMessageError(const QString& text, QWidget *parent = 0,
+     medMessageError(const QString& text, QWidget *parent = nullptr,
                                       unsigned int timeout=0);
-    ~medMessageError();
+    ~medMessageError() = default;
 };
 
 // /////////////////////////////////////////////////////////////////
 // medMessageProgress
 // /////////////////////////////////////////////////////////////////
 
-
 class MEDCORELEGACY_EXPORT medMessageProgress : public medMessage
 {
     Q_OBJECT
 
 public:
-     medMessageProgress(const QString& text, QWidget *parent = 0);
-    ~medMessageProgress();
+     medMessageProgress(const QString& text, QWidget *parent = nullptr);
+    ~medMessageProgress() = default;
     void associateTimer();
     void paintEvent ( QPaintEvent * event );
 
 protected:
     QProgressBar *progress;
 
-
 public slots:
     void setProgress(int value);
     void success();
     void failure();
 };
-
 
 // /////////////////////////////////////////////////////////////////
 // medMessageController
@@ -126,7 +120,7 @@ signals:
 
 protected:
      medMessageController();
-    ~medMessageController();
+    ~medMessageController() = default;
 
 protected:
     static medMessageController *s_instance;
@@ -134,5 +128,3 @@ protected:
 private:
     medMessageControllerPrivate *d;
 };
-
-

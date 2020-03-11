@@ -2,7 +2,7 @@
 
  medInria
 
- Copyright (c) INRIA 2013 - 2018. All rights reserved.
+ Copyright (c) INRIA 2013 - 2020. All rights reserved.
  See LICENSE.txt for details.
  
   This software is distributed WITHOUT ANY WARRANTY; without even
@@ -28,7 +28,7 @@
 
 itkDataTensorImageReaderBase::itkDataTensorImageReaderBase() : dtkAbstractDataReader()
 {
-    this->io = 0;
+    this->io = nullptr;
 }
 
 itkDataTensorImageReaderBase::~itkDataTensorImageReaderBase()
@@ -38,13 +38,13 @@ itkDataTensorImageReaderBase::~itkDataTensorImageReaderBase()
 QStringList itkDataTensorImageReaderBase::handled() const
 {
     return QStringList() << "itkDataTensorImageDouble3"
-			 << "itkDataTensorImageFloat3";
+                         << "itkDataTensorImageFloat3";
 }
 
 QStringList itkDataTensorImageReaderBase::s_handled()
 {
     return QStringList() << "itkDataTensorImageDouble3"
-			 << "itkDataTensorImageFloat3";
+                         << "itkDataTensorImageFloat3";
 }
 
 bool itkDataTensorImageReaderBase::canRead (const QStringList &paths)
@@ -61,11 +61,13 @@ bool itkDataTensorImageReaderBase::canRead (const QString &path)
             return false;
 
         this->io->SetFileName (path.toLatin1().constData());
-        try {
+        try
+        {
             this->io->ReadImageInformation();
         }
-        catch (itk::ExceptionObject &e) {
-            dtkDebug() << e.GetDescription();
+        catch (itk::ExceptionObject &e)
+        {
+            qDebug() << e.GetDescription();
             return false;
         }
 
@@ -91,36 +93,38 @@ bool itkDataTensorImageReaderBase::readInformation (const QString &path)
         return false;
     
     this->io->SetFileName ( path.toLatin1().constData() );
-    try {
+    try
+    {
         this->io->ReadImageInformation();
     }
-    catch (itk::ExceptionObject &e) {
-        dtkDebug() << e.GetDescription();
-	return false;
+    catch (itk::ExceptionObject &e)
+    {
+        qDebug() << e.GetDescription();
+        return false;
     }
     
     medAbstractData *medData = dynamic_cast<medAbstractData*>(this->data());
 
     if (!medData) {
-      
+
         switch (this->io->GetComponentType()) {
 
-	    case itk::ImageIOBase::FLOAT:
-            medData = medAbstractDataFactory::instance()->create ("itkDataTensorImageFloat3");
-		if (medData)
-		    this->setData ( medData );
-		break;
-		  
-	    case itk::ImageIOBase::DOUBLE:
-            medData = medAbstractDataFactory::instance()->create ("itkDataTensorImageDouble3");
-		if (medData)
-		    this->setData ( medData );
-		break;
-		  
-	    default:
-	        dtkDebug() << "Unsupported component type";
-		return false;
-	}
+            case itk::ImageIOBase::FLOAT:
+                medData = medAbstractDataFactory::instance()->create ("itkDataTensorImageFloat3");
+                if (medData)
+                    this->setData ( medData );
+                break;
+
+            case itk::ImageIOBase::DOUBLE:
+                medData = medAbstractDataFactory::instance()->create ("itkDataTensorImageDouble3");
+                if (medData)
+                    this->setData ( medData );
+                break;
+
+            default:
+                qDebug() << "Unsupported component type";
+                return false;
+        }
     }
 
     if (medData) {
@@ -141,287 +145,286 @@ bool itkDataTensorImageReaderBase::read (const QString &path)
 {
     if (this->io.IsNull())
         return false;
-	
+
     this->readInformation ( path );
-	
-    dtkDebug() << "Read with: " << this->identifier();
+
+    qDebug() << "Read with: " << this->identifier();
 
     if (medAbstractData *medData = dynamic_cast<medAbstractData*>(this->data()) ) {
-      
+
         if (medData->identifier()=="itkDataTensorImageDouble3") {
 
-	  if (this->io->GetNumberOfComponents()==6) {
+            if (this->io->GetNumberOfComponents()==6) {
 
-	    typedef itk::Tensor<double, 3>    TensorType;
-	    typedef itk::Image<TensorType, 3> TensorImageType;
+                typedef itk::Tensor<double, 3>    TensorType;
+                typedef itk::Image<TensorType, 3> TensorImageType;
 
-	    typedef itk::Vector<double, 6>    VectorType;
-	    typedef itk::Image<VectorType, 3> VectorImageType;
+                typedef itk::Vector<double, 6>    VectorType;
+                typedef itk::Image<VectorType, 3> VectorImageType;
 
-	    typedef itk::ImageFileReader<VectorImageType> ReaderType;
-	    
-	    VectorImageType::Pointer image = nullptr;
-	    {
-	      ReaderType::Pointer reader = ReaderType::New();
-	      reader->SetImageIO (this->io);
-	      reader->SetFileName ( path.toLatin1().constData() );
-	      try {
-		reader->Update();
-	      }
-	      catch (itk::ExceptionObject &e) {
-		dtkDebug() << e.GetDescription();
-		return false;
-	      }
-	      image = reader->GetOutput(); 
-	    }
+                typedef itk::ImageFileReader<VectorImageType> ReaderType;
 
-	    TensorImageType::Pointer tensors = TensorImageType::New();
-	    TensorImageType::RegionType region = image->GetLargestPossibleRegion();
-	    tensors->SetRegions   (region);
-	    tensors->SetSpacing   (image->GetSpacing());
-	    tensors->SetOrigin    (image->GetOrigin());
-	    tensors->SetDirection (image->GetDirection());
+                VectorImageType::Pointer image = nullptr;
+                {
+                    ReaderType::Pointer reader = ReaderType::New();
+                    reader->SetImageIO (this->io);
+                    reader->SetFileName ( path.toLatin1().constData() );
+                    try {
+                        reader->Update();
+                    }
+                    catch (itk::ExceptionObject &e) {
+                        qDebug() << e.GetDescription();
+                        return false;
+                    }
+                    image = reader->GetOutput();
+                }
 
-	    try {
-	        tensors->Allocate();
-	    }
-	    catch (itk::ExceptionObject &e) {
-	        dtkDebug() << e.GetDescription();
-		return false;
-	    }
+                TensorImageType::Pointer tensors = TensorImageType::New();
+                TensorImageType::RegionType region = image->GetLargestPossibleRegion();
+                tensors->SetRegions   (region);
+                tensors->SetSpacing   (image->GetSpacing());
+                tensors->SetOrigin    (image->GetOrigin());
+                tensors->SetDirection (image->GetDirection());
 
-	    itk::ImageRegionConstIteratorWithIndex<VectorImageType>  itIn (image,
-									   image->GetLargestPossibleRegion());
-	    itk::ImageRegionIteratorWithIndex<TensorImageType> itOut(tensors,
-								     tensors->GetLargestPossibleRegion());
+                try {
+                    tensors->Allocate();
+                }
+                catch (itk::ExceptionObject &e) {
+                    qDebug() << e.GetDescription();
+                    return false;
+                }
 
-	    while(!itOut.IsAtEnd()) {
-      
-	      VectorType vec = itIn.Get();
-	      TensorType tensor;
-	      
-	      for( unsigned int j=0; j<6; j++) {
-		tensor[j] = vec[j];
-	      }
-      
-	      itOut.Set (tensor);
-	      
-	      ++itOut;
-	      ++itIn;
-	    }
+                itk::ImageRegionConstIteratorWithIndex<VectorImageType>  itIn (image,
+                                                                               image->GetLargestPossibleRegion());
+                itk::ImageRegionIteratorWithIndex<TensorImageType> itOut(tensors,
+                                                                         tensors->GetLargestPossibleRegion());
 
-	    medData->setData (tensors);
-	    
-	  }
-	  else if (this->io->GetNumberOfComponents()==9) {
+                while(!itOut.IsAtEnd()) {
 
-	    typedef itk::Tensor<double, 3>    TensorType;
-	    typedef itk::Image<TensorType, 3> TensorImageType;
+                    VectorType vec = itIn.Get();
+                    TensorType tensor;
 
-	    typedef itk::Vector<double, 9>    VectorType;
-	    typedef itk::Image<VectorType, 3> VectorImageType;
+                    for( unsigned int j=0; j<6; j++) {
+                        tensor[j] = vec[j];
+                    }
 
-	    typedef itk::ImageFileReader<VectorImageType> ReaderType;
-	    
-	    VectorImageType::Pointer image = nullptr;
-	    {
-	      ReaderType::Pointer reader = ReaderType::New();
-	      reader->SetImageIO (this->io);
-	      reader->SetFileName ( path.toLatin1().constData() );
-	      try {
-		reader->Update();
-	      }
-	      catch (itk::ExceptionObject &e) {
-		dtkDebug() << e.GetDescription();
-		return false;
-	      }
-	      image = reader->GetOutput(); 
-	    }
+                    itOut.Set (tensor);
 
-	    TensorImageType::Pointer tensors = TensorImageType::New();
-	    TensorImageType::RegionType region = image->GetLargestPossibleRegion();
-	    tensors->SetRegions   (region);
-	    tensors->SetSpacing   (image->GetSpacing());
-	    tensors->SetOrigin    (image->GetOrigin());
-	    tensors->SetDirection (image->GetDirection());
+                    ++itOut;
+                    ++itIn;
+                }
 
-	    try {
-	        tensors->Allocate();
-	    }
-	    catch (itk::ExceptionObject &e) {
-	        dtkDebug() << e.GetDescription();
-		return false;
-	    }
+                medData->setData (tensors);
 
-	    itk::ImageRegionConstIteratorWithIndex<VectorImageType>  itIn (image,
-									   image->GetLargestPossibleRegion());
-	    itk::ImageRegionIteratorWithIndex<TensorImageType> itOut(tensors,
-								     tensors->GetLargestPossibleRegion());
+            }
+            else if (this->io->GetNumberOfComponents()==9) {
 
-	    while(!itOut.IsAtEnd()) {
-      
-	      VectorType vec = itIn.Get();
-	      TensorType tensor;
-	      
-	      for (unsigned int i=0; i<3; i++)
-		for (unsigned int j=0; j<3; j++)
-		  tensor.SetComponent (i, j, vec[i*3+j]);
-      
-	      itOut.Set (tensor);
-	      
-	      ++itOut;
-	      ++itIn;
-	    }
+                typedef itk::Tensor<double, 3>    TensorType;
+                typedef itk::Image<TensorType, 3> TensorImageType;
 
-	    medData->setData (tensors);
-	  }
-	  else {
-	      dtkDebug() << "Unsupported number of components";
-	      return false;
-	  } 
-	}
+                typedef itk::Vector<double, 9>    VectorType;
+                typedef itk::Image<VectorType, 3> VectorImageType;
 
-	else if (medData->identifier()=="itkDataTensorImageFloat3") {
+                typedef itk::ImageFileReader<VectorImageType> ReaderType;
 
-	  if (this->io->GetNumberOfComponents()==6) {
+                VectorImageType::Pointer image = nullptr;
+                {
+                    ReaderType::Pointer reader = ReaderType::New();
+                    reader->SetImageIO (this->io);
+                    reader->SetFileName ( path.toLatin1().constData() );
+                    try {
+                        reader->Update();
+                    }
+                    catch (itk::ExceptionObject &e) {
+                        qDebug() << e.GetDescription();
+                        return false;
+                    }
+                    image = reader->GetOutput();
+                }
 
-	    typedef itk::Tensor<float, 3>     TensorType;
-	    typedef itk::Image<TensorType, 3> TensorImageType;
+                TensorImageType::Pointer tensors = TensorImageType::New();
+                TensorImageType::RegionType region = image->GetLargestPossibleRegion();
+                tensors->SetRegions   (region);
+                tensors->SetSpacing   (image->GetSpacing());
+                tensors->SetOrigin    (image->GetOrigin());
+                tensors->SetDirection (image->GetDirection());
 
-	    typedef itk::Vector<float, 6>     VectorType;
-	    typedef itk::Image<VectorType, 3> VectorImageType;
+                try {
+                    tensors->Allocate();
+                }
+                catch (itk::ExceptionObject &e) {
+                    qDebug() << e.GetDescription();
+                    return false;
+                }
 
-	    typedef itk::ImageFileReader<VectorImageType> ReaderType;
-	    
-	    VectorImageType::Pointer image = nullptr;
-	    {
-	      ReaderType::Pointer reader = ReaderType::New();
-	      reader->SetImageIO (this->io);
-	      reader->SetFileName ( path.toLatin1().constData() );
-	      try {
-		reader->Update();
-	      }
-	      catch (itk::ExceptionObject &e) {
-		dtkDebug() << e.GetDescription();
-		return false;
-	      }
-	      image = reader->GetOutput(); 
-	    }
+                itk::ImageRegionConstIteratorWithIndex<VectorImageType>  itIn (image,
+                                                                               image->GetLargestPossibleRegion());
+                itk::ImageRegionIteratorWithIndex<TensorImageType> itOut(tensors,
+                                                                         tensors->GetLargestPossibleRegion());
 
-	    TensorImageType::Pointer tensors = TensorImageType::New();
-	    TensorImageType::RegionType region = image->GetLargestPossibleRegion();
-	    tensors->SetRegions   (region);
-	    tensors->SetSpacing   (image->GetSpacing());
-	    tensors->SetOrigin    (image->GetOrigin());
-	    tensors->SetDirection (image->GetDirection());
+                while(!itOut.IsAtEnd()) {
 
-	    try {
-	        tensors->Allocate();
-	    }
-	    catch (itk::ExceptionObject &e) {
-	        dtkDebug() << e.GetDescription();
-		return false;
-	    }
+                    VectorType vec = itIn.Get();
+                    TensorType tensor;
 
-	    itk::ImageRegionConstIteratorWithIndex<VectorImageType>  itIn (image,
-									   image->GetLargestPossibleRegion());
-	    itk::ImageRegionIteratorWithIndex<TensorImageType> itOut(tensors,
-								     tensors->GetLargestPossibleRegion());
+                    for (unsigned int i=0; i<3; i++)
+                        for (unsigned int j=0; j<3; j++)
+                            tensor.SetComponent (i, j, vec[i*3+j]);
 
-	    while(!itOut.IsAtEnd()) {
-      
-	      VectorType vec = itIn.Get();
-	      TensorType tensor;
-	      
-	      for( unsigned int j=0; j<6; j++) {
-		tensor[j] = vec[j];
-	      }
-      
-	      itOut.Set (tensor);
-	      
-	      ++itOut;
-	      ++itIn;
-	    }
-	    
-	    medData->setData (tensors);
-	  }
-	  else if (this->io->GetNumberOfComponents()==9) {
+                    itOut.Set (tensor);
 
-	    typedef itk::Tensor<float, 3>     TensorType;
-	    typedef itk::Image<TensorType, 3> TensorImageType;
+                    ++itOut;
+                    ++itIn;
+                }
 
-	    typedef itk::Vector<float, 9>     VectorType;
-	    typedef itk::Image<VectorType, 3> VectorImageType;
+                medData->setData (tensors);
+            }
+            else {
+                qDebug() << "Unsupported number of components";
+                return false;
+            }
+        }
 
-	    typedef itk::ImageFileReader<VectorImageType> ReaderType;
-	    
-	    VectorImageType::Pointer image = nullptr;
-	    {
-	      ReaderType::Pointer reader = ReaderType::New();
-	      reader->SetImageIO (this->io);
-	      reader->SetFileName ( path.toLatin1().constData() );
-	      try {
-		reader->Update();
-	      }
-	      catch (itk::ExceptionObject &e) {
-		dtkDebug() << e.GetDescription();
-		return false;
-	      }
-	      image = reader->GetOutput(); 
-	    }
+        else if (medData->identifier()=="itkDataTensorImageFloat3") {
 
-	    TensorImageType::Pointer tensors = TensorImageType::New();
-	    TensorImageType::RegionType region = image->GetLargestPossibleRegion();
-	    tensors->SetRegions   (region);
-	    tensors->SetSpacing   (image->GetSpacing());
-	    tensors->SetOrigin    (image->GetOrigin());
-	    tensors->SetDirection (image->GetDirection());
+            if (this->io->GetNumberOfComponents()==6) {
 
-	    try {
-	        tensors->Allocate();
-	    }
-	    catch (itk::ExceptionObject &e) {
-	        dtkDebug() << e.GetDescription();
-		return false;
-	    }
+                typedef itk::Tensor<float, 3>     TensorType;
+                typedef itk::Image<TensorType, 3> TensorImageType;
 
-	    itk::ImageRegionConstIteratorWithIndex<VectorImageType>  itIn (image,
-									   image->GetLargestPossibleRegion());
-	    itk::ImageRegionIteratorWithIndex<TensorImageType> itOut(tensors,
-								     tensors->GetLargestPossibleRegion());
+                typedef itk::Vector<float, 6>     VectorType;
+                typedef itk::Image<VectorType, 3> VectorImageType;
 
-	    while(!itOut.IsAtEnd()) {
-      
-	      VectorType vec = itIn.Get();
-	      TensorType tensor;
-	      
-	      for (unsigned int i=0; i<3; i++)
-		for (unsigned int j=0; j<3; j++)
-		  tensor.SetComponent (i, j, vec[i*3+j]);
-      
-	      itOut.Set (tensor);
-	      
-	      ++itOut;
-	      ++itIn;
-	    }
+                typedef itk::ImageFileReader<VectorImageType> ReaderType;
 
-	    medData->setData (tensors);
-	  }
-	  else {
-	      dtkDebug() << "Unsupported number of components";
-	      return false;
-	  } 
-	}
-	else {
-	  dtkDebug() << "Unsupported data type";
-	  return false;
-	}
+                VectorImageType::Pointer image = nullptr;
+                {
+                    ReaderType::Pointer reader = ReaderType::New();
+                    reader->SetImageIO (this->io);
+                    reader->SetFileName ( path.toLatin1().constData() );
+                    try {
+                        reader->Update();
+                    }
+                    catch (itk::ExceptionObject &e) {
+                        qDebug() << e.GetDescription();
+                        return false;
+                    }
+                    image = reader->GetOutput();
+                }
+
+                TensorImageType::Pointer tensors = TensorImageType::New();
+                TensorImageType::RegionType region = image->GetLargestPossibleRegion();
+                tensors->SetRegions   (region);
+                tensors->SetSpacing   (image->GetSpacing());
+                tensors->SetOrigin    (image->GetOrigin());
+                tensors->SetDirection (image->GetDirection());
+
+                try {
+                    tensors->Allocate();
+                }
+                catch (itk::ExceptionObject &e) {
+                    qDebug() << e.GetDescription();
+                    return false;
+                }
+
+                itk::ImageRegionConstIteratorWithIndex<VectorImageType>  itIn (image,
+                                                                               image->GetLargestPossibleRegion());
+                itk::ImageRegionIteratorWithIndex<TensorImageType> itOut(tensors,
+                                                                         tensors->GetLargestPossibleRegion());
+
+                while(!itOut.IsAtEnd()) {
+
+                    VectorType vec = itIn.Get();
+                    TensorType tensor;
+
+                    for( unsigned int j=0; j<6; j++) {
+                        tensor[j] = vec[j];
+                    }
+
+                    itOut.Set (tensor);
+
+                    ++itOut;
+                    ++itIn;
+                }
+
+                medData->setData (tensors);
+            }
+            else if (this->io->GetNumberOfComponents()==9) {
+
+                typedef itk::Tensor<float, 3>     TensorType;
+                typedef itk::Image<TensorType, 3> TensorImageType;
+
+                typedef itk::Vector<float, 9>     VectorType;
+                typedef itk::Image<VectorType, 3> VectorImageType;
+
+                typedef itk::ImageFileReader<VectorImageType> ReaderType;
+
+                VectorImageType::Pointer image = nullptr;
+                {
+                    ReaderType::Pointer reader = ReaderType::New();
+                    reader->SetImageIO (this->io);
+                    reader->SetFileName ( path.toLatin1().constData() );
+                    try {
+                        reader->Update();
+                    }
+                    catch (itk::ExceptionObject &e) {
+                        qDebug() << e.GetDescription();
+                        return false;
+                    }
+                    image = reader->GetOutput();
+                }
+
+                TensorImageType::Pointer tensors = TensorImageType::New();
+                TensorImageType::RegionType region = image->GetLargestPossibleRegion();
+                tensors->SetRegions   (region);
+                tensors->SetSpacing   (image->GetSpacing());
+                tensors->SetOrigin    (image->GetOrigin());
+                tensors->SetDirection (image->GetDirection());
+
+                try {
+                    tensors->Allocate();
+                }
+                catch (itk::ExceptionObject &e) {
+                    qDebug() << e.GetDescription();
+                    return false;
+                }
+
+                itk::ImageRegionConstIteratorWithIndex<VectorImageType>  itIn (image,
+                                                                               image->GetLargestPossibleRegion());
+                itk::ImageRegionIteratorWithIndex<TensorImageType> itOut(tensors,
+                                                                         tensors->GetLargestPossibleRegion());
+
+                while(!itOut.IsAtEnd()) {
+
+                    VectorType vec = itIn.Get();
+                    TensorType tensor;
+
+                    for (unsigned int i=0; i<3; i++)
+                        for (unsigned int j=0; j<3; j++)
+                            tensor.SetComponent (i, j, vec[i*3+j]);
+
+                    itOut.Set (tensor);
+
+                    ++itOut;
+                    ++itIn;
+                }
+
+                medData->setData (tensors);
+            }
+            else {
+                qDebug() << "Unsupported number of components";
+                return false;
+            }
+        }
+        else {
+            qDebug() << "Unsupported data type";
+            return false;
+        }
     }
     else {
-      dtkDebug() << "No data set or could not create one";
-      return false;
+        qDebug() << "No data set or could not create one";
+        return false;
     }
 
     return true;
-    
 }

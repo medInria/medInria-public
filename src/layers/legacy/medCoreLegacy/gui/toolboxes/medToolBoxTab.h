@@ -1,8 +1,9 @@
+#pragma once
 /*=========================================================================
 
  medInria
 
- Copyright (c) INRIA 2013 - 2018. All rights reserved.
+ Copyright (c) INRIA 2013 - 2020. All rights reserved.
  See LICENSE.txt for details.
 
   This software is distributed WITHOUT ANY WARRANTY; without even
@@ -11,14 +12,11 @@
 
 =========================================================================*/
 
-#pragma once
-
 #include <QtGui>
 #include <QtWidgets>
 
 #include <medCoreLegacyExport.h>
 
-class medToolBoxTabPrivate;
 
 class MEDCORELEGACY_EXPORT medToolBoxTab : public QTabWidget
 {
@@ -26,11 +24,6 @@ class MEDCORELEGACY_EXPORT medToolBoxTab : public QTabWidget
     Q_PROPERTY(int height READ height WRITE setFixedHeight)
 
 public:
-     medToolBoxTab(QWidget *parent = NULL);
+     medToolBoxTab(QWidget *parent = nullptr);
     ~medToolBoxTab();
-
-private:
-    medToolBoxTabPrivate *d;
 };
-
-

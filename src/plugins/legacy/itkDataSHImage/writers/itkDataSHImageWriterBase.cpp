@@ -2,7 +2,7 @@
 
  medInria
 
- Copyright (c) INRIA 2013 - 2018. All rights reserved.
+ Copyright (c) INRIA 2013 - 2020. All rights reserved.
  See LICENSE.txt for details.
  
   This software is distributed WITHOUT ANY WARRANTY; without even
@@ -32,12 +32,11 @@ QStringList itkDataSHImageWriterBase::s_handled()
 
 itkDataSHImageWriterBase::itkDataSHImageWriterBase(): dtkAbstractDataWriter()
 {
-    this->io = 0;
+    this->io = nullptr;
 }
 
 itkDataSHImageWriterBase::~itkDataSHImageWriterBase()
 {
-
 
 }
 
@@ -72,38 +71,44 @@ bool itkDataSHImageWriterBase::canWrite(const QString& path)
 
 bool itkDataSHImageWriterBase::write(const QString& path)
 {
-	 if (!this->data())
-		 return false;
+    if (!this->data())
+    {
+        return false;
+    }
 
-	 if (this->io.IsNull())
-		 return false;
+    if (this->io.IsNull())
+    {
+        return false;
+    }
 
-    if (medAbstractData *medData = dynamic_cast<medAbstractData*>(this->data()) ) {
+    if (medAbstractData *medData = dynamic_cast<medAbstractData*>(this->data()) )
+    {
+        if(medData->identifier()=="itkDataSHImageFloat3")
+        {
+            float dummy = 0;
+            write(path, dummy);
+        }
 
-                if(medData->identifier()=="itkDataSHImageFloat3") {
+        else if(medData->identifier()=="itkDataSHImageDouble3")
+        {
+            double dummy = 0;
+            write(path, dummy);
+        }
+        else
+        {
+            qWarning() << "Unrecognized pixel type";
+            return false;
+        }
+    }
 
-		    float dummy = 0;
-		    write(path, dummy);
-		}
-
-                else if(medData->identifier()=="itkDataSHImageDouble3") {
-
-		    double dummy = 0;
-		    write(path, dummy);
-		}
-
-		else {
-			dtkWarn() << "Unrecognized pixel type";
-			return false;
-		}
-	}
-
-	return true;
+    return true;
 }
 
 template <class PixelType>
 bool itkDataSHImageWriterBase::write(const QString& path, PixelType dummyArgument)
 {
+    Q_UNUSED(dummyArgument)
+
     typedef typename itk::VectorImage<PixelType, 3>     SHImageType;
 
     typedef typename SHImageType::Pointer SHImageTypePointer;
@@ -113,11 +118,13 @@ bool itkDataSHImageWriterBase::write(const QString& path, PixelType dummyArgumen
     ImageFileWriterPointer myWriter = itk::ImageFileWriter<SHImageType>::New();
     myWriter->SetFileName(path.toLatin1().constData());
     myWriter->SetInput(/*mySH*/image);
-    try {
+    try
+    {
         myWriter->Write();
     }
-    catch(itk::ExceptionObject &e) {
-        dtkDebug() << e.GetDescription();
+    catch(itk::ExceptionObject &e)
+    {
+        qDebug() << e.GetDescription();
         return false;
     }
 

@@ -2,7 +2,7 @@
 
  medInria
 
- Copyright (c) INRIA 2013 - 2018. All rights reserved.
+ Copyright (c) INRIA 2013 - 2020. All rights reserved.
  See LICENSE.txt for details.
  
   This software is distributed WITHOUT ANY WARRANTY; without even
@@ -12,9 +12,7 @@
 =========================================================================*/
 
 #include <medAbstractNavigator.h>
-
 #include <medAbstractView.h>
-
 
 /**
  * @fn QWidget* medAbstractNavigator::buildToolBoxWidget()
@@ -29,8 +27,6 @@
  * toolbar of the container where the parent view is dsiplayed.
  */
 
-
-
 class medAbstractNavigatorPrivate
 {
 public:
@@ -42,8 +38,8 @@ medAbstractNavigator::medAbstractNavigator(medAbstractView *parent):
     d(new medAbstractNavigatorPrivate)
 {
     setParent(parent);
-    d->toolBarWidget = NULL;
-    d->toolBoxWidget = NULL;
+    d->toolBarWidget = nullptr;
+    d->toolBoxWidget = nullptr;
 }
 
 medAbstractNavigator::~medAbstractNavigator()

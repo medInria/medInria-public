@@ -2,7 +2,7 @@
 
  medInria
 
- Copyright (c) INRIA 2013 - 2018. All rights reserved.
+ Copyright (c) INRIA 2013 - 2020. All rights reserved.
  See LICENSE.txt for details.
  
   This software is distributed WITHOUT ANY WARRANTY; without even
@@ -38,7 +38,7 @@ medVtkFibersDataReader::~medVtkFibersDataReader()
 {
     d->reader->Delete();
     delete d;
-    d = NULL;
+    d = nullptr;
 }
 
 QStringList medVtkFibersDataReader::handled() const
@@ -60,8 +60,6 @@ bool medVtkFibersDataReader::canRead (const QStringList& paths)
 
 bool medVtkFibersDataReader::readInformation (const QString& path)
 {
-    // d->reader->SetFileName (path.toLatin1().constData());
-
     medAbstractData *medData = dynamic_cast<medAbstractData*>(this->data());
 
     if (!medData)
@@ -160,4 +158,3 @@ dtkAbstractDataReader *create_medVtkFibersDataReader()
 {
     return new medVtkFibersDataReader;
 }
-

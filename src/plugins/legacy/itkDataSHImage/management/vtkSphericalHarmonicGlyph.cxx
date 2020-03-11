@@ -2,7 +2,7 @@
 
  medInria
 
- Copyright (c) INRIA 2013 - 2018. All rights reserved.
+ Copyright (c) INRIA 2013 - 2020. All rights reserved.
  See LICENSE.txt for details.
 
   This software is distributed WITHOUT ANY WARRANTY; without even
@@ -24,7 +24,7 @@
 #include "vtkSphericalHarmonicGlyph.h"
 
 
-vtkStandardNewMacro(vtkSphericalHarmonicGlyph);
+vtkStandardNewMacro(vtkSphericalHarmonicGlyph)
 
 // Function taken from 3D Slicer, SuperquadricTensorGlyph
 //
@@ -102,8 +102,8 @@ vtkSphericalHarmonicGlyph::vtkSphericalHarmonicGlyph() {
     ColorGlyphs = 1;
     ColorMode = COLOR_BY_SCALARS;
     SetNumberOfInputPorts(2);
-    SphericalHarmonicSource = 0;
-    TMatrix = 0;
+    SphericalHarmonicSource = nullptr;
+    TMatrix = nullptr;
 }
 
 vtkSphericalHarmonicGlyph::~vtkSphericalHarmonicGlyph() {
@@ -332,9 +332,6 @@ vtkSphericalHarmonicGlyph::RequestData(vtkInformation*,vtkInformationVector** in
 
     if (newPointScalars) {
         newPointScalars->SetName(GetSphericalHarmonicValuesArrayName());
-        //const int idx = outPD->AddArray(newPointScalars);
-        //outPD->SetActiveAttribute(idx, vtkDataSetAttributes::SCALARS);
-        //newPointScalars->PrintSelf(std::cout,0);
         newPointScalars->Delete();
     }
 
@@ -365,9 +362,12 @@ vtkSphericalHarmonicGlyph::SetSourceConnection(int id,vtkAlgorithmOutput* algOut
 }
 
 vtkPolyData*
-vtkSphericalHarmonicGlyph::GetSource() {
+vtkSphericalHarmonicGlyph::GetSource()
+{
     if (GetNumberOfInputConnections(1)<1)
-        return NULL;
+    {
+        return nullptr;
+    }
     return vtkPolyData::SafeDownCast(GetExecutive()->GetInputData(1,0));
 }
 

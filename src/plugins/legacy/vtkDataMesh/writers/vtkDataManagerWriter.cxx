@@ -470,37 +470,38 @@ const char* vtkDataManagerWriter::GetDataSetName()
 //----------------------------------------------------------------------------
 vtkXMLWriter* vtkDataManagerWriter::CreateWriter(vtkMetaDataSet* metadataset)
 {
+    vtkXMLWriter* writer = nullptr;
 
-  vtkXMLWriter* writer = NULL;
-  
-  if (vtkMetaDataSetSequence::SafeDownCast (metadataset))
-    return NULL;
+    if (vtkMetaDataSetSequence::SafeDownCast (metadataset))
+    {
+        return nullptr;
+    }
 
-  if (!metadataset || !metadataset->GetDataSet())
-    return NULL;
-    
-  
-  switch (metadataset->GetType())
-  {
-      case vtkMetaDataSet::VTK_META_SURFACE_MESH :
-	writer = vtkXMLPolyDataWriter::New();
-	break;
-	
-      case vtkMetaDataSet::VTK_META_VOLUME_MESH :
-	writer = vtkXMLUnstructuredGridWriter::New();
-	break;
-	
-      case vtkMetaDataSet::VTK_META_IMAGE_DATA :
-	writer = vtkXMLImageDataWriter::New();
-	break;
-	
-      default:
-	vtkErrorMacro(<<"dataset type not handled"<<endl);
-	break;
-  }
+    if (!metadataset || !metadataset->GetDataSet())
+    {
+        return nullptr;
+    }
 
-  return writer;
-  
+    switch (metadataset->GetType())
+    {
+        case vtkMetaDataSet::VTK_META_SURFACE_MESH :
+            writer = vtkXMLPolyDataWriter::New();
+            break;
+
+        case vtkMetaDataSet::VTK_META_VOLUME_MESH :
+            writer = vtkXMLUnstructuredGridWriter::New();
+            break;
+
+        case vtkMetaDataSet::VTK_META_IMAGE_DATA :
+            writer = vtkXMLImageDataWriter::New();
+            break;
+
+        default:
+            vtkErrorMacro(<<"dataset type not handled"<<endl);
+            break;
+    }
+
+    return writer;
 }
 
 //----------------------------------------------------------------------------

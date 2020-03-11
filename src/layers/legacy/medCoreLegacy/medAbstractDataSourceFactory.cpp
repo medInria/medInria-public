@@ -2,7 +2,7 @@
 
  medInria
 
- Copyright (c) INRIA 2013 - 2018. All rights reserved.
+ Copyright (c) INRIA 2013 - 2020. All rights reserved.
  See LICENSE.txt for details.
  
   This software is distributed WITHOUT ANY WARRANTY; without even
@@ -46,8 +46,9 @@ QList<QString> medAbstractDataSourceFactory::dataSourcePlugins(void)
 medAbstractDataSource *medAbstractDataSourceFactory::create(QString type,QWidget * parent)
 {
     if(!d->dataSourceCreators.contains(type))
-        return NULL;
-
+    {
+        return nullptr;
+    }
     medAbstractDataSource *conf = d->dataSourceCreators[type](parent);
 
     return conf;
@@ -60,7 +61,7 @@ medAbstractDataSourceFactory::medAbstractDataSourceFactory(void) : dtkAbstractFa
 medAbstractDataSourceFactory::~medAbstractDataSourceFactory(void)
 {
     delete d;
-    d = NULL;
+    d = nullptr;
 }
 
-medAbstractDataSourceFactory *medAbstractDataSourceFactory::s_instance = NULL;
+medAbstractDataSourceFactory *medAbstractDataSourceFactory::s_instance = nullptr;

@@ -1,8 +1,9 @@
+#pragma once
 /*=========================================================================
 
  medInria
 
- Copyright (c) INRIA 2013 - 2018. All rights reserved.
+ Copyright (c) INRIA 2013 - 2020. All rights reserved.
  See LICENSE.txt for details.
 
   This software is distributed WITHOUT ANY WARRANTY; without even
@@ -10,7 +11,6 @@
   PURPOSE.
 
 =========================================================================*/
-#pragma once
 
 #include <medMorphomathOperationProcessNode.h>
 
@@ -48,7 +48,7 @@ void medMorphomathOperationProcessNode<T>::run(void)
 {
     if (d->radius.isEmpty() || d->input.isEmpty())
     {
-        dtkDebug() << Q_FUNC_INFO << "The input is not set. Aborting.";
+        qDebug() << Q_FUNC_INFO << "The input is not set. Aborting.";
         return;
     }
     else
@@ -60,8 +60,7 @@ void medMorphomathOperationProcessNode<T>::run(void)
             filter->kernelRadius()->setValue(d->radius.data());
             filter->run();
             d->output.setData(filter->output());
-            dtkDebug()<<"filtering done";
+            qDebug()<<"filtering done";
         }
     }
 }
-

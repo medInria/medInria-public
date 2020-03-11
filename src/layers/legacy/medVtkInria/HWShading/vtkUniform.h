@@ -1,3 +1,4 @@
+#pragma once
 /*============================================================================
 The Hardware Shading (HWShading) module is protected by the
 following copyright:
@@ -16,8 +17,6 @@ PURPOSE.  See the above copyright notices for more information.
 This file is a modified version inspired from the original file by
 the medInria team.
 ============================================================================*/
-
-#pragma once
 
 #include <medVtkInriaExport.h>
 #include <vtkShaderUniform.h>

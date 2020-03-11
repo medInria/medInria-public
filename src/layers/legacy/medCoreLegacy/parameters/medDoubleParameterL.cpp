@@ -260,4 +260,3 @@ void medDoubleParameterL::setSliderIntValue(int value)
     double dValue = currentDoubleValue * d->step + d->min;
     setValue(dValue);
 }
-

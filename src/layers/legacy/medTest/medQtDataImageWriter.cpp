@@ -83,9 +83,10 @@ QStringList medQtDataImageWriter::supportedFileExtensions() const
         sortedFormats.push_back(it);
     }
     CompareReversePriority compareReversePriority;
-    qSort( sortedFormats.begin(), sortedFormats.end(), compareReversePriority );
+    std::sort(sortedFormats.begin(), sortedFormats.end(), compareReversePriority);
 
-    foreach( FormatInfoList::const_iterator it, sortedFormats ) {
+    foreach( FormatInfoList::const_iterator it, sortedFormats )
+    {
         extensions << ( "." + it->fileExtension );
     }
     return extensions;

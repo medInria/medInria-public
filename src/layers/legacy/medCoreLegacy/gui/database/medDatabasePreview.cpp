@@ -38,7 +38,6 @@ public:
     medDataIndex currentDataIndex;
 };
 
-
 medDatabasePreviewStaticScene::medDatabasePreviewStaticScene(QObject *parent):
     d(new medDatabasePreviewStaticScenePrivate)
 {
@@ -54,7 +53,7 @@ medDatabasePreviewStaticScene::medDatabasePreviewStaticScene(QObject *parent):
 medDatabasePreviewStaticScene::~medDatabasePreviewStaticScene()
 {
     delete d;
-    d = NULL;
+    d = nullptr;
 }
 
 void medDatabasePreviewStaticScene::setImage(const medDataIndex &index)
@@ -133,7 +132,6 @@ medDataIndex& medDatabasePreviewStaticScene::currentDataIndex() const
     return d->currentDataIndex;
 }
 
-
 void medDatabasePreviewStaticScene::mouseDoubleClickEvent(QGraphicsSceneMouseEvent *event)
 {
     if(!d->isMulti)
@@ -178,15 +176,14 @@ medDatabasePreviewDynamicScene::medDatabasePreviewDynamicScene(const QList<QPair
     d(new medDatabasePreviewDynamicScenePrivate)
 {
     d->seriesDescriptionDataIndexPairList = seriesDescriptionDataIndexList;
-    qSort(d->seriesDescriptionDataIndexPairList.begin(), d->seriesDescriptionDataIndexPairList.end(), &stringMedDataIndexPairLessThan);
+    std::sort(d->seriesDescriptionDataIndexPairList.begin(), d->seriesDescriptionDataIndexPairList.end(), &stringMedDataIndexPairLessThan);
 }
 
 medDatabasePreviewDynamicScene::~medDatabasePreviewDynamicScene()
 {
     delete d;
-    d = NULL;
+    d = nullptr;
 }
-
 
 void medDatabasePreviewDynamicScene::previewMouseMoveEvent(QMouseEvent *event, int width)
 {
@@ -215,13 +212,15 @@ public:
 
 medDatabasePreview::medDatabasePreview(QWidget *parent): d(new medDatabasePreviewPrivate)
 {
+    Q_UNUSED(parent)
+
     this->setMouseTracking(true);
 
     QGraphicsScene *scene = new QGraphicsScene;
     this->setScene(scene);
 
-    d->dynamicScene = NULL;
-    d->staticScene = NULL;
+    d->dynamicScene = nullptr;
+    d->staticScene = nullptr;
 
     QGraphicsPixmapItem *pixmap = new QGraphicsPixmapItem;
     pixmap->setPixmap(QPixmap(":/pixmaps/default_thumbnail.png"));
@@ -244,7 +243,7 @@ medDatabasePreview::medDatabasePreview(QWidget *parent): d(new medDatabasePrevie
 medDatabasePreview::~medDatabasePreview()
 {
     delete d;
-    d = NULL;
+    d = nullptr;
 }
 
 

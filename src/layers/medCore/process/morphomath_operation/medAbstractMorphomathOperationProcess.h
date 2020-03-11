@@ -1,3 +1,4 @@
+#pragma once
 /*=========================================================================
 
  medInria
@@ -11,13 +12,10 @@
 
 =========================================================================*/
 
-#pragma once
-
 #include <medAbstractProcess.h>
+#include <medCoreExport.h>
 
 #include <dtkCore>
-
-#include <medCoreExport.h>
 
 class medAbstractImageData;
 class medIntParameter;
@@ -28,7 +26,7 @@ class MEDCORE_EXPORT medAbstractMorphomathOperationProcess : public medAbstractP
     Q_OBJECT
 
 public:
-    medAbstractMorphomathOperationProcess(QObject *parent = NULL);
+    medAbstractMorphomathOperationProcess(QObject *parent = nullptr);
     virtual ~medAbstractMorphomathOperationProcess();
 
     void setInput(medAbstractImageData* data);

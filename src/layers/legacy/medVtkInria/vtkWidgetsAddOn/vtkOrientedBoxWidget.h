@@ -1,8 +1,9 @@
+#pragma once
 /*=========================================================================
 
  medInria
 
- Copyright (c) INRIA 2013 - 2018. All rights reserved.
+ Copyright (c) INRIA 2013 - 2020. All rights reserved.
  See LICENSE.txt for details.
  
   This software is distributed WITHOUT ANY WARRANTY; without even
@@ -10,8 +11,6 @@
   PURPOSE.
 
 =========================================================================*/
-
-#pragma once
 
 #include <medVtkInriaExport.h>
 #include <vtkBoxWidget.h>
@@ -39,9 +38,9 @@ class MEDVTKINRIA_EXPORT vtkOrientedBoxWidget : public vtkBoxWidget
  public:
   
   static vtkOrientedBoxWidget* New();
-  vtkTypeMacro(vtkOrientedBoxWidget, vtkBoxWidget);
+  vtkTypeMacro(vtkOrientedBoxWidget, vtkBoxWidget)
 
-  vtkGetObjectMacro (OrientationMatrix, vtkMatrix4x4);
+  vtkGetObjectMacro (OrientationMatrix, vtkMatrix4x4)
   virtual void SetOrientationMatrix (vtkMatrix4x4* matrix);
   
  protected: 
@@ -53,8 +52,5 @@ class MEDVTKINRIA_EXPORT vtkOrientedBoxWidget : public vtkBoxWidget
   
   vtkMatrix4x4* OrientationMatrix;
   vtkMatrix4x4* InvertedOrientationMatrix;
-  
 
 };
-
-

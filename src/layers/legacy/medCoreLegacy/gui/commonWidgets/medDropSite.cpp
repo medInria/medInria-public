@@ -2,7 +2,7 @@
 
  medInria
 
- Copyright (c) INRIA 2013 - 2018. All rights reserved.
+ Copyright (c) INRIA 2013 - 2020. All rights reserved.
  See LICENSE.txt for details.
  
   This software is distributed WITHOUT ANY WARRANTY; without even
@@ -11,10 +11,7 @@
 
 =========================================================================*/
 
-#include <dtkCoreSupport/dtkGlobal.h>
-
 #include <medDataIndex.h>
-
 #include <medDropSite.h>
 
 #include <QtGui>
@@ -40,7 +37,7 @@ medDropSite::~medDropSite(void)
 {
     delete d;
 
-    d = NULL;
+    d = nullptr;
 }
 
 QSize medDropSite::sizeHint(void) const
@@ -111,17 +108,6 @@ void medDropSite::clear(){
 void medDropSite::paintEvent(QPaintEvent *event)
 {
     QLabel::paintEvent(event);
-
-//    // Optionally draw something (e.g. a tag) over the label in case it is a pixmap
-
-//    if(!this->pixmap())
-//        return;
-//
-//    QPainter painter;
-//    painter.begin(this);
-//    painter.setPen(Qt::white);
-//    painter.drawText(event->rect(), "Overlay", QTextOption(Qt::AlignHCenter | Qt::AlignCenter));
-//    painter.end();
 }
 
 void medDropSite::mousePressEvent(QMouseEvent* event)

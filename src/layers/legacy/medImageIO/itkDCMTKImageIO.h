@@ -1,8 +1,9 @@
+#pragma once
 /*=========================================================================
 
  medInria
 
- Copyright (c) INRIA 2013 - 2018. All rights reserved.
+ Copyright (c) INRIA 2013 - 2020. All rights reserved.
  See LICENSE.txt for details.
 
   This software is distributed WITHOUT ANY WARRANTY; without even
@@ -10,8 +11,6 @@
   PURPOSE.
 
 =========================================================================*/
-
-#pragma once
 
 #ifdef _MSC_VER
 #pragma warning ( disable : 4786 )
@@ -42,7 +41,7 @@ public:
 };
 
 
-namespace itk //TODO no namespace please ! (and no class name prifixed with other librarie pefix)
+namespace itk
 {
 
 class MEDIMAGEIO_EXPORT DCMTKImageIO : public MultiThreadedImageIOBase
@@ -54,8 +53,8 @@ public:
     typedef SmartPointer<Self>       Pointer;
     typedef SmartPointer<const Self> ConstPointer;
 
-    itkNewMacro (Self);
-    itkTypeMacro(DCMTKImageIO, MultiThreadedImageIOBase);
+    itkNewMacro (Self)
+    itkTypeMacro(DCMTKImageIO, MultiThreadedImageIOBase)
 
     typedef std::map< std::string, std::vector< std::string > >     StringMap;
 

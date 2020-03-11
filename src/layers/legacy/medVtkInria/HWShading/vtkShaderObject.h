@@ -1,3 +1,4 @@
+#pragma once
 /*============================================================================
 
 The Hardware Shading (HWShading) module is protected by the
@@ -33,8 +34,6 @@ PURPOSE.  See the above copyright notices for more information.
  * - Added static void printShaderInfoLog()
  */
 
-#pragma once
-
 #include <medVtkInriaExport.h>
 
 #include <vtkShaderBaseHandle.h>
@@ -46,7 +45,7 @@ class MEDVTKINRIA_EXPORT vtkShaderObject : public vtkShaderBaseHandle
 {
 public:
 
-  vtkTypeMacro (vtkShaderObject, vtkShaderBaseHandle);
+  vtkTypeMacro (vtkShaderObject, vtkShaderBaseHandle)
   
   /**
    * Specify the source for this object. Either set the source text directly or
@@ -55,7 +54,7 @@ public:
   virtual void SetSourceText (const char* _arg)
     {
     vtkDebugMacro(<< this->GetClassName() << " (" << this << "): setting SourceText to " << (_arg?_arg:"(null)") );
-    if ( this->SourceText == NULL && _arg == NULL) { return;}
+    if ( this->SourceText == nullptr && _arg == nullptr) { return;}
     if ( this->SourceText && _arg && (!strcmp(this->SourceText,_arg))) { return;}
     if (this->SourceText) { delete [] this->SourceText; }
     if (_arg)
@@ -65,12 +64,12 @@ public:
       }
     else
       {
-      this->SourceText = NULL;
+      this->SourceText = nullptr;
       }
     this->Modified();
     } 
 
-  vtkGetStringMacro(SourceText);
+  vtkGetStringMacro(SourceText)
   void ReadSourceTextFromFile(const char* filename);
 
   virtual void Compile();
@@ -107,9 +106,5 @@ private:
   /**
    * Print shader infolog (duh).
    */
-  static void PrintShaderInfoLog(GLuint shader);
-  
+  static void PrintShaderInfoLog(GLuint shader); 
 };
-
-
-

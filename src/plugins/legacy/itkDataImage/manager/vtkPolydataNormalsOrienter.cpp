@@ -49,7 +49,7 @@ int vtkPolyDataNormalsOrienter::RequestData(
     vtkPointData *outPD=output->GetPointData();
 
     vtkDataArray *sourceNormals;
-    vtkFloatArray *newNormals=NULL;
+    vtkFloatArray *newNormals = nullptr;
     vtkTransform *trans;
 
     trans = vtkTransform::New();

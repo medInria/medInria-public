@@ -1,17 +1,16 @@
+#pragma once
 /*=========================================================================
 
- medInria
+medInria
 
- Copyright (c) INRIA 2013 - 2018. All rights reserved.
- See LICENSE.txt for details.
+Copyright (c) INRIA 2013 - 2020. All rights reserved.
+See LICENSE.txt for details.
 
-  This software is distributed WITHOUT ANY WARRANTY; without even
-  the implied warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR
-  PURPOSE.
+This software is distributed WITHOUT ANY WARRANTY; without even
+the implied warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR
+PURPOSE.
 
 =========================================================================*/
-
-#pragma once
 
 #include <medAbstractImageView.h>
 #include <medVtkViewPluginExport.h>
@@ -28,7 +27,7 @@ class MEDVTKVIEWPLUGIN_EXPORT medVtkView : public medAbstractImageView
 
 public:
 
-    medVtkView(QObject* parent = 0);
+    medVtkView(QObject* parent = nullptr);
     virtual ~medVtkView();
 
     virtual QString  identifier() const;
@@ -79,4 +78,3 @@ private:
     medVtkViewPrivate *d;
     friend class medVtkViewObserver;
 };
-

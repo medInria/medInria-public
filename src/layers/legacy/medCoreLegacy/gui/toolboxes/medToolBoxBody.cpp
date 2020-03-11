@@ -2,7 +2,7 @@
 
  medInria
 
- Copyright (c) INRIA 2013 - 2018. All rights reserved.
+ Copyright (c) INRIA 2013 - 2020. All rights reserved.
  See LICENSE.txt for details.
  
   This software is distributed WITHOUT ANY WARRANTY; without even
@@ -29,13 +29,13 @@ medToolBoxBody::medToolBoxBody(QWidget *parent) : QFrame(parent), d(new medToolB
     d->layout->setContentsMargins(0, 0, 0, 0);
     d->layout->setSpacing(0);
     d->layoutOrientation = Qt::Vertical;
-    d->tab = NULL;
+    d->tab = nullptr;
 }
 
 medToolBoxBody::~medToolBoxBody(void)
 {
     delete d;
-    d = NULL;
+    d = nullptr;
 }
 
 void medToolBoxBody::addWidget(QWidget *widget)

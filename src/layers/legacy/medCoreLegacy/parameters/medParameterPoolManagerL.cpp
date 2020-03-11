@@ -95,4 +95,4 @@ medParameterPoolL* medParameterPoolManagerL::pool(QString poolId)
     return d->pools.value(poolId);
 }
 
-medParameterPoolManagerL *medParameterPoolManagerL::s_instance = NULL;
+medParameterPoolManagerL *medParameterPoolManagerL::s_instance = nullptr;

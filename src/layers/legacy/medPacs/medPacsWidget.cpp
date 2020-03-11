@@ -2,7 +2,7 @@
 
  medInria
 
- Copyright (c) INRIA 2013 - 2018. All rights reserved.
+ Copyright (c) INRIA 2013 - 2020. All rights reserved.
  See LICENSE.txt for details.
  
   This software is distributed WITHOUT ANY WARRANTY; without even
@@ -19,11 +19,6 @@
 #include <medAbstractPacsNode.h>
 #include <medAbstractPacsStoreScp.h>
 #include <medAbstractPacsResultDataset.h>
-
-#include <QUuid>
-#include <QMenu>
-
-#include <dtkCoreSupport/dtkGlobal.h>
 
 // /////////////////////////////////////////////////////////////////
 // medPacsWidgetPrivate
@@ -53,8 +48,9 @@ public:
 
 void medPacsWidgetPrivate::run(void)
 {
-    if(!this->server) {
-        dtkWarn() << "DICOM server could not be started! pacsmodule not loaded?";
+    if(!this->server)
+    {
+        qWarning() << "DICOM server could not be started! pacsmodule not loaded?";
         return;
     }
     QDir tmp = QDir::temp();
@@ -94,11 +90,12 @@ medPacsWidget::medPacsWidget(QWidget *parent) : QTreeWidget(parent), d(new medPa
 
     this->setHeaderLabels(QStringList() << "Name" << "Description" << "Id" << "Modality");
 
-    d->find = NULL;
-    d->echo = NULL;
+    d->find = nullptr;
+    d->echo = nullptr;
     d->server = medAbstractPacsFactory::instance()->createStoreScp("dcmtkStoreScp");
-    if (!d->server) {
-        dtkWarn() << "Unable to find a valid implementation of the store scp service.";
+    if (!d->server)
+    {
+        qWarning() << "Unable to find a valid implementation of the store scp service.";
         return;
     }
 
@@ -109,7 +106,6 @@ medPacsWidget::medPacsWidget(QWidget *parent) : QTreeWidget(parent), d(new medPa
     this->readSettings();
     d->start();
     d->selectedNodes = d->nodes;
-
 }
 
 medPacsWidget::~medPacsWidget(void)
@@ -124,7 +120,7 @@ medPacsWidget::~medPacsWidget(void)
     }
     delete d;
 
-    d = NULL;
+    d = nullptr;
 }
 
 void medPacsWidget::readSettings(void)
@@ -213,8 +209,9 @@ void medPacsWidget::search(QString query)
                 item->setData(2,Qt::UserRole, QString(dataset->getStudyInstanceUID()));
             }
         }
-    }else {
-        dtkDebug() << "findScu: cannot create instance, maybe module was not loaded?";
+    }else
+    {
+        qDebug() << "findScu: cannot create instance, maybe module was not loaded?";
     }
 }
 
@@ -350,8 +347,6 @@ void medPacsWidget::updateContextMenu(const QPoint& point)
     menu.exec(mapToGlobal(point));
 }
 
-
-
 void medPacsWidget::onItemImported(void)
 {
     this->readSettings();
@@ -419,7 +414,7 @@ void medPacsWidget::onEchoRequest()
                 response.push_back(false);
 
         } else {
-            dtkDebug() << "echoScu: cannot create instance, maybe module was not loaded?";
+            qDebug() << "echoScu: cannot create instance, maybe module was not loaded?";
         }
     }
 

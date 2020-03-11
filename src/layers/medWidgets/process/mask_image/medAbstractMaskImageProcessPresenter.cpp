@@ -2,7 +2,7 @@
 
  medInria
 
- Copyright (c) INRIA 2013 - 2018. All rights reserved.
+ Copyright (c) INRIA 2013 - 2020. All rights reserved.
  See LICENSE.txt for details.
 
   This software is distributed WITHOUT ANY WARRANTY; without even
@@ -48,6 +48,7 @@ medAbstractMaskImageProcessPresenter::medAbstractMaskImageProcessPresenter(medAb
 
 medAbstractMaskImageProcessPresenter::~medAbstractMaskImageProcessPresenter()
 {
+
 }
 
 QWidget *medAbstractMaskImageProcessPresenter::buildToolBoxWidget()
@@ -101,7 +102,6 @@ medViewContainerSplitter *medAbstractMaskImageProcessPresenter::buildViewContain
     return splitter;
 }
 
-
 void medAbstractMaskImageProcessPresenter::_setInputFromContainer(medAbstractData *data)
 {
     d->process->setInput(qobject_cast<medAbstractImageData *>(data));
@@ -111,7 +111,6 @@ void medAbstractMaskImageProcessPresenter::_setMaskFromContainer(medAbstractData
 {
     d->process->setMask(qobject_cast<medAbstractImageData *>(data));
 }
-
 
 void medAbstractMaskImageProcessPresenter::_importOutput(medAbstractJob::medJobExitStatus jobExitStatus)
 {

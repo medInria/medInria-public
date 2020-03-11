@@ -2,7 +2,7 @@
 
  medInria
 
- Copyright (c) INRIA 2013 - 2018. All rights reserved.
+ Copyright (c) INRIA 2013 - 2020. All rights reserved.
  See LICENSE.txt for details.
  
   This software is distributed WITHOUT ANY WARRANTY; without even
@@ -34,15 +34,18 @@ medPacsMover::medPacsMover(const QVector<medMoveCommandItem>& cmdList): medJobIt
 {
     d->cmdList = cmdList;
 
-    d->move = NULL;
+    d->move = nullptr;
 }
 
 medPacsMover::~medPacsMover( void )
 {
-    if (d->move) delete d->move;
-    delete d;
+    if (d->move)
+    {
+        delete d->move;
+    }
 
-    d = NULL;
+    delete d;
+    d = nullptr;
 }
 
 void medPacsMover::internalRun( void )
@@ -75,13 +78,15 @@ void medPacsMover::doQueuedMove()
             d->move->addRequestToQueue(d->cmdList.at(i).group, d->cmdList.at(i).elem, d->cmdList.at(i).query.toLatin1(), source, target);
         }
 
-    if(d->move->performQueuedMoveRequests() == 0)
+        if(d->move->performQueuedMoveRequests() == 0)
+        {
             emit success(this);
-    else
+        }
+        else
+        {
             emit failure(this);
-
+        }
     }
-
 }
 
 void medPacsMover::onCancel(QObject* sender)

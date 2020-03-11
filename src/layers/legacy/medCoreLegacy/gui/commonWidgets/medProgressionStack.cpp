@@ -2,7 +2,7 @@
 
  medInria
 
- Copyright (c) INRIA 2013 - 2018. All rights reserved.
+ Copyright (c) INRIA 2013 - 2020. All rights reserved.
  See LICENSE.txt for details.
  
   This software is distributed WITHOUT ANY WARRANTY; without even
@@ -65,7 +65,7 @@ medProgressionStack::~medProgressionStack(void)
 {
     delete d;
 
-    d = NULL;
+    d = nullptr;
 }
 
 QSize medProgressionStack::sizeHint(void) const
@@ -81,9 +81,10 @@ void medProgressionStack::setLabel(QObject *sender, QString label)
     if(d->bars.count() == 0)
         emit(shown());
 
-    if (d->bars.contains (sender)) {
-        dtkWarn () << "progression stack already has a label assigned to process " << sender << ", not assigning a new one";
-	return;
+    if (d->bars.contains (sender))
+    {
+        qWarning () << "progression stack already has a label assigned to process " << sender << ", not assigning a new one";
+        return;
     }
 
     QWidget *widget = new QWidget(this);
@@ -167,7 +168,7 @@ void medProgressionStack::removeItem(){
     }
     catch (...)
     {
-        dtkWarn() << "exception caught while removing item from progression stack";
+        qWarning() << "exception caught while removing item from progression stack";
     }
 
 }

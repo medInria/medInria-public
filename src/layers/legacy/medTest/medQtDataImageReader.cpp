@@ -90,8 +90,8 @@ bool medQtDataImageReader::readInformation( const QStringList& paths )
 
 void medQtDataImageReader::reset()
 {
-    m_reader.reset(NULL);
-    this->setData(NULL);
+    m_reader.reset(nullptr);
+    this->setData(nullptr);
 }
 
 void medQtDataImageReader::setMetaDataFromImageReader()
@@ -145,37 +145,44 @@ bool medQtDataImageReader::read( const QString& path )
 
 int medQtDataImageReader::readStartingFrom( const QString& path, int iStart )
 {
-    if (iStart == 0 ) {
+    if (iStart == 0 )
+    {
         this->reset();
     }
 
     m_reader.reset( new QImageReader( path ) );
     if ( !m_reader->canRead() )
+    {
         return 0;
-
+    }
 
     this->setData( medAbstractDataFactory::instance()->createSmartPointer(medQtDataImage::staticIdentifier()) );
 
     this->setMetaDataFromImageReader();
 
     QImage nextImage = m_reader->read();
-    if ( nextImage.isNull() ) {
-        this->setData(NULL);
+    if ( nextImage.isNull() )
+    {
+        this->setData(nullptr);
         return 0;
     }
 
     medAbstractData * medData = dynamic_cast<medAbstractData*>(this->data());
 
     int numRead(0);
-    if ( m_reader->supportsAnimation() ) {
+    if ( m_reader->supportsAnimation() )
+    {
         int imageCount = m_reader->imageCount();
-        for( int i(0); i<imageCount; ++i ) {
+        for( int i(0); i<imageCount; ++i )
+        {
             m_reader->jumpToImage(i);
             nextImage = m_reader->read();
             medData->setData(&(nextImage), i + iStart);
         }
         numRead = imageCount;
-    } else {
+    }
+    else
+    {
         medData->setData(&(nextImage), iStart);
         numRead = 1;
     }

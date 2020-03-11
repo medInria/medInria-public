@@ -2,7 +2,7 @@
 
  medInria
 
- Copyright (c) INRIA 2013 - 2018. All rights reserved.
+ Copyright (c) INRIA 2013 - 2020. All rights reserved.
  See LICENSE.txt for details.
  
   This software is distributed WITHOUT ANY WARRANTY; without even
@@ -13,14 +13,11 @@
 
 #include <itkProcessRegistration.h>
 
+#include <dtkCoreSupport/dtkAbstractDataWriter.h>
 #include <dtkCoreSupport/dtkSmartPointer.h>
+
 #include <medAbstractData.h>
 #include <medAbstractDataFactory.h>
-#include <dtkCoreSupport/dtkAbstractDataWriter.h>
-
-// /////////////////////////////////////////////////////////////////
-//
-// /////////////////////////////////////////////////////////////////
 
 #include <itkCastImageFilter.h>
 
@@ -55,7 +52,6 @@ public:
     unsigned int dimensions;
     itk::ImageBase<3>::Pointer fixedImage;
     QVector<itk::ImageBase<3>::Pointer> movingImages;
-    //itk::ImageBase<3>::Pointer movingImage;
     itkProcessRegistration::ImageType fixedImageType;
     itkProcessRegistration::ImageType movingImageType;
     dtkSmartPointer<medAbstractData> output;
@@ -122,7 +118,7 @@ template <typename PixelType>
        else
        {
            QString pixel_type =  typeid(PixelType).name();
-           dtkDebug()<< "Error: The pixel type " + pixel_type + " is not supported yet."  ;
+           qDebug()<< "Error: The pixel type " + pixel_type + " is not supported yet."  ;
            return;
        }
     if ( dimensions == 3 ){
@@ -174,7 +170,7 @@ template <typename PixelType>
             }
             catch(itk::ExceptionObject &ex)
             {
-                dtkDebug() << "Extraction failed:  " << ex.what();
+                qDebug() << "Extraction failed:  " << ex.what();
                 return ;
             }
             fixedImage = extractFilter->GetOutput();
@@ -203,7 +199,7 @@ template <typename PixelType>
             }
             catch(itk::ExceptionObject &ex)
             {
-                dtkDebug() << "Extraction failed:  " << ex.what();
+                qDebug() << "Extraction failed:  " << ex.what();
                 return ;
             }
             movingImages[i] = extractFilter->GetOutput();
@@ -274,7 +270,7 @@ bool itkProcessRegistration::setInputData(medAbstractData *data, int channel)
         d->dimensions = 4;
     }
     else{
-        dtkDebug() << "Unable to handle the number of dimensions " \
+        qDebug() << "Unable to handle the number of dimensions " \
                 << "for an image of description: "<< data->identifier();
     }
 
@@ -344,7 +340,7 @@ bool itkProcessRegistration::setInputData(medAbstractData *data, int channel)
     }
     catch(itk::ExceptionObject& e)
     {
-        dtkDebug() << e.what();
+        qDebug() << e.what();
         res = false; // In this case, we've failed
     }
 
@@ -415,7 +411,7 @@ bool itkProcessRegistration::write(const QStringList& files)
 {
     if (files.count()!=2)
     {
-        dtkDebug() << "can't write, the list doesn't have 2 items";
+        qDebug() << "can't write, the list doesn't have 2 items";
         return false;
     }
 
@@ -434,16 +430,15 @@ bool itkProcessRegistration::write(const QStringList& files)
 bool itkProcessRegistration::writeTransform(const QString& file)
 {
     DTK_DEFAULT_IMPLEMENTATION;
-    DTK_UNUSED(file);
+    Q_UNUSED(file);
     return false;
 }
-
 
 bool itkProcessRegistration::write(const QString& file)
 {
     if (output() == nullptr)
     {
-        dtkDebug() << "the registration method hasn't been run yet.";
+        qDebug() << "the registration method hasn't been run yet.";
         return false;
     }
 
@@ -453,18 +448,18 @@ bool itkProcessRegistration::write(const QString& file)
     for (int i=0; i<writers.size(); i++)
     {
         dtkAbstractDataWriter *dataWriter = medAbstractDataFactory::instance()->writer(writers[i]);
-        dtkDebug() << "trying " << dataWriter->identifier();
+        qDebug() << "trying " << dataWriter->identifier();
 
         if (! dataWriter->handled().contains(out->identifier()))
         {
-          dtkDebug() << "failed with " << dataWriter->identifier();
+          qDebug() << "failed with " << dataWriter->identifier();
           continue;
         }
 
-        dtkDebug() << "success with " << dataWriter->identifier();
+        qDebug() << "success with " << dataWriter->identifier();
         dataWriter->setData (out);
 
-        dtkDebug() << "trying to write in file : "<<file;
+        qDebug() << "trying to write in file : "<<file;
 
         if (dataWriter->canWrite( file )) {
             if (dataWriter->write( file )) {

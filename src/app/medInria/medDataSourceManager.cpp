@@ -157,20 +157,20 @@ medDataSourceManager * medDataSourceManager::instance( void )
     return s_instance;
 }
 
-medDataSourceManager::~medDataSourceManager( void )
+medDataSourceManager::~medDataSourceManager()
 {
     delete d;
-    d = NULL;
+    d = nullptr;
 }
 
 void medDataSourceManager::openFromPath(QString path)
 {
-    //qobject_cast<medApplication*>(qApp)->open(path);
+
 }
 
 void medDataSourceManager::openFromIndex(medDataIndex index)
 {
-    //qobject_cast<medApplication*>(qApp)->open(index);
+
 }
 
 void medDataSourceManager::loadFromPath(QString path)
@@ -178,12 +178,12 @@ void medDataSourceManager::loadFromPath(QString path)
     medDataManager::instance()->importPath(path, false);
 }
 
-void medDataSourceManager::destroy( void )
+void medDataSourceManager::destroy()
 {
     if (s_instance)
     {
         delete s_instance;
-        s_instance = 0;
+        s_instance = nullptr;
     }
 }
 
@@ -197,4 +197,4 @@ medDatabaseDataSource* medDataSourceManager::databaseDataSource()
     return d->dbSource;
 }
 
-medDataSourceManager *medDataSourceManager::s_instance = NULL;
+medDataSourceManager *medDataSourceManager::s_instance = nullptr;

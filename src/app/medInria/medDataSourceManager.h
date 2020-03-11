@@ -1,8 +1,9 @@
+#pragma once
 /*=========================================================================
 
  medInria
 
- Copyright (c) INRIA 2013 - 2018. All rights reserved.
+ Copyright (c) INRIA 2013 - 2020. All rights reserved.
  See LICENSE.txt for details.
  
   This software is distributed WITHOUT ANY WARRANTY; without even
@@ -10,8 +11,6 @@
   PURPOSE.
 
 =========================================================================*/
-
-#pragma once
 
 #include <QObject>
 #include <QUuid>
@@ -36,7 +35,6 @@ public:
     QList<medAbstractDataSource*> dataSources();
     medDatabaseDataSource* databaseDataSource();
 
-
 protected slots:
     void exportData(const medDataIndex &index);
     void importData(medAbstractData *data);
@@ -53,10 +51,8 @@ signals:
 protected:
     void connectDataSource(medAbstractDataSource* dataSource);
 
-
     medDataSourceManager();
     ~medDataSourceManager();
-
 
 protected slots:
     void openFromPath(QString path);

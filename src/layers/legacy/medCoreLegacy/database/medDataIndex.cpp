@@ -190,8 +190,10 @@ QDebug operator<<(QDebug debug, medDataIndex *index)
 {
     if ( index ){
         debug.nospace() << "(" << index->m_dataSourceId << ", " << index->m_patientId << ", " << index->m_studyId << ", " << index->m_seriesId << ")";
-    } else {
-        debug.nospace() << "(" << "[medDataIndex* NULL]" << ")";
+    }
+    else
+    {
+        debug.nospace() << "(" << "[medDataIndex* null]" << ")";
     }
 
     return debug.space();

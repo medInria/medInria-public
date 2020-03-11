@@ -41,14 +41,14 @@ medVtkViewPlugin::medVtkViewPlugin(QObject *parent) :
 medVtkViewPlugin::~medVtkViewPlugin()
 {
     delete d;
-    d = NULL;
+    d = nullptr;
 }
 
 bool medVtkViewPlugin::initialize()
 {
-    if (!medVtkView::registered()) { dtkWarn() << "Unable to register medVtkView type"; }
+    if (!medVtkView::registered()) { qWarning() << "Unable to register medVtkView type"; }
 
-    if (!medVtkViewNavigator::registered()) { dtkWarn() << "Unable to register medVtkViewNavigator type"; }
+    if (!medVtkViewNavigator::registered()) { qWarning() << "Unable to register medVtkViewNavigator type"; }
 
     return true;
 }
@@ -103,6 +103,3 @@ QStringList medVtkViewPlugin::types() const
 {
     return QStringList() << medVtkView::s_identifier();
 }
-
-//TODO What is it for - RDE
-//Q_EXPORT_PLUGIN2(medVtkViewPlugin, medVtkViewPlugin)

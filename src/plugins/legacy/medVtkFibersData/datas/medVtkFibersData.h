@@ -1,17 +1,16 @@
+#pragma once
 /*=========================================================================
 
  medInria
 
- Copyright (c) INRIA 2013 - 2018. All rights reserved.
+ Copyright (c) INRIA 2013 - 2020. All rights reserved.
  See LICENSE.txt for details.
- 
+
   This software is distributed WITHOUT ANY WARRANTY; without even
   the implied warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR
   PURPOSE.
 
 =========================================================================*/
-
-#pragma once
 
 #include <medAbstractFibersData.h>
 
@@ -25,7 +24,7 @@ class MEDVTKFIBERSDATAPLUGIN_EXPORT medVtkFibersData : public medAbstractFibersD
     MED_DATA_INTERFACE("VTK Fiber Data",
                        "VTK Fiber Data")
 public:
-             medVtkFibersData();
+    medVtkFibersData();
     virtual ~medVtkFibersData();
 
     static bool registered();

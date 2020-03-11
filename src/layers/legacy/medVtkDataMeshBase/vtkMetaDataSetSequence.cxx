@@ -2,7 +2,7 @@
 
  medInria
 
- Copyright (c) INRIA 2013 - 2018. All rights reserved.
+ Copyright (c) INRIA 2013 - 2020. All rights reserved.
  See LICENSE.txt for details.
 
   This software is distributed WITHOUT ANY WARRANTY; without even
@@ -40,7 +40,7 @@
 #include <algorithm> // for sort algorithm
 
 //----------------------------------------------------------------------------
-vtkStandardNewMacro( vtkMetaDataSetSequence );
+vtkStandardNewMacro( vtkMetaDataSetSequence )
 
 //----------------------------------------------------------------------------
 vtkMetaDataSetSequence::vtkMetaDataSetSequence()
@@ -411,7 +411,6 @@ void vtkMetaDataSetSequence::UpdateToIndex (unsigned int id)
                 vtkDataArray *array = datasettoshow->GetPointData()->GetArray(name.c_str());
                 if (array)
                 {
-//    pdscalars->SetVoidArray (array);
                     pdscalars->DeepCopy (array);
                 }
             }
@@ -434,7 +433,6 @@ void vtkMetaDataSetSequence::UpdateToIndex (unsigned int id)
 
                 if (array)
                 {
-//    cdscalars->SetVoidArray (array);
                     cdscalars->DeepCopy (array);
                 }
             }
@@ -453,7 +451,6 @@ void vtkMetaDataSetSequence::UpdateToIndex (unsigned int id)
                 vtkDataArray *array = datasettoshow->GetPointData()->GetArray(name.c_str());
                 if (array)
                 {
-//    pdscalars->SetVoidArray (array);
                     pdtensors->DeepCopy (array);
                 }
             }
@@ -475,7 +472,6 @@ void vtkMetaDataSetSequence::UpdateToIndex (unsigned int id)
 
                 if (array)
                 {
-//    cdscalars->SetVoidArray (array);
                     cdtensors->DeepCopy (array);
                 }
             }
@@ -487,8 +483,6 @@ void vtkMetaDataSetSequence::UpdateToIndex (unsigned int id)
         }
     }
 
-    // index showing how much frames we lost
-    // vtkDebugMacro(<<"sequence losts "<< ((int)id-(int)(this->CurrentId)) << "frames");
     // updating the current id
     this->CurrentId   = id;
 }
@@ -593,17 +587,11 @@ void vtkMetaDataSetSequence::ColorByArray(vtkDataArray *array)
 
         if (lut)
         {
-//       mapper->SetLookupTable (lut);
             mapper->UseLookupTableScalarRangeOn();
         }
 
-        //mapper->SetScalarRange (min, max);
         mapper->SelectColorArray (array->GetName());
     }
-
-
-
-    //this->GetDataSet()->Modified();
 }
 
 //----------------------------------------------------------------------------
@@ -632,7 +620,6 @@ vtkDoubleArray*vtkMetaDataSetSequence::GenerateFollowerTimeTable(const char *arr
 
     ret->SetName (arrayname);
 
-    //unsigned int hasarray = this->GetNumberOfMetaDataSets();
     unsigned int canfollow = this->GetNumberOfMetaDataSets();
 
     for (int i=0; i<this->GetNumberOfMetaDataSets(); i++)

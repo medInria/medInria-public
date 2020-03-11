@@ -2,7 +2,7 @@
 
  medInria
 
- Copyright (c) INRIA 2013 - 2018. All rights reserved.
+ Copyright (c) INRIA 2013 - 2020. All rights reserved.
  See LICENSE.txt for details.
  
   This software is distributed WITHOUT ANY WARRANTY; without even
@@ -133,17 +133,16 @@ public:
 
 itkDataSHImageVtkViewInteractor::itkDataSHImageVtkViewInteractor(medAbstractView *parent):
     medAbstractImageViewInteractor(parent),
-    d(new itkDataSHImageVtkViewInteractorPrivate) {
-
-    d->data    = 0;
-
+    d(new itkDataSHImageVtkViewInteractorPrivate)
+{
+    d->data = nullptr;
     d->view = dynamic_cast<medAbstractImageView*>(parent);
 
     medVtkViewBackend* backend = static_cast<medVtkViewBackend*>(parent->backend());
     d->view2d = backend->view2D;
     d->view3d = backend->view3D;
     d->render = backend->renWin;
-    d->orientationMatrix = 0;
+    d->orientationMatrix = nullptr;
 
     d->manager = vtkSphericalHarmonicManager::New();
 
@@ -169,10 +168,10 @@ itkDataSHImageVtkViewInteractor::itkDataSHImageVtkViewInteractor(medAbstractView
     d->slicingParameter = new medIntParameterL("Slicing", this);
 }
 
-itkDataSHImageVtkViewInteractor::~itkDataSHImageVtkViewInteractor() {
-
+itkDataSHImageVtkViewInteractor::~itkDataSHImageVtkViewInteractor()
+{
     delete d;
-    d = 0;
+    d = nullptr;
 }
 
 QString itkDataSHImageVtkViewInteractor::description() const {
@@ -211,15 +210,19 @@ void itkDataSHImageVtkViewInteractor::setInputData(medAbstractData *data)
 
     //  Two itk SH image formats are supported
     //  we need to convert them to vtkStructuredPoints so it's understood by the SH manager
-
     const QString& identifier = data->identifier();
+
     if (identifier=="itkDataSHImageFloat3")
+    {
         d->setVTKFilter<itk::VectorImage<float,3> >(data,d->filterFloat);
+    }
     else if (identifier=="itkDataSHImageDouble3")
+    {
         d->setVTKFilter<itk::VectorImage<double,3> >(data,d->filterDouble);
+    }
     else
     {
-        dtkDebug() << "Unrecognized SH data type: " << identifier;
+        qDebug() << "Unrecognized SH data type: " << identifier;
         return;
     }
 
@@ -257,7 +260,6 @@ void itkDataSHImageVtkViewInteractor::setupParameters()
     sampleRateParam->setRange(1,10);
     sampleRateParam->setValue(1);
 
-
     //  flipX, flipY, flipZ and Enhance checkboxes
 
     medBoolParameterL *flipXParam = new medBoolParameterL("FlipX", this);
@@ -273,7 +275,6 @@ void itkDataSHImageVtkViewInteractor::setupParameters()
     glyphResolutionParam->setRange(0,10);
     glyphResolutionParam->setValue(2);
 
-
     //  We need to calculate one single number for the scale, out of the minor and major scales
     //  scale = minor*10^(major)
 
@@ -282,7 +283,6 @@ void itkDataSHImageVtkViewInteractor::setupParameters()
     medIntParameterL *minorScalingParam = new medIntParameterL("Scale", this);
     minorScalingParam->setRange(0,9);
     minorScalingParam->setValue(3);
-
 
     //  Major scaling
 
@@ -336,7 +336,6 @@ void itkDataSHImageVtkViewInteractor::setupParameters()
 
 void itkDataSHImageVtkViewInteractor::setWindowLevel(QHash<QString,QVariant>)
 {
-    //TODO
 }
 
 void itkDataSHImageVtkViewInteractor::setOpacity(double opacity)
@@ -502,8 +501,6 @@ void itkDataSHImageVtkViewInteractor::setUpViewForThumbnail()
 
 void itkDataSHImageVtkViewInteractor::moveToSlice(int slice)
 {
-    //TODO find a way to get woorldCoordinate for slice from vtkInria.
-    // instead of moving to the slice corresponding on the first layer dropped.
     if(d->view->is2D() && slice != d->view2d->GetSlice())
     {
         d->view2d->SetSlice(slice);
@@ -567,20 +564,6 @@ void itkDataSHImageVtkViewInteractor::updateSlicingParam()
 {
     if(!d->view->is2D())
         return;
-
-    //TODO Should be set according to the real number of slice of this data and
-    // not according to vtkInria (ie. first layer droped) - RDE
-    // slice orientation may differ from view orientation. Adapt slider range accordingly.
-//    int orientationId = d->view2d->GetSliceOrientation();
-//    int dim[3];
-//    d->manager->GetSphericalHarmonicDimensions(dim);
-
-//    if (orientationId==vtkImageView2D::SLICE_ORIENTATION_XY)
-//        d->slicingParameter->setRange(0, dim[2] - 1);
-//    else if (orientationId==vtkImageView2D::SLICE_ORIENTATION_XZ)
-//        d->slicingParameter->setRange (0, dim[1] - 1);
-//    else if (orientationId==vtkImageView2D::SLICE_ORIENTATION_YZ)
-//        d->slicingParameter->setRange (0, dim[0] - 1);
 
     d->slicingParameter->blockSignals(true);
     d->slicingParameter->setRange(d->view2d->GetSliceMin(), d->view2d->GetSliceMax());

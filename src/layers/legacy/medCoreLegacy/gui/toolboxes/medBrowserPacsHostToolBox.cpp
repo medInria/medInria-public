@@ -54,7 +54,7 @@ medBrowserPacsHostToolBox::~medBrowserPacsHostToolBox(void)
 
     delete d;
 
-    d = NULL;
+    d = nullptr;
 }
 
 void medBrowserPacsHostToolBox::readSettings(void)

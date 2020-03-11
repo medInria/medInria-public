@@ -1,8 +1,9 @@
+#pragma once
 /*=========================================================================
 
  medInria
 
- Copyright (c) INRIA 2013 - 2018. All rights reserved.
+ Copyright (c) INRIA 2013 - 2020. All rights reserved.
  See LICENSE.txt for details.
  
   This software is distributed WITHOUT ANY WARRANTY; without even
@@ -10,8 +11,6 @@
   PURPOSE.
 
 =========================================================================*/
-
-#pragma once
 
 #include <medAbstractPacsBaseScu.h>
 #include <medPacsExport.h>
@@ -23,8 +22,8 @@ class MEDPACS_EXPORT medAbstractPacsMoveScu : public medAbstractPacsBaseScu
     Q_OBJECT
 
 public:
-             medAbstractPacsMoveScu();
-    virtual ~medAbstractPacsMoveScu();
+    medAbstractPacsMoveScu() = default;
+    ~medAbstractPacsMoveScu() override = default;
 
     virtual int sendMoveRequest(const char* peerTitle, const char* peerIP, unsigned int peerPort, 
                                 const char* ourTitle, const char* ourIP, unsigned int ourPort);
@@ -41,7 +40,4 @@ public:
 
 signals:
     void progressed(int);
-
 };
-
-

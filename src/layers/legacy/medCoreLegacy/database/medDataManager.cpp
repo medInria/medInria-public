@@ -2,7 +2,7 @@
 
  medInria
 
- Copyright (c) INRIA 2013 - 2019. All rights reserved.
+ Copyright (c) INRIA 2013 - 2020. All rights reserved.
  See LICENSE.txt for details.
 
   This software is distributed WITHOUT ANY WARRANTY; without even
@@ -53,9 +53,13 @@ public:
         if (dbController->dataSourceId() == id)
             return dbController;
         else if (nonPersDbController->dataSourceId() == id)
+        {
             return nonPersDbController;
+        }
         else
-            return NULL;
+        {
+            return nullptr;
+        }
     }
 
     Q_DECLARE_PUBLIC(medDataManager)
@@ -71,7 +75,7 @@ public:
 
 // ------------------------- medDataManager -----------------------------------
 
-medDataManager * medDataManager::s_instance = NULL;
+medDataManager * medDataManager::s_instance = nullptr;
 
 // Not thread-safe, but should only be called once, at application start-up
 void medDataManager::initialize()
@@ -113,7 +117,7 @@ medAbstractData* medDataManager::retrieveData(const medDataIndex& index)
         d->loadedDataObjectTracker.insert(index, dataObjRef);
         return dataObjRef;
     }
-    return NULL;
+    return nullptr;
 }
 
 QUuid medDataManager::importData(medAbstractData *data, bool persistent)
@@ -456,7 +460,7 @@ QPixmap medDataManager::thumbnail(const medDataIndex & index)
     medAbstractDbController* dbc = d->controllerForDataSource(index.dataSourceId());
 
     QPixmap pix;
-    // dbc is NULL when called from the importer, as data is not imported yet
+    // dbc is null when called from the importer, as data is not imported yet
     if (dbc)
     {
         pix = dbc->thumbnail(index);

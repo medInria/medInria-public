@@ -1,8 +1,9 @@
+#pragma once
 /*=========================================================================
 
  medInria
 
- Copyright (c) INRIA 2013 - 2018. All rights reserved.
+ Copyright (c) INRIA 2013 - 2020. All rights reserved.
  See LICENSE.txt for details.
 
   This software is distributed WITHOUT ANY WARRANTY; without even
@@ -10,8 +11,6 @@
   PURPOSE.
 
 =========================================================================*/
-
-#pragma once
 
 #include <QtCore>
 
@@ -46,8 +45,8 @@ class MEDCORELEGACY_EXPORT medJobItemL :  public QObject, public QRunnable
     Q_OBJECT
 
 public:
-             medJobItemL();
-    virtual ~medJobItemL();
+    medJobItemL();
+    ~medJobItemL() override;
 
     virtual void run();
 
@@ -85,5 +84,3 @@ protected slots:
     void onProgress(QObject* sender, int prog);
 
 };
-
-

@@ -1,11 +1,23 @@
+#pragma once
+/*=========================================================================
+
+ medInria
+
+ Copyright (c) INRIA 2013 - 2020. All rights reserved.
+ See LICENSE.txt for details.
+
+  This software is distributed WITHOUT ANY WARRANTY; without even
+  the implied warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR
+  PURPOSE.
+
+=========================================================================*/
+
 #include <vtkMatrix4x4.h>
 #include <vtkMatrixToLinearTransform.h>
 #include <vtkMetaDataSet.h>
 #include <vtkPointSet.h>
 #include <vtkSmartPointer.h>
 #include <vtkTransformFilter.h>
-
-#pragma once
 
 class medAbstractData;
 class vtkMatrix4x4;

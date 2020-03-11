@@ -2,7 +2,7 @@
 
  medInria
 
- Copyright (c) INRIA 2013 - 2018. All rights reserved.
+ Copyright (c) INRIA 2013 - 2020. All rights reserved.
  See LICENSE.txt for details.
  
   This software is distributed WITHOUT ANY WARRANTY; without even
@@ -17,31 +17,31 @@
 #include <vtkMath.h>
 
 
-vtkStandardNewMacro(vtkTensorManager);
+vtkStandardNewMacro(vtkTensorManager)
 
 vtkTensorManager::vtkTensorManager()
 {
-  this->RenderWindowInteractor = 0;
+    this->RenderWindowInteractor = nullptr;
 
-  this->Input = 0;
+    this->Input = nullptr;
 
-  this->Renderer = 0;
-  
-  this->TensorVisuManagerAxial    = vtkTensorVisuManager::New();
-  this->TensorVisuManagerSagittal = vtkTensorVisuManager::New();
-  this->TensorVisuManagerCoronal  = vtkTensorVisuManager::New();
+    this->Renderer = nullptr;
+
+    this->TensorVisuManagerAxial    = vtkTensorVisuManager::New();
+    this->TensorVisuManagerSagittal = vtkTensorVisuManager::New();
+    this->TensorVisuManagerCoronal  = vtkTensorVisuManager::New();
 
     this->SetSampleRate(2,2,2);
 
-  this->DirectionMatrix = 0;
+    this->DirectionMatrix = nullptr;
 
-  this->PhysicalToVoxelCoordinatesTransformMatrix = vtkMatrix4x4::New();
-  this->PhysicalToVoxelCoordinatesTransformMatrix->Identity();
+    this->PhysicalToVoxelCoordinatesTransformMatrix = vtkMatrix4x4::New();
+    this->PhysicalToVoxelCoordinatesTransformMatrix->Identity();
 
-  for( int i=0; i<3; i++)
-  {
-    this->CurrentPosition[i] = 0;
-  }
+    for( int i=0; i<3; i++)
+    {
+        this->CurrentPosition[i] = 0;
+    }
 }
 
 vtkTensorManager::~vtkTensorManager()
@@ -69,73 +69,54 @@ vtkTensorManager::~vtkTensorManager()
 }
 
 void vtkTensorManager::SetRenderWindowInteractor (vtkRenderWindowInteractor* rwin, vtkRenderer* ren)
-{
-  
-  if( rwin != this->RenderWindowInteractor )
-  {
-    
-    if( this->RenderWindowInteractor != NULL )
+{ 
+    if( rwin != this->RenderWindowInteractor )
     {
-      this->Initialize();
-      this->RenderWindowInteractor->UnRegister (this);
+
+        if( this->RenderWindowInteractor != nullptr )
+        {
+            this->Initialize();
+            this->RenderWindowInteractor->UnRegister (this);
+        }
+
+        this->RenderWindowInteractor = rwin;
+        if( this->RenderWindowInteractor )
+        {
+            this->RenderWindowInteractor->Register(this);
+        }
     }
-    
-    this->RenderWindowInteractor = rwin;
-    if( this->RenderWindowInteractor )
+
+    if (ren)
     {
-      this->RenderWindowInteractor->Register(this);
+        this->Renderer = ren;
     }
-  }
-  
-  if (ren)
-  {
-	this->Renderer = ren;
-  }
-  else if (this->RenderWindowInteractor)
-  {
-  
-    this->RenderWindowInteractor->GetRenderWindow()->GetRenderers()->InitTraversal();
-    vtkRenderer* first_renderer = this->RenderWindowInteractor->GetRenderWindow()->GetRenderers()->GetNextItem();
-    
-    int numLayers = this->RenderWindowInteractor->GetRenderWindow()->GetNumberOfLayers();
-    this->RenderWindowInteractor->GetRenderWindow()->SetNumberOfLayers ( numLayers + 1 );
-    
-    this->Renderer = vtkRenderer::New();
-    this->Renderer->SetLayer ( numLayers );
-    if (first_renderer)
-      this->Renderer->SetActiveCamera ( first_renderer->GetActiveCamera() );
-    
-    this->RenderWindowInteractor->GetRenderWindow()->AddRenderer ( this->Renderer );
-    
-    // this->Renderer->Delete(); // no need since renderer is smart pointed
-  }
-  
+    else if (this->RenderWindowInteractor)
+    {
+
+        this->RenderWindowInteractor->GetRenderWindow()->GetRenderers()->InitTraversal();
+        vtkRenderer* first_renderer = this->RenderWindowInteractor->GetRenderWindow()->GetRenderers()->GetNextItem();
+
+        int numLayers = this->RenderWindowInteractor->GetRenderWindow()->GetNumberOfLayers();
+        this->RenderWindowInteractor->GetRenderWindow()->SetNumberOfLayers ( numLayers + 1 );
+
+        this->Renderer = vtkRenderer::New();
+        this->Renderer->SetLayer ( numLayers );
+        if (first_renderer)
+            this->Renderer->SetActiveCamera ( first_renderer->GetActiveCamera() );
+
+        this->RenderWindowInteractor->GetRenderWindow()->AddRenderer ( this->Renderer );
+    }
 }
 
 void vtkTensorManager::Initialize()
 {
   if( this->RenderWindowInteractor )
   {
-    /*
-      this->RenderWindowInteractor->GetRenderWindow()->GetRenderers()->InitTraversal();
-      vtkRenderer* first_renderer = this->RenderWindowInteractor->GetRenderWindow()->GetRenderers()->GetNextItem();
-      if (first_renderer)
-      {
-      first_renderer->RemoveActor( this->TensorVisuManagerAxial->GetActor() );
-      first_renderer->RemoveActor( this->TensorVisuManagerSagittal->GetActor() );
-      first_renderer->RemoveActor( this->TensorVisuManagerCoronal->GetActor() );
-      }
-    */
     if ( this->Renderer )
     {
-      //this->RenderWindowInteractor->GetRenderWindow()->RemoveRenderer ( this->Renderer );
-      //int numLayers = this->RenderWindowInteractor->GetRenderWindow()->GetNumberOfLayers();
-      //this->RenderWindowInteractor->GetRenderWindow()->SetNumberOfLayers ( numLayers-1 );
       this->Renderer->RemoveActor( this->TensorVisuManagerAxial->GetActor() );
       this->Renderer->RemoveActor( this->TensorVisuManagerSagittal->GetActor() );
       this->Renderer->RemoveActor( this->TensorVisuManagerCoronal->GetActor() );
-      //this->Renderer->Delete();
-      //this->Renderer = 0;
     }
   } 
 }
@@ -216,13 +197,10 @@ void vtkTensorManager::SetCurrentPosition (const int& X, const int& Y, const int
   
 }
 
-
-
 void vtkTensorManager::SetCurrentPosition (int pos[3])
 {
   this->SetCurrentPosition (pos[0], pos[1], pos[2]);
 }
-
 
 void vtkTensorManager::SetCurrentPosition (const double& X, const double& Y, const double& Z)
 {
@@ -245,12 +223,10 @@ void vtkTensorManager::SetCurrentPosition (const double& X, const double& Y, con
   this->SetCurrentPosition(vox_pos[0], vox_pos[1], vox_pos[2]);
 }
 
-
 void vtkTensorManager::SetCurrentPosition (const double pos[3])
 {
   this->SetCurrentPosition (pos[0], pos[1], pos[2]);
 }
-
 
 void vtkTensorManager::ResetPosition()
 {
@@ -268,14 +244,12 @@ void vtkTensorManager::ResetPosition()
   this->SetCurrentPosition (X,Y,Z);  
 }
 
-
 void vtkTensorManager::SetGlyphShape (int i)
 {
   this->TensorVisuManagerAxial   ->SetGlyphShape (i);
   this->TensorVisuManagerSagittal->SetGlyphShape (i);
   this->TensorVisuManagerCoronal ->SetGlyphShape (i);
 }
-
 
 void vtkTensorManager::SetGlyphShapeToLine ()
 {
@@ -284,14 +258,12 @@ void vtkTensorManager::SetGlyphShapeToLine ()
   this->TensorVisuManagerCoronal ->SetGlyphShapeToLine ();
 }
 
-
 void vtkTensorManager::SetGlyphShapeToDisk ()
 {
   this->TensorVisuManagerAxial   ->SetGlyphShapeToDisk ();
   this->TensorVisuManagerSagittal->SetGlyphShapeToDisk ();
   this->TensorVisuManagerCoronal ->SetGlyphShapeToDisk ();
 }
-
 
 void vtkTensorManager::SetGlyphShapeToArrow ()
 {
@@ -300,14 +272,12 @@ void vtkTensorManager::SetGlyphShapeToArrow ()
   this->TensorVisuManagerCoronal ->SetGlyphShapeToArrow ();
 }
 
-
 void vtkTensorManager::SetGlyphShapeToCube ()
 {
   this->TensorVisuManagerAxial   ->SetGlyphShapeToCube ();
   this->TensorVisuManagerSagittal->SetGlyphShapeToCube ();
   this->TensorVisuManagerCoronal ->SetGlyphShapeToCube ();
 }
-
 
 void vtkTensorManager::SetGlyphShapeToCylinder ()
 {
@@ -316,14 +286,12 @@ void vtkTensorManager::SetGlyphShapeToCylinder ()
   this->TensorVisuManagerCoronal ->SetGlyphShapeToCylinder ();
 }
 
-
 void vtkTensorManager::SetGlyphShapeToSphere ()
 {
   this->TensorVisuManagerAxial   ->SetGlyphShapeToSphere ();
   this->TensorVisuManagerSagittal->SetGlyphShapeToSphere ();
   this->TensorVisuManagerCoronal ->SetGlyphShapeToSphere ();
 }
-
 
 void vtkTensorManager::SetGlyphShapeToSuperquadric ()
 {
@@ -332,14 +300,12 @@ void vtkTensorManager::SetGlyphShapeToSuperquadric ()
   this->TensorVisuManagerCoronal ->SetGlyphShapeToSuperquadric ();
 }
 
-
 void vtkTensorManager::SetGlyphScale (const float& f)
 {
   this->TensorVisuManagerAxial   ->SetGlyphScale (f);
   this->TensorVisuManagerSagittal->SetGlyphScale (f);
   this->TensorVisuManagerCoronal ->SetGlyphScale (f);
 }
-
 
 void vtkTensorManager::SetMaxGlyphSize (const float& f)
 {
@@ -348,14 +314,12 @@ void vtkTensorManager::SetMaxGlyphSize (const float& f)
   this->TensorVisuManagerCoronal ->SetMaxGlyphSize (f);
 }
 
-
 void vtkTensorManager::SetSampleRate (const int& n1,const int& n2, const int& n3)
 {
   this->TensorVisuManagerAxial   ->SetSampleRate (n1, n2, n3);
   this->TensorVisuManagerSagittal->SetSampleRate (n1, n2, n3);
   this->TensorVisuManagerCoronal ->SetSampleRate (n1, n2, n3);
 }
-
 
 void vtkTensorManager::SetGlyphResolution (int res)
 {
@@ -364,14 +328,12 @@ void vtkTensorManager::SetGlyphResolution (int res)
   this->TensorVisuManagerCoronal ->SetGlyphResolution (res);
 }
 
-
 void vtkTensorManager::SetScalarRange (const float& min, const float& max)
 {
   this->TensorVisuManagerAxial   ->SetScalarRange (min, max);
   this->TensorVisuManagerSagittal->SetScalarRange (min, max);
   this->TensorVisuManagerCoronal ->SetScalarRange (min, max);
 }
-
 
 void vtkTensorManager::SetColorModeToEigenvector (const int& v)
 {
@@ -380,14 +342,12 @@ void vtkTensorManager::SetColorModeToEigenvector (const int& v)
   this->TensorVisuManagerCoronal ->SetColorModeToEigenvector (v);
 }
 
-
 void vtkTensorManager::SetColorModeToEigenvalue (const int& v)
 {
   this->TensorVisuManagerAxial   ->SetColorModeToEigenvalue (v);
   this->TensorVisuManagerSagittal->SetColorModeToEigenvalue (v);
   this->TensorVisuManagerCoronal ->SetColorModeToEigenvalue (v);
 }
-
 
 void vtkTensorManager::SetColorModeToVolume ()
 {
@@ -396,14 +356,12 @@ void vtkTensorManager::SetColorModeToVolume ()
   this->TensorVisuManagerCoronal ->SetColorModeToVolume ();
 }
 
-
 void vtkTensorManager::SetColorModeToTrace ()
 {
   this->TensorVisuManagerAxial   ->SetColorModeToTrace ();
   this->TensorVisuManagerSagittal->SetColorModeToTrace ();
   this->TensorVisuManagerCoronal ->SetColorModeToTrace ();
 }
-
 
 void vtkTensorManager::SetColorModeToDistanceToIdentity ()
 {
@@ -412,14 +370,12 @@ void vtkTensorManager::SetColorModeToDistanceToIdentity ()
   this->TensorVisuManagerCoronal ->SetColorModeToDistanceToIdentity ();
 }
 
-
 void vtkTensorManager::SetColorMode (const int& i)
 {
   this->TensorVisuManagerAxial   ->SetColorMode (i);
   this->TensorVisuManagerSagittal->SetColorMode (i);
   this->TensorVisuManagerCoronal ->SetColorMode (i);
 }
-
 
 void vtkTensorManager::FlipX (bool a)
 {
@@ -428,14 +384,12 @@ void vtkTensorManager::FlipX (bool a)
   this->TensorVisuManagerCoronal ->FlipX (a);
 }
 
-
 void vtkTensorManager::FlipY (bool a)
 {
   this->TensorVisuManagerAxial   ->FlipY (a);
   this->TensorVisuManagerSagittal->FlipY (a);
   this->TensorVisuManagerCoronal ->FlipY (a);
 }
-
 
 void vtkTensorManager::FlipZ (bool a)
 {
@@ -444,14 +398,12 @@ void vtkTensorManager::FlipZ (bool a)
   this->TensorVisuManagerCoronal ->FlipZ (a);
 }
 
-
 void vtkTensorManager::SetLookupTable (vtkLookupTable* lut)
 {
   this->TensorVisuManagerAxial   ->SetLookupTable (lut);
   this->TensorVisuManagerSagittal->SetLookupTable (lut);
   this->TensorVisuManagerCoronal ->SetLookupTable (lut);
 }
-
 
 void vtkTensorManager::SetScalars (vtkDataArray* scalars)
 {
@@ -460,22 +412,17 @@ void vtkTensorManager::SetScalars (vtkDataArray* scalars)
   this->TensorVisuManagerCoronal ->SetScalars (scalars);
 }
 
-
-
 void vtkTensorManager::SetAxialSliceVisibility (int i)
 {
   this->TensorVisuManagerAxial->GetActor ()->SetVisibility (i);
 }
-
 
 void vtkTensorManager::SetSagittalSliceVisibility (int i)
 {
   this->TensorVisuManagerSagittal->GetActor ()->SetVisibility (i);
 }
 
-
 void vtkTensorManager::SetCoronalSliceVisibility (int i)
 {
   this->TensorVisuManagerCoronal->GetActor ()->SetVisibility (i);
 }
-

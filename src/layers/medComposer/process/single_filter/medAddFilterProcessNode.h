@@ -1,8 +1,9 @@
+#pragma once
 /*=========================================================================
 
  medInria
 
- Copyright (c) INRIA 2013 - 2018. All rights reserved.
+ Copyright (c) INRIA 2013 - 2020. All rights reserved.
  See LICENSE.txt for details.
 
   This software is distributed WITHOUT ANY WARRANTY; without even
@@ -10,13 +11,11 @@
   PURPOSE.
 
 =========================================================================*/
-#pragma once
 
 #include <medSingleFilterDoubleOperationProcessNode.h>
 #include <medAbstractAddFilterProcess.h>
 
 #include <medComposerExport.h>
-
 
 class MEDCOMPOSER_EXPORT medAddFilterProcessNode : public medSingleFilterDoubleOperationProcessNode<medAbstractAddFilterProcess>
 {
@@ -25,5 +24,3 @@ public:
 
      virtual QWidget *editor(void);
 };
-
-

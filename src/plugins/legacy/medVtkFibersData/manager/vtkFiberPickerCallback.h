@@ -3,7 +3,7 @@
 
 medInria
 
-Copyright (c) INRIA 2013 - 2018. All rights reserved.
+Copyright (c) INRIA 2013 - 2020. All rights reserved.
 See LICENSE.txt for details.
 
 This software is distributed WITHOUT ANY WARRANTY; without even
@@ -11,6 +11,7 @@ the implied warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR
 PURPOSE.
 
 =========================================================================*/
+
 #include <medVtkFibersDataPluginExport.h>
 
 #include <vtkCommand.h>
@@ -61,13 +62,12 @@ public:
 
     void DeletePickedCell();
 
-
 protected:
     vtkFiberPickerCallback()
     {
         inputPort = nullptr;
-        this->FiberImage   = 0;
-        this->FibersManager= 0;
+        this->FiberImage   = nullptr;
+        this->FibersManager= nullptr;
         this->PickedFiber  = vtkPolyData::New();
         this->PickedMapper = vtkPolyDataMapper::New();
         this->PickedActor  = vtkActor::New();
@@ -101,6 +101,3 @@ private:
 
     vtkFibersManager *FibersManager;
 };
-
-
-

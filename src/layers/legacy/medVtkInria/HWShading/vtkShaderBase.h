@@ -1,3 +1,4 @@
+#pragma once
 /*============================================================================
 
 The Hardware Shading (HWShading) module is protected by the
@@ -39,18 +40,11 @@ PURPOSE.  See the above copyright notices for more information.
  * - Removed #include <GL/glew.h>
  */
 
-#pragma once
-
 #include <medVtkInriaExport.h>
 
-//#include <GL/glew.h> // for OpenGL types and some functions
-// TODO: can this be done without glew?
 #include <vtk_glew.h>
 
 #include <vtkObject.h>
-
-//#define GL_GLEXT_PROTOTYPES 1
-//#include "GL/gl.h"
 
 /**
  * Base class for all GLSL shader related subclasses. Implements

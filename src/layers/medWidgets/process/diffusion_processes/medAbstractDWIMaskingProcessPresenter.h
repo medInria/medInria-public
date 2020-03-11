@@ -1,8 +1,9 @@
+#pragma once
 /*=========================================================================
 
  medInria
 
- Copyright (c) INRIA 2013 - 2018. All rights reserved.
+ Copyright (c) INRIA 2013 - 2020. All rights reserved.
  See LICENSE.txt for details.
 
   This software is distributed WITHOUT ANY WARRANTY; without even
@@ -11,12 +12,9 @@
 
 =========================================================================*/
 
-#pragma once
-
 #include <medAbstractProcessPresenter.h>
 #include <medAbstractDWIMaskingProcess.h>
 #include <medProcessPresenterFactory.h>
-
 #include <medWidgetsExport.h>
 
 class QWidget;
@@ -31,7 +29,7 @@ class MEDWIDGETS_EXPORT medAbstractDWIMaskingProcessPresenter : public medAbstra
     Q_OBJECT
 
 public:
-    medAbstractDWIMaskingProcessPresenter(medAbstractDWIMaskingProcess *parent = NULL);
+    medAbstractDWIMaskingProcessPresenter(medAbstractDWIMaskingProcess *parent = nullptr);
     virtual ~medAbstractDWIMaskingProcessPresenter();
 
     void setUseRunControls(bool useRun);
@@ -43,7 +41,6 @@ public:
     const QScopedPointer<medAbstractDWIMaskingProcessPresenterPrivate> d;
 
 private slots:
-    // TODO RDE - have to be moved later.
     void _importOutput(medAbstractJob::medJobExitStatus jobExitStatus);
     void _setInputFromContainer(medAbstractData *data);
 

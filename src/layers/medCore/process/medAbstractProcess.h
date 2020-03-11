@@ -1,8 +1,9 @@
+#pragma once
 /*=========================================================================
 
  medInria
 
- Copyright (c) INRIA 2013 - 2018. All rights reserved.
+ Copyright (c) INRIA 2013 - 2020. All rights reserved.
  See LICENSE.txt for details.
 
   This software is distributed WITHOUT ANY WARRANTY; without even
@@ -11,29 +12,25 @@
 
 =========================================================================*/
 
-#pragma once
-
 #include <medAbstractJob.h>
+#include <medCoreExport.h>
 
 #include <dtkCore>
 
-#include <medCoreExport.h>
-
 class medAbstractParameter;
-
 class medAbstractProcessPrivate;
+
 class MEDCORE_EXPORT medAbstractProcess: public medAbstractJob
 {
     Q_OBJECT
 public:
-    medAbstractProcess(QObject *parent = NULL);
+    medAbstractProcess(QObject *parent = nullptr);
     virtual ~medAbstractProcess();
 
     virtual QString description() const = 0;
 
     medAbstractParameter* parameter(QString const& id) const;
     QList<medAbstractParameter*> parameters() const;
-
 
 protected:
     void registerParameter(medAbstractParameter *parameter);

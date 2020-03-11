@@ -156,7 +156,7 @@ void vtkRulerWidget::SetEnabled (int enabling)
         this->Interactor->GetLastEventPosition()[0],
         this->Interactor->GetLastEventPosition()[1]));
 
-      if (this->CurrentRenderer == NULL)
+      if (this->CurrentRenderer == nullptr)
       {
         return;
       }
@@ -194,7 +194,7 @@ void vtkRulerWidget::SetEnabled (int enabling)
     // Compositing temporarily changes the camera to display an image.
     this->StartEventObserverId = this->CurrentRenderer->AddObserver(
       vtkCommand::StartEvent, this->Observer, 1 );
-    this->InvokeEvent( vtkCommand::EnableEvent, NULL );
+    this->InvokeEvent( vtkCommand::EnableEvent, nullptr );
   }
   else
   {
@@ -223,13 +223,10 @@ void vtkRulerWidget::SetEnabled (int enabling)
     this->CurrentRenderer->RemoveObserver( this->StartEventObserverId );
       }
 
-    this->InvokeEvent( vtkCommand::DisableEvent, NULL );
-    this->SetCurrentRenderer( NULL );
+    this->InvokeEvent( vtkCommand::DisableEvent, nullptr );
+    this->SetCurrentRenderer(nullptr);
   }
-
 }
-
-
 
 void vtkRulerWidget::ExecuteCameraUpdateEvent(vtkObject *vtkNotUsed(o),
                               unsigned long vtkNotUsed(event),

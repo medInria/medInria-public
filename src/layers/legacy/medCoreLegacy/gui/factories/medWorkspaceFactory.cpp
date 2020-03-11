@@ -2,7 +2,7 @@
 
  medInria
 
- Copyright (c) INRIA 2013 - 2018. All rights reserved.
+ Copyright (c) INRIA 2013 - 2020. All rights reserved.
  See LICENSE.txt for details.
  
   This software is distributed WITHOUT ANY WARRANTY; without even
@@ -11,10 +11,8 @@
 
 =========================================================================*/
 
-#include <medWorkspaceFactory.h>
-
-#include <medToolBoxFactory.h>
 #include <medAbstractWorkspaceLegacy.h>
+#include <medToolBoxFactory.h>
 #include <medWorkspaceFactory.h>
 
 class medWorkspaceFactoryPrivate
@@ -62,8 +60,9 @@ QList<QString> medWorkspaceFactory::workspaces(void)
 medAbstractWorkspaceLegacy *medWorkspaceFactory::createWorkspace(QString type,QWidget* parent)
 {
     if(!d->creators.contains(type))
-        return NULL;
-
+    {
+        return nullptr;
+    }
     medAbstractWorkspaceLegacy * workspace = d->creators[type]->creator(parent);
 
     return workspace;
@@ -106,7 +105,8 @@ QList<medWorkspaceFactory::Details *> medWorkspaceFactory::workspaceDetailsSorte
         filteredDetails = details;
 
     QList<medWorkspaceFactory::Details*> detailsList = filteredDetails.values();
-    qSort(detailsList.begin(),detailsList.end(), wsDetailsSortByName);
+    std::sort(detailsList.begin(),detailsList.end(), wsDetailsSortByName);
+
     return detailsList;
 }
 
@@ -119,7 +119,7 @@ medWorkspaceFactory::~medWorkspaceFactory(void)
 {
     qDeleteAll(d->creators);
     delete d;
-    d = NULL;
+    d = nullptr;
 }
 
 /**
@@ -131,7 +131,7 @@ medWorkspaceFactory::Details * medWorkspaceFactory::workspaceDetailsFromId(QStri
     return d->creators.value(identifier);
 }
 
-medWorkspaceFactory *medWorkspaceFactory::s_instance = NULL;
+medWorkspaceFactory *medWorkspaceFactory::s_instance = nullptr;
 
 
 
@@ -139,7 +139,7 @@ bool medWorkspaceFactory::isUsable(QString identifier) const
 {
     if (d->creators.contains(identifier))
     {
-        if (d->creators.value(identifier)->isUsable==NULL)
+        if (d->creators.value(identifier)->isUsable==nullptr)
             return true;
         else
             return d->creators.value(identifier)->isUsable();

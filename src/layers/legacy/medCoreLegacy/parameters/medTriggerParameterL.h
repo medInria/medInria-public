@@ -2,7 +2,7 @@
 
  medInria
 
- Copyright (c) INRIA 2013 - 2018. All rights reserved.
+ Copyright (c) INRIA 2013 - 2020. All rights reserved.
  See LICENSE.txt for details.
 
   This software is distributed WITHOUT ANY WARRANTY; without even
@@ -12,7 +12,6 @@
 =========================================================================*/
 
 #include <medAbstractParameterL.h>
-
 #include <medCoreLegacyExport.h>
 
 class QIcon;
@@ -26,7 +25,7 @@ class MEDCORELEGACY_EXPORT medTriggerParameterL : public medAbstractTriggerParam
     Q_OBJECT
 
 public:
-    medTriggerParameterL(QString name = "Unknown trigger parameter", QObject* parent = 0);
+    medTriggerParameterL(QString name = "Unknown trigger parameter", QObject* parent = nullptr);
     virtual ~medTriggerParameterL();
 
     void setButtonIcon(QIcon& icon);
@@ -35,6 +34,7 @@ public:
     QPushButton* getPushButton();
 
     virtual QWidget* getWidget();
+
 private slots:
     void removeInternPushButton();
 

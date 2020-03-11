@@ -1,8 +1,9 @@
+#pragma once
 /*=========================================================================
 
  medInria
 
- Copyright (c) INRIA 2013 - 2018. All rights reserved.
+ Copyright (c) INRIA 2013 - 2020. All rights reserved.
  See LICENSE.txt for details.
 
   This software is distributed WITHOUT ANY WARRANTY; without even
@@ -11,14 +12,11 @@
 
 =========================================================================*/
 
-#pragma once
-
 #include <medAnnotationData.h>
-
-#include <QtWidgets>
-#include <QVector3D>
-
 #include <medCoreLegacyExport.h>
+
+#include <QVector3D>
+#include <QtWidgets>
 
 /** Defines a set of seed points that may be attached to a data
  * One of the points may be in a selected state.
@@ -72,6 +70,3 @@ protected:
     QVector<QVector3D> m_centerWorld;
     int m_selectedSeed;
 };
-
-
-

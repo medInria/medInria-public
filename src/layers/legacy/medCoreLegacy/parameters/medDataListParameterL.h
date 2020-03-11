@@ -1,8 +1,9 @@
+#pragma once
 /*=========================================================================
 
  medInria
 
- Copyright (c) INRIA 2013 - 2018. All rights reserved.
+ Copyright (c) INRIA 2013 - 2020. All rights reserved.
  See LICENSE.txt for details.
 
   This software is distributed WITHOUT ANY WARRANTY; without even
@@ -11,13 +12,10 @@
 
 =========================================================================*/
 
-#pragma once
-
 #include <medAbstractParameterL.h>
+#include <medCoreLegacyExport.h>
 
 #include <QIcon>
-
-#include <medCoreLegacyExport.h>
 
 class QComboBox;
 class QWidget;
@@ -31,7 +29,7 @@ class MEDCORELEGACY_EXPORT medDataListParameterL: public medAbstractParameterL
     Q_OBJECT
 
 public:
-    medDataListParameterL(QString name = "Unknown data list parameter", QObject* parent = 0);
+    medDataListParameterL(QString name = "Unknown data list parameter", QObject* parent = nullptr);
     virtual ~medDataListParameterL();
 
     void setValues(QList<medDataIndex> values);

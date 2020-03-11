@@ -1,8 +1,9 @@
+#pragma once
 /*=========================================================================
 
  medInria
 
- Copyright (c) INRIA 2013 - 2018. All rights reserved.
+ Copyright (c) INRIA 2013 - 2020. All rights reserved.
  See LICENSE.txt for details.
  
   This software is distributed WITHOUT ANY WARRANTY; without even
@@ -10,8 +11,6 @@
   PURPOSE.
 
 =========================================================================*/
-
-#pragma once
 
 #include <medVtkInriaExport.h>
 #include <vtkInteractorStyleRubberBandZoom.h>
@@ -22,7 +21,7 @@ class MEDVTKINRIA_EXPORT vtkInriaInteractorStyleRubberBandZoom : public vtkInter
 {
 public:
     static vtkInriaInteractorStyleRubberBandZoom *New();
-    vtkTypeMacro(vtkInriaInteractorStyleRubberBandZoom, vtkInteractorStyleRubberBandZoom);
+    vtkTypeMacro(vtkInriaInteractorStyleRubberBandZoom, vtkInteractorStyleRubberBandZoom)
 
     // Description:
     // Event bindings
@@ -31,12 +30,12 @@ public:
     virtual void OnRightButtonDown();
     virtual void OnRightButtonUp();
 
-    void LeftButtonModeOn(){leftButtonModeOn = true;};
-    void RightButtonModeOn(){rightButtonModeOn = true;};
-    void LeftButtonModeOff(){leftButtonModeOn = false;};
-    void RightButtonModeOff(){rightButtonModeOn = false;};
-    bool RightButtonModeIsOn(){return rightButtonModeOn;};
-    bool LeftButtonModeIsOn(){return leftButtonModeOn;};
+    void LeftButtonModeOn(){leftButtonModeOn = true;}
+    void RightButtonModeOn(){rightButtonModeOn = true;}
+    void LeftButtonModeOff(){leftButtonModeOn = false;}
+    void RightButtonModeOff(){rightButtonModeOn = false;}
+    bool RightButtonModeIsOn(){return rightButtonModeOn;}
+    bool LeftButtonModeIsOn(){return leftButtonModeOn;}
 
 protected:
     vtkInriaInteractorStyleRubberBandZoom();
@@ -50,4 +49,3 @@ private:
     bool leftButtonModeOn;
     bool rightButtonModeOn;
 };
-

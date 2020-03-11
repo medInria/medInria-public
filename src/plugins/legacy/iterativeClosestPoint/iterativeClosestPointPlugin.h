@@ -1,8 +1,9 @@
+#pragma once
 /*=========================================================================
 
  medInria
 
- Copyright (c) INRIA 2013 - 2019. All rights reserved.
+ Copyright (c) INRIA 2013 - 2020. All rights reserved.
  See LICENSE.txt for details.
  
   This software is distributed WITHOUT ANY WARRANTY; without even
@@ -11,10 +12,8 @@
 
 =========================================================================*/
 
-#pragma once
-
+#include <iterativeClosestPointPluginExport.h>
 #include <medPluginLegacy.h>
-#include "iterativeClosestPointPluginExport.h"
 
 class ITERATIVECLOSESTPOINTPLUGIN_EXPORT iterativeClosestPointPlugin : public medPluginLegacy
 {
@@ -31,5 +30,3 @@ public:
     virtual QString version() const;
     virtual QStringList types() const;
 };
-
-

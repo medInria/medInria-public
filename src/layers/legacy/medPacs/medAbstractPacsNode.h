@@ -1,8 +1,9 @@
+#pragma once
 /*=========================================================================
 
  medInria
 
- Copyright (c) INRIA 2013 - 2018. All rights reserved.
+ Copyright (c) INRIA 2013 - 2020. All rights reserved.
  See LICENSE.txt for details.
  
   This software is distributed WITHOUT ANY WARRANTY; without even
@@ -11,10 +12,9 @@
 
 =========================================================================*/
 
-#pragma once
-
 #include <QtCore/QObject>
 #include <QVector>
+
 #include <medPacsExport.h>
 
 class medAbstractPacsResultDataset;
@@ -24,8 +24,8 @@ class MEDPACS_EXPORT medAbstractPacsNode : public QObject
     Q_OBJECT
     
 public:
-             medAbstractPacsNode();
-    virtual ~medAbstractPacsNode();
+    medAbstractPacsNode() = default;
+    ~medAbstractPacsNode() override = default;
 
     virtual void setTitle(QString title);
     
@@ -47,5 +47,3 @@ public:
 
     virtual QVector<medAbstractPacsResultDataset*> getResultDatasetContainer();
 };
-
-

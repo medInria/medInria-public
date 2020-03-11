@@ -1,8 +1,10 @@
+#pragma once
+
 /*=========================================================================
 
  medInria
 
- Copyright (c) INRIA 2013 - 2018. All rights reserved.
+ Copyright (c) INRIA 2013 - 2020. All rights reserved.
  See LICENSE.txt for details.
  
   This software is distributed WITHOUT ANY WARRANTY; without even
@@ -11,14 +13,11 @@
 
 =========================================================================*/
 
-#pragma once
-
 #include <medVtkInriaExport.h>
 #include <medVtkImageInfo.h>
 
 #include <vtkImageView.h>
 #include <vtkInteractorStyleImageView2D.h>
-
 #include <vtkSmartPointer.h>
 
 #include <vector>
@@ -58,7 +57,7 @@ class vtkImageAlgorithm;
 
 
  A) SLICE_ORIENTATION enum
- the slice orientation enum has changed to match VTK : XY / XZ / YZ
+ the slice orientation enum has changed to match VTK: XY / XZ / YZ
  The axis enum is therefore of no need.
 
  B) The ImageToColor instance has been moved to ImageView (see vtkImageView.h)
@@ -66,7 +65,7 @@ class vtkImageAlgorithm;
  C) Orientation and Convention systems have been put in place,
  thus replacing the DirectionMatrix system
 
- D) The Zoom / Pan differentiation : is it needed ?
+ D) The Zoom / Pan differentiation: is it needed ?
 
  E) again here Visibility --> Show
 
@@ -76,7 +75,7 @@ class vtkImageAlgorithm;
  of the overall code. So I put it back.
  One thing remains though. Pierre differentiated the Zoom event from the Pan event,
  thus authorizing sync. of one and not the other. In the system I propose there is
- no differentiation, they are gathered in the CameraMove event. to be discussed.
+ no differentiation, they are gathered in the CameraMove event. To be discussed.
 
  G) All mouse interactions have thus been put in place.
 
@@ -109,7 +108,7 @@ class MEDVTKINRIA_EXPORT vtkImageView2D : public vtkImageView
 {
 public:
     static vtkImageView2D *New();
-    vtkTypeMacro (vtkImageView2D, vtkImageView);
+    vtkTypeMacro (vtkImageView2D, vtkImageView)
     void PrintSelf(ostream& os, vtkIndent indent);
 
     vtkMTimeType GetMTime();
@@ -130,19 +129,18 @@ public:
 
     // Description:
     // Set/Get the input image to the viewer.
-    virtual void SetInput (vtkAlgorithmOutput* pi_poVtkAlgoOutput, vtkMatrix4x4 *matrix = 0, int layer = 0);
-    virtual void SetInput (vtkActor *actor, int layer = 0, vtkMatrix4x4 *matrix = 0, const int imageSize[3] = 0, const double imageSpacing[] = 0, const double imageOrigin[] = 0);
-
+    virtual void SetInput      (vtkAlgorithmOutput* pi_poVtkAlgoOutput, vtkMatrix4x4 *matrix = nullptr, int layer = 0);
+    virtual void SetInputLayer (vtkAlgorithmOutput* pi_poVtkAlgoOutput, vtkMatrix4x4 *matrix = nullptr, int layer = 0);
+    virtual void SetInputCommon(vtkAlgorithmOutput* pi_poVtkAlgoOutput, int layer = 0);
+    virtual void SetInput (vtkActor *actor, int layer = 0, vtkMatrix4x4 *matrix = nullptr,
+                           const int imageSize[3] = nullptr, const double imageSpacing[] = nullptr, const double imageOrigin[] = nullptr);
 
     void RemoveLayerActor(vtkActor *actor, int layer = 0);
-    
-    //int AddInput (vtkImageData *image, vtkMatrix4x4 *matrix);
 
-    virtual vtkActor* AddDataSet (vtkPointSet* arg, vtkProperty* prop = NULL);
+    virtual vtkActor* AddDataSet (vtkPointSet* arg, vtkProperty* prop = nullptr);
     virtual void RemoveDataSet (vtkPointSet *arg);
 
     medVtkImageInfo* GetMedVtkImageInfo(int layer = 0) const;
-
 
     virtual void InstallInteractor();
     virtual void UnInstallInteractor();
@@ -151,7 +149,7 @@ public:
 
     /**
    Description:
-   The orientation of the view is a abstract representation of the object
+   The orientation of the view is an abstract representation of the object
    we are looking at. It results from the acquisition plane. Setting the View
    Orientation by calling SetViewOrientation() will imply the view to set its
    inner "slice" orientation. (slice orientation == 2 means plane of acquisition.)
@@ -348,8 +346,8 @@ public:
     vtkGetMacro (CursorFollowMouse, int);
 
     void SetAnnotationStyle (unsigned int arg);
-    vtkGetMacro (AnnotationStyle, unsigned int);
-
+    vtkGetMacro (AnnotationStyle, unsigned int)
+    unsigned int GetAnnotationStyle2D();
 
     virtual void AddLayer(int);
     virtual void RemoveLayer(int layer);
@@ -442,8 +440,6 @@ protected:
     vtkImage2DDisplay * GetImage2DDisplayForLayer(int layer) const;
     vtkRenderer * GetRendererForLayer(int layer) const;
 
-
-
     //BTX
     std::list<vtkDataSet2DWidget*>::iterator FindDataSetWidget(vtkPointSet* arg);
     //ETX
@@ -451,7 +447,6 @@ protected:
     void SetFirstLayer(vtkAlgorithmOutput *pi_poInputAlgoImg, vtkMatrix4x4 *matrix, int layer);
     bool IsFirstLayer(int layer) const;
     int GetFirstLayer() const;
-
 
     int ViewOrientation;
     int ViewConvention;
@@ -463,6 +458,8 @@ protected:
     int ShowImageAxis;
 
     unsigned int AnnotationStyle;
+
+    std::string matrixOrientation[3][2];
 
     int CursorFollowMouse;
     int Slice;
@@ -491,5 +488,4 @@ private:
 
 public:
     vtkImageView2DQtSignals *qtSignalHandler;
-
 };

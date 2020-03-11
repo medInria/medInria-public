@@ -2,7 +2,7 @@
 
  medInria
 
- Copyright (c) INRIA 2013 - 2018. All rights reserved.
+ Copyright (c) INRIA 2013 - 2020. All rights reserved.
  See LICENSE.txt for details.
  
   This software is distributed WITHOUT ANY WARRANTY; without even
@@ -17,36 +17,25 @@
 
 #include <QtCore>
 
-medAbstractPacsResultDataset::medAbstractPacsResultDataset( void )
-{
-
-}
-
-medAbstractPacsResultDataset::~medAbstractPacsResultDataset( void )
-{
-
-}
-
 const char* medAbstractPacsResultDataset::getStudyInstanceUID()
 {
     DTK_DEFAULT_IMPLEMENTATION;
 
-    return NULL;
+    return nullptr;
 }
-
 
 const char* medAbstractPacsResultDataset::getSeriesInstanceUID()
 {
     DTK_DEFAULT_IMPLEMENTATION;
 
-    return NULL;
+    return nullptr;
 }
 
 const char* medAbstractPacsResultDataset::getSOPInstanceUID()
 {
     DTK_DEFAULT_IMPLEMENTATION;
 
-    return NULL;
+    return nullptr;
 }
 
 QVector<medAbstractPacsKey*> medAbstractPacsResultDataset::getKeyContainer()
@@ -60,5 +49,5 @@ const char* medAbstractPacsResultDataset::findKeyValue( int group, int elem )
 {
     DTK_DEFAULT_IMPLEMENTATION;
 
-    return NULL;
+    return nullptr;
 }

@@ -2,7 +2,7 @@
 
  medInria
 
- Copyright (c) INRIA 2013 - 2018. All rights reserved.
+ Copyright (c) INRIA 2013 - 2020. All rights reserved.
  See LICENSE.txt for details.
 
   This software is distributed WITHOUT ANY WARRANTY; without even
@@ -11,11 +11,10 @@
 
 =========================================================================*/
 
+#include <medAbstractParameter.h>
 #include <medAbstractProcess.h>
 
 #include <QMap>
-
-#include <medAbstractParameter.h>
 
 class medAbstractProcessPrivate
 {

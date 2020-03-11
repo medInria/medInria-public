@@ -1,8 +1,9 @@
+#pragma once
 /*=========================================================================
 
  medInria
 
- Copyright (c) INRIA 2013 - 2018. All rights reserved.
+ Copyright (c) INRIA 2013 - 2020. All rights reserved.
  See LICENSE.txt for details.
 
   This software is distributed WITHOUT ANY WARRANTY; without even
@@ -10,8 +11,6 @@
   PURPOSE.
 
 =========================================================================*/
-
-#pragma once
 
 #include <medSingleFilterOperationProcessNode.h>
 
@@ -48,7 +47,7 @@ bool medSingleFilterOperationProcessNode<T>::prepareInput(void)
 {
     if (d->input1.isEmpty())
     {
-        dtkDebug() << Q_FUNC_INFO << "The input is not set. Aborting.";
+        qDebug() << Q_FUNC_INFO << "The input is not set. Aborting.";
         return false;
     }
     else
@@ -82,6 +81,5 @@ void medSingleFilterOperationProcessNode<T>::run(void)
     filter->run();
     this->prepareOutput();
 
-    dtkDebug()<<"filtering done";
+    qDebug()<<"filtering done";
 }
-

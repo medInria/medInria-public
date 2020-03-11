@@ -2,7 +2,7 @@
 
  medInria
 
- Copyright (c) INRIA 2013 - 2018. All rights reserved.
+ Copyright (c) INRIA 2013 - 2020. All rights reserved.
  See LICENSE.txt for details.
 
   This software is distributed WITHOUT ANY WARRANTY; without even
@@ -11,15 +11,14 @@
 
 =========================================================================*/
 
+#include <medAbstractProcess.h>
 #include <medAbstractProcessPresenter.h>
+#include <medJobManager.h>
 
 #include <QThreadPool>
 #include <QPushButton>
 
 #include <dtkLog>
-
-#include <medAbstractProcess.h>
-#include <medJobManager.h>
 
 class medAbstractProcessPresenterPrivate
 {
@@ -27,13 +26,12 @@ public:
     medAbstractProcess *process;
 };
 
-
 medAbstractProcessPresenter::medAbstractProcessPresenter(medAbstractProcess*parent)
     : QObject(parent), d(new medAbstractProcessPresenterPrivate)
 {
-    if(parent == NULL)
+    if(parent == nullptr)
     {
-        dtkWarn() << "Constructing presenter parented to a null process"
+        qWarning() << "Constructing presenter parented to a null process"
                   << this;
     }
     d->process = parent;

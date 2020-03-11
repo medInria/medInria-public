@@ -24,8 +24,7 @@ PURPOSE.  See the above copyright notices for more information.
 #include "vtkUniformSampler.h"
 #include <vtkObjectFactory.h>
 
-
-vtkStandardNewMacro(vtkUniformSampler);
+vtkStandardNewMacro(vtkUniformSampler)
 
 vtkUniformSampler::vtkUniformSampler()
 {

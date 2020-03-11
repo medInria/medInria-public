@@ -91,5 +91,5 @@ bool operator<( const QColor & lhs, const QColor & rhs ){
 void medImageMaskAnnotationData::setColorMap( const ColorMapType & colorMap )
 {
     m_colorMap = colorMap;
-    qSort( m_colorMap );
+    std::sort(m_colorMap.begin(), m_colorMap.end());
 }

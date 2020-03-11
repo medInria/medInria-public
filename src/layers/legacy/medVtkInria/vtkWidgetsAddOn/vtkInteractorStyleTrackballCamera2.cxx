@@ -2,7 +2,7 @@
 
  medInria
 
- Copyright (c) INRIA 2013 - 2018. All rights reserved.
+ Copyright (c) INRIA 2013 - 2020. All rights reserved.
  See LICENSE.txt for details.
  
   This software is distributed WITHOUT ANY WARRANTY; without even
@@ -21,8 +21,7 @@
 #include "vtkCamera.h"
 #include "vtkCallbackCommand.h"
 
-
-vtkStandardNewMacro(vtkInteractorStyleTrackballCamera2);
+vtkStandardNewMacro(vtkInteractorStyleTrackballCamera2)
 
 vtkInteractorStyleTrackballCamera2::vtkInteractorStyleTrackballCamera2()
 {  
@@ -62,18 +61,18 @@ void vtkInteractorStyleTrackballCamera2::OnLeftButtonDown()
 void vtkInteractorStyleTrackballCamera2::OnMouseWheelForward()
 {
     vtkInteractorStyleTrackballCamera::OnMouseWheelForward();
-    this->InvokeEvent(vtkCommand::InteractionEvent, NULL);
+    this->InvokeEvent(vtkCommand::InteractionEvent, nullptr);
 }
 
 void vtkInteractorStyleTrackballCamera2::OnMouseWheelBackward()
 {
     vtkInteractorStyleTrackballCamera::OnMouseWheelBackward();
-    this->InvokeEvent(vtkCommand::InteractionEvent, NULL);
+    this->InvokeEvent(vtkCommand::InteractionEvent, nullptr);
 }
 
 void vtkInteractorStyleTrackballCamera2::Rotate()
 {
-  if (this->CurrentRenderer == NULL)
+  if (this->CurrentRenderer == nullptr)
     return;
     
   vtkRenderWindowInteractor *rwi = this->Interactor;

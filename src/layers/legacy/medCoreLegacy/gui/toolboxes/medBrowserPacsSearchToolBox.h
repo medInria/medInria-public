@@ -1,8 +1,9 @@
+#pragma once
 /*=========================================================================
 
  medInria
 
- Copyright (c) INRIA 2013 - 2018. All rights reserved.
+ Copyright (c) INRIA 2013 - 2020. All rights reserved.
  See LICENSE.txt for details.
 
   This software is distributed WITHOUT ANY WARRANTY; without even
@@ -10,8 +11,6 @@
   PURPOSE.
 
 =========================================================================*/
-
-#pragma once
 
 #include <medToolBox.h>
 
@@ -24,7 +23,7 @@ class MEDCORELEGACY_EXPORT medBrowserPacsSearchToolBox : public medToolBox
     Q_OBJECT
 
 public:
-     medBrowserPacsSearchToolBox(QWidget *parent = 0);
+     medBrowserPacsSearchToolBox(QWidget *parent = nullptr);
     ~medBrowserPacsSearchToolBox();
 
 signals:
@@ -36,5 +35,3 @@ protected slots:
 private:
     medBrowserPacsSearchToolBoxPrivate *d;
 };
-
-

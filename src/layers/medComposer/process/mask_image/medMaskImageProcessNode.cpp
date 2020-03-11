@@ -45,7 +45,7 @@ void medMaskImageProcessNode::run()
 {
     if (d->input.isEmpty() || d->mask.isEmpty())
     {
-        dtkDebug() << Q_FUNC_INFO << "Missing inputs. Aborting.";
+        qDebug() << Q_FUNC_INFO << "Missing inputs. Aborting.";
         return;
     }
 
@@ -63,7 +63,9 @@ QWidget* medMaskImageProcessNode::editor()
 {
     medAbstractProcess* process = this->object();
     if (!process)
-        return NULL;
+    {
+        return nullptr;
+    }
     medAbstractProcessPresenter* presenter = medWidgets::maskImage::presenterFactory().create(process);
     return presenter->buildToolBoxWidget();
 }

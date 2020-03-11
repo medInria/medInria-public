@@ -2,7 +2,7 @@
 
  medInria
 
- Copyright (c) INRIA 2013 - 2018. All rights reserved.
+ Copyright (c) INRIA 2013 - 2020. All rights reserved.
  See LICENSE.txt for details.
 
   This software is distributed WITHOUT ANY WARRANTY; without even
@@ -34,9 +34,9 @@ public:
 medAbstractParameterPresenter::medAbstractParameterPresenter(medAbstractParameter *parent)
     : QObject(parent), d(new medAbstractParameterPresenterPrivate)
 {
-    if(parent == NULL)
+    if(parent == nullptr)
     {
-        dtkWarn() << "Constructing presenter parented to a null parameter"
+        qWarning() << "Constructing presenter parented to a null parameter"
                   << this;
     }
 
@@ -84,7 +84,7 @@ void medAbstractParameterPresenter::_connectWidget(QWidget *widget)
 
 medAbstractParameterPresenter* medAbstractParameterPresenter::buildFromParameter(medAbstractParameter *parameter)
 {
-    medAbstractParameterPresenter *presenter = NULL;
+    medAbstractParameterPresenter *presenter = nullptr;
     switch(parameter->type())
     {
     case medParameterType::MED_PARAMETER_BOOL :

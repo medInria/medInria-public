@@ -1,8 +1,9 @@
+#pragma once
 /*=========================================================================
 
  medInria
 
- Copyright (c) INRIA 2013 - 2018. All rights reserved.
+ Copyright (c) INRIA 2013 - 2020. All rights reserved.
  See LICENSE.txt for details.
 
   This software is distributed WITHOUT ANY WARRANTY; without even
@@ -11,10 +12,7 @@
 
 =========================================================================*/
 
-#pragma once
-
 #include <medAbstractViewInteractor.h>
-
 #include <medCoreLegacyExport.h>
 
 class medAbstractLayeredView;
@@ -26,7 +24,7 @@ class MEDCORELEGACY_EXPORT medAbstractLayeredViewInteractor : public medAbstract
     Q_OBJECT
 
 public:
-             medAbstractLayeredViewInteractor(medAbstractView *parent);
+    medAbstractLayeredViewInteractor(medAbstractView *parent);
     virtual ~medAbstractLayeredViewInteractor();
 
 public:
@@ -35,8 +33,6 @@ public:
 private slots:
     virtual void setVisibility(bool) = 0;
 
-
 private:
     medAbstractLayeredViewInteractorPrivate *d;
 };
-

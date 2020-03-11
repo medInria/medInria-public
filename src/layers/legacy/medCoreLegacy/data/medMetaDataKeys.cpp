@@ -2,7 +2,7 @@
 
  medInria
 
- Copyright (c) INRIA 2013 - 2018. All rights reserved.
+ Copyright (c) INRIA 2013 - 2020. All rights reserved.
  See LICENSE.txt for details.
 
   This software is distributed WITHOUT ANY WARRANTY; without even
@@ -15,8 +15,8 @@
 
 #include <medCoreLegacyExport.h>
 
-namespace medMetaDataKeys {
-
+namespace medMetaDataKeys
+{
     MEDCORELEGACY_EXPORT Key::Registery Key::registery;
 
     /** Define the actual keys to use */
@@ -55,7 +55,6 @@ namespace medMetaDataKeys {
     MEDCORELEGACY_EXPORT const Key SeriesThumbnail("SeriesThumbnail", "Series Thumbnail");
 
     // IMAGE
-
     MEDCORELEGACY_EXPORT const Key SOPInstanceUID("SOPInstanceUID", "SOP Instance UID");
     MEDCORELEGACY_EXPORT const Key Columns("Columns","Columns",QVariant::UInt);
     MEDCORELEGACY_EXPORT const Key Rows("Rows","Rows",QVariant::UInt);
@@ -89,5 +88,4 @@ namespace medMetaDataKeys {
     MEDCORELEGACY_EXPORT const Key FlipAngle("FlipAngle");
     MEDCORELEGACY_EXPORT const Key EchoTime("EchoTime");
     MEDCORELEGACY_EXPORT const Key RepetitionTime("RepetitionTime");
-};
-
+}

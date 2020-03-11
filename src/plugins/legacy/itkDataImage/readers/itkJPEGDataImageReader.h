@@ -1,8 +1,9 @@
+#pragma once
 /*=========================================================================
 
  medInria
 
- Copyright (c) INRIA 2013 - 2018. All rights reserved.
+ Copyright (c) INRIA 2013 - 2020. All rights reserved.
  See LICENSE.txt for details.
  
   This software is distributed WITHOUT ANY WARRANTY; without even
@@ -11,12 +12,11 @@
 
 =========================================================================*/
 
-#pragma once
-
 #include <itkDataImageReaderBase.h>
 #include <itkDataImagePluginExport.h>
 
-class ITKDATAIMAGEPLUGIN_EXPORT itkJPEGDataImageReader: public itkDataImageReaderBase {
+class ITKDATAIMAGEPLUGIN_EXPORT itkJPEGDataImageReader: public itkDataImageReaderBase
+{
 public:
     itkJPEGDataImageReader();
     virtual ~itkJPEGDataImageReader();
@@ -36,5 +36,3 @@ private:
 };
 
 dtkAbstractDataReader *createItkJPEGDataImageReader();
-
-

@@ -1,17 +1,16 @@
+#pragma once
 /*=========================================================================
 
  medInria
 
- Copyright (c) INRIA 2013 - 2019. All rights reserved.
+ Copyright (c) INRIA 2013 - 2020. All rights reserved.
  See LICENSE.txt for details.
- 
+
   This software is distributed WITHOUT ANY WARRANTY; without even
   the implied warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR
   PURPOSE.
 
 =========================================================================*/
-
-#pragma once
 
 #include <dtkCoreSupport/dtkPlugin.h>
 
@@ -33,7 +32,7 @@ class MEDVIEWSEGMENTATIONPLUGIN_EXPORT medSegmentationPlugin : public medPluginL
     Q_INTERFACES(dtkPlugin)
 
 public:
-    medSegmentationPlugin(QObject *parent = 0);
+    medSegmentationPlugin(QObject *parent = nullptr);
     ~medSegmentationPlugin();
 
     virtual bool initialize();
@@ -51,5 +50,3 @@ public:
 private:
      medSegmentationPluginPrivate *d;
 };
-
-

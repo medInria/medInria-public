@@ -1,8 +1,9 @@
+#pragma once
 /*=========================================================================
 
  medInria
 
- Copyright (c) INRIA 2013 - 2018. All rights reserved.
+ Copyright (c) INRIA 2013 - 2020. All rights reserved.
  See LICENSE.txt for details.
 
   This software is distributed WITHOUT ANY WARRANTY; without even
@@ -11,24 +12,21 @@
 
 =========================================================================*/
 
-#pragma once
-
 #include <medAbstractProcess.h>
+#include <medCoreExport.h>
 
 #include <dtkCore>
 
-#include <medCoreExport.h>
-
 class medAbstractImageData;
 class medIntParameter;
-
 class medAbstractMaskImageProcessPrivate;
+
 class MEDCORE_EXPORT medAbstractMaskImageProcess : public medAbstractProcess
 {
     Q_OBJECT
 
 public:
-    medAbstractMaskImageProcess(QObject *parent = NULL);
+    medAbstractMaskImageProcess(QObject *parent = nullptr);
     virtual ~medAbstractMaskImageProcess();
 
     void setInput(medAbstractImageData* data);

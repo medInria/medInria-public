@@ -1,8 +1,9 @@
+#pragma once
 /*=========================================================================
 
  medInria
 
- Copyright (c) INRIA 2013 - 2018. All rights reserved.
+ Copyright (c) INRIA 2013 - 2020. All rights reserved.
  See LICENSE.txt for details.
  
   This software is distributed WITHOUT ANY WARRANTY; without even
@@ -11,13 +12,12 @@
 
 =========================================================================*/
 
-#pragma once
-
 #include <itkDataImageReaderBase.h>
 #include <itkDataImagePluginExport.h>
 #include <itkImage.h>
 
-class ITKDATAIMAGEPLUGIN_EXPORT itkPhilipsRECDataImageReader: public itkDataImageReaderBase {
+class ITKDATAIMAGEPLUGIN_EXPORT itkPhilipsRECDataImageReader: public itkDataImageReaderBase
+{
 public:
     itkPhilipsRECDataImageReader();
     virtual ~itkPhilipsRECDataImageReader();
@@ -64,5 +64,3 @@ private:
             FloatImageType::DirectionType direction);
     FloatImageType::DirectionType ExtractPARRECImageOrientation ();
 };
-
-

@@ -1,8 +1,9 @@
+#pragma once
 /*=========================================================================
 
  medInria
 
- Copyright (c) INRIA 2013 - 2018. All rights reserved.
+ Copyright (c) INRIA 2013 - 2020. All rights reserved.
  See LICENSE.txt for details.
  
   This software is distributed WITHOUT ANY WARRANTY; without even
@@ -10,8 +11,6 @@
   PURPOSE.
 
 =========================================================================*/
-
-#pragma once
 
 #include <medAbstractData.h>
 
@@ -25,7 +24,7 @@ class ITKDATADIFFUSIONGRADIENTLISTPLUGIN_EXPORT itkDataDiffusionGradientList : p
     MED_DATA_INTERFACE("Itk Data Diffusion Gradient List",
                        "Data type to store diffusion gradients.")
 public:
-             itkDataDiffusionGradientList();
+    itkDataDiffusionGradientList();
     virtual ~itkDataDiffusionGradientList();
 
     static bool registered();
@@ -41,6 +40,3 @@ public slots:
 private:
     itkDataDiffusionGradientListPrivate *d;
 };
-
-
-

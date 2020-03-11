@@ -300,9 +300,9 @@ void vtkVectorVisuManager::SetColorByUserColor()
 {
     // free some memory!
     vtkDataSet *data = Orienter->GetOutput();
-    data->GetPointData()->SetScalars(NULL);
+    data->GetPointData()->SetScalars(nullptr);
     this->ValueArray->Initialize();
-    this->Mapper->SetLookupTable(NULL);
+    this->Mapper->SetLookupTable(nullptr);
 
     this->Mapper->SetColorModeToDefault();
     this->Actor->GetProperty()->SetColor(UserColor);

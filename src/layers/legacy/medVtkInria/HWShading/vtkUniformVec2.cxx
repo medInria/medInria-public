@@ -30,7 +30,7 @@ PURPOSE.  See the above copyright notices for more information.
 #include "vtkUniformVec2.h"
 #include <vtkObjectFactory.h>
 
-vtkStandardNewMacro(vtkUniformVec2);
+vtkStandardNewMacro(vtkUniformVec2)
 
 vtkUniformVec2::vtkUniformVec2()
 {

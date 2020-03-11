@@ -1,8 +1,9 @@
+#pragma once
 /*=========================================================================
 
  medInria
 
- Copyright (c) INRIA 2013 - 2018. All rights reserved.
+ Copyright (c) INRIA 2013 - 2020. All rights reserved.
  See LICENSE.txt for details.
 
   This software is distributed WITHOUT ANY WARRANTY; without even
@@ -11,10 +12,7 @@
 
 =========================================================================*/
 
-#pragma once
-
 #include <medAbstractParameterGroupL.h>
-
 #include <medCoreLegacyExport.h>
 
 class medViewParameterGroupLPrivate;
@@ -24,7 +22,7 @@ class MEDCORELEGACY_EXPORT medViewParameterGroupL : public medAbstractParameterG
     Q_OBJECT
 
 public:
-    medViewParameterGroupL(QString name = "", QObject *parent = 0, QString workspace = "");
+    medViewParameterGroupL(QString name = "", QObject *parent = nullptr, QString workspace = "");
     virtual ~medViewParameterGroupL();
 
     void addImpactedView(medAbstractView *view);

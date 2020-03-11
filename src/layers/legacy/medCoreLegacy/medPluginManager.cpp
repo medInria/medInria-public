@@ -2,7 +2,7 @@
 
  medInria
 
- Copyright (c) INRIA 2013 - 2019. All rights reserved.
+ Copyright (c) INRIA 2013 - 2020. All rights reserved.
  See LICENSE.txt for details.
 
   This software is distributed WITHOUT ANY WARRANTY; without even
@@ -161,7 +161,7 @@ medPluginManager::~medPluginManager(void)
     d = nullptr;
 }
 
-medPluginManager *medPluginManager::s_instance = NULL;
+medPluginManager *medPluginManager::s_instance = nullptr;
 
 
 void medPluginManager::onLoadError(const QString &errorMessage)

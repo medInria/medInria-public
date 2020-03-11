@@ -1,8 +1,9 @@
+#pragma once
 /*=========================================================================
 
  medInria
 
- Copyright (c) INRIA 2013 - 2018. All rights reserved.
+ Copyright (c) INRIA 2013 - 2020. All rights reserved.
  See LICENSE.txt for details.
 
   This software is distributed WITHOUT ANY WARRANTY; without even
@@ -11,11 +12,7 @@
 
 =========================================================================*/
 
-#pragma once
-
 #include <dtkCoreSupport/dtkAbstractFactory.h>
-
-#include <medCoreLegacyExport.h>
 
 #include <QStringList>
 
@@ -24,7 +21,7 @@
 #include <medAbstractViewInteractor.h>
 #include <medAbstractNavigator.h>
 #include <medAbstractInteractor.h>
-
+#include <medCoreLegacyExport.h>
 
 typedef medAbstractView *(*viewCreator)(QObject *parent);
 typedef medAbstractViewNavigator *(*navigatorCreator)(medAbstractView *parent);
@@ -40,7 +37,7 @@ public:
     static medViewFactory *instance();
 
     template <typename T>
-    T* createView(QString identifier, QObject *parent = 0);
+    T* createView(QString identifier, QObject *parent = nullptr);
 
     template <typename T>
     T* createNavigator(QString identifier, medAbstractView *parent);
@@ -87,7 +84,6 @@ public:
     virtual QStringList interactorsAbleToHandle(const QString viewType, const QString dataType) const;
     QStringList additionalNavigatorsAbleToHandle(const QString dataType) const;
     QStringList additionalInteractorsAbleToHandle(const QString viewType, const QString dataType) const;
-
 
 protected:
      medViewFactory();
@@ -144,8 +140,8 @@ private:
 template <typename T>
 T* medViewFactory::createView(QString identifier, QObject *parent)
 {
-    medAbstractView* view = NULL;
-    viewCreator c = NULL;
+    medAbstractView* view = nullptr;
+    viewCreator c = nullptr;
     c = this->getViewCreator(identifier);
     if(c)
         view = (c)(parent);
@@ -161,8 +157,8 @@ template <typename T>
 T* medViewFactory::createNavigator(QString identifier, medAbstractView *parent)
 {
 
-    medAbstractViewNavigator* navigator = NULL;
-    navigatorCreator c = NULL;
+    medAbstractViewNavigator* navigator = nullptr;
+    navigatorCreator c = nullptr;
     c = this->getNavigatorCreator(identifier);
     if(c)
         navigator = (c)(parent);
@@ -177,8 +173,8 @@ T* medViewFactory::createNavigator(QString identifier, medAbstractView *parent)
 template <typename T>
 T*  medViewFactory::createInteractor(QString identifier, medAbstractView *parent)
 {
-    medAbstractViewInteractor* interactor = NULL;
-    interactorCreator c = NULL;
+    medAbstractViewInteractor* interactor = nullptr;
+    interactorCreator c = nullptr;
     c = this->getInteractorCreator(identifier);
     if(c)
         interactor = (c)(parent);

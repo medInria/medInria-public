@@ -1,8 +1,9 @@
+#pragma once
 /*=========================================================================
 
  medInria
 
- Copyright (c) INRIA 2013 - 2018. All rights reserved.
+ Copyright (c) INRIA 2013 - 2020. All rights reserved.
  See LICENSE.txt for details.
 
   This software is distributed WITHOUT ANY WARRANTY; without even
@@ -10,8 +11,6 @@
   PURPOSE.
 
 =========================================================================*/
-
-#pragma once
 
 #include <QtCore/QObject>
 #include <QtCore/QHash>
@@ -44,7 +43,6 @@ public slots:
 protected:
     medParameterPoolManagerL();
 
-protected:
     static medParameterPoolManagerL *s_instance;
 
 private:

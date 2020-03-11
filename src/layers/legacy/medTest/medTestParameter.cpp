@@ -14,7 +14,7 @@ medTestParameter::medTestParameter(QString name):
     medAbstractParameterL(name),
     d(new medTestParameterPrivate)
 {
-    d->widget = NULL;
+    d->widget = nullptr;
 }
 
 medTestParameter::~medTestParameter()
@@ -37,5 +37,5 @@ QWidget* medTestParameter::getWidget()
 void medTestParameter::removeInternWidget()
 {
     this->removeFromInternWidgets(d->widget);
-    d->widget = NULL;
+    d->widget = nullptr;
 }

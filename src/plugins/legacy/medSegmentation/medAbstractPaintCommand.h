@@ -1,8 +1,9 @@
+#pragma once
 /*=========================================================================
 
  medInria
 
- Copyright (c) INRIA 2013 - 2018. All rights reserved.
+ Copyright (c) INRIA 2013 - 2020. All rights reserved.
  See LICENSE.txt for details.
 
   This software is distributed WITHOUT ANY WARRANTY; without even
@@ -10,8 +11,6 @@
   PURPOSE.
 
 =========================================================================*/
-
-#pragma once
 
 #include <QUndoCommand>
 #include <QtCore>
@@ -34,7 +33,6 @@ class medAbstractImageView;
 class medAbstractData;
 class medAnnotationData;
 class medAbstractImageData;
-
 
 typedef itk::Image<unsigned char, 3> MaskType;
 
@@ -63,13 +61,10 @@ protected:
     QHash<MaskType*, LabelMapType::Pointer> labelMaps;
 };
 
-
-
 struct medPaintCommandOptions
 {
     medAbstractImageView *view;
     medAbstractData* data;
-    //medAbstractData *maskData;
     medAnnotationData *maskAnnotationData;
     MaskType::Pointer itkMask;
     QVector<QVector3D> points;
@@ -77,11 +72,10 @@ struct medPaintCommandOptions
     double radius;
 };
 
-
 class MEDVIEWSEGMENTATIONPLUGIN_EXPORT medAbstractPaintCommand : public QUndoCommand
 {
 public:
-    medAbstractPaintCommand(medPaintCommandOptions *options, QUndoCommand *parent = 0);
+    medAbstractPaintCommand(medPaintCommandOptions *options, QUndoCommand *parent = nullptr);
     virtual ~medAbstractPaintCommand();
 
     virtual void undo() = 0;
