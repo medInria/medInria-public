@@ -164,25 +164,19 @@ void itkDCMTKDataImageReaderPrivate::threadDone(itk::DCMTKImageIO::Pointer io)
 
 void itkDCMTKDataImageReaderPrivate::initialiseStatic()
 {
-    if ( ! mutex)
-    {
+    if (!mutex) {
         QMutex * m = new QMutex();
-        if ( ! mutex.testAndSetOrdered(nullptr, m))
-        {
+        if (!mutex.testAndSetOrdered(NULL, m))
             delete m;
-        }
     }
 
     QMutexLocker lock(mutex);
 
     if (!ioThreads)
-    {
         ioThreads = new QList<QThread*>();
-    }
+
     if (!ioPointers)
-    {
         ioPointers = new QList<itk::DCMTKImageIO::Pointer>();
-    }
 }
 
 
