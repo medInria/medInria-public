@@ -34,36 +34,41 @@ namespace itk
   }
 
   
-  void MultiThreadedImageIOBase::SetFileNames (FileNameVectorType filenames)
+  void MultiThreadedImageIOBase::SetFileNames(FileNameVectorType filenames)
   {
-    unsigned int fileCount = filenames.size();
-    if( fileCount ) {
-      
-      this->SetFileName ( filenames[0].c_str() ); // tells the reader not to exit
-      
-      if( fileCount==1 ) { // special case when only one file is set
-	// it can be a directory - we scan it for files
-	
-	if( itksys::SystemTools::FileIsDirectory ( filenames[0].c_str() ) ) {
-	  
-	  m_FileNames.clear();
-	  itksys::Directory directory;
-	  directory.Load( filenames[0].c_str() );
-	  for( unsigned long i=0; i<directory.GetNumberOfFiles(); i++ )
-	  {
-	    std::string name = directory.GetPath();
-	    name += directory.GetFile (i);
-	    if( this->CanReadFile ( name.c_str() ) ) {
-	      m_FileNames.push_back ( name );
-	    }
-	  }
-	}
-	else
-	  m_FileNames = filenames;
+      unsigned int fileCount = filenames.size();
+      if (fileCount)
+      {
+          this->SetFileName(filenames[0].c_str()); // tells the reader not to exit
+          if (fileCount == 1)
+          { 
+              // special case when only one file is set
+              // it can be a directory - we scan it for files
+              if (itksys::SystemTools::FileIsDirectory(filenames[0].c_str()))
+              {
+                  m_FileNames.clear();
+                  itksys::Directory directory;
+                  directory.Load(filenames[0].c_str());
+                  for (unsigned long i = 0; i < directory.GetNumberOfFiles(); i++)
+                  {
+                      std::string name = directory.GetPath();
+                      name += directory.GetFile(i);
+                      if (this->CanReadFile(name.c_str()))
+                      {
+                          m_FileNames.push_back(name);
+                      }
+                  }
+              }
+              else
+              {
+                  m_FileNames = filenames;
+              }
+          }
+          else
+          {
+              m_FileNames = filenames;
+          }              
       }
-      else
-	m_FileNames = filenames;
-    }
   }
 
   

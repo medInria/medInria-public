@@ -190,9 +190,9 @@ void medAbstractDatabaseImporter::importFile ( void )
     bool atLeastOneImportSucceeded = false;
     bool atLeastOneImportError = false;
 
-    foreach ( QString file, fileList )
+    for( QString file: fileList )
     {
-        if ( d->isCancelled ) // check if user cancelled the process
+        if ( d->isCancelled ) // check if user canceled the process
             break;
 
         emit progress ( this, ( ( qreal ) currentFileNumber/ ( qreal ) fileList.count() ) * 50.0 ); //TODO: reading and filtering represents 50% of the importing process?
@@ -720,7 +720,8 @@ dtkSmartPointer<dtkAbstractDataReader> medAbstractDatabaseImporter::getSuitableR
         dataReader = medAbstractDataFactory::instance()->readerSmartPointer(readers[i]);
         dataReader->enableDeferredDeletion(false);
 
-        if (dataReader->canRead(filename)) {
+        if (dataReader->canRead(filename))
+        {
             return dataReader;
         }
     }
