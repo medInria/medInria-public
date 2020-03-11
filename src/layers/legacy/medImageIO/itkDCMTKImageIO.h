@@ -74,12 +74,12 @@ public:
 
     static double MAXIMUM_GAP;
 
-    bool CanReadFile(const char*);
-    void ReadImageInformation();
+    bool CanReadFile(const char*)  override;
+    void ReadImageInformation()    override;
 
-    bool CanWriteFile(const char*);
-    void WriteImageInformation();
-    void Write(const void* buffer);
+    bool CanWriteFile(const char*) override;
+    void WriteImageInformation()   override;
+    void Write(const void* buffer) override;
 
     // DICOM related stuff
     std::string GetPatientName() const;
