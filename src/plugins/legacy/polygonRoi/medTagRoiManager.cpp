@@ -10,46 +10,39 @@
   PURPOSE.
 
 =========================================================================*/
-#include "vtkContourOverlayRepresentation.h"
+#include <medTagRoiManager.h>
 
-#include <medRoiManager.h>
-#include <polygonRoiToolBox.h>
-#include <vtkContourRepresentation.h>
-
-#include <QTreeWidget>
-#include <medVtkViewBackend.h>
-#include <medToolBox.h>
-#include <vtkPolyData.h>
-#include <vtkPolyLine.h>
-#include <vtkParametricSpline.h>
-#include <polygonEventFilter.h>
-#include <medIntParameterL.h>
-#include <vtkRenderWindowInteractor.h>
-#include <vtkRenderer.h>
-#include <vtkAppendPolyData.h>
-#include <medUtilitiesITK.h>
-#include <itkImageBase.h>
-#include <vtkPolyDataToImageStencil.h>
-#include <vtkImageStencil.h>
-#include <vtkImageData.h>
-#include <vtkPointData.h>
-#include <itkVTKImageToImageFilter.h>
-#include <vtkSphereSource.h>
-#include <itkImageFileWriter.h>
-#include <vtkXMLPolyDataWriter.h>
-#include <vtkXMLImageDataWriter.h>
-#include <vtkMatrix4x4.h>
+// medInria
 #include <medAbstractDataFactory.h>
-#include <medUtilities.h>
+#include <medTagContours.h>
 #include <medDataManager.h>
+#include <medIntParameterL.h>
+#include <medUtilities.h>
+#include <polygonEventFilter.h>
+#include <polygonRoiToolBox.h>
+#include <medVtkViewBackend.h>
+#include <medAbstractImageData.h>
+#include <vtkContourOverlayRepresentation.h>
 
-class medLabelManagerPrivate
+// vtk
+#include <vtkActor.h>
+#include <vtkAppendPolyData.h>
+#include <vtkMetaDataSet.h>
+#include <vtkMetaSurfaceMesh.h>
+#include <vtkParametricSpline.h>
+#include <vtkPolyData.h>
+#include <vtkPolyDataMapper.h>
+#include <vtkPolyLine.h>
+#include <vtkProperty.h>
+#include <vtkPointData.h>
+
+class medTagRoiManagerPrivate
 {
 public:
-    medLabelManagerPrivate(){}
-    medLabelManagerPrivate(medAbstractView *view, polygonEventFilter *eventCursor, QColor color);
-    ~medLabelManagerPrivate();
-
+    medTagRoiManagerPrivate(){}
+    medTagRoiManagerPrivate(medAbstractView *view, polygonEventFilter *eventCursor, QColor color);
+    ~medTagRoiManagerPrivate();
+    void clearRois();
     QList<polygonRoi*> rois;
     int orientation;
     int sliceOrientation;
@@ -59,7 +52,7 @@ public:
     bool enableInterpolation;
 };
 
-medLabelManagerPrivate::medLabelManagerPrivate(medAbstractView *view, polygonEventFilter *eventCursor, QColor color)
+medTagRoiManagerPrivate::medTagRoiManagerPrivate(medAbstractView *view, polygonEventFilter *eventCursor, QColor color)
     :eventCursor(eventCursor), enableInterpolation(true)
 {
 
@@ -74,7 +67,7 @@ medLabelManagerPrivate::medLabelManagerPrivate(medAbstractView *view, polygonEve
     rois.append(roi);
 }
 
-medLabelManagerPrivate::~medLabelManagerPrivate()
+void medTagRoiManagerPrivate::clearRois()
 {
     for (polygonRoi *roi: rois)
     {
@@ -83,44 +76,50 @@ medLabelManagerPrivate::~medLabelManagerPrivate()
     rois.clear();
 }
 
-
-medLabelManager::medLabelManager(medAbstractView *view, polygonEventFilter *eventCursor, QColor color):
-    d(new medLabelManagerPrivate(view, eventCursor, color))
+medTagRoiManagerPrivate::~medTagRoiManagerPrivate()
 {
-    connectRois();
-    manageTick();
+    clearRois();
 }
 
-medLabelManager::~medLabelManager()
+
+medTagRoiManager::medTagRoiManager(medAbstractView *view, polygonEventFilter *eventCursor, QColor color):
+    d(new medTagRoiManagerPrivate(view, eventCursor, color))
+{
+    connectRois();
+    //manageTick();
+}
+
+medTagRoiManager::~medTagRoiManager()
 {
     delete d;
 }
 
-void medLabelManager::appendRoi()
+polygonRoi* medTagRoiManager::appendRoi()
 {
     vtkImageView2D *view2d = static_cast<medVtkViewBackend*>(d->view->backend())->view2D;
     polygonRoi *roi = new polygonRoi(view2d, d->color);
     d->rois.append(roi);
-    manageTick();
+    //manageTick();
     connectRois();
+    return roi;
 }
 
-void medLabelManager::appendRoi(polygonRoi *roi)
+void medTagRoiManager::appendRoi(polygonRoi *roi)
 {
     d->rois.append(roi);
 }
 
-QColor medLabelManager::getColor()
+QColor medTagRoiManager::getColor()
 {
     return d->color;
 }
 
-QList<polygonRoi *> medLabelManager::getRois()
+QList<polygonRoi *> medTagRoiManager::getRois()
 {
     return d->rois;
 }
 
-void medLabelManager::setContourEnabled(bool state)
+void medTagRoiManager::setContourEnabled(bool state)
 {
     for (polygonRoi *roi : d->rois)
     {
@@ -129,14 +128,38 @@ void medLabelManager::setContourEnabled(bool state)
     }
 }
 
-void medLabelManager::setEnableInterpolation(bool state)
+void medTagRoiManager::select(bool state)
+{
+    polygonRoi *roi = existingRoiInSlice();
+    if (roi)
+    {
+        if (state)
+            roi->select();
+        else
+            roi->unselect();
+    }
+}
+
+void medTagRoiManager::loadContours( QVector<medContourNodes> contours)
+{
+    d->clearRois();
+    for (medContourNodes nodes : contours)
+    {
+        polygonRoi *roi = appendRoi();
+        roi->setIdSlice(nodes.getSlice());
+        roi->setOrientation(nodes.getOrientation());
+        roi->loadNodes(nodes.getNodes());
+    }
+}
+
+void medTagRoiManager::setEnableInterpolation(bool state)
 {
     d->enableInterpolation = state;
     if (state)
         interpolateIfNeeded();
 }
 
-polygonRoi *medLabelManager::roiOpenInSlice()
+polygonRoi *medTagRoiManager::roiOpenInSlice()
 {
     polygonRoi *roi = existingRoiInSlice();
     if (roi && roi->getContour()->GetContourRepresentation()->GetClosedLoop()==false)
@@ -146,7 +169,7 @@ polygonRoi *medLabelManager::roiOpenInSlice()
     return nullptr;
 }
 
-bool medLabelManager::roiClosedInSlice()
+bool medTagRoiManager::roiClosedInSlice()
 {
     polygonRoi *roi = existingRoiInSlice();
     if (roi)
@@ -156,16 +179,14 @@ bool medLabelManager::roiClosedInSlice()
     return false;
 }
 
-bool medLabelManager::isSameSliceOrientation()
+bool medTagRoiManager::isSameSliceOrientation()
 {
     vtkImageView2D *view2d = static_cast<medVtkViewBackend*>(d->view->backend())->view2D;
     return (d->sliceOrientation==view2d->GetSliceOrientation());
 }
 
-void medLabelManager::removeAllTick()
+void medTagRoiManager::removeAllTick()
 {
-    vtkImageView2D *view2d = static_cast<medVtkViewBackend*>(d->view->backend())->view2D;
-
     medIntParameterL *slicingParameter = nullptr;
     foreach (medAbstractInteractor *interactor, qobject_cast<medAbstractLayeredView*>(d->view)->layerInteractors(0))
     {
@@ -191,7 +212,7 @@ void medLabelManager::removeAllTick()
 
 }
 
-void medLabelManager::initializeMaskData( medAbstractData * imageData, medAbstractData * maskData )
+void medTagRoiManager::initializeMaskData( medAbstractData * imageData, medAbstractData * maskData )
 {
     UChar3ImageType::Pointer mask = UChar3ImageType::New();
     Q_ASSERT(mask->GetImageDimension() == 3);
@@ -287,7 +308,58 @@ void medLabelManager::initializeMaskData( medAbstractData * imageData, medAbstra
     maskData->setData((QObject*)(mask.GetPointer()));
 }
 
-void medLabelManager::createMaskWithLabel(int label)
+int medTagRoiManager::numberOfMasterRois()
+{
+    int numberOfMaster = 0;
+    for (polygonRoi *roi : d->rois)
+    {
+        if ( roi->isMasterRoi())
+            numberOfMaster++;
+    }
+    return numberOfMaster;
+}
+
+vtkSmartPointer<vtkPolyData> medTagRoiManager::getContoursAsPolyData(int label)
+{
+    vtkSmartPointer<vtkAppendPolyData> append = vtkSmartPointer<vtkAppendPolyData>::New();
+    append->SetUserManagedInputs(true);
+    append->SetNumberOfInputs(d->rois.size());
+    int num = 0;
+    for (polygonRoi *roi : d->rois)
+    {
+        vtkSmartPointer<vtkIdTypeArray> array = vtkSmartPointer<vtkIdTypeArray>::New();
+        array->SetName("Labels");
+        array->SetNumberOfComponents(1);
+        vtkSmartPointer<vtkPolyData> pd = roi->getPolyData();
+        array->SetNumberOfTuples(pd->GetNumberOfPoints());
+        array->Fill(label);
+        pd->GetPointData()->AddArray(array);
+        append->SetInputDataByNumber(num, pd);
+        num++;
+    }
+    append->Update();
+    return append->GetOutput();
+}
+
+QVector<medContourNodes> medTagRoiManager::getContoursAsNodes()
+{
+    QVector<medContourNodes> contours;
+    for (polygonRoi *roi : d->rois)
+    {
+        if ( roi->isMasterRoi())
+        {
+            contours.push_back(roi->getContourAsNodes());
+        }
+    }
+    return contours;
+}
+
+void medTagRoiManager::createContourWithLabel(int label)
+{
+
+}
+
+void medTagRoiManager::createMaskWithLabel(int label)
 {
     vtkImageView2D *view2d = static_cast<medVtkViewBackend*>(d->view->backend())->view2D;
     medAbstractImageView *v = qobject_cast<medAbstractImageView*>(d->view);
@@ -451,60 +523,29 @@ void medLabelManager::createMaskWithLabel(int label)
             }
         }
     }
-    QString desc = QString("contour with label ") + QString::number(label);
+    QString desc = QString("mask with label ") + QString::number(label);
     medUtilities::setDerivedMetaData(output, inputData, desc);
     medDataManager::instance()->importData(output, false);
     return;
 }
 
-void medLabelManager::SetMasterRoi(bool state)
+void medTagRoiManager::SetMasterRoi(bool state)
 {
     polygonRoi *roi = existingRoiInSlice();
     roi->setMasterRoi(true);
 }
 
-void medLabelManager::manageTick()
+void medTagRoiManager::manageTick(medSliderL *slider)
 {
-    vtkImageView2D *view2d = static_cast<medVtkViewBackend*>(d->view->backend())->view2D;
-
-    medIntParameterL *slicingParameter = nullptr;
-    for( auto interactor : qobject_cast<medAbstractLayeredView*>(d->view)->layerInteractors(0))
+    for (polygonRoi *roi : d->rois)
     {
-        if ((interactor->identifier() == "medVtkViewItkDataImageInteractor") ||
-                (interactor->identifier() == "medVtkViewItkDataImage4DInteractor"))
-        {
-            for (auto parameter : interactor->linkableParameters())
-            {
-                if (parameter->name() == "Slicing")
-                {
-                    slicingParameter = qobject_cast<medIntParameterL*>(parameter);
-                    break;
-                }
-            }
-            break;
-        }
+        roi->manageTick(slider);
     }
-    if ( slicingParameter )
-    {
-        slicingParameter->getSlider()->removeAllTicks();
-        for (polygonRoi *roi : d->rois)
-        {
-            if (view2d->GetViewOrientation() != roi->getOrientation())
-            {
-                slicingParameter->getSlider()->removeTick(roi->getIdSlice());
-            }
-            else
-            {
-                slicingParameter->getSlider()->addTick(roi->getIdSlice());
-            }
-            slicingParameter->getSlider()->update();
-        }
-        d->view->render();
-    }
+    d->view->render();
     return;
 }
 
-polygonRoi *medLabelManager::existingRoiInSlice()
+polygonRoi *medTagRoiManager::existingRoiInSlice()
 {
     vtkImageView2D *view2d = static_cast<medVtkViewBackend*>(d->view->backend())->view2D;
     int slice = view2d->GetSlice();
@@ -521,28 +562,29 @@ polygonRoi *medLabelManager::existingRoiInSlice()
 
 }
 
-bool medLabelManager::isSameOrientation(int orientation)
+bool medTagRoiManager::isSameOrientation(int orientation)
 {
     return (d->orientation==orientation);
 }
 
-bool medLabelManager::sortRois(const polygonRoi *p1, const polygonRoi *p2)
+bool medTagRoiManager::sortRois(const polygonRoi *p1, const polygonRoi *p2)
 {
    return p1->getIdSlice() < p2->getIdSlice();
 }
 
-void medLabelManager::connectRois()
+void medTagRoiManager::connectRois()
 {
     for (polygonRoi *roi: d->rois)
     {
         connect(roi, SIGNAL(updateCursorState(CURSORSTATE)), d->eventCursor, SLOT(setCursorState(CURSORSTATE)), Qt::UniqueConnection);
         connect(roi, SIGNAL(interpolate()), this, SLOT(interpolateIfNeeded()), Qt::UniqueConnection);
+        connect(roi, SIGNAL(interpolate()), d->eventCursor, SLOT(manageTick()), Qt::UniqueConnection);
         connect(roi, SIGNAL(toggleRepulsorButton(bool)), this, SIGNAL(toggleRepulsorButton(bool)), Qt::UniqueConnection);
         connect(roi, SIGNAL(updateRoiInAlternativeViews()), this, SIGNAL(updateRoisInAlternativeViews()));
     }
 }
 
-void medLabelManager::manageVisibility()
+void medTagRoiManager::manageVisibility()
 {
     for (polygonRoi *roi : d->rois)
     {
@@ -551,7 +593,7 @@ void medLabelManager::manageVisibility()
     d->view->render();
 }
 
-void medLabelManager::addRoisInAlternativeViews(medAbstractImageView *v)
+void medTagRoiManager::addRoisInAlternativeViews(medAbstractImageView *v)
 {
     for (polygonRoi *roi : d->rois)
     {
@@ -560,7 +602,7 @@ void medLabelManager::addRoisInAlternativeViews(medAbstractImageView *v)
     v->render();
 }
 
-bool medLabelManager::mouseIsCloseFromContour(double mousePos[2])
+bool medTagRoiManager::mouseIsCloseFromContour(double mousePos[2])
 {
     polygonRoi *roi = existingRoiInSlice();
     if (roi)
@@ -578,7 +620,7 @@ bool medLabelManager::mouseIsCloseFromContour(double mousePos[2])
     return false;
 }
 
-double medLabelManager::getMinimumDistanceFromNodesToEventPosition(double eventPos[2])
+double medTagRoiManager::getMinimumDistanceFromNodesToEventPosition(double eventPos[2])
 {
     polygonRoi *roi = existingRoiInSlice();
     double minDist = DBL_MAX;
@@ -598,7 +640,7 @@ double medLabelManager::getMinimumDistanceFromNodesToEventPosition(double eventP
 
 }
 
-double medLabelManager::getMinimumDistanceFromIntermediateNodesToEventPosition(double eventPos[2])
+double medTagRoiManager::getMinimumDistanceFromIntermediateNodesToEventPosition(double eventPos[2])
 {
     polygonRoi *roi = existingRoiInSlice();
     double minDist = DBL_MAX;
@@ -627,7 +669,7 @@ double medLabelManager::getMinimumDistanceFromIntermediateNodesToEventPosition(d
     return minDist;
 }
 
-void medLabelManager::deleteNode(double X, double Y)
+void medTagRoiManager::deleteNode(double X, double Y)
 {
     polygonRoi *roi = existingRoiInSlice();
     double minDist = DBL_MAX;
@@ -666,7 +708,7 @@ void medLabelManager::deleteNode(double X, double Y)
     d->view->render();
 }
 
-void medLabelManager::deleteContour()
+void medTagRoiManager::deleteContour()
 {
     polygonRoi *roiToCheck = existingRoiInSlice();
     if (roiToCheck)
@@ -690,12 +732,12 @@ void medLabelManager::deleteContour()
     d->view->render();
 }
 
-double medLabelManager::getDistance(double mousePos[2], double contourPos[2])
+double medTagRoiManager::getDistance(double mousePos[2], double contourPos[2])
 {
     return sqrt(pow(mousePos[0] - contourPos[0], 2) + pow(mousePos[1] - contourPos[1], 2));
 }
 
-void medLabelManager::interpolateIfNeeded()
+void medTagRoiManager::interpolateIfNeeded()
 {
     if (!d->enableInterpolation)
         return;
@@ -704,7 +746,6 @@ void medLabelManager::interpolateIfNeeded()
         return;
 
     removeAllTick();
-
     // TODO : Remove. Find a way to ensure all contour are closed (add pixel tolerance or force close on sliceChangedEvent)
     for (polygonRoi *roi : d->rois)
     {
@@ -731,7 +772,7 @@ void medLabelManager::interpolateIfNeeded()
     }
     if (d->rois.size() >= 2)
     {
-        std::sort(d->rois.begin(), d->rois.end(), medLabelManager::sortRois);
+        std::sort(d->rois.begin(), d->rois.end(), medTagRoiManager::sortRois);
 
         QList<polygonRoi *> listOfRois;
         for (int i=0; i<d->rois.size()-1; i++)
@@ -744,10 +785,10 @@ void medLabelManager::interpolateIfNeeded()
     }
     connectRois();
     manageVisibility();
-    manageTick();
+    //manageTick();
 }
 
-QList<polygonRoi *> medLabelManager::interpolateBetween2Slices(polygonRoi *firstRoi, polygonRoi *secondRoi)
+QList<polygonRoi *> medTagRoiManager::interpolateBetween2Slices(polygonRoi *firstRoi, polygonRoi *secondRoi)
 {
     QList<polygonRoi *> outputRois;
     vtkContourRepresentation* contour;
@@ -816,7 +857,7 @@ QList<polygonRoi *> medLabelManager::interpolateBetween2Slices(polygonRoi *first
     return outputRois;
 }
 
-QList<vtkPolyData* > medLabelManager::generateIntermediateCurves(vtkSmartPointer<vtkPolyData> curve1, vtkSmartPointer<vtkPolyData> curve2, int nb)
+QList<vtkPolyData* > medTagRoiManager::generateIntermediateCurves(vtkSmartPointer<vtkPolyData> curve1, vtkSmartPointer<vtkPolyData> curve2, int nb)
 {
     int max = curve2->GetNumberOfPoints();
 
@@ -883,7 +924,7 @@ QList<vtkPolyData* > medLabelManager::generateIntermediateCurves(vtkSmartPointer
     return list;
 }
 
-void medLabelManager::reorderPolygon(vtkPolyData *poly)
+void medTagRoiManager::reorderPolygon(vtkPolyData *poly)
 {
     vtkImageView2D *view2d = static_cast<medVtkViewBackend*>(d->view->backend())->view2D;
 
@@ -943,7 +984,7 @@ void medLabelManager::reorderPolygon(vtkPolyData *poly)
     poly->SetPoints(reorderedPoints);
 }
 
-void medLabelManager::resampleCurve(vtkPolyData *poly,int nbPoints)
+void medTagRoiManager::resampleCurve(vtkPolyData *poly,int nbPoints)
 {
     vtkSmartPointer<vtkParametricSpline> spline =vtkSmartPointer<vtkParametricSpline>::New();
     poly->GetPoints()->InsertNextPoint(poly->GetPoints()->GetPoint(0));

@@ -12,7 +12,9 @@
 =========================================================================*/
 #include "polygonRoiPlugin.h"
 #include "polygonRoiToolBox.h"
-
+#include <medContours.h>
+#include <medContoursReader.h>
+#include <medContoursWriters.h>
 
 polygonRoiPlugin::polygonRoiPlugin(QObject *parent) : medPluginLegacy(parent)
 {
@@ -24,11 +26,19 @@ bool polygonRoiPlugin::initialize()
      {
          qDebug() << "Unable to register polygonRoiToolBox";
      }
-//     if(!medRoiManagementToolBox::registered())
-//     {
-//         qDebug() << "Unable to register medRoiManagementToolBox";
-//     }
-    return true;
+     if (!medContours::registered())
+     {
+         qDebug() << "Unable to register medContours type";
+     }
+     if (!medContoursReader::registered())
+     {
+         qDebug() << "Unable to register medContoursReader type";
+     }
+     if (!medContoursWriter::registered())
+     {
+         qDebug() << "Unable to register medContoursWriter type";
+     }
+     return true;
 }
 
 QString polygonRoiPlugin::name() const
@@ -51,5 +61,5 @@ QString polygonRoiPlugin::version() const
 
 QStringList polygonRoiPlugin::types() const
 {
-    return QStringList() << "polygonRoi";
+    return QStringList() << "polygonRoi" << "medContours";
 }

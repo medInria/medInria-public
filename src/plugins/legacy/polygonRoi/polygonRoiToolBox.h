@@ -12,30 +12,16 @@
 =========================================================================*/
 #pragma once
 
-#include <dtkCoreSupport/dtkSmartPointer.h>
-
-#include <itkImage.h>
-
-#include <medAbstractRoi.h>
+// medInria
 #include <medAbstractSelectableToolBox.h>
-#include <medRoiManager.h>
+#include <medTagRoiManager.h>
 #include <medTableWidgetChooser.h>
-
-#include <polygonRoi.h>
 #include <polygonRoiPluginExport.h>
 
-#include <medImageMaskAnnotationData.h>
-#include <vtkInriaInteractorStylePolygonRepulsor.h>
-#include <vtkPolygon.h>
-#include <vtkRenderWindowInteractor.h>
 
-class medAbstractData;
-class medAbstractImageView;
-class contourWidgetListener;
-class medAbstractImageData;
 class polygonEventFilter;
 
-typedef itk::Image<unsigned char, 3> UChar3ImageType;
+//typedef itk::Image<unsigned char, 3> UChar3ImageType;
 
 /*! \brief Toolbox to create, use, interpolate Polygon ROI.
  *
@@ -78,7 +64,6 @@ public slots:
     void onLayerClosed(uint index);
     void clickClosePolygon(bool state);
     void activateRepulsor(bool state);
-    void generateAndSaveBinaryImage();
     void interpolateCurve(bool state);
     void updateTableWidgetView(unsigned int row, unsigned int col);
     void updateTableWidgetItems();
@@ -91,8 +76,9 @@ public slots:
 private slots:
 
     void disableButtons();
-    void exportContours();
-//    void importContours();
+    void saveContours();
+    void saveBinaryImage();
+
 protected:
 
     void binaryImageFromPolygon(QList<QPair<vtkPolygon*,PlaneIndexSlicePair> > polys);
@@ -105,13 +91,13 @@ protected:
 private:
 
     polygonEventFilter *viewEventFilter;
-    medAbstractImageView *currentView;
+    QPointer<medAbstractImageView> currentView;
+
     QPushButton *addNewCurve;
-    QPushButton *generateBinaryImage_button;
+    QPushButton *saveBinaryMaskButton;
     QPushButton *repulsorTool;
     QCheckBox *interpolate;
     medTableWidgetChooser* tableViewChooser;
-    QPushButton *exportContourButton;
-    QPushButton *importContourButton;
+    QPushButton *saveContourButton;
 
 };
