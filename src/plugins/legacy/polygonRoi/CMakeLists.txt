@@ -28,13 +28,16 @@ set(CMAKE_INCLUDE_CURRENT_DIR TRUE)
 ## Resolve dependencies
 ## #############################################################################
 
-find_package(dtk REQUIRED)
+find_package(dtk REQUIRED
+    dtkCore
+    dtkCoreSupport
+    )
 include_directories(${dtk_INCLUDE_DIRS})
 
 find_package(ITK REQUIRED COMPONENTS ITKCommon ITKImageLabel ITKVtkGlue ITKIOImageBase ITKIOMeta)
 include(${ITK_USE_FILE})
 
-find_package(VTK REQUIRED COMPONENTS vtkCommonCore vtkInteractionWidgets vtkImagingStencil)
+find_package(VTK REQUIRED COMPONENTS vtkCommonCore vtkInteractionWidgets vtkImagingStencil vtkIOLegacy)
 include(${VTK_USE_FILE})
 
 find_package(Qt5 REQUIRED COMPONENTS Gui)
@@ -45,6 +48,10 @@ find_package(Qt5 REQUIRED COMPONENTS Gui)
 
 list_source_files(${TARGET_NAME}
   ${CMAKE_CURRENT_SOURCE_DIR}
+  data
+  readers
+  writers
+  repulsor
   )
 
 ## #############################################################################
@@ -57,6 +64,7 @@ list_header_directories_to_include(${TARGET_NAME}
 
 include_directories(${${TARGET_NAME}_INCLUDE_DIRS}
   ${MEDINRIA_INCLUDE_DIRS}
+  ${DATA_HEADERS}
   )
 
 ## #############################################################################
@@ -74,6 +82,8 @@ add_library(${TARGET_NAME} SHARED
 
 target_link_libraries(${TARGET_NAME}
   ${QT_LIBRARIES}
+  dtkCore
+  dtkCoreSupport
   medCore
   medRegistration
   medVtkInria

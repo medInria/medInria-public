@@ -12,56 +12,20 @@
 =========================================================================*/
 #include "polygonRoiToolBox.h"
 
-#include <itkBinaryContourImageFilter.h>
-#include <itkCastImageFilter.h>
-#include <itkImageRegionIterator.h>
-#include <itkMinimumMaximumImageCalculator.h>
-#include <itkSliceBySliceImageFilter.h>
-#include <vtkPolyDataMapper.h>
-
-#include <medAbstractDataFactory.h>
-#include <medAbstractImageData.h>
-#include <medAbstractImageView.h>
 #include <medAbstractProcessLegacy.h>
-#include <medAbstractRoi.h>
-#include <medDataManager.h>
+#include <medContours.h>
 #include <medPluginManager.h>
 #include <medTabbedViewContainers.h>
-#include <medTransform.h>
+#include <medTableWidgetChooser.h>
 #include <medToolBox.h>
 #include <medToolBoxFactory.h>
 #include <medToolBoxHeader.h>
 #include <medUtilities.h>
-#include <medVtkViewBackend.h>
-#include <vtkCleanPolyData.h>
-#include <vtkPointData.h>
-
 #include <medViewContainer.h>
 #include <medViewContainerManager.h>
 #include <medViewContainerSplitter.h>
 #include <medViewFactory.h>
 #include <polygonEventFilter.h>
-#include <vtkActor.h>
-#include <vtkAppendPolyData.h>
-#include <vtkCellArray.h>
-#include <vtkContourRepresentation.h>
-#include <vtkContourWidget.h>
-#include <vtkFillHolesFilter.h>
-#include <vtkImageActor.h>
-#include <vtkMatrix4x4.h>
-#include <vtkMetaSurfaceMesh.h>
-#include <vtkParametricSpline.h>
-#include <vtkPolyData.h>
-#include <vtkXMLPolyDataWriter.h>
-#include <vtkPolyLine.h>
-#include <vtkPolygon.h>
-#include <vtkProperty.h>
-#include <vtkRenderer.h>
-#include <vtkSmartPointer.h>
-#include <medTableWidgetChooser.h>
-#include <vtkWidgetEvent.h>
-#include <vtkContourWidget.h>
-#include <medIntParameterL.h>
 
 const char *polygonRoiToolBox::generateBinaryImageButtonName = "generateBinaryImageButton";
 
@@ -93,11 +57,6 @@ polygonRoiToolBox::polygonRoiToolBox(QWidget *parent ) :
     repulsorTool->setCheckable(true);
     connect(repulsorTool,SIGNAL(clicked(bool)),this,SLOT(activateRepulsor(bool)));
 
-    generateBinaryImage_button = new QPushButton(tr("Save Mask"));
-    generateBinaryImage_button->setToolTip("Import the current mask to the non persistent database");
-    generateBinaryImage_button->setObjectName(generateBinaryImageButtonName);
-    connect(generateBinaryImage_button,SIGNAL(clicked()),this,SLOT(generateAndSaveBinaryImage()));
-
     currentView = nullptr;
 
     QHBoxLayout *ButtonLayout0 = new QHBoxLayout();
@@ -108,7 +67,6 @@ polygonRoiToolBox::polygonRoiToolBox(QWidget *parent ) :
     layout->addLayout( ButtonLayout1 );
     ButtonLayout1->addWidget(interpolate);
     ButtonLayout1->addWidget(repulsorTool);
-    ButtonLayout1->addWidget(generateBinaryImage_button);
 
     tableViewChooser = new medTableWidgetChooser(this, 1, 3, 50);
     // Mandatory : Qt bug ? : Without the lines below, the size of the table View is not as expected
@@ -116,34 +74,39 @@ polygonRoiToolBox::polygonRoiToolBox(QWidget *parent ) :
     tableViewChooser->setFixedHeight(size.height()-1);
     tableViewChooser->setFixedWidth(size.width()-1);
     tableViewChooser->setIconSize(QSize(size.height()-1,size.height()-1));
-
     connect(tableViewChooser, SIGNAL(selected(unsigned int,unsigned int)), this, SLOT(updateTableWidgetView(unsigned int,unsigned int)));
 
-    //layout->addWidget(tableViewChooser);
-
-    exportContourButton = new QPushButton("Export Contour(s)");
-    exportContourButton->setToolTip("Export these contours as an .ctr file loadable only in medInria.");
-    exportContourButton->setMinimumSize(150, 20);
-    exportContourButton->setMaximumSize(150, 20);
-    exportContourButton->setObjectName("exportContourButton");
-    connect(exportContourButton, SIGNAL(clicked()), this, SLOT(exportContours()));
-    importContourButton = new QPushButton("Import Contour(s)");
-    importContourButton->setToolTip("Import contours from an .ctr file.");
-    importContourButton->setMinimumSize(150, 20);
-    importContourButton->setMaximumSize(150, 20);
-    importContourButton->setObjectName("exportContourButton");
-    connect(importContourButton, SIGNAL(clicked()), this, SLOT(importContours()));
-    QVBoxLayout *ButtonLayout3 = new QVBoxLayout();
-    ButtonLayout3->addWidget(exportContourButton);
-    ButtonLayout3->addWidget(importContourButton);
     QHBoxLayout *ButtonLayout2 = new QHBoxLayout();
-    layout->addLayout( ButtonLayout2);
+    layout->addLayout( ButtonLayout2 );
     ButtonLayout2->addWidget(tableViewChooser);
-    ButtonLayout2->addLayout(ButtonLayout3);
+
+    QLabel *saveLabel = new QLabel("Save segmentations as :");
+    QVBoxLayout *ButtonSaveLayout = new QVBoxLayout();
+    saveBinaryMaskButton = new QPushButton(tr("Mask(s)"));
+    saveBinaryMaskButton->setToolTip("Import the current mask to the non persistent database");
+    saveBinaryMaskButton->setObjectName(generateBinaryImageButtonName);
+    connect(saveBinaryMaskButton,SIGNAL(clicked()),this,SLOT(saveBinaryImage()));
+    ButtonSaveLayout->addWidget(saveBinaryMaskButton);
+
+    saveContourButton = new QPushButton("Contour(s)");
+    saveContourButton->setToolTip("Export these contours as an .ctrb file loadable only in medInria.");
+    saveContourButton->setMinimumSize(150, 20);
+    saveContourButton->setMaximumSize(150, 20);
+    saveContourButton->setObjectName("saveContoursButton");
+    connect(saveContourButton, SIGNAL(clicked()), this, SLOT(saveContours()));
+    ButtonSaveLayout->addWidget(saveContourButton);
+
+    QHBoxLayout *ButtonLayout3 = new QHBoxLayout();
+    layout->addLayout( ButtonLayout3);
+    ButtonLayout3->addWidget(saveLabel);
+    ButtonLayout3->addLayout(ButtonSaveLayout);
 
     // How to use
-    QLabel *explanation = new QLabel(tr("Define a ROI: choose 'Closed Polygon' and click on the data set.\n")
-                                     + tr("Remove a landmark: put the cursor on it and right-click.\n")
+    QString underlineStyle = "<br><br><span style=\" text-decoration: underline;\">%1</span>";
+    QLabel *explanation = new QLabel(QString(underlineStyle).arg("Define a Contour :") + " Activate the toolbox, then click on the data set."
+                                     + QString(underlineStyle).arg("Define new Label :") + " Right-click on the image then choose color"
+                                     + QString(underlineStyle).arg("Remove node/contour/label :") + " Put the cursor on contour then right-click and choose menu \"Remove ...\"."
+                                     + QString(underlineStyle).arg("Save segmentation :") + " Put the cursor on contour then right-click and choose menu \"Save ...\"."
                                      );
     explanation->setSizePolicy(QSizePolicy::Ignored, QSizePolicy::Preferred);
     explanation->setWordWrap(true);
@@ -155,7 +118,6 @@ polygonRoiToolBox::polygonRoiToolBox(QWidget *parent ) :
 
 polygonRoiToolBox::~polygonRoiToolBox()
 {
-    qDebug()<<"delete tb";
     delete viewEventFilter;
 }
 
@@ -183,30 +145,48 @@ medAbstractData *polygonRoiToolBox::processOutput()
 
 void polygonRoiToolBox::updateView()
 {
-    qDebug()<<"update View";
     medAbstractView *view = this->getWorkspace()->tabbedViewContainers()->getFirstSelectedContainerView();
+    if (!view)
+        return;
     medAbstractImageView *v = qobject_cast<medAbstractImageView*>(view);
-    if (view)
-    {
-        // Toolbox does not work with meshes or vector images
-        for (unsigned int i=0; i<v->layersCount(); ++i)
-        {
-            medAbstractData *data = v->layerData(i);
-            if(!data || data->identifier().contains("vtkDataMesh")
-                    || data->identifier().contains("itkDataImageVector"))
-            {
-                handleDisplayError(medAbstractProcessLegacy::DIMENSION_3D);
-                return;
-            }
-        }
-        addNewCurve->setEnabled(true);
+    if (!v)
+        return;
 
-        if (currentView != v)
+    if (v->layersCount()==1 && viewEventFilter)
+    {
+        medAbstractData *data = v->layerData(0);
+        if (data->identifier().contains("medContours"))
+            return;
+    }
+
+    for (unsigned int i=0; i<v->layersCount(); ++i)
+    {
+        medAbstractData *data = v->layerData(i);
+        if(!data || data->identifier().contains("vtkDataMesh")
+                                || data->identifier().contains("itkDataImageVector"))
         {
-            currentView = v;
-            if (viewEventFilter)
+            handleDisplayError(medAbstractProcessLegacy::DIMENSION_3D);
+            return;
+        }
+        else
+        {
+            addNewCurve->setEnabled(true);
+
+            if (currentView != v)
             {
-                viewEventFilter->updateView(currentView);
+                currentView = v;
+                if (viewEventFilter)
+                {
+                    viewEventFilter->updateView(currentView);
+                }
+            }
+
+            if (data->identifier().contains("medContours") && viewEventFilter)
+            {
+                viewEventFilter->loadContours(data);
+                addNewCurve->setChecked(true);
+                v->removeLayer(i);
+                addNewCurve->setChecked(true);
             }
 
             updateTableWidgetItems();
@@ -215,8 +195,10 @@ void polygonRoiToolBox::updateView()
             connect(view, SIGNAL(orientationChanged()), this, SLOT(updateTableWidgetItems()), Qt::UniqueConnection);
             connect(view, SIGNAL(orientationChanged()), this, SLOT(manageTick()), Qt::UniqueConnection);
             connect(view, SIGNAL(orientationChanged()), this, SLOT(manageRoisVisibility()), Qt::UniqueConnection);
+
         }
     }
+
 }
 
 void polygonRoiToolBox::onViewClosed()
@@ -250,7 +232,6 @@ void polygonRoiToolBox::onViewClosed()
 
 void polygonRoiToolBox::onLayerClosed(uint index)
 {
-    qDebug()<<"on layer closed : "<<index;
     medAbstractView *view = this->getWorkspace()->tabbedViewContainers()->getFirstSelectedContainerView();
     medAbstractImageView *v = qobject_cast<medAbstractImageView*>(view);
     // We enter here only if onLayerClosed has not been called during a view removal
@@ -276,7 +257,8 @@ void polygonRoiToolBox::clickClosePolygon(bool state)
         return;
     }
 
-    generateBinaryImage_button->setEnabled(state);
+    saveBinaryMaskButton->setEnabled(state);
+    saveContourButton->setEnabled(state);
     enableTableViewChooser(state);
     if (state)
     {
@@ -285,7 +267,7 @@ void polygonRoiToolBox::clickClosePolygon(bool state)
         {
             viewEventFilter = new polygonEventFilter(currentView);
             connect(viewEventFilter, SIGNAL(enableRepulsor(bool)), repulsorTool, SLOT(setEnabled(bool)), Qt::UniqueConnection);
-            connect(viewEventFilter, SIGNAL(enableGenerateMask(bool)), generateBinaryImage_button, SLOT(setEnabled(bool)), Qt::UniqueConnection);
+            connect(viewEventFilter, SIGNAL(enableGenerateMask(bool)), saveBinaryMaskButton, SLOT(setEnabled(bool)), Qt::UniqueConnection);
             connect(viewEventFilter, SIGNAL(enableViewChooser(bool)), this, SLOT(enableTableViewChooser(bool)), Qt::UniqueConnection);
             connect(viewEventFilter, SIGNAL(toggleRepulsorButton(bool)), this, SLOT(activateRepulsor(bool)), Qt::UniqueConnection);
         }
@@ -335,8 +317,6 @@ void polygonRoiToolBox::activateRepulsor(bool state)
 
 void polygonRoiToolBox::resetToolboxBehaviour()
 {
-//    if (!currentView)
-//        return;
     medTabbedViewContainers *containers = this->getWorkspace()->tabbedViewContainers();
     QList<medViewContainer*> containersInTabSelected = containers->containersInTab(containers->currentIndex());
     if (containersInTabSelected.size() != 1)
@@ -533,11 +513,11 @@ void polygonRoiToolBox::interpolateCurve(bool state)
     viewEventFilter->setEnableInterpolation(state);
 }
 
-void polygonRoiToolBox::generateAndSaveBinaryImage()
+void polygonRoiToolBox::saveBinaryImage()
 {
     if (!viewEventFilter)
         return;
-    viewEventFilter->generateMask();
+    viewEventFilter->saveMask();
 }
 
 
@@ -547,15 +527,18 @@ void polygonRoiToolBox::disableButtons()
     addNewCurve->setChecked(false);
     repulsorTool->setEnabled(false);
     repulsorTool->setChecked(false);
-    generateBinaryImage_button->setEnabled(false);
+    saveBinaryMaskButton->setEnabled(false);
+    saveContourButton->setEnabled(false);
     tableViewChooser->setEnabled(false);
 
 }
 
-void polygonRoiToolBox::exportContours()
+void polygonRoiToolBox::saveContours()
 {
-    //if (viewEventFilter)
-        //viewEventFilter->exportContours();
+    if (viewEventFilter)
+    {
+        viewEventFilter->saveAllContours();
+    }
 }
 
 void polygonRoiToolBox::clear()

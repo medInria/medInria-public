@@ -13,18 +13,19 @@
 #pragma once
 
 #include "medAbstractRoi.h"
+#include "medContourNodes.h"
+#include <medAbstractImageView.h>
 #include <medAbstractView.h>
+#include <medImageViewEnum.h>
+#include <medSliderL.h>
 #include <polygonRoiPluginExport.h>
 #include <vtkContourWidget.h>
 #include <vtkImageView2D.h>
-#include <medImageViewEnum.h>
-#include <medAbstractImageView.h>
 #include <vtkPolygon.h>
 
 enum class CURSORSTATE { CS_NONE, CS_MOUSE_EVENT, CS_SLICE_CHANGED, CS_CONTINUE, CS_REPULSOR  };
 
 class polygonRoiPrivate;
-class BezierRoiObserver;
 /**
  * 
  */
@@ -39,7 +40,7 @@ public:
     vtkContourWidget * getContour();
     void createPolydataToAddInViews();
     vtkImageView2D * getView();
-    
+
     virtual void Off();
     virtual void On();
     virtual bool isVisible();
@@ -56,9 +57,15 @@ public:
     void addRoiToAlternativeView(medAbstractImageView *view);
     bool isClosed();
     void setEnabled(bool state);
-    vtkSmartPointer<vtkPolygon> createPolygonFromContour();
+    vtkPolyData *createPolyDataFromContour();
     void manageVisibility();
 
+    vtkProperty *getProperty();
+    vtkPolyData *getPolyData();
+    void loadNodes(QVector<QVector3D> coordinates);
+
+    medContourNodes getContourAsNodes();
+    void manageTick(medSliderL *slider);
 public slots:
     virtual void undo();
     virtual void redo();
@@ -73,6 +80,5 @@ signals:
 private:
     polygonRoiPrivate *d;
     friend class PolygonRoiObserver;
-    void setColor(double[]);
     virtual void setRightColor();
 };

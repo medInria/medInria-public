@@ -12,13 +12,16 @@
 =========================================================================*/
 #pragma once
 
-#include "vtkInriaInteractorStylePolygonRepulsor.h"
+// qt
+#include <QMenu>
 
+// medInria
+#include <medTagContours.h>
+#include <medTagRoiManager.h>
 #include <medViewEventFilter.h>
-#include <medRoiManager.h>
-#include <QSpinBox>
+#include <vtkInriaInteractorStylePolygonRepulsor.h>
+#include <vtkMetaDataSet.h>
 
-#include <qwidgetaction.h>
 
 typedef itk::Image<unsigned char, 3> UChar3ImageType;
 
@@ -40,10 +43,13 @@ public:
     void setEnableInterpolation(bool state);
     void addAlternativeViews(medAbstractImageView *view);
     void activateRepulsor(bool state);
-    void generateMask();
+    void saveMask();
     medAbstractImageView *getView(){return currentView;}
     void clearAlternativeViews();
     bool isContourInSlice();
+    //void exportContours(QFile *file);
+    void saveAllContours();
+    void loadContours(medAbstractData *data);
 
 public slots:
     void addRoisInAlternativeViews();
@@ -53,17 +59,15 @@ public slots:
     void manageTick();
     void manageRoisVisibility();
     void removeView();
+
 private slots:
-    void deletedNode(medLabelManager *manager, double X, double Y);
-    void deletedContour(medLabelManager *manager);
-    void deletedLabel(medLabelManager *manager);
-    void savedMask(medLabelManager *manager);
+    void deleteNode(medTagRoiManager *manager, double X, double Y);
+    void deleteContour(medTagRoiManager *manager);
+    void deleteLabel(medTagRoiManager *manager);
+    void saveMask(medTagRoiManager *manager);
+    void saveContour(medTagRoiManager *manager);
 
 signals:
-    void nodeToDelete(medLabelManager *manager, double X, double Y);
-    void contourToDelete(medLabelManager *manager);
-    void labelToDelete(medLabelManager *manager);
-    void maskToSave(medLabelManager *manager);
     void enableRepulsor(bool state);
     void enableGenerateMask(bool state);
     void enableViewChooser(bool state);
@@ -72,22 +76,24 @@ signals:
 
 private:
     medAbstractImageView *currentView;
+    dtkSmartPointer<medAbstractData> contourOutput;
     CURSORSTATE cursorState;
-    QList<medLabelManager *> managers;
+    QList<medTagRoiManager *> managers;
     QList<QColor> colorList;
-    QSignalMapper signalMapper;
     QList<medAbstractImageView*> alternativeViews;
     bool isRepulsorActivated;
     vtkInriaInteractorStylePolygonRepulsor *interactorStyleRepulsor;
 
     bool leftButtonBehaviour(medAbstractView *view, QMouseEvent *mouseEvent);
+    bool rightButtonBehaviour(medAbstractView *view, QMouseEvent *mouseEvent);
     QList<QColor> getAvailableColors(QList<QColor> colorsToExclude);
     QMenu *updateLabelMenu(QList<QColor> colors);
     QList<QColor> updateColors(QList<QColor> colorsToExclude);
     bool manageRoiWithLabel(QMouseEvent *mouseEvent);
     bool addPointInContourWithLabel(QMouseEvent *mouseEvent);
-    medLabelManager *closestManagerInSlice(double mousePos[]);
+    medTagRoiManager *closestManagerInSlice(double mousePos[]);
     void setToolboxButtonsState(bool state);
-    void addManagerToList(int label);
+    medTagRoiManager *addManagerToList(int label);
     void manageButtonsState();
+    void saveContoursAsMedAbstractData(vtkMetaDataSet *outputDataSet, QVector<medTagContours> contoursData);
 };

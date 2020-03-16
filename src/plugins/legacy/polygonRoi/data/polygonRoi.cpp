@@ -12,29 +12,21 @@
 =========================================================================*/
 #include "polygonRoi.h"
 
-#include <medRoiManager.h>
+#include <medTagRoiManager.h>
 #include <medVtkViewBackend.h>
 
 #include <vtkContourOverlayRepresentation.h>
 #include <vtkContourWidget.h>
 #include <vtkImageView2D.h>
 #include <vtkPolyData.h>
+#include <vtkProperty.h>
 #include <vtkProperty2D.h>
+#include <vtkRenderWindowInteractor.h>
 #include <vtkSmartPointer.h>
 #include <vtkWidgetEventTranslator.h>
-#include <vtkPolygon.h>
-#include <vtkProperty.h>
-#include <vtkRenderWindowInteractor.h>
-#include <vtkCylinderSource.h>
-#include <vtkCleanPolyData.h>
-#include <vtkTransformPolyDataFilter.h>
-#include <vtkTransform.h>
 #include <vtkWidgetEvent.h>
 #include <vtkWidgetCallbackMapper.h>
-
-static double ROI_COLOR[3] = {0, 0, 1.0};
-static double MASTER_ROI_COLOR[3] = {0.0, 1.0, 0.0};
-static double SELECTED_ROI_COLOR[3] = {1.0, 0.533, 0.2};
+#include <QVector3D>
 
 class PolygonRoiObserver : public vtkCommand
 {
@@ -131,7 +123,6 @@ public:
     polygonRoi *copyRoi;
     QList<medAbstractImageView*> alternativeViews;
     QColor roiColor;
-    bool forceOff;
 };
 
 polygonRoi::polygonRoi(vtkImageView2D *view, QColor color, medAbstractRoi *parent )
@@ -183,13 +174,11 @@ bool polygonRoi::isClosed()
 void polygonRoi::setEnabled(bool state)
 {
     d->contour->SetEnabled(state);
-    d->forceOff = state;
 }
 
-vtkSmartPointer<vtkPolygon> polygonRoi::createPolygonFromContour()
+vtkPolyData *polygonRoi::createPolyDataFromContour()
 {
     vtkContourRepresentation* contourRep = d->contour->GetContourRepresentation();
-    d->polyData = contourRep->GetContourRepresentationAsPolyData();
     vtkSmartPointer<vtkPolygon> polygon = vtkSmartPointer<vtkPolygon>::New();
     vtkSmartPointer<vtkPoints> points = vtkSmartPointer<vtkPoints>::New();
     std::vector<vtkIdType> vec_ids;
@@ -207,42 +196,102 @@ vtkSmartPointer<vtkPolygon> polygonRoi::createPolygonFromContour()
 
     }
     polygon->Initialize(points->GetNumberOfPoints(), &vec_ids[0], points);
-    return polygon;
-}
-
-void polygonRoi::createPolydataToAddInViews()
-{
-    vtkSmartPointer<vtkPolygon> polygon = createPolygonFromContour();
 
     vtkSmartPointer<vtkCellArray> cells = vtkSmartPointer<vtkCellArray>::New();
     cells->InsertNextCell(polygon);
-    d->polyData->SetPolys(cells);
+    vtkPolyData *pd = contourRep->GetContourRepresentationAsPolyData();
+    pd->SetPolys(cells);
 
-    d->property = vtkSmartPointer<vtkProperty>::New();
+    return pd;
+}
+
+vtkProperty *polygonRoi::getProperty()
+{
+    vtkProperty* property = vtkProperty::New();
     double color[3];
     color[0] = d->roiColor.redF();
     color[1] = d->roiColor.greenF();
     color[2] = d->roiColor.blueF();
-    d->property->SetColor(color);
+    property->SetColor(color);
     if(isMasterRoi())
     {
-        d->property->SetOpacity(1.);
+        property->SetOpacity(1.);
     }
     else
     {
-        d->property->SetOpacity(0.2);
+        property->SetOpacity(0.2);
     }
-    d->property->SetLighting(false);
-    d->property->SetLineWidth(1.);
-    d->property->SetPointSize(1.);
-    d->property->SetInterpolationToFlat();
-    d->property->SetVertexColor(0., 0., 1.);
+    property->SetLighting(false);
+    property->SetLineWidth(1.);
+    property->SetPointSize(1.);
+    property->SetInterpolationToFlat();
+    property->SetVertexColor(0., 0., 1.);
+    return property;
+}
+
+vtkPolyData* polygonRoi::getPolyData()
+{
+    if (!d->polyData)
+        d->polyData = createPolyDataFromContour();
+    return d->polyData;
+}
+
+void polygonRoi::loadNodes(QVector<QVector3D> coordinates)
+{
+
+    vtkSmartPointer<vtkPoints> points = vtkSmartPointer<vtkPoints>::New();
+    int numPts = coordinates.size();
+    for (int i = 0; i < numPts; i++)
+    {
+        points->InsertPoint(static_cast<vtkIdType>(i), coordinates[i].x(), coordinates[i].y(), coordinates[i].z());
+    }
+
+    // Create a cell array to connect the points into meaningful geometry
+    vtkIdType* vertexIndices = new vtkIdType[numPts];
+    for (int i = 0; i < numPts; i++) { vertexIndices[i] = static_cast<vtkIdType>(i); }
+    // Set the last vertex to 0; this means the last line segment will join the 19th point (vertices[19])
+    // with the first one (vertices[0]), thus closing the circle.
+//    vertexIndices[numPts] = 0;
+    vtkSmartPointer<vtkCellArray> lines = vtkSmartPointer<vtkCellArray>::New();
+    lines->InsertNextCell(numPts, vertexIndices);
+
+    // Create polydata to hold the geometry just created, and populate it
+    vtkSmartPointer<vtkPolyData> polydata = vtkSmartPointer<vtkPolyData>::New();
+    polydata->SetPoints(points);
+    polydata->SetLines(lines);
+    d->contour->Initialize(polydata);
+    d->contour->GetContourRepresentation()->SetClosedLoop(1);
+
+    emit updateCursorState(CURSORSTATE::CS_MOUSE_EVENT);
+    emit interpolate();
+    emit updateRoiInAlternativeViews();
+
+}
+
+void polygonRoi::createPolydataToAddInViews()
+{
+    d->polyData = createPolyDataFromContour();
+    d->property = getProperty();
     return;
 }
 
 vtkContourWidget * polygonRoi::getContour()
 {
     return d->contour;
+}
+
+medContourNodes polygonRoi::getContourAsNodes()
+{
+    vtkContourRepresentation * contourRep = d->contour->GetContourRepresentation();
+    QVector<QVector3D> coordinates;
+    for (int node = 0; node < contourRep->GetNumberOfNodes(); node++)
+    {
+        double pos[3];
+        contourRep->GetNthNodeWorldPosition(node, pos);
+        coordinates.push_back(QVector3D(pos[0],pos[1],pos[2]));
+    }
+    medContourNodes contourNodes = medContourNodes(getIdSlice(), getOrientation(), coordinates);
+    return contourNodes;
 }
 
 void polygonRoi::undo()
@@ -266,6 +315,20 @@ void polygonRoi::Off()
 void polygonRoi::On()
 {
     d->contour->On();
+}
+
+void polygonRoi::manageTick(medSliderL *slider)
+{
+    if (d->view->GetViewOrientation() != getOrientation())
+    {
+        slider->removeTick(getIdSlice());
+    }
+    else
+    {
+        slider->addTick(getIdSlice());
+    }
+    slider->update();
+    return;
 }
 
 void polygonRoi::manageVisibility()
@@ -319,7 +382,9 @@ QString polygonRoi::info()
 
 void polygonRoi::select()
 {
-    setColor(SELECTED_ROI_COLOR);
+    double selectedColor[3] = {1.0, 0.533, 0.2};
+    vtkContourOverlayRepresentation *contourRep = dynamic_cast<vtkContourOverlayRepresentation*>(d->contour->GetContourRepresentation());
+    contourRep->GetLinesProperty()->SetColor(selectedColor);
     medAbstractRoi::select();
 }
 
@@ -332,12 +397,6 @@ void polygonRoi::unselect()
 bool polygonRoi::isVisible()
 {
     return (d->contour->GetEnabled());
-}
-
-void polygonRoi::setColor(double newColor[])
-{
-    vtkContourOverlayRepresentation *contourRep = dynamic_cast<vtkContourOverlayRepresentation*>(d->contour->GetContourRepresentation());
-    contourRep->GetLinesProperty()->SetColor(newColor);
 }
 
 void polygonRoi::setRightColor()
