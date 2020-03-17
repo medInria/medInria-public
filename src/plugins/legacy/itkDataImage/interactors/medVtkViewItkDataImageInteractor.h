@@ -47,10 +47,10 @@ public:
     void createSlicingParam();
 
     /**
-     * @brief getCurrentLayer return the current layer number in the view
+     * @brief getCurrentImageDataLayer return the layer of the current set image data
      * @return unsigned int current number
      */
-    unsigned int getCurrentLayer();
+    unsigned int getCurrentImageDataLayer();
 
 public slots:
     virtual void setOpacity (double opacity);
