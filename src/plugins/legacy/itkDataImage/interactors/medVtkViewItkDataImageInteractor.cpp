@@ -184,14 +184,14 @@ void medVtkViewItkDataImageInteractor::setInputData(medAbstractData *data)
 
         initParameters(d->imageData);
 
-        double* range = d->view2d->GetScalarRange(getCurrentLayer());
+        double* range = d->view2d->GetScalarRange(getCurrentImageDataLayer());
         this->initWindowLevelParameters(range);
     }
 }
 
 void medVtkViewItkDataImageInteractor::removeData()
 {
-    unsigned int imageLayer = getCurrentLayer();
+    unsigned int imageLayer = getCurrentImageDataLayer();
     d->view2d->RemoveLayer(imageLayer);
     d->view3d->RemoveLayer(imageLayer);
 }
@@ -241,17 +241,19 @@ void medVtkViewItkDataImageInteractor::initParameters(medAbstractImageData* data
                                      << "Muscles & Bones" << "Bones" << "Red Vessels"
                                      << "Cardiac" << "Gray Rainbow" << "Stern" << "Black Body" << "Binary Map";
     foreach(QString lut, luts)
+    {
         d->lutParam->addItem(lut);
-
+    }
     connect(d->lutParam, SIGNAL(valueChanged(QString)), this, SLOT(setLut(QString)));
-
 
     d->presetParam = new medStringListParameterL("Preset", this);
     QStringList presets = QStringList() << "None" << "VR Muscles&Bones" << "Vascular I"
                                         << "Vascular II" << "Vascular III" << "Vascular IV"
                                         << "Standard" << "Glossy" ;
     foreach(QString preset, presets)
+    {
         d->presetParam->addItem(preset);
+    }
 
     if(d->presetToLut.isEmpty())
     {
@@ -268,9 +270,13 @@ void medVtkViewItkDataImageInteractor::initParameters(medAbstractImageData* data
     connect(d->presetParam, SIGNAL(valueChanged(QString)), this, SLOT(setPreset(QString)));
 
     if(d->view->layer(data) > 0)
+    {
         this->opacityParameter()->setValue(0.5);
+    }
     else
-       this->opacityParameter()->setValue(1);
+    {
+        this->opacityParameter()->setValue(1);
+    }
 
     createSlicingParam();
 
@@ -287,7 +293,7 @@ void medVtkViewItkDataImageInteractor::initParameters(medAbstractImageData* data
 
     connect(d->view, SIGNAL(currentLayerChanged()), this, SLOT(updateImageViewInternalLayer()));
 
-    if(getCurrentLayer() == 0)
+    if(getCurrentImageDataLayer() == 0)
     {
         switch(d->view2d->GetViewOrientation())
         {
@@ -348,7 +354,7 @@ void medVtkViewItkDataImageInteractor::initWindowLevelParameters(double *range)
 
 void medVtkViewItkDataImageInteractor::setOpacity(double opacity)
 {
-    unsigned int imageLayer = getCurrentLayer();
+    unsigned int imageLayer = getCurrentImageDataLayer();
 
     d->view3d->SetOpacity (opacity, imageLayer);
     d->view2d->SetOpacity (opacity, imageLayer);
@@ -358,7 +364,7 @@ void medVtkViewItkDataImageInteractor::setOpacity(double opacity)
 
 void medVtkViewItkDataImageInteractor::setVisibility(bool visible)
 {
-    unsigned int imageLayer = getCurrentLayer();
+    unsigned int imageLayer = getCurrentImageDataLayer();
 
     if(visible)
     {
@@ -381,7 +387,7 @@ QString medVtkViewItkDataImageInteractor::lut() const
 
 void medVtkViewItkDataImageInteractor::setLut(QString value)
 {
-    unsigned int imageLayer = getCurrentLayer();
+    unsigned int imageLayer = getCurrentImageDataLayer();
 
     typedef vtkTransferFunctionPresets Presets;
     vtkColorTransferFunction * rgb   = vtkColorTransferFunction::New();
@@ -415,7 +421,7 @@ void medVtkViewItkDataImageInteractor::setPreset(QString preset)
 
     if ( preset == "None" )
     {
-        double *range = d->view2d->GetScalarRange(getCurrentLayer());
+        double *range = d->view2d->GetScalarRange(getCurrentImageDataLayer());
         wl["Window"] = QVariant(range[1]-range[0]);
         wl["Level"] = QVariant(0.5*(range[1]+range[0]));
         setWindowLevel(wl);
@@ -540,7 +546,7 @@ void medVtkViewItkDataImageInteractor::setWindowLevelFromMinMax()
         double level = 0.5 * (maxIntensityValueUpdated - minIntensityValueUpdated) + minIntensityValueUpdated;
         double window = maxIntensityValueUpdated - minIntensityValueUpdated;
 
-        unsigned int imageLayer = getCurrentLayer();
+        unsigned int imageLayer = getCurrentImageDataLayer();
 
         //--- block
         this->windowLevelParameter()->blockSignals(true);
@@ -555,7 +561,7 @@ void medVtkViewItkDataImageInteractor::setWindowLevelFromMinMax()
 
 void medVtkViewItkDataImageInteractor::updateInterpolateStatus(bool pi_bStatus, int pi_iLayer)
 {
-    if (d->imageData && (pi_iLayer == static_cast<int>(getCurrentLayer())))
+    if (d->imageData && (pi_iLayer == static_cast<int>(getCurrentImageDataLayer())))
     {
         d->enableInterpolation->setValue(pi_bStatus);
     }
@@ -576,7 +582,7 @@ void medVtkViewItkDataImageInteractor::setWindowLevel(QHash<QString, QVariant> v
         return;
     }
 
-    unsigned int imageLayer = getCurrentLayer();
+    unsigned int imageLayer = getCurrentImageDataLayer();
 
     if (d->view2d->GetColorWindow(imageLayer) != w)
     {
@@ -710,11 +716,11 @@ void medVtkViewItkDataImageInteractor::enableWindowLevel(bool enable)
 
 void medVtkViewItkDataImageInteractor::interpolation(bool pi_bActive)
 {
-    d->view2d->SetInterpolate(pi_bActive, getCurrentLayer());
+    d->view2d->SetInterpolate(pi_bActive, getCurrentImageDataLayer());
     d->view2d->Render();
 }
 
-unsigned int medVtkViewItkDataImageInteractor::getCurrentLayer()
+unsigned int medVtkViewItkDataImageInteractor::getCurrentImageDataLayer()
 {
-   return d->view2d->GetCurrentLayer();
+   return d->view->layer(d->imageData);
 }
