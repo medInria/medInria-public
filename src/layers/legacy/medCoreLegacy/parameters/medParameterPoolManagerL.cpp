@@ -65,12 +65,9 @@ void medParameterPoolManagerL::linkParameter(medAbstractParameterL* parameter , 
 
 void medParameterPoolManagerL::unlinkParameter(medAbstractParameterL* param)
 {
-    foreach(medParameterPoolL *pool, d->pools.values() )
+    for(medParameterPoolL *pool : d->pools.values() )
     {
         pool->remove(param);
-
-        /*if(pool->count() == 0)
-            removePool(poolId);*/
     }
 }
 
@@ -82,10 +79,12 @@ QList<medParameterPoolL*> medParameterPoolManagerL::pools()
 QStringList medParameterPoolManagerL::pools(medAbstractParameterL *param)
 {
     QStringList pools;
-    foreach(medParameterPoolL *pool, d->pools.values() )
+    for(medParameterPoolL *pool: d->pools.values() )
     {
         if(pool->parameters().contains(param))
+        {
             pools << pool->name();
+        }
     }
     return pools;
 }

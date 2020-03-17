@@ -48,7 +48,7 @@ bool medLUTToXMLWriter::writeFile(QIODevice *device)
     d->xml.writeStartElement("medLUTs");
     d->xml.writeAttribute("version", "1.1");
 
-    foreach (medClutEditorTable * table, d->tables)
+    for(medClutEditorTable * table : d->tables)
     {
         d->writeTable(*table);
     }
@@ -66,7 +66,7 @@ void medLUTToXMLWriterPrivate::writeTable(const medClutEditorTable & table)
     // If the table has at least a node
     if (table.vertices().count() > 0)
     {
-        foreach (const medClutEditorVertex * vertex, table.vertices())
+        for(const medClutEditorVertex * vertex : table.vertices())
         {
             writeNode(*vertex);
         }

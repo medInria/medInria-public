@@ -72,7 +72,7 @@ void medAbstractLayeredView::removeInteractors(medAbstractData *data)
     delete pInteractor;
 
     QList<medAbstractInteractor*> extraInt =  d->extraInteractorsHash.take(data);
-    foreach(medAbstractInteractor* extra, extraInt)
+    for(medAbstractInteractor* extra : extraInt)
     {
         delete extra;
     }
@@ -103,7 +103,7 @@ bool medAbstractLayeredView::initialiseInteractors(medAbstractData *data)
     if(!extraInt.isEmpty())
     {
         QList<medAbstractInteractor*> extraIntList;
-        foreach (QString i, extraInt)
+        for(QString i : extraInt)
         {
             medAbstractInteractor* interactor = factory->createAdditionalInteractor(i, this);
             interactor->setInputData(data);
@@ -138,7 +138,7 @@ bool medAbstractLayeredView::initialiseNavigators()
     QStringList extraNav = factory->additionalNavigatorsAbleToHandle(this->identifier());
     if(!extraNav.isEmpty())
     {
-        foreach (QString n, extraNav)
+        for(QString n : extraNav)
         {
             medAbstractNavigator* nav = factory->createAdditionalNavigator(n, this);
             connect(this, SIGNAL(orientationChanged()), nav, SLOT(updateWidgets()));
@@ -201,8 +201,10 @@ QList<medDataIndex> medAbstractLayeredView::dataList() const
 {
     QList <medDataIndex> outputList;
 
-    foreach(medAbstractData *data, d->layersDataList)
+    for(medAbstractData *data : d->layersDataList)
+    {
         outputList << data->dataIndex();
+    }
 
     return outputList;
 }
@@ -241,7 +243,7 @@ void medAbstractLayeredView::setDataList(QList<medDataIndex> dataList)
 {
     d->dataListParameter->blockSignals(true);
 
-    foreach(medDataIndex index, this->dataList())
+    for(medDataIndex index : this->dataList())
     {
         if (!dataList.contains(index))
         {
@@ -253,7 +255,7 @@ void medAbstractLayeredView::setDataList(QList<medDataIndex> dataList)
         }
     }
 
-    foreach(medDataIndex index, dataList)
+    for(medDataIndex index : dataList)
     {
         medAbstractData *data = medDataManager::instance()->retrieveData(index);
         if (!data || this->contains(data))
@@ -349,10 +351,12 @@ bool medAbstractLayeredView::contains(medAbstractData * data) const
 
 bool medAbstractLayeredView::contains(QString identifier) const
 {
-    foreach(medAbstractData *data, d->layersDataList)
+    for(medAbstractData *data : d->layersDataList)
     {
         if(data->identifier() == identifier)
+        {
             return true;
+        }
     }
 
     return false;
@@ -424,9 +428,9 @@ QList<medAbstractNavigator*> medAbstractLayeredView::navigators()
 QList<medAbstractParameterL*> medAbstractLayeredView::interactorsParameters(unsigned int layer)
 {
     QList<medAbstractParameterL*>  params;
-    foreach (medAbstractInteractor* interactor, this->layerInteractors(layer))
+    for(medAbstractInteractor* interactor : this->layerInteractors(layer))
     {
-        foreach(medAbstractParameterL *param, interactor->linkableParameters())
+        for(medAbstractParameterL *param : interactor->linkableParameters())
         {
             params.append(param);
         }

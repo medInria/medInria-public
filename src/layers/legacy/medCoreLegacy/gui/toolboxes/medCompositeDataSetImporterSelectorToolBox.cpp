@@ -114,7 +114,7 @@ void medCompositeDataSetImporterSelectorToolBox::initialize()
 
     int i=1;
     medToolBoxFactory* factory = medToolBoxFactory::instance();
-    foreach (QString toolbox,factory->toolBoxesFromCategory("composite_dataset"))
+    for(QString toolbox : factory->toolBoxesFromCategory("composite_dataset"))
     {
         medToolBoxDetails* details = factory->toolBoxDetailsFromId(toolbox);
 

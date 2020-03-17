@@ -398,7 +398,7 @@ void medDatabaseView::onRemoveSelectedItemRequested( void )
 
     if (reply == QMessageBox::Yes)
     {
-        foreach(const QModelIndex& index, this->selectionModel()->selectedRows())
+        for(const QModelIndex& index : this->selectionModel()->selectedRows())
         {
             medAbstractDatabaseItem *item = nullptr;
             if(QSortFilterProxyModel *proxy = dynamic_cast<QSortFilterProxyModel *>(this->model()))
@@ -587,7 +587,7 @@ void medDatabaseView::onEditRequested()
             }
         }
 
-        foreach(QVariant attrib, attributes)
+        for(QVariant attrib : attributes)
         {
             const medMetaDataKeys::Key* key =  medMetaDataKeys::Key::fromKeyName(attrib.toString().toStdString().c_str());
             if(key)
@@ -603,7 +603,7 @@ void medDatabaseView::onEditRequested()
         if(res == QDialog::Accepted)
         {
             int i=0;
-            foreach(QString label, labels)
+            for(QString label : labels)
             {
                 QVariant data = editDialog.value(label);
                 QVariant variant = item->attribute(i);
@@ -648,7 +648,7 @@ void medDatabaseView::onMetadataRequested(void)
             QList<QVariant> metadataList;
 
             // Get back keys and metadata from the selected data
-            foreach (const medMetaDataKeys::Key* key, medMetaDataKeys::Key::all())
+            for(const medMetaDataKeys::Key* key : medMetaDataKeys::Key::all())
             {
                 metadata = medDataManager::instance()->getMetaData(item->dataIndex(), key->key());
 

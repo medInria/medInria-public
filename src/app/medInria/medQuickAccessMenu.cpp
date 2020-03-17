@@ -436,7 +436,7 @@ void medQuickAccessMenu::createVerticalQuickAccessMenu()
     //Dynamically setup workspaces access button
     QList<medWorkspaceFactory::Details*> workspaceDetails = medWorkspaceFactory::instance()->workspaceDetailsSortedByName();
     unsigned int numActiveWorkspaces = 0;
-    foreach ( medWorkspaceFactory::Details* detail, workspaceDetails )
+    for( medWorkspaceFactory::Details* detail : workspaceDetails )
     {
         if (!detail->isActive)
             continue;
@@ -517,7 +517,7 @@ void medQuickAccessMenu::createHorizontalQuickAccessMenu()
 
     QList<medWorkspaceFactory::Details*> workspaceDetails = medWorkspaceFactory::instance()->workspaceDetailsSortedByName();
     unsigned int numActiveWorkspaces = 0;
-    foreach ( medWorkspaceFactory::Details* detail, workspaceDetails )
+    for( medWorkspaceFactory::Details* detail : workspaceDetails )
     {
         if (!detail->isActive)
             continue;

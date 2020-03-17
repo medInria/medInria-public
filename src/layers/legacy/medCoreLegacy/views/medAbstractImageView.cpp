@@ -141,7 +141,7 @@ void medAbstractImageView::removeInteractors(medAbstractData *data)
     delete pInteractor;
 
     QList<medAbstractInteractor*> extraInt =  d->extraInteractorsHash.take(data);
-    foreach(medAbstractInteractor* extra, extraInt)
+    for(medAbstractInteractor* extra : extraInt)
     {
         delete extra;
     }
@@ -173,7 +173,7 @@ bool medAbstractImageView::initialiseInteractors(medAbstractData *data)
     if(!extraInt.isEmpty())
     {
         QList<medAbstractInteractor*> extraIntList;
-        foreach (QString i, extraInt)
+        for(QString i : extraInt)
         {
             medAbstractInteractor* interactor = factory->createAdditionalInteractor(i, this);
             connect(this, SIGNAL(orientationChanged()), interactor, SLOT(updateWidgets()));
@@ -207,7 +207,7 @@ bool medAbstractImageView::initialiseNavigators()
     QStringList extraNav = factory->additionalNavigatorsAbleToHandle(this->identifier());
     if(!extraNav.isEmpty())
     {
-        foreach (QString n, extraNav)
+        for(QString n : extraNav)
         {
             medAbstractNavigator* nav = factory->createAdditionalNavigator(n, this);
             connect(this, SIGNAL(orientationChanged()), nav, SLOT(updateWidgets()));
@@ -229,7 +229,7 @@ void medAbstractImageView::switchToFourViews()
 
     topLeftContainerSplitter->adjustContainersSize();
 
-    foreach(medDataIndex index, this->dataList())
+    for(medDataIndex index : this->dataList())
     {
         medAbstractData *data = medDataManager::instance()->retrieveData(index);
         if (data)
@@ -281,14 +281,14 @@ void medAbstractImageView::switchToFourViews()
         layerGroup->addImpactedlayer(bottomRightContainerView, bottomRightContainerView->layerData(i));
     }
 
-    foreach(medAbstractParameterL* param, this->linkableParameters())
+    for(medAbstractParameterL* param : this->linkableParameters())
     {
         param->trigger();
     }
 
     for (unsigned int i = 0;i < this->layersCount();++i)
     {
-        foreach(medAbstractParameterL* param, this->linkableParameters(i))
+        for(medAbstractParameterL* param : this->linkableParameters(i))
         {
             param->trigger();
         }

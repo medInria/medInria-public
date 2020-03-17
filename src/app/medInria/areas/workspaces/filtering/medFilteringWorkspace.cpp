@@ -460,7 +460,7 @@ void medFilteringWorkspace::setProcessType(int index)
         case MorphoMath:
         {
             QStringList plugins = medCore::morphomathOperation::erodeImage::pluginFactory().keys();
-            foreach(QString pluginKey, plugins)
+            for(QString pluginKey : plugins)
             {
                 medAbstractProcess *process = medCore::morphomathOperation::erodeImage::pluginFactory().create(pluginKey);
                 if (process)
@@ -476,7 +476,7 @@ void medFilteringWorkspace::setProcessType(int index)
             }
 
             plugins = medCore::morphomathOperation::dilateImage::pluginFactory().keys();
-            foreach(QString pluginKey, plugins)
+            for(QString pluginKey : plugins)
             {
                 medAbstractProcess *process = medCore::morphomathOperation::dilateImage::pluginFactory().create(pluginKey);
                 if (process)
@@ -492,7 +492,7 @@ void medFilteringWorkspace::setProcessType(int index)
             }
 
             plugins = medCore::morphomathOperation::openingImage::pluginFactory().keys();
-            foreach(QString pluginKey, plugins)
+            for(QString pluginKey : plugins)
             {
                 medAbstractProcess *process = medCore::morphomathOperation::openingImage::pluginFactory().create(pluginKey);
                 if (process)
@@ -508,7 +508,7 @@ void medFilteringWorkspace::setProcessType(int index)
             }
 
             plugins = medCore::morphomathOperation::closingImage::pluginFactory().keys();
-            foreach(QString pluginKey, plugins)
+            for(QString pluginKey : plugins)
             {
                 medAbstractProcess *process = medCore::morphomathOperation::closingImage::pluginFactory().create(pluginKey);
                 if (process)
@@ -528,7 +528,7 @@ void medFilteringWorkspace::setProcessType(int index)
         case SingleFilter:
         {
             QStringList plugins = medCore::singleFilterOperation::gaussianFilter::pluginFactory().keys();
-            foreach(QString pluginKey, plugins)
+            for(QString pluginKey : plugins)
             {
                 medAbstractProcess *process = medCore::singleFilterOperation::gaussianFilter::pluginFactory().create(pluginKey);
                 if (process)
@@ -544,7 +544,7 @@ void medFilteringWorkspace::setProcessType(int index)
             }
 
             plugins = medCore::singleFilterOperation::medianFilter::pluginFactory().keys();
-            foreach(QString pluginKey, plugins)
+            for(QString pluginKey : plugins)
             {
                 medAbstractProcess *process = medCore::singleFilterOperation::medianFilter::pluginFactory().create(pluginKey);
                 if (process)
@@ -560,7 +560,7 @@ void medFilteringWorkspace::setProcessType(int index)
             }
 
             plugins = medCore::singleFilterOperation::normalizeFilter::pluginFactory().keys();
-            foreach(QString pluginKey, plugins)
+            for(QString pluginKey : plugins)
             {
                 medAbstractProcess *process = medCore::singleFilterOperation::normalizeFilter::pluginFactory().create(pluginKey);
                 if (process)
@@ -576,7 +576,7 @@ void medFilteringWorkspace::setProcessType(int index)
             }
 
             plugins = medCore::singleFilterOperation::shrinkFilter::pluginFactory().keys();
-            foreach(QString pluginKey, plugins)
+            for(QString pluginKey : plugins)
             {
                 medAbstractProcess *process = medCore::singleFilterOperation::shrinkFilter::pluginFactory().create(pluginKey);
                 if (process)
@@ -592,7 +592,7 @@ void medFilteringWorkspace::setProcessType(int index)
             }
 
             plugins = medCore::singleFilterOperation::windowingFilter::pluginFactory().keys();
-            foreach(QString pluginKey, plugins)
+            for(QString pluginKey : plugins)
             {
                 medAbstractProcess *process = medCore::singleFilterOperation::windowingFilter::pluginFactory().create(pluginKey);
                 if (process)
@@ -608,7 +608,7 @@ void medFilteringWorkspace::setProcessType(int index)
             }
 
             plugins = medCore::singleFilterOperation::imageDenoising::pluginFactory().keys();
-            foreach(QString pluginKey, plugins)
+            for(QString pluginKey : plugins)
             {
                 medAbstractProcess *process = medCore::singleFilterOperation::imageDenoising::pluginFactory().create(pluginKey);
                 if (process)
@@ -624,7 +624,7 @@ void medFilteringWorkspace::setProcessType(int index)
             }
 
             plugins = medCore::singleFilterOperation::relaxometryEstimation::pluginFactory().keys();
-            foreach(QString pluginKey, plugins)
+            for(QString pluginKey : plugins)
             {
                 medAbstractProcess *process = medCore::singleFilterOperation::relaxometryEstimation::pluginFactory().create(pluginKey);
                 if (process)
@@ -640,7 +640,7 @@ void medFilteringWorkspace::setProcessType(int index)
             }
 
             plugins = medCore::singleFilterOperation::symmetryAlignment::pluginFactory().keys();
-            foreach(QString pluginKey, plugins)
+            for(QString pluginKey : plugins)
             {
                 medAbstractProcess *process = medCore::singleFilterOperation::symmetryAlignment::pluginFactory().create(pluginKey);
                 if (process)
@@ -656,7 +656,7 @@ void medFilteringWorkspace::setProcessType(int index)
             }
 
             plugins = medCore::singleFilterOperation::biasCorrection::pluginFactory().keys();
-            foreach(QString pluginKey, plugins)
+            for(QString pluginKey : plugins)
             {
                medAbstractProcess *process = medCore::singleFilterOperation::biasCorrection::pluginFactory().create(pluginKey);
                if (process)
@@ -678,7 +678,7 @@ void medFilteringWorkspace::setProcessType(int index)
         default:
         {
             QStringList plugins = medCore::singleFilterOperation::addFilter::pluginFactory().keys();
-            foreach(QString pluginKey, plugins)
+            for(QString pluginKey : plugins)
             {
                 medAbstractProcess *process = medCore::singleFilterOperation::addFilter::pluginFactory().create(pluginKey);
                 if (process)
@@ -694,7 +694,7 @@ void medFilteringWorkspace::setProcessType(int index)
             }
 
             plugins = medCore::singleFilterOperation::subtractFilter::pluginFactory().keys();
-            foreach(QString pluginKey, plugins)
+            for(QString pluginKey : plugins)
             {
                 medAbstractProcess *process = medCore::singleFilterOperation::subtractFilter::pluginFactory().create(pluginKey);
                 if (process)
@@ -710,7 +710,7 @@ void medFilteringWorkspace::setProcessType(int index)
             }
 
             plugins = medCore::singleFilterOperation::multiplyFilter::pluginFactory().keys();
-            foreach(QString pluginKey, plugins)
+            for(QString pluginKey : plugins)
             {
                 medAbstractProcess *process = medCore::singleFilterOperation::multiplyFilter::pluginFactory().create(pluginKey);
                 if (process)
@@ -726,7 +726,7 @@ void medFilteringWorkspace::setProcessType(int index)
             }
 
             plugins = medCore::singleFilterOperation::divideFilter::pluginFactory().keys();
-            foreach(QString pluginKey, plugins)
+            for(QString pluginKey : plugins)
             {
                 medAbstractProcess *process = medCore::singleFilterOperation::divideFilter::pluginFactory().create(pluginKey);
                 if (process)
@@ -742,7 +742,7 @@ void medFilteringWorkspace::setProcessType(int index)
             }
 
             plugins = medCore::arithmeticOperation::addImage::pluginFactory().keys();
-            foreach(QString pluginKey, plugins)
+            for(QString pluginKey : plugins)
             {
                 medAbstractProcess *process = medCore::arithmeticOperation::addImage::pluginFactory().create(pluginKey);
                 if (process)
@@ -758,7 +758,7 @@ void medFilteringWorkspace::setProcessType(int index)
             }
 
             plugins = medCore::arithmeticOperation::subtractImage::pluginFactory().keys();
-            foreach(QString pluginKey, plugins)
+            for(QString pluginKey : plugins)
             {
                 medAbstractProcess *process = medCore::arithmeticOperation::subtractImage::pluginFactory().create(pluginKey);
                 if (process)
@@ -774,7 +774,7 @@ void medFilteringWorkspace::setProcessType(int index)
             }
 
             plugins = medCore::arithmeticOperation::multiplyImage::pluginFactory().keys();
-            foreach(QString pluginKey, plugins)
+            for(QString pluginKey : plugins)
             {
                 medAbstractProcess *process = medCore::arithmeticOperation::multiplyImage::pluginFactory().create(pluginKey);
                 if (process)
@@ -790,7 +790,7 @@ void medFilteringWorkspace::setProcessType(int index)
             }
 
             plugins = medCore::arithmeticOperation::divideImage::pluginFactory().keys();
-            foreach(QString pluginKey, plugins)
+            for(QString pluginKey : plugins)
             {
                 medAbstractProcess *process = medCore::arithmeticOperation::divideImage::pluginFactory().create(pluginKey);
                 if (process)
@@ -806,7 +806,7 @@ void medFilteringWorkspace::setProcessType(int index)
             }
 
             plugins = medCore::singleFilterOperation::invertFilter::pluginFactory().keys();
-            foreach(QString pluginKey, plugins)
+            for(QString pluginKey : plugins)
             {
                 medAbstractProcess *process = medCore::singleFilterOperation::invertFilter::pluginFactory().create(pluginKey);
                 if (process)
@@ -822,7 +822,7 @@ void medFilteringWorkspace::setProcessType(int index)
             }
 
             plugins = medCore::maskImage::pluginFactory().keys();
-            foreach(QString pluginKey, plugins)
+            for(QString pluginKey : plugins)
             {
                 medAbstractProcess *process = medCore::maskImage::pluginFactory().create(pluginKey);
                 if (process)

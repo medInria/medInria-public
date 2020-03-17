@@ -118,9 +118,10 @@ bool medDatabaseItem::insertColumns(int position, int columns)
     for (int column = 0 ; column < columns ; ++column)
         d->itemData.insert(position, QVariant());
 
-    foreach (medDatabaseItem *child, d->childItems)
+    for(medDatabaseItem *child : d->childItems)
+    {
         child->insertColumns(position, columns);
-
+    }
     return true;
 }
 
@@ -152,8 +153,10 @@ bool medDatabaseItem::removeColumns(int position, int columns)
     for (int column = 0 ; column < columns ; ++column)
         d->itemData.removeAt(position);
 
-    foreach (medDatabaseItem *child, d->childItems)
+    for(medDatabaseItem *child : d->childItems)
+    {
         child->removeColumns(position, columns);
+    }
 
     return true;
 }
@@ -212,7 +215,7 @@ int medDatabaseItem::rowOf(medAbstractDatabaseItem *child) const
     int row = 0;
     bool found = false;
     
-    foreach(medDatabaseItem *item, d->childItems)
+    for(medDatabaseItem *item : d->childItems)
     {
         if(item==child)
         {

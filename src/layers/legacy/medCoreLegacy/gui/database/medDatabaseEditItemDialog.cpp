@@ -63,7 +63,7 @@ medDatabaseEditItemDialog::medDatabaseEditItemDialog(QList<QString> attributes, 
     d->attributes = attributes;
     d->values = dataList;
 
-    foreach(QString attrib, attributes)
+    for(QString attrib : attributes)
     {
         QVariant data = dataList[i];
         i++;

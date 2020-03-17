@@ -368,7 +368,7 @@ void medHomepageArea::initPage()
     workspaceLabelOther->setMargin(10);
     workspaceButtonsLayoutOther->addWidget ( workspaceLabelOther );
 
-    foreach ( medWorkspaceFactory::Details* detail, workspaceDetails)
+    for( medWorkspaceFactory::Details* detail : workspaceDetails)
     {
         medHomepageButton * button = new medHomepageButton ( this );
         button->setText ( detail->name );

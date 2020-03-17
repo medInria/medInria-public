@@ -82,7 +82,7 @@ void medToolBoxContainer::clear()
         d->layout->setStretch (i, 0);
     }
 
-    foreach(medToolBox *tb, d->toolboxes)
+    for(medToolBox *tb : d->toolboxes)
     {
         tb->hide();
         d->layout->removeWidget(tb);

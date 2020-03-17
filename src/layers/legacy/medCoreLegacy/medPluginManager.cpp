@@ -132,7 +132,7 @@ void medPluginManager::onPluginLoaded(const QString& name)
         categories = plug->metaDataValues("category");
     }
 
-    foreach(QString category, categories)
+    for(QString category : categories)
     {
         d->handlers[category] << plug->types();
     }

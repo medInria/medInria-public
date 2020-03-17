@@ -541,11 +541,11 @@ void medMainWindow::switchToSearchArea()
     QHash<QString, QStringList> toolboxDataHash;
     medToolBoxFactory *tbFactory = medToolBoxFactory::instance();
     QList<medWorkspaceFactory::Details*> workspaceDetails = medWorkspaceFactory::instance()->workspaceDetailsSortedByName();
-    foreach ( medWorkspaceFactory::Details *detail, workspaceDetails )
+    for( medWorkspaceFactory::Details *detail : workspaceDetails )
     {
         QString workspaceName = detail->name;
 
-        foreach(QString toolboxName, tbFactory->toolBoxesFromCategory(workspaceName))
+        for(QString toolboxName : tbFactory->toolBoxesFromCategory(workspaceName))
         {
             medToolBoxDetails *toolboxDetails = tbFactory->toolBoxDetailsFromId(toolboxName);
 

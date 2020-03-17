@@ -83,7 +83,7 @@ void medToolBoxBody::clear()
         d->layout->setColumnStretch (i, 0);
     }
     
-    foreach(QWidget *wid, d->widgets)
+    for(QWidget *wid : d->widgets)
     {
         wid->hide();
         d->layout->removeWidget(wid);
@@ -100,8 +100,7 @@ void medToolBoxBody::setOrientation(Qt::Orientation orientation)
 
     this->clear();
 
-
-    foreach(QWidget * wid, d->widgets )
+    for(QWidget * wid : d->widgets )
     {
       //addToolBox also sets the orientation of the toolboxes
       addWidget (wid);

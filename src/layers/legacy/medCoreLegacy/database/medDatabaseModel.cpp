@@ -539,15 +539,14 @@ void medDatabaseModel::populate(medAbstractDatabaseItem *root)
     dataSources << medDatabaseController::instance()->dataSourceId()
                 << medDatabaseNonPersistentController::instance()->dataSourceId();
 
-    foreach( const int dataSourceId, dataSources )
+    for( const int dataSourceId : dataSources )
     {
-
         medAbstractDbController * dbc = medDataManager::instance()->controllerForDataSource(dataSourceId);
 
         IndexList patientsForSource = dbc->patients();
 
         // Iterate over patientIds for this data source
-        foreach( const medDataIndex& patient, patientsForSource )
+        for( const medDataIndex& patient : patientsForSource )
         {
             QList<QVariant> ptData = d->ptDefaultData;
             for (int i(0); i<d->DataCount; ++i)
@@ -566,7 +565,7 @@ void medDatabaseModel::populate(medAbstractDatabaseItem *root)
             IndexList studiesForSource = dbc->studies(patient);
 
             // Iterate over studyIds for this patient
-            foreach( const medDataIndex& study, studiesForSource )
+            for( const medDataIndex& study : studiesForSource )
             {
                 QList<QVariant> stData = d->stDefaultData;
                 for (int i(0); i<d->DataCount; ++i)
@@ -590,7 +589,7 @@ void medDatabaseModel::populate(medAbstractDatabaseItem *root)
                 if(!d->justBringStudies)
                 {
                     // Iterate over series for this study
-                    foreach( const medDataIndex& series, seriesForSource )
+                    for( const medDataIndex& series : seriesForSource )
                     {
 
                         QList<QVariant> seData = d->seDefaultData;
@@ -608,13 +607,13 @@ void medDatabaseModel::populate(medAbstractDatabaseItem *root)
                         medAbstractDatabaseItem *seItem = new medDatabaseItem(series, d->seAttributes, seData, stItem);
 
                         stItem->append(seItem);
-                    } // foreach series
+                    } // for series
                 }
             }
 
             root->append(ptItem);
-        } // foreach patient
-    } // foreach dataSource
+        } // for patient
+    } // for dataSource
 }
 
 void medDatabaseModel::update(const medDataIndex& dataIndex)
@@ -756,7 +755,7 @@ void medDatabaseModel::updateStudy(const medDataIndex& dataIndex, bool updateChi
 
             if (series.count() > 0)
             {
-                foreach(medDataIndex currentSeries, series)
+                for(medDataIndex currentSeries : series)
                 {
                     updateSeries(currentSeries);
                 }
@@ -847,7 +846,7 @@ void medDatabaseModel::updateStudy(const medDataIndex& dataIndex, bool updateChi
         if(updateChildren)
         {
             QList<medDataIndex> series = dbc->series(dataIndex);
-            foreach(medDataIndex currentSeries, series)
+            for(medDataIndex currentSeries : series)
             {
                 updateSeries(currentSeries);
             }
@@ -878,7 +877,7 @@ void medDatabaseModel::updatePatient(const medDataIndex& dataIndex, bool updateC
 
                 changePersistenIndexAndSubIndex(index);
 
-                foreach(medDataIndex tempIndex, d->medIndexMap.keys())
+                for(medDataIndex tempIndex : d->medIndexMap.keys())
                 {
                     if(medDataIndex::isMatch(dataIndex, tempIndex))
                         d->medIndexMap.remove(tempIndex);

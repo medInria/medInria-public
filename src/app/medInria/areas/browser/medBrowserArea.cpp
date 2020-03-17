@@ -88,9 +88,11 @@ medBrowserArea::medBrowserArea(QWidget *parent) : QWidget(parent), d(new medBrow
         d->sourceSelectorToolBox->setCurrentTab(1);
     }
 
-    //dataSources
-    foreach (medAbstractDataSource *dataSource, medDataSourceManager::instance()->dataSources())
+    // DataSources
+    for(medAbstractDataSource *dataSource : medDataSourceManager::instance()->dataSources())
+    {
         addDataSource(dataSource);
+    }
  }
 
 medBrowserArea::~medBrowserArea()
@@ -112,11 +114,16 @@ void medBrowserArea::setToolBoxesVisible(int index, bool visible )
         return;
 
     QList<medToolBox*> toolBoxes = d->dataSources[index]->getToolBoxes();
-    foreach(medToolBox* toolBox, toolBoxes)
+    for(medToolBox* toolBox : toolBoxes)
     {
         if(toolBox->parentWidget())
-          toolBox->setVisible(visible);
-        else toolBox->setVisible(false);
+        {
+            toolBox->setVisible(visible);
+        }
+        else
+        {
+            toolBox->setVisible(false);
+        }
     }
 }
 
@@ -127,7 +134,7 @@ void medBrowserArea::addDataSource( medAbstractDataSource* dataSource )
     d->sourceSelectorToolBox->addTab(dataSource->tabName(),dataSource->sourceSelectorWidget(),dataSource->description());
 
     QList<medToolBox*> toolBoxes = dataSource->getToolBoxes();
-    foreach(medToolBox* toolBox, toolBoxes)
+    for(medToolBox* toolBox : toolBoxes)
     {
         toolBox->setVisible(false);
         d->toolboxContainer->addToolBox(toolBox);

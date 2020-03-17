@@ -44,9 +44,13 @@ public:
     void cleanupTracker()
     {
         QMutexLocker lock(&mutex);
-        foreach(const medDataIndex& i, loadedDataObjectTracker.keys())
+        for(const medDataIndex& i : loadedDataObjectTracker.keys())
+        {
             if (loadedDataObjectTracker.value(i).isNull())
+            {
                 loadedDataObjectTracker.remove(i);
+            }
+        }
     }
 
     medAbstractDbController* controllerForDataSource(int id) {
@@ -152,7 +156,7 @@ QHash<QString, dtkAbstractDataWriter*> medDataManager::getPossibleWriters(medAbs
     QList<QString> allWriters = medAbstractDataFactory::instance()->writers();
     QHash<QString, dtkAbstractDataWriter*> possibleWriters;
 
-    foreach(QString writerType, allWriters)
+    for(QString writerType : allWriters)
     {
         dtkAbstractDataWriter * writer = medAbstractDataFactory::instance()->writer(writerType);
         if (writer->handled().contains(data->identifier()))
@@ -182,7 +186,7 @@ void medDataManager::exportData(medAbstractData* data)
     QComboBox* typesHandled = new QComboBox(exportDialog);
     // we use allWriters as the list of keys to make sure we traverse possibleWriters
     // in the order specified by the writers priorities.
-    foreach(QString type, allWriters)
+    for(QString type : allWriters)
     {
         if (!possibleWriters.contains(type))
             continue;
@@ -235,7 +239,7 @@ void medDataManager::exportData(medAbstractData* data)
         // if the combobox and filename extensions are equal, no need to enter here.
         if (!userExtension.isEmpty() && (comboExtension != ("."+userExtension)))
         {
-            foreach(QString type, allWriters)
+            for(QString type : allWriters)
             {
                 if (possibleWriters.contains(type))
                 {
@@ -393,14 +397,17 @@ QUuid medDataManager::makePersistent(medAbstractData* data)
     }
     else if( data->dataIndex().isValidForStudy() )
     {
-        foreach(medDataIndex index, d->nonPersDbController->series(data->dataIndex()))
+        for(medDataIndex index : d->nonPersDbController->series(data->dataIndex()))
+        {
             jobUuid = makePersistent(this->retrieveData(index));
-
+        }
     }
     else if( data->dataIndex().isValidForPatient())
     {
-        foreach(medDataIndex index, d->nonPersDbController->studies(data->dataIndex()))
+        for(medDataIndex index : d->nonPersDbController->studies(data->dataIndex()))
+        {
             jobUuid = makePersistent(this->retrieveData(index));
+        }
     }
 
     return jobUuid;
@@ -499,7 +506,8 @@ medDataManager::medDataManager() : d_ptr(new medDataManagerPrivate(this))
     Q_D(medDataManager);
     QList<medAbstractDbController*> controllers;
     controllers << d->dbController << d->nonPersDbController;
-    foreach(medAbstractDbController* controller, controllers) {
+    for(medAbstractDbController* controller : controllers)
+    {
         connect(controller, SIGNAL(dataImported(medDataIndex,QUuid)), this, SIGNAL(dataImported(medDataIndex,QUuid)));
         connect(controller, SIGNAL(dataRemoved(medDataIndex)), this, SIGNAL(dataRemoved(medDataIndex)));
         connect(controller, SIGNAL(metadataModified(medDataIndex,QString,QString)), this, SIGNAL(metadataModified(medDataIndex,QString,QString)));

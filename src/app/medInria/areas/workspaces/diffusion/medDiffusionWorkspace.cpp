@@ -67,7 +67,7 @@ medDiffusionWorkspace::medDiffusionWorkspace(QWidget *parent) : medAbstractWorks
 
     // -- View toolboxes --
     QList<QString> toolboxNames = medToolBoxFactory::instance()->toolBoxesFromCategory("view");
-    foreach(QString toolbox, toolboxNames)
+    for(QString toolbox : toolboxNames)
     {
        addToolBox( medToolBoxFactory::instance()->createToolBox(toolbox, parent) );
     }

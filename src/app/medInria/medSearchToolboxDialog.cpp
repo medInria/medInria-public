@@ -69,7 +69,7 @@ medSearchToolboxDialog::medSearchToolboxDialog(QWidget *parent, QHash<QString, Q
 
     // Populate the tree
     int cpt = 0;
-    foreach (auto current, toolboxDataHash)
+    for(auto current : toolboxDataHash)
     {
         QTreeWidgetItem * item = new QTreeWidgetItem(tree);
         item->setText(0, current.at(0));
@@ -96,13 +96,13 @@ void medSearchToolboxDialog::searchTextChanged(const QString& text)
     // First we hide every item from the list
     QList<QTreeWidgetItem *> allItems = tree->findItems(
                 QString("*"), Qt::MatchWrap | Qt::MatchWildcard | Qt::MatchRecursive);
-    foreach(QTreeWidgetItem* item, allItems)
+    for(QTreeWidgetItem* item : allItems)
     {
         item->setHidden(true);
     }
 
     // Then we show only matching items
-    foreach(QTreeWidgetItem* item, clist)
+    for(QTreeWidgetItem* item : clist)
     {
         item->setHidden(false);
     }

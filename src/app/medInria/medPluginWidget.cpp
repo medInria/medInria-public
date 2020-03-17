@@ -48,7 +48,7 @@ void medPluginWidgetPrivate::resetPluginsTree()
     //get the list of plugins
     medPluginManager* mpm = medPluginManager::instance();
 
-    foreach(dtkPlugin* plugin,mpm->plugins())
+    for(dtkPlugin* plugin : mpm->plugins())
     {
         QTreeWidgetItem * item = new QTreeWidgetItem(pluginsTree);
         item->setText(0,plugin->name());
@@ -80,7 +80,7 @@ void medPluginWidgetPrivate::resetTypesTree()
     medAbstractDataFactory * dataFactory = medAbstractDataFactory::instance();
     QTreeWidgetItem * dataItem = new QTreeWidgetItem(typesTree);
     dataItem->setText(0,QObject::tr("Data"));
-    foreach(QString data,dataFactory->creators())
+    for(QString data : dataFactory->creators())
     {
         QTreeWidgetItem * item = new QTreeWidgetItem(dataItem);
         item->setText(1,data);
@@ -90,7 +90,7 @@ void medPluginWidgetPrivate::resetTypesTree()
 
     QTreeWidgetItem * readerItem = new QTreeWidgetItem(typesTree);
     readerItem->setText(0,QObject::tr("Readers"));
-    foreach(QString data,dataFactory->readers())
+    for(QString data : dataFactory->readers())
     {
         QTreeWidgetItem * item = new QTreeWidgetItem(readerItem);
         item->setText(1,data);
@@ -100,7 +100,7 @@ void medPluginWidgetPrivate::resetTypesTree()
 
     QTreeWidgetItem * writerItem = new QTreeWidgetItem(typesTree);
     writerItem->setText(0,QObject::tr("Writers"));
-    foreach(QString data,dataFactory->writers())
+    for(QString data : dataFactory->writers())
     {
         QTreeWidgetItem * item = new QTreeWidgetItem(writerItem);
         item->setText(1,data);
@@ -114,7 +114,7 @@ void medPluginWidgetPrivate::resetTypesTree()
 
     QTreeWidgetItem * viewItem = new QTreeWidgetItem(typesTree);
     viewItem->setText(0,QObject::tr("Views"));
-    foreach(QString view,viewFactory->creators())
+    for(QString view : viewFactory->creators())
     {
         QTreeWidgetItem * item = new QTreeWidgetItem(viewItem);
         item->setText(1,view);
@@ -127,7 +127,7 @@ void medPluginWidgetPrivate::resetTypesTree()
 
     QTreeWidgetItem * processItem = new QTreeWidgetItem(typesTree);
     processItem->setText(0,QObject::tr("Processes"));
-    foreach(QString process,processFactory->creators())
+    for(QString process : processFactory->creators())
     {
         QTreeWidgetItem * item = new QTreeWidgetItem(processItem);
         item->setText(1,process);
@@ -148,7 +148,7 @@ void medPluginWidgetPrivate::resetFailedPluginsTree()
     //get the list of plugins
     medPluginManager* mpm = medPluginManager::instance();
 
-    foreach(QString error, mpm->loadErrors())
+    for(QString error : mpm->loadErrors())
     {
         QTreeWidgetItem * item = new QTreeWidgetItem(errorTree);
         item->setText(0,error);

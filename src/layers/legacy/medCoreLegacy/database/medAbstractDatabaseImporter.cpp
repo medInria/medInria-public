@@ -999,7 +999,7 @@ QString medAbstractDatabaseImporter::generateUniqueVolumeId ( const medAbstractD
     // truncate orientation to 5 digits for a more robust import since
     // sometimes orientation only differs with the last 2 digits, creating
     // multiple series
-    foreach ( QString orient, orientations )
+    for( QString orient : orientations )
     {
         double d_orient = orient.toDouble();
         orientation += QString::number ( d_orient, 'g', 5 );

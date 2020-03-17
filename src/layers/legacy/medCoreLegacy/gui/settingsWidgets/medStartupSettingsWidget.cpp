@@ -81,7 +81,7 @@ medStartupSettingsWidget::medStartupSettingsWidget(QWidget *parent) : medSetting
     d->defaultStartingArea->addItem(tr("Homepage"));
     d->defaultStartingArea->addItem(tr("Browser"));
     d->defaultStartingArea->addItem(tr("Composer"));
-    foreach(medWorkspaceFactory::Details* detail, workspaceDetails)
+    for(medWorkspaceFactory::Details* detail : workspaceDetails)
     {
         d->defaultStartingArea->addItem(detail->name);
     }

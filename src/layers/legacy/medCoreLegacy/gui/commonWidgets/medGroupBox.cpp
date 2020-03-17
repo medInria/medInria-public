@@ -63,7 +63,7 @@ void medGroupBox::setCollapsed(bool collapse)
     if (d->collapsible || !collapse)
     {
         // show/hide children
-        foreach(QObject* child, children())
+        for(QObject* child : children())
         {
             if (child->isWidgetType())
                 qobject_cast<QWidget*>(child)->setVisible(!collapse);

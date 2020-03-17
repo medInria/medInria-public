@@ -43,7 +43,7 @@ medSelectorToolBox::medSelectorToolBox(QWidget *parent, QString tlbxId)
     // Get informations about the workspace toolboxes:
     // displayed name, description for tooltip, and identifier
     QHash<QString, QStringList> toolboxDataHash;
-    foreach(QString toolboxName, tbFactory->toolBoxesFromCategory(tlbxId))
+    for(QString toolboxName : tbFactory->toolBoxesFromCategory(tlbxId))
     {
         medToolBoxDetails *details = tbFactory->toolBoxDetailsFromId(toolboxName);
 
@@ -58,7 +58,7 @@ medSelectorToolBox::medSelectorToolBox(QWidget *parent, QString tlbxId)
     std::sort(names.begin(), names.end());
 
     int i = 1; // toolboxes positions
-    foreach( QString name, names )
+    for( QString name : names )
     {
         QStringList values = toolboxDataHash.value(name);
         d->chooseComboBox->addItem(name, values.at(0));

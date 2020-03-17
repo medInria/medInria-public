@@ -169,7 +169,7 @@ medActionsToolBox::medActionsToolBox( QWidget *parent /*= 0*/, bool FILE_SYSTEM 
     QGridLayout *gridLayout = new QGridLayout(d->buttonsWidget);
     gridLayout->setHorizontalSpacing(4);
 
-    foreach(QAbstractButton* bt, d->buttonsList)
+    for(QAbstractButton* bt : d->buttonsList)
     {
         bt->setAutoFillBackground(true);
         bt->setObjectName("actionToolBoxButton"); // set for style sheet medInria.qss
@@ -269,7 +269,7 @@ void medActionsToolBox::selectedPathsChanged(const QStringList& paths)
     bool containsFolders = false;
     bool containsFiles = false;
 
-    foreach(QString path, paths)
+    for(QString path : paths)
     {
         QFileInfo fi(path);
 
@@ -293,7 +293,7 @@ void medActionsToolBox::updateButtons(QString selectedItem)
 {
     QList<QString> actions = d->itemToActions.values(selectedItem);
 
-    foreach(QAbstractButton* bt, d->buttonsList)
+    for(QAbstractButton* bt : d->buttonsList)
     {
         bt->setVisible(true);
         bool showButton = actions.contains( bt->accessibleName() );

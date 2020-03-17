@@ -103,7 +103,7 @@ void medDatabaseSearchPanel::setColumnNames( const QStringList &columns )
 
     d->columnBox->clear();
 
-    foreach(QString columnName, columns)
+    for(QString columnName : columns)
     {
         if (columnName != "")
         {

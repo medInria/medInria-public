@@ -115,13 +115,17 @@ void medLayerParameterGroupL::updatePool()
         if(!view->contains(layerData))
             continue;
 
-        foreach(medAbstractInteractor* interactor, view->layerInteractors(view->layer(layerData)))
+        for(medAbstractInteractor* interactor : view->layerInteractors(view->layer(layerData)))
+        {
             params.append(interactor->linkableParameters());
+        }
 
-        foreach(medAbstractParameterL* param, params)
+        for(medAbstractParameterL* param : params)
         {
             if(this->parametersToLink().contains(param->name()))
+            {
                 d->pool->append(param);
+            }
         }
     }
 }
@@ -133,32 +137,42 @@ void medLayerParameterGroupL::updateParameterToLinkList(medAbstractLayeredView *
     {
         QList<medAbstractParameterL*>  params;
 
-        foreach(medAbstractInteractor* interactor, view->layerInteractors(view->layer(layerData)))
+        for(medAbstractInteractor* interactor : view->layerInteractors(view->layer(layerData)))
+        {
             params.append(interactor->linkableParameters());
+        }
 
-        foreach(medAbstractParameterL* param, params)
+        for(medAbstractParameterL* param : params)
         {
             if(!this->parametersToLink().contains(param->name()))
+            {
                 this->addParameterToLink(param->name());
+            }
         }
     }
     else if( !linkAll() && !this->parametersNotToLink().isEmpty() && view->contains(layerData) )
     {
         QList<medAbstractParameterL*>  params;
 
-        foreach(medAbstractInteractor* interactor, view->layerInteractors(view->layer(layerData)))
-            params.append(interactor->linkableParameters());
-
-        foreach(medAbstractParameterL* param, params)
+        for(medAbstractInteractor* interactor : view->layerInteractors(view->layer(layerData)))
         {
-            if(!this->parametersToLink().contains(param->name()))
-                this->addParameterToLink(param->name());
+            params.append(interactor->linkableParameters());
         }
 
-        foreach(QString paramNotToLink, this->parametersNotToLink())
+        for(medAbstractParameterL* param : params)
+        {
+            if(!this->parametersToLink().contains(param->name()))
+            {
+                this->addParameterToLink(param->name());
+            }
+        }
+
+        for(QString paramNotToLink : this->parametersNotToLink())
         {
             if(this->parametersToLink().contains(paramNotToLink))
+            {
                 this->removeParameter(paramNotToLink);
+            }
         }
     }
 

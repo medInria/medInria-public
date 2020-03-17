@@ -560,7 +560,7 @@ bool medDatabaseController::updateFromNoVersionToVersion1()
         {
             imagePaths[q.value(0).toInt()] += q.value(0).toString();
         }
-        foreach(int id, imagePaths.keys())
+        for(int id : imagePaths.keys())
         {
             q.prepare("UPDATE series SET path==:paths,isIndexed='true' WHERE id==:seriesId");
             q.bindValue(":paths", imagePaths[id].join(";"));
@@ -686,7 +686,7 @@ QList<medDataIndex> medDatabaseController::moveStudy( const medDataIndex& indexS
 
             // and update patient id in series indexes
             QList<medDataIndex> seriesIndexList = series(indexStudy);
-            foreach(medDataIndex newSeriesIndex, seriesIndexList)
+            for(medDataIndex newSeriesIndex : seriesIndexList)
             {
                 newSeriesIndex.setPatientId(toPatient.patientId());
                 newIndexList << newSeriesIndex;

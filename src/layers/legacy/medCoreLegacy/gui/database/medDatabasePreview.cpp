@@ -65,8 +65,10 @@ void medDatabasePreviewStaticScene::setImage(const medDataIndex &index)
     pixmap->setPixmap(medDataManager::instance()->thumbnail(index));
     this->addItem(pixmap);
 
-    if( ! this->views().isEmpty()) {
-        foreach(QGraphicsView * v, this->views()) {
+    if( ! this->views().isEmpty())
+    {
+        for(QGraphicsView * v : this->views())
+        {
             v->fitInView(pixmap, Qt::KeepAspectRatio);
         }
     }
@@ -292,7 +294,7 @@ void medDatabasePreview::showStudyPreview(const medDataIndex &index)
     QList<medDataIndex> seriesIndex = dbc->series(index);
     QList<QPair<medDataIndex,QString> > seriesDescriptionDataIndexPairList;
 
-    foreach (medDataIndex currentSeriesIndex, seriesIndex)
+    for(medDataIndex currentSeriesIndex : seriesIndex)
     {
         d->staticScene->addImage(currentSeriesIndex);
         QString seriesDescription = dbc->metaData(currentSeriesIndex, medMetaDataKeys::SeriesDescription);

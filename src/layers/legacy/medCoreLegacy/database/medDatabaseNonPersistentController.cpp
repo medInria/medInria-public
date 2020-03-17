@@ -457,7 +457,7 @@ QList<medDataIndex> medDatabaseNonPersistentController::moveStudy(const medDataI
     {
         // let's try to get patient information from its series
         QList<medDataIndex> studiesIndexList = studies(toPatient);
-        foreach(medDataIndex tempStudy, studiesIndexList)
+        for(medDataIndex tempStudy : studiesIndexList)
         {
             QList<medDataIndex> seriesIndexList = series(tempStudy);
 
@@ -495,7 +495,7 @@ QList<medDataIndex> medDatabaseNonPersistentController::moveStudy(const medDataI
     // we also have to update the series of the study
     QList<medDataIndex> seriesIndexList = series(indexStudy);
 
-    foreach(medDataIndex series, seriesIndexList)
+    for(medDataIndex series : seriesIndexList)
     {
         dataStudy = retrieve(series);
 

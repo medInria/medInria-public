@@ -61,7 +61,7 @@ medRegistrationSelectorToolBox::medRegistrationSelectorToolBox(QWidget *parent, 
     // --- Setting up custom toolboxes list ---
     medToolBoxFactory* tbFactory = medToolBoxFactory::instance();
 
-    foreach(QString toolbox, tbFactory->toolBoxesFromCategory("UndoRedoRegistration"))
+    for(QString toolbox : tbFactory->toolBoxesFromCategory("UndoRedoRegistration"))
     {
         medToolBoxDetails* details = tbFactory->toolBoxDetailsFromId(toolbox);
         medRegistrationAbstractToolBox * tb = qobject_cast<medRegistrationAbstractToolBox*>(medToolBoxFactory::instance()->createToolBox(toolbox));
@@ -333,11 +333,15 @@ void medRegistrationSelectorToolBox::handleOutput(typeOfOperation type, QString 
         }
     }
 
-    foreach(QString metaData, d->fixedData->metaDataList())
+    for(QString metaData : d->fixedData->metaDataList())
+    {
         output->setMetaData(metaData,d->fixedData->metaDataValues(metaData));
+    }
 
-    foreach(QString property, d->fixedData->propertyList())
+    for(QString property : d->fixedData->propertyList())
+    {
         output->addProperty(property,d->fixedData->propertyValues(property));
+    }
 
     output->setMetaData(medMetaDataKeys::SeriesDescription.key(), newDescription);
 

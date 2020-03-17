@@ -103,8 +103,8 @@ void medStorage::recurseAddDir(QDir d, QStringList & list)
 
     QStringList qsl = d.entryList(QDir::NoDotAndDotDot | QDir::Dirs | QDir::Files);
 
-    foreach (QString file, qsl) {
-
+    for (QString file : qsl)
+    {
         QFileInfo finfo(QString("%1/%2").arg(d.path()).arg(file));
 
         if (finfo.isSymLink())
@@ -133,7 +133,8 @@ bool medStorage::createDestination(QStringList sourceList, QStringList& destList
     }
 
     int trimCount = sourceDir.length();
-    foreach (QString sourceFile, sourceList) {
+    for (QString sourceFile : sourceList)
+    {
         sourceFile.remove(0,trimCount);
 
         QString destination = destDir + sourceFile;
