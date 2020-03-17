@@ -182,7 +182,7 @@ void medWorkspaceArea::setCurrentWorkspace(medAbstractWorkspaceLegacy *workspace
     d->toolBoxContainer->addToolBox(workspace->selectionToolBox());
     workspace->selectionToolBox()->show();
 
-    foreach (medToolBox * toolbox, workspace->toolBoxes())
+    for(medToolBox * toolbox : workspace->toolBoxes())
     {
         d->toolBoxContainer->addToolBox(toolbox);
         toolbox->show();

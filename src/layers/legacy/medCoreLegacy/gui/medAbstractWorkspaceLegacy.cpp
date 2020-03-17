@@ -200,7 +200,7 @@ bool medAbstractWorkspaceLegacy::areToolBoxesVisible() const
 
 void medAbstractWorkspaceLegacy::clearWorkspaceToolBoxes()
 {
-    foreach(medToolBox* tb,d->toolBoxes)
+    for(medToolBox* tb : d->toolBoxes)
     {
         tb->body()->clear();
     }
@@ -220,7 +220,7 @@ void medAbstractWorkspaceLegacy::updateNavigatorsToolBox()
     QList<QWidget*>  navigators;
     QStringList viewType;
 
-    foreach(QUuid uuid, d->viewContainerStack->containersSelected())
+    for(QUuid uuid : d->viewContainerStack->containersSelected())
     {
         medViewContainer *container = medViewContainerManager::instance()->container(uuid);
         // update the toolbox when the content of the view change
@@ -238,7 +238,7 @@ void medAbstractWorkspaceLegacy::updateNavigatorsToolBox()
     }
     // add the navigators widgets
     d->navigatorToolBox->show();
-    foreach(QWidget* navigator, navigators)
+    for(QWidget* navigator : navigators)
     {
         d->navigatorToolBox->addWidget(navigator);
         navigator->show();
@@ -262,7 +262,7 @@ void medAbstractWorkspaceLegacy::updateMouseInteractionToolBox()
 
     QList<QWidget*>  navigators;
     QStringList viewType;
-    foreach(QUuid uuid, d->viewContainerStack->containersSelected())
+    for(QUuid uuid : d->viewContainerStack->containersSelected())
     {
         medViewContainer *container = medViewContainerManager::instance()->container(uuid);
         // update the toolbox when the content of the view change
@@ -279,7 +279,7 @@ void medAbstractWorkspaceLegacy::updateMouseInteractionToolBox()
     }
     // add the navigators widgets
     d->mouseInteractionToolBox->show();
-    foreach(QWidget* navigator, navigators)
+    for(QWidget* navigator : navigators)
     {
         d->mouseInteractionToolBox->addWidget(navigator);
         navigator->show();
@@ -289,7 +289,7 @@ void medAbstractWorkspaceLegacy::updateMouseInteractionToolBox()
 QList<int> medAbstractWorkspaceLegacy::getSelectedLayerIndices()
 {
     QList<int> layerIndices;
-    foreach (QListWidgetItem *item, d->selectedLayers)
+    for(QListWidgetItem *item : d->selectedLayers)
     {
         layerIndices.append(item->data(Qt::UserRole).toInt());
     }
@@ -335,7 +335,7 @@ void medAbstractWorkspaceLegacy::updateLayersToolBox()
     connect(d->layerListWidget, SIGNAL(itemSelectionChanged()), this, SLOT(handleLayerSelectionChange()));
     connect(d->layerListWidget, SIGNAL(itemDoubleClicked(QListWidgetItem*)), this, SLOT(resetCameraOnSelectedLayer(QListWidgetItem*)));
 
-    foreach(QUuid uuid, d->viewContainerStack->containersSelected())
+    for(QUuid uuid : d->viewContainerStack->containersSelected())
     {
         // fill the layer widget
         medViewContainer *container = medViewContainerManager::instance()->container(uuid);
@@ -371,7 +371,7 @@ void medAbstractWorkspaceLegacy::updateLayersToolBox()
                 layout->addWidget(thumbnailButton);
                 layout->addWidget(layerName);
                 layout->addStretch();
-                foreach (medAbstractInteractor *interactor, layeredView->layerInteractors(layer))
+                for(medAbstractInteractor *interactor : layeredView->layerInteractors(layer))
                 {
                     if(interactor->layerWidget())
                         layout->addWidget(interactor->layerWidget());
@@ -384,7 +384,7 @@ void medAbstractWorkspaceLegacy::updateLayersToolBox()
                     d->poolIndicators.insert(d->layerListWidget->count(), poolIndicator);
 
                     QList<medLayerParameterGroupL*> layerGroups = medParameterGroupManagerL::instance()->layerGroups(layeredView, data);
-                    foreach(medLayerParameterGroupL *layerGroup, layerGroups)
+                    for(medLayerParameterGroupL *layerGroup : layerGroups)
                     {
                         poolIndicator->addColorIndicator(layerGroup->color(), layerGroup->name());
                         connect(layerGroup, SIGNAL(groupColorChanged(QColor,QColor)), poolIndicator, SLOT(replaceColorIndicator(QColor,QColor)));
@@ -466,7 +466,7 @@ void medAbstractWorkspaceLegacy::changeCurrentLayer(int row)
 void medAbstractWorkspaceLegacy::updateInteractorsToolBox()
 {
     medViewContainerManager *containerMng =  medViewContainerManager::instance();
-    foreach(QUuid uuid, d->viewContainerStack->containersSelected())
+    for(QUuid uuid : d->viewContainerStack->containersSelected())
     {
         containerMng->container(uuid)->highlight();
     }
@@ -476,11 +476,9 @@ void medAbstractWorkspaceLegacy::updateInteractorsToolBox()
     if(!d->layerListWidget)
         return;
 
-    // Hack to always have something selected in the layerListWidget
-    // TODO: try to find a better solution...
     if(d->layerListWidget->selectedItems().count() == 0)
     {
-        foreach(QListWidgetItem* item, d->selectedLayers)
+        for(QListWidgetItem* item : d->selectedLayers)
         {
             d->layerListWidget->blockSignals(true);
             item->setSelected(true);
@@ -513,7 +511,7 @@ void medAbstractWorkspaceLegacy::updateInteractorsToolBox()
     // If we have a multiSelection we just want to colorise the container that have at least one layer selected.
     if(d->layerListWidget->selectedItems().size() > 1)
     {
-        foreach(QListWidgetItem* item, d->layerListWidget->selectedItems())
+        for(QListWidgetItem* item : d->layerListWidget->selectedItems())
         {
             QUuid containerUuid = d->containerForLayerWidgetsItem.value(item);
             medViewContainer *container = containerMng->container(containerUuid);
@@ -525,7 +523,7 @@ void medAbstractWorkspaceLegacy::updateInteractorsToolBox()
         return;
     }
 
-    foreach (medAbstractInteractor* interactor, view->layerInteractors(currentLayer))
+    for(medAbstractInteractor* interactor : view->layerInteractors(currentLayer))
     {
         QString interactorIdentifier = interactor->identifier();
         if(!interactorsIdentifier.contains(interactorIdentifier))
@@ -581,7 +579,7 @@ void medAbstractWorkspaceLegacy::buildTemporaryPool()
     medViewContainerManager *containerMng =  medViewContainerManager::instance();
     d->temporaryPoolForInteractors->clear();
 
-    foreach(QListWidgetItem* item, d->layerListWidget->selectedItems())
+    for(QListWidgetItem* item : d->layerListWidget->selectedItems())
     {
         QUuid containerUuid = d->containerForLayerWidgetsItem.value(item);
         medViewContainer *container = containerMng->container(containerUuid);
@@ -589,7 +587,7 @@ void medAbstractWorkspaceLegacy::buildTemporaryPool()
 
         medAbstractLayeredView *view = dynamic_cast<medAbstractLayeredView*>(container->view());
 
-        foreach (medAbstractInteractor* interactor, view->layerInteractors(layer))
+        for(medAbstractInteractor* interactor : view->layerInteractors(layer))
         {
             d->temporaryPoolForInteractors->append(interactor->linkableParameters());
         }
@@ -614,7 +612,7 @@ void medAbstractWorkspaceLegacy::open(const medDataIndex &index)
         QList<medDataIndex> seriesList = medDataManager::instance()->getSeriesListFromStudy(index);
         if (seriesList.count() > 0)
         {
-            foreach (medDataIndex seriesIndex, seriesList)
+            for(medDataIndex seriesIndex : seriesList)
             {
                 container->addData(medDataManager::instance()->retrieveData(seriesIndex));
             }
@@ -675,7 +673,7 @@ QWidget* medAbstractWorkspaceLegacy::buildViewLinkMenu()
     QList<medAbstractView*> views;
     QList<medAbstractParameterL*>  viewsParams;
 
-    foreach(QUuid uuid, d->viewContainerStack->containersSelected())
+    for(QUuid uuid : d->viewContainerStack->containersSelected())
     {
         medViewContainer *container = medViewContainerManager::instance()->container(uuid);
         view = container->view();
@@ -697,21 +695,22 @@ QWidget* medAbstractWorkspaceLegacy::buildViewLinkMenu()
     QStringList paramNames;
 
     // build a stringList witth all the param names
-    foreach(medAbstractParameterL* viewParam, viewsParams)
+    for(medAbstractParameterL* viewParam : viewsParams)
+    {
         paramNames << viewParam->name();
+    }
 
     QList<medAbstractParameterGroupL*>  groups;
     QStringList selectedGroups;
     QStringList partiallySelectedGroups;
 
-    //TODO: to review
-    foreach(medViewParameterGroupL *viewGroup, medParameterGroupManagerL::instance()->viewGroups(this->identifier()))
+    for(medViewParameterGroupL *viewGroup : medParameterGroupManagerL::instance()->viewGroups(this->identifier()))
     {
         groups.append(viewGroup);
         bool selected = true;
         bool partiallySelected = false;
 
-        foreach(medAbstractView *view, views)
+        for(medAbstractView *view : views)
         {
             if(!viewGroup->impactedViews().contains(view))
                 selected = false;
@@ -743,7 +742,7 @@ QWidget* medAbstractWorkspaceLegacy::buildLayerLinkMenu(QList<QListWidgetItem*> 
     QMultiHash<medAbstractLayeredView*, unsigned int> layers;
     medViewContainerManager *containerMng =  medViewContainerManager::instance();
 
-    foreach(QListWidgetItem *item, selectedlayers)
+    for(QListWidgetItem *item : selectedlayers)
     {
         int currentLayer = item->data(Qt::UserRole).toInt();
         QList<QString> interactorsIdentifier;
@@ -752,7 +751,7 @@ QWidget* medAbstractWorkspaceLegacy::buildLayerLinkMenu(QList<QListWidgetItem*> 
         medViewContainer *container = containerMng->container(containerUuid);
         medAbstractLayeredView *view = dynamic_cast<medAbstractLayeredView*>(container->view());
 
-        foreach (medAbstractInteractor* interactor, view->layerInteractors(currentLayer))
+        for(medAbstractInteractor* interactor : view->layerInteractors(currentLayer))
         {
             QString interactorIdentifier = interactor->identifier();
             if(!interactorsIdentifier.contains(interactorIdentifier))
@@ -779,14 +778,16 @@ QWidget* medAbstractWorkspaceLegacy::buildLayerLinkMenu(QList<QListWidgetItem*> 
     connect(d->layerLinkMenu, SIGNAL(groupColorChangeRequest(QString,QColor)), this, SLOT(changeLayerGroupColor(QString, QColor)));
 
     // build a stringList with all the param names
-    foreach(medAbstractParameterL* layerParam, layersParams)
+    for(medAbstractParameterL* layerParam : layersParams)
+    {
         paramNames << layerParam->name();
+    }
 
     QList<medAbstractParameterGroupL*>  groups;
     QStringList selectedGroups;
     QStringList partiallySelectedGroups;
 
-    foreach(medLayerParameterGroupL *layerGroup, medParameterGroupManagerL::instance()->layerGroups(this->identifier()))
+    for(medLayerParameterGroupL *layerGroup : medParameterGroupManagerL::instance()->layerGroups(this->identifier()))
     {
         groups.append(layerGroup);
         bool selected = true;
@@ -825,7 +826,7 @@ void medAbstractWorkspaceLegacy::addViewstoGroup(QString group)
 
     medViewParameterGroupL *paramGroup = medParameterGroupManagerL::instance()->viewGroup(group, this->identifier());
 
-    foreach(QUuid uuid, d->viewContainerStack->containersSelected())
+    for(QUuid uuid : d->viewContainerStack->containersSelected())
     {
         medViewContainer *container = medViewContainerManager::instance()->container(uuid);
         view = container->view();
@@ -843,7 +844,7 @@ void medAbstractWorkspaceLegacy::removeViewsFromGroup(QString group)
 
     medViewParameterGroupL *paramGroup = medParameterGroupManagerL::instance()->viewGroup(group, this->identifier());
 
-    foreach(QUuid uuid, d->viewContainerStack->containersSelected())
+    for(QUuid uuid : d->viewContainerStack->containersSelected())
     {
         medViewContainer *container = medViewContainerManager::instance()->container(uuid);
         view = container->view();
@@ -860,7 +861,7 @@ void medAbstractWorkspaceLegacy::addLayerstoGroup(QString group)
     medLayerParameterGroupL *paramGroup = medParameterGroupManagerL::instance()->layerGroup(group, this->identifier());
     medViewContainerManager *containerMng =  medViewContainerManager::instance();
 
-    foreach(QListWidgetItem *item, d->selectedLayers)
+    for(QListWidgetItem *item : d->selectedLayers)
     {
         int currentLayer = item->data(Qt::UserRole).toInt();
 
@@ -885,7 +886,7 @@ void medAbstractWorkspaceLegacy::removeLayersFromGroup(QString group)
     medLayerParameterGroupL *paramGroup = medParameterGroupManagerL::instance()->layerGroup(group, this->identifier());
     medViewContainerManager *containerMng =  medViewContainerManager::instance();
 
-    foreach(QListWidgetItem *item, d->selectedLayers)
+    for(QListWidgetItem *item : d->selectedLayers)
     {
         int currentLayer = item->data(Qt::UserRole).toInt();
 
@@ -942,14 +943,18 @@ void medAbstractWorkspaceLegacy::addLayerGroup(medLayerParameterGroupL * group)
 
 void medAbstractWorkspaceLegacy::setViewGroups(QList<medViewParameterGroupL*> groups)
 {
-    foreach(medViewParameterGroupL* group, medParameterGroupManagerL::instance()->viewGroups(this->identifier()))
+    for(medViewParameterGroupL* group : medParameterGroupManagerL::instance()->viewGroups(this->identifier()))
+    {
         addViewGroup(group);
+    }
 }
 
 void medAbstractWorkspaceLegacy::setLayerGroups(QList<medLayerParameterGroupL*> groups)
 {
-    foreach(medLayerParameterGroupL* group, groups)
+    for(medLayerParameterGroupL* group : groups)
+    {
         addLayerGroup(group);
+    }
 }
 
 void medAbstractWorkspaceLegacy::setInitialGroups()

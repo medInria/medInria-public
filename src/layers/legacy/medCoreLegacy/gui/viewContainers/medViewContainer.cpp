@@ -363,8 +363,10 @@ void medViewContainer::splitContainer(unsigned int numY, unsigned int numX)
 
     for (unsigned int i = 1;i < numY;++i)
     {
-        foreach(medViewContainer *container, listSplitsX)
+        for(medViewContainer *container : listSplitsX)
+        {
             container->splitHorizontally();
+        }
     }
 
     motherSplitter->adjustContainersSize();
@@ -784,7 +786,7 @@ void medViewContainer::addData(medDataIndex index)
 
             if (userIsOk)
             {
-                foreach (medDataIndex seriesIndex, seriesList)
+                for(medDataIndex seriesIndex : seriesList)
                 {
                     this->addData(medDataManager::instance()->retrieveData(seriesIndex));
                 }

@@ -97,8 +97,7 @@ medSaveModifiedDialog::medSaveModifiedDialog(QWidget *parent) : QDialog(parent),
     layout->addWidget(d->treeWidget);
     layout->addLayout(hlayout);
 
-    //TODO a little bit ugly the way medSaveModifiedDialogCheckListItem are parented no ?
-    foreach(medDatabaseNonPersistentItem *item, medDatabaseNonPersistentController::instance()->items())
+    for(medDatabaseNonPersistentItem *item : medDatabaseNonPersistentController::instance()->items())
     {
         if ((item->studyName() != "") && (item->seriesName() != ""))
             new medSaveModifiedDialogCheckListItem(d->treeWidget->invisibleRootItem(), item->index(), item->name(), item->studyName(), item->seriesName(), item->file(), item->thumb());
@@ -138,9 +137,11 @@ void medSaveModifiedDialog::saveAndQuit()
     }
 
     medDataManager * mdm = medDataManager::instance();
-    foreach(medDataIndex index, list)
+    for(medDataIndex index : list)
+    {
         mdm->makePersistent(mdm->retrieveData(index));
-    
+    }
+
     if (d->counter != 0)
         d->quitRequested = true;
     else
@@ -166,8 +167,12 @@ void medSaveModifiedDialog::onUpdateTree()
 {
     d->treeWidget->clear();
     
-    foreach(medDatabaseNonPersistentItem *item, medDatabaseNonPersistentController::instance()->items())
-    d->treeWidget->insertTopLevelItem(0,new medSaveModifiedDialogCheckListItem(d->treeWidget->invisibleRootItem(), item->index(), item->name(), item->studyName(), item->seriesName(), item->file(), item->thumb()));
+    for(medDatabaseNonPersistentItem *item : medDatabaseNonPersistentController::instance()->items())
+    {
+        d->treeWidget->insertTopLevelItem(0,new medSaveModifiedDialogCheckListItem(d->treeWidget->invisibleRootItem(),
+                                                                                   item->index(), item->name(), item->studyName(),
+                                                                                   item->seriesName(), item->file(), item->thumb()));
+    }
     
     d->treeWidget->update();
     d->treeWidget->resizeColumnToContents(0);

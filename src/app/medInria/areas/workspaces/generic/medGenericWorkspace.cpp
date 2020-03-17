@@ -110,7 +110,7 @@ void medGenericWorkspace::setProcessType(int index)
         default:
         {
             QStringList plugins = medCore::generic::pluginFactory().keys();
-            foreach(QString pluginKey, plugins)
+            for(QString pluginKey : plugins)
             {
                 medAbstractProcess *process = medCore::generic::pluginFactory().create(pluginKey);
                 if (process)

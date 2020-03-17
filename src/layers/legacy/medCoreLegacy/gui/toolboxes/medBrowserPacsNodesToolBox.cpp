@@ -152,7 +152,8 @@ void medBrowserPacsNodesToolBox::fillWidget( QList<QVariant> nodes )
     d->table->setHorizontalHeaderLabels(QStringList() << "Title" << "Address" << "Port");
     d->table->setSelectionBehavior(QAbstractItemView::SelectRows);
 
-    foreach(QVariant node, nodes) {
+    for(QVariant node : nodes)
+    {
         int row = d->table->rowCount(); d->table->insertRow(row);
 
         d->table->setItem(row, 0, new QTableWidgetItem(node.toStringList().at(0)));

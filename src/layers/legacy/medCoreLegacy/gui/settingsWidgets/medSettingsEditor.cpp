@@ -64,7 +64,7 @@ medSettingsEditor::~medSettingsEditor()
 
 void medSettingsEditorPrivate::read()
 {
-    foreach(medSettingsWidget * setting, settingsWidgets)
+    for(medSettingsWidget * setting : settingsWidgets)
     {
         setting->read();
     }
@@ -225,7 +225,7 @@ void medSettingsEditor::queryWidgets()
     medSettingsWidget * setWid;
     QScrollArea * scroll;
     unsigned int i =0;
-    foreach (QString widgetStyle, settingsFactory->settingsWidgets())
+    for(QString widgetStyle : settingsFactory->settingsWidgets())
     {
         if (!d->settingsWidgets.contains(widgetStyle))
         {
@@ -257,8 +257,7 @@ bool medSettingsEditor::save()
     bool success = true;
     if (!d->stack->currentIndex())
     {
-        foreach(medSettingsWidget * setting,
-            d->settingsWidgets)
+        for(medSettingsWidget * setting : d->settingsWidgets)
         {
             if (!setting->validate())
             {

@@ -71,8 +71,10 @@ void medAbstractParameterL::setToolTip(QString tooltip)
 {
     d->toolTip = tooltip;
 
-    foreach(QWidget *widget, d->internWidget)
+    for(QWidget *widget : d->internWidget)
+    {
         widget->setToolTip(tooltip);
+    }
 }
 
 bool medAbstractParameterL::match(medAbstractParameterL const *other)
@@ -84,16 +86,20 @@ void medAbstractParameterL::show()
 {
     d->hide = false;
 
-    foreach (QWidget *widget, d->internWidget)
+    for(QWidget *widget : d->internWidget)
+    {
         widget->show();
+    }
 }
 
 void medAbstractParameterL::hide()
 {
     d->hide = true;
 
-    foreach (QWidget *widget, d->internWidget)
+    for(QWidget *widget : d->internWidget)
+    {
         widget->hide();
+    }
 }
 
 void medAbstractParameterL::removeInternLabel()
@@ -117,10 +123,11 @@ void medAbstractParameterL::removeFromInternWidgets(QWidget *widget)
 
 void medAbstractParameterL::blockInternWidgetsSignals(bool block) const
 {
-    foreach(QWidget* widget, d->internWidget)
+    for(QWidget* widget : d->internWidget)
+    {
         widget->blockSignals(block);
+    }
 }
-
 
 //--------------------------------------------------------------------------
 //  medAbstractTriggerParameterL

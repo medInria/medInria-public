@@ -71,6 +71,9 @@ void medJobManagerL::dispatchGlobalCancelEvent(bool ignoreNewJobItems)
 {
     if (ignoreNewJobItems)
         d->m_IsActive = false;
-    foreach( medJobItemL* item, d->itemList )
+
+    for( medJobItemL* item : d->itemList )
+    {
         emit cancel( item );
+    }
 }

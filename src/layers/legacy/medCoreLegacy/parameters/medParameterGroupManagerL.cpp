@@ -100,7 +100,7 @@ medViewParameterGroupL* medParameterGroupManagerL::viewGroup(QString groupName, 
         workspace = d->currentWorkspace;
     }
 
-    foreach(medViewParameterGroupL* viewGroup, d->viewGroups.values(workspace))
+    for(medViewParameterGroupL* viewGroup : d->viewGroups.values(workspace))
     {
         if( viewGroup->name() == groupName )
         {
@@ -121,7 +121,7 @@ medLayerParameterGroupL* medParameterGroupManagerL::layerGroup(QString groupName
         workspace = d->currentWorkspace;
     }
 
-    foreach(medLayerParameterGroupL* layerGroup, d->layerGroups.values(workspace))
+    for(medLayerParameterGroupL* layerGroup : d->layerGroups.values(workspace))
     {
         if( layerGroup->name() == groupName )
         {

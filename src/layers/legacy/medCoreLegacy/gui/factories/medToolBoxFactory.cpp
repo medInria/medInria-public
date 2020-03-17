@@ -140,7 +140,7 @@ medToolBoxFactory::medToolBoxFactory(void) : dtkAbstractFactory(), d(new medTool
 medToolBoxFactory::~medToolBoxFactory(void)
 {
     //delete details.
-    foreach (medToolBoxDetails * detail, d->creators.values())
+    for(medToolBoxDetails * detail : d->creators.values())
     {
         delete detail;
         detail = nullptr;

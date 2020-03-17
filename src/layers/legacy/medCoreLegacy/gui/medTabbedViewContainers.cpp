@@ -155,7 +155,7 @@ QList<medAbstractView*> medTabbedViewContainers::viewsInTab(int index)
         return views;
 
     QList<medViewContainer*> containers = splitter->containers();
-    foreach(medViewContainer *container, containers)
+    for(medViewContainer *container : containers)
     {
         views << container->view();
     }
@@ -190,7 +190,7 @@ void medTabbedViewContainers::setSplitter(int index, medViewContainerSplitter *s
     this->setCurrentIndex(idx);
     d->containerSelectedForTabIndex.insert(idx, QList<QUuid>());
     connect(splitter, SIGNAL(newContainer(QUuid)), this, SLOT(connectContainer(QUuid)), Qt::UniqueConnection);
-    foreach(medViewContainer* container, splitter->containers())
+    for(medViewContainer* container : splitter->containers())
     {
         this->connectContainer(container->uuid());
     }
@@ -299,8 +299,10 @@ void medTabbedViewContainers::addContainerToSelection(QUuid container)
 
     if(QApplication::keyboardModifiers() != Qt::ControlModifier)
     {
-        foreach (QUuid uuid, containersSelected)
+        for(QUuid uuid : containersSelected)
+        {
             medViewContainerManager::instance()->container(uuid)->setSelected(false);
+        }
     }
     // containersSelected may have been modified in removeContainerFromSelection so
     // we have to get it back again
@@ -317,7 +319,7 @@ void medTabbedViewContainers::addContainerToSelection(QUuid container)
 
 void medTabbedViewContainers::removeContainerFromSelection(QUuid container)
 {
-    foreach(QList<QUuid> containersSelected, d->containerSelectedForTabIndex.values())
+    for(QList<QUuid> containersSelected : d->containerSelectedForTabIndex.values())
     {
         int tabIndex = d->containerSelectedForTabIndex.key(containersSelected);
         if(containersSelected.removeOne(container))
@@ -335,14 +337,16 @@ void medTabbedViewContainers::removeContainerFromSelection(QUuid container)
 void medTabbedViewContainers::buildTemporaryPool()
 {
     d->pool->clear();
-    foreach(QUuid uuid, this->containersSelected())
+    for(QUuid uuid : this->containersSelected())
     {
         medViewContainer *container = medViewContainerManager::instance()->container(uuid);
 
         if(!container->view())
+        {
             continue;
+        }
 
-        foreach(medAbstractParameterL *param, container->view()->linkableParameters())
+        for(medAbstractParameterL *param : container->view()->linkableParameters())
         {
             d->pool->append(param);
         }
@@ -351,12 +355,12 @@ void medTabbedViewContainers::buildTemporaryPool()
 
 void medTabbedViewContainers::connectContainerSelectedForCurrentTab()
 {
-    foreach(QList<QUuid> containersSelected, d->containerSelectedForTabIndex.values())
+    for(QList<QUuid> containersSelected : d->containerSelectedForTabIndex.values())
     {
         int tabIndex = d->containerSelectedForTabIndex.key(containersSelected);
         if(tabIndex == this->currentIndex())
         {
-            foreach (QUuid uuid, containersSelected)
+            for(QUuid uuid : containersSelected)
             {
                 medViewContainer *container =  medViewContainerManager::instance()->container(uuid);
                 connect(container, SIGNAL(viewRemoved()), this, SIGNAL(containersSelectedChanged()), Qt::UniqueConnection);
@@ -365,7 +369,7 @@ void medTabbedViewContainers::connectContainerSelectedForCurrentTab()
         }
         else
         {
-            foreach (QUuid uuid, containersSelected)
+            for(QUuid uuid : containersSelected)
             {
                 medViewContainer *container =  medViewContainerManager::instance()->container(uuid);
                 this->disconnect(container, SIGNAL(viewRemoved()), this, 0);

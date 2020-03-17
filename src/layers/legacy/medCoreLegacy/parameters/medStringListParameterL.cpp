@@ -53,8 +53,10 @@ void medStringListParameterL::addItem(QString item, QIcon icon)
 
 void medStringListParameterL::addItems(QStringList items)
 {
-    foreach(QString item, items)
+    for(QString item : items)
+    {
         this->addItem(item);
+    }
 }
 
 void medStringListParameterL::removeItem(QString item)
@@ -88,8 +90,10 @@ QComboBox* medStringListParameterL::getComboBox()
     if(!d->comboBox)
     {
         d->comboBox = new QComboBox;
-        foreach(QString item, d->items)
+        for(QString item : d->items)
+        {
             d->comboBox->addItem(d->iconForItem.value(item), item);
+        }
 
         this->addToInternWidgets(d->comboBox);
 

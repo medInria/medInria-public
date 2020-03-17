@@ -67,7 +67,7 @@ medDataSourceManager::medDataSourceManager(): d(new medDataSourceManagerPrivate)
 
     // dynamic data sources (from plugins)
 
-    foreach(QString dataSourceName, medAbstractDataSourceFactory::instance()->dataSourcePlugins())
+    for(QString dataSourceName : medAbstractDataSourceFactory::instance()->dataSourcePlugins())
     {
         dtkDebug()<< "factory creates dataSource:" << dataSourceName;
         medAbstractDataSource *dataSource = medAbstractDataSourceFactory::instance()->create(dataSourceName, 0);

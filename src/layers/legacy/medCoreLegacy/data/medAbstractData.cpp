@@ -98,7 +98,7 @@ medAbstractData * medAbstractData::convert(const QString &toType)
 {
     medAbstractData *conversion = nullptr;
 
-    foreach (QString converterId, medAbstractDataFactory::instance()->converters())
+    for(QString converterId : medAbstractDataFactory::instance()->converters())
     {
         QScopedPointer<dtkAbstractDataConverter> converter (medAbstractDataFactory::instance()->converter(converterId));
 
@@ -109,11 +109,14 @@ medAbstractData * medAbstractData::convert(const QString &toType)
 
             if(conversion)
             {
-                foreach(QString metaDataKey, this->metaDataList())
+                for(QString metaDataKey : this->metaDataList())
+                {
                     conversion->setMetaData(metaDataKey, this->metaDataValues(metaDataKey));
-
-                foreach(QString propertyKey, this->propertyList())
+                }
+                for(QString propertyKey : this->propertyList())
+                {
                     conversion->addProperty(propertyKey, this->propertyValues(propertyKey));
+                }
             }
         }
     }
@@ -132,7 +135,8 @@ QList< medAttachedData * > medAbstractData::attachedData() const
 #if QT_VERSION > 0x0406FF
     ret.reserve(d->attachedData.size());
 #endif
-    foreach( medAttachedData * data, d->attachedData ) {
+    for( medAttachedData * data : d->attachedData )
+    {
         ret.push_back(data);
     }
     return ret;
@@ -145,8 +149,10 @@ QList< medAttachedData * > medAbstractData::attachedData() const
  */
 void medAbstractData::clearAttachedData()
 {
-    foreach ( medAttachedData * data, d->attachedData )
+    for( medAttachedData * data : d->attachedData )
+    {
         emit attachedDataRemoved( data );
+    }
     d->attachedData.clear();
 }
 

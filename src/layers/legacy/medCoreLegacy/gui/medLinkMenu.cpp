@@ -152,7 +152,7 @@ void medLinkMenu::setAvailableParameters(QStringList parameters)
     d->paramList->insertItem(0,item);
 
     int i = 1;
-    foreach(QString param, parameters)
+    for(QString param : parameters)
     {
         QListWidgetItem * item = new QListWidgetItem(param);
         item->setSizeHint(QSize(item->sizeHint().width(), 20));
@@ -204,7 +204,7 @@ void medLinkMenu::setGroups(QList<medAbstractParameterGroupL*> groups)
         d->groupList->model()->removeRow(i);
     d->groupList->blockSignals(false);
 
-    foreach(medAbstractParameterGroupL *group, groups)
+    for(medAbstractParameterGroupL *group : groups)
     {
         addGroup(group);
 
@@ -226,7 +226,7 @@ void medLinkMenu::setGroups(QList<medAbstractParameterGroupL*> groups)
 
 void medLinkMenu::setSelectedGroups(QStringList groups)
 {
-    foreach(QString group, groups)
+    for(QString group : groups)
     {
         for(int i=0; i<d->groupList->count(); i++)
         {
@@ -242,7 +242,7 @@ void medLinkMenu::setSelectedGroups(QStringList groups)
 
 void medLinkMenu::setPartiallySelectedGroups(QStringList groups)
 {
-    foreach(QString group, groups)
+    for(QString group : groups)
     {
         for(int i=0; i<d->groupList->count(); i++)
         {
@@ -432,7 +432,7 @@ void medLinkMenu::updateParamCheckState(QString group)
     else
     {
         QList<QString> params = d->currentGroups.value(group)->parametersToLink();
-        foreach(QString param, params)
+        for(QString param : params)
         {
             for(int i=1; i<d->paramList->count(); i++)
             {
@@ -621,11 +621,11 @@ void medLinkMenu::saveAsPreset()
 void medLinkMenu::loadPreset()
 {
     QStringList presets = medSettingsManager::instance()->keys("GroupPresets");
-    foreach(QString preset, presets)
+    for(QString preset : presets)
     {
         QStringList params = medSettingsManager::instance()->value("GroupPresets", preset).toStringList();
         bool ok = true;
-        foreach(QString param, params)
+        for(QString param : params)
         {
             if(!d->availableParams.contains(param))
             {
@@ -676,7 +676,7 @@ void medLinkMenu::applyPreset(QListWidgetItem* item)
         }
 
         // preset has been renamed, need to look for the renamed item
-        foreach(QString key, d->presets.keys())
+        for(QString key : d->presets.keys())
         {
             if(!presetsInListWidget.contains(key))
             {
@@ -690,7 +690,7 @@ void medLinkMenu::applyPreset(QListWidgetItem* item)
     }
     else  presetParams = d->presets[preset];
 
-    foreach(QString presetParam, presetParams)
+    for(QString presetParam : presetParams)
     {
         for(int i=1; i<d->paramList->count(); i++)
         {

@@ -58,7 +58,7 @@ QString medDatabaseNonPersistentImporter::getPatientID(QString patientName, QStr
     bool patientExists = false;
     QString patientID;
 
-    foreach(medDatabaseNonPersistentItem* item, items)
+    for(medDatabaseNonPersistentItem* item : items)
     {
         if(item->name() == patientName && item->birthdate() == birthDate)
         {
@@ -262,7 +262,7 @@ QString medDatabaseNonPersistentImporter::ensureUniqueSeriesName ( const QString
     QList<medDatabaseNonPersistentItem*> items = npdc->items();
 
     QStringList seriesNames;
-    foreach(medDatabaseNonPersistentItem* item, items)
+    for(medDatabaseNonPersistentItem* item : items)
     {
         QString sname = item->seriesName();
         if(sname.startsWith(seriesName) )

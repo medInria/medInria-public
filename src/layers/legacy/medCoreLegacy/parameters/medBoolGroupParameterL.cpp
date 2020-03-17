@@ -162,7 +162,7 @@ QWidget* medBoolGroupParameterL::getPushButtonGroup()
         d->pushButtonGroup = new QButtonGroup;
         d->pushButtonGroup->setExclusive(true);
 
-        foreach (medBoolParameterL* parameter, d->parameters)
+        for(medBoolParameterL* parameter : d->parameters)
         {
             d->pushButtonGroup->addButton(parameter->getPushButton());
             d->pushButtonLayout->addWidget(parameter->getPushButton());
@@ -183,7 +183,7 @@ QWidget* medBoolGroupParameterL::getCheckBoxGroup()
         d->checkBoxGroup = new QButtonGroup;
         d->checkBoxGroup->setExclusive(true);
 
-        foreach (medBoolParameterL* parameter, d->parameters)
+        for(medBoolParameterL* parameter : d->parameters)
         {
             QHBoxLayout *pLayout = new QHBoxLayout;
             pLayout->addWidget(parameter->getLabel());
@@ -207,7 +207,7 @@ QWidget* medBoolGroupParameterL::getRadioButtonGroup()
         d->radioButtonGroup = new QButtonGroup;
         d->radioButtonGroup->setExclusive(true);
 
-        foreach (medBoolParameterL* parameter, d->parameters)
+        for(medBoolParameterL* parameter : d->parameters)
         {
             QHBoxLayout *pLayout = new QHBoxLayout;
             pLayout->addWidget(parameter->getLabel());
