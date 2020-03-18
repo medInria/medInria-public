@@ -148,12 +148,12 @@ void medRoiManagementToolBox::updateView()
         orientationObserverTag = static_cast<medVtkViewBackend*>(d->currentView->backend())->view2D->AddObserver(vtkImageView2D::OrientationChangedEvent, this, &medRoiManagementToolBox::updateDisplay);
 
         d->slicingParameter = nullptr;
-        foreach (medAbstractInteractor *interactor, qobject_cast<medAbstractLayeredView*>(d->currentView)->layerInteractors(0))
+        for(medAbstractInteractor *interactor : qobject_cast<medAbstractLayeredView*>(d->currentView)->layerInteractors(0))
         {
             if ((interactor->identifier() == "medVtkViewItkDataImageInteractor") ||
                     (interactor->identifier() == "medVtkViewItkDataImage4DInteractor"))
             {
-                foreach (medAbstractParameterL *parameter, interactor->linkableParameters())
+                for(medAbstractParameterL *parameter : interactor->linkableParameters())
                 {
                     if (parameter->name() == "Slicing")
                     {

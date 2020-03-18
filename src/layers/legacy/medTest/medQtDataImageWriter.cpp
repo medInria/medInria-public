@@ -85,7 +85,7 @@ QStringList medQtDataImageWriter::supportedFileExtensions() const
     CompareReversePriority compareReversePriority;
     std::sort(sortedFormats.begin(), sortedFormats.end(), compareReversePriority);
 
-    foreach( FormatInfoList::const_iterator it, sortedFormats )
+    for( FormatInfoList::const_iterator it : sortedFormats )
     {
         extensions << ( "." + it->fileExtension );
     }
@@ -166,7 +166,8 @@ bool medQtDataImageWriter::writeOrTest( const QString& path, bool dryRun /*= tru
 
     // Set metadata
     const QStringList keys = medData->metaDataList();
-    foreach( const QString key, keys) {
+    for( const QString key : keys)
+    {
         writer->setText( key, medData->metadata(key) );
     }
 

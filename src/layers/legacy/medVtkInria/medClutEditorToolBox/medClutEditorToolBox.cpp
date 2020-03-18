@@ -120,7 +120,7 @@ medClutEditorToolBox::medClutEditorToolBox(QWidget *parent) : medToolBox(parent)
 
 medClutEditorToolBox::~medClutEditorToolBox(void)
 {
-    foreach (medClutEditorTable* table, d->tables)
+    for(medClutEditorTable* table : d->tables)
     {
         delete table;
     }
@@ -365,7 +365,7 @@ void medClutEditorToolBox::onLoadTableAction(void)
     updateSavedTables();
 
     QStringList titles;
-    foreach (medClutEditorTable *table, d->tables)
+    for(medClutEditorTable *table : d->tables)
     {
         titles << table->title();
     }
@@ -375,7 +375,7 @@ void medClutEditorToolBox::onLoadTableAction(void)
     if( dialog.exec() == QDialog::Accepted )
     {
         // We got Ok
-        foreach (medClutEditorTable *table, d->tables)
+        for(medClutEditorTable *table : d->tables)
         {
             if ( table->title() == dialog.textValue())
             {
@@ -407,7 +407,7 @@ void medClutEditorToolBox::onSaveTableAction(void)
             // Check if table name already saved
             int indexIfTableAlreadySaved = -1;
             int currentIndex = 0;
-            foreach (medClutEditorTable *savedtable, d->tables)
+            for(medClutEditorTable *savedtable : d->tables)
             {
                 if (tableToSave->title() == savedtable->title())
                 {
@@ -456,7 +456,7 @@ void medClutEditorToolBox::onSaveTableAction(void)
 void medClutEditorToolBox::updateSavedTables()
 {
     // Initialize tables
-    foreach (medClutEditorTable *table, d->tables)
+    for(medClutEditorTable *table : d->tables)
     {
         delete table;
     }

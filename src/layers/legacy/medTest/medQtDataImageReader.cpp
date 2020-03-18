@@ -70,9 +70,12 @@ bool medQtDataImageReader::canRead( const QString& path )
 
 bool medQtDataImageReader::canRead( const QStringList& paths )
 {
-    foreach( const QString path, paths ) {
+    for( const QString path : paths )
+    {
         if (! canRead(path) )
+        {
             return false;
+        }
     }
     return true;
 }
@@ -101,7 +104,8 @@ void medQtDataImageReader::setMetaDataFromImageReader()
         return;
 
     const QStringList keys = m_reader->textKeys();
-    foreach( const QString key, keys) {
+    for( const QString key : keys)
+    {
         medData->setMetaData( key, m_reader->text(key) );
     }
 }
@@ -116,7 +120,8 @@ bool medQtDataImageReader::read( const QStringList& paths )
 
     int numRead(0);
     this->setProgress(0);
-    foreach( const QString path, paths ) {
+    for( const QString path : paths )
+    {
         numRead += this->readStartingFrom(path, numRead);
         double progress = static_cast<double>(numRead)/static_cast<double>(paths.size()) * 100.;
         this->setProgress(static_cast<int>(progress));

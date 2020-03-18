@@ -45,7 +45,7 @@ public:
         vtkBoxWidget *widget = reinterpret_cast<vtkBoxWidget*>(caller);
         widget->GetTransform(t);
 
-        foreach (vtkMetaDataSet *metadata, datasets)
+        for(vtkMetaDataSet *metadata : datasets)
         {
             for(unsigned int i = 0; i < metadata->GetNumberOfActors(); i++)
             {
@@ -192,7 +192,7 @@ void meshManipulationToolBox::handleLayerChange()
     QList<int> selectedLayerIndices = this->getWorkspace()->getSelectedLayerIndices();
 
     _selectedData.clear();
-    foreach (int layerIndex, selectedLayerIndices)
+    for(int layerIndex : selectedLayerIndices)
     {
         medAbstractData *data = _view->layerData(layerIndex);
 
@@ -272,7 +272,7 @@ void meshManipulationToolBox::computeData()
             const std::vector<vtkMetaDataSet*>& datasetList = seq->GetMetaDataSetList();
 
             vtkMetaDataSetSequence *newSeq = vtkMetaDataSetSequence::New();
-            foreach(vtkMetaDataSet *metaDataset, datasetList)
+            for(vtkMetaDataSet *metaDataset : datasetList)
             {
                 vtkPointSet *newPointSet = transformDataSet(metaDataset, transformFilter, t);
                 vtkMetaDataSet *newDataset = metaDataset->NewInstance();
@@ -456,9 +456,9 @@ void meshManipulationToolBox::importTransform()
 
             vtkSmartPointer<vtkMatrix4x4> m = vtkSmartPointer<vtkMatrix4x4>::New();
             int i = 0, j = 0;
-            foreach(QByteArray line, matrixStr.split('\n'))
+            for(QByteArray line : matrixStr.split('\n'))
             {
-                foreach(QByteArray num, line.split('\t'))
+                for(QByteArray num : line.split('\t'))
                 {
                     m->SetElement(i, j, num.toDouble());
                     j++;

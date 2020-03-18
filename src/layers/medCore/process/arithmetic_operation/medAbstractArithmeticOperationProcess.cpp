@@ -67,13 +67,15 @@ void medAbstractArithmeticOperationProcess::setOutput(medAbstractImageData *data
     if (!d->output->hasMetaData(medMetaDataKeys::SeriesDescription.key()))
         d->output->setMetaData ( medMetaDataKeys::SeriesDescription.key(), newSeriesDescription );
 
-    foreach ( QString metaData, d->input1->metaDataList() )
+    for( QString metaData : d->input1->metaDataList() )
     {
         d->output->setMetaData ( metaData, d->input1->metaDataValues ( metaData ) );
     }
 
-    foreach ( QString property, d->input1->propertyList() )
+    for( QString property : d->input1->propertyList() )
+    {
         d->output->addProperty ( property,d->input1->propertyValues ( property ) );
+    }
 }
 
 medAbstractImageData* medAbstractArithmeticOperationProcess::output() const

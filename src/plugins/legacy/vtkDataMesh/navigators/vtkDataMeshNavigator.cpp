@@ -75,7 +75,7 @@ vtkDataMeshNavigator::vtkDataMeshNavigator(medAbstractView* parent):
 
     d->colorBackgroundParam = new medStringListParameterL("Background Color", this);
 
-    foreach(QString color, colors)
+    for(QString color : colors)
     {
         d->colorBackgroundParam->addItem(color, medStringListParameterL::createIconFromColor(color));
     }
@@ -137,13 +137,18 @@ void vtkDataMeshNavigator::updateWidgets()
          || d->imageView->contains("vtkDataMesh4D")
          ))
     {
-        foreach(medAbstractParameterL *parameter, d->parameters)
+        for(medAbstractParameterL *parameter : d->parameters)
+        {
             parameter->show();
-
+        }
     }
     else
-        foreach(medAbstractParameterL *parameter, d->parameters)
+    {
+        for(medAbstractParameterL *parameter : d->parameters)
+        {
             parameter->hide();
+        }
+    }
 }
 
 void vtkDataMeshNavigator::enableDepthPeeling(bool enabled)
@@ -222,8 +227,10 @@ QWidget *  vtkDataMeshNavigator::buildToolBoxWidget()
     layout->setContentsMargins(0, 0, 0, 0);
     layout->setLabelAlignment(Qt::AlignLeft);
 
-    foreach(medAbstractParameterL *parameter, d->parameters)
+    for(medAbstractParameterL *parameter : d->parameters)
+    {
         layout->addRow(parameter->getLabel(), parameter->getWidget());
+    }
     return toolBoxWidget;
 }
 

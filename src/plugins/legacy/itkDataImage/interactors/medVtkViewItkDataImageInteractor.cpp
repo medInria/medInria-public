@@ -240,7 +240,7 @@ void medVtkViewItkDataImageInteractor::initParameters(medAbstractImageData* data
                                      << "Green Black Alpha" << "Blue Black Alpha"
                                      << "Muscles & Bones" << "Bones" << "Red Vessels"
                                      << "Cardiac" << "Gray Rainbow" << "Stern" << "Black Body" << "Binary Map";
-    foreach(QString lut, luts)
+    for(QString lut : luts)
     {
         d->lutParam->addItem(lut);
     }
@@ -250,7 +250,7 @@ void medVtkViewItkDataImageInteractor::initParameters(medAbstractImageData* data
     QStringList presets = QStringList() << "None" << "VR Muscles&Bones" << "Vascular I"
                                         << "Vascular II" << "Vascular III" << "Vascular IV"
                                         << "Standard" << "Glossy" ;
-    foreach(QString preset, presets)
+    for(QString preset : presets)
     {
         d->presetParam->addItem(preset);
     }

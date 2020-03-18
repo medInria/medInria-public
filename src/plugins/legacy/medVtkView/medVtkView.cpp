@@ -464,15 +464,19 @@ void medVtkView::buildMouseInteractionParamPool(uint layer)
     QList<medBoolParameterL*> params;
 
     params.append(primaryNavigator()->mouseInteractionParameters());
-    foreach (medAbstractNavigator* navigator, this->extraNavigators())
+    for(medAbstractNavigator* navigator : this->extraNavigators())
+    {
         params.append(navigator->mouseInteractionParameters());
+    }
 
     params.append(primaryInteractor(layer)->mouseInteractionParameters());
-    foreach (medAbstractInteractor* interactor, this->extraInteractors(layer))
+    for(medAbstractInteractor* interactor : this->extraInteractors(layer))
+    {
         params.append(interactor->mouseInteractionParameters());
+    }
 
     // add all mouse interaction params of the view in the "Mouse interaction" pool
-    foreach (medBoolParameterL* param, params)
+    for(medBoolParameterL* param : params)
     {
         medParameterPoolManagerL::instance()->linkParameter(param, "Mouse Interaction");
         connect(param, SIGNAL(valueChanged(bool)), this, SLOT(saveMouseInteractionSettings(bool)));

@@ -80,21 +80,25 @@ void medDiffusionModelEstimationMetaProcess::setOutput(medAbstractDiffusionModel
     if (!d->output->hasMetaData(medMetaDataKeys::SeriesDescription.key()))
         d->output->setMetaData ( medMetaDataKeys::SeriesDescription.key(), newSeriesDescription );
 
-    foreach ( QString metaData, d->input->metaDataList() )
+    for( QString metaData : d->input->metaDataList() )
     {
         d->output->setMetaData ( metaData, d->input->metaDataValues ( metaData ) );
     }
 
-    foreach ( QString property, d->input->propertyList() )
+    for( QString property : d->input->propertyList() )
+    {
         d->output->addProperty ( property,d->input->propertyValues ( property ) );
+    }
 }
 
 QStringList medDiffusionModelEstimationMetaProcess::dwiMaskingPlugins() const
 {
     QStringList pluginsList;
 
-    foreach(QString pluginKey, medCore::dwiMasking::pluginFactory().keys())
+    for(QString pluginKey : medCore::dwiMasking::pluginFactory().keys())
+    {
         pluginsList << pluginKey;
+    }
 
     return pluginsList;
 }
@@ -103,8 +107,10 @@ QStringList medDiffusionModelEstimationMetaProcess::modelEstimationPlugins() con
 {
     QStringList pluginsList;
 
-    foreach(QString pluginKey, medCore::diffusionModelEstimation::pluginFactory().keys())
+    for(QString pluginKey : medCore::diffusionModelEstimation::pluginFactory().keys())
+    {
         pluginsList << pluginKey;
+    }
 
     return pluginsList;
 }

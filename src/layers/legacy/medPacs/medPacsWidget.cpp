@@ -149,9 +149,10 @@ void medPacsWidget::readSettings(void)
 
     d->nodes.clear();
 
-    foreach(QVariant node, nodes)
+    for(QVariant node : nodes)
+    {
         d->nodes << node.toStringList();
-
+    }
 }
 
 bool medPacsWidget::isServerFunctional()
@@ -185,18 +186,20 @@ void medPacsWidget::search(QString query)
         d->find->addQueryAttribute(0x0020,0x000D, "\0"); // studyInstanceUID
         d->find->addQueryAttribute(0x0020,0x0010, "\0"); // study ID
 
-        foreach(QStringList node, d->selectedNodes)
+        for(QStringList node : d->selectedNodes)
+        {
             d->find->sendFindRequest(node.at(0).toLatin1(), node.at(1).toLatin1(), tryToInt(node.at(2)),
                 d->hostTitle.toLatin1(), d->hostAddress.toLatin1(), tryToInt(d->hostPort));
+        }
 
         QVector<medAbstractPacsNode *> nodes = d->find->getNodeContainer();
 
-        foreach(medAbstractPacsNode *node, nodes) {
-
+        for(medAbstractPacsNode *node : nodes)
+        {
             QVector<medAbstractPacsResultDataset *> container = node->getResultDatasetContainer();
 
-            foreach(medAbstractPacsResultDataset *dataset, container) {
-
+            for(medAbstractPacsResultDataset *dataset : container)
+            {
                 QTreeWidgetItem *item = new QTreeWidgetItem(this, QStringList()
                                                             << QString(dataset->findKeyValue(0x0010,0x0010))
                                                             << QString(dataset->findKeyValue(0x0008,0x1030))
@@ -260,12 +263,12 @@ void medPacsWidget::findSeriesLevel(QTreeWidgetItem * item)
 
     QVector<medAbstractPacsNode *> nodes = d->find->getNodeContainer();
 
-    foreach(medAbstractPacsNode *node, nodes) {
-
+    for(medAbstractPacsNode *node : nodes)
+    {
         QVector<medAbstractPacsResultDataset*> container = node->getResultDatasetContainer();
 
-        foreach(medAbstractPacsResultDataset *dataset, container) {
-
+        for(medAbstractPacsResultDataset *dataset : container)
+        {
             QTreeWidgetItem *pItem = new QTreeWidgetItem(item);
             pItem->setChildIndicatorPolicy(QTreeWidgetItem::ShowIndicator);
             pItem->setData(0,Qt::UserRole, nodeIndex);
@@ -315,12 +318,12 @@ void medPacsWidget::findImageLevel(QTreeWidgetItem *item)
 
     QVector<medAbstractPacsNode *> nodes = d->find->getNodeContainer();
 
-    foreach(medAbstractPacsNode *node, nodes) {
-
+    for(medAbstractPacsNode *node : nodes)
+    {
         QVector<medAbstractPacsResultDataset*> container = node->getResultDatasetContainer();
 
-        foreach(medAbstractPacsResultDataset *dataset, container) {
-
+        for(medAbstractPacsResultDataset *dataset : container)
+        {
             QTreeWidgetItem *pItem = new QTreeWidgetItem(item);
 
             pItem->setData(0,Qt::UserRole, nodeIndex);
@@ -402,7 +405,7 @@ void medPacsWidget::onEchoRequest()
     this->readSettings();
     QVector<bool> response;
 
-    foreach(QStringList node, d->nodes)
+    for(QStringList node : d->nodes)
     {
         if(!d->echo) d->echo = medAbstractPacsFactory::instance()->createEchoScu("dcmtkEchoScu");
         if(d->echo)

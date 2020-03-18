@@ -205,9 +205,10 @@ void vtkDataMeshInteractor::setupParameters()
         for (int i = 0;  i < d->metaDataSet->GetDataSet()->GetCellData()->GetNumberOfArrays(); i++)
             nameList << QString::fromUtf8(d->metaDataSet->GetDataSet()->GetCellData()->GetArrayName(i));
 
-        foreach(QString name, nameList)
+        for(QString name : nameList)
+        {
             d->attributesParam->addItem(name);
-
+        }
         connect(d->attributesParam, SIGNAL(valueChanged(QString)), this, SLOT(setAttribute(QString)));
         d->attributesParam->setValue("Default");
         d->parameters << d->attributesParam;
@@ -241,9 +242,10 @@ void vtkDataMeshInteractor::setupParameters()
     colors << "#0080FF";
     colors << "#0080C0";
 
-    foreach(QString color, colors)
+    for(QString color : colors)
+    {
         d->colorParam->addItem(color, medStringListParameterL::createIconFromColor(color));
-
+    }
     connect(d->colorParam, SIGNAL(valueChanged(QString)), this, SLOT(setColor(QString)));
 
     if (!d->metaDataSet->GetActor(0))
@@ -422,9 +424,12 @@ void vtkDataMeshInteractor::setAttribute(const QString & attributeName)
             const std::vector<std::string> & vec = vtkLookupTableManager::GetAvailableLookupTables();
             for(std::vector<std::string>::const_iterator it = vec.begin(); it < vec.end(); ++it)
                 luts.append(QString::fromStdString(*it));
+
             d->LUTParam->clear();
-            foreach(QString lut, luts)
+            for(QString lut : luts)
+            {
                 d->LUTParam->addItem(lut);
+            }
 
             d->attribute = attributes->GetArray(qPrintable(attributeName));
             attributes->SetActiveScalars(qPrintable(attributeName));

@@ -74,7 +74,7 @@ void medPaintCommand::paint()
     d->label = LabelObjectType::New();
     d->label->SetAttribute(this->options()->maskValue);
 
-    foreach(QVector3D newPoint, this->options()->points)
+    for(QVector3D newPoint : this->options()->points)
     {
         typedef  MaskType::DirectionType::InternalMatrixType::element_type ElemType;
         itk::Point< ElemType > centerPoint;

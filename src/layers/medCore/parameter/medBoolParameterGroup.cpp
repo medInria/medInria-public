@@ -33,10 +33,12 @@ medBoolParameterGroup::~medBoolParameterGroup()
 
 void medBoolParameterGroup::addBoolParameter(medBoolParameter *param)
 {
-    foreach(medBoolParameter *refParam, d->boolParameters)
+    for(medBoolParameter *refParam : d->boolParameters)
     {
         if (param->match(refParam))
+        {
             return;
+        }
     }
 
     d->boolParameters.append(param);
@@ -54,7 +56,7 @@ void medBoolParameterGroup::changeActiveBoolParameter(bool paramValue)
         return;
 
     QObject *signalSender = sender();
-    foreach(medBoolParameter *param, d->boolParameters)
+    for(medBoolParameter *param : d->boolParameters)
     {
         if (param == signalSender)
         {

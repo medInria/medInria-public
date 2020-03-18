@@ -451,9 +451,9 @@ void manualRegistrationToolBox::constructContainers(medTabbedViewContainers* tab
         tabContainers->setAcceptDrops(false);
 
         // deselect container before going to reformat mode, otherwise problem !
-        foreach(QUuid u,tabContainers->containersSelected())
+        for(QUuid u : tabContainers->containersSelected())
         {
-            foreach(medViewContainer * cont,tabContainers->containersInTab(tabContainers->currentIndex()))
+            for(medViewContainer * cont : tabContainers->containersInTab(tabContainers->currentIndex()))
             {
                 if (u == cont->uuid())
                 {

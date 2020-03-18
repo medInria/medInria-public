@@ -766,12 +766,12 @@ void AlgorithmPaintToolBox::updateView()
             }
 
             slicingParameter = nullptr;
-            foreach (medAbstractInteractor *interactor, qobject_cast<medAbstractLayeredView*>(currentView)->layerInteractors(0))
+            for(medAbstractInteractor *interactor : qobject_cast<medAbstractLayeredView*>(currentView)->layerInteractors(0))
             {
                 if ((interactor->identifier() == "medVtkViewItkDataImageInteractor") ||
                         (interactor->identifier() == "medVtkViewItkDataImage4DInteractor"))
                 {
-                    foreach (medAbstractParameterL *parameter, interactor->linkableParameters())
+                    for(medAbstractParameterL *parameter : interactor->linkableParameters())
                     {
                         if (parameter->name() == "Slicing")
                         {
@@ -850,7 +850,7 @@ void AlgorithmPaintToolBox::setData( medAbstractData *medData )
     if ( m_imageData )
     {
         medImageMaskAnnotationData *existingMaskAnnData = nullptr;
-        foreach( medAttachedData *data, m_imageData->attachedData() )
+        for( medAttachedData *data : m_imageData->attachedData() )
         {
 
             if ( qobject_cast<medImageMaskAnnotationData*>(data) )
@@ -1366,11 +1366,11 @@ void AlgorithmPaintToolBox::updateStroke(ClickAndMoveEventFilter * filter, medAb
     {
         m_maskAnnotationData->setMetaData("SeriesDescription", "mask");
         view->addLayer(m_maskAnnotationData);
-        foreach (medAbstractInteractor* interactor, view->layerInteractors(getWorkspace()->getSelectedLayerIndices()[0]))
+        for(medAbstractInteractor* interactor : view->layerInteractors(getWorkspace()->getSelectedLayerIndices()[0]))
         {
             if (interactor->identifier() == "medAnnotationInteractor")
             {
-                foreach (medAbstractParameterL* parameter, interactor->linkableParameters())
+                for(medAbstractParameterL* parameter : interactor->linkableParameters())
                 {
                     if (parameter->name() == "Opacity")
                     {
@@ -1579,7 +1579,7 @@ void AlgorithmPaintToolBox::undo()
     region.SetIndex(index2d);
 
     PaintBrushSet list;
-    foreach(auto& prev, previousState.first )
+    for(auto& prev : previousState.first )
     {
         unsigned int idSlice = prev->getIdSlice();
         Mask2dType::Pointer currentSlice = Mask2dType::New();
@@ -1663,7 +1663,7 @@ void AlgorithmPaintToolBox::redo()
     region.SetIndex(index2d);
 
     PaintBrushSet list;
-    foreach(auto& next, nextState.first )
+    for(auto& next : nextState.first )
     {
         unsigned int idSlice = next->getIdSlice();
         Mask2dType::Pointer currentSlice = Mask2dType::New();
@@ -2503,7 +2503,7 @@ void AlgorithmPaintToolBox::computeIntermediateSlice(Mask2dFloatType::Pointer di
 
 void AlgorithmPaintToolBox::addViewEventFilter( medViewEventFilter *filter)
 {
-    foreach(QUuid uuid, this->getWorkspace()->tabbedViewContainers()->containersSelected())
+    for(QUuid uuid : this->getWorkspace()->tabbedViewContainers()->containersSelected())
     {
         medViewContainer *container = medViewContainerManager::instance()->container(uuid);
         if(container)

@@ -60,11 +60,13 @@ void medAbstractDiffusionScalarMapsProcess::setOutput(medAbstractImageData *data
     if (!d->output->hasMetaData(medMetaDataKeys::SeriesDescription.key()))
         d->output->setMetaData ( medMetaDataKeys::SeriesDescription.key(), newSeriesDescription );
 
-    foreach ( QString metaData, d->input->metaDataList() )
+    for( QString metaData : d->input->metaDataList() )
     {
         d->output->setMetaData ( metaData, d->input->metaDataValues ( metaData ) );
     }
 
-    foreach ( QString property, d->input->propertyList() )
+    for( QString property : d->input->propertyList() )
+    {
         d->output->addProperty ( property,d->input->propertyValues ( property ) );
+    }
 }

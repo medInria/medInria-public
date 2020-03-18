@@ -106,7 +106,7 @@ medDiffusionSelectorToolBox::medDiffusionSelectorToolBox(QWidget *parent, Select
 
         case ScalarMaps:
             labelTitle = tr("Scalar maps");
-            foreach(QString pluginKey, medCore::diffusionScalarMaps::pluginFactory().keys())
+            for(QString pluginKey : medCore::diffusionScalarMaps::pluginFactory().keys())
             {
                 medAbstractProcess *process = medCore::diffusionScalarMaps::pluginFactory().create(pluginKey);
                 d->methodCombo->addItem(process->caption(),pluginKey);
@@ -116,7 +116,7 @@ medDiffusionSelectorToolBox::medDiffusionSelectorToolBox(QWidget *parent, Select
         case Tractography:
         default:
             labelTitle = tr("Tractography algorithm");
-            foreach(QString pluginKey, medCore::tractography::pluginFactory().keys())
+            for(QString pluginKey : medCore::tractography::pluginFactory().keys())
             {
                 medAbstractProcess *process = medCore::tractography::pluginFactory().create(pluginKey);
                 d->methodCombo->addItem(process->caption(),pluginKey);
