@@ -157,7 +157,7 @@ bool medAbstractView::initialiseInteractors(medAbstractData *data)
     if(!extraInt.isEmpty())
     {
         QList<medAbstractInteractor*> extraIntList;
-        foreach (QString i, extraInt)
+        for(QString i : extraInt)
         {
             medAbstractInteractor* interactor = factory->createAdditionalInteractor(i, this);
             interactor->setInputData(data);
@@ -189,7 +189,7 @@ bool medAbstractView::initialiseNavigators()
     QStringList extraNav = factory->additionalNavigatorsAbleToHandle(this->identifier());
     if(!extraNav.isEmpty())
     {
-        foreach (QString n, extraNav)
+        for(QString n : extraNav)
         {
             medAbstractNavigator *nav = factory->createAdditionalNavigator(n, this);
             connect(this, SIGNAL(orientationChanged()), nav, SLOT(updateWidgets()));
@@ -329,9 +329,10 @@ QList<medAbstractParameterL*> medAbstractView::linkableParameters()
     QList<medAbstractParameterL*>  params;
     params.append(this->primaryNavigator()->linkableParameters());
 
-    foreach(medAbstractNavigator* nav,  this->extraNavigators())
+    for(medAbstractNavigator* nav :  this->extraNavigators())
+    {
         params.append(nav->linkableParameters());
-
+    }
     return params;
 }
 
@@ -350,10 +351,12 @@ QWidget* medAbstractView::toolBarWidget()
 {
     if(d->toolBarWidget.isNull())
     {
-        foreach(medAbstractInteractor *interactor, this->interactors())
+        for(medAbstractInteractor *interactor : this->interactors())
         {
             if(!interactor)
+            {
                 continue;
+            }
 
             QWidget* widget = interactor->toolBarWidget();
             if(widget)
@@ -369,10 +372,12 @@ QWidget* medAbstractView::toolBarWidget()
             }
         }
 
-        foreach(medAbstractNavigator *navigator, this->navigators())
+        for(medAbstractNavigator *navigator : this->navigators())
         {
             if(!navigator)
+            {
                 continue;
+            }
 
             QWidget* widget = navigator->toolBarWidget();
             if(widget)
@@ -403,8 +408,10 @@ QWidget* medAbstractView::navigatorWidget()
         QVBoxLayout* navigatorLayout = new QVBoxLayout(d->navigatorWidget);
 
         navigatorLayout->addWidget(primaryNavigator()->toolBoxWidget());
-        foreach (medAbstractNavigator* navigator, this->extraNavigators())
+        for(medAbstractNavigator* navigator : this->extraNavigators())
+        {
             navigatorLayout->addWidget(navigator->toolBoxWidget());
+        }
     }
 
     return d->navigatorWidget;
@@ -426,16 +433,22 @@ QWidget* medAbstractView::mouseInteractionWidget()
 
     QList<medBoolParameterL*> params;
 
-    foreach (medAbstractInteractor* interactor, this->interactors())
+    for(medAbstractInteractor* interactor : this->interactors())
+    {
         params.append(interactor->mouseInteractionParameters());
+    }
 
-    foreach (medAbstractNavigator* navigator, this->navigators())
+    for(medAbstractNavigator* navigator : this->navigators())
+    {
         params.append(navigator->mouseInteractionParameters());
+    }
 
     medBoolGroupParameterL *groupParam = new medBoolGroupParameterL("Mouse Interaction", this);
     groupParam->setPushButtonDirection(QBoxLayout::LeftToRight);
-    foreach (medBoolParameterL* param, params)
+    for(medBoolParameterL* param : params)
+    {
         groupParam->addParameter(param);
+    }
 
     d->mouseInteractionWidget = groupParam->getPushButtonGroup();
 

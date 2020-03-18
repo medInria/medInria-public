@@ -51,7 +51,7 @@ void medUtilities::setDerivedMetaData(medAbstractData* derived, medAbstractData*
 
 void medUtilities::copyMetaDataIfEmpty(medAbstractData* derived, medAbstractData* original, QList<QString> metaDataKeys)
 {
-    foreach (QString metaDataKey, metaDataKeys)
+    for(QString metaDataKey : metaDataKeys)
     {
         copyMetaDataIfEmpty(derived, original, metaDataKey);
     }
@@ -166,9 +166,9 @@ void medUtilities::switchTo3D(medAbstractView *view, Mode3DType mode3D)
 
         medStringListParameterL *mode3DParam = nullptr, *renderer3DParam = nullptr;
 
-        foreach (medAbstractNavigator* navigator, view->navigators())
+        for(medAbstractNavigator* navigator : view->navigators())
         {
-            foreach (medAbstractParameterL* extraParameter, navigator->linkableParameters())
+            for(medAbstractParameterL* extraParameter : navigator->linkableParameters())
             {
                 if (extraParameter->name() == "3D Mode")
                 {

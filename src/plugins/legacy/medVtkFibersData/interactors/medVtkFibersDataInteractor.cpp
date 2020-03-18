@@ -207,7 +207,7 @@ void medVtkFibersDataInteractorPrivate::setROI (medAbstractData *data)
         roiComboBox->blockSignals(true);
         roiComboBox->clear();
         unsigned int i = 0;
-        foreach (int label, labels)
+        for(int label : labels)
         {
             roiLabels[i] = label;
             roiComboBox->addItem("ROI " + QString::number(label));
@@ -852,7 +852,7 @@ void medVtkFibersDataInteractor::saveBundlesInDataBase()
         newSeriesDescription += (*it).first.c_str();
         tmpBundle->setMetaData ( medMetaDataKeys::SeriesDescription.key(), newSeriesDescription );
 
-        foreach ( QString metaData, d->data->metaDataList() )
+        for( QString metaData : d->data->metaDataList() )
         {
             if ((metaData == "BundleList")||(metaData == "BundleColorList"))
                 continue;
@@ -860,8 +860,10 @@ void medVtkFibersDataInteractor::saveBundlesInDataBase()
             tmpBundle->setMetaData (metaData, d->data->metaDataValues (metaData));
         }
 
-        foreach ( QString property, d->data->propertyList() )
-        tmpBundle->addProperty ( property,d->data->propertyValues ( property ) );
+        for( QString property : d->data->propertyList() )
+        {
+            tmpBundle->addProperty ( property,d->data->propertyValues ( property ) );
+        }
 
         QString generatedID = QUuid::createUuid().toString().replace("{","").replace("}","");
         tmpBundle->setMetaData ( medMetaDataKeys::SeriesID.key(), generatedID );
@@ -1198,7 +1200,7 @@ void medVtkFibersDataInteractor::addBundle (const QString &name, const QColor &c
     this->bundleImageStatistics(name, meanData, minData, maxData, varData);
     this->bundleLengthStatistics(name, meanLength, minLength, maxLength, varLength);
 
-    foreach (QString key, meanData.keys())
+    for(QString key : meanData.keys())
     {
         QStandardItem *childItem1 = new QStandardItem (key + ": " + QString::number(meanData[key]));
         childItem1->setEditable(false);
@@ -1571,17 +1573,23 @@ void medVtkFibersDataInteractor::saveCurrentBundle()
     newSeriesDescription += (*it).first.c_str();
     savedBundle->setMetaData ( medMetaDataKeys::SeriesDescription.key(), newSeriesDescription );
         
-    foreach ( QString metaData, d->data->metaDataList() )
+    for( QString metaData : d->data->metaDataList() )
     {
         if ((metaData == "BundleList")||(metaData == "BundleColorList"))
+        {
             continue;
-        
+        }
+
         if (!savedBundle->hasMetaData(metaData))
+        {
             savedBundle->addMetaData (metaData, d->data->metaDataValues (metaData));
+        }
     }
     
-    foreach ( QString property, d->data->propertyList() )
+    for( QString property : d->data->propertyList() )
+    {
         savedBundle->addProperty ( property,d->data->propertyValues ( property ) );
+    }
     
     QString generatedID = QUuid::createUuid().toString().replace("{","").replace("}","");
     savedBundle->setMetaData ( medMetaDataKeys::SeriesID.key(), generatedID );

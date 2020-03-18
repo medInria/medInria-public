@@ -345,8 +345,10 @@ QWidget *medVtkViewItkDataImageNavigator::buildToolBoxWidget()
 {
     QWidget *toolBoxWidget = new QWidget;
     QFormLayout *layout = new QFormLayout(toolBoxWidget);
-    foreach(medAbstractParameterL *parameter, d->parameters)
+    for(medAbstractParameterL *parameter : d->parameters)
+    {
         layout->addRow(parameter->getLabel(), parameter->getWidget());
+    }
     toolBoxWidget->hide();
     return toolBoxWidget;
 }

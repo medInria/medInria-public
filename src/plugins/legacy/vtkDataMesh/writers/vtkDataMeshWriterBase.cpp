@@ -38,13 +38,13 @@ bool vtkDataMeshWriterBase::canWrite(const QString& /*path*/)
 
 void vtkDataMeshWriterBase::addMetaDataAsFieldData(vtkMetaDataSet* dataSet)
 {
-    foreach (QString key, data()->metaDataList())
+    for(QString key : data()->metaDataList())
     {
         vtkSmartPointer<vtkStringArray> metaDataArray = vtkSmartPointer<vtkStringArray>::New();
         QString arrayName = QString(metaDataFieldPrefix) + key;
         metaDataArray->SetName(arrayName.toStdString().c_str());
 
-        foreach (QString value, data()->metaDataValues(key))
+        for(QString value : data()->metaDataValues(key))
         {
             metaDataArray->InsertNextValue(value.toStdString().c_str());
         }

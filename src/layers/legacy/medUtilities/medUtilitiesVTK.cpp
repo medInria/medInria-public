@@ -179,7 +179,7 @@ void medUtilitiesVTK::transformCoordinates(medAbstractData* data,
                                            QStringList arrayNames,
                                            vtkLinearTransform* transformFilter)
 {
-    foreach (QString arrayName, arrayNames)
+    for(QString arrayName : arrayNames)
     {
         vtkDataArray* array = getArray(data, arrayName);
         if (array)

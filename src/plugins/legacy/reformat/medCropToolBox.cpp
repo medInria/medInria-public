@@ -538,7 +538,7 @@ void medCropToolBoxPrivate::replaceViewWithOutputData(medAbstractWorkspaceLegacy
 
 void medCropToolBoxPrivate::importOutput()
 {
-    foreach (medAbstractData *output, outputData)
+    for(medAbstractData *output : outputData)
     {
         medDataManager::instance()->importData(output, false);
     }

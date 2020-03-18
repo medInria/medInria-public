@@ -406,9 +406,10 @@ QWidget* medVtkViewItkVectorFieldInteractor::buildToolBoxWidget()
 {
     QWidget *toolbox = new QWidget;
     QFormLayout *layout = new QFormLayout(toolbox);
-    foreach(medAbstractParameterL *parameter, d->parameters)
+    for(medAbstractParameterL *parameter : d->parameters)
+    {
         layout->addRow(parameter->getLabel(), parameter->getWidget());
-
+    }
     return toolbox;
 }
 

@@ -277,11 +277,15 @@ bool itkProcessRegistration::setInputData(medAbstractData *data, int channel)
     *last_charac = '3';
 
     dtkSmartPointer <medAbstractData> convertedData = medAbstractDataFactory::instance()->create ("itkDataImageFloat3");
-    foreach ( QString metaData, data->metaDataList() )
+    for( QString metaData : data->metaDataList() )
+    {
         convertedData->setMetaData ( metaData, data->metaDataValues ( metaData ) );
+    }
 
-    foreach ( QString property, data->propertyList() )
+    for( QString property : data->propertyList() )
+    {
         convertedData->addProperty ( property,data->propertyValues ( property ) );
+    }
 
     if (channel==0)
         d->output = medAbstractDataFactory::instance()->create ("itkDataImageFloat3");

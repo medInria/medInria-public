@@ -64,7 +64,7 @@ bool vtkDataMesh4DWriter::write(const QString& path)
         return false;
     }
 
-    foreach (vtkMetaDataSet* dataSet, sequence->GetMetaDataSetList())
+    for(vtkMetaDataSet* dataSet : sequence->GetMetaDataSetList())
     {
         addMetaDataAsFieldData(dataSet);
     }
@@ -77,7 +77,7 @@ bool vtkDataMesh4DWriter::write(const QString& path)
     // this->writer->SetFileTypeToBinary();
     this->writer->Update();
 
-    foreach (vtkMetaDataSet* dataSet, sequence->GetMetaDataSetList())
+    for(vtkMetaDataSet* dataSet : sequence->GetMetaDataSetList())
     {
         clearMetaDataFieldData(dataSet);
     }

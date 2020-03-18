@@ -143,7 +143,7 @@ void medAnnotationInteractor::setInputData(medAbstractData *data)
     {
         disconnect(d->imageData, SIGNAL(dataModified(medAbstractData*)), this, SLOT(onDataModified(medAbstractData*)) );
         // Remove annotations
-        foreach( dtkSmartPointer<medAnnotationData> key,  d->installedAnnotations )
+        for( dtkSmartPointer<medAnnotationData> key :  d->installedAnnotations )
         {
             if ( key->parentData() == data )
             {

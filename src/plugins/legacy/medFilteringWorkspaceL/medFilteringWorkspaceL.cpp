@@ -129,7 +129,7 @@ void medFilteringWorkspaceL::importProcessOutput()
                 d->filterOutput->setMetaData ( medMetaDataKeys::SeriesDescription.key(), newSeriesDescription );
             }
 
-            foreach ( QString metaData, inputData->metaDataList() )
+            for( QString metaData : inputData->metaDataList() )
             {
                 if (!d->filterOutput->hasMetaData(metaData))
                 {
@@ -137,7 +137,7 @@ void medFilteringWorkspaceL::importProcessOutput()
                 }
             }
 
-            foreach ( QString property, inputData->propertyList() )
+            for( QString property : inputData->propertyList() )
             {
                 d->filterOutput->addProperty ( property,inputData->propertyValues ( property ) );
             }

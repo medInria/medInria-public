@@ -126,7 +126,7 @@ int medSmoothMeshProcess::update()
         vtkMetaDataSetSequence *inputSequence = static_cast<vtkMetaDataSetSequence*>(d->input->data());
         vtkMetaDataSetSequence *outputSequence = vtkMetaDataSetSequence::New();
 
-        foreach(vtkMetaDataSet *inputMetaDataSet, inputSequence->GetMetaDataSetList())
+        for(vtkMetaDataSet *inputMetaDataSet : inputSequence->GetMetaDataSetList())
         {
             vtkMetaDataSet *outputMetaDataSet = smoothOneMetaDataSet(inputMetaDataSet);
             outputMetaDataSet->SetTime(inputMetaDataSet->GetTime());

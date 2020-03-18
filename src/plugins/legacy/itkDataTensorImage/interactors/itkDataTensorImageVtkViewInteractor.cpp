@@ -522,11 +522,12 @@ QWidget* itkDataTensorImageVtkViewInteractor::buildToolBoxWidget()
 {
     QWidget *toolbox = new QWidget;
     QFormLayout *layout = new QFormLayout(toolbox);
-    foreach(medAbstractParameterL *parameter, d->parameters)
+    for(medAbstractParameterL *parameter : d->parameters)
     {
         if ((parameter->name() == "Opacity")||(parameter->name() == "Visibility"))
+        {
             continue;
-
+        }
         layout->addRow(parameter->getLabel(), parameter->getWidget());
     }
 

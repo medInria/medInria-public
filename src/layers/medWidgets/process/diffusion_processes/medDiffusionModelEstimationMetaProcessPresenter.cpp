@@ -87,7 +87,7 @@ QWidget *medDiffusionModelEstimationMetaProcessPresenter::buildToolBoxWidget()
     dwiMaskingComboLayout->addWidget(dwiMaskingLabel);
     d->dwiMaskingComboBox = new QComboBox;
     d->dwiMaskingComboBox->addItem("None");
-    foreach(QString maskingName, d->process->dwiMaskingPlugins())
+    for(QString maskingName : d->process->dwiMaskingPlugins())
     {
         medAbstractDWIMaskingProcess *tmpProcess = medCore::dwiMasking::pluginFactory().create(maskingName);
         d->dwiMaskingComboBox->addItem(tmpProcess->caption(),maskingName);
@@ -109,7 +109,7 @@ QWidget *medDiffusionModelEstimationMetaProcessPresenter::buildToolBoxWidget()
     modelEstimationComboLayout->addWidget(modelEstimationLabel);
     d->modelEstimationComboBox = new QComboBox;
     d->modelEstimationComboBox->addItem("None selected");
-    foreach(QString estimationName, d->process->modelEstimationPlugins())
+    for(QString estimationName : d->process->modelEstimationPlugins())
     {
         medAbstractDiffusionModelEstimationProcess *tmpProcess = medCore::diffusionModelEstimation::pluginFactory().create(estimationName);
         d->modelEstimationComboBox->addItem(tmpProcess->caption(),estimationName);
