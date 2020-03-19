@@ -16,7 +16,6 @@
 
 #include <itkImage.h>
 #include <medContourNodes.h>
-#include <medSliderL.h>
 #include <polygonRoi.h>
 
 class medRoiManagerPrivate;
@@ -64,9 +63,12 @@ public:
     void select(bool state);
     void loadContours(QVector<medContourNodes> contours);
 
+    int findClosestContourFromPoint(QVector3D worldMouseCoord);
+    int getClosestSliceFromPoint();
+    void removeContoursInAlternativeViews(medAbstractImageView *v);
 public slots:
     void interpolateIfNeeded();
-    void addRoisInAlternativeViews(medAbstractImageView *v);
+    void addContoursInAlternativeViews(medAbstractImageView *v);
 
 signals:
     void updateRoisInAlternativeViews();

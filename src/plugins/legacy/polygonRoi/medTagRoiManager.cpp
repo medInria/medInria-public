@@ -14,18 +14,17 @@
 
 // medInria
 #include <medAbstractDataFactory.h>
-#include <medTagContours.h>
+#include <medAbstractImageData.h>
 #include <medDataManager.h>
+#include <medTagContours.h>
 #include <medIntParameterL.h>
 #include <medUtilities.h>
+#include <medVtkViewBackend.h>
 #include <polygonEventFilter.h>
 #include <polygonRoiToolBox.h>
-#include <medVtkViewBackend.h>
-#include <medAbstractImageData.h>
 #include <vtkContourOverlayRepresentation.h>
 
 // vtk
-#include <vtkActor.h>
 #include <vtkAppendPolyData.h>
 #include <vtkMetaDataSet.h>
 #include <vtkMetaSurfaceMesh.h>
@@ -33,7 +32,6 @@
 #include <vtkPolyData.h>
 #include <vtkPolyDataMapper.h>
 #include <vtkPolyLine.h>
-#include <vtkProperty.h>
 #include <vtkPointData.h>
 
 class medTagRoiManagerPrivate
@@ -50,6 +48,7 @@ public:
     polygonEventFilter *eventCursor;
     QColor color;
     bool enableInterpolation;
+    int closestSlice;
 };
 
 medTagRoiManagerPrivate::medTagRoiManagerPrivate(medAbstractView *view, polygonEventFilter *eventCursor, QColor color)
@@ -62,7 +61,7 @@ medTagRoiManagerPrivate::medTagRoiManagerPrivate(medAbstractView *view, polygonE
     this->orientation = view2d->GetViewOrientation();
     this->sliceOrientation = view2d->GetSliceOrientation();
     this->color = color;
-
+    this->closestSlice = -1;
     polygonRoi *roi = new polygonRoi(view2d, color);
     rois.append(roi);
 }
@@ -92,6 +91,7 @@ medTagRoiManager::medTagRoiManager(medAbstractView *view, polygonEventFilter *ev
 medTagRoiManager::~medTagRoiManager()
 {
     delete d;
+
 }
 
 polygonRoi* medTagRoiManager::appendRoi()
@@ -593,13 +593,23 @@ void medTagRoiManager::manageVisibility()
     d->view->render();
 }
 
-void medTagRoiManager::addRoisInAlternativeViews(medAbstractImageView *v)
+void medTagRoiManager::addContoursInAlternativeViews(medAbstractImageView *v)
 {
     for (polygonRoi *roi : d->rois)
     {
-        roi->addRoiToAlternativeView(v);
+        roi->addContourInAlternativeView(v);
     }
     v->render();
+}
+
+void medTagRoiManager::removeContoursInAlternativeViews(medAbstractImageView *v)
+{
+    for (polygonRoi *roi : d->rois)
+    {
+        roi->removeContourInAlternativeView(v);
+    }
+    v->render();
+
 }
 
 bool medTagRoiManager::mouseIsCloseFromContour(double mousePos[2])
@@ -1002,4 +1012,24 @@ void medTagRoiManager::resampleCurve(vtkPolyData *poly,int nbPoints)
 
     poly->SetPoints(points);
     points->Delete();
+}
+
+int medTagRoiManager::findClosestContourFromPoint(QVector3D worldMouseCoord)
+{
+    double minDist = DBL_MAX;
+    for (polygonRoi *roi : d->rois)
+    {
+        double dist = roi->findClosestContourFromPoint(worldMouseCoord);
+        if ( dist < minDist)
+        {
+            minDist = dist;
+            d->closestSlice = roi->getIdSlice();
+        }
+    }
+    return minDist;
+}
+
+int medTagRoiManager::getClosestSliceFromPoint()
+{
+    return d->closestSlice;
 }

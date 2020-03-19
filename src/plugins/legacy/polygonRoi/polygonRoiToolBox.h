@@ -100,4 +100,5 @@ private:
     medTableWidgetChooser* tableViewChooser;
     QPushButton *saveContourButton;
 
+    void loadContoursIfPresent(medAbstractImageView *v, unsigned int layer);
 };
