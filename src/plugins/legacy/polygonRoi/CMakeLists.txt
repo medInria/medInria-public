@@ -37,7 +37,7 @@ include_directories(${dtk_INCLUDE_DIRS})
 find_package(ITK REQUIRED COMPONENTS ITKCommon ITKImageLabel ITKVtkGlue ITKIOImageBase ITKIOMeta)
 include(${ITK_USE_FILE})
 
-find_package(VTK REQUIRED COMPONENTS vtkCommonCore vtkInteractionWidgets vtkImagingStencil vtkIOLegacy)
+find_package(VTK REQUIRED COMPONENTS vtkGUISupportQt vtkCommonCore vtkIOLegacy)
 include(${VTK_USE_FILE})
 
 find_package(Qt5 REQUIRED COMPONENTS Gui)

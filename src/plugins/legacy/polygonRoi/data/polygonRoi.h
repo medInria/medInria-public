@@ -12,10 +12,10 @@
 =========================================================================*/
 #pragma once
 
-#include "medAbstractRoi.h"
-#include "medContourNodes.h"
 #include <medAbstractImageView.h>
+#include <medAbstractRoi.h>
 #include <medAbstractView.h>
+#include <medContourNodes.h>
 #include <medImageViewEnum.h>
 #include <medSliderL.h>
 #include <polygonRoiPluginExport.h>
@@ -54,18 +54,20 @@ public:
     virtual bool canUndo(){return true;}
     
     void addViewToList(medAbstractImageView *viewToAdd);
-    void addRoiToAlternativeView(medAbstractImageView *view);
+    void addContourInAlternativeView(medAbstractImageView *view);
     bool isClosed();
     void setEnabled(bool state);
     vtkPolyData *createPolyDataFromContour();
     void manageVisibility();
 
-    vtkProperty *getProperty();
+    vtkProperty *createPropertyForPolyData();
     vtkPolyData *getPolyData();
     void loadNodes(QVector<QVector3D> coordinates);
 
     medContourNodes getContourAsNodes();
     void manageTick(medSliderL *slider);
+    double findClosestContourFromPoint(QVector3D coords);
+    void removeContourInAlternativeView(medAbstractImageView *view);
 public slots:
     virtual void undo();
     virtual void redo();

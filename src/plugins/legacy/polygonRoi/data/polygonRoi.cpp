@@ -10,14 +10,18 @@
   PURPOSE.
 
 =========================================================================*/
-#include "polygonRoi.h"
+#include <polygonRoi.h>
 
+// medInria
 #include <medTagRoiManager.h>
 #include <medVtkViewBackend.h>
 
+// vtk
+#include <vtkCellLocator.h>
 #include <vtkContourOverlayRepresentation.h>
 #include <vtkContourWidget.h>
 #include <vtkImageView2D.h>
+#include <vtkPointData.h>
 #include <vtkPolyData.h>
 #include <vtkProperty.h>
 #include <vtkProperty2D.h>
@@ -25,7 +29,8 @@
 #include <vtkSmartPointer.h>
 #include <vtkWidgetEventTranslator.h>
 #include <vtkWidgetEvent.h>
-#include <vtkWidgetCallbackMapper.h>
+
+// Qt
 #include <QVector3D>
 
 class PolygonRoiObserver : public vtkCommand
@@ -205,7 +210,7 @@ vtkPolyData *polygonRoi::createPolyDataFromContour()
     return pd;
 }
 
-vtkProperty *polygonRoi::getProperty()
+vtkProperty *polygonRoi::createPropertyForPolyData()
 {
     vtkProperty* property = vtkProperty::New();
     double color[3];
@@ -226,6 +231,7 @@ vtkProperty *polygonRoi::getProperty()
     property->SetPointSize(1.);
     property->SetInterpolationToFlat();
     property->SetVertexColor(0., 0., 1.);
+    //property->SetEdgeVisibility(true);
     return property;
 }
 
@@ -271,7 +277,7 @@ void polygonRoi::loadNodes(QVector<QVector3D> coordinates)
 void polygonRoi::createPolydataToAddInViews()
 {
     d->polyData = createPolyDataFromContour();
-    d->property = getProperty();
+    d->property = createPropertyForPolyData();
     return;
 }
 
@@ -422,13 +428,12 @@ void polygonRoi::addViewToList(medAbstractImageView *viewToAdd)
     d->alternativeViews.append(viewToAdd);
 }
 
-void polygonRoi::addRoiToAlternativeView(medAbstractImageView *view)
+void polygonRoi::addContourInAlternativeView(medAbstractImageView *view)
 {
     if ( view->orientation() == medImageView::VIEW_ALL_ORIENTATION )
         return;
 
     createPolydataToAddInViews();
-
     if (view->orientation() == medImageView::VIEW_ORIENTATION_3D)
     {
         vtkImageView3D* view3D = static_cast<medVtkViewBackend*>(view->backend())->view3D;
@@ -441,5 +446,45 @@ void polygonRoi::addRoiToAlternativeView(medAbstractImageView *view)
         view2D->RemoveDataSet(d->polyData);
         view2D->AddDataSet(d->polyData, d->property);
     }
+
     return;
 }
+
+void polygonRoi::removeContourInAlternativeView(medAbstractImageView *view)
+{
+    if ( view->orientation() == medImageView::VIEW_ALL_ORIENTATION )
+        return;
+
+    createPolydataToAddInViews();
+    if (view->orientation() == medImageView::VIEW_ORIENTATION_3D)
+    {
+        vtkImageView3D* view3D = static_cast<medVtkViewBackend*>(view->backend())->view3D;
+        view3D->RemoveDataSet(d->polyData);
+    }
+    else
+    {
+        vtkImageView2D* view2D = static_cast<medVtkViewBackend*>(view->backend())->view2D;
+        view2D->RemoveDataSet(d->polyData);
+    }
+
+    return;
+}
+
+double polygonRoi::findClosestContourFromPoint(QVector3D worldMouseCoord)
+{
+    vtkContourRepresentation* contourRep = d->contour->GetContourRepresentation();
+    double coords[3] = {worldMouseCoord.x(), worldMouseCoord.y(), worldMouseCoord.z()};
+    vtkSmartPointer<vtkCellLocator> cellLocator =
+        vtkSmartPointer<vtkCellLocator>::New();
+    cellLocator->SetDataSet(d->polyData);
+    cellLocator->BuildLocator();
+
+    //Find the closest points to TestPoint
+    double closestPoint[3];//the coordinates of the closest point will be returned here
+    double closestPointDist2; //the squared distance to the closest point will be returned here
+    vtkIdType cellId; //the cell id of the cell containing the closest point will be returned here
+    int subId; //this is rarely used (in triangle strips only, I believe)
+    cellLocator->FindClosestPoint(coords, closestPoint, cellId, subId, closestPointDist2);
+    return closestPointDist2;
+}
+

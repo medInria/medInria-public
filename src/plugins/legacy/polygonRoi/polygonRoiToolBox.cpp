@@ -13,7 +13,6 @@
 #include "polygonRoiToolBox.h"
 
 #include <medAbstractProcessLegacy.h>
-#include <medContours.h>
 #include <medPluginManager.h>
 #include <medTabbedViewContainers.h>
 #include <medTableWidgetChooser.h>
@@ -26,6 +25,7 @@
 #include <medViewContainerSplitter.h>
 #include <medViewFactory.h>
 #include <polygonEventFilter.h>
+
 
 const char *polygonRoiToolBox::generateBinaryImageButtonName = "generateBinaryImageButton";
 
@@ -143,62 +143,81 @@ medAbstractData *polygonRoiToolBox::processOutput()
     return nullptr;
 }
 
+void polygonRoiToolBox::loadContoursIfPresent(medAbstractImageView *v, unsigned int layer)
+{
+    medAbstractData *data = v->layerData(layer);
+    if (data->identifier().contains("medContours") && v==currentView)
+    {
+        viewEventFilter->loadContours(data);
+        addNewCurve->setChecked(true);
+        v->removeLayer(layer);
+        addNewCurve->setChecked(true);
+    }
+}
+
 void polygonRoiToolBox::updateView()
 {
-    medAbstractView *view = this->getWorkspace()->tabbedViewContainers()->getFirstSelectedContainerView();
-    if (!view)
-        return;
-    medAbstractImageView *v = qobject_cast<medAbstractImageView*>(view);
-    if (!v)
-        return;
-
-    if (v->layersCount()==1 && viewEventFilter)
+    medTabbedViewContainers *containers = this->getWorkspace()->tabbedViewContainers();
+    if (containers)
     {
-        medAbstractData *data = v->layerData(0);
-        if (data->identifier().contains("medContours"))
+        if ( containers->currentIndex() == -1 )
             return;
-    }
+        QList<medAbstractView*> viewsInTabSelected = containers->viewsInTab(containers->currentIndex());
 
-    for (unsigned int i=0; i<v->layersCount(); ++i)
-    {
-        medAbstractData *data = v->layerData(i);
-        if(!data || data->identifier().contains("vtkDataMesh")
-                                || data->identifier().contains("itkDataImageVector"))
+        medAbstractView *view = containers->getFirstSelectedContainerView();
+        if (!view)
+            return;
+        medAbstractImageView *v = qobject_cast<medAbstractImageView*>(view);
+        if (!v)
+            return;
+
+        QList<medViewContainer*> containersInTab = containers->containersInTab(containers->currentIndex());
+        if (viewsInTabSelected.size() > 1)
         {
-            handleDisplayError(medAbstractProcessLegacy::DIMENSION_3D);
+            for (unsigned int i=0; i<v->layersCount(); ++i)
+            {
+                loadContoursIfPresent(v, i);
+            }
             return;
         }
-        else
-        {
-            addNewCurve->setEnabled(true);
 
-            if (currentView != v)
+        if (v->layersCount()==1 && viewEventFilter)
+        {
+            medAbstractData *data = v->layerData(0);
+            if (data->identifier().contains("medContours"))
+                return;
+        }
+
+        for (unsigned int i=0; i<v->layersCount(); ++i)
+        {
+            medAbstractData *data = v->layerData(i);
+            if(!data || data->identifier().contains("vtkDataMesh")
+                                    || data->identifier().contains("itkDataImageVector"))
             {
-                currentView = v;
-                if (viewEventFilter)
+                handleDisplayError(medAbstractProcessLegacy::DIMENSION_3D);
+                return;
+            }
+            else
+            {
+                addNewCurve->setEnabled(true);
+
+                if (currentView != v)
                 {
-                    viewEventFilter->updateView(currentView);
+                    currentView = v;
                 }
+
+                loadContoursIfPresent(v, i);
+
+                updateTableWidgetItems();
+                connect(currentView, SIGNAL(closed()), this, SLOT(onViewClosed()), Qt::UniqueConnection);
+                connect(currentView, SIGNAL(layerRemoved(uint)), this, SLOT(onLayerClosed(uint)), Qt::UniqueConnection);
+                connect(view, SIGNAL(orientationChanged()), this, SLOT(updateTableWidgetItems()), Qt::UniqueConnection);
+                connect(view, SIGNAL(orientationChanged()), this, SLOT(manageTick()), Qt::UniqueConnection);
+                connect(view, SIGNAL(orientationChanged()), this, SLOT(manageRoisVisibility()), Qt::UniqueConnection);
+
             }
-
-            if (data->identifier().contains("medContours") && viewEventFilter)
-            {
-                viewEventFilter->loadContours(data);
-                addNewCurve->setChecked(true);
-                v->removeLayer(i);
-                addNewCurve->setChecked(true);
-            }
-
-            updateTableWidgetItems();
-            connect(currentView, SIGNAL(closed()), this, SLOT(onViewClosed()), Qt::UniqueConnection);
-            connect(currentView, SIGNAL(layerRemoved(uint)), this, SLOT(onLayerClosed(uint)), Qt::UniqueConnection);
-            connect(view, SIGNAL(orientationChanged()), this, SLOT(updateTableWidgetItems()), Qt::UniqueConnection);
-            connect(view, SIGNAL(orientationChanged()), this, SLOT(manageTick()), Qt::UniqueConnection);
-            connect(view, SIGNAL(orientationChanged()), this, SLOT(manageRoisVisibility()), Qt::UniqueConnection);
-
         }
     }
-
 }
 
 void polygonRoiToolBox::onViewClosed()
@@ -215,7 +234,6 @@ void polygonRoiToolBox::onViewClosed()
             if (viewClosed == viewEventFilter->getView() )
             {
                 viewEventFilter->reset();
-                viewEventFilter->clearAlternativeViews();
             }
         }
         if (viewsInTabSelected.size()==0)
@@ -271,6 +289,7 @@ void polygonRoiToolBox::clickClosePolygon(bool state)
             connect(viewEventFilter, SIGNAL(enableViewChooser(bool)), this, SLOT(enableTableViewChooser(bool)), Qt::UniqueConnection);
             connect(viewEventFilter, SIGNAL(toggleRepulsorButton(bool)), this, SLOT(activateRepulsor(bool)), Qt::UniqueConnection);
         }
+
         viewEventFilter->updateView(currentView);
         viewEventFilter->On();
         viewEventFilter->installOnView(currentView);
@@ -379,11 +398,11 @@ void polygonRoiToolBox::updateTableWidgetView(unsigned int row, unsigned int col
         }
         container->addData(data);
 
-        connect(container, &medViewContainer::containerSelected, [=](){
-            container->setSelected(false);
+        medAbstractImageView* view = static_cast<medAbstractImageView *> (container->view());
+        viewEventFilter->installOnView(view);
+        connect(view, &medAbstractView::closed, [=](){
             mainContainer->setSelected(true);
         });
-        medAbstractImageView* view = static_cast<medAbstractImageView *> (container->view());
         medTableWidgetItem * item = static_cast<medTableWidgetItem*>(tableViewChooser->selectedItems().at(nbItem));
         connect(view, SIGNAL(closed()), viewEventFilter, SLOT(removeView()));
 
@@ -394,9 +413,6 @@ void polygonRoiToolBox::updateTableWidgetView(unsigned int row, unsigned int col
     viewEventFilter->addRoisInAlternativeViews();
 
     tableViewChooser->setEnabled(false);
-    addNewCurve->setChecked(false);
-
-    mainContainer->setSelected(true);
 }
 
 

@@ -96,4 +96,9 @@ private:
     medTagRoiManager *addManagerToList(int label);
     void manageButtonsState();
     void saveContoursAsMedAbstractData(vtkMetaDataSet *outputDataSet, QVector<medTagContours> contoursData);
+    int findClosestSliceFromMouseClick(QVector3D worldMouseCoord);
+    int performPropPicking(medAbstractImageView *v, QMouseEvent *mouseEvent);
+    bool updateMainViewOnChosenSlice(medAbstractImageView *view, QMouseEvent *mouseEvent);
+    int findAvailableLabel();
+    void removeContoursInAlternativeViews(medTagRoiManager *manager);
 };

@@ -15,23 +15,23 @@
 #include <float.h>
 
 // medInria
+#include <medAbstractImageData.h>
 #include <medAbstractDataFactory.h>
+#include <medContours.h>
 #include <medDataManager.h>
 #include <medIntParameterL.h>
+#include <medUtilities.h>
 #include <medVtkViewBackend.h>
 #include <vtkMetaSurfaceMesh.h>
 
 // Qt
 #include <QGuiApplication>
 #include <QScreen>
-#include <medContours.h>
 
 // vtk
-#include <medAbstractImageData.h>
-#include <medUtilities.h>
 #include <vtkAppendPolyData.h>
-#include <vtkMetaDataSet.h>
 #include <vtkRenderWindowInteractor.h>
+
 
 polygonEventFilter::polygonEventFilter(medAbstractImageView *view) :
         medViewEventFilter(), currentView(view), cursorState(CURSORSTATE::CS_MOUSE_EVENT), isRepulsorActivated(false)
@@ -67,20 +67,6 @@ void polygonEventFilter::updateView(medAbstractImageView *view)
     currentView = view;
 }
 
-bool polygonEventFilter::mouseReleaseEvent(medAbstractView *view, QMouseEvent *mouseEvent)
-{
-    if (isRepulsorActivated)
-    {
-        if (interactorStyleRepulsor != nullptr)
-        {
-            interactorStyleRepulsor->GetManager()->SetMasterRoi(true);
-            interactorStyleRepulsor->GetManager()->interpolateIfNeeded();
-        }
-    }
-
-    return false;
-}
-
 void polygonEventFilter::reset()
 {
     for (medTagRoiManager *manager: managers)
@@ -97,9 +83,38 @@ void polygonEventFilter::reset()
     }
 }
 
+bool polygonEventFilter::mouseReleaseEvent(medAbstractView *view, QMouseEvent *mouseEvent)
+{
+    medAbstractImageView *v = dynamic_cast<medAbstractImageView *> (view);
+    if ( !currentView )
+    {
+        return false;
+    }
+    if (currentView != v)
+    {
+        return updateMainViewOnChosenSlice(v, mouseEvent);
+    }
+    if (isRepulsorActivated)
+    {
+        if (interactorStyleRepulsor != nullptr)
+        {
+            interactorStyleRepulsor->GetManager()->SetMasterRoi(true);
+            interactorStyleRepulsor->GetManager()->interpolateIfNeeded();
+        }
+    }
+
+    return false;
+}
+
 bool polygonEventFilter::mousePressEvent(medAbstractView * view, QMouseEvent *mouseEvent)
 {
-    currentView = dynamic_cast<medAbstractImageView *> (view);
+    medAbstractImageView *v = dynamic_cast<medAbstractImageView *> (view);
+    if ( !currentView )
+    {
+        return false;
+    }
+    if (currentView != v)
+        return false;
 
     if (mouseEvent->button()==Qt::LeftButton)
     {
@@ -109,6 +124,21 @@ bool polygonEventFilter::mousePressEvent(medAbstractView * view, QMouseEvent *mo
     {
         return rightButtonBehaviour(view, mouseEvent);
     }
+    return false;
+}
+
+bool polygonEventFilter::updateMainViewOnChosenSlice(medAbstractImageView *view, QMouseEvent *mouseEvent)
+{
+    QPointF position;
+    position.setX(mouseEvent->x()*QGuiApplication::screenAt(mouseEvent->pos())->devicePixelRatio());
+    position.setY(mouseEvent->y()*QGuiApplication::screenAt(mouseEvent->pos())->devicePixelRatio());
+    QVector3D clickPosition = view->mapDisplayToWorldCoordinates(position);
+    int slice = findClosestSliceFromMouseClick(clickPosition);
+    if ( slice == -1 )
+        return false;
+    vtkImageView2D *view2D =  static_cast<medVtkViewBackend*>(currentView->backend())->view2D;
+    view2D->SetSlice(slice);
+    view2D->Render();
     return false;
 }
 
@@ -423,7 +453,7 @@ void polygonEventFilter::addRoisInAlternativeViews()
     {
         for (medTagRoiManager *manager : managers)
         {
-            manager->addRoisInAlternativeViews(v);
+            manager->addContoursInAlternativeViews(v);
         }
     }
 }
@@ -544,17 +574,37 @@ void polygonEventFilter::loadContours(medAbstractData *data)
         qDebug()<<"unable to create new manager ";
         return;
     }
+
     for (medTagContours &tagContours : tagContoursSet)
     {
-        qDebug()<<"contours lab "<<tagContours.getLabel();
         if ( managers.size()==colorList.size() )
         {
             qDebug()<<"unable to create new manager ";
             return;
         }
-        medTagRoiManager *manager = addManagerToList(managers.size());
+        int label = findAvailableLabel();
+        if ( label == -1 )
+            return;
+        medTagRoiManager *manager = addManagerToList(label);
         manager->loadContours(tagContours.getContourNodes());
     }
+}
+
+int polygonEventFilter::findAvailableLabel()
+{
+    QList<QColor> usedColors;
+    for ( medTagRoiManager* manager : managers )
+    {
+        usedColors.append(manager->getColor());
+    }
+    for (QColor color : colorList)
+    {
+        if (!usedColors.contains(color))
+        {
+            return colorList.indexOf(color);
+        }
+    }
+    return -1;
 }
 
 void polygonEventFilter::manageTick()
@@ -615,6 +665,7 @@ void polygonEventFilter::deleteNode(medTagRoiManager *manager, double X, double 
     {
         manager->select(false);
     }
+    manageTick();
     manageButtonsState();
 }
 
@@ -626,17 +677,28 @@ void polygonEventFilter::deleteContour(medTagRoiManager *manager)
         managers.removeOne(manager);
         delete manager;
     }
+    manageTick();
     manageButtonsState();
 }
 
 
 void polygonEventFilter::deleteLabel(medTagRoiManager *manager)
 {
+    removeContoursInAlternativeViews(manager);
     managers.removeOne(manager);
     manager->removeAllTick();
+
     delete manager;
     currentView->render();
     manageButtonsState();
+}
+
+void polygonEventFilter::removeContoursInAlternativeViews(medTagRoiManager *manager)
+{
+    for (medAbstractImageView *v : alternativeViews)
+    {
+        manager->removeContoursInAlternativeViews(v);
+    }
 }
 
 void polygonEventFilter::manageButtonsState()
@@ -714,4 +776,20 @@ medTagRoiManager *polygonEventFilter::closestManagerInSlice(double mousePos[2])
         }
     }
     return managerInSlice;
+}
+
+int polygonEventFilter::findClosestSliceFromMouseClick(QVector3D worldMouseCoord)
+{
+    double minDistance = 1.;
+    medTagRoiManager *closestManager = nullptr;
+    for (medTagRoiManager *manager : managers)
+    {
+        double dist = manager->findClosestContourFromPoint(worldMouseCoord);
+        if ( dist < minDistance)
+        {
+            minDistance = dist;
+            closestManager = manager;
+        }
+    }
+    return (minDistance<1.)?closestManager->getClosestSliceFromPoint():-1;
 }
