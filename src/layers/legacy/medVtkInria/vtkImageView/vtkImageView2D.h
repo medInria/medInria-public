@@ -129,16 +129,12 @@ public:
 
     // Description:
     // Set/Get the input image to the viewer.
-    virtual void SetInput      (vtkAlgorithmOutput* pi_poVtkAlgoOutput, vtkMatrix4x4 *matrix = nullptr, int layer = 0);
-    virtual void SetInputLayer (vtkAlgorithmOutput* pi_poVtkAlgoOutput, vtkMatrix4x4 *matrix = nullptr, int layer = 0);
-    virtual void SetInputCommon(vtkAlgorithmOutput* pi_poVtkAlgoOutput, int layer = 0);
-    virtual void SetInput (vtkActor *actor, int layer = 0, vtkMatrix4x4 *matrix = nullptr,
-                           const int imageSize[3] = nullptr, const double imageSpacing[] = nullptr, const double imageOrigin[] = nullptr);
-
-    void RemoveLayerActor(vtkActor *actor, int layer = 0);
-
+    virtual void SetInput        (vtkAlgorithmOutput* pi_poVtkAlgoOutput, vtkMatrix4x4 *matrix = nullptr, int layer = 0);
+    virtual void SetInput        (vtkActor *actor, int layer = 0, vtkMatrix4x4 *matrix = nullptr, const int imageSize[3] = nullptr, const double imageSpacing[] = nullptr, const double imageOrigin[] = nullptr);
     virtual vtkActor* AddDataSet (vtkPointSet* arg, vtkProperty* prop = nullptr);
-    virtual void RemoveDataSet (vtkPointSet *arg);
+    virtual void RemoveDataSet   (vtkPointSet *arg);
+    
+    void RemoveLayerActor(vtkActor *actor, int layer = 0);
 
     medVtkImageInfo* GetMedVtkImageInfo(int layer = 0) const;
 
@@ -444,7 +440,10 @@ protected:
     std::list<vtkDataSet2DWidget*>::iterator FindDataSetWidget(vtkPointSet* arg);
     //ETX
 
-    void SetFirstLayer(vtkAlgorithmOutput *pi_poInputAlgoImg, vtkMatrix4x4 *matrix, int layer);
+    void SetFirstLayer  (vtkAlgorithmOutput *pi_poInputAlgoImg, vtkMatrix4x4 *matrix, int layer);
+    void SetOtherLayer  (vtkAlgorithmOutput* pi_poVtkAlgoOutput, vtkMatrix4x4 *matrix = nullptr, int layer = 0);
+    void SetInputCommon (vtkAlgorithmOutput* pi_poVtkAlgoOutput, int layer = 0);
+
     bool IsFirstLayer(int layer) const;
     int GetFirstLayer() const;
 
@@ -475,10 +474,13 @@ protected:
 
     std::list<vtkDataSet2DWidget*> DataSetWidgets;
 
-    struct LayerInfo {
+    struct LayerInfo
+    {
         vtkSmartPointer<vtkImage2DDisplay> ImageDisplay;
         vtkSmartPointer<vtkImageAlgorithm> ImageAlgo;
-        vtkSmartPointer<vtkRenderer> Renderer;
+        //vtkSmartPointer<vtkDataSet>        DataSet; //keep for future code factorization
+        //vtkSmartPointer<vtkActor>          Actor;   //keep for future code factorization
+        vtkSmartPointer<vtkRenderer>       Renderer;
     };
     typedef std::vector<LayerInfo > LayerInfoVecType;
     LayerInfoVecType LayerInfoVec;

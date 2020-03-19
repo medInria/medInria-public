@@ -453,7 +453,7 @@ void vtkImageView3D::SetInput(vtkAlgorithmOutput* pi_poVtkAlgoOutput, vtkMatrix4
         {
             if (layer > 0 && layer < 4)
             {
-                SetInputLayer(pi_poVtkAlgoOutput, matrix, layer);
+                SetOtherLayer(pi_poVtkAlgoOutput, matrix, layer);
             }
             else if (layer >= 4)
             {
@@ -464,6 +464,26 @@ void vtkImageView3D::SetInput(vtkAlgorithmOutput* pi_poVtkAlgoOutput, vtkMatrix4
             this->InternalUpdate();
         }
     }
+}
+
+void vtkImageView3D::SetInput(vtkActor * actor, int layer, vtkMatrix4x4 * matrix, const int imageSize[3], const double imageSpacing[], const double imageOrigin[])
+{
+    unsigned int numberOfLayers = GetNumberOfLayers();
+    if ((numberOfLayers == 0) && matrix)
+    {
+        this->SetOrientationMatrix(matrix);
+    }
+
+    vtkDataSet *arg = actor->GetMapper()->GetInput();
+    // If this is the first widget to be added, reset camera
+    if (!this->GetMedVtkImageInfo() || !this->GetMedVtkImageInfo()->initialized)
+    {
+        this->ResetCamera(arg);
+    }
+
+    this->DataSetCollection->AddItem(arg);
+    this->DataSetActorCollection->AddItem(actor);
+    this->Renderer->AddViewProp(actor); //same as this->Renderer->AddActor(actor);
 }
 
 bool vtkImageView3D::is3D()
@@ -490,7 +510,7 @@ bool vtkImageView3D::is3D()
 }
 
 //----------------------------------------------------------------------------
-void vtkImageView3D::SetInputLayer(vtkAlgorithmOutput* pi_poVtkAlgoOutput, vtkMatrix4x4 *matrix /*= 0*/, int layer /*= 0*/)
+void vtkImageView3D::SetOtherLayer(vtkAlgorithmOutput* pi_poVtkAlgoOutput, vtkMatrix4x4 *matrix /*= 0*/, int layer /*= 0*/)
 {
     pi_poVtkAlgoOutput = this->ResliceImageToInput(pi_poVtkAlgoOutput, matrix);
 
@@ -508,14 +528,22 @@ void vtkImageView3D::SetInputLayer(vtkAlgorithmOutput* pi_poVtkAlgoOutput, vtkMa
     }
 
     this->AddLayer(layer);
-    this->GetImage3DDisplayForLayer(layer)->SetInputProducer(poVtkAlgoOutputTmp);
+    vtkImage3DDisplay *imageDisplay = this->GetImage3DDisplayForLayer(layer);
+    if (imageDisplay)
+    {
+        imageDisplay->SetInputProducer(poVtkAlgoOutputTmp);
+    }
 }
 
 void vtkImageView3D::SetFirstLayer(vtkAlgorithmOutput *pi_poInputAlgoImg, vtkMatrix4x4 *matrix, int layer)
 {
-    this->GetImage3DDisplayForLayer(0)->SetInputProducer(pi_poInputAlgoImg);
-    this->Superclass::SetInput (pi_poInputAlgoImg, matrix, layer);
-    this->GetImage3DDisplayForLayer(0)->SetInputData(m_poInternalImageFromInput);
+    vtkImage3DDisplay *imageDisplay = this->GetImage3DDisplayForLayer(0);
+    if (imageDisplay)
+    {
+        imageDisplay->SetInputProducer(pi_poInputAlgoImg);
+        this->Superclass::SetInput(pi_poInputAlgoImg, matrix, layer);
+        imageDisplay->SetInputData(m_poInternalImageFromInput);
+    }
 }
 
 //----------------------------------------------------------------------------
@@ -628,42 +656,56 @@ void vtkImageView3D::SetTransferFunctions (vtkColorTransferFunction * color,
 {
     if (this->HasLayer (layer))
     {
-        if (this->GetImage3DDisplayForLayer(layer)->GetMedVtkImageInfo())
+        vtkImage3DDisplay *imageDisplay = this->GetImage3DDisplayForLayer(layer);
+        if (imageDisplay)
         {
-            double *range = this->GetImage3DDisplayForLayer(layer)->GetMedVtkImageInfo()->scalarRange;
-            this->SetTransferFunctionRangeFromWindowSettings(color, opacity, range[0], range[1]);
-
-            this->VolumeProperty->SetColor(layer, color );
-            this->VolumeProperty->SetScalarOpacity(layer, opacity );
-
-            if (layer == 0)
+            if (imageDisplay->GetMedVtkImageInfo())
             {
-                //update planar window level only if we change layer 0
-                this->PlanarWindowLevelX->SetLookupTable(color);
-                this->PlanarWindowLevelY->SetLookupTable(color);
-                this->PlanarWindowLevelZ->SetLookupTable(color);
+                double *range = imageDisplay->GetMedVtkImageInfo()->scalarRange;
+                this->SetTransferFunctionRangeFromWindowSettings(color, opacity, range[0], range[1]);
+
+                this->VolumeProperty->SetColor(layer, color);
+                this->VolumeProperty->SetScalarOpacity(layer, opacity);
+
+                if (layer == 0)
+                {
+                    //update planar window level only if we change layer 0
+                    this->PlanarWindowLevelX->SetLookupTable(color);
+                    this->PlanarWindowLevelY->SetLookupTable(color);
+                    this->PlanarWindowLevelZ->SetLookupTable(color);
+                }
             }
         }
     }
 }
 
 //----------------------------------------------------------------------------
-void vtkImageView3D::SetOpacity (double opacity, int layer)
+void vtkImageView3D::SetOpacity(double opacity, int layer)
 {
-  if (this->HasLayer(layer))
-  {
-    this->VolumeProperty->SetComponentWeight(layer, opacity);
-    this->GetImage3DDisplayForLayer(layer)->SetOpacity(opacity);
-  }
+    if (this->HasLayer(layer))
+    {
+        this->VolumeProperty->SetComponentWeight(layer, opacity);
+        vtkImage3DDisplay *imageDisplay = this->GetImage3DDisplayForLayer(layer);
+        if (imageDisplay)
+        {
+            imageDisplay->SetOpacity(opacity);
+        }
+    }
 }
 
 //----------------------------------------------------------------------------
 double vtkImageView3D::GetOpacity(int layer) const
 {
+    double dfRes = 0.0;
     if (this->HasLayer(layer))
-    return this->GetImage3DDisplayForLayer(layer)->GetOpacity();
-
-  return 0.0;
+    {
+        vtkImage3DDisplay *imageDisplay = GetImage3DDisplayForLayer(layer);
+        if (imageDisplay)
+        {
+            imageDisplay->GetOpacity();
+        }
+    }
+    return dfRes;
 }
 
 //----------------------------------------------------------------------------
@@ -698,17 +740,30 @@ void vtkImageView3D::SetVisibility (int visibility, int layer)
       //if we add new layers later the first one will stay hidden
       this->VolumeProperty->SetComponentWeight(layer, 0);
     }
-    this->GetImage3DDisplayForLayer(layer)->SetVisibility(visibility);
+
+    vtkImage3DDisplay *imageDisplay = this->GetImage3DDisplayForLayer(layer);
+    if (imageDisplay)
+    {
+        imageDisplay->SetVisibility(visibility);
+    }
   }
 }
 
 //----------------------------------------------------------------------------
 int vtkImageView3D::GetVisibility (int layer) const
 {
-    if (this->HasLayer(layer))
-    return this->GetImage3DDisplayForLayer(layer)->GetVisibility();
+    int iRes = 0;
 
-  return 0;
+    if (this->HasLayer(layer))
+    {
+        vtkImage3DDisplay *imageDisplay = this->GetImage3DDisplayForLayer(layer);
+        if (imageDisplay)
+        {
+            iRes = imageDisplay->GetVisibility();
+        }
+    }
+
+    return iRes;
 }
 
 void vtkImageView3D::SetColorWindow (double s,int layer)
@@ -952,6 +1007,33 @@ vtkActor* vtkImageView3D::AddDataSet (vtkPointSet* arg, vtkProperty* prop)
   // been referenced in the renderer, so we can
   // safely return it. well hopefully.
   return actor;
+}
+
+//----------------------------------------------------------------------------
+vtkActor* vtkImageView3D::DataSetToActor(vtkPointSet* arg, vtkProperty* prop)
+{
+    vtkDataSetSurfaceFilter* geometryextractor = vtkDataSetSurfaceFilter::New();
+    vtkPolyDataNormals* normalextractor = vtkPolyDataNormals::New();
+    vtkPolyDataMapper* mapper = vtkPolyDataMapper::New();
+    vtkActor* actor = vtkActor::New();
+
+    normalextractor->SetFeatureAngle(90);
+    ///\todo try to skip the normal extraction filter in order to
+    // enhance the visualization speed when the data is time sequence.
+    geometryextractor->SetInputData(arg);
+    normalextractor->SetInputConnection(geometryextractor->GetOutputPort());
+    mapper->SetInputConnection(normalextractor->GetOutputPort());
+    actor->SetMapper(mapper);
+    if (prop)
+    {
+        actor->SetProperty(prop);
+    }
+
+    mapper->Delete();
+    normalextractor->Delete();
+    geometryextractor->Delete();
+
+    return actor;
 }
 
 //----------------------------------------------------------------------------
