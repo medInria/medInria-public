@@ -152,8 +152,7 @@ void vtkDataSet2DWidget::SetEnabled(int enabling)
       this->ImageView->GetInteractorStyle()->RemoveObserver (this->Command);
     if( this->ImageView->GetRenderWindow() )
       this->ImageView->GetRenderWindow()->RemoveRenderer (this->Renderer);
-  }
-    
+  }    
 }
 
 //----------------------------------------------------------------------------------
