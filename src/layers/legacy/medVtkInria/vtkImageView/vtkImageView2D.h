@@ -478,8 +478,6 @@ protected:
     {
         vtkSmartPointer<vtkImage2DDisplay> ImageDisplay;
         vtkSmartPointer<vtkImageAlgorithm> ImageAlgo;
-        //vtkSmartPointer<vtkDataSet>        DataSet; //keep for future code factorization
-        //vtkSmartPointer<vtkActor>          Actor;   //keep for future code factorization
         vtkSmartPointer<vtkRenderer>       Renderer;
     };
     typedef std::vector<LayerInfo > LayerInfoVecType;
