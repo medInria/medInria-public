@@ -140,10 +140,10 @@ void medTagRoiManager::select(bool state)
     }
 }
 
-void medTagRoiManager::loadContours( QVector<medContourNodes> contours)
+void medTagRoiManager::loadContours( QVector<medWorldPosContours> contours)
 {
     d->clearRois();
-    for (medContourNodes nodes : contours)
+    for (medWorldPosContours nodes : contours)
     {
         polygonRoi *roi = appendRoi();
         roi->setIdSlice(nodes.getSlice());
@@ -156,7 +156,11 @@ void medTagRoiManager::setEnableInterpolation(bool state)
 {
     d->enableInterpolation = state;
     if (state)
+    {
         interpolateIfNeeded();
+        d->eventCursor->manageTick();
+        updateRoisInAlternativeViews();
+    }
 }
 
 polygonRoi *medTagRoiManager::roiOpenInSlice()
@@ -341,9 +345,9 @@ vtkSmartPointer<vtkPolyData> medTagRoiManager::getContoursAsPolyData(int label)
     return append->GetOutput();
 }
 
-QVector<medContourNodes> medTagRoiManager::getContoursAsNodes()
+QVector<medWorldPosContours> medTagRoiManager::getContoursAsNodes()
 {
-    QVector<medContourNodes> contours;
+    QVector<medWorldPosContours> contours;
     for (polygonRoi *roi : d->rois)
     {
         if ( roi->isMasterRoi())
@@ -352,11 +356,6 @@ QVector<medContourNodes> medTagRoiManager::getContoursAsNodes()
         }
     }
     return contours;
-}
-
-void medTagRoiManager::createContourWithLabel(int label)
-{
-
 }
 
 void medTagRoiManager::createMaskWithLabel(int label)
@@ -612,6 +611,38 @@ void medTagRoiManager::removeContoursInAlternativeViews(medAbstractImageView *v)
 
 }
 
+QVector<QVector2D> medTagRoiManager::copyContour()
+{
+    polygonRoi *roi = existingRoiInSlice();
+    if ( roi )
+    {
+        return roi->copyContour();
+    }
+    // impossible case : test of existing roi is already done in caller
+    return QVector<QVector2D>();
+}
+
+bool medTagRoiManager::pasteContour(QVector<QVector2D> nodes)
+{
+    polygonRoi *roi = existingRoiInSlice();
+    if ( roi )
+    {
+        return false;
+    }
+    vtkImageView2D *view2d = static_cast<medVtkViewBackend*>(d->view->backend())->view2D;
+    int slice = view2d->GetSlice();
+
+    if (!isSameOrientation(view2d->GetViewOrientation()))
+        return false;
+
+    roi = appendRoi();
+    roi->setIdSlice(slice);
+    roi->setOrientation(d->orientation);
+    roi->pasteContour(nodes);
+    view2d->Render();
+    return true;
+}
+
 bool medTagRoiManager::mouseIsCloseFromContour(double mousePos[2])
 {
     polygonRoi *roi = existingRoiInSlice();
@@ -720,14 +751,14 @@ void medTagRoiManager::deleteNode(double X, double Y)
 
 void medTagRoiManager::deleteContour()
 {
-    polygonRoi *roiToCheck = existingRoiInSlice();
-    if (roiToCheck)
+    polygonRoi *roiToDelete = existingRoiInSlice();
+    if (roiToDelete)
     {
-        QList<polygonRoi *>::Iterator it = d->rois.begin();
+       QList<polygonRoi *>::Iterator it = d->rois.begin();
         while( it != d->rois.end())
         {
             polygonRoi *roi = *it;
-            if ( roiToCheck == roi )
+            if ( roiToDelete == roi )
             {
                 it = d->rois.erase(it);
                 delete roi;
@@ -795,7 +826,6 @@ void medTagRoiManager::interpolateIfNeeded()
     }
     connectRois();
     manageVisibility();
-    //manageTick();
 }
 
 QList<polygonRoi *> medTagRoiManager::interpolateBetween2Slices(polygonRoi *firstRoi, polygonRoi *secondRoi)

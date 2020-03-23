@@ -15,7 +15,7 @@
 #include <polygonRoiPluginExport.h>
 
 #include <itkImage.h>
-#include <medContourNodes.h>
+#include <medWorldPosContours.h>
 #include <polygonRoi.h>
 
 class medRoiManagerPrivate;
@@ -55,17 +55,19 @@ public:
     void deleteContour();
     void removeAllTick();
     void createMaskWithLabel(int label);
-    void createContourWithLabel(int label);
     void SetMasterRoi(bool state);
 
     vtkSmartPointer<vtkPolyData> getContoursAsPolyData(int label);
-    QVector<medContourNodes> getContoursAsNodes();
+    QVector<medWorldPosContours> getContoursAsNodes();
     void select(bool state);
-    void loadContours(QVector<medContourNodes> contours);
+    void loadContours(QVector<medWorldPosContours> contours);
 
     int findClosestContourFromPoint(QVector3D worldMouseCoord);
     int getClosestSliceFromPoint();
     void removeContoursInAlternativeViews(medAbstractImageView *v);
+
+    QVector<QVector2D> copyContour();
+    bool pasteContour(QVector<QVector2D> nodes);
 public slots:
     void interpolateIfNeeded();
     void addContoursInAlternativeViews(medAbstractImageView *v);

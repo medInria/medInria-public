@@ -107,7 +107,9 @@ polygonRoiToolBox::polygonRoiToolBox(QWidget *parent ) :
                                      + QString(underlineStyle).arg("Define new Label :") + " Right-click on the image then choose color"
                                      + QString(underlineStyle).arg("Remove node/contour/label :") + " Put the cursor on contour then right-click and choose menu \"Remove ...\"."
                                      + QString(underlineStyle).arg("Save segmentation :") + " Put the cursor on contour then right-click and choose menu \"Save ...\"."
-                                     );
+                                     + QString(underlineStyle).arg("Copy ROIs in current slice:") + " CTRL/CMD + c."
+                                     + QString(underlineStyle).arg("Paste ROIs:") + " CTRL/CMD + v.");
+
     explanation->setSizePolicy(QSizePolicy::Ignored, QSizePolicy::Preferred);
     explanation->setWordWrap(true);
     layout->addWidget(explanation);
@@ -151,7 +153,6 @@ void polygonRoiToolBox::loadContoursIfPresent(medAbstractImageView *v, unsigned 
         viewEventFilter->loadContours(data);
         addNewCurve->setChecked(true);
         v->removeLayer(layer);
-        addNewCurve->setChecked(true);
     }
 }
 
@@ -334,6 +335,18 @@ void polygonRoiToolBox::activateRepulsor(bool state)
     }
 }
 
+void polygonRoiToolBox::copyContours()
+{
+//    if (viewEventFilter)
+//        viewEventFilter->copyContours();
+}
+
+void polygonRoiToolBox::pasteContours()
+{
+//    if (viewEventFilter)
+//        viewEventFilter->pasteContours();
+}
+
 void polygonRoiToolBox::resetToolboxBehaviour()
 {
     medTabbedViewContainers *containers = this->getWorkspace()->tabbedViewContainers();
@@ -400,8 +413,12 @@ void polygonRoiToolBox::updateTableWidgetView(unsigned int row, unsigned int col
 
         medAbstractImageView* view = static_cast<medAbstractImageView *> (container->view());
         viewEventFilter->installOnView(view);
+        viewEventFilter->clearCopiedContours();
         connect(view, &medAbstractView::closed, [=](){
             mainContainer->setSelected(true);
+        });
+        connect(container, &medViewContainer::containerSelected, [=](){
+            viewEventFilter->Off();
         });
         medTableWidgetItem * item = static_cast<medTableWidgetItem*>(tableViewChooser->selectedItems().at(nbItem));
         connect(view, SIGNAL(closed()), viewEventFilter, SLOT(removeView()));
@@ -409,7 +426,12 @@ void polygonRoiToolBox::updateTableWidgetView(unsigned int row, unsigned int col
         view->setOrientation(dynamic_cast<medTableWidgetItem*>(item)->orientation());
         viewEventFilter->addAlternativeViews(view);
     }
+    connect(mainContainer, &medViewContainer::containerSelected, [=](){
+        if (addNewCurve->isChecked())
+            viewEventFilter->On();
+    });
     mainContainer->setClosingMode(medViewContainer::CLOSE_BUTTON_HIDDEN);
+    mainContainer->setSelected(true);
     viewEventFilter->addRoisInAlternativeViews();
 
     tableViewChooser->setEnabled(false);

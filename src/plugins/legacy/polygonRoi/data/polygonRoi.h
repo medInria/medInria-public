@@ -15,7 +15,7 @@
 #include <medAbstractImageView.h>
 #include <medAbstractRoi.h>
 #include <medAbstractView.h>
-#include <medContourNodes.h>
+#include <medWorldPosContours.h>
 #include <medImageViewEnum.h>
 #include <medSliderL.h>
 #include <polygonRoiPluginExport.h>
@@ -64,10 +64,13 @@ public:
     vtkPolyData *getPolyData();
     void loadNodes(QVector<QVector3D> coordinates);
 
-    medContourNodes getContourAsNodes();
+    medWorldPosContours getContourAsNodes();
     void manageTick(medSliderL *slider);
     double findClosestContourFromPoint(QVector3D coords);
     void removeContourInAlternativeView(medAbstractImageView *view);
+
+    QVector<QVector2D> copyContour();
+    bool pasteContour(QVector<QVector2D> nodes);
 public slots:
     virtual void undo();
     virtual void redo();
