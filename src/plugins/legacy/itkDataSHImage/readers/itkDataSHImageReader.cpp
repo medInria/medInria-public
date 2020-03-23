@@ -73,7 +73,8 @@ bool itkDataSHImageReader::canRead (const QString &path)
     itk::ImageIOBase::Pointer imageIO = itk::ImageIOFactory::CreateImageIO(path.toLatin1().constData(),
                                                                            itk::ImageIOFactory::ReadMode);
 
-    if (!imageIO.IsNull()) {
+    if (!imageIO.IsNull())
+    {
         if (!imageIO->CanReadFile ( path.toLatin1().constData() ))
             return false;
 
@@ -85,7 +86,15 @@ bool itkDataSHImageReader::canRead (const QString &path)
             dtkDebug() << e.GetDescription();
             return false;
         }
-        if (imageIO->GetNumberOfComponents/*PerPixel*/() != 15 && imageIO->GetNumberOfComponents/*PerPixel*/() != 28)
+
+        unsigned int vectorSize = imageIO->GetNumberOfComponents();
+        double order = -1.5 + std::sqrt(2 * vectorSize + 0.25);
+
+        if (std::abs(order - static_cast<int>(order)) > 1.0e-6)
+            return false;
+
+        int castOrder = static_cast<int>(order);
+        if ((castOrder <= 2)||(castOrder % 2 != 0))
             return false;
 
         return true;
