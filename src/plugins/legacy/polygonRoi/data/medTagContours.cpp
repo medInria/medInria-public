@@ -6,15 +6,15 @@ medTagContours::medTagContours()
 
 }
 
-medTagContours::medTagContours(qint32 lab, QVector<medWorldPosContours> contourVec)
-    :label(lab), contours(contourVec)
+medTagContours::medTagContours(QString name, QVector<medWorldPosContours> contourVec)
+    :labelName(name), contours(contourVec)
 {
 
 }
 
 medTagContours::medTagContours(const medTagContours &other)
 {
-    label = other.label;
+    labelName = other.labelName;
     contours = other.contours;
 }
 
@@ -25,7 +25,7 @@ medTagContours::~medTagContours()
 
 QTextStream &operator<<(QTextStream &out, const medTagContours &data)
 {
-    out << "label\n" <<data.label<< "\ncontours\n";
+    out << "labelName\n" <<data.labelName<< "\ncontours\n";
     for (medWorldPosContours nodes : data.contours)
         out << nodes<<"\n";
     return out;
@@ -33,11 +33,11 @@ QTextStream &operator<<(QTextStream &out, const medTagContours &data)
 
 QDataStream &operator>>(QDataStream &in, medTagContours &data)
 {
-    return in >> data.label >> data.contours;
+    return in >> data.labelName >> data.contours;
 }
 
 QDataStream &operator<<(QDataStream &out, const medTagContours &data)
 {
-    return out << data.label << data.contours;
+    return out << data.labelName << data.contours;
 }
 

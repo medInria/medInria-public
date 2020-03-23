@@ -387,15 +387,15 @@ QString polygonRoi::info()
 
 void polygonRoi::select()
 {
-    double selectedColor[3] = {1.0, 0.533, 0.2};
     vtkContourOverlayRepresentation *contourRep = dynamic_cast<vtkContourOverlayRepresentation*>(d->contour->GetContourRepresentation());
-    contourRep->GetLinesProperty()->SetColor(selectedColor);
+    contourRep->GetLinesProperty()->SetLineWidth(8.);
     medAbstractRoi::select();
 }
 
 void polygonRoi::unselect()
 {
-    setRightColor();
+    vtkContourOverlayRepresentation *contourRep = dynamic_cast<vtkContourOverlayRepresentation*>(d->contour->GetContourRepresentation());
+    contourRep->GetLinesProperty()->SetLineWidth(4.);
     medAbstractRoi::unselect();
 }
 
