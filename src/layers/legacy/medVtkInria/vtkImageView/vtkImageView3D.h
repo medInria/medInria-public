@@ -141,10 +141,11 @@ public:
     virtual void SetCroppingMode(unsigned int);
     virtual unsigned int GetCroppingMode ();
 
-    virtual void SetInput      (vtkAlgorithmOutput* pi_poVtkAlgoOutput, vtkMatrix4x4 *matrix = nullptr, int layer = 0);
-    virtual bool is3D();
-    virtual void SetInputLayer (vtkAlgorithmOutput* pi_poVtkAlgoOutput, vtkMatrix4x4 *matrix = nullptr, int layer = 0);
-    void SetFirstLayer(vtkAlgorithmOutput *pi_poInputAlgoImg, vtkMatrix4x4 *matrix= nullptr, int layer = 0);
+    virtual void SetInput        (vtkAlgorithmOutput* pi_poVtkAlgoOutput, vtkMatrix4x4 *matrix = nullptr, int layer = 0);
+    virtual void SetInput        (vtkActor *actor, int layer = 0, vtkMatrix4x4 *matrix = nullptr, const int imageSize[3] = nullptr, const double imageSpacing[] = nullptr, const double imageOrigin[] = nullptr);
+    static vtkActor* DataSetToActor(vtkPointSet* arg, vtkProperty* prop = nullptr);
+    virtual vtkActor* AddDataSet (vtkPointSet* arg, vtkProperty* prop = NULL);
+    virtual void RemoveDataSet   (vtkPointSet* arg);
 
     virtual void SetOrientationMatrix (vtkMatrix4x4* matrix);
 
@@ -188,9 +189,6 @@ public:
     virtual void InstallInteractor();
     virtual void UnInstallInteractor();
 
-    virtual vtkActor* AddDataSet (vtkPointSet* arg, vtkProperty* prop = NULL);
-    virtual void RemoveDataSet (vtkPointSet* arg);
-
     virtual void AddLayer (int layer);
     virtual int GetNumberOfLayers() const;
     virtual void RemoveLayer (int layer);
@@ -219,14 +217,17 @@ protected:
     vtkImageView3D();
     ~vtkImageView3D();
 
+    void SetFirstLayer(vtkAlgorithmOutput *pi_poInputAlgoImg, vtkMatrix4x4 *matrix = nullptr, int layer = 0);
+    void SetOtherLayer(vtkAlgorithmOutput* pi_poVtkAlgoOutput, vtkMatrix4x4 *matrix = nullptr, int layer = 0);
+    bool is3D();
+
     virtual void InstallPipeline();
     virtual void UnInstallPipeline();
 
     virtual void SetupVolumeRendering();
     virtual void SetupWidgets();
     virtual void UpdateVolumeFunctions(int layer);
-    virtual void ApplyColorTransferFunction(vtkScalarsToColors * colors,
-                                            int layer);
+    virtual void ApplyColorTransferFunction(vtkScalarsToColors * colors, int layer);
     virtual void InternalUpdate();
 
     vtkImage3DDisplay * GetImage3DDisplayForLayer(int layer) const;
@@ -282,8 +283,11 @@ protected:
     double Opacity;
     int Visibility;
 
-    struct LayerInfo {
+    struct LayerInfo 
+    {
         vtkSmartPointer<vtkImage3DDisplay> ImageDisplay;
+        vtkSmartPointer<vtkDataSet>        DataSet;
+        vtkSmartPointer<vtkActor>          Actor;
     };
 
     vtkSmartPointer<vtkImageMapToColors>        PlanarWindowLevelX;
@@ -296,9 +300,6 @@ protected:
 
 private:
     vtkImageView3D(const vtkImageView3D&);  // Not implemented.
-    void operator=(const vtkImageView3D&);    // Not implemented.
-
+    void operator=(const vtkImageView3D&);  // Not implemented.
 };
-
-
 

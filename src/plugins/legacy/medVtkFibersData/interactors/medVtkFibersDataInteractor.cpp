@@ -426,6 +426,7 @@ medVtkFibersDataInteractor::medVtkFibersDataInteractor(medAbstractView *parent):
     }
 
     d->slicingParameter = new medIntParameterL("Slicing", this);
+    d->slicingParameter->getSlider()->setOrientation(Qt::Horizontal);
     connect(d->slicingParameter, SIGNAL(valueChanged(int)), this, SLOT(moveToSlice(int)));
     connect(d->view->positionBeingViewedParameter(), SIGNAL(valueChanged(QVector3D)), this, SLOT(updateSlicingParam()));
 }
@@ -536,9 +537,7 @@ void medVtkFibersDataInteractor::setInputData(medAbstractData *data)
         d->data = data;
 
         d->view2d->SetInput(d->actor, d->view->layer(d->data));
-
-        //TODO - harmonise all of this setInput method in vtkImageView.
-        d->view3d->GetRenderer()->AddActor(d->actor);
+        d->view3d->SetInput(d->actor, d->view->layer(d->data));
         this->updateWidgets();
     }
 

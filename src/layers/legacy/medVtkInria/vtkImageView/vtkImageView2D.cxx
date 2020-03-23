@@ -28,6 +28,7 @@
 #include <vtkImageViewCornerAnnotation.h>
 #include <vtkInformation.h>
 #include <vtkLeaderActor2D.h>
+#include <vtkMapper.h>
 #include <vtkMatrixToLinearTransform.h>
 #include <vtkOrientationAnnotation.h>
 #include <vtkPlane.h>
@@ -148,12 +149,11 @@ vtkImageView2D::~vtkImageView2D()
   this->OrientationAnnotation->Delete();
 
 
-  for (std::list<vtkDataSet2DWidget*>::iterator it3 = this->DataSetWidgets.begin();
-      it3!=this->DataSetWidgets.end(); ++it3)
+  for (auto &dataSetWidget : this->DataSetWidgets)
   {
-    (*it3)->Off();
-    (*it3)->SetImageView (nullptr);
-    (*it3)->Delete();
+    dataSetWidget->Off();
+    dataSetWidget->SetImageView (nullptr);
+    dataSetWidget->Delete();
   }
 }
 
@@ -1609,11 +1609,10 @@ void vtkImageView2D::InstallInteractor()
   if( this->ShowImageAxis && this->RenderWindow && this->GetRenderer())
     this->Axes2DWidget->On();
 
-  for (std::list<vtkDataSet2DWidget*>::iterator it = this->DataSetWidgets.begin();
-      it!=this->DataSetWidgets.end(); ++it)
+  for (auto &dataSetWidget : this->DataSetWidgets)
   {
-    (*it)->SetImageView(this);
-    (*it)->On();
+    dataSetWidget->SetImageView(this);
+    dataSetWidget->On();
   }
 
   this->IsInteractorInstalled = 1;
@@ -1644,10 +1643,10 @@ void vtkImageView2D::UnInstallInteractor()
       }
   }
 
-  for (std::list<vtkDataSet2DWidget*>::iterator it = this->DataSetWidgets.begin(); it!=this->DataSetWidgets.end(); ++it )
+  for (auto &dataSetWidget : this->DataSetWidgets)
   {
-    (*it)->SetImageView(nullptr);
-    (*it)->Off();
+    dataSetWidget->SetImageView(nullptr);
+    dataSetWidget->Off();
   }
 
   this->IsInteractorInstalled = 0;
@@ -1740,25 +1739,11 @@ void vtkImageView2D::SetInput(vtkAlgorithmOutput* pi_poVtkAlgoOutput, vtkMatrix4
         }
         else // layer > 0
         {
-            SetInputLayer(pi_poVtkAlgoOutput, matrix, layer);
+            SetOtherLayer(pi_poVtkAlgoOutput, matrix, layer);
         }
 
         SetInputCommon(pi_poVtkAlgoOutput, layer);
     }
-}
-
-void vtkImageView2D::SetInputLayer(vtkAlgorithmOutput* pi_poVtkAlgoOutput, vtkMatrix4x4 *matrix /*= 0*/, int layer /*= 0*/)
-{
-    // layer > 0
-    this->AddLayer(layer);
-    pi_poVtkAlgoOutput = this->ResliceImageToInput(pi_poVtkAlgoOutput, matrix);
-
-    vtkImage2DDisplay *imageDisplay = this->GetImage2DDisplayForLayer(layer);
-    imageDisplay->SetInputProducer(pi_poVtkAlgoOutput);
-    imageDisplay->SetInputData(static_cast<vtkImageAlgorithm*>(pi_poVtkAlgoOutput->GetProducer())->GetOutput());
-    imageDisplay->GetImageActor()->SetUserMatrix (this->OrientationMatrix);
-
-    this->SetColorRange(imageDisplay->GetMedVtkImageInfo()->scalarRange, layer);
 }
 
 void vtkImageView2D::SetInputCommon(vtkAlgorithmOutput* pi_poVtkAlgoOutput, int layer /*= 0*/)
@@ -1788,8 +1773,33 @@ void vtkImageView2D::SetInputCommon(vtkAlgorithmOutput* pi_poVtkAlgoOutput, int 
     }
 }
 
+void vtkImageView2D::SetOtherLayer(vtkAlgorithmOutput* pi_poVtkAlgoOutput, vtkMatrix4x4 *matrix /*= 0*/, int layer /*= 0*/)
+{
+    // layer > 0
+    this->AddLayer(layer);
+    pi_poVtkAlgoOutput = this->ResliceImageToInput(pi_poVtkAlgoOutput, matrix);
+
+    vtkImage2DDisplay *imageDisplay = this->GetImage2DDisplayForLayer(layer);
+    imageDisplay->SetInputProducer(pi_poVtkAlgoOutput);
+    imageDisplay->SetInputData(static_cast<vtkImageAlgorithm*>(pi_poVtkAlgoOutput->GetProducer())->GetOutput());
+    imageDisplay->GetImageActor()->SetUserMatrix (this->OrientationMatrix);
+
+    this->SetColorRange(imageDisplay->GetMedVtkImageInfo()->scalarRange, layer);
+}
+
+
 void vtkImageView2D::SetInput (vtkActor *actor, int layer, vtkMatrix4x4 *matrix, const int imageSize[], const double imageSpacing[], const double imageOrigin[])
 {
+    vtkDataSet *arg = actor->GetMapper()->GetInput();
+    // If this is the first widget to be added, reset camera
+    if (!this->GetMedVtkImageInfo() || !this->GetMedVtkImageInfo()->initialized)
+    {
+        this->ResetCamera(arg);
+    }
+
+    this->DataSetCollection->AddItem(arg);
+    this->DataSetActorCollection->AddItem(actor);
+
     vtkRenderer *renderer = 0;
 
     this->AddLayer(layer);
@@ -2081,31 +2091,28 @@ void vtkImageView2D::UpdateBounds (const double bounds[6], int layer, vtkMatrix4
 }
 
 //----------------------------------------------------------------------------
-void vtkImageView2D::RemoveDataSet (vtkPointSet *arg)
+void vtkImageView2D::RemoveDataSet(vtkPointSet *arg)
 {
-  this->Superclass::RemoveDataSet (arg);
-
-  for (std::list<vtkDataSet2DWidget*>::iterator it = this->DataSetWidgets.begin();
-      it != this->DataSetWidgets.end(); ++it)
-  {
-    if ((*it)->GetSource()==arg)
+    this->Superclass::RemoveDataSet(arg);
+    for (auto &dataSetWidget : this->DataSetWidgets)
     {
-      (*it)->Off();
-      (*it)->SetImageView (nullptr);
-      (*it)->Delete();
-      this->DataSetWidgets.erase (it);
-      this->Modified();
-      break;
+        if (dataSetWidget->GetSource() == arg)
+        {
+            dataSetWidget->Off();
+            dataSetWidget->SetImageView(nullptr);
+            dataSetWidget->Delete();
+            this->DataSetWidgets.remove(dataSetWidget);
+            this->Modified();
+            break;
+        }
     }
-  }
 }
 
 //----------------------------------------------------------------------------
 std::list<vtkDataSet2DWidget*>::iterator vtkImageView2D::FindDataSetWidget(vtkPointSet* arg)
 {
 
-    for (  std::list<vtkDataSet2DWidget*>::iterator it = this->DataSetWidgets.begin();
-            it != this->DataSetWidgets.end(); ++it)
+  for (std::list<vtkDataSet2DWidget*>::iterator it = this->DataSetWidgets.begin(); it != this->DataSetWidgets.end(); ++it)
   {
     vtkDataSet2DWidget* widget = (*it);
     if (widget->GetSource() == arg)
@@ -2210,25 +2217,35 @@ void vtkImageView2D::RemoveLayer(int layer)
         if (this->LayerInfoVec.size() == 0 )
         {
             AddLayer(0);
-            for (auto poWidget : this->DataSetWidgets)
+        }
+
+        for (auto poWidget : this->DataSetWidgets)
+        {
+            poWidget->SetImageView(this);
+            poWidget->On();
+            this->UpdateBounds(poWidget->GetSource()->GetBounds(), 0, matrix, imageSize, imageSpacing, imageOrigin);
+            this->Modified();
+            // If this is the first widget to be added, reset camera
+            if ((!this->GetMedVtkImageInfo() || !this->GetMedVtkImageInfo()->initialized) && (this->DataSetWidgets.size() == 1))
             {
-                poWidget->SetImageView(this);
-                poWidget->On();
-                this->UpdateBounds(poWidget->GetSource()->GetBounds(), 0, matrix, imageSize, imageSpacing, imageOrigin);
-                this->Modified();
-                // If this is the first widget to be added, reset camera
-                if ((!this->GetMedVtkImageInfo() || !this->GetMedVtkImageInfo()->initialized) && (this->DataSetWidgets.size() == 1))
-                {
-                    this->ResetCamera(poWidget->GetSource());
-                }
+                this->ResetCamera(poWidget->GetSource());
             }
         }
+
+        for (int i = 0; i < this->DataSetActorCollection->GetNumberOfItems(); ++i)
+        {
+            auto poActor = vtkActor::SafeDownCast(this->DataSetActorCollection->GetItemAsObject(i));
+            this->UpdateBounds(poActor->GetMapper()->GetBounds(), 0, matrix, imageSize, imageSpacing, imageOrigin);
+            this->Modified();
+        }   
 
         // Make contiguous
         for ( size_t i(0); i<this->LayerInfoVec.size(); ++i )
         {
-            if( this->LayerInfoVec[i].Renderer )
+            if (this->LayerInfoVec[i].Renderer)
+            {
                 this->LayerInfoVec[i].Renderer->SetLayer(static_cast<int>(i));
+            }                
             this->SetCurrentLayer(static_cast<int>(i));
         }
     }

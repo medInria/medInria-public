@@ -527,7 +527,10 @@ void vtkDataMeshInteractor::updatePipeline ()
         if(vtkPointSet * pointSet = vtkPointSet::SafeDownCast (d->metaDataSet->GetDataSet()))
         {
             d->actor2d = d->view2d->AddDataSet(pointSet);
-            d->actor3d = d->view3d->AddDataSet(pointSet);
+            //d->actor3d = d->view3d->AddDataSet(pointSet);
+            d->actor3d = vtkImageView3D::DataSetToActor(pointSet);
+            d->view3d->SetInput(d->actor3d);
+            d->actor3d->Delete();
 
             d->metaDataSet->AddActor(d->actor2d);
             d->metaDataSet->AddActor(d->actor3d);

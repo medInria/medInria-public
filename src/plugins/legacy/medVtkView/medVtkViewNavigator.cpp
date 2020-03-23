@@ -644,6 +644,14 @@ void medVtkViewNavigator::changeOrientation(medImageView::Orientation orientatio
             d->currentView->SetInput(d->view2d->Get2DDisplayMapperInputAlgorithm(0)->GetInputConnection(0,0), d->view2d->GetOrientationMatrix());
             d->currentView->ResetCamera();
         }
+        else
+        {
+            d->currentView->SetInput(nullptr);
+        }
+    }
+    else
+    {
+        d->currentView->SetInput(nullptr);
     }
     d->currentView->SetRenderWindow(renWin);
     d->currentView->SetCurrentPoint(pos);
