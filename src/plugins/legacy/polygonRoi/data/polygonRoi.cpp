@@ -257,7 +257,6 @@ void polygonRoi::loadNodes(QVector<QVector3D> coordinates)
     for (int i = 0; i < numPts; i++) { vertexIndices[i] = static_cast<vtkIdType>(i); }
     // Set the last vertex to 0; this means the last line segment will join the 19th point (vertices[19])
     // with the first one (vertices[0]), thus closing the circle.
-//    vertexIndices[numPts] = 0;
     vtkSmartPointer<vtkCellArray> lines = vtkSmartPointer<vtkCellArray>::New();
     lines->InsertNextCell(numPts, vertexIndices);
 
@@ -286,7 +285,7 @@ vtkContourWidget * polygonRoi::getContour()
     return d->contour;
 }
 
-medContourNodes polygonRoi::getContourAsNodes()
+medWorldPosContours polygonRoi::getContourAsNodes()
 {
     vtkContourRepresentation * contourRep = d->contour->GetContourRepresentation();
     QVector<QVector3D> coordinates;
@@ -296,7 +295,7 @@ medContourNodes polygonRoi::getContourAsNodes()
         contourRep->GetNthNodeWorldPosition(node, pos);
         coordinates.push_back(QVector3D(pos[0],pos[1],pos[2]));
     }
-    medContourNodes contourNodes = medContourNodes(getIdSlice(), getOrientation(), coordinates);
+    medWorldPosContours contourNodes = medWorldPosContours(getIdSlice(), getOrientation(), coordinates);
     return contourNodes;
 }
 
@@ -434,6 +433,7 @@ void polygonRoi::addContourInAlternativeView(medAbstractImageView *view)
         return;
 
     createPolydataToAddInViews();
+
     if (view->orientation() == medImageView::VIEW_ORIENTATION_3D)
     {
         vtkImageView3D* view3D = static_cast<medVtkViewBackend*>(view->backend())->view3D;
@@ -456,6 +456,7 @@ void polygonRoi::removeContourInAlternativeView(medAbstractImageView *view)
         return;
 
     createPolydataToAddInViews();
+
     if (view->orientation() == medImageView::VIEW_ORIENTATION_3D)
     {
         vtkImageView3D* view3D = static_cast<medVtkViewBackend*>(view->backend())->view3D;
@@ -466,13 +467,54 @@ void polygonRoi::removeContourInAlternativeView(medAbstractImageView *view)
         vtkImageView2D* view2D = static_cast<medVtkViewBackend*>(view->backend())->view2D;
         view2D->RemoveDataSet(d->polyData);
     }
-
     return;
+}
+
+QVector<QVector2D> polygonRoi::copyContour()
+{
+    QVector<QVector2D> coordinates;
+    if ( d->contour->GetWidgetState() != 2 )
+    {
+        return coordinates;
+    }
+
+    vtkContourRepresentation * contourRep = d->contour->GetContourRepresentation();
+    for (int node = 0; node < contourRep->GetNumberOfNodes(); node++)
+    {
+        double pos[2];
+        contourRep->GetNthNodeDisplayPosition(node, pos);
+        coordinates.push_back(QVector2D(pos[0],pos[1]));
+    }
+    return coordinates;
+}
+
+bool polygonRoi::pasteContour(QVector<QVector2D> nodes)
+{
+    vtkContourOverlayRepresentation *contourRep = static_cast<vtkContourOverlayRepresentation*>(d->contour->GetContourRepresentation());
+    for (QVector2D node : nodes)
+    {
+        double pos[2];
+        pos[0] = node.x();
+        pos[1] = node.y();
+        d->contour->GetContourRepresentation()->AddNodeAtDisplayPosition(pos);
+    }
+    contourRep->SaveState();
+    contourRep->SetClosedLoop(1);
+    d->contour->On();
+    d->contour->SetWidgetState(2);
+
+    emit updateCursorState(CURSORSTATE::CS_MOUSE_EVENT);
+    emit interpolate();
+    emit updateRoiInAlternativeViews();
+
+    return true;
 }
 
 double polygonRoi::findClosestContourFromPoint(QVector3D worldMouseCoord)
 {
-    vtkContourRepresentation* contourRep = d->contour->GetContourRepresentation();
+    if (!d->polyData)
+        d->polyData = createPolyDataFromContour();
+
     double coords[3] = {worldMouseCoord.x(), worldMouseCoord.y(), worldMouseCoord.z()};
     vtkSmartPointer<vtkCellLocator> cellLocator =
         vtkSmartPointer<vtkCellLocator>::New();

@@ -79,6 +79,8 @@ private slots:
     void saveContours();
     void saveBinaryImage();
 
+    void copyContours();
+    void pasteContours();
 protected:
 
     void binaryImageFromPolygon(QList<QPair<vtkPolygon*,PlaneIndexSlicePair> > polys);

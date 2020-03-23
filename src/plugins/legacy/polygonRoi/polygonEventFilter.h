@@ -16,6 +16,7 @@
 #include <QMenu>
 
 // medInria
+#include <medDisplayPosContours.h>
 #include <medTagContours.h>
 #include <medTagRoiManager.h>
 #include <medViewEventFilter.h>
@@ -35,6 +36,7 @@ public:
     ~polygonEventFilter();
     bool mousePressEvent(medAbstractView * view, QMouseEvent *mouseEvent) override;
     bool mouseReleaseEvent(medAbstractView * view, QMouseEvent *mouseEvent) override;
+    bool eventFilter(QObject *obj, QEvent *event);
 
     void reset();
     void updateView(medAbstractImageView *view);
@@ -51,6 +53,7 @@ public:
     void saveAllContours();
     void loadContours(medAbstractData *data);
 
+    void clearCopiedContours();
 public slots:
     void addRoisInAlternativeViews();
     void setCursorState(CURSORSTATE state){cursorState = state;}
@@ -60,6 +63,8 @@ public slots:
     void manageRoisVisibility();
     void removeView();
 
+    void copyContours();
+    void pasteContours();
 private slots:
     void deleteNode(medTagRoiManager *manager, double X, double Y);
     void deleteContour(medTagRoiManager *manager);
@@ -67,6 +72,7 @@ private slots:
     void saveMask(medTagRoiManager *manager);
     void saveContour(medTagRoiManager *manager);
 
+    void copyContour(medTagRoiManager *manager);
 signals:
     void enableRepulsor(bool state);
     void enableGenerateMask(bool state);
@@ -83,6 +89,8 @@ private:
     QList<medAbstractImageView*> alternativeViews;
     bool isRepulsorActivated;
     vtkInriaInteractorStylePolygonRepulsor *interactorStyleRepulsor;
+    QList<medDisplayPosContours> copyNodesList;
+    bool activateEventFilter;
 
     bool leftButtonBehaviour(medAbstractView *view, QMouseEvent *mouseEvent);
     bool rightButtonBehaviour(medAbstractView *view, QMouseEvent *mouseEvent);
@@ -97,8 +105,8 @@ private:
     void manageButtonsState();
     void saveContoursAsMedAbstractData(vtkMetaDataSet *outputDataSet, QVector<medTagContours> contoursData);
     int findClosestSliceFromMouseClick(QVector3D worldMouseCoord);
-    int performPropPicking(medAbstractImageView *v, QMouseEvent *mouseEvent);
     bool updateMainViewOnChosenSlice(medAbstractImageView *view, QMouseEvent *mouseEvent);
     int findAvailableLabel();
     void removeContoursInAlternativeViews(medTagRoiManager *manager);
+    medTagRoiManager *getManagerFromColor(QColor color);
 };

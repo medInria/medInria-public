@@ -34,7 +34,7 @@
 
 
 polygonEventFilter::polygonEventFilter(medAbstractImageView *view) :
-        medViewEventFilter(), currentView(view), cursorState(CURSORSTATE::CS_MOUSE_EVENT), isRepulsorActivated(false)
+        medViewEventFilter(), currentView(view), cursorState(CURSORSTATE::CS_MOUSE_EVENT), isRepulsorActivated(false), activateEventFilter(true)
 {
     colorList = QList<QColor>({
         Qt::green,
@@ -83,23 +83,56 @@ void polygonEventFilter::reset()
     }
 }
 
+bool polygonEventFilter::eventFilter(QObject *obj, QEvent *event)
+{
+    QKeyEvent *keyEvent = dynamic_cast<QKeyEvent*>(event);
+    QMouseEvent *mouseEvent = dynamic_cast<QMouseEvent*>(event);
+
+    if (mouseEvent)
+        return medViewEventFilter::eventFilter(obj,event);
+
+    if (!keyEvent)
+        return false;
+
+    if ( keyEvent->type() == QEvent::ShortcutOverride )
+    {
+        if ( keyEvent->key() == Qt::Key::Key_C )
+            copyContours();
+        if ( keyEvent->key() == Qt::Key::Key_V )
+            pasteContours();
+    }
+    return event->isAccepted();
+}
+
 bool polygonEventFilter::mouseReleaseEvent(medAbstractView *view, QMouseEvent *mouseEvent)
 {
+    if ( !view )
+        return false;
     medAbstractImageView *v = dynamic_cast<medAbstractImageView *> (view);
-    if ( !currentView )
+    if ( !currentView || !v )
     {
         return false;
     }
-    if (currentView != v)
+
+    if (currentView != v )
     {
+        if ( isRepulsorActivated )
+        {
+            emit toggleRepulsorButton(false);
+        }
         return updateMainViewOnChosenSlice(v, mouseEvent);
     }
-    if (isRepulsorActivated)
+    else
     {
-        if (interactorStyleRepulsor != nullptr)
+        if (isRepulsorActivated && activateEventFilter)
         {
-            interactorStyleRepulsor->GetManager()->SetMasterRoi(true);
-            interactorStyleRepulsor->GetManager()->interpolateIfNeeded();
+            if (interactorStyleRepulsor != nullptr)
+            {
+                interactorStyleRepulsor->GetManager()->SetMasterRoi(true);
+                interactorStyleRepulsor->GetManager()->interpolateIfNeeded();
+                addRoisInAlternativeViews();
+                manageTick();
+            }
         }
     }
 
@@ -108,6 +141,9 @@ bool polygonEventFilter::mouseReleaseEvent(medAbstractView *view, QMouseEvent *m
 
 bool polygonEventFilter::mousePressEvent(medAbstractView * view, QMouseEvent *mouseEvent)
 {
+    if ( ! activateEventFilter )
+        return false;
+
     medAbstractImageView *v = dynamic_cast<medAbstractImageView *> (view);
     if ( !currentView )
     {
@@ -268,8 +304,14 @@ bool polygonEventFilter::rightButtonBehaviour(medAbstractView *view, QMouseEvent
         });
         saveMenu->addAction(saveContourAction);
 
+        QAction *copyContourAction = new QAction("Copy Selected Contour", &mainMenu);
+        connect(copyContourAction, &QAction::triggered, [=](){
+            copyContour(closestManager);
+        });
+
         mainMenu.addMenu(roiManagementMenu);
         mainMenu.addMenu(saveMenu);
+        mainMenu.addAction(copyContourAction);
     }
     else
     {
@@ -416,7 +458,7 @@ QList<QColor> polygonEventFilter::getAvailableColors(QList<QColor> colorsToExclu
 
 void polygonEventFilter::Off()
 {
-    removeFromAllViews();
+    activateEventFilter = false;
     for (medTagRoiManager *manager : managers)
     {
         manager->setContourEnabled(false);
@@ -427,6 +469,7 @@ void polygonEventFilter::Off()
 
 void polygonEventFilter::On()
 {
+    activateEventFilter = true;
     for (medTagRoiManager *manager : managers)
     {
         manager->setContourEnabled(true);
@@ -475,6 +518,73 @@ void polygonEventFilter::removeView()
     }
     if ( alternativeViews.size()==0 )
         emit clearLastAlternativeView();
+}
+
+void polygonEventFilter::clearCopiedContours()
+{
+    copyNodesList.clear();
+}
+
+void polygonEventFilter::copyContour(medTagRoiManager *manager)
+{
+    copyNodesList.clear();
+    QVector<QVector2D> coords = manager->copyContour();
+    if (!coords.empty())
+    {
+        int label = colorList.indexOf(manager->getColor()) + 1;
+        medDisplayPosContours contours = medDisplayPosContours(label, coords);
+        copyNodesList.append(contours);
+    }
+    return;
+}
+
+void polygonEventFilter::copyContours()
+{
+    copyNodesList.clear();
+    for (medTagRoiManager *manager : managers)
+    {
+        if (manager->existingRoiInSlice())
+        {
+            QVector<QVector2D> coords = manager->copyContour();
+            if (!coords.empty())
+            {
+                int label = colorList.indexOf(manager->getColor()) + 1;
+                medDisplayPosContours contours = medDisplayPosContours(label, coords);
+                copyNodesList.append(contours);
+            }
+        }
+    }
+}
+
+void polygonEventFilter::pasteContours()
+{
+    for (medDisplayPosContours contours : copyNodesList)
+    {
+        QColor color = colorList.at(contours.getLabel()-1);
+        medTagRoiManager *manager = getManagerFromColor(color);
+        if ( manager )
+        {
+            if ( !manager->existingRoiInSlice() )
+            {
+                manager->pasteContour(contours.getNodes());
+            }
+            else
+            {
+                qDebug()<<"contour with label "<< contours.getLabel() << " already exist in slice ";
+            }
+        }
+        addRoisInAlternativeViews();
+    }
+}
+
+medTagRoiManager *polygonEventFilter::getManagerFromColor(QColor color)
+{
+    for (medTagRoiManager *manager : managers)
+    {
+        if (manager->getColor() == color)
+            return manager;
+    }
+    return nullptr;
 }
 
 void polygonEventFilter::activateRepulsor(bool state)
@@ -671,7 +781,9 @@ void polygonEventFilter::deleteNode(medTagRoiManager *manager, double X, double 
 
 void polygonEventFilter::deleteContour(medTagRoiManager *manager)
 {
+    removeContoursInAlternativeViews(manager);
     manager->deleteContour();
+    addRoisInAlternativeViews();
     if ( manager->getRois().empty() )
     {
         managers.removeOne(manager);
