@@ -31,7 +31,7 @@ class POLYGONROIPLUGIN_EXPORT medTagRoiManager : public QObject
     Q_OBJECT
 
 public:
-    medTagRoiManager(medAbstractView *view, polygonEventFilter *eventCursor, QColor color=Qt::transparent);
+    medTagRoiManager(medAbstractView *view, polygonEventFilter *eventCursor, QColor color=Qt::transparent, QString name="undefined");
     ~medTagRoiManager();
 
     polygonRoi* roiOpenInSlice();
@@ -41,6 +41,7 @@ public:
     void appendRoi(polygonRoi *roi);
     QList<polygonRoi *> getRois();
     QColor getColor();
+    QString getName();
     polygonRoi *appendRoi();
 
     void setContourEnabled(bool state);
@@ -68,6 +69,7 @@ public:
 
     QVector<QVector2D> copyContour();
     bool pasteContour(QVector<QVector2D> nodes);
+    void setName(QString name);
 public slots:
     void interpolateIfNeeded();
     void addContoursInAlternativeViews(medAbstractImageView *v);

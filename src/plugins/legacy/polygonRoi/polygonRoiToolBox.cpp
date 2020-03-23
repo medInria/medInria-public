@@ -419,6 +419,8 @@ void polygonRoiToolBox::updateTableWidgetView(unsigned int row, unsigned int col
         });
         connect(container, &medViewContainer::containerSelected, [=](){
             viewEventFilter->Off();
+            repulsorTool->setChecked(false);
+            repulsorTool->setEnabled(false);
         });
         medTableWidgetItem * item = static_cast<medTableWidgetItem*>(tableViewChooser->selectedItems().at(nbItem));
         connect(view, SIGNAL(closed()), viewEventFilter, SLOT(removeView()));
@@ -428,7 +430,10 @@ void polygonRoiToolBox::updateTableWidgetView(unsigned int row, unsigned int col
     }
     connect(mainContainer, &medViewContainer::containerSelected, [=](){
         if (addNewCurve->isChecked())
+        {
             viewEventFilter->On();
+            repulsorTool->setEnabled(true);
+        }
     });
     mainContainer->setClosingMode(medViewContainer::CLOSE_BUTTON_HIDDEN);
     mainContainer->setSelected(true);

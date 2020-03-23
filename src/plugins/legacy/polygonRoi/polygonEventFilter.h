@@ -16,6 +16,7 @@
 #include <QMenu>
 
 // medInria
+#include <QWidgetAction>
 #include <medDisplayPosContours.h>
 #include <medTagContours.h>
 #include <medTagRoiManager.h>
@@ -58,7 +59,7 @@ public slots:
     void addRoisInAlternativeViews();
     void setCursorState(CURSORSTATE state){cursorState = state;}
 
-    void updateLabel(int label);
+    void createNewManager(int label);
     void manageTick();
     void manageRoisVisibility();
     void removeView();
@@ -66,7 +67,7 @@ public slots:
     void copyContours();
     void pasteContours();
 private slots:
-    void deleteNode(medTagRoiManager *manager, double X, double Y);
+    void deleteNode(medTagRoiManager *manager, QMouseEvent *mouseEvent);
     void deleteContour(medTagRoiManager *manager);
     void deleteLabel(medTagRoiManager *manager);
     void saveMask(medTagRoiManager *manager);
@@ -95,13 +96,13 @@ private:
     bool leftButtonBehaviour(medAbstractView *view, QMouseEvent *mouseEvent);
     bool rightButtonBehaviour(medAbstractView *view, QMouseEvent *mouseEvent);
     QList<QColor> getAvailableColors(QList<QColor> colorsToExclude);
-    QMenu *updateLabelMenu(QList<QColor> colors);
-    QList<QColor> updateColors(QList<QColor> colorsToExclude);
+    QMenu *createColorMenu(QList<QColor> colors);
+    QList<QColor> updateColorsList(QList<QColor> colorsToExclude);
     bool manageRoiWithLabel(QMouseEvent *mouseEvent);
     bool addPointInContourWithLabel(QMouseEvent *mouseEvent);
     medTagRoiManager *closestManagerInSlice(double mousePos[]);
     void setToolboxButtonsState(bool state);
-    medTagRoiManager *addManagerToList(int label);
+    medTagRoiManager *addManagerToList(int label, QString labelName);
     void manageButtonsState();
     void saveContoursAsMedAbstractData(vtkMetaDataSet *outputDataSet, QVector<medTagContours> contoursData);
     int findClosestSliceFromMouseClick(QVector3D worldMouseCoord);
@@ -109,4 +110,5 @@ private:
     int findAvailableLabel();
     void removeContoursInAlternativeViews(medTagRoiManager *manager);
     medTagRoiManager *getManagerFromColor(QColor color);
+    QWidgetAction * updateNameManager(medTagRoiManager* closestManager, QMenu *mainMenu);
 };

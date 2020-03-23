@@ -38,7 +38,7 @@ class medTagRoiManagerPrivate
 {
 public:
     medTagRoiManagerPrivate(){}
-    medTagRoiManagerPrivate(medAbstractView *view, polygonEventFilter *eventCursor, QColor color);
+    medTagRoiManagerPrivate(medAbstractView *view, polygonEventFilter *eventCursor, QColor color, QString name);
     ~medTagRoiManagerPrivate();
     void clearRois();
     QList<polygonRoi*> rois;
@@ -47,11 +47,12 @@ public:
     medAbstractView *view;
     polygonEventFilter *eventCursor;
     QColor color;
+    QString name;
     bool enableInterpolation;
     int closestSlice;
 };
 
-medTagRoiManagerPrivate::medTagRoiManagerPrivate(medAbstractView *view, polygonEventFilter *eventCursor, QColor color)
+medTagRoiManagerPrivate::medTagRoiManagerPrivate(medAbstractView *view, polygonEventFilter *eventCursor, QColor color, QString name)
     :eventCursor(eventCursor), enableInterpolation(true)
 {
 
@@ -61,6 +62,7 @@ medTagRoiManagerPrivate::medTagRoiManagerPrivate(medAbstractView *view, polygonE
     this->orientation = view2d->GetViewOrientation();
     this->sliceOrientation = view2d->GetSliceOrientation();
     this->color = color;
+    this->name = name;
     this->closestSlice = -1;
     polygonRoi *roi = new polygonRoi(view2d, color);
     rois.append(roi);
@@ -81,8 +83,8 @@ medTagRoiManagerPrivate::~medTagRoiManagerPrivate()
 }
 
 
-medTagRoiManager::medTagRoiManager(medAbstractView *view, polygonEventFilter *eventCursor, QColor color):
-    d(new medTagRoiManagerPrivate(view, eventCursor, color))
+medTagRoiManager::medTagRoiManager(medAbstractView *view, polygonEventFilter *eventCursor, QColor color, QString name):
+    d(new medTagRoiManagerPrivate(view, eventCursor, color, name))
 {
     connectRois();
     //manageTick();
@@ -114,6 +116,16 @@ QColor medTagRoiManager::getColor()
     return d->color;
 }
 
+QString medTagRoiManager::getName()
+{
+    return d->name;
+}
+
+void medTagRoiManager::setName(QString name)
+{
+    d->name = name;
+}
+
 QList<polygonRoi *> medTagRoiManager::getRois()
 {
     return d->rois;
@@ -138,6 +150,7 @@ void medTagRoiManager::select(bool state)
         else
             roi->unselect();
     }
+    d->view->render();
 }
 
 void medTagRoiManager::loadContours( QVector<medWorldPosContours> contours)

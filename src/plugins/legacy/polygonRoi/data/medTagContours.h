@@ -14,14 +14,14 @@ class  medTagContours
 {
 public:
     medTagContours();
-    medTagContours(qint32 lab, QVector<medWorldPosContours> contourVec);
+    medTagContours(QString name, QVector<medWorldPosContours> contourVec);
     medTagContours(const medTagContours& other);
     virtual ~medTagContours();
 
-    void setLabel(qint32 lab){label = lab;}
+    void setLabelName(QString name){labelName = name;}
     void setContourNodes(QVector<medWorldPosContours> contourVec){contours = contourVec;}
 
-    qint32 getLabel(){return label;}
+    QString getLabelName(){return labelName;}
     QVector<medWorldPosContours> getContourNodes(){return contours;}
 
     friend QDataStream& operator>>(QDataStream& in, medTagContours& data);
@@ -29,7 +29,7 @@ public:
     friend QTextStream& operator<<(QTextStream& out, const medTagContours& data);
 protected:
     QVector<medWorldPosContours> contours;
-    qint32 label;
+    QString labelName;
 //    QColor color;
 };
 
