@@ -263,7 +263,6 @@ void itkDataSHImageVtkViewInteractor::setupParameters()
     medBoolParameterL *flipXParam = new medBoolParameterL("FlipX", this);
     medBoolParameterL *flipYParam = new medBoolParameterL("FlipY", this);
     medBoolParameterL *flipZParam = new medBoolParameterL("FlipZ", this);
-    flipZParam->setValue(true);
 
     medBoolParameterL *enhanceParam = new medBoolParameterL("Enhance", this);
 

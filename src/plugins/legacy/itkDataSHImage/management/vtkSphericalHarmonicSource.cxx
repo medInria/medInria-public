@@ -42,7 +42,7 @@ double sphLegendre(const int l,const int m,const double theta) {
     const unsigned lmm = l-m;
     const unsigned lpm = l+m;
     const double fact   = boost::math::factorial<double>(lmm)/boost::math::factorial<double>(lpm);
-    const double factor = static_cast<double>(2*l+1)/(8.0*vtkMath::Pi())*fact;
+    const double factor = static_cast<double>(2*l+1) * fact / (4.0 * vtkMath::Pi());
     return sqrt(factor)*boost::math::legendre_p(l,m,cos(theta));
 }
 #else
@@ -107,8 +107,7 @@ vtkSphericalHarmonicSource::vtkSphericalHarmonicSource(const int tess) {
     DeformOn();
     NormalizeOff();
 
-    // By Default we flip the z-axis, the internal x,y,z have z flipped with respect to visu
-    SetFlipVector(false,false,true);
+    SetFlipVector(false,false,false);
     MaxThesisFuncOff();
 
     TesselationType = Icosahedron;
@@ -340,7 +339,10 @@ ComputeSHMatrixMaxThesis(const int order,vtkPolyData *shell,const bool* FlipVect
 
             for (int m=1,j1=j-1,j2=j+1;m<=l;++m,--j1,++j2) {
                 const double temp = std::sqrt(2.0)*sphLegendre(l,m,theta);
-                B(j1,i) = temp*cos(m*phi);
+                if (m % 2 != 0)
+                    B(j1,i) = - temp*cos(m*phi);
+                else
+                    B(j1,i) = temp*cos(m*phi);
                 B(j2,i) = temp*sin(m*phi);
             }
         }
