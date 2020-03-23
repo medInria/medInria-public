@@ -191,7 +191,7 @@ void medVtkViewItkDataImageInteractor::setInputData(medAbstractData *data)
 
 void medVtkViewItkDataImageInteractor::removeData()
 {
-    unsigned int imageLayer = getCurrentLayer();
+    unsigned int imageLayer = d->view->layer(d->imageData);
     d->view2d->RemoveLayer(imageLayer);
     d->view3d->RemoveLayer(imageLayer);
 }
