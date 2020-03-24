@@ -69,12 +69,12 @@ bool medContoursWriter::canWrite(const QString& path)
     {
         return false;
     }
-
     return dynamic_cast<vtkMetaDataSet*>((vtkObject*)(this->data()->data()));
 }
 
 bool medContoursWriter::write(const QString& path)
 {
+    bool bRes;
     if (!this->data())
     {
         return false;
@@ -100,17 +100,19 @@ bool medContoursWriter::write(const QString& path)
 
     if ( path.endsWith(".ctr") )
     {
-        return writeASCIIFile(ctr, path, mesh);
+        bRes =  writeASCIIFile(ctr, path, mesh);
     }
     else if ( path.endsWith(".ctrb") )
     {
-        return writeBinaryFile(path, ctr, mesh);
+        bRes = writeBinaryFile(path, ctr, mesh);
     }
     else
     {
-        qDebug()<<"extension not supported";
-        return false;
+        qDebug()<<metaObject()->className()<<":: write - xtension not supported.";
+        bRes = false;
     }
+    return bRes;
+
 }
 
 bool medContoursWriter::writeBinaryFile(const QString& path, medContours* ctr, vtkMetaDataSet* mesh)
@@ -209,7 +211,7 @@ bool medContoursWriter::writeASCIIFile(medContours* ctr, const QString& path, vt
 
 void medContoursWriter::addMetaDataAsFieldData(vtkMetaDataSet* dataSet)
 {
-    foreach (QString key, data()->metaDataList())
+    for (QString &key : data()->metaDataList())
     {
         vtkSmartPointer<vtkStringArray> metaDataArray = vtkSmartPointer<vtkStringArray>::New();
         QString arrayName = QString(metaDataFieldPrefix) + key;

@@ -80,7 +80,7 @@ polygonRoiToolBox::polygonRoiToolBox(QWidget *parent ) :
     layout->addLayout( ButtonLayout2 );
     ButtonLayout2->addWidget(tableViewChooser);
 
-    QLabel *saveLabel = new QLabel("Save segmentations as :");
+    QLabel *saveLabel = new QLabel("Save segmentations as:");
     QVBoxLayout *ButtonSaveLayout = new QVBoxLayout();
     saveBinaryMaskButton = new QPushButton(tr("Mask(s)"));
     saveBinaryMaskButton->setToolTip("Import the current mask to the non persistent database");
@@ -103,11 +103,11 @@ polygonRoiToolBox::polygonRoiToolBox(QWidget *parent ) :
 
     // How to use
     QString underlineStyle = "<br><br><span style=\" text-decoration: underline;\">%1</span>";
-    QLabel *explanation = new QLabel(QString(underlineStyle).arg("Define a Contour :") + " Activate the toolbox, then click on the data set."
-                                     + QString(underlineStyle).arg("Define new Label :") + " Right-click on the image then choose color"
-                                     + QString(underlineStyle).arg("Remove node/contour/label :") + " Put the cursor on contour then right-click and choose menu \"Remove ...\"."
-                                     + QString(underlineStyle).arg("Save segmentation :") + " Put the cursor on contour then right-click and choose menu \"Save ...\"."
-                                     + QString(underlineStyle).arg("Copy ROIs in current slice:") + " CTRL/CMD + c."
+    QLabel *explanation = new QLabel(QString(underlineStyle).arg("Define a Contour: ") + " Activate the toolbox, then click on the data set."
+                                     + QString(underlineStyle).arg("Define new Label: ") + " Right-click on the image then choose color"
+                                     + QString(underlineStyle).arg("Remove node/contour/label: ") + " Put the cursor on contour then right-click and choose menu \"Remove ...\"."
+                                     + QString(underlineStyle).arg("Save segmentation: ") + " Put the cursor on contour then right-click and choose menu \"Save ...\"."
+                                     + QString(underlineStyle).arg("Copy ROIs in current slice: ") + " CTRL/CMD + c."
                                      + QString(underlineStyle).arg("Paste ROIs:") + " CTRL/CMD + v.");
 
     explanation->setSizePolicy(QSizePolicy::Ignored, QSizePolicy::Preferred);
@@ -162,15 +162,21 @@ void polygonRoiToolBox::updateView()
     if (containers)
     {
         if ( containers->currentIndex() == -1 )
+        {
             return;
+        }
         QList<medAbstractView*> viewsInTabSelected = containers->viewsInTab(containers->currentIndex());
 
         medAbstractView *view = containers->getFirstSelectedContainerView();
         if (!view)
+        {
             return;
+        }
         medAbstractImageView *v = qobject_cast<medAbstractImageView*>(view);
         if (!v)
+        {
             return;
+        }
 
         QList<medViewContainer*> containersInTab = containers->containersInTab(containers->currentIndex());
         if (viewsInTabSelected.size() > 1)
@@ -186,7 +192,9 @@ void polygonRoiToolBox::updateView()
         {
             medAbstractData *data = v->layerData(0);
             if (data->identifier().contains("medContours"))
+            {
                 return;
+            }
         }
 
         for (unsigned int i=0; i<v->layersCount(); ++i)
@@ -272,7 +280,7 @@ void polygonRoiToolBox::clickClosePolygon(bool state)
     if (!currentView)
     {
         addNewCurve->setChecked(false);
-        qDebug()<<"no view in container";
+        qDebug()<<metaObject()->className()<<":: clickClosePolygon - no view in container.";
         return;
     }
 
@@ -281,7 +289,6 @@ void polygonRoiToolBox::clickClosePolygon(bool state)
     enableTableViewChooser(state);
     if (state)
     {
-
         if (!viewEventFilter)
         {
             viewEventFilter = new polygonEventFilter(currentView);
@@ -335,24 +342,14 @@ void polygonRoiToolBox::activateRepulsor(bool state)
     }
 }
 
-void polygonRoiToolBox::copyContours()
-{
-//    if (viewEventFilter)
-//        viewEventFilter->copyContours();
-}
-
-void polygonRoiToolBox::pasteContours()
-{
-//    if (viewEventFilter)
-//        viewEventFilter->pasteContours();
-}
-
 void polygonRoiToolBox::resetToolboxBehaviour()
 {
     medTabbedViewContainers *containers = this->getWorkspace()->tabbedViewContainers();
     QList<medViewContainer*> containersInTabSelected = containers->containersInTab(containers->currentIndex());
     if (containersInTabSelected.size() != 1)
+    {
         return;
+    }
     containersInTabSelected[0]->setClosingMode(medViewContainer::CLOSE_CONTAINER);
     enableTableViewChooser(addNewCurve->isChecked());
 }
@@ -360,19 +357,25 @@ void polygonRoiToolBox::resetToolboxBehaviour()
 void polygonRoiToolBox::manageTick()
 {
  if (viewEventFilter && currentView)
+ {
      viewEventFilter->manageTick();
+ }
 }
 
 void polygonRoiToolBox::manageRoisVisibility()
 {
     if (viewEventFilter && currentView)
+    {
         viewEventFilter->manageRoisVisibility();
+    }
 }
 
 void polygonRoiToolBox::updateTableWidgetView(unsigned int row, unsigned int col)
 {
     if (!viewEventFilter)
+    {
         return;
+    }
 
     medTabbedViewContainers *containers = this->getWorkspace()->tabbedViewContainers();
     QList<medViewContainer*> containersInTabSelected = containers->containersInTab(containers->currentIndex());
@@ -384,7 +387,9 @@ void polygonRoiToolBox::updateTableWidgetView(unsigned int row, unsigned int col
     medViewContainer* mainContainer = containersInTabSelected.at(0);
     medAbstractImageView* mainView = dynamic_cast<medAbstractImageView *> (mainContainer->view());
     if (!mainView)
+    {
         return;
+    }
     medAbstractData* data = mainView->layerData(0);
 
     medViewContainer *previousContainer;
@@ -406,7 +411,7 @@ void polygonRoiToolBox::updateTableWidgetView(unsigned int row, unsigned int col
         }
         else
         {
-            qDebug()<<"ERROR";
+            handleDisplayError(medAbstractProcessLegacy::FAILURE);
             return;
         }
         container->addData(data);
@@ -446,7 +451,9 @@ void polygonRoiToolBox::updateTableWidgetView(unsigned int row, unsigned int col
 void polygonRoiToolBox::updateTableWidgetItems()
 {
     if ( tableViewChooser->selectedItems().size() > 0 )
+    {
         return;
+    }
 
     medTableWidgetItem *firstOrientation;
     medTableWidgetItem *secondOrientation;
@@ -511,7 +518,8 @@ void polygonRoiToolBox::updateTableWidgetItems()
 
         case medImageView::VIEW_ALL_ORIENTATION:
         default:
-            qDebug()<<"Unexpected Case";
+            qDebug()<<metaObject()->className()<<":: updateTableWidgetItems - unknown view.";
+            handleDisplayError(medAbstractProcessLegacy::FAILURE);
             return;
         }
 
@@ -543,23 +551,31 @@ void polygonRoiToolBox::enableTableViewChooser(bool state)
         medTabbedViewContainers *containers = this->getWorkspace()->tabbedViewContainers();
         QList<medViewContainer*> containersInTabSelected = containers->containersInTab(containers->currentIndex());
         if (containersInTabSelected.size() == 1)
+        {
             tableViewChooser->setEnabled(state);
+        }
     }
     else
+    {
         tableViewChooser->setEnabled(state);
+    }
 }
 
 void polygonRoiToolBox::interpolateCurve(bool state)
 {
     if (!viewEventFilter)
+    {
         return;
+    }
     viewEventFilter->setEnableInterpolation(state);
 }
 
 void polygonRoiToolBox::saveBinaryImage()
 {
     if (!viewEventFilter)
+    {
         return;
+    }
     viewEventFilter->saveMask();
 }
 
@@ -573,7 +589,6 @@ void polygonRoiToolBox::disableButtons()
     saveBinaryMaskButton->setEnabled(false);
     saveContourButton->setEnabled(false);
     tableViewChooser->setEnabled(false);
-
 }
 
 void polygonRoiToolBox::saveContours()
@@ -592,6 +607,5 @@ void polygonRoiToolBox::clear()
     {
         currentView = nullptr;
     }
-
     disableButtons();
 }

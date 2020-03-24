@@ -33,20 +33,19 @@ public:
 
 public slots:
 
-    virtual bool canRead(const QString& path);
-    virtual bool canRead(const QStringList& paths);
+    bool canRead(const QString& path) override;
+    bool canRead(const QStringList& paths) override;
 
-    virtual bool readInformation(const QString& path);
-    virtual bool readInformation(const QStringList& paths);
+    bool readInformation(const QString& path) override;
+    bool readInformation(const QStringList& paths) override;
 
-    virtual bool read(const QString& path);
-    virtual bool read(const QStringList& paths);
+    bool read(const QString& path) override;
+    bool read(const QStringList& paths) override;
 
-    virtual void setProgress(int value);
+    void setProgress(int value) override;
 
 protected:
     bool readBinaryFile(QString path);
-    bool readASCIIFile(QString path);
     vtkSmartPointer<vtkMetaDataSet> retrieveMeshFromReader(vtkSmartPointer<vtkDataSetReader> reader);
 
 private:

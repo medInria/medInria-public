@@ -56,7 +56,9 @@ polygonEventFilter::polygonEventFilter(medAbstractImageView *view) :
 polygonEventFilter::~polygonEventFilter()
 {
     if (interactorStyleRepulsor)
+    {
         interactorStyleRepulsor->Delete();
+    }
     for (medTagRoiManager *manager: managers)
     {
         delete manager;
@@ -91,17 +93,25 @@ bool polygonEventFilter::eventFilter(QObject *obj, QEvent *event)
     QMouseEvent *mouseEvent = dynamic_cast<QMouseEvent*>(event);
 
     if (mouseEvent)
+    {
         return medViewEventFilter::eventFilter(obj,event);
+    }
 
     if (!keyEvent)
+    {
         return false;
+    }
 
     if ( keyEvent->type() == QEvent::ShortcutOverride )
     {
         if ( keyEvent->key() == Qt::Key::Key_C )
+        {
             copyContours();
+        }
         if ( keyEvent->key() == Qt::Key::Key_V )
+        {
             pasteContours();
+        }
     }
     return event->isAccepted();
 }
@@ -291,8 +301,8 @@ bool polygonEventFilter::rightButtonBehaviour(medAbstractView *view, QMouseEvent
 
     QList<QColor> colors = updateColorsList(colorsToExclude);
     QMenu *colorMenu = createColorMenu(colors);
-    QMenu *roiManagementMenu = new QMenu("Remove : ");
-    QMenu *saveMenu = new QMenu("Save as : ");
+    QMenu *roiManagementMenu = new QMenu("Remove: ");
+    QMenu *saveMenu = new QMenu("Save as: ");
     if (closestManager && closestManager->getMinimumDistanceFromNodesToEventPosition(mousePos) < 10 )
     {
         closestManager->select(true);
@@ -395,7 +405,9 @@ bool polygonEventFilter::addPointInContourWithLabel(QMouseEvent *mouseEvent)
             if ( manager->existingRoiInSlice() )
             {
                 if ( manager->roiClosedInSlice())
+                {
                     colorsToExclude.append(manager->getColor());
+                }
                 else
                 {
                     cursorState = CURSORSTATE::CS_NONE;
@@ -405,7 +417,9 @@ bool polygonEventFilter::addPointInContourWithLabel(QMouseEvent *mouseEvent)
             else
             {
                 if (!manager->isSameSliceOrientation())
+                {
                     colorsToExclude.append(manager->getColor());
+                }
             }
         }
 
@@ -419,7 +433,9 @@ bool polygonEventFilter::addPointInContourWithLabel(QMouseEvent *mouseEvent)
             QList<QColor> colors = updateColorsList(colorsToExclude);
             QMenu * menu = createColorMenu(colors);
             if ( !menu->exec(mouseEvent->globalPos()))
+            {
                 res = true;
+            }
             delete menu;
         }
         return res;
@@ -591,7 +607,7 @@ void polygonEventFilter::copyContours()
 
 void polygonEventFilter::pasteContours()
 {
-    for (medDisplayPosContours contours : copyNodesList)
+    for (medDisplayPosContours &contours : copyNodesList)
     {
         QColor color = colorList.at(contours.getLabel()-1);
         medTagRoiManager *manager = getManagerFromColor(color);
@@ -720,7 +736,7 @@ void polygonEventFilter::loadContours(medAbstractData *data)
 
     if ( managers.size()==colorList.size() )
     {
-        qDebug()<<"unable to create new manager ";
+        qDebug()<<metaObject()->className()<<":: loadContours - unable to create a new manager.";
         return;
     }
 
@@ -728,13 +744,16 @@ void polygonEventFilter::loadContours(medAbstractData *data)
     {
         if ( managers.size()==colorList.size() )
         {
-            qDebug()<<"unable to create new manager ";
+            qDebug()<<metaObject()->className()<<":: loadContours - unable to create a new manager.";
             return;
         }
         int label = findAvailableLabel();
         if ( label == -1 )
+        {
             return;
+        }
         QString labelName = (tagContours.getLabelName() == "undefined")?QString("label-%1").arg(label):tagContours.getLabelName();
+
         medTagRoiManager *manager = addManagerToList(label, labelName);
         manager->loadContours(tagContours.getContourNodes());
     }
@@ -924,8 +943,6 @@ void polygonEventFilter::saveContour(medTagRoiManager *manager)
 
     saveContoursAsMedAbstractData(outputDataSet, contoursData);
     manager->select(false);
-    return;
-
 }
 
 medTagRoiManager *polygonEventFilter::closestManagerInSlice(double mousePos[2])

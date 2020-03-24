@@ -20,11 +20,6 @@ medWorldPosContours::medWorldPosContours(const medWorldPosContours &other)
     orientation = other.orientation;
 }
 
-medWorldPosContours::~medWorldPosContours()
-{
-
-}
-
 void medWorldPosContours::setSlice(qint32 id)
 {
     sliceId = id;
@@ -54,6 +49,8 @@ QTextStream &operator<<(QTextStream &out, const medWorldPosContours &data)
 {
     out << "sliceId\n" <<data.sliceId<< "\norientation\n"<<data.orientation<<"\nnodes\n";
     for (QVector3D vec : data.nodes)
+    {
         out<<vec.x()<<" "<<vec.y()<<"\n";
+    }
     return out;
 }
