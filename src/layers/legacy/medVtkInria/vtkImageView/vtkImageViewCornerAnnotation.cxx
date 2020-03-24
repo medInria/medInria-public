@@ -184,8 +184,6 @@ void vtkImageViewCornerAnnotation::TextReplace(vtkImageActor *imageActor,
     QString replaceText = "";
     QString textQ = "";
 
-    // Slice current and max
-
     if (imageActor && this->ShowSliceAndImage && this->ImageView)
     {
         //---- osSW
