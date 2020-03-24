@@ -681,10 +681,19 @@ void polygonEventFilter::saveContoursAsMedAbstractData(vtkMetaDataSet *outputDat
 
     medAbstractData * input = currentView->layerData(0);
     medAbstractImageData *inputData = qobject_cast<medAbstractImageData*>(input);
-    QString desc = QString("contours with label ");
+    QString desc = QString("contours: ");
+    int num = 0;
     for (medTagContours contours : contoursData)
     {
-        desc.append(QString("%1 ").arg(contours.getLabelName()));
+        if (contours.getLabelName()=="undefined")
+        {
+            desc.append(QString("%1 ").arg(num));
+            num++;
+        }
+        else
+        {
+            desc.append(QString("%1 ").arg(contours.getLabelName()));
+        }
     }
     medUtilities::setDerivedMetaData(contourOutput, inputData, desc);
     contourOutput->setData(outputDataSet);
@@ -703,7 +712,7 @@ void polygonEventFilter::saveAllContours()
     int num = 0;
     for (medTagRoiManager *manager : managers)
     {
-        int label = colorList.indexOf(manager->getColor()) + 1;
+        int label = colorList.indexOf(manager->getColor());
 
         auto ctr = manager->getContoursAsNodes();
         medTagContours contoursTag;
@@ -751,6 +760,14 @@ void polygonEventFilter::loadContours(medAbstractData *data)
         if ( label == -1 )
         {
             return;
+        }
+        for (medTagRoiManager *manager : managers)
+        {
+            if (manager->getName()==tagContours.getLabelName())
+            {
+                qDebug()<<metaObject()->className()<<":: loadContours - unable to create a new manager.";
+                return;
+            }
         }
         QString labelName = (tagContours.getLabelName() == "undefined")?QString("label-%1").arg(label):tagContours.getLabelName();
 
@@ -924,7 +941,7 @@ void polygonEventFilter::saveContour(medTagRoiManager *manager)
     append->SetUserManagedInputs(true);
     append->SetNumberOfInputs(managers.size());
 
-    int label = colorList.indexOf(manager->getColor()) + 1;
+    int label = colorList.indexOf(manager->getColor());
 
     auto ctr = manager->getContoursAsNodes();
     medTagContours contoursTag;
