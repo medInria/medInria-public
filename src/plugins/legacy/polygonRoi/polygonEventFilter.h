@@ -91,6 +91,7 @@ private:
     vtkInriaInteractorStylePolygonRepulsor *interactorStyleRepulsor;
     QList<medDisplayPosContours> copyNodesList;
     bool activateEventFilter;
+    bool enableInterpolation;
 
     bool leftButtonBehaviour(medAbstractView *view, QMouseEvent *mouseEvent);
     bool rightButtonBehaviour(medAbstractView *view, QMouseEvent *mouseEvent);

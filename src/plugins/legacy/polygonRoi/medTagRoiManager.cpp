@@ -167,6 +167,24 @@ void medTagRoiManager::loadContours( QVector<medWorldPosContours> contours)
     }
 }
 
+void medTagRoiManager::removeIntermediateContours()
+{
+    QList<polygonRoi *>::Iterator it = d->rois.begin();
+    while( it != d->rois.end())
+    {
+        polygonRoi *roi = *it;
+        if ( roi->isMasterRoi() )
+        {
+            ++it;
+        }
+        else
+        {
+            it = d->rois.erase(it);
+            delete roi;
+        }
+    }
+}
+
 void medTagRoiManager::setEnableInterpolation(bool state)
 {
     d->enableInterpolation = state;
@@ -175,6 +193,10 @@ void medTagRoiManager::setEnableInterpolation(bool state)
         interpolateIfNeeded();
         d->eventCursor->manageTick();
         emit enableOtherViewsVisibility(true);
+    }
+    else
+    {
+        removeIntermediateContours();
     }
 }
 
@@ -583,7 +605,7 @@ void medTagRoiManager::connectRois()
         connect(roi, SIGNAL(interpolate()), this, SLOT(interpolateIfNeeded()), Qt::UniqueConnection);
         connect(roi, SIGNAL(interpolate()), d->eventCursor, SLOT(manageTick()), Qt::UniqueConnection);
         connect(roi, SIGNAL(toggleRepulsorButton(bool)), this, SIGNAL(toggleRepulsorButton(bool)), Qt::UniqueConnection);
-        connect(roi, SIGNAL(enableOtherViewsVisibility(bool)), this, SIGNAL(enableOtherViewsVisibility(bool)));
+        connect(roi, SIGNAL(enableOtherViewsVisibility(bool)), this, SIGNAL(enableOtherViewsVisibility(bool)), Qt::UniqueConnection);
     }
 }
 
@@ -775,6 +797,16 @@ void medTagRoiManager::removeContourOtherView(medAbstractImageView *v)
 
 }
 
+void medTagRoiManager::removeIntermediateContoursOtherView(medAbstractImageView *v )
+{
+    for (polygonRoi *roi: d->rois)
+    {
+        if (!roi->isMasterRoi())
+            roi->updateContourOtherView(v, false);
+    }
+    v->render();
+}
+
 double medTagRoiManager::getDistance(double mousePos[2], double contourPos[2])
 {
     return sqrt(pow(mousePos[0] - contourPos[0], 2) + pow(mousePos[1] - contourPos[1], 2));
@@ -800,20 +832,7 @@ void medTagRoiManager::interpolateIfNeeded()
         }
     }
 
-    QList<polygonRoi *>::Iterator it = d->rois.begin();
-    while( it != d->rois.end())
-    {
-        polygonRoi *roi = *it;
-        if ( roi->isMasterRoi() )
-        {
-            ++it;
-        }
-        else
-        {
-            it = d->rois.erase(it);
-            delete roi;
-        }
-    }
+    removeIntermediateContours();
     if (d->rois.size() >= 2)
     {
         std::sort(d->rois.begin(), d->rois.end(), medTagRoiManager::sortRois);

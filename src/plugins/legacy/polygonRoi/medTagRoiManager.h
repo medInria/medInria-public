@@ -70,6 +70,7 @@ public:
     bool pasteContour(QVector<QVector2D> nodes);
     void setName(QString name);
     void removeContourOtherView(medAbstractImageView *v);
+    void removeIntermediateContoursOtherView(medAbstractImageView *v);
 public slots:
     void interpolateIfNeeded();
     void enableOtherViewVisibility(medAbstractImageView *v, bool state);
@@ -92,6 +93,7 @@ private:
     void connectRois();
     double getDistance(double mousePos[2], double contourPos[2]);
     void initializeMaskData(medAbstractData *imageData, medAbstractData *maskData);
+    void removeIntermediateContours();
 };
 
 

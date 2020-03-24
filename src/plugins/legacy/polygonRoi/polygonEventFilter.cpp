@@ -36,7 +36,7 @@
 
 
 polygonEventFilter::polygonEventFilter(medAbstractImageView *view) :
-        medViewEventFilter(), currentView(view), cursorState(CURSORSTATE::CS_MOUSE_EVENT), isRepulsorActivated(false), activateEventFilter(true)
+        medViewEventFilter(), currentView(view), cursorState(CURSORSTATE::CS_MOUSE_EVENT), isRepulsorActivated(false), activateEventFilter(true), enableInterpolation(true)
 {
     colorList = QList<QColor>({
         Qt::green,
@@ -374,6 +374,7 @@ bool polygonEventFilter::rightButtonBehaviour(medAbstractView *view, QMouseEvent
 medTagRoiManager *polygonEventFilter::addManagerToList(int label, QString labelName)
 {
     medTagRoiManager * manager = new medTagRoiManager(currentView, this, colorList[label], labelName);
+    manager->setEnableInterpolation(enableInterpolation);
     managers.append(manager);
     connect(manager, SIGNAL(toggleRepulsorButton(bool)), this, SIGNAL(toggleRepulsorButton(bool)), Qt::UniqueConnection);
     connect(manager, SIGNAL(enableOtherViewsVisibility(bool)), this, SLOT(enableOtherViewsVisibility(bool)), Qt::UniqueConnection);
@@ -527,10 +528,19 @@ void polygonEventFilter::On()
 
 void polygonEventFilter::setEnableInterpolation(bool state)
 {
+    enableInterpolation = state;
     for (medTagRoiManager *manager : managers)
     {
+        if (!state)
+        {
+            for (medAbstractImageView * v : otherViews)
+            {
+                manager->removeIntermediateContoursOtherView(v);
+            }
+        }
         manager->setEnableInterpolation(state);
     }
+    manageTick();
 }
 
 void polygonEventFilter::addAlternativeViews(medAbstractImageView* view)
