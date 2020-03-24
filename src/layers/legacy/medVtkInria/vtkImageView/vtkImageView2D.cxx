@@ -982,7 +982,9 @@ void vtkImageView2D::SetAnnotationsFromOrientation()
         {
             solution[3] = matrixOrientation[id1][0];
             solution[1] = matrixOrientation[id1][1];
-        } else {
+        }
+        else
+        {
             solution[3] = matrixOrientation[id1][1];
             solution[1] = matrixOrientation[id1][0];
         }
@@ -990,7 +992,9 @@ void vtkImageView2D::SetAnnotationsFromOrientation()
         {
             solution[0] = matrixOrientation[id2][0];
             solution[2] = matrixOrientation[id2][1];
-        } else {
+        }
+        else
+        {
             solution[0] = matrixOrientation[id2][1];
             solution[2] = matrixOrientation[id2][0];
         }
@@ -2160,7 +2164,6 @@ void vtkImageView2D::RemoveLayer(int layer)
 {  
     if (this->HasLayer(layer))
     {
-
         // ////////////////////////////////////////////////////////////////////////
         // Save image informations of layer 0
         double  bounds[6];
