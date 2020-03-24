@@ -437,7 +437,7 @@ void polygonRoiToolBox::updateTableWidgetView(unsigned int row, unsigned int col
     });
     mainContainer->setClosingMode(medViewContainer::CLOSE_BUTTON_HIDDEN);
     mainContainer->setSelected(true);
-    viewEventFilter->addRoisInAlternativeViews();
+    viewEventFilter->enableOtherViewsVisibility(true);
 
     tableViewChooser->setEnabled(false);
 }

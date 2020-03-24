@@ -54,7 +54,7 @@ public:
     virtual bool canUndo(){return true;}
     
     void addViewToList(medAbstractImageView *viewToAdd);
-    void addContourInAlternativeView(medAbstractImageView *view);
+    void updateContourOtherView(medAbstractImageView *view, bool state);
     bool isClosed();
     void setEnabled(bool state);
     vtkPolyData *createPolyDataFromContour();
@@ -67,10 +67,10 @@ public:
     medWorldPosContours getContourAsNodes();
     void manageTick(medSliderL *slider);
     double findClosestContourFromPoint(QVector3D coords);
-    void removeContourInAlternativeView(medAbstractImageView *view);
 
     QVector<QVector2D> copyContour();
     bool pasteContour(QVector<QVector2D> nodes);
+    int getNumberOfNodes();
 public slots:
     virtual void undo();
     virtual void redo();
@@ -80,7 +80,7 @@ signals:
     void updateCursorState(CURSORSTATE state);
     void interpolate();
     void toggleRepulsorButton(bool state);
-    void updateRoiInAlternativeViews();
+    void enableOtherViewsVisibility(bool state);
 
 private:
     polygonRoiPrivate *d;
