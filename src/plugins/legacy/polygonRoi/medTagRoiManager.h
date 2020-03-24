@@ -65,17 +65,17 @@ public:
 
     int findClosestContourFromPoint(QVector3D worldMouseCoord);
     int getClosestSliceFromPoint();
-    void removeContoursInAlternativeViews(medAbstractImageView *v);
 
     QVector<QVector2D> copyContour();
     bool pasteContour(QVector<QVector2D> nodes);
     void setName(QString name);
+    void removeContourOtherView(medAbstractImageView *v);
 public slots:
     void interpolateIfNeeded();
-    void addContoursInAlternativeViews(medAbstractImageView *v);
+    void enableOtherViewVisibility(medAbstractImageView *v, bool state);
 
 signals:
-    void updateRoisInAlternativeViews();
+    void enableOtherViewsVisibility(bool state);
     void toggleRepulsorButton(bool state);
 
 private:

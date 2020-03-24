@@ -50,13 +50,12 @@ public:
     medAbstractImageView *getView(){return currentView;}
     void clearAlternativeViews();
     bool isContourInSlice();
-    //void exportContours(QFile *file);
     void saveAllContours();
     void loadContours(medAbstractData *data);
 
     void clearCopiedContours();
 public slots:
-    void addRoisInAlternativeViews();
+    void enableOtherViewsVisibility(bool state);
     void setCursorState(CURSORSTATE state){cursorState = state;}
 
     void createNewManager(int label);
@@ -87,7 +86,7 @@ private:
     CURSORSTATE cursorState;
     QList<medTagRoiManager *> managers;
     QList<QColor> colorList;
-    QList<medAbstractImageView*> alternativeViews;
+    QList<medAbstractImageView*> otherViews;
     bool isRepulsorActivated;
     vtkInriaInteractorStylePolygonRepulsor *interactorStyleRepulsor;
     QList<medDisplayPosContours> copyNodesList;
@@ -108,7 +107,6 @@ private:
     int findClosestSliceFromMouseClick(QVector3D worldMouseCoord);
     bool updateMainViewOnChosenSlice(medAbstractImageView *view, QMouseEvent *mouseEvent);
     int findAvailableLabel();
-    void removeContoursInAlternativeViews(medTagRoiManager *manager);
     medTagRoiManager *getManagerFromColor(QColor color);
     QWidgetAction * updateNameManager(medTagRoiManager* closestManager, QMenu *mainMenu);
 };

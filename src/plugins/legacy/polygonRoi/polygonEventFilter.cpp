@@ -132,7 +132,7 @@ bool polygonEventFilter::mouseReleaseEvent(medAbstractView *view, QMouseEvent *m
             {
                 interactorStyleRepulsor->GetManager()->SetMasterRoi(true);
                 interactorStyleRepulsor->GetManager()->interpolateIfNeeded();
-                addRoisInAlternativeViews();
+                enableOtherViewsVisibility(true);
                 manageTick();
             }
         }
@@ -366,7 +366,7 @@ medTagRoiManager *polygonEventFilter::addManagerToList(int label, QString labelN
     medTagRoiManager * manager = new medTagRoiManager(currentView, this, colorList[label], labelName);
     managers.append(manager);
     connect(manager, SIGNAL(toggleRepulsorButton(bool)), this, SIGNAL(toggleRepulsorButton(bool)), Qt::UniqueConnection);
-    connect(manager, SIGNAL(updateRoisInAlternativeViews()), this, SLOT(addRoisInAlternativeViews()), Qt::UniqueConnection);
+    connect(manager, SIGNAL(enableOtherViewsVisibility(bool)), this, SLOT(enableOtherViewsVisibility(bool)), Qt::UniqueConnection);
     return manager;
 }
 
@@ -519,36 +519,36 @@ void polygonEventFilter::setEnableInterpolation(bool state)
 
 void polygonEventFilter::addAlternativeViews(medAbstractImageView* view)
 {
-    alternativeViews.append(view);
+    otherViews.append(view);
 }
 
-void polygonEventFilter::addRoisInAlternativeViews()
+void polygonEventFilter::enableOtherViewsVisibility(bool state)
 {
-    for (medAbstractImageView * v : alternativeViews)
+    for (medAbstractImageView * v : otherViews)
     {
         for (medTagRoiManager *manager : managers)
         {
-            manager->addContoursInAlternativeViews(v);
+            manager->enableOtherViewVisibility(v, state);
         }
     }
 }
 
 void polygonEventFilter::clearAlternativeViews()
 {
-    alternativeViews.clear();
+    otherViews.clear();
 }
 
 void polygonEventFilter::removeView()
 {
     medAbstractView *viewClosed = qobject_cast<medAbstractView*>(QObject::sender());
-    for (medAbstractImageView *v : alternativeViews)
+    for (medAbstractImageView *v : otherViews)
     {
         if (viewClosed==v)
         {
-            alternativeViews.removeOne(v);
+            otherViews.removeOne(v);
         }
     }
-    if ( alternativeViews.size()==0 )
+    if ( otherViews.size()==0 )
         emit clearLastAlternativeView();
 }
 
@@ -606,7 +606,7 @@ void polygonEventFilter::pasteContours()
                 qDebug()<<"contour with label "<< contours.getLabel() << " already exist in slice ";
             }
         }
-        addRoisInAlternativeViews();
+        enableOtherViewsVisibility(true);
     }
 }
 
@@ -810,51 +810,59 @@ void polygonEventFilter::deleteNode(medTagRoiManager *manager, QMouseEvent *mous
 
     manager->deleteNode(X, Y);
 
-    if ( manager->getRois().empty() )
+    if ( manager->getRois().size()==1 && manager->getRois()[0]->getNumberOfNodes()==1)
     {
-        managers.removeOne(manager);
-        delete manager;
+        for (medAbstractImageView * v : otherViews)
+        {
+            manager->enableOtherViewVisibility(v, false);
+        }
+    }
+    else if (manager->getRois().isEmpty())
+    {
+        deleteLabel(manager);
+    }
+    else if (!manager->existingRoiInSlice())
+    {
+        deleteContour(manager);
     }
     else
     {
         manager->select(false);
+        manageTick();
+        manageButtonsState();
     }
-    manageTick();
-    manageButtonsState();
 }
 
 void polygonEventFilter::deleteContour(medTagRoiManager *manager)
 {
-    removeContoursInAlternativeViews(manager);
+    for (medAbstractImageView * v : otherViews)
+    {
+        manager->removeContourOtherView(v);
+    }
     manager->deleteContour();
-    addRoisInAlternativeViews();
     if ( manager->getRois().empty() )
     {
-        managers.removeOne(manager);
-        delete manager;
+        deleteLabel(manager);
     }
-    manageTick();
-    manageButtonsState();
+    else
+    {
+        manageTick();
+        manageButtonsState();
+    }
 }
 
 
 void polygonEventFilter::deleteLabel(medTagRoiManager *manager)
 {
-    removeContoursInAlternativeViews(manager);
+    for (medAbstractImageView * v : otherViews)
+    {
+        manager->enableOtherViewVisibility(v, false);
+    }
     managers.removeOne(manager);
     manager->removeAllTick();
 
     delete manager;
-    currentView->render();
     manageButtonsState();
-}
-
-void polygonEventFilter::removeContoursInAlternativeViews(medTagRoiManager *manager)
-{
-    for (medAbstractImageView *v : alternativeViews)
-    {
-        manager->removeContoursInAlternativeViews(v);
-    }
 }
 
 void polygonEventFilter::manageButtonsState()

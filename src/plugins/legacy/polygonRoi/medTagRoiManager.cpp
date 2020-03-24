@@ -172,7 +172,7 @@ void medTagRoiManager::setEnableInterpolation(bool state)
     {
         interpolateIfNeeded();
         d->eventCursor->manageTick();
-        updateRoisInAlternativeViews();
+        emit enableOtherViewsVisibility(true);
     }
 }
 
@@ -592,7 +592,7 @@ void medTagRoiManager::connectRois()
         connect(roi, SIGNAL(interpolate()), this, SLOT(interpolateIfNeeded()), Qt::UniqueConnection);
         connect(roi, SIGNAL(interpolate()), d->eventCursor, SLOT(manageTick()), Qt::UniqueConnection);
         connect(roi, SIGNAL(toggleRepulsorButton(bool)), this, SIGNAL(toggleRepulsorButton(bool)), Qt::UniqueConnection);
-        connect(roi, SIGNAL(updateRoiInAlternativeViews()), this, SIGNAL(updateRoisInAlternativeViews()));
+        connect(roi, SIGNAL(enableOtherViewsVisibility(bool)), this, SIGNAL(enableOtherViewsVisibility(bool)));
     }
 }
 
@@ -605,23 +605,13 @@ void medTagRoiManager::manageVisibility()
     d->view->render();
 }
 
-void medTagRoiManager::addContoursInAlternativeViews(medAbstractImageView *v)
+void medTagRoiManager::enableOtherViewVisibility(medAbstractImageView *v, bool state)
 {
     for (polygonRoi *roi : d->rois)
     {
-        roi->addContourInAlternativeView(v);
+        roi->updateContourOtherView(v, state);
     }
     v->render();
-}
-
-void medTagRoiManager::removeContoursInAlternativeViews(medAbstractImageView *v)
-{
-    for (polygonRoi *roi : d->rois)
-    {
-        roi->removeContourInAlternativeView(v);
-    }
-    v->render();
-
 }
 
 QVector<QVector2D> medTagRoiManager::copyContour()
@@ -750,12 +740,8 @@ void medTagRoiManager::deleteNode(double X, double Y)
         contourRep->DeleteNthNode(node);
         if (contourRep->GetNumberOfNodes() == 0)
         {
-            qDebug()<<"rois size 1 "<<d->rois.size();
             d->rois.removeOne(roi);
             delete roi;
-            qDebug()<<"rois size 2 "<<d->rois.size();
-            //d->view->render();
-            //return;
         }
     }
     interpolateIfNeeded();
@@ -786,6 +772,16 @@ void medTagRoiManager::deleteContour()
     d->view->render();
 }
 
+void medTagRoiManager::removeContourOtherView(medAbstractImageView *v)
+{
+    polygonRoi *roiToDelete = existingRoiInSlice();
+    if (roiToDelete)
+    {
+        roiToDelete->updateContourOtherView(v, false);
+    }
+
+}
+
 double medTagRoiManager::getDistance(double mousePos[2], double contourPos[2])
 {
     return sqrt(pow(mousePos[0] - contourPos[0], 2) + pow(mousePos[1] - contourPos[1], 2));
@@ -799,6 +795,7 @@ void medTagRoiManager::interpolateIfNeeded()
     if (d->rois.size() < 2)
         return;
 
+    emit enableOtherViewsVisibility(false);
     removeAllTick();
     // TODO : Remove. Find a way to ensure all contour are closed (add pixel tolerance or force close on sliceChangedEvent)
     for (polygonRoi *roi : d->rois)
@@ -837,6 +834,7 @@ void medTagRoiManager::interpolateIfNeeded()
         }
         d->rois.append(listOfRois);
     }
+    emit enableOtherViewsVisibility(true);
     connectRois();
     manageVisibility();
 }
