@@ -48,7 +48,7 @@ class MEDVTKINRIA_EXPORT vtkImageViewCornerAnnotation : public vtkCornerAnnotati
   vtkImageViewCornerAnnotation();
   ~vtkImageViewCornerAnnotation();
 
-  virtual void TextReplace(vtkImageActor *ia, vtkImageMapToWindowLevelColors *);
+  virtual void TextReplace(vtkImageActor *imageActor, vtkImageMapToWindowLevelColors *);
 
  private:
   vtkImageViewCornerAnnotation(const vtkImageViewCornerAnnotation&);  // Not implemented.

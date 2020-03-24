@@ -2152,7 +2152,6 @@ void vtkImageView2D::RemoveLayer(int layer)
 {  
     if (this->HasLayer(layer))
     {
-
         // ////////////////////////////////////////////////////////////////////////
         // Save image informations of layer 0
         double  bounds[6];
