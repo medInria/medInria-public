@@ -166,10 +166,3 @@ set_lib_install_rules(${TARGET_NAME}
   ${${TARGET_NAME}_HEADERS}
   )
 
-## #############################################################################
-## Build tests
-## #############################################################################
-
-if(${PROJECT_NAME}_BUILD_TESTS)
-  add_subdirectory(tests)
-endif()
