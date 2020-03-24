@@ -11,7 +11,6 @@ public:
     medWorldPosContours();
     medWorldPosContours(qint32 id, qint32 ori, QVector<QVector3D> coordinates);
     medWorldPosContours(const medWorldPosContours& other);
-    virtual ~medWorldPosContours();
 
     friend QDataStream& operator>>(QDataStream& in, medWorldPosContours& data);
     friend QDataStream& operator<<(QDataStream& out, const medWorldPosContours& data);

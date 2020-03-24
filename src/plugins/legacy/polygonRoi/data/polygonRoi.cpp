@@ -10,7 +10,7 @@
   PURPOSE.
 
 =========================================================================*/
-#include <polygonRoi.h>
+#include "polygonRoi.h"
 
 // medInria
 #include <medTagRoiManager.h>
@@ -78,19 +78,9 @@ void PolygonRoiObserver::Execute ( vtkObject *caller, unsigned long event, void 
             emit roi->toggleRepulsorButton(false);
             break;
         }
-//        case vtkCommand::EndInteractionEvent:
-//        {
-//            qDebug()<<"end interaction event";
-//            roi->setMasterRoi(true);
-//            emit roi->updateCursorState(CURSORSTATE::CS_MOUSE_EVENT);
-//            emit roi->interpolate();
-//            emit roi->updateRoiInAlternativeViews();
-//            break;
-//        }
         case vtkCommand::EndInteractionEvent:
         case vtkCommand::MouseMoveEvent:
         {
-            qDebug()<<"mouse move event";
             roi->setMasterRoi(true);
             emit roi->updateCursorState(CURSORSTATE::CS_MOUSE_EVENT);
             emit roi->interpolate();
@@ -232,14 +222,15 @@ vtkProperty *polygonRoi::createPropertyForPolyData()
     property->SetPointSize(1.);
     property->SetInterpolationToFlat();
     property->SetVertexColor(0., 0., 1.);
-    //property->SetEdgeVisibility(true);
     return property;
 }
 
 vtkPolyData* polygonRoi::getPolyData()
 {
     if (!d->polyData)
+    {
         d->polyData = createPolyDataFromContour();
+    }
     return d->polyData;
 }
 
@@ -354,7 +345,6 @@ void polygonRoi::manageVisibility()
         else
             Off();
     }
-
 }
 
 
@@ -439,7 +429,9 @@ void polygonRoi::addViewToList(medAbstractImageView *viewToAdd)
 void polygonRoi::updateContourOtherView(medAbstractImageView *view, bool state)
 {
     if ( view->orientation() == medImageView::VIEW_ALL_ORIENTATION )
+    {
         return;
+    }
 
 
     if (state)
@@ -479,10 +471,7 @@ void polygonRoi::updateContourOtherView(medAbstractImageView *view, bool state)
             vtkImageView2D* view2D = static_cast<medVtkViewBackend*>(view->backend())->view2D;
             view2D->RemoveDataSet(d->polyData);
         }
-
     }
-
-    return;
 }
 
 QVector<QVector2D> polygonRoi::copyContour()
@@ -528,7 +517,9 @@ bool polygonRoi::pasteContour(QVector<QVector2D> nodes)
 double polygonRoi::findClosestContourFromPoint(QVector3D worldMouseCoord)
 {
     if (!d->polyData)
+    {
         d->polyData = createPolyDataFromContour();
+    }
 
     double coords[3] = {worldMouseCoord.x(), worldMouseCoord.y(), worldMouseCoord.z()};
     vtkSmartPointer<vtkCellLocator> cellLocator =

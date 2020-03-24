@@ -160,7 +160,9 @@ QList<medAbstractView*> medTabbedViewContainers::viewsInTab(int index)
     foreach(medViewContainer *container, containers)
     {
         if(container->view())
+        {
             views << container->view();
+        }
     }
 
     return views;

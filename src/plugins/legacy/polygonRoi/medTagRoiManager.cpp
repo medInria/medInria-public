@@ -87,7 +87,6 @@ medTagRoiManager::medTagRoiManager(medAbstractView *view, polygonEventFilter *ev
     d(new medTagRoiManagerPrivate(view, eventCursor, color, name))
 {
     connectRois();
-    //manageTick();
 }
 
 medTagRoiManager::~medTagRoiManager()
@@ -101,7 +100,6 @@ polygonRoi* medTagRoiManager::appendRoi()
     vtkImageView2D *view2d = static_cast<medVtkViewBackend*>(d->view->backend())->view2D;
     polygonRoi *roi = new polygonRoi(view2d, d->color);
     d->rois.append(roi);
-    //manageTick();
     connectRois();
     return roi;
 }
@@ -146,9 +144,13 @@ void medTagRoiManager::select(bool state)
     if (roi)
     {
         if (state)
+        {
             roi->select();
+        }
         else
+        {
             roi->unselect();
+        }
     }
     d->view->render();
 }
@@ -323,17 +325,6 @@ void medTagRoiManager::initializeMaskData( medAbstractData * imageData, medAbstr
     mask->FillBuffer(0);
 
     maskData->setData((QObject*)(mask.GetPointer()));
-}
-
-int medTagRoiManager::numberOfMasterRois()
-{
-    int numberOfMaster = 0;
-    for (polygonRoi *roi : d->rois)
-    {
-        if ( roi->isMasterRoi())
-            numberOfMaster++;
-    }
-    return numberOfMaster;
 }
 
 vtkSmartPointer<vtkPolyData> medTagRoiManager::getContoursAsPolyData(int label)
@@ -636,7 +627,9 @@ bool medTagRoiManager::pasteContour(QVector<QVector2D> nodes)
     int slice = view2d->GetSlice();
 
     if (!isSameOrientation(view2d->GetViewOrientation()))
+    {
         return false;
+    }
 
     roi = appendRoi();
     roi->setIdSlice(slice);

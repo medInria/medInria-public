@@ -18,16 +18,13 @@ medTagContours::medTagContours(const medTagContours &other)
     contours = other.contours;
 }
 
-medTagContours::~medTagContours()
-{
-
-}
-
 QTextStream &operator<<(QTextStream &out, const medTagContours &data)
 {
     out << "labelName\n" <<data.labelName<< "\ncontours\n";
     for (medWorldPosContours nodes : data.contours)
+    {
         out << nodes<<"\n";
+    }
     return out;
 }
 

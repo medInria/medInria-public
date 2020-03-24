@@ -92,6 +92,7 @@ bool medContoursReader::canRead(const QStringList& paths)
 
 bool medContoursReader::readInformation(const QString& path)
 {
+    bool bRes = true;
     QFile file(path);
     if (path.endsWith(".ctrb"))
     {
@@ -108,7 +109,7 @@ bool medContoursReader::readInformation(const QString& path)
                 (d->fileVersion >= medContoursWriter::NUMBER_OF_EXPORT_VERSIONS))
             {
                 qDebug() << metaObject()->className() << ":: readInformation - unknown contours binary export version.";
-                return false;
+                bRes = false;
             }
 
             this->setData(medAbstractDataFactory::instance()->create(QString("medContours")));
@@ -124,7 +125,7 @@ bool medContoursReader::readInformation(const QString& path)
         {
             qDebug()<< metaObject()->className()
                     << "::readInformation - failed to open underlying vtk file.";
-            return false;
+            bRes = false;
         }
 
         reader->ReadHeader();
@@ -133,12 +134,12 @@ bool medContoursReader::readInformation(const QString& path)
         {
             qDebug()<< metaObject()->className()
                     << "::readInformation - file does not have the correct header.";
-            return false;
+            bRes = false;
         }
         this->setData(medAbstractDataFactory::instance()->create(QString("medContours")));
     }
 
-    return true;
+    return bRes;
 }
 
 bool medContoursReader::readInformation(const QStringList& paths)
@@ -174,6 +175,7 @@ bool medContoursReader::read(const QString& path)
 
 bool medContoursReader::readBinaryFile(QString path)
 {
+    bool bRes = true;
     QFile file(path);
     if (file.open(QFile::ReadOnly))
     {
@@ -197,7 +199,7 @@ bool medContoursReader::readBinaryFile(QString path)
                 qDebug() << metaObject()->className() << ":: read - failed to read binary mesh data.";
                 delete[] inputString;
                 file.close();
-                return false;
+                bRes = false;
             }
             setProgress(25);
 
@@ -209,7 +211,7 @@ bool medContoursReader::readBinaryFile(QString path)
             if (!dataSet)
             {
                 qDebug() << metaObject()->className() << ":: readBinaryFile - failure to read Contours.";
-                return false;
+                bRes = false;
             }
             setProgress(60);
 
@@ -243,35 +245,11 @@ bool medContoursReader::readBinaryFile(QString path)
         {
             qDebug() << metaObject()->className() << ":: unsupported binary file.";
             file.close();
-            return false;
+            bRes = false;
         }
     }
     setProgress(100);
-    return true;
-}
-
-bool medContoursReader::readASCIIFile(QString path)
-{
-//    vtkSmartPointer<vtkDataSetReader> reader = vtkSmartPointer<vtkDataSetReader>::New();
-//    reader->SetFileName(qPrintable(path));
-
-//    vtkSmartPointer<vtkMetaDataSet> dataSet = retrieveMeshFromReader(reader);
-//    if (!dataSet)
-//    {
-//        qDebug() << metaObject()->className() << ":: readLegacyFile - failure to read Contours.";
-//        return false;
-//    }
-
-//    // set the mesh
-//    this->data()->setData(dataSet);
-
-//    QVector<medTagContours> contoursSet;
-//    //convertVtkDataToContours(dataSet, taggedContours);
-
-//    this->data()->setData(contoursSet, 1);
-
-//    setProgress(100);
-    return true;
+    return bRes;
 }
 
 vtkSmartPointer<vtkMetaDataSet> medContoursReader::retrieveMeshFromReader(vtkSmartPointer<vtkDataSetReader> reader)
@@ -289,7 +267,7 @@ vtkSmartPointer<vtkMetaDataSet> medContoursReader::retrieveMeshFromReader(vtkSma
         else
         {
             // not a surface . Abort
-            qDebug()<< metaObject()->className() << ":: labellised contours not a surface nor a volume.";
+            qDebug()<< metaObject()->className() << ":: labeled contours not a surface nor a volume.";
             return nullptr;
         }
 
@@ -353,11 +331,16 @@ bool medContoursReader::extractMetaDataFromFieldData(vtkMetaDataSet* dataSet)
 
 bool medContoursReader::read(const QStringList& paths)
 {
+    bool bRes;
     if (paths.empty())
     {
-        return false;
+        bRes = false;
     }
-    return read(qPrintable(paths.first()));
+    else
+    {
+        bRes = read(qPrintable(paths.first()));
+    }
+    return bRes;
 }
 
 void medContoursReader::setProgress(int value)

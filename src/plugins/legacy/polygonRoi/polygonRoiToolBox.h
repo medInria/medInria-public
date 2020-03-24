@@ -21,8 +21,6 @@
 
 class polygonEventFilter;
 
-//typedef itk::Image<unsigned char, 3> UChar3ImageType;
-
 /*! \brief Toolbox to create, use, interpolate Polygon ROI.
  *
  * This toolbox has several named widgets which can be accessed in python pipelines:\n\n
@@ -79,8 +77,6 @@ private slots:
     void saveContours();
     void saveBinaryImage();
 
-    void copyContours();
-    void pasteContours();
 protected:
 
     void binaryImageFromPolygon(QList<QPair<vtkPolygon*,PlaneIndexSlicePair> > polys);

@@ -8,7 +8,7 @@
 
 
 /**
- * @brief The ContourData class contains all the  labellised contour.
+ * @brief The medTagContours class contains all the  labeled contour.
  */
 class  medTagContours
 {
@@ -16,7 +16,6 @@ public:
     medTagContours();
     medTagContours(QString name, QVector<medWorldPosContours> contourVec);
     medTagContours(const medTagContours& other);
-    virtual ~medTagContours();
 
     void setLabelName(QString name){labelName = name;}
     void setContourNodes(QVector<medWorldPosContours> contourVec){contours = contourVec;}
@@ -30,6 +29,5 @@ public:
 protected:
     QVector<medWorldPosContours> contours;
     QString labelName;
-//    QColor color;
 };
 

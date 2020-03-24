@@ -92,7 +92,6 @@ private:
     void connectRois();
     double getDistance(double mousePos[2], double contourPos[2]);
     void initializeMaskData(medAbstractData *imageData, medAbstractData *maskData);
-    int numberOfMasterRois();
 };
 
 
