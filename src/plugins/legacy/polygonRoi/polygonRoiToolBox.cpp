@@ -298,6 +298,7 @@ void polygonRoiToolBox::clickClosePolygon(bool state)
             connect(viewEventFilter, SIGNAL(toggleRepulsorButton(bool)), this, SLOT(activateRepulsor(bool)), Qt::UniqueConnection);
         }
 
+        viewEventFilter->setEnableInterpolation(interpolate->isChecked());
         viewEventFilter->updateView(currentView);
         viewEventFilter->On();
         viewEventFilter->installOnView(currentView);
