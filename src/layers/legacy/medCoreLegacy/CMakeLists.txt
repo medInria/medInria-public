@@ -63,7 +63,6 @@ target_include_directories(${TARGET_NAME}
   PUBLIC ${${TARGET_NAME}_INCLUDE_DIRS}
   )
 
-
 ## #############################################################################
 ## Link
 ## #############################################################################
@@ -84,7 +83,6 @@ if (WIN32) #TODO is that for the memory management thing ?
   target_link_libraries(${TARGET_NAME} psapi.lib)
 endif()
 
-
 ## #############################################################################
 ## install
 ## #############################################################################
@@ -93,17 +91,10 @@ set_lib_install_rules(${TARGET_NAME}
   ${${TARGET_NAME}_HEADERS}
   )
 
-
 ## #############################################################################
 ## Build tests
 ## #############################################################################
 
 if(${PROJECT_NAME}_BUILD_TESTS)
   add_subdirectory(tests)
-  #TODO: we will need to change the tests organization because of dependance to medTest...
-  #add_subdirectory(gui/tests)
-  #add_subdirectory(parameters/tests)
-  #add_subdirectory(view/tests)
-  #add_subdirectory(data/tests)
-  #add_subdirectory(process/tests)
 endif()
