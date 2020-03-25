@@ -11,17 +11,18 @@
 #
 ##############################################################################
 
-function(TTK_project)
-set(ep TTK)
-
+function(LCCLogDemons_project)
+set(ep LCCLogDemons)
 
 ## #############################################################################
 ## List the dependencies of the project
 ## #############################################################################
 
 list(APPEND ${ep}_dependencies 
-  VTK
-  ITK 
+  Qt5
+  ITK
+  RPI
+  dtk
   )
   
 ## #############################################################################
@@ -39,8 +40,8 @@ if (NOT USE_SYSTEM_${ep})
 ## Set up versioning control.
 ## #############################################################################
 
-set(git_url ${GITHUB_PREFIX}ocommowi/TTK.git)
-set(git_tag merge-ttk-private)
+set(git_url ${GITHUB_PREFIX}Inria-Asclepios/LCC-LogDemons.git)
+set(git_tag master)
 
 
 ## #############################################################################
@@ -61,13 +62,14 @@ set(cmake_args
   ${ep_common_cache_args}
   -DCMAKE_BUILD_TYPE=${CMAKE_BUILD_TYPE_externals_projects}
   -DCMAKE_C_FLAGS:STRING=${${ep}_c_flags}
-  -DCMAKE_CXX_FLAGS:STRING=${${ep}_cxx_flags}
-  -DCMAKE_SHARED_LINKER_FLAGS:STRING=${${ep}_shared_linker_flags}  
+  -DCMAKE_CXX_FLAGS:STRING=${${ep}_cxx_flags}  
   -DCMAKE_INSTALL_PREFIX:PATH=<INSTALL_DIR>
-  -DBUILD_SHARED_LIBS:BOOL=${BUILD_SHARED_LIBS_${ep}}    
-  -DVTK_DIR:FILEPATH=${VTK_DIR}
+  -DBUILD_SHARED_LIBS:BOOL=${BUILD_SHARED_LIBS_${ep}}
+  -DQt5_DIR:FILEPATH=${Qt5_DIR}
+  -Ddtk_DIR:FILEPATH=${dtk_DIR}
   -DITK_DIR:FILEPATH=${ITK_DIR}
-  -DBUILD_TESTING:BOOL=OFF
+  -DRPI_DIR:FILEPATH=${RPI_DIR}
+  -DLOG_DEMONS_BUILD_PLUGIN:BOOL=ON
   )
 
 

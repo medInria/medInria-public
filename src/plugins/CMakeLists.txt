@@ -49,6 +49,16 @@ set(PLUGIN_LIST
   legacy/itkDataSHImage                                                  ON
   legacy/undoRedoRegistration                                            ON
   legacy/diffeomorphicDemons                                             ON
+  
+  legacy/itkDWIBrainMaskCalculatorProcess                                ON
+  legacy/itkINRDataImageReader                                           ON
+  legacy/itkINRDataImageWriter                                           ON
+  legacy/itkProcessRegistration                                          ON
+  legacy/itkProcessTensorLogEuclidean_legacy                             ON
+  legacy/itkTensorEstimationProcess                                      ON
+  legacy/itkTensorScalarMapsProcess                                      ON
+  legacy/itkTensorTractographyProcess                                    ON
+  
   legacy/medVtkView                                                      ON
   legacy/medFilteringWorkspaceL                                          ON
   legacy/medSegmentationWorkspace                                        ON
