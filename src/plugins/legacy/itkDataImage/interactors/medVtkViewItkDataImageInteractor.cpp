@@ -232,6 +232,7 @@ bool medVtkViewItkDataImageInteractor::SetViewInput(medAbstractData* data, int l
 
 void medVtkViewItkDataImageInteractor::initParameters(medAbstractImageData* data)
 {
+    d->imageData = data; //used among others for 4D
     d->lutParam = new medStringListParameterL("Lut", this);
     QStringList luts = QStringList() << "Default" << "Black & White" << "Black & White Inversed"
                                      << "Spectrum" << "Hot Metal" << "Hot Green"
