@@ -1,0 +1,13 @@
+#pragma once
+
+#include <QtGlobal>
+
+#if defined(itkDWIBrainMaskCalculatorProcessPlugin_EXPORTS)
+#  define ITKDWIBRAINMASKCALCULATORPROCESSPLUGIN_EXPORT Q_DECL_EXPORT
+#else
+#  define ITKDWIBRAINMASKCALCULATORPROCESSPLUGIN_EXPORT Q_DECL_IMPORT
+#endif
+
+
+
+

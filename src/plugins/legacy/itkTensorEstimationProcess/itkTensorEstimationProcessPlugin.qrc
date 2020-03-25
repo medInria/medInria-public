@@ -1,0 +1,5 @@
+<RCC>
+    <qresource prefix="/">
+        <file>itkTensorEstimationProcessPlugin.json</file>
+    </qresource>
+</RCC>
