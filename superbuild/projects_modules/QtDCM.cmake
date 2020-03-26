@@ -48,6 +48,13 @@ set(git_tag APHP)
 ## #############################################################################
 
 # set compilation flags
+if (WIN32)
+  set(BUILD_SHARED_LIBS_${ep} OFF)
+  set(DCMTK_WIDE_CHAR_FILE_IO_FUNCTIONS ON)
+else()
+  set(DCMTK_WIDE_CHAR_FILE_IO_FUNCTIONS OFF)
+endif()
+
 if (UNIX)
   set(${ep}_c_flags "${${ep}_c_flags} -Wall")
   set(${ep}_cxx_flags "${${ep}_cxx_flags} -Wall")
@@ -64,11 +71,13 @@ set(cmake_args
   -DCMAKE_CXX_FLAGS=${${ep}_cxx_flags}
   -DCMAKE_SHARED_LINKER_FLAGS=${${ep}_shared_linker_flags}  
   -DCMAKE_INSTALL_PREFIX=<INSTALL_DIR>
+  -DCMAKE_INSTALL_PREFIX=<INSTALL_DIR>
   -DBUILD_SHARED_LIBS=${BUILD_SHARED_LIBS_${ep}}
   -DQt5_DIR=${Qt5_DIR}
   -DITK_DIR:FILEPATH=${ITK_DIR}
   -DDCMTK_DIR:FILEPATH=${DCMTK_DIR}
   -DDCMTK_FIND_PACKAGE_USE_CONFIG_ONLY=ON
+  -DDCMTK_WIDE_CHAR_FILE_IO_FUNCTIONS:BOOL=${DCMTK_WIDE_CHAR_FILE_IO_FUNCTIONS}
   )
 
 ## #############################################################################
