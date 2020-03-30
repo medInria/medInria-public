@@ -26,7 +26,6 @@ Information on how to contact the developers can be found on the [medInria conta
 
 #### License
 
-Copyright (c) INRIA 2019. All rights reserved.
 See LICENSE.txt for details.
 
  
