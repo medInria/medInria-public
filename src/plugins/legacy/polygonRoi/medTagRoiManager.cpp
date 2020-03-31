@@ -616,6 +616,15 @@ void medTagRoiManager::manageVisibility()
     d->view->render();
 }
 
+void medTagRoiManager::setEnableInteraction(bool state)
+{
+   polygonRoi *roi = existingRoiInSlice();
+   if ( roi )
+   {
+       roi->setEnableLeftButtonInteraction(state);
+   }
+}
+
 void medTagRoiManager::enableOtherViewVisibility(medAbstractImageView *v, bool state)
 {
     for (polygonRoi *roi : d->rois)
@@ -659,7 +668,7 @@ bool medTagRoiManager::pasteContour(QVector<QVector2D> nodes)
     return true;
 }
 
-bool medTagRoiManager::mouseIsCloseFromContour(double mousePos[2])
+bool medTagRoiManager::mouseIsCloseFromNodes(double mousePos[2])
 {
     polygonRoi *roi = existingRoiInSlice();
     if (roi)
@@ -1065,7 +1074,7 @@ void medTagRoiManager::resampleCurve(vtkPolyData *poly,int nbPoints)
     points->Delete();
 }
 
-int medTagRoiManager::findClosestContourFromPoint(QVector3D worldMouseCoord)
+double medTagRoiManager::findClosestContourFromPoint(QVector3D worldMouseCoord)
 {
     double minDist = DBL_MAX;
     for (polygonRoi *roi : d->rois)

@@ -49,7 +49,7 @@ public:
 
     void manageTick(medSliderL *slider);
     void manageVisibility();
-    bool mouseIsCloseFromContour(double mousePos[2]);
+    bool mouseIsCloseFromNodes(double mousePos[2]);
     double getMinimumDistanceFromNodesToEventPosition(double eventPos[2]);
     double getMinimumDistanceFromIntermediateNodesToEventPosition(double eventPos[2]);
     void deleteNode(double X, double Y);
@@ -63,7 +63,7 @@ public:
     void select(bool state);
     void loadContours(QVector<medWorldPosContours> contours);
 
-    int findClosestContourFromPoint(QVector3D worldMouseCoord);
+    double findClosestContourFromPoint(QVector3D worldMouseCoord);
     int getClosestSliceFromPoint();
 
     QVector<QVector2D> copyContour();
@@ -71,6 +71,7 @@ public:
     void setName(QString name);
     void removeContourOtherView(medAbstractImageView *v);
     void removeIntermediateContoursOtherView(medAbstractImageView *v);
+    void setEnableInteraction(bool state);
 public slots:
     void interpolateIfNeeded();
     void enableOtherViewVisibility(medAbstractImageView *v, bool state);

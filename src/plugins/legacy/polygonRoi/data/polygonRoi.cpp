@@ -140,7 +140,6 @@ polygonRoi::polygonRoi(vtkImageView2D *view, QColor color, medAbstractRoi *paren
     d->observer->setRoi(this);
     d->contour->AddObserver(vtkCommand::EndInteractionEvent,d->observer,10);
     d->contour->AddObserver(vtkCommand::MouseMoveEvent,d->observer,10);
-    contourRep->AddObserver(vtkCommand::PlacePointEvent,d->observer,0);
     d->copyRoi = nullptr;
 
     d->roiColor = color;
@@ -152,6 +151,11 @@ polygonRoi::~polygonRoi()
 {
     delete d;
     d = nullptr;
+}
+
+void polygonRoi::setEnableLeftButtonInteraction(bool state)
+{
+    d->contour->GetEventTranslator()->SetTranslation(vtkCommand::LeftButtonPressEvent, state);
 }
 
 bool polygonRoi::isClosed()

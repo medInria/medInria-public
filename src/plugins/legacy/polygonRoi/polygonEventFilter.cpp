@@ -28,9 +28,9 @@
 #include <QGuiApplication>
 #include <QLineEdit>
 #include <QScreen>
+#include <QWidgetAction>
 
 // vtk
-#include <QWidgetAction>
 #include <vtkAppendPolyData.h>
 #include <vtkRenderWindowInteractor.h>
 
@@ -442,52 +442,73 @@ bool polygonEventFilter::addPointInContourWithLabel(QMouseEvent *mouseEvent)
         QList<QColor> colorsToExclude;
         for (medTagRoiManager *manager : managers)
         {
-            double mousePos[2];
-            mousePos[0] = mouseEvent->x()*QGuiApplication::screenAt(mouseEvent->globalPos())->devicePixelRatio();
-            mousePos[1] = (currentView->viewWidget()->height()-mouseEvent->y()-1)*QGuiApplication::screenAt(mouseEvent->globalPos())->devicePixelRatio();
-            if ( manager->mouseIsCloseFromContour(mousePos) )
+            if ( manager->roiClosedInSlice() || manager->isSameSliceOrientation()==false )
             {
-                cursorState = CURSORSTATE::CS_NONE;
-                return res;
-            }
-
-            if ( manager->existingRoiInSlice() )
-            {
-                if ( manager->roiClosedInSlice())
-                {
-                    colorsToExclude.append(manager->getColor());
-                }
-                else
-                {
-                    cursorState = CURSORSTATE::CS_NONE;
-                    return res;
-                }
-            }
-            else
-            {
-                if (!manager->isSameSliceOrientation())
-                {
-                    colorsToExclude.append(manager->getColor());
-                }
+                colorsToExclude.append(manager->getColor());
             }
         }
 
-
         if (activeManager )
         {
-            if (!activeManager->existingRoiInSlice())
+            polygonRoi *roi = activeManager->existingRoiInSlice();
+            if ( !roi )
             {
+                for (medTagRoiManager *manager : managers)
+                {
+                    if ( manager != activeManager )
+                    {
+                        manager->setEnableInteraction(false);
+                    }
+                }
                 activeManager->appendRoi();
             }
             else
             {
-                QList<QColor> colors = updateColorsList(colorsToExclude);
-                QMenu * menu = createColorMenu(colors);
-                if ( !menu->exec(mouseEvent->globalPos()))
+                if (roi->isClosed())
                 {
-                    res = true;
+                    double mousePos[2];
+                    mousePos[0] = mouseEvent->x()*QGuiApplication::screenAt(mouseEvent->globalPos())->devicePixelRatio();
+                    mousePos[1] = (currentView->viewWidget()->height()-mouseEvent->y()-1)*QGuiApplication::screenAt(mouseEvent->globalPos())->devicePixelRatio();
+                    bool mouseIsClosed = false;
+                    for (medTagRoiManager *manager : managers)
+                    {
+                        if ( manager != activeManager )
+                        {
+                            manager->setEnableInteraction(true);
+                        }
+                        if ( manager->mouseIsCloseFromNodes(mousePos) )
+                        {
+                            mouseIsClosed = true;
+                        }
+                    }
+
+                    if ( mouseIsClosed )
+                    {
+                        cursorState = CURSORSTATE::CS_NONE;
+                        return res;
+                    }
+                    else
+                    {
+                        QList<QColor> colors = updateColorsList(colorsToExclude);
+                        QMenu * menu = createColorMenu(colors);
+                        if ( !menu->exec(mouseEvent->globalPos()))
+                        {
+                            res = true;
+                        }
+                        delete menu;
+                    }
                 }
-                delete menu;
+                else
+                {
+                    for (medTagRoiManager *manager : managers)
+                    {
+                        if ( manager != activeManager )
+                        {
+                            manager->setEnableInteraction(false);
+                        }
+                    }
+
+                }
             }
         }
         else
@@ -500,7 +521,6 @@ bool polygonEventFilter::addPointInContourWithLabel(QMouseEvent *mouseEvent)
             }
             delete menu;
         }
-
         return res;
     }
 }

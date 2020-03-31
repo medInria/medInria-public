@@ -71,6 +71,7 @@ public:
     QVector<QVector2D> copyContour();
     bool pasteContour(QVector<QVector2D> nodes);
     int getNumberOfNodes();
+    void setEnableLeftButtonInteraction(bool state);
 public slots:
     virtual void undo();
     virtual void redo();
