@@ -34,9 +34,45 @@
 #include <vtkAppendPolyData.h>
 #include <vtkRenderWindowInteractor.h>
 
+class View2DObserver : public vtkCommand
+{
+public:
+    static View2DObserver* New()
+    {
+        return new View2DObserver;
+    }
+
+    void Execute ( vtkObject *caller, unsigned long event, void *callData );
+
+    void setObject ( polygonEventFilter *obj )
+    {
+        this->obj = obj;
+    }
+
+private:
+    polygonEventFilter *obj;
+};
+
+void View2DObserver::Execute ( vtkObject *caller, unsigned long event, void *callData )
+{
+
+    switch ( event )
+    {
+        case vtkImageView2D::SliceChangedEvent:
+        {
+            obj->manageRoisVisibility();
+            break;
+        }
+        default:
+        {
+            break;
+        }
+    }
+}
 
 polygonEventFilter::polygonEventFilter(medAbstractImageView *view) :
-        medViewEventFilter(), currentView(view), cursorState(CURSORSTATE::CS_MOUSE_EVENT), isRepulsorActivated(false), activateEventFilter(true), enableInterpolation(true)
+        medViewEventFilter(), currentView(view), cursorState(CURSORSTATE::CS_MOUSE_EVENT), isRepulsorActivated(false), activateEventFilter(true), enableInterpolation(true),
+        activeManager(nullptr)
 {
     colorList = QList<QColor>({
         Qt::green,
@@ -49,6 +85,10 @@ polygonEventFilter::polygonEventFilter(medAbstractImageView *view) :
         Qt::black
     });
 
+    vtkSmartPointer<View2DObserver> observer = vtkSmartPointer<View2DObserver>::New();
+    observer->setObject(this);
+    vtkImageView2D *view2d = static_cast<medVtkViewBackend*>(currentView->backend())->view2D;
+    view2d->AddObserver(vtkImageView2D::SliceChangedEvent,observer,0);
     // interactors
     interactorStyleRepulsor = vtkInriaInteractorStylePolygonRepulsor::New();
 }
@@ -128,16 +168,17 @@ bool polygonEventFilter::mouseReleaseEvent(medAbstractView *view, QMouseEvent *m
 
     if (currentView != v )
     {
-        if ( isRepulsorActivated )
-        {
-            emit toggleRepulsorButton(false);
-        }
         return updateMainViewOnChosenSlice(v, mouseEvent);
     }
     else
     {
         if (isRepulsorActivated && activateEventFilter)
         {
+            if ( !isContourInSlice() || isOnlyOneNodeInSlice())
+            {
+                return false;
+            }
+
             if (interactorStyleRepulsor != nullptr)
             {
                 interactorStyleRepulsor->GetManager()->SetMasterRoi(true);
@@ -194,7 +235,16 @@ bool polygonEventFilter::leftButtonBehaviour(medAbstractView *view, QMouseEvent 
 {
     if (isRepulsorActivated)
     {
-        cursorState = CURSORSTATE::CS_REPULSOR;
+        if (isContourInSlice())
+        {
+            cursorState = CURSORSTATE::CS_REPULSOR;
+            activateRepulsor(true);
+        }
+        else
+        {
+            activateRepulsor(false);
+            isRepulsorActivated = true;
+        }
     }
 
     if (cursorState != CURSORSTATE::CS_NONE && !managers.empty())
@@ -203,7 +253,6 @@ bool polygonEventFilter::leftButtonBehaviour(medAbstractView *view, QMouseEvent 
     switch (cursorState)
     {
     case CURSORSTATE::CS_MOUSE_EVENT:
-    case CURSORSTATE::CS_SLICE_CHANGED:
     {
         return addPointInContourWithLabel(mouseEvent);
     }
@@ -376,7 +425,6 @@ medTagRoiManager *polygonEventFilter::addManagerToList(int label, QString labelN
     medTagRoiManager * manager = new medTagRoiManager(currentView, this, colorList[label], labelName);
     manager->setEnableInterpolation(enableInterpolation);
     managers.append(manager);
-    connect(manager, SIGNAL(toggleRepulsorButton(bool)), this, SIGNAL(toggleRepulsorButton(bool)), Qt::UniqueConnection);
     connect(manager, SIGNAL(enableOtherViewsVisibility(bool)), this, SLOT(enableOtherViewsVisibility(bool)), Qt::UniqueConnection);
     return manager;
 }
@@ -386,7 +434,7 @@ bool polygonEventFilter::addPointInContourWithLabel(QMouseEvent *mouseEvent)
     bool res = false;
     if (managers.size()==0)
     {
-        addManagerToList(0, QString("label-0"));
+        activeManager = addManagerToList(0, QString("label-0"));
         return res;
     }
     else
@@ -424,10 +472,23 @@ bool polygonEventFilter::addPointInContourWithLabel(QMouseEvent *mouseEvent)
             }
         }
 
-        if ( managers.size()==1 && colorsToExclude.empty() )
+
+        if (activeManager )
         {
-            medTagRoiManager *manager = managers.at(0);
-            manager->appendRoi();            
+            if (!activeManager->existingRoiInSlice())
+            {
+                activeManager->appendRoi();
+            }
+            else
+            {
+                QList<QColor> colors = updateColorsList(colorsToExclude);
+                QMenu * menu = createColorMenu(colors);
+                if ( !menu->exec(mouseEvent->globalPos()))
+                {
+                    res = true;
+                }
+                delete menu;
+            }
         }
         else
         {
@@ -439,9 +500,11 @@ bool polygonEventFilter::addPointInContourWithLabel(QMouseEvent *mouseEvent)
             }
             delete menu;
         }
+
         return res;
     }
 }
+
 void polygonEventFilter::createNewManager(int label)
 {
     for (medTagRoiManager *manager : managers)
@@ -449,10 +512,11 @@ void polygonEventFilter::createNewManager(int label)
         if (manager->getColor() == colorList.at(label))
         {
             manager->appendRoi();
+            activeManager = manager;
             return;
         }
     }
-    addManagerToList(label, QString("label-%1").arg(label));
+    activeManager = addManagerToList(label, QString("label-%1").arg(label));
 }
 
 QMenu *polygonEventFilter::createColorMenu(QList<QColor> colors)
@@ -648,9 +712,6 @@ medTagRoiManager *polygonEventFilter::getManagerFromColor(QColor color)
 
 void polygonEventFilter::activateRepulsor(bool state)
 {
-    if ( isRepulsorActivated == state)
-        return;
-
     isRepulsorActivated = state;
 
 
@@ -908,6 +969,10 @@ void polygonEventFilter::deleteLabel(medTagRoiManager *manager)
     manager->removeAllTick();
 
     delete manager;
+    if (activeManager==manager)
+    {
+        activeManager = nullptr;
+    }
     manageButtonsState();
 }
 
@@ -935,6 +1000,27 @@ bool polygonEventFilter::isContourInSlice()
         }
     }
     return false;
+}
+
+bool polygonEventFilter::isOnlyOneNodeInSlice()
+{
+    bool res = false;
+    for (medTagRoiManager *manager : managers)
+    {
+        polygonRoi *roi = manager->existingRoiInSlice();
+        if (roi)
+        {
+            if (roi->getNumberOfNodes()==1)
+            {
+                res = true;
+            }
+            else if ( roi->getNumberOfNodes()>1)
+            {
+                return false;
+            }
+        }
+    }
+    return res;
 }
 
 void polygonEventFilter::saveMask(medTagRoiManager *manager)

@@ -92,7 +92,6 @@ medTagRoiManager::medTagRoiManager(medAbstractView *view, polygonEventFilter *ev
 medTagRoiManager::~medTagRoiManager()
 {
     delete d;
-
 }
 
 polygonRoi* medTagRoiManager::appendRoi()
@@ -604,7 +603,6 @@ void medTagRoiManager::connectRois()
         connect(roi, SIGNAL(updateCursorState(CURSORSTATE)), d->eventCursor, SLOT(setCursorState(CURSORSTATE)), Qt::UniqueConnection);
         connect(roi, SIGNAL(interpolate()), this, SLOT(interpolateIfNeeded()), Qt::UniqueConnection);
         connect(roi, SIGNAL(interpolate()), d->eventCursor, SLOT(manageTick()), Qt::UniqueConnection);
-        connect(roi, SIGNAL(toggleRepulsorButton(bool)), this, SIGNAL(toggleRepulsorButton(bool)), Qt::UniqueConnection);
         connect(roi, SIGNAL(enableOtherViewsVisibility(bool)), this, SIGNAL(enableOtherViewsVisibility(bool)), Qt::UniqueConnection);
     }
 }

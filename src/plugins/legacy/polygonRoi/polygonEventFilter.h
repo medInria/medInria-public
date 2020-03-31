@@ -92,6 +92,7 @@ private:
     QList<medDisplayPosContours> copyNodesList;
     bool activateEventFilter;
     bool enableInterpolation;
+    medTagRoiManager *activeManager;
 
     bool leftButtonBehaviour(medAbstractView *view, QMouseEvent *mouseEvent);
     bool rightButtonBehaviour(medAbstractView *view, QMouseEvent *mouseEvent);
@@ -110,4 +111,5 @@ private:
     int findAvailableLabel();
     medTagRoiManager *getManagerFromColor(QColor color);
     QWidgetAction * updateNameManager(medTagRoiManager* closestManager, QMenu *mainMenu);
+    bool isOnlyOneNodeInSlice();
 };

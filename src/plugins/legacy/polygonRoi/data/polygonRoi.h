@@ -79,9 +79,7 @@ public slots:
 signals:
     void updateCursorState(CURSORSTATE state);
     void interpolate();
-    void toggleRepulsorButton(bool state);
     void enableOtherViewsVisibility(bool state);
-
 private:
     polygonRoiPrivate *d;
     friend class PolygonRoiObserver;

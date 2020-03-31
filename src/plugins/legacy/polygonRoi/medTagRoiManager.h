@@ -77,7 +77,6 @@ public slots:
 
 signals:
     void enableOtherViewsVisibility(bool state);
-    void toggleRepulsorButton(bool state);
 
 private:
     dtkSmartPointer<medAbstractData> output;

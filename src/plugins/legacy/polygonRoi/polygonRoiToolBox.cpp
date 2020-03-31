@@ -324,22 +324,8 @@ void polygonRoiToolBox::activateRepulsor(bool state)
 {
     if (currentView && viewEventFilter)
     {
-        if (state)
-        {
-            if ( viewEventFilter->isContourInSlice())
-            {
-                viewEventFilter->activateRepulsor(state);
-            }
-            else
-            {
-                repulsorTool->setChecked(false);
-            }
-        }
-        else
-        {
-            repulsorTool->setChecked(false);
-            viewEventFilter->activateRepulsor(state);
-        }
+        repulsorTool->setChecked(state);
+        viewEventFilter->activateRepulsor(state);
     }
 }
 
@@ -425,7 +411,6 @@ void polygonRoiToolBox::updateTableWidgetView(unsigned int row, unsigned int col
         });
         connect(container, &medViewContainer::containerSelected, [=](){
             viewEventFilter->Off();
-            repulsorTool->setChecked(false);
             repulsorTool->setEnabled(false);
         });
         medTableWidgetItem * item = static_cast<medTableWidgetItem*>(tableViewChooser->selectedItems().at(nbItem));
@@ -439,6 +424,10 @@ void polygonRoiToolBox::updateTableWidgetView(unsigned int row, unsigned int col
         {
             viewEventFilter->On();
             repulsorTool->setEnabled(true);
+            if (repulsorTool->isChecked())
+            {
+                activateRepulsor(true);
+            }
         }
     });
     mainContainer->setClosingMode(medViewContainer::CLOSE_BUTTON_HIDDEN);
