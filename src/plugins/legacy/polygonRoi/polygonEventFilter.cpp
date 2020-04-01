@@ -85,25 +85,13 @@ polygonEventFilter::polygonEventFilter(medAbstractImageView *view) :
         Qt::black
     });
 
-    vtkSmartPointer<View2DObserver> observer = vtkSmartPointer<View2DObserver>::New();
-    observer->setObject(this);
-    vtkImageView2D *view2d = static_cast<medVtkViewBackend*>(currentView->backend())->view2D;
-    view2d->AddObserver(vtkImageView2D::SliceChangedEvent,observer,0);
     // interactors
     interactorStyleRepulsor = vtkInriaInteractorStylePolygonRepulsor::New();
 }
 
 polygonEventFilter::~polygonEventFilter()
 {
-    if (interactorStyleRepulsor)
-    {
-        interactorStyleRepulsor->Delete();
-    }
-    for (medTagRoiManager *manager: managers)
-    {
-        delete manager;
-    }
-    managers.clear();
+    reset();
 }
 
 void polygonEventFilter::updateView(medAbstractImageView *view)
@@ -119,12 +107,14 @@ void polygonEventFilter::reset()
     }
     managers.clear();
     cursorState = CURSORSTATE::CS_MOUSE_EVENT;
-    activateRepulsor(false);
+    isRepulsorActivated = false;
     if (interactorStyleRepulsor)
     {
         interactorStyleRepulsor->Delete();
         interactorStyleRepulsor = nullptr;
     }
+    otherViews.clear();
+    activeManager = nullptr;
 }
 
 bool polygonEventFilter::eventFilter(QObject *obj, QEvent *event)
@@ -151,6 +141,10 @@ bool polygonEventFilter::eventFilter(QObject *obj, QEvent *event)
         if ( keyEvent->key() == Qt::Key::Key_V )
         {
             pasteContours();
+        }
+        if ( keyEvent->key() == Qt::Key::Key_Backspace )
+        {
+            deleteNode(savedMousePosition);
         }
     }
     return event->isAccepted();
@@ -189,6 +183,13 @@ bool polygonEventFilter::mouseReleaseEvent(medAbstractView *view, QMouseEvent *m
         }
     }
 
+    return false;
+}
+
+bool polygonEventFilter::mouseMoveEvent(medAbstractView *view, QMouseEvent *mouseEvent)
+{
+    savedMousePosition[0] = mouseEvent->x()*QGuiApplication::screenAt(mouseEvent->globalPos())->devicePixelRatio();
+    savedMousePosition[1] = (currentView->viewWidget()->height()-mouseEvent->y()-1)*QGuiApplication::screenAt(mouseEvent->globalPos())->devicePixelRatio();
     return false;
 }
 
@@ -317,28 +318,25 @@ QWidgetAction * polygonEventFilter::updateNameManager(medTagRoiManager* closestM
     connect(renameManager, &QLineEdit::editingFinished, [=](){
        closestManager->setName(renameManager->text());
     });
+    connect(renameManager, &QLineEdit::returnPressed, [=](){
+       mainMenu->close();
+    });
+
     QWidgetAction *renameManagerAction = new QWidgetAction(mainMenu);
     renameManagerAction->setDefaultWidget(renameManager);
 
     return renameManagerAction;
 }
 
-bool polygonEventFilter::rightButtonBehaviour(medAbstractView *view, QMouseEvent *mouseEvent)
+medTagRoiManager *polygonEventFilter::getClosestManager(double *mousePos)
 {
-    QMenu mainMenu;
-    QList<QColor> colorsToExclude;
-    medTagRoiManager * closestManager = nullptr;
+    medTagRoiManager *closestManager = nullptr;
     double minDist = DBL_MAX;
     double dist = 0.;
-    double mousePos[2];
-    mousePos[0] = mouseEvent->x()*QGuiApplication::screenAt(mouseEvent->globalPos())->devicePixelRatio();
-    mousePos[1] = (currentView->viewWidget()->height()-mouseEvent->y()-1)*QGuiApplication::screenAt(mouseEvent->globalPos())->devicePixelRatio();
     for (medTagRoiManager *manager : managers)
     {
         if ( manager->existingRoiInSlice() )
         {
-            colorsToExclude.append(manager->getColor());
-
             dist = manager->getMinimumDistanceFromNodesToEventPosition(mousePos);
             if ( dist < minDist )
             {
@@ -347,7 +345,24 @@ bool polygonEventFilter::rightButtonBehaviour(medAbstractView *view, QMouseEvent
             }
         }
     }
+    return closestManager;
+}
 
+bool polygonEventFilter::rightButtonBehaviour(medAbstractView *view, QMouseEvent *mouseEvent)
+{
+    QMenu mainMenu;
+    QList<QColor> colorsToExclude;
+    double mousePos[2];
+    mousePos[0] = mouseEvent->x()*QGuiApplication::screenAt(mouseEvent->globalPos())->devicePixelRatio();
+    mousePos[1] = (currentView->viewWidget()->height()-mouseEvent->y()-1)*QGuiApplication::screenAt(mouseEvent->globalPos())->devicePixelRatio();
+    medTagRoiManager * closestManager = getClosestManager(mousePos);
+    for (medTagRoiManager *manager : managers)
+    {
+        if ( manager->existingRoiInSlice() )
+        {
+            colorsToExclude.append(manager->getColor());
+        }
+    }
     QList<QColor> colors = updateColorsList(colorsToExclude);
     QMenu *colorMenu = createColorMenu(colors);
     QMenu *roiManagementMenu = new QMenu("Remove: ");
@@ -358,7 +373,7 @@ bool polygonEventFilter::rightButtonBehaviour(medAbstractView *view, QMouseEvent
         mainMenu.addMenu(roiManagementMenu);
         QAction *deleteOneNodeAction = new QAction("Node", roiManagementMenu);
         connect(deleteOneNodeAction, &QAction::triggered, [=](){
-            deleteNode(closestManager, mouseEvent);
+            deleteNode(closestManager, &mousePos[0]);
         });
         roiManagementMenu->addAction(deleteOneNodeAction);
 
@@ -589,6 +604,23 @@ QList<QColor> polygonEventFilter::getAvailableColors(QList<QColor> colorsToExclu
     return colors;
 }
 
+void polygonEventFilter::removeObserver()
+{
+    if (currentView)
+    {
+        vtkImageView2D *view2d = static_cast<medVtkViewBackend*>(currentView->backend())->view2D;
+        view2d->RemoveObserver(observer);
+    }
+}
+
+void polygonEventFilter::addObserver()
+{
+    observer = vtkSmartPointer<View2DObserver>::New();
+    observer->setObject(this);
+    vtkImageView2D *view2d = static_cast<medVtkViewBackend*>(currentView->backend())->view2D;
+    view2d->AddObserver(vtkImageView2D::SliceChangedEvent,observer,0);
+}
+
 void polygonEventFilter::Off()
 {
     activateEventFilter = false;
@@ -609,6 +641,7 @@ void polygonEventFilter::On()
         manager->setContourEnabled(true);
         manager->setEnableInteraction(true);
     }
+
     cursorState = CURSORSTATE::CS_CONTINUE;
 }
 
@@ -736,7 +769,6 @@ void polygonEventFilter::activateRepulsor(bool state)
 {
     isRepulsorActivated = state;
 
-
     vtkImageView2D *view2D =  static_cast<medVtkViewBackend*>(currentView->backend())->view2D;
     if (state)
     {
@@ -752,11 +784,26 @@ void polygonEventFilter::activateRepulsor(bool state)
     {
         cursorState = CURSORSTATE::CS_MOUSE_EVENT;
         vtkInteractorStyleImageView2D *interactorStyle2D = vtkInteractorStyleImageView2D::New();
+        if (!interactorStyleRepulsor)
+            interactorStyleRepulsor = vtkInriaInteractorStylePolygonRepulsor::New();
         interactorStyle2D->SetLeftButtonInteraction(interactorStyleRepulsor->GetLeftButtonInteraction());
         view2D->SetInteractorStyle(interactorStyle2D);
         view2D->SetupInteractor(view2D->GetInteractor()); // to reinstall vtkImageView2D pipeline
         interactorStyle2D->Delete();
     }
+    for (medTagRoiManager *manager: managers)
+    {
+        manager->setEnableInteraction(!state);
+        polygonRoi *roi = manager->existingRoiInSlice();
+        if ( roi )
+        {
+            if (!roi->isClosed())
+            {
+                roi->getContour()->SetWidgetState(vtkContourWidget::Define);
+            }
+        }
+    }
+
     return;
 }
 
@@ -932,12 +979,19 @@ void polygonEventFilter::setToolboxButtonsState(bool state)
     emit enableViewChooser(state);
 }
 
-void polygonEventFilter::deleteNode(medTagRoiManager *manager, QMouseEvent *mouseEvent)
+void polygonEventFilter::deleteNode(double *mousePosition)
 {
-    double X = mouseEvent->x()*QGuiApplication::screenAt(mouseEvent->globalPos())->devicePixelRatio();
-    double Y = (currentView->viewWidget()->height()-mouseEvent->y()-1)*QGuiApplication::screenAt(mouseEvent->globalPos())->devicePixelRatio();
+    medTagRoiManager *closestManager = getClosestManager(mousePosition);
+    if (closestManager && closestManager->getMinimumDistanceFromNodesToEventPosition(mousePosition) < 10. )
+    {
+        deleteNode(closestManager, mousePosition);
+    }
 
-    manager->deleteNode(X, Y);
+}
+
+void polygonEventFilter::deleteNode(medTagRoiManager *manager, const double *mousePos)
+{
+    manager->deleteNode(mousePos[0], mousePos[1]);
 
     if ( manager->getRois().size()==1 && manager->getRois()[0]->getNumberOfNodes()==1)
     {

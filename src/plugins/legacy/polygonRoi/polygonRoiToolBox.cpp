@@ -298,10 +298,11 @@ void polygonRoiToolBox::clickClosePolygon(bool state)
             connect(viewEventFilter, SIGNAL(toggleRepulsorButton(bool)), this, SLOT(activateRepulsor(bool)), Qt::UniqueConnection);
         }
 
-        viewEventFilter->setEnableInterpolation(interpolate->isChecked());
         viewEventFilter->updateView(currentView);
+        viewEventFilter->setEnableInterpolation(interpolate->isChecked());
         viewEventFilter->On();
         viewEventFilter->installOnView(currentView);
+        viewEventFilter->addObserver();
 
         if ( viewEventFilter->isContourInSlice() )
         {
@@ -317,6 +318,8 @@ void polygonRoiToolBox::clickClosePolygon(bool state)
     {
         repulsorTool->setEnabled(state);
         viewEventFilter->Off();
+        viewEventFilter->removeFromAllViews();
+        viewEventFilter->removeObserver();
     }
 }
 
@@ -579,6 +582,8 @@ void polygonRoiToolBox::disableButtons()
     saveBinaryMaskButton->setEnabled(false);
     saveContourButton->setEnabled(false);
     tableViewChooser->setEnabled(false);
+    interpolate->setEnabled(false);
+    interpolate->setChecked(true);
 }
 
 void polygonRoiToolBox::saveContours()

@@ -28,6 +28,7 @@
 typedef itk::Image<unsigned char, 3> UChar3ImageType;
 
 class medTableWidgetItem;
+class View2DObserver;
 
 class polygonEventFilter : public medViewEventFilter
 {
@@ -37,7 +38,9 @@ public:
     ~polygonEventFilter();
     bool mousePressEvent(medAbstractView * view, QMouseEvent *mouseEvent) override;
     bool mouseReleaseEvent(medAbstractView * view, QMouseEvent *mouseEvent) override;
-    bool eventFilter(QObject *obj, QEvent *event);
+    bool mouseMoveEvent(medAbstractView * view, QMouseEvent *mouseEvent) override;
+
+    bool eventFilter(QObject *obj, QEvent *event) override;
 
     void reset();
     void updateView(medAbstractImageView *view);
@@ -54,6 +57,8 @@ public:
     void loadContours(medAbstractData *data);
 
     void clearCopiedContours();
+    void removeObserver();
+    void addObserver();
 public slots:
     void enableOtherViewsVisibility(bool state);
     void setCursorState(CURSORSTATE state){cursorState = state;}
@@ -66,7 +71,7 @@ public slots:
     void copyContours();
     void pasteContours();
 private slots:
-    void deleteNode(medTagRoiManager *manager, QMouseEvent *mouseEvent);
+    void deleteNode(medTagRoiManager *manager, const double *mousePos);
     void deleteContour(medTagRoiManager *manager);
     void deleteLabel(medTagRoiManager *manager);
     void saveMask(medTagRoiManager *manager);
@@ -93,6 +98,8 @@ private:
     bool activateEventFilter;
     bool enableInterpolation;
     medTagRoiManager *activeManager;
+    vtkSmartPointer<View2DObserver> observer;
+    double savedMousePosition[2];
 
     bool leftButtonBehaviour(medAbstractView *view, QMouseEvent *mouseEvent);
     bool rightButtonBehaviour(medAbstractView *view, QMouseEvent *mouseEvent);
@@ -111,5 +118,7 @@ private:
     int findAvailableLabel();
     medTagRoiManager *getManagerFromColor(QColor color);
     QWidgetAction * updateNameManager(medTagRoiManager* closestManager, QMenu *mainMenu);
+    void deleteNode(double *mousePosition);
     bool isOnlyOneNodeInSlice();
+    medTagRoiManager *getClosestManager(double *mousePos);
 };

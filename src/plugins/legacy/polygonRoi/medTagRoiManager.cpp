@@ -547,7 +547,7 @@ void medTagRoiManager::createMaskWithLabel(int label)
             }
         }
     }
-    QString desc = QString("mask with label ") + QString::number(label);
+    QString desc = QString("mask: ") + QString(d->name);
     medUtilities::setDerivedMetaData(output, inputData, desc);
     medDataManager::instance()->importData(output, false);
     return;
@@ -699,7 +699,9 @@ double medTagRoiManager::getMinimumDistanceFromNodesToEventPosition(double event
             roi->getContour()->GetContourRepresentation()->GetNthNodeDisplayPosition(i, contourPos);
             dist = getDistance(eventPos, contourPos);
             if ( dist < minDist )
+            {
                 minDist = dist;
+            }
         }
     }
     return minDist;
@@ -764,6 +766,10 @@ void medTagRoiManager::deleteNode(double X, double Y)
         {
             d->rois.removeOne(roi);
             delete roi;
+        }
+        else
+        {
+            roi->getContour()->SetWidgetState(vtkContourWidget::Define);
         }
     }
     interpolateIfNeeded();
