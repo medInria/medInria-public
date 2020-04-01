@@ -595,6 +595,7 @@ void polygonEventFilter::Off()
     for (medTagRoiManager *manager : managers)
     {
         manager->setContourEnabled(false);
+        manager->setEnableInteraction(false);
     }
     activateRepulsor(false);
     cursorState = CURSORSTATE::CS_CONTINUE;
@@ -606,6 +607,7 @@ void polygonEventFilter::On()
     for (medTagRoiManager *manager : managers)
     {
         manager->setContourEnabled(true);
+        manager->setEnableInteraction(true);
     }
     cursorState = CURSORSTATE::CS_CONTINUE;
 }
