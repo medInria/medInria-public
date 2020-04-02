@@ -14,6 +14,8 @@ PURPOSE.
 
 #include <QMainWindow>
 
+#include <QMainWindow>
+
 #include <medAbstractImageView.h>
 #include <medVtkViewPluginExport.h>
 
