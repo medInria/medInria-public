@@ -13,6 +13,8 @@
 
 #pragma once
 
+#include <QMainWindow>
+
 #include <medAbstractImageView.h>
 #include <medVtkViewPluginExport.h>
 
@@ -37,6 +39,8 @@ public:
     virtual medViewBackend * backend() const;
     virtual QString description() const;
     virtual QWidget *viewWidget();
+    virtual QMainWindow* mainWindow();
+
     virtual QPointF mapWorldToDisplayCoordinates(const QVector3D & worldVec );
     virtual QVector3D mapDisplayToWorldCoordinates(const QPointF & scenePoint );
     virtual QVector3D viewCenter();
