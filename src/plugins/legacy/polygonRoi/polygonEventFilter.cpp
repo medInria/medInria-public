@@ -302,10 +302,10 @@ bool polygonEventFilter::leftButtonBehaviour(medAbstractView *view, QMouseEvent 
     return false;
 }
 
-
-QWidgetAction * polygonEventFilter::updateNameManager(medTagRoiManager* closestManager, QMenu *mainMenu)
+QLineEdit * polygonEventFilter::updateNameManager(medTagRoiManager* closestManager, QMenu *mainMenu)
 {
     QLineEdit *renameManager = new QLineEdit(closestManager->getName());
+    renameManager->setContextMenuPolicy(Qt::ContextMenuPolicy::NoContextMenu);
     QFont font = renameManager->font();
     font.setWeight(QFont::Black);
     font.setPointSize(15);
@@ -322,10 +322,7 @@ QWidgetAction * polygonEventFilter::updateNameManager(medTagRoiManager* closestM
        mainMenu->close();
     });
 
-    QWidgetAction *renameManagerAction = new QWidgetAction(mainMenu);
-    renameManagerAction->setDefaultWidget(renameManager);
-
-    return renameManagerAction;
+    return renameManager;
 }
 
 medTagRoiManager *polygonEventFilter::getClosestManager(double *mousePos)
@@ -367,6 +364,7 @@ bool polygonEventFilter::rightButtonBehaviour(medAbstractView *view, QMouseEvent
     QMenu *colorMenu = createColorMenu(colors);
     QMenu *roiManagementMenu = new QMenu("Remove: ");
     QMenu *saveMenu = new QMenu("Save as: ");
+    QWidgetAction *renameManagerAction = new QWidgetAction(&mainMenu);
     if (closestManager && closestManager->getMinimumDistanceFromNodesToEventPosition(mousePos) < 10 )
     {
         closestManager->select(true);
@@ -406,7 +404,7 @@ bool polygonEventFilter::rightButtonBehaviour(medAbstractView *view, QMouseEvent
             copyContour(closestManager);
         });
 
-        QWidgetAction *renameManagerAction = updateNameManager(closestManager, &mainMenu);
+        renameManagerAction->setDefaultWidget(updateNameManager(closestManager, &mainMenu));
 
         mainMenu.addAction(renameManagerAction);
         mainMenu.addMenu(roiManagementMenu);
@@ -431,6 +429,7 @@ bool polygonEventFilter::rightButtonBehaviour(medAbstractView *view, QMouseEvent
     delete colorMenu;
     delete roiManagementMenu;
     delete saveMenu;
+    delete renameManagerAction;
 
     return true;
 }

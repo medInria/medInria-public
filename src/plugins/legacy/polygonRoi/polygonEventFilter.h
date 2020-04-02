@@ -16,6 +16,7 @@
 #include <QMenu>
 
 // medInria
+#include <QLineEdit>
 #include <QWidgetAction>
 #include <medDisplayPosContours.h>
 #include <medTagContours.h>
@@ -117,7 +118,7 @@ private:
     bool updateMainViewOnChosenSlice(medAbstractImageView *view, QMouseEvent *mouseEvent);
     int findAvailableLabel();
     medTagRoiManager *getManagerFromColor(QColor color);
-    QWidgetAction * updateNameManager(medTagRoiManager* closestManager, QMenu *mainMenu);
+    QLineEdit *updateNameManager(medTagRoiManager* closestManager, QMenu *mainMenu);
     void deleteNode(double *mousePosition);
     bool isOnlyOneNodeInSlice();
     medTagRoiManager *getClosestManager(double *mousePos);
