@@ -105,9 +105,10 @@ polygonRoiToolBox::polygonRoiToolBox(QWidget *parent ) :
     QString underlineStyle = "<br><br><span style=\" text-decoration: underline;\">%1</span>";
     QLabel *explanation = new QLabel(QString(underlineStyle).arg("Define a Contour: ") + " Activate the toolbox, then click on the data set."
                                      + QString(underlineStyle).arg("Define new Label: ") + " Right-click on the image then choose color"
-                                     + QString(underlineStyle).arg("Remove node/contour/label: ") + " Put the cursor on contour then right-click and choose menu \"Remove ...\"."
-                                     + QString(underlineStyle).arg("Save segmentation: ") + " Put the cursor on contour then right-click and choose menu \"Save ...\"."
-                                     + QString(underlineStyle).arg("Copy ROIs in current slice: ") + " CTRL/CMD + c."
+                                     + QString(underlineStyle).arg("Rename a Label: ") + " Put the cursor on a node then right-click and set a new label name"
+                                     + QString(underlineStyle).arg("Remove node/contour/label: ") + " BackSpace or put the cursor on a node then right-click and choose menu\"Remove ...\"."
+                                     + QString(underlineStyle).arg("Save segmentation: ") + " Put the cursor on a node then right-click and choose menu \"Save ...\"."
+                                     + QString(underlineStyle).arg("Copy ROIs in current slice: ") + " CTRL/CMD + c. or put the cursor on a node then right-click and choose menu\"Copy ...\""
                                      + QString(underlineStyle).arg("Paste ROIs:") + " CTRL/CMD + v.");
 
     explanation->setSizePolicy(QSizePolicy::Ignored, QSizePolicy::Preferred);
