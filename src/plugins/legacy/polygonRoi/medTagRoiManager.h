@@ -44,7 +44,6 @@ public:
     QString getName();
     polygonRoi *appendRoi();
 
-    void setContourEnabled(bool state);
     void setEnableInterpolation(bool state);
 
     void manageTick(medSliderL *slider);

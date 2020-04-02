@@ -72,7 +72,6 @@ void PolygonRoiObserver::Execute ( vtkObject *caller, unsigned long event, void 
     switch ( event )
     {
         case vtkCommand::EndInteractionEvent:
-        case vtkCommand::MouseMoveEvent:
         {
             roi->setMasterRoi(true);
             emit roi->updateCursorState(CURSORSTATE::CS_MOUSE_EVENT);
@@ -121,7 +120,7 @@ polygonRoi::polygonRoi(vtkImageView2D *view, QColor color, medAbstractRoi *paren
     vtkSmartPointer<vtkContourOverlayRepresentation> contourRep = vtkSmartPointer<vtkContourOverlayRepresentation>::New();
     contourRep->GetLinesProperty()->SetLineWidth(4);
     contourRep->GetProperty()->SetPointSize(5);
-    contourRep->GetProperty()->SetColor(1.0, 0.0, 0.0);
+    contourRep->GetProperty()->SetColor(1.0, 0.0, 1.0);
     contourRep->GetActiveProperty()->SetOpacity(0);
     contourRep->SetPixelTolerance(20);
     d->contour = vtkContourWidget::New();
@@ -131,6 +130,8 @@ polygonRoi::polygonRoi(vtkImageView2D *view, QColor color, medAbstractRoi *paren
     d->contour->SetInteractor(view->GetInteractor());
     // deactivate the default RightButtonPressEvent -> AddFinalPointAction
     d->contour->GetEventTranslator()->SetTranslation(vtkCommand::RightButtonPressEvent,0);
+    d->contour->GetEventTranslator()->SetTranslation(vtkCommand::KeyPressEvent, vtkWidgetEvent::NoEvent);
+    d->contour->GetEventTranslator()->SetTranslation(vtkCommand::KeyReleaseEvent, vtkWidgetEvent::NoEvent);
     d->contour->On();
     d->view = view;
 
@@ -139,12 +140,10 @@ polygonRoi::polygonRoi(vtkImageView2D *view, QColor color, medAbstractRoi *paren
     d->observer = PolygonRoiObserver::New();
     d->observer->setRoi(this);
     d->contour->AddObserver(vtkCommand::EndInteractionEvent,d->observer,10);
-    d->contour->AddObserver(vtkCommand::MouseMoveEvent,d->observer,10);
     d->copyRoi = nullptr;
 
     d->roiColor = color;
     setMasterRoi(true);
-
 }
 
 polygonRoi::~polygonRoi()
@@ -155,17 +154,21 @@ polygonRoi::~polygonRoi()
 
 void polygonRoi::setEnableLeftButtonInteraction(bool state)
 {
-    d->contour->GetEventTranslator()->SetTranslation(vtkCommand::LeftButtonPressEvent, state);
+    if (state)
+    {
+        d->contour->GetEventTranslator()->SetTranslation(vtkCommand::LeftButtonPressEvent, vtkWidgetEvent::Select);
+        d->contour->GetEventTranslator()->SetTranslation(vtkCommand::MouseMoveEvent, vtkWidgetEvent::Move);
+    }
+    else
+    {
+        d->contour->GetEventTranslator()->SetTranslation(vtkCommand::LeftButtonPressEvent, vtkWidgetEvent::NoEvent);
+        d->contour->GetEventTranslator()->SetTranslation(vtkCommand::MouseMoveEvent, vtkWidgetEvent::NoEvent);
+    }
 }
 
 bool polygonRoi::isClosed()
 {
     return d->contour->GetContourRepresentation()->GetClosedLoop();
-}
-
-void polygonRoi::setEnabled(bool state)
-{
-    d->contour->SetEnabled(state);
 }
 
 vtkPolyData *polygonRoi::createPolyDataFromContour()

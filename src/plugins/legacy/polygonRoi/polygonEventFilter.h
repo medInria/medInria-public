@@ -122,4 +122,5 @@ private:
     void deleteNode(double *mousePosition);
     bool isOnlyOneNodeInSlice();
     medTagRoiManager *getClosestManager(double *mousePos);
+    void enableOnlyActiveManager();
 };

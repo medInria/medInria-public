@@ -128,15 +128,6 @@ QList<polygonRoi *> medTagRoiManager::getRois()
     return d->rois;
 }
 
-void medTagRoiManager::setContourEnabled(bool state)
-{
-    for (polygonRoi *roi : d->rois)
-    {
-        roi->setEnabled(state);
-        manageVisibility();
-    }
-}
-
 void medTagRoiManager::select(bool state)
 {
     polygonRoi *roi = existingRoiInSlice();
@@ -618,11 +609,11 @@ void medTagRoiManager::manageVisibility()
 
 void medTagRoiManager::setEnableInteraction(bool state)
 {
-   polygonRoi *roi = existingRoiInSlice();
-   if ( roi )
-   {
-       roi->setEnableLeftButtonInteraction(state);
-   }
+    polygonRoi *roi = existingRoiInSlice();
+    if ( roi )
+    {
+        roi->setEnableLeftButtonInteraction(state);
+    }
 }
 
 void medTagRoiManager::enableOtherViewVisibility(medAbstractImageView *v, bool state)

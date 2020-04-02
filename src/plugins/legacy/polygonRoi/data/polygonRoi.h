@@ -56,7 +56,6 @@ public:
     void addViewToList(medAbstractImageView *viewToAdd);
     void updateContourOtherView(medAbstractImageView *view, bool state);
     bool isClosed();
-    void setEnabled(bool state);
     vtkPolyData *createPolyDataFromContour();
     void manageVisibility();
 
@@ -81,6 +80,7 @@ signals:
     void updateCursorState(CURSORSTATE state);
     void interpolate();
     void enableOtherViewsVisibility(bool state);
+
 private:
     polygonRoiPrivate *d;
     friend class PolygonRoiObserver;

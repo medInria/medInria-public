@@ -150,8 +150,20 @@ void polygonRoiToolBox::loadContoursIfPresent(medAbstractImageView *v, unsigned 
     medAbstractData *data = v->layerData(layer);
     if (data->identifier().contains("medContours") && v==currentView)
     {
+        if (addNewCurve->isChecked()==false)
+        {
+            addNewCurve->setChecked(true);
+        }
         viewEventFilter->loadContours(data);
-        addNewCurve->setChecked(true);
+        if (viewEventFilter->isContourInSlice())
+        {
+            repulsorTool->setEnabled(true);
+            if (repulsorTool->isChecked())
+            {
+                    viewEventFilter->activateRepulsor(true);
+            }
+        }
+
         v->removeLayer(layer);
     }
 }
@@ -261,10 +273,6 @@ void polygonRoiToolBox::onLayerClosed(uint index)
 {
     medAbstractView *view = this->getWorkspace()->tabbedViewContainers()->getFirstSelectedContainerView();
     medAbstractImageView *v = qobject_cast<medAbstractImageView*>(view);
-    // We enter here only if onLayerClosed has not been called during a view removal
-    addNewCurve->blockSignals(true);
-    addNewCurve->setChecked(false);
-    addNewCurve->blockSignals(false);
     if (!v || (v && v->layersCount()==0))
     {
         if (viewEventFilter)
@@ -319,7 +327,6 @@ void polygonRoiToolBox::clickClosePolygon(bool state)
         repulsorTool->setEnabled(state);
         viewEventFilter->Off();
         viewEventFilter->removeFromAllViews();
-        viewEventFilter->removeObserver();
     }
 }
 
