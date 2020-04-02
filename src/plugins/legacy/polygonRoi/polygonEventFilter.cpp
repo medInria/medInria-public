@@ -319,6 +319,14 @@ QLineEdit * polygonEventFilter::updateNameManager(medTagRoiManager* closestManag
     QString style = "QLineEdit { color: rgb(%1, %2, %3); }";
     renameManager->setStyleSheet(style.arg(mycolor.red()).arg(mycolor.green()).arg(mycolor.blue()));
     connect(renameManager, &QLineEdit::editingFinished, [=](){
+       for (medTagRoiManager *manager : managers)
+       {
+           if (manager->getName()==renameManager->text())
+           {
+               qDebug()<<"forbidden name";
+               return;
+           }
+       }
        closestManager->setName(renameManager->text());
     });
     connect(renameManager, &QLineEdit::returnPressed, [=](){
@@ -915,15 +923,15 @@ void polygonEventFilter::loadContours(medAbstractData *data)
         {
             return;
         }
+        QString labelName = (tagContours.getLabelName() == "undefined")?QString("label-%1").arg(label):tagContours.getLabelName();
         for (medTagRoiManager *manager : managers)
         {
-            if (manager->getName()==tagContours.getLabelName())
+            if (manager->getName()==labelName)
             {
                 qDebug()<<metaObject()->className()<<":: loadContours - unable to create a new manager.";
                 return;
             }
         }
-        QString labelName = (tagContours.getLabelName() == "undefined")?QString("label-%1").arg(label):tagContours.getLabelName();
 
         medTagRoiManager *manager = addManagerToList(label, labelName);
         manager->loadContours(tagContours.getContourNodes());
