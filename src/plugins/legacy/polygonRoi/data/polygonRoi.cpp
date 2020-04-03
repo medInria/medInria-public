@@ -120,7 +120,7 @@ polygonRoi::polygonRoi(vtkImageView2D *view, QColor color, medAbstractRoi *paren
     vtkSmartPointer<vtkContourOverlayRepresentation> contourRep = vtkSmartPointer<vtkContourOverlayRepresentation>::New();
     contourRep->GetLinesProperty()->SetLineWidth(4);
     contourRep->GetProperty()->SetPointSize(5);
-    contourRep->GetProperty()->SetColor(1.0, 0.0, 1.0);
+    contourRep->GetProperty()->SetColor(1.0, 0.0, 0.0);
     contourRep->GetActiveProperty()->SetOpacity(0);
     contourRep->SetPixelTolerance(20);
     d->contour = vtkContourWidget::New();

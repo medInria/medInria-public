@@ -123,4 +123,5 @@ private:
     bool isOnlyOneNodeInSlice();
     medTagRoiManager *getClosestManager(double *mousePos);
     void enableOnlyActiveManager();
+    QMenu *changeLabelActions(medTagRoiManager* closestManager);
 };

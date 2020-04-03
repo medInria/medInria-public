@@ -78,7 +78,7 @@ polygonEventFilter::polygonEventFilter(medAbstractImageView *view) :
         Qt::green,
         Qt::blue,
         Qt::yellow,
-        Qt::red,
+        Qt::darkMagenta,
         Qt::cyan,
         Qt::gray,
         Qt::white,
@@ -356,6 +356,31 @@ medTagRoiManager *polygonEventFilter::getClosestManager(double *mousePos)
     return closestManager;
 }
 
+QMenu *polygonEventFilter::changeLabelActions(medTagRoiManager* closestManager)
+{
+    QMenu *changeMenu = new QMenu("Change Label:");
+    for (medTagRoiManager *manager : managers)
+    {
+        if (manager!= closestManager && !manager->existingRoiInSlice())
+        {
+            QPixmap pixmap(20,20);
+            pixmap.fill(manager->getColor());
+            QIcon icon(pixmap);
+            QAction *action = new QAction(icon, manager->getName(), changeMenu);
+            connect(action, &QAction::triggered, [=](){
+                polygonRoi *roi = closestManager->existingRoiInSlice();
+                QVector<QVector2D> nodes = roi->copyContour();
+                polygonRoi *roiToAdd = manager->appendRoi();
+                roiToAdd->pasteContour(nodes);
+                deleteContour(closestManager);
+                activeManager = manager;
+            });
+            changeMenu->addAction(action);
+        }
+    }
+    return changeMenu;
+}
+
 bool polygonEventFilter::rightButtonBehaviour(medAbstractView *view, QMouseEvent *mouseEvent)
 {
     QMenu mainMenu;
@@ -375,7 +400,9 @@ bool polygonEventFilter::rightButtonBehaviour(medAbstractView *view, QMouseEvent
     QMenu *colorMenu = createColorMenu(colors);
     QMenu *roiManagementMenu = new QMenu("Remove: ");
     QMenu *saveMenu = new QMenu("Save as: ");
+    QMenu *changeMenu = nullptr;
     QWidgetAction *renameManagerAction = new QWidgetAction(&mainMenu);
+    QAction *copyContourAction = new QAction("Copy", &mainMenu);
     if (closestManager && closestManager->getMinimumDistanceFromNodesToEventPosition(mousePos) < 10 )
     {
         closestManager->select(true);
@@ -398,28 +425,34 @@ bool polygonEventFilter::rightButtonBehaviour(medAbstractView *view, QMouseEvent
         });
         roiManagementMenu->addAction(deleteLabelAction);
 
-        QAction *saveMaskAction = new QAction("Mask", &mainMenu);
+        QAction *saveMaskAction = new QAction("Mask", saveMenu);
         connect(saveMaskAction, &QAction::triggered, [=](){
             saveMask(closestManager);
         });
         saveMenu->addAction(saveMaskAction);
 
-        QAction *saveContourAction = new QAction("Contour", &mainMenu);
+        QAction *saveContourAction = new QAction("Contour", saveMenu);
         connect(saveContourAction, &QAction::triggered, [=](){
             saveContour(closestManager);
         });
         saveMenu->addAction(saveContourAction);
 
-        QAction *copyContourAction = new QAction("Copy", &mainMenu);
+
         connect(copyContourAction, &QAction::triggered, [=](){
             copyContour(closestManager);
         });
+
+        changeMenu = changeLabelActions(closestManager);
 
         renameManagerAction->setDefaultWidget(updateNameManager(closestManager, &mainMenu));
 
         mainMenu.addAction(renameManagerAction);
         mainMenu.addMenu(roiManagementMenu);
         mainMenu.addMenu(saveMenu);
+        if ( !changeMenu->actions().isEmpty() )
+        {
+            mainMenu.addMenu(changeMenu);
+        }
         mainMenu.addAction(copyContourAction);
 
     }
@@ -441,6 +474,9 @@ bool polygonEventFilter::rightButtonBehaviour(medAbstractView *view, QMouseEvent
     delete roiManagementMenu;
     delete saveMenu;
     delete renameManagerAction;
+
+    delete changeMenu;
+    delete copyContourAction;
 
     return true;
 }
@@ -1072,6 +1108,7 @@ void polygonEventFilter::deleteLabel(medTagRoiManager *manager)
     {
         activeManager = nullptr;
     }
+    manageTick();
     manageButtonsState();
 }
 

@@ -109,7 +109,8 @@ polygonRoiToolBox::polygonRoiToolBox(QWidget *parent ) :
                                      + QString(underlineStyle).arg("Remove node/contour/label: ") + " BackSpace or put the cursor on a node then right-click and choose menu\"Remove ...\"."
                                      + QString(underlineStyle).arg("Save segmentation: ") + " Put the cursor on a node then right-click and choose menu \"Save ...\"."
                                      + QString(underlineStyle).arg("Copy ROIs in current slice: ") + " CTRL/CMD + c. or put the cursor on a node then right-click and choose menu\"Copy ...\""
-                                     + QString(underlineStyle).arg("Paste ROIs:") + " CTRL/CMD + v.");
+                                     + QString(underlineStyle).arg("Paste ROIs:") + " CTRL/CMD + v."
+                                     + QString(underlineStyle).arg("Change current label:") + " Put the cursor on a node then right-click and choose menu \"Change label ...\".");
 
     explanation->setSizePolicy(QSizePolicy::Ignored, QSizePolicy::Preferred);
     explanation->setWordWrap(true);
