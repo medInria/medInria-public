@@ -67,7 +67,7 @@ itkMorphologicalFiltersToolBox::itkMorphologicalFiltersToolBox ( QWidget *parent
     d->pixelButton = new QRadioButton(tr("pixels"), this);
     d->pixelButton->setObjectName("pixels");
     d->pixelButton->setToolTip(tr("If \"pixels\" is selected, the dimensions of the structuring element will be calculated in pixels."));
-    connect(d->pixelButton, SIGNAL(toggled(bool)), this, SLOT(roundSpinBox(bool)));
+    connect(d->pixelButton, SIGNAL(toggled(bool)), this, SLOT(roundSpinBox(bool)), Qt::UniqueConnection);
 
     kernelSizeLayout->addWidget ( kernelSizeLabel );
     kernelSizeLayout->addWidget ( d->kernelSize );
@@ -113,7 +113,7 @@ itkMorphologicalFiltersToolBox::itkMorphologicalFiltersToolBox ( QWidget *parent
     widget->setLayout(layout);
     this->addWidget(widget);
 
-    connect ( runButton, SIGNAL ( clicked() ), this, SLOT ( run() ) );
+    connect(runButton, SIGNAL(clicked()), this, SLOT(run()), Qt::UniqueConnection);
 }
 
 itkMorphologicalFiltersToolBox::~itkMorphologicalFiltersToolBox()

@@ -119,7 +119,7 @@ itkFiltersToolBox::itkFiltersToolBox(QWidget *parent)
     
     d->filters->addItems(filtersList);
 
-    QObject::connect ( d->filters, SIGNAL ( currentIndexChanged ( int ) ), this, SLOT ( onFiltersActivated ( int ) ) );
+    QObject::connect(d->filters, SIGNAL(currentIndexChanged(int)), this, SLOT(onFiltersActivated(int)), Qt::UniqueConnection);
 
     //Add filter widgets
     d->addFilterWidget = new QWidget(this);
@@ -302,9 +302,9 @@ itkFiltersToolBox::itkFiltersToolBox(QWidget *parent)
     signalMapper->setMapping(d->thresholdUpperValue, 1);
     signalMapper->setMapping(d->thresholdFilterValue, 2);
 
-    connect(d->thresholdLowerValue,  SIGNAL(valueChanged(double)), signalMapper, SLOT (map()));
-    connect(d->thresholdUpperValue,  SIGNAL(valueChanged(double)), signalMapper, SLOT (map()));
-    connect(d->thresholdFilterValue, SIGNAL(valueChanged(double)), signalMapper, SLOT (map()));
+    connect(d->thresholdLowerValue,  SIGNAL(valueChanged(double)), signalMapper, SLOT (map()), Qt::UniqueConnection);
+    connect(d->thresholdUpperValue,  SIGNAL(valueChanged(double)), signalMapper, SLOT (map()), Qt::UniqueConnection);
+    connect(d->thresholdFilterValue, SIGNAL(valueChanged(double)), signalMapper, SLOT (map()), Qt::UniqueConnection);
     connect(signalMapper, SIGNAL(mapped(int)),this, SLOT(updateClutEditorValue(int)));
 
     d->thresholdFilterValue2 = new QSpinBox;
@@ -317,7 +317,7 @@ itkFiltersToolBox::itkFiltersToolBox(QWidget *parent)
     d->infoThreshold = new QLabel("Values equal to the threshold value are not set to Outside Value");
     d->infoThreshold->setWordWrap(true);
     d->infoThreshold->setStyleSheet("font: italic");
-    connect(d->binaryThreshold, SIGNAL(toggled(bool)), this, SLOT(checkBinaryThreshold(bool)));
+    connect(d->binaryThreshold, SIGNAL(toggled(bool)), this, SLOT(checkBinaryThreshold(bool)), Qt::UniqueConnection);
 
     d->histogram = new QCheckBox(tr("Open Histogram"), this);
     d->histogram->setObjectName("histogram");
@@ -397,7 +397,7 @@ itkFiltersToolBox::itkFiltersToolBox(QWidget *parent)
 
     d->thresholdFilterWidget->setLayout ( thresholdFilterLayout );
 
-    connect(d->valueButtonGroup, SIGNAL(buttonClicked(int)), this, SLOT(updateThresholdToolboxBehaviour(int)));
+    connect(d->valueButtonGroup, SIGNAL(buttonClicked(int)), this, SLOT(updateThresholdToolboxBehaviour(int)), Qt::UniqueConnection);
     greaterButton->click();
     d->clutEditor = nullptr;
 
@@ -443,11 +443,11 @@ itkFiltersToolBox::itkFiltersToolBox(QWidget *parent)
     widget->setLayout(layout);
     this->addWidget(widget);
 
-    connect ( runButton, SIGNAL ( clicked() ), this, SLOT ( run() ) );
+    connect(runButton, SIGNAL(clicked()), this, SLOT(run()), Qt::UniqueConnection);
 
     if (this->selectorToolBox()) // empty in pipelines
     {
-        connect(this->selectorToolBox(), SIGNAL(inputChanged()), this, SLOT(update()));
+        connect(this->selectorToolBox(), SIGNAL(inputChanged()), this, SLOT(update()), Qt::UniqueConnection);
         update();
     }
 }
@@ -591,7 +591,7 @@ int itkFiltersToolBox::setupSpinBoxValues(medAbstractData* data)
 void itkFiltersToolBox::setupItkAddProcess()
 {
     d->process = dtkAbstractProcessFactory::instance()->createSmartPointer ( "itkAddProcess" );
-    
+
     d->process->setInput(this->selectorToolBox()->data());
     d->process->setParameter(d->addFilterValue->value());
 }
@@ -761,15 +761,14 @@ void itkFiltersToolBox::run()
             break;
     }
 
-    if (! d->process)
+    if (d->process)
     {
-        return;
-    }
-    this->setToolBoxOnWaitStatus();
+        this->setToolBoxOnWaitStatus();
 
-    medRunnableProcess *runProcess = new medRunnableProcess;
-    runProcess->setProcess ( d->process );
-    this->addConnectionsAndStartJob(runProcess);
+        medRunnableProcess *runProcess = new medRunnableProcess;
+        runProcess->setProcess ( d->process );
+        this->addConnectionsAndStartJob(runProcess);
+    }
 }
 
 void itkFiltersToolBox::updateClutEditorValue(int label)
@@ -854,7 +853,7 @@ void itkFiltersToolBox::updateClutEditorView()
             d->clutEditor->getScene()->table()->addVertex(new medClutEditorVertex( maxVal, maxCoord, maxColor, d->clutEditor->getScene()->table() ));
             d->clutEditor->getScene()->table()->addVertex(new medClutEditorVertex( value, coord, d->thresholdColor, d->clutEditor->getScene()->table() ));
 
-            connect(d->clutEditor->getScene()->table()->vertices().at(1)->getColorAction(), SIGNAL(triggered()), this, SLOT(setThresholdColor()));
+            connect(d->clutEditor->getScene()->table()->vertices().at(1)->getColorAction(), SIGNAL(triggered()), this, SLOT(setThresholdColor()), Qt::UniqueConnection);
 
             d->clutEditor->invertLUT(d->valueButtonGroup->checkedId()!=itkFiltersThresholdingProcess::upperButtonId);
         }
