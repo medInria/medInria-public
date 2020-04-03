@@ -134,7 +134,10 @@ bool polygonEventFilter::eventFilter(QObject *obj, QEvent *event)
     }
 
     if ( ! activateEventFilter )
+    {
         return false;
+    }
+
     if ( keyEvent->type() == QEvent::ShortcutOverride )
     {
         if ( keyEvent->key() == Qt::Key::Key_C )
@@ -267,7 +270,6 @@ bool polygonEventFilter::leftButtonBehaviour(medAbstractView *view, QMouseEvent 
     {
         for (medTagRoiManager *manager : managers)
         {
-            //manager->setContourEnabled(true);
             polygonRoi *roi = manager->roiOpenInSlice();
             if ( roi != nullptr)
             {
@@ -841,10 +843,13 @@ void polygonEventFilter::activateRepulsor(bool state)
         cursorState = CURSORSTATE::CS_REPULSOR;
         vtkInteractorStyleImageView2D *interactorStyle2D = vtkInteractorStyleImageView2D::SafeDownCast(view2D->GetInteractor()->GetInteractorStyle());
         if (!interactorStyleRepulsor)
+        {
             interactorStyleRepulsor = vtkInriaInteractorStylePolygonRepulsor::New();
+        }
         interactorStyleRepulsor->SetLeftButtonInteraction(interactorStyle2D->GetLeftButtonInteraction());
         view2D->SetInteractorStyle(interactorStyleRepulsor);
         view2D->SetupInteractor(view2D->GetInteractor()); // to reinstall vtkImageView2D pipeline
+
         for (medTagRoiManager *manager: managers)
         {
             manager->setEnableInteraction(false);
