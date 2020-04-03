@@ -105,10 +105,12 @@ polygonRoiToolBox::polygonRoiToolBox(QWidget *parent ) :
     QString underlineStyle = "<br><br><span style=\" text-decoration: underline;\">%1</span>";
     QLabel *explanation = new QLabel(QString(underlineStyle).arg("Define a Contour: ") + " Activate the toolbox, then click on the data set."
                                      + QString(underlineStyle).arg("Define new Label: ") + " Right-click on the image then choose color"
-                                     + QString(underlineStyle).arg("Remove node/contour/label: ") + " Put the cursor on contour then right-click and choose menu \"Remove ...\"."
-                                     + QString(underlineStyle).arg("Save segmentation: ") + " Put the cursor on contour then right-click and choose menu \"Save ...\"."
-                                     + QString(underlineStyle).arg("Copy ROIs in current slice: ") + " CTRL/CMD + c."
-                                     + QString(underlineStyle).arg("Paste ROIs:") + " CTRL/CMD + v.");
+                                     + QString(underlineStyle).arg("Rename a Label: ") + " Put the cursor on a node then right-click and set a new label name"
+                                     + QString(underlineStyle).arg("Remove node/contour/label: ") + " BackSpace or put the cursor on a node then right-click and choose menu\"Remove ...\"."
+                                     + QString(underlineStyle).arg("Save segmentation: ") + " Put the cursor on a node then right-click and choose menu \"Save ...\"."
+                                     + QString(underlineStyle).arg("Copy ROIs in current slice: ") + " CTRL/CMD + c. or put the cursor on a node then right-click and choose menu\"Copy ...\""
+                                     + QString(underlineStyle).arg("Paste ROIs:") + " CTRL/CMD + v."
+                                     + QString(underlineStyle).arg("Change current label:") + " Put the cursor on a node then right-click and choose menu \"Change label ...\".");
 
     explanation->setSizePolicy(QSizePolicy::Ignored, QSizePolicy::Preferred);
     explanation->setWordWrap(true);
@@ -150,8 +152,20 @@ void polygonRoiToolBox::loadContoursIfPresent(medAbstractImageView *v, unsigned 
     medAbstractData *data = v->layerData(layer);
     if (data->identifier().contains("medContours") && v==currentView)
     {
+        if (addNewCurve->isChecked()==false)
+        {
+            addNewCurve->setChecked(true);
+        }
         viewEventFilter->loadContours(data);
-        addNewCurve->setChecked(true);
+        if (viewEventFilter->isContourInSlice())
+        {
+            repulsorTool->setEnabled(true);
+            if (repulsorTool->isChecked())
+            {
+                    viewEventFilter->activateRepulsor(true);
+            }
+        }
+
         v->removeLayer(layer);
     }
 }
@@ -261,10 +275,6 @@ void polygonRoiToolBox::onLayerClosed(uint index)
 {
     medAbstractView *view = this->getWorkspace()->tabbedViewContainers()->getFirstSelectedContainerView();
     medAbstractImageView *v = qobject_cast<medAbstractImageView*>(view);
-    // We enter here only if onLayerClosed has not been called during a view removal
-    addNewCurve->blockSignals(true);
-    addNewCurve->setChecked(false);
-    addNewCurve->blockSignals(false);
     if (!v || (v && v->layersCount()==0))
     {
         if (viewEventFilter)
@@ -298,10 +308,11 @@ void polygonRoiToolBox::clickClosePolygon(bool state)
             connect(viewEventFilter, SIGNAL(toggleRepulsorButton(bool)), this, SLOT(activateRepulsor(bool)), Qt::UniqueConnection);
         }
 
-        viewEventFilter->setEnableInterpolation(interpolate->isChecked());
         viewEventFilter->updateView(currentView);
+        viewEventFilter->setEnableInterpolation(interpolate->isChecked());
         viewEventFilter->On();
         viewEventFilter->installOnView(currentView);
+        viewEventFilter->addObserver();
 
         if ( viewEventFilter->isContourInSlice() )
         {
@@ -324,22 +335,8 @@ void polygonRoiToolBox::activateRepulsor(bool state)
 {
     if (currentView && viewEventFilter)
     {
-        if (state)
-        {
-            if ( viewEventFilter->isContourInSlice())
-            {
-                viewEventFilter->activateRepulsor(state);
-            }
-            else
-            {
-                repulsorTool->setChecked(false);
-            }
-        }
-        else
-        {
-            repulsorTool->setChecked(false);
-            viewEventFilter->activateRepulsor(state);
-        }
+        repulsorTool->setChecked(state);
+        viewEventFilter->activateRepulsor(state);
     }
 }
 
@@ -425,7 +422,6 @@ void polygonRoiToolBox::updateTableWidgetView(unsigned int row, unsigned int col
         });
         connect(container, &medViewContainer::containerSelected, [=](){
             viewEventFilter->Off();
-            repulsorTool->setChecked(false);
             repulsorTool->setEnabled(false);
         });
         medTableWidgetItem * item = static_cast<medTableWidgetItem*>(tableViewChooser->selectedItems().at(nbItem));
@@ -439,6 +435,10 @@ void polygonRoiToolBox::updateTableWidgetView(unsigned int row, unsigned int col
         {
             viewEventFilter->On();
             repulsorTool->setEnabled(true);
+            if (repulsorTool->isChecked())
+            {
+                activateRepulsor(true);
+            }
         }
     });
     mainContainer->setClosingMode(medViewContainer::CLOSE_BUTTON_HIDDEN);
@@ -590,6 +590,8 @@ void polygonRoiToolBox::disableButtons()
     saveBinaryMaskButton->setEnabled(false);
     saveContourButton->setEnabled(false);
     tableViewChooser->setEnabled(false);
+    interpolate->setEnabled(false);
+    interpolate->setChecked(true);
 }
 
 void polygonRoiToolBox::saveContours()

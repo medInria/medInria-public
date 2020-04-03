@@ -56,7 +56,6 @@ public:
     void addViewToList(medAbstractImageView *viewToAdd);
     void updateContourOtherView(medAbstractImageView *view, bool state);
     bool isClosed();
-    void setEnabled(bool state);
     vtkPolyData *createPolyDataFromContour();
     void manageVisibility();
 
@@ -71,6 +70,7 @@ public:
     QVector<QVector2D> copyContour();
     bool pasteContour(QVector<QVector2D> nodes);
     int getNumberOfNodes();
+    void setEnableLeftButtonInteraction(bool state);
 public slots:
     virtual void undo();
     virtual void redo();
@@ -79,7 +79,6 @@ public slots:
 signals:
     void updateCursorState(CURSORSTATE state);
     void interpolate();
-    void toggleRepulsorButton(bool state);
     void enableOtherViewsVisibility(bool state);
 
 private:

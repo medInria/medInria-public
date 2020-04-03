@@ -92,7 +92,6 @@ medTagRoiManager::medTagRoiManager(medAbstractView *view, polygonEventFilter *ev
 medTagRoiManager::~medTagRoiManager()
 {
     delete d;
-
 }
 
 polygonRoi* medTagRoiManager::appendRoi()
@@ -127,15 +126,6 @@ void medTagRoiManager::setName(QString name)
 QList<polygonRoi *> medTagRoiManager::getRois()
 {
     return d->rois;
-}
-
-void medTagRoiManager::setContourEnabled(bool state)
-{
-    for (polygonRoi *roi : d->rois)
-    {
-        roi->setEnabled(state);
-        manageVisibility();
-    }
 }
 
 void medTagRoiManager::select(bool state)
@@ -548,7 +538,7 @@ void medTagRoiManager::createMaskWithLabel(int label)
             }
         }
     }
-    QString desc = QString("mask with label ") + QString::number(label);
+    QString desc = QString("mask: ") + QString(d->name);
     medUtilities::setDerivedMetaData(output, inputData, desc);
     medDataManager::instance()->importData(output, false);
     return;
@@ -604,7 +594,6 @@ void medTagRoiManager::connectRois()
         connect(roi, SIGNAL(updateCursorState(CURSORSTATE)), d->eventCursor, SLOT(setCursorState(CURSORSTATE)), Qt::UniqueConnection);
         connect(roi, SIGNAL(interpolate()), this, SLOT(interpolateIfNeeded()), Qt::UniqueConnection);
         connect(roi, SIGNAL(interpolate()), d->eventCursor, SLOT(manageTick()), Qt::UniqueConnection);
-        connect(roi, SIGNAL(toggleRepulsorButton(bool)), this, SIGNAL(toggleRepulsorButton(bool)), Qt::UniqueConnection);
         connect(roi, SIGNAL(enableOtherViewsVisibility(bool)), this, SIGNAL(enableOtherViewsVisibility(bool)), Qt::UniqueConnection);
     }
 }
@@ -616,6 +605,15 @@ void medTagRoiManager::manageVisibility()
         roi->manageVisibility();
     }
     d->view->render();
+}
+
+void medTagRoiManager::setEnableInteraction(bool state)
+{
+    polygonRoi *roi = existingRoiInSlice();
+    if ( roi )
+    {
+        roi->setEnableLeftButtonInteraction(state);
+    }
 }
 
 void medTagRoiManager::enableOtherViewVisibility(medAbstractImageView *v, bool state)
@@ -661,7 +659,7 @@ bool medTagRoiManager::pasteContour(QVector<QVector2D> nodes)
     return true;
 }
 
-bool medTagRoiManager::mouseIsCloseFromContour(double mousePos[2])
+bool medTagRoiManager::mouseIsCloseFromNodes(double mousePos[2])
 {
     polygonRoi *roi = existingRoiInSlice();
     if (roi)
@@ -692,7 +690,9 @@ double medTagRoiManager::getMinimumDistanceFromNodesToEventPosition(double event
             roi->getContour()->GetContourRepresentation()->GetNthNodeDisplayPosition(i, contourPos);
             dist = getDistance(eventPos, contourPos);
             if ( dist < minDist )
+            {
                 minDist = dist;
+            }
         }
     }
     return minDist;
@@ -757,6 +757,10 @@ void medTagRoiManager::deleteNode(double X, double Y)
         {
             d->rois.removeOne(roi);
             delete roi;
+        }
+        else
+        {
+            roi->getContour()->SetWidgetState(vtkContourWidget::Define);
         }
     }
     interpolateIfNeeded();
@@ -1067,7 +1071,7 @@ void medTagRoiManager::resampleCurve(vtkPolyData *poly,int nbPoints)
     points->Delete();
 }
 
-int medTagRoiManager::findClosestContourFromPoint(QVector3D worldMouseCoord)
+double medTagRoiManager::findClosestContourFromPoint(QVector3D worldMouseCoord)
 {
     double minDist = DBL_MAX;
     for (polygonRoi *roi : d->rois)

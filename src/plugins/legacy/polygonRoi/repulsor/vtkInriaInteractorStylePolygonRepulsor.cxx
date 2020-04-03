@@ -41,6 +41,7 @@ vtkInriaInteractorStylePolygonRepulsor::vtkInriaInteractorStylePolygonRepulsor()
     this->RepulsorActor = vtkCircleActor2D::New();
     this->RepulsorActor->SetVisibility(0);
     this->RepulsorActor->SetProperty(this->RepulsorProperty);
+    this->manager = nullptr;
 }
 
 //----------------------------------------------------------------------------
@@ -78,7 +79,10 @@ void vtkInriaInteractorStylePolygonRepulsor::OnLeftButtonDown()
     {
         return;
     }
-
+    if (!manager)
+    {
+        return;
+    }
     this->Position[0] = this->Interactor->GetEventPosition()[0];
     this->Position[1] = this->Interactor->GetEventPosition()[1]; 
     this->FindPokedRenderer(this->Position[0], this->Position[1]);
@@ -123,14 +127,14 @@ void vtkInriaInteractorStylePolygonRepulsor::OnLeftButtonUp()
 //----------------------------------------------------------------------------
 void vtkInriaInteractorStylePolygonRepulsor::SetCurrentView(medAbstractView *view)
 {
-    OnLeftButtonUp();
     this->CurrentView = view;
+    OnLeftButtonUp();
 }
 
 void vtkInriaInteractorStylePolygonRepulsor::SetManager(medTagRoiManager *closestManagerInSlice)
 {
-    OnLeftButtonUp();
     this->manager = closestManagerInSlice;
+    OnLeftButtonUp();
 }
 
 //----------------------------------------------------------------------------
@@ -150,6 +154,10 @@ bool vtkInriaInteractorStylePolygonRepulsor::IsInRepulsorDisk(double *pt)
 
 void vtkInriaInteractorStylePolygonRepulsor::RedefinePolygons()
 {
+    if (!manager)
+    {
+        return;
+    }
     for (polygonRoi * roi : manager->getRois())
     {
         bool contourChanged = false;

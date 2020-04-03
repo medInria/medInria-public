@@ -71,15 +71,7 @@ void PolygonRoiObserver::Execute ( vtkObject *caller, unsigned long event, void 
 
     switch ( event )
     {
-        case vtkImageView2D::SliceChangedEvent:
-        {
-            roi->manageVisibility();
-            emit roi->updateCursorState(CURSORSTATE::CS_SLICE_CHANGED);
-            emit roi->toggleRepulsorButton(false);
-            break;
-        }
         case vtkCommand::EndInteractionEvent:
-        case vtkCommand::MouseMoveEvent:
         {
             roi->setMasterRoi(true);
             emit roi->updateCursorState(CURSORSTATE::CS_MOUSE_EVENT);
@@ -103,7 +95,7 @@ public:
         contour->GetContourRepresentation()->RemoveAllObservers();
         contour->Delete();
         view->RemoveObserver(observer);
-        observer->Delete();        
+        observer->Delete();
         view = nullptr;
         if (copyRoi)
         {
@@ -138,6 +130,8 @@ polygonRoi::polygonRoi(vtkImageView2D *view, QColor color, medAbstractRoi *paren
     d->contour->SetInteractor(view->GetInteractor());
     // deactivate the default RightButtonPressEvent -> AddFinalPointAction
     d->contour->GetEventTranslator()->SetTranslation(vtkCommand::RightButtonPressEvent,0);
+    d->contour->GetEventTranslator()->SetTranslation(vtkCommand::KeyPressEvent, vtkWidgetEvent::NoEvent);
+    d->contour->GetEventTranslator()->SetTranslation(vtkCommand::KeyReleaseEvent, vtkWidgetEvent::NoEvent);
     d->contour->On();
     d->view = view;
 
@@ -145,15 +139,11 @@ polygonRoi::polygonRoi(vtkImageView2D *view, QColor color, medAbstractRoi *paren
     setIdSlice(view->GetSlice());
     d->observer = PolygonRoiObserver::New();
     d->observer->setRoi(this);
-    d->view->AddObserver(vtkImageView2D::SliceChangedEvent,d->observer,0);
     d->contour->AddObserver(vtkCommand::EndInteractionEvent,d->observer,10);
-    d->contour->AddObserver(vtkCommand::MouseMoveEvent,d->observer,10);
-    contourRep->AddObserver(vtkCommand::PlacePointEvent,d->observer,0);
     d->copyRoi = nullptr;
 
     d->roiColor = color;
     setMasterRoi(true);
-
 }
 
 polygonRoi::~polygonRoi()
@@ -162,14 +152,23 @@ polygonRoi::~polygonRoi()
     d = nullptr;
 }
 
+void polygonRoi::setEnableLeftButtonInteraction(bool state)
+{
+    if (state)
+    {
+        d->contour->GetEventTranslator()->SetTranslation(vtkCommand::LeftButtonPressEvent, vtkWidgetEvent::Select);
+        d->contour->GetEventTranslator()->SetTranslation(vtkCommand::MouseMoveEvent, vtkWidgetEvent::Move);
+    }
+    else
+    {
+        d->contour->GetEventTranslator()->SetTranslation(vtkCommand::LeftButtonPressEvent, vtkWidgetEvent::NoEvent);
+        d->contour->GetEventTranslator()->SetTranslation(vtkCommand::MouseMoveEvent, vtkWidgetEvent::NoEvent);
+    }
+}
+
 bool polygonRoi::isClosed()
 {
     return d->contour->GetContourRepresentation()->GetClosedLoop();
-}
-
-void polygonRoi::setEnabled(bool state)
-{
-    d->contour->SetEnabled(state);
 }
 
 vtkPolyData *polygonRoi::createPolyDataFromContour()
@@ -461,16 +460,10 @@ void polygonRoi::updateContourOtherView(medAbstractImageView *view, bool state)
         {
             return;
         }
-        if (view->orientation() == medImageView::VIEW_ORIENTATION_3D)
-        {
-            vtkImageView3D* view3D = static_cast<medVtkViewBackend*>(view->backend())->view3D;
-            view3D->RemoveDataSet(d->polyData);
-        }
-        else
-        {
-            vtkImageView2D* view2D = static_cast<medVtkViewBackend*>(view->backend())->view2D;
-            view2D->RemoveDataSet(d->polyData);
-        }
+        vtkImageView3D* view3D = static_cast<medVtkViewBackend*>(view->backend())->view3D;
+        view3D->RemoveDataSet(d->polyData);
+        vtkImageView2D* view2D = static_cast<medVtkViewBackend*>(view->backend())->view2D;
+        view2D->RemoveDataSet(d->polyData);
     }
 }
 
