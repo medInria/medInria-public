@@ -162,7 +162,7 @@ void polygonRoiToolBox::loadContoursIfPresent(medAbstractImageView *v, unsigned 
             repulsorTool->setEnabled(true);
             if (repulsorTool->isChecked())
             {
-                    viewEventFilter->activateRepulsor(true);
+                viewEventFilter->activateRepulsor(true);
             }
         }
 
