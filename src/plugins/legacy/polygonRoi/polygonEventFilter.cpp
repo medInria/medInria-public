@@ -119,8 +119,6 @@ void polygonEventFilter::reset()
 
 bool polygonEventFilter::eventFilter(QObject *obj, QEvent *event)
 {
-    if ( ! activateEventFilter )
-        return false;
 
     QKeyEvent *keyEvent = dynamic_cast<QKeyEvent*>(event);
     QMouseEvent *mouseEvent = dynamic_cast<QMouseEvent*>(event);
@@ -135,6 +133,8 @@ bool polygonEventFilter::eventFilter(QObject *obj, QEvent *event)
         return false;
     }
 
+    if ( ! activateEventFilter )
+        return false;
     if ( keyEvent->type() == QEvent::ShortcutOverride )
     {
         if ( keyEvent->key() == Qt::Key::Key_C )

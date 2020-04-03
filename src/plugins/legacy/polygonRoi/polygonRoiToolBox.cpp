@@ -328,7 +328,6 @@ void polygonRoiToolBox::clickClosePolygon(bool state)
     {
         repulsorTool->setEnabled(state);
         viewEventFilter->Off();
-        viewEventFilter->removeFromAllViews();
     }
 }
 
