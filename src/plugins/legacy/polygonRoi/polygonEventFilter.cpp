@@ -178,8 +178,11 @@ bool polygonEventFilter::mouseReleaseEvent(medAbstractView *view, QMouseEvent *m
 
             if (interactorStyleRepulsor != nullptr)
             {
-                interactorStyleRepulsor->GetManager()->SetMasterRoi(true);
-                interactorStyleRepulsor->GetManager()->interpolateIfNeeded();
+                if (interactorStyleRepulsor->GetManager() != nullptr )
+                {
+                    interactorStyleRepulsor->GetManager()->SetMasterRoi(true);
+                    interactorStyleRepulsor->GetManager()->interpolateIfNeeded();
+                }
                 enableOtherViewsVisibility(true);
                 manageTick();
             }
