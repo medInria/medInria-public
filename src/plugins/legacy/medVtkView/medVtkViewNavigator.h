@@ -87,6 +87,7 @@ protected slots:
     void showRuler(bool);
     void showAnnotations(bool);
     void showScalarBar(bool);
+    void showAnnotatedCube(bool show);
 
     void enableZooming(bool);
     void enableSlicing(bool);
