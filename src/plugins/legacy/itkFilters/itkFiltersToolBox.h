@@ -27,6 +27,9 @@ class itkFiltersToolBoxPrivate;
  * "gaussianFilterValue" : medDoubleParameterL\n
  * "medianSizeFilterValue" : medDoubleParameterL\n
  * "componentSizeThresholdFilterValue" : medIntParameterL\n
+ * "thresholdFilterValue" : medDoubleParameterL\n
+ * "thresholdLowerValue" : medDoubleParameterL\n
+ * "thresholdUpperValue" : medDoubleParameterL\n
  * "thresholdValue" : medDoubleParameterL\n
  * "lowerValue" : medDoubleParameterL\n
  * "upperValue" : medDoubleParameterL\n

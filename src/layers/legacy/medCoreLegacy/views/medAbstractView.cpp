@@ -443,8 +443,12 @@ QWidget* medAbstractView::mouseInteractionWidget()
     return d->mouseInteractionWidget;
 }
 
-
 QUndoStack* medAbstractView::undoStack() const
 {
     return d->undoStack;
+}
+
+QMainWindow* medAbstractView::mainWindow()
+{
+    return nullptr;
 }
