@@ -814,7 +814,9 @@ void itkFiltersToolBox::updateClutEditorView()
     {
         QList<medClutEditorVertex*>& vertices = d->clutEditor->getScene()->table()->vertices();
         if ( vertices.size()==0 )
+        {
             return;
+        }
 
         if ( d->binaryThreshold->isChecked() || d->valueButtonGroup->checkedId()==itkFiltersThresholdingProcess::outsideButtonId )
         {
