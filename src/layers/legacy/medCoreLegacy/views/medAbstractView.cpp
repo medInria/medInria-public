@@ -459,3 +459,8 @@ QUndoStack* medAbstractView::undoStack() const
 {
     return d->undoStack;
 }
+
+QMainWindow* medAbstractView::mainWindow()
+{
+    return nullptr;
+}
