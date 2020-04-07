@@ -75,6 +75,8 @@ public:
     QPointer<medClutEditorToolBox> transFun;
 
     QScopedPointer<medVtkViewBackend> backend;
+
+    QMainWindow* mainWindow;
 };
 
 medVtkView::medVtkView(QObject* parent): medAbstractImageView(parent),
@@ -91,9 +93,12 @@ medVtkView::medVtkView(QObject* parent): medAbstractImageView(parent),
     d->renWin->SetStereoTypeToCrystalEyes();
     d->renWin->SetAlphaBitPlanes(1);
     d->renWin->SetMultiSamples(0);
-            // needed for immersive room
+
+    // needed for immersive room
     if (qApp->arguments().contains("--stereo"))
+    {
         d->renWin->SetStereoRender(1);
+    }
 
     // construct views
     // view2d
@@ -109,7 +114,7 @@ medVtkView::medVtkView(QObject* parent): medAbstractImageView(parent),
     d->view2d->ShowRulerWidgetOn();
     d->interactorStyle2D = d->view2d->GetInteractorStyle(); // save interactorStyle
 
-    // view3d.
+    // view3d
     d->view3d = vtkImageView3D::New();
     d->view3d->SetShowBoxWidget(0);
     d->view3d->SetCroppingModeToOff();
@@ -133,6 +138,9 @@ medVtkView::medVtkView(QObject* parent): medAbstractImageView(parent),
     d->viewWidget->installEventFilter(this);
     d->viewWidget->setFocusPolicy(Qt::ClickFocus );
     d->viewWidget->setCursor(QCursor(Qt::CrossCursor));
+
+    d->mainWindow = new QMainWindow();
+    d->mainWindow->setCentralWidget(d->viewWidget);
 
     d->backend.reset(new medVtkViewBackend(d->view2d, d->view3d, d->renWin));
 
@@ -219,20 +227,28 @@ QWidget* medVtkView::viewWidget()
     return d->viewWidget;
 }
 
+QMainWindow* medVtkView::mainWindow()
+{
+    return d->mainWindow;
+}
+
 void medVtkView::reset()
 {
     d->view2d->Reset();
     d->view3d->Reset();
     this->render();
-
 }
 
 void medVtkView::render()
 {
     if(this->is2D())
+    {
         d->view2d->Render();
+    }
     else
+    {
         d->view3d->Render();
+    }
 }
 
 QPointF medVtkView::mapWorldToDisplayCoordinates(const QVector3D & worldVec)
@@ -573,7 +589,7 @@ void medVtkView::showHistogram(bool checked)
         if (d->transFun == nullptr)
         {
             d->transFun = new medClutEditorToolBox();
-            d->viewWidget->parentWidget()->layout()->addWidget(d->transFun);
+            d->mainWindow->parentWidget()->layout()->addWidget(d->transFun);
 
             d->transFun->setView(this);
             d->transFun->setMaximumHeight(350);

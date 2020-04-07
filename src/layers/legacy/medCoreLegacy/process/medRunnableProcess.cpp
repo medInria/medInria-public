@@ -42,8 +42,9 @@ void medRunnableProcess::setProcess (dtkAbstractProcess *proc)
 {
     d->process = proc;
 
-    if (d->process) {
-        connect (d->process, SIGNAL (progressed(int)), this, SLOT (onProgressed(int)));
+    if (d->process)
+    {
+        connect (d->process, SIGNAL (progressed(int)), this, SLOT (onProgressed(int)), Qt::UniqueConnection);
     }
 }
 
@@ -101,6 +102,8 @@ void medRunnableProcess::onProgressed (int value)
 */
 void medRunnableProcess::onCancel (QObject *sender)
 {
+    Q_UNUSED(sender)
+
     if (d->process)
     {
         d->process->cancel();
