@@ -90,9 +90,9 @@ VarSegToolBox::VarSegToolBox(QWidget *parent )
     layout->addWidget(d->applyMaskButton);
     layout->addWidget(d->binaryImageButton);
 
-    connect(d->segButton,         SIGNAL(toggled(bool)), this, SLOT(segmentation(bool)));
-    connect(d->binaryImageButton, SIGNAL(clicked()),     this, SLOT(addBinaryImage()));
-    connect(d->applyMaskButton,   SIGNAL(clicked()),     this, SLOT(applyMaskToImage()));
+    connect(d->segButton,         SIGNAL(toggled(bool)), this, SLOT(segmentation(bool)), Qt::UniqueConnection);
+    connect(d->binaryImageButton, SIGNAL(clicked()),     this, SLOT(addBinaryImage()), Qt::UniqueConnection);
+    connect(d->applyMaskButton,   SIGNAL(clicked()),     this, SLOT(applyMaskToImage()), Qt::UniqueConnection);
 
     d->controller = vtkLandmarkSegmentationController::New();
     d->output = medAbstractDataFactory::instance()->createSmartPointer("itkDataImageUChar3");
@@ -219,8 +219,6 @@ void VarSegToolBox::applyMaskToImage()
 {
     if (d->currentView)
     {
-        addBinaryImage();
-
         this->setToolBoxOnWaitStatus();
 
         d->process = qobject_cast<medAbstractProcessLegacy*>(dtkAbstractProcessFactory::instance()->create("medMaskApplication"));
@@ -237,7 +235,7 @@ void VarSegToolBox::applyMaskToImage()
 
             medRunnableProcess *runProcess = new medRunnableProcess;
             runProcess->setProcess (d->process);
-            connect (runProcess, SIGNAL (success  (QObject*)), this, SLOT(displayOutput()));
+            connect (runProcess, SIGNAL (success  (QObject*)), this, SLOT(displayOutput()), Qt::UniqueConnection);
             this->addConnectionsAndStartJob(runProcess);
         }
         else
@@ -250,6 +248,14 @@ void VarSegToolBox::applyMaskToImage()
 
 void VarSegToolBox::displayOutput()
 {
+    typedef itk::Image<unsigned char, 3> binaryType;
+    binaryType::Pointer img = d->controller->GetBinaryImage();
+    if (img)
+    {
+        d->output->setData(img);
+        medUtilities::setDerivedMetaData(d->output, d->originalInput, "variational segmentation");
+    }
+
     for(int i = 0;i<d->medViews.size();i++)
     {
         d->medViews[i]->addLayer(d->process->output());
@@ -311,7 +317,7 @@ void VarSegToolBox::startSegmentation()
     if (!d->mprOn)
     {
         connect(d->currentView, SIGNAL(propertySet(QString,QString)), this, SLOT(updateLandmarksRenderer(QString,QString)),Qt::UniqueConnection);
-        connect(d->currentView, SIGNAL(closed()), this, SLOT(manageClosingView()));
+        connect(d->currentView, SIGNAL(closed()), this, SLOT(manageClosingView()), Qt::UniqueConnection);
         if (d->currentView->property("Orientation")=="3D")
         {
             d->controller->setMode3D(true);
