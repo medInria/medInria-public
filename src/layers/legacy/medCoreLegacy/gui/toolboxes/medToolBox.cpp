@@ -157,10 +157,8 @@ void medToolBox::switchMinimize()
 */
 void medToolBox::show()
 {
-    //JGG dtkDebug()<<"show TB:" << header()->title();
     if(d->validDataTypes.isEmpty() || d->isContextVisible)
     {
-        //JGG dtkDebug()<<"actually showing in TB";
         QWidget::show();
     }
 }
