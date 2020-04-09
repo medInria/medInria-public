@@ -30,6 +30,7 @@ medMessage::medMessage( QWidget *parent,
     icon = new QLabel(this);
 
     info = new QLabel(this);
+    info->setObjectName("medMessageLabel");
     info->setText(text);
 
     QHBoxLayout *layout = new QHBoxLayout(this);
