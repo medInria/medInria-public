@@ -111,7 +111,7 @@ medViewContainer::medViewContainer(medViewContainerSplitter *parent): QFrame(par
     QVBoxLayout *defaultLayout = new QVBoxLayout(d->defaultWidget);
     defaultLayout->addWidget(defaultLabel);
     defaultLayout->addWidget(openButton);
-    connect(openButton, SIGNAL(clicked()), this, SLOT(openFromSystem()));
+    connect(openButton, SIGNAL(clicked()), this, SLOT(openFromSystem()), Qt::UniqueConnection);
 
     d->menuButton = new QPushButton(this);
     d->menuButton->setIcon(QIcon(":/pixmaps/tools.png"));
@@ -119,13 +119,13 @@ medViewContainer::medViewContainer(medViewContainerSplitter *parent): QFrame(par
     d->menuButton->setToolTip(tr("Tools"));
 
     d->toolBarMenu = new QMenu(this);
-    connect(d->menuButton, SIGNAL(clicked()), this, SLOT(popupMenu()));
+    connect(d->menuButton, SIGNAL(clicked()), this, SLOT(popupMenu()), Qt::UniqueConnection);
 
     d->openAction = new QAction(tr("Open"), d->toolBarMenu);
     d->openAction->setIcon(QIcon(":/pixmaps/open.png"));
     d->openAction->setToolTip(tr("Open a file from your system"));
     d->openAction->setIconVisibleInMenu(true);
-    connect(d->openAction, SIGNAL(triggered()), this, SLOT(openFromSystem()));
+    connect(d->openAction, SIGNAL(triggered()), this, SLOT(openFromSystem()), Qt::UniqueConnection);
 
     d->closeContainerButton = new QPushButton(this);
     d->closeContainerButton->setIcon(QIcon(":/pixmaps/closebutton.png"));
@@ -138,20 +138,20 @@ medViewContainer::medViewContainer(medViewContainerSplitter *parent): QFrame(par
     d->vSplitAction->setIcon(QIcon(":/pixmaps/splitbutton_vertical.png"));
     d->vSplitAction->setToolTip(tr("Split vertically"));
     d->vSplitAction->setIconVisibleInMenu(true);
-    connect(d->vSplitAction, SIGNAL(triggered()), this, SIGNAL(vSplitRequest()));
+    connect(d->vSplitAction, SIGNAL(triggered()), this, SIGNAL(vSplitRequest()), Qt::UniqueConnection);
 
     d->hSplitAction = new QAction(tr("H split"), d->toolBarMenu);
     d->hSplitAction->setIcon(QIcon(":/pixmaps/splitbutton_horizontal.png"));
     d->hSplitAction->setToolTip(tr("Split horizontally"));
     d->hSplitAction->setIconVisibleInMenu(true);
-    connect(d->hSplitAction, SIGNAL(triggered()), this, SIGNAL(hSplitRequest()));
+    connect(d->hSplitAction, SIGNAL(triggered()), this, SIGNAL(hSplitRequest()), Qt::UniqueConnection);
 
     // Four Split actions
     d->fourSplitAction = new QAction(tr("4 split"), d->toolBarMenu);
     d->fourSplitAction->setIcon(QIcon(":/icons/fourViews.png"));
     d->fourSplitAction->setToolTip(tr("Split in 4 views"));
     d->fourSplitAction->setIconVisibleInMenu(true);
-    connect(d->fourSplitAction, SIGNAL(triggered()), this, SIGNAL(requestFourSplit()));
+    connect(d->fourSplitAction, SIGNAL(triggered()), this, SIGNAL(requestFourSplit()), Qt::UniqueConnection);
     d->fourSplitAction->setEnabled(false);
 
     // Histogram actions
@@ -174,7 +174,7 @@ medViewContainer::medViewContainer(medViewContainerSplitter *parent): QFrame(par
 
     d->maximizedAction->setIcon(maximizedIcon);
     d->maximizedAction->setIconVisibleInMenu(true);
-    connect(d->maximizedAction, SIGNAL(toggled(bool)), this, SLOT(toggleMaximized(bool)));
+    connect(d->maximizedAction, SIGNAL(toggled(bool)), this, SLOT(toggleMaximized(bool)), Qt::UniqueConnection);
     d->maximizedAction->setEnabled(true);
 
     // Presets
@@ -183,7 +183,7 @@ medViewContainer::medViewContainer(medViewContainerSplitter *parent): QFrame(par
     d->presetMenu->setIcon(QIcon(":/icons/splitPresets.png"));
 
     d->presetLayoutChooser = new medLayoutChooser(this);
-    connect(d->presetLayoutChooser, SIGNAL(selected(unsigned int,unsigned int)), this, SLOT(splitContainer(unsigned int,unsigned int)));
+    connect(d->presetLayoutChooser, SIGNAL(selected(unsigned int,unsigned int)), this, SLOT(splitContainer(unsigned int,unsigned int)), Qt::UniqueConnection);
 
     QVBoxLayout *presetMenuLayout = new QVBoxLayout;
     presetMenuLayout->setContentsMargins(0,0,0,0);
@@ -292,7 +292,7 @@ void medViewContainer::setDefaultWidget(QWidget *defaultWidget)
     {
         d->mainLayout->removeWidget(d->defaultWidget);
         delete d->defaultWidget;
-        d->mainLayout->addWidget(defaultWidget, 0, 0, 0, 0, Qt::AlignCenter);
+        d->mainLayout->addWidget(defaultWidget, 0, 0, 0, 0);
     }
     d->defaultWidget = defaultWidget;
 }
@@ -388,17 +388,17 @@ void medViewContainer::setClosingMode(medViewContainer::ClosingMode mode)
     case medViewContainer::CLOSE_CONTAINER:
         d->closeContainerButton->show();
         d->closeContainerButton->disconnect(this, SLOT(removeView()));
-        connect(d->closeContainerButton, SIGNAL(clicked()), this, SLOT(checkIfStillDeserveToLiveContainer()));
+        connect(d->closeContainerButton, SIGNAL(clicked()), this, SLOT(checkIfStillDeserveToLiveContainer()), Qt::UniqueConnection);
         break;
     case medViewContainer::CLOSE_VIEW:
         d->closeContainerButton->show();
         d->closeContainerButton->disconnect(this, SLOT(checkIfStillDeserveToLiveContainer()));
-        connect(d->closeContainerButton, SIGNAL(clicked()), this, SLOT(removeView()));
+        connect(d->closeContainerButton, SIGNAL(clicked()), this, SLOT(removeView()), Qt::UniqueConnection);
         break;
     case medViewContainer::CLOSE_BUTTON_HIDDEN:
         d->closeContainerButton->hide();
         d->closeContainerButton->disconnect(this, SLOT(checkIfStillDeserveToLiveContainer()));
-        connect(d->closeContainerButton, SIGNAL(clicked()), this, SLOT(removeView()));
+        connect(d->closeContainerButton, SIGNAL(clicked()), this, SLOT(removeView()), Qt::UniqueConnection);
         break;
     }
 }
@@ -435,15 +435,15 @@ void medViewContainer::setView(medAbstractView *view)
     if(view)
     {
         d->view = view;
-        connect(d->view, SIGNAL(destroyed()), this, SLOT(removeInternView()));
+        connect(d->view, SIGNAL(destroyed()), this, SLOT(removeInternView()), Qt::UniqueConnection);
         connect(d->view, SIGNAL(selectedRequest(bool)), this, SLOT(setSelected(bool)));
 
         if(medAbstractLayeredView *layeredView = dynamic_cast<medAbstractLayeredView*>(view))
         {
-            connect(layeredView, SIGNAL(currentLayerChanged()), this, SIGNAL(currentLayerChanged()));
-            connect(layeredView, SIGNAL(currentLayerChanged()), this, SLOT(updateToolBar()));
-            connect(layeredView, SIGNAL(layerAdded(uint)), this, SIGNAL(viewContentChanged()));
-            connect(layeredView, SIGNAL(layerRemoved(uint)), this, SIGNAL(viewContentChanged()));
+            connect(layeredView, SIGNAL(currentLayerChanged()), this, SIGNAL(currentLayerChanged()), Qt::UniqueConnection);
+            connect(layeredView, SIGNAL(currentLayerChanged()), this, SLOT(updateToolBar()),         Qt::UniqueConnection);
+            connect(layeredView, SIGNAL(layerAdded(uint)), this, SIGNAL(viewContentChanged()),       Qt::UniqueConnection);
+            connect(layeredView, SIGNAL(layerRemoved(uint)), this, SIGNAL(viewContentChanged()),     Qt::UniqueConnection);
         }
 
         if (medAbstractImageView *imageView = dynamic_cast <medAbstractImageView*> (view))
@@ -451,16 +451,17 @@ void medViewContainer::setView(medAbstractView *view)
             if (d->userSplittable)
             {
                 d->fourSplitAction->setEnabled(true);
-                connect(this, SIGNAL(requestFourSplit()), imageView, SLOT(switchToFourViews()));
+                connect(this, SIGNAL(requestFourSplit()), imageView, SLOT(switchToFourViews()), Qt::UniqueConnection);
             }
 
-            connect(d->histogramAction, SIGNAL(toggled(bool)), this, SLOT(toggleHistogram(bool)));
-            connect(d->histogramAction, SIGNAL(toggled(bool)), imageView, SLOT(showHistogram(bool)));
+            connect(d->histogramAction, SIGNAL(toggled(bool)), this, SLOT(toggleHistogram(bool)),    Qt::UniqueConnection);
+            connect(d->histogramAction, SIGNAL(toggled(bool)), imageView, SLOT(showHistogram(bool)), Qt::UniqueConnection);
 
             d->histogramAction->setEnabled(true);
         }
 
         d->defaultWidget->hide();
+
         QWidget* mainWidget = d->view->mainWindow();
         if (!mainWidget)
         {
@@ -514,9 +515,11 @@ void medViewContainer::highlight(QString color)
             d->view->mainWindow()->updateGeometry();
             d->view->mainWindow()->update();
         }
-
-        d->view->viewWidget()->updateGeometry();
-        d->view->viewWidget()->update();
+        else
+        {
+            d->view->viewWidget()->updateGeometry();
+            d->view->viewWidget()->update();
+        }
     }
 
     d->highlightColor = color;
@@ -532,9 +535,11 @@ void medViewContainer::unHighlight()
             d->view->mainWindow()->updateGeometry();
             d->view->mainWindow()->update();
         }
-
-        d->view->viewWidget()->updateGeometry();
-        d->view->viewWidget()->update();
+        else
+        {
+            d->view->viewWidget()->updateGeometry();
+            d->view->viewWidget()->update();
+        }
     }
 }
 
@@ -735,7 +740,7 @@ bool medViewContainer::dropEventFromFile(QDropEvent * event)
         {
             pathList.append(urlList.at(i).toLocalFile());
         }
-        connect(medDataManager::instance(), SIGNAL(dataImported(medDataIndex, QUuid)), this, SLOT(droppedDataReady(medDataIndex, QUuid)));
+        connect(medDataManager::instance(), SIGNAL(dataImported(medDataIndex, QUuid)), this, SLOT(droppedDataReady(medDataIndex, QUuid)), Qt::UniqueConnection);
         d->oQuuidVect.resize(pathList.size());
         for (int i = 0; i < pathList.size(); ++i)
         {
@@ -890,7 +895,7 @@ void medViewContainer::openFromSystem()
     if (path.isEmpty())
         return;
 
-    connect(medDataManager::instance(), SIGNAL(dataImported(medDataIndex,QUuid)), this, SLOT(dataReady(medDataIndex,QUuid)));
+    connect(medDataManager::instance(), SIGNAL(dataImported(medDataIndex,QUuid)), this, SLOT(dataReady(medDataIndex,QUuid)), Qt::UniqueConnection);
     d->expectedUuid = medDataManager::instance()->importPath(path, true, false);
 
     //  save last directory opened in settings.

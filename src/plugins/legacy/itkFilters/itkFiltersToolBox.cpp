@@ -277,8 +277,8 @@ itkFiltersToolBox::itkFiltersToolBox(QWidget *parent)
 
     d->thresholdFilterValue = new medDoubleParameterL( tr("Value"), this);
     d->thresholdFilterValue->setToolTip(tr("Only keep values according to the threshold type"));
-    d->thresholdFilterValue->setValue(itkFiltersThresholdingProcess::defaultThreshold);
     d->thresholdFilterValue->setRange(-10000, 10000);
+    d->thresholdFilterValue->setValue(itkFiltersThresholdingProcess::defaultThreshold);
     d->thresholdFilterValue->setObjectName("thresholdFilterValue");
 
     d->thresholdLowerValue = new medDoubleParameterL( tr("Lower Value"), this);
@@ -303,7 +303,7 @@ itkFiltersToolBox::itkFiltersToolBox(QWidget *parent)
     connect(d->thresholdLowerValue,  SIGNAL(valueChanged(double)), signalMapper, SLOT (map()), Qt::UniqueConnection);
     connect(d->thresholdUpperValue,  SIGNAL(valueChanged(double)), signalMapper, SLOT (map()), Qt::UniqueConnection);
     connect(d->thresholdFilterValue, SIGNAL(valueChanged(double)), signalMapper, SLOT (map()), Qt::UniqueConnection);
-    connect(signalMapper, SIGNAL(mapped(int)),this, SLOT(updateClutEditorValue(int)));
+    connect(signalMapper, SIGNAL(mapped(int)),this, SLOT(updateClutEditorValue(int)), Qt::UniqueConnection);
 
     d->thresholdFilterValue2 = new QSpinBox;
     d->thresholdFilterValue2->setRange ( -10000, 10000 );
@@ -445,8 +445,8 @@ itkFiltersToolBox::itkFiltersToolBox(QWidget *parent)
 
     if (this->selectorToolBox()) // empty in pipelines
     {
-        connect(this->selectorToolBox(), SIGNAL(inputChanged()), this, SLOT(update()), Qt::UniqueConnection);
         update();
+        connect(this->selectorToolBox(), SIGNAL(inputChanged()), this, SLOT(update()), Qt::UniqueConnection);
     }
 }
 
