@@ -1,18 +1,39 @@
+################################################################################
+#
+# medInria
+#
+# Copyright (c) INRIA 2013 - 2018. All rights reserved.
+# See LICENSE.txt for details.
+#
+#  This software is distributed WITHOUT ANY WARRANTY; without even
+#  the implied warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR
+#  PURPOSE.
+#
+################################################################################
+
 set(TARGET_NAME itkTensorTractographyProcessPlugin)
+
+## #############################################################################
+## Setup version numbering
+## #############################################################################
+
+set(${TARGET_NAME}_VERSION ${MEDINRIA_VERSION})
+
+string(TOUPPER ${TARGET_NAME} TARGET_NAME_UP)
+add_definitions(-D${TARGET_NAME_UP}_VERSION="${${TARGET_NAME}_VERSION}")
 
 ## #############################################################################
 ## Resolve dependencies
 ## #############################################################################
 
-find_package(TTK_Private REQUIRED)
-include(${TTK_Private_USE_FILE})
-
-find_package(VTK REQUIRED)
+find_package(VTK REQUIRED vtkCommonCore vtkCommonDataModel)
 include(${VTK_USE_FILE})
 
-find_package(ITK)
+find_package(ITK REQUIRED ITKCommon ITKTransform ITKImageFunction)
 include(${ITK_USE_FILE})
 
+find_package(TTK REQUIRED)
+include(${TTK_USE_FILE})
 ## #############################################################################
 ## List Sources
 ## #############################################################################

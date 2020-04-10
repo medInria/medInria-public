@@ -4,14 +4,14 @@ set(TARGET_NAME itkTensorEstimationProcessPlugin)
 ## Resolve dependencies
 ## #############################################################################
 
-find_package(TTK_Private REQUIRED)
-include(${TTK_Private_USE_FILE})
+#find_package(VTK REQUIRED)
+#include(${VTK_USE_FILE})
 
-find_package(VTK REQUIRED)
-include(${VTK_USE_FILE})
-
-find_package(ITK)
+find_package(ITK REQUIRED COMPONENTS ITKCommon ITKFiniteDifference)
 include(${ITK_USE_FILE})
+
+find_package(TTK REQUIRED)
+include(${TTK_USE_FILE})
 
 ## #############################################################################
 ## List Sources

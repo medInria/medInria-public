@@ -10,24 +10,24 @@
 //
 // /////////////////////////////////////////////////////////////////
 
-#include "itkImageRegistrationMethod.h"
-#include "itkMattesMutualInformationImageToImageMetric.h"
-#include "itkLinearInterpolateImageFunction.h"
-#include "itkEuler3DTransform.h"
-#include "itkCenteredTransformInitializer.h"
+#include <itkImageRegistrationMethod.h>
+#include <itkMattesMutualInformationImageToImageMetric.h>
+#include <itkLinearInterpolateImageFunction.h>
+#include <itkEuler3DTransform.h>
+#include <itkCenteredTransformInitializer.h>
 
-#include "itkImage.h"
-#include "itkMetaImageIO.h"
-#include "itkResampleImageFilter.h"
-#include "itkCastImageFilter.h"
+#include <itkImage.h>
+#include <itkMetaImageIO.h>
+#include <itkResampleImageFilter.h>
+#include <itkCastImageFilter.h>
 
-#include "itkTensor.h"
-#include "itkCommand.h"
+#include <itkCommand.h>
+#include <itkTensor.h>
 
 #include <rpiDisplacementFieldTransform.h>
 #include <itkStationaryVelocityFieldTransform.h>
 
-#include <rpiIncompressibleLogDemons.hxx>
+//#include <rpiIncompressibleLogDemons.hxx>
 #include <rpiCommonTools.hxx>
 
 #include "time.h"

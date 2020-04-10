@@ -7,10 +7,10 @@ set(TARGET_NAME itkTensorScalarMapsProcessPlugin)
 find_package(TTK REQUIRED)
 include(${TTK_USE_FILE})
 
-find_package(VTK REQUIRED)
+find_package(VTK REQUIRED COMPONENTS vtkRenderingCore)
 include(${VTK_USE_FILE})
 
-find_package(ITK)
+find_package(ITK REQUIRED COMPONENTS ITKCommon)
 include(${ITK_USE_FILE})
 
 ## #############################################################################
