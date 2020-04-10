@@ -305,7 +305,7 @@ itkFiltersToolBox::itkFiltersToolBox(QWidget *parent)
     connect(d->thresholdLowerValue,  SIGNAL(valueChanged(double)), signalMapper, SLOT (map()), Qt::UniqueConnection);
     connect(d->thresholdUpperValue,  SIGNAL(valueChanged(double)), signalMapper, SLOT (map()), Qt::UniqueConnection);
     connect(d->thresholdFilterValue, SIGNAL(valueChanged(double)), signalMapper, SLOT (map()), Qt::UniqueConnection);
-    connect(signalMapper, SIGNAL(mapped(int)),this, SLOT(updateClutEditorValue(int)));
+    connect(signalMapper, SIGNAL(mapped(int)),this, SLOT(updateClutEditorValue(int)), Qt::UniqueConnection);
 
     d->thresholdFilterValue2 = new QSpinBox;
     d->thresholdFilterValue2->setRange ( -10000, 10000 );
