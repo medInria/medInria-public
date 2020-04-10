@@ -378,7 +378,7 @@ class MEDVTKDATAMESHBASE_EXPORT vtkMetaDataSet: public vtkDataObject
   /**
      Method called everytime the dataset changes for initialization
   */
-  virtual void Initialize();
+  void Initialize() override;
 
   /**
      Internal use : read and assign positions to the dataset (should be point set).

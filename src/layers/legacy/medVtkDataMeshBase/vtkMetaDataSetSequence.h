@@ -45,8 +45,8 @@ class MEDVTKDATAMESHBASE_EXPORT vtkMetaDataSetSequence: public vtkMetaDataSet
  public:
 
   static vtkMetaDataSetSequence* New();
-  vtkTypeMacro(vtkMetaDataSetSequence,vtkMetaDataSet)
-  virtual void PrintSelf(ostream& os, vtkIndent indent);
+  vtkTypeMacro(vtkMetaDataSetSequence,vtkMetaDataSet);
+  void PrintSelf(ostream& os, vtkIndent indent) override;
 
   virtual vtkMetaDataSetSequence* Clone() override;
 
@@ -123,7 +123,7 @@ class MEDVTKDATAMESHBASE_EXPORT vtkMetaDataSetSequence: public vtkMetaDataSet
   */
   vtkGetMacro (SequenceDuration, double)
 
-  virtual const char* GetDataSetType() const
+  virtual const char* GetDataSetType() const override
   {
     return "Sequence";
   }
@@ -158,11 +158,11 @@ class MEDVTKDATAMESHBASE_EXPORT vtkMetaDataSetSequence: public vtkMetaDataSet
      The array must be contained by the member vtkDataSet of this metadataset.
      Use GetArray() to find a specific array
   */
-  virtual void ColorByArray(vtkDataArray* array);
+  void ColorByArray(vtkDataArray* array) override;
   /**
      Get/Set the scalar visibility, see parent class
   */
-  virtual void SetScalarVisibility(bool val);
+  void SetScalarVisibility(bool val) override;
 
   /**
      Get/Set method for the same geometry flag.
@@ -204,11 +204,13 @@ class MEDVTKDATAMESHBASE_EXPORT vtkMetaDataSetSequence: public vtkMetaDataSet
      It corresponds basically to all metadataset characteristics unless the vtkDataSet
      name, time, metadata dictionary...
   */
-  virtual void CopyInformation (vtkMetaDataSet* metadataset);
+  void CopyInformation (vtkMetaDataSet* metadataset) override;
 
   virtual double* GetCurrentScalarRange();
 
-  vtkGetMacro (CurrentId, int)
+  double* GetScalarRange(QString attributeName = QString()) override;
+
+  vtkGetMacro (CurrentId, int);
   
 protected:
   vtkMetaDataSetSequence();
@@ -218,7 +220,7 @@ protected:
   /**
      Internal use : Initialize sequence, not used yet.
   */
-  virtual void Initialize();
+  void Initialize() override;
   /**
      Internal use : Build the output from a given vtkMetaDataSet.
   */
