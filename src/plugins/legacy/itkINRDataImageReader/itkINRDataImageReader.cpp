@@ -7,7 +7,7 @@
 #include <medAbstractData.h>
 #include <medAbstractDataFactory.h>
 
-#include <mipsInrimageImageIO.h>
+#include <medInrimageImageIO.h>
 
 // /////////////////////////////////////////////////////////////////
 // itkINRDataImageReaderPrivate

@@ -7,8 +7,8 @@ set(TARGET_NAME itkINRDataImageWriterPlugin)
 ## #################################################################
 
 set(${TARGET_NAME}_VERSION_MAJOR 3 CACHE STRING "${TARGET_NAME} major version number." FORCE)
-set(${TARGET_NAME}_VERSION_MINOR 0 CACHE STRING "${TARGET_NAME} minor version number." FORCE)
-set(${TARGET_NAME}_VERSION_BUILD 0 CACHE STRING "${TARGET_NAME} build version number." FORCE)
+set(${TARGET_NAME}_VERSION_MINOR 1 CACHE STRING "${TARGET_NAME} minor version number." FORCE)
+set(${TARGET_NAME}_VERSION_BUILD 1 CACHE STRING "${TARGET_NAME} build version number." FORCE)
 set(${TARGET_NAME}_VERSION
   "${${TARGET_NAME}_VERSION_MAJOR}.${${TARGET_NAME}_VERSION_MINOR}.${${TARGET_NAME}_VERSION_BUILD}")
 
@@ -50,8 +50,8 @@ SET(ITKIO_LIBRARIES
   ITKIOMRC
 )
 
-find_package(MIPS REQUIRED)
-include(${MIPS_USE_FILE})
+#find_package(MIPS REQUIRED)
+#include(${MIPS_USE_FILE})
 
 ## #################################################################
 ## Input
@@ -94,11 +94,11 @@ target_link_libraries(${TARGET_NAME}
   medImageIO
   dtkCoreSupport
   dtkLog
-  medCoreLegacy
-  InrimageNG
-  mipsItkImageIO
-  LinearAlgebra
-  mipsZ)
+  medCoreLegacy)
+  #InrimageNG
+  #mipsItkImageIO
+  #LinearAlgebra
+  #mipsZ)
 
 if (PLUGINS_LEGACY_PATH)
   set_property(TARGET ${TARGET_NAME} PROPERTY RUNTIME_OUTPUT_DIRECTORY ${PLUGINS_LEGACY_PATH})

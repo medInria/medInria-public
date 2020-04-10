@@ -2,7 +2,7 @@
 #
 # medInria
 #
-# Copyright (c) INRIA 2013 - 2018. All rights reserved.
+# Copyright (c) INRIA 2013 - 2020. All rights reserved.
 # See LICENSE.txt for details.
 #
 #  This software is distributed WITHOUT ANY WARRANTY; without even
@@ -50,14 +50,15 @@ set(PLUGIN_LIST
   legacy/undoRedoRegistration                                            ON
   legacy/diffeomorphicDemons                                             ON
   
-  legacy/itkDWIBrainMaskCalculatorProcess                                ON
+  #legacy/itkDWIBrainMaskCalculatorProcess                                ON
   legacy/itkINRDataImageReader                                           ON
   legacy/itkINRDataImageWriter                                           ON
-  legacy/itkProcessRegistration                                          ON
-  legacy/itkProcessTensorLogEuclidean_legacy                             ON
-  legacy/itkTensorEstimationProcess                                      ON
-  legacy/itkTensorScalarMapsProcess                                      ON
-  legacy/itkTensorTractographyProcess                                    ON
+  legacy/itkProcessRegistrationIncompressibleLogDemons                   ON
+  #legacy/itkProcessTensorLogEuclidean_legacy                             ON
+  process/itkTensorEstimationProcess                                      ON
+  process/itkTensorScalarMapsProcess                                      ON
+  process/itkTensorTractographyProcess                                    ON
+  legacy/LCCLogDemons                                                    ON
   
   legacy/medVtkView                                                      ON
   legacy/medFilteringWorkspaceL                                          ON

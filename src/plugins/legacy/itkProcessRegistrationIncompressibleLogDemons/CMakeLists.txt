@@ -1,30 +1,41 @@
-cmake_minimum_required(VERSION 3.1.0)
+################################################################################
+#
+# medInria
+#
+# Copyright (c) INRIA 2013 - 2020. All rights reserved.
+# See LICENSE.txt for details.
+#
+#  This software is distributed WITHOUT ANY WARRANTY; without even
+#  the implied warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR
+#  PURPOSE.
+#
+################################################################################
 
-set(TARGET_NAME itkINRDataImageReaderPlugin)
+set(TARGET_NAME itkProcessRegistrationILogDemonsPlugin)
 
-## #################################################################
+## #############################################################################
 ## Setup version numbering
-## #################################################################
+## #############################################################################
 
-set(${TARGET_NAME}_VERSION_MAJOR 3 CACHE STRING "${TARGET_NAME} major version number." FORCE)
-set(${TARGET_NAME}_VERSION_MINOR 1 CACHE STRING "${TARGET_NAME} minor version number." FORCE)
-set(${TARGET_NAME}_VERSION_BUILD 1 CACHE STRING "${TARGET_NAME} build version number." FORCE)
-set(${TARGET_NAME}_VERSION
-  "${${TARGET_NAME}_VERSION_MAJOR}.${${TARGET_NAME}_VERSION_MINOR}.${${TARGET_NAME}_VERSION_BUILD}")
-
-mark_as_advanced(${TARGET_NAME}_VERSION_MAJOR)
-mark_as_advanced(${TARGET_NAME}_VERSION_MINOR)
-mark_as_advanced(${TARGET_NAME}_VERSION_BUILD)
+set(${TARGET_NAME}_VERSION ${MEDINRIA_VERSION})
 
 string(TOUPPER ${TARGET_NAME} TARGET_NAME_UP)
 add_definitions(-D${TARGET_NAME_UP}_VERSION="${${TARGET_NAME}_VERSION}")
+
+set(CMAKE_INCLUDE_CURRENT_DIR TRUE)
 
 ## #################################################################
 ## Resolve dependencies
 ## #################################################################
 
-find_package(ITK REQUIRED)
+find_package(ITK REQUIRED COMPONENTS ITKCommon ITKTransform ITKTransformFactory ITKRegistrationCommon ITKIOMeta)
 include(${ITK_USE_FILE})
+
+find_package(TTK REQUIRED)
+include(${TTK_USE_FILE})
+
+find_package(RPI REQUIRED)
+include(${RPI_USE_FILE})
 
 SET(ITKIO_LIBRARIES
   ITKIOImageBase
@@ -33,14 +44,18 @@ SET(ITKIO_LIBRARIES
   ITKIOBruker
   ITKIOHDF5
   ITKIOGDCM
+  ITKIOGE
   ITKIOGIPL
   ITKIOJPEG
+  ITKIOJPEG2000
   ITKIOLSM
   ITKIOMeta
   ITKIOMINC
   ITKIONIFTI
   ITKIONRRD
   ITKIOPNG
+  ${ITKIOPhilipsREC_LIBRARIES}
+  ITKIOTIFF
   ITKIOStimulate
   ITKIOVTK
   ITKIOTransformBase
@@ -49,9 +64,6 @@ SET(ITKIO_LIBRARIES
   ITKIOTransformMatlab
   ITKIOMRC
 )
-
-#find_package(MIPS REQUIRED)
-#include(${MIPS_USE_FILE})
 
 ## #################################################################
 ## Input
@@ -89,16 +101,18 @@ target_include_directories(${TARGET_NAME}
 
 target_link_libraries(${TARGET_NAME}
   Qt5::Core
-  ITKCommon
-  ${ITKIO_LIBRARIES}
-  medImageIO
   dtkCoreSupport
   dtkLog
-  medCoreLegacy)
-  #InrimageNG
-  #mipsItkImageIO
-  #LinearAlgebra
-  #mipsZ)
+  medCoreLegacy
+  ${ITKIO_LIBRARIES}
+  ITKStatistics
+  ITKTensor
+  InrimageNG
+  medRegistration
+  LinearAlgebra
+  Basics
+  #mipsZ
+)
 
 if (PLUGINS_LEGACY_PATH)
   set_property(TARGET ${TARGET_NAME} PROPERTY RUNTIME_OUTPUT_DIRECTORY ${PLUGINS_LEGACY_PATH})
@@ -112,4 +126,4 @@ endif()
 install(TARGETS ${TARGET_NAME}
   RUNTIME DESTINATION plugins_legacy
   LIBRARY DESTINATION plugins_legacy
-  ARCHIVE DESTINATION lib)
+  ARCHIVE DESTINATION plugins_legacy)

@@ -11,7 +11,7 @@
 #
 ################################################################################
 
-set(TARGET_NAME itkDataDiffusionGradientListPlugin)
+set(TARGET_NAME itkTensorTractographyProcessPlugin)
 
 ## #############################################################################
 ## Setup version numbering
@@ -22,21 +22,18 @@ set(${TARGET_NAME}_VERSION ${MEDINRIA_VERSION})
 string(TOUPPER ${TARGET_NAME} TARGET_NAME_UP)
 add_definitions(-D${TARGET_NAME_UP}_VERSION="${${TARGET_NAME}_VERSION}")
 
-
 ## #############################################################################
 ## Resolve dependencies
 ## #############################################################################
 
-find_package(dtk REQUIRED)
-include_directories(${dtk_INCLUDE_DIRS})
+find_package(VTK REQUIRED vtkCommonCore vtkCommonDataModel)
+include(${VTK_USE_FILE})
 
-find_package(ITK REQUIRED COMPONENTS ITKCommon)
+find_package(ITK REQUIRED ITKCommon ITKTransform ITKImageFunction)
 include(${ITK_USE_FILE})
 
 find_package(TTK REQUIRED)
 include(${TTK_USE_FILE})
-
-
 ## #############################################################################
 ## List Sources
 ## #############################################################################
@@ -45,59 +42,58 @@ list_source_files(${TARGET_NAME}
   ${CMAKE_CURRENT_SOURCE_DIR}
   )
 
-
-## #############################################################################
-## include directories.
-## #############################################################################
-
 list_header_directories_to_include(${TARGET_NAME}
   ${${TARGET_NAME}_HEADERS}
   )
-
-include_directories(${${TARGET_NAME}_INCLUDE_DIRS}
-  ${MEDINRIA_INCLUDE_DIRS}
-  )
-
-## #############################################################################
-## Precompile headers
-## #############################################################################
-
-if(MEDINRIA_USE_PRECOMPILED_HEADERS)
-  add_precompiled_header(${TARGET_NAME}_PCH
-    ${MEDPLUGINSPCH_H}
-    ${MEDPLUGINSPCH_CPP}
-    ${${TARGET_NAME}_SOURCES}
-    )
-endif()
-
 
 ## #############################################################################
 ## add library
 ## #############################################################################
 
 add_library(${TARGET_NAME} SHARED
-  ${${TARGET_NAME}_PCH}
   ${${TARGET_NAME}_CFILES}
+  ${${TARGET_NAME}_QRC}
   )
 
+## #############################################################################
+## include directories.
+## #############################################################################
+
+target_include_directories(${TARGET_NAME}
+  PRIVATE ${${TARGET_NAME}_INCLUDE_DIRS}
+  )
+# PRIVATE because plugins are not supposed to be used somewhere else
 
 ## #############################################################################
 ## Link
 ## #############################################################################
 
 target_link_libraries(${TARGET_NAME}
-  ${QT_LIBRARIES}
-  dtkLog
+  ITKCommon
+  Qt5::Core
   dtkCore
+  dtkCoreSupport
+  dtkLog
   ITKTensor
+  ITKIOTransformBase
   medCore
-  medLog
+  medCoreLegacy
+  medVtkInria
+  medWidgets
+  vtkRenderingCore
   )
 
+if (PLUGINS_PATH)
+  set_property(TARGET ${TARGET_NAME} PROPERTY RUNTIME_OUTPUT_DIRECTORY ${PLUGINS_PATH})
+  set_property(TARGET ${TARGET_NAME} PROPERTY LIBRARY_OUTPUT_DIRECTORY ${PLUGINS_PATH})
+endif()
 
-## #############################################################################
+## #################################################################
 ## Install rules
-## #############################################################################
+## #################################################################
 
-set_plugin_install_rules_legacy(${TARGET_NAME})
+install(TARGETS ${TARGET_NAME}
+  RUNTIME DESTINATION plugins
+  LIBRARY DESTINATION plugins
+  ARCHIVE DESTINATION lib)
 
