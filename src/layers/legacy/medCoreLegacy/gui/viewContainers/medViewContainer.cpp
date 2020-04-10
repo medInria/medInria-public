@@ -292,7 +292,7 @@ void medViewContainer::setDefaultWidget(QWidget *defaultWidget)
     {
         d->mainLayout->removeWidget(d->defaultWidget);
         delete d->defaultWidget;
-        d->mainLayout->addWidget(defaultWidget, 0, 0, 0, 0, Qt::AlignCenter);
+        d->mainLayout->addWidget(defaultWidget, 0, 0, 0, 0);
     }
     d->defaultWidget = defaultWidget;
 }
@@ -459,6 +459,7 @@ void medViewContainer::setView(medAbstractView *view)
         }
 
         d->defaultWidget->hide();
+
         QWidget* mainWidget = d->view->mainWindow();
         if (!mainWidget)
         {
@@ -517,9 +518,11 @@ void medViewContainer::highlight(QString color)
             d->view->mainWindow()->updateGeometry();
             d->view->mainWindow()->update();
         }
-
-        d->view->viewWidget()->updateGeometry();
-        d->view->viewWidget()->update();
+        else
+        {
+            d->view->viewWidget()->updateGeometry();
+            d->view->viewWidget()->update();
+        }
     }
 
     d->highlightColor = color;
@@ -535,9 +538,11 @@ void medViewContainer::unHighlight()
             d->view->mainWindow()->updateGeometry();
             d->view->mainWindow()->update();
         }
-
-        d->view->viewWidget()->updateGeometry();
-        d->view->viewWidget()->update();
+        else
+        {
+            d->view->viewWidget()->updateGeometry();
+            d->view->viewWidget()->update();
+        }
     }
 }
 
