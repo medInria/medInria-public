@@ -531,7 +531,8 @@ void vtkImageView3D::InternalUpdate()
         // append all scalar buffer into the same image
         for (auto it : this->LayerInfoVec)
         {
-            appender->AddInputConnection(it.ImageDisplay->GetInputProducer()->GetOutputPort());
+            if(it.ImageDisplay->GetInputProducer()!=nullptr)
+                appender->AddInputConnection(it.ImageDisplay->GetInputProducer()->GetOutputPort());
         }
         if (this->LayerInfoVec.size()>1)
         {
