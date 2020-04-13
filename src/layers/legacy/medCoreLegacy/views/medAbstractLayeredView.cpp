@@ -62,6 +62,10 @@ medAbstractLayeredView::~medAbstractLayeredView()
     int c = layersCount()-1;
     for(int i=c; i>=0; i--)
         removeLayer(i);
+
+    qDeleteAll(d->extraNavigators);
+    d->extraNavigators.clear();
+
     delete d;
 }
 
