@@ -76,7 +76,7 @@ QString LCCLogDemonsPlugin::description() const
 
 QString LCCLogDemonsPlugin::version() const
 {
-    return LCCLOGDEMONSPLUGIN_VERSION;
+    return tr("3.1.1");
 }
 
 QString LCCLogDemonsPlugin::contact() const

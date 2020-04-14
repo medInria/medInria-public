@@ -31,17 +31,12 @@ include_directories(${dtk_INCLUDE_DIRS})
 
 find_package(ITK REQUIRED COMPONENTS ITKCommon ITKTransform ITKRegistrationCommon ITKImageGrid ITKImageFilterBase  ITKIOImageBase ITKTransformFactory ITKIOTransformBase ITKIOMeta ITKIOTransformInsightLegacy ITKPDEDeformableRegistration ITKReview)
 include(${ITK_USE_FILE})
-#message("${ITK_USE_FILE}")
 
 find_package(RPI REQUIRED)
 include(${RPI_USE_FILE})
-#message("${RPI_USE_FILE}*****\n\n\n*****************************************${CMAKE_MODULE_PATH}*************************************\n\n\n")
 
-find_package(LCCLogDemons REQUIRED)
-#find_package(log-demons REQUIRED)
-message("${log-demons_USE_FILE}")
-message("${LCCLogDemons_USE_FILE}")
-include(${log-demons_USE_FILE})
+find_package(LogDemons REQUIRED)
+include(${LogDemons_USE_FILE})
 
 ## #############################################################################
 ## List Sources
@@ -107,8 +102,8 @@ target_link_libraries(${TARGET_NAME}
   dtkLog
   dtkCoreSupport
   medCoreLegacy
-  medRegistration
-  libLCClogDemons
+  medRegistration  
+  RPILCClogDemons
 )
 
 set(CMAKE_RUNTIME_OUTPUT_DIRECTORY ${CMAKE_BINARY_DIR}/bin)

@@ -27,6 +27,7 @@ list(APPEND ${ep}_dependencies
   TTK 
   QtDCM
   RPI
+  LogDemons
   )
 
 if (USE_DTKIMAGING)
@@ -85,6 +86,7 @@ set(cmake_args
   -DTTK_DIR=${TTK_DIR}
   -DVTK_DIR=${VTK_DIR}
   -DQt5_DIR=${Qt5_DIR}
+  -DLogDemons_DIR=${LogDemons_DIR}
   -DBoost_INCLUDE_DIR=${Boost_INCLUDE_DIR}
   -DmedInria_VERSION:STRING=${${PROJECT_NAME}_VERSION}
   -DBUILD_ALL_PLUGINS=OFF
