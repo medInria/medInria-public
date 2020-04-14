@@ -27,7 +27,7 @@
 #include <rpiDisplacementFieldTransform.h>
 #include <itkStationaryVelocityFieldTransform.h>
 
-//#include <rpiIncompressibleLogDemons.hxx>
+#include <rpiIncompressibleLogDemons.hxx>
 #include <rpiCommonTools.hxx>
 
 #include "time.h"

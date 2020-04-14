@@ -28,7 +28,7 @@ set(CMAKE_INCLUDE_CURRENT_DIR TRUE)
 ## Resolve dependencies
 ## #################################################################
 
-find_package(ITK REQUIRED COMPONENTS ITKCommon ITKTransform ITKTransformFactory ITKRegistrationCommon ITKIOMeta)
+find_package(ITK REQUIRED COMPONENTS ITKCommon ITKTransform ITKTransformFactory ITKRegistrationCommon ITKIOMeta ITKIOTransformBase ITKIOTransformInsightLegacy ITKDistanceMap ITKDisplacementField ITKReview)
 include(${ITK_USE_FILE})
 
 find_package(TTK REQUIRED)
@@ -70,10 +70,14 @@ SET(ITKIO_LIBRARIES
 ## #################################################################
 
 list_source_files(${TARGET_NAME}
-  .
+  .  
+  ${CMAKE_CURRENT_SOURCE_DIR}
+  ${CMAKE_CURRENT_SOURCE_DIR}/fromMIPS
   )
 
 list_header_directories_to_include(${TARGET_NAME}
+  ${${TARGET_NAME}_HEADERS}
+  ${CMAKE_CURRENT_SOURCE_DIR}/fromMIPS
   ${${TARGET_NAME}_HEADERS}
   )
 
