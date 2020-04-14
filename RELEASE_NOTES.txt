@@ -1,3 +1,11 @@
+medInria v3.1.1:
+- Viewer optimization: opening data is quicker, debug a window/level lag
+- The annotation cube can be hidden in 3D view
+- Solve some annotation text problems
+- DB: remove a bug in the creation of the series
+- Fix dicom import bug with special characters
+- Solve SH data image, and 4D image bugs
+
 medInria v3.1:
 - Switch ITK to version 5.0.0
 - Switch VTK to version 8.1.2

@@ -42,10 +42,9 @@ vtkImageViewCornerAnnotation::~vtkImageViewCornerAnnotation() = default;
 void vtkImageViewCornerAnnotation::SetImageView(vtkImageView* arg)
 {
     this->ImageView = arg;
-    this->view2d = vtkImageView2D::SafeDownCast (this->ImageView);
 }
 
-void vtkImageViewCornerAnnotation::TextReplace(vtkImageActor *ia,
+void vtkImageViewCornerAnnotation::TextReplace(vtkImageActor *imageActor,
                                                vtkImageMapToWindowLevelColors */*wl*/)
 {
     int slice = 0, slice_max = 0;
@@ -62,6 +61,11 @@ void vtkImageViewCornerAnnotation::TextReplace(vtkImageActor *ia,
     int coord[3] = {0, 0, 0};
     int coord_x = 0, coord_y = 0;
     double value = 0.0, zoom = 100.0;
+
+    if (!view2d)
+    {
+        this->view2d = vtkImageView2D::SafeDownCast (this->ImageView);
+    }
 
     if (this->ImageView)
     {
@@ -146,23 +150,23 @@ void vtkImageViewCornerAnnotation::TextReplace(vtkImageActor *ia,
         }
     }
 
-    if (view2d && ia)
+    if (view2d && imageActor)
     {
-        int sliceOrientation = view2d->GetSliceOrientation();
-
-        int min, max;
-        double position[3]={0.0, 0.0, 0.0};
-
-        view2d->GetSliceRange(min,max);
+        // Current slice and Slice Max
+        int min = 0, max = 0;
+        view2d->GetSliceRange(min, max);
         slice = view2d->GetSlice() - min +1;
         slice_max = max - min + 1;
 
+        // Slice Orientation & Position
+        int sliceOrientation = view2d->GetSliceOrientation();
         coord[sliceOrientation]=slice-1;
 
+        double position[3]={0.0, 0.0, 0.0};
         this->ImageView->GetWorldCoordinatesFromImageCoordinates(coord, position);
         pos_z = position[sliceOrientation];
 
-        ia_input = ia->GetInput();
+        ia_input = imageActor->GetInput();
         if (!wl_input && ia_input)
         {
             input_type_is_float = (ia_input->GetScalarType() == VTK_FLOAT ||
@@ -180,7 +184,7 @@ void vtkImageViewCornerAnnotation::TextReplace(vtkImageActor *ia,
     QString replaceText = "";
     QString textQ = "";
 
-    if (ia && this->ShowSliceAndImage && this->ImageView)
+    if (imageActor && this->ShowSliceAndImage && this->ImageView)
     {
         //---- osSW
         if (this->CornerText[0] && strlen(this->CornerText[0]))
@@ -188,7 +192,7 @@ void vtkImageViewCornerAnnotation::TextReplace(vtkImageActor *ia,
             textQ = this->CornerText[0];
 
             // Zoom
-            replaceText = QString::number(zoom);
+            replaceText = " Zoom: " + QString::number(zoom);
             textQ.replace("<zoom>", replaceText);
 
             // Slice current and max

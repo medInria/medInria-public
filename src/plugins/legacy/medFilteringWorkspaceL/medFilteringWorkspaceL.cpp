@@ -36,7 +36,7 @@ medFilteringWorkspaceL::medFilteringWorkspaceL(QWidget *parent)
     : medSelectorWorkspace (parent, staticName()), d(new medFilteringWorkspaceLPrivate)
 {
     connect(this->tabbedViewContainers(), SIGNAL(containersSelectedChanged()),
-            selectorToolBox(), SIGNAL(inputChanged()));
+            selectorToolBox(), SIGNAL(inputChanged()), Qt::UniqueConnection);
 }
 
 medFilteringWorkspaceL::~medFilteringWorkspaceL()
@@ -58,10 +58,10 @@ void medFilteringWorkspaceL::setupTabbedViewContainer()
     d->outputContainer = d->inputContainer->splitVertically();
     resetDefaultWidgetOutputContainer();
 
-    connect(d->inputContainer, SIGNAL(viewContentChanged()), this, SLOT(changeToolBoxInput()));
-    connect(d->inputContainer, SIGNAL(viewRemoved()), this, SLOT(changeToolBoxInput()));
-    connect(d->inputContainer, SIGNAL(viewRemoved()), this, SLOT(resetDefaultWidgetInputContainer()));
-    connect(d->outputContainer, SIGNAL(viewRemoved()), this, SLOT(resetDefaultWidgetOutputContainer()));
+    connect(d->inputContainer,  SIGNAL(viewContentChanged()), this, SLOT(changeToolBoxInput()), Qt::UniqueConnection);
+    connect(d->inputContainer,  SIGNAL(viewRemoved()),        this, SLOT(changeToolBoxInput()), Qt::UniqueConnection);
+    connect(d->inputContainer,  SIGNAL(viewRemoved()),        this, SLOT(resetDefaultWidgetInputContainer()), Qt::UniqueConnection);
+    connect(d->outputContainer, SIGNAL(viewRemoved()),        this, SLOT(resetDefaultWidgetOutputContainer()), Qt::UniqueConnection);
 
     d->inputContainer->setSelected(true);
     d->outputContainer->setSelected(false);
@@ -166,7 +166,8 @@ bool medFilteringWorkspaceL::registered()
 void medFilteringWorkspaceL::open(const medDataIndex &index)
 {
     if(!index.isValidForSeries() || !d->inputContainer->isSelected())
+    {
         return;
-
+    }
     d->inputContainer->addData(medDataManager::instance()->retrieveData(index));
 }

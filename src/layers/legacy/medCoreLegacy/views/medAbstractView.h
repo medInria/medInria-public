@@ -15,6 +15,8 @@
 
 #include <dtkCoreSupport/dtkAbstractView.h>
 
+#include <QMainWindow>
+
 #include <medCoreLegacyExport.h>
 
 class medAbstractViewPrivate;
@@ -58,6 +60,7 @@ public:
 
     virtual QWidget* navigatorWidget();
     virtual QWidget *viewWidget() = 0;
+    virtual QMainWindow* mainWindow();
     virtual QWidget *mouseInteractionWidget();
     virtual QWidget* toolBarWidget();
 

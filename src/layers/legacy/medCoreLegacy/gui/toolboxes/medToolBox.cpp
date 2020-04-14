@@ -48,6 +48,7 @@ medToolBox::medToolBox(QWidget *parent) : QWidget(parent), d(new medToolBoxPriva
     d->isContextVisible = false;
     d->aboutPluginVisibility = false;
     d->plugin = nullptr;
+    d->workspace = nullptr;
 
     d->layout = new QVBoxLayout(this);
     d->layout->setContentsMargins(0, 0, 0, 0);
@@ -156,10 +157,8 @@ void medToolBox::switchMinimize()
 */
 void medToolBox::show()
 {
-    //JGG dtkDebug()<<"show TB:" << header()->title();
     if(d->validDataTypes.isEmpty() || d->isContextVisible)
     {
-        //JGG dtkDebug()<<"actually showing in TB";
         QWidget::show();
     }
 }
