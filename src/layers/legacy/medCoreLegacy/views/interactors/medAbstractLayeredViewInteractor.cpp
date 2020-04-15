@@ -37,6 +37,7 @@ medAbstractLayeredViewInteractor::medAbstractLayeredViewInteractor(medAbstractVi
 medAbstractLayeredViewInteractor::~medAbstractLayeredViewInteractor()
 {
     delete d;
+    d =nullptr;
 }
 
 medAbstractBoolParameterL* medAbstractLayeredViewInteractor::visibilityParameter()

@@ -2217,12 +2217,12 @@ void vtkImageView2D::RemoveLayer(int layer)
         }
 
         // Make contiguous
-        for ( size_t i(0); i<this->LayerInfoVec.size(); ++i )
-        {
-            if( this->LayerInfoVec[i].Renderer )
-                this->LayerInfoVec[i].Renderer->SetLayer(static_cast<int>(i));
-            this->SetCurrentLayer(static_cast<int>(i));
-        }
+       for ( size_t i(0); i<this->LayerInfoVec.size(); ++i )
+       {
+           if( this->LayerInfoVec[i].Renderer )
+               this->LayerInfoVec[i].Renderer->SetLayer(static_cast<int>(i));
+       }
+
     }
 }
 

@@ -115,6 +115,7 @@ medVtkViewItkDataImageNavigator::medVtkViewItkDataImageNavigator(medAbstractView
 medVtkViewItkDataImageNavigator::~medVtkViewItkDataImageNavigator()
 {
     delete d;
+    d = nullptr;
 }
 
 QString  medVtkViewItkDataImageNavigator::identifier() const

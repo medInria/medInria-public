@@ -294,6 +294,7 @@ void medAbstractLayeredView::updateDataListParameter(unsigned int layer)
 
 void medAbstractLayeredView::removeLayer(unsigned int layer)
 {
+    this->setCurrentLayer(layer);
     this->removeData(this->layerData(layer));
 }
 
