@@ -649,16 +649,16 @@ void medVtkFibersDataInteractor::setRenderingMode(RenderingMode mode)
 
 void medVtkFibersDataInteractor::activateGPU(bool activate)
 {
-    if (activate)
+    /*if (activate)
     {
         vtkFibersManager::UseHardwareShadersOn();
         d->manager->ChangeMapperToUseHardwareShaders();
     } 
     else
-    {
+    {*/
         vtkFibersManager::UseHardwareShadersOff();
         d->manager->ChangeMapperToDefault();
-    }
+    /*}*/
 }
 
 void medVtkFibersDataInteractor::setFiberColorMode(QString mode)

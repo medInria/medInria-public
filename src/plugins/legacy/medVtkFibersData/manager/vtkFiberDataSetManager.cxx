@@ -13,16 +13,15 @@ PURPOSE.
 
 #include "vtkFiberDataSetManager.h"
 
-#include "vtkObjectFactory.h"
-#include "vtkFiberDataSet.h"
-#include "vtkActor.h"
-#include "vtkProperty.h"
-#include "vtkFiberMapper.h"
-#include "vtkTubeFilter.h"
-#include "vtkRibbonFilter.h"
-#include "vtkPointData.h"
-#include "vtkPolyData.h"
-
+#include <vtkObjectFactory.h>
+#include <vtkFiberDataSet.h>
+#include <vtkActor.h>
+#include <vtkProperty.h>
+#include <vtkTubeFilter.h>
+#include <vtkRibbonFilter.h>
+#include <vtkPointData.h>
+#include <vtkPolyData.h>
+#include <vtkPolyDataMapper.h>
 #include <map>
 
 
@@ -258,22 +257,8 @@ void vtkFiberDataSetManager::CreateRenderingPipelineForBundle (const std::string
       }
     }
     
-    vtkPolyDataMapper *mapper = 0;
-    if (vtkFibersManager::GetUseHardwareShaders())
-    {
-      vtkFiberMapper *fiberMapper = vtkFiberMapper::New();
-      fiberMapper->SetAmbientContributionShadow(0.0);
-      fiberMapper->SetDiffuseContributionShadow(0.6);
-      fiberMapper->SetSpecularContributionShadow(0.0);
-      fiberMapper->LightingOff();
-      fiberMapper->ShadowingOff();
-      mapper = fiberMapper;
-    }
-    else
+    vtkPolyDataMapper *mapper = vtkPolyDataMapper::New();
 
-    {
-      mapper = vtkPolyDataMapper::New();
-    }
     mapper->SetScalarModeToUseCellData();
     
     d->FiberBundlePipelineList[name]->Mapper->Delete();
@@ -283,13 +268,6 @@ void vtkFiberDataSetManager::CreateRenderingPipelineForBundle (const std::string
     switch (this->GetRenderingMode())
     {    
 	case RENDER_IS_TUBES:
-	  if (vtkFiberMapper* fiberMapper = vtkFiberMapper::SafeDownCast (mapper))
-	  {
-	    fiberMapper->LightingOn();
-	    fiberMapper->ShadowingOn();
-        fiberMapper->SetInputData (bundle);
-	  }
-	  else
 	  {   
 	    vtkTubeFilter *tubeFilter = d->FiberBundlePipelineList[name]->TubeFilter;
 	    tubeFilter->SetRadius ( this->GetRadius() );
@@ -299,25 +277,18 @@ void vtkFiberDataSetManager::CreateRenderingPipelineForBundle (const std::string
         tubeFilter->SetInputData ( bundle );
 	    
         mapper->SetInputConnection ( tubeFilter->GetOutputPort() );
+	    break;
 	  }
-	  break;
 	  
 	case RENDER_IS_RIBBONS:
-	  if (vtkFiberMapper* fiberMapper = vtkFiberMapper::SafeDownCast (mapper))
-	  {
-	    fiberMapper->LightingOn();
-	    fiberMapper->ShadowingOff();
-        fiberMapper->SetInputData (bundle);
-	  }
-	  else
 	  {
 	    vtkRibbonFilter *ribbonFilter = d->FiberBundlePipelineList[name]->RibbonFilter;
 	    ribbonFilter->SetWidth ( this->GetRadius() );
         ribbonFilter->SetInputData ( bundle );
 	    
         mapper->SetInputConnection ( ribbonFilter->GetOutputPort() );
+	    break;
 	  }
-	  break;
 	  
 	case RENDER_IS_POLYLINES:	  
 	default:
