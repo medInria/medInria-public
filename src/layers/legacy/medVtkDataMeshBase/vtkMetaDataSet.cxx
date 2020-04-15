@@ -34,12 +34,12 @@ vtkStandardNewMacro( vtkMetaDataSet )
 //----------------------------------------------------------------------------
 vtkMetaDataSet::vtkMetaDataSet()
 {
-  this->DataSet          = 0;
+  this->DataSet = nullptr;
   this->WirePolyData = nullptr;
 
   this->ActorList = vtkActorCollection::New();
   this->ArrayCollection = vtkDataArrayCollection::New();
-  this->CurrentScalarArray = 0;
+  this->CurrentScalarArray = nullptr;
 
   this->Time             = -1;
   this->Property         = 0;
@@ -96,12 +96,12 @@ vtkMetaDataSet::~vtkMetaDataSet()
   }
 
   if (this->Property)
+  {
     this->Property->Delete();
+  }
 
   this->ActorList->Delete();
   this->ArrayCollection->Delete();
-
-
 }
 
 vtkMetaDataSet* vtkMetaDataSet::Clone()

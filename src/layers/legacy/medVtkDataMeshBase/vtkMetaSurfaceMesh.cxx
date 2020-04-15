@@ -54,6 +54,7 @@ vtkStandardNewMacro( vtkMetaSurfaceMesh );
 
 //----------------------------------------------------------------------------
 vtkMetaSurfaceMesh::vtkMetaSurfaceMesh()
+    : vtkMetaDataSet()
 {
   this->Type = vtkMetaDataSet::VTK_META_SURFACE_MESH;
 }

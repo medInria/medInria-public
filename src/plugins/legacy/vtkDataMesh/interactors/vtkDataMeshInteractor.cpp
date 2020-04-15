@@ -428,6 +428,7 @@ void vtkDataMeshInteractor::setAttribute(const QString & attributeName)
 
             d->attribute = attributes->GetArray(qPrintable(attributeName));
             attributes->SetActiveScalars(qPrintable(attributeName));
+            d->metaDataSet->SetCurrentActiveArray(d->attribute);
 
             d->LUTParam->show();
         }
@@ -436,11 +437,10 @@ void vtkDataMeshInteractor::setAttribute(const QString & attributeName)
         mapper3d->SelectColorArray(qPrintable(attributeName));
 
         d->poLutWidget->show();
-        double range[2];
-        d->attribute->GetRange(range);
+        double* range = d->metaDataSet->GetScalarRange(attributeName);
 
-        initWindowLevelParameters(range);
-
+        int dataType = d->attribute->GetDataType();
+        initWindowLevelParameters(range, dataType);
         
         this->setLut(d->lut.first);
 
@@ -466,24 +466,33 @@ void vtkDataMeshInteractor::setAttribute(const QString & attributeName)
 }
 
 
-void vtkDataMeshInteractor::initWindowLevelParameters(double * range)
+void vtkDataMeshInteractor::initWindowLevelParameters(double * range, int dataType)
 {
-    double window = range[1] - range[0];
-
-    double halfWidth = 0.5 * window;
-    double levelMin = range[0] - halfWidth;
-    double levelMax = range[1] + halfWidth;
-    double intensityStep = qMin(0.1, (levelMax - levelMin) / 1000);
+    // default for integer values
+    double intensityStep = 1.0;
+    int nbDecimals = 0;
+    // if the arrays contains decimal values, compute a
+    // proper intensity step
+    if (dataType == VTK_FLOAT || dataType == VTK_DOUBLE)
+    {
+        double window = range[1] - range[0];
+        double halfWidth = 0.5 * window;
+        double levelMin = range[0] - halfWidth;
+        double levelMax = range[1] + halfWidth;
+        intensityStep = qMin(0.1, (levelMax - levelMin) / 1000);
+        nbDecimals = 6;
+    }
 
     d->minIntensityParameter->blockSignals(true);
     d->maxIntensityParameter->blockSignals(true);
 
     d->minIntensityParameter->setSingleStep(intensityStep);
-    d->minIntensityParameter->setDecimals(6);
     d->maxIntensityParameter->setSingleStep(intensityStep);
-    d->maxIntensityParameter->setDecimals(6);
-    d->minIntensityParameter->setRange(levelMin, levelMax);
-    d->maxIntensityParameter->setRange(levelMin, levelMax);
+    d->minIntensityParameter->setDecimals(nbDecimals);
+    d->maxIntensityParameter->setDecimals(nbDecimals);
+
+    d->minIntensityParameter->setRange(range[0], range[1]);
+    d->maxIntensityParameter->setRange(range[0], range[1]);
     d->minIntensityParameter->setValue(range[0]);
     d->maxIntensityParameter->setValue(range[1]);
 
