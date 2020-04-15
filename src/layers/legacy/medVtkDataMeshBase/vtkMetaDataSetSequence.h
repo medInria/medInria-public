@@ -210,6 +210,8 @@ class MEDVTKDATAMESHBASE_EXPORT vtkMetaDataSetSequence: public vtkMetaDataSet
 
   void GetScalarRange(double range[2], QString attributeName = QString("")) override;
 
+  double* GetScalarRange(QString attributeName) override;
+
   vtkGetMacro (CurrentId, int);
   
 protected:
