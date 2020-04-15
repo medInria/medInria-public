@@ -215,18 +215,6 @@ void vtkFiberDataSetManager::SetRenderingModeToRibbons()
   this->CreateBundleRenderingPipeline();
 }
 
-void vtkFiberDataSetManager::ChangeMapperToUseHardwareShaders()
-{
-  vtkFibersManager::ChangeMapperToUseHardwareShaders();
-  this->CreateBundleRenderingPipeline();
-}
-
-void vtkFiberDataSetManager::ChangeMapperToDefault()
-{
-  vtkFibersManager::ChangeMapperToDefault();
-  this->CreateBundleRenderingPipeline();
-}
-
 void vtkFiberDataSetManager::CreateBundleRenderingPipeline()
 {
   if (!this->FiberDataSet)

@@ -142,7 +142,6 @@ public slots:
     void selectLineMode(bool);
     void selectRibbonMode(bool);
     void selectTubeMode(bool);
-    void activateGPU (bool activate);
     void setFiberColorMode(QString mode);
 
     void updateRange();

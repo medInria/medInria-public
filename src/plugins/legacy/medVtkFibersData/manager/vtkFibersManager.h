@@ -124,17 +124,6 @@ class MEDVTKFIBERSDATAPLUGIN_EXPORT vtkFibersManager : public vtkObject
   static int GetRenderingMode();
   
   virtual void SetRenderingMode(int);
-  
-  static void UseHardwareShadersOn();
-  
-  static void UseHardwareShadersOff();
-  
-  static void SetUseHardwareShaders(int);
-  
-  static int GetUseHardwareShaders();
-
-  virtual void ChangeMapperToUseHardwareShaders();
-  virtual void ChangeMapperToDefault();
 
   
   /** Set the ouput of the callback to ite input. Thus, users
@@ -235,11 +224,5 @@ class MEDVTKFIBERSDATAPLUGIN_EXPORT vtkFibersManager : public vtkObject
   vtkRenderWindowInteractor *RenderWindowInteractor;
   vtkRenderer               *Renderer;
 
-  static int vtkUseHardwareShaders;
   static int vtkFiberRenderingStyle;
-
 };
-
-
-
-

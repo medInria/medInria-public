@@ -43,8 +43,6 @@ class MEDVTKFIBERSDATAPLUGIN_EXPORT vtkFiberDataSetManager : public vtkFibersMan
   virtual void SetRenderingModeToPolyLines();
   virtual void SetRenderingModeToTubes();
   virtual void SetRenderingModeToRibbons();
-  virtual void ChangeMapperToUseHardwareShaders();
-  virtual void ChangeMapperToDefault();
 
   //BTX
   virtual void SetBundleVisibility(const std::string &name, int visibility);
