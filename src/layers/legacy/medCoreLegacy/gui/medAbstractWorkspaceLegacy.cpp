@@ -400,8 +400,7 @@ void medAbstractWorkspaceLegacy::updateLayersToolBox()
                     removeButton->setFixedSize(20,20);
 
                     layout->addWidget(removeButton);
-                    connect(removeButton, SIGNAL(clicked()), this, SLOT(removeLayer()));
-
+                    connect(removeButton, SIGNAL(clicked()), this, SLOT(removeLayer()), Qt::UniqueConnection);
                 }
 
                 layerWidget->setSizePolicy(QSizePolicy::Maximum, QSizePolicy::Fixed);

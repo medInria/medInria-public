@@ -30,9 +30,6 @@ class itkFiltersToolBoxPrivate;
  * "thresholdFilterValue" : medDoubleParameterL\n
  * "thresholdLowerValue" : medDoubleParameterL\n
  * "thresholdUpperValue" : medDoubleParameterL\n
- * "thresholdValue" : medDoubleParameterL\n
- * "lowerValue" : medDoubleParameterL\n
- * "upperValue" : medDoubleParameterL\n
  * "outsideThresholdValue" : QSpinBox\n
  * "greaterButton" : QRadioButton\n
  * "lowerButton" : QRadioButton\n
