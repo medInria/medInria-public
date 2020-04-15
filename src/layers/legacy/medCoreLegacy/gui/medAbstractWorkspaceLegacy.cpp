@@ -80,7 +80,7 @@ medAbstractWorkspaceLegacy::medAbstractWorkspaceLegacy(QWidget *parent)
 
     d->viewContainerStack = new medTabbedViewContainers(this, parent);
 
-    connect(d->viewContainerStack, SIGNAL(containersSelectedChanged()), this, SLOT(updateNavigatorsToolBox()));
+    connect(d->viewContainerStack, SIGNAL(containersSelectedChanged()), this, SLOT(updateNavigatorsToolBox()), Qt::UniqueConnection);
 
     d->databaseVisibility = true;
     d->toolBoxesVisibility = true;

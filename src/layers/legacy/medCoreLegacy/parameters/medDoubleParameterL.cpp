@@ -91,9 +91,7 @@ void medDoubleParameterL::setValue(double value)
         }
 
         //  update intern widget
-        this->blockInternWidgetsSignals(true);
         this->updateInternWigets();
-        this->blockInternWidgetsSignals(false);
 
         emit valueChanged(m_value);
     }
@@ -101,6 +99,8 @@ void medDoubleParameterL::setValue(double value)
 
 void medDoubleParameterL::updateInternWigets()
 {
+    this->blockInternWidgetsSignals(true);
+
     if(d->spinBox)
     {
         d->spinBox->setValue(m_value);
@@ -113,6 +113,8 @@ void medDoubleParameterL::updateInternWigets()
     {
         d->valueLabel->setText(QString::number(m_value, 'f', 2));
     }
+
+    this->blockInternWidgetsSignals(false);
 }
 
 void medDoubleParameterL::setRange(double min, double max)
@@ -130,6 +132,8 @@ void medDoubleParameterL::setRange(double min, double max)
         {
             d->slider->setRange(0, convertToInt(max));
         }
+
+        updateInternWigets();
     }
 }
 
