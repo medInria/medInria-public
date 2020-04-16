@@ -490,7 +490,7 @@ void vtkMetaDataSetSequence::UpdateToIndex (unsigned int id)
 //----------------------------------------------------------------------------
 double*vtkMetaDataSetSequence::GetCurrentScalarRange()
 {
-    static double *val = new double[2];
+    double *val = new double[2];
     val[0] = VTK_DOUBLE_MAX;
     val[1] = VTK_DOUBLE_MIN;
 
@@ -708,4 +708,28 @@ void vtkMetaDataSetSequence::ComputeTimesFromDuration()
     {
         this->GetMetaDataSet(i)->SetTime((double) ( i )/ (double)(this->GetNumberOfMetaDataSets() ) );
     }
+}
+
+double* vtkMetaDataSetSequence::GetScalarRange(QString attributeName)
+{
+    // TODO: this is evil, would be better to pass the range as parameter
+    static double* val = new double[2];
+    val[0] = VTK_DOUBLE_MAX;
+    val[1] = VTK_DOUBLE_MIN;
+
+    for (unsigned int i = 0; i < this->MetaDataSetList.size(); i++)
+    {
+      double* range = this->MetaDataSetList[i]->GetScalarRange(attributeName);
+
+      if (val[0] > range[0])
+      {
+        val[0] = range[0];
+      }
+      if (val[1] < range[1])
+      {
+        val[1] = range[1];
+      }
+    }
+
+    return val;
 }
