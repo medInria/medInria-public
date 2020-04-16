@@ -339,7 +339,7 @@ unsigned int vtkMetaSurfaceMesh::CanReadFile (const char* filename)
     // medit .mesh format must have 'MeshVersionFormatted' as header
     if (vtkMetaDataSet::IsMeditFormat(filename))
     {
-        return vtkMetaSurfaceMesh::FILE_IS_MESH;
+      return vtkMetaSurfaceMesh::FILE_IS_MESH;
     }
     return 0;
   }
