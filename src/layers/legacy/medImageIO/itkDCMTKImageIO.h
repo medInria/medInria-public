@@ -87,6 +87,7 @@ public:
     std::string GetPatientSex() const;
     std::string GetPatientAge() const;
     std::string GetStudyID() const;
+    std::string GetStudyInstanceUID() const;
     std::string GetPatientDOB() const;
     std::string GetStudyDescription() const;
     std::string GetSeriesDescription() const;
@@ -107,7 +108,7 @@ public:
     std::string GetPatientStatus() const;
 
     // new
-    std::string GetSeriesID() const;
+    std::string GetSeriesInstanceUID() const;
     std::string GetOrientation() const;
     std::string GetSeriesNumber() const;
     std::string GetSequenceName() const;

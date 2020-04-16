@@ -381,7 +381,8 @@ bool itkDCMTKDataImageReader::readInformation(const QStringList& paths)
 
         // STUDY
         //StudyId
-        medData->setMetaData(medMetaDataKeys::StudyDicomID.key(),     d->io->GetStudyID().c_str());
+        medData->setMetaData(medMetaDataKeys::StudyID.key(),          QString::fromLatin1(d->io->GetStudyID().c_str()));
+        medData->setMetaData(medMetaDataKeys::StudyInstanceUID.key(), d->io->GetStudyInstanceUID().c_str());
         medData->setMetaData(medMetaDataKeys::StudyDescription.key(), QString::fromLatin1(d->io->GetStudyDescription().c_str()));
         medData->setMetaData(medMetaDataKeys::Institution.key(),      QString::fromLatin1(d->io->GetInstitution().c_str()));
         medData->setMetaData(medMetaDataKeys::Referee.key(),          QString::fromLatin1(d->io->GetReferringPhysicianName().c_str()));
@@ -390,7 +391,7 @@ bool itkDCMTKDataImageReader::readInformation(const QStringList& paths)
 
         // SERIES
         //SeriesID
-        medData->setMetaData(medMetaDataKeys::SeriesDicomID.key(),     d->io->GetSeriesID().c_str());
+        medData->setMetaData(medMetaDataKeys::SeriesInstanceUID.key(), d->io->GetSeriesInstanceUID().c_str());
         medData->setMetaData(medMetaDataKeys::SeriesNumber.key(),      d->io->GetSeriesNumber().c_str());
         medData->setMetaData(medMetaDataKeys::Modality.key(),          d->io->GetModality().c_str());
         medData->setMetaData(medMetaDataKeys::Performer.key(),         QString::fromLatin1(d->io->GetPerformingPhysicianName().c_str()));

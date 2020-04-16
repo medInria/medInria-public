@@ -101,7 +101,7 @@ namespace medMetaDataKeys {
 
     // STUDY
     extern MEDCORELEGACY_EXPORT const Key StudyID;
-    extern MEDCORELEGACY_EXPORT const Key StudyDicomID;
+    extern MEDCORELEGACY_EXPORT const Key StudyInstanceUID;
     extern MEDCORELEGACY_EXPORT const Key StudyDescription;
     extern MEDCORELEGACY_EXPORT const Key Institution;
     extern MEDCORELEGACY_EXPORT const Key Referee;
@@ -110,7 +110,7 @@ namespace medMetaDataKeys {
 
     // SERIES
     extern MEDCORELEGACY_EXPORT const Key SeriesID;
-    extern MEDCORELEGACY_EXPORT const Key SeriesDicomID;
+    extern MEDCORELEGACY_EXPORT const Key SeriesInstanceUID;
     extern MEDCORELEGACY_EXPORT const Key SeriesStoreId;
     extern MEDCORELEGACY_EXPORT const Key SeriesNumber;
     extern MEDCORELEGACY_EXPORT const Key Modality;

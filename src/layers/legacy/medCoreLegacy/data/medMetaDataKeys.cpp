@@ -34,7 +34,7 @@ namespace medMetaDataKeys {
 
     // STUDY
     MEDCORELEGACY_EXPORT const Key StudyID("StudyID", "Study ID");
-    MEDCORELEGACY_EXPORT const Key StudyDicomID("StudyDicomID", "Study Dicom ID");
+    MEDCORELEGACY_EXPORT const Key StudyInstanceUID("StudyInstanceUID", "Study Instance UID");
     MEDCORELEGACY_EXPORT const Key StudyDescription("StudyDescription", "Study Description");
     MEDCORELEGACY_EXPORT const Key Institution("Institution");
     MEDCORELEGACY_EXPORT const Key Referee("Referee");
@@ -43,7 +43,7 @@ namespace medMetaDataKeys {
 
     // SERIES
     MEDCORELEGACY_EXPORT const Key SeriesID("SeriesID", "Series ID");
-    MEDCORELEGACY_EXPORT const Key SeriesDicomID("SeriesDicomID", "Series Dicom ID");
+    MEDCORELEGACY_EXPORT const Key SeriesInstanceUID("SeriesInstanceUID", "Series Instance UID");
     MEDCORELEGACY_EXPORT const Key SeriesNumber("SeriesNumber", "Series Number");
     MEDCORELEGACY_EXPORT const Key Modality("Modality");
     MEDCORELEGACY_EXPORT const Key Performer("Performer");

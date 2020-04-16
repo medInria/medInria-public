@@ -151,7 +151,8 @@ medDataIndex medDatabaseNonPersistentImporter::populateDatabaseAndGenerateThumbn
     int     studyDbId   = -1;
     QString studyName = medMetaDataKeys::StudyDescription.getFirstValue(data);
     QString studyId = medMetaDataKeys::StudyID.getFirstValue(data);
-    QString studyUid = medMetaDataKeys::StudyDicomID.getFirstValue(data);
+    QString studyUid = medMetaDataKeys::StudyInstanceUID.getFirstValue(data);
+
     QString seriesName = medMetaDataKeys::SeriesDescription.getFirstValue(data);
 
     if( studyName!="EmptyStudy" || seriesName!="EmptySeries" )
@@ -192,7 +193,7 @@ medDataIndex medDatabaseNonPersistentImporter::populateDatabaseAndGenerateThumbn
             medData->setMetaData ( medMetaDataKeys::BirthDate.key(), birthdate );
             medData->setMetaData ( medMetaDataKeys::StudyDescription.key(), QStringList() << studyName );
             medData->setMetaData ( medMetaDataKeys::StudyID.key(), QStringList() << studyId );
-            medData->setMetaData ( medMetaDataKeys::StudyDicomID.key(), QStringList() << studyUid );
+            medData->setMetaData ( medMetaDataKeys::StudyInstanceUID.key(), QStringList() << studyUid );
 
             studyItem->d->name = patientName;
             studyItem->d->patientId = patientId;
@@ -212,7 +213,7 @@ medDataIndex medDatabaseNonPersistentImporter::populateDatabaseAndGenerateThumbn
         index = medDataIndex ( npdc->dataSourceId(), patientDbId, studyDbId, npdc->seriesId ( true ) );
 
         QString seriesId = medMetaDataKeys::SeriesID.getFirstValue(data);
-        QString seriesUid = medMetaDataKeys::SeriesDicomID.getFirstValue(data);
+        QString seriesUid = medMetaDataKeys::SeriesInstanceUID.getFirstValue(data);
         QString orientation = medMetaDataKeys::Orientation.getFirstValue(data);
         QString seriesNumber = medMetaDataKeys::SeriesNumber.getFirstValue(data);
         QString sequenceName = medMetaDataKeys::SequenceName.getFirstValue(data);

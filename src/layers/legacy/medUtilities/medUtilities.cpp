@@ -63,7 +63,7 @@ QStringList medUtilities::metaDataKeysToCopyForDerivedData(medAbstractData* deri
          << medMetaDataKeys::Gender.key()
          << medMetaDataKeys::Description.key()
          << medMetaDataKeys::StudyID.key()
-         << medMetaDataKeys::StudyDicomID.key()
+         << medMetaDataKeys::StudyInstanceUID.key()
          << medMetaDataKeys::StudyDescription.key()
          << medMetaDataKeys::Institution.key()
          << medMetaDataKeys::Referee.key()
@@ -105,8 +105,8 @@ void medUtilities::generateSeriesAndSOPInstanceId(medAbstractData* data)
     QString generatedSOPInstanceID = QUuid::createUuid().toString().replace("{", "").replace("}", "");
     data->setMetaData(medMetaDataKeys::SOPInstanceUID.key(), generatedSOPInstanceID);
     
-    QString generatedSeriesDicomID = QUuid::createUuid().toString().replace("{", "").replace("}", "");
-    data->setMetaData(medMetaDataKeys::SeriesDicomID.key(), generatedSeriesDicomID);
+    QString generatedSeriesInstanceUID = QUuid::createUuid().toString().replace("{", "").replace("}", "");
+    data->setMetaData(medMetaDataKeys::SeriesInstanceUID.key(), generatedSeriesInstanceUID);
 }
 
 void medUtilities::querySeriesDescription(medAbstractData* data)
