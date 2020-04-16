@@ -95,7 +95,6 @@ if (WIN32)
 endif()
 
 target_link_libraries(${PROJECT_NAME}
-  ${QT_LIBRARIES}
   ${QTDCM_LIBRARIES}
   ${DCMTK_LIBRARIES}
   ${WIN_LINK_LIBRARIES}

@@ -72,8 +72,8 @@ target_link_libraries(${TARGET_NAME}
   Qt5::Widgets
   dtkCoreSupport
   dtkLog
-  ITKCommon
-  vtkCommonCore
+  ${ITK_LIBRARIES}
+  ${VTK_LIBRARIES}
   )
 
 ## #############################################################################

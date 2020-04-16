@@ -34,7 +34,7 @@ find_package(dtk REQUIRED)
 include_directories(${dtk_INCLUDE_DIRS})
 
 find_package(ITK REQUIRED COMPONENTS ITKCommon ITKImageIntensity ITKBiasCorrection
-                                     ITKImageSources ITKThresholding)
+    ITKImageSources ITKThresholding)
 include(${ITK_USE_FILE})
 
 ## #############################################################################

@@ -88,7 +88,6 @@ add_library(${TARGET_NAME} SHARED
 ## #############################################################################
 
 target_link_libraries(${TARGET_NAME}
-  ${QT_LIBRARIES}
   dtkLog
   dtkCore
   ITKTensor

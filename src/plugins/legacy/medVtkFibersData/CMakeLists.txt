@@ -100,15 +100,14 @@ add_library(${TARGET_NAME} SHARED
 ## #############################################################################
 
 target_link_libraries(${TARGET_NAME}
-  ${QT_LIBRARIES}
   dtkCore
   dtkLog
   medCore
   medLog
   medVtkInria
   ttkAlgorithms
-  ITKCommon
-  ITKVtkGlue
+  ${ITK_LIBRARIES}
+  ${VTK_LIBRARIES}
   )
 
 

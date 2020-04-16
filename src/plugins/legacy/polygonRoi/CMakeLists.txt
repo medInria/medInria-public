@@ -36,7 +36,7 @@ include_directories(${dtk_INCLUDE_DIRS})
 find_package(ITK REQUIRED COMPONENTS ITKCommon ITKImageLabel)
 include(${ITK_USE_FILE})
 
-find_package(VTK REQUIRED COMPONENTS vtkCommonCore vtkInteractionWidgets)
+find_package(VTK REQUIRED COMPONENTS vtkCommonCore vtkInteractionWidgets vtkCommonComputationalGeometry)
 include(${VTK_USE_FILE})
 
 ## #############################################################################
@@ -73,12 +73,11 @@ add_library(${TARGET_NAME} SHARED
 ## #############################################################################
 
 target_link_libraries(${TARGET_NAME}
-  ${QT_LIBRARIES}
   medCore
   medRegistration
   medVtkInria
   medUtilities
-  vtkCommonComputationalGeometry
+  ${VTK_LIBRARIES}
   )
 
 set(CMAKE_RUNTIME_OUTPUT_DIRECTORY ${CMAKE_BINARY_DIR}/bin)

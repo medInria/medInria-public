@@ -74,7 +74,8 @@ add_library(${TARGET_NAME} SHARED
 ## #############################################################################
 
 target_link_libraries(${TARGET_NAME}
-  ${QT_LIBRARIES}
+  ${ITK_LIBRARIES}
+  ${VTK_LIBRARIES}
   medCore
   medVtkInria
   medUtilities

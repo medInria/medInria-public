@@ -32,7 +32,10 @@ add_definitions(-D${TARGET_NAME_UP}_VERSION="${${TARGET_NAME}_VERSION}")
 find_package(dtk REQUIRED)
 include_directories(${dtk_INCLUDE_DIRS})
 
-find_package(ITK REQUIRED  COMPONENTS ITKIOImageBase ITKIOMeta ITKIONRRD ITKIONIFTI)
+find_package(ITK REQUIRED  COMPONENTS ITKIOImageBase ITKIOMeta ITKIONRRD ITKIONIFTI
+    ITKIOBioRad ITKIOBMP ITKIOBruker ITKIOGDCM ITKIOGIPL ITKIOHDF5 ITKIOJPEG
+    ITKIOJPEG2000 ITKIOLSM ITKIOMeta ITKIOMINC ITKIOMRC ITKIONIFTI ITKIONRRD
+    ITKIOPNG ITKIOStimulate ITKIOVTK)
 include(${ITK_USE_FILE})
     
 find_package(VTK REQUIRED  COMPONENTS vtkCommonCore vtkCommonExecutionModel vtkRenderingCore vtkImagingCore vtkInteractionStyle vtkInteractionWidgets)
@@ -98,26 +101,9 @@ add_library(${TARGET_NAME} SHARED
 ## #############################################################################
 
 target_link_libraries(${TARGET_NAME}
-  ${QT_LIBRARIES}
   dtkCore
   dtkLog
-  ITKIOBioRad
-  ITKIOBMP
-  ITKIOBruker
-  ITKIOGDCM
-  ITKIOGIPL
-  ITKIOHDF5
-  ITKIOJPEG
-  ITKIOJPEG2000
-  ITKIOLSM
-  ITKIOMeta
-  ITKIOMINC
-  ITKIOMRC
-  ITKIONIFTI
-  ITKIONRRD
-  ITKIOPNG
-  ITKIOStimulate
-  ITKIOVTK
+  ${ITK_LIBRARIES}
   ITKTensor
   medCore
   medLog

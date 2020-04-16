@@ -33,10 +33,10 @@ set(CMAKE_INCLUDE_CURRENT_DIR TRUE)
 find_package(dtk REQUIRED)
 include_directories(${dtk_INCLUDE_DIRS})
 
-find_package(ITK REQUIRED COMPONENTS ITKCommon ITKImageGrid ITKVtkGlue)
+find_package(ITK REQUIRED COMPONENTS ITKCommon ITKTransform ITKImageGrid ITKVtkGlue)
 include(${ITK_USE_FILE})
 
-find_package(VTK REQUIRED COMPONENTS vtkGUISupportQt vtkInteractionWidgets vtkInteractionImage)
+find_package(VTK REQUIRED COMPONENTS vtkGUISupportQt vtkGUISupportQtOpenGL vtkInteractionWidgets vtkInteractionImage)
 include(${VTK_USE_FILE})
 
 ## #############################################################################
@@ -73,15 +73,11 @@ add_library(${TARGET_NAME} SHARED
 ## #############################################################################
 
 target_link_libraries(${TARGET_NAME}
-  ${QT_LIBRARIES}
-  ITKCommon
-  ITKTransform
+  ${ITK_LIBRARIES}
+  ${VTK_LIBRARIES}
   medCore
   medVtkInria
   medUtilities
-  vtkInteractionImage
-  vtkGUISupportQt
-  vtkGUISupportQtOpenGL
   )
 
 set(CMAKE_RUNTIME_OUTPUT_DIRECTORY ${CMAKE_BINARY_DIR}/bin)

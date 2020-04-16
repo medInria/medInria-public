@@ -23,7 +23,14 @@ set(TARGET_NAME medRegistration)
 find_package(dtk REQUIRED)
 include_directories(${dtk_INCLUDE_DIRS})
 
-find_package(ITK REQUIRED COMPONENTS ITKIOImageBase ITKTransform ITKIOTransformBase ITKIOTransformInsightLegacy ITKRegistrationCommon ITKIOMeta)#ITKCommon ITKTransformFactory
+find_package(ITK REQUIRED COMPONENTS ITKCommon ITKIOImageBase ITKIOBMP ITKIOLSM ITKIOJPEG
+    ITKIOJPEG2000 ITKIOGE ITKIOPNG ITKIOVTK ITKIOGDCM ITKNrrdIO ITKIONRRD
+    ITKIOMINC ITKIONIFTI ITKIOGIPL ITKIOHDF5 ITKIOBioRad ITKIOStimulate
+    ITKTransform ITKIOTransformBase ITKIOTransformHDF5 ITKIOTIFF
+    ITKIOTransformMatlab ITKIOMRC ITKIOTransformInsightLegacy ITKRegistrationCommon
+    ITKIOMeta ITKStatistics ITKIOPhilipsREC)
+
+#ITKCommon ITKTransformFactory
 include(${ITK_USE_FILE})
 
 find_package(RPI REQUIRED)
@@ -71,34 +78,7 @@ target_link_libraries(${TARGET_NAME}
   dtkCoreSupport
   medCoreLegacy
   dtkLog
-  ITKCommon
-  ITKIOImageBase
-  ITKIOBMP
-  ITKIOBruker
-  ITKIOLSM
-  ITKIOJPEG
-  ITKIOJPEG2000
-  ITKIOGE
-  ITKIOPNG
-  ITKIOVTK
-  ITKIOGDCM
-  ITKNrrdIO
-  ITKIONRRD
-  ITKIOMeta
-  ITKIOMINC
-  ITKIONIFTI
-  ITKIOGIPL
-  ITKIOHDF5
-  ITKIOBioRad
-  ITKIOStimulate
-  ${ITKIOPhilipsREC_LIBRARIES}
-  ITKIOTIFF
-  ITKStatistics
-  ITKIOTransformBase
-  ITKIOTransformHDF5
-  ITKIOTransformMatlab
-  ITKIOTransformInsightLegacy
-  ITKIOMRC
+  ${ITK_LIBRARIES}
   )
 
 

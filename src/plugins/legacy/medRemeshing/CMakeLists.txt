@@ -37,8 +37,7 @@ find_package(ITK REQUIRED COMPONENTS ITKCommon)
 include(${ITK_USE_FILE})
 
 find_package(VTK REQUIRED COMPONENTS vtkCommonCore vtkCommonDataModel vtkFiltersCore
-                                     vtkFiltersModeling vtkRenderingCore vtkInteractionStyle
-                                     vtkInteractionWidgets)
+    vtkFiltersModeling vtkRenderingCore vtkInteractionStyle vtkInteractionWidgets)
 include(${VTK_USE_FILE})
 
 ## #############################################################################
@@ -75,7 +74,8 @@ add_library(${TARGET_NAME} SHARED
 ## #############################################################################
 
 target_link_libraries(${TARGET_NAME}
-  ${QT_LIBRARIES}
+  ${ITK_LIBRARIES}
+  ${VTK_LIBRARIES}
   medCore
   medVtkInria
   medUtilities

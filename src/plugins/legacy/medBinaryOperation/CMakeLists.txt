@@ -70,10 +70,9 @@ add_library(${TARGET_NAME} SHARED
 ## #############################################################################
 
 target_link_libraries(${TARGET_NAME}
-  ${QT_LIBRARIES}
   dtkCore
   dtkLog
-  ITKCommon
+  ${ITK_LIBRARIES}
   medCore
   medUtilities
   )

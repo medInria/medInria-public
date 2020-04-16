@@ -71,9 +71,7 @@ add_library(${TARGET_NAME} SHARED
 ## #############################################################################
 ## Link
 ## #############################################################################
-
 target_link_libraries(${TARGET_NAME}
-  ${QT_LIBRARIES}
   ${VTK_LIBRARIES}
   medCore
   medVtkInria

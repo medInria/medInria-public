@@ -28,7 +28,7 @@ add_definitions(-D${TARGET_NAME_UP}_VERSION="${${TARGET_NAME}_VERSION}")
 ## Resolve dependencies
 ## #############################################################################
 
-find_package(dtk REQUIRED)
+find_package(dtk REQUIRED )
 include_directories(${dtk_INCLUDE_DIRS})
 
 find_package(RPI REQUIRED)
@@ -83,11 +83,9 @@ add_library(${TARGET_NAME} SHARED
 ## #############################################################################
 
 target_link_libraries(${TARGET_NAME}
-  ${RPI_LIBRARIES}
-  ${QT_LIBRARIES}
   dtkCore
   dtkLog
-  ITKCommon
+  ${ITK_LIBRARIES}
   medCore
   medRegistration
   )

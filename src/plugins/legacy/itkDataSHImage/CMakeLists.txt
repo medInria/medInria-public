@@ -32,7 +32,9 @@ add_definitions(-D${TARGET_NAME_UP}_VERSION="${${TARGET_NAME}_VERSION}")
 find_package(dtk REQUIRED)
 include_directories(${dtk_INCLUDE_DIRS})
 
-find_package(ITK REQUIRED COMPONENTS ITKIOImageBase ITKIOMeta )
+find_package(ITK REQUIRED COMPONENTS ITKIOImageBase ITKIOMeta ITKIOBMP ITKIOBioRad
+    ITKIOBruker ITKIOGDCM ITKIOGIPL ITKIOHDF5 ITKIOJPEG ITKIOJPEG2000 ITKIOLSM ITKIOMRC
+    ITKIOMINC ITKIONIFTI ITKIONRRD ITKIOPNG ITKIOStimulate ITKIOVTK)
 include(${ITK_USE_FILE})
 
 find_package(VTK REQUIRED COMPONENTS vtkCommonExecutionModel vtkRenderingCore vtkInteractionWidgets)
@@ -99,10 +101,9 @@ add_library(${TARGET_NAME} SHARED
 ## #############################################################################
 
 target_link_libraries(${TARGET_NAME}
-  ${QT_LIBRARIES}
-  dtkCore
   dtkCore
   dtkLog
+  ${ITK_LIBRARIES}
   medCore
   medLog
   medVtkInria

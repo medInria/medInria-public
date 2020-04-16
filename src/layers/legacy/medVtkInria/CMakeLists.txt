@@ -19,7 +19,11 @@ set(TARGET_NAME medVtkInria)
 ## Find required
 ## #############################################################################
 
-find_package(VTK REQUIRED COMPONENTS vtkRenderingVolumeOpenGL2 vtkInteractionWidgets vtkRenderingAnnotation vtkInteractionStyle vtkImagingStatistics vtkIOLegacy )
+find_package(VTK REQUIRED COMPONENTS vtkCommonCore vtkCommonSystem vtkImagingColor vtkImagingGeneral vtkImagingHybrid vtkImagingStencil
+    vtkIOCore vtkIOExportOpenGL2 vtkIOGeometry vtkIOImage vtkIOLegacy vtkIOXML
+    vtkRenderingCore vtkRenderingOpenGL2 vtkRenderingContextOpenGL2 vtkRenderingVolumeOpenGL2
+    vtkInteractionWidgets vtkRenderingAnnotation vtkInteractionStyle vtkImagingStatistics
+    vtkFiltersExtraction vtkFiltersModeling vtkFiltersGeometry vtksys)
 include(${VTK_USE_FILE})
 
 find_package(OpenGL REQUIRED)
@@ -130,35 +134,11 @@ target_include_directories(${TARGET_NAME}
 
 target_link_libraries(${TARGET_NAME}
   ${OPENGL_LIBRARIES}
+  ${VTK_LIBRARIES}
   Qt5::Core
   Qt5::Widgets
   medCoreLegacy
-  vtkCommonCore
-  vtkCommonSystem
-  vtkImagingColor
-  vtkImagingGeneral
-  vtkImagingHybrid
-  vtkIOCore
-  vtkIOExportOpenGL2
-  vtkIOGeometry
-  vtkIOImage
-  vtkIOLegacy
-  vtkIOXML
-  vtkRenderingAnnotation
-  vtkRenderingCore
-  vtkRenderingOpenGL2
-  vtkRenderingVolumeOpenGL2
-  vtkRenderingContextOpenGL2
-  ${VTK_OSPRAY_RENDERING_LIBRARY}
-  vtkInteractionWidgets
-  vtkInteractionStyle
-  vtkFiltersExtraction
-  vtkFiltersModeling
-  vtkImagingStencil
-  vtkFiltersGeometry
-  vtksys
   )
-
 
 ## #############################################################################
 ## install

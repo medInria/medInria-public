@@ -18,9 +18,18 @@ set(TARGET_NAME medImageIO)
 ## #############################################################################
 ## find requireds
 ## #############################################################################
+find_package(ITK REQUIRED COMPONENTS   ITKCommon
+    ITKIOImageBase ITKIOBMP ITKIOBruker ITKIOLSM ITKIOJPEG ITKIOJPEG2000
+    ITKIOPNG ITKIOVTK ITKIOGDCM ITKNrrdIO ITKIONRRD ITKIOMeta ITKIOMINC
+    ITKIONIFTI ITKIOGIPL ITKIOGE ITKIOHDF5 ITKIOBioRad ITKIOStimulate
+    ITKIOMRC ITKIOTIFF ITKVTK ITKVtkGlue ITKIOPhilipsREC)
 
-find_package(ITK REQUIRED COMPONENTS ITKVtkGlue ITKIOImageBase ITKIOMeta)
 include(${ITK_USE_FILE})
+
+# find vtk
+find_package(VTK REQUIRED COMPONENTS vtkIOImage)
+include(${VTK_USE_FILE})
+
 
 #WARNING USE VTK through ITKVtkGlue and medLog
 
@@ -65,35 +74,12 @@ target_include_directories(${TARGET_NAME}
 target_link_libraries(${TARGET_NAME}
   Qt5::Core
   Qt5::Widgets
+  ${ITK_LIBRARIES}
+  ${VTK_LIBRARIES}
   dtkCoreSupport
   dtkLog
   medCore
   medCoreLegacy
-  ITKCommon
-  ITKIOImageBase
-  ITKIOBMP
-  ITKIOBruker
-  ITKIOLSM
-  ITKIOJPEG
-  ITKIOJPEG2000
-  ITKIOPNG
-  ITKIOVTK
-  ITKIOGDCM
-  ITKNrrdIO
-  ITKIONRRD
-  ITKIOMeta
-  ITKIOMINC
-  ITKIONIFTI
-  ITKIOGIPL
-  ITKIOGE
-  ITKIOHDF5
-  ITKIOBioRad
-  ITKIOStimulate
-  ITKIOMRC
-  ITKIOTIFF
-  ITKVTK
-  vtkIOImage
-  ${ITKIOPhilipsREC_LIBRARIES}
   ${DCMTK_LIBRARIES}
   )
 

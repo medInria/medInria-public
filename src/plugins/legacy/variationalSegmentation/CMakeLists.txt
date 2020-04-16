@@ -33,8 +33,8 @@ set(CMAKE_INCLUDE_CURRENT_DIR TRUE)
 find_package(dtk REQUIRED)
 include_directories(${dtk_INCLUDE_DIRS})
 
-find_package(ITK REQUIRED COMPONENTS ITKCommon ITKImageFilterBase ITKThresholding
-                                     ITKVtkGlue)
+find_package(ITK REQUIRED COMPONENTS ITKCommon ITKTransform ITKVTK ITKImageFilterBase ITKThresholding
+    ITKVtkGlue)
 include(${ITK_USE_FILE})
 
 find_package(VTK REQUIRED COMPONENTS vtkCommonCore vtkInteractionWidgets vtkRenderingCore)
@@ -74,12 +74,11 @@ add_library(${TARGET_NAME} SHARED
 ## #############################################################################
 
 target_link_libraries(${TARGET_NAME}
-  ${QT_LIBRARIES}
+  ${ITK_LIBRARIES}
+  ${VTK_LIBRARIES}
   medCore
   medVtkInria
   medUtilities
-  ITKVTK
-  ITKTransform
   )
 
 set(CMAKE_RUNTIME_OUTPUT_DIRECTORY ${CMAKE_BINARY_DIR}/bin)

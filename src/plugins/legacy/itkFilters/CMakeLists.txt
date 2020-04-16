@@ -34,7 +34,7 @@ find_package(dtk REQUIRED)
 include_directories(${dtk_INCLUDE_DIRS})
 
 find_package(ITK REQUIRED COMPONENTS ITKCommon ITKThresholding ITKConnectedComponents
-                                     ITKSmoothing ITKBinaryMathematicalMorphology)
+    ITKSmoothing ITKBinaryMathematicalMorphology)
 include(${ITK_USE_FILE})
 
 ## #############################################################################
@@ -71,10 +71,9 @@ add_library(${TARGET_NAME} SHARED
 ## #############################################################################
 
 target_link_libraries(${TARGET_NAME}
-  ${QT_LIBRARIES}
   dtkCore
   dtkLog
-  ITKCommon
+  ${ITK_LIBRARIES}
   medCore
   medUtilities
   )
