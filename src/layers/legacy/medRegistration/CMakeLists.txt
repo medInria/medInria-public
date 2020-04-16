@@ -30,7 +30,6 @@ find_package(ITK REQUIRED COMPONENTS ITKCommon ITKIOImageBase ITKIOBMP ITKIOLSM 
     ITKIOTransformMatlab ITKIOMRC ITKIOTransformInsightLegacy ITKRegistrationCommon
     ITKIOMeta ITKStatistics ITKIOPhilipsREC)
 
-#ITKCommon ITKTransformFactory
 include(${ITK_USE_FILE})
 
 find_package(RPI REQUIRED)
