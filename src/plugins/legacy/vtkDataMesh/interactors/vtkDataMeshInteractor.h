@@ -63,7 +63,7 @@ public slots:
     void setRenderingType(const QString &type);
     void setAttribute(const QString & attribute);
 
-    void initWindowLevelParameters(double * range);
+    void initWindowLevelParameters(double * range, int dataType);
 
     void setLut(const QString &lutName);
 
