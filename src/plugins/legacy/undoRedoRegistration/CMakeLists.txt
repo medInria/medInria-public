@@ -34,12 +34,11 @@ add_definitions(-D${TARGET_NAME_UP}_VERSION="${${TARGET_NAME}_VERSION}")
 find_package(dtk REQUIRED)
 include_directories(${dtk_INCLUDE_DIRS})
 
-find_package(ITK REQUIRED COMPONENTS ITKCommon ITKTransform ITKIOTransformBase ITKIOTransformInsightLegacy ITKIOMeta ITKIOImageBase)
-include(${ITK_USE_FILE})
-
-find_package(RPI REQUIRED)
+find_package(RPI REQUIRED )
 include(${RPI_USE_FILE})
-
+include(ITKLibs) # FOR and FROM RPI
+find_package(ITK REQUIRED COMPONENTS ${ITKIO_LIBRARIES} ${ITK_TRANSFORM_LIBRARIES} ITKIOMeta )
+include(${ITK_USE_FILE})
 
 ## #############################################################################
 ## List Sources
@@ -70,7 +69,6 @@ add_library(${TARGET_NAME} SHARED
 
 target_include_directories(${TARGET_NAME}
   PUBLIC ${${TARGET_NAME}_INCLUDE_DIRS}
-  PRIVATE ${MEDINRIA_INCLUDE_DIRS}
   )
 
 ## #############################################################################
@@ -78,10 +76,6 @@ target_include_directories(${TARGET_NAME}
 ## #############################################################################
 
 target_link_libraries(${TARGET_NAME}
-  Qt5::Core
-  Qt5::Widgets
-  dtkLog
-  dtkCore
   medCore
   medRegistration
   )

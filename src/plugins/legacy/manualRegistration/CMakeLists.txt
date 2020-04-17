@@ -33,14 +33,14 @@ set(CMAKE_INCLUDE_CURRENT_DIR TRUE)
 find_package(dtk REQUIRED)
 include_directories(${dtk_INCLUDE_DIRS})
 
-find_package(ITK REQUIRED COMPONENTS ITKIOImageBase ITKTransform ITKIOTransformBase ITKIOTransformInsightLegacy ITKRegistrationCommon ITKIOMeta)
+find_package(RPI REQUIRED )
+include(${RPI_USE_FILE})
+include(ITKLibs) # FOR and FROM RPI
+find_package(ITK REQUIRED COMPONENTS ${ITKIO_LIBRARIES} ${ITK_TRANSFORM_LIBRARIES} ITKRegistrationCommon ITKIOMeta )
 include(${ITK_USE_FILE})
 
 find_package(VTK REQUIRED COMPONENTS vtkCommonCore vtkInteractionWidgets)
 include(${VTK_USE_FILE})
-
-find_package(RPI REQUIRED)
-include(${RPI_USE_FILE})
 
 ## #############################################################################
 ## List Sources
@@ -69,7 +69,7 @@ add_library(${TARGET_NAME} SHARED
 
 target_include_directories(${TARGET_NAME}
   PUBLIC ${${TARGET_NAME}_INCLUDE_DIRS}
-  PRIVATE ${MEDINRIA_INCLUDE_DIRS}
+  PRIVATE ${RPI_INCLUDE_DIRS}
   )
 
 ## #############################################################################
@@ -77,8 +77,6 @@ target_include_directories(${TARGET_NAME}
 ## #############################################################################
 
 target_link_libraries(${TARGET_NAME}
-  dtkCore
-  dtkLog
   ${ITK_LIBRARIES}
   ${VTK_LIBRARIES}
   medCore

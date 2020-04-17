@@ -53,9 +53,6 @@ set(ITK_IMAGES_DEPENDENCIES
 find_package(ITK REQUIRED COMPONENTS ITKIOImageBase ITKIOGDCM ITKIOVTK ITKVtkGlue ${ITK_IMAGES_DEPENDENCIES} ITKStatistics)
 include(${ITK_USE_FILE})
 
-# itkLogForwarder used through medLog
-# vtkImageView2D  used through medVtkInria
-
 #WARNING USE VTK through ITKIOVTK and medLog, medVtkInria
 
 if (ITK_USE_SYSTEM_GDCM)
@@ -133,10 +130,6 @@ target_include_directories(${TARGET_NAME}
 ## #############################################################################
 
 target_link_libraries(${TARGET_NAME}
-  Qt5::Core
-  Qt5::Widgets
-  dtkCore
-  dtkLog
   ${ITK_LIBRARIES}
   medCore
   medImageIO

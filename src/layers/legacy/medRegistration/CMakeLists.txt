@@ -15,7 +15,6 @@
 
 set(TARGET_NAME medRegistration)
 
-
 ## #############################################################################
 ## find requireds
 ## #############################################################################
@@ -23,17 +22,12 @@ set(TARGET_NAME medRegistration)
 find_package(dtk REQUIRED)
 include_directories(${dtk_INCLUDE_DIRS})
 
-find_package(ITK REQUIRED COMPONENTS ITKCommon ITKIOImageBase ITKIOBMP ITKIOLSM ITKIOJPEG
-    ITKIOJPEG2000 ITKIOGE ITKIOPNG ITKIOVTK ITKIOGDCM ITKNrrdIO ITKIONRRD
-    ITKIOMINC ITKIONIFTI ITKIOGIPL ITKIOHDF5 ITKIOBioRad ITKIOStimulate
-    ITKTransform ITKIOTransformBase ITKIOTransformHDF5 ITKIOTIFF
-    ITKIOTransformMatlab ITKIOMRC ITKIOTransformInsightLegacy ITKRegistrationCommon
-    ITKIOMeta ITKStatistics ITKIOPhilipsREC)
-
-include(${ITK_USE_FILE})
-
-find_package(RPI REQUIRED)
+find_package(RPI REQUIRED )
 include(${RPI_USE_FILE})
+include(ITKLibs) # FOR and FROM RPI
+find_package(ITK REQUIRED COMPONENTS ${ITKIO_LIBRARIES} ${ITK_TRANSFORM_LIBRARIES}
+       ITKRegistrationCommon)
+include(${ITK_USE_FILE})
 
 
 ## #############################################################################
@@ -64,6 +58,7 @@ add_library(${TARGET_NAME} SHARED
 
 target_include_directories(${TARGET_NAME}
   PUBLIC ${${TARGET_NAME}_INCLUDE_DIRS}
+  PRIVATE ${RPI_INCLUDE_DIRS}
   )
 
 
@@ -72,14 +67,9 @@ target_include_directories(${TARGET_NAME}
 ## #############################################################################
 
 target_link_libraries(${TARGET_NAME}
-  Qt5::Core
-  Qt5::Widgets
-  dtkCoreSupport
   medCoreLegacy
-  dtkLog
   ${ITK_LIBRARIES}
   )
-
 
 ## #############################################################################
 ## install

@@ -66,7 +66,6 @@ add_library(${TARGET_NAME} SHARED
 
 target_include_directories(${TARGET_NAME}
   PUBLIC ${${TARGET_NAME}_INCLUDE_DIRS}
-  PRIVATE ${MEDINRIA_INCLUDE_DIRS}
   )
 ## #############################################################################
 ## Link

@@ -19,7 +19,6 @@ set(TARGET_NAME qtdcmDataSourcePlugin)
 ## #############################################################################
 
 set(${TARGET_NAME}_VERSION ${MEDINRIA_VERSION})
-
 string(TOUPPER ${TARGET_NAME} TARGET_NAME_UP)
 add_definitions(-D${TARGET_NAME_UP}_VERSION="${${TARGET_NAME}_VERSION}")
 
@@ -80,7 +79,6 @@ target_include_directories(${TARGET_NAME}
   PUBLIC ${${TARGET_NAME}_INCLUDE_DIRS}
   PUBLIC  ${QTDCM_INCLUDE_DIRS}
   PUBLIC  ${QTDCM_DIR}
-  PRIVATE ${MEDINRIA_INCLUDE_DIRS}
   )
 
 ## #############################################################################
@@ -97,8 +95,6 @@ target_link_libraries(${TARGET_NAME}
   ${QTDCM_LIBRARIES}
   ${DCMTK_LIBRARIES}
   ${WIN_LINK_LIBRARIES}
-  dtkCore
-  dtkLog
   medCore
   )
 

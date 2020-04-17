@@ -65,15 +65,12 @@ add_library(${TARGET_NAME} SHARED
 
 target_include_directories(${TARGET_NAME}
   PUBLIC ${${TARGET_NAME}_INCLUDE_DIRS}
-  PRIVATE ${MEDINRIA_INCLUDE_DIRS}
   )
 ## #############################################################################
 ## Link
 ## #############################################################################
 
 target_link_libraries(${TARGET_NAME}
-  dtkCore
-  dtkLog
   ${ITK_LIBRARIES}
   medCore
   medUtilities

@@ -29,12 +29,11 @@ add_definitions(-D${TARGET_NAME_UP}_VERSION="${${TARGET_NAME}_VERSION}")
 ## #############################################################################
 
 find_package(dtk REQUIRED )
-include_directories(${dtk_INCLUDE_DIRS})
 
-find_package(RPI REQUIRED)
+find_package(RPI REQUIRED )
 include(${RPI_USE_FILE})
-
-find_package(ITK REQUIRED COMPONENTS ITKCommon ITKIOTransformBase ITKIOTransformInsightLegacy ITKTransform ITKTransformFactory ITKRegistrationCommon ITKIOMeta ITKIOImageBase ITKPDEDeformableRegistration ITKIOTransformBase)
+include(ITKLibs) # FOR and FROM RPI
+find_package(ITK REQUIRED COMPONENTS ${ITKIO_LIBRARIES} ${ITK_TRANSFORM_LIBRARIES} ITKRegistrationCommon ITKPDEDeformableRegistration )
 include(${ITK_USE_FILE})
 
 ## #############################################################################
@@ -52,7 +51,6 @@ list_source_files(${TARGET_NAME}
 list_header_directories_to_include(${TARGET_NAME}
   ${${TARGET_NAME}_HEADERS}
   )
-
 
 ## #############################################################################
 ## Precompile headers
@@ -77,15 +75,13 @@ add_library(${TARGET_NAME} SHARED
 
 target_include_directories(${TARGET_NAME}
   PUBLIC ${${TARGET_NAME}_INCLUDE_DIRS}
-  PRIVATE ${MEDINRIA_INCLUDE_DIRS}
+  PRIVATE ${RPI_INCLUDE_DIRS}
   )
 ## #############################################################################
 ## Link
 ## #############################################################################
 
 target_link_libraries(${TARGET_NAME}
-  dtkCore
-  dtkLog
   ${ITK_LIBRARIES}
   medCore
   medRegistration

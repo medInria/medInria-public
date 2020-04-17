@@ -91,7 +91,6 @@ add_library(${TARGET_NAME} SHARED
 
 target_include_directories(${TARGET_NAME}
   PUBLIC ${${TARGET_NAME}_INCLUDE_DIRS}
-  PRIVATE ${MEDINRIA_INCLUDE_DIRS}
   PRIVATE ${Boost_INCLUDE_DIR}
   )
 
@@ -100,8 +99,6 @@ target_include_directories(${TARGET_NAME}
 ## #############################################################################
 
 target_link_libraries(${TARGET_NAME}
-  dtkCore
-  dtkLog
   ${ITK_LIBRARIES}
   medCore
   medLog

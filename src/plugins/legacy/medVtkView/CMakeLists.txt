@@ -67,7 +67,6 @@ add_library(${TARGET_NAME} SHARED
 
 target_include_directories(${TARGET_NAME}
   PUBLIC ${${TARGET_NAME}_INCLUDE_DIRS}
-  PRIVATE ${MEDINRIA_INCLUDE_DIRS}
   )
 
 ## #############################################################################
@@ -75,16 +74,8 @@ target_include_directories(${TARGET_NAME}
 ## #############################################################################
 
 target_link_libraries(${TARGET_NAME}
-  Qt5::Core
-  Qt5::Widgets
-  Qt5::Gui
-  Qt5::OpenGL
-  dtkCore
-  dtkLog
   medCore
   medVtkInria
-  vtkGUISupportQt
-  vtkGUISupportQtOpenGL
   medVtkDataMeshBase
   )
 
