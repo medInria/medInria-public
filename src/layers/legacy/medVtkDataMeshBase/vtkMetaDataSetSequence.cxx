@@ -723,7 +723,7 @@ void vtkMetaDataSetSequence::ComputeTimesFromDuration()
     }
 }
 
-double* vtkMetaDataSetSequence::GetScalarRange(QString attribute)
+double* vtkMetaDataSetSequence::GetScalarRange(QString attributeName)
 {
     static double* val = new double[2];
     val[0] = VTK_DOUBLE_MAX;

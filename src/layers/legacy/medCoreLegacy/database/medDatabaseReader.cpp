@@ -179,10 +179,10 @@ medAbstractData* medDatabaseReader::run()
     medMetaDataKeys::Gender.set ( medData, gender );
     medMetaDataKeys::StudyDescription.set ( medData, studyName );
     medMetaDataKeys::StudyID.set ( medData, studyId );
-    medMetaDataKeys::StudyDicomID.set ( medData, studyUid );
+    medMetaDataKeys::StudyInstanceUID.set ( medData, studyUid );
     medMetaDataKeys::SeriesDescription.set ( medData, seriesName );
     medMetaDataKeys::SeriesID.set ( medData, seriesId );
-    medMetaDataKeys::SeriesDicomID.set ( medData, seriesUid );
+    medMetaDataKeys::SeriesInstanceUID.set ( medData, seriesUid );
     medMetaDataKeys::Orientation.set ( medData, orientation );
     medMetaDataKeys::Columns.set ( medData, columns );
     medMetaDataKeys::Rows.set ( medData, rows );

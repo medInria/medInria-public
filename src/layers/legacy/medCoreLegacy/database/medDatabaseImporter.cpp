@@ -161,7 +161,7 @@ int medDatabaseImporter::getOrCreateStudy ( const medAbstractData* medData, QSql
     QString studyUid    = medMetaDataKeys::StudyInstanceUID.getFirstValue(medData);
     QString studyId    = medMetaDataKeys::StudyID.getFirstValue(medData);
 
-    QString serieName   = medMetaDataKeys::SeriesDescription.getFirstValue(medData).simplified();
+    QString seriesName   = medMetaDataKeys::SeriesDescription.getFirstValue(medData).simplified();
 
     if( studyName=="EmptyStudy" && seriesName=="EmptySeries" )
         return studyDbId;
