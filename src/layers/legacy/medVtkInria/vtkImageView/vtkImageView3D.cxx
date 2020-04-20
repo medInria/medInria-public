@@ -1127,12 +1127,10 @@ void vtkImageView3D::RemoveLayer (int layer)
 
         if (layer == 0 && GetNumberOfLayers() > 0)
         {
-            //SetFirstLayer();
             vtkImage3DDisplay *imageDisplay = this->GetImage3DDisplayForLayer(0);
             if (imageDisplay)
             {
-                //imageDisplay->SetInputProducer(pi_poInputAlgoImg);
-                this->Superclass::SetInput(imageDisplay->GetInputProducer()->GetOutputPort(), GetOrientationMatrix(), 0);
+            	this->Superclass::SetInput(imageDisplay->GetInputProducer()->GetOutputPort(), GetOrientationMatrix(), 0);
                 imageDisplay->SetInputData(m_poInternalImageFromInput);
             }
         }
