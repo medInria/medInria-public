@@ -378,6 +378,9 @@ void vtkImageView3D::UnInstallPipeline()
 {
   if (this->Renderer)
   {
+    this->VolumeMapper->RemoveAllInputs();
+    this->VolumeMapper->RemoveAllInputConnections(0);
+    this->Renderer->RemoveViewProp (this->VolumeActor);
     this->Renderer->RemoveViewProp (this->ActorX);
     this->Renderer->RemoveViewProp (this->ActorY);
     this->Renderer->RemoveViewProp (this->ActorZ);
@@ -1122,6 +1125,17 @@ void vtkImageView3D::RemoveLayer (int layer)
         // Delete is handled by SmartPointers.
         this->LayerInfoVec.erase(this->LayerInfoVec.begin() + layer);
 
+        if (layer == 0 && GetNumberOfLayers() > 0)
+        {
+            //SetFirstLayer();
+            vtkImage3DDisplay *imageDisplay = this->GetImage3DDisplayForLayer(0);
+            if (imageDisplay)
+            {
+                //imageDisplay->SetInputProducer(pi_poInputAlgoImg);
+                this->Superclass::SetInput(imageDisplay->GetInputProducer()->GetOutputPort(), GetOrientationMatrix(), 0);
+                imageDisplay->SetInputData(m_poInternalImageFromInput);
+            }
+        }
 
         // ////////////////////////////////////////////////////////////////////////
         // Rebuild a layer if necessary
