@@ -456,7 +456,7 @@ QImage medVtkView::buildThumbnail(const QSize &size)
     this->blockSignals(true);//we dont want to send things that would ending up on updating some gui things or whatever. - RDE
     int w(size.width()), h(size.height());
 
-//    // will cause crashes if any calls to renWin->Render() happened before this line
+    // will cause crashes if any calls to renWin->Render() happened before this line
     d->viewWidget->resize(w,h);
     d->viewWidget->show();
     d->renWin->SetSize(w,h);
