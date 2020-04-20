@@ -718,7 +718,7 @@ void vtkMetaDataSetSequence::GetScalarRange(double range[2], QString attributeNa
     }
 }
 
-double* vtkMetaDataSetSequence::GetScalarRange(QString attribute)
+double* vtkMetaDataSetSequence::GetScalarRange(QString attributeName)
 {
     static double* val = new double[2];
     val[0] = VTK_DOUBLE_MAX;
