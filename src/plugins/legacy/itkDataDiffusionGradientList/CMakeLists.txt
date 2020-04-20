@@ -19,11 +19,9 @@ set(TARGET_NAME itkDataDiffusionGradientListPlugin)
 ## Setup version numbering
 ## #############################################################################
 
-set(${TARGET_NAME}_VERSION ${MEDINRIA_VERSION})
-
+set(${TARGET_NAME}_VERSION ${${PROJECT_NAME}_VERSION})
 string(TOUPPER ${TARGET_NAME} TARGET_NAME_UP)
 add_definitions(-D${TARGET_NAME_UP}_VERSION="${${TARGET_NAME}_VERSION}")
-
 
 ## #############################################################################
 ## Resolve dependencies
@@ -38,22 +36,12 @@ include(${ITK_USE_FILE})
 find_package(TTK REQUIRED)
 include(${TTK_USE_FILE})
 
-
 ## #############################################################################
 ## List Sources
 ## #############################################################################
 
 list_source_files(${TARGET_NAME}
   ${CMAKE_CURRENT_SOURCE_DIR}
-  )
-
-
-## #############################################################################
-## include directorie.
-## #############################################################################
-
-list_header_directories_to_include(${TARGET_NAME}
-  ${${TARGET_NAME}_HEADERS}
   )
 
 ## #############################################################################
@@ -68,7 +56,6 @@ if(MEDINRIA_USE_PRECOMPILED_HEADERS)
     )
 endif()
 
-
 ## #############################################################################
 ## add library
 ## #############################################################################
@@ -78,6 +65,21 @@ add_library(${TARGET_NAME} SHARED
   ${${TARGET_NAME}_CFILES}
   )
 
+## #############################################################################
+## Setup version numbering
+## #############################################################################
+
+set(${TARGET_NAME}_VERSION ${${PROJECT_NAME}_VERSION})
+string(TOUPPER ${TARGET_NAME} TARGET_NAME_UP)
+target_compile_definitions(${TARGET_NAME} PUBLIC ${TARGET_NAME_UP}_VERSION="${${TARGET_NAME}_VERSION}")
+
+## #############################################################################
+## include directorie.
+## #############################################################################
+
+list_header_directories_to_include(${TARGET_NAME}
+  ${${TARGET_NAME}_HEADERS}
+  )
 target_include_directories(${TARGET_NAME}
   PUBLIC ${${TARGET_NAME}_INCLUDE_DIRS}
   )
@@ -97,4 +99,3 @@ target_link_libraries(${TARGET_NAME}
 ## #############################################################################
 
 set_plugin_install_rules_legacy(${TARGET_NAME})
-

@@ -15,23 +15,12 @@
 set(TARGET_NAME qtdcmDataSourcePlugin)
 
 ## #############################################################################
-## Setup version numbering
-## #############################################################################
-
-set(${TARGET_NAME}_VERSION ${MEDINRIA_VERSION})
-string(TOUPPER ${TARGET_NAME} TARGET_NAME_UP)
-add_definitions(-D${TARGET_NAME_UP}_VERSION="${${TARGET_NAME}_VERSION}")
-
-
-## #############################################################################
 ## Resolve dependencies
 ## #############################################################################
 
 find_package(dtk REQUIRED)
 include_directories(${dtk_INCLUDE_DIRS})
-
 find_package(DCMTK REQUIRED NO_MODULE)
-
 find_package(QtDCM REQUIRED)
 
 ## #############################################################################
@@ -41,15 +30,6 @@ find_package(QtDCM REQUIRED)
 list_source_files(${TARGET_NAME}
   ${CMAKE_CURRENT_SOURCE_DIR}
   )
-
-## #############################################################################
-## include directorie.
-## #############################################################################
-
-list_header_directories_to_include(${TARGET_NAME}
-  ${${TARGET_NAME}_HEADERS}
-  )
-
 
 ## #############################################################################
 ## Precompile headers
@@ -75,6 +55,22 @@ add_library(${TARGET_NAME} SHARED
   ${${TARGET_NAME}_CFILES}
   )
 
+## #############################################################################
+## Setup version numbering
+## #############################################################################
+
+set(${TARGET_NAME}_VERSION ${${PROJECT_NAME}_VERSION})
+string(TOUPPER ${TARGET_NAME} TARGET_NAME_UP)
+target_compile_definitions(${TARGET_NAME} PUBLIC ${TARGET_NAME_UP}_VERSION="${${TARGET_NAME}_VERSION}")
+
+## #############################################################################
+## include directorie.
+## #############################################################################
+
+list_header_directories_to_include(${TARGET_NAME}
+  ${${TARGET_NAME}_HEADERS}
+  )
+
 target_include_directories(${TARGET_NAME}
   PUBLIC ${${TARGET_NAME}_INCLUDE_DIRS}
   PUBLIC  ${QTDCM_INCLUDE_DIRS}
@@ -97,7 +93,6 @@ target_link_libraries(${TARGET_NAME}
   ${WIN_LINK_LIBRARIES}
   medCore
   )
-
 
 ## #############################################################################
 ## Install rules

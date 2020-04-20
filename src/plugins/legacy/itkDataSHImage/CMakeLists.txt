@@ -16,16 +16,6 @@
 set(TARGET_NAME itkDataSHImagePlugin)
 
 ## #############################################################################
-## Setup version numbering
-## #############################################################################
-
-set(${TARGET_NAME}_VERSION ${MEDINRIA_VERSION})
-
-string(TOUPPER ${TARGET_NAME} TARGET_NAME_UP)
-add_definitions(-D${TARGET_NAME_UP}_VERSION="${${TARGET_NAME}_VERSION}")
-
-
-## #############################################################################
 ## Resolve dependencies
 ## #############################################################################
 
@@ -59,14 +49,6 @@ list_source_files(${TARGET_NAME}
 
 
 ## #############################################################################
-## include directorie.
-## #############################################################################
-
-list_header_directories_to_include(${TARGET_NAME}
-  ${${TARGET_NAME}_HEADERS}
-  )
-
-## #############################################################################
 ## Precompile headers
 ## #############################################################################
 
@@ -78,7 +60,6 @@ if(MEDINRIA_USE_PRECOMPILED_HEADERS)
     )
 endif()
 
-
 ## #############################################################################
 ## add library
 ## #############################################################################
@@ -87,6 +68,23 @@ add_library(${TARGET_NAME} SHARED
   ${${TARGET_NAME}_PCH}
   ${${TARGET_NAME}_CFILES}
   ${${TARGET_NAME}_QRC}
+  )
+
+## #############################################################################
+## Setup version numbering
+## #############################################################################
+
+set(${TARGET_NAME}_VERSION ${${PROJECT_NAME}_VERSION})
+string(TOUPPER ${TARGET_NAME} TARGET_NAME_UP)
+target_compile_definitions(${TARGET_NAME} PUBLIC ${TARGET_NAME_UP}_VERSION="${${TARGET_NAME}_VERSION}")
+
+
+## #############################################################################
+## include directorie.
+## #############################################################################
+
+list_header_directories_to_include(${TARGET_NAME}
+  ${${TARGET_NAME}_HEADERS}
   )
 
 target_include_directories(${TARGET_NAME}
@@ -105,7 +103,6 @@ target_link_libraries(${TARGET_NAME}
   medVtkInria
   medImageIO
   )
-
 
 ## #############################################################################
 ## Install rules
