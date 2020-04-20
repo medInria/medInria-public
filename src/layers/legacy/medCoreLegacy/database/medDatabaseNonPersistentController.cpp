@@ -563,7 +563,7 @@ medDataIndex medDatabaseNonPersistentController::moveSeries(const medDataIndex& 
                                  QStringList() <<  dataStudy->metadata( medMetaDataKeys::StudyDescription.key()) );
         dataSeries->setMetaData ( medMetaDataKeys::StudyID.key(),
                                  QStringList() <<  dataStudy->metadata( medMetaDataKeys::StudyID.key()) );
-        dataSerie->setMetaData ( medMetaDataKeys::StudyInstanceUID.key(),
+        dataSeries->setMetaData ( medMetaDataKeys::StudyInstanceUID.key(),
                                  QStringList() <<  dataStudy->metadata( medMetaDataKeys::StudyInstanceUID.key()) );
 
         seriesItem->setName(dataStudy->metadata( medMetaDataKeys::PatientName.key()));
