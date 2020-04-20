@@ -13,8 +13,9 @@
 
 #include "medVtkView.h"
 
-#include <QWidget>
 #include <QHash>
+#include <QTest>
+#include <QWidget>
 
 #include <QVTKOpenGLWidget.h>
 #include <QGLFramebufferObject>
@@ -464,6 +465,16 @@ QImage medVtkView::buildThumbnail(const QSize &size)
     d->viewWidget->show();
     d->renWin->SetSize(w,h);
     render();
+
+#ifdef Q_OS_UNIX
+    // X11 likes to animate window creation, which means by the time we grab the
+    // widget, it might not be fully ready yet, in which case we get artefacts.
+    // Only necessary if rendering to an actual screen window.
+    if(d->renWin->GetOffScreenRendering() == 0)
+    {
+        QTest::qWaitForWindowExposed(d->viewWidget);
+    }
+#endif
 
     QImage thumbnail = d->viewWidget->grabFramebuffer();
     d->viewWidget->hide();
