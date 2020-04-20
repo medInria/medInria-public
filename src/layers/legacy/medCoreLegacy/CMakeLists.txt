@@ -74,6 +74,7 @@ target_link_libraries(${TARGET_NAME}
   Qt5::OpenGL
   Qt5::Gui
   Qt5::Sql
+  Qt5::Test
   ${OPENGL_LIBRARIES}
   dtkCoreSupport
   dtkGuiSupport
