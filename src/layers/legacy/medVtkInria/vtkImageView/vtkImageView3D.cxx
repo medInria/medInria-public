@@ -447,9 +447,17 @@ void vtkImageView3D::SetInput(vtkAlgorithmOutput* pi_poVtkAlgoOutput, vtkMatrix4
         if(layer == 0)
         {
             SetFirstLayer(pi_poVtkAlgoOutput, matrix, layer);
-        }
 
-        if (is3D())
+            if (is3D())
+            {
+                this->InternalUpdate();
+            }
+            else
+            {
+                vtkErrorMacro( <<"Only 3D layers are supported in 3D orientation" );
+            }
+        }
+        else if (is3D())
         {
             if (layer > 0 && layer < 4)
             {
@@ -458,9 +466,11 @@ void vtkImageView3D::SetInput(vtkAlgorithmOutput* pi_poVtkAlgoOutput, vtkMatrix4
             else if (layer >= 4)
             {
                 vtkErrorMacro( <<"Only 4 layers are supported in 3D fusion" );
-                return;
             }
-            InternalUpdate();
+        }
+        else
+        {
+            vtkErrorMacro( <<"Only 3D layers are supported in 3D orientation" );
         }
     }
 }
