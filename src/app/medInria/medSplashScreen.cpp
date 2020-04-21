@@ -104,7 +104,7 @@ void medSplashScreen::finish(QWidget *mainWin)
 {
     if (mainWin)
     {
-#if defined(Q_OS_UNIX)
+#if defined(Q_OS_LINUX)
         QTest::qWaitForWindowExposed(mainWin);
 #endif
     }
