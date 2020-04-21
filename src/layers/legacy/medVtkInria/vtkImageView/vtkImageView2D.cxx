@@ -247,7 +247,9 @@ void vtkImageView2D::GetSliceRange(int &min, int &max) const
         max = 0;
         
         if(this->Get2DDisplayMapperInputAlgorithm())
+        {
             this->Get2DDisplayMapperInputAlgorithm()->UpdateInformation();
+        }
         auto pAlgo = this->Get2DDisplayMapperInputAlgorithm();
         if (pAlgo != nullptr)
         {
@@ -641,8 +643,10 @@ void vtkImageView2D::SetViewOrientation(int orientation)
 void vtkImageView2D::SetOrientationMatrix (vtkMatrix4x4* matrix)
 {
   this->Superclass::SetOrientationMatrix (matrix);
-    if(this->GetImage2DDisplayForLayer(GetFirstLayer()))
+  if(this->GetImage2DDisplayForLayer(GetFirstLayer()))
+  {
         this->GetImage2DDisplayForLayer(GetFirstLayer())->GetImageActor()->SetUserMatrix (this->OrientationMatrix);
+  }
   this->UpdateOrientation();
 
   // The slice might have changed in the process
