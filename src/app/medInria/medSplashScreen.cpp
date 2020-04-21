@@ -11,6 +11,8 @@
 
 =========================================================================*/
 
+#include <QTest>
+
 #include <medSplashScreen.h>
 #include <dtkCoreSupport/dtkPlugin.h>
 #include <medPluginManager.h>
@@ -102,9 +104,8 @@ void medSplashScreen::finish(QWidget *mainWin)
 {
     if (mainWin)
     {
-#if defined(Q_OS_X11)
-        extern void qt_x11_wait_for_window_manager(QWidget *mainWin);
-        qt_x11_wait_for_window_manager(mainWin);
+#if defined(Q_OS_LINUX)
+        QTest::qWaitForWindowExposed(mainWin);
 #endif
     }
     close();

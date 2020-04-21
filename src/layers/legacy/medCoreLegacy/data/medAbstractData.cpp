@@ -23,10 +23,7 @@
 
 #include <QApplication>
 #include <QMainWindow>
-
-#ifdef Q_OS_X11
-void qt_x11_wait_for_window_manager(QWidget*);
-#endif
+#include <QTest>
 
 class medAbstractDataPrivate
 {
@@ -253,11 +250,12 @@ QImage medAbstractData::generateThumbnailInGuiThread(QSize size)
             viewWidget->move(aMainWindow->geometry().x(), aMainWindow->geometry().y());
             // and raise the main window above the temporary
             aMainWindow->raise();
+
+            // We need to wait for the window manager to finish animating before we can continue.
+#ifdef Q_OS_LINUX
+            QTest::qWaitForWindowExposed(viewWidget);
+#endif
         }
-        // We need to wait for the window manager to finish animating before we can continue.
-    #ifdef Q_OS_X11
-        qt_x11_wait_for_window_manager(viewWidget);
-    #endif
     }
 
     view->addLayer(this);
