@@ -59,7 +59,7 @@ target_link_libraries(${TARGET_NAME}
     )
 
 ## #############################################################################
-## include directorie.
+## include directories.
 ## #############################################################################
 
 target_include_directories(${TARGET_NAME}

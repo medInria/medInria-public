@@ -55,7 +55,7 @@ add_library(${TARGET_NAME} SHARED
 
 
 ## #############################################################################
-## include directorie.
+## include directories.
 ## #############################################################################
 
 target_include_directories(${TARGET_NAME}

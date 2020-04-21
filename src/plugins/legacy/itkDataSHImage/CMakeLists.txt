@@ -80,7 +80,7 @@ target_compile_definitions(${TARGET_NAME} PUBLIC ${TARGET_NAME_UP}_VERSION="${${
 
 
 ## #############################################################################
-## include directorie.
+## include directories.
 ## #############################################################################
 
 list_header_directories_to_include(${TARGET_NAME}

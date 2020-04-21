@@ -57,7 +57,7 @@ add_library(${TARGET_NAME} SHARED
   )
 
 ## #############################################################################
-## include directorie.
+## include directories.
 ## #############################################################################
 
 target_include_directories(${TARGET_NAME}
@@ -65,11 +65,9 @@ target_include_directories(${TARGET_NAME}
   PRIVATE ${DCMTK_INCLUDE_DIRS}
   )
 
-
 ## #############################################################################
 ## Link
 ## #############################################################################
-
 
 target_link_libraries(${TARGET_NAME}
   Qt5::Core
