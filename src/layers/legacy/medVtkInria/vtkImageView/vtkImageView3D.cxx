@@ -512,15 +512,13 @@ bool vtkImageView3D::is3D()
 //----------------------------------------------------------------------------
 void vtkImageView3D::SetOtherLayer(vtkAlgorithmOutput* pi_poVtkAlgoOutput, vtkMatrix4x4 *matrix /*= 0*/, int layer /*= 0*/)
 {
-    pi_poVtkAlgoOutput = this->ResliceImageToInput(pi_poVtkAlgoOutput, matrix);
-
-    vtkAlgorithmOutput *poVtkAlgoOutputTmp = pi_poVtkAlgoOutput;
+    vtkAlgorithmOutput *poVtkAlgoOutputTmp = this->ResliceImageToInput(pi_poVtkAlgoOutput, matrix);
     // cast it if needed
-    if (static_cast<vtkImageAlgorithm*>(pi_poVtkAlgoOutput->GetProducer())->GetOutput()->GetScalarType()
-            != this->GetMedVtkImageInfo()->scalarType)
+    int inputImgScalarType = static_cast<vtkImageAlgorithm*>(poVtkAlgoOutputTmp->GetProducer())->GetOutput()->GetScalarType();
+    if (inputImgScalarType != this->GetMedVtkImageInfo()->scalarType)
     {
         vtkImageCast *cast = vtkImageCast::New();
-        cast->SetInputConnection(pi_poVtkAlgoOutput);
+        cast->SetInputConnection(poVtkAlgoOutputTmp);
         cast->SetOutputScalarType (this->GetMedVtkImageInfo()->scalarType);
         cast->Update();
 
@@ -702,7 +700,7 @@ double vtkImageView3D::GetOpacity(int layer) const
         vtkImage3DDisplay *imageDisplay = GetImage3DDisplayForLayer(layer);
         if (imageDisplay)
         {
-            imageDisplay->GetOpacity();
+            dfRes = imageDisplay->GetOpacity();
         }
     }
     return dfRes;
