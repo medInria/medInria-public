@@ -18,17 +18,9 @@ set(TARGET_NAME medLog)
 ## #############################################################################
 ## find requireds
 ## #############################################################################
-
-# find dtk
 find_package(dtk REQUIRED)
-
-# find itk
 find_package(ITK REQUIRED COMPONENTS ITKCommon)
-include(${ITK_USE_FILE})
-
-# find vtk
 find_package(VTK REQUIRED COMPONENTS vtkCommonCore)
-include(${VTK_USE_FILE})
 
 ## #############################################################################
 ## List Sources
@@ -57,6 +49,8 @@ add_library(${TARGET_NAME} SHARED
 target_include_directories(${TARGET_NAME}
   PUBLIC ${${TARGET_NAME}_INCLUDE_DIRS}
   PUBLIC ${dtk_INCLUDE_DIRS}
+  PRIVATE ${ITK_INCLUDE_DIRS}
+  PRIVATE ${VTK_INCLUDE_DIRS}
   )
 
 ## #############################################################################

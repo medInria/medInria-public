@@ -19,12 +19,12 @@ set(TARGET_NAME medVtkInria)
 ## Find required
 ## #############################################################################
 
-find_package(VTK REQUIRED COMPONENTS vtkCommonCore vtkCommonSystem vtkImagingColor vtkImagingGeneral vtkImagingHybrid vtkImagingStencil
-    vtkIOCore vtkIOExportOpenGL2 vtkIOGeometry vtkIOImage vtkIOLegacy vtkIOXML
-    vtkRenderingCore vtkRenderingOpenGL2 vtkRenderingContextOpenGL2 vtkRenderingVolumeOpenGL2
-    vtkInteractionWidgets vtkRenderingAnnotation vtkInteractionStyle vtkImagingStatistics
-    vtkFiltersExtraction vtkFiltersModeling vtkFiltersGeometry vtksys)
-include(${VTK_USE_FILE})
+find_package(VTK REQUIRED COMPONENTS
+    vtkRenderingVolume
+    vtkRenderingVolumeOpenGL2
+    vtkInteractionWidgets
+    vtkIOLegacy
+    )
 
 find_package(OpenGL REQUIRED)
 
@@ -118,14 +118,16 @@ add_library(${TARGET_NAME} SHARED
   ${${TARGET_NAME}_CFILES}
   )
 
+target_compile_definitions(${TARGET_NAME} PUBLIC ${VTK_DEFINITIONS})
+
 ## #############################################################################
 ## include directories.
 ## #############################################################################
 
 target_include_directories(${TARGET_NAME}
-  PUBLIC
-  ${${TARGET_NAME}_INCLUDE_DIRS}
-  ${CMAKE_BINARY_DIR}/shaders
+  PUBLIC ${${TARGET_NAME}_INCLUDE_DIRS}
+  PUBLIC ${CMAKE_BINARY_DIR}/shaders
+  PRIVATE ${VTK_INCLUDE_DIRS}
   )
 
 ## #############################################################################

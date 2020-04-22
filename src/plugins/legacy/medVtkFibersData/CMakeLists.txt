@@ -21,8 +21,9 @@ set(TARGET_NAME medVtkFibersDataPlugin)
 
 find_package(dtk REQUIRED)
 
-find_package(VTK REQUIRED COMPONENTS  vtkImagingCore vtkIOLegacy vtkIOXML vtkRenderingCore vtkRenderingOpenGL2 vtkInteractionWidgets) 
-include(${VTK_USE_FILE})
+find_package(VTK REQUIRED COMPONENTS
+    vtkIOLegacy
+    vtkRenderingOpenGL2 vtkInteractionWidgets)
 
 find_package(ITK REQUIRED COMPONENTS ITKCommon ITKVtkGlue)
 
@@ -74,6 +75,7 @@ add_library(${TARGET_NAME} SHARED
 set(${TARGET_NAME}_VERSION ${${PROJECT_NAME}_VERSION})
 string(TOUPPER ${TARGET_NAME} TARGET_NAME_UP)
 target_compile_definitions(${TARGET_NAME} PUBLIC ${TARGET_NAME_UP}_VERSION="${${TARGET_NAME}_VERSION}")
+target_compile_definitions(${TARGET_NAME} PUBLIC ${VTK_DEFINITIONS})
 
 ## #############################################################################
 ## include directories.
@@ -87,6 +89,7 @@ target_include_directories(${TARGET_NAME}
   PUBLIC ${${TARGET_NAME}_INCLUDE_DIRS}
   PUBLIC ${dtk_INCLUDE_DIRS}
   PRIVATE ${ITK_INCLUDE_DIRS}
+  PRIVATE ${VTK_INCLUDE_DIRS}
   )
 
 ## #############################################################################

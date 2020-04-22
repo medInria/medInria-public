@@ -27,7 +27,9 @@ find_package(ITK REQUIRED  COMPONENTS  ITKIOImageBase ITKMetaIO ITKIOMeta
     ITKIOJPEG2000 ITKIOLSM ITKIOMINC ITKIOMRC ITKIONIFTI ITKIONRRD
     ITKIOPNG ITKIOStimulate ITKIOVTK)
 
-find_package(VTK REQUIRED  COMPONENTS vtkCommonCore vtkCommonExecutionModel vtkRenderingCore vtkImagingCore vtkInteractionStyle vtkInteractionWidgets)
+find_package(VTK REQUIRED  COMPONENTS
+    vtkImagingCore
+    vtkInteractionWidgets)
 
 find_package(TTK REQUIRED)
 include(${TTK_USE_FILE})
@@ -77,7 +79,7 @@ add_library(${TARGET_NAME} SHARED
 set(${TARGET_NAME}_VERSION ${${PROJECT_NAME}_VERSION})
 string(TOUPPER ${TARGET_NAME} TARGET_NAME_UP)
 target_compile_definitions(${TARGET_NAME} PUBLIC ${TARGET_NAME_UP}_VERSION="${${TARGET_NAME}_VERSION}")
-
+target_compile_definitions(${TARGET_NAME} PUBLIC ${VTK_DEFINITIONS})
 ## #############################################################################
 ## include directories.
 ## #############################################################################

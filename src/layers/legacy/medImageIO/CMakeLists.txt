@@ -24,17 +24,10 @@ find_package(ITK REQUIRED COMPONENTS   ITKCommon
     ITKIONIFTI ITKIOGIPL ITKIOGE ITKIOHDF5 ITKIOBioRad ITKIOStimulate
     ITKIOMRC ITKIOTIFF ITKVTK ITKVtkGlue ITKIOPhilipsREC)
 
-include(${ITK_USE_FILE})
-
 # find vtk
 find_package(VTK REQUIRED COMPONENTS vtkIOImage)
-include(${VTK_USE_FILE})
-
-
-#WARNING USE VTK through ITKVtkGlue and medLog
 
 find_package(DCMTK REQUIRED NO_MODULE)
-
 
 ## #############################################################################
 ## List Sources
@@ -63,6 +56,8 @@ add_library(${TARGET_NAME} SHARED
 target_include_directories(${TARGET_NAME}
   PUBLIC ${${TARGET_NAME}_INCLUDE_DIRS}
   PRIVATE ${DCMTK_INCLUDE_DIRS}
+  PRIVATE ${ITK_INCLUDE_DIRS}
+  PRIVATE ${VTK_INCLUDE_DIRS}
   )
 
 ## #############################################################################

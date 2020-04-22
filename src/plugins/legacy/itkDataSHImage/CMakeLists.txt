@@ -25,8 +25,7 @@ find_package(ITK REQUIRED COMPONENTS ITKIOImageBase  ITKIOMeta ITKIOBMP ITKIOBio
     ITKIOBruker ITKIOGDCM ITKIOGIPL ITKIOHDF5 ITKIOJPEG ITKIOJPEG2000 ITKIOLSM ITKIOMRC
     ITKIOMINC ITKIONIFTI ITKIONRRD ITKIOPNG ITKIOStimulate ITKIOVTK)
 
-find_package(VTK REQUIRED COMPONENTS vtkCommonExecutionModel vtkRenderingCore vtkInteractionWidgets)
-#include(${VTK_USE_FILE})
+find_package(VTK REQUIRED COMPONENTS vtkInteractionWidgets)
 
 if (APPLE OR WIN32)
     find_package(Boost REQUIRED)
@@ -74,6 +73,7 @@ add_library(${TARGET_NAME} SHARED
 set(${TARGET_NAME}_VERSION ${${PROJECT_NAME}_VERSION})
 string(TOUPPER ${TARGET_NAME} TARGET_NAME_UP)
 target_compile_definitions(${TARGET_NAME} PUBLIC ${TARGET_NAME_UP}_VERSION="${${TARGET_NAME}_VERSION}")
+target_compile_definitions(${TARGET_NAME} PUBLIC ${VTK_DEFINITIONS})
 
 ## #############################################################################
 ## include directories.
@@ -97,6 +97,7 @@ target_include_directories(${TARGET_NAME}
 
 target_link_libraries(${TARGET_NAME}
   ${ITK_LIBRARIES}
+  ${VTK_LIBRARIES}
   medCore
   medLog
   medVtkInria
