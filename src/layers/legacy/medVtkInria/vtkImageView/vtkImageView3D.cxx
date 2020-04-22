@@ -447,6 +447,7 @@ void vtkImageView3D::SetInput(vtkAlgorithmOutput* pi_poVtkAlgoOutput, vtkMatrix4
         if(layer == 0)
         {
             SetFirstLayer(pi_poVtkAlgoOutput, matrix, layer);
+            initImage(layer);
 
             if (is3D())
             {
@@ -462,6 +463,7 @@ void vtkImageView3D::SetInput(vtkAlgorithmOutput* pi_poVtkAlgoOutput, vtkMatrix4
             if (layer > 0 && layer < 4)
             {
                 SetOtherLayer(pi_poVtkAlgoOutput, matrix, layer);
+                initImage(layer);
             }
             else if (layer >= 4)
             {
@@ -1286,4 +1288,23 @@ medVtkImageInfo* vtkImageView3D::GetMedVtkImageInfo(int layer /*= 0*/) const
     }
 
     return imageInfo;
+}
+
+
+void  vtkImageView3D::initImage(int pi_iLayer)
+{
+    if (pi_iLayer == 0)
+    {
+        double *range = m_poInternalImageFromInput->GetScalarRange();
+        this->SetColorRange(range, pi_iLayer);
+    }
+
+    this->VolumeProperty->SetShade(pi_iLayer, 1);
+    this->VolumeProperty->SetComponentWeight(pi_iLayer, 1.0);
+    vtkColorTransferFunction *rgb = this->GetDefaultColorTransferFunction();
+    vtkPiecewiseFunction     *alpha = this->GetDefaultOpacityTransferFunction();
+
+    this->SetTransferFunctions(rgb, alpha, pi_iLayer);
+    rgb->Delete();
+    alpha->Delete();
 }
