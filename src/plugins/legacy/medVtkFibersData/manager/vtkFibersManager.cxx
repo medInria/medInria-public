@@ -18,6 +18,7 @@
 #include <vtkCommand.h>
 #include <vtkBoxWidget.h>
 #include <vtkPolyData.h>
+#include <vtkPolyDataMapper.h>
 #include <vtkLimitFibersToVOI.h>
 #include <vtkLimitFibersToROI.h>
 #include <vtkTubeFilter.h>
@@ -47,7 +48,6 @@
 
 #include <stdio.h>
 
-#include "vtkFiberMapper.h"
 #include "vtkFiberKeyboardCallback.h"
 #include "vtkFibersManagerCallback.h"
 #include "vtkFiberPickerCallback.h"
@@ -58,7 +58,6 @@
 vtkStandardNewMacro(vtkFibersManager);
 
 
-int vtkFibersManager::vtkUseHardwareShaders  = 0;
 int vtkFibersManager::vtkFiberRenderingStyle = 0;
 
 
@@ -108,22 +107,10 @@ vtkFibersManager::vtkFibersManager()
   this->PickerCallback->SetFibersManager (this);
   
 
-  if( vtkFibersManager::GetUseHardwareShaders() )
-  {
-    vtkFiberMapper* mapper = vtkFiberMapper::New();
-    mapper->SetAmbientContributionShadow(0.0);
-    mapper->SetDiffuseContributionShadow(0.6);
-    mapper->SetSpecularContributionShadow(0.0);
-    mapper->LightingOff();
-    mapper->ShadowingOff();
-    this->Mapper = mapper;
-  }
-  else
-  {
-    vtkPolyDataMapper* mapper = vtkPolyDataMapper::New();
-    mapper->UseLookupTableScalarRangeOn();
-    this->Mapper = mapper;
-  }
+
+  vtkPolyDataMapper* mapper = vtkPolyDataMapper::New();
+  mapper->UseLookupTableScalarRangeOn();
+  this->Mapper = mapper;
 
 
   this->Mapper->SetInputConnection ( this->Callback->GetOutputPort() );
@@ -142,8 +129,6 @@ vtkFibersManager::vtkFibersManager()
     "4: Use lines\n"
     "5: Use ribbons\n"
     "6: Use tubes\n"
-    "7: Use software rendering\n"
-    "8: Use hardware rendering\n"
     "n: Navigate into visible\n"
     "u: Reset to initial state\n"
     "P: Pick fiber\n"
@@ -358,53 +343,20 @@ void vtkFibersManager::Initialize()
 void vtkFibersManager::SetRenderingModeToTubes()
 {
   vtkFiberRenderingStyle = RENDER_IS_TUBES;
-  
-  vtkFiberMapper* mapper = vtkFiberMapper::SafeDownCast (this->Mapper);
-  if( mapper )
-  {
-    mapper->LightingOn();
-    mapper->ShadowingOn();
-  }
-  else // the rendering is not supported
-       // and the mapper is a regular polydatamapper
-  {
-    this->Mapper->SetInputConnection (this->TubeFilter->GetOutputPort());
-  }
-
+  this->Mapper->SetInputConnection (this->TubeFilter->GetOutputPort());
 }
 
 void vtkFibersManager::SetRenderingModeToRibbons()
 {
   vtkFiberRenderingStyle = RENDER_IS_RIBBONS;
-  
-  vtkFiberMapper* mapper = vtkFiberMapper::SafeDownCast (this->Mapper);
-  if( mapper )
-  {
-    mapper->LightingOn();
-    mapper->ShadowingOff();
-  }
-  else
-  {
-    this->Mapper->SetInputConnection (this->RibbonFilter->GetOutputPort());
-  }
-
+  this->Mapper->SetInputConnection (this->RibbonFilter->GetOutputPort());
 }
 
 void vtkFibersManager::SetRenderingModeToPolyLines()
 {
   vtkFiberRenderingStyle = RENDER_IS_POLYLINES;
-  
-  vtkFiberMapper* mapper = vtkFiberMapper::SafeDownCast (this->Mapper);
-  if( mapper )
-  {
-    mapper->LightingOff();
-    mapper->ShadowingOff();
-  }
-  else
-  {
-    this->PickerCallback->SetInputConnection (this->Callback->GetOutputPort());
-    this->Mapper->SetInputConnection (this->Callback->GetOutputPort());
-  }
+  this->PickerCallback->SetInputConnection (this->Callback->GetOutputPort());
+  this->Mapper->SetInputConnection (this->Callback->GetOutputPort());
 }
 
 void vtkFibersManager::SetRenderingMode(int mode)
@@ -429,82 +381,6 @@ void vtkFibersManager::SetRenderingMode(int mode)
   }	
 }
 
-void vtkFibersManager::ChangeMapperToUseHardwareShaders()
-{
-  vtkDebugMacro(<<"Hardware shading is activated.");
-  
-  if( vtkFiberMapper::SafeDownCast( this->Mapper ) )
-  {
-    return;
-  }
-  
-  vtkFiberMapper* mapper = vtkFiberMapper::New();
-  
-  if( !mapper->IsRenderSupported(this->Renderer) )
-  {
-    vtkErrorMacro(<<"Error: Hardware acceleration is not supported.");
-    mapper->Delete();
-    return;
-  }
-  
-  mapper->SetAmbientContributionShadow(0.0);
-  mapper->SetDiffuseContributionShadow(0.6);
-  mapper->SetSpecularContributionShadow(0.0);
-  mapper->LightingOff();
-  mapper->ShadowingOff();
-
-  mapper->SetInputConnection( this->Callback->GetOutputPort() );
-  this->Actor->SetMapper( mapper );
-
-  if( this->Mapper )
-  {
-    mapper->SetScalarMode ( this->Mapper->GetScalarMode() );
-    mapper->SelectColorArray ( this->Mapper->GetArrayId() );
-    mapper->SetLookupTable ( this->Mapper->GetLookupTable() );
-    this->Mapper->Delete(); 
-    this->Mapper = 0;
-  }
-  this->Mapper = mapper;
-  
-  this->SetRenderingMode( vtkFibersManager::GetRenderingMode() );
-}
-
-void vtkFibersManager::ChangeMapperToDefault()
-{
-  if( !vtkFiberMapper::SafeDownCast( this->Mapper ) )
-  {
-    return;
-  }
-  
-  vtkPolyDataMapper* mapper = vtkPolyDataMapper::New();
-  mapper->UseLookupTableScalarRangeOn();
-  mapper->SetInputConnection( this->Callback->GetOutputPort() );
-  this->Actor->SetMapper( mapper );
-  
-  if( this->Mapper )
-  {
-    mapper->SetScalarMode ( this->Mapper->GetScalarMode() );
-    mapper->SelectColorArray ( this->Mapper->GetArrayId() );
-    mapper->SetLookupTable ( this->Mapper->GetLookupTable() );
-    this->Mapper->Delete(); 
-    this->Mapper = 0;
-  }
-  this->Mapper = mapper;
-  
-  this->SetRenderingMode( vtkFibersManager::GetRenderingMode() );
-}
-
-
-void vtkFibersManager::SetUseHardwareShaders(int i)
-{
-  vtkUseHardwareShaders = i;
-}
-
-int vtkFibersManager::GetUseHardwareShaders()
-{ 
-  return vtkUseHardwareShaders; 
-}
-
 int vtkFibersManager::GetRenderingMode()
 { 
   return vtkFiberRenderingStyle; 
@@ -523,16 +399,6 @@ vtkLimitFibersToROI* vtkFibersManager::GetROILimiter() const
 vtkLimitFibersToVOI* vtkFibersManager::GetVOILimiter() const
 {
   return this->Callback->GetFiberLimiter();
-}
-
-void vtkFibersManager::UseHardwareShadersOn()
-{
-  vtkFibersManager::SetUseHardwareShaders(1);
-}
-  
-void vtkFibersManager::UseHardwareShadersOff()
-{
-  vtkFibersManager::SetUseHardwareShaders(0);
 }
 
 
@@ -674,5 +540,4 @@ void vtkFibersManager::Execute()
   this->Callback->GetROIFiberLimiter()->Modified();
   this->Callback->GetFiberLimiter()->Modified();
   this->Callback->GetFiberLimiter()->Update();
-  //m_Callback->Execute(m_BoxWidget, 0, 0);
 }

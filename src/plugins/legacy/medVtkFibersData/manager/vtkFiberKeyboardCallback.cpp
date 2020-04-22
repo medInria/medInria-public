@@ -63,24 +63,6 @@ void vtkFiberKeyboardCallback::Execute(vtkObject *caller, unsigned long event, v
             }
             break;
 
-        case '7':
-            if (this->FibersManager)
-            {
-                vtkFibersManager::UseHardwareShadersOff();
-                this->FibersManager->ChangeMapperToDefault();
-                rwin->Render();
-            }
-            break;
-
-        case '8':
-            if (this->FibersManager)
-            {
-                vtkFibersManager::UseHardwareShadersOn();
-                this->FibersManager->ChangeMapperToUseHardwareShaders();
-                rwin->Render();
-            }
-            break;
-
 
         case 'n':
         case 'N':

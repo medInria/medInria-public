@@ -39,8 +39,6 @@ list_source_files(${TARGET_NAME}
   vtkWidgetsAddOn
   vtkVisuManagement
   vtkVisuManagement/lut
-  HWShading
-  HWShading/helpers
   medClutEditorToolBox
   )
 
@@ -48,61 +46,6 @@ list_header_directories_to_include(${TARGET_NAME}
   ${${TARGET_NAME}_HEADERS}
   )
 
-## #############################################################################
-## write header shader
-## #############################################################################
-
-
-include(HWShading/cmake/shader_to_header.cmake)
-
-# see HWShading/cmake/shader_to_header.cmake
-shader_to_header(HWShading/shaders/AnisotropicLighting.vert
-  AnisotropicLightingVertexText
-  )
-
-shader_to_header(HWShading/shaders/AnisotropicLighting.frag
-  AnisotropicLightingFragmentText
-  )
-
-shader_to_header(HWShading/shaders/ShadowMapping.vert
-  ShadowMappingVertexText
-  )
-
-shader_to_header(HWShading/shaders/ShadowMapping.frag
-  ShadowMappingFragmentText
-  )
-
-shader_to_header(HWShading/shaders/Spotlight.func
-  SpotlightFunctionsText
-  )
-
-shader_to_header(HWShading/shaders/AnisotropicLighting.func
-  AnisotropicLightingFunctionsText
-  )
-
-shader_to_header(HWShading/shaders/AnisoLiShadowMap.frag
-  AnisotropicLightingShadowMappingFragmentText
-  )
-
-shader_to_header(HWShading/shaders/AnisoLiShadowMap.vert
-  AnisotropicLightingShadowMappingVertexText
-  )
-
-shader_to_header(HWShading/shaders/BuildShadowMap.vert
-  BuildShadowMapVertexText
-  )
-
-shader_to_header(HWShading/shaders/BuildShadowMap.frag
-  BuildShadowMapFragmentText
-  )
-
-shader_to_header(HWShading/shaders/BuildShadowMapLines.vert
-  BuildShadowMapLinesVertexText
-  )
-
-shader_to_header(HWShading/shaders/BuildShadowMapLines.frag
-  BuildShadowMapLinesFragmentText
-  )
 
 ## #############################################################################
 ## add library

@@ -13,16 +13,15 @@ PURPOSE.
 
 #include "vtkFiberDataSetManager.h"
 
-#include "vtkObjectFactory.h"
-#include "vtkFiberDataSet.h"
-#include "vtkActor.h"
-#include "vtkProperty.h"
-#include "vtkFiberMapper.h"
-#include "vtkTubeFilter.h"
-#include "vtkRibbonFilter.h"
-#include "vtkPointData.h"
-#include "vtkPolyData.h"
-
+#include <vtkObjectFactory.h>
+#include <vtkFiberDataSet.h>
+#include <vtkActor.h>
+#include <vtkProperty.h>
+#include <vtkTubeFilter.h>
+#include <vtkRibbonFilter.h>
+#include <vtkPointData.h>
+#include <vtkPolyData.h>
+#include <vtkPolyDataMapper.h>
 #include <map>
 
 
@@ -99,23 +98,6 @@ void vtkFiberDataSetManager::Disable()
   vtkFibersManager::Disable();
 }
 
-/*
-void vtkFiberDataSetManager::SetRenderWindowInteractor (vtkRenderWindowInteractor *iren)
-{
-  vtkFibersManager::SetRenderWindowInteractor (iren);
-  
-  if (iren && this->GetRenderer())
-  {
-    vtkFiberDataSetManagerPrivate::vtkFiberBundlePipelineListType::iterator it = d->FiberBundlePipelineList.begin();
-    while (it!=d->FiberBundlePipelineList.end())
-    {
-      this->GetRenderer()->AddViewProp ( d->FiberBundlePipelineList[(*it).first]->Actor );
-      ++it;
-    }
-  }
-}
-*/
-
 void vtkFiberDataSetManager::SetInput (vtkFiberDataSet *dataset)
 {
   if (dataset!=this->FiberDataSet)
@@ -144,33 +126,9 @@ void vtkFiberDataSetManager::SetInput (vtkFiberDataSet *dataset)
   }
   d->FiberBundlePipelineList.clear();
 
-  /*
-  vtkFiberDataSet::vtkFiberBundleListType bundles = this->FiberDataSet->GetBundleList();
-  vtkFiberDataSet::vtkFiberBundleListType::iterator itb = bundles.begin();
-  while (itb!=bundles.end())
-  {
-    d->FiberBundlePipelineList[(*itb).first] = new vtkFiberDataSetManagerPrivate::BundlePipeline;
-    d->FiberBundlePipelineList[(*itb).first]->Actor->GetProperty()
-      ->SetColor ( (*itb).second.Red, (*itb).second.Green, (*itb).second.Blue);
-    if (this->GetRenderer())
-    {
-      this->GetRenderer()->AddViewProp ( d->FiberBundlePipelineList[(*itb).first]->Actor );
-    }
-    ++itb;
-  }
-  */
-
   this->CreateBundleRenderingPipeline();
 }
 
-/*
-void vtkFiberDataSetManager::RemoveAllActors()
-{
-  this->RemoveBundleActors();
-
-  vtkFibersManager::RemoveAllActors();
-}
-*/
 
 void vtkFiberDataSetManager::AddBundleActors()
 {
@@ -216,18 +174,6 @@ void vtkFiberDataSetManager::SetRenderingModeToRibbons()
   this->CreateBundleRenderingPipeline();
 }
 
-void vtkFiberDataSetManager::ChangeMapperToUseHardwareShaders()
-{
-  vtkFibersManager::ChangeMapperToUseHardwareShaders();
-  this->CreateBundleRenderingPipeline();
-}
-
-void vtkFiberDataSetManager::ChangeMapperToDefault()
-{
-  vtkFibersManager::ChangeMapperToDefault();
-  this->CreateBundleRenderingPipeline();
-}
-
 void vtkFiberDataSetManager::CreateBundleRenderingPipeline()
 {
   if (!this->FiberDataSet)
@@ -242,89 +188,61 @@ void vtkFiberDataSetManager::CreateBundleRenderingPipeline()
   }
 }
 
-void vtkFiberDataSetManager::CreateRenderingPipelineForBundle (const std::string &name)
+void vtkFiberDataSetManager::CreateRenderingPipelineForBundle(const std::string &name)
 {
-  if (vtkPolyData *bundle = this->FiberDataSet->GetBundleList()[name].Bundle)
-  {
-    vtkFiberDataSetManagerPrivate::vtkFiberBundlePipelineListType::iterator it = d->FiberBundlePipelineList.find (name);
-    if (it==d->FiberBundlePipelineList.end())
+    if (vtkPolyData *bundle = this->FiberDataSet->GetBundleList()[name].Bundle)
     {
-      // create rendering pipeline
-      d->FiberBundlePipelineList[name] = new vtkFiberDataSetManagerPrivate::BundlePipeline;
-      d->FiberBundlePipelineList[name]->Actor->GetProperty()->SetColor (this->FiberDataSet->GetBundleList()[name].Red, this->FiberDataSet->GetBundleList()[name].Green, this->FiberDataSet->GetBundleList()[name].Blue);
-      if (this->GetRenderer())
-      {
-	    this->GetRenderer()->AddViewProp ( d->FiberBundlePipelineList[name]->Actor );
-      }
-    }
-    
-    vtkPolyDataMapper *mapper = 0;
-    if (vtkFibersManager::GetUseHardwareShaders())
-    {
-      vtkFiberMapper *fiberMapper = vtkFiberMapper::New();
-      fiberMapper->SetAmbientContributionShadow(0.0);
-      fiberMapper->SetDiffuseContributionShadow(0.6);
-      fiberMapper->SetSpecularContributionShadow(0.0);
-      fiberMapper->LightingOff();
-      fiberMapper->ShadowingOff();
-      mapper = fiberMapper;
-    }
-    else
+        vtkFiberDataSetManagerPrivate::vtkFiberBundlePipelineListType::iterator it = d->FiberBundlePipelineList.find(name);
+        if (it == d->FiberBundlePipelineList.end())
+        {
+            // create rendering pipeline
+            d->FiberBundlePipelineList[name] = new vtkFiberDataSetManagerPrivate::BundlePipeline;
+            d->FiberBundlePipelineList[name]->Actor->GetProperty()->SetColor(this->FiberDataSet->GetBundleList()[name].Red, this->FiberDataSet->GetBundleList()[name].Green, this->FiberDataSet->GetBundleList()[name].Blue);
+            if (this->GetRenderer())
+            {
+                this->GetRenderer()->AddViewProp(d->FiberBundlePipelineList[name]->Actor);
+            }
+        }
 
-    {
-      mapper = vtkPolyDataMapper::New();
-    }
-    mapper->SetScalarModeToUseCellData();
-    
-    d->FiberBundlePipelineList[name]->Mapper->Delete();
-    d->FiberBundlePipelineList[name]->Mapper = mapper;
-    d->FiberBundlePipelineList[name]->Actor->SetMapper ( mapper );
+        vtkPolyDataMapper *mapper = vtkPolyDataMapper::New();
 
-    switch (this->GetRenderingMode())
-    {    
-	case RENDER_IS_TUBES:
-	  if (vtkFiberMapper* fiberMapper = vtkFiberMapper::SafeDownCast (mapper))
-	  {
-	    fiberMapper->LightingOn();
-	    fiberMapper->ShadowingOn();
-        fiberMapper->SetInputData (bundle);
-	  }
-	  else
-	  {   
-	    vtkTubeFilter *tubeFilter = d->FiberBundlePipelineList[name]->TubeFilter;
-	    tubeFilter->SetRadius ( this->GetRadius() );
-	    tubeFilter->SetNumberOfSides (4);
-	    tubeFilter->UseDefaultNormalOff();
-	    tubeFilter->CappingOn();
-        tubeFilter->SetInputData ( bundle );
-	    
-        mapper->SetInputConnection ( tubeFilter->GetOutputPort() );
-	  }
-	  break;
-	  
-	case RENDER_IS_RIBBONS:
-	  if (vtkFiberMapper* fiberMapper = vtkFiberMapper::SafeDownCast (mapper))
-	  {
-	    fiberMapper->LightingOn();
-	    fiberMapper->ShadowingOff();
-        fiberMapper->SetInputData (bundle);
-	  }
-	  else
-	  {
-	    vtkRibbonFilter *ribbonFilter = d->FiberBundlePipelineList[name]->RibbonFilter;
-	    ribbonFilter->SetWidth ( this->GetRadius() );
-        ribbonFilter->SetInputData ( bundle );
-	    
-        mapper->SetInputConnection ( ribbonFilter->GetOutputPort() );
-	  }
-	  break;
-	  
-	case RENDER_IS_POLYLINES:	  
-	default:
-      mapper->SetInputData( bundle );
-	  break;
+        mapper->SetScalarModeToUseCellData();
+
+        d->FiberBundlePipelineList[name]->Mapper->Delete();
+        d->FiberBundlePipelineList[name]->Mapper = mapper;
+        d->FiberBundlePipelineList[name]->Actor->SetMapper(mapper);
+
+        switch (this->GetRenderingMode())
+        {
+        case RENDER_IS_TUBES:
+            {
+                vtkTubeFilter *tubeFilter = d->FiberBundlePipelineList[name]->TubeFilter;
+                tubeFilter->SetRadius(this->GetRadius());
+                tubeFilter->SetNumberOfSides(4);
+                tubeFilter->UseDefaultNormalOff();
+                tubeFilter->CappingOn();
+                tubeFilter->SetInputData(bundle);
+            
+                mapper->SetInputConnection(tubeFilter->GetOutputPort());
+                break;
+            }
+
+        case RENDER_IS_RIBBONS:
+            {
+                vtkRibbonFilter *ribbonFilter = d->FiberBundlePipelineList[name]->RibbonFilter;
+                ribbonFilter->SetWidth(this->GetRadius());
+                ribbonFilter->SetInputData(bundle);
+            
+                mapper->SetInputConnection(ribbonFilter->GetOutputPort());
+                break;
+            }
+
+        case RENDER_IS_POLYLINES:
+        default:
+            mapper->SetInputData(bundle);
+            break;
+        }
     }
-  }
 }
 
 void vtkFiberDataSetManager::Validate (const std::string &name, double color[3])
@@ -348,25 +266,7 @@ void vtkFiberDataSetManager::Validate (const std::string &name, double color[3])
   this->FiberDataSet->AddBundle (name, bundle, color);
 
   bundle->Delete();
-
-  // create rendering pipeline
-  /*
-  vtkFiberDataSetManagerPrivate::vtkFiberBundlePipelineListType::iterator it = d->FiberBundlePipelineList.find (name);
-  if (it!=d->FiberBundlePipelineList.end())
-  {
-    if (this->GetRenderer())
-    {
-      this->GetRenderer()->RemoveViewProp ( d->FiberBundlePipelineList[name]->Actor );
-    }
-    delete d->FiberBundlePipelineList[name];
-    d->FiberBundlePipelineList.erase (it);
-  }
-  
-  d->FiberBundlePipelineList[name] = new vtkFiberDataSetManagerPrivate::BundlePipeline;
-  
-  d->FiberBundlePipelineList[name]->Actor->GetProperty()->SetColor (color[0], color[1], color[2]);
-  */
-  
+    
   this->CreateRenderingPipelineForBundle (name);
   
   if (this->GetRenderer())
