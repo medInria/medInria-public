@@ -20,7 +20,6 @@ set(TARGET_NAME medFilteringWorkspaceLPlugin)
 ## #############################################################################
 
 find_package(dtk REQUIRED)
-include_directories(${dtk_INCLUDE_DIRS})
 
 ## #############################################################################
 ## List Sources
@@ -57,6 +56,7 @@ list_header_directories_to_include(${TARGET_NAME}
 
 target_include_directories(${TARGET_NAME}
   PUBLIC ${${TARGET_NAME}_INCLUDE_DIRS}
+  PUBLIC ${dtk_INCLUDE_DIRS}
   )
 
 ## #############################################################################

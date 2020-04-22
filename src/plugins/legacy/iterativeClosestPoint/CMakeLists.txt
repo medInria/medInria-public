@@ -20,7 +20,6 @@ set(TARGET_NAME iterativeClosestPointPlugin)
 ## #############################################################################
 
 find_package(dtk REQUIRED)
-include_directories(${dtk_INCLUDE_DIRS})
 
 find_package(ITK REQUIRED COMPONENTS ITKCommon)
 include(${ITK_USE_FILE})
@@ -35,7 +34,6 @@ include(${VTK_USE_FILE})
 list_source_files(${TARGET_NAME}
   ${CMAKE_CURRENT_SOURCE_DIR}
   )
-
 
 ## #############################################################################
 ## add library
@@ -64,6 +62,7 @@ list_header_directories_to_include(${TARGET_NAME}
 
 target_include_directories(${TARGET_NAME}
   PUBLIC ${${TARGET_NAME}_INCLUDE_DIRS}
+  PUBLIC ${dtk_INCLUDE_DIRS}
   )
 ## #############################################################################
 ## Link

@@ -20,7 +20,6 @@ set(TARGET_NAME undoRedoRegistrationPlugin)
 ## #################################################################
 
 find_package(dtk REQUIRED)
-include_directories(${dtk_INCLUDE_DIRS})
 
 find_package(RPI REQUIRED )
 include(${RPI_USE_FILE})
@@ -64,6 +63,7 @@ list_header_directories_to_include(${TARGET_NAME}
 
 target_include_directories(${TARGET_NAME}
   PUBLIC ${${TARGET_NAME}_INCLUDE_DIRS}
+  PUBLIC ${dtk_INCLUDE_DIRS}
   )
 
 ## #############################################################################

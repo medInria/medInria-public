@@ -20,7 +20,6 @@ set(TARGET_NAME itkDataImagePlugin)
 ## #############################################################################
 
 find_package(dtk REQUIRED)
-include_directories(${dtk_INCLUDE_DIRS})
 
 set(ITK_IMAGES_DEPENDENCIES
     ITKIOMeta
@@ -55,7 +54,6 @@ if (USE_OSPRay)
 endif()
 
 find_package(DCMTK REQUIRED NO_MODULE)
-
 
 ## #############################################################################
 ## List Sources
@@ -121,6 +119,7 @@ target_compile_definitions(${TARGET_NAME} PUBLIC ${TARGET_NAME_UP}_VERSION="${${
 
 target_include_directories(${TARGET_NAME}
   PRIVATE ${${TARGET_NAME}_INCLUDE_DIRS}
+  PUBLIC ${dtk_INCLUDE_DIRS}
   )
 
 ## #############################################################################
@@ -140,7 +139,6 @@ target_link_libraries(${TARGET_NAME}
 ## #############################################################################
 
 set_plugin_install_rules_legacy(${TARGET_NAME})
-
 
 ## #############################################################################
 ## Build tests

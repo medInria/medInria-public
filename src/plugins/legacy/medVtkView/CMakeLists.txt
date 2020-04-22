@@ -20,7 +20,6 @@ set(TARGET_NAME medVtkViewPlugin)
 ## #############################################################################
 
 find_package(dtk REQUIRED)
-include_directories(${dtk_INCLUDE_DIRS})
 
 find_package(VTK REQUIRED COMPONENTS vtkGUISupportQt vtkInteractionWidgets)
 include(${VTK_USE_FILE})
@@ -62,8 +61,10 @@ target_compile_definitions(${TARGET_NAME} PUBLIC ${TARGET_NAME_UP}_VERSION="${${
 list_header_directories_to_include(${TARGET_NAME}
   ${${TARGET_NAME}_HEADERS}
   )
+
 target_include_directories(${TARGET_NAME}
   PUBLIC ${${TARGET_NAME}_INCLUDE_DIRS}
+  PUBLIC ${dtk_INCLUDE_DIRS}
   )
 
 ## #############################################################################

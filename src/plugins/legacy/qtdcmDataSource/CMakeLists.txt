@@ -19,7 +19,6 @@ set(TARGET_NAME qtdcmDataSourcePlugin)
 ## #############################################################################
 
 find_package(dtk REQUIRED)
-include_directories(${dtk_INCLUDE_DIRS})
 find_package(DCMTK REQUIRED NO_MODULE)
 find_package(QtDCM REQUIRED)
 
@@ -75,6 +74,7 @@ target_include_directories(${TARGET_NAME}
   PUBLIC ${${TARGET_NAME}_INCLUDE_DIRS}
   PUBLIC  ${QTDCM_INCLUDE_DIRS}
   PUBLIC  ${QTDCM_DIR}
+  PUBLIC ${dtk_INCLUDE_DIRS}
   )
 
 ## #############################################################################

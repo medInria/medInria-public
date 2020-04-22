@@ -20,7 +20,6 @@ set(TARGET_NAME medRegistration)
 ## #############################################################################
 
 find_package(dtk REQUIRED)
-include_directories(${dtk_INCLUDE_DIRS})
 
 find_package(RPI REQUIRED )
 include(${RPI_USE_FILE})
@@ -28,7 +27,6 @@ include(ITKLibs) # FOR and FROM RPI
 find_package(ITK REQUIRED COMPONENTS ${ITKIO_LIBRARIES} ${ITK_TRANSFORM_LIBRARIES}
        ITKRegistrationCommon)
 include(${ITK_USE_FILE})
-
 
 ## #############################################################################
 ## List Sources
@@ -38,11 +36,6 @@ list_source_files(${TARGET_NAME}
   ${CMAKE_CURRENT_SOURCE_DIR}
   )
 
-list_header_directories_to_include(${TARGET_NAME}
-  ${${TARGET_NAME}_HEADERS}
-  )
-
-
 ## #############################################################################
 ## add library
 ## #############################################################################
@@ -51,16 +44,18 @@ add_library(${TARGET_NAME} SHARED
   ${${TARGET_NAME}_CFILES}
   )
 
-
 ## #############################################################################
 ## include directories.
 ## #############################################################################
-
+list_header_directories_to_include(${TARGET_NAME}
+  ${${TARGET_NAME}_HEADERS}
+  )
+  
 target_include_directories(${TARGET_NAME}
   PUBLIC ${${TARGET_NAME}_INCLUDE_DIRS}
   PRIVATE ${RPI_INCLUDE_DIRS}
+  PUBLIC ${dtk_INCLUDE_DIRS}
   )
-
 
 ## #############################################################################
 ## Link

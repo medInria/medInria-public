@@ -20,7 +20,6 @@ set(TARGET_NAME itkDataSHImagePlugin)
 ## #############################################################################
 
 find_package(dtk REQUIRED)
-include_directories(${dtk_INCLUDE_DIRS})
 
 find_package(ITK REQUIRED COMPONENTS ITKIOImageBase ITKIOMeta ITKIOBMP ITKIOBioRad
     ITKIOBruker ITKIOGDCM ITKIOGIPL ITKIOHDF5 ITKIOJPEG ITKIOJPEG2000 ITKIOLSM ITKIOMRC
@@ -90,6 +89,7 @@ list_header_directories_to_include(${TARGET_NAME}
 target_include_directories(${TARGET_NAME}
   PUBLIC ${${TARGET_NAME}_INCLUDE_DIRS}
   PRIVATE ${Boost_INCLUDE_DIR}
+  PUBLIC ${dtk_INCLUDE_DIRS}
   )
 
 ## #############################################################################
