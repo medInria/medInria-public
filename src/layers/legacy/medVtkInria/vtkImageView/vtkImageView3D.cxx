@@ -447,6 +447,7 @@ void vtkImageView3D::SetInput(vtkAlgorithmOutput* pi_poVtkAlgoOutput, vtkMatrix4
         if(layer == 0)
         {
             SetFirstLayer(pi_poVtkAlgoOutput, matrix, layer);
+            initializeTransferFunctions(layer);
 
             if (is3D())
             {
@@ -462,6 +463,7 @@ void vtkImageView3D::SetInput(vtkAlgorithmOutput* pi_poVtkAlgoOutput, vtkMatrix4
             if (layer > 0 && layer < 4)
             {
                 SetOtherLayer(pi_poVtkAlgoOutput, matrix, layer);
+                initializeTransferFunctions(layer);
             }
             else if (layer >= 4)
             {
@@ -550,6 +552,10 @@ void vtkImageView3D::SetFirstLayer(vtkAlgorithmOutput *pi_poInputAlgoImg, vtkMat
         imageDisplay->SetInputProducer(pi_poInputAlgoImg);
         this->Superclass::SetInput(pi_poInputAlgoImg, matrix, layer);
         imageDisplay->SetInputData(m_poInternalImageFromInput);
+        
+        //The code below is useful for Volume rendering and more precisely for LUT 
+        double *range = m_poInternalImageFromInput->GetScalarRange(); 
+        this->SetColorRange(range, 0);
     }
 }
 
@@ -1287,3 +1293,17 @@ medVtkImageInfo* vtkImageView3D::GetMedVtkImageInfo(int layer /*= 0*/) const
 
     return imageInfo;
 }
+
+//The code below is useful for Volume rendering and more precisely for LUT 
+void  vtkImageView3D::initializeTransferFunctions(int pi_iLayer)
+{
+    this->VolumeProperty->SetShade(pi_iLayer, 1);
+    this->VolumeProperty->SetComponentWeight(pi_iLayer, 1.0);
+    vtkColorTransferFunction *rgb = this->GetDefaultColorTransferFunction();
+    vtkPiecewiseFunction     *alpha = this->GetDefaultOpacityTransferFunction();
+
+    this->SetTransferFunctions(rgb, alpha, pi_iLayer);
+    rgb->Delete();
+    alpha->Delete();
+}
+
