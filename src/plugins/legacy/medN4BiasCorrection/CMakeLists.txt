@@ -21,7 +21,6 @@ set(TARGET_NAME medN4BiasCorrectionPlugin)
 
 find_package(ITK REQUIRED COMPONENTS ITKCommon ITKImageIntensity ITKBiasCorrection
     ITKImageSources ITKThresholding)
-include(${ITK_USE_FILE})
 
 ## #############################################################################
 ## List Sources
@@ -58,6 +57,7 @@ list_header_directories_to_include(${TARGET_NAME}
 
 target_include_directories(${TARGET_NAME}
   PUBLIC ${${TARGET_NAME}_INCLUDE_DIRS}
+  PRIVATE ${ITK_INCLUDE_DIRS}
   )
 
 ## #############################################################################

@@ -24,8 +24,7 @@ find_package(dtk REQUIRED)
 find_package(RPI REQUIRED )
 include(${RPI_USE_FILE})
 include(ITKLibs) # FOR and FROM RPI
-find_package(ITK REQUIRED COMPONENTS ${ITKIO_LIBRARIES} ${ITK_TRANSFORM_LIBRARIES} ITKRegistrationCommon ITKIOMeta )
-include(${ITK_USE_FILE})
+find_package(ITK REQUIRED COMPONENTS ${ITKIO_LIBRARIES} ${ITK_TRANSFORM_LIBRARIES} ITKRegistrationCommon ITKIOImageBase  ITKIOMeta )
 
 find_package(VTK REQUIRED COMPONENTS vtkCommonCore vtkInteractionWidgets)
 include(${VTK_USE_FILE})
@@ -69,6 +68,7 @@ target_include_directories(${TARGET_NAME}
   PUBLIC ${${TARGET_NAME}_INCLUDE_DIRS}
   PRIVATE ${RPI_INCLUDE_DIRS}
   PUBLIC ${dtk_INCLUDE_DIRS}
+  PRIVATE ${ITK_INCLUDE_DIRS}
   )
 
 ## #############################################################################

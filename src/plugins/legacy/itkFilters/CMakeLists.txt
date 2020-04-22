@@ -23,7 +23,6 @@ find_package(dtk REQUIRED)
 
 find_package(ITK REQUIRED COMPONENTS ITKCommon ITKThresholding ITKConnectedComponents
     ITKSmoothing ITKBinaryMathematicalMorphology)
-include(${ITK_USE_FILE})
 
 ## #############################################################################
 ## List Sources
@@ -61,6 +60,7 @@ list_header_directories_to_include(${TARGET_NAME}
 target_include_directories(${TARGET_NAME}
   PUBLIC ${${TARGET_NAME}_INCLUDE_DIRS}
   PUBLIC ${dtk_INCLUDE_DIRS}
+  PRIVATE ${ITK_INCLUDE_DIRS}
   )
 ## #############################################################################
 ## Link

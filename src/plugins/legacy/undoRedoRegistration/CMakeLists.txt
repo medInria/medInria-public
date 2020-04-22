@@ -24,8 +24,7 @@ find_package(dtk REQUIRED)
 find_package(RPI REQUIRED )
 include(${RPI_USE_FILE})
 include(ITKLibs) # FOR and FROM RPI
-find_package(ITK REQUIRED COMPONENTS ${ITKIO_LIBRARIES} ${ITK_TRANSFORM_LIBRARIES} ITKIOMeta )
-include(${ITK_USE_FILE})
+find_package(ITK REQUIRED COMPONENTS ${ITKIO_LIBRARIES} ${ITK_TRANSFORM_LIBRARIES} ITKMetaIO )
 
 ## #############################################################################
 ## List Sources
@@ -64,6 +63,7 @@ list_header_directories_to_include(${TARGET_NAME}
 target_include_directories(${TARGET_NAME}
   PUBLIC ${${TARGET_NAME}_INCLUDE_DIRS}
   PUBLIC ${dtk_INCLUDE_DIRS}
+  PRIVATE ${ITK_INCLUDE_DIRS}
   )
 
 ## #############################################################################

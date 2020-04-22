@@ -20,9 +20,9 @@ set(TARGET_NAME medAlgorithmPaint)
 ## #############################################################################
 
 find_package(dtk REQUIRED)
+include_directories(${dtk_INCLUDE_DIRS})
 
 find_package(ITK REQUIRED COMPONENTS ITKCommon ITKRegionGrowing ITKDistanceMap ITKColormap)
-include(${ITK_USE_FILE})
 
 ## #############################################################################
 ## List Sources
@@ -59,7 +59,7 @@ list_header_directories_to_include(${TARGET_NAME}
   )
 target_include_directories(${TARGET_NAME}
   PUBLIC ${${TARGET_NAME}_INCLUDE_DIRS}
-  PUBLIC ${dtk_INCLUDE_DIRS}
+  PRIVATE ${ITK_INCLUDE_DIRS}
   )
 
 ## #############################################################################

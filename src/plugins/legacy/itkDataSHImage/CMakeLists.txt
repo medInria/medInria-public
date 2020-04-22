@@ -21,13 +21,12 @@ set(TARGET_NAME itkDataSHImagePlugin)
 
 find_package(dtk REQUIRED)
 
-find_package(ITK REQUIRED COMPONENTS ITKIOImageBase ITKIOMeta ITKIOBMP ITKIOBioRad
+find_package(ITK REQUIRED COMPONENTS ITKIOImageBase  ITKIOMeta ITKIOBMP ITKIOBioRad
     ITKIOBruker ITKIOGDCM ITKIOGIPL ITKIOHDF5 ITKIOJPEG ITKIOJPEG2000 ITKIOLSM ITKIOMRC
     ITKIOMINC ITKIONIFTI ITKIONRRD ITKIOPNG ITKIOStimulate ITKIOVTK)
-include(${ITK_USE_FILE})
 
 find_package(VTK REQUIRED COMPONENTS vtkCommonExecutionModel vtkRenderingCore vtkInteractionWidgets)
-include(${VTK_USE_FILE})
+#include(${VTK_USE_FILE})
 
 if (APPLE OR WIN32)
     find_package(Boost REQUIRED)
@@ -45,7 +44,6 @@ list_source_files(${TARGET_NAME}
   readers
   writers
   )
-
 
 ## #############################################################################
 ## Precompile headers
@@ -77,7 +75,6 @@ set(${TARGET_NAME}_VERSION ${${PROJECT_NAME}_VERSION})
 string(TOUPPER ${TARGET_NAME} TARGET_NAME_UP)
 target_compile_definitions(${TARGET_NAME} PUBLIC ${TARGET_NAME_UP}_VERSION="${${TARGET_NAME}_VERSION}")
 
-
 ## #############################################################################
 ## include directories.
 ## #############################################################################
@@ -90,6 +87,8 @@ target_include_directories(${TARGET_NAME}
   PUBLIC ${${TARGET_NAME}_INCLUDE_DIRS}
   PRIVATE ${Boost_INCLUDE_DIR}
   PUBLIC ${dtk_INCLUDE_DIRS}
+  PRIVATE ${ITK_INCLUDE_DIRS}
+  PRIVATE ${VTK_INCLUDE_DIRS}
   )
 
 ## #############################################################################
@@ -107,5 +106,4 @@ target_link_libraries(${TARGET_NAME}
 ## #############################################################################
 ## Install rules
 ## #############################################################################
-
 set_plugin_install_rules_legacy(${TARGET_NAME})

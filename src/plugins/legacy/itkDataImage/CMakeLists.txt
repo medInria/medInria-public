@@ -22,6 +22,7 @@ set(TARGET_NAME itkDataImagePlugin)
 find_package(dtk REQUIRED)
 
 set(ITK_IMAGES_DEPENDENCIES
+    ITKIOImageBase
     ITKIOMeta
 
     #common formats for common images
@@ -41,7 +42,6 @@ set(ITK_IMAGES_DEPENDENCIES
 )
 
 find_package(ITK REQUIRED COMPONENTS ITKIOImageBase ITKIOGDCM ITKIOVTK ITKVtkGlue ${ITK_IMAGES_DEPENDENCIES} ITKStatistics)
-include(${ITK_USE_FILE})
 
 #WARNING USE VTK through ITKIOVTK and medLog, medVtkInria
 
@@ -112,7 +112,6 @@ set(${TARGET_NAME}_VERSION ${${PROJECT_NAME}_VERSION})
 string(TOUPPER ${TARGET_NAME} TARGET_NAME_UP)
 target_compile_definitions(${TARGET_NAME} PUBLIC ${TARGET_NAME_UP}_VERSION="${${TARGET_NAME}_VERSION}")
 
-
 ## #############################################################################
 ## include directories.
 ## #############################################################################
@@ -120,6 +119,7 @@ target_compile_definitions(${TARGET_NAME} PUBLIC ${TARGET_NAME_UP}_VERSION="${${
 target_include_directories(${TARGET_NAME}
   PRIVATE ${${TARGET_NAME}_INCLUDE_DIRS}
   PUBLIC ${dtk_INCLUDE_DIRS}
+  PRIVATE ${ITK_INCLUDE_DIRS}
   )
 
 ## #############################################################################

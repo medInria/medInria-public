@@ -28,7 +28,6 @@ find_package(VTK REQUIRED COMPONENTS vtkCommonCore vtkCommonDataModel vtkRenderi
 include(${VTK_USE_FILE})
 
 find_package(ITK REQUIRED COMPONENTS ITKCommon)
-include(${ITK_USE_FILE})
 
 ## #############################################################################
 ## List Sources
@@ -83,6 +82,7 @@ list_header_directories_to_include(${TARGET_NAME}
 target_include_directories(${TARGET_NAME}
   PUBLIC ${${TARGET_NAME}_INCLUDE_DIRS}
   PUBLIC ${dtk_INCLUDE_DIRS}
+  PRIVATE ${ITK_INCLUDE_DIRS}
   )
 
 ## #############################################################################
