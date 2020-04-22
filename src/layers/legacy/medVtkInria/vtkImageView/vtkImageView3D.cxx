@@ -503,15 +503,13 @@ bool vtkImageView3D::is3D()
 //----------------------------------------------------------------------------
 void vtkImageView3D::SetInputLayer(vtkAlgorithmOutput* pi_poVtkAlgoOutput, vtkMatrix4x4 *matrix /*= 0*/, int layer /*= 0*/)
 {
-    pi_poVtkAlgoOutput = this->ResliceImageToInput(pi_poVtkAlgoOutput, matrix);
-
-    vtkAlgorithmOutput *poVtkAlgoOutputTmp = pi_poVtkAlgoOutput;
+    vtkAlgorithmOutput *poVtkAlgoOutputTmp = this->ResliceImageToInput(pi_poVtkAlgoOutput, matrix);
     // cast it if needed
-    if (static_cast<vtkImageAlgorithm*>(pi_poVtkAlgoOutput->GetProducer())->GetOutput()->GetScalarType()
-            != this->GetMedVtkImageInfo()->scalarType)
+    int inputImgScalarType = static_cast<vtkImageAlgorithm*>(poVtkAlgoOutputTmp->GetProducer())->GetOutput()->GetScalarType();
+    if (inputImgScalarType != this->GetMedVtkImageInfo()->scalarType)
     {
         vtkImageCast *cast = vtkImageCast::New();
-        cast->SetInputConnection(pi_poVtkAlgoOutput);
+        cast->SetInputConnection(poVtkAlgoOutputTmp);
         cast->SetOutputScalarType (this->GetMedVtkImageInfo()->scalarType);
         cast->Update();
 
@@ -679,10 +677,16 @@ void vtkImageView3D::SetOpacity (double opacity, int layer)
 //----------------------------------------------------------------------------
 double vtkImageView3D::GetOpacity(int layer) const
 {
+    double dfRes = 0.0;
     if (this->HasLayer(layer))
-    return this->GetImage3DDisplayForLayer(layer)->GetOpacity();
-
-  return 0.0;
+    {
+        vtkImage3DDisplay *imageDisplay = GetImage3DDisplayForLayer(layer);
+        if (imageDisplay)
+        {
+            dfRes = imageDisplay->GetOpacity();
+        }
+    }
+    return dfRes;
 }
 
 //----------------------------------------------------------------------------
@@ -971,6 +975,33 @@ vtkActor* vtkImageView3D::AddDataSet (vtkPointSet* arg, vtkProperty* prop)
   // been referenced in the renderer, so we can
   // safely return it. well hopefully.
   return actor;
+}
+
+//----------------------------------------------------------------------------
+vtkActor* vtkImageView3D::DataSetToActor(vtkPointSet* arg, vtkProperty* prop)
+{
+    vtkDataSetSurfaceFilter* geometryextractor = vtkDataSetSurfaceFilter::New();
+    vtkPolyDataNormals* normalextractor = vtkPolyDataNormals::New();
+    vtkPolyDataMapper* mapper = vtkPolyDataMapper::New();
+    vtkActor* actor = vtkActor::New();
+
+    normalextractor->SetFeatureAngle(90);
+    ///\todo try to skip the normal extraction filter in order to
+    // enhance the visualization speed when the data is time sequence.
+    geometryextractor->SetInputData(arg);
+    normalextractor->SetInputConnection(geometryextractor->GetOutputPort());
+    mapper->SetInputConnection(normalextractor->GetOutputPort());
+    actor->SetMapper(mapper);
+    if (prop)
+    {
+        actor->SetProperty(prop);
+    }
+
+    mapper->Delete();
+    normalextractor->Delete();
+    geometryextractor->Delete();
+
+    return actor;
 }
 
 //----------------------------------------------------------------------------
