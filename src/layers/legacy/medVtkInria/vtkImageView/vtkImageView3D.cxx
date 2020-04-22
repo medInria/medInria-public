@@ -447,7 +447,7 @@ void vtkImageView3D::SetInput(vtkAlgorithmOutput* pi_poVtkAlgoOutput, vtkMatrix4
         if(layer == 0)
         {
             SetFirstLayer(pi_poVtkAlgoOutput, matrix, layer);
-            initImage(layer);
+            initializeTransferFunctions(layer);
 
             if (is3D())
             {
@@ -463,7 +463,7 @@ void vtkImageView3D::SetInput(vtkAlgorithmOutput* pi_poVtkAlgoOutput, vtkMatrix4
             if (layer > 0 && layer < 4)
             {
                 SetInputLayer(pi_poVtkAlgoOutput, matrix, layer);
-                initImage(layer);
+                initializeTransferFunctions(layer);
             }
             else if (layer >= 4)
             {
@@ -1211,7 +1211,7 @@ medVtkImageInfo* vtkImageView3D::GetMedVtkImageInfo(int layer /*= 0*/) const
 }
 
 
-void  vtkImageView3D::initImage(int pi_iLayer)
+void  vtkImageView3D::initializeTransferFunctions(int pi_iLayer)
 {
     if (pi_iLayer == 0)
     {

@@ -297,6 +297,6 @@ private:
     vtkImageView3D(const vtkImageView3D&);  // Not implemented.
     void operator=(const vtkImageView3D&);    // Not implemented.
 	
-    void  initImage(int pi_iLayer);
+    void  initializeTransferFunctions(int pi_iLayer);
 };
 
