@@ -241,12 +241,15 @@ vtkMTimeType vtkImageView2D::GetMTime()
 //----------------------------------------------------------------------------
 void vtkImageView2D::GetSliceRange(int &min, int &max) const
 {
-    if (this->GetMedVtkImageInfo()->initialized)
+    if (this->GetMedVtkImageInfo() && this->GetMedVtkImageInfo()->initialized)
     {
         min = 0;
         max = 0;
         
-        this->Get2DDisplayMapperInputAlgorithm()->UpdateInformation();
+        if(this->Get2DDisplayMapperInputAlgorithm())
+        {
+            this->Get2DDisplayMapperInputAlgorithm()->UpdateInformation();
+        }
         auto pAlgo = this->Get2DDisplayMapperInputAlgorithm();
         if (pAlgo != nullptr)
         {
@@ -640,7 +643,10 @@ void vtkImageView2D::SetViewOrientation(int orientation)
 void vtkImageView2D::SetOrientationMatrix (vtkMatrix4x4* matrix)
 {
   this->Superclass::SetOrientationMatrix (matrix);
-  this->GetImage2DDisplayForLayer(GetFirstLayer())->GetImageActor()->SetUserMatrix (this->OrientationMatrix);
+  if(this->GetImage2DDisplayForLayer(GetFirstLayer()))
+  {
+        this->GetImage2DDisplayForLayer(GetFirstLayer())->GetImageActor()->SetUserMatrix (this->OrientationMatrix);
+  }
   this->UpdateOrientation();
 
   // The slice might have changed in the process
@@ -1743,16 +1749,19 @@ void vtkImageView2D::SetInput(vtkAlgorithmOutput* pi_poVtkAlgoOutput, vtkMatrix4
 void vtkImageView2D::SetInputLayer(vtkAlgorithmOutput* pi_poVtkAlgoOutput, vtkMatrix4x4 *matrix /*= 0*/, int layer /*= 0*/)
 {
     // layer > 0
-
     this->AddLayer(layer);
     pi_poVtkAlgoOutput = this->ResliceImageToInput(pi_poVtkAlgoOutput, matrix);
-
     vtkImage2DDisplay *imageDisplay = this->GetImage2DDisplayForLayer(layer);
-    imageDisplay->SetInputProducer(pi_poVtkAlgoOutput);
-    imageDisplay->SetInputData(static_cast<vtkImageAlgorithm*>(pi_poVtkAlgoOutput->GetProducer())->GetOutput());
-    imageDisplay->GetImageActor()->SetUserMatrix (this->OrientationMatrix);
-
-    this->SetColorRange(imageDisplay->GetMedVtkImageInfo()->scalarRange, layer);
+    if (imageDisplay)
+    {
+        imageDisplay->SetInputProducer(pi_poVtkAlgoOutput);
+        imageDisplay->SetInputData(static_cast<vtkImageAlgorithm*>(pi_poVtkAlgoOutput->GetProducer())->GetOutput());
+        imageDisplay->GetImageActor()->SetUserMatrix (this->OrientationMatrix);
+        if(imageDisplay->GetMedVtkImageInfo())
+        {
+            this->SetColorRange(imageDisplay->GetMedVtkImageInfo()->scalarRange, layer);
+        }
+    }
 }
 
 void vtkImageView2D::SetInputCommon(vtkAlgorithmOutput* pi_poVtkAlgoOutput, int layer /*= 0*/)
