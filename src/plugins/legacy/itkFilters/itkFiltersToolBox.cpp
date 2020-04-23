@@ -496,6 +496,7 @@ void itkFiltersToolBox::clear()
     d->maxColor = Qt::white;
     d->thresholdColor = Qt::black;
     d->minValueImage = d->maxValueImage = 0.;
+    d->process = nullptr;
 }
 
 void itkFiltersToolBox::update()
