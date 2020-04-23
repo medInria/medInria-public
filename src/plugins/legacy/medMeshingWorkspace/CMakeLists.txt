@@ -49,7 +49,7 @@ list_header_directories_to_include(${TARGET_NAME}
   )
 
 target_include_directories(${TARGET_NAME}
-  PUBLIC ${${TARGET_NAME}_INCLUDE_DIRS}
+  PRIVATE ${${TARGET_NAME}_INCLUDE_DIRS}
   )
 
 ## #############################################################################

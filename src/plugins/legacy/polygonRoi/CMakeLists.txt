@@ -23,8 +23,7 @@ find_package(dtk REQUIRED)
 
 find_package(ITK REQUIRED COMPONENTS ITKCommon ITKImageLabel)
 
-find_package(VTK REQUIRED COMPONENTS
-    vtkInteractionWidgets vtkCommonComputationalGeometry)
+find_package(VTK REQUIRED COMPONENTS vtkInteractionWidgets vtkCommonComputationalGeometry)
 
 ## #############################################################################
 ## List Sources
@@ -61,8 +60,8 @@ list_header_directories_to_include(${TARGET_NAME}
   )
 
 target_include_directories(${TARGET_NAME}
-  PUBLIC ${${TARGET_NAME}_INCLUDE_DIRS}
-  PUBLIC ${dtk_INCLUDE_DIRS}
+  PRIVATE ${${TARGET_NAME}_INCLUDE_DIRS}
+  PRIVATE ${dtk_INCLUDE_DIRS}
   PRIVATE ${ITK_INCLUDE_DIRS}
   PRIVATE ${VTK_INCLUDE_DIRS}
   )

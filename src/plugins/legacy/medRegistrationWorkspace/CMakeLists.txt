@@ -16,12 +16,6 @@
 set(TARGET_NAME medRegistrationWorkspacePlugin)
 
 ## #############################################################################
-## Resolve dependencies
-## #############################################################################
-
-find_package(dtk REQUIRED)
-
-## #############################################################################
 ## List Sources
 ## #############################################################################
 
@@ -55,8 +49,7 @@ list_header_directories_to_include(${TARGET_NAME}
   )
 
 target_include_directories(${TARGET_NAME}
-  PUBLIC ${${TARGET_NAME}_INCLUDE_DIRS}
-  PUBLIC ${dtk_INCLUDE_DIRS}
+  PRIVATE ${${TARGET_NAME}_INCLUDE_DIRS}
   )
 ## #############################################################################
 ## Link

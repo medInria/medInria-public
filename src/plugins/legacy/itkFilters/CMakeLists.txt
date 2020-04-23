@@ -24,6 +24,8 @@ find_package(dtk REQUIRED)
 find_package(ITK REQUIRED COMPONENTS ITKCommon ITKThresholding ITKConnectedComponents
     ITKSmoothing ITKBinaryMathematicalMorphology)
 
+message(${ITK_LIBRARIES})
+
 ## #############################################################################
 ## List Sources
 ## #############################################################################

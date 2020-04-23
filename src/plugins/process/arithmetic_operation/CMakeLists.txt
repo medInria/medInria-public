@@ -48,7 +48,7 @@ add_library(${TARGET_NAME} SHARED
 
 target_include_directories(${TARGET_NAME}
   PRIVATE ${${TARGET_NAME}_INCLUDE_DIRS}
-    PRIVATE ${ITK_INCLUDE_DIRS}
+  PRIVATE ${ITK_INCLUDE_DIRS}
   )
 # PRIVATE because plugins are not supposed to be used somewhere else
 
