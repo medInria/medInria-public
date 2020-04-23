@@ -35,8 +35,6 @@ public:
 medFilteringWorkspaceL::medFilteringWorkspaceL(QWidget *parent)
     : medSelectorWorkspace (parent, staticName()), d(new medFilteringWorkspaceLPrivate)
 {
-    connect(this->tabbedViewContainers(), SIGNAL(containersSelectedChanged()),
-            selectorToolBox(), SIGNAL(inputChanged()), Qt::UniqueConnection);
 }
 
 medFilteringWorkspaceL::~medFilteringWorkspaceL()
@@ -58,8 +56,8 @@ void medFilteringWorkspaceL::setupTabbedViewContainer()
     d->outputContainer = d->inputContainer->splitVertically();
     resetDefaultWidgetOutputContainer();
 
+    // viewContentChanged includes new data added, changed or removed
     connect(d->inputContainer,  SIGNAL(viewContentChanged()), this, SLOT(changeToolBoxInput()), Qt::UniqueConnection);
-    connect(d->inputContainer,  SIGNAL(viewRemoved()), this, SLOT(changeToolBoxInput()),        Qt::UniqueConnection);
     connect(d->inputContainer,  SIGNAL(viewRemoved()), this, SLOT(resetDefaultWidgetInputContainer()),  Qt::UniqueConnection);
     connect(d->outputContainer, SIGNAL(viewRemoved()), this, SLOT(resetDefaultWidgetOutputContainer()), Qt::UniqueConnection);
 
@@ -77,6 +75,8 @@ void medFilteringWorkspaceL::changeToolBoxInput()
         }
         else
         {
+            // Emits the inputChanged() signal caught by selector toolboxes to trigger an update.
+            // The signal is only emitted for a change in the input container, not the output one.
             medAbstractLayeredView *layeredView = dynamic_cast<medAbstractLayeredView *>(d->inputContainer->view());
             selectorToolBox()->onInputSelected(layeredView->layerData(layeredView->currentLayer()));
         }
