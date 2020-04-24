@@ -39,8 +39,8 @@ if (NOT USE_SYSTEM_${ep})
 ## Set up versioning control.
 ## #############################################################################
 
-set(git_url ${GITHUB_PREFIX}Florent2305/TTK-Public.git)
-set(git_tag merge-ttk-private)
+set(git_url ${GITHUB_PREFIX}Inria-Asclepios/TTK-Public.git)
+set(git_tag master)
 
 
 ## #############################################################################

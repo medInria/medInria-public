@@ -39,8 +39,8 @@ if (NOT USE_SYSTEM_${ep})
 ## Set up versioning control.
 ## #############################################################################
 
-set(git_url ${GITHUB_PREFIX}Florent2305/LCC-LogDemons.git)
-set(git_tag Export_Libraries)
+set(git_url ${GITHUB_PREFIX}Inria-Asclepios/LCC-LogDemons.git)
+set(git_tag master)
 
 
 ## #############################################################################
