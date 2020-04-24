@@ -20,7 +20,6 @@ set(TARGET_NAME itkDataImagePlugin)
 ## #############################################################################
 
 set(ITK_IMAGES_DEPENDENCIES
-
     ITKIOMeta
     #common formats for common images
     ITKIOBMP ITKIOJPEG ITKIOJPEG2000 ITKIOPNG ITKIOTIFF
@@ -69,11 +68,6 @@ if (MSVC)
          )
     endif()
 
-  #Prevent compiler warnings about valid std::copy.
-  if(MSVC)
-      add_definitions(-D_SCL_SECURE_NO_WARNINGS)
-  endif()
-
 endif()
 
 ## #############################################################################
@@ -97,6 +91,11 @@ target_compile_definitions(${TARGET_NAME} PUBLIC
 target_compile_definitions(${TARGET_NAME} PUBLIC
     $<$<BOOL:${USE_OSPRay}>:MED_USE_OSPRAY_4_VR_BY_CPU>
     )
+#Prevent compiler warnings about valid std::copy.
+target_compile_definitions(${TARGET_NAME} PUBLIC
+    $<$<BOOL:${MSVC}>:_SCL_SECURE_NO_WARNINGS>
+    )
+
 
 ## #############################################################################
 ## source

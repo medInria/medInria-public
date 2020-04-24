@@ -28,16 +28,6 @@ list_header_directories_to_include(${TARGET_NAME}
   )
 
 ## #############################################################################
-## Add definition
-## #############################################################################
-
-if (NOT MSVC) #TODO : what is it for ?
-  add_definitions(-Wno-write-strings)
-  add_definitions(-Wformat=0)
-endif()
-
-
-## #############################################################################
 ## add library
 ## #############################################################################
 
@@ -45,6 +35,18 @@ add_library(${TARGET_NAME} SHARED
  "${${TARGET_NAME}_QRC}"
   )
 
+## #############################################################################
+## Add definition and options
+## #############################################################################
+
+if (NOT MSVC) #TODO : what is it for ?
+  target_compile_options(${TARGET_NAME} PRIVATE "-Wno-write-strings")
+  target_compile_options(${TARGET_NAME} PRIVATE "-Wformat=0")
+endif()
+
+target_compile_definitions(${TARGET_NAME} PUBLIC
+    $<$<BOOL:${USE_OSPRay}>:MED_USE_OSPRAY_4_VR_BY_CPU>
+    )
 ## #############################################################################
 ## Link
 ## #############################################################################

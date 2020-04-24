@@ -18,22 +18,21 @@ set(TARGET_NAME medVtkInria)
 ## #############################################################################
 ## Find required
 ## #############################################################################
+if (USE_OSPRay)
+  set(VTK_OSPRAY_RENDERING_LIBRARY "vtkRenderingOSPRay")
+ELSE()
+  set(VTK_OSPRAY_RENDERING_LIBRARY "")
+endif()
 
 find_package(VTK REQUIRED COMPONENTS vtkCommonCore
     vtkRenderingVolume
     vtkRenderingVolumeOpenGL2
     vtkInteractionWidgets
     vtkIOLegacy
+    ${VTK_OSPRAY_RENDERING_LIBRARY}
     )
 
 find_package(OpenGL REQUIRED)
-
-if (USE_OSPRay)
-  add_definitions(-DMED_USE_OSPRAY_4_VR_BY_CPU)
-  set(VTK_OSPRAY_RENDERING_LIBRARY "vtkRenderingOSPRay")
-ELSE()
-  set(VTK_OSPRAY_RENDERING_LIBRARY "")
-endif()
 
 ## #############################################################################
 ## List sources
@@ -119,6 +118,10 @@ add_library(${TARGET_NAME} SHARED
   )
 
 target_compile_definitions(${TARGET_NAME} PUBLIC ${VTK_DEFINITIONS})
+
+target_compile_definitions(${TARGET_NAME} PUBLIC
+    $<$<BOOL:${USE_OSPRay}>:MED_USE_OSPRAY_4_VR_BY_CPU>
+    )
 
 ## #############################################################################
 ## source

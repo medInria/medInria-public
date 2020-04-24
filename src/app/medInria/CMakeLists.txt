@@ -41,16 +41,6 @@ list_header_directories_to_include(${TARGET_NAME}
   ${${TARGET_NAME}_HEADERS}
   )
 
-
-## #############################################################################
-## Add preproc if we have revisions from the super project
-## #############################################################################
-
-if (EXISTS ${CMAKE_BINARY_DIR}/revisions/medRevisions.h)
-  include_directories(${CMAKE_BINARY_DIR}/revisions)
-  add_definitions(-D${PROJECT_NAME}_HAS_REVISIONS)
-endif()
-
 ## #############################################################################
 ## Add preproc if we want immersive room stuff
 ## #############################################################################
@@ -59,16 +49,6 @@ option(ACTIVATE_WALL_OPTION
   "Activate the command line option --wall (INRIA Sophia, immersive room)"
   OFF
   )
-if (ACTIVATE_WALL_OPTION)
-  add_definitions(-DACTIVATE_WALL_OPTION)
-endif()
-
-## #############################################################################
-## Variable
-## #############################################################################
-
-string(TIMESTAMP BUILD_DATE "\"%d_%m_%Y\"")
-add_definitions(-DMEDINRIA_BUILD_DATE=${BUILD_DATE})
 
 ## #############################################################################
 ## OS specificites
@@ -81,16 +61,14 @@ if(WIN32)
     )
 endif()
 
-
 if (APPLE)
   set(DEPLOYMENT_SYSTEM MACOSX_BUNDLE)
 endif()
-if (WIN32)
 
+if (WIN32)
   if(NOT ${MED_SHOW_CONSOLE} )
     set(DEPLOYMENT_SYSTEM WIN32)
   endif()
-
   set(${TARGET_NAME}_RC resources/medInria.rc)
 endif()
 
@@ -111,14 +89,32 @@ if (APPLE)
 endif()
 
 ## #############################################################################
-## include directorie.
+## Add definition and options
+## #############################################################################
+
+target_compile_definitions(${TARGET_NAME} PUBLIC
+    $<$<BOOL:${ACTIVATE_WALL_OPTION}>:ACTIVATE_WALL_OPTION>
+    )
+
+## Add preproc if we have revisions from the super project
+
+if (EXISTS ${CMAKE_BINARY_DIR}/revisions/medRevisions.h)
+  target_include_directories(${TARGET_NAME} PUBLIC ${CMAKE_BINARY_DIR}/revisions)
+  target_compile_definitions( ${TARGET_NAME} PUBLIC ${PROJECT_NAME}_HAS_REVISIONS)
+endif()
+
+## Variable
+string(TIMESTAMP BUILD_DATE "\"%d_%m_%Y\"")
+target_compile_definitions( ${TARGET_NAME} PUBLIC MEDINRIA_BUILD_DATE=${BUILD_DATE})
+
+## #############################################################################
+## include directories.
 ## #############################################################################
 
 target_include_directories(${TARGET_NAME}
   PRIVATE ${${TARGET_NAME}_INCLUDE_DIRS}
   PRIVATE ${dtk_INCLUDE_DIRS}
   )
-# PRIVATE beacause application is not supposed to be used somewhere else
 
 ## #############################################################################
 ## Links.
@@ -139,7 +135,6 @@ target_link_libraries(${TARGET_NAME}
   medCoreLegacy
   medPacs
   )
-
 
 ## #############################################################################
 ## install
