@@ -1,20 +1,4 @@
 #pragma once
-/*=========================================================================
-
-Program:   Insight Segmentation & Registration Toolkit
-Module:    $RCSfile: mipsInrimageImageIO.h,v $
-Language:  C++
-Date:      $Date: 2005/03/23 16:33:27 $
-Version:   $Revision: 1.6 $
-
-Copyright (c) 2002 Insight Consortium. All rights reserved.
-See ITKCopyright.txt or http://www.itk.org/HTML/Copyright.htm for details.
-
-This software is distributed WITHOUT ANY WARRANTY; without even
-the implied warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR
-PURPOSE.  See the above copyright notices for more information.
-
-=========================================================================*/
 
 /**
  * \file   mipsInrimageImageIO.h
@@ -42,82 +26,81 @@ PURPOSE.  See the above copyright notices for more information.
 #include <itkMetaDataObject.h>
 #include <itk_zlib.h>
 
-namespace itk //TODO no namespace please ! (and no class name prifixed with other librarie pefix)
-{
-    /**
+/**
      * \author Gregoire Malandain
      * \brief Class that defines how to read Inrimage 4 file format.
      * */
-    class MEDIMAGEIO_EXPORT InrimageImageIO : public ImageIOBase
-    {
-    public:
-        /** Standard class typedefs. */
-        typedef InrimageImageIO    Self;
-        typedef ImageIOBase        Superclass;
-        typedef SmartPointer<Self> Pointer;
+class MEDIMAGEIO_EXPORT InrimageImageIO : public itk::ImageIOBase
+{
+public:
+    /** Standard class typedefs. */
+    using Self = InrimageImageIO;
+    using Superclass = ImageIOBase;
+    using Pointer = itk::SmartPointer<Self>;
 
-        /** Method for creation through the object factory. */
-        itkNewMacro(Self);
+    /** Method for creation through the object factory. */
+    itkNewMacro(Self);
 
-        /** Run-time type information (and related methods). */
-        itkTypeMacro(InrimageImageIO, Superclass);
+    /** Run-time type information (and related methods). */
+    itkTypeMacro(InrimageImageIO, Superclass);
 
-        /*-------- This part of the interfaces deals with reading data. ----- */
+    /*-------- This part of the interfaces deals with reading data. ----- */
 
-        /** Determine if the file can be read with this ImageIO implementation.
+    /** Determine if the file can be read with this ImageIO implementation.
          * \author Gregoire Malandain
          * \param FileNameToRead The name of the file to test for reading.
          * \post Sets classes ImageIOBase::m_FileName variable to be FileNameToWrite
          * \return Returns true if this ImageIO can read the file specified.
          */
-        virtual bool CanReadFile(const char* FileNameToRead);
+    bool CanReadFile(const char* FileNameToRead) override;
 
-        /** Set the spacing and dimension information for the set filename. */
-        virtual void ReadImageInformation();
+    /** Set the spacing and dimension information for the set filename. */
+    virtual void ReadImageInformation();
 
-        /** Convert to type_info */
-        const std::type_info& ConvertToTypeInfo(IOPixelType) const;
+    /** Convert to type_info */
+    const std::type_info& ConvertToTypeInfo(IOPixelType) const;
 
-        /** Reads the data from disk into the memory buffer provided. */
-        virtual void Read(void* buffer);
+    /** Reads the data from disk into the memory buffer provided. */
+    virtual void Read(void* buffer);
 
-        /** Compute the size (in bytes) of the components of a pixel. For
+    /** Compute the size (in bytes) of the components of a pixel. For
          * example, and RGB pixel of unsigned char would have a
          * component size of 1 byte. NO MORE USEFUL FOR ITK > 1.8*/
-         //virtual unsigned int GetComponentSize() const;
+    //virtual unsigned int GetComponentSize() const;
 
-         /*-------- This part of the interfaces deals with writing data. ----- */
+    /*-------- This part of the interfaces deals with writing data. ----- */
 
-         /** Determine if the file can be written with this ImageIO implementation.
+    /** Determine if the file can be written with this ImageIO implementation.
           * \param FileNameToWrite The name of the file to test for writing.
           * \author Gregoire Malandain
           * \post Sets classes ImageIOBase::m_FileName variable to be FileNameToWrite
           * \return Returns true if this ImageIO can write the file specified.
           */
-        virtual bool CanWriteFile(const char * FileNameToWrite);
+    bool CanWriteFile(const char * FileNameToWrite) override;
 
-        /** Set the spacing and dimension information for the set filename. */
-        virtual void WriteImageInformation();
+    /** Set the spacing and dimension information for the set filename. */
+    virtual void WriteImageInformation();
 
-        /** Writes the data to disk from the memory buffer provided. Make sure
+    /** Writes the data to disk from the memory buffer provided. Make sure
          * that the IORegions has been set properly. */
-        virtual void Write(const void* buffer);
+    void Write(const void* buffer) override;
 
+protected:
+    InrimageImageIO();
+    ~InrimageImageIO();
+    void PrintSelf(std::ostream& os, itk::Indent indent) const;
 
-    protected:
-        InrimageImageIO();
-        ~InrimageImageIO();
-        void PrintSelf(std::ostream& os, Indent indent) const;
+private:
+    void SwapBytesIfNecessary(void * buffer, unsigned long numberOfPixels);
 
-    private:
-        InrimageImageIO(const Self&); //purposely not implemented
-        void operator=(const Self&); //purposely not implemented
-        void SwapBytesIfNecessary(void * buffer, unsigned long numberOfPixels);
+    void GetRotationMatrixFromAngles(double rx, double ry, double rz, vnl_matrix <double> &rotationMatrix);
 
-        gzFile m_file;
+    void GetRotationAnglesFromMatrix(const vnl_matrix <double> &rotationMatrix, std::vector <double> &r);
 
-        /**  All of the information read in from the header file */
-        unsigned int m_NumberBlocksInHeader;
-        std::string m_header;
-    };
-}
+    gzFile m_file;
+
+    /**  All of the information read in from the header file */
+    unsigned int m_NumberBlocksInHeader;
+    std::string m_header;
+};
+

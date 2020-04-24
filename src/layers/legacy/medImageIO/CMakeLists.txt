@@ -32,11 +32,9 @@ find_package(DCMTK REQUIRED NO_MODULE)
 
 list_source_files(${TARGET_NAME}
   ${CMAKE_CURRENT_SOURCE_DIR}
-  ${CMAKE_CURRENT_SOURCE_DIR}/fromMIPS
   )
 
 list_header_directories_to_include(${TARGET_NAME}
-  ${CMAKE_CURRENT_SOURCE_DIR}/fromMIPS
   ${${TARGET_NAME}_HEADERS}
   )
 

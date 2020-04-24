@@ -29,7 +29,7 @@ static QStringList s_handled() {
 
 itkINRDataImageWriter::itkINRDataImageWriter(void) :  itkDataImageWriterBase()
 {
-    this->io = itk::InrimageImageIO::New();
+    this->io = InrimageImageIO::New();
 }
 
 itkINRDataImageWriter::~itkINRDataImageWriter(void)

@@ -25,7 +25,7 @@ const char itkINRDataImageReader::ID[] = "itkINRDataImageReader";
 
 itkINRDataImageReader::itkINRDataImageReader(void) :  itkDataImageReaderBase(), d(new itkINRDataImageReaderPrivate)
 {
-    this->io = itk::InrimageImageIO::New();
+    this->io = InrimageImageIO::New();
 }
 
 itkINRDataImageReader::~itkINRDataImageReader(void)
