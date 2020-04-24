@@ -19,7 +19,7 @@ set(TARGET_NAME medVtkInria)
 ## Find required
 ## #############################################################################
 
-find_package(VTK REQUIRED COMPONENTS
+find_package(VTK REQUIRED COMPONENTS vtkCommonCore
     vtkRenderingVolume
     vtkRenderingVolumeOpenGL2
     vtkInteractionWidgets
@@ -115,11 +115,19 @@ shader_to_header(HWShading/shaders/BuildShadowMapLines.frag
 ## #############################################################################
 
 add_library(${TARGET_NAME} SHARED
-  ${${TARGET_NAME}_CFILES}
+  "${${TARGET_NAME}_QRC}"
   )
 
 target_compile_definitions(${TARGET_NAME} PUBLIC ${VTK_DEFINITIONS})
 
+## #############################################################################
+## source
+## #############################################################################
+target_sources(${TARGET_NAME}
+    PRIVATE ${${TARGET_NAME}_SOURCES}
+    PUBLIC ${${TARGET_NAME}_TEMPLATES}
+    PUBLIC ${${TARGET_NAME}_HEADERS}
+)
 ## #############################################################################
 ## include directories.
 ## #############################################################################
@@ -127,7 +135,7 @@ target_compile_definitions(${TARGET_NAME} PUBLIC ${VTK_DEFINITIONS})
 target_include_directories(${TARGET_NAME}
   PUBLIC ${${TARGET_NAME}_INCLUDE_DIRS}
   PUBLIC ${CMAKE_BINARY_DIR}/shaders
-  PRIVATE ${VTK_INCLUDE_DIRS}
+  PUBLIC ${VTK_INCLUDE_DIRS}
   )
 
 ## #############################################################################

@@ -69,8 +69,7 @@ endif()
 
 add_library(${TARGET_NAME} MODULE
   ${${TARGET_NAME}_PCH}
-  ${${TARGET_NAME}_CFILES}
-  ${${TARGET_NAME}_QRC}
+  "${${TARGET_NAME}_QRC}"
   )
 ## #############################################################################
 ## Setup version numbering
@@ -80,6 +79,16 @@ set(${TARGET_NAME}_VERSION ${${PROJECT_NAME}_VERSION})
 string(TOUPPER ${TARGET_NAME} TARGET_NAME_UP)
 target_compile_definitions(${TARGET_NAME} PUBLIC ${TARGET_NAME_UP}_VERSION="${${TARGET_NAME}_VERSION}")
 target_compile_definitions(${TARGET_NAME} PUBLIC ${VTK_DEFINITIONS})
+
+## #############################################################################
+## source
+## #############################################################################
+target_sources(${TARGET_NAME}
+    PRIVATE ${${TARGET_NAME}_SOURCES}
+    PUBLIC ${${TARGET_NAME}_TEMPLATES}
+    PUBLIC ${${TARGET_NAME}_HEADERS}
+)
+
 ## #############################################################################
 ## include directories.
 ## #############################################################################

@@ -100,7 +100,7 @@ endif()
 
 add_executable(${TARGET_NAME} ${DEPLOYMENT_SYSTEM} # Empty for Linux
   ${${TARGET_NAME}_CFILES}
-  ${${TARGET_NAME}_QRC}
+  "${${TARGET_NAME}_QRC}"
   ${${TARGET_NAME}_QSS} # Just to have it in EDI
   ${${TARGET_NAME}_RC}  # Empty for Unix
   ${${TARGET_NAME}_HTML}

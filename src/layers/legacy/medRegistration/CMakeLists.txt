@@ -38,8 +38,18 @@ list_source_files(${TARGET_NAME}
 ## #############################################################################
 
 add_library(${TARGET_NAME} SHARED
-  ${${TARGET_NAME}_CFILES}
+ "${${TARGET_NAME}_QRC}"
   )
+
+
+## #############################################################################
+## source
+## #############################################################################
+target_sources(${TARGET_NAME}
+    PRIVATE ${${TARGET_NAME}_SOURCES}
+    PUBLIC ${${TARGET_NAME}_TEMPLATES}
+    PUBLIC ${${TARGET_NAME}_HEADERS}
+)
 
 ## #############################################################################
 ## include directories.
@@ -50,9 +60,9 @@ list_header_directories_to_include(${TARGET_NAME}
   
 target_include_directories(${TARGET_NAME}
   PUBLIC ${${TARGET_NAME}_INCLUDE_DIRS}
-  PRIVATE ${RPI_INCLUDE_DIRS}
+  PUBLIC ${RPI_INCLUDE_DIRS}
   PUBLIC ${dtk_INCLUDE_DIRS}
-  PRIVATE ${ITK_INCLUDE_DIRS}
+  PUBLIC ${ITK_INCLUDE_DIRS}
   )
 
 ## #############################################################################

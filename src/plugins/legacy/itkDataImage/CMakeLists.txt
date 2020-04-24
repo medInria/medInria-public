@@ -20,6 +20,7 @@ set(TARGET_NAME itkDataImagePlugin)
 ## #############################################################################
 
 set(ITK_IMAGES_DEPENDENCIES
+
     ITKIOMeta
     #common formats for common images
     ITKIOBMP ITKIOJPEG ITKIOJPEG2000 ITKIOPNG ITKIOTIFF
@@ -80,7 +81,7 @@ endif()
 ## #############################################################################
 
 add_library(${TARGET_NAME} MODULE
-  ${${TARGET_NAME}_CFILES}
+  "${${TARGET_NAME}_QRC}"
   )
 ## #############################################################################
 ## Setup version numbering
@@ -96,6 +97,15 @@ target_compile_definitions(${TARGET_NAME} PUBLIC
 target_compile_definitions(${TARGET_NAME} PUBLIC
     $<$<BOOL:${USE_OSPRay}>:MED_USE_OSPRAY_4_VR_BY_CPU>
     )
+
+## #############################################################################
+## source
+## #############################################################################
+target_sources(${TARGET_NAME}
+    PRIVATE ${${TARGET_NAME}_SOURCES}
+    PUBLIC ${${TARGET_NAME}_TEMPLATES}
+    PUBLIC ${${TARGET_NAME}_HEADERS}
+)
 
 ## #############################################################################
 ## include directories.

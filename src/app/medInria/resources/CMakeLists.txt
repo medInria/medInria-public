@@ -17,7 +17,7 @@ file(GLOB ${TARGET_NAME}_QRC
   *.qrc
   )
 set(${TARGET_NAME}_QRC
-  ${${TARGET_NAME}_QRC}
+  "${${TARGET_NAME}_QRC}"
   PARENT_SCOPE
   )
 
