@@ -18,7 +18,6 @@ set(TARGET_NAME qtdcmDataSourcePlugin)
 ## Resolve dependencies
 ## #############################################################################
 
-find_package(dtk REQUIRED)
 find_package(DCMTK REQUIRED NO_MODULE)
 find_package(QtDCM REQUIRED)
 
@@ -49,7 +48,7 @@ endif()
 
 link_directories(${QTDCM_LIBRARY_DIR})
 
-add_library(${TARGET_NAME} SHARED
+add_library(${TARGET_NAME} MODULE
   ${${TARGET_NAME}_PCH}
   ${${TARGET_NAME}_CFILES}
   )

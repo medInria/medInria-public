@@ -18,7 +18,7 @@ set(TARGET_NAME medLog)
 ## #############################################################################
 ## find requireds
 ## #############################################################################
-find_package(dtk REQUIRED)
+
 find_package(ITK REQUIRED COMPONENTS ITKCommon)
 find_package(VTK REQUIRED COMPONENTS vtkCommonCore)
 

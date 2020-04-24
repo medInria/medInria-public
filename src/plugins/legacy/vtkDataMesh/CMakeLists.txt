@@ -19,8 +19,6 @@ set(TARGET_NAME vtkDataMeshPlugin)
 ## Resolve dependencies
 ## #############################################################################
 
-find_package(dtk REQUIRED)
-
 find_package(VTK REQUIRED COMPONENTS
     vtkRenderingVolumeOpenGL2
     vtkRenderingContext2D
@@ -59,7 +57,7 @@ endif()
 ## add library
 ## #############################################################################
 
-add_library(${TARGET_NAME} SHARED
+add_library(${TARGET_NAME} MODULE
   ${${TARGET_NAME}_PCH}
   ${${TARGET_NAME}_CFILES}
   )

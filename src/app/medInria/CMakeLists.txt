@@ -22,9 +22,6 @@ set(TARGET_NAME medInria)
 add_subdirectory(QSingleApplication)
 add_subdirectory(resources)
 
-find_package(dtk REQUIRED)
-include_directories(${dtk_INCLUDE_DIRS})
-
 list_source_files(${TARGET_NAME}
   ${CMAKE_CURRENT_SOURCE_DIR}
   areas/browser
@@ -53,7 +50,6 @@ if (EXISTS ${CMAKE_BINARY_DIR}/revisions/medRevisions.h)
   include_directories(${CMAKE_BINARY_DIR}/revisions)
   add_definitions(-D${PROJECT_NAME}_HAS_REVISIONS)
 endif()
-
 
 ## #############################################################################
 ## Add preproc if we want immersive room stuff
@@ -120,6 +116,7 @@ endif()
 
 target_include_directories(${TARGET_NAME}
   PRIVATE ${${TARGET_NAME}_INCLUDE_DIRS}
+  PRIVATE ${dtk_INCLUDE_DIRS}
   )
 # PRIVATE beacause application is not supposed to be used somewhere else
 

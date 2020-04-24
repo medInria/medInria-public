@@ -19,13 +19,10 @@ set(TARGET_NAME medVtkDataMeshBase)
 ## Find required
 ## #############################################################################
 
-find_package(dtk REQUIRED)
-
 find_package(VTK REQUIRED COMPONENTS
     vtkRenderingVolumeOpenGL2  vtkRenderingContext2D
     vtkInteractionWidgets
     vtkIOParallelXML vtkIOGeometry  vtkIOExport
-    #vtkIOInfovis
     )
 
 find_package(ITK REQUIRED COMPONENTS ITKCommon)

@@ -19,14 +19,10 @@ set(TARGET_NAME itkDataTensorImagePlugin)
 ## Resolve dependencies
 ## #############################################################################
 
-find_package(dtk REQUIRED)
-
-
 set(ITK_IMAGES_DEPENDENCIES
     ITKIOMeta
     ITKIONIFTI ITKIONRRD
 )
-
 
 find_package(ITK REQUIRED  COMPONENTS ${ITK_IMAGES_DEPENDENCIES}
      ITKIOStimulate ITKIOVTK)
@@ -71,7 +67,7 @@ endif()
 ## add library
 ## #############################################################################
 
-add_library(${TARGET_NAME} SHARED
+add_library(${TARGET_NAME} MODULE
   ${${TARGET_NAME}_PCH}
   ${${TARGET_NAME}_CFILES}
   ${${TARGET_NAME}_QRC}

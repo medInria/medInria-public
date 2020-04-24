@@ -19,14 +19,11 @@ set(TARGET_NAME itkDataImagePlugin)
 ## Resolve dependencies
 ## #############################################################################
 
-find_package(dtk REQUIRED)
-
 set(ITK_IMAGES_DEPENDENCIES
     ITKIOMeta
     #common formats for common images
     ITKIOBMP ITKIOJPEG ITKIOJPEG2000 ITKIOPNG ITKIOTIFF
     #Medical images formats
-    #ITKIOBruker ITKIOHDF5
     ITKIOGIPL ITKIONRRD ITKIONIFTI ITKIOGIPL ITKIOPhilipsREC ITKIOGDCM
 )
 
@@ -82,7 +79,7 @@ endif()
 ## add library
 ## #############################################################################
 
-add_library(${TARGET_NAME} SHARED
+add_library(${TARGET_NAME} MODULE
   ${${TARGET_NAME}_CFILES}
   )
 ## #############################################################################

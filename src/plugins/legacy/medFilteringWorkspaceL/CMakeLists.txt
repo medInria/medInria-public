@@ -16,12 +16,6 @@
 set(TARGET_NAME medFilteringWorkspaceLPlugin)
 
 ## #############################################################################
-## Resolve dependencies
-## #############################################################################
-
-find_package(dtk REQUIRED)
-
-## #############################################################################
 ## List Sources
 ## #############################################################################
 
@@ -33,7 +27,7 @@ list_source_files(${TARGET_NAME}
 ## add library
 ## #############################################################################
 
-add_library(${TARGET_NAME} SHARED
+add_library(${TARGET_NAME} MODULE
   ${${TARGET_NAME}_CFILES}
   ${${TARGET_NAME}_QRC}
   )

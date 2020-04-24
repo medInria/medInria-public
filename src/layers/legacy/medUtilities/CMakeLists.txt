@@ -19,8 +19,6 @@ set(TARGET_NAME medUtilities)
 ## Find required
 ## #############################################################################
 
-find_package(dtk REQUIRED)
-
 find_package(VTK REQUIRED COMPONENTS vtkInteractionWidgets )
 
 find_package(ITK REQUIRED COMPONENTS ITKCommon)

@@ -19,8 +19,6 @@ set(TARGET_NAME diffeomorphicDemonsPlugin)
 ## Resolve dependencies
 ## #############################################################################
 
-find_package(dtk REQUIRED )
-
 find_package(RPI REQUIRED )
 include(${RPI_USE_FILE})
 include(ITKLibs) # FOR and FROM RPI
@@ -50,7 +48,7 @@ endif()
 ## add library
 ## #############################################################################
 
-add_library(${TARGET_NAME} SHARED
+add_library(${TARGET_NAME} MODULE
   ${${TARGET_NAME}_PCH}
   ${${TARGET_NAME}_CFILES}
   )

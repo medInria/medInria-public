@@ -19,8 +19,6 @@ set(TARGET_NAME undoRedoRegistrationPlugin)
 ## Resolve dependencies
 ## #################################################################
 
-find_package(dtk REQUIRED)
-
 find_package(RPI REQUIRED )
 include(${RPI_USE_FILE})
 include(ITKLibs) # FOR and FROM RPI
@@ -38,7 +36,7 @@ list_source_files(${TARGET_NAME}
 ## add library
 ## #############################################################################
 
-add_library(${TARGET_NAME} SHARED
+add_library(${TARGET_NAME} MODULE
   ${${TARGET_NAME}_CFILES}
   ${${TARGET_NAME}_QRC}
   )

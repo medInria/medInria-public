@@ -19,8 +19,6 @@ set(TARGET_NAME medRegistration)
 ## find requireds
 ## #############################################################################
 
-find_package(dtk REQUIRED)
-
 find_package(RPI REQUIRED )
 include(${RPI_USE_FILE})
 include(ITKLibs) # FOR and FROM RPI

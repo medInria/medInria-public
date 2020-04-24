@@ -19,8 +19,6 @@ set(TARGET_NAME medVtkViewPlugin)
 ## Resolve dependencies
 ## #############################################################################
 
-find_package(dtk REQUIRED)
-
 find_package(VTK REQUIRED COMPONENTS
     vtkGUISupportQt vtkInteractionWidgets)
 
@@ -40,7 +38,7 @@ set(${TARGET_NAME}_QRC resources/medVtkView.qrc)
 ## add library
 ## #############################################################################
 
-add_library(${TARGET_NAME} SHARED
+add_library(${TARGET_NAME} MODULE
   ${${TARGET_NAME}_CFILES}
   ${${TARGET_NAME}_QRC}
   )
