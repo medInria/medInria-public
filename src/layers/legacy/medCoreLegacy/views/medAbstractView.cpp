@@ -315,7 +315,7 @@ void medAbstractView::setUpViewForThumbnail()
     if(!primaryInteractor)
     {
         QString msg = "Unable to find any current primary interactor for view "  + this->identifier();
-        dtkWarn() << msg;
+        qWarning() << msg;
     }
 
     else
