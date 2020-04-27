@@ -211,30 +211,17 @@ unsigned int vtkMetaVolumeMesh::CanReadFile (const char* filename)
 {
     if (vtkMetaVolumeMesh::IsMeshExtension(vtksys::SystemTools::GetFilenameLastExtension(filename).c_str()))
     {
-        // check if there is any tetrahedron...
-
-        std::ifstream file (filename );
-        char str[256];
-        file >> str;
-
-        if(file.fail())
+        // medit .mesh format must have 'MeshVersionFormatted' as header
+        if (vtkMetaDataSet::IsMeditFormat(filename))
         {
-            return 0;
+            // Additionally, check if there are any tetrahedra
+            std::ifstream file(filename);
+            if (vtkMetaDataSet::PlaceStreamCursor(file, "Tetrahedra"))
+            {
+                return vtkMetaVolumeMesh::FILE_IS_MESH;
+            }
         }
-
-        while( (!file.fail()) && (strcmp (str, "Tetrahedra") != 0) && (strcmp (str, "End") != 0) && (strcmp (str, "END") != 0) )
-        {
-            file >> str;
-        }
-
-        if (strcmp (str, "Tetrahedra") == 0)
-        {
-            return vtkMetaVolumeMesh::FILE_IS_MESH;
-        }
-        else
-        {
-            return 0;
-        }
+        return 0;
     }
 
     if (vtkMetaVolumeMesh::IsGMeshExtension(vtksys::SystemTools::GetFilenameLastExtension(filename).c_str()))
