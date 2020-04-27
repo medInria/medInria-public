@@ -337,7 +337,7 @@ void medVtkViewItkDataImageInteractor::initWindowLevelParameters(double *range)
     if(d->isFloatImage)
     {
         int iDecimalCount = 2;
-        if(std::fabsl(d->intensityStep)<1)
+        if(d->intensityStep<1)
         {
             iDecimalCount = 1 + std::ceill(std::fabsl(std::log10l(d->intensityStep)));
         }
