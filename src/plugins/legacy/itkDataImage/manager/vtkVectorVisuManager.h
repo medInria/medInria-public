@@ -18,6 +18,7 @@
 #include <vtkPolyDataMapper.h>
 #include <vtkPolyDataNormals.h>
 #include <vtkGlyph3D.h>
+#include <vtkGlyph3DMapper.h>
 #include <vtkExtractVOI.h>
 #include <vtkPolyDataAlgorithm.h>
 #include <vtkUnsignedIntArray.h>
@@ -26,6 +27,7 @@
 #include <vtkImageData.h>
 #include <vtkVectorOrienter.h>
 #include <vtkAssignAttribute.h>
+
 
 #include <vtkPolydataNormalsOrienter.h>
 
@@ -73,11 +75,8 @@ class vtkVectorVisuManager : public vtkObject
   void SetSampleRate(const int&,const int&,const int&);
   int* GetSampleRate(){return this->VOI->GetSampleRate();}
 
-  /** Get the vtkMapper. */
-  vtkGetObjectMacro (Mapper, vtkMapper)
-
-  /** Get the vtkGlyph3D. */
-  vtkGetObjectMacro (Glyph, vtkGlyph3D)
+  /** Get the vtkGlyph3DMapper. */
+  vtkGetObjectMacro (GlyphMapper, vtkGlyph3DMapper)
 
   void SetColorMode(ColorMode mode);
   ColorMode GetColorMode(){return this->CurrentColorMode;}
@@ -103,11 +102,10 @@ class vtkVectorVisuManager : public vtkObject
   vtkExtractVOI*            VOI;
   vtkAssignAttribute *      Assign;
   vtkVectorOrienter*        Orienter;
-  vtkGlyph3D*               Glyph;
-  vtkPolyDataMapper*        Mapper;
+  vtkGlyph3DMapper*         GlyphMapper;
+
   vtkActor*                 Actor;
   vtkPolyDataNormals*       Normals;
-  vtkPolyDataNormalsOrienter* NormalsOrienter;
 
   vtkImageData*             Input;
 
