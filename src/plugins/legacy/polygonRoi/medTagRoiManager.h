@@ -62,7 +62,6 @@ public:
     void select(bool state);
     void loadContours(QVector<medWorldPosContours> contours);
 
-    double findClosestContourFromPoint(QVector3D worldMouseCoord);
     int getClosestSliceFromPoint();
 
     QVector<QVector2D> copyContour();

@@ -65,7 +65,6 @@ public:
 
     medWorldPosContours getContourAsNodes();
     void manageTick(medSliderL *slider);
-    double findClosestContourFromPoint(QVector3D coords);
 
     QVector<QVector2D> copyContour();
     bool pasteContour(QVector<QVector2D> nodes);

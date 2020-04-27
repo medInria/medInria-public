@@ -13,6 +13,7 @@
 #include "polygonRoiToolBox.h"
 
 #include <medAbstractProcessLegacy.h>
+#include <medParameterGroupManagerL.h>
 #include <medPluginManager.h>
 #include <medTabbedViewContainers.h>
 #include <medTableWidgetChooser.h>
@@ -24,6 +25,7 @@
 #include <medViewContainerManager.h>
 #include <medViewContainerSplitter.h>
 #include <medViewFactory.h>
+#include <medViewParameterGroupL.h>
 #include <polygonEventFilter.h>
 
 
@@ -297,6 +299,7 @@ void polygonRoiToolBox::clickClosePolygon(bool state)
     saveBinaryMaskButton->setEnabled(state);
     saveContourButton->setEnabled(state);
     enableTableViewChooser(state);
+    interpolate->setEnabled(state);
     if (state)
     {
         if (!viewEventFilter)
@@ -392,6 +395,18 @@ void polygonRoiToolBox::updateTableWidgetView(unsigned int row, unsigned int col
 
     medViewContainer *previousContainer;
     medViewContainer* container;
+    QString linkGroupBaseName = "MPR ";
+    unsigned int linkGroupNumber = 1;
+
+    QString linkGroupName = linkGroupBaseName + QString::number(linkGroupNumber);
+    while (medParameterGroupManagerL::instance()->viewGroup(linkGroupName))
+    {
+        linkGroupNumber++;
+        linkGroupName = linkGroupBaseName + QString::number(linkGroupNumber);
+    }
+    medViewParameterGroupL *viewGroup = new medViewParameterGroupL(linkGroupName, mainView);
+    viewGroup->addImpactedView(mainView);
+
     for (int nbItem = 0; nbItem<tableViewChooser->selectedItems().size(); nbItem++)
     {
         if (nbItem == 0)
@@ -417,9 +432,6 @@ void polygonRoiToolBox::updateTableWidgetView(unsigned int row, unsigned int col
         medAbstractImageView* view = static_cast<medAbstractImageView *> (container->view());
         viewEventFilter->installOnView(view);
         viewEventFilter->clearCopiedContours();
-        connect(view, &medAbstractView::closed, [=](){
-            mainContainer->setSelected(true);
-        });
         connect(container, &medViewContainer::containerSelected, [=](){
             viewEventFilter->Off();
             repulsorTool->setEnabled(false);
@@ -429,9 +441,16 @@ void polygonRoiToolBox::updateTableWidgetView(unsigned int row, unsigned int col
 
         view->setOrientation(dynamic_cast<medTableWidgetItem*>(item)->orientation());
         viewEventFilter->addAlternativeViews(view);
+
+        viewGroup->addImpactedView(view);
+
     }
+    viewGroup->setLinkAllParameters(true);
+    viewGroup->removeParameter("Slicing");
+    viewGroup->removeParameter("Orientation");
+
     connect(mainContainer, &medViewContainer::containerSelected, [=](){
-        if (addNewCurve->isChecked())
+        if (currentView && addNewCurve->isChecked())
         {
             viewEventFilter->On();
             repulsorTool->setEnabled(true);

@@ -1071,21 +1071,6 @@ void medTagRoiManager::resampleCurve(vtkPolyData *poly,int nbPoints)
     points->Delete();
 }
 
-double medTagRoiManager::findClosestContourFromPoint(QVector3D worldMouseCoord)
-{
-    double minDist = DBL_MAX;
-    for (polygonRoi *roi : d->rois)
-    {
-        double dist = roi->findClosestContourFromPoint(worldMouseCoord);
-        if ( dist < minDist)
-        {
-            minDist = dist;
-            d->closestSlice = roi->getIdSlice();
-        }
-    }
-    return minDist;
-}
-
 int medTagRoiManager::getClosestSliceFromPoint()
 {
     return d->closestSlice;

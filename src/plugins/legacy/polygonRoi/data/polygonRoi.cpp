@@ -506,26 +506,3 @@ bool polygonRoi::pasteContour(QVector<QVector2D> nodes)
 
     return true;
 }
-
-double polygonRoi::findClosestContourFromPoint(QVector3D worldMouseCoord)
-{
-    if (!d->polyData)
-    {
-        d->polyData = createPolyDataFromContour();
-    }
-
-    double coords[3] = {worldMouseCoord.x(), worldMouseCoord.y(), worldMouseCoord.z()};
-    vtkSmartPointer<vtkCellLocator> cellLocator =
-        vtkSmartPointer<vtkCellLocator>::New();
-    cellLocator->SetDataSet(d->polyData);
-    cellLocator->BuildLocator();
-
-    //Find the closest points to TestPoint
-    double closestPoint[3];//the coordinates of the closest point will be returned here
-    double closestPointDist2; //the squared distance to the closest point will be returned here
-    vtkIdType cellId; //the cell id of the cell containing the closest point will be returned here
-    int subId; //this is rarely used (in triangle strips only, I believe)
-    cellLocator->FindClosestPoint(coords, closestPoint, cellId, subId, closestPointDist2);
-    return closestPointDist2;
-}
-

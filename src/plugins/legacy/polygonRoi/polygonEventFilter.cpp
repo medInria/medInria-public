@@ -166,11 +166,7 @@ bool polygonEventFilter::mouseReleaseEvent(medAbstractView *view, QMouseEvent *m
         return false;
     }
 
-    if (currentView != v )
-    {
-        return updateMainViewOnChosenSlice(v, mouseEvent);
-    }
-    else
+    if (currentView == v )
     {
         if (isRepulsorActivated && activateEventFilter)
         {
@@ -223,21 +219,6 @@ bool polygonEventFilter::mousePressEvent(medAbstractView * view, QMouseEvent *mo
     {
         return rightButtonBehaviour(view, mouseEvent);
     }
-    return false;
-}
-
-bool polygonEventFilter::updateMainViewOnChosenSlice(medAbstractImageView *view, QMouseEvent *mouseEvent)
-{
-    QPointF position;
-    position.setX(mouseEvent->x()*QGuiApplication::screenAt(mouseEvent->pos())->devicePixelRatio());
-    position.setY(mouseEvent->y()*QGuiApplication::screenAt(mouseEvent->pos())->devicePixelRatio());
-    QVector3D clickPosition = view->mapDisplayToWorldCoordinates(position);
-    int slice = findClosestSliceFromMouseClick(clickPosition);
-    if ( slice == -1 )
-        return false;
-    vtkImageView2D *view2D =  static_cast<medVtkViewBackend*>(currentView->backend())->view2D;
-    view2D->SetSlice(slice);
-    view2D->Render();
     return false;
 }
 
@@ -1216,20 +1197,4 @@ medTagRoiManager *polygonEventFilter::closestManagerInSlice(double mousePos[2])
         }
     }
     return managerInSlice;
-}
-
-int polygonEventFilter::findClosestSliceFromMouseClick(QVector3D worldMouseCoord)
-{
-    double minDistance = 1.;
-    medTagRoiManager *closestManager = nullptr;
-    for (medTagRoiManager *manager : managers)
-    {
-        double dist = manager->findClosestContourFromPoint(worldMouseCoord);
-        if ( dist < minDistance)
-        {
-            minDistance = dist;
-            closestManager = manager;
-        }
-    }
-    return (minDistance<1.)?closestManager->getClosestSliceFromPoint():-1;
 }

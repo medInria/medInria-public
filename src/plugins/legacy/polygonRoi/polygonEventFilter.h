@@ -114,8 +114,6 @@ private:
     medTagRoiManager *addManagerToList(int label, QString labelName);
     void manageButtonsState();
     void saveContoursAsMedAbstractData(vtkMetaDataSet *outputDataSet, QVector<medTagContours> contoursData);
-    int findClosestSliceFromMouseClick(QVector3D worldMouseCoord);
-    bool updateMainViewOnChosenSlice(medAbstractImageView *view, QMouseEvent *mouseEvent);
     int findAvailableLabel();
     medTagRoiManager *getManagerFromColor(QColor color);
     QLineEdit *updateNameManager(medTagRoiManager* closestManager, QMenu *mainMenu);
