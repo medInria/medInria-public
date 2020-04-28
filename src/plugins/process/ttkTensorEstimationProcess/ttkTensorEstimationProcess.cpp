@@ -1,4 +1,4 @@
-#include <itkTensorEstimationProcess.h>
+#include "ttkTensorEstimationProcess.h"
 
 #include <dtkLog>
 
@@ -15,7 +15,7 @@
 #include <medAbstractDiffusionModelImageData.h>
 #include <medAbstractDataFactory.h>
 
-itkTensorEstimationProcess::itkTensorEstimationProcess(QObject *parent)
+ttkTensorEstimationProcess::ttkTensorEstimationProcess(QObject *parent)
     : medAbstractDiffusionModelEstimationProcess(parent)
 {
     m_estimationfilter = 0;
@@ -48,41 +48,41 @@ itkTensorEstimationProcess::itkTensorEstimationProcess(QObject *parent)
     m_smoothing->addBoolParameter(m_HighSmoothing);
 }
 
-itkTensorEstimationProcess::~itkTensorEstimationProcess()
+ttkTensorEstimationProcess::~ttkTensorEstimationProcess()
 {
 }
 
-QString itkTensorEstimationProcess::caption() const
+QString ttkTensorEstimationProcess::caption() const
 {
     return "TTK tensor estimation";
 }
 
-QString itkTensorEstimationProcess::description() const
+QString ttkTensorEstimationProcess::description() const
 {
     return "Use TTK to estimate tensor models from DWI data";
 }
 
-medBoolParameter *itkTensorEstimationProcess::noSmoothing() const
+medBoolParameter *ttkTensorEstimationProcess::noSmoothing() const
 {
     return m_NoSmoothing;
 }
 
-medBoolParameter *itkTensorEstimationProcess::lowSmoothing() const
+medBoolParameter *ttkTensorEstimationProcess::lowSmoothing() const
 {
     return m_LowSmoothing;
 }
 
-medBoolParameter *itkTensorEstimationProcess::mediumSmoothing() const
+medBoolParameter *ttkTensorEstimationProcess::mediumSmoothing() const
 {
     return m_MediumSmoothing;
 }
 
-medBoolParameter *itkTensorEstimationProcess::highSmoothing() const
+medBoolParameter *ttkTensorEstimationProcess::highSmoothing() const
 {
     return m_HighSmoothing;
 }
 
-medAbstractJob::medJobExitStatus itkTensorEstimationProcess::run()
+medAbstractJob::medJobExitStatus ttkTensorEstimationProcess::run()
 {
     medAbstractJob::medJobExitStatus jobExitSatus = medAbstractJob::MED_JOB_EXIT_FAILURE;
 
@@ -137,7 +137,7 @@ medAbstractJob::medJobExitStatus itkTensorEstimationProcess::run()
 }
 
 template <class inputType>
-medAbstractJob::medJobExitStatus itkTensorEstimationProcess::_run()
+medAbstractJob::medJobExitStatus ttkTensorEstimationProcess::_run()
 {
     typedef itk::Image <inputType,4> DWIImageType;
     typedef itk::Image <inputType,3> SingleDWIImageType;
@@ -288,7 +288,7 @@ medAbstractJob::medJobExitStatus itkTensorEstimationProcess::_run()
     return medAbstractJob::MED_JOB_EXIT_SUCCESS;
 }
 
-void itkTensorEstimationProcess::cancel()
+void ttkTensorEstimationProcess::cancel()
 {
     // Not implemented yet
 }

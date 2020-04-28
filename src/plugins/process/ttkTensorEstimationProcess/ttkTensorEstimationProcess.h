@@ -8,14 +8,14 @@
 #include <medBoolParameterGroup.h>
 #include <medBoolParameter.h>
 
-#include <itkTensorEstimationProcessPluginExport.h>
+#include <ttkTensorEstimationProcessPluginExport.h>
 
-class ITKTENSORESTIMATIONPROCESSPLUGIN_EXPORT itkTensorEstimationProcess: public medAbstractDiffusionModelEstimationProcess
+class TTKTENSORESTIMATIONPROCESSPLUGIN_EXPORT ttkTensorEstimationProcess: public medAbstractDiffusionModelEstimationProcess
 {
     Q_OBJECT
 public:
-    itkTensorEstimationProcess(QObject* parent = NULL);
-    ~itkTensorEstimationProcess();
+    ttkTensorEstimationProcess(QObject* parent = NULL);
+    ~ttkTensorEstimationProcess();
 
     virtual medAbstractJob::medJobExitStatus run();
     virtual void cancel();
@@ -42,7 +42,7 @@ private:
     medBoolParameter *m_HighSmoothing;
 };
 
-inline medAbstractDiffusionModelEstimationProcess* itkTensorEstimationProcessCreator()
+inline medAbstractDiffusionModelEstimationProcess* ttkTensorEstimationProcessCreator()
 {
-    return new itkTensorEstimationProcess();
+    return new ttkTensorEstimationProcess();
 }

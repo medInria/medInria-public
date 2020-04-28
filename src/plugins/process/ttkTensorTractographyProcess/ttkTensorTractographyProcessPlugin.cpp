@@ -8,10 +8,10 @@
 void ttkTensorTractographyProcessPlugin::initialize(void)
 {
     medCore::tractography::pluginFactory().record(ttkTensorTractographyProcess::staticMetaObject.className(), ttkTensorTractographyProcessCreator);
-    medWidgets::tractography::presenterFactory().record(itkTensorTractographyProcess::staticMetaObject.className(), itkTensorTractographyProcessPresenterCreator);
+    medWidgets::tractography::presenterFactory().record(ttkTensorTractographyProcess::staticMetaObject.className(), ttkTensorTractographyProcessPresenterCreator);
 }
 
-void itkTensorTractographyProcessPlugin::uninitialize(void)
+void ttkTensorTractographyProcessPlugin::uninitialize(void)
 {
 }
 

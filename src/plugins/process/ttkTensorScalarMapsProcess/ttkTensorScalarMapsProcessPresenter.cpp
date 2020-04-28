@@ -1,4 +1,4 @@
-#include <itkTensorScalarMapsProcessPresenter.h>
+#include "ttkTensorScalarMapsProcessPresenter.h"
 
 #include <medJobManager.h>
 
@@ -12,19 +12,19 @@
 #include <QSlider>
 #include <QSignalMapper>
 
-itkTensorScalarMapsProcessPresenter::itkTensorScalarMapsProcessPresenter(medAbstractDiffusionScalarMapsProcess *parent)
+ttkTensorScalarMapsProcessPresenter::ttkTensorScalarMapsProcessPresenter(medAbstractDiffusionScalarMapsProcess *parent)
     : medAbstractDiffusionScalarMapsProcessPresenter(parent)
 {
-    m_process = qobject_cast <itkTensorScalarMapsProcess *> (parent);
+    m_process = qobject_cast <ttkTensorScalarMapsProcess *> (parent);
     m_progressionPresenter = new medIntParameterPresenter(m_process->progression());
 }
 
-medAbstractDiffusionScalarMapsProcess* itkTensorScalarMapsProcessPresenter::process() const
+medAbstractDiffusionScalarMapsProcess* ttkTensorScalarMapsProcessPresenter::process() const
 {
     return m_process;
 }
 
-QWidget *itkTensorScalarMapsProcessPresenter::buildToolBoxWidget()
+QWidget* ttkTensorScalarMapsProcessPresenter::buildToolBoxWidget()
 {
     QWidget *tbWidget = new QWidget;
     QVBoxLayout *tbGlobalLayout = new QVBoxLayout;
@@ -157,7 +157,7 @@ QWidget *itkTensorScalarMapsProcessPresenter::buildToolBoxWidget()
     return tbWidget;
 }
 
-void itkTensorScalarMapsProcessPresenter::requestScalarMap(QString mapRequested)
+void ttkTensorScalarMapsProcessPresenter::requestScalarMap(QString mapRequested)
 {
     m_process->selectRequestedScalarMap(mapRequested);
     medJobManager::instance()->startJobInThread(this->process());

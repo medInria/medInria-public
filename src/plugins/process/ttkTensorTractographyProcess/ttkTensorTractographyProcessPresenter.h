@@ -28,4 +28,4 @@ private:
     medIntParameterPresenter *m_progressionPresenter;
 };
 
-MED_DECLARE_PROCESS_PRESENTER_CREATOR(medAbstractTractographyProcess, itkTensorTractographyProcess)
+MED_DECLARE_PROCESS_PRESENTER_CREATOR(medAbstractTractographyProcess, ttkTensorTractographyProcess)

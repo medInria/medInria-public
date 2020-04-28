@@ -1,11 +1,8 @@
-set(TARGET_NAME itkTensorEstimationProcessPlugin)
+set(TARGET_NAME ttkTensorEstimationProcessPlugin)
 
 ## #############################################################################
 ## Resolve dependencies
 ## #############################################################################
-
-#find_package(VTK REQUIRED)
-#include(${VTK_USE_FILE})
 
 find_package(ITK REQUIRED COMPONENTS ITKCommon ITKFiniteDifference)
 include(${ITK_USE_FILE})

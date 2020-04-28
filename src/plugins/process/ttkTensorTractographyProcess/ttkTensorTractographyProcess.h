@@ -10,7 +10,7 @@
 
 #include "ttkTensorTractographyProcessPluginExport.h"
 
-class ITKTENSORTRACTOGRAPHYPROCESSPLUGIN_EXPORT ttkTensorTractographyProcess: public medAbstractTractographyProcess
+class TTKTENSORTRACTOGRAPHYPROCESSPLUGIN_EXPORT ttkTensorTractographyProcess: public medAbstractTractographyProcess
 {
     Q_OBJECT
 public:

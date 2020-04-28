@@ -75,9 +75,9 @@ set(PLUGIN_LIST
   process/arithmetic_operation                                           ON
   process/bias_correction                                                ON
   process/dwi_basic_thresholding                                         ON
-  process/itkTensorEstimationProcess                                     ON
-  process/itkTensorScalarMapsProcess                                     ON
-  process/itkTensorTractographyProcess                                   ON
+  process/ttkTensorEstimationProcess                                     ON
+  process/ttkTensorScalarMapsProcess                                     ON
+  process/ttkTensorTractographyProcess                                   ON
   process/mask_image                                                     ON
   process/morphomath_operation                                           ON
   process/single_filter                                                  ON

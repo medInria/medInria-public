@@ -1,4 +1,4 @@
-#include <itkTensorEstimationProcessPresenter.h>
+#include "ttkTensorEstimationProcessPresenter.h"
 
 #include <medBoolParameterPresenter.h>
 #include <QVBoxLayout>
@@ -7,10 +7,10 @@
 #include <QLabel>
 #include <QGroupBox>
 
-itkTensorEstimationProcessPresenter::itkTensorEstimationProcessPresenter(medAbstractDiffusionModelEstimationProcess *parent)
+ttkTensorEstimationProcessPresenter::ttkTensorEstimationProcessPresenter(medAbstractDiffusionModelEstimationProcess *parent)
     : medAbstractDiffusionModelEstimationProcessPresenter(parent)
 {
-    m_process = qobject_cast <itkTensorEstimationProcess *> (parent);
+    m_process = qobject_cast <ttkTensorEstimationProcess *> (parent);
 
     m_noSmoothingPresenter = new medBoolParameterPresenter(m_process->noSmoothing());
     m_lowSmoothingPresenter = new medBoolParameterPresenter(m_process->lowSmoothing());
@@ -18,12 +18,12 @@ itkTensorEstimationProcessPresenter::itkTensorEstimationProcessPresenter(medAbst
     m_highSmoothingPresenter = new medBoolParameterPresenter(m_process->highSmoothing());
 }
 
-medAbstractDiffusionModelEstimationProcess* itkTensorEstimationProcessPresenter::process() const
+medAbstractDiffusionModelEstimationProcess* ttkTensorEstimationProcessPresenter::process() const
 {
     return m_process;
 }
 
-QWidget *itkTensorEstimationProcessPresenter::buildToolBoxWidget()
+QWidget *ttkTensorEstimationProcessPresenter::buildToolBoxWidget()
 {
     QWidget *tbWidget = medAbstractDiffusionModelEstimationProcessPresenter::buildToolBoxWidget();
     QVBoxLayout *tbLayout = qobject_cast <QVBoxLayout *> (tbWidget->layout());

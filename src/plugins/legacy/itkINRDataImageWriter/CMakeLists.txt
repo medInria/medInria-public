@@ -107,16 +107,8 @@ target_link_libraries(${TARGET_NAME}
   dtkLog
   medCoreLegacy)
 
-if (PLUGINS_LEGACY_PATH)
-  set_property(TARGET ${TARGET_NAME} PROPERTY RUNTIME_OUTPUT_DIRECTORY ${PLUGINS_LEGACY_PATH})
-  set_property(TARGET ${TARGET_NAME} PROPERTY LIBRARY_OUTPUT_DIRECTORY ${PLUGINS_LEGACY_PATH})
-endif()
-
 ## #################################################################
 ## Install rules
 ## #################################################################
 
-install(TARGETS ${TARGET_NAME}
-  RUNTIME DESTINATION plugins_legacy
-  LIBRARY DESTINATION plugins_legacy
-  ARCHIVE DESTINATION lib)
+set_plugin_install_rules_legacy(${TARGET_NAME})

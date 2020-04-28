@@ -1,4 +1,4 @@
-set(TARGET_NAME itkTensorScalarMapsProcessPlugin)
+set(TARGET_NAME ttkTensorScalarMapsProcessPlugin)
 
 ## #############################################################################
 ## Resolve dependencies

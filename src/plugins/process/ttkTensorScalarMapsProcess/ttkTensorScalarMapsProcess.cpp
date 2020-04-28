@@ -1,4 +1,4 @@
-#include <itkTensorScalarMapsProcess.h>
+#include "ttkTensorScalarMapsProcess.h"
 
 #include <dtkLog>
 
@@ -10,52 +10,54 @@
 #include <medAbstractDiffusionModelImageData.h>
 #include <medAbstractDataFactory.h>
 
+// ////////////////////////////////////////////
+// Headers from TTK
 #include <itkTensorToScalarTensorImageFilter.h>
-#include "itkTensorToScalarFunction.h"
-#include "itkTensorToFAFunction.h"
-#include "itkTensorToColorFAFunction.h"
-#include "itkTensorToLogFAFunction.h"
-#include "itkTensorToADCFunction.h"
-#include "itkTensorToClFunction.h"
-#include "itkTensorToCpFunction.h"
-#include "itkTensorToCsFunction.h"
-#include "itkTensorToRAFunction.h"
-#include "itkTensorToVRFunction.h"
-#include "itkTensorToVolumeFunction.h"
-#include "itkTensorToLambdaFunction.h"
+#include <itkTensorToScalarFunction.h>
+#include <itkTensorToFAFunction.h>
+#include <itkTensorToColorFAFunction.h>
+#include <itkTensorToLogFAFunction.h>
+#include <itkTensorToADCFunction.h>
+#include <itkTensorToClFunction.h>
+#include <itkTensorToCpFunction.h>
+#include <itkTensorToCsFunction.h>
+#include <itkTensorToRAFunction.h>
+#include <itkTensorToVRFunction.h>
+#include <itkTensorToVolumeFunction.h>
+#include <itkTensorToLambdaFunction.h>
 
 #include <itkCommand.h>
 #include <medMetaDataKeys.h>
 
 #include <vtkSmartPointer.h>
 
-itkTensorScalarMapsProcess::itkTensorScalarMapsProcess(QObject *parent)
+ttkTensorScalarMapsProcess::ttkTensorScalarMapsProcess(QObject *parent)
     : medAbstractDiffusionScalarMapsProcess(parent)
 {
     m_filter = 0;
     m_scalarMapRequested = "fa";
 }
 
-itkTensorScalarMapsProcess::~itkTensorScalarMapsProcess()
+ttkTensorScalarMapsProcess::~ttkTensorScalarMapsProcess()
 {
 }
 
-QString itkTensorScalarMapsProcess::caption() const
+QString ttkTensorScalarMapsProcess::caption() const
 {
     return "Tensor scalar maps";
 }
 
-QString itkTensorScalarMapsProcess::description() const
+QString ttkTensorScalarMapsProcess::description() const
 {
     return "Compute scalar maps from tensors data";
 }
 
-void itkTensorScalarMapsProcess::selectRequestedScalarMap(QString mapRequested)
+void ttkTensorScalarMapsProcess::selectRequestedScalarMap(QString mapRequested)
 {
     m_scalarMapRequested = mapRequested;
 }
 
-medAbstractJob::medJobExitStatus itkTensorScalarMapsProcess::run()
+medAbstractJob::medJobExitStatus ttkTensorScalarMapsProcess::run()
 {
     medAbstractJob::medJobExitStatus jobExitSatus = medAbstractJob::MED_JOB_EXIT_FAILURE;
 
@@ -77,7 +79,7 @@ medAbstractJob::medJobExitStatus itkTensorScalarMapsProcess::run()
 }
 
 template <class inputType>
-medAbstractJob::medJobExitStatus itkTensorScalarMapsProcess::_run()
+medAbstractJob::medJobExitStatus ttkTensorScalarMapsProcess::_run()
 {
     typedef itk::Tensor<inputType, 3> TensorType;
     typedef itk::Image<TensorType, 3> TensorImageType;
@@ -90,7 +92,7 @@ medAbstractJob::medJobExitStatus itkTensorScalarMapsProcess::_run()
 
     itk::CStyleCommand::Pointer callback = itk::CStyleCommand::New();
     callback->SetClientData((void*)this);
-    callback->SetCallback(itkTensorScalarMapsProcess::eventCallback);
+    callback->SetCallback(ttkTensorScalarMapsProcess::eventCallback);
 
     if (m_scalarMapRequested == "ColorFA")
     {
@@ -189,7 +191,7 @@ medAbstractJob::medJobExitStatus itkTensorScalarMapsProcess::_run()
     return medAbstractJob::MED_JOB_EXIT_SUCCESS;
 }
 
-void itkTensorScalarMapsProcess::cancel()
+void ttkTensorScalarMapsProcess::cancel()
 {
     if(this->isRunning())
     {

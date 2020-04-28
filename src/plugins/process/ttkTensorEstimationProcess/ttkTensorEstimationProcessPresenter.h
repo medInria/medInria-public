@@ -1,23 +1,24 @@
 #pragma once
 
 #include <medAbstractDiffusionModelEstimationProcessPresenter.h>
-#include <itkTensorEstimationProcessPluginExport.h>
-#include <itkTensorEstimationProcess.h>
 #include <medProcessPresenterFactory.h>
 
+#include "ttkTensorEstimationProcess.h"
+#include "ttkTensorEstimationProcessPluginExport.h"
+
 class medBoolParameterPresenter;
-class ITKTENSORESTIMATIONPROCESSPLUGIN_EXPORT itkTensorEstimationProcessPresenter: public medAbstractDiffusionModelEstimationProcessPresenter
+class TTKTENSORESTIMATIONPROCESSPLUGIN_EXPORT ttkTensorEstimationProcessPresenter: public medAbstractDiffusionModelEstimationProcessPresenter
 {
     Q_OBJECT
 
 public:
-    itkTensorEstimationProcessPresenter(medAbstractDiffusionModelEstimationProcess *parent);
+    ttkTensorEstimationProcessPresenter(medAbstractDiffusionModelEstimationProcess *parent);
     virtual medAbstractDiffusionModelEstimationProcess* process() const;
 
     virtual QWidget *buildToolBoxWidget();
 
 private:
-    itkTensorEstimationProcess *m_process;
+    ttkTensorEstimationProcess *m_process;
 
     medBoolParameterPresenter *m_noSmoothingPresenter;
     medBoolParameterPresenter *m_lowSmoothingPresenter;
@@ -25,4 +26,4 @@ private:
     medBoolParameterPresenter *m_highSmoothingPresenter;
 };
 
-MED_DECLARE_PROCESS_PRESENTER_CREATOR(medAbstractDiffusionModelEstimationProcess, itkTensorEstimationProcess)
+MED_DECLARE_PROCESS_PRESENTER_CREATOR(medAbstractDiffusionModelEstimationProcess, ttkTensorEstimationProcess)

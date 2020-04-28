@@ -3,7 +3,7 @@
 #include <medAbstractTractographyProcess.h>
 #include "ttkTensorTractographyProcessPluginExport.h"
 
-class TTKTENSORTRACTOGRAPHYPROCESSPLUGIN_EXPORT itkTensorTractographyProcessPlugin : public medAbstractTractographyProcessPlugin
+class TTKTENSORTRACTOGRAPHYPROCESSPLUGIN_EXPORT ttkTensorTractographyProcessPlugin : public medAbstractTractographyProcessPlugin
 {
     Q_OBJECT
 
@@ -11,8 +11,8 @@ class TTKTENSORTRACTOGRAPHYPROCESSPLUGIN_EXPORT itkTensorTractographyProcessPlug
     Q_PLUGIN_METADATA(IID "fr.inria.ttkTensorTractographyProcessPlugin" FILE "ttkTensorTractographyProcessPlugin.json")
 
 public:
-     itkTensorTractographyProcessPlugin() {}
-     virtual ~itkTensorTractographyProcessPlugin() {}
+     ttkTensorTractographyProcessPlugin() {}
+     virtual ~ttkTensorTractographyProcessPlugin() {}
 
 public:
     void initialize();

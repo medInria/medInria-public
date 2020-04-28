@@ -12,7 +12,7 @@
 ttkTensorTractographyProcessPresenter::ttkTensorTractographyProcessPresenter(medAbstractTractographyProcess *parent)
     : medAbstractTractographyProcessPresenter(parent)
 {
-    m_process = qobject_cast <itkTensorTractographyProcess *> (parent);
+    m_process = qobject_cast <ttkTensorTractographyProcess *> (parent);
 
     m_faThreshold = new medIntParameterPresenter(m_process->faThreshold());
     m_faThreshold2 = new medIntParameterPresenter(m_process->faThreshold2());

@@ -8,14 +8,14 @@
 #include <medIntParameter.h>
 #include <medDoubleParameter.h>
 
-#include <itkTensorScalarMapsProcessPluginExport.h>
+#include <ttkTensorScalarMapsProcessPluginExport.h>
 
-class ITKTENSORSCALARMAPSPROCESSPLUGIN_EXPORT itkTensorScalarMapsProcess: public medAbstractDiffusionScalarMapsProcess
+class TTKTENSORSCALARMAPSPROCESSPLUGIN_EXPORT ttkTensorScalarMapsProcess: public medAbstractDiffusionScalarMapsProcess
 {
     Q_OBJECT
 public:
-    itkTensorScalarMapsProcess(QObject* parent = NULL);
-    ~itkTensorScalarMapsProcess();
+    ttkTensorScalarMapsProcess(QObject* parent = NULL);
+    ~ttkTensorScalarMapsProcess();
 
     static void eventCallback(itk::Object *caller, const itk::EventObject& event, void *clientData)
     {
@@ -42,7 +42,7 @@ private:
     QString m_scalarMapRequested;
 };
 
-inline medAbstractDiffusionScalarMapsProcess* itkTensorScalarMapsProcessCreator()
+inline medAbstractDiffusionScalarMapsProcess* ttkTensorScalarMapsProcessCreator()
 {
-    return new itkTensorScalarMapsProcess();
+    return new ttkTensorScalarMapsProcess();
 }
