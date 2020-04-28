@@ -70,9 +70,6 @@ public:
     /** Set the spacing and dimension information for the set filename. */
     virtual void ReadImageInformation();
 
-    /** Convert to type_info */
-    const std::type_info& ConvertToTypeInfo(IOPixelType) const;
-
     /** Reads the data from disk into the memory buffer provided. */
     virtual void Read(void* buffer);
 
