@@ -1,3 +1,18 @@
+################################################################################
+#
+# medInria
+#
+# Copyright (c) INRIA. All rights reserved.
+#
+# See LICENSE.txt for details in the root of the sources or:
+# https://github.com/medInria/medInria-public/blob/master/LICENSE.txt
+#
+# This software is distributed WITHOUT ANY WARRANTY; without even
+# the implied warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR
+# PURPOSE.
+#
+################################################################################
+
 cmake_minimum_required(VERSION 3.1.0)
 
 set(TARGET_NAME itkINRDataImageWriterPlugin)
@@ -9,8 +24,7 @@ set(TARGET_NAME itkINRDataImageWriterPlugin)
 set(${TARGET_NAME}_VERSION_MAJOR 3 CACHE STRING "${TARGET_NAME} major version number." FORCE)
 set(${TARGET_NAME}_VERSION_MINOR 1 CACHE STRING "${TARGET_NAME} minor version number." FORCE)
 set(${TARGET_NAME}_VERSION_BUILD 1 CACHE STRING "${TARGET_NAME} build version number." FORCE)
-set(${TARGET_NAME}_VERSION
-  "${${TARGET_NAME}_VERSION_MAJOR}.${${TARGET_NAME}_VERSION_MINOR}.${${TARGET_NAME}_VERSION_BUILD}")
+set(${TARGET_NAME}_VERSION "${${TARGET_NAME}_VERSION_MAJOR}.${${TARGET_NAME}_VERSION_MINOR}.${${TARGET_NAME}_VERSION_BUILD}")
 
 mark_as_advanced(${TARGET_NAME}_VERSION_MAJOR)
 mark_as_advanced(${TARGET_NAME}_VERSION_MINOR)

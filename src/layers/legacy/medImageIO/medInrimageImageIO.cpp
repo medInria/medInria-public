@@ -1,18 +1,16 @@
 /*=========================================================================
-  Program:   Insight Segmentation & Registration Toolkit
-  Module:    $RCSfile: mipsInrimageImageIO.cxx,v $
-  Language:  C++
-  Date:      $Date: 2006/09/27 12:17:44 $
-  Version:   $Revision: 1.12 $
 
-  Copyright (c) 2002 Insight Consortium. All rights reserved.
-  See ITKCopyright.txt or http://www.itk.org/HTML/Copyright.htm for details.
+ medInria
 
-  This software is distributed WITHOUT ANY WARRANTY; without even
+ Copyright (c) INRIA 2013 All rights reserved.
+ See LICENSE.txt for details in the root of the sources or:
+ https://github.com/medInria/medInria-public/blob/master/LICENSE.txt
+
+ This software is distributed WITHOUT ANY WARRANTY; without even
   the implied warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR
-  PURPOSE.  See the above copyright notices for more information.
+  PURPOSE.
 
-  =========================================================================*/
+=========================================================================*/
 
 #include "medInrimageImageIO.h"
 #include <itkExceptionObject.h>
