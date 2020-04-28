@@ -2,7 +2,7 @@
 #
 # medInria
 #
-# Copyright (c) INRIA 2013 - 2018. All rights reserved.
+# Copyright (c) INRIA 2013 - 2020. All rights reserved.
 # See LICENSE.txt for details.
 #
 #  This software is distributed WITHOUT ANY WARRANTY; without even
@@ -39,41 +39,47 @@ option(BUILD_COMPOSITEDATASET_PLUGIN
 ## ADD here any new plugin with a default compilation value,
 ## you want to include in the build,
 set(PLUGIN_LIST
-  legacy/medVtkFibersData                                                ON
-  legacy/itkDataImage                                                    ON
-  legacy/vtkDataMesh                                                     ON
+  legacy/diffeomorphicDemons                                             ON  
+  legacy/iterativeClosestPoint                                           ON
   legacy/itkDataDiffusionGradientList                                    ON
-  legacy/itkDataTensorImage                                              ON
-  legacy/medSegmentation                                                 ON
-  legacy/qtdcmDataSource                                                 ON
+  legacy/itkDataImage                                                    ON
   legacy/itkDataSHImage                                                  ON
-  legacy/undoRedoRegistration                                            ON
-  legacy/diffeomorphicDemons                                             ON
-  legacy/medVtkView                                                      ON
-  legacy/medFilteringWorkspaceL                                          ON
-  legacy/medSegmentationWorkspace                                        ON
-  legacy/medRegistrationWorkspace                                        ON
-  legacy/medMaskApplication                                              ON
-  legacy/medBinaryOperation                                              ON
+  legacy/itkDataTensorImage                                              ON
+  legacy/itkFilters                                                      ON
+  legacy/itkINRDataImageReader                                           ON
+  legacy/itkINRDataImageWriter                                           ON
+  legacy/LCCLogDemons                                                    ON  
   legacy/manualRegistration                                              ON
-  legacy/polygonRoi                                                      ON
   legacy/medAlgorithmPaint                                               ON
+  legacy/medBinaryOperation                                              ON
+  legacy/medCreateMeshFromMask                                           ON
+  legacy/medFilteringWorkspaceL                                          ON
+  legacy/medMaskApplication                                              ON
+  legacy/medMeshingWorkspace                                             ON
+  legacy/medN4BiasCorrection                                             ON
+  legacy/medRegistrationWorkspace                                        ON
+  legacy/medRemeshing                                                    ON
+  legacy/medSegmentation                                                 ON
+  legacy/medSegmentationWorkspace                                        ON
+  legacy/medVtkFibersData                                                ON
+  legacy/medVtkView                                                      ON
+  legacy/meshManipulation                                                ON
+  legacy/meshMapping                                                     ON
+  legacy/polygonRoi                                                      ON
+  legacy/qtdcmDataSource                                                 ON
+  legacy/reformat                                                        ON
+  legacy/undoRedoRegistration                                            ON
   legacy/variationalSegmentation                                         ON
   legacy/voiCutter                                                       ON
-  legacy/reformat                                                        ON
-  legacy/medMeshingWorkspace                                             ON
-  legacy/medCreateMeshFromMask                                           ON
-  legacy/medRemeshing                                                    ON
-  legacy/medN4BiasCorrection                                             ON
-  legacy/meshMapping                                                     ON
-  legacy/meshManipulation                                                ON
-  legacy/iterativeClosestPoint                                           ON
-  legacy/itkFilters                                                      ON
+  legacy/vtkDataMesh                                                     ON
   process/arithmetic_operation                                           ON
   process/bias_correction                                                ON
   process/dwi_basic_thresholding                                         ON
-  process/morphomath_operation                                           ON
+  process/ttkTensorEstimationProcess                                     ON
+  process/ttkTensorScalarMapsProcess                                     ON
+  process/ttkTensorTractographyProcess                                   ON
   process/mask_image                                                     ON
+  process/morphomath_operation                                           ON
   process/single_filter                                                  ON
   )
 

@@ -18,7 +18,7 @@ set(TARGET_NAME medImageIO)
 ## find requireds
 ## #############################################################################
 
-find_package(ITK REQUIRED COMPONENTS ITKVtkGlue ITKIOImageBase ITKIOMeta)
+find_package(ITK REQUIRED COMPONENTS ITKVtkGlue ITKIOImageBase ITKIOMeta ITKZLIB)
 include(${ITK_USE_FILE})
 
 #WARNING USE VTK through ITKVtkGlue and medLog
