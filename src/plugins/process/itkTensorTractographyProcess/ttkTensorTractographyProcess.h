@@ -8,14 +8,14 @@
 #include <medIntParameter.h>
 #include <medDoubleParameter.h>
 
-#include <itkTensorTractographyProcessPluginExport.h>
+#include "ttkTensorTractographyProcessPluginExport.h"
 
-class ITKTENSORTRACTOGRAPHYPROCESSPLUGIN_EXPORT itkTensorTractographyProcess: public medAbstractTractographyProcess
+class ITKTENSORTRACTOGRAPHYPROCESSPLUGIN_EXPORT ttkTensorTractographyProcess: public medAbstractTractographyProcess
 {
     Q_OBJECT
 public:
-    itkTensorTractographyProcess(QObject* parent = NULL);
-    ~itkTensorTractographyProcess();
+    ttkTensorTractographyProcess(QObject* parent = NULL);
+    ~ttkTensorTractographyProcess();
 
     static void eventCallback(itk::Object *caller, const itk::EventObject& event, void *clientData)
     {
@@ -51,7 +51,7 @@ private:
     medIntParameter *m_sampling;
 };
 
-inline medAbstractTractographyProcess* itkTensorTractographyProcessCreator()
+inline medAbstractTractographyProcess* ttkTensorTractographyProcessCreator()
 {
-    return new itkTensorTractographyProcess();
+    return new ttkTensorTractographyProcess();
 }

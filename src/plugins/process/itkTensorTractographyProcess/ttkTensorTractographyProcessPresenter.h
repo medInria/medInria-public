@@ -1,23 +1,23 @@
 #pragma once
 
 #include <medAbstractTractographyProcessPresenter.h>
-#include <itkTensorTractographyProcessPluginExport.h>
-#include <itkTensorTractographyProcess.h>
 #include <medProcessPresenterFactory.h>
+#include "ttkTensorTractographyProcess.h"
+#include "ttkTensorTractographyProcessPluginExport.h"
 
 class medIntParameterPresenter;
-class ITKTENSORTRACTOGRAPHYPROCESSPLUGIN_EXPORT itkTensorTractographyProcessPresenter: public medAbstractTractographyProcessPresenter
+class TTKTENSORTRACTOGRAPHYPROCESSPLUGIN_EXPORT ttkTensorTractographyProcessPresenter: public medAbstractTractographyProcessPresenter
 {
     Q_OBJECT
 
 public:
-    itkTensorTractographyProcessPresenter(medAbstractTractographyProcess *parent);
+    ttkTensorTractographyProcessPresenter(medAbstractTractographyProcess *parent);
     virtual medAbstractTractographyProcess* process() const;
 
     virtual QWidget *buildToolBoxWidget();
 
 private:
-    itkTensorTractographyProcess *m_process;
+    ttkTensorTractographyProcess *m_process;
 
     medIntParameterPresenter *m_faThreshold;
     medIntParameterPresenter *m_faThreshold2;

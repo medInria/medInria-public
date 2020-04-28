@@ -1,4 +1,4 @@
-#include <itkTensorTractographyProcessPresenter.h>
+#include <ttkTensorTractographyProcessPresenter.h>
 
 #include <medIntParameterPresenter.h>
 #include <QVBoxLayout>
@@ -9,7 +9,7 @@
 #include <QGroupBox>
 #include <QSlider>
 
-itkTensorTractographyProcessPresenter::itkTensorTractographyProcessPresenter(medAbstractTractographyProcess *parent)
+ttkTensorTractographyProcessPresenter::ttkTensorTractographyProcessPresenter(medAbstractTractographyProcess *parent)
     : medAbstractTractographyProcessPresenter(parent)
 {
     m_process = qobject_cast <itkTensorTractographyProcess *> (parent);
@@ -23,12 +23,12 @@ itkTensorTractographyProcessPresenter::itkTensorTractographyProcessPresenter(med
     m_progressionPresenter = new medIntParameterPresenter(m_process->progression());
 }
 
-medAbstractTractographyProcess* itkTensorTractographyProcessPresenter::process() const
+medAbstractTractographyProcess* ttkTensorTractographyProcessPresenter::process() const
 {
     return m_process;
 }
 
-QWidget *itkTensorTractographyProcessPresenter::buildToolBoxWidget()
+QWidget *ttkTensorTractographyProcessPresenter::buildToolBoxWidget()
 {
     QWidget *tbWidget = new QWidget;
     QVBoxLayout *tbGlobalLayout = new QVBoxLayout;
