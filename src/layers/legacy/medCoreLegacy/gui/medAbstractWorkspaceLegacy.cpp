@@ -697,16 +697,18 @@ QWidget* medAbstractWorkspaceLegacy::buildViewLinkMenu()
 
     // build a stringList witth all the param names
     foreach(medAbstractParameterL* viewParam, viewsParams)
+    {
         paramNames << viewParam->name();
+    }
 
-    QList<medAbstractParameterGroupL*>  groups;
+    QList<medAbstractParameterGroupL*> abstractGroupsList;
     QStringList selectedGroups;
     QStringList partiallySelectedGroups;
 
-    //TODO: to review
-    foreach(medViewParameterGroupL *viewGroup, medParameterGroupManagerL::instance()->viewGroups(this->identifier()))
+    auto viewGroupsList = medParameterGroupManagerL::instance()->viewGroups(this->identifier());
+    for(medViewParameterGroupL *viewGroup : viewGroupsList)
     {
-        groups.append(viewGroup);
+        abstractGroupsList.append(viewGroup);
         bool selected = true;
         bool partiallySelected = false;
 
@@ -724,7 +726,7 @@ QWidget* medAbstractWorkspaceLegacy::buildViewLinkMenu()
     }
 
     d->viewLinkMenu->setAvailableParameters( paramNames );
-    d->viewLinkMenu->setGroups(groups);
+    d->viewLinkMenu->setGroups(abstractGroupsList);
     d->viewLinkMenu->setSelectedGroups(selectedGroups);
     d->viewLinkMenu->setPartiallySelectedGroups(partiallySelectedGroups);
 
@@ -779,15 +781,18 @@ QWidget* medAbstractWorkspaceLegacy::buildLayerLinkMenu(QList<QListWidgetItem*> 
 
     // build a stringList with all the param names
     foreach(medAbstractParameterL* layerParam, layersParams)
+    {
         paramNames << layerParam->name();
+    }
 
-    QList<medAbstractParameterGroupL*>  groups;
+    QList<medAbstractParameterGroupL*>  abstractGroupsList;
     QStringList selectedGroups;
     QStringList partiallySelectedGroups;
 
-    foreach(medLayerParameterGroupL *layerGroup, medParameterGroupManagerL::instance()->layerGroups(this->identifier()))
+    auto layerGroupsList = medParameterGroupManagerL::instance()->layerGroups(this->identifier());
+    for(medLayerParameterGroupL *layerGroup : layerGroupsList)
     {
-        groups.append(layerGroup);
+        abstractGroupsList.append(layerGroup);
         bool selected = true;
         bool partiallySelected = false;
 
@@ -801,13 +806,17 @@ QWidget* medAbstractWorkspaceLegacy::buildLayerLinkMenu(QList<QListWidgetItem*> 
                 partiallySelected = true;
         }
         if(selected)
+        {
             selectedGroups << layerGroup->name();
+        }
         else if(partiallySelected)
+        {
             partiallySelectedGroups << layerGroup->name();
+        }
     }
 
     d->layerLinkMenu->setAvailableParameters( paramNames.toSet().toList() );
-    d->layerLinkMenu->setGroups(groups);
+    d->layerLinkMenu->setGroups(abstractGroupsList);
     d->layerLinkMenu->setSelectedGroups(selectedGroups);
     d->layerLinkMenu->setPartiallySelectedGroups(partiallySelectedGroups);
 
@@ -957,7 +966,7 @@ void medAbstractWorkspaceLegacy::setInitialGroups()
     viewGroup1->setLinkAllParameters(true);
     viewGroup1->removeParameter("DataList");
 
-    medViewParameterGroupL *layerGroup1 = new medViewParameterGroupL("Layer Group 1", this, this->identifier());
+    medLayerParameterGroupL *layerGroup1 = new medLayerParameterGroupL("Layer Group 1", this, this->identifier());
     layerGroup1->setLinkAllParameters(true);
 }
 
