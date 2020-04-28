@@ -174,7 +174,6 @@ QDoubleSpinBox* medDoubleParameterL::getSpinBox()
     {
         d->spinBox = new medDoubleSpinBox;
         d->spinBox->setRange(d->min, d->max);
-        d->spinBox->setValue(m_value);
         d->spinBox->setSingleStep(d->step);
         d->spinBox->setKeyboardTracking(false);
 
@@ -197,6 +196,7 @@ QDoubleSpinBox* medDoubleParameterL::getSpinBox()
         }
 
         d->spinBox->setDecimals(d->decimals);
+        d->spinBox->setValue(m_value);
 
         this->addToInternWidgets(d->spinBox);
         connect(d->spinBox, SIGNAL(destroyed()), this, SLOT(removeInternSpinBox()));

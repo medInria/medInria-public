@@ -336,8 +336,13 @@ void medVtkViewItkDataImageInteractor::initWindowLevelParameters(double *range)
 
     if(d->isFloatImage)
     {
-        d->minIntensityParameter->setDecimals(2);
-        d->maxIntensityParameter->setDecimals(2);
+        int iDecimalCount = 2;
+        if(d->intensityStep<1)
+        {
+            iDecimalCount = 1 + std::ceill(std::fabsl(std::log10l(d->intensityStep)));
+        }
+        d->minIntensityParameter->setDecimals(iDecimalCount);
+        d->maxIntensityParameter->setDecimals(iDecimalCount);
     }
     else
     {
