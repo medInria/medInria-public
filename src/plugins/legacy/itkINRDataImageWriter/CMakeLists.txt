@@ -50,9 +50,6 @@ SET(ITKIO_LIBRARIES
   ITKIOMRC
 )
 
-#find_package(MIPS REQUIRED)
-#include(${MIPS_USE_FILE})
-
 ## #################################################################
 ## Input
 ## #################################################################
@@ -95,10 +92,6 @@ target_link_libraries(${TARGET_NAME}
   dtkCoreSupport
   dtkLog
   medCoreLegacy)
-  #InrimageNG
-  #mipsItkImageIO
-  #LinearAlgebra
-  #mipsZ)
 
 if (PLUGINS_LEGACY_PATH)
   set_property(TARGET ${TARGET_NAME} PROPERTY RUNTIME_OUTPUT_DIRECTORY ${PLUGINS_LEGACY_PATH})
