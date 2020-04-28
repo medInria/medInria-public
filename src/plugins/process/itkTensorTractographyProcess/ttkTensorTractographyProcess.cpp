@@ -1,4 +1,4 @@
-#include <itkTensorTractographyProcess.h>
+#include "ttkTensorTractographyProcess.h"
 
 #include <dtkLog>
 
@@ -18,7 +18,7 @@
 
 #include <vtkSmartPointer.h>
 
-itkTensorTractographyProcess::itkTensorTractographyProcess(QObject *parent)
+ttkTensorTractographyProcess::ttkTensorTractographyProcess(QObject *parent)
     : medAbstractTractographyProcess(parent)
 {
     m_logerfilter = 0;
@@ -56,46 +56,46 @@ itkTensorTractographyProcess::itkTensorTractographyProcess(QObject *parent)
     m_sampling->setValue(1);
 }
 
-itkTensorTractographyProcess::~itkTensorTractographyProcess()
+ttkTensorTractographyProcess::~ttkTensorTractographyProcess()
 {
 }
 
-QString itkTensorTractographyProcess::caption() const
+QString ttkTensorTractographyProcess::caption() const
 {
     return "TTK tensor tractography";
 }
 
-QString itkTensorTractographyProcess::description() const
+QString ttkTensorTractographyProcess::description() const
 {
     return "Use TTK to track fibers from tensors data";
 }
 
-medIntParameter *itkTensorTractographyProcess::faThreshold() const
+medIntParameter *ttkTensorTractographyProcess::faThreshold() const
 {
     return m_faThreshold;
 }
 
-medIntParameter *itkTensorTractographyProcess::faThreshold2() const
+medIntParameter *ttkTensorTractographyProcess::faThreshold2() const
 {
     return m_faThreshold2;
 }
 
-medIntParameter *itkTensorTractographyProcess::smoothness() const
+medIntParameter *ttkTensorTractographyProcess::smoothness() const
 {
     return m_smoothness;
 }
 
-medIntParameter *itkTensorTractographyProcess::minLength() const
+medIntParameter *ttkTensorTractographyProcess::minLength() const
 {
     return m_minLength;
 }
 
-medIntParameter *itkTensorTractographyProcess::sampling() const
+medIntParameter *ttkTensorTractographyProcess::sampling() const
 {
     return m_sampling;
 }
 
-medAbstractJob::medJobExitStatus itkTensorTractographyProcess::run()
+medAbstractJob::medJobExitStatus ttkTensorTractographyProcess::run()
 {
     medAbstractJob::medJobExitStatus jobExitSatus = medAbstractJob::MED_JOB_EXIT_FAILURE;
 
@@ -117,7 +117,7 @@ medAbstractJob::medJobExitStatus itkTensorTractographyProcess::run()
 }
 
 template <class inputType>
-medAbstractJob::medJobExitStatus itkTensorTractographyProcess::_run()
+medAbstractJob::medJobExitStatus ttkTensorTractographyProcess::_run()
 {
     typedef itk::Tensor<inputType, 3> TensorType;
     typedef itk::Image<TensorType, 3> TensorImageType;
@@ -164,7 +164,7 @@ medAbstractJob::medJobExitStatus itkTensorTractographyProcess::_run()
 
     itk::CStyleCommand::Pointer callback = itk::CStyleCommand::New();
     callback->SetClientData((void*)this);
-    callback->SetCallback(itkTensorTractographyProcess::eventCallback);
+    callback->SetCallback(ttkTensorTractographyProcess::eventCallback);
     trackerFilter->AddObserver(itk::ProgressEvent(), callback);
 
     try
@@ -199,7 +199,7 @@ medAbstractJob::medJobExitStatus itkTensorTractographyProcess::_run()
     return medAbstractJob::MED_JOB_EXIT_SUCCESS;
 }
 
-void itkTensorTractographyProcess::cancel()
+void ttkTensorTractographyProcess::cancel()
 {
     if(this->isRunning())
     {
