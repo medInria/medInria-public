@@ -443,7 +443,6 @@ void InrimageImageIO::ReadImageInformation()
     std::istringstream issh(m_header);
     std::string line;
 
-    //std::cout << "GeTLINE: " << std::getline( issh, line ) << std::endl;
 
     double rx = 0, ry = 0, rz = 0;
 
@@ -527,19 +526,15 @@ void InrimageImageIO::ReadImageInformation()
                 }
                 else if (std::string(id, 0, strlen("TX")).compare("TX") == 0) {
                     issl >> r;
-                    // this->SetOrigin( 0, r );
                     origin[0] = r;
                 }
                 else if (std::string(id, 0, strlen("TY")).compare("TY") == 0) {
                     issl >> r;
-                    // this->SetOrigin( 1, r );
                     origin[1] = r;
                 }
                 else if (std::string(id, 0, strlen("TZ")).compare("TZ") == 0) {
                     issl >> r;
                     origin[2] = r;
-                    // if (this->GetNumberOfDimensions() > 2)
-                    //   this->SetOrigin( 2, r );
                 }
                 break;
 
@@ -559,7 +554,6 @@ void InrimageImageIO::ReadImageInformation()
                 if (std::string(id, 0, strlen("XDIM")).compare("XDIM") == 0) {
                     issl >> i;
                     dim[0] = i;
-                    // this->SetDimensions( 0, i );
                 }
                 break;
 
@@ -567,7 +561,6 @@ void InrimageImageIO::ReadImageInformation()
                 if (std::string(id, 0, strlen("YDIM")).compare("YDIM") == 0) {
                     issl >> i;
                     dim[1] = i;
-                    // this->SetDimensions( 1, i );
                 }
                 break;
 
@@ -575,18 +568,14 @@ void InrimageImageIO::ReadImageInformation()
                 if (std::string(id, 0, strlen("ZDIM")).compare("ZDIM") == 0) {
                     issl >> i;
                     dim[2] = i;
-                    // if ( i > 1 ) {
-                    //   this->SetNumberOfDimensions( 3 );
-                    //   this->SetDimensions( 2, i );
-                    // }
                 }
                 break;
 
             case 'V':
                 if (std::string(id, 0, strlen("VDIM")).compare("VDIM") == 0) {
                     issl >> i;
-                    if (i > 1) {
-                        // ??? this->SetComponentType( VECTOR );
+                    if (i > 1)
+                    {
                         ncomponents = i;
                         this->SetNumberOfComponents(ncomponents);
                     }
@@ -594,18 +583,14 @@ void InrimageImageIO::ReadImageInformation()
                 else if (std::string(id, 0, strlen("VX")).compare("VX") == 0) {
                     issl >> r;
                     voxelsize[0] = r;
-                    // this->SetSpacing( 0, r );
                 }
                 else if (std::string(id, 0, strlen("VY")).compare("VY") == 0) {
                     issl >> r;
                     voxelsize[1] = r;
-                    // this->SetSpacing( 1, r );
                 }
                 else if (std::string(id, 0, strlen("VZ")).compare("VZ") == 0) {
                     issl >> r;
                     voxelsize[2] = r;
-                    // if ( this->GetNumberOfDimensions() > 2 )
-                    //   this->SetSpacing( 2, r );
                 }
 
                 break;
@@ -801,11 +786,6 @@ void InrimageImageIO::Read(void* buffer)
 
 }
 
-
-
-/**
-     *
-     */
 bool InrimageImageIO::CanWriteFile(const char * FileNameToWrite)
 {
     m_FileName = FileNameToWrite;
@@ -821,9 +801,7 @@ bool InrimageImageIO::CanWriteFile(const char * FileNameToWrite)
     return false;
 }
 
-void
-InrimageImageIO
-::WriteImageInformation(void)
+void InrimageImageIO::WriteImageInformation(void)
 {
     return;
 }
@@ -1058,14 +1036,12 @@ InrimageImageIO
 
 
 /************************************************************
-     *
-     * private methods
-     *
-     ************************************************************/
+ *
+ * private methods
+ *
+ ************************************************************/
 
-void
-InrimageImageIO::SwapBytesIfNecessary(void* buffer,
-                                      unsigned long numberOfPixels)
+void InrimageImageIO::SwapBytesIfNecessary(void* buffer, unsigned long numberOfPixels)
 {
     if (ImageIOBase::GetByteOrder() == LittleEndian)
     {
