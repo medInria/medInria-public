@@ -59,17 +59,8 @@ target_link_libraries(${TARGET_NAME}
   medWidgets
   )
 
-if (PLUGINS_PATH)
-  set_property(TARGET ${TARGET_NAME} PROPERTY RUNTIME_OUTPUT_DIRECTORY ${PLUGINS_PATH})
-  set_property(TARGET ${TARGET_NAME} PROPERTY LIBRARY_OUTPUT_DIRECTORY ${PLUGINS_PATH})
-endif()
-
 ## #################################################################
 ## Install rules
 ## #################################################################
 
-install(TARGETS ${TARGET_NAME}
-  RUNTIME DESTINATION plugins
-  LIBRARY DESTINATION plugins
-  ARCHIVE DESTINATION lib)
-
+set_plugin_install_rules(${TARGET_NAME})
