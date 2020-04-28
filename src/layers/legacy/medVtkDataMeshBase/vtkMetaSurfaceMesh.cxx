@@ -334,9 +334,15 @@ bool vtkMetaSurfaceMesh::IsOBJExtension (const char* ext)
 //----------------------------------------------------------------------------
 unsigned int vtkMetaSurfaceMesh::CanReadFile (const char* filename)
 {
-
-  if (vtkMetaSurfaceMesh::IsMeshExtension(vtksys::SystemTools::GetFilenameLastExtension(filename).c_str()))
-    return vtkMetaSurfaceMesh::FILE_IS_MESH;
+    if (vtkMetaSurfaceMesh::IsMeshExtension(vtksys::SystemTools::GetFilenameLastExtension(filename).c_str()))
+    {
+        // medit .mesh format must have 'MeshVersionFormatted' as header
+        if (vtkMetaDataSet::IsMeditFormat(filename))
+        {
+            return vtkMetaSurfaceMesh::FILE_IS_MESH;
+        }
+        return 0;
+    }
 
   if (vtkMetaSurfaceMesh::IsOBJExtension(vtksys::SystemTools::GetFilenameLastExtension(filename).c_str()))
   {
