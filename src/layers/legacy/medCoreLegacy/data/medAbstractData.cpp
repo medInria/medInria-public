@@ -216,6 +216,8 @@ QImage medAbstractData::generateThumbnailInGuiThread(QSize size)
     // we're currently using, and if it is one of the crashy ones, render to a
     // proper window instead, that we try to hide behind the main medInria one.
 
+   dtkSmartPointer<medAbstractImageView> view = medViewFactory::instance()->createView<medAbstractImageView>("medVtkView");
+
     bool offscreenCapable = false;
     med::GPUInfo gpu = med::gpuModel();
 
@@ -234,8 +236,7 @@ QImage medAbstractData::generateThumbnailInGuiThread(QSize size)
     }
 #endif
 
-    dtkSmartPointer<medAbstractImageView> view = medViewFactory::instance()->createView<medAbstractImageView>("medVtkView");
-
+ 
     if(offscreenCapable)
     {
         view->setOffscreenRendering(true);

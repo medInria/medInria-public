@@ -15,6 +15,7 @@
 
 #include <QFileInfo>
 #include <QtOpenGL/QtOpenGL>
+#include <QOpenGLContext>
 
 namespace med {
 
@@ -37,13 +38,14 @@ GPUInfo gpuModel()
     // just fill it once, we are not going to change GPU on the fly
     static GPUInfo gpu;
     if (gpu.renderer.isEmpty()) {
-        // glGetString requires a valid OpenGL context, the easiest way is to
-        // create a bogus QGLWidget and force a render.
-        QGLWidget glw;
-        glw.makeCurrent();
-        gpu.renderer = QString::fromLocal8Bit(reinterpret_cast<const char*>(glGetString(GL_RENDERER)));
-        gpu.version = QString::fromLocal8Bit(reinterpret_cast<const char*>(glGetString(GL_VERSION)));
-        gpu.vendor = QString::fromLocal8Bit(reinterpret_cast<const char*>(glGetString(GL_VENDOR)));
+        QOffscreenSurface surf;
+        surf.create();
+        QOpenGLContext ctx;
+        ctx.create();
+        ctx.makeCurrent(&surf);
+        gpu.renderer = QString::fromLocal8Bit(reinterpret_cast<const char*>(ctx.functions()->glGetString(GL_RENDERER)));
+        gpu.version = QString::fromLocal8Bit(reinterpret_cast<const char*>(ctx.functions()->glGetString(GL_VERSION)));
+        gpu.vendor = QString::fromLocal8Bit(reinterpret_cast<const char*>(ctx.functions()->glGetString(GL_VENDOR)));
     }
     return gpu;
 }
