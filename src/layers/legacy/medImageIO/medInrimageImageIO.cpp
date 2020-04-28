@@ -171,43 +171,6 @@ void InrimageImageIO::PrintSelf(std::ostream& os, itk::Indent indent) const
     os << indent << "PixelType " << m_PixelType << std::endl;
 }
 
-const std::type_info& InrimageImageIO::ConvertToTypeInfo(IOPixelType t) const
-{
-
-    switch (t)
-    {
-        case UCHAR:
-            return typeid(unsigned char);
-        case CHAR:
-            return typeid(char);
-        case USHORT:
-            return typeid(unsigned short);
-        case SHORT:
-            return typeid(short);
-        case UINT:
-            return typeid(unsigned int);
-        case INT:
-            return typeid(int);
-        case ULONG:
-            return typeid(unsigned long);
-        case LONG:
-            return typeid(long);
-        case FLOAT:
-            return typeid(float);
-        case DOUBLE:
-            return typeid(double);
-            /*case RGB:
-              return typeid(RGBPixel<unsigned char>);
-              case RGBA:
-              return typeid(RGBAPixel<unsigned char>);
-             */
-        default:
-            itkExceptionMacro("Invalid type: " << m_PixelType);
-    }
-    return typeid(ImageIOBase::UNKNOWNPIXELTYPE);
-
-}
-
 // called from CreateImageIO ( Insight/Code/IO/itkImageIOFactory.cxx )
 // called from ImageFileReader::GenerateOutputInformation ( Insight/Code/IO/itkImageFileReader.txx )
 bool InrimageImageIO::CanReadFile(const char* FileNameToRead)
@@ -1045,7 +1008,7 @@ void InrimageImageIO::SwapBytesIfNecessary(void* buffer, unsigned long numberOfP
 {
     if (ImageIOBase::GetByteOrder() == LittleEndian)
     {
-        switch (m_PixelType)
+        switch (m_ComponentType)
         {
             case CHAR:
                 itk::ByteSwapper<char>::SwapRangeFromSystemToLittleEndian((char*)buffer,
@@ -1095,7 +1058,7 @@ void InrimageImageIO::SwapBytesIfNecessary(void* buffer, unsigned long numberOfP
     }
     else
     {
-        switch (m_PixelType)
+        switch (m_ComponentType)
         {
             case CHAR:
                 itk::ByteSwapper<char>::SwapRangeFromSystemToBigEndian((char *)buffer,
