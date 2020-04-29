@@ -71,20 +71,22 @@ public slots:
 
     void copyContours();
     void pasteContours();
+
 private slots:
     void deleteNode(medTagRoiManager *manager, const double *mousePos);
     void deleteContour(medTagRoiManager *manager);
     void deleteLabel(medTagRoiManager *manager);
     void saveMask(medTagRoiManager *manager);
     void saveContour(medTagRoiManager *manager);
-
     void copyContour(medTagRoiManager *manager);
+
 signals:
     void enableRepulsor(bool state);
     void enableGenerateMask(bool state);
     void enableViewChooser(bool state);
     void toggleRepulsorButton(bool);
     void clearLastAlternativeView();
+    void sendErrorMessage(QString);
 
 private:
     medAbstractImageView *currentView;
@@ -109,19 +111,16 @@ private:
     QList<QColor> updateColorsList(QList<QColor> colorsToExclude);
     bool manageRoiWithLabel(QMouseEvent *mouseEvent);
     bool addPointInContourWithLabel(QMouseEvent *mouseEvent);
-    medTagRoiManager *closestManagerInSlice(double mousePos[]);
     void setToolboxButtonsState(bool state);
     medTagRoiManager *addManagerToList(int label, QString labelName);
     void manageButtonsState();
     void saveContoursAsMedAbstractData(vtkMetaDataSet *outputDataSet, QVector<medTagContours> contoursData);
-    int findClosestSliceFromMouseClick(QVector3D worldMouseCoord);
-    bool updateMainViewOnChosenSlice(medAbstractImageView *view, QMouseEvent *mouseEvent);
     int findAvailableLabel();
     medTagRoiManager *getManagerFromColor(QColor color);
     QLineEdit *updateNameManager(medTagRoiManager* closestManager, QMenu *mainMenu);
     void deleteNode(double *mousePosition);
-    bool isOnlyOneNodeInSlice();
     medTagRoiManager *getClosestManager(double *mousePos);
     void enableOnlyActiveManager();
     QMenu *changeLabelActions(medTagRoiManager* closestManager);
+    bool isActiveContourInSlice();
 };

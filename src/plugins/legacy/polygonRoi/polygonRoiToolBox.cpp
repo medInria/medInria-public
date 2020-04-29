@@ -13,6 +13,7 @@
 #include "polygonRoiToolBox.h"
 
 #include <medAbstractProcessLegacy.h>
+#include <medParameterGroupManagerL.h>
 #include <medPluginManager.h>
 #include <medTabbedViewContainers.h>
 #include <medTableWidgetChooser.h>
@@ -24,6 +25,7 @@
 #include <medViewContainerManager.h>
 #include <medViewContainerSplitter.h>
 #include <medViewFactory.h>
+#include <medViewParameterGroupL.h>
 #include <polygonEventFilter.h>
 
 
@@ -297,6 +299,7 @@ void polygonRoiToolBox::clickClosePolygon(bool state)
     saveBinaryMaskButton->setEnabled(state);
     saveContourButton->setEnabled(state);
     enableTableViewChooser(state);
+    interpolate->setEnabled(state);
     if (state)
     {
         if (!viewEventFilter)
@@ -306,6 +309,7 @@ void polygonRoiToolBox::clickClosePolygon(bool state)
             connect(viewEventFilter, SIGNAL(enableGenerateMask(bool)), saveBinaryMaskButton, SLOT(setEnabled(bool)), Qt::UniqueConnection);
             connect(viewEventFilter, SIGNAL(enableViewChooser(bool)), this, SLOT(enableTableViewChooser(bool)), Qt::UniqueConnection);
             connect(viewEventFilter, SIGNAL(toggleRepulsorButton(bool)), this, SLOT(activateRepulsor(bool)), Qt::UniqueConnection);
+            connect(viewEventFilter, SIGNAL(sendErrorMessage(QString)), this, SLOT(errorMessage(QString)), Qt::UniqueConnection);
         }
 
         viewEventFilter->updateView(currentView);
@@ -313,7 +317,7 @@ void polygonRoiToolBox::clickClosePolygon(bool state)
         viewEventFilter->On();
         viewEventFilter->installOnView(currentView);
         viewEventFilter->addObserver();
-
+        this->currentView->viewWidget()->setFocus();
         if ( viewEventFilter->isContourInSlice() )
         {
             repulsorTool->setEnabled(state);
@@ -337,6 +341,7 @@ void polygonRoiToolBox::activateRepulsor(bool state)
     {
         repulsorTool->setChecked(state);
         viewEventFilter->activateRepulsor(state);
+        currentView->viewWidget()->setFocus();
     }
 }
 
@@ -350,6 +355,11 @@ void polygonRoiToolBox::resetToolboxBehaviour()
     }
     containersInTabSelected[0]->setClosingMode(medViewContainer::CLOSE_CONTAINER);
     enableTableViewChooser(addNewCurve->isChecked());
+}
+
+void polygonRoiToolBox::errorMessage(QString error)
+{
+    displayMessageError(error);
 }
 
 void polygonRoiToolBox::manageTick()
@@ -392,6 +402,18 @@ void polygonRoiToolBox::updateTableWidgetView(unsigned int row, unsigned int col
 
     medViewContainer *previousContainer;
     medViewContainer* container;
+    QString linkGroupBaseName = "MPR ";
+    unsigned int linkGroupNumber = 1;
+
+    QString linkGroupName = linkGroupBaseName + QString::number(linkGroupNumber);
+    while (medParameterGroupManagerL::instance()->viewGroup(linkGroupName))
+    {
+        linkGroupNumber++;
+        linkGroupName = linkGroupBaseName + QString::number(linkGroupNumber);
+    }
+    medViewParameterGroupL *viewGroup = new medViewParameterGroupL(linkGroupName, mainView);
+    viewGroup->addImpactedView(mainView);
+
     for (int nbItem = 0; nbItem<tableViewChooser->selectedItems().size(); nbItem++)
     {
         if (nbItem == 0)
@@ -417,9 +439,6 @@ void polygonRoiToolBox::updateTableWidgetView(unsigned int row, unsigned int col
         medAbstractImageView* view = static_cast<medAbstractImageView *> (container->view());
         viewEventFilter->installOnView(view);
         viewEventFilter->clearCopiedContours();
-        connect(view, &medAbstractView::closed, [=](){
-            mainContainer->setSelected(true);
-        });
         connect(container, &medViewContainer::containerSelected, [=](){
             viewEventFilter->Off();
             repulsorTool->setEnabled(false);
@@ -429,10 +448,18 @@ void polygonRoiToolBox::updateTableWidgetView(unsigned int row, unsigned int col
 
         view->setOrientation(dynamic_cast<medTableWidgetItem*>(item)->orientation());
         viewEventFilter->addAlternativeViews(view);
+
+        viewGroup->addImpactedView(view);
+
     }
+    viewGroup->setLinkAllParameters(true);
+    viewGroup->removeParameter("Slicing");
+    viewGroup->removeParameter("Orientation");
+
     connect(mainContainer, &medViewContainer::containerSelected, [=](){
-        if (addNewCurve->isChecked())
+        if (currentView && addNewCurve->isChecked())
         {
+            currentView->viewWidget()->setFocus();
             viewEventFilter->On();
             repulsorTool->setEnabled(true);
             if (repulsorTool->isChecked())
@@ -569,6 +596,10 @@ void polygonRoiToolBox::interpolateCurve(bool state)
         return;
     }
     viewEventFilter->setEnableInterpolation(state);
+    if ( currentView )
+    {
+        currentView->viewWidget()->setFocus();
+    }
 }
 
 void polygonRoiToolBox::saveBinaryImage()

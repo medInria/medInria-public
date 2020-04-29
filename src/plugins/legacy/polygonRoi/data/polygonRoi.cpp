@@ -119,8 +119,7 @@ polygonRoi::polygonRoi(vtkImageView2D *view, QColor color, medAbstractRoi *paren
 {
     vtkSmartPointer<vtkContourOverlayRepresentation> contourRep = vtkSmartPointer<vtkContourOverlayRepresentation>::New();
     contourRep->GetLinesProperty()->SetLineWidth(4);
-    contourRep->GetProperty()->SetPointSize(5);
-    contourRep->GetProperty()->SetColor(1.0, 0.0, 0.0);
+    contourRep->GetProperty()->SetPointSize(8);
     contourRep->GetActiveProperty()->SetOpacity(0);
     contourRep->SetPixelTolerance(20);
     d->contour = vtkContourWidget::New();
@@ -154,15 +153,27 @@ polygonRoi::~polygonRoi()
 
 void polygonRoi::setEnableLeftButtonInteraction(bool state)
 {
+    vtkContourOverlayRepresentation *contourRep =
+            dynamic_cast<vtkContourOverlayRepresentation*>(d->contour->GetContourRepresentation());
     if (state)
     {
         d->contour->GetEventTranslator()->SetTranslation(vtkCommand::LeftButtonPressEvent, vtkWidgetEvent::Select);
         d->contour->GetEventTranslator()->SetTranslation(vtkCommand::MouseMoveEvent, vtkWidgetEvent::Move);
+        setRightColor();
     }
     else
     {
         d->contour->GetEventTranslator()->SetTranslation(vtkCommand::LeftButtonPressEvent, vtkWidgetEvent::NoEvent);
         d->contour->GetEventTranslator()->SetTranslation(vtkCommand::MouseMoveEvent, vtkWidgetEvent::NoEvent);
+        QColor tr = Qt::transparent;
+        double color[3];
+        color[0] = tr.redF();
+        color[1] = tr.greenF();
+        color[2] = tr.blueF();
+        contourRep->GetLinesProperty()->SetColor(color);
+        contourRep->GetProperty()->SetColor(color);
+        contourRep->GetLinesProperty()->SetOpacity(0.2);
+        contourRep->GetProperty()->SetOpacity(0.2);
     }
 }
 
@@ -188,7 +199,6 @@ vtkPolyData *polygonRoi::createPolyDataFromContour()
             contourRep->GetIntermediatePointWorldPosition(j, k, pos);
             vec_ids.push_back(points->InsertNextPoint(pos));
         }
-
     }
     polygon->Initialize(points->GetNumberOfPoints(), &vec_ids[0], points);
 
@@ -257,7 +267,6 @@ void polygonRoi::loadNodes(QVector<QVector3D> coordinates)
     polydata->SetLines(lines);
     d->contour->Initialize(polydata);
     d->contour->GetContourRepresentation()->SetClosedLoop(1);
-
 
     emit updateCursorState(CURSORSTATE::CS_MOUSE_EVENT);
     emit interpolate();
@@ -410,13 +419,17 @@ void polygonRoi::setRightColor()
     color[2] = d->roiColor.blueF();
     vtkContourOverlayRepresentation *contourRep = dynamic_cast<vtkContourOverlayRepresentation*>(d->contour->GetContourRepresentation());
     contourRep->GetLinesProperty()->SetColor(color);
+    contourRep->GetProperty()->SetColor(1., 0., 0.);
+
     if(isMasterRoi())
     {
         contourRep->GetLinesProperty()->SetOpacity(1.);
+        contourRep->GetProperty()->SetOpacity(1.);
     }
     else
     {
         contourRep->GetLinesProperty()->SetOpacity(0.2);
+        contourRep->GetProperty()->SetOpacity(0.2);
     }
 }
 
@@ -506,26 +519,3 @@ bool polygonRoi::pasteContour(QVector<QVector2D> nodes)
 
     return true;
 }
-
-double polygonRoi::findClosestContourFromPoint(QVector3D worldMouseCoord)
-{
-    if (!d->polyData)
-    {
-        d->polyData = createPolyDataFromContour();
-    }
-
-    double coords[3] = {worldMouseCoord.x(), worldMouseCoord.y(), worldMouseCoord.z()};
-    vtkSmartPointer<vtkCellLocator> cellLocator =
-        vtkSmartPointer<vtkCellLocator>::New();
-    cellLocator->SetDataSet(d->polyData);
-    cellLocator->BuildLocator();
-
-    //Find the closest points to TestPoint
-    double closestPoint[3];//the coordinates of the closest point will be returned here
-    double closestPointDist2; //the squared distance to the closest point will be returned here
-    vtkIdType cellId; //the cell id of the cell containing the closest point will be returned here
-    int subId; //this is rarely used (in triangle strips only, I believe)
-    cellLocator->FindClosestPoint(coords, closestPoint, cellId, subId, closestPointDist2);
-    return closestPointDist2;
-}
-

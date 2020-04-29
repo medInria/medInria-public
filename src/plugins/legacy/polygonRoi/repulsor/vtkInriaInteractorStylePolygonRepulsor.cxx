@@ -96,7 +96,7 @@ void vtkInriaInteractorStylePolygonRepulsor::OnLeftButtonDown()
     double pos[2];
     pos[0] = (double)Position[0];
     pos[1] = (double)Position[1];
-    double dist = manager->getMinimumDistanceFromIntermediateNodesToEventPosition(pos);
+    double dist = manager->getMinimumDistanceFromNodesToMouse(pos);
     this->Radius = (int)((dist+0.5)*0.8);
     this->RepulsorActor->SetRadius(this->Radius);
     this->RepulsorActor->SetCenter(this->Position[0], this->Position[1]);

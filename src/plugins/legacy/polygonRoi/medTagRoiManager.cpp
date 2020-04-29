@@ -235,12 +235,14 @@ void medTagRoiManager::removeAllTick()
             break;
         }
     }
-    for (polygonRoi *roi : d->rois)
+    if (slicingParameter)
     {
-        slicingParameter->getSlider()->removeTick(roi->getIdSlice());
-        slicingParameter->getSlider()->update();
+        for (polygonRoi *roi : d->rois)
+        {
+            slicingParameter->getSlider()->removeTick(roi->getIdSlice());
+            slicingParameter->getSlider()->update();
+        }
     }
-
 }
 
 void medTagRoiManager::initializeMaskData( medAbstractData * imageData, medAbstractData * maskData )
@@ -547,7 +549,10 @@ void medTagRoiManager::createMaskWithLabel(int label)
 void medTagRoiManager::SetMasterRoi(bool state)
 {
     polygonRoi *roi = existingRoiInSlice();
-    roi->setMasterRoi(true);
+    if (roi)
+    {
+        roi->setMasterRoi(true);
+    }
 }
 
 void medTagRoiManager::manageTick(medSliderL *slider)
@@ -566,7 +571,10 @@ polygonRoi *medTagRoiManager::existingRoiInSlice()
     int slice = view2d->GetSlice();
 
     if (!isSameOrientation(view2d->GetViewOrientation()))
+    {
+        emit sendErrorMessage(getName() + ": has not the same orientation as 2D view");
         return nullptr;
+    }
 
     for (polygonRoi* roi : d->rois)
     {
@@ -609,11 +617,11 @@ void medTagRoiManager::manageVisibility()
 
 void medTagRoiManager::setEnableInteraction(bool state)
 {
-    polygonRoi *roi = existingRoiInSlice();
-    if ( roi )
+    for (polygonRoi *roi : d->rois)
     {
         roi->setEnableLeftButtonInteraction(state);
     }
+    d->view->render();
 }
 
 void medTagRoiManager::enableOtherViewVisibility(medAbstractImageView *v, bool state)
@@ -641,6 +649,7 @@ bool medTagRoiManager::pasteContour(QVector<QVector2D> nodes)
     polygonRoi *roi = existingRoiInSlice();
     if ( roi )
     {
+        emit sendErrorMessage(getName() + " already exists in current slice.");
         return false;
     }
     vtkImageView2D *view2d = static_cast<medVtkViewBackend*>(d->view->backend())->view2D;
@@ -648,6 +657,7 @@ bool medTagRoiManager::pasteContour(QVector<QVector2D> nodes)
 
     if (!isSameOrientation(view2d->GetViewOrientation()))
     {
+        emit sendErrorMessage(getName() + ": has not the same orientation as 2D view");
         return false;
     }
 
@@ -677,29 +687,7 @@ bool medTagRoiManager::mouseIsCloseFromNodes(double mousePos[2])
     return false;
 }
 
-double medTagRoiManager::getMinimumDistanceFromNodesToEventPosition(double eventPos[2])
-{
-    polygonRoi *roi = existingRoiInSlice();
-    double minDist = DBL_MAX;
-    double dist = 0.;
-    double contourPos[2];
-    if (roi)
-    {
-        for (int i = 0; i< roi->getContour()->GetContourRepresentation()->GetNumberOfNodes(); i++)
-        {
-            roi->getContour()->GetContourRepresentation()->GetNthNodeDisplayPosition(i, contourPos);
-            dist = getDistance(eventPos, contourPos);
-            if ( dist < minDist )
-            {
-                minDist = dist;
-            }
-        }
-    }
-    return minDist;
-
-}
-
-double medTagRoiManager::getMinimumDistanceFromIntermediateNodesToEventPosition(double eventPos[2])
+double medTagRoiManager::getMinimumDistanceFromNodesToMouse(double eventPos[2], bool allNodes)
 {
     polygonRoi *roi = existingRoiInSlice();
     double minDist = DBL_MAX;
@@ -713,15 +701,20 @@ double medTagRoiManager::getMinimumDistanceFromIntermediateNodesToEventPosition(
             contourRep->GetNthNodeDisplayPosition(j, contourPos);
             dist = getDistance(eventPos, contourPos);
             if ( dist < minDist )
-                minDist = dist;
-            for ( int k = 0; k<contourRep->GetNumberOfIntermediatePoints(j); k++ )
             {
-                contourRep->GetIntermediatePointDisplayPosition(j, k, contourPos);
-                dist = getDistance(eventPos, contourPos);
-                if ( dist < minDist )
-                    minDist = dist;
+                minDist = dist;
             }
 
+            if (allNodes)
+            {
+                for ( int k = 0; k<contourRep->GetNumberOfIntermediatePoints(j); k++ )
+                {
+                    contourRep->GetIntermediatePointDisplayPosition(j, k, contourPos);
+                    dist = getDistance(eventPos, contourPos);
+                    if ( dist < minDist )
+                        minDist = dist;
+                }
+            }
         }
 
     }
@@ -831,7 +824,7 @@ void medTagRoiManager::interpolateIfNeeded()
     {
         if ( roi->getContour()->GetContourRepresentation()->GetClosedLoop() == false )
         {
-            //displayMessageError("Non-closed polygon at slice: " + QString::number(roi->getIdSlice()+1) + ". Operation aborted");
+            emit sendErrorMessage(getName() + ": Non-closed polygon at slice: " + QString::number(roi->getIdSlice()+1) + ". Operation aborted");
             return;
         }
     }
@@ -861,37 +854,34 @@ QList<polygonRoi *> medTagRoiManager::interpolateBetween2Slices(polygonRoi *firs
     vtkContourRepresentation* contour;
     // Contour first ROI
     contour = firstRoi->getContour()->GetContourRepresentation();
+
     vtkSmartPointer<vtkPolyData> curveMin = contour->GetContourRepresentationAsPolyData();
-    int curveMinNbNode = contour->GetNumberOfNodes();
     int minSlice = firstRoi->getIdSlice();
 
     // Contour second ROI
     contour = secondRoi->getContour()->GetContourRepresentation();
     vtkSmartPointer<vtkPolyData> curveMax = contour->GetContourRepresentationAsPolyData();
 
-    int curveMaxNbNode = contour->GetNumberOfNodes();
     int maxSlice = secondRoi->getIdSlice();
 
     // Compute intermediate ROIs between two successive ROIs
-    QList<vtkPolyData *> listPolyData = generateIntermediateCurves(curveMax,curveMin,maxSlice-minSlice-1);
-    double number = ceil(1.8 * (double)(curveMinNbNode));
-    if (curveMaxNbNode > curveMinNbNode)
+    QList<QVector<QVector3D>> listOfNodes = generateIntermediateCurves(curveMax,curveMin,maxSlice-minSlice-1);
+    if ( listOfNodes.size() != (maxSlice-minSlice-1) )
     {
-        number = ceil(1.8 * (double)(curveMaxNbNode));
+        emit sendErrorMessage(getName() + ": Unable to interpolate between slice: " + QString::number(minSlice+1) + " and " + QString::number(maxSlice-1) + ". Operation aborted");
     }
 
     vtkImageView2D *view2d = static_cast<medVtkViewBackend*>(d->view->backend())->view2D;
-
-    for (int i = minSlice+1;i<maxSlice;i++)
+    int idSlice = minSlice+1;
+    for (QVector<QVector3D> nodes : listOfNodes)
     {
         polygonRoi *polyRoi = new polygonRoi(view2d, d->color);
+        polyRoi->loadNodes(nodes);
         vtkContourWidget *contour = polyRoi->getContour();
-        contour->SetEnabled(true);
-
-        int nbPointsPoly = listPolyData[i-(minSlice+1)]->GetNumberOfPoints();
+        vtkSmartPointer<vtkPolyData> poly = vtkSmartPointer<vtkPolyData>::New();
+        contour->GetContourRepresentation()->GetNodePolyData(poly);
+        int nbPointsPoly = contour->GetContourRepresentation()->GetNumberOfNodes();
         int pointToRemove = 0;
-
-        contour->Initialize(listPolyData[i-(minSlice+1)]);
         for (int k = 0; k<nbPointsPoly; k++)
         {
             if (k%5==0)
@@ -903,31 +893,20 @@ QList<polygonRoi *> medTagRoiManager::interpolateBetween2Slices(polygonRoi *firs
                 contour->GetContourRepresentation()->DeleteNthNode(pointToRemove);
             }
         }
-
-        vtkContourRepresentation *contourRep = contour->GetContourRepresentation();
-
-        contourRep->SetClosedLoop(1);
-
-        polyRoi->setIdSlice(i);
+        contour->SetEnabled(true);
+        polyRoi->setIdSlice(idSlice);
+        idSlice++;
         polyRoi->setMasterRoi(false);
-        //addViewsToRoi(polyRoi);
 
         outputRois.append(polyRoi);
     }
-
-    for (vtkPolyData *pd : listPolyData)
-    {
-        pd->Delete();
-    }
-    listPolyData.clear();
-
+    listOfNodes.clear();
     return outputRois;
 }
 
-QList<vtkPolyData* > medTagRoiManager::generateIntermediateCurves(vtkSmartPointer<vtkPolyData> curve1, vtkSmartPointer<vtkPolyData> curve2, int nb)
+QList<QVector<QVector3D>> medTagRoiManager::generateIntermediateCurves(vtkSmartPointer<vtkPolyData> curve1, vtkSmartPointer<vtkPolyData> curve2, int nb)
 {
     int max = curve2->GetNumberOfPoints();
-
     vtkSmartPointer<vtkPolyData> startCurve = curve1, endCurve = curve2;
     bool curve2ToCurve1 = false;
 
@@ -946,17 +925,10 @@ QList<vtkPolyData* > medTagRoiManager::generateIntermediateCurves(vtkSmartPointe
     reorderPolygon(startCurve);
     reorderPolygon(endCurve);
 
-    vtkSmartPointer<vtkPoints> bufferPoints = vtkSmartPointer<vtkPoints>::New();
-    QList<vtkPolyData*> list;
+    QList<QVector<QVector3D>> listOfNodes;
     for(int i=1; i<=nb; i++)
     {
-        vtkPolyData *poly = vtkPolyData::New();
-        vtkCellArray *cells = vtkCellArray::New();
-        vtkPolyLine *polyLine = vtkPolyLine::New();
-
-        polyLine->GetPointIds()->SetNumberOfIds(startCurve->GetNumberOfPoints());
-
-        bufferPoints->Reset();
+        QVector<QVector3D> nodes;
         for(int k=0; k<startCurve->GetNumberOfPoints(); k++)
         {
             double p1[3],p2[3],p3[3];
@@ -974,21 +946,11 @@ QList<vtkPolyData* > medTagRoiManager::generateIntermediateCurves(vtkSmartPointe
                 p3[1]= p2[1] +(p1[1]-p2[1])*((i)/(double)(nb+1));
                 p3[2]= p2[2] +(p1[2]-p2[2])*((i)/(double)(nb+1));
             }
-            bufferPoints->InsertNextPoint(p3);
-            polyLine->GetPointIds()->SetId(k, k);
+            nodes.push_back(QVector3D(p3[0], p3[1], p3[2]));
         }
-        cells->InsertNextCell(polyLine);
-
-        vtkPoints * polyPoints = vtkPoints::New();
-        polyPoints->DeepCopy(bufferPoints);
-        poly->SetPoints(polyPoints);
-        poly->SetLines(cells);
-        list.append(poly);
-        cells->Delete();
-        polyLine->Delete();
-        polyPoints->Delete();
+        listOfNodes.append(nodes);
     }
-    return list;
+    return listOfNodes;
 }
 
 void medTagRoiManager::reorderPolygon(vtkPolyData *poly)
@@ -1069,21 +1031,6 @@ void medTagRoiManager::resampleCurve(vtkPolyData *poly,int nbPoints)
 
     poly->SetPoints(points);
     points->Delete();
-}
-
-double medTagRoiManager::findClosestContourFromPoint(QVector3D worldMouseCoord)
-{
-    double minDist = DBL_MAX;
-    for (polygonRoi *roi : d->rois)
-    {
-        double dist = roi->findClosestContourFromPoint(worldMouseCoord);
-        if ( dist < minDist)
-        {
-            minDist = dist;
-            d->closestSlice = roi->getIdSlice();
-        }
-    }
-    return minDist;
 }
 
 int medTagRoiManager::getClosestSliceFromPoint()
