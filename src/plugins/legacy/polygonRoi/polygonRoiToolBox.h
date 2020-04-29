@@ -70,7 +70,7 @@ public slots:
     void manageRoisVisibility();
     void enableTableViewChooser(bool state);
     void resetToolboxBehaviour();
-    void displayErrorMessage(QString error);
+    void errorMessage(QString error);
 private slots:
 
     void disableButtons();

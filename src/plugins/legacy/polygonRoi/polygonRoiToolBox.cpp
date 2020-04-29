@@ -309,7 +309,7 @@ void polygonRoiToolBox::clickClosePolygon(bool state)
             connect(viewEventFilter, SIGNAL(enableGenerateMask(bool)), saveBinaryMaskButton, SLOT(setEnabled(bool)), Qt::UniqueConnection);
             connect(viewEventFilter, SIGNAL(enableViewChooser(bool)), this, SLOT(enableTableViewChooser(bool)), Qt::UniqueConnection);
             connect(viewEventFilter, SIGNAL(toggleRepulsorButton(bool)), this, SLOT(activateRepulsor(bool)), Qt::UniqueConnection);
-            connect(viewEventFilter, SIGNAL(displayErrorMessage(QString)), this, SLOT(displayErrorMessage(QString)), Qt::UniqueConnection);
+            connect(viewEventFilter, SIGNAL(sendErrorMessage(QString)), this, SLOT(errorMessage(QString)), Qt::UniqueConnection);
         }
 
         viewEventFilter->updateView(currentView);
@@ -317,7 +317,7 @@ void polygonRoiToolBox::clickClosePolygon(bool state)
         viewEventFilter->On();
         viewEventFilter->installOnView(currentView);
         viewEventFilter->addObserver();
-
+        this->currentView->viewWidget()->setFocus();
         if ( viewEventFilter->isContourInSlice() )
         {
             repulsorTool->setEnabled(state);
@@ -341,6 +341,7 @@ void polygonRoiToolBox::activateRepulsor(bool state)
     {
         repulsorTool->setChecked(state);
         viewEventFilter->activateRepulsor(state);
+        currentView->viewWidget()->setFocus();
     }
 }
 
@@ -356,7 +357,7 @@ void polygonRoiToolBox::resetToolboxBehaviour()
     enableTableViewChooser(addNewCurve->isChecked());
 }
 
-void polygonRoiToolBox::displayErrorMessage(QString error)
+void polygonRoiToolBox::errorMessage(QString error)
 {
     displayMessageError(error);
 }
@@ -458,6 +459,7 @@ void polygonRoiToolBox::updateTableWidgetView(unsigned int row, unsigned int col
     connect(mainContainer, &medViewContainer::containerSelected, [=](){
         if (currentView && addNewCurve->isChecked())
         {
+            currentView->viewWidget()->setFocus();
             viewEventFilter->On();
             repulsorTool->setEnabled(true);
             if (repulsorTool->isChecked())
@@ -594,6 +596,10 @@ void polygonRoiToolBox::interpolateCurve(bool state)
         return;
     }
     viewEventFilter->setEnableInterpolation(state);
+    if ( currentView )
+    {
+        currentView->viewWidget()->setFocus();
+    }
 }
 
 void polygonRoiToolBox::saveBinaryImage()

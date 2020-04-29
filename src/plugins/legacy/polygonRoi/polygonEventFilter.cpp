@@ -122,7 +122,6 @@ bool polygonEventFilter::eventFilter(QObject *obj, QEvent *event)
 {
     QKeyEvent *keyEvent = dynamic_cast<QKeyEvent*>(event);
     QMouseEvent *mouseEvent = dynamic_cast<QMouseEvent*>(event);
-
     if (mouseEvent)
     {
         return medViewEventFilter::eventFilter(obj,event);
@@ -152,6 +151,24 @@ bool polygonEventFilter::eventFilter(QObject *obj, QEvent *event)
         {
             deleteNode(savedMousePosition);
         }
+        if ( keyEvent->key() == Qt::Key::Key_Right )
+        {
+            if (currentView && currentView->backend())
+            {
+                vtkImageView2D *view2D =  static_cast<medVtkViewBackend*>(currentView->backend())->view2D;
+                view2D->SetSlice(view2D->GetSlice()+1);
+                view2D->Render();
+            }
+        }
+        if ( keyEvent->key() == Qt::Key::Key_Left )
+        {
+            if (currentView && currentView->backend())
+            {
+                vtkImageView2D *view2D =  static_cast<medVtkViewBackend*>(currentView->backend())->view2D;
+                view2D->SetSlice(view2D->GetSlice()-1);
+                view2D->Render();
+            }
+        }
     }
     return event->isAccepted();
 }
@@ -170,7 +187,7 @@ bool polygonEventFilter::mouseReleaseEvent(medAbstractView *view, QMouseEvent *m
     {
         if (isRepulsorActivated && activateEventFilter)
         {
-            if ( !isContourInSlice() || isOnlyOneNodeInSlice())
+            if ( !isActiveContourInSlice() || (activeManager && activeManager->roiOpenInSlice()))
             {
                 return false;
             }
@@ -195,7 +212,6 @@ bool polygonEventFilter::mouseMoveEvent(medAbstractView *view, QMouseEvent *mous
 {
     savedMousePosition[0] = mouseEvent->x()*QGuiApplication::screenAt(mouseEvent->globalPos())->devicePixelRatio();
     savedMousePosition[1] = (currentView->viewWidget()->height()-mouseEvent->y()-1)*QGuiApplication::screenAt(mouseEvent->globalPos())->devicePixelRatio();
-    currentView->viewWidget()->setCursor(Qt::OpenHandCursor);
     if (activeManager)
     {
         if ( activeManager->getMinimumDistanceFromNodesToMouse(savedMousePosition, false) < 10.)
@@ -242,7 +258,7 @@ bool polygonEventFilter::leftButtonBehaviour(medAbstractView *view, QMouseEvent 
 {
     if (isRepulsorActivated)
     {
-        if (isContourInSlice())
+        if (isActiveContourInSlice())
         {
             cursorState = CURSORSTATE::CS_REPULSOR;
             activateRepulsor(true);
@@ -286,7 +302,7 @@ bool polygonEventFilter::leftButtonBehaviour(medAbstractView *view, QMouseEvent 
         mousePos[1] = (currentView->viewWidget()->height()-mouseEvent->y()-1)*QGuiApplication::screenAt(mouseEvent->globalPos())->devicePixelRatio();
         if (!activeManager)
         {
-            emit displayErrorMessage("No active contour: Unable to use repulsor tool.");
+            emit sendErrorMessage("No active contour: Unable to use repulsor tool.");
             return false;
         }
         if (interactorStyleRepulsor == nullptr)
@@ -325,7 +341,7 @@ QLineEdit * polygonEventFilter::updateNameManager(medTagRoiManager* closestManag
            if (manager->getName()==renameManager->text())
            {
                qDebug()<<"forbidden name";
-               emit displayErrorMessage("An other contour has already the same name: " + renameManager->text());
+               emit sendErrorMessage("An other contour has already the same name: " + renameManager->text());
                return;
            }
        }
@@ -501,7 +517,7 @@ medTagRoiManager *polygonEventFilter::addManagerToList(int label, QString labelN
     manager->setEnableInterpolation(enableInterpolation);
     managers.append(manager);
     connect(manager, SIGNAL(enableOtherViewsVisibility(bool)), this, SLOT(enableOtherViewsVisibility(bool)), Qt::UniqueConnection);
-    connect(manager, SIGNAL(displayErrorMessage(QString)), this, SIGNAL(displayErrorMessage(QString)), Qt::UniqueConnection);
+    connect(manager, SIGNAL(sendErrorMessage(QString)), this, SIGNAL(sendErrorMessage(QString)), Qt::UniqueConnection);
     activeManager = manager;
 
     enableOnlyActiveManager();
@@ -686,6 +702,7 @@ void polygonEventFilter::setEnableInterpolation(bool state)
         }
         manager->setEnableInterpolation(state);
     }
+    enableOnlyActiveManager();
     manageTick();
 }
 
@@ -775,7 +792,7 @@ void polygonEventFilter::pasteContours()
             }
             else
             {
-                emit displayErrorMessage("contour " + manager->getName() + " already exists in current slice ");
+                emit sendErrorMessage("contour " + manager->getName() + " already exists in current slice ");
             }
         }
         enableOtherViewsVisibility(true);
@@ -914,7 +931,7 @@ void polygonEventFilter::loadContours(medAbstractData *data)
 
     if ( managers.size()==colorList.size() )
     {
-        emit displayErrorMessage("loadContours - unable to create a new manager.");
+        emit sendErrorMessage("loadContours - unable to create a new manager.");
         return;
     }
 
@@ -922,13 +939,13 @@ void polygonEventFilter::loadContours(medAbstractData *data)
     {
         if ( managers.size()==colorList.size() )
         {
-            emit displayErrorMessage("loadContours - unable to create a new manager.");
+            emit sendErrorMessage("loadContours - unable to create a new manager.");
             return;
         }
         int label = findAvailableLabel();
         if ( label == -1 )
         {
-            emit displayErrorMessage("Unable to load contours. No label available.");
+            emit sendErrorMessage("Unable to load contours. No label available.");
             return;
         }
         QString labelName = (tagContours.getLabelName() == "undefined")?QString("label-%1").arg(label):tagContours.getLabelName();
@@ -936,7 +953,7 @@ void polygonEventFilter::loadContours(medAbstractData *data)
         {
             if (manager->getName()==labelName)
             {
-                emit displayErrorMessage("loadContours - unable to create a new manager.");
+                emit sendErrorMessage("loadContours - unable to create a new manager.");
                 return;
             }
         }
@@ -1083,6 +1100,7 @@ void polygonEventFilter::deleteLabel(medTagRoiManager *manager)
     }
     manageTick();
     manageButtonsState();
+    currentView->render();
 }
 
 void polygonEventFilter::manageButtonsState()
@@ -1111,25 +1129,14 @@ bool polygonEventFilter::isContourInSlice()
     return false;
 }
 
-bool polygonEventFilter::isOnlyOneNodeInSlice()
+bool polygonEventFilter::isActiveContourInSlice()
 {
-    bool res = false;
-    for (medTagRoiManager *manager : managers)
+    bool retVal = false;
+    if ( activeManager && activeManager->existingRoiInSlice() )
     {
-        polygonRoi *roi = manager->existingRoiInSlice();
-        if (roi)
-        {
-            if (roi->getNumberOfNodes()==1)
-            {
-                res = true;
-            }
-            else if ( roi->getNumberOfNodes()>1)
-            {
-                return false;
-            }
-        }
+        retVal = true;
     }
-    return res;
+    return retVal;
 }
 
 void polygonEventFilter::saveMask(medTagRoiManager *manager)

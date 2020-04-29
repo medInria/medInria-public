@@ -76,7 +76,7 @@ public slots:
 
 signals:
     void enableOtherViewsVisibility(bool state);
-    void displayErrorMessage(QString);
+    void sendErrorMessage(QString);
 private:
     dtkSmartPointer<medAbstractData> output;
     dtkSmartPointer<medAbstractData> contourOutput;

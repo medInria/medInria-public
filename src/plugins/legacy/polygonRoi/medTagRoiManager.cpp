@@ -243,7 +243,6 @@ void medTagRoiManager::removeAllTick()
             slicingParameter->getSlider()->update();
         }
     }
-
 }
 
 void medTagRoiManager::initializeMaskData( medAbstractData * imageData, medAbstractData * maskData )
@@ -572,8 +571,10 @@ polygonRoi *medTagRoiManager::existingRoiInSlice()
     int slice = view2d->GetSlice();
 
     if (!isSameOrientation(view2d->GetViewOrientation()))
-        emit displayErrorMessage(getName() + ": has not the same orientation as 2D view");
+    {
+        emit sendErrorMessage(getName() + ": has not the same orientation as 2D view");
         return nullptr;
+    }
 
     for (polygonRoi* roi : d->rois)
     {
@@ -648,7 +649,7 @@ bool medTagRoiManager::pasteContour(QVector<QVector2D> nodes)
     polygonRoi *roi = existingRoiInSlice();
     if ( roi )
     {
-        emit displayErrorMessage(getName + " already exists in current slice.");
+        emit sendErrorMessage(getName() + " already exists in current slice.");
         return false;
     }
     vtkImageView2D *view2d = static_cast<medVtkViewBackend*>(d->view->backend())->view2D;
@@ -656,7 +657,7 @@ bool medTagRoiManager::pasteContour(QVector<QVector2D> nodes)
 
     if (!isSameOrientation(view2d->GetViewOrientation()))
     {
-        emit displayErrorMessage(getName() + ": has not the same orientation as 2D view");
+        emit sendErrorMessage(getName() + ": has not the same orientation as 2D view");
         return false;
     }
 
@@ -700,7 +701,9 @@ double medTagRoiManager::getMinimumDistanceFromNodesToMouse(double eventPos[2], 
             contourRep->GetNthNodeDisplayPosition(j, contourPos);
             dist = getDistance(eventPos, contourPos);
             if ( dist < minDist )
+            {
                 minDist = dist;
+            }
 
             if (allNodes)
             {
@@ -821,7 +824,7 @@ void medTagRoiManager::interpolateIfNeeded()
     {
         if ( roi->getContour()->GetContourRepresentation()->GetClosedLoop() == false )
         {
-            emit displayErrorMessage(getName() + ": Non-closed polygon at slice: " + QString::number(roi->getIdSlice()+1) + ". Operation aborted");
+            emit sendErrorMessage(getName() + ": Non-closed polygon at slice: " + QString::number(roi->getIdSlice()+1) + ". Operation aborted");
             return;
         }
     }
@@ -865,7 +868,7 @@ QList<polygonRoi *> medTagRoiManager::interpolateBetween2Slices(polygonRoi *firs
     QList<QVector<QVector3D>> listOfNodes = generateIntermediateCurves(curveMax,curveMin,maxSlice-minSlice-1);
     if ( listOfNodes.size() != (maxSlice-minSlice-1) )
     {
-        emit displayErrorMessage(getName() + ": Unable to interpolate between slice: " + QString::number(minSlice+1) + " and " + QString::number(maxSlice-1) + ". Operation aborted");
+        emit sendErrorMessage(getName() + ": Unable to interpolate between slice: " + QString::number(minSlice+1) + " and " + QString::number(maxSlice-1) + ". Operation aborted");
     }
 
     vtkImageView2D *view2d = static_cast<medVtkViewBackend*>(d->view->backend())->view2D;

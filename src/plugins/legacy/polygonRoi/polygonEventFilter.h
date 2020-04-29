@@ -86,7 +86,7 @@ signals:
     void enableViewChooser(bool state);
     void toggleRepulsorButton(bool);
     void clearLastAlternativeView();
-    void displayErrorMessage(QString);
+    void sendErrorMessage(QString);
 
 private:
     medAbstractImageView *currentView;
@@ -119,8 +119,8 @@ private:
     medTagRoiManager *getManagerFromColor(QColor color);
     QLineEdit *updateNameManager(medTagRoiManager* closestManager, QMenu *mainMenu);
     void deleteNode(double *mousePosition);
-    bool isOnlyOneNodeInSlice();
     medTagRoiManager *getClosestManager(double *mousePos);
     void enableOnlyActiveManager();
     QMenu *changeLabelActions(medTagRoiManager* closestManager);
+    bool isActiveContourInSlice();
 };
