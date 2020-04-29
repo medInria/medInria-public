@@ -1,33 +1,39 @@
 ################################################################################
 #
 # medInria
-
-# Copyright (c) INRIA 2013. All rights reserved.
-
-# See LICENSE.txt for details in the root of the sources or:
-# https://github.com/medInria/medInria-public/blob/master/LICENSE.txt
-
-# This software is distributed WITHOUT ANY WARRANTY; without even
-# the implied warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR
-# PURPOSE.
+#
+# Copyright (c) INRIA 2013 - 2018. All rights reserved.
+# See LICENSE.txt for details.
+#
+#  This software is distributed WITHOUT ANY WARRANTY; without even
+#  the implied warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR
+#  PURPOSE.
 #
 ################################################################################
 
-set(TARGET_NAME medImageIO)
-
+set(TARGET_NAME ttkTensorTractographyProcessPlugin)
 
 ## #############################################################################
-## find requireds
+## Setup version numbering
 ## #############################################################################
 
-find_package(ITK REQUIRED COMPONENTS ITKVtkGlue ITKIOImageBase ITKIOMeta ITKZLIB)
+set(${TARGET_NAME}_VERSION ${MEDINRIA_VERSION})
+
+string(TOUPPER ${TARGET_NAME} TARGET_NAME_UP)
+add_definitions(-D${TARGET_NAME_UP}_VERSION="${${TARGET_NAME}_VERSION}")
+
+## #############################################################################
+## Resolve dependencies
+## #############################################################################
+
+find_package(VTK REQUIRED vtkCommonCore vtkCommonDataModel)
+include(${VTK_USE_FILE})
+
+find_package(ITK REQUIRED ITKCommon ITKTransform ITKImageFunction)
 include(${ITK_USE_FILE})
 
-#WARNING USE VTK through ITKVtkGlue and medLog
-
-find_package(DCMTK REQUIRED NO_MODULE)
-
-
+find_package(TTK REQUIRED)
+include(${TTK_USE_FILE})
 ## #############################################################################
 ## List Sources
 ## #############################################################################
@@ -46,62 +52,39 @@ list_header_directories_to_include(${TARGET_NAME}
 
 add_library(${TARGET_NAME} SHARED
   ${${TARGET_NAME}_CFILES}
+  ${${TARGET_NAME}_QRC}
   )
 
 ## #############################################################################
-## include directorie.
+## include directories.
 ## #############################################################################
 
 target_include_directories(${TARGET_NAME}
-  PUBLIC ${${TARGET_NAME}_INCLUDE_DIRS}
-  PRIVATE ${DCMTK_INCLUDE_DIRS}
+  PRIVATE ${${TARGET_NAME}_INCLUDE_DIRS}
   )
-
+# PRIVATE because plugins are not supposed to be used somewhere else
 
 ## #############################################################################
 ## Link
 ## #############################################################################
 
-
 target_link_libraries(${TARGET_NAME}
+  ITKCommon
   Qt5::Core
-  Qt5::Widgets
+  dtkCore
   dtkCoreSupport
   dtkLog
+  ITKTensor
+  ITKIOTransformBase
   medCore
   medCoreLegacy
-  ITKCommon
-  ITKIOImageBase
-  ITKIOBMP
-  ITKIOBruker
-  ITKIOLSM
-  ITKIOJPEG
-  ITKIOJPEG2000
-  ITKIOPNG
-  ITKIOVTK
-  ITKIOGDCM
-  ITKNrrdIO
-  ITKIONRRD
-  ITKIOMeta
-  ITKIOMINC
-  ITKIONIFTI
-  ITKIOGIPL
-  ITKIOGE
-  ITKIOHDF5
-  ITKIOBioRad
-  ITKIOStimulate
-  ITKIOMRC
-  ITKIOTIFF
-  ITKVTK
-  vtkIOImage
-  ${ITKIOPhilipsREC_LIBRARIES}
-  ${DCMTK_LIBRARIES}
+  medVtkInria
+  medWidgets
+  vtkRenderingCore
   )
 
-## #############################################################################
-## install
-## #############################################################################
+## #################################################################
+## Install rules
+## #################################################################
 
-set_lib_install_rules(${TARGET_NAME}
-  ${${TARGET_NAME}_HEADERS}
-  )
+set_plugin_install_rules(${TARGET_NAME})

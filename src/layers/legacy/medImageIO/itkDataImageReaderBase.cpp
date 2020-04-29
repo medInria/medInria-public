@@ -80,7 +80,7 @@ bool itkDataImageReaderBase::canRead (const QStringList& paths)
 {
     if (!paths.count())
         return false;
-    return this->canRead ( paths[0].toLatin1().constData() );
+    return this->canRead ( paths[0] );
 }
 
 bool itkDataImageReaderBase::readInformation (const QString& path)
@@ -229,7 +229,7 @@ bool itkDataImageReaderBase::readInformation (const QStringList& paths)
 {
     if (!paths.count())
         return false;
-    return this->readInformation ( paths[0].toLatin1().constData() );
+    return this->readInformation ( paths[0] );
 }
 
 template <unsigned DIM,typename T>
@@ -360,7 +360,7 @@ bool itkDataImageReaderBase::read (const QStringList& paths)
 {
     if (paths.count() < 1)
         return false;
-    return this->read(paths[0].toLatin1().constData());
+    return this->read(paths[0]);
 }
 
 void itkDataImageReaderBase::setProgress (int value)

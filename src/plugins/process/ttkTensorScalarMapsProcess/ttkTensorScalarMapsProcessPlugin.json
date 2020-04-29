@@ -1,0 +1,6 @@
+{
+            "name" : "ttkTensorScalarMapsProcessPlugin",
+         "concept" : "medAbstractDiffusionScalarMapsProcess",
+         "version" : "3.0.0", 	
+    "dependencies" : []
+}
