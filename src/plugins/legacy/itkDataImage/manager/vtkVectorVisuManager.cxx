@@ -50,6 +50,8 @@ vtkVectorVisuManager::vtkVectorVisuManager()
     this->GlyphMapper->SetInputConnection( this->Orienter->GetOutputPort() );
     this->GlyphMapper->SetSourceConnection(arrowSource->GetOutputPort());
     this->GlyphMapper->SetScaleModeToScaleByVectorComponents();
+    this->GlyphMapper->SetOrientationModeToDirection();
+    this->GlyphMapper->SetStatic(false);
 
     this->GlyphMapper->OrientOn();
     this->GlyphMapper->ScalingOn();
@@ -95,7 +97,7 @@ void vtkVectorVisuManager::SetInput(vtkImageData* data, vtkMatrix4x4 *matrix)
 
     this->VOI->SetInputData ( this->Input );
     this->Orienter->SetOrientationMatrix(matrix);
-     this->GlyphMapper->Modified(); // a voir
+    this->GlyphMapper->Modified(); // a voir
 }
 
 void vtkVectorVisuManager::SetVOI(const int& imin, const int& imax,
