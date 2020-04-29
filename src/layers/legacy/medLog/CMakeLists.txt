@@ -19,18 +19,8 @@ set(TARGET_NAME medLog)
 ## find requireds
 ## #############################################################################
 
-# find dtk
-find_package(dtk REQUIRED)
-include_directories(${dtk_INCLUDE_DIRS})
-
-# find itk
 find_package(ITK REQUIRED COMPONENTS ITKCommon)
-include(${ITK_USE_FILE})
-
-# find vtk
 find_package(VTK REQUIRED COMPONENTS vtkCommonCore)
-include(${VTK_USE_FILE})
-
 
 ## #############################################################################
 ## List Sources
@@ -44,24 +34,34 @@ list_header_directories_to_include(${TARGET_NAME}
   ${${TARGET_NAME}_HEADERS}
   )
 
-
 ## #############################################################################
 ## add library
 ## #############################################################################
 
 add_library(${TARGET_NAME} SHARED
-  ${${TARGET_NAME}_CFILES}
+    "${${TARGET_NAME}_QRC}"
   )
+
+## #############################################################################
+## source
+## #############################################################################
+target_sources(${TARGET_NAME}
+    PRIVATE ${${TARGET_NAME}_SOURCES}
+    PUBLIC ${${TARGET_NAME}_TEMPLATES}
+    PUBLIC ${${TARGET_NAME}_HEADERS}
+)
 
 
 ## #############################################################################
-## include directorie.
+## include directories.
 ## #############################################################################
 
 target_include_directories(${TARGET_NAME}
   PUBLIC ${${TARGET_NAME}_INCLUDE_DIRS}
+  PUBLIC ${dtk_INCLUDE_DIRS}
+  PRIVATE ${ITK_INCLUDE_DIRS}
+  PRIVATE ${VTK_INCLUDE_DIRS}
   )
-
 
 ## #############################################################################
 ## Link
@@ -72,8 +72,8 @@ target_link_libraries(${TARGET_NAME}
   Qt5::Widgets
   dtkCoreSupport
   dtkLog
-  ITKCommon
-  vtkCommonCore
+  ${ITK_LIBRARIES}
+  ${VTK_LIBRARIES}
   )
 
 ## #############################################################################

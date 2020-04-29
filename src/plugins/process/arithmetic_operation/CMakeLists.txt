@@ -20,7 +20,6 @@ set(TARGET_NAME medItkArithmeticOperationProcessPlugin)
 ## #############################################################################
 
 find_package(ITK REQUIRED COMPONENTS ITKMathematicalMorphology)
-include(${ITK_USE_FILE})
 
 ## #############################################################################
 ## List Sources
@@ -38,22 +37,27 @@ list_header_directories_to_include(${TARGET_NAME}
 ## add library
 ## #############################################################################
 
-
-add_library(${TARGET_NAME} SHARED
-  ${${TARGET_NAME}_CFILES}
-  ${${TARGET_NAME}_QRC}
+add_library(${TARGET_NAME} MODULE
+  "${${TARGET_NAME}_QRC}"
   )
 
-
+## #############################################################################
+## source
+## #############################################################################
+target_sources(${TARGET_NAME}
+    PRIVATE ${${TARGET_NAME}_SOURCES}
+    PUBLIC ${${TARGET_NAME}_TEMPLATES}
+    PUBLIC ${${TARGET_NAME}_HEADERS}
+)
 ## #############################################################################
 ## include directorie.
 ## #############################################################################
 
 target_include_directories(${TARGET_NAME}
   PRIVATE ${${TARGET_NAME}_INCLUDE_DIRS}
+  PRIVATE ${ITK_INCLUDE_DIRS}
   )
-# PRIVATE beacause plugins are not supposed to be used somewhere else
-
+# PRIVATE because plugins are not supposed to be used somewhere else
 
 ## #############################################################################
 ## Link
@@ -68,10 +72,8 @@ target_link_libraries(${TARGET_NAME}
   medWidgets
   )
 
-
 ## #############################################################################
 ## Install rules
 ## #############################################################################
 
 set_plugin_install_rules(${TARGET_NAME})
-

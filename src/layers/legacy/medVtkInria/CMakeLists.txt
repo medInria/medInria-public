@@ -18,18 +18,21 @@ set(TARGET_NAME medVtkInria)
 ## #############################################################################
 ## Find required
 ## #############################################################################
-
-find_package(VTK REQUIRED COMPONENTS vtkRenderingVolumeOpenGL2 vtkInteractionWidgets vtkRenderingAnnotation vtkInteractionStyle vtkImagingStatistics vtkIOLegacy )
-include(${VTK_USE_FILE})
-
-find_package(OpenGL REQUIRED)
-
 if (USE_OSPRay)
-  add_definitions(-DMED_USE_OSPRAY_4_VR_BY_CPU)
   set(VTK_OSPRAY_RENDERING_LIBRARY "vtkRenderingOSPRay")
 ELSE()
   set(VTK_OSPRAY_RENDERING_LIBRARY "")
 endif()
+
+find_package(VTK REQUIRED COMPONENTS vtkCommonCore
+    vtkRenderingVolume
+    vtkRenderingVolumeOpenGL2
+    vtkInteractionWidgets
+    vtkIOLegacy
+    ${VTK_OSPRAY_RENDERING_LIBRARY}
+    )
+
+find_package(OpenGL REQUIRED)
 
 ## #############################################################################
 ## List sources
@@ -111,17 +114,31 @@ shader_to_header(HWShading/shaders/BuildShadowMapLines.frag
 ## #############################################################################
 
 add_library(${TARGET_NAME} SHARED
-  ${${TARGET_NAME}_CFILES}
+  "${${TARGET_NAME}_QRC}"
   )
 
+target_compile_definitions(${TARGET_NAME} PUBLIC ${VTK_DEFINITIONS})
+
+target_compile_definitions(${TARGET_NAME} PUBLIC
+    $<$<BOOL:${USE_OSPRay}>:MED_USE_OSPRAY_4_VR_BY_CPU>
+    )
+
 ## #############################################################################
-## include directorie.
+## source
+## #############################################################################
+target_sources(${TARGET_NAME}
+    PRIVATE ${${TARGET_NAME}_SOURCES}
+    PUBLIC ${${TARGET_NAME}_TEMPLATES}
+    PUBLIC ${${TARGET_NAME}_HEADERS}
+)
+## #############################################################################
+## include directories.
 ## #############################################################################
 
 target_include_directories(${TARGET_NAME}
-  PUBLIC
-  ${${TARGET_NAME}_INCLUDE_DIRS}
-  ${CMAKE_BINARY_DIR}/shaders
+  PUBLIC ${${TARGET_NAME}_INCLUDE_DIRS}
+  PUBLIC ${CMAKE_BINARY_DIR}/shaders
+  PUBLIC ${VTK_INCLUDE_DIRS}
   )
 
 ## #############################################################################
@@ -130,35 +147,11 @@ target_include_directories(${TARGET_NAME}
 
 target_link_libraries(${TARGET_NAME}
   ${OPENGL_LIBRARIES}
+  ${VTK_LIBRARIES}
   Qt5::Core
   Qt5::Widgets
   medCoreLegacy
-  vtkCommonCore
-  vtkCommonSystem
-  vtkImagingColor
-  vtkImagingGeneral
-  vtkImagingHybrid
-  vtkIOCore
-  vtkIOExportOpenGL2
-  vtkIOGeometry
-  vtkIOImage
-  vtkIOLegacy
-  vtkIOXML
-  vtkRenderingAnnotation
-  vtkRenderingCore
-  vtkRenderingOpenGL2
-  vtkRenderingVolumeOpenGL2
-  vtkRenderingContextOpenGL2
-  ${VTK_OSPRAY_RENDERING_LIBRARY}
-  vtkInteractionWidgets
-  vtkInteractionStyle
-  vtkFiltersExtraction
-  vtkFiltersModeling
-  vtkImagingStencil
-  vtkFiltersGeometry
-  vtksys
   )
-
 
 ## #############################################################################
 ## install

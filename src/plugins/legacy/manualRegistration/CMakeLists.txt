@@ -16,31 +16,15 @@
 set(TARGET_NAME manualRegistrationPlugin)
 
 ## #############################################################################
-## Setup version numbering
-## #############################################################################
-
-set(${TARGET_NAME}_VERSION ${MEDINRIA_VERSION})
-
-string(TOUPPER ${TARGET_NAME} TARGET_NAME_UP)
-add_definitions(-D${TARGET_NAME_UP}_VERSION="${${TARGET_NAME}_VERSION}")
-
-set(CMAKE_INCLUDE_CURRENT_DIR TRUE)
-
-## #############################################################################
 ## Resolve dependencies
 ## #############################################################################
 
-find_package(dtk REQUIRED)
-include_directories(${dtk_INCLUDE_DIRS})
-
-find_package(ITK REQUIRED COMPONENTS ITKIOImageBase ITKTransform ITKIOTransformBase ITKIOTransformInsightLegacy ITKRegistrationCommon ITKIOMeta)
-include(${ITK_USE_FILE})
-
-find_package(VTK REQUIRED COMPONENTS vtkCommonCore vtkInteractionWidgets)
-include(${VTK_USE_FILE})
-
-find_package(RPI REQUIRED)
+find_package(RPI REQUIRED )
 include(${RPI_USE_FILE})
+include(ITKLibs) # FOR and FROM RPI
+find_package(ITK REQUIRED COMPONENTS ${ITKIO_LIBRARIES} ${ITK_TRANSFORM_LIBRARIES} ITKRegistrationCommon ITKIOImageBase  ITKIOMeta )
+
+find_package(VTK REQUIRED COMPONENTS vtkInteractionWidgets)
 
 ## #############################################################################
 ## List Sources
@@ -51,6 +35,32 @@ list_source_files(${TARGET_NAME}
   )
 
 ## #############################################################################
+## add library
+## #############################################################################
+
+add_library(${TARGET_NAME} MODULE
+  "${${TARGET_NAME}_QRC}"
+  )
+
+## #############################################################################
+## Setup version numbering
+## #############################################################################
+
+set(${TARGET_NAME}_VERSION ${${PROJECT_NAME}_VERSION})
+string(TOUPPER ${TARGET_NAME} TARGET_NAME_UP)
+target_compile_definitions(${TARGET_NAME} PUBLIC ${TARGET_NAME_UP}_VERSION="${${TARGET_NAME}_VERSION}")
+target_compile_definitions(${TARGET_NAME} PUBLIC ${VTK_DEFINITIONS})
+
+## #############################################################################
+## source
+## #############################################################################
+target_sources(${TARGET_NAME}
+    PRIVATE ${${TARGET_NAME}_SOURCES}
+    PUBLIC ${${TARGET_NAME}_TEMPLATES}
+    PUBLIC ${${TARGET_NAME}_HEADERS}
+)
+
+## #############################################################################
 ## include directories
 ## #############################################################################
 
@@ -58,17 +68,12 @@ list_header_directories_to_include(${TARGET_NAME}
   ${${TARGET_NAME}_HEADERS}
   )
 
-include_directories(${${TARGET_NAME}_INCLUDE_DIRS}
-  ${MEDINRIA_INCLUDE_DIRS}
-  )
-
-## #############################################################################
-## add library
-## #############################################################################
-
-add_library(${TARGET_NAME} SHARED
-  ${${TARGET_NAME}_CFILES}
-  ${${TARGET_NAME}_QRC}
+target_include_directories(${TARGET_NAME}
+  PUBLIC ${${TARGET_NAME}_INCLUDE_DIRS}
+  PRIVATE ${RPI_INCLUDE_DIRS}
+  PRIVATE ${dtk_INCLUDE_DIRS}
+  PRIVATE ${ITK_INCLUDE_DIRS}
+  PRIVATE ${VTK_INCLUDE_DIRS}
   )
 
 ## #############################################################################
@@ -76,16 +81,12 @@ add_library(${TARGET_NAME} SHARED
 ## #############################################################################
 
 target_link_libraries(${TARGET_NAME}
-  ${QT_LIBRARIES}
-  ${RPI_LIBRARIES}
-  dtkCore
-  dtkLog
+  ${ITK_LIBRARIES}
+  ${VTK_LIBRARIES}
   medCore
   medRegistration
   medVtkInria
   )
-
-set(CMAKE_RUNTIME_OUTPUT_DIRECTORY ${CMAKE_BINARY_DIR}/bin)
 
 ## #############################################################################
 ## Install rules

@@ -16,26 +16,13 @@
 set(TARGET_NAME diffeomorphicDemonsPlugin)
 
 ## #############################################################################
-## Setup version numbering
-## #############################################################################
-
-set(${TARGET_NAME}_VERSION ${MEDINRIA_VERSION})
-
-string(TOUPPER ${TARGET_NAME} TARGET_NAME_UP)
-add_definitions(-D${TARGET_NAME_UP}_VERSION="${${TARGET_NAME}_VERSION}")
-
-## #############################################################################
 ## Resolve dependencies
 ## #############################################################################
 
-find_package(dtk REQUIRED)
-include_directories(${dtk_INCLUDE_DIRS})
-
-find_package(RPI REQUIRED)
+find_package(RPI REQUIRED )
 include(${RPI_USE_FILE})
-
-find_package(ITK REQUIRED COMPONENTS ITKCommon ITKIOTransformBase ITKIOTransformInsightLegacy ITKTransform ITKTransformFactory ITKRegistrationCommon ITKIOMeta ITKIOImageBase ITKPDEDeformableRegistration ITKIOTransformBase)
-include(${ITK_USE_FILE})
+include(ITKLibs) # FOR and FROM RPI
+find_package(ITK REQUIRED COMPONENTS ${ITKIO_LIBRARIES} ${ITK_TRANSFORM_LIBRARIES} ITKRegistrationCommon ITKPDEDeformableRegistration )
 
 ## #############################################################################
 ## List Sources
@@ -43,18 +30,6 @@ include(${ITK_USE_FILE})
 
 list_source_files(${TARGET_NAME}
   ${CMAKE_CURRENT_SOURCE_DIR}
-  )
-
-## #############################################################################
-## include directorie.
-## #############################################################################
-
-list_header_directories_to_include(${TARGET_NAME}
-  ${${TARGET_NAME}_HEADERS}
-  )
-
-include_directories(${${TARGET_NAME}_INCLUDE_DIRS}
-  ${MEDINRIA_INCLUDE_DIRS}
   )
 
 ## #############################################################################
@@ -73,21 +48,47 @@ endif()
 ## add library
 ## #############################################################################
 
-add_library(${TARGET_NAME} SHARED
+add_library(${TARGET_NAME} MODULE
   ${${TARGET_NAME}_PCH}
-  ${${TARGET_NAME}_CFILES}
+  "${${TARGET_NAME}_QRC}"
   )
 
+## #############################################################################
+## Setup version numbering
+## #############################################################################
+
+set(${TARGET_NAME}_VERSION ${${PROJECT_NAME}_VERSION})
+string(TOUPPER ${TARGET_NAME} TARGET_NAME_UP)
+target_compile_definitions(${TARGET_NAME} PUBLIC ${TARGET_NAME_UP}_VERSION="${${TARGET_NAME}_VERSION}")
+
+## #############################################################################
+## source
+## #############################################################################
+target_sources(${TARGET_NAME}
+    PRIVATE ${${TARGET_NAME}_SOURCES}
+    PUBLIC ${${TARGET_NAME}_TEMPLATES}
+    PUBLIC ${${TARGET_NAME}_HEADERS}
+)
+
+## #############################################################################
+## include directories.
+## #############################################################################
+
+list_header_directories_to_include(${TARGET_NAME}
+  ${${TARGET_NAME}_HEADERS}
+  )
+target_include_directories(${TARGET_NAME}
+  PRIVATE ${${TARGET_NAME}_INCLUDE_DIRS}
+  PRIVATE ${RPI_INCLUDE_DIRS}
+  PRIVATE ${ITK_INCLUDE_DIRS}
+  PRIVATE ${dtk_INCLUDE_DIRS}
+  )
 ## #############################################################################
 ## Link
 ## #############################################################################
 
 target_link_libraries(${TARGET_NAME}
-  ${RPI_LIBRARIES}
-  ${QT_LIBRARIES}
-  dtkCore
-  dtkLog
-  ITKCommon
+  ${ITK_LIBRARIES}
   medCore
   medRegistration
   )

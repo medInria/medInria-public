@@ -16,27 +16,15 @@
 set(TARGET_NAME itkDataSHImagePlugin)
 
 ## #############################################################################
-## Setup version numbering
-## #############################################################################
-
-set(${TARGET_NAME}_VERSION ${MEDINRIA_VERSION})
-
-string(TOUPPER ${TARGET_NAME} TARGET_NAME_UP)
-add_definitions(-D${TARGET_NAME_UP}_VERSION="${${TARGET_NAME}_VERSION}")
-
-
-## #############################################################################
 ## Resolve dependencies
 ## #############################################################################
 
-find_package(dtk REQUIRED)
-include_directories(${dtk_INCLUDE_DIRS})
+set(ITK_IMAGES_DEPENDENCIES ITKIOMeta
+)
 
-find_package(ITK REQUIRED COMPONENTS ITKIOImageBase ITKIOMeta )
-include(${ITK_USE_FILE})
+find_package(ITK REQUIRED COMPONENTS ${ITK_IMAGES_DEPENDENCIES} ITKIOStimulate ITKIOVTK)
 
-find_package(VTK REQUIRED COMPONENTS vtkCommonExecutionModel vtkRenderingCore vtkInteractionWidgets)
-include(${VTK_USE_FILE})
+find_package(VTK REQUIRED COMPONENTS vtkInteractionWidgets)
 
 if (APPLE OR WIN32)
     find_package(Boost REQUIRED)
@@ -55,21 +43,6 @@ list_source_files(${TARGET_NAME}
   writers
   )
 
-
-## #############################################################################
-## include directorie.
-## #############################################################################
-
-list_header_directories_to_include(${TARGET_NAME}
-  ${${TARGET_NAME}_HEADERS}
-  )
-
-include_directories(${${TARGET_NAME}_INCLUDE_DIRS}
-  ${MEDINRIA_INCLUDE_DIRS}
-  ${Boost_INCLUDE_DIR}
-  )
-
-
 ## #############################################################################
 ## Precompile headers
 ## #############################################################################
@@ -82,36 +55,63 @@ if(MEDINRIA_USE_PRECOMPILED_HEADERS)
     )
 endif()
 
-
 ## #############################################################################
 ## add library
 ## #############################################################################
 
-add_library(${TARGET_NAME} SHARED
+add_library(${TARGET_NAME} MODULE
   ${${TARGET_NAME}_PCH}
-  ${${TARGET_NAME}_CFILES}
-  ${${TARGET_NAME}_QRC}
+  "${${TARGET_NAME}_QRC}"
   )
 
+## #############################################################################
+## Setup version numbering
+## #############################################################################
+
+set(${TARGET_NAME}_VERSION ${${PROJECT_NAME}_VERSION})
+string(TOUPPER ${TARGET_NAME} TARGET_NAME_UP)
+target_compile_definitions(${TARGET_NAME} PUBLIC ${TARGET_NAME_UP}_VERSION="${${TARGET_NAME}_VERSION}")
+target_compile_definitions(${TARGET_NAME} PUBLIC ${VTK_DEFINITIONS})
+
+## #############################################################################
+## source
+## #############################################################################
+target_sources(${TARGET_NAME}
+    PRIVATE ${${TARGET_NAME}_SOURCES}
+    PUBLIC ${${TARGET_NAME}_TEMPLATES}
+    PUBLIC ${${TARGET_NAME}_HEADERS}
+)
+
+## #############################################################################
+## include directories.
+## #############################################################################
+
+list_header_directories_to_include(${TARGET_NAME}
+  ${${TARGET_NAME}_HEADERS}
+  )
+
+target_include_directories(${TARGET_NAME}
+  PUBLIC ${${TARGET_NAME}_INCLUDE_DIRS}
+  PRIVATE ${Boost_INCLUDE_DIR}
+  PRIVATE ${dtk_INCLUDE_DIRS}
+  PRIVATE ${ITK_INCLUDE_DIRS}
+  PRIVATE ${VTK_INCLUDE_DIRS}
+  )
 
 ## #############################################################################
 ## Link
 ## #############################################################################
 
 target_link_libraries(${TARGET_NAME}
-  ${QT_LIBRARIES}
-  dtkCore
-  dtkCore
-  dtkLog
+  ${ITK_LIBRARIES}
+  ${VTK_LIBRARIES}
   medCore
   medLog
   medVtkInria
   medImageIO
   )
 
-
 ## #############################################################################
 ## Install rules
 ## #############################################################################
-
 set_plugin_install_rules_legacy(${TARGET_NAME})

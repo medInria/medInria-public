@@ -16,58 +16,21 @@
 set(TARGET_NAME itkDataImagePlugin)
 
 ## #############################################################################
-## Setup version numbering
-## #############################################################################
-
-set(${TARGET_NAME}_VERSION ${${PROJECT_NAME}_VERSION})
-
-string(TOUPPER ${TARGET_NAME} TARGET_NAME_UP)
-add_definitions(-D${TARGET_NAME_UP}_VERSION="${${TARGET_NAME}_VERSION}")
-
-## #############################################################################
 ## Resolve dependencies
 ## #############################################################################
 
-find_package(dtk REQUIRED)
-include_directories(${dtk_INCLUDE_DIRS})
-
 set(ITK_IMAGES_DEPENDENCIES
     ITKIOMeta
-
     #common formats for common images
-    ITKIOBMP
-    ITKIOJPEG
-    ITKIOJPEG2000
-    ITKIOPNG
-    ITKIOTIFF
-
+    ITKIOBMP ITKIOJPEG ITKIOJPEG2000 ITKIOPNG ITKIOTIFF
     #Medical images formats
-    ITKIOBruker
-    ITKIOHDF5
-    ITKIOGIPL
-    ITKIONIFTI
-    ITKIONRRD
-    ITKIOPhilipsREC
+    ITKIOGIPL ITKIONRRD ITKIONIFTI ITKIOGIPL ITKIOPhilipsREC ITKIOGDCM
 )
 
-find_package(ITK REQUIRED COMPONENTS ITKIOImageBase ITKIOGDCM ITKIOVTK ITKVtkGlue ${ITK_IMAGES_DEPENDENCIES})
-include(${ITK_USE_FILE})
-
-# itkLogForwarder used through medLog
-# vtkImageView2D  used through medVtkInria
-
-#WARNING USE VTK through ITKIOVTK and medLog, medVtkInria
-
-if (ITK_USE_SYSTEM_GDCM)
-  add_definitions(-DITK_USE_SYSTEM_GDCM)
-endif()
-
-if (USE_OSPRay)
-  add_definitions(-DMED_USE_OSPRAY_4_VR_BY_CPU)
-endif()
+find_package(ITK REQUIRED COMPONENTS
+      ITKIOVTK ITKVtkGlue ${ITK_IMAGES_DEPENDENCIES} ITKStatistics)
 
 find_package(DCMTK REQUIRED NO_MODULE)
-
 
 ## #############################################################################
 ## List Sources
@@ -87,9 +50,6 @@ list_header_directories_to_include(${TARGET_NAME}
   ${${TARGET_NAME}_HEADERS}
   )
 
-## #############################################################################
-## add library
-## #############################################################################
 
 # Due to the large number of template functions, windows needs an extra compile flag.
 # Currently this only affects x64/debug builds, but enabling this flag for others does no harm.
@@ -108,24 +68,52 @@ if (MSVC)
          )
     endif()
 
-  #Prevent compiler warnings about valid std::copy.
-  if(MSVC)
-      add_definitions(-D_SCL_SECURE_NO_WARNINGS)
-  endif()
-
 endif()
 
-add_library(${TARGET_NAME} SHARED
-  ${${TARGET_NAME}_CFILES}
+## #############################################################################
+## add library
+## #############################################################################
+
+add_library(${TARGET_NAME} MODULE
+  "${${TARGET_NAME}_QRC}"
   )
+## #############################################################################
+## Setup version numbering
+## #############################################################################
+
+set(${TARGET_NAME}_VERSION ${${PROJECT_NAME}_VERSION})
+string(TOUPPER ${TARGET_NAME} TARGET_NAME_UP)
+target_compile_definitions(${TARGET_NAME} PUBLIC ${TARGET_NAME_UP}_VERSION="${${TARGET_NAME}_VERSION}")
+
+target_compile_definitions(${TARGET_NAME} PUBLIC
+    $<$<BOOL:${ITK_USE_SYSTEM_GDCM}>:ITK_USE_SYSTEM_GDCM>
+    )
+target_compile_definitions(${TARGET_NAME} PUBLIC
+    $<$<BOOL:${USE_OSPRay}>:MED_USE_OSPRAY_4_VR_BY_CPU>
+    )
+#Prevent compiler warnings about valid std::copy.
+target_compile_definitions(${TARGET_NAME} PUBLIC
+    $<$<BOOL:${MSVC}>:_SCL_SECURE_NO_WARNINGS>
+    )
 
 
 ## #############################################################################
-## include directorie.
+## source
+## #############################################################################
+target_sources(${TARGET_NAME}
+    PRIVATE ${${TARGET_NAME}_SOURCES}
+    PUBLIC ${${TARGET_NAME}_TEMPLATES}
+    PUBLIC ${${TARGET_NAME}_HEADERS}
+)
+
+## #############################################################################
+## include directories.
 ## #############################################################################
 
 target_include_directories(${TARGET_NAME}
   PRIVATE ${${TARGET_NAME}_INCLUDE_DIRS}
+  PRIVATE ${dtk_INCLUDE_DIRS}
+  PRIVATE ${ITK_INCLUDE_DIRS}
   )
 
 ## #############################################################################
@@ -133,11 +121,7 @@ target_include_directories(${TARGET_NAME}
 ## #############################################################################
 
 target_link_libraries(${TARGET_NAME}
-  Qt5::Core
-  Qt5::Widgets
-  dtkCore
-  dtkLog
-  ITKStatistics
+  ${ITK_LIBRARIES}
   medCore
   medImageIO
   medLog
@@ -149,7 +133,6 @@ target_link_libraries(${TARGET_NAME}
 ## #############################################################################
 
 set_plugin_install_rules_legacy(${TARGET_NAME})
-
 
 ## #############################################################################
 ## Build tests

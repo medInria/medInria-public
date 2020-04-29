@@ -40,10 +40,17 @@ list_header_directories_to_include(${TARGET_NAME}
 ## #############################################################################
 
 add_library(${TARGET_NAME} SHARED
-  ${${TARGET_NAME}_CFILES}
-  ${${TARGET_NAME}_QRC}
+  "${${TARGET_NAME}_QRC}"
   )
 
+## #############################################################################
+## source
+## #############################################################################
+target_sources(${TARGET_NAME}
+    PRIVATE ${${TARGET_NAME}_SOURCES}
+    PUBLIC ${${TARGET_NAME}_TEMPLATES}
+    PUBLIC ${${TARGET_NAME}_HEADERS}
+)
 
 ## #############################################################################
 ## include directorie.

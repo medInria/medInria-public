@@ -16,27 +16,13 @@
 set(TARGET_NAME medVtkViewPlugin)
 
 ## #############################################################################
-## Setup version numbering
-## #############################################################################
-
-set(${TARGET_NAME}_VERSION ${${PROJECT_NAME}_VERSION})
-
-string(TOUPPER ${TARGET_NAME} TARGET_NAME_UP)
-add_definitions(-D${TARGET_NAME_UP}_VERSION="${${TARGET_NAME}_VERSION}")
-
-
-## #############################################################################
 ## Resolve dependencies
 ## #############################################################################
 
-find_package(dtk REQUIRED)
-include_directories(${dtk_INCLUDE_DIRS})
-
-find_package(VTK REQUIRED COMPONENTS vtkGUISupportQt vtkInteractionWidgets)
-include(${VTK_USE_FILE})
+find_package(VTK REQUIRED COMPONENTS
+    vtkGUISupportQt vtkInteractionWidgets)
 
 find_package(ITK REQUIRED COMPONENTS ITKCommon)
-include(${ITK_USE_FILE})
 
 ## #############################################################################
 ## List Sources
@@ -49,52 +35,63 @@ list_source_files(${TARGET_NAME}
 set(${TARGET_NAME}_QRC resources/medVtkView.qrc)
 
 ## #############################################################################
-## include directorie.
+## add library
+## #############################################################################
+
+add_library(${TARGET_NAME} MODULE
+  "${${TARGET_NAME}_QRC}"
+  )
+
+## #############################################################################
+## Setup version numbering
+## #############################################################################
+
+set(${TARGET_NAME}_VERSION ${${PROJECT_NAME}_VERSION})
+string(TOUPPER ${TARGET_NAME} TARGET_NAME_UP)
+target_compile_definitions(${TARGET_NAME} PUBLIC ${TARGET_NAME_UP}_VERSION="${${TARGET_NAME}_VERSION}")
+target_compile_definitions(${TARGET_NAME} PUBLIC ${VTK_DEFINITIONS})
+
+## #############################################################################
+## source
+## #############################################################################
+target_sources(${TARGET_NAME}
+    PRIVATE ${${TARGET_NAME}_SOURCES}
+    PUBLIC ${${TARGET_NAME}_TEMPLATES}
+    PUBLIC ${${TARGET_NAME}_HEADERS}
+)
+
+## #############################################################################
+## include directories.
 ## #############################################################################
 
 list_header_directories_to_include(${TARGET_NAME}
   ${${TARGET_NAME}_HEADERS}
   )
 
-include_directories(${${TARGET_NAME}_INCLUDE_DIRS}
-  ${${TARGET_NAME}_INCLUDE_DIRS}
+target_include_directories(${TARGET_NAME}
+  PRIVATE ${${TARGET_NAME}_INCLUDE_DIRS}
+  PRIVATE ${dtk_INCLUDE_DIRS}
+  PRIVATE ${ITK_INCLUDE_DIRS}
+  PRIVATE ${VTK_INCLUDE_DIRS}
   )
-
-## #############################################################################
-## add library
-## #############################################################################
-
-add_library(${TARGET_NAME} SHARED
-  ${${TARGET_NAME}_CFILES}
-  ${${TARGET_NAME}_QRC}
-  )
-
 
 ## #############################################################################
 ## Link
 ## #############################################################################
 
 target_link_libraries(${TARGET_NAME}
-  Qt5::Core
-  Qt5::Widgets
-  Qt5::Gui
-  Qt5::OpenGL
-  dtkCore
-  dtkLog
   medCore
   medVtkInria
-  vtkGUISupportQt
-  vtkGUISupportQtOpenGL
   medVtkDataMeshBase
+  ${VTK_LIBRARIES}
+  ${ITK_LIBRARIES}
   )
-
 
 ## #############################################################################
 ## Install rules
 ## #############################################################################
 
 set_plugin_install_rules_legacy(${TARGET_NAME})
-
 
 ## #############################################################################
 ## Build tests
@@ -103,4 +100,3 @@ set_plugin_install_rules_legacy(${TARGET_NAME})
 if(${TARGET_NAME}_BUILD_TESTS)
   #add_subdirectory(tests)
 endif()
-

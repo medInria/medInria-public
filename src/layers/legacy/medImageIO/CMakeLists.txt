@@ -18,14 +18,24 @@ set(TARGET_NAME medImageIO)
 ## #############################################################################
 ## find requireds
 ## #############################################################################
+set(ITK_IMAGES_DEPENDENCIES
+    ITKIOImageBase
+    ITKIOMeta
+    #common formats for common images
+    ITKIOBMP ITKIOJPEG ITKIOJPEG2000 ITKIOPNG ITKIOTIFF
+    #Medical images formats
+    ITKIOGIPL ITKIONRRD ITKIONIFTI ITKIOGIPL ITKIOPhilipsREC ITKIOGDCM ITKIOBioRad ITKIOBruker
+    ITKNrrdIO ITKIOMINC ITKIOHDF5 ITKIOMRC ITKIOLSM
+)
 
-find_package(ITK REQUIRED COMPONENTS ITKVtkGlue ITKIOImageBase ITKIOMeta)
-include(${ITK_USE_FILE})
+# ITKCommon ITKIOImageBase
+find_package(ITK REQUIRED COMPONENTS ${ITK_IMAGES_DEPENDENCIES} ITKIOVTK ITKIOGIPL ITKIOGE
+    ITKIOStimulate ITKVTK ITKVtkGlue )
 
-#WARNING USE VTK through ITKVtkGlue and medLog
+# find vtk
+find_package(VTK REQUIRED COMPONENTS vtkIOImage)
 
 find_package(DCMTK REQUIRED NO_MODULE)
-
 
 ## #############################################################################
 ## List Sources
@@ -44,56 +54,42 @@ list_header_directories_to_include(${TARGET_NAME}
 ## #############################################################################
 
 add_library(${TARGET_NAME} SHARED
-  ${${TARGET_NAME}_CFILES}
+   "${${TARGET_NAME}_QRC}"
   )
 
 ## #############################################################################
-## include directorie.
+## source
+## #############################################################################
+target_sources(${TARGET_NAME}
+    PRIVATE ${${TARGET_NAME}_SOURCES}
+    PUBLIC ${${TARGET_NAME}_TEMPLATES}
+    PUBLIC ${${TARGET_NAME}_HEADERS}
+)
+
+## #############################################################################
+## include directories.
 ## #############################################################################
 
 target_include_directories(${TARGET_NAME}
   PUBLIC ${${TARGET_NAME}_INCLUDE_DIRS}
   PRIVATE ${DCMTK_INCLUDE_DIRS}
+  PUBLIC ${ITK_INCLUDE_DIRS}
+  PRIVATE ${VTK_INCLUDE_DIRS}
   )
-
 
 ## #############################################################################
 ## Link
 ## #############################################################################
 
-
 target_link_libraries(${TARGET_NAME}
   Qt5::Core
   Qt5::Widgets
+  ${ITK_LIBRARIES}
+  ${VTK_LIBRARIES}
   dtkCoreSupport
   dtkLog
   medCore
   medCoreLegacy
-  ITKCommon
-  ITKIOImageBase
-  ITKIOBMP
-  ITKIOBruker
-  ITKIOLSM
-  ITKIOJPEG
-  ITKIOJPEG2000
-  ITKIOPNG
-  ITKIOVTK
-  ITKIOGDCM
-  ITKNrrdIO
-  ITKIONRRD
-  ITKIOMeta
-  ITKIOMINC
-  ITKIONIFTI
-  ITKIOGIPL
-  ITKIOGE
-  ITKIOHDF5
-  ITKIOBioRad
-  ITKIOStimulate
-  ITKIOMRC
-  ITKIOTIFF
-  ITKVTK
-  vtkIOImage
-  ${ITKIOPhilipsREC_LIBRARIES}
   ${DCMTK_LIBRARIES}
   )
 

@@ -19,15 +19,13 @@ set(TARGET_NAME medVtkDataMeshBase)
 ## Find required
 ## #############################################################################
 
-find_package(dtk REQUIRED)
-include_directories(${dtk_INCLUDE_DIRS})
-
-
-find_package(VTK REQUIRED COMPONENTS vtkCommonCore vtkCommonDataModel vtkRenderingCore vtkRenderingVolumeOpenGL2 vtkInteractionStyle vtkInteractionWidgets vtkIOParallelXML vtkIOImage vtkIOGeometry  vtkIOExport vtkRenderingContext2D vtkIOInfovis)
-include(${VTK_USE_FILE})
+find_package(VTK REQUIRED COMPONENTS
+    vtkRenderingVolumeOpenGL2  vtkRenderingContext2D
+    vtkInteractionWidgets
+    vtkIOParallelXML vtkIOGeometry  vtkIOExport
+    )
 
 find_package(ITK REQUIRED COMPONENTS ITKCommon)
-include(${ITK_USE_FILE})
 
 ## #############################################################################
 ## List sources
@@ -37,25 +35,34 @@ list_source_files(${TARGET_NAME}
   ${CMAKE_CURRENT_SOURCE_DIR}
   )
 
-list_header_directories_to_include(${TARGET_NAME}
-  ${${TARGET_NAME}_HEADERS}
-  )
-
 ## #############################################################################
 ## add library
 ## #############################################################################
 
 add_library(${TARGET_NAME} SHARED
-  ${${TARGET_NAME}_CFILES}
+   "${${TARGET_NAME}_QRC}"
   )
 
 ## #############################################################################
+## source
+## #############################################################################
+target_sources(${TARGET_NAME}
+    PRIVATE ${${TARGET_NAME}_SOURCES}
+    PUBLIC ${${TARGET_NAME}_TEMPLATES}
+    PUBLIC ${${TARGET_NAME}_HEADERS}
+)
+## #############################################################################
 ## include directories
 ## #############################################################################
+list_header_directories_to_include(${TARGET_NAME}
+  ${${TARGET_NAME}_HEADERS}
+  )
 
 target_include_directories(${TARGET_NAME}
-  PUBLIC
-  ${${TARGET_NAME}_INCLUDE_DIRS}
+  PUBLIC ${${TARGET_NAME}_INCLUDE_DIRS}
+  PUBLIC ${dtk_INCLUDE_DIRS}
+  PRIVATE ${ITK_INCLUDE_DIRS}
+  PRIVATE ${VTK_INCLUDE_DIRS}
   )
 
 ## #############################################################################
@@ -63,12 +70,12 @@ target_include_directories(${TARGET_NAME}
 ## #############################################################################
 
 target_link_libraries(${TARGET_NAME}
-  vtkIOInfovis
+  ${VTK_LIBRARIES}
+  ${ITK_LIBRARIES}
   medCore
   medLog
   medVtkInria
   )
-
 
 ## #############################################################################
 ## install

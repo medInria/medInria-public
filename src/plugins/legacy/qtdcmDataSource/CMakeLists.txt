@@ -12,62 +12,32 @@
 # PURPOSE.
 #
 ################################################################################
-
-project(qtdcmDataSourcePlugin)
-
-## #############################################################################
-## Setup version numbering
-## #############################################################################
-
-set(${PROJECT_NAME}_VERSION ${MEDINRIA_VERSION})
-
-string(TOUPPER ${PROJECT_NAME} PROJECT_NAME_UP)
-add_definitions(-D${PROJECT_NAME_UP}_VERSION="${${PROJECT_NAME}_VERSION}")
-
+set(TARGET_NAME qtdcmDataSourcePlugin)
 
 ## #############################################################################
 ## Resolve dependencies
 ## #############################################################################
 
-find_package(dtk REQUIRED)
-include_directories(${dtk_INCLUDE_DIRS})
-
 find_package(DCMTK REQUIRED NO_MODULE)
-
 find_package(QtDCM REQUIRED)
 
 ## #############################################################################
 ## List Sources
 ## #############################################################################
 
-list_source_files(${PROJECT_NAME}
+list_source_files(${TARGET_NAME}
   ${CMAKE_CURRENT_SOURCE_DIR}
   )
-
-## #############################################################################
-## include directorie.
-## #############################################################################
-
-list_header_directories_to_include(${PROJECT_NAME}
-  ${${PROJECT_NAME}_HEADERS}
-  )
-
-include_directories(${${PROJECT_NAME}_INCLUDE_DIRS}
-  ${MEDINRIA_INCLUDE_DIRS}
-  ${QTDCM_INCLUDE_DIRS}
-  ${QTDCM_DIR}
-  )
-
 
 ## #############################################################################
 ## Precompile headers
 ## #############################################################################
 
 if(MEDINRIA_USE_PRECOMPILED_HEADERS)
-  add_precompiled_header(${PROJECT_NAME}_PCH
+  add_precompiled_header(${TARGET_NAME}_PCH
     ${MEDPLUGINSPCH_H}
     ${MEDPLUGINSPCH_CPP}
-    ${${PROJECT_NAME}_SOURCES}
+    ${${TARGET_NAME}_SOURCES}
     )
 endif()
 
@@ -78,11 +48,42 @@ endif()
 
 link_directories(${QTDCM_LIBRARY_DIR})
 
-add_library(${PROJECT_NAME} SHARED
-  ${${PROJECT_NAME}_PCH}
-  ${${PROJECT_NAME}_CFILES}
+add_library(${TARGET_NAME} MODULE
+  ${${TARGET_NAME}_PCH}
+  "${${TARGET_NAME}_QRC}"
   )
 
+## #############################################################################
+## Setup version numbering
+## #############################################################################
+
+set(${TARGET_NAME}_VERSION ${${PROJECT_NAME}_VERSION})
+string(TOUPPER ${TARGET_NAME} TARGET_NAME_UP)
+target_compile_definitions(${TARGET_NAME} PUBLIC ${TARGET_NAME_UP}_VERSION="${${TARGET_NAME}_VERSION}")
+
+## #############################################################################
+## source
+## #############################################################################
+target_sources(${TARGET_NAME}
+    PRIVATE ${${TARGET_NAME}_SOURCES}
+    PUBLIC ${${TARGET_NAME}_TEMPLATES}
+    PUBLIC ${${TARGET_NAME}_HEADERS}
+)
+
+## #############################################################################
+## include directories.
+## #############################################################################
+
+list_header_directories_to_include(${TARGET_NAME}
+  ${${TARGET_NAME}_HEADERS}
+  )
+
+target_include_directories(${TARGET_NAME}
+  PRIVATE ${${TARGET_NAME}_INCLUDE_DIRS}
+  PRIVATE  ${QTDCM_INCLUDE_DIRS}
+  PRIVATE  ${QTDCM_DIR}
+  PRIVATE ${dtk_INCLUDE_DIRS}
+  )
 
 ## #############################################################################
 ## Link
@@ -94,19 +95,15 @@ if (WIN32)
     )
 endif()
 
-target_link_libraries(${PROJECT_NAME}
-  ${QT_LIBRARIES}
+target_link_libraries(${TARGET_NAME}
   ${QTDCM_LIBRARIES}
   ${DCMTK_LIBRARIES}
   ${WIN_LINK_LIBRARIES}
-  dtkCore
-  dtkLog
   medCore
   )
-
 
 ## #############################################################################
 ## Install rules
 ## #############################################################################
 
-set_plugin_install_rules_legacy(${PROJECT_NAME})
+set_plugin_install_rules_legacy(${TARGET_NAME})

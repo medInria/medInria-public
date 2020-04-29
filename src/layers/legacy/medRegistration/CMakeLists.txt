@@ -15,20 +15,15 @@
 
 set(TARGET_NAME medRegistration)
 
-
 ## #############################################################################
 ## find requireds
 ## #############################################################################
 
-find_package(dtk REQUIRED)
-include_directories(${dtk_INCLUDE_DIRS})
-
-find_package(ITK REQUIRED COMPONENTS ITKIOImageBase ITKTransform ITKIOTransformBase ITKIOTransformInsightLegacy ITKRegistrationCommon ITKIOMeta)#ITKCommon ITKTransformFactory
-include(${ITK_USE_FILE})
-
-find_package(RPI REQUIRED)
+find_package(RPI REQUIRED )
 include(${RPI_USE_FILE})
-
+include(ITKLibs) # FOR and FROM RPI
+find_package(ITK REQUIRED COMPONENTS ${ITKIO_LIBRARIES} ${ITK_TRANSFORM_LIBRARIES}
+       ITKRegistrationCommon)
 
 ## #############################################################################
 ## List Sources
@@ -38,69 +33,46 @@ list_source_files(${TARGET_NAME}
   ${CMAKE_CURRENT_SOURCE_DIR}
   )
 
-list_header_directories_to_include(${TARGET_NAME}
-  ${${TARGET_NAME}_HEADERS}
-  )
-
-
 ## #############################################################################
 ## add library
 ## #############################################################################
 
 add_library(${TARGET_NAME} SHARED
-  ${${TARGET_NAME}_CFILES}
+ "${${TARGET_NAME}_QRC}"
   )
 
 
 ## #############################################################################
-## include directorie.
+## source
 ## #############################################################################
+target_sources(${TARGET_NAME}
+    PRIVATE ${${TARGET_NAME}_SOURCES}
+    PUBLIC ${${TARGET_NAME}_TEMPLATES}
+    PUBLIC ${${TARGET_NAME}_HEADERS}
+)
 
+## #############################################################################
+## include directories.
+## #############################################################################
+list_header_directories_to_include(${TARGET_NAME}
+  ${${TARGET_NAME}_HEADERS}
+  )
+  
 target_include_directories(${TARGET_NAME}
   PUBLIC ${${TARGET_NAME}_INCLUDE_DIRS}
+  PUBLIC ${RPI_INCLUDE_DIRS}
+  PUBLIC ${dtk_INCLUDE_DIRS}
+  PUBLIC ${ITK_INCLUDE_DIRS}
   )
-
 
 ## #############################################################################
 ## Link
 ## #############################################################################
 
 target_link_libraries(${TARGET_NAME}
-  Qt5::Core
-  Qt5::Widgets
-  dtkCoreSupport
   medCoreLegacy
-  dtkLog
-  ITKCommon
-  ITKIOImageBase
-  ITKIOBMP
-  ITKIOBruker
-  ITKIOLSM
-  ITKIOJPEG
-  ITKIOJPEG2000
-  ITKIOGE
-  ITKIOPNG
-  ITKIOVTK
-  ITKIOGDCM
-  ITKNrrdIO
-  ITKIONRRD
-  ITKIOMeta
-  ITKIOMINC
-  ITKIONIFTI
-  ITKIOGIPL
-  ITKIOHDF5
-  ITKIOBioRad
-  ITKIOStimulate
-  ${ITKIOPhilipsREC_LIBRARIES}
-  ITKIOTIFF
-  ITKStatistics
-  ITKIOTransformBase
-  ITKIOTransformHDF5
-  ITKIOTransformMatlab
-  ITKIOTransformInsightLegacy
-  ITKIOMRC
+  ${ITK_LIBRARIES}
   )
-
 
 ## #############################################################################
 ## install

@@ -15,15 +15,6 @@
 
 set(TARGET_NAME medComposer)
 
-
-## #############################################################################
-## find requireds
-## #############################################################################
-
-find_package(dtk REQUIRED)
-include_directories(${dtk_INCLUDE_DIRS})
-
-
 ## #############################################################################
 ## List Sources
 ## #############################################################################
@@ -46,11 +37,18 @@ list_header_directories_to_include(${TARGET_NAME}
 ## add library
 ## #############################################################################
 
-
 add_library(${TARGET_NAME} SHARED
-  ${${TARGET_NAME}_CFILES}
-  ${${TARGET_NAME}_QRC}
+  "${${TARGET_NAME}_QRC}"
   )
+
+## #############################################################################
+## source
+## #############################################################################
+target_sources(${TARGET_NAME}
+    PRIVATE ${${TARGET_NAME}_SOURCES}
+    PUBLIC ${${TARGET_NAME}_TEMPLATES}
+    PUBLIC ${${TARGET_NAME}_HEADERS}
+)
 
 
 ## #############################################################################
@@ -59,8 +57,8 @@ add_library(${TARGET_NAME} SHARED
 
 target_include_directories(${TARGET_NAME}
   PUBLIC ${${TARGET_NAME}_INCLUDE_DIRS}
+  PRIVATE ${dtk_INCLUDE_DIRS}
   )
-
 
 ## #############################################################################
 ## Link
