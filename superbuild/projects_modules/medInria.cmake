@@ -27,6 +27,7 @@ list(APPEND ${ep}_dependencies
   TTK 
   QtDCM
   RPI
+  LogDemons
   )
 
 if (USE_DTKIMAGING)
@@ -85,6 +86,7 @@ set(cmake_args
   -DTTK_DIR=${TTK_DIR}
   -DVTK_DIR=${VTK_DIR}
   -DQt5_DIR=${Qt5_DIR}
+  -DLogDemons_DIR=${LogDemons_DIR}
   -DBoost_INCLUDE_DIR=${Boost_INCLUDE_DIR}
   -DmedInria_VERSION:STRING=${${PROJECT_NAME}_VERSION}
   -DBUILD_ALL_PLUGINS=OFF
@@ -135,7 +137,7 @@ if (WIN32)
   file(TO_NATIVE_PATH ${_qt5Core_install_prefix} QT5_BIN_BASE)
   file(TO_NATIVE_PATH ${medInria_BINARY_DIR}     MED_BIN_BASE)
   
-  set(CONFIG_MODE $<$<CONFIG:debug>:Debug>$<$<CONFIG:release>:Release>$<$<CONFIG:MinSizeRel>:MinSizeRel>$<$<CONFIG:RelWithDebugInfo>:RelWithDebugInfo>)
+  set(CONFIG_MODE $<$<CONFIG:debug>:Debug>$<$<CONFIG:release>:Release>$<$<CONFIG:MinSizeRel>:MinSizeRel>$<$<CONFIG:RelWithDebInfo>:RelWithDebInfo>)
   
   set(MED_BIN_BASE ${MED_BIN_BASE}\\${CONFIG_MODE}\\bin)  
   

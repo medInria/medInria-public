@@ -55,6 +55,7 @@ list(APPEND external_projects
   DCMTK 
   QtDCM 
   dtk
+  LogDemons
   )
 
 if (USE_DTKIMAGING)
