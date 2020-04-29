@@ -26,6 +26,8 @@ public:
         ProjectOnXZ,
         ProjectOnXY
     };
+  vtkVectorOrienter(const vtkVectorOrienter&) = delete;
+  void operator=(const vtkVectorOrienter&) = delete;
 
   vtkTypeMacro(vtkVectorOrienter,vtkImageAlgorithm);
   void PrintSelf(ostream& os, vtkIndent indent);
@@ -55,13 +57,11 @@ protected:
 
   virtual int RequestData(vtkInformation* request,
                           vtkInformationVector** inputVector,
-                          vtkInformationVector* outputVector);
+                          vtkInformationVector* outputVector) override;
 
 
 
 private:
-  vtkVectorOrienter(const vtkVectorOrienter&);  // Not implemented.
-  void operator=(const vtkVectorOrienter&);  // Not implemented.
 
   ProjectionMode    ProjMode;
 

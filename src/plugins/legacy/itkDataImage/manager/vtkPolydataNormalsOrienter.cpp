@@ -26,7 +26,7 @@ vtkStandardNewMacro(vtkPolyDataNormalsOrienter)
 
 vtkPolyDataNormalsOrienter::vtkPolyDataNormalsOrienter()
 {
-    Matrix = 0;
+    Matrix = nullptr;
 }
 
 

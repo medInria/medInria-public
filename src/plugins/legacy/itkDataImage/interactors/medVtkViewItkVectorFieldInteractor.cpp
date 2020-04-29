@@ -100,7 +100,6 @@ medVtkViewItkVectorFieldInteractor::medVtkViewItkVectorFieldInteractor(medAbstra
 medVtkViewItkVectorFieldInteractor::~medVtkViewItkVectorFieldInteractor()
 {
     delete d;
-    d = nullptr;
 }
 
 QString medVtkViewItkVectorFieldInteractor::description() const
@@ -178,6 +177,7 @@ void medVtkViewItkVectorFieldInteractor::setInputData(medAbstractData *data)
 
         vtkImageData *vtkImage = d->floatFilter->GetOutput();
         d->manager->SetInput(vtkImage);
+
     }
     else if( identifier.compare("itkDataImageVectorDouble3") == 0 )
     {
@@ -230,6 +230,8 @@ void medVtkViewItkVectorFieldInteractor::setInputData(medAbstractData *data)
     d->manager->GetVectorVisuManagerAxial()->GetActor()->SetProperty( d->actorProperty );
     d->manager->GetVectorVisuManagerSagittal()->GetActor()->SetProperty( d->actorProperty );
     d->manager->GetVectorVisuManagerCoronal()->GetActor()->SetProperty( d->actorProperty );
+
+    mat->Delete();
 
     setupParameters();
     update();

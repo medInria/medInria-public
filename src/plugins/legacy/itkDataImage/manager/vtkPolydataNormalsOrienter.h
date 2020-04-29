@@ -30,7 +30,7 @@ protected:
 
     virtual int RequestData(vtkInformation* request,
                             vtkInformationVector** inputVector,
-                            vtkInformationVector* outputVector);
+                            vtkInformationVector* outputVector) override;
 
 private:
     vtkMatrix4x4      *Matrix;
