@@ -302,7 +302,7 @@ double * vtkItkConversion<volumeType, imageDim>::getCurrentScalarRange()
 
     if (m_ItkInputImage.IsNotNull() || m_ItkInputImage4D.IsNotNull())
     {
-        dResScalarRange = new double[2]; //FloTODO check potential memory leak
+        dResScalarRange = new double[2]; //FloTODO check potential memory leak // neb : the caller is the owner
         dResScalarRange[0] = VTK_DOUBLE_MAX;
         dResScalarRange[1] = VTK_DOUBLE_MIN;
 
