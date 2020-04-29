@@ -338,7 +338,7 @@ void medVtkViewItkDataImageInteractor::initWindowLevelParameters(double *range)
         int iDecimalCount = 2;
         if(d->intensityStep<1)
         {
-            iDecimalCount = 1 + std::ceill(std::fabsl(std::log10l(d->intensityStep)));
+            iDecimalCount = 1 + std::ceil(std::fabs(std::log10(static_cast<long double>(d->intensityStep))));
         }
         d->minIntensityParameter->setDecimals(iDecimalCount);
         d->maxIntensityParameter->setDecimals(iDecimalCount);
