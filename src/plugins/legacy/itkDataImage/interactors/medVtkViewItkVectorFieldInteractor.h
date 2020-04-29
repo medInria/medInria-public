@@ -26,22 +26,22 @@ public:
     medVtkViewItkVectorFieldInteractor(medAbstractView* parent);
     ~medVtkViewItkVectorFieldInteractor();
 
-    virtual QString description() const;
-    virtual QString identifier() const;
-    virtual QStringList handled() const;
+    QString description() const override;
+    QString identifier() const override;
+    QStringList handled() const override;
 
     static bool registered();
 
-    virtual void setInputData(medAbstractData * data);
+    void setInputData(medAbstractData * data) override;
 
-    virtual QWidget* buildLayerWidget();
-    virtual QWidget* buildToolBoxWidget();
-    virtual QWidget* buildToolBarWidget();
+    QWidget* buildLayerWidget() override;
+    QWidget* buildToolBoxWidget() override;
+    QWidget* buildToolBarWidget() override;
 
-    virtual QList<medAbstractParameterL*> linkableParameters();
-    virtual QList<medBoolParameterL*> mouseInteractionParameters();
+    QList<medAbstractParameterL*> linkableParameters() override;
+    QList<medBoolParameterL*> mouseInteractionParameters() override;
 
-    virtual void removeData();
+    void removeData() override;
 
 public slots:
 
@@ -63,7 +63,7 @@ public slots:
 
     virtual void setUpViewForThumbnail();
 
-    virtual void updateWidgets();
+    void updateWidgets() override;
 
 protected:
     void setupParameters();
