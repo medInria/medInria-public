@@ -49,8 +49,7 @@ public:
     void manageTick(medSliderL *slider);
     void manageVisibility();
     bool mouseIsCloseFromNodes(double mousePos[2]);
-    double getMinimumDistanceFromNodesToEventPosition(double eventPos[2]);
-    double getMinimumDistanceFromIntermediateNodesToEventPosition(double eventPos[2]);
+    double getMinimumDistanceFromNodesToMouse(double eventPos[2], bool allNodes = true);
     void deleteNode(double X, double Y);
     void deleteContour();
     void removeAllTick();
@@ -70,13 +69,14 @@ public:
     void removeContourOtherView(medAbstractImageView *v);
     void removeIntermediateContoursOtherView(medAbstractImageView *v);
     void setEnableInteraction(bool state);
+
 public slots:
     void interpolateIfNeeded();
     void enableOtherViewVisibility(medAbstractImageView *v, bool state);
 
 signals:
     void enableOtherViewsVisibility(bool state);
-
+    void displayErrorMessage(QString);
 private:
     dtkSmartPointer<medAbstractData> output;
     dtkSmartPointer<medAbstractData> contourOutput;
@@ -84,7 +84,7 @@ private:
     medTagRoiManagerPrivate* const d;
 
     QList<polygonRoi *> interpolateBetween2Slices(polygonRoi *firstRoi, polygonRoi *secondRoi);
-    QList<vtkPolyData *> generateIntermediateCurves(vtkSmartPointer<vtkPolyData> curve1, vtkSmartPointer<vtkPolyData> curve2, int nb);
+    QList<QVector<QVector3D> > generateIntermediateCurves(vtkSmartPointer<vtkPolyData> curve1, vtkSmartPointer<vtkPolyData> curve2, int nb);
     void resampleCurve(vtkPolyData *poly, int nbPoints);
     void reorderPolygon(vtkPolyData *poly);
     static bool sortRois(const polygonRoi *p1, const polygonRoi *p2);

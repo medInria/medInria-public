@@ -309,6 +309,7 @@ void polygonRoiToolBox::clickClosePolygon(bool state)
             connect(viewEventFilter, SIGNAL(enableGenerateMask(bool)), saveBinaryMaskButton, SLOT(setEnabled(bool)), Qt::UniqueConnection);
             connect(viewEventFilter, SIGNAL(enableViewChooser(bool)), this, SLOT(enableTableViewChooser(bool)), Qt::UniqueConnection);
             connect(viewEventFilter, SIGNAL(toggleRepulsorButton(bool)), this, SLOT(activateRepulsor(bool)), Qt::UniqueConnection);
+            connect(viewEventFilter, SIGNAL(displayErrorMessage(QString)), this, SLOT(displayErrorMessage(QString)), Qt::UniqueConnection);
         }
 
         viewEventFilter->updateView(currentView);
@@ -353,6 +354,11 @@ void polygonRoiToolBox::resetToolboxBehaviour()
     }
     containersInTabSelected[0]->setClosingMode(medViewContainer::CLOSE_CONTAINER);
     enableTableViewChooser(addNewCurve->isChecked());
+}
+
+void polygonRoiToolBox::displayErrorMessage(QString error)
+{
+    displayMessageError(error);
 }
 
 void polygonRoiToolBox::manageTick()
