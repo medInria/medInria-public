@@ -464,7 +464,20 @@ void medVtkViewItkVectorFieldInteractor::updateSlicingParam()
 
 void medVtkViewItkVectorFieldInteractor::updatePlaneVisibility()
 {
-    // this is a temp sol : not optimal,without this the screen is black
-    this->update();
-    d->manager->SetGlyphScale(1.0);
+    markMapperModified();
 }
+
+void medVtkViewItkVectorFieldInteractor::markMapperModified() {
+
+    if(d->manager->GetVectorVisuManagerAxial()) {
+        d->manager->GetVectorVisuManagerAxial()->GetGlyphMapper()->Modified();
+    }
+    if(d->manager->GetVectorVisuManagerSagittal()) {
+        d->manager->GetVectorVisuManagerSagittal()->GetGlyphMapper()->Modified();
+    }
+    if(d->manager->GetVectorVisuManagerCoronal()) {
+        d->manager->GetVectorVisuManagerCoronal()->GetGlyphMapper()->Modified();
+    }
+}
+
+

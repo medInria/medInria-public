@@ -43,6 +43,8 @@ public:
 
     void removeData() override;
 
+    void markMapperModified();
+
 public slots:
 
     void setScale(double scale);
