@@ -196,7 +196,6 @@ void medVtkFibersDataInteractorPrivate::setROI (medAbstractData *data)
     roiManager->SetInput (converter->GetOutput());
     roiManager->SetDirectionMatrix (matrix2);
 
-    // manager->GetROILimiter()->Update();
     roiManager->GenerateData();
 
     std::sort(labels.begin(), labels.end());
