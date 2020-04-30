@@ -165,12 +165,10 @@ void polygonRoi::setEnableLeftButtonInteraction(bool state)
     {
         d->contour->GetEventTranslator()->SetTranslation(vtkCommand::LeftButtonPressEvent, vtkWidgetEvent::NoEvent);
         d->contour->GetEventTranslator()->SetTranslation(vtkCommand::MouseMoveEvent, vtkWidgetEvent::NoEvent);
-        QColor tr = Qt::transparent;
         double color[3];
-        color[0] = tr.redF();
-        color[1] = tr.greenF();
-        color[2] = tr.blueF();
-        contourRep->GetLinesProperty()->SetColor(color);
+        color[0] = d->roiColor.redF();
+        color[1] = d->roiColor.greenF();
+        color[2] = d->roiColor.blueF();
         contourRep->GetProperty()->SetColor(color);
         contourRep->GetLinesProperty()->SetOpacity(0.2);
         contourRep->GetProperty()->SetOpacity(0.2);
@@ -224,7 +222,7 @@ vtkProperty *polygonRoi::createPropertyForPolyData()
     }
     else
     {
-        property->SetOpacity(0.2);
+        property->SetOpacity(0.3);
     }
     property->SetLighting(false);
     property->SetLineWidth(1.);

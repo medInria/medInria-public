@@ -123,4 +123,5 @@ private:
     void enableOnlyActiveManager();
     QMenu *changeLabelActions(medTagRoiManager* closestManager);
     bool isActiveContourInSlice();
+    void setCustomCursor();
 };

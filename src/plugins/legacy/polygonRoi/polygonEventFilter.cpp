@@ -212,11 +212,12 @@ bool polygonEventFilter::mouseMoveEvent(medAbstractView *view, QMouseEvent *mous
 {
     savedMousePosition[0] = mouseEvent->x()*QGuiApplication::screenAt(mouseEvent->globalPos())->devicePixelRatio();
     savedMousePosition[1] = (currentView->viewWidget()->height()-mouseEvent->y()-1)*QGuiApplication::screenAt(mouseEvent->globalPos())->devicePixelRatio();
+
     if (activeManager)
     {
-        if ( activeManager->getMinimumDistanceFromNodesToMouse(savedMousePosition, false) < 10.)
+        if ( activeManager->getMinimumDistanceFromNodesToMouse(savedMousePosition, false) < 20.)
         {
-            currentView->viewWidget()->setCursor(Qt::OpenHandCursor);
+            setCustomCursor();
         }
         else
         {
@@ -320,6 +321,33 @@ bool polygonEventFilter::leftButtonBehaviour(medAbstractView *view, QMouseEvent 
     }
     }
     return false;
+}
+
+void polygonEventFilter::setCustomCursor()
+{
+    double radiusSize = 1.;
+    // Adapt to scale of view (zoom, crop, etc)
+    double radiusSizeDouble = radiusSize * currentView->scale();
+    int radiusSizeInt = floor(radiusSizeDouble + 0.5);
+    // Create shape of the new cursor
+    QPixmap pix(radiusSizeInt, radiusSizeInt);
+    pix.fill(Qt::transparent);
+    QPainter painter(&pix);
+    painter.setCompositionMode(QPainter::CompositionMode_Source);
+    painter.setRenderHint( QPainter::Antialiasing );
+    painter.setBackgroundMode(Qt::TransparentMode);
+    painter.setBackground(QColor(255,255,255,255));
+    painter.setPen( Qt::red );
+    painter.drawEllipse( 0, 0, radiusSizeInt, radiusSizeInt );
+    painter.setPen( Qt::red );
+    painter.drawPoint(floor(radiusSizeDouble/2.0+0.5),     floor(radiusSizeDouble/2.0+0.5));
+    painter.drawPoint(floor(radiusSizeDouble/2.0-1.0+0.5), floor(radiusSizeDouble/2.0+0.5));
+    painter.drawPoint(floor(radiusSizeDouble/2.0+1.0+0.5), floor(radiusSizeDouble/2.0+0.5));
+    painter.drawPoint(floor(radiusSizeDouble/2.0+0.5),     floor(radiusSizeDouble/2.0-1.0+0.5));
+    painter.drawPoint(floor(radiusSizeDouble/2.0+0.5),     floor(radiusSizeDouble/2.0+1.0+0.5));
+
+    // Update the cursor
+    currentView->viewWidget()->setCursor(QCursor(pix, -1, -1));
 }
 
 QLineEdit * polygonEventFilter::updateNameManager(medTagRoiManager* closestManager, QMenu *mainMenu)
@@ -426,7 +454,6 @@ bool polygonEventFilter::rightButtonBehaviour(medAbstractView *view, QMouseEvent
     QAction *activationAction = nullptr;
     if (closestManager && (closestManager->getMinimumDistanceFromNodesToMouse(mousePos) < 10.))
     {
-        closestManager->select(true);
         QAction *deleteOneNodeAction = new QAction("Node", roiManagementMenu);
         connect(deleteOneNodeAction, &QAction::triggered, [=](){
             deleteNode(closestManager, &mousePos[0]);
@@ -485,14 +512,7 @@ bool polygonEventFilter::rightButtonBehaviour(medAbstractView *view, QMouseEvent
         }
         mainMenu.addAction(copyContourAction);
 
-        QAction *action = mainMenu.exec(mouseEvent->globalPos());
-        if ( !action)
-        {
-            if ( closestManager)
-            {
-                closestManager->select(false);
-            }
-        }
+        mainMenu.exec(mouseEvent->globalPos());
     }
     else
     {
@@ -756,7 +776,6 @@ void polygonEventFilter::copyContour(medTagRoiManager *manager)
         medDisplayPosContours contours = medDisplayPosContours(label, coords);
         copyNodesList.append(contours);
     }
-    manager->select(false);
     return;
 }
 
@@ -1059,7 +1078,6 @@ void polygonEventFilter::deleteNode(medTagRoiManager *manager, const double *mou
     }
     else
     {
-        manager->select(false);
         manageTick();
         manageButtonsState();
     }
@@ -1143,7 +1161,6 @@ void polygonEventFilter::saveMask(medTagRoiManager *manager)
 {
     int label = colorList.indexOf(manager->getColor()) + 1;
     manager->createMaskWithLabel(label);
-    manager->select(false);
 }
 
 void polygonEventFilter::saveContour(medTagRoiManager *manager)
@@ -1171,5 +1188,4 @@ void polygonEventFilter::saveContour(medTagRoiManager *manager)
     outputDataSet->SetDataSet(append->GetOutput());
 
     saveContoursAsMedAbstractData(outputDataSet, contoursData);
-    manager->select(false);
 }

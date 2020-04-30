@@ -58,7 +58,6 @@ public:
 
     vtkSmartPointer<vtkPolyData> getContoursAsPolyData(int label);
     QVector<medWorldPosContours> getContoursAsNodes();
-    void select(bool state);
     void loadContours(QVector<medWorldPosContours> contours);
 
     int getClosestSliceFromPoint();
