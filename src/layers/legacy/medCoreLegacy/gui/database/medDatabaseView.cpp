@@ -280,7 +280,7 @@ void medDatabaseView::onItemDoubleClicked(const QModelIndex& index)
 }
 
 /** Opens the currently selected item. */
-void medDatabaseView::onViewSelectedItemRequested(void)
+void medDatabaseView::onViewSelectedItemRequested()
 {
     // Called when the user right click->View in DB on a series/study
 

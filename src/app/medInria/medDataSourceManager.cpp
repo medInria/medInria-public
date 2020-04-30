@@ -97,9 +97,6 @@ void medDataSourceManager::connectDataSource(medAbstractDataSource *dataSource)
 
     connect(dataSource, SIGNAL(dataToImportReceived(QString)),
             this, SLOT(importFile(QString)));
-
-    connect(dataSource, SIGNAL(dataToIndexReceived(QString)),
-            this, SLOT(indexFile(QString)));
 }
 
 //TODO: Maybe it is not the best place to put it (medDataManager?)
@@ -139,12 +136,6 @@ void medDataSourceManager::importFile(QString path)
     medDataManager::instance()->importPath(path, false, true);
 }
 
-void medDataSourceManager::indexFile(QString path)
-{
-    medDataManager::instance()->importPath(path, true, true);
-}
-
-
 void medDataSourceManager::emitDataReceivingFailed(QString fileName)
 {
   medMessageController::instance()->showError(tr("Unable to get from source the data named ") + fileName, 3000);
@@ -165,12 +156,12 @@ medDataSourceManager::~medDataSourceManager( void )
 
 void medDataSourceManager::openFromPath(QString path)
 {
-    //qobject_cast<medApplication*>(qApp)->open(path);
+    qobject_cast<medApplication*>(qApp)->open(path);
 }
 
 void medDataSourceManager::openFromIndex(medDataIndex index)
 {
-    //qobject_cast<medApplication*>(qApp)->open(index);
+    qobject_cast<medApplication*>(qApp)->open(index);
 }
 
 void medDataSourceManager::loadFromPath(QString path)
