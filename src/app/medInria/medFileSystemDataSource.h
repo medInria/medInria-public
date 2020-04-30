@@ -57,7 +57,6 @@ signals:
 
 private slots:
     void onFileSystemImportRequested();
-    void onFileSystemIndexRequested();
     void onFileSystemLoadRequested();
     void onFileSystemViewRequested();
     void onFileDoubleClicked(const QString& filename);

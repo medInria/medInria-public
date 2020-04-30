@@ -39,9 +39,7 @@ protected slots:
     void exportData(const medDataIndex &index);
     void importData(medAbstractData *data);
     void importFile(QString path);
-    void indexFile(QString path);
     void emitDataReceivingFailed(QString fileName);
-
 
 signals:
     void open(const medDataIndex&);
