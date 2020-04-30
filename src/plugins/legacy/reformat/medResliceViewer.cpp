@@ -43,7 +43,6 @@
 #include <vtkResliceCursorThickLineRepresentation.h>
 #include <vtkResliceCursorWidget.h>
 #include <vtkTransform.h>
-#include <vtkRenderWindowInteractor.h>
 
 class medResliceCursorCallback : public vtkCommand
 {
