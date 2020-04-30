@@ -459,9 +459,9 @@ QImage medVtkView::buildThumbnail(const QSize &size)
 {
     // We dont want to send things that would ending up on updating gui things.
     this->blockSignals(true);
-    int w(size.width()), h(size.height());
 
-    // will cause crashes if any calls to renWin->Render() happened before this line
+    // Will cause crashes if any calls to renWin->Render() happened before this line
+    int w(size.width()), h(size.height());
     d->mainWindow->resize(w,h);
     d->mainWindow->show();
     d->renWin->SetSize(w,h);
@@ -480,9 +480,11 @@ QImage medVtkView::buildThumbnail(const QSize &size)
     QImage thumbnail = d->viewWidget->grabFramebuffer();
 
     d->mainWindow->hide();
-    this->blockSignals(false);
 
     thumbnail = thumbnail.copy(0, thumbnail.height() - h, w, h);
+
+    // End blocking signals
+    this->blockSignals(false);
 
     return thumbnail;
 }
