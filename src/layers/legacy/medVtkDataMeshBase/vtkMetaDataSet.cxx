@@ -100,6 +100,11 @@ vtkMetaDataSet::~vtkMetaDataSet()
     this->Property->Delete();
   }
 
+  if (this->LookupTable)
+  {
+    this->LookupTable->Delete();
+  }
+
   this->ActorList->Delete();
   this->ArrayCollection->Delete();
 }
@@ -605,6 +610,7 @@ void vtkMetaDataSet::ReadCSVData(const char* filename)
             }
             delete tuple;
             this->GetDataSet()->GetPointData()->AddArray(array);
+            array->Delete(); // ref count is increased in AddArray
         }
     }
 
@@ -626,6 +632,7 @@ void vtkMetaDataSet::ReadCSVData(const char* filename)
             }
             delete tuple;
             this->GetDataSet()->GetCellData()->AddArray (array);
+            array->Delete(); // ref count is increased in AddArray
         }
     }
 
