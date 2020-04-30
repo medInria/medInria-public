@@ -129,23 +129,23 @@ public:
 
     // Description:
     // Set/Get the input image to the viewer.
-    virtual void SetInput      (vtkAlgorithmOutput* pi_poVtkAlgoOutput, vtkMatrix4x4 *matrix = nullptr, int layer = 0);
-    virtual void SetInputLayer (vtkAlgorithmOutput* pi_poVtkAlgoOutput, vtkMatrix4x4 *matrix = nullptr, int layer = 0);
+    void SetInput      (vtkAlgorithmOutput* pi_poVtkAlgoOutput, vtkMatrix4x4 *matrix = nullptr, int layer = 0) override;
+    void SetInputLayer (vtkAlgorithmOutput* pi_poVtkAlgoOutput, vtkMatrix4x4 *matrix = nullptr, int layer = 0);
     virtual void SetInputCommon(vtkAlgorithmOutput* pi_poVtkAlgoOutput, int layer = 0);
     virtual void SetInput (vtkActor *actor, int layer = 0, vtkMatrix4x4 *matrix = nullptr,
                            const int imageSize[3] = nullptr, const double imageSpacing[] = nullptr, const double imageOrigin[] = nullptr);
 
     void RemoveLayerActor(vtkActor *actor, int layer = 0);
 
-    virtual vtkActor* AddDataSet (vtkPointSet* arg, vtkProperty* prop = nullptr);
-    virtual void RemoveDataSet (vtkPointSet *arg);
+    vtkActor* AddDataSet (vtkPointSet* arg, vtkProperty* prop = nullptr) override;
+    void RemoveDataSet (vtkPointSet *arg) override;
 
     medVtkImageInfo* GetMedVtkImageInfo(int layer = 0) const;
 
-    virtual void InstallInteractor();
-    virtual void UnInstallInteractor();
+    void InstallInteractor() override;
+    void UnInstallInteractor() override;
 
-    virtual void StoreLookupTable (vtkLookupTable *lookuptable, int layer);
+    void StoreLookupTable (vtkLookupTable *lookuptable, int layer) override;
 
     /**
    Description:
@@ -224,7 +224,7 @@ public:
     virtual int  GetSlice() const;
     virtual void SetSlice(int s);
 
-    virtual void SetCurrentPoint (double pos[3]);
+    void SetCurrentPoint (double pos[3]) override;
 
     virtual void UpdateDisplayExtent();
 
@@ -244,7 +244,7 @@ public:
    */
     vtkGetMacro (ViewOrientation, int);
     virtual void SetViewOrientation (int orientation);
-    virtual void SetOrientationMatrix (vtkMatrix4x4* matrix);
+    void SetOrientationMatrix (vtkMatrix4x4* matrix) override;
 
     /**
    The ViewConvention instance explains where to place the camera around
@@ -349,41 +349,41 @@ public:
     vtkGetMacro (AnnotationStyle, unsigned int)
     unsigned int GetAnnotationStyle2D();
 
-    virtual void AddLayer(int);
-    virtual void RemoveLayer(int layer);
-    virtual void RemoveAllLayers();
-    virtual int GetNumberOfLayers() const;
+    void AddLayer(int) override;
+    void RemoveLayer(int layer) override;
+    void RemoveAllLayers() override;
+    int GetNumberOfLayers() const override;
 
     using vtkImageView::GetColorLevel;
-    virtual double GetColorLevel(int layer) const;
+    double GetColorLevel(int layer) const override;
     using vtkImageView::GetColorWindow;
-    virtual double GetColorWindow(int layer)const;
-    virtual void SetTransferFunctionRangeFromWindowSettings(int layer);
+    double GetColorWindow(int layer)const override;
+    void SetTransferFunctionRangeFromWindowSettings(int layer) override;
 
     //pure virtual methods from base class:
-    virtual vtkColorTransferFunction * GetColorTransferFunction(int layer) const;
-    virtual vtkPiecewiseFunction* GetOpacityTransferFunction (int layer) const;
-    virtual void StoreColorTransferFunction (vtkColorTransferFunction *ctf,
-                                             int layer);
-    virtual void StoreOpacityTransferFunction (vtkPiecewiseFunction *otf,
-                                               int layer);
-    virtual vtkLookupTable * GetLookupTable(int layer) const;
-    virtual bool GetUseLookupTable(int layer) const;
-    virtual void SetUseLookupTable (bool use, int layer);
-    virtual void StoreColorWindow(double s,int layer);
-    virtual void StoreColorLevel(double s,int layer);
+    vtkColorTransferFunction * GetColorTransferFunction(int layer) const override;
+    vtkPiecewiseFunction* GetOpacityTransferFunction (int layer) const override;
+    void StoreColorTransferFunction (vtkColorTransferFunction *ctf,
+                                             int layer) override;
+    void StoreOpacityTransferFunction (vtkPiecewiseFunction *otf,
+                                               int layer) override;
+    vtkLookupTable * GetLookupTable(int layer) const override;
+    bool GetUseLookupTable(int layer) const override;
+    void SetUseLookupTable (bool use, int layer) override;
+    void StoreColorWindow(double s,int layer) override;
+    void StoreColorLevel(double s,int layer) override;
 
     virtual void UpdateBounds (const double bounds[6], int layer = 0, vtkMatrix4x4 *matrix = 0, const int imageSize[3] = 0, const double imageSpacing[] = 0,
                              const double imageOrigin[] = 0);
 
-    virtual vtkRenderer * GetRenderer() const;
+    vtkRenderer * GetRenderer() const override;
     vtkImageAlgorithm * GetImageAlgorithmForLayer(int layer) const;
 
 protected:
     vtkImageView2D();
     ~vtkImageView2D();
 
-    virtual void ApplyColorTransferFunction(vtkScalarsToColors * colors, int layer);
+    void ApplyColorTransferFunction(vtkScalarsToColors * colors, int layer) override;
 
     virtual void UpdateSlicePlane();
     virtual void UpdateCenter();
@@ -397,8 +397,8 @@ protected:
 
     virtual void InitializeSlicePlane();
 
-    virtual void InstallPipeline();
-    virtual void UnInstallPipeline();
+    void InstallPipeline() override;
+    void UnInstallPipeline() override;
 
     /**
    The ViewConvention instance explains where to place the camera around
