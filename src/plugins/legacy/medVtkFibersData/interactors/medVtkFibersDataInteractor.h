@@ -224,4 +224,3 @@ private:
     medVtkFibersDataInteractorPrivate *d;
 };
 
-
