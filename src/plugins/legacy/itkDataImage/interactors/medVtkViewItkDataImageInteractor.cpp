@@ -594,18 +594,13 @@ void medVtkViewItkDataImageInteractor::setWindowLevel(QHash<QString, QVariant> v
     {
         d->view2d->SetColorWindow(w, imageLayer);
     }
-    if (d->view3d->GetColorWindow(imageLayer) != w)
-    {
-        d->view3d->SetColorWindow(w, imageLayer);
-    }
+
     if (d->view2d->GetColorLevel(imageLayer) != l)
     {
         d->view2d->SetColorLevel(l, imageLayer);
     }
-    if (d->view3d->GetColorLevel(imageLayer) != l)
-    {
-        d->view3d->SetColorLevel(l, imageLayer);
-    }
+
+    d->view3d->SetColorWindowLevel( w,  l,  imageLayer);
 
     //--- block
     d->minIntensityParameter->blockSignals(true);

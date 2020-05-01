@@ -240,7 +240,6 @@ void vtkImageView::SetupInteractor(vtkRenderWindowInteractor *arg)
 void vtkImageView::SetRenderWindow(vtkRenderWindow *arg)
 {
     this->UnInstallPipeline();
-
     vtkSetObjectBodyMacro (RenderWindow, vtkRenderWindow, arg);
 
     if (this->RenderWindow && this->RenderWindow->GetInteractor())
@@ -570,9 +569,10 @@ void vtkImageView::SetTransferFunctions (vtkColorTransferFunction *color,
                                          vtkPiecewiseFunction     *opacity,
                                          int layer)
 {
-    if ( color   == nullptr && this->GetColorTransferFunction(layer)   == nullptr &&
-         opacity == nullptr && this->GetOpacityTransferFunction(layer) == nullptr &&
-         this->GetLookupTable(layer) != nullptr )
+    if ( !color   && !this->GetColorTransferFunction(layer)
+         && !opacity
+         && !this->GetOpacityTransferFunction(layer)
+         && this->GetLookupTable(layer) )
     {
         //not sure this line is useful:
         this->SetLookupTable( this->GetLookupTable(layer),layer );
@@ -583,17 +583,17 @@ void vtkImageView::SetTransferFunctions (vtkColorTransferFunction *color,
 
     // color
     vtkColorTransferFunction * rgb = nullptr;
-    if ( color != nullptr )
+    if ( color)
     {
         rgb = vtkColorTransferFunction::New();
         rgb->DeepCopy( color );
     }
-    else if ( this->GetColorTransferFunction(layer) == nullptr )
+    else if ( !this->GetColorTransferFunction(layer) )
     {
         rgb = this->GetDefaultColorTransferFunction();
     }
 
-    if ( rgb != nullptr )
+    if ( rgb )
     {
         this->StoreColorTransferFunction(rgb,layer);
         rgb->Delete();
@@ -601,24 +601,24 @@ void vtkImageView::SetTransferFunctions (vtkColorTransferFunction *color,
 
     // opacity
     vtkPiecewiseFunction * alpha = nullptr;
-    if ( opacity != nullptr )
+    if ( opacity)
     {
         alpha = vtkPiecewiseFunction::New();
         alpha->DeepCopy( opacity );
     }
-    else if ( this->GetOpacityTransferFunction(layer) == nullptr )
+    else if ( !this->GetOpacityTransferFunction(layer) )
     {
         alpha = this->GetDefaultOpacityTransferFunction();
     }
 
-    if ( alpha != nullptr )
+    if ( alpha )
     {
         this->StoreOpacityTransferFunction(alpha,layer );
         alpha->Delete();
     }
 
     // clean up
-    if ( this->GetLookupTable(layer) != nullptr )
+    if ( this->GetLookupTable(layer))
     {
         // remove lookup table not in use
         this->SetLookupTable(nullptr, layer);
@@ -983,8 +983,8 @@ void vtkImageView::SetColorRange( double r[2],int layer )
     double level  = 0.5 * ( r[0] + r[1] );
     double window = r[1] - r[0];
 
-    this->SetColorLevel( level,layer );
-    this->SetColorWindow( window,layer );
+    this->SetColorWindowLevel( window,  level,  layer);
+
 }
 
 //----------------------------------------------------------------------------
@@ -1427,8 +1427,9 @@ void vtkImageView::ResetWindowLevel()
     double window = range[1]-range[0];
     double level = 0.5*(range[1]+range[0]);
 
-    this->SetColorWindow ( window );
-    this->SetColorLevel ( level );
+    int layer = this->GetCurrentLayer();
+    this->SetColorWindowLevel(window, level, layer);
+
 }
 
 //----------------------------------------------------------------------------

@@ -118,6 +118,7 @@ vtkImageView3D::~vtkImageView3D()
   this->ActorZ->Delete();
   this->ExtraPlaneCollection->Delete();
   this->ExtraPlaneInputCollection->Delete();
+
 }
 
 //----------------------------------------------------------------------------
@@ -292,10 +293,11 @@ void vtkImageView3D::SetupVolumeRendering()
        this->VolumeProperty->GetIndependentComponents())
   {
     this->VolumeProperty->SetScalarOpacity(0, this->GetOpacityTransferFunction(0) );
-    this->VolumeProperty->SetColor(0, this->GetColorTransferFunction(0));
-    this->PlanarWindowLevelX->SetLookupTable(this->GetColorTransferFunction(0));
-    this->PlanarWindowLevelY->SetLookupTable(this->GetColorTransferFunction(0));
-    this->PlanarWindowLevelZ->SetLookupTable(this->GetColorTransferFunction(0));
+    auto colortransferfunction = this->GetColorTransferFunction(0);
+    this->VolumeProperty->SetColor(0, colortransferfunction);
+    this->PlanarWindowLevelX->SetLookupTable(colortransferfunction);
+    this->PlanarWindowLevelY->SetLookupTable(colortransferfunction);
+    this->PlanarWindowLevelZ->SetLookupTable(colortransferfunction);
   }
   else if (!this->VolumeProperty->GetIndependentComponents())
   {
@@ -518,6 +520,10 @@ void vtkImageView3D::SetInputLayer(vtkAlgorithmOutput* pi_poVtkAlgoOutput, vtkMa
 
     this->AddLayer(layer);
     this->GetImage3DDisplayForLayer(layer)->SetInputProducer(poVtkAlgoOutputTmp);
+    auto image = static_cast<vtkImageAlgorithm*>(poVtkAlgoOutputTmp->GetProducer())->GetOutput();
+    double *range = image->GetScalarRange();
+    this->SetColorRange(range, layer);
+    this->GetImage3DDisplayForLayer(layer)->SetInputData(image);
 }
 
 void vtkImageView3D::SetFirstLayer(vtkAlgorithmOutput *pi_poInputAlgoImg, vtkMatrix4x4 *matrix, int layer)
@@ -761,9 +767,9 @@ void vtkImageView3D::UpdateVolumeFunctions(int layer)
     return;
 
   vtkColorTransferFunction * color   =
-  this->VolumeProperty->GetRGBTransferFunction(layer);
+  this->VolumeProperty->GetRGBTransferFunction(0);
   vtkPiecewiseFunction     * opacity =
-  this->VolumeProperty->GetScalarOpacity(layer);
+  this->VolumeProperty->GetScalarOpacity(0);
 
   const double * range = lookuptable->GetRange();
   double width = range[1] - range[0];
@@ -1066,6 +1072,7 @@ void vtkImageView3D::RemoveLayer (int layer)
 {
     if (this->HasLayer(layer))
     {
+
         // ////////////////////////////////////////////////////////////////////////
         // Remove layer
         vtkRenderer *renderer = this->Renderer;
@@ -1083,7 +1090,9 @@ void vtkImageView3D::RemoveLayer (int layer)
             if (this->GetRenderWindow())
             {
                 this->GetRenderWindow()->RemoveRenderer(renderer);
+
             }
+
             this->Modified();
         }
 
@@ -1104,6 +1113,7 @@ void vtkImageView3D::RemoveLayer (int layer)
                 this->Modified();
             }
         }
+
     }    
 }
 
@@ -1258,6 +1268,7 @@ void  vtkImageView3D::initializeTransferFunctions(int pi_iLayer)
     vtkPiecewiseFunction     *alpha = this->GetDefaultOpacityTransferFunction();
 
     this->SetTransferFunctions(rgb, alpha, pi_iLayer);
+    this->UpdateVolumeFunctions(pi_iLayer);
     rgb->Delete();
     alpha->Delete();
 }
