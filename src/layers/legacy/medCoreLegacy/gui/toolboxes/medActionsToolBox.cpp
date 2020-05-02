@@ -27,10 +27,8 @@ public:
     QPushButton* removeBt;
     QPushButton* viewBt;
     QPushButton* exportBt;
-    QPushButton* bookmarkBt;
     QPushButton* importBt;
     QPushButton* loadBt;
-    QPushButton* indexBt;
     QPushButton* saveBt;
     QPushButton* newPatientBt;
     QPushButton* newStudyBt;
@@ -69,7 +67,6 @@ medActionsToolBox::medActionsToolBox( QWidget *parent /*= 0*/, bool FILE_SYSTEM 
 
     initializeItemToActionsMap();
 
-
     d->viewBt = new QPushButton(d->buttonsWidget);
     d->viewBt->setAccessibleName("View");
     d->viewBt->setText(tr("View"));
@@ -91,25 +88,11 @@ medActionsToolBox::medActionsToolBox( QWidget *parent /*= 0*/, bool FILE_SYSTEM 
         d->importBt->setToolTip(tr("Import (copy) item(s) into the database."));
         d->importBt->setIcon(QIcon(":/icons/import.png"));
 
-        d->indexBt = new QPushButton(d->buttonsWidget);
-        d->indexBt->setAccessibleName("Index");
-        d->indexBt->setText(tr("Index"));
-        d->indexBt->setToolTip(tr("Include the item(s) into the database but do not import (copy) them."));
-        d->indexBt->setIcon(QIcon(":/icons/finger.png"));
-
-        d->bookmarkBt = new QPushButton(d->buttonsWidget);
-        d->bookmarkBt->setAccessibleName("Bookmark");
-        d->bookmarkBt->setText(tr("Bookmark"));
-        d->bookmarkBt->setToolTip(tr("Bookmark selected folder/resource."));
-        d->bookmarkBt->setIcon(QIcon(":/icons/star.svg"));
-
-        connect(d->bookmarkBt, SIGNAL(clicked()), this, SIGNAL(bookmarkClicked()));
         connect(d->importBt, SIGNAL(clicked()), this, SIGNAL(importClicked()));
         connect(d->loadBt, SIGNAL(clicked()), this, SIGNAL(loadClicked()));
-        connect(d->indexBt, SIGNAL(clicked()), this, SIGNAL(indexClicked()));
 
-        // the order of the buttons in this list determines the order used to place them in the grid layout
-        d->buttonsList << d->viewBt << d->loadBt << d->importBt << d->indexBt << d->bookmarkBt;
+        // The order of the buttons in this list determines the order used to place them in the grid layout
+        d->buttonsList << d->viewBt << d->loadBt << d->importBt;
 
         d->informationWidget->setVisible(true);
     }
@@ -358,17 +341,14 @@ void medActionsToolBox::initializeItemToActionsMap()
 
     d->itemToActions.insert("Folders", "Bookmark");
     d->itemToActions.insert("Folders", "Import");
-    d->itemToActions.insert("Folders", "Index");
     d->itemToActions.insert("Folders", "Temporary Import");
     d->itemToActions.insert("Folders", "View");
 
     d->itemToActions.insert("Files", "Import");
-    d->itemToActions.insert("Files", "Index");
     d->itemToActions.insert("Files", "Temporary Import");
     d->itemToActions.insert("Files", "View");
 
     d->itemToActions.insert("Files & Folders", "Import");
-    d->itemToActions.insert("Files & Folders", "Index");
     d->itemToActions.insert("Files & Folders", "Temporary Import");
     d->itemToActions.insert("Files & Folders", "View");
 }

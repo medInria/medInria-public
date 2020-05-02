@@ -68,28 +68,25 @@ medFileSystemDataSource::medFileSystemDataSource( QWidget* parent ): medAbstract
 
     d->side = new dtkFinderSideView;
 
-    QAction *importAction = new QAction(tr("Import"), this);
-    importAction->setIconVisibleInMenu(true);
-    importAction->setIcon(QIcon(":icons/import.png"));
-    QAction *indexAction = new QAction(tr("Index"), this);
-    indexAction->setIconVisibleInMenu(true);
-    indexAction->setIcon(QIcon(":icons/finger.png"));
-    QAction *loadAction = new QAction(tr("Temporary Import"), this);
-    loadAction->setIconVisibleInMenu(true);
-    loadAction->setIcon(QIcon(":icons/document-open.png"));
     QAction *viewAction = new QAction(tr("View"), this);
     viewAction->setIconVisibleInMenu(true);
     viewAction->setIcon(QIcon(":icons/eye.png"));
 
-    d->finder->addContextMenuAction(importAction);
-    d->finder->addContextMenuAction(indexAction);
-    d->finder->addContextMenuAction(loadAction);
-    d->finder->addContextMenuAction(viewAction);
+    QAction *tempoImportAction = new QAction(tr("Temporary Import"), this);
+    tempoImportAction->setIconVisibleInMenu(true);
+    tempoImportAction->setIcon(QIcon(":icons/document-open.png"));
 
-    connect(importAction, SIGNAL(triggered()), this, SLOT(onFileSystemImportRequested()));
-    connect(indexAction, SIGNAL(triggered()), this, SLOT(onFileSystemIndexRequested()));
-    connect( loadAction, SIGNAL(triggered()), this, SLOT(onFileSystemLoadRequested()));
-    connect( viewAction, SIGNAL(triggered()), this, SLOT(onFileSystemViewRequested()));
+    QAction *importAction = new QAction(tr("Import"), this);
+    importAction->setIconVisibleInMenu(true);
+    importAction->setIcon(QIcon(":icons/import.png"));
+
+    d->finder->addContextMenuAction(viewAction);
+    d->finder->addContextMenuAction(tempoImportAction);
+    d->finder->addContextMenuAction(importAction);
+
+    connect(viewAction,        SIGNAL(triggered()), this, SLOT(onFileSystemViewRequested()));
+    connect(tempoImportAction, SIGNAL(triggered()), this, SLOT(onFileSystemLoadRequested()));
+    connect(importAction,      SIGNAL(triggered()), this, SLOT(onFileSystemImportRequested()));
 
     QVBoxLayout *filesystem_layout = new QVBoxLayout(d->filesystemWidget);
     QHBoxLayout *toolbar_layout = new QHBoxLayout();
@@ -141,10 +138,9 @@ medFileSystemDataSource::medFileSystemDataSource( QWidget* parent ): medAbstract
     connect(d->finder, SIGNAL(selectionChanged(const QStringList&)), d->actionsToolBox, SLOT(selectedPathsChanged(const QStringList&)));
 
     connect(d->actionsToolBox, SIGNAL(bookmarkClicked()), d->finder, SLOT(onBookmarkSelectedItemsRequested()));
-    connect(d->actionsToolBox, SIGNAL(viewClicked()), this, SLOT(onFileSystemViewRequested()));
+    connect(d->actionsToolBox, SIGNAL(viewClicked()),   this, SLOT(onFileSystemViewRequested()));
     connect(d->actionsToolBox, SIGNAL(importClicked()), this, SLOT(onFileSystemImportRequested()));
-    connect(d->actionsToolBox, SIGNAL(indexClicked()), this, SLOT(onFileSystemIndexRequested()));
-    connect(d->actionsToolBox, SIGNAL(loadClicked()), this, SLOT(onFileSystemLoadRequested()));
+    connect(d->actionsToolBox, SIGNAL(loadClicked()),   this, SLOT(onFileSystemLoadRequested()));
 
     connect (d->toolbar, SIGNAL(showHiddenFiles(bool)), d->finder, SLOT(onShowHiddenFiles(bool)));
     connect (d->toolbar, SIGNAL(showHiddenFiles(bool)), this, SLOT(saveHiddenFilesSettings(bool)));
@@ -192,7 +188,7 @@ QString medFileSystemDataSource::description(void) const
 return tr("Browse the file system");
 }
 
-void medFileSystemDataSource::onFileSystemImportRequested(void)
+void medFileSystemDataSource::onFileSystemImportRequested()
 {
     // remove paths that are subpaths of some other path in the list
     QStringList purgedList = removeNestedPaths(d->finder->selectedPaths());
@@ -201,18 +197,6 @@ void medFileSystemDataSource::onFileSystemImportRequested(void)
     {
         QFileInfo info(path);
         emit dataToImportReceived(info.absoluteFilePath());
-    }
-}
-
-void medFileSystemDataSource::onFileSystemIndexRequested(void)
-{
-    // remove paths that are subpaths of some other path in the list
-    QStringList purgedList = removeNestedPaths(d->finder->selectedPaths());
-
-    foreach(QString path, purgedList)
-    {
-        QFileInfo info(path);
-        emit dataToIndexReceived(info.absoluteFilePath());
     }
 }
 
@@ -244,7 +228,9 @@ void medFileSystemDataSource::onFileDoubleClicked(const QString& filename)
 {
     QFileInfo info(filename);
     if (info.isFile())
+    {
         emit open(info.absoluteFilePath());
+    }
 }
 
 QStringList medFileSystemDataSource::removeNestedPaths(const QStringList& paths)
