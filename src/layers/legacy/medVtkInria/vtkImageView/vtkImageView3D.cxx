@@ -466,6 +466,7 @@ void vtkImageView3D::SetInput(vtkAlgorithmOutput* pi_poVtkAlgoOutput, vtkMatrix4
             {
                 SetInputLayer(pi_poVtkAlgoOutput, matrix, layer);
                 initializeTransferFunctions(layer);
+                this->InternalUpdate();
             }
             else if (layer >= 4)
             {
@@ -611,6 +612,7 @@ void vtkImageView3D::InternalUpdate()
     // Read bounds and use these to place widget, rather than force whole dataset to be read.
     double bounds [6];
     this->GetInputBounds (bounds);
+
     this->BoxWidget->SetInputConnection(appender->GetOutputPort());
     this->BoxWidget->PlaceWidget (bounds);
     this->Callback->Execute (this->BoxWidget, 0, bounds);
@@ -767,9 +769,9 @@ void vtkImageView3D::UpdateVolumeFunctions(int layer)
     return;
 
   vtkColorTransferFunction * color   =
-  this->VolumeProperty->GetRGBTransferFunction(0);
+  this->VolumeProperty->GetRGBTransferFunction(layer);
   vtkPiecewiseFunction     * opacity =
-  this->VolumeProperty->GetScalarOpacity(0);
+  this->VolumeProperty->GetScalarOpacity(layer);
 
   const double * range = lookuptable->GetRange();
   double width = range[1] - range[0];
