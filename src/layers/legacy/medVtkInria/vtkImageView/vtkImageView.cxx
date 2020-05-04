@@ -1071,7 +1071,7 @@ double vtkImageView::GetValueAtPosition(double worldcoordinates[3], int componen
 
     int indices[3];
     this->GetImageCoordinatesFromWorldCoordinates (worldcoordinates, indices);
-    this->Get2DDisplayMapperInputAlgorithm()->UpdateInformation();
+    this->Get2DDisplayMapperInputAlgorithm(layer)->UpdateInformation();
     vtkImageData* inputImage = poAlgoTmp->GetOutput();
 
     return inputImage->GetScalarComponentAsDouble(indices[0], indices[1], indices[2], component);
