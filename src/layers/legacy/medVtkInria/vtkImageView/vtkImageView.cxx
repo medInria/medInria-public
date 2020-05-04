@@ -657,7 +657,6 @@ void vtkImageView::SetLookupTable (vtkLookupTable* lookuptable,int layer)
         this->SetUseLookupTable(true,layer);
         this->StoreLookupTable(lookuptable,layer);
         this->ScalarBar->SetLookupTable( lookuptable );
-        this->WindowLevel->SetLookupTable( this->LookupTable );
 
         if ( this->GetColorTransferFunction(layer) != nullptr )
         {
