@@ -122,12 +122,14 @@ void DCMTKImageIO::ReadImageInformation()
     // Using a set, we remove any duplicate filename - should we do this?
     NameSetType fileNamesSet;
     FileNameVectorType fileNamesVector = this->GetFileNames();
-    for( unsigned int i=0; i<fileNamesVector.size(); i++ ) {
+    for( unsigned int i=0; i<fileNamesVector.size(); i++ )
+    {
         fileNamesSet.insert(fileNamesVector[i]);
     }
 
-    int fileCount = (int)( fileNamesSet.size() );
-    if( fileCount == 0 ) {
+    int fileCount = static_cast<int>(fileNamesSet.size());
+    if( fileCount == 0 )
+    {
         itkExceptionMacro (<<"Cannot find any dicom in directory or dicom is not valid");
     }
 
@@ -135,8 +137,7 @@ void DCMTKImageIO::ReadImageInformation()
     m_FilenameToIndexMap.clear();
     m_LocationToFilenamesMap.clear();
 
-    int    fileIndex = 0;
-    double sliceLocation = 0;
+    int fileIndex = 0;
 
     /** The purpose of the next loop is to parse the DICOM header of each file and to store all
      fields in the Dictionary. */
@@ -162,33 +163,30 @@ void DCMTKImageIO::ReadImageInformation()
     /** The purpose of the next loop is to order filenames depending on their sliceLocation,
        assuming that the sliceLocation field gives the order dicoms are obtained. */
     double b = 0.0;
-    fileIndex =0;
     const StringVectorType &imagePositions = this->GetMetaDataValueVectorString("(0020,0032)");
     if (!imagePositions.empty())
     {
-        for (auto &elem : fileNamesSet)
-        {
-            if (fileIndex == 0)
-                b = this->GetSliceLocation(imagePositions[fileIndex]);
-            else
-            {
-                double testLocation = this->GetSliceLocation(imagePositions[fileIndex]);
-                if (testLocation < b)
-                    b = testLocation;
-            }
+        // Initialization
+        b = this->GetSliceLocation(imagePositions[0]);
 
-            ++fileIndex;
+        // If more fileNamesSet
+        for (unsigned int fileIndex = 1 ; fileIndex<fileNamesSet.size() ; ++fileIndex)
+        {
+            double testLocation = this->GetSliceLocation(imagePositions[fileIndex]);
+            if (testLocation < b)
+            {
+                b = testLocation;
+            }
         }
     }
 
-
     fileIndex = 0;
-
+    double sliceLocation = 0;
     for (auto &fileName : fileNamesSet)
     {
         try
         {
-            if (imagePositions.size() > 0) 
+            if (imagePositions.size() > 0)
             {
                 sliceLocation = this->GetSliceLocation(imagePositions[fileIndex]);
             }
