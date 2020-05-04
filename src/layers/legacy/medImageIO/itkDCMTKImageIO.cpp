@@ -162,22 +162,23 @@ void DCMTKImageIO::ReadImageInformation()
     /** The purpose of the next loop is to order filenames depending on their sliceLocation,
        assuming that the sliceLocation field gives the order dicoms are obtained. */
     double b = 0.0;
-    fileIndex =0;
     const StringVectorType &imagePositions = this->GetMetaDataValueVectorString("(0020,0032)");
     if (!imagePositions.empty())
     {
-        for (auto &elem : fileNamesSet)
+        for (fileIndex = 0; fileIndex<fileNamesSet.size(); ++fileIndex)
         {
             if (fileIndex == 0)
+            {
                 b = this->GetSliceLocation(imagePositions[fileIndex]);
+            }
             else
             {
                 double testLocation = this->GetSliceLocation(imagePositions[fileIndex]);
                 if (testLocation < b)
+                {
                     b = testLocation;
+                }
             }
-
-            ++fileIndex;
         }
     }
 
