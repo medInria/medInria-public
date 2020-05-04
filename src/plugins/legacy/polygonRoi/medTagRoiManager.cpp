@@ -128,23 +128,6 @@ QList<polygonRoi *> medTagRoiManager::getRois()
     return d->rois;
 }
 
-void medTagRoiManager::select(bool state)
-{
-    polygonRoi *roi = existingRoiInSlice();
-    if (roi)
-    {
-        if (state)
-        {
-            roi->select();
-        }
-        else
-        {
-            roi->unselect();
-        }
-    }
-    d->view->render();
-}
-
 void medTagRoiManager::loadContours( QVector<medWorldPosContours> contours)
 {
     d->clearRois();
@@ -712,7 +695,9 @@ double medTagRoiManager::getMinimumDistanceFromNodesToMouse(double eventPos[2], 
                     contourRep->GetIntermediatePointDisplayPosition(j, k, contourPos);
                     dist = getDistance(eventPos, contourPos);
                     if ( dist < minDist )
+                    {
                         minDist = dist;
+                    }
                 }
             }
         }
