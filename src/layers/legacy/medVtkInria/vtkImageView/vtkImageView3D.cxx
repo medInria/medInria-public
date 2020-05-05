@@ -672,8 +672,16 @@ void vtkImageView3D::SetOpacity (double opacity, int layer)
 //----------------------------------------------------------------------------
 double vtkImageView3D::GetOpacity(int layer) const
 {
-    vtkImage3DDisplay * imageDisplay;
-    return (imageDisplay=GetImage3DDisplayForLayer(layer))? imageDisplay->GetOpacity() : 0.0;
+    double dfRes = 0.0;
+    if (this->HasLayer(layer))
+    {
+        vtkImage3DDisplay *imageDisplay = GetImage3DDisplayForLayer(layer);
+        if (imageDisplay)
+        {
+            dfRes = imageDisplay->GetOpacity();
+        }
+    }
+    return dfRes;
 }
 
 //----------------------------------------------------------------------------
@@ -1020,14 +1028,12 @@ int vtkImageView3D::GetNumberOfLayers() const
 {
     // I don't really know why, but LayerInfoVec size is set to 1 at initialization time,
     // so we need one more check to know the real number of layer
+    int result = static_cast<int>(LayerInfoVec.size());
     if( LayerInfoVec.size() == 1)
     {
-        return (LayerInfoVec.at(0).ImageDisplay->GetMedVtkImageInfo())? 1 : 0;
+         result = (LayerInfoVec.at(0).ImageDisplay->GetMedVtkImageInfo())? 1 : 0;
     }
-    else
-    {
-        return static_cast<int>(LayerInfoVec.size());
-    }
+    return result;
 }
 
 //----------------------------------------------------------------------------
@@ -1102,7 +1108,11 @@ void vtkImageView3D::RemoveAllLayers()
 
 vtkImage3DDisplay * vtkImageView3D::GetImage3DDisplayForLayer( int layer ) const
 {
-   return  ( layer > -1 && (unsigned int)layer < LayerInfoVec.size())? LayerInfoVec.at(layer).ImageDisplay : nullptr;
+  if ( layer > -1 && (unsigned int)layer < this->LayerInfoVec.size())
+  {
+      return this->LayerInfoVec.at(layer).ImageDisplay;
+  }
+  else return nullptr;
 }
 
 void vtkImageView3D::ApplyColorTransferFunction(vtkScalarsToColors * colors, int layer)
