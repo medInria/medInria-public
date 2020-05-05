@@ -191,7 +191,7 @@ medResliceViewer::medResliceViewer(medAbstractView *view, QWidget *parent): medA
     views[2]->SetRenderWindow(riw[2]->GetRenderWindow());
     riw[2]->SetupInteractor(views[2]->GetRenderWindow()->GetInteractor());
 
-    vtkSmartPointer<vtkRenderer> ren = vtkSmartPointer<vtkRenderer>::New();
+    auto ren = vtkSmartPointer<vtkRenderer>::New();
     vtkNew<vtkGenericOpenGLRenderWindow> renderWindow;
     views[3]->SetRenderWindow(renderWindow);
     views[3]->GetRenderWindow()->AddRenderer(ren);
@@ -199,7 +199,7 @@ medResliceViewer::medResliceViewer(medAbstractView *view, QWidget *parent): medA
     // Make them all share the same reslice cursor object.
     for (int i = 0; i < 3; i++)
     {
-        vtkResliceCursorLineRepresentation *rep = vtkResliceCursorLineRepresentation::SafeDownCast(
+        auto rep = vtkResliceCursorLineRepresentation::SafeDownCast(
                     riw[i]->GetResliceCursorWidget()->GetRepresentation());
         riw[i]->SetResliceCursor(riw[selectedView]->GetResliceCursor());
 
@@ -210,10 +210,10 @@ medResliceViewer::medResliceViewer(medAbstractView *view, QWidget *parent): medA
         riw[i]->SetResliceModeToOblique();
     }
 
-    vtkSmartPointer<vtkCellPicker> picker = vtkSmartPointer<vtkCellPicker>::New();
+    auto picker = vtkSmartPointer<vtkCellPicker>::New();
     picker->SetTolerance(0.005);
 
-    vtkSmartPointer<vtkProperty> ipwProp = vtkSmartPointer<vtkProperty>::New();
+    auto ipwProp = vtkSmartPointer<vtkProperty>::New();
 
     vtkRenderWindowInteractor *iren = views[3]->GetInteractor();
 
@@ -319,7 +319,7 @@ void medResliceViewer::SetBlendMode(int m)
 {
     for (int i = 0; i < 3; i++)
     {
-        vtkImageSlabReslice *thickSlabReslice = vtkImageSlabReslice::SafeDownCast(
+        auto thickSlabReslice = vtkImageSlabReslice::SafeDownCast(
                     vtkResliceCursorThickLineRepresentation::SafeDownCast(
                         riw[i]->GetResliceCursorWidget()->GetRepresentation())->GetReslice());
         thickSlabReslice->SetBlendMode(m);
@@ -370,10 +370,10 @@ void medResliceViewer::render()
 
 void medResliceViewer::saveImage()
 {
-    vtkSmartPointer<vtkMatrix4x4> resliceMatrix = vtkSmartPointer<vtkMatrix4x4>::New();
+    auto resliceMatrix = vtkSmartPointer<vtkMatrix4x4>::New();
     calculateResliceMatrix(resliceMatrix);
 
-    vtkImageReslice *reslicerTop = vtkImageReslice::New();
+    auto reslicerTop = vtkImageReslice::New();
     reslicerTop->SetInputData(vtkViewData);
     reslicerTop->AutoCropOutputOn();
     reslicerTop->SetResliceAxes(resliceMatrix);
@@ -421,13 +421,14 @@ void medResliceViewer::saveImage()
             generateOutput<double>(reslicerTop, "itkDataImageDouble3");
             break;
     }
+   reslicerTop->Delete();
 
     emit imageReformatedGenerated();
 }
 
 void medResliceViewer::thickSlabChanged(double val)
 {
-    QDoubleSpinBox *spinBoxSender = qobject_cast<QDoubleSpinBox*>(QObject::sender());
+    auto spinBoxSender = qobject_cast<QDoubleSpinBox*>(QObject::sender());
 
     if (spinBoxSender)
     {
@@ -467,7 +468,7 @@ void medResliceViewer::thickSlabChanged(double val)
 void medResliceViewer::extentChanged(int val)
 {
     Q_UNUSED(val)
-    medSliderSpinboxPair *pairSender = qobject_cast<medSliderSpinboxPair*>(QObject::sender());
+    auto pairSender = qobject_cast<medSliderSpinboxPair*>(QObject::sender());
 
     if (pairSender)
     {
@@ -748,7 +749,7 @@ void medResliceViewer::generateOutput(vtkImageReslice* reslicer, QString destTyp
 
 void medResliceViewer::applyResamplingPix()
 {
-    resampleProcess *resamplePr = new resampleProcess();
+    auto resamplePr = new resampleProcess();
     resamplePr->setInput(outputData);
     resamplePr->setParameter(outputSpacing[0], 0);
     resamplePr->setParameter(outputSpacing[1], 1);
@@ -762,7 +763,7 @@ void medResliceViewer::applyResamplingPix()
 template <typename DATA_TYPE>
 void medResliceViewer::compensateForRadiologicalView(itk::Image<DATA_TYPE, 3>* outputImage)
 {
-    vtkSmartPointer<vtkMatrix4x4> transformMatrix = vtkSmartPointer<vtkMatrix4x4>::New();
+    auto transformMatrix = vtkSmartPointer<vtkMatrix4x4>::New();
     medTransform::getTransform(*outputImage, *transformMatrix);
     for (int i = 0; i < 3; i++)
     {
@@ -789,8 +790,8 @@ void medResliceViewer::correctOutputTransform(itk::Image<DATA_TYPE, 3>* outputIm
     typedef itk::Image<DATA_TYPE, 3> ImageType;
     typename ImageType::Pointer inputImage = static_cast<ImageType*>(inputData->data());
 
-    vtkSmartPointer<vtkMatrix4x4> inputTransformMatrix = vtkSmartPointer<vtkMatrix4x4>::New();
-    vtkSmartPointer<vtkMatrix4x4> outputInverseTransformMatrix = vtkSmartPointer<vtkMatrix4x4>::New();
+    auto inputTransformMatrix = vtkSmartPointer<vtkMatrix4x4>::New();
+    auto outputInverseTransformMatrix = vtkSmartPointer<vtkMatrix4x4>::New();
     medTransform::getTransform<DATA_TYPE>(*inputImage, *inputTransformMatrix);
     medTransform::getTransform<DATA_TYPE>(*outputImage, *outputInverseTransformMatrix);
     outputInverseTransformMatrix->Invert();
@@ -799,7 +800,7 @@ void medResliceViewer::correctOutputTransform(itk::Image<DATA_TYPE, 3>* outputIm
     getImageCenterInLocalSpace<DATA_TYPE>(inputImage, inputCenter);
     getImageCenterInLocalSpace<DATA_TYPE>(outputImage, outputCenter);
 
-    vtkSmartPointer<vtkTransform> transform = vtkSmartPointer<vtkTransform>::New();
+    auto transform = vtkSmartPointer<vtkTransform>::New();
     transform->PostMultiply();
     transform->Concatenate(outputInverseTransformMatrix);
     transform->Translate(-outputCenter[0], -outputCenter[1], -outputCenter[2]);
@@ -828,7 +829,7 @@ void medResliceViewer::getImageCenterInLocalSpace(itk::Image<DATA_TYPE, 3>* imag
 
 vtkSmartPointer<vtkMatrix4x4> medResliceViewer::getResliceRotationMatrix(vtkMatrix4x4* resliceMatrix)
 {
-    vtkSmartPointer<vtkMatrix4x4> resliceRotationMatrix = vtkSmartPointer<vtkMatrix4x4>::New();
+    auto resliceRotationMatrix = vtkSmartPointer<vtkMatrix4x4>::New();
 
     resliceRotationMatrix->DeepCopy(resliceMatrix);
     for (int i = 0; i < 3; i++)

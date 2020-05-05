@@ -39,16 +39,16 @@ public:
 
     medResliceViewer(medAbstractView *view, QWidget *parent = nullptr);
     ~medResliceViewer();
-    virtual QString identifier() const;
+    QString identifier() const override;
     void setToolBox(resliceToolBox *);
 
-    virtual QString description() const;
+    QString description() const override;
 
-    virtual medViewBackend * backend() const;
+    medViewBackend * backend() const override;
 
-    virtual QWidget* navigatorWidget();
-    virtual QWidget *viewWidget();
-    virtual QWidget *mouseInteractionWidget();
+    QWidget* navigatorWidget() override;
+    QWidget *viewWidget() override;
+    QWidget *mouseInteractionWidget() override;
 
 public slots:
 
@@ -58,9 +58,9 @@ public slots:
     virtual void SetBlendModeToMinIP();
     virtual void SetBlendModeToMeanIP();
     virtual void SetBlendMode(int);
-    virtual void reset();
+    void reset() override;
     virtual void resetViews();
-    virtual void render();
+    void render() override;
 
     void saveImage();
     void thickSlabChanged(double);
@@ -71,7 +71,7 @@ public slots:
     vtkImagePlaneWidget* getImagePlaneWidget(int i);
     dtkSmartPointer<medAbstractData> getOutput();
 
-    virtual void update(){}
+    void update() override {}
 
 signals:
 
@@ -119,6 +119,6 @@ protected:
 
 private:
 
-    virtual QImage buildThumbnail(const QSize &size);
+     QImage buildThumbnail(const QSize &size) override;
 
 };
