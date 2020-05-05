@@ -156,6 +156,8 @@ voiCutterToolBox::voiCutterToolBox(QWidget *parent) :
 
 voiCutterToolBox::~voiCutterToolBox()
 {
+    d->observer->Delete();
+    d->interactorStyleDrawPolygon->Delete();
     delete d;
     d = nullptr;
 }
@@ -758,6 +760,17 @@ void voiCutterToolBox::definePolygonsImage(std::vector<vtkVector2i> polygonPoint
     {
         cutThroughImage<itk::Image<double,3> >(RoiList,RoiPointList,stackMax,stackOrientation,m);
     }
+
+    for(auto poly : *RoiList)
+        poly->Delete();
+    RoiList->clear();
+    delete RoiList;
+
+    for(auto pts : *RoiPointList)
+        pts->Delete();
+    RoiPointList->clear();
+    delete RoiPointList;
+
 }
 
 template <typename IMAGE>
