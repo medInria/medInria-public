@@ -56,7 +56,7 @@ public:
     static vtkImageView3D* New();
     vtkTypeMacro(vtkImageView3D, vtkImageView);
 
-    vtkMTimeType GetMTime();
+    vtkMTimeType GetMTime() override;
 
     // Rendering Modes available.
     // PLANAR_RENDERING will render every vtkImageActor instance added with Add2DPhantom()
@@ -78,7 +78,7 @@ public:
     vtkGetObjectMacro (ActorZ, vtkImageActor);
     vtkGetObjectMacro (ExtraPlaneCollection, vtkProp3DCollection);
 
-    virtual medVtkImageInfo* GetMedVtkImageInfo(int layer = 0) const;
+    medVtkImageInfo* GetMedVtkImageInfo(int layer = 0) const override;
 
     virtual void SetVolumeMapperToRayCast();
 #ifdef MED_USE_OSPRAY_4_VR_BY_CPU
@@ -140,26 +140,26 @@ public:
     virtual void SetCroppingMode(unsigned int);
     virtual unsigned int GetCroppingMode ();
 
-    virtual void SetInput      (vtkAlgorithmOutput* pi_poVtkAlgoOutput, vtkMatrix4x4 *matrix = nullptr, int layer = 0);
+    void SetInput      (vtkAlgorithmOutput* pi_poVtkAlgoOutput, vtkMatrix4x4 *matrix = nullptr, int layer = 0) override;
     virtual bool is3D();
     static vtkActor* DataSetToActor(vtkPointSet* arg, vtkProperty* prop = nullptr);
     virtual void SetInputLayer (vtkAlgorithmOutput* pi_poVtkAlgoOutput, vtkMatrix4x4 *matrix = nullptr, int layer = 0);
     void SetFirstLayer(vtkAlgorithmOutput *pi_poInputAlgoImg, vtkMatrix4x4 *matrix= nullptr, int layer = 0);
 
-    virtual void SetOrientationMatrix (vtkMatrix4x4* matrix);
+    void SetOrientationMatrix (vtkMatrix4x4* matrix) override;
 
     using vtkImageView::SetColorWindow;
-    virtual void SetColorWindow(double s,int layer);
+    void SetColorWindow(double s,int layer) override;
 
     using vtkImageView::SetColorLevel;
-    virtual void SetColorLevel(double s,int layer);
+    void SetColorLevel(double s,int layer) override;
 
 
-    virtual void SetLookupTable (vtkLookupTable* lookuptable, int layer);
+    void SetLookupTable (vtkLookupTable* lookuptable, int layer) override;
 
-    virtual void SetTransferFunctions(vtkColorTransferFunction * color,
+    void SetTransferFunctions(vtkColorTransferFunction * color,
                                       vtkPiecewiseFunction * opacity,
-                                      int layer);
+                                      int layer) override;
 
     virtual void SetOpacity(double opacity, int layer);
     virtual double GetOpacity(int layer) const;
@@ -181,38 +181,38 @@ public:
     void SetOrientationMarkerViewport(double, double, double, double);
 
 
-    virtual void SetCurrentPoint (double pos[3]);
+    void SetCurrentPoint (double pos[3]) override;
 
     virtual void UpdateDisplayExtent();
 
-    virtual void InstallInteractor();
-    virtual void UnInstallInteractor();
+    void InstallInteractor() override;
+    void UnInstallInteractor() override;
 
-    virtual vtkActor* AddDataSet (vtkPointSet* arg, vtkProperty* prop = nullptr);
-    virtual void RemoveDataSet (vtkPointSet* arg);
+    vtkActor* AddDataSet (vtkPointSet* arg, vtkProperty* prop = nullptr) override;
+    void RemoveDataSet (vtkPointSet* arg) override;
 
-    virtual void AddLayer (int layer);
-    virtual int GetNumberOfLayers() const;
-    virtual void RemoveLayer (int layer);
-    virtual void RemoveAllLayers();
+    void AddLayer (int layer) override;
+    int GetNumberOfLayers() const override;
+    void RemoveLayer (int layer) override;
+    void RemoveAllLayers() override;
 
     //pure virtual methods from base class:
-    virtual vtkColorTransferFunction * GetColorTransferFunction(int layer) const;
-    virtual vtkPiecewiseFunction* GetOpacityTransferFunction (int layer) const;
-    virtual void StoreColorTransferFunction (vtkColorTransferFunction *ctf,
-                                             int layer);
-    virtual void StoreOpacityTransferFunction (vtkPiecewiseFunction *otf,
-                                               int layer);
-    virtual vtkLookupTable * GetLookupTable(int layer) const;
-    virtual bool GetUseLookupTable(int layer) const;
-    virtual void SetUseLookupTable (bool use, int layer);
+    vtkColorTransferFunction * GetColorTransferFunction(int layer) const override;
+    vtkPiecewiseFunction* GetOpacityTransferFunction (int layer) const override;
+    void StoreColorTransferFunction (vtkColorTransferFunction *ctf,
+                                             int layer) override;
+    void StoreOpacityTransferFunction (vtkPiecewiseFunction *otf,
+                                               int layer) override;
+    vtkLookupTable * GetLookupTable(int layer) const override;
+    bool GetUseLookupTable(int layer) const override;
+    void SetUseLookupTable (bool use, int layer) override;
     using vtkImageView::GetColorWindow;
-    virtual double GetColorWindow(int layer) const;
-    virtual void StoreColorWindow(double s,int layer);
+    double GetColorWindow(int layer) const override;
+    void StoreColorWindow(double s,int layer) override;
     using vtkImageView::GetColorLevel;
-    virtual double GetColorLevel(int layer) const;
-    virtual void StoreColorLevel(double s,int layer);
-    virtual void StoreLookupTable (vtkLookupTable *lookuptable, int layer);
+    double GetColorLevel(int layer) const override;
+    void StoreColorLevel(double s,int layer) override;
+    void StoreLookupTable (vtkLookupTable *lookuptable, int layer) override;
 
 protected:
 

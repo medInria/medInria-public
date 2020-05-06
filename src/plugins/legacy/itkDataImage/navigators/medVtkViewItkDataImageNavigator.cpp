@@ -326,7 +326,7 @@ void medVtkViewItkDataImageNavigator::enableCropping(bool enabled)
     {
         if ( d->view3d->GetBoxWidget()->GetInteractor() )
         {
-            // d->view3D->SetCroppingModeToOff ();
+            d->view3d->SetCroppingModeToOff();
             d->view3d->SetShowBoxWidget ( 0 );
         }
     }
