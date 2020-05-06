@@ -233,7 +233,7 @@ void medAbstractDatabaseImporter::importFile ( void )
 
             medData->setMetaData ( medMetaDataKeys::PatientID.key(), QStringList() << patientID );
 
-            tmpSeriesUid = medMetaDataKeys::SeriesDicomID.getFirstValue(medData);
+            tmpSeriesUid = medMetaDataKeys::SeriesInstanceUID.getFirstValue(medData);
 
             if (tmpSeriesUid != currentSeriesUid)
             {
@@ -578,18 +578,18 @@ void medAbstractDatabaseImporter::populateMissingMetadata ( medAbstractData* med
     if ( !medData->hasMetaData ( medMetaDataKeys::StudyID.key() ) )
         medData->setMetaData ( medMetaDataKeys::StudyID.key(), QStringList() << "0" );
 
-    if ( !medData->hasMetaData ( medMetaDataKeys::StudyDicomID.key() ) )
-        medData->setMetaData ( medMetaDataKeys::StudyDicomID.key(), QStringList() << "" );
+    if ( !medData->hasMetaData ( medMetaDataKeys::SeriesInstanceUID.key() ) )
+        medData->setMetaData ( medMetaDataKeys::SeriesInstanceUID.key(), QStringList() << "" );
 
     QString generatedSeriesId = QUuid::createUuid().toString().replace("{","").replace("}","");
 
     if ( !medData->hasMetaData ( medMetaDataKeys::SeriesID.key() ) )
       medData->setMetaData ( medMetaDataKeys::SeriesID.key(), QStringList() << generatedSeriesId);
 
-    QString generatedSeriesDicomID = QUuid::createUuid().toString().replace("{","").replace("}","");
+    QString generatedSeriesInstanceUID = QUuid::createUuid().toString().replace("{","").replace("}","");
 
-    if ( !medData->hasMetaData ( medMetaDataKeys::SeriesDicomID.key() ) )
-        medData->setMetaData ( medMetaDataKeys::SeriesDicomID.key(), QStringList() << generatedSeriesDicomID );
+    if ( !medData->hasMetaData ( medMetaDataKeys::SeriesInstanceUID.key() ) )
+        medData->setMetaData ( medMetaDataKeys::SeriesInstanceUID.key(), QStringList() << generatedSeriesInstanceUID );
 
     if ( !medData->hasMetaData ( medMetaDataKeys::Orientation.key() ) )
         medData->setMetaData ( medMetaDataKeys::Orientation.key(), QStringList() << "" );
@@ -977,7 +977,7 @@ QString medAbstractDatabaseImporter::generateUniqueVolumeId ( const medAbstractD
     // Get all the information from the medAbstractData metadata.
     // This information will then be passed to the database.
     QString patientName = medMetaDataKeys::PatientName.getFirstValue(medData);
-    QString studyDicomId = medMetaDataKeys::StudyDicomID.getFirstValue(medData);
+    QString studyDicomId = medMetaDataKeys::StudyInstanceUID.getFirstValue(medData);
 
     // We don't use the seriesDicomID, too unreliable : you can have images part
     // of the same series with different UIDs, and different volumes within the

@@ -154,9 +154,9 @@ bool medDatabaseNonPersistentItem::Match(medAbstractData *medData)
 {
     QString patientName = medMetaDataKeys::PatientName.getFirstValue(medData).simplified();
     QString studyName = medMetaDataKeys::StudyDescription.getFirstValue(medData).simplified();
-    QString studyUid = medMetaDataKeys::StudyDicomID.getFirstValue(medData);
+    QString studyUid = medMetaDataKeys::StudyInstanceUID.getFirstValue(medData);
     QString seriesName = medMetaDataKeys::SeriesDescription.getFirstValue(medData).simplified();
-    QString seriesUid = medMetaDataKeys::SeriesDicomID.getFirstValue(medData);
+    QString seriesUid = medMetaDataKeys::SeriesInstanceUID.getFirstValue(medData);
     QString orientation = medMetaDataKeys::Orientation.getFirstValue(medData);
     QString seriesNumber = medMetaDataKeys::SeriesNumber.getFirstValue(medData);
     QString sequenceName = medMetaDataKeys::SequenceName.getFirstValue(medData);
@@ -174,5 +174,6 @@ bool medDatabaseNonPersistentItem::Match(medAbstractData *medData)
         seriesNumber == d->seriesNumber &&
         sequenceName == d->sequenceName &&
         sliceThickness == d->sliceThickness &&
-        rows == d->rows );
+        rows == d->rows &&
+        columns == d->columns);
 }

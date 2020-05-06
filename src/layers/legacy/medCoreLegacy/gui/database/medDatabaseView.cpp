@@ -550,7 +550,7 @@ void medDatabaseView::onCreateStudyRequested()
             medData->setMetaData ( medMetaDataKeys::StudyDescription.key(), QStringList() << studyName );
             
             medData->setMetaData ( medMetaDataKeys::StudyID.key(), QStringList() << "0" );
-            medData->setMetaData ( medMetaDataKeys::StudyDicomID.key(), QStringList() << "" );
+            medData->setMetaData ( medMetaDataKeys::StudyInstanceUID.key(), QStringList() << "" );
 
             medDataManager::instance()->importData(medData, editDialog.isPersistent());
         }
