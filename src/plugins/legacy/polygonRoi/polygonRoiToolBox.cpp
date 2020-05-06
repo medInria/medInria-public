@@ -81,7 +81,7 @@ polygonRoiToolBox::polygonRoiToolBox(QWidget *parent ) :
     connect(plusButton, SIGNAL(pressed()), this, SLOT(addLabelName()));
     plusButton->hide();
 
-    applyButton = new QPushButton("Set default labels");
+    applyButton = new QPushButton("Apply");
     applyButton->setProperty("default", QVariant(true));
     connect(applyButton, SIGNAL(pressed()), this, SLOT(setPredefinedLabelNames()));
 
@@ -727,7 +727,6 @@ void polygonRoiToolBox::updateListOfLabelNames(int index)
     {
         structureList->hide();
         plusButton->hide();
-        applyButton->setText("Set default labels");
     }
     else if ( index <= listItems.size() )
     {
@@ -747,7 +746,6 @@ void polygonRoiToolBox::updateListOfLabelNames(int index)
         }
         structureList->show();
         plusButton->show();
-        applyButton->setText("Set specifics labels");
 
     }
     else
