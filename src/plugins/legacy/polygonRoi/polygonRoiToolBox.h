@@ -71,11 +71,15 @@ public slots:
     void enableTableViewChooser(bool state);
     void resetToolboxBehaviour();
     void errorMessage(QString error);
+
 private slots:
 
     void disableButtons();
     void saveContours();
     void saveBinaryImage();
+    void addLabelName();
+    void setPredefinedLabelNames();
+    void updateListOfLabelNames(int index);
 
 protected:
 
@@ -88,6 +92,8 @@ protected:
 
 private:
 
+    QList<QColor> colorsList;
+    QList<QStringList> listItems;
     polygonEventFilter *viewEventFilter;
     QPointer<medAbstractImageView> currentView;
 
@@ -97,6 +103,11 @@ private:
     QCheckBox *interpolate;
     medTableWidgetChooser* tableViewChooser;
     QPushButton *saveContourButton;
+
+    QComboBox *specialities;
+    QListWidget *structureList;
+    QPushButton *plusButton;
+    QPushButton *applyButton;
 
     void loadContoursIfPresent(medAbstractImageView *v, unsigned int layer);
 };

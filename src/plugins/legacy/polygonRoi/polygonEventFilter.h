@@ -17,6 +17,7 @@
 
 // medInria
 #include <QLineEdit>
+#include <QListWidget>
 #include <QWidgetAction>
 #include <medDisplayPosContours.h>
 #include <medTagContours.h>
@@ -35,7 +36,7 @@ class polygonEventFilter : public medViewEventFilter
 {
     Q_OBJECT
 public:
-    polygonEventFilter(medAbstractImageView *view);
+    polygonEventFilter(medAbstractImageView *view, QList<QColor> colorsList);
     ~polygonEventFilter();
     bool mousePressEvent(medAbstractView * view, QMouseEvent *mouseEvent) override;
     bool mouseReleaseEvent(medAbstractView * view, QMouseEvent *mouseEvent) override;
@@ -60,6 +61,8 @@ public:
     void clearCopiedContours();
     void removeObserver();
     void addObserver();
+
+    void setPredefinedLabels(QList<QPair<QString, QColor> > labels);
 public slots:
     void enableOtherViewsVisibility(bool state);
     void setCursorState(CURSORSTATE state){cursorState = state;}
@@ -93,7 +96,8 @@ private:
     dtkSmartPointer<medAbstractData> contourOutput;
     CURSORSTATE cursorState;
     QList<medTagRoiManager *> managers;
-    QList<QColor> colorList;
+    QList<QColor> colorsList;
+    QList<QColor> defaultColorsList;
     QList<medAbstractImageView*> otherViews;
     bool isRepulsorActivated;
     vtkInriaInteractorStylePolygonRepulsor *interactorStyleRepulsor;
@@ -103,11 +107,12 @@ private:
     medTagRoiManager *activeManager;
     vtkSmartPointer<View2DObserver> observer;
     double savedMousePosition[2];
+    QStringList predefinedLabels;
 
     bool leftButtonBehaviour(medAbstractView *view, QMouseEvent *mouseEvent);
     bool rightButtonBehaviour(medAbstractView *view, QMouseEvent *mouseEvent);
     QList<QColor> getAvailableColors(QList<QColor> colorsToExclude);
-    QMenu *createColorMenu(QList<QColor> colors);
+    QMenu *createColorMenu(QList<QColor> colors, QStringList names);
     QList<QColor> updateColorsList(QList<QColor> colorsToExclude);
     bool manageRoiWithLabel(QMouseEvent *mouseEvent);
     bool addPointInContourWithLabel(QMouseEvent *mouseEvent);
@@ -124,4 +129,5 @@ private:
     QMenu *changeLabelActions(medTagRoiManager* closestManager);
     bool isActiveContourInSlice();
     void setCustomCursor();
+    QString getManagerName(QString labelName, int index);
 };
