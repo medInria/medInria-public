@@ -22,6 +22,7 @@
 #include <medUtilities.h>
 #include <medUtilitiesITK.h>
 #include <medVtkViewBackend.h>
+#include <medDoubleParameterL.h>
 
 #include <vtkCamera.h>
 #include <vtkCellPicker.h>
@@ -427,7 +428,9 @@ void medResliceViewer::saveImage()
 
 void medResliceViewer::thickSlabChanged(double val)
 {
-    QDoubleSpinBox *spinBoxSender = qobject_cast<QDoubleSpinBox*>(QObject::sender());
+    medDoubleParameterL * doubleParam = qobject_cast<medDoubleParameterL*>(QObject::sender());
+
+    auto spinBoxSender = doubleParam? doubleParam->getSpinBox() : nullptr;
 
     if (spinBoxSender)
     {
