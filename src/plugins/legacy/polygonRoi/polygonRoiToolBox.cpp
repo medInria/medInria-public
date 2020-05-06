@@ -31,10 +31,19 @@
 
 const char *polygonRoiToolBox::generateBinaryImageButtonName = "generateBinaryImageButton";
 
-
 polygonRoiToolBox::polygonRoiToolBox(QWidget *parent ) :
     medAbstractSelectableToolBox(parent), viewEventFilter(nullptr)
 {
+    colorsList = QList<QColor>({
+        Qt::green,
+        Qt::blue,
+        Qt::yellow,
+        Qt::darkMagenta,
+        Qt::cyan,
+        Qt::gray,
+        Qt::white,
+        Qt::black
+    });
     QWidget *displayWidget = new QWidget(this);
     this->addWidget(displayWidget);
 
@@ -59,16 +68,54 @@ polygonRoiToolBox::polygonRoiToolBox(QWidget *parent ) :
     repulsorTool->setCheckable(true);
     connect(repulsorTool,SIGNAL(clicked(bool)),this,SLOT(activateRepulsor(bool)));
 
+    specialities = new QComboBox();
+
+    structureList = new QListWidget();
+    structureList->setDragDropMode(QAbstractItemView::InternalMove);
+    structureList->setDragEnabled(true);
+    structureList->setAcceptDrops(true);
+    structureList->setDropIndicatorShown(true);
+    structureList->hide();
+    plusButton = new QPushButton(QIcon(":/pixmaps/plus-button.png"), "");
+    plusButton->setMaximumSize(QSize(20,20));
+    connect(plusButton, SIGNAL(pressed()), this, SLOT(addLabelName()));
+    plusButton->hide();
+
+    applyButton = new QPushButton("Set default labels");
+    applyButton->setProperty("default", QVariant(true));
+    connect(applyButton, SIGNAL(pressed()), this, SLOT(setPredefinedLabelNames()));
+
+    QStringList spe;
+    spe << "default" << "prostate";
+    specialities->addItems(spe);
+    connect(specialities, SIGNAL(currentIndexChanged(int)), this, SLOT(updateListOfLabelNames(int)));
+
     currentView = nullptr;
 
     QHBoxLayout *ButtonLayout0 = new QHBoxLayout();
     layout->addLayout( ButtonLayout0 );
     ButtonLayout0->addWidget(addNewCurve);
 
-    QHBoxLayout *ButtonLayout1 = new QHBoxLayout();
-    layout->addLayout( ButtonLayout1 );
-    ButtonLayout1->addWidget(interpolate);
-    ButtonLayout1->addWidget(repulsorTool);
+    QVBoxLayout *ButtonLayout1 = new QVBoxLayout();
+    layout->addLayout(ButtonLayout1);
+    ButtonLayout1->addWidget(specialities);
+    QHBoxLayout *ButtonLayout2 = new QHBoxLayout();
+    ButtonLayout2->addWidget(structureList);
+    ButtonLayout2->addStretch(0);
+    ButtonLayout2->setContentsMargins(0,0,0,0);
+    ButtonLayout2->setSpacing(0);
+    QHBoxLayout *ButtonLayout3 = new QHBoxLayout();
+    ButtonLayout3->addWidget(plusButton, Qt::AlignLeft);
+    ButtonLayout3->addStretch(2);
+    ButtonLayout3->addWidget(applyButton, Qt::AlignRight);
+    ButtonLayout1->addLayout(ButtonLayout2);
+    ButtonLayout1->addLayout(ButtonLayout3);
+
+
+    QHBoxLayout *ButtonLayout4 = new QHBoxLayout();
+    layout->addLayout( ButtonLayout4 );
+    ButtonLayout4->addWidget(interpolate);
+    ButtonLayout4->addWidget(repulsorTool);
 
     tableViewChooser = new medTableWidgetChooser(this, 1, 3, 50);
     // Mandatory : Qt bug ? : Without the lines below, the size of the table View is not as expected
@@ -78,9 +125,9 @@ polygonRoiToolBox::polygonRoiToolBox(QWidget *parent ) :
     tableViewChooser->setIconSize(QSize(size.height()-1,size.height()-1));
     connect(tableViewChooser, SIGNAL(selected(unsigned int,unsigned int)), this, SLOT(updateTableWidgetView(unsigned int,unsigned int)));
 
-    QHBoxLayout *ButtonLayout2 = new QHBoxLayout();
-    layout->addLayout( ButtonLayout2 );
-    ButtonLayout2->addWidget(tableViewChooser);
+    QHBoxLayout *ButtonLayout5 = new QHBoxLayout();
+    layout->addLayout( ButtonLayout5 );
+    ButtonLayout5->addWidget(tableViewChooser);
 
     QLabel *saveLabel = new QLabel("Save segmentations as:");
     QVBoxLayout *ButtonSaveLayout = new QVBoxLayout();
@@ -98,10 +145,11 @@ polygonRoiToolBox::polygonRoiToolBox(QWidget *parent ) :
     connect(saveContourButton, SIGNAL(clicked()), this, SLOT(saveContours()));
     ButtonSaveLayout->addWidget(saveContourButton);
 
-    QHBoxLayout *ButtonLayout3 = new QHBoxLayout();
-    layout->addLayout( ButtonLayout3);
-    ButtonLayout3->addWidget(saveLabel);
-    ButtonLayout3->addLayout(ButtonSaveLayout);
+    QHBoxLayout *ButtonLayout6 = new QHBoxLayout();
+    layout->addLayout( ButtonLayout6);
+    ButtonLayout6->addWidget(saveLabel);
+    ButtonLayout6->addLayout(ButtonSaveLayout);
+
 
     // How to use
     QString underlineStyle = "<br><br><span style=\" text-decoration: underline;\">%1</span>";
@@ -300,11 +348,16 @@ void polygonRoiToolBox::clickClosePolygon(bool state)
     saveContourButton->setEnabled(state);
     enableTableViewChooser(state);
     interpolate->setEnabled(state);
+    specialities->setEnabled(state);
+    structureList->setEnabled(state);
+    plusButton->setEnabled(state);
+    applyButton->setEnabled(state);
+
     if (state)
     {
         if (!viewEventFilter)
         {
-            viewEventFilter = new polygonEventFilter(currentView);
+            viewEventFilter = new polygonEventFilter(currentView, colorsList);
             connect(viewEventFilter, SIGNAL(enableRepulsor(bool)), repulsorTool, SLOT(setEnabled(bool)), Qt::UniqueConnection);
             connect(viewEventFilter, SIGNAL(enableGenerateMask(bool)), saveBinaryMaskButton, SLOT(setEnabled(bool)), Qt::UniqueConnection);
             connect(viewEventFilter, SIGNAL(enableViewChooser(bool)), this, SLOT(enableTableViewChooser(bool)), Qt::UniqueConnection);
@@ -611,6 +664,97 @@ void polygonRoiToolBox::saveBinaryImage()
     viewEventFilter->saveMask();
 }
 
+void polygonRoiToolBox::addLabelName()
+{
+    if ( structureList->count()==colorsList.size())
+    {
+        displayMessageError("Unable to create more label. Maximum size achieved");
+        plusButton->setDisabled(true);
+        return;
+    }
+    QPixmap pixmap(20,20);
+    pixmap.fill(colorsList.at(structureList->count()));
+    QIcon icon(pixmap);
+    QListWidgetItem *item =  new QListWidgetItem(icon, QString("Label-%1").arg(QString::number(structureList->count())));
+    item->setSizeHint(QSize(20,20));
+    QFont font;
+    font.setBold(true);
+    item->setFont(font);
+    item->setFlags(item->flags() | Qt::ItemIsEditable);
+    structureList->addItem(item);
+}
+
+void polygonRoiToolBox::setPredefinedLabelNames()
+{
+    if (!viewEventFilter)
+    {
+        displayMessageError("Toolbox is probably not activated");
+        return;
+    }
+
+    QList<QPair<QString, QColor>> labels;
+    if (structureList->count()>0)
+    {
+        for (int idx = 0; idx < structureList->count(); ++idx)
+        {
+            QListWidgetItem *item = structureList->item(idx);
+            QColor col = item->icon().pixmap(QSize(20,20)).toImage().pixelColor(0,0);
+            QString lab = item->text();
+            labels.append(QPair(lab, col));
+        }
+    }
+    viewEventFilter->setPredefinedLabels(labels);
+    QString defaultStyle = structureList->styleSheet();
+    structureList->setStyleSheet("QListWidget { background: lightGreen; }");
+    QTimer::singleShot(300, this, [=] () {
+        structureList->setStyleSheet(defaultStyle);
+    });
+}
+
+void polygonRoiToolBox::updateListOfLabelNames(int index)
+{
+    structureList->setMaximumHeight(30*(colorsList.size()+1));
+    structureList->setContentsMargins(0,0,0,0);
+    structureList->clear();
+
+    // The 2 lines below are temporary code
+    // Will be replaced soon by values parsed in json configuration file
+    QStringList items;
+    items << "WG" << "ZT";
+    listItems.append(items);
+
+    if ( index == 0 ) // default case
+    {
+        structureList->hide();
+        plusButton->hide();
+        applyButton->setText("Set default labels");
+    }
+    else if ( index <= listItems.size() )
+    {
+        QStringList itemText = listItems.at(index-1);
+        for ( int idx = 0; idx < itemText.size(); idx++ )
+        {
+            QPixmap pixmap(20,20);
+            pixmap.fill(colorsList.at(idx));
+            QIcon icon(pixmap);
+            QListWidgetItem *item =  new QListWidgetItem(icon, itemText.at(idx));
+            item->setSizeHint(QSize(20,20));
+            QFont font;
+            font.setBold(true);
+            item->setFont(font);
+            item->setFlags(item->flags() | Qt::ItemIsEditable);
+            structureList->insertItem(idx, item);
+        }
+        structureList->show();
+        plusButton->show();
+        applyButton->setText("Set specifics labels");
+
+    }
+    else
+    {
+        displayMessageError("Impossible case.");
+    }
+}
 
 void polygonRoiToolBox::disableButtons()
 {
@@ -623,6 +767,10 @@ void polygonRoiToolBox::disableButtons()
     tableViewChooser->setEnabled(false);
     interpolate->setEnabled(false);
     interpolate->setChecked(true);
+    specialities->setDisabled(true);
+    structureList->setDisabled(true);
+    plusButton->setDisabled(true);
+    applyButton->setDisabled(true);
 }
 
 void polygonRoiToolBox::saveContours()
