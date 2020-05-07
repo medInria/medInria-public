@@ -56,19 +56,19 @@ public:
         SHMatrixRshBasis
     };
 
-    virtual QString description() const;
-    virtual QString identifier() const;
-    virtual QStringList handled() const;
+    QString description() const override;
+    QString identifier() const override;
+    QStringList handled() const override;
 
     static bool registered();
 
-    virtual void setInputData(medAbstractData * data);
+    void setInputData(medAbstractData * data) override;
 
-    virtual QWidget* buildLayerWidget();
-    virtual QWidget* buildToolBoxWidget();
-    virtual QWidget* buildToolBarWidget();
-    virtual QList<medAbstractParameterL*> linkableParameters();
-    virtual QList<medBoolParameterL*> mouseInteractionParameters();
+    QWidget* buildLayerWidget() override;
+    QWidget* buildToolBoxWidget() override;
+    QWidget* buildToolBarWidget() override;
+    QList<medAbstractParameterL*> linkableParameters() override;
+    QList<medBoolParameterL*> mouseInteractionParameters() override;
 
     void removeData();
 
@@ -136,9 +136,9 @@ public slots:
     void setVisibility(bool visibility);
     void setWindowLevel(QHash<QString, QVariant>);
 
-    virtual void setUpViewForThumbnail();
+    void setUpViewForThumbnail() override;
 
-    virtual void updateWidgets();
+    void updateWidgets() override;
 
     virtual void moveToSlice  (int slice);
 

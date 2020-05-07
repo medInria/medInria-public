@@ -181,6 +181,8 @@ itkDataTensorImageVtkViewInteractor::itkDataTensorImageVtkViewInteractor(medAbst
 
 itkDataTensorImageVtkViewInteractor::~itkDataTensorImageVtkViewInteractor()
 {
+    d->manager->Delete();
+    d->orientationMatrix->Delete();
     delete d;
     d = nullptr;
 }

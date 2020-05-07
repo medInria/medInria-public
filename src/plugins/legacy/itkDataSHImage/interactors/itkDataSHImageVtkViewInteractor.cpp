@@ -170,6 +170,8 @@ itkDataSHImageVtkViewInteractor::itkDataSHImageVtkViewInteractor(medAbstractView
 
 itkDataSHImageVtkViewInteractor::~itkDataSHImageVtkViewInteractor()
 {
+    d->manager->Delete();
+    d->orientationMatrix->Delete();
     delete d;
     d = nullptr;
 }
