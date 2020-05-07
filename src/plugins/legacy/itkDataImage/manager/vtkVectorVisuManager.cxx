@@ -24,7 +24,6 @@
 #include <vtkInformation.h>
 #include <vtkLookupTable.h>
 
-
 vtkStandardNewMacro(vtkVectorVisuManager)
 
 vtkVectorVisuManager::vtkVectorVisuManager()
@@ -97,7 +96,7 @@ void vtkVectorVisuManager::SetInput(vtkImageData* data, vtkMatrix4x4 *matrix)
 
     this->VOI->SetInputData ( this->Input );
     this->Orienter->SetOrientationMatrix(matrix);
-    this->GlyphMapper->Modified(); // a voir
+    this->GlyphMapper->Modified();
 }
 
 void vtkVectorVisuManager::SetVOI(const int& imin, const int& imax,

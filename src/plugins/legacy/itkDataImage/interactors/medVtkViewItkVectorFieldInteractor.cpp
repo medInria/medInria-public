@@ -177,7 +177,6 @@ void medVtkViewItkVectorFieldInteractor::setInputData(medAbstractData *data)
 
         vtkImageData *vtkImage = d->floatFilter->GetOutput();
         d->manager->SetInput(vtkImage);
-
     }
     else if( identifier.compare("itkDataImageVectorDouble3") == 0 )
     {
@@ -467,15 +466,18 @@ void medVtkViewItkVectorFieldInteractor::updatePlaneVisibility()
     markMapperModified();
 }
 
-void medVtkViewItkVectorFieldInteractor::markMapperModified() {
-
-    if(d->manager->GetVectorVisuManagerAxial()) {
+void medVtkViewItkVectorFieldInteractor::markMapperModified()
+{
+    if(d->manager->GetVectorVisuManagerAxial())
+    {
         d->manager->GetVectorVisuManagerAxial()->GetGlyphMapper()->Modified();
     }
-    if(d->manager->GetVectorVisuManagerSagittal()) {
+    if(d->manager->GetVectorVisuManagerSagittal())
+    {
         d->manager->GetVectorVisuManagerSagittal()->GetGlyphMapper()->Modified();
     }
-    if(d->manager->GetVectorVisuManagerCoronal()) {
+    if(d->manager->GetVectorVisuManagerCoronal())
+    {
         d->manager->GetVectorVisuManagerCoronal()->GetGlyphMapper()->Modified();
     }
 }

@@ -27,8 +27,6 @@
 #include <vtkImageData.h>
 #include <vtkVectorOrienter.h>
 #include <vtkAssignAttribute.h>
-
-
 #include <vtkPolydataNormalsOrienter.h>
 
 class vtkMatrix4x4;
