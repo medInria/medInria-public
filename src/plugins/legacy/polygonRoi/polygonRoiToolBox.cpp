@@ -265,6 +265,11 @@ polygonRoiToolBox::polygonRoiToolBox(QWidget *parent ) :
 
 polygonRoiToolBox::~polygonRoiToolBox()
 {
+    if(currentView)
+    {
+        delete viewsPlaneIndex.value(currentView);
+    }
+    interactorStyleRepulsor->Delete();
     delete hashViewObserver;
 }
 
@@ -561,6 +566,7 @@ void polygonRoiToolBox::resampleCurve(vtkPolyData *poly,int nbPoints)
     }
 
     poly->SetPoints(points);
+    points->Delete();
 }
 
 QList<vtkPolyData* > polygonRoiToolBox::generateIntermediateCurves(vtkSmartPointer<vtkPolyData> curve1, vtkSmartPointer<vtkPolyData> curve2, int nb)
@@ -814,6 +820,10 @@ void polygonRoiToolBox::generateBinaryImage()
 
         QList<QPair<vtkPolygon*,PlaneIndexSlicePair> > listPolygon = createImagePolygons(listPolyData);
         binaryImageFromPolygon(listPolygon);
+        for(int i=0; i<listPolygon.size(); i++) // delete allocated mem in createImagePolygons
+        {
+            listPolygon[i].first->Delete();
+        }
     }
 }
 
@@ -894,6 +904,7 @@ QList<QPair<vtkPolygon*,polygonRoiToolBox::PlaneIndexSlicePair> > polygonRoiTool
         }
 
         polygon->Initialize(points->GetNumberOfPoints(), ids, points);
+        points->Delete();
 
         listPolygon.append(QPair<vtkPolygon*,PlaneIndexSlicePair>(polygon,listPoly.at(i).second));
     }
@@ -1364,9 +1375,11 @@ void polygonRoiToolBox::extractROI()
                     vertexIndices[numPts] = 0;
                     vtkSmartPointer<vtkCellArray> lines = vtkSmartPointer<vtkCellArray>::New();
                     lines->InsertNextCell(numPts+1, vertexIndices);
+                    delete [] vertexIndices;
 
                     vtkPolyData *poly = vtkPolyData::New();
                     poly->SetPoints(polyPoints);
+                    polyPoints->Delete();
                     poly->SetLines(lines);
 
                     // Points decimation
@@ -1382,10 +1395,12 @@ void polygonRoiToolBox::extractROI()
                         }
                     }
                     poly->SetPoints(decimatedPoints);
+                    decimatedPoints->Delete();
 
                     polygonRoi *polyRoi = new polygonRoi(view2d);
                     vtkContourWidget *contour = polyRoi->getContour();
                     contour->Initialize(poly);
+                    poly->Delete();
 
                     vtkContourRepresentation *contourRep = contour->GetContourRepresentation();
                     contourRep->SetClosedLoop(1);
