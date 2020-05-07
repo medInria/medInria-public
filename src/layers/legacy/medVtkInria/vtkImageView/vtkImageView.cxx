@@ -149,10 +149,9 @@ vtkImageView::vtkImageView()
     this->LookupTable->Build();
 }
 
-
 vtkImageView::~vtkImageView()
 {
-    this->OrientationTransform->SetInput ( NULL );
+    this->OrientationTransform->SetInput(nullptr);
 
     this->OrientationMatrix->Delete();
     this->InvertOrientationMatrix->Delete();
@@ -172,31 +171,30 @@ vtkImageView::~vtkImageView()
     if( this->RenderWindow )
     {
         this->RenderWindow->Delete();
-        this->RenderWindow = 0;
+        this->RenderWindow = nullptr;
     }
     if( this->Renderer )
     {
         this->Renderer->Delete();
-        this->Renderer = 0;
+        this->Renderer = nullptr;
     }
     if( this->OverlayRenderer )
     {
         this->OverlayRenderer->Delete();
-        this->OverlayRenderer = 0;
+        this->OverlayRenderer = nullptr;
     }
     if( this->Interactor )
     {
         this->Interactor->Delete();
-        this->Interactor = 0;
+        this->Interactor = nullptr;
     }
     if (this->InteractorStyle)
     {
         this->InteractorStyle->Delete();
-        this->InteractorStyle = 0;
+        this->InteractorStyle = nullptr;
     }
     if (this->m_poInternalImageFromInput)
     {
-        //this->m_poInternalImageFromInput->Delete();
         this->m_poInternalImageFromInput = nullptr;
         this->m_poInputVtkAlgoOutput = nullptr;
     }
@@ -323,11 +321,13 @@ bool vtkImageView::Compare(vtkMatrix4x4 *mat1, vtkMatrix4x4 *mat2)
 */
 vtkAlgorithmOutput* vtkImageView::ResliceImageToInput(vtkAlgorithmOutput* pi_poVtkAlgoPort, vtkMatrix4x4 *matrix)
 {
-    vtkAlgorithmOutput *poResOutput = 0;
+    vtkAlgorithmOutput *poResOutput = nullptr;
     vtkImageData* image = ((vtkImageAlgorithm*)pi_poVtkAlgoPort->GetProducer())->GetOutput();
-    if (!pi_poVtkAlgoPort || !this->GetMedVtkImageInfo() || !this->GetMedVtkImageInfo()->initialized)
-        return NULL;
 
+    if (!pi_poVtkAlgoPort || !this->GetMedVtkImageInfo() || !this->GetMedVtkImageInfo()->initialized)
+    {
+        return nullptr;
+    }
 
     if ( pi_poVtkAlgoPort &&
          this->Compare(image->GetOrigin(),      this->GetMedVtkImageInfo()->origin, 3) &&
@@ -622,8 +622,7 @@ void vtkImageView::SetTransferFunctions (vtkColorTransferFunction *color,
     if ( this->GetLookupTable(layer) != NULL )
     {
         // remove lookup table not in use
-        //    this->GetLookupTable(layer)->Delete();
-        this->SetLookupTable(NULL, layer);
+        this->SetLookupTable(nullptr, layer);
     }
 
     this->SetTransferFunctionRangeFromWindowSettings(layer);
@@ -661,7 +660,6 @@ void vtkImageView::SetLookupTable (vtkLookupTable* lookuptable,int layer)
         this->SetUseLookupTable(true,layer);
         this->StoreLookupTable(lookuptable,layer);
         this->ScalarBar->SetLookupTable( lookuptable );
-        this->WindowLevel->SetLookupTable( this->LookupTable );
 
         if ( this->GetColorTransferFunction(layer) != NULL )
         {
@@ -873,8 +871,6 @@ void vtkImageView::SetWindowSettingsFromTransferFunction(int layer)
     if ( touched )
     {
         this->SetColorRange( targetRange, layer );
-        //TODO call Modified on the right object
-        //    this->GetWindowLevel(layer)->Modified();
         this->ScalarBar->Modified();
     }
 }
@@ -990,8 +986,8 @@ void vtkImageView::SetColorRange( double r[2],int layer )
     double level  = 0.5 * ( r[0] + r[1] );
     double window = r[1] - r[0];
 
-    this->SetColorLevel( level,layer );
-    this->SetColorWindow( window,layer );
+    this->SetColorWindowLevel( window,  level,  layer);
+
 }
 
 //----------------------------------------------------------------------------
@@ -1078,7 +1074,7 @@ double vtkImageView::GetValueAtPosition(double worldcoordinates[3], int componen
 
     int indices[3];
     this->GetImageCoordinatesFromWorldCoordinates (worldcoordinates, indices);
-    this->Get2DDisplayMapperInputAlgorithm()->UpdateInformation();
+    this->Get2DDisplayMapperInputAlgorithm(layer)->UpdateInformation();
     vtkImageData* inputImage = poAlgoTmp->GetOutput();
 
     return inputImage->GetScalarComponentAsDouble(indices[0], indices[1], indices[2], component);
@@ -1404,8 +1400,9 @@ void vtkImageView::ResetWindowLevel()
     double window = range[1]-range[0];
     double level = 0.5*(range[1]+range[0]);
 
-    this->SetColorWindow ( window );
-    this->SetColorLevel ( level );
+    int layer = this->GetCurrentLayer();
+    this->SetColorWindowLevel(window, level, layer);
+
 }
 
 //----------------------------------------------------------------------------

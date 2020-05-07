@@ -464,6 +464,7 @@ void vtkImageView3D::SetInput(vtkAlgorithmOutput* pi_poVtkAlgoOutput, vtkMatrix4
             {
                 SetOtherLayer(pi_poVtkAlgoOutput, matrix, layer);
                 initializeTransferFunctions(layer);
+                this->InternalUpdate();
             }
             else if (layer >= 4)
             {
@@ -562,7 +563,7 @@ void vtkImageView3D::SetFirstLayer(vtkAlgorithmOutput *pi_poInputAlgoImg, vtkMat
 //----------------------------------------------------------------------------
 void vtkImageView3D::InternalUpdate()
 {
-    bool multiLayers = false;
+    bool multiLayers = LayerInfoVec.size()>1;
     bool multichannelInput = (this->m_poInternalImageFromInput->GetScalarType() == VTK_UNSIGNED_CHAR &&
                               (this->m_poInternalImageFromInput->GetNumberOfScalarComponents() == 3 ||
                                this->m_poInternalImageFromInput->GetNumberOfScalarComponents() == 4 ));
@@ -599,23 +600,30 @@ void vtkImageView3D::InternalUpdate()
         this->ActorY->GetMapper()->SetInputConnection(appender->GetOutputPort());
         this->ActorZ->GetMapper()->SetInputConnection(appender->GetOutputPort());
     }
-    else
+    else if(LayerInfoVec.size()>0)
     {
-        this->VolumeProperty->IndependentComponentsOn();
-        this->VolumeProperty->ShadeOn();
-        this->PlanarWindowLevelX->SetInputConnection(this->m_poInputVtkAlgoOutput);
-        this->PlanarWindowLevelX->SetOutputFormatToRGB();
-        this->PlanarWindowLevelX->UpdateInformation();
-        this->PlanarWindowLevelX->Update();
-        this->PlanarWindowLevelY->SetInputConnection(this->m_poInputVtkAlgoOutput);
-        this->PlanarWindowLevelY->SetOutputFormatToRGB();
-        this->PlanarWindowLevelY->UpdateInformation();
-        this->PlanarWindowLevelY->Update();
-        this->PlanarWindowLevelZ->SetInputConnection(this->m_poInputVtkAlgoOutput);
-        this->PlanarWindowLevelZ->SetOutputFormatToRGB();
-        this->PlanarWindowLevelZ->UpdateInformation();
-        this->PlanarWindowLevelZ->Update();
-        vtkScalarsToColors* lut = this->VolumeProperty->GetRGBTransferFunction(0);
+        VolumeProperty->IndependentComponentsOn();
+        VolumeProperty->ShadeOn();
+        auto imDisplay = GetImage3DDisplayForLayer(0);
+        if(imDisplay && imDisplay->GetInputProducer())
+        {
+            PlanarWindowLevelX->SetInputConnection(imDisplay->GetInputProducer()->GetOutputPort());
+            PlanarWindowLevelX->SetOutputFormatToRGB();
+            PlanarWindowLevelX->UpdateInformation();
+            PlanarWindowLevelX->Update();
+
+            PlanarWindowLevelY->SetInputConnection(imDisplay->GetInputProducer()->GetOutputPort());
+            PlanarWindowLevelY->SetOutputFormatToRGB();
+            PlanarWindowLevelY->UpdateInformation();
+            PlanarWindowLevelY->Update();
+
+            PlanarWindowLevelZ->SetInputConnection(imDisplay->GetInputProducer()->GetOutputPort());
+            PlanarWindowLevelZ->SetOutputFormatToRGB();
+            PlanarWindowLevelZ->UpdateInformation();
+            PlanarWindowLevelZ->Update();
+        }
+
+        auto * lut = VolumeProperty->GetRGBTransferFunction(0);
         if (lut)
         {
             this->PlanarWindowLevelX->SetLookupTable(lut);
@@ -629,6 +637,10 @@ void vtkImageView3D::InternalUpdate()
     // Read bounds and use these to place widget, rather than force whole dataset to be read.
     double bounds [6];
     this->GetInputBounds (bounds);
+    
+    //auto image = appender->GetOutput();
+    //double * bounds = image->GetBounds();
+    
     this->BoxWidget->SetInputConnection(appender->GetOutputPort());
     this->BoxWidget->PlaceWidget (bounds);
     this->Callback->Execute (this->BoxWidget, 0, bounds);
@@ -1133,10 +1145,26 @@ void vtkImageView3D::RemoveLayer (int layer)
         }
 
         // Delete is handled by SmartPointers.
-        this->LayerInfoVec.erase(this->LayerInfoVec.begin() + layer);
+        LayerInfoVec.erase(LayerInfoVec.begin() + layer);
 
+        if( LayerInfoVec.size()>0 && layer == 0)
+        {
+            auto imDisplay = GetImage3DDisplayForLayer(0);
+            if(imDisplay && imDisplay->GetInputProducer())
+            {
+                this->Superclass::SetInput(imDisplay->GetInputProducer()->GetOutputPort(), VolumeActor->GetUserMatrix(), layer);
+            }
+            double *range = m_poInternalImageFromInput->GetScalarRange();
+            SetColorRange(range, 0);
+            initializeTransferFunctions(0);
+        }
+        if(LayerInfoVec.size()>0 && GetImage3DDisplayForLayer(0))
+        {
+           SetRenderWindow(GetRenderWindow());
+        }
 
-        // ////////////////////////////////////////////////////////////////////////
+        InternalUpdate();
+        // //////////////////////////////////////////////////////////////////////
         // Rebuild a layer if necessary
         if (this->LayerInfoVec.size() == 0)
         {
@@ -1297,13 +1325,14 @@ medVtkImageInfo* vtkImageView3D::GetMedVtkImageInfo(int layer /*= 0*/) const
 //The code below is useful for Volume rendering and more precisely for LUT 
 void  vtkImageView3D::initializeTransferFunctions(int pi_iLayer)
 {
-    this->VolumeProperty->SetShade(pi_iLayer, 1);
-    this->VolumeProperty->SetComponentWeight(pi_iLayer, 1.0);
-    vtkColorTransferFunction *rgb = this->GetDefaultColorTransferFunction();
-    vtkPiecewiseFunction     *alpha = this->GetDefaultOpacityTransferFunction();
-
-    this->SetTransferFunctions(rgb, alpha, pi_iLayer);
+    VolumeProperty->SetShade(pi_iLayer, 1);
+    VolumeProperty->SetComponentWeight(pi_iLayer, 1.0);
+    auto *rgb = this->GetDefaultColorTransferFunction();
+    auto *alpha = this->GetDefaultOpacityTransferFunction();
+    SetTransferFunctions(rgb, alpha, pi_iLayer);
+    UpdateVolumeFunctions(pi_iLayer);
     rgb->Delete();
     alpha->Delete();
 }
+
 

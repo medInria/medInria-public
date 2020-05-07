@@ -233,7 +233,6 @@ bool medVtkViewItkDataImageInteractor::SetViewInput(medAbstractData* data, int l
 void medVtkViewItkDataImageInteractor::initParameters(medAbstractImageData* data)
 {
     d->imageData = data; //used among others for 4D
-
     d->lutParam = new medStringListParameterL("Lut", this);
     QStringList luts = QStringList() << "Default" << "Black & White" << "Black & White Inversed"
                                      << "Spectrum" << "Hot Metal" << "Hot Green"
@@ -242,7 +241,7 @@ void medVtkViewItkDataImageInteractor::initParameters(medAbstractImageData* data
                                      << "Green Black Alpha" << "Blue Black Alpha"
                                      << "Muscles & Bones" << "Bones" << "Red Vessels"
                                      << "Cardiac" << "Gray Rainbow" << "Stern" << "Black Body" << "Binary Map";
-    foreach(QString lut, luts)
+    for(QString lut : luts)
     {
         d->lutParam->addItem(lut);
     }
@@ -252,7 +251,7 @@ void medVtkViewItkDataImageInteractor::initParameters(medAbstractImageData* data
     QStringList presets = QStringList() << "None" << "VR Muscles&Bones" << "Vascular I"
                                         << "Vascular II" << "Vascular III" << "Vascular IV"
                                         << "Standard" << "Glossy" ;
-    foreach(QString preset, presets)
+    for(QString preset : presets)
     {
         d->presetParam->addItem(preset);
     }
@@ -595,18 +594,13 @@ void medVtkViewItkDataImageInteractor::setWindowLevel(QHash<QString, QVariant> v
     {
         d->view2d->SetColorWindow(w, imageLayer);
     }
-    if (d->view3d->GetColorWindow(imageLayer) != w)
-    {
-        d->view3d->SetColorWindow(w, imageLayer);
-    }
+
     if (d->view2d->GetColorLevel(imageLayer) != l)
     {
         d->view2d->SetColorLevel(l, imageLayer);
     }
-    if (d->view3d->GetColorLevel(imageLayer) != l)
-    {
-        d->view3d->SetColorLevel(l, imageLayer);
-    }
+
+    d->view3d->SetColorWindowLevel( w,  l,  imageLayer);
 
     //--- block
     d->minIntensityParameter->blockSignals(true);

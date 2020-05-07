@@ -2,7 +2,7 @@
 
  medInria
 
- Copyright (c) INRIA 2013 - 2018. All rights reserved.
+ Copyright (c) INRIA 2013 - 2020. All rights reserved.
  See LICENSE.txt for details.
 
   This software is distributed WITHOUT ANY WARRANTY; without even
@@ -12,15 +12,12 @@
 =========================================================================*/
 
 #include <medAbstractImageViewNavigator.h>
-
 #include <medAbstractImageView.h>
-
 #include <medCompositeParameterL.h>
-#include <medVector3DParameterL.h>
-#include <medTimeLineParameterL.h>
 #include <medDataIndex.h>
 #include <medDataManager.h>
-
+#include <medTimeLineParameterL.h>
+#include <medVector3DParameterL.h>
 
 class medAbstractImageViewNavigatorPrivate
 {
@@ -35,15 +32,14 @@ public:
 medAbstractImageViewNavigator::medAbstractImageViewNavigator(medAbstractView *parent):
     medAbstractLayeredViewNavigator(parent), d(new medAbstractImageViewNavigatorPrivate)
 {
-    d->view = dynamic_cast<medAbstractImageView *>(parent);
-    d->positionBeingViewedParameter = NULL;
-    d->cameraParameter = NULL;
-    d->timeLineParameter = NULL;
+    d->positionBeingViewedParameter = nullptr;
+    d->cameraParameter = nullptr;
+    d->timeLineParameter = nullptr;
 
     d->view = dynamic_cast<medAbstractImageView *>(parent);
     if(!d->view)
     {
-        dtkWarn() << "Derived type of medAbstractImageViewNavigator should always be parented \
+        qWarning() << "Derived type of medAbstractImageViewNavigator should always be parented \
                       with derived type of medAbstractImageView.";
         return;
     }
@@ -104,7 +100,7 @@ void medAbstractImageViewNavigator::updateTimeLineParameter()
 
     double sequenceDuration = 0;
     double sequenceFrameRate = 0;
-    foreach(medDataIndex index, d->view->dataList())
+    for(medDataIndex index : d->view->dataList())
     {
         medAbstractData *data = medDataManager::instance()->retrieveData(index);
         if (!data)

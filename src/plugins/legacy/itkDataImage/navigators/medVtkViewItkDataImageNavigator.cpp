@@ -60,7 +60,6 @@ public:
 
 =========================================================================*/
 
-
 medVtkViewItkDataImageNavigator::medVtkViewItkDataImageNavigator(medAbstractView* parent):
     medAbstractNavigator(parent), d(new medVtkViewItkDataImageNavigatorPrivate)
 {
@@ -327,7 +326,7 @@ void medVtkViewItkDataImageNavigator::enableCropping(bool enabled)
     {
         if ( d->view3d->GetBoxWidget()->GetInteractor() )
         {
-            // d->view3D->SetCroppingModeToOff ();
+            d->view3d->SetCroppingModeToOff();
             d->view3d->SetShowBoxWidget ( 0 );
         }
     }
@@ -346,8 +345,10 @@ QWidget *medVtkViewItkDataImageNavigator::buildToolBoxWidget()
 {
     QWidget *toolBoxWidget = new QWidget;
     QFormLayout *layout = new QFormLayout(toolBoxWidget);
-    foreach(medAbstractParameterL *parameter, d->parameters)
+    for(medAbstractParameterL *parameter : d->parameters)
+    {
         layout->addRow(parameter->getLabel(), parameter->getWidget());
+    }
     toolBoxWidget->hide();
     return toolBoxWidget;
 }
