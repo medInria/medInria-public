@@ -2,6 +2,7 @@
 
 #include <QDataStream>
 #include <QTextStream>
+#include <QVector>
 #include <QVector3D>
 
 
