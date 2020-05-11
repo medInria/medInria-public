@@ -50,6 +50,8 @@ class MEDVTKDATAMESHBASE_EXPORT vtkMetaDataSetSequence: public vtkMetaDataSet
 
   virtual vtkMetaDataSetSequence* Clone() override;
 
+  void operator=(const vtkMetaDataSetSequence&) = delete;
+
   //ETX
   /**
      Insert a vtkMetaDataSet at the end of the sequence list
@@ -123,7 +125,7 @@ class MEDVTKDATAMESHBASE_EXPORT vtkMetaDataSetSequence: public vtkMetaDataSet
   */
   vtkGetMacro (SequenceDuration, double)
 
-  virtual const char* GetDataSetType() const override
+  const char* GetDataSetType() const override
   {
     return "Sequence";
   }
@@ -232,7 +234,6 @@ protected:
   //ETX
 
  private:
-  void operator=(const vtkMetaDataSetSequence&);              // Not implemented.
 
   int    CurrentId;
   double SequenceDuration;

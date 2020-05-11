@@ -32,13 +32,13 @@ public:
     vtkDataMeshInteractor(medAbstractView* parent);
     virtual ~vtkDataMeshInteractor();
 
-    virtual QString description() const;
-    virtual QString identifier() const;
-    virtual QStringList handled() const;
+    QString description() const override;
+    QString identifier() const override;
+    QStringList handled() const override;
 
     static bool registered();
 
-    virtual void setInputData(medAbstractData * data);
+    void setInputData(medAbstractData * data) override;
 
     bool edgeVisibility() const;
     QColor color() const;
@@ -46,11 +46,11 @@ public:
     QString attribute() const;
     QString lut() const;
 
-    virtual QWidget* buildLayerWidget();
-    virtual QWidget* buildToolBarWidget();
-    virtual QWidget* buildToolBoxWidget();
-    virtual QList<medAbstractParameterL*> linkableParameters();
-    virtual QList<medBoolParameterL*> mouseInteractionParameters();
+    QWidget* buildLayerWidget() override;
+    QWidget* buildToolBarWidget() override;
+    QWidget* buildToolBoxWidget() override;
+    QList<medAbstractParameterL*> linkableParameters() override;
+    QList<medBoolParameterL*> mouseInteractionParameters() override;
 
 public slots:
     void setOpacity(double value);
@@ -66,11 +66,11 @@ public slots:
 
     void setLut(const QString &lutName);
 
-    virtual void removeData();
-    virtual void setUpViewForThumbnail();
+    void removeData() override;
+    void setUpViewForThumbnail() override;
     virtual void moveToSlice  (int slice);
 
-    virtual void updateWidgets();
+    void updateWidgets() override;
 
 protected:
     void updatePipeline ();
