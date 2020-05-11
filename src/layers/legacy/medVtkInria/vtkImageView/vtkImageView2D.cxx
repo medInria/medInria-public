@@ -1795,11 +1795,6 @@ void vtkImageView2D::SetOtherLayer(vtkAlgorithmOutput* pi_poVtkAlgoOutput, vtkMa
 void vtkImageView2D::SetInput (vtkActor *actor, int layer, vtkMatrix4x4 *matrix, const int imageSize[], const double imageSpacing[], const double imageOrigin[])
 {
     vtkDataSet *arg = actor->GetMapper()->GetInput();
-    // If this is the first widget to be added, reset camera
-    if (!this->GetMedVtkImageInfo() || !this->GetMedVtkImageInfo()->initialized)
-    {
-        this->ResetCamera(arg);
-    }
 
     this->DataSetCollection->AddItem(arg);
     this->DataSetActorCollection->AddItem(actor);
