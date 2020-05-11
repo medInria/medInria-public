@@ -27,7 +27,7 @@
 #include <medViewFactory.h>
 #include <medViewParameterGroupL.h>
 #include <polygonEventFilter.h>
-
+#include <QPair>
 
 const char *polygonRoiToolBox::generateBinaryImageButtonName = "generateBinaryImageButton";
 
@@ -700,7 +700,7 @@ void polygonRoiToolBox::setPredefinedLabelNames()
             QListWidgetItem *item = structureList->item(idx);
             QColor col = item->icon().pixmap(QSize(20,20)).toImage().pixelColor(0,0);
             QString lab = item->text();
-            labels.append(QPair(lab, col));
+            labels.append(QPair <QString, QColor> (lab, col));
         }
     }
     viewEventFilter->setPredefinedLabels(labels);

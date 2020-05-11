@@ -1,5 +1,5 @@
 #include <medTagContours.h>
-
+#include <QVector>
 
 medTagContours::medTagContours()
 {
