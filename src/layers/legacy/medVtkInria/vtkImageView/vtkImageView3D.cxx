@@ -1155,10 +1155,6 @@ void vtkImageView3D::RemoveLayer (int layer)
             this->SetColorRange(range, 0);
             this->initializeTransferFunctions(0);
         }
-//        if(this->LayerInfoVec.size()>0 && this->GetImage3DDisplayForLayer(0))
-//        {
-//           this->SetRenderWindow(GetRenderWindow());
-//        }
 
         InternalUpdate();
 
