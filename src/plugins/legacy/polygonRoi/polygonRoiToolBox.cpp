@@ -37,9 +37,10 @@ polygonRoiToolBox::polygonRoiToolBox(QWidget *parent ) :
     colorsList = QList<QColor>({
         Qt::green,
         Qt::blue,
-        Qt::yellow,
+        QColor(224,255,255),
+        QColor(64,224,208),
+        QColor(46,139,87),
         Qt::darkMagenta,
-        Qt::cyan,
         Qt::gray,
         Qt::white,
         Qt::black
@@ -50,11 +51,11 @@ polygonRoiToolBox::polygonRoiToolBox(QWidget *parent ) :
     QVBoxLayout *layout = new QVBoxLayout();
     displayWidget->setLayout(layout);
 
-    addNewCurve = new QPushButton(tr("Activate Toolbox"));
-    addNewCurve->setToolTip(tr("Activate closed polygon mode"));
-    addNewCurve->setCheckable(true);
-    addNewCurve->setObjectName("closedPolygonButton");
-    connect(addNewCurve,SIGNAL(toggled(bool)),this,SLOT(clickClosePolygon(bool)));
+    activateTBButton = new QPushButton(tr("Activate Toolbox"));
+    activateTBButton->setToolTip(tr("Activate closed polygon mode"));
+    activateTBButton->setCheckable(true);
+    activateTBButton->setObjectName("closedPolygonButton");
+    connect(activateTBButton,SIGNAL(toggled(bool)),this,SLOT(clickClosePolygon(bool)));
 
     interpolate = new QCheckBox(tr("interpolate"));
     interpolate->setToolTip("Interpolate between master ROIs");
@@ -70,52 +71,48 @@ polygonRoiToolBox::polygonRoiToolBox(QWidget *parent ) :
 
     specialities = new QComboBox();
 
-    structureList = new QListWidget();
-    structureList->setDragDropMode(QAbstractItemView::InternalMove);
-    structureList->setDragEnabled(true);
-    structureList->setAcceptDrops(true);
-    structureList->setDropIndicatorShown(true);
-    structureList->hide();
     plusButton = new QPushButton(QIcon(":/pixmaps/plus-button.png"), "");
     plusButton->setMaximumSize(QSize(20,20));
-    connect(plusButton, SIGNAL(pressed()), this, SLOT(addLabelName()));
+    connect(plusButton, SIGNAL(pressed()), this, SLOT(addLabelNameInList()));
     plusButton->hide();
-
-    applyButton = new QPushButton("Apply");
-    applyButton->setProperty("default", QVariant(true));
-    connect(applyButton, SIGNAL(pressed()), this, SLOT(setPredefinedLabelNames()));
 
     QStringList spe;
     spe << "default" << "prostate";
     specialities->addItems(spe);
-    connect(specialities, SIGNAL(currentIndexChanged(int)), this, SLOT(updateListOfLabelNames(int)));
+    connect(specialities, SIGNAL(currentIndexChanged(int)), this, SLOT(displayStructuresPerSpeciality(int)));
+    // The lines below are temp code
+    // Will be replaced soon by values parsed in json configuration file
+    QListWidget *defaultNameList = new QListWidget;
+    QStringList defaultStructures;
+    defaultStructures << "Label-0" << "Label-1";
+    initStructureNames(defaultNameList,defaultStructures);
+    structuresList.append(defaultNameList);
+    QListWidget *prostateNameList = new QListWidget;
+    QStringList prostateStructures;
+    prostateStructures << "WG (whole gland)" << "TZ (transitional zone)" << "Target 1" << "Target 2" << "Target 3";
+    initStructureNames(prostateNameList,prostateStructures, true);
+    structuresList.append(prostateNameList);
+    // End of temp code
 
     currentView = nullptr;
 
-    QHBoxLayout *ButtonLayout0 = new QHBoxLayout();
-    layout->addLayout( ButtonLayout0 );
-    ButtonLayout0->addWidget(addNewCurve);
+    QHBoxLayout *activateTBLayout = new QHBoxLayout();
+    layout->addLayout( activateTBLayout );
+    activateTBLayout->addWidget(activateTBButton);
 
-    QVBoxLayout *ButtonLayout1 = new QVBoxLayout();
-    layout->addLayout(ButtonLayout1);
-    ButtonLayout1->addWidget(specialities);
-    QHBoxLayout *ButtonLayout2 = new QHBoxLayout();
-    ButtonLayout2->addWidget(structureList);
-    ButtonLayout2->addStretch(0);
-    ButtonLayout2->setContentsMargins(0,0,0,0);
-    ButtonLayout2->setSpacing(0);
-    QHBoxLayout *ButtonLayout3 = new QHBoxLayout();
-    ButtonLayout3->addWidget(plusButton, Qt::AlignLeft);
-    ButtonLayout3->addStretch(2);
-    ButtonLayout3->addWidget(applyButton, Qt::AlignRight);
-    ButtonLayout1->addLayout(ButtonLayout2);
-    ButtonLayout1->addLayout(ButtonLayout3);
+    QVBoxLayout *labelNamesLayout = new QVBoxLayout();
+    layout->addLayout(labelNamesLayout);
+    labelNamesLayout->addWidget(specialities);
+    for (QListWidget *labelNamesList : structuresList)
+    {
+        labelNamesLayout->addWidget(labelNamesList);
+    }
+    labelNamesLayout->addWidget(plusButton, Qt::AlignLeft);
 
-
-    QHBoxLayout *ButtonLayout4 = new QHBoxLayout();
-    layout->addLayout( ButtonLayout4 );
-    ButtonLayout4->addWidget(interpolate);
-    ButtonLayout4->addWidget(repulsorTool);
+    QHBoxLayout *contoursActionLayout = new QHBoxLayout();
+    layout->addLayout( contoursActionLayout );
+    contoursActionLayout->addWidget(interpolate);
+    contoursActionLayout->addWidget(repulsorTool);
 
     tableViewChooser = new medTableWidgetChooser(this, 1, 3, 50);
     // Mandatory : Qt bug ? : Without the lines below, the size of the table View is not as expected
@@ -125,17 +122,17 @@ polygonRoiToolBox::polygonRoiToolBox(QWidget *parent ) :
     tableViewChooser->setIconSize(QSize(size.height()-1,size.height()-1));
     connect(tableViewChooser, SIGNAL(selected(unsigned int,unsigned int)), this, SLOT(updateTableWidgetView(unsigned int,unsigned int)));
 
-    QHBoxLayout *ButtonLayout5 = new QHBoxLayout();
-    layout->addLayout( ButtonLayout5 );
-    ButtonLayout5->addWidget(tableViewChooser);
+    QHBoxLayout *tableViewLayout = new QHBoxLayout();
+    layout->addLayout( tableViewLayout );
+    tableViewLayout->addWidget(tableViewChooser);
 
     QLabel *saveLabel = new QLabel("Save segmentations as:");
-    QVBoxLayout *ButtonSaveLayout = new QVBoxLayout();
+    QVBoxLayout *saveButtonsLayout = new QVBoxLayout();
     saveBinaryMaskButton = new QPushButton(tr("Mask(s)"));
     saveBinaryMaskButton->setToolTip("Import the current mask to the non persistent database");
     saveBinaryMaskButton->setObjectName(generateBinaryImageButtonName);
     connect(saveBinaryMaskButton,SIGNAL(clicked()),this,SLOT(saveBinaryImage()));
-    ButtonSaveLayout->addWidget(saveBinaryMaskButton);
+    saveButtonsLayout->addWidget(saveBinaryMaskButton);
 
     saveContourButton = new QPushButton("Contour(s)");
     saveContourButton->setToolTip("Export these contours as an .ctrb file loadable only in medInria.");
@@ -143,13 +140,12 @@ polygonRoiToolBox::polygonRoiToolBox(QWidget *parent ) :
     saveContourButton->setMaximumSize(150, 20);
     saveContourButton->setObjectName("saveContoursButton");
     connect(saveContourButton, SIGNAL(clicked()), this, SLOT(saveContours()));
-    ButtonSaveLayout->addWidget(saveContourButton);
+    saveButtonsLayout->addWidget(saveContourButton);
 
-    QHBoxLayout *ButtonLayout6 = new QHBoxLayout();
-    layout->addLayout( ButtonLayout6);
-    ButtonLayout6->addWidget(saveLabel);
-    ButtonLayout6->addLayout(ButtonSaveLayout);
-
+    QHBoxLayout *saveLayout = new QHBoxLayout();
+    layout->addLayout( saveLayout);
+    saveLayout->addWidget(saveLabel);
+    saveLayout->addLayout(saveButtonsLayout);
 
     // How to use
     QString underlineStyle = "<br><br><span style=\" text-decoration: underline;\">%1</span>";
@@ -172,6 +168,11 @@ polygonRoiToolBox::polygonRoiToolBox(QWidget *parent ) :
 
 polygonRoiToolBox::~polygonRoiToolBox()
 {
+    for (QListWidget *widget : structuresList)
+    {
+        delete widget;
+    }
+    structuresList.clear();
     delete viewEventFilter;
 }
 
@@ -202,9 +203,9 @@ void polygonRoiToolBox::loadContoursIfPresent(medAbstractImageView *v, unsigned 
     medAbstractData *data = v->layerData(layer);
     if (data->identifier().contains("medContours") && v==currentView)
     {
-        if (addNewCurve->isChecked()==false)
+        if (activateTBButton->isChecked()==false)
         {
-            addNewCurve->setChecked(true);
+            activateTBButton->setChecked(true);
         }
         viewEventFilter->loadContours(data);
         if (viewEventFilter->isContourInSlice())
@@ -272,7 +273,27 @@ void polygonRoiToolBox::updateView()
             }
             else
             {
-                addNewCurve->setEnabled(true);
+                activateTBButton->setEnabled(true);
+
+                // The lines below are temp code
+                // Will be replaced soon by values parsed in json configuration file
+                QListWidget *defaultWidget = structuresList.at(0);
+                if ( defaultWidget->count()==0)
+                {
+                    QStringList defaultStructures;
+                    defaultStructures << "Label-0" << "Label-1";
+                    initStructureNames(defaultWidget,defaultStructures);
+                }
+                QListWidget *prostateWidget = structuresList.at(1);
+                if ( prostateWidget->count()==0)
+                {
+                    QStringList prostateStructures;
+                    prostateStructures << "WG (whole gland)" << "TZ (transitional zone)" << "Target 1" << "Target 2" << "Target 3";
+                    initStructureNames(prostateWidget,prostateStructures, true);
+                }
+
+                displayStructuresPerSpeciality(0);
+                // End of temp code
 
                 if (currentView != v)
                 {
@@ -307,6 +328,12 @@ void polygonRoiToolBox::onViewClosed()
             if (viewClosed == viewEventFilter->getView() )
             {
                 viewEventFilter->reset();
+                for (QListWidget *widget : structuresList)
+                {
+                    widget->clear();
+                    widget->hide();
+                }
+                specialities->setCurrentIndex(0);
             }
         }
         if (viewsInTabSelected.size()==0)
@@ -330,6 +357,12 @@ void polygonRoiToolBox::onLayerClosed(uint index)
         if (viewEventFilter)
         {
             viewEventFilter->reset();
+            for (QListWidget *widget : structuresList)
+            {
+                widget->clear();
+                widget->hide();
+            }
+            specialities->setCurrentIndex(0);
         }
         this->clear();
     }
@@ -339,7 +372,7 @@ void polygonRoiToolBox::clickClosePolygon(bool state)
 {
     if (!currentView)
     {
-        addNewCurve->setChecked(false);
+        activateTBButton->setChecked(false);
         qDebug()<<metaObject()->className()<<":: clickClosePolygon - no view in container.";
         return;
     }
@@ -349,9 +382,11 @@ void polygonRoiToolBox::clickClosePolygon(bool state)
     enableTableViewChooser(state);
     interpolate->setEnabled(state);
     specialities->setEnabled(state);
-    structureList->setEnabled(state);
+    for (QListWidget *structureWidget : structuresList)
+    {
+        structureWidget->setEnabled(state);
+    }
     plusButton->setEnabled(state);
-    applyButton->setEnabled(state);
 
     if (state)
     {
@@ -363,6 +398,7 @@ void polygonRoiToolBox::clickClosePolygon(bool state)
             connect(viewEventFilter, SIGNAL(enableViewChooser(bool)), this, SLOT(enableTableViewChooser(bool)), Qt::UniqueConnection);
             connect(viewEventFilter, SIGNAL(toggleRepulsorButton(bool)), this, SLOT(activateRepulsor(bool)), Qt::UniqueConnection);
             connect(viewEventFilter, SIGNAL(sendErrorMessage(QString)), this, SLOT(errorMessage(QString)), Qt::UniqueConnection);
+            connect(viewEventFilter, SIGNAL(managerActivated(QString, QColor)), this, SLOT(selectLabelNameInList(QString, QColor)), Qt::UniqueConnection);
         }
 
         viewEventFilter->updateView(currentView);
@@ -407,7 +443,7 @@ void polygonRoiToolBox::resetToolboxBehaviour()
         return;
     }
     containersInTabSelected[0]->setClosingMode(medViewContainer::CLOSE_CONTAINER);
-    enableTableViewChooser(addNewCurve->isChecked());
+    enableTableViewChooser(activateTBButton->isChecked());
 }
 
 void polygonRoiToolBox::errorMessage(QString error)
@@ -510,7 +546,7 @@ void polygonRoiToolBox::updateTableWidgetView(unsigned int row, unsigned int col
     viewGroup->removeParameter("Orientation");
 
     connect(mainContainer, &medViewContainer::containerSelected, [=](){
-        if (currentView && addNewCurve->isChecked())
+        if (currentView && activateTBButton->isChecked())
         {
             currentView->viewWidget()->setFocus();
             viewEventFilter->On();
@@ -664,100 +700,156 @@ void polygonRoiToolBox::saveBinaryImage()
     viewEventFilter->saveMask();
 }
 
-void polygonRoiToolBox::addLabelName()
+QListWidgetItem * polygonRoiToolBox::createWidgetItem(QString name, QColor col)
 {
-    if ( structureList->count()==colorsList.size())
-    {
-        displayMessageError("Unable to create more label. Maximum size achieved");
-        plusButton->setDisabled(true);
-        return;
-    }
     QPixmap pixmap(20,20);
-    pixmap.fill(colorsList.at(structureList->count()));
-    QIcon icon(pixmap);
-    QListWidgetItem *item =  new QListWidgetItem(icon, QString("Label-%1").arg(QString::number(structureList->count())));
+    pixmap.fill(col);
+    QListWidgetItem *item =  new QListWidgetItem(pixmap, name);
     item->setSizeHint(QSize(20,20));
     QFont font;
     font.setBold(true);
     item->setFont(font);
-    item->setFlags(item->flags() | Qt::ItemIsEditable);
-    structureList->addItem(item);
+    item->setFlags(item->flags() | Qt::ItemIsSelectable | Qt::ItemIsEditable | Qt::ItemIsUserCheckable);
+    item->setCheckState(Qt::Unchecked);
+
+    return item;
 }
 
-void polygonRoiToolBox::setPredefinedLabelNames()
+void polygonRoiToolBox::selectLabelNameInList(QString name, QColor color)
 {
-    if (!viewEventFilter)
+    QListWidget *labels = structuresList.at(specialities->currentIndex());
+    for (int row = 0; row < labels->count(); row++)
     {
-        displayMessageError("Toolbox is probably not activated");
+        QListWidgetItem *item = labels->item(row);
+        QString itemName = item->text();
+        QColor itemColor = item->icon().pixmap(QSize(20,20)).toImage().pixelColor(0,0);
+        bool itemScore = (item->checkState()==Qt::Checked)?true:false;
+        if (itemName==name && itemColor==color)
+        {
+
+            item->setSelected(true);
+            if (viewEventFilter)
+            {
+                viewEventFilter->setScoreToManager(itemName, itemColor, itemScore);
+            }
+
+        }
+        else
+        {
+            item->setSelected(false);
+        }
+    }
+}
+
+void polygonRoiToolBox::addLabelNameInList()
+{
+    QListWidget *structureWidget = structuresList.at(specialities->currentIndex());
+    if ( structureWidget->count()==colorsList.size())
+    {
+        displayMessageError("Unable to create more label. Maximum size achieved");
         return;
     }
-
-    QList<QPair<QString, QColor>> labels;
-    if (structureList->count()>0)
-    {
-        for (int idx = 0; idx < structureList->count(); ++idx)
-        {
-            QListWidgetItem *item = structureList->item(idx);
-            QColor col = item->icon().pixmap(QSize(20,20)).toImage().pixelColor(0,0);
-            QString lab = item->text();
-            labels.append(QPair <QString, QColor> (lab, col));
-        }
-    }
-    viewEventFilter->setPredefinedLabels(labels);
-    QString defaultStyle = structureList->styleSheet();
-    structureList->setStyleSheet("QListWidget { background: lightGreen; }");
-    QTimer::singleShot(300, this, [=] () {
-        structureList->setStyleSheet(defaultStyle);
-    });
+    QListWidgetItem *item = createWidgetItem(QString("Label-%1").arg(QString::number(structureWidget->count())),
+                                             colorsList.at(structureWidget->count()));
+    structureWidget->addItem(item);
+    structureWidget->setMaximumHeight((20*structureWidget->count())+5);
+    updateLabelNamesOnContours(structureWidget);
 }
 
-void polygonRoiToolBox::updateListOfLabelNames(int index)
+void polygonRoiToolBox::displayStructuresPerSpeciality(int index)
 {
-    structureList->setMaximumHeight(30*(colorsList.size()+1));
-    structureList->setContentsMargins(0,0,0,0);
-    structureList->clear();
-
-    // The 2 lines below are temporary code
-    // Will be replaced soon by values parsed in json configuration file
-    QStringList items;
-    items << "WG" << "ZT";
-    listItems.append(items);
-
-    if ( index == 0 ) // default case
+    for (QListWidget *widget : structuresList)
     {
-        structureList->hide();
-        plusButton->hide();
+        widget->hide();
     }
-    else if ( index <= listItems.size() )
+    QListWidget *structuresWidget = structuresList.at(index);
+
+    updateLabelNamesOnContours(structuresWidget);
+
+    structuresWidget->show();
+    plusButton->show();
+}
+
+void polygonRoiToolBox::updateLabelNamesOnContours(QListWidget *structuresWidget)
+{
+    QStringList names;
+    QList<QColor> colors;
+    for (int row = 0; row < structuresWidget->count(); row++)
     {
-        QStringList itemText = listItems.at(index-1);
-        for ( int idx = 0; idx < itemText.size(); idx++ )
+        QListWidgetItem *item = structuresWidget->item(row);
+        QColor col = item->icon().pixmap(QSize(20,20)).toImage().pixelColor(0,0);
+        colors << col;
+        names << item->text();
+    }
+
+    if ( viewEventFilter)
+    {
+        viewEventFilter->updateManagerInfos(names, colors);
+    }
+
+    for (int row = 0; row < structuresWidget->count(); row++)
+    {
+        QListWidgetItem *item = structuresWidget->item(row);
+        QColor col = item->icon().pixmap(QSize(20,20)).toImage().pixelColor(0,0);
+        bool score = (item->checkState()==Qt::Checked)?true:false;
+        if (viewEventFilter)
         {
-            QPixmap pixmap(20,20);
-            pixmap.fill(colorsList.at(idx));
-            QIcon icon(pixmap);
-            QListWidgetItem *item =  new QListWidgetItem(icon, itemText.at(idx));
-            item->setSizeHint(QSize(20,20));
-            QFont font;
-            font.setBold(true);
-            item->setFont(font);
-            item->setFlags(item->flags() | Qt::ItemIsEditable);
-            structureList->insertItem(idx, item);
+            viewEventFilter->setScoreToManager(item->text(), col, score);
         }
-        structureList->show();
-        plusButton->show();
+    }
+}
 
-    }
-    else
+void polygonRoiToolBox::initStructureNames(QListWidget *structuresWidget,
+                                        QStringList names, bool isProstate)
+{
+    connect(structuresWidget, &QListWidget::itemClicked, [&](QListWidgetItem *item){
+       if ( item->isSelected() && viewEventFilter )
+       {
+            QColor color = item->icon().pixmap(QSize(20,20)).toImage().pixelColor(0,0);
+            QString name = item->text();
+            if ( viewEventFilter)
+            {
+                viewEventFilter->activateContour(name, color);
+            }
+       }
+    });
+
+    connect(structuresWidget, &QListWidget::itemChanged, [this, structuresWidget](QListWidgetItem *item){
+        updateLabelNamesOnContours(structuresWidget);
+    });
+
+    connect(structuresWidget->model(), &QAbstractItemModel::rowsMoved, [this, structuresWidget](const QModelIndex &, int, int, const QModelIndex &, int){
+        updateLabelNamesOnContours(structuresWidget);
+    });
+    structuresWidget->setContentsMargins(0,0,0,0);
+
+    int idx = 0;
+    for (QString name : names)
     {
-        displayMessageError("Impossible case.");
+        QColor col = colorsList.at(idx);
+        idx++;
+        QListWidgetItem *item = createWidgetItem(name,
+                                                 col);
+
+        structuresWidget->addItem(item);
+        if (isProstate && col!=Qt::green && col!=Qt::blue)
+        {
+            item->setCheckState(Qt::Checked);
+        }
     }
+    structuresWidget->setDragDropMode(QAbstractItemView::InternalMove);
+    structuresWidget->setDragEnabled(true);
+    structuresWidget->setAcceptDrops(true);
+    structuresWidget->setDropIndicatorShown(true);
+    structuresWidget->setMaximumHeight((20*structuresWidget->count())+5);
+    structuresWidget->hide();
+
 }
 
 void polygonRoiToolBox::disableButtons()
 {
-    addNewCurve->setEnabled(false);
-    addNewCurve->setChecked(false);
+    activateTBButton->setEnabled(false);
+    activateTBButton->setChecked(false);
     repulsorTool->setEnabled(false);
     repulsorTool->setChecked(false);
     saveBinaryMaskButton->setEnabled(false);
@@ -766,9 +858,11 @@ void polygonRoiToolBox::disableButtons()
     interpolate->setEnabled(false);
     interpolate->setChecked(true);
     specialities->setDisabled(true);
-    structureList->setDisabled(true);
+    for (QListWidget *widget : structuresList)
+    {
+        widget->setDisabled(true);
+    }
     plusButton->setDisabled(true);
-    applyButton->setDisabled(true);
 }
 
 void polygonRoiToolBox::saveContours()

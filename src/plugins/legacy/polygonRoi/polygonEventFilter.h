@@ -62,7 +62,10 @@ public:
     void removeObserver();
     void addObserver();
 
-    void setPredefinedLabels(QList<QPair<QString, QColor> > labels);
+    void updateManagerInfos(QStringList labelNames, QList<QColor> labelColors);
+    void activateContour(QString name, QColor color);
+    void setScoreToManager(QString name, QColor color, bool state);
+
 public slots:
     void enableOtherViewsVisibility(bool state);
     void setCursorState(CURSORSTATE state){cursorState = state;}
@@ -90,7 +93,7 @@ signals:
     void toggleRepulsorButton(bool);
     void clearLastAlternativeView();
     void sendErrorMessage(QString);
-
+    void managerActivated(QString, QColor);
 private:
     medAbstractImageView *currentView;
     dtkSmartPointer<medAbstractData> contourOutput;
@@ -112,7 +115,7 @@ private:
     bool leftButtonBehaviour(medAbstractView *view, QMouseEvent *mouseEvent);
     bool rightButtonBehaviour(medAbstractView *view, QMouseEvent *mouseEvent);
     QList<QColor> getAvailableColors(QList<QColor> colorsToExclude);
-    QMenu *createColorMenu(QList<QColor> colors, QStringList names);
+    QMenu *createColorWithNameMenu(QList<QColor> colors, QStringList names);
     QList<QColor> updateColorsList(QList<QColor> colorsToExclude);
     bool manageRoiWithLabel(QMouseEvent *mouseEvent);
     bool addPointInContourWithLabel(QMouseEvent *mouseEvent);
@@ -130,4 +133,5 @@ private:
     bool isActiveContourInSlice();
     void setCustomCursor();
     QString getManagerName(QString labelName, int index);
+    QAction *createScoreAction(medTagRoiManager *manager, QString score, QColor color);
 };

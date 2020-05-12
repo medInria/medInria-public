@@ -151,30 +151,6 @@ polygonRoi::~polygonRoi()
     d = nullptr;
 }
 
-void polygonRoi::setEnableLeftButtonInteraction(bool state)
-{
-    vtkContourOverlayRepresentation *contourRep =
-            dynamic_cast<vtkContourOverlayRepresentation*>(d->contour->GetContourRepresentation());
-    if (state)
-    {
-        d->contour->GetEventTranslator()->SetTranslation(vtkCommand::LeftButtonPressEvent, vtkWidgetEvent::Select);
-        d->contour->GetEventTranslator()->SetTranslation(vtkCommand::MouseMoveEvent, vtkWidgetEvent::Move);
-        setRightColor();
-    }
-    else
-    {
-        d->contour->GetEventTranslator()->SetTranslation(vtkCommand::LeftButtonPressEvent, vtkWidgetEvent::NoEvent);
-        d->contour->GetEventTranslator()->SetTranslation(vtkCommand::MouseMoveEvent, vtkWidgetEvent::NoEvent);
-        double color[3];
-        color[0] = d->roiColor.redF();
-        color[1] = d->roiColor.greenF();
-        color[2] = d->roiColor.blueF();
-        contourRep->GetProperty()->SetColor(color);
-        contourRep->GetLinesProperty()->SetOpacity(0.2);
-        contourRep->GetProperty()->SetOpacity(0.2);
-    }
-}
-
 bool polygonRoi::isClosed()
 {
     return d->contour->GetContourRepresentation()->GetClosedLoop();
@@ -409,6 +385,31 @@ bool polygonRoi::isVisible()
     return (d->contour->GetEnabled());
 }
 
+void polygonRoi::activateContour(bool state)
+{
+    vtkContourOverlayRepresentation *contourRep =
+            dynamic_cast<vtkContourOverlayRepresentation*>(d->contour->GetContourRepresentation());
+    if (state)
+    {
+        d->contour->GetEventTranslator()->SetTranslation(vtkCommand::LeftButtonPressEvent, vtkWidgetEvent::Select);
+        d->contour->GetEventTranslator()->SetTranslation(vtkCommand::MouseMoveEvent, vtkWidgetEvent::Move);
+        setRightColor();
+    }
+    else
+    {
+        d->contour->GetEventTranslator()->SetTranslation(vtkCommand::LeftButtonPressEvent, vtkWidgetEvent::NoEvent);
+        d->contour->GetEventTranslator()->SetTranslation(vtkCommand::MouseMoveEvent, vtkWidgetEvent::NoEvent);
+        double color[3];
+        color[0] = d->roiColor.redF();
+        color[1] = d->roiColor.greenF();
+        color[2] = d->roiColor.blueF();
+        contourRep->GetLinesProperty()->SetColor(color);
+        contourRep->GetProperty()->SetColor(color);
+        contourRep->GetLinesProperty()->SetOpacity(0.2);
+        contourRep->GetProperty()->SetOpacity(0.2);
+    }
+}
+
 void polygonRoi::setRightColor()
 {
     double color[3];
@@ -431,6 +432,12 @@ void polygonRoi::setRightColor()
     }
 }
 
+void polygonRoi::updateColor(QColor color, bool activate)
+{
+    d->roiColor = color;
+    activateContour(activate);
+}
+
 void polygonRoi::addViewToList(medAbstractImageView *viewToAdd)
 {
     d->alternativeViews.append(viewToAdd);
@@ -442,7 +449,6 @@ void polygonRoi::updateContourOtherView(medAbstractImageView *view, bool state)
     {
         return;
     }
-
 
     if (state)
     {

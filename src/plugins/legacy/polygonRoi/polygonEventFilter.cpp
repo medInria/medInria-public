@@ -31,6 +31,7 @@
 #include <QWidgetAction>
 
 // vtk
+#include <QLabel>
 #include <vtkAppendPolyData.h>
 #include <vtkRenderWindowInteractor.h>
 #include <vtkRenderer.h>
@@ -402,8 +403,7 @@ QMenu *polygonEventFilter::changeLabelActions(medTagRoiManager* closestManager)
         {
             QPixmap pixmap(20,20);
             pixmap.fill(manager->getColor());
-            QIcon icon(pixmap);
-            QAction *action = new QAction(icon, manager->getName(), changeMenu);
+            QAction *action = new QAction(pixmap, manager->getName(), changeMenu);
             connect(action, &QAction::triggered, [=](){
                 polygonRoi *roi = closestManager->existingRoiInSlice();
                 QVector<QVector2D> nodes = roi->copyContour();
@@ -449,18 +449,19 @@ bool polygonEventFilter::rightButtonBehaviour(medAbstractView *view, QMouseEvent
         }
     }
 
-    QMenu *colorMenu = createColorMenu(colors, names);
+    QMenu *colorMenu = createColorWithNameMenu(colors, names);
     QMenu *roiManagementMenu = new QMenu("Remove: ");
     QMenu *saveMenu = new QMenu("Save as: ");
     QMenu *changeMenu = nullptr;
     QWidgetAction *renameManagerAction = new QWidgetAction(&mainMenu);
     QAction *copyContourAction = new QAction("Copy", &mainMenu);
     QAction *activationAction = nullptr;
+    QMenu *scoreMenu = new QMenu("Set Score");
     if (closestManager && (closestManager->getMinimumDistanceFromNodesToMouse(mousePos) < 10.))
     {
         QAction *deleteOneNodeAction = new QAction("Node", roiManagementMenu);
-        connect(deleteOneNodeAction, &QAction::triggered, [=](){
-            deleteNode(closestManager, &mousePos[0]);
+        connect(deleteOneNodeAction, &QAction::triggered, [this, &closestManager, &mousePos](){
+            deleteNode(closestManager, mousePos);
         });
         roiManagementMenu->addAction(deleteOneNodeAction);
 
@@ -506,8 +507,36 @@ bool polygonEventFilter::rightButtonBehaviour(medAbstractView *view, QMouseEvent
 
         renameManagerAction->setDefaultWidget(updateNameManager(closestManager, &mainMenu));
 
+
         mainMenu.addAction(renameManagerAction);
-        mainMenu.addAction(activationAction);
+        if (!closestManager->getOptName().isEmpty())
+        {
+            QLabel *name = new QLabel(closestManager->getOptName());
+            QFont font = name->font();
+            font.setWeight(QFont::Black);
+            font.setPointSize(15);
+            font.setUnderline(true);
+            name->setFont(font);
+            name->setAlignment(Qt::AlignCenter);
+            QString style = "QLabel { color: rgb(%1, %2, %3); }";
+            name->setStyleSheet(style.arg(closestManager->getOptColor().red()).
+                                arg(closestManager->getOptColor().green()).
+                                arg(closestManager->getOptColor().blue()));
+            QWidgetAction *widAct = new QWidgetAction(&mainMenu);
+            widAct->setDefaultWidget(name);
+            mainMenu.addAction(widAct);
+        }
+        if ( activationAction )
+        {
+            mainMenu.addAction(activationAction);
+        }
+        if (closestManager->hasScore())
+        {
+            scoreMenu->addAction(createScoreAction(closestManager, "PIRADS3", Qt::yellow));
+            scoreMenu->addAction(createScoreAction(closestManager, "PIRADS4", QColor(139, 69, 19)));
+            scoreMenu->addAction(createScoreAction(closestManager, "PIRADS5", Qt::darkRed));
+            mainMenu.addMenu(scoreMenu);
+        }
         mainMenu.addMenu(roiManagementMenu);
         mainMenu.addMenu(saveMenu);
         if ( !changeMenu->actions().isEmpty() )
@@ -530,6 +559,7 @@ bool polygonEventFilter::rightButtonBehaviour(medAbstractView *view, QMouseEvent
     delete roiManagementMenu;
     delete saveMenu;
     delete renameManagerAction;
+    delete scoreMenu;
 
     delete changeMenu;
     delete copyContourAction;
@@ -555,6 +585,7 @@ medTagRoiManager *polygonEventFilter::addManagerToList(int label, QString labelN
     connect(manager, SIGNAL(enableOtherViewsVisibility(bool)), this, SLOT(enableOtherViewsVisibility(bool)), Qt::UniqueConnection);
     connect(manager, SIGNAL(sendErrorMessage(QString)), this, SIGNAL(sendErrorMessage(QString)), Qt::UniqueConnection);
     activeManager = manager;
+    emit managerActivated(manager->getName(), manager->getColor());
 
     enableOnlyActiveManager();
     return manager;
@@ -566,11 +597,11 @@ void polygonEventFilter::enableOnlyActiveManager()
     {
         if ( manager != activeManager )
         {
-            manager->setEnableInteraction(false);
+            manager->activateContours(false);
         }
         else
         {
-            manager->setEnableInteraction(true);
+            manager->activateContours(true);
         }
     }
 }
@@ -579,7 +610,7 @@ bool polygonEventFilter::addPointInContourWithLabel(QMouseEvent *mouseEvent)
 {
     if (managers.size()==0)
     {
-        activeManager = addManagerToList(0, QString("label-0"));
+        activeManager = addManagerToList(0, QString("Label-0"));
     }
     else
     {
@@ -617,28 +648,27 @@ void polygonEventFilter::createNewManager(int label)
             return;
         }
     }
-    activeManager = addManagerToList(label, QString("label-%1").arg(label));
+    activeManager = addManagerToList(label, QString("Label-%1").arg(label));
 }
 
-QMenu *polygonEventFilter::createColorMenu(QList<QColor> colors, QStringList names)
+QMenu *polygonEventFilter::createColorWithNameMenu(QList<QColor> colors, QStringList names)
 {
     QMenu *menu = new QMenu;
     for (int i = 0; i<colors.size(); i++)
     {
         QPixmap pixmap(50,50);
         pixmap.fill(colors.at(i));
-        QIcon icon(pixmap);
         QString name;
         if (names.isEmpty() || names.size()<=i)
         {
-            name = QString::number(colorsList.indexOf(colors.at(i)));
+            name = QString("Label-%1").arg(QString::number(colorsList.indexOf(colors.at(i))));
         }
         else
         {
             name = names.at(i);
         }
 
-        QAction *action = new QAction(icon, name, menu);
+        QAction *action = new QAction(pixmap, name, menu);
         connect(action, &QAction::triggered, [=](){
             createNewManager(colorsList.indexOf((colors.at(i))));
         });
@@ -646,6 +676,18 @@ QMenu *polygonEventFilter::createColorMenu(QList<QColor> colors, QStringList nam
         menu->addAction(action);
     }
     return menu;
+}
+
+QAction *polygonEventFilter::createScoreAction(medTagRoiManager *manager, QString score, QColor color)
+{
+    QPixmap pixmap(50,50);
+    pixmap.fill(color);
+    QAction *action  = new QAction(pixmap, score);
+    connect(action, &QAction::triggered, [=](){
+        manager->setOptName(score);
+        manager->updateContoursColor(color);
+    });
+    return action;
 }
 
 QList<QColor> polygonEventFilter::updateColorsList(QList<QColor> colorsToExclude)
@@ -823,15 +865,15 @@ void polygonEventFilter::pasteContours()
     }
 }
 
-void polygonEventFilter::setPredefinedLabels(QList<QPair<QString, QColor>> labels)
+void polygonEventFilter::updateManagerInfos(QStringList labelNames, QList<QColor> labelColors)
 {
     predefinedLabels.clear();
     colorsList = defaultColorsList;
     int idx = 0;
-    for (QPair<QString, QColor> label : labels)
+    for (QString label : labelNames)
     {
-        predefinedLabels << label.first;
-        colorsList.replace(idx, label.second);
+        predefinedLabels << label;
+        colorsList.replace(idx, labelColors.at(idx));
         idx++;
     }
 
@@ -847,9 +889,36 @@ void polygonEventFilter::setPredefinedLabels(QList<QPair<QString, QColor>> label
                 }
                 else
                 {
-                    manager->setName(QString("label-%1").arg(c));
+                    manager->setName(QString("Label-%1").arg(c));
                 }
             }
+        }
+        if (manager==activeManager)
+        {
+            emit managerActivated(manager->getName(), manager->getColor());
+        }
+    }
+}
+
+void polygonEventFilter::activateContour(QString name, QColor color)
+{
+    for (medTagRoiManager *manager : managers)
+    {
+        if (manager->getName() == name && manager->getColor() == color)
+        {
+            activeManager = manager;
+            enableOnlyActiveManager();
+        }
+    }
+}
+
+void polygonEventFilter::setScoreToManager(QString name, QColor color, bool state)
+{
+    for (medTagRoiManager *manager : managers)
+    {
+        if (manager->getName() == name && manager->getColor() == color)
+        {
+            manager->setScoreState(state);
         }
     }
 }
@@ -885,7 +954,7 @@ void polygonEventFilter::activateRepulsor(bool state)
         {
             if (manager != activeManager)
             {
-                manager->setEnableInteraction(false);
+                manager->activateContours(false);
                 polygonRoi *roi = manager->existingRoiInSlice();
                 if ( roi )
                 {
@@ -959,7 +1028,7 @@ void polygonEventFilter::saveAllContours()
         auto ctr = manager->getContoursAsNodes();
         medTagContours contoursTag;
 
-        QString name = QString("label-%1").arg(label);
+        QString name = QString("Label-%1").arg(label);
         QString labelName = ( name == manager->getName() )?"undefined":manager->getName();
         contoursTag.setLabelName(labelName);
         contoursTag.setContourNodes(ctr);
@@ -1002,7 +1071,7 @@ void polygonEventFilter::loadContours(medAbstractData *data)
             emit sendErrorMessage("Unable to load contours. No label available.");
             return;
         }
-        QString labelName = (tagContours.getLabelName() == "undefined")?QString("label-%1").arg(label):tagContours.getLabelName();
+        QString labelName = (tagContours.getLabelName() == "undefined")?QString("Label-%1").arg(label):tagContours.getLabelName();
         for (medTagRoiManager *manager : managers)
         {
             if (manager->getName()==labelName)
@@ -1209,7 +1278,7 @@ void polygonEventFilter::saveContour(medTagRoiManager *manager)
 
     auto ctr = manager->getContoursAsNodes();
     medTagContours contoursTag;
-    QString name = QString("label-%1").arg(label);
+    QString name = QString("Label-%1").arg(label);
     QString labelName = ( name == manager->getName() )?"undefined":manager->getName();
     contoursTag.setLabelName(labelName);
     contoursTag.setContourNodes(ctr);

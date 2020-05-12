@@ -41,7 +41,9 @@ public:
     void appendRoi(polygonRoi *roi);
     QList<polygonRoi *> getRois();
     QColor getColor();
+    QColor getOptColor();
     QString getName();
+    QString getOptName();
     polygonRoi *appendRoi();
 
     void setEnableInterpolation(bool state);
@@ -65,9 +67,13 @@ public:
     QVector<QVector2D> copyContour();
     bool pasteContour(QVector<QVector2D> nodes);
     void setName(QString name);
+    void setOptName(QString name);
     void removeContourOtherView(medAbstractImageView *v);
     void removeIntermediateContoursOtherView(medAbstractImageView *v);
-    void setEnableInteraction(bool state);
+    void activateContours(bool state);
+    void updateContoursColor(QColor color);
+    bool hasScore();
+    void setScoreState(bool state);
 
 public slots:
     void interpolateIfNeeded();

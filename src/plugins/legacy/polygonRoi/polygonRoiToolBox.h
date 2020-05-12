@@ -71,15 +71,15 @@ public slots:
     void enableTableViewChooser(bool state);
     void resetToolboxBehaviour();
     void errorMessage(QString error);
+    void selectLabelNameInList(QString name, QColor color);
 
 private slots:
 
     void disableButtons();
     void saveContours();
     void saveBinaryImage();
-    void addLabelName();
-    void setPredefinedLabelNames();
-    void updateListOfLabelNames(int index);
+    void addLabelNameInList();
+    void displayStructuresPerSpeciality(int index);
 
 protected:
 
@@ -93,11 +93,11 @@ protected:
 private:
 
     QList<QColor> colorsList;
-    QList<QStringList> listItems;
+    QList<QListWidget*> structuresList;
     polygonEventFilter *viewEventFilter;
     QPointer<medAbstractImageView> currentView;
 
-    QPushButton *addNewCurve;
+    QPushButton *activateTBButton;
     QPushButton *saveBinaryMaskButton;
     QPushButton *repulsorTool;
     QCheckBox *interpolate;
@@ -105,9 +105,10 @@ private:
     QPushButton *saveContourButton;
 
     QComboBox *specialities;
-    QListWidget *structureList;
     QPushButton *plusButton;
-    QPushButton *applyButton;
 
     void loadContoursIfPresent(medAbstractImageView *v, unsigned int layer);
+    void initStructureNames(QListWidget *structuresWidget, QStringList names, bool isProstate = false);
+    void updateLabelNamesOnContours(QListWidget *structuresWidget);
+    QListWidgetItem * createWidgetItem(QString name, QColor col);
 };
