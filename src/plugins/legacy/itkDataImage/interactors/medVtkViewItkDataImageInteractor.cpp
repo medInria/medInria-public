@@ -560,6 +560,7 @@ void medVtkViewItkDataImageInteractor::setWindowLevelFromMinMax()
 
         // Call function from vtkImageView shared by view2d and view3d
         d->view2d->SetColorWindowLevel(window, level, imageLayer);
+        d->view3d->SetColorWindowLevel(window, level, imageLayer);
 
         this->windowLevelParameter()->blockSignals(false);
         //--- unblock
