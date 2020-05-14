@@ -67,6 +67,8 @@ medTagRoiManagerPrivate::medTagRoiManagerPrivate(medAbstractView *view, polygonE
     this->sliceOrientation = view2d->GetSliceOrientation();
     this->baseColor = color;
     this->baseName = name;
+    this->optName = QString();
+    this->optColor = QColor::Invalid;
     this->closestSlice = -1;
     this->scoreState = false;
     polygonRoi *roi = new polygonRoi(view2d, color);
@@ -102,7 +104,7 @@ medTagRoiManager::~medTagRoiManager()
 polygonRoi* medTagRoiManager::appendRoi()
 {
     vtkImageView2D *view2d = static_cast<medVtkViewBackend*>(d->view->backend())->view2D;
-    QColor color = (d->optColor == QColor::Invalid)?d->baseColor:d->optColor;
+    QColor color = (d->rois.size()==0)?d->baseColor:d->rois[0]->getColor();
     polygonRoi *roi = new polygonRoi(view2d, color);
     d->rois.append(roi);
     connectRois();
@@ -646,6 +648,27 @@ void medTagRoiManager::updateContoursColor(QColor color)
     d->view->render();
 }
 
+bool medTagRoiManager::switchColor()
+{
+    bool retValue;
+    if (d->optColor==QColor::Invalid)
+    {
+        retValue = false;
+    }
+    else
+    {
+        QColor roiColor = d->rois[0]->getColor();
+        QColor newColor = (roiColor==d->baseColor)?d->optColor:d->baseColor;
+        for (polygonRoi *roi : d->rois)
+        {
+            roi->updateColor(newColor, d->isActivated);
+        }
+        d->view->render();
+        retValue = true;
+    }
+    return retValue;
+}
+
 bool medTagRoiManager::hasScore()
 {
     return d->scoreState;
@@ -654,6 +677,17 @@ bool medTagRoiManager::hasScore()
 void medTagRoiManager::setScoreState(bool state)
 {
     d->scoreState = state;
+    if (!d->scoreState)
+    {
+        d->optName = QString();
+        d->optColor = QColor::Invalid;
+        for (polygonRoi *roi : d->rois)
+        {
+            roi->updateColor(d->baseColor, d->isActivated);
+        }
+        d->view->render();
+
+    }
 }
 
 void medTagRoiManager::enableOtherViewVisibility(medAbstractImageView *v, bool state)

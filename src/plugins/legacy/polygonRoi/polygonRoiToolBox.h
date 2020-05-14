@@ -14,6 +14,7 @@
 
 // medInria
 #include <medAbstractSelectableToolBox.h>
+#include <medContourInfo.h>
 #include <medTagRoiManager.h>
 #include <medTableWidgetChooser.h>
 #include <polygonRoiPluginExport.h>
@@ -71,7 +72,7 @@ public slots:
     void enableTableViewChooser(bool state);
     void resetToolboxBehaviour();
     void errorMessage(QString error);
-    void selectLabelNameInList(QString name, QColor color);
+    void updateContoursListWidget(medContourInfo &info);
 
 private slots:
 
@@ -79,7 +80,8 @@ private slots:
     void saveContours();
     void saveBinaryImage();
     void addLabelNameInList();
-    void displayStructuresPerSpeciality(int index);
+    void removeLabelNameInList();
+    void showWidgetListForIndex(int index);
 
 protected:
 
@@ -106,9 +108,13 @@ private:
 
     QComboBox *specialities;
     QPushButton *plusButton;
+    QPushButton *minusButton;
+    QVBoxLayout *listNamesLayout;
 
-    void loadContoursIfPresent(medAbstractImageView *v, unsigned int layer);
+    bool loadContoursIfPresent(medAbstractImageView *v, unsigned int layer);
     void initStructureNames(QListWidget *structuresWidget, QStringList names, bool isProstate = false);
     void updateLabelNamesOnContours(QListWidget *structuresWidget);
     QListWidgetItem * createWidgetItem(QString name, QColor col);
+    void clearStructuresList();
+    QColor findAvailableColor(QListWidget *widget);
 };

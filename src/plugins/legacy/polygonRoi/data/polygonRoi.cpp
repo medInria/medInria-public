@@ -438,6 +438,11 @@ void polygonRoi::updateColor(QColor color, bool activate)
     activateContour(activate);
 }
 
+QColor polygonRoi::getColor()
+{
+    return d->roiColor;
+}
+
 void polygonRoi::addViewToList(medAbstractImageView *viewToAdd)
 {
     d->alternativeViews.append(viewToAdd);

@@ -71,7 +71,7 @@ public:
     int getNumberOfNodes();
     void activateContour(bool state);
     void updateColor(QColor color, bool activate);
-
+    QColor getColor();
 public slots:
     virtual void undo();
     virtual void redo();

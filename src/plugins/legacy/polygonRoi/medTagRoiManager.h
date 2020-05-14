@@ -74,6 +74,7 @@ public:
     void updateContoursColor(QColor color);
     bool hasScore();
     void setScoreState(bool state);
+    bool switchColor();
 
 public slots:
     void interpolateIfNeeded();
