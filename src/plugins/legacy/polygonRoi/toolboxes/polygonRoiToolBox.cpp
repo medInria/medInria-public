@@ -12,6 +12,7 @@
 =========================================================================*/
 #include "polygonRoiToolBox.h"
 
+#include <contoursManagementToolBox.h>
 #include <medAbstractProcessLegacy.h>
 #include <medParameterGroupManagerL.h>
 #include <medPluginManager.h>
@@ -72,50 +73,18 @@ polygonRoiToolBox::polygonRoiToolBox(QWidget *parent ) :
     repulsorTool->setCheckable(true);
     connect(repulsorTool,SIGNAL(clicked(bool)),this,SLOT(activateRepulsor(bool)));
 
-    specialities = new QComboBox();
-
-    plusButton = new QPushButton(QIcon(":/pixmaps/plus.png"), "");
-    plusButton->setMaximumSize(QSize(20,20));
-    connect(plusButton, SIGNAL(pressed()), this, SLOT(addLabelNameInList()));
-    plusButton->hide();
-
-    minusButton = new QPushButton(QIcon(":/pixmaps/minus.png"), "");
-    minusButton->setMaximumSize(QSize(20,20));
-    connect(minusButton, SIGNAL(pressed()), this, SLOT(removeLabelNameInList()));
-    minusButton->hide();
-
-    QStringList spe;
-    spe << "default" << "prostate";
-    specialities->addItems(spe);
-    connect(specialities, SIGNAL(currentIndexChanged(int)), this, SLOT(showWidgetListForIndex(int)));
-    // The lines below are temp code
-    // Will be replaced soon by values parsed in json configuration file
-    QListWidget *defaultNameList = new QListWidget;
-    defaultNameList->show();
-    structuresList.append(defaultNameList);
-    QListWidget *prostateNameList = new QListWidget;
-    prostateNameList->hide();
-    structuresList.append(prostateNameList);
-    // End of temp code
-
     currentView = nullptr;
 
     QHBoxLayout *activateTBLayout = new QHBoxLayout();
     layout->addLayout( activateTBLayout );
     activateTBLayout->addWidget(activateTBButton);
 
-    listNamesLayout = new QVBoxLayout();
-    layout->addLayout(listNamesLayout);
-    listNamesLayout->addWidget(specialities);
-    for (QListWidget *labelNamesList : structuresList)
-    {
-        listNamesLayout->addWidget(labelNamesList);
-    }
-    QHBoxLayout *plusMinusLayout = new QHBoxLayout;
-    plusMinusLayout->addWidget(minusButton, Qt::AlignLeft);
-    plusMinusLayout->addWidget(plusButton, Qt::AlignLeft);
-    plusMinusLayout->addStretch();
-    listNamesLayout->addLayout(plusMinusLayout);
+    // Add Contour Management Toolbox
+    managementToolBox = medToolBoxFactory::instance()->createToolBox("contoursManagementToolBox");
+    managementToolBox->header()->hide();
+    layout->addWidget(managementToolBox);
+    connect(activateTBButton,SIGNAL(toggled(bool)),managementToolBox,SLOT(clickActivationButton(bool)), Qt::UniqueConnection);
+    connect(this, SIGNAL(currentLabelsDisplayed()), managementToolBox, SLOT(showCurrentLabels()), Qt::UniqueConnection);
 
     QHBoxLayout *contoursActionLayout = new QHBoxLayout();
     layout->addLayout( contoursActionLayout );
@@ -176,11 +145,11 @@ polygonRoiToolBox::polygonRoiToolBox(QWidget *parent ) :
 
 polygonRoiToolBox::~polygonRoiToolBox()
 {
-    for (QListWidget *widget : structuresList)
-    {
-        delete widget;
-    }
-    structuresList.clear();
+//    for (QListWidget *widget : structuresList)
+//    {
+//        delete widget;
+//    }
+//    structuresList.clear();
     delete viewEventFilter;
 }
 
@@ -206,90 +175,78 @@ medAbstractData *polygonRoiToolBox::processOutput()
     return nullptr;
 }
 
-bool polygonRoiToolBox::loadContoursIfPresent(medAbstractImageView *v, unsigned int layer)
+//bool polygonRoiToolBox::loadContoursIfPresent(medAbstractImageView *v, unsigned int layer)
+//{
+//    bool retVal = false;
+////    medAbstractData *data = v->layerData(layer);
+////    if (data->identifier().contains("medContours") && v==currentView)
+////    {
+////        if (activateTBButton->isChecked()==false)
+////        {
+////            activateTBButton->setChecked(true);
+////        }
+
+////        medContours *contours = dynamic_cast<medContours*>(data);
+////        QVector<medTagContours> &tagContoursSet = contours->getTagContoursSet();
+////        QListWidget *widget = structuresList.at(specialities->currentIndex());
+////        for (medTagContours &tagContours : tagContoursSet)
+////        {
+////            if (widget->count()<colorsList.size())
+////            {
+////                QColor color = findAvailableColor(widget);
+////                bool itemFound = false;
+////                for (int row = 0; row < widget->count(); row++)
+////                {
+////                    QListWidgetItem *item = widget->item(row);
+////                    if (item->text()==tagContours.getLabelName())
+////                    {
+////                        itemFound = true;
+////                        color = item->icon().pixmap(QSize(20,20)).toImage().pixelColor(0,0);
+////                    }
+////                }
+////                if (!itemFound)
+////                {
+////                    QListWidgetItem *item = createWidgetItem(tagContours.getLabelName(),
+////                                                             color);
+////                    widget->addItem(item);
+////                    widget->setMaximumHeight((20*widget->count())+5);
+////                }
+////                if (color!=QColor::Invalid)
+////                {
+////                    viewEventFilter->loadContours(tagContours, color);
+////                }
+////            }
+////            else
+////            {
+////                errorMessage("Too many label already imported");
+////            }
+////        }
+
+////        if (viewEventFilter->isContourInSlice())
+////        {
+////            repulsorTool->setEnabled(true);
+////            if (repulsorTool->isChecked())
+////            {
+////                viewEventFilter->activateRepulsor(true);
+////            }
+////        }
+
+////        v->removeLayer(layer);
+////        retVal = true;
+////    }
+//    return retVal;
+//}
+
+void polygonRoiToolBox::checkRepulsor()
 {
-    bool retVal = false;
-    medAbstractData *data = v->layerData(layer);
-    if (data->identifier().contains("medContours") && v==currentView)
+    if (viewEventFilter && viewEventFilter->isContourInSlice())
     {
-        if (activateTBButton->isChecked()==false)
+        repulsorTool->setEnabled(true);
+        if (repulsorTool->isChecked())
         {
-            activateTBButton->setChecked(true);
-        }
-
-        medContours *contours = dynamic_cast<medContours*>(data);
-        QVector<medTagContours> &tagContoursSet = contours->getTagContoursSet();
-        QListWidget *widget = structuresList.at(specialities->currentIndex());
-        for (medTagContours &tagContours : tagContoursSet)
-        {
-            if (widget->count()<colorsList.size())
-            {
-                QColor color = findAvailableColor(widget);
-                bool itemFound = false;
-                for (int row = 0; row < widget->count(); row++)
-                {
-                    QListWidgetItem *item = widget->item(row);
-                    if (item->text()==tagContours.getLabelName())
-                    {
-                        itemFound = true;
-                        color = item->icon().pixmap(QSize(20,20)).toImage().pixelColor(0,0);
-                    }
-                }
-                if (!itemFound)
-                {
-                    QListWidgetItem *item = createWidgetItem(tagContours.getLabelName(),
-                                                             color);
-                    widget->addItem(item);
-                    widget->setMaximumHeight((20*widget->count())+5);
-                }
-                if (color!=QColor::Invalid)
-                {
-                    viewEventFilter->loadContours(tagContours, color);
-                }
-            }
-            else
-            {
-                errorMessage("Too many label already imported");
-            }
-        }
-
-        if (viewEventFilter->isContourInSlice())
-        {
-            repulsorTool->setEnabled(true);
-            if (repulsorTool->isChecked())
-            {
-                viewEventFilter->activateRepulsor(true);
-            }
-        }
-
-        v->removeLayer(layer);
-        retVal = true;
-    }
-    return retVal;
-}
-
-QColor polygonRoiToolBox::findAvailableColor(QListWidget *widget)
-{
-    QColor color;
-    QList<QColor> colors = colorsList;
-    for (int row = 0; row < widget->count(); row++)
-    {
-        QListWidgetItem *item = widget->item(row);
-        color = item->icon().pixmap(QSize(20,20)).toImage().pixelColor(0,0);
-        if (colors.contains(color))
-        {
-            colors.removeOne(color);
+            viewEventFilter->activateRepulsor(true);
         }
     }
-    if (colors.empty())
-    {
-        color = QColor::Invalid;
-    }
-    else
-    {
-        color = colors.at(0);
-    }
-    return color;
 }
 
 void polygonRoiToolBox::updateView()
@@ -301,7 +258,10 @@ void polygonRoiToolBox::updateView()
         {
             return;
         }
-        QList<medAbstractView*> viewsInTabSelected = containers->viewsInTab(containers->currentIndex());
+        if ( containers->viewsInTab(containers->currentIndex()).size() > 1)
+        {
+            return;
+        }
 
         medAbstractView *view = containers->getFirstSelectedContainerView();
         if (!view)
@@ -311,16 +271,6 @@ void polygonRoiToolBox::updateView()
         medAbstractImageView *v = qobject_cast<medAbstractImageView*>(view);
         if (!v)
         {
-            return;
-        }
-
-        QList<medViewContainer*> containersInTab = containers->containersInTab(containers->currentIndex());
-        if (viewsInTabSelected.size() > 1)
-        {
-            for (unsigned int i=0; i<v->layersCount(); ++i)
-            {
-                loadContoursIfPresent(v, i);
-            }
             return;
         }
 
@@ -344,32 +294,23 @@ void polygonRoiToolBox::updateView()
             }
             else
             {
+//                if (v != nullptr && currentView != v)
+//                {
+                    currentView = v;
+//                }
                 activateTBButton->setEnabled(true);
 
-                // The lines below are temp code
-                // Will be replaced soon by values parsed in json configuration file
-                QListWidget *defaultWidget = structuresList.at(0);
-                if ( defaultWidget->count()==0)
+                if (data->identifier().contains("medContours"))
                 {
-                    QStringList defaultStructures;
-                    defaultStructures << "Label-0";
-                    initStructureNames(defaultWidget,defaultStructures);
+                    if (activateTBButton->isChecked()==false)
+                    {
+                        activateTBButton->setChecked(true);
+                    }
+                    managementToolBox->setWorkspace(getWorkspace());
+                    managementToolBox->updateView();
                 }
-                QListWidget *prostateWidget = structuresList.at(1);
-                if ( prostateWidget->count()==0)
-                {
-                    QStringList prostateStructures;
-                    prostateStructures << "WG (whole gland)" << "TZ (transitional zone)" << "Target 1";
-                    initStructureNames(prostateWidget,prostateStructures, true);
-                }
-                // End of temp code
 
-                if (currentView != v)
-                {
-                    currentView = v;
-                }
-                loadContoursIfPresent(v, i);
-                showWidgetListForIndex(specialities->currentIndex());
+                emit currentLabelsDisplayed();
 
                 updateTableWidgetItems();
                 connect(currentView, SIGNAL(closed()), this, SLOT(onViewClosed()), Qt::UniqueConnection);
@@ -377,44 +318,14 @@ void polygonRoiToolBox::updateView()
                 connect(view, SIGNAL(orientationChanged()), this, SLOT(updateTableWidgetItems()), Qt::UniqueConnection);
                 connect(view, SIGNAL(orientationChanged()), this, SLOT(manageTick()), Qt::UniqueConnection);
                 connect(view, SIGNAL(orientationChanged()), this, SLOT(manageRoisVisibility()), Qt::UniqueConnection);
-
             }
         }
     }
 }
 
-void polygonRoiToolBox::clearStructuresList()
-{
-    for (int row = 0; row < structuresList.size(); row++)
-    {
-        QListWidget *widget = structuresList.at(row);
-        if (row < 2)
-        {
-            widget->clear();
-            widget->hide();
-        }
-        else
-        {
-            listNamesLayout->removeWidget(widget);
-            structuresList.removeOne(widget);
-            delete widget;
-        }
-    }
-    const QSignalBlocker blocker(specialities);
-    int count = specialities->count();
-    for (int row = 0; row < count; row++)
-    {
-        if (row > 1)
-        {
-            specialities->removeItem(row);
-        }
-    }
-    specialities->setCurrentIndex(0);
-}
-
 void polygonRoiToolBox::onViewClosed()
 {
-     medAbstractView *viewClosed = qobject_cast<medAbstractView*>(QObject::sender());
+    medAbstractView *viewClosed = qobject_cast<medAbstractView*>(QObject::sender());
     medTabbedViewContainers *containers = this->getWorkspace()->tabbedViewContainers();
     if (containers)
     {
@@ -425,12 +336,22 @@ void polygonRoiToolBox::onViewClosed()
         {
             if (viewClosed == viewEventFilter->getView() )
             {
+//                viewEventFilter->removeFromView(currentView);
+//                viewEventFilter->removeFromAllViews();
                 viewEventFilter->reset();
-                clearStructuresList();
+                currentView = nullptr;
+                clear();
             }
+//            else
+//            {
+//                if (viewEventFilter)
+//                {
+//                    viewEventFilter->clearAlternativeView(qobject_cast<medAbstractImageView*>(viewClosed));
+//                    viewEventFilter->removeFromView(viewClosed);
+//                }
+//            }
+
         }
-        currentView = nullptr;
-        clear();
     }
 }
 
@@ -440,14 +361,34 @@ void polygonRoiToolBox::onLayerClosed(uint index)
     medAbstractImageView *v = qobject_cast<medAbstractImageView*>(view);
     if (!v || (v && v->layersCount()==0))
     {
-        if (viewEventFilter)
-        {
-            viewEventFilter->reset();
-            viewEventFilter->removeFromAllViews();
-            clearStructuresList();
-        }
-        this->clear();
         medTabbedViewContainers *containers = this->getWorkspace()->tabbedViewContainers();
+        QList<medAbstractView*> viewsInTabSelected = containers->viewsInTab(containers->currentIndex());
+        medAbstractView *closedView = viewsInTabSelected.at(index);
+        if (closedView==view)
+        {
+            QList<medViewContainer*> containersInTab = containers->containersInTab(containers->currentIndex());
+            if(containersInTab.size() > 1)
+            {
+                for(medViewContainer* container : containersInTab)
+                {
+                    container->view()->closed();
+                }
+            }
+            if (viewEventFilter)
+            {
+                viewEventFilter->reset();
+                viewEventFilter->removeFromAllViews();
+            }
+            clear();
+        }
+        else
+        {
+            if (viewEventFilter)
+            {
+                viewEventFilter->clearAlternativeView();
+                viewEventFilter->removeFromView(closedView);
+            }
+        }
     }
 }
 
@@ -464,13 +405,6 @@ void polygonRoiToolBox::clickClosePolygon(bool state)
     saveContourButton->setEnabled(state);
     enableTableViewChooser(state);
     interpolate->setEnabled(state);
-    specialities->setEnabled(state);
-    for (QListWidget *structureWidget : structuresList)
-    {
-        structureWidget->setEnabled(state);
-    }
-    plusButton->setEnabled(state);
-    minusButton->setEnabled(state);
 
     if (state)
     {
@@ -482,9 +416,14 @@ void polygonRoiToolBox::clickClosePolygon(bool state)
             connect(viewEventFilter, SIGNAL(enableViewChooser(bool)), this, SLOT(enableTableViewChooser(bool)), Qt::UniqueConnection);
             connect(viewEventFilter, SIGNAL(toggleRepulsorButton(bool)), this, SLOT(activateRepulsor(bool)), Qt::UniqueConnection);
             connect(viewEventFilter, SIGNAL(sendErrorMessage(QString)), this, SLOT(errorMessage(QString)), Qt::UniqueConnection);
-            connect(viewEventFilter, SIGNAL(sendContourInfoToListWidget(medContourInfo&)), this, SLOT(receiveContoursDatasFromView(medContourInfo&)), Qt::UniqueConnection);
+            connect(managementToolBox, SIGNAL(repulsorState()), this, SLOT(checkRepulsor()), Qt::UniqueConnection);
+            connect(managementToolBox, SIGNAL(sendDatasToView(QList<medContourInfo>)), viewEventFilter, SLOT(receiveDatasFromToolbox(QList<medContourInfo>)));
+            connect(managementToolBox, SIGNAL(sendContourState(medContourInfo)), viewEventFilter, SLOT(receiveContourState(medContourInfo)));
+            connect(managementToolBox, SIGNAL(sendContourName(medContourInfo)), viewEventFilter, SLOT(receiveContourName(medContourInfo)));
+            connect(managementToolBox, SIGNAL(labelToDelete(medContourInfo)), viewEventFilter, SLOT(deleteLabel(medContourInfo)));
+            connect(viewEventFilter, SIGNAL(sendContourInfoToListWidget(medContourInfo&)), managementToolBox, SLOT(receiveContoursDatasFromView(medContourInfo&)), Qt::UniqueConnection);
+            connect(managementToolBox, SIGNAL(contoursToLoad(medTagContours, QColor)), viewEventFilter, SLOT(loadContours(medTagContours, QColor)));
         }
-
         viewEventFilter->updateView(currentView);
         viewEventFilter->setEnableInterpolation(interpolate->isChecked());
         viewEventFilter->On();
@@ -610,6 +549,28 @@ void polygonRoiToolBox::updateTableWidgetView(unsigned int row, unsigned int col
         container->addData(data);
 
         medAbstractImageView* view = static_cast<medAbstractImageView *> (container->view());
+        connect(currentView, SIGNAL(layerRemoved(uint)), this, SLOT(onLayerClosed(uint)), Qt::UniqueConnection);
+        connect(view, &medAbstractImageView::closed, [this](){
+            if (viewEventFilter)
+            {
+                medAbstractView *viewClosed = qobject_cast<medAbstractView*>(QObject::sender());
+                viewEventFilter->clearAlternativeView();
+                viewEventFilter->removeFromView(viewClosed);
+                repulsorTool->setEnabled(true);
+                tableViewChooser->setEnabled(true);
+            }
+        });
+//        connect(view, SIGNAL(layerRemoved(uint)), this, SLOT(onLayerClosed(uint)));
+//                             ); [this](medAbstractData *){
+//            if (viewEventFilter)
+//            {
+////                medTabbedViewContainers *containers = this->getWorkspace()->tabbedViewContainers();
+////                QList<medAbstractView*> viewsInTabSelected = containers->viewsInTab(containers->currentIndex());
+//                medAbstractView *viewClosed = qobject_cast<medAbstractView*>(QObject::sender());
+//                viewEventFilter->clearAlternativeView(qobject_cast<medAbstractImageView*>(viewClosed));
+//                viewEventFilter->removeFromView(viewClosed);
+//            }
+//        });
         viewEventFilter->installOnView(view);
         viewEventFilter->clearCopiedContours();
         connect(container, &medViewContainer::containerSelected, [=](){
@@ -621,13 +582,6 @@ void polygonRoiToolBox::updateTableWidgetView(unsigned int row, unsigned int col
         });
 
         medTableWidgetItem * item = static_cast<medTableWidgetItem*>(tableViewChooser->selectedItems().at(nbItem));
-//        connect(view, SIGNAL(closed()), viewEventFilter, SLOT(removeView()));
-//        connect(view, &medAbstractImageView::closed, [=](){
-//            if (viewEventFilter)
-//            {
-
-//            }
-//        });
         view->setOrientation(dynamic_cast<medTableWidgetItem*>(item)->orientation());
         viewEventFilter->addAlternativeViews(view);
 
@@ -825,243 +779,6 @@ void polygonRoiToolBox::saveBinaryImage()
     viewEventFilter->saveMask();
 }
 
-QListWidgetItem * polygonRoiToolBox::createWidgetItem(QString name, QColor col)
-{
-    QPixmap pixmap(20,20);
-    pixmap.fill(col);
-    QListWidgetItem *item =  new QListWidgetItem(pixmap, name);
-    item->setSizeHint(QSize(20,20));
-    QFont font;
-    font.setBold(true);
-    item->setFont(font);
-    item->setFlags(item->flags() | Qt::ItemIsSelectable | Qt::ItemIsEditable | Qt::ItemIsUserCheckable);
-    item->setCheckState(Qt::Unchecked);
-
-    return item;
-}
-
-void polygonRoiToolBox::receiveContoursDatasFromView(medContourInfo& info)
-{
-    QListWidget *labels = structuresList.at(specialities->currentIndex());
-    for (int row = 0; row < labels->count(); row++)
-    {
-        QListWidgetItem *item = labels->item(row);
-        QString itemName = item->text();
-        QColor itemColor = item->icon().pixmap(QSize(20,20)).toImage().pixelColor(0,0);
-        if ( info.nameUpdated() && itemColor==info.getColor())
-        {
-            item->setText(info.getName());
-            item->setSelected(true);
-        }
-        else if (itemName==info.getName() && itemColor==info.getColor())
-        {
-            item->setSelected(info.isSelected());
-            if (info.scoreState())
-            {
-                QColor secondColor = info.getAdditionalColor();
-                QColor color = (item->foreground().color()==secondColor)?Qt::white:secondColor;
-                item->setForeground(color);
-                if ( item->foreground().color()==secondColor )
-                {
-                    QString style = "QListView::item:selected { background: rgb(%1, %2, %3); }";
-                    labels->setStyleSheet(style.arg(secondColor.red()).arg(secondColor.green()).arg(secondColor.blue()));
-                }
-                else
-                {
-                    labels->setStyleSheet("QListView::item:selected { background: palette(Highlight) }");
-                }
-            }
-        }
-        else
-        {
-            item->setSelected(false);
-        }
-    }
-}
-
-void polygonRoiToolBox::addLabelNameInList()
-{
-    QListWidget *structureWidget = structuresList.at(specialities->currentIndex());
-    if ( structureWidget->count()==colorsList.size())
-    {
-        displayMessageError("Unable to create more label. Maximum size achieved");
-        return;
-    }
-    QColor color = findAvailableColor(structureWidget);
-    QListWidgetItem *item = createWidgetItem(QString("Label-%1").arg(QString::number(structureWidget->count())),
-                                             color);
-    structureWidget->addItem(item);
-    item->setSelected(true);
-    structureWidget->setMaximumHeight((20*structureWidget->count())+5);
-
-    emit structureWidget->itemClicked(item);
-}
-
-void polygonRoiToolBox::removeLabelNameInList()
-{
-    QListWidget *widget = structuresList.at(specialities->currentIndex());
-    for (int row = 0; row<widget->count(); row++)
-    {
-        QListWidgetItem *item = widget->item(row);
-        if (item->isSelected())
-        {
-            QString name = item->text();
-            QColor col = item->icon().pixmap(QSize(20,20)).toImage().pixelColor(0,0);
-            medContourInfo info = medContourInfo(item->text(), col);
-            if (viewEventFilter)
-            {
-                viewEventFilter->deleteLabel(info);
-            }
-            widget->takeItem(row);
-        }
-    }
-
-    if (widget->count()==0)
-    {
-        if (viewEventFilter)
-        {
-            viewEventFilter->updateContourState(QString(), QColor::Invalid);
-        }
-        if (specialities->currentIndex() > 1)
-        {
-            listNamesLayout->removeWidget(widget);
-            structuresList.removeOne(widget);
-            delete widget;
-            specialities->removeItem(specialities->currentIndex());
-        }
-    }
-    else
-    {
-        widget->setMaximumHeight((20*widget->count())+5);
-    }
-}
-
-void polygonRoiToolBox::showWidgetListForIndex(int index)
-{
-    for (QListWidget *widget : structuresList)
-    {
-        widget->hide();
-    }
-    QListWidget *structuresWidget = structuresList.at(index);
-
-    updateLabelNamesOnContours(structuresWidget);
-
-    if (structuresWidget->count()>0)
-    {
-        structuresWidget->item(0)->setSelected(true);
-        emit structuresWidget->itemClicked(structuresWidget->item(0));
-    }
-
-    structuresWidget->show();
-    plusButton->show();
-    minusButton->show();
-}
-
-void polygonRoiToolBox::updateLabelNamesOnContours(QListWidget *structuresWidget)
-{
-    QList<medContourInfo> infos;
-    for (int row = 0; row < structuresWidget->count(); row++)
-    {
-        QListWidgetItem *item = structuresWidget->item(row);
-        QColor col = item->icon().pixmap(QSize(20,20)).toImage().pixelColor(0,0);
-        medContourInfo info = medContourInfo(item->text(), col);
-        infos.append(info);
-    }
-
-    if ( viewEventFilter)
-    {
-        viewEventFilter->updateManagerInfos(infos);
-    }
-
-}
-
-void polygonRoiToolBox::initStructureNames(QListWidget *structuresWidget,
-                                        QStringList names, bool isProstate)
-{
-    connect(structuresWidget, &QListWidget::itemClicked, [this, structuresWidget](QListWidgetItem *item){
-       structuresWidget->setStyleSheet("QListView::item:selected { background: palette(Highlight) }");
-       if ( viewEventFilter )
-       {
-            if (currentView)
-            {
-               currentView->viewWidget()->setFocus();
-            }
-            QColor color = item->icon().pixmap(QSize(20,20)).toImage().pixelColor(0,0);
-            QString name = item->text();
-            bool score = (item->checkState()==Qt::Checked)?true:false;
-            if (!score)
-            {
-                item->setForeground(Qt::white);
-            }
-            if ( viewEventFilter)
-            {
-                viewEventFilter->updateContourState(name, color, score);
-            }
-       }
-    });
-
-    connect(structuresWidget, &QListWidget::itemChanged, [this](QListWidgetItem *item){
-        if ( viewEventFilter )
-        {
-            if (currentView)
-            {
-                currentView->viewWidget()->setFocus();
-            }
-            QColor color = item->icon().pixmap(QSize(20,20)).toImage().pixelColor(0,0);
-            QString name = item->text();
-            if ( viewEventFilter)
-            {
-                viewEventFilter->changeContourName(name, color);
-            }
-        }
-    });
-
-    connect(structuresWidget->model(), &QAbstractItemModel::rowsMoved, [this, structuresWidget](const QModelIndex &, int, int, const QModelIndex &, int){
-//        QListWidgetItem *item = structuresWidget->currentItem();
-//        if ( viewEventFilter )
-//        {
-//            if (currentView)
-//            {
-//                currentView->viewWidget()->setFocus();
-//            }
-//            QColor color = item->icon().pixmap(QSize(20,20)).toImage().pixelColor(0,0);
-//            QString name = item->text();
-//            if ( viewEventFilter)
-//            {
-//                viewEventFilter->updateContourState(name, color);
-//            }
-//        }
-    });
-    structuresWidget->setContentsMargins(0,0,0,0);
-
-    int idx = 0;
-    for (QString name : names)
-    {
-        if (colorsList.size()<=idx)
-        {
-            errorMessage("Unable to add new contour in list : No more color available");
-            break;
-        }
-        QColor col = colorsList.at(idx);
-        idx++;
-        QListWidgetItem *item = createWidgetItem(name,
-                                                 col);
-
-        structuresWidget->addItem(item);
-        if (isProstate && col!=Qt::green && col!=Qt::blue)
-        {
-            item->setCheckState(Qt::Checked);
-        }
-    }
-    structuresWidget->setDragDropMode(QAbstractItemView::InternalMove);
-    structuresWidget->setDragEnabled(true);
-    structuresWidget->setAcceptDrops(true);
-    structuresWidget->setDropIndicatorShown(true);
-    structuresWidget->setMaximumHeight((20*structuresWidget->count())+5);
-    structuresWidget->hide();
-    return;
-}
-
 void polygonRoiToolBox::disableButtons()
 {
     activateTBButton->setEnabled(false);
@@ -1073,13 +790,6 @@ void polygonRoiToolBox::disableButtons()
     tableViewChooser->setEnabled(false);
     interpolate->setEnabled(false);
     interpolate->setChecked(true);
-    specialities->setDisabled(true);
-    for (QListWidget *widget : structuresList)
-    {
-        widget->setDisabled(true);
-    }
-    plusButton->setDisabled(true);
-    minusButton->setDisabled(true);
 }
 
 void polygonRoiToolBox::saveContours()
@@ -1092,6 +802,7 @@ void polygonRoiToolBox::saveContours()
 
 void polygonRoiToolBox::clear()
 {
+    managementToolBox->clear();
     medToolBox::clear();
 
     if(currentView)

@@ -54,25 +54,26 @@ public:
     void activateRepulsor(bool state);
     void saveMask();
     medAbstractImageView *getView(){return currentView;}
-    void clearAlternativeViews();
+    void clearAlternativeView();
     bool isContourInSlice();
     void saveAllContours();
-    void loadContours(medTagContours tagContours,
-                      QColor color);
 
     void clearCopiedContours();
     void removeObserver();
     void addObserver();
 
-    void updateManagerInfos(QList<medContourInfo> infos);
-    void updateContourState(QString name, QColor color, bool score=false);
-    void changeContourName(QString name, QColor color);
-    void deleteLabel(medContourInfo info);
     QList<medTagRoiManager*> getManagers(){return managers;}
 
 public slots:
     void enableOtherViewsVisibility(bool state);
     void setCursorState(CURSORSTATE state){cursorState = state;}
+
+    void receiveDatasFromToolbox(QList<medContourInfo> infos);
+    void receiveContourState(medContourInfo info);
+    void receiveContourName(medContourInfo info);
+    void deleteLabel(medContourInfo info);
+    void loadContours(medTagContours tagContours,
+                      QColor color);
 
     void manageTick();
     void manageRoisVisibility();

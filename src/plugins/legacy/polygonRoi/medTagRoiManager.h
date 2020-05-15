@@ -18,11 +18,8 @@
 #include <medWorldPosContours.h>
 #include <polygonRoi.h>
 
-class medRoiManagerPrivate;
-class medSeriesOfRoi;
 class medTagRoiManagerPrivate;
 class polygonEventFilter;
-class medTableWidgetItem;
 
 typedef itk::Image<unsigned char, 3> UChar3ImageType;
 

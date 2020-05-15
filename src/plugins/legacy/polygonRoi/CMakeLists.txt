@@ -52,6 +52,7 @@ list_source_files(${TARGET_NAME}
   readers
   writers
   repulsor
+  toolboxes
   )
 
 ## #############################################################################

@@ -97,6 +97,8 @@ void polygonEventFilter::updateView(medAbstractImageView *view)
 
 void polygonEventFilter::reset()
 {
+    enableOtherViewsVisibility(false);
+    otherViews.clear();
     for (medTagRoiManager *manager: managers)
     {
         delete manager;
@@ -109,7 +111,6 @@ void polygonEventFilter::reset()
         interactorStyleRepulsor->Delete();
         interactorStyleRepulsor = nullptr;
     }
-    otherViews.clear();
     activeManager = nullptr;
     activeColor = QColor::Invalid;
     activeName = QString();
@@ -305,7 +306,7 @@ bool polygonEventFilter::leftButtonBehaviour(medAbstractView *view, QMouseEvent 
         mousePos[1] = (currentView->viewWidget()->height()-mouseEvent->y()-1)*QGuiApplication::screenAt(mouseEvent->globalPos())->devicePixelRatio();
         if (!activeManager)
         {
-            emit sendErrorMessage("No active contour: Unable to use repulsor tool.");
+            emit sendErrorMessage(QString("%1 :: No active contour: Unable to use repulsor tool.").arg(metaObject()->className()));
             return false;
         }
         if (interactorStyleRepulsor == nullptr)
@@ -692,9 +693,15 @@ void polygonEventFilter::enableOtherViewsVisibility(bool state)
     }
 }
 
-void polygonEventFilter::clearAlternativeViews()
+void polygonEventFilter::clearAlternativeView()
 {
-    otherViews.clear();
+    for (medAbstractImageView *v : otherViews)
+    {
+        if (v->identifier()=="")
+        {
+            otherViews.removeOne(v);
+        }
+    }
 }
 
 void polygonEventFilter::removeView()
@@ -782,7 +789,7 @@ medTagRoiManager *polygonEventFilter::findManagerWithColor(QColor color)
     return mgr;
 }
 
-void polygonEventFilter::updateManagerInfos(QList<medContourInfo> infos)
+void polygonEventFilter::receiveDatasFromToolbox(QList<medContourInfo> infos)
 {
     for (medContourInfo info: infos)
     {
@@ -800,31 +807,31 @@ void polygonEventFilter::updateManagerInfos(QList<medContourInfo> infos)
     }
 }
 
-void polygonEventFilter::updateContourState(QString name, QColor color, bool score)
+void polygonEventFilter::receiveContourState(medContourInfo info)
 {
     activeManager = nullptr;
-    medTagRoiManager *manager = findManagerWithColor(color);
+    medTagRoiManager *manager = findManagerWithColor(info.getColor());
     if (manager)
     {
-        manager->setScoreState(score);
-        manager->setName(name);
+        manager->setScoreState(info.scoreState());
+        manager->setName(info.getName());
         activeManager = manager;
     }
 
-    activeColor = color;
-    activeName = name;
-    scoreState = score;
+    activeColor = info.getColor();
+    activeName = info.getName();
+    scoreState = info.scoreState();
     enableOnlyActiveManager();
 }
 
-void polygonEventFilter::changeContourName(QString name, QColor color)
+void polygonEventFilter::receiveContourName(medContourInfo info)
 {
-    activeColor = color;
-    activeName = name;
-    medTagRoiManager *manager = findManagerWithColor(color);
+    activeColor = info.getColor();
+    activeName = info.getName();
+    medTagRoiManager *manager = findManagerWithColor(activeColor);
     if (manager)
     {
-        manager->setName(name);
+        manager->setName(info.getName());
         activeManager = manager;
         enableOnlyActiveManager();
     }
@@ -842,6 +849,12 @@ medTagRoiManager *polygonEventFilter::getManagerFromColor(QColor color)
 
 void polygonEventFilter::activateRepulsor(bool state)
 {
+    if (!activeManager)
+    {
+        state = false;
+        qDebug()<<metaObject()->className()<<":: No active contour: Unable to use repulsor tool.";
+    }
+
     isRepulsorActivated = state;
 
     vtkImageView2D *view2D =  static_cast<medVtkViewBackend*>(currentView->backend())->view2D;
@@ -853,6 +866,8 @@ void polygonEventFilter::activateRepulsor(bool state)
         {
             interactorStyleRepulsor = vtkInriaInteractorStylePolygonRepulsor::New();
         }
+        interactorStyleRepulsor->SetCurrentView(currentView);
+        interactorStyleRepulsor->SetManager(activeManager);
         interactorStyleRepulsor->SetLeftButtonInteraction(interactorStyle2D->GetLeftButtonInteraction());
         view2D->SetInteractorStyle(interactorStyleRepulsor);
         view2D->SetupInteractor(view2D->GetInteractor()); // to reinstall vtkImageView2D pipeline

@@ -128,7 +128,7 @@ void vtkInriaInteractorStylePolygonRepulsor::OnLeftButtonUp()
 void vtkInriaInteractorStylePolygonRepulsor::SetCurrentView(medAbstractView *view)
 {
     this->CurrentView = view;
-    OnLeftButtonUp();
+    //OnLeftButtonUp();
 }
 
 void vtkInriaInteractorStylePolygonRepulsor::SetManager(medTagRoiManager *closestManagerInSlice)

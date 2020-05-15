@@ -72,32 +72,35 @@ public slots:
     void enableTableViewChooser(bool state);
     void resetToolboxBehaviour();
     void errorMessage(QString error);
-    void updateContoursListWidget(medContourInfo &info);
+//    void receiveContoursDatasFromView(medContourInfo &info);
+    void checkRepulsor();
 
 private slots:
 
     void disableButtons();
     void saveContours();
     void saveBinaryImage();
-    void addLabelNameInList();
-    void removeLabelNameInList();
-    void showWidgetListForIndex(int index);
+//    void addLabelNameInList();
+//    void removeLabelNameInList();
+//    void showWidgetListForIndex(int index);
 
+signals:
+    void currentLabelsDisplayed();
 protected:
 
     void binaryImageFromPolygon(QList<QPair<vtkPolygon*,PlaneIndexSlicePair> > polys);
     QList<QPair<vtkPolygon*,PlaneIndexSlicePair> > createImagePolygons(QList<QPair<vtkPolyData*,PlaneIndexSlicePair> > &listPoly);
 
-    QList<medSeriesOfRoi*> * getListOfView(medAbstractView *view);
     void initializeMaskData( medAbstractData *imageData, medAbstractData *maskData ); // copy of a function in painttoolbox
     void clear();
 
 private:
 
     QList<QColor> colorsList;
-    QList<QListWidget*> structuresList;
+//    QList<QListWidget*> structuresList;
     polygonEventFilter *viewEventFilter;
     QPointer<medAbstractImageView> currentView;
+    medToolBox *managementToolBox;
 
     QPushButton *activateTBButton;
     QPushButton *saveBinaryMaskButton;
@@ -106,15 +109,15 @@ private:
     medTableWidgetChooser* tableViewChooser;
     QPushButton *saveContourButton;
 
-    QComboBox *specialities;
-    QPushButton *plusButton;
-    QPushButton *minusButton;
-    QVBoxLayout *listNamesLayout;
+//    QComboBox *specialities;
+//    QPushButton *plusButton;
+//    QPushButton *minusButton;
+//    QVBoxLayout *listNamesLayout;
 
-    bool loadContoursIfPresent(medAbstractImageView *v, unsigned int layer);
-    void initStructureNames(QListWidget *structuresWidget, QStringList names, bool isProstate = false);
-    void updateLabelNamesOnContours(QListWidget *structuresWidget);
-    QListWidgetItem * createWidgetItem(QString name, QColor col);
-    void clearStructuresList();
-    QColor findAvailableColor(QListWidget *widget);
+//    bool loadContoursIfPresent(medAbstractImageView *v, unsigned int layer);
+//    void initStructureNames(QListWidget *structuresWidget, QStringList names, bool isProstate = false);
+//    void updateLabelNamesOnContours(QListWidget *structuresWidget);
+//    QListWidgetItem * createWidgetItem(QString name, QColor col);
+//    void clearStructuresList();
+//    QColor findAvailableColor(QListWidget *widget);
 };
