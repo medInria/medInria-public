@@ -196,9 +196,10 @@ void resliceToolBox::startReformat()
                 container->setDefaultWidget(d->resliceViewer->viewWidget());
                 connect(container, SIGNAL(viewRemoved()),this, SLOT(stopReformat()), Qt::UniqueConnection);
 
-                connect(d->spacingX->getSpinBox(), SIGNAL(valueChanged(double)), d->resliceViewer, SLOT(thickSlabChanged(double)));
-                connect(d->spacingY->getSpinBox(), SIGNAL(valueChanged(double)), d->resliceViewer, SLOT(thickSlabChanged(double)));
-                connect(d->spacingZ->getSpinBox(), SIGNAL(valueChanged(double)), d->resliceViewer, SLOT(thickSlabChanged(double)));
+                connect(d->spacingX, SIGNAL(valueChanged(double)), d->resliceViewer, SLOT(thickSlabChanged(double)));
+                connect(d->spacingY, SIGNAL(valueChanged(double)), d->resliceViewer, SLOT(thickSlabChanged(double)));
+                connect(d->spacingZ, SIGNAL(valueChanged(double)), d->resliceViewer, SLOT(thickSlabChanged(double)));
+
                 connect(d->b_saveImage, SIGNAL(clicked()), d->resliceViewer, SLOT(saveImage()));
 
                 d->reformatedImage = nullptr;
