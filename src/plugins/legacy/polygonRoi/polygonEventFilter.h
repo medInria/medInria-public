@@ -37,7 +37,7 @@ class polygonEventFilter : public medViewEventFilter
 {
     Q_OBJECT
 public:
-    polygonEventFilter(medAbstractImageView *view, QList<QColor> colorsList);
+    polygonEventFilter(medAbstractImageView *view);
     ~polygonEventFilter();
     bool mousePressEvent(medAbstractView * view, QMouseEvent *mouseEvent) override;
     bool mouseReleaseEvent(medAbstractView * view, QMouseEvent *mouseEvent) override;
@@ -126,7 +126,7 @@ private:
     QLineEdit *updateNameManager(medTagRoiManager* closestManager, QMenu *mainMenu);
     void deleteNode(double *mousePosition);
     medTagRoiManager *getClosestManager(double *mousePos);
-    void enableOnlyActiveManager();
+    void enableActiveManagerIfExists();
     QMenu *changeLabelActions(medTagRoiManager* closestManager);
     bool isActiveContourInSlice();
     void setCustomCursor();

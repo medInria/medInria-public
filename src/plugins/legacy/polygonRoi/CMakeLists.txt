@@ -53,6 +53,7 @@ list_source_files(${TARGET_NAME}
   writers
   repulsor
   toolboxes
+  json
   )
 
 ## #############################################################################

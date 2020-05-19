@@ -83,6 +83,11 @@ void vtkInriaInteractorStylePolygonRepulsor::OnLeftButtonDown()
     {
         return;
     }
+    if (!this->CurrentRenderer)
+    {
+        return;
+    }
+
     this->Position[0] = this->Interactor->GetEventPosition()[0];
     this->Position[1] = this->Interactor->GetEventPosition()[1]; 
     this->FindPokedRenderer(this->Position[0], this->Position[1]);
@@ -111,7 +116,14 @@ void vtkInriaInteractorStylePolygonRepulsor::OnLeftButtonUp()
     {
         return;
     }
-
+    if (!manager)
+    {
+        return;
+    }
+    if (!this->CurrentRenderer)
+    {
+        return;
+    }
     this->CurrentRenderer->RemoveViewProp(this->RepulsorActor);
     this->On = 0;
     this->Interactor->Render();
@@ -128,7 +140,6 @@ void vtkInriaInteractorStylePolygonRepulsor::OnLeftButtonUp()
 void vtkInriaInteractorStylePolygonRepulsor::SetCurrentView(medAbstractView *view)
 {
     this->CurrentView = view;
-    //OnLeftButtonUp();
 }
 
 void vtkInriaInteractorStylePolygonRepulsor::SetManager(medTagRoiManager *closestManagerInSlice)
@@ -266,7 +277,6 @@ void vtkInriaInteractorStylePolygonRepulsor::RedefinePolygons()
                 {
                     this->ListPolygonsToSave.append(roi);
                 }
-                //roi->getContour()->InvokeEvent(vtkCommand::MouseMoveEvent); //to acknowledge that the ROI has changed
             }
         }
 

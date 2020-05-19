@@ -59,7 +59,6 @@ public:
 public slots:
 
     void updateView();
-    void onViewClosed();
     void onLayerClosed(uint index);
     void clickClosePolygon(bool state);
     void activateRepulsor(bool state);
@@ -72,7 +71,6 @@ public slots:
     void enableTableViewChooser(bool state);
     void resetToolboxBehaviour();
     void errorMessage(QString error);
-//    void receiveContoursDatasFromView(medContourInfo &info);
     void checkRepulsor();
 
 private slots:
@@ -80,12 +78,10 @@ private slots:
     void disableButtons();
     void saveContours();
     void saveBinaryImage();
-//    void addLabelNameInList();
-//    void removeLabelNameInList();
-//    void showWidgetListForIndex(int index);
 
 signals:
     void currentLabelsDisplayed();
+    void deactivateContours();
 protected:
 
     void binaryImageFromPolygon(QList<QPair<vtkPolygon*,PlaneIndexSlicePair> > polys);
@@ -96,11 +92,10 @@ protected:
 
 private:
 
-    QList<QColor> colorsList;
-//    QList<QListWidget*> structuresList;
     polygonEventFilter *viewEventFilter;
     QPointer<medAbstractImageView> currentView;
     medToolBox *managementToolBox;
+    QUuid mainContainerUUID;
 
     QPushButton *activateTBButton;
     QPushButton *saveBinaryMaskButton;
@@ -109,15 +104,4 @@ private:
     medTableWidgetChooser* tableViewChooser;
     QPushButton *saveContourButton;
 
-//    QComboBox *specialities;
-//    QPushButton *plusButton;
-//    QPushButton *minusButton;
-//    QVBoxLayout *listNamesLayout;
-
-//    bool loadContoursIfPresent(medAbstractImageView *v, unsigned int layer);
-//    void initStructureNames(QListWidget *structuresWidget, QStringList names, bool isProstate = false);
-//    void updateLabelNamesOnContours(QListWidget *structuresWidget);
-//    QListWidgetItem * createWidgetItem(QString name, QColor col);
-//    void clearStructuresList();
-//    QColor findAvailableColor(QListWidget *widget);
 };

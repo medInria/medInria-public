@@ -73,13 +73,13 @@ void View2DObserver::Execute ( vtkObject *caller, unsigned long event, void *cal
     }
 }
 
-polygonEventFilter::polygonEventFilter(medAbstractImageView *view, QList<QColor> colorsList) :
+polygonEventFilter::polygonEventFilter(medAbstractImageView *view) :
         medViewEventFilter(), currentView(view), cursorState(CURSORSTATE::CS_MOUSE_EVENT), isRepulsorActivated(false), activateEventFilter(true), enableInterpolation(true),
-        activeManager(nullptr)
+        activeManager(nullptr), observer(nullptr)
 {
     activeManager = nullptr;
-    activeName = "Label-0";
-    activeColor = Qt::green;
+    activeName = QString();
+    activeColor = QColor::Invalid;
     scoreState = false;
     // interactors
     interactorStyleRepulsor = vtkInriaInteractorStylePolygonRepulsor::New();
@@ -97,6 +97,7 @@ void polygonEventFilter::updateView(medAbstractImageView *view)
 
 void polygonEventFilter::reset()
 {
+    removeObserver();
     enableOtherViewsVisibility(false);
     otherViews.clear();
     for (medTagRoiManager *manager: managers)
@@ -306,7 +307,7 @@ bool polygonEventFilter::leftButtonBehaviour(medAbstractView *view, QMouseEvent 
         mousePos[1] = (currentView->viewWidget()->height()-mouseEvent->y()-1)*QGuiApplication::screenAt(mouseEvent->globalPos())->devicePixelRatio();
         if (!activeManager)
         {
-            emit sendErrorMessage(QString("%1 :: No active contour: Unable to use repulsor tool.").arg(metaObject()->className()));
+            emit sendErrorMessage(QString("Select a label in list to be able to use repulsor tool.").arg(metaObject()->className()));
             return false;
         }
         if (interactorStyleRepulsor == nullptr)
@@ -424,7 +425,7 @@ QMenu *polygonEventFilter::changeLabelActions(medTagRoiManager* closestManager)
                 roiToAdd->pasteContour(nodes);
                 deleteContour(closestManager);
                 activeManager = manager;
-                enableOnlyActiveManager();
+                enableActiveManagerIfExists();
                 medContourInfo info = medContourInfo(activeManager->getName(), activeManager->getColor(), true);
                 emit sendContourInfoToListWidget(info);
             });
@@ -493,7 +494,7 @@ bool polygonEventFilter::rightButtonBehaviour(medAbstractView *view, QMouseEvent
             activationAction =  new QAction("Activate", &mainMenu);
             connect(activationAction, &QAction::triggered, [=](){
                 activeManager = closestManager;
-                enableOnlyActiveManager();
+                enableActiveManagerIfExists();
                 medContourInfo info = medContourInfo(activeManager->getName(), activeManager->getColor(), true);
                 emit sendContourInfoToListWidget(info);
             });
@@ -557,7 +558,7 @@ bool polygonEventFilter::rightButtonBehaviour(medAbstractView *view, QMouseEvent
 }
 
 
-void polygonEventFilter::enableOnlyActiveManager()
+void polygonEventFilter::enableActiveManagerIfExists()
 {
     for (medTagRoiManager *manager : managers)
     {
@@ -582,7 +583,7 @@ medTagRoiManager *polygonEventFilter::createManager()
     connect(manager, SIGNAL(sendErrorMessage(QString)), this, SIGNAL(sendErrorMessage(QString)), Qt::UniqueConnection);
     activeManager = manager;
 
-    enableOnlyActiveManager();
+    enableActiveManagerIfExists();
     return manager;
 }
 
@@ -615,7 +616,7 @@ QAction *polygonEventFilter::createScoreAction(medTagRoiManager *manager, QStrin
         manager->setOptName(score);
         manager->updateContoursColor(color);
         activeManager = manager;
-        enableOnlyActiveManager();
+        enableActiveManagerIfExists();
         medContourInfo info = medContourInfo(manager->getName(), manager->getColor(), true);
         info.setAdditionalNameAndColor(manager->getOptName(), manager->getOptColor());
         emit sendContourInfoToListWidget(info);
@@ -629,23 +630,29 @@ void polygonEventFilter::removeObserver()
     {
         vtkImageView2D *view2d = static_cast<medVtkViewBackend*>(currentView->backend())->view2D;
         view2d->RemoveObserver(observer);
+        observer = nullptr;
     }
 }
 
 void polygonEventFilter::addObserver()
 {
-    observer = vtkSmartPointer<View2DObserver>::New();
-    observer->setObject(this);
-    vtkImageView2D *view2d = static_cast<medVtkViewBackend*>(currentView->backend())->view2D;
-    view2d->AddObserver(vtkImageView2D::SliceChangedEvent,observer,0);
+    if (!observer)
+    {
+        observer = vtkSmartPointer<View2DObserver>::New();
+        observer->setObject(this);
+        vtkImageView2D *view2d = static_cast<medVtkViewBackend*>(currentView->backend())->view2D;
+        view2d->AddObserver(vtkImageView2D::SliceChangedEvent,observer,0);
+    }
 }
 
 void polygonEventFilter::Off()
 {
     if (currentView)
     {
+        activeColor = QColor::Invalid;
+        activeName = QString();
         activateEventFilter = false;
-        enableOnlyActiveManager();
+        enableActiveManagerIfExists();
         activateRepulsor(false);
         cursorState = CURSORSTATE::CS_CONTINUE;
     }
@@ -654,7 +661,7 @@ void polygonEventFilter::Off()
 void polygonEventFilter::On()
 {
     activateEventFilter = true;
-    enableOnlyActiveManager();
+    enableActiveManagerIfExists();
 
     cursorState = CURSORSTATE::CS_CONTINUE;
 }
@@ -673,7 +680,7 @@ void polygonEventFilter::setEnableInterpolation(bool state)
         }
         manager->setEnableInterpolation(state);
     }
-    enableOnlyActiveManager();
+    enableActiveManagerIfExists();
     manageTick();
 }
 
@@ -772,7 +779,7 @@ void polygonEventFilter::pasteContours()
             }
         }
         enableOtherViewsVisibility(true);
-        enableOnlyActiveManager();
+        enableActiveManagerIfExists();
     }
 }
 
@@ -797,7 +804,6 @@ void polygonEventFilter::receiveDatasFromToolbox(QList<medContourInfo> infos)
         if (mgr)
         {
             mgr->setName(info.getName());
-//            mgr->setScoreState(info.scoreState());
             if (mgr==activeManager)
             {
                 info.setSelected(true);
@@ -821,7 +827,7 @@ void polygonEventFilter::receiveContourState(medContourInfo info)
     activeColor = info.getColor();
     activeName = info.getName();
     scoreState = info.scoreState();
-    enableOnlyActiveManager();
+    enableActiveManagerIfExists();
 }
 
 void polygonEventFilter::receiveContourName(medContourInfo info)
@@ -833,7 +839,7 @@ void polygonEventFilter::receiveContourName(medContourInfo info)
     {
         manager->setName(info.getName());
         activeManager = manager;
-        enableOnlyActiveManager();
+        enableActiveManagerIfExists();
     }
 }
 
@@ -849,12 +855,6 @@ medTagRoiManager *polygonEventFilter::getManagerFromColor(QColor color)
 
 void polygonEventFilter::activateRepulsor(bool state)
 {
-    if (!activeManager)
-    {
-        state = false;
-        qDebug()<<metaObject()->className()<<":: No active contour: Unable to use repulsor tool.";
-    }
-
     isRepulsorActivated = state;
 
     vtkImageView2D *view2D =  static_cast<medVtkViewBackend*>(currentView->backend())->view2D;
@@ -1057,7 +1057,7 @@ void polygonEventFilter::switchContourColor(double *mousePosition)
         if (closestManager->switchColor())
         {
             activeManager = closestManager;
-            enableOnlyActiveManager();
+            enableActiveManagerIfExists();
             medContourInfo info = medContourInfo(closestManager->getName(),
                                                  closestManager->getColor(),
                                                  true);

@@ -7,7 +7,7 @@
 #include <medToolBoxFactory.h>
 
 contoursManagementToolBox::contoursManagementToolBox(QWidget *parent):
-    medToolBox(parent), currentView(nullptr)
+    medToolBox(parent), currentView(nullptr), savedSelectedIndex(QPair<int,int>(0, 0))
 {
     colors = QList<QColor>({
         Qt::green,
@@ -36,25 +36,7 @@ contoursManagementToolBox::contoursManagementToolBox(QWidget *parent):
     minusButton->setMaximumSize(QSize(20,20));
     minusButton->hide();
 
-    QStringList spe;
-    spe << "default" << "prostate";
-    specialities->addItems(spe);
-
-    // The lines below are temp code
-    // Will be replaced soon by values parsed in json configuration file
-
-    QStringList defaultList;
-    defaultList << "Label-0";
-    QListWidget *defaultNameList = initLabelsList(defaultList);
-    defaultNameList->hide();
-    labels.append(defaultNameList);
-
-    QStringList prostateList;
-    prostateList << "WG (whole gland)" << "TZ (transitional zone)" << "Target 1";
-    QListWidget *prostateNameList = initLabelsList(prostateList);
-    prostateNameList->hide();
-    labels.append(prostateNameList);
-    // End of temp code
+    parseJSONFile();
 
     QVBoxLayout *listLabelLayout = new QVBoxLayout();
     layout->addLayout(listLabelLayout);
@@ -87,17 +69,98 @@ bool contoursManagementToolBox::registered()
     return medToolBoxFactory::instance()->registerToolBox<contoursManagementToolBox>();
 }
 
+void contoursManagementToolBox::parseJSONFile()
+{
+    QFile file(":/json/specialities.json");
+    if (!file.open(QIODevice::ReadOnly))
+    {
+        qDebug()<<"unable to open config file";
+        return;
+    }
+
+    QByteArray rawData = file.readAll();
+    file.close();
+    QJsonDocument doc(QJsonDocument::fromJson(rawData));
+    QJsonObject jsonObject = doc.object();
+    QJsonArray jsonArray = jsonObject["specialities"].toArray();
+    QStringList spe;
+    QList<QStringList> listItems;
+
+    for (const QJsonValue & value: jsonArray)
+    {
+        QJsonObject obj = value.toObject();
+        for (QString key : obj.keys())
+        {
+            if (obj[key].isString() && key=="name")
+            {
+                spe << obj[key].toString();
+            }
+            else if ( obj[key].isArray())
+            {
+                QJsonArray descArray= obj[key].toArray();
+                QStringList items;
+                for (QJsonValue descValue : descArray)
+                {
+                    if (descValue.isObject())
+                    {
+                        QJsonObject obj = descValue.toObject();
+                        for (QString k : obj.keys())
+                        {
+                            if (obj[k].isString() && k=="name")
+                            {
+                                items << obj[k].toString();
+                                qDebug()<<"val "<<obj[k].toString();
+                            }
+                            else if ( obj[k].isBool() && k=="hasScore")
+                            {
+                                qDebug()<<"bool "<<obj[k].toBool();
+                            }
+                            else
+                            {
+                                qDebug()<<"Unexpected key "<<obj[k].type();
+                            }
+                        }
+                    }
+                     else
+                    {
+                        qDebug()<<"Unexpected key "<<descValue<<"   "<<descValue.type();
+                    }
+                }
+
+                listItems.append(items);
+                QListWidget *widget = initLabelsList(items);
+                labels.append(widget);
+            }
+        }
+    }
+    specialities->addItems(spe);
+}
+
 void contoursManagementToolBox::clear()
 {
     medToolBox::clear();
 
     currentView = nullptr;
-    specialities->setCurrentIndex(0);
-    for (QListWidget *widget : labels)
+
+    QListWidget *widget = labels.at(0);
+    while( widget->count() > 1)
     {
-        widget->clear();
-        widget->hide();
+        QListWidgetItem *item = widget->takeItem(widget->count()-1);
+        delete item;
     }
+    widget->setMaximumHeight((20*widget->count())+5);
+
+    widget = labels.at(1);
+    while( widget->count() > 4)
+    {
+        QListWidgetItem *item = widget->takeItem(widget->count()-1);
+        delete item;
+    }
+    widget->setMaximumHeight((20*widget->count())+5);
+
+    specialities->setCurrentIndex(0);
+
+    savedSelectedIndex = QPair<int, int>(0, 0);
 }
 
 void contoursManagementToolBox::updateView()
@@ -206,6 +269,14 @@ void contoursManagementToolBox::clickActivationButton(bool state)
     }
     plusButton->setEnabled(state);
     minusButton->setEnabled(state);
+    if (state)
+    {
+        specialities->setCurrentIndex(savedSelectedIndex.first);
+        QListWidget *widget = labels.at(savedSelectedIndex.first);
+        QListWidgetItem *item = widget->item(savedSelectedIndex.second);
+        item->setSelected(true);
+        emit widget->itemChanged(item);
+    }
 }
 
 void contoursManagementToolBox::disableButtons()
@@ -265,7 +336,6 @@ QListWidget *contoursManagementToolBox::initLabelsList(QStringList names, bool i
         QColor color = item->icon().pixmap(QSize(20,20)).toImage().pixelColor(0,0);
         QString name = item->text();
         bool score = (item->checkState()==Qt::Checked)?true:false;
-        qDebug()<<"select contour "<<name;
         if (!score)
         {
             item->setForeground(Qt::white);
@@ -285,22 +355,16 @@ QListWidget *contoursManagementToolBox::initLabelsList(QStringList names, bool i
         emit sendContourName(info);
     });
 
-    connect(widget->model(), &QAbstractItemModel::rowsMoved, [this, widget](const QModelIndex &, int, int, const QModelIndex &, int){
-//        QListWidgetItem *item = structuresWidget->currentItem();
-//        if ( viewEventFilter )
-//        {
-//            if (currentView)
-//            {
-//                currentView->viewWidget()->setFocus();
-//            }
-//            QColor color = item->icon().pixmap(QSize(20,20)).toImage().pixelColor(0,0);
-//            QString name = item->text();
-//            if ( viewEventFilter)
-//            {
-//                viewEventFilter->updateContourState(name, color);
-//            }
-//        }
+    connect(widget, &QListWidget::itemSelectionChanged, [this, widget](){
+        if (widget->selectedItems().size()==0)
+        {
+            QString name = QString();
+            QColor color = QColor::Invalid;
+            medContourInfo info = medContourInfo(name, color);
+            emit sendContourState(info);
+        }
     });
+
     widget->setContentsMargins(0,0,0,0);
 
     int idx = 0;
@@ -451,5 +515,20 @@ void contoursManagementToolBox::receiveContoursDatasFromView(medContourInfo& inf
         {
             item->setSelected(false);
         }
+    }
+}
+
+void contoursManagementToolBox::unselectAll()
+{
+    QListWidget *widget = labels.at(specialities->currentIndex());
+    for (int row=0; row<widget->count(); row++)
+    {
+        QListWidgetItem *item = widget->item(row);
+        if (item->isSelected())
+        {
+            savedSelectedIndex.first = specialities->currentIndex();
+            savedSelectedIndex.second = row;
+        }
+        item->setSelected(false);
     }
 }

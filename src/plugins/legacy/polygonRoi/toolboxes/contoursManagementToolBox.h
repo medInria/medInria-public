@@ -41,6 +41,7 @@ public slots:
 
      void receiveContoursDatasFromView(medContourInfo &info);
      void showCurrentLabels();
+     void unselectAll();
 private slots:
      void showWidgetListForIndex(int index);
 
@@ -63,7 +64,7 @@ private:
 
     QList<QColor> colors;
     medAbstractView * currentView;
-
+    QPair<int, int> savedSelectedIndex;
     void disableButtons();
 
     QListWidget *initLabelsList(QStringList names, bool isProstate=false);
@@ -71,4 +72,5 @@ private:
     void updateLabelNamesOnContours(QListWidget *widget);
     QColor findAvailableColor(QListWidget *widget);
     bool loadDataAsContours(medAbstractImageView *v, unsigned int layer);
+    void parseJSONFile();
 };
