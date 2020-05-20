@@ -55,8 +55,8 @@ contoursManagementToolBox::contoursManagementToolBox(QWidget *parent):
     this->addWidget(widget);
 
     connect(specialities, SIGNAL(currentIndexChanged(int)), this, SLOT(showWidgetListForIndex(int)));
-        connect(minusButton, SIGNAL(pressed()), this, SLOT(removeLabelNameInList()));
-        connect(plusButton, SIGNAL(pressed()), this, SLOT(addLabel()));
+    connect(minusButton, SIGNAL(pressed()), this, SLOT(removeLabelNameInList()));
+    connect(plusButton, SIGNAL(pressed()), this, SLOT(addLabel()));
 }
 
 contoursManagementToolBox::~contoursManagementToolBox()
@@ -67,73 +67,6 @@ contoursManagementToolBox::~contoursManagementToolBox()
 bool contoursManagementToolBox::registered()
 {
     return medToolBoxFactory::instance()->registerToolBox<contoursManagementToolBox>();
-}
-
-void contoursManagementToolBox::parseJSONFile()
-{
-    QFile file(":/json/specialities.json");
-    if (!file.open(QIODevice::ReadOnly))
-    {
-        qDebug()<<"unable to open config file";
-        return;
-    }
-
-    QByteArray rawData = file.readAll();
-    file.close();
-    QJsonDocument doc(QJsonDocument::fromJson(rawData));
-    QJsonObject jsonObject = doc.object();
-    QJsonArray jsonArray = jsonObject["specialities"].toArray();
-    QStringList spe;
-    QList<QStringList> listItems;
-
-    for (const QJsonValue & value: jsonArray)
-    {
-        QJsonObject obj = value.toObject();
-        for (QString key : obj.keys())
-        {
-            if (obj[key].isString() && key=="name")
-            {
-                spe << obj[key].toString();
-            }
-            else if ( obj[key].isArray())
-            {
-                QJsonArray descArray= obj[key].toArray();
-                QStringList items;
-                for (QJsonValue descValue : descArray)
-                {
-                    if (descValue.isObject())
-                    {
-                        QJsonObject obj = descValue.toObject();
-                        for (QString k : obj.keys())
-                        {
-                            if (obj[k].isString() && k=="name")
-                            {
-                                items << obj[k].toString();
-                                qDebug()<<"val "<<obj[k].toString();
-                            }
-                            else if ( obj[k].isBool() && k=="hasScore")
-                            {
-                                qDebug()<<"bool "<<obj[k].toBool();
-                            }
-                            else
-                            {
-                                qDebug()<<"Unexpected key "<<obj[k].type();
-                            }
-                        }
-                    }
-                     else
-                    {
-                        qDebug()<<"Unexpected key "<<descValue<<"   "<<descValue.type();
-                    }
-                }
-
-                listItems.append(items);
-                QListWidget *widget = initLabelsList(items);
-                labels.append(widget);
-            }
-        }
-    }
-    specialities->addItems(spe);
 }
 
 void contoursManagementToolBox::clear()
@@ -312,58 +245,61 @@ void contoursManagementToolBox::showWidgetListForIndex(int index)
 
 void contoursManagementToolBox::updateLabelNamesOnContours(QListWidget *widget)
 {
-    QList<medContourInfo> infos;
+    QList<medContourSharedInfo> infos;
     for (int row = 0; row < widget->count(); row++)
     {
         QListWidgetItem *item = widget->item(row);
         QColor col = item->icon().pixmap(QSize(20,20)).toImage().pixelColor(0,0);
-        medContourInfo info = medContourInfo(item->text(), col);
+        medContourSharedInfo info = medContourSharedInfo(item->text(), col);
         infos.append(info);
     }
 
     emit sendDatasToView(infos);
 }
 
-QListWidget *contoursManagementToolBox::initLabelsList(QStringList names, bool isProstate)
+QListWidget *contoursManagementToolBox::initLabelsList(QStringList names, QList<bool> scores, bool isProstate)
 {
     QListWidget *widget = new QListWidget;
-    connect(widget, &QListWidget::itemClicked, [this, widget](QListWidgetItem *item){
-        widget->setStyleSheet("QListView::item:selected { background: palette(Highlight) }");
+
+    connect(widget, &QListWidget::itemClicked, this, [this](QListWidgetItem *item){
         if (currentView)
         {
            currentView->viewWidget()->setFocus();
         }
+        item->setSelected(true);
         QColor color = item->icon().pixmap(QSize(20,20)).toImage().pixelColor(0,0);
         QString name = item->text();
-        bool score = (item->checkState()==Qt::Checked)?true:false;
-        if (!score)
-        {
-            item->setForeground(Qt::white);
-        }
-        medContourInfo info = medContourInfo(name, color);
-        info.setScore(score);
+        name = name.remove(QRegExp(" - PIRADS[0-9]"));
+        bool hasScore = item->flags().testFlag(Qt::ItemIsUserCheckable);
+        bool checkState = (item->checkState()==Qt::Checked)?true:false;
+
+        medContourSharedInfo info = medContourSharedInfo(name, color);
+        info.setScoreInfo(hasScore);
+        info.setCheckState(checkState);
         emit sendContourState(info);
-    });
-    connect(widget, &QListWidget::itemChanged, [this](QListWidgetItem *item){
+    }, Qt::UniqueConnection);
+
+    connect(widget, &QListWidget::itemChanged, this, [this](QListWidgetItem *item){
         if (currentView)
         {
             currentView->viewWidget()->setFocus();
         }
         QColor color = item->icon().pixmap(QSize(20,20)).toImage().pixelColor(0,0);
         QString name = item->text();
-        medContourInfo info = medContourInfo(name, color);
+        name = name.remove(QRegExp(" - PIRADS[0-9]"));
+        medContourSharedInfo info = medContourSharedInfo(name, color);
         emit sendContourName(info);
-    });
+    }, Qt::UniqueConnection);
 
-    connect(widget, &QListWidget::itemSelectionChanged, [this, widget](){
+    connect(widget, &QListWidget::itemSelectionChanged, this, [this, widget](){
         if (widget->selectedItems().size()==0)
         {
             QString name = QString();
             QColor color = QColor::Invalid;
-            medContourInfo info = medContourInfo(name, color);
+            medContourSharedInfo info = medContourSharedInfo(name, color);
             emit sendContourState(info);
         }
-    });
+    }, Qt::UniqueConnection);
 
     widget->setContentsMargins(0,0,0,0);
 
@@ -376,26 +312,99 @@ QListWidget *contoursManagementToolBox::initLabelsList(QStringList names, bool i
             break;
         }
         QColor col = colors.at(idx);
+        bool score = false;
+        if (scores.size()==names.size())
+        {
+            score = scores.at(idx);
+        }
         idx++;
         QListWidgetItem *item = createWidgetItem(name,
-                                                 col);
+                                                 col,
+                                                 score,
+                                                 isProstate);
 
         widget->addItem(item);
-        if (isProstate && col!=Qt::green && col!=Qt::blue)
-        {
-            item->setCheckState(Qt::Checked);
-        }
     }
-    widget->setDragDropMode(QAbstractItemView::InternalMove);
-    widget->setDragEnabled(true);
-    widget->setAcceptDrops(true);
-    widget->setDropIndicatorShown(true);
+    if (!isProstate)
+    {
+        widget->setDragDropMode(QAbstractItemView::InternalMove);
+        widget->setDragEnabled(true);
+        widget->setAcceptDrops(true);
+        widget->setDropIndicatorShown(true);
+    }
     widget->setMaximumHeight((20*widget->count())+5);
     widget->hide();
     return widget;
 }
 
-QListWidgetItem * contoursManagementToolBox::createWidgetItem(QString name, QColor col)
+void contoursManagementToolBox::parseJSONFile()
+{
+    QFile file(":/json/specialities.json");
+    if (!file.open(QIODevice::ReadOnly))
+    {
+        qDebug()<<"unable to open config file";
+        return;
+    }
+
+    QByteArray rawData = file.readAll();
+    file.close();
+    QJsonDocument doc(QJsonDocument::fromJson(rawData));
+    QJsonObject jsonObject = doc.object();
+    QJsonArray jsonArray = jsonObject["specialities"].toArray();
+    QStringList spe;
+    QList<QStringList> listItems;
+
+    for (const QJsonValue & value: jsonArray)
+    {
+        QJsonObject obj = value.toObject();
+        QStringList items;
+        QList<bool> scores;
+        for (QString key : obj.keys())
+        {
+            if (obj[key].isString() && key=="name")
+            {
+                spe << obj[key].toString();
+            }
+            else if ( obj[key].isArray())
+            {
+                QJsonArray descArray= obj[key].toArray();
+                for (QJsonValue descValue : descArray)
+                {
+                    if (descValue.isObject())
+                    {
+                        QJsonObject obj = descValue.toObject();
+                        for (QString k : obj.keys())
+                        {
+                            if (obj[k].isString() && k=="name")
+                            {
+                                items << obj[k].toString();
+                            }
+                            else if (obj[k].isBool() && k=="hasScore")
+                            {
+                                scores << obj[k].toBool();
+                            }
+                            else
+                            {
+                                qDebug()<<"Unexpected key "<<obj[k].type();
+                            }
+                        }
+                    }
+                     else
+                    {
+                        qDebug()<<"Unexpected key "<<descValue<<"   "<<descValue.type();
+                    }
+                }
+            }
+        }
+        bool isProstate = (spe.last()=="prostate")?true:false;
+        listItems.append(items);
+        QListWidget *widget = initLabelsList(items, scores, isProstate);
+        labels.append(widget);
+    }
+    specialities->addItems(spe);
+}
+
+QListWidgetItem * contoursManagementToolBox::createWidgetItem(QString name, QColor col, bool score, bool isProstate)
 {
     QPixmap pixmap(20,20);
     pixmap.fill(col);
@@ -404,8 +413,26 @@ QListWidgetItem * contoursManagementToolBox::createWidgetItem(QString name, QCol
     QFont font;
     font.setBold(true);
     item->setFont(font);
-    item->setFlags(item->flags() | Qt::ItemIsSelectable | Qt::ItemIsEditable | Qt::ItemIsUserCheckable);
-    item->setCheckState(Qt::Unchecked);
+    if (isProstate)
+    {
+        if (score)
+        {
+            item->setFlags(item->flags() | Qt::ItemIsSelectable | Qt::ItemIsUserCheckable);
+            item->setFlags(item->flags() & (~Qt::ItemIsDragEnabled));
+            item->setCheckState(Qt::Unchecked);
+        }
+        else
+        {
+            item->setFlags(item->flags() | Qt::ItemIsSelectable);
+            item->setFlags(item->flags() & (~Qt::ItemIsUserCheckable));
+            item->setFlags(item->flags() & (~Qt::ItemIsDragEnabled));
+        }
+    }
+    else
+    {
+        item->setFlags(item->flags() | Qt::ItemIsSelectable | Qt::ItemIsEditable);
+        item->setFlags(item->flags() & (~Qt::ItemIsUserCheckable));
+    }
 
     return item;
 }
@@ -438,7 +465,7 @@ void contoursManagementToolBox::removeLabelNameInList()
         {
             QString name = item->text();
             QColor col = item->icon().pixmap(QSize(20,20)).toImage().pixelColor(0,0);
-            medContourInfo info = medContourInfo(item->text(), col);
+            medContourSharedInfo info = medContourSharedInfo(item->text(), col);
             emit labelToDelete(info);
             widget->takeItem(row);
         }
@@ -446,7 +473,7 @@ void contoursManagementToolBox::removeLabelNameInList()
 
     if (widget->count()==0)
     {
-        medContourInfo info = medContourInfo(QString(), QColor::Invalid);
+        medContourSharedInfo info = medContourSharedInfo(QString(), QColor::Invalid);
         emit sendContourState(info);
     }
     else
@@ -479,36 +506,40 @@ QColor contoursManagementToolBox::findAvailableColor(QListWidget *widget)
     return color;
 }
 
-void contoursManagementToolBox::receiveContoursDatasFromView(medContourInfo& info)
+void contoursManagementToolBox::receiveContoursDatasFromView(medContourSharedInfo& info)
 {
     QListWidget *widget = labels.at(specialities->currentIndex());
     for (int row = 0; row < widget->count(); row++)
     {
         QListWidgetItem *item = widget->item(row);
         QString itemName = item->text();
+        itemName = itemName.remove(QRegExp(" - PIRADS[0-9]"));
+
         QColor itemColor = item->icon().pixmap(QSize(20,20)).toImage().pixelColor(0,0);
         if ( info.nameUpdated() && itemColor==info.getColor())
         {
-            item->setText(info.getName());
-            item->setSelected(true);
+            if (!item->flags().testFlag(Qt::ItemIsEditable))
+            {
+                displayMessageError(QString("%1 is not editable").arg(itemName));
+                medContourSharedInfo info = medContourSharedInfo(itemName, itemColor);
+                emit sendContourName(info);
+            }
+            else
+            {
+                item->setText(info.getName());
+                item->setSelected(true);
+            }
         }
         else if (itemName==info.getName() && itemColor==info.getColor())
         {
             item->setSelected(info.isSelected());
-            if (info.scoreState())
+            if (info.hasScore() && item->flags().testFlag(Qt::ItemIsUserCheckable))
             {
-                QColor secondColor = info.getAdditionalColor();
-                QColor color = (item->foreground().color()==secondColor)?Qt::white:secondColor;
-                item->setForeground(color);
-                if ( item->foreground().color()==secondColor )
-                {
-                    QString style = "QListView::item:selected { background: rgb(%1, %2, %3); }";
-                    widget->setStyleSheet(style.arg(secondColor.red()).arg(secondColor.green()).arg(secondColor.blue()));
-                }
-                else
-                {
-                    widget->setStyleSheet("QListView::item:selected { background: palette(Highlight) }");
-                }
+                Qt::CheckState state = (info.checkState())?Qt::Checked:Qt::Unchecked;
+                QString name = (info.getAdditionalName()!=QString())?QString("%1 - %2").arg(info.getName()).arg(info.getAdditionalName()):
+                                                       info.getName();
+                item->setText(name);
+                item->setCheckState(state);
             }
         }
         else

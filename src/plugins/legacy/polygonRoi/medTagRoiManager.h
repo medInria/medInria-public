@@ -64,14 +64,14 @@ public:
     QVector<QVector2D> copyContour();
     bool pasteContour(QVector<QVector2D> nodes);
     void setName(QString name);
-    void setOptName(QString name);
+    void setOptionalNameWithColor(QString name, QColor color);
     void removeContourOtherView(medAbstractImageView *v);
     void removeIntermediateContoursOtherView(medAbstractImageView *v);
     void activateContours(bool state);
-    void updateContoursColor(QColor color);
+    void changeContoursColor(QColor color);
     bool hasScore();
     void setScoreState(bool state);
-    bool switchColor();
+    QColor switchColor();
 
 public slots:
     void interpolateIfNeeded();

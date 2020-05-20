@@ -39,7 +39,7 @@ public slots:
      void updateView();
      void clickActivationButton(bool state);
 
-     void receiveContoursDatasFromView(medContourInfo &info);
+     void receiveContoursDatasFromView(medContourSharedInfo &info);
      void showCurrentLabels();
      void unselectAll();
 private slots:
@@ -49,10 +49,10 @@ private slots:
      void removeLabelNameInList();
 
 signals:
-     void sendDatasToView(QList<medContourInfo> infos);
-     void sendContourState(medContourInfo info);
-     void sendContourName(medContourInfo info);
-     void labelToDelete(medContourInfo info);
+     void sendDatasToView(QList<medContourSharedInfo> infos);
+     void sendContourState(medContourSharedInfo info);
+     void sendContourName(medContourSharedInfo info);
+     void labelToDelete(medContourSharedInfo info);
      void contoursToLoad(medTagContours tagContours,
                            QColor color);
      void repulsorState();
@@ -67,8 +67,8 @@ private:
     QPair<int, int> savedSelectedIndex;
     void disableButtons();
 
-    QListWidget *initLabelsList(QStringList names, bool isProstate=false);
-    QListWidgetItem *createWidgetItem(QString name, QColor col);
+    QListWidget *initLabelsList(QStringList names, QList<bool> scores, bool isProstate=false);
+    QListWidgetItem *createWidgetItem(QString name, QColor col, bool score=false, bool isProstate=false);
     void updateLabelNamesOnContours(QListWidget *widget);
     QColor findAvailableColor(QListWidget *widget);
     bool loadDataAsContours(medAbstractImageView *v, unsigned int layer);

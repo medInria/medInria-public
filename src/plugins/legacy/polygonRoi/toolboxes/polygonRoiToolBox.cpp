@@ -301,11 +301,11 @@ void polygonRoiToolBox::clickClosePolygon(bool state)
             connect(viewEventFilter, SIGNAL(sendErrorMessage(QString)), this, SLOT(errorMessage(QString)), Qt::UniqueConnection);
             connect(this, SIGNAL(deactivateContours()), managementToolBox, SLOT(unselectAll()), Qt::UniqueConnection);
             connect(managementToolBox, SIGNAL(repulsorState()), this, SLOT(checkRepulsor()), Qt::UniqueConnection);
-            connect(managementToolBox, SIGNAL(sendDatasToView(QList<medContourInfo>)), viewEventFilter, SLOT(receiveDatasFromToolbox(QList<medContourInfo>)));
-            connect(managementToolBox, SIGNAL(sendContourState(medContourInfo)), viewEventFilter, SLOT(receiveContourState(medContourInfo)));
-            connect(managementToolBox, SIGNAL(sendContourName(medContourInfo)), viewEventFilter, SLOT(receiveContourName(medContourInfo)));
-            connect(managementToolBox, SIGNAL(labelToDelete(medContourInfo)), viewEventFilter, SLOT(deleteLabel(medContourInfo)));
-            connect(viewEventFilter, SIGNAL(sendContourInfoToListWidget(medContourInfo&)), managementToolBox, SLOT(receiveContoursDatasFromView(medContourInfo&)), Qt::UniqueConnection);
+            connect(managementToolBox, SIGNAL(sendDatasToView(QList<medContourSharedInfo>)), viewEventFilter, SLOT(receiveDatasFromToolbox(QList<medContourSharedInfo>)));
+            connect(managementToolBox, SIGNAL(sendContourState(medContourSharedInfo)), viewEventFilter, SLOT(receiveContourState(medContourSharedInfo)));
+            connect(managementToolBox, SIGNAL(sendContourName(medContourSharedInfo)), viewEventFilter, SLOT(receiveContourName(medContourSharedInfo)));
+            connect(managementToolBox, SIGNAL(labelToDelete(medContourSharedInfo)), viewEventFilter, SLOT(deleteLabel(medContourSharedInfo)));
+            connect(viewEventFilter, SIGNAL(sendContourInfoToListWidget(medContourSharedInfo&)), managementToolBox, SLOT(receiveContoursDatasFromView(medContourSharedInfo&)), Qt::UniqueConnection);
             connect(managementToolBox, SIGNAL(contoursToLoad(medTagContours, QColor)), viewEventFilter, SLOT(loadContours(medTagContours, QColor)));
         }
         viewEventFilter->updateView(currentView);

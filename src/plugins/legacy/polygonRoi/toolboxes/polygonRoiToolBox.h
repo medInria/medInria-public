@@ -14,7 +14,7 @@
 
 // medInria
 #include <medAbstractSelectableToolBox.h>
-#include <medContourInfo.h>
+#include <medContourSharedInfo.h>
 #include <medTagRoiManager.h>
 #include <medTableWidgetChooser.h>
 #include <polygonRoiPluginExport.h>

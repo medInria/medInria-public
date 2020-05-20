@@ -19,7 +19,7 @@
 #include <QLineEdit>
 #include <QListWidget>
 #include <QWidgetAction>
-#include <medContourInfo.h>
+#include <medContourSharedInfo.h>
 #include <medDisplayPosContours.h>
 #include <medTagContours.h>
 #include <medTagRoiManager.h>
@@ -68,10 +68,10 @@ public slots:
     void enableOtherViewsVisibility(bool state);
     void setCursorState(CURSORSTATE state){cursorState = state;}
 
-    void receiveDatasFromToolbox(QList<medContourInfo> infos);
-    void receiveContourState(medContourInfo info);
-    void receiveContourName(medContourInfo info);
-    void deleteLabel(medContourInfo info);
+    void receiveDatasFromToolbox(QList<medContourSharedInfo> infos);
+    void receiveContourState(medContourSharedInfo info);
+    void receiveContourName(medContourSharedInfo info);
+    void deleteLabel(medContourSharedInfo info);
     void loadContours(medTagContours tagContours,
                       QColor color);
 
@@ -97,7 +97,7 @@ signals:
     void toggleRepulsorButton(bool);
     void clearLastAlternativeView();
     void sendErrorMessage(QString);
-    void sendContourInfoToListWidget(medContourInfo &contourInfo);
+    void sendContourInfoToListWidget(medContourSharedInfo &contourInfo);
 private:
     medAbstractImageView *currentView;
     dtkSmartPointer<medAbstractData> contourOutput;
@@ -123,7 +123,7 @@ private:
     void manageButtonsState();
     void saveContoursAsMedAbstractData(vtkMetaDataSet *outputDataSet, QVector<medTagContours> contoursData);
     medTagRoiManager *getManagerFromColor(QColor color);
-    QLineEdit *updateNameManager(medTagRoiManager* closestManager, QMenu *mainMenu);
+    QLineEdit *sendUpdatedName(medTagRoiManager* closestManager, QMenu *mainMenu);
     void deleteNode(double *mousePosition);
     medTagRoiManager *getClosestManager(double *mousePos);
     void enableActiveManagerIfExists();

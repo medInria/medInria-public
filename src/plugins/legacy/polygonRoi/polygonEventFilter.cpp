@@ -354,7 +354,7 @@ void polygonEventFilter::setCustomCursor()
     currentView->viewWidget()->setCursor(QCursor(pix, -1, -1));
 }
 
-QLineEdit * polygonEventFilter::updateNameManager(medTagRoiManager* closestManager, QMenu *mainMenu)
+QLineEdit * polygonEventFilter::sendUpdatedName(medTagRoiManager* closestManager, QMenu *mainMenu)
 {
     QLineEdit *renameManager = new QLineEdit(closestManager->getName());
     renameManager->setContextMenuPolicy(Qt::ContextMenuPolicy::NoContextMenu);
@@ -377,7 +377,7 @@ QLineEdit * polygonEventFilter::updateNameManager(medTagRoiManager* closestManag
            }
        }
        closestManager->setName(renameManager->text());
-       medContourInfo info = medContourInfo(closestManager->getName(), closestManager->getColor());
+       medContourSharedInfo info = medContourSharedInfo(closestManager->getName(), closestManager->getColor());
        info.setUpdateName(true);
        emit sendContourInfoToListWidget(info);
     });
@@ -426,7 +426,7 @@ QMenu *polygonEventFilter::changeLabelActions(medTagRoiManager* closestManager)
                 deleteContour(closestManager);
                 activeManager = manager;
                 enableActiveManagerIfExists();
-                medContourInfo info = medContourInfo(activeManager->getName(), activeManager->getColor(), true);
+                medContourSharedInfo info = medContourSharedInfo(activeManager->getName(), activeManager->getColor(), true);
                 emit sendContourInfoToListWidget(info);
             });
             changeMenu->addAction(action);
@@ -495,14 +495,14 @@ bool polygonEventFilter::rightButtonBehaviour(medAbstractView *view, QMouseEvent
             connect(activationAction, &QAction::triggered, [=](){
                 activeManager = closestManager;
                 enableActiveManagerIfExists();
-                medContourInfo info = medContourInfo(activeManager->getName(), activeManager->getColor(), true);
+                medContourSharedInfo info = medContourSharedInfo(activeManager->getName(), activeManager->getColor(), true);
                 emit sendContourInfoToListWidget(info);
             });
         }
 
         changeMenu = changeLabelActions(closestManager);
 
-        renameManagerAction->setDefaultWidget(updateNameManager(closestManager, &mainMenu));
+        renameManagerAction->setDefaultWidget(sendUpdatedName(closestManager, &mainMenu));
 
 
         mainMenu.addAction(renameManagerAction);
@@ -613,12 +613,13 @@ QAction *polygonEventFilter::createScoreAction(medTagRoiManager *manager, QStrin
     pixmap.fill(color);
     QAction *action  = new QAction(pixmap, score);
     connect(action, &QAction::triggered, [=](){
-        manager->setOptName(score);
-        manager->updateContoursColor(color);
+        manager->setOptionalNameWithColor(score, color);
+        manager->switchColor();
         activeManager = manager;
         enableActiveManagerIfExists();
-        medContourInfo info = medContourInfo(manager->getName(), manager->getColor(), true);
+        medContourSharedInfo info = medContourSharedInfo(manager->getName(), manager->getColor(), true);
         info.setAdditionalNameAndColor(manager->getOptName(), manager->getOptColor());
+        info.setCheckState(true);
         emit sendContourInfoToListWidget(info);
     });
     return action;
@@ -796,9 +797,9 @@ medTagRoiManager *polygonEventFilter::findManagerWithColor(QColor color)
     return mgr;
 }
 
-void polygonEventFilter::receiveDatasFromToolbox(QList<medContourInfo> infos)
+void polygonEventFilter::receiveDatasFromToolbox(QList<medContourSharedInfo> infos)
 {
-    for (medContourInfo info: infos)
+    for (medContourSharedInfo info: infos)
     {
         medTagRoiManager *mgr = findManagerWithColor(info.getColor());
         if (mgr)
@@ -813,24 +814,29 @@ void polygonEventFilter::receiveDatasFromToolbox(QList<medContourInfo> infos)
     }
 }
 
-void polygonEventFilter::receiveContourState(medContourInfo info)
+void polygonEventFilter::receiveContourState(medContourSharedInfo info)
 {
     activeManager = nullptr;
     medTagRoiManager *manager = findManagerWithColor(info.getColor());
     if (manager)
     {
-        manager->setScoreState(info.scoreState());
+        manager->setScoreState(info.hasScore());
         manager->setName(info.getName());
         activeManager = manager;
+        if (manager->getOptName()!=QString() && manager->getOptColor()!=QColor::Invalid)
+        {
+            QColor color = (info.checkState())?manager->getOptColor():manager->getColor();
+            manager->changeContoursColor(color);
+        }
     }
 
     activeColor = info.getColor();
     activeName = info.getName();
-    scoreState = info.scoreState();
+    scoreState = info.hasScore();
     enableActiveManagerIfExists();
 }
 
-void polygonEventFilter::receiveContourName(medContourInfo info)
+void polygonEventFilter::receiveContourName(medContourSharedInfo info)
 {
     activeColor = info.getColor();
     activeName = info.getName();
@@ -1054,14 +1060,19 @@ void polygonEventFilter::switchContourColor(double *mousePosition)
     medTagRoiManager *closestManager = getClosestManager(mousePosition);
     if (closestManager && closestManager->getMinimumDistanceFromNodesToMouse(mousePosition) < 10. )
     {
-        if (closestManager->switchColor())
+        QColor color = closestManager->switchColor();
+        if (color != QColor::Invalid)
         {
             activeManager = closestManager;
             enableActiveManagerIfExists();
-            medContourInfo info = medContourInfo(closestManager->getName(),
+
+            medContourSharedInfo info = medContourSharedInfo(closestManager->getName(),
                                                  closestManager->getColor(),
                                                  true);
+
+            bool checkState = (color==closestManager->getOptColor())?true:false;
             info.setAdditionalNameAndColor(closestManager->getOptName(), closestManager->getOptColor());
+            info.setCheckState(checkState);
             emit sendContourInfoToListWidget(info);
         }
     }
@@ -1112,7 +1123,7 @@ void polygonEventFilter::deleteContour(medTagRoiManager *manager)
     }
 }
 
-void polygonEventFilter::deleteLabel(medContourInfo info)
+void polygonEventFilter::deleteLabel(medContourSharedInfo info)
 {
     for (medTagRoiManager *manager : managers)
     {

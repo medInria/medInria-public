@@ -141,9 +141,10 @@ void medTagRoiManager::setName(QString name)
     d->baseName = name;
 }
 
-void medTagRoiManager::setOptName(QString name)
+void medTagRoiManager::setOptionalNameWithColor(QString name, QColor color)
 {
     d->optName = name;
+    d->optColor = color;
 }
 
 QList<polygonRoi *> medTagRoiManager::getRois()
@@ -637,36 +638,33 @@ void medTagRoiManager::activateContours(bool state)
     d->view->render();
 }
 
-void medTagRoiManager::updateContoursColor(QColor color)
+void medTagRoiManager::changeContoursColor(QColor color)
 {
-    d->optColor = color;
     for (polygonRoi *roi : d->rois)
     {
-        roi->updateColor(d->optColor, d->isActivated);
+        roi->updateColor(color, d->isActivated);
     }
-
     d->view->render();
 }
 
-bool medTagRoiManager::switchColor()
+QColor medTagRoiManager::switchColor()
 {
-    bool retValue;
+    QColor color;
     if (d->optColor==QColor::Invalid)
     {
-        retValue = false;
+        color = QColor::Invalid;
     }
     else
     {
         QColor roiColor = d->rois[0]->getColor();
-        QColor newColor = (roiColor==d->baseColor)?d->optColor:d->baseColor;
+        color= (roiColor==d->baseColor)?d->optColor:d->baseColor;
         for (polygonRoi *roi : d->rois)
         {
-            roi->updateColor(newColor, d->isActivated);
+            roi->updateColor(color, d->isActivated);
         }
         d->view->render();
-        retValue = true;
     }
-    return retValue;
+    return color;
 }
 
 bool medTagRoiManager::hasScore()
@@ -686,7 +684,6 @@ void medTagRoiManager::setScoreState(bool state)
             roi->updateColor(d->baseColor, d->isActivated);
         }
         d->view->render();
-
     }
 }
 
