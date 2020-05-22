@@ -47,19 +47,22 @@ public:
         *velocityFieldSigmaSpinBox, *maxStepLengthSpinBox;
     QCheckBox * boundaryCheckBox, *histoMatchingCheckBox;
     int updateRule;
-
-    medProgressionStack * progression_stack;
+    medAbstractRegistrationProcess *process;
 };
 
 LCCLogDemonsToolBox::LCCLogDemonsToolBox(QWidget *parent) : medAbstractSelectableToolBox(parent), d(new LCCLogDemonsToolBoxPrivate)
 {
-    this->setTitle("LCCLogDemons");
-    
     QWidget *widget = new QWidget(this);
 
     QVBoxLayout * layout = new QVBoxLayout();
 
-    //// Standard parameters
+    QLabel *explanation = new QLabel("Drop 2 datasets with same size and spacing.\n");
+    explanation->setSizePolicy(QSizePolicy::Ignored, QSizePolicy::Preferred);
+    explanation->setWordWrap(true);
+    explanation->setStyleSheet("font: italic");
+    layout->addWidget(explanation);
+
+    // Standard parameters
     d->iterationsLine = new QLineEdit();
     d->iterationsLine->setText("15x10x5");
     d->iterationsLine->setToolTip(tr("Each number of iteration per level must be separated by \"x\". From coarser to finest levels"));
@@ -67,8 +70,6 @@ LCCLogDemonsToolBox::LCCLogDemonsToolBox(QWidget *parent) : medAbstractSelectabl
     QHBoxLayout * iterationsLayout = new QHBoxLayout();
     iterationsLayout->addWidget(iterationsLabel);
     iterationsLayout->addWidget(d->iterationsLine);
-    //layout->addRow(new QLabel(tr("Iterations per level of res."),this),d->iterationsBox);
-
 
     d->updateRuleComboBox =  new QComboBox();
     d->updateRuleComboBox->insertItem(0, "SSD Non Symmetric Log Domain");
@@ -76,16 +77,16 @@ LCCLogDemonsToolBox::LCCLogDemonsToolBox(QWidget *parent) : medAbstractSelectabl
     d->updateRuleComboBox->insertItem(2, "LCC");
     connect ( d->updateRuleComboBox, SIGNAL ( activated ( int ) ), this, SLOT ( chooseUpdateRule ( int ) ) );
 
-    //Parameters for Log   
+    // Parameters for Log
 
-    QLabel * maxStepLengthLabel = new QLabel("Maximum length of an update vector:");
+    QLabel * maxStepLengthLabel = new QLabel("Maximum length of an update vector");
     d->maxStepLengthSpinBox = new QDoubleSpinBox();
     d->maxStepLengthSpinBox->setValue(2.0);
     QHBoxLayout * maxStepLengthLayout = new QHBoxLayout();
     maxStepLengthLayout->addWidget(maxStepLengthLabel);
     maxStepLengthLayout->addWidget(d->maxStepLengthSpinBox);
 
-    QLabel * gradientTypeLabel = new QLabel("Gradient Type:");
+    QLabel * gradientTypeLabel = new QLabel("Gradient Type");
     d->gradientTypeComboBox = new QComboBox();
     d->gradientTypeComboBox->insertItem(0, "Symmetrized");
     d->gradientTypeComboBox->insertItem(1, "Fixed image");
@@ -95,61 +96,60 @@ LCCLogDemonsToolBox::LCCLogDemonsToolBox(QWidget *parent) : medAbstractSelectabl
     gradientTypeLayout->addWidget(gradientTypeLabel);
     gradientTypeLayout->addWidget(d->gradientTypeComboBox);
 
-    QLabel * histoMatchingLabel = new QLabel("Use Histogram Matching:");
+    QLabel * histoMatchingLabel = new QLabel("Use Histogram Matching");
     d->histoMatchingCheckBox = new QCheckBox();
     d->histoMatchingCheckBox->setChecked(true);
     QHBoxLayout * histoMatchingLayout  = new QHBoxLayout();
     histoMatchingLayout->addWidget(histoMatchingLabel);
     histoMatchingLayout->addWidget(d->histoMatchingCheckBox);
 
-
-    //Parameters for LCC
+    // Parameters for LCC
     
-    QLabel * boundaryLabel = new QLabel("Boundary:");
+    QLabel * boundaryLabel = new QLabel("Boundary");
     d->boundaryCheckBox = new QCheckBox();
     d->boundaryCheckBox->setChecked(true);
     QHBoxLayout * boundaryLayout  = new QHBoxLayout();
     boundaryLayout->addWidget(boundaryLabel);
     boundaryLayout->addWidget(d->boundaryCheckBox);
 
-    QLabel * sigmaILabel = new QLabel("Sigma I:");
+    QLabel * sigmaILabel = new QLabel("Sigma I");
     d->sigmaISpinBox = new QDoubleSpinBox();
     d->sigmaISpinBox->setValue(0.2);
     QHBoxLayout * sigmaILayout = new QHBoxLayout();
     sigmaILayout->addWidget(sigmaILabel);
     sigmaILayout->addWidget(d->sigmaISpinBox);
 
-    QLabel * similarityLabel = new QLabel("Similarity Criteria Sigma:");
+    QLabel * similarityLabel = new QLabel("Similarity Criteria Sigma");
     d->similaritySigmaSpinBox = new QDoubleSpinBox();
     d->similaritySigmaSpinBox->setValue(3.0);
     QHBoxLayout * similarityLayout = new QHBoxLayout();
     similarityLayout->addWidget(similarityLabel);
     similarityLayout->addWidget(d->similaritySigmaSpinBox);
 
-    //Common parameters
+    // Common parameters
 
-    QLabel * updateFieldSigmaLabel = new QLabel("Update Field Sigma:");
+    QLabel * updateFieldSigmaLabel = new QLabel("Update Field Sigma");
     d->updateFieldSigmaSpinBox = new QDoubleSpinBox();
     d->updateFieldSigmaSpinBox->setValue(0.0);
     QHBoxLayout * updateFieldSigmaLayout = new QHBoxLayout();
     updateFieldSigmaLayout->addWidget(updateFieldSigmaLabel);
     updateFieldSigmaLayout->addWidget(d->updateFieldSigmaSpinBox);
 
-    QLabel * velocityFieldSigmaLabel = new QLabel("Velocity Field Sigma:");
+    QLabel * velocityFieldSigmaLabel = new QLabel("Velocity Field Sigma");
     d->velocityFieldSigmaSpinBox = new QDoubleSpinBox();
     d->velocityFieldSigmaSpinBox->setValue(1.5);
     QHBoxLayout * velocityFieldSigmaLayout = new QHBoxLayout();
     velocityFieldSigmaLayout->addWidget(velocityFieldSigmaLabel);
     velocityFieldSigmaLayout->addWidget(d->velocityFieldSigmaSpinBox);
 
-    QLabel * bchExpansionLabel = new QLabel("BCH Expansion:");
+    QLabel * bchExpansionLabel = new QLabel("BCH Expansion");
     d->bchExpansionSpinBox = new QSpinBox();
     d->bchExpansionSpinBox->setValue(2);
     QHBoxLayout * bchExpansionLayout = new QHBoxLayout();
     bchExpansionLayout->addWidget(bchExpansionLabel);
     bchExpansionLayout->addWidget(d->bchExpansionSpinBox);
 
-    QLabel * interpolatorTypeLabel = new QLabel("Interpolator Type:");
+    QLabel * interpolatorTypeLabel = new QLabel("Interpolator Type");
     d->interpolatorTypeComboBox = new QComboBox();
     d->interpolatorTypeComboBox->insertItem(0, "Nearest Neighbor");
     d->interpolatorTypeComboBox->insertItem(1, "Linear");
@@ -161,10 +161,6 @@ LCCLogDemonsToolBox::LCCLogDemonsToolBox(QWidget *parent) : medAbstractSelectabl
     d->interpolatorTypeComboBox->setCurrentIndex(1);
 
     QPushButton *runButton = new QPushButton(tr("Run"), this);
-
-    d->progression_stack = new medProgressionStack(widget);
-    QHBoxLayout *progressStackLayout = new QHBoxLayout;
-    progressStackLayout->addWidget(d->progression_stack);
 
     // Layouts
 
@@ -190,14 +186,13 @@ LCCLogDemonsToolBox::LCCLogDemonsToolBox(QWidget *parent) : medAbstractSelectabl
     d->commonWidget = new QWidget(this);
     d->commonWidget->setLayout(commonLayout);
 
-    //Main layout
+    // Main layout
     layout->addLayout(iterationsLayout);
     layout->addWidget(d->updateRuleComboBox);
     layout->addWidget(d->LCCWidget);
     layout->addWidget(d->logWidget);
     layout->addWidget(d->commonWidget);
     layout->addWidget(runButton);
-    layout->addLayout(progressStackLayout);
 
     widget->setLayout(layout);
     this->addWidget(widget);
@@ -205,13 +200,14 @@ LCCLogDemonsToolBox::LCCLogDemonsToolBox(QWidget *parent) : medAbstractSelectabl
     connect(runButton, SIGNAL(clicked()), this, SLOT(run()));
     d->updateRuleComboBox->setCurrentIndex(2);
     chooseUpdateRule(2);
+
+    d->process = nullptr;
 }
 
 LCCLogDemonsToolBox::~LCCLogDemonsToolBox()
 {
     delete d;
-    
-    d = NULL;
+    d = nullptr;
 }
 
 dtkPlugin * LCCLogDemonsToolBox::plugin()
@@ -223,20 +219,18 @@ dtkPlugin * LCCLogDemonsToolBox::plugin()
 
 medAbstractData * LCCLogDemonsToolBox::processOutput()
 {
-	// If called from pipelines, and run() not called before.
-	if (static_cast<medRegistrationSelectorToolBox*>(selectorToolBox())->process() == nullptr)
-	{
-		run();
-	}
+    // If called from pipelines, and run() not called before.
+    if(!d->process)
+    {
+        run();
+    }
 
-	if (static_cast<medRegistrationSelectorToolBox*>(selectorToolBox())->process() != nullptr)
-	{
-		return static_cast<medRegistrationSelectorToolBox*>(selectorToolBox())->process()->output();
-	}
-	else
-	{
-		return nullptr;
-	}
+    if(d->process)
+    {
+        return d->process->output();
+    }
+
+    return nullptr;
 }
 
 bool LCCLogDemonsToolBox::registered()
@@ -268,88 +262,62 @@ void LCCLogDemonsToolBox::chooseUpdateRule(int choice)
         d->commonWidget->show();
         d->updateRule = 2;
     }
-    else
-        return;
 }
 
 void LCCLogDemonsToolBox::run()
 {
-
-    medRegistrationSelectorToolBox *parentTB = dynamic_cast<medRegistrationSelectorToolBox*>(selectorToolBox());
-    medAbstractRegistrationProcess *process;
-    
-    if(parentTB == nullptr)
-        return;
-    
-    if (parentTB->process() && (parentTB->process()->identifier() == "LCCLogDemons"))
+    medRegistrationSelectorToolBox *toolbox = dynamic_cast<medRegistrationSelectorToolBox*>(selectorToolBox());
+    if(toolbox) // toolbox empty in Pipelines and not Registration workspace
     {
-        process = parentTB->process();
-    }
-    else
-    {
-        process = new LCCLogDemons;
-        parentTB->setProcess(process);
-    }
-    
-    medAbstractData *fixedData = parentTB->fixedData();
-    medAbstractData *movingData = parentTB->movingData();
-    
-    if (!fixedData || !movingData)
-        return;
-    
-    LCCLogDemons *process_Registration = dynamic_cast<LCCLogDemons *>(process);
-    if (!process_Registration)
-    {
-        qWarning() << "registration process doesn't exist" ;
-        return;
-    }
+        d->process = dynamic_cast<medAbstractRegistrationProcess*>
+                (dtkAbstractProcessFactory::instance()->create("LCCLogDemons"));
+        toolbox->setProcess(d->process);
 
-    process_Registration->setUpdateRule(d->updateRule);
-    process_Registration->setVerbosity(true);
+        medAbstractData *fixedData  = toolbox->fixedData();
+        medAbstractData *movingData = toolbox->movingData();
 
-    process_Registration->setMaximumUpdateStepLength(d->maxStepLengthSpinBox->value());
-    process_Registration->setGradientType(d->gradientTypeComboBox->currentIndex());
-    process_Registration->setUseHistogramMatching(d->histoMatchingCheckBox->isChecked());
+        if (fixedData && movingData)
+        {
+            this->setToolBoxOnWaitStatus();
 
-    process_Registration->setBoundaryCheck(d->boundaryCheckBox->isChecked());
-    process_Registration->setSigmaI(d->sigmaISpinBox->value());
-    process_Registration->setSimilarityCriteriaSigma(d->similaritySigmaSpinBox->value());
-    process_Registration->setUpdateFieldSigma(d->updateFieldSigmaSpinBox->value());
-    process_Registration->setVelocityFieldSigma(d->velocityFieldSigmaSpinBox->value());
-    process_Registration->setNumberOfTermsBCHExpansion((unsigned int)d->bchExpansionSpinBox->value());
-    process_Registration->useMask(false); //Should we allow the use of mask ?
-    process_Registration->setInterpolatorType(d->interpolatorTypeComboBox->currentIndex());
+            LCCLogDemons *process_Registration = dynamic_cast<LCCLogDemons *>(d->process);
 
-    try {
-        process_Registration->setNumberOfIterations(
-                    rpi::StringToVector<unsigned int>(
-                        d->iterationsLine->text().toStdString()));
+            process_Registration->setUpdateRule(d->updateRule);
+            process_Registration->setVerbosity(false);
+            process_Registration->setMaximumUpdateStepLength(d->maxStepLengthSpinBox->value());
+            process_Registration->setGradientType(d->gradientTypeComboBox->currentIndex());
+            process_Registration->setUseHistogramMatching(d->histoMatchingCheckBox->isChecked());
+            process_Registration->setBoundaryCheck(d->boundaryCheckBox->isChecked());
+            process_Registration->setSigmaI(d->sigmaISpinBox->value());
+            process_Registration->setSimilarityCriteriaSigma(d->similaritySigmaSpinBox->value());
+            process_Registration->setUpdateFieldSigma(d->updateFieldSigmaSpinBox->value());
+            process_Registration->setVelocityFieldSigma(d->velocityFieldSigmaSpinBox->value());
+            process_Registration->setNumberOfTermsBCHExpansion(
+                        static_cast<unsigned int>(d->bchExpansionSpinBox->value()));
+            process_Registration->useMask(false); // LCC-LogDemons crashs if set to true
+            process_Registration->setInterpolatorType(d->interpolatorTypeComboBox->currentIndex());
+
+            try
+            {
+                process_Registration->setNumberOfIterations(
+                            rpi::StringToVector<unsigned int>(
+                                d->iterationsLine->text().toStdString()));
+            }
+            catch (std::exception& err)
+            {
+                qDebug()<<"ExceptionObject caught in "<<metaObject()->className();
+                qDebug()<<err.what();
+                this->setToolBoxOnReadyToUse();
+                return;
+            }
+
+            process_Registration->setFixedInput(fixedData);
+            process_Registration->setMovingInput(movingData);
+
+            medRunnableProcess *runProcess = new medRunnableProcess;
+            runProcess->setProcess (d->process);
+            this->addConnectionsAndStartJob(runProcess);
+            enableOnProcessSuccessImportOutput(runProcess, false);
+        }
     }
-    catch ( std::exception & )
-    {
-        qDebug() << "wrong iteration format";
-        return;
-    }
-    
-    process_Registration->setFixedInput(fixedData);
-    process_Registration->setMovingInput(movingData);
-    
-    medRunnableProcess *runProcess = new medRunnableProcess;
-    runProcess->setProcess (process);
-    
-    d->progression_stack->addJobItem(runProcess, tr("Progress:"));
-    //If there is no observer to track the progression,
-    //make the progress bar spin:
-    //d->progression_stack->setActive(runProcess,true);
-    
-    connect (runProcess, SIGNAL (success  (QObject*)),  this, SIGNAL (success ()));
-    connect (runProcess, SIGNAL (failure  (QObject*)),  this, SIGNAL (failure ()));
-    connect (runProcess, SIGNAL (cancelled (QObject*)), this, SIGNAL (failure ()));
-    //First have the moving progress bar,
-    //and then display the remaining % when known
-    connect (runProcess, SIGNAL(activate(QObject*,bool)),
-             d->progression_stack, SLOT(setActive(QObject*,bool)));
-    
-    medJobManagerL::instance()->registerJobItem(runProcess);
-    QThreadPool::globalInstance()->start(dynamic_cast<QRunnable*>(runProcess));
 }
