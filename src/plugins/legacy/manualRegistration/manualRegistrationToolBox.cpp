@@ -339,7 +339,8 @@ void manualRegistrationToolBox::computeRegistration()
 
             this->setToolBoxOnWaitStatus();
 
-            d->process = dynamic_cast<medAbstractRegistrationProcess*> (dtkAbstractProcessFactory::instance()->create("manualRegistration"));
+            d->process = dynamic_cast<medAbstractRegistrationProcess*>
+                    (dtkAbstractProcessFactory::instance()->create("manualRegistration"));
 
             medRegistrationSelectorToolBox *toolbox = dynamic_cast<medRegistrationSelectorToolBox*>(selectorToolBox());
             if(toolbox) // toolbox empty in Pipelines and not Registration workspace
