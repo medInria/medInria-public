@@ -126,7 +126,6 @@ void medRegistrationSelectorToolBox::changeCurrentToolBox(int index)
     connect (currentToolBox(), SIGNAL (success()),this,SLOT(enableSelectorToolBox()));
     connect (currentToolBox(), SIGNAL (failure()),this,SLOT(enableSelectorToolBox()));
 
-    unsigned int index = this->comboBox()->currentIndex();
     d->nameOfCurrentAlgorithm = this->comboBox()->itemData(index).toString();
 
     if (!d->undoRedoProcess && !d->undoRedoToolBox)
