@@ -24,7 +24,6 @@
 #include <itkResampleImageFilter.h>
 #include <itkCastImageFilter.h>
 
-
 #include <time.h>
 
 #include <rpiLCClogDemons.hxx>
@@ -40,10 +39,7 @@ class LCCLogDemonsPrivate
 {
 public:
     LCCLogDemons * proc;
-    template <class PixelType>
-    int update();
-    template <typename PixelType>
-    bool writeTransform(const QString& file);
+    template <class PixelType> int update();
     
     rpi::LCClogDemons< RegImageType, RegImageType, double > * registrationMethod;
     rpi::LCClogDemons< RegImageType, RegImageType, double >::UpdateRule updateRule;
@@ -62,21 +58,24 @@ public:
 LCCLogDemons::LCCLogDemons() : itkProcessRegistration(), d(new LCCLogDemonsPrivate)
 {
     d->proc = this;
-    d->registrationMethod = NULL;
+    d->registrationMethod = nullptr;
+
+    // Gives the exported file type for medRegistrationSelectorToolBox
+    this->setProperty("outputFileType", "notText");
 }
 
 LCCLogDemons::~LCCLogDemons()
 {
-    d->proc = NULL;
-
+    d->proc = nullptr;
     
     if (d->registrationMethod)
+    {
         delete d->registrationMethod;
-
-    d->registrationMethod = NULL;
+    }
+    d->registrationMethod = nullptr;
     
     delete d;
-    d = 0;
+    d = nullptr;
 }
 
 bool LCCLogDemons::registered()
@@ -160,8 +159,6 @@ QString LCCLogDemons::description() const
     return "LCCLogDemons";
 }
 
-
-
 // /////////////////////////////////////////////////////////////////
 // Templated Version of update
 // /////////////////////////////////////////////////////////////////
@@ -170,12 +167,17 @@ QString LCCLogDemons::description() const
 template <typename PixelType>
 int LCCLogDemonsPrivate::update()
 {
+    int testResult = proc->testInputs();
+    if (testResult != medAbstractProcessLegacy::SUCCESS)
+    {
+        return testResult;
+    }
+
     registrationMethod = new rpi::LCClogDemons<RegImageType,RegImageType,double> ();
-    proc->fixedImage().GetPointer()->SetSpacing(proc->movingImages()[0].GetPointer()->GetSpacing());
 
     registrationMethod->SetFixedImage((const RegImageType*) proc->fixedImage().GetPointer());
     registrationMethod->SetMovingImage((const RegImageType*) proc->movingImages()[0].GetPointer());
-    
+
     registrationMethod->SetUpdateRule(updateRule);
     registrationMethod->SetVerbosity(verbose);
 
@@ -193,21 +195,27 @@ int LCCLogDemonsPrivate::update()
     registrationMethod->SetNumberOfTermsBCHExpansion(BCHExpansion);
     registrationMethod->UseMask(useMask);
     
+    // Print method parameters
+    QString methodParameters = proc->getTitleAndParameters();
+
+    qDebug() << "METHOD PARAMETERS";
+    qDebug() << methodParameters;
+
     // Run the registration
     time_t t1 = clock();
-    try {
+    try
+    {
         registrationMethod->StartRegistration();
     }
     catch( std::exception & err )
     {
-        qDebug() << "ExceptionObject caught ! (startRegistration)" << err.what();
-        return 1;
+        qDebug() << "ExceptionObject caught (startRegistration): " << err.what();
+        return medAbstractProcessLegacy::FAILURE;
     }
     
     time_t t2 = clock();
-    
-    qDebug() << "Elasped time: " << (double)(t2-t1)/(double)CLOCKS_PER_SEC;
-    
+    qDebug() << "Elasped time: " << static_cast<double>(t2-t1)/static_cast<double>(CLOCKS_PER_SEC);
+
     typedef itk::ResampleImageFilter< RegImageType,RegImageType, double> ResampleFilterType;
     typename ResampleFilterType::Pointer resampler = ResampleFilterType::New();
     resampler->SetTransform(registrationMethod->GetDisplacementFieldTransformation());
@@ -219,100 +227,176 @@ int LCCLogDemonsPrivate::update()
     resampler->SetDefaultPixelValue( 0 );
     
     // Set the image interpolator
-    switch(interpolatorType) {
-
-    case rpi::INTERPOLATOR_NEAREST_NEIGHBOR:
-        resampler->SetInterpolator(itk::NearestNeighborInterpolateImageFunction<RegImageType, double>::New());
-        break;
-
-    case rpi::INTERPOLATOR_LINEAR:
-        // Nothing to do ; linear interpolator by default
-        break;
-
-    case rpi::INTERPOLATOR_BSLPINE:
-        resampler->SetInterpolator(itk::BSplineInterpolateImageFunction<RegImageType, double>::New());
-        break;
-
-    case rpi::INTERPOLATOR_SINUS_CARDINAL:
-        resampler->SetInterpolator(itk::WindowedSincInterpolateImageFunction<
-                                   RegImageType,
-                                   RegImageType::ImageDimension,
-                                   itk::Function::HammingWindowFunction<RegImageType::ImageDimension>,
-                                   itk::ConstantBoundaryCondition<RegImageType>,
-                                   double
-                                   >::New());
-        break;
+    switch(interpolatorType)
+    {
+        case rpi::INTERPOLATOR_NEAREST_NEIGHBOR:
+        {
+            resampler->SetInterpolator(itk::NearestNeighborInterpolateImageFunction<RegImageType, double>::New());
+            break;
+        }
+        case rpi::INTERPOLATOR_LINEAR:
+        {
+            // Nothing to do ; linear interpolator by default
+            break;
+        }
+        case rpi::INTERPOLATOR_BSLPINE:
+        {
+            resampler->SetInterpolator(itk::BSplineInterpolateImageFunction<RegImageType, double>::New());
+            break;
+        }
+        case rpi::INTERPOLATOR_SINUS_CARDINAL:
+        {
+            resampler->SetInterpolator(itk::WindowedSincInterpolateImageFunction<
+                                       RegImageType,
+                                       RegImageType::ImageDimension,
+                                       itk::Function::HammingWindowFunction<RegImageType::ImageDimension>,
+                                       itk::ConstantBoundaryCondition<RegImageType>,
+                                       double
+                                       >::New());
+            break;
+        }
     }
     
-    try {
+    try
+    {
         resampler->Update();
     }
-    catch (itk::ExceptionObject &e) {
-        qDebug() << e.GetDescription();
-        return 1;
+    catch (itk::ExceptionObject & err)
+    {
+        qDebug() << "ExceptionObject caught (resampler): " << err.GetDescription();
+        return medAbstractProcessLegacy::FAILURE;
     }
     
     itk::ImageBase<3>::Pointer result = resampler->GetOutput();
     result->DisconnectPipeline();
     
     if (proc->output())
+    {
         proc->output()->setData (result);
+    }
+    return medAbstractProcessLegacy::SUCCESS;
+}
 
-    return 0;
+medAbstractProcessLegacy::DataError LCCLogDemons::testInputs()
+{
+    if (d->proc->fixedImage()->GetLargestPossibleRegion().GetSize()
+            != d->proc->movingImages()[0]->GetLargestPossibleRegion().GetSize())
+    {
+        return medAbstractProcessLegacy::MISMATCHED_DATA_SIZE;
+    }
+
+    if (d->proc->fixedImage()->GetSpacing()
+            != d->proc->movingImages()[0]->GetSpacing())
+    {
+        return medAbstractProcessLegacy::MISMATCHED_DATA_SPACING;
+    }
+
+    return medAbstractProcessLegacy::SUCCESS;
 }
 
 int LCCLogDemons::update(itkProcessRegistration::ImageType imgType)
 {
-    if(fixedImage().IsNull() || movingImages()[0].IsNull())
-        return 1;
-
-    return d->update<float>();
-}
-
-
-template <typename PixelType>
-bool LCCLogDemonsPrivate::writeTransform(const QString& file)
-{
-
-    
-    if (registrationMethod)
+    // Cast has been done in itkProcessRegistration
+    if (imgType == itkProcessRegistration::FLOAT)
     {
-        try{
-            rpi::writeDisplacementFieldTransformation<double, 3>(registrationMethod->GetTransformation(),
-                                                                file.toStdString());
-        }
-        catch (std::exception)
-        {
-            return false;
-        }
-        return true;
+        return d->update<float>();
     }
-    else
-    {
-        return false;
-    }
-    
+
+    return medAbstractProcessLegacy::FAILURE;
 }
 
 bool LCCLogDemons::writeTransform(const QString& file)
 {
-    if(d->registrationMethod == NULL)
-        return 1;
-    
-    return d->writeTransform<float>(file);
+    try
+    {
+        if (auto transform = getTransform())
+        {
+            rpi::writeDisplacementFieldTransformation<double, 3>(transform, file.toStdString());
+        }
+    }
+    catch (std::exception& err)
+    {
+        qDebug() << "ExceptionObject caught (writeTransform): " << err.what();
+        return false;
+    }
+    return true;
 }
 
 itk::Transform<double,3,3>::Pointer LCCLogDemons::getTransform()
 {
     if (d->registrationMethod)
+    {
         return d->registrationMethod->GetDisplacementFieldTransformation().GetPointer();
-    
+    }
     return nullptr;
 }
 
 QString LCCLogDemons::getTitleAndParameters()
 {
-    return QString();
+    auto registration = d->registrationMethod;
+
+    QString titleAndParameters;
+    titleAndParameters += "LCC Log Demons\n";
+
+    titleAndParameters += "  Max number of iterations: " +
+            QString::fromStdString(rpi::VectorToString(registration->GetNumberOfIterations())) + "\n";
+
+    switch (registration->GetUpdateRule())
+    {
+        case 0:
+        {
+            titleAndParameters += "  Update rule: SSD Non Symmetric Log Domain\n";
+            break;
+        }
+        case 1:
+        {
+            titleAndParameters += "  Update rule: SSD Symmetric Log Domain\n";
+            break;
+        }
+        case 2:
+        {
+            titleAndParameters += "  Update rule: LCC\n";
+            break;
+        }
+        default:
+        {
+            titleAndParameters += "  Update rule: Unknown\n";
+        }
+    }
+
+    titleAndParameters += "  Update Field Sigma: "   + QString::number(d->updateFieldSigma) + "\n";
+    titleAndParameters += "  Velocity Field Sigma: " + QString::number(d->velocityFieldSigma) + "\n";
+    titleAndParameters += "  BCH Expansion: "        + QString::number(d->BCHExpansion) + "\n";
+
+    switch(d->interpolatorType)
+    {
+        case rpi::INTERPOLATOR_NEAREST_NEIGHBOR:
+        {
+            titleAndParameters += "  Interpolator type: Nearest Neighbor\n";
+            break;
+        }
+        case rpi::INTERPOLATOR_LINEAR:
+        {
+            titleAndParameters += "  Interpolator type: Linear\n";
+            break;
+        }
+        case rpi::INTERPOLATOR_BSLPINE:
+        {
+            titleAndParameters += "  Interpolator type: B-Spline\n";
+            break;
+        }
+        case rpi::INTERPOLATOR_SINUS_CARDINAL:
+        {
+            titleAndParameters += "  Interpolator type: Sinus Cardinal\n";
+            break;
+        }
+        default:
+        {
+            titleAndParameters += "  Interpolator type: Unknown\n";
+        }
+    }
+
+    return titleAndParameters;
 }
 
 // /////////////////////////////////////////////////////////////////
