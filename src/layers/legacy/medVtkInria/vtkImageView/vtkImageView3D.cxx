@@ -449,10 +449,10 @@ void vtkImageView3D::SetInput(vtkAlgorithmOutput* pi_poVtkAlgoOutput, vtkMatrix4
             SetFirstLayer(pi_poVtkAlgoOutput, matrix, layer);
             initializeTransferFunctions(layer);
 
-            special2DData();
+            data2DTreatment();
             this->InternalUpdate();
         }
-        else if (!special2DData())
+        else if (!data2DTreatment())
         {
             if (layer > 0 && layer < 4)
             {
@@ -488,9 +488,9 @@ void vtkImageView3D::SetInput(vtkActor * actor, int layer, vtkMatrix4x4 * matrix
     this->Renderer->AddViewProp(actor); //same as this->Renderer->AddActor(actor);
 }
 
-bool vtkImageView3D::special2DData()
+bool vtkImageView3D::data2DTreatment()
 {
-    bool isTheData3D = false;
+    bool isTheData2D = false;
 
     int * w_extent = this->GetMedVtkImageInfo()->extent;
     int size [3] = { w_extent [1] - w_extent[0], w_extent [3] - w_extent[2], w_extent [5] - w_extent[4] };
@@ -506,10 +506,10 @@ bool vtkImageView3D::special2DData()
         this->BoxWidget->SetInputConnection (nullptr);
         this->PlaneWidget->SetInputConnection(nullptr);
 
-        isTheData3D = true;
+        isTheData2D = true;
     }
 
-    return isTheData3D;
+    return isTheData2D;
 }
 
 //----------------------------------------------------------------------------
