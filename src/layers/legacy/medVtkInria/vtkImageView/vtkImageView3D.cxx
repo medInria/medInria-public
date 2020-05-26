@@ -449,16 +449,10 @@ void vtkImageView3D::SetInput(vtkAlgorithmOutput* pi_poVtkAlgoOutput, vtkMatrix4
             SetFirstLayer(pi_poVtkAlgoOutput, matrix, layer);
             initializeTransferFunctions(layer);
 
-            if (is3D())
-            {
-                this->InternalUpdate();
-            }
-            else
-            {
-                vtkErrorMacro( <<"Only 3D layers are supported in 3D orientation" );
-            }
+            special2DData();
+            this->InternalUpdate();
         }
-        else if (is3D())
+        else if (!special2DData())
         {
             if (layer > 0 && layer < 4)
             {
@@ -470,10 +464,6 @@ void vtkImageView3D::SetInput(vtkAlgorithmOutput* pi_poVtkAlgoOutput, vtkMatrix4
             {
                 vtkErrorMacro( <<"Only 4 layers are supported in 3D fusion" );
             }
-        }
-        else
-        {
-            vtkErrorMacro( <<"Only 3D layers are supported in 3D orientation" );
         }
     }
 }
@@ -498,9 +488,9 @@ void vtkImageView3D::SetInput(vtkActor * actor, int layer, vtkMatrix4x4 * matrix
     this->Renderer->AddViewProp(actor); //same as this->Renderer->AddActor(actor);
 }
 
-bool vtkImageView3D::is3D()
+bool vtkImageView3D::special2DData()
 {
-    bool isTheData3D = true;
+    bool isTheData3D = false;
 
     int * w_extent = this->GetMedVtkImageInfo()->extent;
     int size [3] = { w_extent [1] - w_extent[0], w_extent [3] - w_extent[2], w_extent [5] - w_extent[4] };
@@ -516,8 +506,9 @@ bool vtkImageView3D::is3D()
         this->BoxWidget->SetInputConnection (nullptr);
         this->PlaneWidget->SetInputConnection(nullptr);
 
-        isTheData3D = false;
+        isTheData3D = true;
     }
+
     return isTheData3D;
 }
 
