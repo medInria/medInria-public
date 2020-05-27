@@ -14,6 +14,7 @@
 
 // medInria
 #include <medAbstractSelectableToolBox.h>
+#include <medContourSharedInfo.h>
 #include <medTagRoiManager.h>
 #include <medTableWidgetChooser.h>
 #include <polygonRoiPluginExport.h>
@@ -58,7 +59,6 @@ public:
 public slots:
 
     void updateView();
-    void onViewClosed();
     void onLayerClosed(uint index);
     void clickClosePolygon(bool state);
     void activateRepulsor(bool state);
@@ -71,43 +71,37 @@ public slots:
     void enableTableViewChooser(bool state);
     void resetToolboxBehaviour();
     void errorMessage(QString error);
+    void checkRepulsor();
 
 private slots:
 
     void disableButtons();
     void saveContours();
     void saveBinaryImage();
-    void addLabelName();
-    void setPredefinedLabelNames();
-    void updateListOfLabelNames(int index);
 
+signals:
+    void currentLabelsDisplayed();
+    void deactivateContours();
 protected:
 
     void binaryImageFromPolygon(QList<QPair<vtkPolygon*,PlaneIndexSlicePair> > polys);
     QList<QPair<vtkPolygon*,PlaneIndexSlicePair> > createImagePolygons(QList<QPair<vtkPolyData*,PlaneIndexSlicePair> > &listPoly);
 
-    QList<medSeriesOfRoi*> * getListOfView(medAbstractView *view);
     void initializeMaskData( medAbstractData *imageData, medAbstractData *maskData ); // copy of a function in painttoolbox
     void clear();
 
 private:
 
-    QList<QColor> colorsList;
-    QList<QStringList> listItems;
     polygonEventFilter *viewEventFilter;
     QPointer<medAbstractImageView> currentView;
+    medToolBox *managementToolBox;
+    QUuid mainContainerUUID;
 
-    QPushButton *addNewCurve;
+    QPushButton *activateTBButton;
     QPushButton *saveBinaryMaskButton;
     QPushButton *repulsorTool;
     QCheckBox *interpolate;
     medTableWidgetChooser* tableViewChooser;
     QPushButton *saveContourButton;
 
-    QComboBox *specialities;
-    QListWidget *structureList;
-    QPushButton *plusButton;
-    QPushButton *applyButton;
-
-    void loadContoursIfPresent(medAbstractImageView *v, unsigned int layer);
 };

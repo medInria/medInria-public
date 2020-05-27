@@ -19,15 +19,13 @@
 #include <QLineEdit>
 #include <QListWidget>
 #include <QWidgetAction>
+#include <medContourSharedInfo.h>
 #include <medDisplayPosContours.h>
 #include <medTagContours.h>
 #include <medTagRoiManager.h>
 #include <medViewEventFilter.h>
 #include <vtkInriaInteractorStylePolygonRepulsor.h>
 #include <vtkMetaDataSet.h>
-
-
-typedef itk::Image<unsigned char, 3> UChar3ImageType;
 
 class medTableWidgetItem;
 class View2DObserver;
@@ -36,7 +34,7 @@ class polygonEventFilter : public medViewEventFilter
 {
     Q_OBJECT
 public:
-    polygonEventFilter(medAbstractImageView *view, QList<QColor> colorsList);
+    polygonEventFilter(medAbstractImageView *view);
     ~polygonEventFilter();
     bool mousePressEvent(medAbstractView * view, QMouseEvent *mouseEvent) override;
     bool mouseReleaseEvent(medAbstractView * view, QMouseEvent *mouseEvent) override;
@@ -53,21 +51,27 @@ public:
     void activateRepulsor(bool state);
     void saveMask();
     medAbstractImageView *getView(){return currentView;}
-    void clearAlternativeViews();
+    void clearAlternativeView();
     bool isContourInSlice();
     void saveAllContours();
-    void loadContours(medAbstractData *data);
 
     void clearCopiedContours();
     void removeObserver();
     void addObserver();
 
-    void setPredefinedLabels(QList<QPair<QString, QColor> > labels);
+    QList<medTagRoiManager*> getManagers(){return managers;}
+
 public slots:
     void enableOtherViewsVisibility(bool state);
     void setCursorState(CURSORSTATE state){cursorState = state;}
 
-    void createNewManager(int label);
+    void receiveDatasFromToolbox(QList<medContourSharedInfo> infos);
+    void receiveContourState(medContourSharedInfo info);
+    void receiveContourName(medContourSharedInfo info);
+    void deleteLabel(medContourSharedInfo info);
+    void loadContours(medTagContours tagContours,
+                      QColor color);
+
     void manageTick();
     void manageRoisVisibility();
     void removeView();
@@ -75,6 +79,7 @@ public slots:
     void copyContours();
     void pasteContours();
 
+    void receiveActivationState(medContourSharedInfo info);
 private slots:
     void deleteNode(medTagRoiManager *manager, const double *mousePos);
     void deleteContour(medTagRoiManager *manager);
@@ -90,14 +95,17 @@ signals:
     void toggleRepulsorButton(bool);
     void clearLastAlternativeView();
     void sendErrorMessage(QString);
+    void sendContourInfoToListWidget(medContourSharedInfo &contourInfo);
+    void saveContours(medAbstractImageView *view, vtkMetaDataSet *outputDataSet, QVector<medTagContours> contoursData);
 
 private:
     medAbstractImageView *currentView;
-    dtkSmartPointer<medAbstractData> contourOutput;
     CURSORSTATE cursorState;
     QList<medTagRoiManager *> managers;
-    QList<QColor> colorsList;
-    QList<QColor> defaultColorsList;
+    QColor activeColor;
+    QString activeName;
+    bool scoreState;
+    QList<QPair<QString, QColor>> pirads;
     QList<medAbstractImageView*> otherViews;
     bool isRepulsorActivated;
     vtkInriaInteractorStylePolygonRepulsor *interactorStyleRepulsor;
@@ -107,27 +115,24 @@ private:
     medTagRoiManager *activeManager;
     vtkSmartPointer<View2DObserver> observer;
     double savedMousePosition[2];
-    QStringList predefinedLabels;
 
     bool leftButtonBehaviour(medAbstractView *view, QMouseEvent *mouseEvent);
     bool rightButtonBehaviour(medAbstractView *view, QMouseEvent *mouseEvent);
-    QList<QColor> getAvailableColors(QList<QColor> colorsToExclude);
-    QMenu *createColorMenu(QList<QColor> colors, QStringList names);
-    QList<QColor> updateColorsList(QList<QColor> colorsToExclude);
-    bool manageRoiWithLabel(QMouseEvent *mouseEvent);
     bool addPointInContourWithLabel(QMouseEvent *mouseEvent);
     void setToolboxButtonsState(bool state);
-    medTagRoiManager *addManagerToList(int label, QString labelName);
     void manageButtonsState();
-    void saveContoursAsMedAbstractData(vtkMetaDataSet *outputDataSet, QVector<medTagContours> contoursData);
-    int findAvailableLabel();
     medTagRoiManager *getManagerFromColor(QColor color);
-    QLineEdit *updateNameManager(medTagRoiManager* closestManager, QMenu *mainMenu);
+    QLineEdit *changeManagerName(medTagRoiManager* closestManager, QMenu *mainMenu);
     void deleteNode(double *mousePosition);
     medTagRoiManager *getClosestManager(double *mousePos);
-    void enableOnlyActiveManager();
+    void enableActiveManagerIfExists();
     QMenu *changeLabelActions(medTagRoiManager* closestManager);
     bool isActiveContourInSlice();
     void setCustomCursor();
     QString getManagerName(QString labelName, int index);
+    QAction *createScoreAction(medTagRoiManager *manager, QString score, QColor color);
+    void switchContourColor(double *mousePosition);
+    medTagRoiManager *findManagerWithColor(QColor color);
+    void createNewManager(medTagContours tagContours);
+    medTagRoiManager *createManager();
 };

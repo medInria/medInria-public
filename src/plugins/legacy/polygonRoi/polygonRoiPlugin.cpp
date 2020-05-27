@@ -12,6 +12,7 @@
 =========================================================================*/
 #include "polygonRoiPlugin.h"
 #include "polygonRoiToolBox.h"
+#include <contoursManagementToolBox.h>
 #include <medContours.h>
 #include <medContoursReader.h>
 #include <medContoursWriters.h>
@@ -25,6 +26,10 @@ bool polygonRoiPlugin::initialize()
      if(!polygonRoiToolBox::registered())
      {
          qDebug() << "Unable to register polygonRoiToolBox";
+     }
+     if(!contoursManagementToolBox::registered())
+     {
+         qDebug() << "Unable to register contoursManagementToolBox";
      }
      if (!medContours::registered())
      {

@@ -18,11 +18,8 @@
 #include <medWorldPosContours.h>
 #include <polygonRoi.h>
 
-class medRoiManagerPrivate;
-class medSeriesOfRoi;
 class medTagRoiManagerPrivate;
 class polygonEventFilter;
-class medTableWidgetItem;
 
 typedef itk::Image<unsigned char, 3> UChar3ImageType;
 
@@ -41,7 +38,9 @@ public:
     void appendRoi(polygonRoi *roi);
     QList<polygonRoi *> getRois();
     QColor getColor();
+    QColor getOptColor();
     QString getName();
+    QString getOptName();
     polygonRoi *appendRoi();
 
     void setEnableInterpolation(bool state);
@@ -60,14 +59,20 @@ public:
     QVector<medWorldPosContours> getContoursAsNodes();
     void loadContours(QVector<medWorldPosContours> contours);
 
-    int getClosestSliceFromPoint();
+    int getClosestSliceFromCurrent2DView();
 
     QVector<QVector2D> copyContour();
     bool pasteContour(QVector<QVector2D> nodes);
     void setName(QString name);
+    void setColor(QColor color);
+    void setOptionalNameWithColor(QString name, QColor color);
     void removeContourOtherView(medAbstractImageView *v);
     void removeIntermediateContoursOtherView(medAbstractImageView *v);
-    void setEnableInteraction(bool state);
+    void activateContours(bool state);
+    void changeContoursColor(QColor color);
+    bool hasScore();
+    void setScoreState(bool state);
+    QColor switchColor();
 
 public slots:
     void interpolateIfNeeded();

@@ -38,7 +38,7 @@ class medTagRoiManagerPrivate
 {
 public:
     medTagRoiManagerPrivate(){}
-    medTagRoiManagerPrivate(medAbstractView *view, polygonEventFilter *eventCursor, QColor color, QString name);
+    medTagRoiManagerPrivate(medAbstractView *view, polygonEventFilter *eventCursor, QColor baseColor, QString baseName);
     ~medTagRoiManagerPrivate();
     void clearRois();
     QList<polygonRoi*> rois;
@@ -46,14 +46,17 @@ public:
     int sliceOrientation;
     medAbstractView *view;
     polygonEventFilter *eventCursor;
-    QColor color;
-    QString name;
+    QColor baseColor;
+    QColor optColor;
+    QString baseName;
+    QString optName;
     bool enableInterpolation;
-    int closestSlice;
+    bool isActivated;
+    bool scoreState;
 };
 
 medTagRoiManagerPrivate::medTagRoiManagerPrivate(medAbstractView *view, polygonEventFilter *eventCursor, QColor color, QString name)
-    :eventCursor(eventCursor), enableInterpolation(true)
+    :eventCursor(eventCursor), enableInterpolation(true), isActivated(true)
 {
 
     this->view = view;
@@ -61,9 +64,11 @@ medTagRoiManagerPrivate::medTagRoiManagerPrivate(medAbstractView *view, polygonE
 
     this->orientation = view2d->GetViewOrientation();
     this->sliceOrientation = view2d->GetSliceOrientation();
-    this->color = color;
-    this->name = name;
-    this->closestSlice = -1;
+    this->baseColor = color;
+    this->baseName = name;
+    this->optName = QString();
+    this->optColor = QColor::Invalid;
+    this->scoreState = false;
     polygonRoi *roi = new polygonRoi(view2d, color);
     rois.append(roi);
 }
@@ -97,7 +102,8 @@ medTagRoiManager::~medTagRoiManager()
 polygonRoi* medTagRoiManager::appendRoi()
 {
     vtkImageView2D *view2d = static_cast<medVtkViewBackend*>(d->view->backend())->view2D;
-    polygonRoi *roi = new polygonRoi(view2d, d->color);
+    QColor color = (d->rois.size()==0)?d->baseColor:d->rois[0]->getColor();
+    polygonRoi *roi = new polygonRoi(view2d, color);
     d->rois.append(roi);
     connectRois();
     return roi;
@@ -110,17 +116,38 @@ void medTagRoiManager::appendRoi(polygonRoi *roi)
 
 QColor medTagRoiManager::getColor()
 {
-    return d->color;
+    return d->baseColor;
+}
+
+QColor medTagRoiManager::getOptColor()
+{
+    return d->optColor;
 }
 
 QString medTagRoiManager::getName()
 {
-    return d->name;
+    return d->baseName;
+}
+
+QString medTagRoiManager::getOptName()
+{
+    return d->optName;
 }
 
 void medTagRoiManager::setName(QString name)
 {
-    d->name = name;
+    d->baseName = name;
+}
+
+void medTagRoiManager::setColor(QColor color)
+{
+    d->baseColor = color;
+}
+
+void medTagRoiManager::setOptionalNameWithColor(QString name, QColor color)
+{
+    d->optName = name;
+    d->optColor = color;
 }
 
 QList<polygonRoi *> medTagRoiManager::getRois()
@@ -441,7 +468,6 @@ void medTagRoiManager::createMaskWithLabel(int label)
     UChar3ImageType::Pointer m_itkMask = dynamic_cast<UChar3ImageType*>( reinterpret_cast<itk::Object*>(output->data()) );
     for(QPair<vtkPolygon *, int> polygon : polygons)
     {
-
         double bounds[6];
         polygon.first->GetBounds(bounds);
         unsigned int x=0, y=0, z=0;
@@ -518,12 +544,13 @@ void medTagRoiManager::createMaskWithLabel(int label)
                     index[x]=i;
                     index[y]=j;
                     index[z]=polygon.second;
-                    m_itkMask->SetPixel(index,label);
+                    m_itkMask->SetPixel(index,label+1);
                 }
             }
         }
     }
-    QString desc = QString("mask: ") + QString(d->name);
+    QString name = (d->optName==QString())?QString(d->baseName):QString("%1-%2").arg(d->baseName).arg(d->optName);
+    QString desc = QString("mask: ") + name;
     medUtilities::setDerivedMetaData(output, inputData, desc);
     medDataManager::instance()->importData(output, false);
     return;
@@ -598,13 +625,69 @@ void medTagRoiManager::manageVisibility()
     d->view->render();
 }
 
-void medTagRoiManager::setEnableInteraction(bool state)
+void medTagRoiManager::activateContours(bool state)
+{
+    d->isActivated = state;
+    vtkImageView2D *view2d = static_cast<medVtkViewBackend*>(d->view->backend())->view2D;
+    int slice = view2d->GetSlice();
+    for (polygonRoi *roi : d->rois)
+    {
+        if (roi->getIdSlice()==slice)
+        {
+            roi->setMasterRoi(true);
+        }
+        roi->activateContour(state);
+    }
+    d->view->render();
+}
+
+void medTagRoiManager::changeContoursColor(QColor color)
 {
     for (polygonRoi *roi : d->rois)
     {
-        roi->setEnableLeftButtonInteraction(state);
+        roi->updateColor(color, d->isActivated);
     }
     d->view->render();
+}
+
+QColor medTagRoiManager::switchColor()
+{
+    QColor color;
+    if (d->optColor==QColor::Invalid)
+    {
+        color = QColor::Invalid;
+    }
+    else
+    {
+        QColor roiColor = d->rois[0]->getColor();
+        color= (roiColor==d->baseColor)?d->optColor:d->baseColor;
+        for (polygonRoi *roi : d->rois)
+        {
+            roi->updateColor(color, d->isActivated);
+        }
+        d->view->render();
+    }
+    return color;
+}
+
+bool medTagRoiManager::hasScore()
+{
+    return d->scoreState;
+}
+
+void medTagRoiManager::setScoreState(bool state)
+{
+    d->scoreState = state;
+    if (!d->scoreState)
+    {
+        d->optName = QString();
+        d->optColor = QColor::Invalid;
+        for (polygonRoi *roi : d->rois)
+        {
+            roi->updateColor(d->baseColor, d->isActivated);
+        }
+        d->view->render();
+    }
 }
 
 void medTagRoiManager::enableOtherViewVisibility(medAbstractImageView *v, bool state)
@@ -736,9 +819,11 @@ void medTagRoiManager::deleteNode(double X, double Y)
             d->rois.removeOne(roi);
             delete roi;
         }
-        else
+        else if (contourRep->GetNumberOfNodes() == 2)
         {
-            roi->getContour()->SetWidgetState(vtkContourWidget::Define);
+            qDebug()<<"widget State "<<roi->getContour()->GetWidgetState();
+            roi->getContour()->SetWidgetState(vtkContourWidget::Start);
+            roi->getContour()->GetContourRepresentation()->SetClosedLoop(false);
         }
     }
     interpolateIfNeeded();
@@ -860,7 +945,7 @@ QList<polygonRoi *> medTagRoiManager::interpolateBetween2Slices(polygonRoi *firs
     int idSlice = minSlice+1;
     for (QVector<QVector3D> nodes : listOfNodes)
     {
-        polygonRoi *polyRoi = new polygonRoi(view2d, d->color);
+        polygonRoi *polyRoi = new polygonRoi(view2d, d->baseColor);
         polyRoi->loadNodes(nodes);
         vtkContourWidget *contour = polyRoi->getContour();
         vtkSmartPointer<vtkPolyData> poly = vtkSmartPointer<vtkPolyData>::New();
@@ -1018,7 +1103,20 @@ void medTagRoiManager::resampleCurve(vtkPolyData *poly,int nbPoints)
     points->Delete();
 }
 
-int medTagRoiManager::getClosestSliceFromPoint()
+int medTagRoiManager::getClosestSliceFromCurrent2DView()
 {
-    return d->closestSlice;
+    vtkImageView2D *view2d = static_cast<medVtkViewBackend*>(d->view->backend())->view2D;
+    int currentSlice = view2d->GetSlice();
+    int newSlice = -1;
+    int minDist = INT_MAX;
+    for (polygonRoi *roi : d->rois)
+    {
+        int dist = roi->getIdSlice() - currentSlice;
+        if (std::abs(dist)<minDist)
+        {
+            minDist = std::abs(dist);
+            newSlice = roi->getIdSlice();
+        }
+    }
+    return newSlice;
 }
