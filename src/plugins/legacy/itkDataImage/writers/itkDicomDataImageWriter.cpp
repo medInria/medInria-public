@@ -232,7 +232,7 @@ void itkDicomDataImageWriter::fillDictionaryFromMetaDataKey(itk::MetaDataDiction
         }
         if (metaDataKey == medMetaDataKeys::PositionReferenceIndicator.key())
         {
-            itk::EncapsulateMetaData<std::string>(dictionary, "0020|0040", data()->metadata(metaDataKey).toStdString());
+            itk::EncapsulateMetaData<std::string>(dictionary, "0020|1040", data()->metadata(metaDataKey).toStdString());
         }
         if (metaDataKey == medMetaDataKeys::Manufacturer.key())
         {
