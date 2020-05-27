@@ -32,6 +32,7 @@ public:
 
     friend QDataStream& operator>>(QDataStream& in, medTagContours& data);
     friend QDataStream& operator<<(QDataStream& out, const medTagContours& data);
+    friend QTextStream& operator<<(QTextStream& out, const medTagContours& data);
 protected:
     QVector<medWorldPosContours> contours;
     QString labelName;

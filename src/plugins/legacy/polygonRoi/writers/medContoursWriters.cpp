@@ -101,7 +101,7 @@ bool medContoursWriter::write(const QString& path)
     if ( path.endsWith(".ctr") )
     {
         // TODO ==> operator << to implement in medTagContours
-        bRes = false // writeASCIIFile(ctr, path, mesh);
+        bRes = false; // writeASCIIFile(ctr, path, mesh);
     }
     else if ( path.endsWith(".ctrb") )
     {

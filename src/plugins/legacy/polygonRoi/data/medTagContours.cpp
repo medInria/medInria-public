@@ -28,6 +28,16 @@ medTagContours::medTagContours(const medTagContours &other)
     contours = other.contours;
 }
 
+QTextStream &operator<<(QTextStream &out, const medTagContours &data)
+{
+    out << "specialityIndex\n" <<data.specialityIndex<< "labelName\n" <<data.labelName<<  "score\n" <<data.score<<"\ncontours\n";
+    for (medWorldPosContours nodes : data.contours)
+    {
+        out << nodes<<"\n";
+    }
+    return out;
+}
+
 QDataStream &operator>>(QDataStream &in, medTagContours &data)
 {
     return in >> data.specialityIndex >> data.labelName >> data.score >> data.target >> data.contours;
