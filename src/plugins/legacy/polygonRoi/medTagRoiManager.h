@@ -59,11 +59,12 @@ public:
     QVector<medWorldPosContours> getContoursAsNodes();
     void loadContours(QVector<medWorldPosContours> contours);
 
-    int getClosestSliceFromPoint();
+    int getClosestSliceFromCurrent2DView();
 
     QVector<QVector2D> copyContour();
     bool pasteContour(QVector<QVector2D> nodes);
     void setName(QString name);
+    void setColor(QColor color);
     void setOptionalNameWithColor(QString name, QColor color);
     void removeContourOtherView(medAbstractImageView *v);
     void removeIntermediateContoursOtherView(medAbstractImageView *v);

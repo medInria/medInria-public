@@ -1,26 +1,39 @@
 #include "contoursManagementToolBox.h"
 #include "polygonRoiToolBox.h"
 
+#include <medAbstractDataFactory.h>
+#include <medAbstractImageData.h>
 #include <medAbstractProcessLegacy.h>
 #include <medContours.h>
+#include <medDataManager.h>
 #include <medTabbedViewContainers.h>
 #include <medToolBoxFactory.h>
+#include <medUtilities.h>
+
+const char* contoursManagementToolBox::urologySpeciality = "urology";
 
 contoursManagementToolBox::contoursManagementToolBox(QWidget *parent):
     medToolBox(parent), currentView(nullptr), savedSelectedIndex(QPair<int,int>(0, 0))
 {
-    colors = QList<QColor>({
+    mainColors = QList<QColor>({
         Qt::green,
         Qt::blue,
-        QColor(224,255,255),
-        QColor(64,224,208),
-        QColor(46,139,87),
         Qt::darkMagenta,
+        QColor(255,128,0),
+        QColor(102,0,204),
+        QColor(255,0,127),
         Qt::gray,
-        Qt::white,
         Qt::black
     });
 
+    targetColors = QList<QColor>({
+        Qt::white,
+        QColor(0,128,128),//teal
+        QColor(224,255,255),//lightcyan
+        QColor(229,204,255),
+        QColor(255,153,204),
+        QColor(64,224,208)//turquoise
+    });
     QWidget *widget = new QWidget();
 
     QVBoxLayout *layout = new QVBoxLayout;
@@ -36,6 +49,12 @@ contoursManagementToolBox::contoursManagementToolBox(QWidget *parent):
     minusButton->setMaximumSize(QSize(20,20));
     minusButton->hide();
 
+    targetLabel = new QLabel("Target");
+    targetLabel->hide();
+    targetButton = new SwitchButton(this, SwitchButton::YESNO);
+    targetButton->hide();
+    connect(targetButton, SIGNAL(valueChanged(bool)), this, SLOT(switchTargetState(bool)));
+
     parseJSONFile();
 
     QVBoxLayout *listLabelLayout = new QVBoxLayout();
@@ -49,6 +68,8 @@ contoursManagementToolBox::contoursManagementToolBox(QWidget *parent):
     plusMinusLayout->addWidget(minusButton, Qt::AlignLeft);
     plusMinusLayout->addWidget(plusButton, Qt::AlignLeft);
     plusMinusLayout->addStretch();
+    plusMinusLayout->addWidget(targetLabel);
+    plusMinusLayout->addWidget(targetButton);
     listLabelLayout->addLayout(plusMinusLayout);
 
     disableButtons();
@@ -61,6 +82,12 @@ contoursManagementToolBox::contoursManagementToolBox(QWidget *parent):
 
 contoursManagementToolBox::~contoursManagementToolBox()
 {
+    for(QListWidget *widget : labels)
+    {
+        delete widget;
+    }
+    labels.clear();
+
     currentView = nullptr;
 }
 
@@ -81,6 +108,7 @@ void contoursManagementToolBox::clear()
         QListWidgetItem *item = widget->takeItem(widget->count()-1);
         delete item;
     }
+    widget->item(0)->setText("Label 0");
     widget->setMaximumHeight((20*widget->count())+5);
 
     widget = labels.at(1);
@@ -88,6 +116,17 @@ void contoursManagementToolBox::clear()
     {
         QListWidgetItem *item = widget->takeItem(widget->count()-1);
         delete item;
+    }
+    for (int row = 0; row<widget->count(); row++)
+    {
+        QListWidgetItem *item = widget->item(row);
+        QString name = item->text();
+        name = name.remove(QRegExp(" - PIRADS[0-9]"));
+        item->setText(name);
+        if (item->flags().testFlag(Qt::ItemIsUserCheckable))
+        {
+            item->setCheckState(Qt::Unchecked);
+        }
     }
     widget->setMaximumHeight((20*widget->count())+5);
 
@@ -143,6 +182,113 @@ void contoursManagementToolBox::updateView()
     showWidgetListForIndex(specialities->currentIndex());
 }
 
+bool contoursManagementToolBox::loadDefaultContours(QListWidget *widget, QVector<medTagContours> &tagContoursSet)
+{
+    bool retVal = false;
+    for (medTagContours &tagContours : tagContoursSet)
+    {
+        if (widget->count()<mainColors.size())
+        {
+            QColor color = findAvailableColor(widget, mainColors);
+            bool itemFound = false;
+            for (int row = 0; row < widget->count(); row++)
+            {
+                QListWidgetItem *item = widget->item(row);
+                if (item->text()==tagContours.getLabelName())
+                {
+                    itemFound = true;
+                    color = item->icon().pixmap(QSize(20,20)).toImage().pixelColor(0,0);
+                    break;
+                }
+            }
+            if (!itemFound)
+            {
+                QListWidgetItem *item = createWidgetItem(tagContours.getLabelName(),
+                                                         color);
+                widget->addItem(item);
+                widget->setMaximumHeight((20*widget->count())+5);
+            }
+            if (color!=QColor::Invalid)
+            {
+                emit contoursToLoad(tagContours, color);
+                retVal = true;
+            }
+        }
+        else
+        {
+            displayMessageError("Too many label already imported");
+            retVal = false;
+            break;
+        }
+    }
+    return retVal;
+}
+
+bool contoursManagementToolBox::loadUrologyContours(QListWidget *widget, QVector<medTagContours> &tagContoursSet)
+{
+    bool retVal = false;
+    int maxSize = mainColors.size()+targetColors.size();
+    for (medTagContours &tagContours : tagContoursSet)
+    {
+        QColor color = QColor::Invalid;
+        bool itemFound = false;
+        for (int row = 0; row < widget->count(); row++)
+        {
+            QListWidgetItem *item = widget->item(row);
+            QString name = item->text().remove(QRegExp(" - PIRADS[0-9]"));
+            if (name==tagContours.getLabelName())
+            {
+                itemFound = true;
+                color = item->icon().pixmap(QSize(20,20)).toImage().pixelColor(0,0);
+                if (tagContours.isTarget())
+                {
+                    QString name = QString("%1 - %2").arg(tagContours.getLabelName()).arg(tagContours.getScore());
+                    item->setText(name);
+                }
+                break;
+            }
+        }
+        if (!itemFound)
+        {
+            QList<QColor> colors;
+            bool score;
+            if (tagContours.isTarget())
+            {
+                colors = targetColors;
+                score = true;
+            }
+            else
+            {
+                colors = mainColors;
+                score = false;
+            }
+            color = findAvailableColor(widget, colors);
+
+            QListWidgetItem *item = createWidgetItem(tagContours.getLabelName(),
+                                                     color, score, true);
+            if (score)
+            {
+                QString name = QString("%1 - %2").arg(tagContours.getLabelName()).arg(tagContours.getScore());
+                item->setText(name);
+            }
+            widget->addItem(item);
+            widget->setMaximumHeight((20*widget->count())+5);
+        }
+        if (widget->count()<maxSize && color!=QColor::Invalid)
+        {
+            emit contoursToLoad(tagContours, color);
+            retVal = true;
+        }
+        else
+        {
+            displayMessageError("Too many label already imported");
+            retVal = false;
+            break;
+        }
+    }
+    return retVal;
+}
+
 bool contoursManagementToolBox::loadDataAsContours(medAbstractImageView *v, unsigned int layer)
 {
     bool retVal = false;
@@ -151,44 +297,20 @@ bool contoursManagementToolBox::loadDataAsContours(medAbstractImageView *v, unsi
     {
         medContours *contours = dynamic_cast<medContours*>(data);
         QVector<medTagContours> &tagContoursSet = contours->getTagContoursSet();
-        QListWidget *widget = labels.at(specialities->currentIndex());
-        for (medTagContours &tagContours : tagContoursSet)
-        {
-            if (widget->count()<colors.size())
-            {
-                QColor color = findAvailableColor(widget);
-                bool itemFound = false;
-                for (int row = 0; row < widget->count(); row++)
-                {
-                    QListWidgetItem *item = widget->item(row);
-                    if (item->text()==tagContours.getLabelName())
-                    {
-                        itemFound = true;
-                        color = item->icon().pixmap(QSize(20,20)).toImage().pixelColor(0,0);
-                    }
-                }
-                if (!itemFound)
-                {
-                    QListWidgetItem *item = createWidgetItem(tagContours.getLabelName(),
-                                                             color);
-                    widget->addItem(item);
-                    widget->setMaximumHeight((20*widget->count())+5);
-                }
-                if (color!=QColor::Invalid)
-                {
-                    emit contoursToLoad(tagContours, color);
-                }
-            }
-            else
-            {
-                displayMessageError("Too many label already imported");
-            }
-        }
+        specialities->setCurrentIndex(tagContoursSet[0].getSpecialityIndex());
+        QListWidget *widget = labels.at(tagContoursSet[0].getSpecialityIndex());
 
+        if (specialities->currentIndex()==0)
+        {
+            retVal = loadDefaultContours(widget, tagContoursSet);
+        }
+        else if (specialities->currentIndex()==1)
+        {
+            retVal = loadUrologyContours(widget, tagContoursSet);
+        }
         emit repulsorState();
 
         v->removeLayer(layer);
-        retVal = true;
     }
     return retVal;
 }
@@ -202,6 +324,7 @@ void contoursManagementToolBox::clickActivationButton(bool state)
     }
     plusButton->setEnabled(state);
     minusButton->setEnabled(state);
+    targetButton->setEnabled(state);
     if (state)
     {
         specialities->setCurrentIndex(savedSelectedIndex.first);
@@ -221,6 +344,7 @@ void contoursManagementToolBox::disableButtons()
     }
     plusButton->setDisabled(true);
     minusButton->setDisabled(true);
+    targetButton->setDisabled(true);
 }
 
 void contoursManagementToolBox::showCurrentLabels()
@@ -238,9 +362,36 @@ void contoursManagementToolBox::showWidgetListForIndex(int index)
 
     updateLabelNamesOnContours(widget);
 
+    if (widget->selectedItems().size()==1)
+    {
+        QListWidgetItem *item = widget->selectedItems().at(0);
+        emit widget->itemClicked(item);
+    }
     widget->show();
     plusButton->show();
     minusButton->show();
+    if(index==1)
+    {
+        if (widget->selectedItems().size()==1)
+        {
+            QListWidgetItem *item = widget->selectedItems().at(0);
+            if (widget->row(item)>3)
+            {
+                targetLabel->show();
+                targetButton->show();
+            }
+            else
+            {
+                targetLabel->hide();
+                targetButton->hide();
+            }
+        }
+    }
+    else
+    {
+        targetLabel->hide();
+        targetButton->hide();
+    }
 }
 
 void contoursManagementToolBox::updateLabelNamesOnContours(QListWidget *widget)
@@ -249,8 +400,10 @@ void contoursManagementToolBox::updateLabelNamesOnContours(QListWidget *widget)
     for (int row = 0; row < widget->count(); row++)
     {
         QListWidgetItem *item = widget->item(row);
+        QString name = item->text();
+        name = name.remove(QRegExp(" - PIRADS[0-9]"));
         QColor col = item->icon().pixmap(QSize(20,20)).toImage().pixelColor(0,0);
-        medContourSharedInfo info = medContourSharedInfo(item->text(), col);
+        medContourSharedInfo info = medContourSharedInfo(name, col);
         infos.append(info);
     }
 
@@ -292,12 +445,38 @@ QListWidget *contoursManagementToolBox::initLabelsList(QStringList names, QList<
     }, Qt::UniqueConnection);
 
     connect(widget, &QListWidget::itemSelectionChanged, this, [this, widget](){
+        if (currentView)
+        {
+            currentView->viewWidget()->setFocus();
+        }
         if (widget->selectedItems().size()==0)
         {
+            targetLabel->hide();
+            targetButton->hide();
             QString name = QString();
             QColor color = QColor::Invalid;
             medContourSharedInfo info = medContourSharedInfo(name, color);
             emit sendContourState(info);
+        }
+        else if (widget->selectedItems().size()==1)
+        {
+            QListWidgetItem *item = widget->selectedItems().at(0);
+            if (widget->row(item)>3)
+            {
+                if (targetLabel->isHidden() || targetButton->isHidden())
+                {
+                    targetLabel->show();
+                    targetButton->show();
+                }
+            }
+            else
+            {
+                if (targetLabel->isVisible() || targetButton->isVisible())
+                {
+                    targetLabel->hide();
+                    targetButton->hide();
+                }
+            }
         }
     }, Qt::UniqueConnection);
 
@@ -306,12 +485,20 @@ QListWidget *contoursManagementToolBox::initLabelsList(QStringList names, QList<
     int idx = 0;
     for (QString name : names)
     {
-        if (colors.size()<=idx)
+        if (mainColors.size()<=idx)
         {
             displayMessageError("Unable to add new contour in list : No more color available");
             break;
         }
-        QColor col = colors.at(idx);
+        QColor col;
+        if (name.startsWith("Target "))
+        {
+            col = findAvailableColor(widget, targetColors);
+        }
+        else
+        {
+            col = findAvailableColor(widget, mainColors);
+        }
         bool score = false;
         if (scores.size()==names.size())
         {
@@ -396,7 +583,7 @@ void contoursManagementToolBox::parseJSONFile()
                 }
             }
         }
-        bool isProstate = (spe.last()=="prostate")?true:false;
+        bool isProstate = (spe.last()==urologySpeciality)?true:false;
         listItems.append(items);
         QListWidget *widget = initLabelsList(items, scores, isProstate);
         labels.append(widget);
@@ -440,49 +627,189 @@ QListWidgetItem * contoursManagementToolBox::createWidgetItem(QString name, QCol
 void contoursManagementToolBox::addLabel()
 {
     QListWidget *widget = labels.at(specialities->currentIndex());
-    if ( widget->count()==colors.size())
+    int maxSize = (specialities->currentIndex()==0)?mainColors.size():(mainColors.size()+targetColors.size());
+    if ( widget->count()==maxSize)
     {
         displayMessageError("Unable to create more label. Maximum size achieved");
         return;
     }
-    QColor color = findAvailableColor(widget);
-    QListWidgetItem *item = createWidgetItem(QString("Label-%1").arg(QString::number(widget->count())),
-                                             color);
-    widget->addItem(item);
-    item->setSelected(true);
-    widget->setMaximumHeight((20*widget->count())+5);
 
-    emit widget->itemClicked(item);
+    QListWidgetItem *item = nullptr;
+    if (specialities->currentText()==urologySpeciality
+            && specialities->currentIndex()==1)
+    {
+        if (targetButton->value())
+        {
+            QColor color = findAvailableColor(widget, targetColors);
+            int count = 1;
+            for (int row=0; row<widget->count(); row++)
+            {
+                if (widget->item(row)->text().startsWith("Target"))
+                {
+                    count++;
+                }
+            }
+            QString name = QString("Target %1").arg(count);
+            if (color == QColor::Invalid)
+            {
+                displayMessageError(QString("Unable to create %1 : No Color available").arg(name));
+                return;
+            }
+            item = createWidgetItem(name,
+                                    color, true, true);
+        }
+        else
+        {
+            QColor color = findAvailableColor(widget, mainColors);
+            int count = 0;
+            for (int row=0; row<widget->count(); row++)
+            {
+                if (!widget->item(row)->text().contains("Target"))
+                {
+                    count++;
+                }
+            }
+            QString name = QString("Label %1").arg(count);
+            if (color == QColor::Invalid)
+            {
+                displayMessageError(QString("Unable to create %1 : No Color available.").arg(name));
+                return;
+            }
+            item = createWidgetItem(name,
+                                    color, false, true);
+            item->setFlags(item->flags() | Qt::ItemIsEditable);
+        }
+    }
+    else
+    {
+        QColor color = findAvailableColor(widget, mainColors);
+        int count = 0;
+        for (int row=0; row<widget->count(); row++)
+        {
+            if (widget->item(row)->text().startsWith("Label"))
+            {
+                count++;
+            }
+        }
+        QString name = QString("Label %1").arg(QString::number(widget->count()));
+        if (color == QColor::Invalid)
+        {
+            displayMessageError(QString("Unable to create %1 : No Color available.").arg(name));
+            return;
+        }
+        item = createWidgetItem(name,
+                                color);
+    }
+    if (item)
+    {
+        widget->addItem(item);
+        item->setSelected(true);
+        widget->setMaximumHeight((20*widget->count())+5);
+
+        emit widget->itemClicked(item);
+    }
+    else
+    {
+        displayMessageError("Error : Creation of new label impossible.");
+    }
 }
 
 void contoursManagementToolBox::removeLabelNameInList()
 {
     QListWidget *widget = labels.at(specialities->currentIndex());
+    int minRowNumber = 0;
+    if (specialities->currentIndex()==1 && specialities->currentText()==urologySpeciality)
+    {
+        minRowNumber = 3;
+    }
+
     for (int row = 0; row<widget->count(); row++)
     {
         QListWidgetItem *item = widget->item(row);
-        if (item->isSelected())
+        if (item->isSelected() && row > minRowNumber)
         {
             QString name = item->text();
+            name = name.remove(QRegExp(" - PIRADS[0-9]"));
             QColor col = item->icon().pixmap(QSize(20,20)).toImage().pixelColor(0,0);
-            medContourSharedInfo info = medContourSharedInfo(item->text(), col);
+            medContourSharedInfo info = medContourSharedInfo(name, col);
             emit labelToDelete(info);
             widget->takeItem(row);
         }
     }
+    widget->setMaximumHeight((20*widget->count())+5);
+}
 
-    if (widget->count()==0)
+void contoursManagementToolBox::switchTargetState(bool state)
+{
+    if (specialities->currentIndex()!=1)
     {
-        medContourSharedInfo info = medContourSharedInfo(QString(), QColor::Invalid);
-        emit sendContourState(info);
+        qDebug()<<QString("%1 :: Impossible case - Slot only available on speciality %2").arg(metaObject()->className()).arg(urologySpeciality);
     }
     else
     {
-        widget->setMaximumHeight((20*widget->count())+5);
+        QListWidget *widget = labels.at(specialities->currentIndex());
+        QList<QListWidgetItem*> selectedItems = widget->selectedItems();
+        if (selectedItems.size()==1)
+        {
+            QListWidgetItem *item = selectedItems.at(0);
+            int row = widget->row(item);
+            if (item->isSelected() && row > 3)
+            {
+                bool itemCheckable = item->flags().testFlag(Qt::ItemIsUserCheckable);
+                QString name;
+                QColor color;
+                if (itemCheckable && !state)
+                {
+                    item->setData(Qt::CheckStateRole, QVariant());
+                    item->setFlags(item->flags() & (~Qt::ItemIsUserCheckable));
+                    item->setFlags(item->flags() | Qt::ItemIsEditable);
+                    int count = 0;
+                    for (int row=0; row<widget->count(); row++)
+                    {
+                        if (!widget->item(row)->text().contains("Target"))
+                        {
+                            count++;
+                        }
+                    }
+                    name = QString("Label %1").arg(count);
+                    color = findAvailableColor(widget, mainColors);
+                }
+                else if (!itemCheckable && state)
+                {
+                    item->setData(Qt::CheckStateRole,Qt::Unchecked);
+                    item->setCheckState(Qt::Unchecked);
+                    item->setFlags(item->flags() | Qt::ItemIsUserCheckable);
+                    item->setFlags(item->flags() & (~Qt::ItemIsEditable));
+                    int count = 1;
+                    for (int row=0; row<widget->count(); row++)
+                    {
+                        if (widget->item(row)->text().startsWith("Target"))
+                        {
+                            count++;
+                        }
+                    }
+                    name = QString("Target %1").arg(count);
+                    color = findAvailableColor(widget, targetColors);
+                }
+                QColor oldColor = item->icon().pixmap(QSize(20,20)).toImage().pixelColor(0,0);
+                item->setText(name);
+                QPixmap pixmap(20,20);
+                pixmap.fill(color);
+                item->setIcon(pixmap);
+                bool hasScore = item->flags().testFlag(Qt::ItemIsUserCheckable);
+                bool checkState = (item->checkState()==Qt::Checked)?true:false;
+
+                medContourSharedInfo info = medContourSharedInfo(name, oldColor);
+                info.setAdditionalNameAndColor(QString(), color);
+                info.setScoreInfo(hasScore);
+                info.setCheckState(checkState);
+                emit sendContourState(info);
+            }
+        }
     }
 }
 
-QColor contoursManagementToolBox::findAvailableColor(QListWidget *widget)
+QColor contoursManagementToolBox::findAvailableColor(QListWidget *widget, QList<QColor> colors)
 {
     QColor color;
     QList<QColor> cols = colors;
@@ -516,7 +843,7 @@ void contoursManagementToolBox::receiveContoursDatasFromView(medContourSharedInf
         itemName = itemName.remove(QRegExp(" - PIRADS[0-9]"));
 
         QColor itemColor = item->icon().pixmap(QSize(20,20)).toImage().pixelColor(0,0);
-        if ( info.nameUpdated() && itemColor==info.getColor())
+        if ( info.nameChanged() && itemColor==info.getColor())
         {
             if (!item->flags().testFlag(Qt::ItemIsEditable))
             {
@@ -541,7 +868,15 @@ void contoursManagementToolBox::receiveContoursDatasFromView(medContourSharedInf
                 item->setText(name);
                 item->setCheckState(state);
             }
+            else if (info.descUpdated() && item->flags().testFlag(Qt::ItemIsUserCheckable))
+            {
+                item->setText(info.getAdditionalName());
+                item->setCheckState(Qt::Unchecked);
+            }
+            medContourSharedInfo activationInfo = medContourSharedInfo(itemName, itemColor);
+            emit sendActivationState(activationInfo);
         }
+
         else
         {
             item->setSelected(false);
@@ -562,4 +897,58 @@ void contoursManagementToolBox::unselectAll()
         }
         item->setSelected(false);
     }
+}
+
+void contoursManagementToolBox::onContoursSaved(medAbstractImageView *view, vtkMetaDataSet *outputDataSet, QVector<medTagContours> contoursData)
+{
+    contourOutput = medAbstractDataFactory::instance()->createSmartPointer("medContours");
+
+    medAbstractData * input = view->layerData(0);
+    medAbstractImageData *inputData = qobject_cast<medAbstractImageData*>(input);
+    QString desc;
+    if (contoursData.size()==1)
+    {
+        desc = QString("contour %1").arg(contoursData[0].getLabelName());
+        contoursData[0].setSpecialityIndex(specialities->currentIndex());
+        if ( specialities->currentIndex()==1 && specialities->currentText()==urologySpeciality)
+        {
+            QListWidget *widget = labels.at(specialities->currentIndex());
+            for (int row=0; row<widget->count(); row++)
+            {
+                QListWidgetItem *item = widget->item(row);
+                if (item->text().contains(contoursData[0].getLabelName()))
+                {
+                    bool target = (item->flags().testFlag(Qt::ItemIsUserCheckable))?true:false;
+                    contoursData[0].setTarget(target);
+                }
+            }
+        }
+    }
+    else
+    {
+        desc = QString("%1 contours").arg(contoursData.size());
+        for (medTagContours& ctr : contoursData )
+        {
+            ctr.setSpecialityIndex(specialities->currentIndex());
+            if ( specialities->currentIndex()==1 && specialities->currentText()==urologySpeciality)
+            {
+                QListWidget *widget = labels.at(specialities->currentIndex());
+                for (int row=0; row<widget->count(); row++)
+                {
+                    QListWidgetItem *item = widget->item(row);
+                    if (item->text().contains(ctr.getLabelName()))
+                    {
+                        bool target = (item->flags().testFlag(Qt::ItemIsUserCheckable))?true:false;
+                        ctr.setTarget(target);
+                    }
+                }
+            }
+        }
+    }
+    medUtilities::setDerivedMetaData(contourOutput, inputData, desc);
+    contourOutput->setData(outputDataSet);
+    contourOutput->setData(&contoursData, 1);
+    outputDataSet->Delete();
+
+    medDataManager::instance()->importData(contourOutput, false);
 }

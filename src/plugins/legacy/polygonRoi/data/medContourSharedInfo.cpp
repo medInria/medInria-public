@@ -8,7 +8,7 @@ medContourSharedInfo::medContourSharedInfo(QString name, QColor color, bool sele
     scoreState = false;
     secondName = QString();
     secondColor = QColor::Invalid;
-    updateName = false;
+    changeName = false;
 }
 
 void medContourSharedInfo::setAdditionalNameAndColor(QString name, QColor color)

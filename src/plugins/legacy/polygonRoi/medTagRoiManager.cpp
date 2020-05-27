@@ -51,7 +51,6 @@ public:
     QString baseName;
     QString optName;
     bool enableInterpolation;
-    int closestSlice;
     bool isActivated;
     bool scoreState;
 };
@@ -69,7 +68,6 @@ medTagRoiManagerPrivate::medTagRoiManagerPrivate(medAbstractView *view, polygonE
     this->baseName = name;
     this->optName = QString();
     this->optColor = QColor::Invalid;
-    this->closestSlice = -1;
     this->scoreState = false;
     polygonRoi *roi = new polygonRoi(view2d, color);
     rois.append(roi);
@@ -139,6 +137,11 @@ QString medTagRoiManager::getOptName()
 void medTagRoiManager::setName(QString name)
 {
     d->baseName = name;
+}
+
+void medTagRoiManager::setColor(QColor color)
+{
+    d->baseColor = color;
 }
 
 void medTagRoiManager::setOptionalNameWithColor(QString name, QColor color)
@@ -465,7 +468,6 @@ void medTagRoiManager::createMaskWithLabel(int label)
     UChar3ImageType::Pointer m_itkMask = dynamic_cast<UChar3ImageType*>( reinterpret_cast<itk::Object*>(output->data()) );
     for(QPair<vtkPolygon *, int> polygon : polygons)
     {
-
         double bounds[6];
         polygon.first->GetBounds(bounds);
         unsigned int x=0, y=0, z=0;
@@ -542,12 +544,13 @@ void medTagRoiManager::createMaskWithLabel(int label)
                     index[x]=i;
                     index[y]=j;
                     index[z]=polygon.second;
-                    m_itkMask->SetPixel(index,label);
+                    m_itkMask->SetPixel(index,label+1);
                 }
             }
         }
     }
-    QString desc = QString("mask: ") + QString(d->baseName);
+    QString name = (d->optName==QString())?QString(d->baseName):QString("%1-%2").arg(d->baseName).arg(d->optName);
+    QString desc = QString("mask: ") + name;
     medUtilities::setDerivedMetaData(output, inputData, desc);
     medDataManager::instance()->importData(output, false);
     return;
@@ -1100,7 +1103,20 @@ void medTagRoiManager::resampleCurve(vtkPolyData *poly,int nbPoints)
     points->Delete();
 }
 
-int medTagRoiManager::getClosestSliceFromPoint()
+int medTagRoiManager::getClosestSliceFromCurrent2DView()
 {
-    return d->closestSlice;
+    vtkImageView2D *view2d = static_cast<medVtkViewBackend*>(d->view->backend())->view2D;
+    int currentSlice = view2d->GetSlice();
+    int newSlice = -1;
+    int minDist = INT_MAX;
+    for (polygonRoi *roi : d->rois)
+    {
+        int dist = roi->getIdSlice() - currentSlice;
+        if (std::abs(dist)<minDist)
+        {
+            minDist = std::abs(dist);
+            newSlice = roi->getIdSlice();
+        }
+    }
+    return newSlice;
 }

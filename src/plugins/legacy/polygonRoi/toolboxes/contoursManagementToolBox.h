@@ -13,6 +13,7 @@
 #pragma once
 
 // medInria
+#include <SwitchButton.h>
 #include <medToolBox.h>
 #include <polygonEventFilter.h>
 
@@ -29,6 +30,8 @@ class contoursManagementToolBox : public medToolBox
                           <<"contoursManagementToolBox")
 
 public:
+    static const char* urologySpeciality;
+
     contoursManagementToolBox(QWidget *parent = nullptr);
     ~contoursManagementToolBox();
     static bool registered();
@@ -42,15 +45,21 @@ public slots:
      void receiveContoursDatasFromView(medContourSharedInfo &info);
      void showCurrentLabels();
      void unselectAll();
+     void onContoursSaved(medAbstractImageView *view,
+                          vtkMetaDataSet *outputDataSet,
+                          QVector<medTagContours> contoursData);
+
 private slots:
      void showWidgetListForIndex(int index);
 
      void addLabel();
      void removeLabelNameInList();
 
+     void switchTargetState(bool state);
 signals:
      void sendDatasToView(QList<medContourSharedInfo> infos);
      void sendContourState(medContourSharedInfo info);
+     void sendActivationState(medContourSharedInfo info);
      void sendContourName(medContourSharedInfo info);
      void labelToDelete(medContourSharedInfo info);
      void contoursToLoad(medTagContours tagContours,
@@ -61,8 +70,13 @@ private:
     QList<QListWidget*> labels;
     QPushButton *plusButton;
     QPushButton *minusButton;
+    SwitchButton* targetButton;
+    QLabel *targetLabel;
 
-    QList<QColor> colors;
+    dtkSmartPointer<medAbstractData> contourOutput;
+
+    QList<QColor> mainColors;
+    QList<QColor> targetColors;
     medAbstractView * currentView;
     QPair<int, int> savedSelectedIndex;
     void disableButtons();
@@ -70,7 +84,9 @@ private:
     QListWidget *initLabelsList(QStringList names, QList<bool> scores, bool isProstate=false);
     QListWidgetItem *createWidgetItem(QString name, QColor col, bool score=false, bool isProstate=false);
     void updateLabelNamesOnContours(QListWidget *widget);
-    QColor findAvailableColor(QListWidget *widget);
+    QColor findAvailableColor(QListWidget *widget, QList<QColor> colors);
     bool loadDataAsContours(medAbstractImageView *v, unsigned int layer);
     void parseJSONFile();
+    bool loadDefaultContours(QListWidget *widget, QVector<medTagContours> &tagContoursSet);
+    bool loadUrologyContours(QListWidget *widget, QVector<medTagContours> &tagContoursSet);
 };

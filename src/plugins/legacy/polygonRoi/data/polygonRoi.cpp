@@ -461,6 +461,11 @@ void polygonRoi::updateContourOtherView(medAbstractImageView *view, bool state)
         {
             createPolydataToAddInViews();
         }
+        double color[3];
+        color[0] = d->roiColor.redF();
+        color[1] = d->roiColor.greenF();
+        color[2] = d->roiColor.blueF();
+        d->property->SetColor(color);
 
         if (view->orientation() == medImageView::VIEW_ORIENTATION_3D)
         {

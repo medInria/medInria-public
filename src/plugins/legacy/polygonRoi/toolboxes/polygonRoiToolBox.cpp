@@ -301,12 +301,14 @@ void polygonRoiToolBox::clickClosePolygon(bool state)
             connect(viewEventFilter, SIGNAL(sendErrorMessage(QString)), this, SLOT(errorMessage(QString)), Qt::UniqueConnection);
             connect(this, SIGNAL(deactivateContours()), managementToolBox, SLOT(unselectAll()), Qt::UniqueConnection);
             connect(managementToolBox, SIGNAL(repulsorState()), this, SLOT(checkRepulsor()), Qt::UniqueConnection);
-            connect(managementToolBox, SIGNAL(sendDatasToView(QList<medContourSharedInfo>)), viewEventFilter, SLOT(receiveDatasFromToolbox(QList<medContourSharedInfo>)));
-            connect(managementToolBox, SIGNAL(sendContourState(medContourSharedInfo)), viewEventFilter, SLOT(receiveContourState(medContourSharedInfo)));
-            connect(managementToolBox, SIGNAL(sendContourName(medContourSharedInfo)), viewEventFilter, SLOT(receiveContourName(medContourSharedInfo)));
-            connect(managementToolBox, SIGNAL(labelToDelete(medContourSharedInfo)), viewEventFilter, SLOT(deleteLabel(medContourSharedInfo)));
+            connect(managementToolBox, SIGNAL(sendDatasToView(QList<medContourSharedInfo>)), viewEventFilter, SLOT(receiveDatasFromToolbox(QList<medContourSharedInfo>)), Qt::UniqueConnection);
+            connect(managementToolBox, SIGNAL(sendContourState(medContourSharedInfo)), viewEventFilter, SLOT(receiveContourState(medContourSharedInfo)), Qt::UniqueConnection);
+            connect(managementToolBox, SIGNAL(sendContourName(medContourSharedInfo)), viewEventFilter, SLOT(receiveContourName(medContourSharedInfo)), Qt::UniqueConnection);
+            connect(managementToolBox, SIGNAL(sendActivationState(medContourSharedInfo)), viewEventFilter, SLOT(receiveActivationState(medContourSharedInfo)), Qt::UniqueConnection);
+            connect(managementToolBox, SIGNAL(labelToDelete(medContourSharedInfo)), viewEventFilter, SLOT(deleteLabel(medContourSharedInfo)), Qt::UniqueConnection);
             connect(viewEventFilter, SIGNAL(sendContourInfoToListWidget(medContourSharedInfo&)), managementToolBox, SLOT(receiveContoursDatasFromView(medContourSharedInfo&)), Qt::UniqueConnection);
-            connect(managementToolBox, SIGNAL(contoursToLoad(medTagContours, QColor)), viewEventFilter, SLOT(loadContours(medTagContours, QColor)));
+            connect(managementToolBox, SIGNAL(contoursToLoad(medTagContours, QColor)), viewEventFilter, SLOT(loadContours(medTagContours, QColor)), Qt::UniqueConnection);
+            connect(viewEventFilter, SIGNAL(saveContours(medAbstractImageView*,vtkMetaDataSet*,QVector<medTagContours>)), managementToolBox, SLOT(onContoursSaved(medAbstractImageView*,vtkMetaDataSet*,QVector<medTagContours>)), Qt::UniqueConnection);
         }
         viewEventFilter->updateView(currentView);
         viewEventFilter->setEnableInterpolation(interpolate->isChecked());

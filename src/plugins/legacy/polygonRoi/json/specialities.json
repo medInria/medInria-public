@@ -4,12 +4,12 @@
             "name": "default",
             "desc": [
             	{
-            		"name" : "Label-0"
+            		"name" : "Label 0"
             	}
             ]
 		},
         {
-            "name": "prostate",
+            "name": "urology",
             "desc": [
 	            {
 	            	"name" : "WG (whole gland)",

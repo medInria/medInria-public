@@ -27,9 +27,6 @@
 #include <vtkInriaInteractorStylePolygonRepulsor.h>
 #include <vtkMetaDataSet.h>
 
-
-typedef itk::Image<unsigned char, 3> UChar3ImageType;
-
 class medTableWidgetItem;
 class View2DObserver;
 
@@ -82,6 +79,7 @@ public slots:
     void copyContours();
     void pasteContours();
 
+    void receiveActivationState(medContourSharedInfo info);
 private slots:
     void deleteNode(medTagRoiManager *manager, const double *mousePos);
     void deleteContour(medTagRoiManager *manager);
@@ -98,14 +96,16 @@ signals:
     void clearLastAlternativeView();
     void sendErrorMessage(QString);
     void sendContourInfoToListWidget(medContourSharedInfo &contourInfo);
+    void saveContours(medAbstractImageView *view, vtkMetaDataSet *outputDataSet, QVector<medTagContours> contoursData);
+
 private:
     medAbstractImageView *currentView;
-    dtkSmartPointer<medAbstractData> contourOutput;
     CURSORSTATE cursorState;
     QList<medTagRoiManager *> managers;
     QColor activeColor;
     QString activeName;
     bool scoreState;
+    QList<QPair<QString, QColor>> pirads;
     QList<medAbstractImageView*> otherViews;
     bool isRepulsorActivated;
     vtkInriaInteractorStylePolygonRepulsor *interactorStyleRepulsor;
@@ -121,9 +121,8 @@ private:
     bool addPointInContourWithLabel(QMouseEvent *mouseEvent);
     void setToolboxButtonsState(bool state);
     void manageButtonsState();
-    void saveContoursAsMedAbstractData(vtkMetaDataSet *outputDataSet, QVector<medTagContours> contoursData);
     medTagRoiManager *getManagerFromColor(QColor color);
-    QLineEdit *sendUpdatedName(medTagRoiManager* closestManager, QMenu *mainMenu);
+    QLineEdit *changeManagerName(medTagRoiManager* closestManager, QMenu *mainMenu);
     void deleteNode(double *mousePosition);
     medTagRoiManager *getClosestManager(double *mousePos);
     void enableActiveManagerIfExists();

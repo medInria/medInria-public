@@ -28,13 +28,17 @@ public:
     QString getAdditionalName(){return secondName;}
     QColor getAdditionalColor(){return secondColor;}
     bool hasScore(){return scoreState;}
-    bool nameUpdated(){return updateName;}
+    bool nameChanged(){return changeName;}
+    bool descUpdated(){return updateDesc;}
+    bool colorUpdated(){return updateColor;}
     bool checkState(){return checked;}
 
     void setAdditionalNameAndColor(QString name, QColor color);
     void setScoreInfo(bool state);
     void setSelected(bool state){selected = state;}
-    void setUpdateName(bool state){updateName = state;}
+    void setChangeName(bool state){changeName = state;}
+    void setUpdateDesc(bool state){updateDesc = state;}
+    void setUpdateColor(bool state){updateColor = state;}
     void setCheckState(bool state){checked = state;}
 
 private:
@@ -44,6 +48,8 @@ private:
     QColor secondColor;
     bool selected;
     bool scoreState;
-    bool updateName;
+    bool changeName;
+    bool updateColor;
     bool checked;
+    bool updateDesc;
 };

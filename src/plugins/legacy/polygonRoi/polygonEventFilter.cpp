@@ -81,6 +81,10 @@ polygonEventFilter::polygonEventFilter(medAbstractImageView *view) :
     activeName = QString();
     activeColor = QColor::Invalid;
     scoreState = false;
+    pirads.append(QPair<QString, QColor>("PIRADS3", Qt::yellow));
+    pirads.append(QPair<QString, QColor>("PIRADS4", QColor(139, 69, 19)));
+    pirads.append(QPair<QString, QColor>("PIRADS5", Qt::darkRed));
+
     // interactors
     interactorStyleRepulsor = vtkInriaInteractorStylePolygonRepulsor::New();
 }
@@ -307,7 +311,7 @@ bool polygonEventFilter::leftButtonBehaviour(medAbstractView *view, QMouseEvent 
         mousePos[1] = (currentView->viewWidget()->height()-mouseEvent->y()-1)*QGuiApplication::screenAt(mouseEvent->globalPos())->devicePixelRatio();
         if (!activeManager)
         {
-            emit sendErrorMessage(QString("Select a label in list to be able to use repulsor tool.").arg(metaObject()->className()));
+            emit sendErrorMessage(QString("Select a label in list to be able to use repulsor tool."));
             return false;
         }
         if (interactorStyleRepulsor == nullptr)
@@ -354,7 +358,7 @@ void polygonEventFilter::setCustomCursor()
     currentView->viewWidget()->setCursor(QCursor(pix, -1, -1));
 }
 
-QLineEdit * polygonEventFilter::sendUpdatedName(medTagRoiManager* closestManager, QMenu *mainMenu)
+QLineEdit * polygonEventFilter::changeManagerName(medTagRoiManager* closestManager, QMenu *mainMenu)
 {
     QLineEdit *renameManager = new QLineEdit(closestManager->getName());
     renameManager->setContextMenuPolicy(Qt::ContextMenuPolicy::NoContextMenu);
@@ -378,7 +382,7 @@ QLineEdit * polygonEventFilter::sendUpdatedName(medTagRoiManager* closestManager
        }
        closestManager->setName(renameManager->text());
        medContourSharedInfo info = medContourSharedInfo(closestManager->getName(), closestManager->getColor());
-       info.setUpdateName(true);
+       info.setChangeName(true);
        emit sendContourInfoToListWidget(info);
     });
     connect(renameManager, &QLineEdit::returnPressed, [=](){
@@ -502,7 +506,7 @@ bool polygonEventFilter::rightButtonBehaviour(medAbstractView *view, QMouseEvent
 
         changeMenu = changeLabelActions(closestManager);
 
-        renameManagerAction->setDefaultWidget(sendUpdatedName(closestManager, &mainMenu));
+        renameManagerAction->setDefaultWidget(changeManagerName(closestManager, &mainMenu));
 
 
         mainMenu.addAction(renameManagerAction);
@@ -529,9 +533,10 @@ bool polygonEventFilter::rightButtonBehaviour(medAbstractView *view, QMouseEvent
         }
         if (closestManager->hasScore())
         {
-            scoreMenu->addAction(createScoreAction(closestManager, "PIRADS3", Qt::yellow));
-            scoreMenu->addAction(createScoreAction(closestManager, "PIRADS4", QColor(139, 69, 19)));
-            scoreMenu->addAction(createScoreAction(closestManager, "PIRADS5", Qt::darkRed));
+            for (QPair<QString, QColor> pirad : pirads)
+            {
+                scoreMenu->addAction(createScoreAction(closestManager, pirad.first, pirad.second));
+            }
             mainMenu.addMenu(scoreMenu);
         }
         mainMenu.addMenu(roiManagementMenu);
@@ -617,6 +622,7 @@ QAction *polygonEventFilter::createScoreAction(medTagRoiManager *manager, QStrin
         manager->switchColor();
         activeManager = manager;
         enableActiveManagerIfExists();
+        enableOtherViewsVisibility(true);
         medContourSharedInfo info = medContourSharedInfo(manager->getName(), manager->getColor(), true);
         info.setAdditionalNameAndColor(manager->getOptName(), manager->getOptColor());
         info.setCheckState(true);
@@ -814,6 +820,16 @@ void polygonEventFilter::receiveDatasFromToolbox(QList<medContourSharedInfo> inf
     }
 }
 
+void polygonEventFilter::receiveActivationState(medContourSharedInfo info)
+{
+    medTagRoiManager *manager = findManagerWithColor(info.getColor());
+    if (manager)
+    {
+        activeManager = manager;
+        enableActiveManagerIfExists();
+    }
+}
+
 void polygonEventFilter::receiveContourState(medContourSharedInfo info)
 {
     activeManager = nullptr;
@@ -823,14 +839,46 @@ void polygonEventFilter::receiveContourState(medContourSharedInfo info)
         manager->setScoreState(info.hasScore());
         manager->setName(info.getName());
         activeManager = manager;
-        if (manager->getOptName()!=QString() && manager->getOptColor()!=QColor::Invalid)
+        if (info.getAdditionalColor()!=QColor::Invalid && info.getAdditionalName()==QString())
         {
-            QColor color = (info.checkState())?manager->getOptColor():manager->getColor();
-            manager->changeContoursColor(color);
+            manager->setColor(info.getAdditionalColor());
+            manager->changeContoursColor(info.getAdditionalColor());
         }
+        else if (manager->getOptName()!=QString() && manager->getOptColor()!=QColor::Invalid)
+        {
+            if (!info.hasScore())
+            {
+                manager->changeContoursColor(manager->getColor());
+                manager->setOptionalNameWithColor(QString(), QColor::Invalid);
+            }
+            else
+            {
+                QColor color = (info.checkState())?manager->getOptColor():manager->getColor();
+                manager->changeContoursColor(color);
+            }
+        }
+        if (currentView)
+        {
+            vtkImageView2D *view2D =  static_cast<medVtkViewBackend*>(currentView->backend())->view2D;
+
+            int newSlice = manager->getClosestSliceFromCurrent2DView();
+            if (newSlice!=-1 && newSlice!=view2D->GetSlice())
+            {
+                view2D->SetSlice(newSlice);
+                view2D->Render();
+            }
+        }
+        enableOtherViewsVisibility(true);
     }
 
-    activeColor = info.getColor();
+    if (info.getAdditionalColor()!=QColor::Invalid && info.getAdditionalName()==QString())
+    {
+        activeColor = info.getAdditionalColor();
+    }
+    else
+    {
+        activeColor = info.getColor();
+    }
     activeName = info.getName();
     scoreState = info.hasScore();
     enableActiveManagerIfExists();
@@ -922,29 +970,6 @@ void polygonEventFilter::saveMask()
     }
 }
 
-void polygonEventFilter::saveContoursAsMedAbstractData(vtkMetaDataSet *outputDataSet, QVector<medTagContours> contoursData)
-{
-    contourOutput = medAbstractDataFactory::instance()->createSmartPointer("medContours");
-
-    medAbstractData * input = currentView->layerData(0);
-    medAbstractImageData *inputData = qobject_cast<medAbstractImageData*>(input);
-    QString desc;
-    if (contoursData.size()==1)
-    {
-        desc = QString("contour %1").arg(contoursData[0].getLabelName());
-    }
-    else
-    {
-        desc = QString("%1 contours").arg(contoursData.size());
-    }
-    medUtilities::setDerivedMetaData(contourOutput, inputData, desc);
-    contourOutput->setData(outputDataSet);
-    contourOutput->setData(&contoursData, 1);
-    outputDataSet->Delete();
-
-    medDataManager::instance()->importData(contourOutput, false);
-}
-
 void polygonEventFilter::saveAllContours()
 {
     QVector<medTagContours> contoursData;
@@ -963,6 +988,10 @@ void polygonEventFilter::saveAllContours()
 
             QString labelName = manager->getName();
             contoursTag.setLabelName(labelName);
+            if (manager->hasScore() && manager->getOptName()!=QString())
+            {
+                contoursTag.setScore(manager->getOptName());
+            }
             contoursTag.setContourNodes(ctr);
             contoursData.append(contoursTag);
 
@@ -975,7 +1004,7 @@ void polygonEventFilter::saveAllContours()
     vtkMetaDataSet *outputDataSet = vtkMetaSurfaceMesh::New();
     outputDataSet->SetDataSet(append->GetOutput());
 
-    saveContoursAsMedAbstractData(outputDataSet, contoursData);
+    emit saveContours(currentView, outputDataSet, contoursData);
     return;
 }
 
@@ -993,10 +1022,23 @@ void polygonEventFilter::loadContours(medTagContours tagContours, QColor color)
     qDebug()<<"create manager with name "<<activeName<<" and color "<<activeColor.toRgb();
     if (findManagerWithColor(color) != nullptr)
     {
-        emit sendErrorMessage(QString("loadContours - contour with color %1 already exists").arg(color.name()));
+        emit sendErrorMessage(QString("loadContours - contour with color %1 already exists").arg(color.toRgb().name()));
         return;
     }
-    createManager()->loadContours(tagContours.getContourNodes());
+    medTagRoiManager *mgr = createManager();
+    mgr->loadContours(tagContours.getContourNodes());
+    if (tagContours.getScore() != QString())
+    {
+        QColor col = QColor::Invalid;
+        for (QPair<QString, QColor> pirad : pirads)
+        {
+            if (pirad.first == tagContours.getScore())
+            {
+                mgr->setOptionalNameWithColor(pirad.first, pirad.second);
+                break;
+            }
+        }
+    }
 }
 
 void polygonEventFilter::manageTick()
@@ -1065,7 +1107,6 @@ void polygonEventFilter::switchContourColor(double *mousePosition)
         {
             activeManager = closestManager;
             enableActiveManagerIfExists();
-
             medContourSharedInfo info = medContourSharedInfo(closestManager->getName(),
                                                  closestManager->getColor(),
                                                  true);
@@ -1074,6 +1115,7 @@ void polygonEventFilter::switchContourColor(double *mousePosition)
             info.setAdditionalNameAndColor(closestManager->getOptName(), closestManager->getOptColor());
             info.setCheckState(checkState);
             emit sendContourInfoToListWidget(info);
+            enableOtherViewsVisibility(true);
         }
     }
 
@@ -1127,7 +1169,7 @@ void polygonEventFilter::deleteLabel(medContourSharedInfo info)
 {
     for (medTagRoiManager *manager : managers)
     {
-        if (manager->getName()==info.getName() && manager->getColor()==info.getColor())
+        if (manager->getName()==info.getName())
         {
             deleteLabel(manager);
             activeManager = nullptr;
@@ -1142,6 +1184,14 @@ void polygonEventFilter::deleteLabel(medTagRoiManager *manager)
     for (medAbstractImageView * v : otherViews)
     {
         manager->enableOtherViewVisibility(v, false);
+    }
+    if (manager->hasScore() && manager->getOptName()!=QString())
+    {
+        medContourSharedInfo info = medContourSharedInfo(manager->getName(), manager->getColor());
+        info.setUpdateDesc(true);
+        info.setAdditionalNameAndColor(manager->getName(), QColor::Invalid);
+        info.setScoreInfo(false);
+        emit sendContourInfoToListWidget(info);
     }
     managers.removeOne(manager);
     manager->removeAllTick();
@@ -1211,6 +1261,10 @@ void polygonEventFilter::saveContour(medTagRoiManager *manager)
     medTagContours contoursTag;
     QString labelName = manager->getName();
     contoursTag.setLabelName(labelName);
+    if (manager->hasScore() && manager->getOptName()!=QString())
+    {
+        contoursTag.setScore(manager->getOptName());
+    }
     contoursTag.setContourNodes(ctr);
     contoursData.append(contoursTag);
 
@@ -1221,5 +1275,5 @@ void polygonEventFilter::saveContour(medTagRoiManager *manager)
     vtkMetaDataSet *outputDataSet = vtkMetaSurfaceMesh::New();
     outputDataSet->SetDataSet(append->GetOutput());
 
-    saveContoursAsMedAbstractData(outputDataSet, contoursData);
+    emit saveContours(currentView, outputDataSet, contoursData);
 }

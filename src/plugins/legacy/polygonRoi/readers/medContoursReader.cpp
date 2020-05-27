@@ -166,6 +166,7 @@ bool medContoursReader::read(const QString& path)
         else
         {
             // TODO ==> Read ASCII File to implement
+            // TODO ==> operator >> to implement in medTagContours
             return false;//readASCIIFile(path);
         }
     }
