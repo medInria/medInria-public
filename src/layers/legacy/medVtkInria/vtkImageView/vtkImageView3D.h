@@ -219,7 +219,7 @@ protected:
 
     void SetFirstLayer(vtkAlgorithmOutput *pi_poInputAlgoImg, vtkMatrix4x4 *matrix = nullptr, int layer = 0);
     void SetOtherLayer(vtkAlgorithmOutput* pi_poVtkAlgoOutput, vtkMatrix4x4 *matrix = nullptr, int layer = 0);
-    bool is3D();
+    bool data2DTreatment();
 
     virtual void InstallPipeline();
     virtual void UnInstallPipeline();
