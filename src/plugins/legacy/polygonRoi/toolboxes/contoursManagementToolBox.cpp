@@ -240,7 +240,7 @@ bool contoursManagementToolBox::loadUrologyContours(QListWidget *widget, QVector
             {
                 itemFound = true;
                 color = item->icon().pixmap(QSize(20,20)).toImage().pixelColor(0,0);
-                if (tagContours.isTarget())
+                if (tagContours.isTarget() && tagContours.getScore()!=QString())
                 {
                     QString name = QString("%1 - %2").arg(tagContours.getLabelName()).arg(tagContours.getScore());
                     item->setText(name);
@@ -726,14 +726,22 @@ void contoursManagementToolBox::removeLabelNameInList()
     for (int row = 0; row<widget->count(); row++)
     {
         QListWidgetItem *item = widget->item(row);
-        if (item->isSelected() && row > minRowNumber)
+        if (item->isSelected())
         {
             QString name = item->text();
             name = name.remove(QRegExp(" - PIRADS[0-9]"));
             QColor col = item->icon().pixmap(QSize(20,20)).toImage().pixelColor(0,0);
             medContourSharedInfo info = medContourSharedInfo(name, col);
             emit labelToDelete(info);
-            widget->takeItem(row);
+            if (row > minRowNumber)
+            {
+                widget->takeItem(row);
+            }
+            else
+            {
+                info.setScoreInfo(item->flags().testFlag(Qt::ItemIsUserCheckable));
+                emit sendActivationState(info);
+            }
         }
     }
     widget->setMaximumHeight((20*widget->count())+5);
@@ -756,7 +764,7 @@ void contoursManagementToolBox::switchTargetState(bool state)
             if (item->isSelected() && row > 3)
             {
                 bool itemCheckable = item->flags().testFlag(Qt::ItemIsUserCheckable);
-                QString name;
+                QString name = "unamed";
                 QColor color;
                 if (itemCheckable && !state)
                 {
@@ -878,6 +886,7 @@ void contoursManagementToolBox::receiveContoursDatasFromView(medContourSharedInf
                 item->setCheckState(Qt::Unchecked);
             }
             medContourSharedInfo activationInfo = medContourSharedInfo(itemName, itemColor);
+            activationInfo.setScoreInfo(item->flags().testFlag(Qt::ItemIsUserCheckable));
             emit sendActivationState(activationInfo);
         }
 

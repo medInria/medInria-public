@@ -822,12 +822,16 @@ void polygonEventFilter::receiveDatasFromToolbox(QList<medContourSharedInfo> inf
 
 void polygonEventFilter::receiveActivationState(medContourSharedInfo info)
 {
+    activeManager = nullptr;
     medTagRoiManager *manager = findManagerWithColor(info.getColor());
     if (manager)
     {
         activeManager = manager;
-        enableActiveManagerIfExists();
     }
+    activeColor = info.getColor();
+    activeName = info.getName();
+    scoreState = info.hasScore();
+    enableActiveManagerIfExists();
 }
 
 void polygonEventFilter::receiveContourState(medContourSharedInfo info)
@@ -1019,7 +1023,6 @@ void polygonEventFilter::loadContours(medTagContours tagContours, QColor color)
 
     activeName = tagContours.getLabelName();
     activeColor = color;
-    qDebug()<<"create manager with name "<<activeName<<" and color "<<activeColor.toRgb();
     if (findManagerWithColor(color) != nullptr)
     {
         emit sendErrorMessage(QString("loadContours - contour with color %1 already exists").arg(color.toRgb().name()));
