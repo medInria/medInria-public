@@ -791,6 +791,10 @@ void contoursManagementToolBox::switchTargetState(bool state)
                     name = QString("Target %1").arg(count);
                     color = findAvailableColor(widget, targetColors);
                 }
+                else
+                {
+                    return;
+                }
                 QColor oldColor = item->icon().pixmap(QSize(20,20)).toImage().pixelColor(0,0);
                 item->setText(name);
                 QPixmap pixmap(20,20);
