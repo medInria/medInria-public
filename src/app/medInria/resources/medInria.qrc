@@ -147,6 +147,8 @@
         <file>pixmaps/radio-disabled.png</file>
         <file>pixmaps/radio-checked-disabled.png</file>
         <file>pixmaps/plus-button.png</file>
+        <file>pixmaps/plus.png</file>
+        <file>pixmaps/minus.png</file>
         <file>pixmaps/checkbox-disabled.png</file>
         <file>pixmaps/checkbox-checked-disabled.png</file>
         <file>pixmaps/arrow-top-disabled.png</file>

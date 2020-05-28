@@ -28,7 +28,7 @@ std::wstring convertUTF8toLocalUtfString(char const * pi_pchStringToConvert)
 #else
 std::string convertUTF8toLocalUtfString(char const * pi_pchStringToConvert)
 {
-    retun std::string(pi_pchStringToConvert);
+    return std::string(pi_pchStringToConvert);
 }
 #endif
 

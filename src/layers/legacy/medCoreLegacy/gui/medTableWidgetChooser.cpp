@@ -11,62 +11,64 @@
 
 =========================================================================*/
 
-#include <medLayoutChooser.h>
+#include <medTableWidgetChooser.h>
 
 #include <QtGui>
 #include <QtWidgets>
 
-class medLayoutChooserPrivate
+class medTableWidgetChooserPrivate
 {
 public:
     unsigned int left;
     unsigned int right;
     unsigned int top;
     unsigned int bottom;
+    int sideSize;
 };
 
-medLayoutChooser::medLayoutChooser(QWidget *parent) : QTableWidget(parent), d(new medLayoutChooserPrivate)
+medTableWidgetChooser::medTableWidgetChooser(QWidget *parent, int rowCount, int colCount, int sideSize) : QTableWidget(rowCount, colCount, parent), d(new medTableWidgetChooserPrivate)
 {
-    this->setRowCount(5);
-    this->setColumnCount(5);
+    d->sideSize = sideSize;
+    this->resizeColumnsToContents();
+    this->resizeRowsToContents();
+
     this->horizontalHeader()->setHidden(true);
     this->verticalHeader()->setHidden(true);
     this->setHorizontalScrollBarPolicy(Qt::ScrollBarAlwaysOff);
     this->setVerticalScrollBarPolicy(Qt::ScrollBarAlwaysOff);
-    this->resizeColumnsToContents();
-    this->resizeRowsToContents();
     this->setFrameShape(QFrame::NoFrame);
 
     d->left = d->right = d->top = d->bottom = 0;
 
     this->setSizePolicy(QSizePolicy::Fixed, QSizePolicy::Fixed);
+
 }
 
-medLayoutChooser::~medLayoutChooser(void)
+medTableWidgetChooser::~medTableWidgetChooser(void)
 {
     delete d;
     d = NULL;
 }
 
-QSize medLayoutChooser::sizeHint(void) const
+QSize medTableWidgetChooser::sizeHint(void) const
 {
-    return QSize(this->columnCount()*30, this->rowCount()*30);
+    return QSize(this->columnCount()*d->sideSize, this->rowCount()*d->sideSize);
 }
 
-int medLayoutChooser::sizeHintForRow(int row) const
+int medTableWidgetChooser::sizeHintForRow(int row) const
 {
     Q_UNUSED(row);
-    return 30;
+    return d->sideSize;
 }
 
-int medLayoutChooser::sizeHintForColumn(int column) const
+int medTableWidgetChooser::sizeHintForColumn(int column) const
 {
     Q_UNUSED(column);
-    return 30;
+    return d->sideSize;
 }
 
 
-void medLayoutChooser::mouseReleaseEvent(QMouseEvent *event)
+void medTableWidgetChooser::mouseReleaseEvent(QMouseEvent *event)
 {
 
     QItemSelection selec = this->selectionModel()->selection();
@@ -87,3 +89,20 @@ void medLayoutChooser::mouseReleaseEvent(QMouseEvent *event)
     d->bottom = 0;
 }
 
+
+medImageView::Orientation medTableWidgetItem::orientation()
+{
+    switch (type())
+    {
+    case medTableWidgetItem::AxialType:
+        return medImageView::VIEW_ORIENTATION_AXIAL;
+    case medTableWidgetItem::CoronalType:
+        return medImageView::VIEW_ORIENTATION_CORONAL;
+    case medTableWidgetItem::SagittalType:
+        return medImageView::VIEW_ORIENTATION_SAGITTAL;
+    case medTableWidgetItem::ThreeDimType:
+        return medImageView::VIEW_ORIENTATION_3D;
+    default:
+        return medImageView::VIEW_ALL_ORIENTATION;
+    }
+}
