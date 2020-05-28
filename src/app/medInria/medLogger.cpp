@@ -11,7 +11,6 @@
 
 =========================================================================*/
 #include "medLogger.h"
-
 #include <QTextStream>
 
 class medLoggerPrivate
