@@ -371,6 +371,7 @@ void medAbstractWorkspaceLegacy::updateLayersToolBox()
                 layout->addWidget(thumbnailButton);
                 layout->addWidget(layerName);
                 layout->addStretch();
+
                 for(medAbstractInteractor *interactor : layeredView->layerInteractors(layer))
                 {
                     if(interactor->layerWidget())
@@ -567,7 +568,16 @@ void medAbstractWorkspaceLegacy::removeLayer()
     layerView->removeLayer(layer);
     if (layerView->layersCount() == 0)
     {
-        delete(layerView);
+        if (medViewContainerManager::instance()->container(containerUuid)->closingMode()
+                == medViewContainer::CLOSE_CONTAINER)
+        {
+            medViewContainerManager::instance()->container(containerUuid)->checkIfStillDeserveToLiveContainer();
+        }
+        else
+        {
+            // For containers that we want to keep even if there are no views/data in it, as in Filtering
+            medViewContainerManager::instance()->container(containerUuid)->removeView();
+        }
     }
 
     this->updateLayersToolBox();
