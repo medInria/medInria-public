@@ -635,17 +635,7 @@ void medViewContainer::removeInternView()
     d->defaultWidget->show();
     this->updateToolBar();
 
-    // viewRemoved is already emitted from the view deletion
-    // in removeView() for views with CLOSE_VIEW mode.
-    if (this->closingMode() != medViewContainer::CLOSE_VIEW)
-    {
-        // On some occasion, the 'delete' here displays 2 logs:
-        // 'Unable to retrieve data at layer: 0 from:  "medVtkView"'
-        // Happen on non CLOSE_VIEW, throught **layer removal** only.
-        // These logs are not linked to GUI error (whereas the 3
-        // from removeView() are.
-        emit viewRemoved();
-    }
+    emit viewRemoved();
 }
 
 void medViewContainer::focusInEvent(QFocusEvent *event)
