@@ -25,6 +25,8 @@
 #include <vtkMetaSurfaceMesh.h>
 
 // Qt
+#include <QApplication>
+#include <QDesktopWidget>
 #include <QGuiApplication>
 #include <QLineEdit>
 #include <QScreen>
@@ -218,8 +220,15 @@ bool polygonEventFilter::mouseReleaseEvent(medAbstractView *view, QMouseEvent *m
 
 bool polygonEventFilter::mouseMoveEvent(medAbstractView *view, QMouseEvent *mouseEvent)
 {
-    savedMousePosition[0] = mouseEvent->x()*QGuiApplication::screenAt(mouseEvent->globalPos())->devicePixelRatio();
-    savedMousePosition[1] = (currentView->viewWidget()->height()-mouseEvent->y()-1)*QGuiApplication::screenAt(mouseEvent->globalPos())->devicePixelRatio();
+#if QT_VERSION > QT_VERSION_CHECK(5, 10, 0)
+    int devicePixelRatio = QGuiApplication::screenAt(mouseEvent->globalPos())->devicePixelRatio();
+#else
+    int screenNumber = QApplication::desktop()->screenNumber(mouseEvent->globalPos());
+    int devicePixelRatio = QGuiApplication::screens().at(screenNumber)->devicePixelRatio();
+#endif
+
+    savedMousePosition[0] = mouseEvent->x()*devicePixelRatio;
+    savedMousePosition[1] = (currentView->viewWidget()->height()-mouseEvent->y()-1)*devicePixelRatio;
 
     if (activeManager)
     {
@@ -306,9 +315,15 @@ bool polygonEventFilter::leftButtonBehaviour(medAbstractView *view, QMouseEvent 
     }
     case CURSORSTATE::CS_REPULSOR:
     {
+#if QT_VERSION > QT_VERSION_CHECK(5, 10, 0)
+        int devicePixelRatio = QGuiApplication::screenAt(mouseEvent->globalPos())->devicePixelRatio();
+#else
+        int screenNumber = QApplication::desktop()->screenNumber(mouseEvent->globalPos());
+        int devicePixelRatio = QGuiApplication::screens().at(screenNumber)->devicePixelRatio();
+#endif
         double mousePos[2];
-        mousePos[0] = mouseEvent->x()*QGuiApplication::screenAt(mouseEvent->globalPos())->devicePixelRatio();
-        mousePos[1] = (currentView->viewWidget()->height()-mouseEvent->y()-1)*QGuiApplication::screenAt(mouseEvent->globalPos())->devicePixelRatio();
+        mousePos[0] = mouseEvent->x()*devicePixelRatio;
+        mousePos[1] = (currentView->viewWidget()->height()-mouseEvent->y()-1)*devicePixelRatio;
         if (!activeManager)
         {
             emit sendErrorMessage(QString("Select a label in list to be able to use repulsor tool."));
@@ -442,11 +457,17 @@ QMenu *polygonEventFilter::changeLabelActions(medTagRoiManager* closestManager)
 bool polygonEventFilter::rightButtonBehaviour(medAbstractView *view, QMouseEvent *mouseEvent)
 {
     QMenu mainMenu(currentView->viewWidget());
-    QList<QColor> colorsToExclude;
-    QStringList namesToExclude;
+
+#if QT_VERSION > QT_VERSION_CHECK(5, 10, 0)
+    int devicePixelRatio = QGuiApplication::screenAt(mouseEvent->globalPos())->devicePixelRatio();
+#else
+    int screenNumber = QApplication::desktop()->screenNumber(mouseEvent->globalPos());
+    int devicePixelRatio = QGuiApplication::screens().at(screenNumber)->devicePixelRatio();
+#endif
+
     double mousePos[2];
-    mousePos[0] = mouseEvent->x()*QGuiApplication::screenAt(mouseEvent->globalPos())->devicePixelRatio();
-    mousePos[1] = (currentView->viewWidget()->height()-mouseEvent->y()-1)*QGuiApplication::screenAt(mouseEvent->globalPos())->devicePixelRatio();
+    mousePos[0] = mouseEvent->x()*devicePixelRatio;
+    mousePos[1] = (currentView->viewWidget()->height()-mouseEvent->y()-1)*devicePixelRatio;
     medTagRoiManager * closestManager = getClosestManager(mousePos);
 
     QMenu *roiManagementMenu = new QMenu("Remove: ");
@@ -1032,7 +1053,6 @@ void polygonEventFilter::loadContours(medTagContours tagContours, QColor color)
     mgr->loadContours(tagContours.getContourNodes());
     if (tagContours.getScore() != QString())
     {
-        QColor col = QColor::Invalid;
         for (QPair<QString, QColor> pirad : pirads)
         {
             if (pirad.first == tagContours.getScore())
