@@ -4,6 +4,7 @@
         <file>icons/splitPresets.png</file>
         <file>pixmaps/plus_button.png</file>
         <file>pixmaps/closebutton.png</file>
+        <file>pixmaps/closebutton-disabled.png</file>
         <file>pixmaps/splitbutton_horizontal.png</file>
         <file>pixmaps/splitbutton_vertical.png</file>
         <file>pixmaps/default_thumbnail.png</file>

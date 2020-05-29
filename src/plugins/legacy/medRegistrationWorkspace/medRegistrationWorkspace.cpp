@@ -35,9 +35,10 @@ public:
 medRegistrationWorkspace::medRegistrationWorkspace(QWidget *parent)
     : medSelectorWorkspace(parent, staticName(), new medRegistrationSelectorToolBox(parent, staticName())), d(new medRegistrationWorkspacePrivate)
 {
-    connect(this->tabbedViewContainers(), SIGNAL(currentChanged(int)), this, SLOT(updateUserLayerClosable(int)));
+    connect(this->tabbedViewContainers(), SIGNAL(currentChanged(int)),
+            this, SLOT(updateUserLayerClosable(int)), Qt::UniqueConnection);
     connect(dynamic_cast<medRegistrationSelectorToolBox*>(selectorToolBox()), SIGNAL(movingDataRegistered(medAbstractData*)),
-        this, SLOT(updateFromRegistrationSuccess(medAbstractData*)));
+            this, SLOT(updateFromRegistrationSuccess(medAbstractData*)), Qt::UniqueConnection);
 }
 
 medRegistrationWorkspace::~medRegistrationWorkspace(void)
@@ -60,18 +61,21 @@ void medRegistrationWorkspace::setupTabbedViewContainer()
     resetDefaultWidgetFuseContainer();
 
     connect(d->containers[Fixed], SIGNAL(viewContentChanged()),
-            this, SLOT(updateFromFixedContainer()));
+            this, SLOT(updateFromFixedContainer()), Qt::UniqueConnection);
     connect(d->containers[Moving],SIGNAL(viewContentChanged()),
-            this, SLOT(updateFromMovingContainer()));
+            this, SLOT(updateFromMovingContainer()), Qt::UniqueConnection);
 
-    connect(d->containers[Fixed],SIGNAL(viewRemoved()),
-            this, SLOT(updateFromFixedContainer()));
+    connect(d->containers[Fixed], SIGNAL(viewRemoved()),
+            this, SLOT(updateFromFixedContainer()), Qt::UniqueConnection);
     connect(d->containers[Moving],SIGNAL(viewRemoved()),
-            this, SLOT(updateFromMovingContainer()));
+            this, SLOT(updateFromMovingContainer()), Qt::UniqueConnection);
 
-    connect(d->containers[Fixed], SIGNAL(viewRemoved()),this, SLOT(resetDefaultWidgetFixedContainer()));
-    connect(d->containers[Moving],SIGNAL(viewRemoved()),this, SLOT(resetDefaultWidgetMovingContainer()));
-    connect(d->containers[Fuse],  SIGNAL(viewRemoved()),this, SLOT(resetDefaultWidgetFuseContainer()));
+    connect(d->containers[Fixed], SIGNAL(viewRemoved()),this, SLOT(resetDefaultWidgetFixedContainer()),
+            Qt::UniqueConnection);
+    connect(d->containers[Moving],SIGNAL(viewRemoved()),this, SLOT(resetDefaultWidgetMovingContainer()),
+            Qt::UniqueConnection);
+    connect(d->containers[Fuse],  SIGNAL(viewRemoved()),this, SLOT(resetDefaultWidgetFuseContainer()),
+            Qt::UniqueConnection);
 
     this->tabbedViewContainers()->setCurrentIndex(Fixed);
     d->containers[Fixed]->setSelected(true);
@@ -82,9 +86,10 @@ void medRegistrationWorkspace::resetDefaultWidgetFixedContainer()
 {
     if(selectorToolBox()) //null when users close the software
     {
-        QLabel *fixedLabel = new QLabel(tr("FIXED"));
-        fixedLabel->setAlignment(Qt::AlignCenter);
-        d->containers[Fixed]->setDefaultWidget(fixedLabel);
+        QLabel *newDefaultLabel = new QLabel(tr("FIXED"));
+        newDefaultLabel->setAlignment(Qt::AlignCenter);
+        newDefaultLabel->setObjectName("defaultWidget");
+        d->containers[Fixed]->setDefaultWidget(newDefaultLabel);
         d->containers[Fixed]->setMultiLayered(false);
         d->containers[Fixed]->setUserSplittable(false);
         d->containers[Fixed]->setClosingMode(medViewContainer::CLOSE_VIEW);
@@ -95,11 +100,12 @@ void medRegistrationWorkspace::resetDefaultWidgetMovingContainer()
 {
     if(selectorToolBox()) //null when users close the software
     {
-        QLabel *movingLabel = new QLabel(tr("MOVING"));
-        movingLabel->setAlignment(Qt::AlignCenter);
-        d->containers[Moving]->setDefaultWidget(movingLabel);
-        d->containers[Moving]->setUserSplittable(false);
+        QLabel *newDefaultLabel = new QLabel(tr("MOVING"));
+        newDefaultLabel->setAlignment(Qt::AlignCenter);
+        newDefaultLabel->setObjectName("defaultWidget");
+        d->containers[Moving]->setDefaultWidget(newDefaultLabel);
         d->containers[Moving]->setMultiLayered(false);
+        d->containers[Moving]->setUserSplittable(false);
         d->containers[Moving]->setClosingMode(medViewContainer::CLOSE_VIEW);
     }
 }
@@ -108,12 +114,13 @@ void medRegistrationWorkspace::resetDefaultWidgetFuseContainer()
 {
     if(selectorToolBox()) //null when users close the software
     {
-        QLabel *fuseLabel = new QLabel(tr("FUSE"));
-        fuseLabel->setAlignment(Qt::AlignCenter);
-        d->containers[Fuse]->setDefaultWidget(fuseLabel);
-        d->containers[Fuse]->setClosingMode(medViewContainer::CLOSE_BUTTON_HIDDEN);
+        QLabel *newDefaultLabel = new QLabel(tr("FUSE"));
+        newDefaultLabel->setAlignment(Qt::AlignCenter);
+        newDefaultLabel->setObjectName("defaultWidget");
+        d->containers[Fuse]->setDefaultWidget(newDefaultLabel);
         d->containers[Fuse]->setUserSplittable(false);
-        d->containers[Fuse]->setAcceptDrops(false);
+        d->containers[Fuse]->setAcceptDrops(false); // only addition from the app
+        d->containers[Fuse]->setClosingMode(medViewContainer::CLOSE_BUTTON_HIDDEN);
     }
 }
 
@@ -161,7 +168,9 @@ void medRegistrationWorkspace::updateFromContainer(medRegistrationWorkspace::Con
 
     if(toolbox)
     {
-        if(!d->containers[containerIndex]->view())
+        // If no view or empty view, reset
+        if(!d->containers[containerIndex]->view() ||
+                (dynamic_cast<medAbstractLayeredView*>(d->containers[containerIndex]->view())->layersCount() <= 0))
         {
             medAbstractLayeredView *fuseView  = dynamic_cast<medAbstractLayeredView*>(d->containers[Fuse]->view());
             if(fuseView)
@@ -192,11 +201,6 @@ void medRegistrationWorkspace::updateFromContainer(medRegistrationWorkspace::Con
         else
         {
             medAbstractLayeredView *currentView  = dynamic_cast<medAbstractLayeredView*>(d->containers[containerIndex]->view());
-            if(!currentView)
-            {
-                qWarning() << "Non layered views are not supported yet in Registration workspace.";
-                return;
-            }
 
             medAbstractData *currentData = currentView->layerData(currentView->currentLayer());
 
@@ -273,9 +277,9 @@ void medRegistrationWorkspace::updateFromRegistrationSuccess(medAbstractData *ou
         d->layerGroups[Moving]->addImpactedlayer(fuseView, output);
 
         connect(d->containers[Moving],SIGNAL(viewContentChanged()),
-                this, SLOT(updateFromMovingContainer()));
+                this, SLOT(updateFromMovingContainer()), Qt::UniqueConnection);
 
         connect(d->containers[Moving],SIGNAL(viewRemoved()),
-                this, SLOT(updateFromMovingContainer()));
+                this, SLOT(updateFromMovingContainer()), Qt::UniqueConnection);
     }
 }
