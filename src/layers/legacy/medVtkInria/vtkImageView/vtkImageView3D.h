@@ -141,7 +141,7 @@ public:
     virtual unsigned int GetCroppingMode ();
 
     void SetInput      (vtkAlgorithmOutput* pi_poVtkAlgoOutput, vtkMatrix4x4 *matrix = nullptr, int layer = 0) override;
-    virtual bool is3D();
+    virtual bool data2DTreatment();
     static vtkActor* DataSetToActor(vtkPointSet* arg, vtkProperty* prop = nullptr);
     virtual void SetInputLayer (vtkAlgorithmOutput* pi_poVtkAlgoOutput, vtkMatrix4x4 *matrix = nullptr, int layer = 0);
     void SetFirstLayer(vtkAlgorithmOutput *pi_poInputAlgoImg, vtkMatrix4x4 *matrix= nullptr, int layer = 0);
