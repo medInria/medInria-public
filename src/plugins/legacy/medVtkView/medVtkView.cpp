@@ -58,7 +58,7 @@ class medVtkViewPrivate
 {
 public:
     // internal state
-    vtkImageView *currentView; //2d or 3d dependig on the navigator orientation.
+    vtkImageView *currentView; //2d or 3d depending on the navigator orientation.
 
     vtkInteractorStyle *interactorStyle2D;
 
