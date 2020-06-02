@@ -157,6 +157,10 @@ bool polygonEventFilter::eventFilter(QObject *obj, QEvent *event)
         {
             deleteNode(savedMousePosition);
         }
+        if ( keyEvent->key() == Qt::Key::Key_A )
+        {
+            activateContour(savedMousePosition);
+        }
         if ( keyEvent->key() == Qt::Key::Key_Right )
         {
             if (currentView && currentView->backend())
@@ -315,15 +319,6 @@ bool polygonEventFilter::leftButtonBehaviour(medAbstractView *view, QMouseEvent 
     }
     case CURSORSTATE::CS_REPULSOR:
     {
-#if QT_VERSION > QT_VERSION_CHECK(5, 10, 0)
-        int devicePixelRatio = QGuiApplication::screenAt(mouseEvent->globalPos())->devicePixelRatio();
-#else
-        int screenNumber = QApplication::desktop()->screenNumber(mouseEvent->globalPos());
-        int devicePixelRatio = QGuiApplication::screens().at(screenNumber)->devicePixelRatio();
-#endif
-        double mousePos[2];
-        mousePos[0] = mouseEvent->x()*devicePixelRatio;
-        mousePos[1] = (currentView->viewWidget()->height()-mouseEvent->y()-1)*devicePixelRatio;
         if (!activeManager)
         {
             emit sendErrorMessage(QString("Select a label in list to be able to use repulsor tool."));
@@ -882,7 +877,9 @@ void polygonEventFilter::receiveContourState(medContourSharedInfo info)
                 manager->changeContoursColor(color);
             }
         }
-        if (currentView)
+        if (currentView &&
+                manager->getName() != "WG (whole gland)" &&
+                manager->getName() != "TZ (transitional zone)")
         {
             vtkImageView2D *view2D =  static_cast<medVtkViewBackend*>(currentView->backend())->view2D;
 
@@ -1118,6 +1115,18 @@ void polygonEventFilter::deleteNode(double *mousePosition)
         deleteNode(closestManager, mousePosition);
     }
 
+}
+
+void polygonEventFilter::activateContour( double *mousePosition)
+{
+    medTagRoiManager *closestManager = getClosestManager(mousePosition);
+    if (closestManager && closestManager->getMinimumDistanceFromNodesToMouse(mousePosition, true) < 10. )
+    {
+        activeManager = closestManager;
+        enableActiveManagerIfExists();
+        medContourSharedInfo info = medContourSharedInfo(activeManager->getName(), activeManager->getColor(), true);
+        emit sendContourInfoToListWidget(info);
+    }
 }
 
 void polygonEventFilter::switchContourColor(double *mousePosition)

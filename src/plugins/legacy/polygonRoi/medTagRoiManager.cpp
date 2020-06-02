@@ -549,8 +549,8 @@ void medTagRoiManager::createMaskWithLabel(int label)
             }
         }
     }
-    QString name = (d->optName==QString())?QString(d->baseName):QString("%1-%2").arg(d->baseName).arg(d->optName);
-    QString desc = QString("mask: ") + name;
+    QString name = (d->optName==QString())?QString(d->baseName):QString("%1_%2").arg(d->baseName).arg(d->optName);
+    QString desc = QString("mask ") + name;
     medUtilities::setDerivedMetaData(output, inputData, desc);
     medDataManager::instance()->importData(output, false);
     return;
