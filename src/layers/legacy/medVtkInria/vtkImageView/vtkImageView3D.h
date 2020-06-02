@@ -15,12 +15,16 @@
 
 #include <medVtkInriaExport.h>
 
+#include <vtkActor.h>
+#include <vtkDataSet.h>
 #include <vtkImageView.h>
+#include <vtkImage3DDisplay.h>
 #include <vtkImageView3DCroppingBoxCallback.h>
 #include <vtkOrientationMarkerWidget.h>
 #include <vtkOrientedBoxWidget.h>
 #include <vtkPlaneWidget.h>
 #include <vtkVolumeProperty.h>
+#include <vector>
 
 class vtkVolume;
 class vtkPiecewiseFunction;
@@ -70,8 +74,10 @@ public:
     };
     //ETX
 
-    vtkGetObjectMacro (VolumeActor, vtkVolume);
-    vtkGetObjectMacro (VolumeProperty, vtkVolumeProperty);
+    vtkVolume * GetVolumeActor(int layer);
+    vtkVolume * GetVolumeActor(void);
+    vtkVolumeProperty * GetVolumeProperty(int layer);
+    vtkVolumeProperty * GetVolumeProperty(void);
     vtkGetObjectMacro (PlaneWidget, vtkPlaneWidget);
     vtkGetObjectMacro (BoxWidget, vtkOrientedBoxWidget);
     vtkGetObjectMacro (ActorX, vtkImageActor);
@@ -157,16 +163,21 @@ public:
 
 
     virtual void SetLookupTable (vtkLookupTable* lookuptable, int layer);
+    virtual void SetLookupTable (vtkLookupTable* lookuptable,QString name , int layer);
 
     virtual void SetTransferFunctions(vtkColorTransferFunction * color,
                                       vtkPiecewiseFunction * opacity,
                                       int layer);
+
+    void SetCurrentLayer(int layer) override;
 
     virtual void SetOpacity(double opacity, int layer);
     virtual double GetOpacity(int layer) const;
 
     virtual void SetVisibility(int visibility, int layer);
     virtual int  GetVisibility(int layer) const;
+
+    bool HaveAnyImage(void) const;
 
     virtual void SetShowActorX (unsigned int);
     vtkGetMacro (ShowActorX, unsigned int);
@@ -181,6 +192,7 @@ public:
     void SetOrientationMarker(vtkActor *actor);
     void SetOrientationMarkerViewport(double, double, double, double);
 
+    void GetInputBounds ( double * bounds ) override;
 
     virtual void SetCurrentPoint (double pos[3]);
 
@@ -189,9 +201,11 @@ public:
     virtual void InstallInteractor();
     virtual void UnInstallInteractor();
 
+    void AddVolume(int layer);
     virtual void AddLayer (int layer);
     virtual int GetNumberOfLayers() const;
     virtual void RemoveLayer (int layer);
+    void RemoveVolume(int layer);
     virtual void RemoveAllLayers();
 
     //pure virtual methods from base class:
@@ -211,6 +225,7 @@ public:
     virtual double GetColorLevel(int layer) const;
     virtual void StoreColorLevel(double s,int layer);
     virtual void StoreLookupTable (vtkLookupTable *lookuptable, int layer);
+    virtual void SetColorWindowLevel(double w, double l, int layer);
 
 protected:
 
@@ -219,12 +234,10 @@ protected:
 
     void SetFirstLayer(vtkAlgorithmOutput *pi_poInputAlgoImg, vtkMatrix4x4 *matrix = nullptr, int layer = 0);
     void SetOtherLayer(vtkAlgorithmOutput* pi_poVtkAlgoOutput, vtkMatrix4x4 *matrix = nullptr, int layer = 0);
-    bool is3D();
 
     virtual void InstallPipeline();
     virtual void UnInstallPipeline();
 
-    virtual void SetupVolumeRendering();
     virtual void SetupWidgets();
     virtual void UpdateVolumeFunctions(int layer);
     virtual void ApplyColorTransferFunction(vtkScalarsToColors * colors, int layer);
@@ -237,10 +250,9 @@ protected:
     vtkImageActor* ActorY;
     vtkImageActor* ActorZ;
 
-    vtkVolumeProperty* VolumeProperty;
-    vtkVolume* VolumeActor;
-
-    vtkSmartVolumeMapper* VolumeMapper;
+    std::vector<vtkVolume*> VolumesActor;
+    std::vector<vtkVolumeProperty*> VolumesProperty;
+    std::vector<vtkSmartVolumeMapper*> VolumesMapper;
 
     vtkImageView3DCroppingBoxCallback* Callback;
 
@@ -297,6 +309,8 @@ protected:
     //(API change)
     typedef std::vector<LayerInfo > LayerInfoVecType;
     LayerInfoVecType LayerInfoVec;
+    bool IsFirstImageLoaded = true;
+
 
 private:
     vtkImageView3D(const vtkImageView3D&);  // Not implemented.
@@ -304,4 +318,5 @@ private:
     
     void  initializeTransferFunctions(int pi_iLayer);
 };
+
 

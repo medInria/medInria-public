@@ -453,13 +453,13 @@ void vtkImageView::GetWithinBoundsPosition (double* pos1, double* pos2)
 {
     for (unsigned int i=0; i<3; i++) pos2[i] = pos1[i];
 
-    if (!this->GetMedVtkImageInfo() || !this->GetMedVtkImageInfo()->initialized)
+    if (!this->GetMedVtkImageInfo(CurrentLayer) || !this->GetMedVtkImageInfo(CurrentLayer)->initialized)
         return;
 
     int indices[3];
     this->GetImageCoordinatesFromWorldCoordinates (pos1, indices);
 
-    int* w_extent = this->GetMedVtkImageInfo()->extent;
+    int* w_extent = this->GetMedVtkImageInfo(CurrentLayer)->extent;
     bool out_of_bounds = false;
 
     for (unsigned int i=0; i<3; i++)
@@ -513,10 +513,10 @@ void vtkImageView::UpdateCursorPosition (double pos[3])
 */
 void vtkImageView::ResetCurrentPoint()
 {
-    if (!this->GetMedVtkImageInfo() ||!this->GetMedVtkImageInfo()->initialized)
+    if (!this->GetMedVtkImageInfo(CurrentLayer) ||!this->GetMedVtkImageInfo(CurrentLayer)->initialized)
         return;
 
-    int *wholeExtent = this->GetMedVtkImageInfo()->extent;
+    int *wholeExtent = this->GetMedVtkImageInfo(CurrentLayer)->extent;
 
     int center[3];
     for (unsigned int i=0; i<3; i++)
@@ -786,10 +786,9 @@ void vtkImageView::SetTransferFunctionRangeFromWindowSettings(int layer)
         targetRange[0] = 0.0;
         targetRange[1] = 1.0;
     }
-
     // lookup table
     vtkScalarsToColors * lookupTable = this->GetLookupTable(layer);
-    if ( this->GetUseLookupTable(layer) && lookupTable != NULL )
+    if ( this->GetUseLookupTable(layer) && lookupTable)
     {
         const double * currentRange = lookupTable->GetRange();
         if ( currentRange[0] != targetRange[0] ||
@@ -800,7 +799,9 @@ void vtkImageView::SetTransferFunctionRangeFromWindowSettings(int layer)
     }
 
     // color transfer function
-    if ( !this->GetUseLookupTable(layer))
+    if ( !this->GetUseLookupTable(layer) &&
+         this->GetColorTransferFunction(layer) &&
+         this->GetOpacityTransferFunction(layer))
     {
         this->SetTransferFunctionRangeFromWindowSettings(
                     this->GetColorTransferFunction(layer),
@@ -981,6 +982,8 @@ void vtkImageView::GetColorRange( double r[2] )
 
 void vtkImageView::GetColorRange(double r[], int layer)
 {
+    double level  = this->GetColorLevel(layer);
+    double window = this->GetColorWindow(layer);
     r[0] = this->GetColorLevel(layer) - 0.5 * this->GetColorWindow(layer);
     r[1] = this->GetColorLevel(layer) + 0.5 * this->GetColorWindow(layer);
 }
@@ -988,10 +991,8 @@ void vtkImageView::GetColorRange(double r[], int layer)
 void vtkImageView::SetColorRange( double r[2],int layer )
 {
     double level  = 0.5 * ( r[0] + r[1] );
-    double window = r[1] - r[0];
-
-    this->SetColorLevel( level,layer );
-    this->SetColorWindow( window,layer );
+    double window = r[1] - r[0];  
+    this->SetColorWindowLevel(window , level, layer);
 }
 
 //----------------------------------------------------------------------------
@@ -1007,15 +1008,15 @@ void vtkImageView::SetTextProperty (vtkTextProperty* textproperty)
 */
 void vtkImageView::GetWorldCoordinatesFromImageCoordinates(int indices[3], double* position)
 {
-    if (!this->GetMedVtkImageInfo() || !this->GetMedVtkImageInfo()->initialized)
+    if (!this->GetMedVtkImageInfo(CurrentLayer) || !this->GetMedVtkImageInfo(CurrentLayer)->initialized)
     {
         position[0] = 0; position[1] = 0; position[2] = 0;
         return;
     }
 
     // Get information
-    double* spacing = this->GetMedVtkImageInfo()->spacing;
-    double* origin = this->GetMedVtkImageInfo()->origin;
+    double* spacing = this->GetMedVtkImageInfo(CurrentLayer)->spacing;
+    double* origin = this->GetMedVtkImageInfo(CurrentLayer)->origin;
 
     double orientedposition[4];
     for (unsigned int i=0; i<3; i++)
@@ -1033,7 +1034,7 @@ void vtkImageView::GetWorldCoordinatesFromImageCoordinates(int indices[3], doubl
 */
 void vtkImageView::GetImageCoordinatesFromWorldCoordinates(double position[3], int* indices) const
 {
-    if (!this->GetMedVtkImageInfo() || !this->GetMedVtkImageInfo()->initialized)
+    if (!this->GetMedVtkImageInfo(CurrentLayer) || !this->GetMedVtkImageInfo(CurrentLayer)->initialized)
     {
         indices[0] = 0; indices[1] = 0; indices[2] = 0;
         return;
@@ -1041,8 +1042,8 @@ void vtkImageView::GetImageCoordinatesFromWorldCoordinates(double position[3], i
 
     // Get information
     double unorientedposition[4] = {position[0], position[1], position[2], 1};
-    double* spacing = this->GetMedVtkImageInfo()->spacing;
-    double* origin = this->GetMedVtkImageInfo()->origin;
+    double* spacing = this->GetMedVtkImageInfo(CurrentLayer)->spacing;
+    double* origin = this->GetMedVtkImageInfo(CurrentLayer)->origin;
 
     // apply inverted orientation matrix to the world-coordinate position
     this->InvertOrientationMatrix->MultiplyPoint (unorientedposition, unorientedposition);
@@ -1078,7 +1079,6 @@ double vtkImageView::GetValueAtPosition(double worldcoordinates[3], int componen
 
     int indices[3];
     this->GetImageCoordinatesFromWorldCoordinates (worldcoordinates, indices);
-    this->Get2DDisplayMapperInputAlgorithm()->UpdateInformation();
     vtkImageData* inputImage = poAlgoTmp->GetOutput();
 
     return inputImage->GetScalarComponentAsDouble(indices[0], indices[1], indices[2], component);
@@ -1172,16 +1172,16 @@ double* vtkImageView::GetBackground() const
 */
 void vtkImageView::SetZoom (double arg)
 {
-    if (!this->GetMedVtkImageInfo() || !this->GetMedVtkImageInfo()->initialized)
+    if (!this->GetMedVtkImageInfo(CurrentLayer) || !this->GetMedVtkImageInfo(CurrentLayer)->initialized)
         return;
 
     vtkCamera *cam = this->GetRenderer() ? this->GetRenderer()->GetActiveCamera() : NULL;
     if (!cam)
         return;
 
-    int* extent = this->GetMedVtkImageInfo()->extent;
+    int* extent = this->GetMedVtkImageInfo(CurrentLayer)->extent;
 
-    double* spacing = this->GetMedVtkImageInfo()->spacing;
+    double* spacing = this->GetMedVtkImageInfo(CurrentLayer)->spacing;
     double xyz[3] = {0,0,0};
     for (unsigned int i=0; i<3; i++)
         xyz[i] = (extent [2*i +1] - extent [2*i]) * spacing[i] / 2.0;
@@ -1199,7 +1199,7 @@ void vtkImageView::SetZoom (double arg)
 //----------------------------------------------------------------------------
 double vtkImageView::GetZoom()
 {
-    if (!this->GetMedVtkImageInfo() || !this->GetMedVtkImageInfo()->initialized)
+    if (!this->GetMedVtkImageInfo(CurrentLayer) || !this->GetMedVtkImageInfo(CurrentLayer)->initialized)
         return 1.0;
     if (!this->Get2DDisplayMapperInputAlgorithm() || !this->Get2DDisplayMapperInputAlgorithm()->GetOutputInformation(0))
         return 1.0;
@@ -1209,9 +1209,9 @@ double vtkImageView::GetZoom()
         return 1.0;
 
     // Ensure that the spacing and dimensions are up-to-date.
-    int* extent = this->GetMedVtkImageInfo()->extent;
+    int* extent = this->GetMedVtkImageInfo(CurrentLayer)->extent;
 
-    double* spacing = this->GetMedVtkImageInfo()->spacing;
+    double* spacing = this->GetMedVtkImageInfo(CurrentLayer)->spacing;
     double xyz[3] = {0,0,0};
     for (unsigned int i=0; i<3; i++)
         xyz[i] = (extent [2*i +1] - extent [2*i]) * spacing[i] / 2.0;
@@ -1232,7 +1232,7 @@ void vtkImageView::ResetCamera()
         //  ResetCamera calls ResetCameraClippingRange anyway...
         //      this->GetRenderer()->ResetCameraClippingRange();
 
-        if ( this->GetMedVtkImageInfo () )
+        if ( this->GetMedVtkImageInfo (CurrentLayer) )
         {
             double bounds [6];
             this->GetInputBoundsInWorldCoordinates (bounds);
@@ -1390,17 +1390,17 @@ void vtkImageView::SetShowScalarBar (int val)
 */
 void vtkImageView::ResetWindowLevel()
 {
-    if (!this->GetMedVtkImageInfo() || !this->GetMedVtkImageInfo()->initialized)
+    if (!this->GetMedVtkImageInfo(CurrentLayer) || !this->GetMedVtkImageInfo(CurrentLayer)->initialized)
     {
         return;
     }
 
-    if( this->GetMedVtkImageInfo()->scalarType==VTK_UNSIGNED_CHAR  && (this->GetMedVtkImageInfo()->nbScalarComponent==3 || this->GetMedVtkImageInfo()->nbScalarComponent ==4) )
+    if( this->GetMedVtkImageInfo(CurrentLayer)->scalarType==VTK_UNSIGNED_CHAR  && (this->GetMedVtkImageInfo(CurrentLayer)->nbScalarComponent==3 || this->GetMedVtkImageInfo(CurrentLayer)->nbScalarComponent ==4) )
     {
         return;
     }
 
-    double* range = this->GetMedVtkImageInfo()->scalarRange;
+    double* range = this->GetMedVtkImageInfo(CurrentLayer)->scalarRange;
     double window = range[1]-range[0];
     double level = 0.5*(range[1]+range[0]);
 
@@ -1535,9 +1535,9 @@ vtkDataSet* vtkImageView::FindActorDataSet (vtkProp3D* arg)
 */
 void vtkImageView::GetInputBounds ( double * bounds )
 {
-    const int* wholeExtent = this->GetMedVtkImageInfo()->extent ;
-    const double * spacing = this->GetMedVtkImageInfo()->spacing;
-    const double * origin = this->GetMedVtkImageInfo ()->origin ;
+    const int* wholeExtent = this->GetMedVtkImageInfo(CurrentLayer)->extent ;
+    const double * spacing = this->GetMedVtkImageInfo(CurrentLayer)->spacing;
+    const double * origin = this->GetMedVtkImageInfo (CurrentLayer)->origin ;
 
     for ( int i(0); i < 3; ++i )
     {
@@ -1552,9 +1552,9 @@ void vtkImageView::GetInputBounds ( double * bounds )
 void vtkImageView::GetInputBoundsInWorldCoordinates ( double * bounds )
 {
     double imageBounds [6];
-    const int* wholeExtent = this->GetMedVtkImageInfo()->extent;
-    const double * spacing = this->GetMedVtkImageInfo()->spacing;
-    const double * origin = this->GetMedVtkImageInfo ()->origin;
+    const int* wholeExtent = this->GetMedVtkImageInfo(CurrentLayer)->extent;
+    const double * spacing = this->GetMedVtkImageInfo(CurrentLayer)->spacing;
+    const double * origin = this->GetMedVtkImageInfo (CurrentLayer)->origin;
 
     for ( int i(0); i < 3; ++i )
     {

@@ -277,7 +277,7 @@ void medVtkViewItkDataImageInteractor::initParameters(medAbstractImageData* data
     }
     else
     {
-       this->opacityParameter()->setValue(1);
+       this->opacityParameter()->setValue(0.99);// if 1.0 : no signal is since the initial is 1.0 but it has been set without a emiting signal
     }
 
     createSlicingParam();
@@ -404,7 +404,7 @@ void medVtkViewItkDataImageInteractor::setLut(QString value)
 
     vtkLookupTable *lut = vtkLookupTableManager::GetLookupTable(value.toStdString());
     d->view3d->SetTransferFunctions(rgb, alpha, imageLayer);
-    d->view3d->SetLookupTable(lut, imageLayer);
+    d->view3d->SetLookupTable(lut,value, imageLayer);
 
     if (imageLayer == 0)
     {

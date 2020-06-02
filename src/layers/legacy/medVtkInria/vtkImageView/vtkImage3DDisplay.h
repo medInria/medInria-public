@@ -19,6 +19,7 @@
 #include <vtkImageData.h>
 #include <vtkLookupTable.h>
 #include <vtkSetGet.h>
+#include <QString>
 
 class vtkImage3DDisplay : public vtkObject
 {
@@ -44,6 +45,12 @@ public:
 
     vtkSetObjectMacro(LookupTable, vtkLookupTable);
     virtual vtkLookupTable*GetLookupTable();
+    void SetLookupTableName(QString name) {
+        m_lookUpTableName = name;
+    }
+    QString GetLookupTableName(void) {
+        return m_lookUpTableName ;
+    }
 
     vtkSetMacro(ColorWindow, double);
     vtkGetMacro(ColorWindow, double);
@@ -66,6 +73,7 @@ private:
     bool UseLookupTable;
     vtkSmartPointer<vtkLookupTable>             LookupTable;
     medVtkImageInfo                             m_sVtkImageInfo;
+    QString                                     m_lookUpTableName = "Default";
 
     vtkImage3DDisplay(const vtkImage3DDisplay&);
     void operator=(const vtkImage3DDisplay&);
