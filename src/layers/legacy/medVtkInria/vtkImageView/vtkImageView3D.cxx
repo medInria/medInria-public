@@ -329,7 +329,6 @@ void vtkImageView3D::SetInput(vtkAlgorithmOutput* pi_poVtkAlgoOutput, vtkMatrix4
     if(pi_poVtkAlgoOutput)
     {
         this->AddLayer(layer);
-
         auto image = static_cast<vtkImageAlgorithm*>(pi_poVtkAlgoOutput->GetProducer())->GetOutput();
         auto cellType = image->GetCellType(0);
         auto imageDisplay = this->GetImage3DDisplayForLayer(layer);
@@ -373,18 +372,19 @@ void vtkImageView3D::SetInput(vtkActor * actor, int layer, vtkMatrix4x4 * matrix
     this->Renderer->AddViewProp(actor); //same as this->Renderer->AddActor(actor);
 }
 
+
 void vtkImageView3D::RemoveDataSet(vtkPointSet* arg)
 {
     vtkProp3D* actor = this->FindDataSetActor (arg);
     if (actor)
         this->Renderer->RemoveViewProp (actor);
-
     this->Superclass::RemoveDataSet (arg);
 }
 
 bool vtkImageView3D::HaveAnyImage(void) const
 {
     return VolumesActor.size()>0;
+
 }
 
 vtkActor* vtkImageView3D::AddDataSet (vtkPointSet* arg, vtkProperty* prop)

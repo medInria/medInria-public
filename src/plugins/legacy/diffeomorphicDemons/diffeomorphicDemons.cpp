@@ -103,8 +103,8 @@ int diffeomorphicDemonsPrivate::update()
         return testResult;
     }
 
-    FixedImageType *inputFixed  = (FixedImageType*)  proc->fixedImage().GetPointer();
-    FixedImageType *inputMoving = (MovingImageType*) proc->movingImages()[0].GetPointer();
+    FixedImageType  *inputFixed  = (FixedImageType*)  proc->fixedImage().GetPointer();
+    MovingImageType *inputMoving = (MovingImageType*) proc->movingImages()[0].GetPointer();
 
     // The output volume is going to located at the origin/direction of the fixed input. Needed for rpi::DiffeomorphicDemons
     typedef itk::ChangeInformationImageFilter< FixedImageType > FilterType;
@@ -175,8 +175,8 @@ int diffeomorphicDemonsPrivate::update()
         qDebug() << "ExceptionObject caught (StartRegistration): " << err.what();
         return medAbstractProcessLegacy::FAILURE;
     }
-    time_t t2 = clock();
 
+    time_t t2 = clock();
     qDebug() << "Elasped time: " << static_cast<double>(t2-t1)/static_cast<double>(CLOCKS_PER_SEC);
 
     emit proc->progressed(80);
@@ -328,10 +328,8 @@ bool diffeomorphicDemons::writeTransform(const QString& file)
         }
         return true;
     }
-    else
-    {
-        return false;
-    }
+
+    return false;
 }
 
 // /////////////////////////////////////////////////////////////////

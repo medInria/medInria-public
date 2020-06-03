@@ -39,7 +39,7 @@
 #include <medSettingsManager.h>
 #include <medAbstractInteractor.h>
 #include <medPoolIndicatorL.h>
-#include <medLayoutChooser.h>
+#include <medTableWidgetChooser.h>
 
 class medViewContainerPrivate
 {
@@ -66,7 +66,7 @@ public:
     QMenu *toolBarMenu;
     QPushButton *menuButton;
 
-    medLayoutChooser *presetLayoutChooser;
+    medTableWidgetChooser *presetLayoutChooser;
     QMenu* presetMenu;
 
     QAction *openAction;
@@ -106,7 +106,7 @@ medViewContainer::medViewContainer(medViewContainerSplitter *parent): QFrame(par
 
     d->defaultWidget = new QWidget;
     d->defaultWidget->setObjectName("defaultWidget");
-    QLabel *defaultLabel = new QLabel(tr("Drag'n drop series/study here from the left panel or"));
+    QLabel *defaultLabel = new QLabel(tr("Drag'n drop series/study here from the left panel or:"));
     QPushButton *openButton= new QPushButton(tr("open a file from your system"));
     QVBoxLayout *defaultLayout = new QVBoxLayout(d->defaultWidget);
     defaultLayout->addWidget(defaultLabel);
@@ -128,7 +128,10 @@ medViewContainer::medViewContainer(medViewContainerSplitter *parent): QFrame(par
     connect(d->openAction, SIGNAL(triggered()), this, SLOT(openFromSystem()), Qt::UniqueConnection);
 
     d->closeContainerButton = new QPushButton(this);
-    d->closeContainerButton->setIcon(QIcon(":/pixmaps/closebutton.png"));
+    QIcon closeIcon;
+    closeIcon.addPixmap(QPixmap(":/pixmaps/closebutton.png"),         QIcon::Normal);
+    closeIcon.addPixmap(QPixmap(":/pixmaps/closebutton-disabled.png"),QIcon::Disabled);
+    d->closeContainerButton->setIcon(closeIcon);
     d->closeContainerButton->setSizePolicy(QSizePolicy::Minimum, QSizePolicy::Fixed);
     d->closeContainerButton->setToolTip(tr("Close"));
     d->closeContainerButton->setFocusPolicy(Qt::NoFocus);
@@ -175,15 +178,15 @@ medViewContainer::medViewContainer(medViewContainerSplitter *parent): QFrame(par
     d->maximizedAction->setIcon(maximizedIcon);
     d->maximizedAction->setIconVisibleInMenu(true);
     connect(d->maximizedAction, SIGNAL(toggled(bool)), this, SLOT(toggleMaximized(bool)), Qt::UniqueConnection);
-    d->maximizedAction->setEnabled(true);
+    d->maximizedAction->setEnabled(false);
 
     // Presets
     d->presetMenu = new QMenu(tr("Presets"),this);
     d->presetMenu->setToolTip(tr("Split into presets"));
     d->presetMenu->setIcon(QIcon(":/icons/splitPresets.png"));
 
-    d->presetLayoutChooser = new medLayoutChooser(this);
-    connect(d->presetLayoutChooser, SIGNAL(selected(unsigned int,unsigned int)), this, SLOT(splitContainer(unsigned int,unsigned int)), Qt::UniqueConnection);
+    d->presetLayoutChooser = new medTableWidgetChooser(this);
+    connect(d->presetLayoutChooser, SIGNAL(selected(unsigned int,unsigned int)), this, SLOT(splitContainer(unsigned int,unsigned int)));
 
     QVBoxLayout *presetMenuLayout = new QVBoxLayout;
     presetMenuLayout->setContentsMargins(0,0,0,0);
@@ -286,14 +289,21 @@ QWidget* medViewContainer::defaultWidget() const
     return d->defaultWidget;
 }
 
+/**
+ * @brief medViewContainer::setDefaultWidget change the central widget
+ * which can be seen inside an empty view.
+ * @param defaultWidget
+ */
 void medViewContainer::setDefaultWidget(QWidget *defaultWidget)
 {
-    if(!d->view)
-    {
-        d->mainLayout->removeWidget(d->defaultWidget);
-        delete d->defaultWidget;
-        d->mainLayout->addWidget(defaultWidget, 0, 0, 0, 0);
-    }
+    // This paragraph could be encapsulated in an 'if(!d->view)' condition,
+    // however, in CLOSE_VIEW views, after the removal of the last data,
+    // setting a new default widget does not display it. d->view should be
+    // deleted before coming here.
+    d->mainLayout->removeWidget(d->defaultWidget);
+    delete d->defaultWidget;
+    d->mainLayout->addWidget(defaultWidget, 0, 0, 0, 0, Qt::AlignCenter);
+
     d->defaultWidget = defaultWidget;
 }
 
@@ -441,7 +451,7 @@ void medViewContainer::setView(medAbstractView *view)
             connect(layeredView, SIGNAL(currentLayerChanged()), this, SIGNAL(currentLayerChanged()), Qt::UniqueConnection);
             connect(layeredView, SIGNAL(currentLayerChanged()), this, SLOT(updateToolBar()), Qt::UniqueConnection);
             connect(layeredView, SIGNAL(layerAdded(uint)), this, SIGNAL(viewContentChanged()), Qt::UniqueConnection);
-            connect(layeredView, SIGNAL(layerRemoved(uint)), this, SIGNAL(viewContentChanged()), Qt::UniqueConnection);
+            connect(layeredView, SIGNAL(layerRemoved(uint)), this, SIGNAL(viewRemoved()), Qt::UniqueConnection);
         }
 
         if (medAbstractImageView *imageView = dynamic_cast <medAbstractImageView*> (view))
@@ -455,7 +465,7 @@ void medViewContainer::setView(medAbstractView *view)
             connect(d->histogramAction, SIGNAL(toggled(bool)), this, SLOT(toggleHistogram(bool)), Qt::UniqueConnection);
             connect(d->histogramAction, SIGNAL(toggled(bool)), imageView, SLOT(showHistogram(bool)), Qt::UniqueConnection);
 
-            d->histogramAction->setEnabled(true);
+            enableNonSplitWidgetsInToolsMenu(true);
         }
 
         d->defaultWidget->hide();
@@ -602,19 +612,24 @@ void medViewContainer::removeView()
     if(d->view)
     {
         d->histogramAction->setChecked(false);
-        emit dataAdded(nullptr);
+
+        // On some occasion, the 'delete' here displays 3 logs:
+        // 'Unable to retrieve data at layer: 0 from:  "medVtkView"'
+        // It is linked to a GUI bug, where mouse/view/layer toolboxes
+        // are not fully cleaned and minimized.
         delete d->view;
     }
-    // removeInternView should be called, so no need to set d->view to NULL
-    // or whatever else
+    // removeInternView should be called, so no need to set d->view to nullptr.
 }
 
 void medViewContainer::removeInternView()
 {
     d->view = nullptr;
-    d->maximizedAction->setEnabled(false);
 
-    d->histogramAction->setEnabled(false);
+    enableNonSplitWidgetsInToolsMenu(false);
+
+    // On Maximize mode, the view can't be removed.
+    // However, it's possible with the histogram, so we uncheck it.
     d->histogramAction->setChecked(false);
 
     d->defaultWidget->show();
@@ -1064,4 +1079,10 @@ QAction* medViewContainer::histogramAction()
 void medViewContainer::enableHistogramAction(bool state)
 {
     d->histogramAction->setEnabled(state);
+}
+
+void medViewContainer::enableNonSplitWidgetsInToolsMenu(bool state)
+{
+    enableHistogramAction(state);
+    d->maximizedAction->setEnabled(state);
 }

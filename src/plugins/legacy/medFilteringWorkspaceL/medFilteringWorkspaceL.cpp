@@ -56,8 +56,8 @@ void medFilteringWorkspaceL::setupTabbedViewContainer()
     d->outputContainer = d->inputContainer->splitVertically();
     resetDefaultWidgetOutputContainer();
 
-    // viewContentChanged includes new data added, changed or removed
     connect(d->inputContainer,  SIGNAL(viewContentChanged()), this, SLOT(changeToolBoxInput()), Qt::UniqueConnection);
+    connect(d->inputContainer,  SIGNAL(viewRemoved()),        this, SLOT(changeToolBoxInput()), Qt::UniqueConnection);
     connect(d->inputContainer,  SIGNAL(viewRemoved()),        this, SLOT(resetDefaultWidgetInputContainer()), Qt::UniqueConnection);
     connect(d->outputContainer, SIGNAL(viewRemoved()),        this, SLOT(resetDefaultWidgetOutputContainer()), Qt::UniqueConnection);
 

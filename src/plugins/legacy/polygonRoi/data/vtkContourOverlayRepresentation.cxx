@@ -274,3 +274,18 @@ int vtkContourOverlayRepresentation::AddNodeAtDisplayPosition( int X, int Y )
     this->InvokeEvent(vtkCommand::PlacePointEvent);
     return result;
 }
+
+int vtkContourOverlayRepresentation::GetNthNodeWorldPosition(int n, double worldPos[])
+{
+    return vtkContourRepresentation::GetNthNodeWorldPosition(n, worldPos);
+}
+
+int vtkContourOverlayRepresentation::GetIntermediatePointWorldPosition(int n, int idx, double point[])
+{
+    return vtkContourRepresentation::GetIntermediatePointWorldPosition(n, idx, point);
+}
+
+int vtkContourOverlayRepresentation::FindClosestPointOnContour(int X, int Y, double worldPos[], int *idx)
+{
+    return vtkContourRepresentation::FindClosestPointOnContour(X,Y,worldPos,idx);
+}

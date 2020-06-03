@@ -66,14 +66,21 @@ public:
     medViewContainer* splitHorizontally();
     medViewContainer* split(Qt::AlignmentFlag alignement = Qt::AlignRight);
 
-    void setDefaultWidget(QWidget *defaultWidget);
     QWidget* defaultWidget() const;
+    void setDefaultWidget(QWidget *defaultWidget);
 
     void addColorIndicator(QColor color, QString description="");
     void removeColorIndicator(QColor color);
 
     bool userValidationForStudyDrop();
     void enableHistogramAction(bool state);
+
+    /**
+     * @brief enableNonSplitWidgetsInToolsMenu enable or disable some
+     * non-split type actions in the view menu.
+     * @param state
+     */
+    void enableNonSplitWidgetsInToolsMenu(bool state);
 
 public slots:
     void setView(medAbstractView* view);

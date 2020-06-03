@@ -11,12 +11,7 @@ medRootContainer::medRootContainer(medTabbedViewContainers* parent) : m_poParent
     setLayout(&m_oInternalLayout);
 }
 
-medRootContainer::~medRootContainer()
-{
-#ifdef _DEBUG
-    std::cout << "~medRootContainer" << std::endl;
-#endif // _DEBUG
-}
+medRootContainer::~medRootContainer(){}
 
 void medRootContainer::replaceSplitter(medViewContainerSplitter *pi_poSplitter)
 {
