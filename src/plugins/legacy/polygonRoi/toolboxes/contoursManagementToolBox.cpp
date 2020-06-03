@@ -919,7 +919,11 @@ void contoursManagementToolBox::onContoursSaved(medAbstractImageView *view, vtkM
     medAbstractData * input = view->layerData(0);
     medAbstractImageData *inputData = qobject_cast<medAbstractImageData*>(input);
     QString desc;
-    if (contoursData.size()==1)
+    if (contoursData.size()==0)
+    {
+        return;
+    }
+    else if (contoursData.size()==1)
     {
         desc = QString("contour %1").arg(contoursData[0].getLabelName());
         contoursData[0].setSpecialityIndex(specialities->currentIndex());
