@@ -96,7 +96,14 @@ public:
         if (imageView->is2D())
         {
             // Convert mouse click to a 3D point in the image.
-            QVector3D posImage = imageView->mapDisplayToWorldCoordinates( mouseEvent->localPos() );
+#if QT_VERSION > QT_VERSION_CHECK(5, 10, 0)
+            int devicePixelRatio = QGuiApplication::screenAt(mouseEvent->globalPos())->devicePixelRatio();
+#else
+            int screenNumber = QApplication::desktop()->screenNumber(mouseEvent->globalPos());
+            int devicePixelRatio = QGuiApplication::screens().at(screenNumber)->devicePixelRatio();
+#endif
+            QPointF mousePos = mouseEvent->localPos() * devicePixelRatio;
+            QVector3D posImage = imageView->mapDisplayToWorldCoordinates( mousePos );
 
             if (m_paintState != PaintState::Wand)
             {
@@ -151,7 +158,14 @@ public:
 
             if (imageView->is2D())
             {
-                QVector3D posImage = imageView->mapDisplayToWorldCoordinates( mouseEvent->localPos() );
+#if QT_VERSION > QT_VERSION_CHECK(5, 10, 0)
+                int devicePixelRatio = QGuiApplication::screenAt(mouseEvent->globalPos())->devicePixelRatio();
+#else
+                int screenNumber = QApplication::desktop()->screenNumber(mouseEvent->globalPos());
+                int devicePixelRatio = QGuiApplication::screens().at(screenNumber)->devicePixelRatio();
+#endif
+                QPointF mousePos = mouseEvent->localPos() * devicePixelRatio;
+                QVector3D posImage = imageView->mapDisplayToWorldCoordinates( mousePos );
 
                 bool isInside;
                 MaskType::IndexType index;
@@ -181,7 +195,14 @@ public:
 
         if (imageView->is2D())
         {
-            QVector3D posImage = imageView->mapDisplayToWorldCoordinates( mouseEvent->localPos() );
+#if QT_VERSION > QT_VERSION_CHECK(5, 10, 0)
+            int devicePixelRatio = QGuiApplication::screenAt(mouseEvent->globalPos())->devicePixelRatio();
+#else
+            int screenNumber = QApplication::desktop()->screenNumber(mouseEvent->globalPos());
+            int devicePixelRatio = QGuiApplication::screens().at(screenNumber)->devicePixelRatio();
+#endif
+            QPointF mousePos = mouseEvent->localPos() * devicePixelRatio;
+            QVector3D posImage = imageView->mapDisplayToWorldCoordinates( mousePos );
             //Project vector onto plane
             this->m_points.push_back(posImage);
             m_cb->updateStroke( this,imageView );
