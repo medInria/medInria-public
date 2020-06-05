@@ -5,6 +5,14 @@ medInria v3.1.1:
 - DB: remove a bug in the creation of the series
 - Fix dicom import bug with special characters
 - Solve SH data image, and 4D image bugs
+- PolygonROI segmentation labels enhanced
+- Tools button icon, allow opening data in fix views
+- Plugins from Asclepios in medInria repository
+- Fix Retina screen problems with segmentations
+- Fix std::cout logs problem with numbers
+- Registration - fix LCC Log Demons transformation crash
+- Registration - put back name in undo-redo tool
+- Improve 3D rendering behavior
 
 medInria v3.1:
 - Switch ITK to version 5.0.0
