@@ -345,7 +345,7 @@ void vtkImageView2D::SetSlice(int slice)
   double pos[3];
   pointTransform->TransformPoint ( this->CurrentPoint , pos );
   // NB: Modified() and InvokeEvent( vtkImageView::CurrentPointChangedEvent ) are
-  // callled in SetCurrentPoint()
+  // called in SetCurrentPoint()
 
   // Shift the camera with the slice, so that the slice does not go behind the camera.
   vtkCamera *camera = this->GetRenderer()->GetActiveCamera();
