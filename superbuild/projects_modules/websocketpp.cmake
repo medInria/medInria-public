@@ -25,11 +25,16 @@ if (NOT USE_SYSTEM_${ep})
 set(git_url ${GITHUB_PREFIX}zaphoyd/websocketpp.git)
 set(git_tag master)
 
-
 ## #############################################################################
 ## Add external-project
 ## #############################################################################
 epComputPath(${ep})
+
+set(cmake_args
+  ${ep_common_cache_args}
+  -DCMAKE_MACOSX_RPATH:BOOL=OFF
+  -DCMAKE_INSTALL_PREFIX=${build_path}
+)
 
 ExternalProject_Add(${ep}
   PREFIX ${EP_PATH_SOURCE}
@@ -43,15 +48,12 @@ ExternalProject_Add(${ep}
   CMAKE_GENERATOR_PLATFORM ${CMAKE_GENERATOR_PLATFORM}
   CMAKE_ARGS ${cmake_args}
   DEPENDS ${${ep}_dependencies}
-  INSTALL_COMMAND ""
   )
 
 ## #############################################################################
 ## Set variable to provide infos about the project
 ## #############################################################################
-
-ExternalProject_Get_Property(${ep} binary_dir)
-set(${ep}_DIR ${binary_dir} PARENT_SCOPE)
+set(${ep}_DIR ${build_path} PARENT_SCOPE)
 
 ## #############################################################################
 ## Add custom targets

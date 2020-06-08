@@ -25,6 +25,8 @@
 #include <itkObjectFactoryBase.h>
 #include <itkCommand.h>
 
+#include <itkMetaDataObject.h>
+
 // implement an observer
 namespace itk {
 
@@ -409,6 +411,15 @@ bool itkDCMTKDataImageReader::readInformation(const QStringList& paths)
         //Dimensions
         //NumberOfDimensions
         medData->setMetaData(medMetaDataKeys::Orientation.key(),     d->io->GetOrientation().c_str());
+        // Patient position
+        std::string patientPos = d->io->GetMetaDataValueString("(0018,5100)", 0);
+        medData->setMetaData(medMetaDataKeys::PatientPosition.key(), patientPos.c_str());
+        // Patient orientation
+        std::string patientOrient = d->io->GetMetaDataValueString("(0020,0020)", 0);
+        medData->setMetaData(medMetaDataKeys::PatientOrientation.key(), patientOrient.c_str());
+        // Image Type
+        std::string imageType = d->io->GetMetaDataValueString("(0008,0008)", 0);
+        medData->setMetaData(medMetaDataKeys::ImageType.key(), imageType.c_str());
 
         // Patient position
         std::string patientPos = d->io->GetMetaDataValueString("(0018,5100)", 0);

@@ -15,6 +15,8 @@
 #include <medImageMaskAnnotationData.h>
 #include <QColor>
 
+#include <QColor>
+
 medImageMaskAnnotationData::medImageMaskAnnotationData() :
     medAnnotationData()
 {

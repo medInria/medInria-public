@@ -67,6 +67,7 @@
 #include <itkVTKDataImageWriter.h>
 #include <itkGISDataImageWriter.h>
 #include <itkDicomDataImageWriter.h>
+#include <mscDicomRtImageWriter.h>
 
 #include <dtkLog/dtkLog.h>
 #include <itkLogForwarder.h>

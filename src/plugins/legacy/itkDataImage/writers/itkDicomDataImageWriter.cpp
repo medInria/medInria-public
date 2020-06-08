@@ -191,6 +191,11 @@ void itkDicomDataImageWriter::fillDictionaryFromMetaDataKey(itk::MetaDataDiction
             // Study Description
             itk::EncapsulateMetaData<std::string>(dictionary, "0008|1030", data()->metadata(metaDataKey).toStdString());
         }
+        if(metaDataKey == QString("StudyTime"))
+        {
+            // Study Description
+            itk::EncapsulateMetaData<std::string>(dictionary, "0008|0030", data()->metadata(metaDataKey).toStdString());
+        }
         if(metaDataKey == QString("Institution"))
         {
             // Institution Name
@@ -230,31 +235,22 @@ void itkDicomDataImageWriter::fillDictionaryFromMetaDataKey(itk::MetaDataDiction
             // Image type
             itk::EncapsulateMetaData<std::string>(dictionary, "0008|0008", data()->metadata(metaDataKey).toStdString());
         }
-        if (metaDataKey == medMetaDataKeys::PositionReferenceIndicator.key())
+        if (metaDataKey == medMetaDataKeys::PatientPosition.key())
         {
-            itk::EncapsulateMetaData<std::string>(dictionary, "0020|1040", data()->metadata(metaDataKey).toStdString());
+            // Patient Position
+            itk::EncapsulateMetaData<std::string>(dictionary, "0018|5100", data()->metadata(metaDataKey).toStdString());
         }
-        if (metaDataKey == medMetaDataKeys::Manufacturer.key())
+        if (metaDataKey == medMetaDataKeys::PatientOrientation.key())
         {
-            itk::EncapsulateMetaData<std::string>(dictionary, "0008|0070", data()->metadata(metaDataKey).toStdString());
+            // Patient Orientation
+            itk::EncapsulateMetaData<std::string>(dictionary, "0020|0020", data()->metadata(metaDataKey).toStdString());
+        }
+        if (metaDataKey == medMetaDataKeys::ImageType.key())
+        {
+            // Image type
+            itk::EncapsulateMetaData<std::string>(dictionary, "0008|0008", data()->metadata(metaDataKey).toStdString());
         }
     }
-}
-
-void itkDicomDataImageWriter::fillDictionaryWithModalityDependentData(itk::MetaDataDictionary& dictionary)
-{
-    QString modality = data()->metadata(medMetaDataKeys::Modality.key());
-    if (modality.contains("MR"))
-    {
-        itk::EncapsulateMetaData<std::string>(dictionary, "0018|0081", data()->metadata("EchoTime").toStdString());
-        itk::EncapsulateMetaData<std::string>(dictionary, "0018|1314", data()->metadata("FlipAngle").toStdString());
-        itk::EncapsulateMetaData<std::string>(dictionary, "0018|0080", data()->metadata("RepetitionTime").toStdString());
-    }
-    else if (modality.contains("CT"))
-    {
-        itk::EncapsulateMetaData<std::string>(dictionary, "0018|0060", data()->metadata("KVP").toStdString());
-    }
-
 }
 
 template <class PixelType> void itkDicomDataImageWriter::fillDictionaryWithSharedData(itk::MetaDataDictionary &dictionary, bool studyUIDExistance,
@@ -392,11 +388,15 @@ template <class PixelType> bool itkDicomDataImageWriter::fillDictionaryAndWriteD
     extract->Update();
 
     itk::ImageRegionIterator<Image2DType> it( extract->GetOutput(), extract->GetOutput()->GetLargestPossibleRegion() );
-    typename Image2DType::PixelType minValue = itk::NumericTraits<typename Image2DType::PixelType>::max();
-    typename Image2DType::PixelType maxValue = itk::NumericTraits<typename Image2DType::PixelType>::min();
+    // Do not use the Image2DType::PixelType type, as it creates problems with
+    // char and uchar images. Furthermore, the Window center and width tags
+    // are coded as 'Decimal String' in the DICOM dictionary, so floating
+    // point value are fine.
+    double minValue = std::numeric_limits<double>::max();
+    double maxValue = std::numeric_limits<double>::lowest();
     for( it.GoToBegin(); !it.IsAtEnd(); ++it )
     {
-        typename Image2DType::PixelType p = it.Get();
+        double p = static_cast<double>(it.Get());
         if( p > maxValue )
         {
             maxValue = p;
@@ -406,8 +406,8 @@ template <class PixelType> bool itkDicomDataImageWriter::fillDictionaryAndWriteD
             minValue = p;
         }
     }
-    typename Image2DType::PixelType windowCenter = (minValue + maxValue) / 2;
-    typename Image2DType::PixelType windowWidth = (maxValue - minValue);
+    double windowCenter = (minValue + maxValue) / 2;
+    double windowWidth = std::max(1., maxValue - minValue);
 
     value.str("");
     value << windowCenter;

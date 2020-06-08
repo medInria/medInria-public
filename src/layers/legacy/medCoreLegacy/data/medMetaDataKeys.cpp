@@ -96,6 +96,10 @@ namespace medMetaDataKeys
     MEDCORELEGACY_EXPORT const Key FrameOfReferenceUID("FrameOfReferenceUID", "Frame of Reference UID");
     MEDCORELEGACY_EXPORT const Key PositionReferenceIndicator("PositionReferenceIndicator", "Position Reference Indicator");
 
+    MEDCORELEGACY_EXPORT const Key PatientOrientation("PatientOrientation", "Patient Orientation");
+    MEDCORELEGACY_EXPORT const Key PatientPosition("PatientPosition", "Patient Position");
+    MEDCORELEGACY_EXPORT const Key ImageType("ImageType", "Image Type");
+
     // MR Image
     MEDCORELEGACY_EXPORT const Key FlipAngle("FlipAngle", "Flip Angle");
     MEDCORELEGACY_EXPORT const Key EchoTime("EchoTime", "Echo Time");

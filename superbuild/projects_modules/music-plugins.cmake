@@ -3,15 +3,20 @@ function(music_plugins_project)
     set(external_project music-plugins)
 
     list(APPEND ${external_project}_dependencies
-        medInria
         dtk
         ITK
         VTK
+        DCMTK
+        medInria
+        jsoncons
+        asio
+        websocketpp
+        openssl
         mmg
         tetgen
         eigen
         qwt
-        gvirtualXRay
+        quazip
         )
 
     EP_Initialisation(${external_project}
@@ -36,8 +41,13 @@ function(music_plugins_project)
             -Ddtk_DIR:FILEPATH=${dtk_DIR}
             -DITK_DIR:FILEPATH=${ITK_DIR}
             -DVTK_DIR:FILEPATH=${VTK_DIR}
+            -DDCMTK_DIR:FILEPATH=${DCMTK_DIR}
             -DmedInria_DIR:FILEPATH=${medInria_DIR}
             -DBoost_INCLUDE_DIR=${Boost_INCLUDE_DIR}
+            -Djsoncons_DIR:FILEPATH=${jsoncons_DIR}
+            -Dasio_DIR:FILEPATH=${asio_DIR}
+            -Dwebsocketpp_DIR:FILEPATH=${websocketpp_DIR}
+            -Dopenssl_DIR:FILEPATH=${openssl_DIR}
             -DEIGEN_INCLUDE_DIR:FILEPATH=${eigen_INCLUDE_DIR}
             -DQWT_INCLUDE_DIR:FILEPATH=${qwt_INCLUDE_DIR}
             -DQWT_DIR:FILEPATH=${qwt_DIR}
@@ -46,7 +56,8 @@ function(music_plugins_project)
             -DMMG_SRC_DIR:FILEPATH=${mmg_SRC_DIR}
             -DTETGEN_INCLUDE_DIR:FILEPATH=${tetgen_INCLUDE_DIR}
             -DTETGEN_DIR:FILEPATH=${tetgen_DIR}
-            )
+            -DQUAZIP_DIR:FILEPATH=${quazip_DIR}
+        )
 
         epComputPath(${external_project})
 

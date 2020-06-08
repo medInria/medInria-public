@@ -32,18 +32,20 @@ set(git_tag master)
 ## Add external-project
 ## #############################################################################
 epComputPath(${ep})
+
 ExternalProject_Add(${ep}
   PREFIX ${EP_PATH_SOURCE}
   SOURCE_DIR ${EP_PATH_SOURCE}/${ep}
   BINARY_DIR ${build_path}
   TMP_DIR ${tmp_path}
   STAMP_DIR ${stamp_path}
+  
   GIT_REPOSITORY ${git_url}
   GIT_TAG ${git_tag}
-  CMAKE_GENERATOR ${gen}
-  CMAKE_GENERATOR_PLATFORM ${CMAKE_GENERATOR_PLATFORM}
   DEPENDS ${${ep}_dependencies}
   UPDATE_COMMAND ""
+  CONFIGURE_COMMAND ${CMAKE_COMMAND} -E echo "Eigen - no configure step required."
+  # Nothing to build, as Eigen is fully templated
   BUILD_COMMAND ""
   INSTALL_COMMAND ""
 )
@@ -53,6 +55,7 @@ ExternalProject_Add(${ep}
 ## #############################################################################
 ExternalProject_Get_Property(${ep} binary_dir)
 set(${ep}_DIR ${binary_dir} PARENT_SCOPE)
+set(${ep}_INCLUDE_DIR ${EP_PATH_SOURCE}/${ep} PARENT_SCOPE)
 
 endif() 
 

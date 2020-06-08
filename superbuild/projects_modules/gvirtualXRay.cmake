@@ -19,11 +19,6 @@ EP_Initialisation(${ep}
 
 if (NOT USE_SYSTEM_${ep})
 
-set(LIB_EXT "dylib")  
-if(UNIX)
-	set(LIB_EXT "so") 
-endif() 
-
 ## #############################################################################
 ## Add specific cmake arguments for configuration step of the project
 ## #############################################################################
@@ -38,40 +33,27 @@ if (UNIX OR APPLE)
   set(${ep}_cxx_flags "${${ep}_cxx_flags}")
 endif()
 
+epComputPath(${ep})
+
 set(cmake_args
   ${ep_common_cache_args}
   -DCMAKE_C_FLAGS:STRING=${${ep}_c_flags}
   -DCMAKE_CXX_FLAGS:STRING=${${ep}_cxx_flags}
   -DCMAKE_SHARED_LINKER_FLAGS:STRING=${${ep}_shared_linker_flags}
-  -DBUILD_TUTORIALS:bool=OFF
-  -DBUILD_EXAMPLES:bool=OFF
-  -DUSE_ITK:bool=OFF
-  -DCMAKE_INSTALL_PREFIX:PATH=${EP_PATH_SOURCE}/../build/gvxr/
-  -DUSE_SYSTEM_ZLIB:bool=ON
-  -DUSE_SYSTEM_LIBTIFF:bool=OFF
-  -DUSE_LIBTIFF:bool=OFF
-  -DUSE_FFTW3:bool=OFF
-  -DUSE_FREETYPE:bool=OFF
-  -DUSE_GDCM:bool=OFF
-  -DUSE_ITK:bool=OFF
-  -DUSE_assimp=OFF
+  -DCMAKE_BUILD_TYPE=${CMAKE_BUILD_TYPE_externals_projects}
+  -DCMAKE_INSTALL_PREFIX:PATH=${build_path}
+  -DBUILD_TUTORIALS:BOOL=OFF
+  -DBUILD_EXAMPLES:BOOL=OFF
+  -DUSE_SYSTEM_ZLIB:BOOL=ON
+  -DUSE_SYSTEM_LIBTIFF:BOOL=OFF
+  -DUSE_SYSTEM_GLEW=OFF
+  -DUSE_LIBTIFF:BOOL=OFF
+  -DUSE_FFTW3:BOOL=OFF
+  -DUSE_FREETYPE:BOOL=OFF
+  -DUSE_GDCM:BOOL=OFF
+  -DUSE_ITK:BOOL=OFF
+  -DUSE_assimp:BOOL=OFF
 )
-
-if(UNIX) 
-set(cmake_args ${cmake_args} 
-  -G "Unix Makefiles"
-  -DGLEW_LIBRARY_DIR="${EP_PATH_SOURCE}/../build/glew/build/lib/"
-  -DCMAKE_BUILD_TYPE=RELEASE
-  -DZLIB_LIBRARY_RELEASE="/lib/x86_64-linux-gnu/libz.so.1"
-  -DZLIB_LIBRARY_DEBUG="/lib/x86_64-linux-gnu/libz.so.1"
-)
-else() 
-set(cmake_args ${cmake_args}
-  -DCMAKE_BUILD_TYPE=RELEASE 
-  -DZLIB_LIBRARY_RELEASE="/usr/lib/libz.1.${LIB_EXT}"
-  -DZLIB_LIBRARY_DEBUG="/usr/lib/libz.1.${LIB_EXT}"
-)
-endif()
  
 ## #############################################################################
 ## Add external-project
@@ -82,24 +64,21 @@ if(APPLE)
   -DCMAKE_MACOSX_RPATH=OFF)
 endif(APPLE)
 
-set(patch_dir ${EP_PATH_SOURCE}/../../medInria-public/superbuild/patches)
-set(source_dir ${EP_PATH_SOURCE}/gvxr)
-set(build_dir ${EP_PATH_SOURCE}/../build/gvxr)
-
-ExternalProject_Add(gvirtualXRay
+ExternalProject_Add(${ep}
   PREFIX ${EP_PATH_SOURCE}
   SOURCE_DIR ${EP_PATH_SOURCE}/${ep}
-  CMAKE_GENERATOR ${gen}
-  CMAKE_GENERATOR_PLATFORM ${CMAKE_GENERATOR_PLATFORM}
+  BINARY_DIR ${build_path}
+  TMP_DIR ${tmp_path}
+  STAMP_DIR ${stamp_path}
   CMAKE_ARGS ${cmake_args}
+
+  URL https://sourceforge.net/projects/gvirtualxray/files/1.1/gVirtualXRay-1.1.0-Source.zip/download
   DEPENDS ${${ep}_dependencies}
-  DOWNLOAD_COMMAND curl -Lo gVirtualXRay-1.1.0.zip https://sourceforge.net/projects/gvirtualxray/files/1.1/gVirtualXRay-1.1.0-Source.zip/download
-  DOWNLOAD_NAME   gVirtualXRay-1.1.0.zip
-  PATCH_COMMAND   unzip   ${EP_PATH_SOURCE}/src/gVirtualXRay-1.1.0.zip -d ${EP_PATH_SOURCE}/
-  CONFIGURE_COMMAND mkdir -p ${build_dir} && cd ${build_dir} && cmake  ${cmake_args} ${source_dir}
-  BUILD_COMMAND  cd ${build_dir} && make install
-  INSTALL_COMMAND ""
   UPDATE_COMMAND ""
+  PATCH_COMMAND ""
+  SOURCE_SUBDIR gvxr
+  BUILD_COMMAND  ${CMAKE_MAKE_PROGRAM} install
+  INSTALL_COMMAND ""
 )
 ## #############################################################################
 ## Set variable to provide infos about the project

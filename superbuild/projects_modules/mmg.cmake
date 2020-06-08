@@ -15,7 +15,7 @@ list(APPEND ${ep}_dependencies "")
 EP_Initialisation(${ep}
   USE_SYSTEM OFF 
   BUILD_SHARED_LIBS OFF
-  REQUIRED_FOR_PLUGINS OFF
+  REQUIRED_FOR_PLUGINS ON
   )
 
 if (NOT USE_SYSTEM_${ep})
@@ -42,12 +42,12 @@ if (UNIX OR APPLE)
 endif()
 
 set(cmake_args
-	${ep_common_cache_args}
-	-DCMAKE_C_FLAGS:STRING=${${ep}_c_flags}
-	-DCMAKE_CXX_FLAGS:STRING=${${ep}_cxx_flags}
+    ${ep_common_cache_args}
+    -DCMAKE_C_FLAGS:STRING=${${ep}_c_flags}
+    -DCMAKE_CXX_FLAGS:STRING=${${ep}_cxx_flags}
     -DCMAKE_SHARED_LINKER_FLAGS:STRING=${${ep}_shared_linker_flags}
-    -DCMAKE_INSTALL_PREFIX:PATH=${EP_PATH_SOURCE}/../build/mmg/
-    -DCMAKE_BUILD_TYPE=${CMAKE_BUILD_TYPE}
+    -DCMAKE_INSTALL_PREFIX:PATH=<INSTALL_DIR>
+    -DCMAKE_BUILD_TYPE=${CMAKE_BUILD_TYPE_externals_projects}
     -DBUILD_MMG:BOOL=ON
     -DLIBMMG_SHARED:BOOL=${BUILD_SHARED_LIBS_${ep}}
     -DUSE_SCOTCH:BOOL=OFF
@@ -56,20 +56,17 @@ set(cmake_args
 ## #############################################################################
 ## Add external-project
 ## #############################################################################
-set(source_dir ${EP_PATH_SOURCE}/mmg)
-set(build_dir ${EP_PATH_SOURCE}/../build/mmg)
-
 epComputPath(${ep})
 
 ExternalProject_Add(${ep}
   PREFIX ${EP_PATH_SOURCE}
   SOURCE_DIR ${EP_PATH_SOURCE}/${ep}
-  GIT_REPOSITORY ${git_url}
-  GIT_TAG ${git_tag}
   BINARY_DIR ${build_path}
   TMP_DIR ${tmp_path}
   STAMP_DIR ${stamp_path}
-  CMAKE_GENERATOR ${gen}
+
+  GIT_REPOSITORY ${git_url}
+  GIT_TAG ${git_tag}
   CMAKE_GENERATOR ${gen}
   CMAKE_GENERATOR_PLATFORM ${CMAKE_GENERATOR_PLATFORM}
   CMAKE_ARGS ${cmake_args}
@@ -81,9 +78,8 @@ ExternalProject_Add(${ep}
 ## #############################################################################
 ## Set variable to provide infos about the project
 ## #############################################################################
-
-ExternalProject_Get_Property(${ep} binary_dir)
-set(${ep}_DIR ${binary_dir} PARENT_SCOPE)
+set(${ep}_INCDIR ${build_path}/include PARENT_SCOPE)
+set(${ep}_LIBDIR ${build_path}/lib PARENT_SCOPE)
 
 endif() #NOT USE_SYSTEM_ep
 

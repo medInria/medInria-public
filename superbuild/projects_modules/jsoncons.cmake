@@ -37,16 +37,17 @@ ExternalProject_Add(${ep}
   STAMP_DIR ${stamp_path}
   GIT_REPOSITORY ${git_url}
   GIT_TAG ${git_tag}
-  CMAKE_GENERATOR ${gen}
-  CMAKE_GENERATOR_PLATFORM ${CMAKE_GENERATOR_PLATFORM}
   DEPENDS ${${ep}_dependencies}
+  UPDATE_COMMAND ""
+  CONFIGURE_COMMAND ${CMAKE_COMMAND} -E echo "Jsoncons - no configure step required."
+  # Nothing to build
+  BUILD_COMMAND ""
   INSTALL_COMMAND ""
   )
 ## #############################################################################
 ## Set variable to provide infos about the project
 ## #############################################################################
-ExternalProject_Get_Property(${ep} binary_dir)
-set(${ep}_DIR ${binary_dir} PARENT_SCOPE)
+set(${ep}_DIR ${EP_PATH_SOURCE}/${ep} PARENT_SCOPE)
 
 endif() #NOT USE_SYSTEM_ep
 

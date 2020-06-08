@@ -21,9 +21,9 @@ find_package(Qt5 REQUIRED COMPONENTS
              Gui
              Network
              OpenGL
-             Sql                                                                                                                       
-	     Widgets                                                                                                                    
-	     Xml
+             Sql
+             Widgets 
+	           Xml
              Test
              Quick
              )
@@ -55,24 +55,24 @@ if (NOT WIN32)
 endif()
   
 list(APPEND external_projects
-  VTK 
-  ITK 
-  RPI 
-  TTK 
-  DCMTK 
-  QtDCM 
-  dtk
-  LogDemons
-  jsoncons
-  asio
-  websocketpp
-  eigen
-  gvirtualXRay
-  qwt 
-  mmg 
-  tetgen
-  #openssl
-)
+     VTK
+     ITK
+     RPI
+     TTK
+     DCMTK
+     QtDCM
+     dtk
+     LogDemons
+     jsoncons
+     asio
+     websocketpp
+     openssl
+     eigen
+     gvirtualXRay
+     qwt
+     mmg
+     tetgen
+     )
 
 if (USE_DTKIMAGING)
   list(APPEND external_projects

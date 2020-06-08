@@ -41,11 +41,10 @@ if (UNIX OR APPLE)
 endif()
 
 set(cmake_args
-	${ep_common_cache_args}
-	-DCMAKE_C_FLAGS:STRING=${${ep}_c_flags}
-	-DCMAKE_CXX_FLAGS:STRING=${${ep}_cxx_flags}
-    -DCMAKE_SHARED_LINKER_FLAGS:STRING=${${ep}_shared_linker_flags}
-    -DCMAKE_INSTALL_PREFIX:PATH=${EP_PATH_SOURCE}/../build/openssl/
+  ${ep_common_cache_args}
+  -DCMAKE_C_FLAGS:STRING=${${ep}_c_flags}
+  -DCMAKE_CXX_FLAGS:STRING=${${ep}_cxx_flags}
+  -DCMAKE_SHARED_LINKER_FLAGS:STRING=${${ep}_shared_linker_flags}
   )
 
 if(APPLE)
@@ -57,33 +56,54 @@ endif(APPLE)
 ## #############################################################################
 ## Add external-project
 ## #############################################################################
-set(source_dir ${EP_PATH_SOURCE}/openssl)
-set(build_dir ${EP_PATH_SOURCE}/../build/openssl)
-message("BUILD DIR OPENSSL" ${build_dir})
+epComputPath(${ep})
 
-ExternalProject_Add(${ep}
-  PREFIX ${EP_PATH_SOURCE}
-  SOURCE_DIR ${EP_PATH_SOURCE}/${ep}
-  GIT_REPOSITORY ${git_url}
-  GIT_TAG ${git_tag}
-  CMAKE_GENERATOR ${gen}
-  CMAKE_GENERATOR_PLATFORM ${CMAKE_GENERATOR_PLATFORM}
-  CMAKE_ARGS ${cmake_args}
-  DEPENDS ${${ep}_dependencies}
+if (WIN32)
 
-  CONFIGURE_COMMAND  mkdir ${build_dir} && cd  ${source_dir} &&  
-                    ./config no-zlib  shared --prefix=${build_dir}  --openssldir=${build_dir} 
-  BUILD_COMMAND cd ${source_dir} &&  make install  ## might have to put 
-  INSTALL_COMMAND ""
-  UPDATE_COMMAND ""
+  ExternalProject_Add(${ep}
+    PREFIX ${EP_PATH_SOURCE}
+    SOURCE_DIR ${EP_PATH_SOURCE}/${ep}
+    BINARY_DIR ${build_path}/realBuild
+    TMP_DIR ${tmp_path}
+    STAMP_DIR ${stamp_path}
+
+    GIT_REPOSITORY ${git_url}
+    GIT_TAG ${git_tag}
+    UPDATE_COMMAND ""
+    PATCH_COMMAND ""
+    DEPENDS ${${ep}_dependencies}
+    CONFIGURE_COMMAND perl ${EP_PATH_SOURCE}/${ep}/Configure VC_WIN64A  no-zlib shared --prefix=${build_path}  --openssldir=${build_path} 
+    BUILD_COMMAND nmake install-sw
+    INSTALL_COMMAND ""
+    )
+
+else (WIN32)
+
+  ExternalProject_Add(${ep}
+    PREFIX ${EP_PATH_SOURCE}
+    SOURCE_DIR ${EP_PATH_SOURCE}/${ep}
+    BINARY_DIR ${build_path}/realBuild
+    TMP_DIR ${tmp_path}
+    STAMP_DIR ${stamp_path}
+
+    GIT_REPOSITORY ${git_url}
+    GIT_TAG ${git_tag}
+    UPDATE_COMMAND ""
+    PATCH_COMMAND ""
+    DEPENDS ${${ep}_dependencies}
+    CONFIGURE_COMMAND ${EP_PATH_SOURCE}/${ep}/config no-zlib shared --prefix=${build_path} --openssldir=${build_path} 
+    BUILD_COMMAND ${CMAKE_MAKE_PROGRAM} install_sw
+    INSTALL_COMMAND ""
   )
+
+endif (WIN32)
 
 ## #############################################################################
 ## Set variable to provide infos about the project
 ## #############################################################################
-
-ExternalProject_Get_Property(${ep} binary_dir)
-set(${ep}_DIR ${binary_dir} PARENT_SCOPE)
+# this temporary variable is necessary; passing directly ${build_path} fails 
+set(build_dir ${build_path})
+set(${ep}_DIR ${build_dir} PARENT_SCOPE)
 
 endif() #NOT USE_SYSTEM_ep
 

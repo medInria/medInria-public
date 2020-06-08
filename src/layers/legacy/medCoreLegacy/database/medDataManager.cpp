@@ -161,12 +161,18 @@ QHash<QString, dtkAbstractDataWriter*> medDataManager::getPossibleWriters(medAbs
     {
         dtkAbstractDataWriter * writer = medAbstractDataFactory::instance()->writer(writerType);
         if (writer->handled().contains(data->identifier()))
+        {
             possibleWriters[writerType] = writer;
+        }
         else
+        {
             delete writer;
+        }
     }
     if (possibleWriters.isEmpty())
-        medMessageController::instance()->showError("Sorry, we have no exporter for this format.");
+    {
+        medMessageController::instance()->showError("Sorry, we have no exporter for this format.", 3000);
+    }
 
     return possibleWriters;
 }
