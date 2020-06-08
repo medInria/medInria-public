@@ -62,6 +62,7 @@ protected slots:
     void enableScaling(bool state);
     void enableRotation(bool state);
     void enableTranslation(bool state);
+    void checkLayer();
 
 private:
     vtkPointSet* transformDataSet(vtkMetaDataSet *dataset,
