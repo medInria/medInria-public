@@ -303,6 +303,7 @@ void polygonRoiToolBox::updateView()
         {
             medAbstractData *data = v->layerData(i);
             if(!data || data->identifier().contains("vtkDataMesh")
+                    || !data->identifier().contains("itkDataImage") //avoid medVtkFibersData also
                     || data->identifier().contains("itkDataImageVector"))
             {
                 handleDisplayError(medAbstractProcessLegacy::DIMENSION_3D);
