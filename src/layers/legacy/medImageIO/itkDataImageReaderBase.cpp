@@ -30,6 +30,12 @@
 itkDataImageReaderBase::itkDataImageReaderBase() : dtkAbstractDataReader()
 {
     this->io = 0;
+    this->itkKeyToMedKey["intent_name"] = medAbstractImageData::PixelMeaningMetaData;
+    this->itkKeyToMedKey["MED_MODALITY"] = medMetaDataKeys::Modality.key();
+    this->itkKeyToMedKey["MED_ORIENTATION"] = medMetaDataKeys::Orientation.key();
+    // retrocompatibility
+    this->itkKeyToMedKey["SeriesDicomID"] = medMetaDataKeys::SeriesInstanceUID.key();
+    this->itkKeyToMedKey["StudyDicomID"] = medMetaDataKeys::StudyInstanceUID.key();
 }
 
 
@@ -254,6 +260,27 @@ bool itkDataImageReaderBase::read_image(const QString& path,const char* type)
     return true;
 }
 
+QString itkDataImageReaderBase::convertItkKeyToMedKey(std::string& keyToConvert)
+{
+    QString convertedKey = "";
+
+    QString itkKey = QString::fromStdString(keyToConvert);
+    if (this->itkKeyToMedKey.contains(itkKey))
+    {
+        convertedKey = this->itkKeyToMedKey[itkKey];
+    }
+    else
+    {
+        const medMetaDataKeys::Key* medKey = medMetaDataKeys::Key::fromKeyName(keyToConvert.c_str());
+        if (medKey)
+        {
+            convertedKey = medKey->key();
+        }
+    }
+
+    return convertedKey;
+}
+
 void itkDataImageReaderBase::extractMetaData()
 {
     itk::Object* itkImage = static_cast<itk::Object*>(data()->data());
@@ -265,32 +292,15 @@ void itkDataImageReaderBase::extractMetaData()
         std::string key = keys[i];
         std::string value;
         itk::ExposeMetaData(metaDataDictionary, key, value);
-        QString metaDataKey;
 
-        if (key == "intent_name")
-        {
-            metaDataKey = medAbstractImageData::PixelMeaningMetaData;
-        }
-        else if (key == "MED_MODALITY")
-        {
-            metaDataKey = medMetaDataKeys::Modality.key();
-        }
-        else if (key == "MED_ORIENTATION")
-        {
-            metaDataKey = medMetaDataKeys::Orientation.key();
-        }
-        else
-        {
-            const medMetaDataKeys::Key* medKey = medMetaDataKeys::Key::fromKeyName(key.c_str());
-            if (medKey)
-            {
-                metaDataKey = medKey->key();
-            }
-        }
-
+        QString metaDataKey = convertItkKeyToMedKey(key);
         if (!metaDataKey.isEmpty())
         {
             data()->setMetaData(metaDataKey, QString(value.c_str()));
+        }
+        else
+        {
+            qDebug() << metaObject()->className() << ":: found unknown key:" << QString::fromStdString(key);
         }
     }
 }
