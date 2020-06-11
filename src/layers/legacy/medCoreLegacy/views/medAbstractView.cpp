@@ -129,6 +129,7 @@ void medAbstractView::clear()
 
 void medAbstractView::removeInteractors(medAbstractData *data)
 {
+    Q_UNUSED(data);
     delete d->primaryInteractor;
     d->primaryInteractor = nullptr;
     d->extraInteractors.clear();

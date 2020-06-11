@@ -379,6 +379,7 @@ void medDatabaseController::importData( medAbstractData *data, const QUuid & imp
 
 void medDatabaseController::showOpeningError(QObject *sender)
 {
+    Q_UNUSED(sender);
     medMessageController::instance()->showError("Opening item failed.", 3000);
 }
 

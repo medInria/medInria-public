@@ -273,6 +273,7 @@ void medTabbedViewContainers::tabBarDoubleClickedHandler(int index)
 
 void medTabbedViewContainers::disconnectTabFromSplitter(int index)
 {
+    Q_UNUSED(index);
     medViewContainerSplitter* splitter = dynamic_cast<medViewContainerSplitter*>(this->sender());
     if(!splitter)
         return;

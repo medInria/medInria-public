@@ -85,6 +85,7 @@ QString medDatabaseNonPersistentImporter::getPatientID(QString patientName, QStr
 **/
 medDataIndex medDatabaseNonPersistentImporter::populateDatabaseAndGenerateThumbnails ( medAbstractData* data, QString pathToStoreThumbnails )
 {
+    Q_UNUSED(pathToStoreThumbnails);
     QPointer<medDatabaseNonPersistentController> npdc =
             medDatabaseNonPersistentController::instance();
 

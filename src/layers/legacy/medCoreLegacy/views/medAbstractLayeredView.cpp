@@ -291,6 +291,7 @@ void medAbstractLayeredView::setDataList(QList<medDataIndex> dataList)
 
 void medAbstractLayeredView::updateDataListParameter(unsigned int layer)
 {
+    Q_UNUSED(layer);
     d->dataListParameter->setValues(this->dataList());
 }
 
@@ -454,5 +455,6 @@ QList<medAbstractParameterL*> medAbstractLayeredView::linkableParameters(unsigne
 
 void medAbstractLayeredView::resetCameraOnLayer(int layer)
 {
+    Q_UNUSED(layer);
     // base class does nothing for now.
 }

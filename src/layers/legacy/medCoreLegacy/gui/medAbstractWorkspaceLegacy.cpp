@@ -959,6 +959,7 @@ void medAbstractWorkspaceLegacy::addLayerGroup(medLayerParameterGroupL * group)
 
 void medAbstractWorkspaceLegacy::setViewGroups(QList<medViewParameterGroupL*> groups)
 {
+    Q_UNUSED(groups);
     for(medViewParameterGroupL* group : medParameterGroupManagerL::instance()->viewGroups(this->identifier()))
     {
         addViewGroup(group);

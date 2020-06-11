@@ -324,6 +324,7 @@ void medDatabaseView::onExportSelectedItemRequested(void)
 
 void medDatabaseView::onSelectionChanged(const QItemSelection& selected, const QItemSelection& deselected)
 {
+    Q_UNUSED(deselected);
     if (selected.count() == 0)
     {
         emit noPatientOrSeriesSelected();

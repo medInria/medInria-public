@@ -311,6 +311,7 @@ void vtkAxes2DWidget::PrintSelf(ostream& os, vtkIndent indent)
 //----------------------------------------------------------------------------------
 void vtkAxes2DWidgetCommand::Execute(vtkObject *caller, unsigned long event, void *callData)
 {
+    Q_UNUSED(callData);
     if (event == vtkImageView2D::CurrentPointChangedEvent)
     {
         if (!this->Widget)

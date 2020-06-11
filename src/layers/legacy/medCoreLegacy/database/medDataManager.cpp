@@ -453,6 +453,7 @@ void medDataManager::removeData(const medDataIndex& index)
 
 void medDataManager::removeFromNonPersistent(medDataIndex indexImported, QUuid uuid)
 {
+    Q_UNUSED(indexImported);
     Q_D(medDataManager);
     if(!d->makePersistentJobs.contains(uuid))
         return;

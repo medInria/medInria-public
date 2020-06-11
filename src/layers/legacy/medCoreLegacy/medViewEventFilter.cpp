@@ -57,6 +57,8 @@ QString medViewEventFilter::identifier(void) const
  *  The default implementations do nothing, returning false. */
 bool medViewEventFilter::mousePressEvent( medAbstractView * vscene, QGraphicsSceneMouseEvent *mouseEvent )
 {
+    Q_UNUSED(vscene);
+    Q_UNUSED(mouseEvent);
     return false;
 }
 
@@ -65,26 +67,36 @@ bool medViewEventFilter::mousePressEvent( medAbstractView * vscene, QGraphicsSce
  *  The default implementations do nothing, returning false. */
 bool medViewEventFilter::mousePressEvent( medAbstractView *view, QMouseEvent *mouseEvent )
 {
+    Q_UNUSED(view);
+    Q_UNUSED(mouseEvent);
     return false;
 }
 
 bool medViewEventFilter::mouseReleaseEvent( medAbstractView * vscene, QGraphicsSceneMouseEvent *mouseEvent )
 {
+    Q_UNUSED(vscene);
+    Q_UNUSED(mouseEvent);
     return false;
 }
 
 bool medViewEventFilter::mouseReleaseEvent( medAbstractView *view, QMouseEvent *mouseEvent )
 {
+    Q_UNUSED(view);
+    Q_UNUSED(mouseEvent);
     return false;
 }
 
 bool medViewEventFilter::mouseMoveEvent( medAbstractView * vscene, QGraphicsSceneMouseEvent *mouseEvent )
 {
+    Q_UNUSED(vscene);
+    Q_UNUSED(mouseEvent);
     return false;
 }
 
 bool medViewEventFilter::mouseMoveEvent( medAbstractView *view, QMouseEvent *mouseEvent )
 {
+    Q_UNUSED(view);
+    Q_UNUSED(mouseEvent);
     return false;
 }
 
