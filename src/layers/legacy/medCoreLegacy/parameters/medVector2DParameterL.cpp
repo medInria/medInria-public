@@ -25,7 +25,7 @@ medVector2DParameterL::~medVector2DParameterL()
 
 QWidget* medVector2DParameterL::getWidget()
 {
-    return 0;
+    return nullptr;
 }
 
 void medVector2DParameterL::updateInternWigets()

@@ -260,7 +260,7 @@ QImage medAbstractData::generateThumbnailInGuiThread(QSize size)
 
             // We need to wait for the window manager to finish animating before we can continue.
 #ifdef Q_OS_LINUX
-            QTest::qWaitForWindowExposed(viewWidget);
+            Q_UNUSED(QTest::qWaitForWindowExposed(viewWidget));
 #endif
         }
     }

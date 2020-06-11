@@ -636,17 +636,18 @@ void vtkMetaDataSet::ReadCSVData(const char* filename)
 //----------------------------------------------------------------------------
 void vtkMetaDataSet::Read (const char* filename)
 {
-  vtkErrorMacro("not implemented here");
-  throw vtkErrorCode::UserError;
+    Q_UNUSED(filename);
+    vtkErrorMacro("not implemented here");
+    throw vtkErrorCode::UserError;
 }
 
 //----------------------------------------------------------------------------
 void vtkMetaDataSet::Write (const char* filename)
 {
-  vtkErrorMacro("not implemented here");
-  throw vtkErrorCode::UserError;
+    Q_UNUSED(filename);
+    vtkErrorMacro("not implemented here");
+    throw vtkErrorCode::UserError;
 }
-
 
 void vtkMetaDataSet::LinkFilters()
 {

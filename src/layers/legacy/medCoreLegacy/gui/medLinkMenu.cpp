@@ -908,6 +908,7 @@ void medGroupWidget::setGroupColor()
 
 void medLeftArrow::paintEvent(QPaintEvent *pe)
 {
+    Q_UNUSED(pe);
     QPainter p(this);
 
     QStyleOptionFrame opt;

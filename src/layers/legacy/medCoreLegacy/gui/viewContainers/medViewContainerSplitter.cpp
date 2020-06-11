@@ -25,6 +25,7 @@
 
 medViewContainerSplitter::medViewContainerSplitter(QWidget *parent)
 {
+    Q_UNUSED(parent);
     this->setOrientation(Qt::Horizontal);
     this->setHandleWidth(2);
     this->setContentsMargins(0,0,0,0);

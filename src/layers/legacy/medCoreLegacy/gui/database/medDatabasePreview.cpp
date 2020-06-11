@@ -41,6 +41,7 @@ public:
 medDatabasePreviewStaticScene::medDatabasePreviewStaticScene(QObject *parent):
     d(new medDatabasePreviewStaticScenePrivate)
 {
+    Q_UNUSED(parent);
     d->baseWidth = med::defaultThumbnailSize.width();
     d->baseHeight = med::defaultThumbnailSize.height();
 
@@ -177,6 +178,7 @@ medDatabasePreviewDynamicScene::medDatabasePreviewDynamicScene(const QList<QPair
                                                                QObject * parent):
     d(new medDatabasePreviewDynamicScenePrivate)
 {
+    Q_UNUSED(parent);
     d->seriesDescriptionDataIndexPairList = seriesDescriptionDataIndexList;
     std::sort(d->seriesDescriptionDataIndexPairList.begin(), d->seriesDescriptionDataIndexPairList.end(), &stringMedDataIndexPairLessThan);
 }

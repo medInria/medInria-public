@@ -47,6 +47,7 @@ void medLogger::finalize()
 
 void medLogger::qtMessageHandler(QtMsgType type, const QMessageLogContext &context, const QString &message)
 {
+    Q_UNUSED(context);
     emit medLoggerPrivate::singleton->newQtMessage(type, QString(message));
 }
 

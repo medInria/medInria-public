@@ -15,6 +15,7 @@
 
 medAbstractProcessLegacy::medAbstractProcessLegacy(medAbstractProcessLegacy * parent)
 {
+    Q_UNUSED(parent);
 }
 
 medAbstractProcessLegacy::~medAbstractProcessLegacy()
