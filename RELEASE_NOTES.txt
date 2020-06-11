@@ -3,8 +3,16 @@ medInria v3.1.1:
 - The annotation cube can be hidden in 3D view
 - Solve some annotation text problems
 - DB: remove a bug in the creation of the series
-- Fix dicom import bug with special characters
+- Fix DICOM import bug with special characters
 - Solve SH data image, and 4D image bugs
+- PolygonROI segmentation labels enhanced
+- Tools button icon, allow opening data in fix views
+- Plugins from Asclepios in medInria repository
+- Fix Retina screen problems with segmentations
+- Registration - fix LCC Log Demons transformation crash
+- Registration - put back name in undo-redo tool
+- Improve 3D rendering behavior
+- Add a DICOM exporter
 
 medInria v3.1:
 - Switch ITK to version 5.0.0
