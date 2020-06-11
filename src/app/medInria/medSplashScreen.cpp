@@ -105,7 +105,7 @@ void medSplashScreen::finish(QWidget *mainWin)
     if (mainWin)
     {
 #if defined(Q_OS_LINUX)
-        QTest::qWaitForWindowExposed(mainWin);
+        Q_UNUSED(QTest::qWaitForWindowExposed(mainWin));
 #endif
     }
     close();
@@ -114,6 +114,8 @@ void medSplashScreen::finish(QWidget *mainWin)
 ////////////////////////////////////////////////////////////////////////////
 void medSplashScreen::paintEvent(QPaintEvent* pe)
 {
+    Q_UNUSED(pe);
+
     QRect aTextRect(rect());
     aTextRect.setRect(aTextRect.x() + 120,
                       aTextRect.y() + 5,
