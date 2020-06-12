@@ -39,6 +39,7 @@ public slots:
 
 protected:
     virtual void fillDictionaryFromMetaDataKey(itk::MetaDataDictionary &dictionary, bool &studyUIDExistance);
+    virtual void fillDictionaryWithModalityDependentData(itk::MetaDataDictionary& dictionary);
 
     template <class PixelType> bool writeDicom(const QString &path);
     template <class PixelType> void fillDictionaryWithSharedData(itk::MetaDataDictionary &dictionary, bool studyUIDExistance,

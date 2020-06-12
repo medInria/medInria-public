@@ -23,7 +23,7 @@ find_package(Qt5 REQUIRED COMPONENTS
              OpenGL
              Sql
              Widgets 
-	           Xml
+             Xml
              Test
              Quick
              )
@@ -68,7 +68,6 @@ list(APPEND external_projects
      websocketpp
      openssl
      eigen
-     gvirtualXRay
      qwt
      mmg
      tetgen

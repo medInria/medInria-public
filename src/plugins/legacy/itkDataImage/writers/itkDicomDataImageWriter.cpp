@@ -235,6 +235,14 @@ void itkDicomDataImageWriter::fillDictionaryFromMetaDataKey(itk::MetaDataDiction
             // Image type
             itk::EncapsulateMetaData<std::string>(dictionary, "0008|0008", data()->metadata(metaDataKey).toStdString());
         }
+        if (metaDataKey == medMetaDataKeys::PositionReferenceIndicator.key())
+        {
+            itk::EncapsulateMetaData<std::string>(dictionary, "0020|1040", data()->metadata(metaDataKey).toStdString());
+        }
+        if (metaDataKey == medMetaDataKeys::Manufacturer.key())
+        {
+            itk::EncapsulateMetaData<std::string>(dictionary, "0008|0070", data()->metadata(metaDataKey).toStdString());
+        }
         if (metaDataKey == medMetaDataKeys::PatientPosition.key())
         {
             // Patient Position
@@ -250,6 +258,21 @@ void itkDicomDataImageWriter::fillDictionaryFromMetaDataKey(itk::MetaDataDiction
             // Image type
             itk::EncapsulateMetaData<std::string>(dictionary, "0008|0008", data()->metadata(metaDataKey).toStdString());
         }
+    }
+}
+
+void itkDicomDataImageWriter::fillDictionaryWithModalityDependentData(itk::MetaDataDictionary& dictionary)
+{
+    QString modality = data()->metadata(medMetaDataKeys::Modality.key());
+    if (modality.contains("MR"))
+    {
+        itk::EncapsulateMetaData<std::string>(dictionary, "0018|0081", data()->metadata("EchoTime").toStdString());
+        itk::EncapsulateMetaData<std::string>(dictionary, "0018|1314", data()->metadata("FlipAngle").toStdString());
+        itk::EncapsulateMetaData<std::string>(dictionary, "0018|0080", data()->metadata("RepetitionTime").toStdString());
+    }
+    else if (modality.contains("CT"))
+    {
+        itk::EncapsulateMetaData<std::string>(dictionary, "0018|0060", data()->metadata("KVP").toStdString());
     }
 }
 

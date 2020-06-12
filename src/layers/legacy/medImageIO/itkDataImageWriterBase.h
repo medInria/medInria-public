@@ -46,6 +46,7 @@ protected:
     std::string convertMedKeyToItkKey(QString medKey);
 
     void encapsulateSharedMetaData(itk::MetaDataDictionary& dict);
+    std::string convertMedKeyToItkKey(QString medKey);
 
 private:
 
