@@ -110,11 +110,6 @@ void itkDicomDataImageWriter::fillDictionaryFromMetaDataKey(itk::MetaDataDiction
     //Get metaDataKey from data
     foreach (QString metaDataKey, data()->metaDataList())
     {
-        if(metaDataKey == QString("FlipAngle"))
-        {
-            //Flip angle
-            itk::EncapsulateMetaData<std::string>(dictionary, "0018|1314", data()->metadata(metaDataKey).toStdString());
-        }
         if (metaDataKey == QString("Modality"))
         {
             // SOP class UID
@@ -147,11 +142,6 @@ void itkDicomDataImageWriter::fillDictionaryFromMetaDataKey(itk::MetaDataDiction
             // Patient's Age
             itk::EncapsulateMetaData<std::string>(dictionary, "0010|0010", data()->metadata(metaDataKey).toStdString());
         }
-        if(metaDataKey == QString("EchoTime"))
-        {
-            // Echo time
-            itk::EncapsulateMetaData<std::string>(dictionary, "0018|0081",  data()->metadata(metaDataKey).toStdString());
-        }
         if(metaDataKey == QString("SeriesDescription"))
         {
             // Series Description
@@ -176,11 +166,6 @@ void itkDicomDataImageWriter::fillDictionaryFromMetaDataKey(itk::MetaDataDiction
         {
             //Protocol
             itk::EncapsulateMetaData<std::string>(dictionary, "0018|1030", data()->metadata(metaDataKey).toStdString());
-        }
-        if(metaDataKey == QString("RepetitionTime"))
-        {
-            //RepetitionTime
-            itk::EncapsulateMetaData<std::string>(dictionary, "0018|0080", data()->metadata(metaDataKey).toStdString());
         }
         if(metaDataKey == QString("Descriptions"))
         {
@@ -211,6 +196,10 @@ void itkDicomDataImageWriter::fillDictionaryFromMetaDataKey(itk::MetaDataDiction
             // Institution Name
             itk::EncapsulateMetaData<std::string>(dictionary, "0008|0080", data()->metadata(metaDataKey).toStdString());
         }
+        if (metaDataKey == medMetaDataKeys::AcquisitionNumber.key())
+        {
+            itk::EncapsulateMetaData<std::string>(dictionary, "0020|0012", data()->metadata(metaDataKey).toStdString());
+        }
         if(metaDataKey == QString("AcquisitionDate"))
         {
             // Acquisition Date
@@ -226,11 +215,44 @@ void itkDicomDataImageWriter::fillDictionaryFromMetaDataKey(itk::MetaDataDiction
             // Sequence Name
             itk::EncapsulateMetaData<std::string>(dictionary, "0018|0024", data()->metadata(metaDataKey).toStdString());
         }
-        if(metaDataKey == QString("Repetition"))
+        if (metaDataKey == medMetaDataKeys::PatientPosition.key())
         {
-            // Sequence Name
-            itk::EncapsulateMetaData<std::string>(dictionary, "0018|0080", data()->metadata(metaDataKey).toStdString());
+            // Patient Position
+            itk::EncapsulateMetaData<std::string>(dictionary, "0018|5100", data()->metadata(metaDataKey).toStdString());
         }
+        if (metaDataKey == medMetaDataKeys::PatientOrientation.key())
+        {
+            // Patient Orientation
+            itk::EncapsulateMetaData<std::string>(dictionary, "0020|0020", data()->metadata(metaDataKey).toStdString());
+        }
+        if (metaDataKey == medMetaDataKeys::ImageType.key())
+        {
+            // Image type
+            itk::EncapsulateMetaData<std::string>(dictionary, "0008|0008", data()->metadata(metaDataKey).toStdString());
+        }
+        if (metaDataKey == medMetaDataKeys::PositionReferenceIndicator.key())
+        {
+            itk::EncapsulateMetaData<std::string>(dictionary, "0020|1040", data()->metadata(metaDataKey).toStdString());
+        }
+        if (metaDataKey == medMetaDataKeys::Manufacturer.key())
+        {
+            itk::EncapsulateMetaData<std::string>(dictionary, "0008|0070", data()->metadata(metaDataKey).toStdString());
+        }
+    }
+}
+
+void itkDicomDataImageWriter::fillDictionaryWithModalityDependentData(itk::MetaDataDictionary& dictionary)
+{
+    QString modality = data()->metadata(medMetaDataKeys::Modality.key());
+    if (modality.contains("MR"))
+    {
+        itk::EncapsulateMetaData<std::string>(dictionary, "0018|0081", data()->metadata("EchoTime").toStdString());
+        itk::EncapsulateMetaData<std::string>(dictionary, "0018|1314", data()->metadata("FlipAngle").toStdString());
+        itk::EncapsulateMetaData<std::string>(dictionary, "0018|0080", data()->metadata("RepetitionTime").toStdString());
+    }
+    else if (modality.contains("CT"))
+    {
+        itk::EncapsulateMetaData<std::string>(dictionary, "0018|0060", data()->metadata("KVP").toStdString());
     }
 
 }
@@ -298,16 +320,22 @@ template <class PixelType> void itkDicomDataImageWriter::fillDictionaryWithShare
         }
 
         // To keep the new series in the same study as the original we need
-        // to keep the same study UID. But we need new series and frame of
-        // reference UID's.
+        // to keep the same study UID. But we need new series UID.
         gdcm::UIDGenerator suid;
         std::string seriesUID = suid.Generate();
-        gdcm::UIDGenerator fuid;
-        std::string frameOfReferenceUID = fuid.Generate();
 
-        // Set the UID's for the study  and frame of reference
+        // Set the UID's for the study
         itk::EncapsulateMetaData<std::string>(dictionary,"0020|000e", seriesUID);
-        itk::EncapsulateMetaData<std::string>(dictionary,"0020|0052", frameOfReferenceUID);
+
+        // Frame of Reference
+        std::string frameOfRef = data()->metadata(medMetaDataKeys::FrameOfReferenceUID.key()).toStdString();
+        if (frameOfRef.empty())
+        {
+            // create a new frame of reference UID
+            gdcm::UIDGenerator fuid;
+            frameOfRef = fuid.Generate();
+        }
+        itk::EncapsulateMetaData<std::string>(dictionary, "0020|0052", frameOfRef);
 }
 
 template <class PixelType> bool itkDicomDataImageWriter::fillDictionaryAndWriteDicomSlice(itk::MetaDataDictionary &dictionary, const QString &path,
@@ -428,6 +456,7 @@ template <class PixelType> bool itkDicomDataImageWriter::writeDicom(const QStrin
     int  numberOfSlices = 0;
 
     fillDictionaryFromMetaDataKey(dictionary, studyUIDExistance);
+    fillDictionaryWithModalityDependentData(dictionary);
     fillDictionaryWithSharedData<PixelType>(dictionary, studyUIDExistance, gdcmIO, numberOfSlices);
 
     for( int slice = 0; slice < numberOfSlices; slice++ )

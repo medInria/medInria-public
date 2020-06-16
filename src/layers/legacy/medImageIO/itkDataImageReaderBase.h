@@ -46,6 +46,9 @@ public slots:
 protected:
 
     itk::ImageIOBase::Pointer io;
+    QHash<QString, QString> itkKeyToMedKey;
+
+    QString convertItkKeyToMedKey(std::string& keyToConvert);
 
 private:
     template <unsigned DIM,typename T>
