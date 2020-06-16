@@ -18,11 +18,8 @@
 medDataReaderWriter::Reader medDataReaderWriter::reader(const QString& path) {
     QList<QString> readers = medAbstractDataFactory::instance()->readers();
 
-    if (readers.size()==0) {
-#if 0
-        emit showError(tr("No reader plugin"),5000);
-        emit failure(this);
-#endif
+    if (readers.size()==0)
+    {
         return Reader();
     }
 

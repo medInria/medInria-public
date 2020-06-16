@@ -331,7 +331,7 @@ void DCMTKImageIO::ReadImageInformation()
 
 }
 
-bool DCMTKImageIO::CanWriteFile( const char* filename)
+bool DCMTKImageIO::CanWriteFile( const char* /*filename*/)
 {
     return false;
 }
@@ -340,7 +340,7 @@ void DCMTKImageIO::WriteImageInformation()
 {
 }
 
-void DCMTKImageIO::Write(const void* buffer)
+void DCMTKImageIO::Write(const void* /*buffer*/)
 {
 }
 
@@ -1062,12 +1062,9 @@ std::string DCMTKImageIO::GetRepetitionTime() const
 
 void
 DCMTKImageIO
-::SwapBytesIfNecessary( void* buffer, unsigned long numberOfPixels )
+::SwapBytesIfNecessary( void* /*buffer*/, unsigned long /*numberOfPixels*/)
 {
 }
-
-
-
 
 void DCMTKImageIO::ReadHeader(const std::string& name, const int& fileIndex, const int& fileCount )
 {

@@ -1111,9 +1111,9 @@ vtkImage3DDisplay * vtkImageView3D::GetImage3DDisplayForLayer( int layer ) const
   else return nullptr;
 }
 
-void vtkImageView3D::ApplyColorTransferFunction(vtkScalarsToColors * colors, int layer)
+void vtkImageView3D::ApplyColorTransferFunction(vtkScalarsToColors * /*colors*/, int /*layer*/)
 {
-  return;
+    return;
 }
 
 vtkColorTransferFunction * vtkImageView3D::GetColorTransferFunction(int layer) const

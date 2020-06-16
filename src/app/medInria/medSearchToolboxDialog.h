@@ -23,7 +23,7 @@ class medSearchToolboxDialog : public QDialog
     Q_OBJECT
 
 public:
-    medSearchToolboxDialog(QWidget *parent, QHash<QString, QStringList> toolboxDataHash);
+    medSearchToolboxDialog(QWidget *parent, QHash<QString, QStringList> toolboxDataHashParent);
     QStringList getFindText();
 
 protected slots:

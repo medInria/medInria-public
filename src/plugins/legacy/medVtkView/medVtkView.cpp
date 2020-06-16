@@ -473,7 +473,7 @@ QImage medVtkView::buildThumbnail(const QSize &size)
     // Only necessary if rendering to an actual screen window.
     if(d->renWin->GetOffScreenRendering() == 0)
     {
-        QTest::qWaitForWindowExposed(d->viewWidget);
+        Q_UNUSED(QTest::qWaitForWindowExposed(d->viewWidget));
     }
 #endif
 

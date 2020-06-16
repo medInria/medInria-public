@@ -383,7 +383,7 @@ protected:
     vtkImageView2D();
     ~vtkImageView2D();
 
-    virtual void ApplyColorTransferFunction(vtkScalarsToColors * colors, int layer);
+    void ApplyColorTransferFunction(vtkScalarsToColors * colors, int layer) override;
 
     virtual void UpdateSlicePlane();
     virtual void UpdateCenter();
