@@ -225,8 +225,7 @@ protected:
     virtual void SetupVolumeRendering();
     virtual void SetupWidgets();
     virtual void UpdateVolumeFunctions(int layer);
-    virtual void ApplyColorTransferFunction(vtkScalarsToColors * colors,
-                                            int layer);
+    void ApplyColorTransferFunction(vtkScalarsToColors *, int) override;
     virtual void InternalUpdate();
 
     vtkImage3DDisplay * GetImage3DDisplayForLayer(int layer) const;
