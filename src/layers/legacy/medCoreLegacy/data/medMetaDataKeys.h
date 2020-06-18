@@ -129,6 +129,8 @@ namespace medMetaDataKeys
     extern MEDCORELEGACY_EXPORT const Key Orientation;
     extern MEDCORELEGACY_EXPORT const Key Origin;
     extern MEDCORELEGACY_EXPORT const Key SliceThickness;
+    extern MEDCORELEGACY_EXPORT const Key PatientOrientation;
+    extern MEDCORELEGACY_EXPORT const Key PatientPosition;
     extern MEDCORELEGACY_EXPORT const Key ImportationDate;
     extern MEDCORELEGACY_EXPORT const Key AcquisitionDate;
     extern MEDCORELEGACY_EXPORT const Key AcquisitionTime;
@@ -148,6 +150,7 @@ namespace medMetaDataKeys
     extern MEDCORELEGACY_EXPORT const Key medDataType;
     extern MEDCORELEGACY_EXPORT const Key PreferredDataReader;
     extern MEDCORELEGACY_EXPORT const Key ImageID;
+    extern MEDCORELEGACY_EXPORT const Key ImageType;
     extern MEDCORELEGACY_EXPORT const Key ThumbnailPath;
     extern MEDCORELEGACY_EXPORT const Key AcquisitionNumber;
 
