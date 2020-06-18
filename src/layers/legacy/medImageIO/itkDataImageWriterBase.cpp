@@ -18,6 +18,7 @@
 #include <dtkLog/dtkLog.h>
 
 #include <medAbstractImageData.h>
+#include <medMetaDataKeys.h>
 
 #include <itkImage.h>
 #include <itkImageFileWriter.h>

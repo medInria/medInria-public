@@ -15,7 +15,7 @@
 
 #include <medAbstractData.h>
 #include <medAbstractDataFactory.h>
-
+#include <medMetaDataKeys.h>
 
 #include <itkExtractImageFilter.h>
 #include <itkImage.h>
