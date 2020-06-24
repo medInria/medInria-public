@@ -20,6 +20,7 @@
 #include <QObject>
 #include <QEvent>
 #include <QGraphicsSceneMouseEvent>
+#include <QGraphicsSceneWheelEvent>
 
 // /////////////////////////////////////////////////////////////////
 // View
@@ -100,6 +101,20 @@ bool medViewEventFilter::mouseMoveEvent( medAbstractView *view, QMouseEvent *mou
     return false;
 }
 
+bool medViewEventFilter::mouseWheelEvent( medAbstractView *view, QWheelEvent *wheelEvent )
+{
+    Q_UNUSED(view);
+    Q_UNUSED(wheelEvent);
+    return false;
+}
+
+bool medViewEventFilter::mouseWheelEvent( medAbstractView *view, QGraphicsSceneWheelEvent *wheelEvent )
+{
+    Q_UNUSED(view);
+    Q_UNUSED(wheelEvent);
+    return false;
+}
+
 //! Override QObject
 bool medViewEventFilter::eventFilter( QObject *obj, QEvent *event )
 {
@@ -145,6 +160,11 @@ bool medViewEventFilter::eventFilter( QObject *obj, QEvent *event )
         {
             QMouseEvent* mouseEvent = static_cast<QMouseEvent *>(event);
             return this->mouseReleaseEvent( view, mouseEvent );
+        }
+    case ( QEvent::Wheel ) :
+        {
+            QWheelEvent* wheelEvent = static_cast<QWheelEvent *>(event);
+            return this->mouseWheelEvent( view, wheelEvent );
         }
     default:
         {
