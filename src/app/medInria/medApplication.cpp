@@ -50,11 +50,10 @@ medApplication::medApplication(int & argc, char**argv) :
 {
     d->mainWindow = nullptr;
 
-    this->setApplicationName("medInria");
+    this->setApplicationName(PROJECT_NAME); /*Beware, change database path*/
     this->setApplicationVersion(MEDINRIA_VERSION);
-    this->setOrganizationName("inria");
+    this->setOrganizationName("INRIA_IHU-LIRY"); /*Beware, change database path*/
     this->setOrganizationDomain("fr");
-    this->setWindowIcon(QIcon(":/medInria.ico"));
 
     medLogger::initialize();
 
@@ -62,8 +61,56 @@ medApplication::medApplication(int & argc, char**argv) :
     qInfo() << "Version: "    << MEDINRIA_VERSION;
     qInfo() << "Build Date: " << MEDINRIA_BUILD_DATE;
 
-    QApplication::setStyle(QStyleFactory::create("fusion"));
-    medStyleSheetParser parser(dtkReadFile(":/medInria.qss"));
+    // Expiration Date
+    QDate expiryDate = QDate::fromString(QString(MEDINRIA_BUILD_DATE), "dd_MM_yyyy").addYears(1);
+    if ( ! expiryDate.isValid() || QDate::currentDate() > expiryDate)
+    {
+        QString expiredInfo = "This copy of ";
+        expiredInfo += (char*)(PROJECT_NAME);
+        expiredInfo += " has expired, please contact ";
+        expiredInfo += (char*)(PROJECT_CONTACT);
+        expiredInfo += " for more information.";
+        QMessageBox msg;
+        msg.setText(expiredInfo);
+        msg.exec();
+        ::exit(1);
+    }
+
+    // Themes
+    QVariant themeChosen = medSettingsManager::instance()->value("startup","theme");
+    int themeIndex = themeChosen.toInt();
+
+    QString qssFile;
+    switch (themeIndex)
+    {
+    case 0:
+    default:
+        // Dark Grey
+        qssFile = ":/music_darkGrey.qss";
+        this->setWindowIcon(QIcon(":music_logo_small_light.png"));
+        break;
+    case 1:
+        // Dark Blue
+        qssFile = ":/music_dark.qss";
+        this->setWindowIcon(QIcon(":music_logo_small_dark.png"));
+        break;
+    case 2:
+        // medInria
+        qssFile = ":/medInria.qss";
+        this->setWindowIcon(QIcon(":music_logo_small_dark.png"));
+        break;
+    case 3:
+        // Light Grey
+        qssFile = ":/music_lightGrey.qss";
+        this->setWindowIcon(QIcon(":music_logo_small_light.png"));
+        break;
+    case 4:
+        // Light
+        qssFile = ":/music_light.qss";
+        this->setWindowIcon(QIcon(":music_logo_small_light.png"));
+        break;
+    }
+    medStyleSheetParser parser(dtkReadFile(qssFile));
     this->setStyleSheet(parser.result());
 
     this->initialize();

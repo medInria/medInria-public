@@ -33,7 +33,7 @@
         <file>icons/error_go.png</file>
         <file>icons/exclamation.png</file>
         <file>icons/eye.png</file>
-        <file>icons/Gaussian_Filter.png</file>
+	    <file>icons/Gaussian_Filter.png</file>
         <file>icons/help.png</file>
         <file>icons/help.svg</file>
         <file>icons/information.png</file>
@@ -165,5 +165,50 @@
         <file>icons/saveScene.png</file>
         <file>icons/saveScene_grey.png</file>
         <file>icons/scene.png</file>
+
+        <file>music_logo_light.png</file>
+        <file>music_logo_small_light.png</file>
+        <file>music_logo_dark.png</file>
+        <file>music_logo_small_dark.png</file>
+        <file>icons/music-check.svg</file>
+        <file>icons/music-cross.svg</file>
+        <file>icons/workspace_Pipelines.png</file>
+        <file>icons/workspace_Simulation.png</file>
+        <file>music_dark.qss</file>
+        <file>music_light.qss</file>
+        <file>music_lightGrey.qss</file>
+        <file>pixmaps/arrow-bot_blue.png</file>
+        <file>pixmaps/arrow-left_blue.png</file>
+        <file>pixmaps/arrow-right_blue.png</file>
+        <file>pixmaps/arrow-top_blue.png</file>
+        <file>pixmaps/drop-down_blue.png</file>
+        <file>pixmaps/checkbox_blue.png</file>
+        <file>pixmaps/plus-button_blue.png</file>
+        <file>icons/adjust_size_blue.png</file>
+        <file>icons/backward_blue.png</file>
+        <file>icons/broken_link_blue.svg</file>
+        <file>icons/camera_blue.png</file>
+        <file>icons/forward_blue.png</file>
+        <file>icons/fullscreen_blue.svg</file>
+        <file>icons/fullscreenExpand_blue.png</file>
+        <file>icons/fullscreenReduce_blue.png</file>
+        <file>icons/link_blue.svg</file>
+        <file>icons/Gaussian_Filter_blue.png</file>
+        <file>icons/maximize_blue.svg</file>
+        <file>icons/movie_blue.png</file>
+        <file>icons/pause_blue.png</file>
+        <file>icons/play_blue.png</file>
+        <file>icons/quit_blue.png</file>
+        <file>icons/settings_blue.png</file>
+        <file>icons/stop_blue.png</file>
+        <file>icons/un_maximize_blue.svg</file>
+        <file>pixmaps/checkbox-checked_blue.png</file>
+        <file>pixmaps/checkbox-partial_blue.png</file>
+        <file>pixmaps/radio-checked_blue.png</file>
+        <file>pixmaps/radio-partial_blue.png</file>
+        <file>icons/movie_grey_blue.png</file>
+        <file>icons/adjust_size_grey_blue.png</file>
+        <file>pixmaps/radio_blue.png</file>
+        <file>music_darkGrey.qss</file>
     </qresource>
 </RCC>

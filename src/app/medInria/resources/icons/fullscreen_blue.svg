@@ -1,0 +1,77 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<!-- Created with Inkscape (http://www.inkscape.org/) -->
+<svg xmlns:dc="http://purl.org/dc/elements/1.1/" xmlns:cc="http://creativecommons.org/ns#" xmlns:rdf="http://www.w3.org/1999/02/22-rdf-syntax-ns#" xmlns:svg="http://www.w3.org/2000/svg" xmlns="http://www.w3.org/2000/svg" xmlns:sodipodi="http://sodipodi.sourceforge.net/DTD/sodipodi-0.dtd" xmlns:inkscape="http://www.inkscape.org/namespaces/inkscape" width="34.133335" height="34.133335" id="svg3951" version="1.1" inkscape:version="0.92.1 r15371" inkscape:export-filename="/user/bbleuze/home/code/medinria/app/medInria/icons/fullscreenReduce.png" inkscape:export-xdpi="90" inkscape:export-ydpi="90" sodipodi:docname="fullscreen.svg">
+  <defs id="defs3953">
+    <inkscape:path-effect effect="envelope" id="path-effect8458" is_visible="true" yy="true" xx="true" bendpath1="M 1.8450132,1.8450126 H 30.154987" bendpath2="M 30.154987,1.8450126 V 30.154987" bendpath3="M 1.8450132,30.154987 H 30.154987" bendpath4="M 1.8450132,1.8450126 V 30.154987"/>
+    <marker inkscape:stockid="EmptyTriangleInM" orient="auto" refY="0" refX="0" id="EmptyTriangleInM" style="overflow:visible">
+      <path id="path4887" d="M -0.54186667,0 3.1488,-2.1333333 v 4.2666666 z" style="fill:#ffffff;fill-rule:evenodd;stroke:#000000;stroke-width:0.42666668pt;marker-start:none" inkscape:connector-curvature="0"/>
+    </marker>
+    <marker inkscape:stockid="EmptyTriangleInL" orient="auto" refY="0" refX="0" id="EmptyTriangleInL" style="overflow:visible">
+      <path id="path4884" d="M 0.19626667,0 7.5776,-4.2666667 v 8.5333334 z" style="fill:#ffffff;fill-rule:evenodd;stroke:#000000;stroke-width:0.85333335pt;marker-start:none" inkscape:connector-curvature="0"/>
+    </marker>
+    <marker inkscape:stockid="Arrow1Send" orient="auto" refY="0" refX="0" id="Arrow1Send" style="overflow:visible">
+      <path id="path4747" d="M -1.28,0 -2.3466667,1.0666667 1.3866667,0 -2.3466667,-1.0666667 Z" style="fill-rule:evenodd;stroke:#000000;stroke-width:0.21333334pt;marker-start:none" inkscape:connector-curvature="0"/>
+    </marker>
+    <marker inkscape:stockid="TriangleOutL" orient="auto" refY="0" refX="0" id="TriangleOutL" style="overflow:visible">
+      <path id="path4875" d="M 4.9237333,0 -2.4576,4.2666667 v -8.5333334 z" style="fill-rule:evenodd;stroke:#000000;stroke-width:0.85333335pt;marker-start:none" inkscape:connector-curvature="0"/>
+    </marker>
+    <marker style="overflow:visible" inkscape:stockid="InfiniteLineEnd" id="InfiniteLineEnd" refX="0" refY="0" orient="auto">
+      <g id="g4968">
+        <circle id="circle4970" r="0.85333335" cy="0" cx="3.2" style="stroke-width:1.06666672"/>
+        <circle id="circle4972" r="0.85333335" cy="0" cx="6.9333334" style="stroke-width:1.06666672"/>
+        <circle id="circle4974" r="0.85333335" cy="0" cx="10.666667" style="stroke-width:1.06666672"/>
+      </g>
+    </marker>
+    <marker inkscape:stockid="TriangleInL" orient="auto" refY="0" refX="0" id="TriangleInL" style="overflow:visible">
+      <path id="path4866" d="M -4.9237333,0 2.4576,-4.2666667 v 8.5333334 z" style="fill-rule:evenodd;stroke:#000000;stroke-width:0.85333335pt;marker-start:none" inkscape:connector-curvature="0"/>
+    </marker>
+    <marker inkscape:stockid="Arrow2Lstart" orient="auto" refY="0" refX="0" id="Arrow2Lstart" style="overflow:visible">
+      <path id="path4750" style="font-size:12px;fill-rule:evenodd;stroke-width:0.73333335;stroke-linejoin:round" d="M 11.403143,4.732916 -1.416553,0.01878889 11.403144,-4.6953372 c -2.0480517,2.7832182 -2.0362508,6.5911436 -10e-7,9.4282532 z" inkscape:connector-curvature="0"/>
+    </marker>
+    <filter id="filter7392" inkscape:label="Glow" inkscape:menu="Shadows and Glows" inkscape:menu-tooltip="Glow of object's own color at the edges" style="color-interpolation-filters:sRGB">
+      <feGaussianBlur id="feGaussianBlur7394" stdDeviation="5" result="result91"/>
+      <feComposite id="feComposite7396" in2="result91" in="SourceGraphic" operator="over"/>
+    </filter>
+    <filter id="filter7398" inkscape:label="Glow" inkscape:menu="Shadows and Glows" inkscape:menu-tooltip="Glow of object's own color at the edges" style="color-interpolation-filters:sRGB">
+      <feGaussianBlur id="feGaussianBlur7400" stdDeviation="5" result="result91"/>
+      <feComposite id="feComposite7402" in2="result91" in="SourceGraphic" operator="over"/>
+    </filter>
+    <filter id="filter7404" inkscape:label="Glow" inkscape:menu="Shadows and Glows" inkscape:menu-tooltip="Glow of object's own color at the edges" style="color-interpolation-filters:sRGB">
+      <feGaussianBlur id="feGaussianBlur7406" stdDeviation="5" result="result91"/>
+      <feComposite id="feComposite7408" in2="result91" in="SourceGraphic" operator="over"/>
+    </filter>
+    <filter id="filter7410" inkscape:label="Glow" inkscape:menu="Shadows and Glows" inkscape:menu-tooltip="Glow of object's own color at the edges" style="color-interpolation-filters:sRGB">
+      <feGaussianBlur id="feGaussianBlur7412" stdDeviation="5" result="result91"/>
+      <feComposite id="feComposite7414" in2="result91" in="SourceGraphic" operator="over"/>
+    </filter>
+    <filter id="filter7428" inkscape:label="Glow" inkscape:menu="Shadows and Glows" inkscape:menu-tooltip="Glow of object's own color at the edges" style="color-interpolation-filters:sRGB">
+      <feGaussianBlur id="feGaussianBlur7430" stdDeviation="1" result="result91"/>
+      <feComposite id="feComposite7432" in2="result91" in="SourceGraphic" operator="over"/>
+    </filter>
+    <filter id="filter8444" inkscape:label="Drop shadow" width="1.5" height="1.5" x="-0.25" y="-0.25">
+      <feGaussianBlur id="feGaussianBlur8446" in="SourceAlpha" stdDeviation="1" result="blur"/>
+      <feColorMatrix id="feColorMatrix8448" result="bluralpha" type="matrix" values="-1 0 0 0 1 0 -1 0 0 1 0 0 -1 0 1 0 0 0 0.5 0 "/>
+      <feOffset id="feOffset8450" in="bluralpha" dx="0.5" dy="0.5" result="offsetBlur"/>
+      <feMerge id="feMerge8452">
+        <feMergeNode id="feMergeNode8454" in="offsetBlur"/>
+        <feMergeNode id="feMergeNode8456" in="SourceGraphic"/>
+      </feMerge>
+    </filter>
+  </defs>
+  <sodipodi:namedview id="base" pagecolor="#ffffff" bordercolor="#666666" borderopacity="1.0" inkscape:pageopacity="0.0" inkscape:pageshadow="2" inkscape:zoom="5.5989012" inkscape:cx="-15.862719" inkscape:cy="31.875103" inkscape:current-layer="layer1" showgrid="true" inkscape:grid-bbox="true" inkscape:document-units="px" inkscape:window-width="2560" inkscape:window-height="1412" inkscape:window-x="0" inkscape:window-y="0" inkscape:window-maximized="1"/>
+  <metadata id="metadata3956">
+    <rdf:RDF>
+      <cc:Work rdf:about="">
+        <dc:format>image/svg+xml</dc:format>
+        <dc:type rdf:resource="http://purl.org/dc/dcmitype/StillImage"/>
+        <dc:title/>
+      </cc:Work>
+    </rdf:RDF>
+  </metadata>
+  <g id="layer1" inkscape:label="Layer 1" inkscape:groupmode="layer">
+    <path transform="matrix(1.0666667,0,0,1.0666667,57.387925,-50.382827)" id="path8464" style="fill:#324156;fill-opacity:1;filter:url(#filter8444)" d="m -35.087442,17.95485 c -2.167918,-2.00013 -2.689328,-2.689327 -2.689328,-2.689327 l -2.037945,1.844315 -2.037945,1.844315 V 12.799167 6.644179 h 6.154988 6.154986 l -1.825569,2.017232 -1.825569,2.017232 c 0,0 0.687753,0.277792 2.670907,2.613128 1.983154,2.335335 -2.396607,6.663209 -4.564525,4.663079 z" inkscape:connector-curvature="0" sodipodi:nodetypes="zccccccccczz"/>
+    <path transform="matrix(1.0666667,0,0,1.0666667,57.387925,-50.382827)" id="path8470" style="fill:#324156;fill-opacity:1;filter:url(#filter8444)" d="m -20.307904,23.643482 c 2.167918,2.00013 2.689328,2.689327 2.689328,2.689327 l 2.037945,-1.844315 2.037945,-1.844315 v 6.154987 6.154987 h -6.154988 -6.154986 l 1.825569,-2.017232 1.825569,-2.017231 c 0,0 -0.687753,-0.277793 -2.670907,-2.613128 -1.983154,-2.335336 2.396607,-6.66321 4.564525,-4.66308 z" inkscape:connector-curvature="0" sodipodi:nodetypes="zccccccccczz"/>
+    <path transform="matrix(1.0666667,0,0,1.0666667,0.02381438,0)" id="path7440" style="fill:#324156;fill-opacity:1;filter:url(#filter8444)" d="m 5.3674429,1.0182613 c 2.167918,2.0001295 2.689328,2.6893265 2.689328,2.6893265 L 10.094716,1.8632733 12.132661,0.01895829 V 6.1739447 12.328932 H 5.9776729 -0.17731297 L 1.648256,10.3117 3.4738249,8.2944677 c 0,0 -0.687753,-0.277792 -2.67090687,-2.613128 C -1.180236,3.3460048 3.1995249,-0.98186871 5.3674429,1.0182613 Z" inkscape:connector-curvature="0" sodipodi:nodetypes="zccccccccczz"/>
+    <path transform="matrix(1.0666667,0,0,1.0666667,0.02381438,0)" id="path8490" style="fill:#324156;fill-opacity:1;filter:url(#filter8444)" d="M 26.587906,30.981739 C 24.419988,28.98161 23.898578,28.292413 23.898578,28.292413 l -2.037946,1.844314 -2.037945,1.844315 v -6.154986 -6.154987 h 6.154989 6.154985 l -1.825569,2.017232 -1.825568,2.017232 c 0,0 0.687753,0.277792 2.670906,2.613128 1.983154,2.335335 -2.396606,6.663208 -4.564524,4.663078 z" inkscape:connector-curvature="0" sodipodi:nodetypes="zccccccccczz"/>
+  </g>
+</svg>

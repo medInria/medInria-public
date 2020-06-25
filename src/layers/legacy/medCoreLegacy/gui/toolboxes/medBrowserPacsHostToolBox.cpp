@@ -66,7 +66,7 @@ void medBrowserPacsHostToolBox::readSettings(void)
     settings.endGroup();
 
     if (title.isEmpty())
-        d->title->setText("MEDINRIA");
+        d->title->setText("MUSIC");
     else
         d->title->setText(title);
     if (port.isEmpty())

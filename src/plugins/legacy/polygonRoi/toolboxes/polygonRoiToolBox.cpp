@@ -101,7 +101,7 @@ polygonRoiToolBox::polygonRoiToolBox(QWidget *parent ) :
     saveButtonsLayout->addWidget(saveBinaryMaskButton);
 
     saveContourButton = new QPushButton("Contour(s)");
-    saveContourButton->setToolTip("Export these contours as an .ctrb file loadable only in medInria.");
+    saveContourButton->setToolTip("Export these contours as an .ctrb file loadable only in this application.");
     saveContourButton->setMinimumSize(150, 20);
     saveContourButton->setMaximumSize(150, 20);
     saveContourButton->setObjectName("saveContoursButton");

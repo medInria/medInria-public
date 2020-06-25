@@ -34,7 +34,7 @@ endif()
 
 set(CPACK_PACKAGE_FILE_NAME "${CPACK_PACKAGE_NAME}-${CPACK_PACKAGE_VERSION}-${MSVC_ARCH}")
 
-set(ICON_PATH "${PROJECT_SOURCE_DIR}/src/app/medInria/resources/medInria.ico")
+set(ICON_PATH "${PROJECT_SOURCE_DIR}/src/app/medInria/resources/music_logo_small.ico")
 
 # The icon to install the application.
 set(CPACK_NSIS_MUI_ICON ${ICON_PATH})
@@ -43,22 +43,22 @@ set(CPACK_NSIS_MUI_ICON ${ICON_PATH})
 set(CPACK_NSIS_MUI_UNIICON ${ICON_PATH})
 
 # Add a desktop shortcut
-set(CPACK_CREATE_DESKTOP_LINKS "medInria")
+set(CPACK_CREATE_DESKTOP_LINKS "MUSIC")
 
 # The icon in the Add/Remove control panel
-set(CPACK_NSIS_INSTALLED_ICON_NAME bin\\\\medInria.exe)
+set(CPACK_NSIS_INSTALLED_ICON_NAME bin\\\\MUSIC.exe)
 
 # Add medinria to the PATH
 set(CPACK_NSIS_MODIFY_PATH "ON")
 
 # Add shortcut in the Startup menu
-set(CPACK_PACKAGE_EXECUTABLES "medInria" "medInria")
+set(CPACK_PACKAGE_EXECUTABLES "MUSIC" "MUSIC")
 
 # Add a link to the application website in the Startup menu.
-set(CPACK_NSIS_MENU_LINKS "http://med.inria.fr/" "Homepage for medInria") 
+set(CPACK_NSIS_MENU_LINKS "https://www.ihu-liryc.fr/fr/music/" "Homepage for MUSIC") 
 
 # Run medInria after installation
-set(CPACK_NSIS_MUI_FINISHPAGE_RUN "medInria.exe")
+set(CPACK_NSIS_MUI_FINISHPAGE_RUN "MUSIC.exe")
 
 # Delete the Startup menu link after uninstallation
 set(CPACK_NSIS_DELETE_ICONS_EXTRA "
@@ -97,7 +97,7 @@ endif()
 
 
 
-set(APP "\${CMAKE_INSTALL_PREFIX}/bin/medInria.exe")
+set(APP "\${CMAKE_INSTALL_PREFIX}/bin/MUSIC.exe")
 set(QT_BINARY_DIR "${Qt5_DIR}/../../../bin")
 set(QT_PLUGINS_DIR "${Qt5_DIR}/../../../plugins")
 set(MEDINRIA_FILES "${medInria_DIR}/Release/bin")
