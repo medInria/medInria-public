@@ -76,10 +76,13 @@ QColor medSliderL::getTickColor()
     switch (themeIndex)
     {
     case 0:
+    case 1:
+    case 2:
     default:
         return QColor("cyan"); // Dark Theme
         break;
-    case 1:
+    case 3:
+    case 4:
         return QColor("blue"); // Light Theme
         break;
     }

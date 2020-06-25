@@ -199,7 +199,7 @@ medHomepageArea::medHomepageArea ( QWidget * parent ) : QWidget ( parent ), d ( 
     aboutAuthorTextBrowser->setFocusPolicy ( Qt::NoFocus );
 
     QTextEdit * aboutLicenseTextEdit = new QTextEdit(this);
-    QFile license ( ":LICENSE.txt" );
+    QFile license ( ":LICENSE_MUSIC.txt" );
     license.open ( QIODevice::ReadOnly | QIODevice::Text );
     QTextStream licenseContent(&license);
     licenseContent.setCodec("UTF-8");
