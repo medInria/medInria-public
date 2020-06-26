@@ -258,7 +258,8 @@ medMainWindow::medMainWindow ( QWidget *parent ) : QMainWindow ( parent ), d ( n
 
 
     this->setCentralWidget ( d->stack );
-    this->setWindowTitle("medInria");
+    this->setWindowTitle(qApp->applicationName());
+
     //  Connect the messageController with the status for notification messages management
     connect(medMessageController::instance(), SIGNAL(addMessage(medMessage*)), d->statusBar, SLOT(addMessage(medMessage*)));
     connect(medMessageController::instance(), SIGNAL(removeMessage(medMessage*)), d->statusBar, SLOT(removeMessage(medMessage*)));
@@ -310,7 +311,7 @@ void medMainWindow::saveSettings()
 }
 
 /**
- * If one tries to launch a new instance of medInria, the QtSingleApplication bypass it and receive
+ * If one tries to launch a new instance of the application, QtSingleApplication bypass it and receive
  * the command line argument used to launch it.
  * See QtSingleApplication::messageReceived(const QString &message).
  * This method processes a message received by the QtSingleApplication from a new instance.

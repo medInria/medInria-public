@@ -37,7 +37,7 @@ class medAbstractImageViewPrivate;
 
 /**
  * @class medAbstractImageView
- * @brief Base class for image view types in medInria
+ * @brief Base class for image view types
  * medAbstractImageView specializes a medAbstractLayeredView.
  **/
 class MEDCORELEGACY_EXPORT medAbstractImageView: public medAbstractLayeredView

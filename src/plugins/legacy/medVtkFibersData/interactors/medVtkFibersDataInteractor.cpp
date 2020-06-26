@@ -343,7 +343,7 @@ medVtkFibersDataInteractor::medVtkFibersDataInteractor(medAbstractView *parent):
     d->bundleOperationGroupParameter->addParameter(d->nullParameter);
 
     d->tagParameter = new medTriggerParameterL("tagFiberParameter", this);
-    d->tagParameter->setToolTip(tr("Tag the currently shown bundle to let medInria memorize it and another, new bundling box, will appear.\nThis new box will also isolate fibers but will also consider the previously \"tagged\" fibers."));
+    d->tagParameter->setToolTip(tr("Tag the currently shown bundle to let the application memorize it and another, new bundling box, will appear.\nThis new box will also isolate fibers but will also consider the previously \"tagged\" fibers."));
     d->tagParameter->setButtonText("Tag");
 
     d->addParameter = new medBoolParameterL("addFiberParameter", this);
