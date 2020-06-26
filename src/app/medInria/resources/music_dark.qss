@@ -701,7 +701,6 @@ QSlider
 
 QSlider::groove:horizontal
 {
-
     border-radius: $SLIDER_RADIUS;
     background: $SLIDER_HORIZONTAL_BACKGROUND;
     height: $SLIDER_SIZE;
@@ -716,7 +715,6 @@ QSlider::handle:horizontal
 
 QSlider::groove:vertical
 {
-
     border-radius: $SLIDER_RADIUS;
     background: $SLIDER_VERTICAL_BACKGROUND;
     width: $SLIDER_SIZE;
@@ -728,7 +726,6 @@ QSlider::handle:vertical
     height: $SLIDER_SIZE;
     border-radius: $SLIDER_RADIUS;
 }
-
 
 QSlider::groove:horizontal:disabled
 {
@@ -742,7 +739,6 @@ QSlider::handle:horizontal:disabled
 
 QSlider::groove:vertical:disabled
 {
-
     background: $SLIDER_DISABLED_VERTICAL_BACKGROUND;
 }
 
@@ -750,7 +746,6 @@ QSlider::handle:vertical:disabled
 {
     background: $SLIDER_DISABLED_COLOR;
 }
-
 
 /*******************************************************************************
      QPushButton QToolButton
@@ -794,14 +789,12 @@ QPushButton::menu-indicator:flat
     image: none;
 }
 
-
 QPushButton:flat
 {
     border: none;
     background-color: none;
     height: $LAYOUT_BUTTON_MIN_HEIGHT;
 }
-
 
 QPushButton:flat:hover
 {
@@ -832,7 +825,6 @@ QToolButton#quitButton:hover
     background-color: $HOME_PAGE_BUTTON_HOVER_BACKGROUND;
 }
 
-
 /*******************************************************************************
      QSplitter
  *******************************************************************************/
@@ -845,7 +837,6 @@ QSplitter::handle:vertical
 {
     border: none;
 }
-
 
 /*******************************************************************************
      QGroupBox
@@ -904,7 +895,6 @@ QTabBar::tab:selected
     background: $TAB_SELECTED_BACKGROUND;
     color: $TAB_SELECTED_COLOR;
 }
-
 
 /*******************************************************************************
      QScrollBar
@@ -973,7 +963,6 @@ QScrollBar::sub-line:vertical
     border: none;
 }
 
-
 /*******************************************************************************
       QMenu
  *******************************************************************************/
@@ -1027,7 +1016,6 @@ QMenu::item:selected
     color: $MENU_ITEM_SELECTED_COLOR;
 }
 
-
 /*******************************************************************************
       medHomepagePushButton
  *******************************************************************************/
@@ -1049,10 +1037,10 @@ medHomepagePushButton[selected="true"]
     border: 2px solid $HIGHLIGHT_COLOR;
 }
 
-
 /*******************************************************************************
     medHomepageButton
  *******************************************************************************/
+
 medHomepageButton
 {
     background-color: $HOME_PAGE_BUTTON_BACKGROUND;
@@ -1063,7 +1051,6 @@ medHomepageButton:hover
     background-color: $HOME_PAGE_BUTTON_HOVER_BACKGROUND;
     color: $HOME_PAGE_BUTTON_COLOR;
 }
-
 
 /*******************************************************************************
     medQuickAccessMenu
@@ -1081,7 +1068,6 @@ medQuickAccessMenu
     border-radius: $QUICK_ACCESS_MENU_RADIUS;
 }
 
-
 /*******************************************************************************
       medToolBox
  *******************************************************************************/
@@ -1090,7 +1076,6 @@ medToolBox .QWidget
     background: $TOOLBOX_BACKGROUND;
 }
 
-
 /*******************************************************************************
       medToolBoxBody
  *******************************************************************************/
@@ -1098,7 +1083,6 @@ medToolBoxBody
 {
     background: $TOOLBOX_BODY_BACKGROUND;
 }
-
 
 /*******************************************************************************
       medToolBoxHeader
@@ -1111,20 +1095,20 @@ medToolBoxHeader
     padding: $TOOLBOX_HEADER_PADDING;
 }
 
-
 /*******************************************************************************
      dtkFinderPathBar
  *******************************************************************************/
+
 dtkFinderPathBar
 {
     background: $FINDER_PATH_BAR_BACKGROUND;
     min-height: $FINDER_PATH_BAR_HEIGHT;
 }
 
-
 /*******************************************************************************
      medTabbedViewContainers
  *******************************************************************************/
+
 medTabbedViewContainers QPushButton
 {
     margin: $VIEW_CONTAINER_BUTTON_MARGIN;
@@ -1154,7 +1138,6 @@ medViewContainer [selected = "true"]
     border: $CONTAINER_SELECTED_BORDER;
 }
 
-
 /*******************************************************************************
      layerWidget
  *******************************************************************************/
@@ -1167,6 +1150,7 @@ QWidget#layerWidget
 /*******************************************************************************
      medMessageProgress
  *******************************************************************************/
+ 
 QProgressBar::chunk[success = "true"]
 {
     background: $GREEN;
@@ -1177,10 +1161,10 @@ QProgressBar::chunk[failure = "true"]
     background: $RED;
 }
 
-
 /*******************************************************************************
      medDropSite
  *******************************************************************************/
+
 medDropSite
 {
     background: $DROP_SITE_BACKGROUND;
@@ -1190,15 +1174,16 @@ medDropSite
 /*******************************************************************************
      settingsWidget
  *******************************************************************************/
+
 QWidget#settingsWidget QTabWidget::pane
 {
     border: 2px solid $EDITION_BACKGROUND;
 }
 
-
 /*******************************************************************************
      medDatabasePreview
  *******************************************************************************/
+
 medDatabasePreview
 {
     border: 1px solid $GREY07;
@@ -1234,6 +1219,7 @@ medQuickAccessPushButton
 /*******************************************************************************
      dtkFinder
  *******************************************************************************/
+ 
 medToolBoxContainer#browserContainerToolbox
 {
     border-right: $BROWSER_CONTAINER_BORDER;

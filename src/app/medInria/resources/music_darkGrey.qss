@@ -336,15 +336,15 @@ $TOOLBOX_HEADER_PADDING         = 0px 8px;
 
 $FILE_SYSTEM_INFO_TEXT_PADDING  = 2px 5px;
 
-
-
 /*******************************************************************************
     QWidget
  *******************************************************************************/
+
 QWidget:disabled
 {
     color: $DISABLE_COLOR;
 }
+
 QWidget
 {
     color: $WIDGET_COLOR;
@@ -353,10 +353,10 @@ QWidget
     outline: 0px;
 }
 
-
 /*******************************************************************************
     QToolTip
  *******************************************************************************/
+
 QToolTip
 {
     color: $TOOLTIP_COLOR;
@@ -364,10 +364,10 @@ QToolTip
     padding: 1px;
 }
 
-
 /*******************************************************************************
     QTableView
  *******************************************************************************/
+
 QTableView
 {
     gridline-color: $GRIDLINE_COLOR;
@@ -375,10 +375,10 @@ QTableView
     alternate-background-color: $ALT_LIST_BACKGROUND;
 }
 
-
 /*******************************************************************************
     QListView
  *******************************************************************************/
+
 QListView
 {
     gridline-color: $GRIDLINE_COLOR;
@@ -386,20 +386,20 @@ QListView
     alternate-background-color: $ALT_LIST_BACKGROUND;
 }
 
-
 /*******************************************************************************
     QTextEdit
  *******************************************************************************/
+
 QTextEdit
 {
     color: $EDITION_COLOR;
     background: $EDITION_BACKGROUND;
 }
 
-
 /*******************************************************************************
     QDateEdit
  *******************************************************************************/
+
 QDateEdit
 {
     color: $EDITION_COLOR;
@@ -411,10 +411,10 @@ QDateEdit::down-arrow
     image: url(:/pixmaps/arrow-bot.png);
 }
 
-
 /*******************************************************************************
      QSpinBox QDoubleSpinBox
  *******************************************************************************/
+
 QSpinBox, QDoubleSpinBox
 {
     color: $EDITION_COLOR;
@@ -468,7 +468,6 @@ QSpinBox::down-arrow:disabled, QDoubleSpinBox::down-arrow::disabled
     image: url(:/pixmaps/arrow-bot-disabled.png);
 }
 
-
 /*******************************************************************************
      QComboBox
  *******************************************************************************/
@@ -512,6 +511,7 @@ QComboBox:item:selected
 /*******************************************************************************
      QCheckBox
  *******************************************************************************/
+
 QCheckBox
 {
     background: none;
@@ -548,10 +548,10 @@ QCheckBox::indicator:disabled:checked
     image: url(:/pixmaps/checkbox-checked-disabled.png);
 }
 
-
 /*******************************************************************************
      QTreeView
  *******************************************************************************/
+
 QTreeView
 {
      alternate-background-color: $ALT_LIST_BACKGROUND;
@@ -567,6 +567,7 @@ QTreeView::indicator:indeterminate
 {
     image: url(:/pixmaps/checkbox-partial.png);
 }
+
 QTreeView::indicator:checked
 {
     background: url(:/pixmaps/checkbox-checked.png);
@@ -610,16 +611,17 @@ QTreeView::branch:open:has-children:has-siblings
 /*******************************************************************************
      QLabel
  *******************************************************************************/
+
 QLabel
 {
     color: $EDITION_COLOR;
     background: none;
 }
 
-
 /*******************************************************************************
      QTableWidget
  *******************************************************************************/
+
 QTableWidget
 {
     gridline-color: $GRIDLINE_COLOR;
@@ -627,10 +629,10 @@ QTableWidget
     alternate-background-color: $ALT_LIST_BACKGROUND;
 }
 
-
 /*******************************************************************************
      QHeaderView
  *******************************************************************************/
+
 QHeaderView
 {
     background-color: $HEADER_BACKGROUND;
@@ -659,10 +661,10 @@ QHeaderView::up-arrow
     image: url(:/pixmaps/arrow-top.png);
 }
 
-
 /*******************************************************************************
      QLineEdit
  *******************************************************************************/
+
 QLineEdit
 {
     color: $EDITION_COLOR;
@@ -670,10 +672,10 @@ QLineEdit
     border-radius: $LINE_EDIT_RADIUS;
 }
 
-
 /*******************************************************************************
      QProgressBar
  *******************************************************************************/
+
 QProgressBar
 {
     border: $PROGRESS_BAR_BORDER;
@@ -690,10 +692,10 @@ QProgressBar::chunk
     background-color: $PROGRESS_BAR_COLOR;
 }
 
-
 /*******************************************************************************
      QStatusBar
  *******************************************************************************/
+
 QStatusBar
 {
     background: $STATUS_BAR_BACKGROUND;
@@ -711,10 +713,10 @@ QStatusBar::item
     background: $STATUS_BAR_BACKGROUND;
 }
 
-
 /*******************************************************************************
      QRadioButton
  *******************************************************************************/
+
 QRadioButton
 {
     background: none;
@@ -752,10 +754,10 @@ QRadioButton::indicator:disabled:checked
     image: url(:/pixmaps/radio-checked-disabled.png);
 }
 
-
 /*******************************************************************************
      QSlider
  *******************************************************************************/
+
 QSlider
 {
     background: none;
@@ -763,7 +765,6 @@ QSlider
 
 QSlider::groove:horizontal
 {
-
     border-radius: $SLIDER_RADIUS;
     background: $SLIDER_HORIZONTAL_BACKGROUND;
     height: $SLIDER_SIZE;
@@ -778,7 +779,6 @@ QSlider::handle:horizontal
 
 QSlider::groove:vertical
 {
-
     border-radius: $SLIDER_RADIUS;
     background: $SLIDER_VERTICAL_BACKGROUND;
     width: $SLIDER_SIZE;
@@ -790,7 +790,6 @@ QSlider::handle:vertical
     height: $SLIDER_SIZE;
     border-radius: $SLIDER_RADIUS;
 }
-
 
 QSlider::groove:horizontal:disabled
 {
@@ -813,10 +812,10 @@ QSlider::handle:vertical:disabled
     background: $SLIDER_DISABLED_COLOR;
 }
 
-
 /*******************************************************************************
      QPushButton QToolButton
  *******************************************************************************/
+
 QPushButton, QPushButton:flat, QToolButton
 {
     border-radius: $PUSH_BUTTON_RADIUS;
@@ -844,7 +843,6 @@ QPushButton:checked, QToolButton:checked
     border: 2px solid $PUSH_BUTTON_CHECKED_BORDER;
 }
 
-
 QPushButton::menu-indicator
 {
     image: url(:/pixmaps/drop-down.png);
@@ -857,14 +855,12 @@ QPushButton::menu-indicator:flat
     image: none;
 }
 
-
 QPushButton:flat
 {
     border: none;
     background-color: none;
     height: $LAYOUT_BUTTON_MIN_HEIGHT;
 }
-
 
 QPushButton:flat:hover
 {
@@ -895,10 +891,10 @@ QToolButton#quitButton:hover
     background-color: $HOME_PAGE_BUTTON_HOVER_BACKGROUND;
 }
 
-
 /*******************************************************************************
      QSplitter
  *******************************************************************************/
+
 QSplitter::handle:horizontal
 {
     border: none;
@@ -909,10 +905,10 @@ QSplitter::handle:vertical
     border: none;
 }
 
-
 /*******************************************************************************
      QGroupBox
  *******************************************************************************/
+
 QGroupBox
 {
     border: $GROUP_BOX_BORDER;
@@ -939,10 +935,10 @@ QGroupBox::indicator::unchecked
     image: url(:/pixmaps/checkbox.png);
 }
 
-
 /*******************************************************************************
      QTabBar
  *******************************************************************************/
+
 QTabBar::tab
 {
     color: $TAB_COLOR;
@@ -969,10 +965,10 @@ QTabBar::tab:selected
     color: $TAB_SELECTED_COLOR;
 }
 
-
 /*******************************************************************************
      QScrollBar
  *******************************************************************************/
+
 QScrollBar:horizontal
 {
     background: $SCROLL_BAR_HORIZONTAL_BACKGROUND;
@@ -1037,10 +1033,10 @@ QScrollBar::sub-line:vertical
     border: none;
 }
 
-
 /*******************************************************************************
       QMenu
  *******************************************************************************/
+
 QMenu
 {
     background-color: $MENU_ITEM_BACKGROUND;
@@ -1086,10 +1082,10 @@ QMenu::item:selected
     color: $MENU_ITEM_SELECTED_COLOR;
 }
 
-
 /*******************************************************************************
       medHomepagePushButton
  *******************************************************************************/
+
 medHomepagePushButton
 {
     background-color: $HOME_PAGE_BUTTON_BACKGROUND;
@@ -1108,10 +1104,10 @@ medHomepagePushButton[selected="true"]
     border: 2px solid $HIGHLIGHT_COLOR;
 }
 
-
 /*******************************************************************************
     medHomepageButton
  *******************************************************************************/
+
 medHomepageButton
 {
     background-color: $HOME_PAGE_BUTTON_BACKGROUND;
@@ -1122,7 +1118,6 @@ medHomepageButton:hover
     background-color: $HOME_PAGE_BUTTON_HOVER_BACKGROUND;
     color: $HOME_PAGE_BUTTON_COLOR;
 }
-
 
 /*******************************************************************************
     medQuickAccessMenu
@@ -1143,24 +1138,25 @@ medQuickAccessMenu
 /*******************************************************************************
       medToolBox
  *******************************************************************************/
+
 medToolBox .QWidget
 {
     background: $TOOLBOX_BACKGROUND;
 }
 
-
 /*******************************************************************************
       medToolBoxBody
  *******************************************************************************/
+
 medToolBoxBody
 {
     background: $TOOLBOX_BODY_BACKGROUND;
 }
 
-
 /*******************************************************************************
       medToolBoxHeader
  *******************************************************************************/
+
 medToolBoxHeader
 {
     background: $TOOLBOX_HEADER_BACKGROUND;
@@ -1170,16 +1166,15 @@ medToolBoxHeader
     font-weight: bold;
 }
 
-
 /*******************************************************************************
      dtkFinderPathBar
  *******************************************************************************/
+
 dtkFinderPathBar
 {
     background: $FINDER_PATH_BAR_BACKGROUND;
     min-height: $FINDER_PATH_BAR_HEIGHT;
 }
-
 
 /*******************************************************************************
      medTabbedViewContainers
@@ -1215,7 +1210,6 @@ medViewContainer [selected = "true"]
     border: $CONTAINER_SELECTED_BORDER;
 }
 
-
 /*******************************************************************************
      layerWidget
  *******************************************************************************/
@@ -1228,6 +1222,7 @@ QWidget#layerWidget
 /*******************************************************************************
      medMessageProgress
  *******************************************************************************/
+
 QProgressBar::chunk[success = "true"]
 {
     background: $GREEN;
@@ -1238,10 +1233,10 @@ QProgressBar::chunk[failure = "true"]
     background: $RED;
 }
 
-
 /*******************************************************************************
      medDropSite
  *******************************************************************************/
+
 medDropSite
 {
     background: $DROP_SITE_BACKGROUND;
@@ -1251,15 +1246,16 @@ medDropSite
 /*******************************************************************************
      settingsWidget
  *******************************************************************************/
+
 QWidget#settingsWidget QTabWidget::pane
 {
     border: 2px solid $EDITION_BACKGROUND;
 }
 
-
 /*******************************************************************************
      medDatabasePreview
  *******************************************************************************/
+
 medDatabasePreview
 {
     border: none;
@@ -1294,6 +1290,7 @@ medQuickAccessPushButton
 /*******************************************************************************
      dtkFinder
  *******************************************************************************/
+ 
 medToolBoxContainer#browserContainerToolbox
 {
     border-right: $BROWSER_CONTAINER_BORDER;
