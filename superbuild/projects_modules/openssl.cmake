@@ -15,7 +15,7 @@ list(APPEND ${ep}_dependencies
 
 EP_Initialisation(${ep}
   USE_SYSTEM OFF 
-  BUILD_SHARED_LIBS ON
+  BUILD_SHARED_LIBS OFF
   REQUIRED_FOR_PLUGINS OFF
   )
 
@@ -73,7 +73,7 @@ if (WIN32)
     UPDATE_COMMAND ""
     PATCH_COMMAND ""
     DEPENDS ${${ep}_dependencies}
-    CONFIGURE_COMMAND perl ${EP_PATH_SOURCE}/${ep}/Configure VC_WIN64A  no-zlib shared --prefix=${build_path}  --openssldir=${build_path} 
+    CONFIGURE_COMMAND perl ${EP_PATH_SOURCE}/${ep}/Configure VC_WIN64A no-tests no-zlib no-shared --prefix=${build_path}  --openssldir=${build_path} 
     BUILD_COMMAND nmake install-sw
     INSTALL_COMMAND ""
     )
@@ -92,7 +92,7 @@ else (WIN32)
     UPDATE_COMMAND ""
     PATCH_COMMAND ""
     DEPENDS ${${ep}_dependencies}
-    CONFIGURE_COMMAND ${EP_PATH_SOURCE}/${ep}/config no-zlib shared --prefix=${build_path} --openssldir=${build_path} 
+    CONFIGURE_COMMAND ${EP_PATH_SOURCE}/${ep}/config no-zlib no-tests no-shared --prefix=${build_path} --openssldir=${build_path} 
     BUILD_COMMAND ${CMAKE_MAKE_PROGRAM} install_sw
     INSTALL_COMMAND ""
   )
