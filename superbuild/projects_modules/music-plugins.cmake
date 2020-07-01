@@ -7,6 +7,10 @@ function(music_plugins_project)
         dtk
         ITK
         VTK
+        mmg
+        tetgen
+        eigen
+        qwt
         )
 
     EP_Initialisation(${external_project}
@@ -33,6 +37,14 @@ function(music_plugins_project)
             -DVTK_DIR:FILEPATH=${VTK_DIR}
             -DmedInria_DIR:FILEPATH=${medInria_DIR}
             -DBoost_INCLUDE_DIR=${Boost_INCLUDE_DIR}
+            -DEIGEN_INCLUDE_DIR:FILEPATH=${eigen_INCLUDE_DIR}
+            -DQWT_INCLUDE_DIR:FILEPATH=${qwt_INCLUDE_DIR}
+            -DQWT_DIR:FILEPATH=${qwt_DIR}
+            -DMMG_INCDIR:FILEPATH=${mmg_INCDIR}
+            -DMMG_LIBDIR:FILEPATH=${mmg_LIBDIR}
+            -DMMG_SRC_DIR:FILEPATH=${mmg_SRC_DIR}
+            -DTETGEN_INCLUDE_DIR:FILEPATH=${tetgen_INCLUDE_DIR}
+            -DTETGEN_DIR:FILEPATH=${tetgen_DIR}
             )
 
         epComputPath(${external_project})

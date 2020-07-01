@@ -68,17 +68,12 @@ list(APPEND external_projects
 if (USE_DTKIMAGING)
   list(APPEND external_projects
       dtkImaging
-      medInria
-      )
-else()
-  list(APPEND external_projects
-      medInria
       )
 endif()
 
 list(APPEND external_projects
+     medInria
     music-plugins
-    music-plugins-liryc
     )
 
 if (USE_OSPRay)
