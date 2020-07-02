@@ -24,7 +24,7 @@ class medStatusBarPrivate;
 
 /**
 * @class  medStatusBar
-* @author Alexandre Abadie
+* @author Alexandre Abadie, Florent Leray
 * @brief  This is extended QStatusBar that can display custom messages.
 */
 class MEDCORELEGACY_EXPORT medStatusBar : public QStatusBar
@@ -59,10 +59,6 @@ signals:
 
 private:
     medStatusBarPrivate * d;
-    int availableSpace; //available space on the status bar
-    int statusBarWidth;
-    QList<medMessage *> hiddenMessageList; // storing messages waiting to be displayed
-    QList<medMessage *> messageList;    // storing displayed messages
 };
 
 
