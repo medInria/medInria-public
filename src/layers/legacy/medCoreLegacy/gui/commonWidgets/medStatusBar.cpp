@@ -14,18 +14,25 @@
 #include <medStatusBar.h>
 
 #include <QtCore>
+#include <mutex>
 
 class medStatusBarPrivate
 {
 public:
     QBoxLayout * statusBarLayout;
+    int availableSpace; //available space on the status bar
+    int statusBarWidth;
+    std::mutex listsofMsgMutex;      // mutex to guard conflict between external signals and/or internal update
+    QList<medMessage *> hiddenMessageList; // storing messages waiting to be displayed
+    QList<medMessage *> messageList;       // storing displayed messages
 };
 
 medStatusBar::medStatusBar ( QWidget* parent ) : QStatusBar ( parent ), d ( new medStatusBarPrivate )
 {
-    d->statusBarLayout = nullptr;
-    this->statusBarWidth = this->size().width();
-    this->availableSpace = -1; //value before initialization (after, always positive)
+    d->statusBarLayout = NULL;
+    d->statusBarWidth = this->size().width();
+    d->availableSpace = -1; //value before initialization (after, always positive)
+    d->listsofMsgMutex;
 }
 
 medStatusBar::~medStatusBar()
@@ -62,21 +69,22 @@ QBoxLayout* medStatusBar::statusBarLayout()
  */
 void medStatusBar::setAvailableSpace ( int space )
 {
-    this->statusBarWidth = this->size().width();
-    this->availableSpace = space;
+    d->statusBarWidth = this->size().width();
+    d->availableSpace = space;
 }
 
 int medStatusBar::getAvailableSpace()
 {
-    return this->availableSpace;
+    return d->availableSpace;
 }
+
 
 /**
  * Initialize availableSpace
 */
 void medStatusBar::init_availableSpace()
 {
-    if (availableSpace == -1 )
+    if (d->availableSpace == -1 )
     {
         emit initializeAvailableSpace();
     } 
@@ -87,10 +95,10 @@ void medStatusBar::init_availableSpace()
 */
 void medStatusBar::spaceManagement()
 {
-    if (availableSpace != -1)       // if availableSpace initialized
+    if (d->availableSpace != -1)       // if availableSpace initialized
     {
-        availableSpace += (this->size().width()-statusBarWidth);    //update available space 
-        statusBarWidth = this->size().width();                      // and statusbarWidth
+        d->availableSpace += (this->size().width()- d->statusBarWidth);    //update available space 
+        d->statusBarWidth = this->size().width();                      // and statusbarWidth
     } 
 }
 
@@ -107,19 +115,20 @@ void medStatusBar::addMessage ( medMessage* message )
     {
         if ( d->statusBarLayout )
         {
-            if ( this->availableSpace > message->size().width()+d->statusBarLayout->spacing())      // if enough space
-            {      
-                this->messageList.append(message);   // messages are stored in a list to easily hide newest messages 
-                                                     // when quit message is displayed
-                this->availableSpace -= (message->size().width() +d->statusBarLayout->spacing());       //update available space
+            d->listsofMsgMutex.lock();
+            if ( d->availableSpace > message->size().width()+d->statusBarLayout->spacing())      // if enough space
+            {
+                d->messageList.append(message);   // messages are stored in a list to easily hide newest messages 
+                                                  // when quit message is displayed
+                d->availableSpace -= (message->size().width() +d->statusBarLayout->spacing());       //update available space
                 message->startTimer(); // starts the countdown before removing the message
                 d->statusBarLayout->insertWidget ( 1, message );
             }
             else
             {
-                this->hiddenMessageList.append(message);    //put the message into a list 
-                
+                d->hiddenMessageList.append(message);    //put the message into a list              
             }
+            d->listsofMsgMutex.unlock();  
         }
     }
 }
@@ -134,8 +143,10 @@ void medStatusBar::removeMessage ( medMessage* message )
 {
     if ( message )
     {
-        this->messageList.removeFirst();
-        this->availableSpace += (message->size().width()+d->statusBarLayout->spacing());         //update available space
+        d->listsofMsgMutex.lock();
+        d->messageList.removeFirst();
+        d->listsofMsgMutex.unlock();
+        d->availableSpace += (message->size().width()+d->statusBarLayout->spacing());         //update available space
         d->statusBarLayout->removeWidget(message);
         showHiddenMessage();    //space has been freed
     }
@@ -146,14 +157,16 @@ void medStatusBar::removeMessage ( medMessage* message )
 */
 void medStatusBar::hideMessage( )
 {
-    if ( !messageList.isEmpty() )
+    d->listsofMsgMutex.lock();
+    if ( !d->messageList.isEmpty() )
     {
-        medMessage* messageToHide = this->messageList.takeFirst(); //take the last notification
+        medMessage* messageToHide = d->messageList.takeFirst(); //take the last notification
         messageToHide->stopTimer();       //stop the timer for not being deleted while hidden
         messageToHide->hide();
-        this->availableSpace += messageToHide->width() + d->statusBarLayout->spacing(); //update available space
-        this->hiddenMessageList.append(messageToHide);
+        d->availableSpace += messageToHide->width() + d->statusBarLayout->spacing(); //update available space
+        d->hiddenMessageList.append(messageToHide);
     }
+    d->listsofMsgMutex.unlock();
 }
 
 /**
@@ -161,10 +174,16 @@ void medStatusBar::hideMessage( )
 */
 void medStatusBar::showHiddenMessage()
 {
-    if(!this->hiddenMessageList.isEmpty())                         // if message waiting to be displayed
+    d->listsofMsgMutex.lock();
+    if(!d->hiddenMessageList.isEmpty())                         // if message waiting to be displayed
     {
-        medMessage* messageToShow = hiddenMessageList.takeFirst();
+        medMessage* messageToShow = d->hiddenMessageList.takeFirst();
+        d->listsofMsgMutex.unlock();
         addMessage(messageToShow);
+    }
+    else
+    {
+        d->listsofMsgMutex.unlock();
     }
 }
 
@@ -173,7 +192,7 @@ void medStatusBar::showHiddenMessage()
 */
 void medStatusBar::resizeEvent ( QResizeEvent* event )
 {
-    if(availableSpace != -1) // not before initialization
+    if(d->availableSpace != -1) // not before initialization
     {
         spaceManagement();
 
@@ -185,7 +204,7 @@ void medStatusBar::resizeEvent ( QResizeEvent* event )
         }
         else
         {
-            if(qAbs(diff) > availableSpace)
+            if(qAbs(diff) > d->availableSpace)
             {
                 hideMessage();
             }
