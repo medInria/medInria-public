@@ -65,6 +65,12 @@ public:
     medDoubleParameterL *opacityParameter(unsigned int layer);
     medTimeLineParameterL *timeLineParameter();
 
+    /**
+     * @brief setRotation is used to rotate a 3D mesh
+     * @param angle type double, and in degree
+     */
+    bool setRotation(double angle);
+
 public slots:
     void switchToFourViews();
     void setOrientation(medImageView::Orientation orientation);

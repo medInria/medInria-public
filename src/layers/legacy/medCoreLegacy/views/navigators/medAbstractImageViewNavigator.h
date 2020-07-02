@@ -40,6 +40,8 @@ public:
 public slots:
 
     virtual void setOrientation(medImageView::Orientation orientation) = 0;
+    virtual bool setRotationAngle(double angle) = 0;
+    
     virtual void setCamera(QHash<QString,QVariant>) = 0;
     virtual void moveToPosition (const QVector3D &position) = 0;
 

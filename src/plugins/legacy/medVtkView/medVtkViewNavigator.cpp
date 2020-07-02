@@ -13,12 +13,14 @@
 
 #include <medVtkViewNavigator.h>
 
+#include <vtkCamera.h>
 #include <vtkImageView2D.h>
 #include <vtkImageView3D.h>
 #include <vtkImageActor.h>
+#include <vtkMetaDataSet.h>
 #include <vtkRenderWindow.h>
 #include <vtkRenderer.h>
-#include <vtkCamera.h>
+#include <vtkTransform.h>
 
 #include <medVtkViewBackend.h>
 #include <medViewFactory.h>
@@ -27,6 +29,8 @@
 #include <medAbstractImageView.h>
 #include <medBoolGroupParameterL.h>
 #include <medBoolParameterL.h>
+#include <medDataIndex.h>
+#include <medDataManager.h>
 #include <medDoubleParameterL.h>
 #include <medVector2DParameterL.h>
 #include <medVector3DParameterL.h>
@@ -529,6 +533,43 @@ void medVtkViewNavigator::setCameraParallelScale(double parallelScale)
     d->view3d->GetInteractorStyle()->HandleObserversOn();
 }
 
+bool medVtkViewNavigator::setRotationAngle(double angle)
+{
+    vtkSmartPointer<vtkTransform> transform = vtkSmartPointer<vtkTransform>::New();
+
+    double* cameraPos = d->view3d->GetCameraFocalPoint();
+    double* cameraUp  = d->view3d->GetCameraViewUp(); // camera axis
+
+    // Translation needed for meshes not centered at 0, 0, 0
+    transform->Translate(cameraPos[0], cameraPos[1], cameraPos[2]);
+    // Rotation in degree
+    transform->RotateWXYZ(angle, cameraUp[0], cameraUp[1], cameraUp[2]);
+    // Put back at original position
+    transform->Translate(-cameraPos[0], -cameraPos[1], -cameraPos[2]);
+
+    foreach(medDataIndex index, d->parent->dataList())
+    {
+        medAbstractData *data = medDataManager::instance()->retrieveData(index);
+
+        // We only apply rotation on meshes
+        if (data && data->identifier().contains("vtkDataMesh") )
+        {
+            vtkMetaDataSet* dataset = reinterpret_cast<vtkMetaDataSet*>(data->data());
+
+            for(unsigned int i = 0; i < dataset->GetNumberOfActors(); i++)
+            {
+                dataset->GetActor(i)->SetUserTransform(transform);
+            }
+        }
+        else
+        {
+            return false;
+        }
+    }
+
+    d->parent->render();
+    return true;
+}
 
 void medVtkViewNavigator::setAxial(bool axial)
 {

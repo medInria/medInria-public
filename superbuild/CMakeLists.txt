@@ -48,6 +48,7 @@ option(USE_DTKIMAGING "Use DTK imaging layer" OFF )
 option(USE_OSPRay "Use OSPRay for CPU VR" OFF )
   
 list(APPEND external_projects
+  ffmpeg
   VTK 
   ITK 
   RPI 
