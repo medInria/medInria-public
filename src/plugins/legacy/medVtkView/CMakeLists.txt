@@ -32,8 +32,8 @@ add_definitions(-D${TARGET_NAME_UP}_VERSION="${${TARGET_NAME}_VERSION}")
 find_package(dtk REQUIRED)
 include_directories(${dtk_INCLUDE_DIRS})
 
-find_package(VTK REQUIRED COMPONENTS vtkGUISupportQt vtkInteractionWidgets)
-include(${VTK_USE_FILE})
+find_package(VTK REQUIRED COMPONENTS InteractionWidgets GUISupportQt)
+include_directories(${VTK_INCLUDE_DIRS})
 
 find_package(ITK REQUIRED COMPONENTS ITKCommon)
 include(${ITK_USE_FILE})
@@ -83,9 +83,8 @@ target_link_libraries(${TARGET_NAME}
   dtkLog
   medCore
   medVtkInria
-  vtkGUISupportQt
-  vtkGUISupportQtOpenGL
   medVtkDataMeshBase
+  VTK::GUISupportQt
   )
 
 

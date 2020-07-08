@@ -35,8 +35,8 @@ include_directories(${dtk_INCLUDE_DIRS})
 find_package(ITK REQUIRED COMPONENTS ITKIOImageBase ITKIOMeta )
 include(${ITK_USE_FILE})
 
-find_package(VTK REQUIRED COMPONENTS vtkCommonExecutionModel vtkRenderingCore vtkInteractionWidgets)
-include(${VTK_USE_FILE})
+find_package(VTK REQUIRED COMPONENTS CommonExecutionModel RenderingCore InteractionWidgets)
+include_directories(${VTK_INCLUDE_DIRS})
 
 if (APPLE OR WIN32)
     find_package(Boost REQUIRED)
