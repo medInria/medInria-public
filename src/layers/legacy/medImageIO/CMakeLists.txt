@@ -93,7 +93,7 @@ target_link_libraries(${TARGET_NAME}
   ITKIOMRC
   ITKIOTIFF
   ITKVTK
-  vtkIOImage
+  VTK::IOImage
   ${ITKIOPhilipsREC_LIBRARIES}
   ${DCMTK_LIBRARIES}
   )

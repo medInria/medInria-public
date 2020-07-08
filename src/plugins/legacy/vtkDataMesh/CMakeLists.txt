@@ -31,8 +31,9 @@ add_definitions(-D${TARGET_NAME_UP}_VERSION="${${TARGET_NAME}_VERSION}")
 find_package(dtk REQUIRED)
 include_directories(${dtk_INCLUDE_DIRS})
 
-find_package(VTK REQUIRED COMPONENTS vtkCommonCore vtkCommonDataModel vtkRenderingCore vtkRenderingVolumeOpenGL2 vtkInteractionStyle vtkInteractionWidgets vtkIOParallelXML vtkIOImage vtkIOGeometry  vtkIOExport vtkRenderingContext2D)
-include(${VTK_USE_FILE})
+find_package(VTK REQUIRED COMPONENTS CommonCore CommonDataModel RenderingCore RenderingVolumeOpenGL2 
+  InteractionStyle InteractionWidgets IOParallelXML IOImage IOGeometry IOExport RenderingContext2D)
+include_directories(${VTK_INCLUDE_DIRS})
 
 find_package(ITK REQUIRED COMPONENTS ITKCommon)
 include(${ITK_USE_FILE})
@@ -100,10 +101,11 @@ target_link_libraries(${TARGET_NAME}
   medCore
   medLog
   medVtkInria
-  vtkIOXML
-  vtkIOCore
-  vtkIOLegacy
+  VTK::IOXML
+  VTK::IOCore
+  VTK::IOLegacy
   medVtkDataMeshBase
+  VTK::IOParallelXML
   )
 
 
