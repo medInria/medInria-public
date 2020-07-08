@@ -22,8 +22,8 @@ set(TARGET_NAME medVtkInria)
 # find dtk
 find_package(dtk REQUIRED)
 
-find_package(VTK REQUIRED COMPONENTS vtkRenderingVolumeOpenGL2 vtkInteractionWidgets vtkRenderingAnnotation vtkInteractionStyle vtkImagingStatistics vtkIOLegacy )
-include(${VTK_USE_FILE})
+find_package(VTK REQUIRED COMPONENTS RenderingVolumeOpenGL2 InteractionWidgets RenderingAnnotation 
+  InteractionStyle ImagingStatistics IOLegacy)
 
 find_package(OpenGL REQUIRED)
 
@@ -83,30 +83,28 @@ target_link_libraries(${TARGET_NAME} PUBLIC
   
   med::Core
   
-  vtkCommonCore
-  vtkCommonSystem
-  vtkImagingColor
-  vtkImagingGeneral
-  vtkImagingHybrid
-  vtkIOCore
-  vtkIOExportOpenGL2
-  vtkIOGeometry
-  vtkIOImage
-  vtkIOLegacy
-  vtkIOXML
-  vtkRenderingAnnotation
-  vtkRenderingCore
-  vtkRenderingOpenGL2
-  vtkRenderingVolumeOpenGL2
-  vtkRenderingContextOpenGL2
+  VTK::CommonCore
+  VTK::CommonSystem
+  VTK::ImagingColor
+  VTK::ImagingGeneral
+  VTK::ImagingHybrid
+  VTK::IOCore
+  VTK::IOGeometry
+  VTK::IOImage
+  VTK::IOLegacy
+  VTK::IOXML
+  VTK::RenderingAnnotation
+  VTK::RenderingCore
+  VTK::RenderingOpenGL2
+  VTK::RenderingVolumeOpenGL2
   ${VTK_OSPRAY_RENDERING_LIBRARY}
-  vtkInteractionWidgets
-  vtkInteractionStyle
-  vtkFiltersExtraction
-  vtkFiltersModeling
-  vtkImagingStencil
-  vtkFiltersGeometry
-  vtksys
+  VTK::InteractionWidgets
+  VTK::InteractionStyle
+  VTK::FiltersExtraction
+  VTK::FiltersModeling
+  VTK::ImagingStencil
+  VTK::FiltersGeometry
+  VTK::vtksys
   
   
   # dtk

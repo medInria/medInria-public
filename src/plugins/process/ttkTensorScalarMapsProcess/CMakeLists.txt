@@ -9,8 +9,8 @@ include_directories(${dtk_INCLUDE_DIRS})
 
 find_package(TTK REQUIRED COMPONENTS ITKTensor ttkAlgorithms)
 
-find_package(VTK REQUIRED COMPONENTS vtkRenderingCore)
-include(${VTK_USE_FILE})
+find_package(VTK REQUIRED COMPONENTS RenderingCore)
+include_directories(${VTK_INCLUDE_DIRS})
 
 find_package(ITK REQUIRED COMPONENTS ITKCommon)
 include(${ITK_USE_FILE})
@@ -60,7 +60,7 @@ target_link_libraries(${TARGET_NAME}
   medCore
   medCoreGui
   medVtkInria
-  vtkRenderingCore
+  VTK::RenderingCore
   )
 
 ## #################################################################

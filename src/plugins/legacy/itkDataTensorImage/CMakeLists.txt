@@ -35,8 +35,8 @@ include_directories(${dtk_INCLUDE_DIRS})
 find_package(ITK REQUIRED  COMPONENTS ITKIOImageBase ITKIOMeta ITKIONRRD ITKIONIFTI)
 include(${ITK_USE_FILE})
     
-find_package(VTK REQUIRED  COMPONENTS vtkCommonCore vtkCommonExecutionModel vtkRenderingCore vtkImagingCore vtkInteractionStyle vtkInteractionWidgets)
-include(${VTK_USE_FILE})
+find_package(VTK REQUIRED COMPONENTS CommonCore CommonExecutionModel RenderingCore ImagingCore InteractionStyle InteractionWidgets)
+include_directories(${VTK_INCLUDE_DIRS})
 
 find_package(TTK REQUIRED COMPONENTS ITKTensor ttkAlgorithms)
 
