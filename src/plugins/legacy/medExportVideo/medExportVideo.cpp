@@ -15,6 +15,16 @@
 #include <vtkFFMPEGWriter.h>
 #endif
 
+// Qt
+#include <QComboBox>
+#include <QFileDialog>
+#include <QGridLayout>
+#include <QLabel>
+#include <QSpinBox>
+
+#include <QEventLoop>
+#include <QProcess>
+
 // /////////////////////////////////////////////////////////////////
 // ExportVideoPrivate
 // /////////////////////////////////////////////////////////////////
@@ -180,20 +190,19 @@ int ExportVideo::exportAsJPEG()
     }
 
     int cpt = 0;
-    foreach (QImage qimage, d->imagesArray)
+    for (QImage qimage : d->imagesArray)
     {
         // Qt to VTK images (vtkImageData)
         vtkSmartPointer<vtkQImageToImageSource> qimageToImageSource = vtkSmartPointer<vtkQImageToImageSource>::New();
         qimageToImageSource->SetQImage(&qimage);
         qimageToImageSource->Update();
-        vtkImageData* vtkImage = qimageToImageSource->GetOutput();
 
         // Current image filename
         QString name = d->filename.left(lastPoint) + QString::number(cpt)+".jpg";
 
         vtkSmartPointer<vtkJPEGWriter> writerJPEG = vtkSmartPointer<vtkJPEGWriter>::New();
         writerJPEG->SetFileName(name.toStdString().c_str());
-        writerJPEG->SetInputConnection(vtkImage->GetProducerPort());
+        writerJPEG->SetInputConnection(qimageToImageSource->GetOutputPort());
         writerJPEG->Write();
 
         cpt++;
@@ -255,7 +264,7 @@ int ExportVideo::exportAsVideo()
 	
     writerVideo->Start();
 
-    foreach (QImage qimage, d->imagesArray)
+    for (QImage qimage : d->imagesArray)
     {
         // Qt to VTK images (vtkImageData)
         vtkSmartPointer<vtkQImageToImageSource> qimageToImageSource = vtkSmartPointer<vtkQImageToImageSource>::New();

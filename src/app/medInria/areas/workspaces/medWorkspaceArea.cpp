@@ -43,6 +43,8 @@
 #include <QImage>
 #include <QtOpenGL/QGLWidget>
 
+#include <medAbstractImageData.h>
+
 medWorkspaceArea::medWorkspaceArea(QWidget *parent) : QWidget(parent), d(new medWorkspaceAreaPrivate)
 {
     d->selectionToolBox = nullptr;
@@ -174,33 +176,57 @@ void medWorkspaceArea::grabVideo()
 
             int screenshotCount = 0;
 
-            if (userParameters.at(1) == 0) // Time video (for 4D datasets)
+            switch(userParameters.at(1))
             {
-                timeLine->unlockTimeLine();
-
-                for (int f=0; f<timeLine->numberOfFrame(); f+=userParameters.at(2))
+                // Time video (for 4D datasets)
+                case 0:
+                default:
                 {
-                    timeLine->setFrame(f);
-                    runExportVideoProcess(process, screenshotCount);
-                    screenshotCount++;
-                }
+                    timeLine->unlockTimeLine();
 
-                timeLine->lockTimeLine();
-            }
-            else // Rotation video
-            {
-                bool res = true;
-                for (double rotation=0.0; rotation<360.0; rotation+=userParameters.at(2))
-                {
-                    res = iview->setRotation(rotation);
-                    if (res)
+                    for (int f=0; f<timeLine->numberOfFrame(); f+=userParameters.at(2))
                     {
+                        timeLine->setFrame(f);
                         runExportVideoProcess(process, screenshotCount);
                         screenshotCount++;
                     }
-                    else
+
+                    timeLine->lockTimeLine();
+                    break;
+                }
+            
+                // Rotation video
+                case 1:
+                {
+                    bool res = true;
+                    for (double rotation=0.0; rotation<360.0; rotation+=userParameters.at(2))
                     {
-                        break;
+                        res = iview->setRotation(rotation);
+                        if (res)
+                        {
+                            runExportVideoProcess(process, screenshotCount);
+                            screenshotCount++;
+                        }
+                        else
+                        {
+                            break;
+                        }
+                    }
+                    break;
+                }
+
+                // Slice video
+                case 2:
+                {
+                    medAbstractLayeredView *layeredView = dynamic_cast<medAbstractLayeredView*>(view);
+                    medAbstractData *data = layeredView->layerData(layeredView->currentLayer());
+                    medAbstractImageData *medData = dynamic_cast <medAbstractImageData *> (data);
+
+                    for (int slice=0; slice<medData->zDimension(); ++slice)
+                    {
+                        iview->setSlice(slice);
+                        runExportVideoProcess(process, screenshotCount);
+                        screenshotCount++;
                     }
                 }
             }

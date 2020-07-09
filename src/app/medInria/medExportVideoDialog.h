@@ -14,6 +14,7 @@ public:
     {
         TIME,
         ROTATION,
+        SLICE,
     };
 
     medExportVideoDialog(QWidget *parent, int numberOfFrames );

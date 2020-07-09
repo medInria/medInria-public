@@ -109,7 +109,7 @@ medTimeLineParameterL::medTimeLineParameterL(QString name, QObject *parent):
     d->timeShiftParameter->setValue(0.0);
 
     d->extensionShiftParameter = new medComboBox;
-    d->extensionShiftParameter->addItem(QString::fromUtf8(QString("µ").toLatin1())+"s",  0);
+    d->extensionShiftParameter->addItem(QString("µ")+"s",  0);
     d->extensionShiftParameter->addItem("ms",  1);
     d->extensionShiftParameter->addItem("s",   2);
     d->extensionShiftParameter->addItem("min", 3);

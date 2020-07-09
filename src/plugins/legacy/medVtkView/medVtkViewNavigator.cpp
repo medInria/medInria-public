@@ -533,6 +533,21 @@ void medVtkViewNavigator::setCameraParallelScale(double parallelScale)
     d->view3d->GetInteractorStyle()->HandleObserversOn();
 }
 
+bool medVtkViewNavigator::setSlice(int slice)
+{
+    int res = false;
+
+    if ((slice > 0) && 
+        (slice < d->view2d->GetSliceMax()))
+    {
+        d->view2d->SetSlice(slice);
+        d->currentView->Render();
+        res = true;
+    }
+    
+    return res;
+}
+
 bool medVtkViewNavigator::setRotationAngle(double angle)
 {
     vtkSmartPointer<vtkTransform> transform = vtkSmartPointer<vtkTransform>::New();

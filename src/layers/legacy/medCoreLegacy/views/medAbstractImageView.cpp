@@ -395,3 +395,15 @@ bool medAbstractImageView::setRotation(double angle)
 
     return false;
 }
+
+bool medAbstractImageView::setSlice(int slice)
+{
+    int res = false;
+
+    medAbstractImageViewNavigator *nav = this->primaryNavigator();
+    if(nav)
+    {
+        return nav->setSlice(slice);
+    }
+    return res;
+}

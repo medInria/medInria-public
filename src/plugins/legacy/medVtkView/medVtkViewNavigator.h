@@ -78,6 +78,12 @@ protected slots:
     void setCameraParallelScale(double parallelScale);
 
     /**
+     * @brief setSlice is used to change the current slice
+     * @param slice type int
+    */
+    bool setSlice(int slice);
+
+    /**
      * @brief setRotation is used to rotate a 3D mesh
      * @param angle type double, and in degree
     */

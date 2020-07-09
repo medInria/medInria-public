@@ -71,6 +71,12 @@ public:
      */
     bool setRotation(double angle);
 
+    /**
+     * @brief setSlice is used to change the current slice in a view
+     * @param slice type int
+     */
+    bool setSlice(int slice);
+
 public slots:
     void switchToFourViews();
     void setOrientation(medImageView::Orientation orientation);

@@ -39,6 +39,7 @@ medExportVideoDialog::medExportVideoDialog(QWidget *parent, int numberOfFrames):
     d->typeCombobox = new medComboBox;
     d->typeCombobox->addItem("Time",     ExportVideoName::TIME);
     d->typeCombobox->addItem("Rotation", ExportVideoName::ROTATION);
+    d->typeCombobox->addItem("Slice",    ExportVideoName::SLICE);
     typeLayout->addWidget(d->typeCombobox);
 
     QObject::connect (d->typeCombobox, SIGNAL(activated(int)), this, SLOT(adaptWidgetForMethod(int)));

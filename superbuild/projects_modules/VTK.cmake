@@ -49,16 +49,15 @@ set(git_tag v8.1.2)
 if (UNIX)
   set(${ep}_c_flags "${${ep}_c_flags} -w")
   set(${ep}_cxx_flags "${${ep}_cxx_flags} -w")
-  # set(unix_additional_args -DVTK_USE_NVCONTROL:BOOL=ON)
 endif()
 
 # library extension
 if (UNIX AND NOT APPLE)
-   set(extention so)
+    set(extention so)
 elseif(APPLE)
-   set(extention dylib)
+    set(extention dylib)
 elseif (WIN32)
-   set(extention lib)
+    set(extention lib)
 endif()
 
 set(cmake_args
@@ -79,50 +78,37 @@ set(cmake_args
   -DModule_vtkRenderingOSPRay:BOOL=${USE_OSPRay}
   -DVTK_QT_VERSION=5
   -DQt5_DIR=${Qt5_DIR}
-  # OGV
-  -DVTK_USE_OGGTHEORA_ENCODER:BOOL=ON
-  # To be removed when upgrading VTK version
-  #-DVTK_REQUIRED_OBJCXX_FLAGS:STRING=""
+  -DVTK_USE_OGGTHEORA_ENCODER:BOOL=ON # OGV Export
   )
 
 if(USE_OSPRay)
-  list(APPEND cmake_args
-  -Dospray_DIR=${ospray_DIR}
-  -DOSPRAY_INSTALL_DIR=${OSPRAY_INSTALL_DIR})
+    list(APPEND cmake_args
+        -Dospray_DIR=${ospray_DIR}
+        -DOSPRAY_INSTALL_DIR=${OSPRAY_INSTALL_DIR}
+    )
 endif()
 
 # Video Export
-
-message(STATUS "### VTK.cmake")
-message(STATUS ${EP_PATH_SOURCE})
-message(STATUS ${EP_PATH_BUILD})
-message(STATUS ${extention})
-message(STATUS ${CMAKE_BUILD_TYPE})
-
-
 if (WIN32)
-set(cmake_args
-  ${cmake_args_generic}
-   # MPEG2
-  -DVTK_USE_MPEG2_ENCODER:BOOL=ON
-  -DvtkMPEG2Encode_INCLUDE_PATH:STRINGS=${EP_PATH_SOURCE}/ffmpeg$<SEMICOLON>${EP_PATH_BUILD}/ffmpeg
-  -DvtkMPEG2Encode_LIBRARIES:STRING=${EP_PATH_BUILD}/ffmpeg/build/${CMAKE_BUILD_TYPE}/vtkMPEG2Encode.${extention}
-  )
+    list(APPEND cmake_args
+        # MPEG2
+        -DVTK_USE_MPEG2_ENCODER:BOOL=ON
+        -DvtkMPEG2Encode_INCLUDE_PATH:STRINGS=${EP_PATH_SOURCE}/ffmpeg$<SEMICOLON>${EP_PATH_BUILD}/ffmpeg
+        -DvtkMPEG2Encode_LIBRARIES:STRING=${EP_PATH_BUILD}/ffmpeg/build/${CMAKE_BUILD_TYPE}/vtkMPEG2Encode.${extention}
+    )
 else()
-set(cmake_args
-  ${cmake_args_generic}
-  # FFMPEG
-  #-DVTK_USE_FFMPEG_ENCODER:BOOL=ON
-  -DModule_vtkIOFFMPEG:BOOL=ON
-  -DFFMPEG_INCLUDE_DIR:STRING=${EP_PATH_BUILD}/ffmpeg/include/
-  -DFFMPEG_avcodec_LIBRARY:STRING=${EP_PATH_BUILD}/ffmpeg/lib/libavcodec.${extention}
-  -DFFMPEG_avformat_LIBRARY:STRING=${EP_PATH_BUILD}/ffmpeg/lib/libavformat.${extention}
-  -DFFMPEG_avutil_LIBRARY:STRING=${EP_PATH_BUILD}/ffmpeg/lib/libavutil.${extention}
-  -DFFMPEG_swscale_LIBRARY:STRING=${EP_PATH_BUILD}/ffmpeg/lib/libswscale.${extention}
-  -DVTK_WRAP_PYTHON:BOOL=ON
-  -DVTK_USE_TK:BOOL=OFF
-  -DVTK_INSTALL_NO_PYTHON:BOOL=ON
-  )
+    list(APPEND cmake_args
+        # FFMPEG
+        -DModule_vtkIOFFMPEG:BOOL=ON
+        -DFFMPEG_INCLUDE_DIR:STRING=${EP_PATH_BUILD}/ffmpeg/include/
+        -DFFMPEG_avcodec_LIBRARY:STRING=${EP_PATH_BUILD}/ffmpeg/lib/libavcodec.${extention}
+        -DFFMPEG_avformat_LIBRARY:STRING=${EP_PATH_BUILD}/ffmpeg/lib/libavformat.${extention}
+        -DFFMPEG_avutil_LIBRARY:STRING=${EP_PATH_BUILD}/ffmpeg/lib/libavutil.${extention}
+        -DFFMPEG_swscale_LIBRARY:STRING=${EP_PATH_BUILD}/ffmpeg/lib/libswscale.${extention}
+        -DVTK_WRAP_PYTHON:BOOL=ON
+        -DVTK_USE_TK:BOOL=OFF
+        -DVTK_INSTALL_NO_PYTHON:BOOL=ON
+    )
 endif()
 
 ## #############################################################################
@@ -148,14 +134,12 @@ ExternalProject_Add(${ep}
   BUILD_ALWAYS 1
   )
   
-
 ## #############################################################################
 ## Set variable to provide infos about the project
 ## #############################################################################
 
 ExternalProject_Get_Property(${ep} binary_dir)
 set(${ep}_DIR ${binary_dir} PARENT_SCOPE)
-
 
 endif() #NOT USE_SYSTEM_ep
 
