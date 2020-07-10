@@ -40,7 +40,6 @@ if (NOT DEFINED ${ep}_SOURCE_DIR)
     if(WIN32) # MPEG2
         set(location URL "http://www.vtk.org/files/support/vtkmpeg2encode.zip")
     else() # FFMPEG
-        #set(tag "release/0.7")
         set(tag "release/4.3")
         set(location GIT_REPOSITORY "${GITHUB_PREFIX}FFmpeg/FFmpeg.git" GIT_TAG ${tag})
     endif()
@@ -68,7 +67,6 @@ if (WIN32)
         TMP_DIR ${tmp_path}
         STAMP_DIR ${stamp_path}
 
-        #${ep_dirs}
         ${location}
         CMAKE_GENERATOR ${gen}
         CMAKE_ARGS ${cmake_args}
@@ -89,13 +87,11 @@ else()
         TMP_DIR ${tmp_path}
         STAMP_DIR ${stamp_path}
 
-        #${ep_dirs}
         ${location}
         CONFIGURE_COMMAND ${EP_PATH_SOURCE}/${ep}/configure
 		        --disable-yasm --disable-static 
 		        --disable-network --disable-zlib --disable-doc --disable-ffplay --disable-decoders
 		        --enable-shared --prefix=${EP_PATH_BUILD}/${ep}
-        #PREFIX ${EP_PATH_BUILD}/${ep}
         BUILD_COMMAND make install
         )
 
