@@ -381,7 +381,9 @@ medImageView::Orientation medAbstractImageView::orientation()
 
 bool medAbstractImageView::setRotation(double angle)
 {
-    medAbstractImageViewNavigator * nav = this->primaryNavigator();
+    int res = false;
+
+    medAbstractImageViewNavigator *nav = this->primaryNavigator();
     if(nav)
     {
         // Set view in 3D if not done before
@@ -390,10 +392,10 @@ bool medAbstractImageView::setRotation(double angle)
             this->setOrientation(medImageView::VIEW_ORIENTATION_3D);
         }
 
-        return nav->setRotationAngle(angle);
+        res = nav->setRotationAngle(angle);
     }
 
-    return false;
+    return res;
 }
 
 bool medAbstractImageView::setSlice(int slice)
@@ -403,7 +405,8 @@ bool medAbstractImageView::setSlice(int slice)
     medAbstractImageViewNavigator *nav = this->primaryNavigator();
     if(nav)
     {
-        return nav->setSlice(slice);
+        res = nav->setSlice(slice);
     }
+
     return res;
 }

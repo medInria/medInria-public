@@ -118,11 +118,11 @@ medWorkspaceArea::~medWorkspaceArea()
 
 QPixmap medWorkspaceArea::grabScreenshot()
 {
-    medTabbedViewContainers* tabbedContainers = currentWorkspace()->tabbedViewContainers();
+    medTabbedViewContainers *tabbedContainers = currentWorkspace()->tabbedViewContainers();
     QList<medViewContainer*> currentContainerList = tabbedContainers->containersInTab(tabbedContainers->currentIndex());
 
     QList<medAbstractView*> selectedValidViewList;
-    foreach (medViewContainer* viewContainer, currentContainerList)
+    for (medViewContainer *viewContainer : currentContainerList)
     {
         // Only takes into account selected non empty views
         if ((viewContainer->view() != nullptr) && viewContainer->isSelected())
@@ -136,7 +136,7 @@ QPixmap medWorkspaceArea::grabScreenshot()
         if (selectedValidViewList.count() == 1)
         {
             // Only one view
-            medAbstractView* currentView = selectedValidViewList.at(0);
+            medAbstractView *currentView = selectedValidViewList.at(0);
             QPixmap screenshot(currentView->viewWidget()->size());
             currentView->viewWidget()->render(&screenshot);
 
@@ -154,12 +154,12 @@ QPixmap medWorkspaceArea::grabScreenshot()
 
 void medWorkspaceArea::grabVideo()
 {
-    medAbstractView* view = this->currentWorkspace()->tabbedViewContainers()->getFirstSelectedContainerView();
+    medAbstractView *view = this->currentWorkspace()->tabbedViewContainers()->getFirstSelectedContainerView();
     if (view)
     {
-        medAbstractProcessLegacy* process = qobject_cast<medAbstractProcessLegacy*>(dtkAbstractProcessFactory::instance()->create("med::ExportVideo"));
-        medAbstractImageView* iview = dynamic_cast<medAbstractImageView*>(view);
-        medTimeLineParameterL* timeLine = iview->timeLineParameter();
+        medAbstractProcessLegacy *process = qobject_cast<medAbstractProcessLegacy*>(dtkAbstractProcessFactory::instance()->create("med::ExportVideo"));
+        medAbstractImageView *iview = dynamic_cast<medAbstractImageView*>(view);
+        medTimeLineParameterL *timeLine = iview->timeLineParameter();
 
         // Get number of frames for dialog window
         int numberOfFrames = 1;
@@ -168,7 +168,22 @@ void medWorkspaceArea::grabVideo()
             numberOfFrames = timeLine->numberOfFrame();
         }
 
-        QVector<int> userParameters = getExportVideoDialogParameters(numberOfFrames);
+        int numberOfSlices = 1;
+        medAbstractLayeredView *layeredView = dynamic_cast<medAbstractLayeredView*>(view);
+        if (layeredView)
+        {
+            medAbstractData *data = layeredView->layerData(layeredView->currentLayer());
+            if (data)
+            {
+                medAbstractImageData *medData = dynamic_cast <medAbstractImageData *> (data);
+                if (medData)
+                {
+                    numberOfSlices = medData->zDimension();
+                }
+            }
+        }
+
+        QVector<int> userParameters = getExportVideoDialogParameters(numberOfFrames, numberOfSlices);
 
         if (userParameters.at(0) == 1) // User is ok to run the video export
         {
@@ -219,11 +234,7 @@ void medWorkspaceArea::grabVideo()
                 // Slice video
                 case 2:
                 {
-                    medAbstractLayeredView *layeredView = dynamic_cast<medAbstractLayeredView*>(view);
-                    medAbstractData *data = layeredView->layerData(layeredView->currentLayer());
-                    medAbstractImageData *medData = dynamic_cast <medAbstractImageData *> (data);
-
-                    for (int slice=0; slice<medData->zDimension(); ++slice)
+                    for (int slice=0; slice<numberOfSlices; ++slice)
                     {
                         iview->setSlice(slice);
                         runExportVideoProcess(process, screenshotCount);
@@ -240,9 +251,9 @@ void medWorkspaceArea::grabVideo()
     }
 }
 
-QVector<int> medWorkspaceArea::getExportVideoDialogParameters(int numberOfFrames)
+QVector<int> medWorkspaceArea::getExportVideoDialogParameters(int numberOfFrames, int numberOfSlices)
 {
-    medExportVideoDialog *exportDialog = new medExportVideoDialog(this, numberOfFrames);
+    medExportVideoDialog *exportDialog = new medExportVideoDialog(this, numberOfFrames, numberOfSlices);
 
     QVector<int> results;
 
@@ -264,7 +275,7 @@ QVector<int> medWorkspaceArea::getExportVideoDialogParameters(int numberOfFrames
     return results;
 }
 
-void medWorkspaceArea::runExportVideoProcess(medAbstractProcessLegacy* process, int screenshotCount)
+void medWorkspaceArea::runExportVideoProcess(medAbstractProcessLegacy *process, int screenshotCount)
 {
     // Get the current state of the view
     QPixmap currentPixmap = grabScreenshot();

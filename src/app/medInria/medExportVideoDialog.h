@@ -17,7 +17,7 @@ public:
         SLICE,
     };
 
-    medExportVideoDialog(QWidget *parent, int numberOfFrames );
+    medExportVideoDialog(QWidget *parent, int numberOfFrames, int numberOfSlices);
     virtual ~medExportVideoDialog();
 
     QVector<int> value();

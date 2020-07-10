@@ -74,7 +74,7 @@ protected:
     /**
      * @brief getExportVideoDialogParameters open a window displaying video export parameters and send results
      */
-    QVector<int> getExportVideoDialogParameters(int numberOfFrames);
+    QVector<int> getExportVideoDialogParameters(int numberOfFrames, int numberOfSlices);
 
     /**
      * @brief runExportVideoProcess send each frame of the video to process

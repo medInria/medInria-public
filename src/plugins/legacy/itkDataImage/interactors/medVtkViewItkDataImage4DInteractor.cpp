@@ -239,8 +239,8 @@ void medVtkViewItkDataImage4DInteractor::setCurrentTime(double time)
     {
         // Refresh view size in case of resize
         QSize size = d->view->viewWidget()->size();
-        int newSizeX = (int)((double)size.width()/90.0);
-        int newSizeY = (int)((double)size.height()/1.5);
+        int newSizeX = static_cast<int>(size.width()/90.0);
+        int newSizeY = static_cast<int>(size.height()/1.5);
 
         // Display Time + Shift
         if (d->textActor == nullptr)

@@ -552,8 +552,8 @@ bool medVtkViewNavigator::setRotationAngle(double angle)
 {
     vtkSmartPointer<vtkTransform> transform = vtkSmartPointer<vtkTransform>::New();
 
-    double* cameraPos = d->view3d->GetCameraFocalPoint();
-    double* cameraUp  = d->view3d->GetCameraViewUp(); // camera axis
+    double *cameraPos = d->view3d->GetCameraFocalPoint();
+    double *cameraUp  = d->view3d->GetCameraViewUp(); // camera axis
 
     // Translation needed for meshes not centered at 0, 0, 0
     transform->Translate(cameraPos[0], cameraPos[1], cameraPos[2]);
@@ -569,7 +569,7 @@ bool medVtkViewNavigator::setRotationAngle(double angle)
         // We only apply rotation on meshes
         if (data && data->identifier().contains("vtkDataMesh") )
         {
-            vtkMetaDataSet* dataset = reinterpret_cast<vtkMetaDataSet*>(data->data());
+            vtkMetaDataSet *dataset = reinterpret_cast<vtkMetaDataSet*>(data->data());
 
             for(unsigned int i = 0; i < dataset->GetNumberOfActors(); i++)
             {

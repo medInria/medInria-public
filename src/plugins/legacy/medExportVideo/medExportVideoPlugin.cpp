@@ -12,7 +12,7 @@ bool ExportVideoPlugin::initialize()
 {
     if (!ExportVideo::registered())
     {
-        dtkWarn() << "Unable to register ExportVideo";
+        qDebug() << "Unable to register ExportVideo";
     }
     return true;
 }

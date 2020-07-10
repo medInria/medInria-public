@@ -37,9 +37,9 @@ public:
     medBoolParameterL *loopParameter;
 
     // Time shift display
-    medBoolParameterL*   displayTimeParameter;
-    medDoubleParameterL* timeShiftParameter;
-    medComboBox*        extensionShiftParameter;
+    medBoolParameterL   *displayTimeParameter;
+    medDoubleParameterL *timeShiftParameter;
+    medComboBox         *extensionShiftParameter;
     QString             currentDisplayedTime;
 
     QTimeLine *timeLine;

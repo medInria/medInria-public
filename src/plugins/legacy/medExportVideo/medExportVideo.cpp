@@ -17,13 +17,12 @@
 
 // Qt
 #include <QComboBox>
+#include <QEventLoop>
 #include <QFileDialog>
 #include <QGridLayout>
 #include <QLabel>
-#include <QSpinBox>
-
-#include <QEventLoop>
 #include <QProcess>
+#include <QSpinBox>
 
 // /////////////////////////////////////////////////////////////////
 // ExportVideoPrivate
@@ -39,14 +38,14 @@ public:
     int maximumFrame;
 
     // GUI
-    QFileDialog* exportDialog;
-    QComboBox* formatComboBox;
-    QSpinBox* frameRateSpinBox;
-    QLabel* frameRateLabel;
-    QComboBox* subsamplingComboBox;
-    QLabel* subsamplingLabel;
-    QComboBox* qualityComboBox;
-    QLabel* qualityLabel;
+    QFileDialog *exportDialog;
+    QComboBox   *formatComboBox;
+    QSpinBox    *frameRateSpinBox;
+    QLabel      *frameRateLabel;
+    QComboBox   *subsamplingComboBox;
+    QLabel      *subsamplingLabel;
+    QComboBox   *qualityComboBox;
+    QLabel      *qualityLabel;
 
     // User parameters
     QString filename;
@@ -95,7 +94,7 @@ QString ExportVideo::identifier() const
     return description();
 }
 
-void ExportVideo::setParameter(int* data, int frame)
+void ExportVideo::setParameter(int *data, int frame)
 {
     d->width  = data[0];
     d->height = data[1];
@@ -120,8 +119,8 @@ void ExportVideo::setParameter(int* data, int frame)
 
     while (arraySize <= frame)
     {
-       d->imagesArray.resize(1 + 2 * arraySize); // it's common to double here to avoid N resizes when giving N frames in order
-       arraySize = d->imagesArray.size();
+        d->imagesArray.resize(1 + 2 * arraySize); // it's common to double here to avoid N resizes when giving N frames in order
+        arraySize = d->imagesArray.size();
     }
 
     d->imagesArray[frame] = currentImage;
@@ -290,12 +289,12 @@ int ExportVideo::displayFileDialog()
     d->exportDialog->setAcceptMode(QFileDialog::AcceptSave);
     d->exportDialog->selectFile("video.ogv");
 
-    QLayout* layout = d->exportDialog->layout();
-    QGridLayout* gridbox = qobject_cast<QGridLayout*>(layout);
+    QLayout *layout = d->exportDialog->layout();
+    QGridLayout *gridbox = qobject_cast<QGridLayout*>(layout);
 
     // Hide the filter list
-    QWidget * filtersLabel = gridbox->itemAtPosition(gridbox->rowCount()-1, 0)->widget();
-    QWidget * filtersList = gridbox->itemAtPosition(gridbox->rowCount()-1, 1)->widget();
+    QWidget *filtersLabel = gridbox->itemAtPosition(gridbox->rowCount()-1, 0)->widget();
+    QWidget *filtersList  = gridbox->itemAtPosition(gridbox->rowCount()-1, 1)->widget();
     filtersLabel->hide();
     filtersList->hide();
 
