@@ -135,6 +135,7 @@ polygonRoiToolBox::polygonRoiToolBox(QWidget *parent ) :
 polygonRoiToolBox::~polygonRoiToolBox()
 {
     delete viewEventFilter;
+    viewEventFilter = nullptr;
 }
 
 bool polygonRoiToolBox::registered()
