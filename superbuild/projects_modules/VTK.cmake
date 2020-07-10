@@ -105,9 +105,6 @@ else()
         -DFFMPEG_avformat_LIBRARY:STRING=${EP_PATH_BUILD}/ffmpeg/lib/libavformat.${extention}
         -DFFMPEG_avutil_LIBRARY:STRING=${EP_PATH_BUILD}/ffmpeg/lib/libavutil.${extention}
         -DFFMPEG_swscale_LIBRARY:STRING=${EP_PATH_BUILD}/ffmpeg/lib/libswscale.${extention}
-        -DVTK_WRAP_PYTHON:BOOL=ON
-        -DVTK_USE_TK:BOOL=OFF
-        -DVTK_INSTALL_NO_PYTHON:BOOL=ON
     )
 endif()
 

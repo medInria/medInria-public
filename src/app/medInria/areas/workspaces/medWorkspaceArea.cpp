@@ -17,6 +17,7 @@
 #include <medAbstractData.h>
 #include <medAbstractDataFactory.h>
 #include <medAbstractDbController.h>
+#include <medAbstractImageData.h>
 #include <medAbstractImageView.h>
 #include <medAbstractView.h>
 #include <medDatabaseController.h>
@@ -38,12 +39,12 @@
 #include <medViewFactory.h>
 #include <medWorkspaceFactory.h>
 
+#include <dtkCoreSupport/dtkAbstractProcessFactory.h>
+
 #include <QtGui>
 #include <QtWidgets>
 #include <QImage>
 #include <QtOpenGL/QGLWidget>
-
-#include <medAbstractImageData.h>
 
 medWorkspaceArea::medWorkspaceArea(QWidget *parent) : QWidget(parent), d(new medWorkspaceAreaPrivate)
 {
