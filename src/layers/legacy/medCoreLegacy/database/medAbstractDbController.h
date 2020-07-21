@@ -31,6 +31,8 @@ public:
 
     virtual int dataSourceId() const = 0;
 
+    virtual bool createConnection() = 0;
+    
     virtual QList<medDataIndex> patients() const = 0;
     virtual QList<medDataIndex> studies(const medDataIndex& index ) const = 0;
     virtual QList<medDataIndex> series(const medDataIndex& index) const = 0;

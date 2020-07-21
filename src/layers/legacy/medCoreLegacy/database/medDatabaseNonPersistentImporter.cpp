@@ -19,6 +19,7 @@
 #include <medDatabaseNonPersistentItem.h>
 #include <medDatabaseNonPersistentItem_p.h>
 #include <medDatabaseNonPersistentImporter.h>
+#include <medDataManager.h>
 #include <medGlobalDefs.h>
 #include <medMetaDataKeys.h>
 
@@ -97,7 +98,7 @@ medDataIndex medDatabaseNonPersistentImporter::populateDatabaseAndGenerateThumbn
     QString birthdate = medMetaDataKeys::BirthDate.getFirstValue(data);
 
     // check if patient is already in the persistent database
-    medDataIndex databaseIndex = medDatabaseController::instance()->indexForPatient ( patientName );
+    medDataIndex databaseIndex = medDataManager::instance()->controller()->indexForPatient(patientName);
     medDatabaseNonPersistentItem *patientItem = nullptr;
 
     if ( databaseIndex.isValid() )
@@ -154,8 +155,8 @@ medDataIndex medDatabaseNonPersistentImporter::populateDatabaseAndGenerateThumbn
     if( studyName!="EmptyStudy" || seriesName!="EmptySeries" )
     {
         // check if study is already in the persistent database
-        databaseIndex = medDatabaseController::instance()->indexForStudy ( patientName, studyName );
-        medDatabaseNonPersistentItem *studyItem = nullptr;
+        databaseIndex = medDataManager::instance()->controller()->indexForStudy ( patientName, studyName );
+        medDatabaseNonPersistentItem *studyItem = NULL;
 
         if ( databaseIndex.isValid() )
         {

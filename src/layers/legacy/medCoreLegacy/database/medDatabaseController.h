@@ -15,7 +15,7 @@
 #include <QSqlDatabase>
 #include <QSqlQuery>
 
-#include <medAbstractDbController.h>
+#include <medAbstractPersistentDbController.h>
 #include <medCoreLegacyExport.h>
 
 #define EXEC_QUERY(q) medDatabaseController::instance()->execQuery(q, __FILE__ , __LINE__ )
@@ -27,7 +27,7 @@ class medJobItemL;
 /**
  * Concrete dbController implementation adhering to abstract base class
  */
-class MEDCORELEGACY_EXPORT medDatabaseController: public medAbstractDbController
+class MEDCORELEGACY_EXPORT medDatabaseController: public medAbstractPersistentDbController
 {
     Q_OBJECT
 
@@ -38,58 +38,38 @@ public:
     const QSqlDatabase& database() const;
 
     bool createConnection();
-    bool  closeConnection();
+    bool  closeConnection() override;
 
-    medDataIndex indexForPatient(int id);
-    medDataIndex indexForStudy  (int id);
-    medDataIndex indexForSeries (int id);
+    medDataIndex indexForPatient(int id) override;
+    medDataIndex indexForStudy  (int id) override;
+    medDataIndex indexForSeries (int id)override;
 
-    medDataIndex indexForPatient (const QString &patientName);
-    medDataIndex indexForStudy   (const QString &patientName, const QString &studyName);
+    medDataIndex indexForPatient (const QString &patientName) override;
+    medDataIndex indexForStudy   (const QString &patientName, const QString &studyName) override;
     medDataIndex indexForSeries  (const QString &patientName, const QString &studyName,
-                                  const QString &seriesName);
+                                  const QString &seriesName) override;
 
     QString stringForPath(const QString & name) const;
 
-    bool moveDatabase(QString newLocation);
+    bool isConnected() const override;
 
-    bool isConnected() const;
+    QList<medDataIndex> patients() const override;
+    QList<medDataIndex> studies(const medDataIndex& index ) const override;
+    QList<medDataIndex> series(const medDataIndex& index) const override;
 
-    virtual QList<medDataIndex> patients() const;
-    virtual QList<medDataIndex> studies(const medDataIndex& index ) const;
-    virtual QList<medDataIndex> series(const medDataIndex& index) const;
+    QString metaData(const medDataIndex& index,const QString& key) const override;
+    bool setMetaData(const medDataIndex& index, const QString& key, const QString& value) override;
 
-    virtual QPixmap thumbnail(const medDataIndex& index) const;
-
-    virtual QString metaData(const medDataIndex& index,const QString& key) const;
-    virtual bool setMetaData(const medDataIndex& index, const QString& key, const QString& value);
-
-    virtual bool isPersistent() const;
-
-    bool execQuery(QSqlQuery& query, const char* file = nullptr, int line = -1) const;
+    bool execQuery(QSqlQuery& query, const char* file = nullptr, int line = -1) const override;
 
     void addTextColumnToSeriesTableIfNeeded(QSqlQuery query, QString columnName);
 
 public slots:
 
-    medAbstractData *retrieve(const medDataIndex &index) const;
+    QList<medDataIndex> moveStudy(const medDataIndex& indexStudy, const medDataIndex& toPatient) override;
+    medDataIndex moveSeries(const medDataIndex& indexSeries, const medDataIndex& toStudy) override;
 
-    void importPath(const QString& file, const QUuid& importUuid, bool indexWithoutCopying = false);
-    void importData(medAbstractData *data, const QUuid & importUuid);
-
-    virtual void remove(const medDataIndex& index);
-
-    QList<medDataIndex> moveStudy(const medDataIndex& indexStudy, const medDataIndex& toPatient);
-    medDataIndex moveSeries(const medDataIndex& indexSeries, const medDataIndex& toStudy);
-
-    virtual int dataSourceId() const;
-
-     bool contains(const medDataIndex &index) const;
-
-     virtual void removeAll();
-
-protected slots:
-    void showOpeningError(QObject *sender);
+    bool contains(const medDataIndex &index) const override;
 
 private:
     medDatabaseController();
@@ -100,7 +80,7 @@ private:
 
     bool updateFromNoVersionToVersion1();
 
-    QSqlDatabase m_database;
+    // QSqlDatabase m_database;
 
     medDatabaseControllerPrivate * d;
     static medDatabaseController * s_instance;

@@ -16,7 +16,6 @@
 #include <medAbstractData.h>
 #include <medAbstractDataFactory.h>
 #include <medAbstractImageData.h>
-#include <medDatabaseController.h>
 #include <medDatabaseRemover.h>
 #include <medDataIndex.h>
 #include <medDataManager.h>
@@ -41,7 +40,7 @@ const QString medDatabaseRemoverPrivate::T_SERIES = "series";
 medDatabaseRemover::medDatabaseRemover ( const medDataIndex &index_ ) : medJobItemL(), d ( new medDatabaseRemoverPrivate )
 {
     d->index = index_;
-    d->db = medDatabaseController::instance()->database();
+    d->db = medDataManager::instance()->controller()->database();
     d->isCancelled = false;
 }
 
@@ -68,7 +67,7 @@ void medDatabaseRemover::internalRun()
         ptQuery.prepare ( "SELECT id FROM " + d->T_PATIENT );
     }
 
-    EXEC_QUERY ( ptQuery );
+    medDataManager::instance()->controller()->execQuery(ptQuery);
     while ( ptQuery.next() )
     {
         if ( d->isCancelled )
@@ -89,7 +88,7 @@ void medDatabaseRemover::internalRun()
         }
         stQuery.bindValue ( ":patient", patientDbId );
 
-        EXEC_QUERY ( stQuery );
+        medDataManager::instance()->controller()->execQuery(stQuery);
         while ( stQuery.next() )
         {
             if ( d->isCancelled )
@@ -110,7 +109,8 @@ void medDatabaseRemover::internalRun()
             }
             seQuery.bindValue ( ":study", studyDbId );
 
-            EXEC_QUERY ( seQuery );
+            medDataManager::instance()->controller()->execQuery(seQuery);
+
             while ( seQuery.next() )
             {
                 if ( d->isCancelled )
@@ -156,7 +156,7 @@ void medDatabaseRemover::removeSeries ( int patientDbId, int studyDbId, int seri
 
     query.prepare ( "SELECT thumbnail, path, name  FROM " + d->T_SERIES + " WHERE id = :series " );
     query.bindValue ( ":series", seriesDbId );
-    EXEC_QUERY ( query );
+    medDataManager::instance()->controller()->execQuery(query);
 
     if ( query.next() )
     {
@@ -181,7 +181,7 @@ bool medDatabaseRemover::isStudyEmpty ( int studyDbId )
 
     query.prepare ( "SELECT id FROM " + d->T_SERIES + " WHERE study = :study " );
     query.bindValue ( ":study", studyDbId );
-    EXEC_QUERY ( query );
+    medDataManager::instance()->controller()->execQuery(query);
     return !query.next();
 }
 
@@ -193,7 +193,7 @@ void medDatabaseRemover::removeStudy ( int patientDbId, int studyDbId )
     query.prepare ( "SELECT thumbnail, name, uid FROM " + d->T_STUDY + " WHERE id = :id " );
     query.bindValue ( ":id", studyDbId );
 
-    EXEC_QUERY ( query );
+    medDataManager::instance()->controller()->execQuery(query);
 
     if ( query.next() )
     {
@@ -215,7 +215,7 @@ bool medDatabaseRemover::isPatientEmpty ( int patientDbId )
 
     query.prepare ( "SELECT id FROM " + d->T_STUDY + " WHERE patient = :patient " );
     query.bindValue ( ":patient", patientDbId );
-    EXEC_QUERY ( query );
+    medDataManager::instance()->controller()->execQuery(query);    
     return !query.next();
 }
 
@@ -228,7 +228,7 @@ void medDatabaseRemover::removePatient ( int patientDbId )
 
     query.prepare ( "SELECT thumbnail, patientId  FROM " + d->T_PATIENT + " WHERE id = :patient " );
     query.bindValue ( ":patient", patientDbId );
-    EXEC_QUERY ( query );
+    medDataManager::instance()->controller()->execQuery(query);
     if ( query.next() )
     {
         removeThumbnailIfNeeded(query);
@@ -244,7 +244,7 @@ bool medDatabaseRemover::removeTableRow ( const QString &table, int id )
     QSqlQuery query ( db );
     query.prepare ( "DELETE FROM " + table + " WHERE id = :id" );
     query.bindValue ( ":id", id );
-    EXEC_QUERY ( query );
+    medDataManager::instance()->controller()->execQuery(query);
 
     return (query.numRowsAffected()==1);
 }

@@ -19,7 +19,6 @@
 #include <medCore.h>
 #include <medDatabaseSettingsWidget.h>
 #include <medDataManager.h>
-#include <medDatabaseController.h>
 #include <medDiffusionWorkspace.h>
 #include <medFilteringWorkspace.h>
 #include <medLogger.h>
@@ -119,14 +118,6 @@ void medApplication::open(QString path)
 void medApplication::initialize()
 {
     qRegisterMetaType<medDataIndex>("medDataIndex");
-
-    //  Setting up database connection
-    if ( ! medDatabaseController::instance()->createConnection())
-    {
-        qDebug() << "Unable to create a connection to the database";
-    }
-
-    medDataManager::initialize();
 
     // Registering different workspaces
     medWorkspaceFactory * viewerWSpaceFactory = medWorkspaceFactory::instance();

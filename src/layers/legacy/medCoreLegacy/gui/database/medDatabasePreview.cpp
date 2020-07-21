@@ -15,7 +15,6 @@
 
 #include <medDataIndex.h>
 #include <medAbstractDbController.h>
-#include <medDatabaseController.h>
 #include <medDatabaseNonPersistentController.h>
 #include <medDataManager.h>
 #include <medGlobalDefs.h>

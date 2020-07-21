@@ -13,7 +13,6 @@
 
 #include <medAbstractDatabaseItem.h>
 #include <medAbstractDbController.h>
-#include <medDatabaseController.h>
 #include <medDatabaseItem.h>
 #include <medDatabaseModel.h>
 #include <medDatabaseNonPersistentController.h>
@@ -536,7 +535,7 @@ void medDatabaseModel::populate(medAbstractDatabaseItem *root)
     typedef QList<medDataIndex> IndexList;
 
     IntList dataSources;
-    dataSources << medDatabaseController::instance()->dataSourceId()
+    dataSources <<  medDataManager::instance()->controller()->dataSourceId()
                 << medDatabaseNonPersistentController::instance()->dataSourceId();
 
     for( const int dataSourceId : dataSources )
