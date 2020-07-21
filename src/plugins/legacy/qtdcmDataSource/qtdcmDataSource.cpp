@@ -14,7 +14,6 @@
 #include <qtdcmDataSource.h>
 
 #include <medDatabaseImporter.h>
-#include <medDatabaseController.h>
 #include <medJobManagerL.h>
 #include <medAbstractDataSourceFactory.h>
 #include <medToolBox.h>

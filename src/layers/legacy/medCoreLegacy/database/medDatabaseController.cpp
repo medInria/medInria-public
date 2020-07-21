@@ -147,9 +147,12 @@ bool medDatabaseController::createConnection(void)
 {
     medStorage::mkpath(medStorage::dataLocation() + "/");
 
-    if (this->m_database.databaseName().isEmpty())
-        this->m_database = QSqlDatabase::addDatabase("QSQLITE");
-    this->m_database.setDatabaseName(medStorage::dataLocation() + "/" + "db");
+    m_database = QSqlDatabase::database("sqlite");
+    if (!m_database.isValid())
+    {
+        m_database = QSqlDatabase::addDatabase("QSQLITE", "sqlite");
+    }
+    m_database.setDatabaseName(medStorage::dataLocation() + "/" + "db");
 
     if (!m_database.open())
     {
@@ -332,60 +335,9 @@ medDataIndex medDatabaseController::indexForSeries(const QString &patientName, c
     return medDataIndex();
 }
 
-/**
-* Import data into the db read from file
-* @param const QString & file The file containing the data
-* @param bool indexWithoutCopying true if the file must only be indexed by its current path,
-* false if the file will be imported (copied or converted to the internal storage format)
-*/
-void medDatabaseController::importPath(const QString& file, const QUuid &importUuid, bool indexWithoutCopying)
-{
-    QFileInfo info(file);
-    medDatabaseImporter *importer = new medDatabaseImporter(info.absoluteFilePath(),importUuid, indexWithoutCopying);
-    medMessageProgress *message = medMessageController::instance()->showProgress("Importing " + info.fileName());
-
-    connect(importer, SIGNAL(progressed(int)),    message, SLOT(setProgress(int)));
-    connect(importer, SIGNAL(dataImported(medDataIndex,QUuid)), this, SIGNAL(dataImported(medDataIndex,QUuid)));
-
-    connect(importer, SIGNAL(success(QObject *)), message, SLOT(success()));
-    connect(importer, SIGNAL(failure(QObject *)), message, SLOT(failure()));
-    connect(importer,SIGNAL(showError(const QString&,unsigned int)),
-            medMessageController::instance(),SLOT(showError(const QString&,unsigned int)));
-
-    medJobManagerL::instance()->registerJobItem(importer);
-    QThreadPool::globalInstance()->start(importer);
-}
-
-/**
-* Import data into the db read from memory
-* @param medAbstractData * data dataObject
-*/
-void medDatabaseController::importData( medAbstractData *data, const QUuid & importUuid)
-{
-    medDatabaseImporter *importer = new medDatabaseImporter(data, importUuid);
-    medMessageProgress *message = medMessageController::instance()->showProgress("Saving database item");
-
-    connect(importer, SIGNAL(progressed(int)),    message, SLOT(setProgress(int)));
-    connect(importer, SIGNAL(dataImported(medDataIndex,QUuid)), this, SIGNAL(dataImported(medDataIndex,QUuid)));
-
-    connect(importer, SIGNAL(success(QObject *)), message, SLOT(success()));
-    connect(importer, SIGNAL(failure(QObject *)), message, SLOT(failure()));
-    connect(importer,SIGNAL(showError(const QString&,unsigned int)),
-            medMessageController::instance(),SLOT(showError(const QString&,unsigned int)));
-
-    medJobManagerL::instance()->registerJobItem(importer);
-    QThreadPool::globalInstance()->start(importer);
-}
-
-void medDatabaseController::showOpeningError(QObject *sender)
-{
-    Q_UNUSED(sender);
-    medMessageController::instance()->showError("Opening item failed.", 3000);
-}
-
 bool medDatabaseController::createPatientTable()
 {
-    QSqlQuery query(this->database());
+    QSqlQuery query(m_database);
 
     if( ! query.prepare(
                 "CREATE TABLE IF NOT EXISTS patient ("
@@ -405,7 +357,7 @@ bool medDatabaseController::createPatientTable()
 
 bool medDatabaseController::createStudyTable()
 {
-    QSqlQuery query(this->database());
+    QSqlQuery query(m_database);
 
     return query.prepare(
                 "CREATE TABLE IF NOT EXISTS study ("
@@ -421,7 +373,7 @@ bool medDatabaseController::createStudyTable()
 
 bool medDatabaseController::createSeriesTable()
 {
-    QSqlQuery query(this->database());
+    QSqlQuery query(m_database);
 
     query.prepare(
                 "CREATE TABLE IF NOT EXISTS series ("
@@ -508,7 +460,7 @@ bool medDatabaseController::updateFromNoVersionToVersion1()
     // whatever reason the app/computer crashes, and we'll just try again on the
     // next launch.
 
-    QSqlQuery q(this->database());
+    QSqlQuery q(m_database);
 
     if ( ! (q.exec("PRAGMA user_version") && q.first()))
     {
@@ -601,27 +553,6 @@ bool medDatabaseController::updateFromNoVersionToVersion1()
 }
 
 /**
-* Change the storage location of the database by copy, verify, delete
-* @param QString newLocation path of new storage location, must be empty
-* @return bool true on success
-*/
-bool medDatabaseController::moveDatabase( QString newLocation)
-{
-    // close connection if necessary
-    if (this->isConnected())
-    {
-        this->closeConnection();
-    }
-    // now update the datastorage path and make sure to reconnect
-    medStorage::setDataLocation(newLocation);
-
-    qDebug() << "Restarting connection...";
-    this->createConnection();
-
-    return true;
-}
-
-/**
 * Status of connection
 * @return bool true on success
 */
@@ -641,21 +572,6 @@ medDatabaseController::~medDatabaseController()
     delete d;
 }
 
-/** override base class */
-void medDatabaseController::remove( const medDataIndex& index )
-{
-    medDatabaseRemover *remover = new medDatabaseRemover(index);
-    medMessageProgress *message = medMessageController::instance()->showProgress("Removing item");
-
-    connect(remover, SIGNAL(progressed(int)),    message, SLOT(setProgress(int)));
-    connect(remover, SIGNAL(success(QObject *)), message, SLOT(success()));
-    connect(remover, SIGNAL(failure(QObject *)), message, SLOT(failure()));
-    connect(remover, SIGNAL(removed(const medDataIndex &)), this, SIGNAL(dataRemoved(medDataIndex)));
-
-    medJobManagerL::instance()->registerJobItem(remover);
-    QThreadPool::globalInstance()->start(remover);
-}
-
 /**
  * Moves study and its series from one patient to another and returns the list of new indexes
  * @param const medDataIndex & indexStudy The data index of the study to be moved
@@ -663,7 +579,7 @@ void medDatabaseController::remove( const medDataIndex& index )
  */
 QList<medDataIndex> medDatabaseController::moveStudy( const medDataIndex& indexStudy, const medDataIndex& toPatient)
 {
-    QSqlQuery query(this->database());
+    QSqlQuery query(m_database);
 
     bool result = false;
     QList<medDataIndex> newIndexList;
@@ -710,7 +626,7 @@ QList<medDataIndex> medDatabaseController::moveStudy( const medDataIndex& indexS
  */
 medDataIndex medDatabaseController::moveSeries( const medDataIndex& indexSeries, const medDataIndex& toStudy)
 {
-    QSqlQuery query(this->database());
+    QSqlQuery query(m_database);
 
     bool result = false;
     medDataIndex newIndex;
@@ -743,7 +659,7 @@ QString medDatabaseController::metaData(const medDataIndex& index,const QString&
     typedef medDatabaseControllerPrivate::MetaDataMap MetaDataMap;
     typedef medDatabaseControllerPrivate::TableEntryList TableEntryList;
 
-    QSqlQuery query(this->database());
+    QSqlQuery query(m_database);
 
     // Attempt to translate the desired metadata into a table / column entry.
     MetaDataMap::const_iterator it(d->metaDataLookup.find(key));
@@ -800,7 +716,7 @@ bool medDatabaseController::setMetaData( const medDataIndex& index, const QStrin
     typedef medDatabaseControllerPrivate::MetaDataMap MetaDataMap;
     typedef medDatabaseControllerPrivate::TableEntryList TableEntryList;
 
-    QSqlQuery query(this->database());
+    QSqlQuery query(m_database);
 
     // Attempt to translate the desired metadata into a table / column entry.
     MetaDataMap::const_iterator it(d->metaDataLookup.find(key));
@@ -846,17 +762,11 @@ bool medDatabaseController::setMetaData( const medDataIndex& index, const QStrin
     return success;
 }
 
-/** Implement base class */
-int medDatabaseController::dataSourceId() const
-{
-    return 1;
-}
-
 /** Enumerate all patients stored in this DB*/
 QList<medDataIndex> medDatabaseController::patients() const
 {
     QList<medDataIndex> ret;
-    QSqlQuery query(this->database());
+    QSqlQuery query(m_database);
     query.prepare("SELECT id FROM patient");
     EXEC_QUERY(query);
 #if QT_VERSION > 0x0406FF
@@ -879,7 +789,7 @@ QList<medDataIndex> medDatabaseController::studies( const medDataIndex& index ) 
         return ret;
     }
 
-    QSqlQuery query(this->database());
+    QSqlQuery query(m_database);
     query.prepare("SELECT id FROM study WHERE patient = :patientId");
     query.bindValue(":patientId", index.patientId());
     EXEC_QUERY(query);
@@ -903,7 +813,7 @@ QList<medDataIndex> medDatabaseController::series( const medDataIndex& index) co
         return ret;
     }
 
-    QSqlQuery query(this->database());
+    QSqlQuery query(m_database);
     query.prepare("SELECT id FROM series WHERE study = :studyId");
     query.bindValue(":studyId", index.studyId());
     EXEC_QUERY(query);
@@ -914,24 +824,6 @@ QList<medDataIndex> medDatabaseController::series( const medDataIndex& index) co
         ret.push_back( medDataIndex::makeSeriesIndex(this->dataSourceId(), index.patientId(), index.studyId(), query.value(0).toInt()));
     }
     return ret;
-}
-
-QPixmap medDatabaseController::thumbnail(const medDataIndex &index) const
-{
-    QString thumbpath = this->metaData(index, medMetaDataKeys::ThumbnailPath.key());
-
-    QFileInfo fileInfo(thumbpath);
-    if ( fileInfo.exists() )
-    {
-        return QPixmap(thumbpath);
-    }
-    return QPixmap();
-}
-
-/** Implement base class */
-bool medDatabaseController::isPersistent(  ) const
-{
-    return true;
 }
 
 bool medDatabaseController::execQuery(QSqlQuery& query, const char* file, int line) const
@@ -964,7 +856,7 @@ bool medDatabaseController::contains(const medDataIndex &index) const
         QVariant studyId = index.studyId();
         QVariant seriesId = index.seriesId();
 
-        QSqlQuery query(this->database());
+        QSqlQuery query(m_database);
         QString fromRequest = "SELECT * FROM patient";
         QString whereRequest = " WHERE patient.id = :id";
 

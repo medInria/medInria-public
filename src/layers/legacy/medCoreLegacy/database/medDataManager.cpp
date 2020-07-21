@@ -21,6 +21,8 @@
 #include <medJobManagerL.h>
 #include <medMessageController.h>
 #include <medPluginManager.h>
+#include <medSettingsManager.h>
+#include <medStorage.h>
 
 /* THESE CLASSES NEED TO BE THREAD-SAFE, don't forget to lock the mutex in the
  * methods below that access state.
@@ -33,12 +35,6 @@ public:
         : q_ptr(q)
         , mutex(QMutex::Recursive)
     {
-        dbController = medDatabaseController::instance();
-        nonPersDbController = medDatabaseNonPersistentController::instance();
-
-        if( ! dbController || ! nonPersDbController) {
-            qCritical() << "One of the DB controllers could not be created !";
-        }
     }
 
     void cleanupTracker()
@@ -71,7 +67,7 @@ public:
     medDataManager * const q_ptr;
     QMutex mutex;
     QHash<medDataIndex, dtkSmartPointer<medAbstractData> > loadedDataObjectTracker;
-    medAbstractDbController * dbController;
+    medAbstractPersistentDbController * dbController;
     medAbstractDbController * nonPersDbController;
     QTimer timer;
     QHash<QUuid, medDataIndex> makePersistentJobs;
@@ -81,17 +77,12 @@ public:
 
 medDataManager * medDataManager::s_instance = nullptr;
 
-// Not thread-safe, but should only be called once, at application start-up
-void medDataManager::initialize()
+medDataManager * medDataManager::instance()
 {
     if ( ! s_instance) {
         s_instance = new medDataManager();
     }
-}
-
-medDataManager * medDataManager::instance()
-{
-    return s_instance;
+   return s_instance;
 }
 
 medAbstractData* medDataManager::retrieveData(const medDataIndex& index)
@@ -359,6 +350,12 @@ medAbstractDbController *medDataManager::controllerForDataSource(int dataSourceI
     return d->controllerForDataSource(dataSourceId);
 }
 
+medAbstractPersistentDbController *medDataManager::controller()
+{
+    Q_D(medDataManager);
+    return d->dbController;    
+}
+
 void medDataManager::exportDialog_updateSuffix(int index)
 {
     QComboBox * typesHandled = qobject_cast<QComboBox*>(sender());
@@ -521,6 +518,15 @@ void medDataManager::setWriterPriorities()
 medDataManager::medDataManager() : d_ptr(new medDataManagerPrivate(this))
 {
     Q_D(medDataManager);
+
+    d->nonPersDbController = medDatabaseNonPersistentController::instance();
+    // Setting up database connection
+    d->dbController = medDatabaseController::instance();
+    if ( ! d->dbController->createConnection() )
+    {
+        qDebug() << "Unable to create a connection to the database";
+    }
+    
     QList<medAbstractDbController*> controllers;
     controllers << d->dbController << d->nonPersDbController;
     for(medAbstractDbController* controller : controllers)
@@ -535,6 +541,39 @@ medDataManager::medDataManager() : d_ptr(new medDataManagerPrivate(this))
 
     connect(medPluginManager::instance(), SIGNAL(allPluginsLoaded()), this, SLOT(setWriterPriorities()));
     connect(this, SIGNAL(dataImported(medDataIndex,QUuid)), this, SLOT(removeFromNonPersistent(medDataIndex,QUuid)));
+}
+
+void medDataManager::setDatabaseLocation()
+{
+    Q_D(medDataManager);
+    QString currentLocation = medStorage::dataLocation();
+
+    //  If the user configured a new location for the database in the settings editor, we'll need to move it
+
+    medSettingsManager* mnger = medSettingsManager::instance();
+    QString newLocation = mnger->value("medDatabaseSettingsWidget", "new_database_location").toString();
+    if (!newLocation.isEmpty())
+    {
+
+        //  If the locations are different we need to move the db to the new location
+
+        if (currentLocation.compare(newLocation) != 0)
+        {
+            if (! d->dbController->moveDatabase(newLocation) )
+            {
+                qDebug() << "Failed to move the database from " << currentLocation << " to " << newLocation;
+                //  The new location is invalid so set it to zero
+                newLocation = "";
+            }
+            mnger->setValue("medDatabaseSettingsWidget", "actual_database_location", newLocation);
+
+            //  We need to reset the new Location to prevent doing it all the time
+
+            mnger->setValue("medDatabaseSettingsWidget", "new_database_location", "");
+        }
+    }
+    // END OF DATABASE INITIALISATION
+
 }
 
 medDataManager::~medDataManager()

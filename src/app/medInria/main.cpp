@@ -25,7 +25,7 @@
 
 #include <medPluginManager.h>
 #include <medDataIndex.h>
-#include <medDatabaseController.h>
+#include <medDataManager.h>
 #include <medSettingsManager.h>
 #include <medStorage.h>
 
@@ -33,6 +33,9 @@
   #include <medPython.h>
   #include <medPythonTools.h>
 #endif
+
+#include <dtkCoreSupport/dtkGlobal.h>
+
 
 void forceShow(medMainWindow& mainwindow )
 {
@@ -192,33 +195,8 @@ int main(int argc,char* argv[])
         splash.showMessage("Loading plugins...");
     }
 
-    //  DATABASE INITIALISATION.
-    //  First compare the current with the new data location
-
-    QString currentLocation = medStorage::dataLocation();
-
-    //  If the user configured a new location for the database in the settings editor, we'll need to move it
-
-    QString newLocation = mnger->value("medDatabaseSettingsWidget", "new_database_location").toString();
-    if (!newLocation.isEmpty()) {
-
-        //  If the locations are different we need to move the db to the new location
-
-        if (currentLocation.compare(newLocation)!=0) {
-            if (!medDatabaseController::instance()->moveDatabase(newLocation)) {
-                qDebug() << "Failed to move the database from " << currentLocation << " to " << newLocation;
-                //  The new location is invalid so set it to zero
-                newLocation = "";
-            }
-            mnger->setValue("medDatabaseSettingsWidget", "actual_database_location",newLocation);
-
-            //  We need to reset the new Location to prevent doing it all the time
-
-            mnger->setValue("medDatabaseSettingsWidget", "new_database_location","");
-        }
-    }
-    // END OF DATABASE INITIALISATION
-
+    medDataManager::instance()->setDatabaseLocation();
+    
 #ifdef USE_PYTHON
     med::python::initialize();
 

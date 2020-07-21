@@ -49,6 +49,7 @@ public:
 
     virtual int dataSourceId() const;
 
+    virtual bool createConnection(){return false;};
     virtual QList<medDataIndex> patients() const;
     virtual QList<medDataIndex> studies(const medDataIndex& index ) const;
     virtual QList<medDataIndex> series(const medDataIndex& index ) const;

@@ -18,7 +18,6 @@
 #include <medAbstractDatabaseImporter.h>
 #include <medAbstractDataFactory.h>
 #include <medAbstractImageData.h>
-#include <medDatabaseController.h>
 #include <medGlobalDefs.h>
 #include <medMetaDataKeys.h>
 #include <medStorage.h>
