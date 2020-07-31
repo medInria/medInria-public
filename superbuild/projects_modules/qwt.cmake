@@ -24,8 +24,7 @@ if (NOT USE_SYSTEM_${ep})
 ## Define repository where get the sources
 ## #############################################################################
 
-set(git_url ${GITHUB_PREFIX}osakared/qwt.git)
-set(git_tag trunk)
+set(svn_url https://svn.code.sf.net/p/qwt/code/trunk)
 
 ## #############################################################################
 ## Add specific cmake arguments for configuration step of the project
@@ -45,8 +44,6 @@ set(cmake_args
   -DCMAKE_INSTALL_PREFIX:PATH=<INSTALL_DIR>
   -DQT_QMAKE_EXECUTABLE:FILEPATH=${QT_QMAKE_EXECUTABLE}
 )
-
-ep_GeneratePatchCommand(${ep} QWT_PATCH_COMMAND qwt-6.3.patch)
 
 ## #############################################################################
 ## Add external-project
@@ -71,15 +68,13 @@ ExternalProject_Add(${ep}
   BINARY_DIR ${build_path}
   TMP_DIR ${tmp_path}
   STAMP_DIR ${stamp_path}
-
-  GIT_REPOSITORY ${git_url}
-  GIT_TAG ${git_tag}
+  SVN_REPOSITORY ${svn_url}
   CMAKE_GENERATOR ${gen}
   CMAKE_GENERATOR_PLATFORM ${CMAKE_GENERATOR_PLATFORM}
   CMAKE_ARGS ${cmake_args}
   DEPENDS ${${ep}_dependencies}
   UPDATE_COMMAND ""
-  PATCH_COMMAND ${QWT_PATCH_COMMAND}
+  PATCH_COMMAND svn patch ${CMAKE_SOURCE_DIR}/superbuild/patches/qwt-6.3-svn.patch
   # Compile only the lib
   CONFIGURE_COMMAND ${QT_QMAKE_EXECUTABLE} ${SPEC} <SOURCE_DIR>/qwt/qwt.pro
   BUILD_COMMAND ${MAKE_PROGRAM} sub-src

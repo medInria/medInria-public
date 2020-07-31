@@ -44,3 +44,27 @@ index d24acde998..9dff50bb0e 100644
 -- 
 2.21.0.windows.1
 
+diff --git a/Rendering/Qt/vtkQtLabelRenderStrategy.cxx b/Rendering/Qt/vtkQtLabelRenderStrategy.cxx
+index 8bfd3f6b6b..2d5adb1834 100644
+--- a/Rendering/Qt/vtkQtLabelRenderStrategy.cxx
++++ b/Rendering/Qt/vtkQtLabelRenderStrategy.cxx
+@@ -40,6 +40,7 @@
+ #include <QImage>
+ #include <QMap>
+ #include <QPainter>
++#include <QPainterPath>
+ #include <QPair>
+ #include <QPixmap>
+ #include <QTextDocument>
+diff --git a/Rendering/Qt/vtkQtStringToImage.cxx b/Rendering/Qt/vtkQtStringToImage.cxx
+index 549ffbe874..7f5a71adcb 100644
+--- a/Rendering/Qt/vtkQtStringToImage.cxx
++++ b/Rendering/Qt/vtkQtStringToImage.cxx
+@@ -34,6 +34,7 @@
+ #include <QPixmap>
+ #include <QTextDocument>
+ #include <QTextStream>
++#include <QPainterPath>
+ 
+ namespace
+ {
