@@ -52,7 +52,7 @@ medApplication::medApplication(int & argc, char**argv) :
 
     this->setApplicationName(PROJECT_NAME); /*Beware, change database path*/
     this->setApplicationVersion(MEDINRIA_VERSION);
-    this->setOrganizationName("INRIA_IHU-LIRY"); /*Beware, change database path*/
+    this->setOrganizationName("INRIA_IHU-LIRYC"); /*Beware, change database path*/
     this->setOrganizationDomain("fr");
 
     medLogger::initialize();
@@ -60,6 +60,8 @@ medApplication::medApplication(int & argc, char**argv) :
     qInfo() << "####################################";
     qInfo() << "Version: "    << MEDINRIA_VERSION;
     qInfo() << "Build Date: " << MEDINRIA_BUILD_DATE;
+
+    QApplication::setStyle(QStyleFactory::create("fusion"));
 
     // Expiration Date
     QDate expiryDate = QDate::fromString(QString(MEDINRIA_BUILD_DATE), "dd_MM_yyyy").addYears(1);

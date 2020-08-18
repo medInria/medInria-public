@@ -41,7 +41,7 @@ gunzip -f MedinriaPackage.sparseimage.gz
 
 devName=`hdiutil attach -readwrite -noverify -noautoopen MedinriaPackage.sparseimage | egrep '^/dev/' | sed 1q | awk '{print $1}'`
 diskutil rename "medInria base" "MUSIC @MEDINRIA_SUPERBUILD_VERSION@"
-\cp -rf @medInria_BINARY_DIR@/bin/TmpInstall/medInria.app /Volumes/"medInria @MEDINRIA_SUPERBUILD_VERSION@"/
+\cp -rf @medInria_BINARY_DIR@/bin/TmpInstall/MUSIC.app /Volumes/"MUSIC @MEDINRIA_SUPERBUILD_VERSION@"/
 
 sync
 hdiutil detach $devName
