@@ -112,8 +112,6 @@ void medStartupSettingsWidget::read()
         d->defaultStartingArea->setCurrentIndex(0);
     }
 
-    connect(d->genericWorkspaceEnabled, SIGNAL(stateChanged(int)), this, SLOT(genericWorkspaceState(int)));
-
     // Theme Settings
     int indexTheme = mnger->value("startup", "theme", 0).toInt();
     if (indexTheme < 0)
@@ -132,7 +130,6 @@ bool medStartupSettingsWidget::write()
     medSettingsManager *mnger = medSettingsManager::instance();
     mnger->setValue("startup", "fullscreen", d->startInFullScreen->isChecked());
     mnger->setValue("startup", "default_starting_area", d->defaultStartingArea->currentText());
-    mnger->setValue("startup", "genericWorkspace", d->genericWorkspaceEnabled->isChecked());
     mnger->setValue("startup", "theme", d->theme->currentIndex());
     return true;
 }
