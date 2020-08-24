@@ -14,7 +14,7 @@
 set(CURRENT_SRC_DIR ${CMAKE_SOURCE_DIR}/packaging/unix)
 set(CURRENT_BIN_DIR ${CMAKE_BINARY_DIR}/packaging/unix)
 
-# Install a launcher scripts for medInria with right environment variable
+# Install a launcher scripts for the application with right environment variable
 
 #   For developpers.
 

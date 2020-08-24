@@ -41,8 +41,8 @@ class medViewBackend {
 
 /**
  * @class medAbstractView
- * @brief Base class for view types in medInria
- * medAbstractView specializes a dtkAbstractView in the context of medInria.
+ * @brief Base class for view types
+ * medAbstractView specializes a dtkAbstractView in the context of the application.
  * A medAbstractView contains medAbstractInteractor and medAbstractNavigator.
  **/
 class MEDCORELEGACY_EXPORT medAbstractView: public dtkAbstractView

@@ -21,7 +21,7 @@
 class medPluginManagerPrivate;
 
 /**
- * @brief Load and unload plugins for medInria.
+ * @brief Load and unload plugins.
  *
 */
 class MEDCORELEGACY_EXPORT medPluginManager : public dtkPluginManager

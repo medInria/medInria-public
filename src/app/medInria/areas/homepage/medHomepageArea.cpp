@@ -37,7 +37,7 @@ medHomepageArea::medHomepageArea ( QWidget * parent ) : QWidget ( parent ), d ( 
     //Setup navigation widget (with buttons for accessing available workspaces)
     d->navigationWidget = new QWidget ( this );
 
-    //Setup the widget where the medInria general information are displayed
+    //Setup the widget where the general information are displayed
     d->infoWidget = new QWidget ( this );
     d->infoWidget->setMinimumSize(400, 400);
 
@@ -118,7 +118,7 @@ medHomepageArea::medHomepageArea ( QWidget * parent ) : QWidget ( parent ), d ( 
     userButtonsLayout->insertWidget ( 3, logButton );
     userButtonsLayout->insertWidget ( 4, helpButton );
 
-    // Info widget : medInria logo, medInria description, etc. QtWebkit ?
+    // Info widget: application logo, description, etc
     QVBoxLayout * infoLayout = new QVBoxLayout(d->infoWidget);
     QLabel * medInriaLabel = new QLabel ( this );
     QPixmap medLogo( ":pixmaps/medInria-logo-homepage.png" );

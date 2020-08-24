@@ -20,7 +20,7 @@
 class MEDVIEWSEGMENTATIONPLUGIN_EXPORT medSegmentationPluginPrivate;
 
 /**
-  Provide segmentation capabilities to medInria.
+  Provide segmentation capabilities.
 
   The main plugin class is called by the app. It needs to :
    - register the segmentation configuration with the app.

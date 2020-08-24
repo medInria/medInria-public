@@ -28,7 +28,7 @@ class medAbstractInteractorPrivate;
 
 /**
  * @class medAbstractInteractor
- * @brief Base class for interactor types in medInria
+ * @brief Base class for interactor types
  * A medAbstractInteractor belongs to a medAbstractView and is responsible for managing
  * all the interactions for a type of medAbstractData in the medAbstractView.
  **/
