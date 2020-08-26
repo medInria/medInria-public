@@ -1,14 +1,16 @@
 #pragma once
 /*=========================================================================
 
-medInria
+ medInria
 
-Copyright (c) INRIA 2013 - 2020. All rights reserved.
-See LICENSE.txt for details.
+ Copyright (c) INRIA 2013. All rights reserved.
 
-This software is distributed WITHOUT ANY WARRANTY; without even
-the implied warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR
-PURPOSE.
+ See LICENSE.txt for details in the root of the sources or:
+ https://github.com/medInria/medInria-public/blob/master/LICENSE.txt
+
+ This software is distributed WITHOUT ANY WARRANTY; without even
+ the implied warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR
+ PURPOSE.
 
 =========================================================================*/
 
@@ -33,6 +35,7 @@ public:
     virtual ~vtkDataMeshInteractor();
 
     virtual QString description() const;
+    virtual QString name() const;
     virtual QString identifier() const;
     virtual QStringList handled() const;
 
@@ -57,6 +60,8 @@ public slots:
     void setWindowLevel (QHash<QString,QVariant>);
     void setColor(const QString &color);
     void setColor(QColor color);
+    void setMaxRange(double max);
+    void setMinRange(double min);
     void setVisibility(bool visible);
     void setEdgeVisibility(bool visible);
     void setRenderingType(const QString &type);
@@ -77,6 +82,7 @@ protected:
     void setLut(vtkLookupTable * lut);
 
     void setupParameters();
+    void restoreParameters(QHash<QString, QString> parameters);
 
 private:
     static QStringList dataHandled();

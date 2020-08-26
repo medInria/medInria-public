@@ -3,15 +3,18 @@
 
  medInria
 
- Copyright (c) INRIA 2013 - 2020. All rights reserved.
- See LICENSE.txt for details.
+ Copyright (c) INRIA 2013. All rights reserved.
 
-  This software is distributed WITHOUT ANY WARRANTY; without even
-  the implied warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR
-  PURPOSE.
+ See LICENSE.txt for details in the root of the sources or:
+ https://github.com/medInria/medInria-public/blob/master/LICENSE.txt
+
+ This software is distributed WITHOUT ANY WARRANTY; without even
+ the implied warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR
+ PURPOSE.
 
 =========================================================================*/
 
+#include <QDomElement>
 #include <QFrame>
 
 #include <medCoreLegacyExport.h>
@@ -107,6 +110,9 @@ public slots:
     void clickHistoAction(bool checked);
     QAction *histogramAction();
 
+    QString saveScene();
+    void loadScene();
+
 signals:
     void maximized(QUuid uuid, bool maximized);
     void maximized(bool maximized);
@@ -121,6 +127,7 @@ signals:
     void dataAdded(medAbstractData *);
     void viewRemoved();
     void requestFourSplit();
+    void importFinished();
 
 protected:
     void focusInEvent(QFocusEvent *event);
@@ -136,10 +143,15 @@ protected:
 
     void recomputeStyleSheet();
 
+    void open(const QString & path);
+    void addMetadataToQDomElement(medAbstractData *data, QDomElement patientInfo, QString metadata);
+    void printInConsole(QString message);
+    void displayMessageError(QString message);
+
 protected slots:
     void openFromSystem();
     void updateToolBar();
-    void dataReady(medDataIndex index, QUuid uuid);
+    void open_waitForImportedSignal(medDataIndex index, QUuid uuid);
     void droppedDataReady(medDataIndex index, QUuid uuid);
 
 private slots:

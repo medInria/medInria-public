@@ -3,22 +3,26 @@
 
  medInria
 
- Copyright (c) INRIA 2013 - 2020. All rights reserved.
- See LICENSE.txt for details.
+ Copyright (c) INRIA 2013. All rights reserved.
 
-  This software is distributed WITHOUT ANY WARRANTY; without even
-  the implied warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR
-  PURPOSE.
+ See LICENSE.txt for details in the root of the sources or:
+ https://github.com/medInria/medInria-public/blob/master/LICENSE.txt
+
+ This software is distributed WITHOUT ANY WARRANTY; without even
+ the implied warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR
+ PURPOSE.
 
 =========================================================================*/
 
 #include <dtkCoreSupport/dtkAbstractViewNavigator.h>
 
+#include<medAbstractParameterL.h>
 #include <medCoreLegacyExport.h>
 #include <medImageViewEnum.h>
 
+#include <QDomDocument>
+
 class medAbstractView;
-class medAbstractParameterL;
 class medBoolParameterL;
 
 class medAbstractNavigatorPrivate;
@@ -30,8 +34,9 @@ public:
     medAbstractNavigator(medAbstractView* parent);
     virtual ~medAbstractNavigator();
 
-public:
     virtual QString description() const = 0;
+    virtual QString name() const;
+    virtual QString version() const;
 
     QWidget* toolBoxWidget();
     QWidget* toolBarWidget();
@@ -39,9 +44,14 @@ public:
     virtual QList<medAbstractParameterL*> linkableParameters() = 0;
     virtual QList<medBoolParameterL*> mouseInteractionParameters() = 0;
 
+    virtual void toXMLNode(QDomDocument *doc, QDomElement *currentNode);
+    void fromXMLNode(QDomElement *element);
+
 protected:
     virtual QWidget* buildToolBoxWidget() = 0;
     virtual QWidget* buildToolBarWidget() = 0;
+
+    virtual void restoreParameters(QHash<QString,QString> parameters);
 
 private slots:
 

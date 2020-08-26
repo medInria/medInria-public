@@ -147,6 +147,7 @@ QUuid medDataManager::importPath(const QString& dataPath, bool indexWithoutCopyi
     controller->importPath(dataPath, uuid, indexWithoutCopying);
     return uuid;
 }
+
 /** @brief return writers able to handle the data *Memory management is the responsability of the caller*
 
 */

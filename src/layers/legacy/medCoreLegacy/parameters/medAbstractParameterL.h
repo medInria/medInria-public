@@ -3,15 +3,19 @@
 
  medInria
 
- Copyright (c) INRIA 2013 - 2020. All rights reserved.
- See LICENSE.txt for details.
+ Copyright (c) INRIA 2013. All rights reserved.
 
-  This software is distributed WITHOUT ANY WARRANTY; without even
-  the implied warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR
-  PURPOSE.
+ See LICENSE.txt for details in the root of the sources or:
+ https://github.com/medInria/medInria-public/blob/master/LICENSE.txt
+
+ This software is distributed WITHOUT ANY WARRANTY; without even
+ the implied warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR
+ PURPOSE.
 
 =========================================================================*/
 
+#include <QDomDocument>
+#include <QDomElement>
 #include <QObject>
 #include <QVector2D>
 #include <QVector3D>
@@ -47,6 +51,8 @@ public:
     void show();
     void hide();
 
+    virtual void toXMLNode(QDomDocument *doc, QDomElement *currentNode);
+
     void setToolTip(QString tooltip);
 
 protected:
@@ -72,8 +78,8 @@ class MEDCORELEGACY_EXPORT medAbstractTriggerParameterL : public medAbstractPara
 {
     Q_OBJECT
 public:
-    medAbstractTriggerParameterL(QString name = "unknown trigger parameter", QObject* parent = nullptr):
-        medAbstractParameterL(name, parent){}
+    medAbstractTriggerParameterL(QString name = "Unknown trigger parameter", QObject* parent = nullptr):
+    medAbstractParameterL(name, parent){}
 public slots:
     virtual void trigger();
 
@@ -87,9 +93,12 @@ class MEDCORELEGACY_EXPORT medAbstractStringParameterL : public medAbstractParam
 {
     Q_OBJECT
 public:
-    medAbstractStringParameterL(QString name = "unknown  string parameter", QObject* parent = nullptr):
-        medAbstractParameterL(name, parent){}
+    medAbstractStringParameterL(QString name = "Unknown string parameter", QObject* parent = nullptr):
+    medAbstractParameterL(name, parent){}
     virtual QString value() const;
+
+    virtual void toXMLNode(QDomDocument *doc, QDomElement *currentNode);
+    static QString fromString(QString value);
 
 public slots:
     virtual void setValue(QString value);
@@ -115,9 +124,12 @@ class MEDCORELEGACY_EXPORT medAbstractIntParameterL : public medAbstractParamete
 {
     Q_OBJECT
 public:
-    medAbstractIntParameterL(QString name = "unknown int parameter", QObject* parent = nullptr):
-        medAbstractParameterL(name, parent){}
+    medAbstractIntParameterL(QString name = "Unknown int parameter", QObject* parent = nullptr):
+    medAbstractParameterL(name, parent){}
     virtual int value() const;
+
+    virtual void toXMLNode(QDomDocument *doc, QDomElement *currentNode);
+    static int fromString(QString value);
 
 public slots:
     virtual void setValue(int value);
@@ -143,9 +155,12 @@ class MEDCORELEGACY_EXPORT medAbstractDoubleParameterL : public medAbstractParam
 {
     Q_OBJECT
 public:
-    medAbstractDoubleParameterL(QString name = "unknown double parameter", QObject* parent = nullptr):
-        medAbstractParameterL(name, parent){}
+    medAbstractDoubleParameterL(QString name = "Unknown double parameter", QObject* parent = nullptr):
+    medAbstractParameterL(name, parent){}
     virtual double value() const;
+
+    virtual void toXMLNode(QDomDocument *doc, QDomElement *currentNode);
+    static double fromString(QString value);
 
 public slots:
     virtual void setValue(double value);
@@ -171,9 +186,12 @@ class MEDCORELEGACY_EXPORT medAbstractBoolParameterL : public medAbstractParamet
 {
     Q_OBJECT
 public:
-    medAbstractBoolParameterL(QString name = "unknown bool parameter", QObject* parent = nullptr):
-        medAbstractParameterL(name, parent){}
+    medAbstractBoolParameterL(QString name = "Unknown bool parameter", QObject* parent = nullptr):
+    medAbstractParameterL(name, parent){}
     virtual bool value() const;
+
+    virtual void toXMLNode(QDomDocument *doc, QDomElement *currentNode);
+    static bool fromString(QString value);
 
 public slots:
     virtual void setValue(bool value);
@@ -199,8 +217,8 @@ class MEDCORELEGACY_EXPORT medAbstractGroupParameterL : public medAbstractParame
 {
     Q_OBJECT
 public:
-    medAbstractGroupParameterL(QString name = "unknown group parameter", QObject* parent = nullptr):
-        medAbstractParameterL(name, parent){}
+    medAbstractGroupParameterL(QString name = "Unknown group parameter", QObject* parent = nullptr):
+    medAbstractParameterL(name, parent){}
 
     /**
      * @brief parametersCandidateToPool reimplement this methode to keep correct synchronisation in medParameterPoolL
@@ -220,11 +238,14 @@ class MEDCORELEGACY_EXPORT medAbstractVector2DParameterL : public medAbstractPar
     Q_OBJECT
 
 public:
-    medAbstractVector2DParameterL(QString name = "Unknow Vector 2D parameter", QObject* parent = nullptr):
-        medAbstractParameterL(name, parent){}
+    medAbstractVector2DParameterL(QString name = "Unknown Vector 2D parameter", QObject* parent = nullptr):
+    medAbstractParameterL(name, parent){}
     virtual ~medAbstractVector2DParameterL(){}
 
     virtual QVector2D value() const;
+
+    virtual void toXMLNode(QDomDocument *doc, QDomElement *currentNode);
+    static QVector2D fromString(QString value);
 
 public slots:
     virtual void setValue(const QVector2D &);
@@ -251,11 +272,14 @@ class MEDCORELEGACY_EXPORT medAbstractVector3DParameterL : public medAbstractPar
     Q_OBJECT
 
 public:
-    medAbstractVector3DParameterL(QString name = "Unknow Vector 3D parameter", QObject* parent = nullptr):
-        medAbstractParameterL(name, parent){}
+    medAbstractVector3DParameterL(QString name = "Unknown Vector 3D parameter", QObject* parent = nullptr):
+    medAbstractParameterL(name, parent){}
     virtual ~medAbstractVector3DParameterL(){}
 
     virtual QVector3D value() const;
+
+    virtual void toXMLNode(QDomDocument *doc, QDomElement *currentNode);
+    static QVector3D fromString(QString value);
 
 public slots:
     virtual void setValue(const QVector3D &);
@@ -282,11 +306,14 @@ class MEDCORELEGACY_EXPORT medAbstractVector4DParameterL : public medAbstractPar
     Q_OBJECT
 
 public:
-    medAbstractVector4DParameterL(QString name = "Unknow Vector 3D parameter", QObject* parent = nullptr):
-        medAbstractParameterL(name, parent){}
+    medAbstractVector4DParameterL(QString name = "Unknown Vector 4D parameter", QObject* parent = nullptr):
+    medAbstractParameterL(name, parent){}
     virtual ~medAbstractVector4DParameterL(){}
 
     virtual QVector4D value() const;
+
+    virtual void toXMLNode(QDomDocument *doc, QDomElement *currentNode);
+    static QVector4D fromString(QString value);
 
 public slots:
     virtual void setValue(const QVector4D &);
