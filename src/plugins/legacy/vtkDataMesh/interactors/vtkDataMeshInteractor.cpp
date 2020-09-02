@@ -447,7 +447,6 @@ void vtkDataMeshInteractor::setAttribute(const QString & attributeName)
         int dataType = d->attribute->GetDataType();
         initWindowLevelParameters(range, dataType);
 
-        
         this->setLut(d->lut.first);
 
         mapper2d->SetScalarVisibility(1);
@@ -584,12 +583,13 @@ void vtkDataMeshInteractor::setLut(vtkLookupTable * lut)
     mapper2d->InterpolateScalarsBeforeMappingOn();
     mapper3d->InterpolateScalarsBeforeMappingOn();
 
-    d->view2d->SetLookupTable(lut);
+    int currentLayerIndex = d->view->currentLayer();
+    d->view2d->SetLookupTable(lut, currentLayerIndex);
     mapper2d->SetLookupTable(lut);
     mapper2d->UseLookupTableScalarRangeOn();
     mapper2d->InterpolateScalarsBeforeMappingOn();
 
-    d->view3d->SetLookupTable(lut,d->view->layer(this->inputData()));
+    d->view3d->SetLookupTable(lut, currentLayerIndex);
     mapper3d->SetLookupTable(lut);
     mapper3d->UseLookupTableScalarRangeOn();
     mapper3d->InterpolateScalarsBeforeMappingOn();
