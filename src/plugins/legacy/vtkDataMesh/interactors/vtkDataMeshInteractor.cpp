@@ -560,7 +560,6 @@ void vtkDataMeshInteractor::setLut(vtkLookupTable * lut)
 
     if ( ! lut )
     {
-        std::cout<<" IN DEFAULT LUT "<<std::endl;
         lut = d->attribute->GetLookupTable();
         d->lut = LutPair(lut, "Default");
     }
