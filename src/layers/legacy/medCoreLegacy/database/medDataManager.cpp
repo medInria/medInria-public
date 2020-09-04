@@ -14,7 +14,7 @@
 #include <QDebug>
 
 #include <medAbstractDataFactory.h>
-#include <medDatabaseController.h>
+#include <medLocalDbController.h>
 #include <medDatabaseNonPersistentController.h>
 #include <medDataManager.h>
 #include <medGlobalDefs.h>
@@ -506,7 +506,7 @@ medDataManager::medDataManager() : d_ptr(new medDataManagerPrivate(this))
 
     d->nonPersDbController = medDatabaseNonPersistentController::instance();
     // Setting up database connection
-    d->dbController = medDatabaseController::instance();
+    d->dbController = medLocalDbController::instance();
     if ( ! d->dbController->createConnection() )
     {
         qDebug() << "Unable to create a connection to the database";

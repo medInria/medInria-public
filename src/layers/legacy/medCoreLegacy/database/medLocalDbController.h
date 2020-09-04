@@ -18,22 +18,22 @@
 #include <medAbstractPersistentDbController.h>
 #include <medCoreLegacyExport.h>
 
-#define EXEC_QUERY(q) medDatabaseController::instance()->execQuery(q, __FILE__ , __LINE__ )
+#define EXEC_QUERY(q) medLocalDbController::instance()->execQuery(q, __FILE__ , __LINE__ )
 
 class medAbstractData;
-class medDatabaseControllerPrivate;
+class medLocalDbControllerPrivate;
 class medJobItemL;
 
 /**
  * Concrete dbController implementation adhering to abstract base class
  */
-class MEDCORELEGACY_EXPORT medDatabaseController: public medAbstractPersistentDbController
+class MEDCORELEGACY_EXPORT medLocalDbController: public medAbstractPersistentDbController
 {
     Q_OBJECT
 
 public:
-    static medDatabaseController* instance();
-    ~medDatabaseController();
+    static medLocalDbController* instance();
+    ~medLocalDbController();
 
     const QSqlDatabase& database() const;
 
@@ -72,7 +72,7 @@ public slots:
     bool contains(const medDataIndex &index) const override;
 
 private:
-    medDatabaseController();
+    medLocalDbController();
 
     bool createPatientTable();
     bool   createStudyTable();
@@ -80,8 +80,6 @@ private:
 
     bool updateFromNoVersionToVersion1();
 
-    // QSqlDatabase m_database;
-
-    medDatabaseControllerPrivate * d;
-    static medDatabaseController * s_instance;
+    medLocalDbControllerPrivate * d;
+    static medLocalDbController * s_instance;
 };
