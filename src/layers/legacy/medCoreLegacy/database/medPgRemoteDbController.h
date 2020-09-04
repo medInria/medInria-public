@@ -1,4 +1,3 @@
-#pragma once
 /*=========================================================================
 
  medInria
@@ -12,28 +11,30 @@
 
 =========================================================================*/
 
+#pragma once
+
 #include <QSqlDatabase>
 #include <QSqlQuery>
 
 #include <medAbstractPersistentDbController.h>
 #include <medCoreLegacyExport.h>
 
-#define EXEC_QUERY(q) medDatabaseController::instance()->execQuery(q, __FILE__ , __LINE__ )
+#define EXEC_QUERY(q) medPgRemoteDbController::instance()->execQuery(q, __FILE__ , __LINE__ )
 
 class medAbstractData;
-class medDatabaseControllerPrivate;
+class medLocalDbControllerPrivate;
 class medJobItemL;
 
 /**
  * Concrete dbController implementation adhering to abstract base class
  */
-class MEDCORELEGACY_EXPORT medDatabaseController: public medAbstractPersistentDbController
+class MEDCORELEGACY_EXPORT medPgRemoteDbController: public medAbstractPersistentDbController
 {
     Q_OBJECT
 
 public:
-    static medDatabaseController* instance();
-    ~medDatabaseController();
+    static medPgRemoteDbController* instance();
+    ~medPgRemoteDbController();
 
     const QSqlDatabase& database() const;
 
@@ -73,7 +74,7 @@ public slots:
     bool contains(const medDataIndex &index) const override;
 
 private:
-    medDatabaseController();
+    medPgRemoteDbController();
 
     bool createPatientTable();
     bool   createStudyTable();
@@ -81,8 +82,6 @@ private:
 
     bool updateFromNoVersionToVersion1();
 
-    // QSqlDatabase m_database;
-
-    medDatabaseControllerPrivate * d;
-    static medDatabaseController * s_instance;
+    medLocalDbControllerPrivate * d;
+    static medPgRemoteDbController * s_instance;
 };
