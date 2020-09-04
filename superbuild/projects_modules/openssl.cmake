@@ -73,8 +73,8 @@ if (WIN32)
     UPDATE_COMMAND ""
     PATCH_COMMAND ""
     DEPENDS ${${ep}_dependencies}
-    CONFIGURE_COMMAND perl ${EP_PATH_SOURCE}/${ep}/Configure VC_WIN64A no-tests no-zlib no-shared --prefix=${build_path}  --openssldir=${build_path} 
-    BUILD_COMMAND nmake install-sw
+    CONFIGURE_COMMAND perl ${EP_PATH_SOURCE}/${ep}/Configure VC_WIN32 no-tests no-zlib no-shared --prefix=${build_path}  --openssldir=${build_path} 
+    BUILD_COMMAND nmake install
     INSTALL_COMMAND ""
     )
 
