@@ -60,8 +60,13 @@ endif(APPLE)
 epComputPath(${ep})
 
 if (WIN32)
+	if(CMAKE_SIZE_OF_VOID_P EQUAL 8) 
+		set(OS_CRYPTO VC-WIN64A) 
+	elseif(CMAKE_SIZE_OF_VOID_P EQUAL 4)
+		set(OS_CRYPTO VC-WIN32) 
+	endif()
 
-  ExternalProject_Add(${ep}
+ExternalProject_Add(${ep}
     PREFIX ${EP_PATH_SOURCE}
     SOURCE_DIR ${EP_PATH_SOURCE}/${ep}
     BINARY_DIR ${build_path}/realBuild
@@ -73,7 +78,7 @@ if (WIN32)
     UPDATE_COMMAND ""
     PATCH_COMMAND ""
     DEPENDS ${${ep}_dependencies}
-    CONFIGURE_COMMAND perl ${EP_PATH_SOURCE}/${ep}/Configure VC-WIN32 no-tests no-zlib no-shared --prefix=${build_path}  --openssldir=${build_path} 
+    CONFIGURE_COMMAND perl ${EP_PATH_SOURCE}/${ep}/Configure ${OS_CRYPTO} no-tests no-zlib no-shared --prefix=${build_path}  --openssldir=${build_path} 
     BUILD_COMMAND nmake install
     INSTALL_COMMAND ""
     )
