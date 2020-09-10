@@ -9,9 +9,7 @@
 #include <vtkQImageToImageSource.h>
 #include <vtkSmartPointer.h>
 
-#ifdef _WIN32
-#include <vtkMPEG2Writer.h>
-#else // Linux and Mac
+#ifdef unix // Linux, Mac or Cygwin
 #include <vtkFFMPEGWriter.h>
 #endif
 
@@ -154,7 +152,7 @@ int ExportVideo::update()
         // Run export video/jpeg
         if (displayFileDialog() == medAbstractProcessLegacy::SUCCESS)
         {
-            qDebug()<<"### ExportVideo::update ENCODING... w h "<<d->width<<"/"<<d->height;
+            qDebug() << metaObject()->className() <<" ENCODING... w h "<<d->width<<"/"<<d->height;
 
             int res = medAbstractProcessLegacy::FAILURE;
 
@@ -167,7 +165,7 @@ int ExportVideo::update()
                 res = this->exportAsVideo();
             }
 
-            qDebug()<<"### ExportVideo::update END OF ENCODING -- "<<res;
+            qDebug() << metaObject()->className() <<" END OF ENCODING -- "<<res;
 
             return res;
         }
@@ -232,20 +230,7 @@ int ExportVideo::exportAsVideo()
     }
     else
     {
-#ifdef _WIN32
-        if (d->format == MPEG2)
-        {
-            vtkSmartPointer<vtkMPEG2Writer> writerVideoTmp = vtkSmartPointer<vtkMPEG2Writer>::New();
-            writerVideoTmp->SetInputConnection(source->GetOutputPort());
-            writerVideoTmp->SetFileName(d->filename.toStdString().c_str());
-
-            writerVideo = writerVideoTmp;
-        }
-        else
-        {
-            return medAbstractProcessLegacy::FAILURE;
-        }
-#else
+#ifdef unix
         if (d->format == FFMPEG)
         {
             vtkSmartPointer<vtkFFMPEGWriter> writerVideoTmp = vtkSmartPointer<vtkFFMPEGWriter>::New();
@@ -308,9 +293,7 @@ int ExportVideo::displayFileDialog()
     // and .ogx for multiplexed Ogg."
     d->formatComboBox->addItem("Ogg Vorbis (.ogv)", OGGVORBIS);
     d->formatComboBox->addItem("JPEG (.jpg .jpeg)", JPGBATCH);
-#ifdef _WIN32
-    d->formatComboBox->addItem("MPEG2 (.avi)", MPEG2);
-#else
+#ifdef unix
     d->formatComboBox->addItem("FFMPEG (.avi)", FFMPEG);
 #endif
     d->formatComboBox->setCurrentIndex(d->format);
@@ -406,18 +389,6 @@ void ExportVideo::handleWidgetDisplayAccordingToType(int index)
             d->exportDialog->selectFile("video.avi");
             d->frameRateSpinBox->show();
             d->frameRateLabel->show();
-            d->subsamplingComboBox->hide();
-            d->subsamplingLabel->hide();
-            d->qualityComboBox->hide();
-            d->qualityLabel->hide();
-            break;
-        }
-        case MPEG2:
-        {
-            // Video
-            d->exportDialog->selectFile("video.avi");
-            d->frameRateSpinBox->hide();
-            d->frameRateLabel->hide();
             d->subsamplingComboBox->hide();
             d->subsamplingLabel->hide();
             d->qualityComboBox->hide();

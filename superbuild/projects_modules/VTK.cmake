@@ -89,14 +89,7 @@ if(USE_OSPRay)
 endif()
 
 # Video Export
-if (WIN32)
-    list(APPEND cmake_args
-        # MPEG2
-        -DVTK_USE_MPEG2_ENCODER:BOOL=ON
-        -DvtkMPEG2Encode_INCLUDE_PATH:STRINGS=${EP_PATH_SOURCE}/ffmpeg$<SEMICOLON>${EP_PATH_BUILD}/ffmpeg
-        -DvtkMPEG2Encode_LIBRARIES:STRING=${EP_PATH_BUILD}/ffmpeg/build/${CMAKE_BUILD_TYPE}/vtkMPEG2Encode.${extention}
-    )
-else()
+if (UNIX)
     list(APPEND cmake_args
         # FFMPEG
         -DModule_vtkIOFFMPEG:BOOL=ON

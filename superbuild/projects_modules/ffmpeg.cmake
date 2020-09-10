@@ -37,10 +37,8 @@ if (NOT USE_SYSTEM_${ep})
 ## #############################################################################
 
 if (NOT DEFINED ${ep}_SOURCE_DIR)
-    if(WIN32) # MPEG2
-        set(location URL "http://www.vtk.org/files/support/vtkmpeg2encode.zip")
-    else() # FFMPEG
-        set(tag "release/4.3")
+    if(UNIX) # is TRUE on all UNIX-like OS's, including Apple OS X and CygWin
+        set(tag "release/4.3") # FFMPEG
         set(location GIT_REPOSITORY "${GITHUB_PREFIX}FFmpeg/FFmpeg.git" GIT_TAG ${tag})
     endif()
 endif()
@@ -59,27 +57,7 @@ set(cmake_args
 ## Add external-project
 ## #############################################################################
 
-if (WIN32)
-    ExternalProject_Add(${ep}
-        PREFIX ${EP_PATH_SOURCE}
-        SOURCE_DIR ${EP_PATH_SOURCE}/${ep}
-        BINARY_DIR ${build_path}
-        TMP_DIR ${tmp_path}
-        STAMP_DIR ${stamp_path}
-
-        ${location}
-        CMAKE_GENERATOR ${gen}
-        CMAKE_ARGS ${cmake_args}
-        DEPENDS ${${ep}_dependencies}
-        INSTALL_COMMAND ""
-        )
-
-    install(DIRECTORY ${EP_PATH_BUILD}/${ep}/${CMAKE_BUILD_TYPE}/
-        DESTINATION lib
-        FILES_MATCHING PATTERN "*lib"
-        )
-
-else()
+if (UNIX)
     ExternalProject_Add(${ep}
         PREFIX ${EP_PATH_SOURCE}
         SOURCE_DIR ${EP_PATH_SOURCE}/${ep}
