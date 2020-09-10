@@ -58,7 +58,7 @@ set(CPACK_PROJECT_CONFIG_FILE ${CURRENT_BIN_DIR}/GeneratorConfig.cmake)
 
 # Set directory where the package will be installed
 
-set (CPACK_PACKAGING_INSTALL_PREFIX /usr/local/MUSIC CACHE STRING "Prefix where the package will be installed")
+set (CPACK_PACKAGING_INSTALL_PREFIX /usr/local/MUSICardio CACHE STRING "Prefix where the package will be installed")
 mark_as_advanced(CPACK_PACKAGING_INSTALL_PREFIX) 
 
 # Add postinst and prerm script

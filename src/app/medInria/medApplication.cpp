@@ -89,27 +89,27 @@ medApplication::medApplication(int & argc, char**argv) :
     default:
         // Dark Grey
         qssFile = ":/music_darkGrey.qss";
-        this->setWindowIcon(QIcon(":music_logo_small_light.png"));
+        this->setWindowIcon(QIcon(":MUSICardio_logo_small_light.png"));
         break;
     case 1:
         // Dark Blue
         qssFile = ":/music_dark.qss";
-        this->setWindowIcon(QIcon(":music_logo_small_dark.png"));
+        this->setWindowIcon(QIcon(":MUSICardio_logo_small_dark.png"));
         break;
     case 2:
         // medInria
         qssFile = ":/medInria.qss";
-        this->setWindowIcon(QIcon(":music_logo_small_dark.png"));
+        this->setWindowIcon(QIcon(":MUSICardio_logo_small_dark.png"));
         break;
     case 3:
         // Light Grey
         qssFile = ":/music_lightGrey.qss";
-        this->setWindowIcon(QIcon(":music_logo_small_light.png"));
+        this->setWindowIcon(QIcon(":MUSICardio_logo_small_light.png"));
         break;
     case 4:
         // Light
         qssFile = ":/music_light.qss";
-        this->setWindowIcon(QIcon(":music_logo_small_light.png"));
+        this->setWindowIcon(QIcon(":MUSICardio_logo_small_light.png"));
         break;
     }
     medStyleSheetParser parser(dtkReadFile(qssFile));

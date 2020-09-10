@@ -33,8 +33,8 @@ add_definitions(-D${PROJECT_NAME_UP}_VERSION="${${PROJECT_NAME}_VERSION}")
 ## Macro
 ## #############################################################################
 
-add_definitions( -DPROJECT_NAME="MUSIC" )
-add_definitions( -DPROJECT_CONTACT="music-userfeedback@inria.fr" )
+add_definitions( -DPROJECT_NAME="MUSICardio" )
+add_definitions( -DPROJECT_CONTACT="music-dev@inria.fr" )
 
 ## #############################################################################
 ## Options

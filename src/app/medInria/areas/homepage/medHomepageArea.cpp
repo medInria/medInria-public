@@ -134,21 +134,20 @@ medHomepageArea::medHomepageArea ( QWidget * parent ) : QWidget ( parent ), d ( 
         case 2:
         default:
         {
-            qssLogoName = ":music_logo_dark.png";
+            qssLogoName = ":MUSICardio_logo_dark.png";
             break;
         }
         case 3:
         case 4:
         {
-            qssLogoName = ":music_logo_light.png";
+            qssLogoName = ":MUSICardio_logo_light.png";
             break;
         }
-    }
-    
+    }    
 
     QPixmap medLogo(qssLogoName);
-    medLogo = medLogo.scaled(350, 150, Qt::KeepAspectRatio, Qt::SmoothTransformation);
-    medInriaLabel->setPixmap ( medLogo );
+    medLogo = medLogo.scaled(576, 121, Qt::KeepAspectRatio, Qt::SmoothTransformation);
+    medInriaLabel->setPixmap(medLogo);
 
     QDate expiryDate = QDate::fromString(QString(MEDINRIA_BUILD_DATE), "dd_MM_yyyy").addYears(1);
     QTextEdit * textEdit = new QTextEdit(this);
@@ -199,7 +198,7 @@ medHomepageArea::medHomepageArea ( QWidget * parent ) : QWidget ( parent ), d ( 
     aboutAuthorTextBrowser->setFocusPolicy ( Qt::NoFocus );
 
     QTextEdit * aboutLicenseTextEdit = new QTextEdit(this);
-    QFile license ( ":LICENSE_MUSIC.txt" );
+    QFile license ( ":LICENSE_MUSICardio.txt" );
     license.open ( QIODevice::ReadOnly | QIODevice::Text );
     QTextStream licenseContent(&license);
     licenseContent.setCodec("UTF-8");

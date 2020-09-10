@@ -18,11 +18,11 @@ cd @medInria_BINARY_DIR@/bin
 
 \rm -fr TmpInstall
 mkdir TmpInstall
-cp -r MUSIC.app TmpInstall
+cp -r MUSICardio.app TmpInstall
 
 cd TmpInstall
 
-@Qt5_DIR@/../../../bin/macdeployqt MUSIC.app -appstore-compliant
+@Qt5_DIR@/../../../bin/macdeployqt MUSICardio.app -appstore-compliant
 
 #Run sub-packagers
 injectDirs=''
@@ -31,7 +31,7 @@ for i in $*; do
 	injectDirs="$injectDirs -inject-dir=$i"
 done
 
-@dtk_DIR@/bin/dtkDeploy MUSIC.app $injectDirs &>/dev/null
+@dtk_DIR@/bin/dtkDeploy MUSICardio.app $injectDirs &>/dev/null
 
 #Run fancy packaging apple script
 
@@ -40,10 +40,10 @@ cd @PROJECT_BINARY_DIR@
 gunzip -f MedinriaPackage.sparseimage.gz
 
 devName=`hdiutil attach -readwrite -noverify -noautoopen MedinriaPackage.sparseimage | egrep '^/dev/' | sed 1q | awk '{print $1}'`
-diskutil rename "medInria base" "MUSIC @MEDINRIA_SUPERBUILD_VERSION@"
-\cp -rf @medInria_BINARY_DIR@/bin/TmpInstall/MUSIC.app /Volumes/"MUSIC @MEDINRIA_SUPERBUILD_VERSION@"/
+diskutil rename "medInria base" "MUSICardio @MEDINRIA_SUPERBUILD_VERSION@"
+\cp -rf @medInria_BINARY_DIR@/bin/TmpInstall/MUSICardio.app /Volumes/"MUSICardio @MEDINRIA_SUPERBUILD_VERSION@"/
 
 sync
 hdiutil detach $devName
-hdiutil convert MedinriaPackage.sparseimage -format UDZO -imagekey zlib-level=9 -o "MUSIC-@MEDINRIA_SUPERBUILD_VERSION@.dmg" 1>/dev/null 2>/dev/null
+hdiutil convert MedinriaPackage.sparseimage -format UDZO -imagekey zlib-level=9 -o "MUSICardio-@MEDINRIA_SUPERBUILD_VERSION@.dmg" 1>/dev/null 2>/dev/null
 \rm -fr MedinriaPackage.sparseimage @medInria_BINARY_DIR@/bin/TmpInstall

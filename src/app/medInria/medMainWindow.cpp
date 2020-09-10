@@ -142,7 +142,7 @@ medMainWindow::medMainWindow ( QWidget *parent ) : QMainWindow ( parent ), d ( n
 
     if (themeIndex == 3)
     {
-        quickAccessIcon.addPixmap(QPixmap(":music_logo_small_light.png"));
+        quickAccessIcon.addPixmap(QPixmap(":MUSICardio_logo_small_light.png"));
         quitIcon.addPixmap(QPixmap(":/icons/quit_blue.png"), QIcon::Normal);
         fullscreenIcon.addPixmap(QPixmap(":icons/fullscreenExpand_blue.png"),QIcon::Normal,QIcon::Off);
         fullscreenIcon.addPixmap(QPixmap(":icons/fullscreenReduce_blue.png"),QIcon::Normal,QIcon::On);
@@ -157,11 +157,11 @@ medMainWindow::medMainWindow ( QWidget *parent ) : QMainWindow ( parent ), d ( n
     {
         if(themeIndex == 0 || themeIndex == 1 || themeIndex == 2)
         {
-            quickAccessIcon.addPixmap(QPixmap(":music_logo_small_dark.png"));
+            quickAccessIcon.addPixmap(QPixmap(":MUSICardio_logo_small_dark.png"));
         }
         else
         {
-            quickAccessIcon.addPixmap(QPixmap(":music_logo_small_light.png"));
+            quickAccessIcon.addPixmap(QPixmap(":MUSICardio_logo_small_light.png"));
         }
         quitIcon.addPixmap(QPixmap(":/icons/quit.png"), QIcon::Normal);
         fullscreenIcon.addPixmap(QPixmap(":icons/fullscreenExpand.png"),QIcon::Normal,QIcon::Off);
@@ -214,7 +214,7 @@ medMainWindow::medMainWindow ( QWidget *parent ) : QMainWindow ( parent ), d ( n
     d->quitButton->setIcon(quitIcon);
     d->quitButton->setObjectName("quitButton");
     connect(d->quitButton, SIGNAL( pressed()), this, SLOT (close()));
-    d->quitButton->setToolTip(tr("Close MUSIC"));
+    d->quitButton->setToolTip(tr("Close the application"));
 
     //  Setting up shortcuts
     //  we use a toolbutton, which has shorcuts,

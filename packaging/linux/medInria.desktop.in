@@ -1,10 +1,10 @@
 [Desktop Entry]
 Type=Application
-Name=MUSIC
+Name=MUSICardio
 GenericName=Medical Imaging Platform
 Comment=Process and Visualize Cardiac Images
 Icon=@CPACK_PACKAGING_INSTALL_PREFIX@/share/icons/music_logo.png
-Exec=MUSIC %U
+Exec=MUSICardio %U
 Terminal=false
 Categories=Graphics;Science;MedicalSoftware;Qt;Viewer;
 MimeType=dcm;img;mha;nii;nii.gz;vtk;fib;roi;

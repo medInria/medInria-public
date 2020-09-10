@@ -36,15 +36,15 @@ set(LOCATE "")
 set(MEDINRIA_DIR ${CMAKE_BINARY_DIR})
 
 if (APPLE)
-  set(MEDINRIA_BIN ${binary_dir}/bin/MUSIC.app/Contents/MacOS/MUSIC)
+  set(MEDINRIA_BIN ${binary_dir}/bin/MUSICardio.app/Contents/MacOS/MUSICardio)
 else()
-  set(MEDINRIA_BIN ${binary_dir}/bin/MUSIC)
+  set(MEDINRIA_BIN ${binary_dir}/bin/MUSICardio)
 endif()
 
 set(MEDINRIA_PLUGINS_DIRS "${binary_dir}/bin/plugins:${DEV_PLUGINS_DIRS}")
 set(MEDINRIA_PLUGINS_LEGACY_DIRS "${binary_dir}/bin/plugins_legacy:${DEV_PLUGINS_LEGACY_DIRS}")
 
-configure_file(${CURRENT_SRC_DIR}/MUSIC.sh.in MUSIC.sh @ONLY)
+configure_file(${CURRENT_SRC_DIR}/MUSICardio.sh.in MUSICardio.sh @ONLY)
 
 #   For end users.
 
@@ -52,14 +52,14 @@ file(READ "${CURRENT_SRC_DIR}/locate_bin.sh" LOCATE)
 set(MEDINRIA_DIR "$(locate)")
 
 if (APPLE)
-  set(MEDINRIA_BIN "\${MEDINRIA_DIR}/bin/MUSIC.app/Contents/MacOS/MUSIC")
+  set(MEDINRIA_BIN "\${MEDINRIA_DIR}/bin/MUSICardio.app/Contents/MacOS/MUSICardio")
 else()
-  set(MEDINRIA_BIN "\${MEDINRIA_DIR}/bin/MUSIC")
+  set(MEDINRIA_BIN "\${MEDINRIA_DIR}/bin/MUSICardio")
 endif()
 
 set(MEDINRIA_PLUGINS_DIRS "\${MEDINRIA_DIR}/plugins:\${MEDINRIA_DIR}/bin/plugins:\${MEDINRIA_USER_PLUGINS_DIRS}")
 set(MEDINRIA_PLUGINS_LEGACY_DIRS "\${MEDINRIA_DIR}/plugins_legacy:\${MEDINRIA_DIR}/bin/plugins_legacy:\${MEDINRIA_USER_PLUGINS_DIRS_LEGACY}")
 
-configure_file(${CURRENT_SRC_DIR}/MUSIC.sh.in ${CURRENT_BIN_DIR}/MUSIC_launcher.sh @ONLY)
-install(PROGRAMS ${CURRENT_BIN_DIR}/MUSIC_launcher.sh
+configure_file(${CURRENT_SRC_DIR}/MUSICardio.sh.in ${CURRENT_BIN_DIR}/MUSICardio_launcher.sh @ONLY)
+install(PROGRAMS ${CURRENT_BIN_DIR}/MUSICardio_launcher.sh
         DESTINATION bin)

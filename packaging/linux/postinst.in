@@ -20,4 +20,4 @@ rm -rf @CPACK_PACKAGING_INSTALL_PREFIX@/bin/dtk*
 
 # Create Symbolic link
 ln -s @CPACK_PACKAGING_INSTALL_PREFIX@/share/applications/medInria.desktop /usr/share/applications/medInria.desktop
-ln -s @CPACK_PACKAGING_INSTALL_PREFIX@/bin/MUSIC_launcher.sh /usr/bin/MUSIC
+ln -s @CPACK_PACKAGING_INSTALL_PREFIX@/bin/MUSICardio_launcher.sh /usr/bin/MUSICardio

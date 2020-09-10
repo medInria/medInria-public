@@ -1,2 +1,2 @@
-execute_process(COMMAND rm -f @PROJECT_BINARY_DIR@/MUSIC-@@PROJECT_NAME@_VERSION@.dmg)
+execute_process(COMMAND rm -f @PROJECT_BINARY_DIR@/MUSICardio-@@PROJECT_NAME@_VERSION@.dmg)
 execute_process(COMMAND @PROJECT_BINARY_DIR@/packaging/apple/mac_packager.sh @medInria_BINARY_DIR@/bin/plugins @medInria_BINARY_DIR@/bin/plugins_legacy @PRIVATE_PLUGINS_DIRS@ @PRIVATE_PLUGINS_LEGACY_DIRS@ @EXTERNAL_PROJECT_PLUGINS_LEGACY_DIRS@)

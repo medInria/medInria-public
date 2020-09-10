@@ -2,4 +2,4 @@
 set -e
 
 [ -h /usr/share/applications/medInria.desktop ] && rm -f /usr/share/applications/medInria.desktop
-[ -h /usr/bin/MUSIC ]  && rm -f /usr/bin/MUSIC
+[ -h /usr/bin/MUSICardio ]  && rm -f /usr/bin/MUSICardio

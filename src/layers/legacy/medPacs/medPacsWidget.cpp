@@ -133,7 +133,7 @@ void medPacsWidget::readSettings(void)
     settings.endGroup();
 
     if (title.isEmpty())
-        d->hostTitle = ("MUSIC");
+        d->hostTitle = ("MUSICardio");
     else
         d->hostTitle = title;
     if (port.isEmpty())

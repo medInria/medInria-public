@@ -1,5 +1,6 @@
-MUSIC v3.0.0:
-- MUSIC core is now on medInria 3.x.x
+MUSICardio v3.0.0:
+- New name: MUSICardio
+- MUSICardio core is now on medInria 3.x.x
 
 medInria v3.1.1:
 - Viewer optimization: opening data is quicker, debug a window/level lag

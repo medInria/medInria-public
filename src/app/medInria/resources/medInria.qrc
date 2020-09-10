@@ -166,11 +166,12 @@
         <file>icons/saveScene_grey.png</file>
         <file>icons/scene.png</file>
 
-        <file>../../../../LICENSE_MUSIC.txt</file>
-        <file>music_logo_light.png</file>
-        <file>music_logo_small_light.png</file>
-        <file>music_logo_dark.png</file>
-        <file>music_logo_small_dark.png</file>
+        <file>../../../../LICENSE_MUSICardio.txt</file>
+        <file>MUSICardio_logo_light-notext.png</file>
+        <file>MUSICardio_logo_light.png</file>
+        <file>MUSICardio_logo_small_light.png</file>
+        <file>MUSICardio_logo_dark.png</file>
+        <file>MUSICardio_logo_small_dark.png</file>
         <file>icons/music-check.svg</file>
         <file>icons/music-cross.svg</file>
         <file>icons/workspace_Pipelines.png</file>
