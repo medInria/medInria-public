@@ -27,6 +27,10 @@ set(CMAKE_INCLUDE_CURRENT_DIR TRUE)
 ## #############################################################################
 ## Resolve dependencies
 ## #############################################################################
+if(${USE_FFmpeg})
+  set (VTK_FFmpeg_MODULE vtkIOFFMPEG)
+  add_definitions(-DMED_USE_FFmpeg)
+endif()
 
 find_package(dtk REQUIRED)
 include_directories(${dtk_INCLUDE_DIRS})
@@ -34,7 +38,7 @@ include_directories(${dtk_INCLUDE_DIRS})
 find_package(ITK REQUIRED COMPONENTS ITKCommon)
 include(${ITK_USE_FILE})
 
-find_package(VTK REQUIRED COMPONENTS vtkCommonCore vtkImagingSources vtkIOFFMPEG vtkIOImage vtkRenderingQt vtkIOMovie)
+find_package(VTK REQUIRED COMPONENTS vtkCommonCore vtkImagingSources ${VTK_FFmpeg_MODULE} vtkIOImage vtkRenderingQt vtkIOMovie)
 include(${VTK_USE_FILE})
 
 ## #############################################################################
@@ -79,7 +83,7 @@ target_link_libraries(${TARGET_NAME}
     vtkIOImage
     vtkRenderingQt
     vtkIOMovie
-    vtkIOFFMPEG
+    ${VTK_FFmpeg_MODULE}
     )
 
 set(CMAKE_RUNTIME_OUTPUT_DIRECTORY ${CMAKE_BINARY_DIR}/bin)

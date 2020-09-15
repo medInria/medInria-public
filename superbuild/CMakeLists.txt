@@ -46,9 +46,15 @@ find_package(Boost REQUIRED)
 option(USE_DTKIMAGING "Use DTK imaging layer" OFF )
   
 option(USE_OSPRay "Use OSPRay for CPU VR" OFF )
+
+if (NOT WIN32)
+  option(USE_FFmpeg "Build with FFmpeg video export support" OFF)
+  if (USE_FFmpeg)
+      list(APPEND external_projects ffmpeg)
+  endif()
+endif()
   
 list(APPEND external_projects
-  ffmpeg
   VTK 
   ITK 
   RPI 
@@ -74,6 +80,8 @@ if (USE_OSPRay)
   SET(ospray_DIR CACHE PATH "The directory containing a CMAKE configuration file for OSPRay")
   SET(OSPRAY_INSTALL_DIR CACHE PATH "Install location of OSPRay")
 endif()
+
+
 
 ## #############################################################################
 ## Setup build configuration

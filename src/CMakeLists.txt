@@ -51,6 +51,13 @@ option(USE_OSPRay
   OFF
   )
 
+if (NOT WIN32)
+option(USE_FFmpeg
+  "Build with FFmpeg video export support"
+  OFF
+  )
+endif()
+
 ## #############################################################################
 ## Find package
 ## #############################################################################
