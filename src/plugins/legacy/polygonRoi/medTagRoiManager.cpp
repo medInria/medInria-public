@@ -921,16 +921,23 @@ void medTagRoiManager::interpolateIfNeeded()
 QList<polygonRoi *> medTagRoiManager::interpolateBetween2Slices(polygonRoi *firstRoi, polygonRoi *secondRoi)
 {
     QList<polygonRoi *> outputRois;
-    vtkContourRepresentation* minContour;
-    vtkContourRepresentation* maxContour;
+    vtkContourRepresentation* contour;
     // Contour first ROI
-    minContour = firstRoi->getContour()->GetContourRepresentation();
+    contour = firstRoi->getContour()->GetContourRepresentation();
+    vtkSmartPointer<vtkPolyData> curveMin = vtkSmartPointer<vtkPolyData>::New();
+    contour->GetNodePolyData(curveMin);
     int minSlice = firstRoi->getIdSlice();
-
-    maxContour = secondRoi->getContour()->GetContourRepresentation();
+    int curveMinNbNode = contour->GetNumberOfNodes();
+ 
+    // Contour second ROI
+    contour = secondRoi->getContour()->GetContourRepresentation();
+    vtkSmartPointer<vtkPolyData> curveMax = vtkSmartPointer<vtkPolyData>::New();
+    contour->GetNodePolyData(curveMax);
     int maxSlice = secondRoi->getIdSlice();
+    int curveMaxNbNode = contour->GetNumberOfNodes();
+
     // Compute intermediate ROIs between two successive ROIs
-    QList<QVector<QVector3D>> listOfNodes = generateIntermediateCurves(maxContour,minContour,maxSlice-minSlice-1);
+    QList<QVector<QVector3D>> listOfNodes = generateIntermediateCurves(curveMax,curveMin,maxSlice-minSlice-1);
     if ( listOfNodes.size() != (maxSlice-minSlice-1) )
     {
         emit sendErrorMessage(getName() + ": Unable to interpolate between slice: " + QString::number(minSlice+1) + " and " + QString::number(maxSlice-1) + ". Operation aborted");
@@ -952,36 +959,24 @@ QList<polygonRoi *> medTagRoiManager::interpolateBetween2Slices(polygonRoi *firs
     return outputRois;
 }
 
-QList<QVector<QVector3D>> medTagRoiManager::generateIntermediateCurves( vtkContourRepresentation* firstContour,  vtkContourRepresentation* secondContour, int nb)
+QList<QVector<QVector3D>> medTagRoiManager::generateIntermediateCurves(vtkSmartPointer<vtkPolyData> curve1, vtkSmartPointer<vtkPolyData> curve2, int nb)
 {
-    vtkSmartPointer<vtkPolyData> firstCurve = vtkSmartPointer<vtkPolyData>::New();
-    firstContour->GetNodePolyData(firstCurve);
-
-    vtkSmartPointer<vtkPolyData> secondCurve = vtkSmartPointer<vtkPolyData>::New();
-    secondContour->GetNodePolyData(secondCurve);
-
-    int nbNodesFirst = firstContour->GetNumberOfNodes();
-    int nbNodesSecond = secondContour->GetNumberOfNodes();
-
+    int max = curve2->GetNumberOfPoints();
+    vtkSmartPointer<vtkPolyData> startCurve = curve1, endCurve = curve2;
     bool curve2ToCurve1 = false;
-    vtkSmartPointer<vtkPolyData> startCurve = firstCurve, endCurve = secondCurve;
-    vtkSmartPointer<vtkPolyData> poly = firstContour->GetContourRepresentationAsPolyData();
 
-    int max = nbNodesSecond-1;
-    if (nbNodesFirst >= nbNodesSecond)
+    if (curve1->GetNumberOfPoints()>=curve2->GetNumberOfPoints())
     {
-        startCurve = secondCurve;
-        endCurve = firstCurve;
-        poly = secondContour->GetContourRepresentationAsPolyData();
-        max = nbNodesFirst-1;
-        curve2ToCurve1 = true;       
+        max = curve1->GetNumberOfPoints();
+        startCurve = curve2;
+        endCurve = curve1;
+        curve2ToCurve1 = true;
     }
 
     //Homogenise the points distribution on the curve
-    if (nbNodesFirst != nbNodesSecond)
-    {
-        resampleCurve(startCurve, max, poly);
-    }
+    resampleCurve(startCurve, max);
+    resampleCurve(endCurve, max);
+
     reorderPolygon(startCurve);
     reorderPolygon(endCurve);
 
@@ -1073,10 +1068,10 @@ void medTagRoiManager::reorderPolygon(vtkPolyData *poly)
     poly->SetPoints(reorderedPoints);
 }
 
-void medTagRoiManager::resampleCurve(vtkPolyData *nodes,int nbPoints, vtkPolyData *poly)
+void medTagRoiManager::resampleCurve(vtkPolyData *poly,int nbPoints)
 {
-    vtkSmartPointer<vtkParametricSpline> spline = vtkSmartPointer<vtkParametricSpline>::New();
-    nodes->GetPoints()->InsertNextPoint(nodes->GetPoints()->GetPoint(0));
+    vtkSmartPointer<vtkParametricSpline> spline =vtkSmartPointer<vtkParametricSpline>::New();
+    poly->GetPoints()->InsertNextPoint(poly->GetPoints()->GetPoint(0));
     spline->SetPoints(poly->GetPoints());
 
     vtkPoints *points = vtkPoints::New();
@@ -1089,7 +1084,7 @@ void medTagRoiManager::resampleCurve(vtkPolyData *nodes,int nbPoints, vtkPolyDat
         points->InsertNextPoint(p);
     }
 
-    nodes->SetPoints(points);
+    poly->SetPoints(points);
     points->Delete();
 }
 
