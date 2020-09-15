@@ -38,7 +38,6 @@ public:
     virtual ~polygonRoi();
 
     vtkContourWidget * getContour();
-    void createPolydataToAddInViews();
     vtkImageView2D * getView();
 
     virtual void Off();
@@ -72,6 +71,7 @@ public:
     void activateContour(bool state);
     void updateColor(QColor color, bool activate);
     QColor getColor();
+    
 public slots:
     virtual void undo();
     virtual void redo();
