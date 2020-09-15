@@ -924,15 +924,17 @@ QList<polygonRoi *> medTagRoiManager::interpolateBetween2Slices(polygonRoi *firs
     vtkContourRepresentation* contour;
     // Contour first ROI
     contour = firstRoi->getContour()->GetContourRepresentation();
-
-    vtkSmartPointer<vtkPolyData> curveMin = contour->GetContourRepresentationAsPolyData();
+    vtkSmartPointer<vtkPolyData> curveMin = vtkSmartPointer<vtkPolyData>::New();
+    contour->GetNodePolyData(curveMin);
     int minSlice = firstRoi->getIdSlice();
-
+    int curveMinNbNode = contour->GetNumberOfNodes();
+ 
     // Contour second ROI
     contour = secondRoi->getContour()->GetContourRepresentation();
-    vtkSmartPointer<vtkPolyData> curveMax = contour->GetContourRepresentationAsPolyData();
-
+    vtkSmartPointer<vtkPolyData> curveMax = vtkSmartPointer<vtkPolyData>::New();
+    contour->GetNodePolyData(curveMax);
     int maxSlice = secondRoi->getIdSlice();
+    int curveMaxNbNode = contour->GetNumberOfNodes();
 
     // Compute intermediate ROIs between two successive ROIs
     QList<QVector<QVector3D>> listOfNodes = generateIntermediateCurves(curveMax,curveMin,maxSlice-minSlice-1);
@@ -947,23 +949,6 @@ QList<polygonRoi *> medTagRoiManager::interpolateBetween2Slices(polygonRoi *firs
     {
         polygonRoi *polyRoi = new polygonRoi(view2d, d->baseColor);
         polyRoi->loadNodes(nodes);
-        vtkContourWidget *contour = polyRoi->getContour();
-        vtkSmartPointer<vtkPolyData> poly = vtkSmartPointer<vtkPolyData>::New();
-        contour->GetContourRepresentation()->GetNodePolyData(poly);
-        int nbPointsPoly = contour->GetContourRepresentation()->GetNumberOfNodes();
-        int pointToRemove = 0;
-        for (int k = 0; k<nbPointsPoly; k++)
-        {
-            if (k%5==0)
-            {
-                pointToRemove++;
-            }
-            else
-            {
-                contour->GetContourRepresentation()->DeleteNthNode(pointToRemove);
-            }
-        }
-        contour->SetEnabled(true);
         polyRoi->setIdSlice(idSlice);
         idSlice++;
         polyRoi->setMasterRoi(false);

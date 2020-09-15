@@ -93,22 +93,15 @@ public:
     {
         contour->RemoveAllObservers();
         contour->GetContourRepresentation()->RemoveAllObservers();
-        contour->Delete();
         view->RemoveObserver(observer);
-        observer->Delete();
         view = nullptr;
-        if (copyRoi)
-        {
-            delete copyRoi;
-        }
     }
 
-    vtkContourWidget *contour;
+    vtkSmartPointer<vtkContourWidget> contour;
     vtkSmartPointer<vtkPolyData> polyData;
     vtkSmartPointer<vtkProperty> property;
     vtkImageView2D *view;
-    PolygonRoiObserver *observer;
-    polygonRoi *copyRoi;
+    vtkSmartPointer<PolygonRoiObserver> observer;
     QList<medAbstractImageView*> alternativeViews;
     QColor roiColor;
 };
@@ -122,7 +115,7 @@ polygonRoi::polygonRoi(vtkImageView2D *view, QColor color, medAbstractRoi *paren
     contourRep->GetProperty()->SetPointSize(8);
     contourRep->GetActiveProperty()->SetOpacity(0);
     contourRep->SetPixelTolerance(20);
-    d->contour = vtkContourWidget::New();
+    d->contour = vtkSmartPointer<vtkContourWidget>::New();
     d->contour->SetRepresentation(contourRep);
 
     contourRep->SetRenderer(view->GetRenderer());
@@ -136,10 +129,9 @@ polygonRoi::polygonRoi(vtkImageView2D *view, QColor color, medAbstractRoi *paren
 
     setOrientation(view->GetViewOrientation());
     setIdSlice(view->GetSlice());
-    d->observer = PolygonRoiObserver::New();
+    d->observer = vtkSmartPointer<PolygonRoiObserver>::New();
     d->observer->setRoi(this);
     d->contour->AddObserver(vtkCommand::EndInteractionEvent,d->observer,10);
-    d->copyRoi = nullptr;
 
     d->roiColor = color;
     setMasterRoi(true);
@@ -246,13 +238,6 @@ void polygonRoi::loadNodes(QVector<QVector3D> coordinates)
     emit interpolate();
     emit enableOtherViewsVisibility(true);
 
-}
-
-void polygonRoi::createPolydataToAddInViews()
-{
-    d->polyData = createPolyDataFromContour();
-    d->property = createPropertyForPolyData();
-    return;
 }
 
 vtkContourWidget * polygonRoi::getContour()
@@ -459,7 +444,11 @@ void polygonRoi::updateContourOtherView(medAbstractImageView *view, bool state)
     {
         if (!d->polyData)
         {
-            createPolydataToAddInViews();
+            d->polyData = createPolyDataFromContour();
+        }
+        if (!d->property)
+        {
+            d->property = createPropertyForPolyData();
         }
         double color[3];
         color[0] = d->roiColor.redF();
