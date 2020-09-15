@@ -16,6 +16,18 @@
 
 #include <dtkCoreSupport/dtkPlugin.h>
 
+/** @enum eCategory Defines all categories of plugins and the order to load them. */
+enum eCategory
+{
+    CAT_IODATA = 1,  /*!< Plugin type of IO data and file format. */
+    CAT_DB,          /*!< Plugin type for database access. */
+    CAT_FEATURE,     /*!< Plugin type for shared functionalities used on area, workspace and process plugins. */
+    CAT_AREA,        /*!< Plugin type of new area. */
+    CAT_WORKSPACE,   /*!< Plugin type of new workspace. */
+    CAT_PROCESS,     /*!< Plugin type of new process. */
+    CAT_END          /*!< enum end mark. */
+};
+
 class MEDCORELEGACY_EXPORT medPluginLegacy : public dtkPlugin
 {
     Q_OBJECT
@@ -67,8 +79,8 @@ public:
     virtual QStringList tags() const;
 
     /**
-     * @brief <not used>
-     * @return <not used>
+     * @brief **not used**
+     * @return **not used**
      */
     virtual bool uninitialize();
 

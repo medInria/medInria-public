@@ -68,6 +68,10 @@ endif()
 
 set(${ep}_BUILD_TYPE Debug CACHE STRING "Build type configuration specific to medInria.")
 
+if (NOT WIN32)
+  option(USE_FFmpeg "Build with FFmpeg video export support" OFF)
+endif()
+
 set(cmake_args
    ${ep_common_cache_args}
   -DCMAKE_BUILD_TYPE=${${ep}_BUILD_TYPE}
@@ -93,7 +97,12 @@ set(cmake_args
   -DBUILD_COMPOSITEDATASET_PLUGIN=OFF
   -DBUILD_EXAMPLE_PLUGINS=OFF
   )
-  
+
+if (${USE_FFmpeg})
+  list(APPEND cmake_args
+  -DUSE_FFmpeg=${USE_FFmpeg})
+endif() 
+
 if (USE_DTKIMAGING)
   set(cmake_args
     ${cmake_args}
