@@ -68,10 +68,6 @@ endif()
 
 set(${ep}_BUILD_TYPE Debug CACHE STRING "Build type configuration specific to medInria.")
 
-if (NOT WIN32)
-  option(USE_FFmpeg "Build with FFmpeg video export support" OFF)
-endif()
-
 set(cmake_args
    ${ep_common_cache_args}
   -DCMAKE_BUILD_TYPE=${${ep}_BUILD_TYPE}

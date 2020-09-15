@@ -25,8 +25,6 @@ find_package(OpenGL REQUIRED)
 
 list_source_files(${TARGET_NAME}
   ${CMAKE_CURRENT_SOURCE_DIR}
-  threadpool/threadpoolLight
-  threadpool/threadpoolQtBase
   data
   database
   data/annotationData

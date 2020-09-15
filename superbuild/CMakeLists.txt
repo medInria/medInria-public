@@ -49,7 +49,7 @@ option(USE_OSPRay "Use OSPRay for CPU VR" OFF )
 
 if (NOT WIN32)
   option(USE_FFmpeg "Build with FFmpeg video export support" OFF)
-  if (USE_FFmpeg)
+  if (${USE_FFmpeg})
       list(APPEND external_projects ffmpeg)
   endif()
 endif()
@@ -81,8 +81,6 @@ if (USE_OSPRay)
   SET(OSPRAY_INSTALL_DIR CACHE PATH "Install location of OSPRay")
 endif()
 
-
-
 ## #############################################################################
 ## Setup build configuration
 ## #############################################################################
@@ -90,7 +88,6 @@ endif()
 unset(CMAKE_BUILD_TYPE CACHE)
 set(CMAKE_BUILD_TYPE_externals_projects Release CACHE STRING "Build type configuration for externals projects libraries.")
 set(CMAKE_BUILD_TYPE_medInria Debug CACHE STRING "Build type configuration specific to medInria.")
-
 
 ## #############################################################################
 ## medInria dirs.

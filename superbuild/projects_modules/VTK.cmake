@@ -17,6 +17,7 @@ set(ep VTK)
 ## #############################################################################
 ## List the dependencies of the project
 ## #############################################################################
+
 if(${USE_FFmpeg})
   list(APPEND ${ep}_dependencies ffmpeg)
 endif()

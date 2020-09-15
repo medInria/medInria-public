@@ -27,6 +27,7 @@ set(CMAKE_INCLUDE_CURRENT_DIR TRUE)
 ## #############################################################################
 ## Resolve dependencies
 ## #############################################################################
+
 if(${USE_FFmpeg})
   set (VTK_FFmpeg_MODULE vtkIOFFMPEG)
   add_definitions(-DMED_USE_FFmpeg)
