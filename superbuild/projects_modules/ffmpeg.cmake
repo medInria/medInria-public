@@ -10,6 +10,8 @@
 #  PURPOSE.
 #
 ################################################################################
+include_guard(GLOBAL)
+if(${USE_FFmpeg})
 
 function(ffmpeg_project)
 set(ep ffmpeg)
@@ -89,3 +91,4 @@ set(${ep}_DIR ${binary_dir} PARENT_SCOPE)
 endif() #NOT USE_SYSTEM_ep
 
 endfunction()
+endif()

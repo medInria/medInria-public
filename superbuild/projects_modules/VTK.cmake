@@ -17,10 +17,9 @@ set(ep VTK)
 ## #############################################################################
 ## List the dependencies of the project
 ## #############################################################################
-
-list(APPEND ${ep}_dependencies
-  ffmpeg
-  )
+if(${USE_FFmpeg})
+  list(APPEND ${ep}_dependencies ffmpeg)
+endif()
   
 ## #############################################################################
 ## Prepare the project
@@ -89,7 +88,7 @@ if(USE_OSPRay)
 endif()
 
 # Video Export
-if (UNIX)
+if(${USE_FFmpeg})
     list(APPEND cmake_args
         # FFMPEG
         -DModule_vtkIOFFMPEG:BOOL=ON
