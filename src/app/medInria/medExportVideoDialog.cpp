@@ -50,7 +50,7 @@ medExportVideoDialog::medExportVideoDialog(QWidget *parent, int numberOfFrames, 
     // Step parameter
     QHBoxLayout *stepLayout = new QHBoxLayout;
     d->nbStep = new medIntParameterL("Recording step", this);
-    d->nbStep->setValue(10);
+    d->nbStep->setValue(1);
     d->numberOfFrames = numberOfFrames;
     d->nbStep->setRange(1, numberOfFrames);
     d->nbStep->getSlider()->setOrientation(Qt::Horizontal);

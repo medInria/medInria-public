@@ -41,6 +41,7 @@
 
 #include <dtkCoreSupport/dtkAbstractProcessFactory.h>
 
+#include <QApplication>
 #include <QtGui>
 #include <QtWidgets>
 #include <QImage>
@@ -192,6 +193,9 @@ void medWorkspaceArea::grabVideo()
 
             int screenshotCount = 0;
 
+            QApplication::setOverrideCursor(Qt::WaitCursor);
+            QApplication::processEvents();
+
             switch(userParameters.at(1))
             {
                 // Time video (for 4D datasets)
@@ -242,6 +246,8 @@ void medWorkspaceArea::grabVideo()
                     }
                 }
             }
+
+            QApplication::restoreOverrideCursor();
 
             // Compute the video and export it
             process->update();

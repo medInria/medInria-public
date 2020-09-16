@@ -9,11 +9,12 @@
 #include <vtkQImageToImageSource.h>
 #include <vtkSmartPointer.h>
 
-#ifdef unix // Linux, Mac or Cygwin
+#if defined (MED_USE_FFmpeg)
 #include <vtkFFMPEGWriter.h>
 #endif
 
 // Qt
+#include <QApplication>
 #include <QComboBox>
 #include <QEventLoop>
 #include <QFileDialog>
@@ -25,6 +26,7 @@
 // /////////////////////////////////////////////////////////////////
 // ExportVideoPrivate
 // /////////////////////////////////////////////////////////////////
+
 namespace med
 {
 class ExportVideoPrivate
@@ -44,6 +46,7 @@ public:
     QLabel      *subsamplingLabel;
     QComboBox   *qualityComboBox;
     QLabel      *qualityLabel;
+    QLabel      *explanationLabel;
 
     // User parameters
     QString filename;
@@ -152,6 +155,8 @@ int ExportVideo::update()
         // Run export video/jpeg
         if (displayFileDialog() == medAbstractProcessLegacy::SUCCESS)
         {
+            QApplication::setOverrideCursor(Qt::WaitCursor);
+            QApplication::processEvents();
             qDebug() << metaObject()->className() <<" ENCODING... w h "<<d->width<<"/"<<d->height;
 
             int res = medAbstractProcessLegacy::FAILURE;
@@ -166,6 +171,7 @@ int ExportVideo::update()
             }
 
             qDebug() << metaObject()->className() <<" END OF ENCODING -- "<<res;
+            QApplication::restoreOverrideCursor();
 
             return res;
         }
@@ -230,13 +236,14 @@ int ExportVideo::exportAsVideo()
     }
     else
     {
-#ifdef unix
+#if defined (MED_USE_FFmpeg)
         if (d->format == FFMPEG)
         {
             vtkSmartPointer<vtkFFMPEGWriter> writerVideoTmp = vtkSmartPointer<vtkFFMPEGWriter>::New();
             writerVideoTmp->SetInputConnection(source->GetOutputPort());
             writerVideoTmp->SetFileName(d->filename.toStdString().c_str());
             writerVideoTmp->SetRate(d->frameRate);
+            writerVideoTmp->SetQuality(d->quality);
             writerVideo = writerVideoTmp;
         }
         else
@@ -293,8 +300,8 @@ int ExportVideo::displayFileDialog()
     // and .ogx for multiplexed Ogg."
     d->formatComboBox->addItem("Ogg Vorbis (.ogv)", OGGVORBIS);
     d->formatComboBox->addItem("JPEG (.jpg .jpeg)", JPGBATCH);
-#ifdef unix
-    d->formatComboBox->addItem("FFMPEG (.avi)", FFMPEG);
+#if defined (MED_USE_FFmpeg)
+    d->formatComboBox->addItem("FFMPEG (.mp4)", FFMPEG);
 #endif
     d->formatComboBox->setCurrentIndex(d->format);
     gridbox->addWidget(new QLabel("Format", d->exportDialog), gridbox->rowCount()-1, 0);
@@ -332,6 +339,12 @@ int ExportVideo::displayFileDialog()
     gridbox->addWidget(d->qualityLabel,    gridbox->rowCount()+2, 0);
     gridbox->addWidget(d->qualityComboBox, gridbox->rowCount()-1, 1);
 
+    // Video explanation of conversion (default: ogv txt)
+    d->explanationLabel = new QLabel("\nYou can convert OGV to MP4 for instance at https://anyconv.com/fr/convertisseur-de-ogv-en-mp4/ or with your own tools.");
+    d->explanationLabel->setWordWrap(true);
+    d->explanationLabel->setStyleSheet("font: italic");
+    gridbox->addWidget(d->explanationLabel, gridbox->rowCount()+3, 0, 3, 0);
+    
     d->exportDialog->setLayout(gridbox);
 
     if ( d->exportDialog->exec() )
@@ -369,6 +382,7 @@ void ExportVideo::handleWidgetDisplayAccordingToType(int index)
             d->subsamplingLabel->show();
             d->qualityComboBox->show();
             d->qualityLabel->show();
+            d->explanationLabel->setText("\nYou can convert OGV to MP4 for instance at https://anyconv.com/fr/convertisseur-de-ogv-en-mp4/ or with your own tools.");
             break;
         }
         case JPGBATCH:
@@ -381,18 +395,20 @@ void ExportVideo::handleWidgetDisplayAccordingToType(int index)
             d->subsamplingLabel->hide();
             d->qualityComboBox->hide();
             d->qualityLabel->hide();
+            d->explanationLabel->setText("\n You can convert a batch of jpeg into movies through your own tools.");
             break;
         }
         case FFMPEG:
         {
             // Video
-            d->exportDialog->selectFile("video.avi");
+            d->exportDialog->selectFile("video.mp4");
             d->frameRateSpinBox->show();
             d->frameRateLabel->show();
             d->subsamplingComboBox->hide();
             d->subsamplingLabel->hide();
-            d->qualityComboBox->hide();
-            d->qualityLabel->hide();
+            d->qualityComboBox->show();
+            d->qualityLabel->show();
+            d->explanationLabel->setText("\nIf needed, you can switch to the OGV export and convert it to MP4 or other formats through your own tools.");
             break;
         }
     }
