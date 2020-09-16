@@ -259,19 +259,6 @@ medWorldPosContours polygonRoi::getContourAsNodes()
     return contourNodes;
 }
 
-void polygonRoi::undo()
-{
-    vtkContourOverlayRepresentation *contourRep =
-            dynamic_cast<vtkContourOverlayRepresentation*>(d->contour->GetContourRepresentation());
-    contourRep->Undo();
-}
-
-void polygonRoi::redo()
-{
-    vtkContourOverlayRepresentation *contourRep = dynamic_cast<vtkContourOverlayRepresentation*>(d->contour->GetContourRepresentation());
-    contourRep->Redo();
-}
-
 void polygonRoi::Off()
 {
     d->contour->Off();
@@ -511,7 +498,6 @@ bool polygonRoi::pasteContour(QVector<QVector2D> nodes)
         pos[1] = node.y();
         d->contour->GetContourRepresentation()->AddNodeAtDisplayPosition(pos);
     }
-    contourRep->SaveState();
     contourRep->SetClosedLoop(1);
     d->contour->On();
     d->contour->SetWidgetState(2);

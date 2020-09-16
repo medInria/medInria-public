@@ -66,57 +66,6 @@ void vtkContourOverlayRepresentation::UpdateContourWorldPositionsBasedOnDisplayP
     }
 }
 
-int vtkContourOverlayRepresentation::CanUndo()
-{
-    return 1;
-} 
-
-int vtkContourOverlayRepresentation::CanRedo()
-{
-    return 1;
-} 
-
-int vtkContourOverlayRepresentation::SaveState()
-{
-    if (!needToSaveState)
-    {
-        return 0;
-    }
-    else
-    {
-        needToSaveState = false;
-    }
-
-    // We save NodeAsPolyData and the slope of each node
-    vtkSmartPointer<vtkPolyData> Nodes = vtkPolyData::New();
-    GetNodePolyData(Nodes);
-    undo_stack.push_back(Nodes);
-    redo_stack.clear();
-    return 1;
-}
-
-void vtkContourOverlayRepresentation::Undo()
-{
-    if (undo_stack.size() > 1)
-    {
-        redo_stack.push_back(undo_stack.at(undo_stack.size()-1));
-        undo_stack.pop_back();
-        vtkSmartPointer<vtkPolyData> Nodes = undo_stack.at(undo_stack.size()-1);
-        this->Initialize(Nodes);
-    }
-}
-
-void vtkContourOverlayRepresentation::Redo()
-{
-    if (redo_stack.size() > 0)
-    {
-        vtkSmartPointer<vtkPolyData> Nodes = redo_stack.at(redo_stack.size()-1);
-        undo_stack.push_back(Nodes);
-        redo_stack.pop_back();
-        this->Initialize(Nodes);
-    }
-}
-
 void vtkContourOverlayRepresentation::WidgetInteraction(double eventPos[2])
 {
     Superclass::WidgetInteraction(eventPos);
