@@ -73,8 +73,8 @@ public:
     QColor getColor();
     
 public slots:
-    virtual void undo();
-    virtual void redo();
+    virtual void undo(){};
+    virtual void redo(){};
     virtual void saveState(){}
 
 signals:

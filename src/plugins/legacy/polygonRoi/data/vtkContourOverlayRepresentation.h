@@ -47,11 +47,6 @@ public:
     vtkSetMacro(needToSaveState, bool)
     vtkGetMacro(needToSaveState, bool)
 
-    int CanUndo(); 
-    int CanRedo(); 
-    int SaveState();
-    void Undo();
-    void Redo();
     void Initialize(vtkPolyData* polyData) override
     {
         Superclass::Initialize(polyData);
@@ -89,7 +84,5 @@ private:
     vtkContourOverlayRepresentation(const vtkContourOverlayRepresentation&);  //Not implemented
     void operator=(const vtkContourOverlayRepresentation&);  //Not implemented
 
-    std::vector<vtkSmartPointer<vtkPolyData> > undo_stack;
-    std::vector<vtkSmartPointer<vtkPolyData> > redo_stack;
     bool needToSaveState;
 };
