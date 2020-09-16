@@ -88,8 +88,8 @@ private:
     medTagRoiManagerPrivate* const d;
 
     QList<polygonRoi *> interpolateBetween2Slices(polygonRoi *firstRoi, polygonRoi *secondRoi);
-    QList<QVector<QVector3D> > generateIntermediateCurves(vtkSmartPointer<vtkPolyData> curve1, vtkSmartPointer<vtkPolyData> curve2, int nb);
-    void resampleCurve(vtkPolyData *poly, int nbPoints);
+    QList<QVector<QVector3D> > generateIntermediateCurves( vtkContourRepresentation* firstContour,  vtkContourRepresentation* secondContour, int nb);
+    void resampleCurve(vtkPolyData *poly, int nbPoints, vtkPolyData *poly2);
     void reorderPolygon(vtkPolyData *poly);
     static bool sortRois(const polygonRoi *p1, const polygonRoi *p2);
     void connectRois();
