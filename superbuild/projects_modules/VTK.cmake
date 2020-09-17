@@ -56,9 +56,7 @@ if (UNIX AND NOT APPLE)
     set(extention so)
 elseif(APPLE)
     set(extention dylib)
-elseif (WIN32)
-    set(extention lib)
-endif()
+endif() # no WIN32 use of FFmpeg
 
 set(cmake_args
   ${ep_common_cache_args}

@@ -9,7 +9,7 @@
 #include <vtkQImageToImageSource.h>
 #include <vtkSmartPointer.h>
 
-#if defined (MED_USE_FFmpeg)
+#ifdef MED_USE_FFmpeg
 #include <vtkFFMPEGWriter.h>
 #endif
 
@@ -234,23 +234,20 @@ int ExportVideo::exportAsVideo()
 
         writerVideo = writerVideoTmp;
     }
+#ifdef MED_USE_FFmpeg
+    else if (d->format == FFMPEG)
+    {
+        vtkSmartPointer<vtkFFMPEGWriter> writerVideoTmp = vtkSmartPointer<vtkFFMPEGWriter>::New();
+        writerVideoTmp->SetInputConnection(source->GetOutputPort());
+        writerVideoTmp->SetFileName(d->filename.toStdString().c_str());
+        writerVideoTmp->SetRate(d->frameRate);
+        writerVideoTmp->SetQuality(d->quality);
+        writerVideo = writerVideoTmp;
+    }
+#endif
     else
     {
-#if defined (MED_USE_FFmpeg)
-        if (d->format == FFMPEG)
-        {
-            vtkSmartPointer<vtkFFMPEGWriter> writerVideoTmp = vtkSmartPointer<vtkFFMPEGWriter>::New();
-            writerVideoTmp->SetInputConnection(source->GetOutputPort());
-            writerVideoTmp->SetFileName(d->filename.toStdString().c_str());
-            writerVideoTmp->SetRate(d->frameRate);
-            writerVideoTmp->SetQuality(d->quality);
-            writerVideo = writerVideoTmp;
-        }
-        else
-        {
-            return medAbstractProcessLegacy::FAILURE;
-        }
-#endif
+        return medAbstractProcessLegacy::FAILURE;
     }
 	
     writerVideo->Start();
@@ -300,7 +297,7 @@ int ExportVideo::displayFileDialog()
     // and .ogx for multiplexed Ogg."
     d->formatComboBox->addItem("Ogg Vorbis (.ogv)", OGGVORBIS);
     d->formatComboBox->addItem("JPEG (.jpg .jpeg)", JPGBATCH);
-#if defined (MED_USE_FFmpeg)
+#ifdef MED_USE_FFmpeg
     d->formatComboBox->addItem("FFMPEG (.mp4)", FFMPEG);
 #endif
     d->formatComboBox->setCurrentIndex(d->format);
