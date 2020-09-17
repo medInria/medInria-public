@@ -83,9 +83,10 @@ target_link_libraries(${TARGET_NAME}
     medCore
     medVtkInria
     medUtilities
+    vtkImagingSources
     vtkIOImage
-    vtkRenderingQt
     vtkIOMovie
+    vtkRenderingQt
     ${VTK_FFmpeg_MODULE}
     )
 

@@ -59,7 +59,6 @@ else()
   set(DCMTK_WIDE_CHAR_FILE_IO_FUNCTIONS OFF)
 endif()
 
-
 # set compilation flags
 if (UNIX)
   set(${ep}_c_flags "${${ep}_c_flags} -w")

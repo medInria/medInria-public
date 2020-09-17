@@ -1,0 +1,34 @@
+From 08022b919fe94f754a28ef4aea0012df9c0df5f1 Mon Sep 17 00:00:00 2001
+From: Mathilde Merle <mathilde.merle@ihu-liryc.fr>
+Date: Thu, 17 Sep 2020 15:37:02 +0200
+Subject: [PATCH] [VTK] handle Windows Utf16 in OggTheoraWriter
+
+---
+ IO/Movie/vtkOggTheoraWriter.cxx | 4 +++-
+ 1 file changed, 3 insertions(+), 1 deletion(-)
+
+diff --git a/IO/Movie/vtkOggTheoraWriter.cxx b/IO/Movie/vtkOggTheoraWriter.cxx
+index d24acde998..9dff50bb0e 100644
+--- a/IO/Movie/vtkOggTheoraWriter.cxx
++++ b/IO/Movie/vtkOggTheoraWriter.cxx
+@@ -21,6 +21,8 @@
+ 
+ #include "vtk_oggtheora.h"
+ 
++#include <vtksys/SystemTools.hxx>
++
+ #include <ctime>
+ 
+ //---------------------------------------------------------------------------
+@@ -190,7 +192,7 @@ int vtkOggTheoraWriterInternal::Start()
+   th_info_clear(&thInfo);
+ 
+   // Finally, open the file and start it off.
+-  this->outFile = fopen(this->Writer->GetFileName(),"wb");
++  this->outFile = vtksys::SystemTools::Fopen(this->Writer->GetFileName(),"wb");
+   if (!this->outFile)
+   {
+     vtkGenericWarningMacro(<< "Could not open " << this->Writer->GetFileName() << "." );
+-- 
+2.25.1
+
