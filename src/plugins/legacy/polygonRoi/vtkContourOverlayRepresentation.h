@@ -40,7 +40,7 @@ public:
     // Description:
     // The class maintains its true contour locations based on display co-ords
     // This method syncs the world co-ords data structure with the display co-ords.
-    virtual void UpdateContourWorldPositionsBasedOnDisplayPositions();
+    void UpdateContourWorldPositionsBasedOnDisplayPositions() override;
 
     vtkSetMacro(needToSaveState, bool)
     vtkGetMacro(needToSaveState, bool)
@@ -50,8 +50,11 @@ public:
     int SaveState();
     void Undo();
     void Redo();
-    virtual void Initialize(vtkPolyData* polyData){Superclass::Initialize(polyData);}
-    virtual void WidgetInteraction(double eventPos[2]);
+    void Initialize(vtkPolyData* polyData) override
+    {
+        Superclass::Initialize(polyData);
+    }
+    void WidgetInteraction(double eventPos[2]) override;
 
     /**
      * @brief ComputeInteractionState is called when the mouse hovers a slice with a vtkContourRepresentation.
@@ -61,14 +64,14 @@ public:
      * @param vtkNotUsed
      * @return Interaction state: cursor is nearby a contour point or not (outside)
      */
-    virtual int ComputeInteractionState(int X, int Y, int vtkNotUsed(modified));
-    virtual int DeleteLastNode();
-    virtual int DeleteActiveNode();
-    virtual int DeleteNthNode( int n );
-    virtual void ClearAllNodes();
-    virtual int AddNodeOnContour( int X, int Y );
-    virtual int AddNodeOnContourAtIndex(int X, int Y, int idx);
-    virtual int AddNodeAtDisplayPosition( int X, int Y );
+    int ComputeInteractionState(int X, int Y, int vtkNotUsed(modified)) override;
+    int DeleteLastNode() override;
+    int DeleteActiveNode() override;
+    int DeleteNthNode( int n ) override;
+    void ClearAllNodes() override;
+    int AddNodeOnContour( int X, int Y ) override;
+    int AddNodeAtDisplayPosition( int X, int Y ) override;
+    int AddNodeAtDisplayPosition( double displayPos[2] ) override;
 
 protected:
     vtkContourOverlayRepresentation();
