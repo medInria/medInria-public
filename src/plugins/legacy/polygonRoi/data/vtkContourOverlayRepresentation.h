@@ -15,6 +15,7 @@ PURPOSE.
 #include <polygonRoiPluginExport.h>
 
 #include <vtkOrientedGlyphFocalPlaneContourRepresentation.h>
+#include <vtkOrientedGlyphContourRepresentation.h>
 #include <vtkSmartPointer.h>
 
 class vtkProperty2D;
@@ -36,6 +37,7 @@ public:
     // Description:
     // Standard methods for instances of this class.
     vtkTypeMacro(vtkContourOverlayRepresentation, vtkOrientedGlyphFocalPlaneContourRepresentation)
+
 
     // Description:
     // The class maintains its true contour locations based on display co-ords
@@ -72,6 +74,12 @@ public:
     int AddNodeOnContour( int X, int Y ) override;
     int AddNodeAtDisplayPosition( int X, int Y ) override;
     int AddNodeAtDisplayPosition( double displayPos[2] ) override;
+
+    int GetNthNodeWorldPosition(int n, double worldPos[3]) override;
+    int GetIntermediatePointWorldPosition(int n, int idx, double point[3]) override;
+    int FindClosestPointOnContour( int X, int Y,
+                                   double worldPos[3],
+                                   int *idx ) override;
 
 protected:
     vtkContourOverlayRepresentation();
