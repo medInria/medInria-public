@@ -1284,7 +1284,6 @@ medClutEditorScene::medClutEditorScene( QObject * parent )
     : QGraphicsScene( parent )
     , d( new medClutEditorScenePrivate )
 {
-    d = new medClutEditorScenePrivate;
     d->size = QSizeF( 500.0, 300.0 );
     d->leftMargin   = 50.0;
     d->rightMargin  = 10.0;
