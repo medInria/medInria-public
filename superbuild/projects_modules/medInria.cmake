@@ -93,7 +93,12 @@ set(cmake_args
   -DBUILD_COMPOSITEDATASET_PLUGIN=OFF
   -DBUILD_EXAMPLE_PLUGINS=OFF
   )
-  
+
+if (${USE_FFmpeg})
+  list(APPEND cmake_args
+  -DUSE_FFmpeg=${USE_FFmpeg})
+endif() 
+
 if (USE_DTKIMAGING)
   set(cmake_args
     ${cmake_args}

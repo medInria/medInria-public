@@ -15,6 +15,8 @@
 
 #include <QtGui>
 #include <QtWidgets>
+
+#include <medAbstractProcessLegacy.h>
 #include <medAbstractWorkspaceLegacy.h>
 
 class medAbstractView;
@@ -43,7 +45,7 @@ public:
 *
 * @param parent
 */
-     medWorkspaceArea(QWidget *parent = 0);
+     medWorkspaceArea(QWidget *parent = nullptr);
     /**
 * @brief
 *
@@ -52,6 +54,7 @@ public:
     ~medWorkspaceArea();
 
     QPixmap grabScreenshot();
+    void grabVideo();
 
     void setupWorkspace(const QString& id);
 
@@ -67,6 +70,18 @@ public:
 protected:
     void addDatabaseView(medDatabaseDataSource* dataSource);
     void switchToStackedViewContainers(medTabbedViewContainers* stack);
+
+    /**
+     * @brief getExportVideoDialogParameters open a window displaying video export parameters and send results
+     */
+    QVector<int> getExportVideoDialogParameters(int numberOfFrames, int numberOfSlices);
+
+    /**
+     * @brief runExportVideoProcess send each frame of the video to process
+     * @param process for video export
+     * @param current screenshot number
+     */
+    void runExportVideoProcess(medAbstractProcessLegacy *process, int screenshotCount);
 
 signals:
     void open(const medDataIndex&);

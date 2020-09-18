@@ -1,0 +1,46 @@
+From e2a8095062670ee622e241f828f36c52c9400bd0 Mon Sep 17 00:00:00 2001
+From: Florent LERAY <florent.leray@inria.fr>
+Date: Fri, 18 Sep 2020 10:45:20 +0200
+Subject: [PATCH] handle Windows Utf16 in OggTheoraWriter
+
+---
+ IO/Movie/module.cmake           | 1 +
+ IO/Movie/vtkOggTheoraWriter.cxx | 4 +++-
+ 2 files changed, 4 insertions(+), 1 deletion(-)
+
+diff --git a/IO/Movie/module.cmake b/IO/Movie/module.cmake
+index fd6d096384..071b4a20a2 100644
+--- a/IO/Movie/module.cmake
++++ b/IO/Movie/module.cmake
+@@ -20,4 +20,5 @@ vtk_module(vtkIOMovie
+     vtkCommonDataModel
+     vtkCommonMisc
+     vtkCommonSystem
++    vtksys
+   )
+\ No newline at end of file
+diff --git a/IO/Movie/vtkOggTheoraWriter.cxx b/IO/Movie/vtkOggTheoraWriter.cxx
+index d24acde998..9dff50bb0e 100644
+--- a/IO/Movie/vtkOggTheoraWriter.cxx
++++ b/IO/Movie/vtkOggTheoraWriter.cxx
+@@ -21,6 +21,8 @@
+ 
+ #include "vtk_oggtheora.h"
+ 
++#include <vtksys/SystemTools.hxx>
++
+ #include <ctime>
+ 
+ //---------------------------------------------------------------------------
+@@ -190,7 +192,7 @@ int vtkOggTheoraWriterInternal::Start()
+   th_info_clear(&thInfo);
+ 
+   // Finally, open the file and start it off.
+-  this->outFile = fopen(this->Writer->GetFileName(),"wb");
++  this->outFile = vtksys::SystemTools::Fopen(this->Writer->GetFileName(),"wb");
+   if (!this->outFile)
+   {
+     vtkGenericWarningMacro(<< "Could not open " << this->Writer->GetFileName() << "." );
+-- 
+2.21.0.windows.1
+

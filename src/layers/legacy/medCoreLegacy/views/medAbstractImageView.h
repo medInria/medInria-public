@@ -65,6 +65,18 @@ public:
     medDoubleParameterL *opacityParameter(unsigned int layer);
     medTimeLineParameterL *timeLineParameter();
 
+    /**
+     * @brief setRotation is used to rotate a 3D mesh
+     * @param angle type double, and in degree
+     */
+    bool setRotation(double angle);
+
+    /**
+     * @brief setSlice is used to change the current slice in a view
+     * @param slice type int
+     */
+    bool setSlice(int slice);
+
 public slots:
     void switchToFourViews();
     void setOrientation(medImageView::Orientation orientation);

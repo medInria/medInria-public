@@ -13,15 +13,19 @@
 
 #include "vtkDataMesh4DInteractor.h"
 
-#include <vtkMetaDataSetSequence.h>
 #include <vtkActor.h>
+#include <vtkDataSetMapper.h>
+#include <vtkMetaDataSetSequence.h>
 #include <vtkProperty.h>
+#include <vtkRenderer.h>
+#include <vtkSmartPointer.h>
+#include <vtkTextActor.h>
+#include <vtkTextProperty.h>
 
 #include <medAbstractImageView.h>
 #include <medVtkViewBackend.h>
 #include <medViewFactory.h>
 #include <medTimeLineParameterL.h>
-
 
 class vtkDataMesh4DInteractorPrivate
 {
@@ -31,8 +35,12 @@ public:
 
     medAbstractData *data;
     medAbstractImageView *view;
+    vtkImageView2D *view2d;
+    vtkImageView3D *view3d;
 
     vtkMetaDataSetSequence *sequence;
+
+    vtkSmartPointer<vtkTextActor> textActor;
 };
 
 
@@ -41,6 +49,12 @@ vtkDataMesh4DInteractor::vtkDataMesh4DInteractor(medAbstractView* parent): vtkDa
 {
     d->view = dynamic_cast<medAbstractImageView *>(parent);
     d->data = nullptr;
+
+    medVtkViewBackend *backend = static_cast<medVtkViewBackend*>(parent->backend());
+    d->view2d = backend->view2D;
+    d->view3d = backend->view3D;
+
+    d->textActor = nullptr;
 }
 
 vtkDataMesh4DInteractor::~vtkDataMesh4DInteractor()
@@ -111,5 +125,43 @@ void vtkDataMesh4DInteractor::setCurrentTime (double time)
         return;
 
     d->sequence->UpdateToTime(time);
+
+    // Set the current time on the view if needed
+    QString displayedTime = d->view->timeLineParameter()->getDisplayedTime();
+    if (displayedTime != "")
+    {
+        // Refresh view size in case of resize
+        QSize size = d->view->viewWidget()->size();
+        int newSizeX = static_cast<int>(size.width()/90.0);
+        int newSizeY = static_cast<int>(size.height()/1.5);
+
+        // Display Time + Shift
+        if (d->textActor == nullptr)
+        {
+            d->textActor = vtkSmartPointer<vtkTextActor>::New();
+            d->textActor->SetInput(displayedTime.toStdString().c_str());
+            d->textActor->SetDisplayPosition(newSizeX, newSizeY);
+            d->textActor->GetTextProperty()->SetColor(1.0, 0.0, 0.0);
+            d->textActor->GetTextProperty()->SetFontSize(20);
+
+            d->view3d->GetRenderer()->AddViewProp(d->textActor);
+            d->view2d->GetRenderer()->AddViewProp(d->textActor);
+         }
+        else
+        {
+            d->textActor->SetInput(displayedTime.toStdString().c_str());
+            d->textActor->SetDisplayPosition(newSizeX, newSizeY);
+        }
+        d->view->render();
+    }
+    else
+    {
+        if (d->textActor != nullptr)
+        {
+            d->view3d->GetRenderer()->RemoveViewProp(d->textActor);
+            d->view2d->GetRenderer()->RemoveViewProp(d->textActor);
+            d->textActor = nullptr;
+        }
+    }
 }
 

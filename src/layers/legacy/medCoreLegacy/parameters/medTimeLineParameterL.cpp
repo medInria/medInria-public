@@ -18,10 +18,11 @@
 #include <QtGui>
 #include <QtWidgets>
 
-#include <medIntParameterL.h>
 #include <medBoolParameterL.h>
-#include <medTriggerParameterL.h>
+#include <medComboBox.h>
 #include <medDoubleParameterL.h>
+#include <medIntParameterL.h>
+#include <medTriggerParameterL.h>
 
 class medTimeLineParameterLPrivate
 {
@@ -34,6 +35,12 @@ public:
     medTriggerParameterL* nextFrameParameter;
     medTriggerParameterL* previousFrameParameter;
     medBoolParameterL *loopParameter;
+
+    // Time shift display
+    medBoolParameterL   *displayTimeParameter;
+    medDoubleParameterL *timeShiftParameter;
+    medComboBox         *extensionShiftParameter;
+    QString             currentDisplayedTime;
 
     QTimeLine *timeLine;
     QPointer<QLabel> frameLabel;
@@ -92,6 +99,29 @@ medTimeLineParameterL::medTimeLineParameterL(QString name, QObject *parent):
     d->parametersCandidateToPool << d->loopParameter;
     d->loopParameter->setText("Loop");
 
+    // Time shift display
+    d->displayTimeParameter = new medBoolParameterL("Display Time", this);
+    d->displayTimeParameter->setText("");
+    d->displayTimeParameter->setValue(true);
+
+    d->timeShiftParameter = new medDoubleParameterL("Display time with shift:", this);
+    d->timeShiftParameter->setRange(0, 500000);
+    d->timeShiftParameter->setValue(0.0);
+
+    d->extensionShiftParameter = new medComboBox;
+    d->extensionShiftParameter->addItem(QString("µ")+"s",  0);
+    d->extensionShiftParameter->addItem("ms",  1);
+    d->extensionShiftParameter->addItem("s",   2);
+    d->extensionShiftParameter->addItem("min", 3);
+    d->extensionShiftParameter->addItem("h",   4);
+    d->extensionShiftParameter->addItem("d",   5);
+    d->extensionShiftParameter->setCurrentIndex(2);
+
+    connect(d->displayTimeParameter,    SIGNAL(valueChanged(bool)),       this, SLOT(computeDisplayedTime()));
+    connect(d->timeShiftParameter,      SIGNAL(valueChanged(double)),     this, SLOT(computeDisplayedTime()));
+    connect(d->extensionShiftParameter, SIGNAL(currentIndexChanged(int)), this, SLOT(computeDisplayedTime()));
+
+    // Default values
     d->duration = 1;
     d->currentFrame = 0;
     d->timeBetweenFrames = 0;
@@ -112,6 +142,7 @@ medTimeLineParameterL::medTimeLineParameterL(QString name, QObject *parent):
     connect(d->timeParameter, SIGNAL(valueChanged(double)), this, SLOT(updateFrameLabel()));
 
     d->loopParameter->setValue(true);
+    computeDisplayedTime();
 }
 
 medTimeLineParameterL::~medTimeLineParameterL()
@@ -268,6 +299,8 @@ void medTimeLineParameterL::updateTime(double time)
         d->currentFrame = d->numberOfFrames;
     else d->currentFrame = frame;
 
+    computeDisplayedTime();
+
     emit timeChanged(time);
 }
 
@@ -294,6 +327,30 @@ void medTimeLineParameterL::setLoop(bool loop)
 {
     int loopCount = (loop == true)?0:1;
     d->timeLine->setLoopCount(loopCount);
+}
+
+void medTimeLineParameterL::computeDisplayedTime()
+{
+    if (d->displayTimeParameter->getCheckBox()->isChecked())
+    {
+        double displayedTimeValue = time()
+                + d->timeShiftParameter->getSpinBox()->value();
+
+        // Ex. "Time = 66.6 ms"
+        d->currentDisplayedTime = QString("Time = ")
+                + QString::number(displayedTimeValue)
+                + " "
+                + d->extensionShiftParameter->currentText();
+    }
+    else
+    {
+        d->currentDisplayedTime = QString("");
+    }
+}
+
+QString medTimeLineParameterL::getDisplayedTime()
+{
+    return d->currentDisplayedTime;
 }
 
 QList<medAbstractParameterL*> medTimeLineParameterL::parametersCandidateToPool() const
@@ -342,9 +399,18 @@ QWidget* medTimeLineParameterL::getWidget()
         indicatorLayout->addWidget(d->frameLabel, 0, Qt::AlignRight);
         indicatorLayout->addWidget(d->numberOfFramesLabel, 0, Qt::AlignRight);
 
+        // Time Shift
+        QHBoxLayout *shiftLayout = new QHBoxLayout;
+        shiftLayout->setAlignment(Qt::AlignLeft);
+        shiftLayout->addWidget(d->displayTimeParameter->getCheckBox());
+        shiftLayout->addWidget(d->timeShiftParameter->getLabel());
+        shiftLayout->addWidget(d->timeShiftParameter->getSpinBox());
+        shiftLayout->addWidget(d->extensionShiftParameter);
+
         widgetLayout->addLayout(buttonsLayout);
         widgetLayout->addWidget(d->timeParameter->getSlider());
         widgetLayout->addLayout(indicatorLayout);
+        widgetLayout->addLayout(shiftLayout);
 
         this->addToInternWidgets(d->widget);
         connect(d->widget, SIGNAL(destroyed()), this, SLOT(removeInternWidget()));
