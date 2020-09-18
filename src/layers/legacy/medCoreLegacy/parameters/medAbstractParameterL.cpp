@@ -2,15 +2,16 @@
 
  medInria
 
- Copyright (c) INRIA 2013 - 2020. All rights reserved.
- See LICENSE.txt for details.
- 
-  This software is distributed WITHOUT ANY WARRANTY; without even
-  the implied warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR
-  PURPOSE.
+ Copyright (c) INRIA 2013. All rights reserved.
+
+ See LICENSE.txt for details in the root of the sources or:
+ https://github.com/medInria/medInria-public/blob/master/LICENSE.txt
+
+ This software is distributed WITHOUT ANY WARRANTY; without even
+ the implied warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR
+ PURPOSE.
 
 =========================================================================*/
-
 #include <medAbstractParameterL.h>
 
 #include <QtGui>
@@ -129,6 +130,13 @@ void medAbstractParameterL::blockInternWidgetsSignals(bool block) const
     }
 }
 
+void medAbstractParameterL::toXMLNode(QDomDocument *doc, QDomElement *currentNode)
+{
+    QDomElement element = doc->createElement("name");
+    element.appendChild(doc->createTextNode(name()));
+    currentNode->appendChild(element);
+}
+
 //--------------------------------------------------------------------------
 //  medAbstractTriggerParameterL
 void medAbstractTriggerParameterL::trigger()
@@ -163,6 +171,22 @@ void medAbstractStringParameterL::trigger()
     emit valueChanged(m_value);
 }
 
+QString medAbstractStringParameterL::fromString(QString value)
+{
+    return value;
+}
+
+void medAbstractStringParameterL::toXMLNode(QDomDocument *doc, QDomElement *currentNode)
+{
+    medAbstractParameterL::toXMLNode(doc, currentNode);
+    QDomElement type = doc->createElement("type");
+    type.appendChild(doc->createTextNode("String"));
+    currentNode->appendChild(type);
+    QDomElement element = doc->createElement("value");
+    element.appendChild(doc->createTextNode(value()));
+    currentNode->appendChild(element);
+}
+
 //--------------------------------------------------------------------------
 //  medAbstractIntParameterL
 void medAbstractIntParameterL::setValue(int value)
@@ -188,6 +212,22 @@ int medAbstractIntParameterL::value() const
 void medAbstractIntParameterL::trigger()
 {
     emit valueChanged(m_value);
+}
+
+int medAbstractIntParameterL::fromString(QString value)
+{
+    return value.toInt();
+}
+
+void medAbstractIntParameterL::toXMLNode(QDomDocument *doc, QDomElement *currentNode)
+{
+    medAbstractParameterL::toXMLNode(doc, currentNode);
+    QDomElement type = doc->createElement("type");
+    type.appendChild(doc->createTextNode("Int"));
+    currentNode->appendChild(type);
+    QDomElement element = doc->createElement("value");
+    element.appendChild(doc->createTextNode(QString::number(value())));
+    currentNode->appendChild(element);
 }
 
 //--------------------------------------------------------------------------
@@ -217,6 +257,22 @@ void medAbstractDoubleParameterL::trigger()
     emit valueChanged(m_value);
 }
 
+double medAbstractDoubleParameterL::fromString(QString value)
+{
+    return value.toDouble();
+}
+
+void medAbstractDoubleParameterL::toXMLNode(QDomDocument *doc, QDomElement *currentNode)
+{
+    medAbstractParameterL::toXMLNode(doc, currentNode);
+    QDomElement type = doc->createElement("type");
+    type.appendChild(doc->createTextNode("Double"));
+    currentNode->appendChild(type);
+    QDomElement element = doc->createElement("value");
+    element.appendChild(doc->createTextNode(QString::number(value())));
+    currentNode->appendChild(element);
+}
+
 //--------------------------------------------------------------------------
 //  medAbstractBoolParameterL
 void medAbstractBoolParameterL::setValue(bool value)
@@ -242,6 +298,30 @@ bool medAbstractBoolParameterL::value() const
 void medAbstractBoolParameterL::trigger()
 {
     emit valueChanged(m_value);
+}
+
+bool medAbstractBoolParameterL::fromString(QString value)
+{
+    return value == "true";
+}
+
+void medAbstractBoolParameterL::toXMLNode(QDomDocument *doc, QDomElement *currentNode)
+{
+    medAbstractParameterL::toXMLNode(doc, currentNode);
+    QDomElement type = doc->createElement("type");
+    type.appendChild(doc->createTextNode("Bool"));
+    currentNode->appendChild(type);
+    QDomElement element = doc->createElement("value");
+    if (value())
+    {
+        element.appendChild(doc->createTextNode("true"));
+    }
+    else
+    {
+        element.appendChild(doc->createTextNode("false"));
+    }
+
+    currentNode->appendChild(element);
 }
 
 //--------------------------------------------------------------------------
@@ -271,6 +351,23 @@ void medAbstractVector2DParameterL::trigger()
     emit valueChanged(m_value);
 }
 
+void medAbstractVector2DParameterL::toXMLNode(QDomDocument *doc, QDomElement *currentNode)
+{
+    medAbstractParameterL::toXMLNode(doc, currentNode);
+    QDomElement type = doc->createElement("type");
+    type.appendChild(doc->createTextNode("Vector2D"));
+    currentNode->appendChild(type);
+    QDomElement element = doc->createElement("value");
+    element.appendChild(doc->createTextNode(QString::number(value().x()) + " " + QString::number(value().y())));
+    currentNode->appendChild(element);
+}
+
+QVector2D medAbstractVector2DParameterL::fromString(QString value)
+{
+    QStringList tokens = value.split(" ");
+    return QVector2D(tokens[0].toDouble(),tokens[1].toDouble());
+}
+
 //--------------------------------------------------------------------------
 //  medAbstractVector3DParameterL
 void medAbstractVector3DParameterL::setValue(const QVector3D &value)
@@ -298,6 +395,27 @@ void medAbstractVector3DParameterL::trigger()
     emit valueChanged(m_value);
 }
 
+QVector3D medAbstractVector3DParameterL::fromString(QString value)
+{
+    QStringList tokens = value.split(" ");
+    return QVector3D(tokens[0].toDouble(),tokens[1].toDouble(),tokens[2].toDouble());
+}
+
+void medAbstractVector3DParameterL::toXMLNode(QDomDocument *doc, QDomElement *currentNode)
+{
+    medAbstractParameterL::toXMLNode(doc, currentNode);
+    QDomElement type = doc->createElement("type");
+    type.appendChild(doc->createTextNode("Vector3D"));
+    currentNode->appendChild(type);
+    QDomElement element = doc->createElement("value");
+    element.appendChild(doc->createTextNode(QString::number(value().x())
+                                            + " "
+                                            + QString::number(value().y())
+                                            + " "
+                                            + QString::number(value().z())));
+    currentNode->appendChild(element);
+}
+
 //--------------------------------------------------------------------------
 //  medAbstractVector4DParameterL
 void medAbstractVector4DParameterL::setValue(const QVector4D &value)
@@ -323,4 +441,27 @@ QVector4D medAbstractVector4DParameterL::value() const
 void medAbstractVector4DParameterL::trigger()
 {
     emit valueChanged(m_value);
+}
+
+QVector4D medAbstractVector4DParameterL::fromString(QString value)
+{
+    QStringList tokens = value.split(" ");
+    return QVector4D(tokens[0].toDouble(),tokens[1].toDouble(),tokens[2].toDouble(),tokens[3].toDouble());
+}
+
+void medAbstractVector4DParameterL::toXMLNode(QDomDocument *doc, QDomElement *currentNode)
+{
+    medAbstractParameterL::toXMLNode(doc, currentNode);
+    QDomElement type = doc->createElement("type");
+    currentNode->appendChild(type);
+    type.appendChild(doc->createTextNode("Vector4D"));
+    QDomElement element = doc->createElement("value");
+    element.appendChild(doc->createTextNode(QString::number(value().x()) 
+                                            + " " 
+                                            + QString::number(value().y())
+                                            + " "
+                                            + QString::number(value().z())
+                                            + " "
+                                            + QString::number(value().w())));
+    currentNode->appendChild(element);
 }

@@ -2,12 +2,14 @@
 
  medInria
 
- Copyright (c) INRIA 2013 - 2020. All rights reserved.
- See LICENSE.txt for details.
+ Copyright (c) INRIA 2013. All rights reserved.
 
-  This software is distributed WITHOUT ANY WARRANTY; without even
-  the implied warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR
-  PURPOSE.
+ See LICENSE.txt for details in the root of the sources or:
+ https://github.com/medInria/medInria-public/blob/master/LICENSE.txt
+
+ This software is distributed WITHOUT ANY WARRANTY; without even
+ the implied warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR
+ PURPOSE.
 
 =========================================================================*/
 
@@ -137,4 +139,20 @@ QIcon medStringListParameterL::createIconFromColor(const QString &colorName)
     iconPixmap.fill(QColor(colorName));
     QIcon itemIcon(iconPixmap);
     return itemIcon;
+}
+
+QString medStringListParameterL::fromString(QString value)
+{
+    return value;
+}
+
+void medStringListParameterL::toXMLNode(QDomDocument *doc, QDomElement *currentNode)
+{
+    medAbstractParameterL::toXMLNode(doc, currentNode);
+    QDomElement type = doc->createElement("type");
+    type.appendChild(doc->createTextNode("String"));
+    currentNode->appendChild(type);
+    QDomElement element = doc->createElement("value");
+    element.appendChild(doc->createTextNode(getComboBox()->currentText()));
+    currentNode->appendChild(element);
 }

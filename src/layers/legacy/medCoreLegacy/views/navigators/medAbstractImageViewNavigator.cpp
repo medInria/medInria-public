@@ -2,12 +2,14 @@
 
  medInria
 
- Copyright (c) INRIA 2013 - 2020. All rights reserved.
- See LICENSE.txt for details.
+ Copyright (c) INRIA 2013. All rights reserved.
 
-  This software is distributed WITHOUT ANY WARRANTY; without even
-  the implied warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR
-  PURPOSE.
+ See LICENSE.txt for details in the root of the sources or:
+ https://github.com/medInria/medInria-public/blob/master/LICENSE.txt
+
+ This software is distributed WITHOUT ANY WARRANTY; without even
+ the implied warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR
+ PURPOSE.
 
 =========================================================================*/
 
@@ -126,4 +128,72 @@ void medAbstractImageViewNavigator::updateTimeLineParameter()
     }
     else
         d->timeLineParameter->hide();
+}
+
+void medAbstractImageViewNavigator::toXMLNode(QDomDocument *doc, QDomElement *currentNode)
+{
+    currentNode->setAttribute("name",name());
+    currentNode->setAttribute("version",version());
+    QDomElement element = doc->createElement("parameters");
+    element.setAttribute("number", this->linkableParameters().size());
+    for(int i=0; i<linkableParameters().size(); i++)
+    {
+        if(linkableParameters()[i]->name() == "Camera")
+        {
+            // Composite parameters cannot save themselves
+            continue;
+        }
+        QDomElement paramNode = doc->createElement("parameter");
+        linkableParameters()[i]->toXMLNode(doc, &paramNode);
+        element.appendChild(paramNode);
+    }
+
+    // Handle Camera parameter we skipped previously
+    QHash<QString,QString> paramsToBeSaved;
+    paramsToBeSaved["Camera Position"] = "QVector3D";
+    paramsToBeSaved["Camera Up"]       = "QVector3D";
+    paramsToBeSaved["Camera Focal"]    = "QVector3D";
+    paramsToBeSaved["Parallel Scale"]  = "double";
+
+    QHashIterator<QString, QString> it(paramsToBeSaved);
+    while (it.hasNext())
+    {
+        it.next();
+
+        qDebug()<<it.key()<<" "<<it.value();
+
+        QDomElement paramNode = doc->createElement("parameter");
+        QDomElement nameNode = doc->createElement("name");
+        nameNode.appendChild(doc->createTextNode(it.key()));
+        QDomElement typeNode = doc->createElement("type");
+        typeNode.appendChild(doc->createTextNode(it.value()));
+        QDomElement valueNode = doc->createElement("value");
+        QString textValue;
+        QVariant var = d->cameraParameter->value(it.key());
+
+        if(var == QVariant())
+        {
+            continue;
+        }
+        if(it.value() == "QVector3D")
+        {
+            QVector3D obj = var.value<QVector3D>();
+            textValue = QString::number(obj.x())+" "+QString::number(obj.y())+" "+QString::number(obj.z());
+
+        }
+        else if(it.value() == "double")
+        {
+            double obj = var.toDouble();
+            textValue = QString::number(obj);
+        }
+        valueNode.appendChild(doc->createTextNode(textValue));
+
+        paramNode.appendChild(nameNode);
+        paramNode.appendChild(typeNode);
+        paramNode.appendChild(valueNode);
+
+        element.appendChild(paramNode);
+    }
+
+    currentNode->appendChild(element);
 }

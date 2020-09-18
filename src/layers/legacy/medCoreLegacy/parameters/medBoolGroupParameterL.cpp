@@ -2,12 +2,14 @@
 
  medInria
 
- Copyright (c) INRIA 2013 - 2020. All rights reserved.
- See LICENSE.txt for details.
+ Copyright (c) INRIA 2013. All rights reserved.
 
-  This software is distributed WITHOUT ANY WARRANTY; without even
-  the implied warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR
-  PURPOSE.
+ See LICENSE.txt for details in the root of the sources or:
+ https://github.com/medInria/medInria-public/blob/master/LICENSE.txt
+
+ This software is distributed WITHOUT ANY WARRANTY; without even
+ the implied warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR
+ PURPOSE.
 
 =========================================================================*/
 
@@ -255,4 +257,21 @@ void medBoolGroupParameterL::trigger()
     if(!d->parameters.isEmpty())
         d->parameters[0]->trigger();
 
+}
+
+void medBoolGroupParameterL::toXMLNode(QDomDocument *doc, QDomElement *currentNode)
+{
+    medAbstractParameterL::toXMLNode(doc, currentNode);
+    QDomElement groupNode = doc->createElement("group");
+    QDomElement sizeNode = doc->createElement("size");
+    sizeNode.appendChild(doc->createTextNode(QString::number(d->parameters.size())));
+    
+    for(int i=0; i<d->parameters.size(); i++)
+    {
+        QDomElement paramNode = doc->createElement("parameter");
+        paramNode.setAttribute("n", i);
+        d->parameters[i]->toXMLNode(doc, &paramNode);
+        groupNode.appendChild(paramNode);
+    }
+    currentNode->appendChild(groupNode);
 }

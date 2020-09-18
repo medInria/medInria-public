@@ -2,12 +2,14 @@
 
  medInria
 
- Copyright (c) INRIA 2013 - 2019. All rights reserved.
- See LICENSE.txt for details.
+ Copyright (c) INRIA 2013. All rights reserved.
 
-  This software is distributed WITHOUT ANY WARRANTY; without even
-  the implied warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR
-  PURPOSE.
+ See LICENSE.txt for details in the root of the sources or:
+ https://github.com/medInria/medInria-public/blob/master/LICENSE.txt
+
+ This software is distributed WITHOUT ANY WARRANTY; without even
+ the implied warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR
+ PURPOSE.
 
 =========================================================================*/
 
@@ -483,6 +485,15 @@ QString medVtkViewItkDataImageInteractor::preset() const
   return d->presetParam->value();
 }
 
+void medVtkViewItkDataImageInteractor::setMinIntensity(double min)
+{
+    d->minIntensityParameter->setValue(min);
+}
+
+void medVtkViewItkDataImageInteractor::setMaxIntensity(double max)
+{
+    d->maxIntensityParameter->setValue(max);
+}
 
 QWidget* medVtkViewItkDataImageInteractor::buildToolBarWidget()
 {
@@ -725,4 +736,37 @@ void medVtkViewItkDataImageInteractor::interpolation(bool pi_bActive)
 unsigned int medVtkViewItkDataImageInteractor::getCurrentImageDataLayer()
 {
    return d->view->layer(d->imageData);
+}
+
+void medVtkViewItkDataImageInteractor::restoreParameters(QHash<QString,QString> parameters)
+{
+    if(parameters.contains("Opacity"))
+    {
+        setOpacity(medDoubleParameterL::fromString(parameters["Opacity"]));
+    }
+    if(parameters.contains("Visibility"))
+    {
+        setVisibility(medBoolParameterL::fromString(parameters["Visibility"]));
+    }
+    if(parameters.contains("Preset"))
+    {
+        setPreset(medStringListParameterL::fromString(parameters["Preset"]));
+    }
+    if(parameters.contains("Lut"))
+    {
+        setLut(medStringListParameterL::fromString(parameters["Lut"]));
+    }
+    if(parameters.contains("Max Intensity"))
+    {
+        setMaxIntensity(medDoubleParameterL::fromString(parameters["Max Intensity"]));
+    }
+    if(parameters.contains("Min Intensity"))
+    {
+        setMinIntensity(medDoubleParameterL::fromString(parameters["Min Intensity"]));
+    }
+}
+
+QString medVtkViewItkDataImageInteractor::name() const
+{
+    return "medVtkViewItkDataImageInteractor";
 }
