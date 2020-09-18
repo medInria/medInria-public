@@ -1,12 +1,24 @@
-From 08022b919fe94f754a28ef4aea0012df9c0df5f1 Mon Sep 17 00:00:00 2001
-From: Mathilde Merle <mathilde.merle@ihu-liryc.fr>
-Date: Thu, 17 Sep 2020 15:37:02 +0200
-Subject: [PATCH] [VTK] handle Windows Utf16 in OggTheoraWriter
+From e2a8095062670ee622e241f828f36c52c9400bd0 Mon Sep 17 00:00:00 2001
+From: Florent LERAY <florent.leray@inria.fr>
+Date: Fri, 18 Sep 2020 10:45:20 +0200
+Subject: [PATCH] handle Windows Utf16 in OggTheoraWriter
 
 ---
+ IO/Movie/module.cmake           | 1 +
  IO/Movie/vtkOggTheoraWriter.cxx | 4 +++-
- 1 file changed, 3 insertions(+), 1 deletion(-)
+ 2 files changed, 4 insertions(+), 1 deletion(-)
 
+diff --git a/IO/Movie/module.cmake b/IO/Movie/module.cmake
+index fd6d096384..071b4a20a2 100644
+--- a/IO/Movie/module.cmake
++++ b/IO/Movie/module.cmake
+@@ -20,4 +20,5 @@ vtk_module(vtkIOMovie
+     vtkCommonDataModel
+     vtkCommonMisc
+     vtkCommonSystem
++    vtksys
+   )
+\ No newline at end of file
 diff --git a/IO/Movie/vtkOggTheoraWriter.cxx b/IO/Movie/vtkOggTheoraWriter.cxx
 index d24acde998..9dff50bb0e 100644
 --- a/IO/Movie/vtkOggTheoraWriter.cxx
@@ -30,5 +42,5 @@ index d24acde998..9dff50bb0e 100644
    {
      vtkGenericWarningMacro(<< "Could not open " << this->Writer->GetFileName() << "." );
 -- 
-2.25.1
+2.21.0.windows.1
 
