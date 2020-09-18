@@ -31,7 +31,6 @@
 #include <medBoolParameterL.h>
 #include <medDataIndex.h>
 #include <medDataManager.h>
-#include <medLayoutChooser.h>
 #include <medMessageController.h>
 #include <medPoolIndicatorL.h>
 #include <medSettingsManager.h>
