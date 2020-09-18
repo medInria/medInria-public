@@ -41,13 +41,20 @@ if (NOT USE_SYSTEM_${ep})
 ## #############################################################################
 
 set(git_url ${GITHUB_PREFIX}medInria/qtdcm.git)
-set(git_tag ITK5) 
+set(git_tag APHP) 
 
 ## #############################################################################
 ## Add specific cmake arguments for configuration step of the project
 ## #############################################################################
 
 # set compilation flags
+if (WIN32)
+  set(BUILD_SHARED_LIBS_${ep} OFF)
+  set(DCMTK_WIDE_CHAR_FILE_IO_FUNCTIONS ON)
+else()
+  set(DCMTK_WIDE_CHAR_FILE_IO_FUNCTIONS OFF)
+endif()
+
 if (UNIX)
   set(${ep}_c_flags "${${ep}_c_flags} -Wall")
   set(${ep}_cxx_flags "${${ep}_cxx_flags} -Wall")
@@ -69,6 +76,7 @@ set(cmake_args
   -DITK_DIR:FILEPATH=${ITK_DIR}
   -DDCMTK_DIR:FILEPATH=${DCMTK_DIR}
   -DDCMTK_FIND_PACKAGE_USE_CONFIG_ONLY=ON
+  -DDCMTK_WIDE_CHAR_FILE_IO_FUNCTIONS:BOOL=${DCMTK_WIDE_CHAR_FILE_IO_FUNCTIONS}
   )
 
 ## #############################################################################

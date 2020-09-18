@@ -156,7 +156,7 @@ QStringList vtkDataMeshInteractor::handled() const
 
 QStringList vtkDataMeshInteractor::dataHandled()
 {
-    QStringList d = QStringList() << "vtkDataMesh";
+    QStringList d = QStringList() << "vtkDataMesh" << "medContours";
     return  d;
 }
 
