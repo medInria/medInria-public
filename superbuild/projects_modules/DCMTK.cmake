@@ -46,7 +46,7 @@ set(git_tag DCMTK-3.6.2)
 ## Check if patch has to be applied
 ## #############################################################################
   
-ep_GeneratePatchCommand(DCMTK DCMTK_PATCH_COMMAND DCMTK_STL_QUIET.patch)
+ep_GeneratePatchCommand(${ep} ${ep}_PATCH_COMMAND DCMTK_STL_QUIET.patch)
 
 ## #############################################################################
 ## Add specific cmake arguments for configuration step of the project
@@ -107,7 +107,7 @@ ExternalProject_Add(${ep}
   
   GIT_REPOSITORY ${git_url}
   GIT_TAG ${git_tag}
-  PATCH_COMMAND ${DCMTK_PATCH_COMMAND}
+  PATCH_COMMAND ${${ep}_PATCH_COMMAND}
   CMAKE_GENERATOR ${gen}
   CMAKE_GENERATOR_PLATFORM ${CMAKE_GENERATOR_PLATFORM}
   CMAKE_ARGS ${cmake_args}
