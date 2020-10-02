@@ -15,6 +15,7 @@
 
 #include <medAbstractDataFactory.h>
 #include <medLocalDbController.h>
+#include <medPgRemoteDbController.h>
 #include <medDatabaseNonPersistentController.h>
 #include <medDataManager.h>
 #include <medGlobalDefs.h>
@@ -521,7 +522,9 @@ medDataManager::medDataManager() : d_ptr(new medDataManagerPrivate(this))
 
     d->nonPersDbController = medDatabaseNonPersistentController::instance();
     // Setting up database connection
-    d->dbController = medLocalDbController::instance();
+    // d->dbController = medLocalDbController::instance();
+    d->dbController = medPgRemoteDbController::instance();
+
     if ( ! d->dbController->createConnection() )
     {
         qDebug() << "Unable to create a connection to the database";

@@ -22,7 +22,7 @@
 #define EXEC_QUERY(q) medPgRemoteDbController::instance()->execQuery(q, __FILE__ , __LINE__ )
 
 class medAbstractData;
-class medLocalDbControllerPrivate;
+class medPgRemoteDbControllerPrivate;
 class medJobItemL;
 
 /**
@@ -82,6 +82,6 @@ private:
 
     bool updateFromNoVersionToVersion1();
 
-    medLocalDbControllerPrivate * d;
+    medPgRemoteDbControllerPrivate * d;
     static medPgRemoteDbController * s_instance;
 };
