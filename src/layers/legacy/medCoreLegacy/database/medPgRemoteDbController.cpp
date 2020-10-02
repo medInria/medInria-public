@@ -20,7 +20,7 @@
 #include <medJobManagerL.h>
 #include <medMessageController.h>
 
-class medLocalDbControllerPrivate
+class medPgRemoteDbControllerPrivate
 {
 public:
     void buildMetaDataLookup();
@@ -41,11 +41,11 @@ public:
     static const QString T_patient ;
 };
 
-const QString medLocalDbControllerPrivate::T_series = "series";
-const QString medLocalDbControllerPrivate::T_study = "study";
-const QString medLocalDbControllerPrivate::T_patient = "patient";
+const QString medPgRemoteDbControllerPrivate::T_series = "series";
+const QString medPgRemoteDbControllerPrivate::T_study = "study";
+const QString medPgRemoteDbControllerPrivate::T_patient = "patient";
 
-void medLocalDbControllerPrivate::buildMetaDataLookup()
+void medPgRemoteDbControllerPrivate::buildMetaDataLookup()
 {
 // The table defines the mapping between metadata in the medAbstractData and the database tables.
     metaDataLookup.insert(medMetaDataKeys::ThumbnailPath.key(),
@@ -144,14 +144,15 @@ const QSqlDatabase& medPgRemoteDbController::database(void) const
 
 bool medPgRemoteDbController::createConnection(void)
 {
-    medStorage::mkpath(medStorage::dataLocation() + "/");
-
-    m_database = QSqlDatabase::database("sqlite");
+    m_database = QSqlDatabase::database("psqldb");
     if (!m_database.isValid())
     {
-        m_database = QSqlDatabase::addDatabase("QSQLITE", "sqlite");
+        m_database = QSqlDatabase::addDatabase("QPSQL", "psqldb");
     }
-    m_database.setDatabaseName(medStorage::dataLocation() + "/" + "db");
+    m_database.setHostName("localhost");
+    m_database.setDatabaseName("musicdb");
+    m_database.setUserName("music");
+    m_database.setPassword("music");    
 
     if (!m_database.open())
     {
@@ -163,33 +164,13 @@ bool medPgRemoteDbController::createConnection(void)
         qDebug() << "Database opened at: " << qPrintable(m_database.databaseName());
         d->isConnected = true;
     }
-
-    if(    !createPatientTable()
-        || !createStudyTable()
-        || !createSeriesTable()
-        || !updateFromNoVersionToVersion1())
-    {
-        return false;
-    }
-
-    // optimize speed of sqlite db
-    QSqlQuery query(m_database);
-    if (!(query.prepare(QLatin1String("PRAGMA synchronous = 0"))
-          && EXEC_QUERY(query))) {
-        qDebug() << "Could not set sqlite synchronous mode to asynchronous mode.";
-    }
-    if (!(query.prepare(QLatin1String("PRAGMA journal_mode=wal"))
-          && EXEC_QUERY(query))) {
-        qDebug() << "Could not set sqlite write-ahead-log journal mode";
-    }
-
     return true;
 }
 
 bool medPgRemoteDbController::closeConnection(void)
 {
     m_database.close();
-    QSqlDatabase::removeDatabase("QSQLITE");
+    QSqlDatabase::removeDatabase("QPSQL");
     d->isConnected = false;
     return true;
 }
@@ -560,7 +541,7 @@ bool medPgRemoteDbController::isConnected() const
     return d->isConnected;
 }
 
-medPgRemoteDbController::medPgRemoteDbController() : d(new medLocalDbControllerPrivate)
+medPgRemoteDbController::medPgRemoteDbController() : d(new medPgRemoteDbControllerPrivate)
 {
     d->buildMetaDataLookup();
     d->isConnected = false;
@@ -655,8 +636,8 @@ medDataIndex medPgRemoteDbController::moveSeries( const medDataIndex& indexSerie
 /** Get metadata for specific item. Return uninitialized string if not present. */
 QString medPgRemoteDbController::metaData(const medDataIndex& index,const QString& key) const
 {
-    typedef medLocalDbControllerPrivate::MetaDataMap MetaDataMap;
-    typedef medLocalDbControllerPrivate::TableEntryList TableEntryList;
+    typedef medPgRemoteDbControllerPrivate::MetaDataMap MetaDataMap;
+    typedef medPgRemoteDbControllerPrivate::TableEntryList TableEntryList;
 
     QSqlQuery query(m_database);
 
@@ -712,8 +693,8 @@ QString medPgRemoteDbController::metaData(const medDataIndex& index,const QStrin
 /** Set metadata for specific item. Return true on success, false otherwise. */
 bool medPgRemoteDbController::setMetaData( const medDataIndex& index, const QString& key, const QString& value )
 {
-    typedef medLocalDbControllerPrivate::MetaDataMap MetaDataMap;
-    typedef medLocalDbControllerPrivate::TableEntryList TableEntryList;
+    typedef medPgRemoteDbControllerPrivate::MetaDataMap MetaDataMap;
+    typedef medPgRemoteDbControllerPrivate::TableEntryList TableEntryList;
 
     QSqlQuery query(m_database);
 

@@ -169,8 +169,8 @@ int main(int argc,char* argv[])
         runningMedInria = application.sendMessage("");
     }
 
-    // if (runningMedInria)
-    //     return 0;
+    if (runningMedInria)
+        return 0;
 
     if (show_splash)
     {
