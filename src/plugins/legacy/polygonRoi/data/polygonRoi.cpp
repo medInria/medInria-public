@@ -377,8 +377,8 @@ void polygonRoi::activateContour(bool state)
         color[2] = d->roiColor.blueF();
         contourRep->GetLinesProperty()->SetColor(color);
         contourRep->GetProperty()->SetColor(color);
-        contourRep->GetLinesProperty()->SetOpacity(0.2);
-        contourRep->GetProperty()->SetOpacity(0.2);
+        contourRep->GetLinesProperty()->SetOpacity(0.4);
+        contourRep->GetProperty()->SetOpacity(0.4);
     }
 }
 
