@@ -121,7 +121,7 @@ void contoursManagementToolBox::clear()
     {
         QListWidgetItem *item = widget->item(row);
         QString name = item->text();
-        name = name.remove(QRegExp(" - PIRADS[0-9]"));
+        name = name.remove(QRegExp(" - Z[T|P]{1}_PIRADS[0-9]"));
         item->setText(name);
         if (item->flags().testFlag(Qt::ItemIsUserCheckable))
         {
@@ -235,7 +235,7 @@ bool contoursManagementToolBox::loadUrologyContours(QListWidget *widget, QVector
         for (int row = 0; row < widget->count(); row++)
         {
             QListWidgetItem *item = widget->item(row);
-            QString name = item->text().remove(QRegExp(" - PIRADS[0-9]"));
+            QString name = item->text().remove(QRegExp(" - Z[T|P]{1}_PIRADS[0-9]"));
             if (name==tagContours.getLabelName())
             {
                 itemFound = true;
@@ -401,7 +401,7 @@ void contoursManagementToolBox::updateLabelNamesOnContours(QListWidget *widget)
     {
         QListWidgetItem *item = widget->item(row);
         QString name = item->text();
-        name = name.remove(QRegExp(" - PIRADS[0-9]"));
+        name = name.remove(QRegExp(" - Z[T|P]{1}_PIRADS[0-9]"));
         QColor col = item->icon().pixmap(QSize(20,20)).toImage().pixelColor(0,0);
         medContourSharedInfo info = medContourSharedInfo(name, col);
         infos.append(info);
@@ -422,7 +422,7 @@ QListWidget *contoursManagementToolBox::initLabelsList(QStringList names, QList<
         item->setSelected(true);
         QColor color = item->icon().pixmap(QSize(20,20)).toImage().pixelColor(0,0);
         QString name = item->text();
-        name = name.remove(QRegExp(" - PIRADS[0-9]"));
+        name = name.remove(QRegExp(" - Z[T|P]{1}_PIRADS[0-9]"));
         bool hasScore = item->flags().testFlag(Qt::ItemIsUserCheckable);
         bool checkState = (item->checkState()==Qt::Checked)?true:false;
 
@@ -439,7 +439,7 @@ QListWidget *contoursManagementToolBox::initLabelsList(QStringList names, QList<
         }
         QColor color = item->icon().pixmap(QSize(20,20)).toImage().pixelColor(0,0);
         QString name = item->text();
-        name = name.remove(QRegExp(" - PIRADS[0-9]"));
+        name = name.remove(QRegExp(" - Z[T|P]{1}_PIRADS[0-9]"));
         medContourSharedInfo info = medContourSharedInfo(name, color);
         emit sendContourName(info);
     }, Qt::UniqueConnection);
@@ -729,7 +729,7 @@ void contoursManagementToolBox::removeLabelNameInList()
         if (item->isSelected())
         {
             QString name = item->text();
-            name = name.remove(QRegExp(" - PIRADS[0-9]"));
+            name = name.remove(QRegExp(" - Z[T|P]{1}_PIRADS[0-9]"));
             QColor col = item->icon().pixmap(QSize(20,20)).toImage().pixelColor(0,0);
             medContourSharedInfo info = medContourSharedInfo(name, col);
             emit labelToDelete(info);
@@ -852,7 +852,7 @@ void contoursManagementToolBox::receiveContoursDatasFromView(medContourSharedInf
     {
         QListWidgetItem *item = widget->item(row);
         QString itemName = item->text();
-        itemName = itemName.remove(QRegExp(" - PIRADS[0-9]"));
+        itemName = itemName.remove(QRegExp(" - Z[T|P]{1}_PIRADS[0-9]"));
 
         QColor itemColor = item->icon().pixmap(QSize(20,20)).toImage().pixelColor(0,0);
         if ( info.nameChanged() && itemColor==info.getColor())

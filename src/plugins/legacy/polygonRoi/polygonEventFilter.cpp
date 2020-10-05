@@ -472,7 +472,9 @@ bool polygonEventFilter::rightButtonBehaviour(medAbstractView *view, QMouseEvent
     QAction *copyContourAction = new QAction("Copy", &mainMenu);
     QAction *activationAction = nullptr;
     QMenu *scoreMenu = new QMenu("Set Score");
-    if (closestManager && (closestManager->getMinimumDistanceFromNodesToMouse(mousePos) < 10.))
+    QMenu* ztMenu = scoreMenu->addMenu(QString("ZT"));
+    QMenu* zpMenu = scoreMenu->addMenu(QString("ZP"));
+     if (closestManager && (closestManager->getMinimumDistanceFromNodesToMouse(mousePos) < 10.))
     {
         QAction *deleteOneNodeAction = new QAction("Node", roiManagementMenu);
         connect(deleteOneNodeAction, &QAction::triggered, [this, &closestManager, &mousePos](){
@@ -551,7 +553,8 @@ bool polygonEventFilter::rightButtonBehaviour(medAbstractView *view, QMouseEvent
         {
             for (QPair<QString, QColor> pirad : pirads)
             {
-                scoreMenu->addAction(createScoreAction(closestManager, pirad.first, pirad.second));
+                ztMenu->addAction(createScoreAction(closestManager, QString("ZT_") + pirad.first, pirad.second));
+                zpMenu->addAction(createScoreAction(closestManager, QString("ZP_") + pirad.first, pirad.second));
             }
             mainMenu.addMenu(scoreMenu);
         }
@@ -569,6 +572,8 @@ bool polygonEventFilter::rightButtonBehaviour(medAbstractView *view, QMouseEvent
     delete roiManagementMenu;
     delete saveMenu;
     delete renameManagerAction;
+    delete ztMenu;
+    delete zpMenu;
     delete scoreMenu;
 
     delete changeMenu;
@@ -1052,9 +1057,11 @@ void polygonEventFilter::loadContours(medTagContours tagContours, QColor color)
     {
         for (QPair<QString, QColor> pirad : pirads)
         {
-            if (pirad.first == tagContours.getScore())
+            QString ZT = QString("ZT_") + pirad.first;
+            QString ZP = QString("ZP_") + pirad.first;
+            if (QRegExp("Z[T|P]{1}_"+pirad.first).exactMatch(tagContours.getScore()))
             {
-                mgr->setOptionalNameWithColor(pirad.first, pirad.second);
+                mgr->setOptionalNameWithColor(tagContours.getScore(), pirad.second);
                 break;
             }
         }
