@@ -71,6 +71,7 @@ list(APPEND external_projects
      qwt
      mmg
      tetgen
+     zlib
      quazip
      )
 
