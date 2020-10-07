@@ -31,6 +31,7 @@ function(zlib_project)
             PREFIX ${EP_PATH_SOURCE}
             SOURCE_DIR ${EP_PATH_SOURCE}/${external_project}
             BINARY_DIR ${build_path}
+            INSTALL_DIR ${build_path}
             TMP_DIR ${tmp_path}
             STAMP_DIR ${stamp_path}
 
