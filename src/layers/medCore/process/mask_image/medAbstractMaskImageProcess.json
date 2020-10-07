@@ -1,0 +1,9 @@
+{
+          "title" : "Mask image",
+           "kind" : "process",
+           "type" : "medAbstractMaskImageProcess",
+           "tags" : ["mask","segmentation"],
+    "description" : "<p>Mask an image with a mask.</p>",
+         "inputs" : ["scalarImage","maskImage"],
+        "outputs" : ["scalarImage"]
+}

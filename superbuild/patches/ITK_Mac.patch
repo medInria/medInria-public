@@ -1,0 +1,15 @@
+diff --git a/Modules/ThirdParty/KWSys/src/CMakeLists.txt b/Modules/ThirdParty/KWSys/src/CMakeLists.txt
+index 3c806d816d..6096ec57df 100644
+--- a/Modules/ThirdParty/KWSys/src/CMakeLists.txt
++++ b/Modules/ThirdParty/KWSys/src/CMakeLists.txt
+@@ -24,7 +24,9 @@ set(KWSYS_INSTALL_COMPONENT_NAME_DEVELOPMENT Development)
+ set(KWSYS_PROPERTIES_C WINDOWS_EXPORT_ALL_SYMBOLS FALSE)
+ set( _macosx_rpath 1)
+ if(DEFINED CMAKE_MACOSX_RPATH AND NOT "${CMAKE_MACOSX_RPATH}" STREQUAL "")
+-  set(_macosx_rpath ${CMAKE_MACOSX_RPATH})
++  if (NOT CMAKE_MACOSX_RPATH)
++    set(_macosx_rpath 0)
++  endif()
+ endif()
+ set(KWSYS_PROPERTIES_CXX MACOSX_RPATH ${_macosx_rpath} WINDOWS_EXPORT_ALL_SYMBOLS FALSE)
+ 

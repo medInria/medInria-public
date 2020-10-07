@@ -1,0 +1,39 @@
+#!/bin/bash
+
+usage() {
+    local ret="$1"
+    echo "Usage: $0 [--prefix prefix_command] [--debug] [--help] parameters"
+    exit ${ret}
+}
+
+@LOCATE@
+
+if [ "$1" == "--help" ]; then
+    usage 0
+fi
+
+med_prefix=""
+if [ "$1" == "--prefix" ]; then
+	shift
+	med_prefix="$1"
+    shift
+fi
+
+if [ "$1" == "--debug" ]; then
+    med_prefix="gdb --args"
+fi
+
+#   Locate the directory containing this script.
+
+MEDINRIA_DIR="@MEDINRIA_DIR@"
+MEDINRIA_BIN="@MEDINRIA_BIN@"
+
+#   Set the plugins and library paths.
+
+export MEDINRIA_PLUGINS_DIR="@MEDINRIA_PLUGINS_DIRS@"
+export MEDINRIA_PLUGINS_DIR_LEGACY="@MEDINRIA_PLUGINS_LEGACY_DIRS@"
+export LD_LIBRARY_PATH=${MEDINRIA_DIR}/lib:${MEDINRIA_DIR}/lib64:${MEDINRIA_DIR}/lib/InsightToolkit:${MEDINRIA_DIR}/lib/vtk-8.0:$LD_LIBRARY_PATH
+
+#   Call medInria
+
+exec ${med_prefix} "${MEDINRIA_BIN}" $*

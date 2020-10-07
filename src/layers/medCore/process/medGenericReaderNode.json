@@ -1,0 +1,10 @@
+{
+          "title" : "Generic Reader",
+           "kind" : "process",
+           "type" : "medGenericReader",
+           "tags" : ["reader","generic","testme"],
+    "description" : "<h3>Reader generic reader</h3>
+                     <p>Produce a data from the given file</p>",
+         "inputs" : ["path"],
+        "outputs" : ["data"]
+}

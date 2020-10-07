@@ -1,0 +1,49 @@
+#pragma once
+/*=========================================================================
+
+ medInria
+
+ Copyright (c) INRIA 2013 - 2020. All rights reserved.
+ See LICENSE.txt for details.
+
+  This software is distributed WITHOUT ANY WARRANTY; without even
+  the implied warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR
+  PURPOSE.
+
+=========================================================================*/
+
+#include <dtkCoreSupport/dtkAbstractDataFactory.h>
+#include <medAbstractData.h>
+
+#include <medCoreLegacyExport.h>
+
+class MEDCORELEGACY_EXPORT medAbstractDataFactory : public dtkAbstractDataFactory
+{
+public:
+    static medAbstractDataFactory *instance();
+
+    template <typename dataType>
+    bool registerDataType()
+    {
+        return dtkAbstractDataFactory::registerDataType(dataType::staticIdentifier(),
+                                                        create<dataType>);
+    }
+
+public slots:
+    medAbstractData *create(const QString& type);
+
+protected:
+     medAbstractDataFactory();
+
+private:
+    static medAbstractDataFactory *s_instance;
+
+    template < typename T >
+    static dtkAbstractData* create()
+    {
+        return ( new T() );
+    }
+
+    bool registerDataType(const QString& type, dtkAbstractDataCreator func);
+    bool registerDataType(const QString& type, dtkAbstractDataCreator func, const QString& nameInterface);
+};

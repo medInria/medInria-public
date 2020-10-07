@@ -1,0 +1,6 @@
+{
+            "name" : "ttkTensorEstimationProcessPlugin",
+         "concept" : "medAbstractDiffusionModelEstimationProcess",
+         "version" : "3.0.0", 	
+    "dependencies" : []
+}

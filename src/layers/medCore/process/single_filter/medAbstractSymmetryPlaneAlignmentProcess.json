@@ -1,0 +1,9 @@
+{
+          "title" : "Symmetry plane alignment",
+           "kind" : "process",
+           "type" : "medAbstractSymmetryPlaneAlignmentProcess",
+           "tags" : ["symmetry plane","alignment", "filter", "operation"],
+    "description" : "<p>Image alignment on its symmetry plane</p>",
+         "inputs" : ["scalarImage"],
+        "outputs" : ["scalarImage"]
+}

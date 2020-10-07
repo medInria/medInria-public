@@ -1,0 +1,79 @@
+################################################################################
+#
+# medInria
+
+# Copyright (c) INRIA 2013. All rights reserved.
+
+# See LICENSE.txt for details in the root of the sources or:
+# https://github.com/medInria/medInria-public/blob/master/LICENSE.txt
+
+# This software is distributed WITHOUT ANY WARRANTY; without even
+# the implied warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR
+# PURPOSE.
+#
+################################################################################
+
+set(TARGET_NAME medWidgets)
+
+## #############################################################################
+## List Sources
+## #############################################################################
+
+list_source_files(${TARGET_NAME}
+  ${CMAKE_CURRENT_SOURCE_DIR}
+  process
+  process/arithmetic_operation
+  process/diffusion_processes
+  process/morphomath_operation
+  process/mask_image
+  process/single_filter
+  parameter
+  toolboxes
+  )
+
+list_header_directories_to_include(${TARGET_NAME}
+  ${${TARGET_NAME}_HEADERS}
+  )
+
+## #############################################################################
+## add library
+## #############################################################################
+
+add_library(${TARGET_NAME} SHARED
+  ${${TARGET_NAME}_CFILES}
+  ${${TARGET_NAME}_QRC}
+  )
+
+
+## #############################################################################
+## include directorie.
+## #############################################################################
+
+target_include_directories(${TARGET_NAME}
+  PUBLIC ${${TARGET_NAME}_INCLUDE_DIRS}
+  )
+
+
+## #############################################################################
+## Link
+## #############################################################################
+
+target_link_libraries(${TARGET_NAME}
+  Qt5::Core
+  Qt5::Widgets
+  medCore
+  dtkCore
+  dtkLog
+  # Legacy
+  medCoreLegacy
+  dtkCoreSupport
+  dtkGuiSupport
+  )
+
+## #############################################################################
+## install
+## #############################################################################
+
+set_lib_install_rules(${TARGET_NAME}
+  ${${TARGET_NAME}_HEADERS}
+  )

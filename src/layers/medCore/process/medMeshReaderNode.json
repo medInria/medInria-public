@@ -1,0 +1,10 @@
+{
+          "title" : "Mesh Reader",
+           "kind" : "process",
+           "type" : "medMeshReader",
+           "tags" : ["reader","mesh","testme"],
+    "description" : "<h3>Reader mesh reader</h3>
+                     <p>Produce a mesh from the given file</p>",
+         "inputs" : ["path"],
+        "outputs" : ["mesh"]
+}

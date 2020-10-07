@@ -1,0 +1,9 @@
+{
+          "title" : "Normalize filter",
+           "kind" : "process",
+           "type" : "medAbstractNormalizeFilterProcess",
+           "tags" : ["normalize","filter", "operation"],
+    "description" : "<p>Normalize filter</p>",
+         "inputs" : ["scalarImage"],
+        "outputs" : ["scalarImage"]
+}

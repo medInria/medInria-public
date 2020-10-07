@@ -1,0 +1,33 @@
+{
+    "specialities": [
+        {
+            "name": "default",
+            "desc": [
+            	{
+            		"name" : "Label 0"
+            	}
+            ]
+		},
+        {
+            "name": "urology",
+            "desc": [
+	            {
+	            	"name" : "WG (whole gland)",
+	            	"hasScore" : false
+	            },
+	            {
+	            	"name" : "TZ (transitional zone)",
+	            	"hasScore" : false
+	            },
+	            {
+	            	"name" : "Target 1",
+	            	"hasScore" : true
+	            },
+	            {
+	            	"name" : "Target 2",
+	            	"hasScore" : true
+	            }
+	        ]
+        }
+    ]
+}

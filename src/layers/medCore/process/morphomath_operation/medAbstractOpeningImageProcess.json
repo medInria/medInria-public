@@ -1,0 +1,9 @@
+{
+          "title" : "Opening image",
+           "kind" : "process",
+           "type" : "medAbstractOpeningImageProcess",
+           "tags" : ["morphology","opening","morphomath", "operation"],
+    "description" : "<p>Perform an opening on an image.</p>",
+         "inputs" : ["scalarImage"],
+        "outputs" : ["scalarImage"]
+}

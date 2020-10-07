@@ -1,0 +1,9 @@
+{
+          "title" : "Gaussian filter",
+           "kind" : "process",
+           "type" : "medAbstractGaussianFilterProcess",
+           "tags" : ["gaussian","filter", "operation"],
+    "description" : "<p>Gaussian filter</p>",
+         "inputs" : ["scalarImage", "double"],
+        "outputs" : ["scalarImage"]
+}

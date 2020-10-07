@@ -1,6 +1,0 @@
-#pragma once
- 
-#cmakedefine MEDINRIA_PLUGINS_PATH "@MEDINRIA_PLUGINS_PATH@"
-#cmakedefine MEDINRIA_TEST_DATA_ROOT "@MEDINRIA_TEST_DATA_ROOT@"
- 
-

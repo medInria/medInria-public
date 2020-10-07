@@ -1,0 +1,49 @@
+#!/bin/bash
+
+# Usage: 
+# - mac_packager.sh plugin1 plugin2 ... pluginN
+# or
+# - mac_packager.sh path_to_plugins/*
+
+# To build a stand-alone mac version of the application, do the following:
+
+# 1. build medInria
+# 2. build medInria-plugins as well as your desired own plugins
+# 3. chmod u+x mac_pacakger.sh
+# 4. run mac_pacakger.sh with each argument being a script to package your plugins, e.g. : ./mac_packager.sh ${Plugins_Build_Dir}/mac_visages_plugins_packager.sh
+
+# The bundle medInria.app will contain all plugins and will be standalone, packaged into MedINRIA.dmg in the install dir
+
+cd @medInria_BINARY_DIR@/bin
+
+\rm -fr TmpInstall
+mkdir TmpInstall
+cp -r medInria.app TmpInstall
+
+cd TmpInstall
+
+@Qt5_DIR@/../../../bin/macdeployqt medInria.app -appstore-compliant
+
+#Run sub-packagers
+injectDirs=''
+for i in $*; do
+	echo $i
+	injectDirs="$injectDirs -inject-dir=$i"
+done
+
+@dtk_DIR@/bin/dtkDeploy medInria.app $injectDirs &>/dev/null
+
+#Run fancy packaging apple script
+
+\cp -f @medInria_SOURCE_DIR@/utils/osx_packaging/BaseMedinriaPackage.sparseimage.gz @PROJECT_BINARY_DIR@/MedinriaPackage.sparseimage.gz
+cd @PROJECT_BINARY_DIR@
+gunzip -f MedinriaPackage.sparseimage.gz
+
+devName=`hdiutil attach -readwrite -noverify -noautoopen MedinriaPackage.sparseimage | egrep '^/dev/' | sed 1q | awk '{print $1}'`
+diskutil rename "medInria base" "medInria @MEDINRIA_SUPERBUILD_VERSION@"
+\cp -rf @medInria_BINARY_DIR@/bin/TmpInstall/medInria.app /Volumes/"medInria @MEDINRIA_SUPERBUILD_VERSION@"/
+
+sync
+hdiutil detach $devName
+hdiutil convert MedinriaPackage.sparseimage -format UDZO -imagekey zlib-level=9 -o "medInria-@MEDINRIA_SUPERBUILD_VERSION@.dmg" 1>/dev/null 2>/dev/null
+\rm -fr MedinriaPackage.sparseimage @medInria_BINARY_DIR@/bin/TmpInstall

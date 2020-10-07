@@ -1,0 +1,5 @@
+<RCC>
+    <qresource prefix="/">
+        <file>medItkSingleFilterOperationProcessPlugin.json</file>
+    </qresource>
+</RCC>

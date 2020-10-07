@@ -1,0 +1,35 @@
+<RCC>
+    <qresource prefix="/">
+        <file>process/arithmetic_operation/medAbstractAddImageProcess.json</file>
+        <file>process/arithmetic_operation/medAbstractDivideImageProcess.json</file>
+        <file>process/arithmetic_operation/medAbstractMultiplyImageProcess.json</file>
+        <file>process/arithmetic_operation/medAbstractSubtractImageProcess.json</file>
+        <file>process/morphomath_operation/medAbstractClosingImageProcess.json</file>
+        <file>process/morphomath_operation/medAbstractDilateImageProcess.json</file>
+        <file>process/morphomath_operation/medAbstractErodeImageProcess.json</file>
+        <file>process/morphomath_operation/medAbstractOpeningImageProcess.json</file>
+        <file>process/mask_image/medAbstractMaskImageProcess.json</file>
+        <file>process/diffusion_processes/medAbstractDiffusionModelEstimationProcess.json</file>
+        <file>process/diffusion_processes/medAbstractDWIMaskingProcess.json</file>
+        <file>process/diffusion_processes/medAbstractDiffusionScalarMapsProcess.json</file>
+        <file>process/diffusion_processes/medAbstractTractographyProcess.json</file>
+        <file>process/single_filter/medAbstractWindowingFilterProcess.json</file>
+        <file>process/single_filter/medAbstractSubtractFilterProcess.json</file>
+        <file>process/single_filter/medAbstractShrinkFilterProcess.json</file>
+        <file>process/single_filter/medAbstractNormalizeFilterProcess.json</file>
+        <file>process/single_filter/medAbstractMultiplyFilterProcess.json</file>
+        <file>process/single_filter/medAbstractMedianFilterProcess.json</file>
+        <file>process/single_filter/medAbstractInvertFilterProcess.json</file>
+        <file>process/single_filter/medAbstractGaussianFilterProcess.json</file>
+        <file>process/single_filter/medAbstractDivideFilterProcess.json</file>
+        <file>process/single_filter/medAbstractAddFilterProcess.json</file>
+        <file>process/single_filter/medAbstractImageDenoisingProcess.json</file>
+        <file>process/single_filter/medAbstractRelaxometryEstimationProcess.json</file>
+        <file>process/single_filter/medAbstractSymmetryPlaneAlignmentProcess.json</file>
+        <file>process/single_filter/medAbstractBiasCorrectionProcess.json</file>
+        <file>process/medGenericReaderNode.json</file>
+        <file>process/medGenericWriterNode.json</file>
+        <file>process/medImageReaderNode.json</file>
+        <file>process/medMeshReaderNode.json</file>
+    </qresource>
+</RCC>

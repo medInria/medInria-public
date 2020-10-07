@@ -1,0 +1,6 @@
+{
+            "name" : "medItkMaskImageProcessPlugin",
+         "concept" : "medAbstractMaskImageProcess",
+         "version" : "0.0.1", 	
+    "dependencies" : []
+}
