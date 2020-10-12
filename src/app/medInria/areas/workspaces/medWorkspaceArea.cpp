@@ -20,7 +20,6 @@
 #include <medAbstractImageData.h>
 #include <medAbstractImageView.h>
 #include <medAbstractView.h>
-#include <medDatabaseController.h>
 #include <medDatabaseDataSource.h>
 #include <medDatabaseNonPersistentController.h>
 #include <medDataIndex.h>

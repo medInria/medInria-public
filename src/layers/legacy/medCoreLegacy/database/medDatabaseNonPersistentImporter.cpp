@@ -14,7 +14,6 @@
 #include <medAbstractData.h>
 #include <medAbstractDataFactory.h>
 #include <medAbstractImageData.h>
-#include <medDatabaseController.h>
 #include <medDatabaseNonPersistentController.h>
 #include <medDatabaseNonPersistentItem.h>
 #include <medDatabaseNonPersistentItem_p.h>
