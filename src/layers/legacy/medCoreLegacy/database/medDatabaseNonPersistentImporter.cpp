@@ -142,7 +142,9 @@ medDataIndex medDatabaseNonPersistentImporter::populateDatabaseAndGenerateThumbn
     QString studyName = medMetaDataKeys::StudyDescription.getFirstValue(data);
     QString studyId = medMetaDataKeys::StudyID.getFirstValue(data);
     QString studyUid = medMetaDataKeys::StudyInstanceUID.getFirstValue(data);
-
+    qDebug()<<"studyName "<<studyName;
+    qDebug()<<"studyId "<<studyId;
+    qDebug()<<"studyUid "<<studyUid;
     QString seriesName = medMetaDataKeys::SeriesDescription.getFirstValue(data);
 
     if( studyName!="EmptyStudy" || seriesName!="EmptySeries" )
@@ -184,7 +186,10 @@ medDataIndex medDatabaseNonPersistentImporter::populateDatabaseAndGenerateThumbn
             medData->setMetaData ( medMetaDataKeys::StudyDescription.key(), QStringList() << studyName );
             medData->setMetaData ( medMetaDataKeys::StudyID.key(), QStringList() << studyId );
             medData->setMetaData ( medMetaDataKeys::StudyInstanceUID.key(), QStringList() << studyUid );
-
+            qDebug()<<"set PatientName "<<patientName;
+            qDebug()<<"set StudyDescription "<<studyName;
+            qDebug()<<"set StudyID "<<studyId;
+            qDebug()<<"set studyInstanceUid "<<studyUid;
             studyItem->d->name = patientName;
             studyItem->d->patientId = patientId;
             studyItem->d->birthdate = birthdate;

@@ -971,8 +971,9 @@ QString medAbstractDatabaseImporter::generateUniqueVolumeId ( const medAbstractD
     // Get all the information from the medAbstractData metadata.
     // This information will then be passed to the database.
     QString patientName = medMetaDataKeys::PatientName.getFirstValue(medData);
+    qDebug()<<"patient name "<<patientName;
     QString studyDicomId = medMetaDataKeys::StudyInstanceUID.getFirstValue(medData);
-
+    qDebug()<<"studyDicomeId "<<studyDicomId;
     // We don't use the seriesDicomID, too unreliable : you can have images part
     // of the same series with different UIDs, and different volumes within the
     // same study with the same UIDs... instead, use Series Description

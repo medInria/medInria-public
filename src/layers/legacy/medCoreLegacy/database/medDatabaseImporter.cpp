@@ -37,7 +37,7 @@ medDatabaseImporter::medDatabaseImporter ( const QString& file, const QUuid& uui
 medDatabaseImporter::medDatabaseImporter ( medAbstractData* medData, const QUuid& uuid ) :
     medAbstractDatabaseImporter(medData, uuid)
 {
-
+    
 }
 
 //-----------------------------------------------------------------------------------------------------------
@@ -175,7 +175,7 @@ int medDatabaseImporter::getOrCreateStudy ( const medAbstractData* medData, QSql
     {
         qDebug() << DTK_COLOR_FG_RED << query.lastError() << DTK_NO_COLOR;
     }
-
+    qDebug()<<"query first "<<query.first();
     if ( query.first() )
     {
         studyDbId = query.value ( 0 ).toInt();
