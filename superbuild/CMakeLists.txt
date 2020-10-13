@@ -47,7 +47,6 @@ option(USE_DTKIMAGING "Use DTK imaging layer" OFF )
 
 option(USE_OSPRay "Use OSPRay for CPU VR" OFF )
 
-<<<<<<< HEAD
 if (NOT WIN32)
   option(USE_FFmpeg "Build with FFmpeg video export support" OFF)
   if (${USE_FFmpeg})
