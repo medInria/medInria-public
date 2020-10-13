@@ -83,7 +83,6 @@ endif()
 list(APPEND external_projects
      medInria
      music-plugins
-     music-plugins-liryc
     )
 
 if (USE_OSPRay)
