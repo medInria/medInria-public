@@ -411,23 +411,6 @@ bool itkDCMTKDataImageReader::readInformation(const QStringList& paths)
         //Dimensions
         //NumberOfDimensions
         medData->setMetaData(medMetaDataKeys::Orientation.key(),     d->io->GetOrientation().c_str());
-        // Patient position
-        std::string patientPos = d->io->GetMetaDataValueString("(0018,5100)", 0);
-        medData->setMetaData(medMetaDataKeys::PatientPosition.key(), patientPos.c_str());
-        // Patient orientation
-        std::string patientOrient = d->io->GetMetaDataValueString("(0020,0020)", 0);
-        medData->setMetaData(medMetaDataKeys::PatientOrientation.key(), patientOrient.c_str());
-
-        // Image Type
-        QString imageType = QString::fromStdString(d->io->GetMetaDataValueString("(0008,0008)", 0));
-        // it seems '\' characters are replaced by whitespaces. This is not correct
-        // for this tag.
-        imageType = imageType.replace(' ', "\\");
-        medData->setMetaData(medMetaDataKeys::ImageType.key(), imageType.toStdString().c_str());
-
-        // Acquisition number
-        std::string acquisitionNumber = d->io->GetMetaDataValueString("(0020,0012)", 0);
-        medData->setMetaData(medMetaDataKeys::AcquisitionNumber.key(), acquisitionNumber.c_str());
 
         // Patient position
         std::string patientPos = d->io->GetMetaDataValueString("(0018,5100)", 0);
