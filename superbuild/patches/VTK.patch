@@ -1,12 +1,14 @@
-From e2a8095062670ee622e241f828f36c52c9400bd0 Mon Sep 17 00:00:00 2001
-From: Florent LERAY <florent.leray@inria.fr>
-Date: Fri, 18 Sep 2020 10:45:20 +0200
-Subject: [PATCH] handle Windows Utf16 in OggTheoraWriter
+From 1b7b962d0efbb009384f0ed7c6f6669250a0542a Mon Sep 17 00:00:00 2001
+From: "mathilde.merle" <mathilde.merle@ihu-liryc.fr>
+Date: Wed, 7 Oct 2020 09:43:48 +0200
+Subject: [PATCH] VTK
 
 ---
- IO/Movie/module.cmake           | 1 +
- IO/Movie/vtkOggTheoraWriter.cxx | 4 +++-
- 2 files changed, 4 insertions(+), 1 deletion(-)
+ IO/Movie/module.cmake                     | 1 +
+ IO/Movie/vtkOggTheoraWriter.cxx           | 4 +++-
+ Rendering/Qt/vtkQtLabelRenderStrategy.cxx | 1 +
+ Rendering/Qt/vtkQtStringToImage.cxx       | 1 +
+ 4 files changed, 6 insertions(+), 1 deletion(-)
 
 diff --git a/IO/Movie/module.cmake b/IO/Movie/module.cmake
 index fd6d096384..071b4a20a2 100644
@@ -41,9 +43,6 @@ index d24acde998..9dff50bb0e 100644
    if (!this->outFile)
    {
      vtkGenericWarningMacro(<< "Could not open " << this->Writer->GetFileName() << "." );
--- 
-2.21.0.windows.1
-
 diff --git a/Rendering/Qt/vtkQtLabelRenderStrategy.cxx b/Rendering/Qt/vtkQtLabelRenderStrategy.cxx
 index 8bfd3f6b6b..2d5adb1834 100644
 --- a/Rendering/Qt/vtkQtLabelRenderStrategy.cxx
@@ -57,14 +56,17 @@ index 8bfd3f6b6b..2d5adb1834 100644
  #include <QPixmap>
  #include <QTextDocument>
 diff --git a/Rendering/Qt/vtkQtStringToImage.cxx b/Rendering/Qt/vtkQtStringToImage.cxx
-index 549ffbe874..7f5a71adcb 100644
+index 549ffbe874..a7c726e4f9 100644
 --- a/Rendering/Qt/vtkQtStringToImage.cxx
 +++ b/Rendering/Qt/vtkQtStringToImage.cxx
-@@ -34,6 +34,7 @@
+@@ -31,6 +31,7 @@
+ #include <QFontMetrics>
+ #include <QImage>
+ #include <QPainter>
++#include <QPainterPath>
  #include <QPixmap>
  #include <QTextDocument>
  #include <QTextStream>
-+#include <QPainterPath>
- 
- namespace
- {
+-- 
+2.14.3 (Apple Git-98)
+
