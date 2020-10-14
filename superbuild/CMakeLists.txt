@@ -66,15 +66,14 @@ list(APPEND external_projects
   )
 
 if (USE_DTKIMAGING)
-  list(APPEND external_projects
-      dtkImaging
-      medInria
-      )
-else()
-  list(APPEND external_projects
-      medInria
-      )
+    list(APPEND external_projects
+        dtkImaging
+        )
 endif()
+
+list(APPEND external_projects
+    medInria
+    )
 
 if (USE_OSPRay)
   SET(ospray_DIR CACHE PATH "The directory containing a CMAKE configuration file for OSPRay")
