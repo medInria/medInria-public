@@ -16,17 +16,17 @@
 ## #############################################################################
 
 find_package(Qt5 REQUIRED COMPONENTS
-             Core
-             Designer
-             Gui
-             Network
-             OpenGL
-             Sql
-             Widgets 
-             Xml
-             Test
-             Quick
-             )
+  Core
+  Designer
+  Gui
+  Network
+  OpenGL
+  Sql                                                                                                                                                                                                                                       
+  Widgets                                                                                                                                                                                                                                       
+  Xml
+  Test
+  Quick
+)
 
 find_package(Boost REQUIRED)
 

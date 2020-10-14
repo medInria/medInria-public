@@ -100,6 +100,10 @@ medLogger::medLogger() : d(new medLoggerPrivate)
     dtkLogger::instance().attachFile(dtkLogPath(qApp));
     dtkLogger::instance().attachConsole();
 
+    // Redirect cerr and cout messages
+    dtkLogger::instance().redirectCerr();
+    dtkLogger::instance().redirectCout();
+
     // Redirect Qt messages
     QObject::connect(this, SIGNAL(newQtMessage(QtMsgType,QString)), this, SLOT(redirectQtMessage(QtMsgType,QString)));
     qInstallMessageHandler(qtMessageHandler);
