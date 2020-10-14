@@ -25,6 +25,8 @@
 #include <vtkImageView3D.h>
 #include <vtkMatrix4x4.h>
 
+#include <gdcmUIDGenerator.h>
+
 void medUtilities::setDerivedMetaData(medAbstractData* derived, medAbstractData* original, QString derivationDescription, bool queryForDescription)
 {
     copyMetaDataIfEmpty(derived, original, metaDataKeysToCopyForDerivedData(derived));
@@ -122,15 +124,26 @@ QStringList medUtilities::metaDataKeysToCopyForDerivedData(medAbstractData* deri
     return keys;
 }
 
+void medUtilities::generateStudyIdAndInstanceUid(medAbstractData* data)
+{
+    gdcm::UIDGenerator uidGenerator;
+    QString generatedStudyId = QString::fromStdString(uidGenerator.Generate());
+    data->setMetaData(medMetaDataKeys::StudyID.key(), generatedStudyId);
+
+    QString generatedStudyInstanceUid = QString::fromStdString(uidGenerator.Generate());
+    data->setMetaData(medMetaDataKeys::StudyInstanceUID.key(), generatedStudyInstanceUid);
+}
+
 void medUtilities::generateSeriesAndSOPInstanceId(medAbstractData* data)
 {
-    QString generatedSeriesID = QUuid::createUuid().toString().replace("{", "").replace("}", "");
+    gdcm::UIDGenerator uidGenerator;
+    QString generatedSeriesID = QString::fromStdString(uidGenerator.Generate());
     data->setMetaData(medMetaDataKeys::SeriesID.key(), generatedSeriesID);
 
-    QString generatedSOPInstanceID = QUuid::createUuid().toString().replace("{", "").replace("}", "");
+    QString generatedSOPInstanceID = QString::fromStdString(uidGenerator.Generate());
     data->setMetaData(medMetaDataKeys::SOPInstanceUID.key(), generatedSOPInstanceID);
-    
-    QString generatedSeriesInstanceUID = QUuid::createUuid().toString().replace("{", "").replace("}", "");
+
+    QString generatedSeriesInstanceUID = QString::fromStdString(uidGenerator.Generate());
     data->setMetaData(medMetaDataKeys::SeriesInstanceUID.key(), generatedSeriesInstanceUID);
 }
 
