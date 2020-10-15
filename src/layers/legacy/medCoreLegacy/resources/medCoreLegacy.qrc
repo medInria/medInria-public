@@ -10,5 +10,12 @@
         <file>pixmaps/default_thumbnail.png</file>
         <file>pixmaps/open.png</file>
         <file>pixmaps/tools.png</file>
+
+        <file>icons/fourViews_blue.png</file>
+        <file>pixmaps/closebutton_blue.png</file>
+        <file>pixmaps/splitbutton_horizontal_blue.png</file>
+        <file>pixmaps/splitbutton_vertical_blue.png</file>
+        <file>pixmaps/tools_blue.png</file>
+        <file>icons/splitPresets_blue.png</file>
     </qresource>
 </RCC>

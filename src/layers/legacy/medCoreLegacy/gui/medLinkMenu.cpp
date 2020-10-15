@@ -41,7 +41,17 @@ public :
 
 medLinkMenu::medLinkMenu(QWidget * parent) : QPushButton(parent), d(new medLinkMenuPrivate)
 {
-    this->setIcon(QIcon(":icons/link.svg"));
+    // Themes
+    QVariant themeChosen = medSettingsManager::instance()->value("startup","theme");
+    int themeIndex = themeChosen.toInt();
+    if (themeIndex == 3) // Light Grey
+    {
+        this->setIcon(QIcon(":icons/link_blue.svg"));
+    }
+    else
+    {
+        this->setIcon(QIcon(":icons/link.svg"));
+    }
 
     d->popupWidget = new QWidget(this);
     d->popupWidget->setWindowFlags(Qt::Dialog | Qt::FramelessWindowHint );

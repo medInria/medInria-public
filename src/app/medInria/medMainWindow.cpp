@@ -129,13 +129,58 @@ medMainWindow::medMainWindow ( QWidget *parent ) : QMainWindow ( parent ), d ( n
     d->stack->addWidget(d->workspaceArea);
     d->stack->addWidget(d->composerArea);
 
+    // Themes
+    QVariant themeChosen = medSettingsManager::instance()->value("startup","theme");
+    int themeIndex = themeChosen.toInt();
+
+    QIcon quickAccessIcon;
+    QIcon adjustIcon;
+    QIcon quitIcon;
+    QIcon fullscreenIcon;
+    QIcon cameraIcon;
+    QIcon movieIcon;
+
+    if (themeIndex == 3)
+    {
+        quickAccessIcon.addPixmap(QPixmap(":MUSICardio_logo_small_light.png"));
+        quitIcon.addPixmap(QPixmap(":/icons/quit_blue.png"), QIcon::Normal);
+        fullscreenIcon.addPixmap(QPixmap(":icons/fullscreenExpand_blue.png"),QIcon::Normal,QIcon::Off);
+        fullscreenIcon.addPixmap(QPixmap(":icons/fullscreenReduce_blue.png"),QIcon::Normal,QIcon::On);
+        cameraIcon.addPixmap(QPixmap(":icons/camera_blue.png"),QIcon::Normal);
+        cameraIcon.addPixmap(QPixmap(":icons/camera_grey.png"),QIcon::Disabled);
+        movieIcon.addPixmap(QPixmap(":icons/movie_blue.png"),      QIcon::Normal);
+        movieIcon.addPixmap(QPixmap(":icons/movie_grey_blue.png"), QIcon::Disabled);
+        adjustIcon.addPixmap(QPixmap(":icons/adjust_size_blue.png"),QIcon::Normal);
+        adjustIcon.addPixmap(QPixmap(":icons/adjust_size_grey_blue.png"),QIcon::Disabled);
+    }
+    else
+    {
+        if(themeIndex == 0 || themeIndex == 1 || themeIndex == 2)
+        {
+            quickAccessIcon.addPixmap(QPixmap(":MUSICardio_logo_small_dark.png"));
+        }
+        else
+        {
+            quickAccessIcon.addPixmap(QPixmap(":MUSICardio_logo_small_light.png"));
+        }
+        quitIcon.addPixmap(QPixmap(":/icons/quit.png"), QIcon::Normal);
+        fullscreenIcon.addPixmap(QPixmap(":icons/fullscreenExpand.png"),QIcon::Normal,QIcon::Off);
+        fullscreenIcon.addPixmap(QPixmap(":icons/fullscreenReduce.png"),QIcon::Normal,QIcon::On);
+        cameraIcon.addPixmap(QPixmap(":icons/camera.png"),QIcon::Normal);
+        cameraIcon.addPixmap(QPixmap(":icons/camera_grey.png"),QIcon::Disabled);
+        movieIcon.addPixmap(QPixmap(":icons/movie.png"),      QIcon::Normal);
+        movieIcon.addPixmap(QPixmap(":icons/movie_grey.png"), QIcon::Disabled);
+        adjustIcon.addPixmap(QPixmap(":icons/adjust_size.png"),QIcon::Normal);
+        adjustIcon.addPixmap(QPixmap(":icons/adjust_size_grey.png"),QIcon::Disabled);
+    }
+
     //  Setup quick access menu
     d->quickAccessButton = new medQuickAccessPushButton ( this );
     d->quickAccessButton->setFocusPolicy ( Qt::NoFocus );
     d->quickAccessButton->setMinimumHeight(31);
-    d->quickAccessButton->setIcon(QIcon(":medInria.ico"));
     d->quickAccessButton->setCursor(Qt::PointingHandCursor);
     d->quickAccessButton->setText(tr("Workspaces access menu"));
+    d->quickAccessButton->setIcon(quickAccessIcon);
     connect(d->quickAccessButton, SIGNAL(clicked()), this, SLOT(toggleQuickAccessVisibility()));
 
     d->quickAccessWidget = new medQuickAccessMenu(true, this);
@@ -165,19 +210,11 @@ medMainWindow::medMainWindow ( QWidget *parent ) : QMainWindow ( parent ), d ( n
     d->controlPressed = false;
 
     //Add quit button
-    QIcon quitIcon;
-    quitIcon.addPixmap(QPixmap(":/icons/quit.png"), QIcon::Normal);
     d->quitButton = new QToolButton(this);
     d->quitButton->setIcon(quitIcon);
     d->quitButton->setObjectName("quitButton");
     connect(d->quitButton, SIGNAL( pressed()), this, SLOT (close()));
-    d->quitButton->setToolTip(tr("Close medInria"));
-
-    //  Setup Fullscreen Button    medWorkspaceFactory::Details* details = medWorkspaceFactory::instance()->workspaceDetailsFromId(workspace);
-
-    QIcon fullscreenIcon ;
-    fullscreenIcon.addPixmap(QPixmap(":icons/fullscreenExpand.png"),QIcon::Normal,QIcon::Off);
-    fullscreenIcon.addPixmap(QPixmap(":icons/fullscreenReduce.png"),QIcon::Normal,QIcon::On);
+    d->quitButton->setToolTip(tr("Close the application"));
 
     //  Setting up shortcuts
     //  we use a toolbutton, which has shorcuts,
@@ -197,9 +234,6 @@ medMainWindow::medMainWindow ( QWidget *parent ) : QMainWindow ( parent ), d ( n
     connect ( d->fullscreenButton, SIGNAL ( toggled(bool) ),
                        this, SLOT ( setFullScreen(bool) ) );
 
-    QIcon cameraIcon;
-    cameraIcon.addPixmap(QPixmap(":icons/camera.png"),QIcon::Normal);
-    cameraIcon.addPixmap(QPixmap(":icons/camera_grey.png"),QIcon::Disabled);
     d->screenshotButton = new QToolButton(this);
     d->screenshotButton->setIcon(cameraIcon);
     d->screenshotButton->setObjectName("screenshotButton");
@@ -227,12 +261,16 @@ medMainWindow::medMainWindow ( QWidget *parent ) : QMainWindow ( parent ), d ( n
     d->adjustSizeButton->setToolTip(tr("Adjust containers size"));
     QObject::connect(d->adjustSizeButton, SIGNAL(clicked()), this, SLOT(adjustContainersSize()));
 
+    QLabel *prototypeLabel = new QLabel("RESEARCH PROTOTYPE NOT FOR CLINICAL USE");
+    prototypeLabel->setStyleSheet("QLabel {color : red}");
+    prototypeLabel->setFont(QFont("Arial", 10, QFont::Bold));
 
     //  QuitMessage and rightEndButtons will switch hidden and shown statuses.
     d->rightEndButtons = new QWidget(this);
     QHBoxLayout * rightEndButtonsLayout = new QHBoxLayout(d->rightEndButtons);
     rightEndButtonsLayout->setContentsMargins ( 5, 0, 5, 0 );
     rightEndButtonsLayout->setSpacing ( 5 );
+    rightEndButtonsLayout->addWidget(prototypeLabel);
     rightEndButtonsLayout->addWidget( d->adjustSizeButton );
     rightEndButtonsLayout->addWidget( d->screenshotButton );
     rightEndButtonsLayout->addWidget( d->movieButton );

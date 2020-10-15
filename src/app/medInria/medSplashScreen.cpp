@@ -35,7 +35,29 @@ medSplashScreen::medSplashScreen(const QPixmap& thePixmap)
 {
     // Graphic
     d->pixmap = thePixmap;
-    d->color = Qt::white;
+    
+    // Themes
+    QVariant themeChosen = medSettingsManager::instance()->value("startup","theme");
+    int themeIndex = themeChosen.toInt();
+    QString qssLogoName;
+    switch (themeIndex)
+    {
+        case 0:
+        case 1:
+        case 2:
+        default:
+        {
+            d->color = Qt::white;
+            break;
+        }
+        case 3:
+        case 4:
+        {
+            d->color = Qt::black;
+            break;
+        }
+    }
+
 
     // Geometry
     d->alignment = Qt::AlignBottom|Qt::AlignLeft;

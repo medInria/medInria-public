@@ -90,7 +90,9 @@ int main(int argc,char* argv[])
     // Qt doc, otherwise there are some edge cases where the style is not fully applied
     //QApplication::setStyle("plastique");
     medApplication application(argc,argv);
-    medSplashScreen splash(QPixmap(":/pixmaps/medInria-logo-homepage.png"));
+    QPixmap splashLogo(":MUSICardio_logo_light-notext.png");
+    splashLogo = splashLogo.scaled(761, 180, Qt::KeepAspectRatio, Qt::SmoothTransformation);
+    medSplashScreen splash(splashLogo);
 
     setlocale(LC_NUMERIC, "C");
     QLocale::setDefault(QLocale("C"));

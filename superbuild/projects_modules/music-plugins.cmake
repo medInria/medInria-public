@@ -30,7 +30,7 @@ function(music_plugins_project)
         set(git_url ${GITHUB_PREFIX}Inria-Asclepios/music.git)
         set(git_tag music3)
 
-        set(${external_project}_BUILD_TYPE RelWithDebInfo CACHE STRING "Build type for MUSIC plugins: None Debug Release RelWithDebInfo MinSizeRel")
+        set(${external_project}_BUILD_TYPE RelWithDebInfo CACHE STRING "Build type for MUSICardio plugins: None Debug Release RelWithDebInfo MinSizeRel")
 
         set(cmake_args
             ${ep_common_cache_args}

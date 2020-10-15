@@ -16,7 +16,7 @@
 cmake_minimum_required(VERSION 3.3)
 
 if(NOT DEFINED ${medInria_VERSION})
-    set(medInria_VERSION 3.1.1)
+    set(medInria_VERSION 3.0.0)
 endif()
 
 project(medInria VERSION ${medInria_VERSION})
@@ -28,6 +28,13 @@ project(medInria VERSION ${medInria_VERSION})
 
 string(TOUPPER ${PROJECT_NAME} PROJECT_NAME_UP)
 add_definitions(-D${PROJECT_NAME_UP}_VERSION="${${PROJECT_NAME}_VERSION}")
+
+## #############################################################################
+## Macro
+## #############################################################################
+
+add_definitions( -DPROJECT_NAME="MUSICardio" )
+add_definitions( -DPROJECT_CONTACT="music-dev@inria.fr" )
 
 ## #############################################################################
 ## Options

@@ -1,0 +1,1477 @@
+/*==============================================================================
+
+ medInria
+
+ Copyright (c) INRIA 2013. All rights reserved.
+ See LICENSE.txt for details.
+
+  This software is distributed WITHOUT ANY WARRANTY; without even
+  the implied warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR
+  PURPOSE.
+
+==============================================================================*/
+
+
+/*******************************************************************************
+    COLOR
+ *******************************************************************************/
+$HUE        = 220;
+$SATURATION = 64.8;
+
+$GREY10     = hsv($HUE,$SATURATION,0);
+$GREY09     = hsv($HUE,$SATURATION,10);
+$GREY08     = hsv($HUE,$SATURATION,20);
+$GREY07     = hsv($HUE,$SATURATION,30);
+$GREY06     = hsv($HUE,$SATURATION,40);
+$GREY05     = hsv($HUE,$SATURATION,50);
+$GREY04     = hsv($HUE,$SATURATION,60);
+$GREY03     = hsv($HUE,$SATURATION,70);
+$GREY02     = hsv($HUE,$SATURATION,80);
+$GREY01     = hsv($HUE,$SATURATION,90);
+$GREY00     = hsv($HUE,$SATURATION,120);
+
+$BLUE_DARK       = #262C3A;
+$BLUE_GREY       = #517398;
+$BLUE_ROI        = #385b9f;
+$BLUE_GREY_LIGHT = #C7D0D5;
+$BLUE_LIGHT      = #e6f7ff;
+$BLUE_VERY_LIGHT = #e3ecf1;
+$WHITE           = #FFFFFF;
+$WHITE_CASSE     = #DFDED4;
+$WHITE_DARK      = #CDCAB9;
+$ORANGE_DARK     = #EC583A;
+$PURPLE_DARK     = #3F2860;
+$GREY_VERY_LIGHT = #d9d9d9;
+$GREY_LIGHT      = #cccccc;
+$GREY            = #B6B6B6;
+$GREY_MID_DARK   = #6E6E6E;
+$GREY_DARK       = #393939;
+$BROWN           = #432F21;
+$ORANGE          = #fc875f;
+$GREEN           = #64FF32;
+$RED             = #FF3333;
+
+$HIGHLIGHT_COLOR = $ORANGE_DARK;
+
+/*******************************************************************************
+    BACKGROUND
+ *******************************************************************************/
+$WIDGET_BACKGROUND                      = $WHITE;
+
+/*Database header in workspaces and browser*/
+$HEADER_BACKGROUND                      = $BLUE_GREY;
+
+/*Navigation bar at bottom of app*/
+$STATUS_BAR_BACKGROUND                  = $BLUE_DARK;
+
+$CONTAINER_BACKGROUND                   = $GREY_VERY_LIGHT;
+$VIEW_CONTAINER_BUTTON_HOVER_BACKGOUND  = $CONTAINER_BACKGROUND; /*Color of tab container background*/
+
+$DROP_SITE_BACKGROUND                   = $GREY_LIGHT;
+
+/*******************************************************************************
+    WIDGET COLOR
+ *******************************************************************************/
+$WIDGET_COLOR         = $WHITE; /*Button text color*/
+
+$DISABLE_COLOR        = $GREY; /*Text of disabled widgets*/
+
+$GRIDLINE_COLOR       = $GREY_MID_DARK; /*Example, Tools button in views -> Presets*/
+
+$HEADER_COLOR         = $GREY_VERY_LIGHT;
+
+$GROUP_BOX_COLOR      = $GREY_VERY_LIGHT;
+
+$HOMEPAGE_TEXT_COLOR  = $BLUE_DARK;
+
+$CHECKBOX_FONT_COLOR     = $BLUE_DARK;
+$RADIOBUTTON_FONT_COLOR  = $BLUE_DARK;
+
+/*******************************************************************************
+    WIDGET COLOR
+ *******************************************************************************/
+
+$QUICK_ACCESS_MENU_HEADER_BACKGROUND    = $GREY_DARK;
+$QUICK_ACCESS_MENU_BACKGROUND           = rgba(200,200,200,150);
+$QUICK_ACCESS_MENU_HEADER_COLOR         = $WHITE;
+
+/*******************************************************************************
+    SPINBOX COLOR
+ *******************************************************************************/
+
+$SPINBOX_BACKGROUND = $WHITE;
+$SPINBOX_FONT_COLOR = $BLUE_DARK;
+
+/*******************************************************************************
+    QLINEEDIT COLOR
+ *******************************************************************************/
+
+$QLINEEDIT_BACKGROUND = $WHITE;
+$QLINEEDIT_FONT_COLOR = $BLUE_DARK;
+
+/*******************************************************************************
+    TOOLTIP COLOR
+ *******************************************************************************/
+
+$TOOLTIP_BACKGROUND = $ORANGE;
+$TOOLTIP_COLOR      = $BLUE_DARK; /*Tooltip text color*/
+
+/*******************************************************************************
+    MENU_ITEM COLOR
+ *******************************************************************************/
+
+/*Example in Tools button in views*/
+$MENU_ITEM_HOVER_BACKGROUND    = $BLUE_GREY_LIGHT;
+$MENU_ITEM_BACKGROUND          = $GREY_DARK;
+$MENU_ITEM_SELECTED_BACKGROUND = $GREY_MID_DARK;
+$MENU_ITEM_SELECTED_COLOR      = $HIGHLIGHT_COLOR;
+
+/*******************************************************************************
+    EDITION COLOR
+ *******************************************************************************/
+
+$EDITION_BACKGROUND = $GREY_VERY_LIGHT; /*Homepage, background color*/
+$EDITION_COLOR      = $BLUE_DARK; /*Homepage, text color*/
+
+/*******************************************************************************
+    PUSH_BUTTON COLOR
+ *******************************************************************************/
+
+$PUSH_BUTTON_BACKGROUND                 = $BLUE_ROI;
+$PUSH_BUTTON_HOVER_BACKGROUND           = $GREY;
+$PUSH_BUTTON_CHECKED_BACKGROUND         = $BLUE_DARK;
+$PUSH_BUTTON_PRESSED_BACKGROUND         = $BLUE_GREY_LIGHT;
+
+/*Example in Brower, Actions buttons*/
+$PUSH_BUTTON_DISABLED_BACKGROUND        = $GREY_MID_DARK;
+$PUSH_BUTTON_DISABLED_COLOR             = $BLUE_GREY_LIGHT;
+
+$PUSH_BUTTON_HOVER_COLOR                = $HIGHLIGHT_COLOR;
+$PUSH_BUTTON_CHECKED_COLOR              = $WHITE;
+
+$HOME_PAGE_BUTTON_BACKGROUND            = $BLUE_GREY;
+$HOME_PAGE_BUTTON_HOVER_BACKGROUND      = $PUSH_BUTTON_HOVER_BACKGROUND;
+$HOME_PAGE_BUTTON_COLOR                 = $HIGHLIGHT_COLOR;
+
+/*******************************************************************************
+    FINDER COLOR
+ *******************************************************************************/
+
+$FINDER_PATH_BAR_BACKGROUND             = $GREY_MID_DARK;
+$FINDER_BACKGROUND                      = $WHITE;
+$FINDER_TOOLBAR_DISABLED_BACKGROUND     = $GREY;
+
+/*******************************************************************************
+    LIST COLOR
+ *******************************************************************************/
+
+/*In database colums*/
+$LIST_BACKGROUND     = $WHITE;
+$ALT_LIST_BACKGROUND = $GREY_VERY_LIGHT;
+$LIST_FONT_COLOR     = $BLUE_DARK;
+
+/*******************************************************************************
+    TAB COLOR
+ *******************************************************************************/
+
+/*Tabs in homepage: settings, etc*/
+$TAB_BACKGROUND           = qlineargradient(x1: 0, y1: 0, x2: 0, y2: 1, stop: 0 $GREY_DARK, stop: 1 $GREY_MID_DARK);
+$TAB_HOVER_BACKGROUND     = qlineargradient(x1: 0, y1: 0, x2: 0, y2: 1, stop: 0 $BLUE_GREY_LIGHT, stop: 1 $BLUE_GREY_LIGHT);
+$TAB_PRESSED_BACKGROUND   = qlineargradient(x1: 0, y1: 0, x2: 0, y2: 1, stop: 0 $BLUE_ROI, stop: 1 $BLUE_ROI);
+$TAB_SELECTED_BACKGROUND  = $BLUE_ROI;
+
+$TAB_SELECTED_COLOR       = $WHITE;
+$TAB_COLOR                = $WHITE; /* Tab text color*/
+$TAB_HOVER_COLOR          = $HIGHLIGHT_COLOR; /* Tab hovered text color*/
+
+$TAB_BODY_HOMEPAGE        = GREY_VERY_LIGHT;
+
+/*******************************************************************************
+    SLIDER COLOR
+ *******************************************************************************/
+
+$SLIDER_HORIZONTAL_BACKGROUND           = qradialgradient(cx: 0.5, cy: 0, fx: 0.5, fy: 0, radius: 1, stop: 0 $GREY, stop: 1 $WHITE_CASSE);
+$SLIDER_VERTICAL_BACKGROUND             = qradialgradient(cx: 0, cy: 0.5, fx: 0, fy: 0.5, radius: 1, stop: 0 $GREY, stop: 1 $WHITE_CASSE);
+$SLIDER_DISABLED_HORIZONTAL_BACKGROUND  = qradialgradient(cx: 0.5, cy: 0, fx: 0.5, fy: 0, radius: 1, stop: 0 $GREY, stop: 1 $WHITE_CASSE);
+$SLIDER_DISABLED_VERTICAL_BACKGROUND    = qradialgradient(cx: 0, cy: 0.5, fx: 0, fy: 0.5, radius: 1, stop: 0 $GREY, stop: 1 $WHITE_CASSE);
+
+$SLIDER_COLOR                       = qradialgradient(cx: 0.5, cy: 0.5, fx: 0.5, fy: 0.5, radius: 1, stop: 0 $BLUE_GREY, stop: 1 $BLUE_ROI);
+$SLIDER_DISABLED_COLOR              = $GREY_LIGHT;
+
+/*******************************************************************************
+    SCROLL_BAR COLOR
+ *******************************************************************************/
+
+/*example in Browser*/
+$SCROLL_BAR_HORIZONTAL_BACKGROUND   = $GREY;
+$SCROLL_BAR_VERTICAL_BACKGROUND     = $GREY;
+
+$SCROLL_BAR_HORIZONTAL_COLOR        = qradialgradient(cx: 0.5, cy: 0, fx: 0.5, fy: 0, radius: 1, stop: 0 $BLUE_GREY, stop: 1 $BLUE_ROI);
+$SCROLL_BAR_VERTICAL_COLOR          = qradialgradient(cx: 0, cy: 0.5, fx: 0, fy: 0.5, radius: 1, stop: 0 $BLUE_GREY, stop: 1 $BLUE_ROI);
+
+/*******************************************************************************
+    PROGRESS_BAR COLOR
+ *******************************************************************************/
+
+$PROGRESS_BAR_BACKGROUND   = $GREY_VERY_LIGHT;
+$PROGRESS_BAR_COLOR        = $ORANGE_DARK;
+$PROGRESS_BAR_TEXT_COLOR   = $BLUE_DARK;
+
+/*******************************************************************************
+    TOOLBOX_HEADER COLOR
+ *******************************************************************************/
+
+$TOOLBOX_HEADER_BACKGROUND  = $GREY_DARK;
+$TOOLBOX_BACKGROUND         = $GREY_VERY_LIGHT;
+$TOOLBOX_BODY_BACKGROUND    = $TOOLBOX_BACKGROUND;
+$TOOLBOX_HEADER_COLOR       = $WHITE; /*Font color*/
+
+/*******************************************************************************
+    COMBO_BOX COLOR
+ *******************************************************************************/
+
+$COMBO_BOX_BACKGROUND               = $BLUE_ROI;
+$COMBO_BOX_HOVER_BACKGROUND         = $COMBO_BOX_BACKGROUND;
+
+$COMBO_BOX_ITEM_BACKGROUND          = $GREY;
+$COMBO_BOX_ITEM_SELECTED_BACKGROUND = $BLUE_GREY;
+$COMBO_BOX_ITEM_SELECTED_COLOR      = $WHITE;
+
+/*******************************************************************************
+    VIEW_PROPERTY COLOR
+ *******************************************************************************/
+
+$VIEW_PROPERTY_HEADER_BACKGROUND    = $BLUE_GREY;
+$VIEW_PROPERTY_BACKGROUND           = $WHITE;
+$VIEW_PROPERTY_ALT_BACKGROUND       = $GREY_VERY_LIGHT;
+
+$VIEW_PROPERTY_COLOR                = $BLUE_VERY_LIGHT;
+$VIEW_PROPERTY_ITEM_COLOR           = $WIDGET_COLOR;
+$VIEW_PROPERTY_ITEM_SELECTED_COLOR  = $COMBO_BOX_ITEM_SELECTED_COLOR;
+
+/*******************************************************************************
+    FILE_SYSTEM COLOR
+ *******************************************************************************/
+
+$FILE_SYSTEM_INFO_TEXT_BACKGROUND       = $WHITE;
+
+/*******************************************************************************
+    BORDER
+ *******************************************************************************/
+$WIDGET_BORDER                  = 0px;
+
+$GROUP_BOX_BORDER               = 1px solid $GREY;
+
+$CONTAINER_BORDER               = 2px solid $GREY;
+
+$CONTAINER_SELECTED_BORDER      = 2px solid $HIGHLIGHT_COLOR;
+
+$MENU_SEPARATOR_BORDER          = 2px solid $GREY;
+
+$PROGRESS_BAR_BORDER            = 1px solid $GREY_DARK;
+
+$BROWSER_CONTAINER_BORDER       = 2px solid $GREY;
+
+$DROP_SITE_BORDER               = 0px;
+
+$DATABASE_PREVIEW_BORDER            = $CONTAINER_BORDER;
+
+$QUICK_ACCESS_PUSH_BUTTON_BORDER    = 0PX;
+
+/*******************************************************************************
+    SIZES
+ *******************************************************************************/
+$STATUS_BAR_HEIGHT              = 34px;
+
+$PROGRESS_BAR_HEIGHT            = 12px;
+
+$CHECKBOX_SIZE                  = 15px;
+
+$RADIO_BUTTON_SIZE              = 15px;
+
+$SLIDER_SIZE                    = 8px;
+
+$PUSH_BUTTON_SIZE               = 20px;
+
+$COMBO_BOX_SIZE                 = 20px;
+
+$SCROLL_BAR_WIDTH               = 12px;
+$SCROLL_BAR_MIN_SIZE            = 28px;
+
+$TAB_HEIGHT                     = 28px;
+
+$HEADER_HEIGHT                  = 26px;
+
+$TOOLBOX_HEADER_HEIGHT          = 28px;
+
+$VIEW_PROPERTY_MIN_HEIGHT       = 250px;
+
+$FINDER_PATH_BAR_HEIGHT         = 28px;
+
+$LAYOUT_BUTTON_MIN_HEIGHT       = 32px;
+
+
+/*******************************************************************************
+    FONT
+ *******************************************************************************/
+$WIDGET_FONTSIZE                = 11px;
+
+$GROUP_BOX_FONTSIZE             = 9px;
+
+
+/*******************************************************************************
+    RADIUS
+ *******************************************************************************/
+$LINE_EDIT_RADIUS               = 3px;
+
+$PROGRESS_BAR_RADIUS            = 5px;
+
+$SLIDER_RADIUS                  = 4px;
+
+$PUSH_BUTTON_RADIUS             = 0px;
+
+$GROUP_BOX_RADIUS               = 3px;
+
+$SCROLL_BAR_RADIUS              = 5px;
+
+$COMBO_BOX_RADIUS               = 3px;
+$VIEW_PROPERTY_COMBO_BOX_RADIUS = 2px;
+
+$FINDER_TOOLBAR_RADIUS          = 2px;
+
+$VIEW_CONTAINER_BUTTON_RADIUS   = 2px;
+
+$QUICK_ACCESS_MENU_RADIUS       = 0px;
+
+
+/*******************************************************************************
+    MARGIN
+ *******************************************************************************/
+$GROUP_BOX_MARGIN               = 1ex;
+
+$VIEW_CONTAINER_BUTTON_MARGIN   = 1px 2px;
+
+
+/*******************************************************************************
+    PADDING
+ *******************************************************************************/
+$TAB_PADDING                    = 12px;
+
+$HEADER_PADDING                 = 1px;
+$HEADER_LEFT_PADDING            = 12px;
+$HEADER_RIGHT_PADDING           = 28px;
+
+$COMBO_BOX_PADDING              = 12px;
+
+$PUSH_BUTTON_PADDING            = 6px;
+
+$VIEW_PROPERTY_ITEM_PADDING     = 4px;
+
+$TREE_VIEW_ITEM_PADDING         = 3px;
+
+$VIEW_CONTAINER_BUTTON_PADDING  = 4px 2px;
+
+$ADD_TAB_BUTTON_PADDING         = 8px 0px;
+
+$TOOLBOX_HEADER_PADDING         = 0px 8px;
+
+$FILE_SYSTEM_INFO_TEXT_PADDING  = 2px 5px;
+
+/*******************************************************************************
+    QWidget
+ *******************************************************************************/
+
+QWidget:disabled
+{
+    color: $DISABLE_COLOR;
+}
+
+QWidget
+{
+    color: $WIDGET_COLOR;
+    background: $WIDGET_BACKGROUND;
+    border: $WIDGET_BORDER;
+    outline: 0px;
+}
+
+/*******************************************************************************
+    QToolTip
+ *******************************************************************************/
+
+QToolTip
+{
+    color: $TOOLTIP_COLOR;
+    background: $TOOLTIP_BACKGROUND;
+    padding: 1px;
+    border: none;
+}
+
+/*******************************************************************************
+    QTableView
+ *******************************************************************************/
+
+QTableView
+{
+    gridline-color: $GRIDLINE_COLOR;
+    background: $LIST_BACKGROUND;
+    alternate-background-color: $ALT_LIST_BACKGROUND;
+    color: $LIST_FONT_COLOR;
+}
+
+/*******************************************************************************
+    QListView
+ *******************************************************************************/
+
+QListView
+{
+    gridline-color: $GRIDLINE_COLOR;
+    background: $LIST_BACKGROUND;
+    alternate-background-color: $ALT_LIST_BACKGROUND;
+    color: $LIST_FONT_COLOR;
+}
+
+/*******************************************************************************
+    QTextEdit
+ *******************************************************************************/
+
+QTextEdit
+{
+    color: $EDITION_COLOR;
+    background: $EDITION_BACKGROUND;
+    margin-top: 10px;
+}
+
+/*******************************************************************************
+    QDateEdit
+ *******************************************************************************/
+
+QDateEdit
+{
+    color: $EDITION_COLOR;
+    background: $EDITION_BACKGROUND;
+}
+
+QDateEdit::down-arrow
+{
+    image: url(:/pixmaps/arrow-bot-disabled.png);
+}
+
+/*******************************************************************************
+     QSpinBox QDoubleSpinBox
+ *******************************************************************************/
+
+QSpinBox, QDoubleSpinBox
+{
+    color: $SPINBOX_FONT_COLOR;
+    background: $SPINBOX_BACKGROUND;
+    min-height: 20px;
+}
+
+QSpinBox::up-button, QDoubleSpinBox::up-button
+{
+    subcontrol-origin: border;
+    subcontrol-position: top right;
+    border: none;
+    background: $PUSH_BUTTON_BACKGROUND;
+}
+
+QSpinBox::up-button:hover, QDoubleSpinBox::up-button:hover
+{
+    background: $PUSH_BUTTON_HOVER_BACKGROUND;
+}
+
+QSpinBox::up-arrow, QDoubleSpinBox::up-arrow
+{
+    image: url(:/pixmaps/arrow-top.png);
+}
+
+QSpinBox::up-arrow:disabled, QDoubleSpinBox::up-arrow:disabled
+{
+    image: url(:/pixmaps/arrow-top-disabled.png);
+}
+
+QSpinBox::down-button, QDoubleSpinBox::down-button
+{
+    subcontrol-origin: border;
+    subcontrol-position: bottom right;
+    border: none;
+    background: $PUSH_BUTTON_BACKGROUND;
+}
+
+QSpinBox::down-button:hover, QDoubleSpinBox::down-button:hover
+{
+    background: $PUSH_BUTTON_HOVER_BACKGROUND;
+}
+
+QSpinBox::down-arrow, QDoubleSpinBox::down-arrow
+{
+    image: url(:/pixmaps/arrow-bot.png);
+}
+
+QSpinBox::down-arrow:disabled, QDoubleSpinBox::down-arrow::disabled
+{
+    image: url(:/pixmaps/arrow-bot-disabled.png);
+}
+
+/*******************************************************************************
+     QComboBox
+ *******************************************************************************/
+
+QComboBox
+{
+    border-radius: $COMBO_BOX_RADIUS;
+    background-color: $COMBO_BOX_BACKGROUND;
+    height: $COMBO_BOX_SIZE;
+    min-width: $COMBO_BOX_SIZE;
+    padding: 0px $COMBO_BOX_PADDING;
+}
+
+QComboBox::drop-down
+{
+    padding-right: $COMBO_BOX_PADDING;
+    image: url(:/pixmaps/arrow-bot.png);
+    subcontrol-origin: padding;
+    subcontrol-position: center right;
+}
+
+QComboBox::hover
+{
+    background-color: $COMBO_BOX_HOVER_BACKGROUND;
+}
+
+QComboBox QAbstractItemView
+{
+    background-color: $COMBO_BOX_ITEM_BACKGROUND;
+    selection-background-color: $COMBO_BOX_ITEM_SELECTED_BACKGROUND;
+    selection-color: $COMBO_BOX_ITEM_SELECTED_COLOR;
+    outline: 0px;
+}
+
+QComboBox QAbstractItemView::disabled
+{
+    color:$BLUE_VERY_LIGHT;
+}
+
+/*******************************************************************************
+     QCheckBox
+ *******************************************************************************/
+
+QCheckBox
+{
+    background: none;
+    color: $CHECKBOX_FONT_COLOR;
+}
+
+QCheckBox::indicator
+{
+    width: $CHECKBOX_SIZE;
+    height: $CHECKBOX_SIZE;
+}
+
+QCheckBox::indicator:unchecked
+{
+    /*image: url(:/pixmaps/checkbox.png);*/
+}
+
+QCheckBox::indicator:checked
+{
+    /*image: url(:/pixmaps/checkbox-checked.png);*/
+}
+
+QCheckBox::indicator:indeterminate
+{
+    /*image: url(:/pixmaps/checkbox-partial.png);*/
+}
+
+QCheckBox::indicator:disabled:unchecked
+{
+    /*image: url(:/pixmaps/checkbox-disabled.png);*/
+}
+
+QCheckBox::indicator:disabled:checked
+{
+    /*image: url(:/pixmaps/checkbox-checked-disabled.png);*/
+}
+
+/*******************************************************************************
+     QTreeView
+ *******************************************************************************/
+
+QTreeView
+{
+     alternate-background-color: $ALT_LIST_BACKGROUND;
+     background: $LIST_BACKGROUND;
+     color: $LIST_FONT_COLOR;
+}
+
+QTreeView::item
+{
+    padding: $TREE_VIEW_ITEM_PADDING 0px;
+}
+
+QTreeView::indicator:indeterminate
+{
+    image: url(:/pixmaps/checkbox-partial.png);
+}
+QTreeView::indicator:checked
+{
+    background: url(:/pixmaps/checkbox-checked.png);
+}
+
+QTreeView::indicator:unchecked
+{
+    image: url(:/pixmaps/checkbox.png);
+}
+
+QTreeView::branch:has-siblings:!adjoins-item
+{
+    image: none;
+}
+
+QTreeView::branch:has-siblings:adjoins-item
+{
+    image: none;
+}
+
+QTreeView::branch:!has-children:!has-siblings:adjoins-item
+{
+    image: none;
+}
+
+QTreeView::branch:has-children:!has-siblings:closed,
+QTreeView::branch:closed:has-children:has-siblings
+{
+    border-image: none;
+    image: url(:pixmaps/arrow-right-disabled.png);
+}
+
+QTreeView::branch:open:has-children:!has-siblings,
+QTreeView::branch:open:has-children:has-siblings
+{
+    border-image: none;
+    image: url(:pixmaps/arrow-bot-disabled.png);
+}
+
+/*******************************************************************************
+     QLabel
+ *******************************************************************************/
+
+QLabel
+{
+    color: $EDITION_COLOR;
+    background: none;
+}
+
+/*******************************************************************************
+     QTableWidget
+ *******************************************************************************/
+
+QTableWidget
+{
+    gridline-color: $GRIDLINE_COLOR;
+    background: $LIST_BACKGROUND;
+    alternate-background-color: $ALT_LIST_BACKGROUND;
+    color: $LIST_FONT_COLOR;
+}
+
+/*******************************************************************************
+     QHeaderView
+ *******************************************************************************/
+
+QHeaderView
+{
+    background-color: $HEADER_BACKGROUND;
+    color: $HEADER_COLOR;
+    border: none;
+}
+
+QHeaderView::section
+{
+    background-color: $HEADER_BACKGROUND;
+    color: $HEADER_COLOR;
+    padding: $HEADER_PADDING;
+    padding-left: $HEADER_LEFT_PADDING;
+    padding-right:$HEADER_RIGHT_PADDING;
+    min-height: $HEADER_HEIGHT;
+    border: none;
+}
+
+QHeaderView::down-arrow
+{
+    image: url(:/pixmaps/arrow-bot.png);
+}
+
+QHeaderView::up-arrow
+{
+    image: url(:/pixmaps/arrow-top.png);
+}
+
+/*******************************************************************************
+     QLineEdit
+ *******************************************************************************/
+
+QLineEdit
+{
+    color: $QLINEEDIT_FONT_COLOR;
+    background: $QLINEEDIT_BACKGROUND;
+    border-radius: $LINE_EDIT_RADIUS;
+}
+
+/*******************************************************************************
+     QProgressBar
+ *******************************************************************************/
+
+QProgressBar
+{
+    border: $PROGRESS_BAR_BORDER;
+    border-radius: $PROGRESS_BAR_RADIUS;
+    background-color: $PROGRESS_BAR_BACKGROUND;
+    max-height: $PROGRESS_BAR_HEIGHT;
+    text-align: right;
+    color: $PROGRESS_BAR_TEXT_COLOR;
+}
+
+QProgressBar::chunk
+{
+    border-radius: $PROGRESS_BAR_RADIUS;
+    background-color: $PROGRESS_BAR_COLOR;
+}
+
+/*******************************************************************************
+     QStatusBar
+ *******************************************************************************/
+
+QStatusBar
+{
+    background: $STATUS_BAR_BACKGROUND;
+    min-height: $STATUS_BAR_HEIGHT;
+}
+
+QStatusBar QWidget
+{
+    background: $STATUS_BAR_BACKGROUND;
+    height: $STATUS_BAR_HEIGHT;
+}
+
+QStatusBar::item
+{
+    background: $STATUS_BAR_BACKGROUND;
+}
+
+/*******************************************************************************
+     QRadioButton
+ *******************************************************************************/
+
+QRadioButton
+{
+    background: none;
+    outline: 0px;
+    color: $RADIOBUTTON_FONT_COLOR;
+}
+
+QRadioButton::indicator
+{
+    width: $RADIO_BUTTON_SIZE;
+    height: $RADIO_BUTTON_SIZE;
+}
+
+QRadioButton::indicator:unchecked
+{
+    /*image: url(:/pixmaps/radio.png);*/
+}
+
+QRadioButton::indicator:checked
+{
+    /*image: url(:/pixmaps/radio-checked.png);*/
+}
+
+QRadioButton::indicator:indeterminate
+{
+    /*image: url(:/pixmaps/radio-partial.png);*/
+}
+
+QRadioButton::indicator:disabled:unchecked
+{
+    /*image: url(:/pixmaps/radio-disabled.png);*/
+}
+
+QRadioButton::indicator:disabled:checked
+{
+    /*image: url(:/pixmaps/radio-checked-disabled.png);*/
+}
+
+/*******************************************************************************
+     QSlider
+ *******************************************************************************/
+ 
+QSlider
+{
+    background: none;
+}
+
+QSlider::groove:horizontal
+{
+
+    border-radius: $SLIDER_RADIUS;
+    background: $SLIDER_HORIZONTAL_BACKGROUND;
+    height: $SLIDER_SIZE;
+}
+
+QSlider::handle:horizontal
+{
+    background: $SLIDER_COLOR;
+    width: $SLIDER_SIZE;
+    border-radius: $SLIDER_RADIUS;
+}
+
+QSlider::groove:vertical
+{
+
+    border-radius: $SLIDER_RADIUS;
+    background: $SLIDER_VERTICAL_BACKGROUND;
+    width: $SLIDER_SIZE;
+}
+
+QSlider::handle:vertical
+{
+    background: $SLIDER_COLOR;
+    height: $SLIDER_SIZE;
+    border-radius: $SLIDER_RADIUS;
+}
+
+QSlider::groove:horizontal:disabled
+{
+    background: $SLIDER_DISABLED_HORIZONTAL_BACKGROUND;
+}
+
+QSlider::handle:horizontal:disabled
+{
+    background: $SLIDER_DISABLED_COLOR;
+}
+
+QSlider::groove:vertical:disabled
+{
+
+    background: $SLIDER_DISABLED_VERTICAL_BACKGROUND;
+}
+
+QSlider::handle:vertical:disabled
+{
+    background: $SLIDER_DISABLED_COLOR;
+}
+
+/*******************************************************************************
+     QPushButton QToolButton
+ *******************************************************************************/
+
+QPushButton, QPushButton:flat, QToolButton
+{
+    border-radius: $PUSH_BUTTON_RADIUS;
+    background-color: $PUSH_BUTTON_BACKGROUND;
+    height: $PUSH_BUTTON_SIZE;
+    min-width: $PUSH_BUTTON_SIZE;
+    padding: 0px $PUSH_BUTTON_PADDING;
+    outline: 0px;
+}
+
+QPushButton:hover, QToolButton:hover
+{
+    background-color: $PUSH_BUTTON_HOVER_BACKGROUND; /*mouse over button*/
+    color: $PUSH_BUTTON_HOVER_COLOR;
+}
+
+QPushButton:pressed, QToolButton:pressed
+{
+    background-color: $PUSH_BUTTON_PRESSED_BACKGROUND; /*button pressed and not released*/
+}
+
+QPushButton:checked, QToolButton:checked
+{
+    /*clicked - checked button*/
+    background-color: $PUSH_BUTTON_CHECKED_BACKGROUND;
+    color: $PUSH_BUTTON_CHECKED_COLOR;
+}
+
+QPushButton::menu-indicator
+{
+    image: url(:/pixmaps/drop-down.png);
+    subcontrol-origin: padding;
+    subcontrol-position: center right;
+}
+
+QPushButton::menu-indicator:flat
+{
+    image: none;
+}
+
+QPushButton:flat
+{
+    border: none;
+    background-color: none;
+    height: $LAYOUT_BUTTON_MIN_HEIGHT;
+}
+
+QPushButton:flat:hover
+{
+    border: none;
+    background-color: none;
+}
+
+QPushButton:flat:pressed
+{
+    border: none;
+    background-color: none;
+}
+
+QPushButton::menu-indicator:flat
+{
+    image: none;
+}
+
+QPushButton:disabled
+{
+   background-color: $PUSH_BUTTON_DISABLED_BACKGROUND;
+   color: $PUSH_BUTTON_DISABLED_COLOR;
+}
+
+QToolButton#fullScreenButton:hover,
+QToolButton#screenshotButton:hover,
+QToolButton#quitButton:hover
+{
+    background-color: $HOME_PAGE_BUTTON_HOVER_BACKGROUND;
+}
+
+/*******************************************************************************
+     QSplitter
+ *******************************************************************************/
+
+QSplitter::handle:horizontal
+{
+    border: none;
+}
+
+QSplitter::handle:vertical
+{
+    border: none;
+}
+
+/*******************************************************************************
+     QGroupBox
+ *******************************************************************************/
+
+QGroupBox
+{
+    border: $GROUP_BOX_BORDER;
+    margin-top: $GROUP_BOX_MARGIN;
+    border-radius: $GROUP_BOX_RADIUS;
+    background: none;
+}
+
+QGroupBox::title
+{
+    subcontrol-origin: margin;
+    subcontrol-position: top center;
+    color: $GROUP_BOX_COLOR;
+    font-size: $GROUP_BOX_FONTSIZE;
+}
+
+QGroupBox::indicator::checked
+{
+    image: url(:/pixmaps/checkbox-checked.png);
+}
+
+QGroupBox::indicator::unchecked
+{
+    image: url(:/pixmaps/checkbox.png);
+}
+
+/*******************************************************************************
+     QTabBar
+ *******************************************************************************/
+ 
+QTabBar::tab
+{
+    color: $TAB_COLOR;
+    background: $TAB_BACKGROUND;
+    padding : 0 $TAB_PADDING;
+    height: $TAB_HEIGHT;
+}
+
+QTabBar::tab:hover
+{
+    background: $TAB_HOVER_BACKGROUND;
+    color: $TAB_HOVER_COLOR;
+}
+
+QTabBar::tab:pressed
+{
+    background: $TAB_PRESSED_BACKGROUND;
+    color: $TAB_HOVER_COLOR;
+}
+
+QTabBar::tab:selected
+{
+    background: $TAB_SELECTED_BACKGROUND;
+    color: $TAB_SELECTED_COLOR;
+}
+
+/*******************************************************************************
+     QScrollBar
+ *******************************************************************************/
+
+QScrollBar:horizontal
+{
+    background: $SCROLL_BAR_HORIZONTAL_BACKGROUND;
+    height: $SCROLL_BAR_WIDTH;
+    min-width :$SCROLL_BAR_MIN_SIZE;
+}
+
+QScrollBar::handle:horizontal
+{
+    border-radius: $SCROLL_BAR_RADIUS;
+    border: 1px solid $SCROLL_BAR_HORIZONTAL_BACKGROUND;
+    background: $SCROLL_BAR_HORIZONTAL_COLOR;
+    height: $SCROLL_BAR_WIDTH;
+    min-width :$SCROLL_BAR_MIN_SIZE;
+}
+
+QScrollBar::add-line:horizontal
+{
+    background: none;
+    width: 0px;
+    height: 0px;
+    border: none;
+}
+
+QScrollBar::sub-line:horizontal
+{
+    background: none;
+    width: 0px;
+    height: 0px;
+    border: none;
+}
+
+QScrollBar:vertical
+{
+    background: $SCROLL_BAR_VERTICAL_BACKGROUND;
+    width: $SCROLL_BAR_WIDTH;
+    min-height :$SCROLL_BAR_MIN_SIZE;
+}
+
+QScrollBar::handle:vertical
+{
+    border-radius: $SCROLL_BAR_RADIUS;
+    border: 1px solid $SCROLL_BAR_HORIZONTAL_BACKGROUND;
+    background: $SCROLL_BAR_VERTICAL_COLOR;
+    width: $SCROLL_BAR_WIDTH;
+    min-height: $SCROLL_BAR_MIN_SIZE;
+}
+
+QScrollBar::add-line:vertical
+{
+    background: none;
+    width: 0px;
+    height: 0px;
+    border: none;
+}
+
+QScrollBar::sub-line:vertical
+{
+    background: none;
+    width: 0px;
+    height: 0px;
+    border: none;
+}
+
+/*******************************************************************************
+      QMenu
+ *******************************************************************************/
+
+QMenu
+{
+    background-color: $MENU_ITEM_BACKGROUND;
+}
+
+QMenu::indicator:non-exclusive:unchecked
+{
+    image: url(:/pixmaps/checkbox.png);
+}
+
+QMenu::indicator:non-exclusive:checked
+{
+    image: url(:/pixmaps/checkbox-checked.png);
+}
+
+QMenu::indicator:exclusive:unchecked
+{
+    image: url(:/pixmaps/radio.png);
+}
+
+QMenu::indicator:exclusive:checked
+{
+    image: url(:/pixmaps/radio-checked.png);
+}
+
+QMenu::item:checked /* appearance of a 'checked' icon */
+{
+    background: $HIGHLIGHT_COLOR;
+}
+
+QMenu::separator
+{
+    border: $MENU_SEPARATOR_BORDER;
+}
+
+QMenu::item
+{
+    border: none;
+    border-left: 5px solid $MENU_ITEM_BACKGROUND; /*magic value !!!*/
+    padding: 4px 22px; /*magic value !!!*/
+}
+
+QMenu::item:selected
+{
+    border: none;
+    border-left: 5px solid $MENU_ITEM_HOVER_BACKGROUND; /*magic value !!!*/
+    background: $MENU_ITEM_HOVER_BACKGROUND;
+    color: $MENU_ITEM_SELECTED_COLOR;
+}
+
+/*******************************************************************************
+      medHomepagePushButton
+ *******************************************************************************/
+
+medHomepagePushButton
+{
+    background-color: $HOME_PAGE_BUTTON_BACKGROUND;
+    font-size: $WIDGET_FONTSIZE;
+    border: 2px solid $WIDGET_BACKGROUND;
+}
+
+medHomepagePushButton:hover
+{
+    background-color: $HOME_PAGE_BUTTON_HOVER_BACKGROUND;
+    color: $HOME_PAGE_BUTTON_COLOR;
+}
+
+medHomepagePushButton[selected="true"]
+{
+    border: 2px solid $HIGHLIGHT_COLOR;
+}
+
+/*******************************************************************************
+    medHomepageButton
+ *******************************************************************************/
+
+medHomepageButton
+{
+    background-color: $HOME_PAGE_BUTTON_BACKGROUND;
+}
+
+medHomepageButton:hover
+{
+    background-color: $HOME_PAGE_BUTTON_HOVER_BACKGROUND;
+    color: $HOME_PAGE_BUTTON_COLOR;
+}
+
+/*******************************************************************************
+    medQuickAccessMenu
+ *******************************************************************************/
+
+QLabel#quickAccessMenuHeader
+{
+    background: $QUICK_ACCESS_MENU_HEADER_BACKGROUND;
+    //padding-top: 4px;
+    color: $QUICK_ACCESS_MENU_HEADER_COLOR;
+}
+
+medQuickAccessMenu
+{
+    background-color: $QUICK_ACCESS_MENU_BACKGROUND;
+    border-radius: $QUICK_ACCESS_MENU_RADIUS;
+}
+
+/*******************************************************************************
+      medToolBox
+ *******************************************************************************/
+
+medToolBox .QWidget
+{
+    background: $TOOLBOX_BACKGROUND;
+}
+
+/*******************************************************************************
+      medToolBoxBody
+ *******************************************************************************/
+
+medToolBoxBody
+{
+    background: $TOOLBOX_BODY_BACKGROUND;
+}
+
+/*******************************************************************************
+      medToolBoxHeader
+ *******************************************************************************/
+
+medToolBoxHeader
+{
+    background: $TOOLBOX_HEADER_BACKGROUND;
+    color: $TOOLBOX_HEADER_COLOR;
+    min-height: $TOOLBOX_HEADER_HEIGHT;
+    padding: $TOOLBOX_HEADER_PADDING;
+}
+
+/*******************************************************************************
+     dtkFinderPathBar
+ *******************************************************************************/
+
+dtkFinderPathBar
+{
+    background: $FINDER_PATH_BAR_BACKGROUND;
+    min-height: $FINDER_PATH_BAR_HEIGHT;
+}
+
+/*******************************************************************************
+     medTabbedViewContainers
+ *******************************************************************************/
+
+medTabbedViewContainers QPushButton
+{
+    margin: $VIEW_CONTAINER_BUTTON_MARGIN;
+    padding: $VIEW_CONTAINER_BUTTON_PADDING;
+    border-radius: $VIEW_CONTAINER_BUTTON_RADIUS;
+}
+
+medTabbedViewContainers QPushButton::hover
+{
+    background: $VIEW_CONTAINER_BUTTON_HOVER_BACKGOUND;
+}
+
+QPushButton#addTabButton
+{
+    image: url(:pixmaps/plus-button.png);
+    padding: $ADD_TAB_BUTTON_PADDING;
+}
+
+medViewContainer
+{
+    border: $CONTAINER_BORDER;
+    background: $CONTAINER_BACKGROUND;
+}
+
+medViewContainer [selected = "true"]
+{
+    border: $CONTAINER_SELECTED_BORDER;
+}
+
+/*******************************************************************************
+     layerWidget
+ *******************************************************************************/
+ 
+QWidget#layerWidget
+{
+    background: none;
+}
+
+/*******************************************************************************
+     medMessageProgress
+ *******************************************************************************/
+
+QProgressBar::chunk[success = "true"]
+{
+    background: $GREEN;
+}
+
+QProgressBar::chunk[failure = "true"]
+{
+    background: $RED;
+}
+
+QLabel#medMessageLabel
+{
+    color: $WHITE;
+}
+
+/*******************************************************************************
+     medDropSite
+ *******************************************************************************/
+
+medDropSite
+{
+    background: $DROP_SITE_BACKGROUND;
+    border: $DROP_SITE_BORDER;
+}
+
+/*******************************************************************************
+     settingsWidget
+ *******************************************************************************/
+
+QWidget#settingsWidget QTabWidget::pane
+{
+    border: 2px solid $EDITION_BACKGROUND;
+}
+
+
+/*******************************************************************************
+     medDatabasePreview
+ *******************************************************************************/
+
+medDatabasePreview
+{
+    border: 1px solid $GREY07;
+}
+
+QLabel#previewLabel
+{
+    color: $TAB_COLOR;
+    background: $TOOLBOX_HEADER_BACKGROUND;
+    min-height: $STATUS_BAR_HEIGHT;
+    border: 1px solid $GREY07;
+    border-top: none;
+}
+
+/*******************************************************************************
+     medViewContainer
+ *******************************************************************************/
+
+QWidget#defaultWidget
+{
+    background: none;
+}
+
+/*******************************************************************************
+     medQuickAccessPushButton
+ *******************************************************************************/
+
+medQuickAccessPushButton
+{
+    border: QUICK_ACCESS_PUSH_BUTTON_BORDER;
+}
+
+/*******************************************************************************
+     dtkFinder
+ *******************************************************************************/
+
+medToolBoxContainer#browserContainerToolbox
+{
+    border-right: $BROWSER_CONTAINER_BORDER;
+}
+
+dtkFinder QTreeView
+{
+    background: $FINDER_BACKGROUND;
+}
+
+dtkFinder QListView
+{
+    background: $FINDER_BACKGROUND;
+}
+
+QLabel#fileSystemInfoText
+{
+    background: $FILE_SYSTEM_INFO_TEXT_BACKGROUND;
+    padding: $FILE_SYSTEM_INFO_TEXT_PADDING;
+}
+
+dtkFinderSideView
+{
+    background: $TOOLBOX_BACKGROUND;
+}
+
+dtkFinderToolBar QToolButton
+{
+    background: $FINDER_PATH_BAR_BACKGROUND;
+    border-radius: $FINDER_TOOLBAR_RADIUS;
+}
+
+dtkFinderToolBar QToolButton:disabled
+{
+    background: $FINDER_TOOLBAR_DISABLED_BACKGROUND;
+}
+
+dtkFinderToolBar
+{
+    background: $FINDER_PATH_BAR_BACKGROUND;
+}
+
+QWidget#toolbarWidget
+{
+    background: $FINDER_PATH_BAR_BACKGROUND;
+}
+
+/*******************************************************************************
+     medLinkMenu
+ *******************************************************************************/
+
+QWidget#internalSubPopWidget
+{
+   background: $GREY;
+   border-radius: 3px;
+}
+
+medLinkMenu QListWidget
+{
+    background-color: $WHITE;
+}
+
+medLinkMenu QListWidget::item
+{
+    border: none;
+}
+
+medLinkMenu QListWidget::item:selected
+{
+    border: none;
+    background: $MENU_ITEM_HOVER_BACKGROUND;
+    color: $MENU_ITEM_SELECTED_COLOR;
+}
+
+/* Change color in the medLinkMenu*/
+QColorDialog
+{
+    background: $GREY_VERY_LIGHT;
+}
+
+/*******************************************************************************
+     medDatabasePreview
+ *******************************************************************************/
+
+/* Thumbnail in DB column */
+QGraphicsView
+{
+    background: transparent;
+    border: transparent;
+}
+
+/*******************************************************************************
+     medSettingsEditor
+ *******************************************************************************/
+
+/* Homepage settings */
+QScrollArea
+{
+    background: $GREY_VERY_LIGHT;
+}
+
+/*******************************************************************************
+     QDialog & cie
+ *******************************************************************************/
+
+ QFileDialog
+ {
+     background: $GREY_VERY_LIGHT;
+ }
+
+ QDialog
+ {
+     background: $GREY_VERY_LIGHT;
+ }
+
+/*******************************************************************************
+     Qwt & cie
+ *******************************************************************************/
+
+ QwtScaleWidget
+ {
+     color: $GREY_DARK;
+ }

@@ -16,6 +16,7 @@
 #include <medHomepageButton.h>
 #include <medPluginWidget.h>
 #include <medSettingsEditor.h>
+#include <medSettingsManager.h>
 #include <medWorkspaceFactory.h>
 
 class medHomepageAreaPrivate
@@ -120,19 +121,49 @@ medHomepageArea::medHomepageArea ( QWidget * parent ) : QWidget ( parent ), d ( 
 
     // Info widget: application logo, description, etc
     QVBoxLayout * infoLayout = new QVBoxLayout(d->infoWidget);
-    QLabel * medInriaLabel = new QLabel ( this );
-    QPixmap medLogo( ":pixmaps/medInria-logo-homepage.png" );
-    medInriaLabel->setPixmap ( medLogo );
+    QLabel * medInriaLabel = new QLabel ( this );   
+    
+    // Themes
+    QVariant themeChosen = medSettingsManager::instance()->value("startup","theme");
+    int themeIndex = themeChosen.toInt();
+    QString qssLogoName;
+    switch (themeIndex)
+    {
+        case 0:
+        case 1:
+        case 2:
+        default:
+        {
+            qssLogoName = ":MUSICardio_logo_dark.png";
+            break;
+        }
+        case 3:
+        case 4:
+        {
+            qssLogoName = ":MUSICardio_logo_light.png";
+            break;
+        }
+    }    
 
+    QPixmap medLogo(qssLogoName);
+    medLogo = medLogo.scaled(576, 121, Qt::KeepAspectRatio, Qt::SmoothTransformation);
+    medInriaLabel->setPixmap(medLogo);
+
+    QDate expiryDate = QDate::fromString(QString(MEDINRIA_BUILD_DATE), "dd_MM_yyyy").addYears(1);
     QTextEdit * textEdit = new QTextEdit(this);
-    textEdit->setHtml ( tr("<b>medInria</b> is a cross-platform medical image "
-                           "processing and visualisation software, "
-                           "and it is <b>free</b>. Through an intuitive user "
-                           "interface, <b>medInria</b> offers from standard "
-                           "to cutting-edge processing functionalities for "
-                           "your medical images such as 2D/3D/4D image "
-                           "visualisation, image registration, or diffusion "
-                           "MR processing and tractography." ));
+    textEdit->setHtml ( QString::fromUtf8("<br/><br/><b>%1</b> (%2) is a software developed in collaboration with "
+                                          "the IHU LIRYC in order to propose functionalities "
+                                          "dedicated to cardiac interventional planning and "
+                                          "guidance, based on the medInria software platform."
+                                          "<br/><br/>"
+                                          "<b>%1</b> is proprietary software, copyright (c) 2013, IHU Liryc, Université de Bordeaux and Inria."
+                                          "<br/><br/>"
+                                          " <font color = 'red'><b>This %1 copy will expire on ")
+                        .arg(qApp->applicationName())
+                        .arg(qApp->applicationVersion())
+                        + QLocale(QLocale::English).toString(expiryDate, "d MMMM yyyy")
+                        + ".</b></font>");
+
     textEdit->setReadOnly ( true );
     textEdit->setFocusPolicy ( Qt::NoFocus );
     textEdit->setMaximumHeight(300);
@@ -153,12 +184,11 @@ medHomepageArea::medHomepageArea ( QWidget * parent ) : QWidget ( parent ), d ( 
 
     QTextEdit * aboutTextEdit = new QTextEdit(this);
 
-    QString aboutText = QString::fromUtf8(
-                "%1 (%2) is a medical imaging platform developed at "
-                "Inria.<br/>"
-                "<center>Inria, Copyright 2013</center>")
-            .arg(qApp->applicationName())
-            .arg(qApp->applicationVersion());
+    QString aboutText = QString::fromUtf8("%1 (%2) is the cardiac imaging platform based on medInria developed at "
+                                          "Inria and IHU LIRYC.<br/>"
+                                          "<center>Copyright (c) 2013, IHU Liryc, Université de Bordeaux and Inria</center>")
+                                          .arg(qApp->applicationName())
+                                          .arg(qApp->applicationVersion());
 
     aboutTextEdit->setHtml (aboutText);
     aboutTextEdit->setFocusPolicy ( Qt::NoFocus );
@@ -168,7 +198,7 @@ medHomepageArea::medHomepageArea ( QWidget * parent ) : QWidget ( parent ), d ( 
     aboutAuthorTextBrowser->setFocusPolicy ( Qt::NoFocus );
 
     QTextEdit * aboutLicenseTextEdit = new QTextEdit(this);
-    QFile license ( ":LICENSE.txt" );
+    QFile license ( ":LICENSE_MUSICardio.txt" );
     license.open ( QIODevice::ReadOnly | QIODevice::Text );
     QTextStream licenseContent(&license);
     licenseContent.setCodec("UTF-8");
@@ -459,7 +489,7 @@ void medHomepageArea::onShowInfo()
 
 void medHomepageArea::onShowHelp()
 {
-    QDesktopServices::openUrl(QUrl("http://med.inria.fr/help/documentation"));
+    QDesktopServices::openUrl(QUrl("https://music.gitlabpages.inria.fr/MUSICsoftware/"));
 }
 
 void medHomepageArea::onShowSettings()
