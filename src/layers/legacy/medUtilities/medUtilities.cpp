@@ -124,6 +124,12 @@ QStringList medUtilities::metaDataKeysToCopyForDerivedData(medAbstractData* deri
     return keys;
 }
 
+QString medUtilities::generateUID()
+{
+    gdcm::UIDGenerator uidGenerator;
+    return QString::fromStdString(uidGenerator.Generate());
+}
+
 void medUtilities::generateStudyIdAndInstanceUid(medAbstractData* data)
 {
     gdcm::UIDGenerator uidGenerator;
