@@ -241,9 +241,6 @@ medMainWindow::medMainWindow ( QWidget *parent ) : QMainWindow ( parent ), d ( n
     d->screenshotButton->setToolTip(tr("Capture screenshot"));
     QObject::connect(d->screenshotButton, SIGNAL(clicked()), this, SLOT(captureScreenshot()));
 
-    QIcon movieIcon;
-    movieIcon.addPixmap(QPixmap(":icons/movie.png"),      QIcon::Normal);
-    movieIcon.addPixmap(QPixmap(":icons/movie_grey.png"), QIcon::Disabled);
     d->movieButton = new QToolButton(this);
     d->movieButton->setIcon(movieIcon);
     d->movieButton->setObjectName("movieButton");
@@ -251,9 +248,6 @@ medMainWindow::medMainWindow ( QWidget *parent ) : QMainWindow ( parent ), d ( n
     d->movieButton->setToolTip(tr("Export 4D view(s) or mesh(s) as movie.\nShortcut Alt+M.\nBeware, do not hide view(s) during process."));
     QObject::connect(d->movieButton, SIGNAL(clicked()), this, SLOT(captureVideo()));
 
-    QIcon adjustIcon;
-    adjustIcon.addPixmap(QPixmap(":icons/adjust_size.png"),      QIcon::Normal);
-    adjustIcon.addPixmap(QPixmap(":icons/adjust_size_grey.png"), QIcon::Disabled);
     d->adjustSizeButton = new QToolButton(this);
     d->adjustSizeButton->setIcon(adjustIcon);
     d->adjustSizeButton->setObjectName("adjustSizeButton");
