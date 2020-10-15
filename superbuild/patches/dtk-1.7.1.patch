@@ -1,0 +1,13 @@
+diff --git a/src/dtkCoreSupport/dtkAbstractData.cpp b/src/dtkCoreSupport/dtkAbstractData.cpp
+index 55a9b2e..80200af 100644
+--- a/src/dtkCoreSupport/dtkAbstractData.cpp
++++ b/src/dtkCoreSupport/dtkAbstractData.cpp
+@@ -36,7 +36,7 @@ dtkAbstractData::dtkAbstractData(dtkAbstractData *parent) : dtkAbstractObject(*n
+     d->numberOfChannels = 0;
+ }
+ 
+-dtkAbstractData::dtkAbstractData(const dtkAbstractData& other) : dtkAbstractObject(*new dtkAbstractDataPrivate(*other.d_func()), this)
++dtkAbstractData::dtkAbstractData(const dtkAbstractData& other) : dtkAbstractObject(*new dtkAbstractDataPrivate(*other.d_func()), other)
+ {
+ 
+ }

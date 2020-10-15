@@ -1,79 +1,64 @@
-##############################################################################
-#
-# medInria
-#
-# Copyright (c) INRIA 2013. All rights reserved.
-# See LICENSE.txt for details.
-# 
-#  This software is distributed WITHOUT ANY WARRANTY; without even
-#  the implied warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR
-#  PURPOSE.
-#
-##############################################################################
+function(qwt_project)
 
-function(TTK_project)
-set(ep TTK)
-
+set(ep qwt)
 
 ## #############################################################################
 ## List the dependencies of the project
 ## #############################################################################
 
-list(APPEND ${ep}_dependencies 
-  VTK
-  ITK 
-  )
+list(APPEND ${ep}_dependencies "")
   
 ## #############################################################################
 ## Prepare the project
-## #############################################################################
+## ############################################################################# 
 
-EP_Initialisation(${ep} 
+EP_Initialisation(${ep}
   USE_SYSTEM OFF 
-  BUILD_SHARED_LIBS ON
+  BUILD_SHARED_LIBS OFF
   REQUIRED_FOR_PLUGINS ON
-  )
+)
 
 if (NOT USE_SYSTEM_${ep})
+
 ## #############################################################################
-## Set up versioning control.
+## Define repository where get the sources
 ## #############################################################################
 
-set(git_url ${GITHUB_PREFIX}Inria-Asclepios/TTK-Public.git)
-set(git_tag master)
-
+set(svn_url https://svn.code.sf.net/p/qwt/code/trunk)
 
 ## #############################################################################
 ## Add specific cmake arguments for configuration step of the project
 ## #############################################################################
 
 # set compilation flags
-if (UNIX)
-  set(${ep}_c_flags "${${ep}_c_flags} -Wall")
-  set(${ep}_cxx_flags "${${ep}_cxx_flags} -Wall")
-endif()
-
-if(CMAKE_CXX_COMPILER_ID MATCHES "Clang")
-    set(${ep}_cxx_flags "${${ep}_cxx_flags} -Wno-inconsistent-missing-override")
-endif()
+# Compile using c++11 standard
+set(${ep}_cxx_flags "${${ep}_cxx_flags} -Wall -std=c++11")
+set(${ep}_c_flags "${${ep}_c_flags} -Wall")
 
 set(cmake_args
   ${ep_common_cache_args}
   -DCMAKE_BUILD_TYPE=${CMAKE_BUILD_TYPE_externals_projects}
   -DCMAKE_C_FLAGS:STRING=${${ep}_c_flags}
   -DCMAKE_CXX_FLAGS:STRING=${${ep}_cxx_flags}
-  -DCMAKE_SHARED_LINKER_FLAGS:STRING=${${ep}_shared_linker_flags}  
+  -DCMAKE_SHARED_LINKER_FLAGS:STRING=${${ep}_shared_linker_flags}
   -DCMAKE_INSTALL_PREFIX:PATH=<INSTALL_DIR>
-  -DBUILD_SHARED_LIBS:BOOL=${BUILD_SHARED_LIBS_${ep}}    
-  -DVTK_DIR:FILEPATH=${VTK_DIR}
-  -DITK_DIR:FILEPATH=${ITK_DIR}
-  -DBUILD_TESTING:BOOL=OFF
-  )
-
+  -DQT_QMAKE_EXECUTABLE:FILEPATH=${QT_QMAKE_EXECUTABLE}
+)
 
 ## #############################################################################
 ## Add external-project
 ## #############################################################################
+if(APPLE)
+  set(SPEC -spec macx-clang)
+endif()
+
+set(MAKE_PROGRAM ${CMAKE_MAKE_PROGRAM})
+if(WIN32)
+  set(MAKE_PROGRAM nmake)
+endif()
+
+find_package(Qt5 REQUIRED Core)
+get_target_property (QT_QMAKE_EXECUTABLE Qt5::qmake IMPORTED_LOCATION)
 
 epComputPath(${ep})
 
@@ -83,26 +68,27 @@ ExternalProject_Add(${ep}
   BINARY_DIR ${build_path}
   TMP_DIR ${tmp_path}
   STAMP_DIR ${stamp_path}
-  
-  GIT_REPOSITORY ${git_url}
-  GIT_TAG ${git_tag}
+  SVN_REPOSITORY ${svn_url}
   CMAKE_GENERATOR ${gen}
   CMAKE_GENERATOR_PLATFORM ${CMAKE_GENERATOR_PLATFORM}
   CMAKE_ARGS ${cmake_args}
   DEPENDS ${${ep}_dependencies}
+  UPDATE_COMMAND ""
+  PATCH_COMMAND svn patch ${CMAKE_SOURCE_DIR}/superbuild/patches/qwt-6.3-svn.patch
+  # Compile only the lib
+  CONFIGURE_COMMAND ${QT_QMAKE_EXECUTABLE} ${SPEC} <SOURCE_DIR>/qwt/qwt.pro
+  BUILD_COMMAND ${MAKE_PROGRAM} sub-src
   INSTALL_COMMAND ""
-  BUILD_ALWAYS 1
-  )
-  
-  
+)
+
 ## #############################################################################
 ## Set variable to provide infos about the project
 ## #############################################################################
 
 ExternalProject_Get_Property(${ep} binary_dir)
 set(${ep}_DIR ${binary_dir} PARENT_SCOPE)
+set(${ep}_INCLUDE_DIR ${EP_PATH_SOURCE}/${ep}/${ep} PARENT_SCOPE)
 
-  
 endif() #NOT USE_SYSTEM_ep
 
 endfunction()

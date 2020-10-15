@@ -17,7 +17,8 @@
 
 #include <itkGDCMImageIO.h>
 
-class ITKDATAIMAGEPLUGIN_EXPORT itkDicomDataImageWriter: public itkDataImageWriterBase {
+class ITKDATAIMAGEPLUGIN_EXPORT itkDicomDataImageWriter : public itkDataImageWriterBase
+{
 public:
     itkDicomDataImageWriter();
     virtual ~itkDicomDataImageWriter();

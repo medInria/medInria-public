@@ -86,6 +86,8 @@ set(cmake_args
 ## Add external-project
 ## #############################################################################
 
+ep_GeneratePatchCommand(${ep} DTK_PATCH_COMMAND dtk-1.7.1.patch)
+
 epComputPath(${ep})
 
 ExternalProject_Add(${ep}
@@ -101,6 +103,7 @@ ExternalProject_Add(${ep}
   CMAKE_GENERATOR_PLATFORM ${CMAKE_GENERATOR_PLATFORM}
   CMAKE_ARGS ${cmake_args}
   DEPENDS ${${ep}_dependencies}
+  PATCH_COMMAND ${DTK_PATCH_COMMAND}
   INSTALL_COMMAND ""
   BUILD_ALWAYS 1
   )

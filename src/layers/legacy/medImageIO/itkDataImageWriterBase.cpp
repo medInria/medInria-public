@@ -49,19 +49,30 @@ bool itkDataImageWriterBase::canWrite(const QString& path)
 }
 
 template <unsigned DIM,typename T>
-bool itkDataImageWriterBase::write_image(const QString& path,const char* type) {
+bool itkDataImageWriterBase::write_image(const QString& path,const char* type)
+{
     medAbstractData* medData = dynamic_cast<medAbstractData*>(this->data());
-    if (medData && medData->identifier()!=type)
+    if (medData && medData->identifier() != type)
+    {
         return false;
+    }
 
     typedef itk::Image<T,DIM> Image;
     typename Image::Pointer image = dynamic_cast<Image*>((itk::Object*)(this->data()->output()));
     if (image.IsNull())
+    {
         return false;
-    if (medData->hasMetaData(medAbstractImageData::PixelMeaningMetaData)) {
-        itk::MetaDataDictionary& dict = image->GetMetaDataDictionary();
-        itk::EncapsulateMetaData(dict,"intent_name",medData->metadata(medAbstractImageData::PixelMeaningMetaData));
     }
+
+    itk::MetaDataDictionary& dict = image->GetMetaDataDictionary();
+    if (medData->hasMetaData(medAbstractImageData::PixelMeaningMetaData))
+    {
+        itk::EncapsulateMetaData(dict, "intent_name", medData->metadata(medAbstractImageData::PixelMeaningMetaData));
+    }
+
+    // save relevant metaDataKeys
+    encapsulateSharedMetaData(dict);
+
     typename itk::ImageFileWriter<Image>::Pointer writer = itk::ImageFileWriter <Image>::New();
     writer->SetImageIO (this->io);
     writer->UseCompressionOn();
