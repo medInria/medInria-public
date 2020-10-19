@@ -154,6 +154,12 @@ else()
   set(GITLAB_INRIA_PREFIX https://gitlab.inria.fr/)
 endif()
 
+if(${USE_GITLAB_SSH})
+  set(GITLAB_PREFIX git@gitlab.com:)
+else()
+  set(GITLAB_PREFIX https://gitlab.com/)
+endif()  
+
 ## #############################################################################
 ## Include cmake modules of external-project
 ## #############################################################################
