@@ -51,6 +51,7 @@ set(cmake_args
     -DBUILD_MMG:BOOL=ON
     -DLIBMMG_SHARED:BOOL=${BUILD_SHARED_LIBS_${ep}}
     -DUSE_SCOTCH:BOOL=OFF
+    -DUSE_VTK:BOOL=OFF
   )
 
 ## #############################################################################
