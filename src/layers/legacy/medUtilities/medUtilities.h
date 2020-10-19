@@ -39,6 +39,10 @@ public:
 
     static QStringList metaDataKeysToCopyForDerivedData(medAbstractData* derived);
 
+    static QString generateUID();
+
+    static void generateStudyIdAndInstanceUid(medAbstractData* data);
+
     static void generateSeriesAndSOPInstanceId(medAbstractData* data);
 
     static void querySeriesDescription(medAbstractData* data);
