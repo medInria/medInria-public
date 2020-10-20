@@ -46,6 +46,8 @@ set(cmake_args
   -DCMAKE_INSTALL_PREFIX:PATH=<INSTALL_DIR>
   # to find zlib 
   -DCMAKE_PREFIX_PATH:FILEPATH=${zlib_DIR}
+  # to find Qt5
+  -DQt5_DIR=${Qt5_DIR}
 )
 
 ## #############################################################################
