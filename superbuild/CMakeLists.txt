@@ -76,9 +76,9 @@ list(APPEND external_projects
      )
 
 if (USE_DTKIMAGING)
-  list(APPEND external_projects
-      dtkImaging
-      )
+    list(APPEND external_projects
+        dtkImaging
+        )
 endif()
 
 list(APPEND external_projects
