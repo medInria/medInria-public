@@ -54,19 +54,30 @@ QString medStorage::dataLocation()
     {
         vDbLoc = medSettingsManager::instance()->value("database", "actual_database_location").toString();
 
-        // if the location is still not set we return the default paths
+        // if the location is still not set we search for an old setting or return the default paths
         if ( vDbLoc.isEmpty() )
         {
+            QSettings oldSettings("fr", "MUSIC");
+            QString oldDatabaseLocation = oldSettings.value("database/actual_database_location").toString();
+
+            if (!oldDatabaseLocation.isEmpty())
+            {
+                vDbLoc = oldDatabaseLocation;
+            }
+            else
+            {
 #ifdef Q_OS_MAC
-            vDbLoc = QStandardPaths::writableLocation(QStandardPaths::GenericDataLocation)
-                    + "/" + QCoreApplication::organizationName()
-                    + "/" + QCoreApplication::applicationName();
+                vDbLoc = QStandardPaths::writableLocation(QStandardPaths::GenericDataLocation)
+                         + "/" + QCoreApplication::organizationName()
+                         + "/" + QCoreApplication::applicationName();
 #else
-            vDbLoc = QStandardPaths::writableLocation(QStandardPaths::GenericDataLocation)
-                    + "/data/" + QCoreApplication::organizationName()
-                    + "/" + QCoreApplication::applicationName();
+                vDbLoc = QStandardPaths::writableLocation(QStandardPaths::GenericDataLocation)
+                         + "/data/" + QCoreApplication::organizationName()
+                         + "/" + QCoreApplication::applicationName();
 #endif
+            }
         }
+
         setDataLocation(vDbLoc);
     }
     return vDbLoc;
