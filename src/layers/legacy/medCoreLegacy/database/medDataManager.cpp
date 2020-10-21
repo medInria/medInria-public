@@ -276,6 +276,12 @@ void medDataManager::exportDataToPath(medAbstractData *data, const QString & fil
     launchExporter(exporter, filename);
 }
 
+void medDataManager::exportDataToPath(QList<medAbstractData*> dataList, const QString & filename, const QString & writer)
+{
+    medDatabaseExporter *exporter = new medDatabaseExporter (dataList, filename, writer);
+    launchExporter(exporter, filename);
+}
+
 void medDataManager::launchExporter(medDatabaseExporter* exporter, const QString & filename)
 {
     QFileInfo info(filename);
