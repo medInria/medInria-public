@@ -15,6 +15,7 @@
 #include "medUtilitiesExport.h"
 
 #include <QStringList>
+#include <QMouseEvent>
 
 class medAbstractData;
 class medAbstractView;
@@ -54,4 +55,7 @@ public:
     static void switchTo3D(medAbstractView *view, Mode3DType mode3D = VR); // Display mesh in 3D orientation
 
     static void computeMeanAndVariance(QList<double> samples, double* mean, double* variance);
+
+    static int getDevicePixelRatio(QMouseEvent* mouseEvent);
+
 };

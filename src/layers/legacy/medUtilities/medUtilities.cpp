@@ -21,6 +21,8 @@
 
 #include <QLineEdit>
 #include <QInputDialog>
+#include <QGuiApplication>
+#include <QScreen>
 
 #include <vtkImageView3D.h>
 #include <vtkMatrix4x4.h>
@@ -273,4 +275,16 @@ void medUtilities::computeMeanAndVariance(QList<double> samples,
 
     *mean = finalMean;
     *variance = tmpVar;
+}
+
+int medUtilities::getDevicePixelRatio(QMouseEvent* mouseEvent)
+{
+    int devicePixelRatio = 1;
+#if QT_VERSION > QT_VERSION_CHECK(5, 10, 0)
+    devicePixelRatio = QGuiApplication::screenAt(mouseEvent->globalPos())->devicePixelRatio();
+#else
+    int screenNumber = QApplication::desktop()->screenNumber(mouseEvent->globalPos());
+    devicePixelRatio = QGuiApplication::screens().at(screenNumber)->devicePixelRatio();
+#endif
+    return devicePixelRatio;
 }
