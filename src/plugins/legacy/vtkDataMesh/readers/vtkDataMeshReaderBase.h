@@ -24,6 +24,8 @@ class VTKDATAMESHPLUGIN_EXPORT vtkDataMeshReaderBase: public dtkAbstractDataRead
 public:
     vtkDataMeshReaderBase();
 
+    QString medMetaDataRetrocompatility(QString key);
+
 public slots:
 
     bool canRead        (const QStringList& paths) override;
@@ -38,4 +40,7 @@ public slots:
     bool canRead        (const QString& path) override {return false;}
     bool readInformation(const QString& path) override {return false;}
     bool read           (const QString& path) override {return false;}
+
+protected:
+    QMap<QString, QString> m_oldKeyToNewKey;
 };

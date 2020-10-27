@@ -14,6 +14,8 @@
 #include "vtkDataMeshReaderBase.h"
 #include "vtkDataMeshWriterBase.h"
 
+#include <medMetaDataKeys.h>
+
 #include <dtkCoreSupport/dtkAbstractData>
 
 #include <vtkFieldData.h>
@@ -23,6 +25,8 @@
 
 vtkDataMeshReaderBase::vtkDataMeshReaderBase() : dtkAbstractDataReader()
 {
+    m_oldKeyToNewKey["StudyDicomID"] = medMetaDataKeys::StudyInstanceUID.key();
+    m_oldKeyToNewKey["SeriesDicomID"] = medMetaDataKeys::SeriesInstanceUID.key();
 }
 
 bool vtkDataMeshReaderBase::canRead(const QStringList& paths)
@@ -61,6 +65,18 @@ bool vtkDataMeshReaderBase::read(const QStringList& paths)
     return result;
 }
 
+QString vtkDataMeshReaderBase::medMetaDataRetrocompatility(QString key)
+{
+    if (m_oldKeyToNewKey.contains(key))
+    {
+        return m_oldKeyToNewKey[key];
+    }
+    else
+    {
+        return key;
+    }
+}
+
 bool vtkDataMeshReaderBase::extractMetaDataFromFieldData(vtkMetaDataSet* dataSet)
 {
     bool foundMetaData = false;
@@ -76,6 +92,7 @@ bool vtkDataMeshReaderBase::extractMetaDataFromFieldData(vtkMetaDataSet* dataSet
             foundMetaData = true;
             vtkStringArray* array = static_cast<vtkStringArray*>(fieldData->GetAbstractArray(i));
             QString metaDataKey = arrayName.remove(0, vtkDataMeshWriterBase::metaDataFieldPrefix.length());
+            metaDataKey = medMetaDataRetrocompatility(metaDataKey);
 
             for (int j = 0; j < array->GetSize(); j++)
             {
