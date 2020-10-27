@@ -96,12 +96,7 @@ public:
         if (imageView->is2D())
         {
             // Convert mouse click to a 3D point in the image.
-#if QT_VERSION > QT_VERSION_CHECK(5, 10, 0)
-            int devicePixelRatio = QGuiApplication::screenAt(mouseEvent->globalPos())->devicePixelRatio();
-#else
-            int screenNumber = QApplication::desktop()->screenNumber(mouseEvent->globalPos());
-            int devicePixelRatio = QGuiApplication::screens().at(screenNumber)->devicePixelRatio();
-#endif
+            int devicePixelRatio = medUtilities::getDevicePixelRatio(mouseEvent);
             QPointF mousePos = mouseEvent->localPos() * devicePixelRatio;
             QVector3D posImage = imageView->mapDisplayToWorldCoordinates( mousePos );
 
@@ -158,12 +153,7 @@ public:
 
             if (imageView->is2D())
             {
-#if QT_VERSION > QT_VERSION_CHECK(5, 10, 0)
-                int devicePixelRatio = QGuiApplication::screenAt(mouseEvent->globalPos())->devicePixelRatio();
-#else
-                int screenNumber = QApplication::desktop()->screenNumber(mouseEvent->globalPos());
-                int devicePixelRatio = QGuiApplication::screens().at(screenNumber)->devicePixelRatio();
-#endif
+                int devicePixelRatio = medUtilities::getDevicePixelRatio(mouseEvent);
                 QPointF mousePos = mouseEvent->localPos() * devicePixelRatio;
                 QVector3D posImage = imageView->mapDisplayToWorldCoordinates( mousePos );
 
@@ -195,12 +185,7 @@ public:
 
         if (imageView->is2D())
         {
-#if QT_VERSION > QT_VERSION_CHECK(5, 10, 0)
-            int devicePixelRatio = QGuiApplication::screenAt(mouseEvent->globalPos())->devicePixelRatio();
-#else
-            int screenNumber = QApplication::desktop()->screenNumber(mouseEvent->globalPos());
-            int devicePixelRatio = QGuiApplication::screens().at(screenNumber)->devicePixelRatio();
-#endif
+            int devicePixelRatio = medUtilities::getDevicePixelRatio(mouseEvent);
             QPointF mousePos = mouseEvent->localPos() * devicePixelRatio;
             QVector3D posImage = imageView->mapDisplayToWorldCoordinates( mousePos );
             //Project vector onto plane

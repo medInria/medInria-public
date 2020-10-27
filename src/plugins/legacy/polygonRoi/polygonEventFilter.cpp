@@ -224,12 +224,7 @@ bool polygonEventFilter::mouseReleaseEvent(medAbstractView *view, QMouseEvent *m
 
 bool polygonEventFilter::mouseMoveEvent(medAbstractView *view, QMouseEvent *mouseEvent)
 {
-#if QT_VERSION > QT_VERSION_CHECK(5, 10, 0)
-    int devicePixelRatio = QGuiApplication::screenAt(mouseEvent->globalPos())->devicePixelRatio();
-#else
-    int screenNumber = QApplication::desktop()->screenNumber(mouseEvent->globalPos());
-    int devicePixelRatio = QGuiApplication::screens().at(screenNumber)->devicePixelRatio();
-#endif
+    int devicePixelRatio = medUtilities::getDevicePixelRatio(mouseEvent);
 
     savedMousePosition[0] = mouseEvent->x()*devicePixelRatio;
     savedMousePosition[1] = (currentView->viewWidget()->height()-mouseEvent->y()-1)*devicePixelRatio;
@@ -453,12 +448,7 @@ bool polygonEventFilter::rightButtonBehaviour(medAbstractView *view, QMouseEvent
 {
     QMenu mainMenu(currentView->viewWidget());
 
-#if QT_VERSION > QT_VERSION_CHECK(5, 10, 0)
-    int devicePixelRatio = QGuiApplication::screenAt(mouseEvent->globalPos())->devicePixelRatio();
-#else
-    int screenNumber = QApplication::desktop()->screenNumber(mouseEvent->globalPos());
-    int devicePixelRatio = QGuiApplication::screens().at(screenNumber)->devicePixelRatio();
-#endif
+    int devicePixelRatio = medUtilities::getDevicePixelRatio(mouseEvent);
 
     double mousePos[2];
     mousePos[0] = mouseEvent->x()*devicePixelRatio;
