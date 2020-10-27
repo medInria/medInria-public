@@ -22,6 +22,9 @@
 #include <medUtilitiesVTK.h>
 #include <medVtkViewBackend.h>
 
+#include <dtkCoreSupport/dtkAbstractProcessFactory.h>
+#include <dtkCoreSupport/dtkSmartPointer.h>
+
 #include <vtkActor.h>
 #include <vtkBoxWidget.h>
 #include <vtkCommand.h>
@@ -139,38 +142,40 @@ bool meshManipulationToolBox::registered()
 
 void meshManipulationToolBox::updateView()
 {
+     _view = nullptr;
     if(body()->isVisible())
     {
         resetToolbox();
 
         medAbstractView *view = this->getWorkspace()->tabbedViewContainers()->getFirstSelectedContainerView();
         medAbstractLayeredView *view3d = qobject_cast<medAbstractLayeredView*>(view);
-        if (!view3d)
+        if (view3d)
         {
-            _view = nullptr;
-        }
-        else
-        {
-            // Toolbox only works with meshes
-            for (unsigned int i=0; i<view3d->layersCount(); ++i)
-            {
-                medAbstractData *data = view3d->layerData(i);
-                if(!data || !data->identifier().contains("vtkDataMesh"))
-                {
-                    handleDisplayError(medAbstractProcessLegacy::MESH_3D);
-                    _view = nullptr;
-                    return;
-                }
-            }
-
             _view = view3d;
 
             connect(this->getWorkspace(), SIGNAL(layerSelectionChanged(QList<int>)),
                     this, SLOT(handleLayerChange()),
                     Qt::UniqueConnection);
 
+            connect(_view, SIGNAL(currentLayerChanged()),
+                    this, SLOT(checkLayer()),
+                    Qt::UniqueConnection);
+
             medUtilities::switchTo3D(_view, medUtilities::MSR);
+
             handleLayerChange();
+        }
+    }
+}
+
+void meshManipulationToolBox::checkLayer()
+{
+    if (_view)
+    {
+        medAbstractData* data = _view->layerData(_view->currentLayer());
+        if (!(data->identifier().contains("EPMap") || data->identifier().contains("vtkDataMesh")))
+        {
+            displayMessageError("This toolbox is designed to be used with 3D meshes and EP maps");
         }
     }
 }
@@ -183,27 +188,25 @@ void meshManipulationToolBox::handleLayerChange()
     }
 
     // Check if current layer is a mesh
-    if (_view.isNull() || _view->layersCount() == 0)
+    if (!_view.isNull() && _view->layersCount() > 0)
     {
-        return;
-    }
+        // Retrieve currently selected layers
+        QList<int> selectedLayerIndices = this->getWorkspace()->getSelectedLayerIndices();
 
-    // Retrieve currently selected layers
-    QList<int> selectedLayerIndices = this->getWorkspace()->getSelectedLayerIndices();
-
-    _selectedData.clear();
-    for(int layerIndex : selectedLayerIndices)
-    {
-        medAbstractData *data = _view->layerData(layerIndex);
-
-        if ((data->identifier().contains("vtkDataMesh") ||
-             data->identifier().contains("EPMap")))
+        _selectedData.clear();
+        foreach (int layerIndex, selectedLayerIndices)
         {
-            _selectedData.append(data);
-        }
-    }
+            medAbstractData *data = _view->layerData(layerIndex);
 
-    setupModificationBox();
+            if ((data->identifier().contains("vtkDataMesh") ||
+                 data->identifier().contains("EPMap")))
+            {
+                _selectedData.append(data);
+            }
+        }
+
+        setupModificationBox();
+    }
 }
 
 void meshManipulationToolBox::setupModificationBox()
@@ -289,18 +292,19 @@ void meshManipulationToolBox::computeData()
         }
         else if (data->identifier().contains("EPMap"))
         {
-            vtkPointSet *newPointSet = transformDataSet(dataset, transformFilter, t);
-            vtkMetaDataSet *metaDataset = dataset->NewInstance();
-            metaDataset->SetDataSet(newPointSet);
-            newPointSet->Delete();
-     
-            output->setData(metaDataset);
-            metaDataset->Delete();
+            // dedicated process
+            dtkSmartPointer<medAbstractProcessLegacy> applyTransformProcess = dtkAbstractProcessFactory::instance()->createSmartPointer("ApplyTransformProcess");
+            if (applyTransformProcess)
+            {
+                double matrix[16];
+                vtkMatrix4x4* m = t->GetMatrix();
+                std::memcpy(matrix, m->GetData(), 16 * sizeof(*matrix));
 
-            // Manually transform catheter coordinates;
-            QStringList arrayNames;
-            arrayNames << "KT_Coordinates" << "_catheter_electrode_positions";
-            medUtilitiesVTK::transformCoordinates(output, arrayNames, t);
+                applyTransformProcess->setInput(data);
+                applyTransformProcess->setParameter(matrix, 16, 0);
+                applyTransformProcess->update();
+                output = applyTransformProcess->output()->clone();
+            }
         }
         transformFilter->Delete();
      
