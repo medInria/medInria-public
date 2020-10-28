@@ -356,6 +356,8 @@ void vtkImageView2D::SetSlice(int slice)
   }
 
   this->SetCurrentPoint (pos);
+
+  qtSignalHandler->emitSliceChanged(slice, this->SliceOrientation);
 }
 
 //----------------------------------------------------------------------------
