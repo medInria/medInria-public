@@ -91,11 +91,22 @@ if(${USE_FFmpeg})
     list(APPEND cmake_args
         # FFMPEG
         -DModule_vtkIOFFMPEG:BOOL=ON
+        -DFFMPEG_ROOT:STRING=${EP_PATH_BUILD}/ffmpeg
         -DFFMPEG_INCLUDE_DIR:STRING=${EP_PATH_BUILD}/ffmpeg/include/
-        -DFFMPEG_avcodec_LIBRARY:STRING=${EP_PATH_BUILD}/ffmpeg/lib/libavcodec.${extention}
-        -DFFMPEG_avformat_LIBRARY:STRING=${EP_PATH_BUILD}/ffmpeg/lib/libavformat.${extention}
-        -DFFMPEG_avutil_LIBRARY:STRING=${EP_PATH_BUILD}/ffmpeg/lib/libavutil.${extention}
-        -DFFMPEG_swscale_LIBRARY:STRING=${EP_PATH_BUILD}/ffmpeg/lib/libswscale.${extention}
+
+        -DFFMPEG_LIBAVCODEC_INCLUDE_DIRS:STRING=${EP_PATH_BUILD}/ffmpeg/include
+        -DFFMPEG_LIBAVDEVICE_INCLUDE_DIRS:STRING=${EP_PATH_BUILD}/ffmpeg/include
+        -DFFMPEG_LIBAVFORMAT_INCLUDE_DIRS:STRING=${EP_PATH_BUILD}/ffmpeg/include
+        -DFFMPEG_LIBAVUTIL_INCLUDE_DIRS:STRING=${EP_PATH_BUILD}/ffmpeg/include
+        -DFFMPEG_LIBSWRESAMPLE_INCLUDE_DIRS:STRING=${EP_PATH_BUILD}/ffmpeg/include
+        -DFFMPEG_LIBSWSCALE_INCLUDE_DIRS:STRING=${EP_PATH_BUILD}/ffmpeg/include
+
+        -DFFMPEG_LIBAVDEVICE_LIBRARIES:STRING=${EP_PATH_BUILD}/ffmpeg/lib/libavdevice.${extention}
+        -DFFMPEG_LIBAVCODEC_LIBRARIES:STRING=${EP_PATH_BUILD}/ffmpeg/lib/libavcodec.${extention}
+        -DFFMPEG_LIBAVFORMAT_LIBRARIES:STRING=${EP_PATH_BUILD}/ffmpeg/lib/libavformat.${extention}
+        -DFFMPEG_LIBAVUTIL_LIBRARIES:STRING=${EP_PATH_BUILD}/ffmpeg/lib/libavutil.${extention}
+        -DFFMPEG_LIBSWRESAMPLE_LIBRARIES:STRING=${EP_PATH_BUILD}/ffmpeg/lib/libswresample.${extention}
+        -DFFMPEG_LIBSWSCALE_LIBRARIES:STRING=${EP_PATH_BUILD}/ffmpeg/lib/libswscale.${extention}
     )
 endif()
 
