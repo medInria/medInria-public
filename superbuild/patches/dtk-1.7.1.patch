@@ -1,5 +1,5 @@
 diff --git a/src/dtkCoreSupport/dtkAbstractData.cpp b/src/dtkCoreSupport/dtkAbstractData.cpp
-index 55a9b2e..80200af 100644
+index 55a9b2e7..80200afa 100644
 --- a/src/dtkCoreSupport/dtkAbstractData.cpp
 +++ b/src/dtkCoreSupport/dtkAbstractData.cpp
 @@ -36,7 +36,7 @@ dtkAbstractData::dtkAbstractData(dtkAbstractData *parent) : dtkAbstractObject(*n
@@ -11,3 +11,48 @@ index 55a9b2e..80200af 100644
  {
  
  }
+diff --git a/src/dtkCoreSupport/dtkAbstractDataFactory.cpp b/src/dtkCoreSupport/dtkAbstractDataFactory.cpp
+index 5ab31e44..206c66ac 100644
+--- a/src/dtkCoreSupport/dtkAbstractDataFactory.cpp
++++ b/src/dtkCoreSupport/dtkAbstractDataFactory.cpp
+@@ -436,18 +436,30 @@ QList<QString> dtkAbstractDataFactory::readers(void) const
+ 
+ QList<QString> dtkAbstractDataFactory::writers(void) const
+ {
+-    if (d->writer_priorities.isEmpty())
+-        return d->writers.keys();
+-
+-    const QStringList priorities = d->writer_priorities.values();
+-
+-    QMap<int, QString> writers;
++    QList<QString> writers = d->writers.keys();
++    if (!d->writer_priorities.isEmpty())
++    {
++        // there are priorities to take into account, rebuild the list of
++        // writers.
++        writers.clear();
++        // writers_priorities is a QMap, meaning it is ordered so looping
++        // on the priorities is correct
++        for (auto& writer : d->writer_priorities.values())
++        {
++            writers.append(writer);
++        }
+ 
+-    foreach (QString writer, d->writers.keys())
+-        if (priorities.contains(writer))
+-            writers.insert(d->writer_priorities.key(writer), writer);
++        // now append the rest of the writers in arbitrary order
++        for (auto& writer : d->writers.keys())
++        {
++            if (!writers.contains(writer))
++            {
++                writers.append(writer);
++            }
++        }
++    }
+ 
+-    return writers.values();
++    return writers;
+ }
+ 
+ QList<QString> dtkAbstractDataFactory::converters(void) const
