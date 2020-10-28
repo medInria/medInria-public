@@ -140,9 +140,9 @@ medMainWindow::medMainWindow ( QWidget *parent ) : QMainWindow ( parent ), d ( n
     QIcon cameraIcon;
     QIcon movieIcon;
 
+    quickAccessIcon.addPixmap(QPixmap(":MUSICardio_logo_small_light.png"));
     if (themeIndex == 3)
     {
-        quickAccessIcon.addPixmap(QPixmap(":MUSICardio_logo_small_light.png"));
         quitIcon.addPixmap(QPixmap(":/icons/quit_blue.png"), QIcon::Normal);
         fullscreenIcon.addPixmap(QPixmap(":icons/fullscreenExpand_blue.png"),QIcon::Normal,QIcon::Off);
         fullscreenIcon.addPixmap(QPixmap(":icons/fullscreenReduce_blue.png"),QIcon::Normal,QIcon::On);
@@ -155,14 +155,6 @@ medMainWindow::medMainWindow ( QWidget *parent ) : QMainWindow ( parent ), d ( n
     }
     else
     {
-        if(themeIndex == 0 || themeIndex == 1 || themeIndex == 2)
-        {
-            quickAccessIcon.addPixmap(QPixmap(":MUSICardio_logo_small_dark.png"));
-        }
-        else
-        {
-            quickAccessIcon.addPixmap(QPixmap(":MUSICardio_logo_small_light.png"));
-        }
         quitIcon.addPixmap(QPixmap(":/icons/quit.png"), QIcon::Normal);
         fullscreenIcon.addPixmap(QPixmap(":icons/fullscreenExpand.png"),QIcon::Normal,QIcon::Off);
         fullscreenIcon.addPixmap(QPixmap(":icons/fullscreenReduce.png"),QIcon::Normal,QIcon::On);
