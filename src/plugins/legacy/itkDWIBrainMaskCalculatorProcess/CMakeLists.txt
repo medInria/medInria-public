@@ -7,10 +7,7 @@ set(TARGET_NAME itkDWIBrainMaskCalculatorProcessPlugin)
 find_package(TTK REQUIRED)
 include(${TTK_USE_FILE})
 
-find_package(VTK REQUIRED)
-include(${VTK_USE_FILE})
-
-find_package(ITK)
+find_package(ITK REQUIRED COMPONENTS ITKCommon ITKImageStatistics ITKImageIntensity ITKSmoothing ITKThresholding ITKMathematicalMorphology ITKBinaryMathematicalMorphology ITKLabelVoting)
 include(${ITK_USE_FILE})
 
 ## #############################################################################

@@ -47,9 +47,11 @@ set(PLUGIN_LIST
   legacy/itkDataImage                                                    ON
   legacy/itkDataSHImage                                                  ON
   legacy/itkDataTensorImage                                              ON
+  legacy/itkDWIBrainMaskCalculatorProcess                                ON
   legacy/itkFilters                                                      ON
   legacy/itkINRDataImageReader                                           ON
   legacy/itkINRDataImageWriter                                           ON
+  legacy/itkProcessRegistrationOptimus                                   ON
   legacy/LCCLogDemons                                                    ON  
   legacy/manualRegistration                                              ON
   legacy/medAlgorithmPaint                                               ON
