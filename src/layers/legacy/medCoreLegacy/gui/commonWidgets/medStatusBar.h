@@ -32,7 +32,7 @@ class MEDCORELEGACY_EXPORT medStatusBar : public QStatusBar
     Q_OBJECT
 public:
 
-    medStatusBar ( QWidget * parent = 0 );
+    medStatusBar ( QWidget * parent = nullptr );
     ~medStatusBar();
 
     void setStatusBarLayout ( QBoxLayout * layout );
