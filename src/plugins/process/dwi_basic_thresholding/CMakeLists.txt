@@ -38,12 +38,10 @@ list_header_directories_to_include(${TARGET_NAME}
 ## add library
 ## #############################################################################
 
-
 add_library(${TARGET_NAME} SHARED
   ${${TARGET_NAME}_CFILES}
   ${${TARGET_NAME}_QRC}
   )
-
 
 ## #############################################################################
 ## include directories.

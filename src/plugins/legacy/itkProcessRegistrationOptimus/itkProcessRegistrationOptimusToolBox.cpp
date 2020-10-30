@@ -41,7 +41,6 @@ public:
     QDoubleSpinBox * rhoEndBox;
     QDoubleSpinBox * scalingCoeffBox;
     QComboBox * interpolatorTypeBox;
-    medProgressionStack * progression_stack;
     medAbstractRegistrationProcess * process;
 };
 
@@ -131,18 +130,9 @@ itkProcessRegistrationOptimusToolBox::itkProcessRegistrationOptimusToolBox(QWidg
     layout->addRow(new QLabel(tr("Scaling coefficient"),widget),
                    d->scalingCoeffBox);
 
-    // progression stack
-    d->progression_stack = new medProgressionStack(widget);
 
     this->addWidget(widget);
     this->addWidget(runButton);
-    this->addWidget(d->progression_stack);
-
-    //enable about plugin. Constructor called after the plugin has been registered, go ahead call it.
-    medPluginManager* pm = medPluginManager::instance();
-    dtkPlugin* plugin = pm->plugin("itkProcessRegistrationOptimusPlugin");
-    setAboutPluginButton(plugin);
-    setAboutPluginVisibility(true);
 
     d->process = nullptr;
 
@@ -239,19 +229,12 @@ void itkProcessRegistrationOptimusToolBox::run(void)
         medRunnableProcess *runProcess = new medRunnableProcess;
         runProcess->setProcess(d->process);
 
-        d->progression_stack->addJobItem(runProcess, tr("Progress:"));
-        d->progression_stack->setActive(runProcess, true);
-        d->progression_stack->disableCancel(runProcess);
-        connect(runProcess, SIGNAL(success(QObject*)), this, SIGNAL(success()));
-        connect(runProcess, SIGNAL(failure(QObject*)), this, SIGNAL(failure()));
-        connect(runProcess, SIGNAL(cancelled(QObject*)), this, SIGNAL(failure()));
-        //First have the moving progress bar,
-        //and then display the remaining % when known
-        connect(runProcess, SIGNAL(activate(QObject*, bool)),
-            d->progression_stack, SLOT(setActive(QObject*, bool)));
+        setToolBoxOnWaitStatus();
 
         medJobManagerL::instance()->registerJobItem(runProcess, d->process->identifier());
-        QThreadPool::globalInstance()->start(dynamic_cast<QRunnable*>(runProcess));
+
+        addConnectionsAndStartJob(runProcess);
+        enableOnProcessSuccessImportOutput(runProcess, false);
     }
 }
 

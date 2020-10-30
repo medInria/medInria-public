@@ -26,10 +26,8 @@ public:
     ~itkProcessRegistrationOptimusToolBox(void);
 
     dtkPlugin * plugin() override;
-    medAbstractData * processOutput() override;
-
-public:
     static bool registered(void);
+    medAbstractData * processOutput() override;
 
 public slots:
     void run(void);

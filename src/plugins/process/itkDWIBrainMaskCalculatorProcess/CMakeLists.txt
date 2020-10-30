@@ -1,3 +1,18 @@
+################################################################################
+#
+# medInria
+
+# Copyright (c) INRIA 2013. All rights reserved.
+
+# See LICENSE.txt for details in the root of the sources or:
+# https://github.com/medInria/medInria-public/blob/master/LICENSE.txt
+
+# This software is distributed WITHOUT ANY WARRANTY; without even
+# the implied warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR
+# PURPOSE.
+#
+################################################################################
+
 set(TARGET_NAME itkDWIBrainMaskCalculatorProcessPlugin)
 
 ## #############################################################################
@@ -56,17 +71,8 @@ target_link_libraries(${TARGET_NAME}
   medWidgets
   )
 
-if (PLUGINS_PATH)
-  set_property(TARGET ${TARGET_NAME} PROPERTY RUNTIME_OUTPUT_DIRECTORY ${PLUGINS_PATH})
-  set_property(TARGET ${TARGET_NAME} PROPERTY LIBRARY_OUTPUT_DIRECTORY ${PLUGINS_PATH})
-endif()
-
-## #################################################################
+## #############################################################################
 ## Install rules
-## #################################################################
+## #############################################################################
 
-install(TARGETS ${TARGET_NAME}
-  RUNTIME DESTINATION plugins
-  LIBRARY DESTINATION plugins
-  ARCHIVE DESTINATION lib)
-
+set_plugin_install_rules(${TARGET_NAME})
