@@ -14,18 +14,24 @@
 #include <medStatusBar.h>
 
 #include <QtCore>
+#include <mutex>
 
 class medStatusBarPrivate
 {
 public:
     QBoxLayout * statusBarLayout;
+    int availableSpace; //available space on the status bar
+    int statusBarWidth;
+    std::recursive_mutex acccessMutex;      // mutex to guard conflict between external signals and/or internal update
+    QList<medMessage *> hiddenMessageList; // storing messages waiting to be displayed
+    QList<medMessage *> messageList;       // storing displayed messages
 };
 
 medStatusBar::medStatusBar ( QWidget* parent ) : QStatusBar ( parent ), d ( new medStatusBarPrivate )
 {
     d->statusBarLayout = nullptr;
-    this->statusBarWidth = this->size().width();
-    this->availableSpace = -1; //value before initialization (after, always positive)
+    d->statusBarWidth = this->size().width();
+    d->availableSpace = -1; //value before initialization (after, always positive)
 }
 
 medStatusBar::~medStatusBar()
@@ -62,21 +68,27 @@ QBoxLayout* medStatusBar::statusBarLayout()
  */
 void medStatusBar::setAvailableSpace ( int space )
 {
-    this->statusBarWidth = this->size().width();
-    this->availableSpace = space;
+    d->acccessMutex.lock();    
+    d->statusBarWidth = this->size().width();
+    d->availableSpace = space;
+    d->acccessMutex.unlock();
 }
 
 int medStatusBar::getAvailableSpace()
 {
-    return this->availableSpace;
+    d->acccessMutex.lock();
+    int iRes = d->availableSpace;
+    d->acccessMutex.unlock();
+    return iRes;
 }
+
 
 /**
  * Initialize availableSpace
 */
 void medStatusBar::init_availableSpace()
 {
-    if (availableSpace == -1 )
+    if (getAvailableSpace() == -1 ) // no need to lock mutex because is done by getAvailableSpace()
     {
         emit initializeAvailableSpace();
     } 
@@ -87,11 +99,13 @@ void medStatusBar::init_availableSpace()
 */
 void medStatusBar::spaceManagement()
 {
-    if (availableSpace != -1)       // if availableSpace initialized
+    d->acccessMutex.lock();
+    if (d->availableSpace != -1)       // if availableSpace initialized
     {
-        availableSpace += (this->size().width()-statusBarWidth);    //update available space 
-        statusBarWidth = this->size().width();                      // and statusbarWidth
-    } 
+        d->availableSpace += (this->size().width()- d->statusBarWidth);    //update available space 
+        d->statusBarWidth = this->size().width();                      // and statusbarWidth
+    }
+    d->acccessMutex.unlock();
 }
 
 /**
@@ -101,27 +115,27 @@ void medStatusBar::spaceManagement()
 */
 void medStatusBar::addMessage ( medMessage* message )
 {
+    d->acccessMutex.lock();
     this->init_availableSpace();
-
     if ( message )
     {
         if ( d->statusBarLayout )
         {
-            if ( this->availableSpace > message->size().width()+d->statusBarLayout->spacing())      // if enough space
-            {      
-                this->messageList.append(message);   // messages are stored in a list to easily hide newest messages 
-                                                     // when quit message is displayed
-                this->availableSpace -= (message->size().width() +d->statusBarLayout->spacing());       //update available space
+            if ( d->availableSpace > message->size().width()+d->statusBarLayout->spacing())      // if enough space
+            {
+                d->messageList.append(message);   // messages are stored in a list to easily hide newest messages 
+                                                  // when quit message is displayed
+                d->availableSpace -= (message->size().width() +d->statusBarLayout->spacing());       //update available space
                 message->startTimer(); // starts the countdown before removing the message
                 d->statusBarLayout->insertWidget ( 1, message );
             }
             else
             {
-                this->hiddenMessageList.append(message);    //put the message into a list 
-                
-            }
+                d->hiddenMessageList.append(message);    //put the message into a list              
+            } 
         }
     }
+    d->acccessMutex.unlock(); 
 }
 
 /**
@@ -132,13 +146,15 @@ void medStatusBar::addMessage ( medMessage* message )
 */
 void medStatusBar::removeMessage ( medMessage* message )
 {
+    d->acccessMutex.lock();
     if ( message )
     {
-        this->messageList.removeFirst();
-        this->availableSpace += (message->size().width()+d->statusBarLayout->spacing());         //update available space
+        d->messageList.removeFirst();
+        d->availableSpace += (message->size().width()+d->statusBarLayout->spacing());         //update available space
         d->statusBarLayout->removeWidget(message);
         showHiddenMessage();    //space has been freed
     }
+    d->acccessMutex.unlock();
 }
 
 /**
@@ -146,14 +162,16 @@ void medStatusBar::removeMessage ( medMessage* message )
 */
 void medStatusBar::hideMessage( )
 {
-    if ( !messageList.isEmpty() )
+    d->acccessMutex.lock();
+    if ( !d->messageList.isEmpty() )
     {
-        medMessage* messageToHide = this->messageList.takeFirst(); //take the last notification
+        medMessage* messageToHide = d->messageList.takeFirst(); //take the last notification
         messageToHide->stopTimer();       //stop the timer for not being deleted while hidden
         messageToHide->hide();
-        this->availableSpace += messageToHide->width() + d->statusBarLayout->spacing(); //update available space
-        this->hiddenMessageList.append(messageToHide);
+        d->availableSpace += messageToHide->width() + d->statusBarLayout->spacing(); //update available space
+        d->hiddenMessageList.append(messageToHide);
     }
+    d->acccessMutex.unlock();
 }
 
 /**
@@ -161,11 +179,13 @@ void medStatusBar::hideMessage( )
 */
 void medStatusBar::showHiddenMessage()
 {
-    if(!this->hiddenMessageList.isEmpty())                         // if message waiting to be displayed
+    d->acccessMutex.lock();
+    if(!d->hiddenMessageList.isEmpty())                         // if message waiting to be displayed
     {
-        medMessage* messageToShow = hiddenMessageList.takeFirst();
+        medMessage* messageToShow = d->hiddenMessageList.takeFirst();
         addMessage(messageToShow);
     }
+    d->acccessMutex.unlock();
 }
 
 /**
@@ -173,7 +193,8 @@ void medStatusBar::showHiddenMessage()
 */
 void medStatusBar::resizeEvent ( QResizeEvent* event )
 {
-    if(availableSpace != -1) // not before initialization
+    d->acccessMutex.lock();
+    if(d->availableSpace != -1) // not before initialization
     {
         spaceManagement();
 
@@ -185,10 +206,11 @@ void medStatusBar::resizeEvent ( QResizeEvent* event )
         }
         else
         {
-            if(qAbs(diff) > availableSpace)
+            if(qAbs(diff) > d->availableSpace)
             {
                 hideMessage();
             }
         }
     }
+    d->acccessMutex.unlock();
 }
