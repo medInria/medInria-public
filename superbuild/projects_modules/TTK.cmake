@@ -91,9 +91,8 @@ ExternalProject_Add(${ep}
   CMAKE_ARGS ${cmake_args}
   DEPENDS ${${ep}_dependencies}
   INSTALL_COMMAND ""
-  BUILD_ALWAYS 1   
-  )
-  
+  BUILD_ALWAYS 0
+  )  
   
 ## #############################################################################
 ## Set variable to provide infos about the project
@@ -101,7 +100,6 @@ ExternalProject_Add(${ep}
 
 ExternalProject_Get_Property(${ep} binary_dir)
 set(${ep}_DIR ${binary_dir} PARENT_SCOPE)
-
   
 endif() #NOT USE_SYSTEM_ep
 
