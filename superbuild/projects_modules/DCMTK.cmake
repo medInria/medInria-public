@@ -39,8 +39,10 @@ if (NOT USE_SYSTEM_${ep})
 ## Set up versioning control.
 ## #############################################################################
 
-set(git_url git://git.dcmtk.org/dcmtk.git)
-set(git_tag DCMTK-3.6.2)
+set(tag "DCMTK-3.6.2")
+if (NOT DEFINED ${ep}_SOURCE_DIR)
+  set(location GIT_REPOSITORY "git://git.dcmtk.org/dcmtk.git" GIT_TAG ${tag})
+endif()
 
 ## #############################################################################
 ## Check if patch has to be applied
@@ -104,16 +106,14 @@ ExternalProject_Add(${ep}
   BINARY_DIR ${build_path}
   TMP_DIR ${tmp_path}
   STAMP_DIR ${stamp_path}
-  
-  GIT_REPOSITORY ${git_url}
-  GIT_TAG ${git_tag}
+  ${location}
   PATCH_COMMAND ${${ep}_PATCH_COMMAND}
   CMAKE_GENERATOR ${gen}
   CMAKE_GENERATOR_PLATFORM ${CMAKE_GENERATOR_PLATFORM}
   CMAKE_ARGS ${cmake_args}
-  DEPENDS ${${ep}_dependencies}
-  INSTALL_COMMAND ""
-  BUILD_ALWAYS 0
+  #DEPENDS ${${ep}_dependencies}
+  #INSTALL_COMMAND ""
+  #BUILD_ALWAYS 0
   )
 
 ## #############################################################################
