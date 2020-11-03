@@ -36,12 +36,13 @@ EP_Initialisation(${ep}
 
 if (NOT USE_SYSTEM_${ep})
 ## #############################################################################
-## Set up versioning control.
+## Set up versioning control
 ## #############################################################################
 
-set(git_url ${GITHUB_PREFIX}Inria-Asclepios/LCC-LogDemons.git)
-set(git_tag master)
-
+if (NOT DEFINED ${ep}_SOURCE_DIR)
+    set(git_url ${GITHUB_PREFIX}Inria-Asclepios/LCC-LogDemons.git)
+    set(git_tag master)
+endif()
 
 ## #############################################################################
 ## Add specific cmake arguments for configuration step of the project

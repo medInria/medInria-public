@@ -37,12 +37,13 @@ EP_Initialisation(${ep}
 if (NOT USE_SYSTEM_${ep})
 
 ## #############################################################################
-## Set up versioning control.
+## Set up versioning control
 ## #############################################################################
 
-set(git_url ${GITLAB_INRIA_PREFIX}dtk/dtk-imaging.git)
-set(git_tag master)
-
+if (NOT DEFINED ${ep}_SOURCE_DIR)
+    set(git_url ${GITLAB_INRIA_PREFIX}dtk/dtk-imaging.git)
+    set(git_tag master)
+endif()
 
 ## #############################################################################
 ## Add specific cmake arguments for configuration step of the project
@@ -93,7 +94,6 @@ ExternalProject_Add(${ep}
   INSTALL_COMMAND ""
   BUILD_ALWAYS 0
   )
-
 
 ## #############################################################################
 ## Set variable to provide infos about the project
