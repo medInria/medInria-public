@@ -36,11 +36,13 @@ EP_Initialisation(${ep}
 if (NOT USE_SYSTEM_${ep})
 
 ## #############################################################################
-## Set up versioning control.
+## Set up versioning control
 ## #############################################################################
 
-set(git_url git://git.dcmtk.org/dcmtk.git)
-set(git_tag DCMTK-3.6.2)
+if (NOT DEFINED ${ep}_SOURCE_DIR)
+    set(git_url git://git.dcmtk.org/dcmtk.git)
+    set(git_tag DCMTK-3.6.2)
+endif()
 
 ## #############################################################################
 ## Check if patch has to be applied
@@ -104,7 +106,7 @@ ExternalProject_Add(${ep}
   BINARY_DIR ${build_path}
   TMP_DIR ${tmp_path}
   STAMP_DIR ${stamp_path}
-  
+
   GIT_REPOSITORY ${git_url}
   GIT_TAG ${git_tag}
   PATCH_COMMAND ${${ep}_PATCH_COMMAND}
@@ -113,7 +115,7 @@ ExternalProject_Add(${ep}
   CMAKE_ARGS ${cmake_args}
   DEPENDS ${${ep}_dependencies}
   INSTALL_COMMAND ""
-  BUILD_ALWAYS 1
+  BUILD_ALWAYS 0
   )
 
 ## #############################################################################
@@ -122,7 +124,6 @@ ExternalProject_Add(${ep}
 
 ExternalProject_Get_Property(${ep} binary_dir)
 set(${ep}_DIR ${binary_dir} PARENT_SCOPE)
-
 
 endif() #NOT USE_SYSTEM_ep
 

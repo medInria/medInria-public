@@ -223,7 +223,7 @@ int vtkContourOverlayRepresentation::AddNodeAtDisplayPosition(int X, int Y)
 
 int vtkContourOverlayRepresentation::AddNodeAtDisplayPosition(double displayPos[2])
 {
-    double worldPos[3];
+    double worldPos[4];
     double worldOrient[9] = {1.0,0.0,0.0,
                              0.0,1.0,0.0,
                              0.0,0.0,1.0};

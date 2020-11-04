@@ -12,6 +12,13 @@ PURPOSE.
 
 =========================================================================*/
 
+#include <fstream>
+
+#ifndef Q_MOC_RUN
+#include <boost/iostreams/tee.hpp>
+#include <boost/iostreams/stream.hpp>
+#endif
+
 #include <dtkLog/dtkLog.h>
 
 #include <QtGui>
@@ -41,12 +48,19 @@ public :
 
 private slots:
     void redirectQtMessage(QtMsgType type, const QString& message);
+    void redirectMessage(const QString& message);
+    void redirectErrorMessage(const QString& message);
 
 private:
     medLoggerPrivate* const d;
 
     medLogger();
     ~medLogger();
+
+    void initializeTeeStreams();
+    void finalizeTeeStreams();
+
+    void createTeeStream(std::ostream* targetStream);
 
     /** Test the size of the log file and cut if needed
      */
