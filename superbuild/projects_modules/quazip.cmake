@@ -60,6 +60,8 @@ endif()
 
 find_package(Qt5 REQUIRED Core)
 
+ep_GeneratePatchCommand(${ep} ${ep}_PATCH_COMMAND quazip.patch)
+
 epComputPath(${ep})
 
 ExternalProject_Add(${ep}
@@ -75,6 +77,7 @@ ExternalProject_Add(${ep}
   CMAKE_GENERATOR_PLATFORM ${CMAKE_GENERATOR_PLATFORM}
   CMAKE_ARGS ${cmake_args}
   DEPENDS ${${ep}_dependencies}
+  PATCH_COMMAND ${${ep}_PATCH_COMMAND}
   UPDATE_COMMAND ""
   INSTALL_COMMAND ""
 )
