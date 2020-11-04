@@ -1,0 +1,13 @@
+diff --git a/quazip/quazip_qt_compat.h b/quazip/quazip_qt_compat.h
+index 93042e3..91d67ed 100644
+--- a/quazip/quazip_qt_compat.h
++++ b/quazip/quazip_qt_compat.h
+@@ -139,7 +139,7 @@ inline qint64 quazip_to_time64_t(const QDateTime &time) {
+ #if QT_VERSION >= QT_VERSION_CHECK(5, 15, 0)
+ const auto quazip_endl = Qt::endl;
+ #else
+-const auto quazip_endl = endl;
++const auto quazip_endl = std::endl<char, std::char_traits<char>>;
+ #endif
+ 
+ #endif // QUAZIP_QT_COMPAT_H
