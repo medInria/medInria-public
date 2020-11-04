@@ -26,7 +26,7 @@ if (NOT USE_SYSTEM_${ep})
 ## #############################################################################
 
 set(git_url ${GITHUB_PREFIX}stachenov/quazip.git)
-set(git_tag v0.9.1)
+set(git_tag v1.1)
 
 ## #############################################################################
 ## Add specific cmake arguments for configuration step of the project
@@ -40,6 +40,7 @@ set(${ep}_c_flags "${${ep}_c_flags} -Wall")
 set(cmake_args
   ${ep_common_cache_args}
   -DCMAKE_BUILD_TYPE=${CMAKE_BUILD_TYPE_externals_projects}
+  -DBUILD_SHARED_LIBS=${BUILD_SHARED_LIBS_${ep}}
   -DCMAKE_C_FLAGS:STRING=${${ep}_c_flags}
   -DCMAKE_CXX_FLAGS:STRING=${${ep}_cxx_flags}
   -DCMAKE_SHARED_LINKER_FLAGS:STRING=${${ep}_shared_linker_flags}
@@ -75,7 +76,6 @@ ExternalProject_Add(${ep}
   CMAKE_ARGS ${cmake_args}
   DEPENDS ${${ep}_dependencies}
   UPDATE_COMMAND ""
-  BUILD_COMMAND ${CMAKE_MAKE_PROGRAM} quazip_static
   INSTALL_COMMAND ""
 )
 
