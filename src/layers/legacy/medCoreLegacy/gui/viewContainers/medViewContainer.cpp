@@ -267,17 +267,17 @@ medViewContainer::medViewContainer(medViewContainerSplitter *parent): QFrame(par
     QWidget *viewToolbarContainer = new QWidget(this);
     viewToolbarContainer->setSizePolicy(QSizePolicy::Minimum, QSizePolicy::Fixed);
     d->viewToolbarContainerLayout = new QHBoxLayout(viewToolbarContainer);
-    d->viewToolbarContainerLayout->setContentsMargins(2, 0, 2, 0);
-    d->viewToolbarContainerLayout->setSpacing(2);
+    d->viewToolbarContainerLayout->setContentsMargins(0, 0, 5, 0);
 
     QWidget *containerToolbar = new QWidget(this);
     containerToolbar->setSizePolicy(QSizePolicy::Maximum, QSizePolicy::Fixed);
     QHBoxLayout *containerToolbarLayout  = new QHBoxLayout(containerToolbar);
-    containerToolbarLayout->setContentsMargins(2, 0, 2, 0);
-    containerToolbarLayout->setSpacing(2);
+    containerToolbarLayout->setContentsMargins(0, 0, 0, 0);
     containerToolbarLayout->addWidget(d->poolIndicator);
     containerToolbarLayout->addWidget(d->menuButton);
     containerToolbarLayout->addWidget(d->closeContainerButton);
+    containerToolbarLayout->addStretch();
+    containerToolbarLayout->setSpacing(0);
 
     d->toolBarLayout->addWidget(viewToolbarContainer);
     d->toolBarLayout->addWidget(containerToolbar,0,Qt::AlignRight);

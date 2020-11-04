@@ -683,6 +683,7 @@ QWidget* vtkDataMeshInteractor::buildToolBarWidget()
 {
     d->toolbar = new QWidget();
     QHBoxLayout* toolbarLayout = new QHBoxLayout(d->toolbar);
+    toolbarLayout->setContentsMargins(5, 0, 0, 0);
     d->slicingParameter->getSlider()->setOrientation(Qt::Horizontal);
     toolbarLayout->addWidget(d->slicingParameter->getSlider());
     return d->toolbar;
@@ -714,11 +715,11 @@ void vtkDataMeshInteractor::updateWidgets()
     {
         if(!d->view->is2D())
         {
-            d->slicingParameter->hide();
+            d->toolbar->hide();
         }
         else
         {
-            d->slicingParameter->show();
+            d->toolbar->show();
             this->updateSlicingParam();
         }
     }
