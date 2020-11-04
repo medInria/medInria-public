@@ -37,11 +37,11 @@ EP_Initialisation(${ep}
 if (NOT USE_SYSTEM_${ep})
 
 ## #############################################################################
-## Set up versioning control.
+## Set up versioning control
 ## #############################################################################
 
 set(git_url ${GITHUB_PREFIX}medInria/qtdcm.git)
-set(git_tag APHP) 
+set(git_tag APHP)
 
 ## #############################################################################
 ## Add specific cmake arguments for configuration step of the project
@@ -99,7 +99,7 @@ ExternalProject_Add(${ep}
   CMAKE_ARGS ${cmake_args}
   DEPENDS ${${ep}_dependencies}
   INSTALL_COMMAND ""
-  BUILD_ALWAYS 1
+  BUILD_ALWAYS 0
   )  
 
 ## #############################################################################

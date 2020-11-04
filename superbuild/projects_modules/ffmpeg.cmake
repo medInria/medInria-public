@@ -36,12 +36,12 @@ EP_Initialisation(${ep}
 if (NOT USE_SYSTEM_${ep})
 
 ## #############################################################################
-## Define repository where get the sources
+## Set up versioning control
 ## #############################################################################
 
 if (NOT DEFINED ${ep}_SOURCE_DIR)
     if(UNIX) # is TRUE on all UNIX-like OS's, including Apple OS X and CygWin
-        set(tag "release/4.3") # FFMPEG
+        set(tag "n3.4.8") # FFMPEG
         set(location GIT_REPOSITORY "${GITHUB_PREFIX}FFmpeg/FFmpeg.git" GIT_TAG ${tag})
     endif()
 endif()
@@ -70,9 +70,9 @@ if (UNIX)
 
         ${location}
         CONFIGURE_COMMAND ${EP_PATH_SOURCE}/${ep}/configure
-		        --disable-yasm --disable-static 
-		        --disable-network --disable-zlib --disable-doc --disable-ffplay --disable-decoders
-		        --enable-shared --prefix=${EP_PATH_BUILD}/${ep}
+            --prefix=${EP_PATH_BUILD}/${ep}
+            --disable-static --enable-shared
+            --disable-yasm
         BUILD_COMMAND make install
         )
 
