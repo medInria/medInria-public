@@ -50,6 +50,7 @@ set(PLUGIN_LIST
   legacy/itkFilters                                                      ON
   legacy/itkINRDataImageReader                                           ON
   legacy/itkINRDataImageWriter                                           ON
+  legacy/itkProcessRegistrationOptimus                                   ON
   legacy/LCCLogDemons                                                    ON  
   legacy/manualRegistration                                              ON
   legacy/medAlgorithmPaint                                               ON
@@ -78,6 +79,7 @@ set(PLUGIN_LIST
   process/arithmetic_operation                                           ON
   process/bias_correction                                                ON
   process/dwi_basic_thresholding                                         ON
+  process/itkDWIBrainMaskCalculatorProcess                               ON
   process/ttkTensorEstimationProcess                                     ON
   process/ttkTensorScalarMapsProcess                                     ON
   process/ttkTensorTractographyProcess                                   ON

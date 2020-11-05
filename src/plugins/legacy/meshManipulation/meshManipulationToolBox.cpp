@@ -194,7 +194,7 @@ void meshManipulationToolBox::handleLayerChange()
         QList<int> selectedLayerIndices = this->getWorkspace()->getSelectedLayerIndices();
 
         _selectedData.clear();
-        foreach (int layerIndex, selectedLayerIndices)
+        for (int layerIndex: selectedLayerIndices)
         {
             medAbstractData *data = _view->layerData(layerIndex);
 
