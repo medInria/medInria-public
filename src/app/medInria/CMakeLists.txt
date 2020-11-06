@@ -44,11 +44,6 @@ list_source_files(${TARGET_NAME}
 ##  see cmake/module/list_header_directories_to_include.cmake
 list_header_directories_to_include(${TARGET_NAME}
   ${${TARGET_NAME}_HEADERS}
-  ${Boost_INCLUDE_DIR}
-  )
-  
-include_directories(${${TARGET_NAME}_INCLUDE_DIRS}
-  ${Boost_INCLUDE_DIR}
   )
 
 
@@ -127,6 +122,7 @@ endif()
 
 target_include_directories(${TARGET_NAME}
   PRIVATE ${${TARGET_NAME}_INCLUDE_DIRS}
+  ${Boost_INCLUDE_DIR}
   )
 # PRIVATE beacause application is not supposed to be used somewhere else
 
