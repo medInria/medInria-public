@@ -62,7 +62,7 @@ void medPgRemoteDbControllerPrivate::buildMetaDataLookup()
         TableEntryList() << TableEntry(T_patient, "birthdate") );
     metaDataLookup.insert(medMetaDataKeys::PatientID.key(),
         TableEntryList() << TableEntry(T_patient, "patientId") );
-
+        
 //Study Data
     metaDataLookup.insert(medMetaDataKeys::StudyDescription.key(),
         TableEntryList() << TableEntry(T_study, "name") );
@@ -150,6 +150,7 @@ bool medPgRemoteDbController::createConnection(void)
         m_database = QSqlDatabase::addDatabase("QPSQL", "psqldb");
     }
     m_database.setHostName("localhost");
+    m_database.setPort(5434);
     m_database.setDatabaseName("musicdb");
     m_database.setUserName("music");
     m_database.setPassword("music");    
@@ -656,7 +657,7 @@ QString medPgRemoteDbController::metaData(const medDataIndex& index,const QStrin
         const QString tableName = entryIt->table;
         const QString columnName = entryIt->column;
         isPath = entryIt->isPath;
-
+        
         int id = -1;
 
         if ( tableName == d->T_series && index.isValidForSeries() )

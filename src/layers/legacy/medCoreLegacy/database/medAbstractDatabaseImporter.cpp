@@ -75,6 +75,7 @@ medAbstractDatabaseImporter::~medAbstractDatabaseImporter ( void )
 **/
 QString medAbstractDatabaseImporter::file ( void )
 {
+    qDebug()<<"Returns file or directory used for import : "<<d->file;
     return d->file;
 }
 
@@ -368,6 +369,18 @@ void medAbstractDatabaseImporter::importFile ( void )
         if ( !d->indexWithoutImporting )
         {
             // create location to store file
+            qDebug()<<"aggregated "<<aggregatedFileName;
+            QTemporaryDir dir("titit/tata");
+            dir.setAutoRemove(false);
+            if (!dir.isValid()) {
+                    qWarning() << "Unable to create temporary directory for images";
+                    emit failure ( this );
+                    emit dataImported(medDataIndex(), d->uuid);
+                    return ;
+            }
+            qDebug()<<"temp dir "<<dir.path();
+            exit(0);
+ 
             QFileInfo fileInfo ( medStorage::dataLocation() + aggregatedFileName );
             if ( !fileInfo.dir().exists() && !medStorage::mkpath ( fileInfo.dir().path() ) )
             {
@@ -465,24 +478,32 @@ void medAbstractDatabaseImporter::importData()
     {
         QString subDirName = "/" + patientId;
         QString imageFileNameBase =  subDirName + "/" +  seriesId;
-
-        QDir dir ( medStorage::dataLocation() + subDirName );
-        if ( !dir.exists() )
-        {
-            if ( !medStorage::mkpath ( medStorage::dataLocation() + subDirName ) )
-            {
-                qWarning() << "Unable to create directory for images";
+        qDebug()<<"subDir "<<subDirName;
+        QTemporaryDir dir(QDir::tempPath() + subDirName );
+        if (!dir.isValid()) {
+                qWarning() << "Unable to create temporary directory for images";
                 emit failure ( this );
                 emit dataImported(medDataIndex(), d->uuid);
                 return ;
-            }
         }
+        // QDir dir ( medStorage::dataLocation() + subDirName );
+        // if ( !dir.exists() )
+        // {
+        //     if ( !medStorage::mkpath ( medStorage::dataLocation() + subDirName ) )
+        //     {
+        //         qWarning() << "Unable to create directory for images";
+        //         emit failure ( this );
+        //         emit dataImported(medDataIndex(), d->uuid);
+        //         return ;
+        //     }
+        // }
 
         QString extension  = determineFutureImageExtensionByDataType ( d->data );
-        QString imageFileName = imageFileNameBase + extension;
-
+        // QString imageFileName = imageFileNameBase + extension;
+        QString imageFileName = "/" + seriesId + extension;
         // writing file
-        writeSuccess = tryWriteImage (  medStorage::dataLocation()+imageFileName, d->data );
+        qDebug()<<"imageFileName "<<imageFileName;
+        writeSuccess = tryWriteImage (  dir.path() +  imageFileName, d->data );
 
         if ( !writeSuccess  )
         {
@@ -494,6 +515,21 @@ void medAbstractDatabaseImporter::importData()
         else
         {
             d->data->setMetaData ( "FileName", imageFileName );
+
+            QString command = "scp" ; //Contains the command to be executed
+            QStringList params;
+            QProcess *proc = new QProcess;
+            params.append(dir.path() + imageFileName);
+            params.append("castelne@medinria-data.bordeaux.inria.fr:~/medInria-data/" ); // FIX THE PATH HERE AS IT IS INVALID!
+            connect(proc, QOverload<int, QProcess::ExitStatus>::of(&QProcess::finished),
+                    [=](int exitCode, QProcess::ExitStatus exitStatus){
+                    qDebug()<<"process finished with exitCode "<<exitCode<<" and status : "<<exitStatus;
+            });
+            connect(proc, QOverload<QProcess::ProcessError>::of(&QProcess::errorOccurred),
+                    [=](QProcess::ProcessError error){
+                    qDebug()<<"process error  "<<error;
+            });
+            proc->start(command, params, QIODevice::ReadWrite); //Starts execution of command        
         }
 
          QFileInfo   seriesInfo ( imageFileName );
@@ -501,6 +537,7 @@ void medAbstractDatabaseImporter::importData()
     }
 
     // Now, populate the database
+    qDebug()<<"thumb_dir "<<thumb_dir;
     medDataIndex index = this->populateDatabaseAndGenerateThumbnails (  d->data, thumb_dir );
 
     emit progress(this, 100);
@@ -921,6 +958,7 @@ QString medAbstractDatabaseImporter::determineFutureImageExtensionByDataType ( c
 **/
 bool medAbstractDatabaseImporter::tryWriteImage ( QString filePath, medAbstractData* imData )
 {
+    qDebug()<<"filePath "<<filePath;
     dtkSmartPointer<dtkAbstractDataWriter> dataWriter = getSuitableWriter ( filePath, imData );
     if ( dataWriter )
     {
@@ -976,9 +1014,7 @@ QString medAbstractDatabaseImporter::generateUniqueVolumeId ( const medAbstractD
     // Get all the information from the medAbstractData metadata.
     // This information will then be passed to the database.
     QString patientName = medMetaDataKeys::PatientName.getFirstValue(medData);
-    qDebug()<<"patient name "<<patientName;
     QString studyDicomId = medMetaDataKeys::StudyInstanceUID.getFirstValue(medData);
-    qDebug()<<"studyDicomeId "<<studyDicomId;
     // We don't use the seriesDicomID, too unreliable : you can have images part
     // of the same series with different UIDs, and different volumes within the
     // same study with the same UIDs... instead, use Series Description

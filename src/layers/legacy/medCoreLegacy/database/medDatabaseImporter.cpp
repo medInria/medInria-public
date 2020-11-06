@@ -169,7 +169,6 @@ int medDatabaseImporter::getOrCreateStudy ( const medAbstractData* medData, QSql
     {
         qDebug() << DTK_COLOR_FG_RED << query.lastError() << DTK_NO_COLOR;
     }
-    qDebug()<<"query first "<<query.first();
     if ( query.first() )
     {
         studyDbId = query.value ( 0 ).toInt();
@@ -253,6 +252,7 @@ int medDatabaseImporter::getOrCreateSeries ( const medAbstractData* medData, QSq
             QStringList fileNames  = medData->metaDataValues( "FileName" );
             seriesPath = fileNames.count()>0 ? fileNames[0] : "" ;
         }
+
         int size               = medMetaDataKeys::Size.getFirstValue(medData).toInt();
         QString refThumbPath   = medMetaDataKeys::ThumbnailPath.getFirstValue(medData);
         QString age            = medMetaDataKeys::Age.getFirstValue(medData);
