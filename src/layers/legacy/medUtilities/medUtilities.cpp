@@ -19,6 +19,8 @@
 #include <medStringListParameterL.h>
 #include <medVtkViewBackend.h>
 
+#include <QApplication>
+#include <QDesktopWidget>
 #include <QLineEdit>
 #include <QInputDialog>
 
