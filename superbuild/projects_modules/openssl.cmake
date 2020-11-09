@@ -111,6 +111,8 @@ endif (WIN32)
 set(build_dir ${build_path})
 set(${ep}_DIR ${build_dir} PARENT_SCOPE)
 
+set(OPENSSL_ROOT_DIR "${EP_PATH_SOURCE}/${ep}" PARENT_SCOPE)
+
 endif() #NOT USE_SYSTEM_ep
 
 endfunction()

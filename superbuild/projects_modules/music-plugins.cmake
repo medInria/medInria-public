@@ -58,6 +58,7 @@ function(music_plugins_project)
             -DTETGEN_DIR:FILEPATH=${tetgen_DIR}
             -DQUAZIP_DIR:FILEPATH=${quazip_DIR}
             -DQUAZIP_INCLUDE_DIR:FILEPATH=${quazip_INCLUDE_DIR}
+            -DOPENSSL_ROOT_DIR:FILEPATH=${OPENSSL_ROOT_DIR} 
             )
 
         epComputPath(${external_project})
