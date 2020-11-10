@@ -1262,7 +1262,7 @@ AlgorithmPaintToolBox::GenerateMinMaxValuesFromImage ()
 
 void AlgorithmPaintToolBox::updateStroke(ClickAndMoveEventFilter * filter, medAbstractImageView * view)
 {
-    setCurrentView(currentView);
+    setCurrentView(view);
     if ( !isMask2dOnSlice() )
     {
         return;
