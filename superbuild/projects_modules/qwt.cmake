@@ -24,7 +24,8 @@ if (NOT USE_SYSTEM_${ep})
 ## Define repository where get the sources
 ## #############################################################################
 
-set(svn_url https://svn.code.sf.net/p/qwt/code/trunk)
+set(git_url ${GITHUB_PREFIX}Inria-Asclepios/qwt.git)
+set(git_tag music3) 
 
 ## #############################################################################
 ## Add specific cmake arguments for configuration step of the project
@@ -68,15 +69,15 @@ ExternalProject_Add(${ep}
   BINARY_DIR ${build_path}
   TMP_DIR ${tmp_path}
   STAMP_DIR ${stamp_path}
-  SVN_REPOSITORY ${svn_url}
+  GIT_REPOSITORY ${git_url}
+  GIT_TAG ${git_tag}
   CMAKE_GENERATOR ${gen}
   CMAKE_GENERATOR_PLATFORM ${CMAKE_GENERATOR_PLATFORM}
   CMAKE_ARGS ${cmake_args}
   DEPENDS ${${ep}_dependencies}
   UPDATE_COMMAND ""
-  PATCH_COMMAND svn patch ${CMAKE_SOURCE_DIR}/superbuild/patches/qwt-6.3-svn.patch
   # Compile only the lib
-  CONFIGURE_COMMAND ${QT_QMAKE_EXECUTABLE} ${SPEC} <SOURCE_DIR>/qwt/qwt.pro
+  CONFIGURE_COMMAND ${QT_QMAKE_EXECUTABLE} ${SPEC} <SOURCE_DIR>/qwt.pro
   BUILD_COMMAND ${MAKE_PROGRAM} sub-src
   INSTALL_COMMAND ""
 )
@@ -87,7 +88,7 @@ ExternalProject_Add(${ep}
 
 ExternalProject_Get_Property(${ep} binary_dir)
 set(${ep}_DIR ${binary_dir} PARENT_SCOPE)
-set(${ep}_INCLUDE_DIR ${EP_PATH_SOURCE}/${ep}/${ep} PARENT_SCOPE)
+set(${ep}_INCLUDE_DIR ${EP_PATH_SOURCE}/${ep} PARENT_SCOPE)
 
 endif() #NOT USE_SYSTEM_ep
 
