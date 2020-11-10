@@ -1418,6 +1418,11 @@ void AlgorithmPaintToolBox::updateStroke(ClickAndMoveEventFilter * filter, medAb
 
 bool AlgorithmPaintToolBox::isMask2dOnSlice()
 {
+    if (!currentView)
+    {
+        return false;
+    }
+
     MaskType::IndexType index3D;
     QVector3D vector = currentView->mapDisplayToWorldCoordinates(QPointF(0,0));
     bool isInside;
