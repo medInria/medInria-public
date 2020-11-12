@@ -31,7 +31,6 @@ set(CMAKE_INCLUDE_CURRENT_DIR TRUE)
 ## #############################################################################
 
 find_package(dtk REQUIRED)
-include_directories(${dtk_INCLUDE_DIRS})
 
 find_package(ITK REQUIRED COMPONENTS ITKCommon ITKThresholding ITKConnectedComponents
                                      ITKSmoothing ITKBinaryMathematicalMorphology)
@@ -53,15 +52,11 @@ list_header_directories_to_include(${TARGET_NAME}
   ${${TARGET_NAME}_HEADERS}
   )
 
-include_directories(${${TARGET_NAME}_INCLUDE_DIRS}
-  ${MEDINRIA_INCLUDE_DIRS}
-  )
-
 ## #############################################################################
 ## add library
 ## #############################################################################
 
-add_library(${TARGET_NAME} SHARED
+add_library(${TARGET_NAME} MODULE
   ${${TARGET_NAME}_CFILES}
   ${${TARGET_NAME}_QRC}
   )

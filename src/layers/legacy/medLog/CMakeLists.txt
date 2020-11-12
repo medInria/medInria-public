@@ -21,7 +21,6 @@ set(TARGET_NAME medLog)
 
 # find dtk
 find_package(dtk REQUIRED)
-include_directories(${dtk_INCLUDE_DIRS})
 
 # find itk
 find_package(ITK REQUIRED COMPONENTS ITKCommon)
@@ -72,8 +71,8 @@ target_link_libraries(${TARGET_NAME}
   Qt5::Widgets
   dtkCoreSupport
   dtkLog
-  ITKCommon
-  vtkCommonCore
+  ${ITK_LIBRARIES}
+  ${VTK_LIBRARIES}
   )
 
 ## #############################################################################

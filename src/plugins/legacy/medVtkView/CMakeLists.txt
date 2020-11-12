@@ -24,13 +24,11 @@ set(${TARGET_NAME}_VERSION ${${PROJECT_NAME}_VERSION})
 string(TOUPPER ${TARGET_NAME} TARGET_NAME_UP)
 add_definitions(-D${TARGET_NAME_UP}_VERSION="${${TARGET_NAME}_VERSION}")
 
-
 ## #############################################################################
 ## Resolve dependencies
 ## #############################################################################
 
 find_package(dtk REQUIRED)
-include_directories(${dtk_INCLUDE_DIRS})
 
 find_package(VTK REQUIRED COMPONENTS vtkGUISupportQt vtkInteractionWidgets)
 include(${VTK_USE_FILE})
@@ -69,7 +67,6 @@ add_library(${TARGET_NAME} SHARED
   ${${TARGET_NAME}_QRC}
   )
 
-
 ## #############################################################################
 ## Link
 ## #############################################################################
@@ -88,13 +85,11 @@ target_link_libraries(${TARGET_NAME}
   medVtkDataMeshBase
   )
 
-
 ## #############################################################################
 ## Install rules
 ## #############################################################################
 
 set_plugin_install_rules_legacy(${TARGET_NAME})
-
 
 ## #############################################################################
 ## Build tests

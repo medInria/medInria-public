@@ -29,12 +29,12 @@ add_definitions(-D${TARGET_NAME_UP}_VERSION="${${TARGET_NAME}_VERSION}")
 ## #############################################################################
 
 find_package(dtk REQUIRED)
-include_directories(${dtk_INCLUDE_DIRS})
 
 find_package(RPI REQUIRED)
 include(${RPI_USE_FILE})
 
-find_package(ITK REQUIRED COMPONENTS ITKCommon ITKIOTransformBase ITKIOTransformInsightLegacy ITKTransform ITKTransformFactory ITKRegistrationCommon ITKIOMeta ITKIOImageBase ITKPDEDeformableRegistration ITKIOTransformBase)
+include(ITKLibs) # FOR and FROM RPI
+find_package(ITK REQUIRED COMPONENTS ${ITKIO_LIBRARIES} ${ITK_TRANSFORM_LIBRARIES} ITKRegistrationCommon ITKPDEDeformableRegistration )
 include(${ITK_USE_FILE})
 
 ## #############################################################################
@@ -51,10 +51,6 @@ list_source_files(${TARGET_NAME}
 
 list_header_directories_to_include(${TARGET_NAME}
   ${${TARGET_NAME}_HEADERS}
-  )
-
-include_directories(${${TARGET_NAME}_INCLUDE_DIRS}
-  ${MEDINRIA_INCLUDE_DIRS}
   )
 
 ## #############################################################################
@@ -76,6 +72,14 @@ endif()
 add_library(${TARGET_NAME} SHARED
   ${${TARGET_NAME}_PCH}
   ${${TARGET_NAME}_CFILES}
+  )
+
+## #############################################################################
+## include directories.
+## #############################################################################
+
+target_include_directories(${TARGET_NAME} 
+  PUBLIC ${${TARGET_NAME}_INCLUDE_DIRS}
   )
 
 ## #############################################################################

@@ -29,7 +29,6 @@ add_definitions(-D${TARGET_NAME_UP}_VERSION="${${TARGET_NAME}_VERSION}")
 ## #############################################################################
 
 find_package(dtk REQUIRED)
-include_directories(${dtk_INCLUDE_DIRS})
 
 set(ITK_IMAGES_DEPENDENCIES
     ITKIOMeta
@@ -58,16 +57,7 @@ include(${ITK_USE_FILE})
 
 #WARNING USE VTK through ITKIOVTK and medLog, medVtkInria
 
-if (ITK_USE_SYSTEM_GDCM)
-  add_definitions(-DITK_USE_SYSTEM_GDCM)
-endif()
-
-if (USE_OSPRay)
-  add_definitions(-DMED_USE_OSPRAY_4_VR_BY_CPU)
-endif()
-
 find_package(DCMTK REQUIRED NO_MODULE)
-
 
 ## #############################################################################
 ## List Sources
@@ -108,17 +98,26 @@ if (MSVC)
          )
     endif()
 
-  #Prevent compiler warnings about valid std::copy.
-  if(MSVC)
-      add_definitions(-D_SCL_SECURE_NO_WARNINGS)
-  endif()
-
 endif()
 
 add_library(${TARGET_NAME} SHARED
   ${${TARGET_NAME}_CFILES}
   )
 
+## #############################################################################
+## definition 
+## #############################################################################
+
+target_compile_definitions(${TARGET_NAME} PUBLIC
+    $<$<BOOL:${ITK_USE_SYSTEM_GDCM}>:ITK_USE_SYSTEM_GDCM>
+    )
+target_compile_definitions(${TARGET_NAME} PUBLIC
+    $<$<BOOL:${USE_OSPRay}>:MED_USE_OSPRAY_4_VR_BY_CPU>
+    )
+
+target_compile_definitions(${TARGET_NAME} PUBLIC
+    $<$<BOOL:${MSVC}>:_SCL_SECURE_NO_WARNINGS>
+    )
 
 ## #############################################################################
 ## include directorie.
@@ -149,7 +148,6 @@ target_link_libraries(${TARGET_NAME}
 ## #############################################################################
 
 set_plugin_install_rules_legacy(${TARGET_NAME})
-
 
 ## #############################################################################
 ## Build tests

@@ -21,13 +21,14 @@ set(TARGET_NAME medRegistration)
 ## #############################################################################
 
 find_package(dtk REQUIRED)
-include_directories(${dtk_INCLUDE_DIRS})
-
-find_package(ITK REQUIRED COMPONENTS ITKIOImageBase ITKTransform ITKIOTransformBase ITKIOTransformInsightLegacy ITKRegistrationCommon ITKIOMeta)#ITKCommon ITKTransformFactory
-include(${ITK_USE_FILE})
 
 find_package(RPI REQUIRED)
 include(${RPI_USE_FILE})
+include(ITKLibs) # FOR and FROM RPI
+
+find_package(ITK REQUIRED COMPONENTS ${ITKIO_LIBRARIES} ${ITK_TRANSFORM_LIBRARIES} ITKRegistrationCommon)
+include(${ITK_USE_FILE})
+
 
 
 ## #############################################################################
@@ -71,36 +72,8 @@ target_link_libraries(${TARGET_NAME}
   dtkCoreSupport
   medCoreLegacy
   dtkLog
-  ITKCommon
-  ITKIOImageBase
-  ITKIOBMP
-  ITKIOBruker
-  ITKIOLSM
-  ITKIOJPEG
-  ITKIOJPEG2000
-  ITKIOGE
-  ITKIOPNG
-  ITKIOVTK
-  ITKIOGDCM
-  ITKNrrdIO
-  ITKIONRRD
-  ITKIOMeta
-  ITKIOMINC
-  ITKIONIFTI
-  ITKIOGIPL
-  ITKIOHDF5
-  ITKIOBioRad
-  ITKIOStimulate
-  ${ITKIOPhilipsREC_LIBRARIES}
-  ITKIOTIFF
-  ITKStatistics
-  ITKIOTransformBase
-  ITKIOTransformHDF5
-  ITKIOTransformMatlab
-  ITKIOTransformInsightLegacy
-  ITKIOMRC
+  ${ITK_LIBRARIES} 
   )
-
 
 ## #############################################################################
 ## install

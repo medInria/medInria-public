@@ -19,7 +19,6 @@ set(TARGET_NAME medImagingCompatibilityPlugin)
 ## #############################################################################
 
 find_package(dtk REQUIRED)
-include_directories(${dtk_INCLUDE_DIRS})
 
 find_package(dtkImaging REQUIRED)
 include_directories(${dtkImaging_INCLUDE_DIRS})

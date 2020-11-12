@@ -24,13 +24,6 @@ include(${VTK_USE_FILE})
 
 find_package(OpenGL REQUIRED)
 
-if (USE_OSPRay)
-  add_definitions(-DMED_USE_OSPRAY_4_VR_BY_CPU)
-  set(VTK_OSPRAY_RENDERING_LIBRARY "vtkRenderingOSPRay")
-ELSE()
-  set(VTK_OSPRAY_RENDERING_LIBRARY "")
-endif()
-
 ## #############################################################################
 ## List sources
 ## #############################################################################
@@ -48,7 +41,6 @@ list_header_directories_to_include(${TARGET_NAME}
   ${${TARGET_NAME}_HEADERS}
   )
 
-
 ## #############################################################################
 ## add library
 ## #############################################################################
@@ -56,6 +48,14 @@ list_header_directories_to_include(${TARGET_NAME}
 add_library(${TARGET_NAME} SHARED
   ${${TARGET_NAME}_CFILES}
   )
+
+## #############################################################################
+## Add definition and options
+## #############################################################################
+
+target_compile_definitions(${TARGET_NAME} PUBLIC
+    $<$<BOOL:${USE_OSPRay}>:MED_USE_OSPRAY_4_VR_BY_CPU>
+    )
 
 ## #############################################################################
 ## include directorie.

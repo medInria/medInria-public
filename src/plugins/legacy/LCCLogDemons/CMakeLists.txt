@@ -27,7 +27,6 @@ endif()
 #find_package(Qt5 COMPONENTS REQUIRED Core)
 
 find_package(dtk REQUIRED)
-include_directories(${dtk_INCLUDE_DIRS})
 
 find_package(ITK REQUIRED COMPONENTS ITKCommon ITKTransform ITKRegistrationCommon ITKImageGrid ITKImageFilterBase  ITKIOImageBase ITKTransformFactory ITKIOTransformBase ITKIOMeta ITKIOTransformInsightLegacy ITKPDEDeformableRegistration ITKReview)
 include(${ITK_USE_FILE})

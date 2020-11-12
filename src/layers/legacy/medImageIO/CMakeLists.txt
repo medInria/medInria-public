@@ -12,18 +12,27 @@
 # PURPOSE.
 #
 ################################################################################
-
 set(TARGET_NAME medImageIO)
-
 
 ## #############################################################################
 ## find requireds
 ## #############################################################################
+set(ITK_IMAGES_DEPENDENCIES
+    ITKIOImageBase
+    ITKIOMeta
+    #common formats for common images
+    ITKIOBMP ITKIOJPEG ITKIOJPEG2000 ITKIOPNG ITKIOTIFF
+    #Medical images formats
+    ITKIOGIPL ITKIONRRD ITKIONIFTI ITKIOGIPL ITKIOPhilipsREC ITKIOGDCM ITKIOBioRad ITKIOBruker
+    ITKNrrdIO ITKIOMINC ITKIOHDF5 ITKIOMRC ITKIOLSM
+)
 
-find_package(ITK REQUIRED COMPONENTS ITKVtkGlue ITKIOImageBase ITKIOMeta ITKZLIB)
+find_package(ITK REQUIRED COMPONENTS ${ITK_IMAGES_DEPENDENCIES} ITKIOVTK ITKIOGIPL ITKIOGE
+    ITKIOStimulate ITKVTK ITKVtkGlue ) 
 include(${ITK_USE_FILE})
 
 #WARNING USE VTK through ITKVtkGlue and medLog
+find_package(VTK REQUIRED COMPONENTS vtkIOImage)
 
 find_package(DCMTK REQUIRED NO_MODULE)
 
@@ -70,31 +79,8 @@ target_link_libraries(${TARGET_NAME}
   dtkLog
   medCore
   medCoreLegacy
-  ITKCommon
-  ITKIOImageBase
-  ITKIOBMP
-  ITKIOBruker
-  ITKIOLSM
-  ITKIOJPEG
-  ITKIOJPEG2000
-  ITKIOPNG
-  ITKIOVTK
-  ITKIOGDCM
-  ITKNrrdIO
-  ITKIONRRD
-  ITKIOMeta
-  ITKIOMINC
-  ITKIONIFTI
-  ITKIOGIPL
-  ITKIOGE
-  ITKIOHDF5
-  ITKIOBioRad
-  ITKIOStimulate
-  ITKIOMRC
-  ITKIOTIFF
-  ITKVTK
-  vtkIOImage
-  ${ITKIOPhilipsREC_LIBRARIES}
+  ${ITK_LIBRARIES} 
+  ${VTK_LIBRARIES}  
   ${DCMTK_LIBRARIES}
   )
 

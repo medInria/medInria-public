@@ -34,7 +34,6 @@ find_package(dtk REQUIRED
     dtkCore
     dtkCoreSupport
     )
-include_directories(${dtk_INCLUDE_DIRS})
 
 find_package(ITK REQUIRED COMPONENTS ITKCommon ITKImageLabel ITKVtkGlue ITKIOImageBase ITKIOMeta)
 include(${ITK_USE_FILE})
@@ -67,7 +66,6 @@ list_header_directories_to_include(${TARGET_NAME}
   )
 
 include_directories(${${TARGET_NAME}_INCLUDE_DIRS}
-  ${MEDINRIA_INCLUDE_DIRS}
   ${DATA_HEADERS}
   )
 

@@ -30,7 +30,6 @@ add_definitions(-D${TARGET_NAME_UP}_VERSION="${${TARGET_NAME}_VERSION}")
 ## #############################################################################
 
 find_package(dtk REQUIRED)
-include_directories(${dtk_INCLUDE_DIRS})
 
 find_package(ITK REQUIRED COMPONENTS ITKCommon ITKLabelMap ITKVtkGlue ITKRegionGrowing)
 include(${ITK_USE_FILE})
@@ -55,11 +54,6 @@ list_header_directories_to_include(${TARGET_NAME}
   ${${TARGET_NAME}_HEADERS}
   )
 
-include_directories(${${TARGET_NAME}_INCLUDE_DIRS}
-  ${MEDINRIA_INCLUDE_DIRS}
-  )
-
-
 ## #############################################################################
 ## Precompile headers
 ## #############################################################################
@@ -72,11 +66,9 @@ if(MEDINRIA_USE_PRECOMPILED_HEADERS)
     )
 endif()
 
-
 ## #############################################################################
 ## add library
 ## #############################################################################
-
 
 add_library(${TARGET_NAME} SHARED
   ${${TARGET_NAME}_PCH}
@@ -84,6 +76,12 @@ add_library(${TARGET_NAME} SHARED
   ${${TARGET_NAME}_QRC}
   )
 
+## #############################################################################
+## Include dir
+## #############################################################################
+
+target_include_directories(${TARGET_NAME}
+    PUBLIC ${${TARGET_NAME}_INCLUDE_DIRS})
 
 ## #############################################################################
 ## Link
@@ -98,7 +96,6 @@ target_link_libraries(${TARGET_NAME}
   medVtkInria
   medImageIO
   )
-
 
 ## #############################################################################
 ## Install rules

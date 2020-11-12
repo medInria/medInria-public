@@ -24,13 +24,11 @@ set(${TARGET_NAME}_VERSION ${MEDINRIA_VERSION})
 string(TOUPPER ${TARGET_NAME} TARGET_NAME_UP)
 add_definitions(-D${TARGET_NAME_UP}_VERSION="${${TARGET_NAME}_VERSION}")
 
-
 ## #############################################################################
 ## Resolve dependencies
 ## #############################################################################
 
 find_package(dtk REQUIRED)
-include_directories(${dtk_INCLUDE_DIRS})
 
 find_package(ITK REQUIRED  COMPONENTS ITKIOImageBase ITKIOMeta ITKIONRRD ITKIONIFTI)
 include(${ITK_USE_FILE})
@@ -40,7 +38,6 @@ include(${VTK_USE_FILE})
 
 find_package(TTK REQUIRED)
 include(${TTK_USE_FILE})
-
 
 ## #############################################################################
 ## List Sources
@@ -64,11 +61,6 @@ list_header_directories_to_include(${TARGET_NAME}
   ${${TARGET_NAME}_HEADERS}
   )
 
-include_directories(${${TARGET_NAME}_INCLUDE_DIRS}
-  ${MEDINRIA_INCLUDE_DIRS}
-  )
-
-
 ## #############################################################################
 ## Precompile headers
 ## #############################################################################
@@ -86,12 +78,18 @@ endif()
 ## add library
 ## #############################################################################
 
-add_library(${TARGET_NAME} SHARED
+add_library(${TARGET_NAME} MODULE
   ${${TARGET_NAME}_PCH}
   ${${TARGET_NAME}_CFILES}
   ${${TARGET_NAME}_QRC}
   )
 
+## #############################################################################
+## Include dir
+## #############################################################################
+
+target_include_directories(${TARGET_NAME}
+    PUBLIC ${${TARGET_NAME}_INCLUDE_DIRS})
 
 ## #############################################################################
 ## Link
@@ -124,13 +122,11 @@ target_link_libraries(${TARGET_NAME}
   medVtkInria
   )
 
-
 ## #############################################################################
 ## Install rules
 ## #############################################################################
 
 set_plugin_install_rules_legacy(${TARGET_NAME})
-
 
 ## #############################################################################
 ## Build tests

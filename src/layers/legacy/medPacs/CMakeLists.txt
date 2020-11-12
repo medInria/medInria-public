@@ -32,8 +32,8 @@ list_header_directories_to_include(${TARGET_NAME}
 ## #############################################################################
 
 if (NOT MSVC) #TODO : what is it for ?
-  add_definitions(-Wno-write-strings)
-  add_definitions(-Wformat=0)
+  add_compile_options(-Wno-write-strings)
+  add_compile_options(-Wformat=0)
 endif()
 
 
@@ -44,7 +44,6 @@ endif()
 add_library(${TARGET_NAME} SHARED
   ${${TARGET_NAME}_CFILES}
   )
-
 
 ## #############################################################################
 ## Link
@@ -65,7 +64,6 @@ target_link_libraries(${TARGET_NAME}
 target_include_directories(${TARGET_NAME}
   PUBLIC ${${TARGET_NAME}_INCLUDE_DIRS}
   )
-
 
 ## #############################################################################
 ## install

@@ -20,17 +20,12 @@ set(TARGET_NAME medUtilities)
 ## #############################################################################
 
 find_package(dtk REQUIRED)
-include_directories(${dtk_INCLUDE_DIRS})
 
 find_package(VTK REQUIRED COMPONENTS vtkInteractionWidgets )
 include(${VTK_USE_FILE})
 
 find_package(ITK REQUIRED COMPONENTS ITKCommon ITKIOGDCM)
 include(${ITK_USE_FILE})
-
-if (ITK_USE_SYSTEM_GDCM)
-  add_definitions(-DITK_USE_SYSTEM_GDCM)
-endif()
 
 ## #############################################################################
 ## List sources
@@ -50,6 +45,14 @@ list_header_directories_to_include(${TARGET_NAME}
 
 add_library(${TARGET_NAME} SHARED
 ${${TARGET_NAME}_CFILES})
+
+## #############################################################################
+## Add definition
+## #############################################################################
+
+if (ITK_USE_SYSTEM_GDCM)
+  target_compile_definitions(${TARGET_NAME} PUBLIC -DITK_USE_SYSTEM_GDCM)
+endif()
 
 ## #############################################################################
 ## include directories
@@ -72,7 +75,6 @@ target_link_libraries(${TARGET_NAME}
   medVtkInria
   medVtkDataMeshBase
   )
-
 
 ## #############################################################################
 ## install

@@ -24,13 +24,11 @@ set(${TARGET_NAME}_VERSION ${MEDINRIA_VERSION})
 string(TOUPPER ${TARGET_NAME} TARGET_NAME_UP)
 add_definitions(-D${TARGET_NAME_UP}_VERSION="${${TARGET_NAME}_VERSION}")
 
-
 ## #############################################################################
 ## Resolve dependencies
 ## #############################################################################
 
 find_package(dtk REQUIRED)
-include_directories(${dtk_INCLUDE_DIRS})
 
 find_package(ITK REQUIRED COMPONENTS ITKIOImageBase ITKIOMeta )
 include(${ITK_USE_FILE})
@@ -54,7 +52,6 @@ list_source_files(${TARGET_NAME}
   readers
   writers
   )
-
 
 ## #############################################################################
 ## include directorie.
@@ -87,12 +84,11 @@ endif()
 ## add library
 ## #############################################################################
 
-add_library(${TARGET_NAME} SHARED
+add_library(${TARGET_NAME} MODULE
   ${${TARGET_NAME}_PCH}
   ${${TARGET_NAME}_CFILES}
   ${${TARGET_NAME}_QRC}
   )
-
 
 ## #############################################################################
 ## Link
@@ -108,7 +104,6 @@ target_link_libraries(${TARGET_NAME}
   medVtkInria
   medImageIO
   )
-
 
 ## #############################################################################
 ## Install rules
