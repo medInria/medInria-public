@@ -25,7 +25,7 @@ if (NOT USE_SYSTEM_${ep})
 ###############################################################################
 
 set(git_url ${GITHUB_PREFIX}chriskohlhoff/asio.git)
-set(git_tag master)
+set(git_tag asio-1-18-0)
 
 ## #############################################################################
 ## Add external-project
