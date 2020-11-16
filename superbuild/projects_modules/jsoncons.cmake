@@ -40,7 +40,8 @@ ExternalProject_Add(${ep}
   DEPENDS ${${ep}_dependencies}
   CMAKE_GENERATOR ${gen}
   CMAKE_GENERATOR_PLATFORM ${CMAKE_GENERATOR_PLATFORM}
-  CMAKE_ARGS ${cmake_args} 
+  CMAKE_ARGS ${cmake_args}
+  INSTALL_COMMAND ""
   )
 ## #############################################################################
 ## Set variable to provide infos about the project
