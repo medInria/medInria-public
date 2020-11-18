@@ -115,6 +115,7 @@ list(APPEND
   ${TTK_DIR}/bin/Release 
   ${dtk_DIR}/bin/Release 
   ${RPI_DIR}/bin/Release 
+  ${ZLIB_DIR}/bin   
   )
 
 install(CODE "
@@ -124,11 +125,13 @@ file(GLOB_RECURSE vtk_files LIST_DIRECTORIES true \"${VTK_DIR}/bin/*.dll\")
 file(GLOB_RECURSE dtk_files LIST_DIRECTORIES true \"${dtk_DIR}/bin/*.dll\")
 file(GLOB_RECURSE dcm_files LIST_DIRECTORIES true \"${QtDCM_DIR}/bin/*.dll\")
 file(GLOB_RECURSE qt5_files LIST_DIRECTORIES true \"${QT_BINARY_DIR}/*.dll\")
+file(GLOB_RECURSE zlib_files LIST_DIRECTORIES true \"${ZLIB_DIR}/bin/*.dll\")
 list(APPEND files \${itk_files})
 list(APPEND files \${vtk_files})
 list(APPEND files \${dtk_files})
 list(APPEND files \${dcm_files})
 list(APPEND files \${qt5_files})
+list(APPEND files \${zlib_files})
 
 foreach(file \${files})
   get_filename_component(file2delete \${file} NAME)
