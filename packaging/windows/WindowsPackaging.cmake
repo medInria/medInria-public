@@ -115,7 +115,6 @@ list(APPEND
   ${TTK_DIR}/bin/Release 
   ${dtk_DIR}/bin/Release 
   ${RPI_DIR}/bin/Release 
-  ${ZLIB_DIR}/bin   
   )
 
 install(CODE "
