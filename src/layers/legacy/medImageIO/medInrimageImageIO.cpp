@@ -171,7 +171,7 @@ void InrimageImageIO::PrintSelf(std::ostream& os, itk::Indent indent) const
     os << indent << "PixelType " << m_PixelType << std::endl;
 }
 
-const std::type_info& InrimageImageIO::ConvertToTypeInfo(itk::IOPixelEnum t) const
+const std::type_info& InrimageImageIO::ConvertToTypeInfo(itk::IOComponentEnum t) const
 {
 
     switch (t)
@@ -204,7 +204,7 @@ const std::type_info& InrimageImageIO::ConvertToTypeInfo(itk::IOPixelEnum t) con
         default:
             itkExceptionMacro("Invalid type: " << m_PixelType);
     }
-    return typeid(itk::IOPixelEnum::UNKNOWNPIXELTYPE);
+    return typeid(itk::IOComponentEnum::UNKNOWNCOMPONENTTYPE);
 
 }
 
@@ -1045,7 +1045,7 @@ void InrimageImageIO::SwapBytesIfNecessary(void* buffer, unsigned long numberOfP
 {
     if (ImageIOBase::GetByteOrder() == itk::IOByteOrderEnum::LittleEndian)
     {
-        switch (m_PixelType)
+        switch (m_ComponentType)
         {
             case itk::IOComponentEnum::CHAR:
                 itk::ByteSwapper<char>::SwapRangeFromSystemToLittleEndian((char*)buffer,
@@ -1095,7 +1095,7 @@ void InrimageImageIO::SwapBytesIfNecessary(void* buffer, unsigned long numberOfP
     }
     else
     {
-        switch (m_PixelType)
+        switch (m_ComponentType)
         {
             case itk::IOComponentEnum::CHAR:
                 itk::ByteSwapper<char>::SwapRangeFromSystemToBigEndian((char *)buffer,
