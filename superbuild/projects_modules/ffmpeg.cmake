@@ -36,7 +36,7 @@ EP_Initialisation(${ep}
 if (NOT USE_SYSTEM_${ep})
 
 ## #############################################################################
-## Define repository where get the sources
+## Set up versioning control
 ## #############################################################################
 
 if (NOT DEFINED ${ep}_SOURCE_DIR)

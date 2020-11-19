@@ -35,11 +35,13 @@ EP_Initialisation(${ep}
 if (NOT USE_SYSTEM_${ep})
 
 ## #############################################################################
-## Set up versioning control.
+## Set up versioning control
 ## #############################################################################
 
-set(git_url ${GITHUB_PREFIX}InsightSoftwareConsortium/ITK.git)
-set(git_tag v5.1.1)
+if (NOT DEFINED ${ep}_SOURCE_DIR)
+    set(git_url ${GITHUB_PREFIX}InsightSoftwareConsortium/ITK.git)
+    set(git_tag v5.1.1)
+endif()
 
 ## #############################################################################
 ## Add specific cmake arguments for configuration step of the project
@@ -99,15 +101,12 @@ ExternalProject_Add(${ep}
   BUILD_ALWAYS 1
   )
 
-
 ## #############################################################################
 ## Set variable to provide infos about the project
 ## #############################################################################
 
 ExternalProject_Get_Property(ITK binary_dir)
 set(${ep}_DIR ${binary_dir} PARENT_SCOPE)
-
-
 
 endif() #NOT USE_SYSTEM_ep
 
