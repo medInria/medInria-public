@@ -47,8 +47,8 @@ QStringList itkNiftiDataImageWriter::handled() const {
 
 QStringList itkNiftiDataImageWriter::supportedFileExtensions() const
 {
-    return QStringList() << ".nii" << ".nii.gz" << ".nia"
-                         << ".hdr" << ".img" << ".img.gz";
+    return QStringList() << ".nii.gz" << ".nii" << ".hdr"
+                         << ".nia" << ".img" << ".img.gz";
 }
 
 bool itkNiftiDataImageWriter::registered() {
