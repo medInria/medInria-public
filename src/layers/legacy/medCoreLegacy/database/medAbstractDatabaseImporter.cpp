@@ -251,6 +251,7 @@ void medAbstractDatabaseImporter::importFile ( void )
             if ( !volumeUniqueIdToVolumeNumber.contains ( volumeId ) )
             {
                 volumeUniqueIdToVolumeNumber[volumeId] = volumeNumber;
+                std::cout<<" -------- adding "<<volumeId.toStdString()<<" with "<<volumeNumber<<std::endl;
                 volumeNumber++;
             }
 
@@ -996,13 +997,13 @@ QString medAbstractDatabaseImporter::generateUniqueVolumeId ( const medAbstractD
 
     orientation = "";
 
-    // truncate orientation to 5 digits for a more robust import since
-    // sometimes orientation only differs with the last 2 digits, creating
+    // truncate orientation to 4 digits for a more robust import since
+    // sometimes orientation only differs with the last digits, creating
     // multiple series
     for( QString orient : orientations )
     {
         double d_orient = orient.toDouble();
-        orientation += QString::number ( d_orient, 'g', 5 );
+        orientation += QString::number ( d_orient, 'g', 4 );
     }
 
     // define a unique key string to identify which volume an image belongs to.
