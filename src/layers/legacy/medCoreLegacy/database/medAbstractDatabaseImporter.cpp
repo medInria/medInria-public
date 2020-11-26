@@ -251,7 +251,6 @@ void medAbstractDatabaseImporter::importFile ( void )
             if ( !volumeUniqueIdToVolumeNumber.contains ( volumeId ) )
             {
                 volumeUniqueIdToVolumeNumber[volumeId] = volumeNumber;
-                std::cout<<" -------- adding "<<volumeId.toStdString()<<" with "<<volumeNumber<<std::endl;
                 volumeNumber++;
             }
 
