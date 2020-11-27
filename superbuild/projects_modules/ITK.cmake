@@ -70,6 +70,10 @@ set(cmake_args
   -DITK_LEGACY_REMOVE:BOOL=ON
   -DVTK_DIR:PATH=${VTK_DIR}
   )
+  
+set(cmake_cache_args
+  -DVTK_DIR:PATH=${VTK_DIR}
+  )
 
 ## #############################################################################
 ## Check if patch has to be applied
@@ -95,7 +99,8 @@ ExternalProject_Add(${ep}
   PATCH_COMMAND ${${ep}_PATCH_COMMAND}
   CMAKE_GENERATOR ${gen}
   CMAKE_GENERATOR_PLATFORM ${CMAKE_GENERATOR_PLATFORM}
-  CMAKE_ARGS ${cmake_args}
+  CMAKE_ARGS ${cmake_args}  
+  CMAKE_CACHE_ARGS ${cmake_cache_args}
   DEPENDS ${${ep}_dependencies}
   INSTALL_COMMAND ""
   BUILD_ALWAYS 1
