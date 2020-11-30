@@ -544,7 +544,7 @@ bool AlgorithmPaintToolBox::registered()
 
 void AlgorithmPaintToolBox::updateMagicWandComputation()
 {
-    if (seedPlanted)
+    if (seedPlanted && currentView)
     {
         if (m_wand3DCheckbox->isChecked() && wandTimer.elapsed()<600) // 1000/24 (24 images per second)
         {
@@ -552,7 +552,7 @@ void AlgorithmPaintToolBox::updateMagicWandComputation()
         }
 
         undo();
-        updateWandRegion(currentView,m_seed);
+        updateWandRegion(currentView, m_seed);
         wandTimer.start();
     }
 }
@@ -754,8 +754,8 @@ void AlgorithmPaintToolBox::updateView()
             {
                 medAbstractData *data = v->layerData(i);
                 if(!data || data->identifier().contains("vtkDataMesh")
-                        || !data->identifier().contains("itkDataImage") //avoid medVtkFibersData also
-                        || data->identifier().contains("itkDataImageVector"))
+                        || !(data->identifier().contains("itkDataImage") || data->identifier().contains("medImageMaskAnnotationData"))
+                        || data->identifier().contains("itkDataImageVector")) //avoid medVtkFibersData
                 {
                     handleDisplayError(medAbstractProcessLegacy::DIMENSION_3D);
                     return;
@@ -1061,7 +1061,6 @@ void AlgorithmPaintToolBox::updateWandRegion(medAbstractImageView *view, QVector
     }
 
     MaskType::IndexType index;
-
     bool isInside;
     unsigned int planeIndex = computePlaneIndex(vec,index,isInside);
     if (isInside)
