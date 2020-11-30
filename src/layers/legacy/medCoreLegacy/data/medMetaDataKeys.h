@@ -48,7 +48,7 @@ namespace medMetaDataKeys
 
         const QStringList getValues(const medAbstractData *data) const { return data->metaDataValues(KEY); }
 
-        const QString getFirstValue(const medAbstractData *data, const QString defaultValue=QString()) const
+        const QString getFirstValue(const medAbstractData *data, const QString defaultValue=QString("")) const
         {
             return  data->hasMetaData(KEY) ? data->metaDataValues(KEY)[0] : defaultValue;
         }
