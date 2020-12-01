@@ -66,7 +66,6 @@ set(cmake_args
   -DModule_ITKReview:BOOL=ON
   -DModule_ITKVtkGlue:BOOL=ON
   -DITK_LEGACY_REMOVE:BOOL=ON
-  -DVTK_DIR:PATH=${VTK_DIR}
   )
   
 set(cmake_cache_args

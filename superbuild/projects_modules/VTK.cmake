@@ -83,7 +83,7 @@ set(cmake_cache_args
   )
 
 if(USE_OSPRay)
-    list(APPEND cmake_args
+    list(APPEND cmake_cache_args
         -Dospray_DIR=${ospray_DIR}
         -DOSPRAY_INSTALL_DIR=${OSPRAY_INSTALL_DIR}
     )
