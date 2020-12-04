@@ -213,7 +213,7 @@ LCCLogDemonsToolBox::~LCCLogDemonsToolBox()
 dtkPlugin * LCCLogDemonsToolBox::plugin()
 {
 	medPluginManager* pm = medPluginManager::instance();
-	dtkPlugin* plugin = pm->plugin("LCC Log Demons");
+	dtkPlugin* plugin = pm->plugin("LCCLogDemonsPlugin");
 	return plugin;
 }
 

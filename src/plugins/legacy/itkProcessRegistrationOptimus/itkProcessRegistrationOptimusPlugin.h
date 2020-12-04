@@ -22,7 +22,7 @@ class ITKPROCESSREGISTRATIONOPTIMUSPLUGIN_EXPORT itkProcessRegistrationOptimusPl
     Q_INTERFACES(dtkPlugin)
 
 public:
-     itkProcessRegistrationOptimusPlugin(QObject *parent = 0);
+     itkProcessRegistrationOptimusPlugin(QObject *parent = nullptr);
     ~itkProcessRegistrationOptimusPlugin(void);
 
      virtual bool initialize(void);
