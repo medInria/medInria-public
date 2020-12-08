@@ -98,8 +98,6 @@ bool contoursManagementToolBox::registered()
 
 void contoursManagementToolBox::clear()
 {
-    medToolBox::clear();
-
     currentView = nullptr;
 
     QListWidget *widget = labels.at(0);
