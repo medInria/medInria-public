@@ -82,8 +82,8 @@ else()
 endif()
 
 install(TARGETS ${target}
-  RUNTIME DESTINATION ${dest}/bin/plugins_legacy
-  LIBRARY DESTINATION ${dest}/bin/plugins_legacy
+  RUNTIME DESTINATION bin/plugins_legacy
+  LIBRARY DESTINATION bin/plugins_legacy
   )
 endmacro()
 
