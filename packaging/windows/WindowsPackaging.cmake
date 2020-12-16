@@ -70,8 +70,8 @@ if (NOT PRIVATE_PLUGINS_DIRS STREQUAL "")
         file(TO_CMAKE_PATH ${pluginpath} pluginpath)
 # Add an extra slash, otherwise we copy the folder, not its content
         set(pluginpath "${pluginpath}/")
-    	message("Adding ${pluginpath} to the private plugins dirs...")
-        install(DIRECTORY ${pluginpath} DESTINATION plugins COMPONENT Runtime FILES_MATCHING PATTERN "*${CMAKE_SHARED_LIBRARY_SUFFIX}")
+    	message("Adding ${pluginpath} to the plugins dirs...")
+        install(DIRECTORY ${pluginpath} DESTINATION bin/plugins COMPONENT Runtime FILES_MATCHING PATTERN "*${CMAKE_SHARED_LIBRARY_SUFFIX}")
     endforeach()
 endif()
 
@@ -80,8 +80,8 @@ if (NOT PRIVATE_PLUGINS_LEGACY_DIRS STREQUAL "")
         file(TO_CMAKE_PATH ${pluginpath} pluginpath)
 # Add an extra slash, otherwise we copy the folder, not its content
         set(pluginpath "${pluginpath}/")
-        message("Adding ${pluginpath} to the private plugins dirs...")
-        install(DIRECTORY ${pluginpath} DESTINATION plugins_legacy COMPONENT Runtime FILES_MATCHING PATTERN "*${CMAKE_SHARED_LIBRARY_SUFFIX}")
+        message("Adding ${pluginpath} to the dirs...")
+        install(DIRECTORY ${pluginpath} DESTINATION bin/plugins_legacy COMPONENT Runtime FILES_MATCHING PATTERN "*${CMAKE_SHARED_LIBRARY_SUFFIX}")
     endforeach()
 endif()
 
@@ -90,8 +90,8 @@ if (NOT EXTERNAL_PROJECT_PLUGINS_LEGACY_DIRS STREQUAL "")
         file(TO_CMAKE_PATH ${pluginpath} pluginpath)
 # Add an extra slash, otherwise we copy the folder, not its content
         set(pluginpath "${pluginpath}/")
-        message("Adding ${pluginpath} to the external project plugins dirs...")
-        install(DIRECTORY ${pluginpath} DESTINATION plugins_legacy COMPONENT Runtime FILES_MATCHING PATTERN "*${CMAKE_SHARED_LIBRARY_SUFFIX}")
+        message("Adding ${pluginpath} to the plugins dirs...")
+        install(DIRECTORY ${pluginpath} DESTINATION bin/plugins_legacy COMPONENT Runtime FILES_MATCHING PATTERN "*${CMAKE_SHARED_LIBRARY_SUFFIX}")
     endforeach()
 endif()
 
