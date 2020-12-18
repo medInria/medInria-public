@@ -54,7 +54,6 @@ install(TARGETS ${target}
 endmacro()
 
 
-
 ################################################################################
 ##############################   LEGACY   ######################################
 macro(set_plugin_install_rules_legacy_generic target dest)
@@ -81,28 +80,28 @@ else()
   set_target_properties( ${target} PROPERTIES LIBRARY_OUTPUT_DIRECTORY                ${dest}/bin/plugins_legacy)
 endif()
 
-install(TARGETS ${target}
-  RUNTIME DESTINATION bin/plugins_legacy
-  LIBRARY DESTINATION bin/plugins_legacy
-  )
+# install(TARGETS ${target}
+#   RUNTIME DESTINATION bin/plugins_legacy
+#   LIBRARY DESTINATION bin/plugins_legacy
+#   )
 endmacro()
 
-macro(set_plugin_install_rules_legacy target)
 ################################################################################
 #
 # Usage: set_plugin_install_rules_legacy(target)
 # set rules for the plugin legacy designed by the target
 #
 ################################################################################
-set_plugin_install_rules_legacy_generic(${target} ${CMAKE_BINARY_DIR}) 
+macro(set_plugin_install_rules_legacy target)
+  set_plugin_install_rules_legacy_generic(${target} ${CMAKE_BINARY_DIR}) 
 endmacro()
 
-macro(set_plugin_install_rules_legacy_external target)
 ################################################################################
 #
 # Usage: set_plugin_install_rules_legacy_external(target)
 # set rules for the external plugin legacy designed by the target
 #
 ################################################################################
-set_plugin_install_rules_legacy_generic(${target} ${medInria_DIR}) 
+macro(set_plugin_install_rules_legacy_external target)
+  set_plugin_install_rules_legacy_generic(${target} ${medInria_DIR})
 endmacro()

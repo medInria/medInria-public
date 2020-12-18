@@ -85,15 +85,15 @@ if (NOT PRIVATE_PLUGINS_LEGACY_DIRS STREQUAL "")
     endforeach()
 endif()
 
-if (NOT EXTERNAL_PROJECT_PLUGINS_LEGACY_DIRS STREQUAL "")
-    foreach(pluginpath ${EXTERNAL_PROJECT_PLUGINS_LEGACY_DIRS})
-        file(TO_CMAKE_PATH ${pluginpath} pluginpath)
-# Add an extra slash, otherwise we copy the folder, not its content
-        set(pluginpath "${pluginpath}/")
-        message("Adding ${pluginpath} to the external project plugins dirs...")
-        install(DIRECTORY ${pluginpath} DESTINATION plugins_legacy COMPONENT Runtime FILES_MATCHING PATTERN "*${CMAKE_SHARED_LIBRARY_SUFFIX}")
-    endforeach()
-endif()
+# if (NOT EXTERNAL_PROJECT_PLUGINS_LEGACY_DIRS STREQUAL "")
+#     foreach(pluginpath ${EXTERNAL_PROJECT_PLUGINS_LEGACY_DIRS})
+#         file(TO_CMAKE_PATH ${pluginpath} pluginpath)
+# # Add an extra slash, otherwise we copy the folder, not its content
+#         set(pluginpath "${pluginpath}/")
+#         message("Adding ${pluginpath} to the external project plugins dirs...")
+#         install(DIRECTORY ${pluginpath} DESTINATION plugins_legacy COMPONENT Runtime FILES_MATCHING PATTERN "*${CMAKE_SHARED_LIBRARY_SUFFIX}")
+#     endforeach()
+# endif()
 
 
 
