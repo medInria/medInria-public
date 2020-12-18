@@ -99,9 +99,9 @@ foreach(dir ${PRIVATE_PLUGINS_LEGACY_DIRS})
     set(CPACK_INSTALL_CMAKE_PROJECTS ${CPACK_INSTALL_CMAKE_PROJECTS} ${dir} ${dir} ALL "/bin")
 endforeach()
 
-foreach(dir ${EXTERNAL_PROJECT_PLUGINS_LEGACY_DIRS})
-    set(CPACK_INSTALL_CMAKE_PROJECTS ${CPACK_INSTALL_CMAKE_PROJECTS} ${dir} ${dir} ALL "/bin")
-endforeach()
+# foreach(dir ${EXTERNAL_PROJECT_PLUGINS_LEGACY_DIRS})
+#     set(CPACK_INSTALL_CMAKE_PROJECTS ${CPACK_INSTALL_CMAKE_PROJECTS} ${dir} ${dir} ALL ".")
+# endforeach()
 
 install(CODE "include(${CURRENT_BIN_DIR}/PostArchiveCleanupScript.cmake)")
 

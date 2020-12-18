@@ -85,6 +85,7 @@ if (NOT PRIVATE_PLUGINS_LEGACY_DIRS STREQUAL "")
     endforeach()
 endif()
 
+
 if (NOT EXTERNAL_PROJECT_PLUGINS_LEGACY_DIRS STREQUAL "")
     foreach(pluginpath ${EXTERNAL_PROJECT_PLUGINS_LEGACY_DIRS})
         file(TO_CMAKE_PATH ${pluginpath} pluginpath)
