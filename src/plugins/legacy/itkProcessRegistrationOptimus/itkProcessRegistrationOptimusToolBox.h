@@ -22,7 +22,7 @@ class itkProcessRegistrationOptimusToolBox : public medAbstractSelectableToolBox
     MED_TOOLBOX_INTERFACE("Optimus", "interface to the optimus algorithm", <<"Registration")
 
 public:
-     itkProcessRegistrationOptimusToolBox(QWidget *parentToolBox = 0);
+     itkProcessRegistrationOptimusToolBox(QWidget *parentToolBox = nullptr);
     ~itkProcessRegistrationOptimusToolBox(void);
 
     dtkPlugin * plugin() override;

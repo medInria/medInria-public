@@ -26,7 +26,7 @@ class LCCLogDemonsPLUGIN_EXPORT LCCLogDemonsToolBox : public medAbstractSelectab
                           << "Registration")
     
 public:
-    LCCLogDemonsToolBox(QWidget *parent = 0);
+    LCCLogDemonsToolBox(QWidget *parent = nullptr);
     ~LCCLogDemonsToolBox();
 
 	dtkPlugin * plugin() override;

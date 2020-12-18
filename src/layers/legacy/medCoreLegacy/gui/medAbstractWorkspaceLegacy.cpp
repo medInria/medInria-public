@@ -73,7 +73,7 @@ medAbstractWorkspaceLegacy::medAbstractWorkspaceLegacy(QWidget *parent)
 {
     d->parent = parent;
 
-    d->selectionToolBox = new medToolBox;
+    d->selectionToolBox = new medToolBox(parent);
     d->selectionToolBox->setTitle("Selection");
     d->selectionToolBox->header()->hide();
     d->selectionToolBox->hide();

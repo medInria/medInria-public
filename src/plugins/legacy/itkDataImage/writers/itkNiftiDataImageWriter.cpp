@@ -45,6 +45,12 @@ QStringList itkNiftiDataImageWriter::handled() const {
     return s_handled();
 }
 
+QStringList itkNiftiDataImageWriter::supportedFileExtensions() const
+{
+    return QStringList() << ".nii.gz" << ".nii" << ".hdr"
+                         << ".nia" << ".img" << ".img.gz";
+}
+
 bool itkNiftiDataImageWriter::registered() {
     return medAbstractDataFactory::instance()->registerDataWriterType(s_identifier(), s_handled(), create);
 }

@@ -56,14 +56,14 @@ public:
     QPixmap grabScreenshot();
     void grabVideo();
 
-    void setupWorkspace(const QString& id);
+    bool setupWorkspace(const QString& id);
 
     void addToolBox(medToolBox *toolbox);
     void insertToolBox(int index, medToolBox *toolbox);
     void removeToolBox(medToolBox *toolbox);
 
-    void setCurrentWorkspace(medAbstractWorkspaceLegacy* workspace);
-    void setCurrentWorkspace(const QString& id);
+    bool setCurrentWorkspace(medAbstractWorkspaceLegacy* workspace);
+    bool setCurrentWorkspace(const QString& id);
 
     medAbstractWorkspaceLegacy* currentWorkspace();
 

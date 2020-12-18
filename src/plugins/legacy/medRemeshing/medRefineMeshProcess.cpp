@@ -106,6 +106,12 @@ vtkMetaDataSet* medRefineMeshProcess::refineOneMetaDataSet(vtkMetaDataSet *input
         loopRefineFilter->SetGlobalWarningDisplay(true);
         loopRefineFilter->Update();
 
+        if (loopRefineFilter->GetOutput()->GetNumberOfCells() == 0)
+        {
+            qDebug() <<  metaObject()->className() << "::Subdivision failed check mesh quality.";
+            return nullptr;
+        }
+
         vtkMetaSurfaceMesh *smesh = vtkMetaSurfaceMesh::New();
         smesh->SetDataSet(loopRefineFilter->GetOutput());
         loopRefineFilter->Delete();

@@ -43,7 +43,7 @@ LCCLogDemonsPlugin::~LCCLogDemonsPlugin()
 {
     delete d;
     
-    d = NULL;
+    d = nullptr;
 }
 
 bool LCCLogDemonsPlugin::initialize()
