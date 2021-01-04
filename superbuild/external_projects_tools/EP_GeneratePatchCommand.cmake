@@ -1,13 +1,19 @@
 ## #############################################################################
 ## Check which patch has to be applied
 ## #############################################################################
+macro(directory_count_elements ep_path elements_count_res)
+    file(GLOB RESULT ${ep_path}/*)
+    list(LENGTH RESULT ${elements_count_res})
+endmacro()
+
 
 function(ep_GeneratePatchCommand ep OutVar)
     find_program(GIT_BIN NAMES git)
     foreach (patch ${ARGN})
         set(PATCHES_TO_APPLY_CUR ${CMAKE_SOURCE_DIR}/superbuild/patches/${patch})
-        
-        if(EXISTS ${EP_PATH_SOURCE}/${ep})    	
+		directory_count_elements(${EP_PATH_SOURCE}/${ep} count)
+		
+        if(NOT ${count} EQUAL 0) #Check if external_project is already cloned
             execute_process(COMMAND ${GIT_BIN} apply --reverse --ignore-whitespace --check ${CMAKE_SOURCE_DIR}/superbuild/patches/${patch}
                             WORKING_DIRECTORY ${EP_PATH_SOURCE}/${ep}
                             RESULT_VARIABLE PATCH_ALREADY_APPLIED
