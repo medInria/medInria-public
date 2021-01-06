@@ -38,10 +38,8 @@ if (NOT USE_SYSTEM_${ep})
 ## Set up versioning control
 ## #############################################################################
 
-if (NOT DEFINED ${ep}_SOURCE_DIR)
-    set(git_url ${GITHUB_PREFIX}Kitware/VTK.git)
-    set(git_tag v8.1.2)
-endif()
+set(git_url ${GITHUB_PREFIX}Kitware/VTK.git)
+set(git_tag v8.1.2)
 
 ## #############################################################################
 ## Add specific cmake arguments for configuration step of the project
@@ -117,7 +115,7 @@ endif()
 ## #############################################################################
 
 ep_GeneratePatchCommand(${ep} ${ep}_PATCH_COMMAND VTK.patch)
-
+message(${VTK_PATCH_COMMAND})
 ## #############################################################################
 ## Add external-project
 ## #############################################################################
