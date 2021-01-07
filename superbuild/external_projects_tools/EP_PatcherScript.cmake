@@ -6,7 +6,6 @@ macro(directory_count_elements ep_path elements_count_res)
     list(LENGTH RESULT ${elements_count_res})
 endmacro()
 
-
 function(ep_GenerateValidPatcherScript ep OutVar patch)
     find_program(GIT_BIN NAMES git)
 
@@ -20,7 +19,7 @@ function(ep_GenerateValidPatcherScript ep OutVar patch)
                         OUTPUT_QUIET
                         ERROR_QUIET)
         				
-        if (PATCH_ALREADY_APPLIED EQUAL 0) #Like all OS system command 0 is Ok, not 0 is bad.
+        if (PATCH_ALREADY_APPLIED EQUAL 0) #As all OS system commands: 0 is Ok, not 0 is bad.
         	# The patch is already applied
         	message("The patch ${patch} for the external project ${ep} is already applied")
         	set (PATCHES_TO_APPLY_CUR "") #Then erase PATCHES_TO_APPLY_CUR
@@ -30,8 +29,8 @@ function(ep_GenerateValidPatcherScript ep OutVar patch)
                             RESULT_VARIABLE PATCH_APPLICABLE
                             OUTPUT_QUIET
                             ERROR_QUIET)
-        	if(PATCH_APPLICABLE EQUAL 0) #Like all OS system command 0 is Ok, not 0 is bad.
-    		    #Do nothing the value is already set
+        	if(PATCH_APPLICABLE EQUAL 0) #As all OS system commands: 0 is Ok, not 0 is bad.
+    		    #Do nothing, the value is already set
     		    message("The patch ${patch} will be applied on pre-existing ${EP_PATH_SOURCE}/${ep}")
     		else()
         		message(FATAL_ERROR "The patch ${patch} for the external project ${ep} is NOT APPLICABLE")
