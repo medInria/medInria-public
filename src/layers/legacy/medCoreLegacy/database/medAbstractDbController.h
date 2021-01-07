@@ -32,34 +32,35 @@ public:
     virtual int dataSourceId() const = 0;
 
     virtual bool createConnection() = 0;
-    
+
     virtual QList<medDataIndex> patients() const = 0;
-    virtual QList<medDataIndex> studies(const medDataIndex& index ) const = 0;
-    virtual QList<medDataIndex> series(const medDataIndex& index) const = 0;
+    virtual QList<medDataIndex> studies(const medDataIndex &index) const = 0;
+    virtual QList<medDataIndex> series(const medDataIndex &index) const = 0;
+    virtual QList<QList<QVariant>> requestDatabaseForModel() const { return QList<QList<QVariant>>(); };
 
-    virtual QPixmap thumbnail(const medDataIndex& index) const = 0;
+    virtual QPixmap thumbnail(const medDataIndex &index) const = 0;
 
-    virtual QString metaData(const medDataIndex& index,const QString& key) const = 0;
-    QString metaData(const medDataIndex& index,const medMetaDataKeys::Key& md) const { return metaData(index,md.key()); }
-    virtual bool setMetaData(const medDataIndex& index, const QString& key, const QString& value) = 0;
+    virtual QString metaData(const medDataIndex &index, const QString &key) const = 0;
+    QString metaData(const medDataIndex &index, const medMetaDataKeys::Key &md) const { return metaData(index, md.key()); }
+    virtual bool setMetaData(const medDataIndex &index, const QString &key, const QString &value) = 0;
     virtual bool isPersistent() const = 0;
 
 signals:
-    void metadataModified(const medDataIndex& index, const QString& key = "", const QString& value = "");
-    void dataImported(const medDataIndex& index, QUuid importId);
-    void dataRemoved(const medDataIndex& index);
+    void metadataModified(const medDataIndex &index, const QString &key = "", const QString &value = "");
+    void dataImported(const medDataIndex &index, QUuid importId);
+    void dataRemoved(const medDataIndex &index);
 
 public slots:
-    virtual medAbstractData* retrieve(const medDataIndex& index) const = 0;
+    virtual medAbstractData *retrieve(const medDataIndex &index) const = 0;
 
-    virtual void importData(medAbstractData* data, const QUuid& importUuid) = 0;
-    virtual void importPath(const QString& file, const QUuid& importUuid, bool indexWithoutCopying) = 0;
+    virtual void importData(medAbstractData *data, const QUuid &importUuid) = 0;
+    virtual void importPath(const QString &file, const QUuid &importUuid, bool indexWithoutCopying) = 0;
 
-    virtual void remove(const medDataIndex& index) = 0;
+    virtual void remove(const medDataIndex &index) = 0;
     virtual void removeAll() = 0;
 
-    virtual bool contains(const medDataIndex& index) const = 0;
+    virtual bool contains(const medDataIndex &index) const = 0;
 
-    virtual QList<medDataIndex> moveStudy(const medDataIndex& indexStudy, const medDataIndex& toPatient) =  0;
-    virtual medDataIndex moveSeries(const medDataIndex& indexSeries, const medDataIndex& toStudy) =  0;
+    virtual QList<medDataIndex> moveStudy(const medDataIndex &indexStudy, const medDataIndex &toPatient) = 0;
+    virtual medDataIndex moveSeries(const medDataIndex &indexSeries, const medDataIndex &toStudy) = 0;
 };

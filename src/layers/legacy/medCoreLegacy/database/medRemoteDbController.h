@@ -1,4 +1,3 @@
-#pragma once
 /*=========================================================================
 
  medInria
@@ -12,6 +11,8 @@
 
 =========================================================================*/
 
+#pragma once
+
 #include <QSqlDatabase>
 #include <QSqlQuery>
 
@@ -19,14 +20,14 @@
 #include <medCoreLegacyExport.h>
 
 /**
- * Specialization of Concrete dbController implementation which allow to connect to local sqlite database
+ * Specialization of Concrete dbController implementation which allow to connect to remote postgres database
  */
-class MEDCORELEGACY_EXPORT medLocalDbController : public medSqlDbController
+class MEDCORELEGACY_EXPORT medRemoteDbController : public medSqlDbController
 {
     Q_OBJECT
 
 public:
-    static medLocalDbController *instance();
+    static medRemoteDbController *instance();
 
     bool createConnection();
     bool closeConnection() override;
@@ -34,16 +35,9 @@ public:
     QList<medDataIndex> patients() const override;
     QList<QList<QVariant>> requestDatabaseForModel() const;
 
-    void addTextColumnToSeriesTableIfNeeded(QSqlQuery query, QString columnName);
-
 protected:
-    medLocalDbController();
+    medRemoteDbController();
 
 private:
-    bool createPatientTable();
-    bool createStudyTable();
-    bool createSeriesTable();
-
-    bool updateFromNoVersionToVersion1();
-    static medLocalDbController *s_instance;
+    static medRemoteDbController *s_instance;
 };
