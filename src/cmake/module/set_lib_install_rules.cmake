@@ -50,21 +50,18 @@ install(TARGETS ${target}
   ARCHIVE DESTINATION lib
   )
 
-
 ## #############################################################################
 ## Add header wich have to be exposed in the include dir of the install tree
 ## #############################################################################
 
-# if(${ARGC} GREATER 1)
-#   set(headers ${ARGV})
+if(${ARGC} GREATER 2)
+  set(headers ${ARGV})
 
-#   message("**************${ARGV}")
-
-#   list(REMOVE_ITEM headers ${target})
-#   install(FILES ${headers}
-#     DESTINATION include/${target}
-#     )
-# endif()
+  list(REMOVE_ITEM headers ${target} ${dest})
+  install(FILES ${headers}
+    DESTINATION include/${target}
+    )
+endif()
 
 endmacro()
 
