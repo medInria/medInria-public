@@ -81,8 +81,6 @@ function(music_plugins_project)
             BUILD_ALWAYS 1
             )
 
-        #set(EXTERNAL_PROJECT_PLUGINS_LEGACY_DIRS ${EXTERNAL_PROJECT_PLUGINS_LEGACY_DIRS} "${build_path}" PARENT_SCOPE)
-
         ExternalProject_Get_Property(${external_project} binary_dir)
         set(${external_project}_DIR ${binary_dir} PARENT_SCOPE)
 
