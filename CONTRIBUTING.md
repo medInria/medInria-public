@@ -2,6 +2,16 @@
 
 Welcome to the medInria Community! 
 
+# Getting started
+
+Please **read carefully** [the GitHub guide on Contributing to Open Source](https://guides.github.com/activities/contributing-to-open-source/). We also recommend you to check this [more detailed documentation on issues and pull requests](https://help.github.com/categories/collaborating-with-issues-and-pull-requests/).
+
+# How development is organized
+- The `master` branch hosts the code under development. We aim to only merge stable contributions, but only minimal effort is put to check side effects of these contributions (ie. contributed fixes or features are tested before a merge, but we acknowledge they might breack things).
+- If you build application based on medInria, we recommend you base your code on medInria's stable branches (those named after the version they prepare as in `3.1.x`), not on `master`, as these see all the systematic testing.
+- Renaming, reorganizing and similar janitoring on the code will only be accepted during short periods before a new stable branch is created. This helps the flow of code between the stable branch and the `master` branch when fixes are applied to one of them.
+- When cherry-picking between branches fails, and you port a commit from one branch to the otherdirectly, the commit message shoud reference the commit that has been ported with the same message with `ported commit <git hash>` appended. 
+
 # Rules for medInria participants
 - To propose a bundle of code use the Pull Request (PR) system. Pull request target branch should be master.
 - Identify the nature of the change of your PR with appropriate title, description and if needed label or milestone.
@@ -25,10 +35,6 @@ Welcome to the medInria Community!
 About the steering committees:
 - **STC**: medInria Scientific and Technical Committee, defines the technical roadmap twice a year, validate the contribution rules, the Reviewers team and discuss every technical point in medInria.
 - **EC**: medInria Executive Committee, decides on evolution of the membership contract, the communication policy and the priorities of the Consortium.
-
-# Getting started
-
-Please **read carefully** [the GitHub guide on Contributing to Open Source](https://guides.github.com/activities/contributing-to-open-source/). We also recommend you to check this [more detailed documentation on issues and pull requests](https://help.github.com/categories/collaborating-with-issues-and-pull-requests/).
 
 # Issues
 
