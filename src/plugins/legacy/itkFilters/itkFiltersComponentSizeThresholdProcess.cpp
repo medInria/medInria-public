@@ -147,7 +147,6 @@ int itkFiltersComponentSizeThresholdProcess::updateProcess(medAbstractData *inpu
 
     setOutputData(medAbstractDataFactory::instance()->createSmartPointer(medUtilitiesITK::itkDataImageId<OutputImageType>()));
 
-    std::cout << "d->binarize = " << d->binarize << std::endl;
     if (d->binarize == true)
     {
 
