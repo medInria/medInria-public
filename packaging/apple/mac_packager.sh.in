@@ -33,6 +33,9 @@ done
 
 @dtk_DIR@/bin/dtkDeploy medInria.app $injectDirs &>/dev/null
 
+# Remove useless plugins
+\rm -fr PlugIns/{bearer, iconengines, imageformats, platforminputcontexts, platforms, printsupport, sqldrivers, styles, virtualkeyboard}
+
 #Run fancy packaging apple script
 
 \cp -f @medInria_SOURCE_DIR@/utils/osx_packaging/BaseMedinriaPackage.sparseimage.gz @PROJECT_BINARY_DIR@/MedinriaPackage.sparseimage.gz
