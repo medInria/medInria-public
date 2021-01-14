@@ -143,13 +143,13 @@ itkProcessRegistrationOptimusToolBox::~itkProcessRegistrationOptimusToolBox(void
 {
     delete d;
 
-    d = NULL;
+    d = nullptr;
 }
 
 dtkPlugin * itkProcessRegistrationOptimusToolBox::plugin()
 {
     medPluginManager* pm = medPluginManager::instance();
-    dtkPlugin* plugin = pm->plugin("Optimus");
+    dtkPlugin* plugin = pm->plugin("itkProcessRegistrationOptimusPlugin");
     return plugin;
 }
 

@@ -24,7 +24,7 @@ public:
     dtkSmartPointer <medAbstractData> input0; //data
     dtkSmartPointer <medAbstractData> input1; //mask
     std::vector<double> computedOutput;
-    enum statsParameter {MEANVARIANCE, VOLUMEML, MINMAX};
+    enum statsParameter {MEAN_STDDEVIATION, VOLUMEML, MINMAX};
     statsParameter chooseFct;
     double outsideValue;
 

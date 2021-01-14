@@ -12,6 +12,39 @@
 =========================================================================*/
 #include "medLogger.h"
 #include <QTextStream>
+#include <iostream>
+#include <string>
+
+#if defined(WIN32)
+std::wstring convertUTF8toLocalUtfString(char const * pi_pchStringToConvert)
+{
+    std::wstring wsRes;
+
+    WCHAR * pwcTmp = nullptr;
+
+    int iWCharBuffSize = MultiByteToWideChar(CP_UTF8, 0, pi_pchStringToConvert, -1, nullptr, 0);
+    if (iWCharBuffSize > 0)
+    {
+        pwcTmp = new WCHAR[iWCharBuffSize + 1];
+        if (MultiByteToWideChar(CP_UTF8, 0, pi_pchStringToConvert, -1, pwcTmp, iWCharBuffSize + 1) == iWCharBuffSize)
+        {
+            wsRes = pwcTmp;
+        }
+        delete[] pwcTmp;
+        pwcTmp = nullptr;
+    }
+
+    return wsRes;
+}
+#else
+std::string convertUTF8toLocalUtfString(char const * pi_pchStringToConvert)
+{
+    return std::string(pi_pchStringToConvert);
+}
+#endif
+
+typedef boost::iostreams::tee_device<std::ostream, std::ofstream> TeeDevice;
+typedef boost::iostreams::stream<TeeDevice> TeeStream;
 
 class medLoggerPrivate
 {
@@ -19,8 +52,17 @@ public:
     static medLogger* singleton;
     static bool logAccessFlag;
 
+    std::ofstream logFile;
+    QList<std::ostream*> redirectedStreams;
+    QList<std::ostream*> redirectedStreamDummies;
+    QList<TeeStream*> teeStreams;
+    QList<std::streambuf*> previousStreamBuffers;
+
     static const qint64 maxLogSize = 5000000;
     static const qint64 minLogSize = 1000000;
+
+
+    medLoggerPrivate() : logFile(convertUTF8toLocalUtfString(dtkLogPath(qApp).toUtf8().data()), std::ios::app) {}
 };
 
 medLogger* medLoggerPrivate::singleton = nullptr;
@@ -89,9 +131,21 @@ void medLogger::redirectQtMessage(QtMsgType type, const QString& message)
     }
 }
 
+void medLogger::redirectMessage(const QString& message)
+{
+    dtkTrace() << message;
+}
+
+void medLogger::redirectErrorMessage(const QString& message)
+{
+    dtkError() << message;
+}
+
 medLogger::medLogger() : d(new medLoggerPrivate)
 {
     qRegisterMetaType<QtMsgType>("QtMsgType");
+
+    initializeTeeStreams();
 
     truncateLogFileIfHeavy();
 
@@ -99,10 +153,6 @@ medLogger::medLogger() : d(new medLoggerPrivate)
 
     dtkLogger::instance().attachFile(dtkLogPath(qApp));
     dtkLogger::instance().attachConsole();
-
-    // Redirect cerr and cout messages
-    dtkLogger::instance().redirectCerr();
-    dtkLogger::instance().redirectCout();
 
     // Redirect Qt messages
     QObject::connect(this, SIGNAL(newQtMessage(QtMsgType,QString)), this, SLOT(redirectQtMessage(QtMsgType,QString)));
@@ -116,6 +166,35 @@ medLogger::~medLogger()
 
     QObject::disconnect(this, SIGNAL(newQtMessage(QtMsgType,QString)), this, SLOT(redirectQtMessage(QtMsgType,QString)));
     qInstallMessageHandler(nullptr);
+    finalizeTeeStreams();
+}
+
+void medLogger::initializeTeeStreams()
+{
+    createTeeStream(&std::cout);
+    createTeeStream(&std::cerr);
+}
+
+void medLogger::finalizeTeeStreams()
+{
+    for (int i = 0; i < d->redirectedStreams.length(); i++)
+    {
+        d->teeStreams.first()->flush();
+        d->teeStreams.first()->close();
+        delete d->teeStreams.takeFirst();
+        delete d->redirectedStreamDummies.takeFirst();
+        d->redirectedStreams.takeFirst()->rdbuf(d->previousStreamBuffers.takeFirst());
+    }
+}
+
+void medLogger::createTeeStream(std::ostream* targetStream)
+{
+    d->redirectedStreams.append(targetStream);
+    d->previousStreamBuffers.append(targetStream->rdbuf());
+    d->redirectedStreamDummies.append(new std::ostream(targetStream->rdbuf()));
+    TeeDevice* teeDevice = new TeeDevice(*d->redirectedStreamDummies.last(), d->logFile);
+    d->teeStreams.append(new TeeStream(*teeDevice));
+    targetStream->rdbuf(d->teeStreams.last()->rdbuf());
 }
 
 void medLogger::truncateLogFileIfHeavy()

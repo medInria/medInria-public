@@ -354,9 +354,7 @@ void vtkMetaDataSetSequence::ComputeSequenceDuration()
         return;
     }
 
-    double step = (this->GetMaxTime() - this->GetMinTime())/(double)(this->GetNumberOfMetaDataSets()-1);
-
-    this->SequenceDuration = this->GetMaxTime() - this->GetMinTime() + step;
+    this->SequenceDuration = this->GetMaxTime() - this->GetMinTime();
 }
 
 //----------------------------------------------------------------------------
@@ -704,9 +702,12 @@ void vtkMetaDataSetSequence::CopyInformation (vtkMetaDataSet *metadataset)
 //----------------------------------------------------------------------------
 void vtkMetaDataSetSequence::ComputeTimesFromDuration()
 {
-    for (int i=0; i<this->GetNumberOfMetaDataSets(); i++)
+    int nbDataSets = this->GetNumberOfMetaDataSets();
+    // compute the time step between each data set
+    double dt = this->GetSequenceDuration() / (nbDataSets - 1);
+    for (int i = 0; i < nbDataSets; i++)
     {
-        this->GetMetaDataSet(i)->SetTime((double) ( i )/ (double)(this->GetNumberOfMetaDataSets() ) );
+        this->GetMetaDataSet(i)->SetTime(dt * i);
     }
 }
 

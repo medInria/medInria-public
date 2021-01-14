@@ -92,8 +92,8 @@ ExternalProject_Add(${ep}
   DEPENDS ${${ep}_dependencies}
   INSTALL_COMMAND ""
   BUILD_ALWAYS 1
-  )  
-  
+  )
+ 
 ## #############################################################################
 ## Set variable to provide infos about the project
 ## #############################################################################

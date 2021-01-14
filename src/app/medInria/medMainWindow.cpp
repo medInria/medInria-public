@@ -675,7 +675,13 @@ void medMainWindow::showWorkspace(QString workspace)
     d->quickAccessButton->setText(tr("Workspace: ") + details->name);
     d->shortcutAccessWidget->updateSelected(workspace);
     d->quickAccessWidget->updateSelected(workspace);
-    d->workspaceArea->setCurrentWorkspace(workspace);
+
+    if (!d->workspaceArea->setCurrentWorkspace(workspace))
+    {
+        QString message = QString("Cannot open workspace ") + details->name;
+        medMessageController::instance()->showError(message, 3000);
+        switchToHomepageArea();
+    }
 
     this->hideQuickAccess();
     this->hideShortcutAccess();

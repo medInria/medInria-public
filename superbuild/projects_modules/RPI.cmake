@@ -40,11 +40,8 @@ if (NOT USE_SYSTEM_${ep})
 ## Set up versioning control
 ## #############################################################################
 
-if (NOT DEFINED ${ep}_SOURCE_DIR)
-    set(git_url ${GITHUB_PREFIX}medInria/RPI.git)
-    set(git_tag ITK5.1.1)
-endif()
-
+set(git_url ${GITHUB_PREFIX}medInria/RPI.git)
+set(git_tag ITK5.1.1)
 ## #############################################################################
 ## Add specific cmake arguments for configuration step of the project
 ## #############################################################################
@@ -92,8 +89,8 @@ ExternalProject_Add(${ep}
   CMAKE_ARGS ${cmake_args}
   DEPENDS ${${ep}_dependencies}
   INSTALL_COMMAND ""
-  BUILD_ALWAYS 1
-  )  
+  BUILD_ALWAYS 0
+  ) 
   
 ## #############################################################################
 ## Set variable to provide infos about the project
