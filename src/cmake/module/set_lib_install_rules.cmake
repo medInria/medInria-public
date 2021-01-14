@@ -11,7 +11,7 @@
 #
 ################################################################################
 
-macro(set_lib_install_rules_generic target dest headers_list)
+macro(set_lib_install_rules_generic target dest)
 
 ################################################################################
 #
@@ -55,10 +55,7 @@ install(TARGETS ${target}
 ## #############################################################################
 
 if(${ARGC} GREATER 2)
-  set(headers ${ARGV})
-
-  list(REMOVE_ITEM headers ${target} ${dest})
-  install(FILES ${headers}
+  install(FILES ${ARGN}
     DESTINATION include/${target}
     )
 endif()
@@ -66,10 +63,10 @@ endif()
 endmacro()
 
 
-macro(set_lib_install_rules target headers_list )  
-  set_lib_install_rules_generic( ${target} ${CMAKE_BINARY_DIR} ${headers_list})
+macro(set_lib_install_rules target)
+  set_lib_install_rules_generic(${target} ${CMAKE_BINARY_DIR} ${ARGN})
 endmacro()
 
-macro(set_lib_install_rules_external target headers_list )  
-  set_lib_install_rules_generic( ${target} ${medInria_DIR} ${headers_list})
+macro(set_lib_install_rules_external target)
+  set_lib_install_rules_generic(${target} ${medInria_DIR} ${ARGN})
 endmacro()
