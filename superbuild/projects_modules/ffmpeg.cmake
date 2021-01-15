@@ -39,11 +39,9 @@ if (NOT USE_SYSTEM_${ep})
 ## Set up versioning control
 ## #############################################################################
 
-if (NOT DEFINED ${ep}_SOURCE_DIR)
-    if(UNIX) # is TRUE on all UNIX-like OS's, including Apple OS X and CygWin
-        set(tag "n3.4.8") # FFMPEG
-        set(location GIT_REPOSITORY "${GITHUB_PREFIX}FFmpeg/FFmpeg.git" GIT_TAG ${tag})
-    endif()
+if(UNIX) # is TRUE on all UNIX-like OS's, including Apple OS X and CygWin
+    set(git_url ${GITHUB_PREFIX}FFmpeg/FFmpeg.git)
+    set(git_tag n3.4.8)
 endif()
 
 ## #############################################################################
@@ -68,7 +66,8 @@ if (UNIX)
         TMP_DIR ${tmp_path}
         STAMP_DIR ${stamp_path}
 
-        ${location}
+        GIT_REPOSITORY ${git_url}
+        GIT_TAG ${git_tag}
         CONFIGURE_COMMAND ${EP_PATH_SOURCE}/${ep}/configure
             --prefix=${EP_PATH_BUILD}/${ep}
             --disable-static --enable-shared

@@ -25,7 +25,7 @@ macro(set_plugin_install_rules target)
 get_property(GENERATOR_MULTI_CONFIG GLOBAL PROPERTY GENERATOR_IS_MULTI_CONFIG)
 
 if(${GENERATOR_MULTI_CONFIG})
-  set_target_properties(${target} PROPERTIES RUNTIME_OUTPUT_DIRECTORY ${CMAKE_BINARY_DIR}/bin/plugins )
+  set_target_properties( ${target} PROPERTIES RUNTIME_OUTPUT_DIRECTORY                ${CMAKE_BINARY_DIR}/bin/plugins )
   set_target_properties( ${target} PROPERTIES RUNTIME_OUTPUT_DIRECTORY_DEBUG          ${CMAKE_BINARY_DIR}/${platformType}Debug/bin/plugins)
   set_target_properties( ${target} PROPERTIES RUNTIME_OUTPUT_DIRECTORY_RELEASE        ${CMAKE_BINARY_DIR}/${platformType}Release/bin/plugins)
   set_target_properties( ${target} PROPERTIES RUNTIME_OUTPUT_DIRECTORY_MINSIZEREL     ${CMAKE_BINARY_DIR}/${platformType}MinSizeRel/bin/plugins)
@@ -52,7 +52,6 @@ install(TARGETS ${target}
   )
 
 endmacro()
-
 
 
 ################################################################################
@@ -87,22 +86,22 @@ install(TARGETS ${target}
   )
 endmacro()
 
-macro(set_plugin_install_rules_legacy target)
 ################################################################################
 #
 # Usage: set_plugin_install_rules_legacy(target)
 # set rules for the plugin legacy designed by the target
 #
 ################################################################################
-set_plugin_install_rules_legacy_generic(${target} ${CMAKE_BINARY_DIR}) 
+macro(set_plugin_install_rules_legacy target)
+  set_plugin_install_rules_legacy_generic(${target} ${CMAKE_BINARY_DIR}) 
 endmacro()
 
-macro(set_plugin_install_rules_legacy_external target)
 ################################################################################
 #
 # Usage: set_plugin_install_rules_legacy_external(target)
 # set rules for the external plugin legacy designed by the target
 #
 ################################################################################
-set_plugin_install_rules_legacy_generic(${target} ${medInria_DIR}) 
+macro(set_plugin_install_rules_legacy_external target)
+  set_plugin_install_rules_legacy_generic(${target} ${medInria_DIR})
 endmacro()

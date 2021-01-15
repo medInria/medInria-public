@@ -1,24 +1,14 @@
 ## #############################################################################
-## Check which patch has to be applied
+## Generate patch command for an external project. To use with ExternalProject_Add
 ## #############################################################################
-
-function(ep_GeneratePatchCommand ep OutVar)
-    find_program(GIT_BIN NAMES git)
-    foreach (patch ${ARGN})
-        execute_process(COMMAND ${GIT_BIN} apply --ignore-whitespace  --check ${CMAKE_SOURCE_DIR}/superbuild/patches/${patch}
-                        WORKING_DIRECTORY ${EP_PATH_SOURCE}/${ep}
-                        RESULT_VARIABLE PATCH_OK
-                        OUTPUT_QUIET
-                        ERROR_QUIET)
-        if (PATCH_OK EQUAL 0 OR NOT EXISTS ${EP_PATH_SOURCE}/${ep})
-            set(PATCHES_TO_APPLY ${PATCHES_TO_APPLY} ${CMAKE_SOURCE_DIR}/superbuild/patches/${patch})
-        endif()
-    endforeach()
-
-    set(PATCH_COMMAND "")
-    if (NOT "${PATCHES_TO_APPLY}" STREQUAL "")
-        set(PATCH_COMMAND ${GIT_BIN} apply --ignore-whitespace ${PATCHES_TO_APPLY})
-    endif()
+function(ep_GeneratePatchCommand ep OutVar patch)
+    set(PATCH_COMMAND ${CMAKE_COMMAND}
+                      -Dep:STRING=${ep}
+                      -DMEDINRIA_SOURCE_DIR:STRING=${CMAKE_SOURCE_DIR}
+                      -DEP_PATH_SOURCE:STRING=${EP_PATH_SOURCE}
+                      -Dpatch:STRING=${patch} 
+                      -P
+                      ${CMAKE_SOURCE_DIR}/superbuild/external_projects_tools/EP_PatcherScript.cmake)
 
     set(${OutVar} ${PATCH_COMMAND} PARENT_SCOPE)
 endfunction()

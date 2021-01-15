@@ -38,10 +38,10 @@ if (NOT USE_SYSTEM_${ep})
 ## Set up versioning control
 ## #############################################################################
 
-if (NOT DEFINED ${ep}_SOURCE_DIR)
-    set(git_url ${GITHUB_PREFIX}InsightSoftwareConsortium/ITK.git)
-    set(git_tag v5.0.0)
-endif()
+
+set(git_url ${GITHUB_PREFIX}InsightSoftwareConsortium/ITK.git)
+set(git_tag v5.0.0)
+
 
 ## #############################################################################
 ## Add specific cmake arguments for configuration step of the project
