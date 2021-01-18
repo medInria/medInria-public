@@ -56,6 +56,8 @@ endmacro()
 
 ################################################################################
 ##############################   LEGACY   ######################################
+macro(set_plugin_install_rules_legacy_generic target dest)
+get_property(GENERATOR_MULTI_CONFIG GLOBAL PROPERTY GENERATOR_IS_MULTI_CONFIG)
 
 if(${GENERATOR_MULTI_CONFIG})
   set_target_properties( ${target} PROPERTIES RUNTIME_OUTPUT_DIRECTORY_DEBUG          ${dest}/${platformType}Debug/bin/plugins_legacy)
