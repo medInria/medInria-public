@@ -38,7 +38,6 @@ done
 \cp -f @medInria_SOURCE_DIR@/utils/osx_packaging/BaseMedinriaPackage.sparseimage.gz @PROJECT_BINARY_DIR@/MedinriaPackage.sparseimage.gz
 cd @PROJECT_BINARY_DIR@
 gunzip -f MedinriaPackage.sparseimage.gz
-hdiutil resize -size 2g MedinriaPackage.sparseimage
 
 devName=`hdiutil attach -readwrite -noverify -noautoopen MedinriaPackage.sparseimage | egrep '^/dev/' | sed 1q | awk '{print $1}'`
 diskutil rename "medInria base" "medInria @MEDINRIA_SUPERBUILD_VERSION@"
