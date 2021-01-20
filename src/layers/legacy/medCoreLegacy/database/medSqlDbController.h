@@ -54,7 +54,9 @@ public:
     QList<medDataIndex> patients() const = 0;
     QList<medDataIndex> studies(const medDataIndex &index) const override;
     QList<medDataIndex> series(const medDataIndex &index) const override;
-    QList<QList<QVariant>> requestDatabaseForModel() const = 0;
+    void requestDatabaseForModel(QHash<int, QHash<QString, QVariant>> &patientData,
+                                 QHash<int, QHash<QString, QVariant>> &studyData,
+                                 QHash<int, QHash<QString, QVariant>> &seriesData) const = 0;
 
     QString metaData(const medDataIndex &index, const QString &key) const override;
     bool setMetaData(const medDataIndex &index, const QString &key, const QString &value) override;

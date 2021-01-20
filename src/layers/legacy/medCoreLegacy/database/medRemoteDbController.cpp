@@ -115,16 +115,16 @@ QList<medDataIndex> medRemoteDbController::patients() const
     return ret;
 }
 
-QList<QList<QVariant>> medSqlDbController::requestDatabaseForModel() const
+void medRemoteDbController::requestDatabaseForModel(QHash<int, QHash<QString, QVariant>> &patientData,
+                                                    QHash<int, QHash<QString, QVariant>> &studyData,
+                                                    QHash<int, QHash<QString, QVariant>> &seriesData) const
 {
-    QList<QList<QVariant>> ret;
-
     int center = medSettingsManager::instance()
                      ->value("database", "center", -1, false)
                      .toInt();
-    QString queryStr = "select patient.id, patient.name, patient.birthdate, patient.gender, \
-                    study.id, study.name, \
-                    series.id, series.name, series.size, series.age, series.modality , series.acquisitiondate, \
+    QString queryStr = "select patient.id as patient_id, patient.name as patient_name, patient.birthdate, patient.gender, \
+                    study.id as study_id, study.name as study_name, \
+                    series.id as series_id, series.name as series_name, series.size, series.age, series.modality , series.acquisitiondate, \
                     series.importationdate, series.referee, series.performer, series.institution, \
                     series.report, series.thumbnail \
                     from patient \
@@ -144,17 +144,43 @@ QList<QList<QVariant>> medSqlDbController::requestDatabaseForModel() const
     }
 
     execQuery(query, __FILE__, __LINE__);
-#if QT_VERSION > 0x0406FF
-    ret.reserve(query.size());
-#endif
     while (query.next())
     {
-        QList<QVariant> columns;
-        for (int i = 0; i < 18; i++)
+        QHash<QString, QVariant> &patientEntry = patientData[query.value("patient_id").toInt()];
+        if (patientEntry.isEmpty())
         {
-            columns.append(query.value(i));
+            patientEntry[medMetaDataKeys::PatientName.key()] = query.value("patient_name").toString();
+            patientEntry[medMetaDataKeys::BirthDate.key()] = query.value("birthdate").toString();
+            patientEntry[medMetaDataKeys::Gender.key()] = query.value("gender").toString();
         }
-        ret.append(columns);
+
+        QHash<QString, QVariant> &studyEntry = studyData[query.value("study_id").toInt()];
+
+        if (studyEntry.isEmpty())
+        {
+            QList<QVariant> studies = patientEntry["studies"].toList();
+            studies.append(query.value("study_id").toInt());
+            patientEntry["studies"] = studies;
+            studyEntry[medMetaDataKeys::StudyDescription.key()] = query.value("study_name").toString();
+        }
+        QHash<QString, QVariant> &seriesEntry = seriesData[query.value("series_id").toInt()];
+        if (seriesEntry.isEmpty())
+        {
+            QList<QVariant> series = studyEntry["series"].toList();
+            series.append(query.value("series_id").toInt());
+            studyEntry["series"] = series;
+            seriesEntry[medMetaDataKeys::SeriesDescription.key()] = query.value("series_name").toString();
+            seriesEntry[medMetaDataKeys::Size.key()] = query.value("size").toString();
+            seriesEntry[medMetaDataKeys::Age.key()] = query.value("age").toString();
+            seriesEntry[medMetaDataKeys::Modality.key()] = query.value("modality").toString();
+            seriesEntry[medMetaDataKeys::AcquisitionDate.key()] = query.value("acquisitiondate").toString();
+            seriesEntry[medMetaDataKeys::ImportationDate.key()] = query.value("importationdate").toString();
+            seriesEntry[medMetaDataKeys::Referee.key()] = query.value("referee").toString();
+            seriesEntry[medMetaDataKeys::Performer.key()] = query.value("performer").toString();
+            seriesEntry[medMetaDataKeys::Institution.key()] = query.value("institution").toString();
+            seriesEntry[medMetaDataKeys::Report.key()] = query.value("report").toString();
+            seriesEntry[medMetaDataKeys::ThumbnailPath.key()] = query.value("thumbnail").toString();
+        }
     }
-    return ret;
+    return;
 }
