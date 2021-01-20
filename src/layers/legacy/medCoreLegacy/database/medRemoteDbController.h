@@ -33,7 +33,9 @@ public:
     bool closeConnection() override;
 
     QList<medDataIndex> patients() const override;
-    QList<QList<QVariant>> requestDatabaseForModel() const;
+    void requestDatabaseForModel(QHash<int, QHash<QString, QVariant>> &patientData,
+                                 QHash<int, QHash<QString, QVariant>> &studyData,
+                                 QHash<int, QHash<QString, QVariant>> &seriesData) const;
 
 protected:
     medRemoteDbController();

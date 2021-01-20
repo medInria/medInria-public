@@ -546,7 +546,6 @@ void medDatabaseModel::populate(medAbstractDatabaseItem *root)
     int dataSourceId = medDatabaseNonPersistentController::instance()->dataSourceId();
     medAbstractDbController *dbc = medDataManager::instance()->controllerForDataSource(dataSourceId);
     IndexList patientsForSource = dbc->patients();
-
     // Iterate over patientIds for this data source
     for (const medDataIndex &patient : patientsForSource)
     {
@@ -618,65 +617,85 @@ void medDatabaseModel::populate(medAbstractDatabaseItem *root)
     // 2nd : populate persistent database (psql or mysql)
     dataSourceId = medDataManager::instance()->controller()->dataSourceId();
     dbc = medDataManager::instance()->controllerForDataSource(dataSourceId);
-    QList<QList<QVariant>> rows = dbc->requestDatabaseForModel();
+    QHash<int, QHash<QString, QVariant>> patientData;
+    QHash<int, QHash<QString, QVariant>> studyData;
+    QHash<int, QHash<QString, QVariant>> seriesData;
+    dbc->requestDatabaseForModel(patientData, studyData, seriesData);
 
-    for (QList<QVariant> row : rows)
+    QHash<int, QHash<QString, QVariant>>::const_iterator ptIterator = patientData.constBegin();
+    while (ptIterator != patientData.constEnd())
     {
-        QListIterator<QVariant> col(row);
-        medDataIndex patient = medDataIndex::makePatientIndex(dataSourceId, col.next().toInt());
+        // qDebug() << ptIterator.key() << ": " << ptIterator.value() << Qt::endl;
+        medDataIndex patient = medDataIndex::makePatientIndex(dataSourceId, ptIterator.key());
         QList<QVariant> ptData = d->ptDefaultData;
         for (int i(0); i < d->DataCount; ++i)
         {
             QVariant attribute = d->ptAttributes[i].toString();
             if (!attribute.isNull())
             {
-                QVariant data = col.next();
+                QVariant data = ptIterator.value()[attribute.toString()];
                 if (data.isValid())
                     ptData[i] = data;
             }
         }
         medAbstractDatabaseItem *ptItem = new medDatabaseItem(patient, d->ptAttributes, ptData, root);
-        medDataIndex study = medDataIndex::makeStudyIndex(
-            dataSourceId, patient.patientId(), col.next().toInt());
 
-        QList<QVariant> stData = d->stDefaultData;
-        for (int i(0); i < d->DataCount; ++i)
+        QVariantList studyList = ptIterator.value()["studies"].toList();
+        for (QVariantList::iterator stIt = studyList.begin(); stIt != studyList.end(); stIt++)
         {
-            QVariant attribute = d->stAttributes[i];
-            if (!attribute.isNull())
-            {
-                QVariant data = col.next();
-                if (data.isValid())
-                    stData[i] = data;
-            }
-        }
+            int studyId = (*stIt).toInt();
+            // qDebug() << "sudy Id " << studyId << " for patient " << ptIterator.key() << " - " << patient.patientId();
+            medDataIndex study = medDataIndex::makeStudyIndex(dataSourceId, patient.patientId(), studyId);
+            QHash<QString, QVariant> studyEntry = studyData[studyId];
 
-        medAbstractDatabaseItem *stItem = new medDatabaseItem(study, d->stAttributes, stData, ptItem);
-        ptItem->append(stItem);
-
-        medDataIndex series = medDataIndex::makeSeriesIndex(dataSourceId, study.patientId(),
-                                                            study.studyId(), col.next().toInt());
-
-        // justBringStudies: not sure this is useful anymore
-        if (!d->justBringStudies)
-        {
-
-            QList<QVariant> seData = d->seDefaultData;
+            QList<QVariant> stData = d->stDefaultData;
             for (int i(0); i < d->DataCount; ++i)
             {
-                QVariant attribute = d->seAttributes[i];
+                QVariant attribute = d->stAttributes[i];
                 if (!attribute.isNull())
                 {
-                    QVariant data = col.next();
+                    QVariant data = studyEntry.value(attribute.toString());
                     if (data.isValid())
-                        seData[i] = data;
+                        stData[i] = data;
                 }
             }
-            medAbstractDatabaseItem *seItem = new medDatabaseItem(series, d->seAttributes, seData, stItem);
+            medAbstractDatabaseItem *stItem = new medDatabaseItem(study, d->stAttributes, stData, ptItem);
+            ptItem->append(stItem);
 
-            stItem->append(seItem);
+            QVariantList seriesList = studyEntry.value("series").toList();
+            for (QVariantList::iterator seIt = seriesList.begin(); seIt != seriesList.end(); seIt++)
+            {
+                int seriesId = (*seIt).toInt();
+                // qDebug() << "series Id " << seriesId << " for patient " << ptIterator.key() << " - " << patient.patientId() << " and study " << studyId << " - " << study.studyId();
+
+                medDataIndex series = medDataIndex::makeSeriesIndex(dataSourceId, study.patientId(),
+                                                                    study.studyId(), seriesId);
+
+                QHash<QString, QVariant> seriesEntry = seriesData[seriesId];
+                // justBringStudies: not sure this is useful anymore
+                if (!d->justBringStudies)
+                {
+
+                    QList<QVariant> seData = d->seDefaultData;
+                    for (int i(0); i < d->DataCount; ++i)
+                    {
+                        QVariant attribute = d->seAttributes[i];
+                        if (!attribute.isNull())
+                        {
+                            QVariant data = seriesEntry.value(attribute.toString());
+                            if (data.isValid())
+                                seData[i] = data;
+                        }
+                    }
+                    medAbstractDatabaseItem *seItem = new medDatabaseItem(series, d->seAttributes, seData, stItem);
+
+                    stItem->append(seItem);
+                }
+            }
         }
         root->append(ptItem);
+
+        ++ptIterator;
     }
 }
 

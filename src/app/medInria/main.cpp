@@ -133,6 +133,9 @@ int main(int argc, char *argv[])
         {{"port","p"},
             QCoreApplication::translate("main", "database server port (default: \"5432\"). \nThis parameter is taken into account only when remotedb parameter is defined"),
             QCoreApplication::translate("main", "PORT")},
+       {"db_prefix_path",
+            QCoreApplication::translate("main", "set database prefix path. \nThis parameter is taken into account only when remotedb parameter is defined"),
+            QCoreApplication::translate("main", "<db_prefix_path>")},
     });
 
         // Process the actual command line arguments given by the user
@@ -169,6 +172,11 @@ int main(int argc, char *argv[])
             {
                 int port = parser.value("port").toInt();
                 mnger->setValue("database", "port", port, false);
+            }
+            if (parser.isSet("db_prefix_path"))
+            {
+                QString db_prefix_path = parser.value("db_prefix_path");
+                mnger->setValue("database", "db_prefix_path", db_prefix_path, false);
             }
         }
         const bool DirectView = parser.isSet("view");
