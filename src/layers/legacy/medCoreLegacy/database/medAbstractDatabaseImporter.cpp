@@ -389,7 +389,7 @@ void medAbstractDatabaseImporter::importFile ( void )
 
         // and finally we populate the database
         QFileInfo aggregatedFileNameFileInfo ( aggregatedFileName );
-        QString pathToStoreThumbnails = aggregatedFileNameFileInfo.dir().path() + "/" + aggregatedFileNameFileInfo.completeBaseName() + "/";
+        QString pathToStoreThumbnails = aggregatedFileNameFileInfo.dir().path() + QDir::separator() + aggregatedFileNameFileInfo.completeBaseName() + QDir::separator();
         index = this->populateDatabaseAndGenerateThumbnails ( imagemedData, pathToStoreThumbnails );
 
         if(!d->uuid.isNull())
@@ -464,8 +464,8 @@ void medAbstractDatabaseImporter::importData()
 
     if ( !d->indexWithoutImporting )
     {
-        QString subDirName = "/" + patientId;
-        QString imageFileNameBase =  subDirName + "/" +  seriesId;
+        QString subDirName = QDir::separator() + patientId;
+        QString imageFileNameBase =  subDirName + QDir::separator() +  seriesId;
 
         QDir dir ( medStorage::dataLocation() + subDirName );
         if ( !dir.exists() )
@@ -498,7 +498,7 @@ void medAbstractDatabaseImporter::importData()
         }
 
          QFileInfo   seriesInfo ( imageFileName );
-         thumb_dir = seriesInfo.dir().path() + "/" + seriesInfo.completeBaseName() + "/";
+         thumb_dir = seriesInfo.dir().path() + QDir::separator() + seriesInfo.completeBaseName() + QDir::separator();
     }
 
     // Now, populate the database
@@ -577,9 +577,6 @@ void medAbstractDatabaseImporter::populateMissingMetadata ( medAbstractData* med
 
     if ( !medData->hasMetaData ( medMetaDataKeys::StudyID.key() ) )
         medData->setMetaData ( medMetaDataKeys::StudyID.key(), QStringList() << "0" );
-
-    if ( !medData->hasMetaData ( medMetaDataKeys::SeriesInstanceUID.key() ) )
-        medData->setMetaData ( medMetaDataKeys::SeriesInstanceUID.key(), QStringList() << "" );
 
     QString generatedSeriesId = QUuid::createUuid().toString().replace("{","").replace("}","");
 
