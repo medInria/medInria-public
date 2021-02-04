@@ -47,7 +47,6 @@ qtdcmDataSourceSerieToolBox::qtdcmDataSourceSerieToolBox(QWidget *parent) : medT
     mainLayout->addWidget(d->serieInfoWidget);
     d->preview->hide();
     d->serieInfoWidget->hide();
-    d->importWidget->hideProgressBar();
 
     this->addWidget(d->main);
     this->setTitle("Series preview and import");
