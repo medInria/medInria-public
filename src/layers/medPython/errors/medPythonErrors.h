@@ -12,5 +12,5 @@
 
 =========================================================================*/
 
-#include "medPythonErrors.h"
-#include "medPythonInit.h"
+#include "medPythonError.h"
+#include "medPythonExceptionTypes.h"

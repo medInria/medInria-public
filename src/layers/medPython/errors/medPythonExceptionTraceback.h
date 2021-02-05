@@ -12,5 +12,16 @@
 
 =========================================================================*/
 
-#include "medPythonErrors.h"
-#include "medPythonInit.h"
+// This is used to retrieve the traceback of an exception and convert it to a
+// user-readable string.
+
+#include <QString>
+
+#include "medPythonCoreForward.h"
+
+namespace med::python::exception_traceback
+{
+
+QString formatTraceback(PyObject* nativeException);
+
+} // namespace med::python::exception_traceback

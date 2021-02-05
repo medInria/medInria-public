@@ -17,6 +17,7 @@
 #include <QDebug>
 
 #include "medPythonCore.h"
+#include "medPythonExceptionTypes.h"
 
 namespace med::python
 {
@@ -26,6 +27,7 @@ void initialize()
     if (!Py_IsInitialized())
     {
         Py_Initialize();
+        exception_types::initialize();
         QApplication::connect(qApp, &QApplication::aboutToQuit, &finalize);
         qInfo() << "Python initialized: " << Py_GetVersion();
     }
@@ -35,6 +37,7 @@ void finalize()
 {
     if (Py_IsInitialized())
     {
+        exception_types::finalize();
         Py_Finalize();
     }
 }

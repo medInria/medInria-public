@@ -1,4 +1,3 @@
-#pragma once
 /*=========================================================================
 
  medInria
@@ -12,5 +11,26 @@
 
 =========================================================================*/
 
-#include "medPythonErrors.h"
-#include "medPythonInit.h"
+#include "medPythonCoreForward.h"
+
+#include "medPythonCore.h"
+
+namespace med::python
+{
+
+void incref(PyObject* object)
+{
+    Py_XINCREF(object);
+}
+
+void decref(PyObject* object)
+{
+    Py_CLEAR(object);
+}
+
+PyObject* none()
+{
+    Py_RETURN_NONE;
+}
+
+} // namespace med::python
