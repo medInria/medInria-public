@@ -182,6 +182,7 @@ set_lib_properties_variables(
     medWidgets
     medUtilities
     medVtkDataMeshBase
+    medPython
     )
 
 if(EXISTS ${CMAKE_SOURCE_DIR}/cmake/${PROJECT_NAME}Config.cmake.in)
