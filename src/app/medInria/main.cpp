@@ -26,6 +26,7 @@
 #include <medPluginManager.h>
 #include <medDataIndex.h>
 #include <medDatabaseController.h>
+#include <medPython.h>
 #include <medSettingsManager.h>
 #include <medStorage.h>
 
@@ -269,6 +270,8 @@ int main(int argc,char* argv[])
     application.setMainWindow(mainwindow);
 
     forceShow(*mainwindow);
+
+    med::python::initialize();
 
     qInfo() << "### Application is running...";
 
