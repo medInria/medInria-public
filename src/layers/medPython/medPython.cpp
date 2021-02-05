@@ -17,6 +17,7 @@
 #include <QDebug>
 
 #include "medPythonCore.h"
+#include "medPythonError.h"
 
 namespace med
 {
@@ -29,6 +30,9 @@ void initialize()
     {
         Py_Initialize();
         QApplication::connect(qApp, &QApplication::aboutToQuit, &finalize);
+
+        internal::initializeErrorHandling();
+
         qInfo() << "Python initialized: " << Py_GetVersion();
     }
 }
