@@ -27,6 +27,7 @@
 #include <vtkMetaDataSet.h>
 #include <vtkMetaSurfaceMesh.h>
 #include <vtkSmartPointer.h>
+#include <vtkMatrix4x4.h>
 
 // /////////////////////////////////////////////////////////////////
 // iterativeClosestPointProcessPrivate
@@ -47,6 +48,12 @@ public:
     int MaxNumIterations;
     int MaxNumLandmarks;
     double MaxMeanDistance;
+    int exportMatrixState;
+    QString exportMatrixFilePath;
+    QString sourceName;
+    QString targetName;
+
+    vtkSmartPointer<vtkMatrix4x4> TransformMatrix;
 };
 
 // /////////////////////////////////////////////////////////////////
@@ -134,8 +141,29 @@ void iterativeClosestPointProcess::setParameter(int data, int channel)
         case 5:
             d->MaxNumLandmarks = data;
             break;
+        case 7:
+            d->exportMatrixState = data;
+            break;
     }
 }
+
+void iterativeClosestPointProcess::setParameter(QString data, int channel)
+{
+    switch (channel)
+    {
+        case 8:
+            d->exportMatrixFilePath = data;
+            break;
+        case 9:
+            d->sourceName = data;
+            break;
+        case 10:
+            d->targetName = data;
+            break;
+    }
+}
+
+
 
 int iterativeClosestPointProcess::update()
 {
@@ -145,10 +173,10 @@ int iterativeClosestPointProcess::update()
     }
 
     vtkSmartPointer<vtkICPFilter> ICPFilter = vtkSmartPointer<vtkICPFilter>::New();
-    
+
     vtkMetaDataSet *source_dataset = static_cast<vtkMetaDataSet*>(d->inputSource->data());
     vtkMetaDataSet *target_dataset = static_cast<vtkMetaDataSet*>(d->inputTarget->data());
-    
+
     ICPFilter->SetSource(static_cast<vtkPolyData*>(source_dataset->GetDataSet()));
     ICPFilter->SetTarget(static_cast<vtkPolyData*>(target_dataset->GetDataSet()));
 
@@ -161,6 +189,14 @@ int iterativeClosestPointProcess::update()
     ICPFilter->SetMaxMeanDistance(d->MaxMeanDistance);
 
     ICPFilter->Update();
+
+    if (d->exportMatrixState == 2)
+    {
+        vtkLinearTransform* transform = ICPFilter->GetLinearTransform();
+        d->TransformMatrix = vtkSmartPointer<vtkMatrix4x4>::New();
+        d->TransformMatrix->DeepCopy(transform->GetMatrix());
+        exportTransformMatrix();
+    }
 
     vtkPolyData *output_polyData = ICPFilter->GetOutput();
 
@@ -182,6 +218,36 @@ int iterativeClosestPointProcess::update()
     }
 
     return medAbstractProcessLegacy::SUCCESS;
+}
+
+
+void iterativeClosestPointProcess::exportTransformMatrix()
+{
+    if (d->exportMatrixState == 2)
+    {
+        QByteArray matrixStr;
+        matrixStr += "# Transformation matrix from " + d->sourceName + " to " + d->targetName + "\n";
+        for(int i = 0; i < 4; i++)
+        {
+            for(int j = 0; j < 4; j++)
+            {
+                matrixStr += QByteArray::number(d->TransformMatrix->GetElement(i, j)) + "\t";
+            }
+            matrixStr += "\n";
+        }
+
+        QFile f(d->exportMatrixFilePath);
+        if (!f.open(QIODevice::WriteOnly))
+        {
+            qDebug() << "Can't open file" << d->exportMatrixFilePath;
+            return;
+        }
+
+        f.write(matrixStr);
+        f.close();
+
+        qDebug() << "Done exporting tranform!";
+    }
 }
 
 medAbstractData * iterativeClosestPointProcess::output()

@@ -31,8 +31,9 @@ public:
     QComboBox *layerSource, *layerTarget;
     QDoubleSpinBox *ScaleFactor, *MaxMeanDistance;
     QSpinBox *MaxNumIterations, *MaxNumLandmarks;
-    QCheckBox *bStartByMatchingCentroids, *bCheckMeanDistance;
+    QCheckBox *bStartByMatchingCentroids, *bCheckMeanDistance, *exportTransferMatrix;
     QComboBox *bTransformationComboBox;
+    QLineEdit *pathExportMatrixLineEdit;
 
     dtkSmartPointer<iterativeClosestPointProcess> process;
 };
@@ -115,9 +116,29 @@ iterativeClosestPointToolBox::iterativeClosestPointToolBox(QWidget *parent)
     MaxNumLandmarks_layout->addWidget(MaxNumLandmarks_Label);
     MaxNumLandmarks_layout->addWidget(d->MaxNumLandmarks);
 
+
+    d->exportTransferMatrix = new QCheckBox(tr("Export Transformation Matrix in a File"));
+    d->exportTransferMatrix->setToolTip("Write the Transformation Matrix to go from Source to Target");
+    connect (d->exportTransferMatrix, SIGNAL(toggled(bool)),
+             this, SLOT(onExportTransferMatrixCheckBoxToggled(bool)));
+
+    QDir dir;
+    QCompleter *fileCompleter = new QCompleter(this);
+    fileCompleter->setModel(new QDirModel(fileCompleter));
+    fileCompleter->setCompletionMode(QCompleter::PopupCompletion);
+
+    d->pathExportMatrixLineEdit = new QLineEdit(dir.absolutePath());
+    d->pathExportMatrixLineEdit->setCompleter(fileCompleter);
+    d->pathExportMatrixLineEdit->hide();
+
+    connect (d->pathExportMatrixLineEdit, SIGNAL(textChanged(QString)),
+             this, SLOT(editTransferMatrixPath(QString)));
+
+
     // Run button
     QPushButton *runButton = new QPushButton(tr("Run"), widget);
     connect(runButton, SIGNAL(clicked()), this, SLOT(run()));
+
 
     parameters_layout->addWidget(d->bStartByMatchingCentroids);
     parameters_layout->addLayout(transformation_layout);
@@ -126,6 +147,8 @@ iterativeClosestPointToolBox::iterativeClosestPointToolBox(QWidget *parent)
     parameters_layout->addLayout(MaxMeanDistance_layout);
     parameters_layout->addLayout(MaxNumIterations_layout);
     parameters_layout->addLayout(MaxNumLandmarks_layout);
+    parameters_layout->addWidget(d->exportTransferMatrix);
+    parameters_layout->addWidget(d->pathExportMatrixLineEdit);
     parameters_layout->addWidget(runButton);
 
     widget->setLayout(parameters_layout);
@@ -168,11 +191,19 @@ void iterativeClosestPointToolBox::run()
             d->process->setParameter(d->MaxNumIterations->value(),4);
             d->process->setParameter(d->MaxNumLandmarks->value(),5);
             d->process->setParameter(d->ScaleFactor->value(),6);
+            d->process->setParameter(d->exportTransferMatrix->checkState(),7);
+            if (d->exportTransferMatrix->checkState() == 2)
+            {
+                d->process->setParameter(d->pathExportMatrixLineEdit->text(), 8);
+                d->process->setParameter(d->layerSource->currentText(), 9);
+                d->process->setParameter(d->layerTarget->currentText(), 10);
+            }
 
             medRunnableProcess *runProcess = new medRunnableProcess;
             runProcess->setProcess (d->process);
             connect (runProcess, SIGNAL(success(QObject*)), this, SLOT(displayOutput()));
             this->addConnectionsAndStartJob(runProcess);
+
         }
         else
         {
@@ -252,3 +283,14 @@ dtkPlugin* iterativeClosestPointToolBox::plugin()
     dtkPlugin *plugin = pm->plugin ( "Iterative Closest Point" );
     return plugin;
 }
+
+void iterativeClosestPointToolBox::onExportTransferMatrixCheckBoxToggled(bool toggle)
+{
+    d->pathExportMatrixLineEdit->setVisible(toggle);
+}
+
+void iterativeClosestPointToolBox::editTransferMatrixPath(QString newPath)
+{
+    d->pathExportMatrixLineEdit->setText(newPath);
+}
+
