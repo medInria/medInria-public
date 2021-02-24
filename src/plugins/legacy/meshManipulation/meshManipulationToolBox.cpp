@@ -462,6 +462,10 @@ void meshManipulationToolBox::importTransform()
             int i = 0, j = 0;
             for(QByteArray line : matrixStr.split('\n'))
             {
+                if (line[0].operator==('#'))
+                {
+                    continue;
+                }
                 for(QByteArray num : line.split('\t'))
                 {
                     m->SetElement(i, j, num.toDouble());
