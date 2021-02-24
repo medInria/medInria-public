@@ -48,6 +48,8 @@ install(TARGETS ${target}
   RUNTIME DESTINATION bin
   LIBRARY DESTINATION lib
   ARCHIVE DESTINATION lib
+  FRAMEWORK DESTINATION lib
+  RESOURCE DESTINATION resources/${target}
   )
 
 ## #############################################################################
