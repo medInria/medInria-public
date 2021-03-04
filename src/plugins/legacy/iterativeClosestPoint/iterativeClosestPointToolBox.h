@@ -41,7 +41,6 @@ public slots:
     void run();
     virtual void updateView();
     void resetComboBoxes();
-    void exportTransform();
     
 protected slots:
     void displayOutput();
