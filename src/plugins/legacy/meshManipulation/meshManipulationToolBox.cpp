@@ -14,6 +14,7 @@
 #include <medAbstractProcessLegacy.h>
 #include <medDataManager.h>
 #include <meshManipulationToolBox.h>
+#include <medMessageController.h>
 #include <medPluginManager.h>
 #include <medTabbedViewContainers.h>
 #include <medToolBoxBody.h>
@@ -635,6 +636,12 @@ void meshManipulationToolBox::exportTransform()
 
 void meshManipulationToolBox::importTransform()
 {
+    auto showError = [=](QString errorMessage, QFile& f)
+    {
+        qDebug() << metaObject()->className() << "::" << errorMessage;
+        medMessageController::instance()->showError(errorMessage, 3000);
+    };
+
     QString filePath = QFileDialog::getOpenFileName(this, "Import the matrix file");
     if (!filePath.isEmpty())
     {
@@ -645,27 +652,47 @@ void meshManipulationToolBox::importTransform()
         }
         else
         {
-            QByteArray matrixStr = f.readAll();
-            f.close();
+            QTextStream stream(&f);
 
+            int nbLinesRead = 0;
             QVector<double> m(16);
-            int i = 0, j = 0;
-            for(QByteArray line : matrixStr.split('\n'))
+            while (!stream.atEnd())
             {
-                if (line[0].operator==('#'))
+                QString line = stream.readLine();
+                if (line[0] == '#')
                 {
+                    // skip commentary
                     continue;
                 }
-                for(QByteArray num : line.split('\t'))
+
+                std::stringstream tokenizer(line.toStdString());
+                int i = 0;
+                for (; i < 4 && tokenizer.good(); ++i)
                 {
-                    m[i * 4 + j] = num.toDouble();
-                    std::cout<<" writing in "<<i * 4 + j<<std::endl;
-                    j++;
+                    tokenizer >> m[nbLinesRead * 4 + i];
                 }
-                i++;j = 0;
+
+                if (i != 4)
+                {
+                    // the line does not contain 4 values
+                    showError("Matrix has wrong formatting", f);
+                    f.close();
+                    return;
+                }
+
+                nbLinesRead++;
             }
 
-            tryAddingRegistrationMatrix(m, QFileInfo(filePath).baseName());
+            if (nbLinesRead == 4)
+            {
+                tryAddingRegistrationMatrix(m, QFileInfo(filePath).baseName());
+            }
+            else
+            {
+                showError("Not a 4x4 matrix.", f);
+            }
+
+            f.close();
         }
     }
 }
