@@ -164,7 +164,7 @@ medHomepageArea::medHomepageArea ( QWidget * parent ) : QWidget ( parent ), d ( 
     aboutTextEdit->setFocusPolicy ( Qt::NoFocus );
 
     QTextBrowser * aboutAuthorTextBrowser = new QTextBrowser(this);
-    aboutAuthorTextBrowser->setSource(QUrl("qrc:authors.html" ));
+    aboutAuthorTextBrowser->setSource(QUrl("qrc:authors.txt" ));
     aboutAuthorTextBrowser->setFocusPolicy ( Qt::NoFocus );
 
     QTextEdit * aboutLicenseTextEdit = new QTextEdit(this);
