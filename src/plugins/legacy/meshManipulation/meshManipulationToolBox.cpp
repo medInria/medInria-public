@@ -819,12 +819,6 @@ void meshManipulationToolBox::applySelectedTransformationInverted()
 
 void meshManipulationToolBox::applyTransformationMatrix(vtkSmartPointer<vtkMatrix4x4> matrix)
 {
-    double* p = matrix->GetData();
-    std::cout<<"[ "<<p[0]<<", "<<p[1]<<", "<<p[2]<<", "<<p[3]<<"]"<<std::endl;
-    std::cout<<"[ "<<p[4]<<", "<<p[5]<<", "<<p[6]<<", "<<p[7]<<"]"<<std::endl;
-    std::cout<<"[ "<<p[8]<<", "<<p[9]<<", "<<p[10]<<", "<<p[11]<<"]"<<std::endl;
-    std::cout<<"[ "<<p[12]<<", "<<p[13]<<", "<<p[14]<<", "<<p[15]<<"]"<<std::endl;
-
     addTransformationMatrixToUndoStack(matrix);
     _callback->applyExternalMatrix(matrix);
     if (_view)
