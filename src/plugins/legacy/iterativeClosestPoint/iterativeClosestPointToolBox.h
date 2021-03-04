@@ -41,9 +41,12 @@ public slots:
     void run();
     virtual void updateView();
     void resetComboBoxes();
+    void exportTransform();
     
 protected slots:
     void displayOutput();
+    void onExportTransferMatrixCheckBoxToggled(bool toggle);
+    void editTransferMatrixPath(QString newPath);
 
 private:
     iterativeClosestPointToolBoxPrivate *d;
