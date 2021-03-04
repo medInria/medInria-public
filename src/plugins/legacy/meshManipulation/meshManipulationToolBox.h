@@ -20,6 +20,8 @@ PURPOSE.
 
 class vtkBoxWidget;
 class ManipulationCallback;
+class vtkDataArray;
+class vtkMatrix4x4;
 class vtkMetaDataSet;
 class vtkTransformFilter;
 class vtkTransform;
@@ -38,24 +40,30 @@ class MESHMANIPULATIONPLUGIN_EXPORT meshManipulationToolBox : public medAbstract
 public:
     meshManipulationToolBox(QWidget *parent = nullptr);
     
-    medAbstractData *processOutput();
+    medAbstractData *processOutput() override;
 
     static bool registered();
-    dtkPlugin * plugin();
+    dtkPlugin * plugin() override;
+
+    void addTransformationMatrixToUndoStack(vtkMatrix4x4* matrix);
 
 public slots:
     void setupModificationBox();
-    void cancel();
     void computeData();
     void save();
     void exportTransform();
     void importTransform();
-    void updateView();
+    void updateView() override;
     void resetToolbox();
 
+    void undo();
+    void redo();
+    void cancel();
+
 protected:
-    virtual void clear();
+    void clear() override;
     void reset();
+    void retrieveRegistrationMatricesFromLayers();
 
 protected slots:
     void handleLayerChange();
@@ -63,11 +71,20 @@ protected slots:
     void enableRotation(bool state);
     void enableTranslation(bool state);
     void checkLayer();
+    void applySelectedTransformation();
+    void applySelectedTransformationInverted();
 
 private:
     vtkPointSet* transformDataSet(vtkMetaDataSet *dataset,
                                   vtkTransformFilter *transformFilter,
                                   vtkTransform *t);
+
+    bool arrayHoldsRegistrationMatrix(vtkDataArray* array);
+    QVector<double> retrieveMatrixFromArray(vtkDataArray* array);
+    void tryAddingRegistrationMatrix(const QVector<double>& matrixAsVector, QString registrationName);
+    void initializeUndoStack();
+    bool buildMatrixFromSelectedTransform(vtkSmartPointer<vtkMatrix4x4> matrix);
+    void applyTransformationMatrix(vtkSmartPointer<vtkMatrix4x4> matrix);
 
 private:
     QPointer<medAbstractLayeredView> _view;
@@ -80,9 +97,19 @@ private:
     QCheckBox *_modifyAllCheckBox;
 
     QPushButton *_saveButton;
+    QPushButton *_undoButton;
+    QPushButton *_redoButton;
     QPushButton *_cancelButton;
+    QPushButton *_applyButton;
+    QPushButton *_applyInverseButton;
     QPushButton *_exportButton;
     QPushButton *_importButton;
     vtkSmartPointer<vtkBoxWidget> _boxWidget;
     vtkSmartPointer<ManipulationCallback> _callback;
+
+    std::list<std::array<double, 16>> _undoStack;
+    std::list<std::array<double, 16>>::iterator _undoStackPos;
+
+    QHash<QString, QVector<double>> _registrationMatrices;
+    QListWidget* _availableMatricesWidget;
 };
