@@ -47,25 +47,31 @@ public:
     const QString rows(void) const;
     const QString columns(void) const;
 
-    const medDataIndex& index(void) const;
+    const medDataIndex &index(void) const;
 
     medAbstractData *data(void);
 
-    void setName(const QString& );
-    void setBirthdate(const QString& );
-    void setPatientId(const QString& );
-    void setStudyName(const QString& );
-    void setSeriesName(const QString& );
-    void setFile(const QString& );
-    void setStudyId(const QString& );
-    void setStudyUid(const QString& );
-    void setSeriesId(const QString& );
-    void setSeriesUid(const QString& );
-    void setThumb(const QImage& );
+    void setName(const QString &);
+    void setBirthdate(const QString &);
+    void setPatientId(const QString &);
+    void setStudyName(const QString &);
+    void setSeriesName(const QString &);
+    void setFile(const QString &);
+    void setStudyId(const QString &);
+    void setStudyUid(const QString &);
+    void setSeriesId(const QString &);
+    void setSeriesUid(const QString &);
+    void setThumb(const QImage &);
+    void setOrientation(const QString &);
+    void setSequenceName(const QString &);
+    void setSeriesNumber(const QString &);
+    void setSliceThickness(const QString &);
+    void setRows(const QString &);
+    void setColumns(const QString &);
 
-    void setIndex(const medDataIndex& );
+    void setIndex(const medDataIndex &);
 
-    void setData(medAbstractData* );
+    void setData(medAbstractData *);
 
     bool Match(medAbstractData *);
 

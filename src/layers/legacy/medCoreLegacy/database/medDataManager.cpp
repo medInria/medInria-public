@@ -14,6 +14,7 @@
 #include <medAbstractDataFactory.h>
 #include <medDataManager.h>
 #include <medDatabaseNonPersistentController.h>
+#include <medDataPacsController.h>
 #include <medGlobalDefs.h>
 #include <medJobManagerL.h>
 #include <medLocalDbController.h>
@@ -55,6 +56,10 @@ public:
         {
             return nonPersDbController;
         }
+        else if (pacsController->dataSourceId() == id)
+        {
+            return pacsController;
+        }
         else
         {
             return nullptr;
@@ -65,10 +70,11 @@ public:
 
     medDataManager *const q_ptr;
     QMutex mutex;
-    QHash<medDataIndex, dtkSmartPointer<medAbstractData>>
+    QHash<medDataIndex, dtkSmartPointer<medAbstractData> >
         loadedDataObjectTracker;
-    medAbstractPersistentDbController *dbController;
+    medDatabasePersistentController *dbController;
     medAbstractDbController *nonPersDbController;
+    medAbstractDbController *pacsController;
     QTimer timer;
     QHash<QUuid, medDataIndex> makePersistentJobs;
 };
@@ -111,6 +117,13 @@ medAbstractData *medDataManager::retrieveData(const medDataIndex &index)
     {
         dataObjRef = d->nonPersDbController->retrieve(index);
     }
+    else if (d->pacsController->contains(index))
+    {
+        if (d->pacsController->loadData(index))
+        {
+            dataObjRef = d->pacsController->retrieve(index);
+        }
+    }
 
     if (dataObjRef)
     {
@@ -120,6 +133,36 @@ medAbstractData *medDataManager::retrieveData(const medDataIndex &index)
         return dataObjRef;
     }
     return nullptr;
+}
+
+void medDataManager::loadData(const medDataIndex &index)
+{
+    Q_D(medDataManager);
+    QMutexLocker locker(&(d->mutex));
+
+    if (d->pacsController->contains(index))
+    {
+
+        if (index.isValidForSeries())
+        {
+            d->pacsController->loadData(index);
+        }
+        else if (index.isValidForStudy())
+        {
+            for (medDataIndex id : d->pacsController->series(index))
+            {
+                loadData(id);
+            }
+        }
+        else if (index.isValidForPatient())
+        {
+            for (medDataIndex id : d->pacsController->studies(index))
+            {
+                loadData(id);
+            }
+        }
+    }
+    return;
 }
 
 QUuid medDataManager::importData(medAbstractData *data, bool persistent)
@@ -148,6 +191,13 @@ QUuid medDataManager::importPath(const QString &dataPath,
         persistent ? d->dbController : d->nonPersDbController;
     controller->importPath(dataPath, uuid, indexWithoutCopying);
     return uuid;
+}
+
+void medDataManager::fetchData(const QHash<QString, QHash<QString, QVariant> > &pData,
+                               const QHash<QString, QHash<QString, QVariant> > &sData)
+{
+    Q_D(medDataManager);
+    d->pacsController->importMetaDataFromPacs(pData, sData);
 }
 
 /** @brief return writers able to handle the data *Memory management is the
@@ -396,7 +446,7 @@ medAbstractDbController *medDataManager::controllerForDataSource(
     return d->controllerForDataSource(dataSourceId);
 }
 
-medAbstractPersistentDbController *medDataManager::controller()
+medDatabasePersistentController *medDataManager::controller()
 {
     Q_D(medDataManager);
     return d->dbController;
@@ -439,9 +489,9 @@ void medDataManager::garbageCollect()
     }
 }
 
-QUuid medDataManager::makePersistent(medAbstractData *data)
+QUuid medDataManager::makePersistent(medDataIndex index)
 {
-    if (!data)
+    if (!index.isValid())
     {
         return QUuid();
     }
@@ -449,32 +499,33 @@ QUuid medDataManager::makePersistent(medAbstractData *data)
     Q_D(medDataManager);
 
     // If already persistent
-    if (data->dataIndex().dataSourceId() == d->dbController->dataSourceId())
+    if (index.dataSourceId() == d->dbController->dataSourceId())
     {
         return QUuid();
     }
 
     QUuid jobUuid;
 
-    if (data->dataIndex().isValidForSeries())
+    medAbstractDbController *dbc =
+        d->controllerForDataSource(index.dataSourceId());
+
+    if (index.isValidForSeries())
     {
-        jobUuid = this->importData(data, true);
-        d->makePersistentJobs.insert(jobUuid, data->dataIndex());
+        jobUuid = this->importData(this->retrieveData(index), true);
+        d->makePersistentJobs.insert(jobUuid, index);
     }
-    else if (data->dataIndex().isValidForStudy())
+    else if (index.isValidForStudy())
     {
-        for (medDataIndex index :
-             d->nonPersDbController->series(data->dataIndex()))
+        for (medDataIndex id : dbc->series(index))
         {
-            jobUuid = makePersistent(this->retrieveData(index));
+            jobUuid = makePersistent(id);
         }
     }
-    else if (data->dataIndex().isValidForPatient())
+    else if (index.isValidForPatient())
     {
-        for (medDataIndex index :
-             d->nonPersDbController->studies(data->dataIndex()))
+        for (medDataIndex id : dbc->studies(index))
         {
-            jobUuid = makePersistent(this->retrieveData(index));
+            jobUuid = makePersistent(id);
         }
     }
 
@@ -583,6 +634,7 @@ medDataManager::medDataManager() : d_ptr(new medDataManagerPrivate(this))
     Q_D(medDataManager);
 
     d->nonPersDbController = medDatabaseNonPersistentController::instance();
+    d->pacsController = medDataPacsController::instance();
     // Setting up database connection
     bool remoteDb = medSettingsManager::instance()
                         ->value("database", "remotedb", false, false)
@@ -602,7 +654,7 @@ medDataManager::medDataManager() : d_ptr(new medDataManagerPrivate(this))
     }
 
     QList<medAbstractDbController *> controllers;
-    controllers << d->dbController << d->nonPersDbController;
+    controllers << d->dbController << d->nonPersDbController << d->pacsController;
     for (medAbstractDbController *controller : controllers)
     {
         connect(controller, SIGNAL(dataImported(medDataIndex, QUuid)), this,
@@ -612,6 +664,8 @@ medDataManager::medDataManager() : d_ptr(new medDataManagerPrivate(this))
         connect(controller,
                 SIGNAL(metadataModified(medDataIndex, QString, QString)), this,
                 SIGNAL(metadataModified(medDataIndex, QString, QString)));
+        connect(controller, SIGNAL(moveRequested(const QString &, const QString &)), this,
+                SIGNAL(moveRequested(const QString &, const QString &)));
     }
 
     connect(&(d->timer), SIGNAL(timeout()), this, SLOT(garbageCollect()));

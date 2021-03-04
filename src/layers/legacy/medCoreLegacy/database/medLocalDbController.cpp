@@ -31,7 +31,7 @@ medLocalDbController *medLocalDbController::instance()
     return s_instance;
 }
 
-medLocalDbController::medLocalDbController() : medSqlDbController()
+medLocalDbController::medLocalDbController() : medDatabasePersistentController()
 {
 }
 

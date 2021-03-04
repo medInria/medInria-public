@@ -11,7 +11,7 @@
 
 =========================================================================*/
 
-#include "medSqlDbController.h"
+#include "medDatabasePersistentController.h"
 
 #include <medJobManagerL.h>
 #include <medMessageController.h>
@@ -22,7 +22,7 @@
 #include "medSettingsManager.h"
 #include "medStorage.h"
 
-class medSqlDbControllerPrivate
+class medDatabasePersistentControllerPrivate
 {
 public:
     void buildMetaDataLookup();
@@ -45,11 +45,11 @@ public:
     static const QString T_patient;
 };
 
-const QString medSqlDbControllerPrivate::T_series = "series";
-const QString medSqlDbControllerPrivate::T_study = "study";
-const QString medSqlDbControllerPrivate::T_patient = "patient";
+const QString medDatabasePersistentControllerPrivate::T_series = "series";
+const QString medDatabasePersistentControllerPrivate::T_study = "study";
+const QString medDatabasePersistentControllerPrivate::T_patient = "patient";
 
-void medSqlDbControllerPrivate::buildMetaDataLookup()
+void medDatabasePersistentControllerPrivate::buildMetaDataLookup()
 {
     // The table defines the mapping between metadata in the medAbstractData and
     // the database tables.
@@ -143,13 +143,149 @@ void medSqlDbControllerPrivate::buildMetaDataLookup()
                               << TableEntry(T_series, "acquisitionTime"));
 }
 
-const QSqlDatabase &medSqlDbController::database(void) const
+/**
+* Import data into the db read from file
+* @param const QString & file The file containing the data
+* @param bool indexWithoutCopying true if the file must only be indexed by its current path,
+* false if the file will be imported (copied or converted to the internal storage format)
+*/
+void medDatabasePersistentController::importPath(const QString &file, const QUuid &importUuid, bool indexWithoutCopying)
+{
+    QFileInfo info(file);
+    qDebug() << "persistent import UUID " << importUuid;
+    medDatabaseImporter *importer = new medDatabaseImporter(info.absoluteFilePath(), importUuid, indexWithoutCopying);
+    medMessageProgress *message = medMessageController::instance()->showProgress("Importing " + info.fileName());
+
+    connect(importer, SIGNAL(progressed(int)), message, SLOT(setProgress(int)));
+    // connect(importer, SIGNAL(dataImported(medDataIndex, QUuid)), this, SIGNAL(dataImported(medDataIndex, QUuid)));
+    connect(importer, QOverload<const medDataIndex &, const QUuid &>::of(&medAbstractDatabaseImporter::dataImported), this, [&](medDataIndex index, QUuid uuid) {
+        qDebug() << "Persistent : index " << index << " imported with uuid " << uuid;
+        emit dataImported(index, uuid);
+    });
+
+    connect(importer, SIGNAL(success(QObject *)), message, SLOT(success()));
+    connect(importer, SIGNAL(failure(QObject *)), message, SLOT(failure()));
+    connect(importer, SIGNAL(showError(const QString &, unsigned int)),
+            medMessageController::instance(), SLOT(showError(const QString &, unsigned int)));
+
+    medJobManagerL::instance()->registerJobItem(importer);
+    QThreadPool::globalInstance()->start(importer);
+}
+
+/**
+* Import data into the db read from memory
+* @param medAbstractData * data dataObject
+*/
+void medDatabasePersistentController::importData(medAbstractData *data, const QUuid &importUuid)
+{
+    medDatabaseImporter *importer = new medDatabaseImporter(data, importUuid);
+    medMessageProgress *message = medMessageController::instance()->showProgress("Saving database item");
+
+    connect(importer, SIGNAL(progressed(int)), message, SLOT(setProgress(int)));
+    connect(importer, SIGNAL(dataImported(medDataIndex, QUuid)), this, SIGNAL(dataImported(medDataIndex, QUuid)));
+
+    connect(importer, SIGNAL(success(QObject *)), message, SLOT(success()));
+    connect(importer, SIGNAL(failure(QObject *)), message, SLOT(failure()));
+    connect(importer, SIGNAL(showError(const QString &, unsigned int)),
+            medMessageController::instance(), SLOT(showError(const QString &, unsigned int)));
+
+    medJobManagerL::instance()->registerJobItem(importer);
+    QThreadPool::globalInstance()->start(importer);
+}
+
+void medDatabasePersistentController::showOpeningError(QObject *sender)
+{
+    medMessageController::instance()->showError("Opening item failed.", 3000);
+}
+
+/**
+* Change the storage location of the database by copy, verify, delete
+* @param QString newLocation path of new storage location, must be empty
+* @return bool true on success
+*/
+bool medDatabasePersistentController::moveDatabase(QString newLocation)
+{
+    // close connection if necessary
+    if (this->isConnected())
+    {
+        this->closeConnection();
+    }
+    // now update the datastorage path and make sure to reconnect
+    medStorage::setDataLocation(newLocation);
+
+    qDebug() << "Restarting connection...";
+    this->createConnection();
+
+    return true;
+}
+
+/** override base class */
+void medDatabasePersistentController::remove(const medDataIndex &index)
+{
+    medDatabaseRemover *remover = new medDatabaseRemover(index);
+    medMessageProgress *message = medMessageController::instance()->showProgress("Removing item");
+
+    connect(remover, SIGNAL(progressed(int)), message, SLOT(setProgress(int)));
+    connect(remover, SIGNAL(success(QObject *)), message, SLOT(success()));
+    connect(remover, SIGNAL(failure(QObject *)), message, SLOT(failure()));
+    connect(remover, SIGNAL(removed(const medDataIndex &)), this, SIGNAL(dataRemoved(medDataIndex)));
+
+    medJobManagerL::instance()->registerJobItem(remover);
+    QThreadPool::globalInstance()->start(remover);
+}
+
+/** Implement base class */
+int medDatabasePersistentController::dataSourceId() const
+{
+    return 1;
+}
+
+QPixmap medDatabasePersistentController::thumbnail(const medDataIndex &index) const
+{
+    QString thumbpath = this->metaData(index, medMetaDataKeys::ThumbnailPath.key());
+
+    QFileInfo fileInfo(thumbpath);
+    if (fileInfo.exists())
+    {
+        return QPixmap(thumbpath);
+    }
+    return QPixmap();
+}
+
+/** Implement base class */
+bool medDatabasePersistentController::isPersistent() const
+{
+    return true;
+}
+
+medAbstractData *medDatabasePersistentController::retrieve(const medDataIndex &index) const
+{
+    QScopedPointer<medDatabaseReader> reader(new medDatabaseReader(index));
+    medMessageProgress *message = medMessageController::instance()->showProgress("Opening database item");
+
+    connect(reader.data(), SIGNAL(progressed(int)), message, SLOT(setProgress(int)));
+    connect(reader.data(), SIGNAL(success(QObject *)), message, SLOT(success()));
+    connect(reader.data(), SIGNAL(failure(QObject *)), message, SLOT(failure()));
+
+    connect(reader.data(), SIGNAL(failure(QObject *)), this, SLOT(showOpeningError(QObject *)));
+
+    medAbstractData *data;
+    data = reader->run();
+    return data;
+}
+
+void medDatabasePersistentController::removeAll()
+{
+    qWarning() << "Attempt to remove all item from PERSISTENT dataBase";
+}
+
+const QSqlDatabase &medDatabasePersistentController::database(void) const
 {
     return m_database;
 }
 
 /** create dataIndices out of partial ids */
-medDataIndex medSqlDbController::indexForPatient(int id)
+medDataIndex medDatabasePersistentController::indexForPatient(int id)
 {
     return medDataIndex::makePatientIndex(this->dataSourceId(), id);
 }
@@ -157,7 +293,7 @@ medDataIndex medSqlDbController::indexForPatient(int id)
 /**
  * Returns the index of a data given patient, study, and series name
  */
-medDataIndex medSqlDbController::indexForPatient(
+medDataIndex medDatabasePersistentController::indexForPatient(
     const QString &patientName)
 {
     QSqlQuery query(m_database);
@@ -181,7 +317,7 @@ medDataIndex medSqlDbController::indexForPatient(
     return medDataIndex();
 }
 
-medDataIndex medSqlDbController::indexForStudy(int id)
+medDataIndex medDatabasePersistentController::indexForStudy(int id)
 {
     QSqlQuery query(m_database);
 
@@ -202,8 +338,8 @@ medDataIndex medSqlDbController::indexForStudy(int id)
                                         id);
 }
 
-medDataIndex medSqlDbController::indexForStudy(const QString &patientName,
-                                               const QString &studyName)
+medDataIndex medDatabasePersistentController::indexForStudy(const QString &patientName,
+                                                            const QString &studyName)
 {
     medDataIndex index = this->indexForPatient(patientName);
     if (!index.isValid())
@@ -233,7 +369,38 @@ medDataIndex medSqlDbController::indexForStudy(const QString &patientName,
     return medDataIndex();
 }
 
-medDataIndex medSqlDbController::indexForSeries(int id)
+medDataIndex medDatabasePersistentController::indexForStudyUID(const QString &patientName,
+                                                               const QString &studyInstanceUID)
+{
+    medDataIndex index = this->indexForPatient(patientName);
+    if (!index.isValid())
+        return index;
+
+    QSqlQuery query(m_database);
+
+    QVariant patientId = index.patientId();
+    QVariant studyId = -1;
+
+    query.prepare("SELECT id FROM study WHERE patient = :id AND uid = :uid");
+    query.bindValue(":id", patientId);
+    query.bindValue(":uid", studyInstanceUID);
+
+    if (!execQuery(query, __FILE__, __LINE__))
+    {
+        qDebug() << DTK_COLOR_FG_RED << query.lastError() << DTK_NO_COLOR;
+    }
+
+    if (query.first())
+    {
+        studyId = query.value(0);
+        index.setStudyId(studyId.toInt());
+        return index;
+    }
+
+    return medDataIndex();
+}
+
+medDataIndex medDatabasePersistentController::indexForSeries(int id)
 {
     QSqlQuery query(m_database);
 
@@ -266,7 +433,7 @@ medDataIndex medSqlDbController::indexForSeries(int id)
                                          studyId.toInt(), id);
 }
 
-medDataIndex medSqlDbController::indexForSeries(
+medDataIndex medDatabasePersistentController::indexForSeries(
     const QString &patientName, const QString &studyName,
     const QString &seriesName)
 {
@@ -297,28 +464,58 @@ medDataIndex medSqlDbController::indexForSeries(
     return medDataIndex();
 }
 
+medDataIndex medDatabasePersistentController::indexForSeriesUID(
+    const QString &patientName, const QString &studyInstanceUID,
+    const QString &seriesInstanceUID)
+{
+    medDataIndex index = this->indexForStudyUID(patientName, studyInstanceUID);
+    if (!index.isValid())
+        return index;
+
+    QSqlQuery query(m_database);
+
+    QVariant studyId = index.studyId();
+
+    query.prepare("SELECT id FROM series WHERE study = :id AND uid = :uid");
+    query.bindValue(":id", studyId);
+    query.bindValue(":uid", seriesInstanceUID);
+
+    if (!execQuery(query, __FILE__, __LINE__))
+    {
+        qDebug() << DTK_COLOR_FG_RED << query.lastError() << DTK_NO_COLOR;
+    }
+
+    if (query.first())
+    {
+        QVariant seriesId = query.value(0);
+        index.setSeriesId(seriesId.toInt());
+        return index;
+    }
+
+    return medDataIndex();
+}
 /**
  * Status of connection
  * @return bool true on success
  */
-bool medSqlDbController::isConnected() const
+bool medDatabasePersistentController::isConnected() const
 {
     return d->isConnected;
 }
 
-void medSqlDbController::setConnected(bool flag)
+void medDatabasePersistentController::setConnected(bool flag)
 {
     d->isConnected = flag;
 }
 
-medSqlDbController::medSqlDbController()
-    : d(new medSqlDbControllerPrivate)
+medDatabasePersistentController::medDatabasePersistentController()
+    : d(new medDatabasePersistentControllerPrivate)
 {
     d->buildMetaDataLookup();
     d->isConnected = false;
 }
 
-medSqlDbController::~medSqlDbController()
+medDatabasePersistentController::~medDatabasePersistentController()
 {
     delete d;
 }
@@ -330,7 +527,7 @@ medSqlDbController::~medSqlDbController()
  * moved
  * @param const medDataIndex & toPatient The data index to move the study to.
  */
-QList<medDataIndex> medSqlDbController::moveStudy(
+QList<medDataIndex> medDatabasePersistentController::moveStudy(
     const medDataIndex &indexStudy, const medDataIndex &toPatient)
 {
     QSqlQuery query(m_database);
@@ -381,7 +578,7 @@ QList<medDataIndex> medSqlDbController::moveStudy(
  * moved
  * @param const medDataIndex & toStudy The data index to move the series to.
  */
-medDataIndex medSqlDbController::moveSeries(
+medDataIndex medDatabasePersistentController::moveSeries(
     const medDataIndex &indexSeries, const medDataIndex &toStudy)
 {
     QSqlQuery query(m_database);
@@ -413,11 +610,11 @@ medDataIndex medSqlDbController::moveSeries(
 
 /** Get metadata for specific item. Return uninitialized string if not present.
  */
-QString medSqlDbController::metaData(const medDataIndex &index,
-                                     const QString &key) const
+QString medDatabasePersistentController::metaData(const medDataIndex &index,
+                                                  const QString &key) const
 {
-    typedef medSqlDbControllerPrivate::MetaDataMap MetaDataMap;
-    typedef medSqlDbControllerPrivate::TableEntryList TableEntryList;
+    typedef medDatabasePersistentControllerPrivate::MetaDataMap MetaDataMap;
+    typedef medDatabasePersistentControllerPrivate::TableEntryList TableEntryList;
 
     QSqlQuery query(m_database);
 
@@ -472,12 +669,12 @@ QString medSqlDbController::metaData(const medDataIndex &index,
 }
 
 /** Set metadata for specific item. Return true on success, false otherwise. */
-bool medSqlDbController::setMetaData(const medDataIndex &index,
-                                     const QString &key,
-                                     const QString &value)
+bool medDatabasePersistentController::setMetaData(const medDataIndex &index,
+                                                  const QString &key,
+                                                  const QString &value)
 {
-    typedef medSqlDbControllerPrivate::MetaDataMap MetaDataMap;
-    typedef medSqlDbControllerPrivate::TableEntryList TableEntryList;
+    typedef medDatabasePersistentControllerPrivate::MetaDataMap MetaDataMap;
+    typedef medDatabasePersistentControllerPrivate::TableEntryList TableEntryList;
 
     QSqlQuery query(m_database);
 
@@ -529,7 +726,7 @@ bool medSqlDbController::setMetaData(const medDataIndex &index,
 }
 
 /** Enumerate all studies for given patient*/
-QList<medDataIndex> medSqlDbController::studies(
+QList<medDataIndex> medDatabasePersistentController::studies(
     const medDataIndex &index) const
 {
     QList<medDataIndex> ret;
@@ -556,7 +753,7 @@ QList<medDataIndex> medSqlDbController::studies(
 }
 
 /** Enumerate all series for given study*/
-QList<medDataIndex> medSqlDbController::series(
+QList<medDataIndex> medDatabasePersistentController::series(
     const medDataIndex &index) const
 {
     QList<medDataIndex> ret;
@@ -583,8 +780,24 @@ QList<medDataIndex> medSqlDbController::series(
     return ret;
 }
 
-bool medSqlDbController::execQuery(QSqlQuery &query, const char *file,
-                                   int line) const
+QHash<QString, QString> medDatabasePersistentController::series(const QString &studyInstanceUID) const
+{
+    QHash<QString, QString> seriesInfos;
+    QSqlQuery query(m_database);
+    query.prepare("select series.name as seriesName, series.uid as seriesUID from series inner join study on study.id = series.study where study.uid = :studyUID");
+    query.bindValue(":studyUID", studyInstanceUID);
+
+    execQuery(query, __FILE__, __LINE__);
+
+    while (query.next())
+    {
+        seriesInfos[query.value("seriesUID").toString()] = query.value("seriesName").toString();
+    }
+    return seriesInfos;
+}
+
+bool medDatabasePersistentController::execQuery(QSqlQuery &query, const char *file,
+                                                int line) const
 {
     if (!query.exec())
     {
@@ -598,7 +811,7 @@ bool medSqlDbController::execQuery(QSqlQuery &query, const char *file,
 }
 
 /** Remove / replace characters to transform into a pathname component. */
-QString medSqlDbController::stringForPath(const QString &name) const
+QString medDatabasePersistentController::stringForPath(const QString &name) const
 {
     QString ret = name.simplified();
     ret.replace(0x00EA, 'e');
@@ -606,7 +819,7 @@ QString medSqlDbController::stringForPath(const QString &name) const
     return ret;
 }
 
-bool medSqlDbController::contains(const medDataIndex &index) const
+bool medDatabasePersistentController::contains(const medDataIndex &index) const
 {
     if (index.isValid() && index.dataSourceId() == dataSourceId())
     {

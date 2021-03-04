@@ -19,6 +19,7 @@
 #include <medAbstractDbController.h>
 #include <medAbstractImageData.h>
 #include <medDatabaseImporter.h>
+#include <medDatabasePersistentController.h>
 #include <medDataManager.h>
 #include <medMetaDataKeys.h>
 #include <medStorage.h>
@@ -331,37 +332,37 @@ int medDatabaseImporter::getOrCreateSeries ( const medAbstractData* medData, QSq
 * Finds if parameter @seriesName is already being used in the database
 * if is not, it returns @seriesName unchanged
 * otherwise, it returns an unused new series name (created by adding a suffix)
+* @param studyInstanceUID -  Unique identifier of the Study.
+* @param seriesInstanceUID -  Unique identifier of the Series.
 * @param seriesName - the series name
 * @return newSeriesName - a new, unused, series name
 **/
-QString medDatabaseImporter::ensureUniqueSeriesName ( const QString seriesName )
+QString medDatabaseImporter::ensureUniqueSeriesName(const QString &studyInstanceUID,
+                                                    const QString &seriesInstanceUID,
+                                                    const QString &seriesName)
 {
-    QSqlDatabase db = medDataManager::instance()->controller()->database();
-
-    QSqlQuery query ( db );
-    query.prepare ( "SELECT name FROM series WHERE name LIKE '" + seriesName + "%'" );
-
-    if ( !query.exec() )
+    QHash<QString, QString> seriesInfos = medDataManager::instance()->controller()->series(studyInstanceUID);
+    for (QString uid : seriesInfos.keys())
     {
-        qDebug() << DTK_COLOR_FG_RED << query.lastError() << DTK_NO_COLOR;
+        if (uid == seriesInstanceUID)
+        {
+            qWarning() << "We cannot import the same series twice";
+            emit failure(this);
+            emit dataImported(medDataIndex(), callerUuid());
+            return QString();
+        }
     }
-
-    QStringList seriesNames;
-    while (query.next())
-    {
-        QString sname = query.value(0).toString();
-        seriesNames << sname;
-    }
-
-    QString originalSeriesName = seriesName;
-    QString newSeriesName = seriesName;
 
     int suffix = 0;
-    while (seriesNames.contains(newSeriesName))
+    QString originalSeriesName = seriesName;
+    QString newSeriesName = seriesName;
+    for (QString name : seriesInfos.values())
     {
-        // it exist
-        suffix++;
-        newSeriesName = originalSeriesName + "_" + QString::number(suffix);
+        if (name.contains(seriesName))
+        {
+            suffix++;
+            newSeriesName = originalSeriesName + "_" + QString::number(suffix);
+        }
     }
 
     return newSeriesName;

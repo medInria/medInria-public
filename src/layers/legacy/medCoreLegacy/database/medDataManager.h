@@ -16,7 +16,7 @@
 #include <QPixmap>
 #include <QUuid>
 
-#include <medAbstractPersistentDbController.h>
+#include <medDatabasePersistentController.h>
 #include <medCoreLegacyExport.h>
 #include <medDatabaseExporter.h>
 #include <medDataIndex.h>
@@ -34,16 +34,19 @@ public:
     static medDataManager * instance();
 
     medAbstractData* retrieveData(const medDataIndex& index);
+    void loadData(const medDataIndex &index);
 
     QHash<QString, dtkAbstractDataWriter*> getPossibleWriters(medAbstractData* data);
 
     QUuid importData(medAbstractData* data, bool persistent = false);
     QUuid importPath(const QString& dataPath, bool indexWithoutCopying, bool persistent = false);
+    void fetchData(const QHash<QString, QHash<QString, QVariant> > &pData,
+                   const QHash<QString, QHash<QString, QVariant> > &sData);
 
     void exportData(medAbstractData* data);
     void exportDataToPath(medAbstractData* data, const QString& path, const QString& format = "");
 
-    QUuid makePersistent(medAbstractData* data);
+    QUuid makePersistent(medDataIndex index);
 
     QString getMetaData(const medDataIndex& index, const QString& key);
     bool setMetadata(const medDataIndex& index, const QString& key, const QString& value);
@@ -62,10 +65,10 @@ public:
     // ------------------------- Compatibility code, to be removed -----------
 
     medAbstractDbController* controllerForDataSource(int dataSourceId);
-    medAbstractPersistentDbController* controller();
+    medDatabasePersistentController *controller();
 
     void setDatabaseLocation();
-    
+
 signals:
     void metadataModified(const medDataIndex& index, const QString& key = "", const QString& value = "");
     void dataImported(const medDataIndex& index, QUuid importId);
@@ -75,6 +78,10 @@ signals:
     // ------------------------- To be moved elsewhere -----------------------
     void patientModified(medDataIndex index);
     void studyModified(medDataIndex index);
+
+    void updateProgress(int level);
+    void moveRequested(const QString &uid, const QString &queryLevel);
+    void moveState(int status, const QString &pathOrMessage);
 
 private slots:
     void exportDialog_updateSuffix(int index);

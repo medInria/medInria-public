@@ -16,13 +16,13 @@
 #include <QSqlDatabase>
 #include <QSqlQuery>
 
-#include <medSqlDbController.h>
+#include <medDatabasePersistentController.h>
 #include <medCoreLegacyExport.h>
 
 /**
  * Specialization of Concrete dbController implementation which allow to connect to remote postgres database
  */
-class MEDCORELEGACY_EXPORT medRemoteDbController : public medSqlDbController
+class MEDCORELEGACY_EXPORT medRemoteDbController : public medDatabasePersistentController
 {
     Q_OBJECT
 
@@ -33,9 +33,9 @@ public:
     bool closeConnection() override;
 
     QList<medDataIndex> patients() const override;
-    void requestDatabaseForModel(QHash<int, QHash<QString, QVariant>> &patientData,
-                                 QHash<int, QHash<QString, QVariant>> &studyData,
-                                 QHash<int, QHash<QString, QVariant>> &seriesData) const;
+    void requestDatabaseForModel(QHash<int, QHash<QString, QVariant> > &patientData,
+                                 QHash<int, QHash<QString, QVariant> > &studyData,
+                                 QHash<int, QHash<QString, QVariant> > &seriesData) const;
 
 protected:
     medRemoteDbController();

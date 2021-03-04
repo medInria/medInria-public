@@ -253,33 +253,40 @@ medDataIndex medDatabaseNonPersistentImporter::populateDatabaseAndGenerateThumbn
 * Finds if parameter @seriesName is already being used in the database
 * if is not, it returns @seriesName unchanged
 * otherwise, it returns an unused new series name (created by adding a suffix)
+* @param studyInstanceUID -  Unique identifier of the Study.
+* @param seriesInstanceUID -  Unique identifier of the Series.
 * @param seriesName - the series name
 * @return newSeriesName - a new, unused, series name
 **/
-QString medDatabaseNonPersistentImporter::ensureUniqueSeriesName ( const QString seriesName )
+QString medDatabaseNonPersistentImporter::ensureUniqueSeriesName(const QString &studyInstanceUID,
+                                                                 const QString &seriesInstanceUID,
+                                                                 const QString &seriesName)
 {
     QPointer<medDatabaseNonPersistentController> npdc =
         medDatabaseNonPersistentController::instance();
+    QHash<QString, QString> seriesInfos = npdc->series(studyInstanceUID);
 
-    QList<medDatabaseNonPersistentItem*> items = npdc->items();
-
-    QStringList seriesNames;
-    for(medDatabaseNonPersistentItem* item : items)
+    for (QString uid : seriesInfos.keys())
     {
-        QString sname = item->seriesName();
-        if(sname.startsWith(seriesName) )
-            seriesNames << sname;
+        if (uid == seriesInstanceUID)
+        {
+            qWarning() << "We cannot import the same series twice";
+            emit failure(this);
+            emit dataImported(medDataIndex(), callerUuid());
+            return QString();
+        }
     }
 
+    int suffix = 0;
     QString originalSeriesName = seriesName;
     QString newSeriesName = seriesName;
-
-    int suffix = 0;
-    while (seriesNames.contains(newSeriesName))
+    for (QString name : seriesInfos.values())
     {
-        // it exist
-        suffix++;
-        newSeriesName = originalSeriesName + "_" + QString::number(suffix);
+        if (name.contains(seriesName))
+        {
+            suffix++;
+            newSeriesName = originalSeriesName + "_" + QString::number(suffix);
+        }
     }
 
     return newSeriesName;
