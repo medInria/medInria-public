@@ -53,6 +53,10 @@ public:
     virtual QList<medDataIndex> patients() const;
     virtual QList<medDataIndex> studies(const medDataIndex& index ) const;
     virtual QList<medDataIndex> series(const medDataIndex& index ) const;
+    QHash<QString, QString> series(const QString &studyInstanceUID) const override;
+    virtual void requestDatabaseForModel(QHash<int, QHash<QString, QVariant> > &patientData,
+                                         QHash<int, QHash<QString, QVariant> > &studyData,
+                                         QHash<int, QHash<QString, QVariant> > &seriesData) const {};
 
     virtual QPixmap thumbnail(const medDataIndex &index) const;
 
@@ -60,13 +64,16 @@ public:
 
     virtual bool setMetaData(const medDataIndex& index, const QString& key, const QString& value);
 
+    bool loadData(const medDataIndex &index) override { return false; };
+
 public slots:
-    virtual medAbstractData* retrieve(const medDataIndex& index, bool readFullData = true) const;
+    virtual medAbstractData *retrieve(const medDataIndex &index) const;
 
-    void importData(medAbstractData *data, const QUuid & callerUuid);
-    void importPath(const QString& file, const QUuid & callerUuid, bool indexWithoutCopying);
-
-    void remove(const medDataIndex& index);
+    void importData(medAbstractData *data, const QUuid &callerUuid);
+    void importPath(const QString &file, const QUuid &callerUuid, bool indexWithoutCopying);
+    bool importMetaDataFromPacs(const QHash<QString, QHash<QString, QVariant> > &pData,
+                                const QHash<QString, QHash<QString, QVariant> > &sData) override { return false; };
+    void remove(const medDataIndex &index);
 
     QList<medDataIndex> moveStudy(const medDataIndex& indexStudy, const medDataIndex& toPatient);
 

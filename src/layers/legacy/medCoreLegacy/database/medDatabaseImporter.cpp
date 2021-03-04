@@ -19,6 +19,7 @@
 #include <medAbstractDbController.h>
 #include <medAbstractImageData.h>
 #include <medDatabaseImporter.h>
+#include <medDatabasePersistentController.h>
 #include <medDataManager.h>
 #include <medMetaDataKeys.h>
 #include <medStorage.h>
@@ -88,11 +89,6 @@ medDataIndex medDatabaseImporter::populateDatabaseAndGenerateThumbnails ( medAbs
 
     int studyDbId = getOrCreateStudy ( medData, db, patientDbId );
 
-    // Update name of the series if a permanent data has this name already
-    QString seriesName = medData->metadata(medMetaDataKeys::SeriesDescription.key());
-    QString newSeriesName = ensureUniqueSeriesName(seriesName, QString::number(studyDbId));
-    medData->setMetaData(medMetaDataKeys::SeriesDescription.key(), newSeriesName);
-
     int seriesDbId = getOrCreateSeries ( medData, db, studyDbId );
 
     medDataIndex index = medDataIndex ( medDataManager::instance()->controller()->dataSourceId() , patientDbId, studyDbId, seriesDbId );
@@ -159,8 +155,7 @@ int medDatabaseImporter::getOrCreateStudy ( const medAbstractData* medData, QSql
 
     QString studyName   = medMetaDataKeys::StudyDescription.getFirstValue(medData).simplified();
     QString studyUid    = medMetaDataKeys::StudyInstanceUID.getFirstValue(medData);
-    QString studyId    = medMetaDataKeys::StudyID.getFirstValue(medData);
-
+    QString studyId     = medMetaDataKeys::StudyID.getFirstValue(medData);
     QString seriesName   = medMetaDataKeys::SeriesDescription.getFirstValue(medData).simplified();
 
     if( studyName=="EmptyStudy" && seriesName=="EmptySeries" )
@@ -337,45 +332,37 @@ int medDatabaseImporter::getOrCreateSeries ( const medAbstractData* medData, QSq
 * Finds if parameter @seriesName is already being used in the database
 * if is not, it returns @seriesName unchanged
 * otherwise, it returns an unused new series name (created by adding a suffix)
+* @param studyInstanceUID -  Unique identifier of the Study.
+* @param seriesInstanceUID -  Unique identifier of the Series.
 * @param seriesName - the series name
 * @return newSeriesName - a new, unused, series name
 **/
-QString medDatabaseImporter::ensureUniqueSeriesName ( const QString seriesName, const QString studyId )
+QString medDatabaseImporter::ensureUniqueSeriesName(const QString &studyInstanceUID,
+                                                    const QString &seriesInstanceUID,
+                                                    const QString &seriesName)
 {
-    QSqlDatabase db = medDataManager::instance()->controller()->database();
-
-    QSqlQuery query ( db );
-    if (studyId.isEmpty())
+    QHash<QString, QString> seriesInfos = medDataManager::instance()->controller()->series(studyInstanceUID);
+    for (QString uid : seriesInfos.keys())
     {
-        query.prepare ( "SELECT name FROM series WHERE name LIKE '" + seriesName + "%'");
+        if (uid == seriesInstanceUID)
+        {
+            qWarning() << "We cannot import the same series twice";
+            emit failure(this);
+            emit dataImported(medDataIndex(), callerUuid());
+            return QString();
+        }
     }
-    else
-    {
-        query.prepare ( "SELECT name FROM series WHERE study = :studyId AND name LIKE '" + seriesName + "%'");
-        query.bindValue ( ":studyId", studyId );
-    }
-
-    if ( !query.exec() )
-    {
-        qDebug() << DTK_COLOR_FG_RED << query.lastError() << DTK_NO_COLOR;
-    }
-
-    QStringList seriesNames;
-    while (query.next())
-    {
-        QString sname = query.value(0).toString();
-        seriesNames << sname;
-    }
-
-    QString originalSeriesName = seriesName;
-    QString newSeriesName = seriesName;
 
     int suffix = 0;
-    while (seriesNames.contains(newSeriesName))
+    QString originalSeriesName = seriesName;
+    QString newSeriesName = seriesName;
+    for (QString name : seriesInfos.values())
     {
-        // it exist
-        suffix++;
-        newSeriesName = originalSeriesName + "_" + QString::number(suffix);
+        if (name.contains(seriesName))
+        {
+            suffix++;
+            newSeriesName = originalSeriesName + "_" + QString::number(suffix);
+        }
     }
 
     return newSeriesName;

@@ -33,7 +33,7 @@ medRemoteDbController *medRemoteDbController::instance()
     return s_instance;
 }
 
-medRemoteDbController::medRemoteDbController() : medSqlDbController()
+medRemoteDbController::medRemoteDbController() : medDatabasePersistentController()
 {
 }
 

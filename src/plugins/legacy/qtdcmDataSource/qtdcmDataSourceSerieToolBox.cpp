@@ -47,6 +47,7 @@ qtdcmDataSourceSerieToolBox::qtdcmDataSourceSerieToolBox(QWidget *parent) : medT
     mainLayout->addWidget(d->serieInfoWidget);
     d->preview->hide();
     d->serieInfoWidget->hide();
+    d->importWidget->setFetchMode();
 
     this->addWidget(d->main);
     this->setTitle("Series preview and import");

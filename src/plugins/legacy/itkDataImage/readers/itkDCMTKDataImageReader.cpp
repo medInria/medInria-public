@@ -377,6 +377,7 @@ bool itkDCMTKDataImageReader::readInformation(const QStringList& paths)
         medData->setMetaData(medMetaDataKeys::Age.key(),         d->io->GetPatientAge().c_str());
         medData->setMetaData(medMetaDataKeys::BirthDate.key(),   d->io->GetPatientDOB().c_str());
         medData->setMetaData(medMetaDataKeys::Gender.key(),      d->io->GetPatientSex().c_str());
+        medData->setMetaData(medMetaDataKeys::PatientID.key(), QString::fromLatin1(d->io->GetPatientID().c_str()));
         medData->setMetaData(medMetaDataKeys::Description.key(), QString::fromLatin1(d->io->GetScanOptions().c_str()));
 
         // STUDY

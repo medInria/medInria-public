@@ -15,13 +15,13 @@
 #include <QSqlDatabase>
 #include <QSqlQuery>
 
-#include <medSqlDbController.h>
+#include <medDatabasePersistentController.h>
 #include <medCoreLegacyExport.h>
 
 /**
  * Specialization of Concrete dbController implementation which allow to connect to local sqlite database
  */
-class MEDCORELEGACY_EXPORT medLocalDbController : public medSqlDbController
+class MEDCORELEGACY_EXPORT medLocalDbController : public medDatabasePersistentController
 {
     Q_OBJECT
 
@@ -32,9 +32,9 @@ public:
     bool closeConnection() override;
 
     QList<medDataIndex> patients() const override;
-    void requestDatabaseForModel(QHash<int, QHash<QString, QVariant>> &patientData,
-                                 QHash<int, QHash<QString, QVariant>> &studyData,
-                                 QHash<int, QHash<QString, QVariant>> &seriesData) const;
+    void requestDatabaseForModel(QHash<int, QHash<QString, QVariant> > &patientData,
+                                 QHash<int, QHash<QString, QVariant> > &studyData,
+                                 QHash<int, QHash<QString, QVariant> > &seriesData) const;
 
     void addTextColumnToSeriesTableIfNeeded(QSqlQuery query, QString columnName);
 

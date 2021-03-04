@@ -541,8 +541,9 @@ void medDatabaseModel::repopulate(void)
 void medDatabaseModel::populate(medAbstractDatabaseItem *root)
 {
     typedef QList<medDataIndex> IndexList;
-
     // first : populate non persistent database
+    // [WARNING] : I think we can remove this loop
+    // populate is called at the software initialization. And the non persistent database is always empty at this time.
     int dataSourceId = medDatabaseNonPersistentController::instance()->dataSourceId();
     medAbstractDbController *dbc = medDataManager::instance()->controllerForDataSource(dataSourceId);
     IndexList patientsForSource = dbc->patients();
