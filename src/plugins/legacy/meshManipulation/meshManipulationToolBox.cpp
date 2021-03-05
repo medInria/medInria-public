@@ -114,11 +114,10 @@ meshManipulationToolBox::meshManipulationToolBox(QWidget *parent)
     QVBoxLayout* toolboxLayout = new QVBoxLayout();
     w->setLayout(toolboxLayout);
     
-    QLabel *explanation = new QLabel("Drop one or multiple meshes in the view.\n\n"
-                                     "Scaling: hold <right-click> on the bounding box\n\n"
-                                     "Rotation: hold <left-click> on the sides of the bounding box\n\n"
-                                     "Translation: hold <mouse-wheel button>, or <left-click> on the central sphere of the bounding box\n\n\n"
-                                     "Registration matrices are automatically retrieved from the input datasets if available.\n\n", this);
+    QLabel *explanation = new QLabel("Select one or multiple layers to manually adjust.\n\n"
+                                     "Scaling: hold <right-click> on the bounding box\n"
+                                     "Rotation: hold <left-click> on the sides of the bounding box\n"
+                                     "Translation: hold <mouse-wheel button>, or <left-click> on the central sphere of the bounding box\n\n", this);
     explanation->setSizePolicy(QSizePolicy::Ignored, QSizePolicy::Preferred);
     explanation->setWordWrap(true);
     explanation->setStyleSheet("font: italic");
@@ -166,18 +165,16 @@ meshManipulationToolBox::meshManipulationToolBox(QWidget *parent)
     _availableMatricesWidget = new QListWidget(this);
     _availableMatricesWidget->setToolTip("Lists all the imported registration matrices.");
     _availableMatricesWidget->setObjectName("availableMatricesWidget");
-    _availableMatricesWidget->setMaximumHeight(156);
+    _availableMatricesWidget->setMaximumHeight(96);
     _availableMatricesWidget->setSelectionMode(QAbstractItemView::SingleSelection);
     toolboxLayout->addWidget(_availableMatricesWidget);
 
     QHBoxLayout* applyLayout = new QHBoxLayout();
     _applyButton = new QPushButton("Apply", this);
     _applyButton->setToolTip("Apply selected transformation.");
-//    _applyButton->setEnabled(false);
 
     _applyInverseButton = new QPushButton("Apply inverse", this);
-    _applyInverseButton->setToolTip("Apply the invers transformation");
-//    _applyInverseButton->setEnabled(false);
+    _applyInverseButton->setToolTip("Apply the inverse transformation");
 
     applyLayout->addWidget(_applyButton);
     applyLayout->addWidget(_applyInverseButton);
@@ -736,7 +733,6 @@ void meshManipulationToolBox::addTransformationMatrixToUndoStack(vtkMatrix4x4* m
     if (_undoStackPos != _undoStack.end())
     {
          // there are elements that need to be removed
-        std::cout<<" must remove last transforms"<<std::endl;
         _undoStack.erase(_undoStackPos, _undoStack.end());
         _undoStackPos = _undoStack.end();
     }
