@@ -29,6 +29,7 @@
 #include <vtkActor.h>
 #include <vtkBoxWidget.h>
 #include <vtkCommand.h>
+#include <vtkDoubleArray.h>
 #include <vtkFieldData.h>
 #include <vtkMatrix4x4.h>
 #include <vtkMetaDataSet.h>
@@ -517,6 +518,18 @@ vtkPointSet* meshManipulationToolBox::transformDataSet(vtkMetaDataSet *dataset,
 
     vtkPointSet *newPointset = pointset->NewInstance();
     newPointset->DeepCopy(transformFilter->GetOutput());
+
+    // save the transformation matrix
+    vtkMatrix4x4* m = t->GetMatrix();
+    auto mArray = vtkSmartPointer<vtkDoubleArray>::New();
+    mArray->SetNumberOfTuples(16);
+    mArray->SetNumberOfComponents(1);
+    mArray->SetName("TransformMatrix");
+    double* data = mArray->GetPointer(0);
+    double* mat  = m->GetData();
+    std::memcpy(data, mat, 16 * sizeof(*data));
+
+    newPointset->GetFieldData()->AddArray(mArray);
 
     return newPointset;
 }
