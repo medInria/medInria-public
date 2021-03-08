@@ -134,6 +134,7 @@ void medVtkViewItkDataImage4DInteractor::setInputData(medAbstractData *data)
             double* range = m_poConv->getCurrentScalarRange();
             d->view2d->SetColorRange(range);
             this->initWindowLevelParameters(range);
+            delete [] range;
 
             createSlicingParam();
 
@@ -177,6 +178,7 @@ bool medVtkViewItkDataImage4DInteractor::SetViewInput(medAbstractData* data, int
             {
                 d->view2d->SetInput(poVtkAlgoOutputPort, poMatrix, layer);
                 d->view3d->SetInput(poVtkAlgoOutputPort, poMatrix, layer);
+                poMatrix->Delete();
             }
         }
     }
@@ -209,6 +211,7 @@ bool medVtkViewItkDataImage4DInteractor::SetViewInput(const char* type, medAbstr
                 {
                     d->view2d->SetInput(poVtkAlgoOutputPort, poMatrix, layer);
                     d->view3d->SetInput(poVtkAlgoOutputPort, poMatrix, layer);
+                    poMatrix->Delete();
                 }
             }
         }
