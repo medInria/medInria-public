@@ -63,13 +63,15 @@ set(cmake_args
   -DCMAKE_CXX_FLAGS:STRING=${${ep}_cxx_flags}  
   -DCMAKE_INSTALL_PREFIX:PATH=<INSTALL_DIR>
   -DBUILD_SHARED_LIBS:BOOL=${BUILD_SHARED_LIBS_${ep}}
+  -DLOG_DEMONS_BUILD_PLUGIN:BOOL=OFF
+  )
+
+set(cmake_cache_args
   -DQt5_DIR:FILEPATH=${Qt5_DIR}
   -Ddtk_DIR:FILEPATH=${dtk_DIR}
   -DITK_DIR:FILEPATH=${ITK_DIR}
   -DRPI_DIR:FILEPATH=${RPI_DIR}
-  -DLOG_DEMONS_BUILD_PLUGIN:BOOL=OFF
   )
-
 
 ## #############################################################################
 ## Add external-project
@@ -89,6 +91,7 @@ ExternalProject_Add(${ep}
   CMAKE_GENERATOR ${gen}
   CMAKE_GENERATOR_PLATFORM ${CMAKE_GENERATOR_PLATFORM}
   CMAKE_ARGS ${cmake_args}
+  CMAKE_CACHE_ARGS ${cmake_cache_args}
   DEPENDS ${${ep}_dependencies}
   INSTALL_COMMAND ""
   BUILD_ALWAYS 1
