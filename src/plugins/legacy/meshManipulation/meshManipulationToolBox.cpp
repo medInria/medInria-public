@@ -646,12 +646,6 @@ void meshManipulationToolBox::exportTransform()
 
 void meshManipulationToolBox::importTransform()
 {
-    auto showError = [=](QString errorMessage, QFile& f)
-    {
-        qDebug() << metaObject()->className() << "::" << errorMessage;
-        medMessageController::instance()->showError(errorMessage, 3000);
-    };
-
     QString filePath = QFileDialog::getOpenFileName(this, "Import the matrix file");
     if (!filePath.isEmpty())
     {
@@ -685,7 +679,7 @@ void meshManipulationToolBox::importTransform()
                 if (i != 4)
                 {
                     // the line does not contain 4 values
-                    showError("Matrix has wrong formatting", f);
+                    medToolBox::displayMessageError("Matrix has wrong formatting.");
                     f.close();
                     return;
                 }
@@ -699,11 +693,11 @@ void meshManipulationToolBox::importTransform()
             }
             else
             {
-                showError("Not a 4x4 matrix.", f);
+                medToolBox::displayMessageError("Not a 4x4 matrix.");
             }
 
-            f.close();
         }
+        f.close();
     }
 }
 
