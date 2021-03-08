@@ -156,7 +156,8 @@ vtkImageView2D::~vtkImageView2D()
     (*it3)->Delete();
   }
 
-  if(m_vtkImageFromBoundsSourceGenerator) {
+  if(m_vtkImageFromBoundsSourceGenerator)
+  {
       m_vtkImageFromBoundsSourceGenerator->Delete();
   }
 
