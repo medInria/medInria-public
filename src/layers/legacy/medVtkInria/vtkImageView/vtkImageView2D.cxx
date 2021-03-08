@@ -155,6 +155,13 @@ vtkImageView2D::~vtkImageView2D()
     (*it3)->SetImageView (nullptr);
     (*it3)->Delete();
   }
+
+  if(m_vtkImageFromBoundsSourceGenerator)
+  {
+      m_vtkImageFromBoundsSourceGenerator->Delete();
+  }
+
+  delete qtSignalHandler;
 }
 
 //----------------------------------------------------------------------------
