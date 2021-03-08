@@ -26,7 +26,7 @@ public:
     medCreateMeshFromMask();
     virtual ~medCreateMeshFromMask();
 
-    virtual QString description() const;
+    QString description() const override;
 
     static bool registered();
 

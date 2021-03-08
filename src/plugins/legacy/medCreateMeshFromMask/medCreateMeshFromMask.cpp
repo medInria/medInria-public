@@ -145,6 +145,7 @@ template <class PixelType> int medCreateMeshFromMaskPrivate::update()
         vtkMetaSurfaceMesh *smesh = vtkMetaSurfaceMesh::New();
         smesh->SetDataSet(polydata);
 
+        matrix->Delete();
         contour->Delete();
         contourTrian->Delete();
         if (contourDecimated)
@@ -163,6 +164,17 @@ template <class PixelType> int medCreateMeshFromMaskPrivate::update()
         return medAbstractProcessLegacy::SUCCESS;
     }
 
+    matrix->Delete();
+    contour->Delete();
+    contourTrian->Delete();
+    if (contourDecimated)
+    {
+        contourDecimated->Delete();
+    }
+    if (contourSmoothed)
+    {
+        contourSmoothed->Delete();
+    }
     output = nullptr;
     return medAbstractProcessLegacy::FAILURE;
 }
