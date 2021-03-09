@@ -25,6 +25,7 @@ find_package(OpenGL REQUIRED)
 
 list_source_files(${TARGET_NAME}
   ${CMAKE_CURRENT_SOURCE_DIR}
+  computerInfo
   data
   database
   data/annotationData
@@ -84,7 +85,7 @@ target_link_libraries(${TARGET_NAME}
   )
 
 if (WIN32) #TODO is that for the memory management thing ?
-  target_link_libraries(${TARGET_NAME} psapi.lib)
+  target_link_libraries(${TARGET_NAME} psapi.lib Ws2_32.lib)
 endif()
 
 ## #############################################################################
