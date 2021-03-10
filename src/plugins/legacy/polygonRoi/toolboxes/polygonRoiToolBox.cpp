@@ -45,7 +45,7 @@ polygonRoiToolBox::polygonRoiToolBox(QWidget *parent ) :
     displayWidget->setLayout(layout);
 
     activateTBButton = new QPushButton(tr("Activate Toolbox"));
-    activateTBButton->setToolTip(tr("Activate closed polygon mode"));
+    activateTBButton->setToolTip(tr("Activate closed polygon mode. You should only have one view."));
     activateTBButton->setCheckable(true);
     activateTBButton->setObjectName("closedPolygonButton");
     connect(activateTBButton,SIGNAL(toggled(bool)),this,SLOT(clickClosePolygon(bool)));
@@ -194,6 +194,10 @@ void polygonRoiToolBox::updateView()
             return;
         }
         medAbstractImageView *v = qobject_cast<medAbstractImageView*>(view);
+        if (!v)
+        {
+            return;
+        }
 
         if (v->layersCount()==1 && viewEventFilter)
         {
@@ -235,6 +239,7 @@ void polygonRoiToolBox::updateView()
                 emit currentLabelsDisplayed();
 
                 updateTableWidgetItems();
+
                 connect(currentView, SIGNAL(layerRemoved(uint)), this, SLOT(onLayerClosed(uint)), Qt::UniqueConnection);
                 connect(view, SIGNAL(orientationChanged()), this, SLOT(updateTableWidgetItems()), Qt::UniqueConnection);
                 connect(view, SIGNAL(orientationChanged()), this, SLOT(manageTick()), Qt::UniqueConnection);
@@ -255,7 +260,7 @@ void polygonRoiToolBox::onLayerClosed(uint index)
             viewEventFilter->removeFromAllViews();
             viewEventFilter->reset();
         }
-        clear();
+
         medTabbedViewContainers *tabs = this->getWorkspace()->tabbedViewContainers();
         if (tabs)
         {
@@ -271,6 +276,8 @@ void polygonRoiToolBox::onLayerClosed(uint index)
                 }
             }
         }
+
+        clear();
     }
 }
 
@@ -698,14 +705,29 @@ void polygonRoiToolBox::clear()
     // Switching to a new toolbox, we can reset the main container behavior
     medTabbedViewContainers *tabs = getWorkspace()->tabbedViewContainers();
     QList<medViewContainer*> containersInTabSelected = tabs->containersInTab(tabs->currentIndex());
-    if (containersInTabSelected.size() > 0)
+    if (containersInTabSelected.size() > 1)
     {
         medViewContainer* mainContainer = containersInTabSelected.at(0);
         mainContainer->setClosingMode(medViewContainer::CLOSE_VIEW);
+       
+        // If we switch to an other toolbox, we want to remove the split views
+        containersInTabSelected.at(1)->setClosingMode(medViewContainer::CLOSE_BUTTON_HIDDEN);
+        containersInTabSelected.at(1)->removeView();
+        containersInTabSelected.at(1)->checkIfStillDeserveToLiveContainer();
     }
 
     if(currentView)
     {
         currentView = nullptr;
+    }
+
+    // If every view of the container has been closed, we need to check if the view needs to be reset
+    if (containersInTabSelected.size() == 1)
+    {
+        auto view = containersInTabSelected.at(0)->view();
+        if (view && dynamic_cast<medAbstractLayeredView*>(view)->layersCount() == 0)
+        {
+            containersInTabSelected.at(0)->checkIfStillDeserveToLiveContainer();
+        }
     }
 }
