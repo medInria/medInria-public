@@ -11,7 +11,7 @@ namespace medComputerInfo
     *** CPU
     ******************************************************/
     int MEDCORELEGACY_EXPORT getNbOfCores();
-    int MEDCORELEGACY_EXPORT getloadavg (double *loadavg);
+    int MEDCORELEGACY_EXPORT getLoadAvg(double *loadavg);
 
     /******************************************************
     *** MEMORY
