@@ -7,24 +7,25 @@ CRITICAL_SECTION g_CritSect;
 static int volatile g_CritSectInit = 0;
 #if (_WIN32_WINNT >= 0x0500)
 #define InitCriticalSection(cs) \
-   InitializeCriticalSectionAndSpinCount(cs, 3000)
+    InitializeCriticalSectionAndSpinCount(cs, 3000)
 #else
 #define InitCriticalSection(cs) \
-   (InitializeCriticalSection(cs), TRUE)
+    (InitializeCriticalSection(cs), TRUE)
 #endif
 #if defined(SRWLOCK_INIT) && defined(_WIN32_WINNT) && (_WIN32_WINNT >= 0x0501)
 
-#define filetime_int64(ft)	((int64_t) ((LARGE_INTEGER *) &(ft))->QuadPart)
+#define filetime_int64(ft) ((int64_t)((LARGE_INTEGER *)&(ft))->QuadPart)
 
-static struct {
-   int64_t idle;
-   int64_t kernel;
-   int64_t user;
+static struct
+{
+    int64_t idle;
+    int64_t kernel;
+    int64_t user;
 } g_OldTimes;
 
 namespace medComputerInfo
 {
-    int getloadavg(double *loadavg)
+    int getLoadAvg(double *loadavg)
     {
         int res = -1;
         if (!g_CritSectInit)
@@ -60,88 +61,99 @@ namespace medComputerInfo
         return res;
     }
 
-    #else
+#else
 
-    typedef struct {
-        DWORD status;
-        union {
-            LONG vLong;
-            double vDouble;
-            LONGLONG vLongLong;
-            void *vPtr;
-        } u;
-    } PDH_VALUE;
-
-    typedef long (WINAPI *PPdhOpenQuery) (LPCSTR, DWORD_PTR, HANDLE *);
-    typedef long (WINAPI *PPdhAddEnglishCounter) (HANDLE, LPCSTR, DWORD_PTR, HANDLE *);
-    typedef long (WINAPI *PPdhCollectQueryData) (HANDLE);
-    typedef long (WINAPI *PPdhGetFormattedCounterValue) (HANDLE, DWORD, LPDWORD, PDH_VALUE *);
-
-    #define PDH_CPU_QUERY	"\\Processor(_Total)\\% Processor Time"
-
-
-    static HINSTANCE hdll;
-    static HANDLE hquery;
-    static HANDLE hcounter;
-
-    static PPdhOpenQuery pPdhOpenQuery;
-    static PPdhAddEnglishCounter pPdhAddEnglishCounter;
-    static PPdhCollectQueryData pPdhCollectQueryData;
-    static PPdhGetFormattedCounterValue pPdhGetFormattedCounterValue;
-
-
-    int getloadavg(double *loadavg)
+typedef struct
+{
+    DWORD status;
+    union
     {
-        PDH_VALUE value;
-        int res;
+        LONG vLong;
+        double vDouble;
+        LONGLONG vLongLong;
+        void *vPtr;
+    } u;
+} PDH_VALUE;
 
-        if (!hdll) {
-            hdll = LoadLibrary("pdh.dll");
-            if (!hdll) return -1;
+typedef long(WINAPI *PPdhOpenQuery)(LPCSTR, DWORD_PTR, HANDLE *);
+typedef long(WINAPI *PPdhAddEnglishCounter)(HANDLE, LPCSTR, DWORD_PTR, HANDLE *);
+typedef long(WINAPI *PPdhCollectQueryData)(HANDLE);
+typedef long(WINAPI *PPdhGetFormattedCounterValue)(HANDLE, DWORD, LPDWORD, PDH_VALUE *);
 
-            pPdhOpenQuery = (PPdhOpenQuery)
-                GetProcAddress(hdll, "PdhOpenQueryA");
-            pPdhAddEnglishCounter = (PPdhAddEnglishCounter)
-                GetProcAddress(hdll, "PdhAddEnglishCounterA");
-            pPdhCollectQueryData = (PPdhCollectQueryData)
-                GetProcAddress(hdll, "PdhCollectQueryData");
-            pPdhGetFormattedCounterValue = (PPdhGetFormattedCounterValue)
-                GetProcAddress(hdll, "PdhGetFormattedCounterValue");
+#define PDH_CPU_QUERY "\\Processor(_Total)\\% Processor Time"
 
-            res = pPdhOpenQuery(NULL, 0, &hquery);
-            if (res) return res;
+static HINSTANCE hdll;
+static HANDLE hquery;
+static HANDLE hcounter;
 
-            res = pPdhAddEnglishCounter(hquery, PDH_CPU_QUERY, 0, &hcounter);
-            if (res) return res;
+static PPdhOpenQuery pPdhOpenQuery;
+static PPdhAddEnglishCounter pPdhAddEnglishCounter;
+static PPdhCollectQueryData pPdhCollectQueryData;
+static PPdhGetFormattedCounterValue pPdhGetFormattedCounterValue;
 
-            pPdhCollectQueryData(hquery);  /* to avoid PDH_INVALID_DATA result */
-        }
+int getLoadAvg(double *loadavg)
+{
+    PDH_VALUE value;
+    int res;
 
-        if (!hcounter) return -1;
+    if (!hdll)
+    {
+        hdll = LoadLibrary("pdh.dll");
+        if (!hdll)
+            return -1;
 
-        res = pPdhCollectQueryData(hquery);
-        if (res) return res;
+        pPdhOpenQuery = (PPdhOpenQuery)
+            GetProcAddress(hdll, "PdhOpenQueryA");
+        pPdhAddEnglishCounter = (PPdhAddEnglishCounter)
+            GetProcAddress(hdll, "PdhAddEnglishCounterA");
+        pPdhCollectQueryData = (PPdhCollectQueryData)
+            GetProcAddress(hdll, "PdhCollectQueryData");
+        pPdhGetFormattedCounterValue = (PPdhGetFormattedCounterValue)
+            GetProcAddress(hdll, "PdhGetFormattedCounterValue");
 
-        res = pPdhGetFormattedCounterValue(hcounter, 0x8200, NULL, &value);
-        if (res) return res;
+        res = pPdhOpenQuery(NULL, 0, &hquery);
+        if (res)
+            return res;
 
-        *loadavg = value.u.vDouble;
-        return 0;
+        res = pPdhAddEnglishCounter(hquery, PDH_CPU_QUERY, 0, &hcounter);
+        if (res)
+            return res;
+
+        pPdhCollectQueryData(hquery); /* to avoid PDH_INVALID_DATA result */
     }
 
-    #endif
+    if (!hcounter)
+        return -1;
+
+    res = pPdhCollectQueryData(hquery);
+    if (res)
+        return res;
+
+    res = pPdhGetFormattedCounterValue(hcounter, 0x8200, NULL, &value);
+    if (res)
+        return res;
+
+    *loadavg = value.u.vDouble;
+    return 0;
+}
+
+#endif
     int getNbOfCores()
     {
         SYSTEM_INFO info;
         GetSystemInfo(&info);
         return info.dwNumberOfProcessors;
     }
-    #else
-    #include <stdio.h>
-    #include <stdlib.h>
-    #include <math.h>
-    #include <unistd.h>
-    int getloadavg(double *loadavg)
+}
+#else
+#include <stdio.h>
+#include <stdlib.h>
+#include <math.h>
+#include <unistd.h>
+
+namespace medComputerInfo
+{
+    int getLoadAvg(double *loadavg)
     {
         return getloadavg(loadavg, 1);
     }
@@ -150,6 +162,5 @@ namespace medComputerInfo
     {
         return sysconf(_SC_NPROCESSORS_ONLN);
     }
-    #endif
-
+#endif
 }
