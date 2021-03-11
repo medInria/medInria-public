@@ -137,7 +137,6 @@ polygonRoiToolBox::polygonRoiToolBox(QWidget *parent ) :
 polygonRoiToolBox::~polygonRoiToolBox()
 {
     delete viewEventFilter;
-    viewEventFilter = nullptr; // Will be tested in connect signal due to application closing
 }
 
 bool polygonRoiToolBox::registered()
@@ -154,11 +153,6 @@ dtkPlugin* polygonRoiToolBox::plugin()
 
 medAbstractData *polygonRoiToolBox::processOutput()
 {
-//    if (!m_maskData)
-//    {
-//        //generateBinaryImage();
-//    }
-//    return m_maskData; // return output data
     return nullptr;
 }
 
@@ -451,26 +445,12 @@ void polygonRoiToolBox::updateTableWidgetView(unsigned int row, unsigned int col
 
         // Closing behavior of the non-main view
         medAbstractImageView* view = static_cast<medAbstractImageView *> (container->view());
-        connect(view, &medAbstractImageView::closed, [this, mainContainer](){
-            if (viewEventFilter)
+        connect(view, &medAbstractImageView::closed, [this, mainContainer]()
+        {
+            if (viewEventFilter && mainContainer)
             {
                 viewEventFilter->clearAlternativeView();
-                medTabbedViewContainers *tabs = this->getWorkspace()->tabbedViewContainers();
-                if (tabs)
-                {
-                    QList<medViewContainer*> containersInTab = tabs->containersInTab(tabs->currentIndex());
-                    if (containersInTab.size()==1 && containersInTab.at(0)->uuid()==mainContainerUUID)
-                    {
-                        if (activateTBButton->isEnabled())
-                        {
-                            repulsorTool->setEnabled(true);
-                            tableViewChooser->setEnabled(true);
-                        }
-                    }
-                }
-
                 mainContainer->setSelected(true);
-
                 // Once the alternate container is closed, the main one is allowed to be closed
                 mainContainer->setClosingMode(medViewContainer::CLOSE_VIEW);
             }
