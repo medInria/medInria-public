@@ -445,14 +445,20 @@ void polygonRoiToolBox::updateTableWidgetView(unsigned int row, unsigned int col
 
         // Closing behavior of the non-main view
         medAbstractImageView* view = static_cast<medAbstractImageView *> (container->view());
-        connect(view, &medAbstractImageView::closed, [this, mainContainer]()
+        connect(view, &medAbstractImageView::closed, this, [this]()
         {
-            if (viewEventFilter && mainContainer)
+            if (viewEventFilter)
             {
                 viewEventFilter->clearAlternativeView();
-                mainContainer->setSelected(true);
-                // Once the alternate container is closed, the main one is allowed to be closed
-                mainContainer->setClosingMode(medViewContainer::CLOSE_VIEW);
+                medTabbedViewContainers *tabs = this->getWorkspace()->tabbedViewContainers();
+                if (tabs)
+                {
+                    QList<medViewContainer*> containersInTab = tabs->containersInTab(tabs->currentIndex());
+
+                    containersInTab.at(0)->setSelected(true);
+                    // Once the alternate container is closed, the main one is allowed to be closed
+                    containersInTab.at(0)->setClosingMode(medViewContainer::CLOSE_VIEW);
+                }
             }
         });
 
