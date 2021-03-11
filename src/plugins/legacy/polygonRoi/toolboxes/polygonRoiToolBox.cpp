@@ -455,6 +455,21 @@ void polygonRoiToolBox::updateTableWidgetView(unsigned int row, unsigned int col
                 {
                     QList<medViewContainer*> containersInTab = tabs->containersInTab(tabs->currentIndex());
 
+                    // This code seems obsolete:
+                    // This connect is called only at the closing of the second view (split view).
+                    // When a split view is created, the main view is locked, it cannot be removed.
+                    // This code enables the repulsor and split buttons when the second view is removed.
+                    // However, without this code, the repulsor and split buttons are already well set at 
+                    //the closing of the second view.
+                    if (containersInTab.size()==1 && containersInTab.at(0)->uuid()==mainContainerUUID)
+                    {
+                        if (activateTBButton->isEnabled())
+                        {
+                            repulsorTool->setEnabled(true);
+                            tableViewChooser->setEnabled(true);
+                        }
+                    }
+
                     containersInTab.at(0)->setSelected(true);
                     // Once the alternate container is closed, the main one is allowed to be closed
                     containersInTab.at(0)->setClosingMode(medViewContainer::CLOSE_VIEW);
