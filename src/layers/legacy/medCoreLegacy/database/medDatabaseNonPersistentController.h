@@ -65,6 +65,7 @@ public:
     virtual bool setMetaData(const medDataIndex& index, const QString& key, const QString& value);
 
     bool loadData(const medDataIndex &index) override { return false; };
+    bool isDataLoaded(const medDataIndex &index) override { return true; };
 
 public slots:
     virtual medAbstractData *retrieve(const medDataIndex &index) const;

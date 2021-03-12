@@ -48,6 +48,7 @@ public:
     virtual bool setMetaData(const medDataIndex &index, const QString &key, const QString &value) = 0;
     virtual bool isPersistent() const = 0;
     virtual bool loadData(const medDataIndex &index) = 0;
+    virtual bool isDataLoaded(const medDataIndex &index) = 0;
 
 signals:
     void metadataModified(const medDataIndex &index, const QString &key = "", const QString &value = "");

@@ -74,6 +74,23 @@ void NoFocusDelegate::paint(QPainter* painter, const QStyleOptionViewItem & opti
                 if(!dbc->isPersistent())
                 {
                     itemOption.font.setItalic(true);
+                    QString name = item->data(0).toString();
+                    if (!dbc->isDataLoaded(item->dataIndex()))
+                    {
+                        if (!name.endsWith(" (*)"))
+                        {
+                            name = name.append(" (*)");
+                            item->setData(0, QVariant(name));
+                        }
+                    }
+                    else
+                    {
+                        if (name.endsWith(" (*)"))
+                        {
+                            name.remove(name.length() - 4, 4);
+                            item->setData(0, QVariant(name));
+                        }
+                    }
                 }
             }
         }

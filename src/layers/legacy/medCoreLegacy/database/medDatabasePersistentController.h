@@ -78,6 +78,7 @@ public:
     bool isPersistent() const;
 
     bool loadData(const medDataIndex &index) override { return false; };
+    bool isDataLoaded(const medDataIndex &index) override { return true; };
 
 protected:
     void setConnected(bool flag);
