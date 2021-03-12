@@ -891,7 +891,8 @@ bool medDataPacsController::loadData(const medDataIndex &index)
         case 1: //PENDING
             timer.setInterval(d->timeout);
             break;
-        case 2: //KO
+        case -1: //KO
+        default:
             loop.exit(ResultEventLoop::FAILURE);
             break;
         }
@@ -907,6 +908,7 @@ bool medDataPacsController::loadData(const medDataIndex &index)
     {
         message->setProgress(100);
         message->failure();
+        remove(index);
         ret = false;
     }
 
@@ -946,7 +948,7 @@ void medDataPacsController::onImportFinished(const QString &path, QEventLoop &lo
     });
 
     connect(importer,
-            QOverload<const medDataIndex &, const QUuid &>::of(&medAbstractDatabaseImporter::dataImported),
+            QOverload<const medDataIndex &, const QUuid &>::of(&medDataPacsImporter::dataImported),
             &loop, [&](const medDataIndex &index, const QUuid &uuid) -> void {
                 emit dataImported(index, uuid);
                 d->numberOfFiles--;
@@ -965,7 +967,7 @@ void medDataPacsController::onImportFinished(const QString &path, QEventLoop &lo
             });
 
     connect(importer,
-            QOverload<const medDataIndex &>::of(&medAbstractDatabaseImporter::dataImported),
+            QOverload<const medDataIndex &>::of(&medDataPacsImporter::dataImported),
             &loop, [&](const medDataIndex &index) -> void {
                 if (index.isValid())
                 {
@@ -1006,4 +1008,49 @@ medAbstractData *medDataPacsController::retrieve(const medDataIndex &index) cons
 void medDataPacsController::setNumberOfFilesInDir(int num)
 {
     d->numberOfFiles = num;
+}
+
+bool medDataPacsController::isDataLoaded(const medDataIndex &index)
+{
+    bool ret = false;
+    if (!d->items.contains(index) || d->items.value(index) == nullptr)
+    {
+        ret = false;
+    }
+    else
+    {
+        medDatabaseNonPersistentItem *item = d->items.value(index);
+        if (index.isValidForSeries())
+        {
+            if (item->data() != nullptr && item->data()->data() != nullptr)
+            {
+                ret = true;
+            }
+        }
+        else if (index.isValidForStudy())
+        {
+            QList<medDataIndex> indexes = series(index);
+            for (medDataIndex id : indexes)
+            {
+                ret = isDataLoaded(id);
+                if (!ret)
+                {
+                    break;
+                }
+            }
+        }
+        else if (index.isValidForPatient())
+        {
+            QList<medDataIndex> indexes = studies(index);
+            for (medDataIndex id : indexes)
+            {
+                ret = isDataLoaded(id);
+                if (!ret)
+                {
+                    break;
+                }
+            }
+        }
+    }
+    return ret;
 }

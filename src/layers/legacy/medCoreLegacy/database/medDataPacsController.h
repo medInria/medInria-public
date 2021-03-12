@@ -78,8 +78,9 @@ public:
     bool setMetaData(const medDataIndex &index, const QString &key, const QString &value) override;
     bool isPersistent() const override;
 
-    bool loadData(const medDataIndex &index);
+    bool loadData(const medDataIndex &index) override;
     void setNumberOfFilesInDir(int num);
+    bool isDataLoaded(const medDataIndex &index) override;
 
 public slots:
     medAbstractData *retrieve(const medDataIndex &index) const override;
