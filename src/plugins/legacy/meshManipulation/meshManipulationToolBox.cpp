@@ -612,18 +612,28 @@ void meshManipulationToolBox::exportTransform()
 {
     if (_boxWidget && _boxWidget->GetEnabled())
     {
-        vtkSmartPointer<vtkTransform> t = vtkSmartPointer<vtkTransform>::New();
-        _boxWidget->GetTransform(t);
-
-        vtkSmartPointer<vtkMatrix4x4> m = vtkSmartPointer<vtkMatrix4x4>::New();
-        m->DeepCopy(t->GetMatrix());
+        // export select transform
+        std::array<double, 16> matrixAsArray;
+        auto selectedTransform = _availableMatricesWidget->selectedItems();
+        if (selectedTransform.size() == 0 || selectedTransform[0]->text() == "Current transform")
+        {
+            // user is exporting the current transform
+            auto transform = vtkSmartPointer<vtkTransform>::New();
+            _boxWidget->GetTransform(transform);
+            std::memcpy(matrixAsArray.data(), transform->GetMatrix()->GetData(), 16 * sizeof(double));
+        }
+        else
+        {
+            QString name = selectedTransform[0]->text();
+            std::memcpy(matrixAsArray.data(), _registrationMatrices[name].data(), 16 * sizeof(double));
+        }
 
         QByteArray matrixStr;
         for(int i = 0; i < 4; i++)
         {
             for(int j = 0; j < 4; j++)
             {
-                matrixStr += QByteArray::number(m->GetElement(i, j)) + "\t";
+                matrixStr += QByteArray::number(matrixAsArray[i * 4 + j]) + "\t";
             }
             matrixStr += "\n";
         }
@@ -848,11 +858,12 @@ bool meshManipulationToolBox::buildMatrixFromSelectedTransform(vtkSmartPointer<v
         // only one item can be selected so this is safe
         auto* item = selectedItems.first();
         QString name = item->text();
-        if (name == "Current transform")
+        if (name == "Current transform" && _boxWidget)
         {
-            // special item that points to the last item in the undo stack
-            std::memcpy(matrix->GetData(), _undoStack.back().data(), 16 * sizeof(double));
-            return true;
+            // special item that points to the current transform
+            auto transform = vtkSmartPointer<vtkTransform>::New();
+            _boxWidget->GetTransform(transform);
+            matrix->DeepCopy(transform->GetMatrix());
         }
         else if (_registrationMatrices.contains(name))
         {
