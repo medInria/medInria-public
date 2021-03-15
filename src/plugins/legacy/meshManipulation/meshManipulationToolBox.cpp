@@ -14,6 +14,7 @@
 #include <medAbstractProcessLegacy.h>
 #include <medDataManager.h>
 #include <meshManipulationToolBox.h>
+#include <medMetaDataKeys.h>
 #include <medMessageController.h>
 #include <medPluginManager.h>
 #include <medTabbedViewContainers.h>
@@ -108,8 +109,6 @@ public:
 meshManipulationToolBox::meshManipulationToolBox(QWidget *parent)
     : medAbstractSelectableToolBox(parent)
 {
-    initializeUndoStack();
-
     QWidget *w = new QWidget(this);
     this->addWidget(w);
     QVBoxLayout* toolboxLayout = new QVBoxLayout();
@@ -210,6 +209,8 @@ meshManipulationToolBox::meshManipulationToolBox(QWidget *parent)
     _callback->boxWidget = _boxWidget;
     _boxWidget->AddObserver(vtkCommand::EndInteractionEvent, _callback);
     _boxWidget->AddObserver(vtkCommand::InteractionEvent, _callback);
+
+    initializeUndoStack();
 }
 
 bool meshManipulationToolBox::registered()
@@ -249,6 +250,8 @@ void meshManipulationToolBox::updateView()
 void meshManipulationToolBox::retrieveRegistrationMatricesFromLayers()
 {
     _availableMatricesWidget->clear();
+    _availableMatricesWidget->addItem("Current transform");
+
     _registrationMatrices.clear();
 
     unsigned int nbLayers = _view->layersCount();
@@ -269,6 +272,7 @@ void meshManipulationToolBox::retrieveRegistrationMatricesFromLayers()
                     QVector<double> matrixAsVector = retrieveMatrixFromArray(array);
 
                     QString arrayName(array->GetName());
+                    arrayName += " (" + abstractData->metadata(medMetaDataKeys::SeriesDescription.key()) + ")";
                     tryAddingRegistrationMatrix(matrixAsVector, arrayName);
                 }
             }
@@ -732,6 +736,12 @@ void meshManipulationToolBox::initializeUndoStack()
                                        0.0, 0.0, 0.0, 1.0};
     _undoStack.push_back(identity);
     _undoStackPos = _undoStack.end();
+
+    // this item is always visible and points on the top of the undo stack
+    if (_availableMatricesWidget->count() == 0)
+    {
+        _availableMatricesWidget->addItem("Current transform");
+    }
 }
 
 void meshManipulationToolBox::addTransformationMatrixToUndoStack(vtkMatrix4x4* matrix)
@@ -838,7 +848,13 @@ bool meshManipulationToolBox::buildMatrixFromSelectedTransform(vtkSmartPointer<v
         // only one item can be selected so this is safe
         auto* item = selectedItems.first();
         QString name = item->text();
-        if (_registrationMatrices.contains(name))
+        if (name == "Current transform")
+        {
+            // special item that points to the last item in the undo stack
+            std::memcpy(matrix->GetData(), _undoStack.back().data(), 16 * sizeof(double));
+            return true;
+        }
+        else if (_registrationMatrices.contains(name))
         {
             QVector<double>& matrixAsVector = _registrationMatrices[name];
             std::memcpy(matrix->GetData(), matrixAsVector.data(), 16 * sizeof(double));
