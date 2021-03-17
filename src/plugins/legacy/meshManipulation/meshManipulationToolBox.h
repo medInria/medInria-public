@@ -18,6 +18,8 @@ PURPOSE.
 
 #include <vtkSmartPointer.h>
 
+#include <array>
+
 class vtkBoxWidget;
 class ManipulationCallback;
 class vtkDataArray;
