@@ -16,6 +16,8 @@
 #include <QPixmap>
 #include <QUuid>
 
+#include <dtkCoreSupport/dtkSmartPointer>
+
 #include <medCoreLegacyExport.h>
 #include <medDatabaseExporter.h>
 #include <medDataIndex.h>
@@ -40,8 +42,8 @@ public:
     QUuid importData(medAbstractData* data, bool persistent = false);
     QUuid importPath(const QString& dataPath, bool indexWithoutCopying, bool persistent = false);
 
-    void exportData(medAbstractData* data);
-    void exportDataToPath(medAbstractData* data, const QString& path, const QString& format = "");
+    void exportData(dtkSmartPointer<medAbstractData> data);
+    void exportDataToPath(dtkSmartPointer<medAbstractData> data, const QString& path, const QString& format = "");
 
     QUuid makePersistent(medAbstractData* data);
 
