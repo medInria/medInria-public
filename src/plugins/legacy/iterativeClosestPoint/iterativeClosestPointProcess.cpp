@@ -20,6 +20,8 @@
 #include <medUtilities.h>
 #include <medUtilitiesVTK.h>
 
+#include <vtkDoubleArray.h>
+#include <vtkFieldData.h>
 #include <vtkICPFilter.h>
 #include <vtkIterativeClosestPointTransform.h>
 #include <vtkLandmarkTransform.h>
@@ -190,15 +192,26 @@ int iterativeClosestPointProcess::update()
 
     ICPFilter->Update();
 
+    vtkLinearTransform* transform = ICPFilter->GetLinearTransform();
+    d->TransformMatrix = vtkSmartPointer<vtkMatrix4x4>::New();
+    d->TransformMatrix->DeepCopy(transform->GetMatrix());
+
     if (d->exportMatrixState == 2)
     {
-        vtkLinearTransform* transform = ICPFilter->GetLinearTransform();
-        d->TransformMatrix = vtkSmartPointer<vtkMatrix4x4>::New();
-        d->TransformMatrix->DeepCopy(transform->GetMatrix());
         exportTransformMatrix();
     }
 
+    // save the transformation matrix
+    vtkSmartPointer<vtkDoubleArray> icpTransformArray = vtkSmartPointer<vtkDoubleArray>::New();
+    icpTransformArray->SetNumberOfTuples(16);
+    icpTransformArray->SetNumberOfComponents(1);
+    icpTransformArray->SetName("ICP_TransformMatrix");
+    double* data = icpTransformArray->GetPointer(0);
+    double* mat  = d->TransformMatrix->GetData();
+    std::memcpy(data, mat, 16 * sizeof(*data));
+
     vtkPolyData *output_polyData = ICPFilter->GetOutput();
+    output_polyData->GetFieldData()->AddArray(icpTransformArray);
 
     vtkMetaSurfaceMesh *output_mesh = vtkMetaSurfaceMesh::New();
     output_mesh->SetDataSet(output_polyData);
