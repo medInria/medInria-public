@@ -227,7 +227,7 @@ QHash<QString, dtkAbstractDataWriter *> medDataManager::getPossibleWriters(
     return possibleWriters;
 }
 
-void medDataManager::exportData(medAbstractData *data)
+void medDataManager::exportData(dtkSmartPointer<medAbstractData> data)
 {
     if (!data)
         return;
@@ -344,9 +344,7 @@ void medDataManager::exportData(medAbstractData *data)
     delete exportDialog;
 }
 
-void medDataManager::exportDataToPath(medAbstractData *data,
-                                      const QString &filename,
-                                      const QString &writer)
+void medDataManager::exportDataToPath(dtkSmartPointer<medAbstractData> data, const QString & filename, const QString & writer)
 {
     medDatabaseExporter *exporter =
         new medDatabaseExporter(data, filename, writer);

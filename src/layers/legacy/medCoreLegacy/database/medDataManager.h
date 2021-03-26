@@ -17,6 +17,7 @@
 #include <QUuid>
 
 #include <medDatabasePersistentController.h>
+#include <dtkCoreSupport/dtkSmartPointer>
 #include <medCoreLegacyExport.h>
 #include <medDatabaseExporter.h>
 #include <medDataIndex.h>
@@ -43,8 +44,8 @@ public:
     void fetchData(const QHash<QString, QHash<QString, QVariant> > &pData,
                    const QHash<QString, QHash<QString, QVariant> > &sData);
 
-    void exportData(medAbstractData* data);
-    void exportDataToPath(medAbstractData* data, const QString& path, const QString& format = "");
+    void exportData(dtkSmartPointer<medAbstractData> data);
+    void exportDataToPath(dtkSmartPointer<medAbstractData> data, const QString& path, const QString& format = "");
 
     QUuid makePersistent(medDataIndex index);
 

@@ -20,12 +20,12 @@
 class medDatabaseExporterPrivate
 {
 public:
-    medAbstractData *data;
+    dtkSmartPointer<medAbstractData> data;
     QString          filename;
     QString          writer;
 };
 
-medDatabaseExporter::medDatabaseExporter(medAbstractData * data, const QString & filename, const QString & writer) : medJobItemL(), d(new medDatabaseExporterPrivate)
+medDatabaseExporter::medDatabaseExporter(dtkSmartPointer<medAbstractData> data, const QString & filename, const QString & writer) : medJobItemL(), d(new medDatabaseExporterPrivate)
 {
     d->data     = data;
     d->filename = filename;
