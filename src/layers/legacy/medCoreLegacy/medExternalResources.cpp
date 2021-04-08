@@ -47,7 +47,6 @@ QString getResourcesDirectoryForMacPackage(QString libraryName)
     {
         CFURLRef relativeResourcesDirectoryURL = CFBundleCopyResourcesDirectoryURL(bundle);
         CFURLRef resourcesDirectoryURL = CFURLCopyAbsoluteURL(relativeResourcesDirectoryURL);
-        CFRelease(bundle);
         CFRelease(relativeResourcesDirectoryURL);
 
         if (resourcesDirectoryURL)
@@ -80,7 +79,6 @@ QString getResourcePathForMacPackage(QString filename, QString libraryName)
     {
         CFStringRef resourceName = CFStringCreateWithCString(nullptr, qUtf8Printable(filename), kCFStringEncodingUTF8);
         CFURLRef resourceURL = CFBundleCopyResourceURL(bundle, resourceName, nullptr, nullptr);
-        CFRelease(bundle);
         CFRelease(resourceName);
 
         if (resourceURL)
