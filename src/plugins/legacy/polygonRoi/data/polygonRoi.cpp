@@ -13,7 +13,7 @@
 #include "polygonRoi.h"
 
 // medInria
-#include <medTagRoiManager.h>
+#include <polygonLabel.h>
 #include <medVtkViewBackend.h>
 
 // vtk
@@ -47,7 +47,7 @@ public:
     {
         this->roi = roi;
     }
-    
+
 protected:
     PolygonRoiObserver();
     ~PolygonRoiObserver();
@@ -56,9 +56,7 @@ private:
     polygonRoi * roi;
 };
 
-PolygonRoiObserver::PolygonRoiObserver()
-{
-}
+PolygonRoiObserver::PolygonRoiObserver(){}
 
 PolygonRoiObserver::~PolygonRoiObserver(){}
 
@@ -74,9 +72,12 @@ void PolygonRoiObserver::Execute ( vtkObject *caller, unsigned long event, void 
         case vtkCommand::EndInteractionEvent:
         {
             roi->setMasterRoi(true);
-            emit roi->updateCursorState(CURSORSTATE::CS_MOUSE_EVENT);
-            emit roi->interpolate();
-            emit roi->enableOtherViewsVisibility(true);
+            emit roi->contourFinished(CURSORSTATE::CS_DEFAULT);
+            break;
+        }
+        case vtkImageView2D::SliceChangedEvent:
+        {
+            roi->manageVisibility();
             break;
         }
         default:
@@ -121,7 +122,7 @@ polygonRoi::polygonRoi(vtkImageView2D *view, QColor color, medAbstractRoi *paren
     contourRep->SetRenderer(view->GetRenderer());
     d->contour->SetInteractor(view->GetInteractor());
     // deactivate the default RightButtonPressEvent -> AddFinalPointAction
-    d->contour->GetEventTranslator()->SetTranslation(vtkCommand::RightButtonPressEvent,0);
+    d->contour->GetEventTranslator()->SetTranslation(vtkCommand::RightButtonPressEvent,vtkWidgetEvent::NoEvent);
     d->contour->GetEventTranslator()->SetTranslation(vtkCommand::KeyPressEvent, vtkWidgetEvent::NoEvent);
     d->contour->GetEventTranslator()->SetTranslation(vtkCommand::KeyReleaseEvent, vtkWidgetEvent::NoEvent);
     d->contour->On();
@@ -131,7 +132,10 @@ polygonRoi::polygonRoi(vtkImageView2D *view, QColor color, medAbstractRoi *paren
     setIdSlice(view->GetSlice());
     d->observer = vtkSmartPointer<PolygonRoiObserver>::New();
     d->observer->setRoi(this);
+
     d->contour->AddObserver(vtkCommand::EndInteractionEvent,d->observer,10);
+
+    d->view->AddObserver(vtkImageView2D::SliceChangedEvent, d->observer, 0);
 
     d->roiColor = color;
     setMasterRoi(true);
@@ -139,6 +143,16 @@ polygonRoi::polygonRoi(vtkImageView2D *view, QColor color, medAbstractRoi *paren
 
 polygonRoi::~polygonRoi()
 {
+    if (d->polyData)
+    {
+        for (medAbstractImageView *view : d->alternativeViews)
+        {
+            vtkImageView3D *view3D = static_cast<medVtkViewBackend *>(view->backend())->view3D;
+            view3D->RemoveDataSet(d->polyData);
+            vtkImageView2D *view2D = static_cast<medVtkViewBackend *>(view->backend())->view2D;
+            view2D->RemoveDataSet(d->polyData);
+        }
+    }
     delete d;
     d = nullptr;
 }
@@ -234,10 +248,7 @@ void polygonRoi::loadNodes(QVector<QVector3D> coordinates)
     d->contour->Initialize(polydata);
     d->contour->GetContourRepresentation()->SetClosedLoop(1);
 
-    emit updateCursorState(CURSORSTATE::CS_MOUSE_EVENT);
-    emit interpolate();
-    emit enableOtherViewsVisibility(true);
-
+    emit contourFinished(CURSORSTATE::CS_DEFAULT);
 }
 
 vtkContourWidget * polygonRoi::getContour()
@@ -289,15 +300,18 @@ void polygonRoi::manageVisibility()
     contourRep->GetProperty()->SetPointSize(6);
     if (d->view->GetViewOrientation() != getOrientation())
     {
-        contourRep->GetProperty()->SetPointSize(1);
-        On();
+        Off();
     }
     else
     {
         if (d->view->GetSlice() == getIdSlice())
+        {
             On();
+        }
         else
+        {
             Off();
+        }
     }
 }
 
@@ -335,19 +349,18 @@ int polygonRoi::getNumberOfNodes()
 {
     vtkContourRepresentation * contourRep = d->contour->GetContourRepresentation();
     return contourRep->GetNumberOfNodes();
-
 }
 
 void polygonRoi::select()
 {
-    vtkContourOverlayRepresentation *contourRep = dynamic_cast<vtkContourOverlayRepresentation*>(d->contour->GetContourRepresentation());
+    auto contourRep = dynamic_cast<vtkContourOverlayRepresentation*>(d->contour->GetContourRepresentation());
     contourRep->GetLinesProperty()->SetLineWidth(8.);
     medAbstractRoi::select();
 }
 
 void polygonRoi::unselect()
 {
-    vtkContourOverlayRepresentation *contourRep = dynamic_cast<vtkContourOverlayRepresentation*>(d->contour->GetContourRepresentation());
+    auto contourRep = dynamic_cast<vtkContourOverlayRepresentation*>(d->contour->GetContourRepresentation());
     contourRep->GetLinesProperty()->SetLineWidth(4.);
     medAbstractRoi::unselect();
 }
@@ -359,8 +372,7 @@ bool polygonRoi::isVisible()
 
 void polygonRoi::activateContour(bool state)
 {
-    vtkContourOverlayRepresentation *contourRep =
-            dynamic_cast<vtkContourOverlayRepresentation*>(d->contour->GetContourRepresentation());
+    auto contourRep = dynamic_cast<vtkContourOverlayRepresentation*>(d->contour->GetContourRepresentation());
     if (state)
     {
         d->contour->GetEventTranslator()->SetTranslation(vtkCommand::LeftButtonPressEvent, vtkWidgetEvent::Select);
@@ -388,7 +400,7 @@ void polygonRoi::setRightColor()
     color[0] = d->roiColor.redF();
     color[1] = d->roiColor.greenF();
     color[2] = d->roiColor.blueF();
-    vtkContourOverlayRepresentation *contourRep = dynamic_cast<vtkContourOverlayRepresentation*>(d->contour->GetContourRepresentation());
+    auto contourRep = dynamic_cast<vtkContourOverlayRepresentation*>(d->contour->GetContourRepresentation());
     contourRep->GetLinesProperty()->SetColor(color);
     contourRep->GetProperty()->SetColor(1., 0., 0.);
 
@@ -404,7 +416,7 @@ void polygonRoi::setRightColor()
     }
 }
 
-void polygonRoi::updateColor(QColor color, bool activate)
+void polygonRoi::updateColor(QColor &color, bool activate)
 {
     d->roiColor = color;
     activateContour(activate);
@@ -415,13 +427,9 @@ QColor polygonRoi::getColor()
     return d->roiColor;
 }
 
-void polygonRoi::addViewToList(medAbstractImageView *viewToAdd)
-{
-    d->alternativeViews.append(viewToAdd);
-}
-
 void polygonRoi::updateContourOtherView(medAbstractImageView *view, bool state)
 {
+    d->alternativeViews.append(view);
     if ( view->orientation() == medImageView::VIEW_ALL_ORIENTATION )
     {
         return;
@@ -455,7 +463,6 @@ void polygonRoi::updateContourOtherView(medAbstractImageView *view, bool state)
             view2D->RemoveDataSet(d->polyData);
             view2D->AddDataSet(d->polyData, d->property);
         }
-
     }
     else
     {
@@ -488,9 +495,9 @@ QVector<QVector2D> polygonRoi::copyContour()
     return coordinates;
 }
 
-bool polygonRoi::pasteContour(QVector<QVector2D> nodes)
+bool polygonRoi::pasteContour(QVector<QVector2D> &nodes)
 {
-    vtkContourOverlayRepresentation *contourRep = static_cast<vtkContourOverlayRepresentation*>(d->contour->GetContourRepresentation());
+    auto contourRep = static_cast<vtkContourOverlayRepresentation*>(d->contour->GetContourRepresentation());
     for (QVector2D node : nodes)
     {
         double pos[2];
@@ -502,9 +509,45 @@ bool polygonRoi::pasteContour(QVector<QVector2D> nodes)
     d->contour->On();
     d->contour->SetWidgetState(2);
 
-    emit updateCursorState(CURSORSTATE::CS_MOUSE_EVENT);
-    emit interpolate();
-    emit enableOtherViewsVisibility(true);
-
+    emit contourFinished(CURSORSTATE::CS_DEFAULT);
     return true;
 }
+
+bool polygonRoi::isInCurrentSlice()
+{
+    return (d->view->GetSlice() == getIdSlice());
+}
+
+void polygonRoi::setCurrentSlice()
+{
+    setIdSlice(d->view->GetSlice());
+}
+
+void polygonRoi::setActiveView(vtkImageView2D *pView2d)
+{
+    removeObservers();
+    d->view = pView2d;
+    d->contour->GetContourRepresentation()->SetRenderer(d->view->GetRenderer());
+    d->contour->SetInteractor(d->view->GetInteractor());
+    addObservers();
+}
+
+void polygonRoi::removeObservers()
+{
+    d->contour->RemoveAllObservers();
+    d->view->RemoveObserver(d->observer);
+}
+
+void polygonRoi::addObservers()
+{
+    d->contour->AddObserver(vtkCommand::EndInteractionEvent,d->observer,10);
+    d->view->AddObserver(vtkImageView2D::SliceChangedEvent, d->observer, 0);
+}
+
+int polygonRoi::getDistanceFromCurrentSlice()
+{
+    int dist = (int) getIdSlice() - d->view->GetSlice();
+    return dist;
+}
+
+

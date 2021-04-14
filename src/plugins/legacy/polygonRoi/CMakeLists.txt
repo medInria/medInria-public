@@ -56,6 +56,7 @@ list_source_files(${TARGET_NAME}
   repulsor
   toolboxes
   json
+  viewevent
   )
 
 ## #############################################################################

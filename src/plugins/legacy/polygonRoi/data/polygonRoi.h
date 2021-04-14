@@ -23,7 +23,7 @@
 #include <vtkImageView2D.h>
 #include <vtkPolygon.h>
 
-enum class CURSORSTATE { CS_NONE, CS_MOUSE_EVENT, CS_SLICE_CHANGED, CS_CONTINUE, CS_REPULSOR  };
+enum class CURSORSTATE { CS_NONE, CS_DEFAULT, CS_REPULSOR  };
 
 class polygonRoiPrivate;
 /**
@@ -33,12 +33,18 @@ class POLYGONROIPLUGIN_EXPORT polygonRoi : public medAbstractRoi
 {
     Q_OBJECT
 
+
+
 public:
     polygonRoi(vtkImageView2D *view, QColor color, medAbstractRoi *parent = nullptr );
     virtual ~polygonRoi();
 
     vtkContourWidget * getContour();
     vtkImageView2D * getView();
+//    void updateView(vtkImageView2D *pView);
+
+    void removeObservers();
+    void addObservers();
 
     virtual void Off();
     virtual void On();
@@ -52,7 +58,6 @@ public:
     virtual bool canRedo(){return true;}
     virtual bool canUndo(){return true;}
     
-    void addViewToList(medAbstractImageView *viewToAdd);
     void updateContourOtherView(medAbstractImageView *view, bool state);
     bool isClosed();
     vtkPolyData *createPolyDataFromContour();
@@ -66,24 +71,31 @@ public:
     void manageTick(medSliderL *slider);
 
     QVector<QVector2D> copyContour();
-    bool pasteContour(QVector<QVector2D> nodes);
+    bool pasteContour(QVector<QVector2D> &nodes);
     int getNumberOfNodes();
     void activateContour(bool state);
-    void updateColor(QColor color, bool activate);
+    void updateColor(QColor &color, bool activate);
     QColor getColor();
-    
+    bool isInCurrentSlice();
+    void setCurrentSlice();
+    void setActiveView(vtkImageView2D *pView2d);
+    int getDistanceFromCurrentSlice();
+
 public slots:
     virtual void undo(){};
     virtual void redo(){};
     virtual void saveState(){}
 
 signals:
-    void updateCursorState(CURSORSTATE state);
-    void interpolate();
-    void enableOtherViewsVisibility(bool state);
+    void contourFinished(CURSORSTATE state);
+//    void interpolate();
+//    void enableOtherViewsVisibility(bool state);
 
 private:
     polygonRoiPrivate *d;
     friend class PolygonRoiObserver;
     virtual void setRightColor();
+
+//    void orientationChanged(vtkImageView2D *view2D);
+
 };

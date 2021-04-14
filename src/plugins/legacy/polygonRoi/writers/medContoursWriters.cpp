@@ -192,7 +192,7 @@ bool medContoursWriter::writeASCIIFile(medContours* ctr, const QString& path, vt
         {
             QTextStream out(&file);
             QVector<medTagContours> contoursSet = ctr->getTagContoursSet();
-            out<<"number of labels\n"<<contoursSet.size();
+            out<<"number of labelList\n"<<contoursSet.size();
             for (medTagContours& contours : contoursSet)
             {
                 out<<contours;
