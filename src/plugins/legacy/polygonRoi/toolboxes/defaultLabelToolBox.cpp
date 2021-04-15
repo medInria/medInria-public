@@ -156,12 +156,11 @@ int defaultLabelToolBox::getContourPositionAndColor(QString &name, QColor &color
     }
     else
     {
+        color = findAvailableColor(mainColors);
         QListWidgetItem *item = createWidgetItem(name,
                                                  color);
         addDefaultItem(item);
         position = labels->row(item);
-        color = item->icon().pixmap(QSize(20,20)).toImage().pixelColor(0,0);
-
     }
     return position;
 }
@@ -314,10 +313,24 @@ void defaultLabelToolBox::onMinusClicked()
         if (row > 0)
         {
             labels->takeItem(row);
+            updatePolygonLabelPosition(row);
         }
-
     }
     labels->setMaximumHeight((20*labels->count())+5);
+}
+
+void defaultLabelToolBox::updatePolygonLabelPosition(int startPosition)
+{
+    if (startPosition < labels->count())
+    {
+        for (int row = startPosition; row < labels->count(); row++)
+        {
+            QListWidgetItem *item1 = labels->item(row);
+            QString name = item1->text();
+            name = name.remove(QRegExp(" - Z[T|P]{1}_PIRADS[0-9]"));
+            currentViewEvent->updatePosition(name, row);
+        }
+    }
 }
 
 void defaultLabelToolBox::setName(QString &name)

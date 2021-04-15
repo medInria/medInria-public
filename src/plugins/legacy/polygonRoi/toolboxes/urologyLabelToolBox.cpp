@@ -275,6 +275,7 @@ void urologyLabelToolBox::onMinusClicked()
         if (row > minRowNumber)
         {
             labels->takeItem(row);
+            updatePolygonLabelPosition(row);
         }
     }
     labels->setMaximumHeight((20*labels->count())+5);
@@ -399,11 +400,11 @@ int urologyLabelToolBox::getContourPositionAndColor(QString &name, bool scoreSta
         {
             newName.append(QString(" - %0").arg(scoreName));
         }
+        color = findAvailableColor(scoreState?targetColors:mainColors);
         QListWidgetItem *item = createWidgetItem(newName, color);
         itemSpecialization(item, scoreState);
         labels->addItem(item);
         position = labels->row(item);
-        color = item->icon().pixmap(QSize(20,20)).toImage().pixelColor(0,0);
         labels->setMaximumHeight((20*labels->count())+5);
     }
     return position;

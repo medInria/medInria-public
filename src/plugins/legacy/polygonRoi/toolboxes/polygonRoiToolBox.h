@@ -54,7 +54,8 @@ public:
     static bool registered();
     dtkPlugin* plugin() override;
     medAbstractData *processOutput() override;
-    medAbstractImageData * getAttachedDataToEventView(baseViewEvent *pEvent);
+    void drawCross(double *position);
+    void eraseCross();
 
     QPushButton *repulsorTool;
 
@@ -64,6 +65,7 @@ public slots:
     void clickClosePolygon(bool state);
     void activateRepulsor(bool state);
     void interpolateCurve(bool state);
+    void showHelp() const;
 
 private slots:
 
@@ -78,7 +80,7 @@ private slots:
     void clear() override;
 
 private:
-    QHash<medDataIndex, baseViewEvent *> eventViewForData;
+    QHash<medDataIndex, baseViewEvent *> viewEventHash;
     qint32 specialityPreference;
     medToolBox *pMedToolBox;
     medDataIndex activeDataIndex;
@@ -86,8 +88,8 @@ private:
     QPushButton *saveBinaryMaskButton;
     QCheckBox *interpolate;
     QPushButton *saveContourButton;
+    QPushButton *helpButton;
     QTimer *timerHighLight;
-
     void createAndConnectEventFilter(const medAbstractData *data, medAbstractImageView *imageView);
     QList<medAbstractData *> getITKImageDataInSelectedView(medAbstractView *view);
     QList<medContours *> getContoursInSelectedView(medAbstractView *view);

@@ -13,7 +13,7 @@
 #include <polygonLabel.h>
 
 #include <vtkCallbackCommand.h>
-#include <vtkContourOverlayRepresentation.h>
+#include <viewinteractors/vtkContourOverlayRepresentation.h>
 #include <vtkContourRepresentation.h>
 #include <vtkInriaInteractorStylePolygonRepulsor.h>
 #include <vtkMath.h>

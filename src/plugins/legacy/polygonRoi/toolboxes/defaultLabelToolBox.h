@@ -64,6 +64,7 @@ protected:
     QColor findAvailableColor(QList<QColor> &colors);
     static QListWidgetItem *createWidgetItem(const QString &name, const QColor &col);
     QStringList getPreLoadNames() const;
+    void updatePolygonLabelPosition(int startPosition);
 
     QLabel *dataName;
     QListWidget* labels;

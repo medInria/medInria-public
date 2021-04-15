@@ -38,6 +38,8 @@ baseViewEvent::baseViewEvent(medAbstractImageView *iView, polygonRoiToolBox *too
 {
     currentView = iView;
 
+    crossPosition = new medMouseCrossPosition(iView);
+
     currentLabel = nullptr;
 
     // interactors
@@ -46,6 +48,7 @@ baseViewEvent::baseViewEvent(medAbstractImageView *iView, polygonRoiToolBox *too
 
 baseViewEvent::~baseViewEvent()
 {
+    delete crossPosition;
     removeViewInteractor();
     manageTickVisibility(false);
     for (polygonLabel *label: labelList)
@@ -69,10 +72,10 @@ bool baseViewEvent::eventFilter(QObject *obj, QEvent *event)
     if (!currentView)
         return false;
 
-    vtkImageView2D *view2d = static_cast<medVtkViewBackend*>(currentView->backend())->view2D;
 
     auto keyEvent = dynamic_cast<QKeyEvent*>(event);
     auto mouseEvent = dynamic_cast<QMouseEvent*>(event);
+
 
     if (mouseEvent)
     {
@@ -83,6 +86,7 @@ bool baseViewEvent::eventFilter(QObject *obj, QEvent *event)
     {
         return false;
     }
+
 
     if ( keyEvent->type() == QEvent::ShortcutOverride )
     {
@@ -106,21 +110,38 @@ bool baseViewEvent::eventFilter(QObject *obj, QEvent *event)
         {
             if (currentView)
             {
+                vtkImageView2D *view2d = static_cast<medVtkViewBackend*>(currentView->backend())->view2D;
                 view2d->SetSlice(view2d->GetSlice() + 1);
-                view2d->Render();
+                currentView->render();
             }
         }
         if ( keyEvent->key() == Qt::Key::Key_Left )
         {
             if (currentView)
             {
+                vtkImageView2D *view2d = static_cast<medVtkViewBackend*>(currentView->backend())->view2D;
                 view2d->SetSlice(view2d->GetSlice()-1);
-                view2d->Render();
+                currentView->render();
             }
         }
         if ( keyEvent->key() == Qt::Key::Key_S )
         {
             switchContourColor(savedMousePosition);
+        }
+        if (keyEvent->key() == Qt::Key::Key_D )
+        {
+            double percentPos[2];
+            percentPos[0] = savedMousePosition[0] / currentView->viewWidget()->width();
+            percentPos[1] = savedMousePosition[1] / currentView->viewWidget()->height();
+            pToolBox->drawCross(percentPos);
+        }
+        if ( keyEvent->key() == Qt::Key::Key_E )
+        {
+            pToolBox->eraseCross();
+        }
+        if (keyEvent->key() == Qt::Key::Key_H )
+        {
+            pToolBox->showHelp();
         }
     }
     return event->isAccepted();
@@ -128,13 +149,6 @@ bool baseViewEvent::eventFilter(QObject *obj, QEvent *event)
 
 bool baseViewEvent::mouseReleaseEvent(medAbstractView *view, QMouseEvent *mouseEvent)
 {
-    if ( !view || ! currentView )
-        return false;
-
-    if (currentView != view)
-        return false;
-
-
     if (isRepulsorActivated )
     {
         if ( !isActiveContourInSlice() || (currentLabel && currentLabel->roiOpenInSlice()))
@@ -146,7 +160,7 @@ bool baseViewEvent::mouseReleaseEvent(medAbstractView *view, QMouseEvent *mouseE
         {
             if (interactorStyleRepulsor->GetManager() != nullptr )
             {
-                interactorStyleRepulsor->GetManager()->SetMasterRoi(true);
+                interactorStyleRepulsor->GetManager()->SetMasterRoi();
                 interactorStyleRepulsor->GetManager()->interpolateIfNeeded();
             }
             manageTickVisibility(true);
@@ -158,12 +172,6 @@ bool baseViewEvent::mouseReleaseEvent(medAbstractView *view, QMouseEvent *mouseE
 
 bool baseViewEvent::mouseMoveEvent(medAbstractView *view, QMouseEvent *mouseEvent)
 {
-    if ( !view )
-        return false;
-    if (view != currentView)
-    {
-        return true;
-    }
 #if QT_VERSION > QT_VERSION_CHECK(5, 10, 0)
     qreal devicePixelRatio = QGuiApplication::screenAt(mouseEvent->globalPos())->devicePixelRatio();
 #else
@@ -194,16 +202,22 @@ bool baseViewEvent::mouseMoveEvent(medAbstractView *view, QMouseEvent *mouseEven
 
 bool baseViewEvent::mousePressEvent(medAbstractView * view, QMouseEvent *mouseEvent)
 {
-    if ( !view || ! currentView )
-        return false;
-
-    if (currentView != view)
-        return false;
-
     if (mouseEvent->button()==Qt::LeftButton)
     {
-        leftButtonBehaviour(view, mouseEvent);
-        return false;
+        if (mouseEvent->modifiers() != Qt::ControlModifier)
+        {
+            if (mouseEvent->modifiers() == Qt::ShiftModifier)
+            {
+                double percentPos[2];
+                percentPos[0] = savedMousePosition[0] / currentView->viewWidget()->width();
+                percentPos[1] = savedMousePosition[1] / currentView->viewWidget()->height();
+                pToolBox->drawCross(percentPos);
+            }
+            else
+            {
+                leftButtonBehaviour(view);
+            }
+        }
     }
     else if (mouseEvent->button()==Qt::RightButton)
     {
@@ -212,14 +226,8 @@ bool baseViewEvent::mousePressEvent(medAbstractView * view, QMouseEvent *mouseEv
     return false;
 }
 
-void baseViewEvent::leftButtonBehaviour(medAbstractView *view, QMouseEvent *mouseEvent)
+void baseViewEvent::leftButtonBehaviour(medAbstractView *view)
 {
-    if ( !view || ! currentView )
-        return;
-
-    if (currentView != view)
-        return;
-
     if (isRepulsorActivated)
     {
         if (isActiveContourInSlice())
@@ -238,24 +246,7 @@ void baseViewEvent::leftButtonBehaviour(medAbstractView *view, QMouseEvent *mous
     {
         case CURSORSTATE::CS_DEFAULT:
         {
-            bool isRoiOpen = false;
-            for (polygonLabel *label : labelList)
-            {
-                polygonRoi *roi = label->roiOpenInSlice();
-                if (roi)
-                {
-                    roi->getContour()->SetWidgetState(vtkContourWidget::Define);
-
-                    roi->getContour()->InvokeEvent(vtkCommand::PlacePointEvent);
-                    cursorState = CURSORSTATE::CS_NONE;
-                    isRoiOpen = true;
-                    break;
-                }
-            }
-            if (!isRoiOpen)
-            {
-                addPointInContourWithLabel();
-            }
+            addPointInContourWithLabel();
             break;
         }
         case CURSORSTATE::CS_REPULSOR:
@@ -626,7 +617,6 @@ polygonLabel *baseViewEvent::findManager(int position)
 void baseViewEvent::updateContourProperty(QString &name, QColor &color, int position, bool isSelected, bool hasScore,
                                           bool checkState)
 {
-    qDebug()<<"updateContourProperty "<<name;
     if (!currentView)
         return;
 
@@ -652,7 +642,6 @@ void baseViewEvent::updateContourProperty(QString &name, QColor &color, int posi
         currentLabel = new polygonLabel(currentView, this, color, name, position, isSelected, enableInterpolation);
         currentLabel->setScoreState(hasScore);
         labelList.append(currentLabel);
-        connect(currentLabel, SIGNAL(sendErrorMessage(QString)), this, SIGNAL(sendErrorMessage(QString)), Qt::UniqueConnection);
     }
     currentLabel->setRoisSelectedState();
     currentView->render();
@@ -904,6 +893,15 @@ void baseViewEvent::deleteLabel(int position)
     }
 }
 
+void baseViewEvent::updatePosition(QString name, int position)
+{
+    for (auto label: labelList)
+    {
+        if (label->getName()==name)
+            label->getState().position = position;
+    }
+}
+
 int baseViewEvent::deleteLabelBase(polygonLabel *manager)
 {
     int position = -1;
@@ -1027,9 +1025,20 @@ medAbstractView *baseViewEvent::getCurrentView()
     return currentView;
 }
 
+void baseViewEvent::replaceCurrentView(medAbstractImageView *iView)
+{
+    currentView = iView;
+    for (auto label : labelList)
+    {
+        label->replaceCurrentView(iView);
+    }
+}
+
 void baseViewEvent::showOnDifferentOrientation()
 {
     auto view = dynamic_cast<medAbstractImageView *>(sender());
+    qDebug()<<"size of oriented view "<<view->viewWidget()->size();
+    qDebug()<<"size of current view "<<currentView->viewWidget()->size();
     for (polygonLabel *label : labelList)
     {
         label->updateRoiOnOrientedView(view, true);
@@ -1055,6 +1064,7 @@ void baseViewEvent::rename(int position, QString newName)
 
 void baseViewEvent::onSelectContainer()
 {
+
     updateLabelToolBoxState(identifier);
     installOnView(currentView);
     for (auto label : labelList)
@@ -1092,5 +1102,20 @@ bool baseViewEvent::isContourLoadable(QString &labelName)
         }
     }
     return true;
+}
+
+void baseViewEvent::drawCross(double *position)
+{
+    double pos[2];
+    pos[0] = currentView->viewWidget()->width() * position[0];
+    pos[1] = currentView->viewWidget()->height() * position[1];
+    crossPosition->draw(pos);
+    currentView->render();
+}
+
+void baseViewEvent::eraseCross()
+{
+    crossPosition->erase();
+    currentView->render();
 }
 

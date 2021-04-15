@@ -18,7 +18,7 @@
 
 // vtk
 #include <vtkCellLocator.h>
-#include <vtkContourOverlayRepresentation.h>
+#include <viewinteractors/vtkContourOverlayRepresentation.h>
 #include <vtkContourWidget.h>
 #include <vtkImageView2D.h>
 #include <vtkPointData.h>
@@ -92,6 +92,14 @@ class polygonRoiPrivate
 public:
     ~polygonRoiPrivate()
     {
+        for (medAbstractImageView *view : alternativeViews)
+        {
+            vtkImageView3D *view3D = static_cast<medVtkViewBackend *>(view->backend())->view3D;
+            view3D->RemoveDataSet(polyData);
+            vtkImageView2D *view2D = static_cast<medVtkViewBackend *>(view->backend())->view2D;
+            view2D->RemoveDataSet(polyData);
+        }
+        alternativeViews.clear();
         contour->RemoveAllObservers();
         contour->GetContourRepresentation()->RemoveAllObservers();
         view->RemoveObserver(observer);
@@ -141,18 +149,18 @@ polygonRoi::polygonRoi(vtkImageView2D *view, QColor color, medAbstractRoi *paren
     setMasterRoi(true);
 }
 
+void polygonRoi::replaceCurrentView(vtkImageView2D *view2d)
+{
+    d->contour->GetContourRepresentation()->SetRenderer(view2d->GetRenderer());
+    d->contour->SetInteractor(view2d->GetInteractor());
+
+    d->view = view2d;
+    setOrientation(view2d->GetViewOrientation());
+    setIdSlice(view2d->GetSlice());
+}
+
 polygonRoi::~polygonRoi()
 {
-    if (d->polyData)
-    {
-        for (medAbstractImageView *view : d->alternativeViews)
-        {
-            vtkImageView3D *view3D = static_cast<medVtkViewBackend *>(view->backend())->view3D;
-            view3D->RemoveDataSet(d->polyData);
-            vtkImageView2D *view2D = static_cast<medVtkViewBackend *>(view->backend())->view2D;
-            view2D->RemoveDataSet(d->polyData);
-        }
-    }
     delete d;
     d = nullptr;
 }
@@ -429,7 +437,6 @@ QColor polygonRoi::getColor()
 
 void polygonRoi::updateContourOtherView(medAbstractImageView *view, bool state)
 {
-    d->alternativeViews.append(view);
     if ( view->orientation() == medImageView::VIEW_ALL_ORIENTATION )
     {
         return;
@@ -437,43 +444,51 @@ void polygonRoi::updateContourOtherView(medAbstractImageView *view, bool state)
 
     if (state)
     {
-        if (!d->polyData)
+        if (!d->alternativeViews.contains(view))
         {
-            d->polyData = createPolyDataFromContour();
-        }
-        if (!d->property)
-        {
-            d->property = createPropertyForPolyData();
-        }
-        double color[3];
-        color[0] = d->roiColor.redF();
-        color[1] = d->roiColor.greenF();
-        color[2] = d->roiColor.blueF();
-        d->property->SetColor(color);
+            d->alternativeViews.append(view);
+            if (!d->polyData)
+            {
+                d->polyData = createPolyDataFromContour();
+            }
+            if (!d->property)
+            {
+                d->property = createPropertyForPolyData();
+            }
+            double color[3];
+            color[0] = d->roiColor.redF();
+            color[1] = d->roiColor.greenF();
+            color[2] = d->roiColor.blueF();
+            d->property->SetColor(color);
 
-        if (view->orientation() == medImageView::VIEW_ORIENTATION_3D)
-        {
-            vtkImageView3D* view3D = static_cast<medVtkViewBackend*>(view->backend())->view3D;
-            view3D->RemoveDataSet(d->polyData);
-            view3D->AddDataSet(d->polyData, d->property);
-        }
-        else
-        {
-            vtkImageView2D* view2D = static_cast<medVtkViewBackend*>(view->backend())->view2D;
-            view2D->RemoveDataSet(d->polyData);
-            view2D->AddDataSet(d->polyData, d->property);
+            if (view->orientation() == medImageView::VIEW_ORIENTATION_3D)
+            {
+                vtkImageView3D *view3D = static_cast<medVtkViewBackend *>(view->backend())->view3D;
+                view3D->RemoveDataSet(d->polyData);
+                view3D->AddDataSet(d->polyData, d->property);
+            }
+            else
+            {
+                vtkImageView2D *view2D = static_cast<medVtkViewBackend *>(view->backend())->view2D;
+                view2D->RemoveDataSet(d->polyData);
+                view2D->AddDataSet(d->polyData, d->property);
+            }
         }
     }
     else
     {
-        if (!d->polyData)
+        if (d->alternativeViews.contains(view))
         {
-            return;
+            d->alternativeViews.removeOne(view);
+            if (!d->polyData)
+            {
+                return;
+            }
+            vtkImageView3D *view3D = static_cast<medVtkViewBackend *>(view->backend())->view3D;
+            view3D->RemoveDataSet(d->polyData);
+            vtkImageView2D *view2D = static_cast<medVtkViewBackend *>(view->backend())->view2D;
+            view2D->RemoveDataSet(d->polyData);
         }
-        vtkImageView3D* view3D = static_cast<medVtkViewBackend*>(view->backend())->view3D;
-        view3D->RemoveDataSet(d->polyData);
-        vtkImageView2D* view2D = static_cast<medVtkViewBackend*>(view->backend())->view2D;
-        view2D->RemoveDataSet(d->polyData);
     }
 }
 
@@ -523,15 +538,6 @@ void polygonRoi::setCurrentSlice()
     setIdSlice(d->view->GetSlice());
 }
 
-void polygonRoi::setActiveView(vtkImageView2D *pView2d)
-{
-    removeObservers();
-    d->view = pView2d;
-    d->contour->GetContourRepresentation()->SetRenderer(d->view->GetRenderer());
-    d->contour->SetInteractor(d->view->GetInteractor());
-    addObservers();
-}
-
 void polygonRoi::removeObservers()
 {
     d->contour->RemoveAllObservers();
@@ -542,12 +548,6 @@ void polygonRoi::addObservers()
 {
     d->contour->AddObserver(vtkCommand::EndInteractionEvent,d->observer,10);
     d->view->AddObserver(vtkImageView2D::SliceChangedEvent, d->observer, 0);
-}
-
-int polygonRoi::getDistanceFromCurrentSlice()
-{
-    int dist = (int) getIdSlice() - d->view->GetSlice();
-    return dist;
 }
 
 

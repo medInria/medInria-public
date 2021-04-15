@@ -16,7 +16,7 @@
 
 #include <itkImage.h>
 #include <medWorldPosContours.h>
-#include <polygonRoi.h>
+#include <viewinteractors/polygonRoi.h>
 
 class medLabelPolygonsPrivate;
 class baseViewEvent;
@@ -32,24 +32,22 @@ class POLYGONROIPLUGIN_EXPORT polygonLabel : public QObject
 public:
     polygonLabel(medAbstractImageView *view, baseViewEvent *eventCursor, QColor &color, QString &name,
                  int position, bool isSelected, bool interpolate);
-    ~polygonLabel();
+    ~polygonLabel() override;
 
     polygonRoi* roiOpenInSlice();
 
     [[maybe_unused]] bool roiClosedInSlice();
     bool isSameSliceOrientation();
     polygonRoi *existingRoiInSlice();
-    void appendRoi(polygonRoi *roi);
     QList<polygonRoi *> getRois();
     QColor & getColor();
     QColor & getOptColor();
     QString & getName();
     QString & getOptName();
     int getPosition();
+    void replaceCurrentView(medAbstractImageView *iView);
 
     polygonRoi *appendRoi();
-    void updateView(medAbstractImageView *view);
-    void setActiveView(medAbstractImageView *pView);
 
     void removeViewObservers();
     void addViewObservers();
@@ -58,27 +56,22 @@ public:
 
     void manageTick(medSliderL *slider);
     void manageVisibility();
-    bool mouseIsCloseFromNodes(double mousePos[2]);
     double getMinimumDistanceFromNodesToMouse(double eventPos[2], bool allNodes = true);
     void deleteNode(double X, double Y);
     void deleteContour();
     void removeAllTick();
     void createMaskWithLabel(int label);
-    void SetMasterRoi(bool state);
+    void SetMasterRoi();
 
     vtkSmartPointer<vtkPolyData> getContoursAsPolyData(int label);
     QVector<medWorldPosContours> getContoursAsNodes();
     void loadContours(QVector<medWorldPosContours> &contours);
-
-    unsigned int getClosestSliceFromCurrent2DView();
 
     QVector<QVector2D> copyContour();
     bool pasteContour(QVector<QVector2D> nodes);
     void setName(QString &name);
     void setColor(QColor &color);
     void setOptionalNameWithColor(const QString &name, const QColor &color);
-    void removeContourOtherView(medAbstractImageView *v);
-    void removeIntermediateContoursOtherView(medAbstractImageView *v);
     void setRoisSelectedState();
     bool hasScore();
     void setScoreState(bool state);

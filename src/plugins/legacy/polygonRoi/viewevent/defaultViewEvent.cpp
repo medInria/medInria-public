@@ -34,6 +34,7 @@ void defaultViewEvent::activateContour(double *mousePosition)
 {
     int position = activateContourBase(mousePosition);
     dLabelToolBox->selectRow(position);
+    currentView->render();
 }
 
 QLineEdit *defaultViewEvent::changeManagerName(polygonLabel *closestManager, QMenu *mainMenu)
@@ -119,8 +120,6 @@ void defaultViewEvent::loadContours(QVector<medTagContours> &tagContoursSet)
                 {
                     label = new polygonLabel(currentView, this, color, name, position, false, enableInterpolation);
                     labelList.append(label);
-                    connect(currentLabel, SIGNAL(sendErrorMessage(QString)), this, SIGNAL(sendErrorMessage(QString)),
-                            Qt::UniqueConnection);
                 }
                 label->loadContours(tagContour.getContourNodes());
                 label->setRoisSelectedState();
