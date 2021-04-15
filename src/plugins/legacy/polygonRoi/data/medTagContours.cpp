@@ -2,19 +2,19 @@
 #include <QVector>
 
 medTagContours::medTagContours()
-    : labelName(QString()), labelScore(QString()), target(false)
+    : labelName(QString()), labelScore(QString()), target(false), specialityIndex(0)
 {
 
 }
 
 medTagContours::medTagContours(QString &name, QVector<medWorldPosContours> &contourVec)
-    : labelName(name), labelScore(QString()), target(false), contours(contourVec)
+    :contours(contourVec), labelName(name), labelScore(QString()), target(false), specialityIndex(0)
 {
 
 }
 
 medTagContours::medTagContours(QString &name, QString &scoreName, bool targetState, QVector<medWorldPosContours> &contourVec)
-    : labelName(name), labelScore(scoreName), target(targetState), contours(contourVec)
+    : contours(contourVec), labelName(name), labelScore(scoreName), target(targetState), specialityIndex(0)
 {
 
 }
@@ -30,8 +30,7 @@ medTagContours::medTagContours(const medTagContours &other)
 
 QTextStream &operator<<(QTextStream &out, const medTagContours &data)
 {
-    out << "specialityIndex\n" << data.specialityIndex << "labelName\n" << data.labelName << "labelScore\n" << data.labelScore << "\ncontours\n";
-    for (medWorldPosContours nodes : data.contours)
+    for (const medWorldPosContours& nodes : data.contours)
     {
         out << nodes<<"\n";
     }
