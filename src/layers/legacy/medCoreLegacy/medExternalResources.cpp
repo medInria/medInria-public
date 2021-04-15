@@ -38,6 +38,38 @@ CFBundleRef getBundleOrFramework(QString libraryName)
 // On macOS the main resources are located in the bundle's resource folder and
 // the library-specific resources are located in the library's framework
 // resource folder. If 'libraryName' is empty then the bundle is searched.
+QString getResourcesDirectoryForMacPackage(QString libraryName)
+{
+    QString result;
+    CFBundleRef bundle = getBundleOrFramework(libraryName);
+
+    if (bundle)
+    {
+        CFURLRef relativeResourcesDirectoryURL = CFBundleCopyResourcesDirectoryURL(bundle);
+        CFURLRef resourcesDirectoryURL = CFURLCopyAbsoluteURL(relativeResourcesDirectoryURL);
+        CFRelease(relativeResourcesDirectoryURL);
+
+        if (resourcesDirectoryURL)
+        {
+            CFStringRef resourcesDirectory = CFURLCopyFileSystemPath(resourcesDirectoryURL, kCFURLPOSIXPathStyle);
+            CFRelease(resourcesDirectoryURL);
+            CFIndex utf16length = CFStringGetLength(resourcesDirectory);
+            CFIndex maxUtf8length = CFStringGetMaximumSizeForEncoding(utf16length, kCFStringEncodingUTF8);
+            std::string pathString(maxUtf8length, '\0');
+
+            if (CFStringGetCString(resourcesDirectory, pathString.data(), maxUtf8length, kCFStringEncodingUTF8))
+            {
+                result = pathString.c_str();
+            }
+
+            CFRelease(resourcesDirectory);
+        }
+    }
+
+    return result;
+}
+
+// (see getResourcesDirectoryForMacPackage for implementation notes)
 QString getResourcePathForMacPackage(QString filename, QString libraryName)
 {
     QString result;
@@ -47,7 +79,6 @@ QString getResourcePathForMacPackage(QString filename, QString libraryName)
     {
         CFStringRef resourceName = CFStringCreateWithCString(nullptr, qUtf8Printable(filename), kCFStringEncodingUTF8);
         CFURLRef resourceURL = CFBundleCopyResourceURL(bundle, resourceName, nullptr, nullptr);
-        CFRelease(bundle);
         CFRelease(resourceName);
 
         if (resourceURL)
@@ -72,9 +103,9 @@ QString getResourcePathForMacPackage(QString filename, QString libraryName)
 
 #else
 
-// Search for the resource in the '../resources/[libraryName/]' directory
-// relative to the application directory.
-QString getResourcePathFromApplicationDirectory(QString filename, QString libraryName)
+// Return the '../resources/[libraryName/]' directory relative to the
+// application directory.
+QString getResourcesDirectoryFromApplicationDirectory(QString libraryName)
 {
     QString result;
     QString applicationDirectory = qApp->applicationDirPath();
@@ -87,12 +118,27 @@ QString getResourcePathFromApplicationDirectory(QString filename, QString librar
             && resourcesDirectory.cd("resources")
             && (libraryName.isEmpty() || resourcesDirectory.cd(libraryName)))
         {
-            QString resourceFilePath = resourcesDirectory.filePath(filename);
+            result = resourcesDirectory.path();
+        }
+    }
 
-            if (QFileInfo::exists(resourceFilePath))
-            {
-                result = resourceFilePath;
-            }
+    return result;
+}
+
+// Search for the resource in the '../resources/[libraryName/]' directory
+// relative to the application directory.
+QString getResourcePathFromApplicationDirectory(QString filename, QString libraryName)
+{
+    QString result;
+    QString resourcesDirectory = getResourcesDirectoryFromApplicationDirectory(libraryName);
+
+    if (!resourcesDirectory.isEmpty())
+    {
+        QString resourceFilePath = QDir(resourcesDirectory).filePath(filename);
+
+        if (QFileInfo::exists(resourceFilePath))
+        {
+            result = resourceFilePath;
         }
     }
 
@@ -102,6 +148,19 @@ QString getResourcePathFromApplicationDirectory(QString filename, QString librar
 #endif
 
 } // namespace
+
+QString getExternalResourcesDirectory(QString libraryName)
+{
+    QString result;
+
+#if defined(Q_OS_MACOS)
+    result = getResourcesDirectoryForMacPackage(libraryName);
+#else
+    result = getResourcesDirectoryFromApplicationDirectory(libraryName);
+#endif
+
+    return result;
+}
 
 QString getExternalResourcePath(QString filename, QString libraryName)
 {

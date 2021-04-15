@@ -104,7 +104,7 @@ macro(add_external_resources target)
     endif()
 
     target_sources(${target} PRIVATE ${resources})
-    set_target_properties(${target} PROPERTIES RESOURCE "${resources}")
+    set_property(TARGET ${target} APPEND PROPERTY RESOURCE "${resources}")
 
     if (APPLE)
 ### MACOS RULES
@@ -112,11 +112,14 @@ macro(add_external_resources target)
       # if the target is a library, we must build it as a framework to contain
       # the resources.
       if (target_type STREQUAL "SHARED_LIBRARY")
-        set_target_properties(${target} PROPERTIES
-          FRAMEWORK TRUE
-          MACOSX_BUNDLE_BUNDLE_NAME ${target}
-          MACOSX_FRAMEWORK_IDENTIFIER ${${PROJECT_NAME}_IDENTIFIER}.${target}
-          )
+        get_target_property(is_framework ${target} FRAMEWORK)
+        if (NOT is_framework)
+          set_target_properties(${target} PROPERTIES
+            FRAMEWORK TRUE
+            MACOSX_BUNDLE_BUNDLE_NAME ${target}
+            MACOSX_FRAMEWORK_IDENTIFIER ${${PROJECT_NAME}_IDENTIFIER}.${target}
+            )
+        endif()
       endif()
 
     else()
