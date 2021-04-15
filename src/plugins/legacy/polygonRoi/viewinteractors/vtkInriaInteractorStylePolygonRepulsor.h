@@ -16,7 +16,7 @@ PURPOSE.
 
 #include <medAbstractView.h>
 
-#include <polygonRoi.h>
+#include <viewinteractors/polygonRoi.h>
 #include <polygonRoiPluginExport.h>
 
 #include <vtkCircleActor2D.h>

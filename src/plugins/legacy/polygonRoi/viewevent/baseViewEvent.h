@@ -30,6 +30,7 @@
 #include <medIntParameterL.h>
 #include <medAbstractImageData.h>
 #include <polygonRoiToolBox.h>
+#include <viewinteractors/medMouseCrossPosition.h>
 
 class medTableWidgetItem;
 class defaultLabelToolBox;
@@ -38,20 +39,23 @@ class baseViewEvent : public medViewEventFilter
 {
     Q_OBJECT
 
+    void activateMouseEvent(bool state);
+
 public:
     baseViewEvent(medAbstractImageView *iView, polygonRoiToolBox *toolBox);
     ~baseViewEvent();
     bool mousePressEvent(medAbstractView * view, QMouseEvent *mouseEvent) override;
     bool mouseReleaseEvent(medAbstractView * view, QMouseEvent *mouseEvent) override;
     bool mouseMoveEvent(medAbstractView * view, QMouseEvent *mouseEvent) override;
-
     bool eventFilter(QObject *obj, QEvent *event) override;
+
     medAbstractView *getCurrentView();
+    void replaceCurrentView(medAbstractImageView *iView);
 
     virtual void initialize(medToolBox *medTb, QString &seriesName) = 0;
 
     virtual void updateLabelToolBoxState(QString &name) = 0;
-
+    void updatePosition(QString name, int position);
     void setEnableInterpolation(bool state);
     void activateRepulsor(bool state);
     void saveMask();
@@ -64,7 +68,8 @@ public:
 
     virtual void deleteLabel(polygonLabel *manager) = 0;
     virtual void loadContours(QVector<medTagContours> &tagContoursSet) = 0;
-
+    void drawCross(double *position);
+    void eraseCross();
 public slots:
 
     [[maybe_unused]] void onContourFinished(CURSORSTATE state);
@@ -99,6 +104,7 @@ protected:
     QString identifier;
     bool enableInterpolation;
     polygonRoiToolBox *pToolBox;
+    medMouseCrossPosition *crossPosition;
 
     int activateContourBase(double *mousePosition);
     static QLineEdit *changeManagerNameBase(polygonLabel *closestManager, QMenu *mainMenu);
@@ -114,7 +120,7 @@ private:
     double savedMousePosition[2];
     dtkSmartPointer<medAbstractData> contourOutput;
 
-    void leftButtonBehaviour(medAbstractView *view, QMouseEvent *mouseEvent);
+    void leftButtonBehaviour(medAbstractView *view);
     bool rightButtonBehaviour(medAbstractView *view, QMouseEvent *mouseEvent);
     void addPointInContourWithLabel();
     void deleteNode(double *mousePosition);
@@ -138,5 +144,4 @@ private:
     polygonLabel *findManager(int position);
 
     static medIntParameterL *getSlicingParameter(medAbstractImageView *iView) ;
-
 };

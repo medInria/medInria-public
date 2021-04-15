@@ -22,7 +22,7 @@
 #include <medVtkViewBackend.h>
 #include <viewevent/baseViewEvent.h>
 #include <polygonRoiToolBox.h>
-#include <vtkContourOverlayRepresentation.h>
+#include <viewinteractors/vtkContourOverlayRepresentation.h>
 
 // vtk
 #include <vtkAppendPolyData.h>
@@ -136,9 +136,17 @@ vtkImageView2D * polygonLabel::getView2D() const
     return static_cast<medVtkViewBackend *>(d->view->backend())->view2D;
 }
 
-void polygonLabel::appendRoi(polygonRoi *roi)
+void polygonLabel::replaceCurrentView(medAbstractImageView *iView)
 {
-    d->rois.append(roi);
+    vtkImageView2D *view2d = static_cast<medVtkViewBackend *>(iView->backend())->view2D;
+    d->view = iView;
+
+    d->orientation = view2d->GetViewOrientation();
+    d->sliceOrientation = view2d->GetSliceOrientation();
+    for (auto roi : d->rois)
+    {
+        roi->replaceCurrentView(view2d);
+    }
 }
 
 QColor & polygonLabel::getColor()
@@ -193,9 +201,12 @@ void polygonLabel::loadContours(QVector<medWorldPosContours> &contours)
     for (medWorldPosContours nodes : contours)
     {
         polygonRoi *roi = appendRoi();
-        roi->setIdSlice(nodes.getSlice());
-        roi->setOrientation(nodes.getOrientation());
-        roi->loadNodes(nodes.getNodes());
+        if (roi)
+        {
+            roi->setIdSlice(nodes.getSlice());
+            roi->setOrientation(nodes.getOrientation());
+            roi->loadNodes(nodes.getNodes());
+        }
     }
 }
 
@@ -223,8 +234,6 @@ void polygonLabel::setEnableInterpolation(bool state)
     if (state)
     {
         interpolateIfNeeded();
-//        d->eventCursor->manageTickVisibility(true);
-//        emit enableOtherViewsVisibility(true);
     }
     else
     {
@@ -590,7 +599,7 @@ void polygonLabel::createMaskWithLabel(int label)
     medDataManager::instance()->importData(output, false);
 }
 
-void polygonLabel::SetMasterRoi(bool state)
+void polygonLabel::SetMasterRoi()
 {
     polygonRoi *roi = existingRoiInSlice();
     if (roi)
@@ -644,9 +653,6 @@ void polygonLabel::connectRois()
     for (polygonRoi *roi: d->rois)
     {
         connect(roi, SIGNAL(contourFinished(CURSORSTATE)), d->eventCursor, SLOT(onContourFinished(CURSORSTATE)), Qt::UniqueConnection);
-//        connect(roi, SIGNAL(interpolate()), this, SLOT(interpolateIfNeeded()), Qt::UniqueConnection);
-//        connect(roi, SIGNAL(interpolate()), d->eventCursor, SLOT(manageTickVisibility()), Qt::UniqueConnection);
-//        connect(roi, SIGNAL(enableOtherViewsVisibility(bool)), this, SIGNAL(enableOtherViewsVisibility(bool)), Qt::UniqueConnection);
     }
 }
 
@@ -656,7 +662,6 @@ void polygonLabel::manageVisibility()
     {
         roi->manageVisibility();
     }
-//    d->view->render();
 }
 
 void polygonLabel::setRoisSelectedState()
@@ -670,7 +675,6 @@ void polygonLabel::setRoisSelectedState()
         }
         roi->activateContour(selected);
     }
-    d->view->render();
 }
 
 void polygonLabel::changeContoursColor(QColor color)
@@ -679,7 +683,6 @@ void polygonLabel::changeContoursColor(QColor color)
     {
         roi->updateColor(color, d->property.selected);
     }
-//    d->view->render();
 }
 
 QColor polygonLabel::switchColor()
@@ -695,7 +698,6 @@ QColor polygonLabel::switchColor()
         color= (roiColor==d->property.mainColor) ? d->property.secondColor : d->property.mainColor;
         for (polygonRoi *roi : d->rois)
         {
-            qDebug() << "update color roi from " << d->property.mainColor << " to " << color << " selected " << d->property.selected;
             roi->updateColor(color, d->property.selected);
         }
         d->view->render();
@@ -711,16 +713,6 @@ bool polygonLabel::hasScore()
 void polygonLabel::setScoreState(bool state)
 {
     d->property.scoreState = state;
-//    if (!d->property.scoreState)
-//    {
-//        d->property.secondName = QString();
-//        d->property.secondColor = QColor::Invalid;
-//        for (polygonRoi *roi : d->rois)
-//        {
-//            roi->updateColor(d->property.mainColor, d->isActivated);
-//        }
-//        d->view->render();
-//    }
 }
 
 QVector<QVector2D> polygonLabel::copyContour()
@@ -751,29 +743,14 @@ bool polygonLabel::pasteContour(QVector<QVector2D> nodes)
     }
 
     roi = appendRoi();
-    roi->setCurrentSlice();
-    roi->setOrientation(d->orientation);
-    roi->pasteContour(nodes);
-    d->view->render();
-    return true;
-}
-
-bool polygonLabel::mouseIsCloseFromNodes(double mousePos[2])
-{
-    polygonRoi *roi = existingRoiInSlice();
     if (roi)
     {
-        for (int i = 0; i< roi->getContour()->GetContourRepresentation()->GetNumberOfNodes(); i++)
-        {
-            double contourPos[2];
-            roi->getContour()->GetContourRepresentation()->GetNthNodeDisplayPosition(i, contourPos);
-            if ( getDistance(mousePos, contourPos) <= 10. )
-            {
-                return true;
-            }
-        }
+        roi->setCurrentSlice();
+        roi->setOrientation(d->orientation);
+        roi->pasteContour(nodes);
     }
-    return false;
+//    d->view->render();
+    return true;
 }
 
 double polygonLabel::getMinimumDistanceFromNodesToMouse(double eventPos[2], bool allNodes)
@@ -850,7 +827,7 @@ void polygonLabel::deleteNode(double X, double Y)
         }
     }
     interpolateIfNeeded();
-    d->view->render();
+//    d->view->render();
 }
 
 void polygonLabel::deleteContour()
@@ -874,7 +851,7 @@ void polygonLabel::deleteContour()
         }
     }
     interpolateIfNeeded();
-    d->view->render();
+//    d->view->render();
 }
 
 double polygonLabel::getDistance(double mousePos[2], double contourPos[2])
@@ -1097,47 +1074,6 @@ void polygonLabel::resampleCurve(vtkPolyData *nodes, int nbPoints, vtkPolyData *
 
     nodes->SetPoints(points);
     points->Delete();
-}
-
-unsigned int polygonLabel::getClosestSliceFromCurrent2DView()
-{
-    unsigned int slice = -1;
-
-    int minDist = INT_MAX;
-    for (polygonRoi *roi : d->rois)
-    {
-        int dist = roi->getDistanceFromCurrentSlice();
-        if (std::abs(dist)<minDist)
-        {
-            minDist = std::abs(dist);
-            slice = roi->getIdSlice();
-        }
-    }
-    return slice;
-}
-
-void polygonLabel::updateView(medAbstractImageView *view)
-{
-//    d->view = view;
-//    vtkImageView2D *view2d = static_cast<medVtkViewBackend*>(view->backend())->view2D;
-//    for (polygonRoi *roi: getRois())
-//    {
-//        roi->updateView(view2d);
-//    }
-}
-
-void polygonLabel::setActiveView(medAbstractImageView *pView)
-{
-    d->view = pView;
-
-    vtkImageView2D *view2d = getView2D();
-    if (!view2d)
-        return;
-
-    for (polygonRoi *roi: getRois())
-    {
-        roi->setActiveView(view2d);
-    }
 }
 
 void polygonLabel::updateRoiOnOrientedView(medAbstractImageView *pView, bool state)

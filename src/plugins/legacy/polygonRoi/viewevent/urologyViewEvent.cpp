@@ -29,6 +29,7 @@ void urologyViewEvent::activateContour(double *mousePosition)
 {
     int position = activateContourBase(mousePosition);
     uLabelToolBox->selectRow(position);
+    currentView->render();
 }
 
 QLineEdit *urologyViewEvent::changeManagerName(polygonLabel *closestManager, QMenu *mainMenu)
@@ -196,8 +197,6 @@ void urologyViewEvent::loadContours(QVector<medTagContours> &tagContoursSet)
                 {
                     label = new polygonLabel(currentView, this, color, name, position, false, enableInterpolation);
                     labelList.append(label);
-                    connect(currentLabel, SIGNAL(sendErrorMessage(QString)), this, SIGNAL(sendErrorMessage(QString)),
-                            Qt::UniqueConnection);
                 }
                 if (isTarget && tagContour.getScore() != QString())
                 {

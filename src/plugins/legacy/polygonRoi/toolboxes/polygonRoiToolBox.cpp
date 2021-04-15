@@ -27,6 +27,7 @@
 #include <medSettingsManager.h>
 #include <medMetaDataKeys.h>
 #include <medContours.h>
+//#include <medVtkViewBackend.h>
 
 const char *polygonRoiToolBox::generateBinaryImageButtonName = "generateBinaryImageButton";
 
@@ -114,19 +115,16 @@ polygonRoiToolBox::polygonRoiToolBox(QWidget *parent ) :
     saveLayout->addLayout(saveButtonsLayout);
 
     // How to use
-    QString underlineStyle = "<br><br><span style=\" text-decoration: underline;\">%1</span>";
-    auto explanation = new QLabel(QString(underlineStyle).arg("Define a Contour") + ": activate the toolbox, then click on the data set"
-                                     + QString(underlineStyle).arg("Define new Label") + ": right-click on the image then choose color"
-                                     + QString(underlineStyle).arg("Rename a Label") + ": put the cursor on a node then right-click and set a new label name"
-                                     + QString(underlineStyle).arg("Remove node/contour/label") + ": backSpace or put the cursor on a node then right-click and choose menu \"Remove\""
-                                     + QString(underlineStyle).arg("Save segmentation") + ": put the cursor on a node then right-click and choose menu \"Save\""
-                                     + QString(underlineStyle).arg("Copy ROIs in current slice") + ": CTRL/CMD + C or put the cursor on a node then right-click and choose menu \"Copy\""
-                                     + QString(underlineStyle).arg("Paste ROIs") + ": CTRL/CMD + V."
-                                     + QString(underlineStyle).arg("Change current label") + ": put the cursor on a node then right-click and choose menu \"Change label\".");
-
-    explanation->setSizePolicy(QSizePolicy::Ignored, QSizePolicy::Preferred);
-    explanation->setWordWrap(true);
-    layout->addWidget(explanation);
+    auto helpLayout = new QVBoxLayout();
+    layout->addLayout(helpLayout);
+    helpLayout->setContentsMargins(0, 10, 0, 0);
+    helpButton = new QPushButton("Help");
+    helpButton->setToolTip("show help related to this toolbox.");
+    helpButton->setMinimumSize(150, 20);
+    helpButton->setMaximumSize(150, 20);
+    helpButton->setObjectName("helpButton");
+    connect(helpButton, SIGNAL(clicked()), this, SLOT(showHelp()));
+    helpLayout->addWidget(helpButton);
 
     timerHighLight = new QTimer;
     // buttons initialisation: view has no data
@@ -194,14 +192,30 @@ void polygonRoiToolBox::updateView()
         {
             // attached view event with the first image data we found in view
             medAbstractData *data = dataList[0];
-            baseViewEvent *event = eventViewForData[data->dataIndex()];
-            // check if we have an event view attached to this data but in another container/view
-            if (event)
+            if (viewEventHash.contains(data->dataIndex()))
             {
-                 if (imageView != event->getCurrentView())
+                baseViewEvent *event = viewEventHash[data->dataIndex()];
+                // check if we have an event view attached to this data but in another container/view
+                if (imageView != event->getCurrentView())
                 {
-                     connect(imageView, SIGNAL(layerRemoved(medAbstractData *)), this, SLOT(onLayerRemoveOnOrientedViews(medAbstractData *)), Qt::UniqueConnection);
-                     connect(imageView, SIGNAL(orientationChanged()), event, SLOT(showOnDifferentOrientation()));
+                    QWidget *w1 = imageView->viewWidget();
+                    int p1 = 2*w1->width() + 2*w1->height();
+                    QWidget *w2 = event->getCurrentView()->viewWidget();
+                    int p2 = 2*w2->width() + 2*w2->height();
+                    medAbstractImageView *view1 = nullptr;
+                    if (p2<p1) // the eventView is attached to the smallest view => we must switch
+                    {
+                        view1 = dynamic_cast<medAbstractImageView *>(event->getCurrentView());
+                        event->replaceCurrentView(imageView);
+                    }
+                    else
+                    {
+                        view1 = imageView;
+                    }
+                    connect(view1, SIGNAL(layerRemoved(medAbstractData * )), this,
+                            SLOT(onLayerRemoveOnOrientedViews(medAbstractData * )), Qt::UniqueConnection);
+                    connect(view1, SIGNAL(orientationChanged()), event, SLOT(showOnDifferentOrientation()));
+
                 }
             }
             else
@@ -223,12 +237,15 @@ void polygonRoiToolBox::updateView()
                     }
                     else
                     {
-                        for (baseViewEvent *event1 : eventViewForData.values())
+                        for (baseViewEvent *event1 : viewEventHash.values())
                         {
                             if (event1->getCurrentView()==view)
                             {
                                 event1->loadContours(tagContoursSet);
-                                emit activateTBButton->click();
+                                if (!activateTBButton->isChecked())
+                                {
+                                    emit activateTBButton->click();
+                                }
 
                                 break;
                             }
@@ -258,15 +275,13 @@ void polygonRoiToolBox::updateView()
 void polygonRoiToolBox::onLayerRemoveOnOrientedViews(medAbstractData *data)
 {
     auto view = dynamic_cast<medAbstractImageView *>(sender());
-    baseViewEvent *event = eventViewForData[data->dataIndex()];
-    if (!event)
+    if (viewEventHash.contains(data->dataIndex()))
     {
-        eventViewForData.remove(data->dataIndex());
-        return;
-    }
-    if (event->getCurrentView() != view)
-    {
-        event->removeViewFromList(view);
+        baseViewEvent *event = viewEventHash[data->dataIndex()];
+        if (event->getCurrentView() != view)
+        {
+            event->removeViewFromList(view);
+        }
     }
 }
 
@@ -280,18 +295,18 @@ void polygonRoiToolBox::createAndConnectEventFilter(const medAbstractData *data,
     {
         auto eventFilter = new urologyViewEvent(imageView, this);
         eventFilter->initialize(pMedToolBox, toolBoxName);
-        eventViewForData[data->dataIndex()] = eventFilter;
+        viewEventHash[data->dataIndex()] = eventFilter;
     }
     else
     {
         auto eventFilter = new defaultViewEvent(imageView, this);
         eventFilter->initialize(pMedToolBox, toolBoxName);
-        eventViewForData[data->dataIndex()] = eventFilter;
+        viewEventHash[data->dataIndex()] = eventFilter;
     }
 
     connect(imageView, SIGNAL(selectedRequest(bool)), this, SLOT(onDataIndexActivated()), Qt::UniqueConnection);
     connect(imageView, SIGNAL(selectedRequest(bool)), activateTBButton, SLOT(setEnabled(bool)), Qt::UniqueConnection);
-    emit imageView->selectedRequest(true);
+    activateTBButton->setEnabled(true);
 
     connect(imageView, SIGNAL(layerRemoved(medAbstractData *)), this, SLOT(onLayerRemoved(medAbstractData *)), Qt::UniqueConnection);
 
@@ -299,76 +314,73 @@ void polygonRoiToolBox::createAndConnectEventFilter(const medAbstractData *data,
 
 void polygonRoiToolBox::onLayerRemoved(medAbstractData *data)
 {
-    baseViewEvent *pViewEvent = eventViewForData[data->dataIndex()];
-    if (!pViewEvent)
+    if (viewEventHash.contains(data->dataIndex()))
     {
-        eventViewForData.remove(data->dataIndex());
-        return;
-    }
-    disconnect(pViewEvent->getCurrentView(), SIGNAL(selectedRequest(bool)), this, SLOT(onDataIndexActivated()));
+        baseViewEvent *pViewEvent = viewEventHash[data->dataIndex()];
+        disconnect(pViewEvent->getCurrentView(), SIGNAL(selectedRequest(bool)), this, SLOT(onDataIndexActivated()));
 
-    // check if this data is in another view. If yes, we have to disconnect signals
-    medTabbedViewContainers *tabs = this->getWorkspace()->tabbedViewContainers();
-    for (medViewContainer *container : tabs->containersInTab(tabs->currentIndex()))
-    {
-        QUuid uuid = container->uuid();
-        medAbstractView *view = container->view();
-        if (!view)
+        // check if this data is in another view. If yes, we have to disconnect signals
+        medTabbedViewContainers *tabs = this->getWorkspace()->tabbedViewContainers();
+        for (medViewContainer *container : tabs->containersInTab(tabs->currentIndex()))
         {
-            QString msg = "No view in selected container (" + uuid.toString() + ")";
-            displayMessageError(msg);
-            return;
+            QUuid uuid = container->uuid();
+            medAbstractView *view = container->view();
+            if (!view)
+            {
+                QString msg = "No view in selected container (" + uuid.toString() + ")";
+                displayMessageError(msg);
+                return;
+            }
+            QList<medAbstractData *> dataList = getITKImageDataInSelectedView(view);
+            auto imageView = dynamic_cast<medAbstractImageView *>(view);
+            if (dataList.contains(data) && imageView != pViewEvent->getCurrentView())
+            {
+                disconnect(view, SIGNAL(orientationChanged()), pViewEvent, SLOT(showOnDifferentOrientation()));
+                disconnect(view, SIGNAL(layerRemoved(medAbstractData * )), this,
+                           SLOT(onLayerRemoveOnOrientedViews(medAbstractData * )));
+            }
         }
-        QList<medAbstractData *> dataList = getITKImageDataInSelectedView(view);
-        auto imageView = dynamic_cast<medAbstractImageView *>(view);
-        if (dataList.contains(data) && imageView != pViewEvent->getCurrentView())
+
+        viewEventHash.remove(data->dataIndex());
+        if (activeDataIndex == data->dataIndex())
         {
-            disconnect(view, SIGNAL(orientationChanged()), pViewEvent, SLOT(onChangeOrientation()));
-            disconnect(view, SIGNAL(layerRemoved(medAbstractData *)), this, SLOT(onLayerRemoveOnOrientedViews(medAbstractData *)));
+            activeDataIndex = medDataIndex();
         }
-    }
+        delete pViewEvent;
 
-    eventViewForData.remove(data->dataIndex());
-    if (activeDataIndex == data->dataIndex())
-    {
-        activeDataIndex = medDataIndex();
-    }
-    delete pViewEvent;
-
-    if (eventViewForData.empty())
-    {
-        clear();
+        if (viewEventHash.empty())
+        {
+            clear();
+        }
     }
 }
 
 void polygonRoiToolBox::onDataIndexActivated()
 {
-    auto view = dynamic_cast<medAbstractImageView *>(sender());
-    for (medAbstractData *data : getITKImageDataInSelectedView(view))
+    if (activateTBButton->isChecked())
     {
-        if (data->dataIndex() == activeDataIndex)
+        auto view = dynamic_cast<medAbstractImageView *>(sender());
+        for (medAbstractData *data : getITKImageDataInSelectedView(view))
         {
-            qDebug()<<"already selected view "<<activeDataIndex;
-            return;
+            if (data->dataIndex() == activeDataIndex)
+            {
+                return;
+            }
         }
-    }
-    for (baseViewEvent *event : eventViewForData)
-    {
-        event->removeViewInteractor();
-    }
-    for (medAbstractData *data : getITKImageDataInSelectedView(view))
-    {
-        baseViewEvent *event = eventViewForData.value(data->dataIndex());
-        if (event)
+        for (baseViewEvent *event : viewEventHash)
         {
-            event->onSelectContainer();
-            activeDataIndex = data->dataIndex();
-            highLightContainer(event->getCurrentView());
-            return;
+            event->removeFromAllViews();
         }
-        else
+        for (medAbstractData *data : getITKImageDataInSelectedView(view))
         {
-            eventViewForData.remove(data->dataIndex());
+            if (viewEventHash.contains(data->dataIndex()))
+            {
+                baseViewEvent *event = viewEventHash.value(data->dataIndex());
+                event->onSelectContainer();
+                activeDataIndex = data->dataIndex();
+                highLightContainer(event->getCurrentView());
+                return;
+            }
         }
     }
 }
@@ -378,7 +390,7 @@ void polygonRoiToolBox::clickClosePolygon(bool state)
     if (!state)
     {
         pMedToolBox->hide();
-        for (baseViewEvent *event : eventViewForData.values())
+        for (baseViewEvent *event : viewEventHash.values())
         {
             event->removeViewInteractor();
             disconnect(event->getCurrentView(), SIGNAL(selectedRequest(bool)), this, SLOT(onDataIndexActivated()));
@@ -388,16 +400,17 @@ void polygonRoiToolBox::clickClosePolygon(bool state)
     else
     {
         pMedToolBox->show();
-        for (baseViewEvent *event : eventViewForData.values())
+        for (baseViewEvent *event : viewEventHash.values())
         {
+            qDebug()<<"data index "<<viewEventHash.key(event)<<" is connected "<<event->getCurrentView();
             connect(event->getCurrentView(), SIGNAL(selectedRequest(bool)), this, SLOT(onDataIndexActivated()),
                     Qt::UniqueConnection);
             connect(event->getCurrentView(), SIGNAL(layerRemoved(medAbstractData * )), this,
                     SLOT(onLayerRemoved(medAbstractData *)), Qt::UniqueConnection);
         }
-        if (activeDataIndex.isValid() && eventViewForData[activeDataIndex])
+        if (activeDataIndex.isValid() && viewEventHash[activeDataIndex])
         {
-            eventViewForData[activeDataIndex]->onSelectContainer();
+            viewEventHash[activeDataIndex]->onSelectContainer();
         }
     }
     saveBinaryMaskButton->setEnabled(state);
@@ -408,29 +421,23 @@ void polygonRoiToolBox::clickClosePolygon(bool state)
 
 void polygonRoiToolBox::activateRepulsor(bool state)
 {
-    baseViewEvent *event = eventViewForData.value(activeDataIndex);
-    if (!event)
+    if (viewEventHash.contains(activeDataIndex))
     {
-        eventViewForData.remove(activeDataIndex);
-        return;
+        viewEventHash.value(activeDataIndex)->activateRepulsor(state);
     }
-    event->activateRepulsor(state);
 }
 
 void polygonRoiToolBox::interpolateCurve(bool state)
 {
-    baseViewEvent *event = eventViewForData.value(activeDataIndex);
-    if (!event)
+    if (viewEventHash.contains(activeDataIndex))
     {
-        eventViewForData.remove(activeDataIndex);
-        return;
+        viewEventHash.value(activeDataIndex)->setEnableInterpolation(state);
     }
-    event->setEnableInterpolation(state);
 }
 
 void polygonRoiToolBox::saveBinaryImage()
 {
-    for (baseViewEvent *event1 : eventViewForData.values())
+    for (baseViewEvent *event1 : viewEventHash.values())
     {
         event1->saveMask();
     }
@@ -452,7 +459,7 @@ void polygonRoiToolBox::disableButtons()
 
 void polygonRoiToolBox::saveContours()
 {
-    for (baseViewEvent *event : eventViewForData.values())
+    for (baseViewEvent *event : viewEventHash.values())
     {
         event->saveAllContours();
     }
@@ -467,11 +474,11 @@ void polygonRoiToolBox::clear()
 //    medTabbedViewContainers *tabs = getWorkspace()->tabbedViewContainers();
 //    QList<medViewContainer*> containersInTabSelected = tabs->containersInTab(tabs->currentIndex());
 
-    for (baseViewEvent *event : eventViewForData)
+    for (baseViewEvent *event : viewEventHash)
     {
         delete event;
     }
-    eventViewForData.clear();
+    viewEventHash.clear();
 
     pMedToolBox->clear();
     pMedToolBox->setEnabled(false);
@@ -578,18 +585,65 @@ void polygonRoiToolBox::highLightContainer(medAbstractView *pView)
     }
 }
 
-medAbstractImageData * polygonRoiToolBox::getAttachedDataToEventView(baseViewEvent *pEvent)
+void polygonRoiToolBox::drawCross(double *position)
 {
-    medDataIndex index = eventViewForData.key(pEvent);
-    if (index.isValid())
+    for (auto event : viewEventHash)
     {
-        for (medAbstractData *data : getITKImageDataInSelectedView(pEvent->getCurrentView()))
-        {
-            if (data->dataIndex() == index)
-            {
-                return dynamic_cast<medAbstractImageData*>(data);
-            }
-        }
+        event->drawCross(position);
     }
-    return nullptr;
+}
+
+void polygonRoiToolBox::eraseCross()
+{
+    for (auto event : viewEventHash)
+    {
+        event->eraseCross();
+    }
+}
+
+void polygonRoiToolBox::showHelp() const
+{
+    QMessageBox msgBox;
+    msgBox.setWindowTitle("Help");
+    msgBox.setIcon(QMessageBox::Information);
+
+
+    QString underlineStyle = "<span>&#8226; %1</span>";
+    QString titleStyle = "<span style=\" font-size : 14px;text-decoration: underline;\"><center>%1</center></span><br>";
+
+    QString main = QString(QString(titleStyle).arg("Main features")
+                                 + QString(underlineStyle).arg("Draw Contour:") + " Activate the toolbox, then click on the data set<br><br>"
+                                 + QString(underlineStyle).arg("Define new Label:") + " Select a label then click on the data set<br><br>"
+                                 + QString(underlineStyle).arg("Add New Label:") + " Click on Plus Button<br><br>"
+                                 + QString(underlineStyle).arg("Remove label:") + " Click on Minus Button<br><br>");
+
+    QString shortcut = QString(QString(titleStyle).arg("Shortcut")
+                                     + QString(underlineStyle).arg("A:") + " Select contour (work only closed to a contour)<br><br>"
+                                     + QString(underlineStyle).arg("C:") + " Copy contour (work only closed to a contour)<br><br>"
+                                     + QString(underlineStyle).arg("V:") + " Paste contour(s)<br><br>"
+                                     + QString(underlineStyle).arg("BackSpace:") + " Delete node (work only closed to a contour)<br><br>"
+                                     + QString(underlineStyle).arg("Right/Left Arrow:") + " Move to next slice<br><br>"
+                                     + QString(underlineStyle).arg("Shift + Click:") + " Draw cross on mouse click 2D position in all views<br><br>"
+                                     + QString(underlineStyle).arg("D:") + " Draw cross on current 2D position in all views<br><br>"
+                                     + QString(underlineStyle).arg("E:") + " Erase cross in all views<br><br>"
+                                     + QString(underlineStyle).arg("H:") + " show this help<br><br>");
+    if (specialityPreference==1)
+    {
+        shortcut.append(QString(underlineStyle).arg("S:") + " Switch color between target and score<br><br>");
+    }
+
+    QString contextual = QString(QString(titleStyle).arg("Contextual menu")
+                                       + QString(underlineStyle).arg("Remove node/contour/label<br><br>")
+                                       + QString(underlineStyle).arg("Save segmentation contour/mask<br><br>")
+                                       + QString(underlineStyle).arg("Change current label with another existing label<br><br>")
+                                       + QString(underlineStyle).arg("Copy<br><br>"));
+
+    if (specialityPreference==1)
+    {
+        contextual.append(QString(underlineStyle).arg("Attach a pirad score to a target<br><br>"));
+    }
+
+    const QString explanation = main + shortcut + contextual;
+    msgBox.setText(explanation);
+    msgBox.exec();
 }

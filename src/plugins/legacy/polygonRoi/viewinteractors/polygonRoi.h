@@ -33,15 +33,12 @@ class POLYGONROIPLUGIN_EXPORT polygonRoi : public medAbstractRoi
 {
     Q_OBJECT
 
-
-
 public:
     polygonRoi(vtkImageView2D *view, QColor color, medAbstractRoi *parent = nullptr );
     virtual ~polygonRoi();
 
     vtkContourWidget * getContour();
     vtkImageView2D * getView();
-//    void updateView(vtkImageView2D *pView);
 
     void removeObservers();
     void addObservers();
@@ -78,8 +75,7 @@ public:
     QColor getColor();
     bool isInCurrentSlice();
     void setCurrentSlice();
-    void setActiveView(vtkImageView2D *pView2d);
-    int getDistanceFromCurrentSlice();
+    void replaceCurrentView(vtkImageView2D *view2d);
 
 public slots:
     virtual void undo(){};
