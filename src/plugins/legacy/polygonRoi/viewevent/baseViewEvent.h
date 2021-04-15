@@ -50,7 +50,6 @@ public:
     bool eventFilter(QObject *obj, QEvent *event) override;
 
     medAbstractView *getCurrentView();
-    void replaceCurrentView(medAbstractImageView *iView);
 
     virtual void initialize(medToolBox *medTb, QString &seriesName) = 0;
 

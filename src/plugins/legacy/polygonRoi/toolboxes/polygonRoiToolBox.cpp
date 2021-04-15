@@ -126,14 +126,12 @@ polygonRoiToolBox::polygonRoiToolBox(QWidget *parent ) :
     connect(helpButton, SIGNAL(clicked()), this, SLOT(showHelp()));
     helpLayout->addWidget(helpButton);
 
-    timerHighLight = new QTimer;
     // buttons initialisation: view has no data
     disableButtons();
 }
 
 polygonRoiToolBox::~polygonRoiToolBox()
 {
-    delete timerHighLight;
     clear();
     pMedToolBox->deleteLater();
     // If every view of the container has been closed, we need to check if the view needs to be clean
@@ -198,23 +196,9 @@ void polygonRoiToolBox::updateView()
                 // check if we have an event view attached to this data but in another container/view
                 if (imageView != event->getCurrentView())
                 {
-                    QWidget *w1 = imageView->viewWidget();
-                    int p1 = 2*w1->width() + 2*w1->height();
-                    QWidget *w2 = event->getCurrentView()->viewWidget();
-                    int p2 = 2*w2->width() + 2*w2->height();
-                    medAbstractImageView *view1 = nullptr;
-                    if (p2<p1) // the eventView is attached to the smallest view => we must switch
-                    {
-                        view1 = dynamic_cast<medAbstractImageView *>(event->getCurrentView());
-                        event->replaceCurrentView(imageView);
-                    }
-                    else
-                    {
-                        view1 = imageView;
-                    }
-                    connect(view1, SIGNAL(layerRemoved(medAbstractData * )), this,
+                    connect(imageView, SIGNAL(layerRemoved(medAbstractData * )), this,
                             SLOT(onLayerRemoveOnOrientedViews(medAbstractData * )), Qt::UniqueConnection);
-                    connect(view1, SIGNAL(orientationChanged()), event, SLOT(showOnDifferentOrientation()));
+                    connect(imageView, SIGNAL(orientationChanged()), event, SLOT(showOnDifferentOrientation()));
 
                 }
             }
@@ -376,7 +360,10 @@ void polygonRoiToolBox::onDataIndexActivated()
             if (viewEventHash.contains(data->dataIndex()))
             {
                 baseViewEvent *event = viewEventHash.value(data->dataIndex());
+
                 event->onSelectContainer();
+                event->activateRepulsor(repulsorTool->isChecked());
+                event->setEnableInterpolation(interpolate->isChecked());
                 activeDataIndex = data->dataIndex();
                 highLightContainer(event->getCurrentView());
                 return;
@@ -453,8 +440,6 @@ void polygonRoiToolBox::disableButtons()
     saveContourButton->setEnabled(false);
     interpolate->setEnabled(false);
     interpolate->setChecked(true);
-//    pMedToolBox->clear();
-//    pMedToolBox->setEnabled(false);
 }
 
 void polygonRoiToolBox::saveContours()
@@ -471,8 +456,6 @@ void polygonRoiToolBox::clear()
     activateTBButton->setText("Activate Toolbox");
     activeDataIndex = medDataIndex();
     // Switching to a new toolbox, we can clean the main container behavior
-//    medTabbedViewContainers *tabs = getWorkspace()->tabbedViewContainers();
-//    QList<medViewContainer*> containersInTabSelected = tabs->containersInTab(tabs->currentIndex());
 
     for (baseViewEvent *event : viewEventHash)
     {
@@ -483,15 +466,6 @@ void polygonRoiToolBox::clear()
     pMedToolBox->clear();
     pMedToolBox->setEnabled(false);
 
-//    // If every view of the container has been closed, we need to check if the view needs to be clean
-//    if (containersInTabSelected.size() == 1)
-//    {
-//        auto view = containersInTabSelected.at(0)->view();
-//        if (view && dynamic_cast<medAbstractLayeredView*>(view)->layersCount() == 0)
-//        {
-//            containersInTabSelected.at(0)->checkIfStillDeserveToLiveContainer();
-//        }
-//    }
 }
 
 QList<medAbstractData *> polygonRoiToolBox::getITKImageDataInSelectedView(medAbstractView *view)
@@ -577,9 +551,6 @@ void polygonRoiToolBox::highLightContainer(medAbstractView *pView)
         auto iView = dynamic_cast<medAbstractImageView *>(container->view());
         if (iView==pView)
         {
-            timerHighLight->setSingleShot(true);
-            connect(timerHighLight, SIGNAL(timeout()), container, SLOT(unHighlight()));
-            timerHighLight->start(1000);
             container->highlight("red");
         }
     }
@@ -622,7 +593,6 @@ void polygonRoiToolBox::showHelp() const
                                      + QString(underlineStyle).arg("C:") + " Copy contour (work only closed to a contour)<br><br>"
                                      + QString(underlineStyle).arg("V:") + " Paste contour(s)<br><br>"
                                      + QString(underlineStyle).arg("BackSpace:") + " Delete node (work only closed to a contour)<br><br>"
-                                     + QString(underlineStyle).arg("Right/Left Arrow:") + " Move to next slice<br><br>"
                                      + QString(underlineStyle).arg("Shift + Click:") + " Draw cross on mouse click 2D position in all views<br><br>"
                                      + QString(underlineStyle).arg("D:") + " Draw cross on current 2D position in all views<br><br>"
                                      + QString(underlineStyle).arg("E:") + " Erase cross in all views<br><br>"

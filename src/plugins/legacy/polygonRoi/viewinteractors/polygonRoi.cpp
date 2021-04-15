@@ -149,16 +149,6 @@ polygonRoi::polygonRoi(vtkImageView2D *view, QColor color, medAbstractRoi *paren
     setMasterRoi(true);
 }
 
-void polygonRoi::replaceCurrentView(vtkImageView2D *view2d)
-{
-    d->contour->GetContourRepresentation()->SetRenderer(view2d->GetRenderer());
-    d->contour->SetInteractor(view2d->GetInteractor());
-
-    d->view = view2d;
-    setOrientation(view2d->GetViewOrientation());
-    setIdSlice(view2d->GetSlice());
-}
-
 polygonRoi::~polygonRoi()
 {
     delete d;

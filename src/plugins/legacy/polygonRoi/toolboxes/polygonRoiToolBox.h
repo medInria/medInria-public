@@ -89,7 +89,6 @@ private:
     QCheckBox *interpolate;
     QPushButton *saveContourButton;
     QPushButton *helpButton;
-    QTimer *timerHighLight;
     void createAndConnectEventFilter(const medAbstractData *data, medAbstractImageView *imageView);
     QList<medAbstractData *> getITKImageDataInSelectedView(medAbstractView *view);
     QList<medContours *> getContoursInSelectedView(medAbstractView *view);
