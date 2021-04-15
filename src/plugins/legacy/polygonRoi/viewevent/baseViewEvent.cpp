@@ -106,24 +106,6 @@ bool baseViewEvent::eventFilter(QObject *obj, QEvent *event)
         {
             activateContour(savedMousePosition);
         }
-        if ( keyEvent->key() == Qt::Key::Key_Right )
-        {
-            if (currentView)
-            {
-                vtkImageView2D *view2d = static_cast<medVtkViewBackend*>(currentView->backend())->view2D;
-                view2d->SetSlice(view2d->GetSlice() + 1);
-                currentView->render();
-            }
-        }
-        if ( keyEvent->key() == Qt::Key::Key_Left )
-        {
-            if (currentView)
-            {
-                vtkImageView2D *view2d = static_cast<medVtkViewBackend*>(currentView->backend())->view2D;
-                view2d->SetSlice(view2d->GetSlice()-1);
-                currentView->render();
-            }
-        }
         if ( keyEvent->key() == Qt::Key::Key_S )
         {
             switchContourColor(savedMousePosition);
@@ -342,7 +324,7 @@ polygonLabel *baseViewEvent::getClosestPLabel(double *mousePos)
     double dist = 0.;
     for (polygonLabel *manager : labelList)
     {
-        if ( manager->existingRoiInSlice() )
+        if (manager->isRoiInSlice() )
         {
             dist = manager->getMinimumDistanceFromNodesToMouse(mousePos);
             if ( dist < minDist )
@@ -360,13 +342,13 @@ QMenu *baseViewEvent::changeLabelActions(polygonLabel* closestLabel)
     auto changeMenu = new QMenu("Change Label");
     for (polygonLabel *manager : labelList)
     {
-        if (manager != closestLabel && !manager->existingRoiInSlice())
+        if (manager != closestLabel && !manager->isRoiInSlice())
         {
             QPixmap pixmap(20,20);
             pixmap.fill(manager->getColor());
             auto action = new QAction(pixmap, manager->getName(), changeMenu);
             connect(action, &QAction::triggered, [=](){
-                polygonRoi *roi = closestLabel->existingRoiInSlice();
+                polygonRoi *roi = closestLabel->getRoiInSlice();
                 QVector<QVector2D> nodes = roi->copyContour();
                 polygonRoi *roiToAdd = manager->appendRoi();
                 roiToAdd->pasteContour(nodes);
@@ -519,7 +501,7 @@ void baseViewEvent::addPointInContourWithLabel()
 {
     if (currentLabel)
     {
-        if (!currentLabel->existingRoiInSlice())
+        if (!currentLabel->isRoiInSlice() && currentLabel->isSameSliceOrientation())
         {
             currentLabel->appendRoi();
         }
@@ -554,7 +536,7 @@ void baseViewEvent::copyContours()
     copyNodesList.clear();
     for (polygonLabel *manager : labelList)
     {
-        if (manager->existingRoiInSlice())
+        if (manager->isRoiInSlice())
         {
             QVector<QVector2D> coords = manager->copyContour();
             if (!coords.empty())
@@ -575,7 +557,7 @@ void baseViewEvent::pasteContours()
         auto label = findManager(fromLabel->getPosition());
         if ( label )
         {
-            if ( !label->existingRoiInSlice() )
+            if ( !label->isRoiInSlice() )
             {
                 label->pasteContour(contours.getNodes());
             }
@@ -676,12 +658,15 @@ void baseViewEvent::activateRepulsor(bool state)
             if (label != currentLabel)
             {
                 label->setRoisSelectedState();
-                polygonRoi *roi = label->existingRoiInSlice();
-                if ( roi )
+                if (label->isRoiInSlice())
                 {
-                    if (!roi->isClosed())
+                    polygonRoi *roi = label->getRoiInSlice();
+                    if (roi)
                     {
-                        roi->getContour()->SetWidgetState(vtkContourWidget::Define);
+                        if (!roi->isClosed())
+                        {
+                            roi->getContour()->SetWidgetState(vtkContourWidget::Define);
+                        }
                     }
                 }
             }
@@ -861,7 +846,7 @@ void baseViewEvent::deleteNode(polygonLabel *manager, const double *mousePos)
     {
         deleteLabel(manager);
     }
-    else if (!manager->existingRoiInSlice())
+    else if (!manager->isRoiInSlice())
     {
         deleteContour(manager);
     }
@@ -938,7 +923,7 @@ int baseViewEvent::deleteLabelBase(polygonLabel *manager)
 bool baseViewEvent::isActiveContourInSlice()
 {
     bool retVal = false;
-    if (currentLabel && currentLabel->existingRoiInSlice() )
+    if (currentLabel && currentLabel->isRoiInSlice() )
     {
         retVal = true;
     }
@@ -1025,15 +1010,6 @@ medAbstractView *baseViewEvent::getCurrentView()
     return currentView;
 }
 
-void baseViewEvent::replaceCurrentView(medAbstractImageView *iView)
-{
-    currentView = iView;
-    for (auto label : labelList)
-    {
-        label->replaceCurrentView(iView);
-    }
-}
-
 void baseViewEvent::showOnDifferentOrientation()
 {
     auto view = dynamic_cast<medAbstractImageView *>(sender());
@@ -1064,7 +1040,6 @@ void baseViewEvent::rename(int position, QString newName)
 
 void baseViewEvent::onSelectContainer()
 {
-
     updateLabelToolBoxState(identifier);
     installOnView(currentView);
     for (auto label : labelList)

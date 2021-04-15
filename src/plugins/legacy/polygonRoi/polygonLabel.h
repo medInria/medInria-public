@@ -38,14 +38,14 @@ public:
 
     [[maybe_unused]] bool roiClosedInSlice();
     bool isSameSliceOrientation();
-    polygonRoi *existingRoiInSlice();
+    bool isRoiInSlice();
+    polygonRoi *getRoiInSlice();
     QList<polygonRoi *> getRois();
     QColor & getColor();
     QColor & getOptColor();
     QString & getName();
     QString & getOptName();
     int getPosition();
-    void replaceCurrentView(medAbstractImageView *iView);
 
     polygonRoi *appendRoi();
 

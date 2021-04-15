@@ -75,7 +75,6 @@ public:
     QColor getColor();
     bool isInCurrentSlice();
     void setCurrentSlice();
-    void replaceCurrentView(vtkImageView2D *view2d);
 
 public slots:
     virtual void undo(){};
@@ -84,8 +83,6 @@ public slots:
 
 signals:
     void contourFinished(CURSORSTATE state);
-//    void interpolate();
-//    void enableOtherViewsVisibility(bool state);
 
 private:
     polygonRoiPrivate *d;

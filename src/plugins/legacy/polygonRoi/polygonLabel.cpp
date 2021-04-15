@@ -136,19 +136,6 @@ vtkImageView2D * polygonLabel::getView2D() const
     return static_cast<medVtkViewBackend *>(d->view->backend())->view2D;
 }
 
-void polygonLabel::replaceCurrentView(medAbstractImageView *iView)
-{
-    vtkImageView2D *view2d = static_cast<medVtkViewBackend *>(iView->backend())->view2D;
-    d->view = iView;
-
-    d->orientation = view2d->GetViewOrientation();
-    d->sliceOrientation = view2d->GetSliceOrientation();
-    for (auto roi : d->rois)
-    {
-        roi->replaceCurrentView(view2d);
-    }
-}
-
 QColor & polygonLabel::getColor()
 {
     return d->property.mainColor;
@@ -243,7 +230,7 @@ void polygonLabel::setEnableInterpolation(bool state)
 
 polygonRoi *polygonLabel::roiOpenInSlice()
 {
-    polygonRoi *roi = existingRoiInSlice();
+    polygonRoi *roi = getRoiInSlice();
     if (roi && roi->getContour()->GetContourRepresentation()->GetClosedLoop()==false)
     {
         return roi;
@@ -253,7 +240,7 @@ polygonRoi *polygonLabel::roiOpenInSlice()
 
 [[maybe_unused]] bool polygonLabel::roiClosedInSlice()
 {
-    polygonRoi *roi = existingRoiInSlice();
+    polygonRoi *roi = getRoiInSlice();
     if (roi)
     {
         return roi->getContour()->GetContourRepresentation()->GetClosedLoop();
@@ -601,7 +588,7 @@ void polygonLabel::createMaskWithLabel(int label)
 
 void polygonLabel::SetMasterRoi()
 {
-    polygonRoi *roi = existingRoiInSlice();
+    polygonRoi *roi = getRoiInSlice();
     if (roi)
     {
         roi->setMasterRoi(true);
@@ -617,7 +604,17 @@ void polygonLabel::manageTick(medSliderL *slider)
     d->view->render();
 }
 
-polygonRoi *polygonLabel::existingRoiInSlice()
+bool polygonLabel::isRoiInSlice()
+{
+    for (polygonRoi* roi : d->rois)
+    {
+        if (roi->isInCurrentSlice())
+            return true;
+    }
+    return false;
+}
+
+polygonRoi *polygonLabel::getRoiInSlice()
 {
     vtkImageView2D *view2d = getView2D();
     if (!view2d)
@@ -625,7 +622,6 @@ polygonRoi *polygonLabel::existingRoiInSlice()
 
     if (!isSameOrientation(view2d->GetViewOrientation()))
     {
-        emit sendErrorMessage(getName() + ": has not the same orientation as 2D view");
         return nullptr;
     }
 
@@ -635,7 +631,6 @@ polygonRoi *polygonLabel::existingRoiInSlice()
             return roi;
     }
     return nullptr;
-
 }
 
 bool polygonLabel::isSameOrientation(int orientation)
@@ -717,10 +712,13 @@ void polygonLabel::setScoreState(bool state)
 
 QVector<QVector2D> polygonLabel::copyContour()
 {
-    polygonRoi *roi = existingRoiInSlice();
-    if ( roi )
+    if (isRoiInSlice())
     {
-        return roi->copyContour();
+        polygonRoi *roi = getRoiInSlice();
+        if (roi)
+        {
+            return roi->copyContour();
+        }
     }
     // impossible case : test of existing roi is already done in caller
     return QVector<QVector2D>();
@@ -729,7 +727,7 @@ QVector<QVector2D> polygonLabel::copyContour()
 bool polygonLabel::pasteContour(QVector<QVector2D> nodes)
 {
     vtkImageView2D *view2d = static_cast<medVtkViewBackend*>(d->view->backend())->view2D;
-    polygonRoi *roi = existingRoiInSlice();
+    polygonRoi *roi = getRoiInSlice();
     if ( roi )
     {
         emit sendErrorMessage(getName() + " already exists in current slice.");
@@ -755,7 +753,7 @@ bool polygonLabel::pasteContour(QVector<QVector2D> nodes)
 
 double polygonLabel::getMinimumDistanceFromNodesToMouse(double eventPos[2], bool allNodes)
 {
-    polygonRoi *roi = existingRoiInSlice();
+    polygonRoi *roi = getRoiInSlice();
     double minDist = DBL_MAX;
     double contourPos[2];
     double dist = 0.;
@@ -791,7 +789,7 @@ double polygonLabel::getMinimumDistanceFromNodesToMouse(double eventPos[2], bool
 
 void polygonLabel::deleteNode(double X, double Y)
 {
-    polygonRoi *roi = existingRoiInSlice();
+    polygonRoi *roi = getRoiInSlice();
     double minDist = DBL_MAX;
     double contourPos[2];
     double dist = 0.;
@@ -832,7 +830,7 @@ void polygonLabel::deleteNode(double X, double Y)
 
 void polygonLabel::deleteContour()
 {
-    polygonRoi *roiToDelete = existingRoiInSlice();
+    polygonRoi *roiToDelete = getRoiInSlice();
     if (roiToDelete)
     {
        QList<polygonRoi *>::Iterator it = d->rois.begin();
@@ -851,7 +849,6 @@ void polygonLabel::deleteContour()
         }
     }
     interpolateIfNeeded();
-//    d->view->render();
 }
 
 double polygonLabel::getDistance(double mousePos[2], double contourPos[2])
