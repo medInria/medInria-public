@@ -87,43 +87,45 @@ bool baseViewEvent::eventFilter(QObject *obj, QEvent *event)
         return false;
     }
 
+    if (keyEvent->key() == Qt::Key::Key_Up || keyEvent->key() == Qt::Key::Key_Down)
+    {
+        return false;
+    }
 
     if ( keyEvent->type() == QEvent::ShortcutOverride )
     {
-        if ( keyEvent->key() == Qt::Key::Key_C )
+        switch (keyEvent->key())
         {
-            copyContours();
-        }
-        if ( keyEvent->key() == Qt::Key::Key_V )
-        {
-            pasteContours();
-        }
-        if ( keyEvent->key() == Qt::Key::Key_Backspace )
-        {
-            deleteNode(savedMousePosition);
-        }
-        if ( keyEvent->key() == Qt::Key::Key_A )
-        {
-            activateContour(savedMousePosition);
-        }
-        if ( keyEvent->key() == Qt::Key::Key_S )
-        {
-            switchContourColor(savedMousePosition);
-        }
-        if (keyEvent->key() == Qt::Key::Key_D )
-        {
-            double percentPos[2];
-            percentPos[0] = savedMousePosition[0] / currentView->viewWidget()->width();
-            percentPos[1] = savedMousePosition[1] / currentView->viewWidget()->height();
-            pToolBox->drawCross(percentPos);
-        }
-        if ( keyEvent->key() == Qt::Key::Key_E )
-        {
-            pToolBox->eraseCross();
-        }
-        if (keyEvent->key() == Qt::Key::Key_H )
-        {
-            pToolBox->showHelp();
+            case Qt::Key::Key_C:
+                copyContours();
+                break;
+            case Qt::Key::Key_V:
+                pasteContours();
+                break;
+            case Qt::Key::Key_Backspace:
+                deleteNode(savedMousePosition);
+                break;
+            case Qt::Key::Key_A:
+                activateContour(savedMousePosition);
+                break;
+            case Qt::Key::Key_S:
+                switchContourColor(savedMousePosition);
+                break;
+            case Qt::Key::Key_D:
+                double percentPos[2];
+                percentPos[0] = savedMousePosition[0] / currentView->viewWidget()->width();
+                percentPos[1] = savedMousePosition[1] / currentView->viewWidget()->height();
+                pToolBox->drawCross(percentPos);
+                break;
+            case Qt::Key::Key_E:
+                pToolBox->eraseCross();
+                break;
+            case Qt::Key::Key_H:
+                pToolBox->showHelp();
+                break;
+            default:
+                event->ignore();
+                break;
         }
     }
     return event->isAccepted();
