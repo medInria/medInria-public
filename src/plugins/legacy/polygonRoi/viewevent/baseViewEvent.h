@@ -69,9 +69,10 @@ public:
     virtual void loadContours(QVector<medTagContours> &tagContoursSet) = 0;
     void drawCross(double *position);
     void eraseCross();
+    
 public slots:
 
-    [[maybe_unused]] void onContourFinished(CURSORSTATE state);
+    void onContourFinished(CURSORSTATE state);
 
     void updateContourProperty(QString &name, QColor &color,
                                int position, bool isSelected,

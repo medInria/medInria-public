@@ -592,6 +592,7 @@ void polygonRoiToolBox::showHelp() const
                                      + QString(underlineStyle).arg("A:") + " Select contour (work only closed to a contour)<br><br>"
                                      + QString(underlineStyle).arg("C:") + " Copy contour (work only closed to a contour)<br><br>"
                                      + QString(underlineStyle).arg("V:") + " Paste contour(s)<br><br>"
+                                     + QString(underlineStyle).arg("Up/Down:") + " Move to previous/next slice<br><br>"
                                      + QString(underlineStyle).arg("BackSpace:") + " Delete node (work only closed to a contour)<br><br>"
                                      + QString(underlineStyle).arg("Shift + Click:") + " Draw cross on mouse click 2D position in all views<br><br>"
                                      + QString(underlineStyle).arg("D:") + " Draw cross on current 2D position in all views<br><br>"
