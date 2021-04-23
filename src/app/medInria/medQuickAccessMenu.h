@@ -22,7 +22,7 @@ class medQuickAccessMenu : public QWidget
   Q_OBJECT
 
 public:
-    medQuickAccessMenu ( bool vertical, QWidget* parent = nullptr, Qt::WindowFlags f = 0 );
+    medQuickAccessMenu (QWidget* parent = nullptr, Qt::WindowFlags f = 0);
 
     void reset(bool optimizeLayout);
 
@@ -41,8 +41,7 @@ protected:
     void keyReleaseEvent ( QKeyEvent * event );
 
     void createHorizontalQuickAccessMenu();
-    void createVerticalQuickAccessMenu();
-
+    
     void mouseSelectWidget(unsigned int identifier);
 
 signals:

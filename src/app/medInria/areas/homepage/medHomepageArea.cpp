@@ -45,7 +45,7 @@ medHomepageArea::medHomepageArea ( QWidget * parent ) : QWidget ( parent ), d ( 
     connect(actionBrowser, &QAction::triggered, this, &medHomepageArea::onShowBrowser);
     menuFile->addAction(actionBrowser);
 
-    QAction *actionDatabase = new QAction(tr("&Database"), parent);
+    QAction *actionDatabase = new QAction(tr("&Database settings"), parent);
     connect(actionDatabase, &QAction::triggered, this, &medHomepageArea::onShowDatabase);
     menuFile->addAction(actionDatabase);
 
@@ -228,7 +228,7 @@ void medHomepageArea::initPage()
     QVBoxLayout * workspaceButtonsLayoutBasic = new QVBoxLayout;
     QGridLayout * workspaceButtonsLayoutBasicGrid = new QGridLayout;
     workspaceButtonsLayoutBasicGrid->setSpacing ( 10 );
-    QLabel * workspaceLabelBasic = new QLabel ( "<b>Basic</b>" );
+    QLabel * workspaceLabelBasic = new QLabel ( "<b>Basic Area</b>" );
     workspaceLabelBasic->setTextFormat(Qt::RichText);
     workspaceLabelBasic->setAlignment(Qt::AlignLeft);
     workspaceButtonsLayoutBasic->addWidget(workspaceLabelBasic);
@@ -289,7 +289,7 @@ void medHomepageArea::initPage()
     workspaceButtonsLayoutOther->addLayout(workspaceButtonsLayoutOtherGrid);
 
     // If there are too many buttons in a category (more than maximumButtonsPerColumn), split them in several columns
-    int maximumButtonsPerColumn = 6;
+    int maximumButtonsPerColumn = 7;
 
     for( medWorkspaceFactory::Details* detail : workspaceDetails)
     {
@@ -424,7 +424,19 @@ void medHomepageArea::onShowLicense()
     QString text = file.readAll();
 
     QMessageBox msgBox;
-    msgBox.setText(text);
+    msgBox.setText("Here is the application License:                           ");
+    msgBox.setDetailedText(text);
+
+    // Search the "Show Details..." button
+    foreach (QAbstractButton *button, msgBox.buttons())
+    {
+        if (msgBox.buttonRole(button) == QMessageBox::ActionRole)
+        {
+            button->click(); // click it to expand the text
+            break;
+        }
+    }
+
     msgBox.exec();
 }
 

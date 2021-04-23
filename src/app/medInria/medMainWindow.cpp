@@ -8,7 +8,7 @@
  * This software is distributed WITHOUT ANY WARRANTY; without even
  * the implied warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.
  */
- 
+
 #include <dtkComposerWidget.h>
 
 #include <medBrowserArea.h>
@@ -113,7 +113,7 @@ medMainWindow::medMainWindow ( QWidget *parent ) : QMainWindow ( parent ), d ( n
     d->stack->addWidget(d->composerArea);
 
     // Shortcut to workspaces through CTRL+Space
-    d->shortcutAccessWidget = new medQuickAccessMenu( false, this );
+    d->shortcutAccessWidget = new medQuickAccessMenu(this);
     d->shortcutAccessWidget->setFocusPolicy(Qt::ClickFocus);
     d->shortcutAccessWidget->setProperty("pos", QPoint(0, -500));
 
