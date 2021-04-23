@@ -239,6 +239,35 @@ void medPluginWidget::reset()
     d->resetTypesTree();
 }
 
+void medPluginWidget::onPluginTreeItemActivated(QTreeWidgetItem *item, int column)
+{
+    Q_UNUSED (column);
+    QDialog * dial = new QDialog(this);
+    dtkPlugin * plugin = medPluginManager::instance()->plugin(item->text(0));
+    QString windowTitle = qApp->applicationName()+tr(": about ");
+    windowTitle += plugin->name();
+    dial->setWindowTitle(windowTitle);
+    dtkAboutPlugin * apWidget = new dtkAboutPlugin(plugin,dial);
+
+    QVBoxLayout * layout = new QVBoxLayout(dial);
+
+    QPushButton * okBut = new QPushButton(dial);
+    okBut->setText("Ok");
+    okBut->setFocusPolicy(Qt::NoFocus);
+    QObject::connect(okBut, SIGNAL(clicked()), dial, SLOT(close()));
+
+    QHBoxLayout * butLayout = new QHBoxLayout;
+    butLayout->addStretch();
+    butLayout->addWidget(okBut);
+    butLayout->addStretch();
+
+    layout->addWidget(apWidget);
+    layout->addLayout(butLayout);
+
+    dial->setLayout(layout);
+    dial->exec();
+}
+
 void medPluginWidget::onErrorTreeItemActivated(QTreeWidgetItem* item, int column)
 {
     Q_UNUSED (column);

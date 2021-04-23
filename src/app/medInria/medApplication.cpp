@@ -27,8 +27,6 @@
 #include <medPluginManager.h>
 #include <medSeedPointAnnotationData.h>
 #include <medSettingsManager.h>
-#include <medSettingsWidgetFactory.h>
-#include <medStartupSettingsWidget.h>
 #include <medStyleSheetParser.h>
 #include <medVisualizationWorkspace.h>
 #include <medWorkspaceFactory.h>
@@ -126,11 +124,6 @@ void medApplication::initialize()
     viewerWSpaceFactory->registerWorkspace<medVisualizationWorkspace>();
     viewerWSpaceFactory->registerWorkspace<medDiffusionWorkspace>();
     viewerWSpaceFactory->registerWorkspace<medFilteringWorkspace>();
-
-    //Register settingsWidgets
-    medSettingsWidgetFactory* settingsWidgetFactory = medSettingsWidgetFactory::instance();
-    settingsWidgetFactory->registerSettingsWidget<medStartupSettingsWidget>();
-    //settingsWidgetFactory->registerSettingsWidget<medDatabaseSettingsWidget>();
 
     //Register annotations
     medAbstractDataFactory * datafactory = medAbstractDataFactory::instance();
