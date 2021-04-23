@@ -1075,12 +1075,6 @@ medHomepageButton:hover
     medQuickAccessMenu
  *******************************************************************************/
 
-QLabel#quickAccessMenuHeader
-{
-    background: $QUICK_ACCESS_MENU_HEADER_BACKGROUND;
-    //padding-top: 4px;
-}
-
 medQuickAccessMenu
 {
     background-color: $QUICK_ACCESS_MENU_BACKGROUND;
