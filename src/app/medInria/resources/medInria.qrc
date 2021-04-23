@@ -2,6 +2,8 @@
     <qresource prefix="/">
         <file>../../../../LICENSE.txt</file>
         <file>../../../../RELEASE_NOTES.txt</file>
+        <file>../../../../DESCRIPTION.txt</file>
+        <file>../../../../ABOUT.txt</file>
         <file>medInria.ico</file>
         <file>icons/AxialIcon.png</file>
         <file>icons/CoronalIcon.png</file>

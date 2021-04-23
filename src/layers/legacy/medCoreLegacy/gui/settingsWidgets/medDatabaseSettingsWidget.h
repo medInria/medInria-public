@@ -12,17 +12,19 @@
 
 =========================================================================*/
 
-#include <medSettingsWidget.h>
+#include <QDialog>
+#include <QLineEdit>
+#include <QPushButton>
 #include <QWidget>
 
 #include <medCoreLegacyExport.h>
 
 class medDatabaseSettingsWidgetPrivate;
 
-class MEDCORELEGACY_EXPORT medDatabaseSettingsWidget : public medSettingsWidget
+class MEDCORELEGACY_EXPORT medDatabaseSettingsWidget : public QDialog
 {
     Q_OBJECT
-    MED_SETTINGS_INTERFACE("Database","Database Settings")
+    
 public:
     medDatabaseSettingsWidget(QWidget *parent = nullptr);
 
@@ -33,10 +35,9 @@ private slots:
     void selectDbDirectory();
 
 protected:
-    bool validate();
+    void write();
 
-    bool write();
 private:
-    medDatabaseSettingsWidgetPrivate *d;
-
+    QLineEdit* dbPath;
+    QPushButton* btChooseDir;
 };

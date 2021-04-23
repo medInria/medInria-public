@@ -39,7 +39,6 @@ public:
     void resetFailedPluginsTree();
 };
 
-
 void medPluginWidgetPrivate::resetPluginsTree()
 {
     //First clear the content
@@ -137,7 +136,6 @@ void medPluginWidgetPrivate::resetTypesTree()
     typesTree->setColumnWidth(1,150);
     typesTree->sortByColumn(1,Qt::AscendingOrder);
     typesTree->sortByColumn(0,Qt::AscendingOrder);
-
 }
 
 void medPluginWidgetPrivate::resetFailedPluginsTree()
@@ -161,8 +159,16 @@ void medPluginWidgetPrivate::resetFailedPluginsTree()
 //medPluginWidget methods
 ////////////////////////////////////////////////////////////////////////////////
 medPluginWidget::medPluginWidget(QWidget *parent) :
-    QTabWidget(parent), d(new medPluginWidgetPrivate)
+    QDialog(parent), d(new medPluginWidgetPrivate)
 {
+    setWindowTitle("Plugin Logs");
+    setMinimumWidth(600);
+
+    QTabWidget* mainTabWidget = new QTabWidget(this);
+    QVBoxLayout *layout = new QVBoxLayout;
+    layout->addWidget(mainTabWidget);
+    setLayout(layout);
+
     //Initialise the tree Widget
     d->pluginsTree = new QTreeWidget(this);
     d->pluginsTree->setFrameStyle(QFrame::NoFrame);
@@ -214,12 +220,13 @@ medPluginWidget::medPluginWidget(QWidget *parent) :
     d->typesTree->setSizePolicy(QSizePolicy::Expanding,QSizePolicy::Expanding);
     d->typesTree->setColumnCount(2);
     QStringList typesTreeColumns;
-    typesTreeColumns << tr("Category") << tr("Name");// << tr("Plugin");
+    typesTreeColumns << tr("Category") << tr("Name");
     d->typesTree->setHeaderLabels(typesTreeColumns);
 
-    this->addTab(d->pluginsTree,tr("Loaded Plugins"));
-    this->addTab(d->typesTree,tr("Loaded types"));
-    this->addTab(d->errorTree,tr("Failed Plugins"));
+    mainTabWidget->addTab(d->pluginsTree,tr("Loaded Plugins"));
+    mainTabWidget->addTab(d->typesTree,  tr("Loaded types"));
+    mainTabWidget->addTab(d->errorTree,  tr("Failed Plugins"));
+
     reset();
 }
 
@@ -265,7 +272,7 @@ void medPluginWidget::onPluginTreeItemActivated(QTreeWidgetItem *item, int colum
     dial->exec();
 }
 
-void medPluginWidget::onErrorTreeItemActivated(QTreeWidgetItem* item,int column)
+void medPluginWidget::onErrorTreeItemActivated(QTreeWidgetItem* item, int column)
 {
     Q_UNUSED (column);
     QDialog * dial = new QDialog(this);
@@ -295,5 +302,3 @@ void medPluginWidget::onErrorTreeItemActivated(QTreeWidgetItem* item,int column)
     dial->setLayout(layout);
     dial->exec();
 }
-
-

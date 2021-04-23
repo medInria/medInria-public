@@ -15,27 +15,24 @@
 =========================================================================*/
 
 #include <medCoreLegacyExport.h>
-#include <medSettingsWidget.h>
 
+#include <QCheckBox>
+#include <QDialog>
+#include <QComboBox>
 #include <QWidget>
 
-class medStartupSettingsWidgetPrivate;
-
-class MEDCORELEGACY_EXPORT medStartupSettingsWidget : public medSettingsWidget
+class MEDCORELEGACY_EXPORT medStartupSettingsWidget : public QDialog
 {
     Q_OBJECT
-    MED_SETTINGS_INTERFACE("Start Up", "Startup settings")
 
 public :
-        medStartupSettingsWidget(QWidget *parent = nullptr);
+    medStartupSettingsWidget(QWidget *parent = nullptr);
 
 public slots:
     void read();
-
-protected:
-    bool validate();
-    bool write();
+    void write();
 
 private:
-    medStartupSettingsWidgetPrivate *d;
+    QCheckBox *startInFullScreen;
+    QComboBox *defaultStartingArea;
 };
