@@ -66,7 +66,6 @@ QAction *urologyViewEvent::createScoreAction(polygonLabel *manager, const QStrin
     auto action  = new QAction(pixmap, score);
 
     connect(action, &QAction::triggered, manager,[this, manager, score, color](){
-        qDebug()<<"set score "<<score<<" with color "<<color;
         manager->setOptionalNameWithColor(score, color);
         manager->switchColor();
         currentLabel = manager;
@@ -125,7 +124,6 @@ void urologyViewEvent::switchContourColor(double *mousePosition)
 
 void urologyViewEvent::updateLabelToolBoxState(QString &name)
 {
-    uLabelToolBox->clean();
     uLabelToolBox->setName(name);
     uLabelToolBox->setCurrentViewEventFilter(this);
     for (polygonLabel *pLabel : labelList)
@@ -218,4 +216,14 @@ void urologyViewEvent::loadContours(QVector<medTagContours> &tagContoursSet)
     currentView->render();
 }
 
+void urologyViewEvent::setScoreNameAndColor(polygonLabel *label, QString &name)
+{
+    QColor scoreColor;
+    for (int i = 3; i< 6; i++)
+    {
+        if (name.contains(QString::number(i)))
+            scoreColor = pirads[i-3].second;
+    }
+    label->setOptionalNameWithColor(name, scoreColor);
 
+}

@@ -74,9 +74,8 @@ public slots:
 
     void onContourFinished(CURSORSTATE state);
 
-    void updateContourProperty(QString &name, QColor &color,
-                               int position, bool isSelected,
-                               bool hasScore = false, bool checkState = false);
+    void updateContourProperty(QString &name, QColor &color, int position, bool isSelected, bool hasScore,
+                               bool checkState, QString scoreName = QString());
 
     void manageTickVisibility(bool show);
 
@@ -111,6 +110,7 @@ protected:
     void unselectLabels();
     polygonLabel *getClosestPLabel(double *mousePos);
     bool isContourLoadable(QString &labelName);
+    polygonLabel *findManager(int position);
 
 private:
     CURSORSTATE cursorState;
@@ -141,7 +141,7 @@ private:
 
     virtual int speciality() = 0;
 
-    polygonLabel *findManager(int position);
+    virtual void setScoreNameAndColor(polygonLabel *label, QString &name) {};
 
     static medIntParameterL *getSlicingParameter(medAbstractImageView *iView) ;
 };

@@ -599,7 +599,7 @@ polygonLabel *baseViewEvent::findManager(int position)
 }
 
 void baseViewEvent::updateContourProperty(QString &name, QColor &color, int position, bool isSelected, bool hasScore,
-                                          bool checkState)
+                                          bool checkState, QString scoreName)
 {
     if (!currentView)
         return;
@@ -625,6 +625,10 @@ void baseViewEvent::updateContourProperty(QString &name, QColor &color, int posi
     {
         currentLabel = new polygonLabel(currentView, this, color, name, position, isSelected, enableInterpolation);
         currentLabel->setScoreState(hasScore);
+        if (hasScore && !scoreName.isEmpty())
+        {
+            setScoreNameAndColor(currentLabel, scoreName);
+        }
         labelList.append(currentLabel);
     }
     currentLabel->setRoisSelectedState();
