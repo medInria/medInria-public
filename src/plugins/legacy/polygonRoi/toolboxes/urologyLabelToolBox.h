@@ -38,6 +38,9 @@ public:
 
 
     int getContourPositionAndColor(QString &name, bool scoreState, QColor &color, QString &scoreName);
+
+    bool hasScoreOnPosition(int row, QString &score, QColor &color);
+
 protected slots:
 
     void onPlusClicked() override;
@@ -50,4 +53,5 @@ private:
     QList<QColor> targetColors;
 
     static void itemSpecialization(QListWidgetItem *item, bool scoreState, bool checkState = false) ;
+
 };

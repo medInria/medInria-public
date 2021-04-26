@@ -68,7 +68,7 @@ void defaultLabelToolBox::initialize(QString &seriesName)
 
         if (currentViewEvent)
         {
-            currentViewEvent->updateContourProperty(name, color, position, true);
+            currentViewEvent->updateContourProperty(name, color, position, true, false, false);
         }
         }, Qt::UniqueConnection);
 

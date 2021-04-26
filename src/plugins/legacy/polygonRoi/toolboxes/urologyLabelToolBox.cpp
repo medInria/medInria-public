@@ -25,14 +25,19 @@ void urologyLabelToolBox::initialize(QString &seriesName)
         item->setSelected(true);
         QColor color = item->icon().pixmap(QSize(20,20)).toImage().pixelColor(0,0);
         QString name = item->text();
-        name = name.remove(QRegExp(" - Z[T|P]{1}_PIRADS[0-9]"));
+        QString scoreName;
+        if (name.contains(QRegExp(" - Z[T|P]{1}_PIRADS[0-9]")))
+        {
+            scoreName = name.section(' ', -1);
+            name = name.remove(QRegExp(" - Z[T|P]{1}_PIRADS[0-9]"));
+        }
         bool hasScore = item->flags().testFlag(Qt::ItemIsUserCheckable);
         bool checkState = (item->checkState() == Qt::Checked);
         int position = labels->row(item);
 
         if (currentViewEvent)
         {
-            currentViewEvent->updateContourProperty(name, color, position, true, hasScore, checkState);
+            currentViewEvent->updateContourProperty(name, color, position, true, hasScore, checkState, scoreName);
 
         }
     }, Qt::UniqueConnection);
@@ -347,7 +352,13 @@ void urologyLabelToolBox::updateItem(medLabelProperty &info)
     {
         rename(labels->row(item), info.mainName);
     }
-
+    if (info.scoreState && !info.secondName.isEmpty())
+    {
+        QString name = item->text();
+        name = name.remove(QRegExp(" - Z[T|P]{1}_PIRADS[0-9]"));
+        name.append(QString(" - %1").arg(info.secondName));
+        item->setText(name);
+    }
     itemSpecialization(item, info.scoreState, info.checked);
 
     item->setSelected(info.selected);
@@ -408,4 +419,21 @@ int urologyLabelToolBox::getContourPositionAndColor(QString &name, bool scoreSta
         labels->setMaximumHeight((20*labels->count())+5);
     }
     return position;
+}
+
+bool urologyLabelToolBox::hasScoreOnPosition(int row, QString &score, QColor &color)
+{
+    bool retValue = false;
+    QListWidgetItem *item = labels->item(row);
+    if (item)
+    {
+        QString name = item->text();
+        if (name.contains(QRegExp(" - Z[T|P]{1}_PIRADS[0-9]")))
+        {
+            score = name.section(' ', -2);
+            color = item->icon().pixmap(QSize(20,20)).toImage().pixelColor(0,0);
+            retValue = true;
+        }
+    }
+    return retValue;
 }

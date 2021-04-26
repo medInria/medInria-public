@@ -36,6 +36,7 @@ private:
     QMenu *createScoreMenu(polygonLabel *pLabel) override;
     QAction *createScoreAction(polygonLabel *manager, const QString &score, const QColor &color);
     int speciality() override { return 1;};
+    void setScoreNameAndColor(polygonLabel *label, QString &name) override;
 
     QList<QPair<QString, QColor>> pirads;
 
