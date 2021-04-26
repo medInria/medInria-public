@@ -12,10 +12,11 @@
 =========================================================================*/
 #include "polygonRoiPlugin.h"
 #include "polygonRoiToolBox.h"
-#include <contoursManagementToolBox.h>
+#include <defaultLabelToolBox.h>
 #include <medContours.h>
 #include <medContoursReader.h>
 #include <medContoursWriters.h>
+#include <urologyLabelToolBox.h>
 
 polygonRoiPlugin::polygonRoiPlugin(QObject *parent) : medPluginLegacy(parent)
 {
@@ -27,9 +28,13 @@ bool polygonRoiPlugin::initialize()
      {
          qDebug() << "Unable to register polygonRoiToolBox";
      }
-     if(!contoursManagementToolBox::registered())
+     if(!defaultLabelToolBox::registered())
      {
-         qDebug() << "Unable to register contoursManagementToolBox";
+         qDebug() << "Unable to register defaultLabelToolBox";
+     }
+     if(!urologyLabelToolBox::registered())
+     {
+         qDebug() << "Unable to register urologyLabelToolBox";
      }
      if (!medContours::registered())
      {

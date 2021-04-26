@@ -162,5 +162,5 @@ namespace medComputerInfo
     {
         return sysconf(_SC_NPROCESSORS_ONLN);
     }
-#endif
 }
+#endif

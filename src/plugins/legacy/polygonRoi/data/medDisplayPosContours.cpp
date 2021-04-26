@@ -1,14 +1,16 @@
 
 #include <medDisplayPosContours.h>
 
+#include <utility>
+
 medDisplayPosContours::medDisplayPosContours()
-    :label(-1), nodes(QVector<QVector2D>())
+    :nodes(QVector<QVector2D>()), label(-1)
 {
 
 }
 
 medDisplayPosContours::medDisplayPosContours(qint32 label, QVector<QVector2D> coordinates)
-    :label(label), nodes(coordinates)
+    :nodes(std::move(coordinates)), label(label)
 {
 
 }
@@ -19,12 +21,12 @@ medDisplayPosContours::medDisplayPosContours(const medDisplayPosContours &other)
     nodes = other.nodes;
 }
 
-medDisplayPosContours::~medDisplayPosContours()
-{
-
-}
-
 void medDisplayPosContours::setNodes(QVector<QVector2D>& coords)
 {
     nodes = coords;
+}
+
+void medDisplayPosContours::setLabel(qint32 iLabel)
+{
+    label = iLabel;
 }
