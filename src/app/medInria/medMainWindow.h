@@ -1,17 +1,15 @@
 #pragma once
-/*=========================================================================
-
- medInria
-
- Copyright (c) INRIA 2013 - 2020. All rights reserved.
- See LICENSE.txt for details.
-
-  This software is distributed WITHOUT ANY WARRANTY; without even
-  the implied warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR
-  PURPOSE.
-
-=========================================================================*/
-
+/*
+ * medInria
+ * Copyright (c) INRIA 2013. All rights reserved.
+ * 
+ * medInria is under BSD-2-Clause license. See LICENSE.txt for details in the root of the sources or:
+ * https://github.com/medInria/medInria-public/blob/master/LICENSE.txt
+ * 
+ * This software is distributed WITHOUT ANY WARRANTY; without even
+ * the implied warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.
+ */
+ 
 #include <QtWidgets>
 #include <QUuid>
 #include <QUrl>
@@ -40,13 +38,11 @@ public:
     QWidget* currentArea() const;
 
     void setStartup(const AreaType areaIndex,const QStringList& filenames);
-    void resizeEvent( QResizeEvent * event );
 
 signals:
     void sliceSelected(int slice);
     void mainWindowActivated();
     void mainWindowDeactivated();
-
 
 public slots:
     void setWallScreen(const bool full);
@@ -64,49 +60,54 @@ public slots:
 
     void processNewInstanceMessage(const QString& message);
 
+    /**
+     * @brief Enable or disable a menu in the application menu bar
+     */   
+    void enableMenuBarItem(QString name, bool enabled);
+
+    /**
+     * @brief Display the homepage area
+     */
+    void switchToHomepageArea();
+
+    /**
+     * @brief Display the search a toolbox window tool
+     */
+    void switchToSearchArea();
+
+    /**
+     * @brief In a view container, adjust the views sizes
+     */
+    void adjustContainersSize();
+
+    /**
+     * @brief Take a screenshot of the view
+     */
+    void captureScreenshot();
+
+    /**
+     * @brief Display the video export tool, to capture a movie of a view
+     */
+    void captureVideo();
+
+    /**
+     * @brief Switch to the default workspace saved in the settings
+     */
+    void switchToDefaultWorkSpace();
+
 private slots:
 
     void showWorkspace(QString workspace);
     void showComposer();
 
-    void captureScreenshot();
-    void captureVideo();
-
     void switchToBrowserArea();
-    void switchToSearchArea();
     void switchToWorkspaceArea();
-    void switchToHomepageArea();
     void switchToComposerArea();
 
-    void toggleQuickAccessVisibility();
-    void hideQuickAccess();
     void showShortcutAccess();
     void hideShortcutAccess();
 
     void availableSpaceOnStatusBar();
-
-    /**
-     * @brief Overload existing showFullScreen().
-     *
-     * Allows the update of the fullScreen button.
-     */
-    void showFullScreen();
-
-    /**
-     * @brief Overload existing showNormal().
-     *
-     * Allows the update of the fullScreen button.
-     */
-    void showNormal();
-
-    /**
-     * @brief Overload existing showMaximized().
-     *
-     * Allows the update of the fullScreen button.
-     */
-    void showMaximized();
-
-    void adjustContainersSize();
 
     void open_waitForImportedSignal(medDataIndex,QUuid);
 

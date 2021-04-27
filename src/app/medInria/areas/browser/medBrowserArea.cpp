@@ -151,3 +151,8 @@ void medBrowserArea::removeToolBox(medToolBox *toolbox)
 {
     d->toolboxContainer->removeToolBox(toolbox);
 }
+
+void medBrowserArea::switchToIndexTab(int index)
+{
+    d->sourceSelectorToolBox->setCurrentTab(index);
+}

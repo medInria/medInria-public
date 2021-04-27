@@ -1,0 +1,1 @@
+<b>medInria</b> is a cross-platform medical image processing and visualisation software, and it is <b>free</b>. Through an intuitive user interface, <b>medInria</b> offers from standard to cutting-edge processing functionalities for your medical images such as 2D/3D/4D image visualisation, image registration, or diffusion MR processing and tractography.

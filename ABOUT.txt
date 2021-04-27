@@ -1,0 +1,1 @@
+<b>medInria (4.0.0)</b> is a medical imaging platform developed at Inria.<br/><center>Inria, Copyright 2013</center>

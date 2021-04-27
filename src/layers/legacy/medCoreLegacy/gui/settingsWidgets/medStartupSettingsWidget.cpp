@@ -14,98 +14,77 @@
 =========================================================================*/
 
 #include <medStartupSettingsWidget.h>
-#include <QtWidgets>
-#include <QtGui>
-#include <QtCore>
 
 #include <medSettingsManager.h>
 #include <medWorkspaceFactory.h>
 
-class medStartupSettingsWidgetPrivate
-{
-public:
-    QWidget *parent;
-    QCheckBox *startInFullScreen;
-    QComboBox *defaultStartingArea;
+#include <QFormLayout>
 
-    medStartupSettingsWidgetPrivate();
-    ~medStartupSettingsWidgetPrivate();
-};
-
-medStartupSettingsWidgetPrivate::medStartupSettingsWidgetPrivate()
+medStartupSettingsWidget::medStartupSettingsWidget(QWidget *parent) :
+    QDialog(parent)
 {
-}
+    setWindowTitle(tr("Startup"));
 
-medStartupSettingsWidgetPrivate::~medStartupSettingsWidgetPrivate()
-{
-}
-
-medStartupSettingsWidget::medStartupSettingsWidget(QWidget *parent) : medSettingsWidget(parent), d(new medStartupSettingsWidgetPrivate())
-{
-    setTabName(tr("Startup"));
-    d->startInFullScreen = new QCheckBox(this);
-    d->startInFullScreen->setToolTip(tr("Start application in full screen mode?"));
+    startInFullScreen = new QCheckBox(this);
+    startInFullScreen->setToolTip(tr("Start application in full screen mode?"));
 
     QList<medWorkspaceFactory::Details*> workspaceDetails = medWorkspaceFactory::instance()->workspaceDetailsSortedByName(true);
 
-    d->defaultStartingArea = new QComboBox(this);
-    d->defaultStartingArea->addItem(tr("Search"));
-    d->defaultStartingArea->setItemData(0, 0, Qt::UserRole - 1); // Search is disabled
-    d->defaultStartingArea->addItem(tr("Homepage"));
-    d->defaultStartingArea->addItem(tr("Browser"));
-    d->defaultStartingArea->addItem(tr("Composer"));
+    defaultStartingArea = new QComboBox(this);
+    defaultStartingArea->setItemData(0, 0, Qt::UserRole);
+    defaultStartingArea->addItem(tr("Homepage"));
+    defaultStartingArea->addItem(tr("Import/export files"));
+    defaultStartingArea->addItem(tr("Composer"));
     for(medWorkspaceFactory::Details* detail : workspaceDetails)
     {
-        d->defaultStartingArea->addItem(detail->name);
+        defaultStartingArea->addItem(detail->name);
     }
-    QFormLayout *layout = new QFormLayout;
-    layout->addRow(tr("Fullscreen"), d->startInFullScreen);
-    layout->addRow(tr("Starting area"), d->defaultStartingArea);
-    this->setLayout(layout);
-}
 
-/**
- * @brief Performs the validation of each control inside the widget.
- *
- * @param void
- * @return true is the validation is successful, false otherwise.
-*/
-bool medStartupSettingsWidget::validate()
-{
-    return true;
+    QFormLayout *layout = new QFormLayout;
+    layout->addRow(tr("Fullscreen"), startInFullScreen);
+    layout->addRow(tr("Starting area"), defaultStartingArea);
+
+    // Display the current settings
+    read();
+
+    connect(startInFullScreen,   SIGNAL(stateChanged(int)),        this, SLOT(write()));
+    connect(defaultStartingArea, SIGNAL(currentIndexChanged(int)), this, SLOT(write()));
+    
+    setLayout(layout);
 }
 
 void medStartupSettingsWidget::read()
 {
     medSettingsManager *mnger = medSettingsManager::instance();
-    d->startInFullScreen->setChecked(mnger->value("startup", "fullscreen").toBool());
+    startInFullScreen->setChecked(mnger->value("startup", "fullscreen").toBool());
 
     //if nothing is configured then Homepage is the default area
     QString osDefaultStartingAreaName = mnger->value("startup", "default_starting_area", "Homepage").toString();
 
     int i = 0;
     bool bFind = false;
-    while (!bFind && i<d->defaultStartingArea->count())
+    while (!bFind && i<defaultStartingArea->count())
     {
-        bFind = osDefaultStartingAreaName == d->defaultStartingArea->itemText(i);
-        if (!bFind) ++i;
+        bFind = osDefaultStartingAreaName == defaultStartingArea->itemText(i);
+        if (!bFind)
+        {
+            ++i;
+        }
     }
 
     if (bFind)
     {
-        d->defaultStartingArea->setCurrentIndex(i);
+        defaultStartingArea->setCurrentIndex(i);
     }
     else
     {
-        d->defaultStartingArea->setCurrentIndex(0);
+        defaultStartingArea->setCurrentIndex(0);
     }
 }
 
-bool medStartupSettingsWidget::write()
+void medStartupSettingsWidget::write()
 {
     medSettingsManager *mnger = medSettingsManager::instance();
-    mnger->setValue("startup", "fullscreen", d->startInFullScreen->isChecked());
-    mnger->setValue("startup", "default_starting_area", d->defaultStartingArea->currentText());
-
-    return true;
+    mnger->setValue("startup", "fullscreen", startInFullScreen->isChecked());
+    mnger->setValue("startup", "default_starting_area", defaultStartingArea->currentText());
 }

@@ -25,12 +25,9 @@ class QStackedWidget;
 class QSplitter;
 class medToolBoxBody;
 class medToolBoxTab;
-class medDatabaseDataSource;
-class medFileSystemDataSource;
 class medAbstractDataSource;
 class QTabWidget;
 class medToolBox;
-
 
 class medWorkspaceAreaPrivate
 {
@@ -40,20 +37,11 @@ public:
     QWidget *navigatorContainer;
     QWidget *viewContainer;
 
-    medDatabaseDataSource *dbSource;
-    medFileSystemDataSource *fsSource;
-    QList <medAbstractDataSource*> dataSources;
-
-    QPointer<medClutEditor> transFun;
     QStackedWidget *stack;
     QSplitter * splitter;
-    QMutex mutex;
     QHash<QString, medAbstractWorkspaceLegacy*> workspaces;
     QPointer<medToolBox> selectionToolBox;
 
-public:
     QString currentWorkspaceName;
     medAbstractWorkspaceLegacy *currentWorkspace;
 };
-
-
