@@ -50,7 +50,7 @@ medHomepageArea::medHomepageArea ( QWidget * parent ) : QWidget ( parent ), d ( 
     menuFile->addAction(actionDatabase);
 
     // --- Area menu
-    QMenu *menuArea = menu_bar->addMenu("Go to");
+    QMenu *menuArea = menu_bar->addMenu("Switch to area");
 
     QAction *actionAreaSettings = new QAction(tr("&Startup settings"), parent);
     connect(actionAreaSettings, &QAction::triggered, this, &medHomepageArea::onShowAreaSettings);
@@ -120,11 +120,7 @@ medHomepageArea::medHomepageArea ( QWidget * parent ) : QWidget ( parent ), d ( 
     menuLog->addAction(actionPluginLogs);
 
     // --- About menu
-    QMenu *menuAbout = menu_bar->addMenu("About");
-
-    QAction *actionHelp = new QAction(tr("&Help"), parent);
-    connect(actionHelp, &QAction::triggered, this, &medHomepageArea::onShowHelp);
-    menuAbout->addAction(actionHelp);
+    QMenu *menuAbout = menu_bar->addMenu("Info");
 
     QAction *actionAbout = new QAction(tr("&About the application"), parent);
     connect(actionAbout, &QAction::triggered, this, &medHomepageArea::onShowAbout);
@@ -141,6 +137,12 @@ medHomepageArea::medHomepageArea ( QWidget * parent ) : QWidget ( parent ), d ( 
     QAction *actionLicense = new QAction(tr("&License"), parent);
     connect(actionLicense, &QAction::triggered, this, &medHomepageArea::onShowLicense);
     menuAbout->addAction(actionLicense);
+
+    menuAbout->addSeparator();
+
+    QAction *actionHelp = new QAction(tr("&Help"), parent);
+    connect(actionHelp, &QAction::triggered, this, &medHomepageArea::onShowHelp);
+    menuAbout->addAction(actionHelp);
 
     // --- Prepare right corner menu
     QMenuBar *rightMenuBar = new QMenuBar(menu_bar);
@@ -224,10 +226,13 @@ void medHomepageArea::initPage()
     QList<medWorkspaceFactory::Details*> workspaceDetails = medWorkspaceFactory::instance()->workspaceDetailsSortedByName(true);
 
     //--- Basic grid
+    int spacingBetweenHeaderAndColumn = 10;
+    int spacingBetweenColumnButtons = 10;
 
     QVBoxLayout * workspaceButtonsLayoutBasic = new QVBoxLayout;
+    workspaceButtonsLayoutBasic->setSpacing(spacingBetweenHeaderAndColumn);
     QGridLayout * workspaceButtonsLayoutBasicGrid = new QGridLayout;
-    workspaceButtonsLayoutBasicGrid->setSpacing ( 10 );
+    workspaceButtonsLayoutBasicGrid->setSpacing(spacingBetweenColumnButtons);
     QLabel * workspaceLabelBasic = new QLabel ( "<b>Basic Area</b>" );
     workspaceLabelBasic->setTextFormat(Qt::RichText);
     workspaceLabelBasic->setAlignment(Qt::AlignLeft);
@@ -262,8 +267,9 @@ void medHomepageArea::initPage()
     //--- Workspace grids
 
     QVBoxLayout * workspaceButtonsLayoutMethodology = new QVBoxLayout;
+    workspaceButtonsLayoutMethodology->setSpacing(spacingBetweenHeaderAndColumn);
     QGridLayout * workspaceButtonsLayoutMethodologyGrid = new QGridLayout;
-    workspaceButtonsLayoutMethodologyGrid->setSpacing ( 10 );
+    workspaceButtonsLayoutMethodologyGrid->setSpacing(spacingBetweenColumnButtons);
     QLabel * workspaceLabelMethodology = new QLabel ( "<b>Methodology</b>" );
     workspaceLabelMethodology->setTextFormat(Qt::RichText);
     workspaceLabelMethodology->setAlignment(Qt::AlignLeft);
@@ -271,8 +277,9 @@ void medHomepageArea::initPage()
     workspaceButtonsLayoutMethodology->addLayout(workspaceButtonsLayoutMethodologyGrid);
 
     QVBoxLayout * workspaceButtonsLayoutClinical = new QVBoxLayout;
+    workspaceButtonsLayoutClinical->setSpacing(spacingBetweenHeaderAndColumn);
     QGridLayout * workspaceButtonsLayoutClinicalGrid = new QGridLayout;
-    workspaceButtonsLayoutClinicalGrid->setSpacing ( 10 );
+    workspaceButtonsLayoutClinicalGrid->setSpacing(spacingBetweenColumnButtons);
     QLabel * workspaceLabelClinical = new QLabel ( "<b>Clinical</b>" );
     workspaceLabelClinical->setTextFormat(Qt::RichText);
     workspaceLabelClinical->setAlignment(Qt::AlignLeft);
@@ -280,8 +287,9 @@ void medHomepageArea::initPage()
     workspaceButtonsLayoutClinical->addLayout(workspaceButtonsLayoutClinicalGrid);
 
     QVBoxLayout * workspaceButtonsLayoutOther = new QVBoxLayout;
+    workspaceButtonsLayoutOther->setSpacing(spacingBetweenHeaderAndColumn);
     QGridLayout * workspaceButtonsLayoutOtherGrid = new QGridLayout;
-    workspaceButtonsLayoutOtherGrid->setSpacing ( 10 );
+    workspaceButtonsLayoutOtherGrid->setSpacing(spacingBetweenColumnButtons);
     QLabel * workspaceLabelOther = new QLabel ( "<b>Other</b>" );
     workspaceLabelOther->setTextFormat(Qt::RichText);
     workspaceLabelOther->setAlignment(Qt::AlignLeft);
