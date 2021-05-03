@@ -414,7 +414,7 @@ QVector<medWorldPosContours> polygonLabel::getContoursAsNodes()
     return contours;
 }
 
-void polygonLabel::createMaskWithLabel(int label)
+void polygonLabel::createMask(int label, QString &desc)
 {
     vtkImageView2D *view2d = getView2D();
     if (!view2d)
@@ -578,8 +578,6 @@ void polygonLabel::createMaskWithLabel(int label)
             }
         }
     }
-    QString name = (d->property.secondName == QString()) ? QString(d->property.mainName) : QString("%1_%2").arg(d->property.mainName).arg(d->property.secondName);
-    QString desc = QString("mask ") + name + " (" + inputData->metadata(medMetaDataKeys::SeriesDescription.key()) + ")";
     medUtilities::copyMetaDataIfEmpty(output, inputData, medUtilities::metaDataKeysToCopyForDerivedData(output));
     output->setMetaData(medMetaDataKeys::SeriesDescription.key(), desc);
 

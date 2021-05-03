@@ -24,6 +24,8 @@ public:
 
     void draw(double *position);
     void erase();
+    double *getPosition();
+    int isEnabled();
 
 private:
     vtkSmartPointer<vtkHandleWidget> handle2d;
