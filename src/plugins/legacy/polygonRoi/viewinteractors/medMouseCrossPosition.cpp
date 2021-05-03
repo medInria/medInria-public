@@ -34,8 +34,8 @@ medMouseCrossPosition::medMouseCrossPosition(medAbstractImageView *iView)
     cursor2D->AllOff();
     cursor2D->AxesOn();
     cursor2D->PointOn();
-    double bounds[6] = {-40.0, 40.0,
-                        -40.0, 40.0,
+    double bounds[6] = {-15.0, 15.0,
+                        -15.0, 15.0,
                         0.0, 0.0};
     cursor2D->SetModelBounds(bounds);
     cursor2D->Update();
@@ -49,7 +49,6 @@ medMouseCrossPosition::medMouseCrossPosition(medAbstractImageView *iView)
 
 void medMouseCrossPosition::draw(double *position)
 {
-
     handle2dRep->SetDisplayPosition(position);
     handle2d->On();
 }
@@ -60,4 +59,14 @@ void medMouseCrossPosition::erase()
     {
         handle2d->Off();
     }
+}
+
+double *medMouseCrossPosition::getPosition()
+{
+    return handle2dRep->GetDisplayPosition();
+}
+
+int medMouseCrossPosition::isEnabled()
+{
+    return handle2d->GetEnabled();
 }

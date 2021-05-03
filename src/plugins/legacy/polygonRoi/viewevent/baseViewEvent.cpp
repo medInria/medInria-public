@@ -133,7 +133,17 @@ bool baseViewEvent::eventFilter(QObject *obj, QEvent *event)
 
 bool baseViewEvent::mouseReleaseEvent(medAbstractView *view, QMouseEvent *mouseEvent)
 {
-    if (isRepulsorActivated )
+    if (crossPosition->isEnabled() &&
+        mouseEvent->button() == Qt::LeftButton &&
+        mouseEvent->modifiers() == Qt::ShiftModifier )
+    {
+        setCustomCursor(view, Qt::green);
+        double percentPos[2];
+        percentPos[0] = savedMousePosition[0] / currentView->viewWidget()->width();
+        percentPos[1] = savedMousePosition[1] / currentView->viewWidget()->height();
+        pToolBox->drawCross(percentPos);
+    }
+    else if (isRepulsorActivated )
     {
         if ( !isActiveContourInSlice() || (currentLabel && currentLabel->roiOpenInSlice()))
         {
@@ -162,15 +172,28 @@ bool baseViewEvent::mouseMoveEvent(medAbstractView *view, QMouseEvent *mouseEven
     int screenNumber = QApplication::desktop()->screenNumber(mouseEvent->globalPos());
     int devicePixelRatio = QGuiApplication::screens().at(screenNumber)->devicePixelRatio();
 #endif
-
     savedMousePosition[0] = mouseEvent->x()*devicePixelRatio;
     savedMousePosition[1] = (view->viewWidget()->height()-mouseEvent->y()-1)*devicePixelRatio;
-
-    if (currentLabel)
+    double *crossPos = crossPosition->getPosition();
+    double distToCross = sqrt(
+            pow(crossPos[0] - savedMousePosition[0], 2) +
+            pow(crossPos[1] - savedMousePosition[1], 2));
+    if (crossPosition->isEnabled() && distToCross < 10.)
+    {
+        setCustomCursor(view, Qt::green);
+        if (mouseEvent->modifiers() == Qt::ShiftModifier)
+        {
+            double percentPos[2];
+            percentPos[0] = savedMousePosition[0] / currentView->viewWidget()->width();
+            percentPos[1] = savedMousePosition[1] / currentView->viewWidget()->height();
+            pToolBox->drawCross(percentPos);
+        }
+    }
+    else if (currentLabel)
     {
         if (currentLabel->getMinimumDistanceFromNodesToMouse(savedMousePosition, false) < 20.)
         {
-            setCustomCursor(view);
+            setCustomCursor(view, Qt::red);
         }
         else
         {
@@ -188,19 +211,36 @@ bool baseViewEvent::mousePressEvent(medAbstractView * view, QMouseEvent *mouseEv
 {
     if (mouseEvent->button()==Qt::LeftButton)
     {
-        if (mouseEvent->modifiers() != Qt::ControlModifier)
+        if (mouseEvent->modifiers() == Qt::ShiftModifier)
         {
-            if (mouseEvent->modifiers() == Qt::ShiftModifier)
+            for (polygonLabel *label : labelList)
             {
-                double percentPos[2];
-                percentPos[0] = savedMousePosition[0] / currentView->viewWidget()->width();
-                percentPos[1] = savedMousePosition[1] / currentView->viewWidget()->height();
-                pToolBox->drawCross(percentPos);
+                polygonRoi *roi = label->roiOpenInSlice();
+                if (roi != nullptr)
+                {
+                    roi->getContour()->SetWidgetState(vtkContourWidget::Manipulate);
+                }
             }
-            else
+            activateRepulsor(false);
+            isRepulsorActivated = true;
+
+            double percentPos[2];
+            percentPos[0] = savedMousePosition[0] / currentView->viewWidget()->width();
+            percentPos[1] = savedMousePosition[1] / currentView->viewWidget()->height();
+            pToolBox->drawCross(percentPos);
+        }
+        else
+        {
+            for (polygonLabel *label : labelList)
             {
-                leftButtonBehaviour(view);
+                polygonRoi *roi = label->roiOpenInSlice();
+                if (roi != nullptr)
+                {
+                    if (roi->getContour()->GetWidgetState()==vtkContourWidget::Manipulate)
+                        roi->getContour()->SetWidgetState(vtkContourWidget::Define);
+                }
             }
+            leftButtonBehaviour(view);
         }
     }
     else if (mouseEvent->button()==Qt::RightButton)
@@ -252,7 +292,7 @@ void baseViewEvent::leftButtonBehaviour(medAbstractView *view)
     }
 }
 
-void baseViewEvent::setCustomCursor(medAbstractView *view)
+void baseViewEvent::setCustomCursor(medAbstractView *view, QColor color)
 {
     if (!view)
         return;
@@ -271,9 +311,9 @@ void baseViewEvent::setCustomCursor(medAbstractView *view)
     painter.setRenderHint( QPainter::Antialiasing );
     painter.setBackgroundMode(Qt::TransparentMode);
     painter.setBackground(QColor(255,255,255,255));
-    painter.setPen( Qt::red );
+    painter.setPen( color );
     painter.drawEllipse( 0, 0, radiusSizeInt, radiusSizeInt );
-    painter.setPen( Qt::red );
+    painter.setPen( color );
     painter.drawPoint(floor(radiusSizeDouble/2.0+0.5),     floor(radiusSizeDouble/2.0+0.5));
     painter.drawPoint(floor(radiusSizeDouble/2.0-1.0+0.5), floor(radiusSizeDouble/2.0+0.5));
     painter.drawPoint(floor(radiusSizeDouble/2.0+1.0+0.5), floor(radiusSizeDouble/2.0+0.5));
@@ -570,19 +610,6 @@ void baseViewEvent::pasteContours()
         }
         setLabelActivationState();
     }
-}
-
-polygonLabel *baseViewEvent::findManagerWithColor(QColor &color)
-{
-    polygonLabel *mgr = nullptr;
-    for (polygonLabel *manager : labelList)
-    {
-        if (manager->getColor() == color)
-        {
-            mgr = manager;
-        }
-    }
-    return mgr;
 }
 
 polygonLabel *baseViewEvent::findManager(int position)
@@ -939,7 +966,16 @@ bool baseViewEvent::isActiveContourInSlice()
 void baseViewEvent::saveMask(polygonLabel *manager)
 {
     int label = labelList.indexOf(manager);
-    manager->createMaskWithLabel(label);
+    QString desc = createMaskDescription(manager);
+    manager->createMask(label, desc);
+}
+
+QString baseViewEvent::createMaskDescription(polygonLabel *label)
+{
+    QString name = QString(label->getName());
+    medAbstractData * data = currentView->layerData(0);
+    QString desc = QString("mask ") + name + " (" + data->metadata(medMetaDataKeys::SeriesDescription.key()) + ")";
+    return desc;
 }
 
 void baseViewEvent::saveContour(polygonLabel *label)

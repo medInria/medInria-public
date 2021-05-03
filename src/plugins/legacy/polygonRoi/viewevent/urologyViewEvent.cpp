@@ -2,6 +2,7 @@
 // Created by Julien Castelneau on 06/04/2021.
 //
 
+#include <medMetaDataKeys.h>
 #include "urologyViewEvent.h"
 
 urologyViewEvent::~urologyViewEvent()
@@ -226,4 +227,22 @@ void urologyViewEvent::setScoreNameAndColor(polygonLabel *label, QString &name)
     }
     label->setOptionalNameWithColor(name, scoreColor);
 
+}
+
+QString urologyViewEvent::createMaskDescription(polygonLabel *label)
+{
+    QString name = (label->getOptName() == QString()) ? QString(label->getName()) : QString("%1_%2").arg(label->getName()).arg(label->getOptName());
+    medAbstractData * data = currentView->layerData(0);
+    QString seriesDesc = data->metadata(medMetaDataKeys::SeriesDescription.key());
+    QString patientName = data->metadata(medMetaDataKeys::PatientName.key());
+    if (seriesDesc.contains("T2"))
+    {
+        seriesDesc = "T2";
+    }
+    else if (seriesDesc.contains("ADC"))
+    {
+        seriesDesc = "ADC";
+    }
+    QString desc = patientName + QString(" mask ") + name + " (" + seriesDesc + ")";
+    return desc;
 }

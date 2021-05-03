@@ -111,6 +111,7 @@ protected:
     polygonLabel *getClosestPLabel(double *mousePos);
     bool isContourLoadable(QString &labelName);
     polygonLabel *findManager(int position);
+    virtual QString createMaskDescription(polygonLabel *label);
 
 private:
     CURSORSTATE cursorState;
@@ -127,9 +128,7 @@ private:
     void setLabelActivationState();
     QMenu *changeLabelActions(polygonLabel* closestLabel);
     bool isActiveContourInSlice();
-  static   void setCustomCursor(medAbstractView *view);
-    polygonLabel *findManagerWithColor(QColor &color);
-
+    static void setCustomCursor(medAbstractView *view, QColor color);
 
     virtual void activateContour(double *mousePosition) = 0;
 
