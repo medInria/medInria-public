@@ -84,6 +84,11 @@ medDataIndex medDatabaseImporter::populateDatabaseAndGenerateThumbnails ( medAbs
 
     int studyDbId = getOrCreateStudy ( medData, db, patientDbId );
 
+    // Update name of the series if a permanent data has this name already
+    QString seriesName = medData->metadata(medMetaDataKeys::SeriesDescription.key());
+    QString newSeriesName = ensureUniqueSeriesName(seriesName, QString::number(studyDbId));
+    medData->setMetaData(medMetaDataKeys::SeriesDescription.key(), newSeriesName);
+
     int seriesDbId = getOrCreateSeries ( medData, db, studyDbId );
 
     medDataIndex index = medDataIndex ( medDatabaseController::instance()->dataSourceId(), patientDbId, studyDbId, seriesDbId );
@@ -330,12 +335,20 @@ int medDatabaseImporter::getOrCreateSeries ( const medAbstractData* medData, QSq
 * @param seriesName - the series name
 * @return newSeriesName - a new, unused, series name
 **/
-QString medDatabaseImporter::ensureUniqueSeriesName ( const QString seriesName )
+QString medDatabaseImporter::ensureUniqueSeriesName ( const QString seriesName, const QString studyId )
 {
     QSqlDatabase db = medDatabaseController::instance()->database();
 
     QSqlQuery query ( db );
-    query.prepare ( "SELECT name FROM series WHERE name LIKE '" + seriesName + "%'" );
+    if (studyId.isEmpty())
+    {
+        query.prepare ( "SELECT name FROM series WHERE name LIKE '" + seriesName + "%'");
+    }
+    else
+    {
+        query.prepare ( "SELECT name FROM series WHERE study = :studyId AND name LIKE '" + seriesName + "%'");
+        query.bindValue ( ":studyId", studyId );
+    }
 
     if ( !query.exec() )
     {

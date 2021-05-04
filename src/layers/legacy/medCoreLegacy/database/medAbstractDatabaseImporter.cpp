@@ -429,11 +429,6 @@ void medAbstractDatabaseImporter::importData()
         return;
     }
 
-    // Update name of the series if a permanent data has this name already
-    QString seriesDescription = d->data->metadata(medMetaDataKeys::SeriesDescription.key());
-    QString newSeriesDescription = ensureUniqueSeriesName(seriesDescription);
-    d->data->setMetaData(medMetaDataKeys::SeriesDescription.key(), QStringList() << newSeriesDescription );
-
     if ( !d->data->hasMetaData ( medMetaDataKeys::FilePaths.key() ) )
     {
          d->data->addMetaData ( medMetaDataKeys::FilePaths.key(), QStringList() << "data created internally" );
