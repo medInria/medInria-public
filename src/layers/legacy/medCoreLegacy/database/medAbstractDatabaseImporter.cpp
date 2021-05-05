@@ -465,25 +465,23 @@ void medAbstractDatabaseImporter::importData()
     if (!d->indexWithoutImporting)
     {
         QString subDirName = QDir::separator() + patientId;
-        QString imageFileName = d->data->metadata("FileName");
-        if (imageFileName.isEmpty())
-        {
-            QString imageFileNameBase = subDirName + QDir::separator() + seriesId;
-            QDir dir(medStorage::dataLocation() + subDirName);
-            if (!dir.exists())
-            {
-                if (!medStorage::mkpath(medStorage::dataLocation() + subDirName))
-                {
-                    qWarning() << "Unable to create directory for images";
-                    emit failure(this);
-                    emit dataImported(medDataIndex(), d->uuid);
-                    return;
-                }
-            }
+        QString imageFileNameBase =  subDirName + QDir::separator() +  seriesId;
 
-            QString extension = determineFutureImageExtensionByDataType(d->data);
-            imageFileName = imageFileNameBase + extension;
+        QDir dir ( medStorage::dataLocation() + subDirName );
+        if ( !dir.exists() )
+        {
+            if ( !medStorage::mkpath ( medStorage::dataLocation() + subDirName ) )
+            {
+                qWarning() << "Unable to create directory for images";
+                emit failure ( this );
+                emit dataImported(medDataIndex(), d->uuid);
+                return ;
+            }
         }
+
+        QString extension  = determineFutureImageExtensionByDataType ( d->data );
+        QString imageFileName = imageFileNameBase + extension;
+
         // writing file
         writeSuccess = tryWriteImage(medStorage::dataLocation() + imageFileName, d->data);
         qDebug() << "image File Name " << imageFileName;
