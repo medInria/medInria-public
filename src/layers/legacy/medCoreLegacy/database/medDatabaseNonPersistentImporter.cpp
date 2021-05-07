@@ -37,13 +37,6 @@ medDatabaseNonPersistentImporter::medDatabaseNonPersistentImporter (medAbstractD
 }
 
 //-----------------------------------------------------------------------------------------------------------
-
-medDatabaseNonPersistentImporter::~medDatabaseNonPersistentImporter ()
-{
-
-}
-
-//-----------------------------------------------------------------------------------------------------------
 /**
 * Retrieves patientID. Checks if patient is already in the database
 * if so, reurns is Id, otherwise creates a new guid
@@ -256,7 +249,7 @@ medDataIndex medDatabaseNonPersistentImporter::populateDatabaseAndGenerateThumbn
 * @param seriesName - the series name
 * @return newSeriesName - a new, unused, series name
 **/
-QString medDatabaseNonPersistentImporter::ensureUniqueSeriesName ( const QString seriesName )
+QString medDatabaseNonPersistentImporter::ensureUniqueSeriesName ( const QString seriesName, const QString studyId )
 {
     QPointer<medDatabaseNonPersistentController> npdc =
         medDatabaseNonPersistentController::instance();
