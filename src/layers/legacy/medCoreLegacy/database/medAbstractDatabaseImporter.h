@@ -104,7 +104,7 @@ protected:
     * @param studyId - database study id. If empty, the entire database is searched
     * @return newSeriesName - a new, unused, series name
     **/
-    virtual QString ensureUniqueSeriesName(const QString seriesName, const QString studyId = QString("") ) = 0;
+    virtual QString ensureUniqueSeriesName ( const QString seriesName, const QString studyId = QString("") ) = 0;
 
     /**
      * Retrieves patientID. Checks if patient is already in the database

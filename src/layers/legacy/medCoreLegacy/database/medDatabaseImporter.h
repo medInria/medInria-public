@@ -41,14 +41,14 @@ public:
     ~medDatabaseImporter() override = default;
 
 private:
-    QString ensureUniqueSeriesName(const QString seriesName, const QString studyId) override;
+    QString ensureUniqueSeriesName ( const QString seriesName, const QString studyId ) override;
 
-    medDataIndex populateDatabaseAndGenerateThumbnails ( medAbstractData* medData, QString pathToStoreThumbnail );
+    medDataIndex populateDatabaseAndGenerateThumbnails ( medAbstractData* medData, QString pathToStoreThumbnail ) override;
 
     int getOrCreatePatient ( const medAbstractData* medData, QSqlDatabase db );
     int getOrCreateStudy ( const medAbstractData* medData, QSqlDatabase db, int patientId );
     int getOrCreateSeries ( const medAbstractData* medData, QSqlDatabase db, int studyId );
     void setNumberOfFilesInDirectory(int num) override{};
 
-    QString getPatientID(QString patientName, QString birthDate);
+    QString getPatientID(QString patientName, QString birthDate) override;
 };

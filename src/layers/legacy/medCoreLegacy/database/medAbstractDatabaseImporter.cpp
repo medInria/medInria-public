@@ -423,13 +423,8 @@ void medAbstractDatabaseImporter::importData()
         emit dataImported(medDataIndex(), d->uuid);
         return;
     }
-    qDebug() << "import data " << d->data->data();
-    // Update name of the series if a permanent data has this name already
-    QString seriesDescription = d->data->metadata(medMetaDataKeys::SeriesDescription.key());
-    QString studyInstanceUID = d->data->metadata(medMetaDataKeys::StudyInstanceUID.key());
-    QString seriesInstanceUID = d->data->metadata(medMetaDataKeys::SeriesInstanceUID.key());
 
-    if (!d->data->hasMetaData(medMetaDataKeys::FilePaths.key()))
+    if ( !d->data->hasMetaData ( medMetaDataKeys::FilePaths.key() ) )
     {
         d->data->addMetaData(medMetaDataKeys::FilePaths.key(), QStringList() << "data created internally");
     }
