@@ -566,22 +566,30 @@ QList<medDataIndex> medDataPacsController::series(const medDataIndex &index) con
     return indexes.values();
 }
 
-QHash<QString, QString> medDataPacsController::series(const QString &studyInstanceUID) const
+QStringList medDataPacsController::series(const QString &seriesName, const QString &studyId) const
 {
-    QHash<QString, QString> seriesInfos;
+    QStringList seriesNames;
     medDatabaseNonPersistentItem *item;
     for (medDataIndex index : d->items.keys())
     {
         if (index.isValidForSeries())
         {
             item = d->items.value(index);
-            if (item->studyUid() == studyInstanceUID)
+            if (studyId.isEmpty())
             {
-                seriesInfos[item->seriesUid()] = item->seriesName();
+                if (item->seriesName().startsWith(seriesName))
+                    seriesNames << item->seriesName();
+            }
+            else
+            {
+                if (item->studyId()==studyId && item->seriesName().startsWith(seriesName))
+                {
+                    seriesNames << item->seriesName();
+                }
             }
         }
     }
-    return seriesInfos;
+    return seriesNames;
 }
 
 medDataIndex medDataPacsController::getStudyIfEmpty(const medDataIndex seriesIndex)

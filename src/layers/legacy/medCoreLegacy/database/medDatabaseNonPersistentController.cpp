@@ -367,22 +367,30 @@ QList<medDataIndex> medDatabaseNonPersistentController::series( const medDataInd
     return ret;
 }
 
-QHash<QString, QString> medDatabaseNonPersistentController::series(const QString &studyInstanceUID) const
+QStringList medDatabaseNonPersistentController::series(const QString &seriesName, const QString &studyId) const
 {
-    QHash<QString, QString> seriesInfos;
+    QStringList seriesNames;
     medDatabaseNonPersistentItem *item;
     for (medDataIndex index : d->items.keys())
     {
         if (index.isValidForSeries())
         {
             item = d->items.value(index);
-            if (item->studyUid() == studyInstanceUID)
+            if (studyId.isEmpty())
             {
-                seriesInfos[item->seriesUid()] = item->seriesName();
+                if (item->seriesName().startsWith(seriesName))
+                    seriesNames << item->seriesName();
+            }
+            else
+            {
+                if (item->studyId()==studyId && item->seriesName().startsWith(seriesName))
+                {
+                    seriesNames << item->seriesName();
+                }
             }
         }
     }
-    return seriesInfos;
+    return seriesNames;
 }
 
 QPixmap medDatabaseNonPersistentController::thumbnail(const medDataIndex &index) const

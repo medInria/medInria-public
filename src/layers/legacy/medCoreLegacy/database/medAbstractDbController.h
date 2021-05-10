@@ -36,7 +36,7 @@ public:
     virtual QList<medDataIndex> patients() const = 0;
     virtual QList<medDataIndex> studies(const medDataIndex &index) const = 0;
     virtual QList<medDataIndex> series(const medDataIndex &index) const = 0;
-    virtual QHash<QString, QString> series(const QString &studyInstanceUID) const = 0;
+    virtual QStringList series(const QString &seriesName, const QString &studyId = QString("")) const = 0;
     virtual void requestDatabaseForModel(QHash<int, QHash<QString, QVariant> > &patientData,
                                          QHash<int, QHash<QString, QVariant> > &studyData,
                                          QHash<int, QHash<QString, QVariant> > &seriesData) const = 0;

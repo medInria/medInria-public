@@ -780,20 +780,27 @@ QList<medDataIndex> medDatabasePersistentController::series(
     return ret;
 }
 
-QHash<QString, QString> medDatabasePersistentController::series(const QString &studyInstanceUID) const
+QStringList medDatabasePersistentController::series(const QString &seriesName, const QString &studyId) const
 {
-    QHash<QString, QString> seriesInfos;
     QSqlQuery query(m_database);
-    query.prepare("select series.name as seriesName, series.uid as seriesUID from series inner join study on study.id = series.study where study.uid = :studyUID");
-    query.bindValue(":studyUID", studyInstanceUID);
+    if (studyId.isEmpty())
+    {
+        query.prepare ( "SELECT name FROM series WHERE name LIKE '" + seriesName + "%'");
+    }
+    else
+    {
+        query.prepare ( "SELECT name FROM series WHERE study = :studyId AND name LIKE '" + seriesName + "%'");
+        query.bindValue ( ":studyId", studyId );
+    }
 
     execQuery(query, __FILE__, __LINE__);
-
+    QStringList seriesNames;
     while (query.next())
     {
-        seriesInfos[query.value("seriesUID").toString()] = query.value("seriesName").toString();
+        QString sname = query.value(0).toString();
+        seriesNames << sname;
     }
-    return seriesInfos;
+    return seriesNames;
 }
 
 bool medDatabasePersistentController::execQuery(QSqlQuery &query, const char *file,
