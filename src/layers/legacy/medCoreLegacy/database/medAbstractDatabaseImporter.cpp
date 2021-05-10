@@ -429,9 +429,6 @@ void medAbstractDatabaseImporter::importData()
     QString studyInstanceUID = d->data->metadata(medMetaDataKeys::StudyInstanceUID.key());
     QString seriesInstanceUID = d->data->metadata(medMetaDataKeys::SeriesInstanceUID.key());
 
-    // QString newSeriesDescription = ensureUniqueSeriesName(studyInstanceUID, seriesInstanceUID, seriesDescription);
-    // d->data->setMetaData(medMetaDataKeys::SeriesDescription.key(), QStringList() << newSeriesDescription);
-
     if (!d->data->hasMetaData(medMetaDataKeys::FilePaths.key()))
     {
         d->data->addMetaData(medMetaDataKeys::FilePaths.key(), QStringList() << "data created internally");
@@ -562,10 +559,7 @@ void medAbstractDatabaseImporter::populateMissingMetadata(medAbstractData *medDa
         // it could be that we have already another image with this characteristics
         // so we would like to check whether the image filename is on the db
         // and if so we would add some suffix to distinguish it
-
-        QString studyInstanceUID = medData->metadata(medMetaDataKeys::StudyInstanceUID.key());
-        QString seriesInstanceUID = medData->metadata(medMetaDataKeys::SeriesInstanceUID.key());
-        newSeriesDescription = ensureUniqueSeriesName(studyInstanceUID, seriesInstanceUID, seriesDescription);
+        newSeriesDescription = ensureUniqueSeriesName(seriesDescription);
     }
     else
     {

@@ -47,7 +47,5 @@ public:
 
     void setNumberOfFilesInDirectory(int num) override;
 
-    QString ensureUniqueSeriesName(const QString &studyInstanceUID,
-                                   const QString &seriesInstanceUID,
-                                   const QString &seriesName);
+    QString ensureUniqueSeriesName(const QString seriesName, const QString studyId) override;
 };

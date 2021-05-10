@@ -253,40 +253,24 @@ medDataIndex medDatabaseNonPersistentImporter::populateDatabaseAndGenerateThumbn
 * Finds if parameter @seriesName is already being used in the database
 * if is not, it returns @seriesName unchanged
 * otherwise, it returns an unused new series name (created by adding a suffix)
-* @param studyInstanceUID -  Unique identifier of the Study.
-* @param seriesInstanceUID -  Unique identifier of the Series.
 * @param seriesName - the series name
 * @return newSeriesName - a new, unused, series name
 **/
-QString medDatabaseNonPersistentImporter::ensureUniqueSeriesName(const QString &studyInstanceUID,
-                                                                 const QString &seriesInstanceUID,
-                                                                 const QString &seriesName)
+QString medDatabaseNonPersistentImporter::ensureUniqueSeriesName(const QString seriesName, const QString studyId)
 {
     QPointer<medDatabaseNonPersistentController> npdc =
         medDatabaseNonPersistentController::instance();
-    QHash<QString, QString> seriesInfos = npdc->series(studyInstanceUID);
+    QStringList seriesNames = npdc->series(seriesName, studyId);
 
-    for (QString uid : seriesInfos.keys())
-    {
-        if (uid == seriesInstanceUID)
-        {
-            qWarning() << "We cannot import the same series twice";
-            emit failure(this);
-            emit dataImported(medDataIndex(), callerUuid());
-            return QString();
-        }
-    }
-
-    int suffix = 0;
     QString originalSeriesName = seriesName;
     QString newSeriesName = seriesName;
-    for (QString name : seriesInfos.values())
+
+    int suffix = 0;
+    while (seriesNames.contains(newSeriesName))
     {
-        if (name.contains(seriesName))
-        {
-            suffix++;
-            newSeriesName = originalSeriesName + "_" + QString::number(suffix);
-        }
+        // it exist
+        suffix++;
+        newSeriesName = originalSeriesName + "_" + QString::number(suffix);
     }
 
     return newSeriesName;

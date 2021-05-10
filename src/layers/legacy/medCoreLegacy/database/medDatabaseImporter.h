@@ -41,9 +41,7 @@ public:
     ~medDatabaseImporter() override = default;
 
 private:
-    QString ensureUniqueSeriesName(const QString &studyInstanceUID,
-                                   const QString &seriesInstanceUID,
-                                   const QString &seriesName);
+    QString ensureUniqueSeriesName(const QString seriesName, const QString studyId) override;
 
     medDataIndex populateDatabaseAndGenerateThumbnails ( medAbstractData* medData, QString pathToStoreThumbnail );
 
