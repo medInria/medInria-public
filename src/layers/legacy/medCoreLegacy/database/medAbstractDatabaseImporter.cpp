@@ -142,6 +142,12 @@ void medAbstractDatabaseImporter::importFile ( void )
 {
     QMutexLocker locker ( &d->mutex );
 
+    /* [WARNING]
+     * This algorithm has been very modified to fix bugs or unexpected behaviours
+     * A big refactoring of this file is expected soon
+     * Some comments in this method and in ImportData are deprecated
+     * /
+
     /* The idea of this algorithm can be summarized in 3 steps:
      * 1. Get a list of all the files that will (try to) be imported or indexed
      * 2. Filter files that cannot be read, or won't be possible to write afterwards, or are already in the db
@@ -220,13 +226,9 @@ void medAbstractDatabaseImporter::importFile ( void )
             // 2.2) Fill missing metadata
             populateMissingMetadata(medData, med::smartBaseName(fileInfo.fileName()));
             QString patientID = medMetaDataKeys::PatientID.getFirstValue(medData).simplified();
-            QString patientName = medMetaDataKeys::PatientName.getFirstValue(medData).simplified();
-            QString birthDate = medMetaDataKeys::BirthDate.getFirstValue(medData);
-            if (patientID.isEmpty())
-            {
-                patientID = getPatientID(patientName, birthDate);
-                medData->setMetaData(medMetaDataKeys::PatientID.key(), QStringList() << patientID);
-            }
+
+            QString generatedSeriesId = QUuid::createUuid().toString().replace("{", "").replace("}", "");
+            medData->setMetaData(medMetaDataKeys::SeriesID.key(), QStringList() << generatedSeriesId);
 
             tmpSeriesUid = medMetaDataKeys::SeriesInstanceUID.getFirstValue(medData);
 
@@ -249,20 +251,9 @@ void medAbstractDatabaseImporter::importFile ( void )
                 volumeNumber++;
             }
 
-            // 2.3) a) Determine future file name and path based on patient/study/series/image
-            // i.e.: where we will write the imported image
-            QString imageFileName = determineFutureImageFileName ( medData, volumeUniqueIdToVolumeNumber[volumeId] );
-#ifdef Q_OS_WIN32
-            if ( (medStorage::dataLocation() + "/" + imageFileName).length() > 255 )
-            {
-                emit showError ( tr ( "Your database path is too long" ), 5000 );
-                emit dataImported(medDataIndex(), d->uuid);
-                emit failure ( this );
-                return;
-            }
-#endif
             // 2.3) b) Find the proper extension according to the type of the data
             // i.e.: in which format we will write the file in our database
+            // [CHG] this code is here only to determine if the extension is ok. We must re-compute the extension again below...
             QString futureExtension  = determineFutureImageExtensionByDataType ( medData );
 
             // we care whether we can write the image or not if we are importing
@@ -271,12 +262,10 @@ void medAbstractDatabaseImporter::importFile ( void )
                 continue;
             }
 
-            imageFileName = imageFileName + futureExtension;
-
             // 2.3) c) Add the image to a map for writing them all in the database in a posterior step
-            imagesGroupedByVolume[imageFileName] << fileInfo.filePath();
-            imagesGroupedByPatient[imageFileName] = patientID;
-            imagesGroupedBySeriesId[imageFileName] = currentSeriesId;
+            imagesGroupedByVolume[volumeId] << fileInfo.filePath();
+            imagesGroupedByPatient[volumeId] = patientID;
+            imagesGroupedBySeriesId[volumeId] = currentSeriesId;
         }
         else
         {
@@ -329,7 +318,7 @@ void medAbstractDatabaseImporter::importFile ( void )
 
         currentImageIndex++;
 
-        QString aggregatedFileName = it.key(); // note that this file might be aggregating more than one input files
+        QString volumeId = it.key();
         QStringList filesPaths = it.value();   // input files being aggregated, might be only one or many
         patientID = itPat.value();
         QString seriesID = itSer.value();
@@ -340,19 +329,7 @@ void medAbstractDatabaseImporter::importFile ( void )
         bool readOnlyImageInformation = false;
         imagemedData = tryReadImages ( filesPaths, readOnlyImageInformation );
 
-        if ( imagemedData )
-        {
-            // 3.3) a) re-populate missing metadata
-            // as files might be aggregated we use the aggregated file name as SeriesDescription (if not provided, of course)
-            QFileInfo imagefileInfo ( filesPaths[0] );
-            populateMissingMetadata ( imagemedData, med::smartBaseName(imagefileInfo.fileName()) );
-            imagemedData->setMetaData ( medMetaDataKeys::PatientID.key(), QStringList() << patientID );
-            imagemedData->setMetaData ( medMetaDataKeys::SeriesID.key(), QStringList() << seriesID );
-
-            // 3.3) b) now we are able to add some more metadata
-            addAdditionalMetaData ( imagemedData, aggregatedFileName, filesPaths );
-        }
-        else
+        if ( !imagemedData )
         {
             qWarning() << "Could not repopulate data!";
             emit showError (tr ( "Could not read data: " ) + filesPaths[0], 5000 );
@@ -360,6 +337,46 @@ void medAbstractDatabaseImporter::importFile ( void )
             emit failure(this);
             return;
         }
+        // 3.3) a) re-populate missing metadata
+        // as files might be aggregated we use the aggregated file name as SeriesDescription (if not provided, of course)
+        QFileInfo imagefileInfo ( filesPaths[0] );
+        populateMissingMetadata ( imagemedData, med::smartBaseName(imagefileInfo.fileName()) );
+        /* [WARN - HACK] In tryReadImages, we may read seriesId, but this tag has no sense (in dicom purpose for instance)
+         * This tag is used to compute the series path while writing data on disk and saving in db
+         * Ensure the medAbstractData has the seriesId computed above
+         * */
+        imagemedData->setMetaData ( medMetaDataKeys::SeriesID.key(), QStringList() << seriesID );
+        // Check if patientID was read in Header. If not, we have to set it again
+        if (patientID.isEmpty())
+        {
+            patientID = medMetaDataKeys::PatientID.getFirstValue(imagemedData).simplified();
+            // if even after reading the whole file, there is no patientID, we must:
+            // 1/ check if there is already a patientID in db for this patient (patientName + birthdate)
+            // 2/ create it if not
+            if (patientID.isEmpty())
+            {
+                QString patientName = medMetaDataKeys::PatientName.getFirstValue(imagemedData).simplified();
+                QString birthdate = medMetaDataKeys::BirthDate.getFirstValue(imagemedData).simplified();
+                patientID = getPatientID(patientName, birthdate);
+                imagemedData->setMetaData(medMetaDataKeys::PatientID.key(), QStringList() << patientID );
+            }
+        }
+
+        QString aggregatedFileName = determineFutureImageFileName ( imagemedData, volumeUniqueIdToVolumeNumber[volumeId] );
+#ifdef Q_OS_WIN32
+        if ( (medStorage::dataLocation() + "/" + aggregatedFileName).length() > 255 )
+        {
+            emit showError ( tr ( "Your database path is too long" ), 5000 );
+            emit dataImported(medDataIndex(), d->uuid);
+            emit failure ( this );
+            return;
+        }
+#endif
+        QString futureExtension  = determineFutureImageExtensionByDataType ( imagemedData );
+        aggregatedFileName = aggregatedFileName + futureExtension;
+
+        // 3.3) b) now we are able to add some more metadata
+        addAdditionalMetaData ( imagemedData, aggregatedFileName, filesPaths );
 
         if ( !d->indexWithoutImporting )
         {
@@ -534,17 +551,11 @@ void medAbstractDatabaseImporter::populateMissingMetadata(medAbstractData *medDa
         return;
     }
 
-    QString generatedSeriesId = QUuid::createUuid().toString().replace("{", "").replace("}", "");
-
-    if (!medData->hasMetaData(medMetaDataKeys::SeriesID.key()))
-        medData->setMetaData(medMetaDataKeys::SeriesID.key(), QStringList() << generatedSeriesId);
-
     QString generatedSeriesInstanceUID = QUuid::createUuid().toString().replace("{", "").replace("}", "");
 
     if (!medData->hasMetaData(medMetaDataKeys::SeriesInstanceUID.key()))
         medData->setMetaData(medMetaDataKeys::SeriesInstanceUID.key(), QStringList() << generatedSeriesInstanceUID);
 
-    QString newSeriesDescription;
     // check if image have basic information like patient, study, etc.
     // DICOMs, for instance, do provide it
     if (!medData->hasMetaData(medMetaDataKeys::PatientName.key()) &&
@@ -555,24 +566,15 @@ void medAbstractDatabaseImporter::populateMissingMetadata(medAbstractData *medDa
         // if it was previously imported/indexed as it could happen that it is just another file with the same path
         // see http://pm-med.inria.fr/issues/292
         medData->setMetaData(medMetaDataKeys::ContainsBasicInfo.key(), "false");
-
-        // it could be that we have already another image with this characteristics
-        // so we would like to check whether the image filename is on the db
-        // and if so we would add some suffix to distinguish it
-        newSeriesDescription = ensureUniqueSeriesName(seriesDescription);
     }
     else
     {
         medData->setMetaData(medMetaDataKeys::ContainsBasicInfo.key(), "true");
-        newSeriesDescription = seriesDescription;
     }
 
     if (!medData->hasMetaData(medMetaDataKeys::PatientName.key()) ||
         medData->metadata(medMetaDataKeys::PatientName.key()).isEmpty())
         medData->setMetaData(medMetaDataKeys::PatientName.key(), QStringList() << "John Doe");
-
-    if (!medData->hasMetaData(medMetaDataKeys::PatientID.key()))
-        medData->setMetaData(medMetaDataKeys::PatientID.key(), QStringList() << "0");
 
     if (!medData->hasMetaData(medMetaDataKeys::StudyDescription.key()) ||
         medData->metadata(medMetaDataKeys::StudyDescription.key()).isEmpty())
@@ -580,21 +582,11 @@ void medAbstractDatabaseImporter::populateMissingMetadata(medAbstractData *medDa
 
     if (!medData->hasMetaData(medMetaDataKeys::SeriesDescription.key()) ||
         medData->metadata(medMetaDataKeys::SeriesDescription.key()).isEmpty())
-        medData->setMetaData(medMetaDataKeys::SeriesDescription.key(), QStringList() << newSeriesDescription);
+        medData->setMetaData(medMetaDataKeys::SeriesDescription.key(), QStringList() << seriesDescription);
 
     if (!medData->hasMetaData(medMetaDataKeys::StudyID.key()))
         medData->setMetaData(medMetaDataKeys::StudyID.key(), QStringList() << "0");
-
-    // QString generatedSeriesId = QUuid::createUuid().toString().replace("{", "").replace("}", "");
-
-    // if (!medData->hasMetaData(medMetaDataKeys::SeriesID.key()))
-    //     medData->setMetaData(medMetaDataKeys::SeriesID.key(), QStringList() << generatedSeriesId);
-
-    // QString generatedSeriesInstanceUID = QUuid::createUuid().toString().replace("{", "").replace("}", "");
-
-    // if (!medData->hasMetaData(medMetaDataKeys::SeriesInstanceUID.key()))
-    //     medData->setMetaData(medMetaDataKeys::SeriesInstanceUID.key(), QStringList() << generatedSeriesInstanceUID);
-
+    
     if (!medData->hasMetaData(medMetaDataKeys::Orientation.key()))
         medData->setMetaData(medMetaDataKeys::Orientation.key(), QStringList() << "");
 
