@@ -31,7 +31,7 @@ set(CMAKE_INCLUDE_CURRENT_DIR TRUE)
 ## #############################################################################
 
 if(${USE_FFmpeg})
-  set (VTK_FFmpeg_MODULE vtkIOFFMPEG)
+  set (VTK_FFmpeg_MODULE IOFFMPEG)
   add_definitions(-DMED_USE_FFmpeg)
 endif()
 
@@ -41,7 +41,7 @@ include_directories(${dtk_INCLUDE_DIRS})
 find_package(ITK REQUIRED COMPONENTS ITKCommon)
 include(${ITK_USE_FILE})
 
-find_package(VTK REQUIRED COMPONENTS vtkCommonCore vtkImagingSources ${VTK_FFmpeg_MODULE} vtkIOImage vtkRenderingQt vtkIOMovie)
+find_package(VTK REQUIRED COMPONENTS CommonCore ImagingSources ${VTK_FFmpeg_MODULE} IOImage RenderingQt IOMovie ImagingSources IOOggTheora)
 include(${VTK_USE_FILE})
 
 ## #############################################################################
@@ -83,10 +83,11 @@ target_link_libraries(${TARGET_NAME}
     medCore
     medVtkInria
     medUtilities
-    vtkImagingSources
-    vtkIOImage
-    vtkIOMovie
-    vtkRenderingQt
+    VTK::ImagingSources
+    VTK::IOImage
+    VTK::IOMovie
+	VTK::IOOggTheora
+    VTK::RenderingQt
     ${VTK_FFmpeg_MODULE}
     )
 
