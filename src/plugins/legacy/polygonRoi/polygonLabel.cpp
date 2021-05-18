@@ -578,8 +578,7 @@ void polygonLabel::createMask(int label, QString &desc)
             }
         }
     }
-    medUtilities::copyMetaDataIfEmpty(output, inputData, medUtilities::metaDataKeysToCopyForDerivedData(output));
-    output->setMetaData(medMetaDataKeys::SeriesDescription.key(), desc);
+    medUtilities::setDerivedMetaData(output, inputData, desc, false, false);
 
     medDataManager::instance()->importData(output, false);
 }

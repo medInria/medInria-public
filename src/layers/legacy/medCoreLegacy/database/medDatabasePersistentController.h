@@ -63,7 +63,7 @@ public:
     QList<medDataIndex> patients() const = 0;
     QList<medDataIndex> studies(const medDataIndex &index) const override;
     QList<medDataIndex> series(const medDataIndex &index) const override;
-    QHash<QString, QString> series(const QString &studyInstanceUID) const override;
+    QStringList series(const QString &seriesName, const QString &studyId = QString("")) const override;
     void requestDatabaseForModel(QHash<int, QHash<QString, QVariant> > &patientData,
                                  QHash<int, QHash<QString, QVariant> > &studyData,
                                  QHash<int, QHash<QString, QVariant> > &seriesData) const = 0;

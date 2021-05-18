@@ -89,6 +89,11 @@ medDataIndex medDatabaseImporter::populateDatabaseAndGenerateThumbnails ( medAbs
 
     int studyDbId = getOrCreateStudy ( medData, db, patientDbId );
 
+    // Update name of the series if a permanent data has this name already
+    QString seriesName = medData->metadata(medMetaDataKeys::SeriesDescription.key());
+    QString newSeriesName = ensureUniqueSeriesName(seriesName, QString::number(studyDbId));
+    medData->setMetaData(medMetaDataKeys::SeriesDescription.key(), newSeriesName);
+
     int seriesDbId = getOrCreateSeries ( medData, db, studyDbId );
 
     medDataIndex index = medDataIndex ( medDataManager::instance()->controller()->dataSourceId() , patientDbId, studyDbId, seriesDbId );
@@ -332,37 +337,22 @@ int medDatabaseImporter::getOrCreateSeries ( const medAbstractData* medData, QSq
 * Finds if parameter @seriesName is already being used in the database
 * if is not, it returns @seriesName unchanged
 * otherwise, it returns an unused new series name (created by adding a suffix)
-* @param studyInstanceUID -  Unique identifier of the Study.
-* @param seriesInstanceUID -  Unique identifier of the Series.
 * @param seriesName - the series name
 * @return newSeriesName - a new, unused, series name
 **/
-QString medDatabaseImporter::ensureUniqueSeriesName(const QString &studyInstanceUID,
-                                                    const QString &seriesInstanceUID,
-                                                    const QString &seriesName)
+QString medDatabaseImporter::ensureUniqueSeriesName(const QString seriesName, const QString studyId)
 {
-    QHash<QString, QString> seriesInfos = medDataManager::instance()->controller()->series(studyInstanceUID);
-    for (QString uid : seriesInfos.keys())
-    {
-        if (uid == seriesInstanceUID)
-        {
-            qWarning() << "We cannot import the same series twice";
-            emit failure(this);
-            emit dataImported(medDataIndex(), callerUuid());
-            return QString();
-        }
-    }
+    QStringList seriesNames = medDataManager::instance()->controller()->series(seriesName, studyId);
 
-    int suffix = 0;
     QString originalSeriesName = seriesName;
     QString newSeriesName = seriesName;
-    for (QString name : seriesInfos.values())
+
+    int suffix = 0;
+    while (seriesNames.contains(newSeriesName))
     {
-        if (name.contains(seriesName))
-        {
-            suffix++;
-            newSeriesName = originalSeriesName + "_" + QString::number(suffix);
-        }
+        // it exist
+        suffix++;
+        newSeriesName = originalSeriesName + "_" + QString::number(suffix);
     }
 
     return newSeriesName;
