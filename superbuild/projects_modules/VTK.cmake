@@ -135,7 +135,7 @@ endif()
 ## Check if patch has to be applied
 ## #############################################################################
 
-ep_GeneratePatchCommand(${ep} ${ep}_PATCH_COMMAND VTK.patch)
+#ep_GeneratePatchCommand(${ep} ${ep}_PATCH_COMMAND VTK.patch)
 
 ## #############################################################################
 ## Add external-project

@@ -26,6 +26,7 @@
 
 // vtk
 #include <vtkAppendPolyData.h>
+#include <vtkIdTypeArray.h>
 #include <vtkMetaDataSet.h>
 #include <vtkMetaSurfaceMesh.h>
 #include <vtkParametricSpline.h>
