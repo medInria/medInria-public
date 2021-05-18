@@ -184,10 +184,6 @@ void medAbstractDatabaseImporter::importFile ( void )
     // or in selecting a proper format to store the new file afterwards
     // new files ARE NOT written in the database yet, but are stored in a map for writing in a posterior step
 
-    QString tmpPatientId;
-    QString currentPatientId = "";
-    QString patientID;
-
     QString tmpSeriesUid;
     QString currentSeriesUid = "-1";
     QString currentSeriesId = "";
@@ -225,7 +221,7 @@ void medAbstractDatabaseImporter::importFile ( void )
 
             // 2.2) Fill missing metadata
             populateMissingMetadata(medData, med::smartBaseName(fileInfo.fileName()));
-            QString patientID = medMetaDataKeys::PatientID.getFirstValue(medData).simplified();
+            QString tmpPatientID = medMetaDataKeys::PatientID.getFirstValue(medData).simplified();
 
             QString generatedSeriesId = QUuid::createUuid().toString().replace("{", "").replace("}", "");
             medData->setMetaData(medMetaDataKeys::SeriesID.key(), QStringList() << generatedSeriesId);
@@ -264,7 +260,7 @@ void medAbstractDatabaseImporter::importFile ( void )
 
             // 2.3) c) Add the image to a map for writing them all in the database in a posterior step
             imagesGroupedByVolume[volumeId] << fileInfo.filePath();
-            imagesGroupedByPatient[volumeId] = patientID;
+            imagesGroupedByPatient[volumeId] = tmpPatientID;
             imagesGroupedBySeriesId[volumeId] = currentSeriesId;
         }
         else
@@ -318,9 +314,9 @@ void medAbstractDatabaseImporter::importFile ( void )
 
         currentImageIndex++;
 
-        QString volumeId = it.key();
+        QString volumeIdKey = it.key();
         QStringList filesPaths = it.value();   // input files being aggregated, might be only one or many
-        patientID = itPat.value();
+        QString patientID = itPat.value();
         QString seriesID = itSer.value();
 
         dtkSmartPointer<medAbstractData> imagemedData;
@@ -362,7 +358,7 @@ void medAbstractDatabaseImporter::importFile ( void )
             }
         }
 
-        QString aggregatedFileName = determineFutureImageFileName ( imagemedData, volumeUniqueIdToVolumeNumber[volumeId] );
+        QString aggregatedFileName = determineFutureImageFileName ( imagemedData, volumeUniqueIdToVolumeNumber[volumeIdKey] );
 #ifdef Q_OS_WIN32
         if ( (medStorage::dataLocation() + "/" + aggregatedFileName).length() > 255 )
         {
