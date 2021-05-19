@@ -91,8 +91,6 @@ set(cmake_args
   -DVTK_MODULE_ENABLE_VTK_GUISupportQtOpenGL=YES
   -DVTK_QT_VERSION=5
   -DVTK_USE_OGGTHEORA_ENCODER:BOOL=ON # OGV Export
-
-  -DModule_vtkRenderingOSPRay:BOOL=${USE_OSPRay} 
   )
   
 set(cmake_cache_args
@@ -101,6 +99,7 @@ set(cmake_cache_args
 
 if(USE_OSPRay)
     list(APPEND cmake_cache_args
+        -DVTK_MODULE_ENABLE_VTK_RenderingOSPRay=YES
         -Dospray_DIR=${ospray_DIR}
         -DOSPRAY_INSTALL_DIR=${OSPRAY_INSTALL_DIR}
     )
@@ -110,7 +109,7 @@ endif()
 if(${USE_FFmpeg})
     list(APPEND cmake_args
         # FFMPEG
-        -DModule_vtkIOFFMPEG:BOOL=ON
+        -DVTK_MODULE_ENABLE_VTK_IOFFMPEG=YES
         -DFFMPEG_ROOT:STRING=${EP_PATH_BUILD}/ffmpeg
         -DFFMPEG_INCLUDE_DIR:STRING=${EP_PATH_BUILD}/ffmpeg/include/
 
