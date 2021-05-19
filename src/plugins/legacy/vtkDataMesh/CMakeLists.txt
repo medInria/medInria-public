@@ -108,6 +108,7 @@ target_link_libraries(${TARGET_NAME}
   VTK::IOParallelXML
   )
 
+vtk_module_autoinit(TARGETS ${TARGET_NAME} MODULES ${VTK_LIBRARIES})
 
 ## #############################################################################
 ## Install rules

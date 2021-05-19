@@ -81,6 +81,8 @@ target_link_libraries(${TARGET_NAME} PUBLIC
   dtkCoreSupport
   )
 
+vtk_module_autoinit(TARGETS ${TARGET_NAME} MODULES VTK::CommonCore)
+
 ## #############################################################################
 ## install
 ## #############################################################################

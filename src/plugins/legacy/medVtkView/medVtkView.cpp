@@ -17,7 +17,7 @@
 #include <QTest>
 #include <QWidget>
 
-#include <QVTKOpenGLWidget.h>
+#include <QVTKOpenGLNativeWidget.h>
 #include <QGLFramebufferObject>
 
 #include <QVTKInteractorAdapter.h>
@@ -67,7 +67,7 @@ public:
     vtkImageView3D *view3d;
 
     vtkGenericOpenGLRenderWindow *renWin;
-    QVTKOpenGLWidget *viewWidget;
+    QVTKOpenGLNativeWidget *viewWidget;
 
     medVtkViewObserver *observer;
 
@@ -145,20 +145,9 @@ medVtkView::medVtkView(QObject* parent): medAbstractImageView(parent),
     d->view3d->SetInteractorStyle(interactorStyle);
     interactorStyle->Delete();
 
-    d->viewWidget = new QVTKOpenGLWidget();
-    //if (QThread::currentThread() != QApplication::instance()->thread())
-    //{
-    //    QMetaObject::invokeMethod(this,
-    //                              "createQVTKOpenGLWidget",
-    //                              Qt::BlockingQueuedConnection,
-    //                              Q_RETURN_ARG(QVTKOpenGLWidget*, d->viewWidget));
-    //}
-    //else
-    //{
-    //    d->viewWidget = new QVTKOpenGLWidget();
-    //}
+    d->viewWidget = new QVTKOpenGLNativeWidget();
     d->viewWidget->setEnableHiDPI(true);
-    d->viewWidget->SetRenderWindow(d->renWin);
+    d->viewWidget->setRenderWindow(d->renWin);
 
     // Event filter used to know if the view is selected or not
     d->viewWidget->installEventFilter(this);

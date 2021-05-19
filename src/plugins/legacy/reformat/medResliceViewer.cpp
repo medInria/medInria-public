@@ -160,7 +160,7 @@ medResliceViewer::medResliceViewer(medAbstractView *view, QWidget *parent): medA
     // Build views
     for (int i = 0; i < 4; i++)
     {
-        views[i] = new QVTKOpenGLWidget();
+        views[i] = new QVTKOpenGLNativeWidget();
         views[i]->setEnableHiDPI(true);
         views[i]->setSizePolicy(QSizePolicy::Minimum, QSizePolicy::Minimum);
         views[i]->installEventFilter(this);
@@ -183,19 +183,19 @@ medResliceViewer::medResliceViewer(medAbstractView *view, QWidget *parent): medA
     viewBody->setLayout(gridLayout);
 
     // Share render windows and interactors
-    views[0]->SetRenderWindow(riw[0]->GetRenderWindow());
-    riw[0]->SetupInteractor(views[0]->GetRenderWindow()->GetInteractor());
+    views[0]->setRenderWindow(riw[0]->GetRenderWindow());
+    riw[0]->SetupInteractor(views[0]->renderWindow()->GetInteractor());
 
-    views[1]->SetRenderWindow(riw[1]->GetRenderWindow());
-    riw[1]->SetupInteractor(views[1]->GetRenderWindow()->GetInteractor());
+    views[1]->setRenderWindow(riw[1]->GetRenderWindow());
+    riw[1]->SetupInteractor(views[1]->renderWindow()->GetInteractor());
 
-    views[2]->SetRenderWindow(riw[2]->GetRenderWindow());
-    riw[2]->SetupInteractor(views[2]->GetRenderWindow()->GetInteractor());
+    views[2]->setRenderWindow(riw[2]->GetRenderWindow());
+    riw[2]->SetupInteractor(views[2]->renderWindow()->GetInteractor());
 
     vtkSmartPointer<vtkRenderer> ren = vtkSmartPointer<vtkRenderer>::New();
     vtkNew<vtkGenericOpenGLRenderWindow> renderWindow;
-    views[3]->SetRenderWindow(renderWindow);
-    views[3]->GetRenderWindow()->AddRenderer(ren);
+    views[3]->setRenderWindow(renderWindow);
+    views[3]->renderWindow()->AddRenderer(ren);
 
     // Make them all share the same reslice cursor object.
     for (int i = 0; i < 3; i++)
@@ -216,7 +216,7 @@ medResliceViewer::medResliceViewer(medAbstractView *view, QWidget *parent): medA
 
     vtkSmartPointer<vtkProperty> ipwProp = vtkSmartPointer<vtkProperty>::New();
 
-    vtkRenderWindowInteractor *iren = views[3]->GetInteractor();
+    vtkRenderWindowInteractor *iren = views[3]->interactor();
 
     // Build planes on views
     for (int i = 0; i < 3; i++)
@@ -365,7 +365,7 @@ void medResliceViewer::render()
     for (int i = 0; i < 3; i++)
     {
         riw[i]->Render();
-        views[i]->GetRenderWindow()->Render();
+        views[i]->renderWindow()->Render();
     }
 }
 
@@ -491,7 +491,7 @@ void medResliceViewer::extentChanged(int val)
 
 bool medResliceViewer::eventFilter(QObject *object, QEvent *event)
 {
-    if (!qobject_cast<QVTKOpenGLWidget*>(object))
+    if (!qobject_cast<QVTKOpenGLNativeWidget*>(object))
     {
         return true;
     }
