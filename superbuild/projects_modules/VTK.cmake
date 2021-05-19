@@ -68,29 +68,19 @@ set(cmake_args
   -DCMAKE_INSTALL_PREFIX=<INSTALL_DIR>  
   -DBUILD_SHARED_LIBS=${BUILD_SHARED_LIBS_${ep}}
 
-  # VTK generic parameters 
+  # Generic parameters 
   -DVTK_BUILD_TESTING=OFF
   -DVTK_BUILD_DOCUMENTATION=OFF
   -DVTK_BUILD_EXAMPLES=OFF
   -DVTK_RENDERING_BACKEND=OpenGL2
 
-  #  Enabling modules for build
-  # Cf. https://vtk.org/doc/nightly/html/md__home_kitware_dashboards_buildbot_vtk_nightly-master-ike-linux-shared-release_doc_nightly_osm749dd663df9981384f2598c108aac3b0.html
-  #  YES: The module must be built.
-  #  NO: The module must not be built. If a YES module has a NO module in its dependency tree, an error is raised.
-  #  WANT: The module should be built. It will not be built, however, if it depends on a NO module.
-  #  DONT_WANT: The module doesn't need to be built. It will be built if a YES or WANT module depends on it.
-  #  DEFAULT: Look at other metadata to determine the status.
-
-  # TODO: setting to "YES" the modules, as done below in VTK_GROUP_ENABLE_Qt for instance does not work.
-  # I need to enter ccmake to change the value from DEFAULT to YES.
-
   # Qt
   -DVTK_GROUP_ENABLE_Qt=YES
   -DVTK_MODULE_ENABLE_VTK_GUISupportQt=YES
-  -DVTK_MODULE_ENABLE_VTK_GUISupportQtOpenGL=YES
   -DVTK_QT_VERSION=5
-  -DVTK_USE_OGGTHEORA_ENCODER:BOOL=ON # OGV Export
+
+  # OGV Export
+  -DVTK_USE_OGGTHEORA_ENCODER:BOOL=ON
   )
   
 set(cmake_cache_args
@@ -128,12 +118,6 @@ if(${USE_FFmpeg})
         -DFFMPEG_LIBSWSCALE_LIBRARIES:STRING=${EP_PATH_BUILD}/ffmpeg/lib/libswscale.${extention}
     )
 endif()
-
-## #############################################################################
-## Check if patch has to be applied
-## #############################################################################
-
-#ep_GeneratePatchCommand(${ep} ${ep}_PATCH_COMMAND VTK.patch)
 
 ## #############################################################################
 ## Add external-project
