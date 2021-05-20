@@ -18,7 +18,7 @@ PURPOSE.
 
 #include <medAbstractView.h>
 
-#include <QVTKOpenGLWidget.h>
+#include <QVTKOpenGLNativeWidget.h>
 
 #include <resliceToolBox.h>
 
@@ -83,7 +83,7 @@ protected:
     vtkSmartPointer<vtkImagePlaneWidget> planeWidget[3];
     double planeNormal[3][3];
     QWidget *viewBody;
-    QVTKOpenGLWidget *views[4];
+    QVTKOpenGLNativeWidget *views[4];
     dtkSmartPointer<medAbstractData> inputData;
     double *outputSpacing;
     unsigned char selectedView;

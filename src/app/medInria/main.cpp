@@ -68,7 +68,7 @@ void forceShow(medMainWindow& mainwindow )
 
 int main(int argc,char* argv[])
 {
-    // Setup openGL surface compatible with QVTKOpenGLWidget,
+    // Setup openGL surface compatible with QVTKOpenGLNativeWidget,
     // required by medVtkView
     QSurfaceFormat fmt;
     fmt.setRenderableType(QSurfaceFormat::OpenGL);
