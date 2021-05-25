@@ -21,7 +21,7 @@ class QSlider;
 class QProgressBar;
 class medDoubleParameterPresenterPrivate;
 
-class MEDWIDGETS_EXPORT medDoubleParameterPresenter : public medAbstractParameterPresenter
+class MEDCOREGUI_EXPORT medDoubleParameterPresenter : public medAbstractParameterPresenter
 {
     Q_OBJECT
 

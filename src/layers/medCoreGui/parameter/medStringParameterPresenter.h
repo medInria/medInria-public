@@ -20,7 +20,7 @@ class QLineEdit;
 class QDateEdit;
 class medStringParameterPresenterPrivate;
 
-class MEDWIDGETS_EXPORT medStringParameterPresenter : public medAbstractParameterPresenter
+class MEDCOREGUI_EXPORT medStringParameterPresenter : public medAbstractParameterPresenter
 {
     Q_OBJECT
 

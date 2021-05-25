@@ -15,7 +15,7 @@
 #include <medAbstractProcessPresenter.h>
 #include <medAbstractDWIMaskingProcess.h>
 #include <medProcessPresenterFactory.h>
-#include <medWidgetsExport.h>
+#include <medCoreGuiExport.h>
 
 class QWidget;
 class QPushButton;
@@ -24,7 +24,7 @@ class medViewContainerSplitter;
 class medAbstractData;
 
 class medAbstractDWIMaskingProcessPresenterPrivate;
-class MEDWIDGETS_EXPORT medAbstractDWIMaskingProcessPresenter : public medAbstractProcessPresenter
+class MEDCOREGUI_EXPORT medAbstractDWIMaskingProcessPresenter : public medAbstractProcessPresenter
 {
     Q_OBJECT
 
@@ -48,4 +48,4 @@ signals:
     void _outputImported(medAbstractData *);
 };
 
-MED_DECLARE_PROCESS_PRESENTER_FACTORY(medAbstractDWIMaskingProcess, MEDWIDGETS_EXPORT)
+MED_DECLARE_PROCESS_PRESENTER_FACTORY(medAbstractDWIMaskingProcess, MEDCOREGUI_EXPORT)

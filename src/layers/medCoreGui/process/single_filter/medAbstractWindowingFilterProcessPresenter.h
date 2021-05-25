@@ -15,11 +15,11 @@
 #include <medAbstractSingleFilterOperationProcessPresenter.h>
 #include <medAbstractWindowingFilterProcess.h>
 #include <medProcessPresenterFactory.h>
-#include <medWidgetsExport.h>
+#include <medCoreGuiExport.h>
 
 class medAbstractWindowingFilterProcessPresenterPrivate;
 
-class MEDWIDGETS_EXPORT medAbstractWindowingFilterProcessPresenter: public medAbstractSingleFilterOperationProcessPresenter
+class MEDCOREGUI_EXPORT medAbstractWindowingFilterProcessPresenter: public medAbstractSingleFilterOperationProcessPresenter
 {
     Q_OBJECT
 public:
@@ -31,4 +31,4 @@ public:
     const QScopedPointer<medAbstractWindowingFilterProcessPresenterPrivate> d;
 };
 
-MED_DECLARE_PROCESS_PRESENTER_FACTORY(medAbstractWindowingFilterProcess, MEDWIDGETS_EXPORT)
+MED_DECLARE_PROCESS_PRESENTER_FACTORY(medAbstractWindowingFilterProcess, MEDCOREGUI_EXPORT)

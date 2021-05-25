@@ -15,7 +15,7 @@
 #include <medAbstractProcessPresenter.h>
 #include <medAbstractDiffusionScalarMapsProcess.h>
 #include <medProcessPresenterFactory.h>
-#include <medWidgetsExport.h>
+#include <medCoreGuiExport.h>
 
 class QWidget;
 class QPushButton;
@@ -25,7 +25,7 @@ class medAbstractImageData;
 class medAbstractData;
 
 class medAbstractDiffusionScalarMapsProcessPresenterPrivate;
-class MEDWIDGETS_EXPORT medAbstractDiffusionScalarMapsProcessPresenter : public medAbstractProcessPresenter
+class MEDCOREGUI_EXPORT medAbstractDiffusionScalarMapsProcessPresenter : public medAbstractProcessPresenter
 {
     Q_OBJECT
 
@@ -47,4 +47,4 @@ signals:
     void _outputImported(medAbstractData *);
 };
 
-MED_DECLARE_PROCESS_PRESENTER_FACTORY(medAbstractDiffusionScalarMapsProcess, MEDWIDGETS_EXPORT)
+MED_DECLARE_PROCESS_PRESENTER_FACTORY(medAbstractDiffusionScalarMapsProcess, MEDCOREGUI_EXPORT)

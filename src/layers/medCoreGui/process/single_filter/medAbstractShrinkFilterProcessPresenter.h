@@ -15,10 +15,10 @@
 #include <medAbstractShrinkFilterProcess.h>
 #include <medAbstractSingleFilterOperationProcessPresenter.h>
 #include <medProcessPresenterFactory.h>
-#include <medWidgetsExport.h>
+#include <medCoreGuiExport.h>
 
 class medAbstractShrinkFilterProcessPresenterPrivate;
-class MEDWIDGETS_EXPORT medAbstractShrinkFilterProcessPresenter: public medAbstractSingleFilterOperationProcessPresenter
+class MEDCOREGUI_EXPORT medAbstractShrinkFilterProcessPresenter: public medAbstractSingleFilterOperationProcessPresenter
 {
     Q_OBJECT
 public:
@@ -31,4 +31,4 @@ private:
     const QScopedPointer<medAbstractShrinkFilterProcessPresenterPrivate> d;
 };
 
-MED_DECLARE_PROCESS_PRESENTER_FACTORY(medAbstractShrinkFilterProcess, MEDWIDGETS_EXPORT)
+MED_DECLARE_PROCESS_PRESENTER_FACTORY(medAbstractShrinkFilterProcess, MEDCOREGUI_EXPORT)

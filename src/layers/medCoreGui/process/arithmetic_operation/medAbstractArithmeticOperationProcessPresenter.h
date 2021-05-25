@@ -15,7 +15,7 @@
 #include <medAbstractArithmeticOperationProcess.h>
 #include <medAbstractProcessPresenter.h>
 #include <medProcessPresenterFactory.h>
-#include <medWidgetsExport.h>
+#include <medCoreGuiExport.h>
 
 class QWidget;
 class QPushButton;
@@ -24,7 +24,7 @@ class medViewContainerSplitter;
 class medAbstractData;
 
 class medAbstractArithmeticOperationProcessPresenterPrivate;
-class MEDWIDGETS_EXPORT medAbstractArithmeticOperationProcessPresenter : public medAbstractProcessPresenter
+class MEDCOREGUI_EXPORT medAbstractArithmeticOperationProcessPresenter : public medAbstractProcessPresenter
 {
     Q_OBJECT
 
@@ -48,5 +48,5 @@ private slots:
 signals:
     void _outputImported(medAbstractData *);
 };
-MED_DECLARE_PROCESS_PRESENTER_FACTORY(medAbstractArithmeticOperationProcess, MEDWIDGETS_EXPORT)
+MED_DECLARE_PROCESS_PRESENTER_FACTORY(medAbstractArithmeticOperationProcess, MEDCOREGUI_EXPORT)
 MED_DECLARE_PROCESS_PRESENTER_CREATOR(medAbstractArithmeticOperationProcess, medAbstractArithmeticOperationProcess)

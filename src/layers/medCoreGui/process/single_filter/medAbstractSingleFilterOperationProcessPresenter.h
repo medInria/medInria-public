@@ -14,7 +14,7 @@
 
 #include <medAbstractProcessPresenter.h>
 #include <medAbstractSingleFilterOperationProcess.h>
-#include <medWidgetsExport.h>
+#include <medCoreGuiExport.h>
 
 class QWidget;
 class QPushButton;
@@ -24,7 +24,7 @@ class medAbstractData;
 class medIntParameterPresenter;
 
 class medAbstractSingleFilterOperationProcessPresenterPrivate;
-class MEDWIDGETS_EXPORT medAbstractSingleFilterOperationProcessPresenter : public medAbstractProcessPresenter
+class MEDCOREGUI_EXPORT medAbstractSingleFilterOperationProcessPresenter : public medAbstractProcessPresenter
 {
     Q_OBJECT
 

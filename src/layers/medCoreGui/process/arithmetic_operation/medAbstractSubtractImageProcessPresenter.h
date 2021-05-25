@@ -15,9 +15,9 @@
 #include <medAbstractArithmeticOperationProcessPresenter.h>
 #include <medAbstractSubtractImageProcess.h>
 #include <medProcessPresenterFactory.h>
-#include <medWidgetsExport.h>
+#include <medCoreGuiExport.h>
 
-class MEDWIDGETS_EXPORT medAbstractSubtractImageProcessPresenter: public medAbstractArithmeticOperationProcessPresenter
+class MEDCOREGUI_EXPORT medAbstractSubtractImageProcessPresenter: public medAbstractArithmeticOperationProcessPresenter
 {
     Q_OBJECT
 public:
@@ -27,4 +27,4 @@ public:
     virtual medAbstractSubtractImageProcess* process() const = 0;
 };
 
-MED_DECLARE_PROCESS_PRESENTER_FACTORY(medAbstractSubtractImageProcess, MEDWIDGETS_EXPORT)
+MED_DECLARE_PROCESS_PRESENTER_FACTORY(medAbstractSubtractImageProcess, MEDCOREGUI_EXPORT)

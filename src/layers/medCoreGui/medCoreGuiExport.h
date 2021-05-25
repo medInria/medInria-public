@@ -14,10 +14,10 @@
 
 #include <QtGlobal>
 
-#if defined(medWidgets_EXPORTS)
-#  define MEDWIDGETS_EXPORT Q_DECL_EXPORT
+#if defined(medCoreGui_EXPORTS)
+#  define MEDCOREGUI_EXPORT Q_DECL_EXPORT
 #else
-#  define MEDWIDGETS_EXPORT Q_DECL_IMPORT
+#  define MEDCOREGUI_EXPORT Q_DECL_IMPORT
 #endif
 
 

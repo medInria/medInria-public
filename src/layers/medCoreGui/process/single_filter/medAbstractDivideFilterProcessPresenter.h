@@ -15,9 +15,9 @@
 #include <medAbstractDivideFilterProcess.h>
 #include <medAbstractSingleFilterOperationDoubleProcessPresenter.h>
 #include <medProcessPresenterFactory.h>
-#include <medWidgetsExport.h>
+#include <medCoreGuiExport.h>
 
-class MEDWIDGETS_EXPORT medAbstractDivideFilterProcessPresenter: public medAbstractSingleFilterOperationDoubleProcessPresenter
+class MEDCOREGUI_EXPORT medAbstractDivideFilterProcessPresenter: public medAbstractSingleFilterOperationDoubleProcessPresenter
 {
     Q_OBJECT
 public:
@@ -27,4 +27,4 @@ public:
     virtual medAbstractDivideFilterProcess* process() const = 0;
 };
 
-MED_DECLARE_PROCESS_PRESENTER_FACTORY(medAbstractDivideFilterProcess, MEDWIDGETS_EXPORT)
+MED_DECLARE_PROCESS_PRESENTER_FACTORY(medAbstractDivideFilterProcess, MEDCOREGUI_EXPORT)

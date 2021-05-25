@@ -21,7 +21,7 @@ class QWidget;
 class QComboBox;
 class medStringListParameterPresenterPrivate;
 
-class MEDWIDGETS_EXPORT medStringListParameterPresenter: public medAbstractParameterPresenter
+class MEDCOREGUI_EXPORT medStringListParameterPresenter: public medAbstractParameterPresenter
 {
     Q_OBJECT
 

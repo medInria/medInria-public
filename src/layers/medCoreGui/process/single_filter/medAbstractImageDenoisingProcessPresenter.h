@@ -15,9 +15,9 @@
 #include <medAbstractImageDenoisingProcess.h>
 #include <medAbstractSingleFilterOperationProcessPresenter.h>
 #include <medProcessPresenterFactory.h>
-#include <medWidgetsExport.h>
+#include <medCoreGuiExport.h>
 
-class MEDWIDGETS_EXPORT medAbstractImageDenoisingProcessPresenter: public medAbstractSingleFilterOperationProcessPresenter
+class MEDCOREGUI_EXPORT medAbstractImageDenoisingProcessPresenter: public medAbstractSingleFilterOperationProcessPresenter
 {
     Q_OBJECT
 public:
@@ -27,4 +27,4 @@ public:
     virtual medAbstractImageDenoisingProcess* process() const = 0;
 };
 
-MED_DECLARE_PROCESS_PRESENTER_FACTORY(medAbstractImageDenoisingProcess, MEDWIDGETS_EXPORT)
+MED_DECLARE_PROCESS_PRESENTER_FACTORY(medAbstractImageDenoisingProcess, MEDCOREGUI_EXPORT)

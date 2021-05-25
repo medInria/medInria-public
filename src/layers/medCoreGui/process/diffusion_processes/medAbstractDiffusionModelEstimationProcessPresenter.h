@@ -15,7 +15,7 @@
 #include <medAbstractProcessPresenter.h>
 #include <medAbstractDiffusionModelEstimationProcess.h>
 #include <medProcessPresenterFactory.h>
-#include <medWidgetsExport.h>
+#include <medCoreGuiExport.h>
 
 class QWidget;
 class QPushButton;
@@ -24,7 +24,7 @@ class medViewContainerSplitter;
 class medAbstractData;
 
 class medAbstractDiffusionModelEstimationProcessPresenterPrivate;
-class MEDWIDGETS_EXPORT medAbstractDiffusionModelEstimationProcessPresenter : public medAbstractProcessPresenter
+class MEDCOREGUI_EXPORT medAbstractDiffusionModelEstimationProcessPresenter : public medAbstractProcessPresenter
 {
     Q_OBJECT
 
@@ -53,4 +53,4 @@ signals:
     void _outputImported(medAbstractData *);
 };
 
-MED_DECLARE_PROCESS_PRESENTER_FACTORY(medAbstractDiffusionModelEstimationProcess, MEDWIDGETS_EXPORT)
+MED_DECLARE_PROCESS_PRESENTER_FACTORY(medAbstractDiffusionModelEstimationProcess, MEDCOREGUI_EXPORT)

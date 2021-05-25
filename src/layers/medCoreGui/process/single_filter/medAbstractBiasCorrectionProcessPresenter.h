@@ -15,9 +15,9 @@
 #include <medAbstractBiasCorrectionProcess.h>
 #include <medAbstractSingleFilterOperationProcessPresenter.h>
 #include <medProcessPresenterFactory.h>
-#include <medWidgetsExport.h>
+#include <medCoreGuiExport.h>
 
-class MEDWIDGETS_EXPORT medAbstractBiasCorrectionProcessPresenter: public medAbstractSingleFilterOperationProcessPresenter
+class MEDCOREGUI_EXPORT medAbstractBiasCorrectionProcessPresenter: public medAbstractSingleFilterOperationProcessPresenter
 {
     Q_OBJECT
 public:
@@ -26,4 +26,4 @@ public:
     virtual medAbstractBiasCorrectionProcess* process() const = 0;
 };
 
-MED_DECLARE_PROCESS_PRESENTER_FACTORY(medAbstractBiasCorrectionProcess, MEDWIDGETS_EXPORT)
+MED_DECLARE_PROCESS_PRESENTER_FACTORY(medAbstractBiasCorrectionProcess, MEDCOREGUI_EXPORT)

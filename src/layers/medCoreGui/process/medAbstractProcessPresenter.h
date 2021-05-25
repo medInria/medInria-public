@@ -16,14 +16,14 @@
 
 #include <medAbstractProcess.h>
 #include <medProcessPresenterFactory.h>
-#include <medWidgetsExport.h>
+#include <medCoreGuiExport.h>
 
 class QWidget;
 class QPushButton;
 class medViewContainerSplitter;
 
 class medAbstractProcessPresenterPrivate;
-class MEDWIDGETS_EXPORT medAbstractProcessPresenter : public QObject
+class MEDCOREGUI_EXPORT medAbstractProcessPresenter : public QObject
 {
     Q_OBJECT
 
@@ -45,4 +45,4 @@ protected slots:
 private:
     const QScopedPointer<medAbstractProcessPresenterPrivate> d;
 };
-MED_DECLARE_PROCESS_PRESENTER_FACTORY(medAbstractProcess, MEDWIDGETS_EXPORT)
+MED_DECLARE_PROCESS_PRESENTER_FACTORY(medAbstractProcess, MEDCOREGUI_EXPORT)

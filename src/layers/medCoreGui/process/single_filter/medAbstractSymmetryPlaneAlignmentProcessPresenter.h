@@ -15,9 +15,9 @@
 #include <medAbstractSingleFilterOperationProcessPresenter.h>
 #include <medAbstractSymmetryPlaneAlignmentProcess.h>
 #include <medProcessPresenterFactory.h>
-#include <medWidgetsExport.h>
+#include <medCoreGuiExport.h>
 
-class MEDWIDGETS_EXPORT medAbstractSymmetryPlaneAlignmentProcessPresenter: public medAbstractSingleFilterOperationProcessPresenter
+class MEDCOREGUI_EXPORT medAbstractSymmetryPlaneAlignmentProcessPresenter: public medAbstractSingleFilterOperationProcessPresenter
 {
     Q_OBJECT
 public:
@@ -27,4 +27,4 @@ public:
     virtual medAbstractSymmetryPlaneAlignmentProcess* process() const = 0;
 };
 
-MED_DECLARE_PROCESS_PRESENTER_FACTORY(medAbstractSymmetryPlaneAlignmentProcess, MEDWIDGETS_EXPORT)
+MED_DECLARE_PROCESS_PRESENTER_FACTORY(medAbstractSymmetryPlaneAlignmentProcess, MEDCOREGUI_EXPORT)

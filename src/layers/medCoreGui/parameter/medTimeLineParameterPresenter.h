@@ -19,7 +19,7 @@ class QWidget;
 
 class medTimeLineParameterPresenterPrivate;
 
-class MEDWIDGETS_EXPORT medTimeLineParameterPresenter : public medAbstractParameterPresenter
+class MEDCOREGUI_EXPORT medTimeLineParameterPresenter : public medAbstractParameterPresenter
 {
     Q_OBJECT
 

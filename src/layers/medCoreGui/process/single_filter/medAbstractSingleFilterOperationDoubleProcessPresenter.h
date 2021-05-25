@@ -15,7 +15,7 @@
 #include <medAbstractSingleFilterOperationProcessPresenter.h>
 #include <medAbstractSingleFilterOperationDoubleProcess.h>
 
-#include <medWidgetsExport.h>
+#include <medCoreGuiExport.h>
 
 class QWidget;
 class QPushButton;
@@ -24,7 +24,7 @@ class medViewContainerSplitter;
 class medAbstractData;
 
 class medAbstractSingleFilterOperationDoubleProcessPresenterPrivate;
-class MEDWIDGETS_EXPORT medAbstractSingleFilterOperationDoubleProcessPresenter : public medAbstractSingleFilterOperationProcessPresenter
+class MEDCOREGUI_EXPORT medAbstractSingleFilterOperationDoubleProcessPresenter : public medAbstractSingleFilterOperationProcessPresenter
 {
     Q_OBJECT
 

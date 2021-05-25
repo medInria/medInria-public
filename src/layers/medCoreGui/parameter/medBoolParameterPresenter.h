@@ -23,7 +23,7 @@ class QAbstractButton;
 class medBoolParameterPresenterPrivate;
 
 
-class MEDWIDGETS_EXPORT medBoolParameterPresenter : public medAbstractParameterPresenter
+class MEDCOREGUI_EXPORT medBoolParameterPresenter : public medAbstractParameterPresenter
 {
     Q_OBJECT
 

@@ -15,9 +15,9 @@
 #include <medAbstractMorphomathOperationProcessPresenter.h>
 #include <medProcessPresenterFactory.h>
 #include <medAbstractDilateImageProcess.h>
-#include <medWidgetsExport.h>
+#include <medCoreGuiExport.h>
 
-class MEDWIDGETS_EXPORT medAbstractDilateImageProcessPresenter: public medAbstractMorphomathOperationProcessPresenter
+class MEDCOREGUI_EXPORT medAbstractDilateImageProcessPresenter: public medAbstractMorphomathOperationProcessPresenter
 {
     Q_OBJECT
 public:
@@ -27,4 +27,4 @@ public:
     virtual medAbstractDilateImageProcess* process() const = 0;
 };
 
-MED_DECLARE_PROCESS_PRESENTER_FACTORY(medAbstractDilateImageProcess, MEDWIDGETS_EXPORT)
+MED_DECLARE_PROCESS_PRESENTER_FACTORY(medAbstractDilateImageProcess, MEDCOREGUI_EXPORT)

@@ -13,7 +13,7 @@
 =========================================================================*/
 
 #include <medToolBox.h>
-#include <medWidgetsExport.h>
+#include <medCoreGuiExport.h>
 #include <medAbstractJob.h>
 
 class medAbstractDiffusionModelEstimationProcess;
@@ -24,7 +24,7 @@ class medAbstractImageData;
 class medDiffusionSelectorToolBoxPrivate;
 class medDataIndex;
 
-class MEDWIDGETS_EXPORT medDiffusionSelectorToolBox : public medToolBox
+class MEDCOREGUI_EXPORT medDiffusionSelectorToolBox : public medToolBox
 {
     Q_OBJECT
 public:

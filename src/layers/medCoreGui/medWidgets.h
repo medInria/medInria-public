@@ -46,37 +46,37 @@
 #include <medAbstractSymmetryPlaneAlignmentProcessPresenter.h>
 #include <medAbstractBiasCorrectionProcessPresenter.h>
 
-#include <medWidgetsExport.h>
+#include <medCoreGuiExport.h>
 
 namespace medWidgets
 {
     namespace pluginManager
     {
-        MEDWIDGETS_EXPORT void initialize(const QString& path = QString(), bool verbose = true);
+        MEDCOREGUI_EXPORT void initialize(const QString& path = QString(), bool verbose = true);
     }
 
     namespace generic
     {
-        MEDWIDGETS_EXPORT medAbstractProcessPresenterFactory& presenterFactory();
+        MEDCOREGUI_EXPORT medAbstractProcessPresenterFactory& presenterFactory();
     }
 
     namespace morphomathOperation
     {
         namespace erodeImage
         {
-            MEDWIDGETS_EXPORT medAbstractErodeImageProcessPresenterFactory& presenterFactory();
+            MEDCOREGUI_EXPORT medAbstractErodeImageProcessPresenterFactory& presenterFactory();
         }
         namespace dilateImage
         {
-            MEDWIDGETS_EXPORT medAbstractDilateImageProcessPresenterFactory& presenterFactory();
+            MEDCOREGUI_EXPORT medAbstractDilateImageProcessPresenterFactory& presenterFactory();
         }
         namespace openingImage
         {
-            MEDWIDGETS_EXPORT medAbstractOpeningImageProcessPresenterFactory& presenterFactory();
+            MEDCOREGUI_EXPORT medAbstractOpeningImageProcessPresenterFactory& presenterFactory();
         }
         namespace closingImage
         {
-            MEDWIDGETS_EXPORT medAbstractClosingImageProcessPresenterFactory& presenterFactory();
+            MEDCOREGUI_EXPORT medAbstractClosingImageProcessPresenterFactory& presenterFactory();
         }
     }
 
@@ -84,22 +84,22 @@ namespace medWidgets
     {
         namespace addImage
         {
-            MEDWIDGETS_EXPORT medAbstractAddImageProcessPresenterFactory& presenterFactory();
+            MEDCOREGUI_EXPORT medAbstractAddImageProcessPresenterFactory& presenterFactory();
         }
 
         namespace subtractImage
         {
-            MEDWIDGETS_EXPORT medAbstractSubtractImageProcessPresenterFactory& presenterFactory();
+            MEDCOREGUI_EXPORT medAbstractSubtractImageProcessPresenterFactory& presenterFactory();
         }
 
         namespace multiplyImage
         {
-            MEDWIDGETS_EXPORT medAbstractMultiplyImageProcessPresenterFactory& presenterFactory();
+            MEDCOREGUI_EXPORT medAbstractMultiplyImageProcessPresenterFactory& presenterFactory();
         }
 
         namespace divideImage
         {
-            MEDWIDGETS_EXPORT medAbstractDivideImageProcessPresenterFactory& presenterFactory();
+            MEDCOREGUI_EXPORT medAbstractDivideImageProcessPresenterFactory& presenterFactory();
         }
     }
 
@@ -107,84 +107,84 @@ namespace medWidgets
     {
         namespace addFilter
         {
-            MEDWIDGETS_EXPORT medAbstractAddFilterProcessPresenterFactory& presenterFactory();
+            MEDCOREGUI_EXPORT medAbstractAddFilterProcessPresenterFactory& presenterFactory();
         }
         namespace divideFilter
         {
-            MEDWIDGETS_EXPORT medAbstractDivideFilterProcessPresenterFactory& presenterFactory();
+            MEDCOREGUI_EXPORT medAbstractDivideFilterProcessPresenterFactory& presenterFactory();
         }
         namespace gaussianFilter
         {
-            MEDWIDGETS_EXPORT medAbstractGaussianFilterProcessPresenterFactory& presenterFactory();
+            MEDCOREGUI_EXPORT medAbstractGaussianFilterProcessPresenterFactory& presenterFactory();
         }
         namespace invertFilter
         {
-            MEDWIDGETS_EXPORT medAbstractInvertFilterProcessPresenterFactory& presenterFactory();
+            MEDCOREGUI_EXPORT medAbstractInvertFilterProcessPresenterFactory& presenterFactory();
         }
         namespace medianFilter
         {
-            MEDWIDGETS_EXPORT medAbstractMedianFilterProcessPresenterFactory& presenterFactory();
+            MEDCOREGUI_EXPORT medAbstractMedianFilterProcessPresenterFactory& presenterFactory();
         }
         namespace multiplyFilter
         {
-            MEDWIDGETS_EXPORT medAbstractMultiplyFilterProcessPresenterFactory& presenterFactory();
+            MEDCOREGUI_EXPORT medAbstractMultiplyFilterProcessPresenterFactory& presenterFactory();
         }
         namespace normalizeFilter
         {
-            MEDWIDGETS_EXPORT medAbstractNormalizeFilterProcessPresenterFactory& presenterFactory();
+            MEDCOREGUI_EXPORT medAbstractNormalizeFilterProcessPresenterFactory& presenterFactory();
         }
         namespace shrinkFilter
         {
-            MEDWIDGETS_EXPORT medAbstractShrinkFilterProcessPresenterFactory& presenterFactory();
+            MEDCOREGUI_EXPORT medAbstractShrinkFilterProcessPresenterFactory& presenterFactory();
         }
         namespace subtractFilter
         {
-            MEDWIDGETS_EXPORT medAbstractSubtractFilterProcessPresenterFactory& presenterFactory();
+            MEDCOREGUI_EXPORT medAbstractSubtractFilterProcessPresenterFactory& presenterFactory();
         }
         namespace windowingFilter
         {
-            MEDWIDGETS_EXPORT medAbstractWindowingFilterProcessPresenterFactory& presenterFactory();
+            MEDCOREGUI_EXPORT medAbstractWindowingFilterProcessPresenterFactory& presenterFactory();
         }
         namespace imageDenoising
         {
-            MEDWIDGETS_EXPORT medAbstractImageDenoisingProcessPresenterFactory& presenterFactory();
+            MEDCOREGUI_EXPORT medAbstractImageDenoisingProcessPresenterFactory& presenterFactory();
         }
         namespace relaxometryEstimation
         {
-            MEDWIDGETS_EXPORT medAbstractRelaxometryEstimationProcessPresenterFactory& presenterFactory();
+            MEDCOREGUI_EXPORT medAbstractRelaxometryEstimationProcessPresenterFactory& presenterFactory();
         }
         namespace symmetryAlignment
         {
-            MEDWIDGETS_EXPORT medAbstractSymmetryPlaneAlignmentProcessPresenterFactory& presenterFactory();
+            MEDCOREGUI_EXPORT medAbstractSymmetryPlaneAlignmentProcessPresenterFactory& presenterFactory();
         }
         namespace biasCorrection
         {
-           MEDWIDGETS_EXPORT medAbstractBiasCorrectionProcessPresenterFactory& presenterFactory();
+           MEDCOREGUI_EXPORT medAbstractBiasCorrectionProcessPresenterFactory& presenterFactory();
         }
     }
 
     namespace maskImage
     {
-        MEDWIDGETS_EXPORT medAbstractMaskImageProcessPresenterFactory& presenterFactory();
+        MEDCOREGUI_EXPORT medAbstractMaskImageProcessPresenterFactory& presenterFactory();
     }
 
     namespace dwiMasking
     {
-        MEDWIDGETS_EXPORT medAbstractDWIMaskingProcessPresenterFactory& presenterFactory();
+        MEDCOREGUI_EXPORT medAbstractDWIMaskingProcessPresenterFactory& presenterFactory();
     }
 
     namespace diffusionModelEstimation
     {
-        MEDWIDGETS_EXPORT medAbstractDiffusionModelEstimationProcessPresenterFactory& presenterFactory();
+        MEDCOREGUI_EXPORT medAbstractDiffusionModelEstimationProcessPresenterFactory& presenterFactory();
     }
 
     namespace diffusionScalarMaps
     {
-        MEDWIDGETS_EXPORT medAbstractDiffusionScalarMapsProcessPresenterFactory& presenterFactory();
+        MEDCOREGUI_EXPORT medAbstractDiffusionScalarMapsProcessPresenterFactory& presenterFactory();
     }
 
     namespace tractography
     {
-        MEDWIDGETS_EXPORT medAbstractTractographyProcessPresenterFactory& presenterFactory();
+        MEDCOREGUI_EXPORT medAbstractTractographyProcessPresenterFactory& presenterFactory();
     }
 }

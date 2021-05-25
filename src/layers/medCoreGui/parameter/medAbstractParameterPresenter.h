@@ -14,14 +14,14 @@
 
 #include <QObject>
 
-#include <medWidgetsExport.h>
+#include <medCoreGuiExport.h>
 
 class QWidget;
 
 class medAbstractParameter;
 
 class medAbstractParameterPresenterPrivate;
-class MEDWIDGETS_EXPORT medAbstractParameterPresenter : public QObject
+class MEDCOREGUI_EXPORT medAbstractParameterPresenter : public QObject
 {
     Q_OBJECT
 
