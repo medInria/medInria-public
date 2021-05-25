@@ -55,8 +55,8 @@ target_link_libraries(${TARGET_NAME}
   dtkLog
   ITKTensor
   medCore
+  medCoreGui
   medVtkInria
-  medWidgets
   vtkRenderingCore
   )
 

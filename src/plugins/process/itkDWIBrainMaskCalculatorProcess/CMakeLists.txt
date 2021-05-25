@@ -68,7 +68,7 @@ target_link_libraries(${TARGET_NAME}
   dtkCoreSupport
   dtkLog
   medCore
-  medWidgets
+  medCoreGui
   )
 
 ## #############################################################################

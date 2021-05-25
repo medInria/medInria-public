@@ -196,11 +196,11 @@ set_property(DIRECTORY ${CMAKE_CURRENT_SOURCE_DIR} PROPERTY VS_STARTUP_PROJECT m
 
 set_lib_properties_variables(
     medCore
+	medCoreGui
     medLog
     medRegistration
     medImageIO
     medVtkInria
-    medWidgets
     medUtilities
     medVtkDataMeshBase
     )

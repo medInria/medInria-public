@@ -33,9 +33,9 @@ add_library(medVtkInria UNKNOWN IMPORTED)
 find_library(medVtkInria_LIBRARY NAMES medVtkInria PATHS @medVtkInria_LIBRARY_DIR@ @medVtkInria_LIBRARY_DIR_DEBUG@ @medVtkInria_LIBRARY_DIR_RELEASE@ @medVtkInria_LIBRARY_DIR_MINSIZEREL@ @medVtkInria_LIBRARY_DIR_RELWITHDEBINFO@)
 set_target_properties(medVtkInria PROPERTIES INTERFACE_INCLUDE_DIRECTORIES "@medVtkInria_INCLUDE_DIRS@" IMPORTED_LOCATION ${medVtkInria_LIBRARY})
 
-add_library(medWidgets UNKNOWN IMPORTED)
-find_library(medWidgets_LIBRARY NAMES medWidgets PATHS @medWidgets_LIBRARY_DIR@ @medWidgets_LIBRARY_DIR_DEBUG@ @medWidgets_LIBRARY_DIR_RELEASE@ @medWidgets_LIBRARY_DIR_MINSIZEREL@ @medWidgets_LIBRARY_DIR_RELWITHDEBINFO@)
-set_target_properties(medWidgets PROPERTIES INTERFACE_INCLUDE_DIRECTORIES "@medWidgets_INCLUDE_DIRS@" IMPORTED_LOCATION ${medWidgets_LIBRARY})
+add_library(medCoreGui UNKNOWN IMPORTED)
+find_library(medCoreGui_LIBRARY NAMES medCoreGui PATHS @medCoreGui_LIBRARY_DIR@ @medCoreGui_LIBRARY_DIR_DEBUG@ @medCoreGui_LIBRARY_DIR_RELEASE@ @medCoreGui_LIBRARY_DIR_MINSIZEREL@ @medCoreGui_LIBRARY_DIR_RELWITHDEBINFO@)
+set_target_properties(medCoreGui PROPERTIES INTERFACE_INCLUDE_DIRECTORIES "@medCoreGui_INCLUDE_DIRS@" IMPORTED_LOCATION ${medCoreGui_LIBRARY})
 
 add_library(medUtilities UNKNOWN IMPORTED)
 find_library(medUtilities_LIBRARY NAMES medUtilities PATHS @medUtilities_LIBRARY_DIR@ @medUtilities_LIBRARY_DIR_DEBUG@ @medUtilities_LIBRARY_DIR_RELEASE@ @medUtilities_LIBRARY_DIR_MINSIZEREL@ @medUtilities_LIBRARY_DIR_RELWITHDEBINFO@)

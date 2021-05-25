@@ -139,7 +139,7 @@ target_link_libraries(${TARGET_NAME}
   dtkGuiSupport
   dtkVrSupport
   medCore
-  medWidgets
+  medCoreGui
   medPacs
   )
 

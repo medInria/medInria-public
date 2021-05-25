@@ -77,8 +77,8 @@ target_link_libraries(${TARGET_NAME}
   ITKTensor
   ITKIOTransformBase
   medCore
+  medCoreGui
   medVtkInria
-  medWidgets
   vtkRenderingCore
   )
 
