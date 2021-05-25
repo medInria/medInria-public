@@ -16,7 +16,6 @@
 #include <QSqlQuery>
 
 #include <medAbstractDbController.h>
-#include <medCoreLegacyExport.h>
 
 #define EXEC_QUERY(q) medDatabaseController::instance()->execQuery(q, __FILE__ , __LINE__ )
 
@@ -27,7 +26,7 @@ class medJobItemL;
 /**
  * Concrete dbController implementation adhering to abstract base class
  */
-class MEDCORELEGACY_EXPORT medDatabaseController: public medAbstractDbController
+class MEDCORE_EXPORT medDatabaseController: public medAbstractDbController
 {
     Q_OBJECT
 

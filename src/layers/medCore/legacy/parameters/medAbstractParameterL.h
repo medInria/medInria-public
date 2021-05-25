@@ -21,12 +21,12 @@
 #include <QVector3D>
 #include <QVector4D>
 
-#include <medCoreLegacyExport.h>
+#include <medCoreExport.h>
 
 class QLabel;
 
 class medAbstractParameterLPrivate;
-class MEDCORELEGACY_EXPORT medAbstractParameterL : public QObject
+class MEDCORE_EXPORT medAbstractParameterL : public QObject
 {
     Q_OBJECT
 
@@ -74,7 +74,7 @@ private:
 
 //--------------------------------------------------------------------------
 //  medAbstractTriggerParameterL
-class MEDCORELEGACY_EXPORT medAbstractTriggerParameterL : public medAbstractParameterL
+class MEDCORE_EXPORT medAbstractTriggerParameterL : public medAbstractParameterL
 {
     Q_OBJECT
 public:
@@ -89,7 +89,7 @@ signals:
 
 //--------------------------------------------------------------------------
 //  medAbstractStringParameterL
-class MEDCORELEGACY_EXPORT medAbstractStringParameterL : public medAbstractParameterL
+class MEDCORE_EXPORT medAbstractStringParameterL : public medAbstractParameterL
 {
     Q_OBJECT
 public:
@@ -120,7 +120,7 @@ protected:
 
 //--------------------------------------------------------------------------
 //  medAbstractIntParameterL
-class MEDCORELEGACY_EXPORT medAbstractIntParameterL : public medAbstractParameterL
+class MEDCORE_EXPORT medAbstractIntParameterL : public medAbstractParameterL
 {
     Q_OBJECT
 public:
@@ -151,7 +151,7 @@ protected:
 
 //--------------------------------------------------------------------------
 //  medAbstractDoubleParameterL
-class MEDCORELEGACY_EXPORT medAbstractDoubleParameterL : public medAbstractParameterL
+class MEDCORE_EXPORT medAbstractDoubleParameterL : public medAbstractParameterL
 {
     Q_OBJECT
 public:
@@ -182,7 +182,7 @@ protected:
 
 //--------------------------------------------------------------------------
 //  medAbstractBoolParameterL
-class MEDCORELEGACY_EXPORT medAbstractBoolParameterL : public medAbstractParameterL
+class MEDCORE_EXPORT medAbstractBoolParameterL : public medAbstractParameterL
 {
     Q_OBJECT
 public:
@@ -213,7 +213,7 @@ protected:
 
 //--------------------------------------------------------------------------
 //  medAbstractGroupParameterL
-class MEDCORELEGACY_EXPORT medAbstractGroupParameterL : public medAbstractParameterL
+class MEDCORE_EXPORT medAbstractGroupParameterL : public medAbstractParameterL
 {
     Q_OBJECT
 public:
@@ -233,7 +233,7 @@ public:
 
 class QVector2D;
 
-class MEDCORELEGACY_EXPORT medAbstractVector2DParameterL : public medAbstractParameterL
+class MEDCORE_EXPORT medAbstractVector2DParameterL : public medAbstractParameterL
 {
     Q_OBJECT
 
@@ -267,7 +267,7 @@ protected:
 
 class QVector3D;
 
-class MEDCORELEGACY_EXPORT medAbstractVector3DParameterL : public medAbstractParameterL
+class MEDCORE_EXPORT medAbstractVector3DParameterL : public medAbstractParameterL
 {
     Q_OBJECT
 
@@ -301,7 +301,7 @@ protected:
 
 class QVector4D;
 
-class MEDCORELEGACY_EXPORT medAbstractVector4DParameterL : public medAbstractParameterL
+class MEDCORE_EXPORT medAbstractVector4DParameterL : public medAbstractParameterL
 {
     Q_OBJECT
 

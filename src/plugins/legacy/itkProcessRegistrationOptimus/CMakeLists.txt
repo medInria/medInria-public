@@ -95,7 +95,7 @@ target_link_libraries(${TARGET_NAME}
   Qt5::Core
   dtkLog
   dtkCoreSupport
-  medCoreLegacy
+  medCore
   ${ITKIO_LIBRARIES}
   ITKOptimizers
   ITKSmoothing

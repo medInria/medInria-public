@@ -16,13 +16,13 @@
 #include <dtkLog>
 #include <QListWidget>
 
-#include <medCoreLegacyExport.h>
+#include <medCoreExport.h>
 
 /**
   * QListWidget doesn't seem to be able to resize itself to its content
   * medListWidget should do so.
   */
-class MEDCORELEGACY_EXPORT medListWidget : public QListWidget
+class MEDCORE_EXPORT medListWidget : public QListWidget
 {
 public:
     medListWidget(QWidget *parent = nullptr) : QListWidget(parent)

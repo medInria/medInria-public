@@ -17,14 +17,13 @@
 #include <QIcon>
 
 #include <medAbstractParameterL.h>
-#include <medCoreLegacyExport.h>
 
 class QComboBox;
 class QWidget;
 class QStringList;
 
 class medStringListParameterLPrivate;
-class MEDCORELEGACY_EXPORT medStringListParameterL: public medAbstractStringParameterL
+class MEDCORE_EXPORT medStringListParameterL: public medAbstractStringParameterL
 {
     Q_OBJECT
 

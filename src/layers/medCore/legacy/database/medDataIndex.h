@@ -14,7 +14,7 @@
 
 #include <QtCore>
 
-#include <medCoreLegacyExport.h>
+#include <medCoreExport.h>
 
 class QMimeData;
 
@@ -26,7 +26,7 @@ class QMimeData;
  *
  *  The integer value NOT_VALID is reserved to indicate unset or invalid data.
  *  */
-class MEDCORELEGACY_EXPORT medDataIndex
+class MEDCORE_EXPORT medDataIndex
 {
 public:
     enum {NOT_VALID = -1 };
@@ -75,12 +75,12 @@ public:
 
     static bool isMatch( const medDataIndex& index1, const medDataIndex& index2);
 
-    friend MEDCORELEGACY_EXPORT bool operator==(const medDataIndex& index1, const medDataIndex& index2);
-    friend MEDCORELEGACY_EXPORT bool operator!=(const medDataIndex& index1, const medDataIndex& index2);
+    friend MEDCORE_EXPORT bool operator==(const medDataIndex& index1, const medDataIndex& index2);
+    friend MEDCORE_EXPORT bool operator!=(const medDataIndex& index1, const medDataIndex& index2);
 
-    friend MEDCORELEGACY_EXPORT bool operator<(const medDataIndex& index1, const medDataIndex& index2);
-    friend MEDCORELEGACY_EXPORT QDebug operator<<(QDebug debug, const medDataIndex& index);
-    friend MEDCORELEGACY_EXPORT QDebug operator<<(QDebug debug,       medDataIndex *index);
+    friend MEDCORE_EXPORT bool operator<(const medDataIndex& index1, const medDataIndex& index2);
+    friend MEDCORE_EXPORT QDebug operator<<(QDebug debug, const medDataIndex& index);
+    friend MEDCORE_EXPORT QDebug operator<<(QDebug debug,       medDataIndex *index);
 
     QMimeData * createMimeData();
     static medDataIndex readMimeData(const QMimeData * mimeData);
@@ -106,18 +106,18 @@ private:
 // Convenience operators
 // /////////////////////////////////////////////////////////////////
 
-MEDCORELEGACY_EXPORT bool operator==(const medDataIndex& index1, const medDataIndex& index2);
-MEDCORELEGACY_EXPORT bool operator!=(const medDataIndex& index1, const medDataIndex& index2);
-MEDCORELEGACY_EXPORT bool operator<(const medDataIndex& index1, const medDataIndex& index2);
+MEDCORE_EXPORT bool operator==(const medDataIndex& index1, const medDataIndex& index2);
+MEDCORE_EXPORT bool operator!=(const medDataIndex& index1, const medDataIndex& index2);
+MEDCORE_EXPORT bool operator<(const medDataIndex& index1, const medDataIndex& index2);
 
-MEDCORELEGACY_EXPORT QDebug operator<<(QDebug debug, const medDataIndex& index);
-MEDCORELEGACY_EXPORT QDebug operator<<(QDebug debug,       medDataIndex *index);
+MEDCORE_EXPORT QDebug operator<<(QDebug debug, const medDataIndex& index);
+MEDCORE_EXPORT QDebug operator<<(QDebug debug,       medDataIndex *index);
 
 // /////////////////////////////////////////////////////////////////
 // Hash functions
 // /////////////////////////////////////////////////////////////////
 
-MEDCORELEGACY_EXPORT uint qHash(const medDataIndex &key);
+MEDCORE_EXPORT uint qHash(const medDataIndex &key);
 
 // /////////////////////////////////////////////////////////////////
 // Meta type registration

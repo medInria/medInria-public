@@ -13,9 +13,8 @@
 =========================================================================*/
 
 #include <medAbstractData.h>
-#include <medCoreLegacyExport.h>
 
-class MEDCORELEGACY_EXPORT medAbstractMaskData : public medAbstractData
+class MEDCORE_EXPORT medAbstractMaskData : public medAbstractData
 {
     Q_OBJECT
 

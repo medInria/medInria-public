@@ -17,8 +17,6 @@
 #include <QBoxLayout>
 #include <medMessageController.h>
 
-#include <medCoreLegacyExport.h>
-
 class medStatusBarPrivate;
 
 /**
@@ -26,7 +24,7 @@ class medStatusBarPrivate;
 * @author Alexandre Abadie, Florent Leray
 * @brief  This is extended QStatusBar that can display custom messages.
 */
-class MEDCORELEGACY_EXPORT medStatusBar : public QStatusBar
+class MEDCORE_EXPORT medStatusBar : public QStatusBar
 {
     Q_OBJECT
 public:

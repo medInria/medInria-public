@@ -15,7 +15,6 @@
 =========================================================================*/
 
 #include <medAbstractLayeredViewNavigator.h>
-#include <medCoreLegacyExport.h>
 #include <medImageViewEnum.h>
 
 class medAbstractImageView;
@@ -24,7 +23,7 @@ class medAbstractVector3DParameterL;
 class medTimeLineParameterL;
 
 class medAbstractImageViewNavigatorPrivate;
-class MEDCORELEGACY_EXPORT medAbstractImageViewNavigator : public medAbstractLayeredViewNavigator
+class MEDCORE_EXPORT medAbstractImageViewNavigator : public medAbstractLayeredViewNavigator
 {
     Q_OBJECT
 

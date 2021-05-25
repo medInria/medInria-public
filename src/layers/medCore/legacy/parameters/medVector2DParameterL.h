@@ -13,12 +13,11 @@
 =========================================================================*/
 
 #include <medAbstractParameterL.h>
-#include <medCoreLegacyExport.h>
 
 class medVector2DParameterLPrivate;
 class QVector2D;
 
-class MEDCORELEGACY_EXPORT medVector2DParameterL : public medAbstractVector2DParameterL
+class MEDCORE_EXPORT medVector2DParameterL : public medAbstractVector2DParameterL
 {
 public:
     medVector2DParameterL(QString name = "Unknown Vector 2D parameter", QObject* parent = nullptr);

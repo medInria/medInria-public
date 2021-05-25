@@ -15,9 +15,7 @@
 #include <dtkCoreSupport/dtkAbstractDataFactory.h>
 #include <medAbstractData.h>
 
-#include <medCoreLegacyExport.h>
-
-class MEDCORELEGACY_EXPORT medAbstractDataFactory : public dtkAbstractDataFactory
+class MEDCORE_EXPORT medAbstractDataFactory : public dtkAbstractDataFactory
 {
 public:
     static medAbstractDataFactory *instance();

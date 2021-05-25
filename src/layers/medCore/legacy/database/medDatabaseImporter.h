@@ -15,7 +15,6 @@
 #include <QtSql/QSqlDatabase>
 
 #include <medAbstractDatabaseImporter.h>
-#include <medCoreLegacyExport.h>
 #include <medDataIndex.h>
 
 class medAbstractData;
@@ -31,7 +30,7 @@ class medAbstractData;
 * the database (and as a result they can end up being aggregated by volume)
 * or they can be just indexed (by indicating so using the parameters in the constructor)
 **/
-class MEDCORELEGACY_EXPORT medDatabaseImporter : public medAbstractDatabaseImporter
+class MEDCORE_EXPORT medDatabaseImporter : public medAbstractDatabaseImporter
 {
     Q_OBJECT
 

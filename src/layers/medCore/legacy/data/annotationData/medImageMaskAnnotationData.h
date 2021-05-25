@@ -14,7 +14,6 @@
 
 #include <medAnnotationData.h>
 #include <medAbstractImageData.h>
-#include <medCoreLegacyExport.h>
 
 #include <dtkCoreSupport/dtkSmartPointer.h>
 
@@ -25,7 +24,7 @@
  *
  * The class contains a medAbstractImageData containing the actual mask data. This can be manipulated.
  */
-class MEDCORELEGACY_EXPORT medImageMaskAnnotationData : public medAnnotationData
+class MEDCORE_EXPORT medImageMaskAnnotationData : public medAnnotationData
 {
     Q_OBJECT
 

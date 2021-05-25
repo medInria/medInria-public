@@ -13,7 +13,6 @@
 =========================================================================*/
 
 #include <medAttachedData.h>
-#include <medCoreLegacyExport.h>
 
 class medAbstractData;
 
@@ -21,7 +20,7 @@ class medAbstractData;
  * Base class for annotations : a specialization of medAttachedData.
  *
  */
-class MEDCORELEGACY_EXPORT medAnnotationData : public medAttachedData
+class MEDCORE_EXPORT medAnnotationData : public medAttachedData
 {
     Q_OBJECT
 

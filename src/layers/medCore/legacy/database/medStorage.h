@@ -15,9 +15,9 @@
 #include <QtCore>
 #include <QString>
 
-#include <medCoreLegacyExport.h>
+#include <medCoreExport.h>
 
-class MEDCORELEGACY_EXPORT medStorage
+class MEDCORE_EXPORT medStorage
 {
 public:
      medStorage();

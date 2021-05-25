@@ -14,14 +14,14 @@
 
 #include <QWidget>
 
-#include <medCoreLegacyExport.h>
+#include <medCoreExport.h>
 
 class medButtonPrivate;
 
 /**
  * @brief General custom button that loads shows an icon.
  */
-class MEDCORELEGACY_EXPORT medButton : public QWidget
+class MEDCORE_EXPORT medButton : public QWidget
 {
     Q_OBJECT
 

@@ -17,7 +17,7 @@
 #include <QMouseEvent>
 #include <QWheelEvent>
 
-#include <medCoreLegacyExport.h>
+#include <medCoreExport.h>
 
 //Forward declarations
 class medAbstractView;
@@ -33,7 +33,7 @@ class QGraphicsSceneWheelEvent;
  *
  * (see QObject::eventFilter & QObject::installEventFilter)
  */
-class MEDCORELEGACY_EXPORT medViewEventFilter : public dtkAbstractObject
+class MEDCORE_EXPORT medViewEventFilter : public dtkAbstractObject
 {
     Q_OBJECT
 

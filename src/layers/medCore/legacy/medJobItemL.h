@@ -14,7 +14,7 @@
 
 #include <QtCore>
 
-#include <medCoreLegacyExport.h>
+#include <medCoreExport.h>
 
 /**
  * @class medJobItemL
@@ -40,7 +40,7 @@
  *   QThreadPool::globalInstance()->start(dynamic_cast<QRunnable*>(runProcess));
  *   @endcode
  */
-class MEDCORELEGACY_EXPORT medJobItemL :  public QObject, public QRunnable
+class MEDCORE_EXPORT medJobItemL :  public QObject, public QRunnable
 {
     Q_OBJECT
 

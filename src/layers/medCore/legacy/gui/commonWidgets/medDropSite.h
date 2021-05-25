@@ -14,12 +14,11 @@
 
 #include <QLabel>
 
-#include <medCoreLegacyExport.h>
 #include <medDataIndex.h>
 
 class medDropSitePrivate;
 
-class MEDCORELEGACY_EXPORT medDropSite : public QLabel
+class MEDCORE_EXPORT medDropSite : public QLabel
 {
     Q_OBJECT
 

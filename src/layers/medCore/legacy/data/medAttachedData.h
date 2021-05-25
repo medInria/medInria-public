@@ -13,14 +13,13 @@
 =========================================================================*/
 
 #include <medAbstractData.h>
-#include <medCoreLegacyExport.h>
 
 class medAttachedDataPrivate;
 
 /**
  * Class to store attachments to datasets
  */
-class MEDCORELEGACY_EXPORT medAttachedData : public medAbstractData
+class MEDCORE_EXPORT medAttachedData : public medAbstractData
 {
     Q_OBJECT
 

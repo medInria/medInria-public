@@ -15,7 +15,6 @@
 #include <QtCore/QObject>
 
 #include <medAbstractDatabaseImporter.h>
-#include <medCoreLegacyExport.h>
 #include <medDataIndex.h>
 
 class medAbstractData;
@@ -26,7 +25,7 @@ class medAbstractData;
 * This class inherits from medJobItemL and is meant to be run by the medJobManagerL.
 *
 */
-class MEDCORELEGACY_EXPORT medDatabaseNonPersistentImporter : public medAbstractDatabaseImporter
+class MEDCORE_EXPORT medDatabaseNonPersistentImporter : public medAbstractDatabaseImporter
 {
     Q_OBJECT
 

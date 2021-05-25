@@ -13,11 +13,10 @@
 =========================================================================*/
 
 #include <medAbstractData.h>
-#include <medCoreLegacyExport.h>
 
 class medAbstractMeshDataPrivate;
 
-class MEDCORELEGACY_EXPORT medAbstractMeshData : public medAbstractData
+class MEDCORE_EXPORT medAbstractMeshData : public medAbstractData
 {
     Q_OBJECT
 

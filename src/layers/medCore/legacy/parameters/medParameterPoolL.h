@@ -17,13 +17,14 @@
 #include <QVector2D>
 #include <QLabel>
 
-#include <medCoreLegacyExport.h>
+#include <medCoreExport.h>
+
 class medAbstractParameterL;
 class medDataIndex;
 class medStringListParameterL;
 
 class medParameterPoolLPrivate;
-class MEDCORELEGACY_EXPORT medParameterPoolL : public QObject
+class MEDCORE_EXPORT medParameterPoolL : public QObject
 {
     Q_OBJECT
 

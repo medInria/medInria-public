@@ -67,11 +67,17 @@ add_library(${TARGET_NAME} SHARED
 ## #############################################################################
 ## Link
 ## #############################################################################
-target_link_libraries(${TARGET_NAME} PUBLIC
-        Qt5::Network
-		Qt5::Widgets
-        medCore
-        medCoreLegacy
+
+target_link_libraries(${TARGET_NAME}
+  Qt5::Core
+  Qt5::Gui
+  Qt5::Widgets
+  Qt5::Network
+  medCore
+  medWidgets
+  dtkLog
+  dtkComposer
+  dtkCore
   )
 
 

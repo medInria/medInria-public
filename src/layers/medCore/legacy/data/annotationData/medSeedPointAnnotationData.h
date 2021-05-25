@@ -13,7 +13,6 @@
 =========================================================================*/
 
 #include <medAnnotationData.h>
-#include <medCoreLegacyExport.h>
 
 #include <QVector3D>
 #include <QtWidgets>
@@ -22,7 +21,7 @@
  * One of the points may be in a selected state.
  * A singleViewContainer size and color is set, the selected point has a different color.
  */
-class MEDCORELEGACY_EXPORT medSeedPointAnnotationData : public medAnnotationData
+class MEDCORE_EXPORT medSeedPointAnnotationData : public medAnnotationData
 {
     Q_OBJECT
     MED_DATA_INTERFACE("medSeedPointAnnotationData", "medSeedPointAnnotationData")

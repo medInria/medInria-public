@@ -17,9 +17,8 @@
 #include <dtkCoreSupport/dtkAbstractDataWriter.h>
 
 #include <medAbstractData.h>
-#include <medCoreLegacyExport.h>
 
-struct MEDCORELEGACY_EXPORT medDataReaderWriter
+struct MEDCORE_EXPORT medDataReaderWriter
 {
     typedef dtkSmartPointer<dtkAbstractDataReader> Reader;
     typedef dtkSmartPointer<dtkAbstractDataWriter> Writer;

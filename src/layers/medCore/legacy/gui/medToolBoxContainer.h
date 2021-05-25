@@ -14,12 +14,12 @@
 
 #include <QtWidgets/QScrollArea>
 
-#include <medCoreLegacyExport.h>
+#include <medCoreExport.h>
 
 class medToolBox;
 class medToolBoxContainerPrivate;
 
-class MEDCORELEGACY_EXPORT medToolBoxContainer : public QScrollArea
+class MEDCORE_EXPORT medToolBoxContainer : public QScrollArea
 {
     Q_OBJECT
 

@@ -21,7 +21,6 @@
 #include <medAbstractViewInteractor.h>
 #include <medAbstractNavigator.h>
 #include <medAbstractInteractor.h>
-#include <medCoreLegacyExport.h>
 
 typedef medAbstractView *(*viewCreator)(QObject *parent);
 typedef medAbstractViewNavigator *(*navigatorCreator)(medAbstractView *parent);
@@ -30,7 +29,7 @@ typedef medAbstractNavigator *(*addNavigatorCreator)(medAbstractView *parent);
 typedef medAbstractInteractor *(*addInteractorCreator)(medAbstractView *parent);
 
 class medViewFactoryPrivate;
-class MEDCORELEGACY_EXPORT medViewFactory : public dtkAbstractFactory
+class MEDCORE_EXPORT medViewFactory : public dtkAbstractFactory
 {
     Q_OBJECT
 public:

@@ -13,7 +13,6 @@
 =========================================================================*/
 
 #include <medAbstractParameterL.h>
-#include <medCoreLegacyExport.h>
 
 #include <QIcon>
 
@@ -24,7 +23,7 @@ class QStringList;
 class medDataIndex;
 
 class medDataListParameterLPrivate;
-class MEDCORELEGACY_EXPORT medDataListParameterL: public medAbstractParameterL
+class MEDCORE_EXPORT medDataListParameterL: public medAbstractParameterL
 {
     Q_OBJECT
 

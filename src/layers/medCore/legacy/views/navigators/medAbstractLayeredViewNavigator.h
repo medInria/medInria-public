@@ -13,9 +13,8 @@
 =========================================================================*/
 
 #include <medAbstractViewNavigator.h>
-#include <medCoreLegacyExport.h>
 
-class MEDCORELEGACY_EXPORT medAbstractLayeredViewNavigator : public medAbstractViewNavigator
+class MEDCORE_EXPORT medAbstractLayeredViewNavigator : public medAbstractViewNavigator
 {
     Q_OBJECT
 

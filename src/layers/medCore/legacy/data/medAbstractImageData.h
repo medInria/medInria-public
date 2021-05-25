@@ -16,9 +16,8 @@
 #include <vector>
 
 #include <medAbstractData.h>
-#include <medCoreLegacyExport.h>
 
-class MEDCORELEGACY_EXPORT medAbstractImageData: public medAbstractData
+class MEDCORE_EXPORT medAbstractImageData: public medAbstractData
 {
     Q_OBJECT
 

@@ -14,11 +14,10 @@
 
 #include <medDataIndex.h>
 #include <medToolBox.h>
-#include <medCoreLegacyExport.h>
 
 class medActionsToolBoxPrivate;
 
-class MEDCORELEGACY_EXPORT medActionsToolBox : public medToolBox
+class MEDCORE_EXPORT medActionsToolBox : public medToolBox
 {
     Q_OBJECT
 public:

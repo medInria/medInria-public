@@ -16,13 +16,11 @@
 #include <medMetaDataKeys.h>
 #include <medAbstractData.h>
 
-#include <medCoreLegacyExport.h>
-
 class medImportJobWatcher;
 class medDataIndex;
 class medJobItemL;
 
-class MEDCORELEGACY_EXPORT medAbstractDbController : public QObject
+class MEDCORE_EXPORT medAbstractDbController : public QObject
 {
     Q_OBJECT
 

@@ -12,7 +12,6 @@
 
 =========================================================================*/
 
-#include <medCoreLegacyExport.h>
 #include <medDataIndex.h>
 
 #include <QDialog>
@@ -22,7 +21,7 @@ class medDatabaseEditItemDialogPrivate;
 /**
  * @brief
  */
-class MEDCORELEGACY_EXPORT medDatabaseEditItemDialog: public QDialog
+class MEDCORE_EXPORT medDatabaseEditItemDialog: public QDialog
 {
     Q_OBJECT
 

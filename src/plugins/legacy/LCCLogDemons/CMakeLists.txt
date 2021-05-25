@@ -102,9 +102,9 @@ target_link_libraries(${TARGET_NAME}
   Qt5::Core
   dtkLog
   dtkCoreSupport
-  medCoreLegacy
-  medRegistration
-  RPI::common
+  medCore
+  medRegistration  
+  RPILCClogDemons
 )
 
 set(CMAKE_RUNTIME_OUTPUT_DIRECTORY ${CMAKE_BINARY_DIR}/bin)

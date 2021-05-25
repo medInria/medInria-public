@@ -14,14 +14,12 @@
 
 #include <medToolBox.h>
 
-#include <medCoreLegacyExport.h>
-
 class medCompositeDataSetImporterSelectorToolBox;
 class medCompositeDataSetImporterAbstractToolBoxPrivate;
 class dtkAbstractProcess;
 class medAbstractData;
 
-class MEDCORELEGACY_EXPORT medCompositeDataSetImporterAbstractToolBox : public medToolBox
+class MEDCORE_EXPORT medCompositeDataSetImporterAbstractToolBox : public medToolBox
 {
     Q_OBJECT
 public:

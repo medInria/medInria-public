@@ -16,7 +16,6 @@
 #include <QtCore/QList>
 
 #include <medAbstractDbController.h>
-#include <medCoreLegacyExport.h>
 #include <medDataIndex.h>
 
 class medAbstractData;
@@ -24,7 +23,7 @@ class medDatabaseNonPersistentItem;
 class medDatabaseNonPersistentControllerPrivate;
 class medImportJobWatcher;
 
-class MEDCORELEGACY_EXPORT medDatabaseNonPersistentController: public medAbstractDbController
+class MEDCORE_EXPORT medDatabaseNonPersistentController: public medAbstractDbController
 {
     Q_OBJECT
 

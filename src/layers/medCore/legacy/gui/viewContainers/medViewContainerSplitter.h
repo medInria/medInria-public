@@ -14,13 +14,13 @@
 
 #include <QSplitter>
 
-#include <medCoreLegacyExport.h>
+#include <medCoreExport.h>
 
 class medViewContainer;
 class medDataIndex;
 class QUuid;
 
-class MEDCORELEGACY_EXPORT medViewContainerSplitter: public QSplitter
+class MEDCORE_EXPORT medViewContainerSplitter: public QSplitter
 {
     Q_OBJECT
 public:

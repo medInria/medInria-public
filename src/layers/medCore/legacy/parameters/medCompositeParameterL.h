@@ -13,13 +13,12 @@
 =========================================================================*/
 
 #include <medAbstractParameterL.h>
-#include <medCoreLegacyExport.h>
 
 #include <QVariant>
 
 class medCompositeParameterLPrivate;
 
-class MEDCORELEGACY_EXPORT medCompositeParameterL : public medAbstractParameterL
+class MEDCORE_EXPORT medCompositeParameterL : public medAbstractParameterL
 {
     Q_OBJECT
 

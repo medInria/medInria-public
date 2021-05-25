@@ -69,7 +69,6 @@ target_link_libraries(${TARGET_NAME}
   dtkCoreSupport
   dtkLog
   medCore
-  medCoreLegacy
   ITKCommon
   ITKIOImageBase
   ITKIOBMP

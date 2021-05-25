@@ -13,14 +13,13 @@
 =========================================================================*/
 
 #include <medAbstractNavigator.h>
-#include <medCoreLegacyExport.h>
 
 class medDoubleParameterL;
 class medAbstractVector2DParameterL;
 
 class medAbstractViewNavigatorPrivate;
 
-class MEDCORELEGACY_EXPORT medAbstractViewNavigator : public medAbstractNavigator
+class MEDCORE_EXPORT medAbstractViewNavigator : public medAbstractNavigator
 {
     Q_OBJECT
 

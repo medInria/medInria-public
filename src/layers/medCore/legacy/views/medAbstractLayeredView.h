@@ -21,7 +21,6 @@
 #include <medAbstractLayeredViewInteractor.h>
 #include <medAbstractLayeredViewNavigator.h>
 #include <medAbstractView.h>
-#include <medCoreLegacyExport.h>
 
 class medAbstractData;
 class medAbstractBoolParameterL;
@@ -29,7 +28,7 @@ class medStringListParameterL;
 class medDataListParameterL;
 
 class medAbstractLayeredViewPrivate;
-class MEDCORELEGACY_EXPORT medAbstractLayeredView : public medAbstractView
+class MEDCORE_EXPORT medAbstractLayeredView : public medAbstractView
 {
     Q_OBJECT
 

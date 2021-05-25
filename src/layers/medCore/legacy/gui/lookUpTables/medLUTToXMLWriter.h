@@ -12,7 +12,7 @@
 
 =========================================================================*/
 
-#include <medCoreLegacyExport.h>
+#include <medCoreExport.h>
 
 #include <medClutEditor.h>
 #include <qiodevice.h>
@@ -20,7 +20,7 @@
 
 class medLUTToXMLWriterPrivate;
 
-class MEDCORELEGACY_EXPORT medLUTToXMLWriter
+class MEDCORE_EXPORT medLUTToXMLWriter
 {
 public:
     medLUTToXMLWriter(const QList<medClutEditorTable*> & tables);

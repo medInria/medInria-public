@@ -12,7 +12,6 @@
 =========================================================================*/
 
 #include <medAbstractParameterL.h>
-#include <medCoreLegacyExport.h>
 
 class QIcon;
 class QPushButton;
@@ -20,7 +19,7 @@ class QSize;
 class QWidget;
 
 class medTriggerParameterLPrivate;
-class MEDCORELEGACY_EXPORT medTriggerParameterL : public medAbstractTriggerParameterL
+class MEDCORE_EXPORT medTriggerParameterL : public medAbstractTriggerParameterL
 {
     Q_OBJECT
 

@@ -14,11 +14,9 @@
 
 #include <medToolBox.h>
 
-#include <medCoreLegacyExport.h>
-
 class medBrowserPacsSearchToolBoxPrivate;
 
-class MEDCORELEGACY_EXPORT medBrowserPacsSearchToolBox : public medToolBox
+class MEDCORE_EXPORT medBrowserPacsSearchToolBox : public medToolBox
 {
     Q_OBJECT
 

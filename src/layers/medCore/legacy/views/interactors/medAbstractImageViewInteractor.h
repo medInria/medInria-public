@@ -13,7 +13,6 @@
 =========================================================================*/
 
 #include <medAbstractLayeredViewInteractor.h>
-#include <medCoreLegacyExport.h>
 #include <medImageViewEnum.h>
 
 class medAbstractImageView;
@@ -21,7 +20,7 @@ class medDoubleParameterL;
 class medCompositeParameterL;
 
 class medAbstractImageViewInteractorPrivate;
-class MEDCORELEGACY_EXPORT medAbstractImageViewInteractor : public medAbstractLayeredViewInteractor
+class MEDCORE_EXPORT medAbstractImageViewInteractor : public medAbstractLayeredViewInteractor
 {
     Q_OBJECT
 

@@ -27,6 +27,7 @@ find_package(OpenGL REQUIRED)
 
 list_source_files(${TARGET_NAME}
   ${CMAKE_CURRENT_SOURCE_DIR}
+  legacy
   legacy/data
   legacy/database
   legacy/data/annotationData

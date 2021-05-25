@@ -15,7 +15,6 @@
 #include <QSqlQuery>
 #include <QtCore/QObject>
 
-#include <medCoreLegacyExport.h>
 #include <medDataIndex.h>
 #include <medJobItemL.h>
 
@@ -25,7 +24,7 @@ class medDatabaseRemoverPrivate;
  * @class medDatabaseRemover
  * @brief Removes given data from the database.
  */
-class MEDCORELEGACY_EXPORT medDatabaseRemover : public medJobItemL
+class MEDCORE_EXPORT medDatabaseRemover : public medJobItemL
 {
     Q_OBJECT
 

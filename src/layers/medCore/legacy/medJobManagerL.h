@@ -14,7 +14,6 @@
 
 #include <QtCore/QObject>
 
-#include <medCoreLegacyExport.h>
 #include <medDataIndex.h>
 
 class medJobManagerLPrivate;
@@ -31,7 +30,7 @@ class medJobItemL;
  *
  * @see medJobItemL
  */
-class MEDCORELEGACY_EXPORT medJobManagerL : public QObject
+class MEDCORE_EXPORT medJobManagerL : public QObject
 {
     Q_OBJECT
 

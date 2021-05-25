@@ -14,9 +14,9 @@
 
 #include <QtGui>
 
-#include <medCoreLegacyExport.h>
+#include <medCoreExport.h>
 
-class MEDCORELEGACY_EXPORT medSliderSpinboxPair: public QWidget
+class MEDCORE_EXPORT medSliderSpinboxPair: public QWidget
 {
     Q_OBJECT
 

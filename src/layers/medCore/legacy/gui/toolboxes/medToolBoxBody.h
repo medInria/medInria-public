@@ -15,12 +15,12 @@
 #include <QtGui>
 #include <QtWidgets>
 
-#include <medCoreLegacyExport.h>
+#include <medCoreExport.h>
 
 class medToolBoxBodyPrivate;
 class medToolBoxTab;
 
-class MEDCORELEGACY_EXPORT medToolBoxBody : public QFrame
+class MEDCORE_EXPORT medToolBoxBody : public QFrame
 {
     Q_OBJECT
 

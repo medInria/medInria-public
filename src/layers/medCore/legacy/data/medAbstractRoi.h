@@ -17,7 +17,6 @@
 #include <QUndoStack>
 
 #include <medAbstractView.h>
-#include <medCoreLegacyExport.h>
 
 class medAbstractRoiPrivate;
 
@@ -33,7 +32,7 @@ public:
     double perimeter;
 };
 
-class MEDCORELEGACY_EXPORT medAbstractRoi : public dtkAbstractObject
+class MEDCORE_EXPORT medAbstractRoi : public dtkAbstractObject
 {
     Q_OBJECT
 
@@ -79,7 +78,7 @@ private:
     medAbstractRoiPrivate * d;
 };
 
-class MEDCORELEGACY_EXPORT RoiUndoRedo : public QUndoCommand
+class MEDCORE_EXPORT RoiUndoRedo : public QUndoCommand
  {
  public:
      RoiUndoRedo(medAbstractRoi *roi, const QString &text)

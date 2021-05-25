@@ -15,7 +15,7 @@
 #include <dtkCoreSupport/dtkAbstractFactory.h>
 #include <QtCore>
 
-#include <medCoreLegacyExport.h>
+#include <medCoreExport.h>
 
 class medSettingsWidget;
 class medSettingsWidgetFactoryPrivate;
@@ -24,7 +24,7 @@ struct medSettingDetails;
 /**
  * @brief This factory creates Widgets that are pages in the medSettingsEditor widget.
 */
-class MEDCORELEGACY_EXPORT medSettingsWidgetFactory : public dtkAbstractFactory
+class MEDCORE_EXPORT medSettingsWidgetFactory : public dtkAbstractFactory
 {
   Q_OBJECT
 
@@ -95,7 +95,7 @@ private:
  * and a function to allocate memory.
  *
  */
-struct MEDCORELEGACY_EXPORT medSettingDetails{
+struct MEDCORE_EXPORT medSettingDetails{
     QString name; /** Readable name*/
     QString description; /** (tooltip) short description */
     medSettingsWidgetFactory::medSettingsWidgetCreator creator; /** function pointer allocating memory for the widget*/

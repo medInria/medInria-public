@@ -140,7 +140,6 @@ target_link_libraries(${TARGET_NAME}
   dtkVrSupport
   medCore
   medWidgets
-  medCoreLegacy
   medPacs
   )
 

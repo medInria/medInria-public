@@ -13,13 +13,12 @@
 =========================================================================*/
 
 #include <medComboBox.h>
-#include <medCoreLegacyExport.h>
 #include <medToolBox.h>
 
 class medAbstractSelectableToolBox;
 class medSelectorToolBoxPrivate;
 
-class MEDCORELEGACY_EXPORT medSelectorToolBox : public medToolBox
+class MEDCORE_EXPORT medSelectorToolBox : public medToolBox
 {
     Q_OBJECT
 

@@ -15,14 +15,13 @@
 #include <QtGui>
 #include <QtWidgets>
 
-#include <medCoreLegacyExport.h>
+#include <medCoreExport.h>
 
 class medDataIndex;
-class medDatabaseModel;
 class medDatabaseViewPrivate;
 class medAbstractDatabaseItem;
 
-class MEDCORELEGACY_EXPORT medDatabaseView : public QTreeView
+class MEDCORE_EXPORT medDatabaseView : public QTreeView
 {
     Q_OBJECT
 

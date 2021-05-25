@@ -14,7 +14,7 @@
 
 #include <QWidget>
 
-#include <medCoreLegacyExport.h>
+#include <medCoreExport.h>
 
 class medSettingsWidgetPrivate;
 
@@ -24,7 +24,7 @@ class medSettingsWidgetPrivate;
  * All the pages in the medSettingsEditor must inherit from this class.
  *
 */
-class MEDCORELEGACY_EXPORT medSettingsWidget : public QWidget
+class MEDCORE_EXPORT medSettingsWidget : public QWidget
 {
     Q_OBJECT
 public:

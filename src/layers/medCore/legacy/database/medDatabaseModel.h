@@ -15,13 +15,13 @@
 #include <QtCore/QAbstractItemModel>
 #include <QtGui>
 
-#include <medCoreLegacyExport.h>
+#include <medCoreExport.h>
 
 class medAbstractDatabaseItem;
 class medDatabaseModelPrivate;
 class medDataIndex;
 
-class MEDCORELEGACY_EXPORT medDatabaseModel : public QAbstractItemModel
+class MEDCORE_EXPORT medDatabaseModel : public QAbstractItemModel
 {
     Q_OBJECT
 

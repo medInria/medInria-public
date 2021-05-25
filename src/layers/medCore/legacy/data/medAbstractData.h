@@ -14,7 +14,7 @@
 
 #include <dtkCoreSupport/dtkAbstractData.h>
 
-#include <medCoreLegacyExport.h>
+#include <medCoreExport.h>
 
 class medAbstractDataPrivate;
 class medAttachedData;
@@ -23,7 +23,7 @@ class medDataIndex;
 /**
  * Extending dtkAbstractData class to hold more specific information
  */
-class MEDCORELEGACY_EXPORT medAbstractData : public dtkAbstractData
+class MEDCORE_EXPORT medAbstractData : public dtkAbstractData
 {
     Q_OBJECT
 

@@ -14,14 +14,16 @@
 
 =========================================================================*/
 
-#include <medCoreLegacyExport.h>
+#include <medSettingsWidget.h>
 
 #include <QCheckBox>
 #include <QDialog>
 #include <QComboBox>
 #include <QWidget>
 
-class MEDCORELEGACY_EXPORT medStartupSettingsWidget : public QDialog
+class medStartupSettingsWidgetPrivate;
+
+class MEDCORE_EXPORT medStartupSettingsWidget : public medSettingsWidget
 {
     Q_OBJECT
 

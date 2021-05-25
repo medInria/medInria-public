@@ -17,14 +17,13 @@
 #include <QBoxLayout>
 
 #include <medAbstractParameterL.h>
-#include <medCoreLegacyExport.h>
 
 class QWidget;
 
 class medBoolParameterL;
 
 class medBoolGroupParameterLPrivate;
-class MEDCORELEGACY_EXPORT medBoolGroupParameterL : public medAbstractGroupParameterL
+class MEDCORE_EXPORT medBoolGroupParameterL : public medAbstractGroupParameterL
 {
     Q_OBJECT
 

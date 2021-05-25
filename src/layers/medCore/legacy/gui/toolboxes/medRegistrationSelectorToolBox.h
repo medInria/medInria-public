@@ -12,7 +12,6 @@
 
 =========================================================================*/
 
-#include <medCoreLegacyExport.h>
 #include <medJobItemL.h>
 #include <medSelectorToolBox.h>
 
@@ -22,7 +21,7 @@ class medAbstractImageData;
 class medDataIndex;
 class medRegistrationSelectorToolBoxPrivate;
 
-class MEDCORELEGACY_EXPORT medRegistrationSelectorToolBox : public medSelectorToolBox
+class MEDCORE_EXPORT medRegistrationSelectorToolBox : public medSelectorToolBox
 {
     Q_OBJECT
 

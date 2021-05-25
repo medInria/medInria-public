@@ -15,7 +15,7 @@
 #include <QWidget>
 #include <QtCore>
 
-#include <medCoreLegacyExport.h>
+#include <medCoreExport.h>
 
 class medToolBox;
 class medDataIndex;
@@ -28,7 +28,7 @@ class medAbstractData;
  * a source selection widget and several ToolBoxes.
  * All dynamic data source implementation should derive from this class.
  **/
-class MEDCORELEGACY_EXPORT medAbstractDataSource : public QObject
+class MEDCORE_EXPORT medAbstractDataSource : public QObject
 {
     Q_OBJECT
 

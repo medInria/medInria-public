@@ -12,7 +12,6 @@
 
 =========================================================================*/
 
-#include <medCoreLegacyExport.h>
 #include <medToolBox.h>
 
 class medDatabaseSearchPanelPrivate;
@@ -37,7 +36,7 @@ private:
 
 };
 
-class MEDCORELEGACY_EXPORT medDatabaseSearchPanel : public medToolBox
+class MEDCORE_EXPORT medDatabaseSearchPanel : public medToolBox
 {
     Q_OBJECT
 public:

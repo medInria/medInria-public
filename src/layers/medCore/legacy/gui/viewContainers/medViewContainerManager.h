@@ -14,7 +14,7 @@
 
 #include <QObject>
 
-#include <medCoreLegacyExport.h>
+#include <medCoreExport.h>
 
 
 class QUuid;
@@ -22,7 +22,7 @@ class medViewContainer;
 
 class medViewContainerManagerPrivate;
 
-class MEDCORELEGACY_EXPORT medViewContainerManager : public QObject
+class MEDCORE_EXPORT medViewContainerManager : public QObject
 {
     Q_OBJECT
 

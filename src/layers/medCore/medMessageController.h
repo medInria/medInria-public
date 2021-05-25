@@ -16,7 +16,7 @@
 #include <QtGui>
 #include <QtWidgets>
 
-#include <medCoreLegacyExport.h>
+#include <medCoreExport.h>
 
 class medMessageControllerPrivate;
 
@@ -24,7 +24,7 @@ class medMessageControllerPrivate;
 // medMessage
 // /////////////////////////////////////////////////////////////////
 
-class MEDCORELEGACY_EXPORT medMessage : public QWidget
+class MEDCORE_EXPORT medMessage : public QWidget
 {
     Q_OBJECT
 
@@ -77,7 +77,7 @@ public:
 // medMessageProgress
 // /////////////////////////////////////////////////////////////////
 
-class MEDCORELEGACY_EXPORT medMessageProgress : public medMessage
+class MEDCORE_EXPORT medMessageProgress : public medMessage
 {
     Q_OBJECT
 
@@ -100,7 +100,7 @@ public slots:
 // medMessageController
 // /////////////////////////////////////////////////////////////////
 
-class MEDCORELEGACY_EXPORT medMessageController : public QObject
+class MEDCORE_EXPORT medMessageController : public QObject
 {
     Q_OBJECT
 

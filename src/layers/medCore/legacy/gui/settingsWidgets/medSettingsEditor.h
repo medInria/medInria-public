@@ -15,7 +15,7 @@
 #include <QWidget>
 #include <QTabWidget>
 
-#include <medCoreLegacyExport.h>
+#include <medCoreExport.h>
 
 class medSettingsEditorPrivate;
 
@@ -28,7 +28,7 @@ class medSettingsEditorPrivate;
  * There is also an alternative advanced tree listing all the sections and keys from the application qSetting.
  *
 */
-class MEDCORELEGACY_EXPORT medSettingsEditor : public QWidget
+class MEDCORE_EXPORT medSettingsEditor : public QWidget
 {
     Q_OBJECT
 

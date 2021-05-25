@@ -12,12 +12,12 @@
 
 =========================================================================*/
 
-#include <medCoreLegacyExport.h>
+#include <medCoreExport.h>
 
 #include <QSlider>
 #include <QtGui>
 
-class MEDCORELEGACY_EXPORT medSliderL : public QSlider
+class MEDCORE_EXPORT medSliderL : public QSlider
 {
     Q_OBJECT
 

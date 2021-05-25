@@ -15,9 +15,9 @@
 #include <QRegExp>
 #include <QVariant>
 
-#include <medCoreLegacyExport.h>
+#include <medCoreExport.h>
 
-class MEDCORELEGACY_EXPORT medStyleSheetParser
+class MEDCORE_EXPORT medStyleSheetParser
 {
 public:
     medStyleSheetParser(QString qss);

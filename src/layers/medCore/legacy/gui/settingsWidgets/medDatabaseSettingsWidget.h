@@ -15,11 +15,9 @@
 #include <medSettingsWidget.h>
 #include <QWidget>
 
-#include <medCoreLegacyExport.h>
-
 class medDatabaseSettingsWidgetPrivate;
 
-class MEDCORELEGACY_EXPORT medDatabaseSettingsWidget : public medSettingsWidget
+class MEDCORE_EXPORT medDatabaseSettingsWidget : public medSettingsWidget
 {
     Q_OBJECT
     MED_SETTINGS_INTERFACE("Database","Database Settings")

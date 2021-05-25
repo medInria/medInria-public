@@ -13,7 +13,6 @@
 =========================================================================*/
 
 #include <medAbstractWorkspaceLegacy.h>
-#include <medCoreLegacyExport.h>
 
 class medSelectorWorkspacePrivate;
 class medSelectorToolBox;
@@ -22,7 +21,7 @@ class medSelectorToolBox;
  * class medSelectorWorkspace
  * Defines the Selector workspace which has a tool to select toolboxes.
  */
-class MEDCORELEGACY_EXPORT medSelectorWorkspace : public medAbstractWorkspaceLegacy
+class MEDCORE_EXPORT medSelectorWorkspace : public medAbstractWorkspaceLegacy
 {
     Q_OBJECT
 

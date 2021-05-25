@@ -17,7 +17,6 @@
 #include <dtkCoreSupport/dtkAbstractViewNavigator.h>
 
 #include<medAbstractParameterL.h>
-#include <medCoreLegacyExport.h>
 #include <medImageViewEnum.h>
 
 #include <QDomDocument>
@@ -26,7 +25,7 @@ class medAbstractView;
 class medBoolParameterL;
 
 class medAbstractNavigatorPrivate;
-class MEDCORELEGACY_EXPORT medAbstractNavigator : public dtkAbstractViewNavigator
+class MEDCORE_EXPORT medAbstractNavigator : public dtkAbstractViewNavigator
 {
     Q_OBJECT
 

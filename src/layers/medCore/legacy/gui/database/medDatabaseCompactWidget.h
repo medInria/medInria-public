@@ -13,7 +13,7 @@
 =========================================================================*/
 
 #include <QWidget>
-#include <medCoreLegacyExport.h>
+#include <medCoreExport.h>
 
 class medDatabaseCompactWidgetPrivate;
 class medDatabaseSearchPanel;
@@ -21,7 +21,7 @@ class medDatabaseView;
 class medDatabasePreview;
 class medDataIndex;
 
-class MEDCORELEGACY_EXPORT medDatabaseCompactWidget: public QWidget
+class MEDCORE_EXPORT medDatabaseCompactWidget: public QWidget
 {
     Q_OBJECT
 public :

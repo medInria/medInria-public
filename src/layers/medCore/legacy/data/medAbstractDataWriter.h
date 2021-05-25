@@ -13,7 +13,7 @@
 =========================================================================*/
 
 #include <dtkCoreSupport/dtkAbstractDataWriter.h>
-#include <medCoreLegacyExport.h>
+#include <medCoreExport.h>
 
 class dtkAbstractData;
 class medAbstractData;
@@ -21,7 +21,7 @@ class medAbstractData;
 /**
  * Extending dtkAbstractDataWriter class 
  */
-class MEDCORELEGACY_EXPORT medAbstractDataWriter : public dtkAbstractDataWriter
+class MEDCORE_EXPORT medAbstractDataWriter : public dtkAbstractDataWriter
 {
     Q_OBJECT
 

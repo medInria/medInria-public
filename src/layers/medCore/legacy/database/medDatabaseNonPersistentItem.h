@@ -15,13 +15,12 @@
 #include <QtCore/QObject>
 #include <QtCore/QList>
 
-#include <medCoreLegacyExport.h>
 #include <medDataIndex.h>
 
 class medAbstractData;
 class medDatabaseNonPersistentItemPrivate;
 
-class MEDCORELEGACY_EXPORT medDatabaseNonPersistentItem : public QObject
+class MEDCORE_EXPORT medDatabaseNonPersistentItem : public QObject
 {
     Q_OBJECT
 

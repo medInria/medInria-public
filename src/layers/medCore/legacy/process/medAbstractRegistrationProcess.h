@@ -13,11 +13,10 @@
 =========================================================================*/
 
 #include <medAbstractProcessLegacy.h>
-#include <medCoreLegacyExport.h>
 
 class medAbstractData;
 
-class MEDCORELEGACY_EXPORT medAbstractRegistrationProcess : public medAbstractProcessLegacy
+class MEDCORE_EXPORT medAbstractRegistrationProcess : public medAbstractProcessLegacy
 {
     Q_OBJECT
 

@@ -69,7 +69,7 @@ target_link_libraries(${TARGET_NAME}
   Qt5::Core
   Qt5::Widgets
   dtkCoreSupport
-  medCoreLegacy
+  medCore
   dtkLog
   ITKCommon
   ITKIOImageBase

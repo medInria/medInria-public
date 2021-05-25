@@ -12,12 +12,12 @@
 
 =========================================================================*/
 
-#include <medCoreLegacyExport.h>
-
 #include <QInputDialog>
 #include <QWidget>
 
-class MEDCORELEGACY_EXPORT medSaveLUTDialog : public QInputDialog
+#include <medCoreExport.h>
+
+class MEDCORE_EXPORT medSaveLUTDialog : public QInputDialog
 {
     Q_OBJECT
 public:

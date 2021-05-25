@@ -20,7 +20,6 @@
 #include <QtWidgets>
 
 #include <medAbstractWorkspaceLegacy.h>
-#include <medCoreLegacyExport.h>
 #include <medJobItemL.h>
 #include <medProgressionStack.h>
 
@@ -40,7 +39,7 @@ class dtkPlugin;
  * They can be minimized, hidden, updated when a view is selected, etc...
  *
 */
-class MEDCORELEGACY_EXPORT medToolBox : public QWidget
+class MEDCORE_EXPORT medToolBox : public QWidget
 {
     Q_OBJECT
 

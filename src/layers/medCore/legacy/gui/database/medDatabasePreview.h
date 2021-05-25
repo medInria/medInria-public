@@ -16,13 +16,13 @@
 #include <QGraphicsScene>
 #include <QImage>
 
-#include <medCoreLegacyExport.h>
+#include <medCoreExport.h>
 
 class medDataIndex;
 class QLabel;
 
 class medDatabasePreviewStaticScenePrivate;
-class MEDCORELEGACY_EXPORT medDatabasePreviewStaticScene: public QGraphicsScene
+class MEDCORE_EXPORT medDatabasePreviewStaticScene: public QGraphicsScene
 {
     Q_OBJECT
 public:
@@ -44,7 +44,7 @@ private :
 
 
 class medDatabasePreviewDynamicScenePrivate;
-class MEDCORELEGACY_EXPORT medDatabasePreviewDynamicScene: public medDatabasePreviewStaticScene
+class MEDCORE_EXPORT medDatabasePreviewDynamicScene: public medDatabasePreviewStaticScene
 {
     Q_OBJECT
 public:
@@ -63,7 +63,7 @@ private:
 
 
 class medDatabasePreviewPrivate;
-class MEDCORELEGACY_EXPORT medDatabasePreview: public QGraphicsView
+class MEDCORE_EXPORT medDatabasePreview: public QGraphicsView
 {
     Q_OBJECT
 public :

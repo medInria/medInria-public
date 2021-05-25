@@ -14,9 +14,9 @@
 
 #include <QInputDialog>
 
-#include <medCoreLegacyExport.h>
+#include <medCoreExport.h>
 
-class MEDCORELEGACY_EXPORT medLoadLUTDialog : public QInputDialog
+class MEDCORE_EXPORT medLoadLUTDialog : public QInputDialog
 {
     Q_OBJECT
 

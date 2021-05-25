@@ -12,16 +12,15 @@
 
 =========================================================================*/
 
-#include <dtkCoreSupport/dtkAbstractDataReader.h>
-#include <medCoreLegacyExport.h>
+#include <QtCore>
+
+#include <medCoreExport.h>
+#include <medJobItemL.h>
 
 class dtkAbstractData;
 class medAbstractData;
 
-/**
- * Extending dtkAbstractDataReader class
- */
-class MEDCORELEGACY_EXPORT medAbstractDataReader : public dtkAbstractDataReader
+class MEDCORE_EXPORT medDatabaseExporter : public medJobItemL
 {
     Q_OBJECT
 

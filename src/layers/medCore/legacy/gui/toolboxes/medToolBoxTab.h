@@ -15,10 +15,10 @@
 #include <QtGui>
 #include <QtWidgets>
 
-#include <medCoreLegacyExport.h>
+#include <medCoreExport.h>
 
 
-class MEDCORELEGACY_EXPORT medToolBoxTab : public QTabWidget
+class MEDCORE_EXPORT medToolBoxTab : public QTabWidget
 {
     Q_OBJECT
     Q_PROPERTY(int height READ height WRITE setFixedHeight)

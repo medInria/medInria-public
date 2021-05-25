@@ -13,13 +13,13 @@
 =========================================================================*/
 
 #include <QtCore>
-#include <medCoreLegacyExport.h>
+#include <medCoreExport.h>
 
 class medAbstractView;
 class medAbstractLayeredView;
 class medAbstractParameterGroupLPrivate;
 
-class MEDCORELEGACY_EXPORT medAbstractParameterGroupL : public QObject
+class MEDCORE_EXPORT medAbstractParameterGroupL : public QObject
 {
     Q_OBJECT
 

@@ -16,7 +16,7 @@
 
 #include <QtCore>
 
-#include <medCoreLegacyExport.h>
+#include <medCoreExport.h>
 
 class medToolBox;
 class medToolBoxFactoryPrivate;
@@ -42,7 +42,7 @@ struct medToolBoxDetails;
  * The details for each toolbox are stored in a struct of type medToolBoxDetails.
  */
 
-class MEDCORELEGACY_EXPORT medToolBoxFactory : public dtkAbstractFactory
+class MEDCORE_EXPORT medToolBoxFactory : public dtkAbstractFactory
 {
     Q_OBJECT
 
@@ -114,7 +114,7 @@ private:
  * and a function to allocate memory.
  *
  */
-struct MEDCORELEGACY_EXPORT medToolBoxDetails{
+struct MEDCORE_EXPORT medToolBoxDetails{
     QString name; /** Readable name*/
     QString description; /** (tooltip) short description of the Toolbox */
     QStringList categories; /** List of categories the toolbox falls in*/

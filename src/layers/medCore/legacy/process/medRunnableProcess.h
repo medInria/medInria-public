@@ -12,7 +12,6 @@
 
 =========================================================================*/
 
-#include <medCoreLegacyExport.h>
 #include <medJobItemL.h>
 
 class medRunnableProcessPrivate;
@@ -28,7 +27,7 @@ class dtkAbstractProcess;
  * As for any medJobItemL, a non-blocking connection is needed for
  * QThreadPool::waitForDone()
  */
-class MEDCORELEGACY_EXPORT medRunnableProcess : public medJobItemL
+class MEDCORE_EXPORT medRunnableProcess : public medJobItemL
 {
     Q_OBJECT
 

@@ -16,7 +16,7 @@
 
 #include <QtCore>
 
-#include <medCoreLegacyExport.h>
+#include <medCoreExport.h>
 
 class medAbstractDataSource;
 class medAbstractDataSourceFactoryPrivate;
@@ -26,7 +26,7 @@ class medAbstractDataSourceFactoryPrivate;
  * @brief Dynamic source plugins (e.g. Shanoir, PACS, ...) factory
  * medAbstractSourceDataPlugin register to this factory.
  **/
-class MEDCORELEGACY_EXPORT medAbstractDataSourceFactory : public dtkAbstractFactory
+class MEDCORE_EXPORT medAbstractDataSourceFactory : public dtkAbstractFactory
 {
     Q_OBJECT
 

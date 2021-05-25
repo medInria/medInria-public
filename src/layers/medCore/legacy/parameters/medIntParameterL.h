@@ -13,7 +13,6 @@
 =========================================================================*/
 
 #include <medAbstractParameterL.h>
-#include <medCoreLegacyExport.h>
 #include <medSliderL.h>
 
 class QWidget;
@@ -21,7 +20,7 @@ class QSpinBox;
 class QSlider;
 
 class medIntParameterLPrivate;
-class MEDCORELEGACY_EXPORT medIntParameterL : public medAbstractIntParameterL
+class MEDCORE_EXPORT medIntParameterL : public medAbstractIntParameterL
 {
     Q_OBJECT
 

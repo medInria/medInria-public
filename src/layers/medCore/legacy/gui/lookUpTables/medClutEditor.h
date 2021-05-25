@@ -16,7 +16,7 @@
 #include <QtGui>
 #include <QtWidgets>
 
-#include <medCoreLegacyExport.h>
+#include <medCoreExport.h>
 
 class medAbstractData;
 class medAbstractImageView;
@@ -27,7 +27,8 @@ class medAbstractImageView;
 
 class medClutEditorVertexPrivate;
 
-class MEDCORELEGACY_EXPORT medClutEditorVertex : public QGraphicsObject
+// TODO use QGraphicsObjectItem noobs.
+class MEDCORE_EXPORT medClutEditorVertex : public QObject, public QGraphicsItem
 {
     Q_OBJECT
 
@@ -81,7 +82,7 @@ private :
 // /////////////////////////////////////////////////////////////////
 class medClutEditorTablePrivate;
 
-class MEDCORELEGACY_EXPORT medClutEditorTable : public QGraphicsObject
+class MEDCORE_EXPORT medClutEditorTable : public QObject, public QGraphicsItem
 {
     Q_OBJECT
 
@@ -156,7 +157,7 @@ private:
 // /////////////////////////////////////////////////////////////////
 class medClutEditorHistogramPrivate;
 
-class MEDCORELEGACY_EXPORT medClutEditorHistogram : public QGraphicsItem
+class MEDCORE_EXPORT medClutEditorHistogram : public QGraphicsItem
 {
 public:
      medClutEditorHistogram(QGraphicsItem *parent = nullptr);
@@ -191,7 +192,7 @@ private:
 class medClutEditorView;
 class medClutEditorScenePrivate;
 
-class MEDCORELEGACY_EXPORT medClutEditorScene : public QGraphicsScene
+class MEDCORE_EXPORT medClutEditorScene : public QGraphicsScene
 {
 public:
      medClutEditorScene(QObject *parent = nullptr);
@@ -221,7 +222,7 @@ private:
 // medClutEditorView
 // /////////////////////////////////////////////////////////////////
 
-class MEDCORELEGACY_EXPORT medClutEditorView : public QGraphicsView
+class MEDCORE_EXPORT medClutEditorView : public QGraphicsView
 {
 public:
      medClutEditorView(QWidget *parent = nullptr);

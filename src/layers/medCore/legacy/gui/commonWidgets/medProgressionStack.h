@@ -14,7 +14,7 @@
 
 #include <QWidget>
 
-#include <medCoreLegacyExport.h>
+#include <medCoreExport.h>
 
 class medJobItemL;
 class medProgressionStackPrivate;
@@ -25,7 +25,7 @@ class medProgressionStackPrivate;
  * All visible jobs will be managed here. The class stores pointers in hashTables to identify the sender of status messages
  * It provides methods to communicate with the jobItems (e.g. to cancel the job)
  */
-class MEDCORELEGACY_EXPORT medProgressionStack : public QWidget
+class MEDCORE_EXPORT medProgressionStack : public QWidget
 {
     Q_OBJECT
 

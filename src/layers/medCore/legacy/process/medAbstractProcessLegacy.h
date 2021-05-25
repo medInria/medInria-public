@@ -15,12 +15,11 @@
 #include <dtkCoreSupport/dtkAbstractProcess.h>
 
 #include <medAbstractData.h>
-#include <medCoreLegacyExport.h>
 
 /**
  * Extending dtkAbstractProcess class to hold more specific information
  */
-class MEDCORELEGACY_EXPORT medAbstractProcessLegacy : public dtkAbstractProcess
+class MEDCORE_EXPORT medAbstractProcessLegacy : public dtkAbstractProcess
 {
     Q_OBJECT
 

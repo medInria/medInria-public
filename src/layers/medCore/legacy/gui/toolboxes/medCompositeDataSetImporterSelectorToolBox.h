@@ -12,12 +12,11 @@
 
 =========================================================================*/
 
-#include <medCoreLegacyExport.h>
 #include <medToolBox.h>
 
 class medCompositeDataSetImporterSelectorToolBoxPrivate;
 
-class MEDCORELEGACY_EXPORT medCompositeDataSetImporterSelectorToolBox : public medToolBox
+class MEDCORE_EXPORT medCompositeDataSetImporterSelectorToolBox : public medToolBox
 {
     Q_OBJECT
 

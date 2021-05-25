@@ -16,13 +16,13 @@
 
 #include <QtCore/QObject>
 
-#include <medCoreLegacyExport.h>
+#include <medCoreExport.h>
 
 class medAbstractData;
 class medDatabaseReaderPrivate;
 class medDataIndex;
 
-class MEDCORELEGACY_EXPORT medDatabaseReader : public QObject
+class MEDCORE_EXPORT medDatabaseReader : public QObject
 {
     Q_OBJECT
 

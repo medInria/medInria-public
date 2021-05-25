@@ -16,12 +16,12 @@
 
 #include <QtCore>
 
-#include <medCoreLegacyExport.h>
+#include <medCoreExport.h>
 
 class medAbstractWorkspaceLegacy;
 class medWorkspaceFactoryPrivate;
 
-class MEDCORELEGACY_EXPORT medWorkspaceFactory : public dtkAbstractFactory
+class MEDCORE_EXPORT medWorkspaceFactory : public dtkAbstractFactory
 {
     Q_OBJECT
 

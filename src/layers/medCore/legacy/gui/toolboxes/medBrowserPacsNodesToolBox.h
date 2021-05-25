@@ -12,12 +12,11 @@
 
 =========================================================================*/
 
-#include <medCoreLegacyExport.h>
 #include <medToolBox.h>
 
 class medBrowserPacsNodesToolBoxPrivate;
 
-class MEDCORELEGACY_EXPORT medBrowserPacsNodesToolBox : public medToolBox
+class MEDCORE_EXPORT medBrowserPacsNodesToolBox : public medToolBox
 {
     Q_OBJECT
 

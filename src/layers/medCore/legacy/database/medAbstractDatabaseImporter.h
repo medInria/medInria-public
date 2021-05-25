@@ -18,7 +18,6 @@
 #include <dtkCoreSupport/dtkSmartPointer.h>
 
 #include <medAbstractData.h>
-#include <medCoreLegacyExport.h>
 #include <medDataIndex.h>
 #include <medJobItemL.h>
 
@@ -36,7 +35,7 @@ class medAbstractData;
 * To implement your own database importer, implement  the pure virtual methods, and override the run() method if neccessary.
 * For example, see @medDatabaseImporter and @medDatabaseNonPersistentReader
 **/
-class MEDCORELEGACY_EXPORT medAbstractDatabaseImporter : public medJobItemL
+class MEDCORE_EXPORT medAbstractDatabaseImporter : public medJobItemL
 {
     Q_OBJECT
 

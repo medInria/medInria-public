@@ -13,14 +13,13 @@
 =========================================================================*/
 
 #include <medAbstractParameterL.h>
-#include <medCoreLegacyExport.h>
 
 class QWidget;
 
 class medBoolParameterL;
 
 class medTimeLineParameterLPrivate;
-class MEDCORELEGACY_EXPORT medTimeLineParameterL : public medAbstractGroupParameterL
+class MEDCORE_EXPORT medTimeLineParameterL : public medAbstractGroupParameterL
 {
     Q_OBJECT
 

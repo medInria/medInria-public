@@ -16,9 +16,9 @@ class medToolBoxPacsSelectorPrivate;
 
 #include <QWidget>
 
-#include <medCoreLegacyExport.h>
+#include <medCoreExport.h>
 
-class MEDCORELEGACY_EXPORT medPacsSelector : public QWidget
+class MEDCORE_EXPORT medPacsSelector : public QWidget
 {
     Q_OBJECT
 

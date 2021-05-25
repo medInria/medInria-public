@@ -15,7 +15,7 @@
 #include <QtCore/QObject>
 #include <QtCore/QHash>
 
-#include <medCoreLegacyExport.h>
+#include <medCoreExport.h>
 
 class medParameterPoolManagerLPrivate;
 
@@ -24,7 +24,7 @@ class medAbstractParameterL;
 class medParameterPoolL;
 class medAbstractView;
 
-class MEDCORELEGACY_EXPORT medParameterPoolManagerL : public QObject
+class MEDCORE_EXPORT medParameterPoolManagerL : public QObject
 {
     Q_OBJECT
 

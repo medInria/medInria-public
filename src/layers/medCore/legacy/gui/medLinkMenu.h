@@ -16,11 +16,10 @@
 #include <QtWidgets>
 
 #include <medAbstractParameterGroupL.h>
-#include <medCoreLegacyExport.h>
 
 class medLinkMenuPrivate;
 
-class MEDCORELEGACY_EXPORT medLinkMenu : public QPushButton
+class MEDCORE_EXPORT medLinkMenu : public QPushButton
 {
     Q_OBJECT
 

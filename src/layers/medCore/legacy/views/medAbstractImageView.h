@@ -15,7 +15,6 @@
 #include <medAbstractLayeredView.h>
 #include <medAbstractImageViewInteractor.h>
 #include <medAbstractImageViewNavigator.h>
-#include <medCoreLegacyExport.h>
 #include <medImageViewEnum.h>
 
 class QVector3D;
@@ -40,7 +39,7 @@ class medAbstractImageViewPrivate;
  * @brief Base class for image view types
  * medAbstractImageView specializes a medAbstractLayeredView.
  **/
-class MEDCORELEGACY_EXPORT medAbstractImageView: public medAbstractLayeredView
+class MEDCORE_EXPORT medAbstractImageView: public medAbstractLayeredView
 {
     Q_OBJECT
 

@@ -12,17 +12,17 @@
 
 =========================================================================*/
 
-#include <medCoreLegacyExport.h>
+#include <QtCore>
+
+#include <medCoreExport.h>
 
 #include <QtCore>
 
 class medSettingsManagerPrivate;
 
-class MEDCORELEGACY_EXPORT medSettingsManager : public QObject {
-  Q_OBJECT
-
- public:
-  static medSettingsManager *instance();
+class MEDCORE_EXPORT medSettingsManager : public QObject
+{
+    Q_OBJECT
 
   static void destroy();
 

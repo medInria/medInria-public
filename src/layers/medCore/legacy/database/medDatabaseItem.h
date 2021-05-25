@@ -16,12 +16,11 @@
 #include <QtGui>
 
 #include <medAbstractDatabaseItem.h>
-#include <medCoreLegacyExport.h>
 #include <medDataIndex.h>
 
 class medDatabaseItemPrivate;
 
-class MEDCORELEGACY_EXPORT medDatabaseItem : public medAbstractDatabaseItem
+class MEDCORE_EXPORT medDatabaseItem : public medAbstractDatabaseItem
 {
 public:
      medDatabaseItem(medDataIndex index, const QList<QVariant>& attributes, const QList<QVariant>& data, medAbstractDatabaseItem *parent = 0);

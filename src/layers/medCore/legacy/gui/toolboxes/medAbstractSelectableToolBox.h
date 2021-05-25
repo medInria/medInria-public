@@ -12,7 +12,6 @@
 
 =========================================================================*/
 
-#include <medCoreLegacyExport.h>
 #include <medToolBox.h>
 
 class medAbstractData;
@@ -20,7 +19,7 @@ class medSelectorToolBox;
 class medAbstractSelectableToolBoxPrivate;
 
 //! Base class for custom toolboxes in combobox
-class MEDCORELEGACY_EXPORT medAbstractSelectableToolBox : public medToolBox
+class MEDCORE_EXPORT medAbstractSelectableToolBox : public medToolBox
 {
     Q_OBJECT
 

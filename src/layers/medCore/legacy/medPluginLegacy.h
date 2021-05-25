@@ -12,11 +12,11 @@
 
 =========================================================================*/
 
-#include "medCoreLegacyExport.h"
-
 #include <dtkCoreSupport/dtkPlugin.h>
 
-class MEDCORELEGACY_EXPORT medPluginLegacy : public dtkPlugin
+#include <medCoreExport.h>
+
+class MEDCORE_EXPORT medPluginLegacy : public dtkPlugin
 {
     Q_OBJECT
 

@@ -17,7 +17,7 @@
 #include <QDomElement>
 #include <QFrame>
 
-#include <medCoreLegacyExport.h>
+#include <medCoreExport.h>
 
 class QUuid;
 class medAbstractView;
@@ -28,7 +28,7 @@ class medViewContainerSplitter;
 class medAbstractParameterL;
 
 class medViewContainerPrivate;
-class MEDCORELEGACY_EXPORT medViewContainer: public QFrame
+class MEDCORE_EXPORT medViewContainer: public QFrame
 {
     Q_OBJECT
 

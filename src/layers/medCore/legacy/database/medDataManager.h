@@ -16,8 +16,7 @@
 #include <QPixmap>
 #include <QUuid>
 
-#include <dtkCoreSupport/dtkSmartPointer>
-#include <medCoreLegacyExport.h>
+#include <medDatabaseExporter.h>
 #include <medDataIndex.h>
 
 class medDataManagerPrivate;
@@ -25,7 +24,7 @@ class medAbstractData;
 class medAbstractDbController;
 class dtkAbstractDataWriter;
 
-class MEDCORELEGACY_EXPORT medDataManager : public QObject
+class MEDCORE_EXPORT medDataManager : public QObject
 {
     Q_OBJECT
 

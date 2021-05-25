@@ -14,9 +14,8 @@
 
 #include <medAbstractInteractor.h>
 #include <medAbstractView.h>
-#include <medCoreLegacyExport.h>
 
-class MEDCORELEGACY_EXPORT medAbstractViewInteractor : public medAbstractInteractor
+class MEDCORE_EXPORT medAbstractViewInteractor : public medAbstractInteractor
 {
     Q_OBJECT
 

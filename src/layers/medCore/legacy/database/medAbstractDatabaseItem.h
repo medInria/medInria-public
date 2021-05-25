@@ -14,11 +14,11 @@
 
 #include <QVariant>
 
-#include <medCoreLegacyExport.h>
+#include <medCoreExport.h>
 
 class medDataIndex;
 
-class MEDCORELEGACY_EXPORT medAbstractDatabaseItem
+class MEDCORE_EXPORT medAbstractDatabaseItem
 {
 
 public:

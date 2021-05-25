@@ -21,7 +21,6 @@
 
 #include <medAbstractView.h>
 #include <medAbstractData.h>
-#include <medCoreLegacyExport.h>
 #include <medImageViewEnum.h>
 
 class medAbstractParameterL;
@@ -35,7 +34,7 @@ class medAbstractInteractorPrivate;
  * A medAbstractInteractor belongs to a medAbstractView and is responsible for managing
  * all the interactions for a type of medAbstractData in the medAbstractView.
  **/
-class MEDCORELEGACY_EXPORT medAbstractInteractor : public dtkAbstractViewInteractor
+class MEDCORE_EXPORT medAbstractInteractor : public dtkAbstractViewInteractor
 {
     Q_OBJECT
 

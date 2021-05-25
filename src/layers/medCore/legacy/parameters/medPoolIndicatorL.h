@@ -14,12 +14,12 @@
 
 #include <QLabel>
 
-#include <medCoreLegacyExport.h>
+#include <medCoreExport.h>
 
 class medStringListParameterL;
 
 class medPoolIndiactorPrivate;
-class MEDCORELEGACY_EXPORT medPoolIndicatorL: public QWidget
+class MEDCORE_EXPORT medPoolIndicatorL: public QWidget
 {
     Q_OBJECT
 

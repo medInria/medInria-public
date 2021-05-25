@@ -12,7 +12,7 @@
 
 =========================================================================*/
 
-#include <medCoreLegacyExport.h>
+#include <medCoreExport.h>
 
 #include <medClutEditor.h>
 #include <qiodevice.h>
@@ -21,7 +21,7 @@
 
 class medXMLToLUTReaderPrivate;
 
-class MEDCORELEGACY_EXPORT medXMLToLUTReader
+class MEDCORE_EXPORT medXMLToLUTReader
 {
 public:
     medXMLToLUTReader(QList<medClutEditorTable*> * tables, medClutEditorScene *scene);

@@ -13,13 +13,12 @@
 =========================================================================*/
 
 #include <medAbstractViewInteractor.h>
-#include <medCoreLegacyExport.h>
 
 class medAbstractLayeredView;
 class medAbstractBoolParameterL;
 
 class medAbstractLayeredViewInteractorPrivate;
-class MEDCORELEGACY_EXPORT medAbstractLayeredViewInteractor : public medAbstractViewInteractor
+class MEDCORE_EXPORT medAbstractLayeredViewInteractor : public medAbstractViewInteractor
 {
     Q_OBJECT
 

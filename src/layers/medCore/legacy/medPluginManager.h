@@ -16,7 +16,7 @@
 
 #include <dtkCoreSupport/dtkPluginManager.h>
 
-#include <medCoreLegacyExport.h>
+#include <medCoreExport.h>
 
 class medPluginManagerPrivate;
 
@@ -24,7 +24,7 @@ class medPluginManagerPrivate;
  * @brief Load and unload plugins.
  *
 */
-class MEDCORELEGACY_EXPORT medPluginManager : public dtkPluginManager
+class MEDCORE_EXPORT medPluginManager : public dtkPluginManager
 {
     Q_OBJECT
 

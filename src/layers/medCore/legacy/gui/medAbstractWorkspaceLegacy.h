@@ -15,7 +15,6 @@
 #include <QtCore>
 #include <QtGui>
 
-#include <medCoreLegacyExport.h>
 #include <medProgressionStack.h>
 
 class QUuid;
@@ -46,7 +45,7 @@ class medViewParameterGroupL;
 class medLayerParameterGroupL;
 
 class medAbstractWorkspaceLegacyPrivate;
-class MEDCORELEGACY_EXPORT medAbstractWorkspaceLegacy : public QObject
+class MEDCORE_EXPORT medAbstractWorkspaceLegacy : public QObject
 {
     Q_OBJECT
 

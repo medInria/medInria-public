@@ -15,7 +15,7 @@
 #include <QGroupBox>
 #include <QChildEvent>
 
-#include <medCoreLegacyExport.h>
+#include <medCoreExport.h>
 
 class medGroupBoxPrivate;
 
@@ -23,7 +23,7 @@ class medGroupBoxPrivate;
  * @brief Extends a QGroupBox to make it collapsible.
  *
  */
-class MEDCORELEGACY_EXPORT medGroupBox : public QGroupBox
+class MEDCORE_EXPORT medGroupBox : public QGroupBox
 {
     Q_OBJECT
 

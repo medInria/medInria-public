@@ -19,7 +19,7 @@
 #include <QDomElement>
 #include <QMainWindow>
 
-#include <medCoreLegacyExport.h>
+#include <medCoreExport.h>
 
 class medAbstractViewPrivate;
 
@@ -48,7 +48,7 @@ class medViewBackend {
  * medAbstractView specializes a dtkAbstractView in the context of the application.
  * A medAbstractView contains medAbstractInteractor and medAbstractNavigator.
  **/
-class MEDCORELEGACY_EXPORT medAbstractView: public dtkAbstractView
+class MEDCORE_EXPORT medAbstractView: public dtkAbstractView
 {
     Q_OBJECT
 

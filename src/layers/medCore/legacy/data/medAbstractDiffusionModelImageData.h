@@ -13,9 +13,8 @@
 =========================================================================*/
 
 #include <medAbstractImageData.h>
-#include <medCoreLegacyExport.h>
 
-class MEDCORELEGACY_EXPORT medAbstractDiffusionModelImageData : public medAbstractImageData
+class MEDCORE_EXPORT medAbstractDiffusionModelImageData : public medAbstractImageData
 {
     Q_OBJECT
 

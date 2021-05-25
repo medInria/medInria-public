@@ -14,11 +14,12 @@
 
 #include <QTableWidget>
 #include <QTableWidgetItem>
-#include <medCoreLegacyExport.h>
 #include <medImageViewEnum.h>
-class medTableWidgetChooserPrivate;
 
-class MEDCORELEGACY_EXPORT medTableWidgetChooser : public QTableWidget
+#include <medCoreExport.h>
+
+class medTableWidgetChooserPrivate;
+class MEDCORE_EXPORT medTableWidgetChooser : public QTableWidget
 {
     Q_OBJECT
 
@@ -41,7 +42,7 @@ private:
     medTableWidgetChooserPrivate *d;
 };
 
-class MEDCORELEGACY_EXPORT medTableWidgetItem : public QTableWidgetItem
+class MEDCORE_EXPORT medTableWidgetItem : public QTableWidgetItem
 {
 public:
     medTableWidgetItem(const QIcon &icon, const QString &text, int type = Type):QTableWidgetItem(icon, text, type){}
