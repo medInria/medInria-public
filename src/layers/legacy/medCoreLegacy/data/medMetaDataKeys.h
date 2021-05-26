@@ -48,7 +48,7 @@ namespace medMetaDataKeys
 
         const QStringList getValues(const medAbstractData *data) const { return data->metaDataValues(KEY); }
 
-        const QString getFirstValue(const medAbstractData *data, const QString defaultValue=QString()) const
+        const QString getFirstValue(const medAbstractData *data, const QString defaultValue=QString("")) const
         {
             return  data->hasMetaData(KEY) ? data->metaDataValues(KEY)[0] : defaultValue;
         }
@@ -129,6 +129,8 @@ namespace medMetaDataKeys
     extern MEDCORELEGACY_EXPORT const Key Orientation;
     extern MEDCORELEGACY_EXPORT const Key Origin;
     extern MEDCORELEGACY_EXPORT const Key SliceThickness;
+    extern MEDCORELEGACY_EXPORT const Key PatientOrientation;
+    extern MEDCORELEGACY_EXPORT const Key PatientPosition;
     extern MEDCORELEGACY_EXPORT const Key ImportationDate;
     extern MEDCORELEGACY_EXPORT const Key AcquisitionDate;
     extern MEDCORELEGACY_EXPORT const Key AcquisitionTime;
@@ -148,7 +150,19 @@ namespace medMetaDataKeys
     extern MEDCORELEGACY_EXPORT const Key medDataType;
     extern MEDCORELEGACY_EXPORT const Key PreferredDataReader;
     extern MEDCORELEGACY_EXPORT const Key ImageID;
+    extern MEDCORELEGACY_EXPORT const Key ImageType;
     extern MEDCORELEGACY_EXPORT const Key ThumbnailPath;
+    extern MEDCORELEGACY_EXPORT const Key AcquisitionNumber;
+
+    // Frame of reference
+    extern MEDCORELEGACY_EXPORT const Key FrameOfReferenceUID;
+    extern MEDCORELEGACY_EXPORT const Key PositionReferenceIndicator;
+
+    // EQUIPEMENT
+    extern MEDCORELEGACY_EXPORT const Key Manufacturer;
+
+    // CT
+    extern MEDCORELEGACY_EXPORT const Key KVP;
 
     // MR Image
     extern MEDCORELEGACY_EXPORT const Key FlipAngle;

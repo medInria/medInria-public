@@ -30,9 +30,6 @@ public:
 signals:
     /**
      * @brief Emits an error message for the medMessageController to display.
-     *
-     * When a section failed the medSettingsWidget::validate() method, a message with its name is emitted.
-     *
      * @param sender Should be the current Object itself.
      * @param text The error message.
      * @param timeout The timeout before the message disapears.

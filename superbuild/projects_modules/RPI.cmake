@@ -37,12 +37,11 @@ EP_Initialisation(${ep}
 if (NOT USE_SYSTEM_${ep})
 
 ## #############################################################################
-## Set up versioning control.
+## Set up versioning control
 ## #############################################################################
 
 set(git_url ${GITHUB_PREFIX}Inria-Asclepios/RPI.git)
-set(git_tag ITK5.0)
-
+set(git_tag ITK5.1.1)
 ## #############################################################################
 ## Add specific cmake arguments for configuration step of the project
 ## #############################################################################
@@ -64,9 +63,12 @@ set(cmake_args
   -DCMAKE_CXX_FLAGS=${${ep}_cxx_flags}
   -DCMAKE_SHARED_LINKER_FLAGS=${${ep}_shared_linker_flags}  
   -DCMAKE_INSTALL_PREFIX=<INSTALL_DIR>
-  -DBUILD_SHARED_LIBS=${BUILD_SHARED_LIBS_${ep}}  
-  -DITK_DIR=${ITK_DIR}
+  -DBUILD_SHARED_LIBS=${BUILD_SHARED_LIBS_${ep}}
   -DRPI_BUILD_EXAMPLES=OFF
+  )
+  
+set(cmake_cache_args
+  -DITK_DIR:FILEPATH=${ITK_DIR}
   )
 
 
@@ -88,11 +90,11 @@ ExternalProject_Add(${ep}
   CMAKE_GENERATOR ${gen}
   CMAKE_GENERATOR_PLATFORM ${CMAKE_GENERATOR_PLATFORM}
   CMAKE_ARGS ${cmake_args}
+  CMAKE_CACHE_ARGS ${cmake_cache_args}
   DEPENDS ${${ep}_dependencies}
   INSTALL_COMMAND ""
-  BUILD_ALWAYS 1
+  BUILD_ALWAYS 0
   ) 
-  
   
 ## #############################################################################
 ## Set variable to provide infos about the project

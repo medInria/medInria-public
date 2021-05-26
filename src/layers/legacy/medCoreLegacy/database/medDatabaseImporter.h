@@ -22,13 +22,13 @@ class medAbstractData;
 
 /**
 * @class medDatabaseImporter
-* @brief Threaded importing/indexing of files or directories into medInria database.
+* @brief Threaded importing/indexing of files or directories into the database.
 * @medDatabaseImporter is in charge of importing (or indexing, any word will be used
-* hereafter) items into medInria database.
+* hereafter) items into the database.
 * It is designed to run as a thread, to know how use it check the documentation
 * of @medJobItemL.
 * Images can be imported, that means that are not only indexed but also copied in
-* medInria database (and as a result they can end up being aggregated by volume)
+* the database (and as a result they can end up being aggregated by volume)
 * or they can be just indexed (by indicating so using the parameters in the constructor)
 **/
 class MEDCORELEGACY_EXPORT medDatabaseImporter : public medAbstractDatabaseImporter

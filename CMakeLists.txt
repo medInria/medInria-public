@@ -2,7 +2,7 @@
 #
 # medInria
 #
-# Copyright (c) INRIA 2018. All rights reserved.
+# Copyright (c) INRIA 2013. All rights reserved.
 # See LICENSE.txt for details.
 # 
 #  This software is distributed WITHOUT ANY WARRANTY; without even
@@ -18,7 +18,7 @@ if(POLICY CMP0020)
 endif()
 
 if(NOT DEFINED ${MEDINRIA_SUPERBUILD_VERSION})
-    set(MEDINRIA_SUPERBUILD_VERSION 3.1.1)
+    set(MEDINRIA_SUPERBUILD_VERSION 4.0.0)
 endif()
 
 SET(CMAKE_CXX_STANDARD 17)

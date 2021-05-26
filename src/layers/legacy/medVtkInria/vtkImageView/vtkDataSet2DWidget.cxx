@@ -169,6 +169,7 @@ void vtkDataSet2DWidgetCommand::Execute(vtkObject *caller,
 				     unsigned long event,
 				     void *callData)
 {
+    Q_UNUSED(callData);
     if (event == vtkImageView2D::SliceChangedEvent ||
             event == vtkImageView2D::CurrentPointChangedEvent )
     {

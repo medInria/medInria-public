@@ -54,6 +54,9 @@ namespace medMetaDataKeys
     MEDCORELEGACY_EXPORT const Key SeriesTime("SeriesTime", "Series Time"/*, QVariant::Date*/);
     MEDCORELEGACY_EXPORT const Key SeriesThumbnail("SeriesThumbnail", "Series Thumbnail");
 
+    // EQUIPEMENT
+    MEDCORELEGACY_EXPORT const Key Manufacturer("Manufacturer", "Manufacturer");
+
     // IMAGE
     MEDCORELEGACY_EXPORT const Key SOPInstanceUID("SOPInstanceUID", "SOP Instance UID");
     MEDCORELEGACY_EXPORT const Key Columns("Columns","Columns",QVariant::UInt);
@@ -83,10 +86,22 @@ namespace medMetaDataKeys
     MEDCORELEGACY_EXPORT const Key PreferredDataReader("PreferredDataReader", "Preferred Data Reader");
     MEDCORELEGACY_EXPORT const Key ImageID("ImageID");
     MEDCORELEGACY_EXPORT const Key ThumbnailPath("ThumbnailPath", "Thumbnail Path");
+    MEDCORELEGACY_EXPORT const Key AcquisitionNumber("AcquisitionNumber", "Acquisition Number");
+
+    MEDCORELEGACY_EXPORT const Key PatientOrientation("PatientOrientation", "Patient Orientation");
+    MEDCORELEGACY_EXPORT const Key PatientPosition("PatientPosition", "Patient Position");
+    MEDCORELEGACY_EXPORT const Key ImageType("ImageType", "Image Type");
+
+    // Frame of reference
+    MEDCORELEGACY_EXPORT const Key FrameOfReferenceUID("FrameOfReferenceUID", "Frame of Reference UID");
+    MEDCORELEGACY_EXPORT const Key PositionReferenceIndicator("PositionReferenceIndicator", "Position Reference Indicator");
 
     // MR Image
-    MEDCORELEGACY_EXPORT const Key FlipAngle("FlipAngle");
-    MEDCORELEGACY_EXPORT const Key EchoTime("EchoTime");
-    MEDCORELEGACY_EXPORT const Key RepetitionTime("RepetitionTime");
+    MEDCORELEGACY_EXPORT const Key FlipAngle("FlipAngle", "Flip Angle");
+    MEDCORELEGACY_EXPORT const Key EchoTime("EchoTime", "Echo Time");
+    MEDCORELEGACY_EXPORT const Key RepetitionTime("RepetitionTime", "Repetition Time");
+
+    // CT Image
+    MEDCORELEGACY_EXPORT const Key KVP("KVP", "kVp", QVariant::UInt);
 };
 

@@ -15,7 +15,7 @@
 
 #include <itkConnectedThresholdImageFilter.h>
 #include <itkDanielssonDistanceMapImageFilter.h>
-#include <itkExceptionObject.h>
+#include <itkMacro.h>
 #include <itkExtractImageFilter.h>
 #include <itkImageLinearIteratorWithIndex.h>
 #include <itkImageSliceIteratorWithIndex.h>
@@ -96,7 +96,14 @@ public:
         if (imageView->is2D())
         {
             // Convert mouse click to a 3D point in the image.
-            QVector3D posImage = imageView->mapDisplayToWorldCoordinates( mouseEvent->localPos() );
+#if QT_VERSION > QT_VERSION_CHECK(5, 10, 0)
+            int devicePixelRatio = QGuiApplication::screenAt(mouseEvent->globalPos())->devicePixelRatio();
+#else
+            int screenNumber = QApplication::desktop()->screenNumber(mouseEvent->globalPos());
+            int devicePixelRatio = QGuiApplication::screens().at(screenNumber)->devicePixelRatio();
+#endif
+            QPointF mousePos = mouseEvent->localPos() * devicePixelRatio;
+            QVector3D posImage = imageView->mapDisplayToWorldCoordinates( mousePos );
 
             if (m_paintState != PaintState::Wand)
             {
@@ -151,7 +158,14 @@ public:
 
             if (imageView->is2D())
             {
-                QVector3D posImage = imageView->mapDisplayToWorldCoordinates( mouseEvent->localPos() );
+#if QT_VERSION > QT_VERSION_CHECK(5, 10, 0)
+                int devicePixelRatio = QGuiApplication::screenAt(mouseEvent->globalPos())->devicePixelRatio();
+#else
+                int screenNumber = QApplication::desktop()->screenNumber(mouseEvent->globalPos());
+                int devicePixelRatio = QGuiApplication::screens().at(screenNumber)->devicePixelRatio();
+#endif
+                QPointF mousePos = mouseEvent->localPos() * devicePixelRatio;
+                QVector3D posImage = imageView->mapDisplayToWorldCoordinates( mousePos );
 
                 bool isInside;
                 MaskType::IndexType index;
@@ -181,7 +195,14 @@ public:
 
         if (imageView->is2D())
         {
-            QVector3D posImage = imageView->mapDisplayToWorldCoordinates( mouseEvent->localPos() );
+#if QT_VERSION > QT_VERSION_CHECK(5, 10, 0)
+            int devicePixelRatio = QGuiApplication::screenAt(mouseEvent->globalPos())->devicePixelRatio();
+#else
+            int screenNumber = QApplication::desktop()->screenNumber(mouseEvent->globalPos());
+            int devicePixelRatio = QGuiApplication::screens().at(screenNumber)->devicePixelRatio();
+#endif
+            QPointF mousePos = mouseEvent->localPos() * devicePixelRatio;
+            QVector3D posImage = imageView->mapDisplayToWorldCoordinates( mousePos );
             //Project vector onto plane
             this->m_points.push_back(posImage);
             m_cb->updateStroke( this,imageView );
@@ -523,7 +544,7 @@ bool AlgorithmPaintToolBox::registered()
 
 void AlgorithmPaintToolBox::updateMagicWandComputation()
 {
-    if (seedPlanted)
+    if (seedPlanted && currentView)
     {
         if (m_wand3DCheckbox->isChecked() && wandTimer.elapsed()<600) // 1000/24 (24 images per second)
         {
@@ -531,7 +552,7 @@ void AlgorithmPaintToolBox::updateMagicWandComputation()
         }
 
         undo();
-        updateWandRegion(currentView,m_seed);
+        updateWandRegion(currentView, m_seed);
         wandTimer.start();
     }
 }
@@ -733,7 +754,8 @@ void AlgorithmPaintToolBox::updateView()
             {
                 medAbstractData *data = v->layerData(i);
                 if(!data || data->identifier().contains("vtkDataMesh")
-                        || data->identifier().contains("itkDataImageVector"))
+                        || !(data->identifier().contains("itkDataImage") || data->identifier().contains("medImageMaskAnnotationData"))
+                        || data->identifier().contains("itkDataImageVector")) //avoid medVtkFibersData
                 {
                     handleDisplayError(medAbstractProcessLegacy::DIMENSION_3D);
                     return;
@@ -1039,7 +1061,6 @@ void AlgorithmPaintToolBox::updateWandRegion(medAbstractImageView *view, QVector
     }
 
     MaskType::IndexType index;
-
     bool isInside;
     unsigned int planeIndex = computePlaneIndex(vec,index,isInside);
     if (isInside)
@@ -1240,7 +1261,7 @@ AlgorithmPaintToolBox::GenerateMinMaxValuesFromImage ()
 
 void AlgorithmPaintToolBox::updateStroke(ClickAndMoveEventFilter * filter, medAbstractImageView * view)
 {
-    setCurrentView(currentView);
+    setCurrentView(view);
     if ( !isMask2dOnSlice() )
     {
         return;
@@ -1396,6 +1417,11 @@ void AlgorithmPaintToolBox::updateStroke(ClickAndMoveEventFilter * filter, medAb
 
 bool AlgorithmPaintToolBox::isMask2dOnSlice()
 {
+    if (!currentView)
+    {
+        return false;
+    }
+
     MaskType::IndexType index3D;
     QVector3D vector = currentView->mapDisplayToWorldCoordinates(QPointF(0,0));
     bool isInside;

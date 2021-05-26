@@ -39,15 +39,10 @@ public:
 
     bool isVisible() override;
 
-    void forceInvisibilityOn() override;
-
-    void forceInvisibilityOff() override;
-
     QString info() override;
 
     QString type() override;
 
-    void computeRoiStatistics() override;
 
     bool canRedo() override;
 
@@ -58,12 +53,6 @@ public:
     void redo() override;
 
     void saveState() override;
-
-    bool copyROI(medAbstractView *view) override;
-
-    medAbstractRoi *getCopy(medAbstractView *view) override;
-
-    QList<medAbstractRoi *> *interpolate(medAbstractRoi *roi) override;
 
     Mask2dType::Pointer getSlice();
 

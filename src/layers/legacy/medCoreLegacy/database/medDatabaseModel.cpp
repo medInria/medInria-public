@@ -856,6 +856,7 @@ void medDatabaseModel::updateStudy(const medDataIndex& dataIndex, bool updateChi
 
 void medDatabaseModel::updatePatient(const medDataIndex& dataIndex, bool updateChildren)
 {
+    Q_UNUSED(updateChildren);
     QModelIndex index = d->medIndexMap.value(dataIndex);
     medAbstractDatabaseItem *item = static_cast<medAbstractDatabaseItem *>(index.internalPointer());
     medAbstractDbController * dbc = medDataManager::instance()->controllerForDataSource(dataIndex.dataSourceId());

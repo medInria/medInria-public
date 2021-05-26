@@ -19,7 +19,7 @@
 class QMimeData;
 
 /** class medDataIndex
- *  \brief  A small class to uniquely identify data stored in the medInria datasources.
+ *  \brief  A small class to uniquely identify data stored in the datasources.
  *  The class contains 5 integer values :
  *  dataSourceId : Identifies the data source (see @medDataManager)
  *  patientId, studyId, seriesId identify the data within the source.

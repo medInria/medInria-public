@@ -77,6 +77,18 @@ protected slots:
     void setCameraFocalPoint(const QVector3D& focal);
     void setCameraParallelScale(double parallelScale);
 
+    /**
+     * @brief setSlice is used to change the current slice
+     * @param slice type int
+    */
+    bool setSlice(int slice);
+
+    /**
+     * @brief setRotation is used to rotate a 3D mesh
+     * @param angle type double, and in degree
+    */
+    bool setRotationAngle(double angle);
+    
     void setAxial(bool axial);
     void setCoronal(bool coronal);
     void setSagittal(bool sagittal);

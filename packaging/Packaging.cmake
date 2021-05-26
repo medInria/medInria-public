@@ -13,7 +13,7 @@
 
 # Set common CPACK variables
 
-set(CPACK_PACKAGE_NAME medInria CACHE STRING "Name of the package for medInria superproject")
+set(CPACK_PACKAGE_NAME medInria CACHE STRING "Name of the package for the superproject")
 mark_as_advanced(CPACK_PACKAGE_NAME)
 
 set(CPACK_PACKAGE_DESCRIPTION_SUMMARY "${CPACK_PACKAGE_NAME} - medical image visualisation and processing tool")

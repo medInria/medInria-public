@@ -37,7 +37,7 @@ EP_Initialisation(${ep}
 if (NOT USE_SYSTEM_${ep})
 
 ## #############################################################################
-## Set up versioning control.
+## Set up versioning control
 ## #############################################################################
 
 set(git_url ${GITLAB_INRIA_PREFIX}dtk/dtk.git)
@@ -78,9 +78,11 @@ set(cmake_args
   -DDTK_BUILD_SUPPORT_PLOT=OFF                                                                                                                                                                                                                                                                                       
   -DDTK_BUILD_SUPPORT_VR=ON                                                                                                                                                                                                                                                                                        
   -DDTK_BUILD_WRAPPERS=OFF
-  -DQt5_DIR=${Qt5_DIR}
   )
-
+  
+set(cmake_cache_args
+  -DQt5_DIR:FILEPATH=${Qt5_DIR}
+  )
 
 ## #############################################################################
 ## Add external-project
@@ -100,11 +102,11 @@ ExternalProject_Add(${ep}
   CMAKE_GENERATOR ${gen}
   CMAKE_GENERATOR_PLATFORM ${CMAKE_GENERATOR_PLATFORM}
   CMAKE_ARGS ${cmake_args}
+  CMAKE_CACHE_ARGS ${cmake_cache_args}
   DEPENDS ${${ep}_dependencies}
   INSTALL_COMMAND ""
   BUILD_ALWAYS 1
   )
-
 
 ## #############################################################################
 ## Set variable to provide infos about the project

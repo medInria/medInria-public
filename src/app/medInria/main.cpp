@@ -97,14 +97,15 @@ int main(int argc,char* argv[])
 
     if (dtkApplicationArgumentsContain(&application, "-h") || dtkApplicationArgumentsContain(&application, "--help"))
     {
-        qDebug() << "Usage: medInria "
-                    "[--fullscreen|--no-fullscreen] "
-                    "[--stereo] "
-                    "[--debug] "
+        qDebug() << "Usage: "
+                 << QFileInfo(argv[0]).baseName().toStdString().c_str()
+                 << "[--fullscreen|--no-fullscreen] "
+                 << "[--stereo] "
+                 << "[--debug] "
             #ifdef ACTIVATE_WALL_OPTION
-                    "[[--wall] [--tracker=URL]] "
+                 << "[[--wall] [--tracker=URL]] "
             #endif
-                    "[[--view] [files]]";
+                 << "[[--view] [files]]";
         return 1;
     }
 

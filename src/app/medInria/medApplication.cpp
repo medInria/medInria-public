@@ -2,12 +2,14 @@
 
  medInria
 
- Copyright (c) INRIA 2013 - 2020. All rights reserved.
- See LICENSE.txt for details.
+ Copyright (c) INRIA 2013. All rights reserved.
 
-  This software is distributed WITHOUT ANY WARRANTY; without even
-  the implied warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR
-  PURPOSE.
+ See LICENSE.txt for details in the root of the sources or:
+ https://github.com/medInria/medInria-public/blob/master/LICENSE.txt
+
+ This software is distributed WITHOUT ANY WARRANTY; without even
+ the implied warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR
+ PURPOSE.
 
 =========================================================================*/
 
@@ -20,14 +22,11 @@
 #include <medDatabaseController.h>
 #include <medDiffusionWorkspace.h>
 #include <medFilteringWorkspace.h>
-#include <medGenericWorkspace.h>
 #include <medLogger.h>
 #include <medMainWindow.h>
 #include <medPluginManager.h>
 #include <medSeedPointAnnotationData.h>
 #include <medSettingsManager.h>
-#include <medSettingsWidgetFactory.h>
-#include <medStartupSettingsWidget.h>
 #include <medStyleSheetParser.h>
 #include <medVisualizationWorkspace.h>
 #include <medWorkspaceFactory.h>
@@ -132,14 +131,6 @@ void medApplication::initialize()
     viewerWSpaceFactory->registerWorkspace<medVisualizationWorkspace>();
     viewerWSpaceFactory->registerWorkspace<medDiffusionWorkspace>();
     viewerWSpaceFactory->registerWorkspace<medFilteringWorkspace>();
-
-    bool genericWorkpace = medSettingsManager::instance()->value("startup", "genericWorkspace", false).toBool();
-    viewerWSpaceFactory->registerWorkspace<medGenericWorkspace>(genericWorkpace);
-
-    //Register settingsWidgets
-    medSettingsWidgetFactory* settingsWidgetFactory = medSettingsWidgetFactory::instance();
-    settingsWidgetFactory->registerSettingsWidget<medStartupSettingsWidget>();
-    settingsWidgetFactory->registerSettingsWidget<medDatabaseSettingsWidget>();
 
     //Register annotations
     medAbstractDataFactory * datafactory = medAbstractDataFactory::instance();

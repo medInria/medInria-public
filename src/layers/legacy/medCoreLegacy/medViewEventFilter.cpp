@@ -20,6 +20,7 @@
 #include <QObject>
 #include <QEvent>
 #include <QGraphicsSceneMouseEvent>
+#include <QGraphicsSceneWheelEvent>
 
 // /////////////////////////////////////////////////////////////////
 // View
@@ -57,6 +58,8 @@ QString medViewEventFilter::identifier(void) const
  *  The default implementations do nothing, returning false. */
 bool medViewEventFilter::mousePressEvent( medAbstractView * vscene, QGraphicsSceneMouseEvent *mouseEvent )
 {
+    Q_UNUSED(vscene);
+    Q_UNUSED(mouseEvent);
     return false;
 }
 
@@ -65,26 +68,50 @@ bool medViewEventFilter::mousePressEvent( medAbstractView * vscene, QGraphicsSce
  *  The default implementations do nothing, returning false. */
 bool medViewEventFilter::mousePressEvent( medAbstractView *view, QMouseEvent *mouseEvent )
 {
+    Q_UNUSED(view);
+    Q_UNUSED(mouseEvent);
     return false;
 }
 
 bool medViewEventFilter::mouseReleaseEvent( medAbstractView * vscene, QGraphicsSceneMouseEvent *mouseEvent )
 {
+    Q_UNUSED(vscene);
+    Q_UNUSED(mouseEvent);
     return false;
 }
 
 bool medViewEventFilter::mouseReleaseEvent( medAbstractView *view, QMouseEvent *mouseEvent )
 {
+    Q_UNUSED(view);
+    Q_UNUSED(mouseEvent);
     return false;
 }
 
 bool medViewEventFilter::mouseMoveEvent( medAbstractView * vscene, QGraphicsSceneMouseEvent *mouseEvent )
 {
+    Q_UNUSED(vscene);
+    Q_UNUSED(mouseEvent);
     return false;
 }
 
 bool medViewEventFilter::mouseMoveEvent( medAbstractView *view, QMouseEvent *mouseEvent )
 {
+    Q_UNUSED(view);
+    Q_UNUSED(mouseEvent);
+    return false;
+}
+
+bool medViewEventFilter::mouseWheelEvent( medAbstractView *view, QWheelEvent *wheelEvent )
+{
+    Q_UNUSED(view);
+    Q_UNUSED(wheelEvent);
+    return false;
+}
+
+bool medViewEventFilter::mouseWheelEvent( medAbstractView *view, QGraphicsSceneWheelEvent *wheelEvent )
+{
+    Q_UNUSED(view);
+    Q_UNUSED(wheelEvent);
     return false;
 }
 
@@ -133,6 +160,11 @@ bool medViewEventFilter::eventFilter( QObject *obj, QEvent *event )
         {
             QMouseEvent* mouseEvent = static_cast<QMouseEvent *>(event);
             return this->mouseReleaseEvent( view, mouseEvent );
+        }
+    case ( QEvent::Wheel ) :
+        {
+            QWheelEvent* wheelEvent = static_cast<QWheelEvent *>(event);
+            return this->mouseWheelEvent( view, wheelEvent );
         }
     default:
         {

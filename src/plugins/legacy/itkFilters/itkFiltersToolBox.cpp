@@ -84,6 +84,7 @@ public:
     QSpinBox *shrink1Value;
     QSpinBox *shrink2Value;
     medIntParameterL *componentSizeThresholdFilterValue;
+    QCheckBox *binaryComponentThreshold;
 
     QDoubleSpinBox *intensityMinimumValue;
     QDoubleSpinBox *intensityMaximumValue;
@@ -405,9 +406,18 @@ itkFiltersToolBox::itkFiltersToolBox(QWidget *parent)
     d->componentSizeThresholdFilterValue->setRange ( 0, 100000 );
     d->componentSizeThresholdFilterValue->setValue ( itkFiltersComponentSizeThresholdProcess::defaultMinimumSize );
     d->componentSizeThresholdFilterValue->setObjectName("componentSizeThresholdFilterValue");
-    QHBoxLayout *componentSizeThresholdFilterLayout = new QHBoxLayout;
-    componentSizeThresholdFilterLayout->addWidget(d->componentSizeThresholdFilterValue->getLabel());
-    componentSizeThresholdFilterLayout->addWidget(d->componentSizeThresholdFilterValue->getSpinBox());
+
+    d->binaryComponentThreshold = new QCheckBox(tr("Binarize"));
+    d->binaryComponentThreshold->setChecked(itkFiltersComponentSizeThresholdProcess::defaultBinarize);
+    d->binaryComponentThreshold->setObjectName("componentSizeThresholdCheckBox");
+
+    QHBoxLayout *componentSizeThresholdValueLayout = new QHBoxLayout;
+    componentSizeThresholdValueLayout->addWidget(d->componentSizeThresholdFilterValue->getLabel());
+    componentSizeThresholdValueLayout->addWidget(d->componentSizeThresholdFilterValue->getSpinBox());
+
+    QVBoxLayout *componentSizeThresholdFilterLayout = new QVBoxLayout;
+    componentSizeThresholdFilterLayout->addWidget(d->binaryComponentThreshold);
+    componentSizeThresholdFilterLayout->addLayout (componentSizeThresholdValueLayout);
     d->componentSizeThresholdFilterWidget->setLayout(componentSizeThresholdFilterLayout);
 
     // Run button:
@@ -703,7 +713,8 @@ void itkFiltersToolBox::setupItkComponentSizeThresholdProcess()
     d->process = dtkAbstractProcessFactory::instance()->createSmartPointer("itkComponentSizeThresholdProcess");
 
     d->process->setInput(this->selectorToolBox()->data());
-    d->process->setParameter(d->componentSizeThresholdFilterValue->value());
+    d->process->setParameter(d->componentSizeThresholdFilterValue->value(), 1);
+    d->process->setParameter(static_cast<int>(d->binaryComponentThreshold->isChecked()), 2);
 }
 
 void itkFiltersToolBox::run()

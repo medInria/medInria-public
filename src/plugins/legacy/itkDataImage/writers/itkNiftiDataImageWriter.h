@@ -21,9 +21,10 @@ public:
     itkNiftiDataImageWriter();
     virtual ~itkNiftiDataImageWriter();
 
-    virtual QString identifier()  const;
-    virtual QString description() const;
-    virtual QStringList handled() const;
+    QString identifier()  const override;
+    QString description() const override;
+    QStringList handled() const override;
+    QStringList supportedFileExtensions() const override;
 
     static bool registered();
 

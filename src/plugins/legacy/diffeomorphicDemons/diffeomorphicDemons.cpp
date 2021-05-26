@@ -103,8 +103,8 @@ int diffeomorphicDemonsPrivate::update()
         return testResult;
     }
 
-    FixedImageType *inputFixed  = (FixedImageType*)  proc->fixedImage().GetPointer();
-    FixedImageType *inputMoving = (MovingImageType*) proc->movingImages()[0].GetPointer();
+    FixedImageType  *inputFixed  = (FixedImageType*)  proc->fixedImage().GetPointer();
+    MovingImageType *inputMoving = (MovingImageType*) proc->movingImages()[0].GetPointer();
 
     // The output volume is going to located at the origin/direction of the fixed input. Needed for rpi::DiffeomorphicDemons
     typedef itk::ChangeInformationImageFilter< FixedImageType > FilterType;
@@ -175,8 +175,8 @@ int diffeomorphicDemonsPrivate::update()
         qDebug() << "ExceptionObject caught (StartRegistration): " << err.what();
         return medAbstractProcessLegacy::FAILURE;
     }
-    time_t t2 = clock();
 
+    time_t t2 = clock();
     qDebug() << "Elasped time: " << static_cast<double>(t2-t1)/static_cast<double>(CLOCKS_PER_SEC);
 
     emit proc->progressed(80);
@@ -244,7 +244,7 @@ itk::Transform<double,3,3>::Pointer diffeomorphicDemons::getTransform()
     typedef float PixelType;
     typedef double TransformScalarType;
     typedef itk::Image< PixelType, 3 > RegImageType;
-    //normaly should use long switch cases, but here we know we work with float3 data.
+    // Normally should use long switch cases, but here we know we work with float3 data.
     if (rpi::DiffeomorphicDemons<RegImageType,RegImageType,TransformScalarType> * registration =
             static_cast<rpi::DiffeomorphicDemons<RegImageType,RegImageType,TransformScalarType> *>(d->registrationMethod))
     {
@@ -259,50 +259,50 @@ QString diffeomorphicDemons::getTitleAndParameters()
     typedef float PixelType;
     typedef double TransformScalarType;
     typedef itk::Image< PixelType, 3 > RegImageType;
-    //normaly should use long switch cases, but here we know we work with float3 data.
+    // Normally should use long switch cases, but here we know we work with float3 data.
     typedef rpi::DiffeomorphicDemons<RegImageType,RegImageType,TransformScalarType> RegistrationType;
     RegistrationType *registration = static_cast<RegistrationType *>(d->registrationMethod);
 
     QString titleAndParameters;
     titleAndParameters += "DiffeomorphicDemons\n";
-    titleAndParameters += "  Max number of iterations   : " + QString::fromStdString(rpi::VectorToString(registration->GetNumberOfIterations())) + "\n";
+    titleAndParameters += "  Max number of iterations: " + QString::fromStdString(rpi::VectorToString(registration->GetNumberOfIterations())) + "\n";
     switch (registration->GetUpdateRule())
     {
     case 0:
-        titleAndParameters += "  Update rule   : DIFFEOMORPHIC\n";
+        titleAndParameters += "  Update rule: DIFFEOMORPHIC\n";
         break;
     case 1:
-        titleAndParameters += "  Update rule   : ADDITIVE\n";
+        titleAndParameters += "  Update rule: ADDITIVE\n";
         break;
     case 2:
-        titleAndParameters += "  Update rule   : COMPOSITIVE\n";
+        titleAndParameters += "  Update rule: COMPOSITIVE\n";
         break;
     default:
-        titleAndParameters += "  Update rule   : Unknown\n";
+        titleAndParameters += "  Update rule: Unknown\n";
     }
 
     switch( registration->GetGradientType() )
     {
     case 0:
-        titleAndParameters += "  Gradient type   : SYMMETRIZED\n";
+        titleAndParameters += "  Gradient type: SYMMETRIZED\n";
         break;
     case 1:
-        titleAndParameters += "  Gradient type   : FIXED_IMAGE\n";
+        titleAndParameters += "  Gradient type: FIXED_IMAGE\n";
         break;
     case 2:
-        titleAndParameters += "  Gradient type   : WARPED_MOVING_IMAGE\n";
+        titleAndParameters += "  Gradient type: WARPED_MOVING_IMAGE\n";
         break;
     case 3:
-        titleAndParameters += "  Gradient type   : MAPPED_MOVING_IMAGE\n";
+        titleAndParameters += "  Gradient type: MAPPED_MOVING_IMAGE\n";
         break;
     default:
-        titleAndParameters += "  Gradient type   : Unknown\n";
+        titleAndParameters += "  Gradient type: Unknown\n";
     }
 
-    titleAndParameters += "  Maximum step length   : " + QString::number(registration->GetMaximumUpdateStepLength()) + " (voxel unit)\n";
-    titleAndParameters += "  Update field standard deviation   : " + QString::number(registration->GetUpdateFieldStandardDeviation()) + " (voxel unit)\n";
-    titleAndParameters += "  Displacement field standard deviation   : " + QString::number(registration->GetDisplacementFieldStandardDeviation()) + " (voxel unit)\n";
-    titleAndParameters += "  Use histogram matching   : " + QString::fromStdString(rpi::BooleanToString(registration->GetUseHistogramMatching())) + "\n";
+    titleAndParameters += "  Maximum step length: " + QString::number(registration->GetMaximumUpdateStepLength()) + " (voxel unit)\n";
+    titleAndParameters += "  Update field standard deviation: " + QString::number(registration->GetUpdateFieldStandardDeviation()) + " (voxel unit)\n";
+    titleAndParameters += "  Displacement field standard deviation: " + QString::number(registration->GetDisplacementFieldStandardDeviation()) + " (voxel unit)\n";
+    titleAndParameters += "  Use histogram matching: " + QString::fromStdString(rpi::BooleanToString(registration->GetUseHistogramMatching())) + "\n";
 
     return titleAndParameters;
 }
@@ -312,7 +312,7 @@ bool diffeomorphicDemons::writeTransform(const QString& file)
     typedef float PixelType;
     typedef double TransformScalarType;
     typedef itk::Image< PixelType, 3 > RegImageType;
-    //normaly should use long switch cases, but here we know we work with float3 data.
+    // Normally should use long switch cases, but here we know we work with float3 data.
     if (rpi::DiffeomorphicDemons<RegImageType,RegImageType,TransformScalarType> * registration =
             static_cast<rpi::DiffeomorphicDemons<RegImageType,RegImageType,TransformScalarType> *>(d->registrationMethod))
     {
@@ -328,10 +328,8 @@ bool diffeomorphicDemons::writeTransform(const QString& file)
         }
         return true;
     }
-    else
-    {
-        return false;
-    }
+
+    return false;
 }
 
 // /////////////////////////////////////////////////////////////////

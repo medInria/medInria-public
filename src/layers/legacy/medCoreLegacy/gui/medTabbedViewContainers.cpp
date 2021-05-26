@@ -157,7 +157,10 @@ QList<medAbstractView*> medTabbedViewContainers::viewsInTab(int index)
     QList<medViewContainer*> containers = splitter->containers();
     for(medViewContainer *container : containers)
     {
-        views << container->view();
+        if(container->view())
+        {
+            views << container->view();
+        }
     }
 
     return views;
@@ -273,6 +276,7 @@ void medTabbedViewContainers::tabBarDoubleClickedHandler(int index)
 
 void medTabbedViewContainers::disconnectTabFromSplitter(int index)
 {
+    Q_UNUSED(index);
     medViewContainerSplitter* splitter = dynamic_cast<medViewContainerSplitter*>(this->sender());
     if(!splitter)
         return;
@@ -311,7 +315,7 @@ void medTabbedViewContainers::addContainerToSelection(QUuid container)
     medViewContainer *newSelectedContainer =  medViewContainerManager::instance()->container(container);
     d->containerSelectedForTabIndex.insert(this->currentIndex(), containersSelected);
 
-    connect(newSelectedContainer, SIGNAL(viewRemoved()), this, SIGNAL(containersSelectedChanged()), Qt::UniqueConnection);
+    connect(newSelectedContainer, SIGNAL(viewRemoved()),        this, SIGNAL(containersSelectedChanged()), Qt::UniqueConnection);
     connect(newSelectedContainer, SIGNAL(viewContentChanged()), this, SIGNAL(containersSelectedChanged()), Qt::UniqueConnection);
 
     emit containersSelectedChanged();
@@ -363,7 +367,7 @@ void medTabbedViewContainers::connectContainerSelectedForCurrentTab()
             for(QUuid uuid : containersSelected)
             {
                 medViewContainer *container =  medViewContainerManager::instance()->container(uuid);
-                connect(container, SIGNAL(viewRemoved()), this, SIGNAL(containersSelectedChanged()), Qt::UniqueConnection);
+                connect(container, SIGNAL(viewRemoved()),        this, SIGNAL(containersSelectedChanged()), Qt::UniqueConnection);
                 connect(container, SIGNAL(viewContentChanged()), this, SIGNAL(containersSelectedChanged()), Qt::UniqueConnection);
             }
         }

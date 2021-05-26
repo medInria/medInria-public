@@ -48,6 +48,7 @@ diffeomorphicDemonsToolBox::diffeomorphicDemonsToolBox(QWidget *parent)
     QLabel *explanation = new QLabel("Drop 2 datasets with same size and spacing.\n");
     explanation->setSizePolicy(QSizePolicy::Ignored, QSizePolicy::Preferred);
     explanation->setWordWrap(true);
+    explanation->setStyleSheet("font: italic");
     layout->addWidget(explanation);
 
     d->iterationsBox = new QLineEdit();
@@ -126,6 +127,8 @@ diffeomorphicDemonsToolBox::diffeomorphicDemonsToolBox(QWidget *parent)
     this->addWidget(widget);
 
     connect(runButton, SIGNAL(clicked()), this, SLOT(run()));
+
+    d->process = nullptr;
 }
 
 diffeomorphicDemonsToolBox::~diffeomorphicDemonsToolBox()
@@ -151,10 +154,10 @@ dtkPlugin* diffeomorphicDemonsToolBox::plugin()
 void diffeomorphicDemonsToolBox::run()
 {
     medRegistrationSelectorToolBox *toolbox = dynamic_cast<medRegistrationSelectorToolBox*>(selectorToolBox());
-
     if(toolbox) // toolbox empty in Pipelines and not Registration workspace
     {
-        d->process = dynamic_cast<medAbstractRegistrationProcess*> (dtkAbstractProcessFactory::instance()->create("diffeomorphicDemons"));
+        d->process = dynamic_cast<medAbstractRegistrationProcess*>
+                (dtkAbstractProcessFactory::instance()->create("diffeomorphicDemons"));
         toolbox->setProcess(d->process);
 
         dtkSmartPointer<medAbstractData> fixedData(toolbox->fixedData());
@@ -195,6 +198,7 @@ void diffeomorphicDemonsToolBox::run()
             medRunnableProcess *runProcess = new medRunnableProcess;
             runProcess->setProcess (d->process);
             this->addConnectionsAndStartJob(runProcess);
+            enableOnProcessSuccessImportOutput(runProcess, false);
         }
     }
 }
@@ -211,8 +215,6 @@ medAbstractData* diffeomorphicDemonsToolBox::processOutput()
     {
         return d->process->output();
     }
-    else
-    {
-        return nullptr;
-    }
+
+    return nullptr;
 }

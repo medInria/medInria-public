@@ -50,8 +50,7 @@ code {
     border-color: rgb(221, 221, 221);
     border-style: solid;
     border-width: 1px;
-    padding: 2px; 10px; 2px; 10px;
-    display: block;
+    padding: 2px 10px 2px 10px
 }
 
 .memname tr {

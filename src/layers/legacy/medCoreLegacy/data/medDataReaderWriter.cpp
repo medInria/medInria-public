@@ -2,12 +2,14 @@
 
  medInria
 
- Copyright (c) INRIA 2013 - 2020. All rights reserved.
- See LICENSE.txt for details.
- 
-  This software is distributed WITHOUT ANY WARRANTY; without even
-  the implied warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR
-  PURPOSE.
+ Copyright (c) INRIA 2013. All rights reserved.
+
+ See LICENSE.txt for details in the root of the sources or:
+ https://github.com/medInria/medInria-public/blob/master/LICENSE.txt
+
+ This software is distributed WITHOUT ANY WARRANTY; without even
+ the implied warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR
+ PURPOSE.
 
 =========================================================================*/
 
@@ -18,11 +20,8 @@
 medDataReaderWriter::Reader medDataReaderWriter::reader(const QString& path) {
     QList<QString> readers = medAbstractDataFactory::instance()->readers();
 
-    if (readers.size()==0) {
-#if 0
-        emit showError(tr("No reader plugin"),5000);
-        emit failure(this);
-#endif
+    if (readers.size()==0)
+    {
         return Reader();
     }
 
@@ -58,9 +57,11 @@ medDataReaderWriter::Writer medDataReaderWriter::writer(const QString& path,cons
     if (!dwriter.isNull() && dwriter->handled().contains(data->identifier()) && dwriter->canWrite(path))
         return dwriter;
 
-    for (int i=0;i<writers.size();++i) {
+    for (int i=0;i<writers.size();++i) 
+    {
         dwriter = medAbstractDataFactory::instance()->writerSmartPointer(writers[i]);
-        if (dwriter->handled().contains(data->identifier()) && dwriter->canWrite(path)) {
+        if (dwriter->handled().contains(data->identifier())) 
+        {
             dwriter->enableDeferredDeletion(false);
             return dwriter;
         }

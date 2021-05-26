@@ -23,7 +23,7 @@ Qt::Key OSIndependentControlKey = Qt::Key_Control;
 
 int retrieveDefaultWorkSpace()
 {
-    int homepageDefaultWorkspaceNumber = 1;
+    int homepageDefaultWorkspaceNumber = 0;
     int iRes = homepageDefaultWorkspaceNumber;
 
     bool bMatch = false;
@@ -31,21 +31,17 @@ int retrieveDefaultWorkSpace()
     QList<medWorkspaceFactory::Details*> oListOfWorkspaceDetails = medWorkspaceFactory::instance()->workspaceDetailsSortedByName(true);
     QVariant oStartupWorkspace = medSettingsManager::instance()->value("startup", "default_starting_area");
 
-    if (oStartupWorkspace.toString() == "Search")
-    {
-        iRes = homepageDefaultWorkspaceNumber; // "Search" should not be the startup area. Default is Homepage.
-    }
     if (oStartupWorkspace.toString() == "Homepage")
     {
         iRes = homepageDefaultWorkspaceNumber;
     }
-    else if (oStartupWorkspace.toString() == "Browser")
+    else if (oStartupWorkspace.toString() == "Import/export files")
     {
-        iRes = 2;
+        iRes = 1;
     }
     else if (oStartupWorkspace.toString() == "Composer")
     {
-        iRes = 3;
+        iRes = 2;
     }
     else
     {
@@ -55,30 +51,24 @@ int retrieveDefaultWorkSpace()
             bMatch = poDetail->name == oStartupWorkspace.toString();
             if (bMatch)
             {
-                iRes = i+4;
+                iRes = i+3;
             }
         }
     }
-
 
     return iRes;
 }
 
 /**
- * Constructor, parameter vertical chooses if the layout will be vertical (bottom left menu) or horizontal (alt-tab like menu)
+ * Constructor, alt-tab like menu, access through "CTRL-Space"
  */
-medQuickAccessMenu::medQuickAccessMenu(bool vertical, QWidget *parent, Qt::WindowFlags f) : QWidget(parent, f)
+medQuickAccessMenu::medQuickAccessMenu(QWidget *parent, Qt::WindowFlags f) : QWidget(parent, f)
 {
     currentSelected = retrieveDefaultWorkSpace();
 
-    if (vertical)
-        this->createVerticalQuickAccessMenu();
-    else
-    {
-        this->createHorizontalQuickAccessMenu();
-        this->setWindowFlags(Qt::Window | Qt::FramelessWindowHint | Qt::WindowStaysOnTopHint);
-        this->setAttribute(Qt::WA_TranslucentBackground, true);
-    }
+    this->createHorizontalQuickAccessMenu();
+    this->setWindowFlags(Qt::Window | Qt::FramelessWindowHint | Qt::WindowStaysOnTopHint);
+    this->setAttribute(Qt::WA_TranslucentBackground, true);
 }
 
 /**
@@ -191,29 +181,23 @@ void medQuickAccessMenu::switchToCurrentlySelected()
 
     if (currentSelected == 0)
     {
-        emit searchSelected();
+        emit homepageSelected();
         return;
     }
 
     if (currentSelected == 1)
     {
-        emit homepageSelected();
+        emit browserSelected();
         return;
     }
 
     if (currentSelected == 2)
     {
-        emit browserSelected();
-        return;
-    }
-
-    if (currentSelected == 3)
-    {
         emit composerSelected();
         return;
     }
 
-    if (currentSelected >= 4)
+    if (currentSelected >= 3)
     {
         emit workspaceSelected(buttonsList[currentSelected]->identifier());
         return;
@@ -345,123 +329,6 @@ void medQuickAccessMenu::mouseSelectWidget(unsigned int identifier)
 }
 
 /**
- * Vertical menu layout creation method
- */
-void medQuickAccessMenu::createVerticalQuickAccessMenu()
-{
-    buttonsList.clear();
-
-    QVBoxLayout *workspaceButtonsLayout = new QVBoxLayout;
-    workspaceButtonsLayout->setMargin(0);
-    workspaceButtonsLayout->setSpacing ( 0 );
-
-    //Setup quick access menu title for toolbox tools
-    QLabel *toolboxeSearchLabel = new QLabel ( tr("<b>Search a toolbox</b>") );
-    toolboxeSearchLabel->setMaximumWidth(300);
-    toolboxeSearchLabel->setFixedHeight(25);
-    toolboxeSearchLabel->setAlignment(Qt::AlignCenter);
-    toolboxeSearchLabel->setTextFormat(Qt::RichText);
-    toolboxeSearchLabel->setObjectName("quickAccessMenuHeader"); // See qss file, dedicated format
-    workspaceButtonsLayout->addWidget(toolboxeSearchLabel);
-
-    //Find a toolbox
-    medHomepagePushButton *searchButton = new medHomepagePushButton ( this );
-    searchButton->setText("Search");
-    searchButton->setIdentifier("Search");
-    searchButton->setIcon(QIcon(":icons/magnifier.png"));
-    searchButton->setFixedHeight(40);
-    searchButton->setMaximumWidth(250);
-    searchButton->setMinimumWidth(250);
-    searchButton->setStyleSheet("border: 0px;");
-    searchButton->setFocusPolicy(Qt::NoFocus);
-    searchButton->setCursor(Qt::PointingHandCursor);
-    workspaceButtonsLayout->addWidget(searchButton);
-    QObject::connect ( searchButton, SIGNAL ( clicked() ), this, SIGNAL ( searchSelected() ) );
-    buttonsList.push_back(searchButton);
-
-    //Setup quick access menu title for workspace
-    QLabel *workspaceLabel = new QLabel ( tr("<b>Switch to workspaces</b>") );
-    workspaceLabel->setMaximumWidth(300);
-    workspaceLabel->setFixedHeight(25);
-    workspaceLabel->setAlignment(Qt::AlignCenter);
-    workspaceLabel->setTextFormat(Qt::RichText);
-    workspaceLabel->setObjectName("quickAccessMenuHeader");
-    workspaceButtonsLayout->addWidget(workspaceLabel);
-
-    //Setup homepage access button
-    medHomepagePushButton *homeButton = new medHomepagePushButton ( this );
-    homeButton->setText("Home");
-    homeButton->setIdentifier("Homepage");
-    homeButton->setIcon ( QIcon ( ":icons/home.png" ) );
-    homeButton->setFixedHeight ( 40 );
-    homeButton->setMaximumWidth ( 250 );
-    homeButton->setMinimumWidth ( 250 );
-    homeButton->setStyleSheet("border: 0px;");
-    homeButton->setFocusPolicy ( Qt::NoFocus );
-    homeButton->setCursor(Qt::PointingHandCursor);
-    workspaceButtonsLayout->addWidget ( homeButton );
-    QObject::connect ( homeButton, SIGNAL ( clicked() ), this, SIGNAL ( homepageSelected() ) );
-    buttonsList.push_back(homeButton);
-
-    //Setup browser access button
-    medHomepagePushButton *browserButton = new medHomepagePushButton(this);
-    browserButton->setCursor(Qt::PointingHandCursor);
-    browserButton->setStyleSheet("border: 0px;");
-    browserButton->setIcon(QIcon(":/icons/folder.png"));
-    browserButton->setText("Browser");
-    browserButton->setFixedHeight(40);
-    browserButton->setMaximumWidth(250);
-    browserButton->setMinimumWidth(250);
-    browserButton->setIdentifier("Browser");
-    browserButton->setFocusPolicy(Qt::NoFocus);
-    workspaceButtonsLayout->addWidget(browserButton);
-    QObject::connect(browserButton, SIGNAL(clicked()), this, SIGNAL(browserSelected()));
-    buttonsList.push_back(browserButton);
-
-    //Setup composer access button
-    medHomepagePushButton *composerButton = new medHomepagePushButton(this);
-    composerButton->setCursor(Qt::PointingHandCursor);
-    composerButton->setStyleSheet("border: 0px;");
-    composerButton->setIcon(QIcon(":/icons/composer.png"));
-    composerButton->setText("Composer");
-    composerButton->setFixedHeight(40);
-    composerButton->setMaximumWidth(250);
-    composerButton->setMinimumWidth(250);
-    composerButton->setIdentifier("Composer");
-    composerButton->setFocusPolicy(Qt::NoFocus);
-    workspaceButtonsLayout->addWidget(composerButton);
-    QObject::connect(composerButton, SIGNAL(clicked()), this, SIGNAL(composerSelected()));
-    buttonsList.push_back(composerButton);
-
-    //Dynamically setup workspaces access button
-    QList<medWorkspaceFactory::Details*> workspaceDetails = medWorkspaceFactory::instance()->workspaceDetailsSortedByName();
-    unsigned int numActiveWorkspaces = 0;
-    for( medWorkspaceFactory::Details* detail : workspaceDetails )
-    {
-        if (!detail->isActive)
-            continue;
-
-        ++numActiveWorkspaces;
-        medHomepagePushButton *button = new medHomepagePushButton ( this );
-        button->setText ( detail->name );
-        button->setFocusPolicy ( Qt::NoFocus );
-        button->setCursor(Qt::PointingHandCursor);
-        button->setStyleSheet("border: 0px;");
-        button->setFixedHeight ( 40 );
-        button->setMaximumWidth ( 250 );
-        button->setMinimumWidth ( 250 );
-        button->setToolTip( detail->description);
-        button->setIdentifier(detail->identifier );
-        workspaceButtonsLayout->addWidget ( button );
-        QObject::connect ( button, SIGNAL ( clicked ( QString ) ), this, SIGNAL ( workspaceSelected ( QString ) ) );
-        buttonsList.push_back(button);
-    }
-    workspaceButtonsLayout->addStretch();
-    this->setMinimumHeight ( 20 + 40 * ( 3 + numActiveWorkspaces ) );
-    this->setLayout(workspaceButtonsLayout);
-}
-
-/**
  * Horizontal menu layout creation method
  */
 void medQuickAccessMenu::createHorizontalQuickAccessMenu()
@@ -496,7 +363,7 @@ void medQuickAccessMenu::createHorizontalQuickAccessMenu()
     smallBrowserButton->setFixedHeight ( 100 );
     smallBrowserButton->setFixedWidth ( 160 );
     smallBrowserButton->setFocusPolicy ( Qt::NoFocus );
-    smallBrowserButton->setText("Browser");
+    smallBrowserButton->setText("Import/export files");
     smallBrowserButton->setIdentifier("Browser");
     shortcutAccessLayout->addWidget ( smallBrowserButton );
     QObject::connect ( smallBrowserButton, SIGNAL ( clicked() ), this, SIGNAL ( browserSelected()) );
@@ -544,16 +411,4 @@ void medQuickAccessMenu::createHorizontalQuickAccessMenu()
     this->setFixedWidth ( 40 + 180 * ( 2 + numActiveWorkspaces ) );
     this->setFixedHeight ( 240 );
     this->setLayout(mainWidgetLayout);
-}
-
-void medQuickAccessMenu::manuallyClickOnWorkspaceButton(QString workspaceName)
-{
-    for (int i = 0;i < buttonsList.size();++i)
-    {
-        if (buttonsList[i]->text() == workspaceName)
-        {
-            buttonsList[i]->click();
-            break;
-        }
-    }
 }

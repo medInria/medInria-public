@@ -69,16 +69,6 @@ bool medPaintBrush::isVisible()
     return false;
 }
 
-void medPaintBrush::forceInvisibilityOn()
-{
-
-}
-
-void medPaintBrush::forceInvisibilityOff()
-{
-
-}
-
 QString medPaintBrush::info()
 {
     return QString();
@@ -87,11 +77,6 @@ QString medPaintBrush::info()
 QString medPaintBrush::type()
 {
     return QString();
-}
-
-void medPaintBrush::computeRoiStatistics()
-{
-
 }
 
 bool medPaintBrush::canRedo()
@@ -117,21 +102,6 @@ void medPaintBrush::redo()
 void medPaintBrush::saveState()
 {
 
-}
-
-bool medPaintBrush::copyROI(medAbstractView *view)
-{
-    return false;
-}
-
-medAbstractRoi *medPaintBrush::getCopy(medAbstractView *view)
-{
-    return nullptr;
-}
-
-QList<medAbstractRoi *> *medPaintBrush::interpolate(medAbstractRoi *roi)
-{
-    return nullptr;
 }
 
 int medPaintBrush::getLabel()

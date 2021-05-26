@@ -57,7 +57,7 @@ class MEDVTKDATAMESHBASE_EXPORT vtkMetaDataSet: public vtkDataObject
 
   static vtkMetaDataSet* New();
   vtkTypeMacro(vtkMetaDataSet,vtkDataObject)
-  virtual void PrintSelf(ostream& os, vtkIndent indent);
+  void PrintSelf(ostream& os, vtkIndent indent) override;
 
   virtual vtkMetaDataSet* Clone();
 

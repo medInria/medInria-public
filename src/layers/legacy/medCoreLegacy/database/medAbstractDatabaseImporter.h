@@ -29,7 +29,7 @@ class medAbstractData;
 * @class medAbstractDatabaseImporter
 * @brief Base class for database importers.
 * @medAbstractDatabaseImporter is in charge of importing (or indexing, any word will be used
-* hereafter) items into medInria databases.
+* hereafter) items into the databases.
 * It is designed to run as a thread, to know how to use it, check the documentation
 * of @medJobItemL.
 * It defines a set of usefuls method (populateMissingMetadata, getSuitableReader,...) and implements a default run() method.

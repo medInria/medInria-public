@@ -41,18 +41,18 @@ double medUtilitiesITK::volume(dtkSmartPointer<medAbstractData> data)
     return statsProcess.output().at(0);
 }
 
-void medUtilitiesITK::meanVariance(dtkSmartPointer<medAbstractData> data,
-                                   dtkSmartPointer<medAbstractData> mask,
-                                   double *mean,
-                                   double *variance)
+void medUtilitiesITK::meanStdDeviation(dtkSmartPointer<medAbstractData> data,
+                                      dtkSmartPointer<medAbstractData> mask,
+                                      double *mean,
+                                      double *stdDeviation)
 {
     statsROI statsProcess;
     statsProcess.setInput(data, 0);
     statsProcess.setInput(mask, 1);
-    statsProcess.setParameter(statsROI::MEANVARIANCE);
+    statsProcess.setParameter(statsROI::MEAN_STDDEVIATION);
     statsProcess.update();
     *mean = statsProcess.output().at(0);
-    *variance = statsProcess.output().at(1);
+    *stdDeviation = statsProcess.output().at(1);
     return;
 }
 

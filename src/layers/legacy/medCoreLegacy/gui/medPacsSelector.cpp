@@ -26,6 +26,7 @@ public:
 
 medPacsSelector::medPacsSelector( QWidget *parent /*= 0*/ ): d(new medToolBoxPacsSelectorPrivate)
 {
+    Q_UNUSED(parent);
     d->selectionList = new QListWidget(this);
 
     QFormLayout* fLayout = new QFormLayout(this);

@@ -2,12 +2,14 @@
 
  medInria
 
- Copyright (c) INRIA 2013 - 2019. All rights reserved.
- See LICENSE.txt for details.
+ Copyright (c) INRIA 2013. All rights reserved.
 
-  This software is distributed WITHOUT ANY WARRANTY; without even
-  the implied warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR
-  PURPOSE.
+ See LICENSE.txt for details in the root of the sources or:
+ https://github.com/medInria/medInria-public/blob/master/LICENSE.txt
+
+ This software is distributed WITHOUT ANY WARRANTY; without even
+ the implied warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR
+ PURPOSE.
 
 =========================================================================*/
 #include <voiCutterToolBox.h>
@@ -156,6 +158,8 @@ voiCutterToolBox::voiCutterToolBox(QWidget *parent) :
 
 voiCutterToolBox::~voiCutterToolBox()
 {
+    d->observer->Delete();
+    d->interactorStyleDrawPolygon->Delete();
     delete d;
     d = nullptr;
 }
@@ -178,6 +182,7 @@ void voiCutterToolBox::updateView()
         {
             medAbstractData *data = d->currentView->layerData(i);
             if(!data || data->identifier().contains("vtkDataMesh")
+                    || !data->identifier().contains("itkDataImage") //avoid medVtkFibersData also
                     || data->identifier().contains("itkDataImageVector"))
             {
                 handleDisplayError(medAbstractProcessLegacy::DIMENSION_3D);
@@ -233,7 +238,7 @@ void voiCutterToolBox::updateView()
         if (!d->orientation3DParam->value()) // data on 2D mode
         {
             activateButtons(true);
-            switchToVR(true); // ajust the data view.
+            switchToVR(true); // adjust the data view.
         }
 
         connect(view, SIGNAL(closed()), this, SLOT(onViewClosed()), Qt::UniqueConnection);
@@ -758,6 +763,17 @@ void voiCutterToolBox::definePolygonsImage(std::vector<vtkVector2i> polygonPoint
     {
         cutThroughImage<itk::Image<double,3> >(RoiList,RoiPointList,stackMax,stackOrientation,m);
     }
+
+    for(auto poly : *RoiList)
+        poly->Delete();
+    RoiList->clear();
+    delete RoiList;
+
+    for(auto pts : *RoiPointList)
+        pts->Delete();
+    RoiPointList->clear();
+    delete RoiPointList;
+
 }
 
 template <typename IMAGE>

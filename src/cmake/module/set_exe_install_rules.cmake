@@ -44,7 +44,7 @@ if (APPLE)
     ${target}
     )
   set(MACOSX_BUNDLE_ICON_FILE
-    medInria.icns
+    ${target}.icns
     )
   set(MACOSX_BUNDLE_SHORT_VERSION_STRING
     ${${target}_VERSION}

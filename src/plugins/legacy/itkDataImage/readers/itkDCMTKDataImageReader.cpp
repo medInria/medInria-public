@@ -19,6 +19,8 @@
 
 #include <itkDCMTKImageIO.h>
 
+#include <itkCommonEnums.h>
+#include <itkImageIOBase.h>
 #include <itkImageFileReader.h>
 #include <itkRGBPixel.h>
 #include <itkMetaDataDictionary.h>
@@ -301,42 +303,42 @@ bool itkDCMTKDataImageReader::readInformation(const QStringList& paths)
         std::ostringstream imagetypestring;
         imagetypestring << "itkDataImage";
 
-        if (d->io->GetPixelType() == itk::ImageIOBase::SCALAR)
+        if (d->io->GetPixelType() == itk::IOPixelEnum::SCALAR)
         {
             switch (d->io->GetComponentType())
             {
-            case itk::ImageIOBase::UCHAR:
+            case itk::IOComponentEnum::UCHAR:
                 imagetypestring << "UChar";
                 break;
-            case itk::ImageIOBase::CHAR:
+            case itk::IOComponentEnum::CHAR:
                 imagetypestring << "Char";
                 break;
-            case itk::ImageIOBase::USHORT:
+            case itk::IOComponentEnum::USHORT:
                 imagetypestring << "UShort";
                 break;
-            case itk::ImageIOBase::SHORT:
+            case itk::IOComponentEnum::SHORT:
                 imagetypestring << "Short";
                 break;
-            case itk::ImageIOBase::UINT:
+            case itk::IOComponentEnum::UINT:
                 imagetypestring << "UInt";
                 break;
-            case itk::ImageIOBase::INT:
+            case itk::IOComponentEnum::INT:
                 imagetypestring << "Int";
                 break;
-            case itk::ImageIOBase::ULONG:
+            case itk::IOComponentEnum::ULONG:
                 imagetypestring << "ULong";
                 break;
-            case itk::ImageIOBase::LONG:
+            case itk::IOComponentEnum::LONG:
                 imagetypestring << "Long";
                 break;
-            case itk::ImageIOBase::FLOAT:
+            case itk::IOComponentEnum::FLOAT:
                 imagetypestring << "Float";
                 break;
-            case itk::ImageIOBase::DOUBLE:
+            case itk::IOComponentEnum::DOUBLE:
                 imagetypestring << "Double";
                 break;
             default:
-                qDebug() << "Unrecognized component type: " << d->io->GetComponentType();
+                qDebug() << "Unrecognized component type: " << static_cast<int>(d->io->GetComponentType());
                 return false;
             }
 
@@ -345,12 +347,12 @@ bool itkDCMTKDataImageReader::readInformation(const QStringList& paths)
             if (medData)
                 this->setData(medData);
         }
-        else if (d->io->GetPixelType() == itk::ImageIOBase::RGB)
+        else if (d->io->GetPixelType() == itk::IOPixelEnum::RGB)
         {
 
             switch (d->io->GetComponentType())
             {
-            case itk::ImageIOBase::UCHAR:
+            case itk::IOComponentEnum::UCHAR:
                 medData = medAbstractDataFactory::instance()->create("itkDataImageRGB3");
 
                 if (medData)
@@ -410,6 +412,24 @@ bool itkDCMTKDataImageReader::readInformation(const QStringList& paths)
         //NumberOfDimensions
         medData->setMetaData(medMetaDataKeys::Orientation.key(),     d->io->GetOrientation().c_str());
 
+        // Patient position
+        std::string patientPos = d->io->GetMetaDataValueString("(0018,5100)", 0);
+        medData->setMetaData(medMetaDataKeys::PatientPosition.key(), patientPos.c_str());
+        // Patient orientation
+        std::string patientOrient = d->io->GetMetaDataValueString("(0020,0020)", 0);
+        medData->setMetaData(medMetaDataKeys::PatientOrientation.key(), patientOrient.c_str());
+
+        // Image Type
+        QString imageType = QString::fromStdString(d->io->GetMetaDataValueString("(0008,0008)", 0));
+        // it seems '\' characters are replaced by whitespaces. This is not correct
+        // for this tag.
+        imageType = imageType.replace(' ', "\\");
+        medData->setMetaData(medMetaDataKeys::ImageType.key(), imageType.toStdString().c_str());
+
+        // Acquisition number
+        std::string acquisitionNumber = d->io->GetMetaDataValueString("(0020,0012)", 0);
+        medData->setMetaData(medMetaDataKeys::AcquisitionNumber.key(), acquisitionNumber.c_str());
+
         // Add Origin
         QString origin = "";
         for (unsigned int i = 0; i < d->io->GetNumberOfDimensions(); ++i)
@@ -451,10 +471,29 @@ bool itkDCMTKDataImageReader::readInformation(const QStringList& paths)
         //ImageID
         //ThumbnailPath
 
-        // MR Image
-        medData->setMetaData(medMetaDataKeys::FlipAngle.key(),      d->io->GetFlipAngle().c_str());
-        medData->setMetaData(medMetaDataKeys::EchoTime.key(),       d->io->GetEchoTime().c_str());
-        medData->setMetaData(medMetaDataKeys::RepetitionTime.key(), d->io->GetRepetitionTime().c_str());
+        QString modality = medData->metadata(medMetaDataKeys::Modality.key());
+        if (modality.contains("CT"))
+        {
+            std::string kvp = d->io->GetMetaDataValueString("(0018,0060)", 0 );
+            medData->setMetaData(medMetaDataKeys::KVP.key(), kvp.c_str());
+        }
+        else if (modality.contains("MR"))
+        {
+            // MR Image
+            medData->setMetaData(medMetaDataKeys::FlipAngle.key(), d->io->GetFlipAngle().c_str());
+            medData->setMetaData(medMetaDataKeys::EchoTime.key(), d->io->GetEchoTime().c_str());
+            medData->setMetaData(medMetaDataKeys::RepetitionTime.key(), d->io->GetRepetitionTime().c_str());
+        }
+
+        // Frame of reference
+        std::string frameOfRef = d->io->GetMetaDataValueString("(0020,0052)", 0);
+        medData->setMetaData(medMetaDataKeys::FrameOfReferenceUID.key(), frameOfRef.c_str());
+        std::string posRefIndicator = d->io->GetMetaDataValueString("(0020,1040)", 0);
+        medData->setMetaData(medMetaDataKeys::PositionReferenceIndicator.key(), posRefIndicator.c_str());
+
+        // Equipement
+        std::string manufacturer = d->io->GetMetaDataValueString("(0008,0070)", 0);
+        medData->setMetaData(medMetaDataKeys::Manufacturer.key(), manufacturer.c_str());
     }
     else
     {

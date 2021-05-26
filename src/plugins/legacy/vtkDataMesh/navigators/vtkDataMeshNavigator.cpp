@@ -2,12 +2,14 @@
 
  medInria
 
- Copyright (c) INRIA 2013 - 2018. All rights reserved.
- See LICENSE.txt for details.
- 
-  This software is distributed WITHOUT ANY WARRANTY; without even
-  the implied warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR
-  PURPOSE.
+ Copyright (c) INRIA 2013. All rights reserved.
+
+ See LICENSE.txt for details in the root of the sources or:
+ https://github.com/medInria/medInria-public/blob/master/LICENSE.txt
+
+ This software is distributed WITHOUT ANY WARRANTY; without even
+ the implied warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR
+ PURPOSE.
 
 =========================================================================*/
 
@@ -211,6 +213,11 @@ void vtkDataMeshNavigator::setBackgroundColor(const QString &color)
 {
     d->colorBackgroundParam->setValue(color);
     setBackgroundColor(QColor(color));
+}
+
+QString vtkDataMeshNavigator::name() const
+{
+    return "vtkDataMeshNavigator";
 }
 
 /*=========================================================================

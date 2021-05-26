@@ -16,7 +16,7 @@
 cmake_minimum_required(VERSION 3.3)
 
 if(NOT DEFINED ${medInria_VERSION})
-    set(medInria_VERSION 3.1.1)
+    set(medInria_VERSION 4.0.0)
 endif()
 
 project(medInria VERSION ${medInria_VERSION})
@@ -50,6 +50,13 @@ option(USE_OSPRay
   "Build with OSPRay support"
   OFF
   )
+
+if (NOT WIN32)
+option(USE_FFmpeg
+  "Build with FFmpeg video export support"
+  OFF
+  )
+endif()
 
 ## #############################################################################
 ## Find package

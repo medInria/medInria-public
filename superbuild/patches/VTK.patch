@@ -1,0 +1,72 @@
+From 1b7b962d0efbb009384f0ed7c6f6669250a0542a Mon Sep 17 00:00:00 2001
+From: "mathilde.merle" <mathilde.merle@ihu-liryc.fr>
+Date: Wed, 7 Oct 2020 09:43:48 +0200
+Subject: [PATCH] VTK
+
+---
+ IO/Movie/module.cmake                     | 1 +
+ IO/Movie/vtkOggTheoraWriter.cxx           | 4 +++-
+ Rendering/Qt/vtkQtLabelRenderStrategy.cxx | 1 +
+ Rendering/Qt/vtkQtStringToImage.cxx       | 1 +
+ 4 files changed, 6 insertions(+), 1 deletion(-)
+
+diff --git a/IO/Movie/module.cmake b/IO/Movie/module.cmake
+index fd6d096384..071b4a20a2 100644
+--- a/IO/Movie/module.cmake
++++ b/IO/Movie/module.cmake
+@@ -20,4 +20,5 @@ vtk_module(vtkIOMovie
+     vtkCommonDataModel
+     vtkCommonMisc
+     vtkCommonSystem
++    vtksys
+   )
+\ No newline at end of file
+diff --git a/IO/Movie/vtkOggTheoraWriter.cxx b/IO/Movie/vtkOggTheoraWriter.cxx
+index d24acde998..9dff50bb0e 100644
+--- a/IO/Movie/vtkOggTheoraWriter.cxx
++++ b/IO/Movie/vtkOggTheoraWriter.cxx
+@@ -21,6 +21,8 @@
+ 
+ #include "vtk_oggtheora.h"
+ 
++#include <vtksys/SystemTools.hxx>
++
+ #include <ctime>
+ 
+ //---------------------------------------------------------------------------
+@@ -190,7 +192,7 @@ int vtkOggTheoraWriterInternal::Start()
+   th_info_clear(&thInfo);
+ 
+   // Finally, open the file and start it off.
+-  this->outFile = fopen(this->Writer->GetFileName(),"wb");
++  this->outFile = vtksys::SystemTools::Fopen(this->Writer->GetFileName(),"wb");
+   if (!this->outFile)
+   {
+     vtkGenericWarningMacro(<< "Could not open " << this->Writer->GetFileName() << "." );
+diff --git a/Rendering/Qt/vtkQtLabelRenderStrategy.cxx b/Rendering/Qt/vtkQtLabelRenderStrategy.cxx
+index 8bfd3f6b6b..2d5adb1834 100644
+--- a/Rendering/Qt/vtkQtLabelRenderStrategy.cxx
++++ b/Rendering/Qt/vtkQtLabelRenderStrategy.cxx
+@@ -40,6 +40,7 @@
+ #include <QImage>
+ #include <QMap>
+ #include <QPainter>
++#include <QPainterPath>
+ #include <QPair>
+ #include <QPixmap>
+ #include <QTextDocument>
+diff --git a/Rendering/Qt/vtkQtStringToImage.cxx b/Rendering/Qt/vtkQtStringToImage.cxx
+index 549ffbe874..a7c726e4f9 100644
+--- a/Rendering/Qt/vtkQtStringToImage.cxx
++++ b/Rendering/Qt/vtkQtStringToImage.cxx
+@@ -31,6 +31,7 @@
+ #include <QFontMetrics>
+ #include <QImage>
+ #include <QPainter>
++#include <QPainterPath>
+ #include <QPixmap>
+ #include <QTextDocument>
+ #include <QTextStream>
+-- 
+2.14.3 (Apple Git-98)
+

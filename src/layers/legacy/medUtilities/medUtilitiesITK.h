@@ -43,9 +43,9 @@ public:
 
     static double volume(dtkSmartPointer<medAbstractData> data);
 
-    static void meanVariance(dtkSmartPointer<medAbstractData> data,
-                             dtkSmartPointer<medAbstractData> mask,
-                             double *mean, double *variance);
+    static void meanStdDeviation(dtkSmartPointer<medAbstractData> data,
+                                dtkSmartPointer<medAbstractData> mask,
+                                double *mean, double *stdDeviation);
 
     typedef itk::Image<char, 3> itkImageChar3;
     typedef itk::Image<unsigned char, 3> itkImageUChar3;

@@ -214,7 +214,7 @@ QImage medAbstractData::generateThumbnailInGuiThread(QSize size)
 {
     // Hack: some drivers crash on offscreen rendering, so we detect which one
     // we're currently using, and if it is one of the crashy ones, render to a
-    // proper window instead, that we try to hide behind the main medInria one.
+    // proper window instead, that we try to hide behind the main one.
 
     bool offscreenCapable = false;
     med::GPUInfo gpu = med::gpuModel();
@@ -260,7 +260,7 @@ QImage medAbstractData::generateThumbnailInGuiThread(QSize size)
 
             // We need to wait for the window manager to finish animating before we can continue.
 #ifdef Q_OS_LINUX
-            QTest::qWaitForWindowExposed(viewWidget);
+            Q_UNUSED(QTest::qWaitForWindowExposed(viewWidget));
 #endif
         }
     }

@@ -17,11 +17,11 @@ PURPOSE.
 #include <QLineEdit>
 #include <QVBoxLayout>
 
-medSearchToolboxDialog::medSearchToolboxDialog(QWidget *parent, QHash<QString, QStringList> toolboxDataHash)
+medSearchToolboxDialog::medSearchToolboxDialog(QWidget *parent, QHash<QString, QStringList> toolboxDataHashParent)
     : QDialog(parent)
 {
     findText.clear();
-    toolboxDataHash = toolboxDataHash;
+    toolboxDataHash = toolboxDataHashParent;
 
     QVBoxLayout *layout = new QVBoxLayout;
     setLayout(layout);

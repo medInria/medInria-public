@@ -3,12 +3,14 @@
 
  medInria
 
- Copyright (c) INRIA 2013 - 2020. All rights reserved.
- See LICENSE.txt for details.
+ Copyright (c) INRIA 2013. All rights reserved.
 
-  This software is distributed WITHOUT ANY WARRANTY; without even
-  the implied warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR
-  PURPOSE.
+ See LICENSE.txt for details in the root of the sources or:
+ https://github.com/medInria/medInria-public/blob/master/LICENSE.txt
+
+ This software is distributed WITHOUT ANY WARRANTY; without even
+ the implied warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR
+ PURPOSE.
 
 =========================================================================*/
 
@@ -37,9 +39,14 @@ public:
     virtual medAbstractVector3DParameterL* positionBeingViewedParameter();
     virtual medTimeLineParameterL* timeLineParameter();
 
+    virtual void toXMLNode(QDomDocument *doc, QDomElement *currentNode);
+
 public slots:
 
     virtual void setOrientation(medImageView::Orientation orientation) = 0;
+    virtual bool setRotationAngle(double angle) = 0;
+    virtual bool setSlice(int slice) = 0;
+
     virtual void setCamera(QHash<QString,QVariant>) = 0;
     virtual void moveToPosition (const QVector3D &position) = 0;
 

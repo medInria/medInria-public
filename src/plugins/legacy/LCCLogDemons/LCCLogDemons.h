@@ -53,7 +53,6 @@ public:
     virtual void useMask(bool flag);
     virtual void setInterpolatorType(int value);
 
-public:
     /**
      * @brief Runs the process.
      *
@@ -62,7 +61,19 @@ public:
      */
     virtual int update(ImageType);
     
-    
+    /**
+     * @brief Get parameters for tooltip in undo/redo area.
+     *
+     * @param void
+     * @return QString of the algorithm title & parameters
+    */
+    virtual QString getTitleAndParameters();
+
+    /**
+     * @brief testInputs() tests origin, dimension and spacing of the input
+     * @return medAbstractProcess::DataError according to the test result
+    */
+    medAbstractProcessLegacy::DataError testInputs();
 protected :
     /**
      * @brief
@@ -73,11 +84,9 @@ protected :
     virtual bool writeTransform(const QString& file);
     
     virtual itk::Transform<double,3,3>::Pointer getTransform();
-    virtual QString getTitleAndParameters();
 
 private:
     LCCLogDemonsPrivate *d;
-    
 };
 
 /**

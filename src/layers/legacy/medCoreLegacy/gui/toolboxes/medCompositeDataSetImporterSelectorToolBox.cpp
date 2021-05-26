@@ -52,7 +52,10 @@ medCompositeDataSetImporterSelectorToolBox::~medCompositeDataSetImporterSelector
     d = nullptr;
 }
 
-void medCompositeDataSetImporterSelectorToolBoxPrivate::read(QString filename) { }
+void medCompositeDataSetImporterSelectorToolBoxPrivate::read(QString filename)
+{
+    Q_UNUSED(filename);
+}
 
 /**
  * @brief Performs validation tests on each section and tires to save.

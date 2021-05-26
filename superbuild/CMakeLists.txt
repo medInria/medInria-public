@@ -46,6 +46,13 @@ find_package(Boost REQUIRED)
 option(USE_DTKIMAGING "Use DTK imaging layer" OFF )
   
 option(USE_OSPRay "Use OSPRay for CPU VR" OFF )
+
+if (NOT WIN32)
+  option(USE_FFmpeg "Build with FFmpeg video export support" OFF)
+  if (${USE_FFmpeg})
+      list(APPEND external_projects ffmpeg)
+  endif()
+endif()
   
 list(APPEND external_projects
   VTK 
@@ -59,15 +66,14 @@ list(APPEND external_projects
   )
 
 if (USE_DTKIMAGING)
-  list(APPEND external_projects
-      dtkImaging
-      medInria
-      )
-else()
-  list(APPEND external_projects
-      medInria
-      )
+    list(APPEND external_projects
+        dtkImaging
+        )
 endif()
+
+list(APPEND external_projects
+    medInria
+    )
 
 if (USE_OSPRay)
   SET(ospray_DIR CACHE PATH "The directory containing a CMAKE configuration file for OSPRay")
@@ -81,7 +87,6 @@ endif()
 unset(CMAKE_BUILD_TYPE CACHE)
 set(CMAKE_BUILD_TYPE_externals_projects Release CACHE STRING "Build type configuration for externals projects libraries.")
 set(CMAKE_BUILD_TYPE_medInria Debug CACHE STRING "Build type configuration specific to medInria.")
-
 
 ## #############################################################################
 ## medInria dirs.
@@ -139,8 +144,6 @@ set(CMAKE_MODULE_PATH
 
 set(PRIVATE_PLUGINS_DIRS "" CACHE PATH "Folders containing private plugins, separated by ';'")
 set(PRIVATE_PLUGINS_LEGACY_DIRS "" CACHE PATH "Folders containing legacy private plugins, separated by ';'")
-
-set(EXTERNAL_PROJECT_PLUGINS_LEGACY_DIRS "")
 
 ## #############################################################################
 ## Add Targets

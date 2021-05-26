@@ -28,7 +28,8 @@ class ITKFILTERSPLUGIN_EXPORT itkFiltersComponentSizeThresholdProcess : public i
 public:
     typedef itk::Image<unsigned short, 3> OutputImageType;
 
-    static const double defaultMinimumSize;
+    static const int defaultMinimumSize;
+    static const bool defaultBinarize;
 
     itkFiltersComponentSizeThresholdProcess(itkFiltersComponentSizeThresholdProcess *parent = nullptr);
     itkFiltersComponentSizeThresholdProcess(const itkFiltersComponentSizeThresholdProcess& other);
@@ -37,7 +38,7 @@ public:
     virtual QString description() const;
     
 public slots:
-    void setParameter(int data);
+    void setParameter(int data, int channel);
     int tryUpdate();
 
 protected:

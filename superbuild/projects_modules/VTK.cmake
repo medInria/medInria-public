@@ -14,13 +14,13 @@
 function(VTK_project)
 set(ep VTK)
 
-
 ## #############################################################################
 ## List the dependencies of the project
 ## #############################################################################
 
-list(APPEND ${ep}_dependencies 
-  )
+if(${USE_FFmpeg})
+  list(APPEND ${ep}_dependencies ffmpeg)
+endif()
   
 ## #############################################################################
 ## Prepare the project
@@ -35,7 +35,7 @@ EP_Initialisation(${ep}
 if (NOT USE_SYSTEM_${ep})
 
 ## #############################################################################
-## Set up versioning control.
+## Set up versioning control
 ## #############################################################################
 
 set(git_url ${GITHUB_PREFIX}Kitware/VTK.git)
@@ -49,8 +49,14 @@ set(git_tag v8.1.2)
 if (UNIX)
   set(${ep}_c_flags "${${ep}_c_flags} -w")
   set(${ep}_cxx_flags "${${ep}_cxx_flags} -w")
-  # set(unix_additional_args -DVTK_USE_NVCONTROL:BOOL=ON)
 endif()
+
+# library extension
+if (UNIX AND NOT APPLE)
+    set(extention so)
+elseif(APPLE)
+    set(extention dylib)
+endif() # no WIN32 use of FFmpeg
 
 set(cmake_args
   ${ep_common_cache_args}
@@ -69,14 +75,50 @@ set(cmake_args
   -DModule_vtkGUISupportQtOpenGL=ON
   -DModule_vtkRenderingOSPRay:BOOL=${USE_OSPRay}
   -DVTK_QT_VERSION=5
-  -DQt5_DIR=${Qt5_DIR}
+  -DVTK_USE_OGGTHEORA_ENCODER:BOOL=ON # OGV Export
+  )
+  
+set(cmake_cache_args
+  -DQt5_DIR:FILEPATH=${Qt5_DIR}
   )
 
 if(USE_OSPRay)
-  list(APPEND cmake_args
-  -Dospray_DIR=${ospray_DIR}
-  -DOSPRAY_INSTALL_DIR=${OSPRAY_INSTALL_DIR})
+    list(APPEND cmake_cache_args
+        -Dospray_DIR=${ospray_DIR}
+        -DOSPRAY_INSTALL_DIR=${OSPRAY_INSTALL_DIR}
+    )
 endif()
+
+# Video Export
+if(${USE_FFmpeg})
+    list(APPEND cmake_args
+        # FFMPEG
+        -DModule_vtkIOFFMPEG:BOOL=ON
+        -DFFMPEG_ROOT:STRING=${EP_PATH_BUILD}/ffmpeg
+        -DFFMPEG_INCLUDE_DIR:STRING=${EP_PATH_BUILD}/ffmpeg/include/
+
+        -DFFMPEG_LIBAVCODEC_INCLUDE_DIRS:STRING=${EP_PATH_BUILD}/ffmpeg/include
+        -DFFMPEG_LIBAVDEVICE_INCLUDE_DIRS:STRING=${EP_PATH_BUILD}/ffmpeg/include
+        -DFFMPEG_LIBAVFORMAT_INCLUDE_DIRS:STRING=${EP_PATH_BUILD}/ffmpeg/include
+        -DFFMPEG_LIBAVUTIL_INCLUDE_DIRS:STRING=${EP_PATH_BUILD}/ffmpeg/include
+        -DFFMPEG_LIBSWRESAMPLE_INCLUDE_DIRS:STRING=${EP_PATH_BUILD}/ffmpeg/include
+        -DFFMPEG_LIBSWSCALE_INCLUDE_DIRS:STRING=${EP_PATH_BUILD}/ffmpeg/include
+
+        -DFFMPEG_LIBAVDEVICE_LIBRARIES:STRING=${EP_PATH_BUILD}/ffmpeg/lib/libavdevice.${extention}
+        -DFFMPEG_LIBAVCODEC_LIBRARIES:STRING=${EP_PATH_BUILD}/ffmpeg/lib/libavcodec.${extention}
+        -DFFMPEG_LIBAVFORMAT_LIBRARIES:STRING=${EP_PATH_BUILD}/ffmpeg/lib/libavformat.${extention}
+        -DFFMPEG_LIBAVUTIL_LIBRARIES:STRING=${EP_PATH_BUILD}/ffmpeg/lib/libavutil.${extention}
+        -DFFMPEG_LIBSWRESAMPLE_LIBRARIES:STRING=${EP_PATH_BUILD}/ffmpeg/lib/libswresample.${extention}
+        -DFFMPEG_LIBSWSCALE_LIBRARIES:STRING=${EP_PATH_BUILD}/ffmpeg/lib/libswscale.${extention}
+    )
+endif()
+
+## #############################################################################
+## Check if patch has to be applied
+## #############################################################################
+
+ep_GeneratePatchCommand(${ep} ${ep}_PATCH_COMMAND VTK.patch)
+
 ## #############################################################################
 ## Add external-project
 ## #############################################################################
@@ -92,22 +134,22 @@ ExternalProject_Add(${ep}
   
   GIT_REPOSITORY ${git_url}
   GIT_TAG ${git_tag}
+  PATCH_COMMAND ${${ep}_PATCH_COMMAND}
   CMAKE_GENERATOR ${gen}
   CMAKE_GENERATOR_PLATFORM ${CMAKE_GENERATOR_PLATFORM}
   CMAKE_ARGS ${cmake_args}
+  CMAKE_CACHE_ARGS ${cmake_cache_args}
   DEPENDS ${${ep}_dependencies}
   INSTALL_COMMAND ""
   BUILD_ALWAYS 1
   )
   
-
 ## #############################################################################
 ## Set variable to provide infos about the project
 ## #############################################################################
 
 ExternalProject_Get_Property(${ep} binary_dir)
 set(${ep}_DIR ${binary_dir} PARENT_SCOPE)
-
 
 endif() #NOT USE_SYSTEM_ep
 

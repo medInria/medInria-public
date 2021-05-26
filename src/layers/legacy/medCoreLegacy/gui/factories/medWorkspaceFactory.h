@@ -90,21 +90,6 @@ public:
                                  isActive);
     }
 
-
-    QHash<QString, medWorkspaceFactory::Details *> workspaceDetails() const;
-    QList<medWorkspaceFactory::Details *> workspaceDetailsSortedByName(bool activeOnly = false) const;
-    medWorkspaceFactory::Details * workspaceDetailsFromId(QString identifier) const;
-
-    bool isUsable(QString identifier) const;
-
-    QList<QString> workspacesFromCategory(const QString& category) const;
-
-public slots:
-
-    medAbstractWorkspaceLegacy* createWorkspace(QString type,QWidget* parent=0);
-
-protected:
-
     /**
      * @brief Registers a medAbstractWorkspaceLegacy type with the factory.
      *
@@ -123,6 +108,21 @@ protected:
                            QString category,
                            medWorkspaceCreator creator,
                            medWorkspaceIsUsable isUsable = nullptr, bool isActive = true);
+
+
+    QHash<QString, medWorkspaceFactory::Details *> workspaceDetails() const;
+    QList<medWorkspaceFactory::Details *> workspaceDetailsSortedByName(bool activeOnly = false) const;
+    medWorkspaceFactory::Details * workspaceDetailsFromId(QString identifier) const;
+
+    bool isUsable(QString identifier) const;
+
+    QList<QString> workspacesFromCategory(const QString& category) const;
+
+public slots:
+
+    medAbstractWorkspaceLegacy* createWorkspace(QString type,QWidget* parent=0);
+
+protected:
 
      medWorkspaceFactory();
     virtual ~medWorkspaceFactory();

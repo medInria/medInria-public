@@ -1476,6 +1476,7 @@ const char *vtkImageView::GetSeriesName() const
 */
 void vtkImageView::AddLayer(int layer)
 {
+    Q_UNUSED(layer);
 }
 
 //----------------------------------------------------------------------------
@@ -1484,6 +1485,7 @@ void vtkImageView::AddLayer(int layer)
 */
 void vtkImageView::RemoveLayer(int layer)
 {
+    Q_UNUSED(layer);
 }
 
 //----------------------------------------------------------------------------
@@ -1632,11 +1634,13 @@ vtkAlgorithm* vtkImageView::Get2DDisplayMapperInputAlgorithm() const
 
 vtkAlgorithm* vtkImageView::Get2DDisplayMapperInputAlgorithm (int layer) const
 {
+    Q_UNUSED(layer);
     return this->WindowLevel->GetInputAlgorithm();
 }
 
 vtkImageAlgorithm* vtkImageView::GetInputAlgorithm(int layer) const
 {
+    Q_UNUSED(layer);
     return dynamic_cast<vtkImageAlgorithm*>(this->WindowLevel->GetInputAlgorithm());
 }
 

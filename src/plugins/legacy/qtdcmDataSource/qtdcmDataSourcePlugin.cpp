@@ -48,7 +48,7 @@ QString qtdcmDataSourcePlugin::name() const
 
 QString qtdcmDataSourcePlugin::description() const
 {
-    return "This plugin adds Dicom functionality to the medInria browser area";
+    return "This plugin adds Dicom functionality to the browser area";
 }
 
 QStringList qtdcmDataSourcePlugin::authors() const

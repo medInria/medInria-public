@@ -58,7 +58,7 @@ class medVtkViewPrivate
 {
 public:
     // internal state
-    vtkImageView *currentView; //2d or 3d dependig on the navigator orientation.
+    vtkImageView *currentView; //2d or 3d depending on the navigator orientation.
 
     vtkInteractorStyle *interactorStyle2D;
 
@@ -473,7 +473,7 @@ QImage medVtkView::buildThumbnail(const QSize &size)
     // Only necessary if rendering to an actual screen window.
     if(d->renWin->GetOffScreenRendering() == 0)
     {
-        QTest::qWaitForWindowExposed(d->viewWidget);
+        Q_UNUSED(QTest::qWaitForWindowExposed(d->viewWidget));
     }
 #endif
 

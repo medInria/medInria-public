@@ -2,12 +2,14 @@
 
  medInria
 
- Copyright (c) INRIA 2013 - 2020. All rights reserved.
- See LICENSE.txt for details.
+ Copyright (c) INRIA 2013. All rights reserved.
 
-  This software is distributed WITHOUT ANY WARRANTY; without even
-  the implied warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR
-  PURPOSE.
+ See LICENSE.txt for details in the root of the sources or:
+ https://github.com/medInria/medInria-public/blob/master/LICENSE.txt
+
+ This software is distributed WITHOUT ANY WARRANTY; without even
+ the implied warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR
+ PURPOSE.
 
 =========================================================================*/
 
@@ -52,7 +54,7 @@ public:
     {
         int res = DTK_FAILURE;
 
-        if (composite->chooseFct == statsROI::MEANVARIANCE) // DEFAULT: Compute Mean and Variance
+        if (composite->chooseFct == statsROI::MEAN_STDDEVIATION) // DEFAULT: Compute Mean and Standard deviation
         {
             if (composite->input1)
             {
@@ -60,47 +62,47 @@ public:
 
                 if ( id == "itkDataImageChar3" )
                 {
-                    res = runMeanVariance< ImageType, itk::Image <char,3> >();
+                    res = runMeanStdDeviation< ImageType, itk::Image <char,3> >();
                 }
                 else if ( id == "itkDataImageUChar3" )
                 {
-                    res = runMeanVariance< ImageType, itk::Image <unsigned char,3> >();
+                    res = runMeanStdDeviation< ImageType, itk::Image <unsigned char,3> >();
                 }
                 else if ( id == "itkDataImageShort3" )
                 {
-                    res = runMeanVariance< ImageType, itk::Image <short,3> >();
+                    res = runMeanStdDeviation< ImageType, itk::Image <short,3> >();
                 }
                 else if ( id == "itkDataImageUShort3" )
                 {
-                    res = runMeanVariance< ImageType, itk::Image <unsigned short,3> >();
+                    res = runMeanStdDeviation< ImageType, itk::Image <unsigned short,3> >();
                 }
                 else if ( id == "itkDataImageInt3" )
                 {
-                    res = runMeanVariance< ImageType, itk::Image <int,3> >();
+                    res = runMeanStdDeviation< ImageType, itk::Image <int,3> >();
                 }
                 else if ( id == "itkDataImageUInt3" )
                 {
-                    res = runMeanVariance< ImageType, itk::Image <unsigned int,3> >();
+                    res = runMeanStdDeviation< ImageType, itk::Image <unsigned int,3> >();
                 }
                 else if ( id == "itkDataImageLong3" )
                 {
-                    res = runMeanVariance< ImageType, itk::Image <long,3> >();
+                    res = runMeanStdDeviation< ImageType, itk::Image <long,3> >();
                 }
                 else if ( id== "itkDataImageULong3" )
                 {
-                    res = runMeanVariance< ImageType, itk::Image <unsigned long,3> >();
+                    res = runMeanStdDeviation< ImageType, itk::Image <unsigned long,3> >();
                 }
                 else if ( id == "itkDataImageFloat3" )
                 {
-                    res = runMeanVariance< ImageType, itk::Image <float,3> >();
+                    res = runMeanStdDeviation< ImageType, itk::Image <float,3> >();
                 }
                 else if ( id == "itkDataImageDouble3" )
                 {
-                    res = runMeanVariance< ImageType, itk::Image <double,3> >();
+                    res = runMeanStdDeviation< ImageType, itk::Image <double,3> >();
                 }
                 else
                 {
-                    qDebug() <<"statsROI, Error : pixel type not yet implemented ("
+                    qDebug() <<"statsROI, error: pixel type not yet implemented ("
                              << id
                              << ")";
                 }
@@ -121,7 +123,7 @@ public:
 
     }
 
-    template <class ImageType, class ImageType2> int runMeanVariance()
+    template <class ImageType, class ImageType2> int runMeanStdDeviation()
     {
         typename ImageType::Pointer  imag = dynamic_cast<ImageType  *> ( ( itk::Object* ) ( composite->input0->data() )) ;
         typename ImageType2::Pointer mask = dynamic_cast<ImageType2 *> ( ( itk::Object* ) ( composite->input1->data() )) ;
@@ -216,8 +218,7 @@ private:
 
 statsROI::statsROI()
 {
-    this->computedOutput.empty();
-    chooseFct = MEANVARIANCE;
+    chooseFct = MEAN_STDDEVIATION;
     outsideValue = 0;
 }
 
@@ -238,7 +239,6 @@ void statsROI::setInput (medAbstractData *data, int channel)
     {
         this->input1 = data; //channel 1 = mask if needed
     }
-
 }
 
 void statsROI::setParameter(statsParameter fct)
@@ -303,7 +303,7 @@ int statsROI::update()
         }
         else
         {
-            qDebug() << "statsROI, Error : pixel type not yet implemented ("
+            qDebug() << "statsROI, error: pixel type not yet implemented ("
                      << id
                      << ")";
         }

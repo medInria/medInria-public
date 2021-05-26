@@ -147,6 +147,7 @@ QUuid medDataManager::importPath(const QString& dataPath, bool indexWithoutCopyi
     controller->importPath(dataPath, uuid, indexWithoutCopying);
     return uuid;
 }
+
 /** @brief return writers able to handle the data *Memory management is the responsability of the caller*
 
 */
@@ -453,6 +454,7 @@ void medDataManager::removeData(const medDataIndex& index)
 
 void medDataManager::removeFromNonPersistent(medDataIndex indexImported, QUuid uuid)
 {
+    Q_UNUSED(indexImported);
     Q_D(medDataManager);
     if(!d->makePersistentJobs.contains(uuid))
         return;

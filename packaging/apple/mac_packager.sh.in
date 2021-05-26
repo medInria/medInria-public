@@ -5,7 +5,7 @@
 # or
 # - mac_packager.sh path_to_plugins/*
 
-# To build a stand-alone mac version of medInria, do the following:
+# To build a stand-alone mac version of the application, do the following:
 
 # 1. build medInria
 # 2. build medInria-plugins as well as your desired own plugins

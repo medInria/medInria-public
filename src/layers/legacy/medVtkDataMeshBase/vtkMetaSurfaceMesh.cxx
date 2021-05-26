@@ -271,7 +271,8 @@ void vtkMetaSurfaceMesh::WriteVtpFile (const char* filename)
 //----------------------------------------------------------------------------
 void vtkMetaSurfaceMesh::WriteOBJFile (const char* filename)
 {
-  vtkErrorMacro(<<"Not yet implemented"<<endl);
+    Q_UNUSED(filename);
+    vtkErrorMacro(<<"Not yet implemented"<<endl);
 }
 
 

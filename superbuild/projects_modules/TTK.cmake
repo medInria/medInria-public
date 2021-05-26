@@ -35,13 +35,13 @@ EP_Initialisation(${ep}
   )
 
 if (NOT USE_SYSTEM_${ep})
+
 ## #############################################################################
-## Set up versioning control.
+## Set up versioning control
 ## #############################################################################
 
-set(git_url ${GITHUB_PREFIX}Inria-Asclepios/TTK-Public.git)
-set(git_tag master)
-
+set(git_url ${GITHUB_PREFIX}medInria/TTK.git)
+set(git_tag ITK5.1.1)
 
 ## #############################################################################
 ## Add specific cmake arguments for configuration step of the project
@@ -64,10 +64,13 @@ set(cmake_args
   -DCMAKE_CXX_FLAGS:STRING=${${ep}_cxx_flags}
   -DCMAKE_SHARED_LINKER_FLAGS:STRING=${${ep}_shared_linker_flags}  
   -DCMAKE_INSTALL_PREFIX:PATH=<INSTALL_DIR>
-  -DBUILD_SHARED_LIBS:BOOL=${BUILD_SHARED_LIBS_${ep}}    
+  -DBUILD_SHARED_LIBS:BOOL=${BUILD_SHARED_LIBS_${ep}}
+  -DBUILD_TESTING:BOOL=OFF
+  )
+  
+set(cmake_cache_args
   -DVTK_DIR:FILEPATH=${VTK_DIR}
   -DITK_DIR:FILEPATH=${ITK_DIR}
-  -DBUILD_TESTING:BOOL=OFF
   )
 
 
@@ -89,19 +92,18 @@ ExternalProject_Add(${ep}
   CMAKE_GENERATOR ${gen}
   CMAKE_GENERATOR_PLATFORM ${CMAKE_GENERATOR_PLATFORM}
   CMAKE_ARGS ${cmake_args}
+  CMAKE_CACHE_ARGS ${cmake_cache_args}
   DEPENDS ${${ep}_dependencies}
   INSTALL_COMMAND ""
-  BUILD_ALWAYS 1   
+  BUILD_ALWAYS 1
   )
-  
-  
+ 
 ## #############################################################################
 ## Set variable to provide infos about the project
 ## #############################################################################
 
 ExternalProject_Get_Property(${ep} binary_dir)
 set(${ep}_DIR ${binary_dir} PARENT_SCOPE)
-
   
 endif() #NOT USE_SYSTEM_ep
 

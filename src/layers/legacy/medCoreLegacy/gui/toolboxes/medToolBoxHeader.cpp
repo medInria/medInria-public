@@ -116,6 +116,7 @@ void medToolBoxHeader::setAboutButtonVisibility(bool visible)
 */
 void medToolBoxHeader::mousePressEvent( QMouseEvent *event )
 {
+    Q_UNUSED(event);
     emit triggered();
 }
 

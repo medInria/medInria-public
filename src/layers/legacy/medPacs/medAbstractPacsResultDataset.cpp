@@ -47,6 +47,8 @@ QVector<medAbstractPacsKey*> medAbstractPacsResultDataset::getKeyContainer()
 
 const char* medAbstractPacsResultDataset::findKeyValue( int group, int elem )
 {
+    Q_UNUSED(group);
+    Q_UNUSED(elem);
     DTK_DEFAULT_IMPLEMENTATION;
 
     return nullptr;

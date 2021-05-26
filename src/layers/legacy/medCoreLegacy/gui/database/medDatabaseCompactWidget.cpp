@@ -32,6 +32,7 @@ public:
 
 medDatabaseCompactWidget::medDatabaseCompactWidget(QWidget *parent): d(new medDatabaseCompactWidgetPrivate)
 {
+    Q_UNUSED(parent);
     this->setContentsMargins(0,0,0,0);
 
     createLayout();

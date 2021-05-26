@@ -162,9 +162,9 @@ protected:
 
     DCMTKImageIO();
     ~DCMTKImageIO();
-    void PrintSelf(std::ostream& os, Indent indent) const;
+    void PrintSelf(std::ostream& os, Indent indent) const override;
 
-    void ThreadedRead (void* buffer, RegionType region, int threadId);
+    void ThreadedRead (void* buffer, RegionType region, int threadId) override;
     void InternalRead (void* buffer, int slice, unsigned long pixelCount);
 
     void SwapBytesIfNecessary(void* buffer, unsigned long numberOfPixels);

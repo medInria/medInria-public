@@ -243,9 +243,14 @@ void medAnnotationInteractor::onDataModified( medAbstractData* data )
     msegAnnIntHelper * helper = d->helpers.at( it->second );
     helper->annotationModified(annData);
     if(d->medVtkView->is2D())
+    {
+        d->view2d->Get2DDisplayMapperInputAlgorithm(d->medVtkView->layer(data))->Modified();
         d->view2d->Render();
+    }
     else
+    {
         d->view3d->Render();
+    }
 }
 
 

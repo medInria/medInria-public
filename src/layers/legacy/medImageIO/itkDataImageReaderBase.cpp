@@ -30,6 +30,12 @@
 itkDataImageReaderBase::itkDataImageReaderBase() : dtkAbstractDataReader()
 {
     this->io = 0;
+    this->itkKeyToMedKey["intent_name"] = medAbstractImageData::PixelMeaningMetaData;
+    this->itkKeyToMedKey["MED_MODALITY"] = medMetaDataKeys::Modality.key();
+    this->itkKeyToMedKey["MED_ORIENTATION"] = medMetaDataKeys::Orientation.key();
+    // retrocompatibility
+    this->itkKeyToMedKey["SeriesDicomID"] = medMetaDataKeys::SeriesInstanceUID.key();
+    this->itkKeyToMedKey["StudyDicomID"] = medMetaDataKeys::StudyInstanceUID.key();
 }
 
 
@@ -65,7 +71,7 @@ bool itkDataImageReaderBase::canRead (const QString& path)
            return false;
         }
 
-        if (this->io->GetPixelType() == itk::ImageIOBase::VECTOR)
+        if (this->io->GetPixelType() == itk::IOPixelEnum::VECTOR)
         {
             return this->io->GetNumberOfComponents() <= 4 ;
         }
@@ -100,7 +106,7 @@ bool itkDataImageReaderBase::readInformation (const QString& path)
     }
 
     medAbstractData *medData = nullptr;
-    if (this->io->GetPixelType()==itk::ImageIOBase::SCALAR )
+    if (this->io->GetPixelType()==itk::IOPixelEnum::SCALAR )
     {
         const int  dim  = this->io->GetNumberOfDimensions();
         if (!(dim>0 && dim<=4))
@@ -113,43 +119,43 @@ bool itkDataImageReaderBase::readInformation (const QString& path)
         switch (this->io->GetComponentType())
         {
 
-            case itk::ImageIOBase::UCHAR:
+            case itk::IOComponentEnum::UCHAR:
                 medData = medAbstractDataFactory::instance()->create(QString("itkDataImageUChar").append(cdim));
                 break;
 
-            case itk::ImageIOBase::CHAR:
+            case itk::IOComponentEnum::CHAR:
                 medData = medAbstractDataFactory::instance()->create (QString("itkDataImageChar").append(cdim));
                 break;
 
-            case itk::ImageIOBase::USHORT:
+            case itk::IOComponentEnum::USHORT:
                 medData = medAbstractDataFactory::instance()->create (QString("itkDataImageUShort").append(cdim));
                 break;
 
-            case itk::ImageIOBase::SHORT:
+            case itk::IOComponentEnum::SHORT:
                 medData = medAbstractDataFactory::instance()->create (QString("itkDataImageShort").append(cdim));
                 break;
 
-            case itk::ImageIOBase::UINT:
+            case itk::IOComponentEnum::UINT:
                 medData = medAbstractDataFactory::instance()->create (QString("itkDataImageUInt").append(cdim));
                 break;
 
-            case itk::ImageIOBase::INT:
+            case itk::IOComponentEnum::INT:
                 medData = medAbstractDataFactory::instance()->create (QString("itkDataImageInt").append(cdim));
                 break;
 
-            case itk::ImageIOBase::ULONG:
+            case itk::IOComponentEnum::ULONG:
                 medData = medAbstractDataFactory::instance()->create (QString("itkDataImageULong").append(cdim));
                 break;
 
-            case itk::ImageIOBase::LONG:
+            case itk::IOComponentEnum::LONG:
                 medData = medAbstractDataFactory::instance()->create (QString("itkDataImageLong").append(cdim));
                 break;
 
-            case itk::ImageIOBase::FLOAT:
+            case itk::IOComponentEnum::FLOAT:
                 medData = medAbstractDataFactory::instance()->create (QString("itkDataImageDouble").append(cdim));  // Bug ???
                 break;
 
-            case itk::ImageIOBase::DOUBLE:
+            case itk::IOComponentEnum::DOUBLE:
                 medData = medAbstractDataFactory::instance()->create (QString("itkDataImageDouble").append(cdim));  // Bug (added 4 which was not existing) ??
                 break;
 
@@ -158,13 +164,13 @@ bool itkDataImageReaderBase::readInformation (const QString& path)
                 return false;
         }
     }
-    else if (this->io->GetPixelType()==itk::ImageIOBase::RGB)
+    else if (this->io->GetPixelType()==itk::IOPixelEnum::RGB)
     {
 
         switch (this->io->GetComponentType())
         {
 
-            case itk::ImageIOBase::UCHAR:
+            case itk::IOComponentEnum::UCHAR:
                 medData = medAbstractDataFactory::instance()->create ("itkDataImageRGB3");
                 break;
 
@@ -173,18 +179,18 @@ bool itkDataImageReaderBase::readInformation (const QString& path)
                 return false;
         }
     }
-    else if (this->io->GetPixelType()==itk::ImageIOBase::VECTOR)
+    else if (this->io->GetPixelType()==itk::IOPixelEnum::VECTOR)
     { //   Added by Theo.
         switch (this->io->GetComponentType())
         {
 
-            case itk::ImageIOBase::UCHAR:
+            case itk::IOComponentEnum::UCHAR:
                 medData = medAbstractDataFactory::instance()->create ("itkDataImageVectorUChar3");
                 break;
-            case itk::ImageIOBase::FLOAT:
+            case itk::IOComponentEnum::FLOAT:
                 medData = medAbstractDataFactory::instance()->create ("itkDataImageVectorFloat3");
                 break;
-            case itk::ImageIOBase::DOUBLE:
+            case itk::IOComponentEnum::DOUBLE:
                 medData = medAbstractDataFactory::instance()->create ("itkDataImageVectorDouble3");
                 break;
             default:
@@ -192,13 +198,13 @@ bool itkDataImageReaderBase::readInformation (const QString& path)
                 return false;
         }
     }
-    else if ( this->io->GetPixelType()==itk::ImageIOBase::RGBA )
+    else if ( this->io->GetPixelType()==itk::IOPixelEnum::RGBA )
     {
 
         switch (this->io->GetComponentType())
         {
 
-        case itk::ImageIOBase::UCHAR:
+        case itk::IOComponentEnum::UCHAR:
             medData = medAbstractDataFactory::instance()->create ("itkDataImageRGBA3");
             break;
 
@@ -254,6 +260,27 @@ bool itkDataImageReaderBase::read_image(const QString& path,const char* type)
     return true;
 }
 
+QString itkDataImageReaderBase::convertItkKeyToMedKey(std::string& keyToConvert)
+{
+    QString convertedKey = "";
+
+    QString itkKey = QString::fromStdString(keyToConvert);
+    if (this->itkKeyToMedKey.contains(itkKey))
+    {
+        convertedKey = this->itkKeyToMedKey[itkKey];
+    }
+    else
+    {
+        const medMetaDataKeys::Key* medKey = medMetaDataKeys::Key::fromKeyName(keyToConvert.c_str());
+        if (medKey)
+        {
+            convertedKey = medKey->key();
+        }
+    }
+
+    return convertedKey;
+}
+
 void itkDataImageReaderBase::extractMetaData()
 {
     itk::Object* itkImage = static_cast<itk::Object*>(data()->data());
@@ -265,32 +292,15 @@ void itkDataImageReaderBase::extractMetaData()
         std::string key = keys[i];
         std::string value;
         itk::ExposeMetaData(metaDataDictionary, key, value);
-        QString metaDataKey;
 
-        if (key == "intent_name")
-        {
-            metaDataKey = medAbstractImageData::PixelMeaningMetaData;
-        }
-        else if (key == "MED_MODALITY")
-        {
-            metaDataKey = medMetaDataKeys::Modality.key();
-        }
-        else if (key == "MED_ORIENTATION")
-        {
-            metaDataKey = medMetaDataKeys::Orientation.key();
-        }
-        else
-        {
-            const medMetaDataKeys::Key* medKey = medMetaDataKeys::Key::fromKeyName(key.c_str());
-            if (medKey)
-            {
-                metaDataKey = medKey->key();
-            }
-        }
-
+        QString metaDataKey = convertItkKeyToMedKey(key);
         if (!metaDataKey.isEmpty())
         {
             data()->setMetaData(metaDataKey, QString(value.c_str()));
+        }
+        else
+        {
+            qDebug() << metaObject()->className() << ":: found unknown key:" << QString::fromStdString(key);
         }
     }
 }

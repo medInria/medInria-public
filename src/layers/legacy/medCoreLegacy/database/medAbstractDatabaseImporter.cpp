@@ -177,7 +177,7 @@ void medAbstractDatabaseImporter::importFile ( void )
     // In this first loop we read the headers of all the images to be imported
     // and check if we don't have any problem in reading the file, the header
     // or in selecting a proper format to store the new file afterwards
-    // new files ARE NOT written in medInria database yet, but are stored in a map for writing in a posterior step
+    // new files ARE NOT written in the database yet, but are stored in a map for writing in a posterior step
 
     QString tmpPatientId;
     QString currentPatientId = "";
@@ -278,7 +278,7 @@ void medAbstractDatabaseImporter::importFile ( void )
 
             imageFileName = imageFileName + futureExtension;
 
-            // 2.3) c) Add the image to a map for writing them all in medInria's database in a posterior step
+            // 2.3) c) Add the image to a map for writing them all in the database in a posterior step
             imagesGroupedByVolume[imageFileName] << fileInfo.filePath();
             imagesGroupedByPatient[imageFileName] = patientID;
             imagesGroupedBySeriesId[imageFileName] = currentSeriesId;
@@ -304,7 +304,7 @@ void medAbstractDatabaseImporter::importFile ( void )
     emit disableCancel ( this );
 
     // 3) Re-read selected files and re-populate them with missing metadata
-    //    then write them to medInria db and populate db tables
+    //    then write them to the database, and populate db tables
     QMap<QString, QStringList>::const_iterator it = imagesGroupedByVolume.begin();
     QMap<QString, QString>::const_iterator  itPat = imagesGroupedByPatient.begin();
     QMap<QString, QString>::const_iterator  itSer = imagesGroupedBySeriesId.begin();
@@ -996,13 +996,13 @@ QString medAbstractDatabaseImporter::generateUniqueVolumeId ( const medAbstractD
 
     orientation = "";
 
-    // truncate orientation to 5 digits for a more robust import since
-    // sometimes orientation only differs with the last 2 digits, creating
+    // truncate orientation to 4 digits for a more robust import since
+    // sometimes orientation only differs with the last digits, creating
     // multiple series
     for( QString orient : orientations )
     {
         double d_orient = orient.toDouble();
-        orientation += QString::number ( d_orient, 'g', 5 );
+        orientation += QString::number ( d_orient, 'g', 4 );
     }
 
     // define a unique key string to identify which volume an image belongs to.

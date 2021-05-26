@@ -28,9 +28,11 @@ class itkFiltersComponentSizeThresholdProcessPrivate
 {
 public:
     double minimumSize;
+    bool binarize;
 };
 
-const double itkFiltersComponentSizeThresholdProcess::defaultMinimumSize = 50.0;
+const int itkFiltersComponentSizeThresholdProcess::defaultMinimumSize = 50;
+const bool itkFiltersComponentSizeThresholdProcess::defaultBinarize = true;
 
 //-------------------------------------------------------------------------------------------
 
@@ -38,6 +40,7 @@ itkFiltersComponentSizeThresholdProcess::itkFiltersComponentSizeThresholdProcess
     : itkFiltersProcessBase(parent), d(new itkFiltersComponentSizeThresholdProcessPrivate)
 {  
     d->minimumSize = defaultMinimumSize;
+    d->binarize = defaultBinarize;
 }
 
 itkFiltersComponentSizeThresholdProcess::itkFiltersComponentSizeThresholdProcess(const itkFiltersComponentSizeThresholdProcess& other)
@@ -66,9 +69,20 @@ QString itkFiltersComponentSizeThresholdProcess::description() const
 
 //-------------------------------------------------------------------------------------------
 
-void itkFiltersComponentSizeThresholdProcess::setParameter(int data)
+void itkFiltersComponentSizeThresholdProcess::setParameter(int data, int channel)
 {
-    d->minimumSize = data;
+    switch(channel)
+    {
+    case 1:
+        d->minimumSize = data;
+        break;
+    case 2:
+        d->binarize = static_cast<bool>(data);
+        break;
+    default:
+        qDebug()<< metaObject()->className()
+                << "::set parameter - unknown channel.";
+    }
 }
 
 //-------------------------------------------------------------------------------------------
@@ -126,24 +140,32 @@ int itkFiltersComponentSizeThresholdProcess::updateProcess(medAbstractData *inpu
     relabelFilter->SetMinimumObjectSize(d->minimumSize);
     relabelFilter->Update();
 
-    // BINARY FILTER
-    typedef itk::BinaryThresholdImageFilter <OutputImageType, OutputImageType> BinaryThresholdImageFilterType;
-    typename BinaryThresholdImageFilterType::Pointer thresholdFilter
-            = BinaryThresholdImageFilterType::New();
-    thresholdFilter->SetInput(relabelFilter->GetOutput());
-    thresholdFilter->SetUpperThreshold(0);
-    thresholdFilter->SetInsideValue(0);
-    thresholdFilter->SetOutsideValue(1);
-
-    thresholdFilter->Update();
-
     itk::CStyleCommand::Pointer callback = itk::CStyleCommand::New();
-    callback->SetClientData(( void * ) this);
-    callback->SetCallback(itkFiltersProcessBase::eventCallback);
-    connectedComponentFilter->AddObserver(itk::ProgressEvent(), callback);
+    callback->SetClientData ( ( void * ) this );
+    callback->SetCallback ( itkFiltersProcessBase::eventCallback );
+    connectedComponentFilter->AddObserver ( itk::ProgressEvent(), callback );
 
     setOutputData(medAbstractDataFactory::instance()->createSmartPointer(medUtilitiesITK::itkDataImageId<OutputImageType>()));
-    getOutputData()->setData(thresholdFilter->GetOutput());
+
+    if (d->binarize == true)
+    {
+
+        // BINARY FILTER
+        typedef itk::BinaryThresholdImageFilter <OutputImageType, OutputImageType> BinaryThresholdImageFilterType;
+        typename BinaryThresholdImageFilterType::Pointer thresholdFilter
+                = BinaryThresholdImageFilterType::New();
+        thresholdFilter->SetInput(relabelFilter->GetOutput());
+        thresholdFilter->SetUpperThreshold(0);
+        thresholdFilter->SetInsideValue(0);
+        thresholdFilter->SetOutsideValue(1);
+
+        thresholdFilter->Update();
+        getOutputData()->setData(thresholdFilter->GetOutput());
+    }
+    else
+    {
+        getOutputData()->setData( relabelFilter->GetOutput());
+    }
 
     QString newSeriesDescription = "connectedComponent " + QString::number(d->minimumSize);
     medUtilities::setDerivedMetaData(getOutputData(), inputData, newSeriesDescription);

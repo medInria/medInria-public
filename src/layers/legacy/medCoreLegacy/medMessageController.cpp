@@ -138,6 +138,7 @@ void medMessageProgress::associateTimer(void)
 
 void medMessageProgress::paintEvent ( QPaintEvent * event)
 {
+    Q_UNUSED(event);
     if (timeout > 0)
     {
         timer->start(timeout);

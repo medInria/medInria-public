@@ -2,6 +2,8 @@
     <qresource prefix="/">
         <file>../../../../LICENSE.txt</file>
         <file>../../../../RELEASE_NOTES.txt</file>
+        <file>../../../../DESCRIPTION.txt</file>
+        <file>../../../../ABOUT.txt</file>
         <file>medInria.ico</file>
         <file>icons/AxialIcon.png</file>
         <file>icons/CoronalIcon.png</file>
@@ -21,7 +23,6 @@
         <file>icons/workspace_Registration.png</file>
         <file>icons/workspace_Filtering.png</file>
         <file>icons/workspace_Segmentation.png</file>
-        <file>icons/workspace_Generic.png</file>
         <file>icons/workspace_Filtering dtk2.png</file>
         <file>icons/workspace_Meshing.png</file>
         <file>icons/workspace_Reformat.png</file>
@@ -125,7 +126,7 @@
         <file>icons/stop.png</file>
         <file>icons/pause.png</file>
         <file>icons/play.png</file>
-        <file>authors.html</file>
+        <file>authors.txt</file>
         <file>icons/fullscreenExpand.png</file>
         <file>icons/fullscreenReduce.png</file>
         <file>icons/medInriaPlugin.png</file>
@@ -147,6 +148,8 @@
         <file>pixmaps/radio-disabled.png</file>
         <file>pixmaps/radio-checked-disabled.png</file>
         <file>pixmaps/plus-button.png</file>
+        <file>pixmaps/plus.png</file>
+        <file>pixmaps/minus.png</file>
         <file>pixmaps/checkbox-disabled.png</file>
         <file>pixmaps/checkbox-checked-disabled.png</file>
         <file>pixmaps/arrow-top-disabled.png</file>
@@ -159,5 +162,10 @@
         <file>pixmaps/arrow-bot.png</file>
         <file>icons/adjust_size.png</file>
         <file>icons/adjust_size_grey.png</file>
+        <file>icons/movie.png</file>
+        <file>icons/movie_grey.png</file>
+        <file>icons/saveScene.png</file>
+        <file>icons/saveScene_grey.png</file>
+        <file>icons/scene.png</file>
     </qresource>
 </RCC>

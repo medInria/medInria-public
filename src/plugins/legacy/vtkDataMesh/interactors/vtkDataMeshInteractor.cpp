@@ -2,12 +2,14 @@
 
  medInria
 
- Copyright (c) INRIA 2013 - 2020. All rights reserved.
- See LICENSE.txt for details.
+ Copyright (c) INRIA 2013. All rights reserved.
 
-  This software is distributed WITHOUT ANY WARRANTY; without even
-  the implied warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR
-  PURPOSE.
+ See LICENSE.txt for details in the root of the sources or:
+ https://github.com/medInria/medInria-public/blob/master/LICENSE.txt
+
+ This software is distributed WITHOUT ANY WARRANTY; without even
+ the implied warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR
+ PURPOSE.
 
 =========================================================================*/
 
@@ -154,7 +156,7 @@ QStringList vtkDataMeshInteractor::handled() const
 
 QStringList vtkDataMeshInteractor::dataHandled()
 {
-    QStringList d = QStringList() << "vtkDataMesh";
+    QStringList d = QStringList() << "vtkDataMesh" << "medContours";
     return  d;
 }
 
@@ -307,6 +309,8 @@ void vtkDataMeshInteractor::setOpacity(double value)
     d->actorProperty2D->SetOpacity(value);
     d->actorProperty3D->SetOpacity(value);
 
+    this->opacityParameter()->setValue(value);
+
     d->view->render();
 }
 
@@ -350,6 +354,7 @@ void vtkDataMeshInteractor::setColor(QColor color)
 
 void vtkDataMeshInteractor::setColor(const QString &color)
 {
+    d->colorParam->setValue(color);
     setColor(QColor(color));
 }
 
@@ -363,6 +368,8 @@ QColor vtkDataMeshInteractor::color() const
 
 void vtkDataMeshInteractor::setRenderingType(const QString & type)
 {
+    d->renderingParam->setValue(type);
+
     QString value = type.toLower();
     if (value == "wireframe")
     {
@@ -383,15 +390,15 @@ void vtkDataMeshInteractor::setRenderingType(const QString & type)
     d->view->render();
 }
 
-
 QString vtkDataMeshInteractor::renderingType() const
 {
     return QString::fromStdString(d->actorProperty3D->GetRepresentationAsString()).toLower();
 }
 
-
 void vtkDataMeshInteractor::setAttribute(const QString & attributeName)
 {
+    d->attributesParam->setValue(attributeName);
+
     vtkPointSet * pointSet = vtkPointSet::SafeDownCast(d->metaDataSet->GetDataSet());
     if ( ! pointSet )
         return;
@@ -448,7 +455,6 @@ void vtkDataMeshInteractor::setAttribute(const QString & attributeName)
         initWindowLevelParameters(range, dataType);
         delete [] range;
 
-        
         this->setLut(d->lut.first);
 
         mapper2d->SetScalarVisibility(1);
@@ -507,6 +513,8 @@ QString vtkDataMeshInteractor::attribute() const
 
 void vtkDataMeshInteractor::setLut(const QString & lutName)
 {
+    d->LUTParam->setValue(lutName);
+
     vtkLookupTable * lut = nullptr;
 
     if (lutName != "Default")
@@ -586,12 +594,13 @@ void vtkDataMeshInteractor::setLut(vtkLookupTable * lut)
     mapper2d->InterpolateScalarsBeforeMappingOn();
     mapper3d->InterpolateScalarsBeforeMappingOn();
 
-    d->view2d->SetLookupTable(lut);
+    int currentLayerIndex = d->view->currentLayer();
+    d->view2d->SetLookupTable(lut, currentLayerIndex);
     mapper2d->SetLookupTable(lut);
     mapper2d->UseLookupTableScalarRangeOn();
     mapper2d->InterpolateScalarsBeforeMappingOn();
 
-    d->view3d->SetLookupTable(lut,d->view->layer(this->inputData()));
+    d->view3d->SetLookupTable(lut, currentLayerIndex);
     mapper3d->SetLookupTable(lut);
     mapper3d->UseLookupTableScalarRangeOn();
     mapper3d->InterpolateScalarsBeforeMappingOn();
@@ -767,4 +776,59 @@ void vtkDataMeshInteractor::updateRange()
     d->view2d->GetScalarBar()->SetLookupTable(lut);
 
     d->view->render();
+}
+
+void vtkDataMeshInteractor::setMaxRange(double max)
+{
+    d->maxIntensityParameter->setValue(max);
+}
+
+void vtkDataMeshInteractor::setMinRange(double min)
+{
+    d->minIntensityParameter->setValue(min);
+}
+
+void vtkDataMeshInteractor::restoreParameters(QHash<QString, QString> parameters)
+{
+    if(parameters.contains("Attributes"))
+    {
+        setAttribute(parameters["Attributes"]);
+    }
+    if(parameters.contains("Opacity"))
+    {
+        setOpacity(medDoubleParameterL::fromString(parameters["Opacity"]));
+    }
+    if(parameters.contains("Visibility"))
+    {
+        setVisibility(medBoolParameterL::fromString(parameters["Visibility"]));
+    }
+    if(parameters.contains("LUT"))
+    {
+        setLut(parameters["LUT"]);
+    }
+    if(parameters.contains("Edge Visible"))
+    {
+        setEdgeVisibility(medBoolParameterL::fromString(parameters["Edge Visible"]));
+    }
+    if(parameters.contains("Rendering"))
+    {
+        setRenderingType(parameters["Rendering"]);
+    }
+    if(parameters.contains("Color"))
+    {
+        setColor(parameters["Color"]);
+    }
+    if(parameters.contains("Max"))
+    {
+        setMaxRange(medDoubleParameterL::fromString(parameters["Max"]));
+    }
+    if(parameters.contains("Min"))
+    {
+        setMinRange(medDoubleParameterL::fromString(parameters["Min"]));
+    }
+}
+
+QString vtkDataMeshInteractor::name() const
+{
+    return "vtkDataMeshInteractor";
 }

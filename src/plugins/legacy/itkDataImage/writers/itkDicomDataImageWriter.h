@@ -32,12 +32,14 @@ public:
     static dtkAbstractDataWriter * create();
 
     QString sopClassUID(QString modality);
-    void fillDictionaryFromMetaDataKey(itk::MetaDataDictionary &dictionary, bool &studyUIDExistance);
 
 public slots:
     virtual bool write(const QString &path);
 
 protected:
+    virtual void fillDictionaryFromMetaDataKey(itk::MetaDataDictionary &dictionary, bool &studyUIDExistance);
+    virtual void fillDictionaryWithModalityDependentData(itk::MetaDataDictionary& dictionary);
+
     template <class PixelType> bool writeDicom(const QString &path);
     template <class PixelType> void fillDictionaryWithSharedData(itk::MetaDataDictionary &dictionary, bool studyUIDExistance,
                                                                  itk::GDCMImageIO::Pointer gdcmIO, int &numberOfSlices);

@@ -1,0 +1,31 @@
+Developers:<br/><br/>
+
+Alexandre Abadie (medInria)<br/>
+Benoit Bleuze (medInria)<br/>
+Clement Philipot (medInria)<br/>
+Fatih Arslan (medInria)<br/>
+Florent Collot (MUSICardio)<br/>
+Florent Leray (medInria)<br/>
+Florian Vichot (medInria / MUSICardio)<br/>
+Guillaume Pasquier (medInria)<br/>
+Hakim Fadil (medInria / MUSICardio)<br/>
+Jaime Garcia Guevara (medInria)<br/>
+John Stark (medInria)<br/>
+Julien Castelneau (medInria / MUSICardio)<br/>
+Julien Wintz (medInria)<br/>
+Loic Cadour (medInria / MUSICardio)<br/>
+Mathilde Merle (MUSICardio)<br/>
+Maxime Sermesant (medInria)<br/>
+Mehdi Juhoor (MUSICardio)<br/>
+Michael Buckingham (MUSICardio)<br/>
+Michael Knopke (medInria)<br/>
+Nicolas Toussaint (medInria)<br/>
+Nordine El Baraka (MUSICardio)<br/>
+Olivier Commowick (medInria)<br/>
+Olivier Clatz (medInria)<br/>
+Pauline Migerditichan (MUSICardio)<br/>
+Pierre Fillard (medInria)<br/>
+Rene-Paul Debroize (medInria)<br/>
+Sergio Medina (medInria)<br/>
+Theodore Papadopoulo (medInria)<br/>
+Stephan Schmitt (medInria)<br/>

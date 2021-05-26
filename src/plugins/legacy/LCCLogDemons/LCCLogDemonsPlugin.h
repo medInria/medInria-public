@@ -26,7 +26,7 @@ class LCCLogDemonsPLUGIN_EXPORT LCCLogDemonsPlugin : public dtkPlugin
     Q_INTERFACES(dtkPlugin)
     
 public:
-    LCCLogDemonsPlugin(QObject *parent = 0);
+    LCCLogDemonsPlugin(QObject *parent = nullptr);
     ~LCCLogDemonsPlugin();
     
     virtual bool initialize();

@@ -14,7 +14,6 @@
 function(ITK_project)
 set(ep ITK)
 
-
 ## #############################################################################
 ## List the dependencies of the project
 ## #############################################################################
@@ -22,7 +21,6 @@ set(ep ITK)
 list(APPEND ${ep}_dependencies 
   VTK
   )
-  
   
 ## #############################################################################
 ## Prepare the project
@@ -34,16 +32,14 @@ EP_Initialisation(${ep}
   REQUIRED_FOR_PLUGINS ON
   )
 
-
 if (NOT USE_SYSTEM_${ep})
 
 ## #############################################################################
-## Set up versioning control.
+## Set up versioning control
 ## #############################################################################
 
 set(git_url ${GITHUB_PREFIX}InsightSoftwareConsortium/ITK.git)
-set(git_tag v5.0.0)
-
+set(git_tag v5.1.1)
 
 ## #############################################################################
 ## Add specific cmake arguments for configuration step of the project
@@ -70,6 +66,9 @@ set(cmake_args
   -DModule_ITKReview:BOOL=ON
   -DModule_ITKVtkGlue:BOOL=ON
   -DITK_LEGACY_REMOVE:BOOL=ON
+  )
+  
+set(cmake_cache_args
   -DVTK_DIR:PATH=${VTK_DIR}
   )
 
@@ -77,7 +76,7 @@ set(cmake_args
 ## Check if patch has to be applied
 ## #############################################################################
   
-ep_GeneratePatchCommand(ITK ITK_PATCH_COMMAND ITK_Mac.patch)
+ep_GeneratePatchCommand(${ep} ${ep}_PATCH_COMMAND ITK_Mac.patch)
 
 ## #############################################################################
 ## Add external-project
@@ -94,15 +93,15 @@ ExternalProject_Add(${ep}
   
   GIT_REPOSITORY ${git_url}
   GIT_TAG ${git_tag}
-  PATCH_COMMAND ${ITK_PATCH_COMMAND}
+  PATCH_COMMAND ${${ep}_PATCH_COMMAND}
   CMAKE_GENERATOR ${gen}
   CMAKE_GENERATOR_PLATFORM ${CMAKE_GENERATOR_PLATFORM}
-  CMAKE_ARGS ${cmake_args}
+  CMAKE_ARGS ${cmake_args}  
+  CMAKE_CACHE_ARGS ${cmake_cache_args}
   DEPENDS ${${ep}_dependencies}
   INSTALL_COMMAND ""
   BUILD_ALWAYS 1
   )
-
 
 ## #############################################################################
 ## Set variable to provide infos about the project
@@ -110,8 +109,6 @@ ExternalProject_Add(${ep}
 
 ExternalProject_Get_Property(ITK binary_dir)
 set(${ep}_DIR ${binary_dir} PARENT_SCOPE)
-
-
 
 endif() #NOT USE_SYSTEM_ep
 

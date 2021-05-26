@@ -2,44 +2,50 @@
 
  medInria
 
- Copyright (c) INRIA 2013 - 2020. All rights reserved.
- See LICENSE.txt for details.
+ Copyright (c) INRIA 2013. All rights reserved.
 
-  This software is distributed WITHOUT ANY WARRANTY; without even
-  the implied warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR
-  PURPOSE.
+ See LICENSE.txt for details in the root of the sources or:
+ https://github.com/medInria/medInria-public/blob/master/LICENSE.txt
+
+ This software is distributed WITHOUT ANY WARRANTY; without even
+ the implied warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR
+ PURPOSE.
 
 =========================================================================*/
 
 #include <medViewContainer.h>
 
-#include <QVBoxLayout>
+#include <QApplication>
+#include <QFileDialog>
 #include <QHBoxLayout>
+#include <QMenu>
 #include <QPushButton>
 #include <QUuid>
-#include <QFileDialog>
-#include <QMenu>
-#include <QApplication>
+#include <QVBoxLayout>
 
-#include <medViewContainerManager.h>
-#include <medAbstractView.h>
+#include <medAbstractData.h>
+#include <medAbstractInteractor.h>
 #include <medAbstractImageView.h>
+#include <medAbstractLayeredView.h>
+#include <medAbstractView.h>
 #include <medBoolParameterL.h>
 #include <medDataIndex.h>
-#include <medAbstractData.h>
 #include <medDataManager.h>
-#include <medViewFactory.h>
-#include <medAbstractLayeredView.h>
+#include <medMessageController.h>
+#include <medPoolIndicatorL.h>
+#include <medSettingsManager.h>
+#include <medStringListParameterL.h>
 #include <medToolBox.h>
 #include <medToolBoxHeader.h>
-#include <medStringListParameterL.h>
 #include <medTriggerParameterL.h>
+#include <medViewContainerManager.h>
 #include <medViewContainerSplitter.h>
+#include <medViewFactory.h>
 #include <medDataManager.h>
 #include <medSettingsManager.h>
 #include <medAbstractInteractor.h>
 #include <medPoolIndicatorL.h>
-#include <medLayoutChooser.h>
+#include <medTableWidgetChooser.h>
 
 class medViewContainerPrivate
 {
@@ -58,7 +64,7 @@ public:
     medViewContainer::ClosingMode closingMode;
     bool multiLayer;
     bool userPoolable;
-    QUuid expectedUuid;
+    QList<QUuid> expectedUuids;
 
     QGridLayout* mainLayout;
     QHBoxLayout* toolBarLayout;
@@ -66,7 +72,7 @@ public:
     QMenu *toolBarMenu;
     QPushButton *menuButton;
 
-    medLayoutChooser *presetLayoutChooser;
+    medTableWidgetChooser *presetLayoutChooser;
     QMenu* presetMenu;
 
     QAction *openAction;
@@ -77,6 +83,7 @@ public:
     QPushButton* closeContainerButton;
     QAction* histogramAction;
     QAction* maximizedAction;
+    QAction* saveSceneAction;
 
     QString defaultStyleSheet;
     QString highlightColor;
@@ -106,12 +113,15 @@ medViewContainer::medViewContainer(medViewContainerSplitter *parent): QFrame(par
 
     d->defaultWidget = new QWidget;
     d->defaultWidget->setObjectName("defaultWidget");
-    QLabel *defaultLabel = new QLabel(tr("Drag'n drop series/study here from the left panel or"));
-    QPushButton *openButton= new QPushButton(tr("open a file from your system"));
+    QLabel *defaultLabel = new QLabel(tr("Drag'n drop series/study here from the left panel or:"));
+    QPushButton *openButton  = new QPushButton(tr("Open a file from your system"));
+    QPushButton *sceneButton = new QPushButton(tr("Open a scene from your system"));
     QVBoxLayout *defaultLayout = new QVBoxLayout(d->defaultWidget);
     defaultLayout->addWidget(defaultLabel);
     defaultLayout->addWidget(openButton);
-    connect(openButton, SIGNAL(clicked()), this, SLOT(openFromSystem()), Qt::UniqueConnection);
+    defaultLayout->addWidget(sceneButton);
+    connect(openButton,  SIGNAL(clicked()), this, SLOT(openFromSystem()), Qt::UniqueConnection);
+    connect(sceneButton, SIGNAL(clicked()), this, SLOT(loadScene()),      Qt::UniqueConnection);
 
     d->menuButton = new QPushButton(this);
     d->menuButton->setIcon(QIcon(":/pixmaps/tools.png"));
@@ -128,7 +138,10 @@ medViewContainer::medViewContainer(medViewContainerSplitter *parent): QFrame(par
     connect(d->openAction, SIGNAL(triggered()), this, SLOT(openFromSystem()), Qt::UniqueConnection);
 
     d->closeContainerButton = new QPushButton(this);
-    d->closeContainerButton->setIcon(QIcon(":/pixmaps/closebutton.png"));
+    QIcon closeIcon;
+    closeIcon.addPixmap(QPixmap(":/pixmaps/closebutton.png"),         QIcon::Normal);
+    closeIcon.addPixmap(QPixmap(":/pixmaps/closebutton-disabled.png"),QIcon::Disabled);
+    d->closeContainerButton->setIcon(closeIcon);
     d->closeContainerButton->setSizePolicy(QSizePolicy::Minimum, QSizePolicy::Fixed);
     d->closeContainerButton->setToolTip(tr("Close"));
     d->closeContainerButton->setFocusPolicy(Qt::NoFocus);
@@ -175,15 +188,23 @@ medViewContainer::medViewContainer(medViewContainerSplitter *parent): QFrame(par
     d->maximizedAction->setIcon(maximizedIcon);
     d->maximizedAction->setIconVisibleInMenu(true);
     connect(d->maximizedAction, SIGNAL(toggled(bool)), this, SLOT(toggleMaximized(bool)), Qt::UniqueConnection);
-    d->maximizedAction->setEnabled(true);
+    d->maximizedAction->setEnabled(false);
+
+    // Scene
+    d->saveSceneAction = new QAction(tr("Save scene"), d->toolBarMenu);
+    d->saveSceneAction->setToolTip(tr("Save container content as is."));
+    d->saveSceneAction->setIcon(QIcon(":icons/saveScene.png"));
+    d->saveSceneAction->setIconVisibleInMenu(true);
+    connect(d->saveSceneAction, SIGNAL(triggered()), this, SLOT(saveScene()), Qt::UniqueConnection);
+    d->saveSceneAction->setEnabled(false);
 
     // Presets
     d->presetMenu = new QMenu(tr("Presets"),this);
     d->presetMenu->setToolTip(tr("Split into presets"));
     d->presetMenu->setIcon(QIcon(":/icons/splitPresets.png"));
 
-    d->presetLayoutChooser = new medLayoutChooser(this);
-    connect(d->presetLayoutChooser, SIGNAL(selected(unsigned int,unsigned int)), this, SLOT(splitContainer(unsigned int,unsigned int)), Qt::UniqueConnection);
+    d->presetLayoutChooser = new medTableWidgetChooser(this);
+    connect(d->presetLayoutChooser, SIGNAL(selected(unsigned int,unsigned int)), this, SLOT(splitContainer(unsigned int,unsigned int)));
 
     QVBoxLayout *presetMenuLayout = new QVBoxLayout;
     presetMenuLayout->setContentsMargins(0,0,0,0);
@@ -198,6 +219,8 @@ medViewContainer::medViewContainer(medViewContainerSplitter *parent): QFrame(par
     d->toolBarMenu->addMenu(d->presetMenu);
     d->toolBarMenu->addSeparator();
     d->toolBarMenu->addActions(QList<QAction*>() << d->maximizedAction);
+    d->toolBarMenu->addSeparator();
+    d->toolBarMenu->addActions(QList<QAction*>() << d->saveSceneAction);
     d->toolBarMenu->addSeparator();
     d->toolBarMenu->addActions(QList<QAction*>() << d->histogramAction);
 
@@ -286,14 +309,21 @@ QWidget* medViewContainer::defaultWidget() const
     return d->defaultWidget;
 }
 
+/**
+ * @brief medViewContainer::setDefaultWidget change the central widget
+ * which can be seen inside an empty view.
+ * @param defaultWidget
+ */
 void medViewContainer::setDefaultWidget(QWidget *defaultWidget)
 {
-    if(!d->view)
-    {
-        d->mainLayout->removeWidget(d->defaultWidget);
-        delete d->defaultWidget;
-        d->mainLayout->addWidget(defaultWidget, 0, 0, 0, 0);
-    }
+    // This paragraph could be encapsulated in an 'if(!d->view)' condition,
+    // however, in CLOSE_VIEW views, after the removal of the last data,
+    // setting a new default widget does not display it. d->view should be
+    // deleted before coming here.
+    d->mainLayout->removeWidget(d->defaultWidget);
+    delete d->defaultWidget;
+    d->mainLayout->addWidget(defaultWidget, 0, 0, 0, 0);
+
     d->defaultWidget = defaultWidget;
 }
 
@@ -442,8 +472,8 @@ void medViewContainer::setView(medAbstractView *view)
         {
             connect(layeredView, SIGNAL(currentLayerChanged()), this, SIGNAL(currentLayerChanged()), Qt::UniqueConnection);
             connect(layeredView, SIGNAL(currentLayerChanged()), this, SLOT(updateToolBar()),         Qt::UniqueConnection);
-            connect(layeredView, SIGNAL(layerAdded(uint)), this, SIGNAL(viewContentChanged()),       Qt::UniqueConnection);
-            connect(layeredView, SIGNAL(layerRemoved(uint)), this, SIGNAL(viewContentChanged()),     Qt::UniqueConnection);
+            connect(layeredView, SIGNAL(layerAdded(uint)),   this, SIGNAL(viewContentChanged()),     Qt::UniqueConnection);
+            connect(layeredView, SIGNAL(layerRemoved(uint)), this, SIGNAL(viewRemoved()),            Qt::UniqueConnection);
         }
 
         if (medAbstractImageView *imageView = dynamic_cast <medAbstractImageView*> (view))
@@ -457,7 +487,7 @@ void medViewContainer::setView(medAbstractView *view)
             connect(d->histogramAction, SIGNAL(toggled(bool)), this, SLOT(toggleHistogram(bool)),    Qt::UniqueConnection);
             connect(d->histogramAction, SIGNAL(toggled(bool)), imageView, SLOT(showHistogram(bool)), Qt::UniqueConnection);
 
-            d->histogramAction->setEnabled(true);
+            enableNonSplitWidgetsInToolsMenu(true);
         }
 
         d->defaultWidget->hide();
@@ -599,19 +629,24 @@ void medViewContainer::removeView()
     if(d->view)
     {
         d->histogramAction->setChecked(false);
-        emit dataAdded(nullptr);
+
+        // On some occasion, the 'delete' here displays 3 logs:
+        // 'Unable to retrieve data at layer: 0 from:  "medVtkView"'
+        // It is linked to a GUI bug, where mouse/view/layer toolboxes
+        // are not fully cleaned and minimized.
         delete d->view;
     }
-    // removeInternView should be called, so no need to set d->view to null
-    // or whatever else
+    // removeInternView should be called, so no need to set d->view to nullptr.
 }
 
 void medViewContainer::removeInternView()
 {
     d->view = nullptr;
-    d->maximizedAction->setEnabled(false);
 
-    d->histogramAction->setEnabled(false);
+    enableNonSplitWidgetsInToolsMenu(false);
+
+    // On Maximize mode, the view can't be removed.
+    // However, it's possible with the histogram, so we uncheck it.
     d->histogramAction->setChecked(false);
 
     d->defaultWidget->show();
@@ -756,8 +791,10 @@ bool medViewContainer::dropEventFromFile(QDropEvent * event)
 
 void medViewContainer::addData(medAbstractData *data)
 {
-    if( ! d->expectedUuid.isNull())
+    if(!d->expectedUuids.isEmpty())
+    {
         return; // we're already waiting for a import to finish, don't accept other data
+    }
 
     if(!data)
         return;
@@ -791,8 +828,10 @@ void medViewContainer::addData(medAbstractData *data)
 
 void medViewContainer::addData(medDataIndex index)
 {
-    if( ! d->expectedUuid.isNull())
+    if(!d->expectedUuids.isEmpty())
+    {
         return; // we're already waiting for a import to finish, don't accept other data
+    }
 
     if (index.isValidForSeries())
     {
@@ -891,15 +930,40 @@ void medViewContainer::openFromSystem()
     medSettingsManager::instance()->setValue("state", "openFromSystem", dialog.saveState());
     medSettingsManager::instance()->setValue("geometry", "openFromSystem", dialog.saveGeometry());
 
+    if (!path.isEmpty())
+    {
+        open(path);
+    }
+}
 
-    if (path.isEmpty())
-        return;
+void medViewContainer::open(const QString & path)
+{
+    QUuid uuid = medDataManager::instance()->importPath(path, false);
+    d->expectedUuids.append(uuid);
+    connect(medDataManager::instance(), SIGNAL(dataImported(medDataIndex,QUuid)),
+            this, SLOT(open_waitForImportedSignal(medDataIndex,QUuid)));
 
-    connect(medDataManager::instance(), SIGNAL(dataImported(medDataIndex,QUuid)), this, SLOT(dataReady(medDataIndex,QUuid)), Qt::UniqueConnection);
-    d->expectedUuid = medDataManager::instance()->importPath(path, true, false);
+    QEventLoop loop;
+    connect(this, SIGNAL(importFinished()), &loop, SLOT(quit()), Qt::UniqueConnection);
+    loop.exec();
 
     //  save last directory opened in settings.
     medSettingsManager::instance()->setValue("path", "medViewContainer", path);
+}
+
+void medViewContainer::open_waitForImportedSignal(medDataIndex index, QUuid uuid)
+{
+    if(d->expectedUuids.contains(uuid))
+    {
+        d->expectedUuids.removeAll(uuid);
+        disconnect(medDataManager::instance(),SIGNAL(dataImported(medDataIndex, QUuid)),
+                   this,SLOT(open_waitForImportedSignal(medDataIndex, QUuid)));
+        if (index.isValid())
+        {
+            this->addData(index);
+        }
+        emit importFinished();
+    }
 }
 
 void medViewContainer::updateToolBar()
@@ -923,16 +987,6 @@ void medViewContainer::updateToolBar()
     {
         d->toolBarLayout->setStretch(0,1);
     }
-}
-
-void medViewContainer::dataReady(medDataIndex index, QUuid uuid)
-{
-    if(d->expectedUuid != uuid)
-        return;
-
-    d->expectedUuid = QUuid(); //RE-init/erase the expected Uuid
-    disconnect(medDataManager::instance(), SIGNAL(dataImported(medDataIndex,QUuid)), this, SLOT(dataReady(medDataIndex,QUuid)));
-    this->addData(index);
 }
 
 void medViewContainer::droppedDataReady(medDataIndex index, QUuid uuid)
@@ -1059,4 +1113,169 @@ QAction* medViewContainer::histogramAction()
 void medViewContainer::enableHistogramAction(bool state)
 {
     d->histogramAction->setEnabled(state);
+}
+
+void medViewContainer::enableNonSplitWidgetsInToolsMenu(bool state)
+{
+    enableHistogramAction(state);
+    d->maximizedAction->setEnabled(state);
+    d->saveSceneAction->setEnabled(state);
+}
+
+/**
+ * @brief saves the scene in a XML file
+ * Saves views (all layers), and toolboxes parameters
+ * 	expected tree is as follow:
+ *  workingDir (user-defined)
+ * 		|-viewID0
+ * 			|-mapping.xml
+ * 			|-layerID01.xml
+ * 			|-layerID02.xml
+ * 			|-data_file (as saved by the dedicated writer)
+ */
+QString medViewContainer::saveScene()
+{
+    QString dirPath = QFileDialog::getExistingDirectory(this, 
+                                                        tr("Open Directory"),
+                                                        QDir::homePath(),
+                                                        QFileDialog::ShowDirsOnly);
+    QDir workingDir(dirPath);
+    QDomDocument doc("xml");
+    QDomElement root = doc.createElement("scene");
+    doc.appendChild(root);
+
+    QString subDirName;
+
+    medAbstractLayeredView* layeredView = dynamic_cast<medAbstractLayeredView*>(view());
+    if (layeredView)
+    {
+        subDirName = "view" + QUuid::createUuid().toString();
+        if(workingDir.mkdir(subDirName))
+        {
+            workingDir.cd(subDirName);
+            QString generatedPath = workingDir.canonicalPath() + "/mapping.xml";
+            QDomElement layeredViewInfo = doc.createElement("layeredView");
+            layeredViewInfo.setAttribute("path", subDirName+"/mapping.xml");
+            layeredViewInfo.setAttribute("id", layeredView->identifier());
+            root.appendChild(layeredViewInfo);
+
+            layeredView->write(generatedPath);
+            workingDir.cdUp();
+
+            QString generatedGlobalPath = workingDir.canonicalPath()+"/globalMapping.xml";
+
+            QFile file(generatedGlobalPath);
+            if (file.open(QIODevice::WriteOnly | QIODevice::Text | QIODevice::Truncate))
+            {
+                QTextStream out(&file);
+                out << doc.toString();
+                QString path = dirPath + "/" + subDirName;
+                return path;
+            }
+            else
+            {
+                displayMessageError("Couldn't open: " + generatedGlobalPath);
+            }
+        }
+        else
+        {
+            displayMessageError("Failed to create new directory: " + subDirName);
+        }
+    }
+    else
+    {
+        displayMessageError("Scene saving failed");
+    }
+    return "";
+}
+
+void medViewContainer::addMetadataToQDomElement(medAbstractData *data, QDomElement patientInfo, QString metadata)
+{
+    if (data->hasMetaData(metadata) && data->metadata(metadata) != "")
+    {
+        patientInfo.setAttribute(metadata, data->metadata(metadata));
+    }
+}
+
+void medViewContainer::loadScene()
+{
+    // Parsing the XML file describing the scene
+    QString fileName = QFileDialog::getOpenFileName(this, 
+                                                    tr("Open File"),
+                                                    QDir::homePath(),
+                                                    tr("XML files (*.xml)"));
+    QFile file(fileName);
+    QFileInfo fileInfo(file);
+    QDir workingDir = fileInfo.dir();
+    if(file.open(QIODevice::ReadOnly))
+    {
+        QDomDocument doc("xml");
+        if(doc.setContent(&file))
+        {
+            // 'doc' now contains the full XML tree
+            QDomNodeList viewsNodes = doc.elementsByTagName("layeredView");
+
+            for(int i=0; i<viewsNodes.size(); i++)
+            {
+                QDomElement viewElement = viewsNodes.item(i).toElement();
+                if(viewElement.isNull())
+                {
+                    printInConsole("Failed to open a view, unable to find element");
+                    continue;
+                }
+                QString path = workingDir.canonicalPath() + "/" + viewElement.attribute("path");
+                if(!QFile::exists(path))
+                {
+                    printInConsole("Failed to open a view: path " + path + " does not exist");
+                    continue;
+                }
+                QFile mappingFile(path);
+                QFileInfo mappingFileInfo(mappingFile);
+                if(!mappingFile.open(QIODevice::ReadOnly))
+                {
+                    printInConsole("Failed to open a view, unable to open mapping file");
+                    continue;
+                }
+                QDomDocument viewInfo("xml");
+                if(viewInfo.setContent(&mappingFile))
+                {
+                    QDomNodeList layersNodes = viewInfo.elementsByTagName("layer");
+
+                    for(int j=0; j<layersNodes.size(); j++)
+                    {
+                        QDomElement layerElement = layersNodes.item(j).toElement();
+                        QString fileName = layerElement.attribute("filename");
+                        open(mappingFileInfo.dir().canonicalPath() + "/" + fileName);
+
+                        medAbstractView *view = this->view();
+                        view->restoreState(&layerElement);
+                    }
+                }
+                else
+                {
+                     displayMessageError("Failed to parse " + fileName);
+                     return;
+                }
+            }
+        }
+        else
+        {
+             displayMessageError("Failed to parse " + fileName);
+        }
+    }
+    else
+    {
+         displayMessageError("Failed to open file " + fileName);
+    }
+}
+
+void medViewContainer::printInConsole(QString message)
+{
+    qDebug() << Q_FUNC_INFO << ": " << message;
+}
+
+void medViewContainer::displayMessageError(QString message)
+{
+    printInConsole(message);
+    medMessageController::instance()->showError(message, 3000);
 }

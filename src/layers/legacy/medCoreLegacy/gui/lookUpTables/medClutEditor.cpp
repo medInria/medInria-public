@@ -843,6 +843,10 @@ void medClutEditorTable::shiftWindowCenter( qreal amount )
 
 void medClutEditorTable::setup(float min, float max, int size, int *table)
 {
+    Q_UNUSED(min);
+    Q_UNUSED(max);
+    Q_UNUSED(size);
+    Q_UNUSED(table);
 }
 
 void medClutEditorTable::getTransferFunction( QList<double> &scalars,
@@ -1280,7 +1284,6 @@ medClutEditorScene::medClutEditorScene( QObject * parent )
     : QGraphicsScene( parent )
     , d( new medClutEditorScenePrivate )
 {
-    d = new medClutEditorScenePrivate;
     d->size = QSizeF( 500.0, 300.0 );
     d->leftMargin   = 50.0;
     d->rightMargin  = 10.0;
@@ -1514,6 +1517,7 @@ void medClutEditorView::resizeEvent(QResizeEvent *event)
 
 void medClutEditorView::wheelEvent( QWheelEvent * event )
 {
+    Q_UNUSED(event);
 }
 
 void medClutEditorView::keyPressEvent( QKeyEvent * event ) {

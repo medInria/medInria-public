@@ -14,7 +14,7 @@
 set(CURRENT_SRC_DIR ${CMAKE_SOURCE_DIR}/packaging/unix)
 set(CURRENT_BIN_DIR ${CMAKE_BINARY_DIR}/packaging/unix)
 
-# Install a launcher scripts for medInria with right environment variable
+# Install a launcher scripts for the application with right environment variable
 
 #   For developpers.
 
@@ -24,10 +24,6 @@ endforeach()
 
 foreach (dir ${PRIVATE_PLUGINS_LEGACY_DIRS})
 	set(DEV_PLUGINS_LEGACY_DIRS "${DEV_PLUGINS_LEGACY_DIRS}:${dir}/bin/plugins_legacy")
-endforeach()
-
-foreach (dir ${EXTERNAL_PROJECT_PLUGINS_LEGACY_DIRS})
-        set(DEV_PLUGINS_LEGACY_DIRS "${DEV_PLUGINS_LEGACY_DIRS}:${dir}/bin/plugins_legacy")
 endforeach()
 
 ExternalProject_Get_Property(medInria binary_dir)

@@ -12,23 +12,23 @@
 
 =========================================================================*/
 
-#include <QTabWidget>
+#include <QDialog>
 
 class QTreeWidgetItem;
 class medPluginWidgetPrivate;
 
-class medPluginWidget : public QTabWidget
+class medPluginWidget : public QDialog
 {
     Q_OBJECT
+
 public:
     explicit medPluginWidget(QWidget *parent = nullptr);
     ~medPluginWidget();
 
-signals:
-
 public slots:
     void onPluginTreeItemActivated(QTreeWidgetItem* item ,int column);
     void onErrorTreeItemActivated(QTreeWidgetItem* item,int column);
+
 protected:
     void reset();
 
