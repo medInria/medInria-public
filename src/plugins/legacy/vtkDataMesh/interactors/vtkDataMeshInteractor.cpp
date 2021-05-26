@@ -453,6 +453,7 @@ void vtkDataMeshInteractor::setAttribute(const QString & attributeName)
 
         int dataType = d->attribute->GetDataType();
         initWindowLevelParameters(range, dataType);
+        delete [] range;
 
         this->setLut(d->lut.first);
 
@@ -585,6 +586,7 @@ void vtkDataMeshInteractor::setLut(vtkLookupTable * lut)
         }
         double * range = d->metaDataSet->GetScalarRange(d->attributesParam->value());
         lut->SetRange(range);
+        delete [] range;
     }
 
     vtkMapper * mapper2d = d->actor2d->GetMapper();

@@ -500,6 +500,7 @@ double*vtkMetaDataSetSequence::GetCurrentScalarRange()
             val[0] = range[0];
         if (val[1] < range[1])
             val[1] = range[1];
+        delete [] range;
     }
 
     return val;
@@ -730,6 +731,7 @@ double* vtkMetaDataSetSequence::GetScalarRange(QString attributeName)
       {
         val[1] = range[1];
       }
+      delete [] range;
     }
 
     return val;
