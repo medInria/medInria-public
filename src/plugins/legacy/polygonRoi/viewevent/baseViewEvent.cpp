@@ -787,10 +787,8 @@ void baseViewEvent::saveAllContours()
             description = QString("%1 contours").arg(contoursData.size());
         }
         medAbstractData * data = currentView->layerData(0);
-        auto *originalData = qobject_cast<medAbstractImageData*>(data);
-        medUtilities::copyMetaDataIfEmpty(contourOutput, originalData, medUtilities::metaDataKeysToCopyForDerivedData(contourOutput));
-        QString newSeriesDescription = description + " (" + originalData->metadata(medMetaDataKeys::SeriesDescription.key()) + ")";
-        contourOutput->setMetaData(medMetaDataKeys::SeriesDescription.key(), newSeriesDescription);
+        description += " (" + data->metadata(medMetaDataKeys::SeriesDescription.key()) + ")";
+        medUtilities::setDerivedMetaData(contourOutput, data, description, false, false);
 
         contourOutput->setData(outputDataSet);
         contourOutput->setData(&contoursData, 1);
@@ -1015,18 +1013,17 @@ void baseViewEvent::saveContour(polygonLabel *label)
     QString description;
     if (contoursData.size() == 1)
     {
-        description = QString("contour %1").arg(contoursData[0].getLabelName());
+        description = QString("contour %1 ").arg(contoursData[0].getLabelName());
 
     }
     else
     {
-        description = QString("%1 contours").arg(contoursData.size());
+        description = QString("%1 contours ").arg(contoursData.size());
     }
     medAbstractData * data = currentView->layerData(0);
-    auto *originalData = qobject_cast<medAbstractImageData*>(data);
-    medUtilities::copyMetaDataIfEmpty(contourOutput, originalData, medUtilities::metaDataKeysToCopyForDerivedData(contourOutput));
-    QString newSeriesDescription = description + " (" + originalData->metadata(medMetaDataKeys::SeriesDescription.key()) + ")";
-    contourOutput->setMetaData(medMetaDataKeys::SeriesDescription.key(), newSeriesDescription);
+    description += " (" + data->metadata(medMetaDataKeys::SeriesDescription.key()) + ")";
+
+    medUtilities::setDerivedMetaData(contourOutput, data, description, false, false);
 
     contourOutput->setData(outputDataSet);
     contourOutput->setData(&contoursData, 1);
