@@ -92,6 +92,8 @@ target_link_libraries(${TARGET_NAME}
     ${VTK_FFmpeg_MODULE_LIB}
     )
 
+vtk_module_autoinit(TARGETS ${TARGET_NAME} MODULES ${VTK_LIBRARIES})
+
 set(CMAKE_RUNTIME_OUTPUT_DIRECTORY ${CMAKE_BINARY_DIR}/bin)
 
 ## #############################################################################

@@ -85,8 +85,10 @@ target_link_libraries(${TARGET_NAME}
   medVtkInria
   medVtkDataMeshBase
   VTK::GUISupportQt
+  VTK::RenderingGL2PSOpenGL2
   )
 
+vtk_module_autoinit(TARGETS ${TARGET_NAME} MODULES ${VTK_LIBRARIES})
 
 ## #############################################################################
 ## Install rules

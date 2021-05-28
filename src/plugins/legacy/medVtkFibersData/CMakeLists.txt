@@ -112,6 +112,7 @@ target_link_libraries(${TARGET_NAME}
   VTK::CommonDataModel
   )
 
+vtk_module_autoinit(TARGETS ${TARGET_NAME} MODULES ${VTK_LIBRARIES})
 
 ## #############################################################################
 ## Install rules
