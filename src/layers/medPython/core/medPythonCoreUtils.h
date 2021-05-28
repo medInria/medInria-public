@@ -16,7 +16,7 @@
 
 #include <QStringList>
 
-namespace med::python::core
+namespace med::python
 {
 
 #if defined(Q_OS_WIN)
@@ -45,4 +45,4 @@ void freeWideCharList(wchar_t** input, size_t numItems);
 
 QStringList getPythonPath();
 
-} // namespace med::python::core
+} // namespace med::python

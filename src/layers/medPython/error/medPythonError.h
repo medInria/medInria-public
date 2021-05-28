@@ -12,13 +12,5 @@
 
 ==============================================================================*/
 
-/// The embedded core Python library is loaded and manually linked at runtime.
-///
-
-namespace med::python
-{
-
-bool setupCoreLibrary();
-bool teardownCoreLibrary();
-
-} // namespace med::python
+#include "medPythonErrorHandling.h"
+#include "medPythonExceptionTypes.h"

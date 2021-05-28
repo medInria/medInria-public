@@ -12,10 +12,10 @@
 
 ==============================================================================*/
 
-namespace med::python::core
+namespace med::python
 {
 
 bool initializePython();
 bool finalizePython();
 
-} // namespace med::python::core
+} // namespace med::python

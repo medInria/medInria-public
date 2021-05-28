@@ -1,4 +1,3 @@
-#pragma once
 /*==============================================================================
 
  medInria
@@ -12,13 +11,21 @@
 
 ==============================================================================*/
 
-/// The embedded core Python library is loaded and manually linked at runtime.
-///
+#include "medPythonCoreForward.h"
+
+#include "medPythonCoreAPI.h"
 
 namespace med::python
 {
 
-bool setupCoreLibrary();
-bool teardownCoreLibrary();
+void incref(PyObject* object)
+{
+    Py_XINCREF(object);
+}
+
+void decref(PyObject* object)
+{
+    Py_CLEAR(object);
+}
 
 } // namespace med::python

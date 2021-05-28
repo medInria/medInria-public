@@ -16,21 +16,23 @@
 #include <QApplication>
 
 #include "medPythonCore.h"
+#include "medPythonError.h"
 
 namespace med::python
 {
 
 bool setup()
 {
-    bool success = core::setup();
+    bool success = setupCore();
 
     if (success)
     {
+        initializeExceptions();
         QApplication::connect(qApp, &QApplication::aboutToQuit, &teardown);
     }
     else
     {
-        core::teardown();
+        teardownCore();
     }
 
     return success;
@@ -38,7 +40,8 @@ bool setup()
 
 bool teardown()
 {
-    return core::teardown();
+    finalizeExceptions();
+    return teardownCore();
 }
 
 } // namespace med::python
