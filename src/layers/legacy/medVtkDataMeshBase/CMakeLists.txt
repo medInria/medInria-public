@@ -65,10 +65,13 @@ target_include_directories(${TARGET_NAME}
 target_link_libraries(${TARGET_NAME}
   VTK::IOInfovis
   VTK::IOExport
+  VTK::IOExportPDF
   medCore
   medLog
   medVtkInria
   )
+
+vtk_module_autoinit(TARGETS ${TARGET_NAME} MODULES ${VTK_LIBRARIES})
 
 ## #############################################################################
 ## install

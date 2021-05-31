@@ -74,11 +74,15 @@ add_library(${TARGET_NAME} SHARED
 
 target_link_libraries(${TARGET_NAME}
   ${QT_LIBRARIES}
-  ${VTK_LIBRARIES}
   medCore
   medVtkInria
   medUtilities
+  VTK::CommonCore
+  VTK::CommonDataModel
+  VTK::FiltersGeneral
   )
+
+vtk_module_autoinit(TARGETS ${TARGET_NAME} MODULES ${VTK_LIBRARIES})
 
 set(CMAKE_RUNTIME_OUTPUT_DIRECTORY ${CMAKE_BINARY_DIR}/bin)
 

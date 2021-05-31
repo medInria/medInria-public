@@ -75,6 +75,8 @@ target_link_libraries(${TARGET_NAME}
   VTK::CommonCore
   )
 
+vtk_module_autoinit(TARGETS ${TARGET_NAME} MODULES VTK::CommonCore)
+
 ## #############################################################################
 ## install
 ## #############################################################################
