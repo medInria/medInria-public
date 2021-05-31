@@ -25,9 +25,13 @@ const char PYTHON_PATH_DELIMITER = ';';
 const char PYTHON_PATH_DELIMITER = ':';
 #endif
 
+/// Do not use before Py_PreInitialize.
+///
 QString wideCharToQString(const wchar_t* input);
 
-/// Note: The returned pointer must be freed using PyMem_RawFree
+/// Do not use before Py_PreInitialize. The returned pointer must be freed using
+/// PyMem_RawFree.
+///
 wchar_t* qStringToWideChar(QString input);
 
 QStringList getPythonPath();

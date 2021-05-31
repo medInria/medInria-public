@@ -11,9 +11,10 @@
 
 ==============================================================================*/
 
-#include "medPythonCoreUtils.h"
-
+// Must be included first (see the header notes for details)
 #include "medPythonCoreAPI.h"
+
+#include "medPythonCoreUtils.h"
 
 namespace med::python::core
 {

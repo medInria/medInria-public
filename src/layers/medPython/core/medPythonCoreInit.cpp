@@ -11,13 +11,15 @@
 
 ==============================================================================*/
 
+// Must be included first (see the header notes for details)
+#include "medPythonCoreAPI.h"
+
 #include "medPythonCoreInit.h"
 
 #include <QDebug>
 
 #include <medExternalResources.h>
 
-#include "medPythonCoreAPI.h"
 #include "medPythonCoreUtils.h"
 
 namespace med::python::core
@@ -76,7 +78,8 @@ bool prepareConfig(PyConfig* config)
 
     if (success)
     {
-        wchar_t** moduleSearchPaths = (wchar_t**)PyMem_RawMalloc(2 * sizeof(wchar_t*));
+        const size_t numModuleSearchPaths = 2;
+        wchar_t** moduleSearchPaths = (wchar_t**)PyMem_RawMalloc(numModuleSearchPaths * sizeof(wchar_t*));
         moduleSearchPaths[0] = qStringToWideChar(modulePath);
         moduleSearchPaths[1] = qStringToWideChar(libraryPath);
 
@@ -90,9 +93,9 @@ bool prepareConfig(PyConfig* config)
                   && checkStatus(PyConfig_SetBytesString(config, &config->platlibdir, qUtf8Printable(libraryPath)))
           #endif
                   && checkStatus(PyConfig_Read(config)) // required to avoid recalculation of module_search_paths during initialization
-                  && checkStatus(PyConfig_SetWideStringList(config, &config->module_search_paths, 2, moduleSearchPaths));
+                  && checkStatus(PyConfig_SetWideStringList(config, &config->module_search_paths, numModuleSearchPaths, moduleSearchPaths));
 
-        for (int i = 0; i < 2; i++)
+        for (int i = 0; i < numModuleSearchPaths; i++)
         {
             PyMem_RawFree(moduleSearchPaths[i]);
         }
@@ -120,7 +123,6 @@ bool initializePython()
     if (success)
     {
         qInfo() << "Python is initialized: " << Py_GetVersion();
-        qInfo() << getPythonPath();
     }
 
     PyConfig_Clear(&config);

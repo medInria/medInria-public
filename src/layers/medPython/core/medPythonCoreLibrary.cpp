@@ -11,14 +11,15 @@
 
 ==============================================================================*/
 
+// Must be included first (see the header notes for details)
+#include "medPythonCoreAPI.h"
+
 #include "medPythonCoreLibrary.h"
 
 #include <QDebug>
 #include <QLibrary>
 
 #include <medExternalResources.h>
-
-#include "medPythonCoreAPI.h"
 
 namespace med::python::core
 {
@@ -86,6 +87,9 @@ bool resolveSymbols()
 {
     qInfo() << "Resolving CPython symbols";
 
+    // Bitwise AND is used to prevent short-circuit evaluation, so that all the
+    // failed symbols are printed instead of just the first one.
+    //
     return resolveSymbol("PyStatus_Exception", &core::PyStatus_Exception)
             & resolveSymbol("PyConfig_Read", &core::PyConfig_Read)
             & resolveSymbol("PyConfig_Clear", &core::PyConfig_Clear)

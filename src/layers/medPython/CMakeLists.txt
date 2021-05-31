@@ -22,7 +22,7 @@ set(TARGET_NAME medPython)
 find_package(dtk REQUIRED)
 include_directories(${dtk_INCLUDE_DIRS})
 
-find_package(Qt5 REQUIRED Core)
+find_package(Qt5 REQUIRED COMPONENTS Core)
 
 find_package(Python3 3.7 REQUIRED COMPONENTS Interpreter Development)
 include_directories(${Python3_INCLUDE_DIRS})

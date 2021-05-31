@@ -12,24 +12,34 @@
 
 ==============================================================================*/
 
-/// This file declares all the CPython functions that are actually used. They
-/// will be linked manually when the Python library is loaded at runtime.
+/// This file declares all the CPython functions and global variables that are
+/// actually used. They will be linked explicitly when the Python library is
+/// loaded at runtime.
+///
+/// NOTE: CPython defines pre-processor macros that affect the standard headers.
+/// Since this file includes the Python header, it must therefore always be
+/// included before any standard headers. To make sure this is the case, the
+/// include directive should be placed at the top of any file that directly
+/// or indirectly includes this one.
 ///
 
-#include <cstddef>
-
-// The following definitions avoid compilation errors when including Python.h
+// One of Python's structs has a member named slots, and this causes conflicts
+// with the the Qt keyword of the same name. This (ugly) hack avoids that.
 #undef slots
 #define slots _slots
-#undef _LARGEFILE_SOURCE
+
+// Python recommends to always define this macro before including its header.
 #define PY_SSIZE_T_CLEAN
 
-// The Python header is included only for the structs. The function pointers
-// declared below are used instead of the functions defined in the header.
+// The Python header is included only for the structs, marcos etc. The pointers
+// declared below are used instead of the functions and global objects defined
+// in the header.
 #include <Python.h>
 
 #undef slots
 #define slots Q_SLOTS
+
+#include <cstddef>
 
 namespace med::python::core
 {

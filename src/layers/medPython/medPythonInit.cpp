@@ -22,15 +22,14 @@ namespace med::python
 
 bool setup()
 {
-    bool success = true;
+    bool success = core::setup();
 
-    if (core::setup())
+    if (success)
     {
         QApplication::connect(qApp, &QApplication::aboutToQuit, &teardown);
     }
     else
     {
-        success = false;
         core::teardown();
     }
 

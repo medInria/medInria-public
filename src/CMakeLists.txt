@@ -59,6 +59,18 @@ option(USE_FFmpeg
   )
 endif()
 
+string(CONCAT USE_PYTHON_DOC
+    "Embed Python 3 into the application."
+    " In order to build, a Python version of at least 3.7 must be installed."
+    " (If embedded, Python can be disactivated at startup with the --no-python"
+    " option)"
+    )
+option(USE_PYTHON ${USE_PYTHON_DOC} ON)
+
+if (USE_PYTHON)
+    add_compile_definitions(USE_PYTHON)
+endif()
+
 ## #############################################################################
 ## Find package
 ## #############################################################################
@@ -195,8 +207,11 @@ set_lib_properties_variables(
     medWidgets
     medUtilities
     medVtkDataMeshBase
-    medPython
     )
+
+if (USE_PYTHON)
+    set_lib_properties_variables(medPython)
+endif()
 
 if(EXISTS ${CMAKE_SOURCE_DIR}/cmake/${PROJECT_NAME}Config.cmake.in)
   configure_file( ## Build tree configure file

@@ -29,6 +29,9 @@ bool setup()
 
 bool teardown()
 {
+    // Bitwise AND is used to prevent short-circuit evaluation, so that the
+    // library is unloaded even if finalization failed.
+    //
     return finalizePython() & teardownCoreLibrary();
 }
 

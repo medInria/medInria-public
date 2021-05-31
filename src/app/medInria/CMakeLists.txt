@@ -145,8 +145,11 @@ target_link_libraries(${TARGET_NAME}
   medWidgets
   medCoreLegacy
   medPacs
-  medPython
   )
+
+if (USE_PYTHON)
+    target_link_libraries(${TARGET_NAME} medPython)
+endif()
 
 
 ## #############################################################################
