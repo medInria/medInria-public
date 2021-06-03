@@ -63,9 +63,11 @@ target_include_directories(${TARGET_NAME}
 ## #############################################################################
 
 target_link_libraries(${TARGET_NAME}
+  VTK::FiltersParallel
   VTK::IOInfovis
   VTK::IOExport
   VTK::IOExportPDF
+  VTK::RenderingContextOpenGL2
   medCore
   medLog
   medVtkInria

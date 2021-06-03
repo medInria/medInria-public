@@ -1,13 +1,15 @@
-/*
- * medInria
- * Copyright (c) INRIA 2013. All rights reserved.
- * 
- * medInria is under BSD-2-Clause license. See LICENSE.txt for details in the root of the sources or:
- * https://github.com/medInria/medInria-public/blob/master/LICENSE.txt
- * 
- * This software is distributed WITHOUT ANY WARRANTY; without even
- * the implied warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.
- */
+/*=========================================================================
+
+ medInria
+
+ Copyright (c) INRIA 2019. All rights reserved.
+ See LICENSE.txt for details.
+
+  This software is distributed WITHOUT ANY WARRANTY; without even
+  the implied warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR
+  PURPOSE.
+
+=========================================================================*/
 
 #include "medResliceViewer.h"
 #include "resampleProcess.h"
@@ -64,19 +66,6 @@ public:
             }
         }
 
-        // if (ev == vtkResliceCursorWidget::WindowLevelEvent || 
-        //     ev == vtkCommand::WindowLevelEvent ||
-        //     ev == vtkResliceCursorWidget::ResliceThicknessChangedEvent)
-        // {
-        //     // Render everything
-        //     for (int i = 0; i < 3; i++)
-        //     {
-        //         this->RCW[i]->Render();
-        //     }
-        //     this->IPW[0]->GetInteractor()->GetRenderWindow()->Render();
-        //     return;
-        // }
-
         vtkImagePlaneWidget *ipw = dynamic_cast<vtkImagePlaneWidget*>(caller);
         if (ipw)
         {
@@ -129,7 +118,7 @@ public:
         IPW[0]->GetInteractor()->GetRenderWindow()->Render();
     }
 
-    medResliceCursorCallback() {}
+    medResliceCursorCallback() = default;
     vtkImagePlaneWidget* IPW[3];
     vtkResliceCursorWidget* RCW[3];
 
@@ -215,8 +204,13 @@ medResliceViewer::medResliceViewer(medAbstractView *view, QWidget *parent): medA
         rep->GetResliceCursorActor()->GetCursorAlgorithm()->SetReslicePlaneNormal(i);
         riw[i]->SetInputData(vtkViewData);
         riw[i]->SetSliceOrientation(i);
-        riw[i]->SetResliceModeToOblique();       // Affiche les plans, mais les images ne sont pas centrées
-        //riw[i]->SetResliceModeToAxisAligned(); // Affiche les images bien centrées, mais pas les plans
+        riw[i]->SetResliceModeToOblique();
+
+        // Due to a bug since ~VTK9 https://gitlab.kitware.com/vtk/vtk/-/issues/18441
+        // the plans are not displayed correctly. A temporary solution is to use a wireframe representation.
+        rep->GetResliceCursorActor()->GetCenterlineProperty(0)->SetRepresentationToWireframe();
+        rep->GetResliceCursorActor()->GetCenterlineProperty(1)->SetRepresentationToWireframe();
+        rep->GetResliceCursorActor()->GetCenterlineProperty(2)->SetRepresentationToWireframe();
     }
 
     vtkSmartPointer<vtkCellPicker> picker = vtkSmartPointer<vtkCellPicker>::New();
@@ -242,7 +236,6 @@ medResliceViewer::medResliceViewer(medAbstractView *view, QWidget *parent): medA
         planeWidget[i]->SetTexturePlaneProperty(ipwProp);
         planeWidget[i]->TextureInterpolateOff();
         planeWidget[i]->SetResliceInterpolateToLinear();
-        //planeWidget[i]->SetInputData(vtkViewData);
         planeWidget[i]->SetInputConnection(view3d->GetInputAlgorithm(view3d->GetCurrentLayer())->GetOutputPort());
         planeWidget[i]->SetPlaneOrientation(i);
         planeWidget[i]->SetSliceIndex(imageDims[i]/2);
@@ -265,7 +258,6 @@ medResliceViewer::medResliceViewer(medAbstractView *view, QWidget *parent): medA
         riw[i]->GetResliceCursorWidget()->AddObserver(vtkResliceCursorWidget::ResliceThicknessChangedEvent, cbk);
         riw[i]->GetResliceCursorWidget()->AddObserver(vtkResliceCursorWidget::ResetCursorEvent, cbk);
         riw[i]->GetInteractorStyle()->AddObserver(vtkCommand::WindowLevelEvent, cbk);
-        //riw[i]->GetInteractorStyle()->AddObserver(vtkCommand::MouseMoveEvent, cbk);
 
         // Make them all share the same color map.
         riw[i]->SetLookupTable(riw[selectedView]->GetLookupTable());
@@ -318,7 +310,6 @@ void medResliceViewer::thickMode(int val)
     for (int i = 0; i < 3; i++)
     {
         riw[i]->SetThickMode(val);
-        //riw[i]->GetRenderer()->ResetCamera();
         riw[i]->Render();
     }
 }
@@ -519,14 +510,15 @@ dtkSmartPointer<medAbstractData> medResliceViewer::getOutput()
 void medResliceViewer::applyRadiologicalConvention()
 {
     double normal[3];
-
-    getResliceImageViewer(0)->GetResliceCursorWidget()->GetResliceCursorRepresentation()->GetResliceCursor()->GetPlane(2)->GetNormal(normal);
+    auto resliceCursor = getResliceImageViewer(0)->GetResliceCursorWidget()->GetResliceCursorRepresentation()->GetResliceCursor();
+    resliceCursor->GetPlane(2)->GetNormal(normal);
     for (int i = 0; i < 3; i++)
     {
         normal[i] = -normal[i];
     }
-    getResliceImageViewer(0)->GetResliceCursorWidget()->GetResliceCursorRepresentation()->GetResliceCursor()->GetPlane(2)->SetNormal(normal);
-    getResliceImageViewer(0)->GetResliceCursorWidget()->GetResliceCursorRepresentation()->GetResliceCursor()->Update();
+    resliceCursor->GetPlane(2)->SetNormal(normal);
+    resliceCursor->Update();
+
     for (int i = 0; i < 3; i++)
     {
         getResliceImageViewer(i)->GetResliceCursorWidget()->Render();
