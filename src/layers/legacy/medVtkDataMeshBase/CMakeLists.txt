@@ -65,9 +65,11 @@ target_include_directories(${TARGET_NAME}
 ## #############################################################################
 
 target_link_libraries(${TARGET_NAME} PUBLIC
+  VTK::FiltersParallel
   VTK::IOInfovis
   VTK::IOExport
   VTK::IOExportPDF
+  VTK::RenderingContextOpenGL2
   med::Core
   med::Log
   med::VtkInria
