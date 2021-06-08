@@ -34,9 +34,9 @@ public:
     vtkTypeMacro(vtkInriaInteractorStylePolygonRepulsor, vtkInteractorStyleImageView2D)
     void PrintSelf(ostream& os, vtkIndent indent);
 
-    virtual void OnMouseMove();
-    virtual void OnLeftButtonDown();
-    virtual void OnLeftButtonUp();
+    void OnMouseMove() override;
+    void OnLeftButtonDown() override;
+    void OnLeftButtonUp() override;
     void SetCurrentView(medAbstractView *view);
     void SetManager(medTagRoiManager *closestManagerInSlice);
     medTagRoiManager *GetManager(){ return manager;}
@@ -47,10 +47,12 @@ public:
 protected:
     vtkInriaInteractorStylePolygonRepulsor();
     ~vtkInriaInteractorStylePolygonRepulsor();
+    vtkInriaInteractorStylePolygonRepulsor(const vtkInriaInteractorStylePolygonRepulsor&) = delete;
+    void operator=(const vtkInriaInteractorStylePolygonRepulsor&) = delete;
 
     virtual void RedefinePolygons();
     void ReallyDeletePoint(vtkSmartPointer<vtkPoints> points, vtkIdList *idList);
-    void  DisplayPointFromPolygon(double *displayPoint, QList<double*> list, int ind);
+    void DisplayPointFromPolygon(double *displayPoint, QList<double*> list, int ind);
 
     int Position[2];
     int On;
@@ -61,7 +63,4 @@ protected:
     QList<polygonRoi*> ListPolygonsToSave;
     medTagRoiManager* manager;
 
-private:
-    vtkInriaInteractorStylePolygonRepulsor(const vtkInriaInteractorStylePolygonRepulsor&);  // Not implemented
-    void operator=(const vtkInriaInteractorStylePolygonRepulsor&);  // Not implemented
 };
