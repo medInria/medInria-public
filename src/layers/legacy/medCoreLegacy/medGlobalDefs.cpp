@@ -1,19 +1,18 @@
-/*=========================================================================
-
- medInria
-
- Copyright (c) INRIA 2013 - 2020. All rights reserved.
- See LICENSE.txt for details.
-
-  This software is distributed WITHOUT ANY WARRANTY; without even
-  the implied warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR
-  PURPOSE.
-
-=========================================================================*/
+/*
+ * medInria
+ * Copyright (c) INRIA 2013. All rights reserved.
+ * 
+ * medInria is under BSD-2-Clause license. See LICENSE.txt for details in the root of the sources or:
+ * https://github.com/medInria/medInria-public/blob/master/LICENSE.txt
+ * 
+ * This software is distributed WITHOUT ANY WARRANTY; without even
+ * the implied warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.
+ */
 
 #include <medGlobalDefs.h>
 
 #include <QFileInfo>
+#include <QOpenGLContext>
 #include <QtOpenGL/QtOpenGL>
 
 namespace med {
@@ -36,14 +35,16 @@ GPUInfo gpuModel()
 {
     // just fill it once, we are not going to change GPU on the fly
     static GPUInfo gpu;
-    if (gpu.renderer.isEmpty()) {
-        // glGetString requires a valid OpenGL context, the easiest way is to
-        // create a bogus QGLWidget and force a render.
-        QGLWidget glw;
-        glw.makeCurrent();
-        gpu.renderer = QString::fromLocal8Bit(reinterpret_cast<const char*>(glGetString(GL_RENDERER)));
-        gpu.version = QString::fromLocal8Bit(reinterpret_cast<const char*>(glGetString(GL_VERSION)));
-        gpu.vendor = QString::fromLocal8Bit(reinterpret_cast<const char*>(glGetString(GL_VENDOR)));
+    if (gpu.renderer.isEmpty())
+    {
+        QOffscreenSurface surface;
+        surface.create();
+        QOpenGLContext context;
+        context.create();
+        context.makeCurrent(&surface);
+        gpu.renderer = QString::fromLocal8Bit(reinterpret_cast<const char*>(context.functions()->glGetString(GL_RENDERER)));
+        gpu.version  = QString::fromLocal8Bit(reinterpret_cast<const char*>(context.functions()->glGetString(GL_VERSION)));
+        gpu.vendor   = QString::fromLocal8Bit(reinterpret_cast<const char*>(context.functions()->glGetString(GL_VENDOR)));
     }
     return gpu;
 }
