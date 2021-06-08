@@ -1,15 +1,13 @@
-/*=========================================================================
-
- medInria
-
- Copyright (c) INRIA 2013 - 2020. All rights reserved.
- See LICENSE.txt for details.
- 
-  This software is distributed WITHOUT ANY WARRANTY; without even
-  the implied warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR
-  PURPOSE.
-
-=========================================================================*/
+/*
+ * medInria
+ * Copyright (c) INRIA 2013. All rights reserved.
+ * 
+ * medInria is under BSD-2-Clause license. See LICENSE.txt for details in the root of the sources or:
+ * https://github.com/medInria/medInria-public/blob/master/LICENSE.txt
+ * 
+ * This software is distributed WITHOUT ANY WARRANTY; without even
+ * the implied warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.
+ */
 
 #include <itkDataTensorImageVtkViewInteractor.h>
 
@@ -59,9 +57,9 @@ public:
     vtkImageView2D *view2d;
     vtkImageView3D *view3d;
     medAbstractData *data;
-    vtkTensorManager *manager;
+    vtkSmartPointer<vtkTensorManager> manager;
     vtkRenderWindow *render;
-    vtkMatrix4x4 *orientationMatrix;
+    vtkSmartPointer<vtkMatrix4x4> orientationMatrix;
 
     // the filters will convert from itk tensor image format to vtkStructuredPoint (format handled by the tensor manager)
     itk::ITKTensorsToVTKTensorsFilter<TensorImageTypeFloat>::Pointer filterFloat;
