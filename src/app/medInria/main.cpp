@@ -68,21 +68,24 @@ void forceShow(medMainWindow& mainwindow )
 
 int main(int argc,char* argv[])
 {
-    // Setup openGL surface compatible with QVTKOpenGLWidget,
-    // required by medVtkView
+    // Setup openGL surface compatible with QVTKOpenGLNativeWidget required by medVtkView.
+    // We could have used "SurfaceFormat::setDefaultFormat(QVTKOpenGLNativeWidget::defaultFormat())"
+    // directly, but in order to avoid a link to VTK here, here is a copy of
+    // the QSurfaceFormat definition in "QVTKRenderWindowAdapter::defaultFormat"
     QSurfaceFormat fmt;
     fmt.setRenderableType(QSurfaceFormat::OpenGL);
     fmt.setVersion(3, 2);
     fmt.setProfile(QSurfaceFormat::CoreProfile);
     fmt.setSwapBehavior(QSurfaceFormat::DoubleBuffer);
-    fmt.setRedBufferSize(1);
-    fmt.setGreenBufferSize(1);
-    fmt.setBlueBufferSize(1);
-    fmt.setDepthBufferSize(1);
+    fmt.setRedBufferSize(8);
+    fmt.setGreenBufferSize(8);
+    fmt.setBlueBufferSize(8);
+    fmt.setDepthBufferSize(8);
+    fmt.setAlphaBufferSize(8);
     fmt.setStencilBufferSize(0);
-    fmt.setAlphaBufferSize(1);
     fmt.setStereo(false);
-    fmt.setSamples(0);
+    fmt.setSamples(0); // we never need multisampling in the context since the FBO can support
+                       // multisamples independently
 
     QSurfaceFormat::setDefaultFormat(fmt);
 
