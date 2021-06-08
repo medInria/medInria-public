@@ -211,8 +211,10 @@ void vtkInriaInteractorStylePolygonRepulsor::RedefinePolygons()
                     ptWorld1[0] = ptWorldtmp[0];
                     ptWorld1[1] = ptWorldtmp[1];
                     ptWorld1[2] = ptWorldtmp[2];
+                    double * pt_k = listPoints[k];
                     listPoints.replace(k,ptWorld1);
-                    contourChanged= true;
+                    delete [] pt_k;
+                    contourChanged = true;
 
                     for( int delta = -1; delta <= 1; delta++ )
                     {
@@ -278,8 +280,10 @@ void vtkInriaInteractorStylePolygonRepulsor::RedefinePolygons()
                     this->ListPolygonsToSave.append(roi);
                 }
             }
+            qDeleteAll(listPoints);
+            listPoints.clear();
+            polyData->Delete();
         }
-
     }
 }
 
