@@ -16,19 +16,13 @@
 #include <QStringList>
 #include <QMap>
 #include <QList>
+#include <medAbstractData.h>
 
-#include <medAbstractData>
+#include <medCoreExport.h>
 
-class MEDSOURCE_EXPORT medAbstractSource : public QObject
+class MEDCORE_EXPORT medAbstractSource : public QObject
 {
-
-    QOBJECT
-
-public:	
-    medAbstractSource();
-    virtual ~medAbstractSource() = 0;
-
-    QOBJECT
+    Q_OBJECT
 
 public:	
     medAbstractSource();
@@ -41,14 +35,14 @@ public:
         QString description;
     };
 	
-	enum eRequestStatus : int
-	{
-		aborted = -3,
-		cnxLost = -2,
-		faild   = -1,
-		finish  =  0,
-		pending =  1
-	}
+    enum eRequestStatus : int
+    {
+        aborted = -3,
+        cnxLost = -2,
+        faild = -1,
+        finish = 0,
+        pending = 1
+    };
     
     /* ***********************************************************************/
     /* *************** Get source properties *********************************/
@@ -95,13 +89,13 @@ public:
     //TODO stroe complementaries data like thumbnail
     
     
-signal:
+signals:
     void progress(int po_iRequest, eRequestStatus status);
 
 public slots:
-    void abort(int pi_iRequest);
-}
+    virtual void abort(int pi_iRequest) = 0;
+};
 
-MEDSOURCE_IMPORT medAbstractSource *instanciateSource();
-MEDSOURCE_IMPORT void instanciateSource(medAbstractSource *);
-using instanciateSource = medAbstractSource*();
+MEDCORE_EXPORT medAbstractSource* createSourceInstance();
+//MEDCORE_EXPORT void instanciateSource(medAbstractSource *);
+using instanciateSource = medAbstractSource* (*)();

@@ -25,7 +25,7 @@ class QJsonDocument;
 class medDBSourcesLoader : public QObject
 {
 
-    QOBJECT
+    Q_OBJECT
 
 public:	
     medDBSourcesLoader();
@@ -63,15 +63,15 @@ signals:
 
 private:
 
-    struct
-	{
-		QString id;                     //Unique id for a type of medSource (QString ou int ou typeid)
-		QString name;                   //Human readable name
-		QString Description;            //Human readable detailed information
-		instanciateSource instanciator; //Function pointer to instanciate a connection to the source object
-	}medSrouceTool;
+    struct medSourceTool
+    {
+        QString id;                     //Unique id for a type of medSource (QString ou int ou typeid)
+        QString name;                   //Human readable name
+        QString Description;            //Human readable detailed information
+        instanciateSource instanciator; //Function pointer to instantiate a connection to the source object
+    };
 	
     QMap<QString, medAbstractSource*> dbSourcesInstances; //IdName, instance
-    QMap<QString, medSrouceTool>      dbSourcesModelMap;  //Db connector type name, function pointer to instanciate a connection to the source object
+    QMap<QString, medSourceTool>      dbSourcesModelMap;  //Db connector type name, function pointer to instantiate a connection to the source object
 	
-}
+};
