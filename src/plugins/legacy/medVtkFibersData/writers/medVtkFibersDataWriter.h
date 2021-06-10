@@ -12,11 +12,11 @@ PURPOSE.
 
 =========================================================================*/
 
-#include <dtkCoreSupport/dtkAbstractDataWriter.h>
+#include <medAbstractDataWriter.h>
 
 #include <medVtkFibersDataPluginExport.h>
 
-class MEDVTKFIBERSDATAPLUGIN_EXPORT medVtkFibersDataWriter : public dtkAbstractDataWriter
+class MEDVTKFIBERSDATAPLUGIN_EXPORT medVtkFibersDataWriter : public medAbstractDataWriter
 {
     Q_OBJECT
 

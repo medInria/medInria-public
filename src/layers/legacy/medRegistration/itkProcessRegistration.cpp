@@ -13,7 +13,7 @@
 
 #include <itkProcessRegistration.h>
 
-#include <dtkCoreSupport/dtkAbstractDataWriter.h>
+#include <medAbstractDataWriter.h>
 #include <dtkCoreSupport/dtkSmartPointer.h>
 
 #include <medAbstractData.h>

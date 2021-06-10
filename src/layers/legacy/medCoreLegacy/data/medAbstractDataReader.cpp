@@ -11,4 +11,20 @@
 
 =========================================================================*/
 
-#include<medDataImporter.h>
+#include <medAbstractDataReader.h>
+#include <medAbstractData.h>
+
+void medAbstractDataReader::setData(QList<medAbstractData*> data)
+{
+	dataList = data;
+}
+
+void medAbstractDataReader::setData(dtkAbstractData* data)
+{
+    dataList = QList<medAbstractData*>() << dynamic_cast<medAbstractData*>(data);
+}
+
+QList<medAbstractData*> medAbstractDataReader::getDataList()
+{
+	return dataList;
+}

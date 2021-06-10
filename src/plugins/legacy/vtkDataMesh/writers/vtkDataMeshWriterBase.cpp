@@ -20,7 +20,7 @@
 
 const QString vtkDataMeshWriterBase::metaDataFieldPrefix = "medMetaData::";
 
-vtkDataMeshWriterBase::vtkDataMeshWriterBase() : dtkAbstractDataWriter()
+vtkDataMeshWriterBase::vtkDataMeshWriterBase() : medAbstractDataWriter()
 {
 }
 

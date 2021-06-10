@@ -44,14 +44,14 @@ namespace itk {
             void Execute(Object *caller, const EventObject &event);
         void Execute(const Object *caller, const EventObject &event);
 
-        void SetDataImageReader(dtkAbstractDataReader* reader) { m_Reader = reader; }
+        void SetDataImageReader(medAbstractDataReader* reader) { m_Reader = reader; }
 
     protected:
         DCMTKDataImageReaderCommand() { m_Reader = nullptr; }
         virtual ~DCMTKDataImageReaderCommand() {}
 
     private:
-        dtkAbstractDataReader* m_Reader;
+        medAbstractDataReader* m_Reader;
     };
 
     void DCMTKDataImageReaderCommand::Execute(Object *caller, const EventObject &event)
@@ -186,7 +186,7 @@ void itkDCMTKDataImageReaderPrivate::initialiseStatic()
 
 const char itkDCMTKDataImageReader::ID[] = "itkDCMTKDataImageReader";
 
-itkDCMTKDataImageReader::itkDCMTKDataImageReader() : dtkAbstractDataReader(), d(new itkDCMTKDataImageReaderPrivate) { }
+itkDCMTKDataImageReader::itkDCMTKDataImageReader() : medAbstractDataReader(), d(new itkDCMTKDataImageReaderPrivate) { }
 
 
 itkDCMTKDataImageReader::~itkDCMTKDataImageReader()

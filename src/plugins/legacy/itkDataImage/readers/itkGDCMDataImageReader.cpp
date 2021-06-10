@@ -138,7 +138,7 @@ itkGDCMDataImageReaderPrivate::itkGDCMDataImageReaderPrivate()
     io = itk::GDCMImageIO::New();
 }
 
-itkGDCMDataImageReader::itkGDCMDataImageReader() : dtkAbstractDataReader(), d(new itkGDCMDataImageReaderPrivate)
+itkGDCMDataImageReader::itkGDCMDataImageReader() : medAbstractDataReader(), d(new itkGDCMDataImageReaderPrivate)
 {
     this->m_Scanner.AddTag( gdcm::Tag(0x0010,0x0010) );
     this->m_Scanner.AddTag( gdcm::Tag(0x0008,0x0130) );

@@ -30,7 +30,7 @@ QStringList itkDataSHImageWriterBase::s_handled()
                          << "itkDataSHImageFloat3";
 }
 
-itkDataSHImageWriterBase::itkDataSHImageWriterBase(): dtkAbstractDataWriter()
+itkDataSHImageWriterBase::itkDataSHImageWriterBase(): medAbstractDataWriter()
 {
     this->io = nullptr;
 }

@@ -14,7 +14,7 @@
 
 #include <itkCommand.h>
 
-class dtkAbstractDataReader;
+class medAbstractDataReader;
 
 namespace itk
 {
@@ -33,7 +33,7 @@ public:
     void Execute(Object *caller, const EventObject &event);
     void Execute(const Object *caller, const EventObject &event);
     
-    void SetDataImageReader (dtkAbstractDataReader* reader)
+    void SetDataImageReader (medAbstractDataReader* reader)
     {
         m_Reader = reader;
     }
@@ -46,6 +46,6 @@ protected:
     virtual ~DataImageReaderCommand(){}
     
 private:
-    dtkAbstractDataReader* m_Reader;
+    medAbstractDataReader* m_Reader;
 };
 }

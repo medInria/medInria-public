@@ -27,7 +27,7 @@
 #include <itkObjectFactoryBase.h>
 #include <itkMetaDataObject.h>
 
-itkDataImageReaderBase::itkDataImageReaderBase() : dtkAbstractDataReader()
+itkDataImageReaderBase::itkDataImageReaderBase() : medAbstractDataReader()
 {
     this->io = 0;
     this->itkKeyToMedKey["intent_name"] = medAbstractImageData::PixelMeaningMetaData;

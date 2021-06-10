@@ -12,21 +12,21 @@
 
 =========================================================================*/
 
-#include <dtkCoreSupport/dtkAbstractDataWriter.h>
+#include <dtkCoreSupport/dtkAbstractDataReader.h>
 #include <medCoreLegacyExport.h>
 
 class dtkAbstractData;
 class medAbstractData;
 
 /**
- * Extending dtkAbstractDataWriter class 
+ * Extending dtkAbstractDataReader class
  */
-class MEDCORELEGACY_EXPORT medAbstractDataWriter : public dtkAbstractDataWriter
+class MEDCORELEGACY_EXPORT medAbstractDataReader : public dtkAbstractDataReader
 {
     Q_OBJECT
 
 public:
-    using dtkAbstractDataWriter::setData;
+    using dtkAbstractDataReader::setData;
     virtual void setData(QList<medAbstractData*> data);
     virtual void setData(dtkAbstractData* data);
     QList<medAbstractData*> getDataList();
