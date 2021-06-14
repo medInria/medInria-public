@@ -113,8 +113,9 @@ bool baseViewEvent::eventFilter(QObject *obj, QEvent *event)
                 break;
             case Qt::Key::Key_D:
                 double percentPos[2];
-                percentPos[0] = savedMousePosition[0] / currentView->viewWidget()->width();
-                percentPos[1] = savedMousePosition[1] / currentView->viewWidget()->height();
+                double wPos[4];
+                crossPosition->getWorldPosition(savedMousePosition, wPos);
+                pToolBox->drawCross(wPos);
                 pToolBox->drawCross(percentPos);
                 break;
             case Qt::Key::Key_E:
@@ -138,10 +139,9 @@ bool baseViewEvent::mouseReleaseEvent(medAbstractView *view, QMouseEvent *mouseE
         mouseEvent->modifiers() == Qt::ShiftModifier )
     {
         setCustomCursor(view, Qt::green);
-        double percentPos[2];
-        percentPos[0] = savedMousePosition[0] / currentView->viewWidget()->width();
-        percentPos[1] = savedMousePosition[1] / currentView->viewWidget()->height();
-        pToolBox->drawCross(percentPos);
+        double wPos[4];
+        crossPosition->getWorldPosition(savedMousePosition, wPos);
+        pToolBox->drawCross(wPos);
     }
     else if (isRepulsorActivated )
     {
@@ -183,10 +183,9 @@ bool baseViewEvent::mouseMoveEvent(medAbstractView *view, QMouseEvent *mouseEven
         setCustomCursor(view, Qt::green);
         if (mouseEvent->modifiers() == Qt::ShiftModifier)
         {
-            double percentPos[2];
-            percentPos[0] = savedMousePosition[0] / currentView->viewWidget()->width();
-            percentPos[1] = savedMousePosition[1] / currentView->viewWidget()->height();
-            pToolBox->drawCross(percentPos);
+            double wPos[4];
+            crossPosition->getWorldPosition(savedMousePosition, wPos);
+            pToolBox->drawCross(wPos);
         }
     }
     else if (currentLabel)
@@ -221,13 +220,11 @@ bool baseViewEvent::mousePressEvent(medAbstractView * view, QMouseEvent *mouseEv
                     roi->getContour()->SetWidgetState(vtkContourWidget::Manipulate);
                 }
             }
-            activateRepulsor(false);
-            isRepulsorActivated = true;
-
-            double percentPos[2];
-            percentPos[0] = savedMousePosition[0] / currentView->viewWidget()->width();
-            percentPos[1] = savedMousePosition[1] / currentView->viewWidget()->height();
-            pToolBox->drawCross(percentPos);
+//            activateRepulsor(false);
+//            isRepulsorActivated = true;
+            double wPos[4];
+            crossPosition->getWorldPosition(savedMousePosition, wPos);
+            pToolBox->drawCross(wPos);
         }
         else
         {
@@ -1120,10 +1117,7 @@ bool baseViewEvent::isContourLoadable(QString &labelName)
 
 void baseViewEvent::drawCross(double *position)
 {
-    double pos[2];
-    pos[0] = currentView->viewWidget()->width() * position[0];
-    pos[1] = currentView->viewWidget()->height() * position[1];
-    crossPosition->draw(pos);
+    crossPosition->draw(position);
     currentView->render();
 }
 

@@ -26,10 +26,12 @@ medMouseCrossPosition::medMouseCrossPosition(medAbstractImageView *iView)
     handle2d->SetProcessEvents(0);
     handle2d->SetManagesCursor(0);
     handle2d->SetInteractor(view2d->GetInteractor());
+    handle2d->SetCurrentRenderer(view2d->GetRenderer());
 
     handle2dRep = vtkSmartPointer<vtkPointHandleRepresentation2D>::New();
     handle2dRep->GetProperty()->SetLineWidth(1.0);
     handle2dRep->GetProperty()->SetColor(0.0, 1.0, 0.0);
+
     vtkSmartPointer<vtkCursor2D> cursor2D = vtkSmartPointer<vtkCursor2D>::New();
     cursor2D->AllOff();
     cursor2D->AxesOn();
@@ -49,7 +51,9 @@ medMouseCrossPosition::medMouseCrossPosition(medAbstractImageView *iView)
 
 void medMouseCrossPosition::draw(double *position)
 {
-    handle2dRep->SetDisplayPosition(position);
+    double dPos[3];
+    handle2d->ComputeWorldToDisplay(handle2d->GetCurrentRenderer(), position[0], position[1], position[2], dPos);
+    handle2dRep->SetDisplayPosition(dPos);
     handle2d->On();
 }
 
@@ -69,4 +73,9 @@ double *medMouseCrossPosition::getPosition()
 int medMouseCrossPosition::isEnabled()
 {
     return handle2d->GetEnabled();
+}
+
+void medMouseCrossPosition::getWorldPosition(double *dPos, double *wPos)
+{
+    handle2d->ComputeDisplayToWorld( handle2d->GetCurrentRenderer(), dPos[0], dPos[1], 0.0,  wPos);
 }
