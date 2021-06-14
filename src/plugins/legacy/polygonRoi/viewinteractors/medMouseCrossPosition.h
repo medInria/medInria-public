@@ -26,6 +26,7 @@ public:
     void erase();
     double *getPosition();
     int isEnabled();
+    void getWorldPosition(double *dPos, double *wPos);
 
 private:
     vtkSmartPointer<vtkHandleWidget> handle2d;
