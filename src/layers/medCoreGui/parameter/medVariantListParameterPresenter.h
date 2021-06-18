@@ -19,7 +19,7 @@ class QWidget;
 class medCompositeParameterPresenterPrivate;
 
 
-class MEDCOREGUI_EXPORT medCompositeParameterPresenter : public medAbstractParameterPresenter
+class MEDCOREGUI_EXPORT medVariantListParameterPresenter : public medAbstractParameterPresenter
 {
     Q_OBJECT
 

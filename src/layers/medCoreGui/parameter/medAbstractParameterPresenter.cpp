@@ -118,7 +118,6 @@ medAbstractParameterPresenter* medAbstractParameterPresenter::buildFromParameter
         presenter = new medVariantListParameterPresenter(qobject_cast<medVariantListParameter*>(parameter)); break;
     case medParameterType::MED_PARAMETER_GROUP:
         presenter = new medGroupParameterPresenter(qobject_cast<medGroupParameter*>(parameter)) ; break;
-
     default:
         dtkDebug() << "Unable to build presenter for parameter of type" << parameter->type();
     }
