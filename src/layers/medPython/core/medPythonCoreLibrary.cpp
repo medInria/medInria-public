@@ -31,7 +31,7 @@ QLibrary coreLibrary;
 
 QString getPythonLibraryPath()
 {
-    return med::getExternalResourcePath(PYTHON_EXECUTABLE_NAME, TARGET_NAME);
+    return med::getExternalResourcePath(PYTHON_LIBRARY, TARGET_NAME);
 }
 
 bool loadCoreLibrary()
