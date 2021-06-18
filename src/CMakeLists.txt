@@ -61,7 +61,7 @@ endif()
 
 string(CONCAT USE_PYTHON_DOC
     "Embed Python 3 into the application."
-    " In order to build, a Python version of at least 3.7 must be installed."
+    " The embeddable package will be downloaded at CMake configuration time."
     " (If embedded, Python can be disactivated at startup with the --no-python"
     " option)"
     )
