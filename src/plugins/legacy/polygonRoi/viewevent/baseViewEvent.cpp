@@ -34,7 +34,7 @@
 baseViewEvent::baseViewEvent(medAbstractImageView *iView, polygonRoiToolBox *toolBox) :
         medViewEventFilter(),
         currentLabel(nullptr), enableInterpolation(true),
-        pToolBox(toolBox), cursorState(CURSORSTATE::CS_DEFAULT), isRepulsorActivated(false)
+        pToolBox(toolBox), cursorState(CURSORSTATE::CS_DEFAULT), isRepulsorActivated(false), globalVtkLeftButtonBehaviour(-1)
 {
     currentView = iView;
 
@@ -136,12 +136,15 @@ bool baseViewEvent::mouseReleaseEvent(medAbstractView *view, QMouseEvent *mouseE
 {
     if (crossPosition->isEnabled() &&
         mouseEvent->button() == Qt::LeftButton &&
-        mouseEvent->modifiers() == Qt::ShiftModifier )
+        mouseEvent->modifiers() == Qt::AltModifier )
     {
         setCustomCursor(view, Qt::green);
         double wPos[4];
         crossPosition->getWorldPosition(savedMousePosition, wPos);
         pToolBox->drawCross(wPos);
+        vtkImageView2D *view2d = static_cast<medVtkViewBackend*>(currentView->backend())->view2D;
+        view2d->SetLeftButtonInteractionStyle(globalVtkLeftButtonBehaviour);
+
     }
     else if (isRepulsorActivated )
     {
@@ -181,7 +184,7 @@ bool baseViewEvent::mouseMoveEvent(medAbstractView *view, QMouseEvent *mouseEven
     if (crossPosition->isEnabled() && distToCross < 10.)
     {
         setCustomCursor(view, Qt::green);
-        if (mouseEvent->modifiers() == Qt::ShiftModifier)
+        if (mouseEvent->modifiers() == Qt::AltModifier)
         {
             double wPos[4];
             crossPosition->getWorldPosition(savedMousePosition, wPos);
@@ -210,23 +213,25 @@ bool baseViewEvent::mousePressEvent(medAbstractView * view, QMouseEvent *mouseEv
 {
     if (mouseEvent->button()==Qt::LeftButton)
     {
-        if (mouseEvent->modifiers() == Qt::ShiftModifier)
+        for (polygonLabel *label : labelList)
         {
-            for (polygonLabel *label : labelList)
+            polygonRoi *roi = label->roiOpenInSlice();
+            if (roi != nullptr)
             {
-                polygonRoi *roi = label->roiOpenInSlice();
-                if (roi != nullptr)
-                {
-                    roi->getContour()->SetWidgetState(vtkContourWidget::Manipulate);
-                }
+                roi->getContour()->SetWidgetState(vtkContourWidget::Manipulate);
             }
-//            activateRepulsor(false);
-//            isRepulsorActivated = true;
+        }
+
+        if (mouseEvent->modifiers() == Qt::AltModifier)
+        {
             double wPos[4];
             crossPosition->getWorldPosition(savedMousePosition, wPos);
             pToolBox->drawCross(wPos);
+            vtkImageView2D *view2d = static_cast<medVtkViewBackend*>(currentView->backend())->view2D;
+            globalVtkLeftButtonBehaviour = view2d->GetLeftButtonInteractionStyle();
+            view2d->SetLeftButtonInteractionStyle(-1);
         }
-        else
+        else if (mouseEvent->modifiers() == Qt::ShiftModifier)
         {
             for (polygonLabel *label : labelList)
             {
@@ -340,20 +345,6 @@ QLineEdit * baseViewEvent::changeManagerNameBase(polygonLabel* closestManager, Q
     });
 
     return renameManager;
-}
-
-
-void baseViewEvent::updateLabelToolBoxStateBase()
-{
-    currentLabel = nullptr;
-    for (polygonLabel *pLabel : labelList)
-    {
-        if (pLabel->getState().selected)
-        {
-            currentLabel = pLabel;
-        }
-    }
-
 }
 
 polygonLabel *baseViewEvent::getClosestPLabel(double *mousePos)
@@ -657,7 +648,6 @@ void baseViewEvent::updateContourProperty(QString &name, QColor &color, int posi
     }
     currentLabel->setRoisSelectedState();
     currentView->render();
-
 }
 
 void baseViewEvent::activateRepulsor(bool state)
@@ -1049,8 +1039,6 @@ medAbstractView *baseViewEvent::getCurrentView()
 void baseViewEvent::showOnDifferentOrientation()
 {
     auto view = dynamic_cast<medAbstractImageView *>(sender());
-    qDebug()<<"size of oriented view "<<view->viewWidget()->size();
-    qDebug()<<"size of current view "<<currentView->viewWidget()->size();
     for (polygonLabel *label : labelList)
     {
         label->updateRoiOnOrientedView(view, true);
@@ -1089,6 +1077,11 @@ void baseViewEvent::removeViewInteractor()
     removeFromAllViews();
     for (auto label : labelList)
     {
+        polygonRoi *roi = label->roiOpenInSlice();
+        if (roi != nullptr)
+        {
+            roi->getContour()->SetWidgetState(vtkContourWidget::Manipulate);
+        }
         label->removeViewObservers();
     }
 }
