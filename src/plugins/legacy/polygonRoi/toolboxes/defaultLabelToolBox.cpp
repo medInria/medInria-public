@@ -256,8 +256,6 @@ void defaultLabelToolBox::updateItem(medLabelProperty &info)
 
     item->setFlags(item->flags() | Qt::ItemIsSelectable | Qt::ItemIsEditable);
     item->setFlags(item->flags() & (~Qt::ItemIsUserCheckable));
-
-    item->setSelected(info.selected);
 }
 
 void defaultLabelToolBox::rename(int row, QString &newName)
@@ -344,6 +342,17 @@ void defaultLabelToolBox::unselectAll()
     {
         QListWidgetItem *item = labels->item(row);
         item->setSelected(false);
+    }
+}
+
+void defaultLabelToolBox::forceItemClickIfNeeded(int selectedLabel)
+{
+    if (labels->row(labels->currentItem()) < 0)
+        return;
+
+    if (selectedLabel!=labels->row(labels->currentItem()))
+    {
+        emit labels->itemClicked(labels->currentItem());
     }
 }
 

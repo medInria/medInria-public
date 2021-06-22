@@ -44,7 +44,6 @@ polygonRoiToolBox::polygonRoiToolBox(QWidget *parent ) :
     {
         specialityPreference = 0;
     }
-
     auto displayWidget = new QWidget(this);
     this->addWidget(displayWidget);
 
@@ -549,6 +548,7 @@ void polygonRoiToolBox::highLightContainer(medAbstractView *pView)
     for (medViewContainer *container : tabs->containersInTab(tabs->currentIndex()))
     {
         auto iView = dynamic_cast<medAbstractImageView *>(container->view());
+        container->setSelected(iView==pView);
         if (iView==pView)
         {
             container->highlight("red");
@@ -583,8 +583,8 @@ void polygonRoiToolBox::showHelp() const
     QString titleStyle = "<span style=\" font-size : 14px;text-decoration: underline;\"><center>%1</center></span><br>";
 
     QString main = QString(QString(titleStyle).arg("Main features")
-                                 + QString(underlineStyle).arg("Draw Contour:") + " Activate the toolbox, then click on the data set<br><br>"
-                                 + QString(underlineStyle).arg("Define new Label:") + " Select a label then click on the data set<br><br>"
+                                 + QString(underlineStyle).arg("Draw Contour:") + " Activate the toolbox, then shift+click on the data set<br><br>"
+                                 + QString(underlineStyle).arg("Define new Label:") + " Select a label then shift+click on the data set<br><br>"
                                  + QString(underlineStyle).arg("Add New Label:") + " Click on Plus Button<br><br>"
                                  + QString(underlineStyle).arg("Remove label:") + " Click on Minus Button<br><br>");
 
@@ -594,7 +594,7 @@ void polygonRoiToolBox::showHelp() const
                                      + QString(underlineStyle).arg("V:") + " Paste contour(s)<br><br>"
                                      + QString(underlineStyle).arg("Up/Down:") + " Move to previous/next slice<br><br>"
                                      + QString(underlineStyle).arg("BackSpace:") + " Delete node (work only closed to a contour)<br><br>"
-                                     + QString(underlineStyle).arg("Shift + Click:") + " Draw cross on mouse click 2D position in all views<br><br>"
+                                     + QString(underlineStyle).arg("Alt + Click:") + " Draw cross on mouse click 2D position in all views<br><br>"
                                      + QString(underlineStyle).arg("D:") + " Draw cross on current 2D position in all views<br><br>"
                                      + QString(underlineStyle).arg("E:") + " Erase cross in all views<br><br>"
                                      + QString(underlineStyle).arg("H:") + " show this help<br><br>");

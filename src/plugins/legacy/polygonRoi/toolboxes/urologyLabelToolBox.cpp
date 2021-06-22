@@ -38,7 +38,6 @@ void urologyLabelToolBox::initialize(QString &seriesName)
         if (currentViewEvent)
         {
             currentViewEvent->updateContourProperty(name, color, position, true, hasScore, checkState, scoreName);
-
         }
     }, Qt::UniqueConnection);
 
@@ -360,8 +359,6 @@ void urologyLabelToolBox::updateItem(medLabelProperty &info)
         item->setText(name);
     }
     itemSpecialization(item, info.scoreState, info.checked);
-
-    item->setSelected(info.selected);
 }
 
 void urologyLabelToolBox::itemSpecialization(QListWidgetItem *item, bool scoreState, bool checkState)

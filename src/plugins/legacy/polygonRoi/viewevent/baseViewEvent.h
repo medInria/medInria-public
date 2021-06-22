@@ -61,7 +61,6 @@ public:
     void saveAllContours();
 
     void removeViewFromList(medAbstractImageView *iView);
-    void updateLabelToolBoxStateBase();
     void rename(int position, QString newName);
     void deleteLabel(int position);
 
@@ -104,6 +103,7 @@ protected:
     bool enableInterpolation;
     polygonRoiToolBox *pToolBox;
     medMouseCrossPosition *crossPosition;
+    int globalVtkLeftButtonBehaviour;
 
     int activateContourBase(double *mousePosition);
     static QLineEdit *changeManagerNameBase(polygonLabel *closestManager, QMenu *mainMenu);
@@ -143,4 +143,5 @@ private:
     virtual void setScoreNameAndColor(polygonLabel *label, QString &name) {};
 
     static medIntParameterL *getSlicingParameter(medAbstractImageView *iView) ;
+
 };
