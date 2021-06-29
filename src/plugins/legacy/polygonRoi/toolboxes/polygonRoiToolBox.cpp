@@ -548,7 +548,6 @@ void polygonRoiToolBox::highLightContainer(medAbstractView *pView)
     for (medViewContainer *container : tabs->containersInTab(tabs->currentIndex()))
     {
         auto iView = dynamic_cast<medAbstractImageView *>(container->view());
-        container->setSelected(iView==pView);
         if (iView==pView)
         {
             container->highlight("red");
@@ -595,7 +594,6 @@ void polygonRoiToolBox::showHelp() const
                                      + QString(underlineStyle).arg("Up/Down:") + " Move to previous/next slice<br><br>"
                                      + QString(underlineStyle).arg("BackSpace:") + " Delete node (work only closed to a contour)<br><br>"
                                      + QString(underlineStyle).arg("Alt + Click:") + " Draw cross on mouse click 2D position in all views<br><br>"
-                                     + QString(underlineStyle).arg("D:") + " Draw cross on current 2D position in all views<br><br>"
                                      + QString(underlineStyle).arg("E:") + " Erase cross in all views<br><br>"
                                      + QString(underlineStyle).arg("H:") + " show this help<br><br>");
     if (specialityPreference==1)

@@ -101,9 +101,6 @@ void vtkInriaInteractorStylePolygonRepulsor::OnLeftButtonDown()
     double pos[2];
     pos[0] = (double)Position[0];
     pos[1] = (double)Position[1];
-    qDebug()<<"repulsor on label "<<manager;
-    qDebug()<<"name "<<manager->getName();
-    qDebug()<<"number of rois "<<manager->getRois().size();
     double dist = manager->getMinimumDistanceFromNodesToMouse(pos);
     this->Radius = (int)((dist+0.5)*0.8);
     this->RepulsorActor->SetRadius(this->Radius);
@@ -140,11 +137,6 @@ void vtkInriaInteractorStylePolygonRepulsor::OnLeftButtonUp()
 }
 
 //----------------------------------------------------------------------------
-void vtkInriaInteractorStylePolygonRepulsor::SetCurrentView(medAbstractView *view)
-{
-    this->CurrentView = view;
-}
-
 void vtkInriaInteractorStylePolygonRepulsor::SetManager(polygonLabel *closestManagerInSlice)
 {
     this->manager = closestManagerInSlice;

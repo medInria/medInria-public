@@ -39,7 +39,6 @@ public:
     virtual void OnMouseMove();
     virtual void OnLeftButtonDown();
     virtual void OnLeftButtonUp();
-    void SetCurrentView(medAbstractView *view);
     void SetManager(polygonLabel *closestManagerInSlice);
     polygonLabel *GetManager(){ return manager;}
     bool IsInRepulsorDisk(double *pt);
@@ -57,7 +56,6 @@ protected:
     int Position[2];
     int On;
     int Radius;
-    medAbstractView *CurrentView;
     vtkCircleActor2D *RepulsorActor;
     vtkProperty2D *RepulsorProperty;
     QList<polygonRoi*> ListPolygonsToSave;
