@@ -658,6 +658,9 @@ void baseViewEvent::updateContourProperty(QString &name, QColor &color, int posi
         labelList.append(currentLabel);
     }
     currentLabel->setRoisSelectedState();
+
+    interactorStyleRepulsor->SetManager(currentLabel);
+
     currentView->render();
 }
 
@@ -843,6 +846,7 @@ int baseViewEvent::activateContourBase(double *mousePosition)
     if (pLabel && pLabel->getMinimumDistanceFromNodesToMouse(mousePosition, true) < 10. )
     {
         currentLabel = pLabel;
+        interactorStyleRepulsor->SetManager(currentLabel);
         pLabel->getState().selected = true;
         pLabel->setRoisSelectedState();
         position = pLabel->getPosition();
