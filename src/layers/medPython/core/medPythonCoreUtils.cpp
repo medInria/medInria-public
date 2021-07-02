@@ -33,6 +33,33 @@ wchar_t* qStringToWideChar(QString input)
     return Py_DecodeLocale(qUtf8Printable(input), nullptr);
 }
 
+void freeWideChar(wchar_t* input)
+{
+    PyMem_RawFree(input);
+}
+
+wchar_t** qStringListToWideChar(QStringList input)
+{
+    wchar_t** result = (wchar_t**)PyMem_RawMalloc(input.size() * sizeof(wchar_t*));
+
+    for (int i = 0; i < input.size(); i++)
+    {
+        result[i] = qStringToWideChar(input[i]);
+    }
+
+    return result;
+}
+
+void freeWideCharList(wchar_t** input, size_t numItems)
+{
+    for (size_t i = 0; i < numItems; i++)
+    {
+        freeWideChar(input[i]);
+    }
+
+    PyMem_RawFree(input);
+}
+
 QStringList getPythonPath()
 {
     return wideCharToQString(Py_GetPath()).split(PYTHON_PATH_DELIMITER);

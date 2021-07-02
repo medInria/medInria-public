@@ -31,7 +31,7 @@ QLibrary coreLibrary;
 
 QString getPythonLibraryPath()
 {
-    return med::getExternalResourcePath(PYTHON_LIBRARY, TARGET_NAME);
+    return med::getExternalResourcePath(PYTHON_MAIN_LIBRARY, TARGET_NAME);
 }
 
 bool loadCoreLibrary()
@@ -90,29 +90,30 @@ bool resolveSymbols()
     // Bitwise AND is used to prevent short-circuit evaluation, so that all the
     // failed symbols are printed instead of just the first one.
     //
-    return resolveSymbol("PyStatus_Exception", &core::PyStatus_Exception)
-            & resolveSymbol("PyConfig_Read", &core::PyConfig_Read)
-            & resolveSymbol("PyConfig_Clear", &core::PyConfig_Clear)
-            & resolveSymbol("PyConfig_SetBytesString", &core::PyConfig_SetBytesString)
-            & resolveSymbol("PyConfig_SetWideStringList", &core::PyConfig_SetWideStringList)
-            & resolveSymbol("PyPreConfig_InitIsolatedConfig", &core::PyPreConfig_InitIsolatedConfig)
-            & resolveSymbol("PyConfig_InitIsolatedConfig", &core::PyConfig_InitIsolatedConfig)
-            & resolveSymbol("Py_PreInitialize", &core::Py_PreInitialize)
-            & resolveSymbol("Py_InitializeFromConfig", &core::Py_InitializeFromConfig)
-            & resolveSymbol("Py_IsInitialized", &core::Py_IsInitialized)
-            & resolveSymbol("Py_FinalizeEx", &core::Py_FinalizeEx)
-            & resolveSymbol("Py_GetVersion", &core::Py_GetVersion)
-            & resolveSymbol("Py_GetPythonHome", &core::Py_GetPythonHome)
-            & resolveSymbol("Py_GetPrefix", &core::Py_GetPrefix)
-            & resolveSymbol("Py_GetExecPrefix", &core::Py_GetExecPrefix)
-            & resolveSymbol("Py_GetPath", &core::Py_GetPath)
-            & resolveSymbol("Py_SetPath", &core::Py_SetPath)
-            & resolveSymbol("PyMem_Free", &core::PyMem_Free)
-            & resolveSymbol("PyMem_RawMalloc", &core::PyMem_RawMalloc)
-            & resolveSymbol("PyMem_RawFree", &core::PyMem_RawFree)
-            & resolveSymbol("Py_EncodeLocale", &core::Py_EncodeLocale)
-            & resolveSymbol("Py_DecodeLocale", &core::Py_DecodeLocale)
-            & resolveSymbol("PyRun_SimpleString", &core::PyRun_SimpleString);
+    return resolveSymbol("PyStatus_Exception", &PyStatus_Exception)
+            & resolveSymbol("PyConfig_Read", &PyConfig_Read)
+            & resolveSymbol("PyConfig_Clear", &PyConfig_Clear)
+            & resolveSymbol("PyConfig_SetBytesString", &PyConfig_SetBytesString)
+            & resolveSymbol("PyConfig_SetWideStringList", &PyConfig_SetWideStringList)
+            & resolveSymbol("PyPreConfig_InitIsolatedConfig", &PyPreConfig_InitIsolatedConfig)
+            & resolveSymbol("PyConfig_InitIsolatedConfig", &PyConfig_InitIsolatedConfig)
+            & resolveSymbol("Py_PreInitialize", &Py_PreInitialize)
+            & resolveSymbol("Py_InitializeFromConfig", &Py_InitializeFromConfig)
+            & resolveSymbol("Py_IsInitialized", &Py_IsInitialized)
+            & resolveSymbol("Py_FinalizeEx", &Py_FinalizeEx)
+            & resolveSymbol("Py_GetVersion", &Py_GetVersion)
+            & resolveSymbol("Py_SetPythonHome", &Py_SetPythonHome)
+            & resolveSymbol("Py_GetPythonHome", &Py_GetPythonHome)
+            & resolveSymbol("Py_GetPrefix", &Py_GetPrefix)
+            & resolveSymbol("Py_GetExecPrefix", &Py_GetExecPrefix)
+            & resolveSymbol("Py_GetPath", &Py_GetPath)
+            & resolveSymbol("Py_SetPath", &Py_SetPath)
+            & resolveSymbol("PyMem_Free", &PyMem_Free)
+            & resolveSymbol("PyMem_RawMalloc", &PyMem_RawMalloc)
+            & resolveSymbol("PyMem_RawFree", &PyMem_RawFree)
+            & resolveSymbol("Py_EncodeLocale", &Py_EncodeLocale)
+            & resolveSymbol("Py_DecodeLocale", &Py_DecodeLocale)
+            & resolveSymbol("PyRun_SimpleString", &PyRun_SimpleString);
 }
 
 } // namespace

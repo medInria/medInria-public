@@ -32,6 +32,7 @@ int (*Py_IsInitialized)() = nullptr;
 int (*Py_FinalizeEx)() = nullptr;
 
 const char* (*Py_GetVersion)() = nullptr;
+void (*Py_SetPythonHome)(const wchar_t *) = nullptr;
 wchar_t* (*Py_GetPythonHome)() = nullptr;
 wchar_t* (*Py_GetPrefix)() = nullptr;
 wchar_t* (*Py_GetExecPrefix)() = nullptr;

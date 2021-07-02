@@ -60,6 +60,7 @@ extern int (*Py_IsInitialized)();
 extern int (*Py_FinalizeEx)();
 
 extern const char* (*Py_GetVersion)();
+extern void (*Py_SetPythonHome)(const wchar_t *);
 extern wchar_t* (*Py_GetPythonHome)();
 extern wchar_t* (*Py_GetPrefix)();
 extern wchar_t* (*Py_GetExecPrefix)();

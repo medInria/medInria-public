@@ -15,6 +15,11 @@
 
 set(TARGET_NAME medPython)
 
+set(CMAKE_MODULE_PATH
+    ${CMAKE_MODULE_PATH}
+    ${CMAKE_CURRENT_SOURCE_DIR}/cmake
+    )
+
 ## #############################################################################
 ## Find dependencies
 ## #############################################################################
@@ -23,6 +28,8 @@ find_package(dtk REQUIRED)
 include_directories(${dtk_INCLUDE_DIRS})
 
 find_package(Qt5 REQUIRED COMPONENTS Core)
+
+include(python_info)
 
 ## #############################################################################
 ## List sources
@@ -57,75 +64,71 @@ target_include_directories(${TARGET_NAME}
     )
 
 ## #############################################################################
-## Embed Python
+## Download embeddable Python
 ## #############################################################################
 
-if (UNIX)
-    if (APPLE)
-        set(minor_python_version 9)
-    else()
-        set(minor_python_version 8)
-    endif()
+file(MAKE_DIRECTORY "${CMAKE_CURRENT_BINARY_DIR}/python")
+set(python_zip "${CMAKE_CURRENT_BINARY_DIR}/python/python.zip")
 
-    set(python_library_name "python3.${minor_python_version}")
+add_custom_command(OUTPUT "${python_zip}"
+    COMMAND ${CMAKE_COMMAND} ARGS
+    -D PYTHON_ZIP=${python_zip}
+    -D PYTHON_VERSION_MINOR=${PYTHON_VERSION_MINOR}
+    -P "${CMAKE_CURRENT_SOURCE_DIR}/cmake/download_python.cmake"
+    VERBATIM
+    )
 
-elseif (WIN32)
-    set(minor_python_version 9)
-    set(python_library_name "python.exe")
-endif()
+## #############################################################################
+## List Python files
+## #############################################################################
 
-set(python_working_dir "${CMAKE_CURRENT_BINARY_DIR}/python")
-
-if (NOT EXISTS "${python_working_dir}")
-
-    set(embedded_python_url "https://med.inria.fr/downloads/embedded-python")
-    set(embedded_python_zip "${python_working_dir}/Python.zip")
-
-    if (UNIX)
-        if (APPLE)
-            set(embedded_python_url "${embedded_python_url}/python-3.${minor_python_version}-mac.zip")
-        else()
-            set(embedded_python_url "${embedded_python_url}/python-3.${minor_python_version}-linux.zip")
-        endif()
-    elseif (WIN32)
-        set(embedded_python_url "${embedded_python_url}/python-3.${minor_python_version}-win.zip")
-    endif()
-
-    message("Downloading the embeddable Python package from ${embedded_python_url}")
-    file(DOWNLOAD ${embedded_python_url} "${embedded_python_zip}" STATUS download_status)
-    list(POP_FRONT download_status download_code download_error)
-
-    if (download_code)
-        message(WARNING "Downloading failed: ${download_error} (${download_code})")
-    else()
-        message("Download succeeded")
-        execute_process(COMMAND ${CMAKE_COMMAND} -E tar x "${embedded_python_zip}"
-            WORKING_DIRECTORY "${python_working_dir}"
-            )
-        file(REMOVE "${embedded_python_zip}")
-    endif()
-
-endif()
-
-file(GLOB python_files LIST_DIRECTORIES FALSE "${python_working_dir}/*")
-
-if (UNIX)
-    file(GLOB_RECURSE python_lib_files LIST_DIRECTORIES FALSE "${python_working_dir}/lib/*")
-    list(APPEND python_files ${python_lib_files})
-endif()
-
-foreach (python_file ${python_files})
-    add_external_resources(${TARGET_NAME} "${python_file}")
+foreach (file ${PYTHON_HEADERS})
+    list(APPEND python_headers "${CMAKE_CURRENT_BINARY_DIR}/python/${PYTHON_HEADERS_DIR}/${file}")
 endforeach()
 
-target_include_directories(${TARGET_NAME} PUBLIC "${python_working_dir}/include/python3.${minor_python_version}")
+foreach (file ${PYTHON_LIBRARIES})
+    list(APPEND python_libraries "${CMAKE_CURRENT_BINARY_DIR}/python/${PYTHON_LIBRARIES_DIR}/${file}")
+endforeach()
+
+foreach (file ${PYTHON_MODULES})
+    list(APPEND python_modules "${CMAKE_CURRENT_BINARY_DIR}/python/${PYTHON_MODULES_DIR}/${file}")
+endforeach()
+
+set(python_license_file "${CMAKE_CURRENT_BINARY_DIR}/python/${PYTHON_LICENSE_FILE}")
+
+## #############################################################################
+## Extract Python files
+## #############################################################################
+
+add_custom_command(OUTPUT ${python_headers} ${python_libraries}  ${python_modules}  ${python_license_file}
+    COMMAND ${CMAKE_COMMAND} ARGS
+    -D PYTHON_ZIP=${python_zip}
+    -P "${CMAKE_CURRENT_SOURCE_DIR}/cmake/extract_python.cmake"
+    WORKING_DIRECTORY "${CMAKE_CURRENT_BINARY_DIR}/python"
+    DEPENDS ${python_zip}
+    VERBATIM
+    )
+
+## #############################################################################
+## Python-related compilation settings
+## #############################################################################
+
+# To prevent warniong of generated files not being moc'd
+cmake_policy(SET CMP0071 NEW)
+
+target_include_directories(${TARGET_NAME} PRIVATE "${CMAKE_CURRENT_BINARY_DIR}/python/${PYTHON_HEADERS_DIR}")
+target_sources(${TARGET_NAME} PRIVATE ${python_headers})
 
 target_compile_definitions(${TARGET_NAME} PUBLIC
-    PYTHON_VERSION_MAJOR=3
-    PYTHON_VERSION_MINOR=${minor_python_version}
-    PYTHON_LIBRARY="${python_library_name}"
-    STANDARD_PYTHON_MODULES_ZIP="python3${minor_python_version}.zip"
+    PYTHON_VERSION_MINOR=${PYTHON_VERSION_MINOR}
+    PYTHON_MAIN_LIBRARY="${PYTHON_MAIN_LIBRARY}"
     )
+
+## #############################################################################
+## Add embedded Python files as resources
+## #############################################################################
+
+add_external_resources(${TARGET_NAME} ${python_libraries}  ${python_modules}  ${python_license_file})
 
 ## #############################################################################
 ## Link
