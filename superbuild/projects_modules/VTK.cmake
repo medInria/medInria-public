@@ -75,8 +75,11 @@ set(cmake_args
   -DModule_vtkGUISupportQtOpenGL=ON
   -DModule_vtkRenderingOSPRay:BOOL=${USE_OSPRay}
   -DVTK_QT_VERSION=5
-  -DQt5_DIR=${Qt5_DIR}
   -DVTK_USE_OGGTHEORA_ENCODER:BOOL=ON # OGV Export
+  )
+  
+set(cmake_cache_args
+  -DQt5_DIR:FILEPATH=${Qt5_DIR}
   )
 
 if(USE_OSPRay)
@@ -135,6 +138,7 @@ ExternalProject_Add(${ep}
   CMAKE_GENERATOR ${gen}
   CMAKE_GENERATOR_PLATFORM ${CMAKE_GENERATOR_PLATFORM}
   CMAKE_ARGS ${cmake_args}
+  CMAKE_CACHE_ARGS ${cmake_cache_args}
   DEPENDS ${${ep}_dependencies}
   INSTALL_COMMAND ""
   BUILD_ALWAYS 1
