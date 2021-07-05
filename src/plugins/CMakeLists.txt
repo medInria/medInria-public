@@ -76,6 +76,7 @@ set(PLUGIN_LIST
   legacy/voiCutter                                                       ON
   legacy/vtkDataMesh                                                     ON
   legacy/medExportVideo                                                  ON
+  legacy/medSQLite                                                       ON
   process/arithmetic_operation                                           ON
   process/bias_correction                                                ON
   process/dwi_basic_thresholding                                         ON

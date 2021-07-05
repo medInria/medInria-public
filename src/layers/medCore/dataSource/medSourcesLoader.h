@@ -29,7 +29,7 @@ class medDBSourcesLoader : public QObject
 
 public:	
     medDBSourcesLoader();
-    ~medDBSourcesLoader();
+    ~medDBSourcesLoader(){};
 	
     /* ***********************************************************************/
     /* *************** Add a source type ********************************/

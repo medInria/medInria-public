@@ -25,9 +25,9 @@ class MEDCORE_EXPORT medAbstractSource : public QObject
     Q_OBJECT
 
 public:	
-    medAbstractSource();
-    virtual ~medAbstractSource() = 0;
-    
+//    medAbstractSource();
+//    virtual ~medAbstractSource() = 0;
+
     struct levelMinimalEntries
     {
         QString id;
