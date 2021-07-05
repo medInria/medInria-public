@@ -113,7 +113,7 @@ add_custom_command(OUTPUT ${python_headers} ${python_libraries}  ${python_module
 ## Python-related compilation settings
 ## #############################################################################
 
-# To prevent warniong of generated files not being moc'd
+# To prevent warning of generated files not being moc'd
 cmake_policy(SET CMP0071 NEW)
 
 target_include_directories(${TARGET_NAME} PRIVATE "${CMAKE_CURRENT_BINARY_DIR}/python/${PYTHON_HEADERS_DIR}")
