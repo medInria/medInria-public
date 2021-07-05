@@ -15,14 +15,14 @@ PURPOSE.
 #include <medPluginLegacy.h>
 #include "medSQLitePluginExport.h"
 
-class MEDSQLITEPLUGIN_EXPORT medSQLItePlugin : public medPluginLegacy
+class MEDSQLITEPLUGIN_EXPORT medSQLitePlugin : public medPluginLegacy
 {
     Q_OBJECT
     Q_PLUGIN_METADATA(IID "fr.inria.medSQLitePlugin" FILE "medSQLitePlugin.json")
     Q_INTERFACES(dtkPlugin)
 
 public:
-    polygonRoiPlugin(QObject *parent = nullptr);
+    medSQLitePlugin(QObject *parent = nullptr);
     virtual bool initialize();
     
     virtual QString name() const;

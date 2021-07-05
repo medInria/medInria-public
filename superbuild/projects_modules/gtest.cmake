@@ -11,8 +11,8 @@
 #
 ################################################################################
 
-function(GTest_project)
-set(ep GTest)
+function(GTEST_project)
+set(ep GTEST)
 
 ## #############################################################################
 ## List the dependencies of the project
@@ -60,7 +60,7 @@ set(cmake_args
   -DCMAKE_CXX_FLAGS=${${ep}_cxx_flags}
   -DCMAKE_MACOSX_RPATH:BOOL=OFF
   -DCMAKE_SHARED_LINKER_FLAGS=${${ep}_shared_linker_flags}  
-  -DCMAKE_INSTALL_PREFIX=<INSTALL_DIR>
+  -DCMAKE_INSTALL_PREFIX=.
   -DBUILD_SHARED_LIBS=${BUILD_SHARED_LIBS_${ep}}
   )
 
@@ -88,7 +88,6 @@ ExternalProject_Add(${ep}
   CMAKE_GENERATOR ${gen}
   CMAKE_GENERATOR_PLATFORM ${CMAKE_GENERATOR_PLATFORM}
   CMAKE_ARGS ${cmake_args}
-  INSTALL_COMMAND ""
   BUILD_ALWAYS 1
   )
 
@@ -96,8 +95,9 @@ ExternalProject_Add(${ep}
 ## Set variable to provide infos about the project
 ## #############################################################################
 
-ExternalProject_Get_Property(GTest binary_dir)
-set(${ep}_DIR ${binary_dir} PARENT_SCOPE)
+ExternalProject_Get_Property(GTEST binary_dir)
+set(${ep}_ROOT ${binary_dir} PARENT_SCOPE)
+
 
 endif() #NOT USE_SYSTEM_ep
 

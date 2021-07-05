@@ -63,7 +63,7 @@ list(APPEND external_projects
   QtDCM 
   dtk
   LogDemons
-  GTest
+  GTEST
   )
 
 if (USE_DTKIMAGING)

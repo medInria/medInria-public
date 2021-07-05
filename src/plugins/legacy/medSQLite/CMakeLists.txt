@@ -13,7 +13,7 @@
 #
 ################################################################################
 
-set(TARGET_NAME medSQLite)
+set(TARGET_NAME medSQLitePlugin)
 
 ## #############################################################################
 ## Setup version numbering
@@ -29,10 +29,7 @@ add_definitions(-D${TARGET_NAME_UP}_VERSION="${${TARGET_NAME}_VERSION}")
 ## Resolve dependencies
 ## #############################################################################
 
-enable_testing()
-find_package(GTest REQUIRED)
 
-#find_package(GTEST REQUIRED)
 #find_package(dtk REQUIRED)
 #include_directories(${dtk_INCLUDE_DIRS})
 #
@@ -50,18 +47,17 @@ find_package(GTest REQUIRED)
 ## List Sources
 ## #############################################################################
 
-#list_source_files(${TARGET_NAME}
-#  . # current dir
-#  )
-
+list_source_files(${TARGET_NAME}
+  ${CMAKE_CURRENT_SOURCE_DIR}
+ )
 
 ## #############################################################################
 ## include directorie.
 ## #############################################################################
 
 list_header_directories_to_include(${TARGET_NAME}
-  ${${TARGET_NAME}_HEADERS}
-  )
+   ${${TARGET_NAME}_HEADERS}
+   )
 
 include_directories(${${TARGET_NAME}_INCLUDE_DIRS}
   ${MEDINRIA_INCLUDE_DIRS}
@@ -95,19 +91,49 @@ add_library(${TARGET_NAME} SHARED
 ## #############################################################################
 ## Link
 ## #############################################################################
-
 target_link_libraries(${TARGET_NAME}
-#  ${QT_LIBRARIES}
-#  dtkCore
 #  dtkCore
 #  dtkLog
         medCore
-        medCoreLegacy
+#        medCoreLegacy
 #  medLog
 #  medVtkInria
 #  medImageIO
   )
 
+set(TARGET_NAME_TEST medSQLiteTest)
+
+enable_testing()
+find_package(GTest REQUIRED)
+
+
+list_header_directories_to_include(${TARGET_NAME_TEST}
+        ${${TARGET_NAME}_HEADERS}
+        )
+
+include_directories(${${TARGET_NAME_TEST}_INCLUDE_DIRS}
+        ${MEDINRIA_INCLUDE_DIRS}
+        )
+
+
+list_source_files(${TARGET_NAME_TEST}
+        medSQLite.cpp
+        test
+        )
+
+include_directories(
+        ${MEDINRIA_INCLUDE_DIRS}
+        ${GTEST_INCLUDE_DIR}
+)
+
+
+file(GLOB SRC_FILES "medSQLite.cpp")
+file(GLOB TEST_SRC_FILES "test/*.cpp")
+#message("${SRC_FILES}")
+add_executable(${TARGET_NAME_TEST} ${SRC_FILES}  ${TEST_SRC_FILES})
+target_link_libraries(${TARGET_NAME_TEST} ${GTEST_LIBRARY_DEBUG} ${GTEST_MAIN_LIBRARY_DEBUG} medCore ${TARGET_NAME})
+
+#add_test(myTest medSQLiteTest)
 
 ## #############################################################################
 ## Install rules
