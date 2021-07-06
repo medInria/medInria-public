@@ -59,6 +59,18 @@ option(USE_FFmpeg
   )
 endif()
 
+string(CONCAT USE_PYTHON_DOC
+    "Embed Python 3 into the application."
+    " The embeddable package will be downloaded at CMake configuration time."
+    " (If embedded, Python can be deactivated at startup with the --no-python"
+    " option)"
+    )
+option(USE_PYTHON ${USE_PYTHON_DOC} ON)
+
+if (USE_PYTHON)
+    add_compile_definitions(USE_PYTHON)
+endif()
+
 ## #############################################################################
 ## Find package
 ## #############################################################################
@@ -196,6 +208,10 @@ set_lib_properties_variables(
     medUtilities
     medVtkDataMeshBase
     )
+
+if (USE_PYTHON)
+    set_lib_properties_variables(medPython)
+endif()
 
 if(EXISTS ${CMAKE_SOURCE_DIR}/cmake/${PROJECT_NAME}Config.cmake.in)
   configure_file( ## Build tree configure file
