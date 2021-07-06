@@ -38,6 +38,7 @@ include(python_info)
 list_source_files(${TARGET_NAME}
     ${CMAKE_CURRENT_SOURCE_DIR}
     ${CMAKE_CURRENT_SOURCE_DIR}/core
+    ${CMAKE_CURRENT_SOURCE_DIR}/error
     )
 
 list_header_directories_to_include(${TARGET_NAME}

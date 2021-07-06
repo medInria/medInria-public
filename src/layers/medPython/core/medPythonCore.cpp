@@ -18,16 +18,16 @@
 #include "medPythonCoreInit.h"
 #include "medPythonCoreLibrary.h"
 
-namespace med::python::core
+namespace med::python
 {
 
-bool setup()
+bool setupCore()
 {
     qInfo() << "Setting up Python...";
     return setupCoreLibrary() && initializePython();
 }
 
-bool teardown()
+bool teardownCore()
 {
     // Bitwise AND is used to prevent short-circuit evaluation, so that the
     // library is unloaded even if finalization failed.
@@ -35,4 +35,4 @@ bool teardown()
     return finalizePython() & teardownCoreLibrary();
 }
 
-} // namespace med::python::core
+} // namespace med::python

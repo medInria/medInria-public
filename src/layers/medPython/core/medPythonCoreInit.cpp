@@ -24,7 +24,7 @@
 
 #include "medPythonCoreUtils.h"
 
-namespace med::python::core
+namespace med::python
 {
 
 namespace
@@ -288,4 +288,4 @@ bool finalizePython()
     return success;
 }
 
-} // namespace med::python::core
+} // namespace med::python

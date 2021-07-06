@@ -12,10 +12,10 @@
 
 ==============================================================================*/
 
-namespace med::python::core
+namespace med::python
 {
 
-bool setup();
-bool teardown();
+bool setupCore();
+bool teardownCore();
 
-} // namespace med::python::core
+} // namespace med::python

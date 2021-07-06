@@ -12,13 +12,16 @@
 
 ==============================================================================*/
 
-/// The embedded core Python library is loaded and manually linked at runtime.
-///
+#include <QString>
+
+#include <medPythonCoreAPI.h>
 
 namespace med::python
 {
 
-bool setupCoreLibrary();
-bool teardownCoreLibrary();
+/// Retrieves the traceback of an exception and converts it to a user-readable
+/// string.
+///
+QString formatExceptionTraceback(PyObject* nativeException);
 
 } // namespace med::python
