@@ -62,7 +62,7 @@ endif()
 string(CONCAT USE_PYTHON_DOC
     "Embed Python 3 into the application."
     " The embeddable package will be downloaded at CMake configuration time."
-    " (If embedded, Python can be disactivated at startup with the --no-python"
+    " (If embedded, Python can be deactivated at startup with the --no-python"
     " option)"
     )
 option(USE_PYTHON ${USE_PYTHON_DOC} ON)
