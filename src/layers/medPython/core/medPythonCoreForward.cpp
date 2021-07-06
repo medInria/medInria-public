@@ -11,9 +11,9 @@
 
 ==============================================================================*/
 
-#include "medPythonCoreForward.h"
-
 #include "medPythonCoreAPI.h"
+
+#include "medPythonCoreForward.h"
 
 namespace med::python
 {

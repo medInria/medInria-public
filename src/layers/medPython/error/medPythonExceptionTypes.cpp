@@ -19,7 +19,7 @@
 #define MEDPYTHON_NATIVE_CLASS_METHOD(exceptionClass, nativeClassObject) \
     PyObject* exceptionClass::nativeClass() \
     { \
-        return *nativeClassObject; \
+        return nativeClassObject; \
     }
 
 namespace med::python

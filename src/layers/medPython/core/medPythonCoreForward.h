@@ -12,8 +12,8 @@
 
 ==============================================================================*/
 
-/// This header forwards and wraps some elements of the CPython library to avoid
-/// having to include the Python headers outside of the module.
+/// Forwards and wraps some elements of the CPython library needed in external
+/// code, to avoid having to include the CPython header.
 ///
 
 #include "medPythonExport.h"
