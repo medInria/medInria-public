@@ -131,7 +131,7 @@ file(GLOB SRC_FILES "medSQLite.cpp")
 file(GLOB TEST_SRC_FILES "test/*.cpp")
 #message("${SRC_FILES}")
 add_executable(${TARGET_NAME_TEST} ${SRC_FILES}  ${TEST_SRC_FILES})
-target_link_libraries(${TARGET_NAME_TEST} ${GTEST_LIBRARY_DEBUG} ${GTEST_MAIN_LIBRARY_DEBUG} medCore ${TARGET_NAME})
+target_link_libraries(${TARGET_NAME_TEST} ${GTEST_LIBRARY} ${GTEST_MAIN_LIBRARY} medCore ${TARGET_NAME})
 
 #add_test(myTest medSQLiteTest)
 
