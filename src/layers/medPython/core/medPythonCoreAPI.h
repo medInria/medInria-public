@@ -12,9 +12,8 @@
 
 ==============================================================================*/
 
-/// This file declares all the CPython functions and global variables that are
-/// actually used. They will be linked explicitly when the Python library is
-/// loaded at runtime.
+/// This file declares the CPython functions and global variables that will be
+/// linked explicitly when the Python library is loaded at runtime.
 ///
 /// NOTE: CPython defines pre-processor macros that affect the standard headers.
 /// Since this file includes the Python header, it must therefore always be
@@ -84,72 +83,92 @@ extern void (*PyErr_NormalizeException)(PyObject**, PyObject**, PyObject**);
 extern void (*PyErr_Clear)();
 extern int (*PyException_SetTraceback)(PyObject*, PyObject*);
 
-extern int (*PyRun_SimpleString)(const char*);
+extern int (*PyRun_SimpleStringFlags)(const char*, PyCompilerFlags*);
 
 extern PyObject* (*PyImport_Import)(PyObject*);
 
-extern Py_ssize_t (*PyObject_Length)(PyObject*);
+extern int (*PyType_IsSubtype)(PyTypeObject*, PyTypeObject*);
+
+extern Py_ssize_t (*PyObject_Size)(PyObject*);
 extern PyObject* (*PyObject_GetAttrString)(PyObject*, const char*);
-
 extern PyObject* (*PyObject_CallObject)(PyObject*, PyObject*);
+extern int (*PyObject_IsTrue)(PyObject*);
+extern PyObject* (*PyObject_Str)(PyObject*);
+extern PyObject* (*PyObject_GetItem)(PyObject*, PyObject*);
 
+extern PyObject* (*PyBool_FromLong)(long);
+
+extern PyObject* (*PyLong_FromLong)(long);
+extern long (*PyLong_AsLong)(PyObject*);
+
+extern PyObject* (*PyFloat_FromDouble)(double);
+extern double (*PyFloat_AsDouble)(PyObject*);
+
+extern Py_ssize_t (*PySequence_Size)(PyObject*);
 extern PyObject* (*PySequence_GetItem)(PyObject*, Py_ssize_t);
 
-extern PyObject* (*_Py_VaBuildValue_SizeT)(const char *, va_list);
+extern PyObject* (*PyMapping_Keys)(PyObject*);
+
+extern PyObject* (*PyList_New)(Py_ssize_t);
+
+extern PyObject* (*PyDict_New)();
+extern int (*PyDict_SetItem)(PyObject*, PyObject*, PyObject*);
+
+extern PyObject* (*_Py_VaBuildValue_SizeT)(const char*, va_list);
 extern void (*_Py_Dealloc)(PyObject*);
 
-extern PyObject** PyExc_BaseException;
-extern PyObject** PyExc_Exception;
-extern PyObject** PyExc_GeneratorExit;
-extern PyObject** PyExc_KeyboardInterrupt;
-extern PyObject** PyExc_SystemExit;
-extern PyObject** PyExc_ArithmeticError;
-extern PyObject** PyExc_FloatingPointError;
-extern PyObject** PyExc_OverflowError;
-extern PyObject** PyExc_ZeroDivisionError;
-extern PyObject** PyExc_ImportError;
-extern PyObject** PyExc_ModuleNotFoundError;
-extern PyObject** PyExc_LookupError;
-extern PyObject** PyExc_IndexError;
-extern PyObject** PyExc_KeyError;
-extern PyObject** PyExc_NameError;
-extern PyObject** PyExc_UnboundLocalError;
-extern PyObject** PyExc_OSError;
-extern PyObject** PyExc_BlockingIOError;
-extern PyObject** PyExc_ChildProcessError;
-extern PyObject** PyExc_ConnectionError;
-extern PyObject** PyExc_BrokenPipeError;
-extern PyObject** PyExc_ConnectionAbortedError;
-extern PyObject** PyExc_ConnectionRefusedError;
-extern PyObject** PyExc_ConnectionResetError;
-extern PyObject** PyExc_FileExistsError;
-extern PyObject** PyExc_FileNotFoundError;
-extern PyObject** PyExc_InterruptedError;
-extern PyObject** PyExc_IsADirectoryError;
-extern PyObject** PyExc_NotADirectoryError;
-extern PyObject** PyExc_PermissionError;
-extern PyObject** PyExc_ProcessLookupError;
-extern PyObject** PyExc_TimeoutError;
-extern PyObject** PyExc_RuntimeError;
-extern PyObject** PyExc_NotImplementedError;
-extern PyObject** PyExc_RecursionError;
-extern PyObject** PyExc_SyntaxError;
-extern PyObject** PyExc_IndentationError;
-extern PyObject** PyExc_TabError;
-extern PyObject** PyExc_ValueError;
-extern PyObject** PyExc_UnicodeError;
-extern PyObject** PyExc_UnicodeDecodeError;
-extern PyObject** PyExc_UnicodeEncodeError;
-extern PyObject** PyExc_UnicodeTranslateError;
-extern PyObject** PyExc_AssertionError;
-extern PyObject** PyExc_AttributeError;
-extern PyObject** PyExc_BufferError;
-extern PyObject** PyExc_EOFError;
-extern PyObject** PyExc_MemoryError;
-extern PyObject** PyExc_ReferenceError;
-extern PyObject** PyExc_StopAsyncIteration;
-extern PyObject** PyExc_StopIteration;
-extern PyObject** PyExc_SystemError;
-extern PyObject** PyExc_TypeError;
+extern PyObject* PyExc_BaseException;
+extern PyObject* PyExc_Exception;
+extern PyObject* PyExc_GeneratorExit;
+extern PyObject* PyExc_KeyboardInterrupt;
+extern PyObject* PyExc_SystemExit;
+extern PyObject* PyExc_ArithmeticError;
+extern PyObject* PyExc_FloatingPointError;
+extern PyObject* PyExc_OverflowError;
+extern PyObject* PyExc_ZeroDivisionError;
+extern PyObject* PyExc_ImportError;
+extern PyObject* PyExc_ModuleNotFoundError;
+extern PyObject* PyExc_LookupError;
+extern PyObject* PyExc_IndexError;
+extern PyObject* PyExc_KeyError;
+extern PyObject* PyExc_NameError;
+extern PyObject* PyExc_UnboundLocalError;
+extern PyObject* PyExc_OSError;
+extern PyObject* PyExc_BlockingIOError;
+extern PyObject* PyExc_ChildProcessError;
+extern PyObject* PyExc_ConnectionError;
+extern PyObject* PyExc_BrokenPipeError;
+extern PyObject* PyExc_ConnectionAbortedError;
+extern PyObject* PyExc_ConnectionRefusedError;
+extern PyObject* PyExc_ConnectionResetError;
+extern PyObject* PyExc_FileExistsError;
+extern PyObject* PyExc_FileNotFoundError;
+extern PyObject* PyExc_InterruptedError;
+extern PyObject* PyExc_IsADirectoryError;
+extern PyObject* PyExc_NotADirectoryError;
+extern PyObject* PyExc_PermissionError;
+extern PyObject* PyExc_ProcessLookupError;
+extern PyObject* PyExc_TimeoutError;
+extern PyObject* PyExc_RuntimeError;
+extern PyObject* PyExc_NotImplementedError;
+extern PyObject* PyExc_RecursionError;
+extern PyObject* PyExc_SyntaxError;
+extern PyObject* PyExc_IndentationError;
+extern PyObject* PyExc_TabError;
+extern PyObject* PyExc_ValueError;
+extern PyObject* PyExc_UnicodeError;
+extern PyObject* PyExc_UnicodeDecodeError;
+extern PyObject* PyExc_UnicodeEncodeError;
+extern PyObject* PyExc_UnicodeTranslateError;
+extern PyObject* PyExc_AssertionError;
+extern PyObject* PyExc_AttributeError;
+extern PyObject* PyExc_BufferError;
+extern PyObject* PyExc_EOFError;
+extern PyObject* PyExc_MemoryError;
+extern PyObject* PyExc_ReferenceError;
+extern PyObject* PyExc_StopAsyncIteration;
+extern PyObject* PyExc_StopIteration;
+extern PyObject* PyExc_SystemError;
+extern PyObject* PyExc_TypeError;
 
 } // namespace med::python

@@ -26,7 +26,7 @@ struct BaseExceptionPrivate
 
 PyObject* BaseException::nativeClass()
 {
-    return *PyExc_BaseException;
+    return PyExc_BaseException;
 }
 
 BaseException::BaseException(QString message) :

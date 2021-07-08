@@ -12,5 +12,6 @@
 
 ==============================================================================*/
 
+#include "medPythonConversion.h"
 #include "medPythonError.h"
 #include "medPythonInit.h"

@@ -12,7 +12,7 @@
 
 ==============================================================================*/
 
-/// The embedded core Python library is loaded and manually linked at runtime.
+/// The embedded core Python library is loaded and explicitly linked at runtime.
 ///
 
 namespace med::python

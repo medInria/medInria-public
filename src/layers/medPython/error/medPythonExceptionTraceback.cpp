@@ -48,7 +48,7 @@ QString getTracebackItem(PyObject* tracebackList, ssize_t index)
 
         if (encodedTracebackItem)
         {
-            result = strdup(PyBytes_AS_STRING(encodedTracebackItem));
+            result = PyBytes_AS_STRING(encodedTracebackItem);
             Py_CLEAR(encodedTracebackItem);
          }
     }

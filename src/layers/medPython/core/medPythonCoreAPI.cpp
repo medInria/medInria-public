@@ -56,79 +56,107 @@ void (*PyErr_NormalizeException)(PyObject**, PyObject**, PyObject**) = nullptr;
 void (*PyErr_Clear)() = nullptr;
 int (*PyException_SetTraceback)(PyObject*, PyObject*) = nullptr;
 
-int (*PyRun_SimpleString)(const char*) = nullptr;
+int (*PyRun_SimpleStringFlags)(const char*, PyCompilerFlags*) = nullptr;
 
 PyObject* (*PyImport_Import)(PyObject*) = nullptr;
 
-Py_ssize_t (*PyObject_Length)(PyObject*) = nullptr;
+int (*PyType_IsSubtype)(PyTypeObject*, PyTypeObject*) = nullptr;
+
+Py_ssize_t (*PyObject_Size)(PyObject*) = nullptr;
 PyObject* (*PyObject_GetAttrString)(PyObject*, const char*) = nullptr;
-
 PyObject* (*PyObject_CallObject)(PyObject*, PyObject*) = nullptr;
+int (*PyObject_IsTrue)(PyObject*) = nullptr;
+PyObject* (*PyObject_Str)(PyObject*) = nullptr;
+PyObject* (*PyObject_GetItem)(PyObject*, PyObject*) = nullptr;
 
+PyObject* (*PyBool_FromLong)(long) = nullptr;
+
+PyObject* (*PyLong_FromLong)(long) = nullptr;
+long (*PyLong_AsLong)(PyObject*) = nullptr;
+
+PyObject* (*PyFloat_FromDouble)(double) = nullptr;
+double (*PyFloat_AsDouble)(PyObject*) = nullptr;
+
+Py_ssize_t (*PySequence_Size)(PyObject*) = nullptr;
 PyObject* (*PySequence_GetItem)(PyObject*, Py_ssize_t) = nullptr;
 
-PyObject* (*_Py_VaBuildValue_SizeT)(const char *, va_list) = nullptr;
+PyObject* (*PyMapping_Keys)(PyObject*) = nullptr;
+
+PyObject* (*PyList_New)(Py_ssize_t) = nullptr;
+
+PyObject* (*PyDict_New)() = nullptr;
+int (*PyDict_SetItem)(PyObject*, PyObject*, PyObject*) = nullptr;
+
+PyObject* (*_Py_VaBuildValue_SizeT)(const char*, va_list) = nullptr;
 void (*_Py_Dealloc)(PyObject*) = nullptr;
 
-PyObject** PyExc_BaseException = nullptr;
-PyObject** PyExc_Exception = nullptr;
-PyObject** PyExc_GeneratorExit = nullptr;
-PyObject** PyExc_KeyboardInterrupt = nullptr;
-PyObject** PyExc_SystemExit = nullptr;
-PyObject** PyExc_ArithmeticError = nullptr;
-PyObject** PyExc_FloatingPointError = nullptr;
-PyObject** PyExc_OverflowError = nullptr;
-PyObject** PyExc_ZeroDivisionError = nullptr;
-PyObject** PyExc_ImportError = nullptr;
-PyObject** PyExc_ModuleNotFoundError = nullptr;
-PyObject** PyExc_LookupError = nullptr;
-PyObject** PyExc_IndexError = nullptr;
-PyObject** PyExc_KeyError = nullptr;
-PyObject** PyExc_NameError = nullptr;
-PyObject** PyExc_UnboundLocalError = nullptr;
-PyObject** PyExc_OSError = nullptr;
-PyObject** PyExc_BlockingIOError = nullptr;
-PyObject** PyExc_ChildProcessError = nullptr;
-PyObject** PyExc_ConnectionError = nullptr;
-PyObject** PyExc_BrokenPipeError = nullptr;
-PyObject** PyExc_ConnectionAbortedError = nullptr;
-PyObject** PyExc_ConnectionRefusedError = nullptr;
-PyObject** PyExc_ConnectionResetError = nullptr;
-PyObject** PyExc_FileExistsError = nullptr;
-PyObject** PyExc_FileNotFoundError = nullptr;
-PyObject** PyExc_InterruptedError = nullptr;
-PyObject** PyExc_IsADirectoryError = nullptr;
-PyObject** PyExc_NotADirectoryError = nullptr;
-PyObject** PyExc_PermissionError = nullptr;
-PyObject** PyExc_ProcessLookupError = nullptr;
-PyObject** PyExc_TimeoutError = nullptr;
-PyObject** PyExc_RuntimeError = nullptr;
-PyObject** PyExc_NotImplementedError = nullptr;
-PyObject** PyExc_RecursionError = nullptr;
-PyObject** PyExc_SyntaxError = nullptr;
-PyObject** PyExc_IndentationError = nullptr;
-PyObject** PyExc_TabError = nullptr;
-PyObject** PyExc_ValueError = nullptr;
-PyObject** PyExc_UnicodeError = nullptr;
-PyObject** PyExc_UnicodeDecodeError = nullptr;
-PyObject** PyExc_UnicodeEncodeError = nullptr;
-PyObject** PyExc_UnicodeTranslateError = nullptr;
-PyObject** PyExc_AssertionError = nullptr;
-PyObject** PyExc_AttributeError = nullptr;
-PyObject** PyExc_BufferError = nullptr;
-PyObject** PyExc_EOFError = nullptr;
-PyObject** PyExc_MemoryError = nullptr;
-PyObject** PyExc_ReferenceError = nullptr;
-PyObject** PyExc_StopAsyncIteration = nullptr;
-PyObject** PyExc_StopIteration = nullptr;
-PyObject** PyExc_SystemError = nullptr;
-PyObject** PyExc_TypeError = nullptr;
+PyObject* PyExc_BaseException = nullptr;
+PyObject* PyExc_Exception = nullptr;
+PyObject* PyExc_GeneratorExit = nullptr;
+PyObject* PyExc_KeyboardInterrupt = nullptr;
+PyObject* PyExc_SystemExit = nullptr;
+PyObject* PyExc_ArithmeticError = nullptr;
+PyObject* PyExc_FloatingPointError = nullptr;
+PyObject* PyExc_OverflowError = nullptr;
+PyObject* PyExc_ZeroDivisionError = nullptr;
+PyObject* PyExc_ImportError = nullptr;
+PyObject* PyExc_ModuleNotFoundError = nullptr;
+PyObject* PyExc_LookupError = nullptr;
+PyObject* PyExc_IndexError = nullptr;
+PyObject* PyExc_KeyError = nullptr;
+PyObject* PyExc_NameError = nullptr;
+PyObject* PyExc_UnboundLocalError = nullptr;
+PyObject* PyExc_OSError = nullptr;
+PyObject* PyExc_BlockingIOError = nullptr;
+PyObject* PyExc_ChildProcessError = nullptr;
+PyObject* PyExc_ConnectionError = nullptr;
+PyObject* PyExc_BrokenPipeError = nullptr;
+PyObject* PyExc_ConnectionAbortedError = nullptr;
+PyObject* PyExc_ConnectionRefusedError = nullptr;
+PyObject* PyExc_ConnectionResetError = nullptr;
+PyObject* PyExc_FileExistsError = nullptr;
+PyObject* PyExc_FileNotFoundError = nullptr;
+PyObject* PyExc_InterruptedError = nullptr;
+PyObject* PyExc_IsADirectoryError = nullptr;
+PyObject* PyExc_NotADirectoryError = nullptr;
+PyObject* PyExc_PermissionError = nullptr;
+PyObject* PyExc_ProcessLookupError = nullptr;
+PyObject* PyExc_TimeoutError = nullptr;
+PyObject* PyExc_RuntimeError = nullptr;
+PyObject* PyExc_NotImplementedError = nullptr;
+PyObject* PyExc_RecursionError = nullptr;
+PyObject* PyExc_SyntaxError = nullptr;
+PyObject* PyExc_IndentationError = nullptr;
+PyObject* PyExc_TabError = nullptr;
+PyObject* PyExc_ValueError = nullptr;
+PyObject* PyExc_UnicodeError = nullptr;
+PyObject* PyExc_UnicodeDecodeError = nullptr;
+PyObject* PyExc_UnicodeEncodeError = nullptr;
+PyObject* PyExc_UnicodeTranslateError = nullptr;
+PyObject* PyExc_AssertionError = nullptr;
+PyObject* PyExc_AttributeError = nullptr;
+PyObject* PyExc_BufferError = nullptr;
+PyObject* PyExc_EOFError = nullptr;
+PyObject* PyExc_MemoryError = nullptr;
+PyObject* PyExc_ReferenceError = nullptr;
+PyObject* PyExc_StopAsyncIteration = nullptr;
+PyObject* PyExc_StopIteration = nullptr;
+PyObject* PyExc_SystemError = nullptr;
+PyObject* PyExc_TypeError = nullptr;
 
 } // namespace med::python
 
-// The following internal functions are used by CPython macros. To avoid link
-// issues at build time, we define our own version that calls the proper
-// runtime-linked one.
+PyTypeObject PyBool_Type = {};
+PyTypeObject PyFloat_Type = {};
+
+// The following functions are called by CPython macros. To avoid link issues at
+// build time, we define our own version that calls the proper runtime-linked
+// one.
+
+int PyType_IsSubtype(PyTypeObject* object1, PyTypeObject* object2)
+{
+    return med::python::PyType_IsSubtype(object1, object2);
+}
 
 void _Py_Dealloc(PyObject* object)
 {

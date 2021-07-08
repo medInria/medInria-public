@@ -12,13 +12,10 @@
 
 ==============================================================================*/
 
+#include <QString>
+
 #include "medPythonCoreForward.h"
-#include "medPythonCoreUtils.h"
+#include "medPythonExport.h"
 
-namespace med::python
-{
-
-bool setupCore();
-bool teardownCore();
-
-} // namespace med::python
+MEDPYTHON_EXPORT bool medPythonConvert(const QString& value, PyObject** output);
+MEDPYTHON_EXPORT bool medPythonConvert(const PyObject* object, QString* output);
