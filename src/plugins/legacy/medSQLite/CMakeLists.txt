@@ -104,8 +104,9 @@ target_link_libraries(${TARGET_NAME}
 set(TARGET_NAME_TEST medSQLiteTest)
 
 enable_testing()
-find_package(GTest REQUIRED)
-
+#find_package(GTest REQUIRED)
+include(GoogleTest)
+#FindGTest()
 
 list_header_directories_to_include(${TARGET_NAME_TEST}
         ${${TARGET_NAME}_HEADERS}
