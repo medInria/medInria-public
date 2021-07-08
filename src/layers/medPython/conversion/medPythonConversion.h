@@ -12,6 +12,7 @@
 
 ==============================================================================*/
 
+#include "medPythonObjectConversion.h"
 #include "medPythonPrimitiveConversion.h"
 #include "medPythonQHashConversion.h"
 #include "medPythonQListConversion.h"

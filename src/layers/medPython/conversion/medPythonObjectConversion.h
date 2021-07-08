@@ -12,7 +12,16 @@
 
 ==============================================================================*/
 
-#include "medPythonConversion.h"
-#include "medPythonError.h"
-#include "medPythonInit.h"
-#include "medPythonObjects.h"
+#include "medPythonCoreForward.h"
+#include "medPythonExport.h"
+
+namespace med::python
+{
+
+class AbstractObject;
+class Object;
+
+} // namespace med::python
+
+MEDPYTHON_EXPORT bool medPythonConvert(const med::python::AbstractObject& object, PyObject** output);
+MEDPYTHON_EXPORT bool medPythonConvert(const PyObject* nativeObject, med::python::Object* output);

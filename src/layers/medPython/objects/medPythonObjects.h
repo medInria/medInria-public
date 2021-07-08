@@ -12,7 +12,7 @@
 
 ==============================================================================*/
 
-#include "medPythonConversion.h"
-#include "medPythonError.h"
-#include "medPythonInit.h"
-#include "medPythonObjects.h"
+#include "medPythonContainerAccessor.h"
+#include "medPythonFunctionCall.h"
+#include "medPythonObject.h"
+#include "medPythonStandardObjects.h"
