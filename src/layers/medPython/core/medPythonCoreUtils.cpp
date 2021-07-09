@@ -60,9 +60,4 @@ void freeWideCharList(wchar_t** input, size_t numItems)
     PyMem_RawFree(input);
 }
 
-QStringList getPythonPath()
-{
-    return wideCharToQString(Py_GetPath()).split(PYTHON_PATH_DELIMITER);
-}
-
 } // namespace med::python

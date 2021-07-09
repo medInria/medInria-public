@@ -14,6 +14,7 @@
 #include "medPythonInit.h"
 
 #include <QApplication>
+#include <QDebug>
 
 #include "medPythonCore.h"
 #include "medPythonError.h"
@@ -21,27 +22,42 @@
 namespace med::python
 {
 
-bool setup()
+namespace
 {
-    bool success = setupCore();
 
-    if (success)
+bool isRunning = false;
+
+} // namespace
+
+bool ensurePythonSetup()
+{
+    if (!isRunning)
     {
-        initializeExceptions();
-        QApplication::connect(qApp, &QApplication::aboutToQuit, &teardown);
+        qInfo() << "Setting up Python...";
+        isRunning = setupCore();
+
+        if (isRunning)
+        {
+            initializeExceptions();
+            QApplication::connect(qApp, &QApplication::aboutToQuit, &ensurePythonTeardown);
+        }
     }
-    else
+
+    return isRunning;
+}
+
+bool ensurePythonTeardown()
+{
+    bool success = true;
+
+    if (isRunning)
     {
-        teardownCore();
+        isRunning = false;
+        finalizeExceptions();
+        success = teardownCore();
     }
 
     return success;
-}
-
-bool teardown()
-{
-    finalizeExceptions();
-    return teardownCore();
 }
 
 } // namespace med::python

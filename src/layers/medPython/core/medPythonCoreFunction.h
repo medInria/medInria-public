@@ -13,8 +13,8 @@
 ==============================================================================*/
 
 /// These templates are used to call the Python functions from the object
-/// wrapping API. They allow automatic propagation of errors and proper handling
-/// of the global interpreter lock (not yet implemented).
+/// wrapping API. They handle automatic propagation of errors and acquiring of
+/// the global interpreter lock (second part not yet implemented).
 ///
 
 #include "medPythonError.h"
@@ -22,18 +22,18 @@
 namespace med::python
 {
 
-template <class RETURN_TYPE, auto FUNCTION, class... ARGS>
-inline RETURN_TYPE coreFunction(ARGS... args)
+template <class FUNCTION_TYPE, class... ARGS>
+inline std::invoke_result_t<FUNCTION_TYPE, ARGS...> coreFunction(FUNCTION_TYPE& function, ARGS... args)
 {
-    RETURN_TYPE result = (*FUNCTION)(std::forward<ARGS>(args)...);
+    std::invoke_result_t<FUNCTION_TYPE, ARGS...> result = function(std::forward<ARGS>(args)...);
     propagateErrorIfOccurred();
     return result;
 }
 
-template <auto FUNCTION, class... ARGS>
-inline void coreFunction(ARGS... args)
+template <class FUNCTION_TYPE, class... ARGS, typename = std::enable_if_t<std::is_void_v<std::invoke_result_t<FUNCTION_TYPE, ARGS...> > > >
+inline void coreFunction(FUNCTION_TYPE& function, ARGS... args)
 {
-    (*FUNCTION)(std::forward<ARGS>(args)...);
+    function(std::forward<ARGS>(args)...);
     propagateErrorIfOccurred();
 }
 

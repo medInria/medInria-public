@@ -36,7 +36,7 @@ FunctionCall::FunctionCall(const AbstractObject& callable, const AbstractObject&
 {
     d->callable = callable;
     d->args = args;
-    d->kwargs = coreFunction<PyObject*, &PyDict_New>();
+    d->kwargs = coreFunction(PyDict_New);
     d->evaluated = false;
 }
 

@@ -36,14 +36,14 @@ ContainerAccessor::ContainerAccessor(const AbstractObject& container, PyObject* 
 
 PyObject* ContainerAccessor::getReference() const
 {
-    d->value = coreFunction<PyObject*, &PyObject_GetItem>(*d->container, *d->key);
+    d->value = coreFunction(PyObject_GetItem, *d->container, *d->key);
     return *d->value;
 }
 
 void ContainerAccessor::setReference(PyObject* reference)
 {
     d->value = reference;
-    coreFunction<&PyObject_SetItem>(*d->container, *d->key, *d->value);
+    coreFunction(PyObject_SetItem, *d->container, *d->key, *d->value);
 }
 
 } // namespace med::python

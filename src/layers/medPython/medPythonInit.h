@@ -12,17 +12,25 @@
 
 ==============================================================================*/
 
+/// The following functions handle the setup and teardown of the embedded Python
+/// interpreter. These functions do not need to be called if one uses only the
+/// wwrapping API, as the API ensures lazy loading of Python.
+///
+
 #include "medPythonExport.h"
 
 namespace med::python
 {
 
-/// Launches the Python interpreter. This will also connect the teardown
-/// function to the application signal aboutToQuit().
+/// Launches the Python interpreter and connects the teardown function to the
+/// application signal aboutToQuit(). This function does nothing if the
+/// interpreter is already running.
 ///
-MEDPYTHON_EXPORT bool setup();
+MEDPYTHON_EXPORT bool ensurePythonSetup();
 
-/// Terminates the Python interpreter and releases all allocated resources.
-MEDPYTHON_EXPORT bool teardown();
+/// Terminates the Python interpreter and releases all allocated resources. This
+/// function does nothing if the interpreter is not running.
+///
+MEDPYTHON_EXPORT bool ensurePythonTeardown();
 
 } // namespace med::python
