@@ -29,7 +29,7 @@ class MEDCORE_EXPORT medDBSourcesLoader : public QObject
 {
 
     Q_OBJECT
-    using instanciateSource = medAbstractSource * (*)(QString id, QString name);
+    using instanciateSource = medAbstractSource * (*)(QString type, QString name);
 
 public:	
     static medDBSourcesLoader* instance();
@@ -38,14 +38,14 @@ public:
     /* ***********************************************************************/
     /* *************** Add a source type ********************************/
     /* ***********************************************************************/
-	bool                                       registerSourceType(QString sourceType, QString shortDescr, QString longDescr, instanciateSource instanciator);
+	bool                                       registerSourceType(QString type, QString name, QString description, instanciateSource instanciator);
 	QList<std::tuple<QString,QString,QString>> sourcesTypeAvailables();
     
     /* ***********************************************************************/
     /* *************** Create/remove sources *********************************/
     /* ***********************************************************************/
-	bool createNewCnx(QString &IdName, QString const &sourceType); //Provide IdName like a nane and the type of source. IdName can be altered to avoid duplicates
-	bool removeOldCnx(QString &IdName);	
+	bool createNewCnx(QString &instanceId, QString const &type); //Provide instanceId like a nane and the type of source. instanceId can be altered to avoid duplicates
+	bool removeOldCnx(QString &instanceId);	
 	
     /* ***********************************************************************/
     /* *************** Get sources *******************************************/
@@ -60,7 +60,7 @@ private:
     bool saveToDisk();   //call after each add or remove source instance, each call to the destructor. Must be crytographied
     bool loadFromDisk(); //call after each add or remove source instance, each call to the destructor. Must be crytographied
 
-    medAbstractSource* createInstanceOfSource(QString const & sourceType, QString const & IdName, QString const & Name);
+    medAbstractSource* createInstanceOfSource(QString const & type, QString const & IdName, QString const & Name);
     bool ensureUniqueSourceIdName(QString & IdName);
 	
 signals:
@@ -74,16 +74,16 @@ private:
 
     struct medSourceTool
     {
-        QString id;                     //Unique id for a type of medSource (QString ou int ou typeid)
+        QString type;                   //Unique id for a type of medSource (QString ou int ou typeid)
         QString name;                   //Human readable name
-        QString Description;            //Human readable detailed information
+        QString description;            //Human readable detailed information
         instanciateSource instanciator; //Function pointer to instantiate a connection to the source object
     };
 
     QMutex m_mutexMap;
-    QMap<QString, QString > m_cnxMapSource; //instance, IdName
-    QMap<QString, QSharedPointer<medAbstractSource> > m_sourcesInstances; //IdName, instance
-    QMap<QString, medSourceTool>      m_sourcesModelMap;  //Source connector type name, function pointer to instantiate a connection to the source object
+    QMap<QString, QString > m_instanceMapType; //instance, instanceId
+    QMap<QString, QSharedPointer<medAbstractSource> > m_instancesMap; //instanceId, instance
+    QMap<QString, medSourceTool>      m_sourcesMap;  //Source connector type name, function pointer to instantiate a connection to the source object
     
     QString m_CnxParametersPath;
     

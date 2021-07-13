@@ -17,6 +17,7 @@
 #include <QMap>
 #include <QList>
 #include <medAbstractData.h>
+#include <medAbstractParameter.h>
 
 #include <medCoreExport.h>
 
@@ -28,7 +29,7 @@ public:
 
     struct levelMinimalEntries
     {
-        QString id;
+        QString type;
         QString name;
         QString description;
     };
@@ -41,7 +42,18 @@ public:
         finish = 0,
         pending = 1
     };
-    
+
+    /* ***********************************************************************/
+    /* *************** Init/set/ctrl source properties ***********************/
+    /* ***********************************************************************/
+    virtual bool initialization(QString const  &pi_instanceId) = 0;
+    virtual bool setInstanceName(QString const &pi_instanceName) = 0;
+    virtual bool connect(bool pi_bEnable = true) = 0;
+
+    virtual QList<medAbstractParameter*> getAllParameters() = 0;
+    virtual QList<medAbstractParameter*> getCipherParameters() = 0;
+    virtual QList<medAbstractParameter*> getVolatilParameters() = 0;
+
     /* ***********************************************************************/
     /* *************** Get source properties *********************************/
     /* ***********************************************************************/
@@ -59,7 +71,7 @@ public:
     
     virtual unsigned int getLevelCount() = 0;
     virtual QStringList  getLevelNames() = 0;
-    virtual QString      getLevelNane(unsigned int pi_uiLevel) = 0;
+    virtual QString      getLevelName(unsigned int pi_uiLevel) = 0;
 
     virtual QStringList  getMandatoryAttributesKeys(unsigned int pi_uiLevel)  = 0;
     virtual QStringList  getAdditionalAttributesKeys(unsigned int pi_uiLevel) = 0;
@@ -68,16 +80,16 @@ public:
     /* ***********************************************************************/
     /* *************** Get elements data *************************************/
     /* ***********************************************************************/
-    virtual QList<levelMinimalEntries>    getMinimalEntries(unsigned int pi_uiLevel, QString id)   = 0; //id ou uid en int ou en QString si  int alors l'implémentation doit avoir une méthode bijective
-    virtual QList<QMap<QString, QString>> getMandatoryAttributes(unsigned int pi_uiLevel, int id)  = 0; //ou QVarient
-    virtual QList<QMap<QString, QString>> getAdditionalAttributes(unsigned int pi_uiLevel, int id) = 0; //ou QVarient
+    virtual QList<levelMinimalEntries>    getMinimalEntries(unsigned int pi_uiLevel, QString type)   = 0; //id ou uid en int ou en QString si  int alors l'implémentation doit avoir une méthode bijective
+    virtual QList<QMap<QString, QString>> getMandatoryAttributes(unsigned int pi_uiLevel, int type)  = 0; //ou QVarient
+    virtual QList<QMap<QString, QString>> getAdditionalAttributes(unsigned int pi_uiLevel, int type) = 0; //ou QVarient
     
     
     /* ***********************************************************************/
     /* *************** Get data          *************************************/
     /* ***********************************************************************/
-    virtual medAbstractData* getDirectData(unsigned int pi_uiLevel, QString id) = 0; //id ou uid en int ou en QString si  int alors l'implémentation doit avoir une méthode bijective
-    virtual int              getAssyncData(unsigned int pi_uiLevel, QString id) = 0; //id ou uid en int ou en QString si  int alors l'implémentation doit avoir une méthode bijective. Retourne un id de request
+    virtual medAbstractData* getDirectData(unsigned int pi_uiLevel, QString type) = 0; //id ou uid en int ou en QString si  int alors l'implémentation doit avoir une méthode bijective
+    virtual int              getAssyncData(unsigned int pi_uiLevel, QString type) = 0; //id ou uid en int ou en QString si  int alors l'implémentation doit avoir une méthode bijective. Retourne un id de request
     
     /* ***********************************************************************/
     /* *************** Store data          ***********************************/

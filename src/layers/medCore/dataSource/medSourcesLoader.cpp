@@ -17,14 +17,14 @@
 #include <QMap>
 
 #include <QFile>
-#include <QStandardPaths    >
+#include <QStandardPaths>
 #include <QCryptographicHash>
 //#include <QPasswordDigestor >
-#include <QJsonObject       >
-#include <QJsonDocument     >
-#include <QTimer            >
-#include <QMutex            >
-#include <QSharedPointer    >
+#include <QJsonObject>
+#include <QJsonDocument>
+#include <QTimer>
+#include <QMutex>
+#include <QSharedPointer>
 
 medDBSourcesLoader *medDBSourcesLoader::s_instance = nullptr;
 
@@ -37,19 +37,21 @@ medDBSourcesLoader *medDBSourcesLoader::instance(void)
 
 medDBSourcesLoader::~medDBSourcesLoader()
 {
-    m_sourcesInstances;
-    m_sourcesModelMap;
+    m_instancesMap;
+    m_sourcesMap;
 }
 
-bool medDBSourcesLoader::registerSourceType(QString sourceType, QString shortDescr, QString longDescr, instanciateSource instanciator)
+bool medDBSourcesLoader::registerSourceType(QString type, QString name, QString description, instanciateSource instanciator)
 {
-    bool bRes = (!sourceType.isEmpty() && instanciator != nullptr && !m_sourcesModelMap.contains(sourceType));
-    
+    bool bRes = (!type.isEmpty() && instanciator != nullptr && !m_sourcesMap.contains(type));
+
+    m_mutexMap.lock();
     if (bRes)
     {
-        medSourceTool tool = { sourceType, shortDescr, longDescr, instanciator };
-        m_sourcesModelMap.insert(sourceType, tool);
+        medSourceTool tool = { type, name, description, instanciator };
+        m_sourcesMap.insert(type, tool);
     }
+    m_mutexMap.unlock();
 
     return bRes;
 }
@@ -57,16 +59,18 @@ bool medDBSourcesLoader::registerSourceType(QString sourceType, QString shortDes
 QList<std::tuple<QString, QString, QString>> medDBSourcesLoader::sourcesTypeAvailables()
 {
     QList<std::tuple<QString, QString, QString>> listRes;
-    
-    for (auto model : m_sourcesModelMap)
+
+    m_mutexMap.lock();
+    for (auto model : m_sourcesMap)
     {
-        listRes.append(std::tuple<QString, QString, QString>(model.id, model.name, model.Description));
+        listRes.append(std::tuple<QString, QString, QString>(model.type, model.name, model.description));
     }
+    m_mutexMap.unlock();
 
     return listRes;
 }
 
-bool medDBSourcesLoader::createNewCnx(QString & IdName, QString const & sourceType)
+bool medDBSourcesLoader::createNewCnx(QString & IdName, QString const & type)
 {
     bool bRes = true;
 
@@ -75,13 +79,13 @@ bool medDBSourcesLoader::createNewCnx(QString & IdName, QString const & sourceTy
     
     if (bRes)
     {
-        medAbstractSource *pDataSource = createInstanceOfSource(sourceType, IdName, IdName);
+        medAbstractSource *pDataSource = createInstanceOfSource(type, IdName, IdName);
     
         bRes = pDataSource != nullptr;
         if (bRes)
         {
-            m_cnxMapSource[IdName] = sourceType;
-            m_sourcesInstances.insert(IdName, QSharedPointer<medAbstractSource>(pDataSource));
+            m_instanceMapType[IdName] = type;
+            m_instancesMap.insert(IdName, QSharedPointer<medAbstractSource>(pDataSource));
             saveToDisk();
             emit(sourceAdded(pDataSource));
         }
@@ -96,10 +100,10 @@ bool medDBSourcesLoader::removeOldCnx(QString & IdName)
     bool bRes = false;
 
     m_mutexMap.lock();
-    if (m_sourcesInstances.contains(IdName))
+    if (m_instancesMap.contains(IdName))
     {
-        auto oldCnx = m_sourcesInstances.take(IdName);
-        m_cnxMapSource.remove(IdName);
+        auto oldCnx = m_instancesMap.take(IdName);
+        m_instanceMapType.remove(IdName);
         saveToDisk();
         QTimer::singleShot(5*60*1000, this, [&]() {oldCnx.reset(); }); //the removed connection will be deleted after 5 min of secured time gap
     }
@@ -111,11 +115,13 @@ bool medDBSourcesLoader::removeOldCnx(QString & IdName)
 QList<medAbstractSource*> medDBSourcesLoader::sourcesList()
 {
     QList<medAbstractSource*> instanceList;
-    
-    for (auto instance : m_sourcesInstances)
+
+    m_mutexMap.lock();
+    for (auto instance : m_instancesMap)
     {
         instanceList.push_back(&(*instance));
     }
+    m_mutexMap.unlock();
     
     return instanceList;
 }
@@ -124,10 +130,12 @@ medAbstractSource * medDBSourcesLoader::getSource(QString IdName)
 {
     medAbstractSource *sourceRes = nullptr;
 
-    if (m_sourcesInstances.contains(IdName))
+    m_mutexMap.lock();
+    if (m_instancesMap.contains(IdName))
     {
-        sourceRes = &(*m_sourcesInstances[IdName]);
+        sourceRes = &(*m_instancesMap[IdName]);
     }
+    m_mutexMap.unlock();
 
     return sourceRes;
 }
@@ -151,13 +159,13 @@ medAbstractSource * medDBSourcesLoader::getSource(QString IdName)
 
 
 
-medAbstractSource* medDBSourcesLoader::createInstanceOfSource(QString const & sourceType, QString const & IdName, QString const & Name)
+medAbstractSource* medDBSourcesLoader::createInstanceOfSource(QString const & type, QString const & IdName, QString const & Name)
 {
     medAbstractSource * pDataSource = nullptr;
     
-    if (m_sourcesModelMap.contains(sourceType))
+    if (m_sourcesMap.contains(type))
     {
-        pDataSource = m_sourcesModelMap[sourceType].instanciator(IdName, Name);
+        pDataSource = m_sourcesMap[type].instanciator(IdName, Name);
     }
 
     return pDataSource;
@@ -174,13 +182,13 @@ bool medDBSourcesLoader::saveToDisk()
 
     QJsonDocument jsonSaveDoc;
     QJsonArray entries;
-    for (auto instance : m_sourcesInstances)
+    for (auto instance : m_instancesMap)
     {
         QJsonObject entry;
-        entry.insert("sourceTypeId", QJsonValue::fromVariant(m_cnxMapSource[instance->getInstanceId()]));
+        entry.insert("sourceTypeId", QJsonValue::fromVariant(m_instanceMapType[instance->getInstanceId()]));
         entry.insert("conxId", QJsonValue::fromVariant(instance->getInstanceId()));
         entry.insert("cnxName", QJsonValue::fromVariant(instance->getInstanceName()));
-
+        //TODO PARAMETERS
         entries.push_back(entry);
     }
     jsonSaveDoc.setArray(entries);
@@ -203,7 +211,7 @@ bool medDBSourcesLoader::ensureUniqueSourceIdName(QString & IdName)
 
     QString IdNameTmp = IdName;
     unsigned int suffix = 0;
-    while (m_sourcesInstances.contains(IdNameTmp) && suffix < 32767)
+    while (m_instancesMap.contains(IdNameTmp) && suffix < 32767) // TODO bRes check
     {
         suffix++;
         IdNameTmp = IdName + "_" + suffix;
