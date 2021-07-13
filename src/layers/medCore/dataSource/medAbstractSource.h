@@ -24,9 +24,7 @@ class MEDCORE_EXPORT medAbstractSource : public QObject
 {
     Q_OBJECT
 
-public:	
-//    medAbstractSource();
-//    virtual ~medAbstractSource() = 0;
+public:
 
     struct levelMinimalEntries
     {
@@ -48,45 +46,45 @@ public:
     /* *************** Get source properties *********************************/
     /* ***********************************************************************/
     virtual bool isWriteable() = 0;
-    virtual bool isLocal() = 0;
-    virtual bool isCached() = 0;
-    virtual bool isOnline() = 0;
+    virtual bool isLocal()     = 0;
+    virtual bool isCached()    = 0;
+    virtual bool isOnline()    = 0;
     
     
     /* ***********************************************************************/
     /* *************** Get source structure information **********************/
     /* ***********************************************************************/
-    QString      getDBName();
-    QString      getDBId();
+    virtual QString      getInstanceName() = 0;
+    virtual QString      getInstanceId()   = 0;
     
-    unsigned int getLevelCount();
-    QStringList  getLevelNames();
-    QString      getLevelNane(unsigned int pi_uiLevel);
-    
-    QStringList  getMandatoryAttributesKeys(unsigned int pi_uiLevel);
-    QStringList  getAdditionalAttributesKeys(unsigned int pi_uiLevel);
+    virtual unsigned int getLevelCount() = 0;
+    virtual QStringList  getLevelNames() = 0;
+    virtual QString      getLevelNane(unsigned int pi_uiLevel) = 0;
+
+    virtual QStringList  getMandatoryAttributesKeys(unsigned int pi_uiLevel)  = 0;
+    virtual QStringList  getAdditionalAttributesKeys(unsigned int pi_uiLevel) = 0;
     
     
     /* ***********************************************************************/
     /* *************** Get elements data *************************************/
     /* ***********************************************************************/
-    QList<levelMinimalEntries>    getMinimalEntries(unsigned int pi_uiLevel, QString id); //id ou uid en int ou en QString si  int alors l'implémentation doit avoir une méthode bijective
-    QList<QMap<QString, QString>> getMandatoryAttributes(unsigned int pi_uiLevel, int id); //ou QVarient
-    QList<QMap<QString, QString>> getAdditionalAttributes(unsigned int pi_uiLevel, int id); //ou QVarient
+    virtual QList<levelMinimalEntries>    getMinimalEntries(unsigned int pi_uiLevel, QString id)   = 0; //id ou uid en int ou en QString si  int alors l'implémentation doit avoir une méthode bijective
+    virtual QList<QMap<QString, QString>> getMandatoryAttributes(unsigned int pi_uiLevel, int id)  = 0; //ou QVarient
+    virtual QList<QMap<QString, QString>> getAdditionalAttributes(unsigned int pi_uiLevel, int id) = 0; //ou QVarient
     
     
     /* ***********************************************************************/
     /* *************** Get data          *************************************/
     /* ***********************************************************************/
-    medAbstractData* getDirectData(unsigned int pi_uiLevel, QString id); //id ou uid en int ou en QString si  int alors l'implémentation doit avoir une méthode bijective
-    int              getAssyncData(unsigned int pi_uiLevel, QString id); //id ou uid en int ou en QString si  int alors l'implémentation doit avoir une méthode bijective. Retourne un id de request
+    virtual medAbstractData* getDirectData(unsigned int pi_uiLevel, QString id) = 0; //id ou uid en int ou en QString si  int alors l'implémentation doit avoir une méthode bijective
+    virtual int              getAssyncData(unsigned int pi_uiLevel, QString id) = 0; //id ou uid en int ou en QString si  int alors l'implémentation doit avoir une méthode bijective. Retourne un id de request
     
     /* ***********************************************************************/
     /* *************** Store data          ***********************************/
     /* ***********************************************************************/
     //TODO store a dataset
     //TODO alter metaData
-    //TODO stroe complementaries data like thumbnail
+    //TODO store complementaries data like thumbnail
     
     
 signals:
@@ -95,7 +93,3 @@ signals:
 public slots:
     virtual void abort(int pi_iRequest) = 0;
 };
-
-MEDCORE_EXPORT medAbstractSource* createSourceInstance();
-//MEDCORE_EXPORT void instanciateSource(medAbstractSource *);
-using instanciateSource = medAbstractSource* (*)();
