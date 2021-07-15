@@ -165,7 +165,8 @@ medAbstractSource* medDBSourcesLoader::createInstanceOfSource(QString const & ty
     
     if (m_sourcesMap.contains(type))
     {
-        pDataSource = m_sourcesMap[type].instanciator(IdName, Name);
+//        pDataSource = m_sourcesMap[type].instanciator(IdName, Name);
+        pDataSource = m_sourcesMap[type].instanciator();
     }
 
     return pDataSource;
@@ -194,7 +195,7 @@ bool medDBSourcesLoader::saveToDisk()
     jsonSaveDoc.setArray(entries);
     QByteArray payload = jsonSaveDoc.toJson();
 
-    QFile cnxSourcesParametersFile(m_CnxParametersPath);
+    QFile cnxSourcesParametersFile(m_CnxParametersPath + "/foo.json");
     bRes = cnxSourcesParametersFile.open(QFile::WriteOnly | QFile::Text | QFile::Truncate);
     if (bRes)
     {

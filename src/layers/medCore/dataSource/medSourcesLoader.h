@@ -29,7 +29,8 @@ class MEDCORE_EXPORT medDBSourcesLoader : public QObject
 {
 
     Q_OBJECT
-    using instanciateSource = medAbstractSource * (*)(QString type, QString name);
+//    using instanciateSource = medAbstractSource * (*)(QString type, QString name);
+    using instanciateSource = medAbstractSource * (*)();
 
 public:	
     static medDBSourcesLoader* instance();

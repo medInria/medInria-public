@@ -18,14 +18,18 @@ medSQLitePlugin::medSQLitePlugin(QObject *parent) : medPluginLegacy(parent)
 {
 }
 
+medAbstractSource *foo()
+{
+    return new medSQlite<QSqlDatabase>();
+}
+
 bool medSQLitePlugin::initialize()
 {
-//    return medDBSourcesLoader::instance()->registerSourceType(
-//            "medSQLite",
-//            "Datasource de type SQLite",
-//            "Ce type de datasource permet l'exploitation des anciennes base medInria 3",
-//            [](){return new medSQlite<QSqlDatabase>();});
-    return true;
+    return medDBSourcesLoader::instance()->registerSourceType(
+            "medSQLite",
+            "Datasource de type SQLite",
+            "Ce type de datasource permet l'exploitation des anciennes base medInria 3",
+            &foo);
 }
 
 QString medSQLitePlugin::name() const

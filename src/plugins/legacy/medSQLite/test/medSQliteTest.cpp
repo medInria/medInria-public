@@ -22,10 +22,10 @@ static bool isOpen;
 
 namespace
 {
-    class MockDB
+    class FakeEngine
     {
     public:
-        MockDB &operator=(const MockDB &other) { return *this; };
+        FakeEngine &operator=(const FakeEngine &other) { return *this; };
 
         static bool isDriverAvailable(const QString &name) { return driverAvailability; }
 
@@ -33,27 +33,33 @@ namespace
 
         bool open() { return isOpen; };
         MOCK_METHOD(void, setDatabaseName, (const QString &));
-        MOCK_METHOD(void, close, ());
-
-        static MockDB &addDatabase(const QString &, const QString &)
+        void close(){};
+        static FakeEngine &addDatabase(const QString &, const QString &)
         {
-            static MockDB db;
+            static FakeEngine db;
             return db;
         };
 
-        static MockDB &database(const QString &)
+        static FakeEngine &database(const QString &)
         {
-            static MockDB db;
+            static FakeEngine db;
             return db;
         };
     };
 
+    class FakeMedSQLite : public medSQlite<FakeEngine>
+    {
+    public:
+        void changeDatabasePath(const QString& value) {
+            m_DbPath->setValue(value);
+        }
+    };
 
     class medSQliteTest : public ::testing::Test
     {
 
     protected:
-        medSQlite<MockDB> *m_;
+        FakeMedSQLite *m_;
 
         medSQliteTest()
         {
@@ -65,7 +71,7 @@ namespace
 
         void SetUp() override
         {
-            m_ = new medSQlite<MockDB>();
+            m_ = new FakeMedSQLite();
         }
 
         void TearDown() override
@@ -75,7 +81,7 @@ namespace
 
     };
 
-    TEST_F(medSQliteTest, test_initialization_failed_if_instance_id_empty)
+    TEST_F(medSQliteTest, test_init_failed_if_instance_id_empty)
     {
         // parameters initialization
         QString instanceId = "";
@@ -87,7 +93,7 @@ namespace
         EXPECT_EQ(m_->getInstanceId(), "");
     }
 
-    TEST_F(medSQliteTest, test_initialization_failed_if_driver_unavailable)
+    TEST_F(medSQliteTest, test_init_failed_if_driver_unavailable)
     {
         // parameters initialization
         QString instanceId = "foo";
@@ -98,7 +104,7 @@ namespace
         EXPECT_EQ(m_->getInstanceId(), "");
     }
 
-    TEST_F(medSQliteTest, test_initialization_failed_if_engine_not_valid)
+    TEST_F(medSQliteTest, test_init_failed_if_engine_not_valid)
     {
         // parameters initialization
         driverAvailability = true;
@@ -109,7 +115,7 @@ namespace
         EXPECT_EQ(m_->getInstanceId(), "");
     }
 
-    TEST_F(medSQliteTest, test_initialization_success_if_engine_and_driver_are_ok)
+    TEST_F(medSQliteTest, test_init_success_if_engine_and_driver_are_ok)
     {
         // parameters initialization
         driverAvailability = true;
@@ -120,21 +126,36 @@ namespace
         EXPECT_EQ(m_->getInstanceId(), instanceId);
     }
 
-    class MockMedSQLite : public medSQlite<MockDB>
-    {
-    public:
-        void changeDatabasePath() {
-            m_DbPath->setValue("");
-        }
-    };
 
-    TEST(medSQliteTest, test_connect_failed_if_db_path_is_empty)
+    TEST_F(medSQliteTest, test_connect_failed_if_db_not_valid)
     {
+        valid = false;
         // expectations
-        MockMedSQLite m = MockMedSQLite();
-        m.changeDatabasePath();
-        EXPECT_EQ(false, m.connect(true));
-        EXPECT_EQ(false, m.connect(false));
+        EXPECT_EQ(false, m_->connect(true));
+    }
+
+    TEST_F(medSQliteTest, test_disconnect_failed_if_db_not_valid)
+    {
+        valid = false;
+        // expectations
+        EXPECT_EQ(false, m_->connect(false));
+    }
+
+    TEST_F(medSQliteTest, test_connect_failed_if_db_path_is_empty)
+    {
+        m_->changeDatabasePath("");
+        valid = true;
+        // expectations
+        EXPECT_EQ(false, m_->connect(true));
+        EXPECT_EQ(true, m_->connect(false));
+    }
+
+    TEST_F(medSQliteTest, test_disconnect_success_if_db_path_is_empty)
+    {
+        m_->changeDatabasePath("");
+        valid = true;
+        // expectations
+        EXPECT_EQ(true, m_->connect(false));
     }
 
 }
