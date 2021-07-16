@@ -105,7 +105,7 @@ target_link_libraries(${TARGET_NAME}
 set(TARGET_NAME_TEST ${TARGET_NAME}Test)
 
 enable_testing()
-#include(GoogleTest)
+include(GoogleTest)
 find_package(GTest REQUIRED)
 
 list_header_directories_to_include(${TARGET_NAME_TEST}

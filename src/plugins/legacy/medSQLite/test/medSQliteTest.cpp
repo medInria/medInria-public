@@ -20,8 +20,8 @@ static bool driverAvailability = true;
 static bool valid;
 static bool isOpen;
 
-namespace
-{
+//namespace
+//{
     class FakeEngine
     {
     public:
@@ -158,7 +158,7 @@ namespace
         EXPECT_EQ(true, m_->connect(false));
     }
 
-}
+//}
 
 
 //using ::testing::NiceMock;

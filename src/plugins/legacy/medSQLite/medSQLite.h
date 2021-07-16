@@ -102,6 +102,7 @@ private:
     const QString m_Driver;
     const QString m_ConnectionName;
     QString m_instanceId;
+    QString m_instanceName;
 };
 
 #include "medSQLite.txx"

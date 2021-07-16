@@ -83,7 +83,7 @@ QVariant medSettingsManager::value(
     const QVariant &defaultValue /*= QVariant() */,
     bool permanentValue /*= true */)
 {
-  bool valuePresent;
+  bool valuePresent = false;
 
   QString sectionKey;
   sectionKey = section + "/" + key;

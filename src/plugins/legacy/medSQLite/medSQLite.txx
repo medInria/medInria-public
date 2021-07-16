@@ -46,7 +46,14 @@ bool medSQlite<T>::initialization(const QString &pi_instanceId)
 template<typename T>
 bool medSQlite<T>::setInstanceName(const QString &pi_instanceName)
 {
-    return false;
+    bool bRes = false;
+
+    if (!pi_instanceName.isEmpty())
+    {
+        m_instanceName = pi_instanceName;
+    }
+
+    return bRes;
 }
 
 template<typename T>
@@ -121,7 +128,7 @@ bool medSQlite<T>::isOnline()
 template<typename T>
 QString medSQlite<T>::getInstanceName()
 {
-    return QString();
+    return m_instanceName;
 }
 
 template<typename T>

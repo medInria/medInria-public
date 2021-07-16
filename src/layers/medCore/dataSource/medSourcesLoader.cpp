@@ -84,6 +84,9 @@ bool medDBSourcesLoader::createNewCnx(QString & IdName, QString const & type)
         bRes = pDataSource != nullptr;
         if (bRes)
         {
+            pDataSource->initialization(IdName);
+            pDataSource->setInstanceName(IdName);
+
             m_instanceMapType[IdName] = type;
             m_instancesMap.insert(IdName, QSharedPointer<medAbstractSource>(pDataSource));
             saveToDisk();
