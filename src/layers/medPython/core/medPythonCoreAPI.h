@@ -89,12 +89,21 @@ extern PyObject* (*PyImport_Import)(PyObject*);
 
 extern int (*PyType_IsSubtype)(PyTypeObject*, PyTypeObject*);
 
+extern PyObject* (*PyObject_Type)(PyObject*);
 extern Py_ssize_t (*PyObject_Size)(PyObject*);
+extern int (*PyObject_HasAttrString)(PyObject*, const char*);
 extern PyObject* (*PyObject_GetAttrString)(PyObject*, const char*);
-extern PyObject* (*PyObject_CallObject)(PyObject*, PyObject*);
+extern int (*PyObject_SetAttrString)(PyObject*, const char*, PyObject*);
 extern int (*PyObject_IsTrue)(PyObject*);
+extern int (*PyObject_Not)(PyObject*);
+extern int (*PyObject_RichCompareBool)(PyObject*, PyObject*, int);
 extern PyObject* (*PyObject_Str)(PyObject*);
+extern PyObject* (*PyObject_Dir)(PyObject*);
 extern PyObject* (*PyObject_GetItem)(PyObject*, PyObject*);
+extern int (*PyObject_SetItem)(PyObject*, PyObject*, PyObject*);
+extern PyObject* (*PyObject_Call)(PyObject*, PyObject*, PyObject*);
+extern PyObject* (*PyObject_CallObject)(PyObject*, PyObject*);
+extern PyObject* (*PyObject_CallNoArgs)(PyObject*);
 
 extern PyObject* (*PyBool_FromLong)(long);
 
@@ -104,15 +113,35 @@ extern long (*PyLong_AsLong)(PyObject*);
 extern PyObject* (*PyFloat_FromDouble)(double);
 extern double (*PyFloat_AsDouble)(PyObject*);
 
-extern Py_ssize_t (*PySequence_Size)(PyObject*);
-extern PyObject* (*PySequence_GetItem)(PyObject*, Py_ssize_t);
+extern PyObject* (*PyNumber_Add)(PyObject*, PyObject*);
+extern PyObject* (*PyNumber_Subtract)(PyObject*, PyObject*);
+extern PyObject* (*PyNumber_Multiply)(PyObject*, PyObject*);
+extern PyObject* (*PyNumber_TrueDivide)(PyObject*, PyObject*);
+extern PyObject* (*PyNumber_InPlaceAdd)(PyObject*, PyObject*);
+extern PyObject* (*PyNumber_InPlaceSubtract)(PyObject*, PyObject*);
+extern PyObject* (*PyNumber_InPlaceMultiply)(PyObject*, PyObject*);
+extern PyObject* (*PyNumber_InPlaceTrueDivide)(PyObject*, PyObject*);
 
+extern int (*PySequence_Check)(PyObject*);
+extern Py_ssize_t (*PySequence_Size)(PyObject*);
+extern int (*PySequence_Contains)(PyObject*, PyObject*);
+extern PyObject* (*PySequence_GetItem)(PyObject*, Py_ssize_t);
+extern PyObject* (*PySequence_Tuple)(PyObject*);
+extern PyObject* (*PySequence_List)(PyObject*);
+
+extern int (*PyMapping_Check)(PyObject*);
+extern int (*PyMapping_HasKey)(PyObject*, PyObject*);
 extern PyObject* (*PyMapping_Keys)(PyObject*);
+extern PyObject* (*PyMapping_Values)(PyObject*);
+
+extern PyObject* (*PyTuple_New)(Py_ssize_t);
 
 extern PyObject* (*PyList_New)(Py_ssize_t);
+extern int (*PyList_Append)(PyObject*, PyObject*);
 
 extern PyObject* (*PyDict_New)();
 extern int (*PyDict_SetItem)(PyObject*, PyObject*, PyObject*);
+extern int (*PyDict_Merge)(PyObject*, PyObject*, int);
 
 extern PyObject* (*_Py_VaBuildValue_SizeT)(const char*, va_list);
 extern void (*_Py_Dealloc)(PyObject*);

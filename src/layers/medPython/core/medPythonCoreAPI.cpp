@@ -62,12 +62,21 @@ PyObject* (*PyImport_Import)(PyObject*) = nullptr;
 
 int (*PyType_IsSubtype)(PyTypeObject*, PyTypeObject*) = nullptr;
 
+PyObject* (*PyObject_Type)(PyObject*) = nullptr;
 Py_ssize_t (*PyObject_Size)(PyObject*) = nullptr;
+int (*PyObject_HasAttrString)(PyObject*, const char*) = nullptr;
 PyObject* (*PyObject_GetAttrString)(PyObject*, const char*) = nullptr;
-PyObject* (*PyObject_CallObject)(PyObject*, PyObject*) = nullptr;
+int (*PyObject_SetAttrString)(PyObject*, const char*, PyObject*) = nullptr;
 int (*PyObject_IsTrue)(PyObject*) = nullptr;
+int (*PyObject_Not)(PyObject*) = nullptr;
+int (*PyObject_RichCompareBool)(PyObject*, PyObject*, int) = nullptr;
 PyObject* (*PyObject_Str)(PyObject*) = nullptr;
+PyObject* (*PyObject_Dir)(PyObject*) = nullptr;
 PyObject* (*PyObject_GetItem)(PyObject*, PyObject*) = nullptr;
+int (*PyObject_SetItem)(PyObject*, PyObject*, PyObject*) = nullptr;
+PyObject* (*PyObject_Call)(PyObject*, PyObject*, PyObject*) = nullptr;
+PyObject* (*PyObject_CallObject)(PyObject*, PyObject*) = nullptr;
+PyObject* (*PyObject_CallNoArgs)(PyObject*) = nullptr;
 
 PyObject* (*PyBool_FromLong)(long) = nullptr;
 
@@ -77,15 +86,35 @@ long (*PyLong_AsLong)(PyObject*) = nullptr;
 PyObject* (*PyFloat_FromDouble)(double) = nullptr;
 double (*PyFloat_AsDouble)(PyObject*) = nullptr;
 
-Py_ssize_t (*PySequence_Size)(PyObject*) = nullptr;
-PyObject* (*PySequence_GetItem)(PyObject*, Py_ssize_t) = nullptr;
+PyObject* (*PyNumber_Add)(PyObject*, PyObject*) = nullptr;
+PyObject* (*PyNumber_Subtract)(PyObject*, PyObject*) = nullptr;
+PyObject* (*PyNumber_Multiply)(PyObject*, PyObject*) = nullptr;
+PyObject* (*PyNumber_TrueDivide)(PyObject*, PyObject*) = nullptr;
+PyObject* (*PyNumber_InPlaceAdd)(PyObject*, PyObject*) = nullptr;
+PyObject* (*PyNumber_InPlaceSubtract)(PyObject*, PyObject*) = nullptr;
+PyObject* (*PyNumber_InPlaceMultiply)(PyObject*, PyObject*) = nullptr;
+PyObject* (*PyNumber_InPlaceTrueDivide)(PyObject*, PyObject*) = nullptr;
 
+int (*PySequence_Check)(PyObject*);
+Py_ssize_t (*PySequence_Size)(PyObject*) = nullptr;
+int (*PySequence_Contains)(PyObject*, PyObject*) = nullptr;
+PyObject* (*PySequence_GetItem)(PyObject*, Py_ssize_t) = nullptr;
+PyObject* (*PySequence_Tuple)(PyObject*) = nullptr;
+PyObject* (*PySequence_List)(PyObject*) = nullptr;
+
+int (*PyMapping_Check)(PyObject*) = nullptr;
+int (*PyMapping_HasKey)(PyObject*, PyObject*) = nullptr;
 PyObject* (*PyMapping_Keys)(PyObject*) = nullptr;
+PyObject* (*PyMapping_Values)(PyObject*) = nullptr;
+
+PyObject* (*PyTuple_New)(Py_ssize_t) = nullptr;
 
 PyObject* (*PyList_New)(Py_ssize_t) = nullptr;
+int (*PyList_Append)(PyObject*, PyObject*) = nullptr;
 
 PyObject* (*PyDict_New)() = nullptr;
 int (*PyDict_SetItem)(PyObject*, PyObject*, PyObject*) = nullptr;
+int (*PyDict_Merge)(PyObject*, PyObject*, int) = nullptr;
 
 PyObject* (*_Py_VaBuildValue_SizeT)(const char*, va_list) = nullptr;
 void (*_Py_Dealloc)(PyObject*) = nullptr;
@@ -146,6 +175,7 @@ PyObject* PyExc_TypeError = nullptr;
 
 } // namespace med::python
 
+PyObject _Py_NoneStruct = {};
 PyTypeObject PyBool_Type = {};
 PyTypeObject PyFloat_Type = {};
 
