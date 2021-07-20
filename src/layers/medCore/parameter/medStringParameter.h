@@ -18,21 +18,21 @@
 class medStringParameterPrivate;
 class MEDCORE_EXPORT medStringParameter : public medAbstractParameter
 {
-    Q_OBJECT
+Q_OBJECT
 
 public:
     medStringParameter(const QString & name, QObject *parent = nullptr);
-    virtual ~medStringParameter();
+    ~medStringParameter() override;
 
-    virtual medParameterType type() const {return medParameterType::MED_PARAMETER_STRING;}
+    medParameterType type() const override{return medParameterType::MED_PARAMETER_STRING;}
 
-    QString value() const;
+    virtual QString value() const;
 
-    void setValidator(QValidator *pi_poValidator);
-    QValidator *getValidator() const;
+    virtual void setValidator(QValidator *pi_poValidator);
+    virtual QValidator *getValidator() const;
 
 public slots:
-    void setValue(QString const& value);
+    virtual bool setValue(QString const& value);
 
     virtual void trigger();
 

@@ -88,161 +88,27 @@ public:
 
     int getAssyncData(unsigned int pi_uiLevel, QString id) override;
 
-
 public slots:
     void abort(int pi_iRequest) override;
 
     void updateDatabaseName(QString const &path);
 
-protected:
-    medStringParameter *m_DbPath;
 
 private:
     T m_Engine;
+    medStringParameter *m_DbPath;
     const QString m_Driver;
-    const QString m_ConnectionName;
     QString m_instanceId;
     QString m_instanceName;
+    bool m_online;
+    QStringList m_LevelNames;
+
+    bool isValidDatabaseStructure();
+
+    bool isDatabaseEmpty();
+
+    virtual bool createTable(const QString &strQuery);
 };
 
 #include "medSQLite.txx"
 
-/*
-template <typename T>
-medSQlite<T>::medSQlite()
-        : medAbstractSource(), driver("QSQLITE"), connectionName("sqlite")
-{
-    database_path = new medStringParameter("LocalDataBasePath", this);
-    connect(database_path, SIGNAL(valueChanged(QString const &)), this, SLOT(setDatabaseName(QString const &)));
-
-}
-
-template <typename T>
-void medSQlite<T>::initialize()
-{
-    if(T::isDriverAvailable(driver))
-    {
-        db = T::database("sqlite");
-        if (!db.isValid())
-        {
-            db = T::addDatabase(driver, "sqlite");
-        }
-        db.setDatabaseName(database_path->value() + "/" + "db");
-
-        if (!db.open())
-        {
-            qDebug()<<"Cannot open database: unable to establish a database connection.";
-            return;
-        }
-
-    }
-}
-
-template <typename T>
-void medSQlite<T>::setDatabaseName(QString const &path)
-{
-
-}
-
-template <typename T>
-bool medSQlite<T>::isWriteable()
-{
-    return true;
-}
-
-template <typename T>
-bool medSQlite<T>::isLocal()
-{
-    return true;
-}
-
-template <typename T>
-bool medSQlite<T>::isCached()
-{
-    return false;
-}
-
-template <typename T>
-bool medSQlite<T>::isOnline()
-{
-    return db.isOpen();
-}
-
-template <typename T>
-unsigned int medSQlite<T>::getLevelCount()
-{
-    return 0;
-}
-
-template <typename T>
-QStringList medSQlite<T>::getLevelNames()
-{
-    return QStringList();
-}
-
-template <typename T>
-QString medSQlite<T>::getLevelName(unsigned int pi_uiLevel)
-{
-    return QString();
-}
-
-template <typename T>
-QStringList medSQlite<T>::getMandatoryAttributesKeys(unsigned int pi_uiLevel)
-{
-    return QStringList();
-}
-
-template <typename T>
-QStringList medSQlite<T>::getAdditionalAttributesKeys(unsigned int pi_uiLevel)
-{
-    return QStringList();
-}
-
-template <typename T>
-QList<medAbstractSource::levelMinimalEntries> medSQlite<T>::getMinimalEntries(unsigned int pi_uiLevel, QString id)
-{
-    return QList<levelMinimalEntries>();
-}
-
-template <typename T>
-QList<QMap<QString, QString>> medSQlite<T>::getMandatoryAttributes(unsigned int pi_uiLevel, int id)
-{
-    return QList<QMap<QString, QString>>();
-}
-
-template <typename T>
-QList<QMap<QString, QString>> medSQlite<T>::getAdditionalAttributes(unsigned int pi_uiLevel, int id)
-{
-    return QList<QMap<QString, QString>>();
-}
-
-template <typename T>
-medAbstractData *medSQlite<T>::getDirectData(unsigned int pi_uiLevel, QString id)
-{
-    return nullptr;
-}
-
-template <typename T>
-int medSQlite<T>::getAssyncData(unsigned int pi_uiLevel, QString id)
-{
-    return 0;
-}
-
-template <typename T>
-void medSQlite<T>::abort(int pi_iRequest)
-{
-
-}
-
-template<typename T>
-QString medSQlite<T>::getInstanceName()
-{
-    return QString();
-}
-
-template<typename T>
-QString medSQlite<T>::getInstanceId()
-{
-    return QString();
-}
-*/
