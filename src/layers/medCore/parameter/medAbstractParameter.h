@@ -13,6 +13,8 @@
 =========================================================================*/
 
 #include <QObject>
+#include <QMap>
+#include <QVariant>
 
 #include <medCoreExport.h>
 
@@ -42,6 +44,9 @@ public:
     void setCaption(QString const& caption);
 
     bool match(medAbstractParameter const* other) const;
+
+    virtual QVariantMap toVariantMap() const = 0;
+    virtual bool fromVariantMap(QVariantMap &pi_variantMap) = 0;
 
 signals:
     void captionChanged(QString caption);

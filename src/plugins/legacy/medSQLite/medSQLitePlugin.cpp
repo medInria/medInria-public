@@ -26,10 +26,11 @@ medAbstractSource *foo()
 bool medSQLitePlugin::initialize()
 {
     return medDBSourcesLoader::instance()->registerSourceType(
-            "medSQLite",
-            "Datasource de type SQLite",
-            "Ce type de datasource permet l'exploitation des anciennes base medInria 3",
-            &foo);
+        "medSQLite",
+        "Datasource de type SQLite",
+        "Ce type de datasource permet l'exploitation des anciennes base medInria 3",
+        //&foo);
+        []() -> medAbstractSource* {return new medSQlite<QSqlDatabase>(); });
 }
 
 QString medSQLitePlugin::name() const

@@ -21,7 +21,7 @@
 
 
 template <typename T>
-class MEDSQLITEPLUGIN_EXPORT medSQlite: public medAbstractSource
+class medSQlite: public medAbstractSource
 {
 
 public:
