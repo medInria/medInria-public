@@ -98,6 +98,7 @@ private:
     T m_Engine;
     medStringParameter *m_DbPath;
     const QString m_Driver;
+    const QString m_ConnectionName;
     QString m_instanceId;
     QString m_instanceName;
     bool m_online;

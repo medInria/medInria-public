@@ -20,7 +20,9 @@
 
 template <typename T>
 medSQlite<T>::medSQlite()
-        : medAbstractSource(), m_Driver("QSQLITE"), m_instanceId(QString()), m_online(false), m_LevelNames({"patient","study","series"})
+        : medAbstractSource(), m_Driver("QSQLITE"),
+        m_ConnectionName("sqlite"), m_instanceId(QString()),
+        m_online(false), m_LevelNames({"patient","study","series"})
 {
     m_DbPath = new medStringParameter("LocalDataBasePath", this);
 //    m_DbPath =
@@ -70,10 +72,10 @@ bool medSQlite<T>::connect(bool pi_bEnable)
     {
         if (!m_DbPath->value().isEmpty())
         {
-            m_Engine = T::database("sqlite");
+            m_Engine = T::database(m_ConnectionName);
             if (!m_Engine.isValid())
             {
-                m_Engine = T::addDatabase("QSQLITE", "sqlite");
+                m_Engine = T::addDatabase(m_Driver, m_ConnectionName);
             }
             m_Engine.setDatabaseName(m_DbPath->value() + "/db");
             bRes = m_Engine.open();
@@ -81,69 +83,51 @@ bool medSQlite<T>::connect(bool pi_bEnable)
             {
                 if (isDatabaseEmpty())
                 {
-                    // TODO : Find a way to test QSQLQuery
                     QString patientQuery = "CREATE TABLE IF NOT EXISTS patient ("
-                                           " id       INTEGER PRIMARY KEY,"
-                                           " name        TEXT,"
-                                           " thumbnail   TEXT,"
-                                           " birthdate   TEXT,"
-                                           " gender      TEXT,"
-                                           " patientId   TEXT"
+                                           " id       INTEGER PRIMARY KEY, name        TEXT,"
+                                           " thumbnail   TEXT, birthdate   TEXT,"
+                                           " gender      TEXT, patientId   TEXT"
                                            ");";
+
                     QString studyQuery = "CREATE TABLE IF NOT EXISTS study ("
-                                         " id        INTEGER      PRIMARY KEY,"
-                                         " patient   INTEGER," // FOREIGN KEY
-                                         " name         TEXT,"
-                                         " uid          TEXT,"
-                                         " thumbnail    TEXT,"
-                                         " studyId      TEXT"
+                                         " id        INTEGER      PRIMARY KEY, patient   INTEGER," // FOREIGN KEY
+                                         " name         TEXT, uid          TEXT,"
+                                         " thumbnail    TEXT, studyId      TEXT"
                                          ");";
+
                     QString seriesQuery = "CREATE TABLE IF NOT EXISTS series ("
-                                          " id       INTEGER      PRIMARY KEY,"
-                                          " study    INTEGER," // FOREIGN KEY
-                                          " size     INTEGER,"
-                                          " name            TEXT,"
-                                          " path            TEXT,"
-                                          " uid             TEXT,"
-                                          " seriesId        TEXT,"
-                                          " orientation     TEXT,"
-                                          " seriesNumber    TEXT,"
-                                          " sequenceName    TEXT,"
-                                          " sliceThickness  TEXT,"
-                                          " rows            TEXT,"
-                                          " columns         TEXT,"
-                                          " thumbnail       TEXT,"
-                                          " age             TEXT,"
-                                          " description     TEXT,"
-                                          " modality        TEXT,"
-                                          " protocol        TEXT,"
-                                          " comments        TEXT,"
-                                          " status          TEXT,"
-                                          " acquisitiondate TEXT,"
-                                          " importationdate TEXT,"
-                                          " referee         TEXT,"
-                                          " performer       TEXT,"
-                                          " institution     TEXT,"
-                                          " report          TEXT,"
-                                          " origin          TEXT,"
-                                          " flipAngle       TEXT,"
-                                          " echoTime        TEXT,"
-                                          " repetitionTime  TEXT,"
-                                          " acquisitionTime TEXT"
+                                          " id       INTEGER      PRIMARY KEY, study    INTEGER," // FOREIGN KEY
+                                          " size     INTEGER, name            TEXT, path            TEXT,"
+                                          " uid             TEXT, seriesId        TEXT, orientation     TEXT,"
+                                          " seriesNumber    TEXT, sequenceName    TEXT, sliceThickness  TEXT,"
+                                          " rows            TEXT, columns         TEXT, thumbnail       TEXT,"
+                                          " age             TEXT, description     TEXT, modality        TEXT,"
+                                          " protocol        TEXT, comments        TEXT, status          TEXT,"
+                                          " acquisitiondate TEXT, importationdate TEXT, referee         TEXT,"
+                                          " performer       TEXT, institution     TEXT, report          TEXT,"
+                                          " origin          TEXT, flipAngle       TEXT, echoTime        TEXT,"
+                                          " repetitionTime  TEXT, acquisitionTime TEXT"
                                           ");";
+
                     bRes = createTable(patientQuery)
                             && createTable(studyQuery)
                             && createTable(seriesQuery);
                     if (!bRes)
                     {
                         m_Engine.close();
+                        T::removeDatabase(m_ConnectionName);
                     }
                 }
                 else if (!isValidDatabaseStructure())
                 {
                     bRes = false;
                     m_Engine.close();
+                    T::removeDatabase(m_ConnectionName);
                 }
+            }
+            else
+            {
+                T::removeDatabase(m_ConnectionName);
             }
         }
         else
@@ -155,6 +139,8 @@ bool medSQlite<T>::connect(bool pi_bEnable)
     else //disconnect
     {
         m_Engine.close();
+        m_Engine = T();
+        T::removeDatabase(m_ConnectionName);
         m_online = false;
         bRes = true;
     }

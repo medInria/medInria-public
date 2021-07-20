@@ -15,6 +15,7 @@
 #include "gmock/gmock.h"
 
 #include <QSqlDatabase>
+#include <QSqlRecord>
 
 #define private public
 
@@ -22,9 +23,9 @@
 
 static bool driverAvailability = true;
 static bool valid;
-static bool isOpen;
+static bool flagOpen;
 static QStringList fakeTables = QStringList();
-
+static int removeCount;
 class FakeEngine
 {
 public:
@@ -35,10 +36,10 @@ public:
     static bool isDriverAvailable(const QString &name) { return driverAvailability; }
 
     bool isValid() { return valid; };
-    bool open() { return isOpen; };
+    bool open() { return flagOpen; };
     void setDatabaseName(const QString &name){};
     MOCK_METHOD(void, close, ());
-//    void close(){};
+    MOCK_METHOD(bool, isOpen, ());
     QSqlQuery exec(){return QSqlQuery();};
     QStringList tables(){return fakeTables;};
 
@@ -53,6 +54,11 @@ public:
         static FakeEngine db;
         return db;
     };
+
+    static void removeDatabase(const QString &)
+    {
+        removeCount++;
+    };
 };
 
 class FakeMedSQLite : public medSQlite<FakeEngine>
@@ -66,20 +72,10 @@ public:
     MOCK_METHOD(bool, createTable, (const QString &));
 };
 
-class RealMedSQLite : public medSQlite<QSqlDatabase>
-{
-public:
-    void changeDatabasePath(const QString& value) {
-        m_DbPath->setValue(value);
-    }
-
-};
-
 class medSQliteTest : public ::testing::Test
 {
 
 protected:
-//    FakeMedSQLite m_;
     ::testing::NiceMock<FakeMedSQLite> m_;
 
     medSQliteTest()
@@ -92,11 +88,12 @@ protected:
 
     void SetUp() override
     {
-//        m_ = FakeMedSQLite();
+        removeCount = 0;
     }
 
     void TearDown() override
     {
+        removeCount = 0;
     }
     QString patientQuery = "CREATE TABLE IF NOT EXISTS patient ("
                            " id       INTEGER PRIMARY KEY,"
@@ -200,18 +197,19 @@ TEST_F(medSQliteTest, test_connect_failed_if_db_path_is_empty)
 {
     m_.changeDatabasePath("");
     // expectations
+    EXPECT_CALL(m_.m_Engine, close()).Times(0);
     EXPECT_EQ(false, m_.connect(true));
     EXPECT_EQ(false, m_.isOnline());
-
 }
 
 TEST_F(medSQliteTest, test_connect_failed_db_not_open)
 {
     m_.changeDatabasePath("foo");
-    isOpen = false;
+    flagOpen = false;
     EXPECT_CALL(m_.m_Engine, close()).Times(0);
     EXPECT_EQ(false, m_.connect(true));
     EXPECT_EQ(false, m_.isOnline());
+    EXPECT_EQ(removeCount, 1);
 }
 
 
@@ -219,7 +217,7 @@ TEST_F(medSQliteTest, test_connect_success_db_structure_empty)
 {
     fakeTables = QStringList();
     m_.changeDatabasePath("foo");
-    isOpen = true;
+    flagOpen = true;
 
     ON_CALL(m_, createTable(patientQuery)).WillByDefault(::testing::Return(true));
     ON_CALL(m_, createTable(studyQuery)).WillByDefault(::testing::Return(true));
@@ -227,13 +225,14 @@ TEST_F(medSQliteTest, test_connect_success_db_structure_empty)
     EXPECT_CALL(m_.m_Engine, close()).Times(0);
     EXPECT_EQ(true, m_.connect(true));
     EXPECT_EQ(true, m_.isOnline());
+    EXPECT_EQ(removeCount, 0);
 }
 
 TEST_F(medSQliteTest, test_connect_failed_db_structure_empty_unable_create_patient_table)
 {
     fakeTables = QStringList();
     m_.changeDatabasePath("foo");
-    isOpen = true;
+    flagOpen = true;
     valid = true;
     ON_CALL(m_, createTable(patientQuery)).WillByDefault(::testing::Return(false));
     ON_CALL(m_, createTable(studyQuery)).WillByDefault(::testing::Return(true));
@@ -241,13 +240,14 @@ TEST_F(medSQliteTest, test_connect_failed_db_structure_empty_unable_create_patie
     EXPECT_CALL(m_.m_Engine, close()).Times(1);
     EXPECT_EQ(false, m_.connect(true));
     EXPECT_EQ(false, m_.isOnline());
+    EXPECT_EQ(removeCount, 1);
 }
 
 TEST_F(medSQliteTest, test_connect_failed_db_structure_empty_unable_create_study_table)
 {
     fakeTables = QStringList();
     m_.changeDatabasePath("foo");
-    isOpen = true;
+    flagOpen = true;
 
     ON_CALL(m_, createTable(patientQuery)).WillByDefault(::testing::Return(true));
     ON_CALL(m_, createTable(studyQuery)).WillByDefault(::testing::Return(false));
@@ -255,13 +255,14 @@ TEST_F(medSQliteTest, test_connect_failed_db_structure_empty_unable_create_study
     EXPECT_CALL(m_.m_Engine, close()).Times(1);
     EXPECT_EQ(false, m_.connect(true));
     EXPECT_EQ(false, m_.isOnline());
+    EXPECT_EQ(removeCount, 1);
 }
 
 TEST_F(medSQliteTest, test_connect_failed_db_structure_empty_unable_create_series_table)
 {
     fakeTables = QStringList();
     m_.changeDatabasePath("foo");
-    isOpen = true;
+    flagOpen = true;
 
     ON_CALL(m_, createTable(patientQuery)).WillByDefault(::testing::Return(true));
     ON_CALL(m_, createTable(studyQuery)).WillByDefault(::testing::Return(true));
@@ -269,6 +270,7 @@ TEST_F(medSQliteTest, test_connect_failed_db_structure_empty_unable_create_serie
     EXPECT_CALL(m_.m_Engine, close()).Times(1);
     EXPECT_EQ(false, m_.connect(true));
     EXPECT_EQ(false, m_.isOnline());
+    EXPECT_EQ(removeCount, 1);
 }
 
 
@@ -276,41 +278,133 @@ TEST_F(medSQliteTest, test_connect_failed_db_structure_invalid)
 {
     fakeTables << "patient" << "studyyyyy" << "series";
     m_.changeDatabasePath("foo");
-    isOpen = true;
+    flagOpen = true;
     EXPECT_CALL(m_.m_Engine, close()).Times(1);
     EXPECT_EQ(false, m_.connect(true));
     EXPECT_EQ(false, m_.isOnline());
+    EXPECT_EQ(removeCount, 1);
 }
 
 TEST_F(medSQliteTest, test_connect_success_valid_db_structure)
 {
     fakeTables << "patient" << "study" << "series";
     m_.changeDatabasePath("foo");
-    isOpen = true;
+    flagOpen = true;
     // expectations
+    EXPECT_CALL(m_.m_Engine, close()).Times(0);
     EXPECT_EQ(true, m_.connect(true));
     EXPECT_EQ(true, m_.isOnline());
+    EXPECT_EQ(removeCount, 0);
 }
-
-//TEST(toto, test_connect_qdb)
-//{
-//    RealMedSQLite t = RealMedSQLite();
-//    t.initialization("foo");
-////    t.changeDatabasePath("/Users/castelne/Library/Application Support/inria/medInria");
-//    t.changeDatabasePath("/Users/castelne/developer/tmp/db_test_plugin");
-//
-//    t.connect(true);
-//}
-
 
 TEST_F(medSQliteTest, test_disconnect_success_if_db_path_is_empty)
 {
     m_.changeDatabasePath("");
     // expectations
+    EXPECT_CALL(m_.m_Engine, close()).Times(1);
     EXPECT_EQ(true, m_.connect(false));
     EXPECT_EQ(false, m_.isOnline());
+    EXPECT_EQ(removeCount, 1);
 }
 
+// Test Integration
+class RealMedSQLite : public medSQlite<QSqlDatabase>
+{
+public:
+    void changeDatabasePath(const QString& value) {
+        m_DbPath->setValue(value);
+    }
+
+};
+
+TEST(integrationTest, test_plugin_connection_success_with_existing_db)
+{
+    RealMedSQLite t = RealMedSQLite();
+    QString instanceId = "bar";
+    t.changeDatabasePath("/Users/castelne/Library/Application Support/inria/medInria");
+
+    // expectations
+    EXPECT_EQ(true, t.initialization(instanceId));
+    EXPECT_EQ(t.getInstanceId(), instanceId);
+    EXPECT_EQ(true, t.connect(true));
+    EXPECT_EQ(true, t.isOnline());
+
+    QSqlRecord record = t.m_Engine.record("patient");
+    QStringList keys = {"id", "name", "thumbnail", "birthdate", "gender", "patientId"};
+    for(int i=0;i<record.count();i++){
+        QSqlField field=record.field(i);
+        EXPECT_EQ(keys.at(i), field.name() );
+    }
+    record = t.m_Engine.record("study");
+    keys.clear();
+    keys << "id" << "patient" << "name" << "uid" << "thumbnail" << "studyId";
+    for(int i=0;i<record.count();i++){
+        QSqlField field=record.field(i);
+        EXPECT_EQ(keys.at(i), field.name() );
+    }
+    record = t.m_Engine.record("series");
+    keys.clear();
+    keys << "id" << "study" << "size" << "name" << "path"<< "uid" << "seriesId" << "orientation"
+         << "seriesNumber" << "sequenceName" << "sliceThickness" << "rows" << "columns" << "thumbnail"
+         << "age" << "description" << "modality" << "protocol" << "comments" << "status" << "acquisitiondate"
+         << "importationdate" << "referee" << "performer" << "institution" << "report" << "origin"
+         << "flipAngle" << "echoTime" << "repetitionTime" << "acquisitionTime" << "isIndexed";
+    for(int i=0;i<record.count();i++){
+        QSqlField field=record.field(i);
+        EXPECT_EQ(keys.at(i), field.name() );
+    }
+
+    EXPECT_EQ(true, t.connect(false));
+    EXPECT_EQ(false, t.isOnline());
+}
+
+TEST(integrationTest, test_plugin_connection_success_with_empty_db)
+{
+    RealMedSQLite t = RealMedSQLite();
+    QString instanceId = "bar";
+    QTemporaryDir dir;
+    if (dir.isValid()) {
+        t.changeDatabasePath(dir.path());
+
+        // expectations
+        EXPECT_EQ(true, t.initialization(instanceId));
+        EXPECT_EQ(t.getInstanceId(), instanceId);
+
+        EXPECT_EQ(true, t.connect(true));
+        EXPECT_EQ(true, t.isOnline());
+
+        QSqlRecord record = t.m_Engine.record("patient");
+        QStringList keys = {"id", "name", "thumbnail", "birthdate", "gender", "patientId"};
+        for(int i=0;i<record.count();i++){
+            QSqlField field=record.field(i);
+            EXPECT_EQ(keys.at(i), field.name() );
+        }
+        record = t.m_Engine.record("study");
+        keys.clear();
+        keys << "id" << "patient" << "name" << "uid" << "thumbnail" << "studyId";
+        for(int i=0;i<record.count();i++){
+            QSqlField field=record.field(i);
+            EXPECT_EQ(keys.at(i), field.name() );
+        }
+        record = t.m_Engine.record("series");
+        keys.clear();
+        keys << "id" << "study" << "size" << "name" << "path"<< "uid" << "seriesId" << "orientation"
+        << "seriesNumber" << "sequenceName" << "sliceThickness" << "rows" << "columns" << "thumbnail"
+        << "age" << "description" << "modality" << "protocol" << "comments" << "status" << "acquisitiondate"
+        << "importationdate" << "referee" << "performer" << "institution" << "report" << "origin"
+        << "flipAngle" << "echoTime" << "repetitionTime" << "acquisitionTime"<< "isIndexed";
+        for(int i=0;i<record.count();i++){
+            QSqlField field=record.field(i);
+            EXPECT_EQ(keys.at(i), field.name() );
+        }
+
+        EXPECT_EQ(true, t.connect(false));
+        EXPECT_EQ(false, t.isOnline());
+        dir.remove();
+    }
+}
+
+// Test Accessors (get/set)
 TEST(AccessTest, test_levelcount_success)
 {
     medSQlite<QSqlDatabase> m = medSQlite<QSqlDatabase>();
@@ -426,7 +520,7 @@ TEST(AccessTest, is_online_true)
     FakeMedSQLite m = FakeMedSQLite();
     fakeTables << "patient" << "study" << "series";
     m.changeDatabasePath("foo");
-    isOpen = true;
+    flagOpen = true;
     m.connect(true);
     EXPECT_EQ(true, m.isOnline());
 }
