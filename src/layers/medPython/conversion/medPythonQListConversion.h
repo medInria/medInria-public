@@ -42,7 +42,7 @@ void clearList(QList<PyObject*> list);
 MEDPYTHON_EXPORT bool medPythonConvert(const QList<PyObject*>& qList, PyObject** output);
 
 template <class TYPE>
-MEDPYTHON_EXPORT bool medPythonConvert(const QList<TYPE>& qList, PyObject** output)
+bool medPythonConvert(const QList<TYPE>& qList, PyObject** output)
 {
     bool success = true;
     QList<PyObject*> objectList;
@@ -70,7 +70,7 @@ MEDPYTHON_EXPORT bool medPythonConvert(const QList<TYPE>& qList, PyObject** outp
 MEDPYTHON_EXPORT bool medPythonConvert(const PyObject* object, QList<PyObject*>* output);
 
 template <class TYPE>
-MEDPYTHON_EXPORT bool medPythonConvert(const PyObject* object, QList<TYPE>* output)
+bool medPythonConvert(const PyObject* object, QList<TYPE>* output)
 {
     bool success = true;
     QList<PyObject*> objectList;

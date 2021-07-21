@@ -15,6 +15,7 @@
 
 #include "medPythonAbstractObject.h"
 
+#include "medPythonAttributeAccessor.h"
 #include "medPythonCoreFunction.h"
 #include "medPythonObject.h"
 #include "medPythonInit.h"
@@ -67,14 +68,9 @@ bool AbstractObject::hasAttribute(QString name) const
     return coreFunction(PyObject_HasAttrString, **this, qUtf8Printable(name));
 }
 
-Object AbstractObject::getAttribute(QString name) const
+AttributeAccessor AbstractObject::attribute(QString name)
 {
-    return coreFunction(PyObject_GetAttrString, **this, qUtf8Printable(name));
-}
-
-void AbstractObject::setAttribute(QString name, AbstractObject& value)
-{
-    coreFunction(PyObject_SetAttrString, **this, qUtf8Printable(name), *value);
+    return AttributeAccessor(*this, name);
 }
 
 QList<QString> AbstractObject::dir() const
@@ -167,9 +163,12 @@ AbstractObject& AbstractObject::operator/=(const AbstractObject& other)
     return *this;
 }
 
-ssize_t AbstractObject::length() const
+size_t AbstractObject::length() const
 {
-    return coreFunction(PyObject_Size, **this);
+    // The cast is safe because only positive values will be returned by this
+    // function (an exception will be thrown if there is an error during the
+    // call).
+    return static_cast<size_t>(coreFunction(PyObject_Size, **this));
 }
 
 bool AbstractObject::contains(const AbstractObject& object) const
@@ -225,7 +224,7 @@ void AbstractObject::update(const AbstractObject& other)
 
 AbstractObject::AbstractObject()
 {
-    ensurePythonSetup();
+    lazyLoadPython();
 }
 
 void AbstractObject::unsupportedFunctionError(QString functionName) const

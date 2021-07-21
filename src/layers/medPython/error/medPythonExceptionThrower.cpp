@@ -11,12 +11,13 @@
 
 ==============================================================================*/
 
+#include "medPythonCoreAPI.h"
+
 #include "medPythonExceptionThrower.h"
 
 #include <QHash>
 
 #include "medPythonBaseException.h"
-#include "medPythonCoreAPI.h"
 
 namespace med::python
 {

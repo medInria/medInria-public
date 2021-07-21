@@ -56,7 +56,7 @@ medApplication::medApplication(int & argc, char**argv) :
     this->setOrganizationDomain("fr");
     this->setWindowIcon(QIcon(":/medInria.ico"));
 
-    medLogger::initialize();
+    //medLogger::initialize();
 
     qInfo() << "####################################";
     qInfo() << "Version: "    << MEDINRIA_VERSION;

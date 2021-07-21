@@ -13,8 +13,6 @@
 
 #include "medPythonExceptionTraceback.h"
 
-#include "medPythonCoreUtils.h"
-
 namespace med::python
 {
 

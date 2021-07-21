@@ -29,6 +29,7 @@
 ///                                .kwarg("category", 2);
 ///
 
+#include "medPythonAttributeAccessor.h"
 #include "medPythonExport.h"
 #include "medPythonObject.h"
 #include "medPythonStandardObjects.h"
@@ -84,7 +85,7 @@ FunctionCall AbstractObject::operator()(ARGS... args)
 template <class... ARGS>
 FunctionCall AbstractObject::callMethod(QString name, ARGS... args)
 {
-    return getAttribute(name).operator()(args...);
+    return attribute(name).operator()(args...);
 }
 
 } // namespace med::python

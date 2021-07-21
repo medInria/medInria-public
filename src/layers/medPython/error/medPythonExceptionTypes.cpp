@@ -11,9 +11,11 @@
 
 ==============================================================================*/
 
-#include "medPythonExceptionTypes.h"
 
 #include "medPythonCoreAPI.h"
+
+#include "medPythonExceptionTypes.h"
+
 #include "medPythonExceptionThrower.h"
 
 #define MEDPYTHON_NATIVE_CLASS_METHOD(exceptionClass, nativeClassObject) \

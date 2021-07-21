@@ -36,7 +36,7 @@ void clearHash(QHash<KEY_TYPE, VALUE_TYPE> hash)
 MEDPYTHON_EXPORT bool medPythonConvert(const QHash<PyObject*, PyObject*>& qHash, PyObject** output);
 
 template <class KEY_TYPE, class VALUE_TYPE>
-MEDPYTHON_EXPORT bool medPythonConvert(const QHash<KEY_TYPE, VALUE_TYPE>& qHash, PyObject** output)
+bool medPythonConvert(const QHash<KEY_TYPE, VALUE_TYPE>& qHash, PyObject** output)
 {
     bool success = true;
     QHash<PyObject*, PyObject*> objectHash;
@@ -70,7 +70,7 @@ MEDPYTHON_EXPORT bool medPythonConvert(const QHash<KEY_TYPE, VALUE_TYPE>& qHash,
 MEDPYTHON_EXPORT bool medPythonConvert(const PyObject* object, QHash<PyObject*, PyObject*>* output);
 
 template <class KEY_TYPE, class VALUE_TYPE>
-MEDPYTHON_EXPORT bool medPythonConvert(const PyObject* object, QHash<KEY_TYPE, VALUE_TYPE>* output)
+bool medPythonConvert(const PyObject* object, QHash<KEY_TYPE, VALUE_TYPE>* output)
 {
     bool success = true;
     QHash<PyObject*, PyObject*> objectHash;

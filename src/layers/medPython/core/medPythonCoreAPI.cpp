@@ -58,8 +58,6 @@ int (*PyException_SetTraceback)(PyObject*, PyObject*) = nullptr;
 
 int (*PyRun_SimpleStringFlags)(const char*, PyCompilerFlags*) = nullptr;
 
-PyObject* (*PyImport_Import)(PyObject*) = nullptr;
-
 int (*PyType_IsSubtype)(PyTypeObject*, PyTypeObject*) = nullptr;
 
 PyObject* (*PyObject_Type)(PyObject*) = nullptr;
@@ -78,11 +76,16 @@ PyObject* (*PyObject_Call)(PyObject*, PyObject*, PyObject*) = nullptr;
 PyObject* (*PyObject_CallObject)(PyObject*, PyObject*) = nullptr;
 PyObject* (*PyObject_CallNoArgs)(PyObject*) = nullptr;
 
+PyObject* Py_None = nullptr;
+
+PyTypeObject* PyBool_Type = nullptr;
 PyObject* (*PyBool_FromLong)(long) = nullptr;
 
+PyTypeObject* PyLong_Type = nullptr;
 PyObject* (*PyLong_FromLong)(long) = nullptr;
 long (*PyLong_AsLong)(PyObject*) = nullptr;
 
+PyTypeObject* PyFloat_Type = nullptr;
 PyObject* (*PyFloat_FromDouble)(double) = nullptr;
 double (*PyFloat_AsDouble)(PyObject*) = nullptr;
 
@@ -95,7 +98,7 @@ PyObject* (*PyNumber_InPlaceSubtract)(PyObject*, PyObject*) = nullptr;
 PyObject* (*PyNumber_InPlaceMultiply)(PyObject*, PyObject*) = nullptr;
 PyObject* (*PyNumber_InPlaceTrueDivide)(PyObject*, PyObject*) = nullptr;
 
-int (*PySequence_Check)(PyObject*);
+int (*PySequence_Check)(PyObject*) = nullptr;
 Py_ssize_t (*PySequence_Size)(PyObject*) = nullptr;
 int (*PySequence_Contains)(PyObject*, PyObject*) = nullptr;
 PyObject* (*PySequence_GetItem)(PyObject*, Py_ssize_t) = nullptr;
@@ -107,17 +110,31 @@ int (*PyMapping_HasKey)(PyObject*, PyObject*) = nullptr;
 PyObject* (*PyMapping_Keys)(PyObject*) = nullptr;
 PyObject* (*PyMapping_Values)(PyObject*) = nullptr;
 
+PyTypeObject* PyTuple_Type = nullptr;
 PyObject* (*PyTuple_New)(Py_ssize_t) = nullptr;
 
+PyTypeObject* PyList_Type = nullptr;
 PyObject* (*PyList_New)(Py_ssize_t) = nullptr;
 int (*PyList_Append)(PyObject*, PyObject*) = nullptr;
 
+PyTypeObject* PyDict_Type = nullptr;
 PyObject* (*PyDict_New)() = nullptr;
 int (*PyDict_SetItem)(PyObject*, PyObject*, PyObject*) = nullptr;
 int (*PyDict_Merge)(PyObject*, PyObject*, int) = nullptr;
 
-PyObject* (*_Py_VaBuildValue_SizeT)(const char*, va_list) = nullptr;
+PyTypeObject* PyModule_Type = nullptr;
+const char* (*PyModule_GetName)(PyObject*) = nullptr;
+PyObject* (*PyModule_GetDict)(PyObject*) = nullptr;
+
+PyObject* (*PyImport_Import)(PyObject*) = nullptr;
+PyObject* (*PyImport_ImportModuleLevel)(const char*, PyObject*, PyObject*, PyObject*, int) = nullptr;
+PyObject* (*PyImport_AddModule)(const char*) = nullptr;
+PyObject* (*PyImport_GetModule)(PyObject*) = nullptr;
+
+PyObject* (*_Py_BuildValue_SizeT)(const char*, ...) = nullptr;
 void (*_Py_Dealloc)(PyObject*) = nullptr;
+
+} // namespace med::python
 
 PyObject* PyExc_BaseException = nullptr;
 PyObject* PyExc_Exception = nullptr;
@@ -173,31 +190,9 @@ PyObject* PyExc_StopIteration = nullptr;
 PyObject* PyExc_SystemError = nullptr;
 PyObject* PyExc_TypeError = nullptr;
 
-} // namespace med::python
-
-PyObject _Py_NoneStruct = {};
-PyTypeObject PyBool_Type = {};
-PyTypeObject PyFloat_Type = {};
-
-// The following functions are called by CPython macros. To avoid link issues at
-// build time, we define our own version that calls the proper runtime-linked
-// one.
-
-int PyType_IsSubtype(PyTypeObject* object1, PyTypeObject* object2)
-{
-    return med::python::PyType_IsSubtype(object1, object2);
-}
-
+#if PYTHON_VERSION_MINOR >= 9
 void _Py_Dealloc(PyObject* object)
 {
     med::python::_Py_Dealloc(object);
 }
-
-PyObject* _Py_BuildValue_SizeT(const char *format, ...)
-{
-    va_list args;
-    va_start(args, format);
-    PyObject* result = med::python::_Py_VaBuildValue_SizeT(format, args);
-    va_end(args);
-    return result;
-}
+#endif

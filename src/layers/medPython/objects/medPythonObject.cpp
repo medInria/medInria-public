@@ -73,6 +73,19 @@ Object::Object(double value) :
     internalSetReference(reference);
 }
 
+Object::Object(const char* value) :
+    d(new ObjectPrivate)
+{
+    PyObject* reference;
+
+    if (!medPythonConvert(QString(value), &reference))
+    {
+        propagateCurrentError();
+    }
+
+    internalSetReference(reference);
+}
+
 Object::Object(QString value) :
     d(new ObjectPrivate)
 {
@@ -94,6 +107,11 @@ Object::~Object()
     }
 
     delete d;
+}
+
+Object& Object::operator=(const Object& other)
+{
+    return static_cast<Object&>(AbstractObject::operator=(other));
 }
 
 PyObject* Object::getReference() const

@@ -12,16 +12,32 @@
 
 ==============================================================================*/
 
-#include <medPythonCoreAPI.h>
-
-#include <QString>
+#include "medPythonExport.h"
+#include "medPythonObject.h"
 
 namespace med::python
 {
 
-/// Retrieves the traceback of an exception and converts it to a user-readable
-/// string.
-///
-QString formatExceptionTraceback(PyObject* nativeException);
+class MEDPYTHON_EXPORT Module : public Object
+{
+public:
+    static Module main();
+
+    Module(PyObject* reference);
+
+    Module(const AbstractObject& other);
+
+    Module(const char* name);
+
+    Module(QString name);
+
+    QString name();
+
+    Object dict();
+
+private:
+    static PyObject* ensureModuleObject(PyObject* reference);
+    static PyObject* getModuleObject(QString name);
+};
 
 } // namespace med::python

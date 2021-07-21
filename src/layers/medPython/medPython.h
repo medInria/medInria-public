@@ -16,3 +16,4 @@
 #include "medPythonError.h"
 #include "medPythonInit.h"
 #include "medPythonObjects.h"
+#include "medPythonTest.h"

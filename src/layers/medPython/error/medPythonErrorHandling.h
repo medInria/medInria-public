@@ -32,7 +32,7 @@ MEDPYTHON_EXPORT void raiseError(PyObject* nativeExceptionClass, QString message
 /// (EXCEPTION_TYPE must be BaseException or a subclass).
 ///
 template <class EXCEPTION_TYPE>
-MEDPYTHON_EXPORT void raiseError(QString message)
+void raiseError(QString message)
 {
     raiseError(EXCEPTION_TYPE::nativeClass(), message);
 }

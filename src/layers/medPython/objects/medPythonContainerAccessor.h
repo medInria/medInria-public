@@ -20,7 +20,7 @@
 ///
 /// or:
 ///
-///     bar[i] += 2;
+///     bar[i] += Object(2);
 ///
 
 #include "medPythonExport.h"

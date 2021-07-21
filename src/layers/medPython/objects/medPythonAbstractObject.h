@@ -34,6 +34,7 @@
 namespace med::python
 {
 
+class AttributeAccessor;
 class ContainerAccessor;
 class FunctionCall;
 class Object;
@@ -71,8 +72,7 @@ public:
     QString typeName() const;
 
     bool hasAttribute(QString name) const;
-    Object getAttribute(QString name) const;
-    void setAttribute(QString name, AbstractObject& value);
+    AttributeAccessor attribute(QString name);
 
     /// Equivalent to the Python expression 'dir(o)'
     ///
@@ -100,7 +100,7 @@ public:
 
     /// Equivalent to the Python expression 'len(o)'
     ///
-    ssize_t length() const;
+    size_t length() const;
 
     /// Equivalent to the Python expression 'o1 in o2'
     ///

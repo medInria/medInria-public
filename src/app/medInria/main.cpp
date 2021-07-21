@@ -29,6 +29,8 @@
 #include <medSettingsManager.h>
 #include <medStorage.h>
 
+#include "medPython.h"
+
 void forceShow(medMainWindow& mainwindow )
 {
     //Idea and code taken from the OpenCOR project, Thanks Allan for the code!
@@ -102,6 +104,10 @@ int main(int argc,char* argv[])
                  << "[--fullscreen|--no-fullscreen] "
                  << "[--stereo] "
                  << "[--debug] "
+            #ifdef USE_PYTHON
+                 << "[--test-python] "
+                 << "[--test-python-crash] "
+            #endif
             #ifdef ACTIVATE_WALL_OPTION
                  << "[[--wall] [--tracker=URL]] "
             #endif
@@ -136,6 +142,10 @@ int main(int argc,char* argv[])
                      << "--tracker"
                      << "--stereo"
                      << "--view"
+                #ifdef USE_PYTHON
+                     << "--test-python"
+                     << "--test-python-crash"
+                #endif
                      << "--debug");
             for (QStringList::const_iterator opt=options.constBegin();opt!=options.constEnd();++opt)
             {
@@ -265,6 +275,16 @@ int main(int argc,char* argv[])
     // Handle file associations open requests that were not handled in the application
     QObject::connect(&application,SIGNAL(messageReceived(const QString&)),
                      mainwindow,SLOT(processNewInstanceMessage(const QString&)));
+
+#ifdef USE_PYTHON
+    bool testPython = application.arguments().contains("--test-python");
+    bool testPythonWithCrash = application.arguments().contains("--test-python-crash");
+
+    if (testPython || testPythonWithCrash)
+    {
+        med::python::test::testEmbeddedPython(testPythonWithCrash);
+    }
+#endif
 
     application.setMainWindow(mainwindow);
 

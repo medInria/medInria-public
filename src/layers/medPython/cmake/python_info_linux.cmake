@@ -110,6 +110,7 @@ set(PYTHON_HEADERS
     pyarena.h
     pycapsule.h
     pyconfig.h
+    pyconfig_x86_64-linux-gnu.h
     pyctype.h
     pydebug.h
     pydtrace.h

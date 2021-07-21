@@ -33,4 +33,8 @@ MEDPYTHON_EXPORT bool ensurePythonSetup();
 ///
 MEDPYTHON_EXPORT bool ensurePythonTeardown();
 
+/// Used for lazy loading. Do not call directly.
+///
+MEDPYTHON_EXPORT void lazyLoadPython();
+
 } // namespace med::python

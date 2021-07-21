@@ -23,7 +23,7 @@
 ///
 
 // One of Python's structs has a member named slots, and this causes conflicts
-// with the the Qt keyword of the same name. This (ugly) hack avoids that.
+// with the the Qt keyword of the same name.
 #undef slots
 #define slots _slots
 
@@ -39,6 +39,19 @@
 #define slots Q_SLOTS
 
 #include <cstddef>
+
+// CPython uses structs for type definitions. Because of explicit linking we
+// have to use pointers to structs, and therefore some macros need to be
+// redefined without the dereferencing of the type argument (the other type
+// checks work differently).
+#undef PyBool_Check
+#define PyBool_Check(x) Py_IS_TYPE(x, PyBool_Type)
+#undef PyFloat_Check
+#define PyFloat_Check(op) PyObject_TypeCheck(op, PyFloat_Type)
+#undef PyModule_Check
+#define PyModule_Check(op) PyObject_TypeCheck(op, PyModule_Type)
+
+#undef Py_None
 
 namespace med::python
 {
@@ -85,8 +98,6 @@ extern int (*PyException_SetTraceback)(PyObject*, PyObject*);
 
 extern int (*PyRun_SimpleStringFlags)(const char*, PyCompilerFlags*);
 
-extern PyObject* (*PyImport_Import)(PyObject*);
-
 extern int (*PyType_IsSubtype)(PyTypeObject*, PyTypeObject*);
 
 extern PyObject* (*PyObject_Type)(PyObject*);
@@ -105,11 +116,16 @@ extern PyObject* (*PyObject_Call)(PyObject*, PyObject*, PyObject*);
 extern PyObject* (*PyObject_CallObject)(PyObject*, PyObject*);
 extern PyObject* (*PyObject_CallNoArgs)(PyObject*);
 
+extern PyObject* Py_None;
+
+extern PyTypeObject* PyBool_Type;
 extern PyObject* (*PyBool_FromLong)(long);
 
+extern PyTypeObject* PyLong_Type;
 extern PyObject* (*PyLong_FromLong)(long);
 extern long (*PyLong_AsLong)(PyObject*);
 
+extern PyTypeObject* PyFloat_Type;
 extern PyObject* (*PyFloat_FromDouble)(double);
 extern double (*PyFloat_AsDouble)(PyObject*);
 
@@ -134,70 +150,31 @@ extern int (*PyMapping_HasKey)(PyObject*, PyObject*);
 extern PyObject* (*PyMapping_Keys)(PyObject*);
 extern PyObject* (*PyMapping_Values)(PyObject*);
 
+extern PyTypeObject* PyTuple_Type;
 extern PyObject* (*PyTuple_New)(Py_ssize_t);
 
+extern PyTypeObject* PyList_Type;
 extern PyObject* (*PyList_New)(Py_ssize_t);
 extern int (*PyList_Append)(PyObject*, PyObject*);
 
+extern PyTypeObject* PyDict_Type;
 extern PyObject* (*PyDict_New)();
 extern int (*PyDict_SetItem)(PyObject*, PyObject*, PyObject*);
 extern int (*PyDict_Merge)(PyObject*, PyObject*, int);
 
-extern PyObject* (*_Py_VaBuildValue_SizeT)(const char*, va_list);
-extern void (*_Py_Dealloc)(PyObject*);
+extern PyTypeObject* PyModule_Type;
+extern const char* (*PyModule_GetName)(PyObject*);
+extern PyObject* (*PyModule_GetDict)(PyObject*);
 
-extern PyObject* PyExc_BaseException;
-extern PyObject* PyExc_Exception;
-extern PyObject* PyExc_GeneratorExit;
-extern PyObject* PyExc_KeyboardInterrupt;
-extern PyObject* PyExc_SystemExit;
-extern PyObject* PyExc_ArithmeticError;
-extern PyObject* PyExc_FloatingPointError;
-extern PyObject* PyExc_OverflowError;
-extern PyObject* PyExc_ZeroDivisionError;
-extern PyObject* PyExc_ImportError;
-extern PyObject* PyExc_ModuleNotFoundError;
-extern PyObject* PyExc_LookupError;
-extern PyObject* PyExc_IndexError;
-extern PyObject* PyExc_KeyError;
-extern PyObject* PyExc_NameError;
-extern PyObject* PyExc_UnboundLocalError;
-extern PyObject* PyExc_OSError;
-extern PyObject* PyExc_BlockingIOError;
-extern PyObject* PyExc_ChildProcessError;
-extern PyObject* PyExc_ConnectionError;
-extern PyObject* PyExc_BrokenPipeError;
-extern PyObject* PyExc_ConnectionAbortedError;
-extern PyObject* PyExc_ConnectionRefusedError;
-extern PyObject* PyExc_ConnectionResetError;
-extern PyObject* PyExc_FileExistsError;
-extern PyObject* PyExc_FileNotFoundError;
-extern PyObject* PyExc_InterruptedError;
-extern PyObject* PyExc_IsADirectoryError;
-extern PyObject* PyExc_NotADirectoryError;
-extern PyObject* PyExc_PermissionError;
-extern PyObject* PyExc_ProcessLookupError;
-extern PyObject* PyExc_TimeoutError;
-extern PyObject* PyExc_RuntimeError;
-extern PyObject* PyExc_NotImplementedError;
-extern PyObject* PyExc_RecursionError;
-extern PyObject* PyExc_SyntaxError;
-extern PyObject* PyExc_IndentationError;
-extern PyObject* PyExc_TabError;
-extern PyObject* PyExc_ValueError;
-extern PyObject* PyExc_UnicodeError;
-extern PyObject* PyExc_UnicodeDecodeError;
-extern PyObject* PyExc_UnicodeEncodeError;
-extern PyObject* PyExc_UnicodeTranslateError;
-extern PyObject* PyExc_AssertionError;
-extern PyObject* PyExc_AttributeError;
-extern PyObject* PyExc_BufferError;
-extern PyObject* PyExc_EOFError;
-extern PyObject* PyExc_MemoryError;
-extern PyObject* PyExc_ReferenceError;
-extern PyObject* PyExc_StopAsyncIteration;
-extern PyObject* PyExc_StopIteration;
-extern PyObject* PyExc_SystemError;
-extern PyObject* PyExc_TypeError;
+extern PyObject* (*PyImport_Import)(PyObject*);
+extern PyObject* (*PyImport_ImportModuleLevel)(const char*, PyObject*, PyObject*, PyObject*, int);
+extern PyObject* (*PyImport_AddModule)(const char*);
+extern PyObject* (*PyImport_GetModule)(PyObject*);
+
+extern PyObject* (*_Py_BuildValue_SizeT)(const char*, ...);
+
+#if PYTHON_VERSION_MINOR >= 9
+extern void (*_Py_Dealloc)(PyObject*);
+#endif
 
 } // namespace med::python

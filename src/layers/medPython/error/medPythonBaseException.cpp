@@ -11,9 +11,10 @@
 
 ==============================================================================*/
 
+#include "medPythonCoreAPI.h"
+
 #include "medPythonBaseException.h"
 
-#include "medPythonCoreAPI.h"
 #include "medPythonExceptionTraceback.h"
 
 namespace med::python

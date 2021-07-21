@@ -60,4 +60,14 @@ bool ensurePythonTeardown()
     return success;
 }
 
+void lazyLoadPython()
+{
+    if (!isRunning)
+    {
+        qInfo() << "(lazy loading of Python triggered)";
+        ensurePythonSetup();
+        qInfo() << "(lazy loading of Python successful)";
+    }
+}
+
 } // namespace med::python

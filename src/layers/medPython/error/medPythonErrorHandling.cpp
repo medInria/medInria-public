@@ -11,9 +11,10 @@
 
 ==============================================================================*/
 
+#include "medPythonCoreAPI.h"
+
 #include "medPythonErrorHandling.h"
 
-#include "medPythonCoreAPI.h"
 #include "medPythonExceptionThrower.h"
 #include <QDebug>
 namespace med::python

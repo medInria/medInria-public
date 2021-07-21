@@ -12,10 +12,21 @@
 
 ==============================================================================*/
 
+#include <QString>
+
 namespace med::python
 {
 
 bool initializePython();
 bool finalizePython();
+
+namespace test
+{
+
+/// Returns the temporary directories used by the embedded Python.
+///
+QStringList getTemporaryDirectories();
+
+}
 
 } // namespace med::python

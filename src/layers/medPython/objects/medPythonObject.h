@@ -63,9 +63,17 @@ public:
 
     /// Creates a wrapped Python string.
     ///
+    Object(const char* value);
+
+    /// Creates a wrapped Python string.
+    ///
     Object(QString value);
 
     virtual ~Object();
+
+    /// Replaces the wrapped object with the one wrapped by 'other'.
+    ///
+    virtual Object& operator=(const Object& other);
 
     using AbstractObject::operator=;
 
@@ -82,7 +90,7 @@ private:
 template <class TYPE>
 Object Object::create(const TYPE& value)
 {
-    ensurePythonSetup();
+    lazyLoadPython();
     PyObject* reference;
 
     if (!medPythonConvert(value, &reference))

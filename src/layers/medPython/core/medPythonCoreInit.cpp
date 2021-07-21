@@ -16,11 +16,12 @@
 
 #include "medPythonCoreInit.h"
 
+#include <QApplication>
 #include <QDebug>
 #include <QFileInfo>
 #include <QTemporaryDir>
 
-#include <medExternalResources.h>
+#include "medExternalResources.h"
 
 #include "medPythonCoreUtils.h"
 
@@ -54,7 +55,13 @@ bool getResourceArchives(QStringList& resourceArchives)
 
     if (success)
     {
-        resourceArchives = QDir(resourcesDirectory).entryList({"*.zip"});
+        QFileInfoList fileInfoList = QDir(resourcesDirectory).entryInfoList({"*.zip"});
+        resourceArchives.clear();
+
+        foreach (QFileInfo fileInfo, fileInfoList)
+        {
+            resourceArchives << fileInfo.absoluteFilePath();
+        }
     }
 
     return success;
@@ -286,6 +293,11 @@ bool finalizePython()
     }
 
     return success;
+}
+
+QStringList test::getTemporaryDirectories()
+{
+    return {temporaryEncodingsParentDirectory->path()};
 }
 
 } // namespace med::python

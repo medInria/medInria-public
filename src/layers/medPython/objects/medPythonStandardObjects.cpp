@@ -16,43 +16,44 @@
 #include "medPythonStandardObjects.h"
 
 #include "medPythonCoreFunction.h"
+#include "medPythonInit.h"
 
 namespace med::python
 {
 
 Object none()
 {
-    ensurePythonSetup();
+    lazyLoadPython();
     Py_RETURN_NONE;
 }
 
 Object list()
 {
-    ensurePythonSetup();
+    lazyLoadPython();
     return coreFunction(PyList_New, 0);
 }
 
 Object list(const Object& object)
 {
-    ensurePythonSetup();
+    lazyLoadPython();
     return coreFunction(PySequence_List, *object);
 }
 
 Object tuple()
 {
-    ensurePythonSetup();
+    lazyLoadPython();
     return coreFunction(PyTuple_New, 0);
 }
 
 Object tuple(const Object& object)
 {
-    ensurePythonSetup();
+    lazyLoadPython();
     return coreFunction(PySequence_Tuple, *object);
 }
 
 Object dict()
 {
-    ensurePythonSetup();
+    lazyLoadPython();
     return coreFunction(PyDict_New);
 }
 

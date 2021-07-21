@@ -12,16 +12,12 @@
 
 ==============================================================================*/
 
-#include <medPythonCoreAPI.h>
+#include "medPythonExport.h"
 
-#include <QString>
-
-namespace med::python
+namespace med::python::test
 {
 
-/// Retrieves the traceback of an exception and converts it to a user-readable
-/// string.
-///
-QString formatExceptionTraceback(PyObject* nativeException);
+MEDPYTHON_EXPORT void testEmbeddedPython(bool withCrash);
 
-} // namespace med::python
+} // namespace med::python::test
+

@@ -12,7 +12,9 @@
 
 ==============================================================================*/
 
+#include "medPythonAttributeAccessor.h"
 #include "medPythonContainerAccessor.h"
 #include "medPythonFunctionCall.h"
+#include "medPythonModule.h"
 #include "medPythonObject.h"
 #include "medPythonStandardObjects.h"
