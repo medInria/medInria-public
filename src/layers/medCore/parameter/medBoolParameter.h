@@ -28,6 +28,9 @@ public:
 
     bool value() const;
 
+    QVariantMap toVariantMap() const override;
+    bool fromVariantMap(QVariantMap &pi_variantMap) override;
+
 public slots:
     void setValue(bool value);
 

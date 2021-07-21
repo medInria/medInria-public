@@ -29,7 +29,6 @@ class MEDCORE_EXPORT medDBSourcesLoader : public QObject
 {
 
     Q_OBJECT
-//    using instanciateSource = medAbstractSource * (*)(QString type, QString name);
     using instanciateSource = medAbstractSource * (*)();
 
 public:	
@@ -45,14 +44,15 @@ public:
     /* ***********************************************************************/
     /* *************** Create/remove sources *********************************/
     /* ***********************************************************************/
-	bool createNewCnx(QString &instanceId, QString const &type); //Provide instanceId like a nane and the type of source. instanceId can be altered to avoid duplicates
-	bool removeOldCnx(QString &instanceId);	
+	bool createCnx(QString &instanceId, QString const &type); //Provide instanceId like an internal name and the type of source. instanceId can be altered to avoid duplicates. If instanceId is empty the function will generate one
+	bool removeCnx(QString const &instanceId);	
 	
     /* ***********************************************************************/
-    /* *************** Get sources *******************************************/
+    /* *************** Handle sources ****************************************/
     /* ***********************************************************************/
 	QList<medAbstractSource*> sourcesList();
-	medAbstractSource*        getSource(QString IdName); 
+	medAbstractSource*        getSource(QString const & instanceId);
+    bool                      renameSource(QString const & instanceId, QString const & name);
 	
 	
 private:
@@ -61,9 +61,16 @@ private:
     bool saveToDisk();   //call after each add or remove source instance, each call to the destructor. Must be crytographied
     bool loadFromDisk(); //call after each add or remove source instance, each call to the destructor. Must be crytographied
 
-    medAbstractSource* createInstanceOfSource(QString const & type, QString const & IdName, QString const & Name);
-    bool ensureUniqueSourceIdName(QString & IdName);
+    void reloadCnx(QJsonObject &obj);
+
+    medAbstractSource* createInstanceOfSource(QString const & type) const;
+    bool generateUniqueSourceId(QString & Id, QString const & type) const;
+    void reparseUnresolvedCnx();
+
+    static void convertCipherParamToJson(QJsonObject & po_oJson, medAbstractParameter *pi_pParam);
 	
+    QString m_CnxParametersPath;
+
 signals:
     void sourceAdded(medAbstractSource*);  // Signal to indicate a new source
 	void sourceRemove(medAbstractSource*); // Signal to indicate a source was removed
@@ -85,8 +92,8 @@ private:
     QMap<QString, QString > m_instanceMapType; //instance, instanceId
     QMap<QString, QSharedPointer<medAbstractSource> > m_instancesMap; //instanceId, instance
     QMap<QString, medSourceTool>      m_sourcesMap;  //Source connector type name, function pointer to instantiate a connection to the source object
+    QList<QJsonObject> m_unresolvedSavedCnx;
     
-    QString m_CnxParametersPath;
     
     static medDBSourcesLoader *s_instance;
 };

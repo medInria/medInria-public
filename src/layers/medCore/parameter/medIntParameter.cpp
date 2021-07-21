@@ -84,3 +84,46 @@ void medIntParameter::trigger()
 {
     emit valueChanged(d->value);
 }
+
+QVariantMap medIntParameter::toVariantMap() const
+{
+    QVariantMap varMapRes;
+
+    varMapRes.insert("id", id());
+    varMapRes.insert("caption", caption());
+    varMapRes.insert("description", description());
+
+    varMapRes.insert("value", d->value);
+    varMapRes.insert("min", d->min);
+    varMapRes.insert("max", d->max);
+
+    return varMapRes;
+}
+
+bool medIntParameter::fromVariantMap(QVariantMap & pi_variantMap)
+{
+    bool bRes = true;
+
+    bRes &= pi_variantMap.contains("id");
+    bRes &= pi_variantMap.contains("caption");
+    bRes &= pi_variantMap.contains("description");
+    bRes &= pi_variantMap.contains("value");
+
+    if (bRes)
+    {
+        bRes &= pi_variantMap["value"].canConvert(QMetaType::Int);
+        bRes &= pi_variantMap["min"].canConvert(QMetaType::Int);
+        bRes &= pi_variantMap["max"].canConvert(QMetaType::Int);
+        if (bRes)
+        {
+            setCaption(pi_variantMap["caption"].toString());
+            setDescription(pi_variantMap["description"].toString());
+
+            d->value = pi_variantMap["value"].toInt();
+            d->min = pi_variantMap["min"].toInt();
+            d->max = pi_variantMap["max"].toInt();
+        }
+    }
+
+    return bRes;
+}

@@ -221,9 +221,9 @@ int main(int argc, char *argv[])
         medPluginManager::instance()->initialize();
 
         // [LIKE PORKY]
-        QString foo("foo");
+        QString foo;
 
-        medDBSourcesLoader::instance()->createNewCnx(foo, "medSQLite");
+        medDBSourcesLoader::instance()->createCnx(foo, "medSQLite");
 
         // Use Qt::WA_DeleteOnClose attribute to be sure to always have only one
         // closeEvent.

@@ -81,3 +81,40 @@ void medStringParameter::trigger()
 {
     emit valueChanged(d->value);
 }
+
+QVariantMap medStringParameter::toVariantMap() const
+{
+    QVariantMap varMapRes;
+
+    varMapRes.insert("id", id());
+    varMapRes.insert("caption", caption());
+    varMapRes.insert("description", description());
+
+    varMapRes.insert("value", d->value);
+
+    return varMapRes;
+}
+
+bool medStringParameter::fromVariantMap(QVariantMap & pi_variantMap)
+{
+    bool bRes = true;
+
+    bRes &= pi_variantMap.contains("id");
+    bRes &= pi_variantMap.contains("caption");
+    bRes &= pi_variantMap.contains("description");
+    bRes &= pi_variantMap.contains("value");
+
+    if (bRes)
+    {
+        bRes = pi_variantMap["value"].canConvert(QMetaType::QString);
+        if (bRes)
+        {
+            setCaption(pi_variantMap["caption"].toString());
+            setDescription(pi_variantMap["description"].toString());
+
+            d->value = pi_variantMap["value"].toString();
+        }
+    }
+
+    return bRes;
+}
