@@ -18,6 +18,7 @@
 
 #include "medPythonAbstractObject.h"
 #include "medPythonExport.h"
+#include "medPythonInit.h"
 
 namespace med::python
 {
@@ -81,6 +82,7 @@ private:
 template <class TYPE>
 Object Object::create(const TYPE& value)
 {
+    ensurePythonSetup();
     PyObject* reference;
 
     if (!medPythonConvert(value, &reference))

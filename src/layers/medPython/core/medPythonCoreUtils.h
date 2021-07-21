@@ -43,6 +43,4 @@ wchar_t** qStringListToWideChar(QStringList input);
 
 void freeWideCharList(wchar_t** input, size_t numItems);
 
-QStringList getPythonPath();
-
 } // namespace med::python

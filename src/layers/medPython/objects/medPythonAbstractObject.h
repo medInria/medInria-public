@@ -132,6 +132,8 @@ public:
     FunctionCall callMethod(QString name, ARGS... args);
 
 protected:
+    AbstractObject();
+
     virtual PyObject* getReference() const = 0;
     virtual void setReference(PyObject* reference) = 0;
 

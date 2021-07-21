@@ -22,32 +22,38 @@ namespace med::python
 
 Object none()
 {
+    ensurePythonSetup();
     Py_RETURN_NONE;
 }
 
 Object list()
 {
-    return coreFunction<PyObject*, &PyList_New>(0);
+    ensurePythonSetup();
+    return coreFunction(PyList_New, 0);
 }
 
 Object list(const Object& object)
 {
-    return coreFunction<PyObject*, &PySequence_List>(*object);
+    ensurePythonSetup();
+    return coreFunction(PySequence_List, *object);
 }
 
 Object tuple()
 {
-    return coreFunction<PyObject*, &PyTuple_New>(0);
+    ensurePythonSetup();
+    return coreFunction(PyTuple_New, 0);
 }
 
 Object tuple(const Object& object)
 {
-    return coreFunction<PyObject*, &PySequence_Tuple>(*object);
+    ensurePythonSetup();
+    return coreFunction(PySequence_Tuple, *object);
 }
 
 Object dict()
 {
-    return coreFunction<PyObject*, &PyDict_New>();
+    ensurePythonSetup();
+    return coreFunction(PyDict_New);
 }
 
 } // namespace med::python

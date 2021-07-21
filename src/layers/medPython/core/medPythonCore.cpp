@@ -13,8 +13,6 @@
 
 #include "medPythonCore.h"
 
-#include <QDebug>
-
 #include "medPythonCoreInit.h"
 #include "medPythonCoreLibrary.h"
 
@@ -23,8 +21,14 @@ namespace med::python
 
 bool setupCore()
 {
-    qInfo() << "Setting up Python...";
-    return setupCoreLibrary() && initializePython();
+    bool success = setupCoreLibrary() && initializePython();
+
+    if (!success)
+    {
+        teardownCore();
+    }
+
+    return success;
 }
 
 bool teardownCore()
