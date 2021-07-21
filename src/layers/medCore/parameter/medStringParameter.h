@@ -32,7 +32,7 @@ public:
     virtual QValidator *getValidator() const;
 
     QVariantMap toVariantMap() const override;
-    bool fromVariantMap(QVariantMap &pi_variantMap) override;
+    bool fromVariantMap(QVariantMap const& pi_variantMap) override;
 
 public slots:
     virtual bool setValue(QString const& value);

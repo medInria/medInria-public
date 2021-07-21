@@ -100,7 +100,7 @@ QVariantMap medDoubleParameter::toVariantMap() const
     return varMapRes;
 }
 
-bool medDoubleParameter::fromVariantMap(QVariantMap & pi_variantMap)
+bool medDoubleParameter::fromVariantMap(QVariantMap const& pi_variantMap)
 {
     bool bRes = true;
 

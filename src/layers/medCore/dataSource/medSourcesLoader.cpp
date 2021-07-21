@@ -39,8 +39,6 @@ medDBSourcesLoader *medDBSourcesLoader::instance()
 
 medDBSourcesLoader::~medDBSourcesLoader()
 {
-    m_instancesMap;
-    m_sourcesMap;
 }
 
 bool medDBSourcesLoader::registerSourceType(QString type, QString name, QString description, instanciateSource instanciator)

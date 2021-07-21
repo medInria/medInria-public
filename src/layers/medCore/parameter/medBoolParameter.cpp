@@ -62,7 +62,7 @@ QVariantMap medBoolParameter::toVariantMap() const
     return varMapRes;
 }
 
-bool medBoolParameter::fromVariantMap(QVariantMap & pi_variantMap)
+bool medBoolParameter::fromVariantMap(QVariantMap const& pi_variantMap)
 {
     bool bRes = true;
 

@@ -100,7 +100,7 @@ QVariantMap medIntParameter::toVariantMap() const
     return varMapRes;
 }
 
-bool medIntParameter::fromVariantMap(QVariantMap & pi_variantMap)
+bool medIntParameter::fromVariantMap(QVariantMap const& pi_variantMap)
 {
     bool bRes = true;
 
