@@ -747,7 +747,7 @@ void vtkMetaDataSet::GetScalarRange(double range[2], QString attributeName)
         }
     }
 
-    // if all rangeues are null rangeues, or if we don't have a current scalar array
+    // if any range is null, or if we don't have a current scalar array
     if ( range[0] == VTK_DOUBLE_MAX || range[1] == VTK_DOUBLE_MIN )
     {
         range[0] = 0;
