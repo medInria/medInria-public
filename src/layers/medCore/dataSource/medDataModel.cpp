@@ -50,7 +50,12 @@ bool medDataModel::getSourceGlobalInfo(QString const & pi_sourceIntanceId, QStri
     return false;
 }
 
-bool medDataModel::getInfoLevel(QString const & pi_sourceIntanceId, unsigned int pi_uiLevel, QVariantList & po_entries)
+bool medDataModel::getLevelMetaData(QString const & pi_sourceIntanceId, unsigned int pi_uiLevel, QVariantList & po_entries)
+{
+    return false;
+}
+
+bool medDataModel::getLevelAttributes(QString const & pi_sourceIntanceId, unsigned int pi_uiLevel, QStringList & po_attributes)
 {
     return false;
 }

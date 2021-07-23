@@ -19,6 +19,8 @@
 #include <medCoreExport.h>
 
 class medDataModel;
+struct medDataModelElementPrivate;
+
 class MEDCORE_EXPORT medDataModelElement : public QAbstractItemModel
 {
 
@@ -44,21 +46,14 @@ public slots:
     void itemPressed(QModelIndex const &index);
 
 private:
+    int getLevelColumCount(unsigned int pi_uiLevel) const;
 
 
 signals:
 
 
 private:
-    medDataModel *m_parent;
-    QString m_SourceInstanceId;
-    QStringList m_columnName;
-    bool m_bOnline;
-    bool m_bWritable;
-    bool m_bCache;
-    //medDataModelItem m_root;
-    int m_iRow;
-    int m_iCol;
+    medDataModelElementPrivate* d;
 
 
 };

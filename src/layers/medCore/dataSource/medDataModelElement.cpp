@@ -18,25 +18,37 @@
 
 #include <QVariantList>
 
+struct medDataModelElementPrivate
+{
+    medDataModel *parent;
+    QString sourceInstanceId;
+    bool bOnline;
+    bool bWritable;
+    bool bCache;
+    int iRow;
+    int iCol;
+    QMap<unsigned int, QStringList> columnNameByLevel;
+};
+
 medDataModelElement::medDataModelElement(medDataModel *parent, QString const & sourceIntanceId)
 {
-    m_parent = parent;
-    m_SourceInstanceId = sourceIntanceId;
+    d->parent = parent;
+    d->sourceInstanceId = sourceIntanceId;
         
-    bool bOk = parent->getSourceGlobalInfo(sourceIntanceId, m_columnName, m_bOnline, m_bWritable, m_bCache);
+    bool bOk = parent->getSourceGlobalInfo(sourceIntanceId, d->columnNameByLevel[0], d->bOnline, d->bWritable, d->bCache);
 
     if (bOk)
     {
-        if (m_bCache)
+        if (d->bCache)
         {
-            m_columnName.push_back("Cached");
+            d->columnNameByLevel[0].push_back("Cached");
         }
-        if (m_bOnline)
+        if (d->bOnline)
         {
             unsigned int iLevel = 0;
             QVariantList entries;
-            parent->getInfoLevel(sourceIntanceId, iLevel, entries);
-            m_iRow = entries.size();
+            parent->getLevelMetaData(sourceIntanceId, iLevel, entries);
+            d->iRow = entries.size();
         }        
     }
 }
@@ -57,7 +69,19 @@ QModelIndex medDataModelElement::index(int row, int column, const QModelIndex & 
 
 QModelIndex medDataModelElement::parent(const QModelIndex & index) const
 {
-    return QModelIndex();
+    QModelIndex indexRes;
+
+    if (index.isValid())
+    {
+        auto indexItem = static_cast<medDataModelItem *>(index.internalPointer());
+        auto parentItem = indexItem->parent();
+        if (parentItem)
+        {
+            indexRes = createIndex(parentItem->row(), 0, parentItem);
+        }
+    }
+
+    return indexRes;
 }
 
 int medDataModelElement::columnCount(const QModelIndex & parent) const
@@ -66,26 +90,31 @@ int medDataModelElement::columnCount(const QModelIndex & parent) const
     
     if (!parent.isValid())
     {
-        iRes = m_columnName.size();
+        iRes = getLevelColumCount(0);
+    }
+    else
+    {
+        medDataModelItem *parentItem = nullptr;
+        parentItem = static_cast<medDataModelItem *>(parent.internalPointer());
+        unsigned int level = parentItem->childLevel();
+        iRes = getLevelColumCount(level);
     }
     
-    return 0;
+    return iRes;
 }
-
 int	medDataModelElement::rowCount(const QModelIndex &parent) const
 {
-    int iRes = 0;
-
-    medDataModelItem *parentItem;
+    int iRes = 0;    
 
     if (parent.column() == 0)
     {
         if (!parent.isValid())
         {
-            iRes = m_iRow;
+            iRes = d->iRow;
         }
         else
         {
+            medDataModelItem *parentItem = nullptr;
             parentItem = static_cast<medDataModelItem *>(parent.internalPointer());
             iRes = parentItem->childCount();
         }
@@ -94,11 +123,55 @@ int	medDataModelElement::rowCount(const QModelIndex &parent) const
     return iRes;
 }
 
+
+
+
+
+
+/* ***********************************************************************/
+/* *************** Not overrides functions and slots *********************/
+/* ***********************************************************************/
+
 void medDataModelElement::setColumnAttributes(unsigned int p_uiLevel, QStringList & attributes)
 {
+    if (d->columnNameByLevel.contains(p_uiLevel))
+    {
+        d->columnNameByLevel[p_uiLevel].append(attributes);
+    }
+    else
+    {
+        // Maybe TODO
+    }
 }
 
 void medDataModelElement::itemPressed(QModelIndex const &index)
 {
 
+}
+
+
+
+
+/* ***********************************************************************/
+/* *************** Private functions and slots ***************************/
+/* ***********************************************************************/
+int medDataModelElement::getLevelColumCount(unsigned int pi_uiLevel) const
+{
+    int iRes = -1;
+
+    if (d->columnNameByLevel.contains(pi_uiLevel))
+    {
+        iRes = d->columnNameByLevel[pi_uiLevel].size();
+    }
+    else
+    {
+        QStringList attributes;
+        if (d->parent->getLevelAttributes(d->sourceInstanceId, pi_uiLevel, attributes))
+        {
+            d->columnNameByLevel[pi_uiLevel] = attributes;
+            iRes = attributes.size();
+        }
+    }
+
+    return iRes;
 }

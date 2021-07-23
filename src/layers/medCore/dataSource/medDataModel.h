@@ -28,7 +28,8 @@ public:
 
     bool setDefaultWorkingSource(unsigned int i);
     bool getSourceGlobalInfo(QString const &pi_sourceIntanceId, QStringList &pi_columnName, bool &pi_bOnline, bool &pi_bWritable, bool &pi_bCache);
-    bool getInfoLevel(QString const &pi_sourceIntanceId, unsigned int pi_uiLevel, QVariantList &po_entries);
+    bool getLevelMetaData(QString const & pi_sourceIntanceId, unsigned int pi_uiLevel, QVariantList & po_entries);
+    bool getLevelAttributes(QString const & pi_sourceIntanceId, unsigned int pi_uiLevel, QStringList & po_attributes);
 
 public slots:
    void addSource(medAbstractSource* pi_source);

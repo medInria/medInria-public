@@ -35,6 +35,10 @@ public:
     /* *************** Data location functions *******************************/
     /* ***********************************************************************/
     int childCount();
+    unsigned int childLevel();
+    int row() const;
+    medDataModelItem *parent();
+
 
 
 
@@ -43,13 +47,13 @@ public:
 
 
     // medAbstractDatabaseItem *child(int row) = 0;
-    // medAbstractDatabaseItem *parent() = 0;
+
     // 
     // void setParent(medAbstractDatabaseItem *parent) = 0;
     // 
     // void append(medAbstractDatabaseItem *child) = 0;
     // 
-    // int row() const = 0;
+
     // int childCount() const = 0;
     // int childNumber() const = 0;
     // int columnCount() const = 0;
