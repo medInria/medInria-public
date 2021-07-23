@@ -24,7 +24,15 @@ medSQlite<T>::medSQlite()
         m_ConnectionName("sqlite"), m_instanceId(QString()),
         m_online(false), m_LevelNames({"patient","study","series"})
 {
+#ifdef Q_OS_MAC
+    auto vDbLoc = QStandardPaths::writableLocation(QStandardPaths::GenericDataLocation) + "/" + QCoreApplication::organizationName() + "/" + QCoreApplication::applicationName();
+#else
+    auto vDbLoc = QStandardPaths::writableLocation(QStandardPaths::GenericDataLocation) + "/data/" + QCoreApplication::organizationName() + "/" + QCoreApplication::applicationName();
+#endif
+
     m_DbPath = new medStringParameter("LocalDataBasePath", this);
+    m_DbPath->setCaption("Path to sqlite local DB");
+    m_DbPath->setValue(vDbLoc);
 //    m_DbPath =
     QObject::connect(m_DbPath, &medStringParameter::valueChanged, this, &medSQlite::updateDatabaseName);
 //    QObject::connect(this, SIGNAL(progress(int, eRequestStatus)), this, SLOT(foo(int, eRequestStatus)));
@@ -150,7 +158,11 @@ bool medSQlite<T>::connect(bool pi_bEnable)
 template<typename T>
 QList<medAbstractParameter *> medSQlite<T>::getAllParameters()
 {
-    return QList<medAbstractParameter *>();
+    QList<medAbstractParameter *> paramListRes;
+
+    paramListRes.push_back(m_DbPath);
+
+    return paramListRes;
 }
 
 template<typename T>
@@ -217,7 +229,7 @@ template <typename T>
 QString medSQlite<T>::getLevelName(unsigned int pi_uiLevel)
 {
     QString retVal;
-    if (pi_uiLevel>0 || pi_uiLevel<m_LevelNames.size())
+    if (pi_uiLevel>0 || pi_uiLevel<static_cast<unsigned int>(m_LevelNames.size()))
     {
         retVal = m_LevelNames.value((int)pi_uiLevel);
     }

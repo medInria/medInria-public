@@ -223,7 +223,9 @@ int main(int argc, char *argv[])
         // [LIKE PORKY]
         QString foo;
 
-        medDBSourcesLoader::instance()->createCnx(foo, "medSQLite");
+        //medDBSourcesLoader::instance()->createCnx(foo, "medSQLite");
+        //medDBSourcesLoader::instance()->renameSource(foo, "Legacy medInria 3 DB");
+        medDBSourcesLoader::instance()->loadFromDisk();
 
         // Use Qt::WA_DeleteOnClose attribute to be sure to always have only one
         // closeEvent.
