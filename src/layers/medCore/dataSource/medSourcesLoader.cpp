@@ -248,7 +248,7 @@ bool medDBSourcesLoader::saveToDisk()
     jsonSaveDoc.setArray(entries);
     QByteArray payload = jsonSaveDoc.toJson();
 
-    QFile cnxSourcesParametersFile(m_CnxParametersPath + MED_DATASOURCES_FILENAME);
+    QFile cnxSourcesParametersFile(m_CnxParametersPath + "/" + MED_DATASOURCES_FILENAME);
     bRes = cnxSourcesParametersFile.open(QFile::WriteOnly | QFile::Text | QFile::Truncate);
     if (bRes)
     {
@@ -266,7 +266,7 @@ bool medDBSourcesLoader::loadFromDisk()
     QString content;
 
     QFile cnxSourcesParametersFile;
-    cnxSourcesParametersFile.setFileName(m_CnxParametersPath + MED_DATASOURCES_FILENAME);
+    cnxSourcesParametersFile.setFileName(m_CnxParametersPath + "/" + MED_DATASOURCES_FILENAME);
     cnxSourcesParametersFile.open(QIODevice::ReadOnly | QIODevice::Text);
     content = cnxSourcesParametersFile.readAll();
     cnxSourcesParametersFile.close();
@@ -334,13 +334,13 @@ void medDBSourcesLoader::reloadCnx(QJsonObject &obj)
 
         while (!bFind && i< normalParameters.size())
         {
-            bFind = paramId != normalParameters[i]->id();
+            bFind = paramId == normalParameters[i]->id();
             if (!bFind) i++;
         }
 
         if (bFind)
         {
-            if (normalParameters[i]->fromVariantMap(obj["parameters"].toObject().toVariantMap()))
+            if (normalParameters[i]->fromVariantMap(obj["parameters"].toObject()[paramId].toObject().toVariantMap()))
             {
                 iAppliedParametersCount++;
             }
@@ -364,7 +364,7 @@ void medDBSourcesLoader::reloadCnx(QJsonObject &obj)
             }
             if (bFind)
             {
-                if (cipherParameters[i]->fromVariantMap(obj["parameters"].toObject().toVariantMap())) //TODO Handle cipher param
+                if (cipherParameters[i]->fromVariantMap(obj["parameters"].toObject()[paramId].toObject().toVariantMap())) //TODO Handle cipher param
                 {
                     iAppliedParametersCount++;
                 }

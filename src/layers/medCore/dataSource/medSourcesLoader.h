@@ -54,12 +54,12 @@ public:
 	medAbstractSource*        getSource(QString const & instanceId);
     bool                      renameSource(QString const & instanceId, QString const & name);
 	
-	
+	bool loadFromDisk(); //call after each add or remove source instance, each call to the destructor. Must be crytographied
 private:
     medDBSourcesLoader();
 
     bool saveToDisk();   //call after each add or remove source instance, each call to the destructor. Must be crytographied
-    bool loadFromDisk(); //call after each add or remove source instance, each call to the destructor. Must be crytographied
+    
 
     void reloadCnx(QJsonObject &obj);
 
@@ -73,7 +73,7 @@ private:
 
 signals:
     void sourceAdded(medAbstractSource*);  // Signal to indicate a new source
-	void sourceRemove(medAbstractSource*); // Signal to indicate a source was removed
+	void sourceRemoved(medAbstractSource*); // Signal to indicate a source was removed
 	
 	void connectorNotAvailable(QString);   // Error a DBSource configuration exist without associated medSource plugin
 
