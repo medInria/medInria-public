@@ -94,6 +94,7 @@ add_library(${TARGET_NAME} SHARED
 target_link_libraries(${TARGET_NAME}
 #  dtkCore
 #  dtkLog
+        Qt5::Sql
         medCore
 #        medCoreLegacy
 #  medLog
@@ -101,12 +102,11 @@ target_link_libraries(${TARGET_NAME}
 #  medImageIO
   )
 
-set(TARGET_NAME_TEST medSQLiteTest)
+set(TARGET_NAME_TEST ${TARGET_NAME}Test)
 
 enable_testing()
-#find_package(GTest REQUIRED)
 include(GoogleTest)
-#FindGTest()
+find_package(GTest REQUIRED)
 
 list_header_directories_to_include(${TARGET_NAME_TEST}
         ${${TARGET_NAME}_HEADERS}
@@ -117,24 +117,35 @@ include_directories(${${TARGET_NAME_TEST}_INCLUDE_DIRS}
         )
 
 
-list_source_files(${TARGET_NAME_TEST}
-        medSQLite.cpp
-        test
+list(APPEND ${TARGET_NAME_TEST}_SOURCE_FILES
+        medSQLite.txx
+        test/medSQliteTest.cpp
         )
 
 include_directories(
         ${MEDINRIA_INCLUDE_DIRS}
         ${GTEST_INCLUDE_DIR}
 )
+find_library(GMOCK_LIBRARY
+        NAMES gmock
+        libgmock
+        libgmock.dylib
+        PATHS "${GTEST_ROOT}/lib")
+find_library(GMOCK_MAIN_LIBRARY
+        NAMES gmock_main
+        libgmock_main
+        libgmock_main.dylib
+        PATHS "${GTEST_ROOT}/lib")
 
+message("${GMOCK_MAIN_LIBRARY}")
+add_executable(${TARGET_NAME_TEST} ${${TARGET_NAME_TEST}_SOURCE_FILES})
 
-file(GLOB SRC_FILES "medSQLite.cpp")
-file(GLOB TEST_SRC_FILES "test/*.cpp")
-#message("${SRC_FILES}")
-add_executable(${TARGET_NAME_TEST} ${SRC_FILES}  ${TEST_SRC_FILES})
-target_link_libraries(${TARGET_NAME_TEST} ${GTEST_LIBRARY} ${GTEST_MAIN_LIBRARY} medCore ${TARGET_NAME})
-
-#add_test(myTest medSQLiteTest)
+target_link_libraries(${TARGET_NAME_TEST}
+        ${GTEST_LIBRARY} ${GTEST_MAIN_LIBRARY}
+        ${GMOCK_LIBRARY} ${GMOCK_MAIN_LIBRARY}
+        medCore
+        Qt5::Sql
+        ${TARGET_NAME})
 
 ## #############################################################################
 ## Install rules

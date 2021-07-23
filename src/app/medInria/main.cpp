@@ -29,6 +29,8 @@
 #include <medSplashScreen.h>
 #include <medStorage.h>
 
+#include <medSourcesLoader.h>
+
 void forceShow(medMainWindow &mainwindow)
 {
     // Idea and code taken from the OpenCOR project, Thanks Allan for the code!
@@ -217,6 +219,11 @@ int main(int argc, char *argv[])
         medDataManager::instance()->setDatabaseLocation();
         medPluginManager::instance()->setVerboseLoading(true);
         medPluginManager::instance()->initialize();
+
+        // [LIKE PORKY]
+        QString foo;
+
+        medDBSourcesLoader::instance()->createCnx(foo, "medSQLite");
 
         // Use Qt::WA_DeleteOnClose attribute to be sure to always have only one
         // closeEvent.

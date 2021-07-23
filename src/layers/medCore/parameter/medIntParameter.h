@@ -31,6 +31,9 @@ public:
     int minimum() const;
     int maximum() const;
 
+    QVariantMap toVariantMap() const override;
+    bool fromVariantMap(QVariantMap const& pi_variantMap) override;
+
 public slots:
     void setValue(int value);
 

@@ -26,9 +26,11 @@
 #include <QMutex>
 #include <QSharedPointer>
 
+#define MED_DATASOURCES_FILENAME "DataSources.json"
+
 medDBSourcesLoader *medDBSourcesLoader::s_instance = nullptr;
 
-medDBSourcesLoader *medDBSourcesLoader::instance(void)
+medDBSourcesLoader *medDBSourcesLoader::instance()
 {
     if (!s_instance)
         s_instance = new medDBSourcesLoader;
@@ -37,8 +39,6 @@ medDBSourcesLoader *medDBSourcesLoader::instance(void)
 
 medDBSourcesLoader::~medDBSourcesLoader()
 {
-    m_instancesMap;
-    m_sourcesMap;
 }
 
 bool medDBSourcesLoader::registerSourceType(QString type, QString name, QString description, instanciateSource instanciator)
@@ -51,6 +51,7 @@ bool medDBSourcesLoader::registerSourceType(QString type, QString name, QString 
         medSourceTool tool = { type, name, description, instanciator };
         m_sourcesMap.insert(type, tool);
     }
+    reparseUnresolvedCnx();
     m_mutexMap.unlock();
 
     return bRes;
@@ -70,22 +71,25 @@ QList<std::tuple<QString, QString, QString>> medDBSourcesLoader::sourcesTypeAvai
     return listRes;
 }
 
-bool medDBSourcesLoader::createNewCnx(QString & IdName, QString const & type)
+bool medDBSourcesLoader::createCnx(QString & instanceId, QString const & type)
 {
     bool bRes = true;
 
     m_mutexMap.lock();
-    bRes = ensureUniqueSourceIdName(IdName);
+    bRes = generateUniqueSourceId(instanceId, type);
     
     if (bRes)
     {
-        medAbstractSource *pDataSource = createInstanceOfSource(type, IdName, IdName);
+        medAbstractSource *pDataSource = createInstanceOfSource(type);
     
         bRes = pDataSource != nullptr;
         if (bRes)
         {
-            m_instanceMapType[IdName] = type;
-            m_instancesMap.insert(IdName, QSharedPointer<medAbstractSource>(pDataSource));
+            pDataSource->initialization(instanceId);
+            pDataSource->setInstanceName(instanceId);
+
+            m_instanceMapType[instanceId] = type;
+            m_instancesMap.insert(instanceId, QSharedPointer<medAbstractSource>(pDataSource));
             saveToDisk();
             emit(sourceAdded(pDataSource));
         }
@@ -95,15 +99,15 @@ bool medDBSourcesLoader::createNewCnx(QString & IdName, QString const & type)
     return bRes;
 }
 
-bool medDBSourcesLoader::removeOldCnx(QString & IdName)
+bool medDBSourcesLoader::removeCnx(QString const & instanceId)
 {
     bool bRes = false;
 
     m_mutexMap.lock();
-    if (m_instancesMap.contains(IdName))
+    if (m_instancesMap.contains(instanceId))
     {
-        auto oldCnx = m_instancesMap.take(IdName);
-        m_instanceMapType.remove(IdName);
+        auto oldCnx = m_instancesMap.take(instanceId);
+        m_instanceMapType.remove(instanceId);
         saveToDisk();
         QTimer::singleShot(5*60*1000, this, [&]() {oldCnx.reset(); }); //the removed connection will be deleted after 5 min of secured time gap
     }
@@ -126,14 +130,32 @@ QList<medAbstractSource*> medDBSourcesLoader::sourcesList()
     return instanceList;
 }
 
-medAbstractSource * medDBSourcesLoader::getSource(QString IdName)
+bool medDBSourcesLoader::renameSource(QString const & instanceId, QString const & name)
+{
+    bool bRes = false;
+
+    if (!name.isEmpty())
+    {
+        m_mutexMap.lock();
+        if (m_instancesMap.contains(instanceId))
+        {
+            m_instancesMap[instanceId]->setInstanceName(name);
+            bRes = saveToDisk();
+        }
+        m_mutexMap.unlock();
+    }
+
+    return bRes;
+}
+
+medAbstractSource * medDBSourcesLoader::getSource(QString const &instanceId)
 {
     medAbstractSource *sourceRes = nullptr;
 
     m_mutexMap.lock();
-    if (m_instancesMap.contains(IdName))
+    if (m_instancesMap.contains(instanceId))
     {
-        sourceRes = &(*m_instancesMap[IdName]);
+        sourceRes = &(*m_instancesMap[instanceId]);
     }
     m_mutexMap.unlock();
 
@@ -159,13 +181,13 @@ medAbstractSource * medDBSourcesLoader::getSource(QString IdName)
 
 
 
-medAbstractSource* medDBSourcesLoader::createInstanceOfSource(QString const & type, QString const & IdName, QString const & Name)
+medAbstractSource* medDBSourcesLoader::createInstanceOfSource(QString const & type) const
 {
     medAbstractSource * pDataSource = nullptr;
     
     if (m_sourcesMap.contains(type))
     {
-        pDataSource = m_sourcesMap[type].instanciator(IdName, Name);
+        pDataSource = m_sourcesMap[type].instanciator();
     }
 
     return pDataSource;
@@ -185,16 +207,48 @@ bool medDBSourcesLoader::saveToDisk()
     for (auto instance : m_instancesMap)
     {
         QJsonObject entry;
-        entry.insert("sourceTypeId", QJsonValue::fromVariant(m_instanceMapType[instance->getInstanceId()]));
-        entry.insert("conxId", QJsonValue::fromVariant(instance->getInstanceId()));
+        entry.insert("sourceType", QJsonValue::fromVariant(m_instanceMapType[instance->getInstanceId()]));
+        entry.insert("cnxId", QJsonValue::fromVariant(instance->getInstanceId()));
         entry.insert("cnxName", QJsonValue::fromVariant(instance->getInstanceName()));
-        //TODO PARAMETERS
+        
+        auto allParameters     = instance->getAllParameters();
+        auto cipherParameters  = instance->getCipherParameters();
+        auto volatilParameters = instance->getVolatilParameters();
+
+        for (auto paramToRemove : cipherParameters)
+        {
+            allParameters.removeAll(paramToRemove);
+        }
+        for (auto paramToRemove : volatilParameters)
+        {
+            allParameters.removeAll(paramToRemove);
+        }
+
+        QJsonObject entryParameters;
+        for (auto medParam : allParameters)
+        {
+            QJsonObject paramAsJson = QJsonObject::fromVariantMap(medParam->toVariantMap());
+            entryParameters.insert(medParam->id(), paramAsJson);
+        }
+        for (auto medParam : cipherParameters)
+        {
+            QJsonObject paramAsJson;
+            convertCipherParamToJson(paramAsJson, medParam); //TODO Cipher
+            entryParameters.insert(medParam->id(), paramAsJson);
+        }
+        entry.insert("parameters", entryParameters);
         entries.push_back(entry);
     }
+
+    for (auto unresolvedSavedCnxEntry : m_unresolvedSavedCnx)
+    {
+        entries.push_back(unresolvedSavedCnxEntry);
+    }
+
     jsonSaveDoc.setArray(entries);
     QByteArray payload = jsonSaveDoc.toJson();
 
-    QFile cnxSourcesParametersFile(m_CnxParametersPath);
+    QFile cnxSourcesParametersFile(m_CnxParametersPath + MED_DATASOURCES_FILENAME);
     bRes = cnxSourcesParametersFile.open(QFile::WriteOnly | QFile::Text | QFile::Truncate);
     if (bRes)
     {
@@ -205,24 +259,218 @@ bool medDBSourcesLoader::saveToDisk()
     return bRes;
 }
 
-bool medDBSourcesLoader::ensureUniqueSourceIdName(QString & IdName)
+bool medDBSourcesLoader::loadFromDisk()
 {
-    bool bRes = !IdName.isEmpty();
+    bool bRes = false;
 
-    QString IdNameTmp = IdName;
-    unsigned int suffix = 0;
-    while (m_instancesMap.contains(IdNameTmp) && suffix < 32767) // TODO bRes check
+    QString content;
+
+    QFile cnxSourcesParametersFile;
+    cnxSourcesParametersFile.setFileName(m_CnxParametersPath + MED_DATASOURCES_FILENAME);
+    cnxSourcesParametersFile.open(QIODevice::ReadOnly | QIODevice::Text);
+    content = cnxSourcesParametersFile.readAll();
+    cnxSourcesParametersFile.close();
+
+    qWarning() << content;
+    QJsonDocument jsonSaveDoc = QJsonDocument::fromJson(content.toUtf8());
+    QJsonArray entries = jsonSaveDoc.array();
+    for (auto entry : entries)
     {
-        suffix++;
-        IdNameTmp = IdName + "_" + suffix;
-    }
-    
-    bRes &= suffix < 32768;
-    if (bRes)
-    {
-        IdName = IdNameTmp;
+        auto obj = entry.toObject();
+
+        if (obj.contains("sourceType") && obj["sourceType"].isString() && !obj["sourceType"].toString().isEmpty() &&
+            obj.contains("cnxId") && obj["cnxId"].isString() && !obj["cnxId"].toString().isEmpty() &&
+            obj.contains("cnxName") && obj["cnxName"].isString() && !obj["cnxName"].toString().isEmpty())
+        {
+            if (m_sourcesMap.contains(obj["sourceType"].toString()))
+            {
+                reloadCnx(obj);
+            }
+            else
+            {
+                qWarning() << "[WARN] Source loading can't find dataSource plugin for : "
+                    << "\nSource type     = " << obj["sourceType"]
+                    << "\nConnection Id   = " << obj["cnxId"]
+                    << "\nConnection name = " << obj["cnxName"];
+                m_unresolvedSavedCnx.push_back(obj);
+            }
+        }
+        else
+        {
+            qWarning() << "[WARN] Source loading invalid entry detected : "
+                << "\nSource type     = " << obj["sourceType"]
+                << "\nConnection Id   = " << obj["cnxId"]
+                << "\nConnection name = " << obj["cnxName"];
+        }
     }
 
     return bRes;
+}
+
+void medDBSourcesLoader::reloadCnx(QJsonObject &obj)
+{
+    int iAppliedParametersCount = 0;
+    auto pDataSource = createInstanceOfSource(obj["sourceType"].toString());
+
+    pDataSource->initialization(obj["cnxId"].toString());
+    pDataSource->setInstanceName(obj["cnxName"].toString());
+    auto normalParameters = pDataSource->getAllParameters();
+    auto cipherParameters = pDataSource->getCipherParameters();
+    auto volatilParameters = pDataSource->getVolatilParameters();
+
+    for (auto paramToRemove : cipherParameters)
+    {
+        normalParameters.removeAll(paramToRemove);
+    }
+    for (auto paramToRemove : volatilParameters)
+    {
+        normalParameters.removeAll(paramToRemove);
+    }
+
+    for (QString paramId : obj["parameters"].toObject().keys())
+    {
+        bool bFind = false;
+        int i = 0;
+
+        while (!bFind && i< normalParameters.size())
+        {
+            bFind = paramId != normalParameters[i]->id();
+            if (!bFind) i++;
+        }
+
+        if (bFind)
+        {
+            if (normalParameters[i]->fromVariantMap(obj["parameters"].toObject().toVariantMap()))
+            {
+                iAppliedParametersCount++;
+            }
+            else
+            {
+                qWarning() << "[WARN] Source loading invalid parameter detected for : "
+                    << "\nSource type     = " << obj["sourceType"]
+                    << "\nConnection Id   = " << obj["cnxId"]
+                    << "\nConnection name = " << obj["cnxName"]
+                    << "\nParameter Name  = " << normalParameters[i]->caption();
+            }
+            normalParameters.removeAt(i);
+        }
+        else
+        {
+            i = 0;
+            while (!bFind && i < cipherParameters.size())
+            {
+                bFind = paramId != cipherParameters[i]->id();
+                if (!bFind) i++;
+            }
+            if (bFind)
+            {
+                if (cipherParameters[i]->fromVariantMap(obj["parameters"].toObject().toVariantMap())) //TODO Handle cipher param
+                {
+                    iAppliedParametersCount++;
+                }
+                else
+                {
+                    qWarning() << "[WARN] Source loading invalid parameter detected for : "
+                        << "\nSource type     = " << obj["sourceType"]
+                        << "\nConnection Id   = " << obj["cnxId"]
+                        << "\nConnection name = " << obj["cnxName"]
+                        << "\nCipher Parameter Name  = " << normalParameters[i]->caption();
+                }
+                cipherParameters.removeAt(i);
+            }
+            else
+            {
+                qWarning() << "[WARN] Source loading invalid parameter detected for : "
+                    << "\nSource type     = " << obj["sourceType"]
+                    << "\nConnection Id   = " << obj["cnxId"]
+                    << "\nConnection name = " << obj["cnxName"]
+                    << "\nParameter name  = " << paramId;
+            }
+        }
+
+        if (!normalParameters.isEmpty() || !cipherParameters.isEmpty())
+        {
+            qWarning() << "[WARN] Source loading empty parameter(s) detected for : "
+                << "\nSource type     = " << obj["sourceType"]
+                << "\nConnection Id   = " << obj["cnxId"]
+                << "\nConnection name = " << obj["cnxName"];
+            for (auto param : normalParameters)
+            {
+                qWarning() << "    Parameter Id = " << param->id();
+                qWarning() << "    Parameter Name = " << param->caption();
+            }
+            for (auto param : cipherParameters)
+            {
+                qWarning() << "    Parameter Id = " << param->id();
+                qWarning() << "    Parameter Name = " << param->caption();
+            }
+        }
+
+    }
+
+    int iParamLakeCount = iAppliedParametersCount - (pDataSource->getAllParameters().size() - pDataSource->getVolatilParameters().size());
+    if (iParamLakeCount < 0)
+    {
+        qWarning() << "[WARN] Source loading lake " << iParamLakeCount << " parameter detected for : "
+            << "\nSource type     = " << obj["sourceType"]
+            << "\nConnection Id   = " << obj["cnxId"]
+            << "\nConnection name = " << obj["cnxName"];
+    }
+
+    m_instanceMapType[obj["cnxId"].toString()] = obj["sourceType"].toString();
+    m_instancesMap.insert(obj["cnxId"].toString(), QSharedPointer<medAbstractSource>(pDataSource));
+    emit(sourceAdded(pDataSource));
+}
+
+bool medDBSourcesLoader::generateUniqueSourceId(QString & Id, QString const & type) const
+{
+    bool bRes = true;
+    
+    if (Id.isEmpty())
+    {
+        auto date = QDate::currentDate().toString("ddMMyy");
+        Id = type + "_" + date;
+    }
+
+    QString IdTmp = Id;
+    unsigned int suffix = 0;
+    while (m_instancesMap.contains(IdTmp) && suffix < 32767 && bRes)
+    {
+        suffix++;
+        IdTmp = Id + "_" + suffix;
+    }
+    
+    bRes = suffix < 32768;
+    if (bRes)
+    {
+        Id = IdTmp;
+    }
+
+    return bRes;
+}
+
+void medDBSourcesLoader::reparseUnresolvedCnx()
+{
+    int i = 0;
+    while ( i< m_unresolvedSavedCnx.size())
+    {
+        
+        if (m_instanceMapType.contains(m_unresolvedSavedCnx[i]["sourceType"].toString()))
+        {
+            auto cnx = m_unresolvedSavedCnx.takeAt(i); 
+            reloadCnx(cnx);
+        }
+        else
+        {
+            i++;
+        }
+    }
+}
+
+
+
+void medDBSourcesLoader::convertCipherParamToJson(QJsonObject & po_oJson, medAbstractParameter * pi_pParam)
+{
+    po_oJson = QJsonObject::fromVariantMap(pi_pParam->toVariantMap());
 }
 

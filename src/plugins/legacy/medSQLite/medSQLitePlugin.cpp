@@ -10,15 +10,27 @@
   PURPOSE.
 
 =========================================================================*/
+#include <medSourcesLoader.h>
 #include "medSQLitePlugin.h"
+#include "medSQLite.h"
 
 medSQLitePlugin::medSQLitePlugin(QObject *parent) : medPluginLegacy(parent)
 {
 }
 
+medAbstractSource *foo()
+{
+    return new medSQlite<QSqlDatabase>();
+}
+
 bool medSQLitePlugin::initialize()
 {
-     return true;
+    return medDBSourcesLoader::instance()->registerSourceType(
+        "medSQLite",
+        "Datasource de type SQLite",
+        "Ce type de datasource permet l'exploitation des anciennes base medInria 3",
+        //&foo);
+        []() -> medAbstractSource* {return new medSQlite<QSqlDatabase>(); });
 }
 
 QString medSQLitePlugin::name() const
