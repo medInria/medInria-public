@@ -45,13 +45,19 @@
 // redefined without the dereferencing of the type argument (the other type
 // checks work differently).
 #undef PyBool_Check
-#define PyBool_Check(x) Py_IS_TYPE(x, PyBool_Type)
+#if PYTHON_VERSION_MINOR < 9
+  #define PyBool_Check(x) (Py_TYPE(x) == PyBool_Type)
+#else
+  #define PyBool_Check(x) Py_IS_TYPE(x, PyBool_Type)
+#endif
 #undef PyFloat_Check
 #define PyFloat_Check(op) PyObject_TypeCheck(op, PyFloat_Type)
 #undef PyModule_Check
 #define PyModule_Check(op) PyObject_TypeCheck(op, PyModule_Type)
 
 #undef Py_None
+
+#undef _Py_Dealloc
 
 namespace med::python
 {
@@ -173,8 +179,6 @@ extern PyObject* (*PyImport_GetModule)(PyObject*);
 
 extern PyObject* (*_Py_BuildValue_SizeT)(const char*, ...);
 
-#if PYTHON_VERSION_MINOR >= 9
 extern void (*_Py_Dealloc)(PyObject*);
-#endif
 
 } // namespace med::python

@@ -190,9 +190,7 @@ PyObject* PyExc_StopIteration = nullptr;
 PyObject* PyExc_SystemError = nullptr;
 PyObject* PyExc_TypeError = nullptr;
 
-#if PYTHON_VERSION_MINOR >= 9
 void _Py_Dealloc(PyObject* object)
 {
     med::python::_Py_Dealloc(object);
 }
-#endif

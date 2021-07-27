@@ -67,14 +67,14 @@ void testLazyLoading()
 
 void testConversion()
 {
-    print("Testing conversion of QList<int> to and from Python");
+    print("Testing conversion of QList<double> to and from Python");
     QList<double> qList1 = {1.5, 2.7, 3.4};
     Object pythonList = list(qList1);
     QList<double> qList2 = pythonList.convert<QList<double> >();
 
     if (qList1 != qList2)
     {
-        throw BaseException("Conversion of QList<int> failed");
+        throw BaseException("Conversion of QList<double> failed");
     }
 }
 
@@ -127,7 +127,7 @@ void testSysPath()
         }
     }
 
-    print("All paths in sys.path are from of the embedded Python");
+    print("All paths in sys.path are from the embedded Python");
 }
 
 void testSysModules()
