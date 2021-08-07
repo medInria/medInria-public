@@ -11,14 +11,12 @@
 
 ==============================================================================*/
 
-#include "medPythonCoreAPI.h"
-
 #include "medPythonQHashConversion.h"
 
 bool medPythonConvert(const QHash<PyObject*, PyObject*>& qHash, PyObject** output)
 {
     bool success = true;
-    *output = med::python::PyDict_New();
+    *output = PyDict_New();
 
     if (*output)
     {
@@ -26,7 +24,7 @@ bool medPythonConvert(const QHash<PyObject*, PyObject*>& qHash, PyObject** outpu
         {
             PyObject* value = qHash.value(key);
 
-            if (med::python::PyDict_SetItem(*output, key, value) == -1)
+            if (PyDict_SetItem(*output, key, value) == -1)
             {
                 Py_CLEAR(*output);
                 success = false;
@@ -45,21 +43,21 @@ bool medPythonConvert(const QHash<PyObject*, PyObject*>& qHash, PyObject** outpu
 bool medPythonConvert(const PyObject* object, QHash<PyObject*, PyObject*>* output)
 {
     bool success = true;
-    PyObject* keys = med::python::PyMapping_Keys(const_cast<PyObject*>(object));
+    PyObject* keys = PyMapping_Keys(const_cast<PyObject*>(object));
 
     if (keys)
     {
-        ssize_t numItems = med::python::PySequence_Size(keys);
+        ssize_t numItems = PySequence_Size(keys);
 
         if (numItems != -1)
         {
             for (ssize_t i = 0; i < numItems; i++)
             {
-                PyObject* key = med::python::PySequence_GetItem(keys, i);
+                PyObject* key = PySequence_GetItem(keys, i);
 
                 if (key)
                 {
-                    PyObject* value = med::python::PyObject_GetItem(const_cast<PyObject*>(object), key);
+                    PyObject* value = PyObject_GetItem(const_cast<PyObject*>(object), key);
 
                     if (value)
                     {

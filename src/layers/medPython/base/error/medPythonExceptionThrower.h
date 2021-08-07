@@ -17,7 +17,7 @@
 /// corresponding C++ class and throws them.
 ///
 
-#include "medPythonCoreForward.h"
+#include "medPythonCoreAPI.h"
 
 namespace med::python
 {

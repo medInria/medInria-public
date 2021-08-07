@@ -17,11 +17,12 @@
 /// level code. Other functions should catch Exception (or a subclass) instead.
 ///
 
+#include "medPythonCoreAPI.h"
+
 #include <stdexcept>
 
 #include <QString>
 
-#include "medPythonCoreForward.h"
 #include "medPythonExceptionThrower.h"
 #include "medPythonExport.h"
 

@@ -29,7 +29,9 @@
 #include <medSettingsManager.h>
 #include <medStorage.h>
 
-#include "medPython.h"
+#if (USE_PYTHON)
+  #include "medPython.h"
+#endif
 
 void forceShow(medMainWindow& mainwindow )
 {

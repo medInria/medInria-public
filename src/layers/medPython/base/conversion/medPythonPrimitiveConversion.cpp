@@ -11,42 +11,40 @@
 
 ==============================================================================*/
 
-#include "medPythonCoreAPI.h"
-
 #include "medPythonPrimitiveConversion.h"
 
 bool medPythonConvert(bool value, PyObject** output)
 {
-    *output = med::python::PyBool_FromLong(value);
+    *output = PyBool_FromLong(value);
     return *output;
 }
 
 bool medPythonConvert(const PyObject* object, bool* output)
 {
-    *output = med::python::PyObject_IsTrue(const_cast<PyObject*>(object));
-    return !med::python::PyErr_Occurred();
+    *output = PyObject_IsTrue(const_cast<PyObject*>(object));
+    return !PyErr_Occurred();
 }
 
 bool medPythonConvert(int value, PyObject** output)
 {
-    *output = med::python::PyLong_FromLong(static_cast<long>(value));
+    *output = PyLong_FromLong(static_cast<long>(value));
     return *output;
 }
 
 bool medPythonConvert(const PyObject* object, long* output)
 {
-    *output = med::python::PyLong_AsLong(const_cast<PyObject*>(object));
-    return !med::python::PyErr_Occurred();
+    *output = PyLong_AsLong(const_cast<PyObject*>(object));
+    return !PyErr_Occurred();
 }
 
 bool medPythonConvert(double value, PyObject** output)
 {
-    *output = med::python::PyFloat_FromDouble(value);
+    *output = PyFloat_FromDouble(value);
     return *output;
 }
 
 bool medPythonConvert(const PyObject* object, double* output)
 {
-    *output = med::python::PyFloat_AsDouble(const_cast<PyObject*>(object));
-    return !med::python::PyErr_Occurred();
+    *output = PyFloat_AsDouble(const_cast<PyObject*>(object));
+    return !PyErr_Occurred();
 }

@@ -12,9 +12,10 @@
 
 ==============================================================================*/
 
+#include "medPythonCoreAPI.h"
+
 #include <QVariant>
 
-#include "medPythonCoreForward.h"
 #include "medPythonExport.h"
 
 MEDPYTHON_EXPORT bool medPythonConvert(const QVariant& value, PyObject** output);

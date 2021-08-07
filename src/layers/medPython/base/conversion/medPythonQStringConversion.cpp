@@ -11,13 +11,11 @@
 
 ==============================================================================*/
 
-#include "medPythonCoreAPI.h"
-
 #include "medPythonQStringConversion.h"
 
 bool medPythonConvert(const QString& value, PyObject** output)
 {
-    *output = med::python::PyUnicode_FromString(qUtf8Printable(value));
+    *output = PyUnicode_FromString(qUtf8Printable(value));
     return *output;
 }
 
@@ -32,10 +30,10 @@ bool medPythonConvert(const PyObject* object, QString* output)
     }
     else if (PyUnicode_Check(const_cast<PyObject*>(object)))
     {
-        stringAsPyBytes = med::python::PyUnicode_AsEncodedString(const_cast<PyObject*>(object), "UTF-8", "strict");
+        stringAsPyBytes = PyUnicode_AsEncodedString(const_cast<PyObject*>(object), "UTF-8", "strict");
     }
 
-    if (!med::python::PyErr_Occurred())
+    if (!PyErr_Occurred())
     {
         if (stringAsPyBytes)
         {
@@ -46,9 +44,9 @@ bool medPythonConvert(const PyObject* object, QString* output)
         else
         {
             // The object is not a string, so apply str() and retry
-            PyObject* objectAsString = med::python::PyObject_Str(const_cast<PyObject*>(object));
+            PyObject* objectAsString = PyObject_Str(const_cast<PyObject*>(object));
 
-            if (!med::python::PyErr_Occurred())
+            if (!PyErr_Occurred())
             {
                 bool success = medPythonConvert(objectAsString, output);
                 Py_CLEAR(objectAsString);

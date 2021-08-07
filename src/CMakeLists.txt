@@ -101,6 +101,16 @@ set(CMAKE_CXX_STANDARD_REQUIRED ON)
 set(CMAKE_MACOSX_RPATH OFF)
 
 ## #############################################################################
+## Global policies
+## #############################################################################
+
+# Prevent warning of generated files not being moc'd
+cmake_policy(SET CMP0071 NEW)
+
+# Make the GENERATED source file property visible in all directories
+cmake_policy(SET CMP0118 NEW)
+
+## #############################################################################
 ## Additionals modules
 ## #############################################################################
 
@@ -210,7 +220,7 @@ set_lib_properties_variables(
     )
 
 if (USE_PYTHON)
-    set_lib_properties_variables(medPython)
+    set_lib_properties_variables(medPythonBase)
 endif()
 
 if(EXISTS ${CMAKE_SOURCE_DIR}/cmake/${PROJECT_NAME}Config.cmake.in)

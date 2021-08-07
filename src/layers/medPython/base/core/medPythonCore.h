@@ -12,7 +12,6 @@
 
 ==============================================================================*/
 
-#include "medPythonCoreForward.h"
 #include "medPythonCoreUtils.h"
 
 namespace med::python

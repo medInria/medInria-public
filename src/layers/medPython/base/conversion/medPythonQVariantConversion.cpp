@@ -11,18 +11,10 @@
 
 ==============================================================================*/
 
-#include "medPythonCoreAPI.h"
-
 #include "medPythonQVariantConversion.h"
 
 #include "medPythonConversion.h"
 #include "medPythonError.h"
-
-// Small hack because we are using CPython macros from the global namespace
-// which use symbols that are explicitly linked in the med::python namespace.
-#define PyBool_Type med::python::PyBool_Type
-#define PyFloat_Type med::python::PyFloat_Type
-#define PyType_IsSubtype med::python::PyType_IsSubtype
 
 bool medPythonConvert(const QVariant& value, PyObject** output)
 {

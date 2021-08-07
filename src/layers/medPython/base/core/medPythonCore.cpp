@@ -14,14 +14,13 @@
 #include "medPythonCore.h"
 
 #include "medPythonCoreInit.h"
-#include "medPythonCoreLibrary.h"
 
 namespace med::python
 {
 
 bool setupCore()
 {
-    bool success = setupCoreLibrary() && initializePython();
+    bool success = initializePython();
 
     if (!success)
     {
@@ -33,10 +32,7 @@ bool setupCore()
 
 bool teardownCore()
 {
-    // Bitwise AND is used to prevent short-circuit evaluation, so that the
-    // library is unloaded even if finalization failed.
-    //
-    return finalizePython() & teardownCoreLibrary();
+    return finalizePython();
 }
 
 } // namespace med::python
