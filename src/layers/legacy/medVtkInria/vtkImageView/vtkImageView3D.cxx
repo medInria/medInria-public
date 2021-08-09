@@ -21,7 +21,8 @@
 #include <vtkAnnotatedCubeActor.h>
 #include <vtkColorTransferFunction.h>
 #include <vtkDataSetCollection.h>
-#include <vtkDataSetSurfaceFilter.h>
+#include <vtkGeometryFilter.h>
+#include <vtkIdFilter.h>
 #include <vtkImageActor.h>
 #include <vtkImageAppendComponents.h>
 #include <vtkImageCast.h>
@@ -918,57 +919,40 @@ void vtkImageView3D::UpdateDisplayExtent()
 }
 
 //----------------------------------------------------------------------------
-vtkActor* vtkImageView3D::AddDataSet (vtkPointSet* arg, vtkProperty* prop)
+vtkActor* vtkImageView3D::AddDataSet(vtkPointSet* arg, vtkProperty* prop)
 {
-  auto geometryextractor = vtkDataSetSurfaceFilter::New();
-  auto normalextractor = vtkPolyDataNormals::New();
-  auto mapper = vtkPolyDataMapper::New();
-  auto actor = vtkActor::New();
+    vtkSmartPointer<vtkActor> actor = DataSetToActor(arg, prop);
+    Renderer->AddViewProp(actor);
 
-  normalextractor->SetFeatureAngle (90);
-  ///\todo try to skip the normal extraction filter in order to
-  // enhance the visualization speed when the data is time sequence.
-  geometryextractor->SetInputData (arg);
-  normalextractor->SetInputConnection (geometryextractor->GetOutputPort());
-  mapper->SetInputConnection (normalextractor->GetOutputPort());
-  actor->SetMapper (mapper);
-  if (prop)
-    actor->SetProperty (prop);
+    // If this is the first widget to be added, reset camera
+    if (!GetMedVtkImageInfo() || !GetMedVtkImageInfo()->initialized)
+    {
+        this->ResetCamera(arg);
+    }
 
-  Renderer->AddViewProp(actor);
+    this->DataSetCollection->AddItem(arg);
+    this->DataSetActorCollection->AddItem(actor);
 
-  mapper->Delete();
-  normalextractor->Delete();
-  geometryextractor->Delete();
-  actor->Delete();
-
-  // If this is the first widget to be added, reset camera
-  if ( ! GetMedVtkImageInfo() || !GetMedVtkImageInfo()->initialized)
-  {
-      this->ResetCamera(arg);
-  }
-
-  this->DataSetCollection->AddItem (arg);
-  this->DataSetActorCollection->AddItem ( actor);
-
-  // the actor is actually not deleted as it has
-  // been referenced in the renderer, so we can
-  // safely return it. well hopefully.
-  return actor;
+    return actor;
 }
 
 //----------------------------------------------------------------------------
-vtkActor* vtkImageView3D::DataSetToActor(vtkPointSet* arg, vtkProperty* prop)
+vtkSmartPointer<vtkActor> vtkImageView3D::DataSetToActor(vtkPointSet* arg, vtkProperty* prop)
 {
-    auto geometryextractor = vtkDataSetSurfaceFilter::New();
-    auto normalextractor = vtkPolyDataNormals::New();
-    auto mapper = vtkPolyDataMapper::New();
-    auto actor = vtkActor::New();
+    auto idFilter = vtkSmartPointer<vtkIdFilter>::New();
+    auto geometryextractor = vtkSmartPointer<vtkGeometryFilter>::New();
+    auto normalextractor = vtkSmartPointer<vtkPolyDataNormals>::New();
+    auto mapper = vtkSmartPointer<vtkPolyDataMapper>::New();
+    auto actor = vtkSmartPointer<vtkActor>::New();
 
+    idFilter->SetCellIds(1);
+    idFilter->SetPointIds(1);
+    idFilter->SetIdsArrayName("vtkOriginalIds");
+    idFilter->SetInputData(arg);
     normalextractor->SetFeatureAngle(90);
     ///\todo try to skip the normal extraction filter in order to
     // enhance the visualization speed when the data is time sequence.
-    geometryextractor->SetInputData(arg);
+    geometryextractor->SetInputConnection(idFilter->GetOutputPort());
     normalextractor->SetInputConnection(geometryextractor->GetOutputPort());
     mapper->SetInputConnection(normalextractor->GetOutputPort());
     actor->SetMapper(mapper);
@@ -976,10 +960,6 @@ vtkActor* vtkImageView3D::DataSetToActor(vtkPointSet* arg, vtkProperty* prop)
     {
         actor->SetProperty(prop);
     }
-
-    mapper->Delete();
-    normalextractor->Delete();
-    geometryextractor->Delete();
 
     return actor;
 }

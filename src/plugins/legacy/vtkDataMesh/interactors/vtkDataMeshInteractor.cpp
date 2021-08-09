@@ -17,7 +17,6 @@
 
 #include <vtkCamera.h>
 #include <vtkActor.h>
-#include <vtkDataSetSurfaceFilter.h>
 #include <vtkImageView.h>
 #include <vtkImageView2D.h>
 #include <vtkImageView3D.h>
