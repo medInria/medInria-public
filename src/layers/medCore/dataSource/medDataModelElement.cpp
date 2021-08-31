@@ -26,19 +26,23 @@ struct medDataModelElementPrivate
     bool bWritable;
     bool bCache;
     int iRow;
-    int iCol;
+    //int iCol; //à supprimer
     QMap<unsigned int, QStringList> columnNameByLevel;
+
+    medDataModelItem *root;
 };
 
-medDataModelElement::medDataModelElement(medDataModel *parent, QString const & sourceIntanceId)
+medDataModelElement::medDataModelElement(medDataModel *parent, QString const & sourceIntanceId) : d(new medDataModelElementPrivate)
 {
     d->parent = parent;
     d->sourceInstanceId = sourceIntanceId;
-        
+    d->root = new medDataModelItem();
+
     bool bOk = parent->getSourceGlobalInfo(sourceIntanceId, d->columnNameByLevel[0], d->bOnline, d->bWritable, d->bCache);
 
     if (bOk)
     {
+        //setColumnAttributes(-1, d->columnNameByLevel[0]); //si on supprime ce param dans parent->getSourceGlobalInfo
         if (d->bCache)
         {
             d->columnNameByLevel[0].push_back("Cached");
@@ -55,16 +59,56 @@ medDataModelElement::medDataModelElement(medDataModel *parent, QString const & s
 
 medDataModelElement::~medDataModelElement()
 {
+    delete d->root;
+    delete d;
 }
 
 QVariant medDataModelElement::data(const QModelIndex & index, int role) const
 {
-    return QVariant();
+    QVariant varDataRes;
+
+    if (index.isValid())
+    {
+        if (role == Qt::TextAlignmentRole && index.column() > 0)
+        {
+            varDataRes = Qt::AlignHCenter;
+        }
+        else if (role == Qt::DisplayRole || role == Qt::EditRole)
+        {
+            medDataModelItem *item = static_cast<medDataModelItem *>(index.internalPointer());
+
+            varDataRes = item->data(index.column());
+        }
+    }
+
+    return varDataRes;
 }
 
 QModelIndex medDataModelElement::index(int row, int column, const QModelIndex & parent) const
 {
-    return QModelIndex();
+    QModelIndex res;
+    
+    medDataModelItem *parentItem = nullptr;
+
+    if (hasIndex(row, column, parent))
+    {
+        if (!parent.isValid())
+        {
+            parentItem = d->root;
+        }
+        else
+        {
+            parentItem = static_cast<medDataModelItem *>(parent.internalPointer());
+        }
+
+        medDataModelItem *childItem = parentItem->child(row);
+        if (childItem)
+        {
+            res = createIndex(row, column, childItem);
+        }
+    }
+
+    return res;
 }
 
 QModelIndex medDataModelElement::parent(const QModelIndex & index) const
@@ -140,7 +184,7 @@ void medDataModelElement::setColumnAttributes(unsigned int p_uiLevel, QStringLis
     }
     else
     {
-        // Maybe TODO
+        // Maybe TODO si on supprime ce param dans parent->getSourceGlobalInfo
     }
 }
 

@@ -14,7 +14,7 @@
 
 #include <QVariant>
 
-class medDataIndex;
+class medDataModelItemPrivate;
 
 class medDataModelItem
 {
@@ -26,7 +26,8 @@ public:
     /* ***********************************************************************/
     /* *************** Data manipulation *************************************/
     /* ***********************************************************************/
-
+    medDataModelItem *child(int row);
+    QVariant data(int column) const;
 
 
 
@@ -39,14 +40,14 @@ public:
     int row() const;
     medDataModelItem *parent();
 
+private:
+    medDataModelItemPrivate *d;
 
 
 
 
 
 
-
-    // medAbstractDatabaseItem *child(int row) = 0;
 
     // 
     // void setParent(medAbstractDatabaseItem *parent) = 0;
@@ -54,11 +55,10 @@ public:
     // void append(medAbstractDatabaseItem *child) = 0;
     // 
 
-    // int childCount() const = 0;
     // int childNumber() const = 0;
     // int columnCount() const = 0;
     // 
-    // QVariant data(int column) const = 0;
+   
     // 
     // bool insertChildren(const medDataIndex& index, int position, int count, int columns) = 0;
     // bool insertColumns(int position, int columns) = 0;
