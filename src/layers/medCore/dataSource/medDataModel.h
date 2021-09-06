@@ -27,8 +27,8 @@ public:
 	~medDataModel();
 
     bool setDefaultWorkingSource(unsigned int i);
-    bool getSourceGlobalInfo(QString const &pi_sourceIntanceId, QStringList &pi_columnName, bool &pi_bOnline, bool &pi_bWritable, bool &pi_bCache);
-    bool getLevelMetaData(QString const & pi_sourceIntanceId, unsigned int pi_uiLevel, QVariantList & po_entries);
+    bool getSourceGlobalInfo(QString const &pi_sourceIntanceId, bool &pi_bOnline, bool &pi_bWritable, bool &pi_bCache);
+    bool getLevelMetaData(QString const & pi_sourceIntanceId, unsigned int pi_uiLevel, QString const & key, QVariantList & po_entries);
     bool getLevelAttributes(QString const & pi_sourceIntanceId, unsigned int pi_uiLevel, QStringList & po_attributes);
 
 public slots:

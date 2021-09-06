@@ -26,8 +26,12 @@ public:
     /* ***********************************************************************/
     /* *************** Data manipulation *************************************/
     /* ***********************************************************************/
-    medDataModelItem *child(int row);
     QVariant data(int column) const;
+    void setData(QStringList const& value);
+
+    medDataModelItem *child(int row) const;
+    void setParent(medDataModelItem *parent);
+    void append(medDataModelItem *child);
 
 
 
@@ -35,10 +39,10 @@ public:
     /* ***********************************************************************/
     /* *************** Data location functions *******************************/
     /* ***********************************************************************/
-    int childCount();
-    unsigned int childLevel();
+    int childCount() const;
+    unsigned int level() const;
     int row() const;
-    medDataModelItem *parent();
+    medDataModelItem *parent() const;
 
 private:
     medDataModelItemPrivate *d;
@@ -48,16 +52,8 @@ private:
 
 
 
-
-    // 
-    // void setParent(medAbstractDatabaseItem *parent) = 0;
-    // 
-    // void append(medAbstractDatabaseItem *child) = 0;
-    // 
-
     // int childNumber() const = 0;
     // int columnCount() const = 0;
-    // 
    
     // 
     // bool insertChildren(const medDataIndex& index, int position, int count, int columns) = 0;
