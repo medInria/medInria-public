@@ -45,13 +45,23 @@ bool medDataModel::setDefaultWorkingSource(unsigned int i)
     return bRes;
 }
 
-bool medDataModel::getSourceGlobalInfo(QString const & pi_sourceIntanceId, QStringList & pi_columnName, bool & pi_bOnline, bool & pi_bWritable, bool & pi_bCache)
+bool medDataModel::getSourceGlobalInfo(QString const & pi_sourceIntanceId, bool & pi_bOnline, bool & pi_bWritable, bool & pi_bCache)
 {
     return false;
 }
 
-bool medDataModel::getLevelMetaData(QString const & pi_sourceIntanceId, unsigned int pi_uiLevel, QVariantList & po_entries)
+bool medDataModel::getLevelMetaData(QString const & pi_sourceIntanceId, unsigned int pi_uiLevel, QString const & key, QVariantList & po_entries)
 {
+    medAbstractSource* pSource = nullptr;
+    //... todo get medAbstractSource with pi_sourceIntanceId
+    //TODO faire les vérifes pré-compute
+    auto listOfMinimalEntries = pSource->getMinimalEntries(pi_uiLevel, ""); //TODO Il manque la clé dans les params getLevelMetaData
+    for (auto &minimalEntry : listOfMinimalEntries)
+    {
+        po_entries.append(QStringList({ minimalEntry.type, minimalEntry.name, minimalEntry.description }));
+    }
+    //TODO faire les vérifes post-compute
+
     return false;
 }
 

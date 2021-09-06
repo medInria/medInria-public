@@ -25,8 +25,6 @@ struct medDataModelElementPrivate
     bool bOnline;
     bool bWritable;
     bool bCache;
-    int iRow;
-    //int iCol; //à supprimer
     QMap<unsigned int, QStringList> columnNameByLevel;
 
     medDataModelItem *root;
@@ -38,22 +36,22 @@ medDataModelElement::medDataModelElement(medDataModel *parent, QString const & s
     d->sourceInstanceId = sourceIntanceId;
     d->root = new medDataModelItem();
 
-    bool bOk = parent->getSourceGlobalInfo(sourceIntanceId, d->columnNameByLevel[0], d->bOnline, d->bWritable, d->bCache);
+    bool bOk = parent->getSourceGlobalInfo(sourceIntanceId, d->bOnline, d->bWritable, d->bCache);
 
     if (bOk)
     {
-        //setColumnAttributes(-1, d->columnNameByLevel[0]); //si on supprime ce param dans parent->getSourceGlobalInfo
+        if (d->bOnline)
+        {
+            populateLevel(d->root, "");
+        }
+        else
+        {
+            getColumnNames(0);
+        }
         if (d->bCache)
         {
             d->columnNameByLevel[0].push_back("Cached");
         }
-        if (d->bOnline)
-        {
-            unsigned int iLevel = 0;
-            QVariantList entries;
-            parent->getLevelMetaData(sourceIntanceId, iLevel, entries);
-            d->iRow = entries.size();
-        }        
     }
 }
 
@@ -76,7 +74,6 @@ QVariant medDataModelElement::data(const QModelIndex & index, int role) const
         else if (role == Qt::DisplayRole || role == Qt::EditRole)
         {
             medDataModelItem *item = static_cast<medDataModelItem *>(index.internalPointer());
-
             varDataRes = item->data(index.column());
         }
     }
@@ -111,6 +108,11 @@ QModelIndex medDataModelElement::index(int row, int column, const QModelIndex & 
     return res;
 }
 
+/**
+* @brief  Get index of the parent.
+* @param  index of which we want the parent.
+* @return Returns the parent of the model item with the given index. If the item has no parent, an invalid QModelIndex is returned.
+*/
 QModelIndex medDataModelElement::parent(const QModelIndex & index) const
 {
     QModelIndex indexRes;
@@ -128,24 +130,33 @@ QModelIndex medDataModelElement::parent(const QModelIndex & index) const
     return indexRes;
 }
 
+/**
+* @brief  Returns the number of columns for the children of the given parent.
+* @param  parent is the index of the parent or invalid index for the top level.
+* @return Returns the number of columns.
+*/
 int medDataModelElement::columnCount(const QModelIndex & parent) const
 {
     int iRes = 0;
-    
-    if (!parent.isValid())
-    {
-        iRes = getLevelColumCount(0);
-    }
-    else
+    unsigned int level = 0;
+
+    if (parent.isValid())
     {
         medDataModelItem *parentItem = nullptr;
         parentItem = static_cast<medDataModelItem *>(parent.internalPointer());
-        unsigned int level = parentItem->childLevel();
-        iRes = getLevelColumCount(level);
+        level = parentItem->level() + 1;
     }
+
+    iRes = getLevelColumCount(level + 1);
     
     return iRes;
 }
+
+/**
+* @brief  Returns the number of rows under the given parent.
+* @param  parent is the index of the parent or invalid index for the top level.
+* @return Returns the number of rows under the given parent. When the parent is valid it means that rowCount is returning the number of children of parent.
+*/
 int	medDataModelElement::rowCount(const QModelIndex &parent) const
 {
     int iRes = 0;    
@@ -154,7 +165,7 @@ int	medDataModelElement::rowCount(const QModelIndex &parent) const
     {
         if (!parent.isValid())
         {
-            iRes = d->iRow;
+            iRes = d->root->childCount();
         }
         else
         {
@@ -182,40 +193,88 @@ void medDataModelElement::setColumnAttributes(unsigned int p_uiLevel, QStringLis
     {
         d->columnNameByLevel[p_uiLevel].append(attributes);
     }
-    else
-    {
-        // Maybe TODO si on supprime ce param dans parent->getSourceGlobalInfo
-    }
 }
 
+/**
+* @brief  This slot refresh the current item pressed by GUI click, if the item don't have sons.
+* @param  index of the GUI element clicked.
+*/
 void medDataModelElement::itemPressed(QModelIndex const &index)
 {
+    medDataModelItem * pItemCurrent = static_cast<medDataModelItem*>(index.internalPointer());
 
+    if (index.isValid())
+    {
+        if (pItemCurrent)
+        {
+            if (pItemCurrent->childCount() == 0)
+            {
+                auto key = pItemCurrent->data(0).toString();
+                populateLevel(pItemCurrent, key);
+            }
+        }
+    }
 }
-
-
 
 
 /* ***********************************************************************/
 /* *************** Private functions and slots ***************************/
 /* ***********************************************************************/
+bool medDataModelElement::getColumnNames(unsigned int const &iLevel) const
+{
+    bool bRes = true;
+    
+    QStringList attributes;
+    bRes = d->parent->getLevelAttributes(d->sourceInstanceId, iLevel, attributes);
+    
+    if (bRes)
+    {
+        d->columnNameByLevel[iLevel] = attributes;
+    }
+
+    return bRes;
+}
+
 int medDataModelElement::getLevelColumCount(unsigned int pi_uiLevel) const
 {
     int iRes = -1;
+    bool bOk = true;
 
-    if (d->columnNameByLevel.contains(pi_uiLevel))
+    if ( !d->columnNameByLevel.contains(pi_uiLevel))
     {
-        iRes = d->columnNameByLevel[pi_uiLevel].size();
+        bOk = getColumnNames(pi_uiLevel);
     }
-    else
-    {
-        QStringList attributes;
-        if (d->parent->getLevelAttributes(d->sourceInstanceId, pi_uiLevel, attributes))
-        {
-            d->columnNameByLevel[pi_uiLevel] = attributes;
-            iRes = attributes.size();
-        }
+
+    if (bOk)
+    {    
+        iRes = d->columnNameByLevel[pi_uiLevel].size();
     }
 
     return iRes;
 }
+
+void medDataModelElement::populateLevel(medDataModelItem * pi_pItem, QString const &key)
+{
+    QVariantList entries;
+    unsigned int iLevel = pi_pItem->level();
+    d->parent->getLevelMetaData(d->sourceInstanceId, iLevel+1, key, entries);
+
+    // ////////////////////////////////////////////////////////////////////////
+    // Populate column names if not already done
+    if (!d->columnNameByLevel.contains(iLevel))
+    {
+        getColumnNames(iLevel);
+    }
+    
+    // ////////////////////////////////////////////////////////////////////////
+    // Populate data loop
+    for (QVariant &var : entries)
+    {
+        medDataModelItem *pItemTmp = new medDataModelItem();
+        auto elem = var.toStringList();
+        pItemTmp->setData(elem);
+        pItemTmp->setParent(pi_pItem);
+        pi_pItem->append(pItemTmp);
+    }
+}
+
