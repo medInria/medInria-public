@@ -41,7 +41,7 @@ int medDataModelItem::childCount() const
 
 unsigned int medDataModelItem::level() const
 {
-    return d->uiLevel+1;
+    return d->uiLevel;
 }
 
 int medDataModelItem::row() const

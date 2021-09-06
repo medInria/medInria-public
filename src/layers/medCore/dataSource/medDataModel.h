@@ -27,7 +27,7 @@ public:
 	~medDataModel();
 
     bool setDefaultWorkingSource(unsigned int i);
-    bool getSourceGlobalInfo(QString const &pi_sourceIntanceId, bool &pi_bOnline, bool &pi_bWritable, bool &pi_bCache);
+    bool getSourceGlobalInfo(QString const &pi_sourceIntanceId, bool &pi_bOnline, bool &pi_bWritable, bool & pi_bLocal, bool &pi_bCache);
     bool getLevelMetaData(QString const & pi_sourceIntanceId, unsigned int pi_uiLevel, QString const & key, QVariantList & po_entries);
     bool getLevelAttributes(QString const & pi_sourceIntanceId, unsigned int pi_uiLevel, QStringList & po_attributes);
 
@@ -45,6 +45,7 @@ signals:
 	void sourceRemoved(medAbstractSource*); // Signal to indicate a source was unregistered
 
 private:
-    QMap< medAbstractSource*,  medDataModelElement*> m_sourcesModelMap;
+    QMap< QString, medAbstractSource*> m_sourceIdToInstanceMap;
+    QMap< medAbstractSource*, medDataModelElement*> m_sourcesModelMap;
     medAbstractSource* m_defaultSource;
 };

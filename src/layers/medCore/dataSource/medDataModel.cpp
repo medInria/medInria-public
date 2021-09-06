@@ -15,6 +15,7 @@
 
 medDataModel::medDataModel(QObject *parent)
 {
+    m_defaultSource = nullptr;
 }
 
 medDataModel::~medDataModel()
@@ -45,38 +46,82 @@ bool medDataModel::setDefaultWorkingSource(unsigned int i)
     return bRes;
 }
 
-bool medDataModel::getSourceGlobalInfo(QString const & pi_sourceIntanceId, bool & pi_bOnline, bool & pi_bWritable, bool & pi_bCache)
+bool medDataModel::getSourceGlobalInfo(QString const & pi_sourceIntanceId, bool & pi_bOnline, bool & pi_bLocal, bool & pi_bWritable, bool & pi_bCache)
 {
-    return false;
+    bool bRes = true;
+
+    medAbstractSource* pSource = m_sourceIdToInstanceMap.value(pi_sourceIntanceId);
+    if (pSource)
+    {
+        pi_bWritable = pSource->isWriteable();
+        pi_bLocal    = pSource->isLocal();
+        pi_bCache    = pSource->isCached();
+        pi_bOnline   = pSource->isOnline();
+    }
+    else
+    {
+        bRes = false;
+    }
+
+    return bRes;
 }
 
 bool medDataModel::getLevelMetaData(QString const & pi_sourceIntanceId, unsigned int pi_uiLevel, QString const & key, QVariantList & po_entries)
 {
-    medAbstractSource* pSource = nullptr;
-    //... todo get medAbstractSource with pi_sourceIntanceId
-    //TODO faire les vérifes pré-compute
-    auto listOfMinimalEntries = pSource->getMinimalEntries(pi_uiLevel, ""); //TODO Il manque la clé dans les params getLevelMetaData
-    for (auto &minimalEntry : listOfMinimalEntries)
-    {
-        po_entries.append(QStringList({ minimalEntry.type, minimalEntry.name, minimalEntry.description }));
-    }
-    //TODO faire les vérifes post-compute
+    bool bRes = true;
 
-    return false;
+    medAbstractSource* pSource = m_sourceIdToInstanceMap.value(pi_sourceIntanceId);
+    if (pSource)
+    {
+        auto listOfMinimalEntries = pSource->getMinimalEntries(pi_uiLevel, key);
+        for (auto &minimalEntry : listOfMinimalEntries)
+        {
+            po_entries.append(QStringList({ minimalEntry.type, minimalEntry.name, minimalEntry.description }));
+        }
+    }
+    else
+    {
+        bRes = false;
+    }
+
+    return bRes;
 }
 
 bool medDataModel::getLevelAttributes(QString const & pi_sourceIntanceId, unsigned int pi_uiLevel, QStringList & po_attributes)
 {
-    return false;
+    bool bRes = true;
+
+    medAbstractSource* pSource = m_sourceIdToInstanceMap.value(pi_sourceIntanceId);
+    if (pSource)
+    {
+        po_attributes = pSource->getMandatoryAttributesKeys(pi_uiLevel);
+    }
+    else
+    {
+        bRes = false;
+    }
+
+    return bRes;
 }
 
 void medDataModel::addSource(medAbstractSource * pi_source)
 {
+    if (pi_source)
+    {
+        auto instanceId = pi_source->getInstanceId();
+        m_sourceIdToInstanceMap[instanceId] = pi_source;
+        m_sourcesModelMap[pi_source] = new medDataModelElement(this, instanceId);
+    }
 }
 
 
 void medDataModel::removeSource(medAbstractSource * pi_source)
 {
+    if (pi_source)
+    {
+        m_sourceIdToInstanceMap.remove(pi_source->getInstanceId());
+        delete m_sourcesModelMap.take(pi_source);
+    }
 }
 
 void medDataModel::addData(medAbstractData * pi_dataset, QString uri)

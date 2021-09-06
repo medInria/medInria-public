@@ -25,6 +25,7 @@ struct medDataModelElementPrivate
     bool bOnline;
     bool bWritable;
     bool bCache;
+    bool bLocal;
     QMap<unsigned int, QStringList> columnNameByLevel;
 
     medDataModelItem *root;
@@ -36,7 +37,7 @@ medDataModelElement::medDataModelElement(medDataModel *parent, QString const & s
     d->sourceInstanceId = sourceIntanceId;
     d->root = new medDataModelItem();
 
-    bool bOk = parent->getSourceGlobalInfo(sourceIntanceId, d->bOnline, d->bWritable, d->bCache);
+    bool bOk = parent->getSourceGlobalInfo(sourceIntanceId, d->bOnline, d->bLocal, d->bWritable, d->bCache);
 
     if (bOk)
     {
@@ -138,6 +139,7 @@ QModelIndex medDataModelElement::parent(const QModelIndex & index) const
 int medDataModelElement::columnCount(const QModelIndex & parent) const
 {
     int iRes = 0;
+    
     unsigned int level = 0;
 
     if (parent.isValid())
