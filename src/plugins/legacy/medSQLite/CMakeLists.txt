@@ -96,7 +96,7 @@ target_link_libraries(${TARGET_NAME}
 #  dtkLog
         Qt5::Sql
         medCore
-#        medCoreLegacy
+        medCoreLegacy
 #  medLog
 #  medVtkInria
 #  medImageIO
@@ -137,8 +137,7 @@ find_library(GMOCK_MAIN_LIBRARY
         libgmock_main.dylib
         PATHS "${GTEST_ROOT}/lib")
 
-message("${GMOCK_MAIN_LIBRARY}")
-add_executable(${TARGET_NAME_TEST} ${${TARGET_NAME_TEST}_SOURCE_FILES})
+add_executable(${TARGET_NAME_TEST} ${${TARGET_NAME_TEST}_SOURCE_FILES} test/medSQLiteRequestTest.cpp test/medSQLiteTest.cpp test/medSQLiteTest.h)
 
 target_link_libraries(${TARGET_NAME_TEST}
         ${GTEST_LIBRARY} ${GTEST_MAIN_LIBRARY}
@@ -146,6 +145,22 @@ target_link_libraries(${TARGET_NAME_TEST}
         medCore
         Qt5::Sql
         ${TARGET_NAME})
+
+
+project(medSQLiteIntegrationQTest LANGUAGES CXX)
+
+find_package(Qt5Test REQUIRED)
+
+#set(CMAKE_INCLUDE_CURRENT_DIR ON)
+
+set(CMAKE_AUTOMOC ON)
+
+enable_testing(true)
+
+add_executable(medSQLiteIntegrationQTest test/medSQLiteIntegrationQTest.cpp)
+add_test(NAME medSQLiteIntegrationQTest COMMAND medSQLiteIntegrationQTest)
+
+target_link_libraries(medSQLiteIntegrationQTest PRIVATE Qt5::Test Qt5::Sql medCore)
 
 ## #############################################################################
 ## Install rules

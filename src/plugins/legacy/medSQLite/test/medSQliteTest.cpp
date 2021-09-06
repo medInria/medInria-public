@@ -17,60 +17,7 @@
 #include <QSqlDatabase>
 #include <QSqlRecord>
 
-#define private public
-
-#include <medSQLite.h>
-
-static bool driverAvailability = true;
-static bool valid;
-static bool flagOpen;
-static QStringList fakeTables = QStringList();
-static int removeCount;
-class FakeEngine
-{
-public:
-    FakeEngine(){};
-    FakeEngine(const FakeEngine &other){};
-    FakeEngine &operator=(const FakeEngine &other) { return *this; };
-
-    static bool isDriverAvailable(const QString &name) { return driverAvailability; }
-
-    bool isValid() { return valid; };
-    bool open() { return flagOpen; };
-    void setDatabaseName(const QString &name){};
-    MOCK_METHOD(void, close, ());
-    MOCK_METHOD(bool, isOpen, ());
-    QSqlQuery exec(){return QSqlQuery();};
-    QStringList tables(){return fakeTables;};
-
-    static FakeEngine &addDatabase(const QString &, const QString &)
-    {
-        static FakeEngine db;
-        return db;
-    };
-
-    static FakeEngine &database(const QString &)
-    {
-        static FakeEngine db;
-        return db;
-    };
-
-    static void removeDatabase(const QString &)
-    {
-        removeCount++;
-    };
-};
-
-class FakeMedSQLite : public medSQlite<FakeEngine>
-{
-public:
-    FakeMedSQLite &operator=(const FakeMedSQLite &other) { return *this; };
-    void changeDatabasePath(const QString& value) {
-        m_DbPath->setValue(value);
-    }
-
-    MOCK_METHOD(bool, createTable, (const QString &));
-};
+#include "medSQLiteTest.h"
 
 class medSQliteTest : public ::testing::Test
 {
@@ -198,6 +145,7 @@ TEST_F(medSQliteTest, test_connect_failed_if_db_path_is_empty)
     m_.changeDatabasePath("");
     // expectations
     EXPECT_CALL(m_.m_Engine, close()).Times(0);
+    EXPECT_CALL(m_, optimizeSpeedSQLiteDB).Times(0);
     EXPECT_EQ(false, m_.connect(true));
     EXPECT_EQ(false, m_.isOnline());
 }
@@ -207,6 +155,7 @@ TEST_F(medSQliteTest, test_connect_failed_db_not_open)
     m_.changeDatabasePath("foo");
     flagOpen = false;
     EXPECT_CALL(m_.m_Engine, close()).Times(0);
+    EXPECT_CALL(m_, optimizeSpeedSQLiteDB).Times(0);
     EXPECT_EQ(false, m_.connect(true));
     EXPECT_EQ(false, m_.isOnline());
     EXPECT_EQ(removeCount, 1);
@@ -223,6 +172,7 @@ TEST_F(medSQliteTest, test_connect_success_db_structure_empty)
     ON_CALL(m_, createTable(studyQuery)).WillByDefault(::testing::Return(true));
     ON_CALL(m_, createTable(seriesQuery)).WillByDefault(::testing::Return(true));
     EXPECT_CALL(m_.m_Engine, close()).Times(0);
+    EXPECT_CALL(m_, optimizeSpeedSQLiteDB).Times(1);
     EXPECT_EQ(true, m_.connect(true));
     EXPECT_EQ(true, m_.isOnline());
     EXPECT_EQ(removeCount, 0);
@@ -238,6 +188,7 @@ TEST_F(medSQliteTest, test_connect_failed_db_structure_empty_unable_create_patie
     ON_CALL(m_, createTable(studyQuery)).WillByDefault(::testing::Return(true));
     ON_CALL(m_, createTable(seriesQuery)).WillByDefault(::testing::Return(true));
     EXPECT_CALL(m_.m_Engine, close()).Times(1);
+    EXPECT_CALL(m_, optimizeSpeedSQLiteDB).Times(0);
     EXPECT_EQ(false, m_.connect(true));
     EXPECT_EQ(false, m_.isOnline());
     EXPECT_EQ(removeCount, 1);
@@ -253,6 +204,7 @@ TEST_F(medSQliteTest, test_connect_failed_db_structure_empty_unable_create_study
     ON_CALL(m_, createTable(studyQuery)).WillByDefault(::testing::Return(false));
     ON_CALL(m_, createTable(seriesQuery)).WillByDefault(::testing::Return(true));
     EXPECT_CALL(m_.m_Engine, close()).Times(1);
+    EXPECT_CALL(m_, optimizeSpeedSQLiteDB).Times(0);
     EXPECT_EQ(false, m_.connect(true));
     EXPECT_EQ(false, m_.isOnline());
     EXPECT_EQ(removeCount, 1);
@@ -268,6 +220,7 @@ TEST_F(medSQliteTest, test_connect_failed_db_structure_empty_unable_create_serie
     ON_CALL(m_, createTable(studyQuery)).WillByDefault(::testing::Return(true));
     ON_CALL(m_, createTable(seriesQuery)).WillByDefault(::testing::Return(false));
     EXPECT_CALL(m_.m_Engine, close()).Times(1);
+    EXPECT_CALL(m_, optimizeSpeedSQLiteDB).Times(0);
     EXPECT_EQ(false, m_.connect(true));
     EXPECT_EQ(false, m_.isOnline());
     EXPECT_EQ(removeCount, 1);
@@ -280,6 +233,7 @@ TEST_F(medSQliteTest, test_connect_failed_db_structure_invalid)
     m_.changeDatabasePath("foo");
     flagOpen = true;
     EXPECT_CALL(m_.m_Engine, close()).Times(1);
+    EXPECT_CALL(m_, optimizeSpeedSQLiteDB).Times(0);
     EXPECT_EQ(false, m_.connect(true));
     EXPECT_EQ(false, m_.isOnline());
     EXPECT_EQ(removeCount, 1);
@@ -292,6 +246,7 @@ TEST_F(medSQliteTest, test_connect_success_valid_db_structure)
     flagOpen = true;
     // expectations
     EXPECT_CALL(m_.m_Engine, close()).Times(0);
+    EXPECT_CALL(m_, optimizeSpeedSQLiteDB).Times(1);
     EXPECT_EQ(true, m_.connect(true));
     EXPECT_EQ(true, m_.isOnline());
     EXPECT_EQ(removeCount, 0);
@@ -302,20 +257,12 @@ TEST_F(medSQliteTest, test_disconnect_success_if_db_path_is_empty)
     m_.changeDatabasePath("");
     // expectations
     EXPECT_CALL(m_.m_Engine, close()).Times(1);
+    EXPECT_CALL(m_, optimizeSpeedSQLiteDB).Times(0);
     EXPECT_EQ(true, m_.connect(false));
     EXPECT_EQ(false, m_.isOnline());
     EXPECT_EQ(removeCount, 1);
 }
 
-// Test Integration
-class RealMedSQLite : public medSQlite<QSqlDatabase>
-{
-public:
-    void changeDatabasePath(const QString& value) {
-        m_DbPath->setValue(value);
-    }
-
-};
 
 TEST(integrationTest, test_plugin_connection_success_with_existing_db)
 {
@@ -374,28 +321,28 @@ TEST(integrationTest, test_plugin_connection_success_with_empty_db)
         EXPECT_EQ(true, t.isOnline());
 
         QSqlRecord record = t.m_Engine.record("patient");
-        QStringList keys = {"id", "name", "thumbnail", "birthdate", "gender", "patientId"};
+        QStringList expected_keys = {"id", "name", "thumbnail", "birthdate", "gender", "patientId"};
         for(int i=0;i<record.count();i++){
             QSqlField field=record.field(i);
-            EXPECT_EQ(keys.at(i), field.name() );
+            EXPECT_EQ(expected_keys.at(i), field.name() );
         }
         record = t.m_Engine.record("study");
-        keys.clear();
-        keys << "id" << "patient" << "name" << "uid" << "thumbnail" << "studyId";
+        expected_keys.clear();
+        expected_keys << "id" << "patient" << "name" << "uid" << "thumbnail" << "studyId";
         for(int i=0;i<record.count();i++){
             QSqlField field=record.field(i);
-            EXPECT_EQ(keys.at(i), field.name() );
+            EXPECT_EQ(expected_keys.at(i), field.name() );
         }
         record = t.m_Engine.record("series");
-        keys.clear();
-        keys << "id" << "study" << "size" << "name" << "path"<< "uid" << "seriesId" << "orientation"
-        << "seriesNumber" << "sequenceName" << "sliceThickness" << "rows" << "columns" << "thumbnail"
-        << "age" << "description" << "modality" << "protocol" << "comments" << "status" << "acquisitiondate"
-        << "importationdate" << "referee" << "performer" << "institution" << "report" << "origin"
-        << "flipAngle" << "echoTime" << "repetitionTime" << "acquisitionTime"<< "isIndexed";
+        expected_keys.clear();
+        expected_keys << "id" << "study" << "size" << "name" << "path" << "uid" << "seriesId" << "orientation"
+                      << "seriesNumber" << "sequenceName" << "sliceThickness" << "rows" << "columns" << "thumbnail"
+                      << "age" << "description" << "modality" << "protocol" << "comments" << "status" << "acquisitiondate"
+                      << "importationdate" << "referee" << "performer" << "institution" << "report" << "origin"
+                      << "flipAngle" << "echoTime" << "repetitionTime" << "acquisitionTime" << "isIndexed";
         for(int i=0;i<record.count();i++){
             QSqlField field=record.field(i);
-            EXPECT_EQ(keys.at(i), field.name() );
+            EXPECT_EQ(expected_keys.at(i), field.name() );
         }
 
         EXPECT_EQ(true, t.connect(false));
@@ -460,7 +407,7 @@ TEST(AccessTest, test_mandatory_attr_keys_1st_level_success)
     medSQlite<QSqlDatabase> m = medSQlite<QSqlDatabase>();
     int level = 0;
     QStringList mandatory_keys;
-    mandatory_keys << "id" << "name"<< "birthdate" << "gender";
+    mandatory_keys << "id" << "name"<< "patientId";
     EXPECT_EQ(mandatory_keys, m.getMandatoryAttributesKeys(level));
 }
 
@@ -469,7 +416,7 @@ TEST(AccessTest, test_mandatory_attr_keys_2nd_level_success)
     medSQlite<QSqlDatabase> m = medSQlite<QSqlDatabase>();
     int level = 1;
     QStringList mandatory_keys;
-    mandatory_keys << "id" << "name";
+    mandatory_keys << "id" << "name" << "uid";
     EXPECT_EQ(mandatory_keys, m.getMandatoryAttributesKeys(level));
 }
 
@@ -478,7 +425,7 @@ TEST(AccessTest, test_mandatory_attr_keys_3rd_level_success)
     medSQlite<QSqlDatabase> m = medSQlite<QSqlDatabase>();
     int level = 2;
     QStringList mandatory_keys;
-    mandatory_keys << "id" << "name";
+    mandatory_keys << "id" << "name" << "uid";
     EXPECT_EQ(mandatory_keys, m.getMandatoryAttributesKeys(level));
 }
 
@@ -486,15 +433,56 @@ TEST(AccessTest, test_mandatory_attr_keys_negative_level_failed)
 {
     medSQlite<QSqlDatabase> m = medSQlite<QSqlDatabase>();
     int level = -1;
-    QStringList mandatory_keys;
-    EXPECT_EQ(mandatory_keys, m.getMandatoryAttributesKeys(level));
+    EXPECT_EQ(QStringList(), m.getMandatoryAttributesKeys(level));
 }
 
 TEST(AccessTest, test_mandatory_attr_keys_invalid_level_failed)
 {
     medSQlite<QSqlDatabase> m = medSQlite<QSqlDatabase>();
     int level = 3;
-    EXPECT_EQ("", m.getLevelName(level));
+    EXPECT_EQ(QStringList(), m.getMandatoryAttributesKeys(level));
+}
+
+TEST(AccessTest, test_additional_attr_keys_1st_level_success)
+{
+    medSQlite<QSqlDatabase> m = medSQlite<QSqlDatabase>();
+    int level = 0;
+    QStringList additional_keys;
+    additional_keys << "thumbnail" << "birthdate"<< "gender";
+    EXPECT_EQ(additional_keys, m.getAdditionalAttributesKeys(level));
+}
+
+TEST(AccessTest, test_additional_attr_keys_2nd_level_success)
+{
+    medSQlite<QSqlDatabase> m = medSQlite<QSqlDatabase>();
+    int level = 1;
+    QStringList additional_keys;
+    additional_keys << "patient";
+    EXPECT_EQ(additional_keys, m.getAdditionalAttributesKeys(level));
+}
+
+TEST(AccessTest, test_additional_attr_keys_3rd_level_success)
+{
+    medSQlite<QSqlDatabase> m = medSQlite<QSqlDatabase>();
+    int level = 2;
+    QStringList additional_keys;
+    additional_keys << "size" << "age" << "modality" << "acquisitiondate" << "importationdate" << "referee"
+                    <<"performer" << "institution" << "report" << "thumbnail";
+    EXPECT_EQ(additional_keys, m.getAdditionalAttributesKeys(level));
+}
+
+TEST(AccessTest, test_additional_attr_keys_negative_level_failed)
+{
+    medSQlite<QSqlDatabase> m = medSQlite<QSqlDatabase>();
+    int level = -1;
+    EXPECT_EQ(QStringList(), m.getAdditionalAttributesKeys(level));
+}
+
+TEST(AccessTest, test_additional_attr_keys_invalid_level_failed)
+{
+    medSQlite<QSqlDatabase> m = medSQlite<QSqlDatabase>();
+    int level = 3;
+    EXPECT_EQ(QStringList(), m.getAdditionalAttributesKeys(level));
 }
 
 TEST(AccessTest, is_writeable_true)
@@ -521,6 +509,8 @@ TEST(AccessTest, is_online_true)
     fakeTables << "patient" << "study" << "series";
     m.changeDatabasePath("foo");
     flagOpen = true;
+    EXPECT_CALL(m, optimizeSpeedSQLiteDB).Times(1);
     m.connect(true);
     EXPECT_EQ(true, m.isOnline());
 }
+

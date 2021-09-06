@@ -75,7 +75,7 @@ public:
     /* ***********************************************************************/
     /* *************** Get elements data *************************************/
     /* ***********************************************************************/
-    QList<levelMinimalEntries> getMinimalEntries(unsigned int pi_uiLevel, QString id) override;
+    QList<levelMinimalEntries> getMinimalEntries(unsigned int pi_uiLevel, QString parentId) override;
 
     QList<QMap<QString, QString>> getMandatoryAttributes(unsigned int pi_uiLevel, int id) override;
 
@@ -84,7 +84,7 @@ public:
     /* ***********************************************************************/
     /* *************** Get data          *************************************/
     /* ***********************************************************************/
-    medAbstractData *getDirectData(unsigned int pi_uiLevel, QString id) override;
+    QString getDirectData(unsigned int pi_uiLevel, QString key) override;
 
     int getAssyncData(unsigned int pi_uiLevel, QString id) override;
 
@@ -95,6 +95,7 @@ public slots:
 
 
 private:
+    // members
     T m_Engine;
     medStringParameter *m_DbPath;
     const QString m_Driver;
@@ -104,11 +105,15 @@ private:
     bool m_online;
     QStringList m_LevelNames;
 
+    // methods
     bool isValidDatabaseStructure();
-
     bool isDatabaseEmpty();
-
     virtual bool createTable(const QString &strQuery);
+    virtual QList<levelMinimalEntries> getPatientMinimalEntries();
+    virtual QList<medAbstractSource::levelMinimalEntries> getStudyMinimalEntries(QString &parentId);
+    virtual QList<medAbstractSource::levelMinimalEntries> getSeriesMinimalEntries(QString &parentId);
+    virtual void optimizeSpeedSQLiteDB();
+    virtual QString getSeriesDirectData(QString &key);
 };
 
 #include "medSQLite.txx"
