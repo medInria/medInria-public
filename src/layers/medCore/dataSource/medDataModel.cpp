@@ -76,14 +76,13 @@ bool medDataModel::getLevelMetaData(QString const & pi_sourceIntanceId, unsigned
         auto listOfMinimalEntries = pSource->getMinimalEntries(pi_uiLevel, key);
         for (auto &minimalEntry : listOfMinimalEntries)
         {
-            po_entries.append(QStringList({ minimalEntry.type, minimalEntry.name, minimalEntry.description }));
+            po_entries.append(QStringList({ minimalEntry.key, minimalEntry.name, minimalEntry.description }));
         }
     }
     else
     {
         bRes = false;
     }
-
     return bRes;
 }
 

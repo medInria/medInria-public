@@ -29,7 +29,7 @@ public:
 
     struct levelMinimalEntries
     {
-        QString type;
+        QString key; // TODO : change
         QString name;
         QString description;
     };
@@ -80,7 +80,7 @@ public:
     /* ***********************************************************************/
     /* *************** Get elements data *************************************/
     /* ***********************************************************************/
-    virtual QList<levelMinimalEntries>    getMinimalEntries(unsigned int pi_uiLevel, QString type)   = 0; //id ou uid en int ou en QString si  int alors l'implémentation doit avoir une méthode bijective
+    virtual QList<levelMinimalEntries>    getMinimalEntries(unsigned int pi_uiLevel, QString parentKey)   = 0; //id ou uid en int ou en QString si  int alors l'implémentation doit avoir une méthode bijective
     virtual QList<QMap<QString, QString>> getMandatoryAttributes(unsigned int pi_uiLevel, int type)  = 0; //ou QVarient
     virtual QList<QMap<QString, QString>> getAdditionalAttributes(unsigned int pi_uiLevel, int type) = 0; //ou QVarient
     
@@ -88,8 +88,8 @@ public:
     /* ***********************************************************************/
     /* *************** Get data          *************************************/
     /* ***********************************************************************/
-    virtual medAbstractData* getDirectData(unsigned int pi_uiLevel, QString type) = 0; //id ou uid en int ou en QString si  int alors l'implémentation doit avoir une méthode bijective
-    virtual int              getAssyncData(unsigned int pi_uiLevel, QString type) = 0; //id ou uid en int ou en QString si  int alors l'implémentation doit avoir une méthode bijective. Retourne un id de request
+    virtual QString getDirectData(unsigned int pi_uiLevel, QString key) = 0; //id ou uid en int ou en QString si  int alors l'implémentation doit avoir une méthode bijective
+    virtual int              getAssyncData(unsigned int pi_uiLevel, QString key) = 0; //id ou uid en int ou en QString si  int alors l'implémentation doit avoir une méthode bijective. Retourne un id de request
     
     /* ***********************************************************************/
     /* *************** Store data          ***********************************/
