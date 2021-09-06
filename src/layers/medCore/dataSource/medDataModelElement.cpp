@@ -139,6 +139,7 @@ QModelIndex medDataModelElement::parent(const QModelIndex & index) const
 int medDataModelElement::columnCount(const QModelIndex & parent) const
 {
     int iRes = 0;
+    
     unsigned int level = 0;
 
     if (parent.isValid())
