@@ -14,6 +14,7 @@
 #include <QSurfaceFormat>
 #include <QtGui>
 #include <QtOpenGL>
+#include <QMainWindow>
 
 #ifdef WIN32
 #include <QtPlatformHeaders/QWindowsWindowFunctions>
@@ -30,6 +31,7 @@
 #include <medStorage.h>
 
 #include <medSourcesLoader.h>
+#include <medDataModel.h>
 
 void forceShow(medMainWindow &mainwindow)
 {
@@ -221,11 +223,29 @@ int main(int argc, char *argv[])
         medPluginManager::instance()->initialize();
 
         // [LIKE PORKY]
-        QString foo;
-
+//        QString foo;
+//
         //medDBSourcesLoader::instance()->createCnx(foo, "medSQLite");
         //medDBSourcesLoader::instance()->renameSource(foo, "Legacy medInria 3 DB");
+
+        auto testModel = new medDataModel();
+        QObject::connect(medDBSourcesLoader::instance(), SIGNAL(sourceAdded(medAbstractSource *)), testModel, SLOT(addSource(medAbstractSource *)));
         medDBSourcesLoader::instance()->loadFromDisk();
+
+        auto testWindow = new QMainWindow();
+        auto treeView = new QTreeView();
+        auto tableView = new QTableView();
+
+//        treeView->setModel()
+        QWidget *w = new QWidget;
+        QVBoxLayout *vLayout = new QVBoxLayout;
+        vLayout->addWidget(treeView);
+        vLayout->addWidget(tableView);
+        w->setLayout(vLayout);
+
+        testWindow->setCentralWidget(w);
+        testWindow->show();
+
 
         // Use Qt::WA_DeleteOnClose attribute to be sure to always have only one
         // closeEvent.
