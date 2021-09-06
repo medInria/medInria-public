@@ -22,6 +22,8 @@ public:
 
 medDataModelItem::medDataModelItem() : d(new medDataModelItemPrivate())
 {
+    d->parentItem = nullptr;
+    d->uiLevel = 0;
 }
 
 medDataModelItem::~medDataModelItem()
@@ -32,14 +34,14 @@ medDataModelItem::~medDataModelItem()
 
 
 
-int medDataModelItem::childCount()
+int medDataModelItem::childCount() const
 {
     return d->childItems.size();
 }
 
-unsigned int medDataModelItem::childLevel()
+unsigned int medDataModelItem::level() const
 {
-    return d->uiLevel+1;
+    return d->uiLevel;
 }
 
 int medDataModelItem::row() const
@@ -54,7 +56,7 @@ int medDataModelItem::row() const
     return iRowRes;
 }
 
-medDataModelItem * medDataModelItem::parent()
+medDataModelItem * medDataModelItem::parent() const
 {
     return d->parentItem;
 }
@@ -64,7 +66,7 @@ medDataModelItem * medDataModelItem::parent()
 
 
 
-medDataModelItem * medDataModelItem::child(int row)
+medDataModelItem * medDataModelItem::child(int row) const
 {
     return d->childItems.value(row);
 }
@@ -72,4 +74,24 @@ medDataModelItem * medDataModelItem::child(int row)
 QVariant medDataModelItem::data(int column) const
 {
     return d->itemData.value(column);
+}
+
+void medDataModelItem::setParent(medDataModelItem * parent)
+{
+    d->parentItem = parent;
+}
+
+void medDataModelItem::setData(QStringList const & value)
+{
+    if (!d->itemData.isEmpty())
+    {
+        d->itemData.clear();
+    }
+
+    d->itemData.append(value);
+}
+
+void medDataModelItem::append(medDataModelItem * child)
+{
+    d->childItems.append(child);
 }

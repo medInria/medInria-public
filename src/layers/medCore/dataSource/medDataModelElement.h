@@ -14,7 +14,7 @@
 
 #include <QAbstractItemModel>
 
-//#include <medDataModel.h>
+#include <medDataModelItem.h>
 
 #include <medCoreExport.h>
 
@@ -42,11 +42,14 @@ public:
 
     void setColumnAttributes(unsigned int p_uiLevel, QStringList &attributes);
 
-public slots:
+//public slots:
     void itemPressed(QModelIndex const &index);
 
+
 private:
-    int getLevelColumCount(unsigned int pi_uiLevel) const;
+    bool getColumnNames(unsigned int const &iLevel) const;
+    int  getLevelColumCount(unsigned int pi_uiLevel) const;
+    void populateLevel(medDataModelItem * pItemCurrent, QString const &key);
 
 
 signals:
