@@ -534,7 +534,7 @@ void polygonRoiToolBox::updateTableWidgetItems()
             secondOrientation = new medTableWidgetItem(QIcon(":/icons/SagittalIcon.png"),
                                                        QString("Sagittal view"),
                                                        medTableWidgetItem::SagittalType);
-            thirdOrientation = new medTableWidgetItem(QIcon(":/icons/3DIcon.png"),
+            thirdOrientation = new medTableWidgetItem(QIcon(":/icons/orientation_3d_white.svg"),
                                                       QString("3d view"),
                                                       medTableWidgetItem::ThreeDimType);
 
@@ -547,7 +547,7 @@ void polygonRoiToolBox::updateTableWidgetItems()
             secondOrientation =  new medTableWidgetItem(QIcon(":/icons/SagittalIcon.png"),
                                                         QString("Sagittal view"),
                                                         medTableWidgetItem::SagittalType);
-            thirdOrientation = new medTableWidgetItem(QIcon(":/icons/3DIcon.png"),
+            thirdOrientation = new medTableWidgetItem(QIcon(":/icons/orientation_3d_white.svg"),
                                                       QString("3d view"),
                                                       medTableWidgetItem::ThreeDimType);
 
@@ -560,7 +560,7 @@ void polygonRoiToolBox::updateTableWidgetItems()
             secondOrientation = new medTableWidgetItem(QIcon(":/icons/CoronalIcon.png"),
                                                        QString("Coronal view"),
                                                        medTableWidgetItem::CoronalType);
-            thirdOrientation = new medTableWidgetItem(QIcon(":/icons/3DIcon.png"),
+            thirdOrientation = new medTableWidgetItem(QIcon(":/icons/orientation_3d_white.svg"),
                                                       QString("3d view"),
                                                       medTableWidgetItem::ThreeDimType);
 

@@ -69,15 +69,15 @@ medFileSystemDataSource::medFileSystemDataSource( QWidget* parent ): medAbstract
 
     QAction *viewAction = new QAction(tr("View"), this);
     viewAction->setIconVisibleInMenu(true);
-    viewAction->setIcon(QIcon(":icons/eye.png"));
+    viewAction->setIcon(QIcon(":icons/eye_white.png"));
 
     QAction *tempoImportAction = new QAction(tr("Temporary Import"), this);
     tempoImportAction->setIconVisibleInMenu(true);
-    tempoImportAction->setIcon(QIcon(":icons/document-open.png"));
+    tempoImportAction->setIcon(QIcon(":icons/import_temporary_white.png"));
 
     QAction *importAction = new QAction(tr("Import"), this);
     importAction->setIconVisibleInMenu(true);
-    importAction->setIcon(QIcon(":icons/import.png"));
+    importAction->setIcon(QIcon(":icons/import_white.png"));
 
     d->finder->addContextMenuAction(viewAction);
     d->finder->addContextMenuAction(tempoImportAction);

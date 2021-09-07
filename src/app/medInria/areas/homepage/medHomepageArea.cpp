@@ -39,6 +39,7 @@ medHomepageArea::medHomepageArea ( QWidget * parent ) : QWidget ( parent ), d ( 
     QMenu *menuFile = menu_bar->addMenu("File");
 
     QAction *actionBrowser = new QAction(tr("&Import/export files"), parent);
+    actionBrowser->setIcon(QIcon(":/icons/open.png"));
     connect(actionBrowser, &QAction::triggered, this, &medHomepageArea::onShowBrowser);
     menuFile->addAction(actionBrowser);
 
@@ -102,6 +103,7 @@ medHomepageArea::medHomepageArea ( QWidget * parent ) : QWidget ( parent ), d ( 
     QMenu *menuTools = menu_bar->addMenu("Tools");
 
     QAction *actionSearch = new QAction(tr("&Search a toolbox"), parent);
+    actionSearch->setIcon(QIcon(":/icons/magnifier_white.png"));
     connect(actionSearch, &QAction::triggered, mainWindow, &medMainWindow::switchToSearchArea);
     menuTools->addAction(actionSearch);
 
@@ -119,7 +121,7 @@ medHomepageArea::medHomepageArea ( QWidget * parent ) : QWidget ( parent ), d ( 
     // --- About menu
     QMenu *menuAbout = menu_bar->addMenu("Info");
 
-    QAction *actionAbout = new QAction(tr("&About the application"), parent);
+    QAction *actionAbout = new QAction(tr("&About"), parent);
     connect(actionAbout, &QAction::triggered, this, &medHomepageArea::onShowAbout);
     menuAbout->addAction(actionAbout);
 
@@ -138,6 +140,7 @@ medHomepageArea::medHomepageArea ( QWidget * parent ) : QWidget ( parent ), d ( 
     menuAbout->addSeparator();
 
     QAction *actionHelp = new QAction(tr("&Help"), parent);
+    actionHelp->setIcon(QIcon(":/icons/help_white.svg"));
     connect(actionHelp, &QAction::triggered, this, &medHomepageArea::onShowHelp);
     menuAbout->addAction(actionHelp);
 
@@ -147,8 +150,8 @@ medHomepageArea::medHomepageArea ( QWidget * parent ) : QWidget ( parent ), d ( 
 
     // --- Fullscreen checkable action
     QIcon fullscreenIcon;
-    fullscreenIcon.addPixmap(QPixmap(":icons/fullscreenExpand.png"),QIcon::Normal,QIcon::Off);
-    fullscreenIcon.addPixmap(QPixmap(":icons/fullscreenReduce.png"),QIcon::Normal,QIcon::On);
+    fullscreenIcon.addPixmap(QPixmap(":icons/fullscreen_on_white.png"),QIcon::Normal,QIcon::Off);
+    fullscreenIcon.addPixmap(QPixmap(":icons/fullscreen_off_white.png"),QIcon::Normal,QIcon::On);
 
     d->actionFullscreen = new QAction(parent);
     d->actionFullscreen->setIcon(fullscreenIcon);
@@ -237,9 +240,9 @@ void medHomepageArea::initPage()
     workspaceButtonsLayoutBasic->addLayout(workspaceButtonsLayoutBasicGrid);
 
     medHomepageButton * browserButton = new medHomepageButton ( this );
-    browserButton->setToolButtonStyle ( Qt::ToolButtonTextUnderIcon );
-    browserButton->setIcon ( QIcon ( ":/icons/folder.png" ) );
-    browserButton->setText ( "Import/export files" );
+    browserButton->setToolButtonStyle ( Qt::ToolButtonTextBesideIcon );
+    browserButton->setIcon ( QIcon ( ":/icons/open.png" ) );
+    browserButton->setText ( " Import/export files" );
     browserButton->setMinimumHeight ( 40 );
     browserButton->setMaximumWidth ( 250 );
     browserButton->setMinimumWidth ( 250 );
@@ -249,9 +252,9 @@ void medHomepageArea::initPage()
     QObject::connect ( browserButton, SIGNAL ( clicked() ),this, SLOT ( onShowBrowser() ) );
 
     medHomepageButton * composerButton = new medHomepageButton ( this );
-    composerButton->setText ("Composer");
+    composerButton->setText ("       Composer");
     composerButton->setFocusPolicy ( Qt::NoFocus );
-    composerButton->setToolButtonStyle(Qt::ToolButtonTextUnderIcon);
+    composerButton->setToolButtonStyle(Qt::ToolButtonTextBesideIcon);
     composerButton->setIcon(QIcon(":/icons/composer.png"));
     composerButton->setMinimumHeight ( 40 );
     composerButton->setMaximumWidth ( 250 );
@@ -494,10 +497,10 @@ void medHomepageArea::switchOffOnFullscreenIcons(const bool checked)
 {
     if (checked)
     {
-        d->actionFullscreen->setIcon(QIcon(":icons/fullscreenReduce.png"));
+        d->actionFullscreen->setIcon(QIcon(":icons/fullscreen_off_white.png"));
     }
     else
     {
-        d->actionFullscreen->setIcon(QIcon(":icons/fullscreenExpand.png"));
+        d->actionFullscreen->setIcon(QIcon(":icons/fullscreen_on_white.png"));
     }
 }

@@ -41,19 +41,21 @@ public :
 
 medLinkMenu::medLinkMenu(QWidget * parent) : QPushButton(parent), d(new medLinkMenuPrivate)
 {
-    this->setIcon(QIcon(":icons/link.svg"));
+    this->setIcon(QIcon(":icons/link_white.svg"));
+    this->setFixedSize(QSize(height(), height()));
+    this->setIconSize(QSize(height(), height()));
 
     d->popupWidget = new QWidget(this);
     d->popupWidget->setWindowFlags(Qt::Dialog | Qt::FramelessWindowHint );
     d->popupWidget->setContentsMargins(0,0,4,4);
     d->popupWidget->setObjectName("popupWidget");
+    d->popupWidget->setMinimumWidth(180);
+    d->popupWidget->setAttribute(Qt::WA_TranslucentBackground);
 
     d->subPopupWidget = new QWidget(this);
     d->subPopupWidget->setWindowFlags(Qt::Dialog | Qt::FramelessWindowHint );
     d->subPopupWidget->setContentsMargins(0,0,4,4);
-    d->subPopupWidget->setObjectName("subPopupWidget");
-
-    d->popupWidget->setAttribute(Qt::WA_TranslucentBackground);
+    d->subPopupWidget->setObjectName("subPopupWidget");    
     d->subPopupWidget->setAttribute(Qt::WA_TranslucentBackground);
 
 #ifdef Q_OS_LINUX
@@ -82,6 +84,7 @@ medLinkMenu::medLinkMenu(QWidget * parent) : QPushButton(parent), d(new medLinkM
     d->newGroupitem = new QListWidgetItem("Add new Group...");
     d->groupList->addItem(d->newGroupitem);
     d->newGroupEdit = new QLineEdit("Add new Group...");
+
     d->groupList->setItemWidget(d->newGroupitem, d->newGroupEdit);
 
     d->saveAsPresetButton = new QPushButton("Save as preset");
@@ -107,7 +110,6 @@ medLinkMenu::medLinkMenu(QWidget * parent) : QPushButton(parent), d(new medLinkM
     connect(d->presetList, SIGNAL(itemEntered(QListWidgetItem*)), this, SLOT(highlightItem(QListWidgetItem*)));
     connect(d->presetList, SIGNAL(itemDoubleClicked(QListWidgetItem*)), this, SLOT(editPreset(QListWidgetItem*)));
     connect(d->presetList, SIGNAL(itemClicked(QListWidgetItem*)), this, SLOT(selectItem(QListWidgetItem*)));
-
 
     QWidget *internalSubPopWidget = new QWidget;
     internalSubPopWidget->setObjectName("internalSubPopWidget");
@@ -452,9 +454,6 @@ void medLinkMenu::hideSubMenu()
 void medLinkMenu::paintEvent(QPaintEvent *ev)
 {
     QPushButton::paintEvent(ev);
-
-    d->groupList->setFixedWidth(this->width());
-    //d->popupWidget->setFixedWidth(this->width());
 
     updateListsPosition();
 }
@@ -818,7 +817,7 @@ void medLinkMenu::addRemovePresetButton(QListWidgetItem* item)
     itemLayout->setSpacing(0);
 
     QPushButton *removeButton = new QPushButton;
-    removeButton->setIcon(QIcon(":/icons/cross.svg"));
+    removeButton->setIcon(QIcon(":/icons/cross_red.svg"));
     removeButton->setIconSize(QSize(12,12));
     removeButton->setStyleSheet("margin:0px;border:0;border-radius: 0px;padding: 0px;");
     removeButton->setFixedSize(12,12);
@@ -851,7 +850,7 @@ medGroupWidget::medGroupWidget(QString groupName, QWidget * parent): medListItem
     groupLabel->setToolTip(groupName);
 
     QPushButton *removeButton = new QPushButton;
-    removeButton->setIcon(QIcon(":/icons/cross.svg"));
+    removeButton->setIcon(QIcon(":/icons/cross_red.svg"));
     removeButton->setIconSize(QSize(12,12));
     removeButton->setStyleSheet("margin:0px;border:0;border-radius: 0px;padding: 0px;");
     removeButton->setFixedSize(12,12);

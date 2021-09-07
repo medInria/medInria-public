@@ -25,12 +25,12 @@ medBoolParameterTestObject::medBoolParameterTestObject(void)
 {
     m_name = QString("testWithObjectName");
     m_text = QString("testWithObjectToolText");
-    m_icon = QIcon(":/pixmaps/plus_button.png");
+    m_icon = QIcon(":/icons/plus_white.png");
     m_iconSize = QSize(42,42);
-    m_pushButton = NULL;
-    m_widget = NULL;
-    m_checkBox = NULL;
-    m_radioButton = NULL;
+    m_pushButton = nullptr;
+    m_widget = nullptr;
+    m_checkBox = nullptr;
+    m_radioButton = nullptr;
 }
 
 medBoolParameterTestObject::~medBoolParameterTestObject(void)

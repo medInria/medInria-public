@@ -130,42 +130,42 @@ medDatabaseView::medDatabaseView(QWidget *parent) : QTreeView(parent), d(new med
     //Init the QActions
     d->viewAction = new QAction(tr("View"), this);
     d->viewAction->setIconVisibleInMenu(true);
-    d->viewAction->setIcon(QIcon(":icons/eye.png"));
+    d->viewAction->setIcon(QIcon(":icons/eye_white.png"));
     connect(d->viewAction, SIGNAL(triggered()), this, SLOT(onViewSelectedItemRequested()));
 
     d->exportAction = new QAction(tr("Export"), this);
     d->exportAction->setIconVisibleInMenu(true);
-    d->exportAction->setIcon(QIcon(":icons/export.png"));
+    d->exportAction->setIcon(QIcon(":icons/export_white.png"));
     connect(d->exportAction, SIGNAL(triggered()), this, SLOT(onExportSelectedItemRequested()));
 
     d->saveAction = new QAction(tr("Save"), this);
     d->saveAction->setIconVisibleInMenu(true);
-    d->saveAction->setIcon(QIcon(":icons/save.png"));
+    d->saveAction->setIcon(QIcon(":icons/save_white.png"));
     connect(d->saveAction, SIGNAL(triggered()), this, SLOT(onSaveSelectedItemRequested()));
 
     d->removeAction = new QAction(tr("Remove"), this);
     d->removeAction->setIconVisibleInMenu(true);
-    d->removeAction->setIcon(QIcon(":icons/cross.svg"));
+    d->removeAction->setIcon(QIcon(":icons/cross_red.svg"));
     connect(d->removeAction, SIGNAL(triggered()), this, SLOT(onRemoveSelectedItemRequested()));
 
     d->addPatientAction = new QAction(tr("New Patient"), this);
     d->addPatientAction->setIconVisibleInMenu(true);
-    d->addPatientAction->setIcon(QIcon(":icons/user_add.png"));
+    d->addPatientAction->setIcon(QIcon(":icons/user_add_white.png"));
     connect(d->addPatientAction, SIGNAL(triggered()), this, SLOT(onCreatePatientRequested()));
     
     d->addStudyAction = new QAction(tr("New Study"), this);
     d->addStudyAction->setIconVisibleInMenu(true);
-    d->addStudyAction->setIcon(QIcon(":icons/page_add.png"));
+    d->addStudyAction->setIcon(QIcon(":icons/study_add_white.png"));
     connect(d->addStudyAction, SIGNAL(triggered()), this, SLOT(onCreateStudyRequested()));
 
     d->editAction = new QAction(tr("Edit..."), this);
     d->editAction->setIconVisibleInMenu(true);
-    d->editAction->setIcon(QIcon(":icons/page_edit.png"));
+    d->editAction->setIcon(QIcon(":icons/edit_white.png"));
     connect(d->editAction, SIGNAL(triggered()), this, SLOT(onEditRequested()));
 
     d->metadataAction = new QAction(tr("Metadata"), this);
     d->metadataAction->setIconVisibleInMenu(true);
-    d->metadataAction->setIcon(QIcon(":icons/information.png"));
+    d->metadataAction->setIcon(QIcon(":icons/information_blue.png"));
     connect(d->metadataAction, SIGNAL(triggered()), this, SLOT(onMetadataRequested()));
 }
 
@@ -234,30 +234,36 @@ void medDatabaseView::updateContextMenu(const QPoint& point)
             if( item->dataIndex().isValidForSeries())
             {
                 d->contextMenu->addAction(d->editAction);
-                d->editAction->setIcon(QIcon(":icons/page_edit.png"));
+                d->editAction->setIcon(QIcon(":icons/edit_white.png"));
                 d->contextMenu->addAction(d->viewAction);
-                d->contextMenu->addAction(d->exportAction);
                 d->contextMenu->addAction(d->metadataAction);
-                d->contextMenu->addAction(d->removeAction);
+                d->contextMenu->addAction(d->exportAction);                
                 if( !(medDataManager::instance()->controllerForDataSource(item->dataIndex().dataSourceId())->isPersistent()) )
+                {
                     d->contextMenu->addAction(d->saveAction);
+                }
+                d->contextMenu->addAction(d->removeAction);
             }
             else if (item->dataIndex().isValidForStudy())
             {
                 d->contextMenu->addAction(d->editAction);
-                d->editAction->setIcon(QIcon(":icons/page_edit.png"));
-                d->contextMenu->addAction(d->removeAction);
+                d->editAction->setIcon(QIcon(":icons/edit_white.png"));
                 if( !(medDataManager::instance()->controllerForDataSource(item->dataIndex().dataSourceId())->isPersistent()) )
+                {
                     d->contextMenu->addAction(d->saveAction);
+                }
+                d->contextMenu->addAction(d->removeAction);
             }
             else if (item->dataIndex().isValidForPatient())
             {
                 d->contextMenu->addAction(d->addStudyAction);
                 d->contextMenu->addAction(d->editAction);
-                d->editAction->setIcon(QIcon(":icons/user_edit.png"));
-                d->contextMenu->addAction(d->removeAction);
+                d->editAction->setIcon(QIcon(":icons/user_edit_white.png"));
                 if( !(medDataManager::instance()->controllerForDataSource(item->dataIndex().dataSourceId())->isPersistent()) )
+                {
                     d->contextMenu->addAction(d->saveAction);
+                }
+                d->contextMenu->addAction(d->removeAction);
             }
         }
     }

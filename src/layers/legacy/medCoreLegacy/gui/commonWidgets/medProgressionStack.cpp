@@ -100,7 +100,7 @@ void medProgressionStack::setLabel(QObject *sender, QString label)
     d->completeLabels.insert(sender, completeLabel);
 
     QPushButton *button= new QPushButton(widget);
-    button->setIcon(QIcon(":icons/cross.svg"));
+    button->setIcon(QIcon(":icons/cross_red.svg"));
 
     connect(button,SIGNAL(clicked()), this,SLOT(sendCancelRequest()));
     d->buttons.insert(sender,button);
