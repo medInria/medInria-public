@@ -291,7 +291,7 @@ AlgorithmPaintToolBox::AlgorithmPaintToolBox(QWidget *parent ) :
 
     m_magicWandButton = new QPushButton(tr("Magic Wand"));
     m_magicWandButton->setObjectName("Magic Wand");
-    QPixmap pixmap(":medSegmentation/pixmaps/magic_wand.png");
+    QPixmap pixmap(":medSegmentation/pixmaps/magic_wand_white.svg");
     QIcon buttonIcon(pixmap);
     m_magicWandButton->setIcon(buttonIcon);
     m_magicWandButton->setToolTip(tr("Magic wand to automatically paint similar voxels."));
@@ -581,55 +581,37 @@ void AlgorithmPaintToolBox::activateStroke()
 
 void AlgorithmPaintToolBox::activateCustomedCursor()
 {
-    if (!currentView) // no data
+    if (!currentView || currentView->orientation() == medImageView::VIEW_ORIENTATION_3D)
     {
-        return;
-    }
-
-    if (currentView->orientation() == medImageView::VIEW_ORIENTATION_3D)
-    {
-        // 3D view
         deactivateCustomedCursor();
-        return;
     }
+    else
+    {
+        // Adapt radius in mm to scale of view (zoom, crop, etc)
+        qreal radiusSizeDouble = m_brushSizeSlider->value() * currentView->scale();
 
-    // Get radius size of the brush in mm
-    double radiusSize = (double)(m_brushSizeSlider->value());
+        // Create shape of the new cursor
+        QPixmap pix(radiusSizeDouble, radiusSizeDouble);
+        pix.fill(Qt::transparent);
+        QPainter painter(&pix);
+        painter.setRenderHint(QPainter::SmoothPixmapTransform);
+        QPen pen;
+        pen.setColor(Qt::darkGreen);
+        pen.setWidth(3);
+        painter.setPen(pen);
+        painter.drawRoundedRect(0.0, 0.0, radiusSizeDouble, radiusSizeDouble, 100.0, 100.0);
 
-    // Adapt to scale of view (zoom, crop, etc)
-    double radiusSizeDouble = radiusSize * currentView->scale();
-
-    int radiusSizeInt = floor(radiusSizeDouble + 0.5);
-
-    // Create shape of the new cursor
-    QPixmap pix(radiusSizeInt, radiusSizeInt);
-    pix.fill(Qt::transparent);
-    QPainter painter(&pix);
-    painter.setCompositionMode(QPainter::CompositionMode_Source);
-    painter.setRenderHint( QPainter::Antialiasing );
-    painter.setBackgroundMode(Qt::TransparentMode);
-    painter.setBackground(QColor(255,255,255,255));
-    painter.setPen( Qt::white );
-    painter.drawEllipse( 0, 0, radiusSizeInt, radiusSizeInt );
-    painter.setPen( Qt::cyan );
-    painter.drawPoint(floor(radiusSizeDouble/2.0+0.5),     floor(radiusSizeDouble/2.0+0.5));
-    painter.drawPoint(floor(radiusSizeDouble/2.0-1.0+0.5), floor(radiusSizeDouble/2.0+0.5));
-    painter.drawPoint(floor(radiusSizeDouble/2.0+1.0+0.5), floor(radiusSizeDouble/2.0+0.5));
-    painter.drawPoint(floor(radiusSizeDouble/2.0+0.5),     floor(radiusSizeDouble/2.0-1.0+0.5));
-    painter.drawPoint(floor(radiusSizeDouble/2.0+0.5),     floor(radiusSizeDouble/2.0+1.0+0.5));
-
-    // Update the cursor
-    currentView->viewWidget()->setCursor(QCursor(pix, -1, -1));
+        // Update the cursor
+        currentView->viewWidget()->setCursor(QCursor(pix, -1, -1));
+    }
 }
 
 void AlgorithmPaintToolBox::deactivateCustomedCursor()
 {
-    if (!currentView) // no data
+    if (currentView)
     {
-        return;
+         currentView->viewWidget()->setCursor(Qt::CrossCursor);
     }
-
-    currentView->viewWidget()->setCursor(Qt::CrossCursor);
 }
 
 void AlgorithmPaintToolBox::activateMagicWand()

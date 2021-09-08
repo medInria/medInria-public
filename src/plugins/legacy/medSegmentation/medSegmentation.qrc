@@ -1,6 +1,7 @@
 <RCC>
     <qresource prefix="medSegmentation">
-      <file>pixmaps/magic_wand.png</file>
+      <file>pixmaps/magic_wand_white.svg</file>
+      <file>pixmaps/magic_wand_black.svg</file>
     </qresource>
 </RCC>
 
