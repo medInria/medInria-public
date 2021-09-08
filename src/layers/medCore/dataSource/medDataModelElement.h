@@ -42,7 +42,7 @@ public:
 
     void setColumnAttributes(unsigned int p_uiLevel, QStringList &attributes);
 
-//public slots:
+public slots:
     void itemPressed(QModelIndex const &index);
 
 

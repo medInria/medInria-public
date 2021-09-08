@@ -72,10 +72,10 @@ QVariant medDataModelElement::data(const QModelIndex & index, int role) const
         {
             varDataRes = Qt::AlignHCenter;
         }
-        else if (role == Qt::DisplayRole || role == Qt::EditRole)
+        else if (!(role == Qt::DisplayRole || role == Qt::EditRole))
         {
             medDataModelItem *item = static_cast<medDataModelItem *>(index.internalPointer());
-            varDataRes = item->data(index.column());
+            varDataRes = item->data(index.column()).toString();
         }
     }
 
@@ -122,7 +122,7 @@ QModelIndex medDataModelElement::parent(const QModelIndex & index) const
     {
         auto indexItem = static_cast<medDataModelItem *>(index.internalPointer());
         auto parentItem = indexItem->parent();
-        if (parentItem)
+        if (parentItem && parentItem != d->root)
         {
             indexRes = createIndex(parentItem->row(), 0, parentItem);
         }
@@ -149,7 +149,7 @@ int medDataModelElement::columnCount(const QModelIndex & parent) const
         level = parentItem->level() + 1;
     }
 
-    iRes = getLevelColumCount(level + 1);
+    iRes = getLevelColumCount(level);
     
     return iRes;
 }
@@ -163,19 +163,16 @@ int	medDataModelElement::rowCount(const QModelIndex &parent) const
 {
     int iRes = 0;    
 
-    if (parent.column() == 0)
+    if (!parent.isValid())
     {
-        if (!parent.isValid())
-        {
-            iRes = d->root->childCount();
-        }
-        else
-        {
-            medDataModelItem *parentItem = nullptr;
-            parentItem = static_cast<medDataModelItem *>(parent.internalPointer());
-            iRes = parentItem->childCount();
-        }
-    }    
+        iRes = d->root->childCount();
+    }
+    else if (parent.column() == 0)
+    {
+        medDataModelItem *parentItem = nullptr;
+        parentItem = static_cast<medDataModelItem *>(parent.internalPointer());
+        iRes = parentItem->childCount();
+    } 
 
     return iRes;
 }

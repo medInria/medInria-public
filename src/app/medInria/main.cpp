@@ -238,6 +238,9 @@ int main(int argc, char *argv[])
 
         treeView->setModel(testModel->getModel(""));
         tableView->setModel(testModel->getModel(""));
+        bool c0Ok = QObject::connect(treeView, SIGNAL(pressed(const QModelIndex &)), tableView, SIGNAL(pressed(const QModelIndex &)));
+        bool c1Ok = QObject::connect(treeView, SIGNAL(pressed(const QModelIndex &)), testModel->getModel(""), SLOT(itemPressed(QModelIndex const &)));
+        bool c2Ok = QObject::connect(tableView, SIGNAL(pressed(const QModelIndex &)), testModel->getModel(""), SLOT(itemPressed(QModelIndex const &)));
         QWidget *w = new QWidget;
         QVBoxLayout *vLayout = new QVBoxLayout;
         vLayout->addWidget(treeView);

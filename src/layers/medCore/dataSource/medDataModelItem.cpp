@@ -13,7 +13,7 @@ public:
     medDataModelItem * parentItem;
     QList<medDataModelItem *> childItems;
 
-    QList<QVariant> itemData;
+    QVariantList itemData;
 
     unsigned int uiLevel;
 };
@@ -87,8 +87,10 @@ void medDataModelItem::setData(QStringList const & value)
     {
         d->itemData.clear();
     }
-
-    d->itemData.append(value);
+    for (auto val : value)
+    {
+        d->itemData.append(val);
+    }    
 }
 
 void medDataModelItem::append(medDataModelItem * child)
