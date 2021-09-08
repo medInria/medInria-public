@@ -1,6 +1,7 @@
 <RCC>
     <qresource prefix="/">
         <file>../../../../LICENSE.txt</file>
+        <file>../../../../LICENSES_EXT.txt</file>
         <file>../../../../RELEASE_NOTES.txt</file>
         <file>../../../../DESCRIPTION.txt</file>
         <file>../../../../ABOUT.txt</file>

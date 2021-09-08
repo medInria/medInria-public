@@ -54,6 +54,11 @@ public slots:
      * @brief Display a license window
      */
     void onShowLicense();
+    
+    /**
+     * @brief Display a licenses window for external libraries
+     */
+    void onShowExtLicenses();
 
     /**
      * @brief Display a database window
