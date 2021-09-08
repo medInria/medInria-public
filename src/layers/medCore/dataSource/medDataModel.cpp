@@ -103,6 +103,12 @@ bool medDataModel::getLevelAttributes(QString const & pi_sourceIntanceId, unsign
     return bRes;
 }
 
+medDataModelElement * medDataModel::getModel(QString const & pi_sourceIntanceId)
+{
+    return m_sourcesModelMap.first(); //TODO
+}
+
+
 void medDataModel::addSource(medAbstractSource * pi_source)
 {
     if (pi_source)

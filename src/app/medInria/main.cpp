@@ -236,7 +236,8 @@ int main(int argc, char *argv[])
         auto treeView = new QTreeView();
         auto tableView = new QTableView();
 
-//        treeView->setModel()
+        treeView->setModel(testModel->getModel(""));
+        tableView->setModel(testModel->getModel(""));
         QWidget *w = new QWidget;
         QVBoxLayout *vLayout = new QVBoxLayout;
         vLayout->addWidget(treeView);

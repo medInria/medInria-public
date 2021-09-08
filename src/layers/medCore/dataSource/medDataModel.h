@@ -15,9 +15,10 @@
 #include <medSourcesLoader.h>
 #include <medDataModelElement.h>
 
+#include <medCoreExport.h>
 #include<QMap>
 
-class medDataModel : public QObject
+class MEDCORE_EXPORT medDataModel : public QObject
 {
 
     Q_OBJECT
@@ -30,6 +31,8 @@ public:
     bool getSourceGlobalInfo(QString const &pi_sourceIntanceId, bool &pi_bOnline, bool &pi_bWritable, bool & pi_bLocal, bool &pi_bCache);
     bool getLevelMetaData(QString const & pi_sourceIntanceId, unsigned int pi_uiLevel, QString const & key, QVariantList & po_entries);
     bool getLevelAttributes(QString const & pi_sourceIntanceId, unsigned int pi_uiLevel, QStringList & po_attributes);
+
+    medDataModelElement* getModel(QString const & pi_sourceIntanceId);
 
 public slots:
    void addSource(medAbstractSource* pi_source);

@@ -259,7 +259,7 @@ void medDataModelElement::populateLevel(medDataModelItem * pi_pItem, QString con
 {
     QVariantList entries;
     unsigned int iLevel = pi_pItem->level();
-    d->parent->getLevelMetaData(d->sourceInstanceId, iLevel+1, key, entries);
+    d->parent->getLevelMetaData(d->sourceInstanceId, iLevel, key, entries);
 
     // ////////////////////////////////////////////////////////////////////////
     // Populate column names if not already done

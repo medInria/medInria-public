@@ -267,41 +267,56 @@ bool medDBSourcesLoader::loadFromDisk()
 
     QFile cnxSourcesParametersFile;
     cnxSourcesParametersFile.setFileName(m_CnxParametersPath + "/" + MED_DATASOURCES_FILENAME);
-    cnxSourcesParametersFile.open(QIODevice::ReadOnly | QIODevice::Text);
-    content = cnxSourcesParametersFile.readAll();
-    cnxSourcesParametersFile.close();
-
-    qWarning() << content;
-    QJsonDocument jsonSaveDoc = QJsonDocument::fromJson(content.toUtf8());
-    QJsonArray entries = jsonSaveDoc.array();
-    for (auto entry : entries)
+    bRes = cnxSourcesParametersFile.open(QIODevice::ReadOnly | QIODevice::Text);
+    if (bRes)
     {
-        auto obj = entry.toObject();
+        int iCnxOk = 0;
+        int iCnxWithoutPlugin = 0;
+        int iCnxInvalid = 0;
 
-        if (obj.contains("sourceType") && obj["sourceType"].isString() && !obj["sourceType"].toString().isEmpty() &&
-            obj.contains("cnxId") && obj["cnxId"].isString() && !obj["cnxId"].toString().isEmpty() &&
-            obj.contains("cnxName") && obj["cnxName"].isString() && !obj["cnxName"].toString().isEmpty())
+        content = cnxSourcesParametersFile.readAll();
+        cnxSourcesParametersFile.close();
+
+        qWarning() << content;
+        QJsonDocument jsonSaveDoc = QJsonDocument::fromJson(content.toUtf8());
+        QJsonArray entries = jsonSaveDoc.array();
+        for (auto entry : entries)
         {
-            if (m_sourcesMap.contains(obj["sourceType"].toString()))
+            auto obj = entry.toObject();
+
+            if (obj.contains("sourceType") && obj["sourceType"].isString() && !obj["sourceType"].toString().isEmpty() &&
+                obj.contains("cnxId") && obj["cnxId"].isString() && !obj["cnxId"].toString().isEmpty() &&
+                obj.contains("cnxName") && obj["cnxName"].isString() && !obj["cnxName"].toString().isEmpty())
             {
-                reloadCnx(obj);
+                if (m_sourcesMap.contains(obj["sourceType"].toString()))
+                {
+                    reloadCnx(obj);
+                    iCnxOk++;
+                }
+                else
+                {
+                    qWarning() << "[WARN] Source loading can't find dataSource plugin for : "
+                        << "\nSource type     = " << obj["sourceType"]
+                        << "\nConnection Id   = " << obj["cnxId"]
+                        << "\nConnection name = " << obj["cnxName"];
+                    m_unresolvedSavedCnx.push_back(obj);
+                    iCnxWithoutPlugin++;
+                }
             }
             else
             {
-                qWarning() << "[WARN] Source loading can't find dataSource plugin for : "
+                qWarning() << "[WARN] Source loading invalid entry detected : "
                     << "\nSource type     = " << obj["sourceType"]
                     << "\nConnection Id   = " << obj["cnxId"]
                     << "\nConnection name = " << obj["cnxName"];
-                m_unresolvedSavedCnx.push_back(obj);
+                iCnxInvalid++;
             }
         }
-        else
-        {
-            qWarning() << "[WARN] Source loading invalid entry detected : "
-                << "\nSource type     = " << obj["sourceType"]
-                << "\nConnection Id   = " << obj["cnxId"]
-                << "\nConnection name = " << obj["cnxName"];
-        }
+        qWarning() << "[WARN] Source loading statistics : "
+            << "\nConnection ok             = " << iCnxOk
+            << "\nConnection without plugin = " << iCnxWithoutPlugin
+            << "\nConnection invalid        = " << iCnxInvalid;
+        bRes = iCnxOk > 0;
     }
 
     return bRes;
@@ -419,6 +434,7 @@ void medDBSourcesLoader::reloadCnx(QJsonObject &obj)
 
     m_instanceMapType[obj["cnxId"].toString()] = obj["sourceType"].toString();
     m_instancesMap.insert(obj["cnxId"].toString(), QSharedPointer<medAbstractSource>(pDataSource));
+    pDataSource->connect();
     emit(sourceAdded(pDataSource));
 }
 
