@@ -30,6 +30,8 @@ public:
     medDataModelElement(medDataModel *parent, QString const & sourceIntanceId);
     virtual ~medDataModelElement();
 
+    // ////////////////////////////////////////////////////////////////////////
+    // Pure Virtual Override
     QVariant	data(const QModelIndex &index, int role = Qt::DisplayRole) const override;
 
     QModelIndex	index(int row, int column, const QModelIndex &parent = QModelIndex()) const override;
@@ -37,6 +39,13 @@ public:
 
     int	columnCount(const QModelIndex &parent = QModelIndex()) const override;
     int	rowCount(const QModelIndex &parent = QModelIndex()) const override;
+
+    // ////////////////////////////////////////////////////////////////////////
+    // Simple Virtual Override
+    bool insertRows(int row, int count, const QModelIndex &parent = QModelIndex()) override;
+
+
+
 
 
 
@@ -49,7 +58,7 @@ public slots:
 private:
     bool getColumnNames(unsigned int const &iLevel) const;
     int  getLevelColumCount(unsigned int pi_uiLevel) const;
-    void populateLevel(medDataModelItem * pItemCurrent, QString const &key);
+    void populateLevel(medDataModelItem * pItemCurrent, QString const &key, QModelIndex const &index, bool subLevel = false);
 
 
 signals:

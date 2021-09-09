@@ -43,7 +43,7 @@ medDataModelElement::medDataModelElement(medDataModel *parent, QString const & s
     {
         if (d->bOnline)
         {
-            populateLevel(d->root, "");
+            populateLevel(d->root, "", QModelIndex());
         }
         else
         {
@@ -72,10 +72,11 @@ QVariant medDataModelElement::data(const QModelIndex & index, int role) const
         {
             varDataRes = Qt::AlignHCenter;
         }
-        else if (!(role == Qt::DisplayRole || role == Qt::EditRole))
+        else if ((role == Qt::DisplayRole || role == Qt::EditRole))
         {
             medDataModelItem *item = static_cast<medDataModelItem *>(index.internalPointer());
-            varDataRes = item->data(index.column()).toString();
+            int i = index.column();
+            varDataRes = item->data(i).toString();
         }
     }
 
@@ -177,6 +178,14 @@ int	medDataModelElement::rowCount(const QModelIndex &parent) const
     return iRes;
 }
 
+bool medDataModelElement::insertRows(int row, int count, const QModelIndex &parent)
+{
+    beginInsertRows(parent, row, row + count - 1);
+
+    endInsertRows();
+    return true;
+}
+
 
 
 
@@ -209,7 +218,9 @@ void medDataModelElement::itemPressed(QModelIndex const &index)
             if (pItemCurrent->childCount() == 0)
             {
                 auto key = pItemCurrent->data(0).toString();
-                populateLevel(pItemCurrent, key);
+                populateLevel(pItemCurrent, key, index, true);
+
+                //insertRow(pItemCurrent->childCount()-1, index);
             }
         }
     }
@@ -252,28 +263,50 @@ int medDataModelElement::getLevelColumCount(unsigned int pi_uiLevel) const
     return iRes;
 }
 
-void medDataModelElement::populateLevel(medDataModelItem * pi_pItem, QString const &key)
+void medDataModelElement::populateLevel(medDataModelItem * pi_pItem, QString const &key, QModelIndex const &index, bool subLevel)
 {
     QVariantList entries;
     unsigned int iLevel = pi_pItem->level();
-    d->parent->getLevelMetaData(d->sourceInstanceId, iLevel, key, entries);
+    //if (subLevel)
+    //{
+    //    iLevel++;
+    //}
+    if (d->parent->getLevelMetaData(d->sourceInstanceId, iLevel, key, entries))
+    {
+        if (index.isValid())
+        {
+            int row = rowCount(index);
+            int elemCount = entries.size();
+            beginInsertRows(index, row, row+elemCount-1);
+        }
+        else
+        {
+            int i = 0;
+            ++i;
+        }
 
-    // ////////////////////////////////////////////////////////////////////////
-    // Populate column names if not already done
-    if (!d->columnNameByLevel.contains(iLevel))
-    {
-        getColumnNames(iLevel);
-    }
-    
-    // ////////////////////////////////////////////////////////////////////////
-    // Populate data loop
-    for (QVariant &var : entries)
-    {
-        medDataModelItem *pItemTmp = new medDataModelItem();
-        auto elem = var.toStringList();
-        pItemTmp->setData(elem);
-        pItemTmp->setParent(pi_pItem);
-        pi_pItem->append(pItemTmp);
+        // ////////////////////////////////////////////////////////////////////////
+        // Populate column names if not already done
+        if (!d->columnNameByLevel.contains(iLevel))
+        {
+            getColumnNames(iLevel);
+        }
+
+        // ////////////////////////////////////////////////////////////////////////
+        // Populate data loop
+        for (QVariant &var : entries)
+        {
+            medDataModelItem *pItemTmp = new medDataModelItem();
+            auto elem = var.toStringList();
+            pItemTmp->setData(elem);
+            pItemTmp->setParent(pi_pItem);
+            pi_pItem->append(pItemTmp);
+        }
+
+        if (index.isValid())
+        {
+            endInsertRows();
+        }
     }
 }
 

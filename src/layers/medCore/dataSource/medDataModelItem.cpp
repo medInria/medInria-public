@@ -79,6 +79,7 @@ QVariant medDataModelItem::data(int column) const
 void medDataModelItem::setParent(medDataModelItem * parent)
 {
     d->parentItem = parent;
+    d->uiLevel = d->parentItem->d->uiLevel + 1;
 }
 
 void medDataModelItem::setData(QStringList const & value)
