@@ -17,6 +17,7 @@
 #include <itkCastImageFilter.h>
 #include <itkConnectedComponentImageFilter.h>
 #include <itkFiltersComponentSizeThresholdProcess.h>
+#include <itkIntensityWindowingImageFilter.h>
 #include <itkRelabelComponentImageFilter.h>
 
 #include <medAbstractData.h>
@@ -27,7 +28,7 @@
 class itkFiltersComponentSizeThresholdProcessPrivate
 {
 public:
-    double minimumSize;
+    int minimumSize;
     bool binarize;
 };
 
@@ -73,15 +74,20 @@ void itkFiltersComponentSizeThresholdProcess::setParameter(int data, int channel
 {
     switch(channel)
     {
-    case 1:
-        d->minimumSize = data;
-        break;
-    case 2:
-        d->binarize = static_cast<bool>(data);
-        break;
-    default:
-        qDebug()<< metaObject()->className()
-                << "::set parameter - unknown channel.";
+        case 1:
+        {
+            d->minimumSize = data;
+            break;
+        }
+        case 2:
+        {
+            d->binarize = static_cast<bool>(data);
+            break;
+        }
+        default:
+        {
+            qDebug()<< metaObject()->className()<< "::set parameter - unknown channel.";
+        }
     }
 }
 
@@ -123,10 +129,27 @@ int itkFiltersComponentSizeThresholdProcess::updateProcess(medAbstractData *inpu
 
     if (std::is_floating_point<typename InputImageType::PixelType>::value)
     {
-        adjustedInputData = castToOutputType<InputImageType>(inputData);;
+        adjustedInputData = castToOutputType<InputImageType>(inputData);
     }
 
-    typename InputImageType::Pointer inputImage = static_cast<InputImageType*>(inputData->data());
+    auto inputImage = static_cast<InputImageType*>(adjustedInputData->data());
+
+    // Get minimum and maximum of the data
+    auto minValueImage = medUtilitiesITK::minimumValue(adjustedInputData);
+    auto maxValueImage = medUtilitiesITK::maximumValue(adjustedInputData);
+    if(minValueImage != 0)
+    {
+        // For masks with values non-0/1, as -1024/10000, set the intensity to 0/1
+        typedef itk::IntensityWindowingImageFilter< InputImageType, InputImageType >  WindowingFilterType;
+        typename WindowingFilterType::Pointer windowingFilter = WindowingFilterType::New();
+        windowingFilter->SetInput(inputImage);
+        windowingFilter->SetWindowMinimum(minValueImage);
+        windowingFilter->SetWindowMaximum(maxValueImage);
+        windowingFilter->SetOutputMinimum(0);
+        windowingFilter->SetOutputMaximum(1);
+        windowingFilter->Update();
+        inputImage = windowingFilter->GetOutput();
+    }
 
     typedef itk::ConnectedComponentImageFilter <InputImageType, OutputImageType> ConnectedComponentFilterType;
     typename ConnectedComponentFilterType::Pointer connectedComponentFilter = ConnectedComponentFilterType::New();
@@ -149,7 +172,6 @@ int itkFiltersComponentSizeThresholdProcess::updateProcess(medAbstractData *inpu
 
     if (d->binarize == true)
     {
-
         // BINARY FILTER
         typedef itk::BinaryThresholdImageFilter <OutputImageType, OutputImageType> BinaryThresholdImageFilterType;
         typename BinaryThresholdImageFilterType::Pointer thresholdFilter
