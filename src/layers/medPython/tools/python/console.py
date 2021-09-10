@@ -1,6 +1,7 @@
 import sys, code
 from . import qt_bindings as qt
 
+
 logo = """
                             888 8888888                  d8b
                             888   888                    Y8P
@@ -11,6 +12,7 @@ logo = """
 888  888  888 Y8b.     Y88b 888   888   888  888 888     888 888  888
 888  888  888  "Y8888   "Y88888 8888888 888  888 888     888 "Y888888
 """
+
 
 class CommandLine(qt.QLineEdit):
 
@@ -45,7 +47,6 @@ class CommandLine(qt.QLineEdit):
 
     def setText(self, text=""):
         super().setText(self.prompt + text)
-
 
         
 class Console(qt.QWidget):
