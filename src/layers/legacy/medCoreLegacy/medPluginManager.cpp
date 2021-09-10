@@ -175,3 +175,16 @@ QStringList medPluginManager::loadErrors()
 {
     return d->loadErrors;
 }
+
+void medPluginManager::loadPlugin(const QString& path)
+{
+    QFileInfo pathInfo(path);
+    QString correctedPath = path;
+
+    if (pathInfo.isBundle())
+    {
+        correctedPath += "/" + pathInfo.baseName();
+    }
+
+    dtkPluginManager::loadPlugin(correctedPath);
+}

@@ -38,6 +38,8 @@ public:
 
     QStringList loadErrors();
 
+    void loadPlugin(const QString& path) override;
+
 public slots:
     void onPluginLoaded(const QString& name);
 
