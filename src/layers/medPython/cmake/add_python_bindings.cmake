@@ -15,63 +15,60 @@
 
 function(add_python_bindings cpp_target bindings_target)
 
-    cmake_parse_arguments(BINDINGS
+    cmake_parse_arguments(args
         ""
-        "NAME;REMOVE_BINDINGS_PREFIX;HEADER_FILE_PREFIX"
-        "SIMPLE_BINDINGS;DIRECTOR_BINDINGS;INCLUDE_INTERFACES;IMPORT_INTERFACES;INCLUDE_HEADERS"
+        "NAME"
+        "INCLUDE;IMPORT"
         ${ARGN}
         )
 
-    if (DEFINED option_NAME)
-        set(module_name ${option_NAME})
+    if (DEFINED args_NAME)
+        set(module_name ${args_NAME})
     else()
         set(module_name ${bindings_target})
     endif()
 
+    get_target_property(package_name ${cpp_target} PYTHON_PACKAGE_NAME)
+    if (NOT package_name)
+        set(package_name ${cpp_target})
+    endif()
+
     set(bindings_dir ${CMAKE_CURRENT_BINARY_DIR}/swig/${bindings_target})
     set(interface_file ${bindings_dir}/${bindings_target}.i)
-    set(modules_dir ${CMAKE_CURRENT_BINARY_DIR}/python/modules/${cpp_target})
-    set(libraries_dir ${CMAKE_CURRENT_BINARY_DIR}/python/libraries/${cpp_target})
+    set(modules_dir ${CMAKE_CURRENT_BINARY_DIR}/python/modules/${package_name})
+    set(libraries_dir ${CMAKE_CURRENT_BINARY_DIR}/python/libraries/${package_name})
 
     string(CONCAT interface_content
-        "%include \"standard_defs.i\"\n\n"
-        "%module(package=\"${cpp_target}\", directors=\"1\") ${module_name}\n\n"
+        "%{\n"
+        "   #include \"medPython.h\"\n"
+        "%}\n\n"
+        "%module(package=\"${package_name}\", directors=\"1\") ${module_name}\n\n"
         "%feature(\"director:except\")\n"
         "{\n"
         "  if ($error != nullptr)\n"
         "  {\n"
-        "    throw Swig::DirectorMethodException()\;\n"
+        "    med::python::propagateCurrentError()\;\n"
+        "  }\n"
+        "}\n\n"
+        "%exception\n"
+        "{\n"
+        "  try\n"
+        "  {\n"
+        "    $action\n"
+        "  }\n"
+        "  catch (med::python::Exception e)\n"
+        "  {\n"
+        "    med::python::raiseError(e.nativeClass(), e.what())\;\n"
+        "    SWIG_fail\;\n"
         "  }\n"
         "}\n\n"
         )
 
-    foreach(file ${option_INCLUDE_HEADERS})
-        string(APPEND interface_content "%{\n#include \"${file}\"\n%}\n\n")
-    endforeach()
-
-    foreach(file ${option_IMPORT_INTERFACES})
+    foreach(file ${args_IMPORT})
         string(APPEND interface_content "%import \"${file}\"\n\n")
     endforeach()
 
-    foreach(binding ${option_DIRECTOR_BINDINGS})
-        string(APPEND "%feature(\"director\") ${binding}\;\n\n")
-    endforeach()
-
-    foreach(binding ${option_SIMPLE_BINDINGS} ${option_DIRECTOR_BINDINGS})
-        if (DEFINED option_REMOVE_BINDINGS_PREFIX)
-            STRING(REGEX REPLACE "^${option_REMOVE_BINDINGS_PREFIX}" "" unprefixed_binding ${binding})
-            string(APPEND interface_content "%rename(${unprefixed_binding}) ${binding}\;\n\n")
-        endif()
-
-        string(APPEND interface_content
-            "%{\n"
-            "#include \"${option_HEADER_FILE_PREFIX}${binding}.h\"\n"
-            "%}\n\n"
-            "%include \"${option_HEADER_FILE_PREFIX}${binding}.h\"\n\n"
-            )
-    endforeach()
-
-    foreach(file ${option_INCLUDE_INTERFACES})
+    foreach(file ${args_INCLUDE})
         string(APPEND interface_content "%include \"${file}\"\n\n")
     endforeach()
 
@@ -93,18 +90,12 @@ function(add_python_bindings cpp_target bindings_target)
         SWIG_USE_TARGET_INCLUDE_DIRECTORIES TRUE
         LIBRARY_OUTPUT_DIRECTORY ${libraries_dir}
         OUTPUT_NAME ${module_name}
+        SWIG_COMPILE_DEFINITIONS SWIG_TYPE_TABLE=${PYTHON_PROJECT_NAME}
         )
 
-    target_include_directories(${bindings_target}
-        PUBLIC
-        ${CMAKE_CURRENT_FUNCTION_LIST_DIR}/scripts
-        )
+    target_link_libraries(${bindings_target} PUBLIC ${PYTHON_PROJECT_NAME}Base)
 
-    target_link_libraries(${bindings_target} PUBLIC medPython)
-
-    set_property(TARGET ${cpp_target}
-        APPEND PROPERTY PYTHON_BINDINGS ${bindings_target}
-        )
+    set_property(TARGET ${cpp_target} APPEND PROPERTY PYTHON_BINDINGS ${bindings_target})
 
     get_target_property(library_prefix ${bindings_target} PREFIX)
 
@@ -115,8 +106,6 @@ function(add_python_bindings cpp_target bindings_target)
     endif()
 
     set(library ${libraries_dir}/${library_prefix}${module_name}${library_suffix})
-
     set_source_files_properties(${library} PROPERTIES GENERATED TRUE)
-    add_custom_command(OUTPUT ${library} COMMAND DEPENDS ${bindings_target})
 
 endfunction()

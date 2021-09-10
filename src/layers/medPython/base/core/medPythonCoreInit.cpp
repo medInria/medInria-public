@@ -16,12 +16,11 @@
 
 #include "medPythonCoreInit.h"
 
-#include <QApplication>
 #include <QDebug>
 #include <QFileInfo>
 #include <QTemporaryDir>
 
-#include "medExternalResources.h"
+#include <medExternalResources.h>
 
 #include "medPythonCoreUtils.h"
 
@@ -69,7 +68,7 @@ bool getResourceArchives(QStringList& resourceArchives)
 
 // The encodings module is required during initialiation, and cannot be
 // contained within a ZIP archive (Python loads it before loading zlib). The
-// module is a package, but the resource system does not allow storing
+// module is a package but the resource system does not allow storing
 // subdirectories. To solve this problem, the package files are stored in the
 // resource directory with the "encodings_" prefix added to them. At runtime, an
 // encodings directory is created within a temporary directory, with symbolic
@@ -264,7 +263,7 @@ bool initializeFromConfig(PyConfig* config)
 
 } // namespace
 
-bool initializePython()
+bool initializeInterpreter()
 {
     PyConfig config;
     bool success = setupEncodingsPackage()
@@ -274,20 +273,22 @@ bool initializePython()
 
     if (success)
     {
-        qInfo() << "Python is initialized: " << Py_GetVersion();
+        qInfo() << "Embedded Python initialized: " << Py_GetVersion();
+    }
+    else
+    {
+        qWarning() << "Initialization of the embedded Python failed";
+        finalizeInterpreter();
     }
 
     return success;
 }
 
-bool finalizePython()
+bool finalizeInterpreter()
 {
     bool success = true;
 
-    // The Python setup might have failed at the symbol resolving step, so we
-    // must make sure the function pointers are valid before using them.
-    //
-    if (Py_IsInitialized && Py_FinalizeEx && Py_IsInitialized())
+    if (Py_IsInitialized())
     {
         success = (Py_FinalizeEx() == 0);
     }

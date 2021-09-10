@@ -12,12 +12,8 @@
 
 ==============================================================================*/
 
+#include "medPythonCoreForward.h"
+#include "medPythonCoreInit.h"
 #include "medPythonCoreUtils.h"
 
-namespace med::python
-{
-
-bool setupCore();
-bool teardownCore();
-
-} // namespace med::python
+typedef struct _object PyObject;

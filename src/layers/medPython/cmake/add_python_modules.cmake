@@ -13,20 +13,38 @@
 #
 ################################################################################
 
-function(add_python_modules package)
+function(add_python_modules target)
 
-    set(modules_dir "${PYTHON_BUILD_DIR}/modules/${package}")
+    cmake_parse_arguments(args
+        ""
+        "SOURCE_DIRECTORY"
+        ""
+        ${ARGN}
+        )
 
-    foreach (module ${ARGN})
-        get_filename_component(module_name ${module} NAME)
+    if (DEFINED args_SOURCE_DIRECTORY)
+        set(source_directory ${args_SOURCE_DIRECTORY})
+    else()
+        set(source_directory ${CMAKE_CURRENT_SOURCE_DIR})
+    endif()
+
+    get_target_property(package_name ${target} PYTHON_PACKAGE_NAME)
+    if (NOT package_name)
+        set(package_name ${target})
+    endif()
+
+    set(modules_dir ${CMAKE_CURRENT_BINARY_DIR}/python/modules/${package_name})
+
+    foreach (module ${args_UNPARSED_ARGUMENTS})
+        get_filename_component(module_name ${module} NAME_WE)
         # Copy modules to the build folder (tar needs them all in one place)
-        set(module_copy "${modules_dir}/${module_name}")
+        set(module_copy "${modules_dir}/${module_name}.py")
         add_custom_command(OUTPUT ${module_copy}
           COMMAND ${CMAKE_COMMAND} ARGS -E copy "${module}" "${module_copy}"
+          WORKING_DIRECTORY ${source_directory}
+          DEPENDS ${source_directory}/${module}
           )
-        list(APPEND ${package}_PYTHON_MODULES ${module_name})
+        set_property(TARGET ${target} APPEND PROPERTY PYTHON_MODULES ${module_name})
     endforeach()
-
-    set(${package}_PYTHON_MODULES ${${package}_PYTHON_MODULES} PARENT_SCOPE)
 
 endfunction()

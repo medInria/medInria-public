@@ -16,10 +16,9 @@
 /// code.
 ///
 
-#include "medPythonCoreAPI.h"
-
 #include <QString>
 
+#include "medPythonCore.h"
 #include "medPythonExport.h"
 
 namespace med::python

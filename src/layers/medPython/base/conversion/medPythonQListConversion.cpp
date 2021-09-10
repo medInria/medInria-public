@@ -11,6 +11,8 @@
 
 ==============================================================================*/
 
+#include "medPythonCoreAPI.h"
+
 #include "medPythonQListConversion.h"
 
 namespace med::python

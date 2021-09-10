@@ -12,10 +12,9 @@
 
 ==============================================================================*/
 
-#include "medPythonCoreAPI.h"
-
 #include <QHash>
 
+#include "medPythonCore.h"
 #include "medPythonExport.h"
 #include "medPythonQListConversion.h"
 
@@ -56,7 +55,7 @@ bool medPythonConvert(const QHash<KEY_TYPE, VALUE_TYPE>& qHash, PyObject** outpu
                 continue;
             }
 
-            Py_CLEAR(pythonKey);
+            med::python::decref(pythonKey);
         }
 
         success = false;

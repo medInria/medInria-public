@@ -117,6 +117,7 @@ cmake_policy(SET CMP0118 NEW)
 set(${PROJECT_NAME}_CMAKE_DIR
   ${CMAKE_CURRENT_SOURCE_DIR}/cmake
   ${CMAKE_CURRENT_SOURCE_DIR}/cmake/module
+  ${CMAKE_CURRENT_SOURCE_DIR}/layers/medPython/cmake
   )
 
 set(CMAKE_MODULE_PATH

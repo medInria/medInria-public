@@ -12,10 +12,9 @@
 
 ==============================================================================*/
 
-#include "medPythonCoreAPI.h"
-
 #include <QList>
 
+#include "medPythonCore.h"
 #include "medPythonExport.h"
 
 namespace med::python

@@ -12,8 +12,7 @@
 
 ==============================================================================*/
 
-#include "medPythonCoreAPI.h"
-
+#include "medPythonCore.h"
 #include "medPythonExport.h"
 
 namespace med::python

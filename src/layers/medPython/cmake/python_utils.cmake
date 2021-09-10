@@ -14,6 +14,7 @@
 ################################################################################
 
 set(PYTHON_PROJECT_NAME medPython)
+set(PYTHON_PLUGIN_PREFIX ${PROJECT_NAME}_)
 
 cmake_policy(SET CMP0078 NEW)
 cmake_policy(SET CMP0086 NEW)

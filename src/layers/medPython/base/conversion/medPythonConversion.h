@@ -12,6 +12,7 @@
 
 ==============================================================================*/
 
+#include "medPythonConversionUtils.h"
 #include "medPythonObjectConversion.h"
 #include "medPythonPrimitiveConversion.h"
 #include "medPythonQHashConversion.h"
@@ -30,15 +31,13 @@
 /// The output must be a new reference to a Python object (meaning the caller
 /// owns it). The function must return true if the conversion succeeded, false
 /// otherwise. If the conversion failed, a Python error must be raised (but not
-/// propagated to C++). If the input type is a pointer, the caller retains
-/// ownership of the input object.
+/// propagated to C++).
 ///
 /// The overload to convert a Python object to C++ has the following signature:
 ///
 ///     bool medPythonConvert(const PyObject* object, OUTPUT_TYPE* output);
 ///
-/// The caller retains ownership of the input object and, if the output type is
-/// a pointer, the caller owns the allocated output object. The function must
-/// return true if the conversion succeeded, false otherwise. If the conversion
-/// failed, a Python error must be raised (but not propagated to C++).
+/// The caller retains ownership of the input object. The function must return
+/// true if the conversion succeeded, false otherwise. If the conversion failed,
+/// a Python error must be raised (but not propagated to C++).
 ///

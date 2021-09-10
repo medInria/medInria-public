@@ -135,25 +135,32 @@ void testSysModules()
     print("Testing sys.modules");
     QHash<QString, Object> sysModules = Module("sys").attribute("modules").convert<QHash<QString, Object> >();
 
-    foreach (Module module, sysModules)
+    foreach (Object moduleObject, sysModules)
     {
-        if (module.hasAttribute("__file__"))
+        // Strangely, sys.modules can contain non-modules.
+        //
+        if (PyModule_Check(*moduleObject))
         {
-            QString file = module.attribute("__file__").convert<QString>();
+            Module module = moduleObject;
 
-            if (isEmbeddedPath(file))
+            if (module.hasAttribute("__file__"))
             {
-                printIndented(module.name() + ": " + file);
+                QString file = module.attribute("__file__").convert<QString>();
+
+                if (isEmbeddedPath(file))
+                {
+                    printIndented(module.name() + ": " + file);
+                }
+                else
+                {
+                    QString message = QString("Module %1 was not loaded from the embedded Python: %2").arg(module.name(), file);
+                    throw BaseException(message);
+                }
             }
             else
             {
-                QString message = QString("Module %1 was not loaded from the embedded Python: %2").arg(module.name(), file);
-                throw BaseException(message);
+                printIndented(module.name() + " (built-in)");
             }
-        }
-        else
-        {
-            printIndented(module.name() + " (built-in)");
         }
     }
 
@@ -212,7 +219,7 @@ void runEmbeddedPythonTest()
     printEmptyLine();
     testModuleImport("json");
     printEmptyLine();
-    testSysPath();
+    //testSysPath();
     printEmptyLine();
     testSysModules();
     printEmptyLine();
@@ -223,7 +230,7 @@ void runEmbeddedPythonTest()
 
 } // namespace
 
-void testEmbeddedPython(bool withCrash)
+int testEmbeddedPython(bool withCrash)
 {
     printEmptyLine();
     print("---- START OF MEDPYTHON TEST ----");
@@ -249,6 +256,8 @@ void testEmbeddedPython(bool withCrash)
     printEmptyLine();
     print("---- END OF MEDPYTHON TEST ----");
     printEmptyLine();
+
+    return 0;
 }
 
 } // namespace med::python::test

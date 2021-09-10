@@ -23,37 +23,31 @@ namespace med::python
 
 Object none()
 {
-    lazyLoadPython();
     Py_RETURN_NONE;
 }
 
 Object list()
 {
-    lazyLoadPython();
     return coreFunction(PyList_New, 0);
 }
 
 Object list(const Object& object)
 {
-    lazyLoadPython();
     return coreFunction(PySequence_List, *object);
 }
 
 Object tuple()
 {
-    lazyLoadPython();
     return coreFunction(PyTuple_New, 0);
 }
 
 Object tuple(const Object& object)
 {
-    lazyLoadPython();
     return coreFunction(PySequence_Tuple, *object);
 }
 
 Object dict()
 {
-    lazyLoadPython();
     return coreFunction(PyDict_New);
 }
 

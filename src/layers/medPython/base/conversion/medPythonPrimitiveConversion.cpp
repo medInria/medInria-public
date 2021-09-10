@@ -11,6 +11,8 @@
 
 ==============================================================================*/
 
+#include "medPythonCoreAPI.h"
+
 #include "medPythonPrimitiveConversion.h"
 
 bool medPythonConvert(bool value, PyObject** output)

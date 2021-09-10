@@ -148,7 +148,10 @@ target_link_libraries(${TARGET_NAME}
   )
 
 if (USE_PYTHON)
-    target_link_libraries(${TARGET_NAME} medPythonBase)
+    target_link_libraries(${TARGET_NAME}
+        medPythonBase
+        medPythonTools
+        )
 endif()
 
 

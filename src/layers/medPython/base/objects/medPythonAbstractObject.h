@@ -117,7 +117,10 @@ public:
     /// of medPythonConvert. The caller owns the returned object.
     ///
     template <class TYPE>
-    TYPE convert();
+    TYPE convert() const;
+
+    template <class TYPE>
+    TYPE cast() const;
 
     // Due to ciruclar dependency issues, the following three template functions
     // are defined in the header file of their respective return types.
@@ -126,22 +129,23 @@ public:
     ContainerAccessor operator[](const ARG& key);
 
     template <class... ARGS>
-    FunctionCall operator()(ARGS... args);
+    FunctionCall operator()(ARGS... args) const;
 
     template <class... ARGS>
     FunctionCall callMethod(QString name, ARGS... args);
 
 protected:
-    AbstractObject();
-
     virtual PyObject* getReference() const = 0;
     virtual void setReference(PyObject* reference) = 0;
 
     void unsupportedFunctionError(QString functionName) const;
+
+private:
+    void* cast(QString cppTypeName) const;
 };
 
 template <class TYPE>
-TYPE AbstractObject::convert()
+TYPE AbstractObject::convert() const
 {
     TYPE result;
 
@@ -151,6 +155,14 @@ TYPE AbstractObject::convert()
     }
 
     return result;
+}
+
+template <class TYPE>
+TYPE AbstractObject::cast() const
+{
+    TYPE result;
+    QString typeName = TYPE::staticMetaObject.className();
+    return static_cast<TYPE*>((QObject*)cast(typeName));
 }
 
 } // namespace med::python

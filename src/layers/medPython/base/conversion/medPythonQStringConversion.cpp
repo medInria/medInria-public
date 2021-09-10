@@ -11,6 +11,8 @@
 
 ==============================================================================*/
 
+#include "medPythonCoreAPI.h"
+
 #include "medPythonQStringConversion.h"
 
 bool medPythonConvert(const QString& value, PyObject** output)

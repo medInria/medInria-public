@@ -17,7 +17,7 @@
 namespace med::python::test
 {
 
-MEDPYTHON_EXPORT void testEmbeddedPython(bool withCrash);
+MEDPYTHON_EXPORT int testEmbeddedPython(bool withCrash);
 
 } // namespace med::python::test
 

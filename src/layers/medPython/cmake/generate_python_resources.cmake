@@ -15,20 +15,30 @@
 
 function(generate_python_resources target)
 
-    set(modules_archive "${CMAKE_CURRENT_BINARY_DIR}/python/modules/${target}.zip")
-    set(modules_dir "${CMAKE_CURRENT_BINARY_DIR}/python/modules/${target}")
+    get_target_property(package_name ${target} PYTHON_PACKAGE_NAME)
+    if (NOT package_name)
+        set(package_name ${target})
+    endif()
 
-    # Create default __init__ file
-    set(init_file "${modules_dir}/__init__.py")
-    set(init_content "// Generated\n")
+    set(modules_archive "${CMAKE_CURRENT_BINARY_DIR}/python/modules/${target}.zip")
+    set(modules_dir "${CMAKE_CURRENT_BINARY_DIR}/python/modules/${package_name}")
+    set(libraries_dir "${CMAKE_CURRENT_BINARY_DIR}/python/libraries/${package_name}")
 
     get_target_property(modules ${target} PYTHON_MODULES)
     get_target_property(bindings ${target} PYTHON_BINDINGS)
 
+    if (NOT "__init__" IN_LIST modules)
+        # Create default __init__ file
+        set(init_file "${modules_dir}/__init__.py")
+        set(init_content "# Generated\n")
+        file(WRITE ${init_file} ${init_content})
+        list(APPEND modules "__init__")
+    endif()
+
     if (modules)
         foreach (module ${modules})
-            string(APPEND init_content "\nfrom . import ${module}")
             list(APPEND module_paths "${modules_dir}/${module}.py")
+            list(APPEND depends "${modules_dir}/${module}.py")
         endforeach()
     endif()
 
@@ -47,28 +57,25 @@ function(generate_python_resources target)
             set(library ${libraries_dir}/${library_name}${library_suffix})
             set(forward_module "${modules_dir}/${library_name}.py")
             file(WRITE ${forward_module} "from ${library_name} import *")
-            string(APPEND init_content "\nfrom . import ${module}")
 
             list(APPEND module_paths
                 "${modules_dir}/${module}.py"
                 ${forward_module}
                 )
+
+            list(APPEND depends ${bindings_target})
+
+            add_external_resources(${target} ${library})
         endforeach()
     endif()
-
-    file(WRITE ${init_file} ${init_content})
 
     add_custom_command(OUTPUT ${modules_archive}
         COMMAND ${CMAKE_COMMAND} -E tar c ${modules_archive} --format=zip -- ${init_file} ${module_paths}
         WORKING_DIRECTORY ${CMAKE_CURRENT_BINARY_DIR}/python/modules
-        DEPENDS ${module_paths}
+        DEPENDS ${depends}
         VERBATIM
         )
 
     add_external_resources(${target} ${modules_archive})
-
-    foreach (library ${${package}_PYTHON_LIBRARIES})
-        add_external_resources(${target} ${library})
-    endforeach()
 
 endfunction()

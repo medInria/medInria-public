@@ -16,9 +16,11 @@
 #include "medPythonAbstractObject.h"
 
 #include "medPythonAttributeAccessor.h"
+#include "medPythonConversionUtils.h"
 #include "medPythonCoreFunction.h"
 #include "medPythonObject.h"
 #include "medPythonInit.h"
+#include "medPythonSWIGCore.h"
 
 namespace med::python
 {
@@ -222,14 +224,22 @@ void AbstractObject::update(const AbstractObject& other)
     }
 }
 
-AbstractObject::AbstractObject()
-{
-    lazyLoadPython();
-}
-
 void AbstractObject::unsupportedFunctionError(QString functionName) const
 {
     throw TypeError(QString("%1 does not support %2").arg(typeName(), functionName));
+}
+
+void* AbstractObject::cast(QString cppTypeName) const
+{
+    void* result = nullptr;
+
+    if (isSWIGWrappedObject(**this, cppTypeName))
+    {
+        result = extractSWIGWrappedObject(**this);
+    }
+
+    propagateErrorIfOccurred();
+    return result;
 }
 
 } // namespace med::python

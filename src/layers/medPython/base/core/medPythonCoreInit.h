@@ -17,13 +17,13 @@
 namespace med::python
 {
 
-bool initializePython();
-bool finalizePython();
+bool initializeInterpreter();
+bool finalizeInterpreter();
 
 namespace test
 {
 
-/// Returns the temporary directories used by the embedded Python.
+/// Returns the temporary directories used by the embedded interpreter.
 ///
 QStringList getTemporaryDirectories();
 

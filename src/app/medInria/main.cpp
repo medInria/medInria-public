@@ -30,7 +30,8 @@
 #include <medStorage.h>
 
 #if (USE_PYTHON)
-  #include "medPython.h"
+  #include <medPython.h>
+  #include <medPythonTools.h>
 #endif
 
 void forceShow(medMainWindow& mainwindow )
@@ -146,7 +147,7 @@ int main(int argc,char* argv[])
                      << "--view"
                 #ifdef USE_PYTHON
                      << "--test-python"
-                     << "--test-python-crash"
+                     << "--test-python-with-crash"
                 #endif
                      << "--debug");
             for (QStringList::const_iterator opt=options.constBegin();opt!=options.constEnd();++opt)
@@ -218,6 +219,20 @@ int main(int argc,char* argv[])
     }
     // END OF DATABASE INITIALISATION
 
+#ifdef USE_PYTHON
+    med::python::initialize();
+
+    bool testPython = application.arguments().contains("--test-python");
+    bool testPythonWithCrash = application.arguments().contains("--test-python-with-crash");
+
+    if (testPython || testPythonWithCrash)
+    {
+        return med::python::test::testEmbeddedPython(testPythonWithCrash);
+    }
+
+    med::python::initializeTools();
+#endif
+
     medPluginManager::instance()->setVerboseLoading(true);
     medPluginManager::instance()->initialize();
 
@@ -278,17 +293,11 @@ int main(int argc,char* argv[])
     QObject::connect(&application,SIGNAL(messageReceived(const QString&)),
                      mainwindow,SLOT(processNewInstanceMessage(const QString&)));
 
-#ifdef USE_PYTHON
-    bool testPython = application.arguments().contains("--test-python");
-    bool testPythonWithCrash = application.arguments().contains("--test-python-crash");
-
-    if (testPython || testPythonWithCrash)
-    {
-        med::python::test::testEmbeddedPython(testPythonWithCrash);
-    }
-#endif
-
     application.setMainWindow(mainwindow);
+
+#ifdef USE_PYTHON
+    med::python::startConsole();
+#endif
 
     forceShow(*mainwindow);
 

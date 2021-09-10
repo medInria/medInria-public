@@ -13,11 +13,6 @@
 #
 ################################################################################
 
-set(CMAKE_MODULE_PATH
-    ${CMAKE_MODULE_PATH}
-    ${CMAKE_CURRENT_SOURCE_DIR}/cmake
-    )
-
 include(python_utils)
 
 ## #############################################################################
@@ -34,3 +29,4 @@ find_package(Qt5 REQUIRED COMPONENTS Core)
 ## #############################################################################
 
 add_subdirectory(base)
+add_subdirectory(tools)

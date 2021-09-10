@@ -79,11 +79,11 @@ PyObject* getTracebackList(PyObject* nativeException)
 
     if (traceback)
     {
-        formatArgs = Py_BuildValue("NNN", Py_TYPE(nativeException), nativeException, traceback);
+        formatArgs = Py_BuildValue("OON", Py_TYPE(nativeException), nativeException, traceback);
     }
     else
     {
-        formatArgs = Py_BuildValue("NN", Py_TYPE(nativeException), nativeException);
+        formatArgs = Py_BuildValue("OO", Py_TYPE(nativeException), nativeException);
     }
 
     if (formatMethod && formatArgs)
@@ -92,7 +92,6 @@ PyObject* getTracebackList(PyObject* nativeException)
     }
 
     PyErr_Clear();
-    Py_CLEAR(traceback);
     Py_CLEAR(formatMethod);
     Py_CLEAR(formatArgs);
     return tracebackList;

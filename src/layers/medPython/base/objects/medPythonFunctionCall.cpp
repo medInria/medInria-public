@@ -46,7 +46,7 @@ FunctionCall::~FunctionCall()
     {
         PyObject* result = evaluate();
         Py_CLEAR(result);
-        propagateCurrentError();
+        propagateErrorIfOccurred();
     }
 }
 

@@ -11,6 +11,8 @@
 
 ==============================================================================*/
 
+#include "medPythonCoreAPI.h"
+
 #include "medPythonExceptionThrower.h"
 
 #include <QHash>

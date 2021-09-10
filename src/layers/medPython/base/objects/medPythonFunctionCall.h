@@ -52,7 +52,7 @@ public:
     /// Add a keyword argument to the call. The type must be eligible to the
     /// 'Object::create' function.
     ///
-    template <class TYPE>
+    template <class TYPE, typename = std::enable_if_t<!std::is_base_of_v<AbstractObject, TYPE> > >
     FunctionCall& kwarg(QString name, const TYPE& value);
 
 protected:
@@ -65,7 +65,7 @@ private:
     PyObject* evaluate() const;
 };
 
-template <class TYPE>
+template <class TYPE, typename>
 FunctionCall& FunctionCall::kwarg(QString name, const TYPE& value)
 {
     return kwarg(name, Object::create(value));
@@ -75,7 +75,7 @@ FunctionCall& FunctionCall::kwarg(QString name, const TYPE& value)
 // circular dependency issues:
 
 template <class... ARGS>
-FunctionCall AbstractObject::operator()(ARGS... args)
+FunctionCall AbstractObject::operator()(ARGS... args) const
 {
     QList<Object> argsList;
     (argsList << ... << Object::create(args)); // C++ fold expression

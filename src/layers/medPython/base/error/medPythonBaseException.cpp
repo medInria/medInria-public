@@ -11,6 +11,8 @@
 
 ==============================================================================*/
 
+#include "medPythonCoreAPI.h"
+
 #include "medPythonBaseException.h"
 
 #include "medPythonExceptionTraceback.h"

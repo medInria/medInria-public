@@ -90,7 +90,6 @@ private:
 template <class TYPE>
 Object Object::create(const TYPE& value)
 {
-    lazyLoadPython();
     PyObject* reference;
 
     if (!medPythonConvert(value, &reference))

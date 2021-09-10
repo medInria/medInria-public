@@ -15,20 +15,6 @@
 
 set(TARGET_NAME ${PYTHON_PROJECT_NAME}Base)
 
-set(CMAKE_MODULE_PATH
-    ${CMAKE_MODULE_PATH}
-    ${CMAKE_CURRENT_SOURCE_DIR}/cmake
-    )
-
-## #############################################################################
-## Find dependencies
-## #############################################################################
-
-find_package(dtk REQUIRED)
-include_directories(${dtk_INCLUDE_DIRS})
-
-find_package(Qt5 REQUIRED COMPONENTS Core)
-
 ## #############################################################################
 ## List sources
 ## #############################################################################
@@ -39,11 +25,28 @@ list_source_files(${TARGET_NAME}
     ${CMAKE_CURRENT_SOURCE_DIR}/core
     ${CMAKE_CURRENT_SOURCE_DIR}/error
     ${CMAKE_CURRENT_SOURCE_DIR}/objects
-    ${CMAKE_CURRENT_SOURCE_DIR}/user
     )
 
 list_header_directories_to_include(${TARGET_NAME}
     ${${TARGET_NAME}_HEADERS}
+    )
+
+## #############################################################################
+## Generate SWIG Runtime header
+## #############################################################################
+
+set(SWIG_RUNTIME_HEADER_DIRECTORY ${CMAKE_CURRENT_BINARY_DIR}/swig)
+set(SWIG_RUNTIME_HEADER ${SWIG_RUNTIME_HEADER_DIRECTORY}/swig_runtime.h)
+
+add_custom_command(
+    OUTPUT ${SWIG_RUNTIME_HEADER}
+    COMMAND ${CMAKE_COMMAND} -E make_directory ${SWIG_RUNTIME_HEADER_DIRECTORY}
+    COMMAND ${SWIG_EXECUTABLE}
+    ARGS
+    "-python"
+    "-c++"
+    "-external-runtime"
+    ${SWIG_RUNTIME_HEADER}
     )
 
 ## #############################################################################
@@ -52,9 +55,13 @@ list_header_directories_to_include(${TARGET_NAME}
 
 add_library(${TARGET_NAME} SHARED
     ${${TARGET_NAME}_CFILES}
+    ${SWIG_RUNTIME_HEADER}
     )
 
-target_compile_definitions(${TARGET_NAME} PUBLIC TARGET_NAME="${TARGET_NAME}")
+target_compile_definitions(${TARGET_NAME} PRIVATE
+    TARGET_NAME="${TARGET_NAME}"
+    PYTHON_PLUGIN_PREFIX="${PYTHON_PLUGIN_PREFIX}"
+    )
 
 ## #############################################################################
 ## Include directories
@@ -63,6 +70,7 @@ target_compile_definitions(${TARGET_NAME} PUBLIC TARGET_NAME="${TARGET_NAME}")
 target_include_directories(${TARGET_NAME}
     PUBLIC
     ${${TARGET_NAME}_INCLUDE_DIRS}
+    ${SWIG_RUNTIME_HEADER_DIRECTORY}
     )
 
 ## #############################################################################

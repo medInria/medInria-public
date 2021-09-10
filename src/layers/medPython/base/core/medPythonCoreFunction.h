@@ -12,9 +12,9 @@
 
 ==============================================================================*/
 
-/// These templates are used to call the Python functions from the object
-/// wrapping API. They handle automatic propagation of errors and acquiring of
-/// the global interpreter lock (second part not yet implemented).
+/// These templates are used to call the Python functions with automatic
+/// propagation of errors and acquiring of the global interpreter lock (second
+/// part not yet implemented).
 ///
 
 #include "medPythonError.h"

@@ -14,7 +14,6 @@
 #include "medPythonInit.h"
 
 #include <QApplication>
-#include <QDebug>
 
 #include "medPythonCore.h"
 #include "medPythonError.h"
@@ -29,24 +28,23 @@ bool isRunning = false;
 
 } // namespace
 
-bool ensurePythonSetup()
+bool initialize()
 {
     if (!isRunning)
     {
-        qInfo() << "Setting up Python...";
-        isRunning = setupCore();
+        isRunning = initializeInterpreter();
 
         if (isRunning)
         {
             initializeExceptions();
-            QApplication::connect(qApp, &QApplication::aboutToQuit, &ensurePythonTeardown);
+            QApplication::connect(qApp, &QApplication::aboutToQuit, &finalize);
         }
     }
 
     return isRunning;
 }
 
-bool ensurePythonTeardown()
+bool finalize()
 {
     bool success = true;
 
@@ -54,20 +52,10 @@ bool ensurePythonTeardown()
     {
         isRunning = false;
         finalizeExceptions();
-        success = teardownCore();
+        success = finalizeInterpreter();
     }
 
     return success;
-}
-
-void lazyLoadPython()
-{
-    if (!isRunning)
-    {
-        qInfo() << "(lazy loading of Python triggered)";
-        ensurePythonSetup();
-        qInfo() << "(lazy loading of Python successful)";
-    }
 }
 
 } // namespace med::python

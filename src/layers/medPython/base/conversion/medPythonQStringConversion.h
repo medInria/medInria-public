@@ -12,10 +12,9 @@
 
 ==============================================================================*/
 
-#include "medPythonCoreAPI.h"
-
 #include <QString>
 
+#include "medPythonCore.h"
 #include "medPythonExport.h"
 
 MEDPYTHON_EXPORT bool medPythonConvert(const QString& value, PyObject** output);

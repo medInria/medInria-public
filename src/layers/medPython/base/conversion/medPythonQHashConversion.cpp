@@ -11,6 +11,8 @@
 
 ==============================================================================*/
 
+#include "medPythonCoreAPI.h"
+
 #include "medPythonQHashConversion.h"
 
 bool medPythonConvert(const QHash<PyObject*, PyObject*>& qHash, PyObject** output)
