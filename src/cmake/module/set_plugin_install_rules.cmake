@@ -83,6 +83,8 @@ endif()
 install(TARGETS ${target}
   RUNTIME DESTINATION bin/plugins_legacy
   LIBRARY DESTINATION bin/plugins_legacy
+  FRAMEWORK DESTINATION bin/plugins_legacy
+  RESOURCE DESTINATION resources/${target}
   )
 endmacro()
 
