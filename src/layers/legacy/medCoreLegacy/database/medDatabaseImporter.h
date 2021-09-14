@@ -51,4 +51,5 @@ private:
     void setNumberOfFilesInDirectory(int num) override{};
 
     QString getPatientID(QString patientName, QString birthDate) override;
+    void createJsonMetadataEntry(medAbstractData *medData, int seriesDbId) override;
 };

@@ -120,5 +120,7 @@ protected:
     **/
     virtual medDataIndex populateDatabaseAndGenerateThumbnails ( medAbstractData* medData, QString pathToStoreThumbnails ) = 0;
     virtual void setNumberOfFilesInDirectory(int num) = 0;
+
+    virtual void createJsonMetadataEntry(medAbstractData *medData, int seriesDbId) {};
     medAbstractDatabaseImporterPrivate *d;
 };
