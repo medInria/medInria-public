@@ -42,6 +42,7 @@ public:
     QString sliceThickness;
     QString rows;
     QString columns;
+    QString toolbox;
 
     medDataIndex index;
 

@@ -168,6 +168,11 @@ namespace medMetaDataKeys
     extern MEDCORELEGACY_EXPORT const Key FlipAngle;
     extern MEDCORELEGACY_EXPORT const Key EchoTime;
     extern MEDCORELEGACY_EXPORT const Key RepetitionTime;
+
+    // APHP
+    extern MEDCORELEGACY_EXPORT const Key Toolbox;
+    extern MEDCORELEGACY_EXPORT const Key OriginalDataUID;
+    extern MEDCORELEGACY_EXPORT const Key JsonMetadataPath;
 };
 
 

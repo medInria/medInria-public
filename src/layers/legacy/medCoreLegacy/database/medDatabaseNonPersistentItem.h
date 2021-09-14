@@ -46,6 +46,7 @@ public:
     const QString sliceThickness(void) const;
     const QString rows(void) const;
     const QString columns(void) const;
+    const QString toolbox(void) const;
 
     const medDataIndex &index(void) const;
 

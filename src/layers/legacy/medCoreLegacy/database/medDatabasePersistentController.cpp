@@ -867,3 +867,23 @@ bool medDatabasePersistentController::contains(const medDataIndex &index) const
     }
     return false;
 }
+
+QString medDatabasePersistentController::jsonMetadataFileExists(const medDataIndex &index)
+{
+    QString resPath = "";
+    if (contains(index))
+    {
+        QVariant seriesId = index.seriesId();
+        QSqlQuery query(m_database);
+        QString request = "SELECT json_meta_path as json_path FROM series WHERE series.id = :id";
+        query.prepare(request);
+        query.bindValue(":id", seriesId);
+        if (!execQuery(query, __FILE__, __LINE__))
+        {
+            qDebug() << DTK_COLOR_FG_RED << query.lastError() << DTK_NO_COLOR;
+        }
+        if (query.first())
+            resPath = query.value("json_path").toString();
+    }
+    return resPath;
+}
