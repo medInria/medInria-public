@@ -139,7 +139,13 @@ medViewContainerSplitter *medDiffusionModelEstimationMetaProcessPresenter::build
     medViewContainer *inputContainer = new medViewContainer;
     splitter->addViewContainer(inputContainer);
 
-    inputContainer->setDefaultWidget(new QLabel("Input DWI"));
+    auto viewLayout = static_cast<QVBoxLayout*>(inputContainer->defaultWidget()->layout());
+    auto label = static_cast<QLabel*>(viewLayout->itemAt(0)->widget());
+    if (!label->text().contains("Input DWI"))
+    {
+        label->setText("Input DWI\n\n"+label->text());
+        label->setAlignment(Qt::AlignCenter);
+    }
     inputContainer->setClosingMode(medViewContainer::CLOSE_VIEW);
     inputContainer->setUserSplittable(false);
     inputContainer->setMultiLayered(true);

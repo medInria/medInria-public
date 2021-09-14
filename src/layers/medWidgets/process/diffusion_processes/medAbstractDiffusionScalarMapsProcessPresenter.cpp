@@ -66,12 +66,20 @@ medViewContainerSplitter *medAbstractDiffusionScalarMapsProcessPresenter::buildV
 
     medViewContainer * outputContainer = inputContainer->splitVertically();
 
-    inputContainer->setDefaultWidget(new QLabel("Input model image"));
+    auto viewLayoutInput = static_cast<QVBoxLayout*>(inputContainer->defaultWidget()->layout());
+    auto labelInput = static_cast<QLabel*>(viewLayoutInput->itemAt(0)->widget());
+    if (!labelInput->text().contains("Input model image"))
+    {
+        labelInput->setText("Input model image\n\n"+labelInput->text());
+        labelInput->setAlignment(Qt::AlignCenter);
+    }
     inputContainer->setClosingMode(medViewContainer::CLOSE_VIEW);
     inputContainer->setUserSplittable(false);
     inputContainer->setMultiLayered(false);
 
-    outputContainer->setDefaultWidget(new QLabel("Output scalar map image"));
+    auto viewLayoutOutput = static_cast<QVBoxLayout*>(outputContainer->defaultWidget()->layout());
+    auto labelOutput = static_cast<QLabel*>(viewLayoutOutput->itemAt(0)->widget());
+    labelOutput->setText("Output scalar map image");
     outputContainer->setClosingMode(medViewContainer::CLOSE_VIEW);
     outputContainer->setUserSplittable(false);
     outputContainer->setMultiLayered(false);
