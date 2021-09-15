@@ -169,10 +169,10 @@ namespace medMetaDataKeys
     extern MEDCORELEGACY_EXPORT const Key EchoTime;
     extern MEDCORELEGACY_EXPORT const Key RepetitionTime;
 
-    // APHP
+    // EXPORT EXTRA DATA TO ATTACHED FILE
     extern MEDCORELEGACY_EXPORT const Key Toolbox;
     extern MEDCORELEGACY_EXPORT const Key OriginalDataUID;
-    extern MEDCORELEGACY_EXPORT const Key JsonMetadataPath;
+    extern MEDCORELEGACY_EXPORT const Key FileMetadataPath;
 };
 
 

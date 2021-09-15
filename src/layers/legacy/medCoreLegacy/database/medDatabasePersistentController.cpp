@@ -868,7 +868,7 @@ bool medDatabasePersistentController::contains(const medDataIndex &index) const
     return false;
 }
 
-QString medDatabasePersistentController::jsonMetadataFileExists(const medDataIndex &index)
+QString medDatabasePersistentController::attachedMetadataFileExists(const medDataIndex &index)
 {
     QString resPath = "";
     if (contains(index))

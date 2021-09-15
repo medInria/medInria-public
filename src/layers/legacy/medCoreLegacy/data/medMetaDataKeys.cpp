@@ -104,8 +104,9 @@ namespace medMetaDataKeys
     // CT Image
     MEDCORELEGACY_EXPORT const Key KVP("KVP", "kVp", QVariant::UInt);
 
+    // EXPORT EXTRA DATA TO ATTACHED FILE
     MEDCORELEGACY_EXPORT const Key Toolbox("Toolbox", "Toolbox used to process image");
     MEDCORELEGACY_EXPORT const Key OriginalDataUID("OriginalData", "UID of original data used to generate new data");
-    MEDCORELEGACY_EXPORT const Key JsonMetadataPath("JsonMetadataPath", "Path to json metadata file");
+    MEDCORELEGACY_EXPORT const Key FileMetadataPath("FileMetadataPath", "Path to attached metadata file");
 };
 

@@ -80,7 +80,7 @@ public:
     bool loadData(const medDataIndex &index) override { return false; };
     bool isDataLoaded(const medDataIndex &index) override { return true; };
 
-    QString jsonMetadataFileExists(const medDataIndex &index) override;
+    QString attachedMetadataFileExists(const medDataIndex &index) override;
 protected:
     void setConnected(bool flag);
     void reset();
