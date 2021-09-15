@@ -47,7 +47,7 @@ class MEDCORELEGACY_EXPORT medToolBoxFactory : public dtkAbstractFactory
     Q_OBJECT
 
 public:
-    typedef medToolBox *(*medToolBoxCreator)(QWidget *parent);
+    typedef medToolBox *(*medToolBoxCreator)(QWidget *parent, void* argument);
 
 public:
     static medToolBoxFactory *instance();
@@ -69,9 +69,16 @@ public:
                                toolboxType::staticName(),
                                toolboxType::staticDescription(),
                                toolboxType::staticCategories(),
-                               creator);
+                               creator,
+                               nullptr);
     }
 
+    bool registerToolBox(QString identifier,
+                         QString name,
+                         QString description,
+                         QStringList categories,
+                         medToolBoxCreator creator,
+                         void* creatorArgument = nullptr);
 
     QList<QString> toolBoxesFromCategory(const QString& category) const;
     medToolBoxDetails* toolBoxDetailsFromId ( const QString& id ) const;
@@ -85,12 +92,6 @@ public slots:
 
 protected:
 
-    bool registerToolBox(QString identifier,
-                         QString name,
-                         QString description,
-                         QStringList categories,
-                         medToolBoxCreator creator);
-
      medToolBoxFactory();
     ~medToolBoxFactory();
 
@@ -102,7 +103,7 @@ private:
      * @warning keep it static if you don't want to freeze your brain (solution in http://www.parashift.com/c++-faq-lite/pointers-to-members.html#faq-33.5 for those interested)
      */
     template < typename T >
-    static medToolBox* create ( QWidget* parent ) {
+    static medToolBox* create(QWidget* parent, void* argument) {
     return ( new T(parent) );
     }
 private:
@@ -119,8 +120,9 @@ struct MEDCORELEGACY_EXPORT medToolBoxDetails{
     QString description; /** (tooltip) short description of the Toolbox */
     QStringList categories; /** List of categories the toolbox falls in*/
     medToolBoxFactory::medToolBoxCreator creator; /** function pointer allocating memory for the toolbox*/
+    void* creatorArgument;  /** Optional argument to the creator function*/
     medToolBoxDetails(QString name,QString description, QStringList categories,
-                     medToolBoxFactory::medToolBoxCreator creator):
+                     medToolBoxFactory::medToolBoxCreator creator, void* creatorArgument):
         name(name),description(description),categories(categories),
-        creator(creator){}
+        creator(creator), creatorArgument(creatorArgument){}
 };
