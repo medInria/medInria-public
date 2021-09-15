@@ -153,7 +153,7 @@ void medDatabaseRemover::removeSeries ( int patientDbId, int studyDbId, int seri
 {
     QSqlDatabase db(d->db);
     QSqlQuery query ( db );
-    int cpt = query.exec("SELECT COUNT(*) as cpt FROM pragma_table_info('series') WHERE name='json_meta_path'");
+    query.exec("SELECT COUNT(*) as cpt FROM pragma_table_info('series') WHERE name='json_meta_path'");
     bool jsonColExist = false;
     if (query.next())
     {

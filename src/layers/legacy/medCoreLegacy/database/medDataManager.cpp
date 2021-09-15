@@ -338,15 +338,16 @@ void medDataManager::exportData(dtkSmartPointer<medAbstractData> data)
         // Send final type to export data
         this->exportDataToPath(data, finalFilename, chosenFormat);
         // Save json file associated to data (APHP/incepto requirement)
-        QString jsonPath = dbController->jsonMetadataFileExists(data->dataIndex());
+        QString jsonPath = dbController->attachedMetadataFileExists(data->dataIndex());
         QString exportPath = exportDialog->directory().absolutePath() +
                 QDir::separator() +
                 data->metadata(medMetaDataKeys::SeriesDescription.key());
-        if (jsonPath.isEmpty() || data->metadata(medMetaDataKeys::Toolbox.key())=="PolygonROI")
+
+        if (data->metadata(medMetaDataKeys::Toolbox.key())=="PolygonROI")
         {
-            saveSegmentationMetadataToJson(data, exportPath);
+            saveAttachedMetadataToFile(data, exportPath);
         }
-        else
+        else if (!jsonPath.isEmpty())
         {
             jsonPath.prepend(medSettingsManager::instance()->value("database", "actual_database_location").toString());
             if (!QDir(exportPath).exists())
@@ -362,7 +363,7 @@ void medDataManager::exportData(dtkSmartPointer<medAbstractData> data)
     delete exportDialog;
 }
 
-void medDataManager::saveSegmentationMetadataToJson(const dtkSmartPointer<medAbstractData> &data, const QString &exportPath) const
+void medDataManager::saveAttachedMetadataToFile(const dtkSmartPointer<medAbstractData> &data, const QString &exportPath) const
 {
     QString id = data->metadata(medMetaDataKeys::SeriesInstanceUID.key());
 
@@ -385,7 +386,6 @@ void medDataManager::saveSegmentationMetadataToJson(const dtkSmartPointer<medAbs
     inceptoObject.insert("createdDate", date);
     inceptoObject.insert("modifiedDate", date);
 
-    QString userId = QUuid::createUuid().toString(QUuid::WithoutBraces);
     inceptoObject.insert("userId", "");
 
     QJsonObject valueObject;
@@ -422,7 +422,7 @@ void medDataManager::saveSegmentationMetadataToJson(const dtkSmartPointer<medAbs
     {
         int pos = jsonFileName.size() - jsonFileName.indexOf(data->metadata(medMetaDataKeys::PatientID.key())) + 1;
         QString suffixPath = jsonFileName.right(pos);
-        data->setMetaData(medMetaDataKeys::JsonMetadataPath.key(), suffixPath);
+        data->setMetaData(medMetaDataKeys::FileMetadataPath.key(), suffixPath);
         jsonFile.close();
     }
 }
@@ -602,7 +602,7 @@ QUuid medDataManager::makePersistent(medDataIndex index)
             QString path = medSettingsManager::instance()->value("database", "actual_database_location").toString();
             path += QDir::separator() + data->metadata(medMetaDataKeys::PatientID.key()) +
                     QDir::separator() + data->metadata(medMetaDataKeys::SeriesID.key()) ;
-            saveSegmentationMetadataToJson(data, path);
+            saveAttachedMetadataToFile(data, path);
         }
 
     }

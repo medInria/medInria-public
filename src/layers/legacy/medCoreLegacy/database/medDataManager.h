@@ -102,5 +102,5 @@ private:
 
     Q_DECLARE_PRIVATE(medDataManager)
 
-    void saveSegmentationMetadataToJson(const dtkSmartPointer<medAbstractData> &data, const QString &exportPath) const;
+    void saveAttachedMetadataToFile(const dtkSmartPointer<medAbstractData> &data, const QString &exportPath) const;
 };
