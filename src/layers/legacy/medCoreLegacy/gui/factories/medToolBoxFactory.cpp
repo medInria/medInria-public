@@ -49,14 +49,16 @@ bool medToolBoxFactory::registerToolBox(QString identifier,
                                         QString name,
                                         QString description,
                                         QStringList categories,
-                                        medToolBoxCreator creator)
+                                        medToolBoxCreator creator,
+                                        void* creatorArgument)
 {
     if(!d->creators.contains(identifier))
     {
         medToolBoxDetails* holder = new medToolBoxDetails(name,
                                                           description,
                                                           categories,
-                                                          creator);
+                                                          creator,
+                                                          creatorArgument);
         d->creators.insert( identifier,
                             holder);
         return true;
@@ -93,7 +95,8 @@ medToolBox *medToolBoxFactory::createToolBox(QString identifier,
         return nullptr;
     }
 
-    medToolBox *toolbox = (d->creators[identifier])->creator(parent);
+    medToolBoxDetails* details = d->creators[identifier];
+    medToolBox *toolbox = details->creator(parent, details->creatorArgument);
 
     return toolbox;
 }
