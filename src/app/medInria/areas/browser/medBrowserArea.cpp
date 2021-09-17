@@ -141,13 +141,3 @@ void medBrowserArea::addDataSource( medAbstractDataSource* dataSource )
     }
     onSourceIndexChanged(d->stack->currentIndex());
 }
-
-void medBrowserArea::addToolBox(medToolBox *toolbox)
-{
-    d->toolboxContainer->addToolBox(toolbox);
-}
-
-void medBrowserArea::removeToolBox(medToolBox *toolbox)
-{
-    d->toolboxContainer->removeToolBox(toolbox);
-}
