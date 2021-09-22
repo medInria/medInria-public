@@ -45,20 +45,24 @@ public:
     bool insertRows(int row, int count, const QModelIndex &parent = QModelIndex()) override;
 
 
+    bool canFetchMore(const QModelIndex& parent) const override;
+    void fetchMore(const QModelIndex& parent) override;
 
 
-
-
-    void setColumnAttributes(unsigned int p_uiLevel, QStringList &attributes);
+    medDataModelItem* getItem(const QModelIndex &index) const;
+    void setColumnAttributes(int p_iLevel, QStringList &attributes);
 
 public slots:
     void itemPressed(QModelIndex const &index);
 
 
+
 private:
-    bool getColumnNames(unsigned int const &iLevel) const;
-    int  getLevelColumCount(unsigned int pi_uiLevel) const;
-    void populateLevel(medDataModelItem * pItemCurrent, QString const &key, QModelIndex const &index, bool subLevel = false);
+    bool getColumnNames(int const &m_iLevel) const;
+    int  getLevelColumCount(int pi_iLevel) const;
+    void populateLevel(QModelIndex const &index, QString const &key);
+    //void populateLevel(medDataModelItem * pItemCurrent, QString const &key, QModelIndex const &index, bool subLevel = false);
+    bool currentLevelFetchable(medDataModelItem * pItemCurrent);
 
 
 signals:

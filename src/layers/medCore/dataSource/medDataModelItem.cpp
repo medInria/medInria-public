@@ -5,30 +5,35 @@
 #include <QVector>
 #include <QString>
 
-//#include <medDataModelElement.h>
+//class medDataModelItemPrivate
+//{
+//public:
+//    medDataModelItem * m_parentItem;
+//    QList<medDataModelItem *> m_childItems;
+//
+//    QVariantList m_itemData;
+//
+//    int m_iLevel;
+//};
 
-class medDataModelItemPrivate
+
+
+medDataModelItem::medDataModelItem() //: d(new medDataModelItemPrivate())
 {
-public:
-    medDataModelItem * parentItem;
-    QList<medDataModelItem *> childItems;
+    m_parentItem = nullptr; //Invalid parent 
+    m_iLevel = -1; //Invalid effective level, used by root item
+    m_bCanHaveSubData = true;
+}
 
-    QVariantList itemData;
-
-    unsigned int uiLevel;
-};
-
-
-
-medDataModelItem::medDataModelItem() : d(new medDataModelItemPrivate())
+medDataModelItem::medDataModelItem(medDataModelItem *parent) //: d(new medDataModelItemPrivate())
 {
-    d->parentItem = nullptr;
-    d->uiLevel = 0;
+    m_bCanHaveSubData = true;
+    setParent(parent);
 }
 
 medDataModelItem::~medDataModelItem()
 {
-    delete d;
+
 }
 
 
@@ -36,21 +41,21 @@ medDataModelItem::~medDataModelItem()
 
 int medDataModelItem::childCount() const
 {
-    return d->childItems.size();
+    return m_childItems.size();
 }
 
-unsigned int medDataModelItem::level() const
+int medDataModelItem::level() const
 {
-    return d->uiLevel;
+    return m_iLevel;
 }
 
 int medDataModelItem::row() const
 {
     int iRowRes = 0;
 
-    if (d->parentItem)
+    if (m_parentItem)
     {
-        iRowRes = d->parentItem->d->childItems.indexOf(const_cast<medDataModelItem*>(this));
+        iRowRes = m_parentItem->m_childItems.indexOf(const_cast<medDataModelItem*>(this));
     }
 
     return iRowRes;
@@ -58,7 +63,28 @@ int medDataModelItem::row() const
 
 medDataModelItem * medDataModelItem::parent() const
 {
-    return d->parentItem;
+    return m_parentItem;
+}
+
+bool medDataModelItem::insertChildren(int position, int count)
+{
+    bool bRes = (position >= 0) && (position <= m_childItems.size());
+
+    if (bRes)
+    {
+        for (int i = 0; i < count; ++i)
+        {
+            medDataModelItem *pItemTmp = new medDataModelItem();
+            m_childItems.insert(position, pItemTmp);
+        }
+    }
+
+    return bRes;
+}
+
+bool medDataModelItem::canHaveSubData()
+{
+    return m_bCanHaveSubData;
 }
 
 
@@ -68,33 +94,33 @@ medDataModelItem * medDataModelItem::parent() const
 
 medDataModelItem * medDataModelItem::child(int row) const
 {
-    return d->childItems.value(row);
+    return m_childItems.value(row);
 }
 
 QVariant medDataModelItem::data(int column) const
 {
-    return d->itemData.value(column);
+    return m_itemData.value(column);
 }
 
 void medDataModelItem::setParent(medDataModelItem * parent)
 {
-    d->parentItem = parent;
-    d->uiLevel = d->parentItem->d->uiLevel + 1;
+    m_parentItem = parent;
+    m_iLevel = m_parentItem->m_iLevel + 1;
 }
 
 void medDataModelItem::setData(QStringList const & value)
 {
-    if (!d->itemData.isEmpty())
+    if (!m_itemData.isEmpty())
     {
-        d->itemData.clear();
+        m_itemData.clear();
     }
     for (auto val : value)
     {
-        d->itemData.append(val);
+        m_itemData.append(val);
     }    
 }
 
 void medDataModelItem::append(medDataModelItem * child)
 {
-    d->childItems.append(child);
+    m_childItems.append(child);
 }

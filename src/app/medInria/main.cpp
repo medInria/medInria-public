@@ -234,17 +234,17 @@ int main(int argc, char *argv[])
 
         auto testWindow = new QMainWindow();
         auto treeView = new QTreeView();
-        auto tableView = new QTableView();
+        //auto tableView = new QTableView();
 
         treeView->setModel(testModel->getModel(""));
-        tableView->setModel(testModel->getModel(""));
-        bool c0Ok = QObject::connect(treeView, SIGNAL(pressed(const QModelIndex &)), tableView, SIGNAL(pressed(const QModelIndex &)));
+        //tableView->setModel(testModel->getModel(""));
+        //bool c0Ok = QObject::connect(treeView, SIGNAL(pressed(const QModelIndex &)), tableView, SIGNAL(pressed(const QModelIndex &)));
         bool c1Ok = QObject::connect(treeView, SIGNAL(pressed(const QModelIndex &)), testModel->getModel(""), SLOT(itemPressed(QModelIndex const &)));
-        bool c2Ok = QObject::connect(tableView, SIGNAL(pressed(const QModelIndex &)), testModel->getModel(""), SLOT(itemPressed(QModelIndex const &)));
+        //bool c2Ok = QObject::connect(tableView, SIGNAL(pressed(const QModelIndex &)), testModel->getModel(""), SLOT(itemPressed(QModelIndex const &)));
         QWidget *w = new QWidget;
         QVBoxLayout *vLayout = new QVBoxLayout;
         vLayout->addWidget(treeView);
-        vLayout->addWidget(tableView);
+        //vLayout->addWidget(tableView);
         w->setLayout(vLayout);
 
         testWindow->setCentralWidget(w);

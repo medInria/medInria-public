@@ -14,13 +14,20 @@
 
 #include <QVariant>
 
-class medDataModelItemPrivate;
+//class medDataModelItemPrivate;
 
 class medDataModelItem
 {
+public:
+    medDataModelItem * m_parentItem;
+    QList<medDataModelItem *> m_childItems;
+    QVariantList m_itemData;
+    int m_iLevel;
+    bool m_bCanHaveSubData;
 
 public:
     medDataModelItem();
+    medDataModelItem(medDataModelItem *parent);
     ~medDataModelItem();
 
     /* ***********************************************************************/
@@ -40,12 +47,16 @@ public:
     /* *************** Data location functions *******************************/
     /* ***********************************************************************/
     int childCount() const;
-    unsigned int level() const;
+    int level() const;
     int row() const;
     medDataModelItem *parent() const;
 
-private:
-    medDataModelItemPrivate *d;
+    bool insertChildren(int position, int count);
+
+    bool canHaveSubData();
+
+//private:
+    //medDataModelItemPrivate *d;
 
 
 

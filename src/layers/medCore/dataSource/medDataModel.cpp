@@ -103,6 +103,23 @@ bool medDataModel::getLevelAttributes(QString const & pi_sourceIntanceId, unsign
     return bRes;
 }
 
+bool medDataModel::getLevelCount(QString const & pi_sourceIntanceId, unsigned int & po_uiLevelMax)
+{
+    bool bRes = true;
+
+    medAbstractSource* pSource = m_sourceIdToInstanceMap.value(pi_sourceIntanceId);
+    if (pSource)
+    {
+        po_uiLevelMax = pSource->getLevelCount();
+    }
+    else
+    {
+        bRes = false;
+    }
+
+    return bRes;
+}
+
 medDataModelElement * medDataModel::getModel(QString const & pi_sourceIntanceId)
 {
     return m_sourcesModelMap.first(); //TODO
