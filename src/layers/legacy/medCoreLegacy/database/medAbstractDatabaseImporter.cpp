@@ -509,6 +509,12 @@ void medAbstractDatabaseImporter::importData()
     // Now, populate the database
     medDataIndex index = this->populateDatabaseAndGenerateThumbnails (  d->data, thumb_dir );
 
+    if (d->data->hasMetaData(medMetaDataKeys::Toolbox.key()) &&
+    d->data->metadata(medMetaDataKeys::Toolbox.key())=="PolygonROI" &&
+    d->data->hasMetaData(medMetaDataKeys::FileMetadataPath.key()))
+    {
+        this->createDBEntryForMetadataAttachedFile(d->data, index.seriesId());
+    }
     emit progress(this, 100);
     emit success(this);
 

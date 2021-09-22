@@ -357,3 +357,30 @@ QString medDatabaseImporter::ensureUniqueSeriesName(const QString seriesName, co
 
     return newSeriesName;
 }
+
+void medDatabaseImporter::createDBEntryForMetadataAttachedFile(medAbstractData *medData, int seriesDbId)
+{
+    QSqlDatabase db = medDataManager::instance()->controller()->database();
+    QSqlQuery query ( db );
+
+    query.exec("SELECT COUNT(*) as cpt FROM pragma_table_info('series') WHERE name='json_meta_path'");
+    bool jsonColExist = false;
+    if (query.next())
+    {
+        jsonColExist = query.value("cpt").toInt() != 0;
+    }
+    if (!jsonColExist)
+    {
+        query.exec("ALTER TABLE series ADD COLUMN json_meta_path TEXT");
+    }
+
+    QString json_meta_path = medData->metadata(medMetaDataKeys::FileMetadataPath.key());
+    QString request = "UPDATE series  SET json_meta_path=:json_path WHERE series.id==:seriesId";
+    query.prepare(request);
+    query.bindValue(":json_path", json_meta_path);
+    query.bindValue(":seriesId", seriesDbId);
+    if ( !query.exec() )
+    {
+        qDebug() << DTK_COLOR_FG_RED << query.lastError() << DTK_NO_COLOR;
+    }
+}

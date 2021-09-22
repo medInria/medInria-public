@@ -101,4 +101,6 @@ private:
     void launchExporter(medDatabaseExporter* exporter, const QString & filename);
 
     Q_DECLARE_PRIVATE(medDataManager)
+
+    void saveAttachedMetadataToFile(const dtkSmartPointer<medAbstractData> &data, const QString &exportPath) const;
 };

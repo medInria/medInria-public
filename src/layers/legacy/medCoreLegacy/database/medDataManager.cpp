@@ -335,13 +335,123 @@ void medDataManager::exportData(dtkSmartPointer<medAbstractData> data)
                 }
             }
         }
-
         // Send final type to export data
         this->exportDataToPath(data, finalFilename, chosenFormat);
+        // Save json file associated to data (APHP/incepto requirement)
+        QString jsonPath = dbController->attachedMetadataFileExists(data->dataIndex());
+        QString exportPath = finalFilename.left(finalFilename.lastIndexOf("."));
+
+        if (data->metadata(medMetaDataKeys::Toolbox.key())=="PolygonROI")
+        {
+            saveAttachedMetadataToFile(data, exportPath);
+        }
+        else if (!jsonPath.isEmpty())
+        {
+            jsonPath.prepend(medSettingsManager::instance()->value("database", "actual_database_location").toString());
+            if (!QDir(exportPath).exists())
+            {
+                QDir().mkpath(exportPath);
+            }
+            QString jsonFileName = exportPath + QDir::separator() + data->metadata(medMetaDataKeys::SeriesInstanceUID.key()) + ".json";
+            QFile::copy(jsonPath, jsonFileName);
+        }
     }
 
     qDeleteAll(possibleWriters);
     delete exportDialog;
+}
+
+void medDataManager::saveAttachedMetadataToFile(const dtkSmartPointer<medAbstractData> &data, const QString &exportPath) const
+{
+    QString id = data->metadata(medMetaDataKeys::SeriesInstanceUID.key());
+
+    if (!QDir(exportPath).exists())
+    {
+        QDir().mkpath(exportPath);
+    }
+    QString jsonFileName = exportPath + QDir::separator() + id + ".json";
+    QFile jsonFile(jsonFileName);
+    jsonFile.open(QIODevice::WriteOnly);
+    QJsonObject mainObject;
+
+    QJsonObject inceptoObject;
+    inceptoObject.insert("id", id);
+
+    QString date =
+            QDate::currentDate().toString("yyyy-MM-dd")
+            +"T"
+            + QTime::currentTime().toString("hh:mm:ss.zzz");
+    inceptoObject.insert("createdDate", date);
+    inceptoObject.insert("modifiedDate", date);
+
+    inceptoObject.insert("userId", "");
+
+    QJsonObject valueObject;
+    QString reference = exportPath.right(exportPath.lastIndexOf("/"));//data->metadata(medMetaDataKeys::SeriesDescription.key());
+    int start = reference.indexOf("mask");
+    start += QString("mask").size() + 1;
+    int end = reference.lastIndexOf("(") - start - 1;
+    reference = reference.mid(start, end);
+    reference.prepend(QString("Daicap_Prostate_"));
+    reference.append(QString("_Segmentation"));
+    reference.replace(" ", "_");
+
+    valueObject.insert("reference",  reference);
+    valueObject.insert("mha_filename",  id);
+    QJsonObject caracteristique;
+
+    QString sequence = exportPath.right(exportPath.lastIndexOf("/"));
+    start = sequence.lastIndexOf("(") + 1;
+    end = sequence.lastIndexOf(")") - start;
+    sequence = sequence.mid(start, end);
+    caracteristique.insert("sequence", sequence);
+
+    if (reference.contains("Target"))
+    {
+        start = reference.indexOf("Target");
+        start += QString("Target").size()+1;
+        QString targetId = reference.mid(start, 1);
+        caracteristique.insert("targetId", targetId);
+
+    }
+    if (reference.contains("PIRADS"))
+    {
+        start = reference.indexOf("PIRADS");
+        start += QString("PIRADS").size();
+        QString pirads = reference.mid(start, 1);
+        caracteristique.insert("pirads", pirads);
+    }
+    if (reference.contains(QRegExp("_Z[T|P]{1}_")))
+    {
+        start = reference.indexOf(QRegExp("Z[T|P]{1}"));
+        QString zone = reference.mid(start, 2);
+        caracteristique.insert("zone", zone);
+    }
+
+    valueObject.insert("caracteristique", caracteristique);
+
+    inceptoObject.insert("value", valueObject);
+
+    QJsonObject medInriaObject;
+    medInriaObject.insert("patientId", data->metadata(medMetaDataKeys::PatientID.key()));
+    medInriaObject.insert("patientName", data->metadata(medMetaDataKeys::PatientName.key()));
+    medInriaObject.insert("studyInstanceUID", data->metadata(medMetaDataKeys::StudyInstanceUID.key()));
+    medInriaObject.insert("studyDescription", data->metadata(medMetaDataKeys::StudyDescription.key()));
+    medInriaObject.insert("seriesInstanceUID", data->metadata(medMetaDataKeys::OriginalDataUID.key()));
+    medInriaObject.insert("seriesDescription", data->metadata(medMetaDataKeys::OriginalDataDesc.key()));
+
+    mainObject.insert("originalMetaData", medInriaObject);
+    mainObject.insert("incepto", inceptoObject);
+
+
+    QJsonDocument doc(mainObject);
+    if (jsonFile.write(doc.toJson()) != -1)
+    {
+        int pos = jsonFileName.size() - jsonFileName.indexOf(data->metadata(medMetaDataKeys::PatientID.key())) + 1;
+        QString suffixPath = jsonFileName.right(pos);
+        data->setMetaData(medMetaDataKeys::FileMetadataPath.key(), suffixPath);
+        jsonFile.close();
+    }
 }
 
 void medDataManager::exportDataToPath(dtkSmartPointer<medAbstractData> data, const QString & filename, const QString & writer)
@@ -509,8 +619,19 @@ QUuid medDataManager::makePersistent(medDataIndex index)
 
     if (index.isValidForSeries())
     {
-        jobUuid = this->importData(this->retrieveData(index), true);
+        medAbstractData *data =  this->retrieveData(index);
+        jobUuid = this->importData(data, true);
         d->makePersistentJobs.insert(jobUuid, index);
+
+        if (data->metadata(medMetaDataKeys::Toolbox.key())=="PolygonROI")
+        {
+            // Save json file associated to data (APHP/incepto requirement)
+            QString path = medSettingsManager::instance()->value("database", "actual_database_location").toString();
+            path += QDir::separator() + data->metadata(medMetaDataKeys::PatientID.key()) +
+                    QDir::separator() + data->metadata(medMetaDataKeys::SeriesID.key()) ;
+            saveAttachedMetadataToFile(data, path);
+        }
+
     }
     else if (index.isValidForStudy())
     {

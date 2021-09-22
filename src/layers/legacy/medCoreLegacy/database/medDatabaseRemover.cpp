@@ -153,19 +153,42 @@ void medDatabaseRemover::removeSeries ( int patientDbId, int studyDbId, int seri
 {
     QSqlDatabase db(d->db);
     QSqlQuery query ( db );
+    query.exec("SELECT COUNT(*) as cpt FROM pragma_table_info('series') WHERE name='json_meta_path'");
+    bool jsonColExist = false;
+    if (query.next())
+    {
+        jsonColExist = query.value("cpt").toInt() != 0;
+    }
 
-    query.prepare ( "SELECT thumbnail, path, name  FROM " + d->T_SERIES + " WHERE id = :series " );
+    if (jsonColExist)
+    {
+        query.prepare(
+                "SELECT thumbnail as thumbnail, path as path, name as name, json_meta_path as json_meta_path  FROM " +
+                d->T_SERIES + " WHERE id = :series ");
+    }
+    else
+    {
+        query.prepare(
+                "SELECT thumbnail as thumbnail, path as path, name as name FROM " +
+                d->T_SERIES + " WHERE id = :series ");
+    }
     query.bindValue ( ":series", seriesDbId );
     medDataManager::instance()->controller()->execQuery(query);
 
     if ( query.next() )
     {
-        QString path = query.value (1).toString();
+        QString path = query.value ("path").toString();
 
         // if path is empty then it was an indexed series
         if ( !path.isNull() && !path.isEmpty() )
         {
             this->removeDataFile(path);
+        }
+        if (jsonColExist)
+        {
+            QString json_meta_file = query.value("json_meta_path").toString();
+            if (!json_meta_file.isEmpty())
+                this->removeFile(json_meta_file);
         }
         removeThumbnailIfNeeded(query);
     }
@@ -258,7 +281,7 @@ void medDatabaseRemover::removeFile ( const QString & filename )
 
 void medDatabaseRemover::removeThumbnailIfNeeded(QSqlQuery query)
 {
-    QString thumbnail = query.value(0).toString();
+    QString thumbnail = query.value("thumbnail").toString();
 
     this->removeFile ( thumbnail );
 
