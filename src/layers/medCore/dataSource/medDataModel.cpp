@@ -133,6 +133,7 @@ void medDataModel::addSource(medAbstractSource * pi_source)
         auto instanceId = pi_source->getInstanceId();
         m_sourceIdToInstanceMap[instanceId] = pi_source;
         m_sourcesModelMap[pi_source] = new medDataModelElement(this, instanceId);
+        auto tester = new QAbstractItemModelTester(m_sourcesModelMap[pi_source], QAbstractItemModelTester::FailureReportingMode::Fatal, this);
     }
 }
 

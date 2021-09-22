@@ -17,6 +17,7 @@
 
 #include <medCoreExport.h>
 #include<QMap>
+#include <QAbstractItemModelTester>
 
 class MEDCORE_EXPORT medDataModel : public QObject
 {
