@@ -582,6 +582,7 @@ void polygonLabel::createMask(int label, QString &desc)
 
     output->setMetaData(medMetaDataKeys::Toolbox.key(), "PolygonROI");
     output->setMetaData(medMetaDataKeys::OriginalDataUID.key(), inputData->metadata(medMetaDataKeys::SeriesInstanceUID.key()));
+    output->setMetaData(medMetaDataKeys::OriginalDataDesc.key(), inputData->metadata(medMetaDataKeys::SeriesDescription.key()));
     medDataManager::instance()->importData(output, false);
 }
 

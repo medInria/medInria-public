@@ -172,6 +172,7 @@ namespace medMetaDataKeys
     // EXPORT EXTRA DATA TO ATTACHED FILE
     extern MEDCORELEGACY_EXPORT const Key Toolbox;
     extern MEDCORELEGACY_EXPORT const Key OriginalDataUID;
+    extern MEDCORELEGACY_EXPORT const Key OriginalDataDesc;
     extern MEDCORELEGACY_EXPORT const Key FileMetadataPath;
 };
 
