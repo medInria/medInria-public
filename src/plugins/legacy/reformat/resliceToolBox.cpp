@@ -264,7 +264,7 @@ void resliceToolBox::updateView()
     medAbstractView* view = this->getWorkspace()->tabbedViewContainers()->getFirstSelectedContainerView();
 
     d->currentView = nullptr;
-    if (view && d->currentView!= view)
+    if (view)
     {
         medAbstractLayeredView *layeredView = qobject_cast<medAbstractLayeredView*>(view);
         if (dynamic_cast<medAbstractImageData*>(layeredView->layerData(layeredView->currentLayer())))
