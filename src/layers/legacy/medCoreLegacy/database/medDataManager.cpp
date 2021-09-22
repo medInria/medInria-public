@@ -339,9 +339,7 @@ void medDataManager::exportData(dtkSmartPointer<medAbstractData> data)
         this->exportDataToPath(data, finalFilename, chosenFormat);
         // Save json file associated to data (APHP/incepto requirement)
         QString jsonPath = dbController->attachedMetadataFileExists(data->dataIndex());
-        QString exportPath = exportDialog->directory().absolutePath() +
-                QDir::separator() +
-                data->metadata(medMetaDataKeys::SeriesDescription.key());
+        QString exportPath = finalFilename.left(finalFilename.lastIndexOf("."));
 
         if (data->metadata(medMetaDataKeys::Toolbox.key())=="PolygonROI")
         {
@@ -389,7 +387,7 @@ void medDataManager::saveAttachedMetadataToFile(const dtkSmartPointer<medAbstrac
     inceptoObject.insert("userId", "");
 
     QJsonObject valueObject;
-    QString reference = data->metadata(medMetaDataKeys::SeriesDescription.key());
+    QString reference = exportPath.right(exportPath.lastIndexOf("/"));//data->metadata(medMetaDataKeys::SeriesDescription.key());
     int start = reference.indexOf("mask");
     start += QString("mask").size() + 1;
     int end = reference.lastIndexOf("(") - start - 1;
@@ -397,12 +395,40 @@ void medDataManager::saveAttachedMetadataToFile(const dtkSmartPointer<medAbstrac
     reference.prepend(QString("Daicap_Prostate_"));
     reference.append(QString("_Segmentation"));
     reference.replace(" ", "_");
+
     valueObject.insert("reference",  reference);
     valueObject.insert("mha_filename",  id);
-    QJsonObject zone_anat;
-    zone_anat.insert("type",  "STRING");
-    zone_anat.insert("strVal",  "none");
-    valueObject.insert("zone_anatomique", zone_anat);
+    QJsonObject caracteristique;
+
+    QString sequence = exportPath.right(exportPath.lastIndexOf("/"));
+    start = sequence.lastIndexOf("(") + 1;
+    end = sequence.lastIndexOf(")") - start;
+    sequence = sequence.mid(start, end);
+    caracteristique.insert("sequence", sequence);
+
+    if (reference.contains("Target"))
+    {
+        start = reference.indexOf("Target");
+        start += QString("Target").size()+1;
+        QString targetId = reference.mid(start, 1);
+        caracteristique.insert("targetId", targetId);
+
+    }
+    if (reference.contains("PIRADS"))
+    {
+        start = reference.indexOf("PIRADS");
+        start += QString("PIRADS").size();
+        QString pirads = reference.mid(start, 1);
+        caracteristique.insert("pirads", pirads);
+    }
+    if (reference.contains(QRegExp("_Z[T|P]{1}_")))
+    {
+        start = reference.indexOf(QRegExp("Z[T|P]{1}"));
+        QString zone = reference.mid(start, 2);
+        caracteristique.insert("zone", zone);
+    }
+
+    valueObject.insert("caracteristique", caracteristique);
 
     inceptoObject.insert("value", valueObject);
 
@@ -412,6 +438,7 @@ void medDataManager::saveAttachedMetadataToFile(const dtkSmartPointer<medAbstrac
     medInriaObject.insert("studyInstanceUID", data->metadata(medMetaDataKeys::StudyInstanceUID.key()));
     medInriaObject.insert("studyDescription", data->metadata(medMetaDataKeys::StudyDescription.key()));
     medInriaObject.insert("seriesInstanceUID", data->metadata(medMetaDataKeys::OriginalDataUID.key()));
+    medInriaObject.insert("seriesDescription", data->metadata(medMetaDataKeys::OriginalDataDesc.key()));
 
     mainObject.insert("originalMetaData", medInriaObject);
     mainObject.insert("incepto", inceptoObject);
