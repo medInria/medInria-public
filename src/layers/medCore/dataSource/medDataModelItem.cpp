@@ -1,4 +1,5 @@
 #include <medDataModelItem.h>
+#include <medDataModelElement.h>
 
 #include <QVariant>
 #include <QList>
@@ -18,15 +19,17 @@
 
 
 
-medDataModelItem::medDataModelItem() //: d(new medDataModelItemPrivate())
+medDataModelItem::medDataModelItem(medDataModelElement *model) //: d(new medDataModelItemPrivate())
 {
+    m_model = model;
     m_parentItem = nullptr; //Invalid parent 
     m_iLevel = -1; //Invalid effective level, used by root item
     m_bCanHaveSubData = true;
 }
 
-medDataModelItem::medDataModelItem(medDataModelItem *parent) //: d(new medDataModelItemPrivate())
+medDataModelItem::medDataModelItem(medDataModelElement *model, medDataModelItem *parent) //: d(new medDataModelItemPrivate())
 {
+    m_model = model;
     m_bCanHaveSubData = true;
     setParent(parent);
 }
@@ -74,7 +77,7 @@ bool medDataModelItem::insertChildren(int position, int count)
     {
         for (int i = 0; i < count; ++i)
         {
-            medDataModelItem *pItemTmp = new medDataModelItem();
+            medDataModelItem *pItemTmp = new medDataModelItem(m_model);
             m_childItems.insert(position, pItemTmp);
         }
     }
@@ -99,7 +102,16 @@ medDataModelItem * medDataModelItem::child(int row) const
 
 QVariant medDataModelItem::data(int column) const
 {
-    return m_itemData.value(column);
+    QVariant varRes(".");
+
+    int internalColumn = m_model->getColumnInsideLevel(m_iLevel, column);
+    if (internalColumn >= 0)
+    {
+        varRes = m_itemData.value(internalColumn);
+    }
+
+    return varRes;
+    //return m_itemData.value(column);
 }
 
 void medDataModelItem::setParent(medDataModelItem * parent)

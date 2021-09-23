@@ -15,19 +15,22 @@
 #include <QVariant>
 
 //class medDataModelItemPrivate;
+class medDataModelElement;
 
 class medDataModelItem
 {
 public:
-    medDataModelItem * m_parentItem;
+    medDataModelElement *m_model;
+    medDataModelItem    *m_parentItem;
     QList<medDataModelItem *> m_childItems;
     QVariantList m_itemData;
+    //QMap<QString, QVariant> m_itemData;
     int m_iLevel;
     bool m_bCanHaveSubData;
 
 public:
-    medDataModelItem();
-    medDataModelItem(medDataModelItem *parent);
+    medDataModelItem(medDataModelElement *model);
+    medDataModelItem(medDataModelElement *model, medDataModelItem *parent);
     ~medDataModelItem();
 
     /* ***********************************************************************/

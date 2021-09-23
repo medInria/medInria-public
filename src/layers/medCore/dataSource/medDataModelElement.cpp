@@ -27,6 +27,7 @@ struct medDataModelElementPrivate
     bool bCache;
     bool bLocal;
     QMap<int, QStringList> columnNameByLevel;
+    QStringList sectionNames;
 
     medDataModelItem *root;
 };
@@ -35,7 +36,7 @@ medDataModelElement::medDataModelElement(medDataModel *parent, QString const & s
 {
     d->parent = parent;
     d->sourceInstanceId = sourceIntanceId;
-    d->root = new medDataModelItem();
+    d->root = new medDataModelItem(this);
 
     bool bOk = parent->getSourceGlobalInfo(sourceIntanceId, d->bOnline, d->bLocal, d->bWritable, d->bCache);
 
@@ -47,8 +48,9 @@ medDataModelElement::medDataModelElement(medDataModel *parent, QString const & s
         }
         else
         {
-            getColumnNames(0);
+            fetchColumnNames(QModelIndex());
         }
+
         if (d->bCache)
         {
             d->columnNameByLevel[0].push_back("Cached");
@@ -124,24 +126,8 @@ QModelIndex medDataModelElement::parent(const QModelIndex & index) const
 */
 int medDataModelElement::columnCount(const QModelIndex & parent) const
 {
-    int iRes = 0;
-    
-    int level = 0;
-
-    if (parent.isValid())
-    {
-        level = getItem(parent)->level() + 1;
-    }
-
-    iRes = getLevelColumCount(level);
-
-    if (iRes < 0)
-    {
-        //qWarning << QString(__FILE__) + __LINE__; //TODO
-        iRes = 0;
-    }
-    
-    return iRes;
+    Q_UNUSED(parent);
+    return d->sectionNames.size();
 }
 
 /**
@@ -220,12 +206,46 @@ inline medDataModelItem * medDataModelElement::getItem(const QModelIndex & index
     return itemRes;
 }
 
-void medDataModelElement::setColumnAttributes(int p_iLevel, QStringList & attributes)
+QVariant medDataModelElement::headerData(int section, Qt::Orientation orientation, int role) const
 {
-    if (d->columnNameByLevel.contains(p_iLevel))
+    QVariant varRes;
+
+    if (role == Qt::DisplayRole && !d->sectionNames.isEmpty())
     {
-        d->columnNameByLevel[p_iLevel].append(attributes);
+        varRes = d->sectionNames[section];
     }
+
+    return varRes;
+}
+
+//void medDataModelElement::setColumnAttributes(int p_iLevel, QStringList & attributes)
+//{
+//    if (d->columnNameByLevel.contains(p_iLevel))
+//    {
+//        d->columnNameByLevel[p_iLevel].append(attributes);
+//        for (auto attribute : attributes)
+//        {
+//            if (!d->sectionNames.contains(attribute))
+//            {
+//                d->sectionNames.push_back(attribute);
+//            }
+//        }
+//    }
+//}
+
+int medDataModelElement::getColumnInsideLevel(int level, int section)
+{
+    int iRes = -1;
+
+    if (section > -1 && section < d->sectionNames.size())
+    {
+        if (d->columnNameByLevel.contains(level))
+        {
+            iRes = d->columnNameByLevel[level].indexOf(d->sectionNames[section]);
+        }
+    }
+
+    return iRes;
 }
 
 /**
@@ -234,7 +254,7 @@ void medDataModelElement::setColumnAttributes(int p_iLevel, QStringList & attrib
 */
 void medDataModelElement::itemPressed(QModelIndex const &index)
 {
-    if (index.isValid() /*&& index.column() == 0*/) //TODO find way to remove  '&& index.column() == 0'
+    if (index.isValid())
     {
         medDataModelItem * pItemCurrent = getItem(index);
         if (currentLevelFetchable(pItemCurrent) && pItemCurrent->childCount() == 0 )
@@ -264,47 +284,42 @@ bool medDataModelElement::currentLevelFetchable(medDataModelItem * pItemCurrent)
 /* ***********************************************************************/
 /* *************** Private functions and slots ***************************/
 /* ***********************************************************************/
-bool medDataModelElement::getColumnNames(int const &m_iLevel) const
+bool medDataModelElement::fetchColumnNames(const QModelIndex &index/*int const &m_iLevel*/)
 {
     bool bRes = true;
     
     QStringList attributes;
-    bRes = d->parent->getLevelAttributes(d->sourceInstanceId, m_iLevel, attributes);
+    auto item = getItem(index);
+    bRes = d->parent->getLevelAttributes(d->sourceInstanceId, item->level()+1, attributes);
     
     if (bRes)
     {
-        d->columnNameByLevel[m_iLevel] = attributes;
+        d->columnNameByLevel[item->level()+1] = attributes;
+        for (auto attribute : attributes)
+        {
+            if (!d->sectionNames.contains(attribute))
+            {
+                //beginInsertColumns(index.siblingAtColumn(0), d->sectionNames.size(), d->sectionNames.size());
+                d->sectionNames.push_back(attribute);
+                //endInsertColumns();
+                //emit dataChanged(index.siblingAtColumn(0), index.siblingAtColumn(d->sectionNames.size() - 1));
+                //emit layoutChanged();
+            }
+        }
     }
 
     return bRes;
 }
 
-int medDataModelElement::getLevelColumCount(int pi_iLevel) const
-{
-    int iRes = -1;
-    bool bOk = true;
-
-    if ( !d->columnNameByLevel.contains(pi_iLevel))
-    {
-        bOk = getColumnNames(pi_iLevel);
-    }
-
-    if (bOk)
-    {    
-        iRes = d->columnNameByLevel[pi_iLevel].size();
-    }
-
-    return iRes;
-}
 
 void medDataModelElement::populateLevel(QModelIndex const &index, QString const &key)
 {
     QVariantList entries;
     medDataModelItem *pItem = getItem(index);
 
-    int m_iLevel = pItem->level()+1;
+    int iLevel = pItem->level()+1;
 
-    if (d->parent->getLevelMetaData(d->sourceInstanceId, m_iLevel, key, entries))
+    if (d->parent->getLevelMetaData(d->sourceInstanceId, iLevel, key, entries))
     {
         if (entries.size() > 0)
         {
@@ -312,27 +327,22 @@ void medDataModelElement::populateLevel(QModelIndex const &index, QString const 
             {
                 int row = rowCount(index);
                 int elemCount = entries.size();
-                emit layoutAboutToBeChanged(); //this is useful to update arrow on the left if click is not inside 
-                beginInsertRows(index, row, row + elemCount - 1);
-            }
-            else
-            {
-                int i = 0;
-                ++i;
+                emit layoutAboutToBeChanged(); //this is useful to update arrow on the left if click is not inside
+                beginInsertRows(index.siblingAtColumn(0), row, row + elemCount - 1);
             }
 
             // ////////////////////////////////////////////////////////////////////////
             // Populate column names if not already done
-            if (!d->columnNameByLevel.contains(m_iLevel))
+            if (!d->columnNameByLevel.contains(iLevel))
             {
-                getColumnNames(m_iLevel);
+                fetchColumnNames(index/*iLevel*/);
             }
 
             // ////////////////////////////////////////////////////////////////////////
             // Populate data loop
             for (QVariant &var : entries)
             {
-                medDataModelItem *pItemTmp = new medDataModelItem();
+                medDataModelItem *pItemTmp = new medDataModelItem(this);
                 auto elem = var.toStringList();
                 pItemTmp->setData(elem);
                 pItemTmp->setParent(pItem);

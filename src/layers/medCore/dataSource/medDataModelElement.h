@@ -40,6 +40,7 @@ public:
     int	columnCount(const QModelIndex &parent = QModelIndex()) const override;
     int	rowCount(const QModelIndex &parent = QModelIndex()) const override;
 
+
     // ////////////////////////////////////////////////////////////////////////
     // Simple Virtual Override
     bool insertRows(int row, int count, const QModelIndex &parent = QModelIndex()) override;
@@ -48,20 +49,24 @@ public:
     bool canFetchMore(const QModelIndex& parent) const override;
     void fetchMore(const QModelIndex& parent) override;
 
+    QVariant headerData(int section, Qt::Orientation orientation, int role) const override;
 
-    medDataModelItem* getItem(const QModelIndex &index) const;
-    void setColumnAttributes(int p_iLevel, QStringList &attributes);
+
+    // ////////////////////////////////////////////////////////////////////////
+    // Simple methods
+    //void setColumnAttributes(int p_iLevel, QStringList &attributes); //maybe developed because not const ?
+    int  getColumnInsideLevel(int level, int section);
+
 
 public slots:
     void itemPressed(QModelIndex const &index);
 
 
 
-private:
-    bool getColumnNames(int const &m_iLevel) const;
-    int  getLevelColumCount(int pi_iLevel) const;
+private:    
+    medDataModelItem* getItem(const QModelIndex &index) const;
+    bool fetchColumnNames(const QModelIndex &index/*int const &m_iLevel*/);
     void populateLevel(QModelIndex const &index, QString const &key);
-    //void populateLevel(medDataModelItem * pItemCurrent, QString const &key, QModelIndex const &index, bool subLevel = false);
     bool currentLevelFetchable(medDataModelItem * pItemCurrent);
 
 
