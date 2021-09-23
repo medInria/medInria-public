@@ -107,7 +107,7 @@ QVariant medDataModelItem::data(int column) const
     int internalColumn = m_model->getColumnInsideLevel(m_iLevel, column);
     if (internalColumn >= 0)
     {
-        varRes = m_itemData.value(internalColumn);
+        varRes = m_itemData.value(internalColumn+1);
     }
 
     return varRes;
@@ -131,6 +131,11 @@ void medDataModelItem::setData(QStringList const & value)
         m_itemData.append(val);
     }    
 }
+
+//void medDataModelItem::setIID(QString iid)
+//{
+//    m_iid = iid;
+//}
 
 void medDataModelItem::append(medDataModelItem * child)
 {

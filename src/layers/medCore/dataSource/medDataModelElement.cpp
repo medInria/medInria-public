@@ -259,7 +259,7 @@ void medDataModelElement::itemPressed(QModelIndex const &index)
         medDataModelItem * pItemCurrent = getItem(index);
         if (currentLevelFetchable(pItemCurrent) && pItemCurrent->childCount() == 0 )
         {
-            auto key = pItemCurrent->data(0).toString();
+            auto key = pItemCurrent->iid();
             populateLevel(index, key);
         }
     }
@@ -291,6 +291,7 @@ bool medDataModelElement::fetchColumnNames(const QModelIndex &index/*int const &
     QStringList attributes;
     auto item = getItem(index);
     bRes = d->parent->getLevelAttributes(d->sourceInstanceId, item->level()+1, attributes);
+    attributes.pop_front();
     
     if (bRes)
     {
@@ -344,6 +345,7 @@ void medDataModelElement::populateLevel(QModelIndex const &index, QString const 
             {
                 medDataModelItem *pItemTmp = new medDataModelItem(this);
                 auto elem = var.toStringList();
+                //pItemTmp->setIID(elem.takeFirst());
                 pItemTmp->setData(elem);
                 pItemTmp->setParent(pItem);
                 pItem->append(pItemTmp);

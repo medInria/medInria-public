@@ -65,7 +65,7 @@ public slots:
 
 private:    
     medDataModelItem* getItem(const QModelIndex &index) const;
-    bool fetchColumnNames(const QModelIndex &index/*int const &m_iLevel*/);
+    bool fetchColumnNames(const QModelIndex &index);
     void populateLevel(QModelIndex const &index, QString const &key);
     bool currentLevelFetchable(medDataModelItem * pItemCurrent);
 
