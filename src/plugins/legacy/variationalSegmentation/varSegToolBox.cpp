@@ -24,6 +24,7 @@
 #include <medRunnableProcess.h>
 #include <medTabbedViewContainers.h>
 #include <medUtilities.h>
+#include <medViewContainer.h>
 #include <medVtkViewBackend.h>
 
 #include <varSegToolBox.h>
@@ -39,7 +40,6 @@ class VarSegToolBoxPrivate
 public:
     vtkLandmarkSegmentationController *controller;
     medAbstractLayeredView *currentView;
-    medAbstractLayeredView *originalView;
     QList<medAbstractLayeredView*> medViews;
     QList<vtkImageView2D*> *views2D;
     QList<vtkImageView3D*> *views3D;
@@ -51,7 +51,6 @@ public:
     dtkSmartPointer<medAbstractData> output;
     int inputSize[3];
     bool segOn;
-    bool mprOn;
     dtkSmartPointer <medAbstractProcessLegacy> process;
 };
 
@@ -97,9 +96,7 @@ VarSegToolBox::VarSegToolBox(QWidget *parent )
     d->controller = vtkLandmarkSegmentationController::New();
     d->output = medAbstractDataFactory::instance()->createSmartPointer("itkDataImageUChar3");
     d->currentView = nullptr;
-    d->originalView = nullptr;
     d->segOn = false;
-    d->mprOn = false;
 
     d->views2D = new QList<vtkImageView2D*>();
     d->views3D = new QList<vtkImageView3D*>();
@@ -256,17 +253,11 @@ void VarSegToolBox::displayOutput()
         medUtilities::setDerivedMetaData(d->output, d->originalInput, "variational segmentation");
     }
 
-    for(int i = 0;i<d->medViews.size();i++)
-    {
-        d->medViews[i]->addLayer(d->process->output());
-        d->medViews[i]->removeLayer(0);
-    }
-
-    if (d->mprOn && d->originalView)
-    {
-        d->originalView->addLayer(d->process->output());
-        d->originalView->removeLayer(0);
-    }
+    medTabbedViewContainers *tabbedViewContainers = getWorkspace()->tabbedViewContainers();
+    medViewContainer *viewContainer = tabbedViewContainers->containersInTab(tabbedViewContainers->currentIndex()).at(0);
+    viewContainer->removeView();
+    viewContainer->setMultiLayered(true);
+    viewContainer->addData(d->process->output());
 }
 
 void VarSegToolBox::updateView()
@@ -295,6 +286,10 @@ void VarSegToolBox::updateView()
             }
         }
     }
+    else
+    {
+        d->currentView = nullptr;
+    }
 }
 
 void VarSegToolBox::clear()
@@ -315,33 +310,11 @@ void VarSegToolBox::startSegmentation()
     d->views2D->clear();
     d->views3D->clear();
 
-    if (!d->mprOn)
-    {
-        connect(d->currentView, SIGNAL(propertySet(QString,QString)), this, SLOT(updateLandmarksRenderer(QString,QString)), Qt::UniqueConnection);
-        connect(d->currentView, SIGNAL(closed()), this, SLOT(manageClosingView()), Qt::UniqueConnection);
-        if (d->currentView->property("Orientation")=="3D")
-        {
-            d->controller->setMode3D(true);
-        }
-        else
-        {
-            d->controller->setMode3D(false);
-        }
-    }
+    connect(d->currentView, SIGNAL(propertySet(QString,QString)), this, SLOT(updateLandmarksRenderer(QString,QString)), Qt::UniqueConnection);
+    connect(d->currentView, SIGNAL(closed()), this, SLOT(manageClosingView()), Qt::UniqueConnection);
 
     vtkCollection *interactorcollection = vtkCollection::New();
-    if (d->mprOn)
-    {
-        for(int i=0; i<4; i++)
-        {
-            interactorcollection->AddItem(static_cast<medVtkViewBackend*>(d->medViews[i]->backend())->renWin->GetInteractor());
-        }
-    }
-    else
-    {
-        interactorcollection->AddItem(static_cast<medVtkViewBackend*>(d->currentView->backend())->renWin->GetInteractor());
-    }
-    
+    interactorcollection->AddItem(static_cast<medVtkViewBackend*>(d->currentView->backend())->renWin->GetInteractor());
     d->controller->SetInteractorCollection(interactorcollection);
     interactorcollection->Delete();
 
@@ -425,12 +398,10 @@ void VarSegToolBox::startSegmentation()
     
     d->controller->SetInput(smallerImage);
     
-    if (!d->mprOn)
-    {
-        d->medViews.append(d->currentView);
-        d->views2D->append(static_cast<medVtkViewBackend*>(d->currentView->backend())->view2D);
-        d->views3D->append(static_cast<medVtkViewBackend*>(d->currentView->backend())->view3D);
-    }
+    d->medViews.append(d->currentView);
+    d->views2D->append(static_cast<medVtkViewBackend*>(d->currentView->backend())->view2D);
+    d->views3D->append(static_cast<medVtkViewBackend*>(d->currentView->backend())->view3D);
+
     for (int i = 0; i<d->medViews.size(); i++)
     {
         d->views2D->at(i)->AddDataSet (d->controller->GetOutput());
@@ -461,7 +432,6 @@ VarSegToolBox::castImageToType(medAbstractData *inputData)
 void VarSegToolBox::manageClosingView()
 {
     d->currentView = nullptr;
-    d->originalView = nullptr;
     d->medViews.clear();
     endSegmentation();
 }
