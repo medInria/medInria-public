@@ -30,6 +30,9 @@ public:
     medDatabaseReader(const medDataIndex& index);
     ~medDatabaseReader();
 
+    void setFullDataMode(bool value);
+    bool fullDataMode();
+
     medAbstractData *run();
 
     QString getFilePath();

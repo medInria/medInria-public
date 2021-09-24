@@ -35,7 +35,7 @@ public:
     static void initialize();
     static medDataManager * instance();
 
-    medAbstractData* retrieveData(const medDataIndex& index);
+    medAbstractData* retrieveData(const medDataIndex& index, bool fullData = true);
 
     QHash<QString, dtkAbstractDataWriter*> getPossibleWriters(medAbstractData* data);
 
