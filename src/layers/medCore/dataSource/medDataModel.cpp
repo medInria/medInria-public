@@ -149,6 +149,24 @@ void medDataModel::removeSource(medAbstractSource * pi_source)
 
 void medDataModel::addData(medAbstractData * pi_dataset, QString uri)
 {
+    QStringList splittedUri;
+    int sourceDelimPos = uri.indexOf(':');
+    splittedUri.append(uri.left(sourceDelimPos));
+    QString sourceUri = uri.right(uri.size() - sourceDelimPos - 1);
+    splittedUri.append(sourceUri.split('/'));
+ 
+    //TODO vérifier la présence dans la map
+    auto pModelElement = m_sourceIdToInstanceMap[splittedUri[0]];
+    // ////////////////////////////////////////////////////////////////////////
+    // Adding dataset to the source
+    bool bContinue = pModelElement->addData(pi_dataset, sourceUri);
+
+    // ////////////////////////////////////////////////////////////////////////
+    // Refresh dataModelElement
+    if (bContinue)
+    {
+        m_sourcesModelMap[pModelElement]->fetch(sourceUri.left(sourceUri.lastIndexOf('/')));
+    }
 }
 
 void medDataModel::addData(medDataIndex * pi_datasetIndex, QString uri)

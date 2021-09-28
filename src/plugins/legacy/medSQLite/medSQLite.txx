@@ -334,6 +334,30 @@ int medSQlite<T>::getAssyncData(unsigned int pi_uiLevel, QString id)
     return 0;
 }
 
+template<typename T>
+bool medSQlite<T>::addData(void * data, QString uri)
+{
+    bool bRes = true;
+
+    QSqlQuery query = m_Engine.exec();
+    auto splittedUri = uri.split('/');
+    auto queryString = QString("INSERT INTO series(study,name) VALUES(:study,:name)");
+    bRes = query.prepare(queryString);
+    query.bindValue(":study", splittedUri[1]);
+    query.bindValue(":name",  splittedUri[2]);
+
+    if (bRes)
+    {
+        if (!query.exec())
+        {
+            qDebug() << query.lastError();
+            bRes = false;
+        }
+    }
+
+    return bRes;
+}
+
 template <typename T>
 void medSQlite<T>::abort(int pi_iRequest)
 {

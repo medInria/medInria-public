@@ -44,6 +44,7 @@ public:
     // ////////////////////////////////////////////////////////////////////////
     // Simple Virtual Override
     bool insertRows(int row, int count, const QModelIndex &parent = QModelIndex()) override;
+    bool removeRows(int row, int count, const QModelIndex &parent = QModelIndex()) override;
 
 
     bool canFetchMore(const QModelIndex& parent) const override;
@@ -56,6 +57,7 @@ public:
     // Simple methods
     //void setColumnAttributes(int p_iLevel, QStringList &attributes); //maybe developed because not const ?
     int  getColumnInsideLevel(int level, int section);
+    bool fetch(QString uri);
 
 
 public slots:
@@ -65,9 +67,18 @@ public slots:
 
 private:    
     medDataModelItem* getItem(const QModelIndex &index) const;
+    QModelIndex getIndex(QString iid, QModelIndex const &parent = QModelIndex()) const;
     bool fetchColumnNames(const QModelIndex &index);
     void populateLevel(QModelIndex const &index, QString const &key);
+    void populateLevelV2(QModelIndex const &index, QString const & uri);
+    void addRowRanges(QMap<int, QVariantList> &entriesToAdd, const QModelIndex & index);
+    void computeRowRangesToAdd(QVariantList &entries, medDataModelItem * pItem, QMap<int, QVariantList> &entriesToAdd);
+    void removeRowRanges(QVector<QPair<int, int>> &rangeToRemove, const QModelIndex & index);
+    void computeRowRangesToRemove(medDataModelItem * pItem, QVariantList &entries, QVector<QPair<int, int>> &rangeToRemove);
     bool currentLevelFetchable(medDataModelItem * pItemCurrent);
+    //bool hasChildItemWithIID(medDataModelItem *pi_Item, QString iid);
+
+    bool itemStillExist(QVariantList &entries, medDataModelItem * pItem);
 
 
 signals:

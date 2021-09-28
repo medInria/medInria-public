@@ -87,6 +87,8 @@ public:
     QString getDirectData(unsigned int pi_uiLevel, QString key) override;
 
     int getAssyncData(unsigned int pi_uiLevel, QString id) override;
+    
+    bool addData(void* data, QString uri) override;
 
 public slots:
     void abort(int pi_iRequest) override;
