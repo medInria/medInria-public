@@ -6,20 +6,10 @@
 #include <QVector>
 #include <QString>
 
-//class medDataModelItemPrivate
-//{
-//public:
-//    medDataModelItem * m_parentItem;
-//    QList<medDataModelItem *> m_childItems;
-//
-//    QVariantList m_itemData;
-//
-//    int m_iLevel;
-//};
 
 
 
-medDataModelItem::medDataModelItem(medDataModelElement *model) //: d(new medDataModelItemPrivate())
+medDataModelItem::medDataModelItem(medDataModelElement *model)
 {
     m_model = model;
     m_parentItem = nullptr; //Invalid parent 
@@ -27,16 +17,21 @@ medDataModelItem::medDataModelItem(medDataModelElement *model) //: d(new medData
     m_bCanHaveSubData = true;
 }
 
-medDataModelItem::medDataModelItem(medDataModelElement *model, medDataModelItem *parent) //: d(new medDataModelItemPrivate())
+medDataModelItem::medDataModelItem(medDataModelItem *parent)
 {
-    m_model = model;
+    m_model = parent->m_model;
     m_bCanHaveSubData = true;
     setParent(parent);
 }
 
 medDataModelItem::~medDataModelItem()
 {
-
+    for (auto &childItem : m_childItems)
+    {
+        delete childItem;
+        childItem = nullptr; //useful ?
+    }
+    m_childItems.clear(); //useful ?
 }
 
 
@@ -80,6 +75,23 @@ bool medDataModelItem::insertChildren(int position, int count)
             medDataModelItem *pItemTmp = new medDataModelItem(m_model);
             m_childItems.insert(position, pItemTmp);
         }
+    }
+
+    return bRes;
+}
+
+bool medDataModelItem::removeRows(int row, int count)
+{
+    bool bRes = true;
+
+    if (row>-1 && count>0 && (row + count < m_childItems.size()))
+    {
+        for (int i = row; i < row + count; ++i)
+        {
+            auto   childItemToRemove = m_childItems[i];
+            delete childItemToRemove;
+        }
+        m_childItems.erase(m_childItems.begin() + row, m_childItems.begin() + row + count - 1);
     }
 
     return bRes;
@@ -134,7 +146,7 @@ medDataModelItem * medDataModelItem::child(int row) const
 
 QVariant medDataModelItem::data(int column) const
 {
-    QVariant varRes(".");
+    QVariant varRes;
 
     int internalColumn = m_model->getColumnInsideLevel(m_iLevel, column);
     if (internalColumn >= 0)
@@ -143,7 +155,6 @@ QVariant medDataModelItem::data(int column) const
     }
 
     return varRes;
-    //return m_itemData.value(column);
 }
 
 void medDataModelItem::setParent(medDataModelItem * parent)
@@ -163,11 +174,6 @@ void medDataModelItem::setData(QStringList const & value)
         m_itemData.append(val);
     }    
 }
-
-//void medDataModelItem::setIID(QString iid)
-//{
-//    m_iid = iid;
-//}
 
 void medDataModelItem::append(medDataModelItem * child)
 {

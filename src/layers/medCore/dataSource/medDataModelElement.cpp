@@ -151,7 +151,7 @@ int	medDataModelElement::rowCount(const QModelIndex &parent) const
 bool medDataModelElement::insertRows(int row, int count, const QModelIndex &parent)
 {
     beginInsertRows(parent, row, row + count - 1);
-    //TODO
+    //TODO Correct implementation
     endInsertRows();
     return true;
 }
@@ -160,8 +160,10 @@ bool medDataModelElement::removeRows(int row, int count, const QModelIndex & par
 {
     bool bRes = true;
     
+    medDataModelItem *pItem = getItem(parent);
     beginRemoveRows(parent, row, row + count - 1);
-
+    bRes = pItem->removeRows(row, count);
+    endRemoveRows();
 
     return bRes;
 }
@@ -181,6 +183,7 @@ inline bool medDataModelElement::canFetchMore(const QModelIndex & parent) const
 
     if (parent.isValid())
     {
+        //TODO Correct implementation
         bRes = true;// item->hasChildren && !item->children.count();
     }
 
@@ -191,6 +194,8 @@ inline void medDataModelElement::fetchMore(const QModelIndex & parent)
 {
     if (canFetchMore(parent))
     {
+        //TODO Correct implementation
+
         //medDataModelElementPrivate *node = getItem(parent);
         //
         // get the information you need to populate node
@@ -273,7 +278,7 @@ int medDataModelElement::getColumnInsideLevel(int level, int section)
     return iRes;
 }
 
-bool medDataModelElement::fetch(QString uri)
+bool medDataModelElement::fetch(QString uri) //See populateLevelV2
 {
     QStringList splittedUri;
     splittedUri.append(uri.split('/'));
@@ -350,11 +355,7 @@ bool medDataModelElement::fetchColumnNames(const QModelIndex &index/*int const &
         {
             if (!d->sectionNames.contains(attribute))
             {
-                //beginInsertColumns(index.siblingAtColumn(0), d->sectionNames.size(), d->sectionNames.size());
                 d->sectionNames.push_back(attribute);
-                //endInsertColumns();
-                //emit dataChanged(index.siblingAtColumn(0), index.siblingAtColumn(d->sectionNames.size() - 1));
-                //emit layoutChanged();
             }
         }
     }
@@ -420,14 +421,14 @@ void medDataModelElement::populateLevelV2(QModelIndex const & index, QString con
     {
         emit layoutAboutToBeChanged(); //this is useful to update arrow on the left if click is not inside
 
-        QVector<QPair<int, int> > rangeToRemove;
+        QVector<QPair<int, int> > rangeToRemove; // vector of ranges to delete, <beginRange, endRange>
         computeRowRangesToRemove(pItem, entries, rangeToRemove);
         removeRowRanges(rangeToRemove, index);
 
         //TODO Update data already present inside the model
 
         QMap<int, QVariantList> entriesToAdd; //position to insert, List of QVariant, itself QVariantList representation of minimal entries
-        computeRowRangesToAdd(entries, pItem, entriesToAdd);
+        computeRowRangesToAdd(pItem, entries, entriesToAdd);
         addRowRanges(entriesToAdd, index);
 
         emit layoutChanged(); // close the emit layoutAboutToBeChanged();
@@ -443,7 +444,7 @@ bool medDataModelElement::itemStillExist(QVariantList &entries, medDataModelItem
     auto end = entries.end();
     while ((it != end) && !bFind)
     {
-        bFind = pItem->child(0)->iid() == (*it).toStringList()[0];
+        bFind = pItem->iid() == (*it).toStringList()[0];
         ++it;
     }
 
@@ -455,41 +456,47 @@ void medDataModelElement::computeRowRangesToRemove(medDataModelItem * pItem, QVa
     int iStartRemoveRange = -1;
     for (int i = 0; i < pItem->childCount(); ++i)
     {
-        if (!itemStillExist(entries, pItem))
+        if (!itemStillExist(entries, pItem->child(i)))
         {
-            if (iStartRemoveRange > -1)
+            //Here pItem->child(i) is no longer present inside refreshed entries
+            if (iStartRemoveRange == -1)
             {
+                //Here a new range starting
                 iStartRemoveRange = i;
             }
         }
         else
         {
+            //Here pItem->child(i) is still present inside refreshed entries
             if (iStartRemoveRange > -1)
             {
+                //Here the current range end
                 rangeToRemove.push_back({ iStartRemoveRange, i - 1 });
-                iStartRemoveRange = -1;
+                iStartRemoveRange = -1; //clean iStartRemoveRange for a future range
             }
         }
     }
+
     if (iStartRemoveRange > -1)
     {
+        //Here we finish with an opened range. Then we close the range with the last child
         rangeToRemove.push_back({ iStartRemoveRange, pItem->childCount() - 1 });
     }
 }
 
 void medDataModelElement::removeRowRanges(QVector<QPair<int, int>> &rangeToRemove, const QModelIndex & index)
 {
-    int iOffsetRange = 0;
+    int iOffsetRange = 0; //Accumulate deletions count to correct ranges still to delete
     for (auto &range : rangeToRemove)
     {
-        removeRows(range.first - iOffsetRange, range.second - iOffsetRange, index); //TODO Override removeRows
-        iOffsetRange += range.second - range.first;
+        removeRows(range.first - iOffsetRange, range.second - iOffsetRange, index); //Used Override removeRows of QAbstractItemModel
+        iOffsetRange += range.second - range.first; //Update the offset
     }
 }
 
 
 
-void medDataModelElement::computeRowRangesToAdd(QVariantList &entries, medDataModelItem * pItem, QMap<int, QVariantList> &entriesToAdd)
+void medDataModelElement::computeRowRangesToAdd(medDataModelItem * pItem, QVariantList &entries, QMap<int, QVariantList> &entriesToAdd)
 {
     int  iLastItemAlreadyPresent = -1;
     for (QVariant &var : entries)
@@ -514,7 +521,9 @@ void medDataModelElement::addRowRanges(QMap<int, QVariantList> &entriesToAdd, co
     medDataModelItem *pItem = getItem(index);
     for (int i = 0; i < startRangeList.size(); ++i)
     {
-        beginInsertRows(index.siblingAtColumn(0), startRangeList[i] + iOffsetRange, startRangeList[i] + entriesToAdd[startRangeList[i]].size() + iOffsetRange - 1);
+        int first = startRangeList[i] ;
+        int last = startRangeList[i] + entriesToAdd[startRangeList[i]].size();
+        beginInsertRows(index.siblingAtColumn(0), first + iOffsetRange, last + iOffsetRange - 1);
 
         // ////////////////////////////////////////////////////////////////////////
         // Populate data loop
@@ -526,7 +535,8 @@ void medDataModelElement::addRowRanges(QMap<int, QVariantList> &entriesToAdd, co
             pItemTmp->setParent(pItem);
             pItem->append(pItemTmp);
         }
-        iOffsetRange += startRangeList[i] + startRangeList[i] + entriesToAdd[startRangeList[i]].size();
+        iOffsetRange += first + last;
+
         endInsertRows();
     }
 }

@@ -30,7 +30,7 @@ public:
 
 public:
     medDataModelItem(medDataModelElement *model);
-    medDataModelItem(medDataModelElement *model, medDataModelItem *parent);
+    medDataModelItem(medDataModelItem *parent);
     ~medDataModelItem();
 
     /* ***********************************************************************/
@@ -61,6 +61,7 @@ public:
     medDataModelItem *parent() const;
 
     bool insertChildren(int position, int count);
+    bool removeRows(int row, int count);
 
     bool canHaveSubData();
 
