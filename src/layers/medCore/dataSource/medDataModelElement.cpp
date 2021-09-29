@@ -177,7 +177,7 @@ bool medDataModelElement::removeRows(int row, int count, const QModelIndex & par
 /* *************** Not overrides functions and slots *********************/
 /* ***********************************************************************/
 
-inline bool medDataModelElement::canFetchMore(const QModelIndex & parent) const
+bool medDataModelElement::canFetchMore(const QModelIndex & parent) const
 {
     bool bRes = false;
 
@@ -190,7 +190,7 @@ inline bool medDataModelElement::canFetchMore(const QModelIndex & parent) const
     return bRes;
 }
 
-inline void medDataModelElement::fetchMore(const QModelIndex & parent)
+void medDataModelElement::fetchMore(const QModelIndex & parent)
 {
     if (canFetchMore(parent))
     {
