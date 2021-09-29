@@ -17,6 +17,7 @@
 #include <medDataModelItem.h>
 
 #include <QVariantList>
+#include <QSequentialIterable>
 
 struct medDataModelElementPrivate
 {
@@ -150,9 +151,19 @@ int	medDataModelElement::rowCount(const QModelIndex &parent) const
 bool medDataModelElement::insertRows(int row, int count, const QModelIndex &parent)
 {
     beginInsertRows(parent, row, row + count - 1);
-
+    //TODO
     endInsertRows();
     return true;
+}
+
+bool medDataModelElement::removeRows(int row, int count, const QModelIndex & parent)
+{
+    bool bRes = true;
+    
+    beginRemoveRows(parent, row, row + count - 1);
+
+
+    return bRes;
 }
 
 
@@ -206,6 +217,20 @@ inline medDataModelItem * medDataModelElement::getItem(const QModelIndex & index
     return itemRes;
 }
 
+QModelIndex medDataModelElement::getIndex(QString iid, QModelIndex const &parent) const
+{
+    QModelIndex indexRes;
+
+    auto item = getItem(parent);
+    int row = item->childIndex(iid);
+    if (row >= 0)
+    {
+        indexRes = parent.child(row, 0);
+    }
+
+    return indexRes;
+}
+
 QVariant medDataModelElement::headerData(int section, Qt::Orientation orientation, int role) const
 {
     QVariant varRes;
@@ -248,6 +273,30 @@ int medDataModelElement::getColumnInsideLevel(int level, int section)
     return iRes;
 }
 
+bool medDataModelElement::fetch(QString uri)
+{
+    QStringList splittedUri;
+    splittedUri.append(uri.split('/'));
+    QModelIndex childIndex;
+    int i = 0;
+    for (auto str : splittedUri)
+    {
+        auto childIndexTmp = getIndex(splittedUri[i]);
+        if (!childIndexTmp.isValid())
+        {
+            //TODO le level intermediaire n'existe pas encore
+            //TODO TRY populate
+            //TODO essayer à nouveau apres le populate si le child existe
+            //     Si oui on continue
+            //     Si non on part en erreur
+        }
+        childIndex = childIndexTmp;
+        i++;
+    }
+
+    return false;
+}
+
 /**
 * @brief  This slot refresh the current item pressed by GUI click, if the item don't have sons.
 * @param  index of the GUI element clicked.
@@ -279,6 +328,7 @@ bool medDataModelElement::currentLevelFetchable(medDataModelItem * pItemCurrent)
 
     return bRes;
 }
+
 
 
 /* ***********************************************************************/
@@ -359,4 +409,126 @@ void medDataModelElement::populateLevel(QModelIndex const &index, QString const 
         }
     }
 }
+
+void medDataModelElement::populateLevelV2(QModelIndex const & index, QString const & uri)
+{
+    QVariantList entries;
+    medDataModelItem *pItem = getItem(index);
+    int iLevel = pItem->level() + 1;
+
+    if (d->parent->getLevelMetaData(d->sourceInstanceId, iLevel, uri, entries))
+    {
+        emit layoutAboutToBeChanged(); //this is useful to update arrow on the left if click is not inside
+
+        QVector<QPair<int, int> > rangeToRemove;
+        computeRowRangesToRemove(pItem, entries, rangeToRemove);
+        removeRowRanges(rangeToRemove, index);
+
+        //TODO Update data already present inside the model
+
+        QMap<int, QVariantList> entriesToAdd; //position to insert, List of QVariant, itself QVariantList representation of minimal entries
+        computeRowRangesToAdd(entries, pItem, entriesToAdd);
+        addRowRanges(entriesToAdd, index);
+
+        emit layoutChanged(); // close the emit layoutAboutToBeChanged();
+    }
+}
+
+
+bool medDataModelElement::itemStillExist(QVariantList &entries, medDataModelItem * pItem)
+{
+    bool bFind = false;
+
+    auto it = entries.begin();
+    auto end = entries.end();
+    while ((it != end) && !bFind)
+    {
+        bFind = pItem->child(0)->iid() == (*it).toStringList()[0];
+        ++it;
+    }
+
+    return bFind;
+}
+
+void medDataModelElement::computeRowRangesToRemove(medDataModelItem * pItem, QVariantList &entries, QVector<QPair<int, int>> &rangeToRemove)
+{
+    int iStartRemoveRange = -1;
+    for (int i = 0; i < pItem->childCount(); ++i)
+    {
+        if (!itemStillExist(entries, pItem))
+        {
+            if (iStartRemoveRange > -1)
+            {
+                iStartRemoveRange = i;
+            }
+        }
+        else
+        {
+            if (iStartRemoveRange > -1)
+            {
+                rangeToRemove.push_back({ iStartRemoveRange, i - 1 });
+                iStartRemoveRange = -1;
+            }
+        }
+    }
+    if (iStartRemoveRange > -1)
+    {
+        rangeToRemove.push_back({ iStartRemoveRange, pItem->childCount() - 1 });
+    }
+}
+
+void medDataModelElement::removeRowRanges(QVector<QPair<int, int>> &rangeToRemove, const QModelIndex & index)
+{
+    int iOffsetRange = 0;
+    for (auto &range : rangeToRemove)
+    {
+        removeRows(range.first - iOffsetRange, range.second - iOffsetRange, index); //TODO Override removeRows
+        iOffsetRange += range.second - range.first;
+    }
+}
+
+
+
+void medDataModelElement::computeRowRangesToAdd(QVariantList &entries, medDataModelItem * pItem, QMap<int, QVariantList> &entriesToAdd)
+{
+    int  iLastItemAlreadyPresent = -1;
+    for (QVariant &var : entries)
+    {
+        int iTmpLastItemAlreadyPresent = pItem->childIndex(var.toStringList()[0]);
+
+        if (iTmpLastItemAlreadyPresent == -1)
+        {
+            entriesToAdd[iLastItemAlreadyPresent + 1].append(var);
+        }
+        else
+        {
+            iLastItemAlreadyPresent = iTmpLastItemAlreadyPresent;
+        }
+    }
+}
+
+void medDataModelElement::addRowRanges(QMap<int, QVariantList> &entriesToAdd, const QModelIndex & index)
+{
+    int iOffsetRange = 0;
+    auto startRangeList = entriesToAdd.keys();
+    medDataModelItem *pItem = getItem(index);
+    for (int i = 0; i < startRangeList.size(); ++i)
+    {
+        beginInsertRows(index.siblingAtColumn(0), startRangeList[i] + iOffsetRange, startRangeList[i] + entriesToAdd[startRangeList[i]].size() + iOffsetRange - 1);
+
+        // ////////////////////////////////////////////////////////////////////////
+        // Populate data loop
+        for (QVariant &var : entriesToAdd[startRangeList[i]])
+        {
+            medDataModelItem *pItemTmp = new medDataModelItem(this);
+            auto elem = var.toStringList();
+            pItemTmp->setData(elem);
+            pItemTmp->setParent(pItem);
+            pItem->append(pItemTmp);
+        }
+        iOffsetRange += startRangeList[i] + startRangeList[i] + entriesToAdd[startRangeList[i]].size();
+        endInsertRows();
+    }
+}
+
 

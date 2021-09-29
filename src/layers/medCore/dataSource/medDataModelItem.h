@@ -41,6 +41,10 @@ public:
     //void setIID(QString iid);
     inline QString iid() { /*return m_iid;*/return m_itemData[0].toString(); }
 
+    int childIndex(QString iid);
+    medDataModelItem* hasChildItemWithIID(QString iid);
+
+
     medDataModelItem *child(int row) const;
     void setParent(medDataModelItem *parent);
     void append(medDataModelItem *child);

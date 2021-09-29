@@ -234,6 +234,8 @@ int main(int argc, char *argv[])
 
         auto testWindow = new QMainWindow();
         auto treeView = new QTreeView();
+        auto buttonAddData = new QPushButton("Add Data");
+
         //auto tableView = new QTableView();
 
         treeView->setModel(testModel->getModel(""));
@@ -244,12 +246,16 @@ int main(int argc, char *argv[])
         QWidget *w = new QWidget;
         QVBoxLayout *vLayout = new QVBoxLayout;
         vLayout->addWidget(treeView);
+        vLayout->addWidget(buttonAddData);
         //vLayout->addWidget(tableView);
         w->setLayout(vLayout);
 
         testWindow->setCentralWidget(w);
         testWindow->show();
 
+        bool c3Ok = QObject::connect(buttonAddData, &QPushButton::clicked, [&]() 
+        {testModel->addData((medAbstractData*)nullptr, QString("medSQLite_210721:2/2/fakeSeries")); }
+        );
 
         // Use Qt::WA_DeleteOnClose attribute to be sure to always have only one
         // closeEvent.

@@ -95,6 +95,38 @@ bool medDataModelItem::canHaveSubData()
 
 
 
+int medDataModelItem::childIndex(QString iid)
+{
+    int iRes = -1;
+    
+    int i = 0;
+    bool bFind = false;
+    while (!bFind && i < m_childItems.size())
+    {
+        bFind = m_childItems[i]->m_itemData[0] == iid;
+        if (bFind)
+        {
+            iRes = i;
+        }
+        ++i;
+    }
+
+    return iRes;
+}
+
+medDataModelItem * medDataModelItem::hasChildItemWithIID(QString iid)
+{
+    medDataModelItem* pItemRes = nullptr;
+
+    int iPos = childIndex(iid);
+    if (iPos > -1)
+    {
+        pItemRes = child(iPos);
+    }
+
+    return pItemRes;
+}
+
 medDataModelItem * medDataModelItem::child(int row) const
 {
     return m_childItems.value(row);
