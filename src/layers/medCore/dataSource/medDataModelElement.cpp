@@ -228,9 +228,10 @@ QModelIndex medDataModelElement::getIndex(QString iid, QModelIndex const &parent
 
     auto item = getItem(parent);
     int row = item->childIndex(iid);
+
     if (row >= 0)
     {
-        indexRes = parent.child(row, 0);
+        indexRes = index(row, 0, parent);
     }
 
     return indexRes;
@@ -286,7 +287,7 @@ bool medDataModelElement::fetch(QString uri) //See populateLevelV2
     int i = 0;
     for (auto str : splittedUri)
     {
-        auto childIndexTmp = getIndex(splittedUri[i]);
+        auto childIndexTmp = getIndex(splittedUri[i], childIndex);
         if (!childIndexTmp.isValid())
         {
             //TODO le level intermediaire n'existe pas encore
@@ -298,6 +299,7 @@ bool medDataModelElement::fetch(QString uri) //See populateLevelV2
         childIndex = childIndexTmp;
         i++;
     }
+    populateLevelV2(childIndex, uri);
 
     return false;
 }

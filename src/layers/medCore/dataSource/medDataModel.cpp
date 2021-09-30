@@ -173,3 +173,15 @@ void medDataModel::addData(medDataIndex * pi_datasetIndex, QString uri)
 {
     //addData(getAbstractDataFromIndex(pi_datasetIndex), uri);
 }
+
+void medDataModel::refresh(QString uri)
+{
+    QStringList splittedUri;
+    int sourceDelimPos = uri.indexOf(':');
+    splittedUri.append(uri.left(sourceDelimPos));
+    QString sourceUri = uri.right(uri.size() - sourceDelimPos - 1);
+    splittedUri.append(sourceUri.split('/'));
+
+    auto pModelElement = m_sourceIdToInstanceMap[splittedUri[0]];
+    m_sourcesModelMap[pModelElement]->fetch(sourceUri);
+}

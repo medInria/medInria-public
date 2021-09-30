@@ -285,19 +285,31 @@ QStringList medSQlite<T>::getAdditionalAttributesKeys(unsigned int pi_uiLevel)
 template <typename T>
 QList<medAbstractSource::levelMinimalEntries> medSQlite<T>::getMinimalEntries(unsigned int pi_uiLevel, QString parentId)
 {
+
     // TODO : id doit etre passé au level 1 & 2. Il correspond à l'id du level supérieur (get study from a patient id)
     // renommer id en parentId ?
     QList<levelMinimalEntries> entries;
+    QString key;
+    if (parentId.contains("/"))
+    {
+        QStringList splittedUri = parentId.split("/");
+        key = splittedUri[pi_uiLevel-1];
+    }
+    else
+    {
+        key = parentId;
+    }
+    
     switch (pi_uiLevel)
     {
         case 0:
             entries = getPatientMinimalEntries();
             break;
         case 1:
-            entries = getStudyMinimalEntries(parentId);
+            entries = getStudyMinimalEntries(key);
             break;
         case 2:
-            entries = getSeriesMinimalEntries(parentId);
+            entries = getSeriesMinimalEntries(key);
             break;
         default:
             break;

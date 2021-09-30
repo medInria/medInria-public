@@ -70,15 +70,18 @@ private:
     QModelIndex getIndex(QString iid, QModelIndex const &parent = QModelIndex()) const;
     bool fetchColumnNames(const QModelIndex &index);
     void populateLevel(QModelIndex const &index, QString const &key);
+
     void populateLevelV2(QModelIndex const &index, QString const & uri);
-    void addRowRanges(QMap<int, QVariantList> &entriesToAdd, const QModelIndex & index);
-    void computeRowRangesToAdd(medDataModelItem * pItem, QVariantList &entries, QMap<int, QVariantList> &entriesToAdd);
-    void computeRowRangesToRemove(medDataModelItem * pItem, QVariantList &entries, QVector<QPair<int, int>> &rangeToRemove);
-    void removeRowRanges(QVector<QPair<int, int>> &rangeToRemove, const QModelIndex & index);
-    bool currentLevelFetchable(medDataModelItem * pItemCurrent);
-    //bool hasChildItemWithIID(medDataModelItem *pi_Item, QString iid);
 
     bool itemStillExist(QVariantList &entries, medDataModelItem * pItem);
+    void computeRowRangesToRemove(medDataModelItem * pItem, QVariantList &entries, QVector<QPair<int, int>> &rangeToRemove);
+    void removeRowRanges(QVector<QPair<int, int>> &rangeToRemove, const QModelIndex & index);
+
+    void computeRowRangesToAdd(medDataModelItem * pItem, QVariantList &entries, QMap<int, QVariantList> &entriesToAdd);
+    void addRowRanges(QMap<int, QVariantList> &entriesToAdd, const QModelIndex & index);
+
+    bool currentLevelFetchable(medDataModelItem * pItemCurrent);
+
 
 
 signals:
