@@ -998,7 +998,7 @@ bool medDatabaseController::contains(const medDataIndex &index) const
     return false;
 }
 
-medAbstractData* medDatabaseController::retrieve(const medDataIndex &index, bool fullData) const
+medAbstractData* medDatabaseController::retrieve(const medDataIndex &index, bool readFullData) const
 {
     QScopedPointer<medDatabaseReader> reader(new medDatabaseReader(index));
     medMessageProgress *message = medMessageController::instance()->showProgress("Opening database item");
@@ -1010,7 +1010,7 @@ medAbstractData* medDatabaseController::retrieve(const medDataIndex &index, bool
     connect(reader.data(), SIGNAL(failure(QObject *)), this, SLOT(showOpeningError(QObject *)));
 
     medAbstractData* data;
-    reader->setFullDataMode(fullData);
+    reader->setReadMode(readFullData ? medDatabaseReader::READ_ALL : medDatabaseReader::READ_INFORMATION);
     data = reader->run();
     return data;
 }

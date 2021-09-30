@@ -27,13 +27,13 @@ class medDatabaseReaderPrivate
 {
 public:
     medDataIndex index;
-    bool fullDataMode;
+    medDatabaseReader::ReadMode readMode;
 };
 
 medDatabaseReader::medDatabaseReader ( const medDataIndex& index ) : QObject(), d ( new medDatabaseReaderPrivate )
 {
     d->index = index;
-    d->fullDataMode = true;
+    d->readMode = READ_ALL;
 }
 
 medDatabaseReader::~medDatabaseReader()
@@ -43,14 +43,14 @@ medDatabaseReader::~medDatabaseReader()
     d = nullptr;
 }
 
-void medDatabaseReader::setFullDataMode(bool value)
+void medDatabaseReader::setReadMode(ReadMode readMode)
 {
-    d->fullDataMode = value;
+    d->readMode = readMode;
 }
 
-bool medDatabaseReader::fullDataMode()
+medDatabaseReader::ReadMode medDatabaseReader::getReadMode() const
 {
-    return d->fullDataMode;
+    return d->readMode;
 }
 
 #define FAILURE(msg) do {qDebug() <<  "medDatabaseReader::run: "<<(msg);emit failure(this);return nullptr;} while(0)
@@ -236,7 +236,7 @@ medAbstractData *medDatabaseReader::readFile( const QStringList& filenames )
         connect ( dataReader, SIGNAL ( progressed ( int ) ), this, SIGNAL ( progressed ( int ) ) );
         if ( dataReader->canRead ( filenames ) )
         {
-            if (!d->fullDataMode)
+            if (d->readMode == READ_INFORMATION)
             {
                 dataReader->readInformation(filenames);
             }

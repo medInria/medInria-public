@@ -35,7 +35,9 @@ public:
     static void initialize();
     static medDataManager * instance();
 
-    medAbstractData* retrieveData(const medDataIndex& index, bool fullData = true);
+    medAbstractData* retrieveData(const medDataIndex& index);
+
+    const QMetaObject* getDataType(const medDataIndex& index);
 
     QHash<QString, dtkAbstractDataWriter*> getPossibleWriters(medAbstractData* data);
 
@@ -87,6 +89,8 @@ protected:
 private:
     medDataManager();
     virtual ~medDataManager();
+
+    medAbstractData* retrieveData(const medDataIndex& index, bool readFullData);
 
     static medDataManager * s_instance;
     void launchExporter(medDatabaseExporter* exporter, const QString & filename);
