@@ -84,14 +84,14 @@ bool medDataModelItem::removeRows(int row, int count)
 {
     bool bRes = true;
 
-    if (row>-1 && count>0 && (row + count < m_childItems.size()))
+    if (row>-1 && count>0 && (row + count - 1 < m_childItems.size()))
     {
         for (int i = row; i < row + count; ++i)
         {
             auto   childItemToRemove = m_childItems[i];
             delete childItemToRemove;
         }
-        m_childItems.erase(m_childItems.begin() + row, m_childItems.begin() + row + count - 1);
+        m_childItems.erase(m_childItems.begin() + row, m_childItems.begin() + row + count);
     }
 
     return bRes;

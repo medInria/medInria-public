@@ -160,9 +160,14 @@ bool medDataModelElement::removeRows(int row, int count, const QModelIndex & par
 {
     bool bRes = true;
     
-    medDataModelItem *pItem = getItem(parent);
-    beginRemoveRows(parent, row, row + count - 1);
+    medDataModelItem *pItem = getItem(parent.siblingAtColumn(0));
+
+    beginRemoveRows(parent.siblingAtColumn(0), row, row + count - 1);
+    QSignalBlocker blocker(this);
     bRes = pItem->removeRows(row, count);
+
+    blocker.unblock();
+
     endRemoveRows();
 
     return bRes;
@@ -491,8 +496,8 @@ void medDataModelElement::removeRowRanges(QVector<QPair<int, int>> &rangeToRemov
     int iOffsetRange = 0; //Accumulate deletions count to correct ranges still to delete
     for (auto &range : rangeToRemove)
     {
-        removeRows(range.first - iOffsetRange, range.second - iOffsetRange, index); //Used Override removeRows of QAbstractItemModel
-        iOffsetRange += range.second - range.first; //Update the offset
+        removeRows(range.first - iOffsetRange, range.second - range.first + 1, index); //Used Override removeRows of QAbstractItemModel
+        iOffsetRange += range.second + 1 - range.first; //Update the offset
     }
 }
 
