@@ -23,7 +23,6 @@ public:
     medDataModelElement       *m_model;
     medDataModelItem          *m_parentItem;
     QList<medDataModelItem *>  m_childItems;
-    //QString                    m_iid;
     QVariantList               m_itemData;
     int                        m_iLevel;
     bool                       m_bCanHaveSubData;
@@ -38,8 +37,7 @@ public:
     /* ***********************************************************************/
     QVariant data(int column) const;
     void setData(QStringList const& value);
-    //void setIID(QString iid);
-    inline QString iid() { /*return m_iid;*/return m_itemData[0].toString(); }
+    inline QString iid() {return m_itemData[0].toString(); }
 
     int childIndex(QString iid);
     medDataModelItem* hasChildItemWithIID(QString iid);

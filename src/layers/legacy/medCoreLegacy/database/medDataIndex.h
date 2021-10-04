@@ -32,6 +32,7 @@ public:
     enum {NOT_VALID = -1 };
 
      medDataIndex(int dataSourceId, int patientId, int studyId, int seriesId);
+     medDataIndex(QString const & uri);
      medDataIndex();
      medDataIndex(const medDataIndex& index);
     ~medDataIndex();
@@ -46,12 +47,14 @@ public:
     void setDataSourceId (int id) { m_dataSourceId = id; }
     void setPatientId (int id) { m_patientId = id; }
     void setStudyId   (int id) { m_studyId = id; }
-    void setSeriesId  (int id) { m_seriesId = id; }
+    void setSeriesId(int id) { m_seriesId = id; }
+    void setUri(QString const & uri) { m_uri = uri; }
 
     int dataSourceId() const { return m_dataSourceId; }
     int patientId() const { return m_patientId; }
     int   studyId() const { return m_studyId; }
     int  seriesId() const { return m_seriesId; }
+    QString   uri() const{ return m_uri;  }
 
     medDataIndex& operator=(const medDataIndex& index);
 
@@ -76,6 +79,7 @@ private:
     int m_patientId;
     int m_studyId;
     int m_seriesId;
+    QString m_uri;
 };
 
 // /////////////////////////////////////////////////////////////////

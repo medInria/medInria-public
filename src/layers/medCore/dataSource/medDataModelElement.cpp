@@ -254,21 +254,6 @@ QVariant medDataModelElement::headerData(int section, Qt::Orientation orientatio
     return varRes;
 }
 
-//void medDataModelElement::setColumnAttributes(int p_iLevel, QStringList & attributes)
-//{
-//    if (d->columnNameByLevel.contains(p_iLevel))
-//    {
-//        d->columnNameByLevel[p_iLevel].append(attributes);
-//        for (auto attribute : attributes)
-//        {
-//            if (!d->sectionNames.contains(attribute))
-//            {
-//                d->sectionNames.push_back(attribute);
-//            }
-//        }
-//    }
-//}
-
 int medDataModelElement::getColumnInsideLevel(int level, int section)
 {
     int iRes = -1;
@@ -403,7 +388,6 @@ void medDataModelElement::populateLevel(QModelIndex const &index, QString const 
             {
                 medDataModelItem *pItemTmp = new medDataModelItem(this);
                 auto elem = var.toStringList();
-                //pItemTmp->setIID(elem.takeFirst());
                 pItemTmp->setData(elem);
                 pItemTmp->setParent(pItem);
                 pItem->append(pItemTmp);
