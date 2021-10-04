@@ -585,7 +585,7 @@ medDataIndex medDatabaseNonPersistentController::moveSeries(const medDataIndex& 
     return newIndex;
 }
 
-medAbstractData* medDatabaseNonPersistentController::retrieve(const medDataIndex& index) const
+medAbstractData* medDatabaseNonPersistentController::retrieve(const medDataIndex& index, bool readFullData) const
 {
     // Lookup item in hash table.
     medDatabaseNonPersistentControllerPrivate::DataHashMapType::const_iterator it( d->items.find(index) );

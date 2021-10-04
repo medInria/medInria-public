@@ -60,7 +60,7 @@ public:
     virtual bool setMetaData(const medDataIndex& index, const QString& key, const QString& value);
 
 public slots:
-    virtual medAbstractData* retrieve(const medDataIndex& index) const;
+    virtual medAbstractData* retrieve(const medDataIndex& index, bool readFullData = true) const;
 
     void importData(medAbstractData *data, const QUuid & callerUuid);
     void importPath(const QString& file, const QUuid & callerUuid, bool indexWithoutCopying);

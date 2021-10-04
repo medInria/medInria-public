@@ -27,11 +27,13 @@ class medDatabaseReaderPrivate
 {
 public:
     medDataIndex index;
+    medDatabaseReader::ReadMode readMode;
 };
 
 medDatabaseReader::medDatabaseReader ( const medDataIndex& index ) : QObject(), d ( new medDatabaseReaderPrivate )
 {
     d->index = index;
+    d->readMode = READ_ALL;
 }
 
 medDatabaseReader::~medDatabaseReader()
@@ -39,6 +41,16 @@ medDatabaseReader::~medDatabaseReader()
     delete d;
 
     d = nullptr;
+}
+
+void medDatabaseReader::setReadMode(ReadMode readMode)
+{
+    d->readMode = readMode;
+}
+
+medDatabaseReader::ReadMode medDatabaseReader::getReadMode() const
+{
+    return d->readMode;
 }
 
 #define FAILURE(msg) do {qDebug() <<  "medDatabaseReader::run: "<<(msg);emit failure(this);return nullptr;} while(0)
@@ -224,7 +236,14 @@ medAbstractData *medDatabaseReader::readFile( const QStringList& filenames )
         connect ( dataReader, SIGNAL ( progressed ( int ) ), this, SIGNAL ( progressed ( int ) ) );
         if ( dataReader->canRead ( filenames ) )
         {
-            dataReader->read ( filenames );
+            if (d->readMode == READ_INFORMATION)
+            {
+                dataReader->readInformation(filenames);
+            }
+            else
+            {
+                dataReader->read(filenames);
+            }
             dataReader->enableDeferredDeletion ( false );
             medData = dynamic_cast<medAbstractData*>(dataReader->data());
 

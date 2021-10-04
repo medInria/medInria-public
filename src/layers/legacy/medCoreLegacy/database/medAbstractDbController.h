@@ -48,7 +48,7 @@ signals:
     void dataRemoved(const medDataIndex& index);
 
 public slots:
-    virtual medAbstractData* retrieve(const medDataIndex& index) const = 0;
+    virtual medAbstractData* retrieve(const medDataIndex& index, bool readFullData = true) const = 0;
 
     virtual void importData(medAbstractData* data, const QUuid& importUuid) = 0;
     virtual void importPath(const QString& file, const QUuid& importUuid, bool indexWithoutCopying) = 0;

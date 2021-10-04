@@ -72,7 +72,7 @@ public:
 
 public slots:
 
-    medAbstractData *retrieve(const medDataIndex &index) const;
+    medAbstractData *retrieve(const medDataIndex &index, bool readFullData = true) const;
 
     void importPath(const QString& file, const QUuid& importUuid, bool indexWithoutCopying = false);
     void importData(medAbstractData *data, const QUuid & importUuid);
