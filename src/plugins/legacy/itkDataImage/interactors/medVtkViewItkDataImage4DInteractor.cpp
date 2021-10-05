@@ -122,11 +122,12 @@ void medVtkViewItkDataImage4DInteractor::setInputData(medAbstractData *data)
 
         if (SetViewInput(data, layer) )
         {
+            double frameRate = static_cast<double>(m_poConv->getNumberOfVolumes()) / static_cast<double>(m_poConv->getTotalTime());
             d->imageData->setMetaData("SequenceDuration", QString::number(m_poConv->getTotalTime()));
-            d->imageData->setMetaData("SequenceFrameRate", QString::number((double)(m_poConv->getNumberOfVolumes() -1 )/ (double)m_poConv->getTotalTime()));
+            d->imageData->setMetaData("SequenceFrameRate", QString::number(frameRate));
 
             qDebug() << "SequenceDuration" << m_poConv->getTotalTime();
-            qDebug() << "SequenceFrameRate" <<(double)(m_poConv->getNumberOfVolumes() -1)/ m_poConv->getTotalTime();
+            qDebug() << "SequenceFrameRate" << frameRate;
 
             d->view2d->GetImageActor(d->view2d->GetCurrentLayer())->GetProperty()->SetInterpolationTypeToCubic();
             initParameters(d->imageData);
