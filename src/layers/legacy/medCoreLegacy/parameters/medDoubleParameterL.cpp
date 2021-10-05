@@ -122,19 +122,16 @@ void medDoubleParameterL::setRange(double min, double max)
     d->min = min;
     d->max = max;
 
-    if(min != max)
+    if(d->spinBox)
     {
-        if(d->spinBox)
-        {
-            d->spinBox->setRange(min, max);
-        }
-        if(d->slider)
-        {
-            d->slider->setRange(0, convertToInt(max));
-        }
-
-        updateInternWigets();
+        d->spinBox->setRange(min, max);
     }
+    if(d->slider)
+    {
+        d->slider->setRange(0, convertToInt(max));
+    }
+
+    updateInternWigets();
 }
 
 void medDoubleParameterL::setSingleStep(double step)
