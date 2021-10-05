@@ -359,6 +359,7 @@ void manualRegistrationToolBox::computeRegistration()
             runProcess->setProcess (d->process);
             connect (runProcess, SIGNAL (success(QObject*)), this, SLOT(retrieveProcessOutputAndUpdateViews()));
             this->addConnectionsAndStartJob(runProcess);
+            enableOnProcessSuccessImportOutput(runProcess, false);
         }
     }
 }
