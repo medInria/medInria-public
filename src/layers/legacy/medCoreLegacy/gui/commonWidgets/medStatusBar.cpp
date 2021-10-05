@@ -149,7 +149,7 @@ void medStatusBar::removeMessage ( medMessage* message )
     d->acccessMutex.lock();
     if ( message )
     {
-        d->messageList.removeFirst();
+        d->messageList.removeOne(message);
         d->availableSpace += (message->size().width()+d->statusBarLayout->spacing());         //update available space
         d->statusBarLayout->removeWidget(message);
         showHiddenMessage();    //space has been freed
