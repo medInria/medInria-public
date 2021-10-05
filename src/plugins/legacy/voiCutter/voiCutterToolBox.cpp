@@ -291,7 +291,7 @@ void voiCutterToolBox::activateButtons(bool param)
     if (!param)
     {
         // No valid data is in the container, or not in 3D
-        d->explanation->setText(tr("Drop a volume in the view, or switch the current one to 3D."));
+        d->explanation->setText(tr("Drop a volume in the view or switch the current one to 3D"));
         d->scissorButton->setEnabled(false);
     }
     else
