@@ -486,23 +486,9 @@ void vtkMetaDataSetSequence::UpdateToIndex (unsigned int id)
 }
 
 //----------------------------------------------------------------------------
-double*vtkMetaDataSetSequence::GetCurrentScalarRange()
+void vtkMetaDataSetSequence::GetCurrentScalarRange(double range[2])
 {
-    double *val = new double[2];
-    val[0] = VTK_DOUBLE_MAX;
-    val[1] = VTK_DOUBLE_MIN;
-
-    for (unsigned int i=0; i<this->MetaDataSetList.size(); i++)
-    {
-        double *range = this->MetaDataSetList[i]->GetScalarRange();
-
-        if (val[0] > range[0])
-            val[0] = range[0];
-        if (val[1] < range[1])
-            val[1] = range[1];
-    }
-
-    return val;
+    GetScalarRange(range);
 }
 
 //----------------------------------------------------------------------------
@@ -711,26 +697,23 @@ void vtkMetaDataSetSequence::ComputeTimesFromDuration()
     }
 }
 
-double* vtkMetaDataSetSequence::GetScalarRange(QString attributeName)
+void vtkMetaDataSetSequence::GetScalarRange(double range[2], QString attributeName)
 {
-    // TODO: this is evil, would be better to pass the range as parameter
-    static double* val = new double[2];
-    val[0] = VTK_DOUBLE_MAX;
-    val[1] = VTK_DOUBLE_MIN;
+    double localRange[2];
+    range[0] = VTK_DOUBLE_MAX;
+    range[1] = VTK_DOUBLE_MIN;
 
-    for (unsigned int i = 0; i < this->MetaDataSetList.size(); i++)
+    for (auto* metaData : this->MetaDataSetList)
     {
-      double* range = this->MetaDataSetList[i]->GetScalarRange(attributeName);
+        metaData->GetScalarRange(localRange, attributeName);
 
-      if (val[0] > range[0])
-      {
-        val[0] = range[0];
-      }
-      if (val[1] < range[1])
-      {
-        val[1] = range[1];
-      }
+        if (range[0] > localRange[0])
+        {
+            range[0] = localRange[0];
+        }
+        if (range[1] < localRange[1])
+        {
+            range[1] = localRange[1];
+        }
     }
-
-    return val;
 }

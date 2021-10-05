@@ -449,7 +449,9 @@ void vtkDataMeshInteractor::setAttribute(const QString & attributeName)
         mapper3d->SelectColorArray(qPrintable(attributeName));
 
         d->poLutWidget->show();
-        double* range = d->metaDataSet->GetScalarRange(attributeName);
+
+        double range[2];
+        d->metaDataSet->GetScalarRange(range, attributeName);
 
         int dataType = d->attribute->GetDataType();
         initWindowLevelParameters(range, dataType);
@@ -487,7 +489,7 @@ void vtkDataMeshInteractor::initWindowLevelParameters(double * range, int dataTy
     int nbDecimals = 0;
     if (dataType == VTK_FLOAT || dataType == VTK_DOUBLE)
     {
-        singleStep = 0.1;
+        singleStep = (range[1] - range[0]) / 1000.0;
         nbDecimals = 6;
     }
     d->minIntensityParameter->setSingleStep(singleStep);
@@ -576,14 +578,14 @@ void vtkDataMeshInteractor::setLut(vtkLookupTable * lut)
     // remove the alpha channel from the LUT, it messes up the mesh
     if (lut)
     {
-        double values[4];
+        double values[4], range[2];
         for(int i = 0; i < lut->GetNumberOfTableValues(); i++)
         {
             lut->GetTableValue(i, values);
             values[3] = 1.0;
             lut->SetTableValue(i, values);
         }
-        double * range = d->metaDataSet->GetScalarRange(d->attributesParam->value());
+        d->metaDataSet->GetScalarRange(range, d->attributesParam->value());
         lut->SetRange(range);
     }
 
