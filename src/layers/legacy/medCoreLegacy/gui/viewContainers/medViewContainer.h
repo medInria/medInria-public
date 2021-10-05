@@ -69,7 +69,14 @@ public:
     medViewContainer* splitHorizontally();
     medViewContainer* split(Qt::AlignmentFlag alignement = Qt::AlignRight);
 
-    void setDefaultWidget(QWidget *defaultWidget);
+    void changeDefaultWidget(QWidget *newDefaultWidget);
+
+    /**
+     * @brief In a view, switch between default widget (text and buttons to open data)
+     * with the data widget
+     * @param displayDefault
+     */
+    void displayDefaultWidget(bool displayDefault = true);
     QWidget* defaultWidget() const;
 
     void addColorIndicator(QColor color, QString description="");
@@ -140,8 +147,6 @@ protected:
     bool dropEventFromFile(QDropEvent * event);
 
     void closeEvent(QCloseEvent * event);
-
-    void recomputeStyleSheet();
 
     void open(const QString & path);
     void addMetadataToQDomElement(medAbstractData *data, QDomElement patientInfo, QString metadata);

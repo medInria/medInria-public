@@ -238,7 +238,6 @@ void medAbstractLayeredView::removeData(medAbstractData *data)
 
     if( res > 0 )
     {
-        emit layerRemoved(layer);
         emit layerRemoved(data);
     }
 }

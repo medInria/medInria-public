@@ -73,17 +73,31 @@ medViewContainerSplitter *medAbstractMaskImageProcessPresenter::buildViewContain
     medViewContainer * outputContainer = inputContainer->splitVertically();
     medViewContainer * maskContainer = inputContainer->splitHorizontally();
 
-    inputContainer->setDefaultWidget(new QLabel("INPUT"));
+    auto viewLayoutInput = static_cast<QVBoxLayout*>(inputContainer->defaultWidget()->layout());
+    auto labelInput = static_cast<QLabel*>(viewLayoutInput->itemAt(0)->widget());
+    if (!labelInput->text().contains("INPUT"))
+    {
+        labelInput->setText("INPUT\n\n"+labelInput->text());
+        labelInput->setAlignment(Qt::AlignCenter);
+    }
     inputContainer->setClosingMode(medViewContainer::CLOSE_VIEW);
     inputContainer->setUserSplittable(false);
     inputContainer->setMultiLayered(false);
 
-    maskContainer->setDefaultWidget(new QLabel("MASK"));
+    auto viewLayoutMask = static_cast<QVBoxLayout*>(maskContainer->defaultWidget()->layout());
+    auto labelMask = static_cast<QLabel*>(viewLayoutMask->itemAt(0)->widget());
+    if (!labelMask->text().contains("MASK"))
+    {
+        labelMask->setText("MASK\n\n"+labelMask->text());
+        labelMask->setAlignment(Qt::AlignCenter);
+    }
     maskContainer->setClosingMode(medViewContainer::CLOSE_VIEW);
     maskContainer->setUserSplittable(false);
     maskContainer->setMultiLayered(false);
 
-    outputContainer->setDefaultWidget(new QLabel("OUTPUT"));
+    auto viewLayoutOutput = static_cast<QVBoxLayout*>(outputContainer->defaultWidget()->layout());
+    auto labelOutput = static_cast<QLabel*>(viewLayoutOutput->itemAt(0)->widget());
+    labelOutput->setText("OUTPUT");
     outputContainer->setClosingMode(medViewContainer::CLOSE_VIEW);
     outputContainer->setUserSplittable(false);
     outputContainer->setMultiLayered(false);

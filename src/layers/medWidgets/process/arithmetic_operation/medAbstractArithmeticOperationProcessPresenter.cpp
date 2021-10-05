@@ -72,17 +72,31 @@ medViewContainerSplitter *medAbstractArithmeticOperationProcessPresenter::buildV
     medViewContainer * outputContainer = inputContainer1->splitVertically();
     medViewContainer* inputContainer2 = inputContainer1->splitHorizontally();
 
-    inputContainer1->setDefaultWidget(new QLabel("INPUT 1"));
+    auto viewLayout1 = static_cast<QVBoxLayout*>(inputContainer1->defaultWidget()->layout());
+    auto label1 = static_cast<QLabel*>(viewLayout1->itemAt(0)->widget());
+    if (!label1->text().contains("INPUT 1"))
+    {
+        label1->setText("INPUT 1\n\n"+label1->text());
+        label1->setAlignment(Qt::AlignCenter);
+    }
     inputContainer1->setClosingMode(medViewContainer::CLOSE_VIEW);
     inputContainer1->setUserSplittable(false);
     inputContainer1->setMultiLayered(false);
 
-    inputContainer2->setDefaultWidget(new QLabel("INPUT 2"));
+    auto viewLayout2 = static_cast<QVBoxLayout*>(inputContainer2->defaultWidget()->layout());
+    auto label2 = static_cast<QLabel*>(viewLayout2->itemAt(0)->widget());
+    if (!label2->text().contains("INPUT 2"))
+    {
+        label2->setText("INPUT 2\n\n"+label2->text());
+        label2->setAlignment(Qt::AlignCenter);
+    }
     inputContainer2->setClosingMode(medViewContainer::CLOSE_VIEW);
     inputContainer2->setUserSplittable(false);
     inputContainer2->setMultiLayered(false);
 
-    outputContainer->setDefaultWidget(new QLabel("OUTPUT"));
+    auto viewLayoutOutput = static_cast<QVBoxLayout*>(outputContainer->defaultWidget()->layout());
+    auto labelOutput = static_cast<QLabel*>(viewLayoutOutput->itemAt(0)->widget());
+    labelOutput->setText("OUTPUT");
     outputContainer->setClosingMode(medViewContainer::CLOSE_VIEW);
     outputContainer->setUserSplittable(false);
     outputContainer->setMultiLayered(false);

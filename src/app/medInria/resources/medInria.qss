@@ -1154,6 +1154,10 @@ medViewContainer [selected = "true"]
     border: $CONTAINER_SELECTED_BORDER;
 }
 
+QWidget#defaultWidget
+{
+    background: none;
+}
 
 /*******************************************************************************
      layerWidget
@@ -1211,15 +1215,6 @@ QLabel#previewLabel
     min-height: $STATUS_BAR_HEIGHT;
     border: 1px solid $GREY07;
     border-top: none;
-}
-
-/*******************************************************************************
-     medViewContainer
- *******************************************************************************/
-
-QWidget#defaultWidget
-{
-    background: none;
 }
 
 /*******************************************************************************

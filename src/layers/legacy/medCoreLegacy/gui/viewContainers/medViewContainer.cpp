@@ -93,6 +93,10 @@ public:
     medViewContainer::DropArea oArea4ExternalDrop;
     std::vector<std::pair<QUuid, bool> > oQuuidVect;
 
+    QLabel *defaultLabel;
+    QPushButton *openButton;
+    QPushButton *sceneButton;
+    
     ~medViewContainerPrivate()
     {
         if(view)
@@ -113,15 +117,15 @@ medViewContainer::medViewContainer(medViewContainerSplitter *parent): QFrame(par
 
     d->defaultWidget = new QWidget;
     d->defaultWidget->setObjectName("defaultWidget");
-    QLabel *defaultLabel = new QLabel(tr("Drag'n drop series/study here from the left panel or:"));
-    QPushButton *openButton  = new QPushButton(tr("Open a file from your system"));
-    QPushButton *sceneButton = new QPushButton(tr("Open a scene from your system"));
+    d->defaultLabel = new QLabel(tr("Drag'n drop series/study here from the left panel or:"));
+    d->openButton  = new QPushButton(tr("Open a file from your system"));
+    d->sceneButton = new QPushButton(tr("Open a scene from your system"));
     QVBoxLayout *defaultLayout = new QVBoxLayout(d->defaultWidget);
-    defaultLayout->addWidget(defaultLabel);
-    defaultLayout->addWidget(openButton);
-    defaultLayout->addWidget(sceneButton);
-    connect(openButton,  SIGNAL(clicked()), this, SLOT(openFromSystem()), Qt::UniqueConnection);
-    connect(sceneButton, SIGNAL(clicked()), this, SLOT(loadScene()),      Qt::UniqueConnection);
+    defaultLayout->addWidget(d->defaultLabel);
+    defaultLayout->addWidget(d->openButton);
+    defaultLayout->addWidget(d->sceneButton);
+    connect(d->openButton,  SIGNAL(clicked()), this, SLOT(openFromSystem()), Qt::UniqueConnection);
+    connect(d->sceneButton, SIGNAL(clicked()), this, SLOT(loadScene()),      Qt::UniqueConnection);
 
     d->menuButton = new QPushButton(this);
     d->menuButton->setIcon(QIcon(":/pixmaps/tools.png"));
@@ -310,21 +314,35 @@ QWidget* medViewContainer::defaultWidget() const
 }
 
 /**
- * @brief medViewContainer::setDefaultWidget change the central widget
- * which can be seen inside an empty view.
+ * @brief Change the central widget. Beware, to be used in containers that we don't want to keep
  * @param defaultWidget
  */
-void medViewContainer::setDefaultWidget(QWidget *defaultWidget)
+void medViewContainer::changeDefaultWidget(QWidget *newDefaultWidget)
 {
-    // This paragraph could be encapsulated in an 'if(!d->view)' condition,
-    // however, in CLOSE_VIEW views, after the removal of the last data,
-    // setting a new default widget does not display it. d->view should be
-    // deleted before coming here.
     d->mainLayout->removeWidget(d->defaultWidget);
     delete d->defaultWidget;
-    d->mainLayout->addWidget(defaultWidget, 0, 0, 0, 0);
+    d->mainLayout->addWidget(newDefaultWidget, 0, 0, 0, 0);
+    d->defaultWidget = newDefaultWidget;
+}
 
-    d->defaultWidget = defaultWidget;
+void medViewContainer::displayDefaultWidget(bool displayDefault)
+{
+    QWidget* mainWidget = d->view->mainWindow();
+    if (!mainWidget)
+    {
+        mainWidget = d->view->viewWidget();
+    }
+
+    if (displayDefault)
+    {
+        mainWidget->hide();
+        d->defaultWidget->show();
+    }
+    else
+    {
+        mainWidget->show();
+        d->defaultWidget->hide();
+    }
 }
 
 bool medViewContainer::isUserOpenable() const
@@ -339,11 +357,19 @@ void medViewContainer::setUserOpenable(bool openable)
     {
         this->setAcceptDrops(true);
         d->openAction->setEnabled(true);
+
+        // Show the Open buttons inside the view
+        d->openButton->show();
+        d->sceneButton->show();
     }
     else
     {
         this->setAcceptDrops(false);
         d->openAction->setEnabled(false);
+
+        // Hide the Open buttons inside the view
+        d->openButton->hide();
+        d->sceneButton->hide();
     }
 }
 
@@ -499,7 +525,8 @@ void medViewContainer::setView(medAbstractView *view)
         }
         d->mainLayout->addWidget(mainWidget, 2, 0, 1, 1);
         mainWidget->setSizePolicy(QSizePolicy::Ignored, QSizePolicy::MinimumExpanding);
-        mainWidget->show();
+
+        displayDefaultWidget(false);
 
         emit viewChanged();
     }
@@ -630,10 +657,8 @@ void medViewContainer::removeView()
     {
         d->histogramAction->setChecked(false);
 
-        // On some occasion, the 'delete' here displays 3 logs:
-        // 'Unable to retrieve data at layer: 0 from:  "medVtkView"'
-        // It is linked to a GUI bug, where mouse/view/layer toolboxes
-        // are not fully cleaned and minimized.
+        displayDefaultWidget(true);
+
         delete d->view;
     }
     // removeInternView should be called, so no need to set d->view to nullptr.
@@ -649,7 +674,6 @@ void medViewContainer::removeInternView()
     // However, it's possible with the histogram, so we uncheck it.
     d->histogramAction->setChecked(false);
 
-    d->defaultWidget->show();
     this->updateToolBar();
 
     emit viewRemoved();
@@ -662,12 +686,6 @@ void medViewContainer::focusInEvent(QFocusEvent *event)
 
     this->setSelected(true);
     QWidget::focusInEvent(event);
-}
-
-void medViewContainer::recomputeStyleSheet()
-{
-    this->style()->unpolish(this);
-    this->style()->polish(this);
 }
 
 void medViewContainer::dragEnterEvent(QDragEnterEvent *event)
