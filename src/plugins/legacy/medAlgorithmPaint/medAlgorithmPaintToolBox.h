@@ -163,6 +163,8 @@ public slots:
 
     void interpolate();
 
+    void showConfident(bool show);
+
 protected:
     friend class ClickAndMoveEventFilter;
 
@@ -213,9 +215,13 @@ private:
     medDoubleParameterL *m_wandUpperThresholdSlider, *m_wandLowerThresholdSlider;
     QPushButton * m_removeSeedButton;
     QShortcut *removeSeed_shortcut;
-    QCheckBox *m_wand3DCheckbox, *m_wand3DRealTime;
+    QCheckBox *m_wand3DCheckbox, *m_wandStatCheckbox, *m_wand3DRealTime;
     QLabel *m_wandInfo;
     QTime wandTimer;
+
+    QSpinBox *nbIterations, *sizeNeighborhood;
+    QDoubleSpinBox *multiplier;
+    QWidget *confidentWidget, *thresholdWidget;
 
     bool seedPlanted;
     QVector3D m_seed;
