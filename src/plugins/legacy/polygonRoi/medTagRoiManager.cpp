@@ -588,8 +588,10 @@ polygonRoi *medTagRoiManager::existingRoiInSlice()
 
     for (polygonRoi* roi : d->rois)
     {
-        if (slice==roi->getIdSlice())
+        if (slice == static_cast<int>(roi->getIdSlice()))
+        {
             return roi;
+        }
     }
     return nullptr;
 
@@ -632,7 +634,7 @@ void medTagRoiManager::activateContours(bool state)
     int slice = view2d->GetSlice();
     for (polygonRoi *roi : d->rois)
     {
-        if (roi->getIdSlice()==slice)
+        if (slice == static_cast<int>(roi->getIdSlice()))
         {
             roi->setMasterRoi(true);
         }

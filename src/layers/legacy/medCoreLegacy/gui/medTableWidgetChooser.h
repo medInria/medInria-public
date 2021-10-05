@@ -23,7 +23,7 @@ class MEDCORELEGACY_EXPORT medTableWidgetChooser : public QTableWidget
     Q_OBJECT
 
 public:
-     medTableWidgetChooser(QWidget *parent = 0, int rowCount = 5, int colCount = 5, int sideSize = 30);
+     medTableWidgetChooser(QWidget *parent = nullptr, int rowCount = 5, int colCount = 5, int sideSize = 30);
     ~medTableWidgetChooser();
 
     QSize sizeHint() const;

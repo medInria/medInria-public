@@ -424,7 +424,7 @@ medTagRoiManager *polygonEventFilter::getClosestManager(double *mousePos)
 
 QMenu *polygonEventFilter::changeLabelActions(medTagRoiManager* closestManager)
 {
-    QMenu *changeMenu = new QMenu("Change Label:");
+    QMenu *changeMenu = new QMenu("Change Label");
     for (medTagRoiManager *manager : managers)
     {
         if (manager!= closestManager && !manager->existingRoiInSlice())
@@ -465,8 +465,8 @@ bool polygonEventFilter::rightButtonBehaviour(medAbstractView *view, QMouseEvent
     mousePos[1] = (currentView->viewWidget()->height()-mouseEvent->y()-1)*devicePixelRatio;
     medTagRoiManager * closestManager = getClosestManager(mousePos);
 
-    QMenu *roiManagementMenu = new QMenu("Remove: ");
-    QMenu *saveMenu = new QMenu("Save as: ");
+    QMenu *roiManagementMenu = new QMenu("Remove");
+    QMenu *saveMenu = new QMenu("Save as");
     QMenu *changeMenu = nullptr;
     QWidgetAction *renameManagerAction = new QWidgetAction(&mainMenu);
     QAction *copyContourAction = new QAction("Copy", &mainMenu);
