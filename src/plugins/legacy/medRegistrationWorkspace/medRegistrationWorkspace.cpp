@@ -84,10 +84,13 @@ void medRegistrationWorkspace::resetDefaultWidgetFixedContainer()
 {
     if(selectorToolBox()) //null when users close the software
     {
-        QLabel *newDefaultLabel = new QLabel(tr("FIXED"));
-        newDefaultLabel->setAlignment(Qt::AlignCenter);
-        newDefaultLabel->setObjectName("defaultWidget");
-        d->containers[Fixed]->setDefaultWidget(newDefaultLabel);
+        auto viewLayout = static_cast<QVBoxLayout*>(d->containers[Fixed]->defaultWidget()->layout());
+        auto label = static_cast<QLabel*>(viewLayout->itemAt(0)->widget());
+        if (!label->text().contains("FIXED"))
+        {
+            label->setText("FIXED\n\n"+label->text());
+            label->setAlignment(Qt::AlignCenter);
+        }
         d->containers[Fixed]->setMultiLayered(false);
         d->containers[Fixed]->setUserSplittable(false);
         d->containers[Fixed]->setClosingMode(medViewContainer::CLOSE_VIEW);
@@ -98,10 +101,13 @@ void medRegistrationWorkspace::resetDefaultWidgetMovingContainer()
 {
     if(selectorToolBox()) //null when users close the software
     {
-        QLabel *newDefaultLabel = new QLabel(tr("MOVING"));
-        newDefaultLabel->setAlignment(Qt::AlignCenter);
-        newDefaultLabel->setObjectName("defaultWidget");
-        d->containers[Moving]->setDefaultWidget(newDefaultLabel);
+        auto viewLayout = static_cast<QVBoxLayout*>(d->containers[Moving]->defaultWidget()->layout());
+        auto label = static_cast<QLabel*>(viewLayout->itemAt(0)->widget());
+        if (!label->text().contains("MOVING"))
+        {
+            label->setText("MOVING\n\n"+label->text());
+            label->setAlignment(Qt::AlignCenter);
+        }
         d->containers[Moving]->setMultiLayered(false);
         d->containers[Moving]->setUserSplittable(false);
         d->containers[Moving]->setClosingMode(medViewContainer::CLOSE_VIEW);
@@ -112,10 +118,13 @@ void medRegistrationWorkspace::resetDefaultWidgetFuseContainer()
 {
     if(selectorToolBox()) //null when users close the software
     {
-        QLabel *newDefaultLabel = new QLabel(tr("FUSE"));
-        newDefaultLabel->setAlignment(Qt::AlignCenter);
-        newDefaultLabel->setObjectName("defaultWidget");
-        d->containers[Fuse]->setDefaultWidget(newDefaultLabel);
+        auto viewLayout = static_cast<QVBoxLayout*>(d->containers[Fuse]->defaultWidget()->layout());
+        auto label = static_cast<QLabel*>(viewLayout->itemAt(0)->widget());
+        if (!label->text().contains("FUSE"))
+        {
+            label->setText("FUSE\n\n"+label->text());
+            label->setAlignment(Qt::AlignCenter);
+        }
         d->containers[Fuse]->setUserSplittable(false);
         d->containers[Fuse]->setAcceptDrops(false); // only addition from the app
         d->containers[Fuse]->setClosingMode(medViewContainer::CLOSE_BUTTON_HIDDEN);

@@ -1164,7 +1164,12 @@ QTabBar::close-button
 
 QTabBar::close-button:hover
 {
-    background: $VIEW_CONTAINER_BUTTON_HOVER_BACKGOUND;
+    background: $VIEW_CONTAINER_BUTTON_HOVER_BACKGOUND
+}
+
+QWidget#defaultWidget
+{
+    background: none;
 }
 
 /*******************************************************************************
@@ -1222,15 +1227,6 @@ QLabel#previewLabel
     min-height: $STATUS_BAR_HEIGHT;
     border: 1px solid $GREY07;
     border-top: none;
-}
-
-/*******************************************************************************
-     medViewContainer
- *******************************************************************************/
-
-QWidget#defaultWidget
-{
-    background: none;
 }
 
 /*******************************************************************************

@@ -77,12 +77,20 @@ medViewContainerSplitter *medAbstractDWIMaskingProcessPresenter::buildViewContai
 
     medViewContainer * outputContainer = inputContainer->splitVertically();
 
-    inputContainer->setDefaultWidget(new QLabel("Input DWI"));
+    auto viewLayoutInput = static_cast<QVBoxLayout*>(inputContainer->defaultWidget()->layout());
+    auto labelInput = static_cast<QLabel*>(viewLayoutInput->itemAt(0)->widget());
+    if (!labelInput->text().contains("Input DWI"))
+    {
+        labelInput->setText("Input DWI\n\n"+labelInput->text());
+        labelInput->setAlignment(Qt::AlignCenter);
+    }
     inputContainer->setClosingMode(medViewContainer::CLOSE_VIEW);
     inputContainer->setUserSplittable(false);
     inputContainer->setMultiLayered(false);
 
-    outputContainer->setDefaultWidget(new QLabel("Output mask"));
+    auto viewLayoutOutput = static_cast<QVBoxLayout*>(outputContainer->defaultWidget()->layout());
+    auto labelOutput = static_cast<QLabel*>(viewLayoutOutput->itemAt(0)->widget());
+    labelOutput->setText("Output mask");
     outputContainer->setClosingMode(medViewContainer::CLOSE_VIEW);
     outputContainer->setUserSplittable(false);
     outputContainer->setMultiLayered(false);

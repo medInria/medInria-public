@@ -93,6 +93,10 @@ public:
     medViewContainer::DropArea oArea4ExternalDrop;
     std::vector<std::pair<QUuid, bool> > oQuuidVect;
 
+    QLabel *defaultLabel;
+    QPushButton *openButton;
+    QPushButton *sceneButton;
+    
     ~medViewContainerPrivate()
     {
         if(view)
@@ -113,18 +117,18 @@ medViewContainer::medViewContainer(medViewContainerSplitter *parent): QFrame(par
 
     d->defaultWidget = new QWidget;
     d->defaultWidget->setObjectName("defaultWidget");
-    QLabel *defaultLabel = new QLabel(tr("Drag'n drop series/study here from the left panel or:"));
-    QPushButton *openButton  = new QPushButton(tr("Open a file from your system"));
-    QPushButton *sceneButton = new QPushButton(tr("Open a scene from your system"));
+    d->defaultLabel = new QLabel(tr("Drag'n drop series/study here from the left panel or:"));
+    d->openButton  = new QPushButton(tr("Open a file from your system"));
+    d->sceneButton = new QPushButton(tr("Open a scene from your system"));
     QVBoxLayout *defaultLayout = new QVBoxLayout(d->defaultWidget);
-    defaultLayout->addWidget(defaultLabel);
-    defaultLayout->addWidget(openButton);
-    defaultLayout->addWidget(sceneButton);
-    connect(openButton,  SIGNAL(clicked()), this, SLOT(openFromSystem()), Qt::UniqueConnection);
-    connect(sceneButton, SIGNAL(clicked()), this, SLOT(loadScene()),      Qt::UniqueConnection);
+    defaultLayout->addWidget(d->defaultLabel);
+    defaultLayout->addWidget(d->openButton);
+    defaultLayout->addWidget(d->sceneButton);
+    connect(d->openButton,  SIGNAL(clicked()), this, SLOT(openFromSystem()), Qt::UniqueConnection);
+    connect(d->sceneButton, SIGNAL(clicked()), this, SLOT(loadScene()),      Qt::UniqueConnection);
 
     d->menuButton = new QPushButton(this);
-    d->menuButton->setIcon(QIcon(":/icons/tools.png"));
+    d->menuButton->setIcon(QIcon(":/icons/settings_white.svg"));
     d->menuButton->setSizePolicy(QSizePolicy::Minimum, QSizePolicy::Fixed);
     d->menuButton->setToolTip(tr("Tools"));
 
@@ -132,7 +136,7 @@ medViewContainer::medViewContainer(medViewContainerSplitter *parent): QFrame(par
     connect(d->menuButton, SIGNAL(clicked()), this, SLOT(popupMenu()), Qt::UniqueConnection);
 
     d->openAction = new QAction(tr("Open"), d->toolBarMenu);
-    d->openAction->setIcon(QIcon(":/icons/open.png"));
+    d->openAction->setIcon(QIcon(":/icons/open_white.svg"));
     d->openAction->setToolTip(tr("Open a file from your system"));
     d->openAction->setIconVisibleInMenu(true);
     connect(d->openAction, SIGNAL(triggered()), this, SLOT(openFromSystem()), Qt::UniqueConnection);
@@ -148,13 +152,13 @@ medViewContainer::medViewContainer(medViewContainerSplitter *parent): QFrame(par
 
     // Split actions
     d->vSplitAction = new QAction(tr("V split"), d->toolBarMenu);
-    d->vSplitAction->setIcon(QIcon(":/pixmaps/splitbutton_vertical.png"));
+    d->vSplitAction->setIcon(QIcon(":/icons/split_vertical_white.png"));
     d->vSplitAction->setToolTip(tr("Split vertically"));
     d->vSplitAction->setIconVisibleInMenu(true);
     connect(d->vSplitAction, SIGNAL(triggered()), this, SIGNAL(vSplitRequest()), Qt::UniqueConnection);
 
     d->hSplitAction = new QAction(tr("H split"), d->toolBarMenu);
-    d->hSplitAction->setIcon(QIcon(":/pixmaps/splitbutton_horizontal.png"));
+    d->hSplitAction->setIcon(QIcon(":/icons/split_horizontal_white.png"));
     d->hSplitAction->setToolTip(tr("Split horizontally"));
     d->hSplitAction->setIconVisibleInMenu(true);
     connect(d->hSplitAction, SIGNAL(triggered()), this, SIGNAL(hSplitRequest()), Qt::UniqueConnection);
@@ -170,7 +174,7 @@ medViewContainer::medViewContainer(medViewContainerSplitter *parent): QFrame(par
     // Histogram actions
     d->histogramAction = new QAction(tr("Open Histogram"), d->toolBarMenu);
     d->histogramAction->setCheckable(true);
-    d->histogramAction->setIcon(QIcon(":/icons/gaussian_filter.png"));
+    d->histogramAction->setIcon(QIcon(":/icons/gaussian_filter_white.png"));
     d->histogramAction->setToolTip("Open a histogram");
     d->histogramAction->setIconVisibleInMenu(true);
     d->histogramAction->setEnabled(false);
@@ -193,7 +197,7 @@ medViewContainer::medViewContainer(medViewContainerSplitter *parent): QFrame(par
     // Scene
     d->saveSceneAction = new QAction(tr("Save scene"), d->toolBarMenu);
     d->saveSceneAction->setToolTip(tr("Save container content as is."));
-    d->saveSceneAction->setIcon(QIcon(":icons/saveScene_white.png"));
+    d->saveSceneAction->setIcon(QIcon(":icons/save_scene_white.svg"));
     d->saveSceneAction->setIconVisibleInMenu(true);
     connect(d->saveSceneAction, SIGNAL(triggered()), this, SLOT(saveScene()), Qt::UniqueConnection);
     d->saveSceneAction->setEnabled(false);
@@ -310,21 +314,35 @@ QWidget* medViewContainer::defaultWidget() const
 }
 
 /**
- * @brief medViewContainer::setDefaultWidget change the central widget
- * which can be seen inside an empty view.
+ * @brief Change the central widget. Beware, to be used in containers that we don't want to keep
  * @param defaultWidget
  */
-void medViewContainer::setDefaultWidget(QWidget *defaultWidget)
+void medViewContainer::changeDefaultWidget(QWidget *newDefaultWidget)
 {
-    // This paragraph could be encapsulated in an 'if(!d->view)' condition,
-    // however, in CLOSE_VIEW views, after the removal of the last data,
-    // setting a new default widget does not display it. d->view should be
-    // deleted before coming here.
     d->mainLayout->removeWidget(d->defaultWidget);
     delete d->defaultWidget;
-    d->mainLayout->addWidget(defaultWidget, 0, 0, 0, 0);
+    d->mainLayout->addWidget(newDefaultWidget, 0, 0, 0, 0);
+    d->defaultWidget = newDefaultWidget;
+}
 
-    d->defaultWidget = defaultWidget;
+void medViewContainer::displayDefaultWidget(bool displayDefault)
+{
+    QWidget* mainWidget = d->view->mainWindow();
+    if (!mainWidget)
+    {
+        mainWidget = d->view->viewWidget();
+    }
+
+    if (displayDefault)
+    {
+        mainWidget->hide();
+        d->defaultWidget->show();
+    }
+    else
+    {
+        mainWidget->show();
+        d->defaultWidget->hide();
+    }
 }
 
 bool medViewContainer::isUserOpenable() const
@@ -339,11 +357,19 @@ void medViewContainer::setUserOpenable(bool openable)
     {
         this->setAcceptDrops(true);
         d->openAction->setEnabled(true);
+
+        // Show the Open buttons inside the view
+        d->openButton->show();
+        d->sceneButton->show();
     }
     else
     {
         this->setAcceptDrops(false);
         d->openAction->setEnabled(false);
+
+        // Hide the Open buttons inside the view
+        d->openButton->hide();
+        d->sceneButton->hide();
     }
 }
 
@@ -499,7 +525,8 @@ void medViewContainer::setView(medAbstractView *view)
         }
         d->mainLayout->addWidget(mainWidget, 2, 0, 1, 1);
         mainWidget->setSizePolicy(QSizePolicy::Ignored, QSizePolicy::MinimumExpanding);
-        mainWidget->show();
+
+        displayDefaultWidget(false);
 
         emit viewChanged();
     }
@@ -630,10 +657,8 @@ void medViewContainer::removeView()
     {
         d->histogramAction->setChecked(false);
 
-        // On some occasion, the 'delete' here displays 3 logs:
-        // 'Unable to retrieve data at layer: 0 from:  "medVtkView"'
-        // It is linked to a GUI bug, where mouse/view/layer toolboxes
-        // are not fully cleaned and minimized.
+        displayDefaultWidget(true);
+
         delete d->view;
     }
     // removeInternView should be called, so no need to set d->view to nullptr.
@@ -649,7 +674,6 @@ void medViewContainer::removeInternView()
     // However, it's possible with the histogram, so we uncheck it.
     d->histogramAction->setChecked(false);
 
-    d->defaultWidget->show();
     this->updateToolBar();
 
     emit viewRemoved();
@@ -662,12 +686,6 @@ void medViewContainer::focusInEvent(QFocusEvent *event)
 
     this->setSelected(true);
     QWidget::focusInEvent(event);
-}
-
-void medViewContainer::recomputeStyleSheet()
-{
-    this->style()->unpolish(this);
-    this->style()->polish(this);
 }
 
 void medViewContainer::dragEnterEvent(QDragEnterEvent *event)

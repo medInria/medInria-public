@@ -87,9 +87,13 @@ void medFilteringWorkspaceL::resetDefaultWidgetInputContainer()
 {
     if(selectorToolBox()) //null when users close the software
     {
-        QLabel *inputLabel = new QLabel("INPUT");
-        inputLabel->setAlignment(Qt::AlignCenter);
-        d->inputContainer->setDefaultWidget(inputLabel);
+        auto viewLayout = static_cast<QVBoxLayout*>(d->inputContainer->defaultWidget()->layout());
+        auto label = static_cast<QLabel*>(viewLayout->itemAt(0)->widget());
+        if (!label->text().contains("INPUT"))
+        {
+            label->setText("INPUT\n\n"+label->text());
+            label->setAlignment(Qt::AlignCenter);
+        }
         d->inputContainer->setClosingMode(medViewContainer::CLOSE_VIEW);
         d->inputContainer->setUserSplittable(false);
         d->inputContainer->setMultiLayered(false);
@@ -100,9 +104,9 @@ void medFilteringWorkspaceL::resetDefaultWidgetOutputContainer()
 {
     if(selectorToolBox()) //null when users close the software
     {
-        QLabel *outputLabel = new QLabel("OUTPUT");
-        outputLabel->setAlignment(Qt::AlignCenter);
-        d->outputContainer->setDefaultWidget(outputLabel);
+        auto viewLayout = static_cast<QVBoxLayout*>(d->outputContainer->defaultWidget()->layout());
+        auto label = static_cast<QLabel*>(viewLayout->itemAt(0)->widget());
+        label->setText("OUTPUT");
         d->outputContainer->setClosingMode(medViewContainer::CLOSE_VIEW);
         d->outputContainer->setUserSplittable(false);
         d->outputContainer->setMultiLayered(false);

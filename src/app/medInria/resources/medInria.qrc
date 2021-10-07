@@ -13,101 +13,95 @@
         <file>icons/SagittalIcon.png</file>
         <file>icons/3DIcon.png</file>
         <file>icons/orientation_3d_black.svg</file>
-        <file>icons/orientation_3d_white.svg</file>    
-        <file>icons/cropping.png</file>        
+        <file>icons/orientation_3d_white.svg</file>
         <file>icons/composer.png</file>
         <file>icons/medInriaPlugin.svg</file>
         <file>icons/information_blue.svg</file>
         <file>icons/information_blue.png</file>
         <file>icons/error.png</file>
-        <file>icons/error.svg</file>
-        <file>icons/medCustomViewContainerA.png</file>
-        <file>icons/medCustomViewContainerB.png</file>
-        <file>icons/medCustomViewContainerC.png</file>
-        <file>icons/medCustomViewContainerD.png</file>
-        <file>icons/medCustomViewContainerE.png</file>
-        <file>icons/medCustomViewContainerF.png</file>
+        <file>icons/cropping_white.svg</file>
+        <file>icons/cropping_black.svg</file>
         <file>icons/maximize_on_white.svg</file>
         <file>icons/maximize_on_black.svg</file>
         <file>icons/maximize_off_white.svg</file>
         <file>icons/maximize_off_black.svg</file>
-        <file>icons/camera.png</file>
-        <file>icons/camera_grey.png</file>
         <file>icons/plus_white.png</file>
         <file>icons/plus_black.png</file>
         <file>icons/minus_white.png</file>
         <file>icons/minus_black.png</file>
-        <file>icons/fullscreen_off_white.png</file>
-        <file>icons/fullscreen_off_black.png</file>
-        <file>icons/fullscreen_on_white.png</file>
-        <file>icons/fullscreen_on_black.png</file>
-        <file>icons/save_white.png</file>
-        <file>icons/save_black.png</file>
-        <file>icons/import_white.png</file>
-        <file>icons/import_black.png</file>
-        <file>icons/import_temporary_white.png</file>
-        <file>icons/import_temporary_black.png</file>
-        <file>icons/import_temporary.svg</file>
+        <file>icons/fullscreen_off_white.svg</file>
+        <file>icons/fullscreen_off_black.svg</file>
+        <file>icons/fullscreen_on_white.svg</file>
+        <file>icons/fullscreen_on_black.svg</file>
+        <file>icons/save_white.svg</file>
+        <file>icons/save_black.svg</file>
+        <file>icons/import_permanent_white.svg</file>
+        <file>icons/import_permanent_black.svg</file>
+        <file>icons/import_temporary_white.svg</file>
+        <file>icons/import_temporary_black.svg</file>
+        <file>icons/metadata_white.svg</file>
+        <file>icons/metadata_black.svg</file>
         <file>icons/help_white.svg</file>
         <file>icons/help_black.svg</file>
         <file>icons/link_white.svg</file>
         <file>icons/link_black.svg</file>
-        <file>icons/adjust_size.png</file>
-        <file>icons/adjust_size_grey.png</file>
-        <file>icons/movie.png</file>
-        <file>icons/movie_grey.png</file>
-        <file>icons/saveScene_white.png</file>
-        <file>icons/saveScene_black.png</file>
-        <file>icons/stack_white.png</file>
-        <file>icons/stack_black.png</file>
-        <file>icons/magnifier_white.png</file>
-        <file>icons/magnifier_black.png</file>
+        <file>icons/camera_on_white.svg</file>
+        <file>icons/camera_on_black.svg</file>
+        <file>icons/camera_off_white.svg</file>
+        <file>icons/camera_on_white.svg</file>
+        <file>icons/movie_on_black.svg</file>
+        <file>icons/movie_on_white.svg</file>
+        <file>icons/movie_off_black.svg</file>
+        <file>icons/movie_off_white.svg</file>
+        <file>icons/save_scene_white.svg</file>
+        <file>icons/save_scene_black.svg</file>
+        <file>icons/stack_white.svg</file>
+        <file>icons/stack_black.svg</file>
+        <file>icons/magnifier_white.svg</file>
+        <file>icons/magnifier_black.svg</file>
         <file>icons/pan_white.svg</file>
         <file>icons/pan_black.svg</file>
-        <file>icons/ruler_white.png</file>
-        <file>icons/ruler_black.png</file>
-        <file>icons/contrast_white.png</file>
-        <file>icons/contrast_black.png</file>
+        <file>icons/ruler_white.svg</file>
+        <file>icons/ruler_black.svg</file>
+        <file>icons/contrast_white.svg</file>
+        <file>icons/contrast_black.svg</file>
         <file>icons/cross_red.svg</file>
         <file>icons/cross_black.svg</file>
         <file>icons/cross_white.svg</file>
-        <file>icons/eye_white.png</file>
-        <file>icons/eye_black.png</file>
+        <file>icons/eye_white.svg</file>
+        <file>icons/eye_black.svg</file>
         <file>icons/gaussian_filter_white.png</file>
         <file>icons/gaussian_filter_black.png</file>
+        <file>icons/settings_white.svg</file>
+        <file>icons/settings_black.svg</file>
         <file>icons/closebutton.png</file>
         <file>icons/closebutton-disabled.png</file>
         <file>icons/closebutton_blue.png</file>
-        <file>icons/splitbutton_horizontal.png</file>
-        <file>icons/splitbutton_horizontal_blue.png</file>
-        <file>icons/splitbutton_vertical.png</file>
-        <file>icons/splitbutton_vertical_blue.png</file>
-        <file>icons/open.png</file>
-        <file>icons/tools.png</file>
-        <file>icons/tools_blue.png</file>
+        <file>icons/split_horizontal_white.png</file>
+        <file>icons/split_horizontal_black.png</file>
+        <file>icons/split_vertical_white.png</file>
+        <file>icons/split_vertical_black.png</file>
+        <file>icons/open_black.svg</file>
+        <file>icons/open_white.svg</file>
         <file>icons/fourViews.png</file>
         <file>icons/fourViews_blue.png</file>
         <file>icons/splitPresets.png</file>
         <file>icons/splitPresets_blue.png</file>
-        <file>icons/user_add_white.png</file>
-        <file>icons/user_add_black.png</file>
-        <file>icons/user_edit_white.png</file>
-        <file>icons/user_edit_black.png</file>
-        <file>icons/study_add_white.png</file>
-        <file>icons/study_add_black.png</file>
-        <file>icons/edit_white.png</file>
-        <file>icons/edit_black.png</file>
-        <file>icons/export_white.png</file>
-        <file>icons/export_black.png</file>
-        <file>icons/time_stop_white.svg</file>
+        <file>icons/user_add_white.svg</file>
+        <file>icons/user_add_black.svg</file>
+        <file>icons/study_add_white.svg</file>
+        <file>icons/study_add_black.svg</file>
+        <file>icons/edit_white.svg</file>
+        <file>icons/edit_black.svg</file>
+        <file>icons/export_white.svg</file>
+        <file>icons/export_black.svg</file>
         <file>icons/time_pause_white.svg</file>
-        <file>icons/time_play_white.svg</file>
-        <file>icons/time_backward_white.svg</file>
-        <file>icons/time_forward_white.svg</file>
-        <file>icons/time_stop_black.svg</file>
         <file>icons/time_pause_black.svg</file>
+        <file>icons/time_play_white.svg</file>
         <file>icons/time_play_black.svg</file>
+        <file>icons/time_backward_white.svg</file>
         <file>icons/time_backward_black.svg</file>
+        <file>icons/time_forward_white.svg</file>
         <file>icons/time_forward_black.svg</file>
 
         <file>pixmaps/medInria-logo-homepage.png</file>

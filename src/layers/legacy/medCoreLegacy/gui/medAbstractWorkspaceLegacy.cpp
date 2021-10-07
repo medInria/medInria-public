@@ -398,6 +398,7 @@ void medAbstractWorkspaceLegacy::updateLayersToolBox()
                     QPushButton *removeButton = new QPushButton;
                     removeButton->setProperty("row", d->layerListWidget->count());
                     removeButton->setIcon(QIcon(":/icons/cross_red.svg"));
+                    removeButton->setToolTip("Close layer");
                     removeButton->setIconSize(QSize(15,15));
                     removeButton->setFixedSize(20,20);
 
@@ -563,21 +564,21 @@ void medAbstractWorkspaceLegacy::removeLayer()
     int layer = item->data(Qt::UserRole).toInt();
 
     medAbstractLayeredView *layerView = dynamic_cast<medAbstractLayeredView *>(medViewContainerManager::instance()->container(containerUuid)->view());
-    if(!layerView)
-        return;
-
-    layerView->removeLayer(layer);
-    if (layerView->layersCount() == 0)
+    if(layerView)
     {
-        if (medViewContainerManager::instance()->container(containerUuid)->closingMode()
-                == medViewContainer::CLOSE_CONTAINER)
+        layerView->removeLayer(layer);
+        if (layerView->layersCount() == 0)
         {
-            medViewContainerManager::instance()->container(containerUuid)->checkIfStillDeserveToLiveContainer();
-        }
-        else
-        {
-            // For containers that we want to keep even if there are no views/data in it, as in Filtering
-            medViewContainerManager::instance()->container(containerUuid)->removeView();
+            if (medViewContainerManager::instance()->container(containerUuid)->closingMode()
+                    == medViewContainer::CLOSE_CONTAINER)
+            {
+                medViewContainerManager::instance()->container(containerUuid)->checkIfStillDeserveToLiveContainer();
+            }
+            else
+            {
+                // For containers that we want to keep even if there are no views/data in it, as in Filtering
+                medViewContainerManager::instance()->container(containerUuid)->removeView();
+            }
         }
     }
 

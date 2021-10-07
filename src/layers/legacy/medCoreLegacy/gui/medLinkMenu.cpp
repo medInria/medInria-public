@@ -42,8 +42,8 @@ public :
 medLinkMenu::medLinkMenu(QWidget * parent) : QPushButton(parent), d(new medLinkMenuPrivate)
 {
     this->setIcon(QIcon(":icons/link_white.svg"));
-    this->setFixedSize(QSize(height(), height()));
-    this->setIconSize(QSize(height(), height()));
+    this->setFixedSize(QSize(height()-3, height()-3));
+    this->setIconSize(QSize(height()-6, height()-6));
 
     d->popupWidget = new QWidget(this);
     d->popupWidget->setWindowFlags(Qt::Dialog | Qt::FramelessWindowHint );

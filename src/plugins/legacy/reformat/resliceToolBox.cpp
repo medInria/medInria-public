@@ -193,7 +193,7 @@ void resliceToolBox::startReformat()
                 connect(d->resliceViewer,SIGNAL(imageReformatedGenerated()),this,SLOT(saveReformatedImage()));
                 medViewContainer * container = getWorkspace()->tabbedViewContainers()->insertNewTab(0, "Reslice");
                 getWorkspace()->tabbedViewContainers()->setCurrentIndex(0);
-                container->setDefaultWidget(d->resliceViewer->viewWidget());
+                container->changeDefaultWidget(d->resliceViewer->viewWidget());
                 connect(container, SIGNAL(viewRemoved()),this, SLOT(stopReformat()), Qt::UniqueConnection);
 
                 connect(d->spacingX, SIGNAL(valueChanged(double)), d->resliceViewer, SLOT(thickSlabChanged(double)));
@@ -263,7 +263,8 @@ void resliceToolBox::updateView()
 {
     medAbstractView* view = this->getWorkspace()->tabbedViewContainers()->getFirstSelectedContainerView();
 
-    if (view && d->currentView!= view)
+    d->currentView = nullptr;
+    if (view)
     {
         medAbstractLayeredView *layeredView = qobject_cast<medAbstractLayeredView*>(view);
         if (dynamic_cast<medAbstractImageData*>(layeredView->layerData(layeredView->currentLayer())))

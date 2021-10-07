@@ -7,16 +7,15 @@
    xmlns="http://www.w3.org/2000/svg"
    xmlns:sodipodi="http://sodipodi.sourceforge.net/DTD/sodipodi-0.dtd"
    xmlns:inkscape="http://www.inkscape.org/namespaces/inkscape"
-   sodipodi:docname="orientation_3d_white.svg"
-   id="svg4"
-   version="1.1"
-   width="24"
-   viewBox="0 0 24 24"
    height="24"
-   fill="none"
+   viewBox="0 0 24 24"
+   width="24"
+   version="1.1"
+   id="svg8"
+   sodipodi:docname="orientation_3d_white.svg"
    inkscape:version="1.0.1 (1.0.1+r73)">
   <metadata
-     id="metadata10">
+     id="metadata14">
     <rdf:RDF>
       <cc:Work
          rdf:about="">
@@ -27,7 +26,7 @@
     </rdf:RDF>
   </metadata>
   <defs
-     id="defs8" />
+     id="defs12" />
   <sodipodi:namedview
      pagecolor="#ffffff"
      bordercolor="#666666"
@@ -37,24 +36,43 @@
      guidetolerance="10"
      inkscape:pageopacity="0"
      inkscape:pageshadow="2"
-     inkscape:window-width="1870"
-     inkscape:window-height="1016"
-     id="namedview6"
+     inkscape:window-width="1920"
+     inkscape:window-height="1043"
+     id="namedview10"
      showgrid="false"
      inkscape:zoom="35.916667"
      inkscape:cx="12"
      inkscape:cy="12"
-     inkscape:window-x="1970"
-     inkscape:window-y="27"
+     inkscape:window-x="0"
+     inkscape:window-y="0"
      inkscape:window-maximized="1"
-     inkscape:current-layer="svg4"
+     inkscape:current-layer="svg8"
      inkscape:document-rotation="0" />
   <path
-     d="M20 7L12 3L4 7M20 7L12 11M20 7V17L12 21M12 11L4 7M12 11V21M4 7V17L12 21"
-     stroke="#ffffff"
+     d="M12.89 1.45l8 4A2 2 0 0 1 22 7.24v9.53a2 2 0 0 1-1.11 1.79l-8 4a2 2 0 0 1-1.79 0l-8-4a2 2 0 0 1-1.1-1.8V7.24a2 2 0 0 1 1.11-1.79l8-4a2 2 0 0 1 1.78 0z"
+     fill="none"
+     stroke="#f0f0f0"
      stroke-linecap="round"
      stroke-linejoin="round"
      stroke-width="2"
-     id="path2"
-     style="fill:none" />
+     id="path2" />
+  <polyline
+     fill="none"
+     points="2.32 6.16 12 11 21.68 6.16"
+     stroke="#f0f0f0"
+     stroke-linecap="round"
+     stroke-linejoin="round"
+     stroke-width="2"
+     id="polyline4" />
+  <line
+     fill="none"
+     stroke="#f0f0f0"
+     stroke-linecap="round"
+     stroke-linejoin="round"
+     stroke-width="2"
+     x1="12"
+     x2="12"
+     y1="22.76"
+     y2="11"
+     id="line6" />
 </svg>

@@ -177,7 +177,7 @@ medVtkViewNavigator::medVtkViewNavigator(medAbstractView *parent) :
     d->showAnnotatedCubeParameter->setValue(true);
 
     d->enableZooming = new medBoolParameterL("Zooming", this);
-    d->enableZooming->setIcon(QIcon (":/icons/magnifier_white.png"));
+    d->enableZooming->setIcon(QIcon (":/icons/magnifier_white.svg"));
     d->enableZooming->setToolTip(tr("Zooming"));
     connect(d->enableZooming, SIGNAL(valueChanged(bool)), this, SLOT(enableZooming(bool)));
     
@@ -187,12 +187,12 @@ medVtkViewNavigator::medVtkViewNavigator(medAbstractView *parent) :
     connect(d->enablePanning, SIGNAL(valueChanged(bool)), this, SLOT(enablePanning(bool)));
 
     d->enableSlicing = new medBoolParameterL("Slicing", this);
-    d->enableSlicing->setIcon(QIcon (":/icons/stack_white.png"));
+    d->enableSlicing->setIcon(QIcon (":/icons/stack_white.svg"));
     d->enableSlicing->setToolTip(tr("Slicing"));
     connect(d->enableSlicing, SIGNAL(valueChanged(bool)), this, SLOT(enableSlicing(bool)));
 
     d->enableMeasuring = new medBoolParameterL("Measuring", this);
-    d->enableMeasuring->setIcon (QIcon (":/icons/ruler_white.png"));
+    d->enableMeasuring->setIcon (QIcon (":/icons/ruler_white.svg"));
     d->enableMeasuring->setToolTip(tr("Measuring"));
     connect(d->enableMeasuring, SIGNAL(valueChanged(bool)), this, SLOT(enableMeasuring(bool)));
 
