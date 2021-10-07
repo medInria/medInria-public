@@ -167,5 +167,10 @@
         <file>icons/saveScene.png</file>
         <file>icons/saveScene_grey.png</file>
         <file>icons/scene.png</file>
+
+        <file>icons/notification_message.svg</file>
+        <file>icons/notification_error.svg</file>
+        <file>icons/notification_success.svg</file>
+        <file>icons/cross_gray.svg</file>
     </qresource>
 </RCC>
