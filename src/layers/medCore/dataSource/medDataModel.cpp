@@ -155,7 +155,7 @@ void medDataModel::addData(medAbstractData * pi_dataset, QString uri)
     QString sourceUri = uri.right(uri.size() - sourceDelimPos - 1);
     splittedUri.append(sourceUri.split('/'));
  
-    //TODO vérifier la présence dans la map
+    //TODO verifier la prï¿½sence dans la map
     auto pModelElement = m_sourceIdToInstanceMap[splittedUri[0]];
     // ////////////////////////////////////////////////////////////////////////
     // Adding dataset to the source

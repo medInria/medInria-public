@@ -297,7 +297,7 @@ bool medDataModelElement::fetch(QString uri) //See populateLevelV2
         {
             //TODO le level intermediaire n'existe pas encore
             //TODO TRY populate
-            //TODO essayer à nouveau apres le populate si le child existe
+            //TODO essayer  nouveau apres le populate si le child existe
             //     Si oui on continue
             //     Si non on part en erreur
         }
@@ -540,7 +540,7 @@ void medDataModelElement::addRowRanges(QMap<int, QVariantList> &entriesToAdd, co
             auto elem = var.toStringList();
             pItemTmp->setData(elem);
             pItemTmp->setParent(pItem);
-            pItem->append(pItemTmp);
+            pItem->insert(first+iOffsetRange, pItemTmp);
         }
         iOffsetRange += first + last;
 
