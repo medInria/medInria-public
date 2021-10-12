@@ -130,7 +130,7 @@ medViewContainer::medViewContainer(medViewContainerSplitter *parent): QFrame(par
     d->menuButton = new QPushButton(this);
     d->menuButton->setIcon(QIcon(":/icons/settings_white.svg"));
     d->menuButton->setSizePolicy(QSizePolicy::Minimum, QSizePolicy::Fixed);
-    d->menuButton->setToolTip(tr("Tools"));
+    d->menuButton->setToolTip(tr("Settings"));
 
     d->toolBarMenu = new QMenu(this);
     connect(d->menuButton, SIGNAL(clicked()), this, SLOT(popupMenu()), Qt::UniqueConnection);

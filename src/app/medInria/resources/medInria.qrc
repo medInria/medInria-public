@@ -101,8 +101,12 @@
         <file>icons/time_play_black.svg</file>
         <file>icons/time_backward_white.svg</file>
         <file>icons/time_backward_black.svg</file>
+        <file>icons/time_backward_step_white.svg</file>
+        <file>icons/time_backward_step_black.svg</file>
         <file>icons/time_forward_white.svg</file>
         <file>icons/time_forward_black.svg</file>
+        <file>icons/time_forward_step_white.svg</file>
+        <file>icons/time_forward_step_black.svg</file>
 
         <file>pixmaps/medInria-logo-homepage.png</file>
         <file>pixmaps/default_thumbnail.png</file>

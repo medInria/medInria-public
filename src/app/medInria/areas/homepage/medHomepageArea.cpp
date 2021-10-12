@@ -158,10 +158,12 @@ medHomepageArea::medHomepageArea ( QWidget * parent ) : QWidget ( parent ), d ( 
     d->actionFullscreen->setChecked(false);
 #if defined(Q_OS_MAC)
     d->actionFullscreen->setShortcut(Qt::ControlModifier + Qt::Key_F);
-    d->actionFullscreen->setToolTip(tr("Switch to fullscreen (cmd+f)"));
+    connect(d->actionFullscreen, &QAction::hovered, [=]{QToolTip::showText(QCursor::pos(), "Switch to fullscreen (cmd+f)", this);});
 #else
     d->actionFullscreen->setShortcut(Qt::Key_F11);
-    d->actionFullscreen->setToolTip(tr("Switch to fullscreen (F11)"));
+    // On Qt5, we can't use setToolTip on an action, without using setToolTipsVisible (by default to false) on the QMenu
+    // Here we have a QAction directly on a QMenuBar without a QMenu, so we display manually the tooltip
+    connect(d->actionFullscreen, &QAction::hovered, [=]{QToolTip::showText(QCursor::pos(), "Switch to fullscreen (F11)", this);});
 #endif
     connect(d->actionFullscreen, &QAction::toggled, mainWindow, &medMainWindow::setFullScreen);
     // On Qt5, QAction in menubar does not seem to show the Off and On icons, so we do it manually

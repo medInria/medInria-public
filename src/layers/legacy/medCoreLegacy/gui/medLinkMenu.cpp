@@ -42,6 +42,7 @@ public :
 medLinkMenu::medLinkMenu(QWidget * parent) : QPushButton(parent), d(new medLinkMenuPrivate)
 {
     this->setIcon(QIcon(":icons/link_white.svg"));
+    setToolTip("Link parameters");
     this->setFixedSize(QSize(height()-3, height()-3));
     this->setIconSize(QSize(height()-6, height()-6));
 
