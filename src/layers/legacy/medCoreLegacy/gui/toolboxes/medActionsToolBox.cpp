@@ -71,7 +71,7 @@ medActionsToolBox::medActionsToolBox( QWidget *parent /*= 0*/, bool FILE_SYSTEM 
     d->viewBt->setAccessibleName("View");
     d->viewBt->setText(tr("View"));
     d->viewBt->setToolTip(tr("Temporarily import (if the data is not already in the database)\nand visualize the currently selected item."));
-    d->viewBt->setIcon(QIcon(":/icons/eye.png"));
+    d->viewBt->setIcon(QIcon(":icons/eye_white.svg"));
     connect(d->viewBt, SIGNAL(clicked()), this, SIGNAL(viewClicked()));
 
     if (FILE_SYSTEM)
@@ -80,13 +80,13 @@ medActionsToolBox::medActionsToolBox( QWidget *parent /*= 0*/, bool FILE_SYSTEM 
         d->loadBt->setAccessibleName("Temporary Import");
         d->loadBt->setText(tr("Temporary Import"));
         d->loadBt->setToolTip(tr("Temporarily import the item(s) so as they can be used inside the application,\nbut do not include them in the database."));
-        d->loadBt->setIcon(QIcon(":/icons/document-open.png"));
+        d->loadBt->setIcon(QIcon(":/icons/import_temporary_white.svg"));
 
         d->importBt = new QPushButton(d->buttonsWidget);
         d->importBt->setAccessibleName("Import");
         d->importBt->setText(tr("Import"));
         d->importBt->setToolTip(tr("Import (copy) item(s) into the database."));
-        d->importBt->setIcon(QIcon(":/icons/import.png"));
+        d->importBt->setIcon(QIcon(":/icons/import_permanent_white.svg"));
 
         connect(d->importBt, SIGNAL(clicked()), this, SIGNAL(importClicked()));
         connect(d->loadBt,   SIGNAL(clicked()), this, SIGNAL(loadClicked()));
@@ -102,37 +102,37 @@ medActionsToolBox::medActionsToolBox( QWidget *parent /*= 0*/, bool FILE_SYSTEM 
         d->saveBt->setAccessibleName("Save");
         d->saveBt->setText(tr("Save"));
         d->saveBt->setToolTip(tr("Save selected item into the database."));
-        d->saveBt->setIcon(QIcon(":/icons/save.png"));
+        d->saveBt->setIcon(QIcon(":/icons/save_white.svg"));
 
         d->newPatientBt = new QPushButton(d->buttonsWidget);
         d->newPatientBt->setAccessibleName("New Patient");
         d->newPatientBt->setText("Patient");
         d->newPatientBt->setToolTip(tr("Create a new patient."));
-        d->newPatientBt->setIcon(QIcon(":/icons/user_add.png"));
+        d->newPatientBt->setIcon(QIcon(":/icons/user_add_white.svg"));
 
         d->newStudyBt = new QPushButton(d->buttonsWidget);
         d->newStudyBt->setAccessibleName("New Study");
         d->newStudyBt->setText("Study");
         d->newStudyBt->setToolTip(tr("Create a new study."));
-        d->newStudyBt->setIcon(QIcon(":/icons/page_add.png"));
+        d->newStudyBt->setIcon(QIcon(":/icons/study_add_white.svg"));
 
         d->editBt = new QPushButton(d->buttonsWidget);
         d->editBt->setAccessibleName("Edit");
         d->editBt->setText("Edit");
         d->editBt->setToolTip(tr("Edit item."));
-        d->editBt->setIcon(QIcon(":/icons/page_edit.png"));
+        d->editBt->setIcon(QIcon(":/icons/edit_white.svg"));
 
         d->exportBt = new QPushButton(d->buttonsWidget);
         d->exportBt->setAccessibleName("Export");
         d->exportBt->setText(tr("Export"));
         d->exportBt->setToolTip(tr("Export the series."));
-        d->exportBt->setIcon(QIcon(":/icons/export.png"));
+        d->exportBt->setIcon(QIcon(":/icons/export_white.svg"));
 
         d->removeBt = new QPushButton(d->buttonsWidget);
         d->removeBt->setAccessibleName("Remove");
         d->removeBt->setText(tr("Remove"));
         d->removeBt->setToolTip(tr("Remove selected item from the database."));
-        d->removeBt->setIcon(QIcon(":/icons/cross.svg"));
+        d->removeBt->setIcon(QIcon(":/icons/cross_red.svg"));
 
         connect(d->removeBt, SIGNAL(clicked()), this, SIGNAL(removeClicked()));
         connect(d->exportBt, SIGNAL(clicked()), this, SIGNAL(exportClicked()));

@@ -1504,12 +1504,12 @@ void medVtkFibersDataInteractor::bundlingListCustomContextMenu(const QPoint &poi
     QMenu *menu = new QMenu;
     
     QAction *saveAction = new QAction(tr("Save"), this);
-    saveAction->setIcon(QIcon(":icons/save.png"));
+    saveAction->setIcon(QIcon(":icons/save_white.svg"));
     connect(saveAction, SIGNAL(triggered()), this, SLOT(saveCurrentBundle()));
     menu->addAction(saveAction);
     
     QAction *removeAction = new QAction(tr("Remove"), this);
-    removeAction->setIcon(QIcon(":icons/cross.svg"));
+    removeAction->setIcon(QIcon(":icons/cross_red.svg"));
     connect(removeAction, SIGNAL(triggered()), this, SLOT(removeCurrentBundle()));
     menu->addAction(removeAction);
 

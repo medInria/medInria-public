@@ -39,6 +39,7 @@ medHomepageArea::medHomepageArea ( QWidget * parent ) : QWidget ( parent ), d ( 
     QMenu *menuFile = menu_bar->addMenu("File");
 
     QAction *actionBrowser = new QAction(tr("&Import/export files"), parent);
+    actionBrowser->setIcon(QIcon(":/icons/open_white.svg"));
     connect(actionBrowser, &QAction::triggered, this, &medHomepageArea::onShowBrowser);
     menuFile->addAction(actionBrowser);
 
@@ -119,7 +120,7 @@ medHomepageArea::medHomepageArea ( QWidget * parent ) : QWidget ( parent ), d ( 
     // --- About menu
     QMenu *menuAbout = menu_bar->addMenu("Info");
 
-    QAction *actionAbout = new QAction(tr("&About the application"), parent);
+    QAction *actionAbout = new QAction(tr("&About"), parent);
     connect(actionAbout, &QAction::triggered, this, &medHomepageArea::onShowAbout);
     menuAbout->addAction(actionAbout);
 
@@ -127,7 +128,7 @@ medHomepageArea::medHomepageArea ( QWidget * parent ) : QWidget ( parent ), d ( 
     connect(actionAuthors, &QAction::triggered, this, &medHomepageArea::onShowAuthors);
     menuAbout->addAction(actionAuthors);
 
-    QAction *actionReleaseNotes = new QAction(tr("&Release Notes"), parent);
+    QAction *actionReleaseNotes = new QAction(tr("&Release Notes "), parent);
     connect(actionReleaseNotes, &QAction::triggered, this, &medHomepageArea::onShowReleaseNotes);
     menuAbout->addAction(actionReleaseNotes);
 
@@ -138,6 +139,7 @@ medHomepageArea::medHomepageArea ( QWidget * parent ) : QWidget ( parent ), d ( 
     menuAbout->addSeparator();
 
     QAction *actionHelp = new QAction(tr("&Help"), parent);
+    actionHelp->setIcon(QIcon(":/icons/help_white.svg"));
     connect(actionHelp, &QAction::triggered, this, &medHomepageArea::onShowHelp);
     menuAbout->addAction(actionHelp);
 
@@ -147,8 +149,8 @@ medHomepageArea::medHomepageArea ( QWidget * parent ) : QWidget ( parent ), d ( 
 
     // --- Fullscreen checkable action
     QIcon fullscreenIcon;
-    fullscreenIcon.addPixmap(QPixmap(":icons/fullscreenExpand.png"),QIcon::Normal,QIcon::Off);
-    fullscreenIcon.addPixmap(QPixmap(":icons/fullscreenReduce.png"),QIcon::Normal,QIcon::On);
+    fullscreenIcon.addPixmap(QPixmap(":icons/fullscreen_on_white.svg"),QIcon::Normal,QIcon::Off);
+    fullscreenIcon.addPixmap(QPixmap(":icons/fullscreen_off_white.svg"),QIcon::Normal,QIcon::On);
 
     d->actionFullscreen = new QAction(parent);
     d->actionFullscreen->setIcon(fullscreenIcon);
@@ -156,10 +158,12 @@ medHomepageArea::medHomepageArea ( QWidget * parent ) : QWidget ( parent ), d ( 
     d->actionFullscreen->setChecked(false);
 #if defined(Q_OS_MAC)
     d->actionFullscreen->setShortcut(Qt::ControlModifier + Qt::Key_F);
-    d->actionFullscreen->setToolTip(tr("Switch to fullscreen (cmd+f)"));
+    connect(d->actionFullscreen, &QAction::hovered, [=]{QToolTip::showText(QCursor::pos(), "Switch to fullscreen (cmd+f)", this);});
 #else
     d->actionFullscreen->setShortcut(Qt::Key_F11);
-    d->actionFullscreen->setToolTip(tr("Switch to fullscreen (F11)"));
+    // On Qt5, we can't use setToolTip on an action, without using setToolTipsVisible (by default to false) on the QMenu
+    // Here we have a QAction directly on a QMenuBar without a QMenu, so we display manually the tooltip
+    connect(d->actionFullscreen, &QAction::hovered, [=]{QToolTip::showText(QCursor::pos(), "Switch to fullscreen (F11)", this);});
 #endif
     connect(d->actionFullscreen, &QAction::toggled, mainWindow, &medMainWindow::setFullScreen);
     // On Qt5, QAction in menubar does not seem to show the Off and On icons, so we do it manually
@@ -237,9 +241,9 @@ void medHomepageArea::initPage()
     workspaceButtonsLayoutBasic->addLayout(workspaceButtonsLayoutBasicGrid);
 
     medHomepageButton * browserButton = new medHomepageButton ( this );
-    browserButton->setToolButtonStyle ( Qt::ToolButtonTextUnderIcon );
-    browserButton->setIcon ( QIcon ( ":/icons/folder.png" ) );
-    browserButton->setText ( "Import/export files" );
+    browserButton->setToolButtonStyle ( Qt::ToolButtonTextBesideIcon );
+    browserButton->setIcon ( QIcon ( ":/icons/open_white.svg" ) );
+    browserButton->setText ( " Import/export files" );
     browserButton->setMinimumHeight ( 40 );
     browserButton->setMaximumWidth ( 250 );
     browserButton->setMinimumWidth ( 250 );
@@ -249,9 +253,9 @@ void medHomepageArea::initPage()
     QObject::connect ( browserButton, SIGNAL ( clicked() ),this, SLOT ( onShowBrowser() ) );
 
     medHomepageButton * composerButton = new medHomepageButton ( this );
-    composerButton->setText ("Composer");
+    composerButton->setText ("       Composer");
     composerButton->setFocusPolicy ( Qt::NoFocus );
-    composerButton->setToolButtonStyle(Qt::ToolButtonTextUnderIcon);
+    composerButton->setToolButtonStyle(Qt::ToolButtonTextBesideIcon);
     composerButton->setIcon(QIcon(":/icons/composer.png"));
     composerButton->setMinimumHeight ( 40 );
     composerButton->setMaximumWidth ( 250 );
@@ -494,10 +498,10 @@ void medHomepageArea::switchOffOnFullscreenIcons(const bool checked)
 {
     if (checked)
     {
-        d->actionFullscreen->setIcon(QIcon(":icons/fullscreenReduce.png"));
+        d->actionFullscreen->setIcon(QIcon(":icons/fullscreen_off_white.svg"));
     }
     else
     {
-        d->actionFullscreen->setIcon(QIcon(":icons/fullscreenExpand.png"));
+        d->actionFullscreen->setIcon(QIcon(":icons/fullscreen_on_white.svg"));
     }
 }

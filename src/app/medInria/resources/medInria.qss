@@ -31,9 +31,9 @@ $GREY11     = #C0C0C0;
 $GREEN      = #64FF32;
 $RED        = #FF3333;
 $YELLOW     = #FFFF99;
+$ORANGE     = #ED6639;
 
 $HIGHLIGHT_COLOR = #FF8833;
-
 
 /*******************************************************************************
     BACKGROUND
@@ -84,6 +84,7 @@ $TOOLBOX_CONTAINER_BACKGROUND           = $GREY01;
 $TOOLBOX_HEADER_BACKGROUND              = qlineargradient(x1: 0, y1: 0, x2: 0, y2: 1, stop: 0 $GREY02, stop: 1 $GREY00);
 $TOOLBOX_BODY_BACKGROUND                = qlineargradient(x1: 0, y1: 0, x2: 0, y2: 1, stop: 0 $GREY02, stop: 1 $GREY01);
 $TOOLBOX_BACKGROUND                     = $GREY04;
+$TOOLBOX_INNER_TITLE                    = $ORANGE;
 
 $VIEW_PROPERTY_BACKGROUND               = $GREY03;
 $VIEW_PROPERTY_HEADER_BACKGROUND        = qlineargradient(x1: 0, y1: 0, x2: 1, y2: 1, stop: 0 $GREY01, stop: 1 $GREY00);
@@ -274,8 +275,6 @@ $VIEW_PROPERTY_ITEM_PADDING     = 4px;
 $TREE_VIEW_ITEM_PADDING         = 3px;
 
 $VIEW_CONTAINER_BUTTON_PADDING  = 4px 2px;
-
-$ADD_TAB_BUTTON_PADDING         = 8px 0px;
 
 $TOOLBOX_HEADER_PADDING         = 0px 8px;
 
@@ -561,6 +560,11 @@ QLabel
     background: none;
 }
 
+QLabel#innerTitle
+{
+    color: $TOOLBOX_INNER_TITLE;
+    background: none;
+}
 
 /*******************************************************************************
      QTableWidget
@@ -1009,7 +1013,7 @@ QMenu::indicator:exclusive:checked
     image: url(:/pixmaps/radio-checked.png);
 }
 
-QMenu::item:checked /* appearance of a 'checked' menu item */
+QMenu::item:checked 
 {
     background: $MENU_ITEM_SELECTED_BACKGROUND;
 }
@@ -1022,14 +1026,15 @@ QMenu::separator
 QMenu::item
 {
     border: none;
-    border-left: 5px solid $MENU_ITEM_BACKGROUND; /*magic value !!!*/
-    padding: 4px 22px; /*magic value !!!*/
+    margin-left: 8px;
+    margin-right: 22px;
+    margin-top: 4px;
+    margin-bottom: 4px;
 }
 
 QMenu::item:selected
 {
     border: none;
-    border-left: 5px solid $MENU_ITEM_HOVER_BACKGROUND; /*magic value !!!*/
     background: $MENU_ITEM_HOVER_BACKGROUND;
     color: $MENU_ITEM_SELECTED_COLOR;
 }
@@ -1128,7 +1133,6 @@ dtkFinderPathBar
 medTabbedViewContainers QPushButton
 {
     margin: $VIEW_CONTAINER_BUTTON_MARGIN;
-    //padding: $VIEW_CONTAINER_BUTTON_PADDING;
     border-radius: $VIEW_CONTAINER_BUTTON_RADIUS;
 }
 
@@ -1139,8 +1143,7 @@ medTabbedViewContainers QPushButton::hover
 
 QPushButton#addTabButton
 {
-    image: url(:pixmaps/plus-button.png);
-    padding: $ADD_TAB_BUTTON_PADDING;
+    image: url(:icons/plus_white.png);
 }
 
 medViewContainer
@@ -1152,6 +1155,16 @@ medViewContainer
 medViewContainer [selected = "true"]
 {
     border: $CONTAINER_SELECTED_BORDER;
+}
+
+QTabBar::close-button
+{
+    image: url(:icons/cross_red.svg)
+}
+
+QTabBar::close-button:hover
+{
+    background: $VIEW_CONTAINER_BUTTON_HOVER_BACKGOUND
 }
 
 QWidget#defaultWidget
@@ -1198,7 +1211,6 @@ QWidget#settingsWidget QTabWidget::pane
 {
     border: 2px solid $EDITION_BACKGROUND;
 }
-
 
 /*******************************************************************************
      medDatabasePreview

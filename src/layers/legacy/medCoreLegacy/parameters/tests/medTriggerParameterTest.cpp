@@ -23,14 +23,12 @@
 
 medTriggerParameterTestObject::medTriggerParameterTestObject(void)
 {
-
-
      m_name = QString("testWithObjectName");
      m_text = QString("testWithObjectToolText");
-     m_icon = QIcon(":/pixmaps/plus_button.png");
+     m_icon = QIcon(":/icons/plus_white.png");
      m_iconSize = QSize(42,42);
-     m_pushButton = NULL;
-     m_widget = NULL;
+     m_pushButton = nullptr;
+     m_widget = nullptr;
 }
 
 medTriggerParameterTestObject::~medTriggerParameterTestObject(void)

@@ -46,8 +46,6 @@ list_source_files(${TARGET_NAME}
   ${CMAKE_CURRENT_SOURCE_DIR}
   )
 
-set(${TARGET_NAME}_QRC resources/medVtkView.qrc)
-
 ## #############################################################################
 ## include directorie.
 ## #############################################################################

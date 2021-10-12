@@ -87,7 +87,7 @@ polygonRoiToolBox::polygonRoiToolBox(QWidget *parent ) :
 
     tableViewChooser = new medTableWidgetChooser(this, 1, 3, 75);
     QSize size = tableViewChooser->sizeHint();
-    tableViewChooser->setIconSize(QSize(size.height(),size.height()));
+    tableViewChooser->setIconSize(QSize(size.height()-6,size.height()-6));
     connect(tableViewChooser, SIGNAL(selected(unsigned int,unsigned int)), this, SLOT(updateTableWidgetView(unsigned int,unsigned int)));
 
     QHBoxLayout *tableViewLayout = new QHBoxLayout();
@@ -554,7 +554,7 @@ void polygonRoiToolBox::updateTableWidgetItems()
             secondOrientation = new medTableWidgetItem(QIcon(":/icons/SagittalIcon.png"),
                                                        QString("Sagittal view"),
                                                        medTableWidgetItem::SagittalType);
-            thirdOrientation = new medTableWidgetItem(QIcon(":/icons/3DIcon.png"),
+            thirdOrientation = new medTableWidgetItem(QIcon(":/icons/orientation_3d_white.svg"),
                                                       QString("3d view"),
                                                       medTableWidgetItem::ThreeDimType);
 
@@ -567,7 +567,7 @@ void polygonRoiToolBox::updateTableWidgetItems()
             secondOrientation =  new medTableWidgetItem(QIcon(":/icons/SagittalIcon.png"),
                                                         QString("Sagittal view"),
                                                         medTableWidgetItem::SagittalType);
-            thirdOrientation = new medTableWidgetItem(QIcon(":/icons/3DIcon.png"),
+            thirdOrientation = new medTableWidgetItem(QIcon(":/icons/orientation_3d_white.svg"),
                                                       QString("3d view"),
                                                       medTableWidgetItem::ThreeDimType);
 
@@ -580,7 +580,7 @@ void polygonRoiToolBox::updateTableWidgetItems()
             secondOrientation = new medTableWidgetItem(QIcon(":/icons/CoronalIcon.png"),
                                                        QString("Coronal view"),
                                                        medTableWidgetItem::CoronalType);
-            thirdOrientation = new medTableWidgetItem(QIcon(":/icons/3DIcon.png"),
+            thirdOrientation = new medTableWidgetItem(QIcon(":/icons/orientation_3d_white.svg"),
                                                       QString("3d view"),
                                                       medTableWidgetItem::ThreeDimType);
 

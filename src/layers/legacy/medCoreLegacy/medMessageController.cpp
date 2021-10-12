@@ -71,7 +71,7 @@ medMessageInfo::medMessageInfo(
         const QString& text, QWidget *parent,unsigned int timeout) :
         medMessage(parent,text, timeout)
 {
-    icon->setPixmap(QPixmap(":/icons/information.png"));
+    icon->setPixmap(QPixmap(":/icons/information_blue.png"));
     this->setFixedWidth(500);
 }
 
@@ -83,7 +83,7 @@ medMessageError::medMessageError(
         const QString& text, QWidget *parent,unsigned int timeout) :
         medMessage(parent, text, timeout)
 {
-    icon->setPixmap(QPixmap(":/icons/exclamation.png"));
+    icon->setPixmap(QPixmap(":/icons/error.png"));
     this->setFixedWidth(500);
 }
 

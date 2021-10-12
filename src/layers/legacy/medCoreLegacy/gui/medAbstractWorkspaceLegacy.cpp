@@ -105,6 +105,7 @@ medAbstractWorkspaceLegacy::medAbstractWorkspaceLegacy(QWidget *parent)
 
     d->interactorToolBox = new medToolBox;
     d->interactorToolBox->header()->hide();
+    d->interactorToolBox->setStyleSheet("border:0;border-radius: 0px;padding: 0px;");
     d->layersToolBox->addWidget(d->interactorToolBox);
 
     d->selectionToolBox->addWidget(d->layersToolBox);
@@ -396,7 +397,8 @@ void medAbstractWorkspaceLegacy::updateLayersToolBox()
                 {
                     QPushButton *removeButton = new QPushButton;
                     removeButton->setProperty("row", d->layerListWidget->count());
-                    removeButton->setIcon(QIcon(":/icons/cross.svg"));
+                    removeButton->setIcon(QIcon(":/icons/cross_red.svg"));
+                    removeButton->setToolTip("Close layer");
                     removeButton->setIconSize(QSize(15,15));
                     removeButton->setFixedSize(20,20);
 
@@ -667,9 +669,6 @@ bool medAbstractWorkspaceLegacy::isUserLayerClosable() const
 QWidget* medAbstractWorkspaceLegacy::buildViewLinkMenu()
 {
     QWidget *linkWidget = new QWidget;
-    QHBoxLayout* linkLayout = new QHBoxLayout(linkWidget);
-    linkLayout->setContentsMargins(80, 5, 5, 5);
-    linkLayout->setSpacing(0);
 
     d->viewLinkMenu = new medLinkMenu(linkWidget);
     connect(d->viewLinkMenu, SIGNAL(groupChecked(QString)), this, SLOT(addViewstoGroup(QString)));
@@ -739,8 +738,10 @@ QWidget* medAbstractWorkspaceLegacy::buildViewLinkMenu()
     d->viewLinkMenu->setSelectedGroups(selectedGroups);
     d->viewLinkMenu->setPartiallySelectedGroups(partiallySelectedGroups);
 
-    linkLayout->addWidget(new QLabel(tr("Link view properties: ")));
-    linkLayout->addWidget(d->viewLinkMenu);
+    QHBoxLayout* linkLayout = new QHBoxLayout(linkWidget);
+    linkLayout->setAlignment(Qt::AlignRight);
+    linkLayout->addWidget(new QLabel(tr("Link view properties: ")), 0, Qt::AlignRight);
+    linkLayout->addWidget(d->viewLinkMenu, 0, Qt::AlignRight);
 
     return linkWidget;
 }
@@ -776,9 +777,6 @@ QWidget* medAbstractWorkspaceLegacy::buildLayerLinkMenu(QList<QListWidgetItem*> 
     }
 
     QWidget *linkWidget = new QWidget;
-    QHBoxLayout* linkLayout = new QHBoxLayout(linkWidget);
-    linkLayout->setContentsMargins(80, 5, 5, 5);
-    linkLayout->setSpacing(0);
 
     d->layerLinkMenu = new medLinkMenu(linkWidget);
     connect(d->layerLinkMenu, SIGNAL(groupChecked(QString)), this, SLOT(addLayerstoGroup(QString)));
@@ -829,8 +827,10 @@ QWidget* medAbstractWorkspaceLegacy::buildLayerLinkMenu(QList<QListWidgetItem*> 
     d->layerLinkMenu->setSelectedGroups(selectedGroups);
     d->layerLinkMenu->setPartiallySelectedGroups(partiallySelectedGroups);
 
-    linkLayout->addWidget(new QLabel(tr("Link layer properties: ")));
-    linkLayout->addWidget(d->layerLinkMenu);
+    QHBoxLayout* linkLayout = new QHBoxLayout(linkWidget);
+    linkLayout->setAlignment(Qt::AlignRight);
+    linkLayout->addWidget(new QLabel(tr("Link layer properties: ")), 0, Qt::AlignRight);
+    linkLayout->addWidget(d->layerLinkMenu, 0, Qt::AlignRight);
 
     return linkWidget;
 

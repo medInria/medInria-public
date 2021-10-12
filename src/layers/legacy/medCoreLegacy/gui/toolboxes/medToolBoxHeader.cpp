@@ -29,7 +29,10 @@ QPixmap * medToolBoxHeaderPrivate::png = nullptr;
 
 medToolBoxHeader::medToolBoxHeader(QWidget *parent) : QFrame(parent), d(new medToolBoxHeaderPrivate)
 {
-    if (!d->png)  d->png = new QPixmap(":icons/information.png");
+    if (!d->png)  
+    {
+        d->png = new QPixmap(":icons/information_blue.png");
+    }
     d->title = "Untitled";
     d->titleOffset = QPoint( 0, 0 );
 

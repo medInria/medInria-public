@@ -65,7 +65,7 @@ medRemeshingToolBox::medRemeshingToolBox(QWidget *parent)
 
     // Decimate and Refine buttons
     QLabel* decimateRefineTitle = new QLabel("Decimate/Refine", this);
-    decimateRefineTitle->setStyleSheet("QLabel { color : #ED6639; }");
+    decimateRefineTitle->setObjectName("innerTitle");
     displayLayout->addWidget(decimateRefineTitle);
 
     // Decimate
@@ -106,7 +106,7 @@ medRemeshingToolBox::medRemeshingToolBox(QWidget *parent)
 
     // User can choose a number of cells
     QLabel *numberTitle = new QLabel("Choose the number of cells that you want", this);
-    numberTitle->setStyleSheet("QLabel { color : #ED6639; }");
+    numberTitle->setObjectName("innerTitle");
     displayLayout->addWidget(numberTitle);
 
     QLabel *numberTxt = new QLabel("number of cells:", this);
@@ -131,7 +131,7 @@ medRemeshingToolBox::medRemeshingToolBox(QWidget *parent)
 
     // Smooth tool
     QLabel *smoothTitle = new QLabel("Smooth", this);
-    smoothTitle->setStyleSheet("QLabel { color : #ED6639; }");
+    smoothTitle->setObjectName("innerTitle");
     displayLayout->addWidget(smoothTitle);
 
     QLabel *iterationsLabel = new QLabel("iterations: ", this);

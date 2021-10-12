@@ -128,23 +128,23 @@ medViewContainer::medViewContainer(medViewContainerSplitter *parent): QFrame(par
     connect(d->sceneButton, SIGNAL(clicked()), this, SLOT(loadScene()),      Qt::UniqueConnection);
 
     d->menuButton = new QPushButton(this);
-    d->menuButton->setIcon(QIcon(":/pixmaps/tools.png"));
+    d->menuButton->setIcon(QIcon(":/icons/settings_white.svg"));
     d->menuButton->setSizePolicy(QSizePolicy::Minimum, QSizePolicy::Fixed);
-    d->menuButton->setToolTip(tr("Tools"));
+    d->menuButton->setToolTip(tr("Settings"));
 
     d->toolBarMenu = new QMenu(this);
     connect(d->menuButton, SIGNAL(clicked()), this, SLOT(popupMenu()), Qt::UniqueConnection);
 
     d->openAction = new QAction(tr("Open"), d->toolBarMenu);
-    d->openAction->setIcon(QIcon(":/pixmaps/open.png"));
+    d->openAction->setIcon(QIcon(":/icons/open_white.svg"));
     d->openAction->setToolTip(tr("Open a file from your system"));
     d->openAction->setIconVisibleInMenu(true);
     connect(d->openAction, SIGNAL(triggered()), this, SLOT(openFromSystem()), Qt::UniqueConnection);
 
     d->closeContainerButton = new QPushButton(this);
     QIcon closeIcon;
-    closeIcon.addPixmap(QPixmap(":/pixmaps/closebutton.png"),         QIcon::Normal);
-    closeIcon.addPixmap(QPixmap(":/pixmaps/closebutton-disabled.png"),QIcon::Disabled);
+    closeIcon.addPixmap(QPixmap(":/icons/closebutton.png"),         QIcon::Normal);
+    closeIcon.addPixmap(QPixmap(":/icons/closebutton-disabled.png"),QIcon::Disabled);
     d->closeContainerButton->setIcon(closeIcon);
     d->closeContainerButton->setSizePolicy(QSizePolicy::Minimum, QSizePolicy::Fixed);
     d->closeContainerButton->setToolTip(tr("Close"));
@@ -152,13 +152,13 @@ medViewContainer::medViewContainer(medViewContainerSplitter *parent): QFrame(par
 
     // Split actions
     d->vSplitAction = new QAction(tr("V split"), d->toolBarMenu);
-    d->vSplitAction->setIcon(QIcon(":/pixmaps/splitbutton_vertical.png"));
+    d->vSplitAction->setIcon(QIcon(":/icons/split_vertical_white.png"));
     d->vSplitAction->setToolTip(tr("Split vertically"));
     d->vSplitAction->setIconVisibleInMenu(true);
     connect(d->vSplitAction, SIGNAL(triggered()), this, SIGNAL(vSplitRequest()), Qt::UniqueConnection);
 
     d->hSplitAction = new QAction(tr("H split"), d->toolBarMenu);
-    d->hSplitAction->setIcon(QIcon(":/pixmaps/splitbutton_horizontal.png"));
+    d->hSplitAction->setIcon(QIcon(":/icons/split_horizontal_white.png"));
     d->hSplitAction->setToolTip(tr("Split horizontally"));
     d->hSplitAction->setIconVisibleInMenu(true);
     connect(d->hSplitAction, SIGNAL(triggered()), this, SIGNAL(hSplitRequest()), Qt::UniqueConnection);
@@ -174,7 +174,7 @@ medViewContainer::medViewContainer(medViewContainerSplitter *parent): QFrame(par
     // Histogram actions
     d->histogramAction = new QAction(tr("Open Histogram"), d->toolBarMenu);
     d->histogramAction->setCheckable(true);
-    d->histogramAction->setIcon(QIcon(":/icons/Gaussian_Filter.png"));
+    d->histogramAction->setIcon(QIcon(":/icons/gaussian_filter_white.png"));
     d->histogramAction->setToolTip("Open a histogram");
     d->histogramAction->setIconVisibleInMenu(true);
     d->histogramAction->setEnabled(false);
@@ -183,8 +183,8 @@ medViewContainer::medViewContainer(medViewContainerSplitter *parent): QFrame(par
     d->maximizedAction = new QAction(tr("Maximize"), d->toolBarMenu);
     d->maximizedAction->setToolTip("Toggle maximized / unmaximized");
     d->maximizedAction->setCheckable(true);
-    QIcon maximizedIcon(":/icons/maximize.svg");
-    maximizedIcon.addFile(":/icons/un_maximize.svg",
+    QIcon maximizedIcon(":/icons/maximize_on_white.svg");
+    maximizedIcon.addFile(":/icons/maximize_off_white.svg",
                         QSize(16,16),
                         QIcon::Normal,
                         QIcon::On);
@@ -197,7 +197,7 @@ medViewContainer::medViewContainer(medViewContainerSplitter *parent): QFrame(par
     // Scene
     d->saveSceneAction = new QAction(tr("Save scene"), d->toolBarMenu);
     d->saveSceneAction->setToolTip(tr("Save container content as is."));
-    d->saveSceneAction->setIcon(QIcon(":icons/saveScene.png"));
+    d->saveSceneAction->setIcon(QIcon(":icons/save_scene_white.svg"));
     d->saveSceneAction->setIconVisibleInMenu(true);
     connect(d->saveSceneAction, SIGNAL(triggered()), this, SLOT(saveScene()), Qt::UniqueConnection);
     d->saveSceneAction->setEnabled(false);

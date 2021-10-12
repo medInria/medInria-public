@@ -79,10 +79,12 @@ medTimeLineParameterL::medTimeLineParameterL(QString name, QObject *parent):
     d->numberOfFramesLabel = nullptr;
 
     d->speedFactorParameter = new medIntParameterL("Speed", this);
+    d->speedFactorParameter->setToolTip("Speed factor of data display");
     d->speedFactorParameter->setRange(1,5000);
     d->speedFactorParameter->setValue(100);
 
     d->playParameter = new medBoolParameterL("Play", this);
+    d->playParameter->setToolTip("Play");
     d->parametersCandidateToPool << d->playParameter;
 
     d->timeParameter = new medDoubleParameterL("Time", this);
@@ -90,25 +92,33 @@ medTimeLineParameterL::medTimeLineParameterL(QString name, QObject *parent):
     d->parametersCandidateToPool << d->timeParameter;
 
     d->nextFrameParameter = new medTriggerParameterL("NextFrame", this);
+    d->nextFrameParameter->setToolTip("Move to the next frame");
+
     d->previousFrameParameter = new medTriggerParameterL("PreviousFrame", this);
+    d->previousFrameParameter->setToolTip("Go back to the previous frame");
 
     d->timeLine = new QTimeLine(7000, this);
     d->timeLine->setCurveShape (QTimeLine::LinearCurve);
 
+    // Choose if the time display is going to loop 
     d->loopParameter = new medBoolParameterL("Loop", this);
     d->parametersCandidateToPool << d->loopParameter;
     d->loopParameter->setText("Loop");
+    d->loopParameter->setToolTip("Choose if display loops or not");
 
     // Time shift display
     d->displayTimeParameter = new medBoolParameterL("Display Time", this);
     d->displayTimeParameter->setText("");
+    d->displayTimeParameter->setToolTip("Choose if time is displayed in the view");
     d->displayTimeParameter->setValue(true);
 
     d->timeShiftParameter = new medDoubleParameterL("Display time with shift:", this);
+    d->timeShiftParameter->setToolTip("Add a duration in displayed time on view");
     d->timeShiftParameter->setRange(0, 500000);
     d->timeShiftParameter->setValue(0.0);
 
     d->extensionShiftParameter = new medComboBox;
+    d->extensionShiftParameter->setToolTip("Duration extension");
     d->extensionShiftParameter->addItem(QString("µ")+"s",  0);
     d->extensionShiftParameter->addItem("ms",  1);
     d->extensionShiftParameter->addItem("s",   2);
@@ -224,13 +234,13 @@ void medTimeLineParameterL::play(bool play)
     {
         d->timeLine->setCurrentTime(mapFrameToTime(d->currentFrame) * 1000);
         d->timeLine->resume();
-        d->playParameter->setIcon (QPixmap(":/icons/pause.png"));
+        d->playParameter->setIcon (QPixmap(":/icons/time_pause_white.svg"));
         emit playing(play);
     }
     else if(d->timeLine->state() == QTimeLine::Running && !play)
     {
         d->timeLine->setPaused(true);
-        d->playParameter->setIcon (QPixmap(":/icons/play.png"));
+        d->playParameter->setIcon (QPixmap(":/icons/time_play_white.svg"));
     }
 
    this->lockTimeLine();
@@ -239,7 +249,7 @@ void medTimeLineParameterL::play(bool play)
 void medTimeLineParameterL::reset()
 {
     d->playParameter->setValue(false);
-    d->playParameter->setIcon (QPixmap(":/icons/play.png"));
+    d->playParameter->setIcon (QPixmap(":/icons/time_play_white.svg"));
 }
 
 void medTimeLineParameterL::setNumberOfFrame(int numberOfFrame)
@@ -367,15 +377,15 @@ QWidget* medTimeLineParameterL::getWidget()
         QHBoxLayout *buttonsLayout = new QHBoxLayout;
         QHBoxLayout *indicatorLayout = new QHBoxLayout;
 
-        d->playParameter->setIcon(QIcon(":/icons/play.png"));
+        d->playParameter->setIcon(QIcon(":/icons/time_play_white.svg"));
         connect(d->playParameter->getPushButton(), SIGNAL(clicked()), this, SLOT(unlockTimeLine()));
-        d->previousFrameParameter->getPushButton()->setIcon(QIcon(":/icons/backward.png"));
-        d->nextFrameParameter->getPushButton()->setIcon(QIcon(":/icons/forward.png"));
+        d->previousFrameParameter->getPushButton()->setIcon(QIcon(":/icons/time_backward_step_white.svg"));
+        d->nextFrameParameter->getPushButton()->setIcon(QIcon(":/icons/time_forward_step_white.svg"));
         d->speedFactorParameter->getSpinBox()->setSingleStep(10);
         d->timeParameter->getSlider()->setOrientation(Qt::Horizontal);
 
-        buttonsLayout->addWidget(d->playParameter->getPushButton());
         buttonsLayout->addWidget(d->previousFrameParameter->getPushButton());
+        buttonsLayout->addWidget(d->playParameter->getPushButton());
         buttonsLayout->addWidget(d->nextFrameParameter->getPushButton());
         buttonsLayout->addWidget(d->speedFactorParameter->getLabel());
         buttonsLayout->addWidget(d->speedFactorParameter->getSpinBox());
