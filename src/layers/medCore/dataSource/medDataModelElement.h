@@ -53,12 +53,18 @@ public:
     QVariant headerData(int section, Qt::Orientation orientation, int role) const override;
 
 
+    Qt::DropActions supportedDropActions() const override;
+    Qt::ItemFlags flags(const QModelIndex &index) const override;
+    QStringList mimeTypes() const override;
+    QMimeData *mimeData(const QModelIndexList &indexes) const override;
+
+
     // ////////////////////////////////////////////////////////////////////////
     // Simple methods
     //void setColumnAttributes(int p_iLevel, QStringList &attributes); //maybe developed because not const ?
     int  getColumnInsideLevel(int level, int section);
     bool fetch(QString uri);
-
+    QString getSourceIntanceId();
 
 public slots:
     void itemPressed(QModelIndex const &index);

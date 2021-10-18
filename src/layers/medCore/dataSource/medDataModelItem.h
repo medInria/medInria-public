@@ -63,6 +63,8 @@ public:
 
     bool canHaveSubData();
 
+    QString uri();
+
 //private:
     //medDataModelItemPrivate *d;
 

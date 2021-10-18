@@ -12,6 +12,7 @@
 =========================================================================*/
 
 #include<medDataModel.h>
+#include<medDataImporter.h>
 
 medDataModel::medDataModel(QObject *parent)
 {
@@ -122,7 +123,38 @@ bool medDataModel::getLevelCount(QString const & pi_sourceIntanceId, unsigned in
 
 medDataModelElement * medDataModel::getModel(QString const & pi_sourceIntanceId)
 {
-    return m_sourcesModelMap.first(); //TODO
+    medDataModelElement * res = nullptr;
+    if (m_sourceIdToInstanceMap.contains(pi_sourceIntanceId))
+    {
+        medAbstractSource * source = m_sourceIdToInstanceMap[pi_sourceIntanceId];
+        if (m_sourcesModelMap.contains(source))
+        {
+            res = m_sourcesModelMap[source];
+        }
+    }
+    return res;
+}
+
+medAbstractData * medDataModel::getData(medDataIndex const & index)
+{
+    medAbstractData *pDataRes = nullptr;
+
+    if (m_IndexToData.contains(index))
+    {
+        pDataRes = m_IndexToData[index];
+    }
+    else
+    {
+        auto splitedUri = index.uri().split(':');
+        auto uriParts = splitedUri[1].split('/'); //TODO check if 1 exist
+        if (m_sourceIdToInstanceMap.contains(splitedUri[0]))
+        {
+            QString pathTmp = m_sourceIdToInstanceMap[splitedUri[0]]->getDirectData(uriParts.size()-1, uriParts[uriParts.size()-1]);
+            medAbstractData *pDataTmp = medDataImporter::convertSingleDataOnfly(pathTmp);
+        }
+    }
+
+    return pDataRes;
 }
 
 

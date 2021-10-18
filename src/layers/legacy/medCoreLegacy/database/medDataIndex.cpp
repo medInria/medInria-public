@@ -35,7 +35,8 @@ medDataIndex::medDataIndex(const medDataIndex& index)
     : m_dataSourceId(index.m_dataSourceId),
     m_patientId(index.m_patientId),
     m_studyId(index.m_studyId),
-    m_seriesId(index.m_seriesId)
+    m_seriesId(index.m_seriesId),
+    m_uri(index.m_uri)
 {
 }
 
@@ -49,6 +50,11 @@ medDataIndex::medDataIndex()
 
 medDataIndex::~medDataIndex(void)
 {
+}
+
+bool medDataIndex::isV2() const
+{
+    return !m_uri.isEmpty();
 }
 
 bool medDataIndex::isValid(void) const
@@ -182,6 +188,21 @@ medDataIndex medDataIndex::readMimeData( const QMimeData * mimeData )
         return medDataIndex(QString::fromUtf8(mimeData->data("med/index2")));
     }
     return medDataIndex();
+}
+
+QList<medDataIndex> medDataIndex::readMimeDataMulti(const QMimeData * mimeData)
+{
+    QList<medDataIndex> dataIndexListRes;
+
+    auto rawData = mimeData->data("med/index2");
+    auto uris = rawData.split('\0');
+
+    for (auto uri : uris)
+    {
+        dataIndexListRes << medDataIndex(QString::fromUtf8(uri));
+    }
+
+    return dataIndexListRes;
 }
 
 medDataIndex medDataIndex::makePatientIndex(int sourceId, int patientId )

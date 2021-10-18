@@ -254,6 +254,73 @@ QVariant medDataModelElement::headerData(int section, Qt::Orientation orientatio
     return varRes;
 }
 
+
+
+
+
+
+
+
+
+Qt::DropActions medDataModelElement::supportedDropActions() const
+{
+    return Qt::CopyAction | Qt::MoveAction | Qt::LinkAction;
+}
+
+Qt::ItemFlags medDataModelElement::flags(const QModelIndex & index) const
+{
+    Qt::ItemFlags defaultFlags = QAbstractItemModel::flags(index);
+
+    if (index.isValid())
+        return Qt::ItemIsDragEnabled | Qt::ItemIsDropEnabled | defaultFlags;
+    else
+        return Qt::ItemIsDropEnabled | defaultFlags;
+}
+
+QStringList medDataModelElement::mimeTypes() const
+{
+    QStringList types;
+    types << "med/index2";
+    return types;
+}
+
+QMimeData * medDataModelElement::mimeData(const QModelIndexList & indexes) const
+{
+    QMimeData *mimeData = new QMimeData;
+    QByteArray encodedData;
+
+    QDataStream stream(&encodedData, QIODevice::WriteOnly);
+    QModelIndexList indexesTmp;
+    for (QModelIndex const &index : indexes)
+    {
+        auto indexTmp = index.siblingAtColumn(0);
+        if (!indexesTmp.contains(indexTmp))
+        {
+            indexesTmp.push_back(indexTmp);
+        }
+    }
+
+    for (QModelIndex const &index : indexesTmp)
+    {
+        if (index.isValid())
+        {
+            encodedData.append(getItem(index)->uri().toUtf8());
+            encodedData.append('\0');            
+        }
+    }
+
+    mimeData->setData("med/index2", encodedData);
+    return mimeData;
+}
+
+
+
+
+
+
+
+
+
 int medDataModelElement::getColumnInsideLevel(int level, int section)
 {
     int iRes = -1;
@@ -292,6 +359,11 @@ bool medDataModelElement::fetch(QString uri) //See populateLevelV2
     populateLevelV2(childIndex, uri);
 
     return false;
+}
+
+QString medDataModelElement::getSourceIntanceId()
+{
+    return d->sourceInstanceId;
 }
 
 /**

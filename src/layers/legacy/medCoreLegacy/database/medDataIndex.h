@@ -37,6 +37,8 @@ public:
      medDataIndex(const medDataIndex& index);
     ~medDataIndex();
 
+    bool isV2() const;
+
     bool isValid() const;
     bool isValidForPatient() const;
     bool isValidForStudy() const;
@@ -69,6 +71,7 @@ public:
 
     QMimeData * createMimeData();
     static medDataIndex readMimeData(const QMimeData * mimeData);
+    static QList<medDataIndex> readMimeDataMulti(const QMimeData * mimeData);
 
     static medDataIndex makePatientIndex(int sourceId, int patientId);
     static medDataIndex makeStudyIndex(int sourceId, int patientId, int studyId);

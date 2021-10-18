@@ -102,6 +102,32 @@ bool medDataModelItem::canHaveSubData()
     return m_bCanHaveSubData;
 }
 
+QString medDataModelItem::uri()
+{
+    QString uriRes = m_model->getSourceIntanceId() + ":";
+
+    QStringList uriParts;
+
+    medDataModelItem *pItem = this;
+    while (pItem->m_parentItem)
+    {
+        uriParts.push_front(pItem->iid());
+        pItem = pItem->m_parentItem;
+    }
+    int size = uriParts.size();
+    if (size > 0)
+    {
+        int i;
+        for (i = 0; (i+1)<size; ++i)
+        {
+            uriRes += uriParts[i] + '/';
+        }
+        uriRes += uriParts[i];
+    }
+
+    return uriRes;
+}
+
 
 
 

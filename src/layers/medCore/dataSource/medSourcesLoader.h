@@ -29,7 +29,7 @@ class MEDCORE_EXPORT medDBSourcesLoader : public QObject
 {
 
     Q_OBJECT
-    using instanciateSource = medAbstractSource * (*)();
+    using instantiateSource = medAbstractSource * (*)();
 
 public:	
     static medDBSourcesLoader* instance();
@@ -38,7 +38,7 @@ public:
     /* ***********************************************************************/
     /* *************** Add a source type ********************************/
     /* ***********************************************************************/
-	bool                                       registerSourceType(QString type, QString name, QString description, instanciateSource instanciator);
+	bool                                       registerSourceType(QString type, QString name, QString description, instantiateSource instanciator);
 	QList<std::tuple<QString,QString,QString>> sourcesTypeAvailables();
     
     /* ***********************************************************************/
@@ -85,7 +85,7 @@ private:
         QString type;                   //Unique id for a type of medSource (QString ou int ou typeid)
         QString name;                   //Human readable name
         QString description;            //Human readable detailed information
-        instanciateSource instanciator; //Function pointer to instantiate a connection to the source object
+        instantiateSource instanciator; //Function pointer to instantiate a connection to the source object
     };
 
     QMutex m_mutexMap;
