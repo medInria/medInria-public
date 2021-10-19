@@ -62,9 +62,8 @@ bool medSQlite<T>::initialization(const QString &pi_instanceId)
 template<typename T>
 bool medSQlite<T>::setInstanceName(const QString &pi_instanceName)
 {
-    bool bRes = false;
-
-    if (!pi_instanceName.isEmpty())
+    bool bRes = !pi_instanceName.isEmpty();
+    if (bRes)
     {
         m_instanceName = pi_instanceName;
     }
