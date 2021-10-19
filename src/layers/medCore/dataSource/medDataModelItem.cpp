@@ -205,3 +205,8 @@ void medDataModelItem::append(medDataModelItem * child)
 {
     m_childItems.append(child);
 }
+
+void medDataModelItem::insert(int position, medDataModelItem *child)
+{
+    m_childItems.insert(position, child);
+}

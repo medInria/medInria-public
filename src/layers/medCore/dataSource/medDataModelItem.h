@@ -46,6 +46,7 @@ public:
     medDataModelItem *child(int row) const;
     void setParent(medDataModelItem *parent);
     void append(medDataModelItem *child);
+    void insert(int position, medDataModelItem *child);
 
 
 
