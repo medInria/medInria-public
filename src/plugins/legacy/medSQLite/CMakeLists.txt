@@ -29,6 +29,7 @@ add_definitions(-D${TARGET_NAME_UP}_VERSION="${${TARGET_NAME}_VERSION}")
 ## Resolve dependencies
 ## #############################################################################
 
+find_package(Qt5Test REQUIRED)
 
 #find_package(dtk REQUIRED)
 #include_directories(${dtk_INCLUDE_DIRS})
@@ -105,15 +106,15 @@ target_link_libraries(${TARGET_NAME}
 set(TARGET_NAME_TEST ${TARGET_NAME}Test)
 
 enable_testing()
-include(GoogleTest)
-find_package(GTest REQUIRED)
-
+#include(GoogleTest)
+set(CMAKE_INCLUDE_CURRENT_DIR ON)
 list_header_directories_to_include(${TARGET_NAME_TEST}
         ${${TARGET_NAME}_HEADERS}
         )
 
 include_directories(${${TARGET_NAME_TEST}_INCLUDE_DIRS}
         ${MEDINRIA_INCLUDE_DIRS}
+        /usr/local/include
         )
 
 
@@ -122,20 +123,26 @@ list(APPEND ${TARGET_NAME_TEST}_SOURCE_FILES
         test/medSQliteTest.cpp
         )
 
-include_directories(
-        ${MEDINRIA_INCLUDE_DIRS}
-        ${GTEST_INCLUDE_DIR}
-)
 find_library(GMOCK_LIBRARY
         NAMES gmock
         libgmock
-        libgmock.dylib
-        PATHS "${GTEST_ROOT}/lib")
+        libgmock.dylib)
+
 find_library(GMOCK_MAIN_LIBRARY
         NAMES gmock_main
         libgmock_main
-        libgmock_main.dylib
-        PATHS "${GTEST_ROOT}/lib")
+        libgmock_main.dylib)
+
+find_library(GTEST_LIBRARY
+        NAMES gtest
+        libgtest
+        libgtest.dylib)
+
+find_library(GTEST_MAIN_LIBRARY
+        NAMES gtest_main
+        libgtest_main
+        libgtest_main.dylib)
+
 
 add_executable(${TARGET_NAME_TEST} ${${TARGET_NAME_TEST}_SOURCE_FILES} test/medSQLiteRequestTest.cpp test/medSQLiteTest.cpp test/medSQLiteTest.h)
 
@@ -149,9 +156,7 @@ target_link_libraries(${TARGET_NAME_TEST}
 
 project(medSQLiteIntegrationQTest LANGUAGES CXX)
 
-find_package(Qt5Test REQUIRED)
 
-#set(CMAKE_INCLUDE_CURRENT_DIR ON)
 
 set(CMAKE_AUTOMOC ON)
 
