@@ -17,9 +17,7 @@
 
 #include <medCoreLegacyExport.h>
 
-
 class medToolBoxHeaderPrivate;
-class medButton;
 
 /**
  * @brief Contains the header of a medToolBox.
@@ -40,8 +38,6 @@ public:
     QString title() const;
 
     void setTitleOffset(const QPoint & titleOffset);
-    void setAboutButtonVisibility(bool visible);
-    medButton* aboutButton();
 
 protected:
     void paintEvent(QPaintEvent *event);
@@ -54,5 +50,3 @@ signals:
 private:
     medToolBoxHeaderPrivate *d;
 };
-
-
