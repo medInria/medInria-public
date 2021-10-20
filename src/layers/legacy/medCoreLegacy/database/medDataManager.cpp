@@ -387,9 +387,9 @@ void medDataManager::saveAttachedMetadataToFile(const dtkSmartPointer<medAbstrac
     inceptoObject.insert("userId", "");
 
     QJsonObject valueObject;
-    QString reference = exportPath.right(exportPath.lastIndexOf("/"));//data->metadata(medMetaDataKeys::SeriesDescription.key());
+    QString reference = data->metadata(medMetaDataKeys::SeriesDescription.key());
     int start = reference.indexOf("mask");
-    start += QString("mask").size() + 1;
+    start += QString("mask ").size();
     int end = reference.lastIndexOf("(") - start - 1;
     reference = reference.mid(start, end);
     reference.prepend(QString("Daicap_Prostate_"));
@@ -397,10 +397,10 @@ void medDataManager::saveAttachedMetadataToFile(const dtkSmartPointer<medAbstrac
     reference.replace(" ", "_");
 
     valueObject.insert("reference",  reference);
-    valueObject.insert("mha_filename",  id);
+    valueObject.insert("mha_filename",  QString(id+".mha"));
     QJsonObject caracteristique;
 
-    QString sequence = exportPath.right(exportPath.lastIndexOf("/"));
+    QString sequence = data->metadata(medMetaDataKeys::SeriesDescription.key());
     start = sequence.lastIndexOf("(") + 1;
     end = sequence.lastIndexOf(")") - start;
     sequence = sequence.mid(start, end);
