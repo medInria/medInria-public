@@ -154,6 +154,9 @@ else()
   set(GITLAB_INRIA_PREFIX https://gitlab.inria.fr/)
 endif()
 
+SET(BUILD_ALWAYS_TIPS_TEXT BUILD_ALWAYS "Enabling this option forces the build step to always be run. This can be the easiest way to robustly ensure that the external project's own build dependencies are evaluated rather than relying on the default success timestamp-based method. This option is not normally needed unless developers are expected to modify something the external project's build depends on in a way that is not detectable via the step target dependencies")
+option(EP_BUILD_ALWAYS  "${BUILD_ALWAYS_TIPS_TEXT}" OFF)
+
 ## #############################################################################
 ## Include cmake modules of external-project
 ## #############################################################################
