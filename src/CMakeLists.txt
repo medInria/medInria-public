@@ -104,11 +104,15 @@ set(CMAKE_MACOSX_RPATH OFF)
 ## Global policies
 ## #############################################################################
 
-# Prevent warning of generated files not being moc'd
-cmake_policy(SET CMP0071 NEW)
+if (${CMAKE_VERSION} VERSION_GREATER_EQUAL "3.10.0")
+    # Prevent warning of generated files not being moc'd
+    cmake_policy(SET CMP0071 NEW)
+endif()
 
-# Make the GENERATED source file property visible in all directories
-cmake_policy(SET CMP0118 NEW)
+if (${CMAKE_VERSION} VERSION_GREATER_EQUAL "3.20.0")
+    # Make the GENERATED source file property visible in all directories
+    cmake_policy(SET CMP0118 NEW)
+endif()
 
 ## #############################################################################
 ## Additionals modules
