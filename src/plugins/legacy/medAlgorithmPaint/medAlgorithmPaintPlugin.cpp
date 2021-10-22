@@ -39,7 +39,7 @@ QString AlgorithmPaintPlugin::description() const
 {
     QString description;
     description += "<h1>Paint Segmentation Tutorial</h1>";
-    description += "Draw a brush mask on your volume in the view. You can change the value and color of the mask using the label parameter.<p>";
+    description += "Draw a brush mask on your volume in the view. You can change the value and color of the mask using the label parameter.";
 
     description += "<h2>Paint / Erase</h2>";
     description += "A left click on the volume in the view draws a mask area under the mouse cursor, a right click removes it. ";

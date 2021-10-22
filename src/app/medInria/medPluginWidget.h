@@ -26,7 +26,6 @@ public:
     ~medPluginWidget();
 
 public slots:
-    void onPluginTreeItemActivated(QTreeWidgetItem* item ,int column);
     void onErrorTreeItemActivated(QTreeWidgetItem* item,int column);
 
 protected:

@@ -80,15 +80,6 @@ meshManipulationToolBox::meshManipulationToolBox(QWidget *parent)
     QWidget *w = new QWidget(this);
     this->addWidget(w);
     w->setLayout(new QVBoxLayout);
-    
-    QLabel *explanation = new QLabel("Drop one or multiple meshes in the view.\n\n"
-                                     "Scaling: hold <right-click> on the bounding box\n\n"
-                                     "Rotation: hold <left-click> on the sides of the bounding box\n\n"
-                                     "Translation: hold <mouse-wheel button>, or <left-click> on the central sphere of the bounding box", this);
-    explanation->setSizePolicy(QSizePolicy::Ignored, QSizePolicy::Preferred);
-    explanation->setWordWrap(true);
-    explanation->setStyleSheet("font: italic");
-    w->layout()->addWidget(explanation);
 
     // scaling
     _scalingCheckBox = new QCheckBox(tr("Enable scaling"));
@@ -106,19 +97,22 @@ meshManipulationToolBox::meshManipulationToolBox(QWidget *parent)
     w->layout()->addWidget(_translationCheckBox);
 
     _saveButton = new QPushButton("Save");
-    _saveButton->setToolTip("Current transform will be applied to all selected layers.");
+    _saveButton->setToolTip("Current transform will be applied to all selected layers");
     _saveButton->setEnabled(false);
     w->layout()->addWidget(_saveButton);
 
     _cancelButton = new QPushButton("Cancel");
+    _cancelButton->setToolTip("Cancel the current transformation");
     _cancelButton->setEnabled(false);
     w->layout()->addWidget(_cancelButton);
 
     _exportButton = new QPushButton("Export matrix");
+    _exportButton->setToolTip("Export the current transformation");
     _exportButton->setEnabled(false);
     w->layout()->addWidget(_exportButton);
 
     _importButton = new QPushButton("Import matrix");
+    _importButton->setToolTip("Import a transformation matrix from a file");
     _importButton->setEnabled(false);
     w->layout()->addWidget(_importButton);
 

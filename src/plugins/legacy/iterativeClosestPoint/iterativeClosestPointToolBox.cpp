@@ -46,14 +46,14 @@ iterativeClosestPointToolBox::iterativeClosestPointToolBox(QWidget *parent)
 
     // Parameters widgets
     d->layerSource = new QComboBox;
-    d->layerSource->addItem("Select the layer", 0);
-    QLabel *layerSource_Label = new QLabel("Select the source mesh:");
+    d->layerSource->addItem("Select the source mesh", 0);
+    QLabel *layerSource_Label = new QLabel("Source mesh");
     parameters_layout->addWidget(layerSource_Label);
     parameters_layout->addWidget(d->layerSource);
     
     d->layerTarget = new QComboBox;
-    d->layerTarget->addItem("Select the layer", 0);
-    QLabel *layerTarget_Label = new QLabel("Select the target mesh:");
+    d->layerTarget->addItem("Select the target mesh", 0);
+    QLabel *layerTarget_Label = new QLabel("Target mesh");
     parameters_layout->addWidget(layerTarget_Label);
     parameters_layout->addWidget(d->layerTarget);
     
@@ -219,8 +219,8 @@ void iterativeClosestPointToolBox::resetComboBoxes()
 {
     d->layerSource->clear();
     d->layerTarget->clear();
-    d->layerSource->addItem("Select a layer");
-    d->layerTarget->addItem("Select a layer");
+    d->layerSource->addItem("Select the source mesh");
+    d->layerTarget->addItem("Select the target mesh");
 }
 
 void iterativeClosestPointToolBox::addLayer(unsigned int layer)

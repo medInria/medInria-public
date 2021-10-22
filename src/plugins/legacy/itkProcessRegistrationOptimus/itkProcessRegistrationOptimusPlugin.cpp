@@ -56,10 +56,12 @@ QString itkProcessRegistrationOptimusPlugin::name(void) const
 
 QString itkProcessRegistrationOptimusPlugin::description(void) const
 {
-    return "Optimus registration method.\n<br/>"
-            "This method is based on the New UOA optimizer. <br/>"
-            "The metric used is the mutual information. The transformation "
-            "computed is a rigid transformation.";
+    QString description;
+    description += "<h1>Optimus Registration Tutorial</h1>";
+    description += "This method is based on the New UOA optimizer. The metric used is the mutual information. ";
+    description += "The transformation computed is a rigid transformation.";
+
+    return description;
 }
 
 QString itkProcessRegistrationOptimusPlugin::contact(void) const

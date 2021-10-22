@@ -109,7 +109,7 @@ medRemeshingToolBox::medRemeshingToolBox(QWidget *parent)
     numberTitle->setObjectName("innerTitle");
     displayLayout->addWidget(numberTitle);
 
-    QLabel *numberTxt = new QLabel("number of cells:", this);
+    QLabel *numberTxt = new QLabel("number of cells", this);
     d->trianglesSpinBox = new QSpinBox;
     d->trianglesSpinBox->setMaximum(30000000);
     d->trianglesSpinBox->setMinimum(0);
@@ -134,13 +134,13 @@ medRemeshingToolBox::medRemeshingToolBox(QWidget *parent)
     smoothTitle->setObjectName("innerTitle");
     displayLayout->addWidget(smoothTitle);
 
-    QLabel *iterationsLabel = new QLabel("iterations: ", this);
+    QLabel *iterationsLabel = new QLabel("iterations", this);
     d->iterationsSpinBox = new QSpinBox;
     d->iterationsSpinBox->setRange(0, 100);
     d->iterationsSpinBox->setSingleStep(1);
     d->iterationsSpinBox->setValue(30);
 
-    QLabel *relaxationLabel = new QLabel("relaxation factor: ", this);
+    QLabel *relaxationLabel = new QLabel("relaxation factor", this);
     d->relaxationSpinBox = new QDoubleSpinBox;
     d->relaxationSpinBox->setRange(0.0, 1.0);
     d->relaxationSpinBox->setSingleStep(0.01);

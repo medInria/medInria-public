@@ -34,9 +34,17 @@ bool medCreateMeshFromMaskPlugin::initialize()
 
 QString medCreateMeshFromMaskPlugin::description() const
 {
-    QString description = \
-            tr("Convert a mask to a closed surface mesh.\
-               <br><br>This plugin uses the <a href=\"https://www.vtk.org/\" style=\"color: #cc0000\" >VTK library</a>.");
+    QString description;
+    description += "<h1>Convert a Mesh from Mask Tutorial</h1>";
+    description += "Convert a mask to a closed surface mesh:";
+    description += "<ul>";
+    description += "<li>Drop a volume or mask in the view.</li>";
+    description += "<li>If needed, choose a threshold. Pixel values over or equal to this threshold are going to be computed.</li>";
+    description += "<li>You can choose to decimate the output mesh, then choose the reduction factor.</li>";
+    description += "<li>You can choose to smooth the output mesh, then choose the iteration number and the relaxation factor.</li>";
+    description += "<li>When you are ready, click on 'Run'.</li>";
+    description += "</ul>";
+    description += "This plugin uses the VTK library: https://vtk.org";
     return description;
 }
 

@@ -37,10 +37,26 @@ bool iterativeClosestPointPlugin::initialize()
 
 QString iterativeClosestPointPlugin::description() const
 {
-    QString description = \
-            tr("Match the orientation/grid between two meshes through the \
-               <a href=\"https://www.vtk.org/doc/nightly/html/classvtkIterativeClosestPointTransform.html\" style=\"color: #cc0000\" >vtkIterativeClosestPointTransform</a> filter. \
-               <br><br>This plugin uses the <a href=\"https://www.vtk.org/\" style=\"color: #cc0000\" >VTK library</a>.");
+    QString description;
+    description += "<h1>Iterative Closest Point Tutorial</h1>";
+    description += "This toolbox matches the orientation and grid between two meshes.";
+
+    description += "<h2>Data</h2>";
+    description += "Drop 2 meshes in the view, then select them in the 'Select the source mesh' and 'Select the target mesh' parameters.";
+
+    description += "<h2>Parameters</h2>";
+    description += "<ul>";
+    description += "<li>Matching centroids: start the process by translating source centroid to target centroid</li>";
+    description += "<li>Choose your type of transformation: Rigid body, Similarity or Affine</li>";
+    description += "<li>Check mean distance: force the algorithm to check the mean distance between two iterations</li>";
+    description += "<li>Scale Factor: set a linear transformation according to this factor</li>";
+    description += "<li>Max Mean Distance: set the maximum mean distance between two iterations</li>";
+    description += "<li>Max Num Iterations: set the maximum number of iterations</li>";
+    description += "<li>Max Num Landmarks: set the maximum number of landmarks</li>";
+    description += "</ul>";
+    description += "When you are ready, click on 'Run'.";
+
+    description += "<br><br>This plugin uses the vtkIterativeClosestPointTransform class from VTK library: https://vtk.org";
     return description;
 }
 

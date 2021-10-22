@@ -82,9 +82,13 @@ medSelectorToolBox::medSelectorToolBox(QWidget *parent, QString tlbxId)
 
     // Help button
     d->helpButton = new QPushButton;
-    d->helpButton->setIcon(QIcon(":icons/help_white.svg"));
+    QIcon helpIcon;
+    helpIcon.addPixmap(QPixmap(":icons/help_white.svg"),QIcon::Normal);
+    helpIcon.addPixmap(QPixmap(":icons/help_grey.svg"), QIcon::Disabled);
+    d->helpButton->setIcon(helpIcon);
     d->helpButton->setToolTip("Help for the selected toolbox");
     d->helpButton->setStyleSheet("QPushButton { background-color: transparent; border: 0px }");
+    d->helpButton->setEnabled(false);
     selectorLayout->addWidget(d->helpButton, 0, Qt::AlignRight);
 
     clear();
@@ -145,6 +149,7 @@ void medSelectorToolBox::changeCurrentToolBox(const QString &identifier)
 
         dtkPlugin *plugin = d->currentToolBox->plugin();
         this->setAboutPluginButton(plugin, d->helpButton);
+        d->helpButton->setEnabled(true);
 
         d->currentToolBox->show();
         d->mainLayout->addWidget(d->currentToolBox);
@@ -153,6 +158,10 @@ void medSelectorToolBox::changeCurrentToolBox(const QString &identifier)
         connect(d->currentToolBox, SIGNAL(failure()), this, SIGNAL(failure()), Qt::UniqueConnection);
 
         emit currentToolBoxChanged();
+    }
+    else
+    {
+        d->helpButton->setEnabled(false);
     }
 }
 

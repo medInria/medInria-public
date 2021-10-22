@@ -238,8 +238,8 @@ void medToolBox::onAboutButtonClicked()
         toolboxDocStrings.append(d->plugin->authors().join(","));
         toolboxDocStrings.append(d->plugin->version());
 
-        medToolBoxHelper dialog(this, toolboxDocStrings);
-        dialog.exec();
+        medToolBoxHelper* dialog = new medToolBoxHelper(this, toolboxDocStrings);
+        dialog->show();
     }
     else
     {
