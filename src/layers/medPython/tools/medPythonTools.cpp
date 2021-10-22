@@ -33,7 +33,7 @@ void initializeTools()
 
 void startConsole()
 {
-    Module toolsModule(QString(PYTHON_PACKAGE_NAME));
+    Module toolsModule = import(PYTHON_PACKAGE_NAME);
     Object console = toolsModule.attribute("Console").callMethod("createInstance")
                      .kwarg("title", QString(CONSOLE_TITLE))
                      .kwarg("size", list<int>({CONSOLE_WIDTH, CONSOLE_HEIGHT}));

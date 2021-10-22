@@ -139,12 +139,19 @@ class Console(qt.QWidget):
         line = self.inputWidget.line()
         self.inputBuffer.append(line)
         source = "\n".join(self.inputBuffer)
-        more = self.interpreter.runsource(source)
-        if more and line:
-            self.inputWidget.prompt = self.ps2
-        else:
+        try:
+            more = self.interpreter.runsource(source)
+            self.updateInputStatus(newCommand = not(more and line))
+        except SystemExit:
+            self.updateInputStatus()
+            qt.qApp().getProperty('MainWindow').close()
+
+    def updateInputStatus(self, newCommand=True):
+        if newCommand:
             self.inputWidget.prompt = self.ps1
             self.resetInputBuffer()
+        else:
+            self.inputWidget.prompt = self.ps2
         self.inputWidget.setText()
 
     def ensureCursorAfterPrompt(self, oldPosition, newPosition):

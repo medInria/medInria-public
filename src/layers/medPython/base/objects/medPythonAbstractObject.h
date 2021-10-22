@@ -120,7 +120,7 @@ public:
     TYPE convert() const;
 
     template <class TYPE>
-    TYPE cast() const;
+    TYPE* cast() const;
 
     // Due to ciruclar dependency issues, the following three template functions
     // are defined in the header file of their respective return types.
@@ -158,9 +158,8 @@ TYPE AbstractObject::convert() const
 }
 
 template <class TYPE>
-TYPE AbstractObject::cast() const
+TYPE* AbstractObject::cast() const
 {
-    TYPE result;
     QString typeName = TYPE::staticMetaObject.className();
     return static_cast<TYPE*>((QObject*)cast(typeName));
 }

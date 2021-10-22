@@ -3,7 +3,21 @@
 
 %{
 #include <QObject>
+#include <QMetaObject>
 %}
+
+#undef Q_OBJECT
+#define Q_OBJECT \
+    public: \
+        static const QMetaObject staticMetaObject; \
+        virtual const QMetaObject *metaObject() const;
+
+struct QMetaObject
+{
+    const char* className() const;
+    const QMetaObject* superClass() const;
+    bool inherits(const QMetaObject* metaObject) const;
+};
 
 %{
 template <class... ARGS, class SENDER_TYPE>
@@ -22,7 +36,7 @@ template void connect(cls*, void (cls ## :: ## *)(), PyObject*);
 
 %extend cls
 {
-    void connect_ ## signal(PyObject* receiver)
+    void connect_noargs_ ## signal(PyObject* receiver)
     {
         connect($self, & ## cls ## :: ## signal, receiver);
     }
@@ -50,15 +64,22 @@ template void connect(cls*, void (cls ## :: ## *)(), PyObject*);
 
 class QObject
 {
+Q_OBJECT
+
 public:
+    virtual const QMetaObject* metaObject() const;
     void deleteLater();
 };
 
+%medPythonTypemaps(QObject*);
+
 %extend QObject
 {
-    QObject* getParent()
+    PyObject* _parent()
     {
-        return $self->parent();
+        PyObject* result = med::python::wrapObjectWithSWIG($self->parent());
+        med::python::propagateErrorIfOccurred();
+        return result;
     }
 
     QVariant getProperty(QString name)
@@ -77,8 +98,13 @@ public:
             if slot:
                 self.connectOldStyle(signal, receiver, slot)
             else:
-                connect = getattr(self, f'connect_{signal}')
+                connect = getattr(self, f'connect_{signal}', None)
+                if not connect:
+                    connect = getattr(self, f'connect_noargs_{signal}')
                 connect(receiver)
+
+        def parent(self):
+            return self._parent()
     %}
 }
 
