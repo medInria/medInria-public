@@ -29,11 +29,9 @@ public:
 
     virtual bool initialize();
 
-    virtual QString contact() const;
     virtual QString description() const;
     virtual QString name() const;
     virtual QString version() const;
-
     virtual QStringList authors() const;
     virtual QStringList contributors() const;
     virtual QStringList types() const;

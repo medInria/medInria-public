@@ -51,7 +51,7 @@ QString itkINRDataImageWriterPlugin::name() const
 
 QString itkINRDataImageWriterPlugin::contact() const
 {
-    return QString::fromUtf8("benoit.bleuze@inria.fr");
+    return QString::fromUtf8("");
 }
 
 QStringList itkINRDataImageWriterPlugin::authors() const

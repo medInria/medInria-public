@@ -12,10 +12,10 @@
 
 =========================================================================*/
 
-#include <dtkCoreSupport/dtkPlugin.h>
+#include <medPluginLegacy.h>
 #include "itkProcessRegistrationOptimusPluginExport.h"
 
-class ITKPROCESSREGISTRATIONOPTIMUSPLUGIN_EXPORT itkProcessRegistrationOptimusPlugin : public dtkPlugin
+class ITKPROCESSREGISTRATIONOPTIMUSPLUGIN_EXPORT itkProcessRegistrationOptimusPlugin : public medPluginLegacy
 {
     Q_OBJECT
     Q_PLUGIN_METADATA(IID "fr.inria.itkProcessRegistrationOptimusPlugin" FILE "itkProcessRegistrationOptimusPlugin.json")
@@ -23,17 +23,13 @@ class ITKPROCESSREGISTRATIONOPTIMUSPLUGIN_EXPORT itkProcessRegistrationOptimusPl
 
 public:
      itkProcessRegistrationOptimusPlugin(QObject *parent = nullptr);
-    ~itkProcessRegistrationOptimusPlugin(void);
 
-     virtual bool initialize(void);
-     virtual bool uninitialize(void);
+     bool initialize() override;
 
-     virtual QString name(void) const;
-     virtual QString description(void) const;
-     virtual QStringList authors(void) const;
-     virtual QStringList contributors(void) const;
-     virtual QString contact()const;
-     virtual QStringList tags(void) const;
-     virtual QStringList types(void) const;
-     virtual QString version() const;
+     QString name() const override;
+     QString description() const override;
+     QStringList authors() const override;
+     QStringList contributors() const override;
+     QStringList types() const override;
+     QString version() const override;
 };

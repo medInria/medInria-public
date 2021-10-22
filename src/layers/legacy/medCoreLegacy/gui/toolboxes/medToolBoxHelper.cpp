@@ -12,13 +12,12 @@
 
 #include <QLabel>
 #include <QTextEdit>
-#include <QVBoxLayout>
 
-medToolBoxHelper::medToolBoxHelper(QWidget *parent, QList<QString> toolboxDocStrings)
-    : QDialog(parent)
+medToolBoxHelper::medToolBoxHelper(QList<QString> toolboxDocStrings): 
+    QDialog()
 {
     setWindowTitle(tr("Help"));
-    setMinimumHeight(400);
+    setMinimumHeight(500);
     setMinimumWidth(400);
 
     QVBoxLayout *layout = new QVBoxLayout;
@@ -31,17 +30,17 @@ medToolBoxHelper::medToolBoxHelper(QWidget *parent, QList<QString> toolboxDocStr
     documentationWidget->setAlignment(Qt::AlignTop);
     layout->addWidget(documentationWidget);
 
-    // Toolbox authors list
-    if (!toolboxDocStrings.at(1).isEmpty())
-    {
-        QLabel *toolboxAuthors = new QLabel(toolboxDocStrings.at(1));
-        layout->addWidget(toolboxAuthors);
-    }
+    setInformationLine(layout, QString("Author(s): "), toolboxDocStrings.at(1));
+    setInformationLine(layout, QString("Contact: "),   toolboxDocStrings.at(2));
+    setInformationLine(layout, QString("Version: "),   toolboxDocStrings.at(3));
+}
 
-    // Toolbox version number
-    if (!toolboxDocStrings.at(2).isEmpty())
+void medToolBoxHelper::setInformationLine(QVBoxLayout *layout, QString description, QString info)
+{
+    if (!info.isEmpty())
     {
-        QLabel *toolboxVersion = new QLabel("Version: "+toolboxDocStrings.at(2));
-        layout->addWidget(toolboxVersion);
+        QLabel *informationLine = new QLabel(description + info);
+        informationLine->setTextInteractionFlags(Qt::TextSelectableByMouse);
+        layout->addWidget(informationLine);
     }
 }

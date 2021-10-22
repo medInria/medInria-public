@@ -70,6 +70,7 @@ manualRegistrationToolBox::manualRegistrationToolBox(QWidget *parent)
     d->b_startManualRegistration->setObjectName("startManualRegistrationButton");
 
     d->explanation = new QLabel("To add a landmark: \n\tShift + left mouse button\nTo remove a pair of landmarks: \n\tBackspace + left mouse button", widget);
+    d->explanation->setStyleSheet("font: italic");
 
     d->numberOfLdInLeftContainer = new QLabel("Number of landmarks in left container: 0", widget);
     d->numberOfLdInRightContainer = new QLabel("Number of landmarks in right container: 0", widget);

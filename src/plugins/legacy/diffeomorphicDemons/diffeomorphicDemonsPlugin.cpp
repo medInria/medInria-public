@@ -44,11 +44,6 @@ QString diffeomorphicDemonsPlugin::name() const
     return "Diffeomorphic Demons";
 }
 
-QString diffeomorphicDemonsPlugin::contact() const
-{
-    return QString::fromUtf8("benoit.bleuze@inria.fr");
-}
-
 QStringList diffeomorphicDemonsPlugin::authors() const
 {
     QStringList list;
@@ -65,7 +60,19 @@ QStringList diffeomorphicDemonsPlugin::contributors() const
 
 QString diffeomorphicDemonsPlugin::description() const
 {
-    return tr("Applies the diffeomorphic demons as they can be found in itk. Converts any type of image to float before applying the change, since the diffeomorphic demons only work on float images <br/> see: <a href=\"http://www.insight-journal.org/browse/publication/154\" > http://www.insight-journal.org/browse/publication/154 </a>");
+    QString description;
+    description += "<h1>Diffeomorphic Demons Tutorial</h1>";
+    description += "Applies the diffeomorphic demons as they can be found in itk.<br>";
+    description += "Converts any type of image to float before applying the change, since the diffeomorphic demons only work on float images.<br>";
+    description += "See article 'Diffeomorphic Demons Using ITK's Finite Difference Solver Hierarchy' http://www.insight-journal.org/browse/publication/154 for more information about the algorithm.";
+    description += "<ul>";
+    description += "<li>Drops 2 data with the same size and spacing in the view.</li>";
+    description += "<li>Select your parameters.</li>";
+    description += "<li>When you are ready, click on 'Run'.</li>";
+    description += "<li>The new transformation is added to the transformation list.</li>";
+    description += "<li>You can redo, undo, reset, and export the last transformation to a file.</li>";
+    description += "</ul>";
+    return description;
 }
 
 QString diffeomorphicDemonsPlugin::version() const

@@ -13,6 +13,7 @@
 #include <medCoreLegacyExport.h>
 
 #include <QDialog>
+#include <QVBoxLayout>
 
 /**
  * @brief This widget displays a window with rich text documentation.
@@ -24,5 +25,8 @@ class MEDCORELEGACY_EXPORT medToolBoxHelper : public QDialog
     Q_OBJECT
 
 public:
-     medToolBoxHelper(QWidget *parent, QList<QString> toolboxDocStrings);
+     medToolBoxHelper(QList<QString> toolboxDocStrings);
+
+private:
+    void setInformationLine(QVBoxLayout *layout, QString description, QString info);
 };

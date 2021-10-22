@@ -24,7 +24,7 @@ bool medPluginLegacy::uninitialize()
 
 QString medPluginLegacy::contact() const
 {
-    return "";
+    return "medinria-userfeedback@inria.fr";
 }
 
 QString medPluginLegacy::description() const
@@ -44,7 +44,7 @@ QString medPluginLegacy::version() const
 
 QStringList medPluginLegacy::authors() const
 {
-    return QStringList();
+    return QStringList("medInria");
 }
 
 QStringList medPluginLegacy::contributors() const

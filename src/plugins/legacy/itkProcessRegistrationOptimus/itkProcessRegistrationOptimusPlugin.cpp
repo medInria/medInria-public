@@ -14,69 +14,59 @@
 #include "itkProcessRegistrationOptimusPlugin.h"
 #include "itkProcessRegistrationOptimusToolBox.h"
 
-#include <dtkLog/dtkLog.h>
-
 // /////////////////////////////////////////////////////////////////
 // itkProcessRegistrationOptimusPlugin
 // /////////////////////////////////////////////////////////////////
 
-itkProcessRegistrationOptimusPlugin::itkProcessRegistrationOptimusPlugin(QObject *parent) : dtkPlugin(parent)
+itkProcessRegistrationOptimusPlugin::itkProcessRegistrationOptimusPlugin(QObject *parent) : medPluginLegacy(parent)
 {
 
 }
 
-itkProcessRegistrationOptimusPlugin::~itkProcessRegistrationOptimusPlugin(void)
-{
-}
-
-bool itkProcessRegistrationOptimusPlugin::initialize(void)
+bool itkProcessRegistrationOptimusPlugin::initialize()
 {
     if(!itkProcessRegistrationOptimus::registered())
     {
-        dtkWarn() << "Unable to register itkProcessRegistrationOptimus type";
+        qWarning() << "Unable to register itkProcessRegistrationOptimus type";
     }
 
     if(!itkProcessRegistrationOptimusToolBox::registered())
     {
-        dtkWarn() << "Unable to register itkProcessRegistrationOptimus toolbox";
+        qWarning() << "Unable to register itkProcessRegistrationOptimus toolbox";
     }
 
     return true;
 }
 
-bool itkProcessRegistrationOptimusPlugin::uninitialize(void)
-{
-    return true;
-}
-
-QString itkProcessRegistrationOptimusPlugin::name(void) const
+QString itkProcessRegistrationOptimusPlugin::name() const
 {
     return "itkProcessRegistrationOptimusPlugin";
 }
 
-QString itkProcessRegistrationOptimusPlugin::description(void) const
+QString itkProcessRegistrationOptimusPlugin::description() const
 {
     QString description;
     description += "<h1>Optimus Registration Tutorial</h1>";
     description += "This method is based on the New UOA optimizer. The metric used is the mutual information. ";
     description += "The transformation computed is a rigid transformation.";
-
+    description += "<ul>";
+    description += "<li>Drops 2 data in the view.</li>";
+    description += "<li>Select your parameters.</li>";
+    description += "<li>When you are ready, click on 'Run'.</li>";
+    description += "<li>The new transformation is added to the transformation list.</li>";
+    description += "<li>You can redo, undo, reset, and export the last transformation to a file.</li>";
+    description += "</ul>";
     return description;
 }
 
-QString itkProcessRegistrationOptimusPlugin::contact(void) const
-{
-    return QString::fromUtf8("Benoît Bleuzé benoit.bleuze@inria.fr");
-}
-
-QStringList itkProcessRegistrationOptimusPlugin::authors(void) const
+QStringList itkProcessRegistrationOptimusPlugin::authors() const
 {
     QStringList list;
     list << "Olivier Clatz";
     return list;
 }
 
-QStringList itkProcessRegistrationOptimusPlugin::contributors(void) const
+QStringList itkProcessRegistrationOptimusPlugin::contributors() const
 {
     QStringList list;
     list <<  QString::fromUtf8("Benoît Bleuzé")
@@ -84,17 +74,12 @@ QStringList itkProcessRegistrationOptimusPlugin::contributors(void) const
     return list;
 }
 
-QString itkProcessRegistrationOptimusPlugin::version(void) const
+QString itkProcessRegistrationOptimusPlugin::version() const
 {
     return ITKPROCESSREGISTRATIONOPTIMUSPLUGIN_VERSION;
 }
 
-QStringList itkProcessRegistrationOptimusPlugin::tags(void) const
-{
-    return QStringList();
-}
-
-QStringList itkProcessRegistrationOptimusPlugin::types(void) const
+QStringList itkProcessRegistrationOptimusPlugin::types() const
 {
     return QStringList() << "itkProcessRegistrationOptimus";
 }

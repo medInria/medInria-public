@@ -236,9 +236,10 @@ void medToolBox::onAboutButtonClicked()
         QList<QString> toolboxDocStrings;
         toolboxDocStrings.append(d->plugin->description());
         toolboxDocStrings.append(d->plugin->authors().join(","));
+        toolboxDocStrings.append(d->plugin->contact());
         toolboxDocStrings.append(d->plugin->version());
 
-        medToolBoxHelper* dialog = new medToolBoxHelper(this, toolboxDocStrings);
+        medToolBoxHelper* dialog = new medToolBoxHelper(toolboxDocStrings);
         dialog->show();
     }
     else

@@ -15,52 +15,28 @@
 #include "LCCLogDemonsPlugin.h"
 #include "LCCLogDemonsToolBox.h"
 
-#include <dtkLog/dtkLog.h>
-
-// /////////////////////////////////////////////////////////////////
-// LCCLogDemonsPluginPrivate
-// /////////////////////////////////////////////////////////////////
-
-class LCCLogDemonsPluginPrivate
-{
-public:
-    // Class variables go here.
-    static const char *s_Name;
-};
-
-const char * LCCLogDemonsPluginPrivate::s_Name = "LCCLogDemons";
-
 // /////////////////////////////////////////////////////////////////
 // LCCLogDemonsPlugin
 // /////////////////////////////////////////////////////////////////
 
-LCCLogDemonsPlugin::LCCLogDemonsPlugin(QObject *parent) : dtkPlugin(parent), d(new LCCLogDemonsPluginPrivate)
+LCCLogDemonsPlugin::LCCLogDemonsPlugin(QObject *parent) 
+: medPluginLegacy(parent)
 {
     
-}
-
-LCCLogDemonsPlugin::~LCCLogDemonsPlugin()
-{
-    delete d;
-    
-    d = nullptr;
 }
 
 bool LCCLogDemonsPlugin::initialize()
 {
-    if(!LCCLogDemons::registered()) {
-        dtkWarn() << "Unable to register LCCLogDemons type";
+    if(!LCCLogDemons::registered())
+    {
+        qWarning() << "Unable to register LCCLogDemons type";
     }
     
-    if(!LCCLogDemonsToolBox::registered()) {
-        dtkWarn() << "Unable to register LCCLogDemons toolbox";
+    if(!LCCLogDemonsToolBox::registered())
+    {
+        qWarning() << "Unable to register LCCLogDemons toolbox";
     }
     
-    return true;
-}
-
-bool LCCLogDemonsPlugin::uninitialize()
-{
     return true;
 }
 
@@ -71,48 +47,20 @@ QString LCCLogDemonsPlugin::name() const
 
 QString LCCLogDemonsPlugin::description() const
 {
-    return tr("LCC Log Demons");
-}
-
-QString LCCLogDemonsPlugin::version() const
-{
-    return tr("3.1.1");
-}
-
-QString LCCLogDemonsPlugin::contact() const
-{
-    return "";
-}
-
-QStringList LCCLogDemonsPlugin::authors() const
-{
-    QStringList list;
-    return list;
-}
-
-QStringList LCCLogDemonsPlugin::contributors() const
-{
-    QStringList list;
-    return list;
-}
-
-QString LCCLogDemonsPlugin::identifier() const
-{
-    return LCCLogDemonsPluginPrivate::s_Name;
-}
-
-
-QStringList LCCLogDemonsPlugin::tags() const
-{
-    return QStringList();
+    QString description;
+    description += "<h1>LCC Log Demons Tutorial</h1>";
+    description += "Apply LCC log demons algorithm on 2 images.<br>";
+    description += "<ul>";
+    description += "<li>Drops 2 data with the same size and spacing in the view.</li>";
+    description += "<li>Select your parameters.</li>";
+    description += "<li>When you are ready, click on 'Run'.</li>";
+    description += "<li>The new transformation is added to the transformation list.</li>";
+    description += "<li>You can redo, undo, reset, and export the last transformation to a file.</li>";
+    description += "</ul>";
+    return description;
 }
 
 QStringList LCCLogDemonsPlugin::types() const
 {
     return QStringList() << "LCCLogDemons";
-}
-
-QStringList LCCLogDemonsPlugin::dependencies() const
-{
-    return QStringList();
 }
