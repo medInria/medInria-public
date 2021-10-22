@@ -83,21 +83,6 @@ public:
 
 signals:
     /**
-     * @brief Tells the world to add a new toolbox to the medToolboxContainer.
-     * Typically used when a generic toolbox adds a custom toolbox.
-     *
-     * @param toolbox
-    */
-    void addToolBox(medToolBox *toolbox);
-
-    /**
-     * @brief Tells the world to remove a toolbox from the medToolBoxContainer.
-     *
-     * @param toolbox
-    */
-    void removeToolBox(medToolBox *toolbox);
-
-    /**
      * @brief Emitted when an action from the toolbox succeeded.
      * Typically used when a dtkProcess returned.
      *

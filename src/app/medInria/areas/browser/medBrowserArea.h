@@ -32,19 +32,6 @@ public:
 public slots:
     void onSourceIndexChanged(int index);
 
-    /**
-* @brief Adds a medToolBox to the medToolBoxContainer.
-*
-* @param toolbox
-*/
-    void addToolBox(medToolBox *toolbox);
-    /**
-* @brief Removes a medToolBox from the medToolBoxContainer.
-*
-* @param toolbox
-*/
-    void removeToolBox(medToolBox *toolbox);
-
 protected:
     void setToolBoxesVisible(int index, bool visible);
     void addDataSource(medAbstractDataSource* dataSource);
