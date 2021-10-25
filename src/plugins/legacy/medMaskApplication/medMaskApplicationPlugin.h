@@ -24,8 +24,6 @@ class MEDMASKAPPLICATIONPLUGIN_EXPORT medMaskApplicationPlugin : public medPlugi
 public:
     medMaskApplicationPlugin(QObject *parent = nullptr);
     virtual bool initialize();
-    virtual bool uninitialize(void);
-
     virtual QString description() const;
     virtual QString name() const;
     virtual QString version() const;

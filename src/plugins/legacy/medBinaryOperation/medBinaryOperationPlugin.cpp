@@ -26,27 +26,27 @@ bool medBinaryOperationPlugin::initialize()
 {
     if(!itkAndOperator::registered())
     {
-        dtkWarn() << "Unable to register itkAndOperator type";
+        qWarning() << "Unable to register itkAndOperator type";
     }
 
     if (!itkNotOperator::registered())
     {
-        dtkWarn() << "Unable to register itkNotOperator type";
+        qWarning() << "Unable to register itkNotOperator type";
     }
 
     if(!itkOrOperator::registered())
     {
-        dtkWarn() << "Unable to register itkOrOperator type";
+        qWarning() << "Unable to register itkOrOperator type";
     }
     
     if(!itkXorOperator::registered())
     {
-        dtkWarn() << "Unable to register itkXorOperator type";
+        qWarning() << "Unable to register itkXorOperator type";
     }
 
     if (!medBinaryOperationToolBox::registered())
     {
-        dtkWarn() << "Unable to register medBinaryOperation toolbox";
+        qWarning() << "Unable to register medBinaryOperation toolbox";
     }
 
     return true;
@@ -59,13 +59,16 @@ QString medBinaryOperationPlugin::name() const
 
 QString medBinaryOperationPlugin::description() const
 {
-    QString description = \
-            "Apply binary operations on masks:<br><br> \
-            <a href=\"https://itk.org/Doxygen/html/classitk_1_1XorImageFilter.html\" style=\"color: #cc0000\" >XOR</a>, \
-            <a href=\"https://itk.org/Doxygen/html/classitk_1_1AndImageFilter.html\" style=\"color: #cc0000\" >AND</a>, \
-            <a href=\"https://itk.org/Doxygen/html/classitk_1_1OrImageFilter.html\" style=\"color: #cc0000\" >OR</a> and \
-            <a href=\"https://itk.org/Doxygen/html/classitk_1_1BinaryNotImageFilter.html\" style=\"color: #cc0000\" >NOT</a>. \
-            <br><br>This plugin uses the <a href=\"https://itk.org/\" style=\"color: #cc0000\" >ITK library</a>.";
+    QString description;
+    description += "<h1>Binary Operation Tutorial</h1>";
+    description += "Apply binary operations on masks.";
+    description += "<ul>";
+    description += "<li>Drop a mask in the INPUT view.</li>";
+    description += "<li>Drop a second mask in the toolbox drop area, except to use 'NOT'.</li>";
+    description += "<li>Choose the type of binary computation that you want to process.</li>";
+    description += "<li>Click on 'Run'.</li>";
+    description += "</ul>";
+    description += "This plugin uses the ITK library: https://itk.org";
     return description;
 }
 

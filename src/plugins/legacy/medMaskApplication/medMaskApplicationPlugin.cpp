@@ -23,28 +23,29 @@ bool medMaskApplicationPlugin::initialize()
 {
     if(!medMaskApplication::registered())
     {
-        dtkWarn() << "Unable to register medMaskApplication type";
+        qWarning() << "Unable to register medMaskApplication type";
     }
     
     if(!medMaskApplicationToolBox::registered())
     {
-        dtkWarn() << "Unable to register medMaskApplication toolbox";
+        qWarning() << "Unable to register medMaskApplication toolbox";
     }
     
-    return true;
-}
-
-bool medMaskApplicationPlugin::uninitialize()
-{
     return true;
 }
 
 QString medMaskApplicationPlugin::description() const
 {
-    QString description = \
-            "Apply a mask to a volume.<br>  \
-            Drop your volume in the INPUT view, and your mask in the toolbox drop area.\
-            <br><br>This plugin uses the <a href=\"https://itk.org/\" style=\"color: #cc0000\" >ITK library</a>.";
+    QString description;
+    description += "<h1>Mask Application Tutorial</h1>";
+    description += "Apply a mask to a volume.";
+    description += "<ul>";
+    description += "<li>Drop a volume in the INPUT view.</li>";
+    description += "<li>Drop a mask in the toolbox drop area.</li>";
+    description += "<li>If needed, choose your mask background value.</li>";
+    description += "<li>Click on 'Run'.</li>";
+    description += "</ul>";
+    description += "This plugin uses the ITK library: https://itk.org";
     return description;
 }
 
