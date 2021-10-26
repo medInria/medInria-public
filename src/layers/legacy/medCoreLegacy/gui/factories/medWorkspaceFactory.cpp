@@ -67,6 +67,7 @@ medAbstractWorkspaceLegacy *medWorkspaceFactory::createWorkspace(QString type,QW
 
     // create a deletable parent to clean up in case of constructor failure.
     parent = new QWidget(parent);
+    parent->hide();
 
     try
     {
