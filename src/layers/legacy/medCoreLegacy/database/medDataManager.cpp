@@ -77,6 +77,8 @@ public:
     medAbstractDbController *pacsController;
     QTimer timer;
     QHash<QUuid, medDataIndex> makePersistentJobs;
+
+    medAbstractData *(*f)(medDataIndex const &); //TODO Remove ok c'est le truc le moins classe du monde (Part1)
 };
 
 // ------------------------- medDataManager -----------------------------------
@@ -92,11 +94,30 @@ medDataManager *medDataManager::instance()
     return s_instance;
 }
 
+void medDataManager::setIndexV2Handler(medAbstractData *(*f)(medDataIndex const &) )
+{
+    d_ptr->f = f;
+}
+
 medAbstractData *medDataManager::retrieveData(const medDataIndex &index)
 {
     Q_D(medDataManager);
     QMutexLocker locker(&(d->mutex));
 
+    if (index.isV2())
+    {
+        medAbstractData * dataTmp = nullptr; // d->loadedDataObjectTracker.value(index);;
+        if (dataTmp == nullptr)
+        {
+            dataTmp = d->f(index); //TODO Remove ok c'est le truc le moins classe du monde (Part2)
+
+            //dataTmp->setDataIndex(index);
+            //
+            //d->loadedDataObjectTracker.insert(index, dataTmp);
+        }
+        return dataTmp;
+
+    }
     // If nothing in the tracker, we'll get a null weak pointer, thus a null
     // shared pointer
     medAbstractData *dataObjRef = d->loadedDataObjectTracker.value(index);

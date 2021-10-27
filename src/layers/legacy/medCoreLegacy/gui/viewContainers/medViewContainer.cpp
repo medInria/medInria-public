@@ -726,35 +726,71 @@ bool medViewContainer::dropEventFromDataBase(QDropEvent * event)
     bool bRes = false;
 
     const QMimeData *mimeData = event->mimeData();
-    medDataIndex index = medDataIndex::readMimeData(mimeData);
-
-    // User can drop a study or a series into the view
-    if(index.isValidForSeries() || index.isValidForStudy())
+    
+    if (mimeData->hasFormat("med/index2"))
     {
-        if (d->userSplittable)
+        auto indexList = medDataIndex::readMimeDataMulti(mimeData);
+        Qt::MouseButtons mousseButton = event->mouseButtons();
+        if (mousseButton.testFlag(Qt::RightButton))
         {
-            DropArea area = computeDropArea(event->pos().x(), event->pos().y());
-
-            if (area == AREA_TOP)
-                emit splitRequest(index, Qt::AlignTop);
-            else if (area == AREA_RIGHT)
-                emit splitRequest(index, Qt::AlignRight);
-            else if (area == AREA_BOTTOM)
-                emit splitRequest(index, Qt::AlignBottom);
-            else if (area == AREA_LEFT)
-                emit splitRequest(index, Qt::AlignLeft);
-            else if (area == AREA_CENTER)
-                this->addData(index);
+            QMenu *popupMenu = new QMenu();
+            QAction *pAction1 = popupMenu->addAction("Open in multiple Tabs");
+            QAction *pAction2 = popupMenu->addAction("Open in multiple views");
+            QAction *pAction3 = popupMenu->addAction("Open in same view");
+            connect(pAction1, &QAction::triggered, [&]() {indexList; });
+            connect(pAction2, &QAction::triggered, [&]() {indexList; });
+            connect(pAction3, &QAction::triggered, [&]() {indexList; });
         }
         else
-            this->addData(index);
+        {
+            for (auto &index : indexList)
+            {
+                this->addData(index);
+            }
 
-        this->setStyleSheet(d->defaultStyleSheet);
-        if (d->selected)
-            this->highlight(d->highlightColor);
+            this->setStyleSheet(d->defaultStyleSheet);
+            if (d->selected)
+                this->highlight(d->highlightColor);
 
-        event->acceptProposedAction();
-        bRes = true;
+            event->acceptProposedAction();
+            bRes = true;
+        }
+
+    }
+    else if (mimeData->hasFormat("med/index"))
+    {
+        medDataIndex index = medDataIndex::readMimeData(mimeData);
+
+        // User can drop a study or a series into the view
+        if (index.isValidForSeries() || index.isValidForStudy())
+        {
+            if (d->userSplittable)
+            {
+                DropArea area = computeDropArea(event->pos().x(), event->pos().y());
+
+                if (area == AREA_TOP)
+                    emit splitRequest(index, Qt::AlignTop);
+                else if (area == AREA_RIGHT)
+                    emit splitRequest(index, Qt::AlignRight);
+                else if (area == AREA_BOTTOM)
+                    emit splitRequest(index, Qt::AlignBottom);
+                else if (area == AREA_LEFT)
+                    emit splitRequest(index, Qt::AlignLeft);
+                else if (area == AREA_CENTER)
+                    this->addData(index);
+            }
+            else
+            {
+                this->addData(index);
+            }
+
+            this->setStyleSheet(d->defaultStyleSheet);
+            if (d->selected)
+                this->highlight(d->highlightColor);
+
+            event->acceptProposedAction();
+            bRes = true;
+        }
     }
 
     return bRes;
@@ -826,14 +862,14 @@ void medViewContainer::addData(medAbstractData *data)
     emit dataAdded(data);
 }
 
-void medViewContainer::addData(medDataIndex index)
+void medViewContainer::addData(medDataIndex const &index)
 {
     if(!d->expectedUuids.isEmpty())
     {
         return; // we're already waiting for a import to finish, don't accept other data
     }
 
-    if (index.isValidForSeries())
+    if (index.isValidForSeries() || index.isV2()) //TODO must be refactored
     {
         this->addData(medDataManager::instance()->retrieveData(index));
     }

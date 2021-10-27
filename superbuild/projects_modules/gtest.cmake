@@ -40,7 +40,7 @@ if (NOT USE_SYSTEM_${ep})
 
 
 set(git_url ${GITHUB_PREFIX}google/googletest.git)
-set(git_tag master)
+set(git_tag release-1.11.0)
 
 
 ## #############################################################################
@@ -62,6 +62,10 @@ set(cmake_args
   -DCMAKE_SHARED_LINKER_FLAGS=${${ep}_shared_linker_flags}  
   -DCMAKE_INSTALL_PREFIX=.
   -DBUILD_SHARED_LIBS=${BUILD_SHARED_LIBS_${ep}}
+  -DINSTALL_GTEST=ON
+  -Dgmock_build_tests=OFF
+  -Dgtest_force_shared_crt=ON
+  #-Dgtest_disable_pthreads=ON
   )
 
 ## #############################################################################
@@ -89,7 +93,7 @@ ExternalProject_Add(${ep}
   CMAKE_GENERATOR_PLATFORM ${CMAKE_GENERATOR_PLATFORM}
   CMAKE_ARGS ${cmake_args}
   CMAKE_CACHE_ARGS ${cmake_cache_args}
-  BUILD_ALWAYS 1
+  BUILD_ALWAYS ${EP_BUILD_ALWAYS}
   )
 
 ## #############################################################################
@@ -97,7 +101,8 @@ ExternalProject_Add(${ep}
 ## #############################################################################
 
 ExternalProject_Get_Property(GTEST binary_dir)
-set(${ep}_ROOT ${binary_dir} PARENT_SCOPE)
+set(${ep}_DIR  ${binary_dir}/lib/cmake/GTest PARENT_SCOPE)
+#set(${ep}_ROOT ${binary_dir} PARENT_SCOPE)
 
 
 endif() #NOT USE_SYSTEM_ep

@@ -21,6 +21,7 @@ void medAbstractDataReader::setData(QList<medAbstractData*> data)
 
 void medAbstractDataReader::setData(dtkAbstractData* data)
 {
+    dtkAbstractDataReader::setData(data);
     dataList = QList<medAbstractData*>() << dynamic_cast<medAbstractData*>(data);
 }
 

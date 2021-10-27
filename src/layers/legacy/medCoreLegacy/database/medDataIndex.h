@@ -32,9 +32,12 @@ public:
     enum {NOT_VALID = -1 };
 
      medDataIndex(int dataSourceId, int patientId, int studyId, int seriesId);
+     medDataIndex(QStringList const & uri);
      medDataIndex();
      medDataIndex(const medDataIndex& index);
     ~medDataIndex();
+
+    bool isV2() const;
 
     bool isValid() const;
     bool isValidForPatient() const;
@@ -43,15 +46,18 @@ public:
 
     QString asString() const;
 
-    void setDataSourceId (int id) { m_dataSourceId = id; }
-    void setPatientId (int id) { m_patientId = id; }
-    void setStudyId   (int id) { m_studyId = id; }
-    void setSeriesId  (int id) { m_seriesId = id; }
+    void setDataSourceId (int id)        { m_dataSourceId = id; }
+    void setPatientId (int id)           { m_patientId = id; }
+    void setStudyId   (int id)           { m_studyId = id; }
+    void setSeriesId(int id)             { m_seriesId = id; }
+    void setUri(QStringList const & uri) { m_uriAsList = uri; }
+    void setUri(QString const & uri);
 
     int dataSourceId() const { return m_dataSourceId; }
-    int patientId() const { return m_patientId; }
-    int   studyId() const { return m_studyId; }
-    int  seriesId() const { return m_seriesId; }
+    int    patientId() const { return m_patientId; }
+    int      studyId() const { return m_studyId; }
+    int     seriesId() const { return m_seriesId; }
+    QStringList  uri() const { return m_uriAsList;  }
 
     medDataIndex& operator=(const medDataIndex& index);
 
@@ -66,6 +72,7 @@ public:
 
     QMimeData * createMimeData();
     static medDataIndex readMimeData(const QMimeData * mimeData);
+    static QList<medDataIndex> readMimeDataMulti(const QMimeData * mimeData);
 
     static medDataIndex makePatientIndex(int sourceId, int patientId);
     static medDataIndex makeStudyIndex(int sourceId, int patientId, int studyId);
@@ -76,6 +83,7 @@ private:
     int m_patientId;
     int m_studyId;
     int m_seriesId;
+    QStringList m_uriAsList;
 };
 
 // /////////////////////////////////////////////////////////////////

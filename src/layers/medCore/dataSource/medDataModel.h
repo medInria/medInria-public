@@ -19,6 +19,11 @@
 #include <QMap>
 #include <QAbstractItemModelTester>
 
+#include <medDataIndex.h>
+#include <medAbstractData.h>
+
+#include <dtkCoreSupport/dtkSmartPointer.h>
+
 class MEDCORE_EXPORT medDataModel : public QObject
 {
 
@@ -35,6 +40,8 @@ public:
     bool getLevelCount(QString const & pi_sourceIntanceId, unsigned int &po_uiLevelMax);
 
     medDataModelElement* getModel(QString const & pi_sourceIntanceId);
+
+    medAbstractData * getData(medDataIndex const & index);
 
 public slots:
    void addSource(medAbstractSource* pi_source);
@@ -56,4 +63,6 @@ private:
     QMap< QString, medAbstractSource*> m_sourceIdToInstanceMap;
     QMap< medAbstractSource*, medDataModelElement*> m_sourcesModelMap;
     medAbstractSource* m_defaultSource;
+
+    QMap<medDataIndex, dtkSmartPointer<medAbstractData> > m_IndexToData;
 };

@@ -29,19 +29,11 @@ add_definitions(-D${TARGET_NAME_UP}_VERSION="${${TARGET_NAME}_VERSION}")
 ## Resolve dependencies
 ## #############################################################################
 
+enable_testing(true)
+FIND_PACKAGE(GTest REQUIRED)
 
-#find_package(dtk REQUIRED)
-#include_directories(${dtk_INCLUDE_DIRS})
-#
-#find_package(ITK REQUIRED COMPONENTS ITKIOImageBase ITKIOMeta )
-#include(${ITK_USE_FILE})
-#
-#find_package(VTK REQUIRED COMPONENTS vtkCommonExecutionModel vtkRenderingCore vtkInteractionWidgets)
-#include(${VTK_USE_FILE})
-#
-#if (APPLE OR WIN32)
-#    find_package(Boost REQUIRED)
-#endif()
+
+
 
 ## #############################################################################
 ## List Sources
@@ -91,76 +83,51 @@ add_library(${TARGET_NAME} SHARED
 ## #############################################################################
 ## Link
 ## #############################################################################
-target_link_libraries(${TARGET_NAME}
-#  dtkCore
-#  dtkLog
+target_link_libraries(${TARGET_NAME} PUBLIC
         Qt5::Sql
         medCore
         medCoreLegacy
-#  medLog
-#  medVtkInria
-#  medImageIO
   )
+
+
+
+
 
 set(TARGET_NAME_TEST ${TARGET_NAME}Test)
 
-enable_testing()
-include(GoogleTest)
-find_package(GTest REQUIRED)
 
-list_header_directories_to_include(${TARGET_NAME_TEST}
-        ${${TARGET_NAME}_HEADERS}
-        )
-
-include_directories(${${TARGET_NAME_TEST}_INCLUDE_DIRS}
-        ${MEDINRIA_INCLUDE_DIRS}
-        )
-
-
-list(APPEND ${TARGET_NAME_TEST}_SOURCE_FILES
-        medSQLite.txx
-        test/medSQliteTest.cpp
-        )
-
-include_directories(
-        ${MEDINRIA_INCLUDE_DIRS}
-        ${GTEST_INCLUDE_DIR}
-)
-find_library(GMOCK_LIBRARY
-        NAMES gmock
-        libgmock
-        libgmock.dylib
-        PATHS "${GTEST_ROOT}/lib")
-find_library(GMOCK_MAIN_LIBRARY
-        NAMES gmock_main
-        libgmock_main
-        libgmock_main.dylib
-        PATHS "${GTEST_ROOT}/lib")
-
-add_executable(${TARGET_NAME_TEST} ${${TARGET_NAME_TEST}_SOURCE_FILES} test/medSQLiteRequestTest.cpp test/medSQLiteTest.cpp test/medSQLiteTest.h)
-
-target_link_libraries(${TARGET_NAME_TEST}
-        ${GTEST_LIBRARY} ${GTEST_MAIN_LIBRARY}
-        ${GMOCK_LIBRARY} ${GMOCK_MAIN_LIBRARY}
-        medCore
+add_executable(${TARGET_NAME_TEST})
+target_sources(${TARGET_NAME_TEST} PUBLIC medSQLite.txx test/medSQLiteRequestTest.cpp test/medSQLiteTest.cpp test/medSQLiteTest.h)
+target_include_directories(${TARGET_NAME_TEST} PUBLIC "." "./test/")
+set_target_properties(${TARGET_NAME_TEST} PROPERTIES COMPILE_DEFINITIONS "GTEST_LINKED_AS_SHARED_LIBRARY=1")
+target_link_libraries(${TARGET_NAME_TEST} PUBLIC
+		GTest::gtest_main
+        GTest::gtest
+		GTest::gmock_main
+		GTest::gmock
+		Qt5::Core
         Qt5::Sql
+        medCore
+        medCoreLegacy
         ${TARGET_NAME})
 
 
-project(medSQLiteIntegrationQTest LANGUAGES CXX)
 
-find_package(Qt5Test REQUIRED)
 
-#set(CMAKE_INCLUDE_CURRENT_DIR ON)
-
-set(CMAKE_AUTOMOC ON)
-
-enable_testing(true)
-
-add_executable(medSQLiteIntegrationQTest test/medSQLiteIntegrationQTest.cpp)
-add_test(NAME medSQLiteIntegrationQTest COMMAND medSQLiteIntegrationQTest)
-
-target_link_libraries(medSQLiteIntegrationQTest PRIVATE Qt5::Test Qt5::Sql medCore)
+#project(medSQLiteIntegrationQTest LANGUAGES CXX)
+#
+#find_package(Qt5Test REQUIRED)
+#
+##set(CMAKE_INCLUDE_CURRENT_DIR ON)
+#
+#set(CMAKE_AUTOMOC ON)
+#
+#enable_testing(true)
+#
+#add_executable(medSQLiteIntegrationQTest test/medSQLiteIntegrationQTest.cpp)
+#add_test(NAME medSQLiteIntegrationQTest COMMAND medSQLiteIntegrationQTest)
+#
+#target_link_libraries(medSQLiteIntegrationQTest PRIVATE Qt5::Test Qt5::Sql medCore)
 
 ## #############################################################################
 ## Install rules

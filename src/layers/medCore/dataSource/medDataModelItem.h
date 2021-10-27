@@ -20,13 +20,12 @@ class medDataModelElement;
 class medDataModelItem
 {
 public:
-    medDataModelElement       *m_model;
-    medDataModelItem          *m_parentItem;
-    QList<medDataModelItem *>  m_childItems;
-    //QString                    m_iid;
-    QVariantList               m_itemData;
-    int                        m_iLevel;
-    bool                       m_bCanHaveSubData;
+    medDataModelElement             *m_model;
+    medDataModelItem                *m_parentItem;
+    QList<medDataModelItem *>        m_childItems;
+    QMap<int, QMap<int, QVariant> >  m_itemData; //column, role, value
+    int                              m_iLevel;
+    bool                             m_bCanHaveSubData;
 
 public:
     medDataModelItem(medDataModelElement *model);
@@ -36,10 +35,9 @@ public:
     /* ***********************************************************************/
     /* *************** Data manipulation *************************************/
     /* ***********************************************************************/
-    QVariant data(int column) const;
-    void setData(QStringList const& value);
-    //void setIID(QString iid);
-    inline QString iid() { /*return m_iid;*/return m_itemData[0].toString(); }
+    void setData(QVariant value, int column = 0, int role = Qt::DisplayRole);
+    QVariant data(int column, int role = Qt::DisplayRole) const;
+    inline QString iid() {return m_itemData[0][0].toString(); }
 
     int childIndex(QString iid);
     medDataModelItem* hasChildItemWithIID(QString iid);
@@ -61,40 +59,10 @@ public:
     int row() const;
     medDataModelItem *parent() const;
 
-    bool insertChildren(int position, int count);
+    //bool insertChildren(int position, int count);
     bool removeRows(int row, int count);
 
     bool canHaveSubData();
 
-//private:
-    //medDataModelItemPrivate *d;
-
-
-
-
-
-
-    // int childNumber() const = 0;
-    // int columnCount() const = 0;
-   
-    // 
-    // bool insertChildren(const medDataIndex& index, int position, int count, int columns) = 0;
-    // bool insertColumns(int position, int columns) = 0;
-    // 
-    // bool removeChildren(int position, int count, bool deleteChildren = true) = 0;
-    // 
-    // bool removeColumns(int position, int columns) = 0;
-    // 
-    // bool setData(int column, const QVariant& value) = 0;
-    // 
-    // const medDataIndex & dataIndex() const = 0;
-    // void setDataIndex(const medDataIndex &) = 0;
-    // 
-    // QVariant attribute(int column) = 0;
-    // QVariant value(int column) = 0;
-    // 
-    // QList<QVariant> attributes() = 0;
-    // QList<QVariant> values() = 0;
-    // 
-    // int rowOf(medAbstractDatabaseItem *child) const = 0;
+    QString uri();
 };
