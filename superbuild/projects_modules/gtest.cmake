@@ -53,7 +53,7 @@ if (UNIX)
   set(${ep}_cxx_flags "${${ep}_cxx_flags} -w -fpermissive")
 endif()
 
-set(cmake_cache_args
+set(cmake_args
   ${ep_common_cache_args}
   -DCMAKE_BUILD_TYPE=${CMAKE_BUILD_TYPE_externals_projects}
   -DCMAKE_C_FLAGS=${${ep}_c_flags}
@@ -65,7 +65,7 @@ set(cmake_cache_args
   -DINSTALL_GTEST=ON
   -Dgmock_build_tests=OFF
   -Dgtest_force_shared_crt=ON
-  -Dgtest_disable_pthreads=ON
+  #-Dgtest_disable_pthreads=ON
   )
 
 ## #############################################################################

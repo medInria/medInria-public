@@ -75,11 +75,11 @@ QVariant medDataModelElement::data(const QModelIndex & index, int role) const
         {
             varDataRes = Qt::AlignHCenter;
         }
-        else if ((role == Qt::DisplayRole || role == Qt::EditRole))
+        else //if ((role == Qt::DisplayRole || role == Qt::EditRole))
         {
             medDataModelItem *item = getItem(index);
             int i = index.column();
-            varDataRes = item->data(i).toString();
+            varDataRes = item->data(i, role);
         }
     }
 
@@ -290,24 +290,21 @@ QMimeData * medDataModelElement::mimeData(const QModelIndexList & indexes) const
     QByteArray encodedData;
 
     QDataStream stream(&encodedData, QIODevice::WriteOnly);
-    QModelIndexList indexesTmp;
+
     for (QModelIndex const &index : indexes)
     {
-        auto indexTmp = index.siblingAtColumn(0);
-        if (!indexesTmp.contains(indexTmp))
-        {
-            indexesTmp.push_back(indexTmp);
-        }
-    }
-
-    for (QModelIndex const &index : indexesTmp)
-    {
-        if (index.isValid())
+        if (index.isValid() && index.column() == 0)
         {
             encodedData.append(getItem(index)->uri().toUtf8());
             encodedData.append('\0');            
         }
     }
+
+    if (!encodedData.isEmpty())
+    {
+        encodedData.remove(encodedData.length()-1, 1);
+    }
+
 
     mimeData->setData("med/index2", encodedData);
     return mimeData;
@@ -460,7 +457,10 @@ void medDataModelElement::populateLevel(QModelIndex const &index, QString const 
             {
                 medDataModelItem *pItemTmp = new medDataModelItem(this);
                 auto elem = var.toStringList();
-                pItemTmp->setData(elem);
+                for (int i = 0; i < elem.size(); ++i)
+                {
+                    pItemTmp->setData(elem[i], i);
+                }
                 pItemTmp->setParent(pItem);
                 pItem->append(pItemTmp);
             }
@@ -594,7 +594,10 @@ void medDataModelElement::addRowRanges(QMap<int, QVariantList> &entriesToAdd, co
         {
             medDataModelItem *pItemTmp = new medDataModelItem(this);
             auto elem = var.toStringList();
-            pItemTmp->setData(elem);
+            for (int i = 0; i < elem.size(); ++i)
+            {
+                pItemTmp->setData(elem[i], i);
+            }
             pItemTmp->setParent(pItem);
             pItem->insert(first+iOffsetRange, pItemTmp);
         }

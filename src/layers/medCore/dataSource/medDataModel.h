@@ -22,6 +22,8 @@
 #include <medDataIndex.h>
 #include <medAbstractData.h>
 
+#include <dtkCoreSupport/dtkSmartPointer.h>
+
 class MEDCORE_EXPORT medDataModel : public QObject
 {
 
@@ -62,5 +64,5 @@ private:
     QMap< medAbstractSource*, medDataModelElement*> m_sourcesModelMap;
     medAbstractSource* m_defaultSource;
 
-    QMap<medDataIndex, medAbstractData*> m_IndexToData;
+    QMap<medDataIndex, dtkSmartPointer<medAbstractData> > m_IndexToData;
 };

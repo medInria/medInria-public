@@ -106,7 +106,17 @@ medAbstractData *medDataManager::retrieveData(const medDataIndex &index)
 
     if (index.isV2())
     {
-        return d->f(index); //TODO Remove ok c'est le truc le moins classe du monde (Part2)
+        medAbstractData * dataTmp = nullptr; // d->loadedDataObjectTracker.value(index);;
+        if (dataTmp == nullptr)
+        {
+            dataTmp = d->f(index); //TODO Remove ok c'est le truc le moins classe du monde (Part2)
+
+            //dataTmp->setDataIndex(index);
+            //
+            //d->loadedDataObjectTracker.insert(index, dataTmp);
+        }
+        return dataTmp;
+
     }
     // If nothing in the tracker, we'll get a null weak pointer, thus a null
     // shared pointer

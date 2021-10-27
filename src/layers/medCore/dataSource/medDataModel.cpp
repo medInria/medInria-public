@@ -145,12 +145,19 @@ medAbstractData * medDataModel::getData(medDataIndex const & index)
     }
     else
     {
-        auto splitedUri = index.uri().split(':');
-        auto uriParts = splitedUri[1].split('/'); //TODO check if 1 exist
-        if (m_sourceIdToInstanceMap.contains(splitedUri[0]))
+        QString source = index.uri()[0];
+        if (m_sourceIdToInstanceMap.contains(source))
         {
-            QString pathTmp = m_sourceIdToInstanceMap[splitedUri[0]]->getDirectData(uriParts.size()-1, uriParts[uriParts.size()-1]);
+            QString pathTmp = m_sourceIdToInstanceMap[source]->getDirectData(index.uri().size()-2, index.uri()[index.uri().size()-1]);
             medAbstractData *pDataTmp = medDataImporter::convertSingleDataOnfly(pathTmp);
+            if (pDataTmp)
+            {
+                pDataTmp->retain();
+                pDataTmp->setDataIndex(index);
+                m_IndexToData[index] = pDataRes;
+                m_IndexToData[index].data();
+                pDataRes = pDataTmp;
+            }
         }
     }
 
@@ -187,7 +194,7 @@ void medDataModel::addData(medAbstractData * pi_dataset, QString uri)
     QString sourceUri = uri.right(uri.size() - sourceDelimPos - 1);
     splittedUri.append(sourceUri.split('/'));
  
-    //TODO verifier la pr�sence dans la map
+    //TODO verifier la presence dans la map
     auto pModelElement = m_sourceIdToInstanceMap[splittedUri[0]];
     // ////////////////////////////////////////////////////////////////////////
     // Adding dataset to the source

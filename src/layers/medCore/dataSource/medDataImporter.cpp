@@ -196,9 +196,9 @@ QList<medAbstractDataReader*> medDataImporter::getSuitableReader(QStringList fil
 
 /**
 * @brief  Create medAbstractData from Files.
-* @param  readers provides readers available for this type of data.
-* @param  fileList is the list of files that constitute the input data.
-* @param  usedReader if not null will contain the instance of the reader used.
+* @param  [in, out] readers provides readers available for this type of data. Not selected reader are deallocated.
+* @param  [in]      fileList is the list of files that constitute the input data.
+* @param  [out]     usedReader if not null will contain the instance of the reader used.
 * @return A medAbstractData if the reading is a success, a nullptr in otherwise.
 */
 medAbstractData * medDataImporter::readFiles(QList<medAbstractDataReader *> &readers, QStringList &fileList, medAbstractDataReader **usedReader)
@@ -245,7 +245,7 @@ medAbstractData * medDataImporter::readFiles(QList<medAbstractDataReader *> &rea
 /**
  * @fn  void medDataImporter::findVolumesInDirectory(QString &path)
  * @brief   Searches volumes/data in directory or a file
- * @param [in]  path    Full pathname of the file.
+ * @param [in]  path Full pathname of the file.
  */
 void medDataImporter::findVolumesInDirectory(QString &path)
 {
@@ -294,8 +294,8 @@ medAbstractData * medDataImporter::convertWithOtherReader(medAbstractData *&data
         {
 
             QString readerIdOld = m_currentReaderVolumesMap[volumeId]->identifier();
-            int oldReaderIndex = m_availablesReadersVolumesMap[volumeId].indexOf(readerIdOld);
-            int newReaderIndex = (oldReaderIndex +1) % m_availablesReadersVolumesMap[volumeId].size();
+            int oldReaderIndex = m_availablesReadersVolumesMap[volumeId].indexOf(readerIdOld); //get current reader index.
+            int newReaderIndex = (oldReaderIndex +1) % m_availablesReadersVolumesMap[volumeId].size(); //get next reader index. If the current reader is the last in the list of available reader go back to the first one
             if (oldReaderIndex != newReaderIndex)
             {
                 readerId = m_availablesReadersVolumesMap[volumeId][newReaderIndex];
@@ -401,7 +401,7 @@ QList<medAbstractData*> medDataImporter::getData()
 /**
  * @fn  medAbstractDataReader * medDataImporter::getCurrentReaderInstance(QString volumeId)
  * @brief   Gets current reader instance.
- * @param   volumeId    Identifier for the volume.
+ * @param   [in] volumeId    Identifier for the volume.
  * @returns Null if it fails, else the current reader instance.
  */
 medAbstractDataReader * medDataImporter::getCurrentReaderInstance(QString volumeId)
@@ -423,7 +423,7 @@ medAbstractDataReader * medDataImporter::getCurrentReaderInstance(QString volume
 /**
  * @fn  medAbstractDataReader * medDataImporter::getCurrentReaderInstance(medAbstractData * data)
  * @brief   Gets current reader instance.
- * @param   data pointer to the data converted by this instance.
+ * @param   [in] data pointer to the data converted by this instance.
  * @returns Null if it fails, else the current reader instance.
  */
 medAbstractDataReader * medDataImporter::getCurrentReaderInstance(medAbstractData * data)
@@ -441,7 +441,7 @@ medAbstractDataReader * medDataImporter::getCurrentReaderInstance(medAbstractDat
 /**
  * @fn  QString medDataImporter::getCurrentReader(QString volumeId)
  * @brief   Gets current reader for a volumeId
- * @param   volumeId    Identifier for the volume. If empty get first volume.
+ * @param   [in] volumeId    Identifier for the volume. If empty get first volume.
  * @returns The current reader for this volumeId or empty if it fails
  */
 QString medDataImporter::getCurrentReader(QString volumeId) //Will failed behavior if reader instance is deallocated 
@@ -463,7 +463,7 @@ QString medDataImporter::getCurrentReader(QString volumeId) //Will failed behavi
 /**
  * @fn  QString medDataImporter::getCurrentReader(medAbstractData * data)
  * @brief   Gets current reader for a medAbstractData
- * @param   data pointer to the data converted by this instance.
+ * @param   [in] data pointer to the data converted by this instance.
  * @returns The current reader for this volumeId or empty if it fails
  */
 QString medDataImporter::getCurrentReader(medAbstractData * data)
@@ -481,7 +481,7 @@ QString medDataImporter::getCurrentReader(medAbstractData * data)
 /**
  * @fn  QStringList medDataImporter::getAvailableReader(QString volumeId)
  * @brief   Gets available readers for a volumeId
- * @param   volumeId Identifier for the volume. If empty get first volume.
+ * @param   [in] volumeId Identifier for the volume. If empty get first volume.
  * @returns The list readerId for this volumeId or empty if it fails
  */
 QStringList medDataImporter::getAvailableReader(QString volumeId)
@@ -503,7 +503,7 @@ QStringList medDataImporter::getAvailableReader(QString volumeId)
 /**
  * @fn  QStringList medDataImporter::getAvailableReader(medAbstractData * data)
  * @brief   Gets available readers for a medAbstractData.
- * @param   data pointer to the data converted by this instance.
+ * @param   [in] data pointer to the data converted by this instance.
  * @returns The list readerId for this volumeId or empty if it fails
  */
 QStringList medDataImporter::getAvailableReader(medAbstractData * data)
@@ -521,7 +521,7 @@ QStringList medDataImporter::getAvailableReader(medAbstractData * data)
 /**
  * @fn  QStringList medDataImporter::getPaths(QString volumeId)
  * @brief   Gets paths for a volumeId.
- * @param   volumeId Identifier for the volume. If empty get first volume.
+ * @param   [in] volumeId Identifier for the volume. If empty get first volume.
  * @returns Paths of the data.
  */
 QStringList medDataImporter::getPaths(QString volumeId)
@@ -543,7 +543,7 @@ QStringList medDataImporter::getPaths(QString volumeId)
 /**
  * @fn  QStringList medDataImporter::getPaths(medAbstractData * data)
  * @brief   Gets paths for a medAbstractData.
- * @param   data pointer to the data converted by this instance.
+ * @param   [in] data pointer to the data converted by this instance.
  * @returns Paths of the data.
  */
 QStringList medDataImporter::getPaths(medAbstractData * data)
@@ -569,7 +569,7 @@ QStringList medDataImporter::getPaths(medAbstractData * data)
  * @fn  QString medDataImporter::createVolumeId(medAbstractData * data)
  * @brief   Creates volume identifier
  * @todo Implement it and in 2nd time move into readers
- * @param [in]  data to determine the volumeId.
+ * @param [in] data to determine the volumeId.
  * @returns The volume identifier.
  */
 QString medDataImporter::createVolumeId(medAbstractData * data)

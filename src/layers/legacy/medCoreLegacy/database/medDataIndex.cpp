@@ -22,12 +22,12 @@ medDataIndex::medDataIndex(int dataSourceId, int patientId, int studyId, int ser
 
 }
 
-medDataIndex::medDataIndex(QString const & uri)
+medDataIndex::medDataIndex(QStringList const & uri)
     : m_dataSourceId(NOT_VALID),
     m_patientId(NOT_VALID),
     m_studyId(NOT_VALID),
     m_seriesId(NOT_VALID),
-    m_uri(uri)
+    m_uriAsList(uri)
 {
 }
 
@@ -36,7 +36,7 @@ medDataIndex::medDataIndex(const medDataIndex& index)
     m_patientId(index.m_patientId),
     m_studyId(index.m_studyId),
     m_seriesId(index.m_seriesId),
-    m_uri(index.m_uri)
+    m_uriAsList(index.m_uriAsList)
 {
 }
 
@@ -54,12 +54,12 @@ medDataIndex::~medDataIndex(void)
 
 bool medDataIndex::isV2() const
 {
-    return !m_uri.isEmpty();
+    return !m_uriAsList.isEmpty();
 }
 
 bool medDataIndex::isValid(void) const
 {
-    return (m_dataSourceId != NOT_VALID && m_patientId != NOT_VALID) ^ !m_uri.isEmpty();
+    return (m_dataSourceId != NOT_VALID && m_patientId != NOT_VALID) ^ !m_uriAsList.isEmpty();
 }
 
 bool medDataIndex::isValidForPatient(void) const
@@ -83,7 +83,7 @@ medDataIndex& medDataIndex::operator=(const medDataIndex& index)
     m_patientId = index.m_patientId;
     m_studyId = index.m_studyId;
     m_seriesId = index.m_seriesId;
-    m_uri = index.m_uri;
+    m_uriAsList = index.m_uriAsList;
 
 	return *this;
 }
@@ -91,7 +91,7 @@ medDataIndex& medDataIndex::operator=(const medDataIndex& index)
 QString medDataIndex::asString() const
 {
     QString returnString;
-    if (m_uri.isEmpty())
+    if (m_uriAsList.isEmpty())
     {
         returnString = QString::number(m_dataSourceId) + " | "
             + QString::number(m_patientId) + " | "
@@ -100,10 +100,22 @@ QString medDataIndex::asString() const
     }
     else
     {
-        returnString = m_uri;
+        returnString = m_uriAsList[0] + ":";
+        for (int i = 1; i < m_uriAsList.size(); ++i)
+        {
+            returnString += m_uriAsList[i] + "\r\n";
+        }
     }
 
     return returnString;
+}
+
+void medDataIndex::setUri(QString const & uri)
+{
+    int sourceDelimterIndex = uri.indexOf(QString(":"));
+
+    m_uriAsList = uri.right(uri.size() - sourceDelimterIndex-1).split(QString("\r\n"));
+    m_uriAsList.push_front(uri.left(sourceDelimterIndex));
 }
 
 /**
@@ -112,7 +124,7 @@ QString medDataIndex::asString() const
  */
 bool medDataIndex::isMatch( const medDataIndex& index1, const medDataIndex& index2)
 {
-    if (index1.m_uri.isEmpty() && index2.m_uri.isEmpty())
+    if (index1.m_uriAsList.isEmpty() && index2.m_uriAsList.isEmpty())
     {
         if (index1.dataSourceId() != index2.dataSourceId())
             return false;
@@ -139,7 +151,7 @@ bool medDataIndex::isMatch( const medDataIndex& index1, const medDataIndex& inde
     }
     else
     {
-        return index1.m_uri == index2.m_uri;
+        return index1.m_uriAsList == index2.m_uriAsList;
     }
 }
 
@@ -151,13 +163,13 @@ QMimeData * medDataIndex::createMimeData()
         .arg(this->studyId()).arg(this->seriesId());
 
     QMimeData *data = new QMimeData;
-    if (m_uri.isEmpty())
+    if (m_uriAsList.isEmpty())
     {
         data->setData("med/index", indexString.toLatin1());
     }
     else
     {
-        data->setData("med/index2", m_uri.toUtf8());
+        data->setData("med/index2", asString().toUtf8());
     }
     return data;
 }
@@ -185,7 +197,9 @@ medDataIndex medDataIndex::readMimeData( const QMimeData * mimeData )
     }
     else if (mimeData->hasFormat("med/index2"))
     {
-        return medDataIndex(QString::fromUtf8(mimeData->data("med/index2")));
+        medDataIndex dataIndexRes;
+        dataIndexRes.setUri(QString::fromUtf8(mimeData->data("med/index2")));
+        return dataIndexRes;
     }
     return medDataIndex();
 }
@@ -199,7 +213,9 @@ QList<medDataIndex> medDataIndex::readMimeDataMulti(const QMimeData * mimeData)
 
     for (auto uri : uris)
     {
-        dataIndexListRes << medDataIndex(QString::fromUtf8(uri));
+        medDataIndex dataIndexTmp;
+        dataIndexTmp.setUri(QString::fromUtf8(uri));
+        dataIndexListRes << dataIndexTmp;
     }
 
     return dataIndexListRes;
@@ -231,7 +247,7 @@ bool operator==(const medDataIndex& index1, const medDataIndex& index2)
         (index1.studyId() == index2.studyId()) && 
         (index1.seriesId() == index2.seriesId()))
         ||
-        (!index1.m_uri.isEmpty() && (index1.m_uri== index2.m_uri));
+        (!index1.m_uriAsList.isEmpty() && (index1.m_uriAsList == index2.m_uriAsList));
 }
 
 bool operator!=(const medDataIndex& index1, const medDataIndex& index2)
@@ -241,7 +257,7 @@ bool operator!=(const medDataIndex& index1, const medDataIndex& index2)
 
 QDebug operator<<(QDebug debug, const medDataIndex& index)
 {
-    debug.nospace() << "(" << index.m_dataSourceId << ", " << index.m_patientId << ", " << index.m_studyId << ", " << index.m_seriesId << ", " << index.m_uri << ")";
+    debug.nospace() << "(" << index.m_dataSourceId << ", " << index.m_patientId << ", " << index.m_studyId << ", " << index.m_seriesId << ", " << index.m_uriAsList << ")";
 
     return debug.space();
 }
@@ -266,7 +282,7 @@ QDebug operator<<(QDebug debug, medDataIndex *index)
  */
 bool operator<(const medDataIndex& index1, const medDataIndex& index2)
 {
-    if (index1.m_uri.isEmpty())
+    if (index1.m_uriAsList.isEmpty())
     {
         if (index1.dataSourceId() < index2.dataSourceId())
             return true;
@@ -287,7 +303,7 @@ bool operator<(const medDataIndex& index1, const medDataIndex& index2)
     }
     else
     {
-        return index1.m_uri < index2.m_uri;
+        return index1.m_uriAsList < index2.m_uriAsList;
     }
     // if we reach here, either greater or equal, return false
     return false;
