@@ -12,6 +12,7 @@
 =========================================================================*/
 
 #include<medDataModel.h>
+#include<medDataImporter.h>
 
 medDataModel::medDataModel(QObject *parent)
 {
@@ -122,7 +123,45 @@ bool medDataModel::getLevelCount(QString const & pi_sourceIntanceId, unsigned in
 
 medDataModelElement * medDataModel::getModel(QString const & pi_sourceIntanceId)
 {
-    return m_sourcesModelMap.first(); //TODO
+    medDataModelElement * res = nullptr;
+    if (m_sourceIdToInstanceMap.contains(pi_sourceIntanceId))
+    {
+        medAbstractSource * source = m_sourceIdToInstanceMap[pi_sourceIntanceId];
+        if (m_sourcesModelMap.contains(source))
+        {
+            res = m_sourcesModelMap[source];
+        }
+    }
+    return res;
+}
+
+medAbstractData * medDataModel::getData(medDataIndex const & index)
+{
+    medAbstractData *pDataRes = nullptr;
+
+    if (m_IndexToData.contains(index))
+    {
+        pDataRes = m_IndexToData[index];
+    }
+    else
+    {
+        QString source = index.uri()[0];
+        if (m_sourceIdToInstanceMap.contains(source))
+        {
+            QString pathTmp = m_sourceIdToInstanceMap[source]->getDirectData(index.uri().size()-2, index.uri()[index.uri().size()-1]);
+            medAbstractData *pDataTmp = medDataImporter::convertSingleDataOnfly(pathTmp);
+            if (pDataTmp)
+            {
+                pDataTmp->retain();
+                pDataTmp->setDataIndex(index);
+                m_IndexToData[index] = pDataRes;
+                m_IndexToData[index].data();
+                pDataRes = pDataTmp;
+            }
+        }
+    }
+
+    return pDataRes;
 }
 
 
@@ -155,7 +194,7 @@ void medDataModel::addData(medAbstractData * pi_dataset, QString uri)
     QString sourceUri = uri.right(uri.size() - sourceDelimPos - 1);
     splittedUri.append(sourceUri.split('/'));
  
-    //TODO verifier la pr�sence dans la map
+    //TODO verifier la presence dans la map
     auto pModelElement = m_sourceIdToInstanceMap[splittedUri[0]];
     // ////////////////////////////////////////////////////////////////////////
     // Adding dataset to the source

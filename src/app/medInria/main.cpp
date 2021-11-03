@@ -228,7 +228,8 @@ int main(int argc, char *argv[])
         //medDBSourcesLoader::instance()->createCnx(foo, "medSQLite");
         //medDBSourcesLoader::instance()->renameSource(foo, "Legacy medInria 3 DB");
 
-        auto testModel = new medDataModel();
+        static auto testModel = new medDataModel(); //TODO Remove ok c'est le truc le moins classe du monde (Part3)
+        medDataManager::instance()->setIndexV2Handler([](medDataIndex const & dataIndex) -> medAbstractData* {return testModel->getData(dataIndex); });
         QObject::connect(medDBSourcesLoader::instance(), SIGNAL(sourceAdded(medAbstractSource *)), testModel, SLOT(addSource(medAbstractSource *)));
         medDBSourcesLoader::instance()->loadFromDisk();
 
@@ -239,10 +240,17 @@ int main(int argc, char *argv[])
 
         //auto tableView = new QTableView();
 
-        treeView->setModel(testModel->getModel(""));
+        treeView->setModel(testModel->getModel("medSQLite_210721"));
+        
+        treeView->setSelectionMode(QAbstractItemView::SingleSelection);
+        treeView->setDragEnabled(true);
+        treeView->viewport()->setAcceptDrops(false);
+        //treeView->setDropIndicatorShown(true);
+        treeView->setDragDropMode(QAbstractItemView::DragOnly);
+        
         //tableView->setModel(testModel->getModel(""));
         //bool c0Ok = QObject::connect(treeView, SIGNAL(pressed(const QModelIndex &)), tableView, SIGNAL(pressed(const QModelIndex &)));
-        bool c1Ok = QObject::connect(treeView, SIGNAL(pressed(const QModelIndex &)), testModel->getModel(""), SLOT(itemPressed(QModelIndex const &)));
+        bool c1Ok = QObject::connect(treeView, SIGNAL(pressed(const QModelIndex &)), testModel->getModel("medSQLite_210721"), SLOT(itemPressed(QModelIndex const &)));
         //bool c2Ok = QObject::connect(tableView, SIGNAL(pressed(const QModelIndex &)), testModel->getModel(""), SLOT(itemPressed(QModelIndex const &)));
         QWidget *w = new QWidget;
         QVBoxLayout *vLayout = new QVBoxLayout;

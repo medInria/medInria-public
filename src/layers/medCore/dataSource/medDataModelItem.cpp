@@ -64,21 +64,21 @@ medDataModelItem * medDataModelItem::parent() const
     return m_parentItem;
 }
 
-bool medDataModelItem::insertChildren(int position, int count)
-{
-    bool bRes = (position >= 0) && (position <= m_childItems.size());
-
-    if (bRes)
-    {
-        for (int i = 0; i < count; ++i)
-        {
-            medDataModelItem *pItemTmp = new medDataModelItem(m_model);
-            m_childItems.insert(position, pItemTmp);
-        }
-    }
-
-    return bRes;
-}
+//bool medDataModelItem::insertChildren(int position, int count)
+//{
+//    bool bRes = (position >= 0) && (position <= m_childItems.size());
+//
+//    if (bRes)
+//    {
+//        for (int i = 0; i < count; ++i)
+//        {
+//            medDataModelItem *pItemTmp = new medDataModelItem(m_model);
+//            m_childItems.insert(position, pItemTmp);
+//        }
+//    }
+//
+//    return bRes;
+//}
 
 bool medDataModelItem::removeRows(int row, int count)
 {
@@ -102,11 +102,41 @@ bool medDataModelItem::canHaveSubData()
     return m_bCanHaveSubData;
 }
 
+QString medDataModelItem::uri()
+{
+    QString uriRes = m_model->getSourceIntanceId() + ":";
+
+    QStringList uriParts;
+
+    medDataModelItem *pItem = this;
+    while (pItem->m_parentItem)
+    {
+        uriParts.push_front(pItem->iid());
+        pItem = pItem->m_parentItem;
+    }
+    int size = uriParts.size();
+    if (size > 0)
+    {
+        int i;
+        for (i = 0; (i+1)<size; ++i)
+        {
+            uriRes += uriParts[i] + "\r\n";
+        }
+        uriRes += uriParts[i];
+    }
+
+    return uriRes;
+}
 
 
 
 
 
+
+
+/* ***********************************************************************/
+/* *************** Data manipulation *************************************/
+/* ***********************************************************************/
 int medDataModelItem::childIndex(QString iid)
 {
     int iRes = -1;
@@ -115,7 +145,7 @@ int medDataModelItem::childIndex(QString iid)
     bool bFind = false;
     while (!bFind && i < m_childItems.size())
     {
-        bFind = m_childItems[i]->m_itemData[0] == iid;
+        bFind = m_childItems[i]->m_itemData[0][0] == iid;
         if (bFind)
         {
             iRes = i;
@@ -144,35 +174,28 @@ medDataModelItem * medDataModelItem::child(int row) const
     return m_childItems.value(row);
 }
 
-QVariant medDataModelItem::data(int column) const
-{
-    QVariant varRes;
-
-    int internalColumn = m_model->getColumnInsideLevel(m_iLevel, column);
-    if (internalColumn >= 0)
-    {
-        varRes = m_itemData.value(internalColumn+1);
-    }
-
-    return varRes;
-}
-
 void medDataModelItem::setParent(medDataModelItem * parent)
 {
     m_parentItem = parent;
     m_iLevel = m_parentItem->m_iLevel + 1;
 }
 
-void medDataModelItem::setData(QStringList const & value)
+void medDataModelItem::setData(QVariant value, int column, int role)
 {
-    if (!m_itemData.isEmpty())
+    m_itemData[column][role] = value;
+}
+
+QVariant medDataModelItem::data(int column, int role) const
+{
+    QVariant varRes;
+
+    int internalColumn = m_model->getColumnInsideLevel(m_iLevel, column);
+    if (m_itemData.contains(internalColumn) && m_itemData[internalColumn].contains(role))
     {
-        m_itemData.clear();
+        varRes = m_itemData[internalColumn+1][role];
     }
-    for (auto val : value)
-    {
-        m_itemData.append(val);
-    }    
+
+    return varRes;
 }
 
 void medDataModelItem::append(medDataModelItem * child)

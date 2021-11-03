@@ -334,7 +334,7 @@ QString medSQlite<T>::getDirectData(unsigned int pi_uiLevel, QString key)
     QString path;
     if (pi_uiLevel==2)
     {
-        path = getSeriesDirectData(key);
+        path = m_DbPath->value() + getSeriesDirectData(key);
     }
     return path;
 }

@@ -11,16 +11,16 @@
 #
 ################################################################################
 
-function(ITK_project)
-set(ep ITK)
+function(GTEST_project)
+set(ep GTEST)
 
 ## #############################################################################
 ## List the dependencies of the project
 ## #############################################################################
 
-list(APPEND ${ep}_dependencies 
-  VTK
-  )
+#list(APPEND ${ep}_dependencies 
+#  VTK
+#  )
   
 ## #############################################################################
 ## Prepare the project
@@ -39,8 +39,8 @@ if (NOT USE_SYSTEM_${ep})
 ## #############################################################################
 
 
-set(git_url ${GITHUB_PREFIX}InsightSoftwareConsortium/ITK.git)
-set(git_tag v5.0.0)
+set(git_url ${GITHUB_PREFIX}google/googletest.git)
+set(git_tag release-1.11.0)
 
 
 ## #############################################################################
@@ -60,26 +60,19 @@ set(cmake_args
   -DCMAKE_CXX_FLAGS=${${ep}_cxx_flags}
   -DCMAKE_MACOSX_RPATH:BOOL=OFF
   -DCMAKE_SHARED_LINKER_FLAGS=${${ep}_shared_linker_flags}  
-  -DCMAKE_INSTALL_PREFIX=<INSTALL_DIR>
+  -DCMAKE_INSTALL_PREFIX=.
   -DBUILD_SHARED_LIBS=${BUILD_SHARED_LIBS_${ep}}
-  -DBUILD_EXAMPLES:BOOL=OFF
-  -DBUILD_TESTING:BOOL=OFF
-  -DModule_ITKIOPhilipsREC:BOOL=ON
-  -DModule_ITKReview:BOOL=ON
-  -DModule_ITKVtkGlue:BOOL=ON
-  -DITK_LEGACY_REMOVE:BOOL=ON
-  -DVTK_DIR:PATH=${VTK_DIR}
-  )
-  
-set(cmake_cache_args
-  -DVTK_DIR:PATH=${VTK_DIR}
+  -DINSTALL_GTEST=ON
+  -Dgmock_build_tests=OFF
+  -Dgtest_force_shared_crt=ON
+  #-Dgtest_disable_pthreads=ON
   )
 
 ## #############################################################################
 ## Check if patch has to be applied
 ## #############################################################################
   
-ep_GeneratePatchCommand(${ep} ${ep}_PATCH_COMMAND ITK_Mac.patch)
+# ep_GeneratePatchCommand(${ep} ${ep}_PATCH_COMMAND ITK_Mac.patch)
 
 ## #############################################################################
 ## Add external-project
@@ -96,13 +89,10 @@ ExternalProject_Add(${ep}
   
   GIT_REPOSITORY ${git_url}
   GIT_TAG ${git_tag}
-  PATCH_COMMAND ${${ep}_PATCH_COMMAND}
   CMAKE_GENERATOR ${gen}
   CMAKE_GENERATOR_PLATFORM ${CMAKE_GENERATOR_PLATFORM}
-  CMAKE_ARGS ${cmake_args}  
+  CMAKE_ARGS ${cmake_args}
   CMAKE_CACHE_ARGS ${cmake_cache_args}
-  DEPENDS ${${ep}_dependencies}
-  INSTALL_COMMAND ""
   BUILD_ALWAYS ${EP_BUILD_ALWAYS}
   )
 
@@ -110,8 +100,10 @@ ExternalProject_Add(${ep}
 ## Set variable to provide infos about the project
 ## #############################################################################
 
-ExternalProject_Get_Property(ITK binary_dir)
-set(${ep}_DIR ${binary_dir} PARENT_SCOPE)
+ExternalProject_Get_Property(GTEST binary_dir)
+set(${ep}_DIR  ${binary_dir}/lib/cmake/GTest PARENT_SCOPE)
+#set(${ep}_ROOT ${binary_dir} PARENT_SCOPE)
+
 
 endif() #NOT USE_SYSTEM_ep
 

@@ -34,6 +34,8 @@ class MEDCORELEGACY_EXPORT medDataManager : public QObject
 public:
     static medDataManager * instance();
 
+    void setIndexV2Handler(medAbstractData* (*f)(medDataIndex const &));
+
     medAbstractData* retrieveData(const medDataIndex& index);
     void loadData(const medDataIndex &index);
 

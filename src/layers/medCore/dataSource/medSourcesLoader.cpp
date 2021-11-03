@@ -41,17 +41,27 @@ medDBSourcesLoader::~medDBSourcesLoader()
 {
 }
 
-bool medDBSourcesLoader::registerSourceType(QString type, QString name, QString description, instanciateSource instanciator)
+/**
+* @brief  Register a new type of source.
+* @param  type is identifier of source type. It must be not empty.
+* @param  name is the name of source type.
+* @param  description is human readable short description .
+* @param  instantiator is the function pointer to instantiate this type of source.
+*         Function pointer signature must be medAbstractSource* (*)()
+*         instantiator must be not nullptr or already registered.
+* @return Returns true if this type of source was registered. False otherwise.
+*/
+bool medDBSourcesLoader::registerSourceType(QString type, QString name, QString description, instantiateSource instantiator)
 {
-    bool bRes = (!type.isEmpty() && instanciator != nullptr && !m_sourcesMap.contains(type));
+    bool bRes = (!type.isEmpty() && instantiator != nullptr && !m_sourcesMap.contains(type));
 
     m_mutexMap.lock();
     if (bRes)
     {
-        medSourceTool tool = { type, name, description, instanciator };
+        medSourceTool tool = { type, name, description, instantiator };
         m_sourcesMap.insert(type, tool);
     }
-    reparseUnresolvedCnx();
+    reparseUnresolvedCnx();  //Try to re-read failed connections to a source 
     m_mutexMap.unlock();
 
     return bRes;

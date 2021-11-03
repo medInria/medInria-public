@@ -75,11 +75,11 @@ QVariant medDataModelElement::data(const QModelIndex & index, int role) const
         {
             varDataRes = Qt::AlignHCenter;
         }
-        else if ((role == Qt::DisplayRole || role == Qt::EditRole))
+        else //if ((role == Qt::DisplayRole || role == Qt::EditRole))
         {
             medDataModelItem *item = getItem(index);
             int i = index.column();
-            varDataRes = item->data(i).toString();
+            varDataRes = item->data(i, role);
         }
     }
 
@@ -254,20 +254,69 @@ QVariant medDataModelElement::headerData(int section, Qt::Orientation orientatio
     return varRes;
 }
 
-//void medDataModelElement::setColumnAttributes(int p_iLevel, QStringList & attributes)
-//{
-//    if (d->columnNameByLevel.contains(p_iLevel))
-//    {
-//        d->columnNameByLevel[p_iLevel].append(attributes);
-//        for (auto attribute : attributes)
-//        {
-//            if (!d->sectionNames.contains(attribute))
-//            {
-//                d->sectionNames.push_back(attribute);
-//            }
-//        }
-//    }
-//}
+
+
+
+
+
+
+
+
+Qt::DropActions medDataModelElement::supportedDropActions() const
+{
+    return Qt::CopyAction | Qt::MoveAction | Qt::LinkAction;
+}
+
+Qt::ItemFlags medDataModelElement::flags(const QModelIndex & index) const
+{
+    Qt::ItemFlags defaultFlags = QAbstractItemModel::flags(index);
+
+    if (index.isValid())
+        return Qt::ItemIsDragEnabled | Qt::ItemIsDropEnabled | defaultFlags;
+    else
+        return Qt::ItemIsDropEnabled | defaultFlags;
+}
+
+QStringList medDataModelElement::mimeTypes() const
+{
+    QStringList types;
+    types << "med/index2";
+    return types;
+}
+
+QMimeData * medDataModelElement::mimeData(const QModelIndexList & indexes) const
+{
+    QMimeData *mimeData = new QMimeData;
+    QByteArray encodedData;
+
+    QDataStream stream(&encodedData, QIODevice::WriteOnly);
+
+    for (QModelIndex const &index : indexes)
+    {
+        if (index.isValid() && index.column() == 0)
+        {
+            encodedData.append(getItem(index)->uri().toUtf8());
+            encodedData.append('\0');            
+        }
+    }
+
+    if (!encodedData.isEmpty())
+    {
+        encodedData.remove(encodedData.length()-1, 1);
+    }
+
+
+    mimeData->setData("med/index2", encodedData);
+    return mimeData;
+}
+
+
+
+
+
+
+
+
 
 int medDataModelElement::getColumnInsideLevel(int level, int section)
 {
@@ -307,6 +356,11 @@ bool medDataModelElement::fetch(QString uri) //See populateLevelV2
     populateLevelV2(childIndex, uri);
 
     return false;
+}
+
+QString medDataModelElement::getSourceIntanceId()
+{
+    return d->sourceInstanceId;
 }
 
 /**
@@ -403,8 +457,10 @@ void medDataModelElement::populateLevel(QModelIndex const &index, QString const 
             {
                 medDataModelItem *pItemTmp = new medDataModelItem(this);
                 auto elem = var.toStringList();
-                //pItemTmp->setIID(elem.takeFirst());
-                pItemTmp->setData(elem);
+                for (int i = 0; i < elem.size(); ++i)
+                {
+                    pItemTmp->setData(elem[i], i);
+                }
                 pItemTmp->setParent(pItem);
                 pItem->append(pItemTmp);
             }
@@ -538,7 +594,10 @@ void medDataModelElement::addRowRanges(QMap<int, QVariantList> &entriesToAdd, co
         {
             medDataModelItem *pItemTmp = new medDataModelItem(this);
             auto elem = var.toStringList();
-            pItemTmp->setData(elem);
+            for (int i = 0; i < elem.size(); ++i)
+            {
+                pItemTmp->setData(elem[i], i);
+            }
             pItemTmp->setParent(pItem);
             pItem->insert(first+iOffsetRange, pItemTmp);
         }

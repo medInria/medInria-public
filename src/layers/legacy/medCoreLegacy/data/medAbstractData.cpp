@@ -73,10 +73,7 @@ medAbstractData* medAbstractData::clone(void)
 void medAbstractData::setDataIndex( const medDataIndex& index )
 {
     // copy ids
-    d->index.setDataSourceId(index.dataSourceId());
-    d->index.setPatientId(index.patientId());
-    d->index.setStudyId(index.studyId());
-    d->index.setSeriesId(index.seriesId());
+    d->index = index;
 }
 
 /**
