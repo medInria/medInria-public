@@ -33,10 +33,7 @@ medSQlite<T>::medSQlite()
     m_DbPath = new medStringParameter("LocalDataBasePath", this);
     m_DbPath->setCaption("Path to sqlite local DB");
     m_DbPath->setValue(vDbLoc);
-//    m_DbPath =
     QObject::connect(m_DbPath, &medStringParameter::valueChanged, this, &medSQlite::updateDatabaseName);
-//    QObject::connect(this, SIGNAL(progress(int, eRequestStatus)), this, SLOT(foo(int, eRequestStatus)));
-//    emit progress(0, eRequestStatus::aborted);
 }
 
 template<typename T>
@@ -45,10 +42,10 @@ bool medSQlite<T>::initialization(const QString &pi_instanceId)
     bool bRes = !pi_instanceId.isEmpty();
     if (bRes)
     {
-        bRes = T::isDriverAvailable(m_Driver);
+        bRes = isDriverAvailable();
         if(bRes)
         {
-            m_Engine = T::addDatabase(m_Driver, "sqlite");
+            m_Engine = addDatabase();
             bRes = m_Engine.isValid();
             if (bRes)
             {
@@ -79,10 +76,10 @@ bool medSQlite<T>::connect(bool pi_bEnable)
     {
         if (!m_DbPath->value().isEmpty())
         {
-            m_Engine = T::database(m_ConnectionName);
+            m_Engine = database();
             if (!m_Engine.isValid())
             {
-                m_Engine = T::addDatabase(m_Driver, m_ConnectionName);
+                m_Engine = addDatabase();
             }
             m_Engine.setDatabaseName(m_DbPath->value() + "/db");
             bRes = m_Engine.open();
@@ -122,14 +119,14 @@ bool medSQlite<T>::connect(bool pi_bEnable)
                     if (!bRes)
                     {
                         m_Engine.close();
-                        T::removeDatabase(m_ConnectionName);
+                        removeDatabase();
                     }
                 }
                 else if (!isValidDatabaseStructure())
                 {
                     bRes = false;
                     m_Engine.close();
-                    T::removeDatabase(m_ConnectionName);
+                    removeDatabase();
                 }
                 if (bRes)
                 {
@@ -138,7 +135,7 @@ bool medSQlite<T>::connect(bool pi_bEnable)
             }
             else
             {
-                T::removeDatabase(m_ConnectionName);
+                removeDatabase();
             }
         }
         else
@@ -151,7 +148,7 @@ bool medSQlite<T>::connect(bool pi_bEnable)
     {
         m_Engine.close();
         m_Engine = T();
-        T::removeDatabase(m_ConnectionName);
+        removeDatabase();
         m_online = false;
         bRes = true;
     }
@@ -334,7 +331,11 @@ QString medSQlite<T>::getDirectData(unsigned int pi_uiLevel, QString key)
     QString path;
     if (pi_uiLevel==2)
     {
-        path = m_DbPath->value() + getSeriesDirectData(key);
+        path = getSeriesDirectData(key);
+        if (!path.isEmpty())
+        {
+            path.prepend(m_DbPath->value());
+        }
     }
     return path;
 }
@@ -378,7 +379,7 @@ void medSQlite<T>::abort(int pi_iRequest)
 template <typename T>
 void medSQlite<T>::updateDatabaseName(QString const &path)
 {
-
+    m_DbPath->setValue(path);
 }
 
 template<typename T>
@@ -468,7 +469,6 @@ QList<medAbstractSource::levelMinimalEntries> medSQlite<T>::getStudyMinimalEntri
         {
             qDebug() << "Error returned by query : " << query.lastError();
             qDebug() << "The query was: " << query.lastQuery().simplified();
-            // TODO : call to abort ?
         }
         else
         {
@@ -480,13 +480,11 @@ QList<medAbstractSource::levelMinimalEntries> medSQlite<T>::getStudyMinimalEntri
                 entry.description = query.value("study_instance_uid").toString();
                 studyEntries.append(entry);
             }
-            // TODO : call to success ?
         }
     }
     else
     {
         qDebug() << "The key is not a valid integer ";
-        // TODO : call to abort ?
     }
     return studyEntries;
 }
@@ -510,7 +508,6 @@ QList<medAbstractSource::levelMinimalEntries> medSQlite<T>::getSeriesMinimalEntr
         {
             qDebug() << "Error returned by query : " << query.lastError();
             qDebug() << "The query was: " << query.lastQuery().simplified();
-            // TODO : call to abort ?
         }
         else
         {
@@ -522,13 +519,11 @@ QList<medAbstractSource::levelMinimalEntries> medSQlite<T>::getSeriesMinimalEntr
                 entry.description = query.value("series_instance_uid").toString();
                 seriesEntries.append(entry);
             }
-            // TODO : call to success ?
         }
     }
     else
     {
         qDebug() << "The key is not a valid integer ";
-        // TODO : call to abort ?
     }
     return seriesEntries;
 }
@@ -567,7 +562,6 @@ QString medSQlite<T>::getSeriesDirectData(QString &key)
         {
             qDebug() << "Error returned by query : " << query.lastError();
             qDebug() << "The query was: " << query.lastQuery().simplified();
-            // TODO : call to abort ?
         }
         else
         {
@@ -575,15 +569,36 @@ QString medSQlite<T>::getSeriesDirectData(QString &key)
             {
                 path = query.value("data_path").toString();
             }
-            emit progress(10, medAbstractSource::eRequestStatus::finish);
-            // TODO : call to success ?
         }
     }
     else
     {
         qDebug() << "The key is not a valid integer ";
-        // TODO : call to abort ?
     }
     return path;
+}
+
+template<typename T>
+bool medSQlite<T>::isDriverAvailable()
+{
+    return T::isDriverAvailable(m_Driver);
+}
+
+template<typename T>
+T medSQlite<T>::addDatabase()
+{
+    return T::addDatabase(m_Driver, m_ConnectionName);
+}
+
+template<typename T>
+void medSQlite<T>::removeDatabase()
+{
+    T::removeDatabase(m_ConnectionName);
+}
+
+template<typename T>
+T medSQlite<T>::database()
+{
+    return T::database(m_ConnectionName);
 }
 

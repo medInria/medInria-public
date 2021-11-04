@@ -223,8 +223,8 @@ int main(int argc, char *argv[])
         medPluginManager::instance()->initialize();
 
         // [LIKE PORKY]
-//        QString foo;
-//
+        //        QString foo;
+        //
         //medDBSourcesLoader::instance()->createCnx(foo, "medSQLite");
         //medDBSourcesLoader::instance()->renameSource(foo, "Legacy medInria 3 DB");
 

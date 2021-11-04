@@ -92,17 +92,13 @@ set(cmake_cache_args
   -DRPI_DIR:PATH=${RPI_DIR}
   -DTTK_DIR:PATH=${TTK_DIR}
   -DVTK_DIR:PATH=${VTK_DIR}
-<<<<<<< HEAD
-=======
   -DGTest_DIR:PATH=${GTEST_DIR}
->>>>>>> origin/medDataSources
   -DQt5_DIR:PATH=${Qt5_DIR}
   -DLogDemons_DIR:PATH=${LogDemons_DIR}
   -DBoost_INCLUDE_DIR:PATH=${Boost_INCLUDE_DIR}
   )
 
 
-#message("+++++ ${GTEST_INCLUDE_DIRS}")
 if (${USE_FFmpeg})
   list(APPEND cmake_args
   -DUSE_FFmpeg=${USE_FFmpeg})

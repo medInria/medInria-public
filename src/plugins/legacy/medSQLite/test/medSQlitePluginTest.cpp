@@ -17,31 +17,30 @@
 #include <QSqlDatabase>
 #include <QSqlRecord>
 
-#include "medSQLiteTest.h"
+#include "medSQlitePluginTest.h"
 
-class medSQliteTest : public ::testing::Test
+class medSQlitePluginTest : public ::testing::Test
 {
 
 protected:
     ::testing::NiceMock<FakeMedSQLite> m_;
 
-    medSQliteTest()
+    medSQlitePluginTest()
     {
     }
 
-    virtual ~medSQliteTest()
+    virtual ~medSQlitePluginTest()
     {
     }
 
     void SetUp() override
     {
-        removeCount = 0;
     }
 
     void TearDown() override
     {
-        removeCount = 0;
     }
+
     QString patientQuery = "CREATE TABLE IF NOT EXISTS patient ("
                            " id       INTEGER PRIMARY KEY,"
                            " name        TEXT,"
@@ -95,172 +94,254 @@ protected:
 };
 
 // Test Initialization
-TEST_F(medSQliteTest, test_init_failed_if_instance_id_empty)
+TEST_F(medSQlitePluginTest, test_init_failed_if_instance_id_empty)
 {
     // parameters initialization
     QString instanceId = "";
-    driverAvailability = true;
-    valid = true;
     // expectations
+    EXPECT_EQ(false, m_.initialization(instanceId));
+    EXPECT_EQ(m_.getInstanceId(), instanceId);
+}
+
+TEST_F(medSQlitePluginTest, test_init_failed_if_driver_unavailable)
+{
+    // parameters initialization
+    QString instanceId = "foo";
+    // expectations
+    ON_CALL(m_, isDriverAvailable()).WillByDefault(::testing::Return(false));
+
+    EXPECT_CALL(m_, isDriverAvailable()).Times(1);
+    EXPECT_CALL(m_, addDatabase()).Times(0);
+    EXPECT_CALL(m_.m_Engine, isValid()).Times(0);
+
     EXPECT_EQ(false, m_.initialization(instanceId));
     EXPECT_EQ(m_.getInstanceId(), "");
 }
 
-TEST_F(medSQliteTest, test_init_failed_if_driver_unavailable)
+TEST_F(medSQlitePluginTest, test_init_failed_if_engine_not_valid)
 {
     // parameters initialization
     QString instanceId = "foo";
-    driverAvailability = false;
-    valid = true;
     // expectations
+    ON_CALL(m_, isDriverAvailable()).WillByDefault(::testing::Return(true));
+    ON_CALL(m_.m_Engine, isValid()).WillByDefault(::testing::Return(false));
+    ON_CALL(m_, addDatabase()).WillByDefault(::testing::Return(m_.m_Engine));
+
+    EXPECT_CALL(m_, isDriverAvailable()).Times(1);
+    EXPECT_CALL(m_, addDatabase()).Times(1);
+    EXPECT_CALL(m_.m_Engine, isValid()).Times(1);
+
     EXPECT_EQ(false, m_.initialization(instanceId));
     EXPECT_EQ(m_.getInstanceId(), "");
 }
 
-TEST_F(medSQliteTest, test_init_failed_if_engine_not_valid)
+TEST_F(medSQlitePluginTest, test_init_success_if_engine_is_valid_and_driver_are_ok)
 {
     // parameters initialization
-    driverAvailability = true;
     QString instanceId = "foo";
-    valid = false;
     // expectations
-    EXPECT_EQ(false, m_.initialization(instanceId));
-    EXPECT_EQ(m_.getInstanceId(), "");
-}
+    ON_CALL(m_, isDriverAvailable()).WillByDefault(::testing::Return(true));
+    ON_CALL(m_.m_Engine, isValid()).WillByDefault(::testing::Return(true));
+    ON_CALL(m_, addDatabase()).WillByDefault(::testing::Return(m_.m_Engine));
 
-TEST_F(medSQliteTest, test_init_success_if_engine_and_driver_are_ok)
-{
-    // parameters initialization
-    driverAvailability = true;
-    QString instanceId = "foo";
-    valid = true;
-    // expectations
+    EXPECT_CALL(m_, isDriverAvailable()).Times(1);
+    EXPECT_CALL(m_, addDatabase()).Times(1);
+    EXPECT_CALL(m_.m_Engine, isValid()).Times(1);
+
     EXPECT_EQ(true, m_.initialization(instanceId));
     EXPECT_EQ(m_.getInstanceId(), instanceId);
 }
 
 // Test Connect/Disconnect
-TEST_F(medSQliteTest, test_connect_failed_if_db_path_is_empty)
+TEST_F(medSQlitePluginTest, test_connect_failed_if_db_path_is_empty)
 {
     m_.changeDatabasePath("");
     // expectations
     EXPECT_CALL(m_.m_Engine, close()).Times(0);
-    EXPECT_CALL(m_, optimizeSpeedSQLiteDB).Times(0);
+    EXPECT_CALL(m_, optimizeSpeedSQLiteDB()).Times(0);
     EXPECT_EQ(false, m_.connect(true));
     EXPECT_EQ(false, m_.isOnline());
 }
 
-TEST_F(medSQliteTest, test_connect_failed_db_not_open)
+TEST_F(medSQlitePluginTest, test_connect_failed_db_not_open)
 {
-    m_.changeDatabasePath("foo");
-    flagOpen = false;
+    QString path = "foo";
+    m_.changeDatabasePath(path);
+    path += "/db";
     EXPECT_CALL(m_.m_Engine, close()).Times(0);
-    EXPECT_CALL(m_, optimizeSpeedSQLiteDB).Times(0);
+    EXPECT_CALL(m_, optimizeSpeedSQLiteDB()).Times(0);
+    EXPECT_CALL(m_, removeDatabase()).Times(1);
+    EXPECT_CALL(m_.m_Engine, open()).Times(1);
+    EXPECT_CALL(m_.m_Engine, isValid()).Times(1);
+    EXPECT_CALL(m_, database()).Times(1);
+    EXPECT_CALL(m_, addDatabase()).Times(0);
+    EXPECT_CALL(m_.m_Engine, setDatabaseName(path)).Times(1);
+
+    ON_CALL(m_.m_Engine, open()).WillByDefault(::testing::Return(false));
+    ON_CALL(m_.m_Engine, isValid()).WillByDefault(::testing::Return(true));
+
     EXPECT_EQ(false, m_.connect(true));
     EXPECT_EQ(false, m_.isOnline());
-    EXPECT_EQ(removeCount, 1);
+
 }
 
 
-TEST_F(medSQliteTest, test_connect_success_db_structure_empty)
+TEST_F(medSQlitePluginTest, test_connect_success_db_structure_empty)
 {
-    fakeTables = QStringList();
-    m_.changeDatabasePath("foo");
-    flagOpen = true;
+    QStringList fakeTables = QStringList();
+    QString path = "foo";
+    m_.changeDatabasePath(path);
+    path += "/db";
 
     ON_CALL(m_, createTable(patientQuery)).WillByDefault(::testing::Return(true));
     ON_CALL(m_, createTable(studyQuery)).WillByDefault(::testing::Return(true));
     ON_CALL(m_, createTable(seriesQuery)).WillByDefault(::testing::Return(true));
+    ON_CALL(m_.m_Engine, open()).WillByDefault(::testing::Return(true));
+    ON_CALL(m_.m_Engine, isValid()).WillByDefault(::testing::Return(true));
+
     EXPECT_CALL(m_.m_Engine, close()).Times(0);
-    EXPECT_CALL(m_, optimizeSpeedSQLiteDB).Times(1);
+    EXPECT_CALL(m_, optimizeSpeedSQLiteDB()).Times(1);
+    EXPECT_CALL(m_.m_Engine, open()).Times(1);
+    EXPECT_CALL(m_.m_Engine, isValid()).Times(1);
+    EXPECT_CALL(m_.m_Engine, tables()).Times(1);
+    EXPECT_CALL(m_.m_Engine, setDatabaseName(path)).Times(1);
+
     EXPECT_EQ(true, m_.connect(true));
     EXPECT_EQ(true, m_.isOnline());
-    EXPECT_EQ(removeCount, 0);
 }
 
-TEST_F(medSQliteTest, test_connect_failed_db_structure_empty_unable_create_patient_table)
+TEST_F(medSQlitePluginTest, test_connect_failed_db_structure_empty_unable_create_patient_table)
 {
-    fakeTables = QStringList();
-    m_.changeDatabasePath("foo");
-    flagOpen = true;
-    valid = true;
+    QStringList fakeTables = QStringList();
+    QString path = "foo";
+    m_.changeDatabasePath(path);
+    path += "/db";
     ON_CALL(m_, createTable(patientQuery)).WillByDefault(::testing::Return(false));
     ON_CALL(m_, createTable(studyQuery)).WillByDefault(::testing::Return(true));
     ON_CALL(m_, createTable(seriesQuery)).WillByDefault(::testing::Return(true));
+    ON_CALL(m_.m_Engine, open()).WillByDefault(::testing::Return(true));
+    ON_CALL(m_.m_Engine, isValid()).WillByDefault(::testing::Return(true));
+
     EXPECT_CALL(m_.m_Engine, close()).Times(1);
-    EXPECT_CALL(m_, optimizeSpeedSQLiteDB).Times(0);
+    EXPECT_CALL(m_, optimizeSpeedSQLiteDB()).Times(0);
+    EXPECT_CALL(m_.m_Engine, open()).Times(1);
+    EXPECT_CALL(m_.m_Engine, isValid()).Times(1);
+    EXPECT_CALL(m_.m_Engine, tables()).Times(1);
+    EXPECT_CALL(m_.m_Engine, setDatabaseName(path)).Times(1);
+
     EXPECT_EQ(false, m_.connect(true));
     EXPECT_EQ(false, m_.isOnline());
-    EXPECT_EQ(removeCount, 1);
 }
 
-TEST_F(medSQliteTest, test_connect_failed_db_structure_empty_unable_create_study_table)
+TEST_F(medSQlitePluginTest, test_connect_failed_db_structure_empty_unable_create_study_table)
 {
-    fakeTables = QStringList();
-    m_.changeDatabasePath("foo");
-    flagOpen = true;
+    QStringList fakeTables = QStringList();
+    QString path = "foo";
+    m_.changeDatabasePath(path);
+    path += "/db";
 
     ON_CALL(m_, createTable(patientQuery)).WillByDefault(::testing::Return(true));
     ON_CALL(m_, createTable(studyQuery)).WillByDefault(::testing::Return(false));
     ON_CALL(m_, createTable(seriesQuery)).WillByDefault(::testing::Return(true));
+    ON_CALL(m_.m_Engine, open()).WillByDefault(::testing::Return(true));
+    ON_CALL(m_.m_Engine, isValid()).WillByDefault(::testing::Return(true));
+
     EXPECT_CALL(m_.m_Engine, close()).Times(1);
-    EXPECT_CALL(m_, optimizeSpeedSQLiteDB).Times(0);
+    EXPECT_CALL(m_, optimizeSpeedSQLiteDB()).Times(0);
+    EXPECT_CALL(m_.m_Engine, open()).Times(1);
+    EXPECT_CALL(m_.m_Engine, isValid()).Times(1);
+    EXPECT_CALL(m_.m_Engine, tables()).Times(1);
+    EXPECT_CALL(m_.m_Engine, setDatabaseName(path)).Times(1);
+
     EXPECT_EQ(false, m_.connect(true));
     EXPECT_EQ(false, m_.isOnline());
-    EXPECT_EQ(removeCount, 1);
 }
 
-TEST_F(medSQliteTest, test_connect_failed_db_structure_empty_unable_create_series_table)
+TEST_F(medSQlitePluginTest, test_connect_failed_db_structure_empty_unable_create_series_table)
 {
-    fakeTables = QStringList();
-    m_.changeDatabasePath("foo");
-    flagOpen = true;
+    QStringList fakeTables = QStringList();
+    QString path = "foo";
+    m_.changeDatabasePath(path);
+    path += "/db";
 
     ON_CALL(m_, createTable(patientQuery)).WillByDefault(::testing::Return(true));
     ON_CALL(m_, createTable(studyQuery)).WillByDefault(::testing::Return(true));
     ON_CALL(m_, createTable(seriesQuery)).WillByDefault(::testing::Return(false));
+    ON_CALL(m_.m_Engine, open()).WillByDefault(::testing::Return(true));
+    ON_CALL(m_.m_Engine, isValid()).WillByDefault(::testing::Return(true));
+
     EXPECT_CALL(m_.m_Engine, close()).Times(1);
-    EXPECT_CALL(m_, optimizeSpeedSQLiteDB).Times(0);
+    EXPECT_CALL(m_, optimizeSpeedSQLiteDB()).Times(0);
+    EXPECT_CALL(m_.m_Engine, open()).Times(1);
+    EXPECT_CALL(m_.m_Engine, isValid()).Times(1);
+    EXPECT_CALL(m_.m_Engine, tables()).Times(1);
+    EXPECT_CALL(m_.m_Engine, setDatabaseName(path)).Times(1);
+
     EXPECT_EQ(false, m_.connect(true));
     EXPECT_EQ(false, m_.isOnline());
-    EXPECT_EQ(removeCount, 1);
 }
 
 
-TEST_F(medSQliteTest, test_connect_failed_db_structure_invalid)
+TEST_F(medSQlitePluginTest, test_connect_failed_db_structure_invalid)
 {
+    QStringList fakeTables;
     fakeTables << "patient" << "studyyyyy" << "series";
-    m_.changeDatabasePath("foo");
-    flagOpen = true;
+    QString path = "foo";
+    m_.changeDatabasePath(path);
+    path += "/db";
+
+    ON_CALL(m_.m_Engine, open()).WillByDefault(::testing::Return(true));
+    ON_CALL(m_.m_Engine, tables()).WillByDefault(::testing::Return(fakeTables));
+    ON_CALL(m_.m_Engine, isValid()).WillByDefault(::testing::Return(true));
+
     EXPECT_CALL(m_.m_Engine, close()).Times(1);
-    EXPECT_CALL(m_, optimizeSpeedSQLiteDB).Times(0);
+    EXPECT_CALL(m_, optimizeSpeedSQLiteDB()).Times(0);
+    EXPECT_CALL(m_.m_Engine, open()).Times(1);
+    EXPECT_CALL(m_.m_Engine, isValid()).Times(1);
+    EXPECT_CALL(m_.m_Engine, tables()).Times(2);
+    EXPECT_CALL(m_ , removeDatabase()).Times(1);
+    EXPECT_CALL(m_.m_Engine, setDatabaseName(path)).Times(1);
+
     EXPECT_EQ(false, m_.connect(true));
     EXPECT_EQ(false, m_.isOnline());
-    EXPECT_EQ(removeCount, 1);
 }
 
-TEST_F(medSQliteTest, test_connect_success_valid_db_structure)
+TEST_F(medSQlitePluginTest, test_connect_success_valid_db_structure)
 {
+    QStringList fakeTables;
     fakeTables << "patient" << "study" << "series";
-    m_.changeDatabasePath("foo");
-    flagOpen = true;
+    QString path = "foo";
+    m_.changeDatabasePath(path);
+    path += "/db";
+
+    ON_CALL(m_.m_Engine, open()).WillByDefault(::testing::Return(true));
+    ON_CALL(m_.m_Engine, tables()).WillByDefault(::testing::Return(fakeTables));
+    ON_CALL(m_.m_Engine, isValid()).WillByDefault(::testing::Return(true));
     // expectations
     EXPECT_CALL(m_.m_Engine, close()).Times(0);
-    EXPECT_CALL(m_, optimizeSpeedSQLiteDB).Times(1);
+    EXPECT_CALL(m_, optimizeSpeedSQLiteDB()).Times(1);
+    EXPECT_CALL(m_.m_Engine, open()).Times(1);
+    EXPECT_CALL(m_.m_Engine, isValid()).Times(1);
+    EXPECT_CALL(m_.m_Engine, tables()).Times(2);
+    EXPECT_CALL(m_.m_Engine, setDatabaseName(path)).Times(1);
+
     EXPECT_EQ(true, m_.connect(true));
     EXPECT_EQ(true, m_.isOnline());
-    EXPECT_EQ(removeCount, 0);
 }
 
-TEST_F(medSQliteTest, test_disconnect_success_if_db_path_is_empty)
+TEST_F(medSQlitePluginTest, test_disconnect_success_if_db_path_is_empty)
 {
     m_.changeDatabasePath("");
     // expectations
     EXPECT_CALL(m_.m_Engine, close()).Times(1);
-    EXPECT_CALL(m_, optimizeSpeedSQLiteDB).Times(0);
+    EXPECT_CALL(m_, optimizeSpeedSQLiteDB()).Times(0);
+    EXPECT_CALL(m_.m_Engine, open()).Times(0);
+    EXPECT_CALL(m_.m_Engine, isValid()).Times(0);
+    EXPECT_CALL(m_.m_Engine, tables()).Times(0);
+    EXPECT_CALL(m_, removeDatabase()).Times(1);
+
     EXPECT_EQ(true, m_.connect(false));
     EXPECT_EQ(false, m_.isOnline());
-    EXPECT_EQ(removeCount, 1);
 }
 
 
@@ -295,7 +376,7 @@ TEST(integrationTest, test_plugin_connection_success_with_existing_db)
          << "seriesNumber" << "sequenceName" << "sliceThickness" << "rows" << "columns" << "thumbnail"
          << "age" << "description" << "modality" << "protocol" << "comments" << "status" << "acquisitiondate"
          << "importationdate" << "referee" << "performer" << "institution" << "report" << "origin"
-         << "flipAngle" << "echoTime" << "repetitionTime" << "acquisitionTime" << "isIndexed";
+         << "flipAngle" << "echoTime" << "repetitionTime" << "acquisitionTime" << "isIndexed" << "json_meta_path";
     for(int i=0;i<record.count();i++){
         QSqlField field=record.field(i);
         EXPECT_EQ(keys.at(i), field.name() );
@@ -339,7 +420,7 @@ TEST(integrationTest, test_plugin_connection_success_with_empty_db)
                       << "seriesNumber" << "sequenceName" << "sliceThickness" << "rows" << "columns" << "thumbnail"
                       << "age" << "description" << "modality" << "protocol" << "comments" << "status" << "acquisitiondate"
                       << "importationdate" << "referee" << "performer" << "institution" << "report" << "origin"
-                      << "flipAngle" << "echoTime" << "repetitionTime" << "acquisitionTime" << "isIndexed";
+                      << "flipAngle" << "echoTime" << "repetitionTime" << "acquisitionTime" << "isIndexed" << "json_meta_path";
         for(int i=0;i<record.count();i++){
             QSqlField field=record.field(i);
             EXPECT_EQ(expected_keys.at(i), field.name() );
@@ -501,16 +582,5 @@ TEST(AccessTest, is_cached_false)
 {
     medSQlite<QSqlDatabase> m = medSQlite<QSqlDatabase>();
     EXPECT_EQ(false, m.isCached());
-}
-
-TEST(AccessTest, is_online_true)
-{
-    FakeMedSQLite m = FakeMedSQLite();
-    fakeTables << "patient" << "study" << "series";
-    m.changeDatabasePath("foo");
-    flagOpen = true;
-    EXPECT_CALL(m, optimizeSpeedSQLiteDB).Times(1);
-    m.connect(true);
-    EXPECT_EQ(true, m.isOnline());
 }
 

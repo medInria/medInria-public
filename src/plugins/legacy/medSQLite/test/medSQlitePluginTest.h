@@ -5,46 +5,35 @@
 #define private public
 #include "medSQLite.h"
 
-static bool driverAvailability = true;
-static bool valid;
-static bool flagOpen;
-static QStringList fakeTables = QStringList();
-static int removeCount;
-
 class FakeEngine
 {
 public:
+
     FakeEngine(){};
     FakeEngine(const FakeEngine &other){};
     FakeEngine &operator=(const FakeEngine &other) { return *this; };
 
-    static bool isDriverAvailable(const QString &name) { return driverAvailability; }
-
-    bool isValid() { return valid; };
-    bool open() { return flagOpen; };
-    void setDatabaseName(const QString &name){};
+    MOCK_METHOD(void, setDatabaseName, (const QString &));
+    MOCK_METHOD(bool, isValid, ());
+    MOCK_METHOD(bool, open, ());
     MOCK_METHOD(void, close, ());
     MOCK_METHOD(bool, isOpen, ());
     MOCK_METHOD(QSqlQuery, exec, ());
-//    QSqlQuery exec(){return QSqlQuery();};
-    QStringList tables(){return fakeTables;};
+    MOCK_METHOD(QStringList, tables, ());
 
+    static bool isDriverAvailable(const QString &name) { return true; }
     static FakeEngine &addDatabase(const QString &, const QString &)
     {
         static FakeEngine db;
         return db;
     };
-
     static FakeEngine &database(const QString &)
     {
         static FakeEngine db;
         return db;
     };
+    static void removeDatabase(const QString&){};
 
-    static void removeDatabase(const QString &)
-    {
-        removeCount++;
-    };
 };
 
 class FakeMedSQLite : public medSQlite<FakeEngine>
@@ -61,6 +50,10 @@ public:
     MOCK_METHOD(QList<levelMinimalEntries>, getStudyMinimalEntries, (QString& parentId));
     MOCK_METHOD(QList<levelMinimalEntries>, getSeriesMinimalEntries, (QString& parentId));
     MOCK_METHOD(QString, getSeriesDirectData, (QString& key));
+    MOCK_METHOD(void, removeDatabase, ());
+    MOCK_METHOD(bool, isDriverAvailable, ());
+    MOCK_METHOD(FakeEngine, addDatabase, ());
+    MOCK_METHOD(FakeEngine, database, ());
 };
 
 // Test Integration

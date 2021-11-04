@@ -116,6 +116,11 @@ private:
     virtual QList<medAbstractSource::levelMinimalEntries> getSeriesMinimalEntries(QString &parentId);
     virtual void optimizeSpeedSQLiteDB();
     virtual QString getSeriesDirectData(QString &key);
+
+    virtual void removeDatabase();
+    virtual bool isDriverAvailable();
+    virtual T addDatabase();
+    virtual T database();
 };
 
 #include "medSQLite.txx"

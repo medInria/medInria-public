@@ -14,7 +14,7 @@
 #include "gmock/gmock.h"
 
 //#include "medSQLite.h"
-#include "medSQLiteTest.h"
+#include "medSQlitePluginTest.h"
 
 
 class medRequestTest : public ::testing::Test
@@ -337,7 +337,7 @@ TEST_F(medRequestTest, get_direct_data_series_level_right_function_call)
     QString expected_value = "foo";
     ON_CALL(m_, getSeriesDirectData(key)).WillByDefault(::testing::Return(expected_value));
     EXPECT_CALL(m_, getSeriesDirectData(key)).Times(1);
-    EXPECT_EQ(m_.getDirectData(ui_level, key), expected_value);
+    EXPECT_EQ(m_.getDirectData(ui_level, key), m_.m_DbPath->value() +  expected_value);
 }
 
 TEST(requestDBTest, get_direct_data_level_series_invalid_key_failed)
@@ -393,7 +393,8 @@ TEST(requestDBTest, get_direct_data_level_series_valid_key_success)
             query.exec();
         }
         QString key = "10";
-        EXPECT_EQ("/path/to/data1", t.getDirectData(2, key));
+        QString expected_path = dir.path() + "/path/to/data1";
+        EXPECT_EQ(expected_path, t.getDirectData(2, key));
         t.connect(false);
         dir.remove();
     }
