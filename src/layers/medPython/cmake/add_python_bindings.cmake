@@ -64,8 +64,11 @@ function(add_python_bindings cpp_target bindings_target)
         "}\n\n"
         )
 
-    foreach(file ${args_IMPORT})
-        string(APPEND interface_content "%import \"${file}\"\n\n")
+    foreach(import ${args_IMPORT})
+        if (TARGET ${import})
+            get_target_property(import ${import} SWIG_INTERFACE_FILE)
+        endif()
+        string(APPEND interface_content "%import \"${import}\"\n\n")
     endforeach()
 
     foreach(file ${args_INCLUDE})
@@ -91,6 +94,7 @@ function(add_python_bindings cpp_target bindings_target)
         LIBRARY_OUTPUT_DIRECTORY ${libraries_dir}
         OUTPUT_NAME ${module_name}
         SWIG_COMPILE_DEFINITIONS SWIG_TYPE_TABLE=${PYTHON_PROJECT_NAME}
+        SWIG_INTERFACE_FILE ${interface_file}
         )
 
     target_link_libraries(${bindings_target} PUBLIC ${PYTHON_PROJECT_NAME}Base)

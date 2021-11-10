@@ -105,7 +105,11 @@ PyObject* FunctionCall::evaluate() const
                 }
                 else
                 {
+#if PYTHON_VERSION_MINOR > 8
                     result = PyObject_CallNoArgs(*d->callable);
+#else
+                    result = PyObject_CallObject(*d->callable, nullptr);
+#endif
                 }
             }
         }

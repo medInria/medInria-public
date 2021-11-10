@@ -13,10 +13,12 @@
 ==============================================================================*/
 
 #include "medPythonConversionUtils.h"
+#include "medPythonDataIndexConversion.h"
 #include "medPythonObjectConversion.h"
 #include "medPythonPrimitiveConversion.h"
 #include "medPythonQHashConversion.h"
 #include "medPythonQListConversion.h"
+#include "medPythonQObjectConversion.h"
 #include "medPythonQStringConversion.h"
 #include "medPythonQVariantConversion.h"
 

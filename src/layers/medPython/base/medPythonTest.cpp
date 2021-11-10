@@ -108,13 +108,13 @@ void testContainerAccess()
 void testModuleImport(QString name)
 {
     print(QString("Testing the import of the %1 module").arg(name));
-    Module module = name;
+    Module module = import(name);
 }
 
 void testSysPath()
 {
     print("Testing sys.path");
-    QStringList sysPath = Module("sys").attribute("path").convert<QStringList>();
+    QStringList sysPath = import("sys").attribute("path").convert<QStringList>();
 
     foreach (QString path, sysPath)
     {
@@ -133,7 +133,7 @@ void testSysPath()
 void testSysModules()
 {
     print("Testing sys.modules");
-    QHash<QString, Object> sysModules = Module("sys").attribute("modules").convert<QHash<QString, Object> >();
+    QHash<QString, Object> sysModules = import("sys").attribute("modules").convert<QHash<QString, Object> >();
 
     foreach (Object moduleObject, sysModules)
     {

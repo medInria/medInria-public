@@ -15,7 +15,6 @@
 
 #include "medPythonConversionUtils.h"
 
-#include "medPythonError.h"
 #include "medPythonSWIGCore.h"
 
 namespace med::python
@@ -87,23 +86,30 @@ void* extractSWIGWrappedObject(const PyObject* object)
     return result;
 }
 
-PyObject* wrapObjectWithSWIG(void* object, QString typeName, bool takeOwnership)
+PyObject* wrapObjectWithSWIG(const void* object, QString typeName, bool takeOwnership)
 {
-    const swig_type_info* swigTypeInfo = getSWIGTypeInfo(typeName);
-    PyObject* result = nullptr;
-
-    if (swigTypeInfo)
+    if (object == nullptr)
     {
-        result = SWIG_NewPointerObj(object, const_cast<swig_type_info*>(swigTypeInfo), 0);
+        Py_RETURN_NONE;
     }
+    else
+    {
+        const swig_type_info* swigTypeInfo = getSWIGTypeInfo(typeName);
+        PyObject* result = nullptr;
 
-    return result;
+        if (swigTypeInfo)
+        {
+            result = SWIG_NewPointerObj(const_cast<void*>(object), const_cast<swig_type_info*>(swigTypeInfo), 0);
+        }
+
+        return result;
+    }
 }
 
-PyObject* wrapObjectWithSWIG(QObject* object, bool takeOwnership)
+PyObject* wrapObjectWithSWIG(const QObject* object, bool takeOwnership)
 {
     PyObject* result = nullptr;
-    const QMetaObject* metaObject = object->metaObject();
+    const QMetaObject* metaObject =  object ? object->metaObject() : &QObject::staticMetaObject;
 
     do
     {

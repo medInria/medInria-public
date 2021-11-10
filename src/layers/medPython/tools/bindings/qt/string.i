@@ -5,32 +5,11 @@
 
 %typemap(typecheck) QString = char *;
 
-%typemap(in) QString
-{
-    medPythonConvert($input, &$1);
-    med::python::propagateErrorIfOccurred();
-}
-
-%typemap(directorout) QString
-{
-    medPythonConvert($input, &$result);
-    med::python::propagateErrorIfOccurred();
-}
-
-%typemap(out) QString
-{
-    medPythonConvert($1, &$result);
-    med::python::propagateErrorIfOccurred();
-}
-
-%typemap(directorin) QString
-{
-    medPythonConvert($1, $input);
-    med::python::propagateErrorIfOccurred();
-}
+%medPythonTypemaps(QString);
 
 %apply QString { const QString };
-%apply QString { const QString& };
+
+%typemap(typecheck) const QString& = char *;
 
 %typemap(in) const QString& (QString temp)
 {
@@ -43,7 +22,7 @@
 {
     medPythonConvert($input, &temp);
     med::python::propagateErrorIfOccurred();
-    $result = &temp;
+    $result = temp;
 }
 
 %typemap(out) const QString&
@@ -52,8 +31,9 @@
     med::python::propagateErrorIfOccurred();
 }
 
-%typemap(directorin) const QString&
+%typemap(directorin) const QString& (PyObject* temp)
 {
-    medPythonConvert(*$1, &$input);
+    medPythonConvert($1, &temp);
     med::python::propagateErrorIfOccurred();
+    $input = temp;
 }

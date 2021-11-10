@@ -32,6 +32,7 @@ set(qt_bindings_sources
     qt/header.i
     qt/string.i
     qt/variant.i
+    qt/list.i
     qt/base.i
     qt/object.i
     qt/widgets.i
@@ -39,7 +40,10 @@ set(qt_bindings_sources
     )
 
 set(medInria_bindings_sources
-    medInria/base.i)
+    medInria/header.i
+    medInria/data.i
+    medInria/gui.i
+    )
 
 ## #############################################################################
 ## Add targets
@@ -68,7 +72,7 @@ add_python_bindings(${TARGET_NAME} qt_bindings
 
 add_python_bindings(${TARGET_NAME} medInria_bindings
     IMPORT
-    ${qt_bindings_sources}
+    qt_bindings
     INCLUDE
     ${medInria_bindings_sources}
     )

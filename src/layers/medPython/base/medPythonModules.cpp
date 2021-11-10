@@ -23,13 +23,13 @@ namespace med::python
 
 void registerModulePath(QString path)
 {
-    Module sys("sys");
+    Module sys = import("sys");
     sys.attribute("path").append(Object(path));
 }
 
 void loadPlugins()
 {
-    Module pkgutil("pkgutil");
+    Module pkgutil = import("pkgutil");
     Object moduleIterator = pkgutil.callMethod("iter_modules");
     Object moduleInfo = coreFunction(PyIter_Next, *moduleIterator);
 
@@ -39,7 +39,7 @@ void loadPlugins()
 
         if (moduleName.startsWith(PYTHON_PLUGIN_PREFIX))
         {
-            Module plugin(moduleName);
+            Module::import(moduleName);
         }
 
         moduleInfo = coreFunction(PyIter_Next, *moduleIterator);

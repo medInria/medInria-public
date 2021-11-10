@@ -23,13 +23,11 @@ class MEDPYTHON_EXPORT Module : public Object
 public:
     static Module main();
 
+    static Module import(QString name);
+
     Module(PyObject* reference);
 
     Module(const AbstractObject& other);
-
-    Module(const char* name);
-
-    Module(QString name);
 
     QString name();
 
@@ -39,5 +37,7 @@ private:
     static PyObject* ensureModuleObject(PyObject* reference);
     static PyObject* getModuleObject(QString name);
 };
+
+Module import(QString name);
 
 } // namespace med::python

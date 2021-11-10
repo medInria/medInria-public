@@ -27,6 +27,11 @@ Module Module::main()
     return getModuleObject("__main__");
 }
 
+Module Module::import(QString name)
+{
+    return getModuleObject(name);
+}
+
 Module::Module(PyObject* reference) :
     Object(ensureModuleObject(reference))
 {
@@ -34,16 +39,6 @@ Module::Module(PyObject* reference) :
 
 Module::Module(const AbstractObject& other) :
     Object(ensureModuleObject(other.newReference()))
-{
-}
-
-Module::Module(const char* name) :
-    Object(getModuleObject(name))
-{
-}
-
-Module::Module(QString name) :
-    Object(getModuleObject(name))
 {
 }
 
@@ -81,6 +76,11 @@ PyObject* Module::getModuleObject(QString name)
     }
 
     return moduleObject;
+}
+
+Module import(QString name)
+{
+    return Module::import(name);
 }
 
 } // namespace med::python
