@@ -13,13 +13,16 @@
 
 #include "medAPHP.h"
 #include <PluginAPHP/QtDcmAPHP.h>
-#include <QNetworkRequest>
-#include <QNetworkAccessManager>
-#include <QUrl>
-#include <QHttpMultiPart>
-#include <QFile>
+#include <QObject>
 
-medAPHP::medAPHP(QtDcmInterface *dicomLib): m_DicomLib(dicomLib)
+//#include <QNetworkRequest>
+//#include <QUrl>
+//#include <QHttpMultiPart>
+//#include <QFile>
+
+medAPHP::medAPHP(QtDcmInterface *dicomLib, medAbstractAnnotation *annotationAPI):
+                    m_LevelNames({"PATIENT","STUDY","SERIES"}),
+                    m_isOnline(false), m_DicomLib(dicomLib), m_AnnotationAPI(annotationAPI)
 {
     m_Aetitle = new medStringParameter("AE Title", this);
     m_Aetitle->setCaption("AE Title (Application Entity Title) used by the plugin (AE) to identify itself. ");
@@ -48,6 +51,11 @@ medAPHP::medAPHP(QtDcmInterface *dicomLib): m_DicomLib(dicomLib)
     m_AnnotationUrl = new medStringParameter("Rest API Anotation URL ");
     m_AnnotationUrl->setCaption("URL to access to Annotation Rest API");
     m_AnnotationUrl->setValue("http://127.0.0.1:5555");
+
+    m_DicomLib->setConnectionParameters(m_Aetitle->value(), m_Hostname->value(),
+                                        m_ServerAet->value(),m_ServerHostname->value(),
+                                        m_ServerPort->value());
+    m_AnnotationAPI->setUrl(m_AnnotationUrl->value());
 }
 
 bool medAPHP::initialization(const QString &pi_instanceId)
@@ -65,7 +73,7 @@ bool medAPHP::setInstanceName(const QString &pi_instanceName)
     bool bRes = !pi_instanceName.isEmpty();
     if (bRes)
     {
-        m_instanceId = pi_instanceName;
+        m_instanceName = pi_instanceName;
     }
     return bRes;
 }
@@ -75,54 +83,18 @@ bool medAPHP::connect(bool pi_bEnable)
     bool bRes = false;
     if (pi_bEnable)
     {
-        int respCode = m_DicomLib->sendEcho(m_Aetitle->value(), m_Hostname->value(),
-                            m_ServerAet->value(), m_ServerHostname->value(),
-                            m_ServerPort->value());
-
-        m_Manager = new QNetworkAccessManager(this);
-
-        QObject::connect(m_Manager, &QNetworkAccessManager::finished,
-                         this, &medAPHP::replyFinished);
-
-//        QString url = m_AnnotationUrl->value() + QString("/annotations/series/annotation");
-//        m_Manager->get(QNetworkRequest(QUrl(url)));
-
-        QNetworkRequest postRequest;
-        postRequest.setUrl(QUrl(m_AnnotationUrl->value() +
-        "/annotations/series/1.3.6.1.4.1.14519.5.2.1.3671.4754.216645718571142540899096273555"
-        "/annotation/1.2.826.0.1.3680043.2.1143.4644061347865562232933004322459135589"
-        "?annotation_type=json&annotation_subtype=&partner=medInria"));
-
-        auto postMultiPart = new QHttpMultiPart();
-        postMultiPart->setContentType(QHttpMultiPart::FormDataType);
-
-        postRequest.setRawHeader(QByteArray("Accept"), QByteArray("multipart/form-data; boundary=BoUnDaRyStRiNg"));
-
-        QHttpPart partData;
-        partData.setHeader(QNetworkRequest::ContentDispositionHeader,
-                           QVariant(R"(form-data; name="annotationData"; filename="1.2.826.0.1.3680043.2.1143.4644061347865562232933004322459135589.json")"));
-        partData.setHeader(QNetworkRequest::ContentTypeHeader, QVariant("application/octet-stream"));
-
-        auto file = new QFile("/Users/castelne/Library/Application Support/inria/medInria/0000000000/1.2.826.0.1.3680043.2.1143.2731159993210582763862514613329574197/1.2.826.0.1.3680043.2.1143.4644061347865562232933004322459135589.json");
-        file->open(QIODevice::ReadOnly);
-        partData.setBodyDevice(file);
-
-        postMultiPart->append(partData);
-        m_Manager->post(postRequest, postMultiPart);
-
-        if (respCode == 0)
+        int respCode = m_DicomLib->sendEcho();
+        bRes = !respCode;
+        if (bRes)
         {
-            bRes = true;
-            emit progress(0, eRequestStatus::finish);
+            respCode = m_AnnotationAPI->isServerAvailable();
+            bRes = !respCode;
         }
-        else
-        {
-            bRes = false;
-            emit abort(0);
-        }
+        m_isOnline = bRes;
     }
     else
     {
+        m_isOnline = false;
         bRes = true;
     }
     return bRes;
@@ -145,7 +117,7 @@ QList<medAbstractParameter *> medAPHP::getVolatilParameters()
 
 bool medAPHP::isWriteable()
 {
-    return false;
+    return true;
 }
 
 bool medAPHP::isLocal()
@@ -160,47 +132,136 @@ bool medAPHP::isCached()
 
 bool medAPHP::isOnline()
 {
-    return false;
+    return m_isOnline;
 }
 
 QString medAPHP::getInstanceName()
 {
-    return {};
+    return m_instanceName;
 }
 
 QString medAPHP::getInstanceId()
 {
-    return {};
+    return m_instanceId;
 }
 
 unsigned int medAPHP::getLevelCount()
 {
-    return 0;
+    return m_LevelNames.size();
 }
 
 QStringList medAPHP::getLevelNames()
 {
-    return {};
+    return m_LevelNames;
 }
 
 QString medAPHP::getLevelName(unsigned int pi_uiLevel)
 {
-    return {};
+    QString retVal;
+    if (pi_uiLevel>0 || pi_uiLevel<static_cast<unsigned int>(m_LevelNames.size()))
+    {
+        retVal = m_LevelNames.value((int)pi_uiLevel);
+    }
+    return retVal;
 }
 
 QStringList medAPHP::getMandatoryAttributesKeys(unsigned int pi_uiLevel)
 {
-    return {};
+    switch (pi_uiLevel)
+    {
+        case 0:
+            return {"id", "patientName", "patientID"};
+        case 1:
+            return {"id", "description", "uid"};
+        case 2:
+            return {"id", "description", "uid"};
+        default:
+            return QStringList();
+    }
 }
 
 QStringList medAPHP::getAdditionalAttributesKeys(unsigned int pi_uiLevel)
 {
-    return {};
+    switch (pi_uiLevel)
+    {
+        case 0:
+            return {"Birthdate", "Gender"};
+        case 1:
+            return {"Date"};
+        case 2:
+            return {"Modality", "Date"};
+        default:
+            return QStringList();
+    }
 }
 
 QList<medAbstractSource::levelMinimalEntries> medAPHP::getMinimalEntries(unsigned int pi_uiLevel, QString parentId)
 {
-    return {};
+    QList<levelMinimalEntries> entries;
+    QString key;
+    if (parentId.contains("/"))
+    {
+        QStringList splittedUri = parentId.split("/");
+        key = splittedUri[(int)pi_uiLevel-1];
+    }
+    else
+    {
+        key = parentId;
+    }
+
+    QList<QMap<QString, QString>> infos;
+    switch (pi_uiLevel)
+    {
+        case 0:
+            infos = m_DicomLib->findPatientMinimalEntries();
+            if (!infos.empty())
+            {
+                for (const auto &info : infos)
+                {
+                    levelMinimalEntries entry;
+                    entry.key = info.value("ID");
+                    entry.name = info.value("Name");
+                    entry.description = info.value("ID");
+                    entries.append(entry);
+                }
+            }
+            break;
+        case 1:
+            infos = m_DicomLib->findStudyMinimalEntries(key);
+            if (!infos.empty())
+            {
+                for (const auto &info : infos)
+                {
+                    levelMinimalEntries entry;
+                    entry.key = info.value("StudyInstanceUID");
+                    entry.name = info.value("Description");
+                    entry.description = info.value("StudyInstanceUID");
+                    entries.append(entry);
+                }
+            }
+            break;
+        case 2:
+            infos = m_DicomLib->findSeriesMinimalEntries(key);
+            infos.append(m_AnnotationAPI->findAnnotationMinimalEntries(key));
+            if (!infos.empty())
+            {
+                for (const auto &info : infos)
+                {
+                    levelMinimalEntries entry;
+                    entry.key = info.value("SeriesInstanceUID");
+                    entry.name = info.value("Description");
+                    entry.description = info.value("SeriesInstanceUID");
+                    entries.append(entry);
+                }
+            }
+
+            break;
+        default:
+            break;
+    }
+
+    return entries;
+
 }
 
 QList<QMap<QString, QString>> medAPHP::getMandatoryAttributes(unsigned int pi_uiLevel, int id)
@@ -231,45 +292,4 @@ bool medAPHP::addData(void *data, QString uri)
 void medAPHP::abort(int pi_iRequest)
 {
 
-}
-
-void medAPHP::replyFinished(QNetworkReply *reply)
-{
-    if(reply->error())
-    {
-        qDebug() << "ERROR!";
-        qDebug() << reply->errorString();
-    }
-    else
-    {
-        qDebug() << reply->header(QNetworkRequest::ContentTypeHeader).toString();
-        qDebug() << reply->header(QNetworkRequest::LastModifiedHeader).toDateTime().toString();;
-        qDebug() << reply->header(QNetworkRequest::ContentLengthHeader).toULongLong();
-        qDebug() << reply->attribute(QNetworkRequest::HttpStatusCodeAttribute).toInt();
-        qDebug() << reply->attribute(QNetworkRequest::HttpReasonPhraseAttribute).toString();
-        QString strReply = (QString)reply->readAll();
-
-        //parse json
-        qDebug() << "Response:" << strReply;
-        QJsonDocument jsonResponse = QJsonDocument::fromJson(strReply.toUtf8());
-        QJsonArray json_array = jsonResponse.array();
-
-        foreach (const QJsonValue &value, json_array) {
-            QJsonObject json_obj = value.toObject();
-            qDebug() << json_obj["annotation_uid"].toString();
-            qDebug() << json_obj["annotation_type"].toString();
-            qDebug() << json_obj["annotation_subtype"].toString();
-            qDebug() << json_obj["series_uid"].toString();
-        }
-        auto file = new QFile("/Users/castelne/developer/tmp/AnnotRestApi.txt");
-        if(file->open(QFile::Append))
-        {
-            file->write(reply->readAll());
-            file->flush();
-            file->close();
-        }
-        delete file;
-    }
-
-    reply->deleteLater();
 }

@@ -29,6 +29,10 @@ add_definitions(-D${TARGET_NAME_UP}_VERSION="${${TARGET_NAME}_VERSION}")
 ## Resolve dependencies
 ## #############################################################################
 
+enable_testing(true)
+FIND_PACKAGE(GTest REQUIRED)
+FIND_PACKAGE(Qt5Test REQUIRED)
+
 find_package(DCMTK REQUIRED NO_MODULE)
 
 find_package(QtDCM REQUIRED)
@@ -93,75 +97,43 @@ target_link_libraries(${TARGET_NAME}
 
 
 ## #############################################################################
-## QTest
+## Tests
 ## #############################################################################
-set(TARGET_NAME_TEST ${TARGET_NAME}QTest)
 
-project(${TARGET_NAME_TEST} LANGUAGES CXX)
+## #############################################################################
+## GTEST
+## #############################################################################
+set(TARGET_NAME_TEST ${TARGET_NAME}GTest)
 
-find_package(Qt5Test REQUIRED)
-
-set(CMAKE_AUTOMOC ON)
-
-enable_testing(true)
-
-add_executable(${TARGET_NAME_TEST} tests/medAPHPQTest.cpp tests/downloader.cpp tests/downloader.h)
-add_test(NAME ${TARGET_NAME_TEST} COMMAND ${TARGET_NAME_TEST})
-
-target_link_libraries(${TARGET_NAME_TEST} PRIVATE
-  Qt5::Test
-  medCore
-  ${TARGET_NAME}
-  ${QTDCM_LIBRARIES}
-  ${DCMTK_LIBRARIES}
-)
-
-### #############################################################################
-### GTest
-### #############################################################################
-
-set(TARGET_NAME_GTEST ${TARGET_NAME}GTest)
-project(${TARGET_NAME_GTEST} LANGUAGES CXX)
-#
-enable_testing()
-include(GoogleTest)
-find_package(GTest REQUIRED)
-include_directories(
-        ${MEDINRIA_INCLUDE_DIRS}
-        /usr/local/include
-)
-
-find_library(GMOCK_LIBRARY
-        NAMES gmock
-        libgmock
-        libgmock.dylib)
-
-find_library(GMOCK_MAIN_LIBRARY
-        NAMES gmock_main
-        libgmock_main
-        libgmock_main.dylib)
-
-find_library(GTEST_LIBRARY
-        NAMES gtest
-        libgtest
-        libgtest.dylib)
-
-find_library(GTEST_MAIN_LIBRARY
-        NAMES gtest_main
-        libgtest_main
-        libgtest_main.dylib)
-
-add_executable(${TARGET_NAME_GTEST} tests/medAPHPGtest.cpp )
-
-target_link_libraries(${TARGET_NAME_GTEST}
-        ${GTEST_LIBRARY} ${GTEST_MAIN_LIBRARY}
-        ${GMOCK_LIBRARY} ${GMOCK_MAIN_LIBRARY}
-        medCore
+add_executable(${TARGET_NAME_TEST})
+target_sources(${TARGET_NAME_TEST} PUBLIC medAPHP.cpp medAnnotation.cpp test/medAPHPGTest.cpp )
+target_include_directories(${TARGET_NAME_TEST} PUBLIC "." "./test/")
+set_target_properties(${TARGET_NAME_TEST} PROPERTIES COMPILE_DEFINITIONS "GTEST_LINKED_AS_SHARED_LIBRARY=1")
+target_link_libraries(${TARGET_NAME_TEST} PUBLIC
+        GTest::gtest_main
+        GTest::gtest
+        GTest::gmock_main
+        GTest::gmock
         medCore
         ${TARGET_NAME}
         ${QTDCM_LIBRARIES}
         ${DCMTK_LIBRARIES}
-)
+        )
+
+## #############################################################################
+## QTEST
+## #############################################################################
+set(TARGET_NAME_QTEST ${TARGET_NAME}QTest)
+add_executable(${TARGET_NAME_QTEST})
+target_sources(${TARGET_NAME_QTEST} PUBLIC medAPHP.cpp medAnnotation.cpp test/medAPHPQTest.cpp)
+target_include_directories(${TARGET_NAME_QTEST} PUBLIC "." "./test/")
+target_link_libraries(${TARGET_NAME_QTEST} PUBLIC
+        Qt5::Test
+        medCore
+        ${TARGET_NAME}
+        ${QTDCM_LIBRARIES}
+        ${DCMTK_LIBRARIES}
+        )
 
 ## #############################################################################
 ## Install rules

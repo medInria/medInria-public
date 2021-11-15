@@ -13,19 +13,19 @@
 #pragma once
 
 #include "medAPHPPluginExport.h"
+#include <medAbstractAnnotation.h>
 
 #include <medAbstractSource.h>
 #include <medIntParameter.h>
 #include <medStringParameter.h>
 #include <PluginAPHP/QtDcmInterface.h>
 
-#include <QNetworkReply>
 
 class medAPHP: public medAbstractSource
 {
 
 public:
-    explicit medAPHP(QtDcmInterface *dicomLib);
+    explicit medAPHP(QtDcmInterface *dicomLib, medAbstractAnnotation *annotationAPI);
 
     ~medAPHP() override = default;
 
@@ -93,13 +93,19 @@ public:
 
 public slots:
     void abort(int pi_iRequest) override;
-    void replyFinished(QNetworkReply *reply);
+//    void replyFinished(QNetworkReply *reply);
 
 private:
     QString m_instanceId;
+    QString m_instanceName;
+    QStringList m_LevelNames;
+
+    bool m_isOnline;
+
     /* ***********************************************************************/
     /* ***************************** PACS Settings ***************************/
     /* ***********************************************************************/
+
     /* ***************************** Local ***********************************/
     /* ***********************************************************************/
     medStringParameter *m_Aetitle;
@@ -119,7 +125,8 @@ private:
     medStringParameter *m_AnnotationUrl;
 
     QtDcmInterface *m_DicomLib;
-    QNetworkAccessManager *m_Manager;
+    medAbstractAnnotation *m_AnnotationAPI;
+
 };
 
 

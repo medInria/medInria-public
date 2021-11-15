@@ -13,6 +13,7 @@
 #include <medSourcesLoader.h>
 #include "medAPHPPlugin.h"
 #include "medAPHP.h"
+#include "medAnnotation.h"
 #include <PluginAPHP/QtDcmAPHP.h>
 
 medAPHPPlugin::medAPHPPlugin(QObject *parent) : medPluginLegacy(parent)
@@ -25,7 +26,7 @@ bool medAPHPPlugin::initialize()
         "medAPHP",
         "Datasource de type APHP (PACS + APIRest)",
         "Ce type de datasource permet l'exploitation des données pour une installation de medInria dans l'environnement de l'EDS APHP",
-        []() -> medAbstractSource* {return new medAPHP(new QtDcmAPHP()); });
+        []() -> medAbstractSource* {return new medAPHP(new QtDcmAPHP(), new medAnnotation()); });
 }
 
 QString medAPHPPlugin::name() const
