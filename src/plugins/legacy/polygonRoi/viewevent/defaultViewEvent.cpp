@@ -72,19 +72,13 @@ void defaultViewEvent::deleteLabel(polygonLabel *manager)
 
 void defaultViewEvent::updateLabelToolBoxState(QString &name)
 {
-    dLabelToolBox->clean();
     dLabelToolBox->setName(name);
     dLabelToolBox->setCurrentViewEventFilter(this);
-    int selectedLabelPosition = -1;
     for (polygonLabel *pLabel : labelList)
     {
         dLabelToolBox->updateItem(pLabel->getState());
-        if (pLabel->getState().selected)
-        {
-            selectedLabelPosition = pLabel->getPosition();
-        }
     }
-    dLabelToolBox->forceItemClickIfNeeded(selectedLabelPosition);
+    dLabelToolBox->forceItemSelection();
 }
 
 void defaultViewEvent::loadContours(QVector<medTagContours> &tagContoursSet)

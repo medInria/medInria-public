@@ -349,7 +349,7 @@ void urologyLabelToolBox::updateItem(medLabelProperty &info)
     }
     else if (item->text() != info.mainName)
     {
-        rename(labels->row(item), info.mainName);
+        info.mainName = item->text();
     }
     if (info.scoreState && !info.secondName.isEmpty())
     {

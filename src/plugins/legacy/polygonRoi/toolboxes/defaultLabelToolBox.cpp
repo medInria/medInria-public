@@ -96,10 +96,8 @@ void defaultLabelToolBox::addDefaultItem(QListWidgetItem *item)
 {
     labels->addItem(item);
 
-    labels->setDragDropMode(QAbstractItemView::InternalMove);
-    labels->setDragEnabled(true);
-    labels->setAcceptDrops(true);
-    labels->setDropIndicatorShown(true);
+    item->setFlags(item->flags() | Qt::ItemIsSelectable | Qt::ItemIsEditable);
+    item->setFlags(item->flags() & (~Qt::ItemIsUserCheckable));
 
     labels->setMaximumHeight((20 * labels->count()) + 5);
 }
@@ -243,15 +241,11 @@ void defaultLabelToolBox::updateItem(medLabelProperty &info)
     {
         item = createWidgetItem(info.mainName, info.mainColor);
         labels->insertItem(info.position, item);
-        labels->setDragDropMode(QAbstractItemView::InternalMove);
-        labels->setDragEnabled(true);
-        labels->setAcceptDrops(true);
-        labels->setDropIndicatorShown(true);
         labels->setMaximumHeight((20 * labels->count()) + 5);
     }
     else if (item->text() != info.mainName)
     {
-        rename(labels->row(item), info.mainName);
+        info.mainName = item->text();
     }
 
     item->setFlags(item->flags() | Qt::ItemIsSelectable | Qt::ItemIsEditable);
@@ -345,14 +339,20 @@ void defaultLabelToolBox::unselectAll()
     }
 }
 
-void defaultLabelToolBox::forceItemClickIfNeeded(int selectedLabel)
+void defaultLabelToolBox::forceItemSelection()
 {
-    if (labels->row(labels->currentItem()) < 0)
-        return;
-
-    if (selectedLabel!=labels->row(labels->currentItem()))
+    int selectedItem = -1;
+    for (int iRow=0; iRow <labels->count(); iRow++)
     {
-        emit labels->itemClicked(labels->currentItem());
+        QListWidgetItem *item = labels->item(iRow);
+        if (item->isSelected())
+        {
+            selectedItem = iRow;
+        }
+    }
+    if (selectedItem!=-1)
+    {
+        emit labels->itemClicked(labels->item(selectedItem));
     }
 }
 
