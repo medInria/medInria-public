@@ -48,7 +48,7 @@ public:
 
     int getContourPositionAndColor(QString &name, QColor &color);
     void unselectAll();
-    void forceItemClickIfNeeded(int selectedLabel);
+    void forceItemSelection();
 
 protected slots:
 

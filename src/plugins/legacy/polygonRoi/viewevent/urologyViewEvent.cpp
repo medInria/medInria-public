@@ -127,16 +127,11 @@ void urologyViewEvent::updateLabelToolBoxState(QString &name)
 {
     uLabelToolBox->setName(name);
     uLabelToolBox->setCurrentViewEventFilter(this);
-    int selectedLabelPosition = -1;
     for (polygonLabel *pLabel : labelList)
     {
         uLabelToolBox->updateItem(pLabel->getState());
-        if (pLabel->getState().selected)
-        {
-            selectedLabelPosition = pLabel->getPosition();
-        }
     }
-    uLabelToolBox->forceItemClickIfNeeded(selectedLabelPosition);
+    uLabelToolBox->forceItemSelection();
 }
 
 QMenu *urologyViewEvent::createScoreMenu(polygonLabel *pLabel)
