@@ -76,11 +76,18 @@ function(embed_python target)
 
     set(copied_library "${CMAKE_BINARY_DIR}/lib/${PYTHON_MAIN_LIBRARY}")
 
-    add_custom_command(OUTPUT ${copied_library}
-      COMMAND ${CMAKE_COMMAND} ARGS -E copy "${python_main_library}" "${CMAKE_BINARY_DIR}/lib/"
-      COMMAND ${CMAKE_INSTALL_NAME_TOOL} -id "${copied_library}" "${copied_library}"
-      DEPENDS "${python_main_library}"
-      )
+    if (APPLE)
+        add_custom_command(OUTPUT ${copied_library}
+          COMMAND ${CMAKE_COMMAND} ARGS -E copy "${python_main_library}" "${CMAKE_BINARY_DIR}/lib/"
+          COMMAND ${CMAKE_INSTALL_NAME_TOOL} -id "${copied_library}" "${copied_library}"
+          DEPENDS "${python_main_library}"
+          )
+    else()
+        add_custom_command(OUTPUT ${copied_library}
+          COMMAND ${CMAKE_COMMAND} ARGS -E copy "${python_main_library}" "${CMAKE_BINARY_DIR}/lib/"
+          DEPENDS "${python_main_library}"
+          )
+    endif()
 
     INSTALL(FILES "${copied_library}" TYPE LIB)
 
