@@ -89,7 +89,7 @@ function(embed_python target)
 ## #############################################################################
 
     target_include_directories(${target} PUBLIC "${working_dir}/${PYTHON_HEADERS_DIR}")
-    target_sources(${target} PUBLIC ${python_headers} ${copied_library})
+    target_sources(${target} PRIVATE ${python_headers} ${copied_library})
     target_link_libraries(${TARGET_NAME} PUBLIC "${copied_library}")
 
     target_compile_definitions(${target} PUBLIC PYTHON_VERSION_MINOR=${PYTHON_VERSION_MINOR})

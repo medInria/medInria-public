@@ -109,11 +109,6 @@ if (${CMAKE_VERSION} VERSION_GREATER_EQUAL "3.10.0")
     cmake_policy(SET CMP0071 NEW)
 endif()
 
-if (${CMAKE_VERSION} VERSION_GREATER_EQUAL "3.20.0")
-    # Make the GENERATED source file property visible in all directories
-    cmake_policy(SET CMP0118 NEW)
-endif()
-
 ## #############################################################################
 ## Additionals modules
 ## #############################################################################
