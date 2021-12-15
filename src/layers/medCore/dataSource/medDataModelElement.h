@@ -21,14 +21,16 @@
 class medDataModel;
 struct medDataModelElementPrivate;
 
-class MEDCORE_EXPORT medDataModelElement : public QAbstractItemModel
+class MEDCORE_EXPORT medSourceItemModel : public QAbstractItemModel
 {
 
     Q_OBJECT
 
 public:	
-    medDataModelElement(medDataModel *parent, QString const & sourceIntanceId);
-    virtual ~medDataModelElement();
+    medSourceItemModel(medDataModel *parent, QString const & sourceIntanceId);
+    virtual ~medSourceItemModel();
+
+    medDataModel * model();
 
     // ////////////////////////////////////////////////////////////////////////
     // Pure Virtual Override
@@ -65,6 +67,7 @@ public:
     int  getColumnInsideLevel(int level, int section);
     bool fetch(QString uri);
     QString getSourceIntanceId();
+    void setOnline(bool pi_bOnline);
 
 public slots:
     void itemPressed(QModelIndex const &index);
@@ -91,7 +94,8 @@ private:
 
 
 signals:
-
+    void online(bool);
+    void columnCountChange(int);
 
 private:
     medDataModelElementPrivate* d;

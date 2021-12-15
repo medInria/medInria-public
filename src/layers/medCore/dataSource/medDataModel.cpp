@@ -121,9 +121,24 @@ bool medDataModel::getLevelCount(QString const & pi_sourceIntanceId, unsigned in
     return bRes;
 }
 
-medDataModelElement * medDataModel::getModel(QString const & pi_sourceIntanceId)
+QString medDataModel::getInstanceName(QString const & pi_sourceIntanceId)
 {
-    medDataModelElement * res = nullptr;
+    QString instanceNameRes;
+    if (m_sourceIdToInstanceMap.contains(pi_sourceIntanceId))
+    {
+        instanceNameRes = m_sourceIdToInstanceMap[pi_sourceIntanceId]->getInstanceName();
+    }
+    return instanceNameRes;
+}
+
+QList<medSourceItemModel*> medDataModel::models()
+{
+    return m_sourcesModelMap.values();
+}
+
+medSourceItemModel * medDataModel::getModel(QString const & pi_sourceIntanceId)
+{
+    medSourceItemModel * res = nullptr;
     if (m_sourceIdToInstanceMap.contains(pi_sourceIntanceId))
     {
         medAbstractSource * source = m_sourceIdToInstanceMap[pi_sourceIntanceId];
@@ -171,7 +186,7 @@ void medDataModel::addSource(medAbstractSource * pi_source)
     {
         auto instanceId = pi_source->getInstanceId();
         m_sourceIdToInstanceMap[instanceId] = pi_source;
-        m_sourcesModelMap[pi_source] = new medDataModelElement(this, instanceId);
+        m_sourcesModelMap[pi_source] = new medSourceItemModel(this, instanceId);
         auto tester = new QAbstractItemModelTester(m_sourcesModelMap[pi_source], QAbstractItemModelTester::FailureReportingMode::Fatal, this);
     }
 }
@@ -181,8 +196,10 @@ void medDataModel::removeSource(medAbstractSource * pi_source)
 {
     if (pi_source)
     {
-        m_sourceIdToInstanceMap.remove(pi_source->getInstanceId());
+        QString instanceId = pi_source->getInstanceId();
+        m_sourceIdToInstanceMap.remove(instanceId);
         delete m_sourcesModelMap.take(pi_source);
+        emit sourceRemoved(instanceId);
     }
 }
 
@@ -195,16 +212,20 @@ void medDataModel::addData(medAbstractData * pi_dataset, QString uri)
     splittedUri.append(sourceUri.split('/'));
  
     //TODO verifier la presence dans la map
-    auto pModelElement = m_sourceIdToInstanceMap[splittedUri[0]];
+    auto pSource = m_sourceIdToInstanceMap[splittedUri[0]];
     // ////////////////////////////////////////////////////////////////////////
     // Adding dataset to the source
-    bool bContinue = pModelElement->addData(pi_dataset, sourceUri);
+    bool bContinue = pSource->addData(pi_dataset, sourceUri);
 
     // ////////////////////////////////////////////////////////////////////////
     // Refresh dataModelElement
     if (bContinue)
     {
-        m_sourcesModelMap[pModelElement]->fetch(sourceUri.left(sourceUri.lastIndexOf('/')));
+        m_sourcesModelMap[pSource]->fetch(sourceUri.left(sourceUri.lastIndexOf('/')));
+    }
+    else
+    {
+        sourceIsOnline(splittedUri[0]);
     }
 }
 
@@ -221,6 +242,17 @@ void medDataModel::refresh(QString uri)
     QString sourceUri = uri.right(uri.size() - sourceDelimPos - 1);
     splittedUri.append(sourceUri.split('/'));
 
-    auto pModelElement = m_sourceIdToInstanceMap[splittedUri[0]];
-    m_sourcesModelMap[pModelElement]->fetch(sourceUri);
+    auto pSource = m_sourceIdToInstanceMap[splittedUri[0]];
+    m_sourcesModelMap[pSource]->fetch(sourceUri);
+}
+
+void medDataModel::sourceIsOnline(QString sourceIntanceId)
+{
+    if (m_sourceIdToInstanceMap.contains(sourceIntanceId))
+    {
+        auto pSource = m_sourceIdToInstanceMap[sourceIntanceId];
+        bool bOnline = pSource->connect(true); //TODO remove when 256 will be applied
+        m_sourcesModelMap[pSource]->setOnline(bOnline); //TODO remove when 256 will be applied
+        //pSource->connect(true);
+    }
 }

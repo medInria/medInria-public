@@ -26,6 +26,8 @@
 #include <QMutex>
 #include <QSharedPointer>
 
+#include <medVirtualRepresentation.h> //TODO: to remove
+
 #define MED_DATASOURCES_FILENAME "DataSources.json"
 
 medDBSourcesLoader *medDBSourcesLoader::s_instance = nullptr;
@@ -206,6 +208,8 @@ medAbstractSource* medDBSourcesLoader::createInstanceOfSource(QString const & ty
 medDBSourcesLoader::medDBSourcesLoader()
 {
     m_CnxParametersPath = ".";
+    medVirtualRepresentation *pVirt = new medVirtualRepresentation();
+    pVirt->setRootPath("C:\\Users\\fleray\\Desktop\\tmp\\virt");
 }
 
 bool medDBSourcesLoader::saveToDisk()

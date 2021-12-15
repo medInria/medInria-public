@@ -32,6 +32,8 @@
 
 #include <medSourcesLoader.h>
 #include <medDataModel.h>
+#include <medSourceItemModelPresenter.h>
+#include <medSourceModelPresenter.h>
 
 void forceShow(medMainWindow &mainwindow)
 {
@@ -248,6 +250,9 @@ int main(int argc, char *argv[])
         //treeView->setDropIndicatorShown(true);
         treeView->setDragDropMode(QAbstractItemView::DragOnly);
         
+        medSourceItemModelPresenter *onlyOneSource_browser = new medSourceItemModelPresenter(testModel->getModel("medSQLite_210721"));
+        medSourceModelPresenter *multiSources_tree = new medSourceModelPresenter(testModel);
+
         //tableView->setModel(testModel->getModel(""));
         //bool c0Ok = QObject::connect(treeView, SIGNAL(pressed(const QModelIndex &)), tableView, SIGNAL(pressed(const QModelIndex &)));
         bool c1Ok = QObject::connect(treeView, SIGNAL(pressed(const QModelIndex &)), testModel->getModel("medSQLite_210721"), SLOT(itemPressed(QModelIndex const &)));
@@ -257,6 +262,14 @@ int main(int argc, char *argv[])
         vLayout->addWidget(treeView);
         vLayout->addWidget(buttonAddData);
         vLayout->addWidget(buttonRefresh);
+        auto *pBrwoser = onlyOneSource_browser->buildTree();
+        pBrwoser->setSelectionMode(QAbstractItemView::SingleSelection);
+        pBrwoser->setDragEnabled(true);
+        pBrwoser->viewport()->setAcceptDrops(false);
+        pBrwoser->setDragDropMode(QAbstractItemView::DragOnly);
+        vLayout->addWidget(pBrwoser);
+        vLayout->addWidget(multiSources_tree->buildWidget());
+
         //vLayout->addWidget(tableView);
         w->setLayout(vLayout);
 

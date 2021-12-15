@@ -93,23 +93,23 @@ target_link_libraries(${TARGET_NAME} PUBLIC
 
 
 
-set(TARGET_NAME_TEST ${TARGET_NAME}Test)
-
-
-add_executable(${TARGET_NAME_TEST})
-target_sources(${TARGET_NAME_TEST} PUBLIC medSQLite.txx test/medSQLiteRequestTest.cpp test/medSQLiteTest.cpp test/medSQLiteTest.h)
-target_include_directories(${TARGET_NAME_TEST} PUBLIC "." "./test/")
-set_target_properties(${TARGET_NAME_TEST} PROPERTIES COMPILE_DEFINITIONS "GTEST_LINKED_AS_SHARED_LIBRARY=1")
-target_link_libraries(${TARGET_NAME_TEST} PUBLIC
-		GTest::gtest_main
-        GTest::gtest
-		GTest::gmock_main
-		GTest::gmock
-		Qt5::Core
-        Qt5::Sql
-        medCore
-        medCoreLegacy
-        ${TARGET_NAME})
+#set(TARGET_NAME_TEST ${TARGET_NAME}Test)
+#
+#
+#add_executable(${TARGET_NAME_TEST})
+#target_sources(${TARGET_NAME_TEST} PUBLIC medSQLite.txx test/medSQLiteRequestTest.cpp test/medSQLiteTest.cpp test/medSQLiteTest.h)
+#target_include_directories(${TARGET_NAME_TEST} PUBLIC "." "./test/")
+#set_target_properties(${TARGET_NAME_TEST} PROPERTIES COMPILE_DEFINITIONS "GTEST_LINKED_AS_SHARED_LIBRARY=1")
+#target_link_libraries(${TARGET_NAME_TEST} PUBLIC
+#		GTest::gtest_main
+#        GTest::gtest
+#		GTest::gmock_main
+#		GTest::gmock
+#		Qt5::Core
+#        Qt5::Sql
+#        medCore
+#        medCoreLegacy
+#        ${TARGET_NAME})
 
 
 

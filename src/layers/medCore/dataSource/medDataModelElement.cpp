@@ -33,7 +33,7 @@ struct medDataModelElementPrivate
     medDataModelItem *root;
 };
 
-medDataModelElement::medDataModelElement(medDataModel *parent, QString const & sourceIntanceId) : d(new medDataModelElementPrivate)
+medSourceItemModel::medSourceItemModel(medDataModel *parent, QString const & sourceIntanceId) : d(new medDataModelElementPrivate)
 {
     d->parent = parent;
     d->sourceInstanceId = sourceIntanceId;
@@ -59,13 +59,18 @@ medDataModelElement::medDataModelElement(medDataModel *parent, QString const & s
     }
 }
 
-medDataModelElement::~medDataModelElement()
+medSourceItemModel::~medSourceItemModel()
 {
     delete d->root;
     delete d;
 }
 
-QVariant medDataModelElement::data(const QModelIndex & index, int role) const
+medDataModel * medSourceItemModel::model()
+{
+    return d->parent;
+}
+
+QVariant medSourceItemModel::data(const QModelIndex & index, int role) const
 {
     QVariant varDataRes;
 
@@ -86,7 +91,7 @@ QVariant medDataModelElement::data(const QModelIndex & index, int role) const
     return varDataRes;
 }
 
-QModelIndex medDataModelElement::index(int row, int column, const QModelIndex & parent) const
+QModelIndex medSourceItemModel::index(int row, int column, const QModelIndex & parent) const
 {
     QModelIndex res;
 
@@ -104,7 +109,7 @@ QModelIndex medDataModelElement::index(int row, int column, const QModelIndex & 
 * @param  index of which we want the parent.
 * @return Returns the parent of the model item with the given index. If the item has no parent, an invalid QModelIndex is returned.
 */
-QModelIndex medDataModelElement::parent(const QModelIndex & index) const
+QModelIndex medSourceItemModel::parent(const QModelIndex & index) const
 {
     QModelIndex indexRes;
 
@@ -125,7 +130,7 @@ QModelIndex medDataModelElement::parent(const QModelIndex & index) const
 * @param  parent is the index of the parent or invalid index for the top level.
 * @return Returns the number of columns.
 */
-int medDataModelElement::columnCount(const QModelIndex & parent) const
+int medSourceItemModel::columnCount(const QModelIndex & parent) const
 {
     Q_UNUSED(parent);
     return d->sectionNames.size();
@@ -136,7 +141,7 @@ int medDataModelElement::columnCount(const QModelIndex & parent) const
 * @param  parent is the index of the parent or invalid index for the top level.
 * @return Returns the number of rows under the given parent. When the parent is valid it means that rowCount is returning the number of children of parent.
 */
-int	medDataModelElement::rowCount(const QModelIndex &parent) const
+int	medSourceItemModel::rowCount(const QModelIndex &parent) const
 {
     int iRes = 0;    
 
@@ -148,7 +153,7 @@ int	medDataModelElement::rowCount(const QModelIndex &parent) const
     return iRes;
 }
 
-bool medDataModelElement::insertRows(int row, int count, const QModelIndex &parent)
+bool medSourceItemModel::insertRows(int row, int count, const QModelIndex &parent)
 {
     beginInsertRows(parent, row, row + count - 1);
     //TODO Correct implementation
@@ -156,7 +161,7 @@ bool medDataModelElement::insertRows(int row, int count, const QModelIndex &pare
     return true;
 }
 
-bool medDataModelElement::removeRows(int row, int count, const QModelIndex & parent)
+bool medSourceItemModel::removeRows(int row, int count, const QModelIndex & parent)
 {
     bool bRes = true;
     
@@ -182,7 +187,7 @@ bool medDataModelElement::removeRows(int row, int count, const QModelIndex & par
 /* *************** Not overrides functions and slots *********************/
 /* ***********************************************************************/
 
-bool medDataModelElement::canFetchMore(const QModelIndex & parent) const
+bool medSourceItemModel::canFetchMore(const QModelIndex & parent) const
 {
     bool bRes = false;
 
@@ -195,7 +200,7 @@ bool medDataModelElement::canFetchMore(const QModelIndex & parent) const
     return bRes;
 }
 
-void medDataModelElement::fetchMore(const QModelIndex & parent)
+void medSourceItemModel::fetchMore(const QModelIndex & parent)
 {
     if (canFetchMore(parent))
     {
@@ -211,7 +216,7 @@ void medDataModelElement::fetchMore(const QModelIndex & parent)
     }
 }
 
-inline medDataModelItem * medDataModelElement::getItem(const QModelIndex & index) const
+inline medDataModelItem * medSourceItemModel::getItem(const QModelIndex & index) const
 {
     medDataModelItem* itemRes = d->root;
 
@@ -227,7 +232,7 @@ inline medDataModelItem * medDataModelElement::getItem(const QModelIndex & index
     return itemRes;
 }
 
-QModelIndex medDataModelElement::getIndex(QString iid, QModelIndex const &parent) const
+QModelIndex medSourceItemModel::getIndex(QString iid, QModelIndex const &parent) const
 {
     QModelIndex indexRes;
 
@@ -242,7 +247,7 @@ QModelIndex medDataModelElement::getIndex(QString iid, QModelIndex const &parent
     return indexRes;
 }
 
-QVariant medDataModelElement::headerData(int section, Qt::Orientation orientation, int role) const
+QVariant medSourceItemModel::headerData(int section, Qt::Orientation orientation, int role) const
 {
     QVariant varRes;
 
@@ -262,12 +267,12 @@ QVariant medDataModelElement::headerData(int section, Qt::Orientation orientatio
 
 
 
-Qt::DropActions medDataModelElement::supportedDropActions() const
+Qt::DropActions medSourceItemModel::supportedDropActions() const
 {
     return Qt::CopyAction | Qt::MoveAction | Qt::LinkAction;
 }
 
-Qt::ItemFlags medDataModelElement::flags(const QModelIndex & index) const
+Qt::ItemFlags medSourceItemModel::flags(const QModelIndex & index) const
 {
     Qt::ItemFlags defaultFlags = QAbstractItemModel::flags(index);
 
@@ -277,14 +282,14 @@ Qt::ItemFlags medDataModelElement::flags(const QModelIndex & index) const
         return Qt::ItemIsDropEnabled | defaultFlags;
 }
 
-QStringList medDataModelElement::mimeTypes() const
+QStringList medSourceItemModel::mimeTypes() const
 {
     QStringList types;
     types << "med/index2";
     return types;
 }
 
-QMimeData * medDataModelElement::mimeData(const QModelIndexList & indexes) const
+QMimeData * medSourceItemModel::mimeData(const QModelIndexList & indexes) const
 {
     QMimeData *mimeData = new QMimeData;
     QByteArray encodedData;
@@ -318,7 +323,7 @@ QMimeData * medDataModelElement::mimeData(const QModelIndexList & indexes) const
 
 
 
-int medDataModelElement::getColumnInsideLevel(int level, int section)
+int medSourceItemModel::getColumnInsideLevel(int level, int section)
 {
     int iRes = -1;
 
@@ -333,7 +338,7 @@ int medDataModelElement::getColumnInsideLevel(int level, int section)
     return iRes;
 }
 
-bool medDataModelElement::fetch(QString uri) //See populateLevelV2
+bool medSourceItemModel::fetch(QString uri) //See populateLevelV2
 {
     QStringList splittedUri;
     splittedUri.append(uri.split('/'));
@@ -358,16 +363,25 @@ bool medDataModelElement::fetch(QString uri) //See populateLevelV2
     return false;
 }
 
-QString medDataModelElement::getSourceIntanceId()
+QString medSourceItemModel::getSourceIntanceId()
 {
     return d->sourceInstanceId;
+}
+
+void medSourceItemModel::setOnline(bool pi_bOnline)
+{
+    if (d->bOnline != pi_bOnline)
+    {
+        d->bOnline = pi_bOnline;
+        emit online(d->bOnline);
+    }
 }
 
 /**
 * @brief  This slot refresh the current item pressed by GUI click, if the item don't have sons.
 * @param  index of the GUI element clicked.
 */
-void medDataModelElement::itemPressed(QModelIndex const &index)
+void medSourceItemModel::itemPressed(QModelIndex const &index)
 {
     if (index.isValid())
     {
@@ -380,7 +394,7 @@ void medDataModelElement::itemPressed(QModelIndex const &index)
     }
 }
 
-bool medDataModelElement::currentLevelFetchable(medDataModelItem * pItemCurrent)
+bool medSourceItemModel::currentLevelFetchable(medDataModelItem * pItemCurrent)
 {
     bool bRes = pItemCurrent->canHaveSubData();
     
@@ -400,7 +414,7 @@ bool medDataModelElement::currentLevelFetchable(medDataModelItem * pItemCurrent)
 /* ***********************************************************************/
 /* *************** Private functions and slots ***************************/
 /* ***********************************************************************/
-bool medDataModelElement::fetchColumnNames(const QModelIndex &index/*int const &m_iLevel*/)
+bool medSourceItemModel::fetchColumnNames(const QModelIndex &index/*int const &m_iLevel*/)
 {
     bool bRes = true;
     
@@ -417,6 +431,7 @@ bool medDataModelElement::fetchColumnNames(const QModelIndex &index/*int const &
             if (!d->sectionNames.contains(attribute))
             {
                 d->sectionNames.push_back(attribute);
+                emit columnCountChange(d->sectionNames.size());
             }
         }
     }
@@ -425,7 +440,7 @@ bool medDataModelElement::fetchColumnNames(const QModelIndex &index/*int const &
 }
 
 
-void medDataModelElement::populateLevel(QModelIndex const &index, QString const &key)
+void medSourceItemModel::populateLevel(QModelIndex const &index, QString const &key)
 {
     QVariantList entries;
     medDataModelItem *pItem = getItem(index);
@@ -474,7 +489,7 @@ void medDataModelElement::populateLevel(QModelIndex const &index, QString const 
     }
 }
 
-void medDataModelElement::populateLevelV2(QModelIndex const & index, QString const & uri)
+void medSourceItemModel::populateLevelV2(QModelIndex const & index, QString const & uri)
 {
     QVariantList entries;
     medDataModelItem *pItem = getItem(index);
@@ -499,7 +514,7 @@ void medDataModelElement::populateLevelV2(QModelIndex const & index, QString con
 }
 
 
-bool medDataModelElement::itemStillExist(QVariantList &entries, medDataModelItem * pItem)
+bool medSourceItemModel::itemStillExist(QVariantList &entries, medDataModelItem * pItem)
 {
     bool bFind = false;
 
@@ -514,7 +529,7 @@ bool medDataModelElement::itemStillExist(QVariantList &entries, medDataModelItem
     return bFind;
 }
 
-void medDataModelElement::computeRowRangesToRemove(medDataModelItem * pItem, QVariantList &entries, QVector<QPair<int, int>> &rangeToRemove)
+void medSourceItemModel::computeRowRangesToRemove(medDataModelItem * pItem, QVariantList &entries, QVector<QPair<int, int>> &rangeToRemove)
 {
     int iStartRemoveRange = -1;
     for (int i = 0; i < pItem->childCount(); ++i)
@@ -547,7 +562,7 @@ void medDataModelElement::computeRowRangesToRemove(medDataModelItem * pItem, QVa
     }
 }
 
-void medDataModelElement::removeRowRanges(QVector<QPair<int, int>> &rangeToRemove, const QModelIndex & index)
+void medSourceItemModel::removeRowRanges(QVector<QPair<int, int>> &rangeToRemove, const QModelIndex & index)
 {
     int iOffsetRange = 0; //Accumulate deletions count to correct ranges still to delete
     for (auto &range : rangeToRemove)
@@ -559,7 +574,7 @@ void medDataModelElement::removeRowRanges(QVector<QPair<int, int>> &rangeToRemov
 
 
 
-void medDataModelElement::computeRowRangesToAdd(medDataModelItem * pItem, QVariantList &entries, QMap<int, QVariantList> &entriesToAdd)
+void medSourceItemModel::computeRowRangesToAdd(medDataModelItem * pItem, QVariantList &entries, QMap<int, QVariantList> &entriesToAdd)
 {
     int  iLastItemAlreadyPresent = -1;
     for (QVariant &var : entries)
@@ -577,7 +592,7 @@ void medDataModelElement::computeRowRangesToAdd(medDataModelItem * pItem, QVaria
     }
 }
 
-void medDataModelElement::addRowRanges(QMap<int, QVariantList> &entriesToAdd, const QModelIndex & index)
+void medSourceItemModel::addRowRanges(QMap<int, QVariantList> &entriesToAdd, const QModelIndex & index)
 {
     int iOffsetRange = 0;
     auto startRangeList = entriesToAdd.keys();
