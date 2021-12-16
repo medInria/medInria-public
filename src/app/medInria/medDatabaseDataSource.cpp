@@ -23,6 +23,12 @@
 #include <medDatabaseView.h>
 #include <medDataManager.h>
 
+#include <medSourcesLoader.h>
+#include <medDataModel.h>
+#include <medSourceItemModelPresenter.h>
+#include <medSourceModelPresenter.h>
+#include <medSourcesWidget.h>
+
 class medDatabaseDataSourcePrivate
 {
 public:
@@ -31,7 +37,7 @@ public:
 
     medDatabaseModel *model;
     QPointer<medDatabaseView> largeView;
-    medDatabaseView *compactView;
+    medSourcesWidget *compactView;
 
     medDatabasePreview *compactPreview;
 
@@ -98,37 +104,72 @@ QWidget* medDatabaseDataSource::mainViewWidget()
     return d->mainWidget;
 }
 
+//QWidget* medDatabaseDataSource::compactViewWidget()
+//{
+//    if (d->compactWidget.isNull())
+//    {
+//        d->compactWidget = new medDatabaseCompactWidget();
+//    
+//        d->compactSearchPanel = new medDatabaseSearchPanel(d->compactWidget);
+//        d->compactSearchPanel->setColumnNames(d->model->columnNames());
+//        connect(d->compactSearchPanel, SIGNAL(filter(const QString &, int)), this, SLOT(compactFilter(const QString &, int)),
+//            Qt::UniqueConnection);
+//    
+//        d->compactView = new medDatabaseView(d->compactWidget);
+//        d->compactView->setSizePolicy(QSizePolicy::MinimumExpanding, QSizePolicy::MinimumExpanding);
+//        d->compactView->setModel(d->compactProxy);
+//        d->compactPreview = new medDatabasePreview(d->compactWidget);
+//    
+//        d->compactWidget->setSearchPanelViewAndPreview(d->compactSearchPanel, d->compactView, d->compactPreview);
+//    
+//        for (int i = 1; i < 12; ++i)
+//            d->compactView->hideColumn(i);
+//    
+//        connect(d->compactView, SIGNAL(patientClicked(const medDataIndex&)), d->compactPreview, SLOT(showPatientPreview(const medDataIndex&)));
+//        connect(d->compactView, SIGNAL(studyClicked(const medDataIndex&)), d->compactPreview, SLOT(showStudyPreview(const medDataIndex&)));
+//        connect(d->compactView, SIGNAL(seriesClicked(const medDataIndex&)), d->compactPreview, SLOT(showSeriesPreview(const medDataIndex&)));
+//    
+//        connect(d->compactPreview, SIGNAL(openRequest(medDataIndex)), d->compactView, SIGNAL(open(medDataIndex)));
+//        connect(d->compactView, SIGNAL(exportData(const medDataIndex&)), this, SIGNAL(exportData(const medDataIndex&)));
+//        connect(d->compactView, SIGNAL(dataRemoved(const medDataIndex&)), this, SIGNAL(dataRemoved(const medDataIndex&)));
+//    }
+//    return d->compactWidget;
+//}
+
 QWidget* medDatabaseDataSource::compactViewWidget()
 {
+    QWidget *compactViewWidgetRes = nullptr;
+
     if(d->compactWidget.isNull())
     {
-        d->compactWidget = new medDatabaseCompactWidget();
+        compactViewWidgetRes = new QWidget();
+        QVBoxLayout *layout = new QVBoxLayout();
+
 
         d->compactSearchPanel = new medDatabaseSearchPanel(d->compactWidget);
         d->compactSearchPanel->setColumnNames(d->model->columnNames());
-        connect(d->compactSearchPanel, SIGNAL(filter(const QString &, int)),this, SLOT(compactFilter(const QString &, int)),
-                Qt::UniqueConnection);
 
-        d->compactView = new medDatabaseView(d->compactWidget);
+        static auto testModel = new medDataModel(); //TODO Remove ok c'est le truc le moins classe du monde (Part3)
+        medDataManager::instance()->setIndexV2Handler([](medDataIndex const & dataIndex) -> medAbstractData* {return testModel->getData(dataIndex); });
+        QObject::connect(medDBSourcesLoader::instance(), SIGNAL(sourceAdded(medAbstractSource *)), testModel, SLOT(addSource(medAbstractSource *)));
+        medDBSourcesLoader::instance()->loadFromDisk();
+        medSourceModelPresenter *multiSources_tree = new medSourceModelPresenter(testModel);
+        d->compactView = multiSources_tree->buildTree();
+
         d->compactView->setSizePolicy(QSizePolicy::MinimumExpanding, QSizePolicy::MinimumExpanding);
-        d->compactView->setModel(d->compactProxy);
+
         d->compactPreview = new medDatabasePreview(d->compactWidget);
 
-        d->compactWidget->setSearchPanelViewAndPreview(d->compactSearchPanel, d->compactView, d->compactPreview);
 
-        for(int i =1; i<12; ++i)
-            d->compactView->hideColumn(i);
 
-        connect(d->compactView, SIGNAL(patientClicked(const medDataIndex&)), d->compactPreview, SLOT(showPatientPreview(const medDataIndex&)));
-        connect(d->compactView, SIGNAL(studyClicked(const medDataIndex&)), d->compactPreview, SLOT(showStudyPreview(const medDataIndex&)));
-        connect(d->compactView, SIGNAL(seriesClicked(const medDataIndex&)), d->compactPreview, SLOT(showSeriesPreview(const medDataIndex&)));
+        layout->addWidget(d->compactSearchPanel);
+        layout->addWidget(d->compactView);
+        layout->addWidget(d->compactPreview);
 
-        connect(d->compactPreview, SIGNAL(openRequest(medDataIndex)), d->compactView , SIGNAL(open(medDataIndex)));
-        connect(d->compactView, SIGNAL(exportData(const medDataIndex&)), this, SIGNAL(exportData(const medDataIndex&)));
-        connect(d->compactView, SIGNAL(dataRemoved(const medDataIndex&)), this, SIGNAL(dataRemoved(const medDataIndex&)));
+        compactViewWidgetRes->setLayout(layout);
     }
 
-    return d->compactWidget;
+    return compactViewWidgetRes;
 }
 
 QWidget* medDatabaseDataSource::sourceSelectorWidget()

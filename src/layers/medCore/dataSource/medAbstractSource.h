@@ -94,10 +94,10 @@ public:
     /* ***********************************************************************/
     /* *************** Store data          ***********************************/
     /* ***********************************************************************/
-    //TODO store a dataset
+    //TODO: store a dataset
     virtual bool addData(void* data, QString uri) = 0;
-    //TODO alter metaData
-    //TODO store complementaries data like thumbnail
+    //TODO: alter metaData
+    //TODO: store complementaries data like thumbnail
     
     
 signals:

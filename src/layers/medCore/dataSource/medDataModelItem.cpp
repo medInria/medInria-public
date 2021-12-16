@@ -9,7 +9,7 @@
 
 
 
-medDataModelItem::medDataModelItem(medDataModelElement *model)
+medDataModelItem::medDataModelItem(medSourceItemModel *model)
 {
     m_model = model;
     m_parentItem = nullptr; //Invalid parent 

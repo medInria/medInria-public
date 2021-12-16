@@ -17,6 +17,7 @@
 
 #include <medCoreExport.h>
 #include <QMap>
+#include <QList>
 #include <QAbstractItemModelTester>
 
 #include <medDataIndex.h>
@@ -39,7 +40,11 @@ public:
     bool getLevelAttributes(QString const & pi_sourceIntanceId, unsigned int pi_uiLevel, QStringList & po_attributes);
     bool getLevelCount(QString const & pi_sourceIntanceId, unsigned int &po_uiLevelMax);
 
-    medDataModelElement* getModel(QString const & pi_sourceIntanceId);
+
+    QString getInstanceName(QString const & pi_sourceIntanceId);
+    QList<medSourceItemModel*> models(); // rediscuté de son nom
+
+    medSourceItemModel* getModel(QString const & pi_sourceIntanceId);
 
     medAbstractData * getData(medDataIndex const & index);
 
@@ -52,16 +57,19 @@ public slots:
 
 
    void refresh(QString uri);   //uri -> sourceInstanceId/IdLevel1/IdLevel.../IdLevelN
+   void sourceIsOnline(QString sourceIntanceId);
+
 private:
 
 
 signals:
     void sourceAdded(medAbstractSource*);   // Signal to indicate a source was registered
-	void sourceRemoved(medAbstractSource*); // Signal to indicate a source was unregistered
+	void sourceRemoved(QString); // Signal to indicate a source was unregistered
+    //void sourceOnline(QString, bool);
 
 private:
     QMap< QString, medAbstractSource*> m_sourceIdToInstanceMap;
-    QMap< medAbstractSource*, medDataModelElement*> m_sourcesModelMap;
+    QMap< medAbstractSource*, medSourceItemModel*> m_sourcesModelMap;
     medAbstractSource* m_defaultSource;
 
     QMap<medDataIndex, dtkSmartPointer<medAbstractData> > m_IndexToData;

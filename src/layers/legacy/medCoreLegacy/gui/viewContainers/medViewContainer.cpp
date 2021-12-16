@@ -677,6 +677,13 @@ void medViewContainer::dragEnterEvent(QDragEnterEvent *event)
 
 void medViewContainer::dragMoveEvent(QDragMoveEvent *event)
 {
+    auto mouseButton = event->mouseButtons();
+    if (mouseButton.testFlag(Qt::RightButton))
+    {
+        int x = 0;
+        x++;
+    }
+
     if(d->userSplittable)
     {
         DropArea area = computeDropArea(event->pos().x(), event->pos().y());
