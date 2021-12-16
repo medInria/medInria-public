@@ -13,7 +13,7 @@
 #pragma once
 
 #include "medAPHPPluginExport.h"
-#include <medAbstractAnnotation.h>
+#include <sphereDicomWeb/medAbstractAnnotation.h>
 
 #include <medAbstractSource.h>
 #include <medIntParameter.h>
@@ -127,6 +127,9 @@ private:
     QtDcmInterface *m_DicomLib;
     medAbstractAnnotation *m_AnnotationAPI;
 
+    QMap<QString, int> pendingRequestId;
+
+    int getQtDcmAsyncData(unsigned int pi_uiLevel, const QString &id);
 };
 
 

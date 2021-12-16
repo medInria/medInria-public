@@ -16,9 +16,27 @@
 #include <QNetworkAccessManager>
 #include <QString>
 
+class restFulWorker : public QThread
+{
+    Q_OBJECT
+public:
+    explicit restFulWorker(QString requestUrl): m_requestUrl(requestUrl){};
+
+    void run() override;
+
+signals:
+    void inProgress();
+    void finished();
+    void failed();
+
+private:
+    QString m_requestUrl;
+};
+
+
 class medAnnotation : public medAbstractAnnotation
 {
-
+    Q_OBJECT
 public:
     medAnnotation();
     ~medAnnotation();
@@ -33,9 +51,15 @@ public:
     /* ***********************************************************************/
     /* **************************** Request Get  *****************************/
     /* ***********************************************************************/
-    QList<QMap<QString, QString>> findAnnotationMinimalEntries(const QString &studyInstanceUID) override;
+    QList<QMap<QString, QString>> findAnnotationMinimalEntries(const QString &seriesInstanceUID) override;
+    int getAnnotationData(const QString &uid) override;
+
+public slots:
+    void moveProgression(){};
 private:
-    QNetworkAccessManager *m_Manager;
+//    QNetworkAccessManager *m_Manager;
+    QMap<int, restFulWorker*> requestIdMap;
+
 };
 
 //        m_Manager = new QNetworkAccessManager(this);

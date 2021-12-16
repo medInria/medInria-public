@@ -13,7 +13,7 @@
 #include <medSourcesLoader.h>
 #include "medAPHPPlugin.h"
 #include "medAPHP.h"
-#include "medAnnotation.h"
+#include "sphereDicomWeb/medAnnotation.h"
 #include <PluginAPHP/QtDcmAPHP.h>
 
 medAPHPPlugin::medAPHPPlugin(QObject *parent) : medPluginLegacy(parent)

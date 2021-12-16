@@ -43,6 +43,7 @@ find_package(QtDCM REQUIRED)
 
 list_source_files(${TARGET_NAME}
   ${CMAKE_CURRENT_SOURCE_DIR}
+  sphereDicomWeb
  )
 
 ## #############################################################################
@@ -106,7 +107,7 @@ target_link_libraries(${TARGET_NAME}
 set(TARGET_NAME_TEST ${TARGET_NAME}GTest)
 
 add_executable(${TARGET_NAME_TEST})
-target_sources(${TARGET_NAME_TEST} PUBLIC medAPHP.cpp medAnnotation.cpp test/medAPHPGTest.cpp )
+target_sources(${TARGET_NAME_TEST} PUBLIC medAPHP.cpp sphereDicomWeb/medAnnotation.cpp test/medAPHPGTest.cpp )
 target_include_directories(${TARGET_NAME_TEST} PUBLIC "." "./test/")
 set_target_properties(${TARGET_NAME_TEST} PROPERTIES COMPILE_DEFINITIONS "GTEST_LINKED_AS_SHARED_LIBRARY=1")
 target_link_libraries(${TARGET_NAME_TEST} PUBLIC
@@ -125,7 +126,7 @@ target_link_libraries(${TARGET_NAME_TEST} PUBLIC
 ## #############################################################################
 set(TARGET_NAME_QTEST ${TARGET_NAME}QTest)
 add_executable(${TARGET_NAME_QTEST})
-target_sources(${TARGET_NAME_QTEST} PUBLIC medAPHP.cpp medAnnotation.cpp test/medAPHPQTest.cpp)
+target_sources(${TARGET_NAME_QTEST} PUBLIC medAPHP.cpp sphereDicomWeb/medAnnotation.cpp test/medAPHPQTest.cpp)
 target_include_directories(${TARGET_NAME_QTEST} PUBLIC "." "./test/")
 target_link_libraries(${TARGET_NAME_QTEST} PUBLIC
         Qt5::Test

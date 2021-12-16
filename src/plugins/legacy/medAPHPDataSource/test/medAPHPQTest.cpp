@@ -3,7 +3,7 @@
 
 #include <medAPHP.h>
 #include <PluginAPHP/QtDcmAPHP.h>
-#include <medAnnotation.h>
+#include <sphereDicomWeb/medAnnotation.h>
 
 
 class TestmedAPHP: public QObject
@@ -84,6 +84,14 @@ class TestmedAPHP: public QObject
             QVERIFY(!entry.name.isEmpty());
             QVERIFY(!entry.description.isEmpty());
         }
+    }
+
+    void test_integration_get_annotation_data_success()
+    {
+        // Warn : We need to define a valid key ie. an existing studyInstanceUID in conncted PACS
+        QString key = "1.2.826.0.1.3680043.2.1143.5929888294927686301021609009274607687";
+        _m->getAssyncData(3, key);
+
     }
 
     void cleanupTestCase()

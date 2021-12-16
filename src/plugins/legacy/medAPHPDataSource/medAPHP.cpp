@@ -21,7 +21,7 @@
 //#include <QFile>
 
 medAPHP::medAPHP(QtDcmInterface *dicomLib, medAbstractAnnotation *annotationAPI):
-                    m_LevelNames({"PATIENT","STUDY","SERIES"}),
+                    m_LevelNames({"PATIENT","STUDY","SERIES","ANNOTATION"}),
                     m_isOnline(false), m_DicomLib(dicomLib), m_AnnotationAPI(annotationAPI)
 {
     m_Aetitle = new medStringParameter("AE Title", this);
@@ -157,8 +157,8 @@ QStringList medAPHP::getLevelNames()
 
 QString medAPHP::getLevelName(unsigned int pi_uiLevel)
 {
-    QString retVal;
-    if (pi_uiLevel>0 || pi_uiLevel<static_cast<unsigned int>(m_LevelNames.size()))
+    QString retVal = "Invalid Level Name";
+    if (pi_uiLevel>=0 && pi_uiLevel<static_cast<unsigned int>(m_LevelNames.size()))
     {
         retVal = m_LevelNames.value((int)pi_uiLevel);
     }
@@ -242,7 +242,6 @@ QList<medAbstractSource::levelMinimalEntries> medAPHP::getMinimalEntries(unsigne
             break;
         case 2:
             infos = m_DicomLib->findSeriesMinimalEntries(key);
-            infos.append(m_AnnotationAPI->findAnnotationMinimalEntries(key));
             if (!infos.empty())
             {
                 for (const auto &info : infos)
@@ -255,6 +254,20 @@ QList<medAbstractSource::levelMinimalEntries> medAPHP::getMinimalEntries(unsigne
                 }
             }
 
+            break;
+        case 3:
+            infos = m_AnnotationAPI->findAnnotationMinimalEntries(key);
+            if (!infos.empty())
+            {
+                for (const auto &info : infos)
+                {
+                    levelMinimalEntries entry;
+                    entry.key = info.value("SeriesInstanceUID");
+                    entry.name = info.value("Description");
+                    entry.description = info.value("SeriesInstanceUID");
+                    entries.append(entry);
+                }
+            }
             break;
         default:
             break;
@@ -281,7 +294,111 @@ QString medAPHP::getDirectData(unsigned int pi_uiLevel, QString key)
 
 int medAPHP::getAssyncData(unsigned int pi_uiLevel, QString id)
 {
-    return 0;
+    int iRes = -1;
+    if (pendingRequestId.contains(id))
+    {
+        iRes = pendingRequestId[id];
+    }
+    else
+    {
+        if (pi_uiLevel > 0 && pi_uiLevel < 3)
+        {
+            iRes = getQtDcmAsyncData(pi_uiLevel, id);
+        }
+        else if (pi_uiLevel == 3)
+        {
+            iRes = m_AnnotationAPI->getAnnotationData(id);
+            if (iRes != -1)
+            {
+                pendingRequestId[id] = iRes;
+
+                QObject::connect(m_AnnotationAPI, &medAbstractAnnotation::getProgress, this,
+                                 [=](int requestId, medAbstractSource::eRequestStatus status) {
+                    switch (status)
+                    {
+                        case eRequestStatus::finish:
+                        {
+                            QString key = pendingRequestId.key(iRes);
+                            pendingRequestId.remove(key);
+                            break;
+                        }
+                        case eRequestStatus::pending:
+                        {
+                            break;
+                        }
+                        case eRequestStatus::faild:
+                        default:
+                        {
+                            QString key = pendingRequestId.key(iRes);
+                            pendingRequestId.remove(key);
+                            break;
+                        }
+                    }
+                    emit progress(iRes, status);
+
+                    }, Qt::UniqueConnection);
+            }
+
+
+        }
+    }
+    return iRes;
+}
+
+int medAPHP::getQtDcmAsyncData(unsigned int pi_uiLevel, const QString &id)
+{
+    int iRes = -1;
+    QString queryLevel;
+    switch (pi_uiLevel)
+    {
+        case 0:
+            queryLevel = "PATIENT";
+            break;
+        case 1:
+            queryLevel = "STUDY";
+            break;
+        case 2:
+            queryLevel = "SERIES";
+            break;
+        default:
+            return iRes;
+    }
+    iRes = m_DicomLib->moveRequest(queryLevel, id);
+    if (iRes != -1)
+    {
+        pendingRequestId[id] = iRes;
+
+        QObject::connect(m_DicomLib, &QtDcmInterface::moveProgress, this, [=](int requestId, int status) {
+            eRequestStatus requestStatus;
+            switch (status)
+            {
+                case 0: //moveStatus::OK
+                {
+                    requestStatus = finish;
+                    QString key = pendingRequestId.key(iRes);
+                    pendingRequestId.remove(key);
+                    break;
+                }
+                case 1: //moveStatus::PENDING
+                {
+                    requestStatus = pending;
+                    break;
+                }
+                case -1: //moveStatus::KO
+                default:
+                {
+                    requestStatus = faild;
+                    QString key = pendingRequestId.key(iRes);
+                    pendingRequestId.remove(key);
+                    break;
+                }
+            }
+            emit progress(iRes, requestStatus);
+
+        }, Qt::UniqueConnection);
+    }
+
+    return iRes;
 }
 
 bool medAPHP::addData(void *data, QString uri)
@@ -291,5 +408,5 @@ bool medAPHP::addData(void *data, QString uri)
 
 void medAPHP::abort(int pi_iRequest)
 {
-
+    m_DicomLib->stopMove(pi_iRequest);
 }

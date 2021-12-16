@@ -13,13 +13,20 @@
 =========================================================================*/
 
 #include <QString>
+#include <QObject>
+#include <medAbstractSource.h>
 
-class medAbstractAnnotation
+class medAbstractAnnotation : public QObject
 {
+    Q_OBJECT
 public:
     virtual void setUrl(const QString &url) { m_url = url;};
     virtual int isServerAvailable() = 0;
-    virtual QList<QMap<QString, QString>> findAnnotationMinimalEntries(const QString &studyInstanceUID) = 0;
+    virtual QList<QMap<QString, QString>> findAnnotationMinimalEntries(const QString &seriesInstanceUID) = 0;
+    virtual int getAnnotationData(const QString &uid) = 0;
+
+signals:
+    void getProgress(int requestId, medAbstractSource::eRequestStatus status);
 
 protected:
     QString m_url;
