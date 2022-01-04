@@ -24,6 +24,7 @@ medAPHP::medAPHP(QtDcmInterface *dicomLib, medAbstractAnnotation *annotationAPI)
                     m_LevelNames({"PATIENT","STUDY","SERIES","ANNOTATION"}),
                     m_isOnline(false), m_DicomLib(dicomLib), m_AnnotationAPI(annotationAPI)
 {
+    timeout = 60000;
     m_Aetitle = new medStringParameter("AE Title", this);
     m_Aetitle->setCaption("AE Title (Application Entity Title) used by the plugin (AE) to identify itself. ");
     m_Aetitle->setValue("MEDINRIA");
@@ -52,7 +53,7 @@ medAPHP::medAPHP(QtDcmInterface *dicomLib, medAbstractAnnotation *annotationAPI)
     m_AnnotationUrl->setCaption("URL to access to Annotation Rest API");
     m_AnnotationUrl->setValue("http://127.0.0.1:5555");
 
-    m_DicomLib->setConnectionParameters(m_Aetitle->value(), m_Hostname->value(),
+    m_DicomLib->setConnectionParameters(m_Aetitle->value(), m_Hostname->value(), m_Port->value(),
                                         m_ServerAet->value(),m_ServerHostname->value(),
                                         m_ServerPort->value());
     m_AnnotationAPI->setUrl(m_AnnotationUrl->value());
@@ -170,7 +171,7 @@ QStringList medAPHP::getMandatoryAttributesKeys(unsigned int pi_uiLevel)
     switch (pi_uiLevel)
     {
         case 0:
-            return {"id", "patientName", "patientID"};
+            return {"id", "description", "patientID"};
         case 1:
             return {"id", "description", "uid"};
         case 2:
@@ -272,7 +273,10 @@ QList<medAbstractSource::levelMinimalEntries> medAPHP::getMinimalEntries(unsigne
         default:
             break;
     }
-
+//    for (auto entry : entries)
+//    {
+//        qDebug()<<"entry "<<entry.key<<" - "<<entry.name<<" - "<<entry.description;
+//    }
     return entries;
 
 }
@@ -289,7 +293,29 @@ QList<QMap<QString, QString>> medAPHP::getAdditionalAttributes(unsigned int pi_u
 
 QString medAPHP::getDirectData(unsigned int pi_uiLevel, QString key)
 {
-    return {};
+    QString retPath;
+    int requestId = getAssyncData(pi_uiLevel, key);
+
+    timer.setSingleShot(true);
+    QEventLoop loop;
+    QObject::connect(&timer, &QTimer::timeout, &loop, [&]() {
+        loop.exit(-1);
+    });
+    timer.start(timeout);
+
+    QObject::connect(m_DicomLib, &QtDcmInterface::pathToData, &loop, [&](int id, const QString& path) {
+        if (requestId == id)
+        {
+            retPath = path;
+            loop.quit();
+        }
+    });
+    int status = loop.exec();
+    if (status == 0)
+    {
+        qDebug()<<"Ok path to Data = "<<retPath;
+    }
+    return retPath;
 }
 
 int medAPHP::getAssyncData(unsigned int pi_uiLevel, QString id)
@@ -382,6 +408,7 @@ int medAPHP::getQtDcmAsyncData(unsigned int pi_uiLevel, const QString &id)
                 case 1: //moveStatus::PENDING
                 {
                     requestStatus = pending;
+                    timer.setInterval(timeout);
                     break;
                 }
                 case -1: //moveStatus::KO
