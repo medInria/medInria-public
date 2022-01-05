@@ -43,7 +43,7 @@ QTreeView * medSourceItemModelPresenter::buildTree(QSortFilterProxyModel *proxy)
         model = d->sourceItemModel;
     }
     treeViewRes->setModel(model);
-    
+    treeViewRes->setSortingEnabled(true);
     return treeViewRes;
 }
 

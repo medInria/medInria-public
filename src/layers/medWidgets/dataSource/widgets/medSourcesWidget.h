@@ -24,6 +24,7 @@
 #include <medWidgetsExport.h>
 
 class medSourceItemModelPresenter;
+
 class medSourcesWidget : public QWidget
 {
     Q_OBJECT
@@ -36,6 +37,7 @@ public:
 public slots:
     void addSource(medDataModel *dataModel, QString sourceInstanceId);
     void removeSource(QString sourceInstanceId);
+    void filter(const QString &);
 
 private:
     QVBoxLayout m_layout;

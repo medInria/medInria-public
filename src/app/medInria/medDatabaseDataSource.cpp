@@ -146,8 +146,11 @@ QWidget* medDatabaseDataSource::compactViewWidget()
         QVBoxLayout *layout = new QVBoxLayout();
 
 
-        d->compactSearchPanel = new medDatabaseSearchPanel(d->compactWidget);
-        d->compactSearchPanel->setColumnNames(d->model->columnNames());
+//        d->compactSearchPanel = new medDatabaseSearchPanel(d->compactWidget);
+//        d->compactSearchPanel->setColumnNames(d->model->columnNames());
+
+        auto filterLabel = new QLabel("Filter ");
+        auto filterLineEdit = new QLineEdit();
 
         static auto testModel = new medDataModel(); //TODO Remove ok c'est le truc le moins classe du monde (Part3)
         medDataManager::instance()->setIndexV2Handler([](medDataIndex const & dataIndex) -> medAbstractData* {return testModel->getData(dataIndex); });
@@ -156,14 +159,18 @@ QWidget* medDatabaseDataSource::compactViewWidget()
         medSourceModelPresenter *multiSources_tree = new medSourceModelPresenter(testModel);
         d->compactView = multiSources_tree->buildTree();
 
+        connect(filterLineEdit, SIGNAL(textChanged(const QString &)), multiSources_tree, SIGNAL(filterProxy(const QString &)));
+
         d->compactView->setSizePolicy(QSizePolicy::MinimumExpanding, QSizePolicy::MinimumExpanding);
 
         d->compactPreview = new medDatabasePreview(d->compactWidget);
 
+        QVBoxLayout *filterLayout = new QVBoxLayout;
+        filterLayout->addWidget(filterLabel, 0);
+        filterLayout->addWidget(filterLineEdit, 1);
 
-
-        layout->addWidget(d->compactSearchPanel);
-        layout->addWidget(d->compactView);
+        layout->addLayout(filterLayout, 0);
+        layout->addWidget(d->compactView, 1);
         layout->addWidget(d->compactPreview);
 
         compactViewWidgetRes->setLayout(layout);
