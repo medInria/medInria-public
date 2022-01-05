@@ -33,6 +33,9 @@ public:
 
     virtual medDataModel *dataModel() const;
 
+signals:
+    void filterProxy(const QString &);
+
 private:
     const QScopedPointer<medSourceModelPresenterPrivate> d;
 };

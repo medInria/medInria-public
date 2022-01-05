@@ -36,6 +36,7 @@ medSourcesWidget * medSourceModelPresenter::buildTree()
     connect(d->model, &medDataModel::sourceAdded, [&](medAbstractSource *sourceInstance) {widgetRes->addSource(d->model, sourceInstance->getInstanceId());});
     connect(d->model, &medDataModel::sourceRemoved, widgetRes, &medSourcesWidget::removeSource);
 
+    connect(this, SIGNAL(filterProxy(const QString &)), widgetRes, SLOT(filter(const QString &)));
     return widgetRes;
 }
 
