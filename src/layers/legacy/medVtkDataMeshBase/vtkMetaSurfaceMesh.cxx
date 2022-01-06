@@ -12,45 +12,40 @@
 =========================================================================*/
 
 #include <vtkMetaSurfaceMesh.h>
-#include "vtkObjectFactory.h"
 
-#include <vtkPolyData.h>
-#include <vtkPolyDataNormals.h>
-#include <vtkPolyDataMapper.h>
-#include <vtkProperty.h>
-#include <vtkCellData.h>
 #include <vtkCellArray.h>
+#include <vtkCellData.h>
+#include <vtkCellType.h>
+#include <vtkCleanPolyData.h>
+#include <vtkCommand.h>
+#include <vtkDataSetSurfaceFilter.h>
+#include <vtkErrorCode.h>
+#include <vtkExtractEdges.h>
+#include <vtkIdList.h>
+#include <vtkLegacyReaderVersion.h>
+#include <vtkLine.h>
+#include <vtkLookupTable.h>
+#include <vtkObjectFactory.h>
+#include <vtkOBJExporter.h>
+#include <vtkOBJReader.h>
 #include <vtkPointData.h>
+#include <vtkPoints.h>
+#include <vtkPolyData.h>
+#include <vtkPolyDataMapper.h>
+#include <vtkPolyDataNormals.h>
 #include <vtkPolyDataReader.h>
 #include <vtkPolyDataWriter.h>
+#include <vtkProperty.h>
+#include <vtkUnsignedShortArray.h>
 #include <vtkXMLPolyDataReader.h>
 #include <vtkXMLPolyDataWriter.h>
 
-#include <vtkPoints.h>
-#include <vtkIdList.h>
-#include <vtkUnsignedShortArray.h>
-#include <vtkCellType.h>
-#include <vtkLine.h>
-#include <vtkExtractEdges.h>
-
-#include <vtkCleanPolyData.h>
-#include <vtkDataSetSurfaceFilter.h>
-#include <vtkOBJReader.h>
-#include <vtkOBJExporter.h>
-
 #include <vtksys/SystemTools.hxx>
-
-#include <vtkCellType.h>
-
-#include <vtkLookupTable.h>
-
-#include <vtkErrorCode.h>
 
 #include <QDebug>
 
 //----------------------------------------------------------------------------
 vtkStandardNewMacro( vtkMetaSurfaceMesh )
-
 
 //----------------------------------------------------------------------------
 vtkMetaSurfaceMesh::vtkMetaSurfaceMesh()
@@ -101,20 +96,29 @@ vtkPolyData* vtkMetaSurfaceMesh::GetPolyData() const
 //----------------------------------------------------------------------------
 void vtkMetaSurfaceMesh::ReadVtkFile (const char* filename)
 {
-  vtkPolyDataReader* reader = vtkPolyDataReader::New();
-  reader->SetFileName (filename);
-  
-  try
-  {
-    reader->Update();
-    this->SetDataSet (reader->GetOutput());
-  }
-  catch (vtkErrorCode::ErrorIds error)
-  {
-    reader->Delete();
-    throw error;
-  }
-  reader->Delete();
+    vtkSmartPointer<vtkPolyDataReader> reader = vtkSmartPointer<vtkPolyDataReader>::New();
+    reader->SetFileName (filename);
+
+    try
+    {
+      reader->Update();
+      if(reader->GetFileMajorVersion() <= vtkLegacyReaderMajorVersion)
+      {
+          this->SetDataSet (reader->GetOutput());
+      }
+      else
+      {
+          vtkErrorMacro(<< "Can not read file with version > " << vtkLegacyReaderMajorVersion
+                        << "." << vtkLegacyReaderMinorVersion << ": " << filename << endl)
+          throw vtkErrorCode::FileFormatError;
+      }
+    }
+    catch (vtkErrorCode::ErrorIds error)
+    {
+      reader->CloseVTKFile();
+      throw error;
+    }
+    reader->CloseVTKFile();
 }
 
 void vtkMetaSurfaceMesh::ReadVtpFile(const char* filename)
@@ -189,7 +193,7 @@ void vtkMetaSurfaceMesh::Read (const char* filename)
                 this->ReadOBJFile (filename);
                 break;
             default :
-                vtkErrorMacro(<<"unknown dataset type : "<<filename<<endl);
+                vtkErrorMacro(<<"unknown dataset type : "<<filename<<endl)
                 throw vtkErrorCode::UnrecognizedFileTypeError;
         }
     }
@@ -207,14 +211,14 @@ void vtkMetaSurfaceMesh::WriteVtkFile (const char* filename)
 {
   if (!this->DataSet)
   {
-    vtkErrorMacro(<<"No DataSet to write"<<endl);
+    vtkErrorMacro(<<"No DataSet to write"<<endl)
     throw vtkErrorCode::UserError;
   }
 
   vtkPolyData* c_mesh = vtkPolyData::SafeDownCast (this->DataSet);
   if (!c_mesh)
   {
-    vtkErrorMacro(<<"DataSet is not a polydata object"<<endl);
+    vtkErrorMacro(<<"DataSet is not a polydata object"<<endl)
     throw vtkErrorCode::UserError;
   }
   
@@ -241,14 +245,14 @@ void vtkMetaSurfaceMesh::WriteVtpFile (const char* filename)
 {
     if (!this->DataSet)
     {
-        vtkErrorMacro(<<"No DataSet to write"<<endl);
+        vtkErrorMacro(<<"No DataSet to write"<<endl)
         throw vtkErrorCode::UserError;
     }
     
     vtkPolyData* c_mesh = vtkPolyData::SafeDownCast (this->DataSet);
     if (!c_mesh)
     {
-        vtkErrorMacro(<<"DataSet is not a polydata object"<<endl);
+        vtkErrorMacro(<<"DataSet is not a polydata object"<<endl)
         throw vtkErrorCode::UserError;
     }
     
@@ -271,8 +275,8 @@ void vtkMetaSurfaceMesh::WriteVtpFile (const char* filename)
 //----------------------------------------------------------------------------
 void vtkMetaSurfaceMesh::WriteOBJFile (const char* filename)
 {
-    Q_UNUSED(filename);
-    vtkErrorMacro(<<"Not yet implemented"<<endl);
+    Q_UNUSED(filename)
+    vtkErrorMacro(<<"Not yet implemented"<<endl)
 }
 
 
@@ -360,59 +364,29 @@ unsigned int vtkMetaSurfaceMesh::CanReadFile (const char* filename)
         return 0;
     }
 
-  if (vtkMetaSurfaceMesh::IsOBJExtension(vtksys::SystemTools::GetFilenameLastExtension(filename).c_str()))
-  {
-    vtkOBJReader* reader = vtkOBJReader::New();
-    reader->SetFileName (filename);
-    try
+    if (vtkMetaSurfaceMesh::IsOBJExtension(vtksys::SystemTools::GetFilenameLastExtension(filename).c_str()))
     {
-      reader->Update();
+        return vtkMetaSurfaceMesh::FILE_IS_OBJ;
     }
-    catch(vtkErrorCode::ErrorIds)
-    {
-      reader->Delete();
-      return 0;
-    }
-    reader->Delete();
-    return vtkMetaSurfaceMesh::FILE_IS_OBJ;
-  }
-  
+
     if (vtkMetaSurfaceMesh::IsVtpExtension(vtksys::SystemTools::GetFilenameLastExtension(filename).c_str()))
     {
-        vtkXMLPolyDataReader* reader = vtkXMLPolyDataReader::New();
-        reader->SetFileName (filename);
-        try
-        {
-            reader->Update();
-        }
-        catch  (vtkErrorCode::ErrorIds)
-        {
-            reader->Delete();
-            return 0;
-        }
-        reader->Delete();
         return vtkMetaSurfaceMesh::FILE_IS_VTP;
     }
     
-  if (!vtkMetaSurfaceMesh::IsVtkExtension(vtksys::SystemTools::GetFilenameLastExtension(filename).c_str()))
-    return 0;
-  
-  try
-  {
-    vtkPolyDataReader* reader = vtkPolyDataReader::New();
-    reader->SetFileName (filename);
-    if (reader->IsFilePolyData ())
+    if (vtkMetaSurfaceMesh::IsVtkExtension(vtksys::SystemTools::GetFilenameLastExtension(filename).c_str()))
     {
-      reader->Delete();
-      return vtkMetaSurfaceMesh::FILE_IS_VTK;
+        vtkPolyDataReader* reader = vtkPolyDataReader::New();
+        reader->SetFileName (filename);
+        if (reader->IsFilePolyData())
+        {
+            reader->Delete();
+            return vtkMetaSurfaceMesh::FILE_IS_VTK;
+        }
+        reader->Delete();
     }
-    reader->Delete();
-  }
-  catch (vtkErrorCode::ErrorIds)
-  {
-  }
 
-  return 0;
+    return 0;
 }
 
 
