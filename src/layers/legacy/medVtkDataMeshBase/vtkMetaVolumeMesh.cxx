@@ -12,32 +12,32 @@
 =========================================================================*/
 
 #include <vtkMetaVolumeMesh.h>
-#include "vtkObjectFactory.h"
 
+#include <vtkCellData.h>
+#include <vtkCommand.h>
+#include <vtkErrorCode.h>
+#include <vtkIdList.h>
+#include <vtkLegacyReaderVersion.h>
+#include <vtkObjectFactory.h>
+#include <vtkPointData.h>
+#include <vtkPoints.h>
+#include <vtkPolyDataMapper.h>
+#include <vtkPolyDataNormals.h>
+#include <vtkProperty.h>
+#include <vtkUnsignedShortArray.h>
 #include <vtkUnstructuredGrid.h>
 #include <vtkUnstructuredGridReader.h>
 #include <vtkUnstructuredGridWriter.h>
 #include <vtkXMLUnstructuredGridReader.h>
 #include <vtkXMLUnstructuredGridWriter.h>
+
 #include <vtksys/SystemTools.hxx>
 
-#include <vtkProperty.h>
-#include <vtkPolyDataMapper.h>
-#include <vtkPolyDataNormals.h>
-
-#include <vtkPoints.h>
-#include <vtkPointData.h>
-#include <vtkCellData.h>
-#include <vtkIdList.h>
-#include <vtkUnsignedShortArray.h>
-
-#include <vtkErrorCode.h>
 
 #include <QDebug>
 
 //----------------------------------------------------------------------------
 vtkStandardNewMacro( vtkMetaVolumeMesh )
-
 
 //----------------------------------------------------------------------------
 vtkMetaVolumeMesh::vtkMetaVolumeMesh()
@@ -95,14 +95,25 @@ void vtkMetaVolumeMesh::ReadVtkFile (const char* filename)
 
     try
     {
-        reader->Update();
-        this->SetDataSet (reader->GetOutput());
+      reader->Update();
+      if(reader->GetFileMajorVersion() <= vtkLegacyReaderMajorVersion)
+      {
+          this->SetDataSet (reader->GetOutput());
+      }
+      else
+      {
+          vtkErrorMacro(<< "Can not read file with version > " << vtkLegacyReaderMajorVersion
+                        << "." << vtkLegacyReaderMinorVersion << ": " << filename << endl)
+          throw vtkErrorCode::FileFormatError;
+      }
     }
     catch (vtkErrorCode::ErrorIds error)
     {
-        reader->Delete();
-        throw error;
+      reader->CloseVTKFile();
+      reader->Delete();
+      throw error;
     }
+    reader->CloseVTKFile();
     reader->Delete();
 }
 
@@ -147,7 +158,7 @@ void vtkMetaVolumeMesh::Read (const char* filename)
                 this->ReadGMeshFile (filename);
                 break;
             default :
-                vtkErrorMacro(<<"unknown dataset type : "<<filename<<endl);
+                vtkErrorMacro(<<"unknown dataset type : "<<filename<<endl)
                 throw vtkErrorCode::UnrecognizedFileTypeError;
         }
     }
@@ -164,13 +175,13 @@ void vtkMetaVolumeMesh::WriteVtkFile (const char* filename)
 {
     if (!this->DataSet)
     {
-        vtkErrorMacro(<<"No DataSet to write"<<endl);
+        vtkErrorMacro(<<"No DataSet to write"<<endl)
         throw vtkErrorCode::UserError;
     }
     vtkUnstructuredGrid* c_mesh = vtkUnstructuredGrid::SafeDownCast (this->DataSet);
     if (!c_mesh)
     {
-        vtkErrorMacro(<<"DataSet is not a polydata object"<<endl);
+        vtkErrorMacro(<<"DataSet is not a polydata object"<<endl)
         throw vtkErrorCode::UserError;
     }
     vtkUnstructuredGridWriter* writer = vtkUnstructuredGridWriter::New();
@@ -196,14 +207,14 @@ void vtkMetaVolumeMesh::WriteVtuFile (const char* filename)
 {
     if (!this->DataSet)
     {
-        vtkErrorMacro(<<"No DataSet to write"<<endl);
+        vtkErrorMacro(<<"No DataSet to write"<<endl)
         throw vtkErrorCode::UserError;
     }
 
     vtkUnstructuredGrid* c_mesh = vtkUnstructuredGrid::SafeDownCast (this->DataSet);
     if (!c_mesh)
     {
-        vtkErrorMacro(<<"DataSet is not a polydata object"<<endl);
+        vtkErrorMacro(<<"DataSet is not a polydata object"<<endl)
         throw vtkErrorCode::UserError;
     }
 
@@ -340,34 +351,21 @@ unsigned int vtkMetaVolumeMesh::CanReadFile (const char* filename)
 
     if (vtkMetaVolumeMesh::IsVtuExtension(vtksys::SystemTools::GetFilenameLastExtension(filename).c_str()))
         {
-            vtkXMLUnstructuredGridReader* reader = vtkXMLUnstructuredGridReader::New();
-            reader->SetFileName (filename);
-            try
-            {
-                reader->Update();
-            }
-            catch  (vtkErrorCode::ErrorIds)
-            {
-                reader->Delete();
-                return 0;
-            }
-            reader->Delete();
             return vtkMetaVolumeMesh::FILE_IS_VTU;
         }
 
-    if (!vtkMetaVolumeMesh::IsVtkExtension(vtksys::SystemTools::GetFilenameLastExtension(filename).c_str()))
+    if (vtkMetaVolumeMesh::IsVtkExtension(vtksys::SystemTools::GetFilenameLastExtension(filename).c_str()))
     {
-        return 0;
+            vtkUnstructuredGridReader* reader = vtkUnstructuredGridReader::New();
+            reader->SetFileName (filename);
+            if (reader->IsFileUnstructuredGrid ())
+            {
+                reader->Delete();
+                return vtkMetaVolumeMesh::FILE_IS_VTK;
+            }
+            reader->Delete();
     }
 
-    vtkUnstructuredGridReader* reader = vtkUnstructuredGridReader::New();
-    reader->SetFileName (filename);
-    if (reader->IsFileUnstructuredGrid ())
-    {
-        reader->Delete();
-        return vtkMetaVolumeMesh::FILE_IS_VTK;
-    }
-    reader->Delete();
     return 0;
 }
 
@@ -589,7 +587,7 @@ void vtkMetaVolumeMesh::ReadGMeshFile (const char* filename)
 
     if(file.fail())
     {
-        vtkErrorMacro("File not found\n");
+        vtkErrorMacro("File not found\n")
         throw vtkErrorCode::FileNotFoundError;
     }
 
@@ -609,7 +607,7 @@ void vtkMetaVolumeMesh::ReadGMeshFile (const char* filename)
             pointarray->Delete();
             cellarray->Delete();
             outputmesh->Delete();
-            vtkErrorMacro("No point in file\n");
+            vtkErrorMacro("No point in file\n")
             throw vtkErrorCode::CannotOpenFileError;
         }
         file >> str;
@@ -641,7 +639,7 @@ void vtkMetaVolumeMesh::ReadGMeshFile (const char* filename)
             pointarray->Delete();
             cellarray->Delete();
             outputmesh->Delete();
-            vtkErrorMacro("No tetrahedron in file\n");
+            vtkErrorMacro("No tetrahedron in file\n")
             throw vtkErrorCode::CannotOpenFileError;
         }
         file >> str;

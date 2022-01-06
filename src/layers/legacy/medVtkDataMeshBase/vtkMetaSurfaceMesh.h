@@ -18,7 +18,6 @@
 
 class vtkPolyData;
 
-
 /**
    \class vtkMetaSurfaceMesh vtkMetaSurfaceMesh.h "vtkMetaSurfaceMesh.h"
    \brief Concrete implementation of vtkMetaDataSet for surface mesh handling
