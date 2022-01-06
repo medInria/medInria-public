@@ -17,6 +17,8 @@
 #include <vtkUnstructuredGrid.h>
 #include <vtkUnstructuredGridReader.h>
 #include <vtkUnstructuredGridWriter.h>
+#include <vtkXMLUnstructuredGridReader.h>
+#include <vtkXMLUnstructuredGridWriter.h>
 #include <vtksys/SystemTools.hxx>
 
 #include <vtkProperty.h>
@@ -104,6 +106,24 @@ void vtkMetaVolumeMesh::ReadVtkFile (const char* filename)
     reader->Delete();
 }
 
+void vtkMetaVolumeMesh::ReadVtuFile(const char* filename)
+{
+    vtkXMLUnstructuredGridReader* reader = vtkXMLUnstructuredGridReader::New();
+    reader->SetFileName (filename);
+
+    try
+    {
+        reader->Update();
+        this->SetDataSet (reader->GetOutput());
+    }
+    catch (vtkErrorCode::ErrorIds error)
+    {
+        reader->Delete();
+        throw error;
+    }
+    reader->Delete();
+}
+
 //----------------------------------------------------------------------------
 void vtkMetaVolumeMesh::Read (const char* filename)
 {
@@ -116,6 +136,9 @@ void vtkMetaVolumeMesh::Read (const char* filename)
         {
             case vtkMetaVolumeMesh::FILE_IS_VTK :
                 this->ReadVtkFile (filename);
+                break;
+            case vtkMetaVolumeMesh::FILE_IS_VTU:
+                this->ReadVtuFile(filename);
                 break;
             case vtkMetaVolumeMesh::FILE_IS_MESH :
                 this->ReadMeshFile (filename);
@@ -169,12 +192,56 @@ void vtkMetaVolumeMesh::WriteVtkFile (const char* filename)
 }
 
 //----------------------------------------------------------------------------
+void vtkMetaVolumeMesh::WriteVtuFile (const char* filename)
+{
+    if (!this->DataSet)
+    {
+        vtkErrorMacro(<<"No DataSet to write"<<endl);
+        throw vtkErrorCode::UserError;
+    }
+
+    vtkUnstructuredGrid* c_mesh = vtkUnstructuredGrid::SafeDownCast (this->DataSet);
+    if (!c_mesh)
+    {
+        vtkErrorMacro(<<"DataSet is not a polydata object"<<endl);
+        throw vtkErrorCode::UserError;
+    }
+
+    vtkXMLUnstructuredGridWriter* writer = vtkXMLUnstructuredGridWriter::New();
+    writer->SetFileName (filename);
+
+    try
+    {
+        writer->SetInputData (c_mesh);
+        writer->Write();
+        writer->Delete();
+    }
+    catch (vtkErrorCode::ErrorIds error)
+    {
+        writer->Delete();
+        throw error;
+    }
+}
+//----------------------------------------------------------------------------
 void vtkMetaVolumeMesh::Write (const char* filename)
 {
     try
     {
-        qDebug() << "Writing: " << filename;
-        this->WriteVtkFile (filename);
+        if (vtkMetaVolumeMesh::IsVtuExtension(vtksys::SystemTools::GetFilenameLastExtension(filename).c_str()))
+        {
+            qDebug()<<"Writing: "<<filename;
+            this->WriteVtuFile (filename);
+        }
+        else if (vtkMetaVolumeMesh::IsVtkExtension(vtksys::SystemTools::GetFilenameLastExtension(filename).c_str()))
+        {
+            qDebug()<<"Writing: "<<filename;
+            this->WriteVtkFile (filename);
+        }
+        else
+        {
+            qDebug()<<"Can not write: " << filename << " vtp extension is for polydata mesh";
+            throw vtkErrorCode::UserError;
+        }
     }
     catch (vtkErrorCode::ErrorIds error)
     {
@@ -183,11 +250,31 @@ void vtkMetaVolumeMesh::Write (const char* filename)
 }
 
 //----------------------------------------------------------------------------
+bool vtkMetaVolumeMesh::IsVtpExtension (const char* ext)
+{
+    if (strcmp (ext, ".vtp") == 0)
+    {
+        return true;
+    }
+    return false;
+}
+
+bool vtkMetaVolumeMesh::IsVtuExtension (const char* ext)
+{
+    if (strcmp (ext, ".vtu") == 0)
+    {
+        return true;
+    }
+    return false;
+}
+
+//----------------------------------------------------------------------------
 bool vtkMetaVolumeMesh::IsVtkExtension (const char* ext)
 {
-    if (strcmp (ext, ".vtk") == 0 ||
-            strcmp (ext, ".vtu") == 0)
+    if (strcmp (ext, ".vtk") == 0)
+    {
         return true;
+    }
     return false;
 }
 //----------------------------------------------------------------------------
@@ -250,6 +337,23 @@ unsigned int vtkMetaVolumeMesh::CanReadFile (const char* filename)
             return 0;
         }
     }
+
+    if (vtkMetaVolumeMesh::IsVtuExtension(vtksys::SystemTools::GetFilenameLastExtension(filename).c_str()))
+        {
+            vtkXMLUnstructuredGridReader* reader = vtkXMLUnstructuredGridReader::New();
+            reader->SetFileName (filename);
+            try
+            {
+                reader->Update();
+            }
+            catch  (vtkErrorCode::ErrorIds)
+            {
+                reader->Delete();
+                return 0;
+            }
+            reader->Delete();
+            return vtkMetaVolumeMesh::FILE_IS_VTU;
+        }
 
     if (!vtkMetaVolumeMesh::IsVtkExtension(vtksys::SystemTools::GetFilenameLastExtension(filename).c_str()))
     {
