@@ -269,129 +269,212 @@ unsigned int vtkMetaVolumeMesh::CanReadFile (const char* filename)
 
 void vtkMetaVolumeMesh::ReadMeshFile (const char* filename)
 {
-    std::ifstream file (filename );
-    char str[256];
-
-    if(file.fail())
+    // lambda to position the stream where needed
+    auto positionStream = [](std::ifstream& file, int nbline, std::string& line)
     {
-        vtkErrorMacro("File not found\n");
+        bool result = true;
+        //not sure if the order of cells (edges, triangles, tetra) is always the same or not
+        //to be sure we go back to the beginning
+        file.clear();
+        file.seekg(0);
+        if(nbline > 1)
+        {
+            int curentLine = 0;
+            while (curentLine != nbline && getline(file, line))
+            {
+                curentLine++;
+            }
+            if (file.bad() || nbline > curentLine)
+            {
+                result =  false;
+            }
+        }
+        else
+        {
+         result = false;
+        }
+        return result;
+    };
+
+    ifstream fileInput(filename );
+    if(fileInput.fail())
+    {
+        vtkErrorMacro("File not found\n")
         throw vtkErrorCode::FileNotFoundError;
     }
 
-    vtkPoints* points = vtkPoints::New();
-    vtkUnsignedShortArray* pointarray = vtkUnsignedShortArray::New();
-    vtkUnsignedShortArray* cellarray  = vtkUnsignedShortArray::New();
-    vtkUnstructuredGrid* outputmesh = vtkUnstructuredGrid::New();
-
-    unsigned short ref = 0;
-
-    file >> str;
-    while((strcmp (str, "Vertices") != 0) && (strcmp (str, "End") != 0) && (strcmp (str, "END") != 0) )
+    QHash<QString, QPair<int,int>> elementsNameHash;
+    QStringList elementsNames;
+    elementsNames << "Vertices" << "Edges" << "Triangles" << "Tetrahedra" << "Ridges";
+    for (int i = 0; i< elementsNames.size(); i++)
     {
-        if (file.fail())
+        elementsNameHash[elementsNames[i]] = qMakePair(0, 0);
+    }
+
+    int curLine = 0;
+    std::string line;
+
+    while(getline(fileInput, line))
+    {
+        curLine++;
+        for (int i = 0; i< elementsNames.size(); i++)
         {
-            points->Delete();
-            pointarray->Delete();
-            cellarray->Delete();
-            outputmesh->Delete();
-            vtkErrorMacro("No point in file\n");
-            throw vtkErrorCode::CannotOpenFileError;
+            if (elementsNameHash[elementsNames[i]].first == curLine - 1
+                    && elementsNameHash[elementsNames[i]].first != 0)
+            {
+                std::istringstream  lineStream(line);
+                lineStream >> elementsNameHash[elementsNames[i]].second;
+            }
+
+            if (line.find(elementsNames[i].toStdString(), 0) != std::string::npos)
+            {
+                 elementsNameHash[elementsNames[i]].first = curLine;
+            }
         }
-        file >> str;
     }
 
-    if((strcmp (str, "End") == 0) || (strcmp (str, "END") == 0))
+    int nbOfCells = 0;
+    for (int i = 1; i< elementsNames.size()-1; i++)
     {
-        vtkErrorMacro(<<"Unexpected end of file"<<endl);
-        points->Delete();
-        pointarray->Delete();
-        cellarray->Delete();
-        outputmesh->Delete();
-        throw vtkErrorCode::PrematureEndOfFileError;
+        nbOfCells += elementsNameHash[elementsNames[i]].second;
     }
 
-    unsigned int NVertices = 0;
-    file >>  NVertices;
-    points->SetNumberOfPoints (NVertices);
+    int nbOfPoints = elementsNameHash[elementsNames[0]].second;
 
-    pointarray->SetName ("Point array");
-    pointarray->Allocate(NVertices);
+    vtkPoints* points = vtkPoints::New();
+    points->SetNumberOfPoints(nbOfPoints);
 
-    // read vertex position
-    for(unsigned int i=0; i<NVertices; i++)
+    vtkUnsignedShortArray* pointarray = vtkUnsignedShortArray::New();
+    pointarray->SetName("Point array");
+    pointarray->Allocate(nbOfPoints);
+
+    vtkUnsignedShortArray* cellarray  = vtkUnsignedShortArray::New();
+    cellarray->SetName("Zones");
+    cellarray->Allocate(nbOfCells);
+
+    vtkUnsignedShortArray* ridgesarray  = vtkUnsignedShortArray::New();
+    ridgesarray->SetName("Ridges");
+    ridgesarray->SetNumberOfComponents(1);
+    ridgesarray->SetNumberOfTuples(nbOfCells);
+    ridgesarray->FillValue(0);
+
+    vtkUnstructuredGrid* outputmesh = vtkUnstructuredGrid::New();
+    outputmesh->Allocate(nbOfCells);
+
+    //Get Vertices and their values
+    if(positionStream(fileInput, elementsNameHash[elementsNames[0]].first+1, line))
     {
-        double pos[3];
-        file >> pos[0] >> pos[1] >> pos[2] >> ref;
-        points->SetPoint (i, pos[0], pos[1], pos[2]);
-        pointarray->InsertNextValue(ref);
+        curLine = 0;
+        while (getline(fileInput, line) && curLine < elementsNameHash[elementsNames[0]].second)
+        {
+            std::istringstream  lineStream(line);
+            double pos[3];
+            unsigned short ref;
+            lineStream >> pos[0] >> pos[1] >> pos[2] >> ref;
+            points->SetPoint(curLine, pos[0], pos[1], pos[2]);
+            pointarray->InsertNextValue(ref);
+            curLine++;
+        }
+    }
+    //Get Edges and their values
+    if(positionStream(fileInput, elementsNameHash[elementsNames[1]].first+1, line))
+    {
+        curLine = 0;
+        while (getline(fileInput, line) && curLine < elementsNameHash[elementsNames[1]].second)
+        {
+            std::istringstream  lineStream(line);
+            unsigned int pos[2];
+            unsigned short ref;
+            lineStream >> pos[0] >> pos[1] >> ref;
+            vtkIdList* idlist = vtkIdList::New();
+            idlist->InsertNextId(pos[0]-1);
+            idlist->InsertNextId(pos[1]-1);
+
+            outputmesh->InsertNextCell(VTK_LINE, idlist);
+            idlist->Delete();
+            cellarray->InsertNextValue(ref);
+            curLine++;
+        }
+    }
+    //Get Triangles and their values
+    if(positionStream(fileInput, elementsNameHash[elementsNames[2]].first+1, line))
+    {
+        curLine = 0;
+        while (getline(fileInput, line) && curLine < elementsNameHash[elementsNames[2]].second)
+        {
+            std::istringstream  lineStream(line);
+            unsigned int pos[3];
+            unsigned short ref;
+            lineStream >> pos[0] >> pos[1] >> pos[2] >> ref;
+            vtkIdList* idlist = vtkIdList::New();
+            idlist->InsertNextId(pos[0]-1);
+            idlist->InsertNextId(pos[1]-1);
+            idlist->InsertNextId(pos[2]-1);
+
+            outputmesh->InsertNextCell(VTK_TRIANGLE, idlist);
+            idlist->Delete();
+            cellarray->InsertNextValue(ref);
+            curLine++;
+        }
+    }
+    //Get Tetras and their values
+    if(positionStream(fileInput, elementsNameHash[elementsNames[3]].first+1, line))
+    {
+        curLine = 0;
+        while (getline(fileInput, line) && curLine < elementsNameHash[elementsNames[3]].second)
+        {
+            std::istringstream  lineStream(line);
+            unsigned int pos[4];
+            unsigned short ref;
+            lineStream >> pos[0] >> pos[1] >> pos[2] >> pos[3] >> ref;
+            vtkIdList* idlist = vtkIdList::New();
+            idlist->InsertNextId(pos[0]-1);
+            idlist->InsertNextId(pos[1]-1);
+            idlist->InsertNextId(pos[2]-1);
+            idlist->InsertNextId(pos[3]-1);
+
+            outputmesh->InsertNextCell(VTK_TETRA, idlist);
+            idlist->Delete();
+            cellarray->InsertNextValue(ref);
+            curLine++;
+        }
+    }
+    //Get Ridges if present will be add as array on cell
+    if(positionStream(fileInput, elementsNameHash[elementsNames[4]].first+1, line) &&
+            elementsNameHash[elementsNames[1]].second > 0)
+    {
+        curLine = 0;
+        while (getline(fileInput, line) && curLine < elementsNameHash[elementsNames[4]].second)
+        {
+            std::istringstream  lineStream(line);
+            unsigned int pos;
+            lineStream >> pos;
+            //This work because the edges were the first cells added
+            ridgesarray->SetValue(pos-1, 1);
+            curLine++;
+        }
     }
 
-    outputmesh->SetPoints (points);
-
+    outputmesh->SetPoints(points);
     if (outputmesh->GetPointData())
     {
-        outputmesh->GetPointData()->AddArray (pointarray);
+        outputmesh->GetPointData()->AddArray(pointarray);
     }
-
-    file >> str;
-
-    while( (strcmp (str, "Tetrahedra") != 0) && (strcmp (str, "End") != 0) && (strcmp (str, "END") != 0) )
-    {
-        if (file.fail())
-        {
-            points->Delete();
-            pointarray->Delete();
-            cellarray->Delete();
-            outputmesh->Delete();
-            vtkErrorMacro("No tetrahedron in file\n");
-            throw vtkErrorCode::CannotOpenFileError;
-        }
-
-        file >> str;
-    }
-
-    if((strcmp (str, "End") == 0) || (strcmp (str, "END") == 0) )
-    {
-        vtkErrorMacro(<<"Unexpected end of file"<<endl);
-        points->Delete();
-        pointarray->Delete();
-        cellarray->Delete();
-        outputmesh->Delete();
-
-        throw vtkErrorCode::PrematureEndOfFileError;
-    }
-    
-    unsigned int NTetrahedra;
-
-    file >>  NTetrahedra;
-    outputmesh->Allocate (NTetrahedra);
-    cellarray->SetName ("Zones");
-    cellarray->Allocate(NTetrahedra);
-    for(unsigned int i=0; i<NTetrahedra; i++)
-    {
-        unsigned int ids[4];
-        file >> ids[0] >> ids[1] >> ids[2] >> ids[3] >> ref;
-        vtkIdList* idlist = vtkIdList::New();
-        idlist->InsertNextId (ids[0]-1);
-        idlist->InsertNextId (ids[1]-1);
-        idlist->InsertNextId (ids[2]-1);
-        idlist->InsertNextId (ids[3]-1);
-
-        outputmesh->InsertNextCell (VTK_TETRA, idlist);
-        idlist->Delete();
-        cellarray->InsertNextValue(ref);
-    }
-
     if (outputmesh->GetCellData())
     {
-        outputmesh->GetCellData()->AddArray (cellarray);
+        outputmesh->GetCellData()->AddArray(cellarray);
+        if(elementsNameHash[elementsNames[4]].second > 0 && elementsNameHash[elementsNames[1]].second > 0)
+        {
+            outputmesh->GetCellData()->AddArray(ridgesarray);
+        }
     }
 
-    this->SetDataSet (outputmesh);
+    this->SetDataSet(outputmesh);
 
     points->Delete();
     pointarray->Delete();
     cellarray->Delete();
+    ridgesarray->Delete();
     outputmesh->Delete();
 }
 
