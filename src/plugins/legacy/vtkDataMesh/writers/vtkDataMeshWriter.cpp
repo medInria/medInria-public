@@ -85,7 +85,7 @@ QString vtkDataMeshWriter::identifier() const
 
 QStringList vtkDataMeshWriter::supportedFileExtensions() const
 {
-    return QStringList() << ".vtk" << ".vtp";
+    return QStringList() << ".vtk" << ".vtp" << ".vtu";
 }
 
 bool vtkDataMeshWriter::registered()
