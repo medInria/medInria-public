@@ -44,26 +44,29 @@ class MEDVTKDATAMESHBASE_EXPORT vtkMetaVolumeMesh: public vtkMetaDataSet
   //BTX
   enum
   {
-    FILE_IS_VTK = 1,
-    FILE_IS_MESH,
-    FILE_IS_OBJ,
-    FILE_IS_GMESH,
-    LAST_FILE_ID
+     FILE_IS_VTK = 1,
+     FILE_IS_VTU,
+     FILE_IS_MESH,
+     FILE_IS_OBJ,
+     FILE_IS_GMESH,
+     LAST_FILE_ID
   };
   //ETX
 
-  virtual void Read (const char* filename);
+  virtual void Read (const char* filename) override;
   
-  virtual void Write (const char* filename);
+  virtual void Write (const char* filename) override;
   
   vtkUnstructuredGrid* GetUnstructuredGrid() const;
   
   static bool         IsVtkExtension (const char* ext);
+  static bool         IsVtpExtension(const char *ext);
+  static bool         IsVtuExtension(const char *ext);
   static bool         IsMeshExtension (const char* ext);
   static bool         IsGMeshExtension (const char* ext);
   static unsigned int CanReadFile (const char* filename);
 
-  virtual const char* GetDataSetType() const
+  virtual const char* GetDataSetType() const override
   {
     return "VolumeMesh";
   }
@@ -71,13 +74,15 @@ class MEDVTKDATAMESHBASE_EXPORT vtkMetaVolumeMesh: public vtkMetaDataSet
 protected:
   vtkMetaVolumeMesh();
   vtkMetaVolumeMesh(const vtkMetaVolumeMesh&);
-  ~vtkMetaVolumeMesh();
+  ~vtkMetaVolumeMesh() override;
 
-  virtual void Initialize();
+  virtual void Initialize() override;
   virtual void ReadVtkFile(const char* filename);
+  virtual void ReadVtuFile(const char* filename);
   virtual void ReadMeshFile(const char* filename);
   virtual void ReadGMeshFile(const char* filename);
   virtual void WriteVtkFile (const char* filename);
+  virtual void WriteVtuFile (const char* filename);
 
 private:
   void operator=(const vtkMetaVolumeMesh&);        // Not implemented.
