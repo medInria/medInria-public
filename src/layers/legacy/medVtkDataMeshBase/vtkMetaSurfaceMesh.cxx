@@ -550,7 +550,7 @@ void vtkMetaSurfaceMesh::ReadMeshFile (const char* filename)
             std::istringstream  lineStream(line);
             unsigned int pos;
             lineStream >> pos;
-            //This work because the edges were the first cells added
+            //This works because the edges were the first cells added
             ridgesarray->SetValue(pos-1, 1);
             curLine++;
         }
