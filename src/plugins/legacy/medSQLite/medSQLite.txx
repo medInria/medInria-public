@@ -318,13 +318,22 @@ QList<medAbstractSource::levelMinimalEntries> medSQlite<T>::getMinimalEntries(un
 }
 
 template <typename T>
-QList<QMap<QString, QString>> medSQlite<T>::getMandatoryAttributes(unsigned int pi_uiLevel, int id)
+QList<QMap<QString, QString>> medSQlite<T>::getMandatoryAttributes(unsigned int pi_uiLevel, QString parentId)
 {
-    return QList<QMap<QString, QString>>();
+    QList < QMap<QString, QString>> res;
+    if (pi_uiLevel == 0)
+    {
+        QMap<QString, QString> tmp;
+        tmp["toto"] = "tata";
+        res.push_back(tmp);
+        tmp["toto"] = "titi";
+        res.push_back(tmp);
+    }
+    return res;
 }
 
 template <typename T>
-QList<QMap<QString, QString>> medSQlite<T>::getAdditionalAttributes(unsigned int pi_uiLevel, int id)
+QList<QMap<QString, QString>> medSQlite<T>::getAdditionalAttributes(unsigned int pi_uiLevel, QString parentId)
 {
     return QList<QMap<QString, QString>>();
 }

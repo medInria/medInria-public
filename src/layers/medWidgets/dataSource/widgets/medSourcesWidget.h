@@ -16,6 +16,8 @@
 //#include <medSourceItemModelPresenter.h>
 #include <medDataModel.h>
 
+#include <medSourceContextMenu.h>
+
 #include <QWidget>
 #include <QPushButton>
 #include <QTreeView>
@@ -39,8 +41,14 @@ public slots:
     void removeSource(QString sourceInstanceId);
     void filter(const QString &);
 
+
+private:
+    void onCustomContextMenu(QPoint const &, QMenu *pi_pMenu); //QTreeView *);
+    QModelIndex indexFromMenu(QMenu *pi_pMenu);
+
 private:
     QVBoxLayout m_layout;
-    QMap<QString, QWidget*> m_treeMap; // sourceInstanceId, SubTreeWidget
-    QMap<QString, QWidget*> m_titleMap;  // sourceInstanceId, source instance names
+    QMap<QString, QWidget*>   m_treeMap; // sourceInstanceId, SubTreeWidget
+    QMap<QString, QWidget*>   m_titleMap;  // sourceInstanceId, source instance names
+    QMap<QMenu*,  QTreeView*> m_TreeviewByMenuMap;
 };

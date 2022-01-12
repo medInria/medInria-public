@@ -67,17 +67,36 @@ bool medDataModel::getSourceGlobalInfo(QString const & pi_sourceIntanceId, bool 
     return bRes;
 }
 
-bool medDataModel::getLevelMetaData(QString const & pi_sourceIntanceId, unsigned int pi_uiLevel, QString const & key, QVariantList & po_entries)
+bool medDataModel::getLevelMetaData(QString const & pi_sourceIntanceId, unsigned int pi_uiLevel, QString const & key, levelAttributes & po_entries)
 {
     bool bRes = true;
 
     medAbstractSource* pSource = m_sourceIdToInstanceMap.value(pi_sourceIntanceId);
     if (pSource)
     {
+        QStringList keys = pSource->getMandatoryAttributesKeys(pi_uiLevel);//TODO replace by fetch medSourceItemModel column names
         auto listOfMinimalEntries = pSource->getMinimalEntries(pi_uiLevel, key);
+
+        datasetAttributes entryTmp;
         for (auto &minimalEntry : listOfMinimalEntries)
         {
-            po_entries.append(QStringList({ minimalEntry.key, minimalEntry.name, minimalEntry.description }));
+            entryTmp[keys[0]] = minimalEntry.key;
+            entryTmp[keys[1]] = minimalEntry.name;
+            entryTmp[keys[2]] = minimalEntry.description;
+            po_entries.push_back(entryTmp);
+        }
+
+        int i = 0;
+        auto listOfMandatoriesEntries = pSource->getMandatoryAttributes(pi_uiLevel, key);
+        for (auto &mandatoriesEntries : listOfMandatoriesEntries)
+        {
+            for (auto & k : mandatoriesEntries.keys())
+            {
+                datasetAttributes &map = po_entries[i];
+                QString val = mandatoriesEntries[k];
+                map[k] = val;
+            }
+            ++i;
         }
     }
     else
@@ -87,7 +106,7 @@ bool medDataModel::getLevelMetaData(QString const & pi_sourceIntanceId, unsigned
     return bRes;
 }
 
-bool medDataModel::getLevelAttributes(QString const & pi_sourceIntanceId, unsigned int pi_uiLevel, QStringList & po_attributes)
+bool medDataModel::getMandatoryAttributesKeys(QString const & pi_sourceIntanceId, unsigned int pi_uiLevel, QStringList & po_attributes)
 {
     bool bRes = true;
 
@@ -169,9 +188,10 @@ medAbstractData * medDataModel::getData(medDataIndex const & index)
             {
                 pDataTmp->retain();
                 pDataTmp->setDataIndex(index);
-                m_IndexToData[index] = pDataRes;
+                m_IndexToData[index] = pDataTmp;
                 m_IndexToData[index].data();
                 pDataRes = pDataTmp;
+                connect(pDataTmp, &QObject::destroyed, this, &medDataModel::removeConvertedData);
             }
         }
     }
@@ -254,5 +274,23 @@ void medDataModel::sourceIsOnline(QString sourceIntanceId)
         bool bOnline = pSource->connect(true); //TODO remove when 256 will be applied
         m_sourcesModelMap[pSource]->setOnline(bOnline); //TODO remove when 256 will be applied
         //pSource->connect(true);
+    }
+}
+
+void medDataModel::removeConvertedData(QObject * obj)
+{
+    medAbstractData* data = static_cast<medAbstractData*>(obj);
+    auto liste1 = m_IndexToData.values();
+    QList<medAbstractData*> liste2;
+    for (auto pData : liste1)
+    {
+        liste2.push_back(pData.data());
+    }
+
+    if (liste2.contains(data))
+    {
+        dtkSmartPointer<medAbstractData> sptr(data);
+        
+        m_IndexToData.key(sptr);
     }
 }

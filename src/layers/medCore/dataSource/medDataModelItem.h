@@ -20,7 +20,7 @@ class medSourceItemModel;
 class medDataModelItem
 {
 public:
-    medSourceItemModel             *m_model;
+    medSourceItemModel              *m_model;
     medDataModelItem                *m_parentItem;
     QList<medDataModelItem *>        m_childItems;
     QMap<int, QMap<int, QVariant> >  m_itemData; //column, role, value

@@ -4,8 +4,11 @@
 #include <medDataModelElement.h> //TODO must be renamed by medSourceItemModel
 #include <medSourceItemModelPresenter.h>
 
+#include <medDataInfoWidget.h>
+
 #include <QPushButton>
 #include <QTreeView>
+#include <QAction>
 
 class medSortFilterProxyModel : public QSortFilterProxyModel
 {
@@ -61,6 +64,53 @@ void medSourcesWidget::addSource(medDataModel *dataModel, QString sourceInstance
     sourceTreeView->viewport()->setAcceptDrops(false);
     //sourceTreeView->setDropIndicatorShown(true);
     sourceTreeView->setDragDropMode(QAbstractItemView::DragOnly);
+
+    //context menu code
+    auto pMenu = new medSourceContextMenu(sourceTreeView);
+    sourceTreeView->setContextMenuPolicy(Qt::CustomContextMenu);
+    m_TreeviewByMenuMap[pMenu] = sourceTreeView;
+    QAction *pushAction    = new QAction(tr("Push"),          pMenu);
+    QAction *refreshAction = new QAction(tr("Refresh"),       pMenu);
+    QAction *saveAction    = new QAction(tr("Save on disk"),  pMenu);
+    QAction *removeAction  = new QAction(tr("Remove"),        pMenu);
+    QAction *fetchAction   = new QAction(tr("Fetch"),         pMenu);
+    QAction *preloadAction = new QAction(tr("Pre-Load"),      pMenu);
+    QAction *readerAction  = new QAction(tr("Change reader"), pMenu);
+    QAction *unloadAction  = new QAction(tr("Unload"),        pMenu);
+    QAction *infoAction    = new QAction(tr("Information"),   pMenu);
+    pMenu->addAction(pushAction);
+    pMenu->addAction(refreshAction);
+    pMenu->addAction(saveAction);
+    pMenu->addAction(removeAction);
+    pMenu->addAction(fetchAction);
+    pMenu->addAction(preloadAction);
+    pMenu->addAction(readerAction);
+    pMenu->addAction(unloadAction);
+    pMenu->addAction(infoAction);
+    //connect(pushAction,    &QAction::triggered, [=]() {  emit infoActionSignal(this->itemFromMenu(pMenu)); });
+    //connect(refreshAction, &QAction::triggered, [=]() {  emit infoActionSignal(this->itemFromMenu(pMenu)); });
+    //connect(saveAction,    &QAction::triggered, [=]() {  emit infoActionSignal(this->itemFromMenu(pMenu)); });
+    //connect(removeAction,  &QAction::triggered, [=]() {  emit infoActionSignal(this->itemFromMenu(pMenu)); });
+    //connect(fetchAction,   &QAction::triggered, [=]() {  emit infoActionSignal(this->itemFromMenu(pMenu)); });
+    //connect(preloadAction, &QAction::triggered, [=]() {  emit infoActionSignal(this->itemFromMenu(pMenu)); });
+    //connect(readerAction,  &QAction::triggered, [=]() {  emit infoActionSignal(this->itemFromMenu(pMenu)); });
+    //connect(unloadAction,  &QAction::triggered, [=]() {  emit infoActionSignal(this->itemFromMenu(pMenu)); });
+    connect(infoAction,    &QAction::triggered, [=]() {
+        QMap<QString, QString> mandatoriesAttributes;
+
+        QModelIndex index = this->indexFromMenu(pMenu);
+        if (index.isValid())
+        {
+            //mandatoriesAttributes = index.model()->getMandatory(index);
+            auto popupDataInfo = new medDataInfoWidget(mandatoriesAttributes);
+            popupDataInfo->show();
+        }
+
+    });
+
+
+
+    connect(sourceTreeView, &QTreeView::customContextMenuRequested, [=](QPoint const& point) { onCustomContextMenu(point, pMenu); });
 
 
     m_layout.addWidget(sourceTreeTitle);
@@ -121,3 +171,28 @@ void medSourcesWidget::filter(const QString &text)
         proxy->setRecursiveFilteringEnabled(true);
     }
 }
+
+void medSourcesWidget::onCustomContextMenu(QPoint const &point, QMenu *pi_pMenu)
+{
+    auto pTreeView = m_TreeviewByMenuMap[pi_pMenu];
+    QModelIndex index = pTreeView->indexAt(point);
+    if (index.isValid())
+    {
+        auto pos = pTreeView->viewport()->mapToGlobal(point);
+        pi_pMenu->exec(pos);
+    }
+}
+
+QModelIndex medSourcesWidget::indexFromMenu(QMenu * pi_pMenu)
+{
+    QModelIndex indexRes;
+
+    auto sourceTreeView = m_TreeviewByMenuMap[pi_pMenu];
+    auto proxy = static_cast<QSortFilterProxyModel*>(sourceTreeView->model());
+    auto pos = sourceTreeView->mapFromGlobal(pi_pMenu->pos());
+    indexRes = proxy->mapToSource(sourceTreeView->indexAt(pos));
+
+    return indexRes;
+}
+
+

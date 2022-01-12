@@ -77,9 +77,9 @@ public:
     /* ***********************************************************************/
     QList<levelMinimalEntries> getMinimalEntries(unsigned int pi_uiLevel, QString parentId) override;
 
-    QList<QMap<QString, QString>> getMandatoryAttributes(unsigned int pi_uiLevel, int id) override;
+    QList<QMap<QString, QString>> getMandatoryAttributes(unsigned int pi_uiLevel, QString parentId) override;
 
-    QList<QMap<QString, QString>> getAdditionalAttributes(unsigned int pi_uiLevel, int id) override;
+    QList<QMap<QString, QString>> getAdditionalAttributes(unsigned int pi_uiLevel, QString parentId) override;
 
     /* ***********************************************************************/
     /* *************** Get data          *************************************/

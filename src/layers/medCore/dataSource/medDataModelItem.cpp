@@ -192,7 +192,7 @@ QVariant medDataModelItem::data(int column, int role) const
     int internalColumn = m_model->getColumnInsideLevel(m_iLevel, column);
     if (m_itemData.contains(internalColumn) && m_itemData[internalColumn].contains(role))
     {
-        varRes = m_itemData[internalColumn+1][role];
+        varRes = m_itemData[internalColumn][role];
     }
 
     return varRes;

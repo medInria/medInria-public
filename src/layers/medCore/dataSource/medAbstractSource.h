@@ -80,9 +80,9 @@ public:
     /* ***********************************************************************/
     /* *************** Get elements data *************************************/
     /* ***********************************************************************/
-    virtual QList<levelMinimalEntries>    getMinimalEntries(unsigned int pi_uiLevel, QString parentKey)   = 0; //id ou uid en int ou en QString si  int alors l'implémentation doit avoir une méthode bijective
-    virtual QList<QMap<QString, QString>> getMandatoryAttributes(unsigned int pi_uiLevel, int type)  = 0; //ou QVarient
-    virtual QList<QMap<QString, QString>> getAdditionalAttributes(unsigned int pi_uiLevel, int type) = 0; //ou QVarient
+    virtual QList<levelMinimalEntries>    getMinimalEntries      (unsigned int pi_uiLevel, QString parentKey) = 0; //id ou uid en int ou en QString si  int alors l'implémentation doit avoir une méthode bijective
+    virtual QList<QMap<QString, QString>> getMandatoryAttributes (unsigned int pi_uiLevel, QString parentKey) = 0; //ou QVarient
+    virtual QList<QMap<QString, QString>> getAdditionalAttributes(unsigned int pi_uiLevel, QString parentKey) = 0; //ou QVarient
     
     
     /* ***********************************************************************/
@@ -102,6 +102,7 @@ public:
     
 signals:
     void progress(int po_iRequest, eRequestStatus status);
+    void connectionStatus(bool);
 
 public slots:
     virtual void abort(int pi_iRequest) = 0;

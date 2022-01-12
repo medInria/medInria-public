@@ -29,24 +29,38 @@ class MEDCORE_EXPORT medDataModel : public QObject
 {
 
     Q_OBJECT
+public:
 
-public:	
+    using datasetAttributes = QMap<QString, QString>;
+    using levelAttributes = QList<datasetAttributes>;
+
+
     medDataModel(QObject *parent = nullptr);
 	~medDataModel();
 
     bool setDefaultWorkingSource(unsigned int i);
+
+    // ////////////////////////////////////////////////////////////////////////////////////////////
+    // Members functions to interrogate the source
     bool getSourceGlobalInfo(QString const &pi_sourceIntanceId, bool &pi_bOnline, bool &pi_bWritable, bool & pi_bLocal, bool &pi_bCache);
-    bool getLevelMetaData(QString const & pi_sourceIntanceId, unsigned int pi_uiLevel, QString const & key, QVariantList & po_entries);
-    bool getLevelAttributes(QString const & pi_sourceIntanceId, unsigned int pi_uiLevel, QStringList & po_attributes);
+    bool getLevelMetaData(QString const & pi_sourceIntanceId, unsigned int pi_uiLevel, QString const & key, levelAttributes & po_entries);
+    bool getMandatoryAttributesKeys(QString const & pi_sourceIntanceId, unsigned int pi_uiLevel, QStringList & po_attributes);
     bool getLevelCount(QString const & pi_sourceIntanceId, unsigned int &po_uiLevelMax);
 
 
+    bool getMandatoryAttributes(QString const & pi_sourceIntanceId, unsigned int pi_uiLevel, QString const & key, datasetAttributes & po_attributes);
+
+
+    // ////////////////////////////////////////////////////////////////////////////////////////////
+    // Members functions to deal with datamodel
     QString getInstanceName(QString const & pi_sourceIntanceId);
     QList<medSourceItemModel*> models(); // rediscuté de son nom
-
     medSourceItemModel* getModel(QString const & pi_sourceIntanceId);
 
+    // ////////////////////////////////////////////////////////////////////////////////////////////
+    // Members functions to get Data, metadata and informations
     medAbstractData * getData(medDataIndex const & index);
+    datasetAttributes getMetaData(medDataIndex const & index);
 
 public slots:
    void addSource(medAbstractSource* pi_source);
@@ -58,6 +72,8 @@ public slots:
 
    void refresh(QString uri);   //uri -> sourceInstanceId/IdLevel1/IdLevel.../IdLevelN
    void sourceIsOnline(QString sourceIntanceId);
+
+   void removeConvertedData(QObject *obj);
 
 private:
 

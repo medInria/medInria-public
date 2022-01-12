@@ -82,12 +82,12 @@ private:
 
     void populateLevelV2(QModelIndex const &index, QString const & uri);
 
-    bool itemStillExist(QVariantList &entries, medDataModelItem * pItem);
-    void computeRowRangesToRemove(medDataModelItem * pItem, QVariantList &entries, QVector<QPair<int, int>> &rangeToRemove);
+    bool itemStillExist(QList<QMap<QString, QString>> &entries, medDataModelItem * pItem);
+    void computeRowRangesToRemove(medDataModelItem * pItem, QList<QMap<QString, QString>> &entries, QVector<QPair<int, int>> &rangeToRemove);
     void removeRowRanges(QVector<QPair<int, int>> &rangeToRemove, const QModelIndex & index);
 
-    void computeRowRangesToAdd(medDataModelItem * pItem, QVariantList &entries, QMap<int, QVariantList> &entriesToAdd);
-    void addRowRanges(QMap<int, QVariantList> &entriesToAdd, const QModelIndex & index);
+    void computeRowRangesToAdd(medDataModelItem * pItem, QList<QMap<QString, QString>> &entries, QMap<int, QList<QMap<QString, QString>>> &entriesToAdd);
+    void addRowRanges(QMap<int, QList<QMap<QString, QString>>> &entriesToAdd, const QModelIndex & index);
 
     bool currentLevelFetchable(medDataModelItem * pItemCurrent);
 
