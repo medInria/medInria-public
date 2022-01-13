@@ -2,7 +2,7 @@
 
 #include <QTreeView>
 #include <QSortFilterProxyModel>
-#include <medDataModelElement.h> //TODO must be renamed by medSourceItemModel
+#include <medSourceItemModel.h>
 
 class medSourceItemModelPresenterPrivate
 {

@@ -11,7 +11,7 @@
 
 =========================================================================*/
 
-#include <medDataModelElement.h>
+#include <medSourceItemModel.h>
 
 #include <medDataModel.h>
 #include <medDataModelItem.h>
@@ -327,17 +327,37 @@ int medSourceItemModel::getColumnInsideLevel(int level, int section)
 {
     int iRes = -1;
 
-    if (section > -1 && section < d->sectionNames.size())
+    if (section > 0 && section < d->sectionNames.size())
     {
         if (d->columnNameByLevel.contains(level))
         {
             iRes = d->columnNameByLevel[level].indexOf(d->sectionNames[section]);
         }
     }
-    //else if (section == 0)
-    //{
-    //    iRes = 0;
-    //}
+    else if (section == 0)
+    {
+        iRes = 1;
+    }
+
+    return iRes;
+}
+
+int medSourceItemModel::getSectionInsideLevel(int level, int column)
+{
+    int iRes = -1;
+
+    if (d->columnNameByLevel.contains(level))
+    {
+        if (column > -1 && column < d->columnNameByLevel[level].size())
+        {
+            QString colName = d->columnNameByLevel[level][column];
+            iRes = d->sectionNames.indexOf(colName);
+        }
+        //else if (column == 0)
+        //{
+        //    iRes = 0;
+        //}
+    }
 
     return iRes;
 }
@@ -379,6 +399,23 @@ void medSourceItemModel::setOnline(bool pi_bOnline)
         d->bOnline = pi_bOnline;
         emit online(d->bOnline);
     }
+}
+
+medSourceItemModel::datasetAttributes medSourceItemModel::getMetaData(QModelIndex const & index)
+{
+    datasetAttributes res;
+
+    if (index.isValid())
+    {
+        medDataModelItem *pItem = getItem(index);
+        int iLevel = pItem->level();
+        for (int i = 0; i < d->columnNameByLevel[iLevel].size(); ++i)
+        {
+            res[d->columnNameByLevel[iLevel][i]] = pItem->metaData(i).toString();
+        }
+    }
+
+    return res;
 }
 
 /**

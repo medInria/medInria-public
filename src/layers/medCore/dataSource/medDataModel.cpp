@@ -11,8 +11,11 @@
 
 =========================================================================*/
 
-#include<medDataModel.h>
-#include<medDataImporter.h>
+#include <medDataModel.h>
+#include <medDataImporter.h>
+
+#include <QModelIndex>
+#include <medDataModelItem.h>
 
 medDataModel::medDataModel(QObject *parent)
 {
@@ -140,6 +143,23 @@ bool medDataModel::getLevelCount(QString const & pi_sourceIntanceId, unsigned in
     return bRes;
 }
 
+bool medDataModel::getOptionalAttributes(QString const & pi_sourceIntanceId, unsigned int pi_uiLevel, QString const & key, QList<QMap<int, QString>>& po_attributes)
+{
+    bool bRes = false;
+
+    medAbstractSource* pSource = m_sourceIdToInstanceMap.value(pi_sourceIntanceId);
+    if (pSource)
+    {
+        //po_attributes = pSource->getAdditionalAttributes(pi_uiLevel, key);
+    }
+    else
+    {
+        bRes = false;
+    }
+
+    return bRes;
+}
+
 QString medDataModel::getInstanceName(QString const & pi_sourceIntanceId)
 {
     QString instanceNameRes;
@@ -197,6 +217,27 @@ medAbstractData * medDataModel::getData(medDataIndex const & index)
     }
 
     return pDataRes;
+}
+
+medDataModel::datasetAttributes medDataModel::getMetaData(QModelIndex const & index)
+{
+    datasetAttributes metaRes;
+
+    if (index.isValid())
+    {
+        QAbstractItemModel *modelTmp = const_cast<QAbstractItemModel *> (index.model());
+        medSourceItemModel *model = dynamic_cast<medSourceItemModel *> (modelTmp);
+        if (model)
+        {
+            metaRes = model->getMetaData(index);
+        }
+    }
+    else
+    {
+
+    }
+
+    return metaRes;
 }
 
 

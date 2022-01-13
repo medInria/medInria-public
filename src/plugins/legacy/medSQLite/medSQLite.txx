@@ -246,11 +246,11 @@ QStringList medSQlite<T>::getMandatoryAttributesKeys(unsigned int pi_uiLevel)
     switch (pi_uiLevel)
     {
         case 0:
-            return {"id", "name", "patientId"};
+            return {"id", "name0", "patientId"};
         case 1:
-            return {"id", "name", "uid"};
+            return {"id", "name1", "uid"};
         case 2:
-            return {"id", "name", "uid"};
+            return {"id", "name2", "uid"};
         default:
             return QStringList();
     }

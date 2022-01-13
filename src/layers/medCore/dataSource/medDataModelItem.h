@@ -36,7 +36,8 @@ public:
     /* *************** Data manipulation *************************************/
     /* ***********************************************************************/
     void setData(QVariant value, int column = 0, int role = Qt::DisplayRole);
-    QVariant data(int column, int role = Qt::DisplayRole) const;
+    QVariant data(int section, int role = Qt::DisplayRole) const;
+    QVariant metaData(int column, int role = Qt::DisplayRole) const;
     inline QString iid() {return m_itemData[0][0].toString(); }
 
     int childIndex(QString iid);

@@ -1,7 +1,7 @@
 #include "medSourceTree.h"
 
 #include <medDataModel.h>
-#include <medDataModelElement.h> //TODO must be renamed by medSourceItemModel
+#include <medSourceItemModel.h>
 #include <medSourceItemModelPresenter.h>
 
 #include <QWidget>
