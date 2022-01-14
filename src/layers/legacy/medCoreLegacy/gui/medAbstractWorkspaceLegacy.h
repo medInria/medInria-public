@@ -85,15 +85,16 @@ public:
 
     medProgressionStack *getProgressionStack();
 
+    void addToolBox(medToolBox *toolbox);
+    void insertToolBox(int index, medToolBox* toolbox);
+    void removeToolBox(medToolBox *toolbox);
+
 public slots:
     virtual void addNewTab();
     void updateNavigatorsToolBox();
     void updateMouseInteractionToolBox();
     void updateLayersToolBox();
     void updateInteractorsToolBox();
-    void addToolBox(medToolBox *toolbox);
-    void insertToolBox(int index, medToolBox* toolbox);
-    void removeToolBox(medToolBox *toolbox);
 
     virtual void open(const medDataIndex& index);
 

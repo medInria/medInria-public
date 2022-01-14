@@ -140,6 +140,12 @@ void medAbstractWorkspaceLegacy::addToolBox(medToolBox *toolbox)
     toolbox->setWorkspace(this);
     toolbox->setParent(d->parent);
     d->toolBoxes.insert(index, toolbox);
+
+    if (toolbox->header()->title().isEmpty())
+    {
+        toolbox->setTitle(toolbox->name());
+    }
+
     emit toolBoxInserted(index, toolbox);
  }
 
