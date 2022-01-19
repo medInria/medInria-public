@@ -79,6 +79,9 @@ public:
 %rename(AbstractData) medAbstractData;
 %include "medAbstractData.h"
 
+%feature("novaluewrapper") dtkSmartPointer<medAbstractData>;
+%template() dtkSmartPointer<medAbstractData>;
+
 %pythoncode
 %{
 
@@ -127,38 +130,25 @@ public:
     $1 = medAbstractData_Check($input) ? 1 : 0;
 }
 
-%typemap(out) medAbstractData*
+%medPythonTypemaps(medAbstractData*);
+
+%typemap(in) medAbstractData* (QObject* temp)
 {
-    if ($1)
-    {
-        medAbstractMeshData* meshData = dynamic_cast<medAbstractMeshData*>($1);
-
-        if (meshData)
-        {
-            $result = SWIG_NewPointerObj(meshData, $descriptor(medAbstractMeshData*), 1);
-        }
-        else
-        {
-            medAbstractImageData* imageData = dynamic_cast<medAbstractImageData*>($1);
-
-            if (imageData)
-            {
-                $result = SWIG_NewPointerObj(imageData, $descriptor(medAbstractImageData*), 1);
-            }
-            else
-            {
-                $result = SWIG_NewPointerObj($1, $1_descriptor, 1);
-            }
-        }
-
-        $1->retain();
-    }
-    else
-    {
-        $result = Py_None;
-        Py_INCREF($result);
-    }
+    medPythonConvert($input, &temp);
+    med::python::propagateErrorIfOccurred();
+    *$1 = dynamic_cast<medAbstractData*>(temp);
 }
+
+%apply medAbstractData { dtkSmartPointer<medAbstractData> };
+
+%typemap(in) dtkSmartPointer<medAbstractData>
+{
+    $1 = ($1_ltype::ObjectType*)med::python::extractSWIGWrappedObject($input);
+    med::python::propagateErrorIfOccurred();
+}
+
+%include "medAbstractImageData.h"
+%include "medAbstractMeshData.h"
 
 %rename(DataManager) medDataManager;
 %include "medDataManager.h"
