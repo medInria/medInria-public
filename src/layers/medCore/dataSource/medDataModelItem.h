@@ -24,6 +24,8 @@ public:
     medDataModelItem                *m_parentItem;
     QList<medDataModelItem *>        m_childItems;
     QMap<int, QMap<int, QVariant> >  m_itemData; //column, role, value
+    QMap<QString, QVariant>          m_itemMeta;    //keyname, value
+    QMap<QString, QString>           m_itemMetaTag; //keyname, Tag
     int                              m_iLevel;
     bool                             m_bCanHaveSubData;
 
@@ -36,7 +38,9 @@ public:
     /* *************** Data manipulation *************************************/
     /* ***********************************************************************/
     void setData(QVariant value, int column = 0, int role = Qt::DisplayRole);
-    QVariant data(int column, int role = Qt::DisplayRole) const;
+    QVariant data(int section, int role = Qt::DisplayRole) const;
+    QVariant metaData(int column, int role = Qt::DisplayRole) const;
+    //QVariant metaData(int column, int role = Qt::DisplayRole) const;//TODO19
     inline QString iid() {return m_itemData[0][0].toString(); }
 
     int childIndex(QString iid);

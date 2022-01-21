@@ -326,7 +326,7 @@ bool medDBSourcesLoader::loadFromDisk()
                 iCnxInvalid++;
             }
         }
-        qWarning() << "[WARN] Source loading statistics : "
+        qWarning() << "[INFO] Source loading statistics : "
             << "\nConnection ok             = " << iCnxOk
             << "\nConnection without plugin = " << iCnxWithoutPlugin
             << "\nConnection invalid        = " << iCnxInvalid;

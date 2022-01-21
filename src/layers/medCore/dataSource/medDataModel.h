@@ -13,7 +13,7 @@
 =========================================================================*/
 
 #include <medSourcesLoader.h>
-#include <medDataModelElement.h>
+#include <medSourceItemModel.h>
 
 #include <medCoreExport.h>
 #include <QMap>
@@ -49,6 +49,8 @@ public:
 
 
     bool getMandatoryAttributes(QString const & pi_sourceIntanceId, unsigned int pi_uiLevel, QString const & key, datasetAttributes & po_attributes);
+    bool getOptionalAttributes(QString const & pi_sourceIntanceId, unsigned int pi_uiLevel, QString const & key, datasetAttributes & po_attributes, datasetAttributes & po_tags);
+    //bool getOptionalAttributes(QString const & pi_sourceIntanceId, unsigned int pi_uiLevel, QString const & key, QList<QMap<int, QString>> & po_attributes); //optional attributes list <role, value> //Role: 1001->displayValue 1002->columnName 1003->tag
 
 
     // ////////////////////////////////////////////////////////////////////////////////////////////
@@ -60,7 +62,7 @@ public:
     // ////////////////////////////////////////////////////////////////////////////////////////////
     // Members functions to get Data, metadata and informations
     medAbstractData * getData(medDataIndex const & index);
-    datasetAttributes getMetaData(medDataIndex const & index);
+    datasetAttributes getMetaData(QModelIndex const & index);
 
 public slots:
    void addSource(medAbstractSource* pi_source);

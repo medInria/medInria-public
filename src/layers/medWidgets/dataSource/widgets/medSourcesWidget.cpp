@@ -1,7 +1,7 @@
 #include "medSourcesWidget.h"
 
 #include <medDataModel.h>
-#include <medDataModelElement.h> //TODO must be renamed by medSourceItemModel
+#include <medSourceItemModel.h>
 #include <medSourceItemModelPresenter.h>
 
 #include <medDataInfoWidget.h>
@@ -59,7 +59,7 @@ void medSourcesWidget::addSource(medDataModel *dataModel, QString sourceInstance
     QPushButton *sourceTreeTitle = new QPushButton(instanceName);
     QTreeView   *sourceTreeView  = sourcePresenter->buildTree(new medSortFilterProxyModel());
 
-    sourceTreeView->setSelectionMode(QAbstractItemView::SingleSelection);
+    //sourceTreeView->setSelectionMode(QAbstractItemView::SingleSelection);
     sourceTreeView->setDragEnabled(true);
     sourceTreeView->viewport()->setAcceptDrops(false);
     //sourceTreeView->setDropIndicatorShown(true);
@@ -102,6 +102,7 @@ void medSourcesWidget::addSource(medDataModel *dataModel, QString sourceInstance
         if (index.isValid())
         {
             //mandatoriesAttributes = index.model()->getMandatory(index);
+            mandatoriesAttributes = dataModel->getMetaData(index);
             auto popupDataInfo = new medDataInfoWidget(mandatoriesAttributes);
             popupDataInfo->show();
         }
@@ -178,7 +179,7 @@ void medSourcesWidget::onCustomContextMenu(QPoint const &point, QMenu *pi_pMenu)
     QModelIndex index = pTreeView->indexAt(point);
     if (index.isValid())
     {
-        auto pos = pTreeView->viewport()->mapToGlobal(point);
+        QPoint pos = pTreeView->viewport()->mapToGlobal(point);
         pi_pMenu->exec(pos);
     }
 }
@@ -187,9 +188,9 @@ QModelIndex medSourcesWidget::indexFromMenu(QMenu * pi_pMenu)
 {
     QModelIndex indexRes;
 
-    auto sourceTreeView = m_TreeviewByMenuMap[pi_pMenu];
-    auto proxy = static_cast<QSortFilterProxyModel*>(sourceTreeView->model());
-    auto pos = sourceTreeView->mapFromGlobal(pi_pMenu->pos());
+    auto sourceTreeView = m_TreeviewByMenuMap[pi_pMenu];    
+    auto proxy = static_cast<medSortFilterProxyModel*>(sourceTreeView->model());
+    auto pos = sourceTreeView->viewport()->mapFromGlobal(pi_pMenu->pos());
     indexRes = proxy->mapToSource(sourceTreeView->indexAt(pos));
 
     return indexRes;

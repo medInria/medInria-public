@@ -37,43 +37,44 @@ medLocalDbController::medLocalDbController() : medDatabasePersistentController()
 
 bool medLocalDbController::createConnection(void)
 {
-    medStorage::mkpath(medStorage::dataLocation() + "/");
-
-    m_database = QSqlDatabase::database("sqlite");
-    if (!m_database.isValid())
-    {
-        m_database = QSqlDatabase::addDatabase("QSQLITE", "sqlite");
-    }
-    m_database.setDatabaseName(medStorage::dataLocation() + "/" + "db");
-
-    if (!m_database.open())
-    {
-        qDebug() << DTK_COLOR_FG_RED << "Cannot open database: unable to establish a database connection." << DTK_NO_COLOR;
-        return false;
-    }
-    else
-    {
-        qDebug() << "Database opened at: " << qPrintable(m_database.databaseName());
-        setConnected(true);
-    }
-
-    if (!createPatientTable() || !createStudyTable() || !createSeriesTable() || !updateFromNoVersionToVersion1())
-    {
-        return false;
-    }
-
-    // optimize speed of sqlite db
-    QSqlQuery query(m_database);
-    if (!(query.prepare(QLatin1String("PRAGMA synchronous = 0")) && execQuery(query, __FILE__, __LINE__)))
-    {
-        qDebug() << "Could not set sqlite synchronous mode to asynchronous mode.";
-    }
-    if (!(query.prepare(QLatin1String("PRAGMA journal_mode=wal")) && execQuery(query, __FILE__, __LINE__)))
-    {
-        qDebug() << "Could not set sqlite write-ahead-log journal mode";
-    }
-
-    return true;
+    //medStorage::mkpath(medStorage::dataLocation() + "/");
+    //
+    //m_database = QSqlDatabase::database("sqlite");
+    //if (!m_database.isValid())
+    //{
+    //    m_database = QSqlDatabase::addDatabase("QSQLITE", "sqlite");
+    //}
+    //m_database.setDatabaseName(medStorage::dataLocation() + "/" + "db");
+    //
+    //if (!m_database.open())
+    //{
+    //    qDebug() << DTK_COLOR_FG_RED << "Cannot open database: unable to establish a database connection." << DTK_NO_COLOR;
+    //    return false;
+    //}
+    //else
+    //{
+    //    qDebug() << "Database opened at: " << qPrintable(m_database.databaseName());
+    //    setConnected(true);
+    //}
+    //
+    //if (!createPatientTable() || !createStudyTable() || !createSeriesTable() || !updateFromNoVersionToVersion1())
+    //{
+    //    return false;
+    //}
+    //
+    //// optimize speed of sqlite db
+    //QSqlQuery query(m_database);
+    //if (!(query.prepare(QLatin1String("PRAGMA synchronous = 0")) && execQuery(query, __FILE__, __LINE__)))
+    //{
+    //    qDebug() << "Could not set sqlite synchronous mode to asynchronous mode.";
+    //}
+    //if (!(query.prepare(QLatin1String("PRAGMA journal_mode=wal")) && execQuery(query, __FILE__, __LINE__)))
+    //{
+    //    qDebug() << "Could not set sqlite write-ahead-log journal mode";
+    //}
+    //
+    //return true;
+    return false;
 }
 
 bool medLocalDbController::closeConnection(void)

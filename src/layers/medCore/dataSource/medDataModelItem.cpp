@@ -1,5 +1,5 @@
 #include <medDataModelItem.h>
-#include <medDataModelElement.h>
+#include <medSourceItemModel.h>
 
 #include <QVariant>
 #include <QList>
@@ -185,14 +185,26 @@ void medDataModelItem::setData(QVariant value, int column, int role)
     m_itemData[column][role] = value;
 }
 
-QVariant medDataModelItem::data(int column, int role) const
+QVariant medDataModelItem::data(int section, int role) const
 {
     QVariant varRes;
 
-    int internalColumn = m_model->getColumnInsideLevel(m_iLevel, column);
+    int internalColumn = m_model->getColumnInsideLevel(m_iLevel, section);
     if (m_itemData.contains(internalColumn) && m_itemData[internalColumn].contains(role))
     {
         varRes = m_itemData[internalColumn][role];
+    }
+
+    return varRes;
+}
+
+QVariant medDataModelItem::metaData(int column, int role) const
+{
+    QVariant varRes;
+
+    if (m_itemData.contains(column) && m_itemData[column].contains(role))
+    {
+        varRes = m_itemData[column][role];
     }
 
     return varRes;

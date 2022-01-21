@@ -26,7 +26,17 @@ class MEDCORE_EXPORT medSourceItemModel : public QAbstractItemModel
 
     Q_OBJECT
 
-public:	
+public:
+
+    using datasetAttributes = QMap<QString, QString>;
+    using levelAttributes = QList<datasetAttributes>;
+    struct datasetAttributes4
+    {
+          QMap<QString, QVariant> values; // <keyName, value>
+          QMap<QString, QVariant> tags;   // <keyName, tag value>
+    
+    };
+
     medSourceItemModel(medDataModel *parent, QString const & sourceIntanceId);
     virtual ~medSourceItemModel();
 
@@ -65,9 +75,19 @@ public:
     // Simple methods
     //void setColumnAttributes(int p_iLevel, QStringList &attributes); //maybe developed because not const ?
     int  getColumnInsideLevel(int level, int section);
+    int  getSectionInsideLevel(int level, int column);
     bool fetch(QString uri);
     QString getSourceIntanceId();
     void setOnline(bool pi_bOnline);
+
+    datasetAttributes getMendatoriesMetaData(QModelIndex const & index);
+    QList<QMap<int, QString>> getAdditionnalMetaData(QModelIndex const & index);
+    bool setAdditionnalMetaData(QModelIndex const & index, QList<QMap<int, QString>> &additionnalMetaData);
+
+    //FLO
+    QModelIndex toIndex(QString uri);
+    QString toUri(QModelIndex index);
+    bool setAdditionnalMetaData2(QModelIndex const & index, datasetAttributes4 const &attributes);
 
 public slots:
     void itemPressed(QModelIndex const &index);
