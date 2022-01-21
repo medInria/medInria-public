@@ -277,7 +277,7 @@ Qt::ItemFlags medSourceItemModel::flags(const QModelIndex & index) const
     Qt::ItemFlags defaultFlags = QAbstractItemModel::flags(index);
 
     if (index.isValid())
-        return Qt::ItemIsDragEnabled | Qt::ItemIsDropEnabled | defaultFlags;
+        return Qt::ItemIsSelectable | Qt::ItemIsEnabled | Qt::ItemIsDragEnabled | Qt::ItemIsDropEnabled | defaultFlags;
     else
         return Qt::ItemIsDropEnabled | defaultFlags;
 }
@@ -401,7 +401,7 @@ void medSourceItemModel::setOnline(bool pi_bOnline)
     }
 }
 
-medSourceItemModel::datasetAttributes medSourceItemModel::getMetaData(QModelIndex const & index)
+medSourceItemModel::datasetAttributes medSourceItemModel::getMendatoriesMetaData(QModelIndex const & index)
 {
     datasetAttributes res;
 
@@ -418,6 +418,140 @@ medSourceItemModel::datasetAttributes medSourceItemModel::getMetaData(QModelInde
     return res;
 }
 
+QList<QMap<int, QString>> medSourceItemModel::getAdditionnalMetaData(QModelIndex const & index)
+{
+    QList<QMap<int, QString>> res;
+
+    if (index.isValid())
+    {
+        QMap<int, QString> resEntryTmp;
+
+        medDataModelItem *pItem = getItem(index);
+        for (auto entry : pItem->m_itemData)
+        {
+            if (entry.contains(1001) && entry.contains(1002))
+            {
+                resEntryTmp[1001] = entry[1001].toString();
+                resEntryTmp[1002] = entry[1002].toString();
+                if (entry.contains(1003))
+                {
+                    resEntryTmp[1003] = entry[1003].toString();
+                }
+                res.append(resEntryTmp);
+            }
+        }
+    }
+
+    return res;
+}
+
+bool medSourceItemModel::setAdditionnalMetaData(QModelIndex const & index, QList<QMap<int, QString>> &additionnalMetaData)
+{
+    bool bRes = true;
+
+
+    if (index.isValid())
+    {
+        QMap<int, QVariant> resEntryTmp;
+
+        medDataModelItem *pItem = getItem(index);
+
+
+        for (auto entry : additionnalMetaData)
+        {
+            if (entry.contains(1001) && entry.contains(1002))
+            {
+                resEntryTmp[1001] = entry[1001];
+                resEntryTmp[1002] = entry[1002];
+                if (entry.contains(1003))
+                {
+                    resEntryTmp[1003] = entry[1003];
+                }
+
+                //
+                int i = 0;
+                bool bFound = false;
+                while (i < pItem->m_itemData.keys().size() && !bFound)
+                {
+                    if (pItem->m_itemData[i].contains(1001) && pItem->m_itemData[i][1001] == resEntryTmp[1001])
+                    {
+                        bFound = true;
+                    }
+                    else
+                    {
+                        ++i;
+                    }
+                }
+                pItem->m_itemData[i] = resEntryTmp;
+            }
+            else
+            {
+                qDebug()<< "[WARN] Try to insert bad additional metadata to " <<  d->sourceInstanceId << " at level " << pItem->level();
+            }
+        }
+    }
+    else
+    {
+        bRes = false;
+    }
+
+
+    return bRes;
+}
+
+QModelIndex medSourceItemModel::toIndex(QString uri)
+{
+    QModelIndex indexRes;
+
+    int sourceDelimterIndex = uri.indexOf(QString(":"));
+    QStringList uriAsList = uri.right(uri.size() - sourceDelimterIndex - 1).split(QString("\r\n"));
+    uriAsList.push_front(uri.left(sourceDelimterIndex));
+    
+    if ((uriAsList.size() > 1) && (uriAsList[0] == d->sourceInstanceId))
+    {
+        auto itemTmp = d->root;
+        int i = 1;
+        do
+        {
+            indexRes = index(itemTmp->childIndex(uriAsList[i]), 0, indexRes);
+            itemTmp = static_cast<medDataModelItem*>(indexRes.internalPointer());
+            ++i;
+        } while (i < uriAsList.size() && indexRes.isValid());
+    }
+
+    return indexRes;
+}
+
+QString medSourceItemModel::toUri(QModelIndex index)
+{
+    QString uriRes;
+
+    if (index.isValid())
+    {
+        auto *item = getItem(index);
+        if (item->m_model == this)
+        {
+            uriRes = item->uri();
+        }
+    }
+
+    return uriRes;
+}
+
+bool medSourceItemModel::setAdditionnalMetaData2(QModelIndex const & index, datasetAttributes4 const & attributes)
+{
+    bool bRes = true;
+
+
+    if (index.isValid())
+    {
+        medDataModelItem *pItem = getItem(index);
+        //pItem->setAdditionnalMetaData2(attributes);//TODO19
+    }
+
+    return bRes;
+}
+
 /**
 * @brief  This slot refresh the current item pressed by GUI click, if the item don't have sons.
 * @param  index of the GUI element clicked.
@@ -432,6 +566,11 @@ void medSourceItemModel::itemPressed(QModelIndex const &index)
             auto key = pItemCurrent->iid();
             populateLevel(index, key);
         }
+        QString uri = pItemCurrent->uri();
+        QModelIndex index2 = toIndex(uri);
+        void* ptr = index2.internalPointer();
+        QString uri2 = toUri(index2);
+
     }
 }
 

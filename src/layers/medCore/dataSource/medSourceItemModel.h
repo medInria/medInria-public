@@ -30,6 +30,12 @@ public:
 
     using datasetAttributes = QMap<QString, QString>;
     using levelAttributes = QList<datasetAttributes>;
+    struct datasetAttributes4
+    {
+          QMap<QString, QVariant> values; // <keyName, value>
+          QMap<QString, QVariant> tags;   // <keyName, tag value>
+    
+    };
 
     medSourceItemModel(medDataModel *parent, QString const & sourceIntanceId);
     virtual ~medSourceItemModel();
@@ -74,7 +80,14 @@ public:
     QString getSourceIntanceId();
     void setOnline(bool pi_bOnline);
 
-    datasetAttributes getMetaData(QModelIndex const & index);
+    datasetAttributes getMendatoriesMetaData(QModelIndex const & index);
+    QList<QMap<int, QString>> getAdditionnalMetaData(QModelIndex const & index);
+    bool setAdditionnalMetaData(QModelIndex const & index, QList<QMap<int, QString>> &additionnalMetaData);
+
+    //FLO
+    QModelIndex toIndex(QString uri);
+    QString toUri(QModelIndex index);
+    bool setAdditionnalMetaData2(QModelIndex const & index, datasetAttributes4 const &attributes);
 
 public slots:
     void itemPressed(QModelIndex const &index);

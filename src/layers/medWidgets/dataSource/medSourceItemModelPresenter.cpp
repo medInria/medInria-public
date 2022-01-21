@@ -34,7 +34,12 @@ QTreeView * medSourceItemModelPresenter::buildTree(QSortFilterProxyModel *proxy)
     {
         proxy->setParent(treeViewRes);
         proxy->setSourceModel(d->sourceItemModel);
-        bool c1Ok = QObject::connect(treeViewRes, &QTreeView::pressed, [=](const QModelIndex &proxyIndex) {inputModel->itemPressed(proxy->mapToSource(proxyIndex)); });
+        bool c1Ok = QObject::connect(treeViewRes, &QTreeView::pressed, [=](const QModelIndex &proxyIndex) 
+        {
+            auto sm = treeViewRes->selectionMode();
+            inputModel->itemPressed(proxy->mapToSource(proxyIndex)); 
+
+        });
         model = proxy;
     }
     else
@@ -44,6 +49,15 @@ QTreeView * medSourceItemModelPresenter::buildTree(QSortFilterProxyModel *proxy)
     }
     treeViewRes->setModel(model);
     treeViewRes->setSortingEnabled(true);
+    //auto selectionModel = new QItemSelectionModel();
+    //selectionModel->setModel(model);
+    //treeViewRes->setSelectionModel(selectionModel);
+    //treeViewRes->setAlternatingRowColors(true);
+    treeViewRes->setAnimated(true);
+    //treeViewRes->sortByColumn(0, Qt::AscendingOrder);
+    treeViewRes->setSelectionBehavior(QAbstractItemView::SelectRows);
+    treeViewRes->setSelectionMode(QAbstractItemView::ExtendedSelection);
+    auto sm = treeViewRes->selectionMode();
     return treeViewRes;
 }
 

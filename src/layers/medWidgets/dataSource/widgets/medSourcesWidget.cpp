@@ -59,7 +59,7 @@ void medSourcesWidget::addSource(medDataModel *dataModel, QString sourceInstance
     QPushButton *sourceTreeTitle = new QPushButton(instanceName);
     QTreeView   *sourceTreeView  = sourcePresenter->buildTree(new medSortFilterProxyModel());
 
-    sourceTreeView->setSelectionMode(QAbstractItemView::SingleSelection);
+    //sourceTreeView->setSelectionMode(QAbstractItemView::SingleSelection);
     sourceTreeView->setDragEnabled(true);
     sourceTreeView->viewport()->setAcceptDrops(false);
     //sourceTreeView->setDropIndicatorShown(true);

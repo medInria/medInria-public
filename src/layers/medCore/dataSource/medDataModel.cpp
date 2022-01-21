@@ -143,22 +143,34 @@ bool medDataModel::getLevelCount(QString const & pi_sourceIntanceId, unsigned in
     return bRes;
 }
 
-bool medDataModel::getOptionalAttributes(QString const & pi_sourceIntanceId, unsigned int pi_uiLevel, QString const & key, QList<QMap<int, QString>>& po_attributes)
-{
-    bool bRes = false;
-
-    medAbstractSource* pSource = m_sourceIdToInstanceMap.value(pi_sourceIntanceId);
-    if (pSource)
-    {
-        //po_attributes = pSource->getAdditionalAttributes(pi_uiLevel, key);
-    }
-    else
-    {
-        bRes = false;
-    }
-
-    return bRes;
-}
+//TODO19
+//bool medDataModel::getOptionalAttributes(QString const & pi_sourceIntanceId, unsigned int pi_uiLevel, QString const & key, QList<QMap<int, QString>>& po_attributes)
+//{
+//    bool bRes = true;
+//
+//    //medAbstractSource* pSource = m_sourceIdToInstanceMap.value(pi_sourceIntanceId);
+//    //if (pSource)
+//    //{
+//    //    QMap<int, QString> roleValueRes;
+//    //    auto attributes4level = pSource->getAdditionalAttributes(pi_uiLevel, key);
+//    //    for (auto attributeEntr : attributes4level)
+//    //    {
+//    //        auto attrKeys = attribute.keys();
+//    //        for (auto k : attrKeys)
+//    //        {
+//    //            roleValueRes[1001] = k;
+//    //            roleValueRes[1002] = attrKeys[k];
+//    //        }
+//    //        
+//    //    }
+//    //}
+//    //else
+//    //{
+//    //    bRes = false;
+//    //}
+//
+//    return bRes;
+//}
 
 QString medDataModel::getInstanceName(QString const & pi_sourceIntanceId)
 {
@@ -229,7 +241,7 @@ medDataModel::datasetAttributes medDataModel::getMetaData(QModelIndex const & in
         medSourceItemModel *model = dynamic_cast<medSourceItemModel *> (modelTmp);
         if (model)
         {
-            metaRes = model->getMetaData(index);
+            metaRes = model->getMendatoriesMetaData(index);
         }
     }
     else

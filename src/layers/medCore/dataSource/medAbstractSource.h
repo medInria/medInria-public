@@ -26,6 +26,28 @@ class MEDCORE_EXPORT medAbstractSource : public QObject
     Q_OBJECT
 
 public:
+    /* ********  Julien tu peux choisir ou proposer d'autres representation ***********************************************/
+    /* */   using  datasetAttributes1 = QMap<QString, QPair<QVariant, QString> >; // <keyName , <value, tag>>
+    /* */   using  datasetAttributes2 = QMap<QString, QMap <QString, QVariant> >; // <keyName , <dataTypeName, value>, dataTypeName can be "value", "role", tag", ...
+    /* */   
+    /* */   struct datasetAttributes3_sub
+    /* */   {
+    /* */       QString                 value;  //value
+    /* */       QMap<QString, QVariant> option; //optional <dataTypeName, value>, dataTypeName can be "value", "role", tag", ...
+    /* */   };
+    /* */   using datasetAttributes3 = QMap<QString, datasetAttributes3_sub >; // <keyName , datasetAttributes3> equivalent to datasetAttributes2
+    /* */   
+    /* */   struct datasetAttributes4
+    /* */   {
+    /* */       QMap<QString, QVariant> values; // <keyName, value>
+    /* */       QMap<QString, QVariant> tags;   // <keyName, tag value>
+    /* */   };
+    /* */   
+    /* */   using  listAttributes1 = QList<datasetAttributes1>;
+    /* */   using  listAttributes2 = QList<datasetAttributes2>;
+    /* */   using  listAttributes3 = QList<datasetAttributes3>;
+    /* */   using  listAttributes4 = QList<datasetAttributes4>;
+    /* -------------------------------------------------------------------------------------------------------------------*/
 
     struct levelMinimalEntries
     {
@@ -83,6 +105,9 @@ public:
     virtual QList<levelMinimalEntries>    getMinimalEntries      (unsigned int pi_uiLevel, QString parentKey) = 0; //id ou uid en int ou en QString si  int alors l'implémentation doit avoir une méthode bijective
     virtual QList<QMap<QString, QString>> getMandatoryAttributes (unsigned int pi_uiLevel, QString parentKey) = 0; //ou QVarient
     virtual QList<QMap<QString, QString>> getAdditionalAttributes(unsigned int pi_uiLevel, QString parentKey) = 0; //ou QVarient
+    
+    //virtual bool getMandatoryAttributes (unsigned int pi_uiLevel, QString Key, datasetAttributes4 &po_attributes) = 0;
+    //virtual bool getAdditionalAttributes(unsigned int pi_uiLevel, QString key, datasetAttributes4 &po_attributes) = 0;
     
     
     /* ***********************************************************************/

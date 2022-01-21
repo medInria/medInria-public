@@ -49,7 +49,8 @@ public:
 
 
     bool getMandatoryAttributes(QString const & pi_sourceIntanceId, unsigned int pi_uiLevel, QString const & key, datasetAttributes & po_attributes);
-    bool getOptionalAttributes(QString const & pi_sourceIntanceId, unsigned int pi_uiLevel, QString const & key, QList<QMap<int, QString>> & po_attributes); //optional attributes list <role, value> //Role: 1001->displayValue 1002->columnName 1003->tag
+    bool getOptionalAttributes(QString const & pi_sourceIntanceId, unsigned int pi_uiLevel, QString const & key, datasetAttributes & po_attributes, datasetAttributes & po_tags);
+    //bool getOptionalAttributes(QString const & pi_sourceIntanceId, unsigned int pi_uiLevel, QString const & key, QList<QMap<int, QString>> & po_attributes); //optional attributes list <role, value> //Role: 1001->displayValue 1002->columnName 1003->tag
 
 
     // ////////////////////////////////////////////////////////////////////////////////////////////

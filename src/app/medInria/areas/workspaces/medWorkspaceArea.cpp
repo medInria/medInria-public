@@ -424,14 +424,16 @@ void medWorkspaceArea::addDatabaseView(medDatabaseDataSource* dataSource)
     databaseViewLayout->setSpacing(0);
     databaseViewLayout->setContentsMargins(0,0,0,0);
 
-    databaseViewLayout->addWidget(dataSource->compactViewWidget());
+    auto *pCompactViewWidget = dataSource->compactViewWidget();
+
+    databaseViewLayout->addWidget(pCompactViewWidget);
     d->navigatorContainer->setLayout(databaseViewLayout);
 
-    dataSource->compactViewWidget()->resize(dataSource->compactViewWidget()->width(), dataSource->compactViewWidget()->height());
+    pCompactViewWidget->resize(pCompactViewWidget->width(), pCompactViewWidget->height());
     //little tricks to force to recompute the stylesheet.
-    dataSource->compactViewWidget()->setStyleSheet("/* */");
+    pCompactViewWidget->setStyleSheet("/* */");
 
-    connect(dataSource->compactViewWidget(), SIGNAL(open(const medDataIndex&)),
+    connect(pCompactViewWidget, SIGNAL(open(const medDataIndex&)),
             this, SIGNAL(open(const medDataIndex&)),
             Qt::UniqueConnection);
 }
