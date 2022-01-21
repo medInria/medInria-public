@@ -9,7 +9,6 @@ static bool driverAvailability = true;
 static bool valid;
 static bool flagOpen;
 static QStringList fakeTables = QStringList();
-static int removeCount;
 
 class FakeEngine
 {
@@ -20,14 +19,16 @@ public:
 
     static bool isDriverAvailable(const QString &name) { return driverAvailability; }
 
-    bool isValid() { return valid; };
-    bool open() { return flagOpen; };
+//    bool open() { return flagOpen; };
     void setDatabaseName(const QString &name){};
     MOCK_METHOD(void, close, ());
     MOCK_METHOD(bool, isOpen, ());
+    MOCK_METHOD(bool, open, ());
+    MOCK_METHOD(bool, isValid, ());
     MOCK_METHOD(QSqlQuery, exec, ());
+    MOCK_METHOD(QStringList, tables, ());
 //    QSqlQuery exec(){return QSqlQuery();};
-    QStringList tables(){return fakeTables;};
+//    QStringList tables(){return fakeTables;};
 
     static FakeEngine &addDatabase(const QString &, const QString &)
     {
@@ -43,7 +44,6 @@ public:
 
     static void removeDatabase(const QString &)
     {
-        removeCount++;
     };
 };
 
@@ -57,7 +57,7 @@ public:
 
     MOCK_METHOD(bool, createTable, (const QString &));
     MOCK_METHOD(void, optimizeSpeedSQLiteDB, ());
-    MOCK_METHOD(QList<levelMinimalEntries>, getPatientMinimalEntries, ());
+    MOCK_METHOD(QList<levelMinimalEntries>, getPatientMinimalEntries, (QString& id));
     MOCK_METHOD(QList<levelMinimalEntries>, getStudyMinimalEntries, (QString& parentId));
     MOCK_METHOD(QList<levelMinimalEntries>, getSeriesMinimalEntries, (QString& parentId));
     MOCK_METHOD(QString, getSeriesDirectData, (QString& key));

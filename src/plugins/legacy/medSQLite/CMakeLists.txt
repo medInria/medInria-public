@@ -97,7 +97,8 @@ target_link_libraries(${TARGET_NAME} PUBLIC
 #
 #
 #add_executable(${TARGET_NAME_TEST})
-#target_sources(${TARGET_NAME_TEST} PUBLIC medSQLite.txx test/medSQLiteRequestTest.cpp test/medSQLiteTest.cpp test/medSQLiteTest.h)
+#target_sources(${TARGET_NAME_TEST} PUBLIC ${CMAKE_CURRENT_SOURCE_DIR}/medSQLite.txx ${CMAKE_CURRENT_SOURCE_DIR}/test/medSQLiteRequestTest.cpp
+#        ${CMAKE_CURRENT_SOURCE_DIR}/test/medSQLiteTest.cpp ${CMAKE_CURRENT_SOURCE_DIR}/test/medSQLiteTest.h)
 #target_include_directories(${TARGET_NAME_TEST} PUBLIC "." "./test/")
 #set_target_properties(${TARGET_NAME_TEST} PROPERTIES COMPILE_DEFINITIONS "GTEST_LINKED_AS_SHARED_LIBRARY=1")
 #target_link_libraries(${TARGET_NAME_TEST} PUBLIC
@@ -110,10 +111,10 @@ target_link_libraries(${TARGET_NAME} PUBLIC
 #        medCore
 #        medCoreLegacy
 #        ${TARGET_NAME})
-
-
-
-
+#
+#
+#
+#
 #project(medSQLiteIntegrationQTest LANGUAGES CXX)
 #
 #find_package(Qt5Test REQUIRED)
@@ -124,13 +125,13 @@ target_link_libraries(${TARGET_NAME} PUBLIC
 #
 #enable_testing(true)
 #
-#add_executable(medSQLiteIntegrationQTest test/medSQLiteIntegrationQTest.cpp)
+#add_executable(medSQLiteIntegrationQTest ${CMAKE_CURRENT_SOURCE_DIR}/test/medSQLiteIntegrationQTest.cpp)
 #add_test(NAME medSQLiteIntegrationQTest COMMAND medSQLiteIntegrationQTest)
 #
 #target_link_libraries(medSQLiteIntegrationQTest PRIVATE Qt5::Test Qt5::Sql medCore)
-
-## #############################################################################
-## Install rules
-## #############################################################################
-
-set_plugin_install_rules_legacy(${TARGET_NAME})
+#
+### #############################################################################
+### Install rules
+### #############################################################################
+#
+#set_plugin_install_rules_legacy(${TARGET_NAME})

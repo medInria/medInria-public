@@ -95,6 +95,17 @@ public slots:
 
     void updateDatabaseName(QString const &path);
 
+private:
+    // methods
+    bool isValidDatabaseStructure();
+    bool isDatabaseEmpty();
+    virtual bool createTable(const QString &strQuery);
+    virtual QList<medAbstractSource::levelMinimalEntries> getPatientMinimalEntries(QString &key);
+    virtual QList<medAbstractSource::levelMinimalEntries> getStudyMinimalEntries(QString &parentId);
+    virtual QList<medAbstractSource::levelMinimalEntries> getSeriesMinimalEntries(QString &parentId);
+    virtual void optimizeSpeedSQLiteDB();
+    virtual QString getSeriesDirectData(QString &key);
+    virtual QList<QMap<QString, QString>> getPatientMandatoriesAttributes(const QString &key);
 
 private:
     // members
@@ -106,16 +117,11 @@ private:
     QString m_instanceName;
     bool m_online;
     QStringList m_LevelNames;
+    QMap<QString, QStringList> m_MandatoryKeysByLevel;
 
-    // methods
-    bool isValidDatabaseStructure();
-    bool isDatabaseEmpty();
-    virtual bool createTable(const QString &strQuery);
-    virtual QList<levelMinimalEntries> getPatientMinimalEntries();
-    virtual QList<medAbstractSource::levelMinimalEntries> getStudyMinimalEntries(QString &parentId);
-    virtual QList<medAbstractSource::levelMinimalEntries> getSeriesMinimalEntries(QString &parentId);
-    virtual void optimizeSpeedSQLiteDB();
-    virtual QString getSeriesDirectData(QString &key);
+    QList<QMap<QString, QString>> getStudyMandatoriesAttributes(const QString &key);
+
+    QList<QMap<QString, QString>> getSeriesMandatoriesAttributes(const QString &key);
 };
 
 #include "medSQLite.txx"
