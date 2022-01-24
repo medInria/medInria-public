@@ -89,6 +89,7 @@ public:
     QString toUri(QModelIndex index);
     bool setAdditionnalMetaData2(QModelIndex const & index, datasetAttributes4 const &attributes);
 
+    bool expandAll(QModelIndex index = QModelIndex(), QString key = "");
 public slots:
     void itemPressed(QModelIndex const &index);
 
@@ -100,7 +101,7 @@ private:
     bool fetchColumnNames(const QModelIndex &index);
     void populateLevel(QModelIndex const &index, QString const &key);
 
-    void populateLevelV2(QModelIndex const &index, QString const & uri);
+    void populateLevelV2(QModelIndex const &index, QString const & key);
 
     bool itemStillExist(QList<QMap<QString, QString>> &entries, medDataModelItem * pItem);
     void computeRowRangesToRemove(medDataModelItem * pItem, QList<QMap<QString, QString>> &entries, QVector<QPair<int, int>> &rangeToRemove);

@@ -56,13 +56,15 @@ public:
     // ////////////////////////////////////////////////////////////////////////////////////////////
     // Members functions to deal with datamodel
     QString getInstanceName(QString const & pi_sourceIntanceId);
-    QList<medSourceItemModel*> models(); // rediscuté de son nom
+    QList<medSourceItemModel*> models(); // rediscute de son nom
     medSourceItemModel* getModel(QString const & pi_sourceIntanceId);
 
     // ////////////////////////////////////////////////////////////////////////////////////////////
     // Members functions to get Data, metadata and informations
     medAbstractData * getData(medDataIndex const & index);
     datasetAttributes getMetaData(QModelIndex const & index);
+
+    void expandAll(const QString &sourceInstanceId);
 
 public slots:
    void addSource(medAbstractSource* pi_source);

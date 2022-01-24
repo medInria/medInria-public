@@ -57,9 +57,33 @@ void medSourcesWidget::addSource(medDataModel *dataModel, QString sourceInstance
     medSourceItemModelPresenter *sourcePresenter = new medSourceItemModelPresenter(sourceModel);
 
     QPushButton *sourceTreeTitle = new QPushButton(instanceName);
+    QPushButton *plusButton = new QPushButton(QIcon(":/pixmaps/plus.png"), "");
+    plusButton->setToolTip("Expand All");
+    plusButton->setMaximumSize(QSize(20,20));
+    plusButton->setCheckable(true);
+    plusButton->setFlat(true);
+
+    QHBoxLayout *hLayout = new QHBoxLayout;
+    hLayout->addWidget(sourceTreeTitle);
+    hLayout->addWidget(plusButton, 0, Qt::AlignRight);
+
+
     QTreeView   *sourceTreeView  = sourcePresenter->buildTree(new medSortFilterProxyModel());
 
-    //sourceTreeView->setSelectionMode(QAbstractItemView::SingleSelection);
+    connect(plusButton, &QPushButton::toggled, [=](bool checked) {
+        if (checked)
+        {
+            plusButton->setIcon(QIcon(":/pixmaps/minus.png"));
+            dataModel->expandAll(sourceInstanceId);
+            sourceTreeView->expandAll();
+        }
+        else
+        {
+            plusButton->setIcon(QIcon(":/pixmaps/plus.png"));
+            sourceTreeView->collapseAll();
+        }
+    });
+
     sourceTreeView->setDragEnabled(true);
     sourceTreeView->viewport()->setAcceptDrops(false);
     //sourceTreeView->setDropIndicatorShown(true);
@@ -113,8 +137,7 @@ void medSourcesWidget::addSource(medDataModel *dataModel, QString sourceInstance
 
     connect(sourceTreeView, &QTreeView::customContextMenuRequested, [=](QPoint const& point) { onCustomContextMenu(point, pMenu); });
 
-
-    m_layout.addWidget(sourceTreeTitle);
+    m_layout.addLayout(hLayout);
     m_layout.addWidget(sourceTreeView);
 
     connect(sourceTreeView, &QTreeView::clicked, [=]() {

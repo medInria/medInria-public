@@ -117,6 +117,7 @@ bool medDataModel::getMandatoryAttributesKeys(QString const & pi_sourceIntanceId
     if (pSource)
     {
         po_attributes = pSource->getMandatoryAttributesKeys(pi_uiLevel);
+        bRes = !po_attributes.isEmpty();
     }
     else
     {
@@ -345,5 +346,14 @@ void medDataModel::removeConvertedData(QObject * obj)
         dtkSmartPointer<medAbstractData> sptr(data);
         
         m_IndexToData.key(sptr);
+    }
+}
+
+void medDataModel::expandAll(const QString &sourceInstanceId)
+{
+    if (m_sourceIdToInstanceMap.contains(sourceInstanceId))
+    {
+        auto pSource = m_sourceIdToInstanceMap[sourceInstanceId];
+        m_sourcesModelMap[pSource]->expandAll();
     }
 }

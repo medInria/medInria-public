@@ -577,15 +577,20 @@ void medSourceItemModel::itemPressed(QModelIndex const &index)
 bool medSourceItemModel::currentLevelFetchable(medDataModelItem * pItemCurrent)
 {
     bool bRes = pItemCurrent->canHaveSubData();
-    
-    unsigned int uiLevelMax = 0;
-
-    bRes &= d->parent->getLevelCount(d->sourceInstanceId, uiLevelMax);
-    if (uiLevelMax != 0)
+    if (pItemCurrent->level()==-1)
     {
-        bRes &= static_cast<unsigned int>(pItemCurrent->level()) < uiLevelMax-1;
+        bRes = true;
     }
+    else
+    {
+        unsigned int uiLevelMax = 0;
 
+        bRes &= d->parent->getLevelCount(d->sourceInstanceId, uiLevelMax);
+        if (uiLevelMax != 0)
+        {
+            bRes &= static_cast<unsigned int>(pItemCurrent->level()) < uiLevelMax - 1;
+        }
+    }
     return bRes;
 }
 
@@ -692,7 +697,7 @@ void medSourceItemModel::populateLevel(QModelIndex const &index, QString const &
     }
 }
 
-void medSourceItemModel::populateLevelV2(QModelIndex const & index, QString const & uri)
+void medSourceItemModel::populateLevelV2(QModelIndex const & index, QString const & key)
 {
     //QVariantList entries; //QList<QList<QString>> list of entries of the given level, each entry has a list of 3 elements {key, name, description}. Key is never displayed, only used to fetch sub-level and used has unique key
     
@@ -700,7 +705,12 @@ void medSourceItemModel::populateLevelV2(QModelIndex const & index, QString cons
     medDataModelItem *pItem = getItem(index);
     int iLevel = pItem->level() + 1;
 
-    if (d->parent->getLevelMetaData(d->sourceInstanceId, iLevel, uri, entries))
+    if (!d->columnNameByLevel.contains(iLevel))
+    {
+        fetchColumnNames(index);
+    }
+
+    if (d->parent->getLevelMetaData(d->sourceInstanceId, iLevel, key, entries))
     {
         emit layoutAboutToBeChanged(); //this is useful to update arrow on the left if click is not inside
 
@@ -802,6 +812,7 @@ void medSourceItemModel::addRowRanges(QMap<int, QList<QMap<QString, QString>>> &
     int iOffsetRange = 0;
     auto startRangeList = entriesToAdd.keys();
     medDataModelItem *pItem = getItem(index);
+    int iLevel = pItem->level() + 1;
     for (int i = 0; i < startRangeList.size(); ++i)
     {
         int first = startRangeList[i] ;
@@ -815,7 +826,19 @@ void medSourceItemModel::addRowRanges(QMap<int, QList<QMap<QString, QString>>> &
             medDataModelItem *pItemTmp = new medDataModelItem(this);
             for (QString k : var.keys())
             {
-                pItemTmp->setData(var[k], getColumnInsideLevel(pItem->level() + 1, d->sectionNames.indexOf(k))+1);
+                int iCol = d->columnNameByLevel[iLevel].indexOf(k);
+                if (iCol == -1)
+                {
+                    d->columnNameByLevel[iLevel].push_back(k);
+                    if (!d->sectionNames.contains(k))
+                    {
+                        qDebug() << "[WARN] Unknown column name " << k << " from getMandatoryAttributesKeys in datasource " << d->sourceInstanceId << " at level " << iLevel-1;
+                        d->sectionNames.push_back(k);
+                        emit columnCountChange(d->sectionNames.size());
+                        iCol = d->columnNameByLevel[iLevel].size()-1;
+                    }
+                }
+                pItemTmp->setData(var[k], iCol);
             }
             pItemTmp->setParent(pItem);
             pItem->insert(first + iOffsetRange, pItemTmp);            
@@ -824,6 +847,30 @@ void medSourceItemModel::addRowRanges(QMap<int, QList<QMap<QString, QString>>> &
 
         endInsertRows();
     }
+}
+
+bool medSourceItemModel::expandAll(QModelIndex index, QString key)
+{
+    auto item = getItem(index);
+    if (currentLevelFetchable(item))
+    {
+        populateLevelV2(index, key);
+
+        for (auto childItem : item->m_childItems)
+        {
+            QString uri = childItem->uri();
+
+            int sourceDelimterIndex = uri.indexOf(QString(":"));
+            QStringList uriAsList = uri.right(uri.size() - sourceDelimterIndex - 1).split(QString("\r\n"));
+            uriAsList.push_front(uri.left(sourceDelimterIndex));
+
+            uriAsList[uriAsList.size() - 1];
+
+            QModelIndex childIndex = toIndex(uri);
+            expandAll(childIndex, uriAsList[uriAsList.size() - 1]);
+        }
+    }
+    return false;
 }
 
 

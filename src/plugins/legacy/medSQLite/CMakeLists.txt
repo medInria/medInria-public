@@ -134,4 +134,4 @@ target_link_libraries(${TARGET_NAME} PUBLIC
 ### Install rules
 ### #############################################################################
 #
-#set_plugin_install_rules_legacy(${TARGET_NAME})
+set_plugin_install_rules_legacy(${TARGET_NAME})
