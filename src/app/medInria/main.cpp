@@ -220,74 +220,16 @@ int main(int argc, char *argv[])
             splash.showMessage("Loading plugins...");
         }
 
-        auto model = medDataModel::instance(&application);
-        medDBSourcesLoader::instance(&application);        
-        QObject::connect(medDBSourcesLoader::instance(), SIGNAL(sourceAdded(medAbstractSource *)), model, SLOT(addSource(medAbstractSource *)));
-        medDBSourcesLoader::instance()->loadFromDisk();
 
         medDataManager::instance()->setDatabaseLocation();
         medPluginManager::instance()->setVerboseLoading(true);
         medPluginManager::instance()->initialize();
 
-        // [LIKE PORKY]
-//        QString foo;
-//
-        //medDBSourcesLoader::instance()->createCnx(foo, "medSQLite");
-        //medDBSourcesLoader::instance()->renameSource(foo, "Legacy medInria 3 DB");
+        auto model = medDataModel::instance(&application);
+        medDBSourcesLoader::instance()->setParent(&application);
+        QObject::connect(medDBSourcesLoader::instance(), SIGNAL(sourceAdded(medAbstractSource *)), model, SLOT(addSource(medAbstractSource *)));
+        medDBSourcesLoader::instance()->loadFromDisk();
 
-//        static auto testModel = new medDataModel();
-//        medDataManager::instance()->setIndexV2Handler([](medDataIndex const & dataIndex) -> medAbstractData* {return testModel->getData(dataIndex); });
-//        QObject::connect(medDBSourcesLoader::instance(), SIGNAL(sourceAdded(medAbstractSource *)), testModel, SLOT(addSource(medAbstractSource *)));
-//        medDBSourcesLoader::instance()->loadFromDisk();
-//
-//        auto testWindow = new QMainWindow();
-//        auto treeView = new QTreeView();
-//        auto buttonAddData = new QPushButton("Add Data");
-//        auto buttonRefresh = new QPushButton("Refresh");
-//
-//        //auto tableView = new QTableView();
-//
-//        treeView->setModel(testModel->getModel("medSQLite_210721"));
-//        
-//        treeView->setSelectionMode(QAbstractItemView::SingleSelection);
-//        treeView->setDragEnabled(true);
-//        treeView->viewport()->setAcceptDrops(false);
-//        //treeView->setDropIndicatorShown(true);
-//        treeView->setDragDropMode(QAbstractItemView::DragOnly);
-//        
-//        medSourceItemModelPresenter *onlyOneSource_browser = new medSourceItemModelPresenter(testModel->getModel("medSQLite_210721"));
-//        medSourceModelPresenter *multiSources_tree = new medSourceModelPresenter(testModel);
-//
-//        //tableView->setModel(testModel->getModel(""));
-//        //bool c0Ok = QObject::connect(treeView, SIGNAL(pressed(const QModelIndex &)), tableView, SIGNAL(pressed(const QModelIndex &)));
-//        bool c1Ok = QObject::connect(treeView, SIGNAL(pressed(const QModelIndex &)), testModel->getModel("medSQLite_210721"), SLOT(itemPressed(QModelIndex const &)));
-//        //bool c2Ok = QObject::connect(tableView, SIGNAL(pressed(const QModelIndex &)), testModel->getModel(""), SLOT(itemPressed(QModelIndex const &)));
-//        QWidget *w = new QWidget;
-//        QVBoxLayout *vLayout = new QVBoxLayout;
-//        vLayout->addWidget(treeView);
-//        vLayout->addWidget(buttonAddData);
-//        vLayout->addWidget(buttonRefresh);
-//        auto *pBrwoser = onlyOneSource_browser->buildTree();
-//        pBrwoser->setSelectionMode(QAbstractItemView::SingleSelection);
-//        pBrwoser->setDragEnabled(true);
-//        pBrwoser->viewport()->setAcceptDrops(false);
-//        pBrwoser->setDragDropMode(QAbstractItemView::DragOnly);
-//        vLayout->addWidget(pBrwoser);
-//        vLayout->addWidget(multiSources_tree->buildWidget());
-//
-//        //vLayout->addWidget(tableView);
-//        w->setLayout(vLayout);
-//
-//        testWindow->setCentralWidget(w);
-//        testWindow->show();
-//
-//        bool c3Ok = QObject::connect(buttonAddData, &QPushButton::clicked, [&]()
-//        {testModel->addData((medAbstractData*)nullptr, QString("medSQLite_210721:2/2/fakeSeries")); }
-//        );        
-//        
-//        bool c4Ok = QObject::connect(buttonRefresh, &QPushButton::clicked, [&]()
-//        {testModel->refresh(QString("medSQLite_210721:2/2")); }
-//        );
 
         // Use Qt::WA_DeleteOnClose attribute to be sure to always have only one
         // closeEvent.

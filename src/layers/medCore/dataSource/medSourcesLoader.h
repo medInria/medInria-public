@@ -55,6 +55,7 @@ public:
     bool                      renameSource(QString const & instanceId, QString const & name);
 	
 	bool loadFromDisk(); //call after each add or remove source instance, each call to the destructor. Must be cryptographied
+
 private:
     medDBSourcesLoader(QObject *parent = nullptr);
 
