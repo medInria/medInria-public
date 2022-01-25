@@ -487,9 +487,8 @@ void medDBSourcesLoader::reparseUnresolvedCnx()
 {
     int i = 0;
     while ( i< m_unresolvedSavedCnx.size())
-    {
-        
-        if (m_instanceMapType.contains(m_unresolvedSavedCnx[i]["sourceType"].toString()))
+    {        
+        if (m_sourcesMap.keys().contains(m_unresolvedSavedCnx[i]["sourceType"].toString()))
         {
             auto cnx = m_unresolvedSavedCnx.takeAt(i); 
             reloadCnx(cnx);
