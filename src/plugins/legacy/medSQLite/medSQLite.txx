@@ -45,6 +45,13 @@ medSQlite<T>::medSQlite()
 }
 
 template<typename T>
+medSQlite<T>::~medSQlite()
+{
+    //TODO
+    connect(false);
+}
+
+template<typename T>
 bool medSQlite<T>::initialization(const QString &pi_instanceId)
 {
     bool bRes = !pi_instanceId.isEmpty();
@@ -211,6 +218,12 @@ bool medSQlite<T>::isOnline()
 }
 
 template<typename T>
+bool medSQlite<T>::isFetchByMinimalEntriesOrMandatoryAttributes()
+{
+    return false;
+}
+
+template<typename T>
 QString medSQlite<T>::getInstanceName()
 {
     return m_instanceName;
@@ -261,29 +274,29 @@ QStringList medSQlite<T>::getMandatoryAttributesKeys(unsigned int pi_uiLevel)
     }
 }
 
-template <typename T>
-QStringList medSQlite<T>::getAdditionalAttributesKeys(unsigned int pi_uiLevel)
-{
-    switch (pi_uiLevel)
-    {
-        case 0:
-            return {};
-        case 1:
-            return {};
-        case 2:
-            // this is the list of all available additional attributes keys in table series
-            // {"study", "size", "path", "orientation", "seriesNumber", "sequenceName", "sliceThickness",
-            // "rows", "columns", "thumbnail", "age", "description", "modality", "protocol", "comments",
-            // "status", "acquisitiondate", "importationdate", "referee", "performer", "institution",
-            // "report", "origin", "flipAngle", "echoTime", "repetitionTime", "acquisitionTime", "isIndexed"};
-            // For now, we choose to send only the key from legacy medinria data source
-            return {"size", "age", "modality", "acquisitiondate", "importationdate", "referee",
-                    "performer", "institution", "report", "thumbnail"};
-        default:
-            return {};
-    }
-
-}
+//template <typename T>
+//QStringList medSQlite<T>::getAdditionalAttributesKeys(unsigned int pi_uiLevel)
+//{
+//    switch (pi_uiLevel)
+//    {
+//        case 0:
+//            return {};
+//        case 1:
+//            return {};
+//        case 2:
+//            // this is the list of all available additional attributes keys in table series
+//            // {"study", "size", "path", "orientation", "seriesNumber", "sequenceName", "sliceThickness",
+//            // "rows", "columns", "thumbnail", "age", "description", "modality", "protocol", "comments",
+//            // "status", "acquisitiondate", "importationdate", "referee", "performer", "institution",
+//            // "report", "origin", "flipAngle", "echoTime", "repetitionTime", "acquisitionTime", "isIndexed"};
+//            // For now, we choose to send only the key from legacy medinria data source
+//            return {"size", "age", "modality", "acquisitiondate", "importationdate", "referee",
+//                    "performer", "institution", "report", "thumbnail"};
+//        default:
+//            return {};
+//    }
+//
+//}
 
 template <typename T>
 QList<medAbstractSource::levelMinimalEntries> medSQlite<T>::getMinimalEntries(unsigned int pi_uiLevel, QString parentId)
@@ -354,9 +367,9 @@ QList<QMap<QString, QString>> medSQlite<T>::getMandatoryAttributes(unsigned int 
 }
 
 template <typename T>
-QList<QMap<QString, QString>> medSQlite<T>::getAdditionalAttributes(unsigned int pi_uiLevel, QString parentId)
+bool medSQlite<T>::getAdditionalAttributes(unsigned int pi_uiLevel, QString Id, datasetAttributes4 &po_attributs)
 {
-    return QList<QMap<QString, QString>>();
+    return false;
 }
 
 template <typename T>

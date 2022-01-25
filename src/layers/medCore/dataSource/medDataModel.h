@@ -34,23 +34,27 @@ public:
     using datasetAttributes = QMap<QString, QString>;
     using levelAttributes = QList<datasetAttributes>;
 
-
-    medDataModel(QObject *parent = nullptr);
+    static medDataModel* instance(QObject *parent = nullptr);
 	~medDataModel();
 
     bool setDefaultWorkingSource(unsigned int i);
 
     // ////////////////////////////////////////////////////////////////////////////////////////////
     // Members functions to interrogate the source
-    bool getSourceGlobalInfo(QString const &pi_sourceIntanceId, bool &pi_bOnline, bool &pi_bWritable, bool & pi_bLocal, bool &pi_bCache);
-    bool getLevelMetaData(QString const & pi_sourceIntanceId, unsigned int pi_uiLevel, QString const & key, levelAttributes & po_entries);
-    bool getMandatoryAttributesKeys(QString const & pi_sourceIntanceId, unsigned int pi_uiLevel, QStringList & po_attributes);
-    bool getLevelCount(QString const & pi_sourceIntanceId, unsigned int &po_uiLevelMax);
+    bool sourceGlobalInfo(QString const &pi_sourceIntanceId, bool &pi_bOnline, bool &pi_bWritable, bool & pi_bLocal, bool &pi_bCache);
+    bool mandatoryAttributesKeys(QString const & pi_sourceIntanceId, unsigned int pi_uiLevel, QStringList & po_attributes);
+    bool attributesForBuildTree(QString const & pi_sourceIntanceId, unsigned int pi_uiLevel, QString const & key, levelAttributes & po_entries);
+    bool mandatoriesAttributes(QString const & pi_sourceIntanceId, unsigned int pi_uiLevel, QString const & parentKey, levelAttributes & po_entries);
+    bool optionalAttributes(QString const & pi_sourceIntanceId, unsigned int pi_uiLevel, QString const & key, datasetAttributes & po_attributes, datasetAttributes & po_tags);
+    bool levelCount(QString const & pi_sourceIntanceId, unsigned int &po_uiLevelMax);
+    
+    // ////////////////////////////////////////////////////////////////////////////////////////////
+    // Members functions to access sourceItemModel
+    void getModelData(QModelIndex &index, datasetAttributes &attributes, int role = 0);
+    void setModelData(QModelIndex &index, datasetAttributes &attributes, int role = 0);
+    void getModelMetaData(QModelIndex &index, datasetAttributes &attributes, datasetAttributes &tag);
+    void setModelMetaData(QModelIndex &index, datasetAttributes &attributes, datasetAttributes &tag);
 
-
-    bool getMandatoryAttributes(QString const & pi_sourceIntanceId, unsigned int pi_uiLevel, QString const & key, datasetAttributes & po_attributes);
-    bool getOptionalAttributes(QString const & pi_sourceIntanceId, unsigned int pi_uiLevel, QString const & key, datasetAttributes & po_attributes, datasetAttributes & po_tags);
-    //bool getOptionalAttributes(QString const & pi_sourceIntanceId, unsigned int pi_uiLevel, QString const & key, QList<QMap<int, QString>> & po_attributes); //optional attributes list <role, value> //Role: 1001->displayValue 1002->columnName 1003->tag
 
 
     // ////////////////////////////////////////////////////////////////////////////////////////////
@@ -62,7 +66,7 @@ public:
     // ////////////////////////////////////////////////////////////////////////////////////////////
     // Members functions to get Data, metadata and informations
     medAbstractData * getData(medDataIndex const & index);
-    datasetAttributes getMetaData(QModelIndex const & index);
+    datasetAttributes getMetaData(QModelIndex const & index); //TODO Rename
 
     void expandAll(const QString &sourceInstanceId);
 
@@ -80,6 +84,7 @@ public slots:
    void removeConvertedData(QObject *obj);
 
 private:
+    medDataModel(QObject *parent = nullptr);
 
 
 signals:
@@ -89,8 +94,10 @@ signals:
 
 private:
     QMap< QString, medAbstractSource*> m_sourceIdToInstanceMap;
-    QMap< medAbstractSource*, medSourceItemModel*> m_sourcesModelMap;
+    QMap< medAbstractSource*, medSourceItemModel*> m_sourcesModelMap; //TODO delete medSourceItemModel* in destructor
     medAbstractSource* m_defaultSource;
 
     QMap<medDataIndex, dtkSmartPointer<medAbstractData> > m_IndexToData;
+
+    static medDataModel * s_instance;
 };

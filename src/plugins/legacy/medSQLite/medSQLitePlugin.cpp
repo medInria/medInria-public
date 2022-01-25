@@ -23,6 +23,10 @@ medAbstractSource *foo()
     return new medSQlite<QSqlDatabase>();
 }
 
+medSQLitePlugin::~medSQLitePlugin()
+{
+}
+
 bool medSQLitePlugin::initialize()
 {
     return medDBSourcesLoader::instance()->registerSourceType(

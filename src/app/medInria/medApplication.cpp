@@ -17,6 +17,7 @@
 
 #include <medAbstractDataFactory.h>
 #include <medCore.h>
+#include <medDataModel.h>
 #include <medDatabaseSettingsWidget.h>
 #include <medDataManager.h>
 #include <medDiffusionWorkspace.h>
@@ -64,7 +65,7 @@ medApplication::medApplication(int & argc, char**argv) :
     QApplication::setStyle(QStyleFactory::create("fusion"));
     medStyleSheetParser parser(dtkReadFile(":/medInria.qss"));
     this->setStyleSheet(parser.result());
-
+    
     this->initialize();
 }
 

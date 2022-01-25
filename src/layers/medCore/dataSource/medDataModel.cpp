@@ -15,15 +15,27 @@
 #include <medDataImporter.h>
 
 #include <QModelIndex>
-#include <medDataModelItem.h>
+
+medDataModel *medDataModel::s_instance = nullptr;
+medDataModel *medDataModel::instance(QObject *parent)
+{
+    if (!s_instance)
+    {
+        s_instance = new medDataModel(parent);
+    }
+    return s_instance;
+}
 
 medDataModel::medDataModel(QObject *parent)
 {
+    setParent(parent);
     m_defaultSource = nullptr;
 }
 
 medDataModel::~medDataModel()
 {
+    int i = 0;
+    ++i;
 }
 
 bool medDataModel::setDefaultWorkingSource(unsigned int i)
@@ -50,7 +62,7 @@ bool medDataModel::setDefaultWorkingSource(unsigned int i)
     return bRes;
 }
 
-bool medDataModel::getSourceGlobalInfo(QString const & pi_sourceIntanceId, bool & pi_bOnline, bool & pi_bLocal, bool & pi_bWritable, bool & pi_bCache)
+bool medDataModel::sourceGlobalInfo(QString const & pi_sourceIntanceId, bool & pi_bOnline, bool & pi_bLocal, bool & pi_bWritable, bool & pi_bCache)
 {
     bool bRes = true;
 
@@ -70,36 +82,30 @@ bool medDataModel::getSourceGlobalInfo(QString const & pi_sourceIntanceId, bool 
     return bRes;
 }
 
-bool medDataModel::getLevelMetaData(QString const & pi_sourceIntanceId, unsigned int pi_uiLevel, QString const & key, levelAttributes & po_entries)
+bool medDataModel::attributesForBuildTree(QString const & pi_sourceIntanceId, unsigned int pi_uiLevel, QString const & key, levelAttributes & po_entries)
 {
     bool bRes = true;
 
     medAbstractSource* pSource = m_sourceIdToInstanceMap.value(pi_sourceIntanceId);
     if (pSource)
     {
-        QStringList keys = pSource->getMandatoryAttributesKeys(pi_uiLevel);//TODO replace by fetch medSourceItemModel column names
-        auto listOfMinimalEntries = pSource->getMinimalEntries(pi_uiLevel, key);
-
-        datasetAttributes entryTmp;
-        for (auto &minimalEntry : listOfMinimalEntries)
+        if (pSource->isFetchByMinimalEntriesOrMandatoryAttributes())
         {
-            entryTmp[keys[0]] = minimalEntry.key;
-            entryTmp[keys[1]] = minimalEntry.name;
-            entryTmp[keys[2]] = minimalEntry.description;
-            po_entries.push_back(entryTmp);
-        }
+            QStringList keys = pSource->getMandatoryAttributesKeys(pi_uiLevel);//TODO replace by fetch medSourceItemModel column names
+            auto listOfMinimalEntries = pSource->getMinimalEntries(pi_uiLevel, key);
 
-        int i = 0;
-        auto listOfMandatoriesEntries = pSource->getMandatoryAttributes(pi_uiLevel, key);
-        for (auto &mandatoriesEntries : listOfMandatoriesEntries)
-        {
-            for (auto & k : mandatoriesEntries.keys())
+            datasetAttributes entryTmp;
+            for (auto &minimalEntry : listOfMinimalEntries)
             {
-                datasetAttributes &map = po_entries[i];
-                QString val = mandatoriesEntries[k];
-                map[k] = val;
+                entryTmp[keys[0]] = minimalEntry.key;
+                entryTmp[keys[1]] = minimalEntry.name;
+                entryTmp[keys[2]] = minimalEntry.description;
+                po_entries.push_back(entryTmp);
             }
-            ++i;
+        }
+        else
+        {
+            po_entries = pSource->getMandatoryAttributes(pi_uiLevel, key);
         }
     }
     else
@@ -109,7 +115,23 @@ bool medDataModel::getLevelMetaData(QString const & pi_sourceIntanceId, unsigned
     return bRes;
 }
 
-bool medDataModel::getMandatoryAttributesKeys(QString const & pi_sourceIntanceId, unsigned int pi_uiLevel, QStringList & po_attributes)
+bool medDataModel::mandatoriesAttributes(QString const & pi_sourceIntanceId, unsigned int pi_uiLevel, QString const & parentKey, levelAttributes & po_entries)
+{
+    bool bRes = true;
+
+    medAbstractSource* pSource = m_sourceIdToInstanceMap.value(pi_sourceIntanceId);
+    if (pSource)
+    {
+        po_entries = pSource->getMandatoryAttributes(pi_uiLevel, parentKey);
+    }
+    else
+    {
+        bRes = false;
+    }
+    return bRes;
+}
+
+bool medDataModel::mandatoryAttributesKeys(QString const & pi_sourceIntanceId, unsigned int pi_uiLevel, QStringList & po_attributes)
 {
     bool bRes = true;
 
@@ -127,7 +149,7 @@ bool medDataModel::getMandatoryAttributesKeys(QString const & pi_sourceIntanceId
     return bRes;
 }
 
-bool medDataModel::getLevelCount(QString const & pi_sourceIntanceId, unsigned int & po_uiLevelMax)
+bool medDataModel::levelCount(QString const & pi_sourceIntanceId, unsigned int & po_uiLevelMax)
 {
     bool bRes = true;
 
@@ -139,6 +161,25 @@ bool medDataModel::getLevelCount(QString const & pi_sourceIntanceId, unsigned in
     else
     {
         bRes = false;
+    }
+
+    return bRes;
+}
+
+bool medDataModel::optionalAttributes(QString const & pi_sourceIntanceId, unsigned int pi_uiLevel, QString const & key, datasetAttributes & po_attributes, datasetAttributes & po_tags)
+{
+    bool bRes = false;
+
+    medAbstractSource* pSource = m_sourceIdToInstanceMap.value(pi_sourceIntanceId);
+    if (pSource)
+    {
+        medAbstractSource::datasetAttributes4 tmp;
+        bRes = pSource->getAdditionalAttributes(pi_uiLevel, key, tmp);
+        if (bRes)
+        {
+            po_attributes = tmp.values;
+            po_tags = tmp.tags;
+        }
     }
 
     return bRes;

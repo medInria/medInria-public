@@ -26,7 +26,7 @@ class medSQlite: public medAbstractSource
 
 public:
     explicit medSQlite();
-    ~medSQlite() override = default;
+    ~medSQlite() override;
 
     /* ***********************************************************************/
     /* *************** Init/set/ctrl source properties ***********************/
@@ -54,6 +54,8 @@ public:
 
     bool isOnline() override;
 
+    bool isFetchByMinimalEntriesOrMandatoryAttributes() override;
+
     /* ***********************************************************************/
     /* *************** Get source structure information **********************/
     /* ***********************************************************************/
@@ -69,7 +71,7 @@ public:
 
     QStringList getMandatoryAttributesKeys(unsigned int pi_uiLevel) override;
 
-    QStringList getAdditionalAttributesKeys(unsigned int pi_uiLevel) override;
+    //QStringList getAdditionalAttributesKeys(unsigned int pi_uiLevel) override;
 
 
     /* ***********************************************************************/
@@ -79,7 +81,7 @@ public:
 
     QList<QMap<QString, QString>> getMandatoryAttributes(unsigned int pi_uiLevel, QString parentId) override;
 
-    QList<QMap<QString, QString>> getAdditionalAttributes(unsigned int pi_uiLevel, QString parentId) override;
+    bool getAdditionalAttributes(unsigned int pi_uiLevel, QString Id, datasetAttributes4 &po_attributs) override;
 
     /* ***********************************************************************/
     /* *************** Get data          *************************************/

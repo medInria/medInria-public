@@ -32,15 +32,18 @@
 
 medDBSourcesLoader *medDBSourcesLoader::s_instance = nullptr;
 
-medDBSourcesLoader *medDBSourcesLoader::instance()
+medDBSourcesLoader *medDBSourcesLoader::instance(QObject *parent)
 {
     if (!s_instance)
-        s_instance = new medDBSourcesLoader;
+        s_instance = new medDBSourcesLoader(parent);
     return s_instance;
 }
 
 medDBSourcesLoader::~medDBSourcesLoader()
 {
+    //maybe delete medAbstractSource
+    int i = 0;
+    i++;
 }
 
 /**
@@ -205,8 +208,9 @@ medAbstractSource* medDBSourcesLoader::createInstanceOfSource(QString const & ty
     return pDataSource;
 }
 
-medDBSourcesLoader::medDBSourcesLoader()
+medDBSourcesLoader::medDBSourcesLoader(QObject *parent)
 {
+    setParent(parent);
     m_CnxParametersPath = ".";
     medVirtualRepresentation *pVirt = new medVirtualRepresentation();
     pVirt->setRootPath("C:\\Users\\fleray\\Desktop\\tmp\\virt");

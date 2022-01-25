@@ -220,6 +220,11 @@ int main(int argc, char *argv[])
             splash.showMessage("Loading plugins...");
         }
 
+        auto model = medDataModel::instance(&application);
+        medDBSourcesLoader::instance(&application);        
+        QObject::connect(medDBSourcesLoader::instance(), SIGNAL(sourceAdded(medAbstractSource *)), model, SLOT(addSource(medAbstractSource *)));
+        medDBSourcesLoader::instance()->loadFromDisk();
+
         medDataManager::instance()->setDatabaseLocation();
         medPluginManager::instance()->setVerboseLoading(true);
         medPluginManager::instance()->initialize();
@@ -230,7 +235,7 @@ int main(int argc, char *argv[])
         //medDBSourcesLoader::instance()->createCnx(foo, "medSQLite");
         //medDBSourcesLoader::instance()->renameSource(foo, "Legacy medInria 3 DB");
 
-//        static auto testModel = new medDataModel(); //TODO Remove ok c'est le truc le moins classe du monde (Part3)
+//        static auto testModel = new medDataModel();
 //        medDataManager::instance()->setIndexV2Handler([](medDataIndex const & dataIndex) -> medAbstractData* {return testModel->getData(dataIndex); });
 //        QObject::connect(medDBSourcesLoader::instance(), SIGNAL(sourceAdded(medAbstractSource *)), testModel, SLOT(addSource(medAbstractSource *)));
 //        medDBSourcesLoader::instance()->loadFromDisk();

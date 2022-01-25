@@ -33,7 +33,7 @@ public:
     struct datasetAttributes4
     {
           QMap<QString, QVariant> values; // <keyName, value>
-          QMap<QString, QVariant> tags;   // <keyName, tag value>
+          QMap<QString, QString> tags;   // <keyName, tag value>
     
     };
 
@@ -74,8 +74,8 @@ public:
     // ////////////////////////////////////////////////////////////////////////
     // Simple methods
     //void setColumnAttributes(int p_iLevel, QStringList &attributes); //maybe developed because not const ?
-    int  getColumnInsideLevel(int level, int section);
-    int  getSectionInsideLevel(int level, int column);
+    int  getColumnInsideLevel(int level, int section) const;
+    int  getSectionInsideLevel(int level, int column) const;
     bool fetch(QString uri);
     QString getSourceIntanceId();
     void setOnline(bool pi_bOnline);
@@ -86,10 +86,16 @@ public:
 
     //FLO
     QModelIndex toIndex(QString uri);
-    QString toUri(QModelIndex index);
-    bool setAdditionnalMetaData2(QModelIndex const & index, datasetAttributes4 const &attributes);
+    QString     toUri(QModelIndex index);
+    bool        setAdditionnalMetaData2(QModelIndex const & index, datasetAttributes4 const &attributes);
+    bool        setAdditionnalMetaData2(QModelIndex const & index, QString const & key, QVariant const & value, QString const & tag = QString() );
+    bool        additionnalMetaData2(QModelIndex const & index, datasetAttributes4 & attributes);
+    bool        additionnalMetaData2(QModelIndex const & index, QString const & key, QVariant & value, QString & tag = QString());
 
-    bool expandAll(QModelIndex index = QModelIndex(), QString key = "");
+
+    //JU
+    void expandAll(QModelIndex index = QModelIndex(), QString key = "");
+
 public slots:
     void itemPressed(QModelIndex const &index);
 

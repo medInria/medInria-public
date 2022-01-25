@@ -39,8 +39,8 @@ public:
     /* */   
     /* */   struct datasetAttributes4
     /* */   {
-    /* */       QMap<QString, QVariant> values; // <keyName, value>
-    /* */       QMap<QString, QVariant> tags;   // <keyName, tag value>
+    /* */       QMap<QString, QString> values; // <keyName, value>
+    /* */       QMap<QString, QString> tags;   // <keyName, tag value>
     /* */   };
     /* */   
     /* */   using  listAttributes1 = QList<datasetAttributes1>;
@@ -49,12 +49,23 @@ public:
     /* */   using  listAttributes4 = QList<datasetAttributes4>;
     /* -------------------------------------------------------------------------------------------------------------------*/
 
+    /**
+     * @brief This structure represents the minimal data useful to build the tree. Minimal entries are a sub-part of mandatories attributes.
+     */
     struct levelMinimalEntries
     {
         QString key; // TODO : change
         QString name;
         QString description;
     };
+
+    struct levelMinimalKeys
+    {
+        QString key;
+        QString name;
+        QString description;
+    };
+
 	
     enum eRequestStatus : int
     {
@@ -83,31 +94,30 @@ public:
     virtual bool isLocal()     = 0;
     virtual bool isCached()    = 0;
     virtual bool isOnline()    = 0;
-    
+    virtual bool isFetchByMinimalEntriesOrMandatoryAttributes() = 0; //true: minimalEntries, false: MandatoryAttributes  
     
     /* ***********************************************************************/
     /* *************** Get source structure information **********************/
     /* ***********************************************************************/
-    virtual QString      getInstanceName() = 0;
-    virtual QString      getInstanceId()   = 0;
-    
-    virtual unsigned int getLevelCount() = 0;
-    virtual QStringList  getLevelNames() = 0;
-    virtual QString      getLevelName(unsigned int pi_uiLevel) = 0;
+    virtual QString          getInstanceName() = 0;
+    virtual QString          getInstanceId()   = 0;
+                             
+    virtual unsigned int     getLevelCount() = 0;
+    virtual QStringList      getLevelNames() = 0;
+    virtual QString          getLevelName(unsigned int pi_uiLevel) = 0;
 
-    virtual QStringList  getMandatoryAttributesKeys(unsigned int pi_uiLevel)  = 0;
-    virtual QStringList  getAdditionalAttributesKeys(unsigned int pi_uiLevel) = 0;
+    //virtual void             getMinimalKeys(unsigned int pi_uiLevel, QString &key, QString &name, QString &description) = 0;
+    //virtual levelMinimalKeys getMinimalKeys(unsigned int pi_uiLevel) = 0;
+    virtual QStringList      getMandatoryAttributesKeys(unsigned int pi_uiLevel)  = 0; // must contain all keys for mandatory attributes including minimal entries keys. Keys defines here will be displayed has column name in browser area except for the first one used as id for requesting the source.
+
     
     
     /* ***********************************************************************/
     /* *************** Get elements data *************************************/
     /* ***********************************************************************/
     virtual QList<levelMinimalEntries>    getMinimalEntries      (unsigned int pi_uiLevel, QString parentKey) = 0; //id ou uid en int ou en QString si  int alors l'implémentation doit avoir une méthode bijective
-    virtual QList<QMap<QString, QString>> getMandatoryAttributes (unsigned int pi_uiLevel, QString parentKey) = 0; //ou QVarient
-    virtual QList<QMap<QString, QString>> getAdditionalAttributes(unsigned int pi_uiLevel, QString parentKey) = 0; //ou QVarient
-    
-    //virtual bool getMandatoryAttributes (unsigned int pi_uiLevel, QString Key, datasetAttributes4 &po_attributes) = 0;
-    //virtual bool getAdditionalAttributes(unsigned int pi_uiLevel, QString key, datasetAttributes4 &po_attributes) = 0;
+    virtual QList<QMap<QString, QString>> getMandatoryAttributes (unsigned int pi_uiLevel, QString parentKey) = 0; //must contain all pairs key/value for mandatory attributes excluding minimal entries, except for minimal levelMinimalEntries.key || //must contain all pairs key/value for mandatory attributes including minimal entries. the third first values must match the values returning by getMandatoryMinimalEntries
+    virtual bool getAdditionalAttributes(unsigned int pi_uiLevel, QString key, datasetAttributes4 &po_attributes) = 0;
     
     
     /* ***********************************************************************/
@@ -132,3 +142,10 @@ signals:
 public slots:
     virtual void abort(int pi_iRequest) = 0;
 };
+
+/*! @fn QStringList medAbstractSource::getMandatoryAttributesKeys(unsigned int pi_uiLevel)
+ *  @brief getMandatoryAttributesKeys returns blablabla1 for the desired level.
+ *  @details must contain all keys for mandatory attributes including minimal entries keys. Keys defines here will be displayed has column name in browser area except for the first one used as id for requesting the source.
+ *  @param pi_uiLevel [in] is the level to perform this member function valid in the data source.
+ *  @return a QStringList of blablabla2.
+ */
