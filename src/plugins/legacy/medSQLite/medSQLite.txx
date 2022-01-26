@@ -304,169 +304,22 @@ QList<medAbstractSource::levelMinimalEntries> medSQlite<T>::getMinimalEntries(un
     // TODO : id doit etre passé au level 1 & 2. Il correspond à l'id du level supérieur (get study from a patient id)
     // renommer id en parentId ?
     QList<levelMinimalEntries> entries;
-    QString key;
-    if (parentId.contains("/"))
-    {
-        QStringList splittedUri = parentId.split("/");
-        key = splittedUri[pi_uiLevel-1];
-    }
-    else
-    {
-        key = parentId;
-    }
-    
+
     switch (pi_uiLevel)
     {
         case 0:
-            entries = getPatientMinimalEntries(key);
+            entries = getPatientMinimalEntries(parentId);
             break;
         case 1:
-            entries = getStudyMinimalEntries(key);
+            entries = getStudyMinimalEntries(parentId);
             break;
         case 2:
-            entries = getSeriesMinimalEntries(key);
+            entries = getSeriesMinimalEntries(parentId);
             break;
         default:
             break;
     }
     return entries;
-}
-
-template <typename T>
-QList<QMap<QString, QString>> medSQlite<T>::getMandatoryAttributes(unsigned int pi_uiLevel, QString parentId)
-{
-    QList < QMap<QString, QString>> res;
-    // TODO : id doit etre passé au level 1 & 2. Il correspond à l'id du level supérieur (get study from a patient id)
-    // renommer id en parentId ?
-    QString key;
-    if (parentId.contains("/"))
-    {
-        QStringList splittedUri = parentId.split("/");
-        key = splittedUri[pi_uiLevel-1];
-    }
-    else
-    {
-        key = parentId;
-    }
-
-    switch (pi_uiLevel)
-    {
-        case 0:
-            res = getPatientMandatoriesAttributes(key);
-            break;
-        case 1:
-            res = getStudyMandatoriesAttributes(key);
-            break;
-        case 2:
-            res = getSeriesMandatoriesAttributes(key);
-            break;
-        default:
-            break;
-    }
-    return res;
-}
-
-template <typename T>
-bool medSQlite<T>::getAdditionalAttributes(unsigned int pi_uiLevel, QString Id, datasetAttributes4 &po_attributs)
-{
-    return false;
-}
-
-template <typename T>
-QString medSQlite<T>::getDirectData(unsigned int pi_uiLevel, QString key)
-{
-    QString path;
-    if (pi_uiLevel==2)
-    {
-        path = m_DbPath->value() + getSeriesDirectData(key);
-    }
-    return path;
-}
-
-template <typename T>
-int medSQlite<T>::getAssyncData(unsigned int pi_uiLevel, QString id)
-{
-    return 0;
-}
-
-template<typename T>
-bool medSQlite<T>::addData(void * data, QString uri)
-{
-    bool bRes = true;
-
-    QSqlQuery query = m_Engine.exec();
-    auto splittedUri = uri.split('/');
-    auto queryString = QString("INSERT INTO series(study,name) VALUES(:study,:name)");
-    bRes = query.prepare(queryString);
-    query.bindValue(":study", splittedUri[1]);
-    query.bindValue(":name",  splittedUri[2]);
-
-    if (bRes)
-    {
-        if (!query.exec())
-        {
-            qDebug() << query.lastError();
-            bRes = false;
-        }
-    }
-
-    return bRes;
-}
-
-template <typename T>
-void medSQlite<T>::abort(int pi_iRequest)
-{
-
-}
-
-template <typename T>
-void medSQlite<T>::updateDatabaseName(QString const &path)
-{
-
-}
-
-template<typename T>
-bool medSQlite<T>::isValidDatabaseStructure()
-{
-    bool bRes = false;
-    QStringList tables = m_Engine.tables();
-    bRes = tables.contains(m_LevelNames.value(0))
-            && tables.contains(m_LevelNames.value(1))
-            && tables.contains(m_LevelNames.value(2));
-    return bRes;
-}
-
-template<typename T>
-bool medSQlite<T>::isDatabaseEmpty()
-{
-    bool bRes = false;
-    QStringList tables = m_Engine.tables();
-    if (tables.empty())
-    {
-        bRes = true;
-    }
-    return bRes;
-}
-
-template<typename T>
-bool medSQlite<T>::createTable(const QString &strQuery)
-{
-    bool bRes = true;
-    QSqlQuery query = m_Engine.exec();
-    if (query.prepare(strQuery))
-    {
-        if (!query.exec())
-        {
-            qDebug() << "The query was: " << query.lastQuery().simplified();
-            bRes = false;
-        }
-    }
-    else
-    {
-        qDebug() << query.lastError();
-        bRes = false;
-    }
-    return bRes;
 }
 
 template<typename T>
@@ -592,59 +445,28 @@ QList<medAbstractSource::levelMinimalEntries> medSQlite<T>::getSeriesMinimalEntr
     return seriesEntries;
 }
 
-template<typename T>
-void medSQlite<T>::optimizeSpeedSQLiteDB()
+template <typename T>
+QList<QMap<QString, QString>> medSQlite<T>::getMandatoryAttributes(unsigned int pi_uiLevel, QString parentId)
 {
-    // From legacy medDatabaseController
-    // optimize speed of sqlite db
-    QSqlQuery query = m_Engine.exec();
-    if (!(query.prepare(QLatin1String("PRAGMA synchronous = 0")) && query.exec()))
+    QList < QMap<QString, QString>> res;
+
+    switch (pi_uiLevel)
     {
-        qDebug() << "Could not set sqlite synchronous mode to asynchronous mode.";
+        case 0:
+            res = getPatientMandatoriesAttributes(parentId);
+            break;
+        case 1:
+            res = getStudyMandatoriesAttributes(parentId);
+            break;
+        case 2:
+            res = getSeriesMandatoriesAttributes(parentId);
+            break;
+        default:
+            break;
     }
-    if (!(query.prepare(QLatin1String("PRAGMA journal_mode=wal")) && query.exec()))
-    {
-        qDebug() << "Could not set sqlite write-ahead-log journal mode";
-    }
+    return res;
 }
 
-template<typename T>
-QString medSQlite<T>::getSeriesDirectData(QString &key)
-{
-    QString path;
-    bool isValid;
-    int db_id = key.toInt(&isValid);
-    if (isValid)
-    {
-        QSqlQuery query = m_Engine.exec();
-        query.prepare("SELECT path as data_path "
-                      "FROM series "
-                      "WHERE id = :id");
-        query.bindValue(":id", db_id);
-
-        if (!query.exec())
-        {
-            qDebug() << "Error returned by query : " << query.lastError();
-            qDebug() << "The query was: " << query.lastQuery().simplified();
-            // TODO : call to abort ?
-        }
-        else
-        {
-            while (query.next())
-            {
-                path = query.value("data_path").toString();
-            }
-            emit progress(10, medAbstractSource::eRequestStatus::finish);
-            // TODO : call to success ?
-        }
-    }
-    else
-    {
-        qDebug() << "The key is not a valid integer ";
-        // TODO : call to abort ?
-    }
-    return path;
-}
 
 template<typename T>
 QList<QMap<QString, QString>> medSQlite<T>::getPatientMandatoriesAttributes(const QString &key)
@@ -777,3 +599,215 @@ QList<QMap<QString, QString>> medSQlite<T>::getSeriesMandatoriesAttributes(const
     return seriesRes;
 }
 
+template <typename T>
+bool medSQlite<T>::getAdditionalAttributes(unsigned int pi_uiLevel, QString id, datasetAttributes4 &po_attributes)
+{
+    bool bRes = false;
+    // renommer id en parentId ?
+
+    switch (pi_uiLevel)
+    {
+        case 0:
+            bRes = true;
+            break;
+        case 1:
+            bRes = true;
+            break;
+        case 2:
+            bRes = getSeriesAdditionalAttributes(id, po_attributes);
+            break;
+        default:
+            break;
+    }
+    return bRes;
+}
+
+template<typename T>
+bool medSQlite<T>::getSeriesAdditionalAttributes(const QString &key, medAbstractSource::datasetAttributes4 &po_attributes)
+{
+    bool bRes;
+    int id = key.toInt(&bRes);
+    if (bRes)
+    {
+
+        QSqlQuery query = m_Engine.exec();
+        QStringList columnNames;
+        columnNames <<"study"<<"size"<<"path"<<"orientation"<<"seriesNumber"<<"sequenceName"<<"sliceThickness"
+                    <<"thumbnail"<<"description"<<"comments"<<"status"<<"acquisitiondate"<<"importationdate"
+                    <<"referee"<<"performer"<<"institution"<<"report"<<"origin"<<"flipAngle"<<"echoTime"
+                    <<"repetitionTime"<<"acquisitionTime"<<"isIndexed";
+
+        QString selectQuery = "SELECT ";
+        for (const auto& str : columnNames)
+        {
+            selectQuery += str + " as " + str + ", ";
+        }
+        selectQuery = selectQuery.left(selectQuery.size() - 2);
+        selectQuery += " from series where id = :id";
+        bRes = query.prepare(selectQuery);
+        if (bRes)
+        {
+            query.bindValue(":id", id);
+            bRes = query.exec();
+            if (bRes)
+            {
+                while (query.next())
+                {
+                    QMap<QString, QString> seriesMap;
+                    for (const QString &str : columnNames)
+                    {
+                        po_attributes.values[str] = query.value(str).toString();
+                    }
+                }
+            }
+        }
+    }
+    return bRes;
+}
+
+template <typename T>
+QVariant medSQlite<T>::getDirectData(unsigned int pi_uiLevel, QString key)
+{
+    QVariant res;
+    if (pi_uiLevel==2)
+    {
+        QString path;
+        if (getSeriesDirectData(key, path))
+        {
+            res = QVariant(m_DbPath->value() + path);
+        }
+    }
+    return res;
+}
+
+template<typename T>
+bool medSQlite<T>::getSeriesDirectData(QString &key, QString &path)
+{
+    bool bRes;
+    int db_id = key.toInt(&bRes);
+    if (bRes)
+    {
+        QSqlQuery query = m_Engine.exec();
+        query.prepare("SELECT path as data_path "
+                      "FROM series "
+                      "WHERE id = :id");
+        query.bindValue(":id", db_id);
+
+        bRes = query.exec();
+        if (bRes)
+        {
+            while (query.next())
+            {
+                path = query.value("data_path").toString();
+            }
+//            emit progress(10, medAbstractSource::eRequestStatus::finish);
+        }
+    }
+    else
+    {
+        qDebug() << "The key is not a valid integer ";
+    }
+    return bRes;
+}
+
+template <typename T>
+int medSQlite<T>::getAssyncData(unsigned int pi_uiLevel, QString id)
+{
+    return 0;
+}
+
+template<typename T>
+bool medSQlite<T>::addData(QVariant data, QString uri)
+{
+    bool bRes = true;
+
+    QSqlQuery query = m_Engine.exec();
+    auto splittedUri = uri.split('/');
+    auto queryString = QString("INSERT INTO series(study,name) VALUES(:study,:name)");
+    bRes = query.prepare(queryString);
+    query.bindValue(":study", splittedUri[1]);
+    query.bindValue(":name",  splittedUri[2]);
+
+    if (bRes)
+    {
+        if (!query.exec())
+        {
+            qDebug() << query.lastError();
+            bRes = false;
+        }
+    }
+
+    return bRes;
+}
+
+template <typename T>
+void medSQlite<T>::abort(int pi_iRequest)
+{
+
+}
+
+template <typename T>
+void medSQlite<T>::updateDatabaseName(QString const &path)
+{
+
+}
+
+template<typename T>
+bool medSQlite<T>::isValidDatabaseStructure()
+{
+    bool bRes = false;
+    QStringList tables = m_Engine.tables();
+    bRes = tables.contains(m_LevelNames.value(0))
+            && tables.contains(m_LevelNames.value(1))
+            && tables.contains(m_LevelNames.value(2));
+    return bRes;
+}
+
+template<typename T>
+bool medSQlite<T>::isDatabaseEmpty()
+{
+    bool bRes = false;
+    QStringList tables = m_Engine.tables();
+    if (tables.empty())
+    {
+        bRes = true;
+    }
+    return bRes;
+}
+
+template<typename T>
+bool medSQlite<T>::createTable(const QString &strQuery)
+{
+    bool bRes = true;
+    QSqlQuery query = m_Engine.exec();
+    if (query.prepare(strQuery))
+    {
+        if (!query.exec())
+        {
+            qDebug() << "The query was: " << query.lastQuery().simplified();
+            bRes = false;
+        }
+    }
+    else
+    {
+        qDebug() << query.lastError();
+        bRes = false;
+    }
+    return bRes;
+}
+
+template<typename T>
+void medSQlite<T>::optimizeSpeedSQLiteDB()
+{
+    // From legacy medDatabaseController
+    // optimize speed of sqlite db
+    QSqlQuery query = m_Engine.exec();
+    if (!(query.prepare(QLatin1String("PRAGMA synchronous = 0")) && query.exec()))
+    {
+        qDebug() << "Could not set sqlite synchronous mode to asynchronous mode.";
+    }
+    if (!(query.prepare(QLatin1String("PRAGMA journal_mode=wal")) && query.exec()))
+    {
+        qDebug() << "Could not set sqlite write-ahead-log journal mode";
+    }
+}

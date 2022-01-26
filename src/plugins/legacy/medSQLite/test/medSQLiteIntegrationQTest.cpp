@@ -17,6 +17,10 @@ public:
 //        QObject::connect(this, SIGNAL(changeDbPath(const QString &)), this, SLOT(updateDatabaseName(const QString &)));
 
     }
+    void changeDatabasePath(QString path)
+    {
+        m_DbPath->setValue(path);
+    }
 //signals:
 //    void changeDbPath(const QString &updatedDbPath);
 
@@ -34,14 +38,10 @@ Q_DECLARE_METATYPE(medAbstractSource::eRequestStatus);
 void TestMedSQLite::getDirectDataLevelSeriesValidKeySuccess()
 {
     RealMedSQLite t = RealMedSQLite();
-    qRegisterMetaType<medAbstractSource::eRequestStatus>("eRequestStatus");
-    QSignalSpy spy(&t, SIGNAL(progress(int, eRequestStatus)));
-
     QString instanceId = "bar";
     QTemporaryDir dir;
     if (dir.isValid()) {
-//        emit t.changeDbPath(dir.path());
-//        t.changeDatabasePath(dir.path());
+        t.changeDatabasePath(dir.path());
 
         // expectations
         t.initialization(instanceId);
@@ -58,20 +58,8 @@ void TestMedSQLite::getDirectDataLevelSeriesValidKeySuccess()
             query.exec();
         }
         QString key = "10";
-        QCOMPARE("/path/to/data1", t.getDirectData(2, key));
+        QCOMPARE(QVariant(dir.path() + "/path/to/data1"), t.getDirectData(2, key));
 
-        QCOMPARE(spy.count(), 1);
-        auto requestStatus = qvariant_cast<medAbstractSource::eRequestStatus>(spy.at(0).at(1));
-        qDebug()<<"requestStatus "<<requestStatus;
-        QCOMPARE(requestStatus, medAbstractSource::finish );
-        QVERIFY(requestStatus == medAbstractSource::finish);
-        QVERIFY(spy.at(0).at(0) == 10);
-
-//        medAbstractSource::eRequestStatus result = qvariant_cast<medAbstractSource::eRequestStatus>(spy.at(1).at(0));
-//        int id = qRegisterMetaType<medAbstractSource::eRequestStatus>("eRequestStatus");
-//        qDebug()<<"tpe "<<arguments.at(0).type();
-////        QVERIFY(arguments.at(0).type() == id); // verify the first argument
-//        EXPECT_EQ("/path/to/data1", t.getDirectData(2, key));
         t.connect(false);
         dir.remove();
     }

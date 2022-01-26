@@ -123,14 +123,14 @@ public:
     /* ***********************************************************************/
     /* *************** Get data          *************************************/
     /* ***********************************************************************/
-    virtual QString getDirectData(unsigned int pi_uiLevel, QString key) = 0; //id ou uid en int ou en QString si  int alors l'implémentation doit avoir une méthode bijective
+    virtual QVariant getDirectData(unsigned int pi_uiLevel, QString key) = 0; //id ou uid en int ou en QString si  int alors l'implémentation doit avoir une méthode bijective
     virtual int     getAssyncData(unsigned int pi_uiLevel, QString key) = 0; //id ou uid en int ou en QString si  int alors l'implémentation doit avoir une méthode bijective. Retourne un id de request
     
     /* ***********************************************************************/
     /* *************** Store data          ***********************************/
     /* ***********************************************************************/
     //TODO: store a dataset
-    virtual bool addData(void* data, QString uri) = 0;
+    virtual bool addData(QVariant data, QString uri) = 0;
     //TODO: alter metaData
     //TODO: store complementaries data like thumbnail
     

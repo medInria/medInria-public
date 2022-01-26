@@ -256,8 +256,23 @@ medAbstractData * medDataModel::getData(medDataIndex const & index)
         QString source = index.uri()[0];
         if (m_sourceIdToInstanceMap.contains(source))
         {
-            QString pathTmp = m_sourceIdToInstanceMap[source]->getDirectData(index.uri().size()-2, index.uri()[index.uri().size()-1]);
-            medAbstractData *pDataTmp = medDataImporter::convertSingleDataOnfly(pathTmp);
+            QVariant data = m_sourceIdToInstanceMap[source]->getDirectData(
+                    index.uri().size() - 2, index.uri()[index.uri().size() - 1]);
+            medAbstractData *pDataTmp = nullptr;
+            if (data.canConvert<medAbstractData *>())
+            {
+                pDataTmp = data.value<medAbstractData *>();
+            }
+            else if (data.canConvert<QString>())
+            {
+                pDataTmp = medDataImporter::convertSingleDataOnfly(data.toString());
+
+            }
+            else if (data.canConvert<QByteArray>())
+            {
+                qDebug()<<"Not implemented yet";
+            }
+
             if (pDataTmp)
             {
                 pDataTmp->retain();
@@ -330,7 +345,9 @@ void medDataModel::addData(medAbstractData * pi_dataset, QString uri)
     auto pSource = m_sourceIdToInstanceMap[splittedUri[0]];
     // ////////////////////////////////////////////////////////////////////////
     // Adding dataset to the source
-    bool bContinue = pSource->addData(pi_dataset, sourceUri);
+    QVariant dataset;
+    dataset.setValue(pi_dataset);
+    bool bContinue = pSource->addData(dataset, sourceUri);
 
     // ////////////////////////////////////////////////////////////////////////
     // Refresh dataModelElement

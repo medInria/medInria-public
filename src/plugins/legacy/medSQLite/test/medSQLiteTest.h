@@ -60,7 +60,7 @@ public:
     MOCK_METHOD(QList<levelMinimalEntries>, getPatientMinimalEntries, (QString& id));
     MOCK_METHOD(QList<levelMinimalEntries>, getStudyMinimalEntries, (QString& parentId));
     MOCK_METHOD(QList<levelMinimalEntries>, getSeriesMinimalEntries, (QString& parentId));
-    MOCK_METHOD(QString, getSeriesDirectData, (QString& key));
+    MOCK_METHOD(bool, getSeriesDirectData, (QString& key, QString& path));
 };
 
 // Test Integration

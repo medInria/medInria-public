@@ -90,9 +90,6 @@ target_link_libraries(${TARGET_NAME} PUBLIC
   )
 
 
-
-
-
 #set(TARGET_NAME_TEST ${TARGET_NAME}Test)
 #
 #
@@ -129,9 +126,9 @@ target_link_libraries(${TARGET_NAME} PUBLIC
 #add_test(NAME medSQLiteIntegrationQTest COMMAND medSQLiteIntegrationQTest)
 #
 #target_link_libraries(medSQLiteIntegrationQTest PRIVATE Qt5::Test Qt5::Sql medCore)
-#
-### #############################################################################
-### Install rules
-### #############################################################################
-#
+
+## #############################################################################
+## Install rules
+## #############################################################################
+
 set_plugin_install_rules_legacy(${TARGET_NAME})

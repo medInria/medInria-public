@@ -143,7 +143,7 @@ TEST_F(medSQliteTest, test_connect_failed_if_db_path_is_empty)
 {
     m_.changeDatabasePath("");
     // expectations
-    EXPECT_CALL(m_.m_Engine, close()).Times(0);
+    EXPECT_CALL(m_.m_Engine, close()).Times(1);
     EXPECT_CALL(m_, optimizeSpeedSQLiteDB).Times(0);
     EXPECT_EQ(false, m_.connect(true));
     EXPECT_EQ(false, m_.isOnline());
@@ -152,8 +152,9 @@ TEST_F(medSQliteTest, test_connect_failed_if_db_path_is_empty)
 TEST_F(medSQliteTest, test_connect_failed_db_not_open)
 {
     m_.changeDatabasePath("foo");
-    flagOpen = false;
-    EXPECT_CALL(m_.m_Engine, close()).Times(0);
+    EXPECT_CALL(m_.m_Engine, close()).Times(1);
+    EXPECT_CALL(m_.m_Engine, isValid()).Times(1);
+    ON_CALL(m_.m_Engine, open()).WillByDefault(::testing::Return(false));
     EXPECT_CALL(m_, optimizeSpeedSQLiteDB).Times(0);
     EXPECT_EQ(false, m_.connect(true));
     EXPECT_EQ(false, m_.isOnline());
@@ -173,7 +174,7 @@ TEST_F(medSQliteTest, test_connect_success_db_structure_empty)
     EXPECT_CALL(m_, createTable(studyQuery)).Times(1);
     EXPECT_CALL(m_, createTable(seriesQuery)).Times(1);
     EXPECT_CALL(m_.m_Engine, open()).Times(1);
-    EXPECT_CALL(m_.m_Engine, close()).Times(0);
+    EXPECT_CALL(m_.m_Engine, close()).Times(1);
     EXPECT_CALL(m_, optimizeSpeedSQLiteDB).Times(1);
     EXPECT_EQ(true, m_.connect(true));
     EXPECT_EQ(true, m_.isOnline());
@@ -189,7 +190,7 @@ TEST_F(medSQliteTest, test_connect_failed_db_structure_empty_unable_create_patie
     ON_CALL(m_, createTable(seriesQuery)).WillByDefault(::testing::Return(true));
     ON_CALL(m_.m_Engine, open()).WillByDefault(::testing::Return(true));
     ON_CALL(m_.m_Engine, isValid()).WillByDefault(::testing::Return(true));
-    EXPECT_CALL(m_.m_Engine, close()).Times(1);
+    EXPECT_CALL(m_.m_Engine, close()).Times(2);
     EXPECT_CALL(m_.m_Engine, open()).Times(1);
     EXPECT_CALL(m_.m_Engine, isValid()).Times(1);
     EXPECT_CALL(m_, optimizeSpeedSQLiteDB).Times(0);
@@ -208,7 +209,7 @@ TEST_F(medSQliteTest, test_connect_failed_db_structure_empty_unable_create_study
     ON_CALL(m_, createTable(seriesQuery)).WillByDefault(::testing::Return(true));
     ON_CALL(m_.m_Engine, open()).WillByDefault(::testing::Return(true));
     ON_CALL(m_.m_Engine, isValid()).WillByDefault(::testing::Return(true));
-    EXPECT_CALL(m_.m_Engine, close()).Times(1);
+    EXPECT_CALL(m_.m_Engine, close()).Times(2);
     EXPECT_CALL(m_.m_Engine, open()).Times(1);
     EXPECT_CALL(m_.m_Engine, isValid()).Times(1);
     EXPECT_CALL(m_, optimizeSpeedSQLiteDB).Times(0);
@@ -227,7 +228,7 @@ TEST_F(medSQliteTest, test_connect_failed_db_structure_empty_unable_create_serie
     ON_CALL(m_, createTable(seriesQuery)).WillByDefault(::testing::Return(false));
     ON_CALL(m_.m_Engine, open()).WillByDefault(::testing::Return(true));
     ON_CALL(m_.m_Engine, isValid()).WillByDefault(::testing::Return(true));
-    EXPECT_CALL(m_.m_Engine, close()).Times(1);
+    EXPECT_CALL(m_.m_Engine, close()).Times(2);
     EXPECT_CALL(m_.m_Engine, open()).Times(1);
     EXPECT_CALL(m_.m_Engine, isValid()).Times(1);
     EXPECT_CALL(m_, optimizeSpeedSQLiteDB).Times(0);
@@ -244,7 +245,7 @@ TEST_F(medSQliteTest, test_connect_failed_db_structure_invalid)
     ON_CALL(m_.m_Engine, open()).WillByDefault(::testing::Return(true));
     ON_CALL(m_.m_Engine, isValid()).WillByDefault(::testing::Return(true));
     ON_CALL(m_.m_Engine, tables()).WillByDefault(::testing::Return(fakeTables));
-    EXPECT_CALL(m_.m_Engine, close()).Times(1);
+    EXPECT_CALL(m_.m_Engine, close()).Times(2);
     EXPECT_CALL(m_.m_Engine, open()).Times(1);
     EXPECT_CALL(m_.m_Engine, isValid()).Times(1);
     EXPECT_CALL(m_.m_Engine, tables()).Times(2);
@@ -260,7 +261,7 @@ TEST_F(medSQliteTest, test_connect_success_valid_db_structure)
     // expectations
     ON_CALL(m_.m_Engine, open()).WillByDefault(::testing::Return(true));
     ON_CALL(m_.m_Engine, tables()).WillByDefault(::testing::Return(t));
-    EXPECT_CALL(m_.m_Engine, close()).Times(0);
+    EXPECT_CALL(m_.m_Engine, close()).Times(1);
     EXPECT_CALL(m_.m_Engine, open()).Times(1);
     EXPECT_CALL(m_, optimizeSpeedSQLiteDB).Times(1);
     EXPECT_EQ(true, m_.connect(true));
@@ -271,7 +272,7 @@ TEST_F(medSQliteTest, test_disconnect_success_if_db_path_is_empty)
 {
     m_.changeDatabasePath("");
     // expectations
-    EXPECT_CALL(m_.m_Engine, close()).Times(1);
+    EXPECT_CALL(m_.m_Engine, close()).Times(2);
     EXPECT_CALL(m_, optimizeSpeedSQLiteDB).Times(0);
     EXPECT_EQ(true, m_.connect(false));
     EXPECT_EQ(false, m_.isOnline());
@@ -461,48 +462,6 @@ TEST(AccessTest, test_mandatory_attr_keys_invalid_level_failed)
     medSQlite<QSqlDatabase> m = medSQlite<QSqlDatabase>();
     int level = 3;
     EXPECT_EQ(QStringList(), m.getMandatoryAttributesKeys(level));
-}
-
-TEST(AccessTest, test_additional_attr_keys_1st_level_success)
-{
-    medSQlite<QSqlDatabase> m = medSQlite<QSqlDatabase>();
-    int level = 0;
-    QStringList additional_keys;
-//    additional_keys << "thumbnail" << "birthdate"<< "gender";
-    EXPECT_EQ(additional_keys, m.getAdditionalAttributesKeys(level));
-}
-
-TEST(AccessTest, test_additional_attr_keys_2nd_level_success)
-{
-    medSQlite<QSqlDatabase> m = medSQlite<QSqlDatabase>();
-    int level = 1;
-    QStringList additional_keys;
-//    additional_keys << "patient";
-    EXPECT_EQ(additional_keys, m.getAdditionalAttributesKeys(level));
-}
-
-TEST(AccessTest, test_additional_attr_keys_3rd_level_success)
-{
-    medSQlite<QSqlDatabase> m = medSQlite<QSqlDatabase>();
-    int level = 2;
-    QStringList additional_keys;
-    additional_keys << "size" << "age" << "modality" << "acquisitiondate" << "importationdate" << "referee"
-                    <<"performer" << "institution" << "report" << "thumbnail";
-    EXPECT_EQ(additional_keys, m.getAdditionalAttributesKeys(level));
-}
-
-TEST(AccessTest, test_additional_attr_keys_negative_level_failed)
-{
-    medSQlite<QSqlDatabase> m = medSQlite<QSqlDatabase>();
-    int level = -1;
-    EXPECT_EQ(QStringList(), m.getAdditionalAttributesKeys(level));
-}
-
-TEST(AccessTest, test_additional_attr_keys_invalid_level_failed)
-{
-    medSQlite<QSqlDatabase> m = medSQlite<QSqlDatabase>();
-    int level = 3;
-    EXPECT_EQ(QStringList(), m.getAdditionalAttributesKeys(level));
 }
 
 TEST(AccessTest, is_writeable_true)

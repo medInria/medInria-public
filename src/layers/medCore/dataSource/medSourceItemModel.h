@@ -90,7 +90,7 @@ public:
     bool        setAdditionnalMetaData2(QModelIndex const & index, datasetAttributes4 const &attributes);
     bool        setAdditionnalMetaData2(QModelIndex const & index, QString const & key, QVariant const & value, QString const & tag = QString() );
     bool        additionnalMetaData2(QModelIndex const & index, datasetAttributes4 & attributes);
-    bool        additionnalMetaData2(QModelIndex const & index, QString const & key, QVariant & value, QString & tag = QString());
+    bool        additionnalMetaData2(QModelIndex const & index, QString const & key, QVariant & value, QString & tag);
 
 
     //JU

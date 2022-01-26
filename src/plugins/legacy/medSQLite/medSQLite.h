@@ -81,16 +81,16 @@ public:
 
     QList<QMap<QString, QString>> getMandatoryAttributes(unsigned int pi_uiLevel, QString parentId) override;
 
-    bool getAdditionalAttributes(unsigned int pi_uiLevel, QString Id, datasetAttributes4 &po_attributs) override;
+    bool getAdditionalAttributes(unsigned int pi_uiLevel, QString id, datasetAttributes4 &po_attributes) override;
 
     /* ***********************************************************************/
     /* *************** Get data          *************************************/
     /* ***********************************************************************/
-    QString getDirectData(unsigned int pi_uiLevel, QString key) override;
+    QVariant getDirectData(unsigned int pi_uiLevel, QString key) override;
 
     int getAssyncData(unsigned int pi_uiLevel, QString id) override;
     
-    bool addData(void* data, QString uri) override;
+    bool addData(QVariant data, QString uri) override;
 
 public slots:
     void abort(int pi_iRequest) override;
@@ -106,7 +106,7 @@ private:
     virtual QList<medAbstractSource::levelMinimalEntries> getStudyMinimalEntries(QString &parentId);
     virtual QList<medAbstractSource::levelMinimalEntries> getSeriesMinimalEntries(QString &parentId);
     virtual void optimizeSpeedSQLiteDB();
-    virtual QString getSeriesDirectData(QString &key);
+    virtual bool getSeriesDirectData(QString &key, QString &path);
     virtual QList<QMap<QString, QString>> getPatientMandatoriesAttributes(const QString &key);
 
 private:
@@ -124,6 +124,8 @@ private:
     QList<QMap<QString, QString>> getStudyMandatoriesAttributes(const QString &key);
 
     QList<QMap<QString, QString>> getSeriesMandatoriesAttributes(const QString &key);
+
+    bool getSeriesAdditionalAttributes(const QString &key, datasetAttributes4 &po_attributes);
 };
 
 #include "medSQLite.txx"

@@ -326,19 +326,20 @@ TEST(requestDBTest, get_minimal_entries_level_series_invalid_key_failed)
 
 TEST_F(medRequestTest, get_direct_data_invalid_level_failed)
 {
-    QString path;
+    QVariant path;
     path = m_.getDirectData(1, "key");
-    EXPECT_EQ(path, "");
+    EXPECT_EQ(path, QVariant());
 }
 
 TEST_F(medRequestTest, get_direct_data_series_level_right_function_call)
 {
     int ui_level = 2;
-    QString key = "key";
+    QString key = "1";
     QString expected_value = "foo";
-    ON_CALL(m_, getSeriesDirectData(key)).WillByDefault(::testing::Return(expected_value));
-    EXPECT_CALL(m_, getSeriesDirectData(key)).Times(1);
-    EXPECT_EQ(m_.getDirectData(ui_level, key), m_.m_DbPath->value() + expected_value);
+    QString path;
+    ON_CALL(m_, getSeriesDirectData(key, path)).WillByDefault(::testing::Return(true));
+    EXPECT_CALL(m_, getSeriesDirectData(key, path)).Times(1);
+    EXPECT_EQ(m_.getDirectData(ui_level, key), QVariant(m_.m_DbPath->value()));
 }
 
 TEST(requestDBTest, get_direct_data_level_series_invalid_key_failed)
