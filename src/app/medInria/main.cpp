@@ -221,12 +221,12 @@ int main(int argc, char *argv[])
         }
 
 
+
+        auto model = medDataModel::instance(&application);
+        medDBSourcesLoader::instance(&application);
         medDataManager::instance()->setDatabaseLocation();
         medPluginManager::instance()->setVerboseLoading(true);
         medPluginManager::instance()->initialize();
-
-        auto model = medDataModel::instance(&application);
-        medDBSourcesLoader::instance()->setParent(&application);
         QObject::connect(medDBSourcesLoader::instance(), SIGNAL(sourceAdded(medAbstractSource *)), model, SLOT(addSource(medAbstractSource *)));
         medDBSourcesLoader::instance()->loadFromDisk();
 
