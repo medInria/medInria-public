@@ -9,7 +9,7 @@
 
 medDataModelItem::medDataModelItem(medSourceItemModel *model)
 {
-    model = model;
+    this->model = model;
     parentItem = nullptr; //Invalid parent 
     iLevel = -1; //Invalid effective level, used by root item
     bCanHaveSubData = true;

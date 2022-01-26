@@ -34,17 +34,12 @@ QTreeView * medSourceItemModelPresenter::buildTree(QSortFilterProxyModel *proxy)
     {
         proxy->setParent(treeViewRes);
         proxy->setSourceModel(d->sourceItemModel);
-        bool c1Ok = QObject::connect(treeViewRes, &QTreeView::pressed, [=](const QModelIndex &proxyIndex) 
-        {
-            auto sm = treeViewRes->selectionMode();
-            inputModel->itemPressed(proxy->mapToSource(proxyIndex)); 
-
-        });
+        QObject::connect(treeViewRes, &QTreeView::pressed, [=](const QModelIndex &proxyIndex) {inputModel->itemPressed(proxy->mapToSource(proxyIndex));});
         model = proxy;
     }
     else
     {
-        bool c1Ok = QObject::connect(treeViewRes, &QTreeView::pressed, inputModel, &medSourceItemModel::itemPressed);
+        QObject::connect(treeViewRes, &QTreeView::pressed, inputModel, &medSourceItemModel::itemPressed);
         model = d->sourceItemModel;
     }
     treeViewRes->setModel(model);

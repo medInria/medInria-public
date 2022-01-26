@@ -41,9 +41,6 @@ medDBSourcesLoader *medDBSourcesLoader::instance(QObject *parent)
 
 medDBSourcesLoader::~medDBSourcesLoader()
 {
-    //maybe delete medAbstractSource
-    int i = 0;
-    i++;
 }
 
 /**
