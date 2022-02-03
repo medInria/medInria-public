@@ -23,6 +23,7 @@
 #include <medRunnableProcess.h>
 #include <medSelectorToolBox.h>
 #include <medToolBoxFactory.h>
+#include <medUtilitiesITK.h>
 
 class medMaskApplicationToolBoxPrivate
 {
@@ -58,8 +59,8 @@ medMaskApplicationToolBox::medMaskApplicationToolBox(QWidget *parent) :
     bundlingLayout->addWidget(clearMaskButton);
 
     d->backgroundSpinBox = new QDoubleSpinBox;
-    d->backgroundSpinBox->setMinimum(-5000);
-    d->backgroundSpinBox->setMaximum(5000);
+    d->backgroundSpinBox->setMinimum(-50000);
+    d->backgroundSpinBox->setMaximum(50000);
     d->backgroundSpinBox->setValue(0);
     QHBoxLayout* backgroundLayout = new QHBoxLayout;
     backgroundLayout->addWidget(new QLabel("Mask background value"));
@@ -126,6 +127,7 @@ void medMaskApplicationToolBox::importMask(const medDataIndex& index)
 {
     d->mask = medDataManager::instance()->retrieveData(index);
     d->maskDropSite->setPixmap(medDataManager::instance()->thumbnail(index).scaled(d->maskDropSite->sizeHint()));
+    d->backgroundSpinBox->setValue(medUtilitiesITK::minimumValue(d->mask));
 }
 
 void medMaskApplicationToolBox::clearMask(void)
