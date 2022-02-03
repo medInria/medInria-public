@@ -1,0 +1,33 @@
+This application uses some external libraries that we would like to thanks:
+
+* DCMTK
+sources: https://github.com/DCMTK/dcmtk
+license: https://github.com/DCMTK/dcmtk/blob/master/COPYRIGHT
+
+* dtk
+sources: https://gitlab.inria.fr/dtk/dtk
+license: https://gitlab.inria.fr/dtk/dtk/-/blob/develop/LICENSE.md
+
+* ITK
+sources: https://github.com/InsightSoftwareConsortium/ITK
+license: https://github.com/InsightSoftwareConsortium/ITK/blob/master/LICENSE
+
+* LCC-LogDemons
+sources: https://github.com/Inria-Asclepios/LCC-LogDemons
+license: https://github.com/Inria-Asclepios/LCC-LogDemons/blob/master/License.txt
+
+* QtDCM
+sources: https://github.com/medInria/qtdcm
+license: https://github.com/medInria/qtdcm/blob/master/LICENSE
+
+* RPI
+sources: https://github.com/Inria-Asclepios/RPI
+license: https://github.com/Inria-Asclepios/RPI/blob/master/README.txt
+
+* TTK
+sources: https://github.com/Inria-Asclepios/TTK-Public
+license: https://github.com/Inria-Asclepios/TTK-Public/blob/master/LICENSE.txt
+
+* VTK
+sources: https://github.com/Kitware/VTK
+license: https://github.com/Kitware/VTK/blob/master/Copyright.txt

@@ -136,6 +136,10 @@ medHomepageArea::medHomepageArea ( QWidget * parent ) : QWidget ( parent ), d ( 
     connect(actionLicense, &QAction::triggered, this, &medHomepageArea::onShowLicense);
     menuAbout->addAction(actionLicense);
 
+    QAction *actionExtLicense = new QAction(tr("&External Licenses"), parent);
+    connect(actionExtLicense, &QAction::triggered, this, &medHomepageArea::onShowExtLicenses);
+    menuAbout->addAction(actionExtLicense);
+
     menuAbout->addSeparator();
 
     QAction *actionHelp = new QAction(tr("&Help"), parent);
@@ -433,7 +437,30 @@ void medHomepageArea::onShowLicense()
     QString text = file.readAll();
 
     QMessageBox msgBox;
-    msgBox.setText("Here is the application License:                           ");
+    msgBox.setText("Here is the application license:                           ");
+    msgBox.setDetailedText(text);
+
+    // Search the "Show Details..." button
+    foreach (QAbstractButton *button, msgBox.buttons())
+    {
+        if (msgBox.buttonRole(button) == QMessageBox::ActionRole)
+        {
+            button->click(); // click it to expand the text
+            break;
+        }
+    }
+
+    msgBox.exec();
+}
+
+void medHomepageArea::onShowExtLicenses()
+{
+    QFile file(":LICENSES_EXT.txt");
+    file.open(QIODevice::ReadOnly | QIODevice::Text);
+    QString text = file.readAll();
+
+    QMessageBox msgBox;
+    msgBox.setText("Here are the external library licenses:                           ");
     msgBox.setDetailedText(text);
 
     // Search the "Show Details..." button
