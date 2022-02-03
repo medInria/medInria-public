@@ -37,8 +37,8 @@ medSQlite<T>::medSQlite()
 
     m_MandatoryKeysByLevel["Patient"] = QStringList({"id", "name", "patientId",
                                                      "birthdate", "gender"});
-    m_MandatoryKeysByLevel["Study"] = QStringList( {"id", "name", "uid"});
-    m_MandatoryKeysByLevel["Series"] = QStringList( {"id", "name", "uid",
+    m_MandatoryKeysByLevel["Study"] = QStringList( {"id", "name", "uid", "patient"});
+    m_MandatoryKeysByLevel["Series"] = QStringList( {"id", "name", "uid", "study",
                                                      "age", "modality", "protocol",
                                                      "origin", "rows", "columns"}) ;
 
@@ -266,37 +266,13 @@ QStringList medSQlite<T>::getMandatoryAttributesKeys(unsigned int pi_uiLevel)
         case 0:
             return m_MandatoryKeysByLevel["Patient"];//{"id", "name", "patientId", "birthdate", "gender"};
         case 1:
-            return m_MandatoryKeysByLevel["Study"];//return {"id", "name", "uid"};
+            return m_MandatoryKeysByLevel["Study"];//return {"id", "patient", "name", "uid"};
         case 2:
-            return m_MandatoryKeysByLevel["Series"];//return {"id", "name", "uid", "age", "modality", "protocol", "origin", "rows", "cols"};
+            return m_MandatoryKeysByLevel["Series"];//return {"id", "study", "name", "uid", "age", "modality", "protocol", "origin", "rows", "cols"};
         default:
             return QStringList();
     }
 }
-
-//template <typename T>
-//QStringList medSQlite<T>::getAdditionalAttributesKeys(unsigned int pi_uiLevel)
-//{
-//    switch (pi_uiLevel)
-//    {
-//        case 0:
-//            return {};
-//        case 1:
-//            return {};
-//        case 2:
-//            // this is the list of all available additional attributes keys in table series
-//            // {"study", "size", "path", "orientation", "seriesNumber", "sequenceName", "sliceThickness",
-//            // "rows", "columns", "thumbnail", "age", "description", "modality", "protocol", "comments",
-//            // "status", "acquisitiondate", "importationdate", "referee", "performer", "institution",
-//            // "report", "origin", "flipAngle", "echoTime", "repetitionTime", "acquisitionTime", "isIndexed"};
-//            // For now, we choose to send only the key from legacy medinria data source
-//            return {"size", "age", "modality", "acquisitiondate", "importationdate", "referee",
-//                    "performer", "institution", "report", "thumbnail"};
-//        default:
-//            return {};
-//    }
-//
-//}
 
 template <typename T>
 QList<medAbstractSource::levelMinimalEntries> medSQlite<T>::getMinimalEntries(unsigned int pi_uiLevel, QString parentId)
@@ -361,6 +337,7 @@ QList<medAbstractSource::levelMinimalEntries> medSQlite<T>::getPatientMinimalEnt
     }
     return patientEntries;
 }
+
 template<typename T>
 QList<medAbstractSource::levelMinimalEntries> medSQlite<T>::getStudyMinimalEntries(QString &parentId)
 {
@@ -632,7 +609,7 @@ bool medSQlite<T>::getSeriesAdditionalAttributes(const QString &key, medAbstract
 
         QSqlQuery query = m_Engine.exec();
         QStringList columnNames;
-        columnNames <<"study"<<"size"<<"path"<<"orientation"<<"seriesNumber"<<"sequenceName"<<"sliceThickness"
+        columnNames <<"size"<<"path"<<"orientation"<<"seriesNumber"<<"sequenceName"<<"sliceThickness"
                     <<"thumbnail"<<"description"<<"comments"<<"status"<<"acquisitiondate"<<"importationdate"
                     <<"referee"<<"performer"<<"institution"<<"report"<<"origin"<<"flipAngle"<<"echoTime"
                     <<"repetitionTime"<<"acquisitionTime"<<"isIndexed";
@@ -717,28 +694,266 @@ int medSQlite<T>::getAssyncData(unsigned int pi_uiLevel, QString id)
 }
 
 template<typename T>
-bool medSQlite<T>::addData(QVariant data, QString uri)
+QString medSQlite<T>::addData(QVariant data, QString parentUri,
+                           QMap<QString, QString> mandatoryAttributes, datasetAttributes4 additionalAttributes)
 {
-    bool bRes = true;
+    QString keyRes;
 
-    QSqlQuery query = m_Engine.exec();
-    auto splittedUri = uri.split('/');
-    auto queryString = QString("INSERT INTO series(study,name) VALUES(:study,:name)");
-    bRes = query.prepare(queryString);
-    query.bindValue(":study", splittedUri[1]);
-    query.bindValue(":name",  splittedUri[2]);
+    int sourceDelimterIndex = parentUri.indexOf(QString(":"));
+    QStringList uriAsList = parentUri.right(parentUri.size() - sourceDelimterIndex - 1).split(QString("\r\n"));
 
-    if (bRes)
+    int level  = uriAsList.size();
+
+    switch (level)
     {
-        if (!query.exec())
+        case 0: //Patient
         {
-            qDebug() << query.lastError();
-            bRes = false;
+            if (!additionalAttributes.values.isEmpty() || !additionalAttributes.tags.isEmpty())
+            {
+                qWarning()<<"No expected additional values or tags at level patient in this local SQLite datasource plugin";
+            }
+            keyRes = addDataToPatientLevel(mandatoryAttributes);
+
+            break;
+        }
+        case 1: //Study
+        {
+            if (!additionalAttributes.values.isEmpty() || !additionalAttributes.tags.isEmpty())
+            {
+                qWarning()<<"No expected additional values or tags at level study in this local SQLite datasource plugin";
+            }
+            keyRes = addDataToStudyLevel(mandatoryAttributes);
+            break;
+        }
+        case 2://Series
+        {
+            keyRes = addDataToSeriesLevel(data, mandatoryAttributes, additionalAttributes);
+            break;
+        }
+        default: //Unknown level
+        {
+            break;
         }
     }
 
-    return bRes;
+    return keyRes;
 }
+
+template<typename T>
+QString medSQlite<T>::addDataToPatientLevel(QMap<QString, QString> &mandatoryAttributes)
+{
+    QString keyRes;
+    QSqlQuery query = m_Engine.exec();
+
+    //m_MandatoryKeysByLevel["Patient"];//{"id", "name", "patientId", "birthdate", "gender"}
+    // 1st : Remove unecessary key
+    auto id = mandatoryAttributes.take("id");
+    QStringList keys = m_MandatoryKeysByLevel["Patient"]; //{ "name", "patientId", "birthdate", "gender"}
+    keys.takeFirst();
+
+    bool bVal = true;
+    if (mandatoryAttributes.size() == keys.size())
+    {
+        for (const auto &key: keys)
+        {
+            if (!mandatoryAttributes.contains(key))
+            {
+                bVal = false;
+                qWarning() << "The key " << key << " is missing in mandatory attributes at level patient";
+            }
+        }
+    }
+    else
+    {
+        qWarning()<<"mandatory attributes size mismatch";
+        bVal = false;
+    }
+
+    if (bVal)
+    {
+//                query.prepare ( "INSERT INTO patient (name, patientId, birthdate, gender) "
+//                                "VALUES (:name, :patientId, :birthdate, :gender)" );
+        QString insertQuery = "INSERT INTO patient (";
+        for (const auto& key : keys)
+        {
+            insertQuery += key + ", ";
+        }
+        insertQuery = insertQuery.left(insertQuery.size() - 2);
+        insertQuery += ") VALUES (:";
+        for (const auto& key : keys)
+        {
+            insertQuery += key + ", :";
+        }
+        insertQuery = insertQuery.left(insertQuery.size() - 3);
+        insertQuery += ")";
+        query.prepare(insertQuery);
+        for (const auto& key : keys)
+        {
+            query.bindValue(":"+key, mandatoryAttributes[key]);
+        }
+        if (query.exec())
+        {
+            keyRes = query.lastInsertId().toString();
+        }
+    }
+    return keyRes;
+}
+
+template<typename T>
+QString medSQlite<T>::addDataToStudyLevel(QMap<QString, QString> mandatoryAttributes)
+{
+    QString keyRes;
+    QSqlQuery query = m_Engine.exec();
+
+    //m_MandatoryKeysByLevel["Study"];//return {"id", "patient", "name", "uid"};
+    // 1st : Remove unecessary key
+    auto id = mandatoryAttributes.take("id");
+    QStringList keys = m_MandatoryKeysByLevel["Study"]; //{ "patient", "name", "uid"}
+    keys.takeFirst();
+
+    bool bVal = true;
+    if (mandatoryAttributes.size() == keys.size())
+    {
+        for (const auto &key: keys)
+        {
+            if (!mandatoryAttributes.contains(key))
+            {
+                qWarning() << "The key " << key << " is missing in mandatory attributes at level study";
+                bVal = false;
+            }
+        }
+    }
+    else
+    {
+        qWarning()<<"mandatory attributes size mismatch";
+        bVal = false;
+    }
+
+    if (bVal)
+    {
+//                query.prepare ( "INSERT INTO study (patient, name, uid) "
+//                                "VALUES (:patient, :name, :uid)" );
+        QString insertQuery = "INSERT INTO study (";
+        for (const auto& key : keys)
+        {
+            insertQuery += key + ", ";
+        }
+        insertQuery = insertQuery.left(insertQuery.size() - 2);
+        insertQuery += ") VALUES (:";
+        for (const auto& key : keys)
+        {
+            insertQuery += key + ", :";
+        }
+        insertQuery = insertQuery.left(insertQuery.size() - 3);
+        insertQuery += ")";
+        query.prepare(insertQuery);
+        for (const auto& key : keys)
+        {
+            query.bindValue(":"+key, mandatoryAttributes[key]);
+        }
+        if (query.exec())
+        {
+            keyRes = query.lastInsertId().toString();
+        }
+    }
+    return keyRes;
+}
+
+template<typename T>
+QString medSQlite<T>::addDataToSeriesLevel(const QVariant& dataset, QMap<QString, QString> mandatoryAttributes,
+                                        medAbstractSource::datasetAttributes4 additionalAttributes)
+{
+    QString keyRes;
+    QSqlQuery query = m_Engine.exec();
+
+    // m_MandatoryKeysByLevel["Series"];//return {"id", "study", "name", "uid", "age", "modality", "protocol", "origin", "rows", "cols"};
+    //    QStringList additionalColumnNames;
+    //    additionalColumnNames <<"size"<<"path"<<"orientation"<<"seriesNumber"<<"sequenceName"<<"sliceThickness"
+    //                          <<"thumbnail"<<"description"<<"comments"<<"status"<<"acquisitiondate"<<"importationdate"
+    //                          <<"referee"<<"performer"<<"institution"<<"report"<<"origin"<<"flipAngle"<<"echoTime"
+    //                          <<"repetitionTime"<<"acquisitionTime"<<"isIndexed";
+    // 1st : Remove unecessary key
+    auto id = mandatoryAttributes.take("id");
+    QStringList mandatoryKeys = m_MandatoryKeysByLevel["Series"]; //{ "study", "name", "uid", "age", "modality", "protocol", "origin", "rows", "cols"}
+    mandatoryKeys.takeFirst();
+    auto additionalMap = additionalAttributes.values; // No need to get additionnalAttributes.tags in SQLite context
+    auto addtitionalKeys = additionalMap.keys();
+    // TODO extract path from dataset parameter and update additionalAttributes.values ==> addtionalAttributes.values["path"] = dataset.toString()
+    bool bVal = true;
+    if (dataset.canConvert<QString>())
+    {
+        additionalAttributes.values["path"] = dataset.toString();
+        if (mandatoryAttributes.size() == mandatoryKeys.size())
+        {
+            for (const auto &key: mandatoryKeys)
+            {
+                if (!mandatoryAttributes.contains(key))
+                {
+                    qWarning() << "The key " << key << " is missing in mandatory attributes at level series";
+                    bVal = false;
+                }
+            }
+        }
+        else
+        {
+            qWarning() << "mandatory attributes size mismatch";
+            bVal = false;
+        }
+
+        if (bVal)
+        {
+//                query.prepare ( "INSERT INTO series (study, name, uid, age, modality, protocol, origin, rows, cols,
+//                                                     size, path, orientation, seriesNumber, sequenceName, sliceThickness,
+//                                                     thumbnail, description, comments, status, acquisitiondate, importationdate,
+//                                                     referee, performer, institution, report, origin, flipAngle, echoTime,
+//                                                     repetitionTime, acquisitionTime, isIndexed)
+//                                                     VALUES (:study, :name, :uid, :age, :modality, :protocol, :origin, :rows, :cols,
+//                                                     :size, :path, :orientation, :seriesNumber, :sequenceName, :sliceThickness,
+//                                                     :thumbnail, :description, :comments, :status, :acquisitiondate, :importationdate,
+//                                                     :referee, :performer, :institution, :report, :origin, :flipAngle, :echoTime,
+//                                                     :repetitionTime, :acquisitionTime, :isIndexed)" );
+            QString insertQuery = "INSERT INTO series (";
+            for (const auto &mandatoryKey: mandatoryKeys)
+            {
+                insertQuery += mandatoryKey + ", ";
+            }
+            for (const auto &additionalKey: addtitionalKeys)
+            {
+                insertQuery += additionalKey + ", ";
+            }
+
+            insertQuery = insertQuery.left(insertQuery.size() - 2);
+            insertQuery += ") VALUES (:";
+            for (const auto &mandatoryKey: mandatoryKeys)
+            {
+                insertQuery += mandatoryKey + ", :";
+            }
+            for (const auto &additionalKey: addtitionalKeys)
+            {
+                insertQuery += additionalKey + ", :";
+            }
+            insertQuery = insertQuery.left(insertQuery.size() - 3);
+            insertQuery += ")";
+            query.prepare(insertQuery);
+            for (const auto &mandatoryKey: mandatoryKeys)
+            {
+                query.bindValue(":" + mandatoryKey, mandatoryAttributes[mandatoryKey]);
+            }
+
+            for (const auto &additionalKey: addtitionalKeys)
+            {
+                query.bindValue(":" + additionalKey, additionalMap[additionalKey]);
+            }
+            if (query.exec())
+            {
+                keyRes = query.lastInsertId().toString();
+            }
+        }
+    }
+
+    return keyRes;
+}
+
 
 template <typename T>
 void medSQlite<T>::abort(int pi_iRequest)
@@ -811,3 +1026,5 @@ void medSQlite<T>::optimizeSpeedSQLiteDB()
         qDebug() << "Could not set sqlite write-ahead-log journal mode";
     }
 }
+
+

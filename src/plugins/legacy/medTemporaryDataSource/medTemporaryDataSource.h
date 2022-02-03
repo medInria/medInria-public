@@ -12,21 +12,17 @@
 =========================================================================*/
 #pragma once
 
-#include "medSQLitePluginExport.h"
+#include "medTemporaryDataSourcePluginExport.h"
 
 #include <medAbstractSource.h>
-#include <medStringParameter.h>
-
-#include <QSqlDatabase>
 
 
-template <typename T>
-class medSQlite: public medAbstractSource
+class medTemporaryDataSource: public medAbstractSource
 {
 
 public:
-    explicit medSQlite();
-    ~medSQlite() override;
+    explicit medTemporaryDataSource();
+    ~medTemporaryDataSource() override;
 
     /* ***********************************************************************/
     /* *************** Init/set/ctrl source properties ***********************/
@@ -71,8 +67,6 @@ public:
 
     QStringList getMandatoryAttributesKeys(unsigned int pi_uiLevel) override;
 
-    //QStringList getAdditionalAttributesKeys(unsigned int pi_uiLevel) override;
-
 
     /* ***********************************************************************/
     /* *************** Get elements data *************************************/
@@ -90,48 +84,19 @@ public:
 
     int getAssyncData(unsigned int pi_uiLevel, QString id) override;
     
-    QString addData(QVariant data, QString parentUri, QMap<QString,
-                 QString> mandatoryAttributes, datasetAttributes4 additionalAttributes) override;
+    QString addData(QVariant data, QString parentUri,
+                    QMap<QString, QString> mandatoryAttributes, datasetAttributes4 additionalAttributes) override;
 
 public slots:
     void abort(int pi_iRequest) override;
 
-    void updateDatabaseName(QString const &path);
-
 private:
     // methods
-    bool isValidDatabaseStructure();
-    bool isDatabaseEmpty();
-    virtual bool createTable(const QString &strQuery);
-    virtual QList<medAbstractSource::levelMinimalEntries> getPatientMinimalEntries(QString &key);
-    virtual QList<medAbstractSource::levelMinimalEntries> getStudyMinimalEntries(QString &parentId);
-    virtual QList<medAbstractSource::levelMinimalEntries> getSeriesMinimalEntries(QString &parentId);
-    virtual void optimizeSpeedSQLiteDB();
-    virtual bool getSeriesDirectData(QString &key, QString &path);
-    virtual QList<QMap<QString, QString>> getPatientMandatoriesAttributes(const QString &key);
-    QList<QMap<QString, QString>> getStudyMandatoriesAttributes(const QString &key);
 
-    QList<QMap<QString, QString>> getSeriesMandatoriesAttributes(const QString &key);
-
-    bool getSeriesAdditionalAttributes(const QString &key, datasetAttributes4 &po_attributes);
-
-    QString addDataToPatientLevel(QMap<QString, QString> &mandatoryAttributes);
-    QString addDataToStudyLevel(QMap<QString, QString> mandatoryAttributes);
-    QString addDataToSeriesLevel(const QVariant& dataset, QMap<QString, QString> mandatoryAttributes,
-                                 medAbstractSource::datasetAttributes4 additionalAttributes);
 private:
     // members
-    T m_Engine;
-    medStringParameter *m_DbPath;
-    const QString m_Driver;
-    const QString m_ConnectionName;
-    QString m_instanceId;
     QString m_instanceName;
-    bool m_online;
-    QStringList m_LevelNames;
-    QMap<QString, QStringList> m_MandatoryKeysByLevel;
-
+    QString m_instanceId;
+    QMap<QString, QVariant> m_pluginKeyToDataMap;
 };
-
-#include "medSQLite.txx"
 

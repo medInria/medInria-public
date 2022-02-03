@@ -410,8 +410,8 @@ TEST(requestDBTest, get_mandatory_data_level_patient_success)
     t.changeDatabasePath("/Users/castelne/Library/ApplicationSupport/inria/medInria/");
     t.initialization(instanceId);
     t.connect(true);
-
-    QList<QMap<QString, QString>>  resList = t.getMandatoryAttributes(0, "");
+    QString key = "";
+    QList<QMap<QString, QString>>  resList = t.getMandatoryAttributes(0, key);
     qDebug()<<"patients : ";
     for (auto map : resList)
     {
@@ -480,5 +480,5 @@ TEST(requestDBTest, get_mandatory_data_level_patient_success)
             qDebug()<<key<<" : "<<map[key];
         }
     }
-
 }
+
