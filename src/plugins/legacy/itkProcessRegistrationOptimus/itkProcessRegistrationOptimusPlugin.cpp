@@ -59,9 +59,7 @@ QString itkProcessRegistrationOptimusPlugin::description(void) const
     return "Optimus registration method.\n<br/>"
             "This method is based on the New UOA optimizer. <br/>"
             "The metric used is the mutual information. The transformation "
-            "computed is a rigid transformation."
-            "<a href=\"http://www.springerlink.com/content/x7m14k3477273072/\">"
-            "http://www.springerlink.com/content/x7m14k3477273072/</a>";
+            "computed is a rigid transformation.";
 }
 
 QString itkProcessRegistrationOptimusPlugin::contact(void) const
