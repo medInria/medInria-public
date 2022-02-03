@@ -11,16 +11,31 @@
 
 =========================================================================*/
 
-#include<medDataModel.h>
-#include<medDataImporter.h>
+#include <medDataModel.h>
+#include <medDataImporter.h>
+
+#include <QModelIndex>
+
+medDataModel *medDataModel::s_instance = nullptr;
+medDataModel *medDataModel::instance(QObject *parent)
+{
+    if (!s_instance)
+    {
+        s_instance = new medDataModel(parent);
+    }
+    return s_instance;
+}
 
 medDataModel::medDataModel(QObject *parent)
 {
+    setParent(parent);
     m_defaultSource = nullptr;
 }
 
 medDataModel::~medDataModel()
 {
+    int i = 0;
+    ++i;
 }
 
 bool medDataModel::setDefaultWorkingSource(unsigned int i)
@@ -47,7 +62,7 @@ bool medDataModel::setDefaultWorkingSource(unsigned int i)
     return bRes;
 }
 
-bool medDataModel::getSourceGlobalInfo(QString const & pi_sourceIntanceId, bool & pi_bOnline, bool & pi_bLocal, bool & pi_bWritable, bool & pi_bCache)
+bool medDataModel::sourceGlobalInfo(QString const & pi_sourceIntanceId, bool & pi_bOnline, bool & pi_bLocal, bool & pi_bWritable, bool & pi_bCache)
 {
     bool bRes = true;
 
@@ -67,17 +82,30 @@ bool medDataModel::getSourceGlobalInfo(QString const & pi_sourceIntanceId, bool 
     return bRes;
 }
 
-bool medDataModel::getLevelMetaData(QString const & pi_sourceIntanceId, unsigned int pi_uiLevel, QString const & key, QVariantList & po_entries)
+bool medDataModel::attributesForBuildTree(QString const & pi_sourceIntanceId, unsigned int pi_uiLevel, QString const & key, levelAttributes & po_entries)
 {
     bool bRes = true;
 
     medAbstractSource* pSource = m_sourceIdToInstanceMap.value(pi_sourceIntanceId);
     if (pSource)
     {
-        auto listOfMinimalEntries = pSource->getMinimalEntries(pi_uiLevel, key);
-        for (auto &minimalEntry : listOfMinimalEntries)
+        if (pSource->isFetchByMinimalEntriesOrMandatoryAttributes())
         {
-            po_entries.append(QStringList({ minimalEntry.key, minimalEntry.name, minimalEntry.description }));
+            QStringList keys = pSource->getMandatoryAttributesKeys(pi_uiLevel);//TODO replace by fetch medSourceItemModel column names
+            auto listOfMinimalEntries = pSource->getMinimalEntries(pi_uiLevel, key);
+
+            datasetAttributes entryTmp;
+            for (auto &minimalEntry : listOfMinimalEntries)
+            {
+                entryTmp[keys[0]] = minimalEntry.key;
+                entryTmp[keys[1]] = minimalEntry.name;
+                entryTmp[keys[2]] = minimalEntry.description;
+                po_entries.push_back(entryTmp);
+            }
+        }
+        else
+        {
+            po_entries = pSource->getMandatoryAttributes(pi_uiLevel, key);
         }
     }
     else
@@ -87,7 +115,23 @@ bool medDataModel::getLevelMetaData(QString const & pi_sourceIntanceId, unsigned
     return bRes;
 }
 
-bool medDataModel::getLevelAttributes(QString const & pi_sourceIntanceId, unsigned int pi_uiLevel, QStringList & po_attributes)
+bool medDataModel::mandatoriesAttributes(QString const & pi_sourceIntanceId, unsigned int pi_uiLevel, QString const & parentKey, levelAttributes & po_entries)
+{
+    bool bRes = true;
+
+    medAbstractSource* pSource = m_sourceIdToInstanceMap.value(pi_sourceIntanceId);
+    if (pSource)
+    {
+        po_entries = pSource->getMandatoryAttributes(pi_uiLevel, parentKey);
+    }
+    else
+    {
+        bRes = false;
+    }
+    return bRes;
+}
+
+bool medDataModel::mandatoryAttributesKeys(QString const & pi_sourceIntanceId, unsigned int pi_uiLevel, QStringList & po_attributes)
 {
     bool bRes = true;
 
@@ -95,6 +139,7 @@ bool medDataModel::getLevelAttributes(QString const & pi_sourceIntanceId, unsign
     if (pSource)
     {
         po_attributes = pSource->getMandatoryAttributesKeys(pi_uiLevel);
+        bRes = !po_attributes.isEmpty();
     }
     else
     {
@@ -104,7 +149,7 @@ bool medDataModel::getLevelAttributes(QString const & pi_sourceIntanceId, unsign
     return bRes;
 }
 
-bool medDataModel::getLevelCount(QString const & pi_sourceIntanceId, unsigned int & po_uiLevelMax)
+bool medDataModel::levelCount(QString const & pi_sourceIntanceId, unsigned int & po_uiLevelMax)
 {
     bool bRes = true;
 
@@ -120,6 +165,54 @@ bool medDataModel::getLevelCount(QString const & pi_sourceIntanceId, unsigned in
 
     return bRes;
 }
+
+bool medDataModel::optionalAttributes(QString const & pi_sourceIntanceId, unsigned int pi_uiLevel, QString const & key, datasetAttributes & po_attributes, datasetAttributes & po_tags)
+{
+    bool bRes = false;
+
+    medAbstractSource* pSource = m_sourceIdToInstanceMap.value(pi_sourceIntanceId);
+    if (pSource)
+    {
+        medAbstractSource::datasetAttributes4 tmp;
+        bRes = pSource->getAdditionalAttributes(pi_uiLevel, key, tmp);
+        if (bRes)
+        {
+            po_attributes = tmp.values;
+            po_tags = tmp.tags;
+        }
+    }
+
+    return bRes;
+}
+
+//TODO19
+//bool medDataModel::getOptionalAttributes(QString const & pi_sourceIntanceId, unsigned int pi_uiLevel, QString const & key, QList<QMap<int, QString>>& po_attributes)
+//{
+//    bool bRes = true;
+//
+//    //medAbstractSource* pSource = m_sourceIdToInstanceMap.value(pi_sourceIntanceId);
+//    //if (pSource)
+//    //{
+//    //    QMap<int, QString> roleValueRes;
+//    //    auto attributes4level = pSource->getAdditionalAttributes(pi_uiLevel, key);
+//    //    for (auto attributeEntr : attributes4level)
+//    //    {
+//    //        auto attrKeys = attribute.keys();
+//    //        for (auto k : attrKeys)
+//    //        {
+//    //            roleValueRes[1001] = k;
+//    //            roleValueRes[1002] = attrKeys[k];
+//    //        }
+//    //        
+//    //    }
+//    //}
+//    //else
+//    //{
+//    //    bRes = false;
+//    //}
+//
+//    return bRes;
+//}
 
 QString medDataModel::getInstanceName(QString const & pi_sourceIntanceId)
 {
@@ -163,15 +256,31 @@ medAbstractData * medDataModel::getData(medDataIndex const & index)
         QString source = index.uri()[0];
         if (m_sourceIdToInstanceMap.contains(source))
         {
-            QString pathTmp = m_sourceIdToInstanceMap[source]->getDirectData(index.uri().size()-2, index.uri()[index.uri().size()-1]);
-            medAbstractData *pDataTmp = medDataImporter::convertSingleDataOnfly(pathTmp);
+            QVariant data = m_sourceIdToInstanceMap[source]->getDirectData(
+                    index.uri().size() - 2, index.uri()[index.uri().size() - 1]);
+            medAbstractData *pDataTmp = nullptr;
+            if (data.canConvert<medAbstractData *>())
+            {
+                pDataTmp = data.value<medAbstractData *>();
+            }
+            else if (data.canConvert<QString>())
+            {
+                pDataTmp = medDataImporter::convertSingleDataOnfly(data.toString());
+                pDataTmp->setDataIndex(index);
+            }
+            else if (data.canConvert<QByteArray>())
+            {
+                qDebug()<<"Not implemented yet";
+            }
+
             if (pDataTmp)
             {
                 pDataTmp->retain();
                 pDataTmp->setDataIndex(index);
-                m_IndexToData[index] = pDataRes;
+                m_IndexToData[index] = pDataTmp;
                 m_IndexToData[index].data();
                 pDataRes = pDataTmp;
+                connect(pDataTmp, &QObject::destroyed, this, &medDataModel::removeConvertedData);
             }
         }
     }
@@ -179,6 +288,26 @@ medAbstractData * medDataModel::getData(medDataIndex const & index)
     return pDataRes;
 }
 
+medDataModel::datasetAttributes medDataModel::getMetaData(QModelIndex const & index)
+{
+    datasetAttributes metaRes;
+
+    if (index.isValid())
+    {
+        QAbstractItemModel *modelTmp = const_cast<QAbstractItemModel *> (index.model());
+        medSourceItemModel *model = dynamic_cast<medSourceItemModel *> (modelTmp);
+        if (model)
+        {
+            metaRes = model->getMendatoriesMetaData(index);
+        }
+    }
+    else
+    {
+
+    }
+
+    return metaRes;
+}
 
 void medDataModel::addSource(medAbstractSource * pi_source)
 {
@@ -203,6 +332,18 @@ void medDataModel::removeSource(medAbstractSource * pi_source)
     }
 }
 
+QUuid medDataModel::saveData(medAbstractData &data)
+{
+    QStringList parentUri;
+    if (!data.parentData().isEmpty())
+    {
+        auto parentData = data.parentData()[0];
+        parentUri = parentData->dataIndex().uri();
+        parentUri.pop_back();
+    }
+    return QUuid();
+}
+
 void medDataModel::addData(medAbstractData * pi_dataset, QString uri)
 {
     QStringList splittedUri;
@@ -215,11 +356,16 @@ void medDataModel::addData(medAbstractData * pi_dataset, QString uri)
     auto pSource = m_sourceIdToInstanceMap[splittedUri[0]];
     // ////////////////////////////////////////////////////////////////////////
     // Adding dataset to the source
-    bool bContinue = pSource->addData(pi_dataset, sourceUri);
+    QVariant dataset;
+    dataset.setValue(pi_dataset);
+    datasetAttributes mandatoryAttributes;
+    medAbstractSource::datasetAttributes4 additionalAttributes;
+    //TODO get mandatory & additional attributes for dataset ?
+    QString key = pSource->addData(dataset, sourceUri, mandatoryAttributes, additionalAttributes);
 
     // ////////////////////////////////////////////////////////////////////////
     // Refresh dataModelElement
-    if (bContinue)
+    if (!key.isEmpty())
     {
         m_sourcesModelMap[pSource]->fetch(sourceUri.left(sourceUri.lastIndexOf('/')));
     }
@@ -256,3 +402,31 @@ void medDataModel::sourceIsOnline(QString sourceIntanceId)
         //pSource->connect(true);
     }
 }
+
+void medDataModel::removeConvertedData(QObject * obj)
+{
+    medAbstractData* data = static_cast<medAbstractData*>(obj);
+    auto liste1 = m_IndexToData.values();
+    QList<medAbstractData*> liste2;
+    for (auto pData : liste1)
+    {
+        liste2.push_back(pData.data());
+    }
+
+    if (liste2.contains(data))
+    {
+        dtkSmartPointer<medAbstractData> sptr(data);
+        
+        m_IndexToData.key(sptr);
+    }
+}
+
+void medDataModel::expandAll(const QString &sourceInstanceId)
+{
+    if (m_sourceIdToInstanceMap.contains(sourceInstanceId))
+    {
+        auto pSource = m_sourceIdToInstanceMap[sourceInstanceId];
+        m_sourcesModelMap[pSource]->expandAll();
+    }
+}
+

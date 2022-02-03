@@ -30,7 +30,11 @@ class medAbstractDataPrivate
 {
 public:
     medDataIndex index;
+    // TODO Remove attachedData
     QList< dtkSmartPointer<medAttachedData> > attachedData;
+
+    QList<medAbstractData * > parentDataList;
+    QList<medAbstractData * > derivedDataList;
 
     QImage thumbnail;
 };
@@ -53,10 +57,22 @@ medAbstractData::medAbstractData(const medAbstractData &other)
     {
         d->attachedData[i] = dynamic_cast<medAttachedData*>(other.d->attachedData[i]->clone());
     }
+
+    d->parentDataList = other.d->parentDataList;
+    d->derivedDataList = other.d->derivedDataList;
 }
 
 medAbstractData::~medAbstractData( void )
 {
+    for (auto dData : d->derivedDataList)
+    {
+        dData->removeParentData(this);
+    }
+    for (auto pData : d->parentDataList)
+    {
+        pData->removeDerivedData(this);
+    }
+
     delete d;
     d = nullptr;
 }
@@ -266,4 +282,54 @@ QImage medAbstractData::generateThumbnailInGuiThread(QSize size)
 
     // We're rendering here, to the temporary window, and will then use the resulting image
     return view->generateThumbnail(size);
+}
+
+bool medAbstractData::addParentData(medAbstractData *pi_parentData)
+{
+    bool bRes = pi_parentData != nullptr;
+    if (bRes)
+    {
+        if (!d->parentDataList.contains(pi_parentData))
+        {
+            d->parentDataList.append(pi_parentData);
+            pi_parentData->d->derivedDataList.append(pi_parentData);
+        }
+    }
+    return bRes;
+}
+
+bool medAbstractData::addDerivedData(medAbstractData *pi_derivedData)
+{
+    bool bRes = pi_derivedData != nullptr;
+    if (bRes)
+    {
+        if (!d->derivedDataList.contains(pi_derivedData))
+        {
+            d->derivedDataList.append(pi_derivedData);
+            pi_derivedData->d->parentDataList.append(this);
+        }
+    }
+    return bRes;
+}
+
+bool medAbstractData::removeParentData(medAbstractData *pi_parentData)
+{
+    pi_parentData->d->derivedDataList.removeOne(this);
+    return d->parentDataList.removeOne(pi_parentData);
+}
+
+bool medAbstractData::removeDerivedData(medAbstractData *pi_derivedData)
+{
+    pi_derivedData->d->parentDataList.removeOne(this);
+    return d->derivedDataList.removeOne(pi_derivedData);
+}
+
+QList<medAbstractData *> medAbstractData::parentData()
+{
+    return d->parentDataList;
+}
+
+QList<medAbstractData *> medAbstractData::derivedData()
+{
+    return d->derivedDataList;
 }

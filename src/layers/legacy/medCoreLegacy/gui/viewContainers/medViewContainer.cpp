@@ -93,6 +93,8 @@ public:
     medViewContainer::DropArea oArea4ExternalDrop;
     std::vector<std::pair<QUuid, bool> > oQuuidVect;
 
+    Qt::MouseButtons mousseDragDropButton;
+
     ~medViewContainerPrivate()
     {
         if(view)
@@ -673,17 +675,11 @@ void medViewContainer::recomputeStyleSheet()
 void medViewContainer::dragEnterEvent(QDragEnterEvent *event)
 {
     event->acceptProposedAction();
+    d->mousseDragDropButton = event->mouseButtons();
 }
 
 void medViewContainer::dragMoveEvent(QDragMoveEvent *event)
 {
-    auto mouseButton = event->mouseButtons();
-    if (mouseButton.testFlag(Qt::RightButton))
-    {
-        int x = 0;
-        x++;
-    }
-
     if(d->userSplittable)
     {
         DropArea area = computeDropArea(event->pos().x(), event->pos().y());
@@ -716,7 +712,7 @@ void medViewContainer::dragLeaveEvent(QDragLeaveEvent *event)
     this->setStyleSheet(d->defaultStyleSheet);
     if(d->selected)
         this->highlight(d->highlightColor);
-
+    d->mousseDragDropButton = Qt::NoButton;
     event->accept();
 }
 
@@ -737,8 +733,7 @@ bool medViewContainer::dropEventFromDataBase(QDropEvent * event)
     if (mimeData->hasFormat("med/index2"))
     {
         auto indexList = medDataIndex::readMimeDataMulti(mimeData);
-        Qt::MouseButtons mousseButton = event->mouseButtons();
-        if (mousseButton.testFlag(Qt::RightButton))
+        if (d->mousseDragDropButton.testFlag(Qt::RightButton))
         {
             QMenu *popupMenu = new QMenu();
             QAction *pAction1 = popupMenu->addAction("Open in multiple Tabs");
@@ -747,6 +742,7 @@ bool medViewContainer::dropEventFromDataBase(QDropEvent * event)
             connect(pAction1, &QAction::triggered, [&]() {indexList; });
             connect(pAction2, &QAction::triggered, [&]() {indexList; });
             connect(pAction3, &QAction::triggered, [&]() {indexList; });
+            popupMenu->exec(this->mapToGlobal(event->pos()));
         }
         else
         {
@@ -799,6 +795,7 @@ bool medViewContainer::dropEventFromDataBase(QDropEvent * event)
             bRes = true;
         }
     }
+    d->mousseDragDropButton = Qt::NoButton;
 
     return bRes;
 }

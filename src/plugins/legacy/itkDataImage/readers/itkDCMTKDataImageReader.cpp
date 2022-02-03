@@ -371,6 +371,16 @@ bool itkDCMTKDataImageReader::readInformation(const QStringList& paths)
 
     if (medData)
     {
+        for (const auto & [key, values] : d->io->GetMetaData())
+        {
+            QStringList valueList;
+            for (auto val : values)
+            {
+                valueList << QString::fromStdString(val);
+            }
+
+            medData->setMetaData(QString::fromStdString(key), valueList);
+        }
         // PATIENT
         //PatientId
         medData->setMetaData(medMetaDataKeys::PatientName.key(), QString::fromLatin1(d->io->GetPatientName().c_str()));

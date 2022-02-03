@@ -32,10 +32,10 @@
 
 medDBSourcesLoader *medDBSourcesLoader::s_instance = nullptr;
 
-medDBSourcesLoader *medDBSourcesLoader::instance()
+medDBSourcesLoader *medDBSourcesLoader::instance(QObject *parent)
 {
     if (!s_instance)
-        s_instance = new medDBSourcesLoader;
+        s_instance = new medDBSourcesLoader(parent);
     return s_instance;
 }
 
@@ -205,8 +205,9 @@ medAbstractSource* medDBSourcesLoader::createInstanceOfSource(QString const & ty
     return pDataSource;
 }
 
-medDBSourcesLoader::medDBSourcesLoader()
+medDBSourcesLoader::medDBSourcesLoader(QObject *parent)
 {
+    setParent(parent);
     m_CnxParametersPath = ".";
     medVirtualRepresentation *pVirt = new medVirtualRepresentation();
     pVirt->setRootPath("C:\\Users\\fleray\\Desktop\\tmp\\virt");
@@ -326,7 +327,7 @@ bool medDBSourcesLoader::loadFromDisk()
                 iCnxInvalid++;
             }
         }
-        qWarning() << "[WARN] Source loading statistics : "
+        qWarning() << "[INFO] Source loading statistics : "
             << "\nConnection ok             = " << iCnxOk
             << "\nConnection without plugin = " << iCnxWithoutPlugin
             << "\nConnection invalid        = " << iCnxInvalid;
@@ -483,9 +484,8 @@ void medDBSourcesLoader::reparseUnresolvedCnx()
 {
     int i = 0;
     while ( i< m_unresolvedSavedCnx.size())
-    {
-        
-        if (m_instanceMapType.contains(m_unresolvedSavedCnx[i]["sourceType"].toString()))
+    {        
+        if (m_sourcesMap.keys().contains(m_unresolvedSavedCnx[i]["sourceType"].toString()))
         {
             auto cnx = m_unresolvedSavedCnx.takeAt(i); 
             reloadCnx(cnx);

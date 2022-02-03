@@ -2,7 +2,7 @@
 
 #include <QTreeView>
 #include <QSortFilterProxyModel>
-#include <medDataModelElement.h> //TODO must be renamed by medSourceItemModel
+#include <medSourceItemModel.h>
 
 class medSourceItemModelPresenterPrivate
 {
@@ -34,16 +34,25 @@ QTreeView * medSourceItemModelPresenter::buildTree(QSortFilterProxyModel *proxy)
     {
         proxy->setParent(treeViewRes);
         proxy->setSourceModel(d->sourceItemModel);
-        bool c1Ok = QObject::connect(treeViewRes, &QTreeView::pressed, [=](const QModelIndex &proxyIndex) {inputModel->itemPressed(proxy->mapToSource(proxyIndex)); });
+        QObject::connect(treeViewRes, &QTreeView::pressed, [=](const QModelIndex &proxyIndex) {inputModel->itemPressed(proxy->mapToSource(proxyIndex));});
         model = proxy;
     }
     else
     {
-        bool c1Ok = QObject::connect(treeViewRes, &QTreeView::pressed, inputModel, &medSourceItemModel::itemPressed);
+        QObject::connect(treeViewRes, &QTreeView::pressed, inputModel, &medSourceItemModel::itemPressed);
         model = d->sourceItemModel;
     }
     treeViewRes->setModel(model);
     treeViewRes->setSortingEnabled(true);
+    //auto selectionModel = new QItemSelectionModel();
+    //selectionModel->setModel(model);
+    //treeViewRes->setSelectionModel(selectionModel);
+    //treeViewRes->setAlternatingRowColors(true);
+    treeViewRes->setAnimated(true);
+    //treeViewRes->sortByColumn(0, Qt::AscendingOrder);
+    treeViewRes->setSelectionBehavior(QAbstractItemView::SelectRows);
+    treeViewRes->setSelectionMode(QAbstractItemView::ExtendedSelection);
+    auto sm = treeViewRes->selectionMode();
     return treeViewRes;
 }
 

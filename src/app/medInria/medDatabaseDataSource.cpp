@@ -48,6 +48,7 @@ public:
     medDatabaseSearchPanel *searchPanel;
     medDatabaseSearchPanel *compactSearchPanel;
     medActionsToolBox* actionsToolBox;
+    medSourceModelPresenter *multiSources_tree;
 };
 
 medDatabaseDataSource::medDatabaseDataSource( QWidget* parent ): medAbstractDataSource(parent), d(new medDatabaseDataSourcePrivate)
@@ -58,6 +59,7 @@ medDatabaseDataSource::medDatabaseDataSource( QWidget* parent ): medAbstractData
 
     d->compactProxy = new medDatabaseProxyModel(this);
     d->compactProxy->setSourceModel(d->model);
+    d->multiSources_tree = new medSourceModelPresenter(medDataModel::instance());
 }
 
 medDatabaseDataSource::~medDatabaseDataSource()
@@ -145,21 +147,14 @@ QWidget* medDatabaseDataSource::compactViewWidget()
         compactViewWidgetRes = new QWidget();
         QVBoxLayout *layout = new QVBoxLayout();
 
-
-//        d->compactSearchPanel = new medDatabaseSearchPanel(d->compactWidget);
-//        d->compactSearchPanel->setColumnNames(d->model->columnNames());
-
         auto filterLabel = new QLabel("Filter ");
         auto filterLineEdit = new QLineEdit();
 
-        static auto testModel = new medDataModel(); //TODO Remove ok c'est le truc le moins classe du monde (Part3)
-        medDataManager::instance()->setIndexV2Handler([](medDataIndex const & dataIndex) -> medAbstractData* {return testModel->getData(dataIndex); });
-        QObject::connect(medDBSourcesLoader::instance(), SIGNAL(sourceAdded(medAbstractSource *)), testModel, SLOT(addSource(medAbstractSource *)));
-        medDBSourcesLoader::instance()->loadFromDisk();
-        medSourceModelPresenter *multiSources_tree = new medSourceModelPresenter(testModel);
-        d->compactView = multiSources_tree->buildTree();
+        medDataManager::instance()->setIndexV2Handler([](medDataIndex const & dataIndex) -> medAbstractData* {return medDataModel::instance()->getData(dataIndex); },
+                                                      [](medAbstractData & data) -> QUuid {return medDataModel::instance()->saveData(data); return QUuid();});//TODO Remove ok c'est le truc le moins classe du monde (Part3)
+        d->compactView = d->multiSources_tree->buildTree();
 
-        connect(filterLineEdit, SIGNAL(textChanged(const QString &)), multiSources_tree, SIGNAL(filterProxy(const QString &)));
+        connect(filterLineEdit, SIGNAL(textChanged(const QString &)), d->multiSources_tree, SIGNAL(filterProxy(const QString &)));
 
         d->compactView->setSizePolicy(QSizePolicy::MinimumExpanding, QSizePolicy::MinimumExpanding);
 

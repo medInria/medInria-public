@@ -11,7 +11,7 @@
 
 =========================================================================*/
 
-#include <medDataModelElement.h>
+#include <medSourceItemModel.h>
 
 #include <medDataModel.h>
 #include <medDataModelItem.h>
@@ -39,7 +39,7 @@ medSourceItemModel::medSourceItemModel(medDataModel *parent, QString const & sou
     d->sourceInstanceId = sourceIntanceId;
     d->root = new medDataModelItem(this);
 
-    bool bOk = parent->getSourceGlobalInfo(sourceIntanceId, d->bOnline, d->bLocal, d->bWritable, d->bCache);
+    bool bOk = parent->sourceGlobalInfo(sourceIntanceId, d->bOnline, d->bLocal, d->bWritable, d->bCache);
 
     if (bOk)
     {
@@ -80,11 +80,11 @@ QVariant medSourceItemModel::data(const QModelIndex & index, int role) const
         {
             varDataRes = Qt::AlignHCenter;
         }
-        else //if ((role == Qt::DisplayRole || role == Qt::EditRole))
+        else
         {
             medDataModelItem *item = getItem(index);
             int i = index.column();
-            varDataRes = item->data(i, role);
+            varDataRes = item->data(getColumnInsideLevel(item->iLevel, i), role);
         }
     }
 
@@ -277,7 +277,7 @@ Qt::ItemFlags medSourceItemModel::flags(const QModelIndex & index) const
     Qt::ItemFlags defaultFlags = QAbstractItemModel::flags(index);
 
     if (index.isValid())
-        return Qt::ItemIsDragEnabled | Qt::ItemIsDropEnabled | defaultFlags;
+        return Qt::ItemIsSelectable | Qt::ItemIsEnabled | Qt::ItemIsDragEnabled | Qt::ItemIsDropEnabled | defaultFlags;
     else
         return Qt::ItemIsDropEnabled | defaultFlags;
 }
@@ -323,15 +323,35 @@ QMimeData * medSourceItemModel::mimeData(const QModelIndexList & indexes) const
 
 
 
-int medSourceItemModel::getColumnInsideLevel(int level, int section)
+int medSourceItemModel::getColumnInsideLevel(int level, int section) const
 {
     int iRes = -1;
 
-    if (section > -1 && section < d->sectionNames.size())
+    if (section > 0 && section < d->sectionNames.size())
     {
         if (d->columnNameByLevel.contains(level))
         {
             iRes = d->columnNameByLevel[level].indexOf(d->sectionNames[section]);
+        }
+    }
+    else if (section == 0)
+    {
+        iRes = 1;
+    }
+
+    return iRes;
+}
+
+int medSourceItemModel::getSectionInsideLevel(int level, int column) const
+{
+    int iRes = -1;
+
+    if (d->columnNameByLevel.contains(level))
+    {
+        if (column > -1 && column < d->columnNameByLevel[level].size())
+        {
+            QString colName = d->columnNameByLevel[level][column];
+            iRes = d->sectionNames.indexOf(colName);
         }
     }
 
@@ -377,6 +397,233 @@ void medSourceItemModel::setOnline(bool pi_bOnline)
     }
 }
 
+medSourceItemModel::datasetAttributes medSourceItemModel::getMendatoriesMetaData(QModelIndex const & index)
+{
+    datasetAttributes res;
+
+    if (index.isValid())
+    {
+        medDataModelItem *pItem = getItem(index);
+        int iLevel = pItem->level();
+        for (int i = 0; i < d->columnNameByLevel[iLevel].size(); ++i)
+        {
+            res[d->columnNameByLevel[iLevel][i]] = pItem->data(i).toString();
+        }
+    }
+
+    return res;
+}
+
+QList<QMap<int, QString>> medSourceItemModel::getAdditionnalMetaData(QModelIndex const & index)
+{
+    QList<QMap<int, QString>> res;
+
+    if (index.isValid())
+    {
+        QMap<int, QString> resEntryTmp;
+
+        medDataModelItem *pItem = getItem(index);
+        for (auto entry : pItem->itemData)
+        {
+            if (entry.contains(1001) && entry.contains(1002))
+            {
+                resEntryTmp[1001] = entry[1001].toString();
+                resEntryTmp[1002] = entry[1002].toString();
+                if (entry.contains(1003))
+                {
+                    resEntryTmp[1003] = entry[1003].toString();
+                }
+                res.append(resEntryTmp);
+            }
+        }
+    }
+
+    return res;
+}
+
+bool medSourceItemModel::setAdditionnalMetaData(QModelIndex const & index, QList<QMap<int, QString>> &additionnalMetaData)
+{
+    bool bRes = true;
+
+
+    if (index.isValid())
+    {
+        QMap<int, QVariant> resEntryTmp;
+
+        medDataModelItem *pItem = getItem(index);
+
+
+        for (auto entry : additionnalMetaData)
+        {
+            if (entry.contains(1001) && entry.contains(1002))
+            {
+                resEntryTmp[1001] = entry[1001];
+                resEntryTmp[1002] = entry[1002];
+                if (entry.contains(1003))
+                {
+                    resEntryTmp[1003] = entry[1003];
+                }
+
+                //
+                int i = 0;
+                bool bFound = false;
+                while (i < pItem->itemData.keys().size() && !bFound)
+                {
+                    if (pItem->itemData[i].contains(1001) && pItem->itemData[i][1001] == resEntryTmp[1001])
+                    {
+                        bFound = true;
+                    }
+                    else
+                    {
+                        ++i;
+                    }
+                }
+                pItem->itemData[i] = resEntryTmp;
+            }
+            else
+            {
+                qDebug()<< "[WARN] Try to insert bad additional metadata to " <<  d->sourceInstanceId << " at level " << pItem->level();
+            }
+        }
+    }
+    else
+    {
+        bRes = false;
+    }
+
+    return bRes;
+}
+
+QModelIndex medSourceItemModel::toIndex(QString uri)
+{
+    QModelIndex indexRes;
+
+    int sourceDelimterIndex = uri.indexOf(QString(":"));
+    QStringList uriAsList = uri.right(uri.size() - sourceDelimterIndex - 1).split(QString("\r\n"));
+    uriAsList.push_front(uri.left(sourceDelimterIndex));
+    
+    //if ((uriAsList.size() > 1) && (uriAsList[0] == d->sourceInstanceId))
+    //{
+    //    auto itemTmp = d->root;
+    //    int i = 1;
+    //    do
+    //    {
+    //        indexRes = index(itemTmp->childIndex(uriAsList[i]), 0, indexRes);
+    //        itemTmp = static_cast<medDataModelItem*>(indexRes.internalPointer());
+    //        ++i;
+    //    } while (i < uriAsList.size() && indexRes.isValid());
+    //}
+
+    if ((uriAsList.size() > 1) && (uriAsList[0] == d->sourceInstanceId))
+    {
+        auto itemTmp = d->root;
+        for(int i = 1; i < uriAsList.size() && itemTmp; ++i)        
+        {
+            itemTmp = itemTmp->child(itemTmp->childIndex(uriAsList[i]));
+        }
+        if (itemTmp)
+        {
+            indexRes = createIndex(itemTmp->parent()->childItems.indexOf(itemTmp), 0, itemTmp);
+        }
+    }
+
+    return indexRes;
+}
+
+QString medSourceItemModel::toUri(QModelIndex index)
+{
+    QString uriRes;
+
+    if (index.isValid())
+    {
+        auto *item = getItem(index);
+        if (item->model == this)
+        {
+            uriRes = item->uri();
+        }
+    }
+
+    return uriRes;
+}
+
+bool medSourceItemModel::setAdditionnalMetaData2(QModelIndex const & index, datasetAttributes4 const & attributes)
+{
+    bool bRes = false;
+
+    if (index.isValid())
+    {
+        medDataModelItem *pItem = getItem(index);
+        if(pItem->model == this)
+        {
+            pItem->setMetaData(attributes.values, attributes.tags);
+            bRes = true;
+        }
+    }
+
+    return bRes;
+}
+
+bool medSourceItemModel::setAdditionnalMetaData2(QModelIndex const & index, QString const & key, QVariant const & value, QString const & tag)
+{
+    bool bRes = false;
+
+    if (index.isValid())
+    {
+        medDataModelItem *pItem = getItem(index);
+        if (pItem->model == this)
+        {
+            pItem->itemMeta[key] = value;
+            if (tag.isEmpty())
+            {
+                pItem->itemMetaTag.remove(key);
+            }
+            else
+            {
+                pItem->itemMetaTag[key] = tag;
+            }
+            bRes = true;
+        }
+    }
+
+    return bRes;
+}
+
+bool medSourceItemModel::additionnalMetaData2(QModelIndex const & index, datasetAttributes4 & attributes)
+{
+    bool bRes = false;
+
+    if (index.isValid())
+    {
+        medDataModelItem *pItem = getItem(index);
+        if (pItem->model == this)
+        {
+            attributes.values = pItem->itemMeta;
+            attributes.tags = pItem->itemMetaTag;
+            bRes = true;
+        }
+    }
+
+    return bRes;
+}
+
+bool medSourceItemModel::additionnalMetaData2(QModelIndex const & index, QString const & key, QVariant & value, QString & tag)
+{
+    bool bRes = false;
+
+    if (index.isValid())
+    {
+        medDataModelItem *pItem = getItem(index);
+        if (pItem->model == this && pItem->itemMeta.contains(key))
+        {
+            value = pItem->itemMeta[key];
+            tag   = pItem->itemMetaTag.value(key);
+            bRes  = true;
+        }
+    }
+
+    return bRes;
+}
+
 /**
 * @brief  This slot refresh the current item pressed by GUI click, if the item don't have sons.
 * @param  index of the GUI element clicked.
@@ -391,21 +638,31 @@ void medSourceItemModel::itemPressed(QModelIndex const &index)
             auto key = pItemCurrent->iid();
             populateLevel(index, key);
         }
+        QString uri = pItemCurrent->uri();
+        QModelIndex index2 = toIndex(uri);
+        void* ptr = index2.internalPointer();
+        QString uri2 = toUri(index2);
+
     }
 }
 
 bool medSourceItemModel::currentLevelFetchable(medDataModelItem * pItemCurrent)
 {
     bool bRes = pItemCurrent->canHaveSubData();
-    
-    unsigned int uiLevelMax = 0;
-
-    bRes &= d->parent->getLevelCount(d->sourceInstanceId, uiLevelMax);
-    if (uiLevelMax != 0)
+    if (pItemCurrent->level()==-1)
     {
-        bRes &= static_cast<unsigned int>(pItemCurrent->level()) < uiLevelMax-1;
+        bRes = true;
     }
+    else
+    {
+        unsigned int uiLevelMax = 0;
 
+        bRes &= d->parent->levelCount(d->sourceInstanceId, uiLevelMax);
+        if (uiLevelMax != 0)
+        {
+            bRes &= static_cast<unsigned int>(pItemCurrent->level()) < uiLevelMax - 1;
+        }
+    }
     return bRes;
 }
 
@@ -414,18 +671,30 @@ bool medSourceItemModel::currentLevelFetchable(medDataModelItem * pItemCurrent)
 /* ***********************************************************************/
 /* *************** Private functions and slots ***************************/
 /* ***********************************************************************/
-bool medSourceItemModel::fetchColumnNames(const QModelIndex &index/*int const &m_iLevel*/)
+bool medSourceItemModel::fetchColumnNames(const QModelIndex &index/*int const &iLevel*/)
 {
     bool bRes = true;
     
     QStringList attributes;
     auto item = getItem(index);
-    bRes = d->parent->getLevelAttributes(d->sourceInstanceId, item->level()+1, attributes);
-    attributes.pop_front();
+    bRes = d->parent->mandatoryAttributesKeys(d->sourceInstanceId, item->level()+1, attributes);
+    //attributes.pop_front(); //To remove the key of minimal entries structure
     
     if (bRes)
     {
         d->columnNameByLevel[item->level()+1] = attributes;
+        attributes.pop_front(); //To remove the key of minimal entries structure
+        
+        QString firstSectionName = attributes.takeFirst();
+        if(d->sectionNames.isEmpty())
+        {
+            d->sectionNames.push_back(firstSectionName);
+        }
+        else if ( !d->sectionNames[0].contains(firstSectionName, Qt::CaseInsensitive))
+        {
+            d->sectionNames[0] = d->sectionNames[0] + " | " + firstSectionName;
+        }
+
         for (auto attribute : attributes)
         {
             if (!d->sectionNames.contains(attribute))
@@ -442,12 +711,18 @@ bool medSourceItemModel::fetchColumnNames(const QModelIndex &index/*int const &m
 
 void medSourceItemModel::populateLevel(QModelIndex const &index, QString const &key)
 {
-    QVariantList entries;
+    //QVariantList entries; //QList<QList<QString>> list of entries of the given level, each entry has a list of 3 elements {key, name, description}. Key is never displayed, only used to fetch sub-level and used has unique key
+    QList<QMap<QString, QString>> entries;
     medDataModelItem *pItem = getItem(index);
 
     int iLevel = pItem->level()+1;
 
-    if (d->parent->getLevelMetaData(d->sourceInstanceId, iLevel, key, entries))
+    if (!d->columnNameByLevel.contains(iLevel))
+    {
+        fetchColumnNames(index);
+    }
+
+    if (d->parent->attributesForBuildTree(d->sourceInstanceId, iLevel, key, entries))
     {
         if (entries.size() > 0)
         {
@@ -459,22 +734,27 @@ void medSourceItemModel::populateLevel(QModelIndex const &index, QString const &
                 beginInsertRows(index.siblingAtColumn(0), row, row + elemCount - 1);
             }
 
-            // ////////////////////////////////////////////////////////////////////////
-            // Populate column names if not already done
-            if (!d->columnNameByLevel.contains(iLevel))
-            {
-                fetchColumnNames(index/*iLevel*/);
-            }
 
             // ////////////////////////////////////////////////////////////////////////
             // Populate data loop
-            for (QVariant &var : entries)
+            for (QMap<QString, QString> &var : entries)
             {
-                medDataModelItem *pItemTmp = new medDataModelItem(this);
-                auto elem = var.toStringList();
-                for (int i = 0; i < elem.size(); ++i)
+                medDataModelItem *pItemTmp = new medDataModelItem(this);              
+                for (QString k : var.keys())
                 {
-                    pItemTmp->setData(elem[i], i);
+                    int iCol = d->columnNameByLevel[iLevel].indexOf(k);
+                    if (iCol == -1)
+                    {
+                        d->columnNameByLevel[iLevel].push_back(k);
+                        if (!d->sectionNames.contains(k))
+                        {
+                            qDebug() << "[WARN] Unknown column name " << k << " from getMandatoryAttributesKeys in datasource " << d->sourceInstanceId << " at level " << iLevel-1;                            
+                            d->sectionNames.push_back(k);
+                            emit columnCountChange(d->sectionNames.size());
+                            iCol = d->columnNameByLevel[iLevel].size()-1;
+                        }
+                    }
+                    pItemTmp->setData(var[k], iCol);
                 }
                 pItemTmp->setParent(pItem);
                 pItem->append(pItemTmp);
@@ -489,13 +769,21 @@ void medSourceItemModel::populateLevel(QModelIndex const &index, QString const &
     }
 }
 
-void medSourceItemModel::populateLevelV2(QModelIndex const & index, QString const & uri)
+void medSourceItemModel::populateLevelV2(QModelIndex const & index, QString const & key)
 {
-    QVariantList entries;
+    //QVariantList entries; //QList<QList<QString>> list of entries of the given level, each entry has a list of 3 elements {key, name, description}. Key is never displayed, only used to fetch sub-level and used has unique key
+    
+    QList<QMap<QString, QString>> entries;
     medDataModelItem *pItem = getItem(index);
     int iLevel = pItem->level() + 1;
 
-    if (d->parent->getLevelMetaData(d->sourceInstanceId, iLevel, uri, entries))
+
+    if (!d->columnNameByLevel.contains(iLevel))
+    {
+        fetchColumnNames(index);
+    }
+
+    if (d->parent->attributesForBuildTree(d->sourceInstanceId, iLevel, key, entries))
     {
         emit layoutAboutToBeChanged(); //this is useful to update arrow on the left if click is not inside
 
@@ -505,7 +793,7 @@ void medSourceItemModel::populateLevelV2(QModelIndex const & index, QString cons
 
         //TODO Update data already present inside the model
 
-        QMap<int, QVariantList> entriesToAdd; //position to insert, List of QVariant, itself QVariantList representation of minimal entries
+        QMap<int, QList<QMap<QString, QString>>> entriesToAdd; //position to insert, List of QVariant, itself QVariantList representation of minimal entries
         computeRowRangesToAdd(pItem, entries, entriesToAdd);
         addRowRanges(entriesToAdd, index);
 
@@ -514,7 +802,7 @@ void medSourceItemModel::populateLevelV2(QModelIndex const & index, QString cons
 }
 
 
-bool medSourceItemModel::itemStillExist(QVariantList &entries, medDataModelItem * pItem)
+bool medSourceItemModel::itemStillExist(QList<QMap<QString, QString>> &entries, medDataModelItem * pItem)
 {
     bool bFind = false;
 
@@ -522,14 +810,14 @@ bool medSourceItemModel::itemStillExist(QVariantList &entries, medDataModelItem 
     auto end = entries.end();
     while ((it != end) && !bFind)
     {
-        bFind = pItem->iid() == (*it).toStringList()[0];
+        bFind = pItem->iid() == (*it).first();// [(*it).keys[0]]; //(*it).values()[0];
         ++it;
     }
 
     return bFind;
 }
 
-void medSourceItemModel::computeRowRangesToRemove(medDataModelItem * pItem, QVariantList &entries, QVector<QPair<int, int>> &rangeToRemove)
+void medSourceItemModel::computeRowRangesToRemove(medDataModelItem * pItem, QList<QMap<QString, QString>> &entries, QVector<QPair<int, int>> &rangeToRemove)
 {
     int iStartRemoveRange = -1;
     for (int i = 0; i < pItem->childCount(); ++i)
@@ -574,12 +862,12 @@ void medSourceItemModel::removeRowRanges(QVector<QPair<int, int>> &rangeToRemove
 
 
 
-void medSourceItemModel::computeRowRangesToAdd(medDataModelItem * pItem, QVariantList &entries, QMap<int, QVariantList> &entriesToAdd)
+void medSourceItemModel::computeRowRangesToAdd(medDataModelItem * pItem, QList<QMap<QString, QString>> &entries, QMap<int, QList<QMap<QString, QString>>> &entriesToAdd)
 {
     int  iLastItemAlreadyPresent = -1;
-    for (QVariant &var : entries)
+    for (QMap<QString, QString> &var : entries)
     {
-        int iTmpLastItemAlreadyPresent = pItem->childIndex(var.toStringList()[0]);
+        int iTmpLastItemAlreadyPresent = pItem->childIndex(var.first());
 
         if (iTmpLastItemAlreadyPresent == -1)
         {
@@ -592,11 +880,12 @@ void medSourceItemModel::computeRowRangesToAdd(medDataModelItem * pItem, QVarian
     }
 }
 
-void medSourceItemModel::addRowRanges(QMap<int, QVariantList> &entriesToAdd, const QModelIndex & index)
+void medSourceItemModel::addRowRanges(QMap<int, QList<QMap<QString, QString>>> &entriesToAdd, const QModelIndex & index)
 {
     int iOffsetRange = 0;
     auto startRangeList = entriesToAdd.keys();
     medDataModelItem *pItem = getItem(index);
+    int iLevel = pItem->level() + 1;
     for (int i = 0; i < startRangeList.size(); ++i)
     {
         int first = startRangeList[i] ;
@@ -605,20 +894,54 @@ void medSourceItemModel::addRowRanges(QMap<int, QVariantList> &entriesToAdd, con
 
         // ////////////////////////////////////////////////////////////////////////
         // Populate data loop
-        for (QVariant &var : entriesToAdd[startRangeList[i]])
+        for (QMap<QString, QString> &var : entriesToAdd[startRangeList[i]])
         {
             medDataModelItem *pItemTmp = new medDataModelItem(this);
-            auto elem = var.toStringList();
-            for (int i = 0; i < elem.size(); ++i)
+            for (QString k : var.keys())
             {
-                pItemTmp->setData(elem[i], i);
+                int iCol = d->columnNameByLevel[iLevel].indexOf(k);
+                if (iCol == -1)
+                {
+                    d->columnNameByLevel[iLevel].push_back(k);
+                    if (!d->sectionNames.contains(k))
+                    {
+                        qDebug() << "[WARN] Unknown column name " << k << " from getMandatoryAttributesKeys in datasource " << d->sourceInstanceId << " at level " << iLevel-1;
+                        d->sectionNames.push_back(k);
+                        emit columnCountChange(d->sectionNames.size());
+                        iCol = d->columnNameByLevel[iLevel].size()-1;
+                    }
+                }
+                pItemTmp->setData(var[k], iCol);
             }
             pItemTmp->setParent(pItem);
-            pItem->insert(first+iOffsetRange, pItemTmp);
+            pItem->insert(first + iOffsetRange, pItemTmp);            
         }
         iOffsetRange += first + last;
 
         endInsertRows();
+    }
+}
+
+void medSourceItemModel::expandAll(QModelIndex index, QString key)
+{
+    auto item = getItem(index);
+    if (currentLevelFetchable(item))
+    {
+        populateLevelV2(index, key);
+
+        for (auto childItem : item->childItems)
+        {
+            QString uri = childItem->uri();
+
+            int sourceDelimterIndex = uri.indexOf(QString(":"));
+            QStringList uriAsList = uri.right(uri.size() - sourceDelimterIndex - 1).split(QString("\r\n"));
+            uriAsList.push_front(uri.left(sourceDelimterIndex));
+
+            uriAsList[uriAsList.size() - 1];
+
+            QModelIndex childIndex = toIndex(uri);
+            expandAll(childIndex, uriAsList[uriAsList.size() - 1]);
+        }
     }
 }
 

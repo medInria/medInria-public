@@ -859,6 +859,31 @@ void DCMTKImageIO::InternalRead (void* buffer, int slice, unsigned long pixelCou
     }
 }
 
+std::map<std::string, std::vector<std::string>> DCMTKImageIO::GetMetaData() const
+{
+    std::map<std::string, std::vector<std::string>> metaDataMap;
+
+    const itk::MetaDataDictionary & dictionary = this->GetMetaDataDictionary();
+
+    using MetaDataStringType = itk::MetaDataObject<std::string>;
+    auto itr = dictionary.Begin();
+    auto end = dictionary.End();
+
+    while (itr != end)
+    {
+        itk::MetaDataObjectBase::Pointer entry = itr->second;
+
+        MetaDataVectorStringType::Pointer entryvalue = dynamic_cast<MetaDataVectorStringType*>(entry.GetPointer());
+
+        if (entryvalue)
+        {
+            metaDataMap[itr->first] = entryvalue->GetMetaDataObjectValue();
+        }
+        ++itr;
+    }
+
+    return metaDataMap;
+}
 
 std::string DCMTKImageIO::GetPatientName() const
 {

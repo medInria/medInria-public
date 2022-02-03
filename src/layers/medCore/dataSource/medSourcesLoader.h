@@ -32,7 +32,7 @@ class MEDCORE_EXPORT medDBSourcesLoader : public QObject
     using instantiateSource = medAbstractSource * (*)();
 
 public:	
-    static medDBSourcesLoader* instance();
+    static medDBSourcesLoader* instance(QObject *parent = nullptr);
     ~medDBSourcesLoader();
 	
     /* ***********************************************************************/
@@ -54,11 +54,12 @@ public:
 	medAbstractSource*        getSource(QString const & instanceId);
     bool                      renameSource(QString const & instanceId, QString const & name);
 	
-	bool loadFromDisk(); //call after each add or remove source instance, each call to the destructor. Must be crytographied
-private:
-    medDBSourcesLoader();
+	bool loadFromDisk(); //call after each add or remove source instance, each call to the destructor. Must be cryptographied
 
-    bool saveToDisk();   //call after each add or remove source instance, each call to the destructor. Must be crytographied
+private:
+    medDBSourcesLoader(QObject *parent = nullptr);
+
+    bool saveToDisk();   //call after each add or remove source instance, each call to the destructor. Must be cryptographied
     
 
     void reloadCnx(QJsonObject &obj);
