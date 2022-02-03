@@ -85,16 +85,17 @@ endif()
 ## #############################################################################
 
 unset(CMAKE_BUILD_TYPE CACHE)
-set(CMAKE_BUILD_TYPE_externals_projects Release CACHE STRING "Build type configuration for externals projects libraries.")
-set(CMAKE_BUILD_TYPE_medInria Debug CACHE STRING "Build type configuration specific to medInria.")
+
+set(CMAKE_BUILD_TYPE_medInria  Debug  CACHE STRING "Build type configuration specific to medInria.")
+set(CMAKE_BUILD_TYPE_ExtProjs Release CACHE STRING "Build type configuration for externals projects libraries.")
 
 ## #############################################################################
-## medInria dirs.
+## medInria dirs
 ## #############################################################################
+
 set(medInria_SOURCE_DIR ${CMAKE_SOURCE_DIR}/src)
 set(medInria_BINARY_DIR ${CMAKE_BINARY_DIR}/medInria-build)
 set(medInria_STAMP_DIR ${CMAKE_BINARY_DIR}/medInria-stamp)
-
 
 ## #############################################################################
 ## Add modules
