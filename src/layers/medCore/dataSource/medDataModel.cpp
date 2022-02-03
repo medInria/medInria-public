@@ -13,7 +13,9 @@
 
 #include <medDataModel.h>
 #include <medDataImporter.h>
+#include <medDataExporter.h>
 
+#include <QTemporaryDir>
 #include <QModelIndex>
 
 medDataModel *medDataModel::s_instance = nullptr;
@@ -341,6 +343,30 @@ QUuid medDataModel::saveData(medAbstractData &data)
         parentUri = parentData->dataIndex().uri();
         parentUri.pop_back();
     }
+
+    auto pSource = m_sourceIdToInstanceMap[parentUri[0]];
+    QTemporaryDir tmpDir;
+    if (tmpDir.isValid())
+    {
+        QString fullTmpPath = tmpDir.path()/*+ dataName*/;
+        bool bWritableData = medDataExporter::convertSingleDataOnfly(&data, fullTmpPath);
+        if (bWritableData)
+        {
+
+
+        }
+
+    }
+
+    // ////////////////////////////////////////////////////////////////////////
+    // Adding dataset to the source
+    //QVariant dataset;
+    //dataset.setValue(pi_dataset);
+    //datasetAttributes mandatoryAttributes;
+    //medAbstractSource::datasetAttributes4 additionalAttributes;
+    ////TODO get mandatory & additional attributes for dataset ?
+    //QString key = pSource->addData(dataset, sourceUri, mandatoryAttributes, additionalAttributes);
+
     return QUuid();
 }
 

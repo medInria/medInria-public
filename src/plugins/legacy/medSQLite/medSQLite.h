@@ -90,8 +90,7 @@ public:
 
     int getAssyncData(unsigned int pi_uiLevel, QString id) override;
     
-    QString addData(QVariant data, QString parentUri, QMap<QString,
-                 QString> mandatoryAttributes, datasetAttributes4 additionalAttributes) override;
+    QString addData(QVariant data, QString parentUri, QString name) override;
 
 public slots:
     void abort(int pi_iRequest) override;
@@ -117,8 +116,7 @@ private:
 
     QString addDataToPatientLevel(QMap<QString, QString> &mandatoryAttributes);
     QString addDataToStudyLevel(QMap<QString, QString> mandatoryAttributes);
-    QString addDataToSeriesLevel(const QVariant& dataset, QMap<QString, QString> mandatoryAttributes,
-                                 medAbstractSource::datasetAttributes4 additionalAttributes);
+    QString addDataToSeriesLevel(const QVariant& dataset,const QString & name,const QString &studyId);
 private:
     // members
     T m_Engine;

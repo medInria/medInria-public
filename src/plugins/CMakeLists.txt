@@ -77,7 +77,7 @@ set(PLUGIN_LIST
   legacy/vtkDataMesh                                                     ON
   legacy/medExportVideo                                                  ON
   legacy/medSQLite                                                       ON
-  legacy/medAPHPDataSource                                               ON
+  legacy/medAPHPDataSource                                               OFF
   legacy/medTemporaryDataSource                                          ON
   process/arithmetic_operation                                           ON
   process/bias_correction                                                ON
