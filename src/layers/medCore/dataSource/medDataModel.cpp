@@ -266,7 +266,7 @@ medAbstractData * medDataModel::getData(medDataIndex const & index)
             else if (data.canConvert<QString>())
             {
                 pDataTmp = medDataImporter::convertSingleDataOnfly(data.toString());
-
+                pDataTmp->setDataIndex(index);
             }
             else if (data.canConvert<QByteArray>())
             {
@@ -309,7 +309,6 @@ medDataModel::datasetAttributes medDataModel::getMetaData(QModelIndex const & in
     return metaRes;
 }
 
-
 void medDataModel::addSource(medAbstractSource * pi_source)
 {
     if (pi_source)
@@ -333,6 +332,18 @@ void medDataModel::removeSource(medAbstractSource * pi_source)
     }
 }
 
+QUuid medDataModel::saveData(medAbstractData &data)
+{
+    QStringList parentUri;
+    if (!data.parentData().isEmpty())
+    {
+        auto parentData = data.parentData()[0];
+        parentUri = parentData->dataIndex().uri();
+        parentUri.pop_back();
+    }
+    return QUuid();
+}
+
 void medDataModel::addData(medAbstractData * pi_dataset, QString uri)
 {
     QStringList splittedUri;
@@ -347,11 +358,14 @@ void medDataModel::addData(medAbstractData * pi_dataset, QString uri)
     // Adding dataset to the source
     QVariant dataset;
     dataset.setValue(pi_dataset);
-    bool bContinue = pSource->addData(dataset, sourceUri);
+    datasetAttributes mandatoryAttributes;
+    medAbstractSource::datasetAttributes4 additionalAttributes;
+    //TODO get mandatory & additional attributes for dataset ?
+    QString key = pSource->addData(dataset, sourceUri, mandatoryAttributes, additionalAttributes);
 
     // ////////////////////////////////////////////////////////////////////////
     // Refresh dataModelElement
-    if (bContinue)
+    if (!key.isEmpty())
     {
         m_sourcesModelMap[pSource]->fetch(sourceUri.left(sourceUri.lastIndexOf('/')));
     }
@@ -415,3 +429,4 @@ void medDataModel::expandAll(const QString &sourceInstanceId)
         m_sourcesModelMap[pSource]->expandAll();
     }
 }
+

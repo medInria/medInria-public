@@ -578,8 +578,10 @@ void polygonLabel::createMask(int label, QString &desc)
             }
         }
     }
-    medUtilities::setDerivedMetaData(output, inputData, desc, false, false);
 
+    output->addParentData(inputData);
+
+    medUtilities::setDerivedMetaData(output, inputData, desc, false, false);
     medDataManager::instance()->importData(output, false);
 }
 

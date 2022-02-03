@@ -79,6 +79,7 @@ public:
     QHash<QUuid, medDataIndex> makePersistentJobs;
 
     medAbstractData *(*f)(medDataIndex const &); //TODO Remove ok c'est le truc le moins classe du monde (Part1)
+    QUuid (*f2)(medAbstractData &); //TODO Remove ok c'est le truc le moins classe du monde (Part1)
 };
 
 // ------------------------- medDataManager -----------------------------------
@@ -94,9 +95,10 @@ medDataManager *medDataManager::instance()
     return s_instance;
 }
 
-void medDataManager::setIndexV2Handler(medAbstractData *(*f)(medDataIndex const &) )
+void medDataManager::setIndexV2Handler(medAbstractData *(*f)(medDataIndex const &), QUuid (*f2)(medAbstractData &))
 {
     d_ptr->f = f;
+    d_ptr->f2 = f2;
 }
 
 medAbstractData *medDataManager::retrieveData(const medDataIndex &index)
@@ -188,15 +190,23 @@ void medDataManager::loadData(const medDataIndex &index)
 
 QUuid medDataManager::importData(medAbstractData *data, bool persistent)
 {
+    QUuid uuid;
     if (!data)
         return QUuid();
-
     Q_D(medDataManager);
-    QUuid uuid = QUuid::createUuid();
-    medAbstractDbController *controller =
-        persistent ? d->dbController : d->nonPersDbController;
-    qDebug() << "generated uuid " << uuid.toString();
-    controller->importData(data, uuid);
+
+    if (data->dataIndex().isV2())
+    {
+        uuid = d->f2(*data);
+    }
+    else
+    {
+        uuid = QUuid::createUuid();
+        medAbstractDbController *controller =
+                persistent ? d->dbController : d->nonPersDbController;
+        qDebug() << "generated uuid " << uuid.toString();
+        controller->importData(data, uuid);
+    }
     return uuid;
 }
 

@@ -67,6 +67,7 @@ public:
     // Members functions to get Data, metadata and informations
     medAbstractData * getData(medDataIndex const & index);
     datasetAttributes getMetaData(QModelIndex const & index); //TODO Rename
+    QUuid saveData(medAbstractData &data);
 
     void expandAll(const QString &sourceInstanceId);
 

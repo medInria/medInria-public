@@ -150,7 +150,8 @@ QWidget* medDatabaseDataSource::compactViewWidget()
         auto filterLabel = new QLabel("Filter ");
         auto filterLineEdit = new QLineEdit();
 
-        medDataManager::instance()->setIndexV2Handler([](medDataIndex const & dataIndex) -> medAbstractData* {return medDataModel::instance()->getData(dataIndex); });//TODO Remove ok c'est le truc le moins classe du monde (Part3)
+        medDataManager::instance()->setIndexV2Handler([](medDataIndex const & dataIndex) -> medAbstractData* {return medDataModel::instance()->getData(dataIndex); },
+                                                      [](medAbstractData & data) -> QUuid {return medDataModel::instance()->saveData(data); return QUuid();});//TODO Remove ok c'est le truc le moins classe du monde (Part3)
         d->compactView = d->multiSources_tree->buildTree();
 
         connect(filterLineEdit, SIGNAL(textChanged(const QString &)), d->multiSources_tree, SIGNAL(filterProxy(const QString &)));
