@@ -21,6 +21,8 @@ endif()
 
 project(medInria VERSION ${medInria_VERSION})
 
+cmake_policy(SET CMP0076 NEW)
+
 string(TOUPPER ${PROJECT_NAME} PROJECT_NAME_UP)
 
 set(${PROJECT_NAME}_IDENTIFIER fr.inria.${PROJECT_NAME})

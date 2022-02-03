@@ -99,7 +99,6 @@ set(cmake_cache_args
   )
 
 
-#message("+++++ ${GTEST_INCLUDE_DIRS}")
 if (${USE_FFmpeg})
   list(APPEND cmake_args
   -DUSE_FFmpeg=${USE_FFmpeg})
