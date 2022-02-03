@@ -55,6 +55,8 @@ public:
 
     bool isOnline() override;
 
+    bool isFetchByMinimalEntriesOrMandatoryAttributes() override;
+
     /* ***********************************************************************/
     /* *************** Get source structure information **********************/
     /* ***********************************************************************/
@@ -70,26 +72,25 @@ public:
 
     QStringList getMandatoryAttributesKeys(unsigned int pi_uiLevel) override;
 
-    QStringList getAdditionalAttributesKeys(unsigned int pi_uiLevel) override;
-
 
     /* ***********************************************************************/
     /* *************** Get elements data *************************************/
     /* ***********************************************************************/
     QList<levelMinimalEntries> getMinimalEntries(unsigned int pi_uiLevel, QString parentId) override;
 
-    QList<QMap<QString, QString>> getMandatoryAttributes(unsigned int pi_uiLevel, int id) override;
+    QList<QMap<QString, QString>> getMandatoryAttributes(unsigned int pi_uiLevel, QString parentId) override;
 
-    QList<QMap<QString, QString>> getAdditionalAttributes(unsigned int pi_uiLevel, int id) override;
+    bool getAdditionalAttributes(unsigned int pi_uiLevel, QString id, datasetAttributes4 &po_attributes) override;
 
     /* ***********************************************************************/
     /* *************** Get data          *************************************/
     /* ***********************************************************************/
-    QString getDirectData(unsigned int pi_uiLevel, QString key) override;
+    QVariant getDirectData(unsigned int pi_uiLevel, QString key) override;
 
     int getAssyncData(unsigned int pi_uiLevel, QString id) override;
-    
-    bool addData(void* data, QString uri) override;
+
+    QString addData(QVariant data, QString parentUri, QMap<QString,
+            QString> mandatoryAttributes, datasetAttributes4 additionalAttributes) override;
 
 public slots:
     void abort(int pi_iRequest) override;

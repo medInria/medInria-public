@@ -15,11 +15,6 @@
 #include <PluginAPHP/QtDcmAPHP.h>
 #include <QObject>
 
-//#include <QNetworkRequest>
-//#include <QUrl>
-//#include <QHttpMultiPart>
-//#include <QFile>
-
 medAPHP::medAPHP(QtDcmInterface *dicomLib, medAbstractAnnotation *annotationAPI):
                     m_LevelNames({"PATIENT","STUDY","SERIES","ANNOTATION"}),
                     m_isOnline(false), m_DicomLib(dicomLib), m_AnnotationAPI(annotationAPI)
@@ -136,6 +131,11 @@ bool medAPHP::isOnline()
     return m_isOnline;
 }
 
+bool medAPHP::isFetchByMinimalEntriesOrMandatoryAttributes()
+{
+    return false;
+}
+
 QString medAPHP::getInstanceName()
 {
     return m_instanceName;
@@ -181,20 +181,20 @@ QStringList medAPHP::getMandatoryAttributesKeys(unsigned int pi_uiLevel)
     }
 }
 
-QStringList medAPHP::getAdditionalAttributesKeys(unsigned int pi_uiLevel)
-{
-    switch (pi_uiLevel)
-    {
-        case 0:
-            return {"Birthdate", "Gender"};
-        case 1:
-            return {"Date"};
-        case 2:
-            return {"Modality", "Date"};
-        default:
-            return QStringList();
-    }
-}
+//QStringList medAPHP::getAdditionalAttributesKeys(unsigned int pi_uiLevel)
+//{
+//    switch (pi_uiLevel)
+//    {
+//        case 0:
+//            return {"Birthdate", "Gender"};
+//        case 1:
+//            return {"Date"};
+//        case 2:
+//            return {"Modality", "Date"};
+//        default:
+//            return QStringList();
+//    }
+//}
 
 QList<medAbstractSource::levelMinimalEntries> medAPHP::getMinimalEntries(unsigned int pi_uiLevel, QString parentId)
 {
@@ -281,19 +281,19 @@ QList<medAbstractSource::levelMinimalEntries> medAPHP::getMinimalEntries(unsigne
 
 }
 
-QList<QMap<QString, QString>> medAPHP::getMandatoryAttributes(unsigned int pi_uiLevel, int id)
+QList<QMap<QString, QString>> medAPHP::getMandatoryAttributes(unsigned int pi_uiLevel, QString parentId)
 {
     return {};
 }
 
-QList<QMap<QString, QString>> medAPHP::getAdditionalAttributes(unsigned int pi_uiLevel, int id)
+bool medAPHP::getAdditionalAttributes(unsigned int pi_uiLevel, QString id, datasetAttributes4 &po_attributes)
 {
-    return {};
+    return false;
 }
 
-QString medAPHP::getDirectData(unsigned int pi_uiLevel, QString key)
+QVariant medAPHP::getDirectData(unsigned int pi_uiLevel, QString key)
 {
-    QString retPath;
+    QVariant res;
     int requestId = getAssyncData(pi_uiLevel, key);
 
     timer.setSingleShot(true);
@@ -306,16 +306,16 @@ QString medAPHP::getDirectData(unsigned int pi_uiLevel, QString key)
     QObject::connect(m_DicomLib, &QtDcmInterface::pathToData, &loop, [&](int id, const QString& path) {
         if (requestId == id)
         {
-            retPath = path;
+            res = QVariant(path);
             loop.quit();
         }
     });
     int status = loop.exec();
     if (status == 0)
     {
-        qDebug()<<"Ok path to Data = "<<retPath;
+        qDebug()<<"Ok path to Data = "<<res.toString();
     }
-    return retPath;
+    return res;
 }
 
 int medAPHP::getAssyncData(unsigned int pi_uiLevel, QString id)
@@ -428,9 +428,10 @@ int medAPHP::getQtDcmAsyncData(unsigned int pi_uiLevel, const QString &id)
     return iRes;
 }
 
-bool medAPHP::addData(void *data, QString uri)
+QString medAPHP::addData(QVariant data, QString parentUri, QMap<QString,
+        QString> mandatoryAttributes, datasetAttributes4 additionalAttributes)
 {
-    return false;
+    return "";
 }
 
 void medAPHP::abort(int pi_iRequest)

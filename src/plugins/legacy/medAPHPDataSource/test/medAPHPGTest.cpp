@@ -251,42 +251,6 @@ TEST_F(medAPHPGTest, test_mandatory_attr_keys_invalid_level_failed)
     EXPECT_EQ(QStringList(), m_->getMandatoryAttributesKeys(level));
 }
 
-TEST_F(medAPHPGTest, test_additional_attr_keys_1st_level_success)
-{
-    int level = 0;
-    QStringList additional_keys;
-    additional_keys << "Birthdate" << "Gender";
-    EXPECT_EQ(additional_keys, m_->getAdditionalAttributesKeys(level));
-}
-
-TEST_F(medAPHPGTest, test_additional_attr_keys_2nd_level_success)
-{
-    int level = 1;
-    QStringList additional_keys;
-    additional_keys << "Date";
-    EXPECT_EQ(additional_keys, m_->getAdditionalAttributesKeys(level));
-}
-
-TEST_F(medAPHPGTest, test_additional_attr_keys_3rd_level_success)
-{
-    int level = 2;
-    QStringList additional_keys;
-    additional_keys << "Modality" << "Date";
-    EXPECT_EQ(additional_keys, m_->getAdditionalAttributesKeys(level));
-}
-
-TEST_F(medAPHPGTest, test_additional_attr_keys_negative_level_failed)
-{
-    int level = -1;
-    EXPECT_EQ(QStringList(), m_->getAdditionalAttributesKeys(level));
-}
-
-TEST_F(medAPHPGTest, test_additional_attr_keys_invalid_level_failed)
-{
-    int level = 3;
-    EXPECT_EQ(QStringList(), m_->getAdditionalAttributesKeys(level));
-}
-
 TEST_F(medAPHPGTest, test_get_minimal_entries_level_patient_failed_QtDCM_return_empty_array)
 {
     QList<QMap<QString, QString>> foo;

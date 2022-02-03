@@ -29,9 +29,9 @@ add_definitions(-D${TARGET_NAME_UP}_VERSION="${${TARGET_NAME}_VERSION}")
 ## Resolve dependencies
 ## #############################################################################
 
-enable_testing(true)
-FIND_PACKAGE(GTest REQUIRED)
-FIND_PACKAGE(Qt5Test REQUIRED)
+#enable_testing(true)
+#FIND_PACKAGE(GTest REQUIRED)
+#FIND_PACKAGE(Qt5Test REQUIRED)
 
 find_package(DCMTK REQUIRED NO_MODULE)
 
@@ -104,37 +104,37 @@ target_link_libraries(${TARGET_NAME}
 ## #############################################################################
 ## GTEST
 ## #############################################################################
-set(TARGET_NAME_TEST ${TARGET_NAME}GTest)
-
-add_executable(${TARGET_NAME_TEST})
-target_sources(${TARGET_NAME_TEST} PUBLIC medAPHP.cpp sphereDicomWeb/medAnnotation.cpp test/medAPHPGTest.cpp )
-target_include_directories(${TARGET_NAME_TEST} PUBLIC "." "./test/")
-set_target_properties(${TARGET_NAME_TEST} PROPERTIES COMPILE_DEFINITIONS "GTEST_LINKED_AS_SHARED_LIBRARY=1")
-target_link_libraries(${TARGET_NAME_TEST} PUBLIC
-        GTest::gtest_main
-        GTest::gtest
-        GTest::gmock_main
-        GTest::gmock
-        medCore
-        ${TARGET_NAME}
-        ${QTDCM_LIBRARIES}
-        ${DCMTK_LIBRARIES}
-        )
-
-## #############################################################################
-## QTEST
-## #############################################################################
-set(TARGET_NAME_QTEST ${TARGET_NAME}QTest)
-add_executable(${TARGET_NAME_QTEST})
-target_sources(${TARGET_NAME_QTEST} PUBLIC medAPHP.cpp sphereDicomWeb/medAnnotation.cpp test/medAPHPQTest.cpp)
-target_include_directories(${TARGET_NAME_QTEST} PUBLIC "." "./test/")
-target_link_libraries(${TARGET_NAME_QTEST} PUBLIC
-        Qt5::Test
-        medCore
-        ${TARGET_NAME}
-        ${QTDCM_LIBRARIES}
-        ${DCMTK_LIBRARIES}
-        )
+#set(TARGET_NAME_TEST ${TARGET_NAME}GTest)
+#
+#add_executable(${TARGET_NAME_TEST})
+#target_sources(${TARGET_NAME_TEST} PUBLIC medAPHP.cpp sphereDicomWeb/medAnnotation.cpp test/medAPHPGTest.cpp )
+#target_include_directories(${TARGET_NAME_TEST} PUBLIC "." "./test/")
+#set_target_properties(${TARGET_NAME_TEST} PROPERTIES COMPILE_DEFINITIONS "GTEST_LINKED_AS_SHARED_LIBRARY=1")
+#target_link_libraries(${TARGET_NAME_TEST} PUBLIC
+#        GTest::gtest_main
+#        GTest::gtest
+#        GTest::gmock_main
+#        GTest::gmock
+#        medCore
+#        ${TARGET_NAME}
+#        ${QTDCM_LIBRARIES}
+#        ${DCMTK_LIBRARIES}
+#        )
+#
+### #############################################################################
+### QTEST
+### #############################################################################
+#set(TARGET_NAME_QTEST ${TARGET_NAME}QTest)
+#add_executable(${TARGET_NAME_QTEST})
+#target_sources(${TARGET_NAME_QTEST} PUBLIC medAPHP.cpp sphereDicomWeb/medAnnotation.cpp test/medAPHPQTest.cpp)
+#target_include_directories(${TARGET_NAME_QTEST} PUBLIC "." "./test/")
+#target_link_libraries(${TARGET_NAME_QTEST} PUBLIC
+#        Qt5::Test
+#        medCore
+#        ${TARGET_NAME}
+#        ${QTDCM_LIBRARIES}
+#        ${DCMTK_LIBRARIES}
+#        )
 
 ## #############################################################################
 ## Install rules
