@@ -18,9 +18,8 @@ medSQLitePlugin::medSQLitePlugin(QObject *parent) : medPluginLegacy(parent)
 {
 }
 
-medAbstractSource *foo()
+medSQLitePlugin::~medSQLitePlugin()
 {
-    return new medSQlite<QSqlDatabase>();
 }
 
 bool medSQLitePlugin::initialize()

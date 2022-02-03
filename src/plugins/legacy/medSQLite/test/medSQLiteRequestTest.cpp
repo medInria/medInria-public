@@ -14,7 +14,7 @@
 #include "gmock/gmock.h"
 
 //#include "medSQLite.h"
-#include "medSQlitePluginTest.h"
+#include "medSQLiteTest.h"
 
 
 class medRequestTest : public ::testing::Test
@@ -59,8 +59,9 @@ TEST_F(medRequestTest, get_minimal_entries_failed_level_greater_than_level_count
 TEST_F(medRequestTest, get_minimal_entries_level_patient_call_getPatientMinimalEntries)
 {
     QList<medAbstractSource::levelMinimalEntries> entries;
-    EXPECT_CALL(m_, getPatientMinimalEntries()).Times(1);
-    entries = m_.getMinimalEntries(0,"patient");
+    QString id = "";
+    EXPECT_CALL(m_, getPatientMinimalEntries(id)).Times(1);
+    entries = m_.getMinimalEntries(0,id);
 }
 
 TEST_F(medRequestTest, get_minimal_entries_level_study_call_getStudyMinimalEntries)
@@ -104,7 +105,7 @@ TEST(requestDBTest, get_minimal_entries_level_patient_integration)
             query.exec();
         }
         QList<medAbstractSource::levelMinimalEntries> entries;
-        entries = t.getMinimalEntries(0,"0");
+        entries = t.getMinimalEntries(0,"");
 
         EXPECT_EQ(entries.size(), 3);
         int i = 0;
@@ -146,14 +147,14 @@ TEST(requestDBTest, get_minimal_entries_level_patient_invalid_key_succeed)
         QList<medAbstractSource::levelMinimalEntries> entries;
         entries = t.getMinimalEntries(0,"patient");
 
-        EXPECT_EQ(entries.size(), 3);
-        int i = 0;
-        for (auto entry : entries)
-        {
-            EXPECT_EQ(ids[i], entry.key);
-            EXPECT_EQ(names[i], entry.name);
-            EXPECT_EQ(patientIds[i++], entry.description);
-        }
+        EXPECT_EQ(entries.size(), 0);
+//        int i = 0;
+//        for (auto entry : entries)
+//        {
+//            EXPECT_EQ(ids[i], entry.key);
+//            EXPECT_EQ(names[i], entry.name);
+//            EXPECT_EQ(patientIds[i++], entry.description);
+//        }
         t.connect(false);
         dir.remove();
     }
@@ -325,19 +326,20 @@ TEST(requestDBTest, get_minimal_entries_level_series_invalid_key_failed)
 
 TEST_F(medRequestTest, get_direct_data_invalid_level_failed)
 {
-    QString path;
+    QVariant path;
     path = m_.getDirectData(1, "key");
-    EXPECT_EQ(path, "");
+    EXPECT_EQ(path, QVariant());
 }
 
 TEST_F(medRequestTest, get_direct_data_series_level_right_function_call)
 {
     int ui_level = 2;
-    QString key = "key";
+    QString key = "1";
     QString expected_value = "foo";
-    ON_CALL(m_, getSeriesDirectData(key)).WillByDefault(::testing::Return(expected_value));
-    EXPECT_CALL(m_, getSeriesDirectData(key)).Times(1);
-    EXPECT_EQ(m_.getDirectData(ui_level, key), m_.m_DbPath->value() +  expected_value);
+    QString path;
+    ON_CALL(m_, getSeriesDirectData(key, path)).WillByDefault(::testing::Return(true));
+    EXPECT_CALL(m_, getSeriesDirectData(key, path)).Times(1);
+    EXPECT_EQ(m_.getDirectData(ui_level, key), QVariant(m_.m_DbPath->value()));
 }
 
 TEST(requestDBTest, get_direct_data_level_series_invalid_key_failed)
@@ -364,7 +366,7 @@ TEST(requestDBTest, get_direct_data_level_series_invalid_key_failed)
         }
         QString key = "invalid_key";
         QString path;
-        EXPECT_EQ(path, t.getDirectData(2, key));
+        EXPECT_EQ(dir.path(), t.getDirectData(2, key));
         t.connect(false);
         dir.remove();
     }
@@ -393,9 +395,90 @@ TEST(requestDBTest, get_direct_data_level_series_valid_key_success)
             query.exec();
         }
         QString key = "10";
-        QString expected_path = dir.path() + "/path/to/data1";
-        EXPECT_EQ(expected_path, t.getDirectData(2, key));
+        EXPECT_EQ(dir.path() + "/path/to/data1", t.getDirectData(2, key));
         t.connect(false);
         dir.remove();
     }
 }
+
+TEST(requestDBTest, get_mandatory_data_level_patient_success)
+{
+    RealMedSQLite t = RealMedSQLite();
+    QString instanceId = "bar";
+
+    // expectations
+    t.changeDatabasePath("/Users/castelne/Library/ApplicationSupport/inria/medInria/");
+    t.initialization(instanceId);
+    t.connect(true);
+    QString key = "";
+    QList<QMap<QString, QString>>  resList = t.getMandatoryAttributes(0, key);
+    qDebug()<<"patients : ";
+    for (auto map : resList)
+    {
+        for (const auto& key: map.keys())
+        {
+            qDebug()<<key<<" : "<<map[key];
+        }
+    }
+
+    resList = t.getMandatoryAttributes(0, "1");
+    qDebug()<<"\nfirst patient : ";
+    for (auto map : resList)
+    {
+        for (const auto& key: map.keys())
+        {
+            qDebug()<<key<<" : "<<map[key];
+        }
+    }
+
+    resList = t.getMandatoryAttributes(0, "foo");
+    qDebug()<<"\ninvalid patient : ";
+    for (auto map : resList)
+    {
+        for (const auto& key: map.keys())
+        {
+            qDebug()<<key<<" : "<<map[key];
+        }
+    }
+
+    resList = t.getMandatoryAttributes(1, "1");
+    qDebug()<<"\n studies : ";
+    for (auto map : resList)
+    {
+        for (const auto& key: map.keys())
+        {
+            qDebug()<<key<<" : "<<map[key];
+        }
+    }
+
+    resList = t.getMandatoryAttributes(1, "bar");
+    qDebug()<<"\n invalid studies : ";
+    for (auto map : resList)
+    {
+        for (const auto& key: map.keys())
+        {
+            qDebug()<<key<<" : "<<map[key];
+        }
+    }
+
+    resList = t.getMandatoryAttributes(2, "1");
+    qDebug()<<"\n series : ";
+    for (auto map : resList)
+    {
+        for (const auto& key: map.keys())
+        {
+            qDebug()<<key<<" : "<<map[key];
+        }
+    }
+
+    resList = t.getMandatoryAttributes(2, "qix");
+    qDebug()<<"\n invalid series : ";
+    for (auto map : resList)
+    {
+        for (const auto& key: map.keys())
+        {
+            qDebug()<<key<<" : "<<map[key];
+        }
+    }
+}
+

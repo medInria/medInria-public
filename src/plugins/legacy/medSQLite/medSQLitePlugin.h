@@ -23,6 +23,7 @@ class MEDSQLITEPLUGIN_EXPORT medSQLitePlugin : public medPluginLegacy
 
 public:
     medSQLitePlugin(QObject *parent = nullptr);
+    ~medSQLitePlugin();
     virtual bool initialize();
     
     virtual QString name() const;

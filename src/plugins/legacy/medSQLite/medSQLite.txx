@@ -34,6 +34,21 @@ medSQlite<T>::medSQlite()
     m_DbPath->setCaption("Path to sqlite local DB");
     m_DbPath->setValue(vDbLoc);
     QObject::connect(m_DbPath, &medStringParameter::valueChanged, this, &medSQlite::updateDatabaseName);
+
+    m_MandatoryKeysByLevel["Patient"] = QStringList({"id", "name", "patientId",
+                                                     "birthdate", "gender"});
+    m_MandatoryKeysByLevel["Study"] = QStringList( {"id", "name", "uid", "patient"});
+    m_MandatoryKeysByLevel["Series"] = QStringList( {"id", "name", "uid", "study",
+                                                     "age", "modality", "protocol",
+                                                     "origin", "rows", "columns"}) ;
+
+}
+
+template<typename T>
+medSQlite<T>::~medSQlite()
+{
+    //TODO
+    connect(false);
 }
 
 template<typename T>
@@ -42,10 +57,10 @@ bool medSQlite<T>::initialization(const QString &pi_instanceId)
     bool bRes = !pi_instanceId.isEmpty();
     if (bRes)
     {
-        bRes = isDriverAvailable();
+        bRes = T::isDriverAvailable(m_Driver);
         if(bRes)
         {
-            m_Engine = addDatabase();
+            m_Engine = T::addDatabase(m_Driver, "sqlite");
             bRes = m_Engine.isValid();
             if (bRes)
             {
@@ -59,8 +74,9 @@ bool medSQlite<T>::initialization(const QString &pi_instanceId)
 template<typename T>
 bool medSQlite<T>::setInstanceName(const QString &pi_instanceName)
 {
-    bool bRes = !pi_instanceName.isEmpty();
-    if (bRes)
+    bool bRes = false;
+
+    if (!pi_instanceName.isEmpty())
     {
         m_instanceName = pi_instanceName;
     }
@@ -76,10 +92,10 @@ bool medSQlite<T>::connect(bool pi_bEnable)
     {
         if (!m_DbPath->value().isEmpty())
         {
-            m_Engine = database();
+            m_Engine = T::database(m_ConnectionName);
             if (!m_Engine.isValid())
             {
-                m_Engine = addDatabase();
+                m_Engine = T::addDatabase(m_Driver, m_ConnectionName);
             }
             m_Engine.setDatabaseName(m_DbPath->value() + "/db");
             bRes = m_Engine.open();
@@ -119,14 +135,14 @@ bool medSQlite<T>::connect(bool pi_bEnable)
                     if (!bRes)
                     {
                         m_Engine.close();
-                        removeDatabase();
+                        T::removeDatabase(m_ConnectionName);
                     }
                 }
                 else if (!isValidDatabaseStructure())
                 {
                     bRes = false;
                     m_Engine.close();
-                    removeDatabase();
+                    T::removeDatabase(m_ConnectionName);
                 }
                 if (bRes)
                 {
@@ -135,7 +151,7 @@ bool medSQlite<T>::connect(bool pi_bEnable)
             }
             else
             {
-                removeDatabase();
+                T::removeDatabase(m_ConnectionName);
             }
         }
         else
@@ -148,7 +164,7 @@ bool medSQlite<T>::connect(bool pi_bEnable)
     {
         m_Engine.close();
         m_Engine = T();
-        removeDatabase();
+        T::removeDatabase(m_ConnectionName);
         m_online = false;
         bRes = true;
     }
@@ -202,6 +218,12 @@ bool medSQlite<T>::isOnline()
 }
 
 template<typename T>
+bool medSQlite<T>::isFetchByMinimalEntriesOrMandatoryAttributes()
+{
+    return false;
+}
+
+template<typename T>
 QString medSQlite<T>::getInstanceName()
 {
     return m_instanceName;
@@ -242,70 +264,33 @@ QStringList medSQlite<T>::getMandatoryAttributesKeys(unsigned int pi_uiLevel)
     switch (pi_uiLevel)
     {
         case 0:
-            return {"id", "name", "patientId"};
+            return m_MandatoryKeysByLevel["Patient"];//{"id", "name", "patientId", "birthdate", "gender"};
         case 1:
-            return {"id", "name", "uid"};
+            return m_MandatoryKeysByLevel["Study"];//return {"id", "patient", "name", "uid"};
         case 2:
-            return {"id", "name", "uid"};
+            return m_MandatoryKeysByLevel["Series"];//return {"id", "study", "name", "uid", "age", "modality", "protocol", "origin", "rows", "cols"};
         default:
             return QStringList();
     }
-}
-
-template <typename T>
-QStringList medSQlite<T>::getAdditionalAttributesKeys(unsigned int pi_uiLevel)
-{
-    switch (pi_uiLevel)
-    {
-        case 0:
-            return {"thumbnail", "birthdate", "gender"};
-        case 1:
-            return {"patient"};
-            // There is 2 other keys {"thumbnail", "studyId"} in table study
-            // but not sure if we want to keep them in future version
-        case 2:
-            // this is the list of all available additional attributes keys in table series
-            // {"study", "size", "path", "orientation", "seriesNumber", "sequenceName", "sliceThickness",
-            // "rows", "columns", "thumbnail", "age", "description", "modality", "protocol", "comments",
-            // "status", "acquisitiondate", "importationdate", "referee", "performer", "institution",
-            // "report", "origin", "flipAngle", "echoTime", "repetitionTime", "acquisitionTime", "isIndexed"};
-            // For now, we choose to send only the key from legacy medinria data source
-            return {"size", "age", "modality", "acquisitiondate", "importationdate", "referee",
-                    "performer", "institution", "report", "thumbnail"};
-        default:
-            return QStringList();
-    }
-
 }
 
 template <typename T>
 QList<medAbstractSource::levelMinimalEntries> medSQlite<T>::getMinimalEntries(unsigned int pi_uiLevel, QString parentId)
 {
-
     // TODO : id doit etre passé au level 1 & 2. Il correspond à l'id du level supérieur (get study from a patient id)
     // renommer id en parentId ?
     QList<levelMinimalEntries> entries;
-    QString key;
-    if (parentId.contains("/"))
-    {
-        QStringList splittedUri = parentId.split("/");
-        key = splittedUri[pi_uiLevel-1];
-    }
-    else
-    {
-        key = parentId;
-    }
-    
+
     switch (pi_uiLevel)
     {
         case 0:
-            entries = getPatientMinimalEntries();
+            entries = getPatientMinimalEntries(parentId);
             break;
         case 1:
-            entries = getStudyMinimalEntries(key);
+            entries = getStudyMinimalEntries(parentId);
             break;
         case 2:
-            entries = getSeriesMinimalEntries(key);
+            entries = getSeriesMinimalEntries(parentId);
             break;
         default:
             break;
@@ -313,31 +298,393 @@ QList<medAbstractSource::levelMinimalEntries> medSQlite<T>::getMinimalEntries(un
     return entries;
 }
 
-template <typename T>
-QList<QMap<QString, QString>> medSQlite<T>::getMandatoryAttributes(unsigned int pi_uiLevel, int id)
+template<typename T>
+QList<medAbstractSource::levelMinimalEntries> medSQlite<T>::getPatientMinimalEntries(QString &key)
 {
-    return QList<QMap<QString, QString>>();
-}
+    QList<levelMinimalEntries> patientEntries;
+    QSqlQuery query = m_Engine.exec();
 
-template <typename T>
-QList<QMap<QString, QString>> medSQlite<T>::getAdditionalAttributes(unsigned int pi_uiLevel, int id)
-{
-    return QList<QMap<QString, QString>>();
-}
-
-template <typename T>
-QString medSQlite<T>::getDirectData(unsigned int pi_uiLevel, QString key)
-{
-    QString path;
-    if (pi_uiLevel==2)
+    bool isInt;
+    int id = key.toInt(&isInt);
+    if (key.isEmpty() || (!key.isEmpty() && isInt))
     {
-        path = getSeriesDirectData(key);
-        if (!path.isEmpty())
+        if (key.isEmpty())
         {
-            path.prepend(m_DbPath->value());
+            query.prepare("SELECT id as db_id, name as patient_name, patientID as patient_id from patient");
+        }
+        else
+        {
+            query.prepare("SELECT id as db_id, name as patient_name, patientID as patient_id from patient where id = :id");
+            query.bindValue(":id", id);
+        }
+
+        if (!query.exec())
+        {
+            qDebug() << "Error returned by query : " << query.lastError();
+            qDebug() << "The query was: " << query.lastQuery().simplified();
+        }
+        else
+        {
+            while (query.next())
+            {
+                levelMinimalEntries entry;
+                entry.key = query.value("db_id").toString();
+                entry.name = query.value("patient_name").toString();
+                entry.description = query.value("patient_id").toString();
+                patientEntries.append(entry);
+            }
         }
     }
-    return path;
+    return patientEntries;
+}
+
+template<typename T>
+QList<medAbstractSource::levelMinimalEntries> medSQlite<T>::getStudyMinimalEntries(QString &parentId)
+{
+    QList<levelMinimalEntries> studyEntries;
+
+    bool isValid;
+    int patientId = parentId.toInt(&isValid);
+    if (isValid)
+    {
+        QSqlQuery query = m_Engine.exec();
+        query.prepare("SELECT id as db_id, name as study_name, uid as study_instance_uid "
+                      "FROM study "
+                      "WHERE patient = :patientId");
+        query.bindValue(":patientId", patientId);
+
+        if (!query.exec())
+        {
+            qDebug() << "Error returned by query : " << query.lastError();
+            qDebug() << "The query was: " << query.lastQuery().simplified();
+            // TODO : call to abort ?
+        }
+        else
+        {
+            while (query.next())
+            {
+                levelMinimalEntries entry;
+                entry.key = query.value("db_id").toString();
+                entry.name = query.value("study_name").toString();
+                entry.description = query.value("study_instance_uid").toString();
+                studyEntries.append(entry);
+            }
+            // TODO : call to success ?
+        }
+    }
+    else
+    {
+        qDebug() << "The key is not a valid integer ";
+        // TODO : call to abort ?
+    }
+    return studyEntries;
+}
+
+template<typename T>
+QList<medAbstractSource::levelMinimalEntries> medSQlite<T>::getSeriesMinimalEntries(QString &parentId)
+{
+    QList<levelMinimalEntries> seriesEntries;
+
+    bool isValid;
+    int studyId = parentId.toInt(&isValid);
+    if (isValid)
+    {
+        QSqlQuery query = m_Engine.exec();
+        query.prepare("SELECT id as db_id, name as series_name, uid as series_instance_uid "
+                      "FROM series "
+                      "WHERE study = :studyId");
+        query.bindValue(":studyId", studyId);
+
+        if (!query.exec())
+        {
+            qDebug() << "Error returned by query : " << query.lastError();
+            qDebug() << "The query was: " << query.lastQuery().simplified();
+            // TODO : call to abort ?
+        }
+        else
+        {
+            while (query.next())
+            {
+                levelMinimalEntries entry;
+                entry.key = query.value("db_id").toString();
+                entry.name = query.value("series_name").toString();
+                entry.description = query.value("series_instance_uid").toString();
+                seriesEntries.append(entry);
+            }
+            // TODO : call to success ?
+        }
+    }
+    else
+    {
+        qDebug() << "The key is not a valid integer ";
+        // TODO : call to abort ?
+    }
+    return seriesEntries;
+}
+
+template <typename T>
+QList<QMap<QString, QString>> medSQlite<T>::getMandatoryAttributes(unsigned int pi_uiLevel, QString parentId)
+{
+    QList < QMap<QString, QString>> res;
+
+    switch (pi_uiLevel)
+    {
+        case 0:
+            res = getPatientMandatoriesAttributes(parentId);
+            break;
+        case 1:
+            res = getStudyMandatoriesAttributes(parentId);
+            break;
+        case 2:
+            res = getSeriesMandatoriesAttributes(parentId);
+            break;
+        default:
+            break;
+    }
+    return res;
+}
+
+
+template<typename T>
+QList<QMap<QString, QString>> medSQlite<T>::getPatientMandatoriesAttributes(const QString &key)
+{
+    QList<QMap<QString, QString>> patientRes;
+    bool isInt;
+    int id = key.toInt(&isInt);
+    if (key.isEmpty() || (!key.isEmpty() && isInt))
+    {
+        QSqlQuery query = m_Engine.exec();
+        QStringList patientMandatoryKeys = m_MandatoryKeysByLevel["Patient"];//{"id", "name", "patientId", "birthdate", "gender"}
+        QString selectQuery = "SELECT ";
+        for (auto str : patientMandatoryKeys)
+        {
+            selectQuery += str + " as " + str + ", ";
+        }
+        selectQuery = selectQuery.left(selectQuery.size() - 2);
+        if (key.isEmpty())
+        {
+            selectQuery += " from patient";
+            query.prepare(selectQuery);
+        }
+        else
+        {
+            selectQuery += " from patient where id = :id";
+            query.prepare(selectQuery);
+            query.bindValue(":id", id);
+        }
+
+        if (!query.exec())
+        {
+            qDebug() << "Error returned by query : " << query.lastError();
+            qDebug() << "The query was: " << query.lastQuery().simplified();
+        }
+        else
+        {
+            while (query.next())
+            {
+                QMap<QString, QString> patientMap;
+                for (const QString &str : patientMandatoryKeys)
+                {
+                    patientMap[str] = query.value(str).toString();
+                }
+                patientRes.append(patientMap);
+            }
+        }
+    }
+    return patientRes;
+}
+
+template<typename T>
+QList<QMap<QString, QString>> medSQlite<T>::getStudyMandatoriesAttributes(const QString &key)
+{
+    QList<QMap<QString, QString>> studyRes;
+    bool isValid;
+    int patient = key.toInt(&isValid);
+    if (isValid)
+    {
+        QSqlQuery query = m_Engine.exec();
+        QStringList studyMandatoryKeys = m_MandatoryKeysByLevel["Study"];
+        QString selectQuery = "SELECT ";
+        for (auto str : studyMandatoryKeys)
+        {
+            selectQuery += str + " as " + str + ", ";
+        }
+        selectQuery = selectQuery.left(selectQuery.size() - 2);
+        selectQuery += " from study where patient = :patient";
+        query.prepare(selectQuery);
+        query.bindValue(":patient", patient);
+
+        if (!query.exec())
+        {
+            qDebug() << "Error returned by query : " << query.lastError();
+            qDebug() << "The query was: " << query.lastQuery().simplified();
+        }
+        else
+        {
+            while (query.next())
+            {
+                QMap<QString, QString> studyMap;
+                for (const QString &str : studyMandatoryKeys)
+                {
+                    studyMap[str] = query.value(str).toString();
+                }
+                studyRes.append(studyMap);
+            }
+        }
+    }
+    return studyRes;
+}
+
+template<typename T>
+QList<QMap<QString, QString>> medSQlite<T>::getSeriesMandatoriesAttributes(const QString &key)
+{
+    QList<QMap<QString, QString>> seriesRes;
+    bool isValid;
+    int study = key.toInt(&isValid);
+    if (isValid)
+    {
+        QSqlQuery query = m_Engine.exec();
+        QStringList seriesMandatoryKeys = m_MandatoryKeysByLevel["Series"];
+        QString selectQuery = "SELECT ";
+        for (auto str : seriesMandatoryKeys)
+        {
+            selectQuery += str + " as " + str + ", ";
+        }
+        selectQuery = selectQuery.left(selectQuery.size() - 2);
+        selectQuery += " from series where study = :study";
+        query.prepare(selectQuery);
+        query.bindValue(":study", study);
+
+        if (!query.exec())
+        {
+            qDebug() << "Error returned by query : " << query.lastError();
+            qDebug() << "The query was: " << query.lastQuery().simplified();
+        }
+        else
+        {
+            while (query.next())
+            {
+                QMap<QString, QString> seriesMap;
+                for (const QString &str : seriesMandatoryKeys)
+                {
+                    seriesMap[str] = query.value(str).toString();
+                }
+                seriesRes.append(seriesMap);
+            }
+        }
+    }
+    return seriesRes;
+}
+
+template <typename T>
+bool medSQlite<T>::getAdditionalAttributes(unsigned int pi_uiLevel, QString id, datasetAttributes4 &po_attributes)
+{
+    bool bRes = false;
+    // renommer id en parentId ?
+
+    switch (pi_uiLevel)
+    {
+        case 0:
+            bRes = true;
+            break;
+        case 1:
+            bRes = true;
+            break;
+        case 2:
+            bRes = getSeriesAdditionalAttributes(id, po_attributes);
+            break;
+        default:
+            break;
+    }
+    return bRes;
+}
+
+template<typename T>
+bool medSQlite<T>::getSeriesAdditionalAttributes(const QString &key, medAbstractSource::datasetAttributes4 &po_attributes)
+{
+    bool bRes;
+    int id = key.toInt(&bRes);
+    if (bRes)
+    {
+
+        QSqlQuery query = m_Engine.exec();
+        QStringList columnNames;
+        columnNames <<"size"<<"path"<<"orientation"<<"seriesNumber"<<"sequenceName"<<"sliceThickness"
+                    <<"thumbnail"<<"description"<<"comments"<<"status"<<"acquisitiondate"<<"importationdate"
+                    <<"referee"<<"performer"<<"institution"<<"report"<<"origin"<<"flipAngle"<<"echoTime"
+                    <<"repetitionTime"<<"acquisitionTime"<<"isIndexed";
+
+        QString selectQuery = "SELECT ";
+        for (const auto& str : columnNames)
+        {
+            selectQuery += str + " as " + str + ", ";
+        }
+        selectQuery = selectQuery.left(selectQuery.size() - 2);
+        selectQuery += " from series where id = :id";
+        bRes = query.prepare(selectQuery);
+        if (bRes)
+        {
+            query.bindValue(":id", id);
+            bRes = query.exec();
+            if (bRes)
+            {
+                while (query.next())
+                {
+                    QMap<QString, QString> seriesMap;
+                    for (const QString &str : columnNames)
+                    {
+                        po_attributes.values[str] = query.value(str).toString();
+                    }
+                }
+            }
+        }
+    }
+    return bRes;
+}
+
+template <typename T>
+QVariant medSQlite<T>::getDirectData(unsigned int pi_uiLevel, QString key)
+{
+    QVariant res;
+    if (pi_uiLevel==2)
+    {
+        QString path;
+        if (getSeriesDirectData(key, path))
+        {
+            res = QVariant(m_DbPath->value() + path);
+        }
+    }
+    return res;
+}
+
+template<typename T>
+bool medSQlite<T>::getSeriesDirectData(QString &key, QString &path)
+{
+    bool bRes;
+    int db_id = key.toInt(&bRes);
+    if (bRes)
+    {
+        QSqlQuery query = m_Engine.exec();
+        query.prepare("SELECT path as data_path "
+                      "FROM series "
+                      "WHERE id = :id");
+        query.bindValue(":id", db_id);
+
+        bRes = query.exec();
+        if (bRes)
+        {
+            while (query.next())
+            {
+                path = query.value("data_path").toString();
+            }
+//            emit progress(10, medAbstractSource::eRequestStatus::finish);
+        }
+    }
+    else
+    {
+        qDebug() << "The key is not a valid integer ";
+    }
+    return bRes;
 }
 
 template <typename T>
@@ -347,28 +694,266 @@ int medSQlite<T>::getAssyncData(unsigned int pi_uiLevel, QString id)
 }
 
 template<typename T>
-bool medSQlite<T>::addData(void * data, QString uri)
+QString medSQlite<T>::addData(QVariant data, QString parentUri,
+                           QMap<QString, QString> mandatoryAttributes, datasetAttributes4 additionalAttributes)
 {
-    bool bRes = true;
+    QString keyRes;
 
-    QSqlQuery query = m_Engine.exec();
-    auto splittedUri = uri.split('/');
-    auto queryString = QString("INSERT INTO series(study,name) VALUES(:study,:name)");
-    bRes = query.prepare(queryString);
-    query.bindValue(":study", splittedUri[1]);
-    query.bindValue(":name",  splittedUri[2]);
+    int sourceDelimterIndex = parentUri.indexOf(QString(":"));
+    QStringList uriAsList = parentUri.right(parentUri.size() - sourceDelimterIndex - 1).split(QString("\r\n"));
 
-    if (bRes)
+    int level  = uriAsList.size();
+
+    switch (level)
     {
-        if (!query.exec())
+        case 0: //Patient
         {
-            qDebug() << query.lastError();
-            bRes = false;
+            if (!additionalAttributes.values.isEmpty() || !additionalAttributes.tags.isEmpty())
+            {
+                qWarning()<<"No expected additional values or tags at level patient in this local SQLite datasource plugin";
+            }
+            keyRes = addDataToPatientLevel(mandatoryAttributes);
+
+            break;
+        }
+        case 1: //Study
+        {
+            if (!additionalAttributes.values.isEmpty() || !additionalAttributes.tags.isEmpty())
+            {
+                qWarning()<<"No expected additional values or tags at level study in this local SQLite datasource plugin";
+            }
+            keyRes = addDataToStudyLevel(mandatoryAttributes);
+            break;
+        }
+        case 2://Series
+        {
+            keyRes = addDataToSeriesLevel(data, mandatoryAttributes, additionalAttributes);
+            break;
+        }
+        default: //Unknown level
+        {
+            break;
         }
     }
 
-    return bRes;
+    return keyRes;
 }
+
+template<typename T>
+QString medSQlite<T>::addDataToPatientLevel(QMap<QString, QString> &mandatoryAttributes)
+{
+    QString keyRes;
+    QSqlQuery query = m_Engine.exec();
+
+    //m_MandatoryKeysByLevel["Patient"];//{"id", "name", "patientId", "birthdate", "gender"}
+    // 1st : Remove unecessary key
+    auto id = mandatoryAttributes.take("id");
+    QStringList keys = m_MandatoryKeysByLevel["Patient"]; //{ "name", "patientId", "birthdate", "gender"}
+    keys.takeFirst();
+
+    bool bVal = true;
+    if (mandatoryAttributes.size() == keys.size())
+    {
+        for (const auto &key: keys)
+        {
+            if (!mandatoryAttributes.contains(key))
+            {
+                bVal = false;
+                qWarning() << "The key " << key << " is missing in mandatory attributes at level patient";
+            }
+        }
+    }
+    else
+    {
+        qWarning()<<"mandatory attributes size mismatch";
+        bVal = false;
+    }
+
+    if (bVal)
+    {
+//                query.prepare ( "INSERT INTO patient (name, patientId, birthdate, gender) "
+//                                "VALUES (:name, :patientId, :birthdate, :gender)" );
+        QString insertQuery = "INSERT INTO patient (";
+        for (const auto& key : keys)
+        {
+            insertQuery += key + ", ";
+        }
+        insertQuery = insertQuery.left(insertQuery.size() - 2);
+        insertQuery += ") VALUES (:";
+        for (const auto& key : keys)
+        {
+            insertQuery += key + ", :";
+        }
+        insertQuery = insertQuery.left(insertQuery.size() - 3);
+        insertQuery += ")";
+        query.prepare(insertQuery);
+        for (const auto& key : keys)
+        {
+            query.bindValue(":"+key, mandatoryAttributes[key]);
+        }
+        if (query.exec())
+        {
+            keyRes = query.lastInsertId().toString();
+        }
+    }
+    return keyRes;
+}
+
+template<typename T>
+QString medSQlite<T>::addDataToStudyLevel(QMap<QString, QString> mandatoryAttributes)
+{
+    QString keyRes;
+    QSqlQuery query = m_Engine.exec();
+
+    //m_MandatoryKeysByLevel["Study"];//return {"id", "patient", "name", "uid"};
+    // 1st : Remove unecessary key
+    auto id = mandatoryAttributes.take("id");
+    QStringList keys = m_MandatoryKeysByLevel["Study"]; //{ "patient", "name", "uid"}
+    keys.takeFirst();
+
+    bool bVal = true;
+    if (mandatoryAttributes.size() == keys.size())
+    {
+        for (const auto &key: keys)
+        {
+            if (!mandatoryAttributes.contains(key))
+            {
+                qWarning() << "The key " << key << " is missing in mandatory attributes at level study";
+                bVal = false;
+            }
+        }
+    }
+    else
+    {
+        qWarning()<<"mandatory attributes size mismatch";
+        bVal = false;
+    }
+
+    if (bVal)
+    {
+//                query.prepare ( "INSERT INTO study (patient, name, uid) "
+//                                "VALUES (:patient, :name, :uid)" );
+        QString insertQuery = "INSERT INTO study (";
+        for (const auto& key : keys)
+        {
+            insertQuery += key + ", ";
+        }
+        insertQuery = insertQuery.left(insertQuery.size() - 2);
+        insertQuery += ") VALUES (:";
+        for (const auto& key : keys)
+        {
+            insertQuery += key + ", :";
+        }
+        insertQuery = insertQuery.left(insertQuery.size() - 3);
+        insertQuery += ")";
+        query.prepare(insertQuery);
+        for (const auto& key : keys)
+        {
+            query.bindValue(":"+key, mandatoryAttributes[key]);
+        }
+        if (query.exec())
+        {
+            keyRes = query.lastInsertId().toString();
+        }
+    }
+    return keyRes;
+}
+
+template<typename T>
+QString medSQlite<T>::addDataToSeriesLevel(const QVariant& dataset, QMap<QString, QString> mandatoryAttributes,
+                                        medAbstractSource::datasetAttributes4 additionalAttributes)
+{
+    QString keyRes;
+    QSqlQuery query = m_Engine.exec();
+
+    // m_MandatoryKeysByLevel["Series"];//return {"id", "study", "name", "uid", "age", "modality", "protocol", "origin", "rows", "cols"};
+    //    QStringList additionalColumnNames;
+    //    additionalColumnNames <<"size"<<"path"<<"orientation"<<"seriesNumber"<<"sequenceName"<<"sliceThickness"
+    //                          <<"thumbnail"<<"description"<<"comments"<<"status"<<"acquisitiondate"<<"importationdate"
+    //                          <<"referee"<<"performer"<<"institution"<<"report"<<"origin"<<"flipAngle"<<"echoTime"
+    //                          <<"repetitionTime"<<"acquisitionTime"<<"isIndexed";
+    // 1st : Remove unecessary key
+    auto id = mandatoryAttributes.take("id");
+    QStringList mandatoryKeys = m_MandatoryKeysByLevel["Series"]; //{ "study", "name", "uid", "age", "modality", "protocol", "origin", "rows", "cols"}
+    mandatoryKeys.takeFirst();
+    auto additionalMap = additionalAttributes.values; // No need to get additionnalAttributes.tags in SQLite context
+    auto addtitionalKeys = additionalMap.keys();
+    // TODO extract path from dataset parameter and update additionalAttributes.values ==> addtionalAttributes.values["path"] = dataset.toString()
+    bool bVal = true;
+    if (dataset.canConvert<QString>())
+    {
+        additionalAttributes.values["path"] = dataset.toString();
+        if (mandatoryAttributes.size() == mandatoryKeys.size())
+        {
+            for (const auto &key: mandatoryKeys)
+            {
+                if (!mandatoryAttributes.contains(key))
+                {
+                    qWarning() << "The key " << key << " is missing in mandatory attributes at level series";
+                    bVal = false;
+                }
+            }
+        }
+        else
+        {
+            qWarning() << "mandatory attributes size mismatch";
+            bVal = false;
+        }
+
+        if (bVal)
+        {
+//                query.prepare ( "INSERT INTO series (study, name, uid, age, modality, protocol, origin, rows, cols,
+//                                                     size, path, orientation, seriesNumber, sequenceName, sliceThickness,
+//                                                     thumbnail, description, comments, status, acquisitiondate, importationdate,
+//                                                     referee, performer, institution, report, origin, flipAngle, echoTime,
+//                                                     repetitionTime, acquisitionTime, isIndexed)
+//                                                     VALUES (:study, :name, :uid, :age, :modality, :protocol, :origin, :rows, :cols,
+//                                                     :size, :path, :orientation, :seriesNumber, :sequenceName, :sliceThickness,
+//                                                     :thumbnail, :description, :comments, :status, :acquisitiondate, :importationdate,
+//                                                     :referee, :performer, :institution, :report, :origin, :flipAngle, :echoTime,
+//                                                     :repetitionTime, :acquisitionTime, :isIndexed)" );
+            QString insertQuery = "INSERT INTO series (";
+            for (const auto &mandatoryKey: mandatoryKeys)
+            {
+                insertQuery += mandatoryKey + ", ";
+            }
+            for (const auto &additionalKey: addtitionalKeys)
+            {
+                insertQuery += additionalKey + ", ";
+            }
+
+            insertQuery = insertQuery.left(insertQuery.size() - 2);
+            insertQuery += ") VALUES (:";
+            for (const auto &mandatoryKey: mandatoryKeys)
+            {
+                insertQuery += mandatoryKey + ", :";
+            }
+            for (const auto &additionalKey: addtitionalKeys)
+            {
+                insertQuery += additionalKey + ", :";
+            }
+            insertQuery = insertQuery.left(insertQuery.size() - 3);
+            insertQuery += ")";
+            query.prepare(insertQuery);
+            for (const auto &mandatoryKey: mandatoryKeys)
+            {
+                query.bindValue(":" + mandatoryKey, mandatoryAttributes[mandatoryKey]);
+            }
+
+            for (const auto &additionalKey: addtitionalKeys)
+            {
+                query.bindValue(":" + additionalKey, additionalMap[additionalKey]);
+            }
+            if (query.exec())
+            {
+                keyRes = query.lastInsertId().toString();
+            }
+        }
+    }
+
+    return keyRes;
+}
+
 
 template <typename T>
 void medSQlite<T>::abort(int pi_iRequest)
@@ -379,7 +964,7 @@ void medSQlite<T>::abort(int pi_iRequest)
 template <typename T>
 void medSQlite<T>::updateDatabaseName(QString const &path)
 {
-    m_DbPath->setValue(path);
+
 }
 
 template<typename T>
@@ -427,108 +1012,6 @@ bool medSQlite<T>::createTable(const QString &strQuery)
 }
 
 template<typename T>
-QList<medAbstractSource::levelMinimalEntries> medSQlite<T>::getPatientMinimalEntries()
-{
-    QList<levelMinimalEntries> patientEntries;
-    QSqlQuery query = m_Engine.exec();
-    if (!(query.prepare("SELECT id as db_id, name as patient_name, patientID as patient_id from patient")
-    && query.exec()))
-    {
-        qDebug() << "Error returned by query : "<< query.lastError();
-        qDebug() << "The query was: " << query.lastQuery().simplified();
-    }
-    else
-    {
-        while (query.next())
-        {
-            levelMinimalEntries entry;
-            entry.key = query.value("db_id").toString();
-            entry.name = query.value("patient_name").toString();
-            entry.description = query.value("patient_id").toString();
-            patientEntries.append(entry);
-        }
-    }
-    return patientEntries;
-}
-template<typename T>
-QList<medAbstractSource::levelMinimalEntries> medSQlite<T>::getStudyMinimalEntries(QString &parentId)
-{
-    QList<levelMinimalEntries> studyEntries;
-
-    bool isValid;
-    int patientId = parentId.toInt(&isValid);
-    if (isValid)
-    {
-        QSqlQuery query = m_Engine.exec();
-        query.prepare("SELECT id as db_id, name as study_name, uid as study_instance_uid "
-                      "FROM study "
-                      "WHERE patient = :patientId");
-        query.bindValue(":patientId", patientId);
-
-        if (!query.exec())
-        {
-            qDebug() << "Error returned by query : " << query.lastError();
-            qDebug() << "The query was: " << query.lastQuery().simplified();
-        }
-        else
-        {
-            while (query.next())
-            {
-                levelMinimalEntries entry;
-                entry.key = query.value("db_id").toString();
-                entry.name = query.value("study_name").toString();
-                entry.description = query.value("study_instance_uid").toString();
-                studyEntries.append(entry);
-            }
-        }
-    }
-    else
-    {
-        qDebug() << "The key is not a valid integer ";
-    }
-    return studyEntries;
-}
-
-template<typename T>
-QList<medAbstractSource::levelMinimalEntries> medSQlite<T>::getSeriesMinimalEntries(QString &parentId)
-{
-    QList<levelMinimalEntries> seriesEntries;
-
-    bool isValid;
-    int studyId = parentId.toInt(&isValid);
-    if (isValid)
-    {
-        QSqlQuery query = m_Engine.exec();
-        query.prepare("SELECT id as db_id, name as series_name, uid as series_instance_uid "
-                      "FROM series "
-                      "WHERE study = :studyId");
-        query.bindValue(":studyId", studyId);
-
-        if (!query.exec())
-        {
-            qDebug() << "Error returned by query : " << query.lastError();
-            qDebug() << "The query was: " << query.lastQuery().simplified();
-        }
-        else
-        {
-            while (query.next())
-            {
-                levelMinimalEntries entry;
-                entry.key = query.value("db_id").toString();
-                entry.name = query.value("series_name").toString();
-                entry.description = query.value("series_instance_uid").toString();
-                seriesEntries.append(entry);
-            }
-        }
-    }
-    else
-    {
-        qDebug() << "The key is not a valid integer ";
-    }
-    return seriesEntries;
-}
-
-template<typename T>
 void medSQlite<T>::optimizeSpeedSQLiteDB()
 {
     // From legacy medDatabaseController
@@ -544,61 +1027,4 @@ void medSQlite<T>::optimizeSpeedSQLiteDB()
     }
 }
 
-template<typename T>
-QString medSQlite<T>::getSeriesDirectData(QString &key)
-{
-    QString path;
-    bool isValid;
-    int db_id = key.toInt(&isValid);
-    if (isValid)
-    {
-        QSqlQuery query = m_Engine.exec();
-        query.prepare("SELECT path as data_path "
-                      "FROM series "
-                      "WHERE id = :id");
-        query.bindValue(":id", db_id);
-
-        if (!query.exec())
-        {
-            qDebug() << "Error returned by query : " << query.lastError();
-            qDebug() << "The query was: " << query.lastQuery().simplified();
-        }
-        else
-        {
-            while (query.next())
-            {
-                path = query.value("data_path").toString();
-            }
-        }
-    }
-    else
-    {
-        qDebug() << "The key is not a valid integer ";
-    }
-    return path;
-}
-
-template<typename T>
-bool medSQlite<T>::isDriverAvailable()
-{
-    return T::isDriverAvailable(m_Driver);
-}
-
-template<typename T>
-T medSQlite<T>::addDatabase()
-{
-    return T::addDatabase(m_Driver, m_ConnectionName);
-}
-
-template<typename T>
-void medSQlite<T>::removeDatabase()
-{
-    T::removeDatabase(m_ConnectionName);
-}
-
-template<typename T>
-T medSQlite<T>::database()
-{
-    return T::database(m_ConnectionName);
-}
 
