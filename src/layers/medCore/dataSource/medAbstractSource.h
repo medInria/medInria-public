@@ -130,7 +130,7 @@ public:
     /* *************** Store data          ***********************************/
     /* ***********************************************************************/
     //TODO: store a dataset
-    virtual QString addData(QVariant data, QString parentUri, QString name) = 0;
+    virtual QString addData(QVariant data, QStringList parentUri, QString name) = 0;
     //TODO: alter metaData
     //TODO: store complementaries data like thumbnail
     

@@ -694,14 +694,14 @@ int medSQlite<T>::getAssyncData(unsigned int pi_uiLevel, QString id)
 }
 
 template<typename T>
-QString medSQlite<T>::addData(QVariant data, QString parentUri, QString name)
+QString medSQlite<T>::addData(QVariant data, QStringList parentUri, QString name)
 {
     QString keyRes;
 
-    int sourceDelimterIndex = parentUri.indexOf(QString(":"));
-    QStringList uriAsList = parentUri.right(parentUri.size() - sourceDelimterIndex - 1).split(QString("\r\n"));
+//    int sourceDelimterIndex = parentUri.indexOf(QString(":"));
+//    QStringList uriAsList = parentUri.right(parentUri.size() - sourceDelimterIndex - 1).split(QString("\r\n"));
 
-    int level  = uriAsList.size();
+    int level  = parentUri.size() - 1;
 
     switch (level)
     {
@@ -726,7 +726,7 @@ QString medSQlite<T>::addData(QVariant data, QString parentUri, QString name)
         }
         case 2://Series
         {
-            keyRes = addDataToSeriesLevel(data, name, uriAsList.last());
+            keyRes = addDataToSeriesLevel(data, name, parentUri.last());
             break;
         }
         default: //Unknown level
@@ -864,70 +864,35 @@ QString medSQlite<T>::addDataToSeriesLevel(const QVariant& dataset,const QString
     QString keyRes;
     QSqlQuery query = m_Engine.exec();
 
-    // m_MandatoryKeysByLevel["Series"];//return {"id", "study", "name", "uid", "age", "modality", "protocol", "origin", "rows", "cols"};
-    //    QStringList additionalColumnNames;
-    //    additionalColumnNames <<"size"<<"path"<<"orientation"<<"seriesNumber"<<"sequenceName"<<"sliceThickness"
-    //                          <<"thumbnail"<<"description"<<"comments"<<"status"<<"acquisitiondate"<<"importationdate"
-    //                          <<"referee"<<"performer"<<"institution"<<"report"<<"origin"<<"flipAngle"<<"echoTime"
-    //                          <<"repetitionTime"<<"acquisitionTime"<<"isIndexed";
-    // 1st : Remove unecessary key
-    
-
     // TODO extract path from dataset parameter and update additionalAttributes.values ==> addtionalAttributes.values["path"] = dataset.toString()
     bool bVal = true;
     if (dataset.canConvert<QString>())
     {
         QString pathIn = dataset.toString();
-        QString fileName = pathIn.right(pathIn.lastIndexOf(QRegExp("[\\/|\\\\]"));
-        QString pathOut = "/" + QUuid().toString() + "/" + fileName;
+        QString fileName = pathIn.right(pathIn.size() - pathIn.lastIndexOf(QDir::separator()) - 1);
+        QString pathOut = QUuid::createUuid().toString().replace("{", "").replace("}", "");// + "/" + fileName;
 
-        if (QFile::copy(pathIn, pathOut))
+        QDir dir(m_DbPath->value());
+        dir.mkdir(pathOut);
+        pathOut.prepend("/");
+        pathOut.append("/"+fileName);
+        QString pathToCopy = m_DbPath->value() + pathOut;
+
+        if (QFile::copy(pathIn, pathToCopy))
         {
-//                query.prepare ( "INSERT INTO series (study, name, uid, age, modality, protocol, origin, rows, cols,
-//                                                     size, path, orientation, seriesNumber, sequenceName, sliceThickness,
-//                                                     thumbnail, description, comments, status, acquisitiondate, importationdate,
-//                                                     referee, performer, institution, report, origin, flipAngle, echoTime,
-//                                                     repetitionTime, acquisitionTime, isIndexed)
-//                                                     VALUES (:study, :name, :uid, :age, :modality, :protocol, :origin, :rows, :cols,
-//                                                     :size, :path, :orientation, :seriesNumber, :sequenceName, :sliceThickness,
-//                                                     :thumbnail, :description, :comments, :status, :acquisitiondate, :importationdate,
-//                                                     :referee, :performer, :institution, :report, :origin, :flipAngle, :echoTime,
-//                                                     :repetitionTime, :acquisitionTime, :isIndexed)" );
-            //QString insertQuery = "INSERT INTO series (";
-            //for (const auto &mandatoryKey: mandatoryKeys)
-            //{
-            //    insertQuery += mandatoryKey + ", ";
-            //}
-            //for (const auto &additionalKey: addtitionalKeys)
-            //{
-            //    insertQuery += additionalKey + ", ";
-            //}
-            //
-            //insertQuery = insertQuery.left(insertQuery.size() - 2);
-            //insertQuery += ") VALUES (:";
-            //for (const auto &mandatoryKey: mandatoryKeys)
-            //{
-            //    insertQuery += mandatoryKey + ", :";
-            //}
-            //for (const auto &additionalKey: addtitionalKeys)
-            //{
-            //    insertQuery += additionalKey + ", :";
-            //}
-            //insertQuery = insertQuery.left(insertQuery.size() - 3);
-            //insertQuery += ")";
-            //query.prepare(insertQuery);
-            //for (const auto &mandatoryKey: mandatoryKeys)
-            //{
-            //    query.bindValue(":" + mandatoryKey, mandatoryAttributes[mandatoryKey]);
-            //}
-            //
-            //for (const auto &additionalKey: addtitionalKeys)
-            //{
-            //    query.bindValue(":" + additionalKey, additionalMap[additionalKey]);
-            //}
+            query.prepare("INSERT INTO series (study, name, uid, path) VALUES (:study, :name, :uid, :path)");
+            query.bindValue(":study", studyId);
+            query.bindValue(":name", name);
+            query.bindValue(":uid", QUuid::createUuid().toString());
+            query.bindValue(":path", pathOut);
+
             if (query.exec())
             {
                 keyRes = query.lastInsertId().toString();
+            }
+            else
+            {
+                qDebug()<<query.lastError();
             }
         }
     }

@@ -83,7 +83,7 @@ bool medDataExporter::convertSingleDataOnfly(medAbstractData * data, QString &pa
 // Private functions 
 // ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 // ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
-QList<medAbstractDataWriter*> medDataExporter::getSuitableWriter(medAbstractData * medData, QString filePath, QStringList *writersId = nullptr)
+QList<medAbstractDataWriter*> medDataExporter::getSuitableWriter(medAbstractData * medData, QString filePath, QStringList *writersId)
 {
     QList<medAbstractDataWriter*> dataWriterRes;
 

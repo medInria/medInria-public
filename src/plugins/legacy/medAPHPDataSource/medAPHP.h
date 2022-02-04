@@ -89,8 +89,7 @@ public:
 
     int getAssyncData(unsigned int pi_uiLevel, QString id) override;
 
-    QString addData(QVariant data, QString parentUri, QMap<QString,
-            QString> mandatoryAttributes, datasetAttributes4 additionalAttributes) override;
+    QString addData(QVariant data, QStringList parentUri, QString name) override;
 
 public slots:
     void abort(int pi_iRequest) override;

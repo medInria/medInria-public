@@ -348,57 +348,62 @@ QUuid medDataModel::saveData(medAbstractData &data)
     QTemporaryDir tmpDir;
     if (tmpDir.isValid())
     {
-        QString fullTmpPath = tmpDir.path()/*+ dataName*/;
+        QString fullTmpPath = tmpDir.path() + "/NewDataSegmented";/*+ dataName*/;
         bool bWritableData = medDataExporter::convertSingleDataOnfly(&data, fullTmpPath);
         if (bWritableData)
         {
+            QVariant dataset;
+            dataset.setValue(fullTmpPath);
 
+            QString key = pSource->addData(dataset, parentUri, "new data segmented");
+
+//            // ////////////////////////////////////////////////////////////////////////
+//            // Refresh dataModelElement
+//            if (!key.isEmpty())
+//            {
+//                m_sourcesModelMap[pSource]->fetch(sourceUri.left(sourceUri.lastIndexOf('/')));
+//            }
+//            else
+//            {
+//                sourceIsOnline(splittedUri[0]);
+//            }
 
         }
 
     }
-
-    // ////////////////////////////////////////////////////////////////////////
-    // Adding dataset to the source
-    //QVariant dataset;
-    //dataset.setValue(pi_dataset);
-    //datasetAttributes mandatoryAttributes;
-    //medAbstractSource::datasetAttributes4 additionalAttributes;
-    ////TODO get mandatory & additional attributes for dataset ?
-    //QString key = pSource->addData(dataset, sourceUri, mandatoryAttributes, additionalAttributes);
 
     return QUuid();
 }
 
 void medDataModel::addData(medAbstractData * pi_dataset, QString uri)
 {
-    QStringList splittedUri;
-    int sourceDelimPos = uri.indexOf(':');
-    splittedUri.append(uri.left(sourceDelimPos));
-    QString sourceUri = uri.right(uri.size() - sourceDelimPos - 1);
-    splittedUri.append(sourceUri.split('/'));
- 
-    //TODO verifier la presence dans la map
-    auto pSource = m_sourceIdToInstanceMap[splittedUri[0]];
-    // ////////////////////////////////////////////////////////////////////////
-    // Adding dataset to the source
-    QVariant dataset;
-    dataset.setValue(pi_dataset);
-    datasetAttributes mandatoryAttributes;
-    medAbstractSource::datasetAttributes4 additionalAttributes;
-    //TODO get mandatory & additional attributes for dataset ?
-    QString key = pSource->addData(dataset, sourceUri, mandatoryAttributes, additionalAttributes);
-
-    // ////////////////////////////////////////////////////////////////////////
-    // Refresh dataModelElement
-    if (!key.isEmpty())
-    {
-        m_sourcesModelMap[pSource]->fetch(sourceUri.left(sourceUri.lastIndexOf('/')));
-    }
-    else
-    {
-        sourceIsOnline(splittedUri[0]);
-    }
+//    QStringList splittedUri;
+//    int sourceDelimPos = uri.indexOf(':');
+//    splittedUri.append(uri.left(sourceDelimPos));
+//    QString sourceUri = uri.right(uri.size() - sourceDelimPos - 1);
+//    splittedUri.append(sourceUri.split('/'));
+//
+//    //TODO verifier la presence dans la map
+//    auto pSource = m_sourceIdToInstanceMap[splittedUri[0]];
+//    // ////////////////////////////////////////////////////////////////////////
+//    // Adding dataset to the source
+//    QVariant dataset;
+//    dataset.setValue(pi_dataset);
+//    datasetAttributes mandatoryAttributes;
+//    medAbstractSource::datasetAttributes4 additionalAttributes;
+//    //TODO get mandatory & additional attributes for dataset ?
+//    QString key = pSource->addData(dataset, sourceUri, "new data segmented");
+//
+//    // ////////////////////////////////////////////////////////////////////////
+//    // Refresh dataModelElement
+//    if (!key.isEmpty())
+//    {
+//        m_sourcesModelMap[pSource]->fetch(sourceUri.left(sourceUri.lastIndexOf('/')));
+//    }
+//    else
+//    {
+//        sourceIsOnline(splittedUri[0]);
+//    }
 }
 
 void medDataModel::addData(medDataIndex * pi_datasetIndex, QString uri)

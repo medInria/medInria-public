@@ -29,6 +29,7 @@ public:
     using dtkAbstractDataWriter::setData;
     virtual void setData(QList<medAbstractData*> data);
     virtual void setData(dtkAbstractData* data);
+
     QList<medAbstractData*> getDataList();
 
 private:

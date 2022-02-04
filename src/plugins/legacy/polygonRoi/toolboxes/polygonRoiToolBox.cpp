@@ -270,10 +270,10 @@ void polygonRoiToolBox::onLayerRemoveOnOrientedViews(medAbstractData *data)
 
 void polygonRoiToolBox::createAndConnectEventFilter(const medAbstractData *data, medAbstractImageView *imageView)
 {
-    QString toolBoxName = data->metaDataValues(medMetaDataKeys::StudyDescription.key())[0] +
-            " - " +
-            data->metaDataValues(medMetaDataKeys::SeriesDescription.key())[0];
-
+//    QString toolBoxName = data->metaDataValues(medMetaDataKeys::StudyDescription.key())[0] +
+//            " - " +
+//            data->metaDataValues(medMetaDataKeys::SeriesDescription.key())[0];
+    QString toolBoxName = "foo";
     if (specialityPreference==1)
     {
         auto eventFilter = new urologyViewEvent(imageView, this);

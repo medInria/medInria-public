@@ -428,8 +428,7 @@ int medAPHP::getQtDcmAsyncData(unsigned int pi_uiLevel, const QString &id)
     return iRes;
 }
 
-QString medAPHP::addData(QVariant data, QString parentUri, QMap<QString,
-        QString> mandatoryAttributes, datasetAttributes4 additionalAttributes)
+QString medAPHP::addData(QVariant data, QStringList parentUri, QString name)
 {
     return "";
 }

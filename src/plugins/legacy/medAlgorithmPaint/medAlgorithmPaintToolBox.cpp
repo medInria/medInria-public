@@ -734,6 +734,11 @@ void AlgorithmPaintToolBox::import()
     medAbstractData *output = dynamic_cast<medAbstractData*>(m_maskData->clone());
 
     copyMetaData(output, m_imageData);
+    if (m_imageData->dataIndex().isV2())
+    {
+        output->setDataIndex(m_imageData->dataIndex().uri());
+        output->addParentData(m_imageData);
+    }
     medDataManager::instance()->importData(output, false);
 
     maskHasBeenSaved = true;

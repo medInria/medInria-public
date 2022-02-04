@@ -157,18 +157,17 @@ int medTemporaryDataSource::getAssyncData(unsigned int pi_uiLevel, QString id)
     return -1;
 }
 
-QString medTemporaryDataSource::addData(QVariant data, QString parentUri,
-                                        QMap<QString, QString> mandatoryAttributes, datasetAttributes4 additionalAttributes)
+QString medTemporaryDataSource::addData(QVariant data, QStringList parentUri, QString name)
 {
     QString keyRes;
-    int sourceDelimterIndex = parentUri.indexOf(QString(":"));
-    QStringList uriAsList = parentUri.right(parentUri.size() - sourceDelimterIndex - 1).split(QString("\r\n"));
-    int level = uriAsList.size();
-    QString key = QString::number(level) + ":" + uriAsList.last();
-    if (!m_pluginKeyToDataMap.contains(key))
-    {
-        m_pluginKeyToDataMap[key] = data;
-    }
+//    int sourceDelimterIndex = parentUri.indexOf(QString(":"));
+//    QStringList uriAsList = parentUri.right(parentUri.size() - sourceDelimterIndex - 1).split(QString("\r\n"));
+//    int level = uriAsList.size();
+//    QString key = QString::number(level) + ":" + uriAsList.last();
+//    if (!m_pluginKeyToDataMap.contains(key))
+//    {
+//        m_pluginKeyToDataMap[key] = data;
+//    }
     return keyRes;
 }
 
