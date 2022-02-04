@@ -736,7 +736,10 @@ void AlgorithmPaintToolBox::import()
     copyMetaData(output, m_imageData);
     if (m_imageData->dataIndex().isV2())
     {
-        output->setDataIndex(m_imageData->dataIndex().uri());
+        QStringList desturi = m_imageData->dataIndex().uri();
+        desturi.pop_back();
+
+        output->setDataIndex(desturi);
         output->addParentData(m_imageData);
     }
     medDataManager::instance()->importData(output, false);

@@ -336,13 +336,13 @@ void medDataModel::removeSource(medAbstractSource * pi_source)
 
 QUuid medDataModel::saveData(medAbstractData &data)
 {
-    QStringList parentUri;
-    if (!data.parentData().isEmpty())
-    {
-        auto parentData = data.parentData()[0];
-        parentUri = parentData->dataIndex().uri();
-        parentUri.pop_back();
-    }
+    QStringList parentUri = data.dataIndex().uri();
+//    if (!data.parentData().isEmpty())
+//    {
+//        auto parentData = data.parentData()[0];
+//        parentUri = parentData->dataIndex().uri();
+//        parentUri.pop_back();
+//    }
 
     auto pSource = m_sourceIdToInstanceMap[parentUri[0]];
     QTemporaryDir tmpDir;
@@ -356,17 +356,18 @@ QUuid medDataModel::saveData(medAbstractData &data)
             dataset.setValue(fullTmpPath);
 
             QString key = pSource->addData(dataset, parentUri, "new data segmented");
-
-//            // ////////////////////////////////////////////////////////////////////////
-//            // Refresh dataModelElement
-//            if (!key.isEmpty())
-//            {
-//                m_sourcesModelMap[pSource]->fetch(sourceUri.left(sourceUri.lastIndexOf('/')));
-//            }
-//            else
-//            {
+            // ////////////////////////////////////////////////////////////////////////
+            // Refresh dataModelElement
+            if (!key.isEmpty())
+            {
+                m_sourcesModelMap[pSource]->fetch(parentUri);
+            }
+            else
+            {
 //                sourceIsOnline(splittedUri[0]);
-//            }
+            }
+            parentUri.append(key);
+            data.dataIndex().setUri(parentUri);
 
         }
 
@@ -413,14 +414,14 @@ void medDataModel::addData(medDataIndex * pi_datasetIndex, QString uri)
 
 void medDataModel::refresh(QString uri)
 {
-    QStringList splittedUri;
-    int sourceDelimPos = uri.indexOf(':');
-    splittedUri.append(uri.left(sourceDelimPos));
-    QString sourceUri = uri.right(uri.size() - sourceDelimPos - 1);
-    splittedUri.append(sourceUri.split('/'));
-
-    auto pSource = m_sourceIdToInstanceMap[splittedUri[0]];
-    m_sourcesModelMap[pSource]->fetch(sourceUri);
+//    QStringList splittedUri;
+//    int sourceDelimPos = uri.indexOf(':');
+//    splittedUri.append(uri.left(sourceDelimPos));
+//    QString sourceUri = uri.right(uri.size() - sourceDelimPos - 1);
+//    splittedUri.append(sourceUri.split('/'));
+//
+//    auto pSource = m_sourceIdToInstanceMap[splittedUri[0]];
+//    m_sourcesModelMap[pSource]->fetch(sourceUri);
 }
 
 void medDataModel::sourceIsOnline(QString sourceIntanceId)

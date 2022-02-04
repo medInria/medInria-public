@@ -76,7 +76,7 @@ public:
     //void setColumnAttributes(int p_iLevel, QStringList &attributes); //maybe developed because not const ?
     int  getColumnInsideLevel(int level, int section) const;
     int  getSectionInsideLevel(int level, int column) const;
-    bool fetch(QString uri);
+    bool fetch(QStringList uri);
     QString getSourceIntanceId();
     void setOnline(bool pi_bOnline);
 
