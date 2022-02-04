@@ -52,13 +52,14 @@ public:
     void setSeriesId(int id)             { m_seriesId = id; }
     void setUri(QStringList const & uri) { m_uriAsList = uri; }
     void setUri(QString const & uri);
+    void setHumanReadableUri(QString const & humanReadableUri);
 
     int dataSourceId() const { return m_dataSourceId; }
     int    patientId() const { return m_patientId; }
     int      studyId() const { return m_studyId; }
     int     seriesId() const { return m_seriesId; }
     QStringList  uri() const { return m_uriAsList;  }
-
+    QString humanReadableUri() const { return m_humanRedableUri; }
     medDataIndex& operator=(const medDataIndex& index);
 
     static bool isMatch( const medDataIndex& index1, const medDataIndex& index2);
@@ -84,6 +85,7 @@ private:
     int m_studyId;
     int m_seriesId;
     QStringList m_uriAsList;
+    QString m_humanRedableUri;
 };
 
 // /////////////////////////////////////////////////////////////////

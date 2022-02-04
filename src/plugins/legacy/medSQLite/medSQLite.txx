@@ -883,7 +883,7 @@ QString medSQlite<T>::addDataToSeriesLevel(const QVariant& dataset,const QString
             query.prepare("INSERT INTO series (study, name, uid, path) VALUES (:study, :name, :uid, :path)");
             query.bindValue(":study", studyId);
             query.bindValue(":name", name);
-            query.bindValue(":uid", QUuid::createUuid().toString());
+            query.bindValue(":uid", QUuid::createUuid().toString().replace("{", "").replace("}", ""));
             query.bindValue(":path", pathOut);
 
             if (query.exec())

@@ -35,6 +35,7 @@ public:
 
     QList<medAbstractData * > parentDataList;
     QList<medAbstractData * > derivedDataList;
+    QString expectedName;
 
     QImage thumbnail;
 };
@@ -332,4 +333,14 @@ QList<medAbstractData *> medAbstractData::parentData()
 QList<medAbstractData *> medAbstractData::derivedData()
 {
     return d->derivedDataList;
+}
+
+QString medAbstractData::getExpectedName()
+{
+    return d->expectedName;
+}
+
+void medAbstractData::setExpectedName(QString name)
+{
+    d->expectedName = name;
 }

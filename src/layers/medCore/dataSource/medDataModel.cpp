@@ -14,6 +14,7 @@
 #include <medDataModel.h>
 #include <medDataImporter.h>
 #include <medDataExporter.h>
+#include <medMetaDataKeys.h>
 
 #include <QTemporaryDir>
 #include <QModelIndex>
@@ -258,7 +259,8 @@ medAbstractData * medDataModel::getData(medDataIndex const & index)
         QString source = index.uri()[0];
         if (m_sourceIdToInstanceMap.contains(source))
         {
-            QVariant data = m_sourceIdToInstanceMap[source]->getDirectData(
+            auto pSource = m_sourceIdToInstanceMap[source];
+            QVariant data = pSource->getDirectData(
                     index.uri().size() - 2, index.uri()[index.uri().size() - 1]);
             medAbstractData *pDataTmp = nullptr;
             if (data.canConvert<medAbstractData *>())
@@ -269,6 +271,11 @@ medAbstractData * medDataModel::getData(medDataIndex const & index)
             {
                 pDataTmp = medDataImporter::convertSingleDataOnfly(data.toString());
                 pDataTmp->setDataIndex(index);
+                QModelIndex modelIndex = m_sourcesModelMap[pSource]->toIndex(index.asString());
+                QString hruUri = m_sourcesModelMap[pSource]->toHumanReadableUri(modelIndex);
+                QString name = hruUri.right(hruUri.size()-hruUri.lastIndexOf("\r\n")-1);
+                pDataTmp->setExpectedName(name);
+                pDataTmp->setMetaData(medMetaDataKeys::SeriesDescription.key(), name);
             }
             else if (data.canConvert<QByteArray>())
             {
@@ -348,14 +355,14 @@ QUuid medDataModel::saveData(medAbstractData &data)
     QTemporaryDir tmpDir;
     if (tmpDir.isValid())
     {
-        QString fullTmpPath = tmpDir.path() + "/NewDataSegmented";/*+ dataName*/;
+        QString fullTmpPath = tmpDir.path() + "/" + QUuid::createUuid().toString().replace("{", "").replace("}", "");/*+ dataName*/;
         bool bWritableData = medDataExporter::convertSingleDataOnfly(&data, fullTmpPath);
         if (bWritableData)
         {
             QVariant dataset;
             dataset.setValue(fullTmpPath);
 
-            QString key = pSource->addData(dataset, parentUri, "new data segmented");
+            QString key = pSource->addData(dataset, parentUri, data.getExpectedName());
             // ////////////////////////////////////////////////////////////////////////
             // Refresh dataModelElement
             if (!key.isEmpty())

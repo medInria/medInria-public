@@ -734,13 +734,18 @@ void AlgorithmPaintToolBox::import()
     medAbstractData *output = dynamic_cast<medAbstractData*>(m_maskData->clone());
 
     copyMetaData(output, m_imageData);
+
     if (m_imageData->dataIndex().isV2())
     {
+
         QStringList desturi = m_imageData->dataIndex().uri();
         desturi.pop_back();
 
         output->setDataIndex(desturi);
         output->addParentData(m_imageData);
+        QString desc = m_imageData->getExpectedName() + "_painted";
+        output->setExpectedName(desc);
+        output->setMetaData(medMetaDataKeys::SeriesDescription.key(), desc);
     }
     medDataManager::instance()->importData(output, false);
 

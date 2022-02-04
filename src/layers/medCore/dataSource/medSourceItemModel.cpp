@@ -365,9 +365,19 @@ bool medSourceItemModel::fetch(QStringList uri) //See populateLevelV2
 //    QModelIndex tmpIndex;
 //    QString tmpIId;
     QString uriAsString = uri[0] + ":";
-    for (int i = 1; i < uri.size(); ++i)
+    int i = 1;
+    if (uri.size() > 1)
     {
-        uriAsString += uri[i] + "\r\n";
+        uriAsString += uri[i];
+        ++i;
+    }
+    if (uri.size() > 2)
+    {
+        do
+        {
+            uriAsString += "\r\n" + uri[i];
+            ++i;
+        } while (i < uri.size());
     }
 
     populateLevelV2(toIndex(uriAsString), uri.last());
@@ -565,6 +575,35 @@ QString medSourceItemModel::toUri(QModelIndex index)
     }
 
     return uriRes;
+}
+
+QString medSourceItemModel::toHumanReadableUri(QModelIndex const & index)
+{
+    QString HRUriRes;
+
+    QModelIndex indexTmp = index;
+    QStringList tmpNames;
+
+    while (indexTmp.isValid())
+    {
+        auto *item = getItem(indexTmp);
+        if (item->model == this)
+        {
+            tmpNames.push_front(item->data(1).toString());
+        }
+        indexTmp = indexTmp.parent();
+    }
+
+    if (!tmpNames.isEmpty())
+    {
+        int i = 0;
+        for (i = 0; i < tmpNames.size() - 1; ++i)
+        {
+            HRUriRes += tmpNames[i] + "\r\n";
+        }
+        HRUriRes += tmpNames[i];
+    }
+    return HRUriRes;
 }
 
 bool medSourceItemModel::setAdditionnalMetaData2(QModelIndex const & index, datasetAttributes4 const & attributes)

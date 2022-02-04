@@ -101,9 +101,14 @@ QString medDataIndex::asString() const
     else
     {
         returnString = m_uriAsList[0] + ":";
-        for (int i = 1; i < m_uriAsList.size(); ++i)
+        if (!m_uriAsList.isEmpty())
         {
-            returnString += m_uriAsList[i] + "\r\n";
+            int i = 1;
+            for (i = 1; i < m_uriAsList.size() - 1; ++i)
+            {
+                returnString += m_uriAsList[i] + "\r\n";
+            }
+            returnString += m_uriAsList[i];
         }
     }
 

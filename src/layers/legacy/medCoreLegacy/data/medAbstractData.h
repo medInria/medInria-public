@@ -56,7 +56,8 @@ public:
     bool removeDerivedData(medAbstractData * pi_derivedData);
     QList<medAbstractData*> parentData();
     QList<medAbstractData*> derivedData();
-
+    void setExpectedName(QString name);
+    QString getExpectedName();
 public slots:
 
     void clearAttachedData();
