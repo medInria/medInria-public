@@ -217,6 +217,8 @@ bool medDataModel::optionalAttributes(QString const & pi_sourceIntanceId, unsign
 //    return bRes;
 //}
 
+
+
 QString medDataModel::getInstanceName(QString const & pi_sourceIntanceId)
 {
     QString instanceNameRes;

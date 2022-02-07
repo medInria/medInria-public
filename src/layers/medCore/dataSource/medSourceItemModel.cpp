@@ -300,7 +300,7 @@ QMimeData * medSourceItemModel::mimeData(const QModelIndexList & indexes) const
     {
         if (index.isValid() && index.column() == 0)
         {
-            encodedData.append(getItem(index)->uri().toUtf8());
+            encodedData.append(getItem(index)->uriAsString().toUtf8());
             encodedData.append('\0');            
         }
     }
@@ -529,7 +529,7 @@ QModelIndex medSourceItemModel::toIndex(QString uri)
 {
     QModelIndex indexRes;
 
-    int sourceDelimterIndex = uri.indexOf(QString(":"));
+    int sourceDelimterIndex = uri.indexOf(QString(":")); //TODO06
     QStringList uriAsList = uri.right(uri.size() - sourceDelimterIndex - 1).split(QString("\r\n"));
     uriAsList.push_front(uri.left(sourceDelimterIndex));
     
@@ -570,7 +570,7 @@ QString medSourceItemModel::toUri(QModelIndex index)
         auto *item = getItem(index);
         if (item->model == this)
         {
-            uriRes = item->uri();
+            uriRes = item->uriAsString();
         }
     }
 
@@ -698,7 +698,7 @@ void medSourceItemModel::itemPressed(QModelIndex const &index)
             auto key = pItemCurrent->iid();
             populateLevel(index, key);
         }
-        QString uri = pItemCurrent->uri();
+        QString uri = pItemCurrent->uriAsString();
         QModelIndex index2 = toIndex(uri);
         void* ptr = index2.internalPointer();
         QString uri2 = toUri(index2);
@@ -991,9 +991,9 @@ void medSourceItemModel::expandAll(QModelIndex index, QString key)
 
         for (auto childItem : item->childItems)
         {
-            QString uri = childItem->uri();
+            QString uri = childItem->uriAsString();
 
-            int sourceDelimterIndex = uri.indexOf(QString(":"));
+            int sourceDelimterIndex = uri.indexOf(QString(":"));//TODO06
             QStringList uriAsList = uri.right(uri.size() - sourceDelimterIndex - 1).split(QString("\r\n"));
             uriAsList.push_front(uri.left(sourceDelimterIndex));
 

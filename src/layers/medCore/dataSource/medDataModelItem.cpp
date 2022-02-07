@@ -63,18 +63,25 @@ bool medDataModelItem::removeRows(int row, int count)
     return bRes;
 }
 
-QString medDataModelItem::uri()
+QStringList medDataModelItem::uriAsList()
 {
-    QString uriRes = model->getSourceIntanceId() + ":";
-
-    QStringList uriParts;
+    QStringList uriListRes;
 
     medDataModelItem *pItem = this;
     while (pItem->parentItem)
     {
-        uriParts.push_front(pItem->iid());
+        uriListRes.push_front(pItem->iid());
         pItem = pItem->parentItem;
     }
+
+    return uriListRes;
+}
+
+QString medDataModelItem::uriAsString()
+{
+    QString uriRes = model->getSourceIntanceId() + ":";
+
+    QStringList uriParts = uriAsList();
     int size = uriParts.size();
     if (size > 0)
     {

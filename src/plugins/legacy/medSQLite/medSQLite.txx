@@ -21,7 +21,7 @@
 template <typename T>
 medSQlite<T>::medSQlite()
         : medAbstractSource(), m_Driver("QSQLITE"),
-        m_ConnectionName("sqlite"), m_instanceId(QString()),
+        /*m_ConnectionName("sqlite"),*/ m_instanceId(QString()),
         m_online(false), m_LevelNames({"patient","study","series"})
 {
 #ifdef Q_OS_MAC
@@ -92,10 +92,10 @@ bool medSQlite<T>::connect(bool pi_bEnable)
     {
         if (!m_DbPath->value().isEmpty())
         {
-            m_Engine = T::database(m_ConnectionName);
+            m_Engine = T::database(m_instanceId);
             if (!m_Engine.isValid())
             {
-                m_Engine = T::addDatabase(m_Driver, m_ConnectionName);
+                m_Engine = T::addDatabase(m_Driver, m_instanceId);
             }
             m_Engine.setDatabaseName(m_DbPath->value() + "/db");
             bRes = m_Engine.open();
@@ -135,14 +135,14 @@ bool medSQlite<T>::connect(bool pi_bEnable)
                     if (!bRes)
                     {
                         m_Engine.close();
-                        T::removeDatabase(m_ConnectionName);
+                        T::removeDatabase(m_instanceId);
                     }
                 }
                 else if (!isValidDatabaseStructure())
                 {
                     bRes = false;
                     m_Engine.close();
-                    T::removeDatabase(m_ConnectionName);
+                    T::removeDatabase(m_instanceId);
                 }
                 if (bRes)
                 {
@@ -151,7 +151,7 @@ bool medSQlite<T>::connect(bool pi_bEnable)
             }
             else
             {
-                T::removeDatabase(m_ConnectionName);
+                T::removeDatabase(m_instanceId);
             }
         }
         else
@@ -164,7 +164,7 @@ bool medSQlite<T>::connect(bool pi_bEnable)
     {
         m_Engine.close();
         m_Engine = T();
-        T::removeDatabase(m_ConnectionName);
+        T::removeDatabase(m_instanceId);
         m_online = false;
         bRes = true;
     }

@@ -42,7 +42,6 @@ public:
     void setParent(medDataModelItem *parent);
     QVariant data  (int column,  int role = Qt::DisplayRole) const;
     void setMetaData(QMap<QString, QVariant> const &attributes, QMap<QString, QString> const &tags);
-    QVariant metaData(QString) const;//TODO19
 
 
     inline void setData(QVariant value, int column = 0, int role = Qt::DisplayRole) { itemData[column][role] = value; }
@@ -69,6 +68,7 @@ public:
     /* ***********************************************************************/
     /* *************** Data conversion ***************************************/
     /* ***********************************************************************/
-    QString uri();
+    QStringList uriAsList();
+    QString     uriAsString();
     QModelIndex index();
 };
