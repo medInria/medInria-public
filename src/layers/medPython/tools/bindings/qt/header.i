@@ -42,6 +42,9 @@
 #undef Q_DECL_NOTHROW
 #define Q_DECL_NOTHROW
 
+#undef Q_DECL_OVERRIDE
+#define Q_DECL_OVERRIDE
+
 #undef Q_DECL_PURE_FUNCTION
 #define Q_DECL_PURE_FUNCTION
 
@@ -120,10 +123,16 @@
         med::python::propagateErrorIfOccurred();
     }
 
-    %typemap(directorin) TYPE
+    %typemap(directorin) TYPE (PyObject* temp)
     {
-        medPythonConvert($1, $input);
+        medPythonConvert($1, &temp);
         med::python::propagateErrorIfOccurred();
+        $input = temp;
+    }
+
+    %typemap(in, numinputs = 0) TYPE* OUTPUT (TYPE temp)
+    {
+        $1 = &temp;
     }
 
 %enddef

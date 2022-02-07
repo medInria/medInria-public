@@ -27,6 +27,10 @@ function(generate_python_resources target)
     get_target_property(modules ${target} PYTHON_MODULES)
     get_target_property(bindings ${target} PYTHON_BINDINGS)
 
+    if (NOT modules)
+        set(modules "")
+    endif()
+
     if (NOT "__init__" IN_LIST modules)
         # Create default __init__ file
         set(init_file "${modules_dir}/__init__.py")
@@ -35,12 +39,10 @@ function(generate_python_resources target)
         list(APPEND modules "__init__")
     endif()
 
-    if (modules)
-        foreach (module ${modules})
-            list(APPEND module_paths "${modules_dir}/${module}.py")
-            list(APPEND depends "${modules_dir}/${module}.py")
-        endforeach()
-    endif()
+    foreach (module ${modules})
+        list(APPEND module_paths "${modules_dir}/${module}.py")
+        list(APPEND depends "${modules_dir}/${module}.py")
+    endforeach()
 
     if (bindings)
         foreach(bindings_target ${bindings})

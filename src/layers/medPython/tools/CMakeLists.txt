@@ -92,6 +92,7 @@ generate_python_resources(${TARGET_NAME})
 target_include_directories(${TARGET_NAME}
     PUBLIC
     ${${TARGET_NAME}_INCLUDE_DIRS}
+    ${CMAKE_CURRENT_SOURCE_DIR}/bindings
     )
 
 target_include_directories(qt_bindings

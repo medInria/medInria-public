@@ -13,6 +13,7 @@
 
 =========================================================================*/
 
+#include <medAbstractParameterL.h>
 #include <medAbstractProcessLegacy.h>
 #include <medButton.h>
 #include <medJobManagerL.h>
@@ -61,8 +62,6 @@ medToolBox::medToolBox(QWidget *parent) : QWidget(parent), d(new medToolBoxPriva
     connect(d->header,SIGNAL(triggered()),this,SLOT(switchMinimize()));
 
     this->setSizePolicy(QSizePolicy::Minimum, QSizePolicy::Minimum);
-
-    this->setTitle(this->name());
 }
 
 medToolBox::~medToolBox(void)
@@ -418,5 +417,112 @@ void medToolBox::enableOnProcessSuccessImportOutput(medJobItemL *job, bool enabl
     else
     {
         disconnect(job, SIGNAL(success(QObject*)), this->getWorkspace(), SLOT(importProcessOutput()));
+    }
+}
+
+QVariant medToolBox::getValue(QString name) const
+{
+    QObject* component = const_cast<medToolBox*>(this)->getComponent(name);
+    QVariant result;
+
+    if (component)
+    {
+        bool found = false;
+
+        if (dynamic_cast<medAbstractParameterL*>(component))
+        {
+            found = getComponentValue<medAbstractIntParameterL>(component, &result)
+                    || getComponentValue<medAbstractDoubleParameterL>(component, &result)
+                    || getComponentValue<medAbstractBoolParameterL>(component, &result)
+                    || getComponentValue<medAbstractStringParameterL>(component, &result);
+        }
+        else if  (dynamic_cast<QAbstractSpinBox*>(component))
+        {
+            found = getComponentValue<QSpinBox>(component, &result)
+                    || getComponentValue<QDoubleSpinBox>(component, &result);
+        }
+
+        if (!found)
+        {
+            qWarning() << QString("Could not retrieve the value of component \"%1\" in toolbox %2")
+                          .arg(name, identifier());
+        }
+    }
+
+    return result;
+}
+
+bool medToolBox::setValue(QString name, QVariant value)
+{
+    QObject* component = getComponent(name);
+    bool found = false;
+
+    if (component)
+    {
+        if (dynamic_cast<medAbstractParameterL*>(component))
+        {
+            found = setComponentValue<medAbstractIntParameterL>(component, value.toInt())
+                    || setComponentValue<medAbstractDoubleParameterL>(component, value.toDouble())
+                    || setComponentValue<medAbstractBoolParameterL>(component, value.toBool())
+                    || setComponentValue<medAbstractStringParameterL>(component, value.toString());
+        }
+        else if (dynamic_cast<QAbstractSpinBox*>(component))
+        {
+            found = setComponentValue<QSpinBox>(component, value.toInt())
+                    || setComponentValue<QDoubleSpinBox>(component, value.toDouble());
+        }
+
+        if (!found)
+        {
+            qWarning() << QString("Could not set the value of component \"%1\" in toolbox %2")
+                          .arg(name, identifier());
+        }
+    }
+
+    return found;
+}
+
+QObject* medToolBox::getComponent(QString name)
+{
+    QObject* result = findChild<QObject*>(name);
+
+    if (!result)
+    {
+        qWarning() << QString("Could find component \"%1\" in toolbox %2")
+                      .arg(name, identifier());
+    }
+
+    return result;
+}
+
+template<class COMPONENT_TYPE, class VALUE_TYPE>
+bool medToolBox::getComponentValue(QObject* component, VALUE_TYPE* value) const
+{
+    COMPONENT_TYPE* castedComponent = dynamic_cast<COMPONENT_TYPE*>(component);
+
+    if (castedComponent)
+    {
+        *value = castedComponent->value();
+        return true;
+    }
+    else
+    {
+        return false;
+    }
+}
+
+template<class COMPONENT_TYPE, class VALUE_TYPE>
+bool medToolBox::setComponentValue(QObject* component, VALUE_TYPE value)
+{
+    COMPONENT_TYPE* castedComponent = dynamic_cast<COMPONENT_TYPE*>(component);
+
+    if (castedComponent)
+    {
+        castedComponent->setValue(value);
+        return true;
+    }
+    else
+    {
+        return false;
     }
 }
