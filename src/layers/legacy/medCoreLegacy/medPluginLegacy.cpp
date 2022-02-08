@@ -24,7 +24,7 @@ bool medPluginLegacy::uninitialize()
 
 QString medPluginLegacy::contact() const
 {
-    return (char*)(PROJECT_CONTACT);
+    return PROJECT_CONTACT;
 }
 
 QString medPluginLegacy::description() const
@@ -44,7 +44,7 @@ QString medPluginLegacy::version() const
 
 QStringList medPluginLegacy::authors() const
 {
-    return QStringList((char*)(PROJECT_TEAM_NAME));
+    return QStringList(PROJECT_TEAM_NAME);
 }
 
 QStringList medPluginLegacy::contributors() const
