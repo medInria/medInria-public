@@ -133,7 +133,7 @@ bool medAPHP::isOnline()
 
 bool medAPHP::isFetchByMinimalEntriesOrMandatoryAttributes()
 {
-    return false;
+    return true;
 }
 
 QString medAPHP::getInstanceName()
@@ -175,6 +175,8 @@ QStringList medAPHP::getMandatoryAttributesKeys(unsigned int pi_uiLevel)
         case 1:
             return {"id", "description", "uid"};
         case 2:
+            return {"id", "description", "uid"};
+        case 3:
             return {"id", "description", "uid"};
         default:
             return QStringList();
@@ -430,7 +432,29 @@ int medAPHP::getQtDcmAsyncData(unsigned int pi_uiLevel, const QString &id)
 
 QString medAPHP::addData(QVariant data, QStringList parentUri, QString name)
 {
-    return "";
+    QString keyRes;
+
+    int level  = parentUri.size() - 1;
+
+    switch (level)
+    {
+        case 0: //Patient
+        case 1: //Study
+        case 2://Series
+            break;
+        case 3:// Annotations
+        {
+            keyRes = m_AnnotationAPI->addData(data, name, parentUri.last());
+
+            break;
+        }
+        default: //Unknown level
+        {
+            break;
+        }
+    }
+
+    return keyRes;
 }
 
 void medAPHP::abort(int pi_iRequest)

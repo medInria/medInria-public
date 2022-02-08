@@ -53,6 +53,8 @@ public:
     /* ***********************************************************************/
     QList<QMap<QString, QString>> findAnnotationMinimalEntries(const QString &seriesInstanceUID) override;
     int getAnnotationData(const QString &uid) override;
+    QString addData(QVariant dataset, QString name, QString &seriesUid) override;
+
 
 public slots:
     void moveProgression(){};

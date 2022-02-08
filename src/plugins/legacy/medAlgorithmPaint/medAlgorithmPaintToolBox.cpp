@@ -737,9 +737,11 @@ void AlgorithmPaintToolBox::import()
 
     if (m_imageData->dataIndex().isV2())
     {
-
         QStringList desturi = m_imageData->dataIndex().uri();
-        desturi.pop_back();
+        if (desturi.first().contains("medSQLite"))
+        {
+            desturi.pop_back();
+        }
 
         output->setDataIndex(desturi);
         output->addParentData(m_imageData);
