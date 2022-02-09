@@ -16,31 +16,13 @@
 #include <medAnnotationInteractor.h>
 
 // /////////////////////////////////////////////////////////////////
-// PluginPrivate
-// /////////////////////////////////////////////////////////////////
-
-class medSegmentationPluginPrivate
-{
-public:
-    // Class variables go here.
-    static const char *s_Name;
-};
-const char * medSegmentationPluginPrivate::s_Name = "segmentationPlugin";
-
-// /////////////////////////////////////////////////////////////////
 // Plugin
 // /////////////////////////////////////////////////////////////////
 
 medSegmentationPlugin::medSegmentationPlugin(QObject *parent)
-    : medPluginLegacy(parent), d(new medSegmentationPluginPrivate)
+    : medPluginLegacy(parent)
 {
 
-}
-
-medSegmentationPlugin::~medSegmentationPlugin()
-{
-    delete d;
-    d = nullptr;
 }
 
 bool medSegmentationPlugin::initialize()
@@ -53,14 +35,9 @@ bool medSegmentationPlugin::initialize()
     return true;
 }
 
-bool medSegmentationPlugin::uninitialize()
-{
-    return true;
-}
-
 QString medSegmentationPlugin::name() const
 {
-    return medSegmentationPluginPrivate::s_Name;
+    return "segmentationPlugin";
 }
 
 QString medSegmentationPlugin::description() const
@@ -77,11 +54,6 @@ QString medSegmentationPlugin::version() const
     return MEDSEGMENTATIONPLUGIN_VERSION;
 }
 
-QString medSegmentationPlugin::contact() const
-{
-    return "John.Stark@inria.fr";
-}
-
 QStringList medSegmentationPlugin::authors() const
 {
     QStringList list;
@@ -95,9 +67,4 @@ QStringList medSegmentationPlugin::contributors() const
     list <<  QString::fromUtf8("Benoît Bleuzé")
              << "Olivier Commowick";
     return list;
-}
-
-QString medSegmentationPlugin::identifier() const
-{
-    return medSegmentationPluginPrivate::s_Name;
 }

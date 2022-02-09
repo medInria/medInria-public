@@ -69,7 +69,7 @@ QString ITKProcessExamplePlugin::name() const
 
 QString ITKProcessExamplePlugin::contact() const
 {
-    return QString::fromUtf8("Clément Philipot clement.philipot@inria.fr");
+    return QString::fromUtf8("example@inria.fr");
 }
 
 QString ITKProcessExamplePlugin::version() const

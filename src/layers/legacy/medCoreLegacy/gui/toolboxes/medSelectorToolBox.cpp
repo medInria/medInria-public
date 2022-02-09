@@ -26,18 +26,27 @@ public:
     QVBoxLayout *mainLayout;
 
     medAbstractData *inputData;
+
+    QPushButton *helpButton;
 };
 
 medSelectorToolBox::medSelectorToolBox(QWidget *parent, QString tlbxId)
     : medToolBox(parent), d(new medSelectorToolBoxPrivate)
 {
+    QWidget *mainWidget = new QWidget;
+    d->mainLayout = new QVBoxLayout;
+    auto selectorLayout = new QHBoxLayout;
+    d->mainLayout->addLayout(selectorLayout);
+    mainWidget->setLayout(d->mainLayout);
+    addWidget(mainWidget);
+
     d->currentToolBox = nullptr;
 
     d->chooseComboBox = new medComboBox;
     d->chooseComboBox->addItem("* Choose a toolbox *");
     d->chooseComboBox->setToolTip(tr("Choose a toolbox in the list"));
     d->chooseComboBox->setItemData(0, "Choose a toolbox", Qt::ToolTipRole);
-
+    
     medToolBoxFactory *tbFactory = medToolBoxFactory::instance();
 
     // Get informations about the workspace toolboxes:
@@ -68,14 +77,19 @@ medSelectorToolBox::medSelectorToolBox(QWidget *parent, QString tlbxId)
 
     connect(d->chooseComboBox, SIGNAL(activated(int)), this, SLOT(changeCurrentToolBox(int)));
 
-    QWidget *mainWidget = new QWidget;
-    d->mainLayout = new QVBoxLayout;
+    d->chooseComboBox->setSizePolicy(QSizePolicy::MinimumExpanding, QSizePolicy::MinimumExpanding);
+    selectorLayout->addWidget(d->chooseComboBox);
 
-    d->chooseComboBox->adjustSize();
-    d->mainLayout->addWidget(d->chooseComboBox);
-    mainWidget->setLayout(d->mainLayout);
-
-    this->addWidget(mainWidget);
+    // Help button
+    d->helpButton = new QPushButton;
+    QIcon helpIcon;
+    helpIcon.addPixmap(QPixmap(":icons/help_white.svg"),QIcon::Normal);
+    helpIcon.addPixmap(QPixmap(":icons/help_grey.svg"), QIcon::Disabled);
+    d->helpButton->setIcon(helpIcon);
+    d->helpButton->setToolTip("Help for the selected toolbox");
+    d->helpButton->setStyleSheet("QPushButton { background-color: transparent; border: 0px }");
+    d->helpButton->setEnabled(false);
+    selectorLayout->addWidget(d->helpButton, 0, Qt::AlignRight);
 
     clear();
 }
@@ -134,8 +148,8 @@ void medSelectorToolBox::changeCurrentToolBox(const QString &identifier)
         d->currentToolBox->header()->hide();
 
         dtkPlugin *plugin = d->currentToolBox->plugin();
-        this->setAboutPluginButton(plugin);
-        this->setAboutPluginVisibility(true);
+        this->setAboutPluginButton(plugin, d->helpButton);
+        d->helpButton->setEnabled(true);
 
         d->currentToolBox->show();
         d->mainLayout->addWidget(d->currentToolBox);
@@ -147,7 +161,7 @@ void medSelectorToolBox::changeCurrentToolBox(const QString &identifier)
     }
     else
     {
-        this->setAboutPluginVisibility(false);
+        d->helpButton->setEnabled(false);
     }
 }
 

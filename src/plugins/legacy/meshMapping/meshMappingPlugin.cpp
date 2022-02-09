@@ -40,9 +40,17 @@ QString meshMappingPlugin::name() const
 
 QString meshMappingPlugin::description() const
 {
-    QString description = \
-            tr("Sample data values at specified point locations on a mesh.\
-               <br><br>This plugin uses the <a href=\"https://www.vtk.org/\" style=\"color: #cc0000\" >VTK library</a>.");
+    QString description;
+    description += "<h1>Mesh Mapping Tutorial</h1>";
+    description += "Sample data values at specified point locations on a mesh. ";
+    description += "It keeps the intersection of the mesh and the data, and set these values to the mesh.";
+    description += "<ul>";
+    description += "<li>Drop a mesh and a data in the view.</li>";
+    description += "<li>Select the data (from which to obtain values) in the parameters of the toolbox.</li>";
+    description += "<li>Select the mesh (whose geometry will be used to determine positions to map) in the parameters of the toolbox.</li>";
+    description += "<li>When you are ready, click on 'Run'.</li>";
+    description += "</ul>";
+    description += "This plugin uses the VTK library: https://vtk.org";
     return description;
 }
 

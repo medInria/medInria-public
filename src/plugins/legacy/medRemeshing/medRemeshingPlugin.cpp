@@ -48,16 +48,24 @@ QString medRemeshingPlugin::name() const
 
 QString medRemeshingPlugin::description() const
 {
-    QString description = \
-            "Modify the number of polygons of a 3D mesh:<br><br> \
-            - <i>Refinement</i><br> \
-            Creates four new triangles for each triangle in the mesh using <a href=\"https://www.vtk.org/doc/nightly/html/classvtkButterflySubdivisionFilter.html\" style=\"color: #cc0000\" >vtkButterflySubdivisionFilter</a>.<br><br> \
-            - <i>Decimation</i><br> \
-            Divides by four the number of triangles using <a href=\"https://www.vtk.org/doc/nightly/html/classvtkDecimatePro.html\" style=\"color: #cc0000\" >vtkDecimatePro</a>.<br><br> \
-            - <i>Manual</i> modification of the number of triangles.<br><br> \
-            - <i>Smooth</i> the mesh using <a href=\"https://www.vtk.org/doc/nightly/html/classvtkSmoothPolyDataFilter.html\" style=\"color: #cc0000\" >vtkSmoothPolyDataFilter</a>. \
-            <br><br>This plugin uses the <a href=\"https://www.vtk.org/\" style=\"color: #cc0000\" >VTK library</a>.";
+    QString description;
+    description += "<h1>RemeshingTutorial</h1>";
+    description += "Modify the number of polygons of a 3D mesh. You can reduce (decimate) and increase (refine) the number of polygons of your mesh, ";
+    description += "choose the exact number of polygons that you need, or smooth your mesh.";
+    
+    description += "<h2>Refinement</h2>";
+    description += "Creates four new triangles for each triangle in the mesh using vtkButterflySubdivisionFilter vtk filter.";
 
+    description += "<h2>Decimation</h2>";
+    description += "Divides by four the number of triangles using vtkDecimatePro vtk filter. You can choose to preserve the shape of the mesh during hard decimation.";
+
+    description += "<h2>Manual change of polygon number</h2>";
+    description += "Manual modification of the number of triangles.";
+
+    description += "<h2>Smooth</h2>";
+    description += "Smooth the mesh using vtkSmoothPolyDataFilter vtk filter.";
+ 
+    description += "<br><br>This plugin uses the VTK library: https://vtk.org";
     return description;
 }
 

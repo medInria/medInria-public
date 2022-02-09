@@ -20,7 +20,7 @@ set(CMAKE_ARCHIVE_OUTPUT_DIRECTORY ${CMAKE_BINARY_DIR}/plugins/)
 ## Setup version numbering
 ## #############################################################################
 
-set(${PROJECT_NAME}_VERSION ${MEDINRIA_VERSION})
+set(${TARGET_NAME}_VERSION ${${PROJECT_NAME}_VERSION})
 
 string(TOUPPER ${PROJECT_NAME} PROJECT_NAME_UP)
 add_definitions(-D${PROJECT_NAME_UP}_VERSION="${${PROJECT_NAME}_VERSION}")

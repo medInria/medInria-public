@@ -115,21 +115,6 @@ polygonRoiToolBox::polygonRoiToolBox(QWidget *parent ) :
     saveLayout->addWidget(saveLabel);
     saveLayout->addLayout(saveButtonsLayout);
 
-    // How to use
-    QString underlineStyle = "<br><br><span style=\" text-decoration: underline;\">%1</span>";
-    QLabel *explanation = new QLabel(QString(underlineStyle).arg("Define a Contour") + ": activate the toolbox, then click on the data set"
-                                     + QString(underlineStyle).arg("Define new Label") + ": right-click on the image then choose color"
-                                     + QString(underlineStyle).arg("Rename a Label") + ": put the cursor on a node then right-click and set a new label name"
-                                     + QString(underlineStyle).arg("Remove node/contour/label") + ": backSpace or put the cursor on a node then right-click and choose menu \"Remove\""
-                                     + QString(underlineStyle).arg("Save segmentation") + ": put the cursor on a node then right-click and choose menu \"Save\""
-                                     + QString(underlineStyle).arg("Copy ROIs in current slice") + ": CTRL/CMD + C or put the cursor on a node then right-click and choose menu \"Copy\""
-                                     + QString(underlineStyle).arg("Paste ROIs") + ": CTRL/CMD + V"
-                                     + QString(underlineStyle).arg("Change current label") + ": put the cursor on a node then right-click and choose menu \"Change label\"");
-
-    explanation->setSizePolicy(QSizePolicy::Ignored, QSizePolicy::Preferred);
-    explanation->setWordWrap(true);
-    layout->addWidget(explanation);
-
     // buttons initialisation: view has no data
     disableButtons();
 }

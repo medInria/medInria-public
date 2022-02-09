@@ -12,38 +12,21 @@
 =========================================================================*/
 
 #include <medToolBoxHeader.h>
-#include <medButton.h>
 
 class medToolBoxHeaderPrivate
 {
 public:
     QString title;
     QPoint titleOffset;
-    medButton* about;
-    static QPixmap* png;
-    static const QString tooltip;
 };
-
-const QString medToolBoxHeaderPrivate::tooltip = QObject::tr("About this plugin");
-QPixmap * medToolBoxHeaderPrivate::png = nullptr;
 
 medToolBoxHeader::medToolBoxHeader(QWidget *parent) : QFrame(parent), d(new medToolBoxHeaderPrivate)
 {
-    if (!d->png)  
-    {
-        d->png = new QPixmap(":icons/information_blue.png");
-    }
     d->title = "Untitled";
     d->titleOffset = QPoint( 0, 0 );
 
     QBoxLayout* layout = new QBoxLayout(QBoxLayout::LeftToRight,this);
     layout->setMargin(0);
-
-    d->about = new medButton(this,*(d->png),
-                             medToolBoxHeaderPrivate::tooltip);
-    layout->addStretch();
-    layout->addWidget(d->about);
-    d->about->hide();
 }
 
 medToolBoxHeader::~medToolBoxHeader(void)
@@ -103,16 +86,6 @@ void medToolBoxHeader::paintEvent(QPaintEvent *event)
 }
 
 /**
- * @brief
- *
- * @param visible
- */
-void medToolBoxHeader::setAboutButtonVisibility(bool visible)
-{
-    d->about->setVisible(visible);
-}
-
-/**
  * @brief Emits the triggered() signal.
  *
  * @param event
@@ -121,13 +94,4 @@ void medToolBoxHeader::mousePressEvent( QMouseEvent *event )
 {
     Q_UNUSED(event);
     emit triggered();
-}
-
-/**
- * @brief Returns a pointer to the aboutButton.
- *
- */
-medButton * medToolBoxHeader::aboutButton()
-{
-    return d->about;
 }

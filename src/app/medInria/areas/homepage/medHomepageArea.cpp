@@ -85,7 +85,7 @@ medHomepageArea::medHomepageArea ( QWidget * parent ) : QWidget ( parent ), d ( 
     }
 
     // --- View menu
-    QMenu *menuView = menu_bar->addMenu("View");
+    QMenu *menuView = menu_bar->addMenu("Views");
 
     QAction *actionAjust = new QAction(tr("&Ajust containers size"), parent);
     connect(actionAjust, &QAction::triggered, mainWindow, &medMainWindow::adjustContainersSize);

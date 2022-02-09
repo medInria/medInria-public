@@ -45,14 +45,29 @@ bool reformatPlugin::initialize()
 
 QString reformatPlugin::description() const
 {
-  QString description = \
-          "This plugin implements two toolboxes: \
-          <br><h5>Cropping</h5><br>  \
-          Crop a volume into a smaller one. \
-          <br><h5>Reslice</h5><br>  \
-          Reorient a volume, change its spacing or dimension. \
-          <br><br>This plugin uses the <a href=\"https://itk.org/\" style=\"color: #cc0000\" >ITK</a> \
-          and <a href=\"https://www.vtk.org/\" style=\"color: #cc0000\" >VTK</a> libraries.";
+    QString description;
+    description += "This plugin implements two toolboxes: ";
+    description += "<h2>Cropping</h2>";
+    description += "Crop a volume into a smaller one. You can manually move and transform the cropping box on the view holding the edges with your mouse.<br>";
+    description += "From the View settings toolbox, you can change the volume orientation and adapt the cropping box in this new direction.<br>";
+    description += "When you are ready, click on 'Apply' to apply the segmentation to the volume. The output is displayed in the view.<br>";
+    description += "Click on 'Save' to save the output in the database.";
+
+    description += "<h2>Reslice</h2>";
+    description += "Reorient a volume, change its spacing or dimension.";
+    description += "<ul>";
+    description += "<li>Drop a volume in the view.</li>";
+    description += "<li>Click on 'Start Reslice'.</li>";
+    description += "<li>The view is split in 3 orientations and 1 view in 3D.</li>";
+    description += "<li>Hold the red and green axis with your mouse to rotate the volume.</li>";
+    description += "<li>Click on 'o' to reset the orientations.</li>";
+    description += "<li>You can change the volume constrast holding left-click on the views.</li>";
+    description += "<li>Click on 'r' to reset the contrast changes.</li>";
+    description += "<li>In the toolbox, you can choose between 'Spacing' and 'Dimension' parameters to apply to the volume.</li>";
+    description += "<li>When you are ready, click on 'Save Image' to export the reformated volume in the database.</li>";
+    description += "</ul>";
+
+    description += "This plugin uses the ITK and VTK libraries: https://itk.org and https://vtk.org";
   return description;
 }
 

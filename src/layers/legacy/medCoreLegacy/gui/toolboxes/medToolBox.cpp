@@ -14,15 +14,14 @@
 =========================================================================*/
 
 #include <medAbstractProcessLegacy.h>
-#include <medButton.h>
 #include <medJobManagerL.h>
 #include <medMessageController.h>
 #include <medToolBox.h>
 #include <medToolBoxHeader.h>
+#include <medToolBoxHelper.h>
 #include <medToolBoxBody.h>
 
 #include <dtkCoreSupport/dtkPlugin>
-#include <dtkGuiSupport/dtkAboutPlugin.h>
 
 class medToolBoxPrivate
 {
@@ -206,78 +205,42 @@ void medToolBox::addValidDataType(const QString & dataType)
 }
 
 /**
- * @brief Enables or disable the aboutPlugin button.
+ * @brief Sets up the help button for a plugin.
  *
- * @param enable true to display the button.
+ * @param plugin The plugin from which we want to display a documentation.
  */
-void medToolBox::setAboutPluginVisibility(bool enable)
+void medToolBox::setAboutPluginButton(dtkPlugin *plugin, QPushButton* helpButton)
 {
-    d->aboutPluginVisibility = enable;
-    d->header->setAboutButtonVisibility(enable);
-}
-
-/**
- * @brief Returns the aboutPlugin button visibility.
- *
- */
-bool medToolBox::aboutPluginVisibility()
-{
-    return d->aboutPluginVisibility;
-}
-
-/**
- * @brief Sets up the plugin this button is refering to.
- *
- * @param plugin The dtkPlugin this button will give info about.
- */
-void medToolBox::setAboutPluginButton(dtkPlugin *plugin)
-{
-    medButton* aboutButton = d->header->aboutButton();
-    if (aboutButton)
+    if (helpButton)
     {
-        aboutButton->disconnect();
-        connect(aboutButton,SIGNAL(triggered()),this,SLOT(onAboutButtonClicked()));
+        helpButton->disconnect();
         d->plugin = plugin;
+        connect(helpButton, SIGNAL(clicked()), this, SLOT(onAboutButtonClicked()));
     }
     else
     {
-        qWarning() << "no aboutButton found for toolbox" << d->header->title();
+        qWarning() << "No help found for toolbox" << d->header->title();
     }
 }
 
 /**
- * @brief Raises a dtkAboutPlugin dialog.
+ * @brief Raises a documentation dialog.
  *
  */
 void medToolBox::onAboutButtonClicked()
 {
     if(d->plugin)
     {
-        qDebug() << "about plugin" << d->plugin->name();
+        qDebug() << qPrintable("Help plugin:") << qPrintable(d->plugin->name());
 
-        QDialog * dial = new QDialog(this);
-        QString windowTitle = tr("About ");
-        windowTitle += d->plugin->name();
-        dial->setWindowTitle(windowTitle);
-        dtkAboutPlugin * apWidget = new dtkAboutPlugin(d->plugin,dial);
+        QList<QString> toolboxDocStrings;
+        toolboxDocStrings.append(d->plugin->description());
+        toolboxDocStrings.append(d->plugin->authors().join(","));
+        toolboxDocStrings.append(d->plugin->contact());
+        toolboxDocStrings.append(d->plugin->version());
 
-        QVBoxLayout * layout = new QVBoxLayout(dial);
-
-        QPushButton * okBut = new QPushButton(dial);
-        okBut->setText("Ok");
-        okBut->setFocusPolicy(Qt::NoFocus);
-        QObject::connect(okBut, SIGNAL(clicked()), dial, SLOT(close()));
-
-        QHBoxLayout * butLayout = new QHBoxLayout;
-        butLayout->addStretch();
-        butLayout->addWidget(okBut);
-        butLayout->addStretch();
-
-        layout->addWidget(apWidget);
-        layout->addLayout(butLayout);
-
-        dial->setLayout(layout);
-        dial->exec();
+        medToolBoxHelper* dialog = new medToolBoxHelper(toolboxDocStrings);
+        dialog->show();
     }
     else
     {

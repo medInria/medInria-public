@@ -35,11 +35,16 @@ bool medN4BiasCorrectionPlugin::initialize()
 
 QString medN4BiasCorrectionPlugin::description() const
 {
-  QString description = \
-          "This plugin implements <a href=\"https://itk.org/Doxygen/html/classitk_1_1N4BiasFieldCorrectionImageFilter.html\" style=\"color: #cc0000\" >itk::N4BiasFieldCorrectionImageFilter</a> \
-          from the <a href=\"https://itk.org/\" style=\"color: #cc0000\" >ITK library</a>.<br>  \
-          Drop an MRI volume in the INPUT view, choose your parameters and run.";
-  return description;
+    QString description;
+    description += "<h1>N4 Bias Correction Tutorial</h1>";
+    description += "This toolbox allows to correct nonuniformity associated with MR images.";
+    description += "<ul>";
+    description += "<li>Drop an MR volume in the INPUT view.</li>";
+    description += "<li>Choose your parameters.</li>";
+    description += "<li>Click on 'Run'.</li>";
+    description += "</ul>";
+    description += "This plugin uses the itk::N4BiasFieldCorrectionImageFilter filter from ITK library: https://itk.org";
+    return description;
 }
 
 QString medN4BiasCorrectionPlugin::name() const

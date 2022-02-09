@@ -13,13 +13,11 @@
 
 #pragma once
 
-#include <dtkCoreSupport/dtkPlugin.h>
+#include <medPluginLegacy.h>
 
 #include "LCCLogDemonsPluginExport.h"
 
-class LCCLogDemonsPLUGIN_EXPORT LCCLogDemonsPluginPrivate;
-
-class LCCLogDemonsPLUGIN_EXPORT LCCLogDemonsPlugin : public dtkPlugin
+class LCCLogDemonsPLUGIN_EXPORT LCCLogDemonsPlugin : public medPluginLegacy
 {
     Q_OBJECT
     Q_PLUGIN_METADATA(IID "fr.inria.LCCLogDemonsPlugin" FILE "LCCLogDemonsPlugin.json")
@@ -27,23 +25,10 @@ class LCCLogDemonsPLUGIN_EXPORT LCCLogDemonsPlugin : public dtkPlugin
     
 public:
     LCCLogDemonsPlugin(QObject *parent = nullptr);
-    ~LCCLogDemonsPlugin();
     
     virtual bool initialize();
-    virtual bool uninitialize();
     
     virtual QString name() const;
-    virtual QString identifier() const;
     virtual QString description() const;
-    virtual QString contact() const;
-    virtual QString version() const;
-    virtual QStringList authors() const;
-    virtual QStringList contributors() const;
-    virtual QStringList dependencies() const;
-    
-    virtual QStringList tags() const;
     virtual QStringList types() const;
-    
-private:
-    LCCLogDemonsPluginPrivate *d;
 };

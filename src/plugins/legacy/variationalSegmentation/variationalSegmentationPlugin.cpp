@@ -43,9 +43,28 @@ QString variationalSegmentationPlugin::name() const
 
 QString variationalSegmentationPlugin::description() const
 {
-    QString description = \
-            tr("Define the contour of a mask by placing landmarks on a volume. \
-               <br><br>This plugin uses the <a href=\"https://www.vtk.org/\" style=\"color: #cc0000\" >VTK library</a>.");
+    QString description;
+    description += "<h1>Variational Segmentation Tutorial</h1>";
+    description += "Drop a volume in the view and click on 'Start Segmentation'.";
+
+    description += "<h2>Segmentation</h2>";
+    description += "Click on the data to add some ";
+    description += "landmarks on the contour, and at least one inside or outside the area you ";
+    description += "want to segment.";
+
+    description += "<h3>Type of landmarks to set</h3>";
+    description += "<ul>";
+    description += "<li>Inside VOI: \n\tShift + right mouse button</li>";
+    description += "<li>On VOI: \n\tShift + left mouse button</li>";
+    description += "<li>Outside VOI: \n\tShift + Ctrl + right mouse button \n\tor Shift + middle mouse button</li>";
+    description += "<li>To delete a landmark: \n\tCtrl + left mouse button on the landmark</li>";
+    description += "</ul>";
+
+    description += "<h2>Results</h2>";
+    description += "When you are done, click on 'Apply segmentation' to see the ";
+    description += "result. You can then generate your binary volume clicking on 'Save Mask'.";
+
+    description += "<br><br>This plugin uses the VTK library: https://vtk.org";
     return description;
 }
 

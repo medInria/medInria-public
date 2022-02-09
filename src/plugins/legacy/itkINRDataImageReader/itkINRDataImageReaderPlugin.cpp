@@ -51,7 +51,7 @@ QString itkINRDataImageReaderPlugin::name(void) const
 
 QString itkINRDataImageReaderPlugin::contact(void) const
 {
-    return QString::fromUtf8("benoit.bleuze@inria.fr");
+    return QString::fromUtf8("");
 }
 
 QStringList itkINRDataImageReaderPlugin::authors(void) const

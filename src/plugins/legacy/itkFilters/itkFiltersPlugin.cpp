@@ -130,17 +130,24 @@ bool itkFiltersPlugin::initialize()
 
 QString itkFiltersPlugin::description() const
 {
-  QString description = \
-          "This plugin implements two toolboxes:  \
-          <br><h5>Morphological Filters</h5><br>  \
-          Processes: <i>dilate, erode, binary close, binary open, grayscale close, grayscale open</i>.\
-          <br><h5>ITK Basic Filters</h5><br>  \
-          Processes: <i>add constant, subtract constant, multiply by constant, \
-          divide by constant, gaussian filter, normalize filter, \
-          median filter, invert filter, shrink filter, intensity filter, \
-          threshold and isolated pixels removal</i>.  \
-          <br><br>This plugin uses the <a href=\"https://itk.org/\" style=\"color: #cc0000\" >ITK library</a>.";
-  return description;
+    QString description;
+    description += "<h1>Filters Tutorial</h1>";
+    description += "This plugin implements two sets of toolboxes.<br>";
+    description += "Drop a volume or mask in the INPUT view.";
+
+    description += "<h2>ITK Basic Filters</h2>";
+    description += "Processes: add constant, subtract constant, multiply by constant, ";
+    description += "divide by constant, gaussian filter, normalize filter, ";
+    description += "median filter, invert filter, shrink filter, intensity filter, ";
+    description += "threshold and isolated pixels removal.";
+
+    description += "<h2>Morphological Filters</h2>";
+    description += "Processes: dilate, erode, binary close, binary open, grayscale close, grayscale open.<br>";
+    description += "Choose the kernel radius in millimeters or pixels, and its shape. ";
+    description += "This kernel is going to be applied on the image during the process.";
+
+    description += "<br><br>This plugin uses the ITK library: https://itk.org";
+    return description;
 }
 
 QString itkFiltersPlugin::name() const

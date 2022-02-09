@@ -57,10 +57,7 @@ public:
     medToolBoxHeader *header() const;
     medToolBoxBody   *body()   const;
 
-    void setAboutPluginVisibility(bool enable);
-    bool aboutPluginVisibility();
-
-    void setAboutPluginButton(dtkPlugin * plugin);
+    void setAboutPluginButton(dtkPlugin * plugin, QPushButton* helpButton);
 
     virtual QString identifier() const {return QString();}
     virtual QString name() const {return QString();}
