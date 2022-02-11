@@ -119,6 +119,7 @@ private:
     QString addDataToPatientLevel(QMap<QString, QString> &mandatoryAttributes);
     QString addDataToStudyLevel(QMap<QString, QString> mandatoryAttributes);
     QString addDataToSeriesLevel(const QVariant& dataset,const QString & name,const QString &studyId);
+
 private:
     // members
     T m_Engine;
@@ -130,6 +131,9 @@ private:
     bool m_online;
     QStringList m_LevelNames;
     QMap<QString, QStringList> m_MandatoryKeysByLevel;
+
+    medStringParameter *pToto;
+    medStringParameter *pTata;
 
 };
 

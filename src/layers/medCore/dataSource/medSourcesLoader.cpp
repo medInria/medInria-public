@@ -30,16 +30,16 @@
 
 #define MED_DATASOURCES_FILENAME "DataSources.json"
 
-medDBSourcesLoader *medDBSourcesLoader::s_instance = nullptr;
+medSourcesLoader *medSourcesLoader::s_instance = nullptr;
 
-medDBSourcesLoader *medDBSourcesLoader::instance(QObject *parent)
+medSourcesLoader *medSourcesLoader::instance(QObject *parent)
 {
     if (!s_instance)
-        s_instance = new medDBSourcesLoader(parent);
+        s_instance = new medSourcesLoader(parent);
     return s_instance;
 }
 
-medDBSourcesLoader::~medDBSourcesLoader()
+medSourcesLoader::~medSourcesLoader()
 {
 }
 
@@ -53,7 +53,7 @@ medDBSourcesLoader::~medDBSourcesLoader()
 *         instantiator must be not nullptr or already registered.
 * @return Returns true if this type of source was registered. False otherwise.
 */
-bool medDBSourcesLoader::registerSourceType(QString type, QString name, QString description, instantiateSource instantiator)
+bool medSourcesLoader::registerSourceType(QString type, QString name, QString description, instantiateSource instantiator)
 {
     bool bRes = (!type.isEmpty() && instantiator != nullptr && !m_sourcesMap.contains(type));
 
@@ -69,7 +69,7 @@ bool medDBSourcesLoader::registerSourceType(QString type, QString name, QString 
     return bRes;
 }
 
-QList<std::tuple<QString, QString, QString>> medDBSourcesLoader::sourcesTypeAvailables()
+QList<std::tuple<QString, QString, QString>> medSourcesLoader::sourcesTypeAvailables()
 {
     QList<std::tuple<QString, QString, QString>> listRes;
 
@@ -83,7 +83,7 @@ QList<std::tuple<QString, QString, QString>> medDBSourcesLoader::sourcesTypeAvai
     return listRes;
 }
 
-bool medDBSourcesLoader::createCnx(QString & instanceId, QString const & type)
+bool medSourcesLoader::createCnx(QString & instanceId, QString const & type)
 {
     bool bRes = true;
 
@@ -111,7 +111,7 @@ bool medDBSourcesLoader::createCnx(QString & instanceId, QString const & type)
     return bRes;
 }
 
-bool medDBSourcesLoader::removeCnx(QString const & instanceId)
+bool medSourcesLoader::removeCnx(QString const & instanceId)
 {
     bool bRes = false;
 
@@ -128,7 +128,7 @@ bool medDBSourcesLoader::removeCnx(QString const & instanceId)
     return bRes;
 }
 
-QList<medAbstractSource*> medDBSourcesLoader::sourcesList()
+QList<medAbstractSource*> medSourcesLoader::sourcesList()
 {
     QList<medAbstractSource*> instanceList;
 
@@ -142,7 +142,7 @@ QList<medAbstractSource*> medDBSourcesLoader::sourcesList()
     return instanceList;
 }
 
-bool medDBSourcesLoader::renameSource(QString const & instanceId, QString const & name)
+bool medSourcesLoader::renameSource(QString const & instanceId, QString const & name)
 {
     bool bRes = false;
 
@@ -160,7 +160,7 @@ bool medDBSourcesLoader::renameSource(QString const & instanceId, QString const 
     return bRes;
 }
 
-medAbstractSource * medDBSourcesLoader::getSource(QString const &instanceId)
+medAbstractSource * medSourcesLoader::getSource(QString const &instanceId)
 {
     medAbstractSource *sourceRes = nullptr;
 
@@ -193,7 +193,7 @@ medAbstractSource * medDBSourcesLoader::getSource(QString const &instanceId)
 
 
 
-medAbstractSource* medDBSourcesLoader::createInstanceOfSource(QString const & type) const
+medAbstractSource* medSourcesLoader::createInstanceOfSource(QString const & type) const
 {
     medAbstractSource * pDataSource = nullptr;
     
@@ -205,7 +205,7 @@ medAbstractSource* medDBSourcesLoader::createInstanceOfSource(QString const & ty
     return pDataSource;
 }
 
-medDBSourcesLoader::medDBSourcesLoader(QObject *parent)
+medSourcesLoader::medSourcesLoader(QObject *parent)
 {
     setParent(parent);
     m_CnxParametersPath = ".";
@@ -213,7 +213,7 @@ medDBSourcesLoader::medDBSourcesLoader(QObject *parent)
     pVirt->setRootPath("C:\\Users\\fleray\\Desktop\\tmp\\virt");
 }
 
-bool medDBSourcesLoader::saveToDisk()
+bool medSourcesLoader::saveToDisk()
 {
     bool bRes = true;
 
@@ -274,7 +274,7 @@ bool medDBSourcesLoader::saveToDisk()
     return bRes;
 }
 
-bool medDBSourcesLoader::loadFromDisk()
+bool medSourcesLoader::loadFromDisk()
 {
     bool bRes = false;
 
@@ -337,7 +337,7 @@ bool medDBSourcesLoader::loadFromDisk()
     return bRes;
 }
 
-void medDBSourcesLoader::reloadCnx(QJsonObject &obj)
+void medSourcesLoader::reloadCnx(QJsonObject &obj)
 {
     int iAppliedParametersCount = 0;
     auto pDataSource = createInstanceOfSource(obj["sourceType"].toString());
@@ -453,7 +453,7 @@ void medDBSourcesLoader::reloadCnx(QJsonObject &obj)
     emit(sourceAdded(pDataSource));
 }
 
-bool medDBSourcesLoader::generateUniqueSourceId(QString & Id, QString const & type) const
+bool medSourcesLoader::generateUniqueSourceId(QString & Id, QString const & type) const
 {
     bool bRes = true;
     
@@ -480,7 +480,7 @@ bool medDBSourcesLoader::generateUniqueSourceId(QString & Id, QString const & ty
     return bRes;
 }
 
-void medDBSourcesLoader::reparseUnresolvedCnx()
+void medSourcesLoader::reparseUnresolvedCnx()
 {
     int i = 0;
     while ( i< m_unresolvedSavedCnx.size())
@@ -499,7 +499,7 @@ void medDBSourcesLoader::reparseUnresolvedCnx()
 
 
 
-void medDBSourcesLoader::convertCipherParamToJson(QJsonObject & po_oJson, medAbstractParameter * pi_pParam)
+void medSourcesLoader::convertCipherParamToJson(QJsonObject & po_oJson, medAbstractParameter * pi_pParam)
 {
     po_oJson = QJsonObject::fromVariantMap(pi_pParam->toVariantMap());
 }

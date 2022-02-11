@@ -18,6 +18,9 @@
 #include <medSettingsEditor.h>
 #include <medWorkspaceFactory.h>
 
+#include <medSourcesLoader.h>
+#include <medSourcesLoaderPresenter.h>
+
 class medHomepageAreaPrivate
 {
 public:
@@ -29,6 +32,7 @@ public:
     QTabWidget * aboutTabWidget;
     QWidget * pluginWidget;
     QWidget * settingsWidget;
+    QWidget * sourcesWidget;
     medSettingsEditor* settingsEditor;
 };
 
@@ -100,23 +104,36 @@ medHomepageArea::medHomepageArea ( QWidget * parent ) : QWidget ( parent ), d ( 
     logButton->setToolButtonStyle ( Qt::ToolButtonTextBesideIcon );
     QObject::connect ( logButton,SIGNAL ( clicked() ),this, SLOT ( openLogDirectory() ) );
 
-    medHomepageButton * settingsButton = new medHomepageButton ( this );
-    settingsButton->setText ( "Settings" );
-    settingsButton->setMinimumHeight ( 30 );
-    settingsButton->setMaximumWidth ( 150 );
-    settingsButton->setMinimumWidth ( 150 );
-    settingsButton->setToolTip(QString("Configure ")+qApp->applicationName());
-    settingsButton->setFocusPolicy ( Qt::NoFocus );
-    settingsButton->setIcon ( QIcon ( ":icons/settings.svg" ) );
-    settingsButton->setIconSize(QSize(16,16));
-    settingsButton->setToolButtonStyle ( Qt::ToolButtonTextBesideIcon );
-    QObject::connect ( settingsButton,SIGNAL ( clicked() ),this, SLOT ( onShowSettings() ) );
+    medHomepageButton * settingsButton = new medHomepageButton(this);
+    settingsButton->setText("Settings");
+    settingsButton->setMinimumHeight(30);
+    settingsButton->setMaximumWidth(150);
+    settingsButton->setMinimumWidth(150);
+    settingsButton->setToolTip(QString("Configure ") + qApp->applicationName());
+    settingsButton->setFocusPolicy(Qt::NoFocus);
+    settingsButton->setIcon(QIcon(":icons/settings.svg"));
+    settingsButton->setIconSize(QSize(16, 16));
+    settingsButton->setToolButtonStyle(Qt::ToolButtonTextBesideIcon);
+    QObject::connect(settingsButton, SIGNAL(clicked()), this, SLOT(onShowSettings()));
 
-    userButtonsLayout->insertWidget ( 0, settingsButton );
-    userButtonsLayout->insertWidget ( 1, pluginButton );
-    userButtonsLayout->insertWidget ( 2, aboutButton );
-    userButtonsLayout->insertWidget ( 3, logButton );
-    userButtonsLayout->insertWidget ( 4, helpButton );
+    medHomepageButton * sourcesButton = new medHomepageButton(this);
+    sourcesButton->setText("Sources");
+    sourcesButton->setMinimumHeight(30);
+    sourcesButton->setMaximumWidth(150);
+    sourcesButton->setMinimumWidth(150);
+    sourcesButton->setToolTip("Add/Remove sources and change sources settings");
+    sourcesButton->setFocusPolicy(Qt::NoFocus);
+    sourcesButton->setIcon(QIcon(":icons/magnifier.svg"));
+    sourcesButton->setIconSize(QSize(16, 16));
+    sourcesButton->setToolButtonStyle(Qt::ToolButtonTextBesideIcon);
+    QObject::connect(sourcesButton, SIGNAL(clicked()), this, SLOT(onShowSources()));
+
+    userButtonsLayout->insertWidget ( 0, sourcesButton );
+    userButtonsLayout->insertWidget ( 1, settingsButton);
+    userButtonsLayout->insertWidget ( 2, pluginButton);
+    userButtonsLayout->insertWidget ( 3, aboutButton);
+    userButtonsLayout->insertWidget ( 4, logButton );
+    userButtonsLayout->insertWidget ( 5, helpButton );
 
     // Info widget: application logo, description, etc
     QVBoxLayout * infoLayout = new QVBoxLayout(d->infoWidget);
@@ -227,6 +244,9 @@ medHomepageArea::medHomepageArea ( QWidget * parent ) : QWidget ( parent ), d ( 
     pluginLayout->addWidget(medInriaLabel3);
     pluginLayout->addWidget(pWid);
     pluginLayout->addLayout(pluginHideButtonLayout);
+    
+    medSourcesLoaderPresenter sourcesLoaderPresenter(medSourcesLoader::instance());
+    d->sourcesWidget = sourcesLoaderPresenter.buildWidget();
 
     //Create the setttings widget.
     d->settingsWidget = new QWidget(this);
@@ -270,6 +290,8 @@ medHomepageArea::medHomepageArea ( QWidget * parent ) : QWidget ( parent ), d ( 
     d->stackedWidget->addWidget(d->aboutWidget);
     d->stackedWidget->addWidget(d->pluginWidget);
     d->stackedWidget->addWidget(d->settingsWidget);
+    d->stackedWidget->addWidget(d->sourcesWidget);
+
     d->stackedWidget->setCurrentIndex(0);//d->infoWidget
     d->stackedWidget->setSizePolicy(QSizePolicy::Maximum,QSizePolicy::Maximum);
 }
@@ -460,6 +482,11 @@ void medHomepageArea::onShowInfo()
 void medHomepageArea::onShowHelp()
 {
     QDesktopServices::openUrl(QUrl("http://med.inria.fr/help/documentation"));
+}
+
+void medHomepageArea::onShowSources()
+{
+    d->stackedWidget->setCurrentWidget(d->sourcesWidget);
 }
 
 void medHomepageArea::onShowSettings()

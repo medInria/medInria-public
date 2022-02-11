@@ -24,7 +24,7 @@ medSQLitePlugin::~medSQLitePlugin()
 
 bool medSQLitePlugin::initialize()
 {
-    return medDBSourcesLoader::instance()->registerSourceType(
+    return medSourcesLoader::instance()->registerSourceType(
         "medSQLite",
         "Datasource de type SQLite",
         "Ce type de datasource permet l'exploitation des anciennes base medInria 3",

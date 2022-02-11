@@ -88,8 +88,6 @@ QStackedWidget *medSourceModelPresenter::buildFilters()
         auto *pParamListWidget = new QWidget();
         pParamListWidget->setLayout(pVLayout);
         filterRes->addWidget(pParamListWidget);
-        
-        // TODO To be continued
     }
     return filterRes;
 }

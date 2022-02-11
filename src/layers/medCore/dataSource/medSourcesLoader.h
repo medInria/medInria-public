@@ -25,15 +25,15 @@ class QMutex;
 template <class T> class QSharedPointer;
 
 
-class MEDCORE_EXPORT medDBSourcesLoader : public QObject
+class MEDCORE_EXPORT medSourcesLoader : public QObject
 {
 
     Q_OBJECT
     using instantiateSource = medAbstractSource * (*)();
 
 public:	
-    static medDBSourcesLoader* instance(QObject *parent = nullptr);
-    ~medDBSourcesLoader();
+    static medSourcesLoader* instance(QObject *parent = nullptr);
+    ~medSourcesLoader();
 	
     /* ***********************************************************************/
     /* *************** Add a source type ********************************/
@@ -57,7 +57,7 @@ public:
 	bool loadFromDisk(); //call after each add or remove source instance, each call to the destructor. Must be cryptographied
 
 private:
-    medDBSourcesLoader(QObject *parent = nullptr);
+    medSourcesLoader(QObject *parent = nullptr);
 
     bool saveToDisk();   //call after each add or remove source instance, each call to the destructor. Must be cryptographied
     
@@ -96,5 +96,5 @@ private:
     QList<QJsonObject> m_unresolvedSavedCnx;
     
     
-    static medDBSourcesLoader *s_instance;
+    static medSourcesLoader *s_instance;
 };

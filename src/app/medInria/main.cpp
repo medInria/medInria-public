@@ -222,12 +222,12 @@ int main(int argc, char *argv[])
 
 
         auto model = medDataModel::instance(&application);
-        medDBSourcesLoader::instance(&application);
+        medSourcesLoader::instance(&application);
         medDataManager::instance()->setDatabaseLocation();
         medPluginManager::instance()->setVerboseLoading(true);
         medPluginManager::instance()->initialize();
-        QObject::connect(medDBSourcesLoader::instance(), SIGNAL(sourceAdded(medAbstractSource *)), model, SLOT(addSource(medAbstractSource *)));
-        medDBSourcesLoader::instance()->loadFromDisk();
+        QObject::connect(medSourcesLoader::instance(), SIGNAL(sourceAdded(medAbstractSource *)), model, SLOT(addSource(medAbstractSource *)));
+        medSourcesLoader::instance()->loadFromDisk();
 
 
         // Use Qt::WA_DeleteOnClose attribute to be sure to always have only one

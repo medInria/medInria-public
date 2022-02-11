@@ -24,7 +24,7 @@ medTemporaryDataSourcePlugin::~medTemporaryDataSourcePlugin()
 
 bool medTemporaryDataSourcePlugin::initialize()
 {
-    return medDBSourcesLoader::instance()->registerSourceType(
+    return medSourcesLoader::instance()->registerSourceType(
         "medTemporaryDataSource",
         "Datasource de type temporaire",
         "Ce type de datasource permet l'exploitation des données en cache pendant l'exécution du logiciel",
