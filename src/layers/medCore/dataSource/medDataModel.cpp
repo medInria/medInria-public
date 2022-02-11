@@ -231,7 +231,24 @@ QString medDataModel::getInstanceName(QString const & pi_sourceIntanceId)
 
 QList<medSourceItemModel*> medDataModel::models()
 {
-    return m_sourcesModelMap.values();
+    //QList<medSourceItemModel*> sourceItemModelListRes;
+    //
+    //auto sourcesList = m_sourceIdToInstanceMap.values();
+    //for (auto * pSource : sourcesList)
+    //{
+    //    sourceItemModelListRes.push_back(m_sourcesModelMap[pSource]);
+    //}
+    //
+    //return sourceItemModelListRes;
+
+    QList<medSourceItemModel*> sourceItemModelListRes;
+
+    for (auto const & sourceId : m_sourceInstanceIdOrderedList)
+    {
+        sourceItemModelListRes.push_back(m_sourcesModelMap[m_sourceIdToInstanceMap[sourceId]]);
+    }
+
+    return sourceItemModelListRes;
 }
 
 medSourceItemModel * medDataModel::getModel(QString const & pi_sourceIntanceId)
@@ -325,6 +342,7 @@ void medDataModel::addSource(medAbstractSource * pi_source)
     if (pi_source)
     {
         auto instanceId = pi_source->getInstanceId();
+        m_sourceInstanceIdOrderedList.push_back(instanceId);
         m_sourceIdToInstanceMap[instanceId] = pi_source;
         m_sourcesModelMap[pi_source] = new medSourceItemModel(this, instanceId);
         auto tester = new QAbstractItemModelTester(m_sourcesModelMap[pi_source], QAbstractItemModelTester::FailureReportingMode::Fatal, this);

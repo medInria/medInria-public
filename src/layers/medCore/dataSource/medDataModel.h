@@ -94,6 +94,7 @@ signals:
     //void sourceOnline(QString, bool);
 
 private:
+    QStringList m_sourceInstanceIdOrderedList;
     QMap< QString, medAbstractSource*> m_sourceIdToInstanceMap;
     QMap< medAbstractSource*, medSourceItemModel*> m_sourcesModelMap; //TODO delete medSourceItemModel* in destructor
     medAbstractSource* m_defaultSource;
