@@ -32,6 +32,8 @@
 #if (USE_PYTHON)
   #include <medPython.h>
   #include <medPythonTools.h>
+  #include <medPipeline.h>
+  #include <medPipelineBindings.h>
 #endif
 
 void forceShow(medMainWindow& mainwindow )
@@ -231,6 +233,8 @@ int main(int argc,char* argv[])
     }
 
     med::python::initializeTools();
+    med::pipeline::initialize();
+    med::pipeline::initializeBindings();
     med::python::loadPythonPlugins();
 #endif
 

@@ -14,7 +14,6 @@
 #include "medPythonQObjectConversion.h"
 
 #include "medPythonConversionUtils.h"
-#include "medPythonError.h"
 
 bool medPythonConvert(const QObject* object, PyObject** output)
 {
