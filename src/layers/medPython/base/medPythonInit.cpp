@@ -17,6 +17,7 @@
 
 #include "medPythonCore.h"
 #include "medPythonError.h"
+#include "medPythonUtils.h"
 
 namespace med::python
 {
@@ -32,7 +33,8 @@ bool initialize()
 {
     if (!isRunning)
     {
-        isRunning = initializeInterpreter();
+        QStringList startupPaths = getStartupPythonPaths();
+        isRunning = initializeInterpreter(startupPaths);
 
         if (isRunning)
         {

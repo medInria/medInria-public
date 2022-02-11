@@ -231,6 +231,7 @@ int main(int argc,char* argv[])
     }
 
     med::python::initializeTools();
+    med::python::loadPythonPlugins();
 #endif
 
     medPluginManager::instance()->setVerboseLoading(true);
