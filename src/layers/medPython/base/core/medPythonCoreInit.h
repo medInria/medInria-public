@@ -17,7 +17,7 @@
 namespace med::python
 {
 
-bool initializeInterpreter();
+bool initializeInterpreter(QStringList additionalModulePaths);
 bool finalizeInterpreter();
 
 namespace test

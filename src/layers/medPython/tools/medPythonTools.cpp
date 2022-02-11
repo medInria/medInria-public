@@ -19,16 +19,40 @@
 
 #include <medExternalResources.h>
 #include <medPython.h>
+#include <medSettingsWidgetFactory.h>
+
+#include "medPythonSettingsWidget.h"
 
 namespace med::python
 {
 
-void initializeTools()
+namespace
 {
-    registerModulePath(getExternalResourcesDirectory(TARGET_NAME));
-    registerModulePath(getExternalResourcePath(QString(TARGET_NAME) + ".zip", TARGET_NAME));
+
+void initializeModulePaths()
+{
+    addPythonPath(getExternalResourcesDirectory(TARGET_NAME));
+    addPythonPath(getExternalResourcePath(QString(TARGET_NAME) + ".zip", TARGET_NAME));
+}
+
+void importModulesInMainNamespace()
+{
     QString command = QString("from %1 import *").arg(PYTHON_PACKAGE_NAME);
     coreFunction(PyRun_SimpleString, qUtf8Printable(command));
+}
+
+void initializeSettingsWidget()
+{
+    medSettingsWidgetFactory::instance()->registerSettingsWidget<PythonSettingsWidget>();
+}
+
+} // namespace
+
+void initializeTools()
+{
+    initializeModulePaths();
+    importModulesInMainNamespace();
+    initializeSettingsWidget();
 }
 
 void startConsole()

@@ -177,7 +177,7 @@ bool setupEncodingsPackage()
     return success;
 }
 
-bool getModulePaths(QStringList& modulePaths)
+bool getCoreModulePaths(QStringList& modulePaths)
 {
     QString resourcesDirectory;
     QStringList resourceArchives;
@@ -235,15 +235,15 @@ bool setConfigOptions(PyConfig* config, QStringList modulePaths)
     return success;
 }
 
-bool prepareConfig(PyConfig* config)
+bool prepareConfig(PyConfig* config, QStringList additionalModulePaths)
 {
-    QStringList modulePaths;
-    bool success = getModulePaths(modulePaths);
+    QStringList coreModulePaths;
+    bool success = getCoreModulePaths(coreModulePaths);
 
     if (success)
     {
         PyConfig_InitIsolatedConfig(config);
-        success = setConfigOptions(config, modulePaths);
+        success = setConfigOptions(config, coreModulePaths + additionalModulePaths);
     }
 
     return success;
@@ -263,12 +263,12 @@ bool initializeFromConfig(PyConfig* config)
 
 } // namespace
 
-bool initializeInterpreter()
+bool initializeInterpreter(QStringList additionalModulePaths)
 {
     PyConfig config;
     bool success = setupEncodingsPackage()
                    && preInitialize()
-                   && prepareConfig(&config)
+                   && prepareConfig(&config, additionalModulePaths)
                    && initializeFromConfig(&config);
 
     if (success)
