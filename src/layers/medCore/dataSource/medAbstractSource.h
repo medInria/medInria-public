@@ -86,6 +86,7 @@ public:
     virtual QList<medAbstractParameter*> getAllParameters() = 0;
     virtual QList<medAbstractParameter*> getCipherParameters() = 0;
     virtual QList<medAbstractParameter*> getVolatilParameters() = 0;
+    virtual QList<medAbstractParameter*> getFilteringParameters() = 0;
 
     /* ***********************************************************************/
     /* *************** Get source properties *********************************/

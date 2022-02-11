@@ -39,6 +39,8 @@ public:
 
     QList<medAbstractParameter *> getVolatilParameters() override;
 
+    QList<medAbstractParameter*> getFilteringParameters() override;
+
     /* ***********************************************************************/
     /* *************** Get source properties *********************************/
     /* ***********************************************************************/

@@ -221,7 +221,6 @@ int main(int argc, char *argv[])
         }
 
 
-
         auto model = medDataModel::instance(&application);
         medDBSourcesLoader::instance(&application);
         medDataManager::instance()->setDatabaseLocation();
