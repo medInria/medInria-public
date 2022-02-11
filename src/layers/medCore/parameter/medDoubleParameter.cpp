@@ -28,6 +28,7 @@ medDoubleParameter::medDoubleParameter(QString const& name,  QObject *parent)
     d->value = 0.0;
     d->min = 0.0;
     d->max = 100.0;
+    connect(this, &medDoubleParameter::valueChanged, this, &medDoubleParameter::triggered);
 }
 
 medDoubleParameter::~medDoubleParameter()
@@ -38,6 +39,18 @@ medDoubleParameter::~medDoubleParameter()
 double medDoubleParameter::value() const
 {
     return d->value;
+}
+
+bool medDoubleParameter::copyValueTo(medAbstractParameter & dest)
+{
+    bool bRes = typeid(dest) == typeid(*this);
+
+    if (bRes)
+    {
+        dynamic_cast<medDoubleParameter*>(&dest)->setValue(value());
+    }
+
+    return bRes;
 }
 
 void medDoubleParameter::setValue(double value)

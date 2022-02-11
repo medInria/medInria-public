@@ -243,16 +243,6 @@ QString medDataModel::getInstanceName(QString const & pi_sourceIntanceId)
 
 QList<medSourceItemModel*> medDataModel::models()
 {
-    //QList<medSourceItemModel*> sourceItemModelListRes;
-    //
-    //auto sourcesList = m_sourceIdToInstanceMap.values();
-    //for (auto * pSource : sourcesList)
-    //{
-    //    sourceItemModelListRes.push_back(m_sourcesModelMap[pSource]);
-    //}
-    //
-    //return sourceItemModelListRes;
-
     QList<medSourceItemModel*> sourceItemModelListRes;
 
     for (auto const & sourceId : m_sourceInstanceIdOrderedList)

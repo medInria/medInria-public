@@ -28,6 +28,7 @@ medIntParameter::medIntParameter(QString const& name,  QObject *parent)
     d->value = 0;
     d->min = 0;
     d->max = 100;
+    connect(this, &medIntParameter::valueChanged, this, &medIntParameter::triggered);
 }
 
 medIntParameter::~medIntParameter()
@@ -38,6 +39,18 @@ medIntParameter::~medIntParameter()
 int medIntParameter::value() const
 {
     return d->value;
+}
+
+bool medIntParameter::copyValueTo(medAbstractParameter & dest)
+{
+    bool bRes = typeid(dest) == typeid(*this);
+
+    if (bRes)
+    {
+        dynamic_cast<medIntParameter*>(&dest)->setValue(value());
+    }
+
+    return bRes;
 }
 
 void medIntParameter::setValue(int value)

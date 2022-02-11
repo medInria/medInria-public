@@ -1,5 +1,4 @@
 #pragma once
-
 /*=========================================================================
 
  medInria
@@ -14,32 +13,30 @@
 =========================================================================*/
 
 #include <medAbstractParameter.h>
+#include <medCoreExport.h>
 
-class medBoolParameterPrivate;
-class MEDCORE_EXPORT medBoolParameter : public medAbstractParameter
+class QIcon;
+class QPushButton;
+class QSize;
+class QWidget;
+
+class MEDCORE_EXPORT medTriggerParameter : public medAbstractParameter
 {
     Q_OBJECT
 
 public:
-    medBoolParameter(const QString & name, QObject *parent = nullptr);
-    ~medBoolParameter() override;
+    medTriggerParameter(QString name = "Unknown trigger parameter", QObject* parent = nullptr);
+    ~medTriggerParameter() override;
 
-    medParameterType type() const override {return medParameterType::MED_PARAMETER_BOOL;}
+    medParameterType type() const override { return medParameterType::MED_PARAMETER_TRIGGER; }
 
-    bool value() const;
+    void trigger() override;
+    bool copyValueTo(medAbstractParameter &dest) override { return false; };
 
-    bool copyValueTo(medAbstractParameter &dest) override;
     QVariantMap toVariantMap() const override;
     bool fromVariantMap(QVariantMap const& pi_variantMap) override;
 
-public slots:
-    void setValue(bool value);
-
-    void trigger() override;
-
 signals:
-    void valueChanged(bool value);
-
-private:
-    const QScopedPointer<medBoolParameterPrivate> d;
+    void pushed(bool);
+    void triggered();
 };

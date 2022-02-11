@@ -4,7 +4,6 @@
 #include <medSourcesWidget.h>
 #include <medSourceItemModelPresenter.h>
 
-#include <QWidget>
 #include <medStringParameterPresenter.h>
 
 
@@ -70,7 +69,26 @@ QStackedWidget *medSourceModelPresenter::buildFilters()
     QStackedWidget *filterRes = new QStackedWidget;
     for (auto sourceModel : d->model->models())
     {
+        auto * pVLayout = new QVBoxLayout;
         auto filterParams = d->model->filteringParameters(sourceModel->getSourceIntanceId());
+        for (auto * param : filterParams)
+        {
+            auto * pHLayout = new QHBoxLayout;
+            auto * pParamPresenter = medAbstractParameterPresenter::buildFromParameter(param);            
+            auto * pWidget = pParamPresenter->buildWidget();
+            if (dynamic_cast<QPushButton*>(pWidget) == nullptr)
+            {
+                auto * pLabel = pParamPresenter->buildLabel();
+                pHLayout->addWidget(pLabel);
+            }
+            pHLayout->addWidget(pWidget);
+
+            pVLayout->addLayout(pHLayout);
+        }
+        auto *pParamListWidget = new QWidget();
+        pParamListWidget->setLayout(pVLayout);
+        filterRes->addWidget(pParamListWidget);
+        
         // TODO To be continued
     }
     return filterRes;

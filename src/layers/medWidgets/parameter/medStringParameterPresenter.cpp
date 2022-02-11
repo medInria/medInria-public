@@ -48,7 +48,14 @@ medStringParameter* medStringParameterPresenter::parameter() const
 
 QWidget* medStringParameterPresenter::buildWidget()
 {
-    return this->buildLineEdit();
+    QWidget *poWidgetRes = nullptr;
+    switch (d->parameter->defaultRepresentation())
+    {
+    case 0:
+    default:
+        poWidgetRes = this->buildLineEdit(); break;
+    }
+    return poWidgetRes;
 }
 
 QLineEdit* medStringParameterPresenter::buildLineEdit()

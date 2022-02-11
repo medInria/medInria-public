@@ -21,9 +21,10 @@ public:
 };
 
 medStringParameter::medStringParameter(QString const& name,  QObject *parent)
-        : medAbstractParameter(name, parent), d(new medStringParameterPrivate)
+    : medAbstractParameter(name, parent), d(new medStringParameterPrivate)
 {
     d->poValidator = nullptr;
+    connect(this, &medStringParameter::valueChanged, this, &medStringParameter::triggered);
 }
 
 medStringParameter::~medStringParameter()
@@ -36,20 +37,32 @@ QString medStringParameter::value() const
     return d->value;
 }
 
+bool medStringParameter::copyValueTo(medAbstractParameter & dest)
+{
+    bool bRes = typeid(dest) == typeid(*this);
+
+    if (bRes)
+    {
+        setValue(dynamic_cast<medStringParameter*>(&dest)->value());
+    }
+
+    return bRes;
+}
+
 bool medStringParameter::setValue( QString const& value)
 {
     bool bRes = true;
 
     if(value != d->value)
     {
-        int i = -1;
-        QString tmpVal = value;
-        bRes = (d->poValidator == nullptr) || (d->poValidator->validate(tmpVal, i) == QValidator::Acceptable);
-        if (bRes)
-        {
-            d->value = value;
-            emit valueChanged(d->value);
-        }
+       int i = -1;
+       QString tmpVal = value;
+       bRes = (d->poValidator == nullptr) || (d->poValidator->validate(tmpVal, i) == QValidator::Acceptable);
+       if (bRes)
+       {
+          d->value = value;
+          emit valueChanged(d->value);
+       }
     }
 
     return bRes;
@@ -57,24 +70,24 @@ bool medStringParameter::setValue( QString const& value)
 
 void medStringParameter::setValidator(QValidator *pi_poValidator)
 {
-    if (d->poValidator != pi_poValidator)
-    {
-        d->poValidator = pi_poValidator;
-        if (pi_poValidator)
-        {
-            int i = -1;
-            if (d->poValidator->validate(d->value, i) != QValidator::Acceptable)
-            {
-                d->value = "";
-            }
-        }
-        emit validatorChanged(d->poValidator);
-    }
+   if (d->poValidator != pi_poValidator)
+   {
+      d->poValidator = pi_poValidator;
+      if (pi_poValidator)
+      {
+         int i = -1;
+         if (d->poValidator->validate(d->value, i) != QValidator::Acceptable)
+         {
+            d->value = "";
+         }
+      }
+      emit validatorChanged(d->poValidator);
+   }
 }
 
 QValidator *medStringParameter::getValidator() const
 {
-    return d->poValidator;
+   return d->poValidator;
 }
 
 void medStringParameter::trigger()

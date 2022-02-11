@@ -189,8 +189,14 @@ QString medDatabaseDataSource::tabName()
 
 QList<medToolBox*> medDatabaseDataSource::getToolBoxes()
 {
+
+
     if(d->toolBoxes.isEmpty())
     {
+        
+        medToolBox * pToolBox = new medToolBox();
+        pToolBox->addWidget(d->multiSources_tree->buildFilters());
+        d->toolBoxes.push_back(pToolBox);
 
 //        d->actionsToolBox = new medActionsToolBox(0, false);
 //        d->toolBoxes.push_back(d->actionsToolBox);

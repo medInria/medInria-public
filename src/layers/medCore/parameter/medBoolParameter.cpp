@@ -22,7 +22,7 @@ public:
 medBoolParameter::medBoolParameter(QString const& name,  QObject *parent)
     : medAbstractParameter(name, parent), d(new medBoolParameterPrivate)
 {
-
+    connect(this, &medBoolParameter::valueChanged, this, &medBoolParameter::triggered);
 }
 
 medBoolParameter::~medBoolParameter()
@@ -33,6 +33,18 @@ medBoolParameter::~medBoolParameter()
 bool medBoolParameter::value() const
 {
     return d->value;
+}
+
+bool medBoolParameter::copyValueTo(medAbstractParameter & dest)
+{
+    bool bRes = typeid(dest) == typeid(*this);
+
+    if (bRes)
+    {
+        dynamic_cast<medBoolParameter*>(&dest)->setValue(value());
+    }
+
+    return bRes;
 }
 
 void medBoolParameter::setValue(bool value)

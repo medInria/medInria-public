@@ -18,6 +18,7 @@
 class QWidget;
 class QSpinBox;
 class QProgressBar;
+class medSlider;
 class medIntParameterPresenterPrivate;
 
 class MEDWIDGETS_EXPORT medIntParameterPresenter : public medAbstractParameterPresenter
@@ -34,6 +35,8 @@ public:
     virtual QWidget *buildWidget();
     QSpinBox *buildSpinBox();
     QProgressBar *buildProgressBar();
+    medSlider * buildSlider();
+
 
     void setSingleStep(int step);
     int singleStep() const;

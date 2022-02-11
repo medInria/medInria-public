@@ -31,6 +31,7 @@ list_source_files(${TARGET_NAME}
   process/single_filter
   parameter
   toolboxes
+  widget
   )
 
 list_header_directories_to_include(${TARGET_NAME}

@@ -17,6 +17,7 @@
 
 class QWidget;
 class QDoubleSpinBox;
+class QSlider;
 class QProgressBar;
 class medDoubleParameterPresenterPrivate;
 
@@ -32,8 +33,9 @@ public:
     virtual medDoubleParameter *parameter() const;
 
     virtual QWidget *buildWidget();
-    QDoubleSpinBox *buildSpinBox();
-    QProgressBar *buildProgressBar();
+    QDoubleSpinBox  *buildSpinBox();
+    QSlider         *buildSlider();
+    QProgressBar    *buildProgressBar();
 
     void setSingleStep(double step);
     double singleStep() const;

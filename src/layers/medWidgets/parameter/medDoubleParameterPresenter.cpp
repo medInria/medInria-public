@@ -15,11 +15,12 @@
 
 #include <QWidget>
 #include <QDoubleSpinBox>
+#include <QSlider>
 #include <QProgressBar>
 
 #include <medDoubleParameter.h>
 
-class medDoubleSpinBox : public QDoubleSpinBox
+class medDoubleSpinBox : public QDoubleSpinBox //TODO FLO extract to medWidget
 {
 public:
     virtual QString textFromValue ( double value ) const
@@ -35,7 +36,21 @@ public:
 
     double singleStep;
     int decimals;
+
+    int convertToInt4Slider(double value);
+    double convertFromInt4Slider(int value);
 };
+
+int medDoubleParameterPresenterPrivate::convertToInt4Slider(double value)
+{
+    return static_cast<int>((value - parameter->minimum()) / singleStep);
+}
+
+double medDoubleParameterPresenterPrivate::convertFromInt4Slider(int value)
+{
+    double currentDoubleValue = static_cast<double>(value);
+    return currentDoubleValue * singleStep + parameter->minimum();
+}
 
 medDoubleParameterPresenter::medDoubleParameterPresenter(medDoubleParameter* parameter)
     :medAbstractParameterPresenter(parameter), d(new medDoubleParameterPresenterPrivate)
@@ -88,7 +103,18 @@ int medDoubleParameterPresenter::decimals() const
 
 QWidget* medDoubleParameterPresenter::buildWidget()
 {
-    return this->buildSpinBox();
+    QWidget *poWidgetRes = nullptr;
+    switch (d->parameter->defaultRepresentation())
+    {
+    case 1:
+        poWidgetRes = this->buildSlider(); break;
+    case 2:
+        poWidgetRes = this->buildProgressBar(); break;
+    case 0:
+    default:
+        poWidgetRes = this->buildSpinBox(); break;
+    }
+    return poWidgetRes;
 }
 
 QDoubleSpinBox* medDoubleParameterPresenter::buildSpinBox()
@@ -116,11 +142,30 @@ QDoubleSpinBox* medDoubleParameterPresenter::buildSpinBox()
     return spinBox;
 }
 
+QSlider * medDoubleParameterPresenter::buildSlider()
+{
+    QSlider *slider = new QSlider;
+
+    slider->setRange(0, d->convertToInt4Slider(d->parameter->maximum()));
+    slider->setSingleStep(d->convertToInt4Slider(d->singleStep));
+    slider->setValue(d->convertToInt4Slider(d->parameter->value()));
+    slider->setStyleSheet("QSlider::handle:horizontal {width: 15px;}");
+    
+    this->_connectWidget(slider);
+
+    connect(slider, &QSlider::valueChanged,                        [=](int value) {d->parameter->setValue(d->convertFromInt4Slider(value)); });
+    connect(d->parameter, &medDoubleParameter::valueChanged,       [=](double value) {slider->setValue(d->convertToInt4Slider(value)); });
+    connect(d->parameter, &medDoubleParameter::rangeChanged,       [=](double min, double max) { slider->setRange(0, d->convertToInt4Slider(d->parameter->maximum())); });
+    connect(this, &medDoubleParameterPresenter::singleStepChanged, [=](double singleStep) { slider->setSingleStep(d->convertToInt4Slider(singleStep)); });
+
+    return slider;
+}
+
 QProgressBar* medDoubleParameterPresenter::buildProgressBar()
 {
     QProgressBar *progressBar = new QProgressBar;
     progressBar->setValue(_percentFromValue(d->parameter->value()));
-    connect(this, &medDoubleParameterPresenter::valueChanged,progressBar, &QProgressBar::setValue);
+    connect(this, &medDoubleParameterPresenter::valueChanged, progressBar, &QProgressBar::setValue);
 
     progressBar->setToolTip(d->parameter->description());
     this->_connectWidget(progressBar);
@@ -156,4 +201,3 @@ void medDoubleParameterPresenter::_emitValueChangedInPercent(double value)
 {
     emit valueChanged(_percentFromValue(value));
 }
-

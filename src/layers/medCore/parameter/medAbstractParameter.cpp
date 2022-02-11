@@ -19,12 +19,15 @@ public:
     QString id;
     QString description;
     QString caption;
+    int guiDefaultRepresentationIndex;
 };
 
 medAbstractParameter::medAbstractParameter(const QString & id, QObject *parent)
     : QObject(parent), d(new medAbstractParameterPrivate)
 {
     d->id = id;
+    d->caption = id; //use id as default caption.
+    d->guiDefaultRepresentationIndex = 0;
 }
 
 medAbstractParameter::~medAbstractParameter()
@@ -32,7 +35,7 @@ medAbstractParameter::~medAbstractParameter()
      // no needed to explicitly delete the d pointer because we used a QScopedPointer
      // to hold it.
 
-     // However we still have to explictly write the destructor, even if empty, otherwise,
+     // However we still have to explicitly write the destructor, even if empty, otherwise,
      // the compiler auto create an inlined one which make
      // 'const QScopedPointer<medAbstractParameterPrivate> d;' impossible with a forward
      // declaration of medAbstractParameterPrivate.
@@ -59,6 +62,16 @@ void medAbstractParameter::setCaption(const QString & caption)
 {
     d->caption = caption;
     emit captionChanged(d->caption);
+}
+
+int medAbstractParameter::defaultRepresentation() const
+{
+    return d->guiDefaultRepresentationIndex;
+}
+
+void medAbstractParameter::setDefaultRepresentation(int representationIndex)
+{
+    d->guiDefaultRepresentationIndex = representationIndex;
 }
 
 QString medAbstractParameter::caption() const

@@ -18,7 +18,7 @@
 class medStringParameterPrivate;
 class MEDCORE_EXPORT medStringParameter : public medAbstractParameter
 {
-Q_OBJECT
+    Q_OBJECT
 
 public:
     medStringParameter(const QString & name, QObject *parent = nullptr);
@@ -27,6 +27,8 @@ public:
     medParameterType type() const override{return medParameterType::MED_PARAMETER_STRING;}
 
     virtual QString value() const;
+
+    bool copyValueTo(medAbstractParameter &dest) override;
 
     virtual void setValidator(QValidator *pi_poValidator);
     virtual QValidator *getValidator() const;

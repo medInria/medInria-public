@@ -27,6 +27,8 @@ public:
 
     double value() const;
 
+    bool copyValueTo(medAbstractParameter &dest) override;
+
     void setRange(double min, double max);
     double minimum() const;
     double maximum() const;

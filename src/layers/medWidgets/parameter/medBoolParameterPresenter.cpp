@@ -15,6 +15,8 @@
 
 #include <QWidget>
 #include <QCheckBox>
+#include <QPushButton>
+#include <QRadioButton>
 
 #include <medBoolParameter.h>
 
@@ -22,12 +24,15 @@ class medBoolParameterPresenterPrivate
 {
 public:
     medBoolParameter* parameter;
+    QIcon icon;
+    QSize iconSize;
 };
 
 medBoolParameterPresenter::medBoolParameterPresenter(medBoolParameter* parameter)
     :medAbstractParameterPresenter(parameter), d(new medBoolParameterPresenterPrivate)
 {
     d->parameter = parameter;
+    d->iconSize = QSize(15, 15);
 }
 
 medBoolParameterPresenter::medBoolParameterPresenter(QString const& newParameterId)
@@ -46,9 +51,26 @@ medBoolParameter* medBoolParameterPresenter::parameter() const
     return d->parameter;
 }
 
+void medBoolParameterPresenter::setIcon(QIcon icon)
+{
+    d->icon = icon;
+}
+
+void medBoolParameterPresenter::setIconSize(QSize const & size)
+{
+    d->iconSize = size;
+}
+
 QWidget* medBoolParameterPresenter::buildWidget()
 {
-    return this->buildCheckBox();
+    QWidget *poWidgetRes = nullptr;
+    switch (d->parameter->defaultRepresentation())
+    {
+    case 0:
+    default:
+        poWidgetRes = this->buildCheckBox(); break;
+    }
+    return poWidgetRes; 
 }
 
 QCheckBox* medBoolParameterPresenter::buildCheckBox()
@@ -61,11 +83,45 @@ QCheckBox* medBoolParameterPresenter::buildCheckBox()
     this->_connectWidget(checkBox);
 
     checkBox->setText(d->parameter->caption());
-    connect(d->parameter, &medBoolParameter::captionChanged,
-            checkBox, &QCheckBox::setText);
+    connect(d->parameter, &medBoolParameter::captionChanged, checkBox, &QCheckBox::setText);
 
     return checkBox;
 }
+
+QPushButton* medBoolParameterPresenter::buildPushButton()
+{
+    QPushButton *pushButton = new QPushButton;
+
+    pushButton->setCheckable(true);
+    pushButton->setChecked(d->parameter->value());
+    pushButton->setText(d->parameter->caption());
+    if (!d->icon.isNull())
+    {
+        pushButton->setIcon(d->icon);
+        pushButton->setIconSize(d->iconSize);
+        pushButton->setMinimumSize(d->iconSize);
+    }
+
+    this->_connectButton(pushButton);
+    this->_connectWidget(pushButton);
+
+    return pushButton;
+}
+
+QRadioButton* medBoolParameterPresenter::buildRadioButton()
+{
+    QRadioButton *radioButton = new QRadioButton;
+
+    radioButton->setChecked(d->parameter->value());
+    radioButton->setText(d->parameter->caption());
+    radioButton->setAutoExclusive(false);
+
+    this->_connectButton(radioButton);
+    this->_connectWidget(radioButton);
+
+    return radioButton;
+}
+
 
 void medBoolParameterPresenter::_connectButton(QAbstractButton *button)
 {
