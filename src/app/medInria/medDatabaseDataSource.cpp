@@ -194,8 +194,10 @@ QList<medToolBox*> medDatabaseDataSource::getToolBoxes()
     if(d->toolBoxes.isEmpty())
     {
         
-        medToolBox * pToolBox = new medToolBox();
-        pToolBox->addWidget(d->multiSources_tree->buildFilters());
+        auto * pToolBox = new medToolBox();
+        auto * pFiltersStackBySource = d->multiSources_tree->buildFilters();
+        connect(this, SIGNAL(changeSource(int)), pFiltersStackBySource, SLOT(setCurrentIndex(int)));
+        pToolBox->addWidget(pFiltersStackBySource);
         d->toolBoxes.push_back(pToolBox);
 
 //        d->actionsToolBox = new medActionsToolBox(0, false);
