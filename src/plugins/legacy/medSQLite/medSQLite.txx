@@ -24,16 +24,17 @@ medSQlite<T>::medSQlite()
         /*m_ConnectionName("sqlite"),*/ m_instanceId(QString()),
         m_online(false), m_LevelNames({"patient","study","series"})
 {
-#ifdef Q_OS_MAC
-    auto vDbLoc = QStandardPaths::writableLocation(QStandardPaths::GenericDataLocation) + "/" + QCoreApplication::organizationName() + "/" + QCoreApplication::applicationName();
-#else
-    auto vDbLoc = QStandardPaths::writableLocation(QStandardPaths::GenericDataLocation) + "/data/" + QCoreApplication::organizationName() + "/" + QCoreApplication::applicationName();
-#endif
-
+//#ifdef Q_OS_MAC
+//    auto vDbLoc = QStandardPaths::writableLocation(QStandardPaths::GenericDataLocation) + "/" + QCoreApplication::organizationName() + "/" + QCoreApplication::applicationName();
+//#else
+//    auto vDbLoc = QStandardPaths::writableLocation(QStandardPaths::GenericDataLocation) + "/data/" + QCoreApplication::organizationName() + "/" + QCoreApplication::applicationName();
+//#endif
+//
+//    m_DbPath = new medStringParameter("LocalDataBasePath", this);
+//    m_DbPath->setCaption("Path to sqlite local DB");
+//    m_DbPath->setValue(vDbLoc);
     m_DbPath = new medStringParameter("LocalDataBasePath", this);
-    m_DbPath->setCaption("Path to sqlite local DB");
-    m_DbPath->setValue(vDbLoc);
-    QObject::connect(m_DbPath, &medStringParameter::valueChanged, this, &medSQlite::updateDatabaseName);
+//    QObject::connect(m_DbPath, &medStringParameter::valueChanged, this, &medSQlite::updateDatabaseName);
 
     m_MandatoryKeysByLevel["Patient"] = QStringList({"id", "name", "patientId",
                                                      "birthdate", "gender"});
@@ -189,6 +190,12 @@ QList<medAbstractParameter *> medSQlite<T>::getCipherParameters()
 
 template<typename T>
 QList<medAbstractParameter *> medSQlite<T>::getVolatilParameters()
+{
+    return QList<medAbstractParameter *>();
+}
+
+template<typename T>
+QList<medAbstractParameter *> medSQlite<T>::getFilteringParameters()
 {
     return QList<medAbstractParameter *>();
 }

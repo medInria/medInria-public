@@ -47,7 +47,8 @@ public:
     bool mandatoriesAttributes(QString const & pi_sourceIntanceId, unsigned int pi_uiLevel, QString const & parentKey, levelAttributes & po_entries);
     bool optionalAttributes(QString const & pi_sourceIntanceId, unsigned int pi_uiLevel, QString const & key, datasetAttributes & po_attributes, datasetAttributes & po_tags);
     bool levelCount(QString const & pi_sourceIntanceId, unsigned int &po_uiLevelMax);
-    
+    QList<medAbstractParameter *> filteringParameters(QString const & pi_sourceInstanceId);
+
     // ////////////////////////////////////////////////////////////////////////////////////////////
     // Members functions to access sourceItemModel
     void getModelData(QModelIndex &index, datasetAttributes &attributes, int role = 0);

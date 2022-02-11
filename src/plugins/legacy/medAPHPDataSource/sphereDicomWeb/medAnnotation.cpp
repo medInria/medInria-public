@@ -22,40 +22,68 @@
 #include <QJsonObject>
 #include <QHttpMultiPart>
 
-static int requestId = -1;
+int medAnnotation::requestId = -1;
 
-void restFulWorker::run()
+void annotationDownloader::doWork(const QString& requestUrl, int pi_requestId)
 {
+    m_requestId = pi_requestId;
+    m_Manager = new QNetworkAccessManager();
+    m_Reply = m_Manager->get(QNetworkRequest(QUrl(requestUrl)));
 
-    auto manager = new QNetworkAccessManager();
-    auto reply = manager->get(QNetworkRequest(QUrl(m_requestUrl)));
-
-    QObject::connect(manager, &QNetworkAccessManager::finished, [&](QNetworkReply *reply) {
-
-        qDebug()<<"reply "<<reply->errorString()<<" "<<reply->error();
-        switch (reply->error())
-        {
-            case QNetworkReply::NoError:
-            {
-                QByteArray data = reply->readAll();
-                emit finished();
-                break;
-            }
-
-            case QNetworkReply::ConnectionRefusedError:
-            default:
-                emit failed();
-                break;
-        }
-
-    });
-
-    QObject::connect(reply, &QNetworkReply::downloadProgress, [this](qint64 bytesReceived, qint64 bytesTotal){
-        qDebug()<<"in progress";
-        emit inProgress();
-    });
+    QObject::connect(m_Manager, SIGNAL(finished(QNetworkReply *)), this, SLOT(finish(QNetworkReply *)));
+    QObject::connect(m_Reply, SIGNAL(errorOccurred(QNetworkReply::NetworkError)), this, SLOT(onErrorOccured(
+            QNetworkReply::NetworkError)));
+    QObject::connect(m_Reply, SIGNAL(downloadProgress(qint64, qint64)), this, SLOT(inProgress(qint64, qint64)));
 
 }
+
+void annotationDownloader::onErrorOccured(QNetworkReply::NetworkError error)
+{
+    if (error != QNetworkReply::NoError )
+    {
+        // TODO To improve, check the value of error and decide what to do !
+        emit downloadProgress(m_requestId, medAbstractSource::eRequestStatus::cnxLost);
+    }
+}
+
+void annotationDownloader::inProgress(qint64 bytesReceived, qint64 bytesTotal)
+{
+    emit downloadProgress(m_requestId, medAbstractSource::eRequestStatus::pending);
+}
+
+void annotationDownloader::finish(QNetworkReply *reply)
+{
+    switch (reply->error())
+    {
+        case QNetworkReply::NoError:
+        {
+            emit downloadProgress(m_requestId, medAbstractSource::eRequestStatus::finish);
+            QByteArray data = reply->readAll();
+            if (m_TemporaryDir.isValid())
+            {
+                QDir dir(m_TemporaryDir.path());
+                dir.mkdir(  QString::number(m_requestId));
+                auto fullFilePath = dir.filePath(QString::number(m_requestId) + "/tmpAnnotation.mha");
+                QFile file(fullFilePath);
+                file.open(QIODevice::WriteOnly);
+                file.write(data);
+                file.close();
+                emit pathToData(m_requestId, fullFilePath);
+            }
+            break;
+        }
+
+        case QNetworkReply::ConnectionRefusedError:
+        default:
+            emit downloadProgress(m_requestId, medAbstractSource::eRequestStatus::faild);
+            break;
+    }
+
+}
+
+
+
+
 
 medAnnotation::medAnnotation()//: m_Manager(new QNetworkAccessManager)
 {
@@ -131,22 +159,14 @@ QList<QMap<QString, QString>> medAnnotation::findAnnotationMinimalEntries(const 
                 foreach (const QJsonValue &value, json_array) {
                     QMap<QString, QString> info;
                     QJsonObject json_obj = value.toObject();
-                    QString meta = json_obj["annotation_meta"].toString();
-                    meta = QString(QByteArray::fromBase64(meta.toLatin1()));
-                    qDebug()<<"meta "<<meta;
+                    QByteArray meta = json_obj["annotation_meta"].toString().toUtf8();
                     QJsonDocument doc;
-                    doc = QJsonDocument::fromJson(QByteArray::fromBase64(meta.toLatin1()));
-                    if (doc.isObject())
+                    doc = QJsonDocument::fromJson(meta);
+                    if (doc.isObject() && doc["name"].isString())
                     {
-                        QJsonObject obj = doc.object();
-                        for (auto key : obj.keys())
-                        {
-                            qDebug()<<key<<" : "<<obj[key];
-                        }
+                        info.insert("Description", doc["name"].toString());
                     }
                     info.insert("SeriesInstanceUID",json_obj["annotation_uid"].toString());
-                    // TODO Find Description in metadata sent by APHP EDS
-                    info.insert("Description", json_obj["partner"].toString());
                     infos.append(info);
                 }
 
@@ -168,21 +188,18 @@ int medAnnotation::getAnnotationData(const QString &annotation_uid)
 {
     QString requestUrl = m_url + "/annotations/" + annotation_uid;
 
-    auto worker = new restFulWorker(requestUrl);
+    auto downloader = new annotationDownloader();
+    downloader->moveToThread(&workerThread);
+    connect(&workerThread, &QThread::finished, downloader, &QObject::deleteLater);
+    connect(this, &medAnnotation::operate, downloader, &annotationDownloader::doWork);
+    connect(downloader, &annotationDownloader::downloadProgress, this, &medAbstractAnnotation::inProgress);
+    connect(downloader, &annotationDownloader::pathToData, this, &medAbstractAnnotation::pathToData);
+    workerThread.start();
 
-    requestIdMap[requestId++] = worker;
-    connect( worker, &restFulWorker::inProgress, worker,[=](){
-        emit getProgress(requestId, medAbstractSource::eRequestStatus::pending);
-    });
-    connect( worker, &restFulWorker::finished, worker,[=](){
-        emit getProgress(requestId, medAbstractSource::eRequestStatus::finish);
-    });
-    connect( worker, &restFulWorker::failed, worker,[=](){
-        emit getProgress(requestId, medAbstractSource::eRequestStatus::faild);
-    });
-    worker->start();
+    requestIdMap[medAnnotation::requestId++] = downloader;
+    emit operate(requestUrl, medAnnotation::requestId);
 
-    return requestId;
+    return medAnnotation::requestId;
 }
 
 QString medAnnotation::addData(QVariant dataset, QString name, QString &seriesUid)
@@ -205,7 +222,9 @@ QString medAnnotation::addData(QVariant dataset, QString name, QString &seriesUi
     QJsonObject obj;
     obj["name"] = name;
     QJsonDocument doc(obj);
-    QByteArray data = doc.toJson(QJsonDocument::Compact).toBase64();
+    auto data = doc.toJson(QJsonDocument::Compact);
+//    qDebug()<<"doc "<<doc.toJson(QJsonDocument::Compact);
+//    QByteArray data = doc.toJson(QJsonDocument::Compact).toBase64();
     query.addQueryItem("annotation_meta", data);
     url.setQuery(query.query());
     postRequest.setUrl(url);
@@ -249,13 +268,13 @@ QString medAnnotation::addData(QVariant dataset, QString name, QString &seriesUi
 
     QObject::connect(&manager, &QNetworkAccessManager::finished, &loop, [&](QNetworkReply *reply) {
 
-        qDebug()<<"reply "<<reply->errorString()<<" "<<reply->error();
+//        qDebug()<<"reply "<<reply->errorString()<<" "<<reply->error();
         switch (reply->error())
         {
             case QNetworkReply::NoError:
             {
                 QString strReply = (QString)reply->readAll();
-                qDebug()<<"reply "<<strReply;
+//                qDebug()<<"reply "<<strReply;
                 res = annotationUid;
                 loop.quit();
                 break;

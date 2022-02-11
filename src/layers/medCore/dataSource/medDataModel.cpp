@@ -102,6 +102,7 @@ bool medDataModel::attributesForBuildTree(QString const & pi_sourceIntanceId, un
             {
                 entryTmp[keys[0]] = minimalEntry.key;
                 entryTmp[keys[1]] = minimalEntry.name;
+
                 entryTmp[keys[2]] = minimalEntry.description;
                 po_entries.push_back(entryTmp);
             }
@@ -167,6 +168,17 @@ bool medDataModel::levelCount(QString const & pi_sourceIntanceId, unsigned int &
     }
 
     return bRes;
+}
+
+QList<medAbstractParameter *> medDataModel::filteringParameters(const QString &pi_sourceInstanceId)
+{
+    QList<medAbstractParameter *> paramRes;
+    medAbstractSource* pSource = m_sourceIdToInstanceMap.value(pi_sourceInstanceId);
+    if (pSource)
+    {
+        paramRes = pSource->getFilteringParameters();
+    }
+    return paramRes;
 }
 
 bool medDataModel::optionalAttributes(QString const & pi_sourceIntanceId, unsigned int pi_uiLevel, QString const & key, datasetAttributes & po_attributes, datasetAttributes & po_tags)
@@ -275,7 +287,7 @@ medAbstractData * medDataModel::getData(medDataIndex const & index)
                 pDataTmp->setDataIndex(index);
                 QModelIndex modelIndex = m_sourcesModelMap[pSource]->toIndex(index.asString());
                 QString hruUri = m_sourcesModelMap[pSource]->toHumanReadableUri(modelIndex);
-                QString name = hruUri.right(hruUri.size()-hruUri.lastIndexOf("\r\n")-1);
+                QString name = hruUri.right(hruUri.size()-hruUri.lastIndexOf("\r\n")-2);
                 pDataTmp->setExpectedName(name);
                 pDataTmp->setMetaData(medMetaDataKeys::SeriesDescription.key(), name);
             }

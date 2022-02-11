@@ -12,7 +12,9 @@
 
 =========================================================================*/
 
+#include <QListWidget>
 #include <QObject>
+#include <QStackedWidget>
 
 #include <medWidgetsExport.h>
 
@@ -30,6 +32,12 @@ public:
     virtual QWidget *buildWidget();
 
     virtual medSourcesWidget *buildTree();
+
+    virtual QStackedWidget *buildBrowser();
+
+    virtual QListWidget *buildSourceList();
+
+    virtual  QStackedWidget *buildFilters();
 
     virtual medDataModel *dataModel() const;
 

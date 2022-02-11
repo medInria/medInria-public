@@ -27,7 +27,9 @@ public:
     virtual int getAnnotationData(const QString &uid) = 0;
     virtual QString addData(QVariant variant, QString name, QString &key) = 0;
 signals:
-    void getProgress(int requestId, medAbstractSource::eRequestStatus status);
+    void inProgress(int requestId, medAbstractSource::eRequestStatus status);
+    void pathToData(int id, const QString &path);
+    void abort();
 
 protected:
     QString m_url;

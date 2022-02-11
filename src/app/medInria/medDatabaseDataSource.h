@@ -42,9 +42,11 @@ public:
 
 public slots:
     void onOpeningFailed(const medDataIndex& index, QUuid);
+    void currentSourceChanged(int current);
 
 signals:
     void open(const medDataIndex&);
+    void changeSource(int current);
 
 protected slots:
     void onFilter(const QString &text, int column);

@@ -66,6 +66,11 @@ QList<medAbstractParameter *> medTemporaryDataSource::getVolatilParameters()
     return {};
 }
 
+QList<medAbstractParameter *> medTemporaryDataSource::getFilteringParameters()
+{
+    return QList<medAbstractParameter *>();
+}
+
 bool medTemporaryDataSource::isWriteable()
 {
     return true;

@@ -33,7 +33,7 @@ class medDatabaseDataSourcePrivate
 {
 public:
     QPointer<QWidget> mainWidget;
-    QPointer<medDatabaseCompactWidget> compactWidget;
+//    QPointer<medDatabaseCompactWidget> compactWidget;
 
     medDatabaseModel *model;
     QPointer<medDatabaseView> largeView;
@@ -49,6 +49,7 @@ public:
     medDatabaseSearchPanel *compactSearchPanel;
     medActionsToolBox* actionsToolBox;
     medSourceModelPresenter *multiSources_tree;
+    int currentSource;
 };
 
 medDatabaseDataSource::medDatabaseDataSource( QWidget* parent ): medAbstractDataSource(parent), d(new medDatabaseDataSourcePrivate)
@@ -60,6 +61,7 @@ medDatabaseDataSource::medDatabaseDataSource( QWidget* parent ): medAbstractData
     d->compactProxy = new medDatabaseProxyModel(this);
     d->compactProxy->setSourceModel(d->model);
     d->multiSources_tree = new medSourceModelPresenter(medDataModel::instance());
+    d->currentSource = 0;
 }
 
 medDatabaseDataSource::~medDatabaseDataSource()
@@ -68,158 +70,160 @@ medDatabaseDataSource::~medDatabaseDataSource()
     d = nullptr;
 }
 
+//QWidget* medDatabaseDataSource::mainViewWidget()
+//{
+//    if(d->mainWidget.isNull())
+//    {
+//        d->mainWidget = new QWidget;
+//        d->largeView = new medDatabaseView(d->mainWidget);
+//        d->largeView->setModel(d->proxy);
+//
+//        QVBoxLayout *database_layout = new QVBoxLayout(d->mainWidget);
+//        database_layout->setContentsMargins(0, 0, 0, 0);
+//        database_layout->setSpacing(0);
+//        database_layout->addWidget(d->largeView);
+//
+//        connect(d->largeView, SIGNAL(open(const medDataIndex&)), this, SIGNAL(open(const medDataIndex&)));
+//        connect(d->largeView, SIGNAL(exportData(const medDataIndex&)), this, SIGNAL(exportData(const medDataIndex&)));
+//        connect(d->largeView, SIGNAL(dataRemoved(const medDataIndex&)), this, SIGNAL(dataRemoved(const medDataIndex&)));
+//
+//        if(!d->toolBoxes.isEmpty())
+//        {
+//            connect(d->actionsToolBox, SIGNAL(removeClicked()), d->largeView, SLOT(onRemoveSelectedItemRequested()));
+//            connect(d->actionsToolBox, SIGNAL(exportClicked()), d->largeView, SLOT(onExportSelectedItemRequested()));
+//            connect(d->actionsToolBox, SIGNAL(viewClicked()), d->largeView, SLOT(onViewSelectedItemRequested()));
+//            connect(d->actionsToolBox, SIGNAL(saveClicked()), d->largeView, SLOT(onSaveSelectedItemRequested()));
+//            connect(d->actionsToolBox, SIGNAL(newPatientClicked()), d->largeView, SLOT(onCreatePatientRequested()));
+//            connect(d->actionsToolBox, SIGNAL(newStudyClicked()), d->largeView, SLOT(onCreateStudyRequested()));
+//            connect(d->actionsToolBox, SIGNAL(editClicked()), d->largeView, SLOT(onEditRequested()));
+//
+//            connect(d->largeView, SIGNAL(patientClicked(const medDataIndex&)), d->actionsToolBox, SLOT(patientSelected(const medDataIndex&)));
+//            connect(d->largeView, SIGNAL(studyClicked(const medDataIndex&)), d->actionsToolBox, SLOT(studySelected(const medDataIndex&)));
+//            connect(d->largeView, SIGNAL(seriesClicked(const medDataIndex&)), d->actionsToolBox, SLOT(seriesSelected(const medDataIndex&)));
+//            connect(d->largeView, SIGNAL(noPatientOrSeriesSelected()), d->actionsToolBox, SLOT(noPatientOrSeriesSelected()));
+//        }
+//
+//    }
+//
+//    return d->mainWidget;
+//}
+
 QWidget* medDatabaseDataSource::mainViewWidget()
 {
-    if(d->mainWidget.isNull())
-    {
-        d->mainWidget = new QWidget;
-        d->largeView = new medDatabaseView(d->mainWidget);
-        d->largeView->setModel(d->proxy);
+    auto *widget = new QWidget();
 
-        QVBoxLayout *database_layout = new QVBoxLayout(d->mainWidget);
-        database_layout->setContentsMargins(0, 0, 0, 0);
-        database_layout->setSpacing(0);
-        database_layout->addWidget(d->largeView);
+    auto *layout = new QVBoxLayout();
+    layout->setContentsMargins(0, 0, 0, 0);
+    layout->setSpacing(0);
 
-        connect(d->largeView, SIGNAL(open(const medDataIndex&)), this, SIGNAL(open(const medDataIndex&)));
-        connect(d->largeView, SIGNAL(exportData(const medDataIndex&)), this, SIGNAL(exportData(const medDataIndex&)));
-        connect(d->largeView, SIGNAL(dataRemoved(const medDataIndex&)), this, SIGNAL(dataRemoved(const medDataIndex&)));
+    QStackedWidget *mainViewWidgetRes = d->multiSources_tree->buildBrowser();
+    connect(this, SIGNAL(changeSource(int)), mainViewWidgetRes, SLOT(setCurrentIndex(int)));
 
-        if(!d->toolBoxes.isEmpty())
-        {
-            connect(d->actionsToolBox, SIGNAL(removeClicked()), d->largeView, SLOT(onRemoveSelectedItemRequested()));
-            connect(d->actionsToolBox, SIGNAL(exportClicked()), d->largeView, SLOT(onExportSelectedItemRequested()));
-            connect(d->actionsToolBox, SIGNAL(viewClicked()), d->largeView, SLOT(onViewSelectedItemRequested()));
-            connect(d->actionsToolBox, SIGNAL(saveClicked()), d->largeView, SLOT(onSaveSelectedItemRequested()));
-            connect(d->actionsToolBox, SIGNAL(newPatientClicked()), d->largeView, SLOT(onCreatePatientRequested()));
-            connect(d->actionsToolBox, SIGNAL(newStudyClicked()), d->largeView, SLOT(onCreateStudyRequested()));
-            connect(d->actionsToolBox, SIGNAL(editClicked()), d->largeView, SLOT(onEditRequested()));
+    layout->addWidget(mainViewWidgetRes);
 
-            connect(d->largeView, SIGNAL(patientClicked(const medDataIndex&)), d->actionsToolBox, SLOT(patientSelected(const medDataIndex&)));
-            connect(d->largeView, SIGNAL(studyClicked(const medDataIndex&)), d->actionsToolBox, SLOT(studySelected(const medDataIndex&)));
-            connect(d->largeView, SIGNAL(seriesClicked(const medDataIndex&)), d->actionsToolBox, SLOT(seriesSelected(const medDataIndex&)));
-            connect(d->largeView, SIGNAL(noPatientOrSeriesSelected()), d->actionsToolBox, SLOT(noPatientOrSeriesSelected()));
-        }
 
-    }
+    widget->setLayout(layout);
 
-    return d->mainWidget;
+    return widget;
 }
-
-//QWidget* medDatabaseDataSource::compactViewWidget()
-//{
-//    if (d->compactWidget.isNull())
-//    {
-//        d->compactWidget = new medDatabaseCompactWidget();
-//    
-//        d->compactSearchPanel = new medDatabaseSearchPanel(d->compactWidget);
-//        d->compactSearchPanel->setColumnNames(d->model->columnNames());
-//        connect(d->compactSearchPanel, SIGNAL(filter(const QString &, int)), this, SLOT(compactFilter(const QString &, int)),
-//            Qt::UniqueConnection);
-//    
-//        d->compactView = new medDatabaseView(d->compactWidget);
-//        d->compactView->setSizePolicy(QSizePolicy::MinimumExpanding, QSizePolicy::MinimumExpanding);
-//        d->compactView->setModel(d->compactProxy);
-//        d->compactPreview = new medDatabasePreview(d->compactWidget);
-//    
-//        d->compactWidget->setSearchPanelViewAndPreview(d->compactSearchPanel, d->compactView, d->compactPreview);
-//    
-//        for (int i = 1; i < 12; ++i)
-//            d->compactView->hideColumn(i);
-//    
-//        connect(d->compactView, SIGNAL(patientClicked(const medDataIndex&)), d->compactPreview, SLOT(showPatientPreview(const medDataIndex&)));
-//        connect(d->compactView, SIGNAL(studyClicked(const medDataIndex&)), d->compactPreview, SLOT(showStudyPreview(const medDataIndex&)));
-//        connect(d->compactView, SIGNAL(seriesClicked(const medDataIndex&)), d->compactPreview, SLOT(showSeriesPreview(const medDataIndex&)));
-//    
-//        connect(d->compactPreview, SIGNAL(openRequest(medDataIndex)), d->compactView, SIGNAL(open(medDataIndex)));
-//        connect(d->compactView, SIGNAL(exportData(const medDataIndex&)), this, SIGNAL(exportData(const medDataIndex&)));
-//        connect(d->compactView, SIGNAL(dataRemoved(const medDataIndex&)), this, SIGNAL(dataRemoved(const medDataIndex&)));
-//    }
-//    return d->compactWidget;
-//}
 
 QWidget* medDatabaseDataSource::compactViewWidget()
 {
-    QWidget *compactViewWidgetRes = nullptr;
+    QWidget *compactViewWidgetRes = new QWidget();
 
-    if(d->compactWidget.isNull())
-    {
-        compactViewWidgetRes = new QWidget();
-        QVBoxLayout *layout = new QVBoxLayout();
+    QVBoxLayout *layout = new QVBoxLayout();
 
-        auto filterLabel = new QLabel("Filter ");
-        auto filterLineEdit = new QLineEdit();
+    auto filterLabel = new QLabel("Filter ");
+    auto filterLineEdit = new QLineEdit();
 
-        medDataManager::instance()->setIndexV2Handler([](medDataIndex const & dataIndex) -> medAbstractData* {return medDataModel::instance()->getData(dataIndex); },
-                                                      [](medAbstractData & data) -> QUuid {return medDataModel::instance()->saveData(data); return QUuid();});//TODO Remove ok c'est le truc le moins classe du monde (Part3)
-        d->compactView = d->multiSources_tree->buildTree();
+    medDataManager::instance()->setIndexV2Handler([](medDataIndex const & dataIndex) -> medAbstractData* {return medDataModel::instance()->getData(dataIndex); },
+                                                  [](medAbstractData & data) -> QUuid {return medDataModel::instance()->saveData(data); return QUuid();});//TODO Remove ok c'est le truc le moins classe du monde (Part3)
+    d->compactView = d->multiSources_tree->buildTree();
 
-        connect(filterLineEdit, SIGNAL(textChanged(const QString &)), d->multiSources_tree, SIGNAL(filterProxy(const QString &)));
+    connect(filterLineEdit, SIGNAL(textChanged(const QString &)), d->multiSources_tree, SIGNAL(filterProxy(const QString &)));
 
-        d->compactView->setSizePolicy(QSizePolicy::MinimumExpanding, QSizePolicy::MinimumExpanding);
+    d->compactView->setSizePolicy(QSizePolicy::MinimumExpanding, QSizePolicy::MinimumExpanding);
 
-        d->compactPreview = new medDatabasePreview(d->compactWidget);
+    d->compactPreview = new medDatabasePreview(compactViewWidgetRes);
 
-        QVBoxLayout *filterLayout = new QVBoxLayout;
-        filterLayout->addWidget(filterLabel, 0);
-        filterLayout->addWidget(filterLineEdit, 1);
+    QVBoxLayout *filterLayout = new QVBoxLayout;
+    filterLayout->addWidget(filterLabel, 0);
+    filterLayout->addWidget(filterLineEdit, 1);
 
-        layout->addLayout(filterLayout, 0);
-        layout->addWidget(d->compactView, 1);
-        layout->addWidget(d->compactPreview);
+    layout->addLayout(filterLayout, 0);
+    layout->addWidget(d->compactView, 1);
+    layout->addWidget(d->compactPreview);
 
-        compactViewWidgetRes->setLayout(layout);
-    }
+    compactViewWidgetRes->setLayout(layout);
 
     return compactViewWidgetRes;
 }
 
 QWidget* medDatabaseDataSource::sourceSelectorWidget()
 {
-    return new QWidget();
+    auto *widget = new QWidget();
+
+    auto *layout = new QVBoxLayout();
+    layout->setContentsMargins(0, 0, 0, 0);
+    layout->setSpacing(0);
+
+    QListWidget *listSources = d->multiSources_tree->buildSourceList();
+    connect(listSources, SIGNAL(currentRowChanged(int)), this, SLOT(currentSourceChanged(int)));
+
+    layout->addWidget(listSources);
+
+    widget->setLayout(layout);
+
+    return widget;
+}
+
+void medDatabaseDataSource::currentSourceChanged(int current)
+{
+    emit changeSource(current);
 }
 
 QString medDatabaseDataSource::tabName()
 {
-    return tr("Database");
+    return tr("Data Sources");
 }
 
 QList<medToolBox*> medDatabaseDataSource::getToolBoxes()
 {
     if(d->toolBoxes.isEmpty())
     {
-        d->actionsToolBox = new medActionsToolBox(0, false);
-        d->toolBoxes.push_back(d->actionsToolBox);
 
-        d->searchPanel = new medDatabaseSearchPanel();
-        d->searchPanel->setColumnNames(d->model->columnNames());
-        d->toolBoxes.push_back(d->searchPanel);
-
-        connect(d->searchPanel, SIGNAL(filter(const QString &, int)),this, SLOT(onFilter(const QString &, int)),
-                Qt::UniqueConnection);
-
-        if( !d->largeView.isNull())
-        {
-            connect(d->actionsToolBox, SIGNAL(removeClicked()), d->largeView, SLOT(onRemoveSelectedItemRequested()));
-            connect(d->actionsToolBox, SIGNAL(exportClicked()), d->largeView, SLOT(onExportSelectedItemRequested()));
-            connect(d->actionsToolBox, SIGNAL(viewClicked()), d->largeView, SLOT(onViewSelectedItemRequested()));
-            connect(d->actionsToolBox, SIGNAL(saveClicked()), d->largeView, SLOT(onSaveSelectedItemRequested()));
-            connect(d->actionsToolBox, SIGNAL(newPatientClicked()), d->largeView, SLOT(onCreatePatientRequested()));
-            connect(d->actionsToolBox, SIGNAL(newStudyClicked()), d->largeView, SLOT(onCreateStudyRequested()));
-            connect(d->actionsToolBox, SIGNAL(editClicked()), d->largeView, SLOT(onEditRequested()));
-
-            connect(d->largeView, SIGNAL(patientClicked(const medDataIndex&)), d->actionsToolBox, SLOT(patientSelected(const medDataIndex&)));
-            connect(d->largeView, SIGNAL(studyClicked(const medDataIndex&)), d->actionsToolBox, SLOT(studySelected(const medDataIndex&)));
-            connect(d->largeView, SIGNAL(seriesClicked(const medDataIndex&)), d->actionsToolBox, SLOT(seriesSelected(const medDataIndex&)));
-            connect(d->largeView, SIGNAL(noPatientOrSeriesSelected()), d->actionsToolBox, SLOT(noPatientOrSeriesSelected()));
-        }
+//        d->actionsToolBox = new medActionsToolBox(0, false);
+//        d->toolBoxes.push_back(d->actionsToolBox);
+//
+//        d->searchPanel = new medDatabaseSearchPanel();
+//        d->searchPanel->setColumnNames(d->model->columnNames());
+//        d->toolBoxes.push_back(d->searchPanel);
+//
+//        connect(d->searchPanel, SIGNAL(filter(const QString &, int)),this, SLOT(onFilter(const QString &, int)),
+//                Qt::UniqueConnection);
+//
+//        if( !d->largeView.isNull())
+//        {
+//            connect(d->actionsToolBox, SIGNAL(removeClicked()), d->largeView, SLOT(onRemoveSelectedItemRequested()));
+//            connect(d->actionsToolBox, SIGNAL(exportClicked()), d->largeView, SLOT(onExportSelectedItemRequested()));
+//            connect(d->actionsToolBox, SIGNAL(viewClicked()), d->largeView, SLOT(onViewSelectedItemRequested()));
+//            connect(d->actionsToolBox, SIGNAL(saveClicked()), d->largeView, SLOT(onSaveSelectedItemRequested()));
+//            connect(d->actionsToolBox, SIGNAL(newPatientClicked()), d->largeView, SLOT(onCreatePatientRequested()));
+//            connect(d->actionsToolBox, SIGNAL(newStudyClicked()), d->largeView, SLOT(onCreateStudyRequested()));
+//            connect(d->actionsToolBox, SIGNAL(editClicked()), d->largeView, SLOT(onEditRequested()));
+//
+//            connect(d->largeView, SIGNAL(patientClicked(const medDataIndex&)), d->actionsToolBox, SLOT(patientSelected(const medDataIndex&)));
+//            connect(d->largeView, SIGNAL(studyClicked(const medDataIndex&)), d->actionsToolBox, SLOT(studySelected(const medDataIndex&)));
+//            connect(d->largeView, SIGNAL(seriesClicked(const medDataIndex&)), d->actionsToolBox, SLOT(seriesSelected(const medDataIndex&)));
+//            connect(d->largeView, SIGNAL(noPatientOrSeriesSelected()), d->actionsToolBox, SLOT(noPatientOrSeriesSelected()));
+//        }
     }
     return d->toolBoxes;
 }
 
 QString medDatabaseDataSource::description(void) const
 {
-    return tr("Browse the Database");
+    return tr("Browse the Data Sources");
 }
 
 void medDatabaseDataSource::onFilter( const QString &text, int column )
@@ -238,3 +242,4 @@ void medDatabaseDataSource::onOpeningFailed(const medDataIndex& index, QUuid)
 {
     d->largeView->onOpeningFailed(index);
 }
+

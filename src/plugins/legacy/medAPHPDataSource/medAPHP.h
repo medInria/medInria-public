@@ -20,6 +20,7 @@
 #include <medStringParameter.h>
 #include <PluginAPHP/QtDcmInterface.h>
 
+#include <atomic>
 
 class medAPHP: public medAbstractSource
 {
@@ -43,6 +44,8 @@ public:
     QList<medAbstractParameter *> getCipherParameters() override;
 
     QList<medAbstractParameter *> getVolatilParameters() override;
+
+    QList<medAbstractParameter*> getFilteringParameters() override;
 
     /* ***********************************************************************/
     /* *************** Get source properties *********************************/
@@ -87,7 +90,7 @@ public:
     /* ***********************************************************************/
     QVariant getDirectData(unsigned int pi_uiLevel, QString key) override;
 
-    int getAssyncData(unsigned int pi_uiLevel, QString id) override;
+    int getAssyncData(unsigned int pi_uiLevel, QString key) override;
 
     QString addData(QVariant data, QStringList parentUri, QString name) override;
 
@@ -96,11 +99,20 @@ public slots:
 //    void replyFinished(QNetworkReply *reply);
 
 private:
+    int getQtDcmAsyncData(unsigned int pi_uiLevel, const QString &key);
+
+private:
     QString m_instanceId;
     QString m_instanceName;
     QStringList m_LevelNames;
 
     bool m_isOnline;
+
+    QtDcmInterface *m_DicomLib;
+    medAbstractAnnotation *m_AnnotationAPI;
+
+    QMap<QString, int> pendingRequestId;
+    static std::atomic<int> s_RequestId;
 
     // TODO : remove TimeOut & QTime it is a HACK
     int timeout;
@@ -127,12 +139,14 @@ private:
     /* ***********************************************************************/
     medStringParameter *m_AnnotationUrl;
 
-    QtDcmInterface *m_DicomLib;
-    medAbstractAnnotation *m_AnnotationAPI;
+    /* ***********************************************************************/
+    /* ************************* Filtering Parameters ************************/
+    /* ***********************************************************************/
+    medStringParameter *m_PatientName;
+    medStringParameter *m_PatientId;
 
-    QMap<QString, int> pendingRequestId;
 
-    int getQtDcmAsyncData(unsigned int pi_uiLevel, const QString &id);
+
 };
 
 
