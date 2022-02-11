@@ -33,6 +33,7 @@ set(qt_bindings_sources
     qt/string.i
     qt/variant.i
     qt/list.i
+    qt/hash.i
     qt/base.i
     qt/object.i
     qt/widgets.i
