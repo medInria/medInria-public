@@ -37,6 +37,13 @@
         med::python::propagateErrorIfOccurred();
     }
 
+    %typemap(argout) QList<CTYPE >* OUTPUT
+    {
+        PyObject* output;
+        medPythonConvert<CTYPE >(*$1, &output);
+        $result = SWIG_Python_AppendOutput($result, output);
+    }
+
 %enddef
 
 %qListTypemaps(bool, SWIG_TYPECHECK_BOOL_ARRAY)

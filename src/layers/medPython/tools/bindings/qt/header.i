@@ -135,6 +135,13 @@
         $1 = &temp;
     }
 
+    %typemap(argout) TYPE* OUTPUT
+    {
+        PyObject* output;
+        medPythonConvert(*$1, &output);
+        $result = SWIG_Python_AppendOutput($result, output);
+    }
+
 %enddef
 
 %pythoncode

@@ -139,12 +139,24 @@ public:
     *$1 = dynamic_cast<medAbstractData*>(temp);
 }
 
-%apply medAbstractData { dtkSmartPointer<medAbstractData> };
+%apply medAbstractData* { dtkSmartPointer<medAbstractData> };
 
 %typemap(in) dtkSmartPointer<medAbstractData>
 {
     $1 = ($1_ltype::ObjectType*)med::python::extractSWIGWrappedObject($input);
     med::python::propagateErrorIfOccurred();
+}
+
+%typemap(in, numinputs = 0) dtkSmartPointer<medAbstractData>* OUTPUT (dtkSmartPointer<medAbstractData> temp)
+{
+    $1 = &temp;
+}
+
+%typemap(argout) dtkSmartPointer<medAbstractData>* OUTPUT
+{
+    PyObject* output;
+    medPythonConvert($1->data(), &output);
+    $result = SWIG_Python_AppendOutput($result, output);
 }
 
 %include "medAbstractImageData.h"
