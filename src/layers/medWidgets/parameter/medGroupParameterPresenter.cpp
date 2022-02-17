@@ -19,13 +19,6 @@
 #include <QHBoxLayout>
 #include <QVBoxLayout>
 
-#include <medGroupParameter.h>
-
-
-
-
-
-
 class medGroupParameterPresenterPrivate
 {
 public:
@@ -33,12 +26,12 @@ public:
 };
 
 medGroupParameterPresenter::medGroupParameterPresenter(medGroupParameter *parent)
-    :medAbstractParameterPresenter(parameter), d(new medGroupParameterPresenterPrivate)
+    :medAbstractParameterPresenter(parent), d(new medGroupParameterPresenterPrivate)
 {
     d->parameter = parent;
 }
 
-medGroupParameterPresenter::medGroupParameterPresenter(const QString & newParameterId)
+medGroupParameterPresenter::medGroupParameterPresenter(QString const & newParameterId)
     : medGroupParameterPresenter(new medGroupParameter(newParameterId))
 {
 
@@ -77,7 +70,7 @@ QGroupBox * medGroupParameterPresenter::buildGroupButton()
     }
     connect(d->parameter, &medGroupParameter::parameterAdded, [=](medAbstractParameter * paramAdded) {addParam(paramAdded, pVLayout); });
     groupBoxRes->setLayout(pVLayout);
-    groupBoxRes->setTitle(d->parameter->caption);
+    groupBoxRes->setTitle(d->parameter->caption());
     groupBoxRes->setToolTip(d->parameter->description());
 
     return groupBoxRes;

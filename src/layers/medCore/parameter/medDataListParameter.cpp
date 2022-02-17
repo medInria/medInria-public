@@ -74,5 +74,5 @@ QVariantMap medDataListParameter::toVariantMap() const
 
 bool medDataListParameter::fromVariantMap(QVariantMap const & pi_variantMap)
 {
-    bool bRes = false;
+    return false; //TODO
 }

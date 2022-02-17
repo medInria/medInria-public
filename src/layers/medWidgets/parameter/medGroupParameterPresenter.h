@@ -13,11 +13,11 @@
 =========================================================================*/
 
 #include <medAbstractParameterPresenter.h>
+#include <medGroupParameter.h>
 
 class QWidget;
 class QGroupBox;
 class QVBoxLayout;
-class medGroupParameter;
 
 class medGroupParameterPresenterPrivate;
 

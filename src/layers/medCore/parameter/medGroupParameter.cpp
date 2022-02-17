@@ -19,6 +19,12 @@ public:
     QList<medAbstractParameter*> parameterList;
 };
 
+medGroupParameter::medGroupParameter(QString const& id, QObject* parent)
+    : medAbstractParameter(id, parent), d(new medGroupParameterPrivate)
+{
+
+}
+
 medGroupParameter::~medGroupParameter()
 {
 
