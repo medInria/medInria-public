@@ -26,8 +26,6 @@
 #include <QMutex>
 #include <QSharedPointer>
 
-#include <medVirtualRepresentation.h> //TODO: to remove
-
 #define MED_DATASOURCES_FILENAME "DataSources.json"
 
 medSourcesLoader *medSourcesLoader::s_instance = nullptr;
@@ -209,8 +207,6 @@ medSourcesLoader::medSourcesLoader(QObject *parent)
 {
     setParent(parent);
     m_CnxParametersPath = ".";
-    medVirtualRepresentation *pVirt = new medVirtualRepresentation();
-    pVirt->setRootPath("C:\\Users\\fleray\\Desktop\\tmp\\virt");
 }
 
 bool medSourcesLoader::saveToDisk()
@@ -465,7 +461,7 @@ bool medSourcesLoader::generateUniqueSourceId(QString & Id, QString const & type
 
     QString IdTmp = Id;
     unsigned int suffix = 0;
-    while (m_instancesMap.contains(IdTmp) && suffix < 32767 && bRes)
+    while (m_instancesMap.contains(IdTmp) && suffix < 32767 && bRes) //Warning no more than 32767 cnx on same source
     {
         suffix++;
         IdTmp = Id + "_" + suffix;

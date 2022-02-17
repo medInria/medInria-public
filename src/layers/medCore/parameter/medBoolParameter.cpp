@@ -78,10 +78,10 @@ bool medBoolParameter::fromVariantMap(QVariantMap const& pi_variantMap)
 {
     bool bRes = true;
 
-    bRes &= pi_variantMap.contains("id");
-    bRes &= pi_variantMap.contains("caption");
-    bRes &= pi_variantMap.contains("description");
-    bRes &= pi_variantMap.contains("value");
+    bRes = bRes && pi_variantMap.contains("id");
+    bRes = bRes && pi_variantMap.contains("caption");
+    bRes = bRes && pi_variantMap.contains("description");
+    bRes = bRes && pi_variantMap.contains("value");
 
     if (bRes)
     {

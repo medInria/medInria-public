@@ -39,6 +39,18 @@ QVariantMap medTriggerParameter::toVariantMap() const
 
 bool medTriggerParameter::fromVariantMap(QVariantMap const & pi_variantMap)
 {
-    return false; //TODO
+    bool bRes = true;
+
+    bRes = bRes && pi_variantMap.contains("id");
+    bRes = bRes && pi_variantMap.contains("caption");
+    bRes = bRes && pi_variantMap.contains("description");
+
+    if (bRes)
+    {
+        setCaption(pi_variantMap["caption"].toString());
+        setDescription(pi_variantMap["description"].toString());
+    }
+
+    return bRes;
 }
 
