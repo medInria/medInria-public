@@ -29,8 +29,8 @@ add_definitions(-D${TARGET_NAME_UP}_VERSION="${${TARGET_NAME}_VERSION}")
 ## Resolve dependencies
 ## #############################################################################
 
-enable_testing(true)
-FIND_PACKAGE(GTest REQUIRED)
+#enable_testing(true)
+#FIND_PACKAGE(GTest REQUIRED)
 
 
 ## #############################################################################
