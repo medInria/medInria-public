@@ -1,98 +1,23 @@
-/*=========================================================================
 
- medInria
 
- Copyright (c) INRIA 2013 - 2019. All rights reserved.
- See LICENSE.txt for details.
-
-  This software is distributed WITHOUT ANY WARRANTY; without even
-  the implied warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR
-  PURPOSE.
-
-=========================================================================*/
 #include "medAnnotation.h"
+#include "annotationDownloader.h"
 
 #include <dcmtk/dcmdata/dcuid.h>
-#include <QTimer>
-#include <QThread>
-#include <QEventLoop>
-#include <QNetworkReply>
-#include <QJsonDocument>
-#include <QJsonArray>
-#include <QJsonObject>
 #include <QHttpMultiPart>
 
-int medAnnotation::requestId = -1;
-
-void annotationDownloader::doWork(const QString& requestUrl, int pi_requestId)
-{
-    m_requestId = pi_requestId;
-    m_Manager = new QNetworkAccessManager();
-    m_Reply = m_Manager->get(QNetworkRequest(QUrl(requestUrl)));
-
-    QObject::connect(m_Manager, SIGNAL(finished(QNetworkReply *)), this, SLOT(finish(QNetworkReply *)));
-    QObject::connect(m_Reply, SIGNAL(errorOccurred(QNetworkReply::NetworkError)), this, SLOT(onErrorOccured(
-            QNetworkReply::NetworkError)));
-    QObject::connect(m_Reply, SIGNAL(downloadProgress(qint64, qint64)), this, SLOT(inProgress(qint64, qint64)));
-
-}
-
-void annotationDownloader::onErrorOccured(QNetworkReply::NetworkError error)
-{
-    if (error != QNetworkReply::NoError )
-    {
-        // TODO To improve, check the value of error and decide what to do !
-        emit downloadProgress(m_requestId, medAbstractSource::eRequestStatus::cnxLost);
-    }
-}
-
-void annotationDownloader::inProgress(qint64 bytesReceived, qint64 bytesTotal)
-{
-    emit downloadProgress(m_requestId, medAbstractSource::eRequestStatus::pending);
-}
-
-void annotationDownloader::finish(QNetworkReply *reply)
-{
-    switch (reply->error())
-    {
-        case QNetworkReply::NoError:
-        {
-            emit downloadProgress(m_requestId, medAbstractSource::eRequestStatus::finish);
-            QByteArray data = reply->readAll();
-            if (m_TemporaryDir.isValid())
-            {
-                QDir dir(m_TemporaryDir.path());
-                dir.mkdir(  QString::number(m_requestId));
-                auto fullFilePath = dir.filePath(QString::number(m_requestId) + "/tmpAnnotation.mha");
-                QFile file(fullFilePath);
-                file.open(QIODevice::WriteOnly);
-                file.write(data);
-                file.close();
-                emit pathToData(m_requestId, fullFilePath);
-            }
-            break;
-        }
-
-        case QNetworkReply::ConnectionRefusedError:
-        default:
-            emit downloadProgress(m_requestId, medAbstractSource::eRequestStatus::faild);
-            break;
-    }
-
-}
-
-
-
-
-
-medAnnotation::medAnnotation()//: m_Manager(new QNetworkAccessManager)
+medAnnotation::medAnnotation()
 {
 
 }
 
 medAnnotation::~medAnnotation()
 {
-//    delete m_Manager;
+    for (annotationDownloader *downloader : requestIdMap.values())
+    {
+        delete downloader;
+    }
+    requestIdMap.clear();
 }
 
 int medAnnotation::isServerAvailable()
@@ -184,8 +109,9 @@ QList<QMap<QString, QString>> medAnnotation::findAnnotationMinimalEntries(const 
     return infos;
 }
 
-int medAnnotation::getAnnotationData(const QString &annotation_uid)
+bool medAnnotation::getAnnotationData(int pi_requestId, const QString &annotation_uid)
 {
+    bool bRes = true;
     QString requestUrl = m_url + "/annotations/" + annotation_uid;
 
     auto downloader = new annotationDownloader();
@@ -196,10 +122,23 @@ int medAnnotation::getAnnotationData(const QString &annotation_uid)
     connect(downloader, &annotationDownloader::pathToData, this, &medAbstractAnnotation::pathToData);
     workerThread.start();
 
-    requestIdMap[medAnnotation::requestId++] = downloader;
-    emit operate(requestUrl, medAnnotation::requestId);
+    requestIdMap[pi_requestId] = downloader;
+    emit operate(requestUrl, pi_requestId);
 
-    return medAnnotation::requestId;
+    return bRes;
+}
+
+bool medAnnotation::isCahedDataPath(int requestId)
+{
+    bool bRes = false;
+    auto downloader = requestIdMap[requestId];
+    if (downloader && (downloader->m_requestId == requestId) && (!downloader->m_path.isEmpty()))
+    {
+        bRes = true;
+        // TODO move signal emission ?
+        emit downloader->pathToData(requestId, downloader->m_path);
+    }
+    return bRes;
 }
 
 QString medAnnotation::addData(QVariant dataset, QString name, QString &seriesUid)
@@ -290,5 +229,23 @@ QString medAnnotation::addData(QVariant dataset, QString name, QString &seriesUi
 
     return annotationUid;
 }
+
+void medAnnotation::abortDownload(int pi_requestId)
+{
+    if (requestIdMap.contains(pi_requestId))
+    {
+        auto downloader = requestIdMap[pi_requestId];
+        downloader->abort();
+        requestIdMap.remove(pi_requestId);
+        delete downloader;
+    }
+
+}
+
+void medAnnotation::updateUrl(QString const & url)
+{
+    m_url = url;
+}
+
 
 

@@ -66,6 +66,8 @@ QWidget* medBoolParameterPresenter::buildWidget()
     QWidget *poWidgetRes = nullptr;
     switch (d->parameter->defaultRepresentation())
     {
+        case 1:
+            poWidgetRes = this->buildPushButton(); break;
     case 0:
     default:
         poWidgetRes = this->buildCheckBox(); break;

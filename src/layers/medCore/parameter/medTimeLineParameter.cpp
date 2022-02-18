@@ -16,7 +16,7 @@
 #include <math.h>       // floor
 
 #include <QTimeLine>
-#include <QEasingCurve >
+#include <QEasingCurve>
 
 #include <medBoolParameter.h>
 #include <medComboBox.h>
