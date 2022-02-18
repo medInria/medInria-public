@@ -108,9 +108,9 @@ private:
     medAPHPParametersPrivate* d;
 
     static std::atomic<int> s_RequestId;
-    static medStringParameter *s_Aetitle;
-    static medStringParameter *s_Hostname;
-    static medIntParameter *s_Port;
+    static medStringParameter s_Aetitle;
+    static medStringParameter s_Hostname;
+    static medIntParameter s_Port;
 
     // TODO : remove TimeOut & QTime it is a HACK
     int timeout;

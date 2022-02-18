@@ -18,12 +18,12 @@
 #include <medIntParameter.h>
 #include <medStringParameter.h>
 #include <medGroupParameter.h>
-#include <medBoolParameter.h>
+#include <medTriggerParameter.h>
 
-std::atomic<int> medAPHP::s_RequestId = -1;
-medStringParameter *medAPHP::s_Aetitle;
-medStringParameter *medAPHP::s_Hostname;
-medIntParameter *medAPHP::s_Port;
+std::atomic<int>   medAPHP::s_RequestId = -1;
+medStringParameter medAPHP::s_Aetitle("AE Title");
+medStringParameter medAPHP::s_Hostname("Hostname");
+medIntParameter    medAPHP::s_Port("TCP Port");
 
 struct medAPHPParametersPrivate
 {
@@ -61,7 +61,7 @@ struct medAPHPParametersPrivate
     medGroupParameter *restFulSettings;
     medStringParameter *restFulUrl;
 
-    medBoolParameter *saveSettingsButton;
+    medTriggerParameter *saveSettingsButton;
 
     /* ***********************************************************************/
     /* ************************* Filtering Parameters ************************/
@@ -82,14 +82,10 @@ medAPHP::medAPHP(QtDcmInterface *dicomLib, medAbstractAnnotation *annotationAPI)
     d->qtdcm = dicomLib;
     d->restFulAPI = annotationAPI;
 
-    s_Aetitle = new medStringParameter("AE Title", this);
-    s_Hostname = new medStringParameter("Hostname", this);
-    s_Port = new medIntParameter("TCP Port", this);
-
     d->localSettings = new medGroupParameter("Local dicom settings", this);
-    d->localSettings->addParameter(s_Aetitle);
-    d->localSettings->addParameter(s_Hostname);
-    d->localSettings->addParameter(s_Port);
+    d->localSettings->addParameter(&s_Aetitle);
+    d->localSettings->addParameter(&s_Hostname);
+    d->localSettings->addParameter(&s_Port);
 
     d->remoteAet = new medStringParameter("Server AE Title");
     d->remoteHostname = new medStringParameter("Server Hostname");
@@ -105,9 +101,8 @@ medAPHP::medAPHP(QtDcmInterface *dicomLib, medAbstractAnnotation *annotationAPI)
     d->restFulSettings = new medGroupParameter("annotation API Settings", this);
     d->restFulSettings->addParameter(d->restFulUrl);
 
-    d->saveSettingsButton = new medBoolParameter("Save", this);
-    d->saveSettingsButton->setDefaultRepresentation(1);
-    QObject::connect(d->saveSettingsButton, SIGNAL(valueChanged(bool)), this, SLOT(onSettingsSaved()));
+    d->saveSettingsButton = new medTriggerParameter("Save", this);
+    QObject::connect(d->saveSettingsButton, SIGNAL(triggered()), this, SLOT(onSettingsSaved()));
 
     d->patientName = new medStringParameter("Patient Name", this);
     d->patientName->setCaption("(0010,0010)");
@@ -134,7 +129,10 @@ bool medAPHP::initialization(const QString &pi_instanceId)
 
 void medAPHP::onSettingsSaved()
 {
-    connect(true);
+    // WARn : Is it usefull ?
+    d->qtdcm->updateLocalParameters(s_Aetitle.value(), s_Hostname.value(), s_Port.value());
+    d->qtdcm->updateRemoteParameters(d->remoteAet->value(), d->remoteHostname->value(), d->remotePort->value());
+    d->restFulAPI->updateUrl(d->restFulUrl->value());
 }
 
 bool medAPHP::setInstanceName(const QString &pi_instanceName)
@@ -152,7 +150,7 @@ bool medAPHP::connect(bool pi_bEnable)
     bool bRes = false;
     if (pi_bEnable)
     {
-        d->qtdcm->updateLocalParameters(s_Aetitle->value(), s_Hostname->value(), s_Port->value());
+        d->qtdcm->updateLocalParameters(s_Aetitle.value(), s_Hostname.value(), s_Port.value());
         d->qtdcm->updateRemoteParameters(d->remoteAet->value(), d->remoteHostname->value(), d->remotePort->value());
         d->restFulAPI->updateUrl(d->restFulUrl->value());
 

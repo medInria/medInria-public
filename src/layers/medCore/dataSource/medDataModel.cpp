@@ -291,12 +291,19 @@ medAbstractData * medDataModel::getData(medDataIndex const & index)
             else if (data.canConvert<QString>())
             {
                 pDataTmp = medDataImporter::convertSingleDataOnfly(data.toString());
-                pDataTmp->setDataIndex(index);
-                QModelIndex modelIndex = m_sourcesModelMap[pSource]->toIndex(index.asString());
-                QString hruUri = m_sourcesModelMap[pSource]->toHumanReadableUri(modelIndex);
-                QString name = hruUri.right(hruUri.size()-hruUri.lastIndexOf("\r\n")-2);
-                pDataTmp->setExpectedName(name);
-                pDataTmp->setMetaData(medMetaDataKeys::SeriesDescription.key(), name);
+                if (pDataTmp)
+                {
+                    pDataTmp->setDataIndex(index);
+                    QModelIndex modelIndex = m_sourcesModelMap[pSource]->toIndex(index.asString());
+                    QString hruUri = m_sourcesModelMap[pSource]->toHumanReadableUri(modelIndex);
+                    QString name = hruUri.right(hruUri.size() - hruUri.lastIndexOf("\r\n") - 2);
+                    pDataTmp->setExpectedName(name);
+                    pDataTmp->setMetaData(medMetaDataKeys::SeriesDescription.key(), name);
+                }
+                else
+                {
+                    qDebug()<<"Unable to read data "<<data.toString();
+                }
             }
             else if (data.canConvert<QByteArray>())
             {

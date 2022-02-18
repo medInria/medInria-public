@@ -34,7 +34,13 @@ void medTriggerParameter::trigger()
 
 QVariantMap medTriggerParameter::toVariantMap() const
 {
-    return QVariantMap(); //TODO
+    QVariantMap varMapRes;
+
+    varMapRes.insert("id",id());
+    varMapRes.insert("caption", caption());
+    varMapRes.insert("description", description());
+
+    return varMapRes;
 }
 
 bool medTriggerParameter::fromVariantMap(QVariantMap const & pi_variantMap)
