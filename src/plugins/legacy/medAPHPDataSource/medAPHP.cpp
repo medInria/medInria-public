@@ -66,6 +66,7 @@ struct medAPHPParametersPrivate
     /* ***********************************************************************/
     /* ************************* Filtering Parameters ************************/
     /* ***********************************************************************/
+    medGroupParameter *patientLevel;
     medStringParameter *patientName;
     medStringParameter *patientId;
 
@@ -104,11 +105,15 @@ medAPHP::medAPHP(QtDcmInterface *dicomLib, medAbstractAnnotation *annotationAPI)
     d->saveSettingsButton = new medTriggerParameter("Save", this);
     QObject::connect(d->saveSettingsButton, SIGNAL(triggered()), this, SLOT(onSettingsSaved()));
 
-    d->patientName = new medStringParameter("Patient Name", this);
-    d->patientName->setCaption("(0010,0010)");
+    d->patientName = new medStringParameter("Patient Name (0010,0010)", this);
+    d->patientName->setCaption("Patient Name");
 //  d->  connect(m_PatientName, &medStringParameter::valueChanged, m_DicomLib, &QtDcmInterface::patientNameFilter);
-    d->patientId = new medStringParameter("Patient ID", this);
-    d->patientId->setCaption("(0010,0020)");
+    d->patientId = new medStringParameter("Patient ID (0010,0020)", this);
+    d->patientId->setCaption("Patient ID");
+    d->patientLevel = new medGroupParameter("Patient Level", this);
+    d->patientLevel->addParameter(d->patientName);
+    d->patientLevel->addParameter(d->patientId);
+
 }
 
 medAPHP::~medAPHP()
@@ -189,7 +194,7 @@ QList<medAbstractParameter *> medAPHP::getVolatilParameters()
 QList<medAbstractParameter *> medAPHP::getFilteringParameters()
 {
     QList<medAbstractParameter *> listRes;
-    listRes << d->patientName << d->patientId;
+    listRes << d->patientLevel;
     return listRes;
 }
 
