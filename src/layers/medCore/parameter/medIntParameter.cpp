@@ -117,16 +117,16 @@ bool medIntParameter::fromVariantMap(QVariantMap const& pi_variantMap)
 {
     bool bRes = true;
 
-    bRes &= pi_variantMap.contains("id");
-    bRes &= pi_variantMap.contains("caption");
-    bRes &= pi_variantMap.contains("description");
-    bRes &= pi_variantMap.contains("value");
+    bRes = bRes && pi_variantMap.contains("id");
+    bRes = bRes && pi_variantMap.contains("caption");
+    bRes = bRes && pi_variantMap.contains("description");
+    bRes = bRes && pi_variantMap.contains("value");
 
     if (bRes)
     {
-        bRes &= pi_variantMap["value"].canConvert(QMetaType::Int);
-        bRes &= pi_variantMap["min"].canConvert(QMetaType::Int);
-        bRes &= pi_variantMap["max"].canConvert(QMetaType::Int);
+        bRes = bRes && pi_variantMap["value"].canConvert(QMetaType::Int);
+        bRes = bRes && pi_variantMap["min"].canConvert(QMetaType::Int);
+        bRes = bRes && pi_variantMap["max"].canConvert(QMetaType::Int);
         if (bRes)
         {
             setCaption(pi_variantMap["caption"].toString());

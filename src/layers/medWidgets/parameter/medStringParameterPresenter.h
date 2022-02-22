@@ -26,11 +26,11 @@ class MEDWIDGETS_EXPORT medStringParameterPresenter : public medAbstractParamete
 public:
     medStringParameterPresenter(medStringParameter *parent);
     medStringParameterPresenter(const QString & newParameterId);
-    virtual ~medStringParameterPresenter();
+    ~medStringParameterPresenter() override;
 
     virtual medStringParameter *parameter() const;
 
-    virtual QWidget *buildWidget();
+    QWidget *buildWidget() override;
     QLineEdit *buildLineEdit();
 
 private:

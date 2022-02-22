@@ -33,6 +33,7 @@ enum medParameterType
     MED_PARAMETER_VECTOR2D, //No presenter available, not needed
     MED_PARAMETER_VECTOR3D, //No presenter available, not needed
     MED_PARAMETER_DATA_LIST, //No presenter available, not needed
+    MED_PARAMETER_GROUP,
 };
 
 class medAbstractParameterPrivate;

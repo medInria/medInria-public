@@ -43,7 +43,7 @@ QWidget * medSourcesLoaderPresenter::buildWidget()
             auto * pHLayout = new QHBoxLayout;
             auto * pParamPresenter = medAbstractParameterPresenter::buildFromParameter(param);
             auto * pWidget = pParamPresenter->buildWidget();
-            if (dynamic_cast<QPushButton*>(pWidget) == nullptr)
+            if (dynamic_cast<QPushButton*>(pWidget) == nullptr && dynamic_cast<QGroupBox*>(pWidget) == nullptr)
             {
                 auto * pLabel = pParamPresenter->buildLabel();
                 pHLayout->addWidget(pLabel);

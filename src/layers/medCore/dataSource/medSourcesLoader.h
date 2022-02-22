@@ -54,12 +54,12 @@ public:
 	medAbstractSource*        getSource(QString const & instanceId);
     bool                      renameSource(QString const & instanceId, QString const & name);
 	
-	bool loadFromDisk(); //call after each add or remove source instance, each call to the destructor. Must be cryptographied
+	bool loadFromDisk(); //call after each add or remove source instance, each call to the destructor. Must be encrypted
 
 private:
     medSourcesLoader(QObject *parent = nullptr);
 
-    bool saveToDisk();   //call after each add or remove source instance, each call to the destructor. Must be cryptographied
+    bool saveToDisk();   //call after each add or remove source instance, each call to the destructor. Must be encrypted
     
 
     void reloadCnx(QJsonObject &obj);

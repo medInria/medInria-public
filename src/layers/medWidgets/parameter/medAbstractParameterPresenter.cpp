@@ -22,6 +22,7 @@
 #include <medBoolParameterPresenter.h>
 #include <medIntParameterPresenter.h>
 #include <medDoubleParameterPresenter.h>
+#include <medGroupParameterPresenter.h>
 #include <medStringParameterPresenter.h>
 #include <medStringListParameterPresenter.h>
 #include <medTimeLineParameterPresenter.h>
@@ -115,6 +116,9 @@ medAbstractParameterPresenter* medAbstractParameterPresenter::buildFromParameter
         presenter = new medTimeLineParameterPresenter(qobject_cast<medTimeLineParameter*>(parameter)); break;
     case medParameterType::MED_PARAMETER_VARIANT_LIST:
         presenter = new medVariantListParameterPresenter(qobject_cast<medVariantListParameter*>(parameter)); break;
+    case medParameterType::MED_PARAMETER_GROUP:
+        presenter = new medGroupParameterPresenter(qobject_cast<medGroupParameter*>(parameter)) ; break;
+
     default:
         dtkDebug() << "Unable to build presenter for parameter of type" << parameter->type();
     }

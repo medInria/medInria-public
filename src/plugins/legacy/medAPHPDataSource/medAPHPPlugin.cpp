@@ -22,7 +22,7 @@ medAPHPPlugin::medAPHPPlugin(QObject *parent) : medPluginLegacy(parent)
 
 bool medAPHPPlugin::initialize()
 {
-    return medDBSourcesLoader::instance()->registerSourceType(
+    return medSourcesLoader::instance()->registerSourceType(
         "medAPHP",
         "Datasource de type APHP (PACS + APIRest)",
         "Ce type de datasource permet l'exploitation des données pour une installation de medInria dans l'environnement de l'EDS APHP",

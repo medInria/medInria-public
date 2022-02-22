@@ -582,6 +582,21 @@ void polygonLabel::createMask(int label, QString &desc)
     output->addParentData(inputData);
 
     medUtilities::setDerivedMetaData(output, inputData, desc, false, false);
+    if (inputData->dataIndex().isV2())
+    {
+        QStringList desturi = inputData->dataIndex().uri();
+        if (desturi.first().contains("medSQLite"))
+        {
+            desturi.pop_back();
+        }
+
+        output->setDataIndex(desturi);
+        output->addParentData(inputData);
+        QString desc = inputData->getExpectedName() + "_segmented";
+        output->setExpectedName(desc);
+        output->setMetaData(medMetaDataKeys::SeriesDescription.key(), desc);
+    }
+
     medDataManager::instance()->importData(output, false);
 }
 

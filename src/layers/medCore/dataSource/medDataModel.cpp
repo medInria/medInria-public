@@ -291,12 +291,26 @@ medAbstractData * medDataModel::getData(medDataIndex const & index)
             else if (data.canConvert<QString>())
             {
                 pDataTmp = medDataImporter::convertSingleDataOnfly(data.toString());
-                pDataTmp->setDataIndex(index);
-                QModelIndex modelIndex = m_sourcesModelMap[pSource]->toIndex(index.asString());
-                QString hruUri = m_sourcesModelMap[pSource]->toHumanReadableUri(modelIndex);
-                QString name = hruUri.right(hruUri.size()-hruUri.lastIndexOf("\r\n")-2);
-                pDataTmp->setExpectedName(name);
-                pDataTmp->setMetaData(medMetaDataKeys::SeriesDescription.key(), name);
+                if (pDataTmp)
+                {
+                    pDataTmp->setDataIndex(index);
+                    QModelIndex modelIndex = m_sourcesModelMap[pSource]->toIndex(index.asString());
+                    QString hruUri = m_sourcesModelMap[pSource]->toHumanReadableUri(modelIndex);
+                    QString name = hruUri.right(hruUri.size() - hruUri.lastIndexOf("\r\n") - 2);
+                    QStringList hruUriAsList = hruUri.split("\r\n");
+                    pDataTmp->setExpectedName(name);
+                    pDataTmp->setMetaData(medMetaDataKeys::SeriesDescription.key(), name);
+                    QString studyDesc;
+                    if (hruUriAsList.size() > 2)
+                    {
+                        studyDesc = hruUriAsList.at(hruUriAsList.size()-2);
+                    }
+                    pDataTmp->setMetaData(medMetaDataKeys::StudyDescription.key(), studyDesc);
+                }
+                else
+                {
+                    qDebug()<<"Unable to read data "<<data.toString();
+                }
             }
             else if (data.canConvert<QByteArray>())
             {

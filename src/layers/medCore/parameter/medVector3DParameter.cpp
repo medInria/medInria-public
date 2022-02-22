@@ -61,12 +61,39 @@ bool medVector3DParameter::copyValueTo(medAbstractParameter & dest)
 
 QVariantMap medVector3DParameter::toVariantMap() const
 {
-    return QVariantMap(); //TODO
+    QVariantMap varMapRes;
+
+    varMapRes.insert("id", id());
+    varMapRes.insert("caption", caption());
+    varMapRes.insert("description", description());
+
+    varMapRes.insert("value", d->value);
+
+    return varMapRes;
 }
 
 bool medVector3DParameter::fromVariantMap(QVariantMap const & pi_variantMap)
 {
-    return false; //TODO
+    bool bRes = true;
+
+    bRes = bRes && pi_variantMap.contains("id");
+    bRes = bRes && pi_variantMap.contains("caption");
+    bRes = bRes && pi_variantMap.contains("description");
+    bRes = bRes && pi_variantMap.contains("value");
+
+    if (bRes)
+    {
+        bRes = bRes && pi_variantMap["value"].canConvert<QVector3D>();
+        if (bRes)
+        {
+            setCaption(pi_variantMap["caption"].toString());
+            setDescription(pi_variantMap["description"].toString());
+
+            d->value = pi_variantMap["value"].value<QVector3D>();
+        }
+    }
+
+    return bRes;
 }
 
 void medVector3DParameter::trigger()
