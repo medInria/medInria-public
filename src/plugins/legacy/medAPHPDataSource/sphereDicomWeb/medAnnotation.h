@@ -38,7 +38,7 @@ public:
     /* ***********************************************************************/
     QList<QMap<QString, QString>> findAnnotationMinimalEntries(const QString &seriesInstanceUID) override;
     bool getAnnotationData(int pi_requestId, const QString &uid) override;
-    bool isCahedDataPath(int requestId);
+    bool isCachedDataPath(int requestId);
     QString addData(QVariant dataset, QString name, QString &seriesUid) override;
 
     void abortDownload(int pi_requestId) override;

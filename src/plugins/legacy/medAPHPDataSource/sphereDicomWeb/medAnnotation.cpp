@@ -128,7 +128,7 @@ bool medAnnotation::getAnnotationData(int pi_requestId, const QString &annotatio
     return bRes;
 }
 
-bool medAnnotation::isCahedDataPath(int requestId)
+bool medAnnotation::isCachedDataPath(int requestId)
 {
     bool bRes = false;
     auto downloader = requestIdMap[requestId];
