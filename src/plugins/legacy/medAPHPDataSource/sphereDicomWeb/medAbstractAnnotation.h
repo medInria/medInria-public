@@ -24,7 +24,7 @@ public:
     virtual int isServerAvailable() = 0;
     virtual QList<QMap<QString, QString>> findAnnotationMinimalEntries(const QString &seriesInstanceUID) = 0;
     virtual bool getAnnotationData(int pi_requestId, const QString &uid) = 0;
-    virtual bool isCahedDataPath(int requestId) = 0;
+    virtual bool isCachedDataPath(int requestId) = 0;
     virtual QString addData(QVariant variant, QString name, QString &key) = 0;
     virtual void abortDownload(int pi_requestId) = 0;
 

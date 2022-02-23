@@ -415,14 +415,14 @@ int medAPHP::getAssyncData(unsigned int pi_uiLevel, QString key)
         int requestId = d->levelKeyToRequestIdMap[levelKey];
         if (pi_uiLevel > 0 && pi_uiLevel < 3)
         {
-            if (d->restFulAPI->isCahedDataPath(requestId))
+            if (d->restFulAPI->isCachedDataPath(requestId))
             {
                 iRes = requestId;
             }
         }
         else if (pi_uiLevel == 3)
         {
-            if (d->restFulAPI->isCahedDataPath(requestId))
+            if (d->restFulAPI->isCachedDataPath(requestId))
             {
                 iRes = requestId;
             }
