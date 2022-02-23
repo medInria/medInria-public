@@ -72,7 +72,14 @@ PyObject* Module::getModuleObject(QString name)
 
     if (!moduleObject)
     {
-        moduleObject = coreFunction(PyImport_ImportModuleLevel, qUtf8Printable(name), nullptr, nullptr, *list(), 0);
+        try
+        {
+            moduleObject = coreFunction(PyImport_ImportModuleLevel, qUtf8Printable(name), nullptr, nullptr, *list(), 0);
+        }
+        catch (med::python::BaseException &e)
+        {
+            qDebug() << e.what();
+        }
     }
 
     return moduleObject;

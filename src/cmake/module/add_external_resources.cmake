@@ -58,7 +58,39 @@ macro(add_external_resources target)
         endif()
       endif()
 
-    else() # NOT APPLE
+    elseif(WIN32) # Windows
+
+      # at post build time we copy the resources to the build directory.
+
+      set(build_dir "${${PROJECT_NAME}_RESOURCES_DIR}")
+
+      # use subfolders for library-specific resources to avoid name collisions
+      if (target_type STREQUAL "SHARED_LIBRARY")
+        set(build_dir "${build_dir}/${target}")
+      endif()
+	  
+	  set(pathsToCpy "")
+      foreach(resource ${resources})
+            get_filename_component(pathTmp ${resource} DIRECTORY)
+			list(APPEND pathsToCpy ${pathTmp})
+      endforeach()
+      list(REMOVE_DUPLICATES pathsToCpy)
+
+      foreach(pathTmp ${pathsToCpy})
+        add_custom_command(TARGET ${target} POST_BUILD
+          COMMAND ${CMAKE_COMMAND} ARGS -E copy_directory "${pathTmp}" "${build_dir}"
+          )
+      endforeach()
+
+      foreach(resource ${resources})
+        get_filename_component(filename "${resource}" NAME)
+        set(output_file "${build_dir}/${filename}")
+        list(APPEND copied_resources "${output_file}")
+      endforeach()
+
+      set(resources "${copied_resources}")
+    
+	else() #Linux
 
       # at post build time we copy the resources to the build directory.
 
@@ -74,13 +106,14 @@ macro(add_external_resources target)
         set(output_file "${build_dir}/${filename}")
         add_custom_command(TARGET ${target} POST_BUILD
           BYPRODUCTS "${output_file}"
-          COMMAND ${CMAKE_COMMAND} ARGS -E copy "${resource}" "${output_file}"
+          COMMAND ${CMAKE_COMMAND} ARGS -E copy_if_different "${resource}" "${output_file}"
           )
         list(APPEND copied_resources "${output_file}")
       endforeach()
 
       set(resources "${copied_resources}")
-
+	
+	
     endif()
 
     # allows the resources to be handled by the install command during

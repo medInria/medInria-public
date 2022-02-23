@@ -9,7 +9,7 @@
 %}
 
 %{
-template <class... ARGS, class SENDER_TYPE>
+template <class SENDER_TYPE, class... ARGS>
 void connect(SENDER_TYPE* sender, void (SENDER_TYPE::*signal)(ARGS...), PyObject* receiver)
 {
     med::python::Object object = med::python::Object::borrowed(receiver);
