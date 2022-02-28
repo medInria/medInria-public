@@ -78,13 +78,13 @@ function(embed_python target)
 
     if (APPLE)
         add_custom_command(OUTPUT ${copied_library}
-          COMMAND ${CMAKE_COMMAND} ARGS -E copy "${python_main_library}" "${CMAKE_BINARY_DIR}/lib/"
+          COMMAND ${CMAKE_COMMAND} ARGS -E copy_if_different "${python_main_library}" "${CMAKE_BINARY_DIR}/lib/"
           COMMAND ${CMAKE_INSTALL_NAME_TOOL} -id "${copied_library}" "${copied_library}"
           DEPENDS "${python_main_library}"
           )
     else()
         add_custom_command(OUTPUT ${copied_library}
-          COMMAND ${CMAKE_COMMAND} ARGS -E copy "${python_main_library}" "${CMAKE_BINARY_DIR}/lib/"
+          COMMAND ${CMAKE_COMMAND} ARGS -E copy_if_different "${python_main_library}" "${CMAKE_BINARY_DIR}/lib/"
           DEPENDS "${python_main_library}"
           )
     endif()
@@ -97,7 +97,12 @@ function(embed_python target)
 
     target_include_directories(${target} PUBLIC "${working_dir}/${PYTHON_HEADERS_DIR}")
     target_sources(${target} PRIVATE ${python_headers} ${copied_library})
-    target_link_libraries(${TARGET_NAME} PUBLIC "${copied_library}")
+	IF(NOT WIN32)
+        target_link_libraries(${TARGET_NAME} PUBLIC "${copied_library}")
+	ELSE()
+        #target_link_libraries(${TARGET_NAME} PUBLIC "${CMAKE_BINARY_DIR}/lib/$<$<CONFIG:debug>:PYTHON_STUB_LIBRARY_DEBUG>$<$<CONFIG:release>:PYTHON_STUB_LIBRARY>$<$<CONFIG:MinSizeRel>:PYTHON_STUB_LIBRARY>$<$<CONFIG:RelWithDebInfo>:PYTHON_STUB_LIBRARY>)
+	    target_link_directories(${TARGET_NAME} PUBLIC "${working_dir}/${PYTHON_LIBRARIES_DIR}")
+	ENDIF()
 
     target_compile_definitions(${target} PUBLIC PYTHON_VERSION_MINOR=${PYTHON_VERSION_MINOR})
 

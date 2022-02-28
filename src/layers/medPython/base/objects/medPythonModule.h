@@ -38,6 +38,6 @@ private:
     static PyObject* getModuleObject(QString name);
 };
 
-Module import(QString name);
+MEDPYTHON_EXPORT Module import(QString name);
 
 } // namespace med::python

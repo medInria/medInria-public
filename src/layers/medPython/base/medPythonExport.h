@@ -13,7 +13,7 @@
 ==============================================================================*/
 
 #ifdef WIN32
-    #ifdef medPython_EXPORTS
+    #ifdef medPythonBase_EXPORTS
         #define MEDPYTHON_EXPORT __declspec(dllexport)
     #else
         #define MEDPYTHON_EXPORT __declspec(dllimport)

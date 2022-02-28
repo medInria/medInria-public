@@ -39,25 +39,25 @@ MEDPYTHON_EXPORT PyObject* wrapObjectWithSWIG(const QObject* object, bool takeOw
 } // namespace med::python
 
 #define MED_PYTHON_STANDARD_VALUE_CONVERSIONS(TYPE) \
-    MEDPYTHON_EXPORT bool medPythonConvert(const TYPE& value, PyObject** output) \
+    bool medPythonConvert(const TYPE& value, PyObject** output) \
     { \
         TYPE* valueCopy = new TYPE(value); \
         *output = med::python::wrapObjectWithSWIG(valueCopy, QString(#TYPE) + "*", true); \
         return !med::python::errorOccurred(); \
     } \
-    MEDPYTHON_EXPORT bool medPythonConvert(const PyObject* object, TYPE* output) \
+    bool medPythonConvert(const PyObject* object, TYPE* output) \
     { \
         *output = *(TYPE*)med::python::extractSWIGWrappedObject(object); \
         return !med::python::errorOccurred(); \
     }
 
 #define MED_PYTHON_STANDARD_POINTER_CONVERSIONS(TYPE) \
-    MEDPYTHON_EXPORT bool medPythonConvert(const TYPE* object, PyObject** output) \
+    bool medPythonConvert(const TYPE* object, PyObject** output) \
     { \
         *output = med::python::wrapObjectWithSWIG(object, QString(#TYPE) + "*"); \
         return !med::python::errorOccurred(); \
     } \
-    MEDPYTHON_EXPORT bool medPythonConvert(const PyObject* object, TYPE** output) \
+    bool medPythonConvert(const PyObject* object, TYPE** output) \
     { \
         *output = (TYPE*)med::python::extractSWIGWrappedObject(nativeObject); \
         return !med::python::errorOccurred(); \

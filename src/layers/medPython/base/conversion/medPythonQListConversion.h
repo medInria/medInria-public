@@ -35,7 +35,7 @@ void clearList(QList<TYPE*> list)
     }
 }
 
-void clearList(QList<PyObject*> list);
+void MEDPYTHON_EXPORT clearList(QList<PyObject*> list);
 
 } // namespace med::python
 

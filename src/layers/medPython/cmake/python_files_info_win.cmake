@@ -15,6 +15,9 @@
 
 set(PYTHON_VERSION_MINOR 9)
 set(PYTHON_MAIN_LIBRARY python39.dll)
+set(PYTHON_MAIN_LIBRARY_DEBUG python39_d.dll)
+set(PYTHON_STUB_LIBRARY python39.lib)
+set(PYTHON_STUB_LIBRARY_DEBUG python39_d.lib)
 set(PYTHON_HEADERS_DIR headers/python3.9)
 set(PYTHON_LIBRARIES_DIR libraries/python3.9)
 set(PYTHON_MODULES_DIR modules/python3.9)
