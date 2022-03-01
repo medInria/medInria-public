@@ -464,7 +464,7 @@ bool medSourcesLoader::generateUniqueSourceId(QString & Id, QString const & type
     while (m_instancesMap.contains(IdTmp) && suffix < 32767 && bRes) //Warning no more than 32767 cnx on same source
     {
         suffix++;
-        IdTmp = Id + "_" + suffix;
+        IdTmp = Id + "_" + QString::number(suffix);
     }
     
     bRes = suffix < 32768;

@@ -165,5 +165,9 @@
         <file>icons/saveScene.png</file>
         <file>icons/saveScene_grey.png</file>
         <file>icons/scene.png</file>
+
+        <file>icons/connect_on.svg</file>
+        <file>icons/connect_off.svg</file>
+        <file>icons/cross_white.svg</file>
     </qresource>
 </RCC>

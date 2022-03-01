@@ -467,7 +467,7 @@ TEST(AccessTest, test_mandatory_attr_keys_invalid_level_failed)
 TEST(AccessTest, is_writeable_true)
 {
     medSQlite<QSqlDatabase> m = medSQlite<QSqlDatabase>();
-    EXPECT_EQ(true, m.isWriteable());
+    EXPECT_EQ(true, m.isWritable());
 }
 
 TEST(AccessTest, is_local_true)

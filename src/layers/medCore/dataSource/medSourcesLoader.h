@@ -38,7 +38,7 @@ public:
     /* ***********************************************************************/
     /* *************** Add a source type ********************************/
     /* ***********************************************************************/
-	bool                                       registerSourceType(QString type, QString name, QString description, instantiateSource instanciator);
+	bool registerSourceType(QString type, QString name, QString description, instantiateSource instanciator);
 	QList<std::tuple<QString,QString,QString>> sourcesTypeAvailables();
     
     /* ***********************************************************************/

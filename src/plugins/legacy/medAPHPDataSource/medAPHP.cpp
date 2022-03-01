@@ -198,7 +198,7 @@ QList<medAbstractParameter *> medAPHP::getFilteringParameters()
     return listRes;
 }
 
-bool medAPHP::isWriteable()
+bool medAPHP::isWritable()
 {
     return true;
 }
