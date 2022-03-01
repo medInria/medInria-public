@@ -290,3 +290,18 @@ int medUtilities::getDevicePixelRatio(QMouseEvent* mouseEvent)
 #endif
     return devicePixelRatio;
 }
+
+/**
+ * @brief Get the screen pixel ratio according to the current view
+ * 
+ * @param view a current view to get the screen ratio from
+ * @return int the screen pixel ratio
+ */
+int medUtilities::getDevicePixelRatio(medAbstractView *view)
+{
+    auto * widgetView = view->viewWidget();
+    auto positionView = widgetView->mapToGlobal({widgetView->width()/2,0});
+    int devicePixelRatio = QGuiApplication::screenAt(positionView)->devicePixelRatio();
+
+    return devicePixelRatio;
+}
