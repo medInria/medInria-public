@@ -102,6 +102,9 @@ public:
 
             if (m_paintState != PaintState::Wand)
             {
+                // Update the cursor size for painting
+                m_cb->activateCustomedCursor();
+
                 // add current state to undo stack
                 bool isInside;
                 MaskType::IndexType index;
@@ -572,8 +575,9 @@ void AlgorithmPaintToolBox::activateCustomedCursor()
     }
     else
     {
-        // Adapt radius in mm to scale of view (zoom, crop, etc)
-        qreal radiusSizeDouble = m_brushSizeSlider->value() * currentView->scale();
+        // Adapt to scale of view (zoom, crop, screen ratio, etc)
+        int devicePixelRatio = medUtilities::getDevicePixelRatio(currentView);
+        qreal radiusSizeDouble = m_brushSizeSlider->value() * currentView->scale() / devicePixelRatio;
 
         // Create shape of the new cursor
         QPixmap pix(radiusSizeDouble, radiusSizeDouble);
