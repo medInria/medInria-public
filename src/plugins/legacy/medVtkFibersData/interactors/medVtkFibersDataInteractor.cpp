@@ -225,7 +225,7 @@ void medVtkFibersDataInteractorPrivate::setROI (medAbstractData *data)
 }
 
 medVtkFibersDataInteractor::medVtkFibersDataInteractor(medAbstractView *parent): medAbstractImageViewInteractor(parent),
-    d(new medVtkFibersDataInteractorPrivate)
+                                                                                 d(new medVtkFibersDataInteractorPrivate)
 {
     d->data    = nullptr;
     d->dataset = nullptr;
@@ -358,11 +358,11 @@ medVtkFibersDataInteractor::medVtkFibersDataInteractor(medAbstractView *parent):
     d->validateParameter = new medTriggerParameterL("validateFiberParameter", this);
     d->validateParameter->setToolTip(tr("Save the current shown bundle and show useful information about it."));
     d->validateParameter->setButtonText("Validate");
-    
+
     d->saveParameter = new medTriggerParameterL("saveFiberParameter", this);
     d->saveParameter->setToolTip(tr("Save all bundles to database"));
     d->saveParameter->setButtonText("Save");
-    
+
     d->showAllBundleParameter = new medBoolParameterL("showAllBundleFiberParameter", this);
     d->showAllBundleParameter->setValue(true);
     d->showAllBundleParameter->setToolTip(tr("Uncheck if you do not want the previously validated bundles to be displayed."));
@@ -405,20 +405,19 @@ medVtkFibersDataInteractor::medVtkFibersDataInteractor(medAbstractView *parent):
     {
         switch(d->view2d->GetViewOrientation())
         {
-        case vtkImageView2D::VIEW_ORIENTATION_AXIAL:
-            d->view->setOrientation(medImageView::VIEW_ORIENTATION_AXIAL);
-            break;
-        case vtkImageView2D::VIEW_ORIENTATION_SAGITTAL:
-            d->view->setOrientation(medImageView::VIEW_ORIENTATION_SAGITTAL);
-            break;
-        case vtkImageView2D::VIEW_ORIENTATION_CORONAL:
-            d->view->setOrientation(medImageView::VIEW_ORIENTATION_CORONAL);
-            break;
+            case vtkImageView2D::VIEW_ORIENTATION_AXIAL:
+                d->view->setOrientation(medImageView::VIEW_ORIENTATION_AXIAL);
+                break;
+            case vtkImageView2D::VIEW_ORIENTATION_SAGITTAL:
+                d->view->setOrientation(medImageView::VIEW_ORIENTATION_SAGITTAL);
+                break;
+            case vtkImageView2D::VIEW_ORIENTATION_CORONAL:
+                d->view->setOrientation(medImageView::VIEW_ORIENTATION_CORONAL);
+                break;
         }
     }
 
     d->slicingParameter = new medIntParameterL("Slicing", this);
-    d->slicingParameter->getSlider()->setOrientation(Qt::Horizontal);
     connect(d->slicingParameter, SIGNAL(valueChanged(int)), this, SLOT(moveToSlice(int)));
     connect(d->view->positionBeingViewedParameter(), SIGNAL(valueChanged(QVector3D)), this, SLOT(updateSlicingParam()));
 }
@@ -465,8 +464,8 @@ bool medVtkFibersDataInteractor::registered()
 {
     medViewFactory *factory = medViewFactory::instance();
     factory->registerInteractor<medVtkFibersDataInteractor>("medVtkFibersDataInteractor",
-                                                         QStringList () << "medVtkView" <<
-                                                         medVtkFibersDataInteractor::dataHandled());
+                                                            QStringList () << "medVtkView" <<
+                                                                           medVtkFibersDataInteractor::dataHandled());
     return true;
 }
 
@@ -529,7 +528,9 @@ void medVtkFibersDataInteractor::setInputData(medAbstractData *data)
         d->data = data;
 
         d->view2d->SetInput(d->actor, d->view->layer(d->data));
-        d->view3d->SetInput(d->actor, d->view->layer(d->data));
+
+        //TODO - harmonise all of this setInput method in vtkImageView.
+        d->view3d->GetRenderer()->AddActor(d->actor);
         this->updateWidgets();
     }
 
@@ -662,7 +663,7 @@ void medVtkFibersDataInteractor::setFiberColorMode(QString mode)
     }
 
     d->view->render();
- }
+}
 
 void medVtkFibersDataInteractor::updateRange()
 {
@@ -794,7 +795,7 @@ void medVtkFibersDataInteractor::validateSelection(const QString &name, const QC
 
     d->view2d->SetInput(d->manager->GetBundleActor(name.toLatin1().constData()), d->view->layer(d->data));
     d->view3d->GetRenderer()->AddActor(d->manager->GetBundleActor(name.toLatin1().constData()));
-    
+
     d->data->setMetaData("BundleList", name);
     d->data->setMetaData("BundleColorList", color.name());
 
@@ -1051,10 +1052,10 @@ void medVtkFibersDataInteractor::computeBundleLengthStatistics (const QString &n
 }
 
 void medVtkFibersDataInteractor::bundleLengthStatistics(const QString &name,
-                                                    double &mean,
-                                                    double &min,
-                                                    double &max,
-                                                    double &var)
+                                                        double &mean,
+                                                        double &min,
+                                                        double &max,
+                                                        double &var)
 {
     if (!d->meanLengthList.contains(name)) {
         this->computeBundleLengthStatistics(name, mean, min, max, var);
@@ -1148,7 +1149,7 @@ void medVtkFibersDataInteractor::validateBundling()
         bundleNumber++;
         text = tr("Fiber bundle #") + QString::number(bundleNumber);
     }
-    
+
     QColor color = QColor::fromHsv(qrand()%360, 255, 210);
     this->validateSelection(text, color);
     this->addBundle(text, color);
@@ -1271,14 +1272,14 @@ void medVtkFibersDataInteractor::importROI(const medDataIndex& index)
     // we accept only ROIs (itkDataImageUChar3)
     // TODO try dynamic_cast of medAbstractMaskData would be better - RDE
     if (!data ||
-            (data->identifier() != "itkDataImageUChar3" &&
-             data->identifier() != "itkDataImageChar3" &&
-             data->identifier() != "itkDataImageUShort3" &&
-             data->identifier() != "itkDataImageShort3" &&
-             data->identifier() != "itkDataImageUInt3" &&
-             data->identifier() != "itkDataImageInt3" &&
-             data->identifier() != "itkDataImageFloat3" &&
-             data->identifier() != "itkDataImageDouble3"))
+        (data->identifier() != "itkDataImageUChar3" &&
+         data->identifier() != "itkDataImageChar3" &&
+         data->identifier() != "itkDataImageUShort3" &&
+         data->identifier() != "itkDataImageShort3" &&
+         data->identifier() != "itkDataImageUInt3" &&
+         data->identifier() != "itkDataImageInt3" &&
+         data->identifier() != "itkDataImageFloat3" &&
+         data->identifier() != "itkDataImageDouble3"))
     {
         medMessageController::instance()->showError(tr("Unable to load ROI, format not supported yet"), 3000);
         return;
@@ -1324,24 +1325,24 @@ void medVtkFibersDataInteractor::selectRoi(int value)
     int boolean = this->roiBoolean (d->roiLabels[value]);
     switch (boolean)
     {
-    case 2:
-        d->andParameter->blockSignals(true);
-        d->andParameter->setValue(true);
-        d->andParameter->blockSignals(false);
-        break;
+        case 2:
+            d->andParameter->blockSignals(true);
+            d->andParameter->setValue(true);
+            d->andParameter->blockSignals(false);
+            break;
 
-    case 1:
-        d->notParameter->blockSignals(true);
-        d->notParameter->setValue(true);
-        d->notParameter->blockSignals(false);
-        break;
+        case 1:
+            d->notParameter->blockSignals(true);
+            d->notParameter->setValue(true);
+            d->notParameter->blockSignals(false);
+            break;
 
-    case 0:
-    default:
-        d->nullParameter->blockSignals(true);
-        d->nullParameter->setValue(true);
-        d->nullParameter->blockSignals(false);
-        break;
+        case 0:
+        default:
+            d->nullParameter->blockSignals(true);
+            d->nullParameter->setValue(true);
+            d->nullParameter->blockSignals(false);
+            break;
     }
 }
 
@@ -1418,7 +1419,7 @@ QWidget* medVtkFibersDataInteractor::buildToolBoxWidget()
     minMaxLayout->addRow(d->minIntensityParameter->getLabel(), minRangeLayout);
     minMaxLayout->addRow(d->maxIntensityParameter->getLabel(), maxRangeLayout);
 
-    toolBoxLayout->addWidget(poGroupBoxLut/*poMinMaxGlobalWidget*/);    
+    toolBoxLayout->addWidget(poGroupBoxLut/*poMinMaxGlobalWidget*/);
     // Finish LUT and WindowLevel range for it 
     ////////////////////////////////////////////////////////////////
 
@@ -1486,7 +1487,7 @@ QWidget* medVtkFibersDataInteractor::buildToolBoxWidget()
     d->bundlingList->setMinimumHeight(150);
     d->bundlingList->setModel(d->bundlingModel);
     d->bundlingList->setEditTriggers(QAbstractItemView::SelectedClicked);
-    
+
     d->bundlingList->setContextMenuPolicy(Qt::CustomContextMenu);
     connect(d->bundlingList,SIGNAL(customContextMenuRequested(const QPoint &)), this, SLOT(bundlingListCustomContextMenu(const QPoint &)));
 
@@ -1501,12 +1502,12 @@ QWidget* medVtkFibersDataInteractor::buildToolBoxWidget()
 void medVtkFibersDataInteractor::bundlingListCustomContextMenu(const QPoint &point)
 {
     QMenu *menu = new QMenu;
-    
+
     QAction *saveAction = new QAction(tr("Save"), this);
     saveAction->setIcon(QIcon(":icons/save.png"));
     connect(saveAction, SIGNAL(triggered()), this, SLOT(saveCurrentBundle()));
     menu->addAction(saveAction);
-    
+
     QAction *removeAction = new QAction(tr("Remove"), this);
     removeAction->setIcon(QIcon(":icons/cross.svg"));
     connect(removeAction, SIGNAL(triggered()), this, SLOT(removeCurrentBundle()));
@@ -1519,13 +1520,13 @@ void medVtkFibersDataInteractor::saveCurrentBundle()
 {
     QModelIndex index = d->bundlingList->currentIndex();
     unsigned int dataIndex = index.row();
-    
+
     if (!d->dataset)
         return;
-    
+
     vtkFiberDataSet::vtkFiberBundleListType bundles = d->dataset->GetBundleList();
     vtkFiberDataSet::vtkFiberBundleListType::iterator it = bundles.begin();
-    
+
     unsigned int i = 0;
     while (i < dataIndex)
     {
@@ -1536,20 +1537,20 @@ void medVtkFibersDataInteractor::saveCurrentBundle()
     medAbstractData *savedBundle = medAbstractDataFactory::instance()->create("medVtkFibersData");
     if (!savedBundle)
         return;
-    
+
     vtkSmartPointer <vtkFiberDataSet> bundle = vtkFiberDataSet::New();
     vtkSmartPointer<vtkPolyData> spoTmpFiberBundle = vtkPolyData::New();
     spoTmpFiberBundle->DeepCopy((*it).second.Bundle);
     spoTmpFiberBundle->GetCellData()->SetScalars(d->dataset->GetFibers()->GetCellData()->GetScalars());
     bundle->SetFibers(spoTmpFiberBundle);
-    
+
     savedBundle->setData(bundle);
-    
+
     QString newSeriesDescription = d->data->metadata ( medMetaDataKeys::SeriesDescription.key() );
     newSeriesDescription += " ";
     newSeriesDescription += (*it).first.c_str();
     savedBundle->setMetaData ( medMetaDataKeys::SeriesDescription.key(), newSeriesDescription );
-        
+
     for( QString metaData : d->data->metaDataList() )
     {
         if ((metaData == "BundleList")||(metaData == "BundleColorList"))
@@ -1562,15 +1563,15 @@ void medVtkFibersDataInteractor::saveCurrentBundle()
             savedBundle->addMetaData (metaData, d->data->metaDataValues (metaData));
         }
     }
-    
+
     for( QString property : d->data->propertyList() )
     {
         savedBundle->addProperty ( property,d->data->propertyValues ( property ) );
     }
-    
+
     QString generatedID = QUuid::createUuid().toString().replace("{","").replace("}","");
     savedBundle->setMetaData ( medMetaDataKeys::SeriesID.key(), generatedID );
-    
+
     medDataManager::instance()->importData(savedBundle);
 }
 
@@ -1578,16 +1579,16 @@ void medVtkFibersDataInteractor::removeCurrentBundle()
 {
     QModelIndex index = d->bundlingList->currentIndex();
     QString bundleName = d->bundlingModel->item(index.row())->data(Qt::UserRole+1).toString();
-    
+
     d->view2d->RemoveLayerActor(d->manager->GetBundleActor(bundleName.toLatin1().constData()),d->view->layer(d->data));
     d->view3d->GetRenderer()->RemoveActor(d->manager->GetBundleActor(bundleName.toLatin1().constData()));
-    
+
     d->manager->RemoveBundle(bundleName.toLatin1().constData());
-    
+
     // TO DO : better handle bundle list: how to remove metadata from object ?
     //d->data->addMetaData("BundleList", name);
     //d->data->addMetaData("BundleColorList", color.name());
-    
+
     // reset to initial navigation state
     d->manager->Reset();
     d->view->render();

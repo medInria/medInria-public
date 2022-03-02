@@ -1002,7 +1002,7 @@ void medDataPacsController::onImportFinished(const QString &path, QEventLoop &lo
     QThreadPool::globalInstance()->start(importer);
 }
 
-medAbstractData *medDataPacsController::retrieve(const medDataIndex &index) const
+medAbstractData *medDataPacsController::retrieve(const medDataIndex &index, bool readFullData) const
 {
     medAbstractData *data = nullptr;
     medDatabaseNonPersistentItem *item = d->items.value(index);

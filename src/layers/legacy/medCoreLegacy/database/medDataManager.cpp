@@ -92,30 +92,37 @@ medDataManager *medDataManager::instance()
     return s_instance;
 }
 
-medAbstractData *medDataManager::retrieveData(const medDataIndex &index)
+medAbstractData* medDataManager::retrieveData(const medDataIndex& index)
+{
+    return retrieveData(index, true);
+}
+
+const QMetaObject* medDataManager::getDataType(const medDataIndex& index)
+{
+    medAbstractData* data = retrieveData(index, false);
+
+    return data ? data->metaObject() : nullptr;
+}
+
+medAbstractData* medDataManager::retrieveData(const medDataIndex& index, bool readFullData)
 {
     Q_D(medDataManager);
     QMutexLocker locker(&(d->mutex));
 
-    // If nothing in the tracker, we'll get a null weak pointer, thus a null
-    // shared pointer
+    // If nothing in the tracker, we'll get a null weak pointer, thus a null shared pointer
     medAbstractData *dataObjRef = d->loadedDataObjectTracker.value(index);
 
-    if (dataObjRef)
+    if(dataObjRef)
     {
         // we found an existing instance of that object
         return dataObjRef;
     }
 
-    // No existing ref, we need to load from the file DB, then the non-persistent
-    // DB
-    if (d->dbController->contains(index))
-    {
-        dataObjRef = d->dbController->retrieve(index);
-    }
-    else if (d->nonPersDbController->contains(index))
-    {
-        dataObjRef = d->nonPersDbController->retrieve(index);
+    // No existing ref, we need to load from the file DB, then the non-persistent DB
+    if (d->dbController->contains(index)) {
+        dataObjRef = d->dbController->retrieve(index, readFullData);
+    } else if(d->nonPersDbController->contains(index)) {
+        dataObjRef = d->nonPersDbController->retrieve(index, readFullData);
     }
     else if (d->pacsController->contains(index))
     {
@@ -125,11 +132,13 @@ medAbstractData *medDataManager::retrieveData(const medDataIndex &index)
         }
     }
 
-    if (dataObjRef)
-    {
+    if (dataObjRef) {
         dataObjRef->setDataIndex(index);
 
-        d->loadedDataObjectTracker.insert(index, dataObjRef);
+        if (readFullData)
+        {
+            d->loadedDataObjectTracker.insert(index, dataObjRef);
+        }
         return dataObjRef;
     }
     return nullptr;

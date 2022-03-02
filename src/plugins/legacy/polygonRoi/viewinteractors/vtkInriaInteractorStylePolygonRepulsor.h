@@ -14,8 +14,6 @@ PURPOSE.
 
 #include "polygonLabel.h"
 
-#include "medTagRoiManager.h"
-
 #include <medAbstractView.h>
 
 #include <viewinteractors/polygonRoi.h>

@@ -39,7 +39,7 @@ class medVtkFibersDataInteractorPrivate;
  */
 class MEDVTKFIBERSDATAPLUGIN_EXPORT medVtkFibersDataInteractor: public medAbstractImageViewInteractor
 {
-    Q_OBJECT
+Q_OBJECT
 
 public:
     medVtkFibersDataInteractor(medAbstractView *parent = nullptr);

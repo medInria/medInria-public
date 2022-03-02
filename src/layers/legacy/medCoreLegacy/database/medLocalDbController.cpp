@@ -375,24 +375,3 @@ void medLocalDbController::requestDatabaseForModel(QHash<int, QHash<QString, QVa
     return;
 }
 
-medAbstractData* medDatabaseController::retrieve(const medDataIndex &index, bool readFullData) const
-{
-    QScopedPointer<medDatabaseReader> reader(new medDatabaseReader(index));
-    medMessageProgress *message = medMessageController::instance()->showProgress("Opening database item");
-
-    connect(reader.data(), SIGNAL(progressed(int)), message, SLOT(setProgress(int)));
-    connect(reader.data(), SIGNAL(success(QObject *)), message, SLOT(success()));
-    connect(reader.data(), SIGNAL(failure(QObject *)), message, SLOT(failure()));
-
-    connect(reader.data(), SIGNAL(failure(QObject *)), this, SLOT(showOpeningError(QObject *)));
-
-    medAbstractData* data;
-    reader->setReadMode(readFullData ? medDatabaseReader::READ_ALL : medDatabaseReader::READ_INFORMATION);
-    data = reader->run();
-    return data;
-}
-
-void medDatabaseController::removeAll()
-{
-    qWarning()<< "Attempt to remove all item from PERSISTENT dataBase";
-}

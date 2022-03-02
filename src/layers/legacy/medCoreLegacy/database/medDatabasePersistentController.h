@@ -86,7 +86,7 @@ protected:
     void reset();
 
 public slots:
-    medAbstractData *retrieve(const medDataIndex &index) const;
+    medAbstractData *retrieve(const medDataIndex &index, bool readFullData = true) const;
 
     void importPath(const QString &file, const QUuid &importUuid, bool indexWithoutCopying = false) override;
     void importData(medAbstractData *data, const QUuid &importUuid) override;

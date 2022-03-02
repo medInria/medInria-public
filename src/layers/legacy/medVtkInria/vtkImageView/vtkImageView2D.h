@@ -90,7 +90,7 @@ class vtkImageAlgorithm;
  */
 class MEDVTKINRIA_EXPORT vtkImageView2DQtSignals : public QObject
 {
-    Q_OBJECT
+Q_OBJECT
 public:
     vtkImageView2DQtSignals() {}
     ~vtkImageView2DQtSignals() {}
@@ -101,14 +101,14 @@ signals:
     void interpolate(bool, int);
 
 private:
-   
+
 };
 
 class MEDVTKINRIA_EXPORT vtkImageView2D : public vtkImageView
 {
 public:
     static vtkImageView2D *New();
-    vtkTypeMacro (vtkImageView2D, vtkImageView)
+vtkTypeMacro (vtkImageView2D, vtkImageView)
     void PrintSelf(ostream& os, vtkIndent indent);
 
     vtkMTimeType GetMTime();
@@ -129,12 +129,16 @@ public:
 
     // Description:
     // Set/Get the input image to the viewer.
-    virtual void SetInput        (vtkAlgorithmOutput* pi_poVtkAlgoOutput, vtkMatrix4x4 *matrix = nullptr, int layer = 0);
-    virtual void SetInput        (vtkActor *actor, int layer = 0, vtkMatrix4x4 *matrix = nullptr, const int imageSize[3] = nullptr, const double imageSpacing[] = nullptr, const double imageOrigin[] = nullptr);
-    virtual vtkActor* AddDataSet (vtkPointSet* arg, vtkProperty* prop = nullptr);
-    virtual void RemoveDataSet   (vtkPointSet *arg);
-    
+    virtual void SetInput      (vtkAlgorithmOutput* pi_poVtkAlgoOutput, vtkMatrix4x4 *matrix = nullptr, int layer = 0);
+    virtual void SetInputLayer (vtkAlgorithmOutput* pi_poVtkAlgoOutput, vtkMatrix4x4 *matrix = nullptr, int layer = 0);
+    virtual void SetInputCommon(vtkAlgorithmOutput* pi_poVtkAlgoOutput, int layer = 0);
+    virtual void SetInput (vtkActor *actor, int layer = 0, vtkMatrix4x4 *matrix = nullptr,
+                           const int imageSize[3] = nullptr, const double imageSpacing[] = nullptr, const double imageOrigin[] = nullptr);
+
     void RemoveLayerActor(vtkActor *actor, int layer = 0);
+
+    virtual vtkActor* AddDataSet (vtkPointSet* arg, vtkProperty* prop = nullptr);
+    virtual void RemoveDataSet (vtkPointSet *arg);
 
     medVtkImageInfo* GetMedVtkImageInfo(int layer = 0) const;
 
@@ -370,7 +374,7 @@ public:
     virtual void StoreColorLevel(double s,int layer);
 
     virtual void UpdateBounds (const double bounds[6], int layer = 0, vtkMatrix4x4 *matrix = 0, const int imageSize[3] = 0, const double imageSpacing[] = 0,
-                             const double imageOrigin[] = 0);
+                               const double imageOrigin[] = 0);
 
     virtual vtkRenderer * GetRenderer() const;
     vtkImageAlgorithm * GetImageAlgorithmForLayer(int layer) const;
@@ -440,10 +444,7 @@ protected:
     std::list<vtkDataSet2DWidget*>::iterator FindDataSetWidget(vtkPointSet* arg);
     //ETX
 
-    void SetFirstLayer  (vtkAlgorithmOutput *pi_poInputAlgoImg, vtkMatrix4x4 *matrix, int layer);
-    void SetOtherLayer  (vtkAlgorithmOutput* pi_poVtkAlgoOutput, vtkMatrix4x4 *matrix = nullptr, int layer = 0);
-    void SetInputCommon (vtkAlgorithmOutput* pi_poVtkAlgoOutput, int layer = 0);
-
+    void SetFirstLayer(vtkAlgorithmOutput *pi_poInputAlgoImg, vtkMatrix4x4 *matrix, int layer);
     bool IsFirstLayer(int layer) const;
     int GetFirstLayer() const;
 
@@ -473,11 +474,10 @@ protected:
 
     std::list<vtkDataSet2DWidget*> DataSetWidgets;
 
-    struct LayerInfo
-    {
+    struct LayerInfo {
         vtkSmartPointer<vtkImage2DDisplay> ImageDisplay;
         vtkSmartPointer<vtkImageAlgorithm> ImageAlgo;
-        vtkSmartPointer<vtkRenderer>       Renderer;
+        vtkSmartPointer<vtkRenderer> Renderer;
     };
     typedef std::vector<LayerInfo > LayerInfoVecType;
     LayerInfoVecType LayerInfoVec;

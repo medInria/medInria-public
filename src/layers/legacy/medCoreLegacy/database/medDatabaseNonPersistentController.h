@@ -68,7 +68,7 @@ public:
     bool isDataLoaded(const medDataIndex &index) override { return true; };
 
 public slots:
-    virtual medAbstractData *retrieve(const medDataIndex &index) const;
+    virtual medAbstractData *retrieve(const medDataIndex &index, bool readFullData = true) const;
 
     void importData(medAbstractData *data, const QUuid &callerUuid);
     void importPath(const QString &file, const QUuid &callerUuid, bool indexWithoutCopying);
