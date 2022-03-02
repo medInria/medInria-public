@@ -213,16 +213,12 @@ vtkMTimeType vtkImageView::GetMTime()
         ScalarBar, m_poInternalImageFromInput };
     const int numObjects = sizeof(objectsToInclude) / sizeof(vtkObject *);
 
-    for ( int i(0); i<numObjects; ++i ) 
-    {
+    for ( int i(0); i<numObjects; ++i ) {
         vtkObject * object = objectsToInclude[i];
-        if (object)
-        {
+        if (object) {
             const vtkMTimeType testMtime = object->GetMTime();
-            if (testMtime > mTime)
-            {
+            if ( testMtime > mTime )
                 mTime = testMtime;
-            }
         }
     }
     return mTime;

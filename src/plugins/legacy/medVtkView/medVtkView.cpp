@@ -549,7 +549,6 @@ void medVtkView::enableRubberBandZoom(bool enable)
         if(interaction != "Zooming")
             interactorStyle->LeftButtonModeOff();
 
-        d->interactorStyle2D = d->view2d->GetInteractorStyle();
         d->view2d->GetInteractor()->SetInteractorStyle(interactorStyle);
         interactorStyle->Delete();
     }

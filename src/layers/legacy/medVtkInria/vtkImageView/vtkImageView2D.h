@@ -90,7 +90,7 @@ class vtkImageAlgorithm;
  */
 class MEDVTKINRIA_EXPORT vtkImageView2DQtSignals : public QObject
 {
-Q_OBJECT
+    Q_OBJECT
 public:
     vtkImageView2DQtSignals() {}
     ~vtkImageView2DQtSignals() {}
@@ -101,14 +101,14 @@ signals:
     void interpolate(bool, int);
 
 private:
-
+   
 };
 
 class MEDVTKINRIA_EXPORT vtkImageView2D : public vtkImageView
 {
 public:
     static vtkImageView2D *New();
-vtkTypeMacro (vtkImageView2D, vtkImageView)
+    vtkTypeMacro (vtkImageView2D, vtkImageView)
     void PrintSelf(ostream& os, vtkIndent indent);
 
     vtkMTimeType GetMTime();
@@ -374,7 +374,7 @@ vtkTypeMacro (vtkImageView2D, vtkImageView)
     virtual void StoreColorLevel(double s,int layer);
 
     virtual void UpdateBounds (const double bounds[6], int layer = 0, vtkMatrix4x4 *matrix = 0, const int imageSize[3] = 0, const double imageSpacing[] = 0,
-                               const double imageOrigin[] = 0);
+                             const double imageOrigin[] = 0);
 
     virtual vtkRenderer * GetRenderer() const;
     vtkImageAlgorithm * GetImageAlgorithmForLayer(int layer) const;
