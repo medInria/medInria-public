@@ -49,7 +49,7 @@ list_source_files(${TARGET_NAME}
 
 
 ## #############################################################################
-## include directories.
+## include directorie.
 ## #############################################################################
 
 list_header_directories_to_include(${TARGET_NAME}

@@ -66,7 +66,8 @@ medWorkspaceArea::medWorkspaceArea(QWidget *parent) : QWidget(parent), d(new med
 
     // Setting up toolbox container
     d->toolBoxContainer = new medToolBoxContainer(this);
-    d->toolBoxContainer->setMinimumWidth(20);
+    d->toolBoxContainer->setSizePolicy(QSizePolicy::Minimum, QSizePolicy::Expanding);
+    d->toolBoxContainer->setMinimumWidth(385);
 
     // Setting up view container
     d->viewContainer = new QWidget(this);
@@ -76,7 +77,9 @@ medWorkspaceArea::medWorkspaceArea(QWidget *parent) : QWidget(parent), d(new med
 
     // Setting up navigator
     d->navigatorContainer = new QWidget(this);
-    d->navigatorContainer->setMinimumWidth(20);
+    d->navigatorContainer->setSizePolicy(QSizePolicy::Fixed, QSizePolicy::Expanding);
+    d->navigatorContainer->setMinimumWidth(186);
+    d->navigatorContainer->setMaximumWidth(320);
     d->navigatorContainer->setContentsMargins(0,0,0,0);
 
     //Set up viewer layout
@@ -95,11 +98,13 @@ medWorkspaceArea::medWorkspaceArea(QWidget *parent) : QWidget(parent), d(new med
     {
         d->splitter->setOrientation(Qt::Horizontal);
         //viewcontainer size
-        int viewContainerSize = parent->width() - 300;
+        int viewContainerSize = QWIDGETSIZE_MAX -
+            d->navigatorContainer->minimumWidth()-
+            d->toolBoxContainer->minimumWidth();
         QList<int> sizes;
-        sizes.append(100);
+        sizes.append(d->navigatorContainer->minimumWidth());
         sizes.append(viewContainerSize);
-        sizes.append(200);
+        sizes.append(d->toolBoxContainer->minimumWidth());
         d->splitter->setSizes(sizes);
     }
 }

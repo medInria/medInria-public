@@ -69,8 +69,8 @@ public:
     medViewContainer* splitHorizontally();
     medViewContainer* split(Qt::AlignmentFlag alignement = Qt::AlignRight);
 
-    QWidget* defaultWidget() const;
     void setDefaultWidget(QWidget *defaultWidget);
+    QWidget* defaultWidget() const;
 
     void addColorIndicator(QColor color, QString description="");
     void removeColorIndicator(QColor color);

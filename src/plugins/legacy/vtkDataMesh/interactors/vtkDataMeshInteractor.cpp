@@ -529,10 +529,12 @@ void vtkDataMeshInteractor::setLut(const QString & lutName)
     d->view->render();
 }
 
+
 QString vtkDataMeshInteractor::lut() const
 {
     return d->lut.second;
 }
+
 
 void vtkDataMeshInteractor::updatePipeline ()
 {

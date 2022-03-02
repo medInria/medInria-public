@@ -2,7 +2,7 @@
 
  medInria
 
- Copyright (c) INRIA 2013 - 2018. All rights reserved.
+ Copyright (c) INRIA 2013 - 2020. All rights reserved.
  See LICENSE.txt for details.
 
   This software is distributed WITHOUT ANY WARRANTY; without even
@@ -47,7 +47,7 @@ medTableWidgetChooser::medTableWidgetChooser(QWidget *parent, int rowCount, int 
 medTableWidgetChooser::~medTableWidgetChooser(void)
 {
     delete d;
-    d = NULL;
+    d = nullptr;
 }
 
 QSize medTableWidgetChooser::sizeHint(void) const
@@ -67,10 +67,8 @@ int medTableWidgetChooser::sizeHintForColumn(int column) const
     return d->sideSize;
 }
 
-
 void medTableWidgetChooser::mouseReleaseEvent(QMouseEvent *event)
 {
-
     QItemSelection selec = this->selectionModel()->selection();
     d->left   = qMin(d->left,   static_cast<unsigned int>(selec.first().left()));
     d->right  = qMax(d->right,  static_cast<unsigned int>(selec.first().right()));
@@ -88,7 +86,6 @@ void medTableWidgetChooser::mouseReleaseEvent(QMouseEvent *event)
     d->top    = 0;
     d->bottom = 0;
 }
-
 
 medImageView::Orientation medTableWidgetItem::orientation()
 {

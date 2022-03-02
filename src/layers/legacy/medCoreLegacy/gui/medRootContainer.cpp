@@ -1,7 +1,16 @@
+/*=========================================================================
+
+ medInria
+
+ Copyright (c) INRIA 2013 - 2020. All rights reserved.
+ See LICENSE.txt for details.
+
+  This software is distributed WITHOUT ANY WARRANTY; without even
+  the implied warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR
+  PURPOSE.
+
+=========================================================================*/
 #include "medRootContainer.h"
-#ifdef _DEBUG
-    #include <iostream>
-#endif // _DEBUG
 
 medRootContainer::medRootContainer(medTabbedViewContainers* parent) : m_poParent(parent)
 {
@@ -11,7 +20,9 @@ medRootContainer::medRootContainer(medTabbedViewContainers* parent) : m_poParent
     setLayout(&m_oInternalLayout);
 }
 
-medRootContainer::~medRootContainer(){}
+medRootContainer::~medRootContainer()
+{
+}
 
 void medRootContainer::replaceSplitter(medViewContainerSplitter *pi_poSplitter)
 {

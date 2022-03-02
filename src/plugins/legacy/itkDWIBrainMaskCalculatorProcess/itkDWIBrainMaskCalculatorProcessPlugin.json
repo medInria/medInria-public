@@ -1,6 +1,0 @@
-{
-            "name" : "itkDWIBrainMaskCalculatorProcessPlugin",
-         "concept" : "medAbstractDWIMaskingProcess",
-         "version" : "3.0.0", 	
-    "dependencies" : []
-}
