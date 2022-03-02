@@ -11,69 +11,67 @@
 
 =========================================================================*/
 
-#include <QSurfaceFormat>
 #include <QtGui>
 #include <QtOpenGL>
+#include <QSurfaceFormat>
 
 #ifdef WIN32
 #include <QtPlatformHeaders/QWindowsWindowFunctions>
 #endif
 
-#include <dtkCoreSupport/dtkGlobal.h>
+#include <medMainWindow.h>
 #include <medApplication.h>
+#include <medSplashScreen.h>
+
+#include <medPluginManager.h>
 #include <medDataIndex.h>
 #include <medDataManager.h>
-#include <medMainWindow.h>
-#include <medPluginManager.h>
 #include <medSettingsManager.h>
-#include <medSplashScreen.h>
 #include <medStorage.h>
 
 #if (USE_PYTHON)
-  #include <medPython.h>
-  #include <medPythonTools.h>
+#include <medPython.h>
+#include <medPythonTools.h>
 #endif
 
 void forceShow(medMainWindow& mainwindow )
 {
-    // Idea and code taken from the OpenCOR project, Thanks Allan for the code!
+    //Idea and code taken from the OpenCOR project, Thanks Allan for the code!
+
 
     // Note: to show ourselves, one would normally use activateWindow(), but
     //       depending on the operating system it may or not bring medInria to
     //       the foreground, so... instead we do what follows, depending on the
     //       operating system...
 
-    //#if defined(Q_OS_WIN)
-    //    // Retrieve window Id
+//#if defined(Q_OS_WIN)
+//    // Retrieve window Id
 
-    //    WId mainWinId = mainwindow.winId();
+//    WId mainWinId = mainwindow.winId();
 
-    //    // Bring main window to the foreground
-    //    SetForegroundWindow(mainWinId);
+//    // Bring main window to the foreground
+//    SetForegroundWindow(mainWinId);
 
-    //    // Show/restore the window, depending on its current state
+//    // Show/restore the window, depending on its current state
 
-    //    if (IsIconic(mainWinId))
-    //        ShowWindow(mainWinId, SW_RESTORE);
-    //    else
-    //        ShowWindow(mainWinId, SW_SHOW);
+//    if (IsIconic(mainWinId))
+//        ShowWindow(mainWinId, SW_RESTORE);
+//    else
+//        ShowWindow(mainWinId, SW_SHOW);
 
-    //    // Note: under Windows, to use activateWindow() will only highlight the
-    //    //       application in the taskbar, since under Windows no application
-    //    //       should be allowed to bring itself to the foreground when
-    //    another
-    //    //       application is already in the foreground. Fair enough, but it
-    //    //       happens that, here, the user wants medInria to be brought to
-    //    the
-    //    //       foreground, hence the above code to get the effect we are
-    //    after...
-    //#else
+//    // Note: under Windows, to use activateWindow() will only highlight the
+//    //       application in the taskbar, since under Windows no application
+//    //       should be allowed to bring itself to the foreground when another
+//    //       application is already in the foreground. Fair enough, but it
+//    //       happens that, here, the user wants medInria to be brought to the
+//    //       foreground, hence the above code to get the effect we are after...
+//#else
     mainwindow.activateWindow();
     mainwindow.raise();
-    //#endif
+//#endif
 }
 
-int main(int argc, char *argv[])
+int main(int argc,char* argv[])
 {
     // Setup openGL surface compatible with QVTKOpenGLWidget,
     // required by medVtkView
@@ -94,10 +92,9 @@ int main(int argc, char *argv[])
     QSurfaceFormat::setDefaultFormat(fmt);
 
     // this needs to be done before creating the QApplication object, as per the
-    // Qt doc, otherwise there are some edge cases where the style is not fully
-    // applied
-    // QApplication::setStyle("plastique");
-    medApplication application(argc, argv);
+    // Qt doc, otherwise there are some edge cases where the style is not fully applied
+    //QApplication::setStyle("plastique");
+    medApplication application(argc,argv);
     medSplashScreen splash(QPixmap(":/pixmaps/medInria-logo-homepage.png"));
 
     setlocale(LC_NUMERIC, "C");
@@ -110,13 +107,13 @@ int main(int argc, char *argv[])
                  << "[--fullscreen|--no-fullscreen] "
                  << "[--stereo] "
                  << "[--debug] "
-            #ifdef USE_PYTHON
+                 #ifdef USE_PYTHON
                  << "[--test-python] "
                  << "[--test-python-crash] "
-            #endif
-            #ifdef ACTIVATE_WALL_OPTION
+                 #endif
+                 #ifdef ACTIVATE_WALL_OPTION
                  << "[[--wall] [--tracker=URL]] "
-            #endif
+                 #endif
                  << "[[--view] [files]]";
         return 1;
     }
@@ -125,75 +122,75 @@ int main(int argc, char *argv[])
     // foreground, hiding all other windows. This makes debugging the startup
     // operations difficult.
 
-    #if !defined(_DEBUG)
+#if !defined(_DEBUG)
     bool show_splash = true;
-    #else
+#else
     bool show_splash = false;
 #endif
 
-        if (parser.isSet("center"))
-        {
-            int center = parser.value("center").toInt();
-            medSettingsManager *mnger = medSettingsManager::instance();
-            mnger->setValue("database", "center", center, false);
-        }
+    medSettingsManager* mnger = medSettingsManager::instance();
 
-        const bool remoteDb = parser.isSet("remotedb");
-        if (remoteDb)
+    QStringList posargs;
+    for (int i=1;i<application.arguments().size();++i)
+    {
+        const QString arg = application.arguments().at(i);
+        if (arg.startsWith("--"))
         {
             bool valid_option = false;
             const QStringList options =
                     (QStringList()
-                     << "--fullscreen"
-                     << "--no-fullscreen"
-                     << "--wall"
-                     << "--tracker"
-                     << "--stereo"
-                     << "--view"
-                #ifdef USE_PYTHON
-                     << "--test-python"
-                     << "--test-python-with-crash"
-                #endif
-                     << "--debug");
+                            << "--fullscreen"
+                            << "--no-fullscreen"
+                            << "--wall"
+                            << "--tracker"
+                            << "--stereo"
+                            << "--view"
+                            #ifdef USE_PYTHON
+                            << "--test-python"
+                            << "--test-python-with-crash"
+                            #endif
+                            << "--debug");
             for (QStringList::const_iterator opt=options.constBegin();opt!=options.constEnd();++opt)
             {
-                QString hostname = parser.value("host");
-                mnger->setValue("database", "hostname", hostname, false);
+                if (arg.startsWith(*opt))
+                {
+                    valid_option = true;
+                }
             }
-            if (parser.isSet("port"))
+            if (!valid_option)
             {
-                int port = parser.value("port").toInt();
-                mnger->setValue("database", "port", port, false);
+                qDebug() << "Ignoring unknown option " << arg;
             }
-            if (parser.isSet("db_prefix_path"))
-            {
-                QString db_prefix_path = parser.value("db_prefix_path");
-                mnger->setValue("database", "db_prefix_path", db_prefix_path, false);
-            }
+            continue;
         }
-        const bool DirectView = parser.isSet("view");
-        QStringList viewPaths = parser.values("view");
+        posargs.append(arg);
+    }
 
-        // const bool DirectView =
-        // dtkApplicationArgumentsContain(&application,"--view") ||
-        // posargs.size()!=0;
-        int runningMedInria = 0;
-        if (DirectView)
-        {
-            show_splash = false;
-            for (QStringList::const_iterator i = viewPaths.constBegin();
-                 i != viewPaths.constEnd(); ++i)
-            {
-                const QString &message = QString("/open ") + *i;
-                runningMedInria = application.sendMessage(message);
-            }
+    const bool DirectView = dtkApplicationArgumentsContain(&application,"--view") || posargs.size()!=0;
+
+    int runningMedInria = 0;
+    if (DirectView) {
+        show_splash = false;
+        for (QStringList::const_iterator i=posargs.constBegin();i!=posargs.constEnd();++i) {
+            const QString& message = QString("/open ")+*i;
+            runningMedInria = application.sendMessage(message);
         }
-        else
-        {
-            runningMedInria = application.sendMessage("");
-        }
-        if (runningMedInria)
-            return 0;
+    } else {
+        runningMedInria = application.sendMessage("");
+    }
+
+    if (runningMedInria)
+        return 0;
+
+    if (show_splash)
+    {
+        QObject::connect(medPluginManager::instance(),SIGNAL(loaded(QString)),
+                         &application,SLOT(redirectMessageToSplash(QString)) );
+        QObject::connect(&application,SIGNAL(showMessage(const QString&)),
+                         &splash,SLOT(showMessage(const QString&)) );
+        splash.show();
+        splash.showMessage("Loading plugins...");
+    }
 
 #ifdef USE_PYTHON
     med::python::initialize();
@@ -209,87 +206,68 @@ int main(int argc, char *argv[])
     med::python::initializeTools();
     med::python::loadPythonPlugins();
 #endif
-
+    medDataManager::instance()->setDatabaseLocation();
     medPluginManager::instance()->setVerboseLoading(true);
     medPluginManager::instance()->initialize();
 
-        medDataManager::instance()->setDatabaseLocation();
-        medPluginManager::instance()->setVerboseLoading(true);
-        medPluginManager::instance()->initialize();
+    //Use Qt::WA_DeleteOnClose attribute to be sure to always have only one closeEvent.
+    auto *mainwindow = new medMainWindow;
+    mainwindow->setAttribute(Qt::WA_DeleteOnClose, true);
 
-        // Use Qt::WA_DeleteOnClose attribute to be sure to always have only one
-        // closeEvent.
-        medMainWindow *mainwindow = new medMainWindow;
-        mainwindow->setAttribute(Qt::WA_DeleteOnClose, true);
+    if (DirectView)
+        mainwindow->setStartup(medMainWindow::WorkSpace,posargs);
 
-        if (DirectView)
-            mainwindow->setStartup(medMainWindow::WorkSpace, viewPaths);
+    bool fullScreen = medSettingsManager::instance()->value("startup", "fullscreen", false).toBool();
 
-        bool fullScreen = medSettingsManager::instance()
-                              ->value("startup", "fullscreen", false)
-                              .toBool();
-        const bool hasFullScreenArg = parser.isSet("fullscreen");
-        const bool hasNoFullScreenArg = parser.isSet("no-fullscreen");
-        const bool hasWallArg = false;
-#ifdef ACTIVATE_WALL_OPTION
-        hasWallArg = parser.isSet("wall");
-#endif
+    const bool hasFullScreenArg   = application.arguments().contains("--fullscreen");
+    const bool hasNoFullScreenArg = application.arguments().contains("--no-fullscreen");
+    const bool hasWallArg         = application.arguments().contains("--wall");
 
-        const int conflict = static_cast<int>(hasFullScreenArg) +
-                             static_cast<int>(hasNoFullScreenArg) +
-                             static_cast<int>(hasWallArg);
+    const int conflict = static_cast<int>(hasFullScreenArg)+static_cast<int>(hasNoFullScreenArg)+ static_cast<int>(hasWallArg);
 
-        if (conflict > 1)
-            dtkWarn() << "Conflicting command line parameters between "
-                         "--fullscreen, --no-fullscreen and -wall. Ignoring.";
-        else
-        {
-            if (hasWallArg)
-            {
-                mainwindow->setWallScreen(true);
-                fullScreen = false;
-            }
-
-            if (hasFullScreenArg)
-                fullScreen = true;
-
-            if (hasNoFullScreenArg)
-                fullScreen = false;
+    if (conflict>1)
+        dtkWarn() << "Conflicting command line parameters between --fullscreen, --no-fullscreen and -wall. Ignoring.";
+    else {
+        if (hasWallArg) {
+            mainwindow->setWallScreen(true);
+            fullScreen = false;
         }
 
-        mainwindow->setFullScreen(fullScreen);
+        if (hasFullScreenArg)
+            fullScreen = true;
+
+        if (hasNoFullScreenArg)
+            fullScreen = false;
+    }
+
+    mainwindow->setFullScreen(fullScreen);
 #ifdef WIN32
-        QWindowsWindowFunctions::setHasBorderInFullScreen(
-            mainwindow->windowHandle(), true);
+    QWindowsWindowFunctions::setHasBorderInFullScreen(mainwindow->windowHandle(), true);
 #endif
 
-        if (parser.isSet("stereo"))
-        {
-            QGLFormat format;
-            format.setAlpha(true);
-            format.setDoubleBuffer(true);
-            format.setStereo(true);
-            format.setDirectRendering(true);
-            QGLFormat::setDefaultFormat(format);
-        }
+    if(application.arguments().contains("--stereo")) {
+        QGLFormat format;
+        format.setAlpha(true);
+        format.setDoubleBuffer(true);
+        format.setStereo(true);
+        format.setDirectRendering(true);
+        QGLFormat::setDefaultFormat(format);
+    }
 
-        if (show_splash)
-            splash.finish(mainwindow);
+    if (show_splash)
+        splash.finish(mainwindow);
 
-        if (medPluginManager::instance()->plugins().isEmpty())
-        {
-            QMessageBox::warning(
-                mainwindow, QObject::tr("No plugin loaded"),
-                QObject::tr("Warning : no plugin loaded successfully."));
-        }
+    if (medPluginManager::instance()->plugins().isEmpty()) {
+        QMessageBox::warning(mainwindow,
+                             QObject::tr("No plugin loaded"),
+                             QObject::tr("Warning : no plugin loaded successfully."));
+    }
 
-        // Handle file associations open requests that were not handled in the
-        // application
-        QObject::connect(&application, SIGNAL(messageReceived(const QString &)),
-                         mainwindow,
-                         SLOT(processNewInstanceMessage(const QString &)));
+    // Handle file associations open requests that were not handled in the application
+    QObject::connect(&application,SIGNAL(messageReceived(const QString&)),
+                     mainwindow,SLOT(processNewInstanceMessage(const QString&)));
 
-        application.setMainWindow(mainwindow);
+    application.setMainWindow(mainwindow);
 
 #ifdef USE_PYTHON
     med::python::startConsole();
@@ -297,12 +275,12 @@ int main(int argc, char *argv[])
 
     forceShow(*mainwindow);
 
-        qInfo() << "### Application is running...";
+    qInfo() << "### Application is running...";
 
-        //  Start main loop.
-        const int status = application.exec();
+    //  Start main loop.
+    const int status = application.exec();
 
-        medPluginManager::instance()->uninitialize();
+    medPluginManager::instance()->uninitialize();
 
-        return status;
+    return status;
 }

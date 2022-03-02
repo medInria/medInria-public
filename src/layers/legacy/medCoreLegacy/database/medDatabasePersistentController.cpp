@@ -258,7 +258,7 @@ bool medDatabasePersistentController::isPersistent() const
     return true;
 }
 
-medAbstractData *medDatabasePersistentController::retrieve(const medDataIndex &index) const
+medAbstractData *medDatabasePersistentController::retrieve(const medDataIndex &index, bool readFullData) const
 {
     QScopedPointer<medDatabaseReader> reader(new medDatabaseReader(index));
     medMessageProgress *message = medMessageController::instance()->showProgress("Opening database item");
