@@ -16,7 +16,7 @@
 cmake_minimum_required(VERSION 3.3)
 
 if(NOT DEFINED ${medInria_VERSION})
-    set(medInria_VERSION 3.1.1)
+    set(medInria_VERSION 3.2.0)
 endif()
 
 project(medInria VERSION ${medInria_VERSION})
@@ -59,6 +59,18 @@ option(USE_FFmpeg
   )
 endif()
 
+string(CONCAT USE_PYTHON_DOC
+    "Embed Python 3 into the application."
+    " The embeddable package will be downloaded at CMake configuration time."
+    " (If embedded, Python can be deactivated at startup with the --no-python"
+    " option)"
+    )
+option(USE_PYTHON ${USE_PYTHON_DOC} ON)
+
+if (USE_PYTHON)
+    add_compile_definitions(USE_PYTHON)
+endif()
+
 ## #############################################################################
 ## Find package
 ## #############################################################################
@@ -89,12 +101,22 @@ set(CMAKE_CXX_STANDARD_REQUIRED ON)
 set(CMAKE_MACOSX_RPATH OFF)
 
 ## #############################################################################
+## Global policies
+## #############################################################################
+
+if (${CMAKE_VERSION} VERSION_GREATER_EQUAL "3.10.0")
+    # Prevent warning of generated files not being moc'd
+    cmake_policy(SET CMP0071 NEW)
+endif()
+
+## #############################################################################
 ## Additionals modules
 ## #############################################################################
 
 set(${PROJECT_NAME}_CMAKE_DIR
   ${CMAKE_CURRENT_SOURCE_DIR}/cmake
   ${CMAKE_CURRENT_SOURCE_DIR}/cmake/module
+  ${CMAKE_CURRENT_SOURCE_DIR}/layers/medPython/cmake
   )
 
 set(CMAKE_MODULE_PATH
@@ -196,6 +218,10 @@ set_lib_properties_variables(
     medUtilities
     medVtkDataMeshBase
     )
+
+if (USE_PYTHON)
+    set_lib_properties_variables(medPythonBase)
+endif()
 
 if(EXISTS ${CMAKE_SOURCE_DIR}/cmake/${PROJECT_NAME}Config.cmake.in)
   configure_file( ## Build tree configure file

@@ -94,6 +94,18 @@ medDataManager *medDataManager::instance()
 
 medAbstractData *medDataManager::retrieveData(const medDataIndex &index)
 {
+    return retrieveData(index, true);
+}
+
+const QMetaObject* medDataManager::getDataType(const medDataIndex& index)
+{
+    medAbstractData* data = retrieveData(index, false);
+
+    return data ? data->metaObject() : nullptr;
+}
+
+medAbstractData* medDataManager::retrieveData(const medDataIndex& index, bool readFullData)
+{
     Q_D(medDataManager);
     QMutexLocker locker(&(d->mutex));
 
@@ -107,15 +119,11 @@ medAbstractData *medDataManager::retrieveData(const medDataIndex &index)
         return dataObjRef;
     }
 
-    // No existing ref, we need to load from the file DB, then the non-persistent
-    // DB
-    if (d->dbController->contains(index))
-    {
-        dataObjRef = d->dbController->retrieve(index);
-    }
-    else if (d->nonPersDbController->contains(index))
-    {
-        dataObjRef = d->nonPersDbController->retrieve(index);
+    // No existing ref, we need to load from the file DB, then the non-persistent DB
+    if (d->dbController->contains(index)) {
+        dataObjRef = d->dbController->retrieve(index, readFullData);
+    } else if(d->nonPersDbController->contains(index)) {
+        dataObjRef = d->nonPersDbController->retrieve(index, readFullData);
     }
     else if (d->pacsController->contains(index))
     {
@@ -129,7 +137,10 @@ medAbstractData *medDataManager::retrieveData(const medDataIndex &index)
     {
         dataObjRef->setDataIndex(index);
 
-        d->loadedDataObjectTracker.insert(index, dataObjRef);
+        if (readFullData)
+        {
+            d->loadedDataObjectTracker.insert(index, dataObjRef);
+        }
         return dataObjRef;
     }
     return nullptr;

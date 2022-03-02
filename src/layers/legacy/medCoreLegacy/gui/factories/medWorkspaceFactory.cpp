@@ -35,12 +35,13 @@ bool medWorkspaceFactory::registerWorkspace(QString identifier,
                                             QString description,
                                             QString category,
                                             medWorkspaceCreator creator,
+                                            void* creatorArgument,
                                             medWorkspaceIsUsable isUsable,
                                             bool isActive)
 {
     if(!d->creators.contains(identifier))
     {
-        medWorkspaceFactory::Details* holder = new medWorkspaceFactory::Details(identifier, name, description, category, creator, isUsable, isActive);
+        medWorkspaceFactory::Details* holder = new medWorkspaceFactory::Details(identifier, name, description, category, creator, creatorArgument, isUsable, isActive);
         d->creators.insert(identifier, holder);
         return true;
     }
@@ -66,10 +67,12 @@ medAbstractWorkspaceLegacy *medWorkspaceFactory::createWorkspace(QString type,QW
 
     // create a deletable parent to clean up in case of constructor failure.
     parent = new QWidget(parent);
+    parent->hide();
 
     try
     {
-        return d->creators[type]->creator(parent);
+        Details* details = d->creators[type];
+        return details->creator(parent, details->creatorArgument);
     }
     catch (const std::exception& e)
     {

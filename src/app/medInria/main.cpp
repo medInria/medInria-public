@@ -29,7 +29,12 @@
 #include <medSplashScreen.h>
 #include <medStorage.h>
 
-void forceShow(medMainWindow &mainwindow)
+#if (USE_PYTHON)
+  #include <medPython.h>
+  #include <medPythonTools.h>
+#endif
+
+void forceShow(medMainWindow& mainwindow )
 {
     // Idea and code taken from the OpenCOR project, Thanks Allan for the code!
 
@@ -98,56 +103,31 @@ int main(int argc, char *argv[])
     setlocale(LC_NUMERIC, "C");
     QLocale::setDefault(QLocale("C"));
 
-    QCommandLineParser parser;
-    parser.addHelpOption();
-    parser.addOptions({
-        // A boolean option with a single name (--fullscreen)
-        {"fullscreen",
-            QCoreApplication::translate("main", "Open application in fullscreen mode")},
-        {"no-fullscreen",
-            QCoreApplication::translate("main", "Open application in windowed mode")},
-        {"stereo",
-            QCoreApplication::translate("main", "Open application in opengl direct rendering")},
-       {"debug", 
-            QCoreApplication::translate("main", "Open application in debug mode")},
-        {{"remotedb", "psql"},
-            QCoreApplication::translate("main", "Connect application to a remote database controller (psql)")},
-        // Options with a value
-#ifdef ACTIVATE_WALL_OPTION
-       {{"wall", "tracker"
-            QCoreApplication::translate("main", "Open application in wall screen "),
-            QCoreApplication::translate("main", "tracker=<url>")},
-#endif
-        {{"v","view"},
-            QCoreApplication::translate("main", "Open application with opened <data> "),
-            QCoreApplication::translate("main", "data")},
-        {{"r", "role"},
-            QCoreApplication::translate("main", "Open database with defined role <junior/expert/coordinateur>."),
-            QCoreApplication::translate("main", "junior/expert/coordinateur")},
-        {{"c", "center"},
-            QCoreApplication::translate("main", "Open database for a specific center <center>."),
-            QCoreApplication::translate("main", "center")},
-        {"host",
-            QCoreApplication::translate("main", "database server host or socket directory (default: \"local socket\"). \nThis parameter is taken into account only when remotedb parameter is defined"),
-            QCoreApplication::translate("main", "HOSTNAME")},
-        {{"port","p"},
-            QCoreApplication::translate("main", "database server port (default: \"5432\"). \nThis parameter is taken into account only when remotedb parameter is defined"),
-            QCoreApplication::translate("main", "PORT")},
-       {"db_prefix_path",
-            QCoreApplication::translate("main", "set database prefix path. \nThis parameter is taken into account only when remotedb parameter is defined"),
-            QCoreApplication::translate("main", "<db_prefix_path>")},
-    });
+    if (dtkApplicationArgumentsContain(&application, "-h") || dtkApplicationArgumentsContain(&application, "--help"))
+    {
+        qDebug() << "Usage: "
+                 << QFileInfo(argv[0]).baseName().toStdString().c_str()
+                 << "[--fullscreen|--no-fullscreen] "
+                 << "[--stereo] "
+                 << "[--debug] "
+            #ifdef USE_PYTHON
+                 << "[--test-python] "
+                 << "[--test-python-crash] "
+            #endif
+            #ifdef ACTIVATE_WALL_OPTION
+                 << "[[--wall] [--tracker=URL]] "
+            #endif
+                 << "[[--view] [files]]";
+        return 1;
+    }
 
-        // Process the actual command line arguments given by the user
-        parser.process(application);
+    // Do not show the splash screen in debug builds because it hogs the
+    // foreground, hiding all other windows. This makes debugging the startup
+    // operations difficult.
 
-        // Do not show the splash screen in debug builds because it hogs the
-        // foreground, hiding all other windows. This makes debugging the startup
-        // operations difficult.
-
-#if !defined(_DEBUG)
-        bool show_splash = true;
-#else
+    #if !defined(_DEBUG)
+    bool show_splash = true;
+    #else
     bool show_splash = false;
 #endif
 
@@ -161,9 +141,21 @@ int main(int argc, char *argv[])
         const bool remoteDb = parser.isSet("remotedb");
         if (remoteDb)
         {
-            medSettingsManager *mnger = medSettingsManager::instance();
-            mnger->setValue("database", "remotedb", remoteDb, false);
-            if (parser.isSet("host"))
+            bool valid_option = false;
+            const QStringList options =
+                    (QStringList()
+                     << "--fullscreen"
+                     << "--no-fullscreen"
+                     << "--wall"
+                     << "--tracker"
+                     << "--stereo"
+                     << "--view"
+                #ifdef USE_PYTHON
+                     << "--test-python"
+                     << "--test-python-with-crash"
+                #endif
+                     << "--debug");
+            for (QStringList::const_iterator opt=options.constBegin();opt!=options.constEnd();++opt)
             {
                 QString hostname = parser.value("host");
                 mnger->setValue("database", "hostname", hostname, false);
@@ -203,16 +195,23 @@ int main(int argc, char *argv[])
         if (runningMedInria)
             return 0;
 
-        if (show_splash)
-        {
-            QObject::connect(medPluginManager::instance(),
-                             SIGNAL(loaded(QString)), &application,
-                             SLOT(redirectMessageToSplash(QString)));
-            QObject::connect(&application, SIGNAL(showMessage(const QString &)),
-                             &splash, SLOT(showMessage(const QString &)));
-            splash.show();
-            splash.showMessage("Loading plugins...");
-        }
+#ifdef USE_PYTHON
+    med::python::initialize();
+
+    bool testPython = application.arguments().contains("--test-python");
+    bool testPythonWithCrash = application.arguments().contains("--test-python-with-crash");
+
+    if (testPython || testPythonWithCrash)
+    {
+        return med::python::test::testEmbeddedPython(testPythonWithCrash);
+    }
+
+    med::python::initializeTools();
+    med::python::loadPythonPlugins();
+#endif
+
+    medPluginManager::instance()->setVerboseLoading(true);
+    medPluginManager::instance()->initialize();
 
         medDataManager::instance()->setDatabaseLocation();
         medPluginManager::instance()->setVerboseLoading(true);
@@ -292,7 +291,11 @@ int main(int argc, char *argv[])
 
         application.setMainWindow(mainwindow);
 
-        forceShow(*mainwindow);
+#ifdef USE_PYTHON
+    med::python::startConsole();
+#endif
+
+    forceShow(*mainwindow);
 
         qInfo() << "### Application is running...";
 

@@ -27,14 +27,19 @@ class MEDCORELEGACY_EXPORT medDatabaseReader : public QObject
     Q_OBJECT
 
 public:
+    enum ReadMode
+    {
+        READ_ALL,
+        READ_INFORMATION
+    };
+
     medDatabaseReader(const medDataIndex& index);
     ~medDatabaseReader();
 
+    void setReadMode(ReadMode readMode);
+    ReadMode getReadMode() const;
+
     medAbstractData *run();
-
-    QString getFilePath();
-
-    qint64 getDataSize();
 
 protected:
     medAbstractData* readFile(const QStringList& filenames);

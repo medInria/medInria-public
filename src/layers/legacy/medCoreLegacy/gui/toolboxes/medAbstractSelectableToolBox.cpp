@@ -34,6 +34,11 @@ medAbstractSelectableToolBox::~medAbstractSelectableToolBox()
     d = nullptr;
 }
 
+dtkPlugin* medAbstractSelectableToolBox::plugin()
+{
+    return nullptr;
+}
+
 void medAbstractSelectableToolBox::setSelectorToolBox(medSelectorToolBox *toolbox)
 {
     d->selectorToolBox = toolbox;

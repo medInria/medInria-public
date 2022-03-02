@@ -23,6 +23,7 @@
 
 
 #include <QString>
+#include <medCoreLegacyExport.h>
 
 namespace med
 {
@@ -30,12 +31,12 @@ namespace med
 // Returns the directory containing the external resources for the project or
 // one of its libraries. A null string is returned if the directory does not
 // exist.
-QString getExternalResourcesDirectory(QString libraryName = QString());
+MEDCORELEGACY_EXPORT QString getExternalResourcesDirectory(QString libraryName = QString());
 
 // Returns the path of an external resource that was added using
 // add_external_resources in the cmake project. If the resource was added
 // through a library target then the library name must be provided. A null
 // string is returned if the resource is not found.
-QString getExternalResourcePath(QString filename, QString libraryName = QString());
+MEDCORELEGACY_EXPORT QString getExternalResourcePath(QString filename, QString libraryName = QString());
 
 } // namespace med

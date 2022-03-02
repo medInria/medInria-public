@@ -61,13 +61,17 @@ public:
     virtual QString category() const =0;
 
     QList <medToolBox*> toolBoxes() const;
-    medToolBox* selectionToolBox() const;
     void setDatabaseVisibility(bool);
     bool isDatabaseVisible() const;
     void setToolBoxesVisibility(bool);
     bool areToolBoxesVisible() const;
     virtual void setupTabbedViewContainer();
     medTabbedViewContainers * tabbedViewContainers() const;
+
+    medToolBox* getMouseInteractionToolBox() const;
+    medToolBox* getNavigatorToolBox() const;
+    medToolBox* getLayersToolBox() const;
+    medToolBox* getProgressionStackToolBox() const;
 
     void setUserLayerPoolable(bool poolable);
     void setUserViewPoolable(bool poolable);
@@ -81,16 +85,16 @@ public:
 
     medProgressionStack *getProgressionStack();
 
+    void addToolBox(medToolBox *toolbox);
+    void insertToolBox(int index, medToolBox* toolbox);
+    void removeToolBox(medToolBox *toolbox);
+
 public slots:
-    virtual void clear();
     virtual void addNewTab();
     void updateNavigatorsToolBox();
     void updateMouseInteractionToolBox();
     void updateLayersToolBox();
     void updateInteractorsToolBox();
-    void clearWorkspaceToolBoxes();
-    void addToolBox(medToolBox *toolbox);
-    void removeToolBox(medToolBox *toolbox);
 
     virtual void open(const medDataIndex& index);
 
@@ -125,6 +129,8 @@ private slots:
 
 signals:
     void layerSelectionChanged(QList<int> selectedLayersIndices);
+    void toolBoxInserted(int index, medToolBox* toolbox);
+    void toolBoxRemoved(medToolBox* toolbox);
 
 private:
     QWidget* buildViewLinkMenu();

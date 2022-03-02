@@ -721,12 +721,10 @@ void vtkMetaDataSet::SetScalarNullValue(const char * arrayName, double nullValue
 }
 
 //----------------------------------------------------------------------------
-double* vtkMetaDataSet::GetScalarRange(QString attributeName)
+void vtkMetaDataSet::GetScalarRange(double range[2], QString attributeName)
 {
-    // TODO: evil, and prone to memleak. Should pass the range array as parameter
-    double* val = new double[2];
-    val[0] = VTK_DOUBLE_MAX;
-    val[1] = VTK_DOUBLE_MIN;
+    range[0] = VTK_DOUBLE_MAX;
+    range[1] = VTK_DOUBLE_MIN;
 
     if (attributeName.trimmed().isEmpty())
     {
@@ -741,22 +739,20 @@ double* vtkMetaDataSet::GetScalarRange(QString attributeName)
     {
         if (this->GetDataSet()->GetPointData()->HasArray(qPrintable(attributeName)))
         {
-            this->GetDataSet()->GetPointData()->GetArray(qPrintable(attributeName))->GetRange(val);
+            this->GetDataSet()->GetPointData()->GetArray(qPrintable(attributeName))->GetRange(range);
         }
         else if (this->GetDataSet()->GetCellData()->HasArray(qPrintable(attributeName)))
         {
-            this->GetDataSet()->GetCellData()->GetArray(qPrintable(attributeName))->GetRange(val);
+            this->GetDataSet()->GetCellData()->GetArray(qPrintable(attributeName))->GetRange(range);
         }
     }
 
-    // if all values are null values, or if we don't have a current scalar array
-    if ( val[0] == VTK_DOUBLE_MAX || val[1] == VTK_DOUBLE_MIN )
+    // if any range is null, or if we don't have a current scalar array
+    if ( range[0] == VTK_DOUBLE_MAX || range[1] == VTK_DOUBLE_MIN )
     {
-        val[0] = 0;
-        val[1] = 1;
+        range[0] = 0;
+        range[1] = 1;
     }
-
-    return val;
 }
 
 //----------------------------------------------------------------------------

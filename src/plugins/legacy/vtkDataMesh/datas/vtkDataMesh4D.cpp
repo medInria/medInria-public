@@ -21,7 +21,6 @@
 #include <vtkMetaDataSetSequence.h>
 
 #include <vtkPNGWriter.h>
-#include <vtkDataSetSurfaceFilter.h>
 #include <vtkPolyDataMapper.h>
 #include <vtkActor.h>
 #include <vtkProperty.h>

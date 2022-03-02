@@ -349,7 +349,7 @@ class MEDVTKDATAMESHBASE_EXPORT vtkMetaDataSet: public vtkDataObject
   virtual double GetScalarNullValue(const char * arrayName);
   virtual void SetScalarNullValue(const char * arrayName, double nullValue);
 
-  virtual double* GetScalarRange(QString attributeName = QString());
+  virtual void GetScalarRange(double range[2], QString attributeName = QString(""));
 
 
   /**

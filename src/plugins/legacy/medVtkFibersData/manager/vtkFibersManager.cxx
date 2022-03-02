@@ -52,9 +52,6 @@
 #include "vtkFibersManagerCallback.h"
 #include "vtkFiberPickerCallback.h"
 
-#include <vtkDataSetSurfaceFilter.h>
-#include <vtkPolyDataNormals.h>
-
 vtkStandardNewMacro(vtkFibersManager);
 
 

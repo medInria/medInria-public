@@ -12,45 +12,40 @@
 =========================================================================*/
 
 #include <vtkMetaSurfaceMesh.h>
-#include "vtkObjectFactory.h"
 
-#include <vtkPolyData.h>
-#include <vtkPolyDataNormals.h>
-#include <vtkPolyDataMapper.h>
-#include <vtkProperty.h>
-#include <vtkCellData.h>
 #include <vtkCellArray.h>
+#include <vtkCellData.h>
+#include <vtkCellType.h>
+#include <vtkCleanPolyData.h>
+#include <vtkCommand.h>
+#include <vtkDataSetSurfaceFilter.h>
+#include <vtkErrorCode.h>
+#include <vtkExtractEdges.h>
+#include <vtkIdList.h>
+#include <vtkLegacyReaderVersion.h>
+#include <vtkLine.h>
+#include <vtkLookupTable.h>
+#include <vtkObjectFactory.h>
+#include <vtkOBJExporter.h>
+#include <vtkOBJReader.h>
 #include <vtkPointData.h>
+#include <vtkPoints.h>
+#include <vtkPolyData.h>
+#include <vtkPolyDataMapper.h>
+#include <vtkPolyDataNormals.h>
 #include <vtkPolyDataReader.h>
 #include <vtkPolyDataWriter.h>
+#include <vtkProperty.h>
+#include <vtkUnsignedShortArray.h>
 #include <vtkXMLPolyDataReader.h>
 #include <vtkXMLPolyDataWriter.h>
 
-#include <vtkPoints.h>
-#include <vtkIdList.h>
-#include <vtkUnsignedShortArray.h>
-#include <vtkCellType.h>
-#include <vtkLine.h>
-#include <vtkExtractEdges.h>
-
-#include <vtkCleanPolyData.h>
-#include <vtkDataSetSurfaceFilter.h>
-#include <vtkOBJReader.h>
-#include <vtkOBJExporter.h>
-
 #include <vtksys/SystemTools.hxx>
-
-#include <vtkCellType.h>
-
-#include <vtkLookupTable.h>
-
-#include <vtkErrorCode.h>
 
 #include <QDebug>
 
 //----------------------------------------------------------------------------
 vtkStandardNewMacro( vtkMetaSurfaceMesh )
-
 
 //----------------------------------------------------------------------------
 vtkMetaSurfaceMesh::vtkMetaSurfaceMesh()
@@ -101,20 +96,29 @@ vtkPolyData* vtkMetaSurfaceMesh::GetPolyData() const
 //----------------------------------------------------------------------------
 void vtkMetaSurfaceMesh::ReadVtkFile (const char* filename)
 {
-  vtkPolyDataReader* reader = vtkPolyDataReader::New();
-  reader->SetFileName (filename);
-  
-  try
-  {
-    reader->Update();
-    this->SetDataSet (reader->GetOutput());
-  }
-  catch (vtkErrorCode::ErrorIds error)
-  {
-    reader->Delete();
-    throw error;
-  }
-  reader->Delete();
+    vtkSmartPointer<vtkPolyDataReader> reader = vtkSmartPointer<vtkPolyDataReader>::New();
+    reader->SetFileName (filename);
+
+    try
+    {
+      reader->Update();
+      if(reader->GetFileMajorVersion() <= vtkLegacyReaderMajorVersion)
+      {
+          this->SetDataSet (reader->GetOutput());
+      }
+      else
+      {
+          vtkErrorMacro(<< "Can not read file with version > " << vtkLegacyReaderMajorVersion
+                        << "." << vtkLegacyReaderMinorVersion << ": " << filename << endl)
+          throw vtkErrorCode::FileFormatError;
+      }
+    }
+    catch (vtkErrorCode::ErrorIds error)
+    {
+      reader->CloseVTKFile();
+      throw error;
+    }
+    reader->CloseVTKFile();
 }
 
 void vtkMetaSurfaceMesh::ReadVtpFile(const char* filename)
@@ -189,7 +193,7 @@ void vtkMetaSurfaceMesh::Read (const char* filename)
                 this->ReadOBJFile (filename);
                 break;
             default :
-                vtkErrorMacro(<<"unknown dataset type : "<<filename<<endl);
+                vtkErrorMacro(<<"unknown dataset type : "<<filename<<endl)
                 throw vtkErrorCode::UnrecognizedFileTypeError;
         }
     }
@@ -207,14 +211,14 @@ void vtkMetaSurfaceMesh::WriteVtkFile (const char* filename)
 {
   if (!this->DataSet)
   {
-    vtkErrorMacro(<<"No DataSet to write"<<endl);
+    vtkErrorMacro(<<"No DataSet to write"<<endl)
     throw vtkErrorCode::UserError;
   }
 
   vtkPolyData* c_mesh = vtkPolyData::SafeDownCast (this->DataSet);
   if (!c_mesh)
   {
-    vtkErrorMacro(<<"DataSet is not a polydata object"<<endl);
+    vtkErrorMacro(<<"DataSet is not a polydata object"<<endl)
     throw vtkErrorCode::UserError;
   }
   
@@ -241,14 +245,14 @@ void vtkMetaSurfaceMesh::WriteVtpFile (const char* filename)
 {
     if (!this->DataSet)
     {
-        vtkErrorMacro(<<"No DataSet to write"<<endl);
+        vtkErrorMacro(<<"No DataSet to write"<<endl)
         throw vtkErrorCode::UserError;
     }
     
     vtkPolyData* c_mesh = vtkPolyData::SafeDownCast (this->DataSet);
     if (!c_mesh)
     {
-        vtkErrorMacro(<<"DataSet is not a polydata object"<<endl);
+        vtkErrorMacro(<<"DataSet is not a polydata object"<<endl)
         throw vtkErrorCode::UserError;
     }
     
@@ -271,8 +275,8 @@ void vtkMetaSurfaceMesh::WriteVtpFile (const char* filename)
 //----------------------------------------------------------------------------
 void vtkMetaSurfaceMesh::WriteOBJFile (const char* filename)
 {
-    Q_UNUSED(filename);
-    vtkErrorMacro(<<"Not yet implemented"<<endl);
+    Q_UNUSED(filename)
+    vtkErrorMacro(<<"Not yet implemented"<<endl)
 }
 
 
@@ -281,14 +285,19 @@ void vtkMetaSurfaceMesh::Write (const char* filename)
 {
     try
     {
-        qDebug()<<"Writing: "<<filename;
         if (vtkMetaSurfaceMesh::IsVtpExtension(vtksys::SystemTools::GetFilenameLastExtension(filename).c_str()))
         {
             this->WriteVtpFile (filename);
         }
+        else if (vtkMetaSurfaceMesh::IsVtkExtension(vtksys::SystemTools::GetFilenameLastExtension(filename).c_str()))
+        {
+            qDebug()<<"Writing: "<<filename;
+            this->WriteVtkFile (filename);
+        }
         else
         {
-            this->WriteVtkFile (filename);
+            qDebug()<<"Can not write: " << filename << " vtu extension is for unstructured grid mesh";
+            throw vtkErrorCode::UserError;
         }
     }
     catch (vtkErrorCode::ErrorIds error)
@@ -301,8 +310,18 @@ void vtkMetaSurfaceMesh::Write (const char* filename)
 bool vtkMetaSurfaceMesh::IsVtpExtension (const char* ext)
 {
     if (strcmp (ext, ".vtp") == 0)
+    {
         return true;
-    
+    }
+    return false;
+}
+
+bool vtkMetaSurfaceMesh::IsVtuExtension (const char* ext)
+{
+    if (strcmp (ext, ".vtu") == 0)
+    {
+        return true;
+    }
     return false;
 }
 
@@ -345,192 +364,219 @@ unsigned int vtkMetaSurfaceMesh::CanReadFile (const char* filename)
         return 0;
     }
 
-  if (vtkMetaSurfaceMesh::IsOBJExtension(vtksys::SystemTools::GetFilenameLastExtension(filename).c_str()))
-  {
-    vtkOBJReader* reader = vtkOBJReader::New();
-    reader->SetFileName (filename);
-    try
+    if (vtkMetaSurfaceMesh::IsOBJExtension(vtksys::SystemTools::GetFilenameLastExtension(filename).c_str()))
     {
-      reader->Update();
+        return vtkMetaSurfaceMesh::FILE_IS_OBJ;
     }
-    catch(vtkErrorCode::ErrorIds)
-    {
-      reader->Delete();
-      return 0;
-    }
-    reader->Delete();
-    return vtkMetaSurfaceMesh::FILE_IS_OBJ;
-  }
-  
+
     if (vtkMetaSurfaceMesh::IsVtpExtension(vtksys::SystemTools::GetFilenameLastExtension(filename).c_str()))
     {
-        vtkXMLPolyDataReader* reader = vtkXMLPolyDataReader::New();
-        reader->SetFileName (filename);
-        try
-        {
-            reader->Update();
-        }
-        catch  (vtkErrorCode::ErrorIds)
-        {
-            reader->Delete();
-            return 0;
-        }
-        reader->Delete();
         return vtkMetaSurfaceMesh::FILE_IS_VTP;
     }
     
-  if (!vtkMetaSurfaceMesh::IsVtkExtension(vtksys::SystemTools::GetFilenameLastExtension(filename).c_str()))
-    return 0;
-  
-  try
-  {
-    vtkPolyDataReader* reader = vtkPolyDataReader::New();
-    reader->SetFileName (filename);
-    if (reader->IsFilePolyData ())
+    if (vtkMetaSurfaceMesh::IsVtkExtension(vtksys::SystemTools::GetFilenameLastExtension(filename).c_str()))
     {
-      reader->Delete();
-      return vtkMetaSurfaceMesh::FILE_IS_VTK;
+        vtkPolyDataReader* reader = vtkPolyDataReader::New();
+        reader->SetFileName (filename);
+        if (reader->IsFilePolyData())
+        {
+            reader->Delete();
+            return vtkMetaSurfaceMesh::FILE_IS_VTK;
+        }
+        reader->Delete();
     }
-    reader->Delete();
-  }
-  catch (vtkErrorCode::ErrorIds)
-  {
-  }
 
-  return 0;
+    return 0;
 }
 
 
 void vtkMetaSurfaceMesh::ReadMeshFile (const char* filename)
 {
-
-  std::ifstream file (filename );
-  char str[256];
-
-  if(file.fail())
-  {
-    vtkErrorMacro("File not found\n");
-    throw vtkErrorCode::FileNotFoundError;
-  }
-
-
-  vtkPoints* points = vtkPoints::New();
-  vtkUnsignedShortArray* pointarray = vtkUnsignedShortArray::New();
-  vtkUnsignedShortArray* cellarray  = vtkUnsignedShortArray::New();
-  vtkPolyData* outputmesh = vtkPolyData::New();
-  
-  unsigned short ref = 0;
-  
-  file >> str;
-  while( (strcmp (str, "Vertices") != 0) && (strcmp (str, "End") != 0) && (strcmp (str, "END") != 0) )
-  {
-    if (file.fail())
+    // lambda to position the stream where needed
+    auto positionStream = [](std::ifstream& file, int nbline, std::string& line)
     {
-      points->Delete();
-      pointarray->Delete();
-      cellarray->Delete();
-      outputmesh->Delete();
-      vtkErrorMacro("No point in file\n");
-      throw vtkErrorCode::CannotOpenFileError;
-    }
-    file >> str;
-  }
+        bool result = true;
+        //not sure if the order of cells (edges, triangles, tetra) is always the same or not
+        //to be sure we go back to the beginning
+        file.clear();
+        file.seekg(0);
+        if(nbline > 1)
+        {
+            int curentLine = 0;
+            while (curentLine != nbline && getline(file, line))
+            {
+                curentLine++;
+            }
+            if (file.bad() || nbline > curentLine)
+            {
+                result =  false;
+            }
+        }
+        else
+        {
+         result = false;
+        }
+        return result;
+    };
 
-  if((strcmp (str, "End") == 0) || (strcmp (str, "END") == 0) )
-  {
-    vtkErrorMacro(<<"Unexpected end of file"<<endl);
+    ifstream fileInput(filename );
+    if(fileInput.fail())
+    {
+        vtkErrorMacro("File not found\n")
+        throw vtkErrorCode::FileNotFoundError;
+    }
+
+    QHash<QString, QPair<int,int>> elementsNameHash;
+    QStringList elementsNames;
+    elementsNames << "Vertices" << "Edges" << "Triangles" << "Ridges";
+    for (int i = 0; i< elementsNames.size(); i++)
+    {
+        elementsNameHash[elementsNames[i]] = qMakePair(0, 0);
+    }
+
+    int curLine = 0;
+    std::string line;
+
+    while(getline(fileInput, line))
+    {
+        curLine++;
+        for (int i = 0; i< elementsNames.size(); i++)
+        {
+            if (elementsNameHash[elementsNames[i]].first == curLine - 1
+                    && elementsNameHash[elementsNames[i]].first != 0)
+            {
+                std::istringstream  lineStream(line);
+                lineStream >> elementsNameHash[elementsNames[i]].second;
+            }
+
+            if (line.find(elementsNames[i].toStdString(), 0) != std::string::npos)
+            {
+                 elementsNameHash[elementsNames[i]].first = curLine;
+            }
+        }
+    }
+
+    int nbOfCells = 0;
+    for (int i = 1; i< elementsNames.size()-1; i++)
+    {
+        nbOfCells += elementsNameHash[elementsNames[i]].second;
+    }
+
+    int nbOfPoints = elementsNameHash[elementsNames[0]].second;
+
+    vtkPoints* points = vtkPoints::New();
+    points->SetNumberOfPoints(nbOfPoints);
+
+    vtkUnsignedShortArray* pointarray = vtkUnsignedShortArray::New();
+    pointarray->SetName("Point array");
+    pointarray->Allocate(nbOfPoints);
+
+    vtkUnsignedShortArray* cellarray  = vtkUnsignedShortArray::New();
+    cellarray->SetName("Zones");
+    cellarray->Allocate(nbOfCells);
+
+    vtkUnsignedShortArray* ridgesarray  = vtkUnsignedShortArray::New();
+    ridgesarray->SetName("Ridges");
+    ridgesarray->SetNumberOfComponents(1);
+    ridgesarray->SetNumberOfTuples(nbOfCells);
+    ridgesarray->FillValue(0);
+
+    vtkPolyData* outputmesh = vtkPolyData::New();
+    outputmesh->Allocate(nbOfCells);
+
+    //Get Vertices and their values
+    if(positionStream(fileInput, elementsNameHash[elementsNames[0]].first+1, line))
+    {
+        curLine = 0;
+        while (getline(fileInput, line) && curLine < elementsNameHash[elementsNames[0]].second)
+        {
+            std::istringstream  lineStream(line);
+            double pos[3];
+            unsigned short ref;
+            lineStream >> pos[0] >> pos[1] >> pos[2] >> ref;
+            points->SetPoint(curLine, pos[0], pos[1], pos[2]);
+            pointarray->InsertNextValue(ref);
+            curLine++;
+        }
+    }
+    //Get Edges and their values
+    if(positionStream(fileInput, elementsNameHash[elementsNames[1]].first+1, line))
+    {
+        curLine = 0;
+        while (getline(fileInput, line) && curLine < elementsNameHash[elementsNames[1]].second)
+        {
+            std::istringstream  lineStream(line);
+            unsigned int pos[2];
+            unsigned short ref;
+            lineStream >> pos[0] >> pos[1] >> ref;
+            vtkIdList* idlist = vtkIdList::New();
+            idlist->InsertNextId(pos[0]-1);
+            idlist->InsertNextId(pos[1]-1);
+
+            outputmesh->InsertNextCell(VTK_LINE, idlist);
+            idlist->Delete();
+            cellarray->InsertNextValue(ref);
+            curLine++;
+        }
+    }
+    //Get Triangles and their values
+    if(positionStream(fileInput, elementsNameHash[elementsNames[2]].first+1, line))
+    {
+        curLine = 0;
+        while (getline(fileInput, line) && curLine < elementsNameHash[elementsNames[2]].second)
+        {
+            std::istringstream  lineStream(line);
+            unsigned int pos[3];
+            unsigned short ref;
+            lineStream >> pos[0] >> pos[1] >> pos[2] >> ref;
+            vtkIdList* idlist = vtkIdList::New();
+            idlist->InsertNextId(pos[0]-1);
+            idlist->InsertNextId(pos[1]-1);
+            idlist->InsertNextId(pos[2]-1);
+
+            outputmesh->InsertNextCell(VTK_TRIANGLE, idlist);
+            idlist->Delete();
+            cellarray->InsertNextValue(ref);
+            curLine++;
+        }
+    }
+    //Get Ridges if present will be add as array on cell
+    if(positionStream(fileInput, elementsNameHash[elementsNames[3]].first+1, line) &&
+            elementsNameHash[elementsNames[1]].second > 0)
+    {
+        curLine = 0;
+        while (getline(fileInput, line) && curLine < elementsNameHash[elementsNames[3]].second)
+        {
+            std::istringstream  lineStream(line);
+            unsigned int pos;
+            lineStream >> pos;
+            //This works because the edges were the first cells added
+            ridgesarray->SetValue(pos-1, 1);
+            curLine++;
+        }
+    }
+
+    outputmesh->SetPoints(points);
+    if (outputmesh->GetPointData())
+    {
+        outputmesh->GetPointData()->AddArray(pointarray);
+    }
+    if (outputmesh->GetCellData())
+    {
+        outputmesh->GetCellData()->AddArray(cellarray);
+        if(elementsNameHash[elementsNames[3]].second > 0 && elementsNameHash[elementsNames[1]].second > 0)
+        {
+            outputmesh->GetCellData()->AddArray(ridgesarray);
+        }
+    }
+
+    this->SetDataSet(outputmesh);
+
     points->Delete();
     pointarray->Delete();
     cellarray->Delete();
+    ridgesarray->Delete();
     outputmesh->Delete();
-
-    throw vtkErrorCode::PrematureEndOfFileError;
-  }
-  
-  unsigned int NVertices = 0;
-  file >>  NVertices;
-  points->SetNumberOfPoints (NVertices);
-
-  pointarray->SetName ("Point array");
-  pointarray->Allocate(NVertices);
-  
-  // read vertex position 
-  for(unsigned int i=0; i<NVertices; i++)
-  {
-    double pos[3];
-    file >> pos[0] >> pos[1] >> pos[2] >> ref;
-    points->SetPoint (i, pos[0], pos[1], pos[2]);
-    pointarray->InsertNextValue(ref);
-  }
-
-  outputmesh->SetPoints (points);
-
-  if (outputmesh->GetPointData())
-  {
-    outputmesh->GetPointData()->AddArray (pointarray);
-  }
-  
-  file >> str;
-  while( (strcmp (str, "Triangles") != 0) && (strcmp (str, "End") != 0) && (strcmp (str, "END") != 0) )
-  {
-    if (file.fail())
-    {
-      points->Delete();
-      pointarray->Delete();
-      cellarray->Delete();
-      outputmesh->Delete();
-      vtkErrorMacro("No triangle in file\n");
-      throw vtkErrorCode::CannotOpenFileError;
-    }
-    
-    file >> str;
-  }
-
-  if((strcmp (str, "End") == 0) || (strcmp (str, "END") == 0) )
-  {
-    vtkErrorMacro(<<"Unexpected end of file"<<endl);
-    points->Delete();
-    pointarray->Delete();
-    cellarray->Delete();
-    outputmesh->Delete();
-
-    throw vtkErrorCode::PrematureEndOfFileError;
-  }
-  
-    
-  unsigned int NTriangles;
-  
-  file >>  NTriangles;
-  outputmesh->Allocate (NTriangles);
-  cellarray->SetName ("Zones");
-  cellarray->Allocate(NTriangles);
-  for(unsigned int i=0; i<NTriangles; i++)
-  {
-    unsigned int ids[3];
-    file >> ids[0] >> ids[1] >> ids[2] >> ref;
-    vtkIdList* idlist = vtkIdList::New();
-    idlist->InsertNextId (ids[0]-1);
-    idlist->InsertNextId (ids[1]-1);
-    idlist->InsertNextId (ids[2]-1);
-    
-    outputmesh->InsertNextCell (VTK_TRIANGLE, idlist);
-    idlist->Delete();
-    cellarray->InsertNextValue(ref);
-  }
-
-  if (outputmesh->GetCellData())
-  {
-    outputmesh->GetCellData()->AddArray (cellarray);
-  }
-  
-  this->SetDataSet (outputmesh);
-
-  points->Delete();
-  pointarray->Delete();
-  cellarray->Delete();
-  outputmesh->Delete();
-  
-    
 }
 
 // void vtkMetaSurfaceMesh::CreateWirePolyDataOld()

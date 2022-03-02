@@ -81,22 +81,30 @@ public:
 
     virtual void toXMLNode(QDomDocument *doc, QDomElement *currentNode);
 
+    virtual QVariant getValue(QString name) const;
+    virtual bool setValue(QString name, QVariant value);
+
+    template<class VALUE_TYPE>
+    VALUE_TYPE getValue(QString name) const
+    {
+        return getValue(name).value<VALUE_TYPE>();
+    }
+
+    template<class VALUE_TYPE>
+    bool setValue(QString name, VALUE_TYPE value)
+    {
+        return setValue(name, QVariant::fromValue<VALUE_TYPE>(value));
+    }
+
+    virtual QObject* getComponent(QString name);
+
+    template<class TYPE>
+    TYPE getComponent(QString name)
+    {
+        return dynamic_cast<TYPE>(getComponent(name));
+    }
+
 signals:
-    /**
-     * @brief Tells the world to add a new toolbox to the medToolboxContainer.
-     * Typically used when a generic toolbox adds a custom toolbox.
-     *
-     * @param toolbox
-    */
-    void addToolBox(medToolBox *toolbox);
-
-    /**
-     * @brief Tells the world to remove a toolbox from the medToolBoxContainer.
-     *
-     * @param toolbox
-    */
-    void removeToolBox(medToolBox *toolbox);
-
     /**
      * @brief Emitted when an action from the toolbox succeeded.
      * Typically used when a dtkProcess returned.
@@ -141,6 +149,13 @@ public slots:
 
 protected slots:
     void onAboutButtonClicked();
+
+protected:
+    template<class COMPONENT_TYPE, class VALUE_TYPE>
+    bool getComponentValue(QObject* component, VALUE_TYPE* value) const;
+
+    template<class COMPONENT_TYPE, class VALUE_TYPE>
+    bool setComponentValue(QObject* component, VALUE_TYPE value);
 
 private:
     medToolBoxPrivate *d;

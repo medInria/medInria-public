@@ -96,17 +96,15 @@ public:
         if (imageView->is2D())
         {
             // Convert mouse click to a 3D point in the image.
-#if QT_VERSION > QT_VERSION_CHECK(5, 10, 0)
-            int devicePixelRatio = QGuiApplication::screenAt(mouseEvent->globalPos())->devicePixelRatio();
-#else
-            int screenNumber = QApplication::desktop()->screenNumber(mouseEvent->globalPos());
-            int devicePixelRatio = QGuiApplication::screens().at(screenNumber)->devicePixelRatio();
-#endif
+            int devicePixelRatio = medUtilities::getDevicePixelRatio(mouseEvent);
             QPointF mousePos = mouseEvent->localPos() * devicePixelRatio;
             QVector3D posImage = imageView->mapDisplayToWorldCoordinates( mousePos );
 
             if (m_paintState != PaintState::Wand)
             {
+                // Update the cursor size for painting
+                m_cb->activateCustomedCursor();
+
                 // add current state to undo stack
                 bool isInside;
                 MaskType::IndexType index;
@@ -158,12 +156,7 @@ public:
 
             if (imageView->is2D())
             {
-#if QT_VERSION > QT_VERSION_CHECK(5, 10, 0)
-                int devicePixelRatio = QGuiApplication::screenAt(mouseEvent->globalPos())->devicePixelRatio();
-#else
-                int screenNumber = QApplication::desktop()->screenNumber(mouseEvent->globalPos());
-                int devicePixelRatio = QGuiApplication::screens().at(screenNumber)->devicePixelRatio();
-#endif
+                int devicePixelRatio = medUtilities::getDevicePixelRatio(mouseEvent);
                 QPointF mousePos = mouseEvent->localPos() * devicePixelRatio;
                 QVector3D posImage = imageView->mapDisplayToWorldCoordinates( mousePos );
 
@@ -195,12 +188,7 @@ public:
 
         if (imageView->is2D())
         {
-#if QT_VERSION > QT_VERSION_CHECK(5, 10, 0)
-            int devicePixelRatio = QGuiApplication::screenAt(mouseEvent->globalPos())->devicePixelRatio();
-#else
-            int screenNumber = QApplication::desktop()->screenNumber(mouseEvent->globalPos());
-            int devicePixelRatio = QGuiApplication::screens().at(screenNumber)->devicePixelRatio();
-#endif
+            int devicePixelRatio = medUtilities::getDevicePixelRatio(mouseEvent);
             QPointF mousePos = mouseEvent->localPos() * devicePixelRatio;
             QVector3D posImage = imageView->mapDisplayToWorldCoordinates( mousePos );
             //Project vector onto plane
@@ -596,8 +584,9 @@ void AlgorithmPaintToolBox::activateCustomedCursor()
     // Get radius size of the brush in mm
     double radiusSize = (double)(m_brushSizeSlider->value());
 
-    // Adapt to scale of view (zoom, crop, etc)
-    double radiusSizeDouble = radiusSize * currentView->scale();
+    // Adapt to scale of view (zoom, crop, screen ratio, etc)
+    int devicePixelRatio = medUtilities::getDevicePixelRatio(currentView);
+    double radiusSizeDouble = radiusSize * currentView->scale() / devicePixelRatio;
 
     int radiusSizeInt = floor(radiusSizeDouble + 0.5);
 

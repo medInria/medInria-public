@@ -26,7 +26,7 @@ class MEDCORELEGACY_EXPORT medWorkspaceFactory : public dtkAbstractFactory
     Q_OBJECT
 
 public:
-    typedef medAbstractWorkspaceLegacy *(*medWorkspaceCreator)(QWidget* parent);
+    typedef medAbstractWorkspaceLegacy *(*medWorkspaceCreator)(QWidget* parent, void* argument);
     typedef bool (*medWorkspaceIsUsable)();
 
     struct Details
@@ -36,6 +36,7 @@ public:
         QString description;
         QString category;
         medWorkspaceCreator creator;
+        void* creatorArgument;
         medWorkspaceIsUsable isUsable;
         bool isActive;
         Details(QString id_,
@@ -43,6 +44,7 @@ public:
                 QString description_,
                 QString category_,
                 medWorkspaceCreator creator_,
+                void* creatorArgument_,
                 medWorkspaceIsUsable isUsable_ = nullptr,
                 bool isActive_ = true)
             : identifier(id_)
@@ -50,6 +52,7 @@ public:
             , description(description_)
             , category(category_)
             , creator(creator_)
+            , creatorArgument(creatorArgument_)
             , isUsable(isUsable_)
             , isActive(isActive_)
         {}
@@ -86,6 +89,7 @@ public:
                                  workspaceType::staticDescription(),
                                  workspaceType::staticCategory(),
                                  creator,
+                                 nullptr,
                                  workspaceType::isUsable,
                                  isActive);
     }
@@ -107,6 +111,7 @@ public:
                            QString description,
                            QString category,
                            medWorkspaceCreator creator,
+                           void* creatorArgument = nullptr,
                            medWorkspaceIsUsable isUsable = nullptr, bool isActive = true);
 
 
@@ -135,7 +140,7 @@ private:
      * @warning keep it static if you don't want to freeze your brain (solution in http://www.parashift.com/c++-faq-lite/pointers-to-members.html#faq-33.5 for those interested)
      */
     template < typename T >
-    static medAbstractWorkspaceLegacy* create ( QWidget* parent ) {
+    static medAbstractWorkspaceLegacy* create(QWidget* parent, void* argument) {
     return ( new T(parent) );
     }
 

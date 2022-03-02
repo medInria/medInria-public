@@ -35,6 +35,7 @@ public:
     medResliceViewer *resliceViewer;
     dtkSmartPointer<medAbstractData> reformatedImage;
     QWidget *reformatOptions;
+    medVtkImageInfo* imageInfo;
 };
 
 resliceToolBox::resliceToolBox (QWidget *parent) : medAbstractSelectableToolBox (parent), d(new resliceToolBoxPrivate)
@@ -263,12 +264,17 @@ void resliceToolBox::updateView()
 {
     medAbstractView* view = this->getWorkspace()->tabbedViewContainers()->getFirstSelectedContainerView();
 
-    if (view && d->currentView!= view)
+    d->currentView = nullptr;
+    if (view)
     {
         medAbstractLayeredView *layeredView = qobject_cast<medAbstractLayeredView*>(view);
         if (dynamic_cast<medAbstractImageData*>(layeredView->layerData(layeredView->currentLayer())))
         {
             d->currentView = layeredView;
+
+            // Get the original image information and display it
+            vtkImageView2D *view2d = static_cast<medVtkViewBackend*>(d->currentView->backend())->view2D;
+            d->imageInfo = view2d->GetMedVtkImageInfo();
             displayInfoOnCurrentView();
         }
     }
@@ -276,18 +282,16 @@ void resliceToolBox::updateView()
 
 void resliceToolBox::displayInfoOnCurrentView()
 {
-    vtkImageView2D *view2d = static_cast<medVtkViewBackend*>(d->currentView->backend())->view2D;
-
     if (d->bySpacingOrDimension->currentIndex() == 0) // Spacing
     {
-        double *spacing = view2d->GetMedVtkImageInfo()->spacing;
+        double *spacing = d->imageInfo->spacing;
         d->spacingX->setValue(spacing[0]);
         d->spacingY->setValue(spacing[1]);
         d->spacingZ->setValue(spacing[2]);
     }
     else // Dimension
     {
-        int *dimension = view2d->GetMedVtkImageInfo()->dimensions;
+        int *dimension = d->imageInfo->dimensions;
         d->spacingX->setValue(dimension[0]);
         d->spacingY->setValue(dimension[1]);
         d->spacingZ->setValue(dimension[2]);
