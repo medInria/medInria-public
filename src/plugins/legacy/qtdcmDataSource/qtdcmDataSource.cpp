@@ -14,7 +14,6 @@
 #include <qtdcmDataSource.h>
 
 #include <medDatabaseImporter.h>
-#include <medDatabaseController.h>
 #include <medJobManagerL.h>
 #include <medAbstractDataSourceFactory.h>
 #include <medToolBox.h>
@@ -174,15 +173,32 @@ void qtdcmDataSource::initWidgets()
 
         QObject::connect ( QtDcmManager::instance(), SIGNAL ( importFinished ( QString ) ), this, SLOT ( onImportFinished ( QString ) ) );
 
+        QObject::connect(QtDcmManager::instance(),
+                         SIGNAL(fetchFinished(QHash<QString, QHash<QString, QVariant> >, QHash<QString, QHash<QString, QVariant> >)),
+                         this,
+                         SLOT(onFetchFinished(QHash<QString, QHash<QString, QVariant> >, QHash<QString, QHash<QString, QVariant> >)));
+
+        QObject::connect(this, SIGNAL(moveRequested(const QString &, const QString &)),
+                         QtDcmManager::instance(), SLOT(onMoveRequested(const QString &, const QString &)));
+        QObject::connect(QtDcmManager::instance(), SIGNAL(updateProgressLevel(int)), this, SIGNAL(updateProgress(int)));
+        QObject::connect(QtDcmManager::instance(), SIGNAL(moveState(int, const QString &)),
+                         this, SIGNAL(moveState(int, const QString &)));
         d->localDicomSettingsWidget->readPreferences();
         d->serversSettingsToolBox->getServersDicomSettingsWidget()->readPreferences();
     }
 }
 
-void qtdcmDataSource::onImportFinished ( QString directory )
+void qtdcmDataSource::onFetchFinished(QHash<QString, QHash<QString, QVariant> > pData,
+                                      QHash<QString, QHash<QString, QVariant> > sData)
+{
+    qDebug() << "Data fetched !";
+    emit dataToFetchReceived(pData, sData);
+}
+
+void qtdcmDataSource::onImportFinished(QString directory)
 {
     qDebug() << "Series moved !";
-    emit dataToImportReceived ( directory );
+    emit dataToImportReceived(directory);
 }
 
 void qtdcmDataSource::onSaveLocalSettings()
@@ -193,7 +209,6 @@ void qtdcmDataSource::onSaveLocalSettings()
         QtDcmPreferences::instance()->writeSettings();
     }
 }
-
 
 // /////////////////////////////////////////////////////////////////
 // Type instantiation

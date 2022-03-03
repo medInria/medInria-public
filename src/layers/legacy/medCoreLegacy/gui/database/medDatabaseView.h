@@ -66,7 +66,8 @@ public slots:
     virtual void onExportSelectedItemRequested();
     virtual void onRemoveSelectedItemRequested();
     virtual void onSaveSelectedItemRequested();
-    void onOpeningFailed(const medDataIndex& index);
+    virtual void onRetrieveDataRequested();
+    void onOpeningFailed(const medDataIndex &index);
     void onCreatePatientRequested();
     void onCreateStudyRequested();
     void onEditRequested();
@@ -83,5 +84,3 @@ protected:
 private:
     medDatabaseViewPrivate *d;
 };
-
-

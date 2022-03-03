@@ -135,7 +135,67 @@ void medDatabaseNonPersistentItem::setThumb(const QImage& thumb)
     d->thumb = thumb;
 }
 
-const medDataIndex& medDatabaseNonPersistentItem::index() const
+const QString medDatabaseNonPersistentItem::orientation() const
+{
+    return d->orientation;
+}
+
+void medDatabaseNonPersistentItem::setOrientation(const QString &orientation)
+{
+    d->orientation = orientation;
+}
+
+const QString medDatabaseNonPersistentItem::sequenceName() const
+{
+    return d->sequenceName;
+}
+
+void medDatabaseNonPersistentItem::setSequenceName(const QString &sequenceName)
+{
+    d->sequenceName = sequenceName;
+}
+
+const QString medDatabaseNonPersistentItem::seriesNumber() const
+{
+    return d->seriesNumber;
+}
+
+void medDatabaseNonPersistentItem::setSeriesNumber(const QString &seriesNumber)
+{
+    d->seriesNumber = seriesNumber;
+}
+
+const QString medDatabaseNonPersistentItem::sliceThickness() const
+{
+    return d->sliceThickness;
+}
+
+void medDatabaseNonPersistentItem::setSliceThickness(const QString &sliceThickness)
+{
+    d->sliceThickness = sliceThickness;
+}
+
+const QString medDatabaseNonPersistentItem::rows() const
+{
+    return d->rows;
+}
+
+void medDatabaseNonPersistentItem::setRows(const QString &rows)
+{
+    d->rows = rows;
+}
+
+const QString medDatabaseNonPersistentItem::columns() const
+{
+    return d->columns;
+}
+
+void medDatabaseNonPersistentItem::setColumns(const QString &columns)
+{
+    d->columns = columns;
+}
+
+const medDataIndex &medDatabaseNonPersistentItem::index() const
 {
     return d->index;
 }
@@ -148,6 +208,11 @@ void medDatabaseNonPersistentItem::setIndex(const medDataIndex& index)
 medAbstractData *medDatabaseNonPersistentItem::data(void)
 {
     return d->data;
+}
+
+void medDatabaseNonPersistentItem::setData(medAbstractData *data)
+{
+    d->data = data;
 }
 
 bool medDatabaseNonPersistentItem::Match(medAbstractData *medData)

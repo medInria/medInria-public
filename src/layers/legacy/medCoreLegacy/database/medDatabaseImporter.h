@@ -48,6 +48,8 @@ private:
     int getOrCreatePatient ( const medAbstractData* medData, QSqlDatabase db );
     int getOrCreateStudy ( const medAbstractData* medData, QSqlDatabase db, int patientId );
     int getOrCreateSeries ( const medAbstractData* medData, QSqlDatabase db, int studyId );
+    void setNumberOfFilesInDirectory(int num) override{};
 
     QString getPatientID(QString patientName, QString birthDate) override;
+    void createDBEntryForMetadataAttachedFile(medAbstractData *medData, int seriesDbId) override;
 };
