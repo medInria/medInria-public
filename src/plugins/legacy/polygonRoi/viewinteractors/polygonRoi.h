@@ -23,7 +23,7 @@
 #include <vtkImageView2D.h>
 #include <vtkPolygon.h>
 
-enum class CURSORSTATE { CS_NONE, CS_MOUSE_EVENT, CS_SLICE_CHANGED, CS_CONTINUE, CS_REPULSOR  };
+enum class CURSORSTATE { CS_NONE, CS_DEFAULT, CS_REPULSOR  };
 
 class polygonRoiPrivate;
 /**
@@ -38,8 +38,10 @@ public:
     virtual ~polygonRoi();
 
     vtkContourWidget * getContour();
-    void createPolydataToAddInViews();
     vtkImageView2D * getView();
+
+    void removeObservers();
+    void addObservers();
 
     virtual void Off();
     virtual void On();
@@ -53,7 +55,6 @@ public:
     virtual bool canRedo(){return true;}
     virtual bool canUndo(){return true;}
     
-    void addViewToList(medAbstractImageView *viewToAdd);
     void updateContourOtherView(medAbstractImageView *view, bool state);
     bool isClosed();
     vtkPolyData *createPolyDataFromContour();
@@ -67,23 +68,27 @@ public:
     void manageTick(medSliderL *slider);
 
     QVector<QVector2D> copyContour();
-    bool pasteContour(QVector<QVector2D> nodes);
+    bool pasteContour(QVector<QVector2D> &nodes);
     int getNumberOfNodes();
     void activateContour(bool state);
-    void updateColor(QColor color, bool activate);
+    void updateColor(QColor &color, bool activate);
     QColor getColor();
+    bool isInCurrentSlice();
+    void setCurrentSlice();
+
 public slots:
-    virtual void undo();
-    virtual void redo();
+    virtual void undo(){};
+    virtual void redo(){};
     virtual void saveState(){}
 
 signals:
-    void updateCursorState(CURSORSTATE state);
-    void interpolate();
-    void enableOtherViewsVisibility(bool state);
+    void contourFinished(CURSORSTATE state);
 
 private:
     polygonRoiPrivate *d;
     friend class PolygonRoiObserver;
     virtual void setRightColor();
+
+//    void orientationChanged(vtkImageView2D *view2D);
+
 };

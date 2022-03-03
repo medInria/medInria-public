@@ -53,9 +53,10 @@ list_source_files(${TARGET_NAME}
   data
   readers
   writers
-  repulsor
+  viewinteractors
   toolboxes
   json
+  viewevent
   )
 
 ## #############################################################################
