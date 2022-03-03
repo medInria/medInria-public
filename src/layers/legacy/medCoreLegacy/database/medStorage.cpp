@@ -54,12 +54,12 @@ QString medStorage::dataLocation()
     }
     else
     {
-        // APHP Hack : try to get path for remote db defined in commandline parameter
-        vDbLoc = medSettingsManager::instance()->value("database", "db_prefix_path", "", false).toString();
-        if (!vDbLoc.isEmpty())
-        {
-            return vDbLoc;
-        }
+//        // APHP Hack : try to get path for remote db defined in commandline parameter
+//        vDbLoc = medSettingsManager::instance()->value("database", "db_prefix_path", "").toString();
+//        if (!vDbLoc.isEmpty())
+//        {
+//            return vDbLoc;
+//        }
 
         vDbLoc = medSettingsManager::instance()->value("database", "actual_database_location").toString();
 

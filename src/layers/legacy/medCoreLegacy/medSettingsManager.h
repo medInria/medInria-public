@@ -12,41 +12,37 @@
 
 =========================================================================*/
 
-#include <medCoreLegacyExport.h>
-
 #include <QtCore>
+
+#include <medCoreLegacyExport.h>
 
 class medSettingsManagerPrivate;
 
-class MEDCORELEGACY_EXPORT medSettingsManager : public QObject {
-  Q_OBJECT
+class MEDCORELEGACY_EXPORT medSettingsManager : public QObject
+{
+Q_OBJECT
 
- public:
-  static medSettingsManager *instance();
+public:
+    static medSettingsManager *instance();
 
-  static void destroy();
+    static void destroy();
 
-  void setValue(const QString &section, const QString &key,
-                const QVariant &value, bool permanentValue = true);
+    void setValue( const QString & section, const QString & key, const QVariant & value );
 
-  QVariant value(const QString &section, const QString &key,
-                 const QVariant &defaultValue = QVariant(),
-                 bool permanentValue = true);
+    QVariant value ( const QString & section, const QString & key, const QVariant & defaultValue = QVariant() );
+    QStringList keys ( const QString & section);
 
-  QStringList keys(const QString &section, bool permanentValue = true);
+    void remove (const QString & section, const QString & key);
 
-  void remove(const QString &section, const QString &key,
-              bool permanentValue = true);
+signals:
+    void settingsChanged( const QString & );
 
- signals:
-  void settingsChanged(const QString &);
+protected:
+    medSettingsManager();
+    ~medSettingsManager();
 
- protected:
-  medSettingsManager();
-  ~medSettingsManager();
+private:
+    static medSettingsManager *s_instance;
 
- private:
-  static medSettingsManager *s_instance;
-
-  medSettingsManagerPrivate *d;
+    medSettingsManagerPrivate *d;
 };

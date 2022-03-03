@@ -19,7 +19,6 @@
 #include <medJobManagerL.h>
 #include <medLocalDbController.h>
 #include <medMessageController.h>
-#include <medRemoteDbController.h>
 #include <medPluginManager.h>
 #include <medSettingsManager.h>
 #include <medStorage.h>
@@ -764,17 +763,7 @@ medDataManager::medDataManager() : d_ptr(new medDataManagerPrivate(this))
     d->nonPersDbController = medDatabaseNonPersistentController::instance();
     d->pacsController = medDataPacsController::instance();
     // Setting up database connection
-    bool remoteDb = medSettingsManager::instance()
-                        ->value("database", "remotedb", false, false)
-                        .toBool();
-    if (remoteDb)
-    {
-        d->dbController = medRemoteDbController::instance();
-    }
-    else
-    {
-        d->dbController = medLocalDbController::instance();
-    }
+    d->dbController = medLocalDbController::instance();
 
     if (!d->dbController->createConnection())
     {
