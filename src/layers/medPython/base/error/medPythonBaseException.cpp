@@ -22,7 +22,7 @@ namespace med::python
 
 struct BaseExceptionPrivate
 {
-    QString message;
+    QByteArray message;
 };
 
 PyObject* BaseException::nativeClass()
@@ -50,7 +50,7 @@ BaseException::~BaseException()
 
 const char* BaseException::what() const throw()
 {
-    return qUtf8Printable(d->message);
+    return d->message;
 }
 
 PyObject* BaseException::createNativeException(PyObject* nativeClass, QString message)
@@ -66,7 +66,7 @@ void BaseException::initializeFromNativeException(PyObject* nativeException)
 {
     if (nativeException)
     {
-        d->message = formatExceptionTraceback(nativeException);
+        d->message = formatExceptionTraceback(nativeException).toUtf8();
         Py_CLEAR(nativeException);
     }
     else
