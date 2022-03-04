@@ -61,6 +61,7 @@ add_library(${TARGET_NAME} SHARED
 target_compile_definitions(${TARGET_NAME} PRIVATE
     TARGET_NAME="${TARGET_NAME}"
     PYTHON_PLUGIN_PREFIX="${PYTHON_PLUGIN_PREFIX}"
+    PROJECT_NAME="${PROJECT_NAME}"
     )
 
 ## #############################################################################

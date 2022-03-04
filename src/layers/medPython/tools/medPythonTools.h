@@ -24,7 +24,7 @@ inline const char* CONSOLE_SHORTCUT = "Ctrl+Shift+P";
 inline const int CONSOLE_WIDTH = 800;
 inline const int CONSOLE_HEIGHT = 600;
 
-MEDPYTHONTOOLS_EXPORT void initializeTools();
+MEDPYTHONTOOLS_EXPORT bool initializeTools();
 
 MEDPYTHONTOOLS_EXPORT void startConsole();
 

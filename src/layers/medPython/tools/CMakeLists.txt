@@ -14,7 +14,7 @@
 ################################################################################
 
 set(TARGET_NAME ${PYTHON_PROJECT_NAME}Tools)
-set(PYTHON_PACKAGE_NAME ${TARGET_NAME})
+set(PYTHON_PACKAGE_NAME ${PROJECT_NAME})
 
 ## #############################################################################
 ## List sources

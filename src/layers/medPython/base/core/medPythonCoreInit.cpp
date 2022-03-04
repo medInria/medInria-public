@@ -41,7 +41,7 @@ bool getResourcesDirectory(QString& resourcesDirectory)
     }
     else
     {
-        qWarning() << "Cannot find the resources directory for " << TARGET_NAME;
+        qCritical() << QString("Cannot find the resources directory for %1.").arg(TARGET_NAME);
     }
 
     return success;
@@ -88,7 +88,8 @@ bool getEncodingsParentDirectory(QString& parentDirectory)
 
         if (!success)
         {
-            qWarning() << "Cannot create temporary directory for the encodings package: " << temporaryEncodingsParentDirectory->errorString();
+            qCritical() << QString("Cannot create temporary directory for the Python encodings package: %1")
+                           .arg(temporaryEncodingsParentDirectory->errorString());
         }
     }
 
@@ -118,7 +119,7 @@ bool getEncodingsDirectory(QString& encodingsDirectory)
             }
             else
             {
-                qWarning() << "Cannot create encodings package directory";
+                qCritical() << "Cannot create the Python encodings package directory";
             }
         }
     }
@@ -154,7 +155,8 @@ bool createEncodingsLink(QFileInfo encodingsFile)
 
         if (!success)
         {
-            qWarning() << "Cannot create symbolic link " << filePath << " -> " << linkPath;
+            qCritical() << QString("Cannot create the symbolic link %1 -> %2.")
+                           .arg(filePath, linkPath);
         }
     }
 
@@ -201,7 +203,8 @@ bool checkStatus(PyStatus status)
 
     if (!success)
     {
-        qWarning() << "Error during initialization of Python: " << status.err_msg;
+        qCritical() << QString("Error during initialization of Python: %1")
+                       .arg(status.err_msg);
     }
 
     return success;
@@ -277,7 +280,7 @@ bool initializeInterpreter(QStringList additionalModulePaths)
     }
     else
     {
-        qWarning() << "Initialization of the embedded Python failed";
+        qCritical() << "Initialization of the embedded Python failed";
         finalizeInterpreter();
     }
 
