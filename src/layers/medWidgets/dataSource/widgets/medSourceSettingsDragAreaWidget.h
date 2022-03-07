@@ -9,32 +9,40 @@
  * This software is distributed WITHOUT ANY WARRANTY; without even
  * the implied warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.
  */
-#include <QDragEnterEvent>
-#include <QDropEvent>
+#include <QListWidget>
 #include <QTreeWidget>
 #include <QVBoxLayout>
-#include <QWidget>
 
 #include <medSourcesLoader.h>
+#include <medSourceSettingsWidget.h>
 #include <medWidgetsExport.h>
 
-class MEDWIDGETS_EXPORT medSourceSettingsDragAreaWidget : public QWidget
+class MEDWIDGETS_EXPORT medSourceSettingsDragAreaWidget : public QListWidget
 {
     Q_OBJECT
+    
 public:
-    explicit medSourceSettingsDragAreaWidget(medSourcesLoader * pSourceLoader, QTreeWidget * sourceInformation, QWidget *parent = nullptr);
+    explicit medSourceSettingsDragAreaWidget(medSourcesLoader * pSourceLoader, 
+                                             QTreeWidget * sourceInformation, 
+                                             QWidget *parent = nullptr);
 
     void addNewSourceItem(medAbstractSource * pSource);
-protected:
-    void dragEnterEvent(QDragEnterEvent *event) override;
-    void dragLeaveEvent(QDragLeaveEvent *event) override;
-    void dragMoveEvent(QDragMoveEvent *event) override;
-    void dropEvent(QDropEvent *event) override;
-    void mousePressEvent(QMouseEvent *event) override;
+    void setSelectedVisualisation(medAbstractSource * pSource);
+    void setSourceToDefault(medAbstractSource * pSource);
+    void setConnectionIcon(medAbstractSource * pSource, bool connection);
+    void removeSourceItem(QString sourceName);
+    void switchMinimization(medSourceSettingsWidget* sourceWidget, bool isMinimized);
+
+    void rowMoved(const QModelIndex &parent, 
+                  int start, 
+                  int end, 
+                  const QModelIndex &destination, 
+                  int row);
+
+signals:
+    void sourceItemChosen(medAbstractSource *); // Signal to indicate this source is selected
 
 private:
     medSourcesLoader * _pSourceLoader;
     QTreeWidget * _sourceInformation;
-
-    QVBoxLayout * sourceColumnLayout;
 };

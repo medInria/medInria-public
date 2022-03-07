@@ -10,14 +10,9 @@
  * the implied warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.
  */
 
-#include <QComboBox>
 #include <QObject>
-#include <QPushButton>
-#include <QTextEdit>
-#include <QWidget>
 
 #include <medSourcesLoader.h>
-#include <medSourceSettingsDragAreaWidget.h>
 #include <medWidgetsExport.h>
 
 class medSourcesLoaderPresenterPrivate;
@@ -30,14 +25,6 @@ public:
     ~medSourcesLoaderPresenter();
 
     QWidget * buildWidget();
-
-protected:
-    static void createNewSource(QComboBox * listCombobox,
-                                QStringList sourceTypeList,
-                                medSourcesLoader * sourceLoader, 
-                                medSourceSettingsDragAreaWidget * dragDropAreaWidget);
-
-    void saveSourcesSettings();
 
 private:
     medSourcesLoaderPresenterPrivate *d;

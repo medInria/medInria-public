@@ -10,13 +10,10 @@
  * the implied warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.
  */
 
-#include <QFrame>
-#include <QImage>
 #include <QLabel>
 #include <QMouseEvent>
 #include <QPushButton>
 #include <QTreeWidget>
-#include <QWidget>
 
 #include <medAbstractSource.h>
 #include <medSourcesLoader.h>
@@ -25,9 +22,8 @@
 class MEDWIDGETS_EXPORT medSourceSettingsWidget : public QFrame
 {
     Q_OBJECT
+    
 public:
-
-    enum type {ON, OFF};
 
     medSourceSettingsWidget(medSourcesLoader * pSourceLoader, 
                             medAbstractSource *pSource, 
@@ -35,35 +31,39 @@ public:
                             QWidget *parent = nullptr);
 
     QString getInstanceName();
+    medAbstractSource * getInstanceSource();
 
-    void setIconToConnection();
-    void switchConnection();
-    void switchDefault();
+    void switchConnectionIcon(bool connection);
+    void switchMinimization();
     void setToDefault(bool askedDefault);
     void deleteThisSource(medSourcesLoader * pSourceLoader, medAbstractSource * pSource);
-
-public slots:
-    void setIcon(type askedType);
+    void updateSourceInformation();
+    void setSelectedVisualisation(bool selected);
+    void saveInitialSize(QSize initialSize);
+    QSize getInitialSize();
 
 protected:
     void paintEvent(QPaintEvent *event);
     void mouseReleaseEvent(QMouseEvent *event) override;
 
 signals:
-    void defaultChosen(QString); // Signal to indicate this widget is the default one
-    void deletedWidget();
+    void sourceItemChosen(medAbstractSource *); // Signal to indicate this widget is clicked
+    void deletedWidget(QString);                // Signal to indicate the widget needs to be destroy
+    void minimizationAsked(bool);               // Signal to indicate a [un]minization is done
 
 private:
     medAbstractSource * _pSource;
     medSourcesLoader * _pSourceLoader;
     QTreeWidget * _sourceInformation;
 
+    bool sourceSelected;
     QLabel * titleLabel;
     QLabel * defaultLabel;
-    bool isDefault;
     QImage * onOffIcon;
     QLabel * imageLabel;
-    type currentIcon;
     QPushButton * connectButton;
     QPushButton* removeSourceButton;
+    QPushButton* minimizeSourceButton;
+    QWidget* parametersWidget;
+    QSize sourceWidgetSize;
 };

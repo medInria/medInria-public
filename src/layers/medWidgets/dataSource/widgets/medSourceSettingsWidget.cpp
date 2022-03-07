@@ -11,10 +11,7 @@
 #include "medSourceSettingsWidget.h"
 
 #include <QGroupBox>
-#include <QLabel>
 #include <QPainter>
-#include <QPushButton>
-#include <QTreeWidgetItem>
 #include <QVBoxLayout>
 
 #include <medAbstractParameterPresenter.h>
@@ -35,11 +32,9 @@ medSourceSettingsWidget::medSourceSettingsWidget(medSourcesLoader * pSourceLoade
     // Transparent background for round corners  
     setAttribute(Qt::WA_TranslucentBackground);
 
-    auto * pVLayout = new QVBoxLayout;
-    
     //--- Title area
     auto * titleLayout = new QHBoxLayout;
-    pVLayout->addLayout(titleLayout);
+    widgetLayout->addLayout(titleLayout);
 
     // Add on/off icons
     onOffIcon = new QImage;
@@ -57,15 +52,41 @@ medSourceSettingsWidget::medSourceSettingsWidget(medSourcesLoader * pSourceLoade
     defaultLabel->setStyleSheet("font: italic");
     titleLayout->addWidget(defaultLabel);
 
+    // todo this does not follow medInria style management. Style sheets created here or in medSourceSettingsDragAreaWidget
+    // should be in medInria.qss, in order to allow other themes to change colors or styles.
+    QString buttonStyle = "QPushButton {"
+                          " background-color: none; }"
+                          "QPushButton:hover {"
+                          " background-color: grey; }";
+
+    // Minimize button
+    minimizeSourceButton = new QPushButton("");
+    QIcon minimizeIcon;
+    minimizeIcon.addPixmap(QPixmap(":/icons/minimize_off_white.svg"), QIcon::Normal);
+    minimizeIcon.addPixmap(QPixmap(":/icons/minimize_off_gray.svg"), QIcon::Disabled);
+    minimizeSourceButton->setIcon(minimizeIcon);
+    minimizeSourceButton->setFixedWidth(25);
+    minimizeSourceButton->setToolTip(tr("Show or hide the body of this source item"));
+    minimizeSourceButton->setStyleSheet(buttonStyle);
+    titleLayout->addWidget(minimizeSourceButton);
+
+    // Delete button
     removeSourceButton = new QPushButton("");
     QIcon quitIcon;
-    quitIcon.addPixmap(QPixmap(":/icons/cross_white.svg"), QIcon::Normal);
+    quitIcon.addPixmap(QPixmap(":/icons/close.svg"), QIcon::Normal);
+    quitIcon.addPixmap(QPixmap(":/icons/close_gray.svg"), QIcon::Disabled);
     removeSourceButton->setIcon(quitIcon);
     removeSourceButton->setFixedWidth(12);
-    removeSourceButton->setToolTip(tr("Remove the selected source"));
+    removeSourceButton->setToolTip(tr("Delete this source"));
+    removeSourceButton->setStyleSheet(buttonStyle);
     titleLayout->addWidget(removeSourceButton);
 
     //--- Fill parameters in body
+    auto * parametersLayout = new QVBoxLayout;
+    parametersWidget = new QWidget();
+    parametersWidget->setLayout(parametersLayout);
+    widgetLayout->addWidget(parametersWidget);
+
     auto params = pSource->getAllParameters();
     for (auto * param : params)
     {
@@ -78,34 +99,18 @@ medSourceSettingsWidget::medSourceSettingsWidget(medSourcesLoader * pSourceLoade
             pHLayout->addWidget(pLabel);
         }
         pHLayout->addWidget(pWidget);
-        pVLayout->addLayout(pHLayout);
+        parametersLayout->addLayout(pHLayout);
     }
 
-    //-- Buttons area
-    auto * buttonsLayout = new QHBoxLayout;
-    pVLayout->addLayout(buttonsLayout);
-
-    connectButton = new QPushButton(tr("Connect"));
-    connectButton->setToolTip(tr("Switch ON or OFF the selected source"));
-    buttonsLayout->addWidget(connectButton);
-    setIconToConnection();
-
-    auto * setDefaultButton = new QPushButton(tr("Set as default"));
-    setDefaultButton->setToolTip(tr("Set the selected source as default"));
-    buttonsLayout->addWidget(setDefaultButton);
-    isDefault = false; // todo get status (not coded yet) and deactivate delete if default
-
-    widgetLayout->addLayout(pVLayout);
+    //-- Init parameters
+    switchConnectionIcon(_pSource->isOnline());
+    setToDefault(false); // todo set status (not coded yet) here or in medSourcesSettings
+    sourceSelected = false;
 
     //--- Now that Qt widgets are set: create connections
-    connect(connectButton, &QPushButton::clicked, [=](bool checked)
+    connect(minimizeSourceButton, &QPushButton::clicked, [=](bool checked)
     {
-        switchConnection();
-    });
-
-    connect(setDefaultButton, &QPushButton::clicked, [=](bool checked)
-    {
-        switchDefault();
+        switchMinimization();
     });
 
     connect(removeSourceButton, &QPushButton::clicked, [=](bool checked)
@@ -115,15 +120,67 @@ medSourceSettingsWidget::medSourceSettingsWidget(medSourcesLoader * pSourceLoade
 }
 
 /**
+ * @brief Set the icon of the source status
+ * 
+ * @param connection boolean 
+ */
+void medSourceSettingsWidget::switchConnectionIcon(bool connection)
+{
+    QIcon newIcon;
+    if (connection)
+    {
+        newIcon =  QIcon(":/icons/connect_on.svg");
+    }
+    else
+    {
+        newIcon = QIcon(":/icons/connect_off.svg");
+    }
+
+    QImage newImage = newIcon.pixmap(QSize(15,15)).toImage();
+    onOffIcon->swap(newImage);
+    imageLabel->setPixmap(QPixmap::fromImage(*onOffIcon));
+}
+
+/**
+ * @brief Switch the icon after minimization or un-minimization, and show or hide the parameter widget
+ * 
+ */
+void medSourceSettingsWidget::switchMinimization()
+{
+    QIcon newIcon;
+    if (parametersWidget->isHidden())
+    {
+        parametersWidget->show();
+        newIcon =  QIcon(":/icons/minimize_off_white.svg");
+    }
+    else
+    {
+        parametersWidget->hide();
+        newIcon =  QIcon(":/icons/minimize_on_white.svg");
+    }
+    minimizeSourceButton->setIcon(newIcon);
+
+    emit(minimizationAsked(parametersWidget->isHidden()));
+}
+
+/**
  * @brief Define the graphic behavior when the widget needs to be updated
  * 
  * @param event
  */
 void medSourceSettingsWidget::paintEvent(QPaintEvent *event)
 {
+    Q_UNUSED(event)
+
+    auto backgroundColor = "#3C464D"; // non selected
+    if (sourceSelected)
+    {
+        backgroundColor = "#7B797D"; // selected
+    }
+
     QPainter painter(this);
     painter.setRenderHint(QPainter::Antialiasing); // smooth borders
-    painter.setBrush(QBrush("#3C464D"));           // visible color of background
+    painter.setBrush(QBrush(backgroundColor));     // visible color of background
     painter.setPen(Qt::transparent);               // thin border color
 
     // Change border radius
@@ -131,151 +188,126 @@ void medSourceSettingsWidget::paintEvent(QPaintEvent *event)
     rect.setWidth(rect.width()-1);
     rect.setHeight(rect.height()-1);
     painter.drawRoundedRect(rect, 8, 8);
-
-    QWidget::paintEvent(event);
-}
-
-void medSourceSettingsWidget::setIconToConnection()
-{
-    if (_pSource->isOnline())
-    {
-        setIcon(ON);
-    }
-    else
-    {
-        setIcon(OFF);
-    }
 }
 
 /**
- * @brief 
+ * @brief When the source item is clicked, the information widget is filled with info from this source,
+ * and a signal is emitted to say that this item has been chosen
  * 
- * @param connect 
+ * @param event 
  */
-void medSourceSettingsWidget::switchConnection()
-{
-    // TODO check signal (not coded yet)
-    if (currentIcon == ON)
-    {
-        setIcon(OFF);
-        _pSource->connect(false);
-    }
-    else
-    {
-        setIcon(ON);
-        _pSource->connect(true);
-    }
-}
-
-/**
- * @brief Set the icon of the source status
- * 
- * @param askedType
- */
-void medSourceSettingsWidget::setIcon(type askedType)
-{
-    QIcon newIcon;
-    switch (askedType)
-    {
-        case ON:
-        {
-            newIcon =  QIcon(":/icons/connect_on.svg");
-            currentIcon = ON;
-            connectButton->setText("Disconnect");
-            break;
-        }
-        case OFF:
-        default:
-        {
-            newIcon = QIcon(":/icons/connect_off.svg");
-            currentIcon = OFF;
-            connectButton->setText("Connect");
-            break;
-        }
-    }
-    QImage newImage = newIcon.pixmap(QSize(15,15)).toImage();
-    onOffIcon->swap(newImage);
-    imageLabel->setPixmap(QPixmap::fromImage(*onOffIcon));
-}
-
-void medSourceSettingsWidget::mouseReleaseEvent(QMouseEvent * event) 
+void medSourceSettingsWidget::mouseReleaseEvent(QMouseEvent * event)
 {
     if (event->button() == Qt::LeftButton)
     {
-        // TODO change border around current source item
-        _sourceInformation->clear();
-
-        QTreeWidgetItem *name = new QTreeWidgetItem(_sourceInformation);
-        name->setText(0, "Selected source: ");
-        name->setText(1, _pSource->getInstanceName());
-
-        QTreeWidgetItem *hasCache = new QTreeWidgetItem(_sourceInformation);
-        hasCache->setText(0, "Has cache: ");
-        hasCache->setText(1, QString::number(_pSource->isCached()));
-
-        QTreeWidgetItem *isLocal = new QTreeWidgetItem(_sourceInformation);
-        isLocal->setText(0, "Is local: ");
-        isLocal->setText(1, QString::number(_pSource->isLocal()));
-
-        QTreeWidgetItem *isWritable = new QTreeWidgetItem(_sourceInformation);
-        isWritable->setText(0, "Is writable: ");
-        isWritable->setText(1, QString::number(_pSource->isWritable()));
+        updateSourceInformation();
+        emit(sourceItemChosen(_pSource));
     }
+}
+
+/**
+ * @brief This method fills the information widget with info from this selected source
+ * 
+ */
+void medSourceSettingsWidget::updateSourceInformation()
+{
+    _sourceInformation->clear();
+
+    QTreeWidgetItem *hasCache = new QTreeWidgetItem(_sourceInformation);
+    hasCache->setText(0, "Has cache: ");
+    hasCache->setText(1, QString::number(_pSource->isCached()));
+
+    QTreeWidgetItem *isLocal = new QTreeWidgetItem(_sourceInformation);
+    isLocal->setText(0, "Is local: ");
+    isLocal->setText(1, QString::number(_pSource->isLocal()));
+
+    QTreeWidgetItem *isWritable = new QTreeWidgetItem(_sourceInformation);
+    isWritable->setText(0, "Is writable: ");
+    isWritable->setText(1, QString::number(_pSource->isWritable()));
+}
+
+/**
+ * @brief Change the visualisation of the source item if selected or not
+ * 
+ * @param selected 
+ */
+void medSourceSettingsWidget::setSelectedVisualisation(bool selected)
+{
+    sourceSelected = selected;
+    repaint();
 }
 
 /**
  * @brief Get unique source name associated with this widget
  * 
- * @return QString 
+ * @return QString the source name
  */
-QString medSourceSettingsWidget::getInstanceName() 
+QString medSourceSettingsWidget::getInstanceName()
 {
     return _pSource->getInstanceName();
 }
 
 /**
- * @brief 
+ * @brief Get the abstract source associated with this widget
  * 
+ * @return medAbstractSource* 
  */
-void medSourceSettingsWidget::switchDefault()
+medAbstractSource * medSourceSettingsWidget::getInstanceSource()
 {
-    if (isDefault)
-    {
-        setToDefault(false);
-    }
-    else
-    {
-        setToDefault(true);
-    }
+    return _pSource;
 }
 
 /**
- * @brief 
+ * @brief When this source item is chosen to be default or not, add or remove the "default" label,
+ * and enable or not the delete button (a default source item cannot be deleted)
  * 
  * @param askedDefault 
  */
 void medSourceSettingsWidget::setToDefault(bool askedDefault)
 {
-    isDefault = askedDefault;
+    // TODO apply default status to sources to save the default source 
     if (askedDefault)
     {
         defaultLabel->setText("default");
         removeSourceButton->setEnabled(false);
-        emit(defaultChosen(_pSource->getInstanceName()));
     }
     else
     {
         defaultLabel->setText("");
         removeSourceButton->setEnabled(true);
-        // todo check if the only one left as default -> at least one should be left
     }
 }
 
+/**
+ * @brief Delete the source in the source list, and remove the widget
+ * 
+ * @param pSourceLoader the loader of sources
+ * @param pSource the source associated with this source widget
+ */
 void medSourceSettingsWidget::deleteThisSource(medSourcesLoader * pSourceLoader, medAbstractSource * pSource)
 {
-    // Delete the source in the source list, and remove the item widget
+    emit deletedWidget(pSource->getInstanceName());
+
     QString instanceId = pSource->getInstanceId();
     pSourceLoader->removeCnx(instanceId);
-    QObject::deleteLater();
-    emit deletedWidget();
+}
+
+/**
+ * @brief This method saves the initial size of the widget at the creation, with all parameters shown
+ * 
+ * @param initialSize 
+ */
+void medSourceSettingsWidget::saveInitialSize(QSize initialSize)
+{
+    sourceWidgetSize = initialSize;
+}
+
+/**
+ * @brief This method returns the initial size of the widget at the creation, with all parameters shown
+ * 
+ * @return QSize 
+ */
+QSize medSourceSettingsWidget::getInitialSize()
+{
+    return sourceWidgetSize;
 }

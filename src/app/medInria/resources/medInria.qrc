@@ -168,6 +168,11 @@
 
         <file>icons/connect_on.svg</file>
         <file>icons/connect_off.svg</file>
-        <file>icons/cross_white.svg</file>
+        <file>icons/close.svg</file>
+        <file>icons/close_gray.svg</file>
+        <file>icons/minimize_on_gray.svg</file>
+        <file>icons/minimize_on_white.svg</file>
+        <file>icons/minimize_off_gray.svg</file>
+        <file>icons/minimize_off_white.svg</file>
     </qresource>
 </RCC>
