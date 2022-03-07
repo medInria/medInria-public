@@ -49,12 +49,6 @@ contoursManagementToolBox::contoursManagementToolBox(QWidget *parent):
     minusButton->setMaximumSize(QSize(20,20));
     minusButton->hide();
 
-    targetLabel = new QLabel("Target");
-    targetLabel->hide();
-    targetButton = new SwitchButton(this, SwitchButton::YESNO);
-    targetButton->hide();
-    connect(targetButton, SIGNAL(valueChanged(bool)), this, SLOT(switchTargetState(bool)));
-
     parseJSONFile();
 
     QVBoxLayout *listLabelLayout = new QVBoxLayout();
@@ -68,8 +62,6 @@ contoursManagementToolBox::contoursManagementToolBox(QWidget *parent):
     plusMinusLayout->addWidget(minusButton, Qt::AlignLeft);
     plusMinusLayout->addWidget(plusButton, Qt::AlignLeft);
     plusMinusLayout->addStretch();
-    plusMinusLayout->addWidget(targetLabel);
-    plusMinusLayout->addWidget(targetButton);
     listLabelLayout->addLayout(plusMinusLayout);
 
     disableButtons();
@@ -322,7 +314,7 @@ void contoursManagementToolBox::clickActivationButton(bool state)
     }
     plusButton->setEnabled(state);
     minusButton->setEnabled(state);
-    targetButton->setEnabled(state);
+
     if (state)
     {
         specialities->setCurrentIndex(savedSelectedIndex.first);
@@ -342,7 +334,6 @@ void contoursManagementToolBox::disableButtons()
     }
     plusButton->setDisabled(true);
     minusButton->setDisabled(true);
-    targetButton->setDisabled(true);
 }
 
 void contoursManagementToolBox::showCurrentLabels()
@@ -368,28 +359,6 @@ void contoursManagementToolBox::showWidgetListForIndex(int index)
     widget->show();
     plusButton->show();
     minusButton->show();
-    if(index==1)
-    {
-        if (widget->selectedItems().size()==1)
-        {
-            QListWidgetItem *item = widget->selectedItems().at(0);
-            if (widget->row(item)>3)
-            {
-                targetLabel->show();
-                targetButton->show();
-            }
-            else
-            {
-                targetLabel->hide();
-                targetButton->hide();
-            }
-        }
-    }
-    else
-    {
-        targetLabel->hide();
-        targetButton->hide();
-    }
 }
 
 void contoursManagementToolBox::updateLabelNamesOnContours(QListWidget *widget)
@@ -449,32 +418,10 @@ QListWidget *contoursManagementToolBox::initLabelsList(QStringList names, QList<
         }
         if (widget->selectedItems().size()==0)
         {
-            targetLabel->hide();
-            targetButton->hide();
             QString name = QString();
             QColor color = QColor::Invalid;
             medContourSharedInfo info = medContourSharedInfo(name, color);
             emit sendContourState(info);
-        }
-        else if (widget->selectedItems().size()==1)
-        {
-            QListWidgetItem *item = widget->selectedItems().at(0);
-            if (widget->row(item)>3)
-            {
-                if (targetLabel->isHidden() || targetButton->isHidden())
-                {
-                    targetLabel->show();
-                    targetButton->show();
-                }
-            }
-            else
-            {
-                if (targetLabel->isVisible() || targetButton->isVisible())
-                {
-                    targetLabel->hide();
-                    targetButton->hide();
-                }
-            }
         }
     }, Qt::UniqueConnection);
 
@@ -636,47 +583,23 @@ void contoursManagementToolBox::addLabel()
     if (specialities->currentText()==urologySpeciality
             && specialities->currentIndex()==1)
     {
-        if (targetButton->value())
+        QColor color = findAvailableColor(widget, targetColors);
+        int count = 1;
+        for (int row=0; row<widget->count(); row++)
         {
-            QColor color = findAvailableColor(widget, targetColors);
-            int count = 1;
-            for (int row=0; row<widget->count(); row++)
+            if (widget->item(row)->text().startsWith("Target"))
             {
-                if (widget->item(row)->text().startsWith("Target"))
-                {
-                    count++;
-                }
+                count++;
             }
-            QString name = QString("Target %1").arg(count);
-            if (color == QColor::Invalid)
-            {
-                displayMessageError(QString("Unable to create %1 : No Color available").arg(name));
-                return;
-            }
-            item = createWidgetItem(name,
-                                    color, true, true);
         }
-        else
+        QString name = QString("Target %1").arg(count);
+        if (color == QColor::Invalid)
         {
-            QColor color = findAvailableColor(widget, mainColors);
-            int count = 0;
-            for (int row=0; row<widget->count(); row++)
-            {
-                if (!widget->item(row)->text().contains("Target"))
-                {
-                    count++;
-                }
-            }
-            QString name = QString("Label %1").arg(count);
-            if (color == QColor::Invalid)
-            {
-                displayMessageError(QString("Unable to create %1 : No Color available.").arg(name));
-                return;
-            }
-            item = createWidgetItem(name,
-                                    color, false, true);
-            item->setFlags(item->flags() | Qt::ItemIsEditable);
+            displayMessageError(QString("Unable to create %1 : No Color available").arg(name));
+            return;
         }
+        item = createWidgetItem(name,
+                                color, true, true);
     }
     else
     {

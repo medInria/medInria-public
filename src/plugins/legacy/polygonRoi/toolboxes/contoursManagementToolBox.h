@@ -13,7 +13,6 @@
 #pragma once
 
 // medInria
-#include <SwitchButton.h>
 #include <medToolBox.h>
 #include <polygonEventFilter.h>
 
@@ -70,8 +69,6 @@ private:
     QList<QListWidget*> labels;
     QPushButton *plusButton;
     QPushButton *minusButton;
-    SwitchButton* targetButton;
-    QLabel *targetLabel;
 
     dtkSmartPointer<medAbstractData> contourOutput;
 
