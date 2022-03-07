@@ -34,11 +34,13 @@ public:
     QWidget *sourceSelectorWidget();
     QString tabName();
 
-    QList<medToolBox*> getToolBoxes();
+    QList<medToolBox *> getToolBoxes();
 
 public slots:
     void onSaveLocalSettings();
     void onImportFinished(QString directory);
+    void onFetchFinished(QHash<QString, QHash<QString, QVariant> > pData,
+                         QHash<QString, QHash<QString, QVariant> > sData);
 
 private:
     qtdcmDataSourcePrivate *d;

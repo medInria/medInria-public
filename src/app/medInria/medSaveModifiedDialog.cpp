@@ -139,7 +139,7 @@ void medSaveModifiedDialog::saveAndQuit()
     medDataManager * mdm = medDataManager::instance();
     for(medDataIndex index : list)
     {
-        mdm->makePersistent(mdm->retrieveData(index));
+        mdm->makePersistent(index);
     }
 
     if (d->counter != 0)

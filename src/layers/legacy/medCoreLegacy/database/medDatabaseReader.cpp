@@ -14,12 +14,14 @@
 #include <dtkCoreSupport/dtkAbstractDataReader.h>
 
 #include <QtSql/QSqlError>
+#include <QtSql/QSqlQuery>
 
 #include <medAbstractData.h>
 #include <medAbstractDataFactory.h>
 #include <medAbstractImageData.h>
-#include <medDatabaseController.h>
 #include <medDatabaseReader.h>
+#include <medDataIndex.h>
+#include <medDataManager.h>
 #include <medMetaDataKeys.h>
 #include <medStorage.h>
 
@@ -61,7 +63,7 @@ medAbstractData* medDatabaseReader::run()
     QVariant   studyDbId = d->index.studyId();
     QVariant  seriesDbId = d->index.seriesId();
 
-    QSqlQuery query(medDatabaseController::instance()->database());
+    QSqlQuery query(medDataManager::instance()->controller()->database());
 
     QString patientName, birthdate, gender, patientId;
     QString studyName, studyUid, studyId;
