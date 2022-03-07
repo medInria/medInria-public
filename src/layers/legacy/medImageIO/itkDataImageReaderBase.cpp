@@ -219,6 +219,34 @@ bool itkDataImageReaderBase::readInformation (const QString& path)
         return false;
     }
 
+    // [HACK] : Some data have informations in their header but itk was not able to read them at this stage.
+    // the itk::readImageInformation method read only default tag defined by itk
+    // In case data was produced in MUSIC for instance, a lot of tags are added (for identification purpose)
+    // A not exhaustive list of added tags :
+    // ContainsBasicInfo Description FilePaths ITK_InputFilterName PatientID PatientName SOPInstanceUID
+    // SeriesDescription SeriesDicomID SeriesID SeriesInstanceUID SeriesThumbnail Size StudyDescription StudyID
+    // We decide to read all available tags here  if possible
+    itk::MetaDataDictionary& metaDataDictionary = this->io->GetMetaDataDictionary();
+    std::vector<std::string> keys = metaDataDictionary.GetKeys();
+
+    for (unsigned int i = 0; i < keys.size(); i++)
+    {
+        std::string key = keys[i];
+        std::string value;
+        itk::ExposeMetaData(metaDataDictionary, key, value);
+
+        QString metaDataKey = convertItkKeyToMedKey(key);
+        if (!metaDataKey.isEmpty())
+        {
+            medData->setMetaData(metaDataKey, QString(value.c_str()));
+        }
+        else
+        {
+            qDebug() << metaObject()->className() << ":: found unknown key:" << QString::fromStdString(key);
+        }
+    }
+    // [END OF HACK]
+
     if (medData)
     {
         this->setData(medData);
