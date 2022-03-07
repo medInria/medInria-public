@@ -12,11 +12,11 @@ PURPOSE.
 
 =========================================================================*/
 
-#include "medTagRoiManager.h"
+#include "polygonLabel.h"
 
 #include <medAbstractView.h>
 
-#include <polygonRoi.h>
+#include <viewinteractors/polygonRoi.h>
 #include <polygonRoiPluginExport.h>
 
 #include <vtkCircleActor2D.h>
@@ -37,9 +37,8 @@ public:
     virtual void OnMouseMove();
     virtual void OnLeftButtonDown();
     virtual void OnLeftButtonUp();
-    void SetCurrentView(medAbstractView *view);
-    void SetManager(medTagRoiManager *closestManagerInSlice);
-    medTagRoiManager *GetManager(){ return manager;}
+    void SetManager(polygonLabel *closestManagerInSlice);
+    polygonLabel *GetManager(){ return manager;}
     bool IsInRepulsorDisk(double *pt);
     vtkGetObjectMacro(RepulsorActor,vtkCircleActor2D)
     vtkGetObjectMacro(RepulsorProperty,vtkProperty2D)
@@ -55,11 +54,10 @@ protected:
     int Position[2];
     int On;
     int Radius;
-    medAbstractView *CurrentView;
     vtkCircleActor2D *RepulsorActor;
     vtkProperty2D *RepulsorProperty;
     QList<polygonRoi*> ListPolygonsToSave;
-    medTagRoiManager* manager;
+    polygonLabel* manager;
 
 private:
     vtkInriaInteractorStylePolygonRepulsor(const vtkInriaInteractorStylePolygonRepulsor&);  // Not implemented

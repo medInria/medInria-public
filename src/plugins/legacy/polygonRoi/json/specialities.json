@@ -1,14 +1,6 @@
 {
     "specialities": [
-        {
-            "name": "default",
-            "desc": [
-            	{
-            		"name" : "Label 0"
-            	}
-            ]
-		},
-        {
+		{
             "name": "urology",
             "desc": [
 	            {
