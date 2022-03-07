@@ -187,6 +187,12 @@ void medSourceSettingsDragAreaWidget::removeSourceItem(QString sourceName)
     }
 }
 
+/**
+ * @brief This method resizes the QListWidget item as soon as the medSourceSettingsWidget is resized
+ * 
+ * @param sourceWidget 
+ * @param isMinimized 
+ */
 void medSourceSettingsDragAreaWidget::switchMinimization(medSourceSettingsWidget* sourceWidget, bool isMinimized)
 {
     for (int i = 0; i < this->count(); ++i)
@@ -212,6 +218,15 @@ void medSourceSettingsDragAreaWidget::switchMinimization(medSourceSettingsWidget
     }
 }
 
+/**
+ * @brief This methods is called at the end of a drag&drop of an item in the list
+ * 
+ * @param parent 
+ * @param start 
+ * @param end 
+ * @param destination 
+ * @param row 
+ */
 void medSourceSettingsDragAreaWidget::rowMoved(const QModelIndex &parent, 
                                                int start, 
                                                int end, 
