@@ -77,6 +77,7 @@ class Console(qt.QWidget):
         self.outputWidget = qt.QLabel()
         self.outputWidget.setAlignment(qt.AlignLeft | qt.AlignBottom)
         self.outputWidget.setWordWrap(True)
+        self.outputWidget.setTextFormat(qt.PlainText)
         self.scrollArea = qt.QScrollArea()
         self.scrollArea.setWidget(self.outputWidget)
         self.scrollArea.setWidgetResizable(True)
@@ -129,7 +130,7 @@ class Console(qt.QWidget):
     def printWelcomeText(self):
         print(f"Python {sys.version} on {sys.platform}")
         print(logo)
-        print('Type "help", "copyright", "credits" or "license" for more information.\n\n')
+        print('Type "help", "copyright", "credits" or "license" for more information on the embedded Python.\n\n')
   
     def resetInputBuffer(self):
         self.inputBuffer = []
