@@ -309,7 +309,7 @@ void medHomepageArea::resizeEvent ( QResizeEvent * event )
     //Recompute the widgets position when the window is resized
     d->navigationWidget->setProperty ( "pos", QPoint ( 20 ,  this->height() / 4 ) );
 
-    d->userWidget->setProperty ( "pos", QPoint ( this->width() - 450,  this->height() - 50 ) );
+    d->userWidget->setProperty ( "pos", QPoint ( this->width() / 2,  this->height() - 50 ) );
 
     d->stackedWidget->setProperty ( "pos", QPoint ( this->width() / 2 ,  this->height() / 5 ) );
 

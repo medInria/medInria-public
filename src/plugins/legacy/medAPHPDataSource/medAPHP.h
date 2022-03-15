@@ -16,19 +16,21 @@
 #include <sphereDicomWeb/medAbstractAnnotation.h>
 
 #include <medAbstractSource.h>
-#include <medIntParameter.h>
-#include <medStringParameter.h>
 #include <PluginAPHP/QtDcmInterface.h>
 
 #include <atomic>
 
+class medStringParameter;
+class medIntParameter;
+struct medAPHPParametersPrivate;
+
 class medAPHP: public medAbstractSource
 {
-
+Q_OBJECT
 public:
     explicit medAPHP(QtDcmInterface *dicomLib, medAbstractAnnotation *annotationAPI);
 
-    ~medAPHP() override = default;
+    ~medAPHP();
 
     /* ***********************************************************************/
     /* *************** Init/set/ctrl source properties ***********************/
@@ -96,56 +98,23 @@ public:
 
 public slots:
     void abort(int pi_iRequest) override;
-//    void replyFinished(QNetworkReply *reply);
+    void onSettingsSaved();
 
 private:
     int getQtDcmAsyncData(unsigned int pi_uiLevel, const QString &key);
+    int getAnnotationAsyncData(const QString &key);
 
 private:
-    QString m_instanceId;
-    QString m_instanceName;
-    QStringList m_LevelNames;
+    medAPHPParametersPrivate* d;
 
-    bool m_isOnline;
-
-    QtDcmInterface *m_DicomLib;
-    medAbstractAnnotation *m_AnnotationAPI;
-
-    QMap<QString, int> pendingRequestId;
     static std::atomic<int> s_RequestId;
+    static medStringParameter s_Aetitle;
+    static medStringParameter s_Hostname;
+    static medIntParameter s_Port;
 
     // TODO : remove TimeOut & QTime it is a HACK
     int timeout;
     QTimer timer;
-    /* ***********************************************************************/
-    /* ***************************** PACS Settings ***************************/
-    /* ***********************************************************************/
-
-    /* ***************************** Local ***********************************/
-    /* ***********************************************************************/
-    medStringParameter *m_Aetitle;
-    medStringParameter *m_Hostname;
-    medIntParameter *m_Port;
-    /* ***********************************************************************/
-    /* ***************************** Server **********************************/
-    /* ***********************************************************************/
-    medStringParameter *m_ServerAet;
-    medStringParameter *m_ServerHostname;
-    medIntParameter *m_ServerPort;
-    // TODO ? : create medStringParameter *m_ServerName ? it is used to identify server with usual name (no needed for connection, just for convenience...)
-
-    /* ***********************************************************************/
-    /* ********************** Annotation REST API Settings *******************/
-    /* ***********************************************************************/
-    medStringParameter *m_AnnotationUrl;
-
-    /* ***********************************************************************/
-    /* ************************* Filtering Parameters ************************/
-    /* ***********************************************************************/
-    medStringParameter *m_PatientName;
-    medStringParameter *m_PatientId;
-
-
 
 };
 
