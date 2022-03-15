@@ -34,6 +34,11 @@
 #include <vtkPolyLine.h>
 #include <vtkPointData.h>
 
+//To remove
+#include <medAbstractWritingPolicy.h>
+#include <medAbstractSource.h>
+
+
 class medLabelPolygonsPrivate
 {
 public:
@@ -49,6 +54,7 @@ public:
     baseViewEvent *eventCursor;
     medLabelProperty property;
     bool enableInterpolation;
+    medAbstractWritingPolicy *writePolicy;
 };
 
 medLabelPolygonsPrivate::medLabelPolygonsPrivate(medAbstractImageView *view, baseViewEvent *eventCursor,
@@ -61,6 +67,7 @@ medLabelPolygonsPrivate::medLabelPolygonsPrivate(medAbstractImageView *view, bas
 
     this->orientation = view2d->GetViewOrientation();
     this->sliceOrientation = view2d->GetSliceOrientation();
+    this->writePolicy = nullptr;
 }
 
 void medLabelPolygonsPrivate::clearRois()
@@ -677,6 +684,69 @@ void polygonLabel::changeContoursColor(QColor color)
     {
         roi->updateColor(color, d->property.selected);
     }
+}
+
+/*!
+*  To move to medAbstractProcess medInria 4
+*/
+#include <medDataModel.h>
+bool polygonLabel::writeResults(medAbstractData * pi_pData, QString const & pi_baseName, QStringList pi_relativeDirDst, QString pi_prefix, QString pi_suffix, QMap<QString, QString> pi_metaData, QString pi_sourceIdDst)
+{
+    bool bRes = true;
+
+    QStringList baseDataUri;
+    medAbstractSource * pSource = nullptr;
+
+    if (pi_sourceIdDst.isEmpty())
+    {
+        pSource = medDataModel::instance()->getDefaultWorkingSource();
+        pi_sourceIdDst = pSource->getInstanceId();
+    }
+    else
+    {
+        pSource = medSourcesLoader::instance()->getSource(pi_sourceIdDst);
+    }
+
+    if (pSource)
+    {
+        medAbstractWritingPolicy * pWp = getWPolicy(pSource);
+        QStringList relPathDst = pWp->computeRelativePathDst(pi_baseName, pi_relativeDirDst, pi_prefix, pi_suffix, pi_metaData);
+        auto baseData = pi_pData->parentData();
+        if (!baseData.isEmpty())
+        {
+            //TODO baseDataUri = baseData[0]->dataIndex().humanReadableUriAsList();
+            if (baseDataUri.size()>1)
+            {
+                baseDataUri.pop_back();
+                baseDataUri[0] = pi_sourceIdDst;
+            }
+        }
+
+        QStringList dstUri = pWp->computeHumanUri(relPathDst, baseDataUri, pi_metaData);
+
+        pWp->checkUri(dstUri, &dstUri);
+
+        //TODO bRes = medDataModel::instance()->write(pi_pData, dstUri);
+    }
+
+    return bRes;
+}
+
+medAbstractWritingPolicy * polygonLabel::getWPolicy(medAbstractSource * pi_pSourceDst)
+{
+    medAbstractWritingPolicy* writePolicyRes = nullptr;
+
+    if (pi_pSourceDst)
+    {
+        writePolicyRes = d->writePolicy;
+
+        if (writePolicyRes == nullptr)
+        {
+            writePolicyRes = medDataModel::instance()->getWPolicy(pi_pSourceDst);
+        }
+    }
+
+    return writePolicyRes;
 }
 
 QColor polygonLabel::switchColor()

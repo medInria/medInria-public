@@ -35,6 +35,8 @@
 #include <medSourceItemModelPresenter.h>
 #include <medSourceModelPresenter.h>
 
+#include <medCollapsableWidget.h>
+
 void forceShow(medMainWindow &mainwindow)
 {
     // Idea and code taken from the OpenCOR project, Thanks Allan for the code!
@@ -220,6 +222,19 @@ int main(int argc, char *argv[])
             splash.showMessage("Loading plugins...");
         }
 
+        //auto testWindow = new QMainWindow();
+        //auto w = new medSpoilerWidget();
+        //QHBoxLayout * lay1 = new QHBoxLayout();
+        //QVBoxLayout * lay2 = new QVBoxLayout();
+        //lay2->addWidget(new QPushButton("TATA BUTTON"));
+        //lay2->addWidget(new QPushButton("TOTO BUTTON"));
+        //w->setContentLayout(*lay2);
+        //testWindow->setCentralWidget(w);
+        //testWindow->show();
+        //
+        //
+        //const int status1 = application.exec();
+        //return status1;
 
         auto model = medDataModel::instance(&application);
         medSourcesLoader::instance(&application);

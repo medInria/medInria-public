@@ -62,13 +62,6 @@ QVariantMap medGroupParameter::toVariantMap() const
     varMapRes.insert("id", id());
     varMapRes.insert("caption", caption());
     varMapRes.insert("description", description());
-    
-    /*int i = 1;
-    for (auto * param : d->parameterList)
-    {
-        varMapRes.insert("value_" + i, param->toVariantMap());
-        i++;
-    }*/
 
     QVariantList variantLst;
     for (auto * param : d->parameterList)
@@ -123,34 +116,6 @@ bool medGroupParameter::fromVariantMap(QVariantMap const & pi_variantMap)
             }
         }
     }
-
-
-
-
-    //QString value("value_");
-    //for (int i = 1; (i < pi_variantMap.size()) && bRes; ++i)
-    //{
-    //    if (pi_variantMap.contains(value + i))
-    //    {
-    //        auto paramAsMap = pi_variantMap[value + i].toMap();
-    //        if (paramAsMap.contains("id"))
-    //        {
-    //            if (idToPramMap.contains(paramAsMap["id"].toString()))
-    //            {
-    //                bRes = idToPramMap[paramAsMap["id"].toString()]->fromVariantMap(paramAsMap);
-    //            }
-    //            else
-    //            {
-    //                //todo
-    //            }
-    //        }
-    //    }
-    //    else
-    //    {
-    //        //todo
-    //    }
-    //}
-
 
     return bRes;
 }

@@ -254,6 +254,12 @@ unsigned int medSQlite<T>::getLevelCount()
 }
 
 template <typename T>
+unsigned int medSQlite<T>::getLevelDesiredWritable()
+{
+    return 2;
+}
+
+template <typename T>
 QStringList medSQlite<T>::getLevelNames()
 {
     return m_LevelNames;
@@ -268,6 +274,12 @@ QString medSQlite<T>::getLevelName(unsigned int pi_uiLevel)
         retVal = m_LevelNames.value((int)pi_uiLevel);
     }
     return retVal;
+}
+
+template <typename T>
+bool  medSQlite<T>::isLevelWritable(unsigned int pi_uiLevel)
+{
+    return pi_uiLevel == 2;
 }
 
 template <typename T>

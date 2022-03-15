@@ -49,6 +49,7 @@ public:
     inline medDataModelItem *child(int row) const { return childItems.value(row); };
     inline void append(medDataModelItem *child) {childItems.append(child);}
     inline void insert(int position, medDataModelItem *child) { childItems.insert(position, child); }
+    QString iid(QString displayValue);
 
 
 

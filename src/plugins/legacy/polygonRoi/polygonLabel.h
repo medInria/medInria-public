@@ -22,6 +22,9 @@ class medLabelPolygonsPrivate;
 class baseViewEvent;
 class medLabelProperty;
 
+class medAbstractWritingPolicy;
+class medAbstractSource;
+
 typedef itk::Image<unsigned char, 3> UChar3ImageType;
 
 class POLYGONROIPLUGIN_EXPORT polygonLabel : public QObject
@@ -80,6 +83,19 @@ public:
     medLabelProperty & getState();
     void updateContourProperty(QString &name, QColor &color, bool isSelected, bool hasScore, bool checkState);
     void changeContoursColor(QColor color);
+
+
+    /*!
+     *  To move to medAbstractProcess medInria 4
+     */
+    bool writeResults(medAbstractData *pi_pData, QString const & pi_baseName, QStringList pi_relativeDirDst, QString pi_prefix, QString pi_suffix, QMap<QString, QString> pi_metaData, QString pi_sourceId = "");
+     
+     
+    medAbstractWritingPolicy* getWPolicy(medAbstractSource *pi_pSourceDst);
+
+    /*!
+     *  To move to medAbstractProcess medInria 4
+     */
 
 public slots:
     void interpolateIfNeeded();

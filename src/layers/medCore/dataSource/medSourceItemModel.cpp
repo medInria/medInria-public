@@ -606,6 +606,31 @@ QString medSourceItemModel::toHumanReadableUri(QModelIndex const & index)
     return HRUriRes;
 }
 
+QStringList medSourceItemModel::fromHumanReadableUri(QStringList humanUri)
+{
+    QStringList uriRes;
+    
+
+    medDataModelItem *itemTmp = d->root;
+
+    uriRes.push_back(d->sourceInstanceId);
+    for (int i = 0; i < humanUri.size() && itemTmp; ++i)
+    {
+        QString keyTmp = itemTmp->iid(humanUri[i]);
+        if (!keyTmp.isEmpty())
+        {
+            uriRes.push_back(keyTmp);
+            itemTmp = itemTmp->child(itemTmp->childIndex(keyTmp));
+        }
+        else
+        {
+            itemTmp = nullptr;
+        }
+    }
+
+    return uriRes;
+}
+
 bool medSourceItemModel::setAdditionnalMetaData2(QModelIndex const & index, datasetAttributes4 const & attributes)
 {
     bool bRes = false;

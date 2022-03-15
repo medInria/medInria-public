@@ -67,9 +67,13 @@ public:
 
     unsigned int getLevelCount() override;
 
+    unsigned int getLevelDesiredWritable() override;
+
     QStringList getLevelNames() override;
 
     QString getLevelName(unsigned int pi_uiLevel) override;
+
+    bool isLevelWritable(unsigned int pi_uiLevel) override;
 
     QStringList getMandatoryAttributesKeys(unsigned int pi_uiLevel) override;
 

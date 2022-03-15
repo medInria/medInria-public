@@ -21,6 +21,8 @@
 
 #include <medCoreExport.h>
 
+class medAbstractWritingPolicy;
+
 class MEDCORE_EXPORT medAbstractSource : public QObject
 {
     Q_OBJECT
@@ -104,8 +106,11 @@ public:
     virtual QString          getInstanceId()   = 0;
                              
     virtual unsigned int     getLevelCount() = 0;
+    virtual unsigned int     getLevelDesiredWritable() = 0;
     virtual QStringList      getLevelNames() = 0;
     virtual QString          getLevelName(unsigned int pi_uiLevel) = 0;
+
+    virtual bool             isLevelWritable(unsigned int pi_uiLevel) = 0;
 
     //virtual void             getMinimalKeys(unsigned int pi_uiLevel, QString &key, QString &name, QString &description) = 0;
     //virtual levelMinimalKeys getMinimalKeys(unsigned int pi_uiLevel) = 0;
@@ -125,7 +130,7 @@ public:
     /* *************** Get data          *************************************/
     /* ***********************************************************************/
     virtual QVariant getDirectData(unsigned int pi_uiLevel, QString key) = 0; //id ou uid en int ou en QString si  int alors l'implémentation doit avoir une méthode bijective
-    virtual int     getAssyncData(unsigned int pi_uiLevel, QString key) = 0; //id ou uid en int ou en QString si  int alors l'implémentation doit avoir une méthode bijective. Retourne un id de request
+    virtual int      getAssyncData(unsigned int pi_uiLevel, QString key) = 0; //id ou uid en int ou en QString si  int alors l'implémentation doit avoir une méthode bijective. Retourne un id de request
     
     /* ***********************************************************************/
     /* *************** Store data          ***********************************/
@@ -135,7 +140,12 @@ public:
     //TODO: alter metaData
     //TODO: store complementaries data like thumbnail
     
-    
+
+    /* ***********************************************************************/
+    /* *************** Optional functions  ***********************************/
+    /* ***********************************************************************/
+    inline virtual medAbstractWritingPolicy* getWritingPolicy() { return nullptr; }
+
 signals:
     void progress(int po_iRequest, eRequestStatus status);
     void connectionStatus(bool);

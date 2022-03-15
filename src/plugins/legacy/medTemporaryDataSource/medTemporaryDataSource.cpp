@@ -111,6 +111,11 @@ unsigned int medTemporaryDataSource::getLevelCount()
     return 3;
 }
 
+unsigned int medTemporaryDataSource::getLevelDesiredWritable()
+{
+    return 0;
+}
+
 QStringList medTemporaryDataSource::getLevelNames()
 {
     return {"Patient", "Study", "Series"};
@@ -119,6 +124,11 @@ QStringList medTemporaryDataSource::getLevelNames()
 QString medTemporaryDataSource::getLevelName(unsigned int pi_uiLevel)
 {
     return "TemporaryData";
+}
+
+bool medTemporaryDataSource::isLevelWritable(unsigned int pi_uiLevel)
+{
+    return true;
 }
 
 QStringList medTemporaryDataSource::getMandatoryAttributesKeys(unsigned int pi_uiLevel)

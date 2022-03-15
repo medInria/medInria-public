@@ -170,6 +170,23 @@ void medDataModelItem::setMetaData(QMap<QString, QVariant> const & attributes, Q
 #endif
 }
 
+QString medDataModelItem::iid(QString displayValue)
+{
+    QString iidRes;
+
+    int i = 0;
+    while (iidRes.isEmpty() && i < childItems.size())
+    {
+        if (displayValue == childItems[i]->data(1).toString())
+        {
+            iidRes = childItems[i]->iid();
+        }
+        i++;
+    }
+
+    return iidRes;
+}
+
 QVariant medDataModelItem::data(int column, int role) const
 {
     QVariant varRes;

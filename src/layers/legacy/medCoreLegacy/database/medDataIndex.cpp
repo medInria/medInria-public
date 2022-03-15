@@ -247,12 +247,24 @@ medDataIndex medDataIndex::makeSeriesIndex( int sourceId, int patientId, int stu
 
 bool operator==(const medDataIndex& index1, const medDataIndex& index2)
 {
-    return ( (index1.dataSourceId() == index2.dataSourceId()) && 
-        (index1.patientId() == index2.patientId()) && 
-        (index1.studyId() == index2.studyId()) && 
-        (index1.seriesId() == index2.seriesId()))
-        ||
-        (!index1.m_uriAsList.isEmpty() && (index1.m_uriAsList == index2.m_uriAsList));
+    bool bRes = false;
+    
+    if (!(index1.isV2() ^ index2.isV2()))
+    {
+        if (!index1.isV2())
+        {
+            bRes = (index1.dataSourceId() == index2.dataSourceId()) &&
+                (index1.patientId() == index2.patientId()) &&
+                (index1.studyId() == index2.studyId()) &&
+                (index1.seriesId() == index2.seriesId());
+        }
+        else
+        {
+            bRes = !index1.m_uriAsList.isEmpty() && (index1.m_uriAsList == index2.m_uriAsList);
+        }
+    }
+
+    return bRes;
 }
 
 bool operator!=(const medDataIndex& index1, const medDataIndex& index2)
