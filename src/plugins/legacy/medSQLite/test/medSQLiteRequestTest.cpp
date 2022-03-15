@@ -366,7 +366,7 @@ TEST(requestDBTest, get_direct_data_level_series_invalid_key_failed)
         }
         QString key = "invalid_key";
         QString path;
-        EXPECT_EQ(dir.path(), t.getDirectData(2, key));
+        EXPECT_EQ(QVariant(), t.getDirectData(2, key));
         t.connect(false);
         dir.remove();
     }

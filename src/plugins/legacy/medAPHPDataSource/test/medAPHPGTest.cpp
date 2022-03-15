@@ -19,8 +19,12 @@ public:
     MOCK_METHOD(entries, findPatientMinimalEntries, () );
     MOCK_METHOD(entries, findStudyMinimalEntries, (const QString &) );
     MOCK_METHOD(entries, findSeriesMinimalEntries, (const QString &) );
-    MOCK_METHOD(int, moveRequest, (const QString &, const QString &));
+//    MOCK_METHOD(int, moveRequest, (const QString &, const QString &));
     MOCK_METHOD(void, stopMove, (int requestId));
+    MOCK_METHOD(bool, moveRequest, (int, const QString &, const QString &));
+    MOCK_METHOD(bool, isCachedDataPath, (int));
+    MOCK_METHOD(void, updateLocalParameters, (QString const &, QString const &, int));
+    MOCK_METHOD(void, updateRemoteParameters, (QString const &, QString const &, int));
 };
 
 class FakeAnnotation : public medAbstractAnnotation
@@ -29,8 +33,11 @@ public:
     MOCK_METHOD(int, isServerAvailable, ());
     using entries = QList<QMap<QString, QString>> ;
     MOCK_METHOD(entries, findAnnotationMinimalEntries, (const QString &));
-    MOCK_METHOD(int, getAnnotationData, (const QString &));
-
+    MOCK_METHOD(bool, getAnnotationData, (int, const QString &));
+    MOCK_METHOD(bool, isCachedDataPath, (int));
+    MOCK_METHOD(QString, addData, (QVariant, QString, QString&));
+    MOCK_METHOD(void, abortDownload, (int));
+    MOCK_METHOD(void, updateUrl, (QString const &));
 };
 
 class medAPHPGTest : public ::testing::Test
@@ -48,12 +55,14 @@ protected:
 
     void SetUp() override
     {
+        //fakeQtDCM = new FakeQtDcmAPHP();
+        //fakeAnnotation = new FakeAnnotation();
         m_ = new medAPHP(&fakeQtDCM, &fakeAnnotation);
     }
 
     void TearDown() override
     {
-        delete m_;
+//        delete m_;
     }
 };
 
@@ -175,14 +184,14 @@ TEST_F(medAPHPGTest, level_count_success)
 TEST_F(medAPHPGTest, test_levelnames_success)
 {
     QStringList names;
-    names << "PATIENT" << "STUDY" << "SERIES" << "ANNOTATION";
+    names << "PATIENTS" << "STUDY" << "SERIES" << "ANNOTATION";
     EXPECT_EQ(names, m_->getLevelNames());
 }
 
 TEST_F(medAPHPGTest, test_levelname_1st_level_success)
 {
     int level = 0;
-    EXPECT_EQ("PATIENT", m_->getLevelName(level));
+    EXPECT_EQ("PATIENTS", m_->getLevelName(level));
 }
 
 TEST_F(medAPHPGTest, test_levelname_2nd_level_success)
@@ -219,7 +228,7 @@ TEST_F(medAPHPGTest, test_mandatory_attr_keys_1st_level_success)
 {
     int level = 0;
     QStringList mandatory_keys;
-    mandatory_keys << "id" << "patientName"<< "patientID";
+    mandatory_keys << "id" << "description" << "patientID";
     EXPECT_EQ(mandatory_keys, m_->getMandatoryAttributesKeys(level));
 }
 
@@ -239,6 +248,14 @@ TEST_F(medAPHPGTest, test_mandatory_attr_keys_3rd_level_success)
     EXPECT_EQ(mandatory_keys, m_->getMandatoryAttributesKeys(level));
 }
 
+TEST_F(medAPHPGTest, test_mandatory_attr_keys_4rd_level_success)
+{
+    int level = 3;
+    QStringList mandatory_keys;
+    mandatory_keys << "id" << "description" << "uid";
+    EXPECT_EQ(mandatory_keys, m_->getMandatoryAttributesKeys(level));
+}
+
 TEST_F(medAPHPGTest, test_mandatory_attr_keys_negative_level_failed)
 {
     int level = -1;
@@ -247,7 +264,7 @@ TEST_F(medAPHPGTest, test_mandatory_attr_keys_negative_level_failed)
 
 TEST_F(medAPHPGTest, test_mandatory_attr_keys_invalid_level_failed)
 {
-    int level = 3;
+    int level = 4;
     EXPECT_EQ(QStringList(), m_->getMandatoryAttributesKeys(level));
 }
 

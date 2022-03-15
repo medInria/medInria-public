@@ -4,7 +4,9 @@
 #include <medAPHP.h>
 #include <PluginAPHP/QtDcmAPHP.h>
 #include <sphereDicomWeb/medAnnotation.h>
-
+#include <medGroupParameter.h>
+#include <medStringParameter.h>
+#include <medIntParameter.h>
 
 class TestmedAPHP: public QObject
 {
@@ -13,6 +15,28 @@ class TestmedAPHP: public QObject
     void initTestCase()
     {
         _m = new medAPHP(new QtDcmAPHP(), new medAnnotation());
+        QList<medAbstractParameter*> params = _m->getAllParameters();
+        medGroupParameter *localSettings = dynamic_cast<medGroupParameter*>(params[0]);
+        QList<medAbstractParameter*> localP = localSettings->value();
+        medStringParameter *aetTitle = dynamic_cast<medStringParameter*>(localP[0]);
+        aetTitle->setValue("MEDINRIA");
+        medStringParameter *host = dynamic_cast<medStringParameter*>(localP[1]);
+        host->setValue("localhost");
+        medIntParameter *port = dynamic_cast<medIntParameter*>(localP[2]);
+        port->setValue(2010);
+
+        medGroupParameter *remoteSettings = dynamic_cast<medGroupParameter*>(params[1]);
+        QList<medAbstractParameter*> remoteP = remoteSettings->value();
+        medStringParameter *serverAetTitle = dynamic_cast<medStringParameter*>(remoteP[0]);
+        serverAetTitle->setValue("SERVER");
+        medStringParameter *sHost = dynamic_cast<medStringParameter*>(remoteP[1]);
+        sHost->setValue("localhost");
+        medIntParameter *sPort = dynamic_cast<medIntParameter*>(remoteP[2]);
+        sPort->setValue(11112);
+        medGroupParameter *restFulSettings = dynamic_cast<medGroupParameter*>(params[2]);
+        medStringParameter *url = dynamic_cast<medStringParameter*>(restFulSettings->value()[0]);
+        url->setValue("http://127.0.0.1:5555");
+
     };
 
 //    void test_init_failed_if_instance_id_empty()
@@ -96,7 +120,7 @@ class TestmedAPHP: public QObject
 
     void cleanupTestCase()
     {
-        delete _m;
+        //delete _m;
     }
 private:
     medAPHP *_m;
