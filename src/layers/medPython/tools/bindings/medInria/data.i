@@ -75,7 +75,6 @@ public:
 %include "dtkCoreSupport/dtkSmartPointer.h"
 %include "dtkCoreSupport/dtkAbstractData.h"
 
-%feature("director") medAbstractData;
 %rename(AbstractData) medAbstractData;
 %include "medAbstractData.h"
 
@@ -162,5 +161,6 @@ public:
 %include "medAbstractImageData.h"
 %include "medAbstractMeshData.h"
 
+%feature("nodirector") medDataManager;
 %rename(DataManager) medDataManager;
 %include "medDataManager.h"
