@@ -18,6 +18,7 @@
 #include "medPythonAttributeAccessor.h"
 #include "medPythonConversionUtils.h"
 #include "medPythonCoreFunction.h"
+#include "medPythonFunctionCall.h"
 #include "medPythonObject.h"
 #include "medPythonInit.h"
 #include "medPythonSWIGCore.h"
@@ -224,18 +225,52 @@ void AbstractObject::update(const AbstractObject& other)
     }
 }
 
+bool AbstractObject::isInstance(const AbstractObject& type) const
+{
+    return coreFunction(PyObject_IsInstance, **this, *type);
+}
+
+bool AbstractObject::isSubType(const AbstractObject& type) const
+{
+    return coreFunction(PyObject_IsSubclass, **this, *type);
+}
+
 void AbstractObject::unsupportedFunctionError(QString functionName) const
 {
     throw TypeError(QString("%1 does not support %2").arg(typeName(), functionName));
+}
+
+bool AbstractObject::isInstance(QString cppTypeName) const
+{
+    return isSWIGWrappedObject(**this, cppTypeName);
+}
+
+bool AbstractObject::isSubType(const QMetaObject* metaObject) const
+{
+    bool result = false;
+
+    if (hasAttribute("staticMetaObject"))
+    {
+        AbstractObject* nonConstThis = const_cast<AbstractObject*>(this);
+        Object pythonMetaObject = wrapObjectWithSWIG(metaObject, "QMetaObject*");
+        result = nonConstThis->attribute("staticMetaObject").callMethod("inherits", pythonMetaObject);
+    }
+
+    return result;
 }
 
 void* AbstractObject::cast(QString cppTypeName) const
 {
     void* result = nullptr;
 
-    if (isSWIGWrappedObject(**this, cppTypeName))
+    if (isInstance(cppTypeName))
     {
         result = extractSWIGWrappedObject(**this);
+    }
+    else
+    {
+        raiseError<TypeError>(QString("%1 is not a SWIG-wrapped object of type %2")
+                              .arg(typeName(), cppTypeName));
     }
 
     propagateErrorIfOccurred();

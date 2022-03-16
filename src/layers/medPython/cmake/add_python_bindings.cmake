@@ -56,7 +56,7 @@ function(add_python_bindings cpp_target bindings_target)
         "  {\n"
         "    $action\n"
         "  }\n"
-        "  catch (med::python::Exception e)\n"
+        "  catch (med::python::Exception& e)\n"
         "  {\n"
         "    med::python::raiseError(e.nativeClass(), e.what())\;\n"
         "    SWIG_fail\;\n"

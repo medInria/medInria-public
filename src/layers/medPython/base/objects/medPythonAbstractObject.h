@@ -122,6 +122,16 @@ public:
     template <class TYPE>
     TYPE* cast() const;
 
+    bool isInstance(const AbstractObject& type) const;
+
+    template <class TYPE>
+    bool isInstance() const;
+
+    bool isSubType(const AbstractObject& type) const;
+
+    template <class TYPE>
+    bool isSubType() const;
+
     // Due to ciruclar dependency issues, the following three template functions
     // are defined in the header file of their respective return types.
 
@@ -141,6 +151,9 @@ protected:
     void unsupportedFunctionError(QString functionName) const;
 
 private:
+    bool isInstance(QString cppTypeName) const;
+    bool isSubType(const QMetaObject* qMetaObject) const;
+
     void* cast(QString cppTypeName) const;
 };
 
@@ -162,6 +175,18 @@ TYPE* AbstractObject::cast() const
 {
     QString typeName = TYPE::staticMetaObject.className();
     return static_cast<TYPE*>((QObject*)cast(typeName));
+}
+
+template <class TYPE>
+bool AbstractObject::isInstance() const
+{
+    return isInstance(TYPE::staticMetaObject.className());
+}
+
+template <class TYPE>
+bool AbstractObject::isSubType() const
+{
+    return isSubType(&TYPE::staticMetaObject);
 }
 
 } // namespace med::python

@@ -1,6 +1,8 @@
 #undef DTKCORESUPPORT_EXPORT
 #define DTKCORESUPPORT_EXPORT
 
+%feature("director");
+
 %pythoncode
 %{
 
@@ -21,3 +23,5 @@ void connect(SENDER_TYPE* sender, void (SENDER_TYPE::*signal)(ARGS...), PyObject
 #define signals private
 
 %include <medCoreLegacyExport.h>
+
+%medPythonTypemaps(med::python::Object)
