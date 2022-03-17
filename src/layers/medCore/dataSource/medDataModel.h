@@ -74,7 +74,7 @@ public:
     void extractBasePath(medAbstractData * pi_pData, QStringList &pi_basePath);
     medAbstractSource * getDefaultWorkingSource();
     medAbstractSource * getSourceToWrite(QString pi_sourceIdDst = "");
-    QUuid saveData2(medAbstractData * pi_pData, QString const & pi_baseName, QStringList pi_basePath, QStringList pi_relativeDirDst, QString pi_prefix, QString pi_suffix, QMap<QString, QString> pi_metaData, QString pi_sourceIdDst = "");
+    QUuid saveData2(medAbstractData * pi_pData, QString const & pi_baseName, QStringList pi_basePathHuman, QStringList pi_basePathURI, QStringList pi_relativeDirDst, QString pi_prefix, QString pi_suffix, QMap<QString, QString> pi_metaData, QString pi_sourceIdDst = "");
 
 
 

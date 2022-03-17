@@ -998,3 +998,86 @@ void medSQlite<T>::optimizeSpeedSQLiteDB()
 }
 
 
+template<typename T>
+int medSQlite<T>::getSupportedxxxx()
+{
+    //TODO
+    return 0;
+}
+
+template<typename T>
+QMap<QString, QStringList> medSQlite<T>::getTypeAndFormat()
+{
+    //TODO
+    return QMap<QString, QStringList>();
+}
+
+template<typename T>
+bool medSQlite<T>::addDirectData(QVariant data, levelMinimalEntries & pio_minimalEntries, unsigned int pi_uiLevel, QString parentKey)
+{
+    //TODO
+    return false;
+}
+
+template<typename T>
+int medSQlite<T>::addAssyncData(QVariant data, levelMinimalEntries & pio_minimalEntries, unsigned int pi_uiLevel, QString parentKey)
+{
+    //TODO
+    return 0;
+}
+
+template<typename T>
+QVariant medSQlite<T>::getDataFromRequest(int pi_iRequest)
+{
+    //TODO
+    return QVariant();
+}
+
+template<typename T>
+bool medSQlite<T>::createPath(QList<levelMinimalEntries>& pio_path, datasetAttributes4 const & pi_attributes, unsigned int pi_uiLevel, QString parentKey)
+{
+    //TODO
+    return false;
+}
+
+template<typename T>
+bool medSQlite<T>::createFolder(levelMinimalEntries & pio_minimalEntries, datasetAttributes4 const & pi_attributes, unsigned int pi_uiLevel, QString parentKey)
+{
+    //TODO
+    return false;
+}
+
+template<typename T>
+bool medSQlite<T>::alterMetaData(datasetAttributes4 const & pi_attributes, unsigned int pi_uiLevel, QString key)
+{
+    //TODO
+    return false;
+}
+
+template<typename T>
+bool medSQlite<T>::getThumbnail(QPixmap & po_thumbnail, unsigned int pi_uiLevel, QString key)
+{
+    //TODO
+    return false;
+}
+
+template<typename T>
+bool medSQlite<T>::setThumbnail(QPixmap & pi_thumbnail, unsigned int pi_uiLevel, QString key)
+{
+    //TODO
+    return false;
+}
+
+template<typename T>
+bool medSQlite<T>::commitData(QVariant data, levelMinimalEntries & pio_minimalEntries, unsigned int pi_uiLevel, QString parentKey)
+{
+    //TODO
+    return false;
+}
+
+template<typename T>
+int medSQlite<T>::push(unsigned int pi_uiLevel, QString key)
+{
+    //TODO
+    return 0;
+}
