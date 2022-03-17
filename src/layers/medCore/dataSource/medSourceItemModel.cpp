@@ -608,12 +608,11 @@ QString medSourceItemModel::toHumanReadableUri(QModelIndex const & index)
 
 QStringList medSourceItemModel::fromHumanReadableUri(QStringList humanUri)
 {
-    QStringList uriRes;
-    
+    QStringList uriRes;    
 
     medDataModelItem *itemTmp = d->root;
-
     uriRes.push_back(d->sourceInstanceId);
+
     for (int i = 0; i < humanUri.size() && itemTmp; ++i)
     {
         QString keyTmp = itemTmp->iid(humanUri[i]);

@@ -186,6 +186,78 @@ QString medTemporaryDataSource::addData(QVariant data, QStringList parentUri, QS
     return keyRes;
 }
 
+int medTemporaryDataSource::getSupportedxxxx()
+{
+    //TODO
+    return 0;
+}
+
+QMap<QString, QStringList> medTemporaryDataSource::getTypeAndFormat()
+{
+    //TODO
+    return QMap<QString, QStringList>();
+}
+
+bool medTemporaryDataSource::addDirectData(QVariant data, levelMinimalEntries & pio_minimalEntries, unsigned int pi_uiLevel, QString parentKey)
+{
+    //TODO
+    return false;
+}
+
+int medTemporaryDataSource::addAssyncData(QVariant data, levelMinimalEntries & pio_minimalEntries, unsigned int pi_uiLevel, QString parentKey)
+{
+    //TODO
+    return 0;
+}
+
+QVariant medTemporaryDataSource::getDataFromRequest(int pi_iRequest)
+{
+    //TODO
+    return QVariant();
+}
+
+bool medTemporaryDataSource::createPath(QList<levelMinimalEntries>& pio_path, datasetAttributes4 const & pi_attributes, unsigned int pi_uiLevel, QString parentKey)
+{
+    //TODO
+    return false;
+}
+
+bool medTemporaryDataSource::createFolder(levelMinimalEntries & pio_minimalEntries, datasetAttributes4 const & pi_attributes, unsigned int pi_uiLevel, QString parentKey)
+{
+    //TODO
+    return false;
+}
+
+bool medTemporaryDataSource::alterMetaData(datasetAttributes4 const & pi_attributes, unsigned int pi_uiLevel, QString key)
+{
+    //TODO
+    return false;
+}
+
+bool medTemporaryDataSource::getThumbnail(QPixmap & po_thumbnail, unsigned int pi_uiLevel, QString key)
+{
+    //TODO
+    return false;
+}
+
+bool medTemporaryDataSource::setThumbnail(QPixmap & pi_thumbnail, unsigned int pi_uiLevel, QString key)
+{
+    //TODO
+    return false;
+}
+
+bool medTemporaryDataSource::commitData(QVariant data, levelMinimalEntries & pio_minimalEntries, unsigned int pi_uiLevel, QString parentKey)
+{
+    //TODO
+    return false;
+}
+
+int medTemporaryDataSource::push(unsigned int pi_uiLevel, QString key)
+{
+    //TODO
+    return 0;
+}
+
 void medTemporaryDataSource::abort(int pi_iRequest)
 {
 

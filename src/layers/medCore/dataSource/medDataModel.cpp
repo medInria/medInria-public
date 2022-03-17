@@ -413,7 +413,9 @@ QUuid medDataModel::saveData(medAbstractData &data)
             QVariant dataset;
             dataset.setValue(fullTmpPath);
 
-            QString key = pSource->addData(dataset, parentUri, data.getExpectedName());
+            QString key;
+            //key = pSource->addData(dataset, parentUri, data.getExpectedName());
+            
             // ////////////////////////////////////////////////////////////////////////
             // Refresh dataModelElement
             if (!key.isEmpty())
@@ -468,75 +470,143 @@ void medDataModel::extractBasePath(medAbstractData * pi_pData, QStringList &pi_b
             pi_basePath.pop_back();
         }
     }
-
-
-
-
-
 }
 
-QUuid medDataModel::saveData2(medAbstractData * pi_pData, QString const & pi_baseName, QStringList pi_basePath, QStringList pi_relativeDirDst, QString pi_prefix, QString pi_suffix, QMap<QString, QString> pi_metaData, QString pi_sourceIdDst)
+QUuid medDataModel::saveData2(medAbstractData * pi_pData, QString const & pi_baseName, QStringList pi_basePathHuman, QStringList pi_basePathURI, QStringList pi_relativeDirDst, QString pi_prefix, QString pi_suffix, QMap<QString, QString> pi_metaData, QString pi_sourceIdDst)
 {
     medAbstractSource * pSource = getSourceToWrite(pi_sourceIdDst);
     QStringList dstUri;
     QStringList parentUri;
 
-    if (pSource)
+    if (pSource && pi_pData)
     {
+        // ///////////////////////////////////////////////////////////////////////////////
+        // Bloc to compute destination URI
+        // warning:
+        //         - add an argument to obtain WP from process if exist
+        //         - use pi_basePathURI when source origin and destination are the same
+        // ///////////////////////////////////////////////////////////////////////////////
         medAbstractWritingPolicy * pWp = getWPolicy(pSource);
         QStringList relPathDst = pWp->computeRelativePathDst(pi_baseName, pi_relativeDirDst, pi_prefix, pi_suffix, pi_metaData);
 
-        extractBasePath(pi_pData, pi_basePath);
-        dstUri = pWp->computeHumanUri(relPathDst, pi_basePath, pi_metaData);
+        extractBasePath(pi_pData, pi_basePathHuman);
+        dstUri = pWp->computeHumanUri(relPathDst, pi_basePathHuman, pi_metaData);
 
         pWp->checkUri(dstUri, &dstUri);
-    }
+        // ///////////////////////////////////////////////////////////////////////////////
+        // <END> Bloc to compute destination URI
+        // ///////////////////////////////////////////////////////////////////////////////
 
-    bool bContinue = true;
-    medSourceItemModel *pModel = m_sourcesModelMap.value(pSource);
-    do
-    {
-        parentUri = pModel->fromHumanReadableUri(dstUri);
-        if (parentUri.size() < dstUri.size())
+
+
+
+        // ///////////////////////////////////////////////////////////////////////////////
+        // Bloc to ensure the destination tree
+        // warning:
+        //         - create folder if not exist
+        //         - use pi_basePathURI when source origin and destination are the same
+        //         - exit cleanly if creation failed
+        //
+        //         -createPath/createFolder
+        // ///////////////////////////////////////////////////////////////////////////////
+        bool bContinue = true;
+        medSourceItemModel *pModel = m_sourcesModelMap.value(pSource);
+        do
         {
-            //TODO Try to create missing level
-
-            //TODO if creation failed then bContinue = false and return error
-        }
-        else
-        {
-            bContinue = false;
-        }
-    } while (bContinue);
-
-    // TODO continue and refactoring the next part code
-
-    QTemporaryDir tmpDir;
-    if (tmpDir.isValid())
-    {
-        QString fullTmpPath = tmpDir.path() + "/" + QUuid::createUuid().toString().replace("{", "").replace("}", "");
-        bool bWritableData = medDataExporter::convertSingleDataOnfly(pi_pData, fullTmpPath);
-        if (bWritableData)
-        {
-            QVariant dataset;
-            dataset.setValue(fullTmpPath);
-
-            QString key = pSource->addData(dataset, parentUri, pi_pData->getExpectedName());
-            // ////////////////////////////////////////////////////////////////////////
-            // Refresh dataModelElement
-            if (!key.isEmpty())
+            parentUri = pModel->fromHumanReadableUri(dstUri);
+            int iParentSize = parentUri.size();
+            if (iParentSize < dstUri.size())
             {
-                m_sourcesModelMap[pSource]->fetch(parentUri);
+                pModel->fetch(parentUri);
+                parentUri = pModel->fromHumanReadableUri(dstUri);
+                if (iParentSize == parentUri.size())
+                {
+                    //createFolder(....);
+                }
+                //TODO Try to create missing level
+
+                //TODO if creation failed then bContinue = false and return error
             }
             else
             {
-                //                sourceIsOnline(splittedUri[0]);
+                bContinue = false;
             }
-            parentUri.append(key);
-            pi_pData->dataIndex().setUri(parentUri);
-        }
-    }
+        } while (bContinue);
+        // ///////////////////////////////////////////////////////////////////////////////
+        // <END> Bloc to ensure the destination tree
+        // ///////////////////////////////////////////////////////////////////////////////
 
+
+
+
+
+        // ///////////////////////////////////////////////////////////////////////////////
+        // Bloc to send data to destination source
+        // warning:
+        //         - create folder if not exist
+        //         - use pi_basePathURI when source origin and destination are the same
+        //         - exit cleanly if creation failed
+        //
+        //         - getSupportedxxxx /!\ MUST BE RENAMED
+        //         - getTypeAndFormat
+        //         - isCached 
+        //         - addDirectData
+        //         - addAssyncData
+        //         - commitData
+        //         - setThumbnail
+        // ///////////////////////////////////////////////////////////////////////////////
+
+        // TODO continue and refactoring the next part code
+        int iTypeOfPassingData = pSource->getSupportedxxxx();
+        switch (iTypeOfPassingData) //TODO replace by if elseif + bitmask
+        {
+            case TOTO_FILE:
+            {
+                QTemporaryDir tmpDir;
+                if (tmpDir.isValid())
+                {
+                    QString fullTmpPath = tmpDir.path() + "/" + QUuid::createUuid().toString().replace("{", "").replace("}", "");
+                    bool bWritableData = medDataExporter::convertSingleDataOnfly(pi_pData, fullTmpPath);
+                    if (bWritableData)
+                    {
+                        QVariant dataset;
+                        dataset.setValue(fullTmpPath);
+                        //TODO build list of levelMinimalEntries to pass to addDirectData, 
+                        QString key;// = pSource->addDirectData(dataset, parentUri, pi_pData->getExpectedName());
+
+                        // ////////////////////////////////////////////////////////////////////////
+                        // Refresh dataModelElement
+                        if (!key.isEmpty())
+                        {
+                            m_sourcesModelMap[pSource]->fetch(parentUri);
+                        }
+                        else
+                        {
+                            //                sourceIsOnline(splittedUri[0]);
+                        }
+                        parentUri.append(key);
+                        pi_pData->dataIndex().setUri(parentUri);
+                    }
+                }
+                break;
+            }
+            case TOTO_ABSDATA:
+            {
+                break;
+            }
+            case TOTO_OTHER:
+            {
+                break;
+            }
+            default:
+                //TODO Exit in error
+                break;
+        }
+
+        // ///////////////////////////////////////////////////////////////////////////////
+        // <END> Bloc to send data to destination source
+        // ///////////////////////////////////////////////////////////////////////////////
+    }
 
 
     return QUuid();

@@ -51,6 +51,10 @@ public:
     /* */   using  listAttributes4 = QList<datasetAttributes4>;
     /* -------------------------------------------------------------------------------------------------------------------*/
 
+    #define TOTO_FILE 1
+    #define TOTO_ABSDATA 2
+    #define TOTO_OTHER 4
+
     /**
      * @brief This structure represents the minimal data useful to build the tree. Minimal entries are a sub-part of mandatories attributes.
      */
@@ -97,7 +101,14 @@ public:
     virtual bool isLocal()     = 0;
     virtual bool isCached()    = 0;
     virtual bool isOnline()    = 0;
-    virtual bool isFetchByMinimalEntriesOrMandatoryAttributes() = 0; //true: minimalEntries, false: MandatoryAttributes  
+    virtual bool isFetchByMinimalEntriesOrMandatoryAttributes() = 0; //true: minimalEntries, false: MandatoryAttributes
+    
+   // virtual bool isMedAbstractDataAccepted();
+    virtual int getSupportedxxxx() = 0;
+    //{
+    //    return TOTO_FILE;// | TOTO_ABSDATA | TOTO_OTHER;
+    //}
+    virtual QMap<QString, QStringList> getTypeAndFormat() = 0; //<TypeOfData, ListOfSupportedFormat>
     
     /* ***********************************************************************/
     /* *************** Get source structure information **********************/
@@ -131,15 +142,24 @@ public:
     /* ***********************************************************************/
     virtual QVariant getDirectData(unsigned int pi_uiLevel, QString key) = 0; //id ou uid en int ou en QString si  int alors l'implémentation doit avoir une méthode bijective
     virtual int      getAssyncData(unsigned int pi_uiLevel, QString key) = 0; //id ou uid en int ou en QString si  int alors l'implémentation doit avoir une méthode bijective. Retourne un id de request
-    
+    virtual QVariant getDataFromRequest(int pi_iRequest) = 0;
+
     /* ***********************************************************************/
     /* *************** Store data          ***********************************/
     /* ***********************************************************************/
-    //TODO: store a dataset
-    virtual QString addData(QVariant data, QStringList parentUri, QString name) = 0;
-    //TODO: alter metaData
-    //TODO: store complementaries data like thumbnail
+    virtual bool addDirectData(QVariant data,  levelMinimalEntries &pio_minimalEntries, unsigned int pi_uiLevel, QString parentKey) = 0; //data ->(dataPath, pointer medAbstractData, pointer stream)
+    virtual int  addAssyncData(QVariant data,  levelMinimalEntries &pio_minimalEntries, unsigned int pi_uiLevel, QString parentKey) = 0; //est-ce pertinent de passer un levelMinimalEntries incomplet qui ne sera probablement pas enrichi ?
+
+    virtual bool createPath(QList<levelMinimalEntries> &pio_path,      datasetAttributes4 const &pi_attributes, unsigned int pi_uiLevel = 0, QString parentKey = "") = 0;
+    virtual bool createFolder(levelMinimalEntries &pio_minimalEntries, datasetAttributes4 const &pi_attributes, unsigned int pi_uiLevel, QString parentKey) = 0;
+
+    virtual bool alterMetaData(datasetAttributes4 const &pi_attributes, unsigned int pi_uiLevel, QString key) = 0;
+
+    virtual bool getThumbnail(QPixmap &po_thumbnail, unsigned int pi_uiLevel, QString key) = 0;
+    virtual bool setThumbnail(QPixmap &pi_thumbnail, unsigned int pi_uiLevel, QString key) = 0;
     
+    virtual bool commitData(QVariant data, levelMinimalEntries &pio_minimalEntries, unsigned int pi_uiLevel, QString parentKey) = 0; //data ->(dataPath, pointer medAbstractData, pointer stream)
+    virtual int  push(unsigned int pi_uiLevel, QString key) = 0;
 
     /* ***********************************************************************/
     /* *************** Optional functions  ***********************************/
@@ -147,7 +167,7 @@ public:
     inline virtual medAbstractWritingPolicy* getWritingPolicy() { return nullptr; }
 
 signals:
-    void progress(int po_iRequest, eRequestStatus status);
+    void progress(int po_iRequest, eRequestStatus status); //getAssyncData, getDataFromRequest, addAssyncData, push
     void connectionStatus(bool);
 
 public slots:

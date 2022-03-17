@@ -90,7 +90,22 @@ public:
 
     int getAssyncData(unsigned int pi_uiLevel, QString id) override;
     
-    QString addData(QVariant data, QStringList parentUri, QString name) override;
+    QString addData(QVariant data, QStringList parentUri, QString name);
+
+
+
+    virtual int getSupportedxxxx() override;
+    virtual QMap<QString, QStringList> getTypeAndFormat() override;
+    virtual bool addDirectData(QVariant data, levelMinimalEntries &pio_minimalEntries, unsigned int pi_uiLevel, QString parentKey) override;
+    virtual int  addAssyncData(QVariant data, levelMinimalEntries &pio_minimalEntries, unsigned int pi_uiLevel, QString parentKey) override;
+    virtual QVariant getDataFromRequest(int pi_iRequest) override;
+    virtual bool createPath(QList<levelMinimalEntries> &pio_path, datasetAttributes4 const &pi_attributes, unsigned int pi_uiLevel = 0, QString parentKey = "") override;
+    virtual bool createFolder(levelMinimalEntries &pio_minimalEntries, datasetAttributes4 const &pi_attributes, unsigned int pi_uiLevel, QString parentKey) override;
+    virtual bool alterMetaData(datasetAttributes4 const &pi_attributes, unsigned int pi_uiLevel, QString key) override;
+    virtual bool getThumbnail(QPixmap &po_thumbnail, unsigned int pi_uiLevel, QString key) override;
+    virtual bool setThumbnail(QPixmap &pi_thumbnail, unsigned int pi_uiLevel, QString key) override;
+    virtual bool commitData(QVariant data, levelMinimalEntries &pio_minimalEntries, unsigned int pi_uiLevel, QString parentKey) override;
+    virtual int  push(unsigned int pi_uiLevel, QString key) override;
 
 public slots:
     void abort(int pi_iRequest) override;
