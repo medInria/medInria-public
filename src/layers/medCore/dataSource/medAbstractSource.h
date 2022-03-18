@@ -51,9 +51,9 @@ public:
     /* */   using  listAttributes4 = QList<datasetAttributes4>;
     /* -------------------------------------------------------------------------------------------------------------------*/
 
-    #define TOTO_FILE 1
-    #define TOTO_ABSDATA 2
-    #define TOTO_OTHER 4
+    #define IO_FILE 1
+    #define IO_MEDABSTRACTDATA 2
+    #define IO_STREAM 4
 
     /**
      * @brief This structure represents the minimal data useful to build the tree. Minimal entries are a sub-part of mandatories attributes.
@@ -104,7 +104,7 @@ public:
     virtual bool isFetchByMinimalEntriesOrMandatoryAttributes() = 0; //true: minimalEntries, false: MandatoryAttributes
     
    // virtual bool isMedAbstractDataAccepted();
-    virtual int getSupportedxxxx() = 0;
+    virtual int getIOInterface() = 0;
     //{
     //    return TOTO_FILE;// | TOTO_ABSDATA | TOTO_OTHER;
     //}

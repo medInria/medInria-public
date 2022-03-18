@@ -472,7 +472,11 @@ void medDataModel::extractBasePath(medAbstractData * pi_pData, QStringList &pi_b
     }
 }
 
-QUuid medDataModel::saveData2(medAbstractData * pi_pData, QString const & pi_baseName, QStringList pi_basePathHuman, QStringList pi_basePathURI, QStringList pi_relativeDirDst, QString pi_prefix, QString pi_suffix, QMap<QString, QString> pi_metaData, QString pi_sourceIdDst)
+QUuid medDataModel::saveData2(medAbstractData *pi_pData, QString const &pi_baseName, QStringList pi_basePathHuman,
+                              QStringList pi_basePathURI, QStringList pi_relativeDirDst, QString pi_prefix,
+                              QString pi_suffix,
+                              QMap<QString, QString> pi_metaData, medAbstractWritingPolicy *pi_policy,
+                              QString pi_sourceIdDst)
 {
     medAbstractSource * pSource = getSourceToWrite(pi_sourceIdDst);
     QStringList dstUri;
@@ -483,16 +487,16 @@ QUuid medDataModel::saveData2(medAbstractData * pi_pData, QString const & pi_bas
         // ///////////////////////////////////////////////////////////////////////////////
         // Bloc to compute destination URI
         // warning:
-        //         - add an argument to obtain WP from process if exist
+        //         - DONE : add an argument to obtain WP from process if exist
         //         - use pi_basePathURI when source origin and destination are the same
         // ///////////////////////////////////////////////////////////////////////////////
-        medAbstractWritingPolicy * pWp = getWPolicy(pSource);
-        QStringList relPathDst = pWp->computeRelativePathDst(pi_baseName, pi_relativeDirDst, pi_prefix, pi_suffix, pi_metaData);
+        //medAbstractWritingPolicy * pWp = getWPolicy(pSource);
+        QStringList relPathDst = pi_policy->computeRelativePathDst(pi_baseName, pi_relativeDirDst, pi_prefix, pi_suffix, pi_metaData);
 
         extractBasePath(pi_pData, pi_basePathHuman);
-        dstUri = pWp->computeHumanUri(relPathDst, pi_basePathHuman, pi_metaData);
+        dstUri = pi_policy->computeHumanUri(relPathDst, pi_basePathHuman, pi_metaData);
 
-        pWp->checkUri(dstUri, &dstUri);
+        pi_policy->checkUri(dstUri, &dstUri);
         // ///////////////////////////////////////////////////////////////////////////////
         // <END> Bloc to compute destination URI
         // ///////////////////////////////////////////////////////////////////////////////
@@ -557,10 +561,10 @@ QUuid medDataModel::saveData2(medAbstractData * pi_pData, QString const & pi_bas
         // ///////////////////////////////////////////////////////////////////////////////
 
         // TODO continue and refactoring the next part code
-        int iTypeOfPassingData = pSource->getSupportedxxxx();
+        int iTypeOfPassingData = pSource->getIOInterface();
         switch (iTypeOfPassingData) //TODO replace by if elseif + bitmask
         {
-            case TOTO_FILE:
+            case IO_FILE:
             {
                 QTemporaryDir tmpDir;
                 if (tmpDir.isValid())
@@ -590,11 +594,11 @@ QUuid medDataModel::saveData2(medAbstractData * pi_pData, QString const & pi_bas
                 }
                 break;
             }
-            case TOTO_ABSDATA:
+            case IO_MEDABSTRACTDATA:
             {
                 break;
             }
-            case TOTO_OTHER:
+            case IO_STREAM:
             {
                 break;
             }
@@ -718,3 +722,21 @@ medAbstractWritingPolicy * medDataModel::getWPolicy(medAbstractSource * pi_pSour
     return writePolicyRes;
 }
 
+medAbstractWritingPolicy * medDataModel::getWPolicy(medAbstractWritingPolicy * pi_policy, QString pi_sourceId)
+{
+    medAbstractWritingPolicy* writePolicyRes = pi_policy;
+    if (writePolicyRes == nullptr)
+    {
+        medAbstractSource *pSourceDst = getSourceToWrite(pi_sourceId);
+        if (pSourceDst)
+        {
+            writePolicyRes = pSourceDst->getWritingPolicy();
+
+            if (writePolicyRes == nullptr)
+            {
+                writePolicyRes = &m_generalWritingPolicy;
+            }
+        }
+    }
+    return writePolicyRes;
+}

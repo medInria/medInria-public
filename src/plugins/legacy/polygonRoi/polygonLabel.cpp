@@ -709,40 +709,46 @@ bool polygonLabel::writeResults(medAbstractData * pi_pData, QString const & pi_b
 {
     bool bRes = true;
 
-    QStringList baseDataUri;
-    medAbstractSource * pSource = nullptr;
+//    QStringList baseDataUri;
+//    medAbstractSource * pSource = medDataModel::instance()->getSourceToWrite(pi_sourceIdDst); //nullptr;
+//
+//    if (pSource)
+//    {
+//        medAbstractWritingPolicy * pWp = getWPolicy(pSource);
+    auto *pWp = medDataModel::instance()->getWPolicy(d->writePolicy, pi_sourceIdDst);
+    QStringList relPathDst = pWp->computeRelativePathDst(pi_baseName, pi_relativeDirDst, pi_prefix, pi_suffix, pi_metaData);
 
-    if (pi_sourceIdDst.isEmpty())
-    {
-        pSource = medDataModel::instance()->getDefaultWorkingSource();
-        pi_sourceIdDst = pSource->getInstanceId();
-    }
-    else
-    {
-        pSource = medSourcesLoader::instance()->getSource(pi_sourceIdDst);
-    }
 
-    if (pSource)
-    {
-        medAbstractWritingPolicy * pWp = getWPolicy(pSource);
-        QStringList relPathDst = pWp->computeRelativePathDst(pi_baseName, pi_relativeDirDst, pi_prefix, pi_suffix, pi_metaData);
-        auto baseData = pi_pData->parentData();
-        if (!baseData.isEmpty())
-        {
-            //TODO baseDataUri = baseData[0]->dataIndex().humanReadableUriAsList();
-            if (baseDataUri.size()>1)
-            {
-                baseDataUri.pop_back();
-                baseDataUri[0] = pi_sourceIdDst;
-            }
-        }
+    // TODO Split this method in 3 :
+    // - 1. Ecriture de la donnée à cote de la donnée d'origine dans la source d'origine (URI)
+    // - 2. Ecriture de la donnée dans la source tmp (HumanURI)
+    // - 3. Creation d'une arborescence dans la source d'origine (HumanURI)
 
-        QStringList dstUri = pWp->computeHumanUri(relPathDst, baseDataUri, pi_metaData);
+    //auto dstUri = pWp->computeHumanUri(relPathDst, pi_basePathHuman, pi_metaData);
 
-        pWp->checkUri(dstUri, &dstUri);
+        QStringList basePathHuman, basePathUri;
+        medDataModel::instance()->saveData2(pi_pData, pi_baseName, basePathHuman,
+                                            basePathUri, pi_relativeDirDst,
+                                            pi_prefix, pi_suffix, pi_metaData,
+                                            d->writePolicy, pi_sourceIdDst);
+//        QStringList relPathDst = pWp->computeRelativePathDst(pi_baseName, pi_relativeDirDst, pi_prefix, pi_suffix, pi_metaData);
+//        auto baseData = pi_pData->parentData();
+//        if (!baseData.isEmpty())
+//        {
+//            //TODO baseDataUri = baseData[0]->dataIndex().humanReadableUriAsList();
+//            if (baseDataUri.size()>1)
+//            {
+//                baseDataUri.pop_back();
+//                baseDataUri[0] = pi_sourceIdDst;
+//            }
+//        }
+//
+//        QStringList dstUri = pWp->computeHumanUri(relPathDst, baseDataUri, pi_metaData);
+//
+//        pWp->checkUri(dstUri, &dstUri);
 
         //TODO bRes = medDataModel::instance()->write(pi_pData, dstUri);
-    }
+//    }
 
     return bRes;
 }

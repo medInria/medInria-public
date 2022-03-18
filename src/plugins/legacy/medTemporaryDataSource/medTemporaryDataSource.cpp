@@ -186,7 +186,7 @@ QString medTemporaryDataSource::addData(QVariant data, QStringList parentUri, QS
     return keyRes;
 }
 
-int medTemporaryDataSource::getSupportedxxxx()
+int medTemporaryDataSource::getIOInterface()
 {
     //TODO
     return 0;

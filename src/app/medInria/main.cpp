@@ -35,8 +35,6 @@
 #include <medSourceItemModelPresenter.h>
 #include <medSourceModelPresenter.h>
 
-#include <medCollapsableWidget.h>
-
 void forceShow(medMainWindow &mainwindow)
 {
     // Idea and code taken from the OpenCOR project, Thanks Allan for the code!

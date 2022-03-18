@@ -717,50 +717,50 @@ int medSQlite<T>::getAssyncData(unsigned int pi_uiLevel, QString id)
     return 0;
 }
 
-template<typename T>
-QString medSQlite<T>::addData(QVariant data, QStringList parentUri, QString name)
-{
-    QString keyRes;
-
-//    int sourceDelimterIndex = parentUri.indexOf(QString(":"));
-//    QStringList uriAsList = parentUri.right(parentUri.size() - sourceDelimterIndex - 1).split(QString("\r\n"));
-
-    int level  = parentUri.size() - 1;
-
-    switch (level)
-    {
-        case 0: //Patient
-        {
-            //if (!additionalAttributes.values.isEmpty() || !additionalAttributes.tags.isEmpty())
-            //{
-            //    qWarning()<<"No expected additional values or tags at level patient in this local SQLite datasource plugin";
-            //}
-            //keyRes = addDataToPatientLevel(mandatoryAttributes);
-
-            break;
-        }
-        case 1: //Study
-        {
-            //if (!additionalAttributes.values.isEmpty() || !additionalAttributes.tags.isEmpty())
-            //{
-            //    qWarning()<<"No expected additional values or tags at level study in this local SQLite datasource plugin";
-            //}
-            //keyRes = addDataToStudyLevel(mandatoryAttributes);
-            break;
-        }
-        case 2://Series
-        {
-            keyRes = addDataToSeriesLevel(data, name, parentUri.last());
-            break;
-        }
-        default: //Unknown level
-        {
-            break;
-        }
-    }
-
-    return keyRes;
-}
+//template<typename T>
+//QString medSQlite<T>::addData(QVariant data, QStringList parentUri, QString name)
+//{
+//    QString keyRes;
+//
+////    int sourceDelimterIndex = parentUri.indexOf(QString(":"));
+////    QStringList uriAsList = parentUri.right(parentUri.size() - sourceDelimterIndex - 1).split(QString("\r\n"));
+//
+//    int level  = parentUri.size() - 1;
+//
+//    switch (level)
+//    {
+//        case 0: //Patient
+//        {
+//            //if (!additionalAttributes.values.isEmpty() || !additionalAttributes.tags.isEmpty())
+//            //{
+//            //    qWarning()<<"No expected additional values or tags at level patient in this local SQLite datasource plugin";
+//            //}
+//            //keyRes = addDataToPatientLevel(mandatoryAttributes);
+//
+//            break;
+//        }
+//        case 1: //Study
+//        {
+//            //if (!additionalAttributes.values.isEmpty() || !additionalAttributes.tags.isEmpty())
+//            //{
+//            //    qWarning()<<"No expected additional values or tags at level study in this local SQLite datasource plugin";
+//            //}
+//            //keyRes = addDataToStudyLevel(mandatoryAttributes);
+//            break;
+//        }
+//        case 2://Series
+//        {
+//            keyRes = addDataToSeriesLevel(data, name, parentUri.last());
+//            break;
+//        }
+//        default: //Unknown level
+//        {
+//            break;
+//        }
+//    }
+//
+//    return keyRes;
+//}
 
 template<typename T>
 QString medSQlite<T>::addDataToPatientLevel(QMap<QString, QString> &mandatoryAttributes)
@@ -999,7 +999,7 @@ void medSQlite<T>::optimizeSpeedSQLiteDB()
 
 
 template<typename T>
-int medSQlite<T>::getSupportedxxxx()
+int medSQlite<T>::getIOInterface()
 {
     //TODO
     return 0;

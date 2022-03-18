@@ -238,6 +238,11 @@ unsigned int medAPHP::getLevelCount()
     return d->levelNames.size();
 }
 
+unsigned int medAPHP::getLevelDesiredWritable()
+{
+    return 3;
+}
+
 QStringList medAPHP::getLevelNames()
 {
     return d->levelNames;
@@ -251,6 +256,11 @@ QString medAPHP::getLevelName(unsigned int pi_uiLevel)
         retVal = d->levelNames.value((int)pi_uiLevel);
     }
     return retVal;
+}
+
+bool medAPHP::isLevelWritable(unsigned int pi_uiLevel)
+{
+    return pi_uiLevel == 3;
 }
 
 QStringList medAPHP::getMandatoryAttributesKeys(unsigned int pi_uiLevel)
@@ -524,33 +534,33 @@ int medAPHP::getQtDcmAsyncData(unsigned int pi_uiLevel, const QString &key)
 
     return iRes;
 }
-
-QString medAPHP::addData(QVariant data, QStringList parentUri, QString name)
-{
-    QString keyRes;
-
-    int level  = parentUri.size() - 1;
-
-    switch (level)
-    {
-        case 0: //Patient
-        case 1: //Study
-        case 2://Series
-            break;
-        case 3:// Annotations
-        {
-            keyRes = d->restFulAPI->addData(data, name, parentUri.last());
-
-            break;
-        }
-        default: //Unknown level
-        {
-            break;
-        }
-    }
-
-    return keyRes;
-}
+//
+//QString medAPHP::addData(QVariant data, QStringList parentUri, QString name)
+//{
+//    QString keyRes;
+//
+//    int level  = parentUri.size() - 1;
+//
+//    switch (level)
+//    {
+//        case 0: //Patient
+//        case 1: //Study
+//        case 2://Series
+//            break;
+//        case 3:// Annotations
+//        {
+//            keyRes = d->restFulAPI->addData(data, name, parentUri.last());
+//
+//            break;
+//        }
+//        default: //Unknown level
+//        {
+//            break;
+//        }
+//    }
+//
+//    return keyRes;
+//}
 
 void medAPHP::abort(int pi_iRequest)
 {
@@ -569,4 +579,73 @@ void medAPHP::abort(int pi_iRequest)
     {
         d->restFulAPI->abortDownload(pi_iRequest);
     }
+}
+
+bool
+medAPHP::createPath(QList<levelMinimalEntries> &pio_path, const medAbstractSource::datasetAttributes4 &pi_attributes,
+                    unsigned int pi_uiLevel, QString parentKey)
+{
+    return false;
+}
+
+int medAPHP::getIOInterface()
+{
+    return 0;
+}
+
+QMap<QString, QStringList> medAPHP::getTypeAndFormat()
+{
+    return QMap<QString, QStringList>();
+}
+
+QVariant medAPHP::getDataFromRequest(int pi_iRequest)
+{
+    return QVariant();
+}
+
+bool medAPHP::addDirectData(QVariant data, medAbstractSource::levelMinimalEntries &pio_minimalEntries,
+                            unsigned int pi_uiLevel, QString parentKey)
+{
+    return false;
+}
+
+int medAPHP::addAssyncData(QVariant data, medAbstractSource::levelMinimalEntries &pio_minimalEntries,
+                           unsigned int pi_uiLevel, QString parentKey)
+{
+    return 0;
+}
+
+bool medAPHP::createFolder(medAbstractSource::levelMinimalEntries &pio_minimalEntries,
+                           const medAbstractSource::datasetAttributes4 &pi_attributes, unsigned int pi_uiLevel,
+                           QString parentKey)
+{
+    return false;
+}
+
+bool
+medAPHP::alterMetaData(const medAbstractSource::datasetAttributes4 &pi_attributes, unsigned int pi_uiLevel, QString key)
+{
+    return false;
+}
+
+bool medAPHP::getThumbnail(QPixmap &po_thumbnail, unsigned int pi_uiLevel, QString key)
+{
+    return false;
+}
+
+bool medAPHP::setThumbnail(QPixmap &pi_thumbnail, unsigned int pi_uiLevel, QString key)
+{
+    return false;
+}
+
+bool
+medAPHP::commitData(QVariant data, medAbstractSource::levelMinimalEntries &pio_minimalEntries, unsigned int pi_uiLevel,
+                    QString parentKey)
+{
+    return false;
+}
+
+int medAPHP::push(unsigned int pi_uiLevel, QString key)
+{
+    return 0;
 }

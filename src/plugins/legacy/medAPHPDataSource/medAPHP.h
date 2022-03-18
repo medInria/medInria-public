@@ -62,6 +62,9 @@ public:
 
     bool isFetchByMinimalEntriesOrMandatoryAttributes() override;
 
+    int getIOInterface() override;
+
+    QMap<QString, QStringList> getTypeAndFormat() override;
     /* ***********************************************************************/
     /* *************** Get source structure information **********************/
     /* ***********************************************************************/
@@ -71,10 +74,13 @@ public:
 
     unsigned int getLevelCount() override;
 
+    unsigned int getLevelDesiredWritable() override;
+
     QStringList getLevelNames() override;
 
     QString getLevelName(unsigned int pi_uiLevel) override;
 
+    bool isLevelWritable(unsigned int pi_uiLevel) override;
     QStringList getMandatoryAttributesKeys(unsigned int pi_uiLevel) override;
 
 
@@ -93,8 +99,29 @@ public:
     QVariant getDirectData(unsigned int pi_uiLevel, QString key) override;
 
     int getAssyncData(unsigned int pi_uiLevel, QString key) override;
+    QVariant getDataFromRequest(int pi_iRequest) override;
 
-    QString addData(QVariant data, QStringList parentUri, QString name) override;
+    bool addDirectData(QVariant data, levelMinimalEntries &pio_minimalEntries, unsigned int pi_uiLevel,
+                       QString parentKey) override;
+
+    int addAssyncData(QVariant data, levelMinimalEntries &pio_minimalEntries, unsigned int pi_uiLevel,
+                      QString parentKey) override;
+
+    bool createFolder(levelMinimalEntries &pio_minimalEntries, const datasetAttributes4 &pi_attributes,
+                      unsigned int pi_uiLevel, QString parentKey) override;
+    bool createPath(QList<levelMinimalEntries> &pio_path, const datasetAttributes4 &pi_attributes, unsigned int pi_uiLevel,
+               QString parentKey) override;
+
+    bool alterMetaData(const datasetAttributes4 &pi_attributes, unsigned int pi_uiLevel, QString key) override;
+
+    bool getThumbnail(QPixmap &po_thumbnail, unsigned int pi_uiLevel, QString key) override;
+
+    bool setThumbnail(QPixmap &pi_thumbnail, unsigned int pi_uiLevel, QString key) override;
+
+    bool commitData(QVariant data, levelMinimalEntries &pio_minimalEntries, unsigned int pi_uiLevel,
+                    QString parentKey) override;
+
+    int push(unsigned int pi_uiLevel, QString key) override;
 
 public slots:
     void abort(int pi_iRequest) override;

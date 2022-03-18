@@ -94,7 +94,7 @@ public:
 
 
 
-    virtual int getSupportedxxxx() override;
+    virtual int getIOInterface() override;
     virtual QMap<QString, QStringList> getTypeAndFormat() override;
     virtual bool addDirectData(QVariant data, levelMinimalEntries &pio_minimalEntries, unsigned int pi_uiLevel, QString parentKey) override;
     virtual int  addAssyncData(QVariant data, levelMinimalEntries &pio_minimalEntries, unsigned int pi_uiLevel, QString parentKey) override;
