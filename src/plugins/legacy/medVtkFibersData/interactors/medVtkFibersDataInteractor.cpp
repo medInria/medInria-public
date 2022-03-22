@@ -248,7 +248,7 @@ medVtkFibersDataInteractor::medVtkFibersDataInteractor(medAbstractView *parent):
     d->bundleToolboxWidget = nullptr;
 
     d->colorFiberParameter = new medStringListParameterL("colorFiberParameter", this);
-    d->colorFiberParameter->setToolTip(tr("Choose the coloring method of the fibers."));
+    d->colorFiberParameter->setToolTip(tr("Choose the coloring method of the fibers"));
     d->colorFiberParameter->getLabel()->setText(tr("Color fibers by:"));
     d->colorFiberParameter->addItem("Local orientation");
     d->colorFiberParameter->addItem("Global orientation");
@@ -264,20 +264,20 @@ medVtkFibersDataInteractor::medVtkFibersDataInteractor(medAbstractView *parent):
     d->parameters << d->LutFiberParameter;
 
     d->alphaTransparencyParameter = new medBoolParameterL("ActivateTransparencyParameter", this);
-    d->alphaTransparencyParameter->setToolTip(tr("Activate transparency."));
+    d->alphaTransparencyParameter->setToolTip(tr("Activate transparency"));
     d->alphaTransparencyParameter->setText(tr("Activate transparency"));
     d->alphaTransparencyParameter->getCheckBox()->setEnabled(true);
     d->parameters << d->alphaTransparencyParameter;
 
     d->minIntensityParameter = new medDoubleParameterL("Min Intensity", this);
-    d->minIntensityParameter->setToolTip(tr("Min Intensity."));
+    d->minIntensityParameter->setToolTip(tr("Min Intensity"));
     d->minIntensityParameter->getLabel()->setText(tr("Min Intensity:"));
     d->minIntensityParameter->setRange(0.0, 1.0);
     d->minIntensityParameter->setValue(0);
     d->parameters << d->minIntensityParameter;
 
     d->maxIntensityParameter = new medDoubleParameterL("Max Intensity", this);
-    d->maxIntensityParameter->setToolTip(tr("Max Intensity."));
+    d->maxIntensityParameter->setToolTip(tr("Max Intensity"));
     d->maxIntensityParameter->getLabel()->setText(tr("Max Intensity:"));
     d->maxIntensityParameter->setRange(0.0, 1.0);
     d->maxIntensityParameter->setValue(1);
@@ -292,17 +292,17 @@ medVtkFibersDataInteractor::medVtkFibersDataInteractor(medAbstractView *parent):
     d->parameters << d->shapesDisplayedGroupParameter;
 
     d->displayPolylinesParameter = new medBoolParameterL("displayPolylinesParameter", this);
-    d->displayPolylinesParameter->setToolTip(tr("Use polylines to draw the fibers."));
+    d->displayPolylinesParameter->setToolTip(tr("Use polylines to draw the fibers"));
     d->displayPolylinesParameter->setText(tr("Display fibers as polylines"));
     d->displayPolylinesParameter->getLabel()->hide();
     d->shapesDisplayedGroupParameter->addParameter(d->displayPolylinesParameter);
     d->displayRibbonsParameter = new medBoolParameterL("displayRibbonsParameter", this);
-    d->displayRibbonsParameter->setToolTip(tr("Use ribbons to draw the fibers."));
+    d->displayRibbonsParameter->setToolTip(tr("Use ribbons to draw the fibers"));
     d->displayRibbonsParameter->setText(tr("Display fibers as ribbons"));
     d->displayRibbonsParameter->getLabel()->hide();
     d->shapesDisplayedGroupParameter->addParameter(d->displayRibbonsParameter);
     d->displayTubesParameter = new medBoolParameterL("displayTubesParameter", this);
-    d->displayTubesParameter->setToolTip(tr("Use tubes to draw the fibers."));
+    d->displayTubesParameter->setToolTip(tr("Use tubes to draw the fibers"));
     d->displayTubesParameter->setText(tr("Display fibers as tubes"));
     d->displayTubesParameter->getLabel()->hide();
     d->shapesDisplayedGroupParameter->addParameter(d->displayTubesParameter);
@@ -310,7 +310,7 @@ medVtkFibersDataInteractor::medVtkFibersDataInteractor(medAbstractView *parent):
     d->displayPolylinesParameter->setValue(true);
 
     d->radiusParameter = new medIntParameterL("fibersRadiusParameter", this);
-    d->radiusParameter->setToolTip(tr("Increase of decrease the radius of the fibers (except if there are being drawn with polylines)."));
+    d->radiusParameter->setToolTip(tr("Increase or decrease the radius of the fibers (except if there are being drawn with polylines)"));
     d->radiusParameter->getLabel()->setText(tr("Fibers radius:"));
     d->radiusParameter->setRange(1, 10);
 
@@ -322,18 +322,18 @@ medVtkFibersDataInteractor::medVtkFibersDataInteractor(medAbstractView *parent):
 
     //--Bundling
     d->andParameter = new medBoolParameterL("andFiberParameter", this);
-    d->andParameter->setToolTip(tr("If \"AND\" is selected fibers will need to overlap with this ROI to be displayed."));
+    d->andParameter->setToolTip(tr("If \"AND\" is selected fibers will need to overlap with this ROI to be displayed"));
     d->andParameter->setText("AND");
     d->andParameter->setValue(true);
     d->andParameter->getLabel()->hide();
 
     d->notParameter = new medBoolParameterL("notFiberParameter", this);
-    d->notParameter->setToolTip(tr("If \"NOT\" is selected fibers overlapping with this ROI will not be displayed."));
+    d->notParameter->setToolTip(tr("If \"NOT\" is selected fibers overlapping with this ROI will not be displayed"));
     d->notParameter->setText("NOT");
     d->notParameter->getLabel()->hide();
 
     d->nullParameter = new medBoolParameterL("nullFiberParameter", this);
-    d->nullParameter->setToolTip(tr("If \"NULL\" is selected this ROI won't be taken into account."));
+    d->nullParameter->setToolTip(tr("If \"NULL\" is selected this ROI won't be taken into account"));
     d->nullParameter->setText("NULL");
     d->nullParameter->getLabel()->hide();
 
@@ -343,11 +343,11 @@ medVtkFibersDataInteractor::medVtkFibersDataInteractor(medAbstractView *parent):
     d->bundleOperationGroupParameter->addParameter(d->nullParameter);
 
     d->tagParameter = new medTriggerParameterL("tagFiberParameter", this);
-    d->tagParameter->setToolTip(tr("Tag the currently shown bundle to let the application memorize it and another, new bundling box, will appear.\nThis new box will also isolate fibers but will also consider the previously \"tagged\" fibers."));
+    d->tagParameter->setToolTip(tr("Tag the currently shown bundle to let the application memorize it and another, new bundling box, will appear.\nThis new box will also isolate fibers but will also consider the previously \"tagged\" fibers"));
     d->tagParameter->setButtonText("Tag");
 
     d->addParameter = new medBoolParameterL("addFiberParameter", this);
-    d->addParameter->setToolTip(tr("Select to either include the fibers that overlap with the bundling box, or to include the ones that do not overlap."));
+    d->addParameter->setToolTip(tr("Select to either include the fibers that overlap with the bundling box, or to include the ones that do not overlap"));
     d->addParameter->setText("Add");
     d->addParameter->setValue(true);
 
@@ -365,12 +365,12 @@ medVtkFibersDataInteractor::medVtkFibersDataInteractor(medAbstractView *parent):
     
     d->showAllBundleParameter = new medBoolParameterL("showAllBundleFiberParameter", this);
     d->showAllBundleParameter->setValue(true);
-    d->showAllBundleParameter->setToolTip(tr("Uncheck if you do not want the previously validated bundles to be displayed."));
+    d->showAllBundleParameter->setToolTip(tr("Uncheck if you do not want the previously validated bundles to be displayed"));
     d->showAllBundleParameter->setText(tr("Show all bundles"));
     d->parameters << d->showAllBundleParameter;
 
     d->showBundleBox = new medBoolParameterL("showBundleFiberBox", this);
-    d->showBundleBox->setToolTip(tr("Select to activate and show the fiber bundling box on the screen."));
+    d->showBundleBox->setToolTip(tr("Select to activate and show the fiber bundling box on the screen"));
     d->showBundleBox->setText("Activate bundling box");
     d->showBundleBox->setValue(false);
 
@@ -1434,12 +1434,12 @@ QWidget* medVtkFibersDataInteractor::buildToolBoxWidget()
     toolBoxLayout->addWidget(d->bundleToolboxWidget);
 
     d->dropOrOpenRoi = new medDropSite(d->toolboxWidget);
-    d->dropOrOpenRoi->setToolTip(tr("Drag-and-drop A ROI from the database."));
+    d->dropOrOpenRoi->setToolTip(tr("Drag-and-drop A ROI from the database"));
     d->dropOrOpenRoi->setText(tr("Drag-and-drop\nfrom the database\nto open a ROI."));
     d->dropOrOpenRoi->setCanAutomaticallyChangeAppereance(false);
 
     QPushButton *clearRoiButton = new QPushButton("Clear ROI", d->toolboxWidget);
-    clearRoiButton->setToolTip(tr("Clear previously loaded ROIs."));
+    clearRoiButton->setToolTip(tr("Clear previously loaded ROIs"));
 
     d->roiComboBox = new QComboBox(d->bundleToolboxWidget);
     if (!d->roiLabels.isEmpty())
@@ -1455,7 +1455,7 @@ QWidget* medVtkFibersDataInteractor::buildToolBoxWidget()
         d->roiComboBox->setCurrentIndex(0);
     }
 
-    d->roiComboBox->setToolTip(tr("Select a ROI to modify how its interaction with the fibers affects whether they are displayed."));
+    d->roiComboBox->setToolTip(tr("Select a ROI to modify how its interaction with the fibers affects whether they are displayed"));
 
     bundleToolboxLayout->addWidget(d->dropOrOpenRoi, 0, Qt::AlignCenter);
     bundleToolboxLayout->addWidget(clearRoiButton, 0, Qt::AlignCenter);

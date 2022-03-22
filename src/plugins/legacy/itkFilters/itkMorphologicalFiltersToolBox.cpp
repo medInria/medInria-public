@@ -61,12 +61,12 @@ itkMorphologicalFiltersToolBox::itkMorphologicalFiltersToolBox ( QWidget *parent
     QHBoxLayout *kernelSizeLayout = new QHBoxLayout;
     d->mmButton = new QRadioButton(tr("mm"), this);
     d->mmButton->setObjectName("mm");
-    d->mmButton->setToolTip(tr("If \"mm\" is selected, the dimensions of the structuring element will be calculated in mm."));
+    d->mmButton->setToolTip(tr("If \"mm\" is selected, the dimensions of the structuring element will be calculated in mm"));
     d->mmButton->setChecked(true);
 
     d->pixelButton = new QRadioButton(tr("pixels"), this);
     d->pixelButton->setObjectName("pixels");
-    d->pixelButton->setToolTip(tr("If \"pixels\" is selected, the dimensions of the structuring element will be calculated in pixels."));
+    d->pixelButton->setToolTip(tr("If \"pixels\" is selected, the dimensions of the structuring element will be calculated in pixels"));
     connect(d->pixelButton, SIGNAL(toggled(bool)), this, SLOT(roundSpinBox(bool)), Qt::UniqueConnection);
 
     kernelSizeLayout->addWidget ( kernelSizeLabel );

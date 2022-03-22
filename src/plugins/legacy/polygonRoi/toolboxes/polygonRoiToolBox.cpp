@@ -45,7 +45,7 @@ polygonRoiToolBox::polygonRoiToolBox(QWidget *parent ) :
     displayWidget->setLayout(layout);
 
     activateTBButton = new QPushButton(tr("Activate Toolbox"));
-    activateTBButton->setToolTip(tr("Activate closed polygon mode.\nYou should only have one view."));
+    activateTBButton->setToolTip(tr("<p>Activate closed polygon mode. You should only have one view</p>"));
     activateTBButton->setCheckable(true);
     activateTBButton->setObjectName("closedPolygonButton");
     connect(activateTBButton,SIGNAL(toggled(bool)),this,SLOT(clickClosePolygon(bool)));
@@ -97,13 +97,13 @@ polygonRoiToolBox::polygonRoiToolBox(QWidget *parent ) :
     QLabel *saveLabel = new QLabel("Save segmentations as:");
     QHBoxLayout *saveButtonsLayout = new QHBoxLayout();
     saveBinaryMaskButton = new QPushButton(tr("Mask(s)"));
-    saveBinaryMaskButton->setToolTip("Import the current mask to the non persistent database");
+    saveBinaryMaskButton->setToolTip("<p>Import the current mask to the non persistent database</p>");
     saveBinaryMaskButton->setObjectName(generateBinaryImageButtonName);
     connect(saveBinaryMaskButton,SIGNAL(clicked()),this,SLOT(saveBinaryImage()));
     saveButtonsLayout->addWidget(saveBinaryMaskButton);
 
     saveContourButton = new QPushButton("Contour(s)");
-    saveContourButton->setToolTip("Export these contours as an .ctrb file loadable only in this application.");
+    saveContourButton->setToolTip("<p>Export these contours as an .ctrb file loadable only in this application</p>");
     saveContourButton->setMinimumSize(150, 20);
     saveContourButton->setMaximumSize(150, 20);
     saveContourButton->setObjectName("saveContoursButton");

@@ -51,20 +51,20 @@ medBinaryOperationToolBox::medBinaryOperationToolBox(QWidget *parent)
     d->dropsite->setCanAutomaticallyChangeAppereance(false);
 
     d->clearDropsiteButton = new QPushButton("Clear", widget);
-    d->clearDropsiteButton->setToolTip(tr("Clear previously loaded mask."));
+    d->clearDropsiteButton->setToolTip(tr("Clear previously loaded mask"));
 
     d->xorButton  = new QRadioButton(tr("XOR"), widget);
-    d->xorButton->setToolTip(tr("\"XOR\" keeps pixels which are positive on a volume and not on the other."));
+    d->xorButton->setToolTip(tr("\"XOR\" keeps pixels which are positive on a volume and not on the other"));
     d->xorButton->setChecked(true);
 
     d->andButton  = new QRadioButton(tr("AND"), widget);
-    d->andButton->setToolTip(tr("\"AND\" keeps pixels which are positive on both volumes."));
+    d->andButton->setToolTip(tr("\"AND\" keeps pixels which are positive on both volumes"));
 
     d->orButton  = new QRadioButton(tr("OR"), widget);
-    d->orButton->setToolTip(tr("\"OR\" keeps keep positive pixels from both volumes."));
+    d->orButton->setToolTip(tr("\"OR\" keeps keep positive pixels from both volumes"));
 
     d->notButton  = new QRadioButton(tr("NOT"), widget);
-    d->notButton->setToolTip(tr("\"NOT\" does an inversion of the volume."));
+    d->notButton->setToolTip(tr("\"NOT\" does an inversion of the volume"));
 
     QVBoxLayout *roiButtonLayout = new QVBoxLayout;
     roiButtonLayout->addWidget(d->dropsite);

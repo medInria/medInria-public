@@ -271,7 +271,7 @@ AlgorithmPaintToolBox::AlgorithmPaintToolBox(QWidget *parent ) :
     QVBoxLayout *layout = new QVBoxLayout(displayWidget);
 
     m_strokeButton = new QPushButton( tr("Paint / Erase") );
-    m_strokeButton->setToolTip(tr("Left-click: Start painting with specified label.\nRight-click: Erase painted voxels."));
+    m_strokeButton->setToolTip(tr("Left-click: Start painting with specified label.\nRight-click: Erase painted voxels"));
     m_strokeButton->setCheckable(true);
     m_strokeButton->setObjectName("paintButton");
 
@@ -282,7 +282,7 @@ AlgorithmPaintToolBox::AlgorithmPaintToolBox(QWidget *parent ) :
     QPixmap pixmap(":medSegmentation/pixmaps/magic_wand_white.svg");
     QIcon buttonIcon(pixmap);
     m_magicWandButton->setIcon(buttonIcon);
-    m_magicWandButton->setToolTip(tr("Magic wand to automatically paint similar voxels."));
+    m_magicWandButton->setToolTip(tr("Magic wand to automatically paint similar voxels"));
     m_magicWandButton->setCheckable(true);
 
     QHBoxLayout *ButtonLayout = new QHBoxLayout();
@@ -294,7 +294,7 @@ AlgorithmPaintToolBox::AlgorithmPaintToolBox(QWidget *parent ) :
     // Brush radius label/slider/spinbox
     QHBoxLayout *brushSizeLayout = new QHBoxLayout();
     m_brushSizeSlider = new medIntParameterL("Brush Radius (mm)");
-    m_brushSizeSlider->setToolTip(tr("Changes the brush radius."));
+    m_brushSizeSlider->setToolTip(tr("Changes the brush radius"));
     m_brushSizeSlider->setValue(4);
     m_brushSizeSlider->setRange(1, 30);
     m_brushSizeSlider->getSlider()->setPageStep(1);
@@ -319,7 +319,7 @@ AlgorithmPaintToolBox::AlgorithmPaintToolBox(QWidget *parent ) :
     // Magic wand's widgets
     m_wandUpperThresholdSlider = new medDoubleParameterL("Upper Threshold", this);
     m_wandUpperThresholdSlider->setObjectName("Upper Threshold");
-    m_wandUpperThresholdSlider->setToolTip(tr("Changes the upper threshold."));
+    m_wandUpperThresholdSlider->setToolTip(tr("Changes the upper threshold"));
     m_wandUpperThresholdSlider->setValue(0);
     m_wandUpperThresholdSlider->setRange(0, 10000);
     m_wandUpperThresholdSlider->getSlider()->setPageStep(1000);
@@ -330,7 +330,7 @@ AlgorithmPaintToolBox::AlgorithmPaintToolBox(QWidget *parent ) :
 
     m_wandLowerThresholdSlider = new medDoubleParameterL("Lower Threshold", this);
     m_wandLowerThresholdSlider->setObjectName("Lower Threshold");
-    m_wandLowerThresholdSlider->setToolTip(tr("Changes the lower threshold."));
+    m_wandLowerThresholdSlider->setToolTip(tr("Changes the lower threshold"));
     m_wandLowerThresholdSlider->setValue(0);
     m_wandLowerThresholdSlider->setRange(0, 10000);
     m_wandLowerThresholdSlider->getSlider()->setPageStep(1000);
@@ -396,7 +396,7 @@ AlgorithmPaintToolBox::AlgorithmPaintToolBox(QWidget *parent ) :
 
     int defaultLabelValue = 1;
     m_strokeLabelSpinBox = new QSpinBox();
-    m_strokeLabelSpinBox->setToolTip(tr("Changes the painted label."));
+    m_strokeLabelSpinBox->setToolTip(tr("Changes the painted label"));
     m_strokeLabelSpinBox->setValue(defaultLabelValue);
     m_strokeLabelSpinBox->setMinimum(1);
     m_strokeLabelSpinBox->setMaximum(23);
@@ -423,12 +423,12 @@ AlgorithmPaintToolBox::AlgorithmPaintToolBox(QWidget *parent ) :
     layout->addLayout( labelSelectionLayout );
 
     m_addButton = new QPushButton( tr("Add") );
-    m_addButton->setToolTip(tr("Append mask to existing mask."));
+    m_addButton->setToolTip(tr("Append mask to existing mask"));
     m_addButton->setObjectName("addButton");
     m_addButton->setDisabled(true);
     m_addButton->hide();
     m_eraseButton = new QPushButton( tr("Erase") );
-    m_eraseButton->setToolTip(tr("Delete mask from existing mask."));
+    m_eraseButton->setToolTip(tr("Delete mask from existing mask"));
     m_eraseButton->setObjectName("eraseButton");
     m_eraseButton->setDisabled(true);
     m_eraseButton->hide();
@@ -443,7 +443,7 @@ AlgorithmPaintToolBox::AlgorithmPaintToolBox(QWidget *parent ) :
     m_applyButton->setDisabled(true);
 
     m_clearMaskButton = new QPushButton( tr("Clear Mask") );
-    m_clearMaskButton->setToolTip(tr("Resets the mask."));
+    m_clearMaskButton->setToolTip(tr("Resets the mask"));
     m_clearMaskButton->setObjectName("clearMaskButton");
     QHBoxLayout * dataButtonsLayout = new QHBoxLayout();
     dataButtonsLayout->addWidget(m_applyButton);

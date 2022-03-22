@@ -318,7 +318,7 @@ void medHomepageArea::initPage()
         if (!(medWorkspaceFactory::instance()->isUsable(detail->identifier)))
         {
             button->setDisabled(true);
-            button->setToolTip("No useful plugin has been found for this workspace.");
+            button->setToolTip("No useful plugin has been found for this workspace");
         }
         if(!detail->category.compare("Basic")) 
         {
