@@ -33,7 +33,6 @@ medSelectorToolBox::medSelectorToolBox(QWidget *parent, QString tlbxId)
     : medToolBox(parent), d(new medSelectorToolBoxPrivate)
 {
     d->currentToolBox = nullptr;
-    d->currentIdentifier = "";
 
     d->chooseComboBox = new medComboBox;
     d->chooseComboBox->addItem("* Choose a toolbox *");
@@ -98,9 +97,10 @@ void medSelectorToolBox::changeCurrentToolBox(int index)
     // Get current toolbox identifier from combobox
     QString identifier = d->chooseComboBox->itemData(index).toString();
 
-    if (identifier != d->currentIdentifier)
+    if (!d->currentToolBox || identifier != d->currentIdentifier)
     {
         this->changeCurrentToolBox(identifier);
+        d->currentIdentifier = identifier;
     }
 }
 
@@ -132,14 +132,12 @@ void medSelectorToolBox::changeCurrentToolBox(const QString &identifier)
 
         d->mainLayout->removeWidget(d->currentToolBox);
         d->currentToolBox = nullptr;
-        d->currentIdentifier = "";
     }
 
     if(toolbox)
     {
         d->currentToolBox = toolbox;
         d->currentToolBox->header()->hide();
-        d->currentIdentifier = identifier;
 
         dtkPlugin *plugin = d->currentToolBox->plugin();
 
