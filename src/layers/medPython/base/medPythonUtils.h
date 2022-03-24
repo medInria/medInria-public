@@ -50,6 +50,8 @@ MEDPYTHON_EXPORT void loadPythonPlugins();
 ///
 MEDPYTHON_EXPORT Object runSourceCode(QString sourceCode);
 
+/// Print text on the Python console
+///
 MEDPYTHON_EXPORT void print(QString text);
 
 } // namespace med::python

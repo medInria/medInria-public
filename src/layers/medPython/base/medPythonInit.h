@@ -28,4 +28,10 @@ MEDPYTHON_EXPORT bool initialize();
 ///
 MEDPYTHON_EXPORT bool finalize();
 
+/// Tests if the Python interpreter is running (i.e. has been initialized and
+/// not finalized). If the interpreter is not running, using the Python API will
+/// cause a crash.
+///
+MEDPYTHON_EXPORT bool isRunning();
+
 } // namespace med::python

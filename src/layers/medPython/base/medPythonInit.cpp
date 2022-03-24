@@ -22,42 +22,39 @@
 namespace med::python
 {
 
-namespace
-{
-
-bool isRunning = false;
-
-} // namespace
-
 bool initialize()
 {
-    if (!isRunning)
+    if (!isRunning())
     {
         QStringList startupPaths = getStartupPythonPaths();
-        isRunning = initializeInterpreter(startupPaths);
+        initializeInterpreter(startupPaths);
 
-        if (isRunning)
+        if (isRunning())
         {
             initializeExceptions();
             QApplication::connect(qApp, &QApplication::aboutToQuit, &finalize);
         }
     }
 
-    return isRunning;
+    return isRunning();
 }
 
 bool finalize()
 {
     bool success = true;
 
-    if (isRunning)
+    if (isRunning())
     {
-        isRunning = false;
         finalizeExceptions();
         success = finalizeInterpreter();
     }
 
     return success;
+}
+
+bool isRunning()
+{
+    return isInterpreterInitialized();
 }
 
 } // namespace med::python

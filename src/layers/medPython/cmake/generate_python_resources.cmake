@@ -67,7 +67,7 @@ function(generate_python_resources target)
 
             list(APPEND depends ${bindings_target})
 
-            add_external_resources(${target} ${library})
+            add_external_resources(${target} FILES ${library})
         endforeach()
     endif()
 
@@ -78,6 +78,6 @@ function(generate_python_resources target)
         VERBATIM
         )
 
-    add_external_resources(${target} ${modules_archive})
+    add_external_resources(${target} FILES ${modules_archive})
 
 endfunction()

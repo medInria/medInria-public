@@ -17,8 +17,7 @@
 #include "medPythonCoreInit.h"
 
 #include <QDebug>
-#include <QFileInfo>
-#include <QTemporaryDir>
+#include <QDir>
 
 #include <medExternalResources.h>
 
@@ -30,168 +29,15 @@ namespace med::python
 namespace
 {
 
-bool getResourcesDirectory(QString& resourcesDirectory)
+bool getPythonHome(QString& pythonHome)
 {
-    static QString staticResourcesDirectory = med::getExternalResourcesDirectory(TARGET_NAME);
-    bool success = !staticResourcesDirectory.isEmpty();
+    pythonHome = med::getExternalResourcesDirectory("python", TARGET_NAME);
+    bool success = !pythonHome.isEmpty();
 
-    if (success)
+    if (!success)
     {
-        resourcesDirectory = staticResourcesDirectory;
-    }
-    else
-    {
-        qCritical() << QString("Cannot find the resources directory for %1.").arg(TARGET_NAME);
-    }
-
-    return success;
-}
-
-bool getResourceArchives(QStringList& resourceArchives)
-{
-    QString resourcesDirectory;
-    bool success = getResourcesDirectory(resourcesDirectory);
-
-    if (success)
-    {
-        QFileInfoList fileInfoList = QDir(resourcesDirectory).entryInfoList({"*.zip"});
-        resourceArchives.clear();
-
-        foreach (QFileInfo fileInfo, fileInfoList)
-        {
-            resourceArchives << fileInfo.absoluteFilePath();
-        }
-    }
-
-    return success;
-}
-
-// The encodings module is required during initialiation, and cannot be
-// contained within a ZIP archive (Python loads it before loading zlib). The
-// module is a package but the resource system does not allow storing
-// subdirectories. To solve this problem, the package files are stored in the
-// resource directory with the "encodings_" prefix added to them. At runtime, an
-// encodings directory is created within a temporary directory, with symbolic
-// links to the actual encodings files. The temporary directory is then added to
-// Python's module paths.
-//
-QScopedPointer<QTemporaryDir> temporaryEncodingsParentDirectory;
-
-bool getEncodingsParentDirectory(QString& parentDirectory)
-{
-    bool success = true;
-
-    if (temporaryEncodingsParentDirectory.isNull())
-    {
-        temporaryEncodingsParentDirectory.reset(new QTemporaryDir);
-        success = temporaryEncodingsParentDirectory->isValid();
-
-        if (!success)
-        {
-            qCritical() << QString("Cannot create temporary directory for the Python encodings package: %1")
-                           .arg(temporaryEncodingsParentDirectory->errorString());
-        }
-    }
-
-    parentDirectory = temporaryEncodingsParentDirectory->path();
-    return success;
-}
-
-bool getEncodingsDirectory(QString& encodingsDirectory)
-{
-    static QString staticEncodingsDirectory;
-    bool success = true;
-
-    if (staticEncodingsDirectory.isEmpty())
-    {
-        QString parentDirectory;
-        success = getEncodingsParentDirectory(parentDirectory);
-
-        if (success)
-        {
-            QDir workingDirectory(parentDirectory);
-            success = workingDirectory.mkpath("encodings")
-                      && workingDirectory.cd("encodings");
-
-            if (success)
-            {
-                staticEncodingsDirectory = workingDirectory.absolutePath();
-            }
-            else
-            {
-                qCritical() << "Cannot create the Python encodings package directory";
-            }
-        }
-    }
-
-    encodingsDirectory = staticEncodingsDirectory;
-    return success;
-}
-
-bool getEncodingsFiles(QFileInfoList& encodingsFiles)
-{
-    QString resourcesDirectory;
-    bool success = getResourcesDirectory(resourcesDirectory);
-
-    if (success)
-    {
-        encodingsFiles = QDir(resourcesDirectory).entryInfoList({"encodings_*.py"});
-    }
-
-    return success;
-}
-
-bool createEncodingsLink(QFileInfo encodingsFile)
-{
-    QString encodingsDirectory;
-    bool success = getEncodingsDirectory(encodingsDirectory);
-
-    if (success)
-    {
-        QString linkName = encodingsFile.fileName().remove(QRegExp("encodings_"));
-        QString linkPath = QDir(encodingsDirectory).absoluteFilePath(linkName);
-        QString filePath = encodingsFile.absoluteFilePath();
-        success = QFile::link(filePath, linkPath);
-
-        if (!success)
-        {
-            qCritical() << QString("Cannot create the symbolic link %1 -> %2.")
-                           .arg(filePath, linkPath);
-        }
-    }
-
-    return success;
-}
-
-bool setupEncodingsPackage()
-{
-    QFileInfoList encodingsFiles;
-    bool success = getEncodingsFiles(encodingsFiles);
-
-    if (success)
-    {
-        foreach (QFileInfo file, encodingsFiles)
-        {
-            success &= createEncodingsLink(file);
-        }
-    }
-
-    return success;
-}
-
-bool getCoreModulePaths(QStringList& modulePaths)
-{
-    QString resourcesDirectory;
-    QStringList resourceArchives;
-    QString encodingsParentDirectory;
-    bool success = getResourcesDirectory(resourcesDirectory)
-                   && getResourceArchives(resourceArchives)
-                   && getEncodingsParentDirectory(encodingsParentDirectory);
-
-    if (success)
-    {
-        modulePaths.clear();
-        modulePaths << resourcesDirectory << resourceArchives << encodingsParentDirectory;
+        qCritical() << QString("Cannot find the embedded Python in the resources of %1.")
+                       .arg(TARGET_NAME);
     }
 
     return success;
@@ -218,21 +64,29 @@ bool preInitialize()
     return checkStatus(Py_PreInitialize(&preConfig));
 }
 
-bool setConfigOptions(PyConfig* config, QStringList modulePaths)
+QStringList convertToNativePaths(QStringList paths)
 {
-    wchar_t** moduleSearchPaths = qStringListToWideChar(modulePaths);
-    config->module_search_paths_set = 1;
-    config->write_bytecode = 0;
+    QStringList result;
 
-    // Even if empty, every one of the options below must be set to prevent recalculation of the paths
-    //
-    bool success = checkStatus(PyConfig_SetBytesString(config, &config->base_executable, TARGET_NAME))
-                   && checkStatus(PyConfig_SetBytesString(config, &config->executable, TARGET_NAME))
-                   && checkStatus(PyConfig_SetBytesString(config, &config->prefix, qUtf8Printable("")))
-                   && checkStatus(PyConfig_SetBytesString(config, &config->base_exec_prefix, qUtf8Printable("")))
-                   && checkStatus(PyConfig_SetBytesString(config, &config->base_prefix, qUtf8Printable("")))
-                   && checkStatus(PyConfig_SetBytesString(config, &config->exec_prefix, qUtf8Printable("")))
-                   && checkStatus(PyConfig_SetWideStringList(config, &config->module_search_paths, modulePaths.size(), moduleSearchPaths));
+    foreach (QString path, paths)
+    {
+        result << QDir::toNativeSeparators(path);
+    }
+
+    return result;
+}
+
+bool setConfigOptions(PyConfig* config, QString pythonHome, QStringList modulePaths)
+{
+    config->write_bytecode = 0;
+    bool success = checkStatus(PyConfig_SetBytesString(config, &config->home, qUtf8Printable(pythonHome)))
+                   && checkStatus(PyConfig_Read(config));
+    wchar_t** moduleSearchPaths = qStringListToWideChar(convertToNativePaths(modulePaths));
+
+    for (int i = 0; success && (i < modulePaths.length()); i++)
+    {
+        success = checkStatus(PyWideStringList_Append(&config->module_search_paths, moduleSearchPaths[i]));
+    }
 
     freeWideCharList(moduleSearchPaths, modulePaths.size());
     return success;
@@ -240,13 +94,13 @@ bool setConfigOptions(PyConfig* config, QStringList modulePaths)
 
 bool prepareConfig(PyConfig* config, QStringList additionalModulePaths)
 {
-    QStringList coreModulePaths;
-    bool success = getCoreModulePaths(coreModulePaths);
+    QString pythonHome;
+    bool success = getPythonHome(pythonHome);
 
     if (success)
     {
         PyConfig_InitIsolatedConfig(config);
-        success = setConfigOptions(config, coreModulePaths + additionalModulePaths);
+        success = setConfigOptions(config, pythonHome, additionalModulePaths);
     }
 
     return success;
@@ -269,8 +123,7 @@ bool initializeFromConfig(PyConfig* config)
 bool initializeInterpreter(QStringList additionalModulePaths)
 {
     PyConfig config;
-    bool success = setupEncodingsPackage()
-                   && preInitialize()
+    bool success = preInitialize()
                    && prepareConfig(&config, additionalModulePaths)
                    && initializeFromConfig(&config);
 
@@ -299,9 +152,9 @@ bool finalizeInterpreter()
     return success;
 }
 
-QStringList test::getTemporaryDirectories()
+bool isInterpreterInitialized()
 {
-    return {temporaryEncodingsParentDirectory->path()};
+    return Py_IsInitialized();
 }
 
 } // namespace med::python

@@ -32,7 +32,7 @@ namespace
 bool initializeModulePaths()
 {
     bool success = false;
-    QString pythonToolsDirectory = getExternalResourcesDirectory(TARGET_NAME);
+    QString pythonToolsDirectory = getExternalResourcesDirectory(".", TARGET_NAME);
 
     if (pythonToolsDirectory.isEmpty())
     {
