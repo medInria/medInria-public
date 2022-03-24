@@ -179,17 +179,6 @@ if (WIN32)
 endif()
 
 ## #############################################################################
-## Setup resources directory (for Windows and Linux)
-## #############################################################################
-
-if (NOT APPLE)
-  set(${PROJECT_NAME}_RESOURCES_DIR "${CMAKE_BINARY_DIR}/resources")
-  add_custom_target(make_resource_dir ALL
-    COMMAND ${CMAKE_COMMAND} -E make_directory "${${PROJECT_NAME}_RESOURCES_DIR}"
-    )
-endif()
-
-## #############################################################################
 ## Add subdirectory
 ## #############################################################################
 
