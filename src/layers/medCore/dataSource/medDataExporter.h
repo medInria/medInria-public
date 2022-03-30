@@ -37,6 +37,7 @@ public:
     // Conversion functions from path to medAbstractData
     // ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
     static bool convertSingleDataOnfly(medAbstractData * data, QString &path);
+    static bool convertSingleDataOnfly(medAbstractData * data, QString &path, QStringList fileExts);
     //medAbstractData *        convertSingleData(QString path);
     //QList<medAbstractData*>  convertMultipData(QString path);
 
@@ -65,7 +66,7 @@ private:
     // ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
     // Private Static functions to:             list files,   getReaders,   readFiles,         opt find volumes
     // ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
-    static QList<medAbstractDataWriter*>  getSuitableWriter(medAbstractData* medData, QString filePath, QStringList *writersId = nullptr);
+    static QList<medAbstractDataWriter*>  getSuitableWriter(medAbstractData* medData, QString filePath, QStringList fileExts = QStringList(), QStringList *writersId = nullptr);
     //static medAbstractData * readFiles(QList<medAbstractDataReader *> &readers, QStringList &fileList, medAbstractDataReader **usedReader = nullptr);
     //void findVolumesInDirectory(QString &path);
 

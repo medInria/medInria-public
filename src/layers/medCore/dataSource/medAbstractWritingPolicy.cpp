@@ -21,30 +21,30 @@
 
 
 
-int medAbstractWritingPolicy::levelToWrite(QStringList pi_dstUri)
+int medAbstractWritingPolicy::levelToWrite(QString pi_sourceId)
 {
     int iRes = -1;
 
-    auto * pSource = medSourcesLoader::instance()->getSource(pi_dstUri[0]);
+    auto * pSource = medDataModel::instance()->getSourceToWrite(pi_sourceId);
     if (pSource)
     {
         iRes = static_cast<int>(pSource->getLevelDesiredWritable());
     }
 
-    return iRes;//TODO ADD DISAMBIGOUS HUMAN URI VS URI
+    return iRes;
 }
 
-bool medAbstractWritingPolicy::islevelWritable(QStringList pi_dstUri)
+bool medAbstractWritingPolicy::islevelWritable(QString pi_sourceId, unsigned int pi_uiLevel)
 {
     bool bRes = false;
 
-    auto * pSource = medSourcesLoader::instance()->getSource(pi_dstUri[0]);
+    auto * pSource = medDataModel::instance()->getSourceToWrite(pi_sourceId);
     if (pSource)
     {
-        bRes = pSource->isLevelWritable(pi_dstUri.size());
+        bRes = pSource->isLevelWritable(pi_uiLevel);
     }
 
-    return bRes; //TODO ADD DISAMBIGOUS HUMAN URI VS URI
+    return bRes;
 }
 
 QStringList medAbstractWritingPolicy::basePathDstFromOrigin(QString sourceDstId, QStringList pi_originPath)

@@ -17,6 +17,7 @@
 #include <itkImage.h>
 #include <medWorldPosContours.h>
 #include <viewinteractors/polygonRoi.h>
+#include <medAbstractWritingPolicy.h>
 
 class medLabelPolygonsPrivate;
 class baseViewEvent;
@@ -88,10 +89,11 @@ public:
     /*!
      *  To move to medAbstractProcess medInria 4
      */
-    bool writeResults(medAbstractData *pi_pData, QString const & pi_baseName, QStringList pi_relativeDirDst, QString pi_prefix, QString pi_suffix, QMap<QString, QString> pi_metaData, QString pi_sourceId = "");
-     
-     
-    medAbstractWritingPolicy* getWPolicy(medAbstractSource *pi_pSourceDst);
+
+    medAbstractWritingPolicy* getBestWPolicy(QString pi_sourceId);
+
+    bool writeResults(QString pi_sourceId, medAbstractData * pi_pData, QStringList pi_UriOfRelatedData, QString pi_basePath, medWritingPolicyData & pi_writingPolicyData);
+    //bool writeResults(medAbstractData *pi_pData, QStringList pi_baseUri, medWritingPolicyData &pi_writingPolicyData, QString pi_sourceId = "");     
 
     /*!
      *  To move to medAbstractProcess medInria 4

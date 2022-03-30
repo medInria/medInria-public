@@ -142,7 +142,7 @@ public:
     /* ***********************************************************************/
     virtual QVariant getDirectData(unsigned int pi_uiLevel, QString key) = 0; //id ou uid en int ou en QString si  int alors l'implémentation doit avoir une méthode bijective
     virtual int      getAssyncData(unsigned int pi_uiLevel, QString key) = 0; //id ou uid en int ou en QString si  int alors l'implémentation doit avoir une méthode bijective. Retourne un id de request
-    virtual QVariant getDataFromRequest(int pi_iRequest) = 0;
+    //virtual QVariant getDataFromRequest(int pi_iRequest) = 0;
 
     /* ***********************************************************************/
     /* *************** Store data          ***********************************/
@@ -160,6 +160,11 @@ public:
     
     virtual bool commitData(QVariant data, levelMinimalEntries &pio_minimalEntries, unsigned int pi_uiLevel, QString parentKey) = 0; //data ->(dataPath, pointer medAbstractData, pointer stream)
     virtual int  push(unsigned int pi_uiLevel, QString key) = 0;
+
+    /* ***********************************************************************/
+    /* *************** Handle async results   ********************************/
+    /* ***********************************************************************/
+    virtual QVariant getAsyncResults(int pi_iRequest) = 0; //QVariant may be a path/medAbstractData*/Key string
 
     /* ***********************************************************************/
     /* *************** Optional functions  ***********************************/

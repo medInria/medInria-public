@@ -1008,15 +1008,89 @@ int medSQlite<T>::getIOInterface()
 template<typename T>
 QMap<QString, QStringList> medSQlite<T>::getTypeAndFormat()
 {
-    //TODO
-    return QMap<QString, QStringList>();
+    QMap<QString, QStringList> mapRes;
+
+    mapRes["Image"] = QStringList({ ".mha",  ".nii.gz"});
+
+    return mapRes;
 }
 
 template<typename T>
 bool medSQlite<T>::addDirectData(QVariant data, levelMinimalEntries & pio_minimalEntries, unsigned int pi_uiLevel, QString parentKey)
 {
-    //TODO
-    return false;
+    bool bRes = false;
+
+    QSqlQuery query = m_Engine.exec();
+
+    // TODO extract path from dataset parameter and update additionalAttributes.values ==> addtionalAttributes.values["path"] = dataset.toString()
+    QString patientId;
+    if (data.canConvert<QString>())
+    {
+        query.prepare("SELECT patient as patient "
+            "FROM study "
+            "WHERE id = :Id");
+        int iPrentKey = parentKey.toInt();
+        query.bindValue(":Id", iPrentKey);
+        if (query.exec() && query.first())
+        {
+            QVariant patient = query.value("patient");
+            auto type = patient.typeName();
+            int id = patient.toInt();
+            query.prepare("SELECT patientId as patientId "
+                "FROM patient "
+                "WHERE id = :Id");
+            query.bindValue(":Id", id);
+            if (query.exec() && query.first())
+            {
+                patientId = query.value("patientId").toString();
+            }
+            else
+            {
+                qDebug() << query.lastError();
+            }
+        }
+        else
+        {
+            qDebug() << query.lastError();
+        }
+
+        QString pathIn = data.toString();
+        //QString fileName = pathIn.right(pathIn.size() - pathIn.lastIndexOf(QDir::separator()) - 1);
+        QString fileNameExt = pathIn.right(pathIn.size() - pathIn.lastIndexOf(".") - 1);
+        QString pathOut = QDir::separator() + patientId + QDir::separator() + QUuid::createUuid().toString().replace("{", "").replace("}", "")/*pio_minimalEntries.name*/ + "." + fileNameExt; //QUuid::createUuid().toString().replace("{", "").replace("}", "") ;
+
+        QDir dir(m_DbPath->value());
+        dir.mkdir(patientId);
+        QString pathToCopy = m_DbPath->value() + pathOut;
+
+
+        if (QFile::copy(pathIn, pathToCopy))
+        {
+
+
+
+            pio_minimalEntries.description = QUuid::createUuid().toString().replace("{", "").replace("}", "");
+
+            query.prepare("INSERT INTO series (study, name, uid, path) VALUES (:study, :name, :uid, :path)");
+            query.bindValue(":study", parentKey);
+            query.bindValue(":name", pio_minimalEntries.name);
+            query.bindValue(":uid", pio_minimalEntries.description);
+            query.bindValue(":path", pathOut);
+
+
+            if (query.exec())
+            {
+                pio_minimalEntries.key = query.lastInsertId().toString();
+                bRes = !pio_minimalEntries.key.isEmpty();
+            }
+            else
+            {
+                qDebug() << query.lastError();
+            }
+        }
+    }
+
+    return bRes;
 }
 
 template<typename T>
@@ -1073,6 +1147,12 @@ bool medSQlite<T>::commitData(QVariant data, levelMinimalEntries & pio_minimalEn
 {
     //TODO
     return false;
+}
+
+template<typename T>
+QVariant medSQlite<T>::getAsyncResults(int pi_iRequest)
+{
+    return QVariant();
 }
 
 template<typename T>

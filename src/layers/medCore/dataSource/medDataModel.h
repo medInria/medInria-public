@@ -74,17 +74,41 @@ public:
     void extractBasePath(medAbstractData * pi_pData, QStringList &pi_basePath);
     medAbstractSource * getDefaultWorkingSource();
     medAbstractSource * getSourceToWrite(QString pi_sourceIdDst = "");
-    QUuid saveData2(medAbstractData *pi_pData, QString const &pi_baseName, QStringList pi_basePathHuman,
-                    QStringList pi_basePathURI, QStringList pi_relativeDirDst, QString pi_prefix, QString pi_suffix,
-                    QMap<QString, QString> pi_metaData, medAbstractWritingPolicy *pi_policy,
-                    QString pi_sourceIdDst = "");
+    
+    static QString uriAsString(QStringList pi_uri);
+    static QStringList uriAsList(QString pi_uri);
 
+    QString convertToPath(QStringList pi_Uri);
+    bool createPath(QString pi_sourceId, QStringList pi_folders, QStringList &po_uri, QMap<int, QString> pi_knownKeys = QMap<int, QString>());
+    //bool saveData(QStringList pi_Uri, QString pi_dataName, medAbstractData *pi_data);
+
+
+    bool saveData3(medAbstractData *pi_pData, QString const &pi_baseName, QStringList pi_uri);
+    bool writeResults(QString pi_sourceId, medAbstractData * pi_pData, QStringList pi_UriOfRelatedData, QString pi_basePath, medWritingPolicyData & pi_writingPolicyData, medAbstractWritingPolicy * pi_pWritingPolicy);
+
+    /** *****************************************************************************************************************/
+    /** *****************************************************************************************************************/
+    /**  TODO TODO TODO TODO TODO TODO TODO TODO TODO TODO TODO TODO TODO TODO TODO TODO TODO TODO TODO TODO TODO TODO **/
+    /** *****************************************************************************************************************/
+    /** *****************************************************************************************************************/
+    /**                                                                                                                **/
+    /** Implement a mechanism substitute temporary id of data to final id given by source                              **/
+    /** to do this:                                                                                                    **/
+    /**   - keep a list of temporaries id of data                                                                      **/
+    /**   - keep a list request id and type of request associated to it (data, key, path)                              **/
+    /**   - keep a mapping between them                                                                                **/
+    /**   - listen the signal finish of source                                                                         **/
+    /**   - call the getAsyncResults on a source                                                                       **/
+    /**                                                                                                                **/
+    /** *****************************************************************************************************************/
+    /** *****************************************************************************************************************/
 
 
     void expandAll(const QString &sourceInstanceId);
 
-    medAbstractWritingPolicy* getWPolicy(medAbstractSource *pi_pSourceDst);
-    medAbstractWritingPolicy* getWPolicy(medAbstractWritingPolicy * pi_policy, QString pi_sourceId = "");
+    medAbstractWritingPolicy* getSourceWPolicy(QString pi_sourceId);
+    medAbstractWritingPolicy* getGeneralWPolicy(){ return &m_generalWritingPolicy; }
+    //medAbstractWritingPolicy* getWPolicy(medAbstractWritingPolicy * pi_policy, QString pi_sourceId = "");
 
 public slots:
    void addSource(medAbstractSource* pi_source);

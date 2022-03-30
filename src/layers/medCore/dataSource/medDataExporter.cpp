@@ -78,12 +78,59 @@ bool medDataExporter::convertSingleDataOnfly(medAbstractData * data, QString &pa
     return bRes;
 }
 
+bool medDataExporter::convertSingleDataOnfly(medAbstractData * data, QString & path, QStringList fileExts)
+{
+    bool bRes = false;
+
+    QList<medAbstractDataWriter*> dataWriters = getSuitableWriter(data, path);
+    if (!dataWriters.isEmpty())
+    {
+        QMultiMap<QString, medAbstractDataWriter*> extfileWriterMap;
+        for (auto fileExt : fileExts)
+        {
+            for (auto * pDataWriter : dataWriters)
+            {
+                if (pDataWriter->supportedFileExtensions().contains(fileExt))
+                {
+                    extfileWriterMap.insert(fileExt, pDataWriter);
+                }
+            }
+        }
+
+        bool bContinue = true;
+        while (bContinue)
+        {
+            for (int i = 0; (i < fileExts.size() && bContinue); ++i)
+            {
+                if (extfileWriterMap.contains(fileExts[i]))
+                {
+                    auto pathTmp = path + fileExts[i];
+                    auto writers = extfileWriterMap.values(fileExts[i]);
+                    for (int i = 0; (i < writers.size() && bContinue); ++i)
+                    {
+                        writers[i]->setData(data);
+                        bRes = writers[i]->write(pathTmp);
+                        if (bRes)
+                        {
+                            bContinue = false;
+                            path = pathTmp;
+                        }
+                    }
+                }
+            }
+            bContinue = false;
+        }
+    }
+
+    return bRes;
+}
+
 // ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 // ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 // Private functions 
 // ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 // ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
-QList<medAbstractDataWriter*> medDataExporter::getSuitableWriter(medAbstractData * medData, QString filePath, QStringList *writersId)
+QList<medAbstractDataWriter*> medDataExporter::getSuitableWriter(medAbstractData * medData, QString filePath, QStringList fileExts, QStringList *writersId)
 {
     QList<medAbstractDataWriter*> dataWriterRes;
 
@@ -98,7 +145,7 @@ QList<medAbstractDataWriter*> medDataExporter::getSuitableWriter(medAbstractData
             auto fileExtList = dataWriter->supportedFileExtensions();
             if (!fileExtList.isEmpty())
             {
-                fileExt = fileExtList[0];
+            	fileExt = fileExtList[0];
             }
 
             if (dataWriter && dataWriter->handled().contains(medData->identifier()) && dataWriter->canWrite(filePath + fileExt))

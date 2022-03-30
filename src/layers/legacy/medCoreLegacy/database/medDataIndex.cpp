@@ -12,6 +12,7 @@
 =========================================================================*/
 
 #include <medDataIndex.h>
+//#include <medDataModel.h> // for setUri when medCore and medCoreLegacy will be fused
 
 medDataIndex::medDataIndex(int dataSourceId, int patientId, int studyId, int seriesId)
     : m_dataSourceId(dataSourceId),
@@ -118,9 +119,10 @@ QString medDataIndex::asString() const
 void medDataIndex::setUri(QString const & uri)
 {
     int sourceDelimterIndex = uri.indexOf(QString(":"));
-
+    
     m_uriAsList = uri.right(uri.size() - sourceDelimterIndex-1).split(QString("\r\n"));
     m_uriAsList.push_front(uri.left(sourceDelimterIndex));
+    //m_uriAsList = medDataModel::uriAsList(uri);
 }
 
 /**

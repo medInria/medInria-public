@@ -29,44 +29,80 @@ void medDefaultWritingPolicy::addSubstitutionSet(QString const & pi_toSubstitute
     m_substitutionMap[pi_toSubstitute] = pi_substitution;
 }
 
-QStringList medDefaultWritingPolicy::computeRelativePathDst(QString const & pi_baseName, QStringList pi_relativeDirDst)
-{
-    QStringList uriRes = pi_relativeDirDst;
+//QStringList medDefaultWritingPolicy::computeRelativePathDst(QString const & pi_baseName, QStringList pi_relativeDirDst)
+//{
+//    QStringList uriRes = pi_relativeDirDst;
+//
+//    uriRes.push_back(pi_baseName);
+//
+//    return uriRes;
+//}
 
-    uriRes.push_back(pi_baseName);
 
-    return uriRes;
-}
 
-QStringList medDefaultWritingPolicy::computeRelativePathDst(QString const & pi_baseName, QStringList pi_relativeDirDst, QString pi_prefix, QString pi_suffix, QMap<QString, QString> pi_metaData)
+
+
+QString medDefaultWritingPolicy::computeName(QString const & pi_baseName, QString pi_prefix, QString pi_suffix, QMap<QString, QString> pi_metaData)
 {
     Q_UNUSED(pi_metaData);
 
-    QStringList uriRes = pi_relativeDirDst;
-
-    uriRes.push_back(pi_prefix + pi_baseName + pi_suffix);
-
-    return uriRes;
+    return pi_prefix + pi_baseName + pi_suffix;
 }
 
-QStringList medDefaultWritingPolicy::computeHumanUri(QStringList const & pi_relativePathDst, QStringList pi_basePathDst)
+QString medDefaultWritingPolicy::computePath(QString pi_sourceId, QString pi_suggestedPath, QMap<QString, QString> pi_metaData, bool pi_bTrim)
 {
-    QStringList uriRes = pi_basePathDst;
+    QStringList pathRes = pi_suggestedPath.split("\r\n");
 
-    uriRes.append(pi_relativePathDst);
+    int iLevelToWrite = medAbstractWritingPolicy::levelToWrite(pi_sourceId);
+    
+    if (iLevelToWrite < pathRes.size())
+    {
+        int iDeltaPathLength = pathRes.size() - iLevelToWrite;
+        for (int i = 0; i < iDeltaPathLength; ++i)
+        {
+            if (pi_bTrim)
+            {
+                pathRes.pop_back();
+            }
+            else
+            {
+                QString last = pathRes.takeLast();
+                int lastPos = pathRes.size() - 1;
+                pathRes[lastPos] = pathRes[lastPos] + '_' + last;
+            }            
+        }
+    }
+    else if (iLevelToWrite > pathRes.size())
+    {
+        int iBazeSize = pathRes.size();
+        int iDeltaPathLength = iLevelToWrite - pathRes.size();
+        QString levelName("Level_");
+        for (int i = 0; i < iDeltaPathLength; ++i)
+        {
+            pathRes.push_back(levelName + QString::number(i + iBazeSize));
+        }
+    }
 
-    checkUri(uriRes, &uriRes);
+    charactersSubstitution(pathRes, &pathRes);
 
-    return uriRes;
+    return pathRes.join("\r\n");
 }
+
+
+
+
+
+
+
 
 QStringList medDefaultWritingPolicy::computeHumanUri(QStringList const & pi_relativePathDst, QStringList pi_basePathDst, QMap<QString, QString> pi_metaData)
 {
     Q_UNUSED(pi_metaData);
-    return computeHumanUri(pi_relativePathDst, pi_basePathDst);
+    //return computeHumanUri(pi_relativePathDst, pi_basePathDst);
+    return QStringList();
 }
 
-bool medDefaultWritingPolicy::incrementName(QString & pio_name /*tata*/, QStringList pi_alreadyExistName /*tata, tata_1, tata_2*/)
+bool medDefaultWritingPolicy::incrementName(QString & pio_name, QStringList pi_alreadyExistName)
 {
     bool bRes = true;
 
@@ -112,7 +148,7 @@ bool medDefaultWritingPolicy::checkUri(QStringList pi_suggestedUri, QStringList 
         QString sourceInstanceId = pi_suggestedUri[0];
         if (sourceInstanceId.length())
         {
-            int iDesiredWritableLevel = levelToWrite(pi_suggestedUri);
+            int iDesiredWritableLevel = levelToWrite(sourceInstanceId);
 
             if (iDesiredWritableLevel != -1)
             {
@@ -122,7 +158,7 @@ bool medDefaultWritingPolicy::checkUri(QStringList pi_suggestedUri, QStringList 
                 }
                 
                 int uriLength = pi_suggestedUri.size();
-                if (islevelWritable(pi_suggestedUri))
+                if (islevelWritable(sourceInstanceId, pi_suggestedUri.size()))
                 { 
                     bRes = true;
                 }
@@ -164,9 +200,14 @@ bool medDefaultWritingPolicy::checkUri(QStringList pi_suggestedUri, QStringList 
     return bRes;
 }
 
-bool medDefaultWritingPolicy::charactersSubstitution(QStringList &pi_suggestedUri, QStringList * pio_rectifiedUri)
+bool medDefaultWritingPolicy::charactersSubstitution(QStringList pi_suggestedUri, QStringList * pio_rectifiedUri)
 {
     bool bRes = true;
+
+    if (pio_rectifiedUri)
+    {
+        pio_rectifiedUri->clear();
+    }
 
     auto avoidCharaters = m_substitutionMap.keys();
     for (auto const uriEntry : pi_suggestedUri)

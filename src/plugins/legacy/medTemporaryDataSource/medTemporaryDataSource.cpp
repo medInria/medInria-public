@@ -210,7 +210,7 @@ int medTemporaryDataSource::addAssyncData(QVariant data, levelMinimalEntries & p
     return 0;
 }
 
-QVariant medTemporaryDataSource::getDataFromRequest(int pi_iRequest)
+QVariant medTemporaryDataSource::getAsyncResults(int pi_iRequest)
 {
     //TODO
     return QVariant();

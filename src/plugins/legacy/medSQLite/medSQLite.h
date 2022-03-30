@@ -109,6 +109,7 @@ public:
     virtual bool getThumbnail(QPixmap &po_thumbnail, unsigned int pi_uiLevel, QString key) override;
     virtual bool setThumbnail(QPixmap &pi_thumbnail, unsigned int pi_uiLevel, QString key) override;
     virtual bool commitData(QVariant data, levelMinimalEntries &pio_minimalEntries, unsigned int pi_uiLevel, QString parentKey) override;
+    virtual QVariant getAsyncResults(int pi_iRequest) override;
     virtual int  push(unsigned int pi_uiLevel, QString key) override;
 
 public slots:

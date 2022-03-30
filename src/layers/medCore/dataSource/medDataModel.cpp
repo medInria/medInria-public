@@ -43,7 +43,6 @@ medDataModel::medDataModel(QObject *parent)
     substitutionsCharacters[">"]  = " ";
     substitutionsCharacters["\""] = " ";
     substitutionsCharacters["|"]  = " ";
-    substitutionsCharacters["\0"] = " ";
     substitutionsCharacters["\r"] = " ";
     substitutionsCharacters["\n"] = " ";
 
@@ -436,6 +435,174 @@ QUuid medDataModel::saveData(medAbstractData &data)
     return QUuid();
 }
 
+bool medDataModel::saveData3(medAbstractData *pi_pData, QString const &pi_baseName, QStringList pi_uri)
+{
+    bool bRes = false;
+
+    if (!pi_uri.isEmpty())
+    {
+        medAbstractSource* pSource = m_sourceIdToInstanceMap.value(pi_uri[0]);
+        medSourceItemModel* pModel = getModel(pi_uri[0]);
+        if (pSource && pModel)
+        {
+            auto typeAndFormat = pSource->getTypeAndFormat();
+            auto bLocal = pSource->isLocal();
+            auto bCached = pSource->isCached();
+
+            QVariant data;
+            medAbstractSource::levelMinimalEntries minimalEntries;
+            minimalEntries.name = pi_baseName;
+            unsigned int uiLevel = pi_uri.size()-1;
+            QString parentKey = pi_uri.last();
+
+            QTemporaryDir tmpDir;
+            if (tmpDir.isValid())
+            {
+                bool bWritableData = false;
+                QString fullTmpPath = tmpDir.path() + "/" + QUuid::createUuid().toString().replace("{", "").replace("}", "");
+                QString dataType = pi_pData->identifier();
+                
+                auto types = typeAndFormat.keys();
+                QStringList exts;
+                for (int i = 0; i < types.size(); ++i)
+                {
+                    if (dataType.contains(types[i]))
+                    {
+                        exts = typeAndFormat[types[i]];
+                        break;
+                    }
+                }
+
+                if (exts.isEmpty())
+                {
+                    bWritableData = medDataExporter::convertSingleDataOnfly(pi_pData, fullTmpPath);
+                }
+                else
+                {
+                    bWritableData = medDataExporter::convertSingleDataOnfly(pi_pData, fullTmpPath, exts);
+                }
+
+                if (bWritableData)
+                {
+                    data.setValue(fullTmpPath);
+
+                    if (bLocal)
+                    {
+                        bRes = pSource->addDirectData(data, minimalEntries, uiLevel, parentKey);
+                        if (bRes)
+                        {
+                            pModel->fetch(pi_uri);
+                            pi_uri.push_back(minimalEntries.key);
+                        }
+                    }
+                    else if (bCached)
+                    {
+                        bRes = pSource->commitData(data, minimalEntries, uiLevel, parentKey);
+                    }
+                    else
+                    {
+                        bRes = pSource->addAssyncData(data, minimalEntries, uiLevel, parentKey);
+                    }
+                }
+            }
+        }
+    }
+
+    return bRes;
+}
+
+
+
+
+bool medDataModel::writeResults(QString pi_sourceId, medAbstractData * pi_pData, QStringList pi_UriOfRelatedData, QString pi_basePath, medWritingPolicyData & pi_writingPolicyData, medAbstractWritingPolicy * pi_pWritingPolicy)
+{
+    bool bRes = true;
+
+    auto * pWp = pi_pWritingPolicy;
+
+    if (pWp == nullptr)
+    {
+        pWp =  getSourceWPolicy(pi_sourceId);
+
+        if (pWp == nullptr)
+        {
+            pWp = getGeneralWPolicy();
+        }
+    }
+
+    QMap<QString, QString> metaData;//pi_pData->metaData(); //TODO
+    QString computedName = pWp->computeName(pi_writingPolicyData.baseName, pi_writingPolicyData.prefix, pi_writingPolicyData.suffix, metaData);
+
+    QString pathOfRelatedData = convertToPath(pi_UriOfRelatedData); // to path of pi_URIOfRelatedData
+
+    QString path;
+    QStringList uri;
+    QMap<int, QString> knownKeys;
+
+
+    auto originPath = pathOfRelatedData.split("\r\n");
+    auto sugestedPath = pi_basePath.split("\r\n", QString::SkipEmptyParts);
+
+
+
+
+    // ////////////////////////////////////////////////////////////////////////////////////////
+    // If we write in the same source as origin, we already known the keys used to build the path, then we initialize knownKeys
+    if (!pi_UriOfRelatedData.isEmpty())
+    {
+        QString suggestedSourceId = pi_UriOfRelatedData.takeFirst();
+        if (pi_sourceId == suggestedSourceId)
+        {
+            for (int i = 0; i < pi_UriOfRelatedData.size(); ++i)
+            {
+                knownKeys[i] = pi_UriOfRelatedData[i];
+            }
+        }
+    }
+    // ////////////////////////////////////////////////////////////////////////////////////////
+
+
+    // ////////////////////////////////////////////////////////////////////////////////////////
+    // Check la coherence de la proposition par rapport à l'URI
+    auto limite = std::min(originPath.size(), sugestedPath.size());
+    for (int i = 0; i < limite; ++i)
+    {
+        bRes = bRes && (originPath[i] == sugestedPath[i]);
+    }
+    if (bRes)
+    {
+        if (originPath.size() > sugestedPath.size())
+        {
+            path = originPath.join("\r\n");
+        }
+        else
+        {
+            path = sugestedPath.join("\r\n");
+        }
+        // ////////////////////////////////////////////////////////////////////////////////////////
+
+        // ////////////////////////////////////////////////////////////////////////////////////////
+        // We compute path and call createPath
+        path = pWp->computePath(pi_sourceId, path, metaData);
+        bRes = createPath(pi_sourceId, path.split("\r\n"), uri, knownKeys);
+        // ////////////////////////////////////////////////////////////////////////////////////////
+
+        // ////////////////////////////////////////////////////////////////////////////////////////
+        // si bRes true alors write
+        if (bRes)
+        {
+            saveData3(pi_pData, computedName, uri);
+        }
+        // ////////////////////////////////////////////////////////////////////////////////////////
+    }
+
+    return bRes;
+}
+
+
+
+
+
 medAbstractSource * medDataModel::getDefaultWorkingSource()
 {
     return m_defaultSource;
@@ -458,6 +625,38 @@ medAbstractSource * medDataModel::getSourceToWrite(QString pi_sourceIdDst)
     return pSource;
 }
 
+QString medDataModel::uriAsString(QStringList pi_uri)
+{
+    QString uriRes;
+
+    if (pi_uri.size() > 0)
+    {
+        uriRes = pi_uri.takeFirst() + ':';
+        uriRes += pi_uri.join("\r\n");
+    }
+
+    return uriRes;
+}
+
+QStringList medDataModel::uriAsList(QString pi_uri)
+{
+    QStringList uriRes;
+
+    int sourceDelimterIndex = pi_uri.indexOf(QString(":"));
+    if (sourceDelimterIndex > -1)
+    {
+        uriRes = pi_uri.right(pi_uri.size() - sourceDelimterIndex - 1).split(QString("\r\n"));
+        uriRes.push_front(pi_uri.left(sourceDelimterIndex));
+    }
+    else
+    {
+        uriRes = pi_uri.split(QString("\r\n"));
+        uriRes.push_front("");
+    }
+    
+    return uriRes;
+}
+
 void medDataModel::extractBasePath(medAbstractData * pi_pData, QStringList &pi_basePath)
 {
     auto baseData = pi_pData->parentData();
@@ -472,152 +671,74 @@ void medDataModel::extractBasePath(medAbstractData * pi_pData, QStringList &pi_b
     }
 }
 
-QUuid medDataModel::saveData2(medAbstractData *pi_pData, QString const &pi_baseName, QStringList pi_basePathHuman,
-                              QStringList pi_basePathURI, QStringList pi_relativeDirDst, QString pi_prefix,
-                              QString pi_suffix,
-                              QMap<QString, QString> pi_metaData, medAbstractWritingPolicy *pi_policy,
-                              QString pi_sourceIdDst)
+QString medDataModel::convertToPath(QStringList pi_Uri)
 {
-    medAbstractSource * pSource = getSourceToWrite(pi_sourceIdDst);
-    QStringList dstUri;
-    QStringList parentUri;
+    QString pathRes;
 
-    if (pSource && pi_pData)
+    auto * pModel = getModel(pi_Uri[0]);
+    if (pModel != nullptr)
     {
-        // ///////////////////////////////////////////////////////////////////////////////
-        // Bloc to compute destination URI
-        // warning:
-        //         - DONE : add an argument to obtain WP from process if exist
-        //         - use pi_basePathURI when source origin and destination are the same
-        // ///////////////////////////////////////////////////////////////////////////////
-        //medAbstractWritingPolicy * pWp = getWPolicy(pSource);
-        QStringList relPathDst = pi_policy->computeRelativePathDst(pi_baseName, pi_relativeDirDst, pi_prefix, pi_suffix, pi_metaData);
+        auto index = pModel->toIndex(pi_Uri);
+        pathRes = pModel->toHumanReadableUri(index);
+    }
 
-        extractBasePath(pi_pData, pi_basePathHuman);
-        dstUri = pi_policy->computeHumanUri(relPathDst, pi_basePathHuman, pi_metaData);
+    return pathRes;
+}
 
-        pi_policy->checkUri(dstUri, &dstUri);
-        // ///////////////////////////////////////////////////////////////////////////////
-        // <END> Bloc to compute destination URI
-        // ///////////////////////////////////////////////////////////////////////////////
+bool medDataModel::createPath(QString pi_sourceId, QStringList pi_folders, QStringList &po_uri, QMap<int, QString> pi_knownKeys)
+{
+    bool bRes = true;
 
+    po_uri.clear();
 
+    auto * pModel = getModel(pi_sourceId);
+    medAbstractSource* pSource = m_sourceIdToInstanceMap.value(pi_sourceId);
+    if (pModel && pSource)
+    {
+        po_uri.push_front(pi_sourceId);
 
-
-        // ///////////////////////////////////////////////////////////////////////////////
-        // Bloc to ensure the destination tree
-        // warning:
-        //         - create folder if not exist
-        //         - use pi_basePathURI when source origin and destination are the same
-        //         - exit cleanly if creation failed
-        //
-        //         -createPath/createFolder
-        // ///////////////////////////////////////////////////////////////////////////////
-        bool bContinue = true;
-        medSourceItemModel *pModel = m_sourcesModelMap.value(pSource);
-        do
+        for (unsigned int i = 0; (i < pi_folders.size() && bRes); ++i)
         {
-            parentUri = pModel->fromHumanReadableUri(dstUri);
-            int iParentSize = parentUri.size();
-            if (iParentSize < dstUri.size())
+            if (pi_knownKeys.contains(i))
             {
-                pModel->fetch(parentUri);
-                parentUri = pModel->fromHumanReadableUri(dstUri);
-                if (iParentSize == parentUri.size())
-                {
-                    //createFolder(....);
-                }
-                //TODO Try to create missing level
-
-                //TODO if creation failed then bContinue = false and return error
+                po_uri.push_back(pi_knownKeys[i]);
+                bRes = pModel->toIndex(po_uri).isValid();
             }
             else
             {
-                bContinue = false;
-            }
-        } while (bContinue);
-        // ///////////////////////////////////////////////////////////////////////////////
-        // <END> Bloc to ensure the destination tree
-        // ///////////////////////////////////////////////////////////////////////////////
+                QString keyTmp = pModel->keyForPath(po_uri, pi_folders[i]);
 
-
-
-
-
-        // ///////////////////////////////////////////////////////////////////////////////
-        // Bloc to send data to destination source
-        // warning:
-        //         - create folder if not exist
-        //         - use pi_basePathURI when source origin and destination are the same
-        //         - exit cleanly if creation failed
-        //
-        //         - getSupportedxxxx /!\ MUST BE RENAMED
-        //         - getTypeAndFormat
-        //         - isCached 
-        //         - addDirectData
-        //         - addAssyncData
-        //         - commitData
-        //         - setThumbnail
-        // ///////////////////////////////////////////////////////////////////////////////
-
-        // TODO continue and refactoring the next part code
-        int iTypeOfPassingData = pSource->getIOInterface();
-        switch (iTypeOfPassingData) //TODO replace by if elseif + bitmask
-        {
-            case IO_FILE:
-            {
-                QTemporaryDir tmpDir;
-                if (tmpDir.isValid())
+                if (keyTmp.isEmpty())
                 {
-                    QString fullTmpPath = tmpDir.path() + "/" + QUuid::createUuid().toString().replace("{", "").replace("}", "");
-                    bool bWritableData = medDataExporter::convertSingleDataOnfly(pi_pData, fullTmpPath);
-                    if (bWritableData)
+                    pModel->fetch(po_uri);
+                    keyTmp = pModel->keyForPath(po_uri, pi_folders[i]);
+                    if (keyTmp.isEmpty())
                     {
-                        QVariant dataset;
-                        dataset.setValue(fullTmpPath);
-                        //TODO build list of levelMinimalEntries to pass to addDirectData, 
-                        QString key;// = pSource->addDirectData(dataset, parentUri, pi_pData->getExpectedName());
-
-                        // ////////////////////////////////////////////////////////////////////////
-                        // Refresh dataModelElement
-                        if (!key.isEmpty())
+                        medAbstractSource::levelMinimalEntries lme;
+                        medAbstractSource::datasetAttributes4 dataSetAttributes;
+                        lme.name = pi_folders[i];
+                        bRes = pSource->createFolder(lme, dataSetAttributes, i, po_uri.last());
+                        if (bRes)
                         {
-                            m_sourcesModelMap[pSource]->fetch(parentUri);
+                            keyTmp = lme.key;                            
                         }
-                        else
-                        {
-                            //                sourceIsOnline(splittedUri[0]);
-                        }
-                        parentUri.append(key);
-                        pi_pData->dataIndex().setUri(parentUri);
+                    }
+                    if (!keyTmp.isEmpty())
+                    {
+                        po_uri.push_back(keyTmp);
+                        pModel->fetch(po_uri);
+                    }
+                    else
+                    {
+                        bRes = false;
                     }
                 }
-                break;
             }
-            case IO_MEDABSTRACTDATA:
-            {
-                break;
-            }
-            case IO_STREAM:
-            {
-                break;
-            }
-            default:
-                //TODO Exit in error
-                break;
         }
-
-        // ///////////////////////////////////////////////////////////////////////////////
-        // <END> Bloc to send data to destination source
-        // ///////////////////////////////////////////////////////////////////////////////
     }
 
-
-    return QUuid();
+    return bRes;
 }
-
-
-
 
 void medDataModel::addData(medAbstractData * pi_dataset, QString uri)
 {
@@ -705,38 +826,34 @@ void medDataModel::expandAll(const QString &sourceInstanceId)
     }
 }
 
-medAbstractWritingPolicy * medDataModel::getWPolicy(medAbstractSource * pi_pSourceDst)
+medAbstractWritingPolicy * medDataModel::getSourceWPolicy(QString pi_sourceId)
 {
     medAbstractWritingPolicy* writePolicyRes = nullptr;
 
-    if (pi_pSourceDst)
+    medAbstractSource *pSourceDst = getSourceToWrite(pi_sourceId);
+    if (pSourceDst)
     {
-        writePolicyRes = pi_pSourceDst->getWritingPolicy();
-
-        if (writePolicyRes == nullptr)
-        {
-            writePolicyRes = &m_generalWritingPolicy;
-        }
+        writePolicyRes = pSourceDst->getWritingPolicy();
     }
 
     return writePolicyRes;
 }
 
-medAbstractWritingPolicy * medDataModel::getWPolicy(medAbstractWritingPolicy * pi_policy, QString pi_sourceId)
-{
-    medAbstractWritingPolicy* writePolicyRes = pi_policy;
-    if (writePolicyRes == nullptr)
-    {
-        medAbstractSource *pSourceDst = getSourceToWrite(pi_sourceId);
-        if (pSourceDst)
-        {
-            writePolicyRes = pSourceDst->getWritingPolicy();
-
-            if (writePolicyRes == nullptr)
-            {
-                writePolicyRes = &m_generalWritingPolicy;
-            }
-        }
-    }
-    return writePolicyRes;
-}
+//medAbstractWritingPolicy * medDataModel::getWPolicy(medAbstractWritingPolicy * pi_policy, QString pi_sourceId)
+//{
+//    medAbstractWritingPolicy* writePolicyRes = pi_policy;
+//    if (writePolicyRes == nullptr)
+//    {
+//        medAbstractSource *pSourceDst = getSourceToWrite(pi_sourceId);
+//        if (pSourceDst)
+//        {
+//            writePolicyRes = pSourceDst->getWritingPolicy();
+//
+//            if (writePolicyRes == nullptr)
+//            {
+//                writePolicyRes = &m_generalWritingPolicy;
+//            }
+//        }
+//    }
+//    return writePolicyRes;
+//}

@@ -587,24 +587,28 @@ void polygonLabel::createMask(int label, QString &desc)
     }
 
     output->addParentData(inputData);
+    medWritingPolicyData writingPolicyData;
+    writingPolicyData.baseName = inputData->getExpectedName();
+    writingPolicyData.suffix = "_segmented";
+    writeResults(inputData->dataIndex().uri()[0], output, inputData->dataIndex().uri(), "", writingPolicyData);
 
-    medUtilities::setDerivedMetaData(output, inputData, desc, false, false);
-    if (inputData->dataIndex().isV2())
-    {
-        QStringList desturi = inputData->dataIndex().uri();
-        if (desturi.first().contains("medSQLite"))
-        {
-            desturi.pop_back();
-        }
-
-        output->setDataIndex(desturi);
-        output->addParentData(inputData);
-        QString desc = inputData->getExpectedName() + "_segmented";
-        output->setExpectedName(desc);
-        output->setMetaData(medMetaDataKeys::SeriesDescription.key(), desc);
-    }
-
-    medDataManager::instance()->importData(output, false);
+    //medUtilities::setDerivedMetaData(output, inputData, desc, false, false);
+    //if (inputData->dataIndex().isV2())
+    //{
+    //    QStringList desturi = inputData->dataIndex().uri();
+    //    if (desturi.first().contains("medSQLite"))
+    //    {
+    //        desturi.pop_back();
+    //    }
+    //
+    //    output->setDataIndex(desturi);
+    //    output->addParentData(inputData);
+    //    QString desc = inputData->getExpectedName() + "_segmented";
+    //    output->setExpectedName(desc);
+    //    output->setMetaData(medMetaDataKeys::SeriesDescription.key(), desc);
+    //}
+    //
+    //medDataManager::instance()->importData(output, false);
 }
 
 void polygonLabel::SetMasterRoi()
@@ -704,71 +708,101 @@ void polygonLabel::changeContoursColor(QColor color)
 /*!
 *  To move to medAbstractProcess medInria 4
 */
+
 #include <medDataModel.h>
-bool polygonLabel::writeResults(medAbstractData * pi_pData, QString const & pi_baseName, QStringList pi_relativeDirDst, QString pi_prefix, QString pi_suffix, QMap<QString, QString> pi_metaData, QString pi_sourceIdDst)
+
+
+medAbstractWritingPolicy * polygonLabel::getBestWPolicy(QString pi_sourceId)
 {
-    bool bRes = true;
+    medAbstractWritingPolicy* writePolicyRes = d->writePolicy;
 
-//    QStringList baseDataUri;
-//    medAbstractSource * pSource = medDataModel::instance()->getSourceToWrite(pi_sourceIdDst); //nullptr;
-//
-//    if (pSource)
-//    {
-//        medAbstractWritingPolicy * pWp = getWPolicy(pSource);
-    auto *pWp = medDataModel::instance()->getWPolicy(d->writePolicy, pi_sourceIdDst);
-    QStringList relPathDst = pWp->computeRelativePathDst(pi_baseName, pi_relativeDirDst, pi_prefix, pi_suffix, pi_metaData);
-
-
-    // TODO Split this method in 3 :
-    // - 1. Ecriture de la donnée à cote de la donnée d'origine dans la source d'origine (URI)
-    // - 2. Ecriture de la donnée dans la source tmp (HumanURI)
-    // - 3. Creation d'une arborescence dans la source d'origine (HumanURI)
-
-    //auto dstUri = pWp->computeHumanUri(relPathDst, pi_basePathHuman, pi_metaData);
-
-        QStringList basePathHuman, basePathUri;
-        medDataModel::instance()->saveData2(pi_pData, pi_baseName, basePathHuman,
-                                            basePathUri, pi_relativeDirDst,
-                                            pi_prefix, pi_suffix, pi_metaData,
-                                            d->writePolicy, pi_sourceIdDst);
-//        QStringList relPathDst = pWp->computeRelativePathDst(pi_baseName, pi_relativeDirDst, pi_prefix, pi_suffix, pi_metaData);
-//        auto baseData = pi_pData->parentData();
-//        if (!baseData.isEmpty())
-//        {
-//            //TODO baseDataUri = baseData[0]->dataIndex().humanReadableUriAsList();
-//            if (baseDataUri.size()>1)
-//            {
-//                baseDataUri.pop_back();
-//                baseDataUri[0] = pi_sourceIdDst;
-//            }
-//        }
-//
-//        QStringList dstUri = pWp->computeHumanUri(relPathDst, baseDataUri, pi_metaData);
-//
-//        pWp->checkUri(dstUri, &dstUri);
-
-        //TODO bRes = medDataModel::instance()->write(pi_pData, dstUri);
-//    }
-
-    return bRes;
-}
-
-medAbstractWritingPolicy * polygonLabel::getWPolicy(medAbstractSource * pi_pSourceDst)
-{
-    medAbstractWritingPolicy* writePolicyRes = nullptr;
-
-    if (pi_pSourceDst)
+    if (writePolicyRes == nullptr)
     {
-        writePolicyRes = d->writePolicy;
+        writePolicyRes = medDataModel::instance()->getSourceWPolicy(pi_sourceId);
 
         if (writePolicyRes == nullptr)
         {
-            writePolicyRes = medDataModel::instance()->getWPolicy(pi_pSourceDst);
+            writePolicyRes = medDataModel::instance()->getGeneralWPolicy();
         }
     }
 
     return writePolicyRes;
 }
+
+bool polygonLabel::writeResults(QString pi_sourceId, medAbstractData * pi_pData, QStringList pi_UriOfRelatedData, QString pi_basePath, medWritingPolicyData & pi_writingPolicyData)
+{
+    return medDataModel::instance()->writeResults(pi_sourceId, pi_pData, pi_UriOfRelatedData, pi_basePath, pi_writingPolicyData, d->writePolicy);
+    //bool bRes = true;
+    //
+    //auto * pWp = getBestWPolicy(pi_sourceId);
+    //QMap<QString, QString> metaData;//pi_pData->metaData(); //TODO
+    //QString computedName = pWp->computeName(pi_writingPolicyData.baseName, pi_writingPolicyData.prefix, pi_writingPolicyData.suffix, metaData);
+    //
+    //QString pathOfRelatedData = medDataModel::instance()->convertToPath(pi_UriOfRelatedData); // to path of pi_URIOfRelatedData
+    //
+    //QString path;
+    //QStringList uri;
+    //QMap<int, QString> knownKeys;
+    //
+    //
+    //auto originPath   = pathOfRelatedData.split("\r\n");
+    //auto sugestedPath = pi_basePath.split("\r\n");
+    //
+    //
+    //// ////////////////////////////////////////////////////////////////////////////////////////
+    //// If we write in the same source as origin, we already known the keys used to build the path, then we initialize knownKeys
+    //if (!pi_UriOfRelatedData.isEmpty()) 
+    //{
+    //    QString suggestedSourceId = pi_UriOfRelatedData.takeFirst();
+    //    if(pi_sourceId == suggestedSourceId)
+    //    {
+    //        for (int i = 0; i < pi_UriOfRelatedData.size(); ++i)
+    //        {
+    //            knownKeys[i] = pi_UriOfRelatedData[i];
+    //        }
+    //    }
+    //}
+    //// ////////////////////////////////////////////////////////////////////////////////////////
+    //
+    //
+    //// ////////////////////////////////////////////////////////////////////////////////////////
+    //// Check la coherence de la proposition par rapport à l'URI
+    //auto limite = std::min(originPath.size(), sugestedPath.size());
+    //for (int i = 0; i < limite; ++i)
+    //{
+    //    bRes = bRes && (originPath[i] == sugestedPath[i]);
+    //}
+    //if (bRes)
+    //{
+    //    if (originPath.size() > sugestedPath.size())
+    //    {
+    //        path = originPath.join("\r\n");
+    //    }
+    //    else
+    //    {
+    //        path = sugestedPath.join("\r\n");
+    //    }
+    //    // ////////////////////////////////////////////////////////////////////////////////////////
+    //
+    //    // ////////////////////////////////////////////////////////////////////////////////////////
+    //    // We compute path and call createPath
+    //    path = pWp->computePath(pi_sourceId, path, metaData);
+    //    bRes = medDataModel::instance()->createPath(pi_sourceId, path.split("\r\n"), uri, knownKeys);
+    //    // ////////////////////////////////////////////////////////////////////////////////////////
+    //
+    //    // ////////////////////////////////////////////////////////////////////////////////////////
+    //    // si bRes true alors write
+    //    if (bRes)
+    //    {
+    //        medDataModel::instance()->saveData3(pi_pData, computedName, uri);
+    //    }
+    //    // ////////////////////////////////////////////////////////////////////////////////////////
+    //}
+    //
+    //return bRes;
+}
+
+
 
 QColor polygonLabel::switchColor()
 {

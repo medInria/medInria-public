@@ -360,27 +360,7 @@ int medSourceItemModel::getSectionInsideLevel(int level, int column) const
 
 bool medSourceItemModel::fetch(QStringList uri) //See populateLevelV2
 {
-//    QString sourceId = uri.takeFirst();
-//    QModelIndex childIndex;
-//    QModelIndex tmpIndex;
-//    QString tmpIId;
-    QString uriAsString = uri[0] + ":";
-    int i = 1;
-    if (uri.size() > 1)
-    {
-        uriAsString += uri[i];
-        ++i;
-    }
-    if (uri.size() > 2)
-    {
-        do
-        {
-            uriAsString += "\r\n" + uri[i];
-            ++i;
-        } while (i < uri.size());
-    }
-
-    populateLevelV2(toIndex(uriAsString), uri.last());
+    populateLevelV2(toIndex(uri), uri.last());
 //    int i = 0;
 //    for (auto iid : uri)
 //    {
@@ -527,12 +507,17 @@ bool medSourceItemModel::setAdditionnalMetaData(QModelIndex const & index, QList
 
 QModelIndex medSourceItemModel::toIndex(QString uri)
 {
-    QModelIndex indexRes;
-
     int sourceDelimterIndex = uri.indexOf(QString(":")); //TODO06
     QStringList uriAsList = uri.right(uri.size() - sourceDelimterIndex - 1).split(QString("\r\n"));
     uriAsList.push_front(uri.left(sourceDelimterIndex));
     
+    return toIndex(uriAsList);
+}
+
+QModelIndex medSourceItemModel::toIndex(QStringList uri)
+{
+    QModelIndex indexRes;
+
     //if ((uriAsList.size() > 1) && (uriAsList[0] == d->sourceInstanceId))
     //{
     //    auto itemTmp = d->root;
@@ -545,12 +530,12 @@ QModelIndex medSourceItemModel::toIndex(QString uri)
     //    } while (i < uriAsList.size() && indexRes.isValid());
     //}
 
-    if ((uriAsList.size() > 1) && (uriAsList[0] == d->sourceInstanceId))
+    if ((uri.size() > 1) && (uri[0] == d->sourceInstanceId))
     {
         auto itemTmp = d->root;
-        for(int i = 1; i < uriAsList.size() && itemTmp; ++i)        
+        for(int i = 1; i < uri.size() && itemTmp; ++i)
         {
-            itemTmp = itemTmp->child(itemTmp->childIndex(uriAsList[i]));
+            itemTmp = itemTmp->child(itemTmp->childIndex(uri[i]));
         }
         if (itemTmp)
         {
@@ -579,7 +564,7 @@ QString medSourceItemModel::toUri(QModelIndex index)
 
 QString medSourceItemModel::toHumanReadableUri(QModelIndex const & index)
 {
-    QString HRUriRes;
+    //QString HRUriRes;
 
     QModelIndex indexTmp = index;
     QStringList tmpNames;
@@ -593,17 +578,17 @@ QString medSourceItemModel::toHumanReadableUri(QModelIndex const & index)
         }
         indexTmp = indexTmp.parent();
     }
-
-    if (!tmpNames.isEmpty())
-    {
-        int i = 0;
-        for (i = 0; i < tmpNames.size() - 1; ++i)
-        {
-            HRUriRes += tmpNames[i] + "\r\n";
-        }
-        HRUriRes += tmpNames[i];
-    }
-    return HRUriRes;
+    
+    //if (!tmpNames.isEmpty())
+    //{
+    //    int i = 0;
+    //    for (i = 0; i < tmpNames.size() - 1; ++i)
+    //    {
+    //        HRUriRes += tmpNames[i] + "\r\n";
+    //    }
+    //    HRUriRes += tmpNames[i];
+    //}
+    return tmpNames.join("\r\n");;
 }
 
 QStringList medSourceItemModel::fromHumanReadableUri(QStringList humanUri)
@@ -628,6 +613,19 @@ QStringList medSourceItemModel::fromHumanReadableUri(QStringList humanUri)
     }
 
     return uriRes;
+}
+
+QString medSourceItemModel::keyForPath(QStringList rootUri, QString folder)
+{
+    QString keyRes;
+
+    QModelIndex index = toIndex(rootUri);
+    if (index.isValid() || rootUri.size()==1) //if valid index was found or if rootUri contains only sourceId, because sourceId only return invalid root index
+    {
+        keyRes = getItem(index)->iid(folder);
+    }
+
+    return keyRes;
 }
 
 bool medSourceItemModel::setAdditionnalMetaData2(QModelIndex const & index, datasetAttributes4 const & attributes)

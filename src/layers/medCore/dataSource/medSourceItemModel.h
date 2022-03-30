@@ -86,9 +86,11 @@ public:
 
     //FLO
     QModelIndex toIndex(QString uri);
+    QModelIndex toIndex(QStringList uri);
     QString     toUri(QModelIndex index);
     QString     toHumanReadableUri(QModelIndex const & index);
     QStringList fromHumanReadableUri(QStringList humanUri);
+    QString     keyForPath(QStringList rootUri, QString folder);
 
     bool        setAdditionnalMetaData2(QModelIndex const & index, datasetAttributes4 const &attributes);
     bool        setAdditionnalMetaData2(QModelIndex const & index, QString const & key, QVariant const & value, QString const & tag = QString() );
