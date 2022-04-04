@@ -38,78 +38,67 @@ public:
     static medDataModel* instance(QObject *parent = nullptr);
 	~medDataModel();
 
-    bool setDefaultWorkingSource(unsigned int i);
 
     // ////////////////////////////////////////////////////////////////////////////////////////////
     // Members functions to interrogate the source
-    bool sourceGlobalInfo(QString const &pi_sourceIntanceId, bool &pi_bOnline, bool &pi_bWritable, bool & pi_bLocal, bool &pi_bCache);
-    bool mandatoryAttributesKeys(QString const & pi_sourceIntanceId, unsigned int pi_uiLevel, QStringList & po_attributes);
-    bool attributesForBuildTree(QString const & pi_sourceIntanceId, unsigned int pi_uiLevel, QString const & key, levelAttributes & po_entries);
-    bool mandatoriesAttributes(QString const & pi_sourceIntanceId, unsigned int pi_uiLevel, QString const & parentKey, levelAttributes & po_entries);
-    bool optionalAttributes(QString const & pi_sourceIntanceId, unsigned int pi_uiLevel, QString const & key, datasetAttributes & po_attributes, datasetAttributes & po_tags);
-    bool levelCount(QString const & pi_sourceIntanceId, unsigned int &po_uiLevelMax);
+    bool sourceGlobalInfo       (QString const & pi_sourceInstanceId, bool &pi_bOnline, bool &pi_bWritable, bool & pi_bLocal, bool &pi_bCache);
+    bool mandatoryAttributesKeys(QString const & pi_sourceInstanceId, unsigned int pi_uiLevel, QStringList & po_attributes);
+    bool attributesForBuildTree (QString const & pi_sourceInstanceId, unsigned int pi_uiLevel, QString const & key, levelAttributes & po_entries);
+    bool mandatoriesAttributes  (QString const & pi_sourceInstanceId, unsigned int pi_uiLevel, QString const & parentKey, levelAttributes & po_entries);
+    bool optionalAttributes     (QString const & pi_sourceInstanceId, unsigned int pi_uiLevel, QString const & key, datasetAttributes & po_attributes, datasetAttributes & po_tags);
+    bool levelCount             (QString const & pi_sourceInstanceId, unsigned int &po_uiLevelMax);
     QList<medAbstractParameter *> filteringParameters(QString const & pi_sourceInstanceId);
+    bool saveData(medAbstractData *pi_pData, QString const &pi_baseName, QStringList pi_uri);
 
     // ////////////////////////////////////////////////////////////////////////////////////////////
-    // Members functions to access sourceItemModel
-    void getModelData(QModelIndex &index, datasetAttributes &attributes, int role = 0);
-    void setModelData(QModelIndex &index, datasetAttributes &attributes, int role = 0);
-    void getModelMetaData(QModelIndex &index, datasetAttributes &attributes, datasetAttributes &tag);
-    void setModelMetaData(QModelIndex &index, datasetAttributes &attributes, datasetAttributes &tag);
-
-
-
-    // ////////////////////////////////////////////////////////////////////////////////////////////
-    // Members functions to deal with datamodel
-    QString getInstanceName(QString const & pi_sourceIntanceId);
+    // Members functions to deal with datamodel                                Advanced Accessors
+    QString getInstanceName(QString const & pi_sourceInstanceId);
     QList<medSourceItemModel*> models(); // rediscute de son nom
-    medSourceItemModel* getModel(QString const & pi_sourceIntanceId);
+    medSourceItemModel* getModel(QString const & pi_sourceInstanceId);
+
 
     // ////////////////////////////////////////////////////////////////////////////////////////////
-    // Members functions to get Data, metadata and informations
+    // Members functions to get Data, metadata and informations                Datasets handling
     medAbstractData * getData(medDataIndex const & index);
-    datasetAttributes getMetaData(QModelIndex const & index); //TODO Rename
-    QUuid saveData(medAbstractData &data);
+    datasetAttributes getMetaData(QModelIndex const & index); //TODO move to medSourceItemModel
+    bool getDataNames(QStringList uri, QStringList &names);
+    bool createPath(QString pi_sourceId, QStringList pi_folders, QStringList &po_uri, QMap<int, QString> pi_knownKeys = QMap<int, QString>());
 
-    void extractBasePath(medAbstractData * pi_pData, QStringList &pi_basePath);
+    bool writeResults(QString pi_sourceId, medAbstractData * pi_pData, QStringList pi_UriOfRelatedData, QString pi_basePath, medWritingPolicyData & pi_writingPolicyData, medAbstractWritingPolicy * pi_pWritingPolicy);
+    QUuid writeResultsHackV3(medAbstractData &data, bool originSrc); //To Adapt
+
+
+
+    // ////////////////////////////////////////////////////////////////////////////////////////////
+    // URI and PATH handler
+    bool setDefaultWorkingSource(unsigned int i);
     medAbstractSource * getDefaultWorkingSource();
     medAbstractSource * getSourceToWrite(QString pi_sourceIdDst = "");
-    
+
+
+    // ////////////////////////////////////////////////////////////////////////////////////////////
+    // URI and PATH handler
     static QString uriAsString(QStringList pi_uri);
     static QStringList uriAsList(QString pi_uri);
-
     QString convertToPath(QStringList pi_Uri);
-    bool createPath(QString pi_sourceId, QStringList pi_folders, QStringList &po_uri, QMap<int, QString> pi_knownKeys = QMap<int, QString>());
-    //bool saveData(QStringList pi_Uri, QString pi_dataName, medAbstractData *pi_data);
 
 
-    bool saveData3(medAbstractData *pi_pData, QString const &pi_baseName, QStringList pi_uri);
-    bool writeResults(QString pi_sourceId, medAbstractData * pi_pData, QStringList pi_UriOfRelatedData, QString pi_basePath, medWritingPolicyData & pi_writingPolicyData, medAbstractWritingPolicy * pi_pWritingPolicy);
-
-    /** *****************************************************************************************************************/
-    /** *****************************************************************************************************************/
-    /**  TODO TODO TODO TODO TODO TODO TODO TODO TODO TODO TODO TODO TODO TODO TODO TODO TODO TODO TODO TODO TODO TODO **/
-    /** *****************************************************************************************************************/
-    /** *****************************************************************************************************************/
-    /**                                                                                                                **/
-    /** Implement a mechanism substitute temporary id of data to final id given by source                              **/
-    /** to do this:                                                                                                    **/
-    /**   - keep a list of temporaries id of data                                                                      **/
-    /**   - keep a list request id and type of request associated to it (data, key, path)                              **/
-    /**   - keep a mapping between them                                                                                **/
-    /**   - listen the signal finish of source                                                                         **/
-    /**   - call the getAsyncResults on a source                                                                       **/
-    /**                                                                                                                **/
-    /** *****************************************************************************************************************/
-    /** *****************************************************************************************************************/
-
-
-    void expandAll(const QString &sourceInstanceId);
-
+    // ////////////////////////////////////////////////////////////////////////////////////////////
+    // Writing Policy
     medAbstractWritingPolicy* getSourceWPolicy(QString pi_sourceId);
     medAbstractWritingPolicy* getGeneralWPolicy(){ return &m_generalWritingPolicy; }
     //medAbstractWritingPolicy* getWPolicy(medAbstractWritingPolicy * pi_policy, QString pi_sourceId = "");
 
+
+    void expandAll(const QString &sourceInstanceId);
+
+
+    // ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+    // ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+    // ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+    // ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+    // ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+    // ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 public slots:
    void addSource(medAbstractSource* pi_source);
    void removeSource(medAbstractSource* pi_source);
@@ -130,7 +119,7 @@ private:
 signals:
     void sourceAdded(medAbstractSource*);   // Signal to indicate a source was registered
 	void sourceRemoved(QString); // Signal to indicate a source was unregistered
-    //void sourceOnline(QString, bool);
+
 
 private:
     QStringList m_sourceInstanceIdOrderedList;
@@ -142,3 +131,22 @@ private:
     medDefaultWritingPolicy m_generalWritingPolicy;
     static medDataModel * s_instance;
 };
+
+
+
+/** *****************************************************************************************************************/
+/** *****************************************************************************************************************/
+/**  TODO TODO TODO TODO TODO TODO TODO TODO TODO TODO TODO TODO TODO TODO TODO TODO TODO TODO TODO TODO TODO TODO **/
+/** *****************************************************************************************************************/
+/** *****************************************************************************************************************/
+/**                                                                                                                **/
+/** Implement a mechanism substitute temporary id of data to final id given by source                              **/
+/** to do this:                                                                                                    **/
+/**   - keep a list of temporaries id of data                                                                      **/
+/**   - keep a list request id and type of request associated to it (data, key, path)                              **/
+/**   - keep a mapping between them                                                                                **/
+/**   - listen the signal finish of source                                                                         **/
+/**   - call the getAsyncResults on a source                                                                       **/
+/**                                                                                                                **/
+/** *****************************************************************************************************************/
+/** *****************************************************************************************************************/

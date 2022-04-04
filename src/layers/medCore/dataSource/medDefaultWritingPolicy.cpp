@@ -29,23 +29,10 @@ void medDefaultWritingPolicy::addSubstitutionSet(QString const & pi_toSubstitute
     m_substitutionMap[pi_toSubstitute] = pi_substitution;
 }
 
-//QStringList medDefaultWritingPolicy::computeRelativePathDst(QString const & pi_baseName, QStringList pi_relativeDirDst)
-//{
-//    QStringList uriRes = pi_relativeDirDst;
-//
-//    uriRes.push_back(pi_baseName);
-//
-//    return uriRes;
-//}
-
-
-
-
 
 QString medDefaultWritingPolicy::computeName(QString const & pi_baseName, QString pi_prefix, QString pi_suffix, QMap<QString, QString> pi_metaData)
 {
     Q_UNUSED(pi_metaData);
-
     return pi_prefix + pi_baseName + pi_suffix;
 }
 
@@ -88,19 +75,6 @@ QString medDefaultWritingPolicy::computePath(QString pi_sourceId, QString pi_sug
     return pathRes.join("\r\n");
 }
 
-
-
-
-
-
-
-
-QStringList medDefaultWritingPolicy::computeHumanUri(QStringList const & pi_relativePathDst, QStringList pi_basePathDst, QMap<QString, QString> pi_metaData)
-{
-    Q_UNUSED(pi_metaData);
-    //return computeHumanUri(pi_relativePathDst, pi_basePathDst);
-    return QStringList();
-}
 
 bool medDefaultWritingPolicy::incrementName(QString & pio_name, QStringList pi_alreadyExistName)
 {
@@ -199,6 +173,7 @@ bool medDefaultWritingPolicy::checkUri(QStringList pi_suggestedUri, QStringList 
 
     return bRes;
 }
+
 
 bool medDefaultWritingPolicy::charactersSubstitution(QStringList pi_suggestedUri, QStringList * pio_rectifiedUri)
 {

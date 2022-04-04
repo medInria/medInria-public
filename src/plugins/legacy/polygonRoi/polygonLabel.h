@@ -89,12 +89,8 @@ public:
     /*!
      *  To move to medAbstractProcess medInria 4
      */
-
     medAbstractWritingPolicy* getBestWPolicy(QString pi_sourceId);
-
     bool writeResults(QString pi_sourceId, medAbstractData * pi_pData, QStringList pi_UriOfRelatedData, QString pi_basePath, medWritingPolicyData & pi_writingPolicyData);
-    //bool writeResults(medAbstractData *pi_pData, QStringList pi_baseUri, medWritingPolicyData &pi_writingPolicyData, QString pi_sourceId = "");     
-
     /*!
      *  To move to medAbstractProcess medInria 4
      */

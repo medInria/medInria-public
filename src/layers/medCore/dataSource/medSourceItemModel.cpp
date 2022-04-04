@@ -514,33 +514,30 @@ QModelIndex medSourceItemModel::toIndex(QString uri)
     return toIndex(uriAsList);
 }
 
+medDataModelItem* medSourceItemModel::getItem(QStringList const &uri)
+{
+    medDataModelItem * itemRes = nullptr;
+
+    if ((uri.size() > 1) && (uri[0] == d->sourceInstanceId))
+    {
+        itemRes = d->root;
+        for (int i = 1; i < uri.size() && itemRes; ++i)
+        {
+            itemRes = itemRes->child(itemRes->childIndex(uri[i]));
+        }
+    }
+
+    return itemRes;
+}
+
 QModelIndex medSourceItemModel::toIndex(QStringList uri)
 {
     QModelIndex indexRes;
 
-    //if ((uriAsList.size() > 1) && (uriAsList[0] == d->sourceInstanceId))
-    //{
-    //    auto itemTmp = d->root;
-    //    int i = 1;
-    //    do
-    //    {
-    //        indexRes = index(itemTmp->childIndex(uriAsList[i]), 0, indexRes);
-    //        itemTmp = static_cast<medDataModelItem*>(indexRes.internalPointer());
-    //        ++i;
-    //    } while (i < uriAsList.size() && indexRes.isValid());
-    //}
-
-    if ((uri.size() > 1) && (uri[0] == d->sourceInstanceId))
+    medDataModelItem * itemTmp =  getItem(uri);
+    if (itemTmp)
     {
-        auto itemTmp = d->root;
-        for(int i = 1; i < uri.size() && itemTmp; ++i)
-        {
-            itemTmp = itemTmp->child(itemTmp->childIndex(uri[i]));
-        }
-        if (itemTmp)
-        {
-            indexRes = createIndex(itemTmp->parent()->childItems.indexOf(itemTmp), 0, itemTmp);
-        }
+        indexRes = createIndex(itemTmp->parent()->childItems.indexOf(itemTmp), 0, itemTmp);
     }
 
     return indexRes;
@@ -626,6 +623,20 @@ QString medSourceItemModel::keyForPath(QStringList rootUri, QString folder)
     }
 
     return keyRes;
+}
+
+bool medSourceItemModel::getDataNames(QStringList uri, QStringList &names)
+{
+    auto* pItem = getItem(uri);
+    if (pItem)
+    {
+        for (auto *pChild : pItem->childItems)
+        {
+            names.push_back(pChild->data(1).toString());
+        }
+    }
+
+    return pItem != nullptr;
 }
 
 bool medSourceItemModel::setAdditionnalMetaData2(QModelIndex const & index, datasetAttributes4 const & attributes)

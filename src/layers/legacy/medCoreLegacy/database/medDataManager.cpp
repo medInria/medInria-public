@@ -79,7 +79,7 @@ public:
     QHash<QUuid, medDataIndex> makePersistentJobs;
 
     medAbstractData *(*f)(medDataIndex const &); //TODO Remove ok c'est le truc le moins classe du monde (Part1)
-    QUuid (*f2)(medAbstractData &); //TODO Remove ok c'est le truc le moins classe du monde (Part1)
+    QUuid (*f2)(medAbstractData &, bool); //TODO Remove ok c'est le truc le moins classe du monde (Part1)
 };
 
 // ------------------------- medDataManager -----------------------------------
@@ -95,7 +95,7 @@ medDataManager *medDataManager::instance()
     return s_instance;
 }
 
-void medDataManager::setIndexV2Handler(medAbstractData *(*f)(medDataIndex const &), QUuid (*f2)(medAbstractData &))
+void medDataManager::setIndexV2Handler(medAbstractData *(*f)(medDataIndex const &), QUuid (*f2)(medAbstractData &, bool))
 {
     d_ptr->f = f;
     d_ptr->f2 = f2;
@@ -197,7 +197,7 @@ QUuid medDataManager::importData(medAbstractData *data, bool persistent)
 
     if (data->dataIndex().isV2())
     {
-        uuid = d->f2(*data);
+        uuid = d->f2(*data, persistent);
     }
     else
     {
