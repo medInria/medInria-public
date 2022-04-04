@@ -1,13 +1,18 @@
+/*
+ * medInria
+ * Copyright (c) INRIA 2013. All rights reserved.
+ * 
+ * medInria is under BSD-2-Clause license. See LICENSE.txt for details in the root of the sources or:
+ * https://github.com/medInria/medInria-public/blob/master/LICENSE.txt
+ * 
+ * This software is distributed WITHOUT ANY WARRANTY; without even
+ * the implied warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.
+ */
+
 #include "medSourcesLoaderPresenter.h"
 
-
-#include <QVBoxLayout>
-#include <QHBoxLayout>
-#include <QGridLayout>
-#include <QGroupBox>
-#include <QPushButton>
-
 #include <medAbstractParameterPresenter.h>
+#include <medSourcesSettings.h>
 
 class medSourcesLoaderPresenterPrivate
 {
@@ -15,7 +20,8 @@ public:
     medSourcesLoader * pSourceLoader;
 };
 
-medSourcesLoaderPresenter::medSourcesLoaderPresenter(medSourcesLoader * parent):d(new medSourcesLoaderPresenterPrivate())
+medSourcesLoaderPresenter::medSourcesLoaderPresenter(medSourcesLoader * parent)
+    : d(new medSourcesLoaderPresenterPrivate())
 {
     d->pSourceLoader = parent;
 }
@@ -28,36 +34,8 @@ medSourcesLoaderPresenter::~medSourcesLoaderPresenter()
 QWidget * medSourcesLoaderPresenter::buildWidget()
 {
     QWidget * pWidgetRes = new QWidget;
-
-    auto * pMainLayout = new QHBoxLayout();
-    auto * pSourceLayout = new QVBoxLayout();
-    auto * pControlLayout = new QVBoxLayout();
-
-    for (auto pSource : d->pSourceLoader->sourcesList())
-    {
-        auto * pSourceParametersBox = new QGroupBox(pSource->getInstanceName());
-        auto * pVLayout = new QVBoxLayout;
-        auto params = pSource->getAllParameters();
-        for (auto * param : params)
-        {
-            auto * pHLayout = new QHBoxLayout;
-            auto * pParamPresenter = medAbstractParameterPresenter::buildFromParameter(param);
-            auto * pWidget = pParamPresenter->buildWidget();
-            if (dynamic_cast<QPushButton*>(pWidget) == nullptr && dynamic_cast<QGroupBox*>(pWidget) == nullptr)
-            {
-                auto * pLabel = pParamPresenter->buildLabel();
-                pHLayout->addWidget(pLabel);
-            }
-            pHLayout->addWidget(pWidget);
-            pVLayout->addLayout(pHLayout);
-        }
-        pSourceParametersBox->setLayout(pVLayout);
-        pSourceLayout->addWidget(pSourceParametersBox);
-    }
-
-    pMainLayout->addLayout(pSourceLayout);
-    pMainLayout->addLayout(pControlLayout);
-    pWidgetRes->setLayout(pMainLayout);
-
+    auto * pMainLayout = new QVBoxLayout();
+    auto * settingsWidget = new medSourcesSettings(d->pSourceLoader, pWidgetRes);
+    pMainLayout->addWidget(settingsWidget);
     return pWidgetRes;
 }

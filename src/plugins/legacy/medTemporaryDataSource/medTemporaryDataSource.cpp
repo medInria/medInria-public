@@ -71,7 +71,7 @@ QList<medAbstractParameter *> medTemporaryDataSource::getFilteringParameters()
     return QList<medAbstractParameter *>();
 }
 
-bool medTemporaryDataSource::isWriteable()
+bool medTemporaryDataSource::isWritable()
 {
     return true;
 }

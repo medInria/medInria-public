@@ -65,7 +65,7 @@ bool medDataModel::setDefaultWorkingSource(unsigned int i)
     if (bRes)
     {
         auto source = m_sourcesModelMap.keys()[i];
-        bool bWritable = source->isWriteable();
+        bool bWritable = source->isWritable();
         bool bLocal = source->isLocal();
         bool bCached = source->isCached();
         bool bOnline = source->isOnline();
@@ -94,7 +94,7 @@ bool medDataModel::sourceGlobalInfo(QString const & pi_sourceInstanceId, bool & 
     medAbstractSource* pSource = m_sourceIdToInstanceMap.value(pi_sourceInstanceId);
     if (pSource)
     {
-        pi_bWritable = pSource->isWriteable();
+        pi_bWritable = pSource->isWritable();
         pi_bLocal    = pSource->isLocal();
         pi_bCache    = pSource->isCached();
         pi_bOnline   = pSource->isOnline();

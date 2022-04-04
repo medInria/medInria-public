@@ -97,7 +97,7 @@ public:
     /* ***********************************************************************/
     /* *************** Get source properties *********************************/
     /* ***********************************************************************/
-    virtual bool isWriteable() = 0;
+    virtual bool isWritable()  = 0;
     virtual bool isLocal()     = 0;
     virtual bool isCached()    = 0;
     virtual bool isOnline()    = 0;

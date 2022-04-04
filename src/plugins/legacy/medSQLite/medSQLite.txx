@@ -206,7 +206,7 @@ QList<medAbstractParameter *> medSQlite<T>::getFilteringParameters()
 }
 
 template <typename T>
-bool medSQlite<T>::isWriteable()
+bool medSQlite<T>::isWritable()
 {
     return true;
 }

@@ -148,7 +148,7 @@ TEST_F(medAPHPGTest, test_disconnect_success)
 
 TEST_F(medAPHPGTest, is_writeable_true)
 {
-    EXPECT_EQ(true, m_->isWriteable());
+    EXPECT_EQ(true, m_->isWritable());
 }
 
 TEST_F(medAPHPGTest, is_local_false)
