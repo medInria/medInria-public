@@ -416,53 +416,78 @@ bool medDataModel::saveData(medAbstractData *pi_pData, QString const &pi_baseNam
             unsigned int uiLevel = pi_uri.size() - 1;
             QString parentKey = pi_uri.last();
 
-            QTemporaryDir tmpDir;
-            if (tmpDir.isValid())
+            if (pSource->getIOInterface()==IO_MEDABSTRACTDATA)
             {
-                bool bWritableData = false;
-                QString fullTmpPath = tmpDir.path() + "/" + QUuid::createUuid().toString().replace("{", "").replace("}", "");
-                QString dataType = pi_pData->identifier();
+                data.setValue(pi_pData);
 
-                auto types = typeAndFormat.keys();
-                QStringList exts;
-                for (int i = 0; i < types.size(); ++i)
+                if (bLocal)
                 {
-                    if (dataType.contains(types[i]))
+                    bRes = pSource->addDirectData(data, minimalEntries, uiLevel, parentKey);
+                    if (bRes)
                     {
-                        exts = typeAndFormat[types[i]];
-                        break;
+                        pModel->fetch(pi_uri);
+                        pi_uri.push_back(minimalEntries.key);
                     }
                 }
-
-                if (exts.isEmpty())
+                else if (bCached)
                 {
-                    bWritableData = medDataExporter::convertSingleDataOnfly(pi_pData, fullTmpPath);
+                    bRes = pSource->commitData(data, minimalEntries, uiLevel, parentKey);
                 }
                 else
                 {
-                    bWritableData = medDataExporter::convertSingleDataOnfly(pi_pData, fullTmpPath, exts);
+                    bRes = pSource->addAssyncData(data, minimalEntries, uiLevel, parentKey);
                 }
-
-                if (bWritableData)
+            }
+            else if (pSource->getIOInterface()==IO_FILE)
+            {
+                QTemporaryDir tmpDir;
+                if (tmpDir.isValid())
                 {
-                    data.setValue(fullTmpPath);
+                    bool bWritableData = false;
+                    QString fullTmpPath = tmpDir.path() + "/" + QUuid::createUuid().toString().replace("{", "").replace("}", "");
+                    QString dataType = pi_pData->identifier();
 
-                    if (bLocal)
+                    auto types = typeAndFormat.keys();
+                    QStringList exts;
+                    for (int i = 0; i < types.size(); ++i)
                     {
-                        bRes = pSource->addDirectData(data, minimalEntries, uiLevel, parentKey);
-                        if (bRes)
+                        if (dataType.contains(types[i]))
                         {
-                            pModel->fetch(pi_uri);
-                            pi_uri.push_back(minimalEntries.key);
+                            exts = typeAndFormat[types[i]];
+                            break;
                         }
                     }
-                    else if (bCached)
+
+                    if (exts.isEmpty())
                     {
-                        bRes = pSource->commitData(data, minimalEntries, uiLevel, parentKey);
+                        bWritableData = medDataExporter::convertSingleDataOnfly(pi_pData, fullTmpPath);
                     }
                     else
                     {
-                        bRes = pSource->addAssyncData(data, minimalEntries, uiLevel, parentKey);
+                        bWritableData = medDataExporter::convertSingleDataOnfly(pi_pData, fullTmpPath, exts);
+                    }
+
+                    if (bWritableData)
+                    {
+                        data.setValue(fullTmpPath);
+
+                        if (bLocal)
+                        {
+                            bRes = pSource->addDirectData(data, minimalEntries, uiLevel, parentKey);
+                            if (bRes)
+                            {
+                                pModel->fetch(pi_uri);
+                                pi_uri.push_back(minimalEntries.key);
+                            }
+                        }
+                        else if (bCached)
+                        {
+                            bRes = pSource->commitData(data, minimalEntries, uiLevel, parentKey);
+                        }
+                        else
+                        {
+                            bRes = pSource->addAssyncData(data, minimalEntries, uiLevel, parentKey);
+                        }
                     }
                 }
             }
@@ -545,7 +570,7 @@ bool medDataModel::writeResults(QString pi_sourceId, medAbstractData * pi_pData,
         // ////////////////////////////////////////////////////////////////////////////////////////
         // We compute path and call createPath
         path = pWp->computePath(pi_sourceId, path, metaData);
-        bRes = createPath(pi_sourceId, path.split("\r\n"), uri, knownKeys);
+        bRes = createPath(pi_sourceId, path.split("\r\n", QString::SkipEmptyParts), uri, knownKeys);
         // ////////////////////////////////////////////////////////////////////////////////////////
 
         // ////////////////////////////////////////////////////////////////////////////////////////

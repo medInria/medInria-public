@@ -32,6 +32,7 @@ struct medAPHPParametersPrivate
     QStringList levelNames;
     bool isOnline;
     QMap<QString, int> levelKeyToRequestIdMap;
+    QMap<int, QVariant> requestIdToResultsMap;
 
     /* ***********************************************************************/
     /* ******************** External Injected Dependencies *******************/
@@ -69,15 +70,16 @@ struct medAPHPParametersPrivate
     medGroupParameter *patientLevel;
     medStringParameter *patientName;
     medStringParameter *patientId;
-
 };
 
-
-medAPHP::medAPHP(QtDcmInterface *dicomLib, medAbstractAnnotation *annotationAPI): d(new medAPHPParametersPrivate)
+medAPHP::medAPHP(QtDcmInterface *dicomLib, medAbstractAnnotation *annotationAPI) : d(new medAPHPParametersPrivate)
 {
     timeout = 60000;
 
-    d->levelNames << "PATIENTS" << "STUDY" << "SERIES" << "ANNOTATION";
+    d->levelNames << "PATIENTS"
+                  << "STUDY"
+                  << "SERIES"
+                  << "ANNOTATION";
     d->isOnline = false;
 
     d->qtdcm = dicomLib;
@@ -107,13 +109,12 @@ medAPHP::medAPHP(QtDcmInterface *dicomLib, medAbstractAnnotation *annotationAPI)
 
     d->patientName = new medStringParameter("Patient Name (0010,0010)", this);
     d->patientName->setCaption("Patient Name");
-//  d->  connect(m_PatientName, &medStringParameter::valueChanged, m_DicomLib, &QtDcmInterface::patientNameFilter);
+    //  d->  connect(m_PatientName, &medStringParameter::valueChanged, m_DicomLib, &QtDcmInterface::patientNameFilter);
     d->patientId = new medStringParameter("Patient ID (0010,0020)", this);
     d->patientId->setCaption("Patient ID");
     d->patientLevel = new medGroupParameter("Patient Level", this);
     d->patientLevel->addParameter(d->patientName);
     d->patientLevel->addParameter(d->patientId);
-
 }
 
 medAPHP::~medAPHP()
@@ -251,7 +252,7 @@ QStringList medAPHP::getLevelNames()
 QString medAPHP::getLevelName(unsigned int pi_uiLevel)
 {
     QString retVal = "Invalid Level Name";
-    if (pi_uiLevel>=0 && pi_uiLevel<static_cast<unsigned int>(d->levelNames.size()))
+    if (pi_uiLevel >= 0 && pi_uiLevel < static_cast<unsigned int>(d->levelNames.size()))
     {
         retVal = d->levelNames.value((int)pi_uiLevel);
     }
@@ -267,16 +268,16 @@ QStringList medAPHP::getMandatoryAttributesKeys(unsigned int pi_uiLevel)
 {
     switch (pi_uiLevel)
     {
-        case 0:
-            return {"id", "description", "patientID"};
-        case 1:
-            return {"id", "description", "uid"};
-        case 2:
-            return {"id", "description", "uid"};
-        case 3:
-            return {"id", "description", "uid"};
-        default:
-            return QStringList();
+    case 0:
+        return {"id", "description", "patientID"};
+    case 1:
+        return {"id", "description", "uid"};
+    case 2:
+        return {"id", "description", "uid"};
+    case 3:
+        return {"id", "description", "uid"};
+    default:
+        return QStringList();
     }
 }
 
@@ -287,7 +288,7 @@ QList<medAbstractSource::levelMinimalEntries> medAPHP::getMinimalEntries(unsigne
     if (parentId.contains("/"))
     {
         QStringList splittedUri = parentId.split("/");
-        key = splittedUri[(int)pi_uiLevel-1];
+        key = splittedUri[(int)pi_uiLevel - 1];
     }
     else
     {
@@ -297,65 +298,65 @@ QList<medAbstractSource::levelMinimalEntries> medAPHP::getMinimalEntries(unsigne
     QList<QMap<QString, QString>> infos;
     switch (pi_uiLevel)
     {
-        case 0:
-            infos = d->qtdcm->findPatientMinimalEntries();
-            if (!infos.empty())
+    case 0:
+        infos = d->qtdcm->findPatientMinimalEntries();
+        if (!infos.empty())
+        {
+            for (const auto &info : infos)
             {
-                for (const auto &info : infos)
-                {
-                    levelMinimalEntries entry;
-                    entry.key = info.value("ID");
-                    entry.name = info.value("Name");
-                    entry.description = info.value("ID");
-                    entries.append(entry);
-                }
+                levelMinimalEntries entry;
+                entry.key = info.value("ID");
+                entry.name = info.value("Name");
+                entry.description = info.value("ID");
+                entries.append(entry);
             }
-            break;
-        case 1:
-            infos = d->qtdcm->findStudyMinimalEntries(key);
-            if (!infos.empty())
+        }
+        break;
+    case 1:
+        infos = d->qtdcm->findStudyMinimalEntries(key);
+        if (!infos.empty())
+        {
+            for (const auto &info : infos)
             {
-                for (const auto &info : infos)
-                {
-                    levelMinimalEntries entry;
-                    entry.key = info.value("StudyInstanceUID");
-                    entry.name = info.value("Description");
-                    entry.description = info.value("StudyInstanceUID");
-                    entries.append(entry);
-                }
+                levelMinimalEntries entry;
+                entry.key = info.value("StudyInstanceUID");
+                entry.name = info.value("Description");
+                entry.description = info.value("StudyInstanceUID");
+                entries.append(entry);
             }
-            break;
-        case 2:
-            infos = d->qtdcm->findSeriesMinimalEntries(key);
-            if (!infos.empty())
+        }
+        break;
+    case 2:
+        infos = d->qtdcm->findSeriesMinimalEntries(key);
+        if (!infos.empty())
+        {
+            for (const auto &info : infos)
             {
-                for (const auto &info : infos)
-                {
-                    levelMinimalEntries entry;
-                    entry.key = info.value("SeriesInstanceUID");
-                    entry.name = info.value("Description");
-                    entry.description = info.value("SeriesInstanceUID");
-                    entries.append(entry);
-                }
+                levelMinimalEntries entry;
+                entry.key = info.value("SeriesInstanceUID");
+                entry.name = info.value("Description");
+                entry.description = info.value("SeriesInstanceUID");
+                entries.append(entry);
             }
+        }
 
-            break;
-        case 3:
-            infos = d->restFulAPI->findAnnotationMinimalEntries(key);
-            if (!infos.empty())
+        break;
+    case 3:
+        infos = d->restFulAPI->findAnnotationMinimalEntries(key);
+        if (!infos.empty())
+        {
+            for (const auto &info : infos)
             {
-                for (const auto &info : infos)
-                {
-                    levelMinimalEntries entry;
-                    entry.key = info.value("SeriesInstanceUID");
-                    entry.name = info.value("Description");
-                    entry.description = info.value("SeriesInstanceUID");
-                    entries.append(entry);
-                }
+                levelMinimalEntries entry;
+                entry.key = info.value("SeriesInstanceUID");
+                entry.name = info.value("Description");
+                entry.description = info.value("SeriesInstanceUID");
+                entries.append(entry);
             }
-            break;
-        default:
-            break;
+        }
+        break;
+    default:
+        break;
     }
 
     return entries;
@@ -373,35 +374,35 @@ bool medAPHP::getAdditionalAttributes(unsigned int pi_uiLevel, QString id, datas
 
 QVariant medAPHP::getDirectData(unsigned int pi_uiLevel, QString key)
 {
+    // return QVariant();
     QVariant iPath;
     int iRequestId = getAssyncData(pi_uiLevel, key);
 
     timer.setSingleShot(true);
     QEventLoop loop;
-    QObject::connect(&timer, &QTimer::timeout, &loop, [&]() {
-        loop.exit(-12);
-    });
+    QObject::connect(&timer, &QTimer::timeout, &loop, [&]()
+                     { loop.exit(-12); });
     timer.start(timeout);
 
-    if (pi_uiLevel!=3)
+    if (pi_uiLevel != 3)
     {
-        QObject::connect(d->qtdcm, &QtDcmInterface::pathToData, &loop, [&](int id, const QString &path) {
+        QObject::connect(d->qtdcm, &QtDcmInterface::pathToData, &loop, [&](int id, const QString &path)
+                         {
             if (iRequestId == id)
             {
                 iPath = QVariant(path);
                 loop.quit();
-            }
-        });
+            } });
     }
     else
     {
-        QObject::connect(d->restFulAPI, &medAbstractAnnotation::pathToData, &loop, [&](int id, const QString &path) {
+        QObject::connect(d->restFulAPI, &medAbstractAnnotation::pathToData, &loop, [&](int id, const QString &path)
+                         {
             if (iRequestId == id)
             {
                 iPath = QVariant(path);
                 loop.quit();
-            }
-        });
+            } });
     }
     int status = loop.exec();
     if (status == 0)
@@ -410,7 +411,7 @@ QVariant medAPHP::getDirectData(unsigned int pi_uiLevel, QString key)
     }
     else
     {
-        qDebug()<<"no path to data "<<status;
+        qDebug() << "no path to data " << status;
     }
     return iPath;
 }
@@ -425,7 +426,7 @@ int medAPHP::getAssyncData(unsigned int pi_uiLevel, QString key)
         int requestId = d->levelKeyToRequestIdMap[levelKey];
         if (pi_uiLevel > 0 && pi_uiLevel < 3)
         {
-            if (d->restFulAPI->isCachedDataPath(requestId))
+            if (d->qtdcm->isCachedDataPath(requestId))
             {
                 iRes = requestId;
             }
@@ -437,9 +438,8 @@ int medAPHP::getAssyncData(unsigned int pi_uiLevel, QString key)
                 iRes = requestId;
             }
         }
-
     }
-    if (iRes==-1)
+    if (iRes == -1)
     {
         d->levelKeyToRequestIdMap[levelKey] = s_RequestId;
         if (pi_uiLevel > 0 && pi_uiLevel < 3)
@@ -461,10 +461,17 @@ int medAPHP::getAnnotationAsyncData(const QString &key)
     {
         iRes = s_RequestId;
 
-        QObject::connect(d->restFulAPI, &medAbstractAnnotation::inProgress, this,
-                         [=](int pi_requestId, eRequestStatus status) {
-            switch (status)
+        QObject::connect(d->restFulAPI, &medAbstractAnnotation::pathToData, this, [&](int id, const QString &path)
+        {
+            d->requestIdToResultsMap[id] = QVariant(path);
+        });
+ 
+        QObject::connect(
+            d->restFulAPI, &medAbstractAnnotation::inProgress, this,
+            [=](int pi_requestId, eRequestStatus status)
             {
+                switch (status)
+                {
                 case pending:
                 {
                     timer.setInterval(timeout);
@@ -474,10 +481,10 @@ int medAPHP::getAnnotationAsyncData(const QString &key)
                 case faild:
                 default:
                     break;
-            }
-            emit progress(pi_requestId, status);
-
-            }, Qt::UniqueConnection);
+                }
+                emit progress(pi_requestId, status);
+            },
+            Qt::UniqueConnection);
     }
     return iRes;
 }
@@ -488,54 +495,61 @@ int medAPHP::getQtDcmAsyncData(unsigned int pi_uiLevel, const QString &key)
     QString queryLevel;
     switch (pi_uiLevel)
     {
-        case 0:
-            queryLevel = "PATIENT";
-            break;
-        case 1:
-            queryLevel = "STUDY";
-            break;
-        case 2:
-            queryLevel = "SERIES";
-            break;
-        default:
-            return iRes;
+    case 0:
+        queryLevel = "PATIENT";
+        break;
+    case 1:
+        queryLevel = "STUDY";
+        break;
+    case 2:
+        queryLevel = "SERIES";
+        break;
+    default:
+        return iRes;
     }
 
     if (d->qtdcm->moveRequest(s_RequestId, queryLevel, key))
     {
         iRes = s_RequestId;
 
-        QObject::connect(d->qtdcm, &QtDcmInterface::moveProgress, this, [=](int pi_requestId, int status) {
-            eRequestStatus requestStatus;
-            switch (status)
+        QObject::connect(d->qtdcm, &QtDcmInterface::pathToData, this, [&](int id, const QString &path)
+        {
+            d->requestIdToResultsMap[id] = QVariant(path);
+        });
+
+        QObject::connect(
+            d->qtdcm, &QtDcmInterface::moveProgress, this, [=](int pi_requestId, int status)
             {
-                case 0: //moveStatus::OK
+                eRequestStatus requestStatus;
+                switch (status)
+                {
+                case 0: // moveStatus::OK
                 {
                     requestStatus = finish;
                     break;
                 }
-                case 1: //moveStatus::PENDING
+                case 1: // moveStatus::PENDING
                 {
                     requestStatus = pending;
                     timer.setInterval(timeout);
                     break;
                 }
-                case -1: //moveStatus::KO
+                case -1: // moveStatus::KO
                 default:
                 {
                     requestStatus = faild;
                     break;
                 }
-            }
-            emit progress(pi_requestId, requestStatus);
-
-        }, Qt::UniqueConnection);
+                }
+                emit progress(pi_requestId, requestStatus); },
+            Qt::UniqueConnection);
     }
 
     return iRes;
 }
+
 //
-//QString medAPHP::addData(QVariant data, QStringList parentUri, QString name)
+// QString medAPHP::addData(QVariant data, QStringList parentUri, QString name)
 //{
 //    QString keyRes;
 //
@@ -581,26 +595,23 @@ void medAPHP::abort(int pi_iRequest)
     }
 }
 
-bool
-medAPHP::createPath(QList<levelMinimalEntries> &pio_path, const medAbstractSource::datasetAttributes4 &pi_attributes,
-                    unsigned int pi_uiLevel, QString parentKey)
+bool medAPHP::createPath(QList<levelMinimalEntries> &pio_path, const medAbstractSource::datasetAttributes4 &pi_attributes,
+                         unsigned int pi_uiLevel, QString parentKey)
 {
     return false;
 }
 
 int medAPHP::getIOInterface()
 {
-    return 0;
+    return IO_FILE;
 }
 
 QMap<QString, QStringList> medAPHP::getTypeAndFormat()
 {
-    return QMap<QString, QStringList>();
-}
+    QMap<QString, QStringList> supportedTypeAndFormats;
+    supportedTypeAndFormats["Image"] = QStringList({".mha"});
 
-QVariant medAPHP::getDataFromRequest(int pi_iRequest)
-{
-    return QVariant();
+    return supportedTypeAndFormats;
 }
 
 bool medAPHP::addDirectData(QVariant data, medAbstractSource::levelMinimalEntries &pio_minimalEntries,
@@ -612,7 +623,15 @@ bool medAPHP::addDirectData(QVariant data, medAbstractSource::levelMinimalEntrie
 int medAPHP::addAssyncData(QVariant data, medAbstractSource::levelMinimalEntries &pio_minimalEntries,
                            unsigned int pi_uiLevel, QString parentKey)
 {
-    return 0;
+    int iRes = -1;
+    if (pi_uiLevel==3)
+    {
+        s_RequestId++;
+        QString name = pio_minimalEntries.name;
+        QString key = d->restFulAPI->addData(data, name, parentKey);
+        d->requestIdToResultsMap[s_RequestId] = QVariant(key);
+    }
+    return iRes;
 }
 
 bool medAPHP::createFolder(medAbstractSource::levelMinimalEntries &pio_minimalEntries,
@@ -622,8 +641,7 @@ bool medAPHP::createFolder(medAbstractSource::levelMinimalEntries &pio_minimalEn
     return false;
 }
 
-bool
-medAPHP::alterMetaData(const medAbstractSource::datasetAttributes4 &pi_attributes, unsigned int pi_uiLevel, QString key)
+bool medAPHP::alterMetaData(const medAbstractSource::datasetAttributes4 &pi_attributes, unsigned int pi_uiLevel, QString key)
 {
     return false;
 }
@@ -638,11 +656,20 @@ bool medAPHP::setThumbnail(QPixmap &pi_thumbnail, unsigned int pi_uiLevel, QStri
     return false;
 }
 
-bool
-medAPHP::commitData(QVariant data, medAbstractSource::levelMinimalEntries &pio_minimalEntries, unsigned int pi_uiLevel,
-                    QString parentKey)
+bool medAPHP::commitData(QVariant data, medAbstractSource::levelMinimalEntries &pio_minimalEntries, unsigned int pi_uiLevel,
+                         QString parentKey)
 {
     return false;
+}
+
+QVariant medAPHP::getAsyncResults(int pi_iRequest)
+{
+    QVariant dataRes;
+    if (d->requestIdToResultsMap.contains(pi_iRequest))
+    {
+        dataRes = d->requestIdToResultsMap[pi_iRequest];
+    }
+    return dataRes;
 }
 
 int medAPHP::push(unsigned int pi_uiLevel, QString key)

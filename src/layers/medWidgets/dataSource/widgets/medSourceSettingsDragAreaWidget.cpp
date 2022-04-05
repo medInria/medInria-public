@@ -25,7 +25,8 @@ medSourceSettingsDragAreaWidget::medSourceSettingsDragAreaWidget(medSourcesLoade
     setDragDropMode(QAbstractItemView::InternalMove);
     setAutoScroll(true);
     setFixedSize(400, 550);
-
+    setSelectionMode(QAbstractItemView::SingleSelection);
+    
     // Change the color of the background when an item is selected to drag&drop
     setStyleSheet("QListWidget::item:selected {background:gray;}");
 

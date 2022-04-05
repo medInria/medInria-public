@@ -40,19 +40,19 @@ protected:
     }
 };
 
-
 TEST_F(medRequestTest, get_minimal_entries_failed_level_negative)
 {
     QList<medAbstractSource::levelMinimalEntries> entries;
-    entries = m_.getMinimalEntries(-1,"patient");
+    EXPECT_CALL(m_.m_Engine, close()).Times(1);
+    entries = m_.getMinimalEntries(-1, "patient");
     ASSERT_EQ(0, entries.size());
 }
 
 TEST_F(medRequestTest, get_minimal_entries_failed_level_greater_than_level_count)
 {
     QList<medAbstractSource::levelMinimalEntries> entries;
-//    EXPECT_CALL(m_, getPatientMinimalEntries()).Times(0);
-    entries = m_.getMinimalEntries(4,"patient");
+    EXPECT_CALL(m_.m_Engine, close()).Times(1);
+    entries = m_.getMinimalEntries(4, "patient");
     ASSERT_EQ(0, entries.size());
 }
 
@@ -60,24 +60,27 @@ TEST_F(medRequestTest, get_minimal_entries_level_patient_call_getPatientMinimalE
 {
     QList<medAbstractSource::levelMinimalEntries> entries;
     QString id = "";
+    EXPECT_CALL(m_.m_Engine, close()).Times(1);
     EXPECT_CALL(m_, getPatientMinimalEntries(id)).Times(1);
-    entries = m_.getMinimalEntries(0,id);
+    entries = m_.getMinimalEntries(0, id);
 }
 
 TEST_F(medRequestTest, get_minimal_entries_level_study_call_getStudyMinimalEntries)
 {
     QList<medAbstractSource::levelMinimalEntries> entries;
     QString patientId = "1";
+    EXPECT_CALL(m_.m_Engine, close()).Times(1);
     EXPECT_CALL(m_, getStudyMinimalEntries(patientId)).Times(1);
-    entries = m_.getMinimalEntries(1,patientId);
+    entries = m_.getMinimalEntries(1, patientId);
 }
 
 TEST_F(medRequestTest, get_minimal_entries_level_series_call_getSeriesMinimalEntries)
 {
     QList<medAbstractSource::levelMinimalEntries> entries;
     QString studyId = "0";
+    EXPECT_CALL(m_.m_Engine, close()).Times(1);
     EXPECT_CALL(m_, getSeriesMinimalEntries(studyId)).Times(1);
-    entries = m_.getMinimalEntries(2,studyId);
+    entries = m_.getMinimalEntries(2, studyId);
 }
 
 TEST(requestDBTest, get_minimal_entries_level_patient_integration)
@@ -85,7 +88,8 @@ TEST(requestDBTest, get_minimal_entries_level_patient_integration)
     RealMedSQLite t = RealMedSQLite();
     QString instanceId = "bar";
     QTemporaryDir dir;
-    if (dir.isValid()) {
+    if (dir.isValid())
+    {
         t.changeDatabasePath(dir.path());
 
         // expectations
@@ -95,7 +99,7 @@ TEST(requestDBTest, get_minimal_entries_level_patient_integration)
         QList<QString> ids = {"1", "11", "12"};
         QList<QString> names = {"Maxime", "Florent", "Vicky"};
         QList<QString> patientIds = {"101", "103", "104"};
-        for (int i = 0; i<3; i++)
+        for (int i = 0; i < 3; i++)
         {
             query.prepare("INSERT INTO patient (id, name, patientId) "
                           "VALUES (:id, :name, :patientId)");
@@ -105,7 +109,7 @@ TEST(requestDBTest, get_minimal_entries_level_patient_integration)
             query.exec();
         }
         QList<medAbstractSource::levelMinimalEntries> entries;
-        entries = t.getMinimalEntries(0,"");
+        entries = t.getMinimalEntries(0, "");
 
         EXPECT_EQ(entries.size(), 3);
         int i = 0;
@@ -125,7 +129,8 @@ TEST(requestDBTest, get_minimal_entries_level_patient_invalid_key_succeed)
     RealMedSQLite t = RealMedSQLite();
     QString instanceId = "bar";
     QTemporaryDir dir;
-    if (dir.isValid()) {
+    if (dir.isValid())
+    {
         t.changeDatabasePath(dir.path());
 
         // expectations
@@ -135,7 +140,7 @@ TEST(requestDBTest, get_minimal_entries_level_patient_invalid_key_succeed)
         QList<QString> ids = {"1", "11", "12"};
         QList<QString> names = {"Maxime", "Florent", "Vicky"};
         QList<QString> patientIds = {"101", "103", "104"};
-        for (int i = 0; i<3; i++)
+        for (int i = 0; i < 3; i++)
         {
             query.prepare("INSERT INTO patient (id, name, patientId) "
                           "VALUES (:id, :name, :patientId)");
@@ -145,16 +150,16 @@ TEST(requestDBTest, get_minimal_entries_level_patient_invalid_key_succeed)
             query.exec();
         }
         QList<medAbstractSource::levelMinimalEntries> entries;
-        entries = t.getMinimalEntries(0,"patient");
+        entries = t.getMinimalEntries(0, "patient");
 
         EXPECT_EQ(entries.size(), 0);
-//        int i = 0;
-//        for (auto entry : entries)
-//        {
-//            EXPECT_EQ(ids[i], entry.key);
-//            EXPECT_EQ(names[i], entry.name);
-//            EXPECT_EQ(patientIds[i++], entry.description);
-//        }
+        //        int i = 0;
+        //        for (auto entry : entries)
+        //        {
+        //            EXPECT_EQ(ids[i], entry.key);
+        //            EXPECT_EQ(names[i], entry.name);
+        //            EXPECT_EQ(patientIds[i++], entry.description);
+        //        }
         t.connect(false);
         dir.remove();
     }
@@ -165,7 +170,8 @@ TEST(requestDBTest, get_minimal_entries_level_study_invalid_key_failed)
     RealMedSQLite t = RealMedSQLite();
     QString instanceId = "bar";
     QTemporaryDir dir;
-    if (dir.isValid()) {
+    if (dir.isValid())
+    {
         t.changeDatabasePath(dir.path());
 
         // expectations
@@ -176,7 +182,7 @@ TEST(requestDBTest, get_minimal_entries_level_study_invalid_key_failed)
         QList<QString> patients = {"1", "1", "40"};
         QList<QString> names = {"Study10", "Study20", "Study30"};
         QList<QString> studyInstancesUIds = {"1.2.3.105.2454434", "1.2.3.105.2454435", "1.2.3.105.2454436"};
-        for (int i = 0; i<3; i++)
+        for (int i = 0; i < 3; i++)
         {
             query.prepare("INSERT INTO study (id, patient, name, uid) "
                           "VALUES (:id, :patient, :name, :studyInstanceUID)");
@@ -188,7 +194,7 @@ TEST(requestDBTest, get_minimal_entries_level_study_invalid_key_failed)
         }
         QList<medAbstractSource::levelMinimalEntries> entries;
         QString patientId = "invalid_key";
-        entries = t.getMinimalEntries(1,patientId);
+        entries = t.getMinimalEntries(1, patientId);
 
         EXPECT_EQ(entries.size(), 0);
         t.connect(false);
@@ -201,7 +207,8 @@ TEST(requestDBTest, get_minimal_entries_level_study_integration)
     RealMedSQLite t = RealMedSQLite();
     QString instanceId = "bar";
     QTemporaryDir dir;
-    if (dir.isValid()) {
+    if (dir.isValid())
+    {
         t.changeDatabasePath(dir.path());
 
         // expectations
@@ -212,7 +219,7 @@ TEST(requestDBTest, get_minimal_entries_level_study_integration)
         QList<QString> patients = {"1", "1", "40"};
         QList<QString> names = {"Study10", "Study20", "Study30"};
         QList<QString> studyInstancesUIds = {"1.2.3.105.2454434", "1.2.3.105.2454435", "1.2.3.105.2454436"};
-        for (int i = 0; i<3; i++)
+        for (int i = 0; i < 3; i++)
         {
             query.prepare("INSERT INTO study (id, patient, name, uid) "
                           "VALUES (:id, :patient, :name, :studyInstanceUID)");
@@ -224,13 +231,13 @@ TEST(requestDBTest, get_minimal_entries_level_study_integration)
         }
         QList<medAbstractSource::levelMinimalEntries> entries;
         QString patientId = "1";
-        entries = t.getMinimalEntries(1,patientId);
+        entries = t.getMinimalEntries(1, patientId);
 
         EXPECT_EQ(entries.size(), 2);
         int i = 0;
         for (auto entry : entries)
         {
-            if (patients[i]==patientId)
+            if (patients[i] == patientId)
             {
                 EXPECT_EQ(ids[i], entry.key);
                 EXPECT_EQ(names[i], entry.name);
@@ -247,7 +254,8 @@ TEST(requestDBTest, get_minimal_entries_level_series_integration)
     RealMedSQLite t = RealMedSQLite();
     QString instanceId = "bar";
     QTemporaryDir dir;
-    if (dir.isValid()) {
+    if (dir.isValid())
+    {
         t.changeDatabasePath(dir.path());
 
         // expectations
@@ -258,7 +266,7 @@ TEST(requestDBTest, get_minimal_entries_level_series_integration)
         QList<QString> studies = {"2", "1", "40"};
         QList<QString> names = {"Series10", "Series20", "Series30"};
         QList<QString> seriesInstancesUIds = {"1.2.3.105.2454434", "1.2.3.105.2454435", "1.2.3.105.2454436"};
-        for (int i = 0; i<3; i++)
+        for (int i = 0; i < 3; i++)
         {
             query.prepare("INSERT INTO series (id, study, name, uid) "
                           "VALUES (:id, :study, :name, :seriesInstanceUID)");
@@ -270,13 +278,13 @@ TEST(requestDBTest, get_minimal_entries_level_series_integration)
         }
         QList<medAbstractSource::levelMinimalEntries> entries;
         QString studyId = "2";
-        entries = t.getMinimalEntries(2,studyId);
+        entries = t.getMinimalEntries(2, studyId);
 
         EXPECT_EQ(entries.size(), 1);
         int i = 0;
         for (auto entry : entries)
         {
-            if (studies[i]==studyId)
+            if (studies[i] == studyId)
             {
                 EXPECT_EQ(ids[i], entry.key);
                 EXPECT_EQ(names[i], entry.name);
@@ -293,7 +301,8 @@ TEST(requestDBTest, get_minimal_entries_level_series_invalid_key_failed)
     RealMedSQLite t = RealMedSQLite();
     QString instanceId = "bar";
     QTemporaryDir dir;
-    if (dir.isValid()) {
+    if (dir.isValid())
+    {
         t.changeDatabasePath(dir.path());
 
         // expectations
@@ -304,7 +313,7 @@ TEST(requestDBTest, get_minimal_entries_level_series_invalid_key_failed)
         QList<QString> studies = {"2", "1", "40"};
         QList<QString> names = {"Series10", "Series20", "Series30"};
         QList<QString> seriesInstancesUIds = {"1.2.3.105.2454434", "1.2.3.105.2454435", "1.2.3.105.2454436"};
-        for (int i = 0; i<3; i++)
+        for (int i = 0; i < 3; i++)
         {
             query.prepare("INSERT INTO series (id, study, name, uid) "
                           "VALUES (:id, :study, :name, :seriesInstanceUID)");
@@ -316,7 +325,7 @@ TEST(requestDBTest, get_minimal_entries_level_series_invalid_key_failed)
         }
         QList<medAbstractSource::levelMinimalEntries> entries;
         QString studyId = "invalid_key";
-        entries = t.getMinimalEntries(2,studyId);
+        entries = t.getMinimalEntries(2, studyId);
 
         EXPECT_EQ(entries.size(), 0);
         t.connect(false);
@@ -328,6 +337,7 @@ TEST_F(medRequestTest, get_direct_data_invalid_level_failed)
 {
     QVariant path;
     path = m_.getDirectData(1, "key");
+    EXPECT_CALL(m_.m_Engine, close()).Times(1);
     EXPECT_EQ(path, QVariant());
 }
 
@@ -338,8 +348,20 @@ TEST_F(medRequestTest, get_direct_data_series_level_right_function_call)
     QString expected_value = "foo";
     QString path;
     ON_CALL(m_, getSeriesDirectData(key, path)).WillByDefault(::testing::Return(true));
+    EXPECT_CALL(m_.m_Engine, close()).Times(1);
     EXPECT_CALL(m_, getSeriesDirectData(key, path)).Times(1);
     EXPECT_EQ(m_.getDirectData(ui_level, key), QVariant(m_.m_DbPath->value()));
+}
+
+TEST_F(medRequestTest, add_direct_data_qvariant_not_string_return_false)
+{
+    QVariant data;
+    medAbstractSource::levelMinimalEntries lme;
+    unsigned int level;
+    QString parentkey;
+    EXPECT_CALL(m_.m_Engine, exec()).Times(1);
+    EXPECT_CALL(m_.m_Engine, close()).Times(1);
+    EXPECT_EQ(m_.addDirectData(data, lme, level, parentkey), false);
 }
 
 TEST(requestDBTest, get_direct_data_level_series_invalid_key_failed)
@@ -347,7 +369,8 @@ TEST(requestDBTest, get_direct_data_level_series_invalid_key_failed)
     RealMedSQLite t = RealMedSQLite();
     QString instanceId = "bar";
     QTemporaryDir dir;
-    if (dir.isValid()) {
+    if (dir.isValid())
+    {
         t.changeDatabasePath(dir.path());
 
         // expectations
@@ -356,7 +379,7 @@ TEST(requestDBTest, get_direct_data_level_series_invalid_key_failed)
         QSqlQuery query = t.m_Engine.exec();
         QList<QString> ids = {"10", "10", "30"};
         QList<QString> paths = {"/path/to/data1", "/path/to/data2", "/path/to/data3"};
-        for (int i = 0; i<3; i++)
+        for (int i = 0; i < 3; i++)
         {
             query.prepare("INSERT INTO series (id, path) "
                           "VALUES (:id, :path)");
@@ -377,7 +400,8 @@ TEST(requestDBTest, get_direct_data_level_series_valid_key_success)
     RealMedSQLite t = RealMedSQLite();
     QString instanceId = "bar";
     QTemporaryDir dir;
-    if (dir.isValid()) {
+    if (dir.isValid())
+    {
         t.changeDatabasePath(dir.path());
 
         // expectations
@@ -386,7 +410,7 @@ TEST(requestDBTest, get_direct_data_level_series_valid_key_success)
         QSqlQuery query = t.m_Engine.exec();
         QList<QString> ids = {"10", "20", "30"};
         QList<QString> paths = {"/path/to/data1", "/path/to/data2", "/path/to/data3"};
-        for (int i = 0; i<3; i++)
+        for (int i = 0; i < 3; i++)
         {
             query.prepare("INSERT INTO series (id, path) "
                           "VALUES (:id, :path)");
@@ -411,74 +435,73 @@ TEST(requestDBTest, get_mandatory_data_level_patient_success)
     t.initialization(instanceId);
     t.connect(true);
     QString key = "";
-    QList<QMap<QString, QString>>  resList = t.getMandatoryAttributes(0, key);
-    qDebug()<<"patients : ";
+    QList<QMap<QString, QString> > resList = t.getMandatoryAttributes(0, key);
+    qDebug() << "patients : ";
     for (auto map : resList)
     {
-        for (const auto& key: map.keys())
+        for (const auto &key : map.keys())
         {
-            qDebug()<<key<<" : "<<map[key];
+            qDebug() << key << " : " << map[key];
         }
     }
 
     resList = t.getMandatoryAttributes(0, "1");
-    qDebug()<<"\nfirst patient : ";
+    qDebug() << "\nfirst patient : ";
     for (auto map : resList)
     {
-        for (const auto& key: map.keys())
+        for (const auto &key : map.keys())
         {
-            qDebug()<<key<<" : "<<map[key];
+            qDebug() << key << " : " << map[key];
         }
     }
 
     resList = t.getMandatoryAttributes(0, "foo");
-    qDebug()<<"\ninvalid patient : ";
+    qDebug() << "\ninvalid patient : ";
     for (auto map : resList)
     {
-        for (const auto& key: map.keys())
+        for (const auto &key : map.keys())
         {
-            qDebug()<<key<<" : "<<map[key];
+            qDebug() << key << " : " << map[key];
         }
     }
 
     resList = t.getMandatoryAttributes(1, "1");
-    qDebug()<<"\n studies : ";
+    qDebug() << "\n studies : ";
     for (auto map : resList)
     {
-        for (const auto& key: map.keys())
+        for (const auto &key : map.keys())
         {
-            qDebug()<<key<<" : "<<map[key];
+            qDebug() << key << " : " << map[key];
         }
     }
 
     resList = t.getMandatoryAttributes(1, "bar");
-    qDebug()<<"\n invalid studies : ";
+    qDebug() << "\n invalid studies : ";
     for (auto map : resList)
     {
-        for (const auto& key: map.keys())
+        for (const auto &key : map.keys())
         {
-            qDebug()<<key<<" : "<<map[key];
+            qDebug() << key << " : " << map[key];
         }
     }
 
     resList = t.getMandatoryAttributes(2, "1");
-    qDebug()<<"\n series : ";
+    qDebug() << "\n series : ";
     for (auto map : resList)
     {
-        for (const auto& key: map.keys())
+        for (const auto &key : map.keys())
         {
-            qDebug()<<key<<" : "<<map[key];
+            qDebug() << key << " : " << map[key];
         }
     }
 
     resList = t.getMandatoryAttributes(2, "qix");
-    qDebug()<<"\n invalid series : ";
+    qDebug() << "\n invalid series : ";
     for (auto map : resList)
     {
-        for (const auto& key: map.keys())
+        for (const auto &key : map.keys())
         {
-            qDebug()<<key<<" : "<<map[key];
+            qDebug() << key << " : " << map[key];
         }
     }
 }
-

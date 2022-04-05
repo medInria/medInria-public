@@ -735,20 +735,21 @@ void AlgorithmPaintToolBox::import()
 
     copyMetaData(output, m_imageData);
 
-    if (m_imageData->dataIndex().isV2())
-    {
-        QStringList desturi = m_imageData->dataIndex().uri();
-        if (desturi.first().contains("medSQLite"))
-        {
-            desturi.pop_back();
-        }
+    // if (m_imageData->dataIndex().isV2())
+    // {
+    //     QStringList desturi = m_imageData->dataIndex().uri();
+    //     if (desturi.first().contains("medSQLite"))
+    //     {
+    //         desturi.pop_back();
+    //     }
 
-        output->setDataIndex(desturi);
-        output->addParentData(m_imageData);
-        QString desc = m_imageData->getExpectedName() + "_painted";
-        output->setExpectedName(desc);
-        output->setMetaData(medMetaDataKeys::SeriesDescription.key(), desc);
-    }
+    //     output->setDataIndex(desturi);
+    //     output->addParentData(m_imageData);
+    //     QString desc = m_imageData->getExpectedName() + "_painted";
+    //     output->setExpectedName(desc);
+    //     output->setMetaData(medMetaDataKeys::SeriesDescription.key(), desc);
+    // }
+    // medDataManager::instance()->importData(output, false);
     medDataManager::instance()->importData(output, false);
 
     maskHasBeenSaved = true;
