@@ -323,7 +323,7 @@ bool medSourcesLoader::loadFromDisk()
                 iCnxInvalid++;
             }
         }
-        qWarning() << "[INFO] Source loading statistics : "
+        qWarning() << "[INFO] Source loading statistics : " 
             << "\nConnection ok             = " << iCnxOk
             << "\nConnection without plugin = " << iCnxWithoutPlugin
             << "\nConnection invalid        = " << iCnxInvalid;
@@ -413,25 +413,24 @@ void medSourcesLoader::reloadCnx(QJsonObject &obj)
                     << "\nParameter name  = " << paramId;
             }
         }
+    }
 
-        if (!normalParameters.isEmpty() || !cipherParameters.isEmpty())
+    if (!normalParameters.isEmpty() || !cipherParameters.isEmpty())
+    {
+        qWarning() << "[WARN] Source loading empty parameter(s) detected for : "
+            << "\nSource type     = " << obj["sourceType"]
+            << "\nConnection Id   = " << obj["cnxId"]
+            << "\nConnection name = " << obj["cnxName"];
+        for (auto param : normalParameters)
         {
-            qWarning() << "[WARN] Source loading empty parameter(s) detected for : "
-                << "\nSource type     = " << obj["sourceType"]
-                << "\nConnection Id   = " << obj["cnxId"]
-                << "\nConnection name = " << obj["cnxName"];
-            for (auto param : normalParameters)
-            {
-                qWarning() << "    Parameter Id = " << param->id();
-                qWarning() << "    Parameter Name = " << param->caption();
-            }
-            for (auto param : cipherParameters)
-            {
-                qWarning() << "    Parameter Id = " << param->id();
-                qWarning() << "    Parameter Name = " << param->caption();
-            }
+            qWarning() << "    Parameter Id = " << param->id();
+            qWarning() << "    Parameter Name = " << param->caption();
         }
-
+        for (auto param : cipherParameters)
+        {
+            qWarning() << "    Parameter Id = " << param->id();
+            qWarning() << "    Parameter Name = " << param->caption();
+        }
     }
 
     int iParamLakeCount = iAppliedParametersCount - (pDataSource->getAllParameters().size() - pDataSource->getVolatilParameters().size());
