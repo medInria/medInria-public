@@ -1,9 +1,7 @@
 #!/bin/bash
 
-# Usage: 
-# - mac_packager.sh plugin1 plugin2 ... pluginN
-# or
-# - mac_packager.sh path_to_plugins/*
+# Usage:
+# - mac_packager.sh path_to_plugins1 path_to_plugins2...
 
 # To build a stand-alone mac version of the application, do the following:
 
@@ -27,9 +25,12 @@ cd TmpInstall
 #Run sub-packagers
 injectDirs=''
 for i in $*; do
-	echo $i
-	injectDirs="$injectDirs -inject-dir=$i"
+        echo $i
+        injectDirs="$injectDirs -inject-dir=$i"
 done
+
+resourceLibsDir=@medInria_BINARY_DIR@/lib/resources
+injectDirs="$injectDirs -inject-dir=$resourceLibsDir"
 
 @dtk_DIR@/bin/dtkDeploy medInria.app $injectDirs &>/dev/null
 
@@ -39,6 +40,32 @@ for lib in @medInria_BINARY_DIR@/bin/TmpInstall/medInria.app/Contents/PlugIns/*.
     libname=${lib##*/}
     installedName="@executable_path/../PlugIns/$libname"
     install_name_tool -id $installedName @medInria_BINARY_DIR@/bin/TmpInstall/medInria.app/Contents/PlugIns/$libname
+done
+
+# Resource libraries are sent as plugins to dtkDeploy (above) because they are
+# not dependencies of the executable (dtkDeploy uses otool on the executable to
+# find which libraires should be imported, so it will not find resource
+# libraries). After the execution of dtkDeploy we move these libraries to the
+# frameworks folder and adjust their install name.
+resourceLibs=''
+for lib in $resourceLibsDir/*.dylib; do
+    libname=${lib##*/}
+    copiedLib=@medInria_BINARY_DIR@/bin/TmpInstall/medInria.app/Contents/Frameworks/$libname
+    \mv @medInria_BINARY_DIR@/bin/TmpInstall/medInria.app/Contents/PlugIns/$libname $copiedLib
+    installedName="@executable_path/../Frameworks/$libname"
+    install_name_tool -id $installedName $copiedLib
+    resourceLibs="$resourceLibs $libname"
+done
+
+# Because of the dtkDeploy bug with install names, we have to fix the
+# dependencies of the resource libraries.
+for lib1 in $resourceLibs; do
+    deployedLib1=@medInria_BINARY_DIR@/bin/TmpInstall/medInria.app/Contents/Frameworks/$lib1
+    installedName="@executable_path/../Frameworks/$lib1"
+    for lib2 in $resourceLibs; do
+        deployedLib2=@medInria_BINARY_DIR@/bin/TmpInstall/medInria.app/Contents/Frameworks/$lib2
+        install_name_tool -change $1/$lib1 $installedName $deployedLib2
+    done
 done
 
 #Run fancy packaging apple script

@@ -91,7 +91,7 @@ endif()
 ## install
 ## #############################################################################
 
-set_lib_install_rules(${TARGET_NAME}
+set_lib_install_rules(${TARGET_NAME} HEADERS
   ${${TARGET_NAME}_HEADERS}
   )
 
