@@ -40,6 +40,7 @@ configure_file(
   
 configure_file(${CMAKE_SOURCE_DIR}/packaging/apple/mac_packager.sh.in 
   ${PROJECT_BINARY_DIR}/packaging/apple/mac_packager.sh
+  @ONLY
   )
 
 set(CPACK_INSTALL_SCRIPT 
