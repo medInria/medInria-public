@@ -33,7 +33,8 @@ done
 
 @dtk_DIR@/bin/dtkDeploy medInria.app $injectDirs &>/dev/null
 
-# A bug in dtkDeploy causes plugins to keep their original installed name. We must must manually fix them.
+# A bug in dtkDeploy causes plugins to keep their original installed name so we
+# must manually fix them.
 for lib in @medInria_BINARY_DIR@/bin/TmpInstall/medInria.app/Contents/PlugIns/*.dylib; do
     libname=${lib##*/}
     installedName="@executable_path/../PlugIns/$libname"
