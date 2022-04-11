@@ -23,6 +23,7 @@
 #include <medAttachedData.h>
 #include <medDataManager.h>
 
+#include <itkIntensityWindowingImageFilter.h>
 #include <itkImageRegionIterator.h>
 #include <itkMinimumMaximumImageCalculator.h>
 
@@ -115,6 +116,35 @@ public:
             else if (composite->chooseFct == statsROI::MINMAX)
             {
                 res = runMinMax<ImageType>();
+            }
+            else if (composite->chooseFct == statsROI::BINARIZE)
+            {
+                // Get minimum and maximum of the data
+                res = runMinMax<ImageType>();
+                auto minValueImage = composite->computedOutput.at(0);
+                auto maxValueImage = composite->computedOutput.at(1);
+
+                auto inputImage = dynamic_cast<ImageType *>((itk::Object *)(composite->input0->data()));
+
+                dtkSmartPointer<medAbstractData> binarizeMask = composite->input0;
+
+                if (minValueImage != 0)
+                {
+                    typedef itk::IntensityWindowingImageFilter<ImageType, ImageType> WindowingFilterType;
+                    typename WindowingFilterType::Pointer windowingFilter = WindowingFilterType::New();
+                    windowingFilter->SetInput(inputImage);
+                    windowingFilter->SetWindowMinimum(minValueImage);
+                    windowingFilter->SetWindowMaximum(maxValueImage);
+                    windowingFilter->SetOutputMinimum(0);
+                    windowingFilter->SetOutputMaximum(1);
+                    windowingFilter->Update();
+                    binarizeMask = medAbstractDataFactory::instance()->createSmartPointer(binarizeMask->identifier());
+                    binarizeMask->setData(windowingFilter->GetOutput());
+
+
+                }
+                composite->computedDataOutput = binarizeMask;
+                res = DTK_SUCCEED;
             }
         }
         return res;
@@ -216,7 +246,6 @@ private:
 
 statsROI::statsROI()
 {
-    this->computedOutput.empty();
     chooseFct = MEAN_STDDEVIATION;
     outsideValue = 0;
 }
@@ -312,5 +341,15 @@ int statsROI::update()
 
 std::vector<double> statsROI::output()
 {
-    return ( this->computedOutput );
+    return this->computedOutput;
+}
+
+/**
+ * @brief Send back the output data
+ * 
+ * @return dtkSmartPointer<medAbstractData> 
+ */
+dtkSmartPointer<medAbstractData> statsROI::dataOutput()
+{
+    return this->computedDataOutput;
 }
