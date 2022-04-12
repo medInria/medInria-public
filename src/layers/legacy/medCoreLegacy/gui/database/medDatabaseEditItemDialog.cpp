@@ -71,7 +71,7 @@ medDatabaseEditItemDialog::medDatabaseEditItemDialog(QList<QString> attributes, 
         if(attrib.isEmpty())
             continue;
         
-        QLineEdit *textEdit = nullptr;
+        QLineEdit *m_textEdit = nullptr;
         QSpinBox *spinbox = nullptr;
         QDateEdit *dateEdit = nullptr;
 
@@ -79,21 +79,21 @@ medDatabaseEditItemDialog::medDatabaseEditItemDialog(QList<QString> attributes, 
         {
          //TODO: add other type QDateTime, int, ...
         case QVariant::String:
-            textEdit = new QLineEdit(this);
-            textEdit->setObjectName(attrib);
-            textEdit->setText(data.toString());
-            formLayout->addRow(attrib, textEdit);
-            connect(textEdit, SIGNAL(textChanged(const QString &)), this, SLOT(setValue(const QString &)));
+            m_textEdit = new QLineEdit(this);
+            m_textEdit->setObjectName(attrib);
+            m_textEdit->setText(data.toString());
+            formLayout->addRow(attrib, m_textEdit);
+            connect(m_textEdit, SIGNAL(textChanged(const QString &)), this, SLOT(setValue(const QString &)));
             break;  
         case QVariant::Char:
-            textEdit = new QLineEdit(this);
-            textEdit->setObjectName(attrib);
+            m_textEdit = new QLineEdit(this);
+            m_textEdit->setObjectName(attrib);
             if(data.isNull())
-                 textEdit->setText("");
-            else textEdit->setText(QString(data.toChar()));
-            textEdit->setMaxLength(1);
-            formLayout->addRow(attrib, textEdit);
-            connect(textEdit, SIGNAL(textChanged(const QString &)), this, SLOT(setCharValue(const QString &)));
+                 m_textEdit->setText("");
+            else m_textEdit->setText(QString(data.toChar()));
+            m_textEdit->setMaxLength(1);
+            formLayout->addRow(attrib, m_textEdit);
+            connect(m_textEdit, SIGNAL(textChanged(const QString &)), this, SLOT(setCharValue(const QString &)));
             break;  
         case QVariant::Int:
             spinbox = new QSpinBox(this);

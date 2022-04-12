@@ -33,7 +33,7 @@ int medAbstractWritingPolicy::levelToWrite(QString pi_sourceId)
     return iRes;
 }
 
-bool medAbstractWritingPolicy::islevelWritable(QString pi_sourceId, unsigned int pi_uiLevel)
+bool medAbstractWritingPolicy::isLevelWritable(QString pi_sourceId, unsigned int pi_uiLevel)
 {
     bool bRes = false;
 
@@ -44,5 +44,26 @@ bool medAbstractWritingPolicy::islevelWritable(QString pi_sourceId, unsigned int
     }
 
     return bRes;
+}
+
+QString medAbstractWritingPolicy::levelName(QString pi_sourceId, unsigned int pi_uiLevel)
+{
+    QString levelNameRes;
+
+    auto * pSource = medDataModel::instance()->getSourceToWrite(pi_sourceId);
+    if (pSource)
+    {
+        levelNameRes = pSource->getLevelName(pi_uiLevel);
+        if (!levelNameRes.isEmpty())
+        {
+            levelNameRes = levelNameRes + "_1";
+        }
+        else
+        {
+            levelNameRes = "Level_" + QString::number(pi_uiLevel);
+        }
+    }
+
+    return levelNameRes;
 }
 

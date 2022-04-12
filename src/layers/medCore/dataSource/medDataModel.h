@@ -26,6 +26,8 @@
 
 #include <dtkCoreSupport/dtkSmartPointer.h>
 
+
+
 class MEDCORE_EXPORT medDataModel : public QObject
 {
 
@@ -34,6 +36,7 @@ public:
 
     using datasetAttributes = QMap<QString, QString>;
     using levelAttributes = QList<datasetAttributes>;
+    //struct 
 
     static medDataModel* instance(QObject *parent = nullptr);
 	~medDataModel();
@@ -47,8 +50,8 @@ public:
     bool mandatoriesAttributes  (QString const & pi_sourceInstanceId, unsigned int pi_uiLevel, QString const & parentKey, levelAttributes & po_entries);
     bool optionalAttributes     (QString const & pi_sourceInstanceId, unsigned int pi_uiLevel, QString const & key, datasetAttributes & po_attributes, datasetAttributes & po_tags);
     bool levelCount             (QString const & pi_sourceInstanceId, unsigned int &po_uiLevelMax);
-    QList<medAbstractParameter *> filteringParameters(QString const & pi_sourceInstanceId);
-    bool saveData(medAbstractData *pi_pData, QString const &pi_baseName, QStringList pi_uri);
+    bool filteringParameters    (QString const & pi_sourceInstanceId, QList<medAbstractParameter*> & po_parameters);
+    bool saveData               (medAbstractData *pi_pData, QString const &pi_baseName, QStringList &pio_uri);
 
     // ////////////////////////////////////////////////////////////////////////////////////////////
     // Members functions to deal with datamodel                                Advanced Accessors
@@ -71,7 +74,7 @@ public:
 
     // ////////////////////////////////////////////////////////////////////////////////////////////
     // URI and PATH handler
-    bool setDefaultWorkingSource(unsigned int i);
+    void setDefaultWorkingSource(medAbstractSource * pi_pSource);
     medAbstractSource * getDefaultWorkingSource();
     medAbstractSource * getSourceToWrite(QString pi_sourceIdDst = "");
 
@@ -80,7 +83,7 @@ public:
     // URI and PATH handler
     static QString uriAsString(QStringList pi_uri);
     static QStringList uriAsList(QString pi_uri);
-    QString convertToPath(QStringList pi_Uri);
+    QString convertToPath(QStringList pi_uri);
 
 
     // ////////////////////////////////////////////////////////////////////////////////////////////
@@ -111,6 +114,7 @@ public slots:
    void sourceIsOnline(QString sourceIntanceId);
 
    void removeConvertedData(QObject *obj);
+   void progress(int pi_iRequest, medAbstractSource::eRequestStatus status);
 
 private:
     medDataModel(QObject *parent = nullptr);
@@ -126,6 +130,8 @@ private:
     QMap< QString, medAbstractSource*> m_sourceIdToInstanceMap;
     QMap< medAbstractSource*, medSourceItemModel*> m_sourcesModelMap; //TODO delete medSourceItemModel* in destructor
     medAbstractSource* m_defaultSource;
+
+    QMap< int, medAbstractSource*> m_;
 
     QMap<medDataIndex, dtkSmartPointer<medAbstractData> > m_IndexToData;
     medDefaultWritingPolicy m_generalWritingPolicy;

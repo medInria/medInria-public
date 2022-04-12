@@ -63,10 +63,9 @@ QString medDefaultWritingPolicy::computePath(QString pi_sourceId, QString pi_sug
     {
         int iBazeSize = pathRes.size();
         int iDeltaPathLength = iLevelToWrite - pathRes.size();
-        QString levelName("Level_");
         for (int i = 0; i < iDeltaPathLength; ++i)
         {
-            pathRes.push_back(levelName + QString::number(i + iBazeSize));
+            pathRes.push_back(levelName(pi_sourceId, i + iBazeSize));
         }
     }
 
@@ -132,7 +131,7 @@ bool medDefaultWritingPolicy::checkUri(QStringList pi_suggestedUri, QStringList 
                 }
                 
                 int uriLength = pi_suggestedUri.size();
-                if (islevelWritable(sourceInstanceId, pi_suggestedUri.size()))
+                if (isLevelWritable(sourceInstanceId, pi_suggestedUri.size()))
                 { 
                     bRes = true;
                 }

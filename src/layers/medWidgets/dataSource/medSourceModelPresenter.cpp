@@ -70,7 +70,8 @@ QStackedWidget *medSourceModelPresenter::buildFilters()
     for (auto sourceModel : d->model->models())
     {
         auto * pVLayout = new QVBoxLayout;
-        auto filterParams = d->model->filteringParameters(sourceModel->getSourceIntanceId());
+        QList<medAbstractParameter*> filterParams;
+        d->model->filteringParameters(sourceModel->getSourceIntanceId(), filterParams);
         for (auto * param : filterParams)
         {
             auto * pHLayout = new QHBoxLayout;

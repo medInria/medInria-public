@@ -26,6 +26,8 @@
 #include <QMutex>
 #include <QSharedPointer>
 
+#include <medSettingsManager.h>
+
 #define MED_DATASOURCES_FILENAME "DataSources.json"
 
 medSourcesLoader *medSourcesLoader::s_instance = nullptr;
@@ -98,6 +100,7 @@ bool medSourcesLoader::createCnx(QString & instanceId, QString const & type)
             pDataSource->initialization(instanceId);
             pDataSource->setInstanceName(instanceId);
 
+            m_sourcesIDs.push_back(instanceId);
             m_instanceMapType[instanceId] = type;
             m_instancesMap.insert(instanceId, QSharedPointer<medAbstractSource>(pDataSource));
             saveToDisk();
@@ -117,8 +120,10 @@ bool medSourcesLoader::removeCnx(QString const & instanceId)
     if (m_instancesMap.contains(instanceId))
     {
         auto oldCnx = m_instancesMap.take(instanceId);
+        m_sourcesIDs.removeAt(m_sourcesIDs.indexOf(instanceId));
         m_instanceMapType.remove(instanceId);
         saveToDisk();
+        emit sourceRemoved(&(*oldCnx));
         QTimer::singleShot(5*60*1000, this, [&]() {oldCnx.reset(); }); //the removed connection will be deleted after 5 min of secured time gap
     }
     m_mutexMap.unlock();
@@ -131,9 +136,9 @@ QList<medAbstractSource*> medSourcesLoader::sourcesList()
     QList<medAbstractSource*> instanceList;
 
     m_mutexMap.lock();
-    for (auto instance : m_instancesMap)
+    for (auto instance : m_sourcesIDs)
     {
-        instanceList.push_back(&(*instance));
+        instanceList.push_back(&(*m_instancesMap[instance]));
     }
     m_mutexMap.unlock();
     
@@ -151,6 +156,7 @@ bool medSourcesLoader::renameSource(QString const & instanceId, QString const & 
         {
             m_instancesMap[instanceId]->setInstanceName(name);
             bRes = saveToDisk();
+            emit sourcesUpdated();
         }
         m_mutexMap.unlock();
     }
@@ -172,6 +178,37 @@ medAbstractSource * medSourcesLoader::getSource(QString const &instanceId)
     return sourceRes;
 }
 
+medAbstractSource * medSourcesLoader::getDefaultWorkingSource()
+{
+    return &(*m_instancesMap.value(medSettingsManager::instance()->value("Sources", "Default", 0).toString()));
+}
+
+
+bool medSourcesLoader::setDefaultWorkingSource(QString const &instanceId)
+{
+    bool bRes = m_instancesMap.contains(instanceId);
+
+    if (bRes)
+    {
+        auto source = m_instancesMap[instanceId];
+        bool bWritable = source->isWritable();
+        bool bLocal = source->isLocal();
+        bool bCached = source->isCached();
+        bool bOnline = source->isOnline();
+
+        if (bWritable && (bLocal || (!bLocal && bCached && bOnline)))
+        {
+            m_defaultSource = &(*source);
+            medSettingsManager::instance()->setValue("Sources", "Default", instanceId);
+            emit defaultWorkingSource(m_defaultSource);
+        }
+        else
+        {
+            bRes = false;
+        }
+    }
+    return bRes;
+}
 
 
 
@@ -198,6 +235,10 @@ medAbstractSource* medSourcesLoader::createInstanceOfSource(QString const & type
     if (m_sourcesMap.contains(type))
     {
         pDataSource = m_sourcesMap[type].instanciator();
+        for (auto *parameter : pDataSource->getAllParameters())
+        {
+            connect(parameter, &medAbstractParameter::triggered, [=]() {this->saveToDisk(); });
+        }
     }
 
     return pDataSource;
@@ -206,17 +247,19 @@ medAbstractSource* medSourcesLoader::createInstanceOfSource(QString const & type
 medSourcesLoader::medSourcesLoader(QObject *parent)
 {
     setParent(parent);
+
     m_CnxParametersPath = ".";
 }
 
-bool medSourcesLoader::saveToDisk()
+bool medSourcesLoader::saveToDisk() const
 {
     bool bRes = true;
 
     QJsonDocument jsonSaveDoc;
     QJsonArray entries;
-    for (auto instance : m_instancesMap)
+    for (auto instanceId : m_sourcesIDs)
     {
+        auto instance = m_instancesMap[instanceId];
         QJsonObject entry;
         entry.insert("sourceType", QJsonValue::fromVariant(m_instanceMapType[instance->getInstanceId()]));
         entry.insert("cnxId", QJsonValue::fromVariant(instance->getInstanceId()));
@@ -257,6 +300,7 @@ bool medSourcesLoader::saveToDisk()
     }
 
     jsonSaveDoc.setArray(entries);
+
     QByteArray payload = jsonSaveDoc.toJson();
 
     QFile cnxSourcesParametersFile(m_CnxParametersPath + "/" + MED_DATASOURCES_FILENAME);
@@ -330,7 +374,22 @@ bool medSourcesLoader::loadFromDisk()
         bRes = iCnxOk > 0;
     }
 
+    if (bRes)
+    {
+        setDefaultWorkingSource(medSettingsManager::instance()->value("Sources", "Default", 0).toString());
+    }
+
     return bRes;
+}
+
+void medSourcesLoader::changeSourceOrder(int oldPlace, int newPlace)
+{
+    if (oldPlace < m_sourcesIDs.size() && newPlace < m_sourcesIDs.size() && oldPlace != newPlace)
+    {
+        m_sourcesIDs.insert(oldPlace > newPlace ? newPlace : newPlace-1, m_sourcesIDs.takeAt(oldPlace));
+        emit sourcesUpdated();
+    }
+    saveToDisk();
 }
 
 void medSourcesLoader::reloadCnx(QJsonObject &obj)
@@ -442,7 +501,7 @@ void medSourcesLoader::reloadCnx(QJsonObject &obj)
             << "\nConnection Id   = " << obj["cnxId"]
             << "\nConnection name = " << obj["cnxName"];
     }
-
+    m_sourcesIDs.push_back(obj["cnxId"].toString());
     m_instanceMapType[obj["cnxId"].toString()] = obj["sourceType"].toString();
     m_instancesMap.insert(obj["cnxId"].toString(), QSharedPointer<medAbstractSource>(pDataSource));
     pDataSource->connect();
