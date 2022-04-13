@@ -28,25 +28,28 @@ class MEDWIDGETS_EXPORT medSourcesSettings : public QWidget
     Q_OBJECT
 
 public:
-    explicit medSourcesSettings(medSourcesLoader * pSourceLoader, QWidget *parent = nullptr);
+     medSourcesSettings(medSourcesLoader * pSourceLoader, QWidget *parent = nullptr);
+    ~medSourcesSettings() = default;
 
-  public slots:  
-    void setAsDefault();
-    void connectSource();
-    void removeSource();
-    void updateSourceConnection();
-    void sourceMoved(const QModelIndex & parent, int start, int end, const QModelIndex & destination, int row);
+  public slots:
     void selectedSourceChange(int pi_index);
-    void updateConnectButton(medAbstractSource * pSource);
-    void connectButtonText();
-    void sourceAdded(medAbstractSource *pi_pSource);
+    void sourceMoved(const QModelIndex & parent, int start, int end, const QModelIndex & destination, int row);
+
+    void createSource();
+    void removeSource();
+    void setAsDefault();
+
+    void sourceCreated(medAbstractSource *pi_pSource);
     void sourceRemoved(medAbstractSource *pi_pSource);
-    void addNewSourceItem(medAbstractSource * pSource);
+    void updateSourceConnection();
+
+    void connectButtonUpdateText();
+    void updateConnectButton(medAbstractSource * pi_pSource);
+
     void switchMinimization(medSourceSettingsWidget* sourceWidget, bool isMinimized);
 
 protected:
     void updateSourceInformation(medAbstractSource * pi_pSource);
-    void createNewSource();
     void updateSelectedSourceDescription(int currentIndex);
 
 

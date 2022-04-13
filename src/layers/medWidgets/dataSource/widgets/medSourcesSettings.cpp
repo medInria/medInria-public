@@ -81,13 +81,13 @@ medSourcesSettings::medSourcesSettings(medSourcesLoader * pSourceLoader, QWidget
 
     for (auto pSource : pSourceLoader->sourcesList())
     {
-        addNewSourceItem(pSource);
+        sourceCreated(pSource);
     }
 
-    int iDefaultWorkingSource = medSettingsManager::instance()->value("Sources", "Default", 0).toInt();
-    if (iDefaultWorkingSource > -1)
+    auto * pDefaultWorkingSource = m_sourceLoader->getDefaultWorkingSource();
+    if (pDefaultWorkingSource)
     {
-        auto *pItem = m_sourceListWidget->item(iDefaultWorkingSource);
+        auto *pItem = m_sourceToItem.value(pDefaultWorkingSource);
         auto *pWidget = static_cast<medSourceSettingsWidget*>(m_sourceListWidget->itemWidget(pItem));
         pWidget->setToDefault(true);
     }
@@ -102,8 +102,6 @@ medSourcesSettings::medSourcesSettings(medSourcesLoader * pSourceLoader, QWidget
     m_setDefaultButton = new QPushButton(tr("Set as default"));
     m_setDefaultButton->setToolTip(tr("Set the selected source as default"));
     sourceSettingsLayout->addWidget(m_setDefaultButton);
-    // todo get the default source and dragDropAreaWidget->setSourceToDefault(source);
-    // or directly in medSourceSettingsWidget constructor
 
     m_connectButton = new QPushButton(tr("Connect"));
     m_connectButton->setToolTip(tr("Switch ON or OFF the selected source"));
@@ -135,11 +133,10 @@ medSourcesSettings::medSourcesSettings(medSourcesLoader * pSourceLoader, QWidget
 
     //--- Now that Qt widgets are set: create connections
     connect(m_sourceTypeCombobox, QOverload<int>::of(&QComboBox::currentIndexChanged), this, &medSourcesSettings::updateSelectedSourceDescription);
-    connect(createButton,       &QPushButton::clicked, this, &medSourcesSettings::createNewSource);
+    connect(createButton,       &QPushButton::clicked, this, &medSourcesSettings::createSource);
     connect(m_setDefaultButton, &QPushButton::clicked, this, &medSourcesSettings::setAsDefault ); // Change default source
-    connect(m_connectButton,    &QPushButton::clicked, this, &medSourcesSettings::connectSource); // Connect or disconnect a source
     connect(m_removeButton,     &QPushButton::clicked, this, &medSourcesSettings::removeSource ); // Ask to remove source
-    connect(m_sourceLoader,     &medSourcesLoader::sourceAdded,  this, &medSourcesSettings::sourceAdded);   // Signal to slot to indicate a new source
+    connect(m_sourceLoader,     &medSourcesLoader::sourceAdded,  this, &medSourcesSettings::sourceCreated);   // Signal to slot to indicate a new source
     connect(m_sourceLoader,     &medSourcesLoader::sourceRemoved, this, &medSourcesSettings::sourceRemoved);   // Signal to slot to indicate a new source
     connect(m_sourceListWidget, &QListWidget::currentRowChanged, this, &medSourcesSettings::selectedSourceChange);
     connect(m_sourceListWidget->model(), &QAbstractItemModel::rowsMoved, this, &medSourcesSettings::sourceMoved);
@@ -155,6 +152,18 @@ medSourcesSettings::medSourcesSettings(medSourcesLoader * pSourceLoader, QWidget
     }
 
     m_sourceListWidget->setAutoScroll(true);
+
+    QWidget * pConfFileWidget = new QWidget();
+    QHBoxLayout * pConfFileLayout = new QHBoxLayout();
+    QLabel * pPathLabel = new QLabel("Sources configuration file");
+    QLineEdit * pPathLineEdit = new QLineEdit();
+    QPushButton * pPathExplorButton = new QPushButton("...");
+    //QFileDialog
+    pConfFileLayout->addWidget(pPathLabel);
+    pConfFileLayout->addWidget(pPathLineEdit);
+    pConfFileLayout->addWidget(pPathExplorButton);
+    pConfFileWidget->setLayout(pConfFileLayout);
+    pMainLayout->addWidget(pConfFileWidget);
 }
 
 void medSourcesSettings::removeSource()
@@ -176,6 +185,7 @@ void medSourcesSettings::setAsDefault()
     {
         if (m_sourceLoader->setDefaultWorkingSource(currentSource->getInstanceId()))
         {
+            m_removeButton->setDisabled(true);
             if (previousDefault)
             {
                 auto *pItem = m_sourceToItem.value(previousDefault);
@@ -189,43 +199,6 @@ void medSourcesSettings::setAsDefault()
     }
 }
 
-
-
-
-
-
-/**
- * @brief Add a new source item in the list
- *
- * @param pSource the new source
- */
-void medSourcesSettings::addNewSourceItem(medAbstractSource * pSource)
-{
-    auto * newSourceWidgetItem = new medSourceSettingsWidget(pSource, this);
-
-    QListWidgetItem *widgetItem = new QListWidgetItem();
-    m_sourceToItem[pSource] = widgetItem;
-    m_sourceListWidget->addItem(widgetItem);
-    m_sourceListWidget->setItemWidget(widgetItem, newSourceWidgetItem);
-
-    // Initial size of item
-    QSize initialSize = newSourceWidgetItem->size();
-    newSourceWidgetItem->saveInitialSize(initialSize);
-    widgetItem->setSizeHint(initialSize);
-
-    m_sourceListWidget->setSpacing(2);
-
-    m_sourceListWidget->setCurrentItem(widgetItem);
-    
-    connect(newSourceWidgetItem, &medSourceSettingsWidget::sourceRename, m_sourceLoader, &medSourcesLoader::renameSource);
-    connect(m_sourceLoader, &medSourcesLoader::sourcesUpdated, newSourceWidgetItem, &medSourceSettingsWidget::titleChanged);
-    connect(m_sourceListWidget, &QListWidget::currentItemChanged, newSourceWidgetItem, &medSourceSettingsWidget::currentItemChanged);
-    connect(newSourceWidgetItem, &medSourceSettingsWidget::minimizationAsked, [=](bool isMinimized)
-    {
-        switchMinimization(newSourceWidgetItem, isMinimized);
-    });
-}
-
 /**
  * @brief This method resizes the QListWidget item as soon as the medSourceSettingsWidget is resized
  *
@@ -234,26 +207,15 @@ void medSourcesSettings::addNewSourceItem(medAbstractSource * pSource)
  */
 void medSourcesSettings::switchMinimization(medSourceSettingsWidget* sourceWidget, bool isMinimized)
 {
-    for (int i = 0; i < m_sourceListWidget->count(); ++i)
+    auto * pItem = m_sourceToItem.value(sourceWidget->getSource());
+    QSize initialSize = sourceWidget->getInitialSize();
+    if (isMinimized)
     {
-        auto * currentItem = m_sourceListWidget->item(i);
-        auto * widget = m_sourceListWidget->itemWidget(currentItem);
-        if (widget)
-        {
-            auto comparedSourceWidget = dynamic_cast<medSourceSettingsWidget*>(widget);
-            if (comparedSourceWidget && (comparedSourceWidget == sourceWidget))
-            {
-                QSize initialSize = sourceWidget->getInitialSize();
-                if (isMinimized)
-                {
-                    currentItem->setSizeHint(QSize(initialSize.width(), 39));
-                }
-                else
-                {
-                    currentItem->setSizeHint(initialSize);
-                }
-            }
-        }
+        pItem->setSizeHint(QSize(initialSize.width(), 39));
+    }
+    else
+    {
+        pItem->setSizeHint(initialSize);
     }
 }
 
@@ -282,7 +244,7 @@ void medSourcesSettings::updateSourceInformation(medAbstractSource * pi_pSource)
  * @brief Launch the creation of a new medAbstractSource and display it in the sources settings widget
  * 
  */
-void medSourcesSettings::createNewSource()
+void medSourcesSettings::createSource()
 {
     auto indexComboBox = m_sourceTypeCombobox->currentIndex();
     QString generatedInstanceId = "";
@@ -312,10 +274,6 @@ void medSourcesSettings::updateSelectedSourceDescription(int currentIndex)
 
 
 
-void medSourcesSettings::connectSource()
-{
-}
-
 
 void medSourcesSettings::selectedSourceChange(int pi_index)
 {
@@ -327,6 +285,7 @@ void medSourcesSettings::selectedSourceChange(int pi_index)
 
         updateSourceInformation(pSource);
         updateConnectButton(pSource);
+        m_removeButton->setDisabled(pSource == m_sourceLoader->getDefaultWorkingSource());
     }
     else
     {
@@ -336,22 +295,21 @@ void medSourcesSettings::selectedSourceChange(int pi_index)
     }
 }
 
-void medSourcesSettings::updateConnectButton(medAbstractSource * pSource)
+void medSourcesSettings::updateConnectButton(medAbstractSource * pi_pSource)
 {
-    connectButtonText();
+    connectButtonUpdateText();
     disconnect(this, SLOT(updateConnectButton));
     disconnect(m_connectButton);
-    connect(pSource, &medAbstractSource::connectionStatus, this, &medSourcesSettings::connectButtonText);
+    connect(pi_pSource, &medAbstractSource::connectionStatus, this, &medSourcesSettings::connectButtonUpdateText);
     connect(m_connectButton, &QPushButton::clicked, this, &medSourcesSettings::updateSourceConnection);
 }
 
-void medSourcesSettings::connectButtonText()
+void medSourcesSettings::connectButtonUpdateText()
 {
     auto * pItem = m_sourceListWidget->currentItem();
     if (pItem)
     {
-        auto *pWidget = static_cast<medSourceSettingsWidget*>(m_sourceListWidget->itemWidget(pItem));
-        auto *pSource = pWidget->getSource();
+        auto *pSource = m_sourceToItem.key(pItem);
         if (pSource->isOnline())
         {
             m_connectButton->setText("Disconnect");
@@ -364,9 +322,31 @@ void medSourcesSettings::connectButtonText()
 }
 
 
-void medSourcesSettings::sourceAdded(medAbstractSource * pi_pSource)
+void medSourcesSettings::sourceCreated(medAbstractSource * pi_pSource)
 {
-    addNewSourceItem(pi_pSource);
+    auto * newSourceWidgetItem = new medSourceSettingsWidget(pi_pSource, this);
+
+    QListWidgetItem *widgetItem = new QListWidgetItem();
+    m_sourceToItem[pi_pSource] = widgetItem;
+    m_sourceListWidget->addItem(widgetItem);
+    m_sourceListWidget->setItemWidget(widgetItem, newSourceWidgetItem);
+
+    // Initial size of item
+    QSize initialSize = newSourceWidgetItem->size();
+    newSourceWidgetItem->saveInitialSize(initialSize);
+    widgetItem->setSizeHint(initialSize);
+
+    m_sourceListWidget->setSpacing(2);
+
+    m_sourceListWidget->setCurrentItem(widgetItem);
+
+    connect(newSourceWidgetItem, &medSourceSettingsWidget::sourceRename, m_sourceLoader, &medSourcesLoader::renameSource);
+    connect(m_sourceLoader, &medSourcesLoader::sourcesUpdated, newSourceWidgetItem, &medSourceSettingsWidget::titleChanged);
+    connect(m_sourceListWidget, &QListWidget::currentItemChanged, newSourceWidgetItem, &medSourceSettingsWidget::currentItemChanged);
+    connect(newSourceWidgetItem, &medSourceSettingsWidget::minimizationAsked, [=](bool isMinimized)
+    {
+        switchMinimization(newSourceWidgetItem, isMinimized);
+    });
 }
 
 void medSourcesSettings::sourceRemoved(medAbstractSource * pi_pSource)
@@ -379,8 +359,7 @@ void medSourcesSettings::updateSourceConnection()
     auto *pItem = m_sourceListWidget->currentItem();
     if (pItem != nullptr)
     {
-        auto *pWidget = static_cast<medSourceSettingsWidget*>(m_sourceListWidget->itemWidget(pItem));
-        auto *pSource = pWidget->getSource();
+        auto *pSource = m_sourceToItem.key(pItem);
         pSource->connect(!pSource->isOnline());
     }
 }

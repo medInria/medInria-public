@@ -180,7 +180,7 @@ medAbstractSource * medSourcesLoader::getSource(QString const &instanceId)
 
 medAbstractSource * medSourcesLoader::getDefaultWorkingSource()
 {
-    return &(*m_instancesMap.value(medSettingsManager::instance()->value("Sources", "Default", 0).toString()));
+    return &(*m_instancesMap.value(medSettingsManager::instance()->value("Sources", "Default", "").toString()));
 }
 
 
