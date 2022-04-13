@@ -141,8 +141,8 @@ medHomepageArea::medHomepageArea ( QWidget * parent ) : QWidget ( parent ), d ( 
     QPixmap medLogo( ":pixmaps/medInria-logo-homepage.png" );
     medInriaLabel->setPixmap ( medLogo );
 
-    QTextEdit * textEdit = new QTextEdit(this);
-    textEdit->setHtml ( tr("<b>medInria</b> is a cross-platform medical image "
+    QTextEdit * m_textEdit = new QTextEdit(this);
+    m_textEdit->setHtml ( tr("<b>medInria</b> is a cross-platform medical image "
                            "processing and visualisation software, "
                            "and it is <b>free</b>. Through an intuitive user "
                            "interface, <b>medInria</b> offers from standard "
@@ -150,15 +150,15 @@ medHomepageArea::medHomepageArea ( QWidget * parent ) : QWidget ( parent ), d ( 
                            "your medical images such as 2D/3D/4D image "
                            "visualisation, image registration, or diffusion "
                            "MR processing and tractography." ));
-    textEdit->setReadOnly ( true );
-    textEdit->setFocusPolicy ( Qt::NoFocus );
-    textEdit->setMaximumHeight(300);
-    textEdit->setMinimumHeight(250);
+    m_textEdit->setReadOnly ( true );
+    m_textEdit->setFocusPolicy ( Qt::NoFocus );
+    m_textEdit->setMaximumHeight(300);
+    m_textEdit->setMinimumHeight(250);
     infoLayout->insertWidget ( 0,medInriaLabel );
-    infoLayout->insertWidget ( 1, textEdit );
+    infoLayout->insertWidget ( 1, m_textEdit );
     infoLayout->addStretch();
 
-    d->infoWidget->setMaximumHeight ( medInriaLabel->height() + textEdit->height() );
+    d->infoWidget->setMaximumHeight ( medInriaLabel->height() + m_textEdit->height() );
 
     //About widget
     QVBoxLayout * aboutLayout = new QVBoxLayout(d->aboutWidget);

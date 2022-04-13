@@ -36,7 +36,7 @@ public:
     ~medSourcesLoader();
 	
     /* ***********************************************************************/
-    /* *************** Add a source type ********************************/
+    /* *************** Add a source type *************************************/
     /* ***********************************************************************/
 	bool registerSourceType(QString type, QString name, QString description, instantiateSource instanciator);
 	QList<std::tuple<QString,QString,QString>> sourcesTypeAvailables();
@@ -45,21 +45,26 @@ public:
     /* *************** Create/remove sources *********************************/
     /* ***********************************************************************/
 	bool createCnx(QString &instanceId, QString const &type); //Provide instanceId like an internal name and the type of source. instanceId can be altered to avoid duplicates. If instanceId is empty the function will generate one
-	bool removeCnx(QString const &instanceId);	
+	bool removeCnx(QString const &instanceId);
 	
     /* ***********************************************************************/
     /* *************** Handle sources ****************************************/
     /* ***********************************************************************/
 	QList<medAbstractSource*> sourcesList();
 	medAbstractSource*        getSource(QString const & instanceId);
+    medAbstractSource*        getDefaultWorkingSource();
+    bool                      setDefaultWorkingSource(QString const &instanceId);
     bool                      renameSource(QString const & instanceId, QString const & name);
 	
 	bool loadFromDisk(); //call after each add or remove source instance, each call to the destructor. Must be encrypted
 
+public slots:
+    void changeSourceOrder(int oldPlace, int newPlace);
+
 private:
     medSourcesLoader(QObject *parent = nullptr);
 
-    bool saveToDisk();   //call after each add or remove source instance, each call to the destructor. Must be encrypted
+    bool saveToDisk() const;   //call after each add or remove source instance, each call to the destructor. Must be encrypted
     
 
     void reloadCnx(QJsonObject &obj);
@@ -76,8 +81,10 @@ signals:
     void sourceAdded(medAbstractSource*);  // Signal to indicate a new source
 	void sourceRemoved(medAbstractSource*); // Signal to indicate a source was removed
 	
-	void connectorNotAvailable(QString);   // Error a DBSource configuration exist without associated medSource plugin
+	void connectorNotAvailable(QString);   // Error a Source configuration exist without associated medSource plugin
+    void sourcesUpdated();
 
+    void defaultWorkingSource(medAbstractSource*);
 
 private:
 
@@ -90,10 +97,12 @@ private:
     };
 
     QMutex m_mutexMap;
+    QStringList m_sourcesIDs;
     QMap<QString, QString > m_instanceMapType; //instance, instanceId
     QMap<QString, QSharedPointer<medAbstractSource> > m_instancesMap; //instanceId, instance
     QMap<QString, medSourceTool>      m_sourcesMap;  //Source connector type name, function pointer to instantiate a connection to the source object
     QList<QJsonObject> m_unresolvedSavedCnx;
+    medAbstractSource * m_defaultSource;
     
     
     static medSourcesLoader *s_instance;

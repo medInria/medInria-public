@@ -135,7 +135,7 @@ bool medDefaultWritingPolicy::checkUri(QStringList pi_suggestedUri, QStringList 
                 }
                 
                 int uriLength = pi_suggestedUri.size();
-                if (islevelWritable(sourceInstanceId, pi_suggestedUri.size()))
+                if (isLevelWritable(sourceInstanceId, pi_suggestedUri.size()))
                 { 
                     bRes = true;
                 }

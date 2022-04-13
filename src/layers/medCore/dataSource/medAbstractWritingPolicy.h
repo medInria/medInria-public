@@ -50,6 +50,7 @@ public:
 
 
     static int levelToWrite(QString pi_sourceId);
-    static bool islevelWritable(QString pi_sourceId, unsigned int pi_uiLevel);
+    static bool isLevelWritable(QString pi_sourceId, unsigned int pi_uiLevel);
+    static QString levelName(QString pi_sourceId, unsigned int pi_uiLevel);
 };
 

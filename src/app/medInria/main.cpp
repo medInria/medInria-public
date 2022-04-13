@@ -240,8 +240,8 @@ int main(int argc, char *argv[])
         medPluginManager::instance()->setVerboseLoading(true);
         medPluginManager::instance()->initialize();
         QObject::connect(medSourcesLoader::instance(), SIGNAL(sourceAdded(medAbstractSource *)), model, SLOT(addSource(medAbstractSource *)));
+        QObject::connect(medSourcesLoader::instance(), SIGNAL(defaultWorkingSource(medAbstractSource *)), model, SLOT(setDefaultWorkingSource(medAbstractSource *)));
         medSourcesLoader::instance()->loadFromDisk();
-
 
         // Use Qt::WA_DeleteOnClose attribute to be sure to always have only one
         // closeEvent.
