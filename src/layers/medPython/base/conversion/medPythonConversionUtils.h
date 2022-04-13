@@ -15,7 +15,7 @@
 #include <QObject>
 #include <QString>
 
-#include "medPythonCore.h"
+#include "medPythonCoreForward.h"
 #include "medPythonError.h"
 #include "medPythonExport.h"
 

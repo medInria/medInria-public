@@ -112,4 +112,6 @@ function(add_python_bindings cpp_target bindings_target)
     set(library ${libraries_dir}/${library_prefix}${module_name}${library_suffix})
     set_source_files_properties(${library} PROPERTIES GENERATED TRUE)
 
+    add_dependencies(${cpp_target} ${bindings_target})
+
 endfunction()

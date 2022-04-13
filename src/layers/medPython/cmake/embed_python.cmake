@@ -13,9 +13,15 @@
 #
 ################################################################################
 
-function(embed_python target)
+set(PYTHON_VERSION_MAJOR 3)
 
-    include(python_files_info)
+if (UNIX AND NOT APPLE)
+    set(PYTHON_VERSION_MINOR 8)
+else()
+    set(PYTHON_VERSION_MINOR 9)
+endif()
+
+function(embed_python target)
 
     get_target_property(binary_dir ${target} BINARY_DIR)
     set(working_dir "${binary_dir}/python")
@@ -36,32 +42,36 @@ function(embed_python target)
         )
 
 ## #############################################################################
-## List Python files
+## List core Python libraries
 ## #############################################################################
 
-    foreach (file ${PYTHON_HEADERS})
-        list(APPEND python_headers "${working_dir}/${PYTHON_HEADERS_DIR}/${file}")
-    endforeach()
+   if (UNIX)
+       set(python_vname python${PYTHON_VERSION_MAJOR}.${PYTHON_VERSION_MINOR})
+       if (APPLE)
+           set(libraries lib${python_vname}.dylib)
+       else()
+           set(libraries lib${python_vname}.so)
+       endif()
+   elseif (WIN32)
+       set(python_vname python${PYTHON_VERSION_MAJOR}${PYTHON_VERSION_MINOR})
+       set(libraries
+           ${python_vname}.dll
+           ${python_vname}_d.dll
+           ${python_vname}.lib
+           ${python_vname}_d.lib
+           )
+   endif()
 
-    foreach (file ${PYTHON_LIBRARIES})
-        if (NOT file STREQUAL ${PYTHON_MAIN_LIBRARY})
-            list(APPEND python_libraries "${working_dir}/${PYTHON_LIBRARIES_DIR}/${file}")
-        endif()
-    endforeach()
-
-    set(python_main_library "${working_dir}/${PYTHON_LIBRARIES_DIR}/${PYTHON_MAIN_LIBRARY}")
-
-    foreach (file ${PYTHON_MODULES})
-        list(APPEND python_modules "${working_dir}/${PYTHON_MODULES_DIR}/${file}")
-    endforeach()
-
-    set(python_license_file "${working_dir}/${PYTHON_LICENSE_FILE}")
+   set(core_python_libraries)
+   foreach (library ${libraries})
+       list(APPEND core_python_libraries "${working_dir}/libraries/${python_vname}/${library}")
+   endforeach()
 
 ## #############################################################################
 ## Extract Python files
 ## #############################################################################
 
-    add_custom_command(OUTPUT ${python_headers} ${python_libraries} ${python_main_library} ${python_modules} ${python_license_file}
+    add_custom_command(OUTPUT ${core_python_libraries}
         COMMAND ${CMAKE_COMMAND} ARGS
         -D PYTHON_ZIP=${python_zip}
         -P "${CMAKE_CURRENT_FUNCTION_LIST_DIR}/scripts/extract_python.cmake"
@@ -71,41 +81,51 @@ function(embed_python target)
         )
 
 ## #############################################################################
-## Import Python library
+## Import core Python libraries
 ## #############################################################################
 
-    set(copied_library "${CMAKE_BINARY_DIR}/lib/${PYTHON_MAIN_LIBRARY}")
+    foreach (library ${core_python_libraries})
+        get_filename_component(library_name "${library}" NAME)
+        set(copied_library "${CMAKE_BINARY_DIR}/lib/${library_name}")
 
-    if (APPLE)
-        add_custom_command(OUTPUT ${copied_library}
-          COMMAND ${CMAKE_COMMAND} ARGS -E copy_if_different "${python_main_library}" "${CMAKE_BINARY_DIR}/lib/"
-          COMMAND ${CMAKE_INSTALL_NAME_TOOL} -id "${copied_library}" "${copied_library}"
-          DEPENDS "${python_main_library}"
-          )
-    else()
-        add_custom_command(OUTPUT ${copied_library}
-          COMMAND ${CMAKE_COMMAND} ARGS -E copy_if_different "${python_main_library}" "${CMAKE_BINARY_DIR}/lib/"
-          DEPENDS "${python_main_library}"
-          )
+        if (APPLE)
+            add_custom_command(OUTPUT ${copied_library}
+              COMMAND ${CMAKE_COMMAND} ARGS -E copy_if_different "${library}" "${copied_library}"
+              COMMAND ${CMAKE_INSTALL_NAME_TOOL} -id "${copied_library}" "${copied_library}"
+              DEPENDS "${library}"
+              )
+        else()
+            add_custom_command(OUTPUT ${imported_core_libraries}
+              COMMAND ${CMAKE_COMMAND} ARGS -E copy_if_different "${library}" "${copied_library}"
+              DEPENDS "${library}"
+              )
+        endif()
+
+        install(FILES "${copied_library}" TYPE LIB)
+        target_sources(${target} PRIVATE ${copied_library})
+
+        if (NOT WIN32)
+            target_link_libraries(${target} PUBLIC "${copied_library}")
+        endif()
+    endforeach()
+
+    if (WIN32)
+        target_link_directories(${target} PUBLIC "${working_dir}")
     endif()
 
-    INSTALL(FILES "${copied_library}" TYPE LIB)
-
 ## #############################################################################
-## Apply to target
+## Embed Python as external resource
 ## #############################################################################
 
-    target_include_directories(${target} PUBLIC "${working_dir}/${PYTHON_HEADERS_DIR}")
-    target_sources(${target} PRIVATE ${python_headers} ${copied_library})
-	IF(NOT WIN32)
-        target_link_libraries(${TARGET_NAME} PUBLIC "${copied_library}")
-	ELSE()
-        #target_link_libraries(${TARGET_NAME} PUBLIC "${CMAKE_BINARY_DIR}/lib/$<$<CONFIG:debug>:PYTHON_STUB_LIBRARY_DEBUG>$<$<CONFIG:release>:PYTHON_STUB_LIBRARY>$<$<CONFIG:MinSizeRel>:PYTHON_STUB_LIBRARY>$<$<CONFIG:RelWithDebInfo>:PYTHON_STUB_LIBRARY>)
-	    target_link_directories(${TARGET_NAME} PUBLIC "${working_dir}/${PYTHON_LIBRARIES_DIR}")
-	ENDIF()
+    set(vname python${PYTHON_VERSION_MAJOR}.${PYTHON_VERSION_MINOR})
 
-    target_compile_definitions(${target} PUBLIC PYTHON_VERSION_MINOR=${PYTHON_VERSION_MINOR})
+    set_external_resources(${target} APPEND DESTINATION ${vname} FILES "${working_dir}/LICENSE.txt")
+    set_external_resources(${target} APPEND DESTINATION ${vname}/lib/${vname} DIRECTORIES "${working_dir}/modules/${vname}")
 
-    add_external_resources(${target} ${python_libraries} ${python_modules} ${python_license_file})
+## #############################################################################
+## Include directories
+## #############################################################################
+
+    target_include_directories(${target} PUBLIC "${working_dir}/headers/python${PYTHON_VERSION_MAJOR}.${PYTHON_VERSION_MINOR}")
 
 endfunction()

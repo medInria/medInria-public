@@ -66,7 +66,7 @@ bool PythonSettingsWidget::write()
         paths << QDir::fromNativeSeparators(item->text());
     }
 
-    setStartupPythonPaths(paths);
+    setUserPythonPaths(paths);
 
     return true;
 }
@@ -75,7 +75,7 @@ void PythonSettingsWidget::read()
 {
     d->pathsList->clear();
 
-    foreach (QString path, getStartupPythonPaths())
+    foreach (QString path, getUserPythonPaths())
     {
         new QListWidgetItem(QDir::toNativeSeparators(path), d->pathsList);
     }

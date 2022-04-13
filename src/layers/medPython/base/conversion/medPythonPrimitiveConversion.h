@@ -12,7 +12,7 @@
 
 ==============================================================================*/
 
-#include "medPythonCore.h"
+#include "medPythonCoreForward.h"
 #include "medPythonExport.h"
 
 MEDPYTHON_EXPORT bool medPythonConvert(bool value, PyObject** output);

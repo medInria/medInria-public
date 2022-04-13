@@ -30,12 +30,12 @@ MEDPYTHON_EXPORT void addPythonPath(QString path);
 /// Specifies paths to be appended to sys.path at startup.
 /// The paths are saved in the application settings.
 ///
-MEDPYTHON_EXPORT void setStartupPythonPaths(QStringList paths);
+MEDPYTHON_EXPORT void setUserPythonPaths(QStringList paths);
 
 /// Retrieves the list of paths that were added to the application settings
-/// through the addPythonPath function.
+/// through the setUserPythonPaths function.
 ///
-MEDPYTHON_EXPORT QStringList getStartupPythonPaths();
+MEDPYTHON_EXPORT QStringList getUserPythonPaths();
 
 /// Loads all top-level packages in sys.path that have the prefix 'medInria_' in
 /// their name. All exceptions are handled. Successfully loaded plugins are
@@ -50,6 +50,8 @@ MEDPYTHON_EXPORT void loadPythonPlugins();
 ///
 MEDPYTHON_EXPORT Object runSourceCode(QString sourceCode);
 
+/// Print text on the Python console
+///
 MEDPYTHON_EXPORT void print(QString text);
 
 } // namespace med::python

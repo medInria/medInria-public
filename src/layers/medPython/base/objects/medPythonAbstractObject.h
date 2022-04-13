@@ -27,7 +27,7 @@
 #include <QString>
 
 #include "medPythonConversion.h"
-#include "medPythonCore.h"
+#include "medPythonCoreForward.h"
 #include "medPythonError.h"
 #include "medPythonExport.h"
 

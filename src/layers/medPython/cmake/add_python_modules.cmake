@@ -39,10 +39,9 @@ function(add_python_modules target)
         get_filename_component(module_name ${module} NAME_WE)
         # Copy modules to the build folder (tar needs them all in one place)
         set(module_copy "${modules_dir}/${module_name}.py")
-        add_custom_command(OUTPUT ${module_copy}
+        add_custom_command(TARGET ${target} POST_BUILD
           COMMAND ${CMAKE_COMMAND} ARGS -E copy "${module}" "${module_copy}"
           WORKING_DIRECTORY ${source_directory}
-          DEPENDS ${source_directory}/${module}
           )
         set_property(TARGET ${target} APPEND PROPERTY PYTHON_MODULES ${module_name})
     endforeach()

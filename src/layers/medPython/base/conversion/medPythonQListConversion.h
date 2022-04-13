@@ -14,7 +14,7 @@
 
 #include <QList>
 
-#include "medPythonCore.h"
+#include "medPythonCoreForward.h"
 #include "medPythonExport.h"
 
 namespace med::python

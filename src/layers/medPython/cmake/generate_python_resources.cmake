@@ -41,7 +41,6 @@ function(generate_python_resources target)
 
     foreach (module ${modules})
         list(APPEND module_paths "${modules_dir}/${module}.py")
-        list(APPEND depends "${modules_dir}/${module}.py")
     endforeach()
 
     if (bindings)
@@ -65,19 +64,16 @@ function(generate_python_resources target)
                 ${forward_module}
                 )
 
-            list(APPEND depends ${bindings_target})
-
-            add_external_resources(${target} ${library})
+            import_external_resources(${target} FILES ${library})
         endforeach()
     endif()
 
-    add_custom_command(OUTPUT ${modules_archive}
+    add_custom_command(TARGET ${target} POST_BUILD
         COMMAND ${CMAKE_COMMAND} -E tar c ${modules_archive} --format=zip -- ${init_file} ${module_paths}
         WORKING_DIRECTORY ${CMAKE_CURRENT_BINARY_DIR}/python/modules
-        DEPENDS ${depends}
         VERBATIM
         )
 
-    add_external_resources(${target} ${modules_archive})
+    import_external_resources(${target} FILES ${modules_archive})
 
 endfunction()

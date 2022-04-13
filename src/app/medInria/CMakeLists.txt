@@ -117,6 +117,13 @@ if (APPLE)
   import_external_resources(${TARGET_NAME} FILES "${CMAKE_CURRENT_SOURCE_DIR}/resources/${TARGET_NAME}.icns")
 endif()
 
+if (USE_PYTHON)
+    import_external_resources(${TARGET_NAME}
+        DESTINATION python
+        FROM_TARGETS medPythonBase
+        )
+endif()
+
 ## #############################################################################
 ## include directorie.
 ## #############################################################################
@@ -148,10 +155,7 @@ target_link_libraries(${TARGET_NAME}
   )
 
 if (USE_PYTHON)
-    target_link_libraries(${TARGET_NAME}
-        medPythonBase
-        medPythonTools
-        )
+    target_link_libraries(${TARGET_NAME} medPythonBase)
 endif()
 
 

@@ -15,7 +15,6 @@
 
 #include "medPythonUtils.h"
 
-#include <medMessageController.h>
 #include <medSettingsManager.h>
 
 #include "medPythonCoreFunction.h"
@@ -27,7 +26,7 @@ namespace med::python
 namespace
 {
 
-const char* STARTUP_PATHS_SETTINGS_ID = "startup_paths";
+const char* USER_PATHS_SETTINGS_ID = "user_paths";
 
 void tryLoadPlugins()
 {
@@ -77,14 +76,14 @@ void addPythonPath(QString path)
     }
 }
 
-void setStartupPythonPaths(QStringList paths)
+void setUserPythonPaths(QStringList paths)
 {
-    medSettingsManager::instance()->setValue(PYTHON_SETTINGS_ID, STARTUP_PATHS_SETTINGS_ID, paths);
+    medSettingsManager::instance()->setValue(PYTHON_SETTINGS_ID, USER_PATHS_SETTINGS_ID, paths);
 }
 
-QStringList getStartupPythonPaths()
+QStringList getUserPythonPaths()
 {
-    return medSettingsManager::instance()->value(PYTHON_SETTINGS_ID, STARTUP_PATHS_SETTINGS_ID).toStringList();
+    return medSettingsManager::instance()->value(PYTHON_SETTINGS_ID, USER_PATHS_SETTINGS_ID).toStringList();
 }
 
 void loadPythonPlugins()

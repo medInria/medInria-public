@@ -15,49 +15,46 @@
 
 #include <QApplication>
 
-#include "medPythonCore.h"
-#include "medPythonError.h"
-#include "medPythonUtils.h"
+#include "medPython.h"
+#include "medPythonCoreInit.h"
 
 namespace med::python
 {
 
-namespace
-{
-
-bool isRunning = false;
-
-} // namespace
-
 bool initialize()
 {
-    if (!isRunning)
-    {
-        QStringList startupPaths = getStartupPythonPaths();
-        isRunning = initializeInterpreter(startupPaths);
+    bool success = true;
 
-        if (isRunning)
+    if (!isRunning())
+    {
+        success = initializeInterpreter(getUserPythonPaths());
+
+        if (success)
         {
             initializeExceptions();
             QApplication::connect(qApp, &QApplication::aboutToQuit, &finalize);
         }
     }
 
-    return isRunning;
+    return success;
 }
 
 bool finalize()
 {
     bool success = true;
 
-    if (isRunning)
+    if (isRunning())
     {
-        isRunning = false;
         finalizeExceptions();
         success = finalizeInterpreter();
     }
 
     return success;
+}
+
+bool isRunning()
+{
+    return isInterpreterInitialized();
 }
 
 } // namespace med::python

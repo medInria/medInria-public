@@ -14,7 +14,7 @@
 
 #include <QObject>
 
-#include "medPythonCore.h"
+#include "medPythonCoreForward.h"
 #include "medPythonExport.h"
 
 MEDPYTHON_EXPORT bool medPythonConvert(const QObject* object, PyObject** output);

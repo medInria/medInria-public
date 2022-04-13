@@ -14,7 +14,7 @@
 
 #include <QHash>
 
-#include "medPythonCore.h"
+#include "medPythonCoreForward.h"
 #include "medPythonExport.h"
 #include "medPythonQListConversion.h"
 

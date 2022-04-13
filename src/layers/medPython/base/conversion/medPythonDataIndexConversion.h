@@ -13,7 +13,7 @@
 ==============================================================================*/
 
 #include "medDataIndex.h"
-#include "medPythonCore.h"
+#include "medPythonCoreForward.h"
 #include "medPythonExport.h"
 
 MEDPYTHON_EXPORT bool medPythonConvert(const medDataIndex& value, PyObject** output);

@@ -18,15 +18,9 @@ namespace med::python
 {
 
 bool initializeInterpreter(QStringList additionalModulePaths);
+
 bool finalizeInterpreter();
 
-namespace test
-{
-
-/// Returns the temporary directories used by the embedded interpreter.
-///
-QStringList getTemporaryDirectories();
-
-}
+bool isInterpreterInitialized();
 
 } // namespace med::python

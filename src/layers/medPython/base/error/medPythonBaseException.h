@@ -21,7 +21,7 @@
 
 #include <QString>
 
-#include "medPythonCore.h"
+#include "medPythonCoreForward.h"
 #include "medPythonExceptionThrower.h"
 #include "medPythonExport.h"
 
