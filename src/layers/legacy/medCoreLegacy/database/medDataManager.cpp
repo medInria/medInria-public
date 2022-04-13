@@ -195,18 +195,19 @@ QUuid medDataManager::importData(medAbstractData *data, bool persistent)
         return QUuid();
     Q_D(medDataManager);
 
-    if (data->dataIndex().isV2())
-    {
-        uuid = d->f2(*data, persistent);
-    }
-    else
-    {
-        uuid = QUuid::createUuid();
-        medAbstractDbController *controller =
-                persistent ? d->dbController : d->nonPersDbController;
-        qDebug() << "generated uuid " << uuid.toString();
-        controller->importData(data, uuid);
-    }
+    uuid = d->f2(*data, persistent);
+    // if (data->dataIndex().isV2())
+    // {
+    //     uuid = d->f2(*data, persistent);
+    // }
+    // else
+    // {
+    //     uuid = QUuid::createUuid();
+    //     medAbstractDbController *controller =
+    //             persistent ? d->dbController : d->nonPersDbController;
+    //     qDebug() << "generated uuid " << uuid.toString();
+    //     controller->importData(data, uuid);
+    // }
     return uuid;
 }
 

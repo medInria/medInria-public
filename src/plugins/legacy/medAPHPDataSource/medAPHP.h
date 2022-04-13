@@ -99,7 +99,6 @@ public:
     QVariant getDirectData(unsigned int pi_uiLevel, QString key) override;
 
     int getAssyncData(unsigned int pi_uiLevel, QString key) override;
-    QVariant getDataFromRequest(int pi_iRequest) override;
 
     bool addDirectData(QVariant data, levelMinimalEntries &pio_minimalEntries, unsigned int pi_uiLevel,
                        QString parentKey) override;
@@ -123,6 +122,7 @@ public:
 
     int push(unsigned int pi_uiLevel, QString key) override;
 
+    QVariant getAsyncResults(int pi_iRequest) override;
 public slots:
     void abort(int pi_iRequest) override;
     void onSettingsSaved();

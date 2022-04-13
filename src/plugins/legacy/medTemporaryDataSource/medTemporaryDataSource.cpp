@@ -13,9 +13,29 @@
 
 #include "medTemporaryDataSource.h"
 
-medTemporaryDataSource::medTemporaryDataSource()
-        : medAbstractSource()
+#include <medIntParameter.h>
+
+struct medTemporaryDataSourcePrivate
 {
+    QString instanceId;
+    QString instanceName;
+    // QMap<QString, QVariant> m_pluginKeyToDataMap;
+
+    medIntParameter *levelCount;
+    int desiredWritableLevel;
+
+    QMap<unsigned int /*level*/, QMap<QString, QVariant>> medAbstractDataMap;
+    QMap<unsigned int, QMultiMap<QString, medAbstractSource::levelMinimalEntries>> minimalEntriesMap;
+};
+
+medTemporaryDataSource::medTemporaryDataSource()
+    : d(new medTemporaryDataSourcePrivate)
+{
+    d->levelCount = new medIntParameter("Number of Levels");
+    d->levelCount->setCaption("Number of Levels");
+    d->levelCount->setValue(3);
+
+    d->desiredWritableLevel = 3;
 }
 
 medTemporaryDataSource::~medTemporaryDataSource()
@@ -28,8 +48,9 @@ bool medTemporaryDataSource::initialization(const QString &pi_instanceId)
 
     if (!pi_instanceId.isEmpty())
     {
-        m_instanceId = pi_instanceId;
+        d->instanceId = pi_instanceId;
     }
+
     return bRes;
 }
 
@@ -39,7 +60,7 @@ bool medTemporaryDataSource::setInstanceName(const QString &pi_instanceName)
 
     if (!pi_instanceName.isEmpty())
     {
-        m_instanceName = pi_instanceName;
+        d->instanceName = pi_instanceName;
     }
     return bRes;
 }
@@ -51,9 +72,7 @@ bool medTemporaryDataSource::connect(bool pi_bEnable)
 
 QList<medAbstractParameter *> medTemporaryDataSource::getAllParameters()
 {
-    QList<medAbstractParameter *> paramListRes;
-
-    return paramListRes;
+    return {d->levelCount};
 }
 
 QList<medAbstractParameter *> medTemporaryDataSource::getCipherParameters()
@@ -68,7 +87,7 @@ QList<medAbstractParameter *> medTemporaryDataSource::getVolatilParameters()
 
 QList<medAbstractParameter *> medTemporaryDataSource::getFilteringParameters()
 {
-    return QList<medAbstractParameter *>();
+    return {};
 }
 
 bool medTemporaryDataSource::isWritable()
@@ -93,37 +112,37 @@ bool medTemporaryDataSource::isOnline()
 
 bool medTemporaryDataSource::isFetchByMinimalEntriesOrMandatoryAttributes()
 {
-    return false;
+    return true;
 }
 
 QString medTemporaryDataSource::getInstanceName()
 {
-    return m_instanceName;
+    return d->instanceName;
 }
 
 QString medTemporaryDataSource::getInstanceId()
 {
-    return m_instanceId;
+    return d->instanceId;
 }
 
 unsigned int medTemporaryDataSource::getLevelCount()
 {
-    return 3;
+    return d->levelCount->value();
 }
 
 unsigned int medTemporaryDataSource::getLevelDesiredWritable()
 {
-    return 0;
+    return d->desiredWritableLevel;
 }
 
 QStringList medTemporaryDataSource::getLevelNames()
 {
-    return {"Patient", "Study", "Series"};
+    return {};
 }
 
 QString medTemporaryDataSource::getLevelName(unsigned int pi_uiLevel)
 {
-    return "TemporaryData";
+    return "";
 }
 
 bool medTemporaryDataSource::isLevelWritable(unsigned int pi_uiLevel)
@@ -133,19 +152,32 @@ bool medTemporaryDataSource::isLevelWritable(unsigned int pi_uiLevel)
 
 QStringList medTemporaryDataSource::getMandatoryAttributesKeys(unsigned int pi_uiLevel)
 {
-    return {};
+    return {"key", "name", "desc"};
 }
 
 QList<medAbstractSource::levelMinimalEntries> medTemporaryDataSource::getMinimalEntries(unsigned int pi_uiLevel, QString parentId)
 {
     QList<levelMinimalEntries> entries;
+    auto minimalEntriesMultiMap = d->minimalEntriesMap[pi_uiLevel];
+    entries = minimalEntriesMultiMap.values(parentId);
 
     return entries;
 }
 
 QList<QMap<QString, QString>> medTemporaryDataSource::getMandatoryAttributes(unsigned int pi_uiLevel, QString parentId)
 {
-    QList < QMap<QString, QString>> res;
+    QList<QMap<QString, QString>> res;
+    QList<levelMinimalEntries> entries;
+    auto minimalEntriesMultiMap = d->minimalEntriesMap[pi_uiLevel];
+    entries = minimalEntriesMultiMap.values(parentId);
+    for (auto entry : entries)
+    {
+        QMap<QString, QString> map;
+        map["key"] = entry.key;
+        map["name"] = entry.name;
+        map["desc"] = entry.description;
+        res.append(map);
+    }
 
     return res;
 }
@@ -153,18 +185,14 @@ QList<QMap<QString, QString>> medTemporaryDataSource::getMandatoryAttributes(uns
 bool medTemporaryDataSource::getAdditionalAttributes(unsigned int pi_uiLevel, QString id, datasetAttributes4 &po_attributes)
 {
     bool bRes = false;
+
     return bRes;
 }
 
 QVariant medTemporaryDataSource::getDirectData(unsigned int pi_uiLevel, QString key)
 {
-    QString localKey = QString::number(pi_uiLevel) + ":" + key;
-    QVariant res;
-    if (m_pluginKeyToDataMap.contains(localKey))
-    {
-        res = m_pluginKeyToDataMap[localKey];
-    }
-    return res;
+    auto uuidToDataMap = d->medAbstractDataMap[pi_uiLevel];
+    return uuidToDataMap[key];
 }
 
 int medTemporaryDataSource::getAssyncData(unsigned int pi_uiLevel, QString id)
@@ -172,93 +200,115 @@ int medTemporaryDataSource::getAssyncData(unsigned int pi_uiLevel, QString id)
     return -1;
 }
 
-QString medTemporaryDataSource::addData(QVariant data, QStringList parentUri, QString name)
-{
-    QString keyRes;
-//    int sourceDelimterIndex = parentUri.indexOf(QString(":"));
-//    QStringList uriAsList = parentUri.right(parentUri.size() - sourceDelimterIndex - 1).split(QString("\r\n"));
-//    int level = uriAsList.size();
-//    QString key = QString::number(level) + ":" + uriAsList.last();
-//    if (!m_pluginKeyToDataMap.contains(key))
-//    {
-//        m_pluginKeyToDataMap[key] = data;
-//    }
-    return keyRes;
-}
+// QString medTemporaryDataSource::addData(QVariant data, QStringList parentUri, QString name)
+// {
+//     QString keyRes;
+//     //    int sourceDelimterIndex = parentUri.indexOf(QString(":"));
+//     //    QStringList uriAsList = parentUri.right(parentUri.size() - sourceDelimterIndex - 1).split(QString("\r\n"));
+//     //    int level = uriAsList.size();
+//     //    QString key = QString::number(level) + ":" + uriAsList.last();
+//     //    if (!m_pluginKeyToDataMap.contains(key))
+//     //    {
+//     //        m_pluginKeyToDataMap[key] = data;
+//     //    }
+//     return keyRes;
+// }
 
 int medTemporaryDataSource::getIOInterface()
 {
-    //TODO
-    return 0;
+    // TODO
+    return IO_MEDABSTRACTDATA;
 }
 
 QMap<QString, QStringList> medTemporaryDataSource::getTypeAndFormat()
 {
-    //TODO
+    // TODO
     return QMap<QString, QStringList>();
 }
 
-bool medTemporaryDataSource::addDirectData(QVariant data, levelMinimalEntries & pio_minimalEntries, unsigned int pi_uiLevel, QString parentKey)
+bool medTemporaryDataSource::addDirectData(QVariant data, levelMinimalEntries &pio_minimalEntries, unsigned int pi_uiLevel, QString parentKey)
 {
-    //TODO
-    return false;
+    bool bRes = true;
+
+    auto uuidToDataMap = d->medAbstractDataMap[pi_uiLevel];
+    QString keyUid = QUuid::createUuid().toString().replace("{", "").replace("}", "");
+    // QMap<QString, QVariant> uuidToDataMap;
+    uuidToDataMap[keyUid] = data;
+    d->medAbstractDataMap[pi_uiLevel] = uuidToDataMap;
+
+
+    pio_minimalEntries.key = keyUid;
+    auto minimalEntriesMultiMap = d->minimalEntriesMap[pi_uiLevel];
+    // QMultiMap<QString, medAbstractSource::levelMinimalEntries> minimalEntriesMultiMap;
+    minimalEntriesMultiMap.insert(parentKey, pio_minimalEntries);
+    d->minimalEntriesMap[pi_uiLevel] = minimalEntriesMultiMap;
+
+    return bRes;
 }
 
 int medTemporaryDataSource::addAssyncData(QVariant data, levelMinimalEntries & pio_minimalEntries, unsigned int pi_uiLevel, QString parentKey)
 {
-    //TODO
-    return 0;
+    // TODO
+    return -1;
 }
 
 QVariant medTemporaryDataSource::getAsyncResults(int pi_iRequest)
 {
-    //TODO
+    // TODO
     return QVariant();
 }
 
-bool medTemporaryDataSource::createPath(QList<levelMinimalEntries>& pio_path, datasetAttributes4 const & pi_attributes, unsigned int pi_uiLevel, QString parentKey)
+bool medTemporaryDataSource::createPath(QList<levelMinimalEntries> &pio_path, datasetAttributes4 const &pi_attributes, unsigned int pi_uiLevel, QString parentKey)
 {
-    //TODO
+    // TODO
     return false;
 }
 
-bool medTemporaryDataSource::createFolder(levelMinimalEntries & pio_minimalEntries, datasetAttributes4 const & pi_attributes, unsigned int pi_uiLevel, QString parentKey)
+bool medTemporaryDataSource::createFolder(levelMinimalEntries &pio_minimalEntries, datasetAttributes4 const &pi_attributes, unsigned int pi_uiLevel, QString parentKey)
 {
-    //TODO
+    bool bRes = true;
+
+    QString keyUid = QUuid::createUuid().toString().replace("{", "").replace("}", "");
+    pio_minimalEntries.key = keyUid;
+
+    // QMultiMap<QString, medAbstractSource::levelMinimalEntries> minimalEntriesMultiMap;
+    auto minimalEntriesMultiMap = d->minimalEntriesMap[pi_uiLevel];
+    minimalEntriesMultiMap.insert(parentKey, pio_minimalEntries);
+    d->minimalEntriesMap[pi_uiLevel] = minimalEntriesMultiMap;
+ 
+    return bRes;
+}
+
+bool medTemporaryDataSource::alterMetaData(datasetAttributes4 const &pi_attributes, unsigned int pi_uiLevel, QString key)
+{
+    // TODO
     return false;
 }
 
-bool medTemporaryDataSource::alterMetaData(datasetAttributes4 const & pi_attributes, unsigned int pi_uiLevel, QString key)
+bool medTemporaryDataSource::getThumbnail(QPixmap &po_thumbnail, unsigned int pi_uiLevel, QString key)
 {
-    //TODO
+    // TODO
     return false;
 }
 
-bool medTemporaryDataSource::getThumbnail(QPixmap & po_thumbnail, unsigned int pi_uiLevel, QString key)
+bool medTemporaryDataSource::setThumbnail(QPixmap &pi_thumbnail, unsigned int pi_uiLevel, QString key)
 {
-    //TODO
+    // TODO
     return false;
 }
 
-bool medTemporaryDataSource::setThumbnail(QPixmap & pi_thumbnail, unsigned int pi_uiLevel, QString key)
+bool medTemporaryDataSource::commitData(QVariant data, levelMinimalEntries &pio_minimalEntries, unsigned int pi_uiLevel, QString parentKey)
 {
-    //TODO
-    return false;
-}
-
-bool medTemporaryDataSource::commitData(QVariant data, levelMinimalEntries & pio_minimalEntries, unsigned int pi_uiLevel, QString parentKey)
-{
-    //TODO
+    // TODO
     return false;
 }
 
 int medTemporaryDataSource::push(unsigned int pi_uiLevel, QString key)
 {
-    //TODO
+    // TODO
     return 0;
 }
 
 void medTemporaryDataSource::abort(int pi_iRequest)
 {
-
 }

@@ -586,13 +586,13 @@ void polygonLabel::createMask(int label, QString &desc)
         }
     }
 
-    output->addParentData(inputData);
-    medWritingPolicyData writingPolicyData;
-    writingPolicyData.baseName = inputData->getExpectedName();
-    writingPolicyData.suffix = "_segmented";
-    writeResults(inputData->dataIndex().uri()[0], output, inputData->dataIndex().uri(), "", writingPolicyData);
+    // output->addParentData(inputData);
+    // medWritingPolicyData writingPolicyData;
+    // writingPolicyData.baseName = inputData->getExpectedName();
+    // writingPolicyData.suffix = "_segmented";
+    // writeResults(inputData->dataIndex().uri()[0], output, inputData->dataIndex().uri(), "", writingPolicyData);
 
-    //medUtilities::setDerivedMetaData(output, inputData, desc, false, false);
+    medUtilities::setDerivedMetaData(output, inputData, desc, false, false);
     //if (inputData->dataIndex().isV2())
     //{
     //    QStringList desturi = inputData->dataIndex().uri();
@@ -608,7 +608,7 @@ void polygonLabel::createMask(int label, QString &desc)
     //    output->setMetaData(medMetaDataKeys::SeriesDescription.key(), desc);
     //}
     //
-    //medDataManager::instance()->importData(output, false);
+    medDataManager::instance()->importData(output, false);
 }
 
 void polygonLabel::SetMasterRoi()

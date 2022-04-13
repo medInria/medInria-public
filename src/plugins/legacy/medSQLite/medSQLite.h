@@ -97,20 +97,19 @@ public:
     /* ***********************************************************************/
     QVariant getDirectData(unsigned int pi_uiLevel, QString key) override;
 
-    int getAssyncData(unsigned int pi_uiLevel, QString id) override;
-    virtual QVariant getDataFromRequest(int pi_iRequest) override;
+    int getAssyncData(unsigned int pi_uiLevel, QString id) override { return -1; };
 
-//    QString addData(QVariant data, QStringList parentUri, QString name) override;
+    //    QString addData(QVariant data, QStringList parentUri, QString name) override;
     virtual bool addDirectData(QVariant data, levelMinimalEntries &pio_minimalEntries, unsigned int pi_uiLevel, QString parentKey) override;
-    virtual int  addAssyncData(QVariant data, levelMinimalEntries &pio_minimalEntries, unsigned int pi_uiLevel, QString parentKey) override;
+    virtual int addAssyncData(QVariant data, levelMinimalEntries &pio_minimalEntries, unsigned int pi_uiLevel, QString parentKey) override { return -1; };
     virtual bool createPath(QList<levelMinimalEntries> &pio_path, datasetAttributes4 const &pi_attributes, unsigned int pi_uiLevel = 0, QString parentKey = "") override;
     virtual bool createFolder(levelMinimalEntries &pio_minimalEntries, datasetAttributes4 const &pi_attributes, unsigned int pi_uiLevel, QString parentKey) override;
     virtual bool alterMetaData(datasetAttributes4 const &pi_attributes, unsigned int pi_uiLevel, QString key) override;
     virtual bool getThumbnail(QPixmap &po_thumbnail, unsigned int pi_uiLevel, QString key) override;
     virtual bool setThumbnail(QPixmap &pi_thumbnail, unsigned int pi_uiLevel, QString key) override;
-    virtual bool commitData(QVariant data, levelMinimalEntries &pio_minimalEntries, unsigned int pi_uiLevel, QString parentKey) override;
-    virtual QVariant getAsyncResults(int pi_iRequest) override;
-    virtual int  push(unsigned int pi_uiLevel, QString key) override;
+    virtual bool commitData(QVariant data, levelMinimalEntries &pio_minimalEntries, unsigned int pi_uiLevel, QString parentKey) override { return false; };
+    virtual QVariant getAsyncResults(int pi_iRequest) override { return QVariant(); };
+    virtual int push(unsigned int pi_uiLevel, QString key) override { return -1; };
 
 public slots:
     void abort(int pi_iRequest) override;
@@ -149,7 +148,7 @@ private:
     bool m_online;
     QStringList m_LevelNames;
     QMap<QString, QStringList> m_MandatoryKeysByLevel;
-
+    QMap<QString, QStringList> m_SupportedTypeAndFormats;
     medStringParameter *pToto;
     medStringParameter *pTata;
 };

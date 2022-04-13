@@ -42,30 +42,34 @@ QString medDefaultWritingPolicy::computePath(QString pi_sourceId, QString pi_sug
 
     int iLevelToWrite = medAbstractWritingPolicy::levelToWrite(pi_sourceId);
     
-    if (iLevelToWrite < pathRes.size())
+    if (iLevelToWrite!=-1)
     {
-        int iDeltaPathLength = pathRes.size() - iLevelToWrite;
-        for (int i = 0; i < iDeltaPathLength; ++i)
+        if (iLevelToWrite < pathRes.size())
         {
-            if (pi_bTrim)
+            int iDeltaPathLength = pathRes.size() - iLevelToWrite;
+            for (int i = 0; i < iDeltaPathLength; ++i)
             {
-                pathRes.pop_back();
+                if (pi_bTrim)
+                {
+                    pathRes.pop_back();
+                }
+                else
+                {
+                    QString last = pathRes.takeLast();
+                    int lastPos = pathRes.size() - 1;
+                    pathRes[lastPos] = pathRes[lastPos] + '_' + last;
+                }            
             }
-            else
-            {
-                QString last = pathRes.takeLast();
-                int lastPos = pathRes.size() - 1;
-                pathRes[lastPos] = pathRes[lastPos] + '_' + last;
-            }            
         }
-    }
-    else if (iLevelToWrite > pathRes.size())
-    {
-        int iBazeSize = pathRes.size();
-        int iDeltaPathLength = iLevelToWrite - pathRes.size();
-        for (int i = 0; i < iDeltaPathLength; ++i)
+        else if (iLevelToWrite > pathRes.size())
         {
-            pathRes.push_back(levelName(pi_sourceId, i + iBazeSize));
+            int iBazeSize = pathRes.size();
+            int iDeltaPathLength = iLevelToWrite - pathRes.size();
+            QString levelName("Level_");
+            for (int i = 0; i < iDeltaPathLength; ++i)
+            {
+                pathRes.push_back(levelName + QString::number(i + iBazeSize));
+            }
         }
     }
 
