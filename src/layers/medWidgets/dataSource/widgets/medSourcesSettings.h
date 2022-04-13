@@ -13,33 +13,63 @@
 #include <QHeaderView>
 #include <QPushButton>
 #include <QTextEdit>
+#include <QTreeWidget>
+#include <QFileDialog>
 
 #include <medSourcesLoader.h>
-#include <medSourceSettingsDragAreaWidget.h>
 #include <medWidgetsExport.h>
+
+class medSourceSettingsWidget;
+class QListWidget;
+class QListWidgetItem;
 
 class MEDWIDGETS_EXPORT medSourcesSettings : public QWidget
 {
     Q_OBJECT
 
 public:
-    explicit medSourcesSettings(medSourcesLoader * pSourceLoader, QWidget *parent = nullptr);
+     medSourcesSettings(medSourcesLoader * pSourceLoader, QWidget *parent = nullptr);
+    ~medSourcesSettings() = default;
+
+  public slots:
+    void selectedSourceChange(int pi_index);
+    void sourceMoved(const QModelIndex & parent, int start, int end, const QModelIndex & destination, int row);
+
+    void createSource();
+    void removeSource();
+    void setAsDefault();
+
+    void sourceCreated(medAbstractSource *pi_pSource);
+    void sourceRemoved(medAbstractSource *pi_pSource);
+    void updateSourceConnection();
+
+    void connectButtonUpdateText();
+    void updateConnectButton(medAbstractSource * pi_pSource);
+
+    void switchMinimization(medSourceSettingsWidget* sourceWidget, bool isMinimized);
 
 protected:
-    void createNewSource();
+    void updateSourceInformation(medAbstractSource * pi_pSource);
     void updateSelectedSourceDescription(int currentIndex);
-    void updateWhenASourceIsSelected(medAbstractSource * pSource);
-    void updateWhenDefaultIsPushed();
-    void updateWhenConnectIsPushed();
+
 
 private:
-    medSourcesLoader * sourceLoader;
-    medAbstractSource * selectedSource;
-    medSourceSettingsDragAreaWidget * dragDropAreaWidget;
-    QTextEdit * textEdit;
-    QStringList sourceTypeList;
-    QStringList sourceNameList;
-    QStringList sourceDescriptionList;
-    QPushButton * connectButton;
-    QComboBox * listCombobox;
+    //Data
+    medSourcesLoader                           * m_sourceLoader;
+    QMap<medAbstractSource*, QListWidgetItem*>   m_sourceToItem;
+
+    //Widgets
+    QComboBox   * m_sourceTypeCombobox;
+    QTextEdit   * m_sourceDescriptionWidget;
+                
+    QListWidget * m_sourceListWidget;
+                
+    QPushButton * m_setDefaultButton;
+    QPushButton * m_connectButton;
+    QTreeWidget * m_sourceInformation; 
+    QPushButton * m_removeButton;
+                
+    QLineEdit   * m_confPathLineEdit;
+    QPushButton * m_confOpenButton;
+    QFileDialog * m_confDialogFile;
 };

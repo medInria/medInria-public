@@ -33,9 +33,5 @@ medSourcesLoaderPresenter::~medSourcesLoaderPresenter()
 
 QWidget * medSourcesLoaderPresenter::buildWidget()
 {
-    QWidget * pWidgetRes = new QWidget;
-    auto * pMainLayout = new QVBoxLayout();
-    auto * settingsWidget = new medSourcesSettings(d->pSourceLoader, pWidgetRes);
-    pMainLayout->addWidget(settingsWidget);
-    return pWidgetRes;
+    return new medSourcesSettings(d->pSourceLoader);;
 }

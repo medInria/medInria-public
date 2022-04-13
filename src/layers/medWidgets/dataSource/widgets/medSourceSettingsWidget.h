@@ -11,9 +11,10 @@
  */
 
 #include <QLabel>
-#include <QMouseEvent>
+#include <QLineEdit>
+#include <QStackedWidget>
 #include <QPushButton>
-#include <QTreeWidget>
+#include <QListWidgetItem>
 
 #include <medAbstractSource.h>
 #include <medSourcesLoader.h>
@@ -25,45 +26,53 @@ class MEDWIDGETS_EXPORT medSourceSettingsWidget : public QFrame
     
 public:
 
-    medSourceSettingsWidget(medSourcesLoader * pSourceLoader, 
-                            medAbstractSource *pSource, 
-                            QTreeWidget * sourceInformation, 
-                            QWidget *parent = nullptr);
+    medSourceSettingsWidget(medAbstractSource *pSource, QWidget *parent = nullptr);
+    ~medSourceSettingsWidget() = default;
 
     QString getInstanceName();
-    medAbstractSource * getInstanceSource();
 
     void switchConnectionIcon(bool connection);
     void switchMinimization();
     void setToDefault(bool askedDefault);
-    void deleteThisSource(medSourcesLoader * pSourceLoader, medAbstractSource * pSource);
-    void updateSourceInformation();
     void setSelectedVisualisation(bool selected);
     void saveInitialSize(QSize initialSize);
     QSize getInitialSize();
 
+
+    /**
+     * @brief Get the abstract source associated with this widget
+     *
+     * @return medAbstractSource*
+     */
+    inline medAbstractSource * getSource() { return m_pSource; }
+
+    bool eventFilter(QObject *watched, QEvent *event);
+
+public slots:
+    void currentItemChanged(QListWidgetItem *current, QListWidgetItem *previous);
+    void titleChanged();
+
 protected:
     void paintEvent(QPaintEvent *event);
-    void mouseReleaseEvent(QMouseEvent *event) override;
 
 signals:
-    void sourceItemChosen(medAbstractSource *); // Signal to indicate this widget is clicked
-    void deletedWidget(QString);                // Signal to indicate the widget needs to be destroy
     void minimizationAsked(bool);               // Signal to indicate a [un]minization is done
+    void sourceRename(QString, QString);
 
 private:
-    medAbstractSource * _pSource;
-    medSourcesLoader * _pSourceLoader;
-    QTreeWidget * _sourceInformation;
+    medAbstractSource * m_pSource;
+    bool                m_sourceSelected;
 
-    bool sourceSelected;
-    QLabel * titleLabel;
-    QLabel * defaultLabel;
-    QImage * onOffIcon;
-    QLabel * imageLabel;
-    QPushButton * connectButton;
-    QPushButton* removeSourceButton;
-    QPushButton* minimizeSourceButton;
-    QWidget* parametersWidget;
-    QSize sourceWidgetSize;
+    QLabel         * m_titleLabel;
+    QLineEdit      * m_titleLineEdit;
+    QStackedWidget   m_titleStack;
+
+    QLabel      * m_defaultLabel;
+    QImage      * m_onOffIcon;
+    QLabel      * m_imageLabel;
+    QPushButton * m_connectButton;
+    QPushButton * m_removeSourceButton;
+    QPushButton * m_minimizeSourceButton;
+    QWidget     * m_parametersWidget;
+    QSize         m_sourceWidgetSize;
 };

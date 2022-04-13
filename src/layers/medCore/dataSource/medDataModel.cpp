@@ -15,7 +15,7 @@
 #include <medDataImporter.h>
 #include <medDataExporter.h>
 #include <medMetaDataKeys.h>
-
+#include <medSettingsManager.h>
 #include <QTemporaryDir>
 #include <QModelIndex>
 
@@ -58,28 +58,9 @@ medDataModel::~medDataModel()
 
 
 
-bool medDataModel::setDefaultWorkingSource(unsigned int i)
+void medDataModel::setDefaultWorkingSource(medAbstractSource * pi_pSource)
 {
-    bool bRes = i < static_cast<unsigned int>(m_sourcesModelMap.size());
-
-    if (bRes)
-    {
-        auto source = m_sourcesModelMap.keys()[i];
-        bool bWritable = source->isWritable();
-        bool bLocal = source->isLocal();
-        bool bCached = source->isCached();
-        bool bOnline = source->isOnline();
-
-        if (bWritable && (bLocal || (!bLocal && bCached && bOnline)))
-        {
-            m_defaultSource = source;
-        }
-        else
-        {
-            bRes = false;
-        }
-    }
-    return bRes;
+    m_defaultSource = pi_pSource;
 }
 
 // ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
@@ -189,15 +170,18 @@ bool medDataModel::levelCount(QString const & pi_sourceInstanceId, unsigned int 
     return bRes;
 }
 
-QList<medAbstractParameter *> medDataModel::filteringParameters(const QString &pi_sourceInstanceId)
+bool medDataModel::filteringParameters(const QString &pi_sourceInstanceId, QList<medAbstractParameter*> & po_parameters)
 {
-    QList<medAbstractParameter *> paramRes;
+    bool bRes = false;
+
     medAbstractSource* pSource = m_sourceIdToInstanceMap.value(pi_sourceInstanceId);
     if (pSource)
     {
-        paramRes = pSource->getFilteringParameters();
+        po_parameters = pSource->getFilteringParameters();
+        bRes = true;
     }
-    return paramRes;
+
+    return bRes;
 }
 
 bool medDataModel::optionalAttributes(QString const & pi_sourceInstanceId, unsigned int pi_uiLevel, QString const & key, datasetAttributes & po_attributes, datasetAttributes & po_tags)
@@ -396,14 +380,14 @@ QUuid medDataModel::writeResultsHackV3(medAbstractData &data, bool originSrc)
     return QUuid();
 }
 
-bool medDataModel::saveData(medAbstractData *pi_pData, QString const &pi_baseName, QStringList pi_uri)
+bool medDataModel::saveData(medAbstractData *pi_pData, QString const &pi_baseName, QStringList &pio_uri)
 {
     bool bRes = false;
 
-    if (!pi_uri.isEmpty())
+    if (!pio_uri.isEmpty())
     {
-        medAbstractSource* pSource = m_sourceIdToInstanceMap.value(pi_uri[0]);
-        medSourceItemModel* pModel = getModel(pi_uri[0]);
+        medAbstractSource* pSource = m_sourceIdToInstanceMap.value(pio_uri[0]);
+        medSourceItemModel* pModel = getModel(pio_uri[0]);
         if (pSource && pModel)
         {
             auto typeAndFormat = pSource->getTypeAndFormat();
@@ -413,8 +397,8 @@ bool medDataModel::saveData(medAbstractData *pi_pData, QString const &pi_baseNam
             QVariant data;
             medAbstractSource::levelMinimalEntries minimalEntries;
             minimalEntries.name = pi_baseName;
-            unsigned int uiLevel = pi_uri.size() - 1;
-            QString parentKey = pi_uri.last();
+            unsigned int uiLevel = pio_uri.size() - 1;
+            QString parentKey = pio_uri.last();
 
             if (pSource->getIOInterface()==IO_MEDABSTRACTDATA)
             {
@@ -425,8 +409,8 @@ bool medDataModel::saveData(medAbstractData *pi_pData, QString const &pi_baseNam
                     bRes = pSource->addDirectData(data, minimalEntries, uiLevel, parentKey);
                     if (bRes)
                     {
-                        pModel->fetch(pi_uri);
-                        pi_uri.push_back(minimalEntries.key);
+                        pModel->fetch(pio_uri);
+                        pio_uri.push_back(minimalEntries.key);
                     }
                 }
                 else if (bCached)
@@ -453,6 +437,8 @@ bool medDataModel::saveData(medAbstractData *pi_pData, QString const &pi_baseNam
                     {
                         if (dataType.contains(types[i]))
                         {
+                            pModel->fetch(pio_uri);
+                            pio_uri.push_back(minimalEntries.key);
                             exts = typeAndFormat[types[i]];
                             break;
                         }
@@ -476,8 +462,8 @@ bool medDataModel::saveData(medAbstractData *pi_pData, QString const &pi_baseNam
                             bRes = pSource->addDirectData(data, minimalEntries, uiLevel, parentKey);
                             if (bRes)
                             {
-                                pModel->fetch(pi_uri);
-                                pi_uri.push_back(minimalEntries.key);
+                                pModel->fetch(pio_uri);
+                                pio_uri.push_back(minimalEntries.key);
                             }
                         }
                         else if (bCached)
@@ -580,7 +566,10 @@ bool medDataModel::writeResults(QString pi_sourceId, medAbstractData * pi_pData,
             QStringList names;
             getDataNames(uri, names);
             pWp->incrementName(computedName, names);
-            saveData(pi_pData, computedName, uri);
+            if (saveData(pi_pData, computedName, uri))
+            {
+                pi_pData->setDataIndex(uri);
+            }
         }
         // ////////////////////////////////////////////////////////////////////////////////////////
     }
@@ -774,14 +763,14 @@ QStringList medDataModel::uriAsList(QString pi_uri)
     return uriRes;
 }
 
-QString medDataModel::convertToPath(QStringList pi_Uri)
+QString medDataModel::convertToPath(QStringList pi_uri)
 {
     QString pathRes;
 
-    auto * pModel = getModel(pi_Uri[0]);
+    auto * pModel = getModel(pi_uri[0]);
     if (pModel != nullptr)
     {
-        auto index = pModel->toIndex(pi_Uri);
+        auto index = pModel->toIndex(pi_uri);
         pathRes = pModel->toHumanReadableUri(index);
     }
 
@@ -823,6 +812,11 @@ void medDataModel::removeConvertedData(QObject * obj)
         
         m_IndexToData.key(sptr);
     }
+}
+
+void medDataModel::progress(int pi_iRequest, medAbstractSource::eRequestStatus status)
+{
+
 }
 
 void medDataModel::expandAll(const QString &sourceInstanceId)
