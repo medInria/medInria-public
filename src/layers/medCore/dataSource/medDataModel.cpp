@@ -409,8 +409,8 @@ bool medDataModel::saveData(medAbstractData *pi_pData, QString const &pi_baseNam
                     bRes = pSource->addDirectData(data, minimalEntries, uiLevel, parentKey);
                     if (bRes)
                     {
-                        pModel->fetch(pi_uri);
-                        pi_uri.push_back(minimalEntries.key);
+                        pModel->fetch(pio_uri);
+                        pio_uri.push_back(minimalEntries.key);
                     }
                 }
                 else if (bCached)
@@ -462,8 +462,8 @@ bool medDataModel::saveData(medAbstractData *pi_pData, QString const &pi_baseNam
                             bRes = pSource->addDirectData(data, minimalEntries, uiLevel, parentKey);
                             if (bRes)
                             {
-                                pModel->fetch(pi_uri);
-                                pi_uri.push_back(minimalEntries.key);
+                                pModel->fetch(pio_uri);
+                                pio_uri.push_back(minimalEntries.key);
                             }
                         }
                         else if (bCached)
