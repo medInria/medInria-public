@@ -37,13 +37,6 @@ MEDPYTHON_EXPORT void setUserPythonPaths(QStringList paths);
 ///
 MEDPYTHON_EXPORT QStringList getUserPythonPaths();
 
-/// Loads all top-level packages in sys.path that have the prefix 'medInria_' in
-/// their name. All exceptions are handled. Successfully loaded plugins are
-/// added to the 'loaded_plugins' dict of the medInria module ('med' in the
-/// Python console) and failed plugin errors are added to 'failed_plugins' dict.
-///
-MEDPYTHON_EXPORT void loadPythonPlugins();
-
 /// Executes Python code and returns a dict containing all global objects
 /// resulting from the execution.
 /// (this function may throw Python-related exceptions)

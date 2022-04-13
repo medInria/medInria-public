@@ -21,46 +21,55 @@
 
 bool medPythonConvert(const QVariant& value, PyObject** output)
 {
-    switch (static_cast<int>(value.type()))
+    if (!value.isValid())
     {
-    case QMetaType::Bool:
-    {
-        return medPythonConvert(value.toBool(), output);
+        *output = Py_None;
+        Py_INCREF(*output);
+        return true;
     }
-    case QMetaType::Int:
+    else
     {
-        return medPythonConvert(value.toInt(), output);
-    }
-    case QMetaType::Float:
-    case QMetaType::Double:
-    {
-        return medPythonConvert(value.toDouble(), output);
-    }
-    case QMetaType::QString:
-    {
-        return medPythonConvert(value.toString(), output);
-    }
-    case QMetaType::QVariantList:
-    {
-        return medPythonConvert(value.toList(), output);
-    }
-    case QMetaType::QStringList:
-    {
-        return medPythonConvert(value.toStringList(), output);
-    }
-    case QMetaType::QVariantHash:
-    {
-        return medPythonConvert(value.toHash(), output);
-    }
-    case QMetaType::QObjectStar:
-    {
-        *output = med::python::wrapObjectWithSWIG(value.value<QObject*>());
-        return *output;
-    }
-    default:
-        QVariant* valueCopy = new QVariant(value);
-        *output = med::python::wrapObjectWithSWIG(valueCopy, "QVariant*", true);
-        return *output;
+        switch (static_cast<int>(value.type()))
+        {
+        case QMetaType::Bool:
+        {
+            return medPythonConvert(value.toBool(), output);
+        }
+        case QMetaType::Int:
+        {
+            return medPythonConvert(value.toInt(), output);
+        }
+        case QMetaType::Float:
+        case QMetaType::Double:
+        {
+            return medPythonConvert(value.toDouble(), output);
+        }
+        case QMetaType::QString:
+        {
+            return medPythonConvert(value.toString(), output);
+        }
+        case QMetaType::QVariantList:
+        {
+            return medPythonConvert(value.toList(), output);
+        }
+        case QMetaType::QStringList:
+        {
+            return medPythonConvert(value.toStringList(), output);
+        }
+        case QMetaType::QVariantHash:
+        {
+            return medPythonConvert(value.toHash(), output);
+        }
+        case QMetaType::QObjectStar:
+        {
+            *output = med::python::wrapObjectWithSWIG(value.value<QObject*>());
+            return *output;
+        }
+        default:
+            QVariant* valueCopy = new QVariant(value);
+            *output = med::python::wrapObjectWithSWIG(valueCopy, "QVariant*", true);
+            return *output;
+        }
     }
 }
 
@@ -84,7 +93,12 @@ bool medPythonConvert(const PyObject* object, QVariant* output)
 {
     bool success = false;
 
-    if (PyBool_Check(object))
+    if (object == Py_None)
+    {
+        *output = QVariant();
+        success = true;
+    }
+    else if (PyBool_Check(object))
     {
         success = medPythonConvert<bool>(object, output);
     }

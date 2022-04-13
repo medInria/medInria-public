@@ -64,7 +64,7 @@ function(embed_python target)
 
    set(core_python_libraries)
    foreach (library ${libraries})
-       list(APPEND core_python_libraries "${working_dir}/libraries/${python_vname}/${library}")
+       list(APPEND core_python_libraries "${working_dir}/lib/${library}")
    endforeach()
 
 ## #############################################################################
@@ -120,12 +120,12 @@ function(embed_python target)
     set(vname python${PYTHON_VERSION_MAJOR}.${PYTHON_VERSION_MINOR})
 
     set_external_resources(${target} APPEND DESTINATION ${vname} FILES "${working_dir}/LICENSE.txt")
-    set_external_resources(${target} APPEND DESTINATION ${vname}/lib/${vname} DIRECTORIES "${working_dir}/modules/${vname}")
+    set_external_resources(${target} APPEND DESTINATION ${vname}/lib/${vname} DIRECTORIES "${working_dir}/lib/${vname}")
 
 ## #############################################################################
 ## Include directories
 ## #############################################################################
 
-    target_include_directories(${target} PUBLIC "${working_dir}/headers/python${PYTHON_VERSION_MAJOR}.${PYTHON_VERSION_MINOR}")
+    target_include_directories(${target} PUBLIC "${working_dir}/include/python${PYTHON_VERSION_MAJOR}.${PYTHON_VERSION_MINOR}")
 
 endfunction()

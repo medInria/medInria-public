@@ -15,6 +15,8 @@ class MEDPYTHONTOOLS_EXPORT PythonSettingsWidget : public medSettingsWidget
     MED_SETTINGS_INTERFACE("Python", "Python Settings")
 
 public:
+    static bool registerWidget();
+
     PythonSettingsWidget(QWidget* parent = 0);
 
     bool write() override;

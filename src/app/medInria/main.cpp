@@ -197,7 +197,7 @@ int main(int argc,char* argv[])
     medDataManager::instance()->setDatabaseLocation();
 
 #ifdef USE_PYTHON
-    if (med::python::initialize())
+    if (med::python::initializeCore())
     {
         bool testPython = application.arguments().contains("--test-python");
         bool testPythonWithCrash = application.arguments().contains("--test-python-with-crash");
@@ -272,6 +272,10 @@ int main(int argc,char* argv[])
     application.setMainWindow(mainwindow);
 
     forceShow(*mainwindow);
+
+#ifdef USE_PYTHON
+    med::python::initializeToolsAndPlugins();
+#endif
 
     qInfo() << "### Application is running...";
 

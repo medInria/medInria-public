@@ -13,27 +13,15 @@
 #
 ################################################################################
 
-set(TARGET_NAME ${PYTHON_PROJECT_NAME}Tools)
+set(TARGET_NAME medInriaBindings)
 
 ## #############################################################################
 ## List sources
 ## #############################################################################
 
-list_source_files(${TARGET_NAME}
-    ${CMAKE_CURRENT_SOURCE_DIR}/cpp
-    )
-
-list_header_directories_to_include(${TARGET_NAME}
-    ${${TARGET_NAME}_HEADERS}
-    )
-
-file(GLOB swig_sources
-    ${CMAKE_CURRENT_SOURCE_DIR}/swig/*.i
-    ${CMAKE_CURRENT_SOURCE_DIR}/swig/*.i.in)
-
-file(GLOB python_sources
-    ${CMAKE_CURRENT_SOURCE_DIR}/python/*.py
-    ${CMAKE_CURRENT_SOURCE_DIR}/python/*.py.in
+file(GLOB sources
+    ${CMAKE_CURRENT_SOURCE_DIR}/*.i
+    ${CMAKE_CURRENT_SOURCE_DIR}/*.i.in
     )
 
 ## #############################################################################
@@ -41,8 +29,9 @@ file(GLOB python_sources
 ## #############################################################################
 
 add_python_module(${TARGET_NAME}
-    PACKAGE ${TARGET_NAME}
-    SOURCES ${python_sources} ${swig_sources} ${${TARGET_NAME}_CFILES}
+    BINDINGS_MODULE_NAME medInria
+    BINDINGS_LIBRARY_NAME ${TARGET_NAME}
+    SOURCES ${sources}
     )
 
 ## #############################################################################
@@ -51,7 +40,7 @@ add_python_module(${TARGET_NAME}
 
 target_include_directories(${TARGET_NAME}
     PUBLIC
-    ${${TARGET_NAME}_INCLUDE_DIRS}
+    ${CMAKE_CURRENT_SOURCE_DIR}
     )
 
 ## #############################################################################
@@ -61,4 +50,6 @@ target_include_directories(${TARGET_NAME}
 target_link_libraries(${TARGET_NAME}
     PUBLIC
     ${PYTHON_PROJECT_NAME}Base
+    qtBindings
+    medCoreLegacy
     )

@@ -1,8 +1,14 @@
 import sys, code
-from . import qt_bindings as qt
+import qt, medInria
+from .pluginManager import failedPlugins
+
+CONSOLE_TITLE = "Python console"
+CONSOLE_SHORTCUT = "Ctrl+Shift+P"
+CONSOLE_WIDTH = 800
+CONSOLE_HEIGHT = 600
 
 
-logo = """
+_logo = """
                             888 8888888                  d8b
                             888   888                    Y8P
                             888   888
@@ -12,6 +18,20 @@ logo = """
 888  888  888 Y8b.     Y88b 888   888   888  888 888     888 888  888
 888  888  888  "Y8888   "Y88888 8888888 888  888 888     888 "Y888888
 """
+
+
+instance = None
+
+
+def initialize():
+    instance = Console(CONSOLE_TITLE, (CONSOLE_WIDTH, CONSOLE_HEIGHT))
+    instance.setShortcut(f'{CONSOLE_SHORTCUT}')
+    mainWindow = qt.qApp().getProperty('MainWindow')
+    mainWindow.connect('destroyed', lambda _ : instance.deleteLater())
+    instance.run()
+    medInria.logInfo(f'The Python console can be accessed with {CONSOLE_SHORTCUT}')
+    if failedPlugins:
+        print('** Some medInria plugins failed to load. Type "pluginsInfo()" for details. **\n\n')
 
 
 class CommandLine(qt.QLineEdit):
@@ -50,13 +70,6 @@ class CommandLine(qt.QLineEdit):
 
         
 class Console(qt.QWidget):
-
-    @classmethod 
-    def createInstance(cls, title, size):
-        cls.instance = cls(title, size=size)
-        mainWindow = qt.qApp().getProperty('MainWindow')
-        mainWindow.connect('destroyed', lambda _ : cls.instance.deleteLater())
-        return cls.instance
 
     def __init__(self, title, size):
         super().__init__()
@@ -129,7 +142,7 @@ class Console(qt.QWidget):
 
     def printWelcomeText(self):
         print(f"Python {sys.version} on {sys.platform}")
-        print(logo)
+        print(_logo)
         print('Type "help", "copyright", "credits" or "license" for more information on the embedded Python.\n\n')
   
     def resetInputBuffer(self):

@@ -120,7 +120,7 @@ endif()
 if (USE_PYTHON)
     import_external_resources(${TARGET_NAME}
         DESTINATION python
-        FROM_TARGETS medPythonBase
+        FROM_TARGETS medPythonBase qtBindings medInriaBindings medPythonTools
         )
 endif()
 

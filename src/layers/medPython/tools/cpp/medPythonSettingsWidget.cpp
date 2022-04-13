@@ -10,6 +10,7 @@
 #include <QStandardPaths>
 
 #include <medPython.h>
+#include <medSettingsWidgetFactory.h>
 
 namespace med::python
 {
@@ -20,6 +21,18 @@ public:
     QListWidget* pathsList;
     QPushButton* removePathButton;
 };
+
+bool PythonSettingsWidget::registerWidget()
+{
+    bool success = medSettingsWidgetFactory::instance()->registerSettingsWidget<PythonSettingsWidget>();
+
+    if (!success)
+    {
+        qCritical() << QString("Cannot register %1.").arg(staticName());
+    }
+
+    return success;
+}
 
 PythonSettingsWidget::PythonSettingsWidget(QWidget *parent) :
     medSettingsWidget(parent), d(new PythonSettingsWidgetPrivate())

@@ -16,12 +16,13 @@
 #include <QApplication>
 
 #include "medPython.h"
+#include "medPythonCoreAPI.h"
 #include "medPythonCoreInit.h"
 
 namespace med::python
 {
 
-bool initialize()
+bool initializeCore()
 {
     bool success = true;
 
@@ -39,12 +40,47 @@ bool initialize()
     return success;
 }
 
+bool initializeToolsAndPlugins()
+{
+    bool success = false;
+
+    if (isRunning())
+    {
+        try
+        {
+            import("medPythonTools").callMethod("initialize");
+
+            // Allow user to query info on successful and failed plugins.
+            QString command = "from medPythonTools import pluginsInfo";
+            coreFunction(PyRun_SimpleString, qUtf8Printable(command));
+
+            success = true;
+        }
+        catch (Exception& e)
+        {
+            qCritical() << QString("Error during initialization of the Python components: %1").arg(e.what());
+        }
+    }
+
+    return success;
+}
+
 bool finalize()
 {
     bool success = true;
 
     if (isRunning())
     {
+        try
+        {
+            import("medPythonTools").callMethod("finalize");
+        }
+        catch (Exception& e)
+        {
+            qCritical() << QString("Error during finalization of the Python components: %1").arg(e.what());
+            success = false;
+        }
+
         finalizeExceptions();
         success = finalizeInterpreter();
     }

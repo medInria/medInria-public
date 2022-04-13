@@ -13,21 +13,42 @@
 #
 ################################################################################
 
-include(python_utils)
+set(TARGET_NAME qtBindings)
 
 ## #############################################################################
-## Find dependencies
+## List sources
 ## #############################################################################
 
-find_package(dtk REQUIRED)
-include_directories(${dtk_INCLUDE_DIRS})
-
-find_package(Qt5 REQUIRED COMPONENTS Core)
+file(GLOB sources
+    ${CMAKE_CURRENT_SOURCE_DIR}/*.i
+    ${CMAKE_CURRENT_SOURCE_DIR}/*.i.in
+    )
 
 ## #############################################################################
-## Add subdirectories
+## Add targets
 ## #############################################################################
 
-add_subdirectory(base)
-add_subdirectory(bindings)
-add_subdirectory(tools)
+add_python_module(${TARGET_NAME}
+    BINDINGS_MODULE_NAME qt
+    BINDINGS_LIBRARY_NAME ${TARGET_NAME}
+    SOURCES ${sources}
+    )
+
+## #############################################################################
+## Include directories
+## #############################################################################
+
+target_include_directories(${TARGET_NAME}
+    PUBLIC
+    ${CMAKE_CURRENT_SOURCE_DIR}
+    )
+
+## #############################################################################
+## Link
+## #############################################################################
+
+target_link_libraries(${TARGET_NAME}
+    PUBLIC
+    ${PYTHON_PROJECT_NAME}Base
+    Qt5::Widgets
+    )

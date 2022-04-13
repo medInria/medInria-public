@@ -1,5 +1,24 @@
 #pragma SWIG nowarn=503,509,602,325,312,314,317,362,361
 
+%ignore operator=;
+%ignore operator>>;
+%ignore operator<<;
+%ignore operator==;
+%ignore operator[];
+%ignore operator!=;
+%ignore operator*=;
+%ignore operator/=;
+%ignore operator bool;
+%ignore operator int;
+%ignore operator float;
+%ignore operator double;
+%ignore operator double*;
+
+#define decltype(x) int
+
+#undef DTKCORESUPPORT_EXPORT
+#define DTKCORESUPPORT_EXPORT
+
 #undef QDOC_PROPERTY
 #define QDOC_PROPERTY(x)
 
@@ -72,6 +91,12 @@
 #undef Q_NORETURN
 #define Q_NORETURN
 
+#undef Q_OBJECT
+#define Q_OBJECT \
+    public: \
+        static const QMetaObject staticMetaObject; \
+        virtual const QMetaObject *metaObject() const;
+
 #undef Q_PRIVATE_SLOT
 #define Q_PRIVATE_SLOT(...)
 
@@ -87,21 +112,56 @@
 #undef Q_SLOTS
 #define Q_SLOTS
 
-%ignore operator=;
-%ignore operator>>;
-%ignore operator<<;
-%ignore operator==;
-%ignore operator[];
-%ignore operator!=;
-%ignore operator*=;
-%ignore operator/=;
-%ignore operator bool;
-%ignore operator int;
-%ignore operator float;
-%ignore operator double;
-%ignore operator double*;
+#define slots
+#define signals private
 
-#define decltype(x) int
+%{
+    #include <QObject>
+    #include <QMetaObject>
+    #include "medPython.h"
+
+    template <class SENDER_TYPE>
+    void connect_noargs(SENDER_TYPE* sender, void (SENDER_TYPE::*signal)(), PyObject* receiver)
+    {
+        med::python::Object object = med::python::Object::borrowed(receiver);
+        sender->connect(sender, signal, [=]() { object();});
+    }
+
+    template <class SENDER_TYPE, class PRIVATE_TAG>
+    void connect_noargs_private(SENDER_TYPE* sender, void (SENDER_TYPE::*signal)(PRIVATE_TAG), PyObject* receiver)
+    {
+        med::python::Object object = med::python::Object::borrowed(receiver);
+        sender->connect(sender, signal, [=]() { object(); });
+    }
+
+    template <class SENDER_TYPE, class... ARGS>
+    void connect(SENDER_TYPE* sender, void (SENDER_TYPE::*signal)(ARGS...), PyObject* receiver)
+    {
+        med::python::Object object = med::python::Object::borrowed(receiver);
+        sender->connect(sender, signal, [=](ARGS... args) { object(args...); });
+    }
+%}
+
+%feature("director:except")
+{
+    if ($error != nullptr)
+    {
+        med::python::propagateCurrentError();
+    }
+}
+
+%exception
+{
+    try
+    {
+        $action
+    }
+    catch (med::python::Exception& e)
+    {
+        med::python::raiseError(e.nativeClass(), e.what());
+        SWIG_fail;
+    }
+}
 
 %define %medPythonTypemaps(TYPE)
 
@@ -143,10 +203,3 @@
     }
 
 %enddef
-
-%pythoncode
-%{
-
-    import inspect
-
-%}

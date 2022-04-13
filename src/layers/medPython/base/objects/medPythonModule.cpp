@@ -72,7 +72,8 @@ PyObject* Module::getModuleObject(QString name)
 
     if (!moduleObject)
     {
-        moduleObject = coreFunction(PyImport_ImportModuleLevel, qUtf8Printable(name), nullptr, nullptr, *list(), 0);
+        Object fromList = list<QString>({"*"});
+        moduleObject = coreFunction(PyImport_ImportModuleLevel, qUtf8Printable(name), nullptr, nullptr, *fromList, 0);
     }
 
     return moduleObject;

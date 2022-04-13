@@ -21,7 +21,11 @@ namespace med::python
 /// application signal aboutToQuit(). This function does nothing if the
 /// interpreter is already running.
 ///
-MEDPYTHON_EXPORT bool initialize();
+MEDPYTHON_EXPORT bool initializeCore();
+
+/// Initializes the Python tools module and loads the Python plugins.
+///
+MEDPYTHON_EXPORT bool initializeToolsAndPlugins();
 
 /// Terminates the Python interpreter and releases all allocated resources. This
 /// function does nothing if the interpreter is not running.

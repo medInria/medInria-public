@@ -10,14 +10,6 @@
 #include <medDataManager.h>
 %}
 
-%inline
-%{
-void debug(QString message)
-{
-    qDebug() << message;
-}
-%}
-
 %rename(DataIndex) medDataIndex;
 %include "medDataIndex.h"
 
@@ -35,6 +27,7 @@ void debug(QString message)
 
 %feature("ref") dtkAbstractObject "$this->retain();";
 %feature("unref") dtkAbstractObject "$this->release();";
+%feature("director") dtkAbstractObject;
 
 class dtkAbstractObject : public QObject
 {
@@ -73,8 +66,11 @@ public:
 };
 
 %include "dtkCoreSupport/dtkSmartPointer.h"
+
+%feature("director") dtkAbstractData;
 %include "dtkCoreSupport/dtkAbstractData.h"
 
+%feature("director") medAbstractData;
 %rename(AbstractData) medAbstractData;
 %include "medAbstractData.h"
 
@@ -97,9 +93,11 @@ public:
 
 %}
 
+%feature("director") medAbstractMeshData;
 %rename(AbstractMeshData) medAbstractMeshData;
 %include "medAbstractMeshData.h"
 
+%feature("director") medAbstractImageData;
 %rename(AbstractImageData) medAbstractImageData;
 %include "medAbstractImageData.h"
 
@@ -157,9 +155,6 @@ public:
     medPythonConvert($1->data(), &output);
     $result = SWIG_Python_AppendOutput($result, output);
 }
-
-%include "medAbstractImageData.h"
-%include "medAbstractMeshData.h"
 
 %feature("nodirector") medDataManager;
 %rename(DataManager) medDataManager;

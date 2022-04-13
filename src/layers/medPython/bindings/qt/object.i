@@ -1,17 +1,6 @@
 %feature("unref") QObject "if(!$this->parent()) delete $this;";
 %feature("director") QObject;
 
-%{
-#include <QObject>
-#include <QMetaObject>
-%}
-
-#undef Q_OBJECT
-#define Q_OBJECT \
-    public: \
-        static const QMetaObject staticMetaObject; \
-        virtual const QMetaObject *metaObject() const;
-
 struct QMetaObject
 {
     const char* className() const;
@@ -19,26 +8,33 @@ struct QMetaObject
     bool inherits(const QMetaObject* metaObject) const;
 };
 
-%{
-template <class SENDER_TYPE, class... ARGS>
-void connect(SENDER_TYPE* sender, void (SENDER_TYPE::*signal)(ARGS...), PyObject* receiver)
-{
-    med::python::Object object = med::python::Object::borrowed(receiver);
-    sender->connect(sender, signal, [=](ARGS... args) { object(args...); });
-}
-%}
-
 %define SIGNAL_NOARGS(cls, signal)
 
 %{
-template void connect(cls*, void (cls ## :: ## *)(), PyObject*);
+template void connect_noargs(cls*, void (cls ## :: ## *)(), PyObject*);
 %}
 
 %extend cls
 {
     void connect_noargs_ ## signal(PyObject* receiver)
     {
-        connect($self, & ## cls ## :: ## signal, receiver);
+        connect_noargs($self, & ## cls ## :: ## signal, receiver);
+    }
+}
+
+%enddef
+
+%define SIGNAL_NOARGS_PRIVATE(cls, signal)
+
+%{
+template void connect_noargs_private(cls*, void (cls ## :: ## *)(cls ## :: ## QPrivateSignal), PyObject*);
+%}
+
+%extend cls
+{
+    void connect_noargs_ ## signal(PyObject* receiver)
+    {
+        connect_noargs_private($self, & ## cls ## :: ## signal, receiver);
     }
 }
 
@@ -108,4 +104,4 @@ public:
     %}
 }
 
-SIGNAL_NOARGS(QObject, destroyed)
+SIGNAL(QObject, destroyed, QObject*)

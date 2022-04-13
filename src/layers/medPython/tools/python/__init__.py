@@ -1,22 +1,28 @@
-import sys
-from . import qt_bindings
-from .medInria_bindings import *
-from .console import Console
+import importlib, sys
+from .customImport import installCustomImportHook as _installCustomImportHook
 
-sys.modules['qt'] = qt_bindings
-sys.modules['__main__'].__dict__['qt'] = qt_bindings
-sys.modules['__main__'].__dict__['med'] = sys.modules[__name__]
 
-loaded_plugins = dict()
-failed_plugins = dict()
+_installCustomImportHook()
 
-def plugins():
-    if loaded_plugins:
-        print("Successfully loaded plugins:\n\t")
-        for plugin in loaded_plugins.items():
-            print(f"{plugin} ");
-        print("\n")
-    if failed_plugins:
-        print(f"{len(failed_plugins)} plugins(s) failed to load:\n")
-        for plugin, message in failed_plugins.items():
-            print(f"{plugin}:\n{message}\n")
+
+from .bindings import registerSettingsWidget as _registerSettingsWidget
+from .pluginManager import loadPlugins as _loadPlugins, pluginsInfo
+from .console import initialize as _initializeConsole
+
+
+def _initializeOnce():
+    _registerSettingsWidget()
+    _loadPlugins()
+    _initializeConsole()
+    yield
+    while True:
+        print(f'{__name__} is already initialized')
+        yield
+
+_initialize = _initializeOnce()
+
+def initialize():
+    next(_initialize)
+
+def finalize():
+    _initialize = _initializeOnce()

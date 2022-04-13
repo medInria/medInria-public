@@ -1,0 +1,37 @@
+from pkgutil import iter_modules
+from importlib import import_module
+import medInria
+
+
+loadedPlugins = dict()
+failedPlugins = dict()
+
+
+def loadPlugins():
+    for moduleInfo in iter_modules():
+        # moduleInfo[2] is True if the module is a package
+        if moduleInfo[2]:
+            moduleName = moduleInfo[1]
+            if moduleName.startswith('@PYTHON_PLUGIN_PREFIX@'):
+                try:
+                    medInria.logInfo(f'Loading python plugin: {moduleName}')
+                    loadedPlugins[moduleName] = import_module(moduleName)
+                except Exception as err:
+                    failedPlugins[moduleName] = f'{err}'
+                    medInria.logCritical(f'Error while loading Python plugin {moduleName}: {err}')
+
+
+def pluginsInfo():
+    if loadedPlugins or failedPlugins:
+        if loadedPlugins:
+            print("Successfully loaded plugins:\n\t")
+            for plugin in loadedPlugins.items():
+                print(f"{plugin} ");
+            print("\n")
+        if failedPlugins:
+            print(f"{len(failedPlugins)} plugins(s) failed to load:\n")
+            for plugin, message in failedPlugins.items():
+                print(f"{plugin}:\n{message}\n")
+    else:
+        print("No plugins were found.")
+

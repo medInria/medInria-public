@@ -9,6 +9,7 @@
 #include <medWorkspaceFactory.h>
 %}
 
+%feature("director") medDropSite;
 %rename(DropSite) medDropSite;
 %include "medDropSite.h"
 
@@ -22,6 +23,7 @@ SIGNAL(medDropSite, objectDropped, medDataIndex)
 
 %ignore medToolBoxDetails;
 
+%feature("director") medToolBox;
 %rename(ToolBox) medToolBox;
 %include "medToolBox.h"
 
@@ -71,6 +73,7 @@ SIGNAL(medDropSite, objectDropped, medDataIndex)
 
 }
 
+%feature("director") medAbstractWorkspaceLegacy;
 %rename(Workspace) medAbstractWorkspaceLegacy;
 %include "medAbstractWorkspaceLegacy.h"
 
