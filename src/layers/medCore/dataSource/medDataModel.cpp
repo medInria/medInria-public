@@ -416,7 +416,6 @@ bool medDataModel::saveData(medAbstractData *pi_pData, QString const &pi_baseNam
                         if (dataType.contains(types[i]))
                         {
                             pModel->fetch(pio_uri);
-                            pio_uri.push_back(minimalEntries.key);
                             exts = typeAndFormat[types[i]];
                             break;
                         }
