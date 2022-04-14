@@ -67,9 +67,9 @@ struct medAPHPParametersPrivate
     /* ***********************************************************************/
     /* ************************* Filtering Parameters ************************/
     /* ***********************************************************************/
-    medGroupParameter *patientLevel;
-    medStringParameter *patientName;
-    medStringParameter *patientId;
+    // medGroupParameter *patientLevel;
+    // medStringParameter *patientName;
+    // medStringParameter *patientId;
 };
 
 medAPHP::medAPHP(QtDcmInterface *dicomLib, medAbstractAnnotation *annotationAPI) : d(new medAPHPParametersPrivate)
@@ -86,15 +86,22 @@ medAPHP::medAPHP(QtDcmInterface *dicomLib, medAbstractAnnotation *annotationAPI)
     d->restFulAPI = annotationAPI;
 
     d->localSettings = new medGroupParameter("Local dicom settings", this);
+    d->localSettings->setDescription("Settings related to local PACS connexion");
+    d->localSettings->setCaption("Settings related to local PACS connexion");
     d->localSettings->addParameter(&s_Aetitle);
     d->localSettings->addParameter(&s_Hostname);
     d->localSettings->addParameter(&s_Port);
+    s_Aetitle.setParent(nullptr);
+    s_Hostname.setParent(nullptr);
+    s_Port.setParent(nullptr);
 
     d->remoteAet = new medStringParameter("Server AE Title");
     d->remoteHostname = new medStringParameter("Server Hostname");
     d->remotePort = new medIntParameter("Server Port");
 
     d->remoteSettings = new medGroupParameter("Dicom server Settings", this);
+    d->remoteSettings->setCaption("Settings related to remote PACS connexion");
+    d->remoteSettings->setDescription("Settings related to remote PACS connexion");
     d->remoteSettings->addParameter(d->remoteAet);
     d->remoteSettings->addParameter(d->remoteHostname);
     d->remoteSettings->addParameter(d->remotePort);
@@ -102,19 +109,23 @@ medAPHP::medAPHP(QtDcmInterface *dicomLib, medAbstractAnnotation *annotationAPI)
     d->restFulUrl = new medStringParameter("Rest API Anotation URL ");
 
     d->restFulSettings = new medGroupParameter("annotation API Settings", this);
+    d->restFulSettings->setCaption("Settings related to remote restFul API connexion");
+    d->restFulSettings->setDescription("Settings related to remote restFul API connexion");
     d->restFulSettings->addParameter(d->restFulUrl);
 
-    d->saveSettingsButton = new medTriggerParameter("Save", this);
+    d->saveSettingsButton = new medTriggerParameter("Apply parameters", this);
+    d->saveSettingsButton->setCaption("Apply");
+    d->saveSettingsButton->setDescription("Update APHP Parameters");
     QObject::connect(d->saveSettingsButton, SIGNAL(triggered()), this, SLOT(onSettingsSaved()));
 
-    d->patientName = new medStringParameter("Patient Name (0010,0010)", this);
-    d->patientName->setCaption("Patient Name");
-    //  d->  connect(m_PatientName, &medStringParameter::valueChanged, m_DicomLib, &QtDcmInterface::patientNameFilter);
-    d->patientId = new medStringParameter("Patient ID (0010,0020)", this);
-    d->patientId->setCaption("Patient ID");
-    d->patientLevel = new medGroupParameter("Patient Level", this);
-    d->patientLevel->addParameter(d->patientName);
-    d->patientLevel->addParameter(d->patientId);
+    // d->patientName = new medStringParameter("Patient Name (0010,0010)", this);
+    // d->patientName->setCaption("Patient Name");
+    // //  d->  connect(m_PatientName, &medStringParameter::valueChanged, m_DicomLib, &QtDcmInterface::patientNameFilter);
+    // d->patientId = new medStringParameter("Patient ID (0010,0020)", this);
+    // d->patientId->setCaption("Patient ID");
+    // d->patientLevel = new medGroupParameter("Patient Level", this);
+    // d->patientLevel->addParameter(d->patientName);
+    // d->patientLevel->addParameter(d->patientId);
 }
 
 medAPHP::~medAPHP()
@@ -195,7 +206,7 @@ QList<medAbstractParameter *> medAPHP::getVolatilParameters()
 QList<medAbstractParameter *> medAPHP::getFilteringParameters()
 {
     QList<medAbstractParameter *> listRes;
-    listRes << d->patientLevel;
+    // listRes << d->patientLevel;
     return listRes;
 }
 

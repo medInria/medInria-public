@@ -13,7 +13,7 @@
 
 #include "medTemporaryDataSource.h"
 
-#include <medIntParameter.h>
+#include <medBoolParameter.h>
 
 struct medTemporaryDataSourcePrivate
 {
@@ -21,8 +21,9 @@ struct medTemporaryDataSourcePrivate
     QString instanceName;
     // QMap<QString, QVariant> m_pluginKeyToDataMap;
 
-    medIntParameter *levelCount;
+    int levelCount;
     int desiredWritableLevel;
+    medBoolParameter *flatTree;
 
     QMap<unsigned int /*level*/, QMap<QString, QVariant>> medAbstractDataMap;
     QMap<unsigned int, QMultiMap<QString, medAbstractSource::levelMinimalEntries>> minimalEntriesMap;
@@ -31,11 +32,20 @@ struct medTemporaryDataSourcePrivate
 medTemporaryDataSource::medTemporaryDataSource()
     : d(new medTemporaryDataSourcePrivate)
 {
-    d->levelCount = new medIntParameter("Number of Levels");
-    d->levelCount->setCaption("Number of Levels");
-    d->levelCount->setValue(3);
 
-    d->desiredWritableLevel = 3;
+    d->flatTree = new medBoolParameter("Flat Source");
+    d->flatTree->setCaption("Flat Source");
+    d->flatTree->setValue(true);
+    d->flatTree->setDefaultRepresentation(2);
+
+    d->levelCount = d->flatTree->value()?0:-1;
+    d->desiredWritableLevel = d->flatTree->value()?0:-1;
+    
+    QObject::connect(d->flatTree, &medBoolParameter::valueChanged, [&](bool state){ 
+        int level = (state)? 0 : -1;
+        d->levelCount = level;
+        d->desiredWritableLevel = level;
+    });
 }
 
 medTemporaryDataSource::~medTemporaryDataSource()
@@ -72,7 +82,7 @@ bool medTemporaryDataSource::connect(bool pi_bEnable)
 
 QList<medAbstractParameter *> medTemporaryDataSource::getAllParameters()
 {
-    return {d->levelCount};
+    return {d->flatTree};
 }
 
 QList<medAbstractParameter *> medTemporaryDataSource::getCipherParameters()
@@ -112,7 +122,7 @@ bool medTemporaryDataSource::isOnline()
 
 bool medTemporaryDataSource::isFetchByMinimalEntriesOrMandatoryAttributes()
 {
-    return true;
+    return false;
 }
 
 QString medTemporaryDataSource::getInstanceName()
@@ -127,7 +137,7 @@ QString medTemporaryDataSource::getInstanceId()
 
 unsigned int medTemporaryDataSource::getLevelCount()
 {
-    return d->levelCount->value();
+    return d->levelCount;
 }
 
 unsigned int medTemporaryDataSource::getLevelDesiredWritable()
@@ -168,17 +178,28 @@ QList<QMap<QString, QString>> medTemporaryDataSource::getMandatoryAttributes(uns
 {
     QList<QMap<QString, QString>> res;
     QList<levelMinimalEntries> entries;
-    auto minimalEntriesMultiMap = d->minimalEntriesMap[pi_uiLevel];
-    entries = minimalEntriesMultiMap.values(parentId);
-    for (auto entry : entries)
+    if (d->minimalEntriesMap.contains(pi_uiLevel))
     {
-        QMap<QString, QString> map;
-        map["key"] = entry.key;
-        map["name"] = entry.name;
-        map["desc"] = entry.description;
-        res.append(map);
+        auto minimalEntriesMultiMap = d->minimalEntriesMap[pi_uiLevel];
+        qDebug() << "unique Keys " << minimalEntriesMultiMap.uniqueKeys();
+        if (pi_uiLevel==0 && !minimalEntriesMultiMap.uniqueKeys().isEmpty())
+        {
+            entries = minimalEntriesMultiMap.values(minimalEntriesMultiMap.firstKey());
+        }
+        else
+        {
+            entries = minimalEntriesMultiMap.values(parentId);
+        }
+            
+        for (auto entry : entries)
+        {
+            QMap<QString, QString> map;
+            map["key"] = entry.key;
+            map["name"] = entry.name;
+            map["desc"] = entry.description;
+            res.append(map);
+        }
     }
-
     return res;
 }
 

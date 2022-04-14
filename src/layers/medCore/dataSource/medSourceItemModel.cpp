@@ -360,36 +360,41 @@ int medSourceItemModel::getSectionInsideLevel(int level, int column) const
 
 bool medSourceItemModel::fetch(QStringList uri) //See populateLevelV2
 {
-    populateLevelV2(toIndex(uri), uri.last());
-//    int i = 0;
-//    for (auto iid : uri)
-//    {
-//        childIndex = getIndex(iid, childIndex);
-//        if (!childIndex.isValid())
-//        {
-//            populateLevelV2(tmpIndex, tmpIId);
-//            tmpIndex = getIndex(tmpIId, tmpIndex);
-//            if (!tmpIndex.isValid())
-//            {
-//                return false;
-//            }
-//        }
-//        tmpIndex = childIndex;
-//        tmpIId = iid;
-////        auto childIndexTmp = getIndex(uri[i], childIndex);
-////        if (!childIndexTmp.isValid())
-////        {
-////            //TODO le level intermediaire n'existe pas encore
-////            //TODO TRY populate
-////            //TODO essayer  nouveau apres le populate si le child existe
-////            //     Si oui on continue
-////            //     Si non on part en erreur
-////        }
-////        childIndex = childIndexTmp;
-////        i++;
-//    }
-//
-//    populateLevelV2(tmpIndex, tmpIId);
+    QString key;
+    if (uri.size() > 1)
+    {
+        key = uri.last();
+    }
+    populateLevelV2(toIndex(uri), key);
+    //    int i = 0;
+    //    for (auto iid : uri)
+    //    {
+    //        childIndex = getIndex(iid, childIndex);
+    //        if (!childIndex.isValid())
+    //        {
+    //            populateLevelV2(tmpIndex, tmpIId);
+    //            tmpIndex = getIndex(tmpIId, tmpIndex);
+    //            if (!tmpIndex.isValid())
+    //            {
+    //                return false;
+    //            }
+    //        }
+    //        tmpIndex = childIndex;
+    //        tmpIId = iid;
+    ////        auto childIndexTmp = getIndex(uri[i], childIndex);
+    ////        if (!childIndexTmp.isValid())
+    ////        {
+    ////            //TODO le level intermediaire n'existe pas encore
+    ////            //TODO TRY populate
+    ////            //TODO essayer  nouveau apres le populate si le child existe
+    ////            //     Si oui on continue
+    ////            //     Si non on part en erreur
+    ////        }
+    ////        childIndex = childIndexTmp;
+    ////        i++;
+    //    }
+    //
+    //    populateLevelV2(tmpIndex, tmpIId);
 
     return false;
 }

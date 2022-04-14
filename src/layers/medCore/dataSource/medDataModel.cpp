@@ -33,20 +33,20 @@ medDataModel::medDataModel(QObject *parent)
 {
     setParent(parent);
     m_defaultSource = nullptr;
-    QMap<QString, QString> substitutionsCharacters;
-    substitutionsCharacters["\\"] = " ";
-    substitutionsCharacters["/"]  = " ";
-    substitutionsCharacters[":"]  = " ";
-    substitutionsCharacters["*"]  = " ";
-    substitutionsCharacters["?"]  = " ";
-    substitutionsCharacters["<"]  = " ";
-    substitutionsCharacters[">"]  = " ";
-    substitutionsCharacters["\""] = " ";
-    substitutionsCharacters["|"]  = " ";
-    substitutionsCharacters["\r"] = " ";
-    substitutionsCharacters["\n"] = " ";
+    // QMap<QString, QString> substitutionsCharacters;
+    // substitutionsCharacters["\\"] = " ";
+    // substitutionsCharacters["/"]  = " ";
+    // substitutionsCharacters[":"]  = " ";
+    // substitutionsCharacters["*"]  = " ";
+    // substitutionsCharacters["?"]  = " ";
+    // substitutionsCharacters["<"]  = " ";
+    // substitutionsCharacters[">"]  = " ";
+    // substitutionsCharacters["\""] = " ";
+    // substitutionsCharacters["|"]  = " ";
+    // substitutionsCharacters["\r"] = " ";
+    // substitutionsCharacters["\n"] = " ";
 
-    m_generalWritingPolicy.setSubstitutionsCharacters(substitutionsCharacters);
+    // m_generalWritingPolicy.setSubstitutionsCharacters(substitutionsCharacters);
 }
 
 medDataModel::~medDataModel()
@@ -280,7 +280,7 @@ medAbstractData * medDataModel::getData(medDataIndex const & index)
                     QModelIndex modelIndex = m_sourcesModelMap[pSource]->toIndex(index.asString());
                     QString hruUri = m_sourcesModelMap[pSource]->toHumanReadableUri(modelIndex);
                     QString name = hruUri.right(hruUri.size() - hruUri.lastIndexOf("\r\n") - 2);
-                    QStringList hruUriAsList = hruUri.split("\r\n");
+                    QStringList hruUriAsList = hruUri.split("\r\n", QString::SkipEmptyParts);
                     pDataTmp->setExpectedName(name);
                     pDataTmp->setMetaData(medMetaDataKeys::SeriesDescription.key(), name);
                     QString studyDesc;
@@ -400,31 +400,9 @@ bool medDataModel::saveData(medAbstractData *pi_pData, QString const &pi_baseNam
             unsigned int uiLevel = pio_uri.size() - 1;
             QString parentKey = pio_uri.last();
 
-            if (pSource->getIOInterface()==IO_MEDABSTRACTDATA)
+            QTemporaryDir tmpDir;
+            if (pSource->getIOInterface() == IO_FILE)
             {
-                data.setValue(pi_pData);
-
-                if (bLocal)
-                {
-                    bRes = pSource->addDirectData(data, minimalEntries, uiLevel, parentKey);
-                    if (bRes)
-                    {
-                        pModel->fetch(pio_uri);
-                        pio_uri.push_back(minimalEntries.key);
-                    }
-                }
-                else if (bCached)
-                {
-                    bRes = pSource->commitData(data, minimalEntries, uiLevel, parentKey);
-                }
-                else
-                {
-                    bRes = pSource->addAssyncData(data, minimalEntries, uiLevel, parentKey);
-                }
-            }
-            else if (pSource->getIOInterface()==IO_FILE)
-            {
-                QTemporaryDir tmpDir;
                 if (tmpDir.isValid())
                 {
                     bool bWritableData = false;
@@ -452,31 +430,42 @@ bool medDataModel::saveData(medAbstractData *pi_pData, QString const &pi_baseNam
                     {
                         bWritableData = medDataExporter::convertSingleDataOnfly(pi_pData, fullTmpPath, exts);
                     }
-
                     if (bWritableData)
                     {
                         data.setValue(fullTmpPath);
-
-                        if (bLocal)
-                        {
-                            bRes = pSource->addDirectData(data, minimalEntries, uiLevel, parentKey);
-                            if (bRes)
-                            {
-                                pModel->fetch(pio_uri);
-                                pio_uri.push_back(minimalEntries.key);
-                            }
-                        }
-                        else if (bCached)
-                        {
-                            bRes = pSource->commitData(data, minimalEntries, uiLevel, parentKey);
-                        }
-                        else
-                        {
-                            bRes = pSource->addAssyncData(data, minimalEntries, uiLevel, parentKey);
-                        }
                     }
                 }
             }
+            else if (pSource->getIOInterface() == IO_MEDABSTRACTDATA)
+            {
+                data.setValue(pi_pData);
+            }
+            else if (pSource->getIOInterface() == IO_STREAM)
+            {
+                qDebug() << "Not Implemented yet. For now, data is an invalid QVariant";
+            }
+            
+            if (data.isValid())
+            {
+                if (bLocal)
+                {
+                    bRes = pSource->addDirectData(data, minimalEntries, uiLevel, parentKey);
+                    if (bRes)
+                    {
+                        pModel->fetch(pio_uri);
+                        pio_uri.push_back(minimalEntries.key);
+                    }
+                }
+                else if (bCached)
+                {
+                    bRes = pSource->commitData(data, minimalEntries, uiLevel, parentKey);
+                }
+                else
+                {
+                    bRes = pSource->addAssyncData(data, minimalEntries, uiLevel, parentKey);
+                }
+            }
+
         }
     }
 
@@ -505,24 +494,27 @@ bool medDataModel::writeResults(QString pi_sourceId, medAbstractData * pi_pData,
     QMap<QString, QString> metaData;//pi_pData->metaData(); //TODO
     QString computedName = pWp->computeName(pi_writingPolicyData.baseName, pi_writingPolicyData.prefix, pi_writingPolicyData.suffix, metaData);
 
-    QString pathOfRelatedData = convertToPath(pi_UriOfRelatedData); // to path of pi_URIOfRelatedData
-
+    auto srcOri = m_sourceIdToInstanceMap.value(pi_UriOfRelatedData[0]);
+    QString pathOfRelatedData;
+    if (srcOri && srcOri->getLevelCount() != 0)
+    {
+        pathOfRelatedData = convertToPath(pi_UriOfRelatedData); // to path of pi_URIOfRelatedData
+    }
+    // QString pathOfRelatedData = convertToPath(pi_UriOfRelatedData); // to path of pi_URIOfRelatedData
     QString path;
     QStringList uri;
     QMap<int, QString> knownKeys;
 
 
-    auto originPath = pathOfRelatedData.split("\r\n");
+    auto originPath = pathOfRelatedData.split("\r\n", QString::SkipEmptyParts);
     auto sugestedPath = pi_sugestedPath.split("\r\n", QString::SkipEmptyParts);
 
-
-
-
+    QString suggestedSourceId;
     // ////////////////////////////////////////////////////////////////////////////////////////
     // If we write in the same source as origin, we already known the keys used to build the path, then we initialize knownKeys
     if (!pi_UriOfRelatedData.isEmpty())
     {
-        QString suggestedSourceId = pi_UriOfRelatedData.takeFirst();
+        suggestedSourceId = pi_UriOfRelatedData.takeFirst();
         if (pi_sourceId == suggestedSourceId)
         {
             for (int i = 0; i < pi_UriOfRelatedData.size(); ++i)
@@ -535,7 +527,7 @@ bool medDataModel::writeResults(QString pi_sourceId, medAbstractData * pi_pData,
 
 
     // ////////////////////////////////////////////////////////////////////////////////////////
-    // Check la coherence de la proposition par rapport à l'URI
+    // Check la coherence de la proposition par rapport ï¿½ l'URI
     auto limite = std::min(originPath.size(), sugestedPath.size());
     for (int i = 0; i < limite; ++i)
     {
@@ -555,13 +547,26 @@ bool medDataModel::writeResults(QString pi_sourceId, medAbstractData * pi_pData,
 
         // ////////////////////////////////////////////////////////////////////////////////////////
         // We compute path and call createPath
-        path = pWp->computePath(pi_sourceId, path, metaData);
+        auto pSource = m_sourceIdToInstanceMap[pi_sourceId];
+        int levelToWrite = m_sourceIdToInstanceMap[suggestedSourceId]->getLevelDesiredWritable();
+        if (pSource->getLevelDesiredWritable()==-1 && levelToWrite!=-1)
+        {
+            path = pWp->computePath(suggestedSourceId, path, metaData);
+        }
+        else
+        {
+            path = pWp->computePath(pi_sourceId, path, metaData);
+        }
         bRes = createPath(pi_sourceId, path.split("\r\n", QString::SkipEmptyParts), uri, knownKeys);
         // ////////////////////////////////////////////////////////////////////////////////////////
 
         // ////////////////////////////////////////////////////////////////////////////////////////
+        // Check if level is writable in destination source
+        int levelToWriteData = uri.size() - 1; // We remove of the size the 1st element (sourceId) 
+
+        // ////////////////////////////////////////////////////////////////////////////////////////
         // si bRes true alors write
-        if (bRes)
+        if (bRes && pSource->isLevelWritable(levelToWriteData))
         {
             QStringList names;
             getDataNames(uri, names);
@@ -584,7 +589,7 @@ bool medDataModel::createPath(QString pi_sourceId, QStringList pi_folders, QStri
     po_uri.clear();
 
     auto * pModel = getModel(pi_sourceId);
-    medAbstractSource* pSource = m_sourceIdToInstanceMap.value(pi_sourceId);
+    medAbstractSource   * pSource = m_sourceIdToInstanceMap.value(pi_sourceId);
     if (pModel && pSource)
     {
         po_uri.push_front(pi_sourceId);
@@ -604,7 +609,7 @@ bool medDataModel::createPath(QString pi_sourceId, QStringList pi_folders, QStri
                 {
                     pModel->fetch(po_uri);
                     keyTmp = pModel->keyForPath(po_uri, pi_folders[i]);
-                    if (keyTmp.isEmpty())
+                    if (keyTmp.isEmpty() && pSource->isLevelWritable(i))
                     {
                         medAbstractSource::levelMinimalEntries lme;
                         medAbstractSource::datasetAttributes4 dataSetAttributes;
@@ -617,13 +622,18 @@ bool medDataModel::createPath(QString pi_sourceId, QStringList pi_folders, QStri
                     }
                     if (!keyTmp.isEmpty())
                     {
-                        po_uri.push_back(keyTmp);
                         pModel->fetch(po_uri);
+                        po_uri.push_back(keyTmp);
                     }
                     else
                     {
                         bRes = false;
                     }
+                }
+                else
+                {
+                    pModel->fetch(po_uri);
+                    po_uri.push_back(keyTmp);
                 }
             }
         }

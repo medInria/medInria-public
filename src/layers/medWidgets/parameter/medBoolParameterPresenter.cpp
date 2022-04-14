@@ -68,9 +68,12 @@ QWidget* medBoolParameterPresenter::buildWidget()
     {
         case 1:
             poWidgetRes = this->buildPushButton(); break;
-    case 0:
-    default:
-        poWidgetRes = this->buildCheckBox(); break;
+        case 2:
+            poWidgetRes = this->buildRadioButton(); break;
+        case 0:
+        default:
+            poWidgetRes = this->buildCheckBox();
+            break;
     }
     return poWidgetRes; 
 }

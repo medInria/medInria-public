@@ -38,7 +38,7 @@ QString medDefaultWritingPolicy::computeName(QString const & pi_baseName, QStrin
 
 QString medDefaultWritingPolicy::computePath(QString pi_sourceId, QString pi_suggestedPath, QMap<QString, QString> pi_metaData, bool pi_bTrim)
 {
-    QStringList pathRes = pi_suggestedPath.split("\r\n");
+    QStringList pathRes = pi_suggestedPath.split("\r\n", QString::SkipEmptyParts);
 
     int iLevelToWrite = medAbstractWritingPolicy::levelToWrite(pi_sourceId);
     

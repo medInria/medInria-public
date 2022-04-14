@@ -237,7 +237,7 @@ QSize medSourceSettingsWidget::getInitialSize()
 
 
 
-inline bool medSourceSettingsWidget::eventFilter(QObject * watched, QEvent * event)
+bool medSourceSettingsWidget::eventFilter(QObject * watched, QEvent * event)
 {
     if (watched == m_titleLineEdit) 
     {

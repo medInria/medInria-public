@@ -14,11 +14,11 @@
 
 #include <medAbstractWritingPolicy.h>
 
-class medDefaultWritingPolicy : public medAbstractWritingPolicy
+class medSQLiteWritingPolicy : public medAbstractWritingPolicy
 {
 public:
-    medDefaultWritingPolicy();
-    inline ~medDefaultWritingPolicy() override = default;
+    medSQLiteWritingPolicy();
+    inline ~medSQLiteWritingPolicy() override = default;
 
     // inherits from medAbstractWritingPolicy	
 	void setSubstitutionsCharacters(QMap<QString, QString> const &pi_substitutionMap) override;
@@ -30,8 +30,8 @@ public:
     bool incrementName(QString &pio_name, QStringList pi_alreadyExistName) override;
 	bool checkUri(QStringList pi_suggestedUri, QStringList * pio_rectifiedUri = nullptr) override;
 
-protected:
-    virtual bool charactersSubstitution(QStringList pi_suggestedUri, QStringList * pio_rectifiedUri);
+// private:
+//     bool charactersSubstitution(QStringList pi_suggestedUri, QStringList * pio_rectifiedUri);
 
 private:
     QMap<QString, QString> m_substitutionMap;

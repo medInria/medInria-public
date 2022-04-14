@@ -16,12 +16,13 @@
 
 #include <medAbstractSource.h>
 #include <medStringParameter.h>
+#include <medSQLiteWritingPolicy.h>
 
 #include <QSqlDatabase>
 
 
 template <typename T>
-class medSQlite: public medAbstractSource
+class medSQlite : public medAbstractSource
 {
 
 public:
@@ -111,6 +112,7 @@ public:
     virtual QVariant getAsyncResults(int pi_iRequest) override { return QVariant(); };
     virtual int push(unsigned int pi_uiLevel, QString key) override { return -1; };
 
+    inline virtual medAbstractWritingPolicy *getWritingPolicy() override { return &m_writingPolicy; };
 public slots:
     void abort(int pi_iRequest) override;
 
@@ -149,8 +151,10 @@ private:
     QStringList m_LevelNames;
     QMap<QString, QStringList> m_MandatoryKeysByLevel;
     QMap<QString, QStringList> m_SupportedTypeAndFormats;
+    medSQLiteWritingPolicy m_writingPolicy;
     medStringParameter *pToto;
     medStringParameter *pTata;
+
 };
 
 #include "medSQLite.txx"

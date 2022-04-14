@@ -44,6 +44,7 @@ medSQlite<T>::medSQlite()
                                                      "origin", "rows", "columns"}) ;
     pToto = new medStringParameter("tata");
     pTata = new medStringParameter("toto");
+
 }
 
 template<typename T>
@@ -279,7 +280,12 @@ QString medSQlite<T>::getLevelName(unsigned int pi_uiLevel)
 template <typename T>
 bool  medSQlite<T>::isLevelWritable(unsigned int pi_uiLevel)
 {
-    return pi_uiLevel == 2;
+    bool bRes = true;
+    if (pi_uiLevel < 0 && pi_uiLevel > 2)
+    {
+        bRes = false;
+    }
+    return bRes;
 }
 
 template <typename T>
@@ -840,7 +846,7 @@ bool medSQlite<T>::addDirectData(QVariant data, levelMinimalEntries &pio_minimal
             }
 
             QString pathOut = QDir::separator() + patientId + QDir::separator() + 
-                            QUuid::createUuid().toString().replace("{", "").replace("}", "")  + "." + fileNameExt;
+                            QUuid::createUuid().toString().replace("{", "").replace("}", "") + fileNameExt;
 
             QDir dir(m_DbPath->value());
             dir.mkdir(patientId);
@@ -884,12 +890,37 @@ template <typename T>
 bool medSQlite<T>::createFolder(levelMinimalEntries &pio_minimalEntries, datasetAttributes4 const &pi_attributes, unsigned int pi_uiLevel, QString parentKey)
 {
     bool bRes = false;
+    QSqlQuery query = m_Engine.exec();
+
     if (pi_uiLevel==0) // Create PATIENT
     {
+        // query.prepare ( "INSERT INTO patient (name, patientId, birthdate, gender) "
+        //                                "VALUES (:name, :patientId, :birthdate, :gender)" );
+        QString patientId = QUuid::createUuid().toString().replace("{", "").replace("}", "");
+        QString insertQuery = "INSERT INTO patient (name, patientId) VALUES (:name, :patientId)";
+        query.prepare(insertQuery);
+        query.bindValue(":name", pio_minimalEntries.name);
+        query.bindValue(":patientId", patientId);
+        bRes = query.exec();
+        if (bRes)
+        {
+            pio_minimalEntries.key = query.lastInsertId().toString();
 
+        }
     } 
     else if (pi_uiLevel==1) // Create STUDY
     {
+        //                query.prepare ( "INSERT INTO study (patient, name, uid) "
+        //                                "VALUES (:patient, :name, :uid)" );
+        QString insertQuery = "INSERT INTO study (patient, name) VALUES (:patient, :name)";
+        query.prepare(insertQuery);
+        query.bindValue(":patient", parentKey);
+        query.bindValue(":name", pio_minimalEntries.name);
+        bRes = query.exec();
+        if (bRes)
+        {
+            pio_minimalEntries.key = query.lastInsertId().toString();
+        }
 
     }
     

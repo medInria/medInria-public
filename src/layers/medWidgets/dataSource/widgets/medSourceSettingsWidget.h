@@ -46,7 +46,7 @@ public:
      */
     inline medAbstractSource * getSource() { return m_pSource; }
 
-    bool eventFilter(QObject *watched, QEvent *event);
+    bool eventFilter(QObject *watched, QEvent *event) override;
 
 public slots:
     void currentItemChanged(QListWidgetItem *current, QListWidgetItem *previous);
