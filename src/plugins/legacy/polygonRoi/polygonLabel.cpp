@@ -421,7 +421,7 @@ QVector<medWorldPosContours> polygonLabel::getContoursAsNodes()
     return contours;
 }
 
-void polygonLabel::createMask(int label, QString &desc)
+void polygonLabel::createMask(int label, QString &desc, bool originSrc)
 {
     vtkImageView2D *view2d = getView2D();
     if (!view2d)
@@ -608,7 +608,7 @@ void polygonLabel::createMask(int label, QString &desc)
     //    output->setMetaData(medMetaDataKeys::SeriesDescription.key(), desc);
     //}
     //
-    medDataManager::instance()->importData(output, false);
+    medDataManager::instance()->importData(output, originSrc);
 }
 
 void polygonLabel::SetMasterRoi()

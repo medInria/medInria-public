@@ -58,6 +58,7 @@ public:
     void eraseCross();
 
     QPushButton *repulsorTool;
+    QRadioButton *dataDestButton;
 
 public slots:
 

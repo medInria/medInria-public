@@ -117,12 +117,16 @@ polygonRoiToolBox::polygonRoiToolBox(QWidget *parent ) :
     auto helpLayout = new QVBoxLayout();
     layout->addLayout(helpLayout);
     helpLayout->setContentsMargins(0, 10, 0, 0);
+    dataDestButton = new QRadioButton("Save in source of original data",this);
+    dataDestButton->setToolTip("Generated data can be saved in origin data source or default working source");
+    dataDestButton->setObjectName("dstButton");
+    dataDestButton->setChecked(true);
     helpButton = new QPushButton("Help");
     helpButton->setToolTip("show help related to this toolbox.");
-    helpButton->setMinimumSize(150, 20);
-    helpButton->setMaximumSize(150, 20);
+    helpButton->setFixedSize(150, 20);
     helpButton->setObjectName("helpButton");
     connect(helpButton, SIGNAL(clicked()), this, SLOT(showHelp()));
+    helpLayout->addWidget(dataDestButton);
     helpLayout->addWidget(helpButton);
 
     // buttons initialisation: view has no data
@@ -401,6 +405,7 @@ void polygonRoiToolBox::clickClosePolygon(bool state)
     }
     saveBinaryMaskButton->setEnabled(state);
     saveContourButton->setEnabled(state);
+    dataDestButton->setEnabled(state);
     interpolate->setEnabled(state);
     repulsorTool->setEnabled(state);
 }
@@ -436,6 +441,7 @@ void polygonRoiToolBox::disableButtons()
     repulsorTool->setEnabled(false);
     repulsorTool->setChecked(false);
     saveBinaryMaskButton->setEnabled(false);
+    dataDestButton->setEnabled(false);
     saveContourButton->setEnabled(false);
     interpolate->setEnabled(false);
     interpolate->setChecked(true);

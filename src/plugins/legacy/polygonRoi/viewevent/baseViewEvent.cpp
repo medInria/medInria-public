@@ -780,8 +780,8 @@ void baseViewEvent::saveAllContours()
         contourOutput->setData(outputDataSet);
         contourOutput->setData(&contoursData, 1);
         outputDataSet->Delete();
-
-        medDataManager::instance()->importData(contourOutput, false);
+        bool originSrc = pToolBox->dataDestButton->isChecked();
+        medDataManager::instance()->importData(contourOutput, originSrc);
     }
 }
 
@@ -952,7 +952,8 @@ void baseViewEvent::saveMask(polygonLabel *manager)
 {
     int label = labelList.indexOf(manager);
     QString desc = createMaskDescription(manager);
-    manager->createMask(label, desc);
+    bool originSrc = pToolBox->dataDestButton->isChecked();
+    manager->createMask(label, desc, originSrc);
 }
 
 QString baseViewEvent::createMaskDescription(polygonLabel *label)
@@ -1015,9 +1016,8 @@ void baseViewEvent::saveContour(polygonLabel *label)
     contourOutput->setData(outputDataSet);
     contourOutput->setData(&contoursData, 1);
     outputDataSet->Delete();
-
-    medDataManager::instance()->importData(contourOutput, false);
-
+    bool originSrc = pToolBox->dataDestButton->isChecked();
+    medDataManager::instance()->importData(contourOutput, originSrc);
 }
 
 void baseViewEvent::onContourFinished(CURSORSTATE state)
