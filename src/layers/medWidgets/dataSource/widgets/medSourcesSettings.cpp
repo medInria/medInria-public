@@ -68,14 +68,16 @@ medSourcesSettings::medSourcesSettings(medSourcesLoader * pSourceLoader, QWidget
 
     // The drag&drop area handles the creation and move of source item widgets
     m_sourceListWidget = new QListWidget(this);
+    sourceLayout->setAlignment(Qt::AlignTop);
     sourceLayout->addWidget(m_sourceListWidget);
 
 
     m_sourceListWidget->setAcceptDrops(true);
     m_sourceListWidget->setDragDropMode(QAbstractItemView::InternalMove);
     m_sourceListWidget->setAutoScroll(true);
-    m_sourceListWidget->setFixedSize(400, 550);
-
+    //m_sourceListWidget->setFixedSize(400, 550);
+    m_sourceListWidget->setResizeMode(QListView::Adjust);
+    m_sourceListWidget->setMinimumWidth(400);
     // Change the color of the background when an item is selected to drag&drop
     m_sourceListWidget->setStyleSheet("QListWidget::item:selected {background:gray;}");
 
@@ -114,14 +116,11 @@ medSourcesSettings::medSourcesSettings(medSourcesLoader * pSourceLoader, QWidget
     m_sourceInformation->header()->setSectionResizeMode(0, QHeaderView::Stretch);
     m_sourceInformation->header()->setSectionResizeMode(1, QHeaderView::Stretch);
     m_sourceInformation->header()->setStretchLastSection(false);
-    m_sourceInformation->setSortingEnabled(true);
     // Init tree
-    QList<QTreeWidgetItem *> items;
     for (int i = 0; i < 3; ++i)
     {
-        items.append(new QTreeWidgetItem(static_cast<QTreeWidget *>(nullptr), QStringList(QString(""))));
+        m_sourceInformation->insertTopLevelItem(i, new QTreeWidgetItem(m_sourceInformation, {"",""}));
     }
-    m_sourceInformation->insertTopLevelItems(0, items);
     m_sourceInformation->setFixedHeight(98);
     sourceSettingsLayout->addWidget(m_sourceInformation);
 
@@ -195,27 +194,8 @@ void medSourcesSettings::setAsDefault()
             auto *pItem = m_sourceToItem.value(currentSource);
             auto *pWidget = static_cast<medSourceSettingsWidget*>(m_sourceListWidget->itemWidget(pItem));
             pWidget->setToDefault(true);
+            m_setDefaultButton->setDisabled(true);
         }
-    }
-}
-
-/**
- * @brief This method resizes the QListWidget item as soon as the medSourceSettingsWidget is resized
- *
- * @param sourceWidget
- * @param isMinimized
- */
-void medSourcesSettings::switchMinimization(medSourceSettingsWidget* sourceWidget, bool isMinimized)
-{
-    auto * pItem = m_sourceToItem.value(sourceWidget->getSource());
-    QSize initialSize = sourceWidget->getInitialSize();
-    if (isMinimized)
-    {
-        pItem->setSizeHint(QSize(initialSize.width(), 39));
-    }
-    else
-    {
-        pItem->setSizeHint(initialSize);
     }
 }
 
@@ -226,17 +206,17 @@ void medSourcesSettings::switchMinimization(medSourceSettingsWidget* sourceWidge
 void medSourcesSettings::updateSourceInformation(medAbstractSource * pi_pSource)
 {
     m_sourceInformation->setVisible(false);
-    QTreeWidgetItem *hasCache = m_sourceInformation->invisibleRootItem()->child(0);
+    QTreeWidgetItem *hasCache = m_sourceInformation->topLevelItem(2);;
     hasCache->setText(0, "Has cache: ");
-    hasCache->setText(1, QString::number(pi_pSource->isCached()));
+    hasCache->setText(1, pi_pSource->isCached() ? "true" : "false");
 
-    QTreeWidgetItem *isLocal = m_sourceInformation->invisibleRootItem()->child(1);
+    QTreeWidgetItem *isLocal = m_sourceInformation->topLevelItem(1);
     isLocal->setText(0, "Is local: ");
-    isLocal->setText(1, QString::number(pi_pSource->isLocal()));
+    isLocal->setText(1, pi_pSource->isLocal() ? "true" : "false");
 
-    QTreeWidgetItem *isWritable = m_sourceInformation->invisibleRootItem()->child(2);
+    QTreeWidgetItem *isWritable = m_sourceInformation->topLevelItem(0);
     isWritable->setText(0, "Is writable: ");
-    isWritable->setText(1, QString::number(pi_pSource->isWritable()));
+    isWritable->setText(1, pi_pSource->isWritable() ? "true" : "false");
     m_sourceInformation->setVisible(true);
 }
 
@@ -282,10 +262,12 @@ void medSourcesSettings::selectedSourceChange(int pi_index)
     {
         auto *pWidget = static_cast<medSourceSettingsWidget*>(m_sourceListWidget->itemWidget(pItem));
         auto *pSource = pWidget->getSource();
+        bool bIsDefaultWorkingSource = pSource == m_sourceLoader->getDefaultWorkingSource();
 
         updateSourceInformation(pSource);
         updateConnectButton(pSource);
-        m_removeButton->setDisabled(pSource == m_sourceLoader->getDefaultWorkingSource());
+        m_removeButton->setDisabled(bIsDefaultWorkingSource);
+        m_setDefaultButton->setDisabled(bIsDefaultWorkingSource);
     }
     else
     {
@@ -324,9 +306,8 @@ void medSourcesSettings::connectButtonUpdateText()
 
 void medSourcesSettings::sourceCreated(medAbstractSource * pi_pSource)
 {
-    auto * newSourceWidgetItem = new medSourceSettingsWidget(pi_pSource, this);
-
     QListWidgetItem *widgetItem = new QListWidgetItem();
+    auto * newSourceWidgetItem = new medSourceSettingsWidget(pi_pSource, widgetItem, this);
     m_sourceToItem[pi_pSource] = widgetItem;
     m_sourceListWidget->addItem(widgetItem);
     m_sourceListWidget->setItemWidget(widgetItem, newSourceWidgetItem);

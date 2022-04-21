@@ -76,6 +76,7 @@ void forceShow(medMainWindow &mainwindow)
 
 int main(int argc, char *argv[])
 {
+    QCoreApplication::setAttribute(Qt::AA_EnableHighDpiScaling);
     // Setup openGL surface compatible with QVTKOpenGLWidget,
     // required by medVtkView
     QSurfaceFormat fmt;

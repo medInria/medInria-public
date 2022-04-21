@@ -35,6 +35,7 @@ class medSortFilterProxyModel : public QSortFilterProxyModel
 medSourcesWidget::medSourcesWidget()
 {
      this->setLayout(&m_layout);
+     m_layout.setAlignment(Qt::AlignTop);
 }
 
 medSourcesWidget::~medSourcesWidget()

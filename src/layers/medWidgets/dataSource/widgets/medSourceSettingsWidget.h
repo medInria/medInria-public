@@ -20,13 +20,14 @@
 #include <medSourcesLoader.h>
 #include <medWidgetsExport.h>
 
+class QHBoxLayout;
 class MEDWIDGETS_EXPORT medSourceSettingsWidget : public QFrame
 {
     Q_OBJECT
     
 public:
 
-    medSourceSettingsWidget(medAbstractSource *pSource, QWidget *parent = nullptr);
+    medSourceSettingsWidget(medAbstractSource *pSource, QListWidgetItem *widgetItem, QWidget *parent = nullptr);
     ~medSourceSettingsWidget() = default;
 
     QString getInstanceName();
@@ -56,13 +57,16 @@ protected:
     void paintEvent(QPaintEvent *event);
 
 signals:
-    void minimizationAsked(bool);               // Signal to indicate a [un]minization is done
+    void minimizationAsked(bool);               // Signal to indicate a [un]minimization is done
     void sourceRename(QString, QString);
 
 private:
+    int                 m_maxHeight;
     medAbstractSource * m_pSource;
+    QListWidgetItem   * m_pItem;
     bool                m_sourceSelected;
 
+    QHBoxLayout    * titleLayout;
     QLabel         * m_titleLabel;
     QLineEdit      * m_titleLineEdit;
     QStackedWidget   m_titleStack;

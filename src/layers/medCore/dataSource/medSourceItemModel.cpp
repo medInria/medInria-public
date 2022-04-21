@@ -810,58 +810,61 @@ bool medSourceItemModel::fetchColumnNames(const QModelIndex &index/*int const &i
 void medSourceItemModel::populateLevel(QModelIndex const &index, QString const &key)
 {
     //QVariantList entries; //QList<QList<QString>> list of entries of the given level, each entry has a list of 3 elements {key, name, description}. Key is never displayed, only used to fetch sub-level and used has unique key
-    QList<QMap<QString, QString>> entries;
-    medDataModelItem *pItem = getItem(index);
-
-    int iLevel = pItem->level()+1;
-
-    if (!d->columnNameByLevel.contains(iLevel))
+    if (index.isValid() != key.isEmpty())
     {
-        fetchColumnNames(index);
-    }
+        QList<QMap<QString, QString>> entries;
+        medDataModelItem *pItem = getItem(index);
 
-    if (d->parent->attributesForBuildTree(d->sourceInstanceId, iLevel, key, entries))
-    {
-        if (entries.size() > 0)
+        int iLevel = pItem->level() + 1;
+
+        if (!d->columnNameByLevel.contains(iLevel))
         {
-            if (index.isValid())
-            {
-                int row = rowCount(index);
-                int elemCount = entries.size();
-                emit layoutAboutToBeChanged(); //this is useful to update arrow on the left if click is not inside
-                beginInsertRows(index.siblingAtColumn(0), row, row + elemCount - 1);
-            }
+            fetchColumnNames(index);
+        }
 
-
-            // ////////////////////////////////////////////////////////////////////////
-            // Populate data loop
-            for (QMap<QString, QString> &var : entries)
+        if (d->parent->attributesForBuildTree(d->sourceInstanceId, iLevel, key, entries))
+        {
+            if (entries.size() > 0)
             {
-                medDataModelItem *pItemTmp = new medDataModelItem(this);              
-                for (QString k : var.keys())
+                if (index.isValid())
                 {
-                    int iCol = d->columnNameByLevel[iLevel].indexOf(k);
-                    if (iCol == -1)
-                    {
-                        d->columnNameByLevel[iLevel].push_back(k);
-                        if (!d->sectionNames.contains(k))
-                        {
-                            qDebug() << "[WARN] Unknown column name " << k << " from getMandatoryAttributesKeys in datasource " << d->sourceInstanceId << " at level " << iLevel-1;                            
-                            d->sectionNames.push_back(k);
-                            emit columnCountChange(d->sectionNames.size());
-                            iCol = d->columnNameByLevel[iLevel].size()-1;
-                        }
-                    }
-                    pItemTmp->setData(var[k], iCol);
+                    int row = rowCount(index);
+                    int elemCount = entries.size();
+                    emit layoutAboutToBeChanged(); //this is useful to update arrow on the left if click is not inside
+                    beginInsertRows(index.siblingAtColumn(0), row, row + elemCount - 1);
                 }
-                pItemTmp->setParent(pItem);
-                pItem->append(pItemTmp);
-            }
 
-            if (index.isValid())
-            {
-                endInsertRows();
-                emit layoutChanged(); // close the emit layoutAboutToBeChanged();
+
+                // ////////////////////////////////////////////////////////////////////////
+                // Populate data loop
+                for (QMap<QString, QString> &var : entries)
+                {
+                    medDataModelItem *pItemTmp = new medDataModelItem(this);
+                    for (QString k : var.keys())
+                    {
+                        int iCol = d->columnNameByLevel[iLevel].indexOf(k);
+                        if (iCol == -1)
+                        {
+                            d->columnNameByLevel[iLevel].push_back(k);
+                            if (!d->sectionNames.contains(k))
+                            {
+                                qDebug() << "[WARN] Unknown column name " << k << " from getMandatoryAttributesKeys in datasource " << d->sourceInstanceId << " at level " << iLevel - 1;
+                                d->sectionNames.push_back(k);
+                                emit columnCountChange(d->sectionNames.size());
+                                iCol = d->columnNameByLevel[iLevel].size() - 1;
+                            }
+                        }
+                        pItemTmp->setData(var[k], iCol);
+                    }
+                    pItemTmp->setParent(pItem);
+                    pItem->append(pItemTmp);
+                }
+
+                if (index.isValid())
+                {
+                    endInsertRows();
+                    emit layoutChanged(); // close the emit layoutAboutToBeChanged();
+                }
             }
         }
     }
@@ -870,32 +873,34 @@ void medSourceItemModel::populateLevel(QModelIndex const &index, QString const &
 void medSourceItemModel::populateLevelV2(QModelIndex const & index, QString const & key)
 {
     //QVariantList entries; //QList<QList<QString>> list of entries of the given level, each entry has a list of 3 elements {key, name, description}. Key is never displayed, only used to fetch sub-level and used has unique key
-    
-    QList<QMap<QString, QString>> entries;
-    medDataModelItem *pItem = getItem(index);
-    int iLevel = pItem->level() + 1;
-
-
-    if (!d->columnNameByLevel.contains(iLevel))
+    if (index.isValid() != key.isEmpty())
     {
-        fetchColumnNames(index);
-    }
+        QList<QMap<QString, QString>> entries;
+        medDataModelItem *pItem = getItem(index);
+        int iLevel = pItem->level() + 1;
 
-    if (d->parent->attributesForBuildTree(d->sourceInstanceId, iLevel, key, entries))
-    {
-        emit layoutAboutToBeChanged(); //this is useful to update arrow on the left if click is not inside
 
-        QVector<QPair<int, int> > rangeToRemove; // vector of ranges to delete, <beginRange, endRange>
-        computeRowRangesToRemove(pItem, entries, rangeToRemove);
-        removeRowRanges(rangeToRemove, index);
+        if (!d->columnNameByLevel.contains(iLevel))
+        {
+            fetchColumnNames(index);
+        }
 
-        //TODO Update data already present inside the model
+        if (d->parent->attributesForBuildTree(d->sourceInstanceId, iLevel, key, entries))
+        {
+            emit layoutAboutToBeChanged(); //this is useful to update arrow on the left if click is not inside
 
-        QMap<int, QList<QMap<QString, QString>>> entriesToAdd; //position to insert, List of QVariant, itself QVariantList representation of minimal entries
-        computeRowRangesToAdd(pItem, entries, entriesToAdd);
-        addRowRanges(entriesToAdd, index);
+            QVector<QPair<int, int> > rangeToRemove; // vector of ranges to delete, <beginRange, endRange>
+            computeRowRangesToRemove(pItem, entries, rangeToRemove);
+            removeRowRanges(rangeToRemove, index);
 
-        emit layoutChanged(); // close the emit layoutAboutToBeChanged();
+            //TODO Update data already present inside the model
+
+            QMap<int, QList<QMap<QString, QString>>> entriesToAdd; //position to insert, List of QVariant, itself QVariantList representation of minimal entries
+            computeRowRangesToAdd(pItem, entries, entriesToAdd);
+            addRowRanges(entriesToAdd, index);
+
+            emit layoutChanged(); // close the emit layoutAboutToBeChanged();
+        }
     }
 }
 

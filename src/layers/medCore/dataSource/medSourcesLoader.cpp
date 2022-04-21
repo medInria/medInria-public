@@ -124,7 +124,11 @@ bool medSourcesLoader::removeCnx(QString const & instanceId)
         m_instanceMapType.remove(instanceId);
         saveToDisk();
         emit sourceRemoved(&(*oldCnx));
-        QTimer::singleShot(5*60*1000, this, [&]() {oldCnx.reset(); }); //the removed connection will be deleted after 5 min of secured time gap
+        QTimer::singleShot(5*60*1000, this, [oldCnx]() 
+        {
+            //Do nothing into the lambda because oldCnx is a shared pointer copied by value passing. Then it will be automatically deleted at the end of lambda execution/scope.
+            //Solution to avoid this timer is to used only QSharedPointer when used a source instance.
+        }); //the removed connection will be deleted after 5 min of secured time gap
     }
     m_mutexMap.unlock();
 

@@ -15,21 +15,27 @@
 #include <QVBoxLayout>
 #include <QKeyEvent>
 
+#include <QGuiApplication>
+#include <QScreen>
+
 #include <medAbstractParameterPresenter.h>
 
-medSourceSettingsWidget::medSourceSettingsWidget(medAbstractSource * pSource, QWidget * parent) : QFrame(parent)
+medSourceSettingsWidget::medSourceSettingsWidget(medAbstractSource * pSource, QListWidgetItem *widgetItem, QWidget * parent) : QFrame(parent)
 {
     m_pSource = pSource;
+    m_pItem = widgetItem;
 
     auto * widgetLayout = new QVBoxLayout;
     setLayout(widgetLayout);
+    widgetLayout->setAlignment(Qt::AlignTop);
 
     // Transparent background for round corners  
     setAttribute(Qt::WA_TranslucentBackground);
 
     //--- Title area
-    auto * titleLayout = new QHBoxLayout;
+    titleLayout = new QHBoxLayout;
     widgetLayout->addLayout(titleLayout);
+    titleLayout->setAlignment(Qt::AlignTop);
 
     // Add on/off icons
     m_onOffIcon = new QImage;
@@ -44,8 +50,6 @@ medSourceSettingsWidget::medSourceSettingsWidget(medAbstractSource * pSource, QW
     m_titleStack.addWidget(m_titleLineEdit);
     m_titleLabel->installEventFilter(this);
     m_titleLineEdit->installEventFilter(this);
-    //m_titleStack.setSizePolicy(m_titleLineEdit->sizePolicy());
-    //connect(m_pSourceLoader, &medSourcesLoader::sourcesUpdated, [=]() { m_titleLabel->setText(m_pSource->getInstanceName()); });
     titleLayout->addWidget(&m_titleStack);
     titleLayout->addStretch();
 
@@ -54,7 +58,6 @@ medSourceSettingsWidget::medSourceSettingsWidget(medAbstractSource * pSource, QW
     m_defaultLabel->setStyleSheet("font: italic");
     titleLayout->addWidget(m_defaultLabel);
 
-    // todo this does not follow medInria style management. Style sheets created here or in medSourceSettingsDragAreaWidget
     // should be in medInria.qss, in order to allow other themes to change colors or styles.
     QString buttonStyle = "QPushButton {"
                           " background-color: none; }"
@@ -95,7 +98,7 @@ medSourceSettingsWidget::medSourceSettingsWidget(medAbstractSource * pSource, QW
 
     //-- Init parameters
     switchConnectionIcon(m_pSource->isOnline());
-    setToDefault(false); // todo set status (not coded yet) here or in medSourcesSettings
+    setToDefault(false);
     m_sourceSelected = false;
 
     //--- Now that Qt widgets are set: create connections
@@ -128,8 +131,7 @@ void medSourceSettingsWidget::switchConnectionIcon(bool connection)
 }
 
 /**
- * @brief Switch the icon after minimization or un-minimization, and show or hide the parameter widget
- * 
+ * @brief Resize the widget and switch the icon after minimization or un-minimization, and show or hide the parameter widget
  */
 void medSourceSettingsWidget::switchMinimization()
 {
@@ -137,15 +139,20 @@ void medSourceSettingsWidget::switchMinimization()
     if (m_parametersWidget->isHidden())
     {
         m_parametersWidget->show();
-        newIcon =  QIcon(":/icons/minimize_off_white.svg");
+        newIcon = QIcon(":/icons/minimize_off_white.svg");
+
+        m_pItem->setSizeHint(getInitialSize());
     }
     else
     {
+        auto g = m_titleStack.mapToGlobal(m_titleStack.geometry().topLeft());
+        auto k = QGuiApplication::screenAt(g)->devicePixelRatio();
+        auto t1 = m_titleStack.frameSize().height()*1;
         m_parametersWidget->hide();
         newIcon =  QIcon(":/icons/minimize_on_white.svg");
+        m_pItem->setSizeHint(QSize(getInitialSize().width(), t1));
     }
     m_minimizeSourceButton->setIcon(newIcon);
-
     emit(minimizationAsked(m_parametersWidget->isHidden()));
 }
 
