@@ -152,17 +152,7 @@ medSourcesSettings::medSourcesSettings(medSourcesLoader * pSourceLoader, QWidget
 
     m_sourceListWidget->setAutoScroll(true);
 
-    QWidget * pConfFileWidget = new QWidget();
-    QHBoxLayout * pConfFileLayout = new QHBoxLayout();
-    QLabel * pPathLabel = new QLabel("Sources configuration file");
-    QLineEdit * pPathLineEdit = new QLineEdit();
-    QPushButton * pPathExplorButton = new QPushButton("...");
-    //QFileDialog
-    pConfFileLayout->addWidget(pPathLabel);
-    pConfFileLayout->addWidget(pPathLineEdit);
-    pConfFileLayout->addWidget(pPathExplorButton);
-    pConfFileWidget->setLayout(pConfFileLayout);
-    pMainLayout->addWidget(pConfFileWidget);
+    pMainLayout->addWidget(createConfPathWidget());
 }
 
 void medSourcesSettings::removeSource()
@@ -246,6 +236,48 @@ void medSourcesSettings::updateSelectedSourceDescription(int currentIndex)
     m_sourceDescriptionWidget->setHtml(std::get<1>(m_sourceLoader->sourcesTypeAvailables()[currentIndex]));
 }
 
+QWidget * medSourcesSettings::createConfPathWidget()
+{
+    QWidget * pConfFileWidget = new QWidget();
+
+    QHBoxLayout * pConfFileLayout = new QHBoxLayout();
+    QLabel * pPathLabel = new QLabel("Config's directory");
+    QLineEdit * pPathLineEdit = new QLineEdit(QDir::toNativeSeparators(m_sourceLoader->getPath()));
+    QPushButton * pPathExplorButton = new QPushButton("...");
+
+    pPathLabel->setToolTip(tr("Directory containing " MED_DATASOURCES_FILENAME));
+
+    connect(pPathExplorButton, &QPushButton::clicked, [=]()
+    {
+        //QString sourcesConfFilePath = QFileDialog::getOpenFileName(this, tr("Select sources configuration file"), "", tr("Config file (*.json)"));
+        QString sourcesConfFilePath = QFileDialog::getExistingDirectory(this, tr("Select sources configuration directory"), m_sourceLoader->getPath());
+
+        if (!sourcesConfFilePath.isEmpty())
+        {
+            if (m_sourceLoader->setPath(sourcesConfFilePath))
+            {
+                pPathLineEdit->setText(sourcesConfFilePath);
+            }
+
+        }
+    });
+    connect(pPathLineEdit, &QLineEdit::editingFinished, [=]()
+    {
+        if (!m_sourceLoader->setPath(QDir::fromNativeSeparators(pPathLineEdit->text())))
+        {
+            pPathLineEdit->setText(m_sourceLoader->getPath());
+        }
+    });
+
+    //QFileDialog
+    pConfFileLayout->addWidget(pPathLabel);
+    pConfFileLayout->addWidget(pPathLineEdit);
+    pConfFileLayout->addWidget(pPathExplorButton);
+    pConfFileWidget->setLayout(pConfFileLayout);
+
+    return pConfFileWidget;
+}
+
 
 
 
@@ -324,10 +356,6 @@ void medSourcesSettings::sourceCreated(medAbstractSource * pi_pSource)
     connect(newSourceWidgetItem, &medSourceSettingsWidget::sourceRename, m_sourceLoader, &medSourcesLoader::renameSource);
     connect(m_sourceLoader, &medSourcesLoader::sourcesUpdated, newSourceWidgetItem, &medSourceSettingsWidget::titleChanged);
     connect(m_sourceListWidget, &QListWidget::currentItemChanged, newSourceWidgetItem, &medSourceSettingsWidget::currentItemChanged);
-    connect(newSourceWidgetItem, &medSourceSettingsWidget::minimizationAsked, [=](bool isMinimized)
-    {
-        switchMinimization(newSourceWidgetItem, isMinimized);
-    });
 }
 
 void medSourcesSettings::sourceRemoved(medAbstractSource * pi_pSource)

@@ -24,6 +24,10 @@ class QJsonDocument;
 class QMutex;
 template <class T> class QSharedPointer;
 
+#ifndef ED_DATASOURCES_FILENAME
+#define MED_DATASOURCES_FILENAME "DataSources.json"
+#endif // !ED_DATASOURCES_FILENAME
+
 
 class MEDCORE_EXPORT medSourcesLoader : public QObject
 {
@@ -57,6 +61,9 @@ public:
     bool                      renameSource(QString const & instanceId, QString const & name);
 	
 	bool loadFromDisk(); //call after each add or remove source instance, each call to the destructor. Must be encrypted
+
+    bool setPath(QString path);
+    QString getPath();
 
 public slots:
     void changeSourceOrder(int oldPlace, int newPlace);

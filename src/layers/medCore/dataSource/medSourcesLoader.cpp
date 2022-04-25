@@ -28,8 +28,6 @@
 
 #include <medSettingsManager.h>
 
-#define MED_DATASOURCES_FILENAME "DataSources.json"
-
 medSourcesLoader *medSourcesLoader::s_instance = nullptr;
 
 medSourcesLoader *medSourcesLoader::instance(QObject *parent)
@@ -221,7 +219,23 @@ bool medSourcesLoader::setDefaultWorkingSource(QString const &instanceId)
 
 
 
+bool medSourcesLoader::setPath(QString path)
+{
+    bool bRes = false;
 
+    if (QFile::exists(path + '/' + MED_DATASOURCES_FILENAME))
+    {
+        medSettingsManager::instance()->setValue("Sources", "Conf dir", path);
+        bRes = true;
+    }
+
+    return bRes;
+}
+
+QString medSourcesLoader::getPath()
+{
+    return m_CnxParametersPath;
+}
 
 
 
@@ -252,7 +266,7 @@ medSourcesLoader::medSourcesLoader(QObject *parent)
 {
     setParent(parent);
 
-    m_CnxParametersPath = ".";
+    m_CnxParametersPath = medSettingsManager::instance()->value("Sources", "Conf dir", ".").toString();
 }
 
 bool medSourcesLoader::saveToDisk() const

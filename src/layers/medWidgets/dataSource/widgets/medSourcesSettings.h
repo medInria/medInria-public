@@ -46,11 +46,11 @@ public:
     void connectButtonUpdateText();
     void updateConnectButton(medAbstractSource * pi_pSource);
 
-    void switchMinimization(medSourceSettingsWidget* sourceWidget, bool isMinimized);
-
 protected:
     void updateSourceInformation(medAbstractSource * pi_pSource);
     void updateSelectedSourceDescription(int currentIndex);
+
+    QWidget * createConfPathWidget();
 
 
 private:
