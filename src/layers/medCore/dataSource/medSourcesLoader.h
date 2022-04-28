@@ -83,6 +83,7 @@ private:
     static void convertCipherParamToJson(QJsonObject & po_oJson, medAbstractParameter *pi_pParam);
 	
     QString m_CnxParametersPath;
+    QString m_CnxParametersFile;
 
 signals:
     void sourceAdded(medAbstractSource*);  // Signal to indicate a new source

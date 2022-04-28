@@ -51,6 +51,8 @@ QWidget* medStringParameterPresenter::buildWidget()
     QWidget *poWidgetRes = nullptr;
     switch (d->parameter->defaultRepresentation())
     {
+    case 1:
+        poWidgetRes = this->buildLineEditOnFinish(); break;
     case 0:
     default:
         poWidgetRes = this->buildLineEdit(); break;
@@ -70,6 +72,23 @@ QLineEdit* medStringParameterPresenter::buildLineEdit()
     connect(d->parameter, &medStringParameter::validatorChanged, lineEdit, &QLineEdit::setValidator);
     connect(d->parameter, &medStringParameter::valueChanged, lineEdit, &QLineEdit::setText);
     connect(lineEdit, &QLineEdit::textEdited, d->parameter, &medStringParameter::setValue);
+
+    return lineEdit;
+}
+
+QLineEdit* medStringParameterPresenter::buildLineEditOnFinish()
+{
+    QLineEdit *lineEdit = new QLineEdit;
+
+    lineEdit->setToolTip(d->parameter->description());
+    lineEdit->setText(d->parameter->value());
+    lineEdit->setValidator(d->parameter->getValidator());
+
+    this->_connectWidget(lineEdit);
+    connect(d->parameter, &medStringParameter::validatorChanged, lineEdit, &QLineEdit::setValidator);
+    connect(d->parameter, &medStringParameter::valueChanged, lineEdit, &QLineEdit::setText);
+    auto *pParam = d->parameter;
+    connect(lineEdit, &QLineEdit::editingFinished, [=]() {pParam->setValue(lineEdit->text()); });
 
     return lineEdit;
 }

@@ -11,14 +11,24 @@
 #include "medSourcesSettings.h"
 
 #include <medSourceSettingsWidget.h>
+#include <medSourcesSettingsHandlerWidget.h>
 #include <medSettingsManager.h>
 
+#include <QComboBox>
+#include <QFileDialog>
+#include <QTextEdit>
 #include <QVBoxLayout>
 
-medSourcesSettings::medSourcesSettings(medSourcesLoader * pSourceLoader, QWidget *parent)
-    : QWidget(parent)
+/**
+ * @brief medSourcesSettings constructor.
+ * 
+ * @param [in] pi_pSourceLoader is pointer to medSourcesLoader instance that the widget represents.
+ * @param [in] pi_parent is the parent widget.
+ */
+medSourcesSettings::medSourcesSettings(medSourcesLoader * pi_pSourceLoader, QWidget *pi_parent)
+    : QWidget(pi_parent)
 {
-    m_sourceLoader = pSourceLoader;
+    m_sourceLoader = pi_pSourceLoader;
 
     auto * pMainLayout = new QVBoxLayout();
     this->setLayout(pMainLayout);
@@ -71,17 +81,15 @@ medSourcesSettings::medSourcesSettings(medSourcesLoader * pSourceLoader, QWidget
     sourceLayout->setAlignment(Qt::AlignTop);
     sourceLayout->addWidget(m_sourceListWidget);
 
-
     m_sourceListWidget->setAcceptDrops(true);
     m_sourceListWidget->setDragDropMode(QAbstractItemView::InternalMove);
     m_sourceListWidget->setAutoScroll(true);
-    //m_sourceListWidget->setFixedSize(400, 550);
     m_sourceListWidget->setResizeMode(QListView::Adjust);
     m_sourceListWidget->setMinimumWidth(400);
     // Change the color of the background when an item is selected to drag&drop
     m_sourceListWidget->setStyleSheet("QListWidget::item:selected {background:gray;}");
 
-    for (auto pSource : pSourceLoader->sourcesList())
+    for (auto pSource : pi_pSourceLoader->sourcesList())
     {
         sourceCreated(pSource);
     }
@@ -94,52 +102,15 @@ medSourcesSettings::medSourcesSettings(medSourcesLoader * pSourceLoader, QWidget
         pWidget->setToDefault(true);
     }
 
-    //--- Sources details and actions
-    auto * sourceSettingsLayout = new QVBoxLayout();
-    sourceLayout->addLayout(sourceSettingsLayout);
-
-    auto * detailsLabel = new QLabel("\nSelect a source to use actions:\n");
-    sourceSettingsLayout->addWidget(detailsLabel);
-
-    m_setDefaultButton = new QPushButton(tr("Set as default"));
-    m_setDefaultButton->setToolTip(tr("Set the selected source as default"));
-    sourceSettingsLayout->addWidget(m_setDefaultButton);
-
-    m_connectButton = new QPushButton(tr("Connect"));
-    m_connectButton->setToolTip(tr("Switch ON or OFF the selected source"));
-    sourceSettingsLayout->addWidget(m_connectButton);
-
-    m_sourceInformation = new QTreeWidget();
-    m_sourceInformation->setColumnCount(2);
-    m_sourceInformation->setAlternatingRowColors(true);
-    m_sourceInformation->setHeaderLabels(QStringList()<<"Information"<<"Result");
-    m_sourceInformation->header()->setSectionResizeMode(0, QHeaderView::Stretch);
-    m_sourceInformation->header()->setSectionResizeMode(1, QHeaderView::Stretch);
-    m_sourceInformation->header()->setStretchLastSection(false);
-    // Init tree
-    for (int i = 0; i < 3; ++i)
-    {
-        m_sourceInformation->insertTopLevelItem(i, new QTreeWidgetItem(m_sourceInformation, {"",""}));
-    }
-    m_sourceInformation->setFixedHeight(98);
-    sourceSettingsLayout->addWidget(m_sourceInformation);
-
-    m_removeButton = new QPushButton(tr("Remove source"));
-    m_removeButton->setToolTip(tr("Remove the selected source"));
-    sourceSettingsLayout->addWidget(m_removeButton);
-
-    sourceSettingsLayout->addStretch();
-
+    m_SettingsHandlerWidget = new medSourcesSettingsHandlerWidget(this);
+    sourceLayout->addWidget(m_SettingsHandlerWidget);
     //--- Now that Qt widgets are set: create connections
     connect(m_sourceTypeCombobox, QOverload<int>::of(&QComboBox::currentIndexChanged), this, &medSourcesSettings::updateSelectedSourceDescription);
     connect(createButton,       &QPushButton::clicked, this, &medSourcesSettings::createSource);
-    connect(m_setDefaultButton, &QPushButton::clicked, this, &medSourcesSettings::setAsDefault ); // Change default source
-    connect(m_removeButton,     &QPushButton::clicked, this, &medSourcesSettings::removeSource ); // Ask to remove source
     connect(m_sourceLoader,     &medSourcesLoader::sourceAdded,  this, &medSourcesSettings::sourceCreated);   // Signal to slot to indicate a new source
     connect(m_sourceLoader,     &medSourcesLoader::sourceRemoved, this, &medSourcesSettings::sourceRemoved);   // Signal to slot to indicate a new source
     connect(m_sourceListWidget, &QListWidget::currentRowChanged, this, &medSourcesSettings::selectedSourceChange);
     connect(m_sourceListWidget->model(), &QAbstractItemModel::rowsMoved, this, &medSourcesSettings::sourceMoved);
-
 
     if (m_sourceListWidget->count())
     {
@@ -155,6 +126,64 @@ medSourcesSettings::medSourcesSettings(medSourcesLoader * pSourceLoader, QWidget
     pMainLayout->addWidget(createConfPathWidget());
 }
 
+
+
+/**
+ * @brief Slot to handle a change selected source.
+ * @details This slot must be connected to m_sourceListWidget.
+ * @param [in] pi_index of the new selected source.
+ */
+void medSourcesSettings::selectedSourceChange(int pi_index)
+{
+    auto *pItem = m_sourceListWidget->item(pi_index);
+    if (pItem != nullptr)
+    {
+        auto *pSource = m_sourceToItem.key(pItem);
+        bool bIsDefaultWorkingSource = pSource == m_sourceLoader->getDefaultWorkingSource();
+
+        m_SettingsHandlerWidget->sourceChange(pSource, bIsDefaultWorkingSource);
+    }
+    else
+    {
+        m_SettingsHandlerWidget->sourceChange(nullptr, false);
+    }
+}
+
+/**
+ * @brief Slot to handle a move of source.
+ * @details This slot must be connected to the QAbstractItemModel of m_sourceListWidget.
+ * @details Parameters and there names are made to perfect match with QAbstractItemModel::rowsMoved
+ * @param [in] parent QModelIndex of the first selected source (not used here).
+ * @param [in] start index order as integer of moved source.
+ * @param [in] end (not used here).
+ * @param [in] destination QModelIndex of the destination neighbor source (not used here).
+ * @param [in] row future index order as integer of moved source.
+ */
+void medSourcesSettings::sourceMoved(const QModelIndex &parent, int start, int end, const QModelIndex &destination, int row)
+{
+    m_sourceLoader->changeSourceOrder(start, row);
+}
+
+
+
+/**
+ * @brief Launch the creation of a new medAbstractSource.
+ * @details This is the slot to call by the create button.
+ */
+void medSourcesSettings::createSource()
+{
+    auto indexComboBox = m_sourceTypeCombobox->currentIndex();
+    QString generatedInstanceId = "";
+    if (!m_sourceLoader->createCnx(generatedInstanceId, std::get<0>(m_sourceLoader->sourcesTypeAvailables()[indexComboBox])))
+    {
+        qDebug()<<"A problem occurred creating a new source.";
+    }
+}
+
+/**
+* @brief Launch the deletion of current medAbstractSource.
+* @details This is the slot to call by the remove button.
+*/
 void medSourcesSettings::removeSource()
 {
     auto * pItem = m_sourceListWidget->currentItem();    
@@ -165,16 +194,23 @@ void medSourcesSettings::removeSource()
     }
 }
 
-void medSourcesSettings::setAsDefault()
+/**
+ * @brief Change the default working source by the current and update internals widgets.
+ * @details This is the slot to call by the default button.
+ * @return True only if the change can be done.
+ */
+bool medSourcesSettings::setAsDefault()
 {
+    bool bRes = false;
+
     auto sources = m_sourceLoader->sourcesList();
     auto * previousDefault = m_sourceLoader->getDefaultWorkingSource();
     auto * currentSource = sources[m_sourceListWidget->currentRow()];
     if (currentSource)
     {
-        if (m_sourceLoader->setDefaultWorkingSource(currentSource->getInstanceId()))
+        bRes = m_sourceLoader->setDefaultWorkingSource(currentSource->getInstanceId());
+        if (bRes)
         {
-            m_removeButton->setDisabled(true);
             if (previousDefault)
             {
                 auto *pItem = m_sourceToItem.value(previousDefault);
@@ -184,158 +220,19 @@ void medSourcesSettings::setAsDefault()
             auto *pItem = m_sourceToItem.value(currentSource);
             auto *pWidget = static_cast<medSourceSettingsWidget*>(m_sourceListWidget->itemWidget(pItem));
             pWidget->setToDefault(true);
-            m_setDefaultButton->setDisabled(true);
+            m_SettingsHandlerWidget->setAsDefault();
         }
     }
+
+    return bRes;
 }
+
+
 
 /**
- * @brief This method fills the information widget with info from this selected source
- *
+ * @brief Display a new source and select it.
+ * @details This is the slot to call by medSourceLoader.
  */
-void medSourcesSettings::updateSourceInformation(medAbstractSource * pi_pSource)
-{
-    m_sourceInformation->setVisible(false);
-    QTreeWidgetItem *hasCache = m_sourceInformation->topLevelItem(2);;
-    hasCache->setText(0, "Has cache: ");
-    hasCache->setText(1, pi_pSource->isCached() ? "true" : "false");
-
-    QTreeWidgetItem *isLocal = m_sourceInformation->topLevelItem(1);
-    isLocal->setText(0, "Is local: ");
-    isLocal->setText(1, pi_pSource->isLocal() ? "true" : "false");
-
-    QTreeWidgetItem *isWritable = m_sourceInformation->topLevelItem(0);
-    isWritable->setText(0, "Is writable: ");
-    isWritable->setText(1, pi_pSource->isWritable() ? "true" : "false");
-    m_sourceInformation->setVisible(true);
-}
-
-/**
- * @brief Launch the creation of a new medAbstractSource and display it in the sources settings widget
- * 
- */
-void medSourcesSettings::createSource()
-{
-    auto indexComboBox = m_sourceTypeCombobox->currentIndex();
-    QString generatedInstanceId = "";
-    bool bOk = m_sourceLoader->createCnx(generatedInstanceId, std::get<0>(m_sourceLoader->sourcesTypeAvailables()[indexComboBox]));
-
-    if (!bOk)
-    {
-        qDebug()<<"A problem occurred creating a new source.";
-    }
-}
-
-/**
- * @brief Display the description of the chosen source type in the GUI
- * 
- * @param currentIndex 
- */
-void medSourcesSettings::updateSelectedSourceDescription(int currentIndex)
-{
-    m_sourceDescriptionWidget->setHtml(std::get<1>(m_sourceLoader->sourcesTypeAvailables()[currentIndex]));
-}
-
-QWidget * medSourcesSettings::createConfPathWidget()
-{
-    QWidget * pConfFileWidget = new QWidget();
-
-    QHBoxLayout * pConfFileLayout = new QHBoxLayout();
-    QLabel * pPathLabel = new QLabel("Config's directory");
-    QLineEdit * pPathLineEdit = new QLineEdit(QDir::toNativeSeparators(m_sourceLoader->getPath()));
-    QPushButton * pPathExplorButton = new QPushButton("...");
-
-    pPathLabel->setToolTip(tr("Directory containing " MED_DATASOURCES_FILENAME));
-
-    connect(pPathExplorButton, &QPushButton::clicked, [=]()
-    {
-        //QString sourcesConfFilePath = QFileDialog::getOpenFileName(this, tr("Select sources configuration file"), "", tr("Config file (*.json)"));
-        QString sourcesConfFilePath = QFileDialog::getExistingDirectory(this, tr("Select sources configuration directory"), m_sourceLoader->getPath());
-
-        if (!sourcesConfFilePath.isEmpty())
-        {
-            if (m_sourceLoader->setPath(sourcesConfFilePath))
-            {
-                pPathLineEdit->setText(sourcesConfFilePath);
-            }
-
-        }
-    });
-    connect(pPathLineEdit, &QLineEdit::editingFinished, [=]()
-    {
-        if (!m_sourceLoader->setPath(QDir::fromNativeSeparators(pPathLineEdit->text())))
-        {
-            pPathLineEdit->setText(m_sourceLoader->getPath());
-        }
-    });
-
-    //QFileDialog
-    pConfFileLayout->addWidget(pPathLabel);
-    pConfFileLayout->addWidget(pPathLineEdit);
-    pConfFileLayout->addWidget(pPathExplorButton);
-    pConfFileWidget->setLayout(pConfFileLayout);
-
-    return pConfFileWidget;
-}
-
-
-
-
-
-
-
-
-
-
-void medSourcesSettings::selectedSourceChange(int pi_index)
-{
-    auto *pItem = m_sourceListWidget->item(pi_index);
-    if (pItem != nullptr)
-    {
-        auto *pWidget = static_cast<medSourceSettingsWidget*>(m_sourceListWidget->itemWidget(pItem));
-        auto *pSource = pWidget->getSource();
-        bool bIsDefaultWorkingSource = pSource == m_sourceLoader->getDefaultWorkingSource();
-
-        updateSourceInformation(pSource);
-        updateConnectButton(pSource);
-        m_removeButton->setDisabled(bIsDefaultWorkingSource);
-        m_setDefaultButton->setDisabled(bIsDefaultWorkingSource);
-    }
-    else
-    {
-        m_connectButton->setDisabled(true);
-        m_setDefaultButton->setDisabled(true);
-        m_removeButton->setDisabled(true);
-    }
-}
-
-void medSourcesSettings::updateConnectButton(medAbstractSource * pi_pSource)
-{
-    connectButtonUpdateText();
-    disconnect(this, SLOT(updateConnectButton));
-    disconnect(m_connectButton);
-    connect(pi_pSource, &medAbstractSource::connectionStatus, this, &medSourcesSettings::connectButtonUpdateText);
-    connect(m_connectButton, &QPushButton::clicked, this, &medSourcesSettings::updateSourceConnection);
-}
-
-void medSourcesSettings::connectButtonUpdateText()
-{
-    auto * pItem = m_sourceListWidget->currentItem();
-    if (pItem)
-    {
-        auto *pSource = m_sourceToItem.key(pItem);
-        if (pSource->isOnline())
-        {
-            m_connectButton->setText("Disconnect");
-        }
-        else
-        {
-            m_connectButton->setText("Connect");
-        }
-    }
-}
-
-
 void medSourcesSettings::sourceCreated(medAbstractSource * pi_pSource)
 {
     QListWidgetItem *widgetItem = new QListWidgetItem();
@@ -358,11 +255,19 @@ void medSourcesSettings::sourceCreated(medAbstractSource * pi_pSource)
     connect(m_sourceListWidget, &QListWidget::currentItemChanged, newSourceWidgetItem, &medSourceSettingsWidget::currentItemChanged);
 }
 
+/**
+ * @brief Refresh the displaying of sources when a source is removed.
+ * @details This is the slot to call by medSourceLoader.
+ */
 void medSourcesSettings::sourceRemoved(medAbstractSource * pi_pSource)
 {
     delete m_sourceToItem.take(pi_pSource);
 }
 
+/**
+ * @brief Refresh the displaying of current source.
+ * @details This is the slot to call by medSourceLoader.
+ */
 void medSourcesSettings::updateSourceConnection()
 {
     auto *pItem = m_sourceListWidget->currentItem();
@@ -373,7 +278,55 @@ void medSourcesSettings::updateSourceConnection()
     }
 }
 
-void medSourcesSettings::sourceMoved(const QModelIndex &parent, int start, int end, const QModelIndex &destination, int row)
+
+
+/**
+ * @brief Display the description of the chosen source type in the GUI.
+ * @param [in] pi_index of current selected type of source.
+ */
+void medSourcesSettings::updateSelectedSourceDescription(int pi_index)
 {
-    m_sourceLoader->changeSourceOrder(start, row);
+    m_sourceDescriptionWidget->setHtml(std::get<1>(m_sourceLoader->sourcesTypeAvailables()[pi_index]));
 }
+
+/**
+ * @brief Create sub widget in charge of path to file to describe each connections.
+ * @details Contains a label, a lineedit path, a button to explore file tree.
+ */
+QWidget * medSourcesSettings::createConfPathWidget()
+{
+    QWidget * pConfFileWidget = new QWidget();
+
+    QHBoxLayout * pConfFileLayout = new QHBoxLayout();
+    QLabel * pPathLabel = new QLabel("Config's directory");
+    QLineEdit * pPathLineEdit = new QLineEdit(QDir::toNativeSeparators(m_sourceLoader->getPath()));
+    QPushButton * pPathExplorButton = new QPushButton("...");
+
+    pPathLabel->setToolTip(tr("Directory containing " MED_DATASOURCES_FILENAME));
+
+    connect(pPathExplorButton, &QPushButton::clicked, [=]()
+    {
+        QString sourcesConfFilePath = QFileDialog::getExistingDirectory(this, tr("Select sources configuration directory"), m_sourceLoader->getPath());
+
+        if (!sourcesConfFilePath.isEmpty() && m_sourceLoader->setPath(sourcesConfFilePath))
+        {
+                pPathLineEdit->setText(QDir::toNativeSeparators(sourcesConfFilePath));
+        }
+    });
+    connect(pPathLineEdit, &QLineEdit::editingFinished, [=]()
+    {
+        if (!m_sourceLoader->setPath(QDir::fromNativeSeparators(pPathLineEdit->text())))
+        {
+            pPathLineEdit->setText(QDir::toNativeSeparators(m_sourceLoader->getPath()));
+        }
+    });
+
+    //QFileDialog
+    pConfFileLayout->addWidget(pPathLabel);
+    pConfFileLayout->addWidget(pPathLineEdit);
+    pConfFileLayout->addWidget(pPathExplorButton);
+    pConfFileWidget->setLayout(pConfFileLayout);
+
+    return pConfFileWidget;
+}
+

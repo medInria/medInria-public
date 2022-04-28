@@ -32,6 +32,7 @@ public:
 
     QWidget *buildWidget() override;
     QLineEdit *buildLineEdit();
+    QLineEdit *buildLineEditOnFinish();
 
 private:
     const QScopedPointer<medStringParameterPresenterPrivate> d;
