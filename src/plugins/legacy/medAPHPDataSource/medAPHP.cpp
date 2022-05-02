@@ -19,6 +19,7 @@
 #include <medStringParameter.h>
 #include <medGroupParameter.h>
 #include <medTriggerParameter.h>
+#include <medStringListParameter.h>
 
 std::atomic<int>   medAPHP::s_RequestId = -1;
 medStringParameter medAPHP::s_Aetitle("AE Title");
@@ -34,6 +35,9 @@ struct medAPHPParametersPrivate
     QMap<QString, int> levelKeyToRequestIdMap;
     QMap<int, QVariant> requestIdToResultsMap;
 
+    QMap<QString, QString> patientLevelAttributes;
+    QMap<QString, QString> studyLevelAttributes;
+    QMap<QString, QString> seriesLevelAttributes;
     /* ***********************************************************************/
     /* ******************** External Injected Dependencies *******************/
     /* ***********************************************************************/
@@ -67,9 +71,11 @@ struct medAPHPParametersPrivate
     /* ***********************************************************************/
     /* ************************* Filtering Parameters ************************/
     /* ***********************************************************************/
-    // medGroupParameter *patientLevel;
-    // medStringParameter *patientName;
-    // medStringParameter *patientId;
+    medGroupParameter *filterPacsSettings;
+    medStringParameter *startDate;
+    medStringParameter *endDate;
+    medTriggerParameter *applyFilterButton;
+
 };
 
 medAPHP::medAPHP(QtDcmInterface *dicomLib, medAbstractAnnotation *annotationAPI) : d(new medAPHPParametersPrivate)
@@ -116,7 +122,131 @@ medAPHP::medAPHP(QtDcmInterface *dicomLib, medAbstractAnnotation *annotationAPI)
     d->saveSettingsButton = new medTriggerParameter("Apply parameters", this);
     d->saveSettingsButton->setCaption("Apply");
     d->saveSettingsButton->setDescription("Update APHP Parameters");
-    QObject::connect(d->saveSettingsButton, SIGNAL(triggered()), this, SLOT(onSettingsSaved()));
+    QObject::connect(d->saveSettingsButton, &medTriggerParameter::pushed, this, &medAPHP::onSettingsSaved);
+
+    medStringParameter *patientID = new medStringParameter("Patient ID", this);
+    patientID->setCaption("Patient ID");
+    QObject::connect(patientID, &medStringParameter::valueEdited, [&](QString const &value) {
+        if (value.isEmpty())
+        {
+            d->patientLevelAttributes.remove("PatientID");
+        }
+        else
+        {
+            d->patientLevelAttributes["PatientID"] = "*" + value + "*";
+        }
+    });
+    medStringParameter *patientName = new medStringParameter("Patient Name", this);
+    patientName->setCaption("Patient Name");
+    QObject::connect(patientName, &medStringParameter::valueEdited, [&](QString const &value) { 
+        if (value.isEmpty())
+        {
+            d->patientLevelAttributes.remove("PatientName");
+        }
+        else
+        {
+            d->patientLevelAttributes["PatientName"] = "*" + value + "*";
+        }
+    });
+    medStringListParameter *gender = new medStringListParameter("Gender", this);
+    gender->addItems({"", "M", "F"});
+    gender->setCaption("Gender");
+    QObject::connect(gender, &medStringListParameter::valueChanged, [&](int const &value) {
+        if (value==0)
+        {
+            d->patientLevelAttributes.remove("PatientSex");
+        }
+        else
+        {
+            d->patientLevelAttributes["PatientSex"] = gender->items()[value];
+        }
+    });
+
+    medStringParameter *studyDescription = new medStringParameter("Study Description", this);
+    studyDescription->setCaption("Study Description");
+    QObject::connect(studyDescription, &medStringParameter::valueEdited, [&](QString const &value) { 
+        if (value==0)
+        {
+            d->studyLevelAttributes.remove("StudyDescription");
+        }
+        else
+        {
+            d->studyLevelAttributes["StudyDescription"] = "*" + value + "*";
+        }
+    });
+    d->startDate = new medStringParameter("Start Study Date", this);
+    d->startDate->setCaption("Start Study Date");
+    d->startDate->setDefaultRepresentation(1);
+ 
+    d->endDate = new medStringParameter("End Study Date", this);
+    d->endDate->setCaption("End Study Date");
+    d->endDate->setDefaultRepresentation(1);
+    QDate currentDate = QDate::currentDate();
+    d->startDate->setValue(currentDate.addYears(-100).toString("yyyyMMdd"));
+    d->endDate->setValue(currentDate.toString("yyyyMMdd"));
+    QObject::connect(d->startDate, &medStringParameter::valueChanged, this, &medAPHP::computeDateRange);
+    QObject::connect(d->endDate, &medStringParameter::valueChanged, this, &medAPHP::computeDateRange);
+    // d->studyLevelAttributes["StudyDescription"] = "BD/PRO Pelvis w";
+
+    medStringParameter *seriesDescription = new medStringParameter("Series Description", this);
+    seriesDescription->setCaption("Series Description");
+    QObject::connect(seriesDescription, &medStringParameter::valueEdited, [&](QString const &value) { 
+        if (value==0)
+        {
+            d->seriesLevelAttributes.remove("SeriesDescription");
+        }
+        else
+        {
+            d->seriesLevelAttributes["SeriesDescription"] = "*" + value + "*";
+        }
+    });
+
+    medStringListParameter *modality = new medStringListParameter("Modality", this);
+    modality->addItems({"", "MR", "CT", "PET"});
+    modality->setCaption("Modality");
+    QObject::connect(modality, &medStringListParameter::valueChanged, [&](int const &value) { 
+        if (value==0)
+        {
+            d->seriesLevelAttributes.remove("Modality");
+        }
+        else
+        {
+            d->seriesLevelAttributes["Modality"] = modality->items()[value];
+        }
+    });
+
+    d->applyFilterButton = new medTriggerParameter("Apply PACS filtering parameters", this);
+    d->applyFilterButton->setCaption("Apply");
+    d->applyFilterButton->setDescription("Apply PACS filtering parameters");
+    QObject::connect(d->applyFilterButton, &medTriggerParameter::pushed, this, &medAPHP::onFiltersApplied);
+
+    medGroupParameter *patientFilter = new medGroupParameter("Patient Level Filters", this);
+    patientFilter->setCaption("Patient Level");
+    patientFilter->setDescription("Settings related to Patient Level");
+    patientFilter->addParameter(patientName);
+    patientFilter->addParameter(patientID);
+    patientFilter->addParameter(gender);
+
+    medGroupParameter *studyFilter = new medGroupParameter("Study Level Filters", this);
+    studyFilter->setCaption("Study Level");
+    studyFilter->setDescription("Settings related to Study Level");
+    studyFilter->addParameter(studyDescription);
+    studyFilter->addParameter(d->startDate);
+    studyFilter->addParameter(d->endDate);
+
+    medGroupParameter *seriesFilter = new medGroupParameter("Series Level Filters", this);
+    seriesFilter->setCaption("Series Level");
+    seriesFilter->setDescription("Settings related to Series Level");
+    seriesFilter->addParameter(seriesDescription);
+    seriesFilter->addParameter(modality);
+
+    d->filterPacsSettings = new medGroupParameter("filter PACS Settings", this);
+    d->filterPacsSettings->setCaption("PACS C-Find Parameters");
+    d->filterPacsSettings->setDescription("Settings related to filter C-Find on PACS");
+    d->filterPacsSettings->addParameter(patientFilter);
+    d->filterPacsSettings->addParameter(studyFilter);
+    d->filterPacsSettings->addParameter(seriesFilter);
+    d->filterPacsSettings->addParameter(d->applyFilterButton);
 
     // d->patientName = new medStringParameter("Patient Name (0010,0010)", this);
     // d->patientName->setCaption("Patient Name");
@@ -150,6 +280,30 @@ void medAPHP::onSettingsSaved()
     d->qtdcm->updateLocalParameters(s_Aetitle.value(), s_Hostname.value(), s_Port.value());
     d->qtdcm->updateRemoteParameters(d->remoteAet->value(), d->remoteHostname->value(), d->remotePort->value());
     d->restFulAPI->updateUrl(d->restFulUrl->value());
+}
+
+void medAPHP::onFiltersApplied()
+{
+    qDebug() << "here we go";
+}
+
+void medAPHP::computeDateRange()
+{
+    QDate startDate = QDate::fromString(d->startDate->value(), "yyyyMMdd");
+    QDate endDate = QDate::fromString(d->endDate->value(), "yyyyMMdd");
+    if ( startDate>endDate )
+    {
+        d->studyLevelAttributes.remove("StudyDate");
+    } 
+    else if (startDate == endDate) 
+    {
+        d->studyLevelAttributes["StudyDate"] = d->startDate->value();
+    } 
+    else 
+    {
+        QString dateRange = d->startDate->value() + "-" + d->endDate->value();
+        d->studyLevelAttributes["StudyDate"] = dateRange;
+    }
 }
 
 bool medAPHP::setInstanceName(const QString &pi_instanceName)
@@ -205,9 +359,7 @@ QList<medAbstractParameter *> medAPHP::getVolatilParameters()
 
 QList<medAbstractParameter *> medAPHP::getFilteringParameters()
 {
-    QList<medAbstractParameter *> listRes;
-    // listRes << d->patientLevel;
-    return listRes;
+    return {d->filterPacsSettings};
 }
 
 bool medAPHP::isWritable()
@@ -280,11 +432,11 @@ QStringList medAPHP::getMandatoryAttributesKeys(unsigned int pi_uiLevel)
     switch (pi_uiLevel)
     {
     case 0:
-        return {"id", "description", "patientID"};
+        return {"id", "description", "patientID", "gender", "birthdate"};
     case 1:
-        return {"id", "description", "uid"};
+        return {"id", "description", "uid", "study date"};
     case 2:
-        return {"id", "description", "uid"};
+        return {"id", "description", "uid", "institution name", "institution address", "acquisition number", "number of series related instances" };
     case 3:
         return {"id", "description", "uid"};
     default:
@@ -310,7 +462,34 @@ QList<medAbstractSource::levelMinimalEntries> medAPHP::getMinimalEntries(unsigne
     switch (pi_uiLevel)
     {
     case 0:
-        infos = d->qtdcm->findPatientMinimalEntries();
+        infos = d->qtdcm->findPatientMinimalEntries(d->patientLevelAttributes);
+        if (!d->studyLevelAttributes.isEmpty() || !d->seriesLevelAttributes.isEmpty())
+        {
+            for (const auto &info : infos)
+            {
+                QString patientId = info.value("ID");
+                QList<QMap<QString, QString>> studyInfos = d->qtdcm->findStudyMinimalEntries(patientId, d->studyLevelAttributes);
+                if (studyInfos.isEmpty())
+                {
+                    infos.removeOne(info);
+                }
+                else
+                {
+                    if (!d->seriesLevelAttributes.isEmpty())
+                    {
+                        for (const auto &studyInfo : studyInfos)
+                        {
+                            QString studyInstanceUID = studyInfo.value("StudyInstanceUID");
+                            QList<QMap<QString, QString>> seriesInfos = d->qtdcm->findSeriesMinimalEntries(studyInstanceUID, d->seriesLevelAttributes);
+                            if (seriesInfos.isEmpty())
+                            {
+                                infos.removeOne(info);
+                            }
+                        }
+                    }
+                }
+            }
+        }
         if (!infos.empty())
         {
             for (const auto &info : infos)
@@ -324,7 +503,20 @@ QList<medAbstractSource::levelMinimalEntries> medAPHP::getMinimalEntries(unsigne
         }
         break;
     case 1:
-        infos = d->qtdcm->findStudyMinimalEntries(key);
+        infos = d->qtdcm->findStudyMinimalEntries(key, d->studyLevelAttributes);
+        if (!d->seriesLevelAttributes.isEmpty())
+        {
+            for (auto const &info : infos)
+            {
+                QString studyInstanceUID = info.value("StudyInstanceUID");
+                QList<QMap<QString, QString>> seriesInfos = d->qtdcm->findSeriesMinimalEntries(studyInstanceUID, d->seriesLevelAttributes);
+                if (seriesInfos.isEmpty())
+                {
+                    infos.removeOne(info);
+                }
+            }
+        }
+
         if (!infos.empty())
         {
             for (const auto &info : infos)
@@ -338,7 +530,7 @@ QList<medAbstractSource::levelMinimalEntries> medAPHP::getMinimalEntries(unsigne
         }
         break;
     case 2:
-        infos = d->qtdcm->findSeriesMinimalEntries(key);
+        infos = d->qtdcm->findSeriesMinimalEntries(key, d->seriesLevelAttributes);
         if (!infos.empty())
         {
             for (const auto &info : infos)

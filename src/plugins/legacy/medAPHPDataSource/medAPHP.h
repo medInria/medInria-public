@@ -126,12 +126,14 @@ public:
 public slots:
     void abort(int pi_iRequest) override;
     void onSettingsSaved();
+    void onFiltersApplied();
 
 private:
     int getQtDcmAsyncData(unsigned int pi_uiLevel, const QString &key);
     int getAnnotationAsyncData(const QString &key);
+    void computeDateRange();
 
-private:
+   private:
     medAPHPParametersPrivate* d;
 
     static std::atomic<int> s_RequestId;

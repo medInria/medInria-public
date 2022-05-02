@@ -17,6 +17,7 @@
 
 class QWidget;
 class QLineEdit;
+class QDateEdit;
 class medStringParameterPresenterPrivate;
 
 class MEDWIDGETS_EXPORT medStringParameterPresenter : public medAbstractParameterPresenter
@@ -32,7 +33,11 @@ public:
 
     QWidget *buildWidget() override;
     QLineEdit *buildLineEdit();
+<<<<<<< HEAD
     QLineEdit *buildLineEditOnFinish();
+=======
+    QDateEdit *buildDateEdit();
+>>>>>>> [NEW] - Add C-Find Filters parameters in Browser Area and apply filters when  QtDcm is Requested
 
 private:
     const QScopedPointer<medStringParameterPresenterPrivate> d;

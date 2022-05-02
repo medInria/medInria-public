@@ -40,10 +40,12 @@ public slots:
     virtual bool setValue(QString const& value);
 
     virtual void trigger();
+    virtual void edit();
 
 signals:
     void valueChanged(QString const& value);
     void validatorChanged(QValidator *const& poValidator);
+    void valueEdited(QString const& value);
 
 private:
     const QScopedPointer<medStringParameterPrivate> d;

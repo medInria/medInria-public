@@ -16,6 +16,7 @@
 
 #include <QWidget>
 #include <QLineEdit>
+#include <QDateEdit>
 #include <QValidator>
 
 class medStringParameterPresenterPrivate
@@ -52,6 +53,8 @@ QWidget* medStringParameterPresenter::buildWidget()
     switch (d->parameter->defaultRepresentation())
     {
     case 1:
+        poWidgetRes = this->buildDateEdit(); break;
+    case 2:
         poWidgetRes = this->buildLineEditOnFinish(); break;
     case 0:
     default:
@@ -72,6 +75,7 @@ QLineEdit* medStringParameterPresenter::buildLineEdit()
     connect(d->parameter, &medStringParameter::validatorChanged, lineEdit, &QLineEdit::setValidator);
     connect(d->parameter, &medStringParameter::valueChanged, lineEdit, &QLineEdit::setText);
     connect(lineEdit, &QLineEdit::textEdited, d->parameter, &medStringParameter::setValue);
+    connect(lineEdit, &QLineEdit::editingFinished, d->parameter, &medStringParameter::edit);
 
     return lineEdit;
 }
@@ -91,4 +95,25 @@ QLineEdit* medStringParameterPresenter::buildLineEditOnFinish()
     connect(lineEdit, &QLineEdit::editingFinished, [=]() {pParam->setValue(lineEdit->text()); });
 
     return lineEdit;
+}
+
+QDateEdit* medStringParameterPresenter::buildDateEdit()
+{
+    QDateEdit *dateEdit = new QDateEdit;
+
+    dateEdit->setToolTip(d->parameter->description());
+    dateEdit->setCalendarPopup(true);
+    QDate date = QDate::fromString( d->parameter->value(), "yyyyMMdd");
+    if (!date.isValid())
+    {
+        date = QDate::currentDate();
+    }
+    dateEdit->setDate(date);
+
+    this->_connectWidget(dateEdit);
+    connect(dateEdit, &QDateEdit::dateChanged, [&](QDate date){ 
+        emit d->parameter->setValue(date.toString("yyyyMMdd"));
+    });
+
+    return dateEdit;
 }

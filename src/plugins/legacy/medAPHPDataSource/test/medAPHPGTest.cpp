@@ -16,9 +16,10 @@ class FakeQtDcmAPHP : public QtDcmInterface
 public:
     MOCK_METHOD(int, sendEcho, ());
     using entries = QList<QMap<QString, QString>> ;
-    MOCK_METHOD(entries, findPatientMinimalEntries, () );
-    MOCK_METHOD(entries, findStudyMinimalEntries, (const QString &) );
-    MOCK_METHOD(entries, findSeriesMinimalEntries, (const QString &) );
+    using filtersMap = QMap<QString, QString>;
+    MOCK_METHOD(entries, findPatientMinimalEntries, (const filtersMap &));
+    MOCK_METHOD(entries, findStudyMinimalEntries, (const QString &, const filtersMap &) );
+    MOCK_METHOD(entries, findSeriesMinimalEntries, (const QString &, const filtersMap &) );
 //    MOCK_METHOD(int, moveRequest, (const QString &, const QString &));
     MOCK_METHOD(void, stopMove, (int requestId));
     MOCK_METHOD(bool, moveRequest, (int, const QString &, const QString &));
@@ -228,7 +229,7 @@ TEST_F(medAPHPGTest, test_mandatory_attr_keys_1st_level_success)
 {
     int level = 0;
     QStringList mandatory_keys;
-    mandatory_keys << "id" << "description" << "patientID";
+    mandatory_keys << "id" << "description" << "patientID" << "gender" << "birthdate";
     EXPECT_EQ(mandatory_keys, m_->getMandatoryAttributesKeys(level));
 }
 
@@ -236,7 +237,7 @@ TEST_F(medAPHPGTest, test_mandatory_attr_keys_2nd_level_success)
 {
     int level = 1;
     QStringList mandatory_keys;
-    mandatory_keys << "id" << "description" << "uid";
+    mandatory_keys << "id" << "description" << "uid" << "study date";
     EXPECT_EQ(mandatory_keys, m_->getMandatoryAttributesKeys(level));
 }
 
@@ -244,7 +245,7 @@ TEST_F(medAPHPGTest, test_mandatory_attr_keys_3rd_level_success)
 {
     int level = 2;
     QStringList mandatory_keys;
-    mandatory_keys << "id" << "description" << "uid";
+    mandatory_keys << "id" << "description" << "uid" << "institution name" << "institution address" << "acquisition number" << "number of series related instances";
     EXPECT_EQ(mandatory_keys, m_->getMandatoryAttributesKeys(level));
 }
 

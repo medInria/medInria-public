@@ -5,7 +5,7 @@
 #include <medSourceItemModelPresenter.h>
 
 #include <medStringParameterPresenter.h>
-
+#include <QGroupBox>
 
 class medSourceModelPresenterPrivate
 {
@@ -77,7 +77,7 @@ QStackedWidget *medSourceModelPresenter::buildFilters()
             auto * pHLayout = new QHBoxLayout;
             auto * pParamPresenter = medAbstractParameterPresenter::buildFromParameter(param);            
             auto * pWidget = pParamPresenter->buildWidget();
-            if (dynamic_cast<QPushButton*>(pWidget) == nullptr)
+            if (dynamic_cast<QPushButton*>(pWidget) == nullptr && dynamic_cast<QGroupBox*>(pWidget) == nullptr)
             {
                 auto * pLabel = pParamPresenter->buildLabel();
                 pHLayout->addWidget(pLabel);
