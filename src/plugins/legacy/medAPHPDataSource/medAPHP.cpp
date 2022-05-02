@@ -384,7 +384,7 @@ bool medAPHP::isOnline()
 
 bool medAPHP::isFetchByMinimalEntriesOrMandatoryAttributes()
 {
-    return true;
+    return false;
 }
 
 QString medAPHP::getInstanceName()
@@ -436,7 +436,7 @@ QStringList medAPHP::getMandatoryAttributesKeys(unsigned int pi_uiLevel)
     case 1:
         return {"id", "description", "uid", "study date"};
     case 2:
-        return {"id", "description", "uid", "institution name", "institution address", "acquisition number", "number of series related instances" };
+        return {"id", "description", "uid", "modality", "institution name", "acquisition number", "number of series related instances" };
     case 3:
         return {"id", "description", "uid"};
     default:
@@ -462,34 +462,8 @@ QList<medAbstractSource::levelMinimalEntries> medAPHP::getMinimalEntries(unsigne
     switch (pi_uiLevel)
     {
     case 0:
-        infos = d->qtdcm->findPatientMinimalEntries(d->patientLevelAttributes);
-        if (!d->studyLevelAttributes.isEmpty() || !d->seriesLevelAttributes.isEmpty())
-        {
-            for (const auto &info : infos)
-            {
-                QString patientId = info.value("ID");
-                QList<QMap<QString, QString>> studyInfos = d->qtdcm->findStudyMinimalEntries(patientId, d->studyLevelAttributes);
-                if (studyInfos.isEmpty())
-                {
-                    infos.removeOne(info);
-                }
-                else
-                {
-                    if (!d->seriesLevelAttributes.isEmpty())
-                    {
-                        for (const auto &studyInfo : studyInfos)
-                        {
-                            QString studyInstanceUID = studyInfo.value("StudyInstanceUID");
-                            QList<QMap<QString, QString>> seriesInfos = d->qtdcm->findSeriesMinimalEntries(studyInstanceUID, d->seriesLevelAttributes);
-                            if (seriesInfos.isEmpty())
-                            {
-                                infos.removeOne(info);
-                            }
-                        }
-                    }
-                }
-            }
-        }
+        infos = cFindPatientLevel();
+
         if (!infos.empty())
         {
             for (const auto &info : infos)
@@ -503,19 +477,7 @@ QList<medAbstractSource::levelMinimalEntries> medAPHP::getMinimalEntries(unsigne
         }
         break;
     case 1:
-        infos = d->qtdcm->findStudyMinimalEntries(key, d->studyLevelAttributes);
-        if (!d->seriesLevelAttributes.isEmpty())
-        {
-            for (auto const &info : infos)
-            {
-                QString studyInstanceUID = info.value("StudyInstanceUID");
-                QList<QMap<QString, QString>> seriesInfos = d->qtdcm->findSeriesMinimalEntries(studyInstanceUID, d->seriesLevelAttributes);
-                if (seriesInfos.isEmpty())
-                {
-                    infos.removeOne(info);
-                }
-            }
-        }
+        infos = cFindStudyLevel(key);
 
         if (!infos.empty())
         {
@@ -567,7 +529,145 @@ QList<medAbstractSource::levelMinimalEntries> medAPHP::getMinimalEntries(unsigne
 
 QList<QMap<QString, QString>> medAPHP::getMandatoryAttributes(unsigned int pi_uiLevel, QString parentId)
 {
-    return {};
+    QList<QMap<QString, QString>> attributesRes;
+    QString key;
+    if (parentId.contains("/"))
+    {
+        QStringList splittedUri = parentId.split("/");
+        key = splittedUri[(int)pi_uiLevel - 1];
+    }
+    else
+    {
+        key = parentId;
+    }
+
+    QList<QMap<QString, QString>> infos;
+    switch (pi_uiLevel)
+    {
+    case 0:
+        infos = cFindPatientLevel();
+
+        if (!infos.empty())
+        {
+            for (const auto &info : infos)
+            {
+                QMap<QString, QString> attributes;
+                attributes["id"] = info.value("ID");
+                attributes["description"] = info.value("Name");
+                attributes["patientID"] = info.value("ID");
+                attributes["gender"] = info.value("Sex");
+                attributes["birthdate"] = info.value("Birthdate");
+                attributesRes.append(attributes);
+            }
+        }
+        break;
+    case 1:
+        infos = cFindStudyLevel(key);
+
+        if (!infos.empty())
+        {
+            for (const auto &info : infos)
+            {        
+                QMap<QString, QString> attributes;
+                attributes["id"] = info.value("StudyInstanceUID");
+                attributes["description"] = info.value("Description");
+                attributes["uid"] = info.value("StudyInstanceUID");
+                attributes["study date"] = info.value("StudyDate");
+                attributesRes.append(attributes);
+            }
+        }
+        break;
+    case 2:
+        infos = d->qtdcm->findSeriesMinimalEntries(key, d->seriesLevelAttributes);
+        if (!infos.empty())
+        {
+            for (const auto &info : infos)
+            {
+                QMap<QString, QString> attributes;
+                attributes["id"] = info.value("SeriesInstanceUID");
+                attributes["description"] = info.value("Description");
+                attributes["uid"] = info.value("SeriesInstanceUID");
+                attributes["modality"] = info.value("Modality");
+                attributes["institution name"] = info.value("InstitutionName");
+                attributes["acquisition number"] = info.value("AcquisitionNumber");
+                attributes["number of series related instances"] = info.value("InstanceCount");
+                attributesRes.append(attributes);
+            }
+        }
+
+        break;
+    case 3:
+        infos = d->restFulAPI->findAnnotationMinimalEntries(key);
+        if (!infos.empty())
+        {
+            for (const auto &info : infos)
+            {
+                QMap<QString, QString> attributes;
+                attributes["id"] = info.value("SeriesInstanceUID");
+                attributes["description"] = info.value("Description");
+                attributes["uid"] = info.value("SeriesInstanceUID");
+                attributesRes.append(attributes);
+            }
+        }
+        break;
+    default:
+        break;
+    }
+
+    return attributesRes;
+}
+
+QList<QMap<QString, QString>> medAPHP::cFindPatientLevel()
+{
+    QList<QMap<QString, QString>> infos;
+    infos = d->qtdcm->findPatientMinimalEntries(d->patientLevelAttributes);
+    if (!d->studyLevelAttributes.isEmpty() || !d->seriesLevelAttributes.isEmpty()) 
+    {
+        for (const auto &info : infos) 
+        {
+            QString patientId = info.value("ID");
+            QList<QMap<QString, QString>> studyInfos = d->qtdcm->findStudyMinimalEntries(patientId, d->studyLevelAttributes);
+            if (studyInfos.isEmpty()) 
+            {
+                infos.removeOne(info);
+            } 
+            else 
+            {
+                if (!d->seriesLevelAttributes.isEmpty()) 
+                {
+                    for (const auto &studyInfo : studyInfos) 
+                    {
+                        QString studyInstanceUID = studyInfo.value("StudyInstanceUID");
+                        QList<QMap<QString, QString>> seriesInfos = d->qtdcm->findSeriesMinimalEntries(studyInstanceUID, d->seriesLevelAttributes);
+                        if (seriesInfos.isEmpty()) 
+                        {
+                            infos.removeOne(info);
+                        }
+                    }
+                }
+            }
+        }
+    }
+    return infos;
+}
+
+QList<QMap<QString, QString>> medAPHP::cFindStudyLevel(const QString &parentKey)
+{
+    QList<QMap<QString, QString>> infos;
+    infos = d->qtdcm->findStudyMinimalEntries(parentKey, d->studyLevelAttributes);
+    if (!d->seriesLevelAttributes.isEmpty())
+    {
+        for (auto const &info : infos)
+        {
+            QString studyInstanceUID = info.value("StudyInstanceUID");
+            QList<QMap<QString, QString>> seriesInfos = d->qtdcm->findSeriesMinimalEntries(studyInstanceUID, d->seriesLevelAttributes);
+            if (seriesInfos.isEmpty())
+            {
+                infos.removeOne(info);
+            }
+        }
+    }
+    return infos;
 }
 
 bool medAPHP::getAdditionalAttributes(unsigned int pi_uiLevel, QString id, datasetAttributes4 &po_attributes)

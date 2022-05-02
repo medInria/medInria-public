@@ -133,6 +133,9 @@ private:
     int getAnnotationAsyncData(const QString &key);
     void computeDateRange();
 
+    QList<QMap<QString, QString>> cFindPatientLevel();
+    QList<QMap<QString, QString>> cFindStudyLevel(const QString &parentKey);
+
    private:
     medAPHPParametersPrivate* d;
 
