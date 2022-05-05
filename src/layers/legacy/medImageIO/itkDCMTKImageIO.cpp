@@ -295,23 +295,7 @@ void DCMTKImageIO::ReadImageInformation()
 
     double startLocation = *l;
     double endLocation   = *lle;
-    int locSign = endLocation>startLocation?1.0:-1.0;
-
-    /**
-       The code below is redundant with the code above given that the acquisition order is already taken
-       into account, so inversing the order of the slices in case the direction of acquisition
-       is opposing the order they should be written in the buffer (i.e., cross product of the
-       row direction and column direction) leads to the opposite of what it's seemingly trying to
-       accomplish.
-       Commenting to avoid mirrored images, keeping because I'm confused.
-     */
-    // just check first volume
-//    int startIndex = m_FilenameToIndexMap[ m_LocationToFilenamesMap.lower_bound ( *l )->second ];
-//    int endIndex   = m_FilenameToIndexMap[ m_LocationToFilenamesMap.lower_bound ( *lle )->second ];
-//    double startSlice = this->GetPositionOnStackingAxisForImage ( startIndex );
-//    double endSlice   = this->GetPositionOnStackingAxisForImage ( endIndex );
-//    int sliceDirection = endSlice>=startSlice?locSign:-locSign;
-    int sliceDirection = locSign;
+    int sliceDirection = endLocation>startLocation?1.0:-1.0;
 
     /**
        Now order filenames such that we can read them sequentially and build the 3D/4D volume.
@@ -715,7 +699,9 @@ double DCMTKImageIO::GetPositionOnStackingAxisForImage (int index)
     else
     {
         if (fabs(closestAxis[0]) == 1)
+        {
             return pos;
+        }
     }
     if (!(is_stream >> pos) )
     {
@@ -724,7 +710,9 @@ double DCMTKImageIO::GetPositionOnStackingAxisForImage (int index)
     else
     {
         if (fabs(closestAxis[1]) == 1)
+        {
             return pos;
+        }
     }
     if (!(is_stream >> pos))
     {
@@ -733,7 +721,9 @@ double DCMTKImageIO::GetPositionOnStackingAxisForImage (int index)
     else
     {
         if (fabs(closestAxis[2]) == 1)
+        {
             return pos;
+        }
     }
 
     itkWarningMacro ( <<"Could not identify position on stacking axis, returning zero." << std::endl );
