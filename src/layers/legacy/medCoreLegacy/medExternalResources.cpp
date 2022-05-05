@@ -70,7 +70,7 @@ QString getResourcesDirectoryForMacPackage(QString libraryName)
 }
 
 // (see getResourcesDirectoryForMacPackage for implementation notes)
-QString getResourcePathForMacPackage(QString filename, QString libraryName)
+QString getResourcePathForMacPackage(QString filename, QString subdirectory, QString libraryName)
 {
     QString result;
     CFBundleRef bundle = getBundleOrFramework(libraryName);
@@ -78,8 +78,20 @@ QString getResourcePathForMacPackage(QString filename, QString libraryName)
     if (bundle)
     {
         CFStringRef resourceName = CFStringCreateWithCString(nullptr, qUtf8Printable(filename), kCFStringEncodingUTF8);
-        CFURLRef resourceURL = CFBundleCopyResourceURL(bundle, resourceName, nullptr, nullptr);
+        CFStringRef resourceSubDir = nullptr;
+
+        if (!subdirectory.isEmpty())
+        {
+            resourceSubDir = CFStringCreateWithCString(nullptr, qUtf8Printable(subdirectory), kCFStringEncodingUTF8);
+        }
+
+        CFURLRef resourceURL = CFBundleCopyResourceURL(bundle, resourceName, nullptr, resourceSubDir);
         CFRelease(resourceName);
+
+        if (resourceSubDir)
+        {
+            CFRelease(resourceSubDir);
+        }
 
         if (resourceURL)
         {
@@ -101,10 +113,10 @@ QString getResourcePathForMacPackage(QString filename, QString libraryName)
     return result;
 }
 
-#else
+#endif
 
-// Return the '../resources/[libraryName/]' directory relative to the
-// application directory.
+// Return the '../resources/[libraryName/]' directory relative to
+// the application directory.
 QString getResourcesDirectoryFromApplicationDirectory(QString libraryName)
 {
     QString result;
@@ -114,9 +126,7 @@ QString getResourcesDirectoryFromApplicationDirectory(QString libraryName)
     {
         QDir resourcesDirectory = applicationDirectory;
 
-        if (resourcesDirectory.cdUp()
-            && resourcesDirectory.cd("resources")
-            && (libraryName.isEmpty() || resourcesDirectory.cd(libraryName)))
+        if (resourcesDirectory.cd(QString("../resources/%1").arg(libraryName)))
         {
             result = resourcesDirectory.path();
         }
@@ -125,51 +135,72 @@ QString getResourcesDirectoryFromApplicationDirectory(QString libraryName)
     return result;
 }
 
-// Search for the resource in the '../resources/[libraryName/]' directory
-// relative to the application directory.
-QString getResourcePathFromApplicationDirectory(QString filename, QString libraryName)
+// Search for the resource in the '../resources/[libraryName/][subdirectory]'
+// directory relative to the application directory.
+QString getResourcePathFromApplicationDirectory(QString filename, QString subdirectory, QString libraryName)
 {
     QString result;
     QString resourcesDirectory = getResourcesDirectoryFromApplicationDirectory(libraryName);
 
     if (!resourcesDirectory.isEmpty())
     {
-        QString resourceFilePath = QDir(resourcesDirectory).filePath(filename);
+        QDir resourcesSubdirectory = resourcesDirectory;
 
-        if (QFileInfo::exists(resourceFilePath))
+        if (subdirectory.isEmpty() || resourcesSubdirectory.cd(subdirectory))
         {
-            result = resourceFilePath;
+            QString resourceFilePath = resourcesSubdirectory.filePath(filename);
+
+            if (QFileInfo::exists(resourceFilePath))
+            {
+                result = resourceFilePath;
+            }
         }
     }
 
     return result;
 }
 
-#endif
-
 } // namespace
 
-QString getExternalResourcesDirectory(QString libraryName)
+QString getExternalResourcesDirectory(QString subdirectory, QString libraryName)
 {
     QString result;
 
 #if defined(Q_OS_MACOS)
-    result = getResourcesDirectoryForMacPackage(libraryName);
+    QString path = getResourcesDirectoryForMacPackage(libraryName);
 #else
-    result = getResourcesDirectoryFromApplicationDirectory(libraryName);
+    QString path = getResourcesDirectoryFromApplicationDirectory(libraryName);
 #endif
+
+    if (!path.isEmpty())
+    {
+        QDir resourcesDirectory = path;
+
+        if (subdirectory.isEmpty() || resourcesDirectory.cd(subdirectory))
+        {
+            result = resourcesDirectory.absolutePath();
+        }
+    }
 
     return result;
 }
 
-QString getExternalResourcePath(QString filename, QString libraryName)
+QString getExternalResourcePath(QString filepath, QString libraryName)
 {
     QString result;
+    QFileInfo fileInfo = filepath;
+    QString filename = fileInfo.fileName();
+    QString subdirectory = fileInfo.dir().path();
+
+    if (subdirectory == ".")
+    {
+        subdirectory.clear();
+    }
 
 #if defined(Q_OS_MACOS)
-    result = getResourcePathForMacPackage(filename, libraryName);
+    result = getResourcePathForMacPackage(filename, subdirectory, libraryName);
 #else
-    result = getResourcePathFromApplicationDirectory(filename, libraryName);
+    result = getResourcePathFromApplicationDirectory(filename, subdirectory, libraryName);
 #endif
 
     return result;
