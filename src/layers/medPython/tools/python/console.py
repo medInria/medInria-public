@@ -31,7 +31,7 @@ def initialize():
     instance.run()
     medInria.logInfo(f'The Python console can be accessed with {CONSOLE_SHORTCUT}')
     if failedPlugins:
-        print('** Some medInria plugins failed to load. Type "pluginsInfo()" for details. **\n\n')
+        print('** Some plugins failed to load. Type "pluginsInfo()" for details. **\n\n')
 
 
 class CommandLine(qt.QLineEdit):

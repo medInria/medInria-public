@@ -15,6 +15,53 @@
 
 function(add_python_module target_name)
 
+################################################################################
+#
+# Usage: add_python_module(target
+#                          [PACKAGE package]
+#                          [PARENT_PACKAGE parent_package]
+#                          [BINDINGS_MODULE_NAME bindings_module_name]
+#                          [BINDINGS_LIBRARY_NAME bindings_library_name]
+#                          [SOURCES [files...]])
+#
+# Creates a target that provides python modules (these modules will need to be
+# imported through `import_external_resources`, see that function for more
+# details). The modules can be specified as .py and .i files (the latter will
+# generate a bindings module through Swig), and also .py.in and .i.in files
+# (these will be automatically configured to generate .py and .i files).
+#
+# If a bindings module is created, the corresponding bindings library will be
+# placed with the normal libraries (not in the resources).
+#
+# The options are:
+#
+# PACKAGE
+#     Specify the name of the package that will contain the modules. This option
+#     is required if more than one modules are provided, and optional for a
+#     a single module.
+#
+# PARENT_PACKAGE
+#     Specify if the module (or package) is inside another package. The value of
+#     this option must be a target previously created with `add_python_modules`.
+#
+# BINDINGS_MODULE_NAME
+#     Specify the name of the generated bindings module. The default name is
+#     "bindings.py" if this command creates a package, or the target name if it
+#     does not.
+#
+# BINDINGS_LIBRARY_NAME
+#     Specify the name of the generated bindings library. The default name is
+#     the same is the bindings module with one exception: if the module name was
+#     not provided and we are creating a package, then the library name will be
+#     [package name]_bindings.
+#
+# SOURCES
+#     Add python source files (.py, .py.in) and Swig interface files (.i, .i.in).
+#     The interface files result in the generation of one python module and one
+#     shared library.
+#
+################################################################################
+
     cmake_parse_arguments(PARSE_ARGV 1 "ARG"
         ""
         "PACKAGE;PARENT_PACKAGE;BINDINGS_MODULE_NAME;BINDINGS_LIBRARY_NAME"
