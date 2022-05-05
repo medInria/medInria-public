@@ -36,7 +36,7 @@ function(import_external_resources target)
 #     Specify a list of targets that have associated resources (declared using
 #     'set_external_resources') to import.
 #
-# FILES, DIERCTORIES
+# FILES, DIRECTORIES
 #     Specify resource files or directories to add directly. This is the
 #     equivalent of the following lines:
 #
@@ -159,20 +159,29 @@ endmacro()
 
 macro(_get_resources_parent_directory parent_dir_var target)
 
-    set(${parent_dir_var} $<IF:$<PLATFORM_ID:Darwin>,$<TARGET_BUNDLE_CONTENT_DIR:${target}>,${CMAKE_BINARY_DIR}>)
-    get_property(is_multi_config GLOBAL PROPERTY GENERATOR_IS_MULTI_CONFIG)
-    if (${is_multi_config})
-        set(config_subdir /$<$<CONFIG:Debug>:Debug>$<$<CONFIG:Release>:Release>$<$<CONFIG:RelWithDebInfo>:RelWithDebInfo>$<$<CONFIG:MinSizeRel>:MinSizeRel>)
-        string(APPEND ${parent_dir_var} $<$<NOT:$<PLATFORM_ID:Darwin>>:/${config_subdir}>)
+    if (APPLE)
+        set(${parent_dir_var} $<TARGET_BUNDLE_CONTENT_DIR:${target}>)
+    else()
+        set(${parent_dir_var} ${CMAKE_BINARY_DIR}>)
+        get_property(is_multi_config GLOBAL PROPERTY GENERATOR_IS_MULTI_CONFIG)
+
+        if (${is_multi_config})
+            string(APPEND ${parent_dir_var} /$<$<CONFIG:Debug>:Debug>$<$<CONFIG:Release>:Release>$<$<CONFIG:RelWithDebInfo>:RelWithDebInfo>$<$<CONFIG:MinSizeRel>:MinSizeRel>)
+        endif()
     endif()
 
 endmacro()
 
 macro(_get_resources_directory resources_dir_var target target_type)
 
-    set(${resources_dir_var} $<IF:$<PLATFORM_ID:Darwin>,Resources,resources>)
-    if (${target_type} STREQUAL "SHARED_LIBRARY")
-        string(APPEND ${resources_dir_var} $<$<NOT:$<PLATFORM_ID:Darwin>>:/${target}>)
+    if (APPLE)
+        set(${resources_dir_var} Resources)
+    else()
+        if (${target_type} STREQUAL "SHARED_LIBRARY")
+            set(${resources_dir_var} resources/${target})
+        else()
+            set(${resources_dir_var} resources)
+        endif()
     endif()
 
 endmacro()

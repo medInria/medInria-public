@@ -38,7 +38,7 @@ function(set_external_resources target)
 # DESTINATION
 #     Specify a subdirectory relative to the final import location.
 #
-# FILES, DIERCTORIES
+# FILES, DIRECTORIES
 #     Specify resource files or directories to add (the contents of the
 #     directories will be copied to the destination folder).
 #
