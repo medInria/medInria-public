@@ -297,14 +297,21 @@ void DCMTKImageIO::ReadImageInformation()
     double endLocation   = *lle;
     int locSign = endLocation>startLocation?1.0:-1.0;
 
+    /**
+       The code below is redundant with the code above given that the acquisition order is already taken
+       into account, so inversing the order of the slices in case the direction of acquisition
+       is opposing the order they should be written in the buffer (i.e., cross product of the
+       row direction and column direction) leads to the opposite of what it's seemingly trying to
+       accomplish.
+       Commenting to avoid mirrored images, keeping because I'm confused.
+     */
     // just check first volume
-    int startIndex = m_FilenameToIndexMap[ m_LocationToFilenamesMap.lower_bound ( *l )->second ];
-    int endIndex   = m_FilenameToIndexMap[ m_LocationToFilenamesMap.lower_bound ( *lle )->second ];
-
-    double startSlice = this->GetZPositionForImage ( startIndex );
-    double endSlice   = this->GetZPositionForImage ( endIndex );
-
-    int sliceDirection = endSlice>=startSlice?locSign:-locSign;
+//    int startIndex = m_FilenameToIndexMap[ m_LocationToFilenamesMap.lower_bound ( *l )->second ];
+//    int endIndex   = m_FilenameToIndexMap[ m_LocationToFilenamesMap.lower_bound ( *lle )->second ];
+//    double startSlice = this->GetPositionOnStackingAxisForImage ( startIndex );
+//    double endSlice   = this->GetPositionOnStackingAxisForImage ( endIndex );
+//    int sliceDirection = endSlice>=startSlice?locSign:-locSign;
+    int sliceDirection = locSign;
 
     /**
        Now order filenames such that we can read them sequentially and build the 3D/4D volume.
@@ -599,8 +606,8 @@ void DCMTKImageIO::DetermineOrigin()
     int startIndex = m_FilenameToIndexMap[ m_LocationToFilenamesMap.lower_bound ( *m_LocationSet.begin() )->second ];
     int endIndex   = m_FilenameToIndexMap[ m_LocationToFilenamesMap.lower_bound ( *m_LocationSet.rbegin() )->second ];
 
-    double startZ = this->GetZPositionForImage (startIndex);
-    double endZ   = this->GetZPositionForImage (endIndex);
+    double startZ = this->GetPositionOnStackingAxisForImage (startIndex);
+    double endZ   = this->GetPositionOnStackingAxisForImage (endIndex);
 
     int index = startIndex;
     if (endZ<startZ)
@@ -680,26 +687,57 @@ void DCMTKImageIO::DetermineOrientation()
 }
 
 
-double DCMTKImageIO::GetZPositionForImage (int index)
+double DCMTKImageIO::GetPositionOnStackingAxisForImage (int index)
 {
-    std::string s_position = this->GetMetaDataValueString("(0020,0032)", index);
-    double zpos = 0.0;
-    double junk;
-    std::istringstream is_stream( s_position.c_str() );
-    if (!(is_stream >> junk) )
+    // Getting the unit vector of the closest axis
+    // so we know which part of the image position to use
+    vnl_vector<double> closestAxis (3);
+    closestAxis[0] = round(m_Direction[2][0]);
+    closestAxis[1] = round(m_Direction[2][1]);
+    closestAxis[2] = round(m_Direction[2][2]);
+    if (fabs(closestAxis[0] + closestAxis[1] + closestAxis[2]) != 1)
     {
-        itkWarningMacro ( << "Cannot convert string to double: " << s_position.c_str() << std::endl );
-    }
-    if (!(is_stream >> junk) )
-    {
-        itkWarningMacro ( << "Cannot convert string to double: " << s_position.c_str() << std::endl );
-    }
-    if (!(is_stream >> zpos))
-    {
-        itkWarningMacro ( << "Cannot convert string to double: " << s_position.c_str() << std::endl );
+        itkExceptionMacro (
+                    << "Ambiguous slice stack direction: "
+                    <<m_Direction[2][0]<<" "
+                    <<m_Direction[2][1]<<" "
+                    <<m_Direction[2][2]
+                );
     }
 
-    return zpos;
+    std::string s_position = this->GetMetaDataValueString("(0020,0032)", index);
+    double pos = 0.0;
+    std::istringstream is_stream( s_position.c_str() );
+    if (!(is_stream >> pos) )
+    {
+        itkWarningMacro ( << "Cannot convert string to double: " << s_position.c_str() << std::endl );
+    }
+    else
+    {
+        if (fabs(closestAxis[0]) == 1)
+            return pos;
+    }
+    if (!(is_stream >> pos) )
+    {
+        itkWarningMacro ( << "Cannot convert string to double: " << s_position.c_str() << std::endl );
+    }
+    else
+    {
+        if (fabs(closestAxis[1]) == 1)
+            return pos;
+    }
+    if (!(is_stream >> pos))
+    {
+        itkWarningMacro ( << "Cannot convert string to double: " << s_position.c_str() << std::endl );
+    }
+    else
+    {
+        if (fabs(closestAxis[2]) == 1)
+            return pos;
+    }
+
+    itkWarningMacro ( <<"Could not identify position on stacking axis, returning zero." << std::endl );
+    return 0.0;
 }
 
 

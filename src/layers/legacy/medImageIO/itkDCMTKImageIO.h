@@ -185,7 +185,7 @@ protected:
     void DetermineOrigin();
     void DetermineOrientation();
 
-    double GetZPositionForImage (int);
+    double GetPositionOnStackingAxisForImage (int);
     double GetSliceLocation(std::string);
 
     void ReadHeader( const std::string& name, const int& fileIndex, const int& fileCount );
