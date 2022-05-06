@@ -590,11 +590,11 @@ void DCMTKImageIO::DetermineOrigin()
     int startIndex = m_FilenameToIndexMap[ m_LocationToFilenamesMap.lower_bound ( *m_LocationSet.begin() )->second ];
     int endIndex   = m_FilenameToIndexMap[ m_LocationToFilenamesMap.lower_bound ( *m_LocationSet.rbegin() )->second ];
 
-    double startZ = this->GetPositionOnStackingAxisForImage (startIndex);
-    double endZ   = this->GetPositionOnStackingAxisForImage (endIndex);
+    double startPosition = this->GetPositionOnStackingAxisForImage (startIndex);
+    double endPosition   = this->GetPositionOnStackingAxisForImage (endIndex);
 
     int index = startIndex;
-    if (endZ<startZ)
+    if (endPosition<startPosition)
     {
         index = endIndex;
     }
