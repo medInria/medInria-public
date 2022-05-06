@@ -690,44 +690,33 @@ double DCMTKImageIO::GetPositionOnStackingAxisForImage (int index)
     }
 
     std::string s_position = this->GetMetaDataValueString("(0020,0032)", index);
-    double pos = 0.0;
     std::istringstream is_stream( s_position.c_str() );
-    if (!(is_stream >> pos) )
+
+    double pos = 0.0;
+    bool foundAxis=false;
+
+    for (int i=0; i<3; i++)
     {
-        itkWarningMacro ( << "Cannot convert string to double: " << s_position.c_str() << std::endl );
-    }
-    else
-    {
-        if (fabs(closestAxis[0]) == 1)
+        if (!(is_stream >> pos) )
         {
-            return pos;
+            itkWarningMacro ( << "Cannot convert string to double: " << s_position.c_str() << std::endl );
         }
-    }
-    if (!(is_stream >> pos) )
-    {
-        itkWarningMacro ( << "Cannot convert string to double: " << s_position.c_str() << std::endl );
-    }
-    else
-    {
-        if (fabs(closestAxis[1]) == 1)
+        else
         {
-            return pos;
-        }
-    }
-    if (!(is_stream >> pos))
-    {
-        itkWarningMacro ( << "Cannot convert string to double: " << s_position.c_str() << std::endl );
-    }
-    else
-    {
-        if (fabs(closestAxis[2]) == 1)
-        {
-            return pos;
+            if (fabs(closestAxis[i]) == 1)
+            {
+                foundAxis = true;
+                break;
+            }
         }
     }
 
-    itkWarningMacro ( <<"Could not identify position on stacking axis, returning zero." << std::endl );
-    return 0.0;
+    if (!foundAxis)
+    {
+        itkWarningMacro ( <<"Could not identify position on stacking axis, returning zero." << std::endl );
+    }
+
+    return pos;
 }
 
 
