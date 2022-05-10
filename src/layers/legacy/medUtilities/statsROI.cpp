@@ -1,17 +1,13 @@
-/*=========================================================================
-
- medInria
-
- Copyright (c) INRIA 2013. All rights reserved.
-
- See LICENSE.txt for details in the root of the sources or:
- https://github.com/medInria/medInria-public/blob/master/LICENSE.txt
-
- This software is distributed WITHOUT ANY WARRANTY; without even
- the implied warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR
- PURPOSE.
-
-=========================================================================*/
+/*
+ * medInria
+ * Copyright (c) INRIA 2013. All rights reserved.
+ *
+ * medInria is under BSD-2-Clause license. See LICENSE.txt for details in the root of the sources or:
+ * https://github.com/medInria/medInria-public/blob/master/LICENSE.txt
+ *
+ * This software is distributed WITHOUT ANY WARRANTY; without even
+ * the implied warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.
+ */
 
 #include "statsROI.h"
 
@@ -25,7 +21,6 @@
 #include <medAttachedData.h>
 #include <medDataManager.h>
 
-#include <itkIntensityWindowingImageFilter.h>
 #include <itkImageRegionIterator.h>
 #include <itkMinimumMaximumImageCalculator.h>
 
@@ -118,35 +113,6 @@ public:
             else if (composite->chooseFct == statsROI::MINMAX)
             {
                 res = runMinMax<ImageType>();
-            }
-            else if (composite->chooseFct == statsROI::BINARIZE)
-            {
-                // Get minimum and maximum of the data
-                res = runMinMax<ImageType>();
-                auto minValueImage = composite->computedOutput.at(0);
-                auto maxValueImage = composite->computedOutput.at(1);
-
-                auto inputImage = dynamic_cast<ImageType *>((itk::Object *)(composite->input0->data()));
-
-                dtkSmartPointer<medAbstractData> binarizeMask = composite->input0;
-
-                if (minValueImage != 0)
-                {
-                    typedef itk::IntensityWindowingImageFilter<ImageType, ImageType> WindowingFilterType;
-                    typename WindowingFilterType::Pointer windowingFilter = WindowingFilterType::New();
-                    windowingFilter->SetInput(inputImage);
-                    windowingFilter->SetWindowMinimum(minValueImage);
-                    windowingFilter->SetWindowMaximum(maxValueImage);
-                    windowingFilter->SetOutputMinimum(0);
-                    windowingFilter->SetOutputMaximum(1);
-                    windowingFilter->Update();
-                    binarizeMask = medAbstractDataFactory::instance()->createSmartPointer(binarizeMask->identifier());
-                    binarizeMask->setData(windowingFilter->GetOutput());
-
-
-                }
-                composite->computedDataOutput = binarizeMask;
-                res = DTK_SUCCEED;
             }
         }
         return res;
@@ -252,11 +218,6 @@ statsROI::statsROI()
     outsideValue = 0;
 }
 
-statsROI::~statsROI()
-{
-    
-}
-
 void statsROI::setInput (medAbstractData *data, int channel)
 {
     if ( !data ) return;
@@ -344,14 +305,4 @@ int statsROI::update()
 std::vector<double> statsROI::output()
 {
     return this->computedOutput;
-}
-
-/**
- * @brief Send back the output data
- * 
- * @return dtkSmartPointer<medAbstractData> 
- */
-dtkSmartPointer<medAbstractData> statsROI::dataOutput()
-{
-    return this->computedDataOutput;
 }

@@ -12,20 +12,26 @@
 =========================================================================*/
 #include "medUtilitiesITK.h"
 
+#include <imageFilters.h>
 #include <statsROI.h>
 
 /**
- * @brief For masks with values non-0/1, as -1024/10000, set the intensity to 0/1
+ * @brief For masks with non-0/1 values, as -1024/10000, set the intensity to 0/1
  *
  * @param data
  */
 dtkSmartPointer<medAbstractData> medUtilitiesITK::binarizeMask(dtkSmartPointer<medAbstractData> data)
 {
-    statsROI statsProcess;
-    statsProcess.setInput(data, 0);
-    statsProcess.setParameter(statsROI::BINARIZE);
-    statsProcess.update();
-    return statsProcess.dataOutput();
+    dtkSmartPointer<medAbstractData> outputData;
+
+    imageFilters process;
+    process.setInput(data);
+    process.setParameter(imageFilters::BINARIZE);
+    if (process.update())
+    {
+        outputData = process.dataOutput();
+    }
+    return outputData;
 }
 
 double medUtilitiesITK::minimumValue(dtkSmartPointer<medAbstractData> data)
