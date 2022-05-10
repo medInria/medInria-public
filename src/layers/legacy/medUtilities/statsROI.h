@@ -1,16 +1,14 @@
 #pragma once
-/*=========================================================================
-
- medInria
-
- Copyright (c) INRIA 2013 - 2020. All rights reserved.
- See LICENSE.txt for details.
-
-  This software is distributed WITHOUT ANY WARRANTY; without even
-  the implied warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR
-  PURPOSE.
-
-=========================================================================*/
+/*
+ * medInria
+ * Copyright (c) INRIA 2013. All rights reserved.
+ *
+ * medInria is under BSD-2-Clause license. See LICENSE.txt for details in the root of the sources or:
+ * https://github.com/medInria/medInria-public/blob/master/LICENSE.txt
+ *
+ * This software is distributed WITHOUT ANY WARRANTY; without even
+ * the implied warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.
+ */
 
 #include "medUtilitiesExport.h"
 
@@ -24,13 +22,11 @@ public:
     dtkSmartPointer <medAbstractData> input0; //data
     dtkSmartPointer <medAbstractData> input1; //mask
     std::vector<double> computedOutput;
-    dtkSmartPointer<medAbstractData> computedDataOutput;
-    enum statsParameter {MEAN_STDDEVIATION, VOLUMEML, MINMAX, BINARIZE};
+    enum statsParameter {MEAN_STDDEVIATION, VOLUMEML, MINMAX};
     statsParameter chooseFct;
     double outsideValue;
 
     statsROI();
-    virtual ~statsROI();
     
     //! Input data to the plugin is set through here
     void setInput(medAbstractData *data, int channel);
@@ -46,6 +42,4 @@ public:
     
     //! The output will be available through here
     std::vector<double> output();
-
-    dtkSmartPointer<medAbstractData> dataOutput();
 };
