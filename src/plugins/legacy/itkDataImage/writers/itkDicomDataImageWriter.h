@@ -17,7 +17,17 @@
 
 #include <itkGDCMImageIO.h>
 
-class ITKDATAIMAGEPLUGIN_EXPORT itkDicomDataImageWriter: public itkDataImageWriterBase {
+#include <dtkCoreSupport/dtkSmartPointer.h>
+
+#include <medAbstractData.h>
+#include <medAbstractDataFactory.h>
+
+
+class ITKDATAIMAGEPLUGIN_EXPORT itkDicomDataImageWriter: public itkDataImageWriterBase
+{
+public:
+    dtkSmartPointer<medAbstractData> dataCopy;
+
 public:
     itkDicomDataImageWriter();
     virtual ~itkDicomDataImageWriter();
