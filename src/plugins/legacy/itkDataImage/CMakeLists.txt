@@ -142,6 +142,7 @@ target_link_libraries(${TARGET_NAME}
   medImageIO
   medLog
   medVtkInria
+  medUtilities
   )
 
 ## #############################################################################
