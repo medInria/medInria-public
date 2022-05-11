@@ -22,10 +22,8 @@ class medSelectorToolBoxPrivate
 public:
     medComboBox *chooseComboBox;
     medAbstractSelectableToolBox *currentToolBox;
-    QString currentIdentifier;
     QHash<QString, medAbstractSelectableToolBox*> toolBoxes;
     QVBoxLayout *mainLayout;
-
     medAbstractData *inputData;
 
     QPushButton *helpButton;
@@ -111,10 +109,9 @@ void medSelectorToolBox::changeCurrentToolBox(int index)
     // Get current toolbox identifier from combobox
     QString identifier = d->chooseComboBox->itemData(index).toString();
 
-    if (!d->currentToolBox || identifier != d->currentIdentifier)
+    if (!d->currentToolBox || identifier != d->currentToolBox->identifier())
     {
         this->changeCurrentToolBox(identifier);
-        d->currentIdentifier = identifier;
     }
 }
 
