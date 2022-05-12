@@ -20,7 +20,6 @@
 #include <vtksys/SystemTools.hxx>
 
 #include <vtkProperty.h>
-#include <vtkDataSetSurfaceFilter.h>
 #include <vtkPolyDataMapper.h>
 #include <vtkPolyDataNormals.h>
 
