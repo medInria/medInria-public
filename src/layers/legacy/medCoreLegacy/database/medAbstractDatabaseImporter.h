@@ -90,7 +90,8 @@ protected:
     QString determineFutureImageFileName ( const medAbstractData* medData, int volumeNumber );
     QString determineFutureImageExtensionByDataType ( const medAbstractData* medData );
 
-    QString generateUniqueVolumeId ( const medAbstractData* medData );
+    bool isDicomName(const QString & fileName);
+    QString generateUniqueVolumeId (const medAbstractData* medData , bool isDicom=false);
     QString generateThumbnail(medAbstractData* medData, QString pathToStoreThumbnail );
 
     void importData();
