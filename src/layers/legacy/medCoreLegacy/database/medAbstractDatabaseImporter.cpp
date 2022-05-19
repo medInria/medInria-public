@@ -238,7 +238,8 @@ void medAbstractDatabaseImporter::importFile ( void )
 
             // 2.3) Generate an unique id for each volume
             // all images of the same volume should share the same id
-            QString volumeId = generateUniqueVolumeId ( medData );
+            bool isdicom = isDicomName(fileInfo.fileName());
+            QString volumeId = generateUniqueVolumeId ( medData, isdicom );
 
             // check whether the image belongs to a new volume
             if ( !volumeUniqueIdToVolumeNumber.contains ( volumeId ) )
@@ -964,7 +965,7 @@ void medAbstractDatabaseImporter::addAdditionalMetaData(medAbstractData *imData,
 * @param medData - @medAbstractData object whose id will be generate
 * @return the volume id of the medData object
 **/
-QString medAbstractDatabaseImporter::generateUniqueVolumeId ( const medAbstractData* medData )
+QString medAbstractDatabaseImporter::generateUniqueVolumeId ( const medAbstractData* medData, bool isDicom )
 {
     if ( !medData )
     {
@@ -979,7 +980,9 @@ QString medAbstractDatabaseImporter::generateUniqueVolumeId ( const medAbstractD
 
     // We don't use the seriesDicomID, too unreliable : you can have images part
     // of the same series with different UIDs, and different volumes within the
-    // same study with the same UIDs... instead, use Series Description
+    // same study with the same UIDs... instead, use SeriesNumber for dicom
+    QString seriesNumber = medMetaDataKeys::SeriesNumber.getFirstValue(medData);
+    // seriesDescription is used for the other type of data
     QString seriesDescription = medMetaDataKeys::SeriesDescription.getFirstValue(medData);
 
     // orientation sometimes differ by a few digits, thus this is not reliable
@@ -989,6 +992,8 @@ QString medAbstractDatabaseImporter::generateUniqueVolumeId ( const medAbstractD
     QString sliceThickness = medMetaDataKeys::SliceThickness.getFirstValue(medData);
     QString rows = medMetaDataKeys::Rows.getFirstValue(medData);
     QString columns = medMetaDataKeys::Columns.getFirstValue(medData);
+    QString echotime = medMetaDataKeys::EchoTime.getFirstValue(medData);
+    QString flipAngle = medMetaDataKeys::FlipAngle.getFirstValue(medData);
 
     QStringList orientations = orientation.split ( " " );
 
@@ -1000,13 +1005,35 @@ QString medAbstractDatabaseImporter::generateUniqueVolumeId ( const medAbstractD
     for( QString orient : orientations )
     {
         double d_orient = orient.toDouble();
-        orientation += QString::number ( d_orient, 'g', 4 );
+        orientation += QString::number ( d_orient, 'f', 4 );
     }
 
     // define a unique key string to identify which volume an image belongs to.
-    // we use: patientName, studyId, seriesId, orientation, seriesNumber, sequenceName, sliceThickness, rows, columns.
+    // we use: patientName, studyId, seriesId, orientation, seriesNumber, sequenceName, sliceThickness, rows, columns,
+    // echoTime and flipAngle.
     // All images of the same volume should share similar values of these parameters
-    QString key = patientName+studyDicomId+seriesDescription+orientation+sequenceName+sliceThickness+rows+columns;
+    QString key;
+    if(isDicom)
+    {
+        key= patientName+studyDicomId+seriesNumber+orientation+sequenceName+sliceThickness+rows+columns
+            +echotime+flipAngle;
+    }
+    else
+    {
+        key= patientName+studyDicomId+seriesDescription+orientation+sequenceName+sliceThickness+rows+columns;
+    }
 
     return key;
+}
+
+//-----------------------------------------------------------------------------------------------------------
+/**
+* Look for dicom extension in file name
+* @param fileName - name of the file that we try to import
+* @return  true if dicom file, false otherwise
+**/
+bool medAbstractDatabaseImporter::isDicomName(const QString & fileName)
+{
+    QFileInfo info(fileName);
+    return info.suffix().toLower() == "dcm";
 }
