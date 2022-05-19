@@ -1035,9 +1035,5 @@ QString medAbstractDatabaseImporter::generateUniqueVolumeId ( const medAbstractD
 bool medAbstractDatabaseImporter::isDicomName(const QString & fileName)
 {
     QFileInfo info(fileName);
-    if(info.suffix().toLower() == "dcm")
-    {
-        return true;
-    }
-    return false;
+    return info.suffix().toLower() == "dcm";
 }
