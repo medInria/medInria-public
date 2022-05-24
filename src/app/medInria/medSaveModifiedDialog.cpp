@@ -51,7 +51,7 @@ class medSaveModifiedDialogCheckListItem : public QTreeWidgetItem
             setText(3, studyName);
             setText(4, seriesName);
             setText(5, file);
-            setCheckState(0, Qt::Unchecked);
+            setCheckState(0, Qt::Checked);
         }
 
         const medDataIndex& getIndex() const
