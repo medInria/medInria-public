@@ -950,7 +950,6 @@ vtkSmartPointer<vtkActor> vtkImageView3D::DataSetToActor(vtkPointSet* arg, vtkPr
     idFilter->FieldDataOn();
     idFilter->SetIdsArrayName("vtkOriginalIds");
     idFilter->SetInputData(arg);
-    idFilter->Update();
 
     geometryextractor->SetInputConnection(idFilter->GetOutputPort());
     normalextractor->SetFeatureAngle(90);
