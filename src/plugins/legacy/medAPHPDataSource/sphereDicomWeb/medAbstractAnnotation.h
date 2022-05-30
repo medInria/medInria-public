@@ -22,6 +22,7 @@ class medAbstractAnnotation : public QObject
 
 public:
     virtual int isServerAvailable() = 0;
+    virtual bool hasUrl() = 0;
     virtual QList<QMap<QString, QString>> findAnnotationMinimalEntries(const QString &seriesInstanceUID) = 0;
     virtual bool getAnnotationData(int pi_requestId, const QString &uid) = 0;
     virtual bool isCachedDataPath(int requestId) = 0;

@@ -100,7 +100,7 @@ QString medStringListParameter::value() const
     {
         osRes = d->items[d->iCurrent];
     }
-    return QString();
+    return osRes;
 }
 
 int medStringListParameter::getIndex() const
