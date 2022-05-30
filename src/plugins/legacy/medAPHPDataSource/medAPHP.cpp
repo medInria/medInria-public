@@ -528,7 +528,7 @@ QList<medAbstractSource::levelMinimalEntries> medAPHP::getMinimalEntries(unsigne
         }
         break;
         case 3:
-            if (!d->restFulUrl->value().isEmpty())
+            if (d->restFulAPI->hasUrl())
             {
                 infos = d->restFulAPI->findAnnotationMinimalEntries(key);
                 if (!infos.empty())
@@ -693,7 +693,7 @@ QList<QMap<QString, QString>> medAPHP::getMandatoryAttributes(unsigned int pi_ui
         }
         break;
         case 3:
-            if (!d->restFulUrl->value().isEmpty())
+            if (d->restFulAPI->hasUrl())
             {
                 auto infos = d->restFulAPI->findAnnotationMinimalEntries(parentKey);
                 if (!infos.empty())

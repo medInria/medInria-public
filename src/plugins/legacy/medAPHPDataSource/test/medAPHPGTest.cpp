@@ -20,9 +20,10 @@ class FakeQtDcmAPHP : public QtDcmInterface
     using filtersMap = QMap<QString, QString>;
     using tagKeysMap = QMap<DcmTagKey, QString>;
     using tagsList = QList<QMap<DcmTagKey, QString>>;
-    MOCK_METHOD(entries, findPatientMinimalEntries, (const filtersMap &));
-    MOCK_METHOD(entries, findStudyMinimalEntries, (const QString &, const filtersMap &));
-    MOCK_METHOD(entries, findSeriesMinimalEntries, (const QString &, const filtersMap &));
+    MOCK_METHOD(tagsList, cFind, (const tagKeysMap &));
+    // MOCK_METHOD(entries, findPatientMinimalEntries, (const filtersMap &));
+    // MOCK_METHOD(entries, findStudyMinimalEntries, (const QString &, const filtersMap &));
+    // MOCK_METHOD(entries, findSeriesMinimalEntries, (const QString &, const filtersMap &));
     //    MOCK_METHOD(int, moveRequest, (const QString &, const QString &));
     MOCK_METHOD(void, stopMove, (int requestId));
     MOCK_METHOD(bool, moveRequest, (int, const QString &, const QString &));
@@ -30,9 +31,6 @@ class FakeQtDcmAPHP : public QtDcmInterface
     MOCK_METHOD(void, updateLocalParameters, (QString const &, QString const &, int));
     MOCK_METHOD(void, updateRemoteParameters, (QString const &, QString const &, int));
 
-    MOCK_METHOD(entries, findStudyUIDFromSeriesInfos, (const tagKeysMap &));
-    MOCK_METHOD(entries, findPatientIdFromStudiesInfos, (const tagKeysMap &));
-    MOCK_METHOD(tagsList, cFind, (const tagKeysMap &));
 };
 
 class FakeAnnotation : public medAbstractAnnotation
@@ -300,13 +298,11 @@ TEST_F(medAPHPGTest, test_mandatory_attr_keys_invalid_level_failed)
 
 TEST_F(medAPHPGTest, test_get_minimal_entries_level_patient_failed_QtDCM_return_empty_array)
 {
-    QList<QMap<QString, QString>> foo;
+    QList<QMap<DcmTagKey, QString>> foo;
 
-    ON_CALL(fakeQtDCM, findPatientMinimalEntries).WillByDefault(testing::Return(foo));
+    ON_CALL(fakeQtDCM, cFind).WillByDefault(testing::Return(foo));
 
-    EXPECT_CALL(fakeQtDCM, findPatientMinimalEntries).Times(1);
-    EXPECT_CALL(fakeQtDCM, findStudyMinimalEntries).Times(0);
-    EXPECT_CALL(fakeQtDCM, findSeriesMinimalEntries).Times(0);
+    EXPECT_CALL(fakeQtDCM, cFind).Times(1);
     EXPECT_CALL(fakeAnnotation, findAnnotationMinimalEntries).Times(0);
 
     QList<medAbstractSource::levelMinimalEntries> entries = m_->getMinimalEntries(0, "key");
@@ -315,22 +311,20 @@ TEST_F(medAPHPGTest, test_get_minimal_entries_level_patient_failed_QtDCM_return_
 
 TEST_F(medAPHPGTest, test_get_minimal_entries_level_patient_success)
 {
-    QList<QMap<QString, QString>> foo;
-    QMap<QString, QString> bar;
-    bar["Name"] = "John Doe";
-    bar["ID"] = "0000001";
+    QList<QMap<DcmTagKey, QString>> foo;
+    QMap<DcmTagKey, QString> bar;
+    bar[DCM_PatientName] = "John Doe";
+    bar[DCM_PatientID] = "0000001";
     foo.append(bar);
-    QMap<QString, QString> qix;
-    qix["Name"] = "Jane Dae";
-    qix["ID"] = "1000000";
+    QMap<DcmTagKey, QString> qix;
+    qix[DCM_PatientName] = "Jane Dae";
+    qix[DCM_PatientID] = "1000000";
     foo.append(qix);
 
-    EXPECT_CALL(fakeQtDCM, findPatientMinimalEntries).Times(1);
-    EXPECT_CALL(fakeQtDCM, findStudyMinimalEntries).Times(0);
-    EXPECT_CALL(fakeQtDCM, findSeriesMinimalEntries).Times(0);
+    EXPECT_CALL(fakeQtDCM, cFind).Times(1);
     EXPECT_CALL(fakeAnnotation, findAnnotationMinimalEntries).Times(0);
 
-    ON_CALL(fakeQtDCM, findPatientMinimalEntries).WillByDefault(testing::Return(foo));
+    ON_CALL(fakeQtDCM, cFind).WillByDefault(testing::Return(foo));
 
     QList<medAbstractSource::levelMinimalEntries> entries = m_->getMinimalEntries(0, "key");
     EXPECT_EQ(entries.size(), foo.size());
@@ -353,13 +347,11 @@ TEST_F(medAPHPGTest, test_get_minimal_entries_level_patient_success)
 
 TEST_F(medAPHPGTest, test_get_minimal_entries_level_study_failed_QtDCM_return_empty_arra)
 {
-    QList<QMap<QString, QString>> foo;
-    EXPECT_CALL(fakeQtDCM, findPatientMinimalEntries).Times(0);
-    EXPECT_CALL(fakeQtDCM, findStudyMinimalEntries).Times(1);
-    EXPECT_CALL(fakeQtDCM, findSeriesMinimalEntries).Times(0);
+    QList<QMap<DcmTagKey, QString>> foo;
+    EXPECT_CALL(fakeQtDCM, cFind).Times(1);
     EXPECT_CALL(fakeAnnotation, findAnnotationMinimalEntries).Times(0);
 
-    ON_CALL(fakeQtDCM, findStudyMinimalEntries).WillByDefault(testing::Return(foo));
+    ON_CALL(fakeQtDCM, cFind).WillByDefault(testing::Return(foo));
 
     QList<medAbstractSource::levelMinimalEntries> entries = m_->getMinimalEntries(1, "key");
 
@@ -368,22 +360,20 @@ TEST_F(medAPHPGTest, test_get_minimal_entries_level_study_failed_QtDCM_return_em
 
 TEST_F(medAPHPGTest, test_get_minimal_entries_level_study_success)
 {
-    QList<QMap<QString, QString>> foo;
-    QMap<QString, QString> bar;
-    bar["Description"] = "Study1";
-    bar["StudyInstanceUID"] = "1.2.3.4.5.6666.7777777";
+    QList<QMap<DcmTagKey, QString>> foo;
+    QMap<DcmTagKey, QString> bar;
+    bar[DCM_StudyDescription] = "Study1";
+    bar[DCM_StudyInstanceUID] = "1.2.3.4.5.6666.7777777";
     foo.append(bar);
-    QMap<QString, QString> qix;
-    qix["Description"] = "Study2";
-    qix["StudyInstanceUID"] = "1.2.3.4.5.6666.8888888";
+    QMap<DcmTagKey, QString> qix;
+    qix[DCM_StudyDescription] = "Study2";
+    qix[DCM_StudyInstanceUID] = "1.2.3.4.5.6666.8888888";
     foo.append(qix);
 
-    EXPECT_CALL(fakeQtDCM, findPatientMinimalEntries).Times(0);
-    EXPECT_CALL(fakeQtDCM, findStudyMinimalEntries).Times(1);
-    EXPECT_CALL(fakeQtDCM, findSeriesMinimalEntries).Times(0);
+    EXPECT_CALL(fakeQtDCM, cFind).Times(1);
     EXPECT_CALL(fakeAnnotation, findAnnotationMinimalEntries).Times(0);
 
-    ON_CALL(fakeQtDCM, findStudyMinimalEntries).WillByDefault(testing::Return(foo));
+    ON_CALL(fakeQtDCM, cFind).WillByDefault(testing::Return(foo));
     QList<medAbstractSource::levelMinimalEntries> entries = m_->getMinimalEntries(1, "key");
 
     EXPECT_EQ(entries.size(), foo.size());
@@ -407,14 +397,12 @@ TEST_F(medAPHPGTest, test_get_minimal_entries_level_study_success)
 
 TEST_F(medAPHPGTest, test_get_minimal_entries_level_series_failed_QtDCM_empty_array)
 {
-    QList<QMap<QString, QString>> foo;
+    QList<QMap<DcmTagKey, QString>> foo;
 
-    EXPECT_CALL(fakeQtDCM, findPatientMinimalEntries).Times(0);
-    EXPECT_CALL(fakeQtDCM, findStudyMinimalEntries).Times(0);
-    EXPECT_CALL(fakeQtDCM, findSeriesMinimalEntries).Times(1);
+    EXPECT_CALL(fakeQtDCM, cFind).Times(1);
     EXPECT_CALL(fakeAnnotation, findAnnotationMinimalEntries).Times(0);
 
-    ON_CALL(fakeQtDCM, findSeriesMinimalEntries).WillByDefault(testing::Return(foo));
+    ON_CALL(fakeQtDCM, cFind).WillByDefault(testing::Return(foo));
     //    ON_CALL(fakeAnnotation, findAnnotationMinimalEntries).WillByDefault(::testing::Return(foo));
 
     QList<medAbstractSource::levelMinimalEntries> entries = m_->getMinimalEntries(2, "key");
@@ -424,22 +412,20 @@ TEST_F(medAPHPGTest, test_get_minimal_entries_level_series_failed_QtDCM_empty_ar
 
 TEST_F(medAPHPGTest, test_get_minimal_entries_level_series_success)
 {
-    QList<QMap<QString, QString>> foo;
-    QMap<QString, QString> bar;
-    bar["Description"] = "T2";
-    bar["SeriesInstanceUID"] = "1.2.3.4.5.6666.7777777";
+    QList<QMap<DcmTagKey, QString>> foo;
+    QMap<DcmTagKey, QString> bar;
+    bar[DCM_SeriesDescription] = "T2";
+    bar[DCM_SeriesInstanceUID] = "1.2.3.4.5.6666.7777777";
     foo.append(bar);
-    QMap<QString, QString> qix;
-    qix["Description"] = "Diffusion";
-    qix["SeriesInstanceUID"] = "1.2.3.4.5.6666.8888888";
+    QMap<DcmTagKey, QString> qix;
+    qix[DCM_SeriesDescription] = "Diffusion";
+    qix[DCM_SeriesInstanceUID] = "1.2.3.4.5.6666.8888888";
     foo.append(qix);
 
-    EXPECT_CALL(fakeQtDCM, findPatientMinimalEntries).Times(0);
-    EXPECT_CALL(fakeQtDCM, findStudyMinimalEntries).Times(0);
-    EXPECT_CALL(fakeQtDCM, findSeriesMinimalEntries).Times(1);
+    EXPECT_CALL(fakeQtDCM, cFind).Times(1);
     EXPECT_CALL(fakeAnnotation, findAnnotationMinimalEntries).Times(0);
 
-    ON_CALL(fakeQtDCM, findSeriesMinimalEntries).WillByDefault(testing::Return(foo));
+    ON_CALL(fakeQtDCM, cFind).WillByDefault(testing::Return(foo));
 
     QList<medAbstractSource::levelMinimalEntries> entries = m_->getMinimalEntries(2, "key");
     EXPECT_EQ(entries.size(), foo.size());
@@ -457,10 +443,10 @@ TEST_F(medAPHPGTest, test_get_minimal_entries_level_annotation_failed_RestAPI_re
 {
     QList<QMap<QString, QString>> foo;
 
-    EXPECT_CALL(fakeQtDCM, findPatientMinimalEntries).Times(0);
-    EXPECT_CALL(fakeQtDCM, findStudyMinimalEntries).Times(0);
-    EXPECT_CALL(fakeQtDCM, findSeriesMinimalEntries).Times(0);
+    EXPECT_CALL(fakeQtDCM, cFind).Times(0);
     EXPECT_CALL(fakeAnnotation, findAnnotationMinimalEntries).Times(1);
+    EXPECT_CALL(fakeAnnotation, hasUrl).Times(1);
+    ON_CALL(fakeAnnotation, hasUrl).WillByDefault(::testing::Return(true));
 
     ON_CALL(fakeAnnotation, findAnnotationMinimalEntries).WillByDefault(::testing::Return(foo));
 
@@ -481,10 +467,10 @@ TEST_F(medAPHPGTest, test_get_minimal_entries_level_annot_success)
     qix["SeriesInstanceUID"] = "1.2.3.4.5.6666.8888888";
     foo.append(qix);
 
-    EXPECT_CALL(fakeQtDCM, findPatientMinimalEntries).Times(0);
-    EXPECT_CALL(fakeQtDCM, findStudyMinimalEntries).Times(0);
-    EXPECT_CALL(fakeQtDCM, findSeriesMinimalEntries).Times(0);
+    EXPECT_CALL(fakeQtDCM, cFind).Times(0);
     EXPECT_CALL(fakeAnnotation, findAnnotationMinimalEntries).Times(1);
+    EXPECT_CALL(fakeAnnotation, hasUrl).Times(1);
+    ON_CALL(fakeAnnotation, hasUrl).WillByDefault(::testing::Return(true));
 
     ON_CALL(fakeAnnotation, findAnnotationMinimalEntries).WillByDefault(::testing::Return(foo));
 
