@@ -41,11 +41,11 @@ medTemporaryDataSource::medTemporaryDataSource()
     d->levelCount = d->flatTree->value()?0:-1;
     d->desiredWritableLevel = d->flatTree->value()?0:-1;
     
-    // QObject::connect(d->flatTree, &medBoolParameter::valueChanged, [&](bool state){ 
-    //     int level = (state)? 0 : -1;
-    //     d->levelCount = level;
-    //     d->desiredWritableLevel = level;
-    // });
+    QObject::connect(d->flatTree, &medBoolParameter::valueChanged, [&](bool state){ 
+        int level = (state)? 0 : -1;
+        d->levelCount = level;
+        d->desiredWritableLevel = level;
+    });
 }
 
 medTemporaryDataSource::~medTemporaryDataSource()
