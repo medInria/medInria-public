@@ -132,55 +132,51 @@ medAPHP::medAPHP(QtDcmInterface *dicomLib, medAbstractAnnotation *annotationAPI)
     medStringParameter *patientID = new medStringParameter("Patient ID", this);
     patientID->setCaption("Patient ID");
     QObject::connect(patientID, &medStringParameter::valueEdited, [&](QString const &value)
-    {
+                     {
         if (value.isEmpty()) 
         {
             d->patientLevelAttributes[DCM_PatientID] = "";
         } else 
         {
             d->patientLevelAttributes[DCM_PatientID] = "*" + value + "*";
-        } 
-    });
+        } });
     medStringParameter *patientName = new medStringParameter("Patient Name", this);
     patientName->setCaption("Patient Name");
     QObject::connect(patientName, &medStringParameter::valueEdited, [&](QString const &value)
-    {
+                     {
         if (value.isEmpty()) 
         {
             d->patientLevelAttributes[DCM_PatientName] = "";
         } else 
         {
             d->patientLevelAttributes[DCM_PatientName] = "*" + value + "*";
-        } 
-    });
+        } });
     medStringListParameter *gender = new medStringListParameter("Gender", this);
     gender->addItems({"", "M", "F"});
     gender->setCaption("Gender");
     QObject::connect(gender, &medStringListParameter::valueChanged, [&](int const &value)
-    {
+                     {
         if (value == 0) 
         {
             d->patientLevelAttributes[DCM_PatientSex] = "";
         } else 
         {
             d->patientLevelAttributes[DCM_PatientSex] = gender->items()[value];
-        } 
-    });
+        } });
 
     d->studyLevelAttributes[DCM_StudyDescription] = "";
     d->studyLevelAttributes[DCM_StudyDate] = "";
     medStringParameter *studyDescription = new medStringParameter("Study Description", this);
     studyDescription->setCaption("Study Description");
     QObject::connect(studyDescription, &medStringParameter::valueEdited, [&](QString const &value)
-    {
+                     {
         if (value == 0) 
         {
             d->studyLevelAttributes[DCM_StudyDescription] = "";
         } else 
         {
             d->studyLevelAttributes[DCM_StudyDescription] = "*" + value + "*";
-        } 
-    });
+        } });
 
     d->startDate = new medStringParameter("Start Study Date", this);
     d->startDate->setCaption("Start Study Date");
@@ -194,7 +190,7 @@ medAPHP::medAPHP(QtDcmInterface *dicomLib, medAbstractAnnotation *annotationAPI)
     d->endDate->setValue(currentDate.toString("yyyyMMdd"));
     QObject::connect(d->startDate, &medStringParameter::valueChanged, this, &medAPHP::computeDateRange);
     QObject::connect(d->endDate, &medStringParameter::valueChanged, this, &medAPHP::computeDateRange);
-    // d->studyLevelAttributes[DCM_StudyDate] = "20100101-20210101";
+    // d->studyLevelAttributes[DCM_StudyDescription] = "*TEVA*";
 
     d->seriesLevelAttributes[DCM_SeriesDescription] = "";
     d->seriesLevelAttributes[DCM_Modality] = "";
@@ -482,45 +478,51 @@ QList<medAbstractSource::levelMinimalEntries> medAPHP::getMinimalEntries(unsigne
                 if (seriesLevelValues.isEmpty())
                 {
                     auto infosStudy = cFindStudy("");
-                    if (!infosStudy.empty())
+                    QStringList patientIDs;
+                    for (const auto &infoStudy : infosStudy)
                     {
-                        for (const auto &infoStudy : infosStudy)
+                        auto currentPatientID = infoStudy[DCM_PatientID];
+                        if (!patientIDs.contains(currentPatientID))
                         {
-                            auto infosPatient = cFindPatient(infoStudy[DCM_PatientID]);
+                            auto infosPatient = cFindPatient(currentPatientID);
                             entries.append(getPatientMinimalEntries(infosPatient));
                         }
+                        patientIDs.append(currentPatientID);
                     }
                 }
                 else
                 {
                     auto infosSeries = cFindSeries("");
-                    if (!infosSeries.empty())
-                    {
-                        for (const auto &infoSeries : infosSeries)
-                        {
-                            auto infosStudy = cFindStudy(infoSeries[DCM_StudyInstanceUID]);
+                    QStringList studyInstanceUIDs;
+                    QStringList patientIDs;
 
-                            if (!infosStudy.empty())
+                    for (const auto &infoSeries : infosSeries)
+                    {
+                        auto currentStudyUID = infoSeries[DCM_StudyInstanceUID];
+                        if (!studyInstanceUIDs.contains(currentStudyUID))
+                        {
+                            auto infosStudy = cFindStudy(currentStudyUID);
+                            auto currentPatientID = infosStudy.first()[DCM_PatientID];
+                            if (!patientIDs.contains(currentPatientID))
                             {
-                                for (const auto &infoStudy : infosStudy)
-                                {
-                                    auto infosPatient = cFindPatient(infoStudy[DCM_PatientID]);
-                                    entries.append(getPatientMinimalEntries(infosPatient));
-                                }
+                                auto infosPatient = cFindPatient(currentPatientID);
+                                entries.append(getPatientMinimalEntries(infosPatient));
                             }
+                            patientIDs.append(currentPatientID);
                         }
+                        studyInstanceUIDs.append(currentStudyUID);
                     }
                 }
             }
         }
         break;
         case 1:
-{
-         auto infosStudy = cFindStudy("", key);
+        {
+            auto infosStudy = cFindStudy("", key);
             bool isSeriesFiltered = !seriesLevelValues.isEmpty();
             entries = getStudyMinimalEntries(infosStudy, isSeriesFiltered);
-    
-}           break;
+        }
+        break;
         case 2:
         {
             auto infosSeries = cFindSeries(key);
@@ -582,17 +584,16 @@ QList<medAbstractSource::levelMinimalEntries> medAPHP::getStudyMinimalEntries(co
                 entries.append(entry);
             }
         }
-
     }
     else
     {
         for (const auto &info : infosMap)
         {
-                levelMinimalEntries entry;
-                entry.key = info[DCM_StudyInstanceUID];
-                entry.name = info[DCM_StudyDescription];
-                entry.description = info[DCM_StudyInstanceUID];
-                entries.append(entry);
+            levelMinimalEntries entry;
+            entry.key = info[DCM_StudyInstanceUID];
+            entry.name = info[DCM_StudyDescription];
+            entry.description = info[DCM_StudyInstanceUID];
+            entries.append(entry);
         }
     }
     return entries;
@@ -647,33 +648,39 @@ QList<QMap<QString, QString>> medAPHP::getMandatoryAttributes(unsigned int pi_ui
                 if (seriesLevelValues.isEmpty())
                 {
                     auto infosStudy = cFindStudy("");
-                    if (!infosStudy.empty())
+                    QStringList patientIDs;
+                    for (const auto &infoStudy : infosStudy)
                     {
-                        for (const auto &infoStudy : infosStudy)
+                        auto currentPatientID = infoStudy[DCM_PatientID];
+                        if (!patientIDs.contains(currentPatientID))
                         {
-                            auto infosPatient = cFindPatient(infoStudy[DCM_PatientID]);
+                            auto infosPatient = cFindPatient(currentPatientID);
                             attributesRes.append(getPatientMandatoryAttributes(infosPatient));
                         }
+                        patientIDs.append(currentPatientID);
                     }
                 }
                 else
                 {
                     auto infosSeries = cFindSeries("");
-                    if (!infosSeries.empty())
-                    {
-                        for (const auto &infoSeries : infosSeries)
-                        {
-                            auto infosStudy = cFindStudy(infoSeries[DCM_StudyInstanceUID]);
+                    QStringList studyInstanceUIDs;
+                    QStringList patientIDs;
 
-                            if (!infosStudy.empty())
+                    for (const auto &infoSeries : infosSeries)
+                    {
+                        auto currentStudyUID = infoSeries[DCM_StudyInstanceUID];
+                        if (!studyInstanceUIDs.contains(currentStudyUID))
+                        {
+                            auto infosStudy = cFindStudy(currentStudyUID);
+                            auto currentPatientID = infosStudy.first()[DCM_PatientID];
+                            if (!patientIDs.contains(currentPatientID))
                             {
-                                for (const auto &infoStudy : infosStudy)
-                                {
-                                    auto infosPatient = cFindPatient(infoStudy[DCM_PatientID]);
-                                    attributesRes.append(getPatientMandatoryAttributes(infosPatient));
-                                }
+                                auto infosPatient = cFindPatient(currentPatientID);
+                                attributesRes.append(getPatientMandatoryAttributes(infosPatient));
                             }
+                            patientIDs.append(currentPatientID);
                         }
+                        studyInstanceUIDs.append(currentStudyUID);
                     }
                 }
             }
@@ -761,6 +768,7 @@ QList<QMap<DcmTagKey, QString>> medAPHP::cFindSeries(const QString &studyInstanc
         tags.insert(key, d->seriesLevelAttributes.value(key));
     }
     tags[DCM_StudyInstanceUID] = studyInstanceUID;
+    tags[DCM_SeriesInstanceUID] = "";
     tags[DCM_InstitutionName] = "";
     tags[DCM_AcquisitionNumber] = "";
     tags[DCM_NumberOfSeriesRelatedInstances] = "";
@@ -787,7 +795,7 @@ QList<QMap<QString, QString>> medAPHP::getPatientMandatoryAttributes(const QList
 QList<QMap<QString, QString>> medAPHP::getStudyMandatoryAttributes(const QList<QMap<DcmTagKey, QString>> &infosMap, bool isSeriesFiltered)
 {
     QList<QMap<QString, QString>> attributesRes;
-   
+
     if (isSeriesFiltered)
     {
         for (const auto &info : infosMap)
@@ -803,7 +811,6 @@ QList<QMap<QString, QString>> medAPHP::getStudyMandatoryAttributes(const QList<Q
                 attributesRes.append(attributes);
             }
         }
-
     }
     else
     {
@@ -815,7 +822,6 @@ QList<QMap<QString, QString>> medAPHP::getStudyMandatoryAttributes(const QList<Q
             attributes["uid"] = info[DCM_StudyInstanceUID];
             attributes["study date"] = info[DCM_StudyDate];
             attributesRes.append(attributes);
-
         }
     }
 
@@ -840,7 +846,6 @@ QList<QMap<QString, QString>> medAPHP::getSeriesMandatoryAttributes(const QList<
     }
     return attributesRes;
 }
-
 
 bool medAPHP::getAdditionalAttributes(unsigned int pi_uiLevel, QString id, datasetAttributes4 &po_attributes)
 {
