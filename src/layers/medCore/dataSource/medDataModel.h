@@ -49,7 +49,9 @@ public:
     bool attributesForBuildTree (QString const & pi_sourceInstanceId, unsigned int pi_uiLevel, QString const & key, levelAttributes & po_entries);
     bool mandatoriesAttributes  (QString const & pi_sourceInstanceId, unsigned int pi_uiLevel, QString const & parentKey, levelAttributes & po_entries);
     bool optionalAttributes     (QString const & pi_sourceInstanceId, unsigned int pi_uiLevel, QString const & key, datasetAttributes & po_attributes, datasetAttributes & po_tags);
-    bool levelCount             (QString const & pi_sourceInstanceId, unsigned int &po_uiLevelMax);
+	bool getAsyncDat            (QString const & pi_sourceInstanceId, unsigned int pi_uiLevel, QString const & key);
+	bool levelCount             (QString const & pi_sourceInstanceId, unsigned int &po_uiLevelMax);
+    bool asyncResult            (QString const & pi_sourceInstanceId, int pi_iRequest);
     bool filteringParameters    (QString const & pi_sourceInstanceId, QList<medAbstractParameter*> & po_parameters);
     bool saveData               (medAbstractData *pi_pData, QString const &pi_baseName, QStringList &pio_uri);
 
@@ -60,17 +62,20 @@ public:
     medSourceItemModel* getModel(QString const & pi_sourceInstanceId);
 
 
-    // ////////////////////////////////////////////////////////////////////////////////////////////
+	medAbstractData * variantToMedAbstractData(QVariant &data, const medDataIndex & index, medAbstractSource * &pSource);
+
+	// ////////////////////////////////////////////////////////////////////////////////////////////
     // Members functions to get Data, metadata and informations                Datasets handling
     medAbstractData * getData(medDataIndex const & index);
-    datasetAttributes getMetaData(QModelIndex const & index); //TODO move to medSourceItemModel
-    bool getDataNames(QStringList uri, QStringList &names);
+    datasetAttributes getMetaData(medDataIndex const & index);
+    bool getDataNames(medDataIndex index, QStringList &names);
     bool createPath(QString pi_sourceId, QStringList pi_folders, QStringList &po_uri, QMap<int, QString> pi_knownKeys = QMap<int, QString>());
 
     bool writeResults(QString pi_sourceId, medAbstractData * pi_pData, QStringList pi_UriOfRelatedData, QString pi_basePath, medWritingPolicyData & pi_writingPolicyData, medAbstractWritingPolicy * pi_pWritingPolicy);
     QUuid writeResultsHackV3(medAbstractData &data, bool originSrc); //To Adapt
 
-
+	bool fetchData(medDataIndex const & index);
+	bool pushData(medDataIndex const & index);
 
     // ////////////////////////////////////////////////////////////////////////////////////////////
     // URI and PATH handler
@@ -90,7 +95,6 @@ public:
     // Writing Policy
     medAbstractWritingPolicy* getSourceWPolicy(QString pi_sourceId);
     medAbstractWritingPolicy* getGeneralWPolicy(){ return &m_generalWritingPolicy; }
-    //medAbstractWritingPolicy* getWPolicy(medAbstractWritingPolicy * pi_policy, QString pi_sourceId = "");
 
 
     void expandAll(const QString &sourceInstanceId);
@@ -106,11 +110,10 @@ public slots:
    void addSource(medAbstractSource* pi_source);
    void removeSource(medAbstractSource* pi_source);
 
-   void addData(medAbstractData * pi_dataset, QString uri);   //uri -> sourceInstanceId/IdLevel1/IdLevel.../IdLevelN
    void addData(medDataIndex * pi_datasetIndex, QString uri); //uri -> sourceInstanceId/IdLevel1/IdLevel.../IdLevelN
 
 
-   void refresh(QString uri);   //uri -> sourceInstanceId/IdLevel1/IdLevel.../IdLevelN
+   void refresh(medDataIndex pi_index);   //uri -> sourceInstanceId/IdLevel1/IdLevel.../IdLevelN
    void sourceIsOnline(QString sourceIntanceId);
 
    void removeConvertedData(QObject *obj);
@@ -118,6 +121,7 @@ public slots:
 
 private:
     medDataModel(QObject *parent = nullptr);
+	medAbstractSource * getSource(QString const pi_sourceId);
 
 
 signals:
@@ -130,9 +134,7 @@ private:
     QMap< QString, medAbstractSource*> m_sourceIdToInstanceMap;
     QMap< medAbstractSource*, medSourceItemModel*> m_sourcesModelMap; //TODO delete medSourceItemModel* in destructor
     medAbstractSource* m_defaultSource;
-
-    QMap< int, medAbstractSource*> m_;
-
+	
     QMap<medDataIndex, dtkSmartPointer<medAbstractData> > m_IndexToData;
     medDefaultWritingPolicy m_generalWritingPolicy;
     static medDataModel * s_instance;

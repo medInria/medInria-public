@@ -37,6 +37,13 @@ public:
     
     };
 
+	struct asyncRequest
+	{
+		int type;
+		int tmpId;
+		QString uri;
+	};
+
     medSourceItemModel(medDataModel *parent, QString const & sourceIntanceId);
     virtual ~medSourceItemModel();
 
@@ -64,6 +71,7 @@ public:
 
     QVariant headerData(int section, Qt::Orientation orientation, int role) const override;
 
+	bool setData(const QModelIndex &index, const QVariant &value, int role = Qt::EditRole);
 
     Qt::DropActions supportedDropActions() const override;
     Qt::ItemFlags flags(const QModelIndex &index) const override;
@@ -77,6 +85,7 @@ public:
     int  getColumnInsideLevel(int level, int section) const;
     int  getSectionInsideLevel(int level, int column) const;
     bool fetch(QStringList uri);
+	bool fetchData(QModelIndex index);
     QString getSourceIntanceId();
     void setOnline(bool pi_bOnline);
 
@@ -99,12 +108,13 @@ public:
     bool        additionnalMetaData2(QModelIndex const & index, datasetAttributes4 & attributes);
     bool        additionnalMetaData2(QModelIndex const & index, QString const & key, QVariant & value, QString & tag);
 
-
+	bool getRequest(int pi_request, asyncRequest &request);
     //JU
     void expandAll(QModelIndex index = QModelIndex(), QString key = "");
 
 public slots:
     void itemPressed(QModelIndex const &index);
+    bool resetModel();
 
 
 

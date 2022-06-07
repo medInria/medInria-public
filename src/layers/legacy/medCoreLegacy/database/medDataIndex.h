@@ -32,10 +32,15 @@ public:
     enum {NOT_VALID = -1 };
 
      medDataIndex(int dataSourceId, int patientId, int studyId, int seriesId);
-     medDataIndex(QStringList const & uri);
+	 medDataIndex(QStringList const & uri);
+	 medDataIndex(QString const & uri);
      medDataIndex();
      medDataIndex(const medDataIndex& index);
     ~medDataIndex();
+
+	operator QStringList() const { return m_uriAsList; }
+	//operator QModelIndex() const { return toModelIndex(); }
+	explicit operator QString() const { return asString(); }
 
     bool isV2() const;
 
@@ -58,8 +63,14 @@ public:
     int    patientId() const { return m_patientId; }
     int      studyId() const { return m_studyId; }
     int     seriesId() const { return m_seriesId; }
+
     QStringList  uri() const { return m_uriAsList;  }
+	QString sourceId() const { return m_uriAsList.size() > 0 ? m_uriAsList[0] : ""; }
+	QString   dataId() const { return m_uriAsList.size() > 1 ? m_uriAsList[m_uriAsList.size()-1] : ""; }
+	int        level() const { return m_uriAsList.size() - 1; }
+
     QString humanReadableUri() const { return m_humanRedableUri; }
+
     medDataIndex& operator=(const medDataIndex& index);
 
     static bool isMatch( const medDataIndex& index1, const medDataIndex& index2);
@@ -78,6 +89,9 @@ public:
     static medDataIndex makePatientIndex(int sourceId, int patientId);
     static medDataIndex makeStudyIndex(int sourceId, int patientId, int studyId);
     static medDataIndex makeSeriesIndex(int sourceId, int patientId, int studyId, int seriesId);
+
+private:
+	//QModelIndex toModelIndex() const;
 
 private:
     int m_dataSourceId;

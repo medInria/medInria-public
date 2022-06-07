@@ -30,6 +30,16 @@ medDataIndex::medDataIndex(QStringList const & uri)
     m_seriesId(NOT_VALID),
     m_uriAsList(uri)
 {
+
+}
+
+medDataIndex::medDataIndex(QString const & uri)
+	: m_dataSourceId(NOT_VALID),
+	m_patientId(NOT_VALID),
+	m_studyId(NOT_VALID),
+	m_seriesId(NOT_VALID)
+{
+	setUri(uri);
 }
 
 medDataIndex::medDataIndex(const medDataIndex& index)
@@ -52,6 +62,7 @@ medDataIndex::medDataIndex()
 medDataIndex::~medDataIndex(void)
 {
 }
+
 
 bool medDataIndex::isV2() const
 {
@@ -242,6 +253,14 @@ medDataIndex medDataIndex::makeSeriesIndex( int sourceId, int patientId, int stu
 {
     return medDataIndex(sourceId, patientId, studyId, seriesId);
 }
+
+
+//QModelIndex medDataIndex::toModelIndex() const
+//{
+//	
+//}
+
+
 
 // /////////////////////////////////////////////////////////////////
 // Convenience operators

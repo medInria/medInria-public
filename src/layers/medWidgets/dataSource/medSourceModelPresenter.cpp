@@ -86,6 +86,20 @@ QStackedWidget *medSourceModelPresenter::buildFilters()
 
             pVLayout->addLayout(pHLayout);
         }
+
+        if (!filterParams.isEmpty())
+        {
+            QFrame *line;
+            line = new QFrame();
+            line->setFrameShape(QFrame::HLine);
+            line->setFrameShadow(QFrame::Sunken);
+            pVLayout->addWidget(line);
+
+            QPushButton *pApplyButton = new QPushButton("Apply");
+            pVLayout->addWidget(pApplyButton);
+            connect(pApplyButton, &QPushButton::clicked, sourceModel, &medSourceItemModel::resetModel);
+        }
+
         auto *pParamListWidget = new QWidget();
         pParamListWidget->setLayout(pVLayout);
         filterRes->addWidget(pParamListWidget);

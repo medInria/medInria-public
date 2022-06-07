@@ -32,7 +32,7 @@ class MEDWIDGETS_EXPORT medSourcesSettingsHandlerWidget : public QWidget
     Q_OBJECT
 
 public:
-    medSourcesSettingsHandlerWidget(medSourcesSettings *parent = nullptr);
+    medSourcesSettingsHandlerWidget(medSourcesSettings *pi_parent = nullptr);
     ~medSourcesSettingsHandlerWidget() = default;
 
     void sourceChange(medAbstractSource * pi_pSource, bool p_default);
@@ -45,7 +45,7 @@ protected:
     void updateSourceInformation(medAbstractSource * pi_pSource);
 
 private:
-    QMetaObject::Connection m_qtConnections[2];
+    QMetaObject::Connection m_qtConnections[2]; /*!< Store internal connections to provide a simple and clear way to disconnect when source change. */
 
     QPushButton * m_setDefaultButton;  /*!< Widget button to define the default source. */
     QPushButton * m_connectButton;     /*!< Widget button to connect and disconnect source. */

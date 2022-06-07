@@ -23,7 +23,7 @@
   *
   * @param [in] parent is the parent medSourcesSettings widget.
   */
-medSourcesSettingsHandlerWidget::medSourcesSettingsHandlerWidget(medSourcesSettings *parent) : QWidget(parent)
+medSourcesSettingsHandlerWidget::medSourcesSettingsHandlerWidget(medSourcesSettings *pi_parent) : QWidget(pi_parent)
 {
     //--- Fill Sources panel
     auto * sourceLayout = new QHBoxLayout();
@@ -65,8 +65,8 @@ medSourcesSettingsHandlerWidget::medSourcesSettingsHandlerWidget(medSourcesSetti
     sourceSettingsLayout->addStretch();
 
     //--- Now that Qt widgets are set: create connections
-    connect(m_setDefaultButton, &QPushButton::clicked, parent, &medSourcesSettings::setAsDefault); // Change default source
-    connect(m_removeButton,     &QPushButton::clicked, parent, &medSourcesSettings::removeSource); // Ask to remove source
+    connect(m_setDefaultButton, &QPushButton::clicked, pi_parent, &medSourcesSettings::setAsDefault); // Change default source
+    connect(m_removeButton,     &QPushButton::clicked, pi_parent, &medSourcesSettings::removeSource); // Ask to remove source
 }
 
 /**
