@@ -199,30 +199,28 @@ medAPHP::medAPHP(QtDcmInterface *dicomLib, medAbstractAnnotation *annotationAPI)
     seriesDescription->setCaption("Series Description");
 
     QObject::connect(seriesDescription, &medStringParameter::valueEdited, [&](QString const &value)
-    {
+                     {
         if (value.isEmpty()) 
         {
             d->seriesLevelAttributes[DCM_SeriesDescription] = "";
         } else 
         {
             d->seriesLevelAttributes[DCM_SeriesDescription] = "*" + value + "*";
-        } 
-    });
+        } });
 
     medStringListParameter *modality = new medStringListParameter("Modality", this);
     modality->addItems({"", "MR", "CT", "PET"});
     modality->setCaption("Modality");
     QObject::connect(modality, &medStringListParameter::valueChanged, [&, modality](int const &value)
-    {
+                     {
         if (value == 0) 
         {
             d->seriesLevelAttributes[DCM_Modality] = "";
         } else 
         {
             d->seriesLevelAttributes[DCM_Modality] = modality->value();
-        } 
-    });
-    // d->seriesLevelAttributes[DCM_Modality] = "MR";
+        } });
+    d->seriesLevelAttributes[DCM_Modality] = "MR";
 
     d->applyFilterButton = new medTriggerParameter("Apply PACS filtering parameters", this);
     d->applyFilterButton->setCaption("Apply");
