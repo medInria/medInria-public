@@ -76,7 +76,6 @@ struct medAPHPParametersPrivate
     medGroupParameter *filterPacsSettings;
     medStringParameter *startDate;
     medStringParameter *endDate;
-    medTriggerParameter *applyFilterButton;
 };
 
 medAPHP::medAPHP(QtDcmInterface *dicomLib, medAbstractAnnotation *annotationAPI) : d(new medAPHPParametersPrivate)
@@ -154,14 +153,14 @@ medAPHP::medAPHP(QtDcmInterface *dicomLib, medAbstractAnnotation *annotationAPI)
     medStringListParameter *gender = new medStringListParameter("Gender", this);
     gender->addItems({"", "M", "F"});
     gender->setCaption("Gender");
-    QObject::connect(gender, &medStringListParameter::valueChanged, [&](int const &value)
+    QObject::connect(gender, &medStringListParameter::valueChanged, [&, gender](int const &value)
                      {
         if (value == 0) 
         {
             d->patientLevelAttributes[DCM_PatientSex] = "";
         } else 
         {
-            d->patientLevelAttributes[DCM_PatientSex] = gender->items()[value];
+            d->patientLevelAttributes[DCM_PatientSex] = gender->value();
         } });
 
     d->studyLevelAttributes[DCM_StudyDescription] = "";
@@ -190,7 +189,6 @@ medAPHP::medAPHP(QtDcmInterface *dicomLib, medAbstractAnnotation *annotationAPI)
     d->endDate->setValue(currentDate.toString("yyyyMMdd"));
     QObject::connect(d->startDate, &medStringParameter::valueChanged, this, &medAPHP::computeDateRange);
     QObject::connect(d->endDate, &medStringParameter::valueChanged, this, &medAPHP::computeDateRange);
-    // d->studyLevelAttributes[DCM_StudyDescription] = "*TEVA*";
 
     d->seriesLevelAttributes[DCM_SeriesDescription] = "";
     d->seriesLevelAttributes[DCM_Modality] = "";
@@ -220,12 +218,6 @@ medAPHP::medAPHP(QtDcmInterface *dicomLib, medAbstractAnnotation *annotationAPI)
         {
             d->seriesLevelAttributes[DCM_Modality] = modality->value();
         } });
-    d->seriesLevelAttributes[DCM_Modality] = "MR";
-
-    d->applyFilterButton = new medTriggerParameter("Apply PACS filtering parameters", this);
-    d->applyFilterButton->setCaption("Apply");
-    d->applyFilterButton->setDescription("Apply PACS filtering parameters");
-    QObject::connect(d->applyFilterButton, &medTriggerParameter::pushed, this, &medAPHP::onFiltersApplied);
 
     medGroupParameter *patientFilter = new medGroupParameter("Patient Level Filters", this);
     patientFilter->setCaption("Patient Level");
@@ -253,7 +245,6 @@ medAPHP::medAPHP(QtDcmInterface *dicomLib, medAbstractAnnotation *annotationAPI)
     d->filterPacsSettings->addParameter(patientFilter);
     d->filterPacsSettings->addParameter(studyFilter);
     d->filterPacsSettings->addParameter(seriesFilter);
-    d->filterPacsSettings->addParameter(d->applyFilterButton);
 }
 
 medAPHP::~medAPHP()

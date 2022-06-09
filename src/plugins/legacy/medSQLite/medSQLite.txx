@@ -42,9 +42,6 @@ medSQlite<T>::medSQlite()
     m_MandatoryKeysByLevel["Series"] = QStringList( {"id", "name", "uid", "study",
                                                      "age", "modality", "protocol",
                                                      "origin", "rows", "columns"}) ;
-    pToto = new medStringParameter("tata");
-    pTata = new medStringParameter("toto");
-
 }
 
 template<typename T>
@@ -199,11 +196,7 @@ QList<medAbstractParameter *> medSQlite<T>::getVolatilParameters()
 template<typename T>
 QList<medAbstractParameter *> medSQlite<T>::getFilteringParameters()
 {
-    QList<medAbstractParameter *> lstRes;
-
-    lstRes << pToto << pTata;
-
-    return lstRes;
+    return {};
 }
 
 template <typename T>

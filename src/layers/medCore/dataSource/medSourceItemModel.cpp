@@ -798,7 +798,7 @@ bool medSourceItemModel::resetModel()
     endResetModel();
 
     //populate the model from scratch
-    populateLevel(QModelIndex(), "");
+    populateLevelV2(QModelIndex(), "");
 
     return bRes;
 }

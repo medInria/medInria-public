@@ -133,18 +133,18 @@ QWidget* medDatabaseDataSource::sourceSelectorWidget()
 
     layout->addWidget(listSources);
 
-    auto pRefreshButton = new QPushButton("R");
-    connect(pRefreshButton, &QPushButton::clicked, [&]() 
-    {
-        int i = d->currentSource; 
-        auto sourcesList = medSourcesLoader::instance()->sourcesList();
-        if (sourcesList.size()>i)
-        {
-            auto sourceId = sourcesList[i]->getInstanceId();
-            medDataModel::instance()->refresh(QStringList(sourceId));
-        }
-    });
-    layout->addWidget(pRefreshButton);
+    // auto pRefreshButton = new QPushButton("R");
+    // connect(pRefreshButton, &QPushButton::clicked, [&]() 
+    // {
+    //     int i = d->currentSource; 
+    //     auto sourcesList = medSourcesLoader::instance()->sourcesList();
+    //     if (sourcesList.size()>i)
+    //     {
+    //         auto sourceId = sourcesList[i]->getInstanceId();
+    //         medDataModel::instance()->refresh(QStringList(sourceId));
+    //     }
+    // });
+    // layout->addWidget(pRefreshButton);
 
     widget->setLayout(layout);
 

@@ -6,6 +6,7 @@
 
 #include <medStringParameterPresenter.h>
 #include <QGroupBox>
+#include <QLabel>
 
 class medSourceModelPresenterPrivate
 {
@@ -98,6 +99,11 @@ QStackedWidget *medSourceModelPresenter::buildFilters()
             QPushButton *pApplyButton = new QPushButton("Apply");
             pVLayout->addWidget(pApplyButton);
             connect(pApplyButton, &QPushButton::clicked, sourceModel, &medSourceItemModel::resetModel);
+        }
+        else
+        {
+            QLabel *noFilterLabel = new QLabel("The current selected source has no filters");
+            pVLayout->addWidget(noFilterLabel);
         }
 
         auto *pParamListWidget = new QWidget();
