@@ -111,10 +111,6 @@ medViewContainer::medViewContainer(medViewContainerSplitter *parent): QFrame(par
     d->view = nullptr;
     d->viewToolbar = nullptr;
 
-    // Themes
-    QVariant themeChosen = medSettingsManager::instance()->value("startup","theme");
-    int themeIndex = themeChosen.toInt();
-
     d->menuButton = new QPushButton(this);
     d->menuButton->setIcon(QIcon(":/pixmaps/tools.png"));
     d->menuButton->setSizePolicy(QSizePolicy::Minimum, QSizePolicy::Fixed);
