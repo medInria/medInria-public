@@ -69,6 +69,8 @@ public:
     medViewContainer* splitHorizontally();
     medViewContainer* split(Qt::AlignmentFlag alignement = Qt::AlignRight);
 
+    void createdDefaultWidget();
+    void initializeDefaultWidget();
     void setDefaultWidget(QWidget *defaultWidget);
     QWidget* defaultWidget() const;
 
