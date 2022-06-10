@@ -118,13 +118,10 @@ void medRegistrationWorkspace::resetDefaultWidgetFuseContainer()
 {
     if(selectorToolBox()) //null when users close the software
     {
-        auto viewLayout = static_cast<QVBoxLayout*>(d->containers[Fuse]->defaultWidget()->layout());
-        auto label = static_cast<QLabel*>(viewLayout->itemAt(0)->widget());
-        if (!label->text().contains("FUSE"))
-        {
-            label->setText("FUSE\n\n"+label->text());
-            label->setAlignment(Qt::AlignCenter);
-        }
+        // Do not keep open data buttons
+        QLabel *outputLabel = new QLabel("FUSE");
+        outputLabel->setAlignment(Qt::AlignCenter);
+        d->containers[Fuse]->changeDefaultWidget(outputLabel);
         d->containers[Fuse]->setUserSplittable(false);
         d->containers[Fuse]->setAcceptDrops(false); // only addition from the app
         d->containers[Fuse]->setClosingMode(medViewContainer::CLOSE_BUTTON_HIDDEN);

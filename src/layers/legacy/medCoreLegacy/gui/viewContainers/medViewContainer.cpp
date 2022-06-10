@@ -92,10 +92,6 @@ public:
 
     medViewContainer::DropArea oArea4ExternalDrop;
     std::vector<std::pair<QUuid, bool> > oQuuidVect;
-
-    QLabel *defaultLabel;
-    QPushButton *openButton;
-    QPushButton *sceneButton;
     
     ~medViewContainerPrivate()
     {
@@ -114,18 +110,6 @@ medViewContainer::medViewContainer(medViewContainerSplitter *parent): QFrame(par
 
     d->view = nullptr;
     d->viewToolbar = nullptr;
-
-    d->defaultWidget = new QWidget;
-    d->defaultWidget->setObjectName("defaultWidget");
-    d->defaultLabel = new QLabel(tr("Drag'n drop series/study here from the left panel or:"));
-    d->openButton  = new QPushButton(tr("Open a file from your system"));
-    d->sceneButton = new QPushButton(tr("Open a scene from your system"));
-    QVBoxLayout *defaultLayout = new QVBoxLayout(d->defaultWidget);
-    defaultLayout->addWidget(d->defaultLabel);
-    defaultLayout->addWidget(d->openButton);
-    defaultLayout->addWidget(d->sceneButton);
-    connect(d->openButton,  SIGNAL(clicked()), this, SLOT(openFromSystem()), Qt::UniqueConnection);
-    connect(d->sceneButton, SIGNAL(clicked()), this, SLOT(loadScene()),      Qt::UniqueConnection);
 
     d->menuButton = new QPushButton(this);
     d->menuButton->setIcon(QIcon(":/icons/settings_white.svg"));
@@ -259,7 +243,7 @@ medViewContainer::medViewContainer(medViewContainerSplitter *parent): QFrame(par
     d->mainLayout->setContentsMargins(0, 0, 0, 0);
     d->mainLayout->setSpacing(0);
     d->mainLayout->addWidget(toolBar, 0, 0, Qt::AlignTop);
-    d->mainLayout->addWidget(d->defaultWidget, 0, 0, 0, 0, Qt::AlignCenter);
+    createdDefaultWidget();
 
     this->setAcceptDrops(true);
     this->setUserSplittable(true);
@@ -308,13 +292,52 @@ medAbstractView* medViewContainer::view() const
     return d->view;
 }
 
+/**
+ * @brief Create the classic inner widget of a container
+ * 
+ */
+void medViewContainer::createdDefaultWidget()
+{
+    // create a default central widget
+    d->defaultWidget = new QWidget;
+    d->defaultWidget->setObjectName("defaultWidget");
+    QLabel *defaultLabel = new QLabel(tr("Drag'n drop series/study here from the left panel or:"));
+    QPushButton *openButton  = new QPushButton(tr("Open a file from your system"));
+    QPushButton *sceneButton = new QPushButton(tr("Open a scene from your system"));
+    QVBoxLayout *defaultLayout = new QVBoxLayout(d->defaultWidget);
+    defaultLayout->addWidget(defaultLabel);
+    defaultLayout->addWidget(openButton);
+    defaultLayout->addWidget(sceneButton);
+    connect(openButton,  SIGNAL(clicked()), this, SLOT(openFromSystem()), Qt::UniqueConnection);
+    connect(sceneButton, SIGNAL(clicked()), this, SLOT(loadScene()),      Qt::UniqueConnection);
+
+    // display the widget
+    d->mainLayout->addWidget(d->defaultWidget, 0, 0, 0, 0, Qt::AlignCenter);
+}
+
+/**
+ * @brief If the inner widget of a view has been removed to put a new 
+ * central widget, this method allows to reset, reinitialize the view 
+ * to the classic inner widget
+ * 
+ */
+void medViewContainer::initializeDefaultWidget()
+{
+    // clear
+    d->mainLayout->removeWidget(d->defaultWidget);
+    delete d->defaultWidget;
+
+    // recreate
+    createdDefaultWidget();
+}
+
 QWidget* medViewContainer::defaultWidget() const
 {
     return d->defaultWidget;
 }
 
 /**
- * @brief Change the central widget. Beware, to be used in containers that we don't want to keep
+ * @brief Change the central widget. Beware, to be used in containers that we don't want to keep at the end
  * @param defaultWidget
  */
 void medViewContainer::changeDefaultWidget(QWidget *newDefaultWidget)
@@ -325,6 +348,11 @@ void medViewContainer::changeDefaultWidget(QWidget *newDefaultWidget)
     d->defaultWidget = newDefaultWidget;
 }
 
+/**
+ * @brief In a view, switch between default widget (text and buttons to open data)
+ * with the data widget
+ * @param displayDefault
+ */
 void medViewContainer::displayDefaultWidget(bool displayDefault)
 {
     QWidget* mainWidget = d->view->mainWindow();
@@ -357,19 +385,11 @@ void medViewContainer::setUserOpenable(bool openable)
     {
         this->setAcceptDrops(true);
         d->openAction->setEnabled(true);
-
-        // Show the Open buttons inside the view
-        d->openButton->show();
-        d->sceneButton->show();
     }
     else
     {
         this->setAcceptDrops(false);
         d->openAction->setEnabled(false);
-
-        // Hide the Open buttons inside the view
-        d->openButton->hide();
-        d->sceneButton->hide();
     }
 }
 
