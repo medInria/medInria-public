@@ -205,13 +205,14 @@ bool medDataModelItem::isAssociatedAbstractData()
 {
     bool bRes = false;
 
-    bRes = itemData[0][100] == "dataCommited" || itemData[0][100] == "dataLoaded";
+    bRes = itemData[0][100] == "DataCommited" || itemData[0][100] == "DataLoaded";
 
     int i = 0;
     int iChildCount = childItems.size();
     while (!bRes && i < iChildCount)
     {
         bRes = childItems[i]->isAssociatedAbstractData();
+        i++;
     }
 
     return bRes;

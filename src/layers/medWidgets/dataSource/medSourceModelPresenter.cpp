@@ -98,7 +98,7 @@ QStackedWidget *medSourceModelPresenter::buildFilters()
 
             QPushButton *pApplyButton = new QPushButton("Apply");
             pVLayout->addWidget(pApplyButton);
-            connect(pApplyButton, &QPushButton::clicked, sourceModel, &medSourceItemModel::resetModel);
+            connect(pApplyButton, &QPushButton::clicked, sourceModel, &medSourceItemModel::refresh);
         }
         else
         {

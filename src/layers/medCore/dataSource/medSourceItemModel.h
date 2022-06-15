@@ -109,7 +109,7 @@ public:
     bool        additionnalMetaData2(QModelIndex const & index, QString const & key, QVariant & value, QString & tag);
 
 	bool getRequest(int pi_request, asyncRequest &request);
-    bool refresh(QModelIndex const & index);
+    bool refresh();
     //JU
     void expandAll(QModelIndex index = QModelIndex(), QString key = "");
 

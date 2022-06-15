@@ -847,7 +847,8 @@ void medDataModel::refresh(medDataIndex pi_index)
     auto *pModel = getModel(pi_index.sourceId());
     if (pModel)
     {
-        pModel->refresh(QModelIndex());
+        pModel->refresh();
+        //(QModelIndex());
     }
 }
 

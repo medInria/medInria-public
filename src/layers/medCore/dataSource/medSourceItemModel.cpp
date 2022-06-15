@@ -795,10 +795,11 @@ bool medSourceItemModel::getRequest(int pi_request, asyncRequest & request)
 	return bRes;
 }
 
-bool medSourceItemModel::refresh(QModelIndex const & pi_index)
+bool medSourceItemModel::refresh()
 {
+    QModelIndex const &pi_index = QModelIndex();
     bool bRes = true;
-    
+
     QList<QStringList> stack;
     stack.push_back(QStringList());
 
