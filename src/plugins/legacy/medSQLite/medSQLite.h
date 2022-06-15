@@ -152,8 +152,6 @@ private:
     QMap<QString, QStringList> m_MandatoryKeysByLevel;
     QMap<QString, QStringList> m_SupportedTypeAndFormats;
     medSQLiteWritingPolicy m_writingPolicy;
-    medStringParameter *pToto;
-    medStringParameter *pTata;
 
 };
 

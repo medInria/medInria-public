@@ -126,8 +126,7 @@ void medSourcesWidget::addSource(medDataModel *dataModel, QString sourceInstance
         QModelIndex index = this->indexFromMenu(pMenu);
         if (index.isValid())
         {
-            //mandatoriesAttributes = index.model()->getMandatory(index);
-            mandatoriesAttributes = dataModel->getMetaData(index);
+            mandatoriesAttributes = sourceModel->getMendatoriesMetaData(index);
             auto popupDataInfo = new medDataInfoWidget(mandatoriesAttributes);
             popupDataInfo->show();
         }

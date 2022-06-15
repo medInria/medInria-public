@@ -30,6 +30,8 @@ struct medDataModelElementPrivate
     QMap<int, QStringList> columnNameByLevel;
     QStringList sectionNames;
 
+	QMap<int, medSourceItemModel::asyncRequest> requestsMap;
+
     medDataModelItem *root;
 };
 
@@ -168,9 +170,9 @@ bool medSourceItemModel::removeRows(int row, int count, const QModelIndex & pare
     medDataModelItem *pItem = getItem(parent.siblingAtColumn(0));
 
     beginRemoveRows(parent.siblingAtColumn(0), row, row + count - 1);
+
     QSignalBlocker blocker(this);
     bRes = pItem->removeRows(row, count);
-
     blocker.unblock();
 
     endRemoveRows();
@@ -257,6 +259,20 @@ QVariant medSourceItemModel::headerData(int section, Qt::Orientation orientation
     }
 
     return varRes;
+}
+
+bool medSourceItemModel::setData(const QModelIndex & index, const QVariant & value, int role)
+{
+	bool bRes = false;
+
+	if (role == 100  && index.isValid())
+	{
+		getItem(index)->setData(value, 0, 100);
+		emit dataChanged(index, index);
+		bRes = true;
+	}
+
+	return bRes;
 }
 
 
@@ -397,6 +413,17 @@ bool medSourceItemModel::fetch(QStringList uri) //See populateLevelV2
     //    populateLevelV2(tmpIndex, tmpIId);
 
     return false;
+}
+
+bool medSourceItemModel::fetchData(QModelIndex index)
+{
+	bool bRes = true;
+
+	//TODO emit
+	setData(index, "DataLoading", 100);
+	bRes = true;
+
+	return bRes;
 }
 
 QString medSourceItemModel::getSourceIntanceId()
@@ -722,6 +749,19 @@ bool medSourceItemModel::additionnalMetaData2(QModelIndex const & index, QString
     return bRes;
 }
 
+bool medSourceItemModel::getRequest(int pi_request, asyncRequest & request)
+{
+	bool bRes = false;
+
+	if (d->requestsMap.contains(pi_request))
+	{
+		request = d->requestsMap[pi_request];
+		bRes = true;
+	}
+
+	return bRes;
+}
+
 /**
 * @brief  This slot refresh the current item pressed by GUI click, if the item don't have sons.
 * @param  index of the GUI element clicked.
@@ -742,6 +782,25 @@ void medSourceItemModel::itemPressed(QModelIndex const &index)
         QString uri2 = toUri(index2);
 
     }
+}
+
+/**
+* @brief  This slot reset the current model. 
+* For example: When source's filters must be applied.
+*/
+bool medSourceItemModel::resetModel()
+{
+    bool bRes = true;
+
+    // remove previous data
+    beginResetModel();
+    bRes = removeRows(0, rowCount());
+    endResetModel();
+
+    //populate the model from scratch
+    populateLevelV2(QModelIndex(), "");
+
+    return bRes;
 }
 
 bool medSourceItemModel::currentLevelFetchable(medDataModelItem * pItemCurrent)
@@ -925,7 +984,7 @@ void medSourceItemModel::computeRowRangesToRemove(medDataModelItem * pItem, QLis
     int iStartRemoveRange = -1;
     for (int i = 0; i < pItem->childCount(); ++i)
     {
-        if (!itemStillExist(entries, pItem->child(i)))
+        if ((!itemStillExist(entries, pItem->child(i))) && (pItem->itemData[0].value(100).toString() == "DataCommited"))
         {
             //Here pItem->child(i) is no longer present inside refreshed entries
             if (iStartRemoveRange == -1)

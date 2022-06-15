@@ -5,7 +5,8 @@
 #include <medSourceItemModelPresenter.h>
 
 #include <medStringParameterPresenter.h>
-
+#include <QGroupBox>
+#include <QLabel>
 
 class medSourceModelPresenterPrivate
 {
@@ -77,7 +78,7 @@ QStackedWidget *medSourceModelPresenter::buildFilters()
             auto * pHLayout = new QHBoxLayout;
             auto * pParamPresenter = medAbstractParameterPresenter::buildFromParameter(param);            
             auto * pWidget = pParamPresenter->buildWidget();
-            if (dynamic_cast<QPushButton*>(pWidget) == nullptr)
+            if (dynamic_cast<QPushButton*>(pWidget) == nullptr && dynamic_cast<QGroupBox*>(pWidget) == nullptr)
             {
                 auto * pLabel = pParamPresenter->buildLabel();
                 pHLayout->addWidget(pLabel);
@@ -86,6 +87,25 @@ QStackedWidget *medSourceModelPresenter::buildFilters()
 
             pVLayout->addLayout(pHLayout);
         }
+
+        if (!filterParams.isEmpty())
+        {
+            QFrame *line;
+            line = new QFrame();
+            line->setFrameShape(QFrame::HLine);
+            line->setFrameShadow(QFrame::Sunken);
+            pVLayout->addWidget(line);
+
+            QPushButton *pApplyButton = new QPushButton("Apply");
+            pVLayout->addWidget(pApplyButton);
+            connect(pApplyButton, &QPushButton::clicked, sourceModel, &medSourceItemModel::resetModel);
+        }
+        else
+        {
+            QLabel *noFilterLabel = new QLabel("The current selected source has no filters");
+            pVLayout->addWidget(noFilterLabel);
+        }
+
         auto *pParamListWidget = new QWidget();
         pParamListWidget->setLayout(pVLayout);
         filterRes->addWidget(pParamListWidget);

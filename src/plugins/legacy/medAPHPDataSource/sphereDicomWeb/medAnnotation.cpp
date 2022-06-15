@@ -54,6 +54,11 @@ int medAnnotation::isServerAvailable()
 
 }
 
+bool medAnnotation::hasUrl()
+{
+    return m_url != QString();
+}
+
 QList<QMap<QString, QString>> medAnnotation::findAnnotationMinimalEntries(const QString &seriesInstanceUID)
 {
     QList<QMap<QString, QString>> infos;

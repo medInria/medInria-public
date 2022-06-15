@@ -126,7 +126,7 @@ void medGroupParameter::addParameter(medAbstractParameter * param)
     {
         param->setParent(this);
         d->parameterList.push_back(param);
-        connect(param, &medAbstractParameter::trigger, this, &medGroupParameter::triggered);
+        connect(param, &medAbstractParameter::triggered, this, &medGroupParameter::trigger);
         emit parameterAdded(param);
     }
 }
@@ -136,7 +136,7 @@ void medGroupParameter::removeParameter(medAbstractParameter * param)
     auto index = d->parameterList.indexOf(param);
     if (index >= 0)
     {
-        disconnect(param, &medAbstractParameter::trigger, this, &medGroupParameter::triggered);
+        disconnect(param, &medAbstractParameter::triggered, this, &medGroupParameter::trigger);
         d->parameterList.takeAt(index);
         emit parameterRemoved(param);
     }

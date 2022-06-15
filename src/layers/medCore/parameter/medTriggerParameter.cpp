@@ -29,7 +29,7 @@ medTriggerParameter::~medTriggerParameter()
 
 void medTriggerParameter::trigger()
 {
-
+    emit triggered();
 }
 
 QVariantMap medTriggerParameter::toVariantMap() const

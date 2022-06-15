@@ -126,12 +126,26 @@ public:
 public slots:
     void abort(int pi_iRequest) override;
     void onSettingsSaved();
+    void onFiltersApplied();
 
 private:
     int getQtDcmAsyncData(unsigned int pi_uiLevel, const QString &key);
     int getAnnotationAsyncData(const QString &key);
+    void computeDateRange();
 
-private:
+    QList<QMap<DcmTagKey, QString>> cFindPatient(const QString &patientID);
+    QList<QMap<DcmTagKey, QString>> cFindStudy(const QString &studyInstanceUID, const QString &patientID = "");
+    QList<QMap<DcmTagKey, QString>> cFindSeries(const QString &studyInstanceUID);
+
+    QList<levelMinimalEntries> getPatientMinimalEntries(const QList<QMap<DcmTagKey, QString>> &infosMap);
+    QList<levelMinimalEntries> getStudyMinimalEntries(const QList<QMap<DcmTagKey, QString>> &infosMap, bool isSeriesFiltered = false);
+    QList<levelMinimalEntries> getSeriesMinimalEntries(const QList<QMap<DcmTagKey, QString>> &infosMap);
+
+    QList<QMap<QString, QString>> getPatientMandatoryAttributes(const QList<QMap<DcmTagKey, QString>> &infosMap);
+    QList<QMap<QString, QString>> getStudyMandatoryAttributes(const QList<QMap<DcmTagKey, QString>> &infosMap, bool isSeriesFiltered = false);
+    QList<QMap<QString, QString>> getSeriesMandatoryAttributes(const QList<QMap<DcmTagKey, QString>> &infosMap);
+
+   private:
     medAPHPParametersPrivate* d;
 
     static std::atomic<int> s_RequestId;

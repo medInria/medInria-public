@@ -95,6 +95,11 @@ void medStringParameter::trigger()
     emit valueChanged(d->value);
 }
 
+void medStringParameter::edit()
+{
+    emit valueEdited(d->value);
+}
+
 QVariantMap medStringParameter::toVariantMap() const
 {
     QVariantMap varMapRes;

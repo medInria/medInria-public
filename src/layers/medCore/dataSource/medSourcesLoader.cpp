@@ -221,12 +221,32 @@ bool medSourcesLoader::setDefaultWorkingSource(QString const &instanceId)
 
 bool medSourcesLoader::setPath(QString path)
 {
-    bool bRes = false;
+    bool bRes = true;
 
-    if (QFile::exists(path + '/' + MED_DATASOURCES_FILENAME))
+    if (QDir(path).exists())
+    {
+        if (QFile::exists(path + '/' + MED_DATASOURCES_FILENAME))
+        {
+            medSettingsManager::instance()->setValue("Sources", "Conf dir", path);
+        }
+        else
+        {
+            auto oldPath = m_CnxParametersPath;
+            m_CnxParametersPath = path;
+            if (!saveToDisk())
+            {
+                m_CnxParametersPath = oldPath;
+                bRes = false;
+            }
+        }
+    }
+    else if (QFile::exists(path))
     {
         medSettingsManager::instance()->setValue("Sources", "Conf dir", path);
-        bRes = true;
+    }
+    else
+    {
+        bRes = false;
     }
 
     return bRes;
@@ -234,7 +254,7 @@ bool medSourcesLoader::setPath(QString path)
 
 QString medSourcesLoader::getPath()
 {
-    return m_CnxParametersPath;
+    return m_CnxParametersFile == MED_DATASOURCES_FILENAME ? m_CnxParametersPath : m_CnxParametersPath + "/" + m_CnxParametersFile;
 }
 
 
@@ -265,8 +285,21 @@ medAbstractSource* medSourcesLoader::createInstanceOfSource(QString const & type
 medSourcesLoader::medSourcesLoader(QObject *parent)
 {
     setParent(parent);
+    m_CnxParametersFile = MED_DATASOURCES_FILENAME;
+    m_CnxParametersPath = ".";
 
-    m_CnxParametersPath = medSettingsManager::instance()->value("Sources", "Conf dir", ".").toString();
+    auto cnxParametersSaved = medSettingsManager::instance()->value("Sources", "Conf dir", ".").toString();
+    
+    QFileInfo info(cnxParametersSaved); 
+    if (info.isFile())
+    {
+        m_CnxParametersFile = info.fileName();
+        m_CnxParametersPath = info.dir().path();
+    }
+    else if (QDir(cnxParametersSaved).exists())
+    {
+        m_CnxParametersPath = cnxParametersSaved;
+    }
 }
 
 bool medSourcesLoader::saveToDisk() const
@@ -321,7 +354,7 @@ bool medSourcesLoader::saveToDisk() const
 
     QByteArray payload = jsonSaveDoc.toJson();
 
-    QFile cnxSourcesParametersFile(m_CnxParametersPath + "/" + MED_DATASOURCES_FILENAME);
+    QFile cnxSourcesParametersFile(m_CnxParametersPath + "/" + m_CnxParametersFile);
     bRes = cnxSourcesParametersFile.open(QFile::WriteOnly | QFile::Text | QFile::Truncate);
     if (bRes)
     {
@@ -339,7 +372,7 @@ bool medSourcesLoader::loadFromDisk()
     QString content;
 
     QFile cnxSourcesParametersFile;
-    cnxSourcesParametersFile.setFileName(m_CnxParametersPath + "/" + MED_DATASOURCES_FILENAME);
+    cnxSourcesParametersFile.setFileName(m_CnxParametersPath + "/" + m_CnxParametersFile);
     bRes = cnxSourcesParametersFile.open(QIODevice::ReadOnly | QIODevice::Text);
     if (bRes)
     {

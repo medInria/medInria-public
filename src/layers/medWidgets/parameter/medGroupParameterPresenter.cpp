@@ -71,6 +71,7 @@ QGroupBox * medGroupParameterPresenter::buildGroupButton()
     connect(d->parameter, &medGroupParameter::parameterAdded, [=](medAbstractParameter * paramAdded) {addParam(paramAdded, pVLayout); });
     groupBoxRes->setLayout(pVLayout);
     groupBoxRes->setTitle(d->parameter->caption());
+    groupBoxRes->setAlignment(Qt::AlignTop);
     groupBoxRes->setToolTip(d->parameter->description());
 
     return groupBoxRes;
@@ -81,7 +82,7 @@ void medGroupParameterPresenter::addParam(medAbstractParameter * param, QVBoxLay
     auto * pHLayout = new QHBoxLayout;
     auto * pParamPresenter = medAbstractParameterPresenter::buildFromParameter(param);
     auto * pWidget = pParamPresenter->buildWidget();
-    if (dynamic_cast<QPushButton*>(pWidget) == nullptr)
+    if (dynamic_cast<QPushButton*>(pWidget) == nullptr && dynamic_cast<QGroupBox*>(pWidget) == nullptr)
     {
         auto * pLabel = pParamPresenter->buildLabel();
         pHLayout->addWidget(pLabel);
