@@ -265,20 +265,39 @@ medAbstractData * medDataModel::variantToMedAbstractData(QVariant &data, const m
 		{
 			pDataRes->setDataIndex(index);
 			QModelIndex modelIndex = m_sourcesModelMap[pSource]->toIndex(index.asString());
-			QString hruUri = m_sourcesModelMap[pSource]->toHumanReadableUri(modelIndex);
 			m_sourcesModelMap[pSource]->setData(modelIndex, "DataLoaded", 100); //Set information on tree about the data is already loaded
-			QString name = hruUri.right(hruUri.size() - hruUri.lastIndexOf("\r\n") - 2);
-			QStringList hruUriAsList = hruUri.split("\r\n", QString::SkipEmptyParts);
-			pDataRes->setExpectedName(name);
-			pDataRes->setMetaData(medMetaDataKeys::SeriesDescription.key(), name);
+            m_sourcesModelMap[pSource]->setData(modelIndex, true, 102);
+            QModelIndex parentIndex = modelIndex.parent();
+            while (parentIndex.isValid())
+            {
+                m_sourcesModelMap[pSource]->setData(parentIndex, true, 102);
+                parentIndex = parentIndex.parent();
+            }
+
+			//QString hruUri = m_sourcesModelMap[pSource]->toHumanReadableUri(modelIndex);
+			//QString name = hruUri.right(hruUri.size() - hruUri.lastIndexOf("\r\n") - 2);
+			//QStringList hruUriAsList = hruUri.split("\r\n", QString::SkipEmptyParts);
+			//pDataRes->setExpectedName(name);
+			//pDataRes->setMetaData(medMetaDataKeys::SeriesDescription.key(), name);
+            
+            QStringList path;
+            m_sourcesModelMap[pSource]->getDataNames(index, path);
+            pDataRes->setExpectedName(path.last());
+            pDataRes->setMetaData(medMetaDataKeys::SeriesDescription.key(), path.last());
 
 			//Todo remove the next asap
-			QString studyDesc;
-			if (hruUriAsList.size() > 2)
-			{
-				studyDesc = hruUriAsList.at(hruUriAsList.size() - 2);
-			}
-			pDataRes->setMetaData(medMetaDataKeys::StudyDescription.key(), studyDesc);
+			//QString studyDesc;
+			//if (hruUriAsList.size() > 2)
+			//{
+			//	studyDesc = hruUriAsList.at(hruUriAsList.size() - 2);
+			//}
+			//pDataRes->setMetaData(medMetaDataKeys::StudyDescription.key(), studyDesc);
+            QString studyDesc;
+            if (path.size() > 2)
+            {
+                studyDesc = path[path.size()-2];
+            }
+            pDataRes->setMetaData(medMetaDataKeys::StudyDescription.key(), studyDesc);
 			//end todo
 		}
 		else
@@ -503,6 +522,13 @@ bool medDataModel::saveData(medAbstractData *pi_pData, QString const &pi_baseNam
                 }
             }
 
+        }
+
+        auto index = pModel->toIndex(pio_uri);
+        while (index.isValid())
+        {
+            m_sourcesModelMap[pSource]->setData(index, true, 102);
+            index = index.parent();
         }
     }
 
@@ -800,19 +826,28 @@ void medDataModel::addData(medDataIndex * pi_datasetIndex, QString uri)
     //addData(getAbstractDataFromIndex(pi_datasetIndex), uri);
 }
 
+//void medDataModel::refresh(medDataIndex pi_index)
+//{
+//    auto *pModel = getModel(pi_index.sourceId());
+//    if (pModel)
+//    {
+//        if (pi_index.level() == 0)
+//        {
+//            pModel->resetModel();
+//        }
+//        else
+//        {
+//            //TODO handle 
+//        }
+//    }
+//}
+
 void medDataModel::refresh(medDataIndex pi_index)
 {
     auto *pModel = getModel(pi_index.sourceId());
     if (pModel)
     {
-        if (pi_index.level() == 0)
-        {
-            pModel->resetModel();
-        }
-        else
-        {
-            //TODO handle 
-        }
+        pModel->refresh(QModelIndex());
     }
 }
 

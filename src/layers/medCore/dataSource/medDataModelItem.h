@@ -51,7 +51,7 @@ public:
     inline void insert(int position, medDataModelItem *child) { childItems.insert(position, child); }
     QString iid(QString displayValue);
 
-
+    bool isAssociatedAbstractData();
 
 
     /* ***********************************************************************/
@@ -64,6 +64,8 @@ public:
 
     int row() const;
     bool removeRows(int row, int count);
+
+    QList<medDataModelItem *> offspringList();
 
 
     /* ***********************************************************************/

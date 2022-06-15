@@ -33,6 +33,7 @@ struct medDataModelElementPrivate
 	QMap<int, medSourceItemModel::asyncRequest> requestsMap;
 
     medDataModelItem *root;
+    QMap<int /*level*/, QList<medDataModelItem*> > itemsMapByLevel;
 };
 
 medSourceItemModel::medSourceItemModel(medDataModel *parent, QString const & sourceIntanceId) : d(new medDataModelElementPrivate)
@@ -234,6 +235,26 @@ inline medDataModelItem * medSourceItemModel::getItem(const QModelIndex & index)
     return itemRes;
 }
 
+medDataModelItem * medSourceItemModel::getItem(int iLevel, QString id) const
+{
+    medDataModelItem * pItemRes = nullptr;
+
+    if (d->itemsMapByLevel.contains(iLevel))
+    {
+        auto & itemLst = d->itemsMapByLevel[iLevel];
+        int i = 0;
+        while (i < itemLst.size() && pItemRes==nullptr)
+        {
+            if (itemLst[i]->iid() == id)
+            {
+                pItemRes = itemLst[i];
+            }
+        }
+    }
+
+    return pItemRes;
+}
+
 QModelIndex medSourceItemModel::getIndex(QString iid, QModelIndex const &parent) const
 {
     QModelIndex indexRes;
@@ -244,6 +265,18 @@ QModelIndex medSourceItemModel::getIndex(QString iid, QModelIndex const &parent)
     if (row >= 0)
     {
         indexRes = index(row, 0, parent);
+    }
+
+    return indexRes;
+}
+
+QModelIndex medSourceItemModel::getIndex(medDataModelItem * pItem) const
+{
+    QModelIndex indexRes;
+
+    if (pItem)
+    {
+        indexRes = createIndex(pItem->row(), 0, pItem);
     }
 
     return indexRes;
@@ -265,9 +298,9 @@ bool medSourceItemModel::setData(const QModelIndex & index, const QVariant & val
 {
 	bool bRes = false;
 
-	if (role == 100  && index.isValid())
+	if (role >= 100  && index.isValid())
 	{
-		getItem(index)->setData(value, 0, 100);
+		getItem(index)->setData(value, 0, role);
 		emit dataChanged(index, index);
 		bRes = true;
 	}
@@ -762,6 +795,59 @@ bool medSourceItemModel::getRequest(int pi_request, asyncRequest & request)
 	return bRes;
 }
 
+bool medSourceItemModel::refresh(QModelIndex const & pi_index)
+{
+    bool bRes = true;
+    
+    QList<QStringList> stack;
+    stack.push_back(QStringList());
+
+    populateLevelV2(QModelIndex(), "");
+
+    // ////////////////////////////////////////////////////////////////////////
+    // Init stack from root item with first sub-items with associated medAbstractData
+    for (auto *pChildItem : d->root->childItems)
+    {
+        if (pChildItem->data(0, 102).toBool())
+        {
+            stack[0].push_back(pChildItem->iid());
+        }
+    }
+
+    // ////////////////////////////////////////////////////////////////////////
+    // Fill stack with sub-levels item with associated medAbstractData
+    for (int iLevel = 1; iLevel < stack.size(); ++iLevel)
+    {
+        for (int iEntry = 0; iEntry < stack[iLevel].size(); iEntry++)
+        {
+            auto *pItem = getItem(iLevel, stack[iLevel][iEntry]);
+            for (auto pChildItem : pItem->childItems)
+            {
+                if (pChildItem->data(0, 102).toBool())
+                {
+                    if (stack.size() == iLevel) { stack.push_back(QStringList()); }
+                    stack[iLevel + 1].push_back(pChildItem->iid());
+                }
+            }
+        }
+    }
+
+    // ////////////////////////////////////////////////////////////////////////
+    // Perform populateLevelV2 on each element of stack
+    for (int iLevel = 0; iLevel < stack.size(); ++iLevel)
+    {
+        for (auto key : stack[iLevel])
+        {
+            auto *pItem = getItem(iLevel, key);
+            auto index = getIndex(pItem);
+
+            populateLevelV2(index.parent(), key);
+        }
+    }
+
+    return bRes;
+}
+
 /**
 * @brief  This slot refresh the current item pressed by GUI click, if the item don't have sons.
 * @param  index of the GUI element clicked.
@@ -820,6 +906,33 @@ bool medSourceItemModel::currentLevelFetchable(medDataModelItem * pItemCurrent)
             bRes &= static_cast<unsigned int>(pItemCurrent->level()) < uiLevelMax - 1;
         }
     }
+    return bRes;
+}
+
+bool medSourceItemModel::removeItem(medDataModelItem * pi_item)
+{
+    bool bRes = false;
+
+    int iLevel = pi_item->level();
+    if (iLevel > -1 && d->itemsMapByLevel.contains(iLevel))
+    {
+        bRes = d->itemsMapByLevel[iLevel].removeOne(pi_item);
+    }
+
+    return bRes;
+}
+
+bool medSourceItemModel::registerItem(medDataModelItem * pi_item)
+{
+    bool bRes = false;
+
+    int iLevel = pi_item->level();
+    if (iLevel > -1 && d->itemsMapByLevel.contains(iLevel))
+    {
+        d->itemsMapByLevel[iLevel].push_back(pi_item);
+        bRes = true;
+    }
+
     return bRes;
 }
 
@@ -984,9 +1097,13 @@ void medSourceItemModel::computeRowRangesToRemove(medDataModelItem * pItem, QLis
     int iStartRemoveRange = -1;
     for (int i = 0; i < pItem->childCount(); ++i)
     {
-        if ((!itemStillExist(entries, pItem->child(i))) && (pItem->itemData[0].value(100).toString() == "DataCommited"))
+        auto *pChild = pItem->child(i);
+        bool bNotOnSource = !itemStillExist(entries, pChild);
+        bool bNoMedDataAssociated = !pChild->isAssociatedAbstractData();
+
+        if (bNotOnSource && bNoMedDataAssociated)
         {
-            //Here pItem->child(i) is no longer present inside refreshed entries
+            //Here pChild is no longer present inside refreshed entries
             if (iStartRemoveRange == -1)
             {
                 //Here a new range starting
@@ -995,12 +1112,22 @@ void medSourceItemModel::computeRowRangesToRemove(medDataModelItem * pItem, QLis
         }
         else
         {
-            //Here pItem->child(i) is still present inside refreshed entries
+            //Here pChild is still present inside refreshed entries
             if (iStartRemoveRange > -1)
             {
                 //Here the current range end
                 rangeToRemove.push_back({ iStartRemoveRange, i - 1 });
                 iStartRemoveRange = -1; //clean iStartRemoveRange for a future range
+            }
+
+            //Here if pChild is not present into the source, all of offspring will be mark as not present
+            pChild->setData(bNotOnSource, 0, 101);
+            if (bNotOnSource)
+            {
+                for (auto *pItemTmp : pChild->offspringList())
+                {
+                    pItemTmp->setData(true, 0, 101);
+                }
             }
         }
     }
@@ -1038,6 +1165,7 @@ void medSourceItemModel::computeRowRangesToAdd(medDataModelItem * pItem, QList<Q
         else
         {
             iLastItemAlreadyPresent = iTmpLastItemAlreadyPresent;
+            pItem->child(iLastItemAlreadyPresent)->setData(false, 0, 101);
         }
     }
 }

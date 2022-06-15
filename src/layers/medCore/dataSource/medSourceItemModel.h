@@ -109,6 +109,7 @@ public:
     bool        additionnalMetaData2(QModelIndex const & index, QString const & key, QVariant & value, QString & tag);
 
 	bool getRequest(int pi_request, asyncRequest &request);
+    bool refresh(QModelIndex const & index);
     //JU
     void expandAll(QModelIndex index = QModelIndex(), QString key = "");
 
@@ -118,9 +119,11 @@ public slots:
 
 
 
-private:    
+private:
     medDataModelItem* getItem(const QModelIndex &index) const;
+    medDataModelItem* getItem(int iLevel, QString id) const;
     QModelIndex getIndex(QString iid, QModelIndex const &parent = QModelIndex()) const;
+    QModelIndex getIndex(medDataModelItem *pItem) const;
     bool fetchColumnNames(const QModelIndex &index);
     void populateLevel(QModelIndex const &index, QString const &key);
 
@@ -135,7 +138,10 @@ private:
 
     bool currentLevelFetchable(medDataModelItem * pItemCurrent);
 
-
+    friend class medDataModelItem;
+    bool removeItem(medDataModelItem *pi_item);
+    bool registerItem(medDataModelItem *pi_item);
+    //void markAsRemovedOnSource();
 
 signals:
     void online(bool);

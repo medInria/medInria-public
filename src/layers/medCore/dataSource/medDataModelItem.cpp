@@ -24,6 +24,7 @@ medDataModelItem::medDataModelItem(medDataModelItem *parent)
 
 medDataModelItem::~medDataModelItem()
 {
+    model->removeItem(this);
     for (auto &childItem : childItems)
     {
         delete childItem;
@@ -61,6 +62,18 @@ bool medDataModelItem::removeRows(int row, int count)
     }
 
     return bRes;
+}
+
+QList<medDataModelItem*> medDataModelItem::offspringList()
+{
+    QList<medDataModelItem*> offspringRes = childItems;
+    
+    for (int i = 0; i < offspringRes.size(); ++i)
+    {
+        offspringRes.append(offspringRes[i]->childItems);
+    }
+
+    return offspringRes;
 }
 
 QStringList medDataModelItem::uriAsList()
@@ -151,6 +164,7 @@ void medDataModelItem::setParent(medDataModelItem * parent)
 {
     parentItem = parent;
     iLevel = parentItem->iLevel + 1;
+    model->registerItem(this);
 }
 
 void medDataModelItem::setMetaData(QMap<QString, QVariant> const & attributes, QMap<QString, QString> const & tags)
@@ -185,6 +199,22 @@ QString medDataModelItem::iid(QString displayValue)
     }
 
     return iidRes;
+}
+
+bool medDataModelItem::isAssociatedAbstractData()
+{
+    bool bRes = false;
+
+    bRes = itemData[0][100] == "dataCommited" || itemData[0][100] == "dataLoaded";
+
+    int i = 0;
+    int iChildCount = childItems.size();
+    while (!bRes && i < iChildCount)
+    {
+        bRes = childItems[i]->isAssociatedAbstractData();
+    }
+
+    return bRes;
 }
 
 QVariant medDataModelItem::data(int column, int role) const
