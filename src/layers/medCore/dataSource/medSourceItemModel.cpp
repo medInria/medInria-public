@@ -816,7 +816,6 @@ bool medSourceItemModel::refresh(QModelIndex const &pi_index)
 
     // ////////////////////////////////////////////////////////////////////////
     // Init stack from root item with first sub-items with associated medAbstractData
-
     for (auto *pChildItem : pStartItem->childItems)
     {
         if (pChildItem->data(0, 102).toBool())
@@ -824,20 +823,21 @@ bool medSourceItemModel::refresh(QModelIndex const &pi_index)
             stack[0].push_back(pChildItem->iid());
         }
     }
+    iStartLevel++;
 
     // ////////////////////////////////////////////////////////////////////////
     // Fill stack with sub-levels item with associated medAbstractData
-    for (int iLevel = iStartLevel + 1; iLevel < stack.size(); ++iLevel)
+    for (int i = 0; i < stack.size(); ++i)
     {
-        for (int iEntry = 0; iEntry < stack[iLevel - iStartLevel].size(); iEntry++)
+        for (int iEntry = 0; iEntry < stack[i].size(); iEntry++)
         {
-            auto *pItem = getItem(iLevel, stack[iLevel - iStartLevel][iEntry]);
+            auto *pItem = getItem(i + iStartLevel, stack[i][iEntry]);
             for (auto pChildItem : pItem->childItems)
             {
                 if (pChildItem->data(0, 102).toBool())
                 {
-                    if (stack.size() == iLevel - iStartLevel) { stack.push_back(QStringList()); }
-                    stack[iLevel - iStartLevel + 1].push_back(pChildItem->iid());
+                    if (stack.size() == i + 1) { stack.push_back(QStringList()); }
+                    stack[i + 1].push_back(pChildItem->iid());
                 }
             }
         }
@@ -845,11 +845,11 @@ bool medSourceItemModel::refresh(QModelIndex const &pi_index)
 
     // ////////////////////////////////////////////////////////////////////////
     // Perform populateLevelV2 on each element of stack
-    for (int iLevel = 0; iLevel < stack.size(); ++iLevel)
+    for (int i = 0; i < stack.size(); ++i)
     {
-        for (auto key : stack[iLevel])
+        for (auto key : stack[i])
         {
-            auto *pItem = getItem(iLevel + iStartLevel, key);
+            auto *pItem = getItem(i + iStartLevel, key);
             auto index = getIndex(pItem);
 
             populateLevelV2(index.parent(), key);
