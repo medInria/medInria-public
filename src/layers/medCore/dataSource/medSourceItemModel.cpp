@@ -372,6 +372,10 @@ QMimeData * medSourceItemModel::mimeData(const QModelIndexList & indexes) const
 
 
 
+QString medSourceItemModel::getColumnNameByLevel(int iLevel, int iCol) const
+{
+    return d->columnNameByLevel[iLevel][iCol];
+}
 int medSourceItemModel::getColumnInsideLevel(int level, int section) const
 {
     int iRes = -1;
@@ -1088,15 +1092,18 @@ void medSourceItemModel::populateLevelV2(QModelIndex const & index, QString cons
 }
 
 
+
 bool medSourceItemModel::itemStillExist(QList<QMap<QString, QString>> &entries, medDataModelItem * pItem)
 {
     bool bFind = false;
+
+    QString iidColName = getColumnNameByLevel(pItem->level(), 0);
 
     auto it = entries.begin();
     auto end = entries.end();
     while ((it != end) && !bFind)
     {
-        bFind = pItem->iid() == (*it).first();// [(*it).keys[0]]; //(*it).values()[0];
+        bFind = pItem->iid() == (*it)[iidColName];
         ++it;
     }
 
@@ -1165,9 +1172,11 @@ void medSourceItemModel::removeRowRanges(QVector<QPair<int, int>> &rangeToRemove
 void medSourceItemModel::computeRowRangesToAdd(medDataModelItem * pItem, QList<QMap<QString, QString>> &entries, QMap<int, QList<QMap<QString, QString>>> &entriesToAdd)
 {
     int  iLastItemAlreadyPresent = -1;
+    
+    QString iidColName = getColumnNameByLevel(pItem->level(), 0);
     for (QMap<QString, QString> &var : entries)
     {
-        int iTmpLastItemAlreadyPresent = pItem->childIndex(var.first());
+        int iTmpLastItemAlreadyPresent = pItem->childIndex(var[iidColName]);
 
         if (iTmpLastItemAlreadyPresent == -1)
         {

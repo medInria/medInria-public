@@ -82,6 +82,7 @@ public:
     // ////////////////////////////////////////////////////////////////////////
     // Simple methods
     //void setColumnAttributes(int p_iLevel, QStringList &attributes); //maybe developed because not const ?
+    QString getColumnNameByLevel(int iLevel, int iCol) const;
     int  getColumnInsideLevel(int level, int section) const;
     int  getSectionInsideLevel(int level, int column) const;
     bool fetch(QStringList uri);
@@ -128,6 +129,7 @@ private:
     void populateLevel(QModelIndex const &index, QString const &key);
 
     void populateLevelV2(QModelIndex const &index, QString const & key);
+
 
     bool itemStillExist(QList<QMap<QString, QString>> &entries, medDataModelItem * pItem);
     void computeRowRangesToRemove(medDataModelItem * pItem, QList<QMap<QString, QString>> &entries, QVector<QPair<int, int>> &rangeToRemove);
