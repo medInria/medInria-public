@@ -94,6 +94,9 @@ public:
     std::string GetNumberOfSeriesInStudy() const;
     std::string GetNumberOfStudyRelatedSeries() const;
     std::string GetStudyDate() const;
+    std::string GetStudyTime() const;
+    std::string GetSeriesDate() const;
+    std::string GetSeriesTime() const;
     std::string GetModality() const;
     std::string GetManufacturer() const;
     std::string GetInstitution() const;

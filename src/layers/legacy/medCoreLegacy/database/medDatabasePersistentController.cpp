@@ -76,6 +76,10 @@ void medDatabasePersistentControllerPrivate::buildMetaDataLookup()
                           TableEntryList() << TableEntry(T_study, "uid"));
     metaDataLookup.insert(medMetaDataKeys::StudyID.key(),
                           TableEntryList() << TableEntry(T_study, "studyId"));
+    metaDataLookup.insert(medMetaDataKeys::StudyTime.key(),
+                          TableEntryList() << TableEntry(T_study, "time"));
+    metaDataLookup.insert(medMetaDataKeys::StudyDate.key(),
+                          TableEntryList() << TableEntry(T_study, "date"));
     // Series Data
     metaDataLookup.insert(medMetaDataKeys::Size.key(),
                           TableEntryList() << TableEntry(T_series, "size"));
@@ -141,6 +145,12 @@ void medDatabasePersistentControllerPrivate::buildMetaDataLookup()
     metaDataLookup.insert(medMetaDataKeys::AcquisitionTime.key(),
                           TableEntryList()
                               << TableEntry(T_series, "acquisitionTime"));
+    metaDataLookup.insert(medMetaDataKeys::SeriesTime.key(),
+                          TableEntryList() << TableEntry(T_series, "time"));
+    metaDataLookup.insert(medMetaDataKeys::SeriesDate.key(),
+                          TableEntryList() << TableEntry(T_series, "date"));
+    metaDataLookup.insert(medMetaDataKeys::KVP.key(),
+                          TableEntryList() << TableEntry(T_series, "kvp"));
 }
 
 /**

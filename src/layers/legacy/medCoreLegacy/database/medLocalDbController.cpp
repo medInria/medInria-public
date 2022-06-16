@@ -107,16 +107,30 @@ bool medLocalDbController::createStudyTable()
 {
     QSqlQuery query(m_database);
 
-    return query.prepare(
-               "CREATE TABLE IF NOT EXISTS study ("
-               " id        INTEGER      PRIMARY KEY,"
-               " patient   INTEGER," // FOREIGN KEY
-               " name         TEXT,"
-               " uid          TEXT,"
-               " thumbnail    TEXT,"
-               " studyId      TEXT"
-               ");") &&
+    query.prepare(
+        "CREATE TABLE IF NOT EXISTS study ("
+        " id        INTEGER      PRIMARY KEY,"
+        " patient   INTEGER," // FOREIGN KEY
+        " name         TEXT,"
+        " uid          TEXT,"
+        " thumbnail    TEXT,"
+        " studyId      TEXT,"
+        " time         TEXT,"
+        " date         TEXT"
+        ");") &&
            execQuery(query, __FILE__, __LINE__);
+
+    // Get all the information about the table columns
+    query.prepare("PRAGMA table_info(study)");
+    if (!execQuery(query, __FILE__, __LINE__))
+    {
+        qDebug() << DTK_COLOR_FG_RED << query.lastError() << DTK_NO_COLOR;
+    }
+
+    this->addTextColumnToStudyTableIfNeeded(query, "time");
+    this->addTextColumnToStudyTableIfNeeded(query, "date");
+
+    return true;
 }
 
 bool medLocalDbController::createSeriesTable()
@@ -155,7 +169,10 @@ bool medLocalDbController::createSeriesTable()
         " flipAngle       TEXT,"
         " echoTime        TEXT,"
         " repetitionTime  TEXT,"
-        " acquisitionTime TEXT"
+        " acquisitionTime TEXT,"
+        " time            TEXT,"
+        " date            TEXT,"
+        " kvp             TEXT"
         ");") &&
         execQuery(query, __FILE__, __LINE__);
 
@@ -171,6 +188,9 @@ bool medLocalDbController::createSeriesTable()
     this->addTextColumnToSeriesTableIfNeeded(query, "echoTime");
     this->addTextColumnToSeriesTableIfNeeded(query, "repetitionTime");
     this->addTextColumnToSeriesTableIfNeeded(query, "acquisitionTime");
+    this->addTextColumnToSeriesTableIfNeeded(query, "time");
+    this->addTextColumnToSeriesTableIfNeeded(query, "date");
+    this->addTextColumnToSeriesTableIfNeeded(query, "kvp");
 
     return true;
 }
@@ -192,6 +212,27 @@ void medLocalDbController::addTextColumnToSeriesTableIfNeeded(QSqlQuery query, Q
     if (!isColumnThere)
     {
         query.prepare("ALTER TABLE series ADD COLUMN " + columnName + " TEXT");
+        execQuery(query, __FILE__, __LINE__);
+    }
+}
+
+void medLocalDbController::addTextColumnToStudyTableIfNeeded(QSqlQuery query, QString columnName)
+{
+    bool isColumnThere = false;
+    query.first();
+
+    while (query.next())
+    {
+        if (query.value(1).toString() == columnName)
+        {
+            isColumnThere = true;
+        }
+    }
+
+    // If columnName is not defined in the db series table, add it.
+    if (!isColumnThere)
+    {
+        query.prepare("ALTER TABLE study ADD COLUMN " + columnName + " TEXT");
         execQuery(query, __FILE__, __LINE__);
     }
 }
@@ -322,10 +363,10 @@ void medLocalDbController::requestDatabaseForModel(QHash<int, QHash<QString, QVa
                                                    QHash<int, QHash<QString, QVariant>> &seriesData) const
 {
     QString queryStr = "select patient.id as patient_id, patient.name as patient_name, patient.birthdate, patient.gender, \
-                    study.id as study_id, study.name as study_name, \
+                    study.id as study_id, study.name as study_name, study.time as study_time, study.date as study_date, \
                     series.id as series_id, series.name as series_name, series.size, series.age, series.modality , series.acquisitiondate, \
                     series.importationdate, series.referee, series.performer, series.institution, \
-                    series.report, series.thumbnail \
+                    series.report, series.thumbnail, series.time as series_time, series.date as series_date, kvp \
                     from patient \
                     inner join study on patient.id = study.patient \
                     inner join series on study.id = series.study";
@@ -352,6 +393,8 @@ void medLocalDbController::requestDatabaseForModel(QHash<int, QHash<QString, QVa
             studies.append(query.value("study_id").toInt());
             patientEntry["studies"] = studies;
             studyEntry[medMetaDataKeys::StudyDescription.key()] = query.value("study_name").toString();
+            studyEntry[medMetaDataKeys::StudyTime.key()] = query.value("study_time").toString();
+            studyEntry[medMetaDataKeys::StudyDate.key()] = query.value("study_date").toString();
         }
         QHash<QString, QVariant> &seriesEntry = seriesData[query.value("series_id").toInt()];
         if (seriesEntry.isEmpty())
@@ -370,6 +413,9 @@ void medLocalDbController::requestDatabaseForModel(QHash<int, QHash<QString, QVa
             seriesEntry[medMetaDataKeys::Institution.key()] = query.value("institution").toString();
             seriesEntry[medMetaDataKeys::Report.key()] = query.value("report").toString();
             seriesEntry[medMetaDataKeys::ThumbnailPath.key()] = query.value("thumbnail").toString();
+            seriesEntry[medMetaDataKeys::SeriesTime.key()] = query.value("series_time").toString();
+            seriesEntry[medMetaDataKeys::SeriesDate.key()] = query.value("series_date").toString();
+            seriesEntry[medMetaDataKeys::KVP.key()] = query.value("kvp").toString();
         }
     }
     return;

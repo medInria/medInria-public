@@ -955,6 +955,24 @@ std::string DCMTKImageIO::GetStudyDate() const
     return name;
 }
 
+std::string DCMTKImageIO::GetStudyTime() const
+{
+    std::string name = this->GetMetaDataValueString ( "(0008,0030)", 0 );
+    return name;
+}
+
+std::string DCMTKImageIO::GetSeriesDate() const
+{
+    std::string name = this->GetMetaDataValueString ( "(0008,0021)", 0 );
+    return name;
+}
+
+std::string DCMTKImageIO::GetSeriesTime() const
+{
+    std::string name = this->GetMetaDataValueString ( "(0008,0031)", 0 );
+    return name;
+}
+
 std::string DCMTKImageIO::GetModality() const
 {
     std::string name = this->GetMetaDataValueString ( "(0008,0060)", 0 );

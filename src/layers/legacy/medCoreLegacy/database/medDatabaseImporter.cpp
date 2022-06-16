@@ -161,7 +161,9 @@ int medDatabaseImporter::getOrCreateStudy ( const medAbstractData* medData, QSql
     QString studyName   = medMetaDataKeys::StudyDescription.getFirstValue(medData).simplified();
     QString studyUid    = medMetaDataKeys::StudyInstanceUID.getFirstValue(medData);
     QString studyId     = medMetaDataKeys::StudyID.getFirstValue(medData);
-    QString seriesName   = medMetaDataKeys::SeriesDescription.getFirstValue(medData).simplified();
+    QString seriesName  = medMetaDataKeys::SeriesDescription.getFirstValue(medData).simplified();
+    QString studyTime   = medMetaDataKeys::StudyTime.getFirstValue(medData);
+    QString studyDate   = medMetaDataKeys::StudyDate.getFirstValue(medData);
 
     if( studyName=="EmptyStudy" && seriesName=="EmptySeries" )
         return studyDbId;
@@ -183,13 +185,15 @@ int medDatabaseImporter::getOrCreateStudy ( const medAbstractData* medData, QSql
     {
         QString refThumbPath = medMetaDataKeys::ThumbnailPath.getFirstValue(medData);
 
-        query.prepare ( "INSERT INTO study (patient, name, uid, thumbnail, studyId) "
-                        "VALUES (:patient, :studyName, :studyUid, :thumbnail, :studyId)" );
+        query.prepare ( "INSERT INTO study (patient, name, uid, thumbnail, studyId, time, date) "
+                        "VALUES (:patient, :studyName, :studyUid, :thumbnail, :studyId, :studyTime, :studyDate)" );
         query.bindValue ( ":patient", patientDbId );
         query.bindValue ( ":studyName", studyName );
         query.bindValue ( ":studyUid", studyUid );
         query.bindValue ( ":thumbnail", refThumbPath );
-        query.bindValue ( ":studyId", studyId);
+        query.bindValue ( ":studyId", studyId );
+        query.bindValue ( ":studyTime", studyTime );
+        query.bindValue ( ":studyDate", studyDate );
 
         query.exec();
 
@@ -259,36 +263,41 @@ int medDatabaseImporter::getOrCreateSeries ( const medAbstractData* medData, QSq
             seriesPath = fileNames.count()>0 ? fileNames[0] : "" ;
         }
 
-        int size               = medMetaDataKeys::Size.getFirstValue(medData).toInt();
-        QString refThumbPath   = medMetaDataKeys::ThumbnailPath.getFirstValue(medData);
-        QString age            = medMetaDataKeys::Age.getFirstValue(medData);
-        QString description    = medMetaDataKeys::Description.getFirstValue(medData);
-        QString modality       = medMetaDataKeys::Modality.getFirstValue(medData);
-        QString protocol       = medMetaDataKeys::Protocol.getFirstValue(medData);
-        QString comments       = medMetaDataKeys::Comments.getFirstValue(medData);
-        QString status         = medMetaDataKeys::Status.getFirstValue(medData);
-        QString acqdate        = medMetaDataKeys::AcquisitionDate.getFirstValue(medData);
-        QString importdate     = medMetaDataKeys::ImportationDate.getFirstValue(medData);
-        QString referee        = medMetaDataKeys::Referee.getFirstValue(medData);
-        QString performer      = medMetaDataKeys::Performer.getFirstValue(medData);
-        QString institution    = medMetaDataKeys::Institution.getFirstValue(medData);
-        QString report         = medMetaDataKeys::Report.getFirstValue(medData);
+        int size                = medMetaDataKeys::Size.getFirstValue(medData).toInt();
+        QString refThumbPath    = medMetaDataKeys::ThumbnailPath.getFirstValue(medData);
+        QString age             = medMetaDataKeys::Age.getFirstValue(medData);
+        QString description     = medMetaDataKeys::Description.getFirstValue(medData);
+        QString modality        = medMetaDataKeys::Modality.getFirstValue(medData);
+        QString protocol        = medMetaDataKeys::Protocol.getFirstValue(medData);
+        QString comments        = medMetaDataKeys::Comments.getFirstValue(medData);
+        QString status          = medMetaDataKeys::Status.getFirstValue(medData);
+        QString acqdate         = medMetaDataKeys::AcquisitionDate.getFirstValue(medData);
+        QString importdate      = medMetaDataKeys::ImportationDate.getFirstValue(medData);
+        QString referee         = medMetaDataKeys::Referee.getFirstValue(medData);
+        QString performer       = medMetaDataKeys::Performer.getFirstValue(medData);
+        QString institution     = medMetaDataKeys::Institution.getFirstValue(medData);
+        QString report          = medMetaDataKeys::Report.getFirstValue(medData);
         QString origin          = medMetaDataKeys::Origin.getFirstValue(medData);
         QString flipAngle       = medMetaDataKeys::FlipAngle.getFirstValue(medData);
         QString echoTime        = medMetaDataKeys::EchoTime.getFirstValue(medData);
         QString repetitionTime  = medMetaDataKeys::RepetitionTime.getFirstValue(medData);
         QString acquisitionTime = medMetaDataKeys::AcquisitionTime.getFirstValue(medData);
+        QString seriesTime      = medMetaDataKeys::SeriesTime.getFirstValue(medData);
+        QString seriesDate      = medMetaDataKeys::SeriesDate.getFirstValue(medData);
+        QString kvp             = medMetaDataKeys::KVP.getFirstValue(medData);
 
         query.prepare ( "INSERT INTO series (study, seriesId, size, name, path, uid, "
                         "orientation, seriesNumber, sequenceName, sliceThickness, rows, columns, "
                         "thumbnail, age, description, modality, protocol, comments, "
                         "status, acquisitiondate, importationdate, referee, performer, institution, report, "
-                        "origin, flipAngle, echoTime, repetitionTime, acquisitionTime) "
+                        "origin, flipAngle, echoTime, repetitionTime, acquisitionTime, "
+                        "time, date, kvp) "
                         "VALUES (:study, :seriesId, :size, :seriesName, :seriesPath, :seriesUid, "
                         ":orientation, :seriesNumber, :sequenceName, :sliceThickness, :rows, :columns, "
                         ":thumbnail, :age, :description, :modality, :protocol, :comments, "
                         ":status, :acquisitiondate, :importationdate, :referee, :performer, :institution, :report, "
-                        ":origin, :flipAngle, :echoTime, :repetitionTime, :acquisitionTime)" );
+                        ":origin, :flipAngle, :echoTime, :repetitionTime, :acquisitionTime, "
+                        ":seriesTime, :seriesDate, :kvp)" );
 
         query.bindValue ( ":study",          studyDbId );
         query.bindValue ( ":seriesId",       seriesId );
@@ -320,6 +329,9 @@ int medDatabaseImporter::getOrCreateSeries ( const medAbstractData* medData, QSq
         query.bindValue ( ":echoTime",         echoTime );
         query.bindValue ( ":repetitionTime",   repetitionTime );
         query.bindValue ( ":acquisitionTime",  acquisitionTime );
+        query.bindValue ( ":seriesTime",     seriesTime );
+        query.bindValue ( ":seriesDate",     seriesDate );
+        query.bindValue ( ":kvp",            kvp );
 
         if ( !query.exec() )
         {

@@ -28,14 +28,15 @@ class MEDCORELEGACY_EXPORT medLocalDbController : public medDatabasePersistentCo
 public:
     static medLocalDbController *instance();
 
-    bool createConnection();
+    bool createConnection() override;
     bool closeConnection() override;
 
     QList<medDataIndex> patients() const override;
     void requestDatabaseForModel(QHash<int, QHash<QString, QVariant> > &patientData,
                                  QHash<int, QHash<QString, QVariant> > &studyData,
-                                 QHash<int, QHash<QString, QVariant> > &seriesData) const;
+                                 QHash<int, QHash<QString, QVariant> > &seriesData) const override;
 
+    void addTextColumnToStudyTableIfNeeded(QSqlQuery query, QString columnName);
     void addTextColumnToSeriesTableIfNeeded(QSqlQuery query, QString columnName);
 
 protected:

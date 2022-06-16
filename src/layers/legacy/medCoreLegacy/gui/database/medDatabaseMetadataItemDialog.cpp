@@ -65,7 +65,7 @@ medDatabaseMetadataItemDialog::medDatabaseMetadataItemDialog(QList<QString> keyL
 
     // Populate the tree
     int cpt = 0;
-    for (QString key : keyList)
+    for (QString &key : keyList)
     {
         // Only keep non empty metadata values
         if (!metadataList.at(cpt).toString().isEmpty())
