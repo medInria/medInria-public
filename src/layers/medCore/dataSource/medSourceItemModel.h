@@ -112,7 +112,7 @@ public:
 	bool getRequest(int pi_request, asyncRequest &request);
     bool refresh(QModelIndex const &pi_index = QModelIndex());
     //JU
-    void expandAll(QModelIndex index = QModelIndex(), QString key = "");
+    void expandAll(QModelIndex index = QModelIndex());
 
 public slots:
     void itemPressed(QModelIndex const &index);
@@ -126,9 +126,7 @@ private:
     QModelIndex getIndex(QString iid, QModelIndex const &parent = QModelIndex()) const;
     QModelIndex getIndex(medDataModelItem *pItem) const;
     bool fetchColumnNames(const QModelIndex &index);
-    void populateLevel(QModelIndex const &index, QString const &key);
-
-    void populateLevelV2(QModelIndex const &index, QString const & key);
+    void populateLevel(QModelIndex const &index);
 
 
     bool itemStillExist(QList<QMap<QString, QString>> &entries, medDataModelItem * pItem);

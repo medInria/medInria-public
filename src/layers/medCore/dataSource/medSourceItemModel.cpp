@@ -48,7 +48,7 @@ medSourceItemModel::medSourceItemModel(medDataModel *parent, QString const & sou
     {
         if (d->bOnline)
         {
-            populateLevel(QModelIndex(), "");
+            populateLevel(QModelIndex());
         }
         else
         {
@@ -419,12 +419,7 @@ int medSourceItemModel::getSectionInsideLevel(int level, int column) const
 
 bool medSourceItemModel::fetch(QStringList uri) //See populateLevelV2
 {
-    QString key;
-    if (uri.size() > 1)
-    {
-        key = uri.last();
-    }
-    populateLevelV2(toIndex(uri), key);
+    populateLevel(toIndex(uri));
     //    int i = 0;
     //    for (auto iid : uri)
     //    {
@@ -814,15 +809,7 @@ bool medSourceItemModel::refresh(QModelIndex const &pi_index)
 
     auto * pStartItem = getItem(pi_index);
     int iStartLevel = pStartItem->level();
-    if (pi_index.isValid())
-    {        
-        populateLevelV2(pi_index, pStartItem->iid());
-    }
-    else
-    {
-        populateLevelV2(pi_index, "");
-    }
-    
+    populateLevel(pi_index);
 
     // ////////////////////////////////////////////////////////////////////////
     // Init stack from root item with first sub-items with associated medAbstractData
@@ -862,7 +849,7 @@ bool medSourceItemModel::refresh(QModelIndex const &pi_index)
             auto *pItem = getItem(i + iStartLevel, key);
             auto index = getIndex(pItem);
 
-            populateLevelV2(index, key);
+            populateLevel(index);
         }
     }
 
@@ -880,8 +867,7 @@ void medSourceItemModel::itemPressed(QModelIndex const &index)
         medDataModelItem * pItemCurrent = getItem(index);
         if (currentLevelFetchable(pItemCurrent) && pItemCurrent->childCount() == 0 )
         {
-            auto key = pItemCurrent->iid();
-            populateLevel(index, key);
+            populateLevel(index);
         }
         QString uri = pItemCurrent->uriAsString();
         QModelIndex index2 = toIndex(uri);
@@ -905,7 +891,7 @@ bool medSourceItemModel::resetModel()
     endResetModel();
 
     //populate the model from scratch
-    populateLevelV2(QModelIndex(), "");
+    populateLevel(QModelIndex());
 
     return bRes;
 }
@@ -999,101 +985,35 @@ bool medSourceItemModel::fetchColumnNames(const QModelIndex &index/*int const &i
     return bRes;
 }
 
-
-void medSourceItemModel::populateLevel(QModelIndex const &index, QString const &key)
+void medSourceItemModel::populateLevel(QModelIndex const & index)
 {
     //QVariantList entries; //QList<QList<QString>> list of entries of the given level, each entry has a list of 3 elements {key, name, description}. Key is never displayed, only used to fetch sub-level and used has unique key
-    if (index.isValid() != key.isEmpty())
+    QString key = getItem(index)->iid();
+    QList<QMap<QString, QString>> entries;
+    medDataModelItem *pItem = getItem(index);
+    int iLevel = pItem->level() + 1;
+
+
+    if (!d->columnNameByLevel.contains(iLevel))
     {
-        QList<QMap<QString, QString>> entries;
-        medDataModelItem *pItem = getItem(index);
-
-        int iLevel = pItem->level() + 1;
-
-        if (!d->columnNameByLevel.contains(iLevel))
-        {
-            fetchColumnNames(index);
-        }
-
-        if (d->parent->attributesForBuildTree(d->sourceInstanceId, iLevel, key, entries))
-        {
-            if (entries.size() > 0)
-            {
-                if (index.isValid())
-                {
-                    int row = rowCount(index);
-                    int elemCount = entries.size();
-                    emit layoutAboutToBeChanged(); //this is useful to update arrow on the left if click is not inside
-                    beginInsertRows(index.siblingAtColumn(0), row, row + elemCount - 1);
-                }
-
-
-                // ////////////////////////////////////////////////////////////////////////
-                // Populate data loop
-                for (QMap<QString, QString> &var : entries)
-                {
-                    medDataModelItem *pItemTmp = new medDataModelItem(this);
-                    for (QString k : var.keys())
-                    {
-                        int iCol = d->columnNameByLevel[iLevel].indexOf(k);
-                        if (iCol == -1)
-                        {
-                            d->columnNameByLevel[iLevel].push_back(k);
-                            if (!d->sectionNames.contains(k))
-                            {
-                                qDebug() << "[WARN] Unknown column name " << k << " from getMandatoryAttributesKeys in datasource " << d->sourceInstanceId << " at level " << iLevel - 1;
-                                d->sectionNames.push_back(k);
-                                emit columnCountChange(d->sectionNames.size());
-                                iCol = d->columnNameByLevel[iLevel].size() - 1;
-                            }
-                        }
-                        pItemTmp->setData(var[k], iCol);
-                    }
-                    pItemTmp->setParent(pItem);
-                    pItem->append(pItemTmp);
-                }
-
-                if (index.isValid())
-                {
-                    endInsertRows();
-                    emit layoutChanged(); // close the emit layoutAboutToBeChanged();
-                }
-            }
-        }
+        fetchColumnNames(index);
     }
-}
 
-void medSourceItemModel::populateLevelV2(QModelIndex const & index, QString const & key)
-{
-    //QVariantList entries; //QList<QList<QString>> list of entries of the given level, each entry has a list of 3 elements {key, name, description}. Key is never displayed, only used to fetch sub-level and used has unique key
-    if (index.isValid() != key.isEmpty())
+    if (d->parent->attributesForBuildTree(d->sourceInstanceId, iLevel, key, entries))
     {
-        QList<QMap<QString, QString>> entries;
-        medDataModelItem *pItem = getItem(index);
-        int iLevel = pItem->level() + 1;
+        emit layoutAboutToBeChanged(); //this is useful to update arrow on the left if click is not inside
 
+        QVector<QPair<int, int> > rangeToRemove; // vector of ranges to delete, <beginRange, endRange>
+        computeRowRangesToRemove(pItem, entries, rangeToRemove);
+        removeRowRanges(rangeToRemove, index);
 
-        if (!d->columnNameByLevel.contains(iLevel))
-        {
-            fetchColumnNames(index);
-        }
+        //TODO Update data already present inside the model
 
-        if (d->parent->attributesForBuildTree(d->sourceInstanceId, iLevel, key, entries))
-        {
-            emit layoutAboutToBeChanged(); //this is useful to update arrow on the left if click is not inside
+        QMap<int, QList<QMap<QString, QString>>> entriesToAdd; //position to insert, List of QVariant, itself QVariantList representation of minimal entries
+        computeRowRangesToAdd(pItem, entries, entriesToAdd);
+        addRowRanges(entriesToAdd, index);
 
-            QVector<QPair<int, int> > rangeToRemove; // vector of ranges to delete, <beginRange, endRange>
-            computeRowRangesToRemove(pItem, entries, rangeToRemove);
-            removeRowRanges(rangeToRemove, index);
-
-            //TODO Update data already present inside the model
-
-            QMap<int, QList<QMap<QString, QString>>> entriesToAdd; //position to insert, List of QVariant, itself QVariantList representation of minimal entries
-            computeRowRangesToAdd(pItem, entries, entriesToAdd);
-            addRowRanges(entriesToAdd, index);
-
-            emit layoutChanged(); // close the emit layoutAboutToBeChanged();
-        }
+        emit layoutChanged(); // close the emit layoutAboutToBeChanged();
     }
 }
 
@@ -1241,12 +1161,12 @@ void medSourceItemModel::addRowRanges(QMap<int, QList<QMap<QString, QString>>> &
     }
 }
 
-void medSourceItemModel::expandAll(QModelIndex index, QString key)
+void medSourceItemModel::expandAll(QModelIndex index)
 {
     auto item = getItem(index);
     if (currentLevelFetchable(item))
     {
-        populateLevelV2(index, key);
+        populateLevel(index);
 
         for (auto childItem : item->childItems)
         {
@@ -1259,7 +1179,7 @@ void medSourceItemModel::expandAll(QModelIndex index, QString key)
             uriAsList[uriAsList.size() - 1];
 
             QModelIndex childIndex = toIndex(uri);
-            expandAll(childIndex, uriAsList[uriAsList.size() - 1]);
+            expandAll(childIndex);
         }
     }
 }
