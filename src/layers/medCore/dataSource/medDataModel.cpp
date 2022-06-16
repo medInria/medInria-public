@@ -274,30 +274,19 @@ medAbstractData * medDataModel::variantToMedAbstractData(QVariant &data, const m
                 parentIndex = parentIndex.parent();
             }
 
-			//QString hruUri = m_sourcesModelMap[pSource]->toHumanReadableUri(modelIndex);
-			//QString name = hruUri.right(hruUri.size() - hruUri.lastIndexOf("\r\n") - 2);
-			//QStringList hruUriAsList = hruUri.split("\r\n", QString::SkipEmptyParts);
-			//pDataRes->setExpectedName(name);
-			//pDataRes->setMetaData(medMetaDataKeys::SeriesDescription.key(), name);
-            
-            QStringList path;
-            m_sourcesModelMap[pSource]->getDataNames(index, path);
-            pDataRes->setExpectedName(path.last());
-            pDataRes->setMetaData(medMetaDataKeys::SeriesDescription.key(), path.last());
+			QString hruUri = m_sourcesModelMap[pSource]->toHumanReadableUri(modelIndex);
+			QString name = hruUri.right(hruUri.size() - hruUri.lastIndexOf("\r\n") - 2);
+			QStringList hruUriAsList = hruUri.split("\r\n", QString::SkipEmptyParts);
+			pDataRes->setExpectedName(name);
+			pDataRes->setMetaData(medMetaDataKeys::SeriesDescription.key(), name);
 
 			//Todo remove the next asap
-			//QString studyDesc;
-			//if (hruUriAsList.size() > 2)
-			//{
-			//	studyDesc = hruUriAsList.at(hruUriAsList.size() - 2);
-			//}
-			//pDataRes->setMetaData(medMetaDataKeys::StudyDescription.key(), studyDesc);
-            QString studyDesc;
-            if (path.size() > 2)
-            {
-                studyDesc = path[path.size()-2];
-            }
-            pDataRes->setMetaData(medMetaDataKeys::StudyDescription.key(), studyDesc);
+			QString studyDesc;
+			if (hruUriAsList.size() > 2)
+			{
+				studyDesc = hruUriAsList.at(hruUriAsList.size() - 2);
+			}
+			pDataRes->setMetaData(medMetaDataKeys::StudyDescription.key(), studyDesc);
 			//end todo
 		}
 		else
@@ -719,7 +708,7 @@ void medDataModel::addSource(medAbstractSource * pi_source)
         m_sourceInstanceIdOrderedList.push_back(instanceId);
         m_sourceIdToInstanceMap[instanceId] = pi_source;
         m_sourcesModelMap[pi_source] = new medSourceItemModel(this, instanceId);
-        auto tester = new QAbstractItemModelTester(m_sourcesModelMap[pi_source], QAbstractItemModelTester::FailureReportingMode::Fatal, this);
+        auto tester = new QAbstractItemModelTester(m_sourcesModelMap[pi_source], QAbstractItemModelTester::FailureReportingMode::QtTest, this);
     }
 }
 
@@ -847,8 +836,7 @@ void medDataModel::refresh(medDataIndex pi_index)
     auto *pModel = getModel(pi_index.sourceId());
     if (pModel)
     {
-        pModel->refresh();
-        //(QModelIndex());
+        pModel->refresh(pModel->toIndex(pi_index));
     }
 }
 

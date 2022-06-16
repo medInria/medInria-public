@@ -374,8 +374,14 @@ QMimeData * medSourceItemModel::mimeData(const QModelIndexList & indexes) const
 
 QString medSourceItemModel::getColumnNameByLevel(int iLevel, int iCol) const
 {
-    return d->columnNameByLevel[iLevel][iCol];
+    QString strRes;
+    if (d->columnNameByLevel.contains(iLevel))
+    {
+        strRes = d->columnNameByLevel[iLevel][iCol];
+    }
+    return strRes;
 }
+
 int medSourceItemModel::getColumnInsideLevel(int level, int section) const
 {
     int iRes = -1;
@@ -856,7 +862,7 @@ bool medSourceItemModel::refresh(QModelIndex const &pi_index)
             auto *pItem = getItem(i + iStartLevel, key);
             auto index = getIndex(pItem);
 
-            populateLevelV2(index.parent(), key);
+            populateLevelV2(index, key);
         }
     }
 
@@ -942,7 +948,7 @@ bool medSourceItemModel::registerItem(medDataModelItem * pi_item)
     bool bRes = false;
 
     int iLevel = pi_item->level();
-    if (iLevel > -1 && d->itemsMapByLevel.contains(iLevel))
+    if (iLevel > -1)
     {
         d->itemsMapByLevel[iLevel].push_back(pi_item);
         bRes = true;
@@ -1173,19 +1179,22 @@ void medSourceItemModel::computeRowRangesToAdd(medDataModelItem * pItem, QList<Q
 {
     int  iLastItemAlreadyPresent = -1;
     
-    QString iidColName = getColumnNameByLevel(pItem->level(), 0);
-    for (QMap<QString, QString> &var : entries)
-    {
-        int iTmpLastItemAlreadyPresent = pItem->childIndex(var[iidColName]);
+    QString iidColName = getColumnNameByLevel(pItem->level()+1, 0);
+    if (!iidColName.isEmpty())
+    {    
+        for (QMap<QString, QString> &var : entries)
+        {
+            int iTmpLastItemAlreadyPresent = pItem->childIndex(var[iidColName]);
 
-        if (iTmpLastItemAlreadyPresent == -1)
-        {
-            entriesToAdd[iLastItemAlreadyPresent + 1].append(var);
-        }
-        else
-        {
-            iLastItemAlreadyPresent = iTmpLastItemAlreadyPresent;
-            pItem->child(iLastItemAlreadyPresent)->setData(false, 0, 101);
+            if (iTmpLastItemAlreadyPresent == -1)
+            {
+                entriesToAdd[iLastItemAlreadyPresent + 1].append(var);
+            }
+            else
+            {
+                iLastItemAlreadyPresent = iTmpLastItemAlreadyPresent;
+                pItem->child(iLastItemAlreadyPresent)->setData(false, 0, 101);
+            }
         }
     }
 }
