@@ -795,19 +795,29 @@ bool medSourceItemModel::getRequest(int pi_request, asyncRequest & request)
 	return bRes;
 }
 
-bool medSourceItemModel::refresh()
+bool medSourceItemModel::refresh(QModelIndex const &pi_index)
 {
-    QModelIndex const &pi_index = QModelIndex();
     bool bRes = true;
 
     QList<QStringList> stack;
     stack.push_back(QStringList());
 
-    populateLevelV2(QModelIndex(), "");
+    auto * pStartItem = getItem(pi_index);
+    int iStartLevel = pStartItem->level();
+    if (pi_index.isValid())
+    {        
+        populateLevelV2(pi_index, pStartItem->iid());
+    }
+    else
+    {
+        populateLevelV2(pi_index, "");
+    }
+    
 
     // ////////////////////////////////////////////////////////////////////////
     // Init stack from root item with first sub-items with associated medAbstractData
-    for (auto *pChildItem : d->root->childItems)
+
+    for (auto *pChildItem : pStartItem->childItems)
     {
         if (pChildItem->data(0, 102).toBool())
         {
@@ -817,17 +827,17 @@ bool medSourceItemModel::refresh()
 
     // ////////////////////////////////////////////////////////////////////////
     // Fill stack with sub-levels item with associated medAbstractData
-    for (int iLevel = 1; iLevel < stack.size(); ++iLevel)
+    for (int iLevel = iStartLevel + 1; iLevel < stack.size(); ++iLevel)
     {
-        for (int iEntry = 0; iEntry < stack[iLevel].size(); iEntry++)
+        for (int iEntry = 0; iEntry < stack[iLevel - iStartLevel].size(); iEntry++)
         {
-            auto *pItem = getItem(iLevel, stack[iLevel][iEntry]);
+            auto *pItem = getItem(iLevel, stack[iLevel - iStartLevel][iEntry]);
             for (auto pChildItem : pItem->childItems)
             {
                 if (pChildItem->data(0, 102).toBool())
                 {
-                    if (stack.size() == iLevel) { stack.push_back(QStringList()); }
-                    stack[iLevel + 1].push_back(pChildItem->iid());
+                    if (stack.size() == iLevel - iStartLevel) { stack.push_back(QStringList()); }
+                    stack[iLevel - iStartLevel + 1].push_back(pChildItem->iid());
                 }
             }
         }
@@ -839,7 +849,7 @@ bool medSourceItemModel::refresh()
     {
         for (auto key : stack[iLevel])
         {
-            auto *pItem = getItem(iLevel, key);
+            auto *pItem = getItem(iLevel + iStartLevel, key);
             auto index = getIndex(pItem);
 
             populateLevelV2(index.parent(), key);
