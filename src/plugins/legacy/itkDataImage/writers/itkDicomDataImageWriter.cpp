@@ -51,8 +51,13 @@ template <class ImageType> itk::Image<int, 3>::Pointer castToInt3(dtkAbstractDat
     typename CasterType::Pointer caster = CasterType::New();
     caster->SetInput(dynamic_cast<ImageType *>((itk::Object *)(input->data())));
     caster->Update();
-    typename itk::Image<int, 3>::Pointer output = caster->GetOutput();
-    return output;
+    return caster->GetOutput();
+}
+
+template <class PixelType> void setDataCopy(dtkSmartPointer<medAbstractData> dataCopy, dtkAbstractData *input)
+{
+    typedef itk::Image<PixelType, 3> ImageTypeInput;
+    dataCopy->setData(castToInt3<ImageTypeInput>(input));
 }
 
 itkDicomDataImageWriter::itkDicomDataImageWriter(): itkDataImageWriterBase() {
@@ -480,6 +485,7 @@ template <class PixelType> bool itkDicomDataImageWriter::writeDicom(const QStrin
     return true;
 }
 
+
 bool itkDicomDataImageWriter::write(const QString &path)
 {
     if (!this->data())
@@ -487,82 +493,78 @@ bool itkDicomDataImageWriter::write(const QString &path)
 
     QString id = data()->identifier();
 
-        try
+    try
+    {
+        // Create a copy of data which can be modified if data is of type double, float, unsigned long or long
+        dataCopy = medAbstractDataFactory::instance()->createSmartPointer(id);
+        if (!dataCopy)
         {
-            // Create a copy of data which can be modified if data is of type double, float, unsigned long or long
-            dataCopy = medAbstractDataFactory::instance()->createSmartPointer(id);
-            if (!dataCopy)
-            {
-                qWarning() << "Pixel type not supported by the software";
-                return false;
-            }
-            dataCopy->setData(data()->data());
+            qWarning() << "Pixel type not supported by the software";
+            return false;
+        }
+        dataCopy->setData(data()->data());
 
-            if (id == "itkDataImageChar3")
+        if (id == "itkDataImageChar3")
+        {
+            writeDicom<char>(path);
+        }
+        else if (id == "itkDataImageUChar3")
+        {
+            writeDicom<unsigned char>(path);
+        }
+        else if (id == "itkDataImageShort3")
+        {
+            writeDicom<short>(path);
+        }
+        else if (id == "itkDataImageUShort3")
+        {
+            writeDicom<unsigned short>(path);
+        }
+        else if (id == "itkDataImageInt3")
+        {
+            writeDicom<int>(path);
+        }
+        else if (id == "itkDataImageUInt3")
+        {
+            writeDicom<unsigned int>(path);
+        }
+        else
+        {
+            typedef itk::Image<int, 3> ImageTypeOutput;
+            dataCopy = medAbstractDataFactory::instance()->createSmartPointer(medUtilitiesITK::itkDataImageId<ImageTypeOutput>());
+            if (id == "itkDataImageLong3")
             {
-                writeDicom<char>(path);
+                setDataCopy<long>(dataCopy, data());
             }
-            else if (id == "itkDataImageUChar3")
+            else if (id == "itkDataImageULong3")
             {
-                writeDicom<unsigned char>(path);
+                setDataCopy<unsigned long>(dataCopy, data());
             }
-            else if (id == "itkDataImageShort3")
+            else if (id == "itkDataImageFloat3")
             {
-                writeDicom<short>(path);
+                setDataCopy<float>(dataCopy, data());
             }
-            else if (id == "itkDataImageUShort3")
+            else if (id == "itkDataImageDouble3")
             {
-                writeDicom<unsigned short>(path);
-            }
-            else if (id == "itkDataImageInt3")
-            {
-                writeDicom<int>(path);
-            }
-            else if (id == "itkDataImageUInt3")
-            {
-                writeDicom<unsigned int>(path);
+                setDataCopy<double>(dataCopy, data());
             }
             else
             {
-                typedef itk::Image<int, 3> ImageTypeOutput;
-                dataCopy = medAbstractDataFactory::instance()->createSmartPointer(medUtilitiesITK::itkDataImageId<ImageTypeOutput>());
-                if (id == "itkDataImageLong3")
-                {
-                    typedef itk::Image<long, 3> ImageTypeInput;
-                    dataCopy->setData(castToInt3<ImageTypeInput>(data()));
-                }
-                else if (id == "itkDataImageULong3")
-                {
-                    typedef itk::Image<unsigned long, 3> ImageTypeInput;
-                    dataCopy->setData(castToInt3<ImageTypeInput>(data()));
-                }
-                else if (id == "itkDataImageFloat3")
-                {
-                    typedef itk::Image<float, 3> ImageTypeInput;
-                    dataCopy->setData(castToInt3<ImageTypeInput>(data()));
-                }
-                else if (id == "itkDataImageDouble3")
-                {
-                    typedef itk::Image<double, 3> ImageTypeInput;
-                    dataCopy->setData(castToInt3<ImageTypeInput>(data()));
-                }
-                else
-                {
-                    qWarning() << "Pixel type not yet supported";
-                    return false;
-                }
-
-                qWarning() << "Beware your Pixel type are not supported by itk Dicom writer, "
-                              "the image will be cast in int to allow export anyway.";
-                writeDicom<int>(path);
+                qWarning() << "Pixel type not yet supported";
+                return false;
             }
+
+            qWarning() << "Beware your Pixel type is not supported by itk Dicom writer, "
+                          "the image will be cast in int to allow export anyway.";
+            writeDicom<int>(path);
         }
-        catch (itk::ExceptionObject &e)
-        {
-            qDebug() << e.GetDescription();
-            return false;
-        }
-        return true;
+    }
+    catch (itk::ExceptionObject &e)
+    {
+        qDebug() << e.GetDescription();
+        return false;
+    }
+    return true;
 }
 
 // /////////////////////////////////////////////////////////////////
