@@ -76,9 +76,6 @@ medBrowserArea::medBrowserArea(QWidget *parent) : QWidget(parent), d(new medBrow
     layout->addWidget(d->toolboxContainer);
     layout->addWidget(d->stack);
 
-    // make toolboxes visible
-    onSourceIndexChanged(d->stack->currentIndex());
-
     // DataSources
     for(medAbstractDataSource *dataSource : medDataSourceManager::instance()->dataSources())
     {
@@ -130,8 +127,7 @@ void medBrowserArea::addDataSource( medAbstractDataSource* dataSource )
     QList<medToolBox*> toolBoxes = dataSource->getToolBoxes();
     for(medToolBox* toolBox : toolBoxes)
     {
-        toolBox->setVisible(false);
         d->toolboxContainer->addToolBox(toolBox);
     }
-    onSourceIndexChanged(d->stack->currentIndex());
+    setToolBoxesVisible(d->stack->count()-1, false);
 }
