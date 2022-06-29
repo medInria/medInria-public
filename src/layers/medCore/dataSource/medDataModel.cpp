@@ -265,8 +265,16 @@ medAbstractData * medDataModel::variantToMedAbstractData(QVariant &data, const m
 		{
 			pDataRes->setDataIndex(index);
 			QModelIndex modelIndex = m_sourcesModelMap[pSource]->toIndex(index.asString());
-			QString hruUri = m_sourcesModelMap[pSource]->toHumanReadableUri(modelIndex);
 			m_sourcesModelMap[pSource]->setData(modelIndex, "DataLoaded", 100); //Set information on tree about the data is already loaded
+            m_sourcesModelMap[pSource]->setData(modelIndex, true, 102);
+            QModelIndex parentIndex = modelIndex.parent();
+            while (parentIndex.isValid())
+            {
+                m_sourcesModelMap[pSource]->setData(parentIndex, true, 102);
+                parentIndex = parentIndex.parent();
+            }
+
+			QString hruUri = m_sourcesModelMap[pSource]->toHumanReadableUri(modelIndex);
 			QString name = hruUri.right(hruUri.size() - hruUri.lastIndexOf("\r\n") - 2);
 			QStringList hruUriAsList = hruUri.split("\r\n", QString::SkipEmptyParts);
 			pDataRes->setExpectedName(name);
@@ -504,6 +512,13 @@ bool medDataModel::saveData(medAbstractData *pi_pData, QString const &pi_baseNam
             }
 
         }
+
+        auto index = pModel->toIndex(pio_uri);
+        while (index.isValid())
+        {
+            m_sourcesModelMap[pSource]->setData(index, true, 102);
+            index = index.parent();
+        }
     }
 
     return bRes;
@@ -693,7 +708,7 @@ void medDataModel::addSource(medAbstractSource * pi_source)
         m_sourceInstanceIdOrderedList.push_back(instanceId);
         m_sourceIdToInstanceMap[instanceId] = pi_source;
         m_sourcesModelMap[pi_source] = new medSourceItemModel(this, instanceId);
-        auto tester = new QAbstractItemModelTester(m_sourcesModelMap[pi_source], QAbstractItemModelTester::FailureReportingMode::Fatal, this);
+        auto tester = new QAbstractItemModelTester(m_sourcesModelMap[pi_source], QAbstractItemModelTester::FailureReportingMode::QtTest, this);
     }
 }
 
@@ -800,19 +815,28 @@ void medDataModel::addData(medDataIndex * pi_datasetIndex, QString uri)
     //addData(getAbstractDataFromIndex(pi_datasetIndex), uri);
 }
 
+//void medDataModel::refresh(medDataIndex pi_index)
+//{
+//    auto *pModel = getModel(pi_index.sourceId());
+//    if (pModel)
+//    {
+//        if (pi_index.level() == 0)
+//        {
+//            pModel->resetModel();
+//        }
+//        else
+//        {
+//            //TODO handle 
+//        }
+//    }
+//}
+
 void medDataModel::refresh(medDataIndex pi_index)
 {
     auto *pModel = getModel(pi_index.sourceId());
     if (pModel)
     {
-        if (pi_index.level() == 0)
-        {
-            pModel->resetModel();
-        }
-        else
-        {
-            //TODO handle 
-        }
+        pModel->refresh(pModel->toIndex(pi_index));
     }
 }
 

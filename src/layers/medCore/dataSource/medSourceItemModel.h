@@ -82,6 +82,7 @@ public:
     // ////////////////////////////////////////////////////////////////////////
     // Simple methods
     //void setColumnAttributes(int p_iLevel, QStringList &attributes); //maybe developed because not const ?
+    QString getColumnNameByLevel(int iLevel, int iCol) const;
     int  getColumnInsideLevel(int level, int section) const;
     int  getSectionInsideLevel(int level, int column) const;
     bool fetch(QStringList uri);
@@ -109,8 +110,9 @@ public:
     bool        additionnalMetaData2(QModelIndex const & index, QString const & key, QVariant & value, QString & tag);
 
 	bool getRequest(int pi_request, asyncRequest &request);
+    bool refresh(QModelIndex const &pi_index = QModelIndex());
     //JU
-    void expandAll(QModelIndex index = QModelIndex(), QString key = "");
+    void expandAll(QModelIndex index = QModelIndex());
 
 public slots:
     void itemPressed(QModelIndex const &index);
@@ -118,13 +120,14 @@ public slots:
 
 
 
-private:    
+private:
     medDataModelItem* getItem(const QModelIndex &index) const;
+    medDataModelItem* getItem(int iLevel, QString id) const;
     QModelIndex getIndex(QString iid, QModelIndex const &parent = QModelIndex()) const;
+    QModelIndex getIndex(medDataModelItem *pItem) const;
     bool fetchColumnNames(const QModelIndex &index);
-    void populateLevel(QModelIndex const &index, QString const &key);
+    void populateLevel(QModelIndex const &index);
 
-    void populateLevelV2(QModelIndex const &index, QString const & key);
 
     bool itemStillExist(QList<QMap<QString, QString>> &entries, medDataModelItem * pItem);
     void computeRowRangesToRemove(medDataModelItem * pItem, QList<QMap<QString, QString>> &entries, QVector<QPair<int, int>> &rangeToRemove);
@@ -135,7 +138,10 @@ private:
 
     bool currentLevelFetchable(medDataModelItem * pItemCurrent);
 
-
+    friend class medDataModelItem;
+    bool removeItem(medDataModelItem *pi_item);
+    bool registerItem(medDataModelItem *pi_item);
+    //void markAsRemovedOnSource();
 
 signals:
     void online(bool);
