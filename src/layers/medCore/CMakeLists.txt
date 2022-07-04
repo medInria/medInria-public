@@ -34,6 +34,8 @@ list_source_files(${TARGET_NAME}
   parameter
   parameter/tools
   job
+  notification
+  log
   )
 
 list_header_directories_to_include(${TARGET_NAME}

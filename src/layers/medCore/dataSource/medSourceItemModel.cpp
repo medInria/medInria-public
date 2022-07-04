@@ -1014,7 +1014,7 @@ void medSourceItemModel::computeRowRangesToRemove(medDataModelItem * pItem, QLis
     {
         auto *pChild = pItem->child(i);
         bool bNotOnSource = !itemStillExist(entries, pChild);
-        bool bNoMedDataAssociated = !pChild->isAssociatedAbstractData();
+        bool bNoMedDataAssociated = !pChild->containRoleValues( QMap<int, QVariantList>({ { 102, QVariantList() } }) );
 
         if (bNotOnSource && bNoMedDataAssociated)
         {

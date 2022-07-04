@@ -33,8 +33,7 @@ public:
     struct datasetAttributes4
     {
           QMap<QString, QVariant> values; // <keyName, value>
-          QMap<QString, QString> tags;   // <keyName, tag value>
-    
+          QMap<QString, QString> tags;   // <keyName, tag value>    
     };
 
 	struct asyncRequest

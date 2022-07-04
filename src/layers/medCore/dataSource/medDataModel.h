@@ -49,7 +49,7 @@ public:
     bool attributesForBuildTree (QString const & pi_sourceInstanceId, unsigned int pi_uiLevel, QString const & key, levelAttributes & po_entries);
     bool mandatoriesAttributes  (QString const & pi_sourceInstanceId, unsigned int pi_uiLevel, QString const & parentKey, levelAttributes & po_entries);
     bool optionalAttributes     (QString const & pi_sourceInstanceId, unsigned int pi_uiLevel, QString const & key, datasetAttributes & po_attributes, datasetAttributes & po_tags);
-	bool getAsyncDat            (QString const & pi_sourceInstanceId, unsigned int pi_uiLevel, QString const & key);
+	bool getAsyncData           (QString const & pi_sourceInstanceId, unsigned int pi_uiLevel, QString const & key);
 	bool levelCount             (QString const & pi_sourceInstanceId, unsigned int &po_uiLevelMax);
     bool asyncResult            (QString const & pi_sourceInstanceId, int pi_iRequest);
     bool filteringParameters    (QString const & pi_sourceInstanceId, QList<medAbstractParameter*> & po_parameters);

@@ -51,7 +51,8 @@ public:
     inline void insert(int position, medDataModelItem *child) { childItems.insert(position, child); }
     QString iid(QString displayValue);
 
-    bool isAssociatedAbstractData();
+    //bool isAssociatedAbstractData();
+    bool containRoleValues(QMap<int /*role*/, QVariantList /*values*/> mapList);
 
 
     /* ***********************************************************************/
