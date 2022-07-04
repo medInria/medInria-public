@@ -13,16 +13,24 @@
 
 #include "medSQLite.h"
 
+#include <medStringParameter.h>
+#include <medStringListParameter.h>
+
 #include <QSqlDriver>
 #include <QSqlError>
 #include <QSqlField>
 #include <QSqlQuery>
 
+QString PatientIDKey = "patientId";
+QString PatientNameKey = "name";
+QString PatientSexKey = "gender";
+
 template <typename T>
 medSQlite<T>::medSQlite()
-        : medAbstractSource(), m_Driver("QSQLITE"),
-        /*m_ConnectionName("sqlite"),*/ m_instanceId(QString()),
-        m_online(false), m_LevelNames({"patient","study","series"})
+    : medAbstractSource(), m_Driver("QSQLITE"),
+      /*m_ConnectionName("sqlite"),*/ m_instanceId(QString()),
+      m_online(false),
+      m_LevelNames({"patient", "study", "series"})
 {
 //#ifdef Q_OS_MAC
 //    auto vDbLoc = QStandardPaths::writableLocation(QStandardPaths::GenericDataLocation) + "/" + QCoreApplication::organizationName() + "/" + QCoreApplication::applicationName();
@@ -42,6 +50,56 @@ medSQlite<T>::medSQlite()
     m_MandatoryKeysByLevel["Series"] = QStringList( {"id", "name", "uid", "study",
                                                      "age", "modality", "protocol",
                                                      "origin", "rows", "columns"}) ;
+
+    m_PatientLevelAttributes[PatientIDKey] = "";
+    m_PatientLevelAttributes[PatientNameKey] = "";
+    m_PatientLevelAttributes[PatientSexKey] = "";
+    medStringParameter *patientID = new medStringParameter("Patient ID", this);
+    patientID->setCaption("Patient ID");
+    QObject::connect(patientID, &medStringParameter::valueEdited, [&](QString const &value)
+                     {
+        if (value.isEmpty()) 
+        {
+            m_PatientLevelAttributes[PatientIDKey] = "";
+        } else 
+        {
+            m_PatientLevelAttributes[PatientIDKey] = value ;
+        } });
+    medStringParameter *patientName = new medStringParameter("Patient Name", this);
+    patientName->setCaption("Patient Name");
+    QObject::connect(patientName, &medStringParameter::valueEdited, [&](QString const &value)
+                     {
+        if (value.isEmpty()) 
+        {
+            m_PatientLevelAttributes[PatientNameKey] = "";
+        } else 
+        {
+            m_PatientLevelAttributes[PatientNameKey] = value;
+        } });
+    medStringListParameter *gender = new medStringListParameter("Gender", this);
+    gender->addItems({"", "M", "F"});
+    gender->setCaption("Gender");
+    QObject::connect(gender, &medStringListParameter::valueChanged, [&, gender](int const &value)
+                     {
+        if (value == 0) 
+        {
+            m_PatientLevelAttributes[PatientSexKey] = "";
+        } else 
+        {
+            m_PatientLevelAttributes[PatientSexKey] = gender->value();
+        } });
+    medGroupParameter *patientFilter = new medGroupParameter("Patient Level Filters", this);
+    patientFilter->setCaption("Patient Level");
+    patientFilter->setDescription("Settings related to Patient Level");
+    patientFilter->addParameter(patientName);
+    patientFilter->addParameter(patientID);
+    patientFilter->addParameter(gender);
+
+    m_FilterDBSettings = new medGroupParameter("filter SQLite DB Settings", this);
+    m_FilterDBSettings->setCaption("SQLite Filters Parameters");
+    m_FilterDBSettings->setDescription("Settings related to filter on SQlite DB");
+    m_FilterDBSettings->addParameter(patientFilter);
+
 }
 
 template<typename T>
@@ -196,7 +254,7 @@ QList<medAbstractParameter *> medSQlite<T>::getVolatilParameters()
 template<typename T>
 QList<medAbstractParameter *> medSQlite<T>::getFilteringParameters()
 {
-    return {};
+    return {m_FilterDBSettings};
 }
 
 template <typename T>
@@ -487,6 +545,19 @@ QList<QMap<QString, QString>> medSQlite<T>::getPatientMandatoriesAttributes(cons
         if (key.isEmpty())
         {
             selectQuery += " from patient";
+            auto patientLevelValues = m_PatientLevelAttributes.values();
+            patientLevelValues.removeAll("");
+            if (!patientLevelValues.isEmpty())
+            {
+                selectQuery += " where ";
+                for (auto key : m_PatientLevelAttributes.keys())
+                {
+                    if (!m_PatientLevelAttributes.value(key).isEmpty())
+                        selectQuery += key + " like '%" + m_PatientLevelAttributes.value(key) + "%' and ";
+                }
+                selectQuery.remove(selectQuery.size() - 5, 5);
+            }
+
             query.prepare(selectQuery);
         }
         else

@@ -17,7 +17,7 @@
 #include <medAbstractSource.h>
 #include <medStringParameter.h>
 #include <medSQLiteWritingPolicy.h>
-
+#include <medGroupParameter.h>
 #include <QSqlDatabase>
 
 
@@ -153,6 +153,8 @@ private:
     QMap<QString, QStringList> m_SupportedTypeAndFormats;
     medSQLiteWritingPolicy m_writingPolicy;
 
+    QMap<QString, QString> m_PatientLevelAttributes;
+    medGroupParameter *m_FilterDBSettings;
 };
 
 #include "medSQLite.txx"
