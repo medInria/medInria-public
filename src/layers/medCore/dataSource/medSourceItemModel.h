@@ -116,7 +116,6 @@ public:
 
 public slots:
     void itemPressed(QModelIndex const &index);
-    bool resetModel();
 
 
 

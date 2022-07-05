@@ -420,38 +420,16 @@ int medSourceItemModel::getSectionInsideLevel(int level, int column) const
 
 bool medSourceItemModel::fetch(QStringList uri) //See populateLevelV2
 {
-    populateLevel(toIndex(uri));
-    //    int i = 0;
-    //    for (auto iid : uri)
-    //    {
-    //        childIndex = getIndex(iid, childIndex);
-    //        if (!childIndex.isValid())
-    //        {
-    //            populateLevelV2(tmpIndex, tmpIId);
-    //            tmpIndex = getIndex(tmpIId, tmpIndex);
-    //            if (!tmpIndex.isValid())
-    //            {
-    //                return false;
-    //            }
-    //        }
-    //        tmpIndex = childIndex;
-    //        tmpIId = iid;
-    ////        auto childIndexTmp = getIndex(uri[i], childIndex);
-    ////        if (!childIndexTmp.isValid())
-    ////        {
-    ////            //TODO le level intermediaire n'existe pas encore
-    ////            //TODO TRY populate
-    ////            //TODO essayer  nouveau apres le populate si le child existe
-    ////            //     Si oui on continue
-    ////            //     Si non on part en erreur
-    ////        }
-    ////        childIndex = childIndexTmp;
-    ////        i++;
-    //    }
-    //
-    //    populateLevelV2(tmpIndex, tmpIId);
+    bool bRes = false;
 
-    return false;
+    auto index = toIndex(uri);
+    if (index.isValid() || uri.size()==1)
+    {
+        populateLevel(toIndex(uri));
+        bRes = true;
+    }
+
+    return bRes;   
 }
 
 bool medSourceItemModel::fetchData(QModelIndex index)
@@ -810,8 +788,9 @@ bool medSourceItemModel::refresh(QModelIndex const &pi_index)
 
     auto * pStartItem = getItem(pi_index);
     int iStartLevel = pStartItem->level();
+    beginResetModel();
     populateLevel(pi_index);
-
+    endResetModel();
     // ////////////////////////////////////////////////////////////////////////
     // Init stack from root item with first sub-items with associated medAbstractData
     for (auto *pChildItem : pStartItem->childItems)
@@ -843,14 +822,15 @@ bool medSourceItemModel::refresh(QModelIndex const &pi_index)
 
     // ////////////////////////////////////////////////////////////////////////
     // Perform populateLevel on each element of stack
-    for (int i = stack.size()-1; i >= 0 ; --i)
+    for (int i = 0; i < stack.size() ; ++i)
     {
         for (auto key : stack[i])
         {
             auto *pItem = getItem(i + iStartLevel, key);
             auto index = getIndex(pItem);
-
+            beginResetModel();
             populateLevel(index);
+            endResetModel();
         }
     }
 
@@ -876,25 +856,6 @@ void medSourceItemModel::itemPressed(QModelIndex const &index)
         QString uri2 = toUri(index2);
 
     }
-}
-
-/**
-* @brief  This slot reset the current model. 
-* For example: When source's filters must be applied.
-*/
-bool medSourceItemModel::resetModel()
-{
-    bool bRes = true;
-
-    // remove previous data
-    beginResetModel();
-    bRes = removeRows(0, rowCount());
-    endResetModel();
-
-    //populate the model from scratch
-    populateLevel(QModelIndex());
-
-    return bRes;
 }
 
 bool medSourceItemModel::currentLevelFetchable(medDataModelItem * pItemCurrent)
@@ -1029,8 +990,6 @@ void medSourceItemModel::populateLevel(QModelIndex const & index)
     }
 }
 
-
-
 bool medSourceItemModel::itemStillExist(QList<QMap<QString, QString>> &entries, medDataModelItem * pItem)
 {
     bool bFind = false;
@@ -1100,13 +1059,11 @@ void medSourceItemModel::removeRowRanges(QVector<QPair<int, int>> &rangeToRemove
     int iOffsetRange = 0; //Accumulate deletions count to correct ranges still to delete
     if (rangeToRemove.size() > 0)
     {
-        beginResetModel();
         for (auto &range : rangeToRemove)
         {
             removeRows(range.first - iOffsetRange, range.second - range.first + 1, index); //Used Override removeRows of QAbstractItemModel
             iOffsetRange += range.second + 1 - range.first; //Update the offset
         }
-        endResetModel();
     }
 }
 
