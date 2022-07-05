@@ -977,7 +977,9 @@ bool medSourceItemModel::fetchColumnNames(const QModelIndex &index/*int const &i
         {
             if (!d->sectionNames.contains(attribute))
             {
+                beginInsertColumns(index, d->sectionNames.size(), d->sectionNames.size());
                 d->sectionNames.push_back(attribute);
+                endInsertColumns();
                 emit columnCountChange(d->sectionNames.size());
             }
         }
@@ -1096,10 +1098,15 @@ void medSourceItemModel::computeRowRangesToRemove(medDataModelItem * pItem, QLis
 void medSourceItemModel::removeRowRanges(QVector<QPair<int, int>> &rangeToRemove, const QModelIndex & index)
 {
     int iOffsetRange = 0; //Accumulate deletions count to correct ranges still to delete
-    for (auto &range : rangeToRemove)
+    if (rangeToRemove.size() > 0)
     {
-        removeRows(range.first - iOffsetRange, range.second - range.first + 1, index); //Used Override removeRows of QAbstractItemModel
-        iOffsetRange += range.second + 1 - range.first; //Update the offset
+        beginResetModel();
+        for (auto &range : rangeToRemove)
+        {
+            removeRows(range.first - iOffsetRange, range.second - range.first + 1, index); //Used Override removeRows of QAbstractItemModel
+            iOffsetRange += range.second + 1 - range.first; //Update the offset
+        }
+        endResetModel();
     }
 }
 
@@ -1155,7 +1162,9 @@ void medSourceItemModel::addRowRanges(QMap<int, QList<QMap<QString, QString>>> &
                     if (!d->sectionNames.contains(k))
                     {
                         qDebug() << "[WARN] Unknown column name " << k << " from getMandatoryAttributesKeys in datasource " << d->sourceInstanceId << " at level " << iLevel-1;
+                        beginInsertColumns(index, d->sectionNames.size(), d->sectionNames.size());
                         d->sectionNames.push_back(k);
+                        endInsertColumns();
                         emit columnCountChange(d->sectionNames.size());
                         iCol = d->columnNameByLevel[iLevel].size()-1;
                     }
