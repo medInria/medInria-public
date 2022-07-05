@@ -126,7 +126,6 @@ public:
 public slots:
     void abort(int pi_iRequest) override;
     void onSettingsSaved();
-    void onFiltersApplied();
 
 private:
     int getQtDcmAsyncData(unsigned int pi_uiLevel, const QString &key);

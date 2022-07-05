@@ -249,6 +249,7 @@ medDataModelItem * medSourceItemModel::getItem(int iLevel, QString id) const
             {
                 pItemRes = itemLst[i];
             }
+            i++;
         }
     }
 
@@ -841,8 +842,8 @@ bool medSourceItemModel::refresh(QModelIndex const &pi_index)
     }
 
     // ////////////////////////////////////////////////////////////////////////
-    // Perform populateLevelV2 on each element of stack
-    for (int i = 0; i < stack.size(); ++i)
+    // Perform populateLevel on each element of stack
+    for (int i = stack.size()-1; i >= 0 ; --i)
     {
         for (auto key : stack[i])
         {
@@ -976,7 +977,9 @@ bool medSourceItemModel::fetchColumnNames(const QModelIndex &index/*int const &i
         {
             if (!d->sectionNames.contains(attribute))
             {
+                beginInsertColumns(index, d->sectionNames.size(), d->sectionNames.size());
                 d->sectionNames.push_back(attribute);
+                endInsertColumns();
                 emit columnCountChange(d->sectionNames.size());
             }
         }
@@ -999,21 +1002,30 @@ void medSourceItemModel::populateLevel(QModelIndex const & index)
         fetchColumnNames(index);
     }
 
-    if (d->parent->attributesForBuildTree(d->sourceInstanceId, iLevel, key, entries))
+    if (pItem->data(0, 101).toBool())
     {
-        emit layoutAboutToBeChanged(); //this is useful to update arrow on the left if click is not inside
-
         QVector<QPair<int, int> > rangeToRemove; // vector of ranges to delete, <beginRange, endRange>
         computeRowRangesToRemove(pItem, entries, rangeToRemove);
         removeRowRanges(rangeToRemove, index);
+    }
+    else
+    { 
+        if (d->parent->attributesForBuildTree(d->sourceInstanceId, iLevel, key, entries))
+        {
+            emit layoutAboutToBeChanged(); //this is useful to update arrow on the left if click is not inside
 
-        //TODO Update data already present inside the model
+            QVector<QPair<int, int> > rangeToRemove; // vector of ranges to delete, <beginRange, endRange>
+            computeRowRangesToRemove(pItem, entries, rangeToRemove);
+            removeRowRanges(rangeToRemove, index);
 
-        QMap<int, QList<QMap<QString, QString>>> entriesToAdd; //position to insert, List of QVariant, itself QVariantList representation of minimal entries
-        computeRowRangesToAdd(pItem, entries, entriesToAdd);
-        addRowRanges(entriesToAdd, index);
+            //TODO Update data already present inside the model
 
-        emit layoutChanged(); // close the emit layoutAboutToBeChanged();
+            QMap<int, QList<QMap<QString, QString>>> entriesToAdd; //position to insert, List of QVariant, itself QVariantList representation of minimal entries
+            computeRowRangesToAdd(pItem, entries, entriesToAdd);
+            addRowRanges(entriesToAdd, index);
+        
+            emit layoutChanged(); // close the emit layoutAboutToBeChanged();
+        }    
     }
 }
 
@@ -1086,10 +1098,15 @@ void medSourceItemModel::computeRowRangesToRemove(medDataModelItem * pItem, QLis
 void medSourceItemModel::removeRowRanges(QVector<QPair<int, int>> &rangeToRemove, const QModelIndex & index)
 {
     int iOffsetRange = 0; //Accumulate deletions count to correct ranges still to delete
-    for (auto &range : rangeToRemove)
+    if (rangeToRemove.size() > 0)
     {
-        removeRows(range.first - iOffsetRange, range.second - range.first + 1, index); //Used Override removeRows of QAbstractItemModel
-        iOffsetRange += range.second + 1 - range.first; //Update the offset
+        beginResetModel();
+        for (auto &range : rangeToRemove)
+        {
+            removeRows(range.first - iOffsetRange, range.second - range.first + 1, index); //Used Override removeRows of QAbstractItemModel
+            iOffsetRange += range.second + 1 - range.first; //Update the offset
+        }
+        endResetModel();
     }
 }
 
@@ -1145,7 +1162,9 @@ void medSourceItemModel::addRowRanges(QMap<int, QList<QMap<QString, QString>>> &
                     if (!d->sectionNames.contains(k))
                     {
                         qDebug() << "[WARN] Unknown column name " << k << " from getMandatoryAttributesKeys in datasource " << d->sourceInstanceId << " at level " << iLevel-1;
+                        beginInsertColumns(index, d->sectionNames.size(), d->sectionNames.size());
                         d->sectionNames.push_back(k);
+                        endInsertColumns();
                         emit columnCountChange(d->sectionNames.size());
                         iCol = d->columnNameByLevel[iLevel].size()-1;
                     }

@@ -271,11 +271,6 @@ void medAPHP::onSettingsSaved()
     d->restFulAPI->updateUrl(d->restFulUrl->value());
 }
 
-void medAPHP::onFiltersApplied()
-{
-    qDebug() << "here we go";
-}
-
 void medAPHP::computeDateRange()
 {
     QDate startDate = QDate::fromString(d->startDate->value(), "yyyyMMdd");
