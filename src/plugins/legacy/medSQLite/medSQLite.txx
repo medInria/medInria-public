@@ -24,6 +24,7 @@
 QString PatientIDKey = "patientId";
 QString PatientNameKey = "name";
 QString PatientSexKey = "gender";
+template <typename T> std::atomic<int> medSQlite<T>::s_RequestId = -1;
 
 template <typename T>
 medSQlite<T>::medSQlite()
@@ -751,6 +752,34 @@ QVariant medSQlite<T>::getDirectData(unsigned int pi_uiLevel, QString key)
     return res;
 }
 
+
+
+template <typename T>
+int medSQlite<T>::getAssyncData(unsigned int pi_uiLevel, QString id)
+{
+    s_RequestId++;
+    QVariant data = getDirectData(pi_uiLevel, id);
+    m_requestToDataMap[s_RequestId] = data;
+
+    time.setHMS(0, 0, 30);
+    QObject::connect(&timer, &QTimer::timeout, this, [=]() { 
+                        time.setHMS(0, 0, time.addSecs(-5).second());
+                        qDebug() << time.toString();
+                        if (time != QTime(0,0))
+                        {
+                            emit progress(s_RequestId, eRequestStatus::pending);
+                        }
+                        else
+                        {
+                            emit progress(s_RequestId, eRequestStatus::finish);
+                            timer.stop();
+                        }
+                        });
+    timer.start();
+
+    return s_RequestId;
+}
+
 template<typename T>
 bool medSQlite<T>::getSeriesDirectData(QString &key, QString &path)
 {
@@ -944,6 +973,31 @@ bool medSQlite<T>::addDirectData(QVariant data, levelMinimalEntries &pio_minimal
 }
 
 template <typename T>
+int medSQlite<T>::addAssyncData(QVariant data, levelMinimalEntries &pio_minimalEntries, unsigned int pi_uiLevel, QString parentKey)
+{
+    addDirectData(data, pio_minimalEntries, pi_uiLevel, parentKey);
+    s_RequestId++;
+    QVariant dataKey = QVariant(pio_minimalEntries.key);
+    m_requestToDataMap[s_RequestId] = dataKey;
+
+    time.setHMS(0, 0, 30);
+    QObject::connect(&timer, &QTimer::timeout, this, [=]() { 
+                        time.setHMS(0, 0, time.addSecs(-5).second());
+                        qDebug() << time.toString();
+                        if (time != QTime(0,0))
+                        {
+                            emit progress(s_RequestId, eRequestStatus::pending);
+                        }
+                        else
+                        {
+                            emit progress(s_RequestId, eRequestStatus::finish);
+                            timer.stop();
+                        }
+                        });
+    timer.start();
+}
+
+template <typename T>
 bool medSQlite<T>::createPath(QList<levelMinimalEntries> &pio_path, datasetAttributes4 const &pi_attributes, unsigned int pi_uiLevel, QString parentKey)
 {
     // TODO
@@ -1129,4 +1183,10 @@ bool medSQlite<T>::setThumbnail(QPixmap &pi_thumbnail, unsigned int pi_uiLevel, 
 {
     // TODO
     return false;
+}
+
+template <typename T>
+QVariant medSQlite<T>::getAsyncResults(int pi_iRequest)
+{
+    return m_requestToDataMap[pi_iRequest];
 }

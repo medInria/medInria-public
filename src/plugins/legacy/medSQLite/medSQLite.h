@@ -98,18 +98,18 @@ public:
     /* ***********************************************************************/
     QVariant getDirectData(unsigned int pi_uiLevel, QString key) override;
 
-    int getAssyncData(unsigned int pi_uiLevel, QString id) override { return -1; };
+    int getAssyncData(unsigned int pi_uiLevel, QString id) override;
 
     //    QString addData(QVariant data, QStringList parentUri, QString name) override;
     virtual bool addDirectData(QVariant data, levelMinimalEntries &pio_minimalEntries, unsigned int pi_uiLevel, QString parentKey) override;
-    virtual int addAssyncData(QVariant data, levelMinimalEntries &pio_minimalEntries, unsigned int pi_uiLevel, QString parentKey) override { return -1; };
+    virtual int addAssyncData(QVariant data, levelMinimalEntries &pio_minimalEntries, unsigned int pi_uiLevel, QString parentKey) override;
     virtual bool createPath(QList<levelMinimalEntries> &pio_path, datasetAttributes4 const &pi_attributes, unsigned int pi_uiLevel = 0, QString parentKey = "") override;
     virtual bool createFolder(levelMinimalEntries &pio_minimalEntries, datasetAttributes4 const &pi_attributes, unsigned int pi_uiLevel, QString parentKey) override;
     virtual bool alterMetaData(datasetAttributes4 const &pi_attributes, unsigned int pi_uiLevel, QString key) override;
     virtual bool getThumbnail(QPixmap &po_thumbnail, unsigned int pi_uiLevel, QString key) override;
     virtual bool setThumbnail(QPixmap &pi_thumbnail, unsigned int pi_uiLevel, QString key) override;
     virtual bool commitData(QVariant data, levelMinimalEntries &pio_minimalEntries, unsigned int pi_uiLevel, QString parentKey) override { return false; };
-    virtual QVariant getAsyncResults(int pi_iRequest) override { return QVariant(); };
+    virtual QVariant getAsyncResults(int pi_iRequest) override;
     virtual int push(unsigned int pi_uiLevel, QString key) override { return -1; };
 
     inline virtual medAbstractWritingPolicy *getWritingPolicy() override { return &m_writingPolicy; };
@@ -155,6 +155,11 @@ private:
 
     QMap<QString, QString> m_PatientLevelAttributes;
     medGroupParameter *m_FilterDBSettings;
+
+    static std::atomic<int> s_RequestId;
+    QMap<int, QVariant> m_requestToDataMap;
+    QTimer timer;
+    QTime time;
 };
 
 #include "medSQLite.txx"
