@@ -52,9 +52,20 @@ public:
 	bool getAsyncData           (QString const & pi_sourceInstanceId, unsigned int pi_uiLevel, QString const & key);
 	bool levelCount             (QString const & pi_sourceInstanceId, unsigned int &po_uiLevelMax);
     bool asyncResult            (QString const & pi_sourceInstanceId, int pi_iRequest);
+    bool abortRequest           (QString const & pi_sourceInstanceId, int pi_iRequest);
     bool filteringParameters    (QString const & pi_sourceInstanceId, QList<medAbstractParameter*> & po_parameters);
     bool saveData               (medAbstractData *pi_pData, QString const &pi_baseName, QStringList &pio_uri);
 
+private:
+    medAbstractSource * getSource(QString const pi_sourceInstanceId);
+
+public slots:
+    void addSource(medAbstractSource* pi_source);
+    void removeSource(medAbstractSource* pi_source);
+    /* REDO */void sourceIsOnline(QString sourceIntanceId);
+    void progress(int pi_iRequest, medAbstractSource::eRequestStatus status);
+
+public:
     // ////////////////////////////////////////////////////////////////////////////////////////////
     // Members functions to deal with datamodel                                Advanced Accessors
     QString getInstanceName(QString const & pi_sourceInstanceId);
@@ -62,7 +73,6 @@ public:
     medSourceItemModel* getModel(QString const & pi_sourceInstanceId);
 
 
-	medAbstractData * variantToMedAbstractData(QVariant &data, const medDataIndex & index, medAbstractSource * &pSource);
 
 	// ////////////////////////////////////////////////////////////////////////////////////////////
     // Members functions to get Data, metadata and informations                Datasets handling
@@ -76,6 +86,7 @@ public:
 
 	bool fetchData(medDataIndex const & index);
 	bool pushData(medDataIndex const & index);
+
 
     // ////////////////////////////////////////////////////////////////////////////////////////////
     // URI and PATH handler
@@ -107,26 +118,20 @@ public:
     // ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
     // ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 public slots:
-   void addSource(medAbstractSource* pi_source);
-   void removeSource(medAbstractSource* pi_source);
 
-   void addData(medDataIndex * pi_datasetIndex, QString uri); //uri -> sourceInstanceId/IdLevel1/IdLevel.../IdLevelN
-
-
+   /* REMOVE */void addData(medDataIndex * pi_datasetIndex, QString uri); //uri -> sourceInstanceId/IdLevel1/IdLevel.../IdLevelN
    void refresh(medDataIndex pi_index);   //uri -> sourceInstanceId/IdLevel1/IdLevel.../IdLevelN
-   void sourceIsOnline(QString sourceIntanceId);
+   /* REDO */void removeConvertedData(QObject *obj);
 
-   void removeConvertedData(QObject *obj);
-   void progress(int pi_iRequest, medAbstractSource::eRequestStatus status);
 
 private:
     medDataModel(QObject *parent = nullptr);
-	medAbstractSource * getSource(QString const pi_sourceId);
-
+	medAbstractData * variantToMedAbstractData(QVariant &data, const medDataIndex & index, medAbstractSource * pSource);
 
 signals:
-    void sourceAdded(medAbstractSource*);   // Signal to indicate a source was registered
-	void sourceRemoved(QString); // Signal to indicate a source was unregistered
+    /* used only on gui */ void sourceAdded(medAbstractSource*);   // Signal to indicate a source was registered
+	/* used only on gui */ void sourceRemoved(QString); // Signal to indicate a source was unregistered
+    void abortRequest(int); //abort the requestId
 
 
 private:

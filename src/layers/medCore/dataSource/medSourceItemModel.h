@@ -35,12 +35,12 @@ public:
           QMap<QString, QVariant> values; // <keyName, value>
           QMap<QString, QString> tags;   // <keyName, tag value>    
     };
-
+    enum asyncRequestType {getRqstType = 1, addRqstType = 2};
 	struct asyncRequest
 	{
-		int type;
-		int tmpId;
-		QString uri;
+        asyncRequestType type;
+		QString tmpId;
+		QStringList uri;
 	};
 
     medSourceItemModel(medDataModel *parent, QString const & sourceIntanceId);
@@ -108,13 +108,21 @@ public:
     bool        additionnalMetaData2(QModelIndex const & index, datasetAttributes4 & attributes);
     bool        additionnalMetaData2(QModelIndex const & index, QString const & key, QVariant & value, QString & tag);
 
-	bool getRequest(int pi_request, asyncRequest &request);
+
+    bool addEntry();
+
+    bool addRequest(int pi_request, asyncRequest &request);
+    bool getRequest(int pi_request, asyncRequest &request);
+    bool removeRequest(int pi_request);
+
     bool refresh(QModelIndex const &pi_index = QModelIndex());
     //JU
     void expandAll(QModelIndex index = QModelIndex());
 
 public slots:
     void itemPressed(QModelIndex const &index);
+    bool abortRequest(QModelIndex const &index); //abort the requestId
+
 
 
 

@@ -766,6 +766,19 @@ bool medSourceItemModel::additionnalMetaData2(QModelIndex const & index, QString
     return bRes;
 }
 
+bool medSourceItemModel::addRequest(int pi_request, asyncRequest & request)
+{
+    bool bRes = false;
+
+    if (!d->requestsMap.contains(pi_request))
+    {
+        d->requestsMap[pi_request] = request;
+        bRes = true;
+    }
+
+    return bRes;
+}
+
 bool medSourceItemModel::getRequest(int pi_request, asyncRequest & request)
 {
 	bool bRes = false;
@@ -777,6 +790,11 @@ bool medSourceItemModel::getRequest(int pi_request, asyncRequest & request)
 	}
 
 	return bRes;
+}
+
+bool medSourceItemModel::removeRequest(int pi_request)
+{
+    return d->requestsMap.remove(pi_request);
 }
 
 bool medSourceItemModel::refresh(QModelIndex const &pi_index)
@@ -856,6 +874,46 @@ void medSourceItemModel::itemPressed(QModelIndex const &index)
         QString uri2 = toUri(index2);
 
     }
+}
+
+bool medSourceItemModel::abortRequest(QModelIndex const & index)
+{
+    bool bRes = false;
+
+    auto uri = getItem(index)->uriAsString();
+    auto requestList = d->requestsMap.values();
+
+    int i = 0;
+    while (!bRes && i<requestList.size())
+    {
+        bRes = requestList[i].uri == uri;
+        if (bRes)
+        {
+            d->parent->abortRequest(d->sourceInstanceId , d->requestsMap.keys()[i]);
+        }
+        i++;
+    }
+
+    return bRes;
+}
+
+/**
+* @brief  This slot reset the current model. 
+* For example: When source's filters must be applied.
+*/
+bool medSourceItemModel::resetModel()
+{
+    bool bRes = true;
+
+    // remove previous data
+    beginResetModel();
+    bRes = removeRows(0, rowCount());
+    endResetModel();
+
+    //populate the model from scratch
+    populateLevel(QModelIndex());
+
+    return bRes;
 }
 
 bool medSourceItemModel::currentLevelFetchable(medDataModelItem * pItemCurrent)
