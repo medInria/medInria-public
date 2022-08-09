@@ -21,6 +21,9 @@
 #include <fstream>
 #include <string>
 
+#include <teeStream.tpp>
+#include <medNotification.h>
+
 #if defined(WIN32)
 #include <windows.h>
 
@@ -80,6 +83,12 @@ public:
 medLogger* medLoggerPrivate::singleton = nullptr;
 bool medLoggerPrivate::logAccessFlag = false;
 
+std::stringstream medLogger::medLogDebug;
+std::stringstream medLogger::medLogWarning;
+std::stringstream medLogger::medLogCritical;
+std::stringstream medLogger::medLogFatal;
+std::stringstream medLogger::medLogInfo;
+
 
 medLogger::medLogger() : d(new medLoggerPrivate)
 {
@@ -121,11 +130,24 @@ void medLogger::finalize()
 
 void medLogger::qtMessageHandler(QtMsgType type, const QMessageLogContext &context, const QString &message)
 {
-    Q_UNUSED(context);
-    emit medLoggerPrivate::singleton->newQtMessage(type, QString(message));
+    emit medLoggerPrivate::singleton->newQtMessage(type, context, QString(message));
 }
 
-void medLogger::redirectQtMessage(QtMsgType type, const QString& message)
+void medLogger::writeNotification(QtMsgType type, const QString & message)
+{
+    medLogger::instance().writeMsg(type, QString(), message, false);
+}
+
+void medLogger::redirectQtMessage(QtMsgType type, const QMessageLogContext &context, const QString& message)
+{
+    QString sContext;
+    bool bNoContext = context.file == nullptr && context.function == nullptr && context.line > 0;    
+    bNoContext ? sContext="" : sContext = QString(context.file) + QString(':') + QString(context.function) + QString(':') + QString::number(context.line);    
+    
+    writeMsg(type, sContext, message, true);
+}
+
+void medLogger::writeMsg(QtMsgType type, QString &sContext, const QString & message, bool bNotif)
 {
     if (d->logAccessFlag)
     {
@@ -135,27 +157,35 @@ void medLogger::redirectQtMessage(QtMsgType type, const QString& message)
         {
             case QtInfoMsg:
             {
-                d->stream << message;
+                d->stream << sContext << message;
                 break;
             }
             case QtDebugMsg:
             {
-                d->stream << message;
+                d->stream << sContext << message;
+                if (bNotif)
+                {
+                    medNotification::notify(medNotification::notifLevel::warnning, "logger", message);
+                }
                 break;
             }
             case QtWarningMsg:
             {
-                d->stream << message;
+                d->stream << sContext << message;
+                if (bNotif)
+                {
+                    medNotification::notify(medNotification::notifLevel::warnning, "logger", message);
+                }
                 break;
             }
             case QtCriticalMsg:
             {
-                d->stream << message;
+                d->stream << sContext << message;
                 break;
             }
             case QtFatalMsg:
             {
-                d->stream << message;
+                d->stream << sContext << message;
                 abort();
             }
         }
@@ -178,6 +208,11 @@ void medLogger::initializeTeeStreams()
 {
     createTeeStream(&std::cout);
     createTeeStream(&std::cerr);
+    createTeeStream(&medLogger::medLogDebug);
+    createTeeStream(&medLogger::medLogWarning);
+    createTeeStream(&medLogger::medLogCritical);
+    createTeeStream(&medLogger::medLogFatal);
+    createTeeStream(&medLogger::medLogInfo);
 }
 
 void medLogger::finalizeTeeStreams()

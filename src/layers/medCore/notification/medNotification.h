@@ -55,6 +55,9 @@ public slots:
 private:
     int notify_internal(notifLevel pi_level, QString pi_title, QString pi_message, int pi_time_ms = -1, int pi_achivementPercentage = -1, int pi_notifId = 0);
 
+    //TODO remove after debug phase
+    void debugWriteNotifications(QJsonObject const &notif);
+
 private:
     QScopedPointer<medNotificationPrivate> d;
 };

@@ -5,12 +5,19 @@
 #include <QJsonObject>
 #include <QTimer>
 
+#include <medLogger.h>
+
+//TODO remove after debug phase
+#include <QFile>
+#include <QJsonDocument>
+
 class medNotificationPrivate
 {
 public:
     static medNotification *instance;
     QMap<int, QJsonObject> notifMap;
     std::atomic<unsigned short> atomic_count{ 0 };
+    QFile debugFile;
 };
 
 medNotification* medNotificationPrivate::instance = nullptr;
@@ -18,11 +25,16 @@ medNotification* medNotificationPrivate::instance = nullptr;
 medNotification::medNotification(QObject * parent) : d(new medNotificationPrivate())
 {
     medNotificationPrivate::instance = this;
+    d->debugFile.setFileName("debugNotification.json");
+    d->debugFile.open(QIODevice::WriteOnly);
 }
 
 medNotification::~medNotification()
 {
+    d->debugFile.close();
 }
+
+
 
 int medNotification::notify(notifLevel pi_level, QString pi_title, QString pi_message, int pi_time_ms, int pi_achievementPercentage, int pi_notifId)
 {
@@ -31,31 +43,44 @@ int medNotification::notify(notifLevel pi_level, QString pi_title, QString pi_me
 
 int medNotification::infoWithProgress(QString pi_title, QString pi_message, int pi_time_ms, int pi_achivementPercentage, int pi_notifId)
 {
-    return notify(notifLevel::info, pi_title, pi_message, pi_time_ms, pi_achivementPercentage, pi_notifId);
+    int iRes = notify(notifLevel::info, pi_title, pi_message, pi_time_ms, pi_achivementPercentage, pi_notifId);
+    medLogger::writeNotification(QtInfoMsg, QString("notification system\r\n") + pi_title + QString("\r\n") + pi_message);
+    return iRes;
 }
 
 void medNotification::info(QString pi_title, QString pi_message, int pi_time_ms)
 {
     notify(notifLevel::info, pi_title, pi_message, pi_time_ms);
+    medLogger::writeNotification(QtInfoMsg, QString("notification system\r\n") + pi_title + QString("\r\n") + pi_message);
 }
 
 void medNotification::success(QString pi_title, QString pi_message, int pi_time_ms)
 {
     notify(notifLevel::success, pi_title, pi_message, pi_time_ms);
+    medLogger::writeNotification(QtInfoMsg, QString("notification system\r\n") + pi_title + QString("\r\n") + pi_message);
 }
 
 void medNotification::warning(QString pi_title, QString pi_message, int pi_time_ms)
 {
     notify(notifLevel::warnning, pi_title, pi_message, pi_time_ms);
+    medLogger::writeNotification(QtWarningMsg, QString("notification system\r\n") + pi_title + QString("\r\n") + pi_message);
 }
 
 void medNotification::error(QString pi_title, QString pi_message)
 {
     notify(notifLevel::error, pi_title, pi_message);
+    medLogger::writeNotification(QtCriticalMsg, QString("notification system\r\n") + pi_title + QString("\r\n") + pi_message);
 }
+
+
 
 void medNotification::remove(int pi_id)
 {
+    //TODO remove after debug phase
+    d->debugFile.write("\r\nRemove notif:\r\n");
+    d->debugFile.write(QJsonDocument(d->notifMap[pi_id]).toJson());
+
+
     d->notifMap.remove(pi_id);
 }
 
@@ -91,4 +116,10 @@ int medNotification::notify_internal(notifLevel pi_level, QString pi_title, QStr
     }
 
     return idRes;
+}
+
+void medNotification::debugWriteNotifications(QJsonObject const & notif)
+{
+    //TODO remove after debug phase
+    d->debugFile.write(QJsonDocument(notif).toJson());
 }
