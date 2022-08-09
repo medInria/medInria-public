@@ -30,17 +30,14 @@
 
 class MEDCORE_EXPORT medDataModel : public QObject
 {
-
     Q_OBJECT
-public:
 
+public:
     using datasetAttributes = QMap<QString, QString>;
     using levelAttributes = QList<datasetAttributes>;
-    //struct 
 
     static medDataModel* instance(QObject *parent = nullptr);
 	~medDataModel();
-
 
     // ////////////////////////////////////////////////////////////////////////////////////////////
     // Members functions to interrogate the source
@@ -52,9 +49,11 @@ public:
 	bool getAsyncData           (QString const & pi_sourceInstanceId, unsigned int pi_uiLevel, QString const & key);
 	bool levelCount             (QString const & pi_sourceInstanceId, unsigned int &po_uiLevelMax);
     bool asyncResult            (QString const & pi_sourceInstanceId, int pi_iRequest);
-    bool abortRequest           (QString const & pi_sourceInstanceId, int pi_iRequest);
+    bool abortRequest           (QString const & pi_sourceInstanceId, int pi_iRequest); //TODO call in medSourceItemModel
     bool filteringParameters    (QString const & pi_sourceInstanceId, QList<medAbstractParameter*> & po_parameters);
-    bool saveData               (medAbstractData *pi_pData, QString const &pi_baseName, QStringList &pio_uri);
+
+    QString getInstanceName(QString const & pi_sourceInstanceId); //Probably used in medSourceModelPresenter and medSourceWidget
+
 
 private:
     medAbstractSource * getSource(QString const pi_sourceInstanceId);
@@ -62,23 +61,27 @@ private:
 public slots:
     void addSource(medAbstractSource* pi_source);
     void removeSource(medAbstractSource* pi_source);
-    /* REDO */void sourceIsOnline(QString sourceIntanceId);
+
+    void sourceIsOnline(QString sourceIntanceId);/* REDO */
     void progress(int pi_iRequest, medAbstractSource::eRequestStatus status);
+
+
+
+
+    
 
 public:
     // ////////////////////////////////////////////////////////////////////////////////////////////
     // Members functions to deal with datamodel                                Advanced Accessors
-    QString getInstanceName(QString const & pi_sourceInstanceId);
     QList<medSourceItemModel*> models(); // rediscute de son nom
     medSourceItemModel* getModel(QString const & pi_sourceInstanceId);
-
-
 
 	// ////////////////////////////////////////////////////////////////////////////////////////////
     // Members functions to get Data, metadata and informations                Datasets handling
     medAbstractData * getData(medDataIndex const & index);
     datasetAttributes getMetaData(medDataIndex const & index);
-    bool getDataNames(medDataIndex index, QStringList &names);
+    bool saveData(medAbstractData *pi_pData, QString const &pi_baseName, QStringList &pio_uri);
+    bool getChildrenNames(medDataIndex index, QStringList &names);
     bool createPath(QString pi_sourceId, QStringList pi_folders, QStringList &po_uri, QMap<int, QString> pi_knownKeys = QMap<int, QString>());
 
     bool writeResults(QString pi_sourceId, medAbstractData * pi_pData, QStringList pi_UriOfRelatedData, QString pi_basePath, medWritingPolicyData & pi_writingPolicyData, medAbstractWritingPolicy * pi_pWritingPolicy);
@@ -108,6 +111,8 @@ public:
     medAbstractWritingPolicy* getGeneralWPolicy(){ return &m_generalWritingPolicy; }
 
 
+    // ////////////////////////////////////////////////////////////////////////////////////////////
+    // 
     void expandAll(const QString &sourceInstanceId);
 
 
@@ -119,14 +124,14 @@ public:
     // ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 public slots:
 
-   /* REMOVE */void addData(medDataIndex * pi_datasetIndex, QString uri); //uri -> sourceInstanceId/IdLevel1/IdLevel.../IdLevelN
-   void refresh(medDataIndex pi_index);   //uri -> sourceInstanceId/IdLevel1/IdLevel.../IdLevelN
+   /* REMOVE */void addData(medDataIndex * pi_datasetIndex, QString uri); //TODO regarder saveData et writeResults    //uri -> sourceInstanceId/IdLevel1/IdLevel.../IdLevelN
+   void refresh(medDataIndex pi_index); //TODO est-il utile  //uri -> sourceInstanceId/IdLevel1/IdLevel.../IdLevelN
    /* REDO */void removeConvertedData(QObject *obj);
 
 
 private:
     medDataModel(QObject *parent = nullptr);
-	medAbstractData * variantToMedAbstractData(QVariant &data, const medDataIndex & index, medAbstractSource * pSource);
+	medAbstractData * variantToMedAbstractData(QVariant &data, const medDataIndex & index);
 
 signals:
     /* used only on gui */ void sourceAdded(medAbstractSource*);   // Signal to indicate a source was registered

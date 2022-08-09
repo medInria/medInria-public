@@ -19,7 +19,11 @@
 #include <QTemporaryDir>
 #include <QModelIndex>
 
-QString getTmpUuid();
+QString getTmpUuid()
+{
+    //TODO 130722
+    return "";
+}
 
 medDataModel *medDataModel::s_instance = nullptr;
 medDataModel *medDataModel::instance(QObject *parent)
@@ -102,7 +106,7 @@ bool medDataModel::attributesForBuildTree(QString const & pi_sourceInstanceId, u
     {
         if (pSource->isFetchByMinimalEntriesOrMandatoryAttributes())
         {
-            QStringList keys = pSource->getMandatoryAttributesKeys(pi_uiLevel);//TODO replace by fetch medSourceItemModel column names
+            QStringList keys = pSource->getMandatoryAttributesKeys(pi_uiLevel);//TODO replace by fetch med Source Item Model column names
             auto listOfMinimalEntries = pSource->getMinimalEntries(pi_uiLevel, key);
 
             datasetAttributes entryTmp;
@@ -208,6 +212,52 @@ bool medDataModel::optionalAttributes(QString const & pi_sourceInstanceId, unsig
     return bRes;
 }
 
+bool medDataModel::abortRequest(QString const & pi_sourceInstanceId, int pi_iRequest)
+{
+    bool bRes = false;
+
+    medAbstractSource* pSource = m_sourceIdToInstanceMap.value(pi_sourceInstanceId);
+    if (pSource)
+    {
+        pSource->abort(pi_iRequest);
+        bRes = true;
+    }
+
+    return bRes;
+}
+
+
+// ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+// ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+// sources handling
+// ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+// ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+void medDataModel::addSource(medAbstractSource * pi_source)
+{
+    if (pi_source)
+    {
+        auto instanceId = pi_source->getInstanceId();
+        m_sourceInstanceIdOrderedList.push_back(instanceId);
+        m_sourceIdToInstanceMap[instanceId] = pi_source;
+        m_sourcesModelMap[pi_source] = new medSourceItemModel(this, instanceId);
+        auto tester = new QAbstractItemModelTester(m_sourcesModelMap[pi_source], QAbstractItemModelTester::FailureReportingMode::Fatal, this);
+        connect(pi_source, &medAbstractSource::progress, this, &medDataModel::progress);
+        emit sourceAdded(pi_source);
+    }
+}
+
+
+void medDataModel::removeSource(medAbstractSource * pi_source)
+{
+    if (pi_source)
+    {
+        QString instanceId = pi_source->getInstanceId();
+        m_sourceIdToInstanceMap.remove(instanceId);
+        delete m_sourcesModelMap.take(pi_source);
+        emit sourceRemoved(instanceId);
+    }
+}
+
 // ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 // ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 // Advanced Accessors
@@ -249,9 +299,8 @@ medSourceItemModel * medDataModel::getModel(QString const & pi_sourceIntanceId)
     return res;
 }
 
-medAbstractData * medDataModel::variantToMedAbstractData(QVariant &data, const medDataIndex & index, medAbstractSource * pSource)
+medAbstractData * medDataModel::variantToMedAbstractData(QVariant &data, const medDataIndex & index)
 {
-    //pSource est ici uniquement utilise pour retrouver le model
 	medAbstractData *pDataRes = nullptr;
 
 	if (data.canConvert<medAbstractData *>())
@@ -264,17 +313,18 @@ medAbstractData * medDataModel::variantToMedAbstractData(QVariant &data, const m
 		if (pDataRes)
 		{
 			pDataRes->setDataIndex(index);
-			QModelIndex modelIndex = m_sourcesModelMap[pSource]->toIndex(index.asString());
-			m_sourcesModelMap[pSource]->setData(modelIndex, "DataLoaded", 100); //Set information on tree about the data is already loaded
-            m_sourcesModelMap[pSource]->setData(modelIndex, true, 102);
+            medSourceItemModel * pModel = getModel(index.sourceId());
+			QModelIndex modelIndex = pModel->toIndex(index);
+			pModel->setData(modelIndex, "DataLoaded", 100); //Set information on tree about the data is already loaded
+            pModel->setData(modelIndex, true, 102);
             QModelIndex parentIndex = modelIndex.parent();
             while (parentIndex.isValid())
             {
-                m_sourcesModelMap[pSource]->setData(parentIndex, true, 102);
+                pModel->setData(parentIndex, true, 102);
                 parentIndex = parentIndex.parent();
             }
 
-			QString hruUri = m_sourcesModelMap[pSource]->toHumanReadableUri(modelIndex);
+			QString hruUri = pModel->toPath(modelIndex);
 			QString name = hruUri.right(hruUri.size() - hruUri.lastIndexOf("\r\n") - 2);
 			QStringList hruUriAsList = hruUri.split("\r\n", QString::SkipEmptyParts);
 			pDataRes->setExpectedName(name);
@@ -331,7 +381,7 @@ medAbstractData * medDataModel::getData(medDataIndex const & index)
         {
             auto pSource = m_sourceIdToInstanceMap[source];
             QVariant data = pSource->getDirectData( index.level() - 1, index.dataId());
-			pDataRes = variantToMedAbstractData(data, index, pSource);
+			pDataRes = variantToMedAbstractData(data, index);
         }
     }
 
@@ -352,7 +402,7 @@ medDataModel::datasetAttributes medDataModel::getMetaData(medDataIndex const & i
     return metaRes;
 }
 
-bool medDataModel::getDataNames(medDataIndex index, QStringList &names)
+bool medDataModel::getChildrenNames(medDataIndex index, QStringList &names)
 {
     bool bRes = false;
 
@@ -361,7 +411,7 @@ bool medDataModel::getDataNames(medDataIndex index, QStringList &names)
         medSourceItemModel* pModel = getModel(index.sourceId());
         if (pModel)
         {
-            bRes = pModel->getDataNames(index, names);
+            bRes = pModel->getChildrenNames(index, names);
         }
     }
 
@@ -407,7 +457,7 @@ bool medDataModel::saveData(medAbstractData *pi_pData, QString const &pi_baseNam
 
     if (!pio_uri.isEmpty())
     {
-        medAbstractSource* pSource = m_sourceIdToInstanceMap.value(pio_uri[0]);
+        medAbstractSource* pSource = getSource(pio_uri[0]);
         medSourceItemModel* pModel = getModel(pio_uri[0]);
         if (pSource && pModel)
         {
@@ -502,7 +552,20 @@ bool medDataModel::saveData(medAbstractData *pi_pData, QString const &pi_baseNam
                     request.tmpId = minimalEntries.key;
                     request.type = medSourceItemModel::asyncRequestType::addRqstType;
                     request.uri << pio_uri << minimalEntries.key;
-                    bRes = pModel->addEntry(minimalEntries, uiLevel, parentKey);
+
+                    //QStringList keys = pSource->getMandatoryAttributesKeys(uiLevel);//TODO replace by fetch med Source Item Model column names
+                    //auto listOfMinimalEntries = pSource->getMinimalEntries(uiLevel, pio_uri.last());
+                    //
+                    //datasetAttributes entryTmp;
+                    //for (auto &minimalEntry : listOfMinimalEntries)
+                    //{
+                    //    entryTmp[keys[0]] = minimalEntry.key;
+                    //    entryTmp[keys[1]] = minimalEntry.name;
+                    //
+                    //    entryTmp[keys[2]] = minimalEntry.description;
+                    //}
+
+                    bRes = pModel->addEntry(minimalEntries.key, minimalEntries.name, minimalEntries.description, uiLevel, parentKey);
                     if (bRes)
                     {
                         pModel->setData(pModel->toIndex(request.uri), "DataCommited", 100);
@@ -569,7 +632,7 @@ bool medDataModel::writeResults(QString pi_sourceId, medAbstractData * pi_pData,
     QMap<QString, QString> metaData;//pi_pData->metaData(); //TODO
     QString computedName = pWp->computeName(pi_writingPolicyData.baseName, pi_writingPolicyData.prefix, pi_writingPolicyData.suffix, metaData);
 
-    auto srcOri = m_sourceIdToInstanceMap.value(pi_UriOfRelatedData[0]);
+    auto srcOri = getSource(pi_UriOfRelatedData[0]);
     QString pathOfRelatedData;
     if (srcOri && srcOri->getLevelCount() != 0)
     {
@@ -644,7 +707,7 @@ bool medDataModel::writeResults(QString pi_sourceId, medAbstractData * pi_pData,
         if (bRes && pSource->isLevelWritable(levelToWriteData))
         {
             QStringList names;
-            getDataNames(uri, names);
+            getChildrenNames(uri, names);
             pWp->incrementName(computedName, names);
             if (saveData(pi_pData, computedName, uri))
             {
@@ -664,7 +727,7 @@ bool medDataModel::createPath(QString pi_sourceId, QStringList pi_folders, QStri
     po_uri.clear();
 
     auto * pModel = getModel(pi_sourceId);
-    medAbstractSource   * pSource = m_sourceIdToInstanceMap.value(pi_sourceId);
+    medAbstractSource   * pSource = getSource(pi_sourceId);
     if (pModel && pSource)
     {
         po_uri.push_front(pi_sourceId);
@@ -718,39 +781,12 @@ bool medDataModel::createPath(QString pi_sourceId, QStringList pi_folders, QStri
 }
 
 
-// ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
-// ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
-// sources handling
-// ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
-// ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
-void medDataModel::addSource(medAbstractSource * pi_source)
-{
-    if (pi_source)
-    {
-        auto instanceId = pi_source->getInstanceId();
-        m_sourceInstanceIdOrderedList.push_back(instanceId);
-        m_sourceIdToInstanceMap[instanceId] = pi_source;
-        m_sourcesModelMap[pi_source] = new medSourceItemModel(this, instanceId);
-<<<<<<< HEAD
-        auto tester = new QAbstractItemModelTester(m_sourcesModelMap[pi_source], QAbstractItemModelTester::FailureReportingMode::Fatal, this);
-=======
-        auto tester = new QAbstractItemModelTester(m_sourcesModelMap[pi_source], QAbstractItemModelTester::FailureReportingMode::QtTest, this);
-        connect(pi_source, &medAbstractSource::progress, this, &medDataModel::progress);
->>>>>>> 765bc4406 (rise async sources mechanism)
-    }
-}
 
 
-void medDataModel::removeSource(medAbstractSource * pi_source)
-{
-    if (pi_source)
-    {
-        QString instanceId = pi_source->getInstanceId();
-        m_sourceIdToInstanceMap.remove(instanceId);
-        delete m_sourcesModelMap.take(pi_source);
-        emit sourceRemoved(instanceId);
-    }
-}
+
+
+
+
 
 medAbstractSource * medDataModel::getSourceToWrite(QString pi_sourceIdDst)
 {
@@ -826,7 +862,7 @@ QString medDataModel::convertToPath(QStringList pi_uri)
     if (pModel != nullptr)
     {
         auto index = pModel->toIndex(pi_uri);
-        pathRes = pModel->toHumanReadableUri(index);
+        pathRes = pModel->toPath(index);
     }
 
     return pathRes;
@@ -913,13 +949,13 @@ bool medDataModel::fetchData(medDataIndex const & index)
     medDataModelItem *pItem = pModel->getItem(index);
     if (pModel)
     {
-        int iRequestId = pSource->getAssyncData(index.level(), index.dataId());
+        int iRequestId = pSource->getAssyncData(index.level(), index.dataId()); //SUROND IT
         if (iRequestId > -1)
         {
             medSourceItemModel::asyncRequest request;
             request.tmpId = pItem->iid();
             request.type = medSourceItemModel::asyncRequestType::getRqstType;
-            request.uri = pItem->uriAsList();
+            request.uri = pItem->uri();
 
             bRes = pModel->addRequest(iRequestId, request);
             if(bRes) pModel->setData(pModel->toIndex(index), "DataLoading", 100);
@@ -947,13 +983,13 @@ bool medDataModel::pushData(medDataIndex const & index)
     medDataModelItem *pItem = pModel->getItem(index);
     if (pModel)
     {
-        int iRequestId = pSource->push(index.level(), index.dataId());
+        int iRequestId = pSource->push(index.level(), index.dataId()); //SUROND IT
         if (iRequestId > -1)
         {
             medSourceItemModel::asyncRequest request;
             request.tmpId = pItem->iid();
             request.type = medSourceItemModel::asyncRequestType::addRqstType;
-            request.uri = pItem->uriAsList();
+            request.uri = pItem->uri();
 
             bRes = pModel->addRequest(iRequestId, request);
             if (bRes)
@@ -993,7 +1029,7 @@ bool medDataModel::asyncResult(QString const & pi_sourceInstanceId, int pi_iRequ
 {
     bool bRes = false;
 
-    medAbstractSource* pSource = m_sourceIdToInstanceMap.value(pi_sourceInstanceId);
+    medAbstractSource* pSource = getSource(pi_sourceInstanceId);
     if (pSource)
     {
 
@@ -1006,7 +1042,7 @@ bool medDataModel::asyncResult(QString const & pi_sourceInstanceId, int pi_iRequ
         {
             case medSourceItemModel::asyncRequestType::getRqstType:  //getAssyncData
             {
-                if (variantToMedAbstractData(data, request.uri, pSource) != nullptr)
+                if (variantToMedAbstractData(data, request.uri) != nullptr)
                 {
                     //notify
                     bRes = true;
@@ -1047,20 +1083,6 @@ bool medDataModel::asyncResult(QString const & pi_sourceInstanceId, int pi_iRequ
     return bRes;
 }
 
-bool medDataModel::abortRequest(QString const & pi_sourceInstanceId, int pi_iRequest)
-{
-    bool bRes = false;
-
-    medAbstractSource* pSource = m_sourceIdToInstanceMap.value(pi_sourceInstanceId);
-    if (pSource)
-    {
-        pSource->abort(pi_iRequest);
-        bRes = true;
-    }
-
-    return bRes;
-}
-
 
 void medDataModel::progress(int pi_iRequest, medAbstractSource::eRequestStatus status)
 {
@@ -1085,7 +1107,7 @@ void medDataModel::progress(int pi_iRequest, medAbstractSource::eRequestStatus s
 					case medAbstractSource::finish:
 					{
 						QVariant data = pSource->getAsyncResults(pi_iRequest);
-                        if (variantToMedAbstractData(data, request.uri, pSource) != nullptr)
+                        if (variantToMedAbstractData(data, request.uri) != nullptr)
                         {
                             //notify
                         }

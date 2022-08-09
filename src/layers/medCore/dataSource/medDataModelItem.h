@@ -72,7 +72,8 @@ public:
     /* ***********************************************************************/
     /* *************** Data conversion ***************************************/
     /* ***********************************************************************/
-    QStringList uriAsList();
+    QStringList relativeUri();
+    QStringList uri();
     QString     uriAsString();
     QModelIndex index();
 };

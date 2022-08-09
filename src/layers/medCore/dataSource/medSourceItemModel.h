@@ -46,7 +46,7 @@ public:
     medSourceItemModel(medDataModel *parent, QString const & sourceIntanceId);
     virtual ~medSourceItemModel();
 
-    medDataModel * model();
+    //medDataModel * model();
 
     // ////////////////////////////////////////////////////////////////////////
     // Pure Virtual Override
@@ -97,11 +97,11 @@ public:
     medDataModelItem* getItem(QStringList const &uri);
     QModelIndex toIndex(QString uri);
     QModelIndex toIndex(QStringList uri);
-    QString     toUri(QModelIndex index);
-    QString     toHumanReadableUri(QModelIndex const & index);
-    QStringList fromHumanReadableUri(QStringList humanUri);
+    //QString     toUri(QModelIndex index);
+    QString     toPath(QModelIndex const & index);
+    QStringList fromPath(QStringList humanUri);
     QString     keyForPath(QStringList rootUri, QString folder);
-    bool        getDataNames(QStringList uri, QStringList &names);
+    bool        getChildrenNames(QStringList uri, QStringList &names);
 
     bool        setAdditionnalMetaData2(QModelIndex const & index, datasetAttributes4 const &attributes);
     bool        setAdditionnalMetaData2(QModelIndex const & index, QString const & key, QVariant const & value, QString const & tag = QString() );
@@ -109,7 +109,7 @@ public:
     bool        additionnalMetaData2(QModelIndex const & index, QString const & key, QVariant & value, QString & tag);
 
 
-    bool addEntry();
+    bool addEntry(QString pi_key, QString pi_name, QString pi_description, unsigned int pi_uiLevel, QString pi_parentKey);
 
     bool addRequest(int pi_request, asyncRequest &request);
     bool getRequest(int pi_request, asyncRequest &request);

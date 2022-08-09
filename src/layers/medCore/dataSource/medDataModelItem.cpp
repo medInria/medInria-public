@@ -76,7 +76,7 @@ QList<medDataModelItem*> medDataModelItem::offspringList()
     return offspringRes;
 }
 
-QStringList medDataModelItem::uriAsList()
+QStringList medDataModelItem::relativeUri()
 {
     QStringList uriListRes;
 
@@ -90,11 +90,18 @@ QStringList medDataModelItem::uriAsList()
     return uriListRes;
 }
 
+QStringList medDataModelItem::uri()
+{
+    QStringList uriRes = relativeUri();
+    uriRes.push_front(model->getSourceIntanceId());
+    return uriRes;
+}
+
 QString medDataModelItem::uriAsString()
 {
     QString uriRes = model->getSourceIntanceId() + ":";
 
-    QStringList uriParts = uriAsList();
+    QStringList uriParts = relativeUri();
     int size = uriParts.size();
     if (size > 0)
     {

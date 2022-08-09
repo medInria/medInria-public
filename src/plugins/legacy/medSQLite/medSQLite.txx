@@ -975,10 +975,12 @@ bool medSQlite<T>::addDirectData(QVariant data, levelMinimalEntries &pio_minimal
 template <typename T>
 int medSQlite<T>::addAssyncData(QVariant data, levelMinimalEntries &pio_minimalEntries, unsigned int pi_uiLevel, QString parentKey)
 {
+    int rqstRes = 0;
+
     addDirectData(data, pio_minimalEntries, pi_uiLevel, parentKey);
-    s_RequestId++;
+    rqstRes = s_RequestId++;
     QVariant dataKey = QVariant(pio_minimalEntries.key);
-    m_requestToDataMap[s_RequestId] = dataKey;
+    m_requestToDataMap[rqstRes] = dataKey;
 
     time.setHMS(0, 0, 30);
     QObject::connect(&timer, &QTimer::timeout, this, [=]() { 
@@ -986,7 +988,7 @@ int medSQlite<T>::addAssyncData(QVariant data, levelMinimalEntries &pio_minimalE
                         qDebug() << time.toString();
                         if (time != QTime(0,0))
                         {
-                            emit progress(s_RequestId, eRequestStatus::pending);
+                            emit progress(rqstRes, eRequestStatus::pending);
                         }
                         else
                         {
@@ -995,6 +997,8 @@ int medSQlite<T>::addAssyncData(QVariant data, levelMinimalEntries &pio_minimalE
                         }
                         });
     timer.start();
+
+    return rqstRes;
 }
 
 template <typename T>
