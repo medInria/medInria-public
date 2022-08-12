@@ -18,10 +18,10 @@
 
 class medLoggerPrivate;
 
-class medLogger : public QObject
+class medNewLogger : public QObject
 {
     Q_OBJECT
-public:    
+public:
     static std::stringstream medLogDebug;
     static std::stringstream medLogWarning;
     static std::stringstream medLogCritical;
@@ -29,9 +29,12 @@ public:
     static std::stringstream medLogInfo;
 
 public:
-    static medLogger& instance();
+    medNewLogger();
+    ~medNewLogger();
 
-    static void initialize();
+    static medNewLogger& instance();
+
+    static void initialize2();
     static void finalize();
 
     static void writeNotification(QtMsgType type, const QString &message);
@@ -48,8 +51,7 @@ private slots:
 private:
     medLoggerPrivate* const d;
 
-    medLogger();
-    ~medLogger();
+    
 
     void initializeTeeStreams();
     void finalizeTeeStreams();
@@ -62,9 +64,9 @@ private:
     void truncateLogFileIfHeavy();
 };
 
-#define medDebug    medLogger::medLogDebug    << "[DBG] "
-#define medWarning  medLogger::medLogWarning  << "[WRN] "
-#define medCritical medLogger::medLogCritical << "[CRT] "
-#define medFatal    medLogger::medLogFatal    << "[FAT] "
-#define medInfo     medLogger::medLogInfo     << "[INF] "
+#define medDebug    medNewLogger::medLogDebug    << "[DBG] "
+#define medWarning  medNewLogger::medLogWarning  << "[WRN] "
+#define medCritical medNewLogger::medLogCritical << "[CRT] "
+#define medFatal    medNewLogger::medLogFatal    << "[FAT] "
+#define medInfo     medNewLogger::medLogInfo     << "[INF] "
 

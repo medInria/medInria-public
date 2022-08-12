@@ -57,7 +57,7 @@ std::string convertUTF8toLocalUtfString(char const * pi_pchStringToConvert)
 class medLoggerPrivate
 {
 public:
-    static medLogger* singleton;
+    static medNewLogger* singleton;
     static bool logAccessFlag;
 
     QString path;
@@ -80,17 +80,18 @@ public:
     }
 };
 
-medLogger* medLoggerPrivate::singleton = nullptr;
+medNewLogger* medLoggerPrivate::singleton = nullptr;
 bool medLoggerPrivate::logAccessFlag = false;
 
-std::stringstream medLogger::medLogDebug;
-std::stringstream medLogger::medLogWarning;
-std::stringstream medLogger::medLogCritical;
-std::stringstream medLogger::medLogFatal;
-std::stringstream medLogger::medLogInfo;
+std::stringstream medNewLogger::medLogDebug;
+std::stringstream medNewLogger::medLogWarning;
+std::stringstream medNewLogger::medLogCritical;
+std::stringstream medNewLogger::medLogFatal;
+std::stringstream medNewLogger::medLogInfo;
 
+medNewLogger tata;
 
-medLogger::medLogger() : d(new medLoggerPrivate)
+medNewLogger::medNewLogger() : d(new medLoggerPrivate)
 {
     qRegisterMetaType<QtMsgType>("QtMsgType");
 
@@ -103,42 +104,42 @@ medLogger::medLogger() : d(new medLoggerPrivate)
     qInstallMessageHandler(qtMessageHandler);
 }
 
-medLogger::~medLogger()
+medNewLogger::~medNewLogger()
 {
     QObject::disconnect(this, SIGNAL(newQtMessage(QtMsgType, QString)), this, SLOT(redirectQtMessage(QtMsgType, QString)));
     qInstallMessageHandler(nullptr);
     finalizeTeeStreams();
 }
 
-medLogger& medLogger::instance()
+medNewLogger& medNewLogger::instance()
 {
     return *medLoggerPrivate::singleton;
 }
 
-void medLogger::initialize()
+void medNewLogger::initialize2()
 {
-    medLoggerPrivate::singleton = new medLogger();
+    medLoggerPrivate::singleton = new medNewLogger();
     medLoggerPrivate::logAccessFlag = true;
 }
 
-void medLogger::finalize()
+void medNewLogger::finalize()
 {
     medLoggerPrivate::logAccessFlag = false;
     medLoggerPrivate::singleton->deleteLater();
     medLoggerPrivate::singleton = nullptr;
 }
 
-void medLogger::qtMessageHandler(QtMsgType type, const QMessageLogContext &context, const QString &message)
+void medNewLogger::qtMessageHandler(QtMsgType type, const QMessageLogContext &context, const QString &message)
 {
     emit medLoggerPrivate::singleton->newQtMessage(type, context, QString(message));
 }
 
-void medLogger::writeNotification(QtMsgType type, const QString & message)
+void medNewLogger::writeNotification(QtMsgType type, const QString & message)
 {
-    medLogger::instance().writeMsg(type, QString(), message, false);
+    medNewLogger::instance().writeMsg(type, QString(), message, false);
 }
 
-void medLogger::redirectQtMessage(QtMsgType type, const QMessageLogContext &context, const QString& message)
+void medNewLogger::redirectQtMessage(QtMsgType type, const QMessageLogContext &context, const QString& message)
 {
     QString sContext;
     bool bNoContext = context.file == nullptr && context.function == nullptr && context.line > 0;    
@@ -147,7 +148,7 @@ void medLogger::redirectQtMessage(QtMsgType type, const QMessageLogContext &cont
     writeMsg(type, sContext, message, true);
 }
 
-void medLogger::writeMsg(QtMsgType type, QString &sContext, const QString & message, bool bNotif)
+void medNewLogger::writeMsg(QtMsgType type, QString &sContext, const QString & message, bool bNotif)
 {
     if (d->logAccessFlag)
     {
@@ -194,28 +195,28 @@ void medLogger::writeMsg(QtMsgType type, QString &sContext, const QString & mess
     }
 }
 
-void medLogger::redirectMessage(const QString& message)
+void medNewLogger::redirectMessage(const QString& message)
 {
     d->stream << message;
 }
 
-void medLogger::redirectErrorMessage(const QString& message)
+void medNewLogger::redirectErrorMessage(const QString& message)
 {
     d->stream << message;
 }
 
-void medLogger::initializeTeeStreams()
+void medNewLogger::initializeTeeStreams()
 {
     createTeeStream(&std::cout);
     createTeeStream(&std::cerr);
-    createTeeStream(&medLogger::medLogDebug);
-    createTeeStream(&medLogger::medLogWarning);
-    createTeeStream(&medLogger::medLogCritical);
-    createTeeStream(&medLogger::medLogFatal);
-    createTeeStream(&medLogger::medLogInfo);
+    createTeeStream(&medNewLogger::medLogDebug);
+    createTeeStream(&medNewLogger::medLogWarning);
+    createTeeStream(&medNewLogger::medLogCritical);
+    createTeeStream(&medNewLogger::medLogFatal);
+    createTeeStream(&medNewLogger::medLogInfo);
 }
 
-void medLogger::finalizeTeeStreams()
+void medNewLogger::finalizeTeeStreams()
 {
     for (int i = 0; i < d->redirectedStreams.length(); i++)
     {
@@ -226,7 +227,7 @@ void medLogger::finalizeTeeStreams()
     }
 }
 
-void medLogger::createTeeStream(std::ostream* targetStream)
+void medNewLogger::createTeeStream(std::ostream* targetStream)
 {
     d->redirectedStreams.append(targetStream);
 
@@ -237,7 +238,7 @@ void medLogger::createTeeStream(std::ostream* targetStream)
     targetStream->rdbuf(d->teeStreams.last()->rdbuf());
 }
 
-void medLogger::truncateLogFileIfHeavy()
+void medNewLogger::truncateLogFileIfHeavy()
 {
     qint64 filesize = QFileInfo(d->path).size();
 
