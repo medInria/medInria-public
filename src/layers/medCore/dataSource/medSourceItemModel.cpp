@@ -318,6 +318,12 @@ bool medSourceItemModel::setData(const QModelIndex & index, const QVariant & val
 		emit dataChanged(index, index);
 		bRes = true;
 	}
+    if (role == 0 && index.isValid())
+    {
+        getItem(index)->setData(value, 0, role);
+        emit dataChanged(index, index);
+        bRes = true;
+    }
 
 	return bRes;
 }
@@ -447,9 +453,9 @@ bool medSourceItemModel::fetchData(QModelIndex index)
 {
 	bool bRes = true;
 
-	//TODO emit
+    medDataIndex idx= getItem(index)->uri();	
+    bRes = d->parent->fetchData(idx);
 	setData(index, "DataLoading", 100);
-	bRes = true;
 
 	return bRes;
 }
@@ -770,21 +776,22 @@ bool medSourceItemModel::addEntry(QString pi_key, QString pi_name, QString pi_de
 {
     bool bRes = false;
 
-    medDataModelItem *pParentItem = getItem(pi_uiLevel, pi_parentKey);
+    medDataModelItem *pParentItem = getItem(pi_uiLevel-1, pi_parentKey);
     if (pParentItem != nullptr)
     {
         QModelIndex parentIndex = getIndex(pParentItem);
-        beginInsertRows(parentIndex, pParentItem->childCount(), pParentItem->childCount());
         emit layoutAboutToBeChanged(); //this is useful to update arrow on the left if click is not inside
+        beginInsertRows(parentIndex, pParentItem->childCount(), pParentItem->childCount());
 
         medDataModelItem *pNewItem = new medDataModelItem(this);
         pNewItem->setData(pi_key, 0);
         pNewItem->setData(pi_name, 1);
         pNewItem->setData(pi_description, 3);
+        pNewItem->setParent(pParentItem);
         pParentItem->append(pNewItem);
-
-        emit layoutChanged(); // close the emit layoutAboutToBeChanged();
+        
         endInsertRows();
+        emit layoutChanged(); // close the emit layoutAboutToBeChanged();
 
         bRes = true;
     }

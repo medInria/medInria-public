@@ -117,7 +117,14 @@ void medSourcesWidget::addSource(medDataModel *dataModel, QString sourceInstance
     //connect(saveAction,    &QAction::triggered, [=]() {  emit infoActionSignal(this->itemFromMenu(pMenu)); });
     //connect(removeAction,  &QAction::triggered, [=]() {  emit infoActionSignal(this->itemFromMenu(pMenu)); });
     //connect(fetchAction,   &QAction::triggered, [=]() {  emit infoActionSignal(this->itemFromMenu(pMenu)); });
-    //connect(preloadAction, &QAction::triggered, [=]() {  emit infoActionSignal(this->itemFromMenu(pMenu)); });
+    connect(preloadAction, &QAction::triggered, [=]() {  
+        QModelIndex index = this->indexFromMenu(pMenu);
+        if (index.isValid())
+        {
+            const_cast<medSourceItemModel*>(static_cast<const medSourceItemModel*>(index.model()))->fetchData(index);
+        }
+    });
+
     //connect(readerAction,  &QAction::triggered, [=]() {  emit infoActionSignal(this->itemFromMenu(pMenu)); });
     //connect(unloadAction,  &QAction::triggered, [=]() {  emit infoActionSignal(this->itemFromMenu(pMenu)); });
     connect(infoAction,    &QAction::triggered, [=]() {

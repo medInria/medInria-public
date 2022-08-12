@@ -24,7 +24,7 @@
 QString PatientIDKey = "patientId";
 QString PatientNameKey = "name";
 QString PatientSexKey = "gender";
-template <typename T> std::atomic<int> medSQlite<T>::s_RequestId = -1;
+template <typename T> std::atomic<int> medSQlite<T>::s_RequestId = 0;
 
 template <typename T>
 medSQlite<T>::medSQlite()
@@ -267,7 +267,7 @@ bool medSQlite<T>::isWritable()
 template <typename T>
 bool medSQlite<T>::isLocal()
 {
-    return true;
+    return false;
 }
 
 template <typename T>
@@ -761,6 +761,7 @@ int medSQlite<T>::getAssyncData(unsigned int pi_uiLevel, QString id)
     QVariant data = getDirectData(pi_uiLevel, id);
     m_requestToDataMap[s_RequestId] = data;
 
+    timer.setInterval(5000);
     time.setHMS(0, 0, 30);
     QObject::connect(&timer, &QTimer::timeout, this, [=]() { 
                         time.setHMS(0, 0, time.addSecs(-5).second());
@@ -978,15 +979,16 @@ int medSQlite<T>::addAssyncData(QVariant data, levelMinimalEntries &pio_minimalE
     int rqstRes = 0;
 
     addDirectData(data, pio_minimalEntries, pi_uiLevel, parentKey);
-    rqstRes = s_RequestId++;
+    rqstRes = ++s_RequestId;
     QVariant dataKey = QVariant(pio_minimalEntries.key);
     m_requestToDataMap[rqstRes] = dataKey;
 
-    time.setHMS(0, 0, 30);
+    timer.setInterval(5000);
+    time.setHMS(0, 0, 55);
     QObject::connect(&timer, &QTimer::timeout, this, [=]() { 
                         time.setHMS(0, 0, time.addSecs(-5).second());
                         qDebug() << time.toString();
-                        if (time != QTime(0,0))
+                        if (time > QTime(0,0))
                         {
                             emit progress(rqstRes, eRequestStatus::pending);
                         }

@@ -94,6 +94,7 @@ public:
     bool setAdditionnalMetaData(QModelIndex const & index, QList<QMap<int, QString>> &additionnalMetaData);
 
     //FLO
+    medDataModelItem* getItem(const QModelIndex &index) const;
     medDataModelItem* getItem(QStringList const &uri);
     QModelIndex toIndex(QString uri);
     QModelIndex toIndex(QStringList uri);
@@ -127,7 +128,7 @@ public slots:
 
 
 private:
-    medDataModelItem* getItem(const QModelIndex &index) const;
+    //medDataModelItem* getItem(const QModelIndex &index) const;
     medDataModelItem* getItem(int iLevel, QString id) const;
     QModelIndex getIndex(QString iid, QModelIndex const &parent = QModelIndex()) const;
     QModelIndex getIndex(medDataModelItem *pItem) const;

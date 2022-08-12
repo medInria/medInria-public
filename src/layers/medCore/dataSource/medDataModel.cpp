@@ -16,13 +16,18 @@
 #include <medDataExporter.h>
 #include <medMetaDataKeys.h>
 #include <medSettingsManager.h>
+
+
+#include <medLogger.h>
+#include <medNotification.h>
+
 #include <QTemporaryDir>
 #include <QModelIndex>
 
 QString getTmpUuid()
 {
     //TODO 130722
-    return "";
+    return "130722";
 }
 
 medDataModel *medDataModel::s_instance = nullptr;
@@ -45,6 +50,7 @@ medDataModel::medDataModel(QObject *parent)
 {
     setParent(parent);
     m_defaultSource = nullptr;
+    medNewLogger::initialize2();
 }
 
 medDataModel::~medDataModel()
@@ -380,8 +386,70 @@ medAbstractData * medDataModel::getData(medDataIndex const & index)
         if (m_sourceIdToInstanceMap.contains(source))
         {
             auto pSource = m_sourceIdToInstanceMap[source];
-            QVariant data = pSource->getDirectData( index.level() - 1, index.dataId());
-			pDataRes = variantToMedAbstractData(data, index);
+            auto bLocal = pSource->isLocal();
+            if (bLocal)
+            {
+                QVariant data = pSource->getDirectData(index.level() - 1, index.dataId());
+                pDataRes = variantToMedAbstractData(data, index);
+            }
+            else
+            {
+                int rqstId = pSource->getAssyncData(index.level() - 1, index.dataId());
+                auto pModel = m_sourcesModelMap[pSource];
+
+                medSourceItemModel::asyncRequest request;
+                request.type = medSourceItemModel::asyncRequestType::getRqstType;
+                request.uri << index;
+
+                if (rqstId > 0)
+                {
+                    pModel->addRequest(rqstId, request);
+                }
+
+                //loop attendre le signal
+                // if(ok)
+
+                QTimer timer;
+                timer.setSingleShot(true);
+                QEventLoop loop;
+                auto timerConnexion = connect(&timer, &QTimer::timeout, &loop, [&]() { loop.exit(-12); });
+                timer.start(100000);
+
+                auto asyncConnexion = connect(this, &medDataModel::getAsyncStatus, &loop, [&](medAbstractSource* p_pSource, int p_rqstId, medAbstractSource::eRequestStatus status)
+                {
+                    if (p_pSource == pSource && p_rqstId == rqstId)
+                    {
+                        switch (status)
+                        {
+                            case medAbstractSource::aborted:
+                            case medAbstractSource::cnxLost:
+                            case medAbstractSource::faild:
+                            {
+                                loop.exit(-1);
+                                break;
+                            }
+                            case medAbstractSource::finish:
+                            {
+                                loop.quit();
+                                break;
+                            }
+                            case medAbstractSource::pending:
+                            {
+                                timer.setInterval(100000);
+                                break;
+                            }
+                            default:
+                                break;
+                        }
+                    }
+                });
+
+                int status = loop.exec();
+                if (status == 0)
+                {
+                    pDataRes = m_IndexToData[index];
+                }
+            }
         }
     }
 
@@ -569,12 +637,14 @@ bool medDataModel::saveData(medAbstractData *pi_pData, QString const &pi_baseNam
                     if (bRes)
                     {
                         pModel->setData(pModel->toIndex(request.uri), "DataCommited", 100);
+                        m_IndexToData[request.uri] = pi_pData;
                         rqstId = pSource->addAssyncData(data, minimalEntries, uiLevel, parentKey);
                         if (rqstId > 0)
                         {
                             bRes = pModel->addRequest(rqstId, request);
                             if (bRes)
                             {
+                                //m_IndexToData[pio_uri] = pi_pData;
                                 //TODO log
                                 //TODO notify
                             }
@@ -949,7 +1019,7 @@ bool medDataModel::fetchData(medDataIndex const & index)
     medDataModelItem *pItem = pModel->getItem(index);
     if (pModel)
     {
-        int iRequestId = pSource->getAssyncData(index.level(), index.dataId()); //SUROND IT
+        int iRequestId = pSource->getAssyncData(index.level()-1, index.dataId()); //SUROND IT
         if (iRequestId > -1)
         {
             medSourceItemModel::asyncRequest request;
@@ -959,8 +1029,10 @@ bool medDataModel::fetchData(medDataIndex const & index)
 
             bRes = pModel->addRequest(iRequestId, request);
             if(bRes) pModel->setData(pModel->toIndex(index), "DataLoading", 100);
-            //TODO log
-            //TODO notify
+
+            int  iNotif = medNotification::infoWithProgress("Fetch data " + pItem->data(1).toString(), "The data " + pItem->data(1).toString() + " is fetch from " + pSource->getInstanceName());
+            medInfo << "Fetch data " << pItem->data(1).toString().toStdString() << "have the Id of notification " << iNotif << "\r\n";
+
             // notify fetch is requested
         }
     }
@@ -995,8 +1067,9 @@ bool medDataModel::pushData(medDataIndex const & index)
             if (bRes)
             {
                 pModel->setData(pModel->toIndex(index), "DataPushing", 100);
-                //TODO log
-                //TODO notify
+                int  iNotif = medNotification::infoWithProgress( "Pushing data " + pItem->data(1).toString(), "The data " + pItem->data(1).toString() + " is pushing to " + pSource->getInstanceName());
+                medInfo << "Pushing data " << pItem->data(1).toString().toStdString() << "have the Id of notification " << iNotif << "\r\n";
+
             }
             else
             {
@@ -1123,6 +1196,8 @@ void medDataModel::progress(int pi_iRequest, medAbstractSource::eRequestStatus s
 					default:
 						break;
 				}
+
+                emit getAsyncStatus(pSource, pi_iRequest, status);
 				break;
 			}
 			case medSourceItemModel::asyncRequestType::addRqstType: //addAssyncData
@@ -1143,8 +1218,9 @@ void medDataModel::progress(int pi_iRequest, medAbstractSource::eRequestStatus s
 							auto index = pItemModel->toIndex(request.uri);
 							if (index.isValid())
 							{
-								pItemModel->setData(index, data, 0); //This replace the temporary id by the definitive id
-								pItemModel->setData(index, "DataCommited", 100);
+                                replaceTmpId(pItemModel, index, data, request);
+                                //notif
+                                //log
 							}
 							else
 							{
@@ -1175,4 +1251,15 @@ void medDataModel::progress(int pi_iRequest, medAbstractSource::eRequestStatus s
 	{
 		qDebug() << "medDataModel::progress receives signal from unknown source or non source object";
 	}
+}
+
+void medDataModel::replaceTmpId(medSourceItemModel * pItemModel, QModelIndex &index, QVariant &data, medSourceItemModel::asyncRequest &request)
+{
+    pItemModel->setData(index, data, 0); //This replace the temporary id by the definitive id
+    pItemModel->setData(index, "DataPushed", 100);
+    auto medData = m_IndexToData.take(request.uri);
+    auto newUri = request.uri;
+    newUri[newUri.size() - 1] = data.toString();
+    m_IndexToData[newUri] = medData;
+    medData->setDataIndex(newUri);
 }

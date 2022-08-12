@@ -65,6 +65,8 @@ public slots:
     void sourceIsOnline(QString sourceIntanceId);/* REDO */
     void progress(int pi_iRequest, medAbstractSource::eRequestStatus status);
 
+    void replaceTmpId(medSourceItemModel * pItemModel, QModelIndex &index, QVariant &data, medSourceItemModel::asyncRequest &request);
+
 
 
 
@@ -137,6 +139,8 @@ signals:
     /* used only on gui */ void sourceAdded(medAbstractSource*);   // Signal to indicate a source was registered
 	/* used only on gui */ void sourceRemoved(QString); // Signal to indicate a source was unregistered
     void abortRequest(int); //abort the requestId
+
+    void getAsyncStatus(medAbstractSource* , int, medAbstractSource::eRequestStatus);
 
 
 private:
