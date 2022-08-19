@@ -23,6 +23,7 @@
 #include <medDiffusionWorkspace.h>
 #include <medFilteringWorkspace.h>
 #include <medLogger.h>
+#include <medNewLogger.h>
 #include <medMainWindow.h>
 #include <medPluginManager.h>
 #include <medSeedPointAnnotationData.h>
@@ -56,7 +57,8 @@ medApplication::medApplication(int & argc, char**argv) :
     this->setOrganizationDomain("fr");
     this->setWindowIcon(QIcon(":/medInria.ico"));
 
-    medLogger::initialize();
+    //medLogger::initialize();
+    medNewLogger::initialize();
 
     qInfo() << "####################################";
     qInfo() << "Version: "    << MEDINRIA_VERSION;

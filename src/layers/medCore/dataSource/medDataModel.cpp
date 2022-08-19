@@ -18,7 +18,7 @@
 #include <medSettingsManager.h>
 
 
-#include <medLogger.h>
+#include <medNewLogger.h>
 #include <medNotification.h>
 
 #include <QTemporaryDir>
@@ -50,7 +50,6 @@ medDataModel::medDataModel(QObject *parent)
 {
     setParent(parent);
     m_defaultSource = nullptr;
-    medNewLogger::initialize2();
 }
 
 medDataModel::~medDataModel()
@@ -1031,7 +1030,7 @@ bool medDataModel::fetchData(medDataIndex const & index)
             if(bRes) pModel->setData(pModel->toIndex(index), "DataLoading", 100);
 
             int  iNotif = medNotification::infoWithProgress("Fetch data " + pItem->data(1).toString(), "The data " + pItem->data(1).toString() + " is fetch from " + pSource->getInstanceName());
-            medInfo << "Fetch data " << pItem->data(1).toString().toStdString() << "have the Id of notification " << iNotif << "\r\n";
+            mInfo << "Fetch data " << pItem->data(1).toString() << "have the Id of notification " << iNotif << "\r\n";
 
             // notify fetch is requested
         }
@@ -1068,7 +1067,7 @@ bool medDataModel::pushData(medDataIndex const & index)
             {
                 pModel->setData(pModel->toIndex(index), "DataPushing", 100);
                 int  iNotif = medNotification::infoWithProgress( "Pushing data " + pItem->data(1).toString(), "The data " + pItem->data(1).toString() + " is pushing to " + pSource->getInstanceName());
-                medInfo << "Pushing data " << pItem->data(1).toString().toStdString() << "have the Id of notification " << iNotif << "\r\n";
+                mInfo << "Pushing data " << pItem->data(1).toString() << "have the Id of notification " << iNotif << "\r\n";
 
             }
             else

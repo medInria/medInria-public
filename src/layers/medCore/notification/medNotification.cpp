@@ -5,7 +5,7 @@
 #include <QJsonObject>
 #include <QTimer>
 
-#include <medLogger.h>
+#include <medNewLogger.h>
 
 //TODO remove after debug phase
 #include <QFile>
