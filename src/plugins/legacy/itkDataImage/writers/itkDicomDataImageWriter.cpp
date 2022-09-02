@@ -16,7 +16,9 @@
 #include <medAbstractData.h>
 #include <medAbstractDataFactory.h>
 #include <medMetaDataKeys.h>
+#include <medUtilitiesITK.h>
 
+#include <itkCastImageFilter.h>
 #include <itkExtractImageFilter.h>
 #include <itkImage.h>
 #include <itkImageFileWriter.h>
@@ -41,6 +43,21 @@ static QStringList s_handled() {
                           << "itkDataImageULong3"
                           << "itkDataImageFloat3"
                           << "itkDataImageDouble3";
+}
+
+template <class ImageType> itk::Image<int, 3>::Pointer castToInt3(dtkAbstractData *input)
+{
+    typedef itk::CastImageFilter<ImageType, itk::Image<int, 3>> CasterType;
+    typename CasterType::Pointer caster = CasterType::New();
+    caster->SetInput(dynamic_cast<ImageType *>((itk::Object *)(input->data())));
+    caster->Update();
+    return caster->GetOutput();
+}
+
+template <class PixelType> void setDataCopy(dtkSmartPointer<medAbstractData> dataCopy, dtkAbstractData *input)
+{
+    typedef itk::Image<PixelType, 3> ImageTypeInput;
+    dataCopy->setData(castToInt3<ImageTypeInput>(input));
 }
 
 itkDicomDataImageWriter::itkDicomDataImageWriter(): itkDataImageWriterBase() {
@@ -327,7 +344,7 @@ template <class PixelType> void itkDicomDataImageWriter::fillDictionaryWithShare
 {
         typedef itk::Image<PixelType,3> Image3DType;
 
-        itk::Object* itkImage = static_cast<itk::Object*>(data()->data());
+        itk::Object* itkImage = static_cast<itk::Object*>(dataCopy->data());
         typename Image3DType::Pointer image = dynamic_cast<Image3DType*>(itkImage);
 
         std::ostringstream value;
@@ -414,7 +431,7 @@ template <class PixelType> bool itkDicomDataImageWriter::fillDictionaryAndWriteD
     typedef itk::Image<PixelType,2> Image2DType;
     typedef itk::ImageFileWriter<Image2DType> WriterType;
 
-    itk::Object* itkImage = static_cast<itk::Object*>(data()->data());
+    itk::Object* itkImage = static_cast<itk::Object*>(dataCopy->data());
     typename Image3DType::Pointer image = dynamic_cast<Image3DType*>(itkImage);
 
     std::ostringstream value;
@@ -533,61 +550,81 @@ template <class PixelType> bool itkDicomDataImageWriter::writeDicom(const QStrin
     return true;
 }
 
+
 bool itkDicomDataImageWriter::write(const QString &path)
 {
     if (!this->data())
         return false;
 
-    QString id = data()->identifier() ;
+    QString id = data()->identifier();
 
-    try {
-        if ( id == "itkDataImageChar3" )
+    try
+    {
+        // Create a copy of data which can be modified if data is of type double, float, unsigned long or long
+        dataCopy = medAbstractDataFactory::instance()->createSmartPointer(id);
+        if (!dataCopy)
+        {
+            qWarning() << "Pixel type not supported by the software";
+            return false;
+        }
+        dataCopy->setData(data()->data());
+
+        if (id == "itkDataImageChar3")
         {
             writeDicom<char>(path);
         }
-        else if ( id == "itkDataImageUChar3" )
+        else if (id == "itkDataImageUChar3")
         {
             writeDicom<unsigned char>(path);
         }
-        else if ( id == "itkDataImageShort3" )
+        else if (id == "itkDataImageShort3")
         {
             writeDicom<short>(path);
         }
-        else if ( id == "itkDataImageUShort3" )
+        else if (id == "itkDataImageUShort3")
         {
             writeDicom<unsigned short>(path);
         }
-        else if ( id == "itkDataImageInt3" )
+        else if (id == "itkDataImageInt3")
         {
             writeDicom<int>(path);
         }
-        else if ( id == "itkDataImageUInt3" )
+        else if (id == "itkDataImageUInt3")
         {
             writeDicom<unsigned int>(path);
         }
-        else if ( id == "itkDataImageLong3" )
-        {
-            writeDicom<long>(path);
-        }
-        else if ( id== "itkDataImageULong3" )
-        {
-            writeDicom<unsigned long>(path);
-        }
-        else if ( id == "itkDataImageFloat3" )
-        {
-            writeDicom<float>(path);
-        }
-        else if ( id == "itkDataImageDouble3" )
-        {
-            writeDicom<double>(path);
-        }
         else
         {
-            qWarning() << "Pixel type not yet supported";
-            return false;
+            typedef itk::Image<int, 3> ImageTypeOutput;
+            dataCopy = medAbstractDataFactory::instance()->createSmartPointer(medUtilitiesITK::itkDataImageId<ImageTypeOutput>());
+            if (id == "itkDataImageLong3")
+            {
+                setDataCopy<long>(dataCopy, data());
+            }
+            else if (id == "itkDataImageULong3")
+            {
+                setDataCopy<unsigned long>(dataCopy, data());
+            }
+            else if (id == "itkDataImageFloat3")
+            {
+                setDataCopy<float>(dataCopy, data());
+            }
+            else if (id == "itkDataImageDouble3")
+            {
+                setDataCopy<double>(dataCopy, data());
+            }
+            else
+            {
+                qWarning() << "Pixel type not yet supported";
+                return false;
+            }
+
+            qWarning() << "Beware your Pixel type is not supported by itk Dicom writer, "
+                          "the image will be cast in int to allow export anyway.";
+            writeDicom<int>(path);
         }
     }
-    catch(itk::ExceptionObject &e)
+    catch (itk::ExceptionObject &e)
     {
         qDebug() << e.GetDescription();
         return false;
