@@ -61,6 +61,7 @@ void medToolBoxContainer::insertToolBox(int index, medToolBox* toolBox)
         d->layout->setStretch(d->layout->count()-1, 0);
         d->layout->insertWidget(index, toolBox, 0, Qt::AlignTop);
         d->layout->addStretch(1);
+        toolBox->show();
     }
 }
 
