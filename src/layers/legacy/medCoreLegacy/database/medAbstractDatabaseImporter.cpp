@@ -664,6 +664,19 @@ void medAbstractDatabaseImporter::populateMissingMetadata(medAbstractData *medDa
 
     if (!medData->hasMetaData(medMetaDataKeys::AcquisitionTime.key()))
         medData->setMetaData(medMetaDataKeys::AcquisitionTime.key(), QStringList() << "");
+
+    if (!medData->hasMetaData(medMetaDataKeys::StudyTime.key()))
+        medData->setMetaData(medMetaDataKeys::StudyTime.key(), QStringList() << "");
+
+    if (!medData->hasMetaData(medMetaDataKeys::StudyDate.key()))
+        medData->setMetaData(medMetaDataKeys::StudyDate.key(), QStringList() << "");
+
+    if (!medData->hasMetaData(medMetaDataKeys::SeriesTime.key()))
+        medData->setMetaData(medMetaDataKeys::SeriesTime.key(), QStringList() << "");
+
+    if (!medData->hasMetaData(medMetaDataKeys::SeriesDate.key()))
+        medData->setMetaData(medMetaDataKeys::SeriesDate.key(), QStringList() << "");
+
 }
 
 //-----------------------------------------------------------------------------------------------------------

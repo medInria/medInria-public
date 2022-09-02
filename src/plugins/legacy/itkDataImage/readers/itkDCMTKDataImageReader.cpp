@@ -388,7 +388,9 @@ bool itkDCMTKDataImageReader::readInformation(const QStringList& paths)
         medData->setMetaData(medMetaDataKeys::Institution.key(),      QString::fromLatin1(d->io->GetInstitution().c_str()));
         medData->setMetaData(medMetaDataKeys::Referee.key(),          QString::fromLatin1(d->io->GetReferringPhysicianName().c_str()));
         //StudyDate
+        medData->setMetaData(medMetaDataKeys::StudyDate.key(),        QString::fromLatin1(d->io->GetStudyDate().c_str()));
         //StudyTime
+        medData->setMetaData(medMetaDataKeys::StudyTime.key(),        QString::fromLatin1(d->io->GetStudyTime().c_str()));
 
         // SERIES
         //SeriesID
@@ -400,7 +402,9 @@ bool itkDCMTKDataImageReader::readInformation(const QStringList& paths)
         medData->setMetaData(medMetaDataKeys::Protocol.key(),          QString::fromLatin1(d->io->GetProtocolName().c_str()));
         medData->setMetaData(medMetaDataKeys::SeriesDescription.key(), QString::fromLatin1(d->io->GetSeriesDescription().c_str()));
         //SeriesDate
+        medData->setMetaData(medMetaDataKeys::SeriesDate.key(),        QString::fromLatin1(d->io->GetSeriesDate().c_str()));
         //SeriesTime
+        medData->setMetaData(medMetaDataKeys::SeriesTime.key(),       QString::fromLatin1(d->io->GetSeriesTime().c_str()));
         //SeriesThumbnail
 
         // IMAGE

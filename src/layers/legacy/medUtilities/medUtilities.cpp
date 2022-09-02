@@ -95,6 +95,8 @@ QStringList medUtilities::metaDataKeysToCopyForDerivedData(medAbstractData* deri
          << medMetaDataKeys::Referee.key()
          << medMetaDataKeys::StudyDate.key()
          << medMetaDataKeys::StudyTime.key()
+         << medMetaDataKeys::SeriesDate.key()
+         << medMetaDataKeys::SeriesTime.key()
          << medMetaDataKeys::Modality.key()
          << medMetaDataKeys::Performer.key()
          << medMetaDataKeys::Report.key()
