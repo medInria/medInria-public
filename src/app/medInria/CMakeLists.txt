@@ -147,14 +147,6 @@ target_link_libraries(${TARGET_NAME}
   medPacs
   )
 
-if (USE_PYTHON)
-    target_link_libraries(${TARGET_NAME}
-        medPythonBase
-        medPythonTools
-        )
-endif()
-
-
 ## #############################################################################
 ## install
 ## #############################################################################
