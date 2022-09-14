@@ -1,5 +1,4 @@
 medInria 3.3:
-- Handling of Python in medInria
 - Fix mirrored DICOM images problem
 - Fix a bug in Paint toolbox with Retina screens
 - Clear some toolboxes view when the user switches to an other one
