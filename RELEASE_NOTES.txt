@@ -1,3 +1,13 @@
+medInria 3.3:
+- Fix mirrored DICOM images problem
+- Fix a bug in Paint toolbox with Retina screens
+- Clear some toolboxes view when the user switches to an other one
+- Add vtu reader and writer for mesh of type unstructured grid
+- Check the version of the vtk file to avoid crash due to the new format introduced in vtk 9
+- ManualRegistration, avoid duplication in outputs
+- Reslice, solve crashs after removing a data in view
+- PolygonROI, solve graphical/ergonomy pb and crashes (split, clear) 
+
 medInria 3.2:
 - Add some tooltips in view navigator
 - Avoid crashes if you try to open fibers data in some toolboxes
