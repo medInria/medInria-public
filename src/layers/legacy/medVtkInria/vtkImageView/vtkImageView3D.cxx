@@ -945,14 +945,14 @@ vtkSmartPointer<vtkActor> vtkImageView3D::DataSetToActor(vtkPointSet* arg, vtkPr
     auto mapper = vtkSmartPointer<vtkPolyDataMapper>::New();
     auto actor = vtkSmartPointer<vtkActor>::New();
 
-    idFilter->SetCellIds(1);
-    idFilter->SetPointIds(1);
+    idFilter->PointIdsOn();
+    idFilter->CellIdsOn();
+    idFilter->FieldDataOn();
     idFilter->SetIdsArrayName("vtkOriginalIds");
     idFilter->SetInputData(arg);
-    normalextractor->SetFeatureAngle(90);
-    ///\todo try to skip the normal extraction filter in order to
-    // enhance the visualization speed when the data is time sequence.
+
     geometryextractor->SetInputConnection(idFilter->GetOutputPort());
+    normalextractor->SetFeatureAngle(90);
     normalextractor->SetInputConnection(geometryextractor->GetOutputPort());
     mapper->SetInputConnection(normalextractor->GetOutputPort());
     actor->SetMapper(mapper);
