@@ -42,7 +42,11 @@ function(set_lib_install_rules target)
         set(dest ${CMAKE_BINARY_DIR})
     endif()
 
-    set(shared_lib_dir lib$<$<AND:$<BOOL:${ARG_RESOURCE}>,$<PLATFORM_ID:Darwin>>:/resource_libs>)
+    if (APPLE)
+        set(shared_lib_dir lib/resource_libs)
+    else()
+        set(shared_lib_dir lib)
+    endif()
 
     if(${GENERATOR_MULTI_CONFIG})
         set_target_properties( ${target} PROPERTIES RUNTIME_OUTPUT_DIRECTORY_DEBUG          ${dest}/${platformType}Debug/bin)
