@@ -12,6 +12,8 @@
 #ifndef medICPFilter_h
 #define medICPFilter_h
 
+#include <iterativeClosestPointPluginExport.h>
+
 #include "vtkCommonDataModelModule.h" // For export macro
 #include "vtkLinearTransform.h"
 #include <vector>
@@ -23,7 +25,7 @@ class vtkCellLocator;
 class vtkLandmarkTransform;
 class vtkDataSet;
 
-class VTKCOMMONDATAMODEL_EXPORT medICPFilter : public vtkLinearTransform {
+class ITERATIVECLOSESTPOINTPLUGIN_EXPORT medICPFilter : public vtkLinearTransform {
 public:
   static medICPFilter *New();
   void PrintSelf(ostream &os, vtkIndent indent) override;
