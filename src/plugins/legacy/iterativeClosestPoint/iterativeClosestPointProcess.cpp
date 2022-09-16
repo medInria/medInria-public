@@ -146,8 +146,29 @@ void iterativeClosestPointProcess::setParameter(int data, int channel)
         case 5:
             d->MaxNumLandmarks = data;
             break;
+        case 7:
+            d->exportMatrixState = data;
+            break;
     }
 }
+
+void iterativeClosestPointProcess::setParameter(QString data, int channel)
+{
+    switch (channel)
+    {
+        case 8:
+            d->exportMatrixFilePath = data;
+            break;
+        case 9:
+            d->sourceName = data;
+            break;
+        case 10:
+            d->targetName = data;
+            break;
+    }
+}
+
+
 
 int iterativeClosestPointProcess::update()
 {
@@ -160,7 +181,7 @@ int iterativeClosestPointProcess::update()
 
     vtkMetaDataSet *source_dataset = static_cast<vtkMetaDataSet*>(d->inputSource->data());
     vtkMetaDataSet *target_dataset = static_cast<vtkMetaDataSet*>(d->inputTarget->data());
-    
+
     ICPFilter->SetSource(static_cast<vtkPolyData*>(source_dataset->GetDataSet()));
     ICPFilter->SetTarget(static_cast<vtkPolyData*>(target_dataset->GetDataSet()));
     ICPFilter->SetMaximumNumberOfIterations(d->MaxNumIterations);

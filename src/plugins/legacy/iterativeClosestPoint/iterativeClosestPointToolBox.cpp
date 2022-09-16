@@ -35,7 +35,7 @@ public:
     QComboBox *layerSource, *layerTarget;
     QDoubleSpinBox *ScaleFactor, *MaxMeanDistance;
     QSpinBox *MaxNumIterations, *MaxNumLandmarks;
-    QCheckBox *bStartByMatchingCentroids, *bCheckMeanDistance;
+    QCheckBox *bStartByMatchingCentroids, *bCheckMeanDistance, *exportTransferMatrix;
     QComboBox *bTransformationComboBox;
     QLineEdit *pathExportMatrixLineEdit;
     QLabel *meanText;
@@ -43,7 +43,6 @@ public:
     QLabel *medianText;
 
     dtkSmartPointer<iterativeClosestPointProcess> process;
-
 };
 
 iterativeClosestPointToolBox::iterativeClosestPointToolBox(QWidget *parent)
@@ -52,7 +51,6 @@ iterativeClosestPointToolBox::iterativeClosestPointToolBox(QWidget *parent)
     QWidget *widget = new QWidget(this);
 
     QVBoxLayout *parameters_layout = new QVBoxLayout;
-
 
     QVBoxLayout *rfeLayout = new QVBoxLayout();
     d->meanText = new QLabel("", this);
@@ -136,10 +134,26 @@ iterativeClosestPointToolBox::iterativeClosestPointToolBox(QWidget *parent)
     MaxNumLandmarks_layout->addWidget(MaxNumLandmarks_Label);
     MaxNumLandmarks_layout->addWidget(d->MaxNumLandmarks);
 
+    d->exportTransferMatrix = new QCheckBox(tr("Export Transformation Matrix in a File"));
+    d->exportTransferMatrix->setToolTip("Write the Transformation Matrix to go from Source to Target");
+    connect (d->exportTransferMatrix, SIGNAL(toggled(bool)),
+             this, SLOT(onExportTransferMatrixCheckBoxToggled(bool)));
+
+    QDir dir;
+    QCompleter *fileCompleter = new QCompleter(this);
+    fileCompleter->setModel(new QDirModel(fileCompleter));
+    fileCompleter->setCompletionMode(QCompleter::PopupCompletion);
+
+    d->pathExportMatrixLineEdit = new QLineEdit(dir.absolutePath());
+    d->pathExportMatrixLineEdit->setCompleter(fileCompleter);
+    d->pathExportMatrixLineEdit->hide();
+
+    connect (d->pathExportMatrixLineEdit, SIGNAL(textChanged(QString)),
+             this, SLOT(editTransferMatrixPath(QString)));
+
     // Run button
     QPushButton *runButton = new QPushButton(tr("Run"), widget);
     connect(runButton, SIGNAL(clicked()), this, SLOT(run()));
-
 
     parameters_layout->addLayout(rfeLayout);
     parameters_layout->addWidget(layerSource_Label);
@@ -153,6 +167,8 @@ iterativeClosestPointToolBox::iterativeClosestPointToolBox(QWidget *parent)
     parameters_layout->addLayout(MaxMeanDistance_layout);
     parameters_layout->addLayout(MaxNumIterations_layout);
     parameters_layout->addLayout(MaxNumLandmarks_layout);
+    parameters_layout->addWidget(d->exportTransferMatrix);
+    parameters_layout->addWidget(d->pathExportMatrixLineEdit);
     parameters_layout->addWidget(runButton);
 
     widget->setLayout(parameters_layout);
@@ -196,12 +212,20 @@ void iterativeClosestPointToolBox::run()
             d->process->setParameter(d->MaxNumIterations->value(),4);
             d->process->setParameter(d->MaxNumLandmarks->value(),5);
             d->process->setParameter(d->ScaleFactor->value(),6);
+            d->process->setParameter(d->exportTransferMatrix->checkState(),7);
+            if (d->exportTransferMatrix->checkState() == 2)
+            {
+                d->process->setParameter(d->pathExportMatrixLineEdit->text(), 8);
+                d->process->setParameter(d->layerSource->currentText(), 9);
+                d->process->setParameter(d->layerTarget->currentText(), 10);
+            }
 
             medRunnableProcess *runProcess = new medRunnableProcess;
             runProcess->setProcess (d->process);
             connect (runProcess, SIGNAL(success(QObject*)), this, SLOT(displayOutput()));
             connect (runProcess, SIGNAL(success(QObject *)), this, SLOT(displayFRE()));
             this->addConnectionsAndStartJob(runProcess);
+
         }
         else
         {
@@ -248,8 +272,8 @@ void iterativeClosestPointToolBox::resetComboBoxes()
 {
     d->layerSource->clear();
     d->layerTarget->clear();
-    d->layerSource->addItem("Select the source mesh");
-    d->layerTarget->addItem("Select the target mesh");
+    d->layerSource->addItem("Select a layer");
+    d->layerTarget->addItem("Select a layer");
 }
 
 void iterativeClosestPointToolBox::addLayer(unsigned int layer)
@@ -316,25 +340,23 @@ void iterativeClosestPointToolBox::showFRE(double &mean, double &stdDev, double 
 
 void iterativeClosestPointToolBox::displayFRE()
 {
-    if (!d->process)
+    if (d->process)
     {
-        return;
-    }
-
-    // retrieve the array that contains the mean,
-    // standard deviation and median
-    medAbstractData *data = this->processOutput();
-    if (data)
-    {
-        vtkMetaDataSet *metaDataSet = static_cast<vtkMetaDataSet *>(data->data());
-        vtkDataSet *mesh = metaDataSet->GetDataSet();
-        vtkDataArray *array = mesh->GetFieldData()->GetArray("FRE Stats");
-        if (array)
+        // retrieve the array that contains the mean,
+        // standard deviation and median
+        medAbstractData *data = this->processOutput();
+        if (data)
         {
-            double stats[3] = { 0.0, 0.0, 0.0 };
-            array->GetTuple(0, stats);
-            // udpate text
-            showFRE(stats[0], stats[1], stats[2]);
+            vtkMetaDataSet *metaDataSet = static_cast<vtkMetaDataSet *>(data->data());
+            vtkDataSet *mesh = metaDataSet->GetDataSet();
+            vtkDataArray *array = mesh->GetFieldData()->GetArray("FRE Stats");
+            if (array)
+            {
+                double stats[3] = { 0.0, 0.0, 0.0 };
+                array->GetTuple(0, stats);
+                // udpate text
+                showFRE(stats[0], stats[1], stats[2]);
+            }
         }
     }
 }
