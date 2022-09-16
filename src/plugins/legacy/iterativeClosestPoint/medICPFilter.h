@@ -1,3 +1,14 @@
+/*
+ * medInria
+ * Copyright (c) INRIA 2013. All rights reserved.
+ *
+ * medInria is under BSD-2-Clause license. See LICENSE.txt for details in the
+ * root of the sources or:
+ * https://github.com/medInria/medInria-public/blob/master/LICENSE.txt
+ *
+ * This software is distributed WITHOUT ANY WARRANTY; without even
+ * the implied warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.
+ */
 #ifndef medICPFilter_h
 #define medICPFilter_h
 
@@ -12,11 +23,10 @@ class vtkCellLocator;
 class vtkLandmarkTransform;
 class vtkDataSet;
 
-class VTKCOMMONDATAMODEL_EXPORT medICPFilter : public vtkLinearTransform
-{
+class VTKCOMMONDATAMODEL_EXPORT medICPFilter : public vtkLinearTransform {
 public:
   static medICPFilter *New();
-  void PrintSelf(ostream& os, vtkIndent indent) override;
+  void PrintSelf(ostream &os, vtkIndent indent) override;
 
   //@{
   /**
@@ -34,7 +44,7 @@ public:
    * An instance of vtkCellLocator is used by default.
    */
   void SetLocator(vtkCellLocator *locator);
-  vtkGetObjectMacro(Locator,vtkCellLocator);
+  vtkGetObjectMacro(Locator, vtkCellLocator);
   //@}
 
   //@{
@@ -78,13 +88,14 @@ public:
    * Value mode is the mean of the sum of absolute values of the closest
    * point distances. The default is VTK_ICP_MODE_RMS
    */
-  vtkSetClampMacro(MeanDistanceMode,int,
-                   VTK_ICP_MODE_RMS,VTK_ICP_MODE_AV);
-  vtkGetMacro(MeanDistanceMode,int);
-  void SetMeanDistanceModeToRMS()
-    {this->SetMeanDistanceMode(VTK_ICP_MODE_RMS);}
-  void SetMeanDistanceModeToAbsoluteValue()
-    {this->SetMeanDistanceMode(VTK_ICP_MODE_AV);}
+  vtkSetClampMacro(MeanDistanceMode, int, VTK_ICP_MODE_RMS, VTK_ICP_MODE_AV);
+  vtkGetMacro(MeanDistanceMode, int);
+  void SetMeanDistanceModeToRMS() {
+    this->SetMeanDistanceMode(VTK_ICP_MODE_RMS);
+  }
+  void SetMeanDistanceModeToAbsoluteValue() {
+    this->SetMeanDistanceMode(VTK_ICP_MODE_AV);
+  }
   const char *GetMeanDistanceModeAsString();
   //@}
 
@@ -130,7 +141,7 @@ public:
    * Get the internal landmark transform. Use it to constrain the number of
    * degrees of freedom of the solution (i.e. rigid body, similarity, etc.).
    */
-  vtkGetObjectMacro(LandmarkTransform,vtkLandmarkTransform);
+  vtkGetObjectMacro(LandmarkTransform, vtkLandmarkTransform);
   //@}
 
   /**
@@ -149,7 +160,6 @@ public:
   void GetFREStats(double &mean, double &variance, double &median);
 
 protected:
-
   //@{
   /**
    * Release source and target
@@ -183,8 +193,8 @@ protected:
    */
   void InternalDeepCopy(vtkAbstractTransform *transform) override;
 
-  vtkDataSet* Source;
-  vtkDataSet* Target;
+  vtkDataSet *Source;
+  vtkDataSet *Target;
   vtkCellLocator *Locator;
   int MaximumNumberOfIterations;
   int CheckMeanDistance;
@@ -199,9 +209,10 @@ protected:
   int NumberOfIterations;
   double MeanDistance;
   vtkLandmarkTransform *LandmarkTransform;
+
 private:
-  medICPFilter(const medICPFilter&) = delete;
-  void operator=(const medICPFilter&) = delete;
+  medICPFilter(const medICPFilter &) = delete;
+  void operator=(const medICPFilter &) = delete;
 };
 
 #endif

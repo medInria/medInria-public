@@ -43,7 +43,6 @@ public:
     QLabel *medianText;
 
     dtkSmartPointer<iterativeClosestPointProcess> process;
-
 };
 
 iterativeClosestPointToolBox::iterativeClosestPointToolBox(QWidget *parent)
@@ -52,7 +51,6 @@ iterativeClosestPointToolBox::iterativeClosestPointToolBox(QWidget *parent)
     QWidget *widget = new QWidget(this);
 
     QVBoxLayout *parameters_layout = new QVBoxLayout;
-
 
     QVBoxLayout *rfeLayout = new QVBoxLayout();
     d->meanText = new QLabel("", this);
@@ -136,7 +134,6 @@ iterativeClosestPointToolBox::iterativeClosestPointToolBox(QWidget *parent)
     MaxNumLandmarks_layout->addWidget(MaxNumLandmarks_Label);
     MaxNumLandmarks_layout->addWidget(d->MaxNumLandmarks);
 
-
     d->exportTransferMatrix = new QCheckBox(tr("Export Transformation Matrix in a File"));
     d->exportTransferMatrix->setToolTip("Write the Transformation Matrix to go from Source to Target");
     connect (d->exportTransferMatrix, SIGNAL(toggled(bool)),
@@ -154,11 +151,9 @@ iterativeClosestPointToolBox::iterativeClosestPointToolBox(QWidget *parent)
     connect (d->pathExportMatrixLineEdit, SIGNAL(textChanged(QString)),
              this, SLOT(editTransferMatrixPath(QString)));
 
-
     // Run button
     QPushButton *runButton = new QPushButton(tr("Run"), widget);
     connect(runButton, SIGNAL(clicked()), this, SLOT(run()));
-
 
     parameters_layout->addLayout(rfeLayout);
     parameters_layout->addWidget(layerSource_Label);
@@ -345,25 +340,23 @@ void iterativeClosestPointToolBox::showFRE(double &mean, double &stdDev, double 
 
 void iterativeClosestPointToolBox::displayFRE()
 {
-    if (!d->process)
+    if (d->process)
     {
-        return;
-    }
-
-    // retrieve the array that contains the mean,
-    // standard deviation and median
-    medAbstractData *data = this->processOutput();
-    if (data)
-    {
-        vtkMetaDataSet *metaDataSet = static_cast<vtkMetaDataSet *>(data->data());
-        vtkDataSet *mesh = metaDataSet->GetDataSet();
-        vtkDataArray *array = mesh->GetFieldData()->GetArray("FRE Stats");
-        if (array)
+        // retrieve the array that contains the mean,
+        // standard deviation and median
+        medAbstractData *data = this->processOutput();
+        if (data)
         {
-            double stats[3] = { 0.0, 0.0, 0.0 };
-            array->GetTuple(0, stats);
-            // udpate text
-            showFRE(stats[0], stats[1], stats[2]);
+            vtkMetaDataSet *metaDataSet = static_cast<vtkMetaDataSet *>(data->data());
+            vtkDataSet *mesh = metaDataSet->GetDataSet();
+            vtkDataArray *array = mesh->GetFieldData()->GetArray("FRE Stats");
+            if (array)
+            {
+                double stats[3] = { 0.0, 0.0, 0.0 };
+                array->GetTuple(0, stats);
+                // udpate text
+                showFRE(stats[0], stats[1], stats[2]);
+            }
         }
     }
 }

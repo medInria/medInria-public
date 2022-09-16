@@ -1,3 +1,14 @@
+/*
+ * medInria
+ * Copyright (c) INRIA 2013. All rights reserved.
+ *
+ * medInria is under BSD-2-Clause license. See LICENSE.txt for details in the
+ * root of the sources or:
+ * https://github.com/medInria/medInria-public/blob/master/LICENSE.txt
+ *
+ * This software is distributed WITHOUT ANY WARRANTY; without even
+ * the implied warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.
+ */
 #include "medICPFilter.h"
 
 #include "vtkCellLocator.h"
@@ -219,19 +230,20 @@ vtkMTimeType medICPFilter::GetMTime()
 }
 
 //----------------------------------------------------------------------------
+
 std::vector<vtkIdType> medICPFilter::GetSourceLandmarkIds()
 {
     return this->SourceLandmarkIds;
 }
 
 //----------------------------------------------------------------------------
+
 void medICPFilter::GetFREStats(double &mean, double &stdDev, double &median)
 {
      mean   = this->meanFRE;
      stdDev = sqrt(this->varianceFRE);
      median = this->medianFRE;
 }
-
 
 //----------------------------------------------------------------------------
 
@@ -328,8 +340,6 @@ void medICPFilter::InternalUpdate()
   {
      this->SourceLandmarkIds[i] = j;
   }
-
-
 
   // Allocate some points.
   // - closestp is used so that the internal state of LandmarkTransform remains
