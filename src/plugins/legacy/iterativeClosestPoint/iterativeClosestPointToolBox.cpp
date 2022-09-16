@@ -43,7 +43,6 @@ public:
     QLabel *medianText;
 
     dtkSmartPointer<iterativeClosestPointProcess> process;
-
 };
 
 iterativeClosestPointToolBox::iterativeClosestPointToolBox(QWidget *parent)

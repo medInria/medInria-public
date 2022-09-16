@@ -230,12 +230,14 @@ vtkMTimeType medICPFilter::GetMTime()
 }
 
 //----------------------------------------------------------------------------
+
 std::vector<vtkIdType> medICPFilter::GetSourceLandmarkIds()
 {
     return this->SourceLandmarkIds;
 }
 
 //----------------------------------------------------------------------------
+
 void medICPFilter::GetFREStats(double &mean, double &stdDev, double &median)
 {
      mean   = this->meanFRE;
