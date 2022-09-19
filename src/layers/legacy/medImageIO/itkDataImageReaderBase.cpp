@@ -51,7 +51,7 @@ bool itkDataImageReaderBase::canRead (const QString& path)
     // Avoid to display log of each metadata not read by itk::ImageIOBase
     this->io->SetGlobalWarningDisplay(false);
 
-    if (!this->io->CanReadFile( path.toLatin1().constData() ))
+    if (!this->io->CanReadFile( path.toUtf8().constData() ))
     {
         return false;
     }
@@ -62,7 +62,7 @@ bool itkDataImageReaderBase::canRead (const QString& path)
         // will be handled by more specific image readers
         // (e.g. tensors if 6 or 9 components)
 
-        this->io->SetFileName( path.toLatin1().constData() );
+        this->io->SetFileName( path.toUtf8().constData() );
         try {
            this->io->ReadImageInformation();
         }
@@ -94,7 +94,7 @@ bool itkDataImageReaderBase::readInformation (const QString& path)
     if (this->io.IsNull())
         return false;
 
-    this->io->SetFileName(path.toLatin1().constData());
+    this->io->SetFileName(path.toUtf8().constData());
     try
     {
         this->io->ReadImageInformation();
@@ -276,7 +276,7 @@ bool itkDataImageReaderBase::read_image(const QString& path,const char* type)
     typedef itk::Image<T,DIM> Image;
     typename itk::ImageFileReader<Image>::Pointer TReader = itk::ImageFileReader<Image>::New();
     TReader->SetImageIO(this->io);
-    TReader->SetFileName(path.toLatin1().constData());
+    TReader->SetFileName(path.toUtf8().constData());
     TReader->SetUseStreaming(true);
     TReader->Update();
 

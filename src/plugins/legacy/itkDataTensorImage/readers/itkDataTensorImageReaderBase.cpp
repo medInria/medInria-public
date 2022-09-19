@@ -57,10 +57,10 @@ bool itkDataTensorImageReaderBase::canRead (const QStringList &paths)
 bool itkDataTensorImageReaderBase::canRead (const QString &path)
 {
     if (!this->io.IsNull()) {
-        if (!this->io->CanReadFile ( path.toLatin1().constData() ))
+        if (!this->io->CanReadFile ( path.toUtf8().constData() ))
             return false;
 
-        this->io->SetFileName (path.toLatin1().constData());
+        this->io->SetFileName (path.toUtf8().constData());
         try
         {
             this->io->ReadImageInformation();
@@ -92,7 +92,7 @@ bool itkDataTensorImageReaderBase::readInformation (const QString &path)
     if (this->io.IsNull())
         return false;
     
-    this->io->SetFileName ( path.toLatin1().constData() );
+    this->io->SetFileName ( path.toUtf8().constData() );
     try
     {
         this->io->ReadImageInformation();
@@ -168,7 +168,7 @@ bool itkDataTensorImageReaderBase::read (const QString &path)
                 {
                     ReaderType::Pointer reader = ReaderType::New();
                     reader->SetImageIO (this->io);
-                    reader->SetFileName ( path.toLatin1().constData() );
+                    reader->SetFileName ( path.toUtf8().constData() );
                     try {
                         reader->Update();
                     }
@@ -231,7 +231,7 @@ bool itkDataTensorImageReaderBase::read (const QString &path)
                 {
                     ReaderType::Pointer reader = ReaderType::New();
                     reader->SetImageIO (this->io);
-                    reader->SetFileName ( path.toLatin1().constData() );
+                    reader->SetFileName ( path.toUtf8().constData() );
                     try {
                         reader->Update();
                     }
@@ -301,7 +301,7 @@ bool itkDataTensorImageReaderBase::read (const QString &path)
                 {
                     ReaderType::Pointer reader = ReaderType::New();
                     reader->SetImageIO (this->io);
-                    reader->SetFileName ( path.toLatin1().constData() );
+                    reader->SetFileName ( path.toUtf8().constData() );
                     try {
                         reader->Update();
                     }
@@ -363,7 +363,7 @@ bool itkDataTensorImageReaderBase::read (const QString &path)
                 {
                     ReaderType::Pointer reader = ReaderType::New();
                     reader->SetImageIO (this->io);
-                    reader->SetFileName ( path.toLatin1().constData() );
+                    reader->SetFileName ( path.toUtf8().constData() );
                     try {
                         reader->Update();
                     }
