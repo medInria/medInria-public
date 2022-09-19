@@ -57,7 +57,7 @@ bool medVtkFibersDataWriter::write(const QString& path)
       return false;
   
   vtkXMLFiberDataSetWriter *writer = vtkXMLFiberDataSetWriter::New();
-  writer->SetFileName ( path.toLatin1().constData() );
+  writer->SetFileName ( path.toUtf8().constData() );
   writer->SetInputData ( dataset );
   writer->SetDataModeToBinary();
   writer->Write();
