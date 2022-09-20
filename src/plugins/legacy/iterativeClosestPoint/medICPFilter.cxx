@@ -482,7 +482,9 @@ void medICPFilter::InternalUpdate()
         if (this->MeanDistanceMode == VTK_ICP_MODE_RMS)
         {
           totaldist += vtkMath::Distance2BetweenPoints(p1, p2);
-        } else {
+        }
+        else
+        {
           totaldist += sqrt(vtkMath::Distance2BetweenPoints(p1, p2));
         }
       }
@@ -493,7 +495,9 @@ void medICPFilter::InternalUpdate()
       if (this->MeanDistanceMode == VTK_ICP_MODE_RMS)
       {
         this->MeanDistance = sqrt(totaldist / (double)nb_points);
-      } else {
+      }
+      else
+      {
         this->MeanDistance = totaldist / (double)nb_points;
       }
       vtkDebugMacro("Mean distance: " << this->MeanDistance);
