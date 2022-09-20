@@ -460,7 +460,7 @@ void medMainWindow::captureScreenshot()
                                                         "Image files (*.png *.jpeg *.jpg);;All files (*.*)",
                                                         0);
 
-        QByteArray format = fileName.right(fileName.lastIndexOf('.')).toUpper().toLatin1();
+        QByteArray format = fileName.right(fileName.lastIndexOf('.')).toUpper().toUtf8();
         if ( ! QImageWriter::supportedImageFormats().contains(format) )
         {
             format = "PNG";

@@ -46,14 +46,14 @@ QStringList vtkDataMesh4DReader::s_handled()
 
 bool vtkDataMesh4DReader::canRead (const QString& path)
 {
-    return this->reader->CanReadFile (path.toLatin1().constData());
+    return this->reader->CanReadFile (path.toUtf8().constData());
 }
 
 bool vtkDataMesh4DReader::readInformation (const QString& path)
 {
   
     medAbstractData *medData = dynamic_cast<medAbstractData*>(this->data());
-    this->reader->SetFileName (path.toLatin1().constData());
+    this->reader->SetFileName (path.toUtf8().constData());
   
     if (!medData)
     {
@@ -87,7 +87,7 @@ bool vtkDataMesh4DReader::read (const QString& path)
             return false;
         }
 
-        this->reader->SetFileName (path.toLatin1().constData());
+        this->reader->SetFileName (path.toUtf8().constData());
         this->reader->Update();
 
         vtkMetaDataSetSequence* sequence = vtkMetaDataSetSequence::SafeDownCast (this->reader->GetOutput()->GetMetaDataSet ((unsigned int)0));
