@@ -146,7 +146,7 @@ void medAbstractDatabaseImporter::importFile ( void )
      * This algorithm has been very modified to fix bugs or unexpected behaviours
      * A big refactoring of this file is expected soon
      * Some comments in this method and in ImportData are deprecated
-     * /
+     */
 
     /* The idea of this algorithm can be summarized in 3 steps:
      * 1. Get a list of all the files that will (try to) be imported or indexed
