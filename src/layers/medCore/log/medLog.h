@@ -18,7 +18,7 @@
 #include <QMap>
 
 class medNewLogger;
-enum eLogLevel;
+enum eLogLevel : int;
 struct streamProperty;
 
 class MEDCORE_EXPORT medLog

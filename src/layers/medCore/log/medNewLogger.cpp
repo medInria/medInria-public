@@ -424,7 +424,7 @@ void medNewLogger::writeMsgfromMedStream(medLog * log, QString &data, streamProp
     }
 }
 
-void medNewLogger::writeMsgfromStdStream(std::ostream * log, QString & data)
+void medNewLogger::writeMsgfromStdStream(std::ostream * log, QString const & data)
 {
     if (d->stdStreamCombinationMap.contains(log))
     {

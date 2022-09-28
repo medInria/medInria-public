@@ -18,7 +18,6 @@
 //#include <medNewLogger.h>
 #include <medNotif.h>
 //#include <medNotifSys.h>
-#include <windows.h>
 
 
 medSourceHandler *medSourceHandler::s_instance = nullptr;

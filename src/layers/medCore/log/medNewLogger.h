@@ -15,6 +15,7 @@
 #include <QObject>
 #include <medCoreExport.h>
 #include <sstream>
+#include <QApplication>
 #include <QDebug>
 #include <QBuffer>
 #include <QMutex>
@@ -48,7 +49,7 @@ struct streamProperty
     bool dbgConsole;
 };
 
-enum eLogLevel {medNoneMsg = -1, medDebugMsg = 0, medInfoMsg, medWarningMsg, medErrorMsg, medFatalMsg};
+enum eLogLevel : int {medNoneMsg = -1, medDebugMsg = 0, medInfoMsg, medWarningMsg, medErrorMsg, medFatalMsg};
 
 struct sLogLevel
 {
@@ -100,7 +101,7 @@ public:
     void createOutputFileIfNeeded(QString fileName);
 
     void writeMsgfromMedStream(medLog * log, QString &data, streamProperty *property = nullptr);
-    void writeMsgfromStdStream(std::ostream * log, QString &data);
+    void writeMsgfromStdStream(std::ostream * log, QString const &data);
 
 private:
     void redirectQtMessage(QtMsgType type, const QMessageLogContext &context, const QString& message);
