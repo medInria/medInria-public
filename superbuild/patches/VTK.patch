@@ -1,15 +1,34 @@
-From 1b7b962d0efbb009384f0ed7c6f6669250a0542a Mon Sep 17 00:00:00 2001
-From: "mathilde.merle" <mathilde.merle@ihu-liryc.fr>
-Date: Wed, 7 Oct 2020 09:43:48 +0200
+From e048bf336f8c2efc1e6b6e57c5fc899b2e6f6402 Mon Sep 17 00:00:00 2001
+From: MERLE Mathilde <mathilde.merle@inria.fr>
+Date: Tue, 20 Sep 2022 16:11:42 +0200
 Subject: [PATCH] VTK
 
 ---
+ CMake/VTKGenerateExportHeader.cmake       | 6 +++++-
  IO/Movie/module.cmake                     | 1 +
  IO/Movie/vtkOggTheoraWriter.cxx           | 4 +++-
  Rendering/Qt/vtkQtLabelRenderStrategy.cxx | 1 +
  Rendering/Qt/vtkQtStringToImage.cxx       | 1 +
- 4 files changed, 6 insertions(+), 1 deletion(-)
+ 5 files changed, 11 insertions(+), 2 deletions(-)
 
+diff --git a/CMake/VTKGenerateExportHeader.cmake b/CMake/VTKGenerateExportHeader.cmake
+index 9a7a76386e..f71969ae54 100644
+--- a/CMake/VTKGenerateExportHeader.cmake
++++ b/CMake/VTKGenerateExportHeader.cmake
+@@ -174,8 +174,12 @@ macro(_vtk_test_compiler_hidden_visibility)
+     execute_process(COMMAND ${CMAKE_C_COMPILER} --version
+       OUTPUT_VARIABLE _gcc_version_info
+       ERROR_VARIABLE _gcc_version_info)
+-    string(REGEX MATCH "[3-9]\\.[0-9]\\.[0-9]*"
++    string(REGEX MATCH "[1-9][0-9]\\.[0-9]\\.[0-9]*"
+       _gcc_version "${_gcc_version_info}")
++    if(NOT _gcc_version)
++      string(REGEX MATCH "[3-9]\\.[0-9]\\.[0-9]*"
++        _gcc_version "${_gcc_version_info}")
++    endif()
+     # gcc on mac just reports: "gcc (GCC) 3.3 20030304 ..." without the
+     # patch level, handle this here:
+     if(NOT _gcc_version)
 diff --git a/IO/Movie/module.cmake b/IO/Movie/module.cmake
 index fd6d096384..071b4a20a2 100644
 --- a/IO/Movie/module.cmake
@@ -68,5 +87,5 @@ index 549ffbe874..a7c726e4f9 100644
  #include <QTextDocument>
  #include <QTextStream>
 -- 
-2.14.3 (Apple Git-98)
+2.25.1
 
