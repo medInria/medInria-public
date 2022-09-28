@@ -19,20 +19,15 @@
 #include <QBuffer>
 #include <QMutex>
 
+#include <medLog.h>
+
 class medNewLoggerPrivate;
 class medNewLogger;
-class medLog;
 
 struct streamProperty
 {
     inline streamProperty()
     {
-        debug = true;
-        warning = true;
-        error = true;
-        info = true;
-        fatal = true;
-
         context = false;
         timestamp = true;
 
@@ -41,13 +36,8 @@ struct streamProperty
         cerrConsole = false;
         dbgConsole = true;
     }
-    QString fileName;
 
-    bool debug;
-    bool warning;
-    bool error;
-    bool info;
-    bool fatal;
+    QString fileName;
 
     bool context;
     bool timestamp;
@@ -58,46 +48,22 @@ struct streamProperty
     bool dbgConsole;
 };
 
+enum eLogLevel {medNoneMsg = -1, medDebugMsg = 0, medInfoMsg, medWarningMsg, medErrorMsg, medFatalMsg};
 
-
-
-
-class MEDCORE_EXPORT medLogStream : public QDebug
+struct sLogLevel
 {
-public:
-    inline medLogStream(medLog *log) : QDebug(&m_string), m_pLog(log) { }
-    //medLogStream(medLogStream && x);
-    ~medLogStream();
+    inline sLogLevel() : levelArray{ 1,1,1,1,1 }, debug(levelArray[medDebugMsg]), warning(levelArray[medInfoMsg]),
+                         error(levelArray[medWarningMsg]), info(levelArray[medErrorMsg]), fatal(levelArray[medFatalMsg]) {}
+    inline bool & operator[](eLogLevel level) { return levelArray[level]; }
+    inline sLogLevel & operator= (sLogLevel const & other) { std::copy_n(other.levelArray, 5, levelArray); return *this; }
 
-private:
-    medLog * m_pLog;
-    QString m_string;
+    bool levelArray[5];
+    bool & debug;
+    bool & info;
+    bool & warning;
+    bool & error;
+    bool & fatal;
 };
-
-
-
-
-
-class MEDCORE_EXPORT medLog
-{
-public:
-    medLog(medNewLogger * logger = nullptr);
-    ~medLog();
-
-    medLogStream operator()();
-    medLogStream operator()(streamProperty propoerty);
-
-    void write(QString data);
-    void setProperty(streamProperty propoerty);
-
-private:
-    friend class medNewLogger;
-
-private:
-    QMutex m_accessMutex;
-    medNewLogger * m_logger;
-};
-
 
 
 
@@ -106,54 +72,57 @@ class MEDCORE_EXPORT medNewLogger : public QObject
 {
     Q_OBJECT
 public:
-    static medLog medLogDebug;   //static std::stringstream medLogDebug;
-    static medLog medLogWarning; //static std::stringstream medLogWarning;
-    static medLog medLogCritical;//static std::stringstream medLogCritical;
-    static medLog medLogFatal;   //static std::stringstream medLogFatal;
-    static medLog medLogInfo;    //static std::stringstream medLogInfo;
+    static medLog medLogDebug;
+    static medLog medLogWarning;
+    static medLog medLogCritical;
+    static medLog medLogFatal;
+    static medLog medLogInfo;
 
 public:
     medNewLogger();
     ~medNewLogger();
 
-    static medNewLogger& instance();
+    static medNewLogger& mainInstance();
 
     static bool initialize(medNewLogger * instance = nullptr);
     static void finalize();
 
-    static void writeNotification(QtMsgType type, const QString &message);
     static void qtMessageHandler(QtMsgType type, const QMessageLogContext &context, const QString &message);
 
-    static void registerMedStream(medLog &log, streamProperty property = streamProperty() );
+    bool setLogPath(QString path);
+    void setLogApp(QApplication * app);
+    bool setLogOutputFileProperty(QString fileName, sLogLevel property);
+    bool enableQtRedirection(bool enable);
 
-    friend void medLog::write(QString data);
+    void registerMedStream(medLog &log, streamProperty property = streamProperty());
+    void registerStdStream(std::ostream &log, streamProperty property = streamProperty());
+
+    void createOutputFileIfNeeded(QString fileName);
+
+    void writeMsgfromMedStream(medLog * log, QString &data, streamProperty *property = nullptr);
+    void writeMsgfromStdStream(std::ostream * log, QString &data);
 
 private:
     void redirectQtMessage(QtMsgType type, const QMessageLogContext &context, const QString& message);
+    QString filePath(QString const & fileName);
 
 private:
     medNewLoggerPrivate* const d;
 
-    
+    void writeMsgInternal(eLogLevel type, streamProperty const & prop, QString const & message);
 
-    void initializeTeeStreams();
-    void finalizeTeeStreams();
+    bool outputIsEnable(QString outputName, eLogLevel level);
 
-    void createTeeStream(std::ostream* targetStream);
-    void writeMsg(QtMsgType type, QString &sContext, const QString & message, bool bNotif);
-    void writeNewMsg(QtMsgType type, const QString & message);
-    void writeMsgfromStream(medLog * log, QString &data);
-
-    /** Test the size of the log file and cut if needed
-     */
-    void truncateLogFileIfHeavy();
+    static eLogLevel getLevelOfMsg(QString const & msg);
+    static eLogLevel getLevelOfQt(QtMsgType const type);    
+    static void truncateLogFileIfHeavy(QString const & path);
 };
 
 
 
 #define mDebug    medNewLogger::medLogDebug()    << "[DBG] "
+#define mInfo     medNewLogger::medLogInfo()     << "[INF] "
 #define mWarning  medNewLogger::medLogWarning()  << "[WRN] "
 #define mCritical medNewLogger::medLogCritical() << "[CRT] "
 #define mFatal    medNewLogger::medLogFatal()    << "[FAT] "
-#define mInfo     medNewLogger::medLogInfo()     << "[INF] "
 

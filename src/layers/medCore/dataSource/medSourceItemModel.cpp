@@ -21,7 +21,7 @@
 
 struct medDataModelElementPrivate
 {
-    medDataModel *parent;
+    medDataHub *parent;
     QString sourceInstanceId;
     bool bOnline;
     bool bWritable;
@@ -36,13 +36,13 @@ struct medDataModelElementPrivate
     QMap<int /*level*/, QList<medDataModelItem*> > itemsMapByLevel;
 };
 
-medSourceItemModel::medSourceItemModel(medDataModel *parent, QString const & sourceIntanceId) : d(new medDataModelElementPrivate)
+medSourceItemModel::medSourceItemModel(medDataHub *parent, QString const & sourceIntanceId) : d(new medDataModelElementPrivate)
 {
     d->parent = parent;
     d->sourceInstanceId = sourceIntanceId;
     d->root = new medDataModelItem(this);
 
-    bool bOk = parent->sourceGlobalInfo(sourceIntanceId, d->bOnline, d->bLocal, d->bWritable, d->bCache);
+    bool bOk = medSourceHandler::instance()->sourceGlobalInfo(sourceIntanceId, d->bOnline, d->bLocal, d->bWritable, d->bCache);
 
     if (bOk)
     {
@@ -68,7 +68,7 @@ medSourceItemModel::~medSourceItemModel()
     delete d;
 }
 
-//medDataModel * medSourceItemModel::model()
+//medDataHub * medSourceItemModel::model()
 //{
 //    return d->parent;
 //}
@@ -799,36 +799,36 @@ bool medSourceItemModel::addEntry(QString pi_key, QString pi_name, QString pi_de
     return bRes;
 }
 
-bool medSourceItemModel::addRequest(int pi_request, asyncRequest & request)
-{
-    bool bRes = false;
-
-    if (!d->requestsMap.contains(pi_request))
-    {
-        d->requestsMap[pi_request] = request;
-        bRes = true;
-    }
-
-    return bRes;
-}
-
-bool medSourceItemModel::getRequest(int pi_request, asyncRequest & request)
-{
-	bool bRes = false;
-
-	if (d->requestsMap.contains(pi_request))
-	{
-		request = d->requestsMap[pi_request];
-		bRes = true;
-	}
-
-	return bRes;
-}
-
-bool medSourceItemModel::removeRequest(int pi_request)
-{
-    return d->requestsMap.remove(pi_request);
-}
+//bool medSourceItemModel::addRequest(int pi_request, asyncRequest & request)
+//{
+//    bool bRes = false;
+//
+//    if (!d->requestsMap.contains(pi_request))
+//    {
+//        d->requestsMap[pi_request] = request;
+//        bRes = true;
+//    }
+//
+//    return bRes;
+//}
+//
+//bool medSourceItemModel::getRequest(int pi_request, asyncRequest & request)
+//{
+//	bool bRes = false;
+//
+//	if (d->requestsMap.contains(pi_request))
+//	{
+//		request = d->requestsMap[pi_request];
+//		bRes = true;
+//	}
+//
+//	return bRes;
+//}
+//
+//bool medSourceItemModel::removeRequest(int pi_request)
+//{
+//    return d->requestsMap.remove(pi_request);
+//}
 
 bool medSourceItemModel::refresh(QModelIndex const &pi_index)
 {
@@ -919,7 +919,7 @@ bool medSourceItemModel::abortRequest(QModelIndex const & index)
         bRes = requestList[i].uri == uri;
         if (bRes)
         {
-            d->parent->abortRequest(d->sourceInstanceId , d->requestsMap.keys()[i]);
+            medSourceHandler::instance()->abortRequest(d->sourceInstanceId , d->requestsMap.keys()[i]);
         }
         i++;
     }
@@ -938,7 +938,7 @@ bool medSourceItemModel::currentLevelFetchable(medDataModelItem * pItemCurrent)
     {
         unsigned int uiLevelMax = 0;
 
-        bRes &= d->parent->levelCount(d->sourceInstanceId, uiLevelMax);
+        bRes &= medSourceHandler::instance()->levelCount(d->sourceInstanceId, uiLevelMax);
         if (uiLevelMax != 0)
         {
             bRes &= static_cast<unsigned int>(pItemCurrent->level()) < uiLevelMax - 1;
@@ -985,7 +985,7 @@ bool medSourceItemModel::fetchColumnNames(const QModelIndex &index/*int const &i
     
     QStringList attributes;
     auto item = getItem(index);
-    bRes = d->parent->mandatoryAttributesKeys(d->sourceInstanceId, item->level()+1, attributes);
+    bRes = medSourceHandler::instance()->mandatoryAttributesKeys(d->sourceInstanceId, item->level()+1, attributes);
     //attributes.pop_front(); //To remove the key of minimal entries structure
     
     if (bRes)
@@ -1040,7 +1040,7 @@ void medSourceItemModel::populateLevel(QModelIndex const & index)
     }
     else
     { 
-        if (d->parent->attributesForBuildTree(d->sourceInstanceId, iLevel, key, entries))
+        if (medSourceHandler::instance()->attributesForBuildTree(d->sourceInstanceId, iLevel, key, entries))
         {
             emit layoutAboutToBeChanged(); //this is useful to update arrow on the left if click is not inside
             QVector<QPair<int, int> > rangeToRemove; // vector of ranges to delete, <beginRange, endRange>

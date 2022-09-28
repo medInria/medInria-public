@@ -18,7 +18,7 @@
 
 #include <medCoreExport.h>
 
-class medDataModel;
+class medDataHub;
 struct medDataModelElementPrivate;
 
 class MEDCORE_EXPORT medSourceItemModel : public QAbstractItemModel
@@ -43,10 +43,10 @@ public:
 		QStringList uri;
 	};
 
-    medSourceItemModel(medDataModel *parent, QString const & sourceIntanceId);
+    medSourceItemModel(medDataHub *parent, QString const & sourceIntanceId);
     virtual ~medSourceItemModel();
 
-    //medDataModel * model();
+    //medDataHub * model();
 
     // ////////////////////////////////////////////////////////////////////////
     // Pure Virtual Override
@@ -112,9 +112,9 @@ public:
 
     bool addEntry(QString pi_key, QString pi_name, QString pi_description, unsigned int pi_uiLevel, QString pi_parentKey);
 
-    bool addRequest(int pi_request, asyncRequest &request);
-    bool getRequest(int pi_request, asyncRequest &request);
-    bool removeRequest(int pi_request);
+    //bool addRequest(int pi_request, asyncRequest &request);
+    //bool getRequest(int pi_request, asyncRequest &request);
+    //bool removeRequest(int pi_request);
 
     bool refresh(QModelIndex const &pi_index = QModelIndex());
     //JU

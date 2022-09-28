@@ -12,6 +12,10 @@
 =========================================================================*/
 #include "medNewLogger.h"
 
+#include <medLog.h>
+#include <medLogStream.h>
+
+
 #include <QtCore>
 #include <QTextStream>
 #include <QFile>
@@ -22,7 +26,7 @@
 #include <string>
 
 #include <teeStream.tpp>
-#include <medNotification.h>
+#include <medNotifSys.h>
 
 #if defined(WIN32)
 #include <windows.h>
@@ -54,103 +58,82 @@ std::string convertUTF8toLocalUtfString(char const * pi_pchStringToConvert)
 }
 #endif
 
+
+class captureStream : public std::basic_streambuf<char>
+{
+public:
+    captureStream(std::ostream& stream, medNewLogger &logger) : m_stream(stream), m_logger(logger)
+    {
+        m_old_buf = stream.rdbuf();
+        stream.rdbuf(this);
+    }
+
+    ~captureStream()
+    {
+        m_stream.rdbuf(m_old_buf);
+    }
+
+protected:
+    //This is called when a std::endl has been inserted into the stream
+    virtual int_type overflow(int_type v)
+    {
+        if (v == '\n' || v == '\r')
+        {
+            m_logger.writeMsgfromStdStream(&m_stream, QString(v));
+        }
+
+        return v;
+    }
+
+    virtual std::streamsize xsputn(const char *p, std::streamsize n)
+    {
+        m_logger.writeMsgfromStdStream(&m_stream, QString(QByteArray(p, n)));
+        return n;
+    }
+
+private:
+    medNewLogger   & m_logger;
+    std::ostream   & m_stream;
+    std::streambuf * m_old_buf;
+};
+
 class medNewLoggerPrivate
 {
 public:
     static medNewLogger* singleton;
-    static bool initialized;
-    bool logAccessFlag;
+    static medNewLogger* qtMsgHandlerInstance;
 
-    //std::ofstream logFile;
-
-
+    QString path;
+    QApplication * app;
+    
+    QString mainLogFileName;
     std::ofstream * mainLogFile;
+    
     QMap<QString, std::ofstream *> logFilesMap;
-    QMap<medLog *, streamProperty> streamCombinationMap;
-    QMap<QtMsgType, streamProperty> qtmsgtypeCombinationMap;
-        
+    QMap<QString, sLogLevel>  logFilesPropertyMap;
 
+    QMap<medLog *, streamProperty>      medStreamCombinationMap;
+    QMap<std::ostream*, streamProperty> stdStreamCombinationMap;
+    QMap<QtMsgType, streamProperty>     qtmsgtypeCombinationMap;
 
-    QList<std::ostream*> redirectedStreams;
-    QList<std::ostream*> redirectedStreamDummies;
-    QList<teestream*> teeStreams;
-    QList<std::streambuf*> previousStreamBuffers;
+    QMap<std::ostream*, captureStream*> stdStreamBuffMap;
 
-    static const qint64 maxLogSize = 5*1024*1024;
-    static const qint64 minLogSize = 1*1024*1024;
-
+    static qint64 maxLogSize;
+    static qint64 minLogSize;
 };
 
 medNewLogger* medNewLoggerPrivate::singleton = nullptr;
-bool medNewLoggerPrivate::initialized = false;
+medNewLogger* medNewLoggerPrivate::qtMsgHandlerInstance = nullptr;
+qint64 medNewLoggerPrivate::maxLogSize = 5 * 1024 * 1024;
+qint64 medNewLoggerPrivate::minLogSize = 1 * 1024 * 1024;
+
+medLog medNewLogger::medLogWarning(medWarningMsg);
+medLog medNewLogger::medLogDebug(medDebugMsg);
+medLog medNewLogger::medLogCritical(medErrorMsg);
+medLog medNewLogger::medLogFatal(medFatalMsg);
+medLog medNewLogger::medLogInfo(medInfoMsg);
 
 
-medLog medNewLogger::medLogWarning;   //std::stringstream medNewLogger::medLogDebug;
-medLog medNewLogger::medLogDebug;     //std::stringstream medNewLogger::medLogWarning;
-medLog medNewLogger::medLogCritical;  //std::stringstream medNewLogger::medLogCritical;
-medLog medNewLogger::medLogFatal;     //std::stringstream medNewLogger::medLogFatal;
-medLog medNewLogger::medLogInfo;      //std::stringstream medNewLogger::medLogInfo;
-
-
-
-// ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
-// ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
-// medLogStream
-// ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
-// ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
-medLogStream::~medLogStream()
-{
-    m_pLog->write(m_string);
-}
-
-
-
-// ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
-// ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
-// medLog
-// ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
-// ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
-medLog::medLog(medNewLogger * logger)
-{
-    if (logger == nullptr)
-    {
-        m_logger = &medNewLogger::instance();
-    }
-    else
-    {
-        m_logger = logger;
-    }
-
-    m_logger->registerMedStream(*this);
-}
-
-medLog::~medLog()
-{
-    //TODO m_logger->unRegisterMedStream(*this);
-}
-
-medLogStream medLog::operator()()
-{
-    return medLogStream(this);
-}
-
-medLogStream medLog::operator()(streamProperty propoerty)
-{
-    // TODO
-    return medLogStream(this);
-}
-
-void medLog::setProperty(streamProperty propoerty)
-{
-    m_logger->registerMedStream(*this, propoerty);
-}
-
-void medLog::write(QString data)
-{
-    m_accessMutex.lock();
-    m_logger->writeMsgfromStream(this, data);
-    m_accessMutex.unlock();
-}
 
 
 
@@ -168,26 +151,34 @@ medNewLogger::medNewLogger() : d(new medNewLoggerPrivate)
     d->qtmsgtypeCombinationMap[QtCriticalMsg];
     d->qtmsgtypeCombinationMap[QtFatalMsg];
     d->qtmsgtypeCombinationMap[QtInfoMsg];
+
+    d->logFilesPropertyMap["cout"].levelArray;
+    d->logFilesPropertyMap["cerr"].levelArray;
+    d->logFilesPropertyMap["dbgConsole"].levelArray;
+    
     d->mainLogFile = nullptr;
 
-    truncateLogFileIfHeavy();
-}
-
-medNewLogger::~medNewLogger()
-{
-    qInstallMessageHandler(nullptr);
-    if (medNewLoggerPrivate::singleton == this)
+    for (auto fileName : d->logFilesMap.keys())
     {
-        finalizeTeeStreams();
+        truncateLogFileIfHeavy(filePath(fileName));
     }
 }
 
-medNewLogger& medNewLogger::instance()
+medNewLogger::~medNewLogger()
+{    
+    if (medNewLoggerPrivate::singleton == this)
+    {
+        qInstallMessageHandler(nullptr);
+    }
+}
+
+medNewLogger& medNewLogger::mainInstance()
 {
     if (medNewLoggerPrivate::singleton == nullptr)
     {
         medNewLoggerPrivate::singleton = new medNewLogger();
     }
+
     return *medNewLoggerPrivate::singleton;
 }
 
@@ -195,234 +186,298 @@ bool medNewLogger::initialize(medNewLogger * instance)
 {
     bool bRes = false;
 
-    if (!medNewLoggerPrivate::initialized && (medNewLoggerPrivate::singleton == nullptr || instance == nullptr))
-    {
-        if (medNewLoggerPrivate::singleton == nullptr)
-        {
-            if (instance == nullptr)
-            {
-                medNewLoggerPrivate::singleton = new medNewLogger();
-            }
-            else
-            {
-                medNewLoggerPrivate::singleton = instance;
-            }
-        }
+    instance->enableQtRedirection(true);
 
+    instance->registerStdStream(std::cout);
+    instance->registerStdStream(std::cerr);
 
-        QString mainLogFileName = QString("%1.log").arg(qApp->applicationName());
-        QString path = QDir(QStandardPaths::standardLocations(QStandardPaths::DataLocation).first()).filePath(mainLogFileName);
-        
-        medNewLoggerPrivate::singleton->d->logFilesMap[mainLogFileName] = new std::ofstream();
-        medNewLoggerPrivate::singleton->d->logFilesMap[mainLogFileName]->open(convertUTF8toLocalUtfString(path.toStdString().c_str()), std::ios::app);
-        medNewLoggerPrivate::singleton->d->mainLogFile = medNewLoggerPrivate::singleton->d->logFilesMap[mainLogFileName];
-
-        medNewLoggerPrivate::singleton->d->logAccessFlag = true;
-        medNewLoggerPrivate::singleton->initializeTeeStreams();
-        // Redirect Qt messages
-        qInstallMessageHandler(qtMessageHandler);
-        medNewLoggerPrivate::initialized = true;
-        bRes = true;
-    }
-
+    instance->registerMedStream(medNewLogger::medLogWarning);
+    instance->registerMedStream(medNewLogger::medLogDebug);
+    instance->registerMedStream(medNewLogger::medLogCritical);
+    instance->registerMedStream(medNewLogger::medLogFatal);
+    instance->registerMedStream(medNewLogger::medLogInfo);
+     //TODO
     return bRes;
 }
 
 void medNewLogger::finalize()
 {
-    medNewLoggerPrivate::singleton->deleteLater();
-    medNewLoggerPrivate::singleton = nullptr;
+    //TODO
 }
+
+
+
+//---------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
+
+
 
 void medNewLogger::qtMessageHandler(QtMsgType type, const QMessageLogContext &context, const QString &message)
 {
-    medNewLoggerPrivate::singleton->redirectQtMessage(type, context, QString(message));
-}
-
-void medNewLogger::writeNotification(QtMsgType type, const QString & message)
-{
-    medNewLogger::instance().writeMsg(type, QString(), message, false);
+    medNewLoggerPrivate::qtMsgHandlerInstance->redirectQtMessage(type, context, QString(message));
 }
 
 void medNewLogger::redirectQtMessage(QtMsgType type, const QMessageLogContext &context, const QString& message)
 {
     QString sContext;
+    QString sMsg = message;
+
     bool bNoContext = context.file == nullptr && context.function == nullptr && context.line > 0;    
     bNoContext ? sContext="" : sContext = QString(context.file) + QString(':') + QString(context.function) + QString(':') + QString::number(context.line);    
+
+    auto level = getLevelOfQt(type); 
+    auto prop = d->qtmsgtypeCombinationMap[type];
+    if (prop.context && !bNoContext)
+    {
+        sMsg = sContext + message;
+    }
+    writeMsgInternal(level, prop, sMsg);
+}
+
+QString medNewLogger::filePath(QString const & fileName)
+{
+    QString pathRes = d->path.isEmpty() ? "./" + fileName : d->path + "/" + fileName;
+
+    return QDir::toNativeSeparators(pathRes);
+}
+
+
+bool medNewLogger::outputIsEnable(QString outputName, eLogLevel level)
+{
+    bool bRes = false;
+
+    if (d->logFilesPropertyMap.contains(outputName))
+    {
+        bRes = d->logFilesPropertyMap[outputName][level];
+    }
+
+    return bRes;
+}
+
+eLogLevel medNewLogger::getLevelOfMsg(QString const & msg)
+{
+    eLogLevel eLevelRes = medInfoMsg;
     
-    writeMsg(type, sContext, message, true);
+    if (msg.startsWith("[DBG]")) {eLevelRes = medDebugMsg;}
+    else if (msg.startsWith("[INF]")) {eLevelRes = medInfoMsg;}
+    else if (msg.startsWith("[WRN]")) {eLevelRes = medWarningMsg;}
+    else if (msg.startsWith("[CRT]")) {eLevelRes = medErrorMsg;}
+    else if (msg.startsWith("[FAT]")) {eLevelRes = medDebugMsg;}
+    
+    return eLevelRes;
 }
 
-void medNewLogger::writeMsg(QtMsgType type, QString &sContext, const QString & message, bool bNotif)
+/** Return the log level associated to a QtMsgType.
+ * @brief this helper function return the log level associated to a QtMsgType.
+ * @param type the QtMsgType to map on eLogLevel.
+ * @return the eLogLevel associated to a QtMsgType.
+ * @details this function is call when Qt redirection appears throw redirectQtMessage.
+ */
+eLogLevel medNewLogger::getLevelOfQt(QtMsgType const type)
 {
-    auto ctx = sContext.toUtf8().toStdString();
-    auto msg = message.toUtf8().toStdString();
-    if (d->logAccessFlag)
+    eLogLevel levelRes = eLogLevel::medInfoMsg;
+
+    switch (type)
     {
-        d->logAccessFlag = false;
+        case QtMsgType::QtDebugMsg:    levelRes = eLogLevel::medDebugMsg;   break;
+        case QtMsgType::QtInfoMsg:     levelRes = eLogLevel::medInfoMsg;    break;
+        case QtMsgType::QtWarningMsg:  levelRes = eLogLevel::medWarningMsg; break;
+        case QtMsgType::QtCriticalMsg: levelRes = eLogLevel::medErrorMsg;   break;
+        case QtMsgType::QtFatalMsg:    levelRes = eLogLevel::medFatalMsg;   break;
+    }
 
-        writeNewMsg(type, message);
-        //switch (type)
-        //{
-        //    case QtInfoMsg:
-        //    {
-        //        std::cout << ctx << msg << std::endl;
-        //        break;
-        //    }
-        //    case QtDebugMsg:
-        //    {
-        //        std::cout << ctx << msg << std::endl;
-        //        if (bNotif)
-        //        {
-        //            medNotification::notify(medNotification::notifLevel::warnning, "logger", message);
-        //        }
-        //        break;
-        //    }
-        //    case QtWarningMsg:
-        //    {
-        //        std::cout << ctx << msg << std::endl;
-        //        if (bNotif)
-        //        {
-        //            medNotification::notify(medNotification::notifLevel::warnning, "logger", message);
-        //        }
-        //        break;
-        //    }
-        //    case QtCriticalMsg:
-        //    {
-        //        std::cout << ctx << msg << std::endl;
-        //        break;
-        //    }
-        //    case QtFatalMsg:
-        //    {
-        //        std::cout << ctx << msg << std::endl;
-        //        abort();
-        //    }
-        //}
+    return levelRes;
+}
 
-        d->logAccessFlag = true;
+
+/** Test the size of the log file and cut if needed
+ * @brief this helper function truncate a log file if this one it's become too heavy
+ * @param path to the file
+ * @details this function is call when the log file is open (creation or append)
+ */
+void medNewLogger::truncateLogFileIfHeavy(QString const & path)
+{
+    qint64 filesize = QFileInfo(path).size();
+    
+    // Over 5Mo, the file is truncated from the beginning (old lines are discarded)
+    if (filesize > medNewLoggerPrivate::maxLogSize)
+    {
+    
+        QFile inFile(path);
+        inFile.open(QFile::ReadOnly);
+        inFile.seek(filesize - medNewLoggerPrivate::minLogSize); // file is going to be cut to minLogSize size
+    
+        QTextStream keptText;
+        while (!inFile.atEnd())
+        {
+            keptText << inFile.readLine();
+            keptText << "\n";
+        }
+    
+        inFile.remove();
+        inFile.close();
+    
+        QFile outFile(path);
+        outFile.open(QFile::ReadWrite | QFile::Truncate);
+        outFile.write(keptText.string()->toUtf8());
+    
+        outFile.close();
     }
 }
 
-void medNewLogger::writeNewMsg(QtMsgType type, const QString & message)
-{
-    if (d->qtmsgtypeCombinationMap.contains(type))
-    {
-        auto & prop = d->qtmsgtypeCombinationMap[type];
-        auto msg = message.toUtf8().toStdString();
-        if (prop.file)
-        {
-            if (prop.fileName.isEmpty())
-            {
-                if (d->mainLogFile)
-                {
-                    (*d->mainLogFile) << msg << std::endl;
-                }
-            }
-            else
-            {
-                if (d->logFilesMap.contains(prop.fileName))
-                {
-                    (*d->logFilesMap[prop.fileName]) << msg << std::endl;
-                }
-            }
-        }
-        if (prop.coutConsole)
-        {
-            fprintf(stdout, "%s\n", msg.c_str());
-        }
-        if (prop.cerrConsole)
-        {
-            fprintf(stderr, "%s\n", msg.c_str());
-        }
-#ifdef _MSC_VER 
-        if (prop.dbgConsole)
-        {
-            //TODO
-        }
-#endif // _MSC_VER 
-    }    
-}
 
-void medNewLogger::initializeTeeStreams()
-{
-    createTeeStream(&std::cout);
-    createTeeStream(&std::cerr);
-    //createTeeStream(&medNewLogger::medLogDebug);
-    //createTeeStream(&medNewLogger::medLogWarning);
-    //createTeeStream(&medNewLogger::medLogCritical);
-    //createTeeStream(&medNewLogger::medLogFatal);
-    //createTeeStream(&medNewLogger::medLogInfo);
-    //createTeeStream(&d->stream);
-}
 
-void medNewLogger::finalizeTeeStreams()
+bool medNewLogger::setLogPath(QString path)
 {
-    for (int i = 0; i < d->redirectedStreams.length(); i++)
+    bool bRes = QFileInfo(path).isDir();
+
+    if (bRes)
     {
-        d->teeStreams.first()->flush();
-        delete d->teeStreams.takeFirst();
-        delete d->redirectedStreamDummies.takeFirst();
-        d->redirectedStreams.takeFirst()->rdbuf(d->previousStreamBuffers.takeFirst());
+        d->path = path;
     }
+
+    return bRes;
 }
 
-void medNewLogger::createTeeStream(std::ostream* targetStream)
+void medNewLogger::setLogApp(QApplication * app)
 {
-    d->redirectedStreams.append(targetStream);
-
-    d->previousStreamBuffers.append(targetStream->rdbuf());
-    d->redirectedStreamDummies.append(new std::ostream(targetStream->rdbuf()));
-    teestream* teeDevice = new teestream(*d->redirectedStreamDummies.last(), *d->mainLogFile);
-    d->teeStreams.append(teeDevice);
-    targetStream->rdbuf(d->teeStreams.last()->rdbuf());
+    d->app = app;
 }
 
-void medNewLogger::truncateLogFileIfHeavy()
+bool medNewLogger::setLogOutputFileProperty(QString fileName, sLogLevel property)
 {
-    //qint64 filesize = QFileInfo(d->path).size();
-    //
-    //// Over 5Mo, the file is truncated from the beginning (old lines are discarded)
-    //if (filesize > d->maxLogSize)
-    //{
-    //
-    //    QFile inFile(d->path);
-    //    inFile.open(QFile::ReadOnly);
-    //    inFile.seek(filesize - d->minLogSize); // file is going to be cut to minLogSize size
-    //
-    //    QTextStream keptText;
-    //    while (!inFile.atEnd())
-    //    {
-    //        keptText << inFile.readLine();
-    //        keptText << "\n";
-    //    }
-    //
-    //    inFile.remove();
-    //    inFile.close();
-    //
-    //    QFile outFile(d->path);
-    //    outFile.open(QFile::ReadWrite | QFile::Truncate);
-    //    outFile.write(keptText.string()->toUtf8());
-    //
-    //    outFile.close();
-    //}
-}
+    bool bRes = true;
 
-
-void medNewLogger::registerMedStream(medLog & log, streamProperty property)
-{
-    auto &map = medNewLoggerPrivate::singleton->d->streamCombinationMap;
-    if (map.contains(&log))
+    if (d->logFilesPropertyMap.contains(fileName))
     {
-
+        d->logFilesPropertyMap[fileName] = property;
     }
     else
     {
-        map[&log] = property;
+        createOutputFileIfNeeded(fileName);
     }
 
+    return bRes;
 }
 
-void medNewLogger::writeMsgfromStream(medLog * log, QString &data)
+bool medNewLogger::enableQtRedirection(bool enable)
 {
+    bool bRes = medNewLoggerPrivate::qtMsgHandlerInstance == nullptr || medNewLoggerPrivate::qtMsgHandlerInstance == this;
+    
+    if (bRes)
+    {
+        if (enable)
+        {
+            medNewLoggerPrivate::qtMsgHandlerInstance = this;
+            qInstallMessageHandler(qtMessageHandler);
+        }
+        else
+        {
+            medNewLoggerPrivate::qtMsgHandlerInstance = nullptr;
+            qInstallMessageHandler(nullptr);
+        }
+    }
 
+    return bRes;
+}
+
+
+
+
+
+
+void medNewLogger::registerMedStream(medLog & log, streamProperty prop)
+{
+    d->medStreamCombinationMap[&log] = prop;
+    createOutputFileIfNeeded(prop.fileName);
+}
+
+void medNewLogger::registerStdStream(std::ostream & log, streamProperty prop)
+{
+    d->stdStreamCombinationMap[&log] = prop;
+    d->stdStreamBuffMap[&log] = new captureStream(log, *this);
+    createOutputFileIfNeeded(prop.fileName);
+}
+
+void medNewLogger::createOutputFileIfNeeded(QString fileName)
+{
+    if (!fileName.isEmpty() && !d->logFilesMap.contains(fileName))
+    {
+        d->logFilesMap[fileName] = new std::ofstream();
+        d->logFilesMap[fileName]->open(convertUTF8toLocalUtfString(filePath(fileName).toStdString().c_str()), std::ios::app);
+        d->logFilesPropertyMap[fileName];
+        truncateLogFileIfHeavy(filePath(fileName));
+    }
+}
+
+void medNewLogger::writeMsgfromMedStream(medLog * log, QString &data, streamProperty *property)
+{
+    //TODO
+
+    if (d->medStreamCombinationMap.contains(log))
+    {
+        auto & prop = d->medStreamCombinationMap[log];
+        writeMsgInternal(getLevelOfMsg(data), prop, data);
+    }
+    else
+    {
+        //TODO
+    }
+}
+
+void medNewLogger::writeMsgfromStdStream(std::ostream * log, QString & data)
+{
+    if (d->stdStreamCombinationMap.contains(log))
+    {
+        auto & prop = d->stdStreamCombinationMap[log];
+        writeMsgInternal(getLevelOfMsg(data), prop, data);
+    }
+    else
+    {
+        fprintf(stderr, "ostream with pointer %p is not registred in medLogger. It contains the following message: %s\n", log, data.toStdString().c_str() );
+    }
+}
+
+
+void medNewLogger::writeMsgInternal(eLogLevel level, streamProperty const & prop, QString const & message)
+{
+    auto msg = message.toUtf8().toStdString();
+    if (prop.file)
+    {
+        std::ostream * outputStream = nullptr;
+        QString fileName;
+
+        if (prop.fileName.isEmpty())
+        {
+            fileName = d->mainLogFileName;
+            outputStream = d->mainLogFile;
+        }
+        else
+        {
+            if (d->logFilesMap.contains(prop.fileName))
+            {
+                fileName = prop.fileName;
+                outputStream = d->logFilesMap[fileName];
+            }
+        }
+        if (outputIsEnable(fileName, level) || (level == eLogLevel::medNoneMsg && fileName == d->mainLogFileName))
+        {
+           (*outputStream) << msg << std::endl;
+        }
+        
+    }
+    if (prop.coutConsole && (outputIsEnable("cout", level) || level == eLogLevel::medNoneMsg))
+    {
+        fprintf(stdout, "%s\n", msg.c_str());
+    }
+    if (prop.cerrConsole && outputIsEnable("cerr", level))
+    {
+        fprintf(stderr, "%s\n", msg.c_str());
+    }
+#ifdef _MSC_VER 
+    if (prop.dbgConsole && outputIsEnable("dbgConsole", level))
+    {
+        auto str = convertUTF8toLocalUtfString(msg.c_str());
+        OutputDebugStringW(str.c_str());
+    }
+#endif // _MSC_VER
 }

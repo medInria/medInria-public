@@ -12,7 +12,7 @@
 
 =========================================================================*/
 
-#include <medSourcesLoader.h>
+#include <medSourceHandler.h>
 #include <medSourceItemModel.h>
 
 #include <medCoreExport.h>
@@ -28,7 +28,7 @@
 
 
 
-class MEDCORE_EXPORT medDataModel : public QObject
+class MEDCORE_EXPORT medDataHub : public QObject
 {
     Q_OBJECT
 
@@ -36,48 +36,10 @@ public:
     using datasetAttributes = QMap<QString, QString>;
     using levelAttributes = QList<datasetAttributes>;
 
-    static medDataModel* instance(QObject *parent = nullptr);
-	~medDataModel();
-
-    // ////////////////////////////////////////////////////////////////////////////////////////////
-    // Members functions to interrogate the source
-    bool sourceGlobalInfo       (QString const & pi_sourceInstanceId, bool &pi_bOnline, bool &pi_bWritable, bool & pi_bLocal, bool &pi_bCache);
-    bool mandatoryAttributesKeys(QString const & pi_sourceInstanceId, unsigned int pi_uiLevel, QStringList & po_attributes);
-    bool attributesForBuildTree (QString const & pi_sourceInstanceId, unsigned int pi_uiLevel, QString const & key, levelAttributes & po_entries);
-    bool mandatoriesAttributes  (QString const & pi_sourceInstanceId, unsigned int pi_uiLevel, QString const & parentKey, levelAttributes & po_entries);
-    bool optionalAttributes     (QString const & pi_sourceInstanceId, unsigned int pi_uiLevel, QString const & key, datasetAttributes & po_attributes, datasetAttributes & po_tags);
-	bool getAsyncData           (QString const & pi_sourceInstanceId, unsigned int pi_uiLevel, QString const & key);
-	bool levelCount             (QString const & pi_sourceInstanceId, unsigned int &po_uiLevelMax);
-    bool asyncResult            (QString const & pi_sourceInstanceId, int pi_iRequest);
-    bool abortRequest           (QString const & pi_sourceInstanceId, int pi_iRequest); //TODO call in medSourceItemModel
-    bool filteringParameters    (QString const & pi_sourceInstanceId, QList<medAbstractParameter*> & po_parameters);
-
-    QString getInstanceName(QString const & pi_sourceInstanceId); //Probably used in medSourceModelPresenter and medSourceWidget
-
-
-private:
-    medAbstractSource * getSource(QString const pi_sourceInstanceId);
-
-public slots:
-    void addSource(medAbstractSource* pi_source);
-    void removeSource(medAbstractSource* pi_source);
-
-    void sourceIsOnline(QString sourceIntanceId);/* REDO */
-    void progress(int pi_iRequest, medAbstractSource::eRequestStatus status);
-
-    void replaceTmpId(medSourceItemModel * pItemModel, QModelIndex &index, QVariant &data, medSourceItemModel::asyncRequest &request);
-
-
-
-
-    
+    static medDataHub* instance(QObject *parent = nullptr);
+	~medDataHub();
 
 public:
-    // ////////////////////////////////////////////////////////////////////////////////////////////
-    // Members functions to deal with datamodel                                Advanced Accessors
-    QList<medSourceItemModel*> models(); // rediscute de son nom
-    medSourceItemModel* getModel(QString const & pi_sourceInstanceId);
-
 	// ////////////////////////////////////////////////////////////////////////////////////////////
     // Members functions to get Data, metadata and informations                Datasets handling
     medAbstractData * getData(medDataIndex const & index);
@@ -94,81 +56,45 @@ public:
 
 
     // ////////////////////////////////////////////////////////////////////////////////////////////
-    // URI and PATH handler
-    void setDefaultWorkingSource(medAbstractSource * pi_pSource);
-    medAbstractSource * getDefaultWorkingSource();
-    medAbstractSource * getSourceToWrite(QString pi_sourceIdDst = "");
-
-
-    // ////////////////////////////////////////////////////////////////////////////////////////////
-    // URI and PATH handler
-    static QString uriAsString(QStringList pi_uri);
-    static QStringList uriAsList(QString pi_uri);
-    QString convertToPath(QStringList pi_uri);
-
-
-    // ////////////////////////////////////////////////////////////////////////////////////////////
-    // Writing Policy
-    medAbstractWritingPolicy* getSourceWPolicy(QString pi_sourceId);
-    medAbstractWritingPolicy* getGeneralWPolicy(){ return &m_generalWritingPolicy; }
-
-
-    // ////////////////////////////////////////////////////////////////////////////////////////////
-    // 
+    // Members functions for GUI    
+    // ------------  Members functions to deal with datamodel                   Advanced Accessors
+    QList<medSourceItemModel*> models(); // rediscute de son nom
+    medSourceItemModel* getModel(QString const & pi_sourceInstanceId); //also used internally
     void expandAll(const QString &sourceInstanceId);
+    void sourceIsOnline(QString sourceIntanceId);
 
 
-    // ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
-    // ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
-    // ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
-    // ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
-    // ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
-    // ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 public slots:
-
-   /* REMOVE */void addData(medDataIndex * pi_datasetIndex, QString uri); //TODO regarder saveData et writeResults    //uri -> sourceInstanceId/IdLevel1/IdLevel.../IdLevelN
+   void addSource(QString const & pi_sourceId);
+   void removeSource(QString const & pi_sourceId);
    void refresh(medDataIndex pi_index); //TODO est-il utile  //uri -> sourceInstanceId/IdLevel1/IdLevel.../IdLevelN
-   /* REDO */void removeConvertedData(QObject *obj);
-
-
-private:
-    medDataModel(QObject *parent = nullptr);
-	medAbstractData * variantToMedAbstractData(QVariant &data, const medDataIndex & index);
+   void unloadData(QObject *obj); /* REDO */
+   int waitGetAsyncData(const QString &sourceId, int rqstId);
+   void progress(const QString &sourceId, int rqstId);
 
 signals:
-    /* used only on gui */ void sourceAdded(medAbstractSource*);   // Signal to indicate a source was registered
-	/* used only on gui */ void sourceRemoved(QString); // Signal to indicate a source was unregistered
-    void abortRequest(int); //abort the requestId
-
+    void abortRequest  (int); //abort the requestId
     void getAsyncStatus(medAbstractSource* , int, medAbstractSource::eRequestStatus);
-
+    void sourceAdded   (QString /*sourceInstanceId*/);
+    void sourceRemoved (QString /*sourceInstanceId*/);
 
 private:
-    QStringList m_sourceInstanceIdOrderedList;
-    QMap< QString, medAbstractSource*> m_sourceIdToInstanceMap;
-    QMap< medAbstractSource*, medSourceItemModel*> m_sourcesModelMap; //TODO delete medSourceItemModel* in destructor
-    medAbstractSource* m_defaultSource;
+    medDataHub(QObject *parent = nullptr);
+	medAbstractData * variantToMedAbstractData(QVariant &data, const medDataIndex & index);
+
+    QVariant prepareDataToWrite(QString &sourceId, medAbstractData * &pi_pData, QStringList & pio_uri);
+    bool warpAddAsync(medAbstractSource::levelMinimalEntries &minimalEntries, QStringList & pio_uri, medSourceItemModel * pModel, unsigned int uiLevel, QString &parentKey, medAbstractData * pi_pData, QVariant &data);
+
+    void getDirectData(const medDataIndex & index, medAbstractData * &pDataRes);
+    static QString getTmpUuid();
+    QString convertToPath(QStringList pi_uri);
+
+private:
+    medSourceHandler * m_sourcesHandler;
+    QMap< QString, medSourceItemModel*> m_sourceIdToModelMap;
+
 	
     QMap<medDataIndex, dtkSmartPointer<medAbstractData> > m_IndexToData;
-    medDefaultWritingPolicy m_generalWritingPolicy;
-    static medDataModel * s_instance;
+    static medDataHub * s_instance;
 };
 
-
-
-/** *****************************************************************************************************************/
-/** *****************************************************************************************************************/
-/**  TODO TODO TODO TODO TODO TODO TODO TODO TODO TODO TODO TODO TODO TODO TODO TODO TODO TODO TODO TODO TODO TODO **/
-/** *****************************************************************************************************************/
-/** *****************************************************************************************************************/
-/**                                                                                                                **/
-/** Implement a mechanism substitute temporary id of data to final id given by source                              **/
-/** to do this:                                                                                                    **/
-/**   - keep a list of temporaries id of data                                                                      **/
-/**   - keep a list request id and type of request associated to it (data, key, path)                              **/
-/**   - keep a mapping between them                                                                                **/
-/**   - listen the signal finish of source                                                                         **/
-/**   - call the getAsyncResults on a source                                                                       **/
-/**                                                                                                                **/
-/** *****************************************************************************************************************/
-/** *****************************************************************************************************************/

@@ -718,11 +718,11 @@ medAbstractWritingPolicy * polygonLabel::getBestWPolicy(QString pi_sourceId)
 
     if (writePolicyRes == nullptr)
     {
-        writePolicyRes = medDataModel::instance()->getSourceWPolicy(pi_sourceId);
+        writePolicyRes = medSourceHandler::instance()->getSourceWPolicy(pi_sourceId);
 
         if (writePolicyRes == nullptr)
         {
-            writePolicyRes = medDataModel::instance()->getGeneralWPolicy();
+            writePolicyRes = medSourceHandler::instance()->getGeneralWPolicy();
         }
     }
 
@@ -731,7 +731,7 @@ medAbstractWritingPolicy * polygonLabel::getBestWPolicy(QString pi_sourceId)
 
 bool polygonLabel::writeResults(QString pi_sourceId, medAbstractData * pi_pData, QStringList pi_UriOfRelatedData, QString pi_basePath, medWritingPolicyData & pi_writingPolicyData)
 {
-    return medDataModel::instance()->writeResults(pi_sourceId, pi_pData, pi_UriOfRelatedData, pi_basePath, pi_writingPolicyData, d->writePolicy);
+    return medDataHub::instance()->writeResults(pi_sourceId, pi_pData, pi_UriOfRelatedData, pi_basePath, pi_writingPolicyData, d->writePolicy);
 }
 
 

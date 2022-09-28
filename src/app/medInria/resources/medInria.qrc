@@ -165,7 +165,6 @@
         <file>icons/saveScene.png</file>
         <file>icons/saveScene_grey.png</file>
         <file>icons/scene.png</file>
-
         <file>icons/connect_on.svg</file>
         <file>icons/connect_off.svg</file>
         <file>icons/close.svg</file>
@@ -174,5 +173,11 @@
         <file>icons/minimize_on_white.svg</file>
         <file>icons/minimize_off_gray.svg</file>
         <file>icons/minimize_off_white.svg</file>
+        <file>icons/bleu_spot.svg</file>
+        <file>icons/green_spot.svg</file>
+        <file>icons/orange_spot.svg</file>
+        <file>icons/red_spot.svg</file>
+        <file>icons/yellow_spot.svg</file>
+        <file>icons/button-notifications.png</file>
     </qresource>
 </RCC>

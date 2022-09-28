@@ -64,8 +64,9 @@ public:
     QWidget*                  rightEndButtons;
     medStatusBar*             statusBar;
     medQuickAccessPushButton* quickAccessButton;
-    
-    QToolButton *quitButton;
+
+    //QToolButton *quitButton;
+    QToolButton *notifButton;
     QToolButton *fullscreenButton;
     QToolButton *adjustSizeButton;
     QToolButton *screenshotButton;
@@ -163,14 +164,24 @@ medMainWindow::medMainWindow ( QWidget *parent ) : QMainWindow ( parent ), d ( n
     d->shortcutAccessVisible = false;
     d->controlPressed = false;
 
+    ////Add quit button
+    //QIcon quitIcon;
+    //quitIcon.addPixmap(QPixmap(":/icons/quit.png"), QIcon::Normal);
+    //d->quitButton = new QToolButton(this);
+    //d->quitButton->setIcon(quitIcon);
+    //d->quitButton->setObjectName("quitButton");
+    //connect(d->quitButton, SIGNAL( pressed()), this, SLOT (close()));
+    //d->quitButton->setToolTip(tr("Close medInria"));
+
     //Add quit button
-    QIcon quitIcon;
-    quitIcon.addPixmap(QPixmap(":/icons/quit.png"), QIcon::Normal);
-    d->quitButton = new QToolButton(this);
-    d->quitButton->setIcon(quitIcon);
-    d->quitButton->setObjectName("quitButton");
-    connect(d->quitButton, SIGNAL( pressed()), this, SLOT (close()));
-    d->quitButton->setToolTip(tr("Close medInria"));
+    QIcon notifIcon;
+    notifIcon.addPixmap(QPixmap(":/icons/button-notifications.png"), QIcon::Normal);
+    d->notifButton = new QToolButton(this);
+    d->notifButton->setIcon(notifIcon);
+    d->notifButton->setObjectName("notifButton");
+    d->notifButton->setToolTip(tr("Show notification pane"));
+
+
 
     //  Setup Fullscreen Button    medWorkspaceFactory::Details* details = medWorkspaceFactory::instance()->workspaceDetailsFromId(workspace);
 
@@ -236,7 +247,8 @@ medMainWindow::medMainWindow ( QWidget *parent ) : QMainWindow ( parent ), d ( n
     rightEndButtonsLayout->addWidget( d->screenshotButton );
     rightEndButtonsLayout->addWidget( d->movieButton );
     rightEndButtonsLayout->addWidget( d->fullscreenButton );
-    rightEndButtonsLayout->addWidget( d->quitButton );
+    //rightEndButtonsLayout->addWidget(d->quitButton);
+    rightEndButtonsLayout->addWidget(d->notifButton);
 
     //  Setting up status bar
     d->statusBarLayout = new QHBoxLayout;
@@ -416,6 +428,7 @@ void medMainWindow::resizeEvent ( QResizeEvent* event )
     QWidget::resizeEvent ( event );
     d->quickAccessWidget->move(QPoint (0, this->height() - d->quickAccessWidget->height() - 30 ));
     this->hideQuickAccess();
+    emit resized(geometry());
 }
 
 //TODO hide it, it is only usefull for immersive romm - RDE
@@ -504,6 +517,11 @@ void medMainWindow::showMaximized()
 QWidget* medMainWindow::currentArea() const
 {
     return d->currentArea;
+}
+
+QToolButton * medMainWindow::notifButton()
+{
+    return d->notifButton;
 }
 
 void medMainWindow::switchToHomepageArea()

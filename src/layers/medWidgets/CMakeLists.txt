@@ -23,6 +23,8 @@ list_source_files(${TARGET_NAME}
   ${CMAKE_CURRENT_SOURCE_DIR}
   dataSource/widgets
   dataSource
+  notification/widgets
+  notification
   process
   process/arithmetic_operation
   process/diffusion_processes

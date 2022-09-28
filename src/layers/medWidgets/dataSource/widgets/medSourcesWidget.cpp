@@ -42,19 +42,19 @@ medSourcesWidget::~medSourcesWidget()
 {
 }
 
-void medSourcesWidget::addSources(medDataModel *dataModel)
+void medSourcesWidget::addSources(medDataHub *dataHub)
 {
-    auto  sourceModels = dataModel->models();
+    auto  sourceModels = dataHub->models();
     for (auto sourceModel : sourceModels)
     {
-        addSource(dataModel, sourceModel->getSourceIntanceId());
+        addSource(dataHub, sourceModel->getSourceIntanceId());
     }
 }
 
-void medSourcesWidget::addSource(medDataModel *dataModel, QString sourceInstanceId)
+void medSourcesWidget::addSource(medDataHub *dataHub, QString sourceInstanceId)
 {
-    auto                        *sourceModel = dataModel->getModel(sourceInstanceId);
-    QString                      instanceName = dataModel->getInstanceName(sourceInstanceId);
+    auto                        *sourceModel = dataHub->getModel(sourceInstanceId);
+    QString                      instanceName = medSourceHandler::instance()->getInstanceName(sourceInstanceId);
     medSourceItemModelPresenter *sourcePresenter = new medSourceItemModelPresenter(sourceModel);
 
     QPushButton *sourceTreeTitle = new QPushButton(instanceName);
@@ -75,7 +75,7 @@ void medSourcesWidget::addSource(medDataModel *dataModel, QString sourceInstance
         if (checked)
         {
             plusButton->setIcon(QIcon(":/pixmaps/minus.png"));
-            dataModel->expandAll(sourceInstanceId);
+            dataHub->expandAll(sourceInstanceId);
             sourceTreeView->expandAll();
         }
         else
@@ -150,13 +150,13 @@ void medSourcesWidget::addSource(medDataModel *dataModel, QString sourceInstance
     connect(sourceTreeView, &QTreeView::clicked, [=]() {
         if (!sourceTreeView->isEnabled())
         {
-            dataModel->sourceIsOnline(sourceInstanceId);
+            dataHub->sourceIsOnline(sourceInstanceId);
         }
     });
     connect(sourceTreeTitle, &QPushButton::clicked, [=]() {
         if (!sourceTreeView->isEnabled())
         {
-            dataModel->sourceIsOnline(sourceInstanceId);
+            dataHub->sourceIsOnline(sourceInstanceId);
         }
     });
 
