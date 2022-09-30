@@ -66,7 +66,7 @@ private:
     QListWidgetItem   * m_pItem;
     bool                m_sourceSelected;
 
-    QHBoxLayout    * titleLayout;
+    QHBoxLayout    * m_titleLayout;
     QLabel         * m_titleLabel;
     QLineEdit      * m_titleLineEdit;
     QStackedWidget   m_titleStack;

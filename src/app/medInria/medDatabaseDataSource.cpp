@@ -59,7 +59,7 @@ medDatabaseDataSource::medDatabaseDataSource( QWidget* parent ): medAbstractData
 
     d->compactProxy = new medDatabaseProxyModel(this);
     d->compactProxy->setSourceModel(d->model);
-    d->multiSources_tree = new medSourceModelPresenter(medDataModel::instance());
+    d->multiSources_tree = new medSourceModelPresenter(medDataHub::instance());
     d->currentSource = 0;
 }
 
@@ -97,8 +97,8 @@ QWidget* medDatabaseDataSource::compactViewWidget()
     auto filterLabel = new QLabel("Filter ");
     auto filterLineEdit = new QLineEdit();
 
-    medDataManager::instance()->setIndexV2Handler([](medDataIndex const & dataIndex) -> medAbstractData* {return medDataModel::instance()->getData(dataIndex); },
-                                                  [](medAbstractData & data, bool originSrc) -> QUuid {return medDataModel::instance()->writeResultsHackV3(data, originSrc);});//TODO Remove ok c'est le truc le moins classe du monde (Part3)
+    medDataManager::instance()->setIndexV2Handler([](medDataIndex const & dataIndex) -> medAbstractData* {return medDataHub::instance()->getData(dataIndex); },
+                                                  [](medAbstractData & data, bool originSrc) -> QUuid {return medDataHub::instance()->writeResultsHackV3(data, originSrc);});//TODO Remove ok c'est le truc le moins classe du monde (Part3)
     d->compactView = d->multiSources_tree->buildTree();
 
     connect(filterLineEdit, SIGNAL(textChanged(const QString &)), d->multiSources_tree, SIGNAL(filterProxy(const QString &)));
@@ -141,7 +141,7 @@ QWidget* medDatabaseDataSource::sourceSelectorWidget()
     //     if (sourcesList.size()>i)
     //     {
     //         auto sourceId = sourcesList[i]->getInstanceId();
-    //         medDataModel::instance()->refresh(QStringList(sourceId));
+    //         medDataHub::instance()->refresh(QStringList(sourceId));
     //     }
     // });
     // layout->addWidget(pRefreshButton);

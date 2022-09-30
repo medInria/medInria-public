@@ -38,6 +38,7 @@ public:
     void restoreSettings();
     void saveSettings();
     QWidget* currentArea() const;
+    QToolButton* notifButton();
 
     void setStartup(const AreaType areaIndex,const QStringList& filenames);
     void resizeEvent( QResizeEvent * event );
@@ -46,6 +47,7 @@ signals:
     void sliceSelected(int slice);
     void mainWindowActivated();
     void mainWindowDeactivated();
+    void resized(QRect const &);
 
 
 public slots:

@@ -33,14 +33,14 @@ medSourceSettingsWidget::medSourceSettingsWidget(medAbstractSource * pSource, QL
     setAttribute(Qt::WA_TranslucentBackground);
 
     //--- Title area
-    titleLayout = new QHBoxLayout;
-    widgetLayout->addLayout(titleLayout);
-    titleLayout->setAlignment(Qt::AlignTop);
+    m_titleLayout = new QHBoxLayout;
+    widgetLayout->addLayout(m_titleLayout);
+    m_titleLayout->setAlignment(Qt::AlignTop);
 
     // Add on/off icons
     m_onOffIcon = new QImage;
     m_imageLabel = new QLabel(""); // QImage is not a widget, we need to add it in a QLabel
-    titleLayout->addWidget(m_imageLabel);
+    m_titleLayout->addWidget(m_imageLabel);
 
     // Add a title 
     m_titleLabel    = new QLabel(pSource->getInstanceName());
@@ -50,13 +50,13 @@ medSourceSettingsWidget::medSourceSettingsWidget(medAbstractSource * pSource, QL
     m_titleStack.addWidget(m_titleLineEdit);
     m_titleLabel->installEventFilter(this);
     m_titleLineEdit->installEventFilter(this);
-    titleLayout->addWidget(&m_titleStack);
-    titleLayout->addStretch();
+    m_titleLayout->addWidget(&m_titleStack);
+    m_titleLayout->addStretch();
 
     // Default message
     m_defaultLabel = new QLabel("");
     m_defaultLabel->setStyleSheet("font: italic");
-    titleLayout->addWidget(m_defaultLabel);
+    m_titleLayout->addWidget(m_defaultLabel);
 
     // should be in medInria.qss, in order to allow other themes to change colors or styles.
     QString buttonStyle = "QPushButton {"
@@ -73,7 +73,7 @@ medSourceSettingsWidget::medSourceSettingsWidget(medAbstractSource * pSource, QL
     m_minimizeSourceButton->setFixedWidth(25);
     m_minimizeSourceButton->setToolTip(tr("Show or hide the body of this source item"));
     m_minimizeSourceButton->setStyleSheet(buttonStyle);
-    titleLayout->addWidget(m_minimizeSourceButton);
+    m_titleLayout->addWidget(m_minimizeSourceButton);
 
     //--- Fill parameters in body
     auto * parametersLayout = new QVBoxLayout;

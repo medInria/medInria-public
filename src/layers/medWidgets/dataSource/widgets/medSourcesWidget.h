@@ -34,10 +34,10 @@ public:
     medSourcesWidget();
     ~medSourcesWidget();
 
-    void addSources(medDataModel *dataModel);
+    void addSources(medDataHub *dataHub);
 
 public slots:
-    void addSource(medDataModel *dataModel, QString sourceInstanceId);
+    void addSource(medDataHub *dataHub, QString sourceInstanceId);
     void removeSource(QString sourceInstanceId);
     void filter(const QString &);
 

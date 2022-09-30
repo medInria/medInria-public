@@ -18,7 +18,7 @@
 
 #include <medWidgetsExport.h>
 
-class medDataModel;
+class medDataHub;
 class medSourcesWidget;
 class medSourceModelPresenterPrivate;
 
@@ -26,7 +26,7 @@ class MEDWIDGETS_EXPORT medSourceModelPresenter : public QObject
 {
     Q_OBJECT
 public:
-    medSourceModelPresenter(medDataModel *parent = nullptr);
+    medSourceModelPresenter(medDataHub *parent = nullptr);
     virtual ~medSourceModelPresenter();
 
     virtual QWidget *buildWidget();
@@ -39,7 +39,7 @@ public:
 
     virtual  QStackedWidget *buildFilters();
 
-    virtual medDataModel *dataModel() const;
+    //virtual medDataHub *dataHub() const;
 
 signals:
     void filterProxy(const QString &);

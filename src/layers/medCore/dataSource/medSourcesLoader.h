@@ -54,6 +54,7 @@ public:
     /* ***********************************************************************/
     /* *************** Handle sources ****************************************/
     /* ***********************************************************************/
+    QStringList sourcesIdList() { return m_sourcesIDs; }
 	QList<medAbstractSource*> sourcesList();
 	medAbstractSource*        getSource(QString const & instanceId);
     medAbstractSource*        getDefaultWorkingSource();

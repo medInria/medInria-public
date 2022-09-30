@@ -11,13 +11,13 @@
 class medSourceModelPresenterPrivate
 {
 public:
-    medDataModel *model;
+    medDataHub *dataHub;
 };
 
 
-medSourceModelPresenter::medSourceModelPresenter(medDataModel *parent) : d(new medSourceModelPresenterPrivate())
+medSourceModelPresenter::medSourceModelPresenter(medDataHub *parent) : d(new medSourceModelPresenterPrivate())
 {
-    d->model = parent;
+    d->dataHub = parent;
 }
 
 medSourceModelPresenter::~medSourceModelPresenter()
@@ -33,10 +33,10 @@ medSourcesWidget * medSourceModelPresenter::buildTree()
 {
     auto widgetRes = new medSourcesWidget;
     
-    widgetRes->addSources(d->model);
+    widgetRes->addSources(d->dataHub);
 
-    connect(d->model, &medDataModel::sourceAdded, [&](medAbstractSource *sourceInstance) {widgetRes->addSource(d->model, sourceInstance->getInstanceId());});
-    connect(d->model, &medDataModel::sourceRemoved, widgetRes, &medSourcesWidget::removeSource);
+    connect(d->dataHub, &medDataHub::sourceAdded, [&](QString sourceInstanceId) {widgetRes->addSource(d->dataHub, sourceInstanceId);});
+    connect(d->dataHub, &medDataHub::sourceRemoved, widgetRes, &medSourcesWidget::removeSource);
 
     connect(this, SIGNAL(filterProxy(const QString &)), widgetRes, SLOT(filter(const QString &)));
     return widgetRes;
@@ -45,7 +45,7 @@ medSourcesWidget * medSourceModelPresenter::buildTree()
 QStackedWidget *medSourceModelPresenter::buildBrowser()
 {
     auto browserRes = new QStackedWidget;
-    for (auto sourceModel : d->model->models())
+    for (auto sourceModel : d->dataHub->models())
     {
         medSourceItemModelPresenter itemModelPresenter(sourceModel);
         browserRes->addWidget(itemModelPresenter.buildTree());
@@ -56,9 +56,9 @@ QStackedWidget *medSourceModelPresenter::buildBrowser()
 QListWidget *medSourceModelPresenter::buildSourceList()
 {
     QListWidget *listSourcesRes = new QListWidget;
-    for (auto sourceModel : d->model->models())
+    for (auto sourceModel : d->dataHub->models())
     {
-        QString instanceName = d->model->getInstanceName(sourceModel->getSourceIntanceId());
+        QString instanceName = medSourceHandler::instance()->getInstanceName(sourceModel->getSourceIntanceId());
         listSourcesRes->addItem(instanceName);
     }
 
@@ -68,11 +68,11 @@ QListWidget *medSourceModelPresenter::buildSourceList()
 QStackedWidget *medSourceModelPresenter::buildFilters()
 {
     QStackedWidget *filterRes = new QStackedWidget;
-    for (auto sourceModel : d->model->models())
+    for (auto sourceModel : d->dataHub->models())
     {
         auto * pVLayout = new QVBoxLayout;
         QList<medAbstractParameter*> filterParams;
-        d->model->filteringParameters(sourceModel->getSourceIntanceId(), filterParams);
+        medSourceHandler::instance()->filteringParameters(sourceModel->getSourceIntanceId(), filterParams);
         for (auto * param : filterParams)
         {
             auto * pHLayout = new QHBoxLayout;
@@ -114,10 +114,10 @@ QStackedWidget *medSourceModelPresenter::buildFilters()
     return filterRes;
 }
 
-medDataModel * medSourceModelPresenter::dataModel() const
-{
-    return d->model;
-}
+//medSourceHandler * medSourceModelPresenter::sourcesHandler() const
+//{
+//    return d->sourcesHandler;
+//}
 
 
 

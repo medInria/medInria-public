@@ -17,14 +17,14 @@
 #include <QMap>
 
 #include <medCoreExport.h>
-#include <medDataModel.h>
+#include <medSourceHandler.h>
 
 
 int medAbstractWritingPolicy::levelToWrite(QString pi_sourceId)
 {
     int iRes = -1;
 
-    auto * pSource = medDataModel::instance()->getSourceToWrite(pi_sourceId);
+    auto * pSource = medSourceHandler::instance()->getSourceToWrite(pi_sourceId);
     if (pSource)
     {
         iRes = static_cast<int>(pSource->getLevelDesiredWritable());
@@ -37,7 +37,7 @@ bool medAbstractWritingPolicy::isLevelWritable(QString pi_sourceId, unsigned int
 {
     bool bRes = false;
 
-    auto * pSource = medDataModel::instance()->getSourceToWrite(pi_sourceId);
+    auto * pSource = medSourceHandler::instance()->getSourceToWrite(pi_sourceId);
     if (pSource)
     {
         bRes = pSource->isLevelWritable(pi_uiLevel);
@@ -50,7 +50,7 @@ QString medAbstractWritingPolicy::levelName(QString pi_sourceId, unsigned int pi
 {
     QString levelNameRes;
 
-    auto * pSource = medDataModel::instance()->getSourceToWrite(pi_sourceId);
+    auto * pSource = medSourceHandler::instance()->getSourceToWrite(pi_sourceId);
     if (pSource)
     {
         levelNameRes = pSource->getLevelName(pi_uiLevel);

@@ -18,7 +18,7 @@
 
 #include <medCoreExport.h>
 
-class medDataModel;
+class medDataHub;
 struct medDataModelElementPrivate;
 
 class MEDCORE_EXPORT medSourceItemModel : public QAbstractItemModel
@@ -33,21 +33,20 @@ public:
     struct datasetAttributes4
     {
           QMap<QString, QVariant> values; // <keyName, value>
-          QMap<QString, QString> tags;   // <keyName, tag value>
-    
+          QMap<QString, QString> tags;   // <keyName, tag value>    
     };
-
+    enum asyncRequestType {getRqstType = 1, addRqstType = 2};
 	struct asyncRequest
 	{
-		int type;
-		int tmpId;
-		QString uri;
+        asyncRequestType type;
+		QString tmpId;
+		QStringList uri;
 	};
 
-    medSourceItemModel(medDataModel *parent, QString const & sourceIntanceId);
+    medSourceItemModel(medDataHub *parent, QString const & sourceIntanceId);
     virtual ~medSourceItemModel();
 
-    medDataModel * model();
+    //medDataHub * model();
 
     // ////////////////////////////////////////////////////////////////////////
     // Pure Virtual Override
@@ -95,32 +94,41 @@ public:
     bool setAdditionnalMetaData(QModelIndex const & index, QList<QMap<int, QString>> &additionnalMetaData);
 
     //FLO
+    medDataModelItem* getItem(const QModelIndex &index) const;
     medDataModelItem* getItem(QStringList const &uri);
     QModelIndex toIndex(QString uri);
     QModelIndex toIndex(QStringList uri);
-    QString     toUri(QModelIndex index);
-    QString     toHumanReadableUri(QModelIndex const & index);
-    QStringList fromHumanReadableUri(QStringList humanUri);
+    //QString     toUri(QModelIndex index);
+    QString     toPath(QModelIndex const & index);
+    QStringList fromPath(QStringList humanUri);
     QString     keyForPath(QStringList rootUri, QString folder);
-    bool        getDataNames(QStringList uri, QStringList &names);
+    bool        getChildrenNames(QStringList uri, QStringList &names);
 
     bool        setAdditionnalMetaData2(QModelIndex const & index, datasetAttributes4 const &attributes);
     bool        setAdditionnalMetaData2(QModelIndex const & index, QString const & key, QVariant const & value, QString const & tag = QString() );
     bool        additionnalMetaData2(QModelIndex const & index, datasetAttributes4 & attributes);
     bool        additionnalMetaData2(QModelIndex const & index, QString const & key, QVariant & value, QString & tag);
 
-	bool getRequest(int pi_request, asyncRequest &request);
+
+    bool addEntry(QString pi_key, QString pi_name, QString pi_description, unsigned int pi_uiLevel, QString pi_parentKey);
+
+    //bool addRequest(int pi_request, asyncRequest &request);
+    //bool getRequest(int pi_request, asyncRequest &request);
+    //bool removeRequest(int pi_request);
+
     bool refresh(QModelIndex const &pi_index = QModelIndex());
     //JU
     void expandAll(QModelIndex index = QModelIndex());
 
 public slots:
     void itemPressed(QModelIndex const &index);
+    bool abortRequest(QModelIndex const &index); //abort the requestId
+
 
 
 
 private:
-    medDataModelItem* getItem(const QModelIndex &index) const;
+    //medDataModelItem* getItem(const QModelIndex &index) const;
     medDataModelItem* getItem(int iLevel, QString id) const;
     QModelIndex getIndex(QString iid, QModelIndex const &parent = QModelIndex()) const;
     QModelIndex getIndex(medDataModelItem *pItem) const;

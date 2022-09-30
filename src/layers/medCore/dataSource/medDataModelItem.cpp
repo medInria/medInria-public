@@ -76,7 +76,7 @@ QList<medDataModelItem*> medDataModelItem::offspringList()
     return offspringRes;
 }
 
-QStringList medDataModelItem::uriAsList()
+QStringList medDataModelItem::relativeUri()
 {
     QStringList uriListRes;
 
@@ -90,11 +90,18 @@ QStringList medDataModelItem::uriAsList()
     return uriListRes;
 }
 
+QStringList medDataModelItem::uri()
+{
+    QStringList uriRes = relativeUri();
+    uriRes.push_front(model->getSourceIntanceId());
+    return uriRes;
+}
+
 QString medDataModelItem::uriAsString()
 {
     QString uriRes = model->getSourceIntanceId() + ":";
 
-    QStringList uriParts = uriAsList();
+    QStringList uriParts = relativeUri();
     int size = uriParts.size();
     if (size > 0)
     {
@@ -201,18 +208,43 @@ QString medDataModelItem::iid(QString displayValue)
     return iidRes;
 }
 
-bool medDataModelItem::isAssociatedAbstractData()
+//bool medDataModelItem::isAssociatedAbstractData()
+//{
+//    bool bRes = false;
+//
+//    bRes = itemData[0][100] == "DataCommited" || itemData[0][100] == "DataLoaded";
+//
+//    int i = 0;
+//    int iChildCount = childItems.size();
+//    while (!bRes && i < iChildCount)
+//    {
+//        bRes = childItems[i]->isAssociatedAbstractData();
+//        i++;
+//    }
+//
+//    return bRes;
+//}
+
+bool medDataModelItem::containRoleValues(QMap<int , QVariantList> mapList)
 {
     bool bRes = false;
 
-    bRes = itemData[0][100] == "DataCommited" || itemData[0][100] == "DataLoaded";
-
     int i = 0;
-    int iChildCount = childItems.size();
-    while (!bRes && i < iChildCount)
+    while (!bRes && i<mapList.size())
     {
-        bRes = childItems[i]->isAssociatedAbstractData();
-        i++;
+        int role = mapList.keys()[i];
+        if (itemData[0].contains(role))
+        {
+            if (itemData[0][role].canConvert<bool>() && mapList[role].isEmpty())
+            {
+                bRes = itemData[0][role].toBool();
+            }
+            else
+            {
+                bRes = itemData[0][role] == mapList[role][i];
+            }
+        }
+        ++i;
     }
 
     return bRes;

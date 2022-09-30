@@ -35,6 +35,12 @@
 #include <medSourceItemModelPresenter.h>
 #include <medSourceModelPresenter.h>
 
+
+#include<medNotifSys.h>
+#include<medNotificationPresenter.h>
+
+#include<medNotifWindow.h>
+
 void forceShow(medMainWindow &mainwindow)
 {
     // Idea and code taken from the OpenCOR project, Thanks Allan for the code!
@@ -234,19 +240,55 @@ int main(int argc, char *argv[])
         //
         //const int status1 = application.exec();
         //return status1;
-
-        auto model = medDataModel::instance(&application);
-        medSourcesLoader::instance(&application);
+  
+        medSourcesLoader::instance(&application);     
         medDataManager::instance()->setDatabaseLocation();
         medPluginManager::instance()->setVerboseLoading(true);
         medPluginManager::instance()->initialize();
-        QObject::connect(medSourcesLoader::instance(), SIGNAL(sourceAdded(medAbstractSource *)), model, SLOT(addSource(medAbstractSource *)));
-        QObject::connect(medSourcesLoader::instance(), &medSourcesLoader::defaultWorkingSource, model, &medDataModel::setDefaultWorkingSource);
+        auto sourceHandler = medSourceHandler::instance(&application);
+        auto model = medDataHub::instance(&application);
+        auto toto1 = QObject::connect(medSourcesLoader::instance(), SIGNAL(sourceAdded(medAbstractSource *)), sourceHandler, SLOT(addSource(medAbstractSource *)));
+        auto toto2 = QObject::connect(medSourcesLoader::instance(), SIGNAL(sourceRemoved(medAbstractSource *)), sourceHandler, SLOT(removeSource(medAbstractSource *)));
+        auto toto3 = QObject::connect(medSourcesLoader::instance(), &medSourcesLoader::defaultWorkingSource, sourceHandler, &medSourceHandler::setDefaultWorkingSource);
+        
         medSourcesLoader::instance()->loadFromDisk();
         
+
+        auto notifSys = medNotifSys::instance();
+ 
+        //medMainWindow *mainwindow2 = new medMainWindow;
+
+
+        //auto status2 = new QStatusBar(mainwindow2);
+        //status2->setContentsMargins(0, 0, 0, 0);
+        //mainwindow2->setStatusBar(status2); 
+        //auto stBarW = medNotifSysPresenter(notifSys).buildWidgetForStatusBar();
+        //status2->addPermanentWidget(stBarW);
+        //mainwindow2->show();
+        //status2->show();
+        //stBarW->show();
+
+        notifSys->setOperatingSystemNotification(true);
+        notifSys->setOperatingSystemNotification(true);
+        notifSys->setOSNotifOnlyNonFocus(true);
+        QObject::connect(&application, &QGuiApplication::focusWindowChanged,
+                         [=](QWindow *focusWindow)
+                         {
+                             notifSys->windowOnTop(focusWindow != nullptr);
+                         }
+        );
+
+
+
         // Use Qt::WA_DeleteOnClose attribute to be sure to always have only one
         // closeEvent.
         medMainWindow *mainwindow = new medMainWindow;
+
+        auto notifBanner = static_cast<medNotificationPaneWidget*>(medNotifSysPresenter(notifSys).buildNotificationWindow());
+        notifBanner->setParent(mainwindow);
+        QObject::connect(mainwindow, &medMainWindow::resized, notifBanner, &medNotificationPaneWidget::windowGeometryUpdate);
+        QObject::connect(mainwindow->notifButton(), &QToolButton::clicked, notifBanner, &medNotificationPaneWidget::swithVisibility);
+
         mainwindow->setAttribute(Qt::WA_DeleteOnClose, true);
 
         if (DirectView)
