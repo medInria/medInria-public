@@ -22,24 +22,22 @@ defaultLabelToolBox::defaultLabelToolBox(QWidget *parent):
                                });
 
     auto widget = new QWidget();
-
     auto layout = new QVBoxLayout;
     widget->setLayout(layout);
 
     dataName = new QLabel("No Data");
+    dataName->setWordWrap(true);
+    dataName->setSizePolicy(QSizePolicy::Ignored, QSizePolicy::Preferred);
+
     labels = new QListWidget;
     labels->setSelectionMode(QAbstractItemView::SingleSelection);
     labels->setContentsMargins(0,0,0,0);
-//    labels->hide();
-
 
     plusButton = new QPushButton(QIcon(":/pixmaps/plus.png"), "");
     plusButton->setMaximumSize(QSize(20,20));
-//    plusButton->hide();
 
     minusButton = new QPushButton(QIcon(":/pixmaps/minus.png"), "");
     minusButton->setMaximumSize(QSize(20,20));
-//    minusButton->hide();
 
     auto listLabelLayout = new QVBoxLayout();
     layout->addLayout(listLabelLayout);
