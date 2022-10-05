@@ -27,7 +27,6 @@
 #include <medSettingsManager.h>
 #include <medMetaDataKeys.h>
 #include <medContours.h>
-//#include <medVtkViewBackend.h>
 
 const char *polygonRoiToolBox::generateBinaryImageButtonName = "generateBinaryImageButton";
 
@@ -50,6 +49,11 @@ polygonRoiToolBox::polygonRoiToolBox(QWidget *parent ) :
     auto layout = new QVBoxLayout();
     displayWidget->setLayout(layout);
 
+    auto *explanation = new QLabel(tr("Drop a data in the view and activate:"));
+    explanation->setWordWrap(true);
+    explanation->setStyleSheet("font: italic");
+    layout->addWidget(explanation );
+
     activateTBButton = new QPushButton(tr("Activate Toolbox"));
     activateTBButton->setToolTip(tr("Activate closed polygon mode. You should only have one view."));
     activateTBButton->setCheckable(true);
@@ -63,7 +67,7 @@ polygonRoiToolBox::polygonRoiToolBox(QWidget *parent ) :
     connect(interpolate,SIGNAL(clicked(bool)) ,this,SLOT(interpolateCurve(bool)));
 
     auto repulsorLayout = new QHBoxLayout();
-    auto repulsorLabel = new QLabel("Correct contours");
+    repulsorLabel = new QLabel("Correct contours");
     repulsorLayout->addWidget(repulsorLabel);
 
     repulsorTool = new QPushButton(tr("Repulsor"));
@@ -80,10 +84,8 @@ polygonRoiToolBox::polygonRoiToolBox(QWidget *parent ) :
     // Add Contour Management Toolbox
     QString identifier = speciality.toLower() + QString("LabelToolBox");
     pMedToolBox = medToolBoxFactory::instance()->createToolBox(identifier);
-
     pMedToolBox->header()->hide();
     pMedToolBox->hide();
-
     layout->addWidget(pMedToolBox);
     connect(activateTBButton, SIGNAL(toggled(bool)), pMedToolBox, SLOT(setEnabled(bool)), Qt::UniqueConnection);
 
@@ -92,7 +94,7 @@ polygonRoiToolBox::polygonRoiToolBox(QWidget *parent ) :
     contoursActionLayout->addWidget(interpolate);
     contoursActionLayout->addLayout(repulsorLayout);
 
-    auto saveLabel = new QLabel("Save segmentations as:");
+    saveLabel = new QLabel("Save segmentations as:");
     auto saveButtonsLayout = new QHBoxLayout();
     saveBinaryMaskButton = new QPushButton(tr("Mask(s)"));
     saveBinaryMaskButton->setToolTip("Import the current mask to the non persistent database");
@@ -101,7 +103,7 @@ polygonRoiToolBox::polygonRoiToolBox(QWidget *parent ) :
     saveButtonsLayout->addWidget(saveBinaryMaskButton);
 
     saveContourButton = new QPushButton("Contour(s)");
-    saveContourButton->setToolTip("Export these contours as an .ctrb file loadable only in medInria.");
+    saveContourButton->setToolTip("Export these contours as an .ctrb file loadable only in this application.");
     saveContourButton->setMinimumSize(150, 20);
     saveContourButton->setMaximumSize(150, 20);
     saveContourButton->setObjectName("saveContoursButton");
@@ -169,12 +171,9 @@ void polygonRoiToolBox::updateView()
     medTabbedViewContainers *tabs = this->getWorkspace()->tabbedViewContainers();
     for (medViewContainer *container : tabs->containersInTab(tabs->currentIndex()))
     {
-        QUuid uuid = container->uuid();
         medAbstractView *view = container->view();
         if (!view)
         {
-            QString msg = "No view in selected container (" + uuid.toString() + ")";
-            displayMessageError(msg);
             return;
         }
         auto imageView = dynamic_cast<medAbstractImageView *>(view);
@@ -270,20 +269,20 @@ void polygonRoiToolBox::onLayerRemoveOnOrientedViews(medAbstractData *data)
 
 void polygonRoiToolBox::createAndConnectEventFilter(const medAbstractData *data, medAbstractImageView *imageView)
 {
-    QString toolBoxName = data->metaDataValues(medMetaDataKeys::StudyDescription.key())[0] +
+    QString dataName = data->metaDataValues(medMetaDataKeys::StudyDescription.key())[0] +
             " - " +
             data->metaDataValues(medMetaDataKeys::SeriesDescription.key())[0];
 
     if (specialityPreference==1)
     {
         auto eventFilter = new urologyViewEvent(imageView, this);
-        eventFilter->initialize(pMedToolBox, toolBoxName);
+        eventFilter->initialize(pMedToolBox, dataName);
         viewEventHash[data->dataIndex()] = eventFilter;
     }
     else
     {
         auto eventFilter = new defaultViewEvent(imageView, this);
-        eventFilter->initialize(pMedToolBox, toolBoxName);
+        eventFilter->initialize(pMedToolBox, dataName);
         viewEventHash[data->dataIndex()] = eventFilter;
     }
 
@@ -401,8 +400,10 @@ void polygonRoiToolBox::clickClosePolygon(bool state)
     }
     saveBinaryMaskButton->setEnabled(state);
     saveContourButton->setEnabled(state);
+    saveLabel->setEnabled(state);
     interpolate->setEnabled(state);
     repulsorTool->setEnabled(state);
+    repulsorLabel->setEnabled(state);
 }
 
 void polygonRoiToolBox::activateRepulsor(bool state)
@@ -435,8 +436,10 @@ void polygonRoiToolBox::disableButtons()
     activateTBButton->setChecked(false);
     repulsorTool->setEnabled(false);
     repulsorTool->setChecked(false);
+    repulsorLabel->setEnabled(false);
     saveBinaryMaskButton->setEnabled(false);
     saveContourButton->setEnabled(false);
+    saveLabel->setEnabled(false);
     interpolate->setEnabled(false);
     interpolate->setChecked(true);
 }
@@ -576,41 +579,42 @@ void polygonRoiToolBox::showHelp() const
     QMessageBox msgBox;
     msgBox.setWindowTitle("Help");
     msgBox.setIcon(QMessageBox::Information);
+    
+    QString main = QString("<h3>Main features</h3>")
+        + QString("<ul>")
+        + QString("<li><b>Draw a contour</b>: shift+click on the data to create a contour</li>")
+        + QString("<li><b>Add a new label</b>: click on '+' button in the label list</li>")
+        + QString("<li><b>Remove a label</b>: click on '-' button in the label list</li>")
+        + QString("<li><b>Use a new label</b>: select a label in the list, then shift+click on the data</li>")
+        + QString("<li><b>Alt+click</b>: draw a landmark at that position in all views</li>")
+        + QString("</ul>");
 
-
-    QString underlineStyle = "<span>&#8226; %1</span>";
-    QString titleStyle = "<span style=\" font-size : 14px;text-decoration: underline;\"><center>%1</center></span><br>";
-
-    QString main = QString(QString(titleStyle).arg("Main features")
-                                 + QString(underlineStyle).arg("Draw Contour:") + " Activate the toolbox, then shift+click on the data set<br><br>"
-                                 + QString(underlineStyle).arg("Define new Label:") + " Select a label then shift+click on the data set<br><br>"
-                                 + QString(underlineStyle).arg("Add New Label:") + " Click on Plus Button<br><br>"
-                                 + QString(underlineStyle).arg("Remove label:") + " Click on Minus Button<br><br>");
-
-    QString shortcut = QString(QString(titleStyle).arg("Shortcut")
-                                     + QString(underlineStyle).arg("A:") + " Select contour (work only closed to a contour)<br><br>"
-                                     + QString(underlineStyle).arg("C:") + " Copy contour (work only closed to a contour)<br><br>"
-                                     + QString(underlineStyle).arg("V:") + " Paste contour(s)<br><br>"
-                                     + QString(underlineStyle).arg("Up/Down:") + " Move to previous/next slice<br><br>"
-                                     + QString(underlineStyle).arg("BackSpace:") + " Delete node (work only closed to a contour)<br><br>"
-                                     + QString(underlineStyle).arg("Alt + Click:") + " Draw cross on mouse click 2D position in all views<br><br>"
-                                     + QString(underlineStyle).arg("E:") + " Erase cross in all views<br><br>"
-                                     + QString(underlineStyle).arg("H:") + " show this help<br><br>");
+    QString shortcut = QString("<h3>Shortcuts</h3>")
+        + QString("<ul>")
+        + QString("<li><kbd>A</kbd> : select nearby contour</li>")
+        + QString("<li><kbd>C</kbd> : copy nearby contour</li>")
+        + QString("<li><kbd>V</kbd> : paste contour(s)</li>")
+        + QString("<li><kbd>Up/Down</kbd> : move to previous/next slice</li>")
+        + QString("<li><kbd>Backspace</kbd> : delete nearby node</li>")
+        + QString("<li><kbd>E</kbd> : erase landmarks in all views</li>")
+        + QString("<li><kbd>H</kbd> : show this help</li>");
     if (specialityPreference==1)
     {
-        shortcut.append(QString(underlineStyle).arg("S:") + " Switch color between target and score<br><br>");
+        shortcut.append(QString("<li><kbd>S</kbd> : switch color between target and score</li>"));
     }
+    shortcut += QString("</ul>");
 
-    QString contextual = QString(QString(titleStyle).arg("Contextual menu")
-                                       + QString(underlineStyle).arg("Remove node/contour/label<br><br>")
-                                       + QString(underlineStyle).arg("Save segmentation contour/mask<br><br>")
-                                       + QString(underlineStyle).arg("Change current label with another existing label<br><br>")
-                                       + QString(underlineStyle).arg("Copy<br><br>"));
-
+    QString contextual = QString("<h3>Contextual menu (right-click on a contour)</h3>")
+        + QString("<ul>")
+        + QString("<li>Remove</li>")
+        + QString("<li>Save segmentation</li>")
+        + QString("<li>Rename label</li>")
+        + QString("<li>Copy</li>");
     if (specialityPreference==1)
     {
-        contextual.append(QString(underlineStyle).arg("Attach a pirad score to a target<br><br>"));
+        contextual.append(QString("<li>Attach a pirad score to a target</li>"));
     }
+    contextual += QString("</ul>");
 
     const QString explanation = main + shortcut + contextual;
     msgBox.setText(explanation);
