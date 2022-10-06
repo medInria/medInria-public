@@ -602,9 +602,9 @@ vtkLandmarkSegmentationController::binaryType::Pointer vtkLandmarkSegmentationCo
     ImageType::SpacingType outputSpacing;
 
     ImageType::SizeType filterInputSize = implicitFunction->GetLargestPossibleRegion().GetSize();
-    outputSpacing[0] = implicitFunction->GetSpacing()[0] * (static_cast<double>(filterInputSize[0]) / static_cast<double>(outputSize[0]));
-    outputSpacing[1] = implicitFunction->GetSpacing()[1] * (static_cast<double>(filterInputSize[1]) / static_cast<double>(outputSize[1]));
-    outputSpacing[2] = implicitFunction->GetSpacing()[2] * (static_cast<double>(filterInputSize[2]) / static_cast<double>(outputSize[2]));
+    outputSpacing[0] = implicitFunction->GetSpacing()[0] * (static_cast<double>(filterInputSize[0]-1) / static_cast<double>(outputSize[0]));
+    outputSpacing[1] = implicitFunction->GetSpacing()[1] * (static_cast<double>(filterInputSize[1]-1) / static_cast<double>(outputSize[1]));
+    outputSpacing[2] = implicitFunction->GetSpacing()[2] * (static_cast<double>(filterInputSize[2]-1) / static_cast<double>(outputSize[2]));
 
     filter->SetInput(implicitFunction);
     filter->SetSize(size);
