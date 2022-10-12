@@ -46,12 +46,14 @@ meshMappingToolBox::meshMappingToolBox(QWidget *parent)
     QLabel *dataLabel = new QLabel("Select the data to map ", this);
     dataLabel->setToolTip(tr("Select the dataset from which to obtain\n probe values (image or mesh)."));
     d->layersForData = new QComboBox;
+    d->layersForData->setSizeAdjustPolicy(QComboBox::AdjustToMinimumContentsLengthWithIcon);
     d->layersForData->addItem("Select the layer", 0);
 
     QLabel *structureLabel = new QLabel("Select the structure", this);
     structureLabel->setToolTip(tr("Select the dataset whose geometry will be used\n \
                                   in determining positions to probe (typically a mesh)."));
     d->layersForStructure = new QComboBox;
+    d->layersForStructure->setSizeAdjustPolicy(QComboBox::AdjustToMinimumContentsLengthWithIcon);
     d->layersForStructure->addItem("Select the layer", 0);
     
     QPushButton *runButton = new QPushButton(tr("Run"), this);

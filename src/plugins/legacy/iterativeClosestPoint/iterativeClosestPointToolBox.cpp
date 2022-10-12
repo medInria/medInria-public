@@ -66,10 +66,12 @@ iterativeClosestPointToolBox::iterativeClosestPointToolBox(QWidget *parent)
     // Parameters widgets
     d->layerSource = new QComboBox;
     d->layerSource->addItem("Select the layer", 0);
+    d->layerSource->setSizeAdjustPolicy(QComboBox::AdjustToMinimumContentsLengthWithIcon);
     QLabel *layerSource_Label = new QLabel("Select the source mesh:");
 
     d->layerTarget = new QComboBox;
     d->layerTarget->addItem("Select the layer", 0);
+    d->layerTarget->setSizeAdjustPolicy(QComboBox::AdjustToMinimumContentsLengthWithIcon);
     QLabel *layerTarget_Label = new QLabel("Select the target mesh:");
 
     // Choose scale factor to apply to Source mesh
