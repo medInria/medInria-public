@@ -44,6 +44,7 @@ public slots:
     virtual void onFailure();
     virtual void onProgressed (int);
     virtual void onCancel (QObject*);
+    void applyCancel();
 
 protected:
     virtual void internalRun();

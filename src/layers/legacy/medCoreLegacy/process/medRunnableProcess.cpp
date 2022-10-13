@@ -97,17 +97,25 @@ void medRunnableProcess::onProgressed (int value)
 * Contrarily to success() and failure(), the cancel() method is called
 * from outside this object (success and failure and emitted by the process
 * itself. This slot implements the expected behaviour when a cancel request
-* was made by calling the approrite onCanceled() slot of the running
+* was made by calling the appropriate onCanceled() slot of the running
 * dtkAbstractProcess
 */
 void medRunnableProcess::onCancel (QObject *sender)
 {
     Q_UNUSED(sender)
+    applyCancel();
+}
+
+void medRunnableProcess::applyCancel()
+{
+    // TODO: this code doesn't work since years, 
+    // that's why the cancel button of processes had been removed.
+    // For now, the process SEEMS to be cancelled. However when we want to quit the application, 
+    // a "Running background job detected! Quit anyway?" pop-up appears, which freezes the app.
 
     if (d->process)
     {
         d->process->cancel();
+        emit (cancelled (this));
     }
-
-    emit (cancelled (this));
 }

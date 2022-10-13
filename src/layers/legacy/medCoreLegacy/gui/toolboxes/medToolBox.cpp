@@ -25,6 +25,9 @@
 #include <dtkCoreSupport/dtkPlugin>
 #include <dtkGuiSupport/dtkAboutPlugin.h>
 
+// TODO: include VTK in core to access this tool
+//#include <vtksys/SystemInformation.hxx>
+
 class medToolBoxPrivate
 {
 public:
@@ -37,6 +40,8 @@ public:
     bool aboutPluginVisibility;
     dtkPlugin* plugin;
     medAbstractWorkspaceLegacy *workspace;
+
+    QTimer *timer;
 
 public:
     QVBoxLayout *layout;
@@ -62,6 +67,9 @@ medToolBox::medToolBox(QWidget *parent) : QWidget(parent), d(new medToolBoxPriva
     connect(d->header,SIGNAL(triggered()),this,SLOT(switchMinimize()));
 
     this->setSizePolicy(QSizePolicy::Minimum, QSizePolicy::Minimum);
+
+    d->timer = new QTimer(this);
+    connect(d->timer, &QTimer::timeout, this, &medToolBox::checkMemoryUsage);
 }
 
 medToolBox::~medToolBox(void)
@@ -384,6 +392,7 @@ medProgressionStack* medToolBox::getProgressionStack()
 void medToolBox::addConnectionsAndStartJob(medJobItemL *job)
 {
     addToolBoxConnections(job);
+    startMemoryCheckTimer();
 
     getProgressionStack()->addJobItem(job, "Progress "+this->name()+":");
 
@@ -406,6 +415,12 @@ void medToolBox::addToolBoxConnections(medJobItemL *job)
     connect (job, SIGNAL (failure   (QObject*)),    this, SLOT   (setToolBoxOnReadyToUse()));
     connect (job, SIGNAL (failure   (int)),         this, SLOT   (handleDisplayError(int)));
     connect (job, SIGNAL (activate(QObject*, bool)), getProgressionStack(), SLOT(setActive(QObject*,bool)));
+
+    // Timer
+    connect (job, SIGNAL (cancelled (QObject*)),    this, SLOT   (stopMemoryCheckTimer()));
+    connect (job, SIGNAL (success   (QObject*)),    this, SLOT   (stopMemoryCheckTimer()));
+    connect (job, SIGNAL (failure   (QObject*)),    this, SLOT   (stopMemoryCheckTimer()));
+    connect (this, SIGNAL(memoryFull()), job, SLOT(applyCancel())); // caught in medRunnableProcess
 }
 
 void medToolBox::enableOnProcessSuccessImportOutput(medJobItemL *job, bool enable)
@@ -525,4 +540,34 @@ bool medToolBox::setComponentValue(QObject* component, VALUE_TYPE value)
     {
         return false;
     }
+}
+
+void medToolBox::startMemoryCheckTimer()
+{
+    d->timer->start(2000); // time specified in ms
+}
+
+void medToolBox::stopMemoryCheckTimer()
+{
+    d->timer->stop();
+}
+
+void medToolBox::checkMemoryUsage()
+{
+    auto percentage = getPercentageUsedRAM();
+    if (percentage > 97.0)
+    {
+        displayMessageError("Your computer memory is almost full, process stopped");
+        emit memoryFull();
+    }
+}
+
+float medToolBox::getPercentageUsedRAM()
+{
+    // TODO: access to VTK/vtksys here in medToolBox
+    // vtksys::SystemInformation sys_info;
+    // sys_info.RunMemoryCheck();
+    // auto percentage = 100.0 * sys_info.GetHostMemoryUsed() / sys_info.GetHostMemoryAvailable();
+    // return percentage;
+    return 99.0;
 }

@@ -19,6 +19,8 @@ set(TARGET_NAME medCoreLegacy)
 #using QOpenGLFunctions::glGetString(), as well as the {OPENGL_LIBRARIES} below.
 find_package(OpenGL REQUIRED)
 
+# TODO: access to "vtksys" from VTK for medToolBox
+
 ## #############################################################################
 ## List Sources
 ## #############################################################################
