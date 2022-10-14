@@ -907,7 +907,7 @@ QList<polygonRoi *> polygonLabel::interpolateBetween2Slices(polygonRoi *firstRoi
     unsigned int maxSlice = secondRoi->getIdSlice();
     // Compute intermediate ROIs between two successive ROIs
     QList<QVector<QVector3D>> listOfNodes = generateIntermediateCurves(maxContour,minContour,maxSlice-minSlice-1);
-    if ( listOfNodes.size() != (maxSlice-minSlice-1) )
+    if ( listOfNodes.size() != static_cast<int>(maxSlice-minSlice-1) )
     {
         emit sendErrorMessage(getName() + ": Unable to interpolate between slice: " + QString::number(minSlice+1) + " and " + QString::number(maxSlice-1) + ". Operation aborted");
     }
