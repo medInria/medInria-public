@@ -76,7 +76,8 @@ VarSegToolBox::VarSegToolBox(QWidget *parent )
     d->binaryImageButton->setToolTip("Import the current mask to the non persistent database");
     d->binaryImageButton->setObjectName("binaryImageButton");
 
-    d->applyMaskButton = new QPushButton(tr("Apply segmentation"), displayWidget);
+    d->applyMaskButton = new QPushButton(tr("Apply and Save Segmentation"), displayWidget);
+    d->applyMaskButton->setToolTip("Apply the mask to the image, save the segmentation");
     d->applyMaskButton->setObjectName("applyMaskButton");
 
     enableButtons(false);
@@ -86,8 +87,8 @@ VarSegToolBox::VarSegToolBox(QWidget *parent )
     layout->addWidget(outside);
     layout->addWidget(on);
     layout->addWidget(deleteLabel);
-    layout->addWidget(d->applyMaskButton);
     layout->addWidget(d->binaryImageButton);
+    layout->addWidget(d->applyMaskButton);
 
     connect(d->segButton,         SIGNAL(toggled(bool)), this, SLOT(segmentation(bool)), Qt::UniqueConnection);
     connect(d->binaryImageButton, SIGNAL(clicked()),     this, SLOT(addBinaryImage()),   Qt::UniqueConnection);
@@ -207,7 +208,7 @@ void VarSegToolBox::addBinaryImage()
     {
         d->output->setData(img);
 
-        medUtilities::setDerivedMetaData(d->output, d->originalInput, "variational segmentation");
+        medUtilities::setDerivedMetaData(d->output, d->originalInput, "VarSegMask");
         medDataManager::instance()->importData(d->output, false);
     }
 }
@@ -234,6 +235,7 @@ void VarSegToolBox::applyMaskToImage()
             runProcess->setProcess (d->process);
             connect (runProcess, SIGNAL (success  (QObject*)), this, SLOT(displayOutput()), Qt::UniqueConnection);
             this->addConnectionsAndStartJob(runProcess);
+            enableOnProcessSuccessImportOutput(runProcess, false);
         }
         else
         {
@@ -245,12 +247,15 @@ void VarSegToolBox::applyMaskToImage()
 
 void VarSegToolBox::displayOutput()
 {
+    medUtilities::setDerivedMetaData(d->process->output(), d->originalInput, "VarSegApplied");
+    medDataManager::instance()->importData(d->process->output(), false);
+
     typedef itk::Image<unsigned char, 3> binaryType;
     binaryType::Pointer img = d->controller->GetBinaryImage();
     if (img)
     {
         d->output->setData(img);
-        medUtilities::setDerivedMetaData(d->output, d->originalInput, "variational segmentation");
+        medUtilities::setDerivedMetaData(d->output, d->originalInput, "VarSegMask");
     }
 
     medTabbedViewContainers *tabbedViewContainers = getWorkspace()->tabbedViewContainers();

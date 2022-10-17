@@ -6,7 +6,8 @@ medInria 3.3:
 - Check the version of the vtk file to avoid crash due to the new format introduced in vtk 9
 - ManualRegistration, avoid duplication in outputs
 - Reslice, solve crashs after removing a data in view
-- PolygonROI, solve graphical/ergonomy pb and crashes (split, clear) 
+- PolygonROI, solve graphical/ergonomy pb and crashes (split, clear)
+- Variational Segmentation: enhance GUI, solve a spacing error on output masks
 
 medInria 3.2:
 - Add some tooltips in view navigator
