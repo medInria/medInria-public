@@ -2,9 +2,23 @@
 
 Welcome to the medInria Community! 
 
+# Getting started
+
+We offer binary version of medInria on [med.inria.fr](https://med.inria.fr/) if you want to use the application. 
+
+To contribute to medInria development, please **read carefully** the [Contributing to projects](https://docs.github.com/en/get-started/quickstart/contributing-to-projects) Github tutorial.
+
+# How development is organized
+- There are several "main" branches, for different ungoing medInria versions.
+- Several ungoing development branches exists, such as the `master` branch or those named `medInriaX.Y.x`. The `master` branch hosts the code of the lastest version under development. The `medInriaX.Y.x` ones host the main previous versions of medInria still in development.
+- We aim to only merge stable contributions, but only minimal effort is put to check side effects of these contributions (ie. contributed fixes or features are tested before a merge, but we acknowledge they might break things).
+- If you build your application based on medInria, we recommend you base your code on medInria's release branches, named `vX.Y.Z`.
+- Renaming, reorganizing and similar janitoring on the code will only be accepted during short periods before a new stable branch is created. This helps the flow of code between the stable branch and the main branches when fixes are applied to one of them.
+- Sometimes cherry-picking between branches fails. In that case, the port of a Pull Request (one commit or more) from one branch to an other has to be done manually. You should add the original Pull Request link in the new Pull Request message.
+
 # Rules for medInria participants
-- To propose a bundle of code use the Pull Request (PR) system. Pull request target branch should be master.
-- Identify the nature of the change of your PR with appropriate title, description and if needed label or milestone.
+- To propose a bundle of code use the Pull Request (PR) system. Pull request target branch should be one of the main branches.
+- Identify the nature of the change of your PR with appropriate title, description, label and if possible milestone.
 - Never auto validate Pull-Requests.
 - To report a bug, to open a discussion or to request an enhancement use Github Issues. Many labels are available to do this:
 	- Bugs, three labels possible:
@@ -25,10 +39,6 @@ Welcome to the medInria Community!
 About the steering committees:
 - **STC**: medInria Scientific and Technical Committee, defines the technical roadmap twice a year, validate the contribution rules, the Reviewers team and discuss every technical point in medInria.
 - **EC**: medInria Executive Committee, decides on evolution of the membership contract, the communication policy and the priorities of the Consortium.
-
-# Getting started
-
-Please **read carefully** [the GitHub guide on Contributing to Open Source](https://guides.github.com/activities/contributing-to-open-source/). We also recommend you to check this [more detailed documentation on issues and pull requests](https://help.github.com/categories/collaborating-with-issues-and-pull-requests/).
 
 # Issues
 
@@ -52,7 +62,7 @@ If you are able to patch the bug or add the feature yourself – fantastic, make
 ### Reminder - How to manage Pull Requests (from GitHub documentation)
 
 - **[Fork](http://guides.github.com/activities/forking/)** the repository and clone it locally.
-- [Connect your clone](https://help.github.com/articles/configuring-a-remote-for-a-fork/) to [the original **upstream** repository](https://github.com/medInria-framework/medInria/) by adding it as a remote.
+- [Connect your clone](https://help.github.com/articles/configuring-a-remote-for-a-fork/) to [the original **upstream** repository](https://github.com/medInria/medInria-public) by adding it as a remote.
 - **Create a branch** for your changes.
 - Make your changes.
 - Pull in changes from upstream often to [**sync your fork**](https://help.github.com/articles/syncing-a-fork/) so that merge conflicts will be less likely in your pull request.
@@ -81,5 +91,3 @@ Remember that:
 
 - You can **add commits** in a Pull Request: see [GitHub documentation](https://help.github.com/articles/committing-changes-to-a-pull-request-branch-created-from-a-fork/).
 - If the pull request contains out of scope commits (from a previous merge with master), **consider rebasing it**.
-
-For more information on forks and Pull Request, check out [this GitHub guide](https://guides.github.com/activities/forking/).
