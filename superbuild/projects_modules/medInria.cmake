@@ -93,6 +93,7 @@ set(cmake_cache_args
   -DTTK_DIR:PATH=${TTK_DIR}
   -DVTK_DIR:PATH=${VTK_DIR}
   -DQt5_DIR:PATH=${Qt5_DIR}
+  -DPYNCPP_DIR:PATH=${PYNCPP_DIR}
   -DLogDemons_DIR:PATH=${LogDemons_DIR}
   -DBoost_INCLUDE_DIR:PATH=${Boost_INCLUDE_DIR}
   )

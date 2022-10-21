@@ -59,6 +59,11 @@ option(USE_FFmpeg
   )
 endif()
 
+option(USE_Python
+  "Build with Python support"
+  ON
+  )
+
 ## #############################################################################
 ## Find package
 ## #############################################################################
@@ -79,6 +84,10 @@ find_package(Qt5 REQUIRED COMPONENTS
 
 find_package(dtk REQUIRED)
 include_directories(${dtk_INCLUDE_DIRS})
+
+if(USE_Python)
+    find_package(PYNCPP REQUIRED COMPONENTS Qt5)
+endif()
 
 ## #############################################################################
 ## enable c++ 17
@@ -156,6 +165,8 @@ if(NOT ${CMAKE_BUILD_TYPE} STREQUAL "Debug")
   message(STATUS "Add -DQT_NO_DEBUG")
   add_definitions(-DQT_NO_DEBUG)
 endif()
+
+add_compile_definitions("USE_PYTHON=$<BOOL:USE_PYTHON>")
 
 ## #############################################################################
 ## Windows specificity
