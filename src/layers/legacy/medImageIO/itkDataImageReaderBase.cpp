@@ -221,7 +221,7 @@ bool itkDataImageReaderBase::readInformation (const QString& path)
 
     // [HACK] : Some data have informations in their header but itk was not able to read them at this stage.
     // the itk::readImageInformation method read only default tag defined by itk
-    // In case data was produced in MUSIC for instance, a lot of tags are added (for identification purpose)
+    // In case data was produced in MUSICardio for instance, a lot of tags are added (for identification purpose)
     // A not exhaustive list of added tags :
     // ContainsBasicInfo Description FilePaths ITK_InputFilterName PatientID PatientName SOPInstanceUID
     // SeriesDescription SeriesDicomID SeriesID SeriesInstanceUID SeriesThumbnail Size StudyDescription StudyID

@@ -120,7 +120,6 @@ void defaultLabelToolBox::clear()
         delete item;
     }
     labels->clear();
-
 }
 
 void defaultLabelToolBox::clean()
@@ -353,6 +352,3 @@ void defaultLabelToolBox::forceItemSelection()
         emit labels->itemClicked(labels->item(selectedItem));
     }
 }
-
-
-

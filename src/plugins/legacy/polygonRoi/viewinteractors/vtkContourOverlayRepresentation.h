@@ -86,8 +86,3 @@ private:
 
     bool needToSaveState;
 };
-
-
-
-
-
