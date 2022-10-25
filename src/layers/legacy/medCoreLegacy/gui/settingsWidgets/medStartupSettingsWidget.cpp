@@ -18,6 +18,8 @@
 #include <medSettingsManager.h>
 #include <medWorkspaceFactory.h>
 
+#include <QFormLayout>
+
 class medStartupSettingsWidgetPrivate
 {
 public:
@@ -35,7 +37,7 @@ medStartupSettingsWidgetPrivate::medStartupSettingsWidgetPrivate()
 }
 
 medStartupSettingsWidget::medStartupSettingsWidget(QWidget *parent) :
-    QDialog(parent)
+    QDialog(parent), d(new medStartupSettingsWidgetPrivate())
 {
     setWindowTitle(tr("Startup"));
 
@@ -59,12 +61,9 @@ medStartupSettingsWidget::medStartupSettingsWidget(QWidget *parent) :
     d->defaultSegmentationSpeciality->addItem(tr("Urology"));
 
     QFormLayout *layout = new QFormLayout;
-    layout->addRow(tr("Fullscreen"), d->startInFullScreen);
-    layout->addRow(tr("Starting area"), d->defaultStartingArea);
+    layout->addRow(tr("Fullscreen"), startInFullScreen);
+    layout->addRow(tr("Starting area"), defaultStartingArea);
     layout->addRow(tr("Segmentation speciality"), d->defaultSegmentationSpeciality);
-
-    this->setLayout(layout);
-}
 
     // Display the current settings
     read();
@@ -123,7 +122,7 @@ void medStartupSettingsWidget::read()
     }
 }
 
-void medStartupSettingsWidget::write()
+bool medStartupSettingsWidget::write()
 {
     medSettingsManager *mnger = medSettingsManager::instance();
     mnger->setValue("startup", "fullscreen", d->startInFullScreen->isChecked());

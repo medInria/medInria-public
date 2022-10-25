@@ -630,7 +630,6 @@ polygonRoi *polygonLabel::getRoiInSlice()
     {
         if (roi->isInCurrentSlice())
             return roi;
-        }
     }
     return nullptr;
 }
