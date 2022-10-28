@@ -228,7 +228,8 @@ QImage medAbstractData::generateThumbnailInGuiThread(QSize size)
         offscreenCapable = true;
 #elif defined(Q_OS_LINUX)
     if (gpu.vendor.toLower().contains("nvidia")
-            || gpu.vendor.toLower().contains("intel"))
+            || gpu.vendor.toLower().contains("intel")
+            || gpu.vendor.toLower().contains("mesa/x.org"))
     {
         offscreenCapable = true;
     }
