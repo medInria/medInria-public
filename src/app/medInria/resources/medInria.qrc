@@ -179,5 +179,7 @@
         <file>icons/red_spot.svg</file>
         <file>icons/yellow_spot.svg</file>
         <file>icons/button-notifications.png</file>
+        <file>icons/check.svg</file>
+        <file>gif/icon.gif</file>
     </qresource>
 </RCC>

@@ -86,7 +86,7 @@ void medNotificationPaneWidget::addNotification(medNotif * notif)
 
     medNotifWidget *newNotifiWidgetPopup = new medNotifWidget(notif, nullptr);
 
-    newNotifiWidgetPopup->setFixedSize(QSize(600, 300));
+    newNotifiWidgetPopup->setFixedSize(QSize(400, 75));
     newNotifiWidgetPopup->move(QPoint(10, 10));
 
     newNotifiWidgetPopup->setParent(m_parent);
@@ -95,16 +95,16 @@ void medNotificationPaneWidget::addNotification(medNotif * notif)
     QAnimationGroup * animationGroup = new QSequentialAnimationGroup(newNotifiWidgetPopup);
 
 
+    int duration_ms = 500;
     m_geoAnimation = new QPropertyAnimation(newNotifiWidgetPopup, "pos");
-    QPoint point_A(10 - 600, 10);
-    QPoint point_B(10 , 10);
-    m_geoAnimation->setDuration(3000);
+    QPoint point_A((m_winSize.width()/2) - 200, -75);
+    QPoint point_B((m_winSize.width()/2) - 200 , 0);
+    m_geoAnimation->setDuration(duration_ms);
     m_geoAnimation->setStartValue(point_A);
     m_geoAnimation->setEndValue(point_B);
 
     QPauseAnimation *pauseAnimation = new QPauseAnimation(3000, this);
 
-    int duration_ms = 3000;
     QGraphicsOpacityEffect * show_effect = new QGraphicsOpacityEffect(newNotifiWidgetPopup);
     show_effect->setOpacity(1);
     m_alphaAnimation = new QPropertyAnimation(show_effect, "opacity");

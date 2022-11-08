@@ -22,7 +22,7 @@
 
 #include <QObject>
 
-std::atomic<int> medAPHP::s_RequestId = -1;
+std::atomic<int> medAPHP::s_RequestId = 0;
 medStringParameter medAPHP::s_Aetitle("AE Title");
 medStringParameter medAPHP::s_Hostname("Hostname");
 medIntParameter medAPHP::s_Port("TCP Port");
@@ -614,22 +614,29 @@ QList<QMap<QString, QString>> medAPHP::getMandatoryAttributes(unsigned int pi_ui
 
     auto seriesLevelValues = d->seriesLevelAttributes.values();
     seriesLevelValues.removeAll("");
+    bool isSeriesFiltered = !seriesLevelValues.isEmpty();
+
     auto studyLevelValues = d->studyLevelAttributes.values();
     studyLevelValues.removeAll("");
+    bool isStudiesFiltered = !studyLevelValues.isEmpty();
 
+    auto patientLevelValues = d->patientLevelAttributes.values();
+    patientLevelValues.removeAll("");
+    bool isPatientFiltered = !patientLevelValues.isEmpty();
+    
     QMap<DcmTagKey, QString> tags;
     switch (pi_uiLevel)
     {
         case 0:
         {
-            if (seriesLevelValues.isEmpty() && studyLevelValues.isEmpty())
+            if (!isSeriesFiltered && !isStudiesFiltered)
             {
                 auto infosPatient = cFindPatient(parentKey);
                 attributesRes = getPatientMandatoryAttributes(infosPatient);
             }
             else
             {
-                if (seriesLevelValues.isEmpty())
+                if (!isSeriesFiltered)
                 {
                     auto infosStudy = cFindStudy("");
                     QStringList patientIDs;
@@ -673,14 +680,13 @@ QList<QMap<QString, QString>> medAPHP::getMandatoryAttributes(unsigned int pi_ui
         case 1:
         {
             auto infosStudy = cFindStudy("", parentKey);
-            bool isSeriesFiltered = !seriesLevelValues.isEmpty();
-            attributesRes = getStudyMandatoryAttributes(infosStudy, isSeriesFiltered);
+            attributesRes = getStudyMandatoryAttributes(infosStudy, isPatientFiltered, isSeriesFiltered);
         }
         break;
         case 2:
         {
             auto infosSeries = cFindSeries(parentKey);
-            attributesRes = getSeriesMandatoryAttributes(infosSeries);
+            attributesRes = getSeriesMandatoryAttributes(infosSeries, isPatientFiltered, isStudiesFiltered);
         }
         break;
         case 3:
@@ -776,9 +782,22 @@ QList<QMap<QString, QString>> medAPHP::getPatientMandatoryAttributes(const QList
     return attributesRes;
 }
 
-QList<QMap<QString, QString>> medAPHP::getStudyMandatoryAttributes(const QList<QMap<DcmTagKey, QString>> &infosMap, bool isSeriesFiltered)
+QList<QMap<QString, QString>> medAPHP::getStudyMandatoryAttributes(QList<QMap<DcmTagKey, QString>> &infosMap, bool isPatientFiltered, bool isSeriesFiltered)
 {
     QList<QMap<QString, QString>> attributesRes;
+
+    if (isPatientFiltered)
+    {
+        QList<QMap<DcmTagKey, QString>> infosStudy = infosMap;
+        for (const auto &info : infosStudy)
+        {
+            auto infosPatient = cFindPatient(info[DCM_PatientID]);
+            if (infosPatient.empty())
+            {
+                infosMap.removeOne(info);
+            }
+        }
+    }
 
     if (isSeriesFiltered)
     {
@@ -812,21 +831,47 @@ QList<QMap<QString, QString>> medAPHP::getStudyMandatoryAttributes(const QList<Q
     return attributesRes;
 }
 
-QList<QMap<QString, QString>> medAPHP::getSeriesMandatoryAttributes(const QList<QMap<DcmTagKey, QString>> &infosMap)
+QList<QMap<QString, QString>> medAPHP::getSeriesMandatoryAttributes(QList<QMap<DcmTagKey, QString>> &infosMap, bool isPatientFiltered, bool isStudiesFiltered)
 {
     QList<QMap<QString, QString>> attributesRes;
 
-    for (const auto &info : infosMap)
+    if (isStudiesFiltered || isPatientFiltered)
     {
-        QMap<QString, QString> attributes;
-        attributes["id"] = info[DCM_SeriesInstanceUID];
-        attributes["description"] = info[DCM_SeriesDescription];
-        attributes["uid"] = info[DCM_SeriesInstanceUID];
-        attributes["modality"] = info[DCM_Modality];
-        attributes["institution name"] = info[DCM_InstitutionName];
-        attributes["acquisition number"] = info[DCM_AcquisitionNumber];
-        attributes["number of series related instances"] = info[DCM_NumberOfSeriesRelatedInstances];
-        attributesRes.append(attributes);
+        QList<QMap<DcmTagKey, QString>> infosSeries = infosMap;
+        for (const auto &info : infosSeries)
+        {
+            auto infosStudy = cFindStudy(info[DCM_StudyInstanceUID]);
+            if (infosStudy.empty())
+            {
+                infosMap.removeOne(info);
+            }
+            else
+            {
+                for (const auto &infoS : infosStudy)
+                {
+                    auto infosPatient = cFindPatient(infoS[DCM_PatientID]);
+                    if (infosPatient.empty())
+                    {
+                        infosMap.removeOne(info);
+                    }
+                }
+            }
+        }
+    }
+   else
+    {
+        for (const auto &info : infosMap)
+        {
+            QMap<QString, QString> attributes;
+            attributes["id"] = info[DCM_SeriesInstanceUID];
+            attributes["description"] = info[DCM_SeriesDescription];
+            attributes["uid"] = info[DCM_SeriesInstanceUID];
+            attributes["modality"] = info[DCM_Modality];
+            attributes["institution name"] = info[DCM_InstitutionName];
+            attributes["acquisition number"] = info[DCM_AcquisitionNumber];
+            attributes["number of series related instances"] = info[DCM_NumberOfSeriesRelatedInstances];
+            attributesRes.append(attributes);
+        }
     }
     return attributesRes;
 }
@@ -1087,6 +1132,7 @@ int medAPHP::addAssyncData(QVariant data, medAbstractSource::levelMinimalEntries
     if (pi_uiLevel == 3)
     {
         s_RequestId++;
+        iRes = s_RequestId;
         QString name = pio_minimalEntries.name;
         QString key = d->restFulAPI->addData(data, name, parentKey);
         d->requestIdToResultsMap[s_RequestId] = QVariant(key);

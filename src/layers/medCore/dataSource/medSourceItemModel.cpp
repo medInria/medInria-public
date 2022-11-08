@@ -78,13 +78,40 @@ medSourceItemModel::~medSourceItemModel()
 QVariant medSourceItemModel::data(const QModelIndex & index, int role) const
 {
     QVariant varDataRes;
-
     if (index.isValid())
     {
         if (role == Qt::TextAlignmentRole && index.column() > 0)
         {
             varDataRes = Qt::AlignHCenter;
         }
+//        else if (role == Qt::ForegroundRole)
+//        {
+//            auto value = data(index, 100).toString();
+//            if (value == "DataLoading")
+//            {
+//                varDataRes = QColor(Qt::red);
+//            }
+//            else if (value == "DataLoaded")
+//            {
+//                varDataRes = QColor(Qt::blue);
+//            }
+//            else if (value == "DataPushing")
+//            {
+//                varDataRes = QColor(Qt::yellow);
+//            }
+//            else if (value == "DataCommited")
+//            {
+//                varDataRes = QColor(Qt::cyan);
+//            }
+//        }
+//        else if (role == Qt::DecorationRole)
+//        {
+//            auto value = data(index, 100).toString();
+////            if (value == "DataLoading")
+////            {
+////                varDataRes = QIcon(":icons/yellow_spot.svg");
+////            }
+//        }
         else
         {
             medDataModelItem *item = getItem(index);
@@ -314,13 +341,13 @@ bool medSourceItemModel::setData(const QModelIndex & index, const QVariant & val
 
 	if (role >= 100  && index.isValid())
 	{
-		getItem(index)->setData(value, 0, role);
+		getItem(index)->setData(value, 1, role);
 		emit dataChanged(index, index);
 		bRes = true;
 	}
     if (role == 0 && index.isValid())
     {
-        getItem(index)->setData(value, 0, role);
+        getItem(index)->setData(value, 1, role);
         emit dataChanged(index, index);
         bRes = true;
     }

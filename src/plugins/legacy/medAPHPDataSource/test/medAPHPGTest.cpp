@@ -8,6 +8,8 @@
 #include <sphereDicomWeb/medAnnotation.h>
 
 #include <QString>
+#include <medGroupParameter.h>
+#include <medStringParameter.h>
 
 #include "medAPHP.h"
 #include "sphereDicomWeb/medAbstractAnnotation.h"
@@ -326,7 +328,7 @@ TEST_F(medAPHPGTest, test_get_minimal_entries_level_patient_success)
 
     ON_CALL(fakeQtDCM, cFind).WillByDefault(testing::Return(foo));
 
-    QList<medAbstractSource::levelMinimalEntries> entries = m_->getMinimalEntries(0, "key");
+    QList<medAbstractSource::levelMinimalEntries> entries = m_->getMinimalEntries(0, "");
     EXPECT_EQ(entries.size(), foo.size());
 
     EXPECT_EQ(entries[0].key, "0000001");
@@ -374,7 +376,7 @@ TEST_F(medAPHPGTest, test_get_minimal_entries_level_study_success)
     EXPECT_CALL(fakeAnnotation, findAnnotationMinimalEntries).Times(0);
 
     ON_CALL(fakeQtDCM, cFind).WillByDefault(testing::Return(foo));
-    QList<medAbstractSource::levelMinimalEntries> entries = m_->getMinimalEntries(1, "key");
+    QList<medAbstractSource::levelMinimalEntries> entries = m_->getMinimalEntries(1, "");
 
     EXPECT_EQ(entries.size(), foo.size());
 
@@ -485,3 +487,141 @@ TEST_F(medAPHPGTest, test_get_minimal_entries_level_annot_success)
     EXPECT_EQ(entries[1].name, "Annot1900");
     EXPECT_EQ(entries[1].description, "1.2.3.4.5.6666.8888888");
 }
+
+TEST_F(medAPHPGTest, test_get_mandatory_attributes_level_patient_success)
+{
+    // auto filteringParams = m_->getFilteringParameters();
+    QList<QMap<DcmTagKey, QString>> foo;
+    QMap<DcmTagKey, QString> bar;
+    bar[DCM_PatientID] = "0000001";
+    bar[DCM_PatientName] = "John Doe";
+    bar[DCM_PatientSex] = "M";
+    bar[DCM_PatientBirthDate] = "";
+    foo.append(bar);
+    QMap<DcmTagKey, QString> qix;
+    qix[DCM_PatientID] = "1000000";
+    qix[DCM_PatientName] = "Jane Dae";
+    qix[DCM_PatientSex] = "F";
+    qix[DCM_PatientBirthDate] = "19200101";
+    foo.append(qix);
+
+    EXPECT_CALL(fakeQtDCM, cFind).Times(1);
+    EXPECT_CALL(fakeAnnotation, findAnnotationMinimalEntries).Times(0);
+    EXPECT_CALL(fakeAnnotation, hasUrl).Times(0);
+    ON_CALL(fakeAnnotation, hasUrl).WillByDefault(::testing::Return(true));
+
+    ON_CALL(fakeQtDCM, cFind).WillByDefault(::testing::Return(foo));
+
+    auto attributes = m_->getMandatoryAttributes(0, "");
+    auto attrkey = m_->getMandatoryAttributesKeys(0); //  {"id", "description", "patientID", "gender", "birthdate"};
+
+    EXPECT_EQ(attributes.size(), 2);
+    if (attributes.size()==2)
+    {    
+        EXPECT_EQ(attributes[0][attrkey[0]], "0000001");
+        EXPECT_EQ(attributes[0][attrkey[1]], "John Doe");
+        EXPECT_EQ(attributes[0][attrkey[2]], "0000001");
+        EXPECT_EQ(attributes[0][attrkey[3]], "M");
+        EXPECT_EQ(attributes[0][attrkey[4]], "");
+
+        EXPECT_EQ(attributes[1][attrkey[0]], "1000000");
+        EXPECT_EQ(attributes[1][attrkey[1]], "Jane Dae");
+        EXPECT_EQ(attributes[1][attrkey[2]], "1000000");
+        EXPECT_EQ(attributes[1][attrkey[3]], "F");
+        EXPECT_EQ(attributes[1][attrkey[4]], "19200101");
+    }
+} 
+
+TEST_F(medAPHPGTest, test_get_mandatory_attributes_level_study_success)
+{
+    QList<QMap<DcmTagKey, QString>> foo;
+    QMap<DcmTagKey, QString> bar;
+    bar[DCM_StudyDescription] = "study";
+    bar[DCM_StudyDate] = "20221212";
+    bar[DCM_StudyInstanceUID] = "1.2.3.4.55555";
+    bar[DCM_PatientID] = "Jo";
+    foo.append(bar);
+    QMap<DcmTagKey, QString> qix;
+    qix[DCM_StudyDescription] = "study2";
+    qix[DCM_StudyDate] = "20211111";
+    qix[DCM_StudyInstanceUID] = "1.2.3.4.66666";
+    qix[DCM_PatientID] = "Jo";
+    foo.append(qix);
+
+    EXPECT_CALL(fakeQtDCM, cFind).Times(1);
+    EXPECT_CALL(fakeAnnotation, findAnnotationMinimalEntries).Times(0);
+    EXPECT_CALL(fakeAnnotation, hasUrl).Times(0);
+    ON_CALL(fakeAnnotation, hasUrl).WillByDefault(::testing::Return(true));
+
+    ON_CALL(fakeQtDCM, cFind).WillByDefault(::testing::Return(foo));
+
+    auto attributes = m_->getMandatoryAttributes(1, "Jo");
+    auto attrkey = m_->getMandatoryAttributesKeys(1); //  {"id", "description", "uid", "study date"};
+
+    EXPECT_EQ(attributes.size(), 2);
+    if (attributes.size()==2)
+    {    
+        EXPECT_EQ(attributes[0][attrkey[0]], "1.2.3.4.55555");
+        EXPECT_EQ(attributes[0][attrkey[1]], "study");
+        EXPECT_EQ(attributes[0][attrkey[2]], "1.2.3.4.55555");
+        EXPECT_EQ(attributes[0][attrkey[3]], "20221212");
+
+        EXPECT_EQ(attributes[1][attrkey[0]], "1.2.3.4.66666");
+        EXPECT_EQ(attributes[1][attrkey[1]], "study2");
+        EXPECT_EQ(attributes[1][attrkey[2]], "1.2.3.4.66666");
+        EXPECT_EQ(attributes[1][attrkey[3]], "20211111");
+    }
+} 
+
+TEST_F(medAPHPGTest, test_get_mandatory_attributes_level_series_success)
+{
+    QList<QMap<DcmTagKey, QString>> foo;
+    QMap<DcmTagKey, QString> bar;
+    bar[DCM_SeriesDescription] = "series";
+    bar[DCM_Modality] = "MR";
+    bar[DCM_StudyInstanceUID] = "1.2.3.4.55555";
+    bar[DCM_SeriesInstanceUID] = "9.8.7.55555";
+    bar[DCM_InstitutionName] = "foo";
+    bar[DCM_AcquisitionNumber] = "12";
+    bar[DCM_NumberOfSeriesRelatedInstances] = "3";
+    foo.append(bar);
+    QMap<DcmTagKey, QString> qix;
+    qix[DCM_SeriesDescription] = "series2";
+    qix[DCM_Modality] = "CT";
+    qix[DCM_StudyInstanceUID] = "1.2.3.4.55555";
+    qix[DCM_SeriesInstanceUID] = "9.8.7.4444";
+    qix[DCM_InstitutionName] = "london";
+    qix[DCM_AcquisitionNumber] = "24";
+    qix[DCM_NumberOfSeriesRelatedInstances] = "66";
+    foo.append(qix);
+
+    EXPECT_CALL(fakeQtDCM, cFind).Times(1);
+    EXPECT_CALL(fakeAnnotation, findAnnotationMinimalEntries).Times(0);
+    EXPECT_CALL(fakeAnnotation, hasUrl).Times(0);
+    ON_CALL(fakeAnnotation, hasUrl).WillByDefault(::testing::Return(true));
+
+    ON_CALL(fakeQtDCM, cFind).WillByDefault(::testing::Return(foo));
+
+    auto attributes = m_->getMandatoryAttributes(2, "1.2.3.4.55555");
+    auto attrkey = m_->getMandatoryAttributesKeys(2); //  {"id", "description", "uid", "modality", "institution name", "acquisition number", "number of series related instances"};
+
+    EXPECT_EQ(attributes.size(), 2);
+    if (attributes.size()==2)
+    {    
+        EXPECT_EQ(attributes[0][attrkey[0]], "9.8.7.55555");
+        EXPECT_EQ(attributes[0][attrkey[1]], "series");
+        EXPECT_EQ(attributes[0][attrkey[2]], "9.8.7.55555");
+        EXPECT_EQ(attributes[0][attrkey[3]], "MR");
+        EXPECT_EQ(attributes[0][attrkey[4]], "foo");
+        EXPECT_EQ(attributes[0][attrkey[5]], "12");
+        EXPECT_EQ(attributes[0][attrkey[6]], "3");
+        
+        EXPECT_EQ(attributes[1][attrkey[0]], "9.8.7.4444");
+        EXPECT_EQ(attributes[1][attrkey[1]], "series2");
+        EXPECT_EQ(attributes[1][attrkey[2]], "9.8.7.4444");
+        EXPECT_EQ(attributes[1][attrkey[3]], "CT");
+        EXPECT_EQ(attributes[1][attrkey[4]], "london");
+        EXPECT_EQ(attributes[1][attrkey[5]], "24");
+        EXPECT_EQ(attributes[1][attrkey[6]], "66");
+    }
+} 

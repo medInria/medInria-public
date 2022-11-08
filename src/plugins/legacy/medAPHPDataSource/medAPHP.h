@@ -141,8 +141,8 @@ private:
     QList<levelMinimalEntries> getSeriesMinimalEntries(const QList<QMap<DcmTagKey, QString>> &infosMap);
 
     QList<QMap<QString, QString>> getPatientMandatoryAttributes(const QList<QMap<DcmTagKey, QString>> &infosMap);
-    QList<QMap<QString, QString>> getStudyMandatoryAttributes(const QList<QMap<DcmTagKey, QString>> &infosMap, bool isSeriesFiltered = false);
-    QList<QMap<QString, QString>> getSeriesMandatoryAttributes(const QList<QMap<DcmTagKey, QString>> &infosMap);
+    QList<QMap<QString, QString>> getStudyMandatoryAttributes(QList<QMap<DcmTagKey, QString>> &infosMap, bool isPatientFiltered, bool isSeriesFiltered);
+    QList<QMap<QString, QString>> getSeriesMandatoryAttributes(QList<QMap<DcmTagKey, QString>> &infosMap, bool isPatientFiltered, bool isStudiesFiltered);
 
    private:
     medAPHPParametersPrivate* d;

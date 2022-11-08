@@ -3,6 +3,7 @@
 #include <QTreeView>
 #include <QSortFilterProxyModel>
 #include <medSourceItemModel.h>
+#include <medSourcesItemDelegate.h>
 
 class medSourceItemModelPresenterPrivate
 {
@@ -36,6 +37,7 @@ QTreeView * medSourceItemModelPresenter::buildTree(QSortFilterProxyModel *proxy)
         proxy->setSourceModel(d->sourceItemModel);
         QObject::connect(treeViewRes, &QTreeView::pressed, [=](const QModelIndex &proxyIndex) {inputModel->itemPressed(proxy->mapToSource(proxyIndex));});
         model = proxy;
+
     }
     else
     {
@@ -50,9 +52,12 @@ QTreeView * medSourceItemModelPresenter::buildTree(QSortFilterProxyModel *proxy)
     //treeViewRes->setAlternatingRowColors(true);
     treeViewRes->setAnimated(true);
     //treeViewRes->sortByColumn(0, Qt::AscendingOrder);
-    treeViewRes->setSelectionBehavior(QAbstractItemView::SelectRows);
+//    treeViewRes->setSelectionBehavior(QAbstractItemView::SelectRows);
     treeViewRes->setSelectionMode(QAbstractItemView::ExtendedSelection);
-    auto sm = treeViewRes->selectionMode();
+
+//    treeViewRes->setStyleSheet("QTreeView::item:selection{background-color:transparent}");
+    treeViewRes->setItemDelegateForColumn(0, new medSourcesItemDelegate(treeViewRes));
+
     return treeViewRes;
 }
 

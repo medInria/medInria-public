@@ -187,7 +187,6 @@ int medSourceHandler::getAsyncData(medDataIndex const & pi_index)
         iRqstIdRes = pSource->getAssyncData(pi_index.level() - 1, pi_index.dataId());
         if (iRqstIdRes > 0)
         {
-            sleep(10);
             addRequest(pi_index.sourceId(), iRqstIdRes, request);
             auto notif = medNotif::createNotif(notifLevel::info, QString("Download ") + pi_index.dataId(), "Data is downloaded from " + pi_index.sourceId());
             m_rqstToNotifMap[request] = notif;
