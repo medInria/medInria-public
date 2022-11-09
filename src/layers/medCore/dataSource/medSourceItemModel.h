@@ -21,6 +21,13 @@
 class medDataHub;
 struct medDataModelElementPrivate;
 
+#define MEDDATA_ROLE   102  //Boolean indicate if a medAbstractData is attached directly or indirectly to an item
+#define DATASTATE_ROLE 100  //String defined as below
+#define DATASTATE_ROLE_DATALOADING  "DataLoading"
+#define DATASTATE_ROLE_DATALOADED   "DataLoaded"
+#define DATASTATE_ROLE_DATAPUSHING  "DataPushing"
+#define DATASTATE_ROLE_DATACOMMITED "DataCommited"
+
 class MEDCORE_EXPORT medSourceItemModel : public QAbstractItemModel
 {
 
@@ -45,8 +52,6 @@ public:
 
     medSourceItemModel(medDataHub *parent, QString const & sourceIntanceId);
     virtual ~medSourceItemModel();
-
-    //medDataHub * model();
 
     // ////////////////////////////////////////////////////////////////////////
     // Pure Virtual Override
@@ -80,7 +85,6 @@ public:
 
     // ////////////////////////////////////////////////////////////////////////
     // Simple methods
-    //void setColumnAttributes(int p_iLevel, QStringList &attributes); //maybe developed because not const ?
     QString getColumnNameByLevel(int iLevel, int iCol) const;
     int  getColumnInsideLevel(int level, int section) const;
     int  getSectionInsideLevel(int level, int column) const;
@@ -94,11 +98,12 @@ public:
     bool setAdditionnalMetaData(QModelIndex const & index, QList<QMap<int, QString>> &additionnalMetaData);
 
     //FLO
+    QString           getDataName(const QModelIndex &index) const;
+    QString           getDataName(QStringList const &uri) const;
     medDataModelItem* getItem(const QModelIndex &index) const;
-    medDataModelItem* getItem(QStringList const &uri);
-    QModelIndex toIndex(QString uri);
-    QModelIndex toIndex(QStringList uri);
-    //QString     toUri(QModelIndex index);
+    medDataModelItem* getItem(QStringList const &uri) const;
+    QModelIndex toIndex(QString uri) const;
+    QModelIndex toIndex(QStringList uri) const;
     QString     toPath(QModelIndex const & index);
     QStringList fromPath(QStringList humanUri);
     QString     keyForPath(QStringList rootUri, QString folder);
@@ -109,12 +114,7 @@ public:
     bool        additionnalMetaData2(QModelIndex const & index, datasetAttributes4 & attributes);
     bool        additionnalMetaData2(QModelIndex const & index, QString const & key, QVariant & value, QString & tag);
 
-
     bool addEntry(QString pi_key, QString pi_name, QString pi_description, unsigned int pi_uiLevel, QString pi_parentKey);
-
-    //bool addRequest(int pi_request, asyncRequest &request);
-    //bool getRequest(int pi_request, asyncRequest &request);
-    //bool removeRequest(int pi_request);
 
     bool refresh(QModelIndex const &pi_index = QModelIndex());
     //JU
@@ -148,7 +148,6 @@ private:
     friend class medDataModelItem;
     bool removeItem(medDataModelItem *pi_item);
     bool registerItem(medDataModelItem *pi_item);
-    //void markAsRemovedOnSource();
 
 signals:
     void online(bool);

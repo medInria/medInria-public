@@ -173,7 +173,7 @@ int medSourceHandler::push(medDataIndex const & pio_index)
     return iRqstIdRes;
 }
 
-int medSourceHandler::getAsyncData(medDataIndex const & pi_index)
+int medSourceHandler::getAsyncData(medDataIndex const & pi_index, QString dataName)
 {
     int iRqstIdRes = -1;
 
@@ -188,7 +188,8 @@ int medSourceHandler::getAsyncData(medDataIndex const & pi_index)
         if (iRqstIdRes > 0)
         {
             addRequest(pi_index.sourceId(), iRqstIdRes, request);
-            auto notif = medNotif::createNotif(notifLevel::info, QString("Download ") + pi_index.dataId(), "Data is downloaded from " + pi_index.sourceId());
+            if (dataName.isEmpty())dataName = pi_index.dataId();
+            auto notif = medNotif::createNotif(notifLevel::info, QString("Download ") + dataName, "Data is downloading from " + pi_index.sourceId());
             m_rqstToNotifMap[request] = notif;
         }
     }
@@ -573,7 +574,7 @@ void medSourceHandler::progress(int pi_iRequest, medAbstractSource::eRequestStat
                     {
                         if (m_rqstToNotifMap.contains(request))
                         {
-                            m_rqstToNotifMap[request]->update(notifLevel::success, -1);
+                            m_rqstToNotifMap[request]->update(notifLevel::success, -1, "Download succeed");
                         }
                         break;
                     }

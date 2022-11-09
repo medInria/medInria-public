@@ -60,7 +60,7 @@ medNotif::~medNotif()
 }
 
 
-bool medNotif::update(notifLevel pi_criticityLevel, int pi_achivementPercentage)
+bool medNotif::update(notifLevel pi_criticityLevel, int pi_achivementPercentage, QString newMessage)
 {
     bool bRes = pi_criticityLevel >= notifLevel::info && pi_criticityLevel <= notifLevel::error && pi_achivementPercentage >= -2 && pi_achivementPercentage <= 101;
     
@@ -68,6 +68,10 @@ bool medNotif::update(notifLevel pi_criticityLevel, int pi_achivementPercentage)
     {
         d->criticalityLevel = pi_criticityLevel;
         d->achievement = pi_achivementPercentage;
+        if (!newMessage.isEmpty())
+        {
+            d->msg = newMessage;
+        }
         medNotifSys::updateNotif(this);
         emit notification();
     }

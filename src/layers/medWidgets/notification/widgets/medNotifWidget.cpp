@@ -118,6 +118,8 @@ void medNotifWidget::update(medNotif * notif)
         m_progressWidget->hide();
     }
 
+    m_msgLabel->setText(notif->getMessage());
+
     extraTriggerUpdate(1, notif);
     extraTriggerUpdate(2, notif);
     extraTriggerUpdate(3, notif);

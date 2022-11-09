@@ -42,9 +42,6 @@ public:
         QString tmpId;
         QStringList uri;
     public:
-        //bool operator<(asyncRequest const & other);
-        //bool operator>(asyncRequest const & other);
-        //bool operator==(asyncRequest const & other);
         friend bool operator< (medSourceHandler::asyncRequest const & a,  medSourceHandler::asyncRequest const & b);
         friend bool operator> (medSourceHandler::asyncRequest const & a,  medSourceHandler::asyncRequest const & b);
         friend bool operator==(medSourceHandler::asyncRequest const & a,  medSourceHandler::asyncRequest const & b);
@@ -78,8 +75,8 @@ public:
     // ////////////////////////////////////////////////////////////////////////////////////////////
     // Members functions to advance exchange with sources
     int push                (medDataIndex const & pio_index);
-    int getAsyncData        (medDataIndex const & pio_index);
-    int  addAssyncData      (medDataIndex const & pio_index, QVariant const & pi_data, medAbstractSource::levelMinimalEntries & pio_minimalEntries);
+    int getAsyncData        (medDataIndex const & pio_index, QString dataName);
+    int addAssyncData      (medDataIndex const & pio_index, QVariant const & pi_data, medAbstractSource::levelMinimalEntries & pio_minimalEntries);
     bool getAsyncResults    (QString const & pi_sourceInstanceId, int pi_request, QVariant & po_data);
     QString getInstanceName (QString const & pi_sourceInstanceId); //Probably used in medSourceModelPresenter and medSourceWidget
 

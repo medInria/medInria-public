@@ -29,8 +29,11 @@ void medSourcesItemDelegate::paint(QPainter *painter, const QStyleOptionViewItem
 //    opt.features &= QStyleOptionViewItem::HasDecoration;
     if (index.isValid())
     {
-        auto value = getIndex(index).data(100).toString();
-        if (value=="DataLoading")
+        auto value = getIndex(index).data(DATASTATE_ROLE).toString();
+        
+        std::string val = value.toStdString();
+
+        if (value== DATASTATE_ROLE_DATALOADING)
         {
 //            m_mov->jumpToNextFrame();
 //            qDebug()<<"pixmap "<<m_mov->currentFrameNumber()<<"  -- "<<m_mov->currentPixmap()<<"   --- "<<m_currentPixmap;
@@ -39,7 +42,7 @@ void medSourcesItemDelegate::paint(QPainter *painter, const QStyleOptionViewItem
             painter->drawPixmap(QRect(option.rect.x()-20, option.rect.y(), option.rect.height(), option.rect.height()), m_mov->currentPixmap());//QPixmap(":icons/yellow_spot.svg"));
 
         }
-        else if (value=="DataLoaded")
+        else if (value== DATASTATE_ROLE_DATALOADED)
         {
             opt.font.setBold(true);
             painter->drawPixmap(QRect(option.rect.x()-20, option.rect.y(), option.rect.height(), option.rect.height()), QPixmap(":icons/check.svg"));//QPixmap(":icons/yellow_spot.svg"));

@@ -99,12 +99,12 @@ medAbstractData * medDataHub::variantToMedAbstractData(QVariant &data, const med
 			pDataRes->setDataIndex(index);
             medSourceItemModel * pModel = getModel(index.sourceId());
 			QModelIndex modelIndex = pModel->toIndex(index);
-			pModel->setData(modelIndex, "DataLoaded", 100); //Set information on tree about the data is already loaded
-            pModel->setData(modelIndex, true, 102);
+			pModel->setData(modelIndex, DATASTATE_ROLE_DATALOADED, DATASTATE_ROLE); //Set information on tree about the data is already loaded
+            pModel->setData(modelIndex, true, MEDDATA_ROLE);
             QModelIndex parentIndex = modelIndex.parent();
             while (parentIndex.isValid())
             {
-                pModel->setData(parentIndex, true, 102);
+                pModel->setData(parentIndex, true, MEDDATA_ROLE);
                 parentIndex = parentIndex.parent();
             }
 
@@ -192,12 +192,24 @@ void medDataHub::getDirectData(const medDataIndex & index, medAbstractData * &pD
     m_sourcesHandler->getDirectData(index.sourceId(), index.level() - 1, index.dataId(), data);
     pDataRes = variantToMedAbstractData(data, index);
 }
-
 // ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 // ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 // Datasets handling
 // ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 // ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+QString medDataHub::getDataName(medDataIndex const & index)
+{
+    QString nameRes;
+
+    auto pModel = getModel(index.sourceId());
+    if (pModel)
+    {
+        nameRes = pModel->getDataName(index);
+    }
+
+    return nameRes;
+}
+
 medAbstractData * medDataHub::getData(medDataIndex const & index)
 {
     medAbstractData *pDataRes = nullptr;
@@ -218,8 +230,10 @@ medAbstractData * medDataHub::getData(medDataIndex const & index)
             }
             else
             {
-                bool bOk = true;
-                int rqstId = m_sourcesHandler->getAsyncData(index);
+                bool bOk = true;                
+                int rqstId = m_sourcesHandler->getAsyncData(index, getDataName(index));
+                auto pModel = getModel(sourceId);
+                pModel->setData(pModel->toIndex(index), DATASTATE_ROLE_DATALOADING, DATASTATE_ROLE);
                 int iStatus = waitGetAsyncData(sourceId, rqstId);
                 if (iStatus == 0)
                 {
@@ -500,7 +514,7 @@ bool medDataHub::saveData(medAbstractData *pi_pData, QString const &pi_baseName,
                     {
                         pModel->fetch(pio_uri);
                         pio_uri.push_back(minimalEntries.key);
-                        if (bCache) pModel->setData(pModel->toIndex(pio_uri), "DataCommited", 100);
+                        if (bCache) pModel->setData(pModel->toIndex(pio_uri), DATASTATE_ROLE_DATACOMMITED, DATASTATE_ROLE);
                         //TODO log
                         //TODO notify
                     }
@@ -520,7 +534,7 @@ bool medDataHub::saveData(medAbstractData *pi_pData, QString const &pi_baseName,
         auto index = pModel->toIndex(pio_uri);
         while (index.isValid())
         {
-            m_sourceIdToModelMap[sourceId]->setData(index, true, 102);
+            m_sourceIdToModelMap[sourceId]->setData(index, true, MEDDATA_ROLE);
             index = index.parent();
         }
     }
@@ -546,7 +560,7 @@ bool medDataHub::warpAddAsync(medAbstractSource::levelMinimalEntries &minimalEnt
     {
         m_IndexToData[request.uri] = pi_pData;
         rqstId = m_sourcesHandler->addAssyncData(pio_uri, data, minimalEntries);
-        pModel->setData(pModel->toIndex(request.uri), "DataCommited", 100);
+        pModel->setData(pModel->toIndex(request.uri), DATASTATE_ROLE_DATACOMMITED, DATASTATE_ROLE);
         if (rqstId > 0)
         {
             //m_IndexToData[pio_uri] = pi_pData;
@@ -732,10 +746,10 @@ bool medDataHub::fetchData(medDataIndex const & index)
     medDataModelItem *pItem = pModel->getItem(index);
     if (pModel)
     {
-        int iRequestId = m_sourcesHandler->getAsyncData(index);
+        int iRequestId = m_sourcesHandler->getAsyncData(index, pItem->data(1).toString());
         if (iRequestId > -1)
         {
-            pModel->setData(pModel->toIndex(index), "DataLoading", 100);
+            pModel->setData(pModel->toIndex(index), DATASTATE_ROLE_DATALOADING, DATASTATE_ROLE);
 
             //int  iNotif = medNotifSys::infoWithProgress("Fetch data " + pItem->data(1).toString(), "The data " + pItem->data(1).toString() + " is fetch from " + pSource->getInstanceName());
             auto toto = medNotif::createNotif(notifLevel::info, "Fetch data " + pItem->data(1).toString(), "The data " + pItem->data(1).toString() + " is fetch from " + m_sourcesHandler->getInstanceName(sourceId), -1, 0);
@@ -775,7 +789,7 @@ bool medDataHub::pushData(medDataIndex const & index)
             // TODO bRes = pModel->addRequest(iRequestId, request);
             if (bRes)
             {
-                pModel->setData(pModel->toIndex(index), "DataPushing", 100);
+                pModel->setData(pModel->toIndex(index), DATASTATE_ROLE_DATAPUSHING, DATASTATE_ROLE);
 
                 //int  iNotif = medNotifSys::infoWithProgress( "Pushing data " + pItem->data(1).toString(), "The data " + pItem->data(1).toString() + " is pushing to " + m_sourcesHandler->getInstanceName(sourceId));
                 //mInfo << "Pushing data " << pItem->data(1).toString() << "have the Id of notification " << iNotif << "\r\n";

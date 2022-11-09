@@ -259,6 +259,23 @@ void medSourceItemModel::fetchMore(const QModelIndex & parent)
     }
 }
 
+QString medSourceItemModel::getDataName(const QModelIndex & index) const
+{
+    QString nameRes;
+
+    if (index.isValid())
+    {
+        nameRes = getItem(index)->data(1).toString();
+    }
+
+    return nameRes;
+}
+
+QString medSourceItemModel::getDataName(QStringList const & uri) const
+{
+    return getDataName(toIndex(uri));
+}
+
 inline medDataModelItem * medSourceItemModel::getItem(const QModelIndex & index) const
 {
     medDataModelItem* itemRes = d->root;
@@ -269,6 +286,22 @@ inline medDataModelItem * medSourceItemModel::getItem(const QModelIndex & index)
         if (item)
         {
             itemRes = item;
+        }
+    }
+
+    return itemRes;
+}
+
+medDataModelItem* medSourceItemModel::getItem(QStringList const &uri) const
+{
+    medDataModelItem * itemRes = nullptr;
+
+    if ((uri.size() > 1) && (uri[0] == d->sourceInstanceId))
+    {
+        itemRes = d->root;
+        for (int i = 1; i < uri.size() && itemRes; ++i)
+        {
+            itemRes = itemRes->child(itemRes->childIndex(uri[i]));
         }
     }
 
@@ -339,18 +372,12 @@ bool medSourceItemModel::setData(const QModelIndex & index, const QVariant & val
 {
 	bool bRes = false;
 
-	if (role >= 100  && index.isValid())
+	if ((role >= 100 || role == 0 ) && index.isValid())
 	{
 		getItem(index)->setData(value, 1, role);
 		emit dataChanged(index, index);
 		bRes = true;
 	}
-    if (role == 0 && index.isValid())
-    {
-        getItem(index)->setData(value, 1, role);
-        emit dataChanged(index, index);
-        bRes = true;
-    }
 
 	return bRes;
 }
@@ -482,7 +509,7 @@ bool medSourceItemModel::fetchData(QModelIndex index)
 
     medDataIndex idx= getItem(index)->uri();	
     bRes = d->parent->fetchData(idx);
-	setData(index, "DataLoading", 100);
+	setData(index, DATASTATE_ROLE_DATALOADING, DATASTATE_ROLE);
 
 	return bRes;
 }
@@ -597,24 +624,7 @@ bool medSourceItemModel::setAdditionnalMetaData(QModelIndex const & index, QList
 
     return bRes;
 }
-
-medDataModelItem* medSourceItemModel::getItem(QStringList const &uri)
-{
-    medDataModelItem * itemRes = nullptr;
-
-    if ((uri.size() > 1) && (uri[0] == d->sourceInstanceId))
-    {
-        itemRes = d->root;
-        for (int i = 1; i < uri.size() && itemRes; ++i)
-        {
-            itemRes = itemRes->child(itemRes->childIndex(uri[i]));
-        }
-    }
-
-    return itemRes;
-}
-
-QModelIndex medSourceItemModel::toIndex(QString uri)
+QModelIndex medSourceItemModel::toIndex(QString uri) const
 {
     int sourceDelimterIndex = uri.indexOf(QString(":")); //TODO 06
     QStringList uriAsList = uri.right(uri.size() - sourceDelimterIndex - 1).split(QString("\r\n"));
@@ -623,7 +633,7 @@ QModelIndex medSourceItemModel::toIndex(QString uri)
     return toIndex(uriAsList);
 }
 
-QModelIndex medSourceItemModel::toIndex(QStringList uri)
+QModelIndex medSourceItemModel::toIndex(QStringList uri) const
 {
     QModelIndex indexRes;
 
@@ -875,7 +885,7 @@ bool medSourceItemModel::refresh(QModelIndex const &pi_index)
     // Init stack from root item with first sub-items with associated medAbstractData
     for (auto *pChildItem : pStartItem->childItems)
     {
-        if (pChildItem->data(0, 102).toBool())
+        if (pChildItem->data(0, MEDDATA_ROLE).toBool())
         {
             stack[0].push_back(pChildItem->iid());
         }
@@ -891,7 +901,7 @@ bool medSourceItemModel::refresh(QModelIndex const &pi_index)
             auto *pItem = getItem(i + iStartLevel, stack[i][iEntry]);
             for (auto pChildItem : pItem->childItems)
             {
-                if (pChildItem->data(0, 102).toBool())
+                if (pChildItem->data(0, MEDDATA_ROLE).toBool())
                 {
                     if (stack.size() == i + 1) { stack.push_back(QStringList()); }
                     stack[i + 1].push_back(pChildItem->iid());
@@ -1110,7 +1120,7 @@ void medSourceItemModel::computeRowRangesToRemove(medDataModelItem * pItem, QLis
     {
         auto *pChild = pItem->child(i);
         bool bNotOnSource = !itemStillExist(entries, pChild);
-        bool bNoMedDataAssociated = !pChild->containRoleValues( QMap<int, QVariantList>({ { 102, QVariantList() } }) );
+        bool bNoMedDataAssociated = !pChild->containRoleValues( QMap<int, QVariantList>({ { MEDDATA_ROLE, QVariantList() } }) );
 
         if (bNotOnSource && bNoMedDataAssociated)
         {

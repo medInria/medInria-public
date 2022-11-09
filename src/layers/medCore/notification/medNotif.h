@@ -37,7 +37,7 @@ public:
     static std::shared_ptr<medNotif> createNotif(notifLevel pi_criticityLevel, QString pi_title, QString pi_message, int pi_time_ms = -1, int pi_achivementPercentage = -1);
 
     ~medNotif();
-    bool update(notifLevel pi_criticityLevel, int pi_achivementPercentage);
+    bool update(notifLevel pi_criticityLevel, int pi_achivementPercentage, QString newMessage = "");
     
     notifLevel getCriticalityLevel();
     QString getTitle();

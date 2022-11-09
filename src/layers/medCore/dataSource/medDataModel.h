@@ -42,6 +42,7 @@ public:
 public:
 	// ////////////////////////////////////////////////////////////////////////////////////////////
     // Members functions to get Data, metadata and informations                Datasets handling
+    QString getDataName(medDataIndex const & index);
     medAbstractData * getData(medDataIndex const & index);
     datasetAttributes getMetaData(medDataIndex const & index);
     bool saveData(medAbstractData *pi_pData, QString const &pi_baseName, QStringList &pio_uri);
