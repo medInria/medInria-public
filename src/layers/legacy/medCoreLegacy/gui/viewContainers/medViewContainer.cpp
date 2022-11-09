@@ -47,6 +47,8 @@
 #include <medPoolIndicatorL.h>
 #include <medTableWidgetChooser.h>
 
+#include <medDataLoadThread.h>
+
 class medViewContainerPrivate
 {
 public:
@@ -748,7 +750,16 @@ bool medViewContainer::dropEventFromDataBase(QDropEvent * event)
         {
             for (auto &index : indexList)
             {
-                this->addData(index);
+                //this->addData(index);
+                QThread* thread = new QThread();
+                medDataLoadThread * pdataLoadThread = new medDataLoadThread(index, this);
+                pdataLoadThread->moveToThread(thread);
+                connect(thread, &QThread::started, pdataLoadThread, &medDataLoadThread::process);
+                connect(pdataLoadThread, &medDataLoadThread::finished, thread, &QThread::quit);
+                connect(pdataLoadThread, &medDataLoadThread::finished, pdataLoadThread, &medDataLoadThread::deleteLater);
+                connect(thread, &QThread::finished, thread, &QThread::deleteLater);
+                thread->start();
+                //pdataLoadThread->start();
             }
 
             this->setStyleSheet(d->defaultStyleSheet);
@@ -1319,3 +1330,4 @@ void medViewContainer::displayMessageError(QString message)
     printInConsole(message);
     medMessageController::instance()->showError(message, 3000);
 }
+
