@@ -78,7 +78,7 @@ void medPluginManager::readSettings()
 #endif
     defaultPath = plugins_dir.absolutePath();
 
-    const char PLUGIN_PATH_VAR_NAME[] = "MEDINRIA_PLUGINS_DIR_LEGACY";
+    const char PLUGIN_PATH_VAR_NAME[] = "MEDINRIA_PLUGINS_DIR";
     QByteArray pluginVarArray = qgetenv(PLUGIN_PATH_VAR_NAME);
 
     if ( !pluginVarArray.isEmpty() )
