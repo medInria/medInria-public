@@ -148,6 +148,32 @@ target_link_libraries(${TARGET_NAME}
   )
 
 ## #############################################################################
+## Python
+## #############################################################################
+
+if(USE_Python)
+    target_link_libraries(${TARGET_NAME} ${PYNCPP_CPP_API_LIBRARY})
+
+    if(WIN32)
+        set(python_home ".")
+    else()
+        set(python_home_subdir "python${PYNCPP_PYTHON_VERSION_MAJOR}.${PYNCPP_PYTHON_VERSION_MINOR}")
+
+        if(APPLE)
+            set(python_home "../Resources/${python_home_subdir}")
+        else()
+            set(python_home "../lib/${python_home_subdir}")
+        endif()
+
+        add_custom_command(TARGET ${TARGET_NAME} POST_BUILD
+            COMMAND ${CMAKE_COMMAND} -E create_symlink "${PYNCPP_PYTHON_DIR}" "$<TARGET_FILE_DIR:${TARGET_NAME}>/${python_home}"
+            )
+    endif()
+
+    target_compile_definitions(${TARGET_NAME} PUBLIC PYTHON_HOME="${python_home}")
+endif()
+
+## #############################################################################
 ## install
 ## #############################################################################
 
