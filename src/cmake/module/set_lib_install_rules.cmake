@@ -33,19 +33,13 @@ function(set_lib_install_rules target)
 #
 ################################################################################
 
-    cmake_parse_arguments(PARSE_ARGV 1 "ARG" "RESOURCE" "" "HEADERS")
+    cmake_parse_arguments(PARSE_ARGV 1 "ARG" "" "" "HEADERS")
     get_property(GENERATOR_MULTI_CONFIG GLOBAL PROPERTY GENERATOR_IS_MULTI_CONFIG)
 
     if (medInria_DIR)
         set(dest ${medInria_DIR})
     else()
         set(dest ${CMAKE_BINARY_DIR})
-    endif()
-
-    if (APPLE)
-        set(shared_lib_dir lib/resource_libs)
-    else()
-        set(shared_lib_dir lib)
     endif()
 
     if(${GENERATOR_MULTI_CONFIG})
@@ -59,21 +53,21 @@ function(set_lib_install_rules target)
         set_target_properties( ${target} PROPERTIES ARCHIVE_OUTPUT_DIRECTORY_MINSIZEREL     ${dest}/${platformType}MinSizeRel/lib)
         set_target_properties( ${target} PROPERTIES ARCHIVE_OUTPUT_DIRECTORY_RELWITHDEBINFO ${dest}/${platformType}RelWithDebInfo/lib)
 
-        set_target_properties( ${target} PROPERTIES LIBRARY_OUTPUT_DIRECTORY_DEBUG          ${dest}/${platformType}Debug/${shared_lib_dir})
-        set_target_properties( ${target} PROPERTIES LIBRARY_OUTPUT_DIRECTORY_RELEASE        ${dest}/${platformType}Release/${shared_lib_dir})
-        set_target_properties( ${target} PROPERTIES LIBRARY_OUTPUT_DIRECTORY_MINSIZEREL     ${dest}/${platformType}MinSizeRel/${shared_lib_dir})
-        set_target_properties( ${target} PROPERTIES LIBRARY_OUTPUT_DIRECTORY_RELWITHDEBINFO ${dest}/${platformType}RelWithDebInfo/${shared_lib_dir})
+        set_target_properties( ${target} PROPERTIES LIBRARY_OUTPUT_DIRECTORY_DEBUG          ${dest}/${platformType}Debug/lib)
+        set_target_properties( ${target} PROPERTIES LIBRARY_OUTPUT_DIRECTORY_RELEASE        ${dest}/${platformType}Release/lib)
+        set_target_properties( ${target} PROPERTIES LIBRARY_OUTPUT_DIRECTORY_MINSIZEREL     ${dest}/${platformType}MinSizeRel/lib)
+        set_target_properties( ${target} PROPERTIES LIBRARY_OUTPUT_DIRECTORY_RELWITHDEBINFO ${dest}/${platformType}RelWithDebInfo/lib)
     else()
         set_target_properties( ${target} PROPERTIES RUNTIME_OUTPUT_DIRECTORY                ${dest}/bin)
         set_target_properties( ${target} PROPERTIES ARCHIVE_OUTPUT_DIRECTORY                ${dest}/lib)
-        set_target_properties( ${target} PROPERTIES LIBRARY_OUTPUT_DIRECTORY                ${dest}/${shared_lib_dir})
+        set_target_properties( ${target} PROPERTIES LIBRARY_OUTPUT_DIRECTORY                ${dest}/lib)
     endif()
 
     install(TARGETS ${target}
         RUNTIME DESTINATION lib
-        LIBRARY DESTINATION ${shared_lib_dir}
+        LIBRARY DESTINATION lib
         ARCHIVE DESTINATION lib
-        FRAMEWORK DESTINATION ${shared_lib_dir}
+        FRAMEWORK DESTINATION lib
         RESOURCE DESTINATION resources/${target}
         )
 
