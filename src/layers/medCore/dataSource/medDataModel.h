@@ -27,6 +27,33 @@
 #include <dtkCoreSupport/dtkSmartPointer.h>
 
 
+enum asyncRequestType { getRqstType = 1, addRqstType = 2 };
+struct asyncRequest
+{
+    asyncRequest() {}
+    asyncRequest(const asyncRequest &rqst) { *this = rqst; }
+    asyncRequest & operator=(asyncRequest const & rqst) { type = rqst.type; tmpId = rqst.tmpId; uri = rqst.uri; return *this; }
+    asyncRequestType type;
+    QString tmpId;
+    QStringList uri;
+
+    QString dataName;
+
+    QTimer timeOut;
+    QEventLoop waiter;
+    bool needMedAbstractConversion;
+
+public:
+    friend bool operator< (asyncRequest const & a, asyncRequest const & b);
+    friend bool operator> (asyncRequest const & a, asyncRequest const & b);
+    friend bool operator==(asyncRequest const & a, asyncRequest const & b);
+};
+
+inline bool operator< (asyncRequest const & a, asyncRequest const & b) { return a.uri < b.uri; };
+inline bool operator> (asyncRequest const & a, asyncRequest const & b) { return a.uri > b.uri; };
+inline bool operator==(asyncRequest const & a, asyncRequest const & b) { return a.uri == b.uri && a.tmpId == b.tmpId && a.type == b.type; };
+
+
 
 class MEDCORE_EXPORT medDataHub : public QObject
 {
@@ -70,8 +97,8 @@ public slots:
    void removeSource(QString const & pi_sourceId);
    void refresh(medDataIndex pi_index); //TODO est-il utile  //uri -> sourceInstanceId/IdLevel1/IdLevel.../IdLevelN
    void unloadData(QObject *obj); /* REDO */
-   int waitGetAsyncData(const QString &sourceId, int rqstId);
-   void progress(const QString &sourceId, int rqstId);
+   int  waitGetAsyncData(const QString &sourceId, int rqstId);
+   void progress(const QString &sourceId, int rqstId, medAbstractSource::eRequestStatus status);
 
 signals:
     void abortRequest  (int); //abort the requestId
@@ -87,13 +114,19 @@ private:
     bool warpAddAsync(medAbstractSource::levelMinimalEntries &minimalEntries, QStringList & pio_uri, medSourceItemModel * pModel, unsigned int uiLevel, QString &parentKey, medAbstractData * pi_pData, QVariant &data);
 
     void getDirectData(const medDataIndex & index, medAbstractData * &pDataRes);
+    void getAsyncData (const medDataIndex & index, medAbstractData * &pDataRes);
     static QString getTmpUuid();
     QString convertToPath(QStringList pi_uri);
+
+    void removeRequest(QString sourceId, int rqstId);
 
 private:
     medSourceHandler * m_sourcesHandler;
     QMap< QString, medSourceItemModel*> m_sourceIdToModelMap;
 
+
+    QMap< QString /*sourceId*/, QMap<int/*requestId*/, asyncRequest> > m_requestsMap;
+    QMap< asyncRequest, std::shared_ptr<medNotif>> m_rqstToNotifMap;
 	
     QMap<medDataIndex, dtkSmartPointer<medAbstractData> > m_IndexToData;
     static medDataHub * s_instance;

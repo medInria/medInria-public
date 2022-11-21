@@ -23,10 +23,13 @@ struct medDataModelElementPrivate;
 
 #define MEDDATA_ROLE   102  //Boolean indicate if a medAbstractData is attached directly or indirectly to an item
 #define DATASTATE_ROLE 100  //String defined as below
-#define DATASTATE_ROLE_DATALOADING  "DataLoading"
-#define DATASTATE_ROLE_DATALOADED   "DataLoaded"
-#define DATASTATE_ROLE_DATAPUSHING  "DataPushing"
-#define DATASTATE_ROLE_DATACOMMITED "DataCommited"
+#define DATASTATE_ROLE_DATANOTLOADED  "DataNotLoaded"
+#define DATASTATE_ROLE_DATALOADING    "DataLoading"
+#define DATASTATE_ROLE_DATALOADED     "DataLoaded"
+#define DATASTATE_ROLE_DATANOTSAVED   "DataNotSaved"
+#define DATASTATE_ROLE_DATACOMMITTED  "DataCommited"
+#define DATASTATE_ROLE_DATAPUSHING    "DataPushing"
+#define DATASTATE_ROLE_DATASAVED      "DataSaved"
 
 class MEDCORE_EXPORT medSourceItemModel : public QAbstractItemModel
 {
@@ -42,13 +45,13 @@ public:
           QMap<QString, QVariant> values; // <keyName, value>
           QMap<QString, QString> tags;   // <keyName, tag value>    
     };
-    enum asyncRequestType {getRqstType = 1, addRqstType = 2};
-	struct asyncRequest
-	{
-        asyncRequestType type;
-		QString tmpId;
-		QStringList uri;
-	};
+    //enum asyncRequestType {getRqstType = 1, addRqstType = 2};
+	//struct asyncRequest
+	//{
+    //    asyncRequestType type;
+	//	QString tmpId;
+	//	QStringList uri;
+	//};
 
     medSourceItemModel(medDataHub *parent, QString const & sourceIntanceId);
     virtual ~medSourceItemModel();

@@ -30,7 +30,7 @@ struct medDataModelElementPrivate
     QMap<int, QStringList> columnNameByLevel;
     QStringList sectionNames;
 
-	QMap<int, medSourceItemModel::asyncRequest> requestsMap;
+	//QMap<int, asyncRequest> requestsMap;
 
     medDataModelItem *root;
     QMap<int /*level*/, QList<medDataModelItem*> > itemsMapByLevel;
@@ -836,37 +836,6 @@ bool medSourceItemModel::addEntry(QString pi_key, QString pi_name, QString pi_de
     return bRes;
 }
 
-//bool medSourceItemModel::addRequest(int pi_request, asyncRequest & request)
-//{
-//    bool bRes = false;
-//
-//    if (!d->requestsMap.contains(pi_request))
-//    {
-//        d->requestsMap[pi_request] = request;
-//        bRes = true;
-//    }
-//
-//    return bRes;
-//}
-//
-//bool medSourceItemModel::getRequest(int pi_request, asyncRequest & request)
-//{
-//	bool bRes = false;
-//
-//	if (d->requestsMap.contains(pi_request))
-//	{
-//		request = d->requestsMap[pi_request];
-//		bRes = true;
-//	}
-//
-//	return bRes;
-//}
-//
-//bool medSourceItemModel::removeRequest(int pi_request)
-//{
-//    return d->requestsMap.remove(pi_request);
-//}
-
 bool medSourceItemModel::refresh(QModelIndex const &pi_index)
 {
     bool bRes = true;
@@ -946,20 +915,20 @@ void medSourceItemModel::itemPressed(QModelIndex const &index)
 bool medSourceItemModel::abortRequest(QModelIndex const & index)
 {
     bool bRes = false;
-
-    auto uri = d->sourceInstanceId + ":" + getItem(index)->relativeUri().join("\r\n");
-    auto requestList = d->requestsMap.values();
-
-    int i = 0;
-    while (!bRes && i<requestList.size())
-    {
-        bRes = requestList[i].uri == uri;
-        if (bRes)
-        {
-            medSourceHandler::instance()->abortRequest(d->sourceInstanceId , d->requestsMap.keys()[i]);
-        }
-        i++;
-    }
+    //TODO
+//    auto uri = d->sourceInstanceId + ":" + getItem(index)->relativeUri().join("\r\n");
+//    auto requestList = d->requestsMap.values();
+//
+//    int i = 0;
+//    while (!bRes && i<requestList.size())
+//    {
+//        bRes = requestList[i].uri == uri;
+//        if (bRes)
+//        {
+//            medSourceHandler::instance()->abortRequest(d->sourceInstanceId , d->requestsMap.keys()[i]);
+//        }
+//        i++;
+//    }
 
     return bRes;
 }

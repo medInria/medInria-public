@@ -14,7 +14,6 @@
 #include "medSourceHandler.h"
 //#include <medMetaDataKeys.h>
 
-
 //#include <medNewLogger.h>
 #include <medNotif.h>
 //#include <medNotifSys.h>
@@ -173,25 +172,14 @@ int medSourceHandler::push(medDataIndex const & pio_index)
     return iRqstIdRes;
 }
 
-int medSourceHandler::getAsyncData(medDataIndex const & pi_index, QString dataName)
+int medSourceHandler::getAsyncData(medDataIndex const & pi_index)
 {
     int iRqstIdRes = -1;
 
     medAbstractSource* pSource = m_sourceIdToInstanceMap.value(pi_index.sourceId());
     if (pSource)
     {
-        asyncRequest request;
-        request.type = asyncRequestType::getRqstType;
-        request.uri << pi_index;
-
         iRqstIdRes = pSource->getAssyncData(pi_index.level() - 1, pi_index.dataId());
-        if (iRqstIdRes > 0)
-        {
-            addRequest(pi_index.sourceId(), iRqstIdRes, request);
-            if (dataName.isEmpty())dataName = pi_index.dataId();
-            auto notif = medNotif::createNotif(notifLevel::info, QString("Download ") + dataName, "Data is downloading from " + pi_index.sourceId());
-            m_rqstToNotifMap[request] = notif;
-        }
     }
 
     return iRqstIdRes;
@@ -213,13 +201,6 @@ bool medSourceHandler::getAsyncResults(QString const & pi_sourceInstanceId, int 
 
     return bRes;
 }
-
-//bool medSourceHandler::asyncResult(QString const & pi_sourceInstanceId, int pi_iRequest)
-//{
-//    //TODO
-//    return false;
-//}
-
 
 bool medSourceHandler::getLevelDesiredWritable(QString const & pi_sourceInstanceId, int & po_iLevel)
 {
@@ -359,16 +340,7 @@ int medSourceHandler::addAssyncData(medDataIndex const & pio_index, QVariant con
     medAbstractSource* pSource = m_sourceIdToInstanceMap.value(pio_index.sourceId());
     if (pSource)
     {
-        asyncRequest request;
-        request.tmpId = pio_minimalEntries.key;
-        request.type = asyncRequestType::addRqstType;
-        request.uri << pio_index << pio_minimalEntries.key;
-
         iRqstIdRes = pSource->addAssyncData(pi_data, pio_minimalEntries, pio_index.level(), pio_index.dataId());
-        if (iRqstIdRes > 0)
-        {
-            addRequest(pio_index.sourceId(), iRqstIdRes, request);
-        }
     }
 
     return iRqstIdRes;
@@ -505,144 +477,17 @@ void medSourceHandler::sourceIsOnline(QString sourceIntanceId)
     }
 }
 
-bool medSourceHandler::addRequest(QString sourceIntanceId, int pi_request, asyncRequest & request)
-{
-
-    bool bRes = false;
-
-    if (m_sourceIdToInstanceMap.contains(sourceIntanceId) && !m_requestsMap[sourceIntanceId].contains(pi_request))
-    {
-        m_requestsMap[sourceIntanceId][pi_request] = request;
-        bRes = true;
-    }
-
-    return bRes;
-}
-
-bool medSourceHandler::getRequest(QString sourceIntanceId, int pi_request, asyncRequest & request)
-{
-    bool bRes = false;
-
-    if (m_requestsMap.contains(sourceIntanceId) && m_requestsMap[sourceIntanceId].contains(pi_request))
-    {
-        request = m_requestsMap[sourceIntanceId][pi_request];
-        bRes = true;
-    }
-
-    return bRes;
-}
-
-bool medSourceHandler::removeRequest(QString sourceIntanceId, int pi_request)
-{
-    bool bRes = false;
-
-    if (m_requestsMap.contains(sourceIntanceId) && m_requestsMap[sourceIntanceId].contains(pi_request))
-    {
-        bRes = m_requestsMap[sourceIntanceId].remove(pi_request);
-    }
-
-    return bRes;
-}
-
 void medSourceHandler::progress(int pi_iRequest, medAbstractSource::eRequestStatus status)
 {
     auto *pSource = static_cast<medAbstractSource*>(sender());
-    //auto *pItemModel = m_sourcesModelMap.value(pSource);
-    asyncRequest request;
 
-    if (pSource && getRequest(pSource->getInstanceId(), pi_iRequest, request))
+    if (pSource )
     {
-        switch (request.type)
-        {
-            case asyncRequestType::getRqstType:  //getAssyncData
-            {
-                switch (status)
-                {
-                    case medAbstractSource::aborted:
-                        break;
-                    case medAbstractSource::cnxLost:
-                        break;
-                    case medAbstractSource::faild:
-                    {
-                        if (m_rqstToNotifMap.contains(request))
-                        {
-                            m_rqstToNotifMap[request]->update(notifLevel::error, 101);
-                        }
-                        break;
-                    }
-                    case medAbstractSource::finish:
-                    {
-                        if (m_rqstToNotifMap.contains(request))
-                        {
-                            m_rqstToNotifMap[request]->update(notifLevel::success, -1, "Download succeed");
-                        }
-                        break;
-                    }
-                    case medAbstractSource::pending:
-                    {
-                        if (m_rqstToNotifMap.contains(request))
-                        {
-                            m_rqstToNotifMap[request]->update(notifLevel::info, 101);
-                        }
-                        break;
-                    }
-                    default:
-                        break;
-                }
-
-                emit getAsyncStatus(pSource->getInstanceId(), pi_iRequest, status);
-                break;
-            }
-            case asyncRequestType::addRqstType: //addAssyncData
-            {
-                switch (status)
-                {
-                    case medAbstractSource::aborted:
-                        break;
-                    case medAbstractSource::cnxLost:
-                        break;
-                    case medAbstractSource::faild:
-                        break;
-                    case medAbstractSource::finish:
-                    {
-                        //QVariant data = pSource->getAsyncResults(pi_iRequest);
-                        //if (data.canConvert<QString>())
-                        //{
-                        //    auto index = pItemModel->toIndex(request.uri);
-                        //    if (index.isValid())
-                        //    {
-                        //        replaceTmpId(pItemModel, index, data, request);
-                        //        //notif
-                        //        //log
-                        //    }
-                        //    else
-                        //    {
-                        //        //error no longer present
-                        //    }
-                        //}
-                        //else
-                        //{
-                        //    //error
-                        //}
-                        break;
-                    }
-                    case medAbstractSource::pending:
-                        break;
-                    default:
-                        break;
-                }
-                break;
-            }
-            default:
-            {
-                qDebug() << "medDataModel::progress receives signal  with requestId " << QString::number(pi_iRequest) << " with unknown request type " << QString::number(request.type) << " .";
-                break;
-            }
-        }
+        emit getAsyncStatus(pSource->getInstanceId(), pi_iRequest, status);
     }
     else
     {
-        qDebug() << "medDataModel::progress receives signal from unknown source or non source object";
+        qDebug() << "medSourceHandler::progress receives signal from unknown source or non source object";
     }
 }
 
@@ -658,23 +503,3 @@ medAbstractWritingPolicy * medSourceHandler::getSourceWPolicy(QString pi_sourceI
 
     return writePolicyRes;
 }
-
-//bool medSourceHandler::asyncRequest::operator<(asyncRequest const & other)
-//{
-//    return true;// this->uri < other.uri;
-//}
-//
-//bool medSourceHandler::asyncRequest::operator>(asyncRequest const & other)
-//{
-//    return false; // this->uri > other.uri;
-//}
-//
-//bool medSourceHandler::asyncRequest::operator==(asyncRequest const & other)
-//{
-//    return true;// type == other.type && tmpId == other.tmpId && uri == other.uri;
-//}
-
-//bool operator<(asyncRequest const & a, asyncRequest const & b)
-//{
-//    return false;
-//}

@@ -35,17 +35,6 @@ class MEDCORE_EXPORT medSourceHandler : public QObject
 public:
     using datasetAttributes = QMap<QString, QString>;
     using levelAttributes = QList<datasetAttributes>;
-    enum asyncRequestType { getRqstType = 1, addRqstType = 2 };
-    struct asyncRequest
-    {
-        asyncRequestType type;
-        QString tmpId;
-        QStringList uri;
-    public:
-        friend bool operator< (medSourceHandler::asyncRequest const & a,  medSourceHandler::asyncRequest const & b);
-        friend bool operator> (medSourceHandler::asyncRequest const & a,  medSourceHandler::asyncRequest const & b);
-        friend bool operator==(medSourceHandler::asyncRequest const & a,  medSourceHandler::asyncRequest const & b);
-    };
 
     static medSourceHandler* instance(QObject *parent = nullptr);
 	~medSourceHandler();
@@ -75,16 +64,10 @@ public:
     // ////////////////////////////////////////////////////////////////////////////////////////////
     // Members functions to advance exchange with sources
     int push                (medDataIndex const & pio_index);
-    int getAsyncData        (medDataIndex const & pio_index, QString dataName);
+    int getAsyncData        (medDataIndex const & pio_index);
     int addAssyncData      (medDataIndex const & pio_index, QVariant const & pi_data, medAbstractSource::levelMinimalEntries & pio_minimalEntries);
     bool getAsyncResults    (QString const & pi_sourceInstanceId, int pi_request, QVariant & po_data);
     QString getInstanceName (QString const & pi_sourceInstanceId); //Probably used in medSourceModelPresenter and medSourceWidget
-
-    // ////////////////////////////////////////////////////////////////////////////////////////////
-    // Handle asynchronous requests
-    bool addRequest(QString sourceIntanceId, int pi_request, asyncRequest & request);
-    bool getRequest(QString sourceIntanceId, int pi_request, asyncRequest & request);
-    bool removeRequest(QString sourceIntanceId, int pi_request);
 
 signals:
     void getAsyncStatus(QString const /*sourceId*/, int /*requestId*/, medAbstractSource::eRequestStatus /*status*/);
@@ -121,16 +104,9 @@ private:
 private:
     QStringList m_sourceInstanceIdOrderedList;
     QMap< QString, medAbstractSource*> m_sourceIdToInstanceMap;
-    QMap< QString /*sourceId*/, QMap<int/*requestId*/, asyncRequest> > m_requestsMap;
-
-    QMap< asyncRequest, std::shared_ptr<medNotif>> m_rqstToNotifMap;
     
     medAbstractSource* m_defaultSource;
     medDefaultWritingPolicy m_generalWritingPolicy;
 
     static medSourceHandler * s_instance;
 };
-
-inline bool operator< (medSourceHandler::asyncRequest const & a, medSourceHandler::asyncRequest const & b) { return a.uri < b.uri; };
-inline bool operator> (medSourceHandler::asyncRequest const & a, medSourceHandler::asyncRequest const & b) { return a.uri > b.uri; };
-inline bool operator==(medSourceHandler::asyncRequest const & a, medSourceHandler::asyncRequest const & b) { return a.uri == b.uri && a.tmpId == b.tmpId && a.type == b.type; };
