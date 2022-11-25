@@ -895,13 +895,13 @@ QVariant medAPHP::getDirectData(unsigned int pi_uiLevel, QString key)
 
     if (pi_uiLevel != 3)
     {
-        QObject::connect(d->qtdcm, &QtDcmInterface::pathToData, &loop, [&](int id, const QString &path)
-                         {
-            if (iRequestId == id)
-            {
-                iPath = QVariant(path);
-                loop.quit();
-            } });
+//        QObject::connect(d->qtdcm, &QtDcmInterface::pathToData, &loop, [&](int id, const QString &path)
+//                         {
+//            if (iRequestId == id)
+//            {
+//                iPath = QVariant(path);
+//                loop.quit();
+//            } });
     }
     else
     {
@@ -1019,11 +1019,13 @@ int medAPHP::getQtDcmAsyncData(unsigned int pi_uiLevel, const QString &key)
     {
         iRes = s_RequestId;
 
-        QObject::connect(d->qtdcm, &QtDcmInterface::pathToData, this, [&](int id, const QString &path)
-                         { d->requestIdToResultsMap[id] = QVariant(path); });
+//        QObject::connect(d->qtdcm, &QtDcmInterface::pathToData, this, [&](int id, const QString &path)
+//                         {
+//            d->requestIdToResultsMap[id] = QVariant(path);
+//                         });
 
         QObject::connect(
-            d->qtdcm, &QtDcmInterface::moveProgress, this, [=](int pi_requestId, int status)
+            d->qtdcm, &QtDcmInterface::moveProgress, this, [=](int pi_requestId, int status, const QString &path)
             {
                 eRequestStatus requestStatus;
                 switch (status)
@@ -1031,6 +1033,7 @@ int medAPHP::getQtDcmAsyncData(unsigned int pi_uiLevel, const QString &key)
                 case 0: // moveStatus::OK
                 {
                     requestStatus = finish;
+                    d->requestIdToResultsMap[pi_requestId] = QVariant(path);
                     break;
                 }
                 case 1: // moveStatus::PENDING

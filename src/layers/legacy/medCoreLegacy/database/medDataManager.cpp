@@ -104,7 +104,7 @@ void medDataManager::setIndexV2Handler(medAbstractData *(*f)(medDataIndex const 
 medAbstractData *medDataManager::retrieveData(const medDataIndex &index)
 {
     Q_D(medDataManager);
-    QMutexLocker locker(&(d->mutex));
+//    QMutexLocker locker(&(d->mutex));
 
     if (index.isV2())
     {
@@ -502,7 +502,7 @@ void medDataManager::exportDialog_updateSuffix(int index)
 void medDataManager::garbageCollect()
 {
     Q_D(medDataManager);
-    QMutexLocker locker(&(d->mutex));
+//    QMutexLocker locker(&(d->mutex));
 
     // garbage collect data that are only referenced by the manager
     QMutableHashIterator<medDataIndex, dtkSmartPointer<medAbstractData>> it(

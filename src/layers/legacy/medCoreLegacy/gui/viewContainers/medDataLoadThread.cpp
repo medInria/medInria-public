@@ -18,7 +18,7 @@
 #include <medDataManager.h>
 #include <medAbstractData.h>
 
-medDataLoadThread::medDataLoadThread(medDataIndex const & index, medViewContainer * parent) : QObject(parent), /*QThread(parent),*/ m_index(index), m_parent(parent)
+medDataLoadThread::medDataLoadThread(medDataIndex const & index, medViewContainer * parent) : /*QThread(parent),*/ m_index(index), m_parent(parent)
 {
     auto toto = connect(this, SIGNAL(dataReady(medAbstractData*)), m_parent, SLOT(addData(medAbstractData *)) );
     toto = toto;

@@ -751,15 +751,14 @@ bool medViewContainer::dropEventFromDataBase(QDropEvent * event)
             for (auto &index : indexList)
             {
                 //this->addData(index);
-                QThread* thread = new QThread();
+                QThread* thread = new QThread(this);
                 medDataLoadThread * pdataLoadThread = new medDataLoadThread(index, this);
-                pdataLoadThread->moveToThread(thread);
+                thread->start();
                 connect(thread, &QThread::started, pdataLoadThread, &medDataLoadThread::process);
                 connect(pdataLoadThread, &medDataLoadThread::finished, thread, &QThread::quit);
                 connect(pdataLoadThread, &medDataLoadThread::finished, pdataLoadThread, &medDataLoadThread::deleteLater);
                 connect(thread, &QThread::finished, thread, &QThread::deleteLater);
-                thread->start();
-                //pdataLoadThread->start();
+                pdataLoadThread->moveToThread(thread);
             }
 
             this->setStyleSheet(d->defaultStyleSheet);

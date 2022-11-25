@@ -180,6 +180,8 @@
         <file>icons/yellow_spot.svg</file>
         <file>icons/button-notifications.png</file>
         <file>icons/check.svg</file>
+        <file>icons/inbox.png</file>
+        <file>icons/outbox.png</file>
         <file>gif/icon.gif</file>
     </qresource>
 </RCC>

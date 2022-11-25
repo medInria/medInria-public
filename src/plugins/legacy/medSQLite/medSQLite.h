@@ -158,8 +158,11 @@ private:
 
     static std::atomic<int> s_RequestId;
     QMap<int, QVariant> m_requestToDataMap;
-    QTimer timer;
-    QTime time;
+    QMap<int, QTimer*> m_requestToTimerMap;
+    QMap<int, QTime*> m_requestToTimeMap;
+
+    QTimer m_timer;
+    void timeManagement();
 };
 
 #include "medSQLite.txx"

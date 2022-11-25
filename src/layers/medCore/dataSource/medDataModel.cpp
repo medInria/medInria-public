@@ -30,7 +30,7 @@
 #define WAITER_EXIT_CODE_FAILD -2
 #define WAITER_EXIT_CODE_CONN_LOST -3
 #define WAITER_EXIT_CODE_TIMEOUT -4
-#define REQUEST_TIME_OUT 100000
+#define REQUEST_TIME_OUT 500
 
 medDataHub *medDataHub::s_instance = nullptr;
 medDataHub *medDataHub::instance(QObject *parent)
@@ -75,6 +75,9 @@ medDataHub::medDataHub(QObject *parent)
     connect(m_sourcesHandler, &medSourceHandler::sourceAdded,   this, &medDataHub::addSource);
     connect(m_sourcesHandler, &medSourceHandler::sourceRemoved, this, &medDataHub::removeSource);
     connect(m_sourcesHandler, &medSourceHandler::getAsyncStatus, this, &medDataHub::progress);
+    m_clock.setInterval(REQUEST_TIME_OUT);
+    connect(&m_clock, &QTimer::timeout, this, &medDataHub::timeOutWatcher);
+    m_clock.start();
 }
 
 medDataHub::~medDataHub()
@@ -299,9 +302,9 @@ int medDataHub::waitGetAsyncData(const QString &sourceId, int rqstId)
         auto &rqst = m_requestsMap[sourceId][rqstId];
         auto waiter = &rqst.waiter;
 
-        rqst.timeOut.setSingleShot(true);
-        auto timerConnexion = connect(&rqst.timeOut, &QTimer::timeout, waiter, [&]() { waiter->exit(WAITER_EXIT_CODE_TIMEOUT); });
-        rqst.timeOut.start(REQUEST_TIME_OUT);
+        //rqst.timeOut.setSingleShot(true);
+        //auto timerConnexion = connect(&rqst.timeOut, &QTimer::timeout, waiter, [&]() { waiter->exit(WAITER_EXIT_CODE_TIMEOUT); });
+        //rqst.timeOut.start(REQUEST_TIME_OUT);
 
         iRqstStatus = waiter->exec();
     }
@@ -383,7 +386,8 @@ void medDataHub::progress(const QString & sourceId, int rqstId, medAbstractSourc
             case medAbstractSource::pending:
             {
                 m_rqstToNotifMap[rqst]->update(notifLevel::info, 101);
-                rqst.timeOut.setInterval(REQUEST_TIME_OUT); //Timeout reset
+                //rqst.timeOut.setInterval(REQUEST_TIME_OUT); //Timeout reset
+                rqst.stampTimeout = QDateTime::currentSecsSinceEpoch() + 100;
                 if (rqst.type == asyncRequestType::getRqstType)
                 {
                     pModel->setData(pModel->toIndex(rqst.uri), DATASTATE_ROLE_DATALOADING, DATASTATE_ROLE);
@@ -404,6 +408,23 @@ void medDataHub::progress(const QString & sourceId, int rqstId, medAbstractSourc
     else
     {
         qDebug() << "Receive not expected source request update " << sourceId << " " << rqstId << " " << status;
+    }
+}
+
+void medDataHub::timeOutWatcher()
+{
+    for (auto &rqstsBySources : m_requestsMap)
+    {
+        for (auto &rqst : rqstsBySources)
+        {
+            if (rqst.stampTimeout < QDateTime::currentSecsSinceEpoch())
+            {
+                if (rqst.waiter.isRunning())
+                {
+                    rqst.waiter.exit(WAITER_EXIT_CODE_TIMEOUT);
+                }
+            }
+        }
     }
 }
 
@@ -960,13 +981,13 @@ bool medDataHub::pushData(medDataIndex const & index)
 void medDataHub::removeRequest(QString sourceId, int rqstId)
 {
     //TODO mutex
-    if (m_requestsMap.contains(sourceId) && m_requestsMap[sourceId].contains(rqstId))
-    {
-        m_rqstToNotifMap.remove(m_requestsMap[sourceId][rqstId]);
-        m_requestsMap[sourceId].remove(rqstId);
-        if (m_requestsMap[sourceId].isEmpty())
-        {
-            m_requestsMap.remove(sourceId);
-        }
-    }
+//    if (m_requestsMap.contains(sourceId) && m_requestsMap[sourceId].contains(rqstId))
+//    {
+//        m_rqstToNotifMap.remove(m_requestsMap[sourceId][rqstId]);
+//        m_requestsMap[sourceId].remove(rqstId);
+//        if (m_requestsMap[sourceId].isEmpty())
+//        {
+//            m_requestsMap.remove(sourceId);
+//        }
+//    }
 }

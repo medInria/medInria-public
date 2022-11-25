@@ -101,6 +101,9 @@ medSQlite<T>::medSQlite()
     m_FilterDBSettings->setDescription("Settings related to filter on SQlite DB");
     m_FilterDBSettings->addParameter(patientFilter);
 
+    m_timer.setInterval(5000);
+    m_timer.start();
+    QObject::connect(&m_timer, &QTimer::timeout, this, &medSQlite::timeManagement);
 }
 
 template<typename T>
@@ -752,33 +755,59 @@ QVariant medSQlite<T>::getDirectData(unsigned int pi_uiLevel, QString key)
     return res;
 }
 
+template<typename T>
+void medSQlite<T>::timeManagement()
+{
+    for (auto key : m_requestToTimeMap.keys())
+    {
+        m_requestToTimeMap[key]->setHMS(0, 0, m_requestToTimeMap[key]->addSecs(-5).second());
+        if (*m_requestToTimeMap[key] != QTime(0,0))
+        {
+            emit progress(key, eRequestStatus::pending);
+        }
+        else
+        {
+            emit progress(key, eRequestStatus::finish);
+            m_requestToTimeMap.remove(key);
+//                            timer->stop();
+        }
+    }
+}
 
 
 template <typename T>
 int medSQlite<T>::getAssyncData(unsigned int pi_uiLevel, QString id)
 {
-    s_RequestId++;
+    int iRequestId = ++s_RequestId;
     QVariant data = getDirectData(pi_uiLevel, id);
-    m_requestToDataMap[s_RequestId] = data;
+    m_requestToDataMap[iRequestId] = data;
+//    m_requestToTimerMap[iRequestId] = new QTimer(this);
+    m_requestToTimeMap[iRequestId] = new QTime();
+//    auto timer = m_requestToTimerMap[iRequestId];
+    auto time = m_requestToTimeMap[iRequestId];
 
-    timer.setInterval(5000);
-    time.setHMS(0, 0, 30);
-    QObject::connect(&timer, &QTimer::timeout, this, [=]() { 
-                        time.setHMS(0, 0, time.addSecs(-5).second());
-                        qDebug() << time.toString();
-                        if (time != QTime(0,0))
-                        {
-                            emit progress(s_RequestId, eRequestStatus::pending);
-                        }
-                        else
-                        {
-                            emit progress(s_RequestId, eRequestStatus::finish);
-                            timer.stop();
-                        }
-                        });
-    timer.start();
+//    timer->setInterval(5000);
+    time->setHMS(0, 0, 30);
 
-    return s_RequestId;
+//    std::unique_ptr<QMetaObject::Connection> pconn{new QMetaObject::Connection};
+//    QMetaObject::Connection &conn = *pconn;
+//    QObject::connect(&m_timer, &QTimer::timeout, this, [=, &conn]() {
+//                        time->setHMS(0, 0, time->addSecs(-5).second());
+//                        qDebug() << time->toString();
+//                        if (*time != QTime(0,0))
+//                        {
+//                            emit progress(iRequestId, eRequestStatus::pending);
+//                        }
+//                        else
+//                        {
+//                            emit progress(iRequestId, eRequestStatus::finish);
+////                            timer->stop();
+//                            QObject::disconnect(conn);
+//                        }
+//                        });
+//    timer->start();
+
+    return iRequestId;
 }
 
 template<typename T>
@@ -982,23 +1011,28 @@ int medSQlite<T>::addAssyncData(QVariant data, levelMinimalEntries &pio_minimalE
     rqstRes = ++s_RequestId;
     QVariant dataKey = QVariant(pio_minimalEntries.key);
     m_requestToDataMap[rqstRes] = dataKey;
+    m_requestToTimerMap[rqstRes] = new QTimer(this);
+    m_requestToTimeMap[rqstRes] = new QTime();
 
-    timer.setInterval(5000);
-    time.setHMS(0, 0, 55);
-    QObject::connect(&timer, &QTimer::timeout, this, [=]() { 
-                        time.setHMS(0, 0, time.addSecs(-5).second());
-                        qDebug() << time.toString();
-                        if (time > QTime(0,0))
+    auto timer = m_requestToTimerMap[rqstRes];
+    auto time = m_requestToTimeMap[rqstRes];
+
+    timer->setInterval(5000);
+    time->setHMS(0, 0, 55);
+    QObject::connect(timer, &QTimer::timeout, this, [=]() { 
+                        time->setHMS(0, 0, time->addSecs(-5).second());
+                        qDebug() << time->toString();
+                        if (*time > QTime(0,0))
                         {
                             emit progress(rqstRes, eRequestStatus::pending);
                         }
                         else
                         {
                             emit progress(s_RequestId, eRequestStatus::finish);
-                            timer.stop();
+                            timer->stop();
                         }
                         });
-    timer.start();
+    timer->start();
 
     return rqstRes;
 }
@@ -1196,3 +1230,4 @@ QVariant medSQlite<T>::getAsyncResults(int pi_iRequest)
 {
     return m_requestToDataMap[pi_iRequest];
 }
+

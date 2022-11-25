@@ -30,16 +30,17 @@
 enum asyncRequestType { getRqstType = 1, addRqstType = 2 };
 struct asyncRequest
 {
-    asyncRequest() {}
+    asyncRequest() {stampTimeout = QDateTime::currentSecsSinceEpoch() + 100;}
     asyncRequest(const asyncRequest &rqst) { *this = rqst; }
-    asyncRequest & operator=(asyncRequest const & rqst) { type = rqst.type; tmpId = rqst.tmpId; uri = rqst.uri; return *this; }
+    asyncRequest & operator=(asyncRequest const & rqst) { type = rqst.type; tmpId = rqst.tmpId; uri = rqst.uri; stampTimeout = rqst.stampTimeout;  return *this; }
     asyncRequestType type;
     QString tmpId;
     QStringList uri;
 
     QString dataName;
 
-    QTimer timeOut;
+    qint64 stampTimeout;
+    //QTimer timeOut;
     QEventLoop waiter;
     bool needMedAbstractConversion;
 
@@ -100,6 +101,9 @@ public slots:
    int  waitGetAsyncData(const QString &sourceId, int rqstId);
    void progress(const QString &sourceId, int rqstId, medAbstractSource::eRequestStatus status);
 
+
+   void timeOutWatcher();
+
 signals:
     void abortRequest  (int); //abort the requestId
     void getAsyncStatus(medAbstractSource* , int, medAbstractSource::eRequestStatus);
@@ -128,6 +132,8 @@ private:
     QMap< QString /*sourceId*/, QMap<int/*requestId*/, asyncRequest> > m_requestsMap;
     QMap< asyncRequest, std::shared_ptr<medNotif>> m_rqstToNotifMap;
 	
+    QTimer m_clock;
+
     QMap<medDataIndex, dtkSmartPointer<medAbstractData> > m_IndexToData;
     static medDataHub * s_instance;
 };
