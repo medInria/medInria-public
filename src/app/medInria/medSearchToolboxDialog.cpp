@@ -83,7 +83,7 @@ medSearchToolboxDialog::medSearchToolboxDialog(QWidget *parent, QHash<QString, Q
     tree->setSortingEnabled(true);
     tree->sortByColumn(0, Qt::AscendingOrder);
     this->adjustSize();
-    tree->setMinimumSize(700,600);
+    tree->setMinimumSize(500,300);
 
     connect(tree, SIGNAL(itemDoubleClicked(QTreeWidgetItem*, int)), this, SLOT(searchItemDoubleClicked(QTreeWidgetItem*, int)));
 }
