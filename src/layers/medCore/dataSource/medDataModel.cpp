@@ -154,7 +154,7 @@ medAbstractData * medDataHub::variantToMedAbstractData(QVariant &data, const med
     else
     {
         auto dataName = getDataName(index);
-        medNotif::createNotif(notifLevel::warnning, QString("Converting ") + dataName, " to load it failed");
+        medNotif::createNotif(notifLevel::warning, QString("Converting ") + dataName, " to load it failed");
     }
 
 	return pDataRes;
@@ -232,15 +232,28 @@ void medDataHub::getAsyncData(const medDataIndex & index, medAbstractData * &pDa
         pModel->setData(pModel->toIndex(index), DATASTATE_ROLE_DATALOADING, DATASTATE_ROLE);
         m_rqstToNotifMap[rqst] = medNotif::createNotif(notifLevel::info, QString("Download ") + rqst.dataName, "Data is downloading from " + index.sourceId());
         int iStatus = waitGetAsyncData(sourceId, rqstId);
-        if (iStatus == 0)
+        switch (iStatus)
         {
-            QVariant data;
-            m_sourcesHandler->getAsyncResults(sourceId, rqstId, data);
-            pDataRes = variantToMedAbstractData(data, index);
-        }
-        else
-        {
-            pModel->setData(pModel->toIndex(index), "", DATASTATE_ROLE);
+            case WAITER_EXIT_CODE_SUCCESS:
+            {
+                QVariant data;
+                m_sourcesHandler->getAsyncResults(sourceId, rqstId, data);
+                pDataRes = variantToMedAbstractData(data, index);
+                break;
+            }
+            case WAITER_EXIT_CODE_ABORT:
+                pModel->setData(pModel->toIndex(index), "", DATASTATE_ROLE);
+                break;
+            case WAITER_EXIT_CODE_CONN_LOST:
+                break;
+            case WAITER_EXIT_CODE_TIMEOUT:
+            {
+                pModel->setData(pModel->toIndex(index), DATASTATE_ROLE_DATANOTLOADED, DATASTATE_ROLE);
+                medNotif::createNotif(notifLevel::info, QString("TimeOut ") + rqst.dataName,
+                                                               "Unable to Download data from source " + index.sourceId());
+                m_rqstToNotifMap[rqst]->update(notifLevel::warning, -1, QString("Error while downloading ") + rqst.dataName + QString(" from ") + index.sourceId());
+                break;
+            }
         }
         removeRequest(sourceId, rqstId);
     }
@@ -322,7 +335,7 @@ void medDataHub::progress(const QString & sourceId, int rqstId, medAbstractSourc
         {
             case medAbstractSource::aborted:
             {
-                m_rqstToNotifMap[rqst]->update(notifLevel::warnning, -1, "Operation aborted by user");
+                m_rqstToNotifMap[rqst]->update(notifLevel::warning, -1, "Operation aborted by user");
                 if (rqst.type == asyncRequestType::getRqstType)
                 {
                     pModel->setData(pModel->toIndex(rqst.uri), QVariant(), DATASTATE_ROLE);
@@ -336,7 +349,7 @@ void medDataHub::progress(const QString & sourceId, int rqstId, medAbstractSourc
             }
             case medAbstractSource::cnxLost:
             {
-                m_rqstToNotifMap[rqst]->update(notifLevel::warnning, -1, "Operation aborted because connexion to " + m_sourcesHandler->getInstanceName(sourceId) + " is lost");
+                m_rqstToNotifMap[rqst]->update(notifLevel::warning, -1, "Operation aborted because connexion to " + m_sourcesHandler->getInstanceName(sourceId) + " is lost");
                 if (rqst.type == asyncRequestType::getRqstType)
                 {
                     pModel->setData(pModel->toIndex(rqst.uri), DATASTATE_ROLE_DATANOTLOADED, DATASTATE_ROLE);
@@ -350,7 +363,7 @@ void medDataHub::progress(const QString & sourceId, int rqstId, medAbstractSourc
             }
             case medAbstractSource::faild:
             {
-                m_rqstToNotifMap[rqst]->update(notifLevel::warnning, -1, "Operation failed");
+                m_rqstToNotifMap[rqst]->update(notifLevel::warning, -1, "Operation failed");
                 if (rqst.type == asyncRequestType::getRqstType)
                 {
                     pModel->setData(pModel->toIndex(rqst.uri), DATASTATE_ROLE_DATANOTLOADED, DATASTATE_ROLE);
@@ -849,7 +862,7 @@ bool medDataHub::createPath(QString pi_sourceId, QStringList pi_folders, QString
     else
     {
         qDebug() << "Can't create path " + pi_folders.join('/');
-        medNotif::createNotif(notifLevel::warnning, "Can't create path", "Can't create path " + pi_folders.join('/'));
+        medNotif::createNotif(notifLevel::warning, "Can't create path", "Can't create path " + pi_folders.join('/'));
     }
 
     return bRes;
@@ -908,6 +921,7 @@ bool medDataHub::fetchData(medDataIndex const & index)
             rqst.dataName = getDataName(index);
             rqst.uri = index;
             rqst.type = getRqstType;
+            rqst.needMedAbstractConversion = true;
 
             m_requestsMap[index.sourceId()][iRequestId] = rqst;
             pModel->setData(pModel->toIndex(index), DATASTATE_ROLE_DATALOADING, DATASTATE_ROLE);

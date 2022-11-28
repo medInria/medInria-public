@@ -12,9 +12,11 @@
 =========================================================================*/
 
 #include "medSQLite.h"
+#include "Worker.h"
 
 #include <medStringParameter.h>
 #include <medStringListParameter.h>
+
 
 #include <QSqlDriver>
 #include <QSqlError>
@@ -101,15 +103,17 @@ medSQlite<T>::medSQlite()
     m_FilterDBSettings->setDescription("Settings related to filter on SQlite DB");
     m_FilterDBSettings->addParameter(patientFilter);
 
-    m_timer.setInterval(5000);
-    m_timer.start();
-    QObject::connect(&m_timer, &QTimer::timeout, this, &medSQlite::timeManagement);
+//    m_timer.setInterval(5000);
+//    m_timer.start();
+//    QObject::connect(&m_timer, &QTimer::timeout, this, &medSQlite::timeManagement);
 }
 
 template<typename T>
 medSQlite<T>::~medSQlite()
 {
     //TODO
+    m_Thread.quit();
+    m_Thread.wait();
     connect(false);
 }
 
@@ -270,7 +274,7 @@ bool medSQlite<T>::isWritable()
 template <typename T>
 bool medSQlite<T>::isLocal()
 {
-    return false;
+    return true;
 }
 
 template <typename T>
@@ -755,24 +759,23 @@ QVariant medSQlite<T>::getDirectData(unsigned int pi_uiLevel, QString key)
     return res;
 }
 
-template<typename T>
-void medSQlite<T>::timeManagement()
-{
-    for (auto key : m_requestToTimeMap.keys())
-    {
-        m_requestToTimeMap[key]->setHMS(0, 0, m_requestToTimeMap[key]->addSecs(-5).second());
-        if (*m_requestToTimeMap[key] != QTime(0,0))
-        {
-            emit progress(key, eRequestStatus::pending);
-        }
-        else
-        {
-            emit progress(key, eRequestStatus::finish);
-            m_requestToTimeMap.remove(key);
-//                            timer->stop();
-        }
-    }
-}
+//template<typename T>
+//void medSQlite<T>::timeManagement()
+//{
+//    for (auto key : m_requestToTimeMap.keys())
+//    {
+//        m_requestToTimeMap[key]->setHMS(0, 0, m_requestToTimeMap[key]->addSecs(-5).second());
+//        if (*m_requestToTimeMap[key] != QTime(0,0))
+//        {
+//            emit progress(key, eRequestStatus::pending);
+//        }
+//        else
+//        {
+//            emit progress(key, eRequestStatus::finish);
+//            m_requestToTimeMap.remove(key);
+//        }
+//    }
+//}
 
 
 template <typename T>
@@ -781,31 +784,24 @@ int medSQlite<T>::getAssyncData(unsigned int pi_uiLevel, QString id)
     int iRequestId = ++s_RequestId;
     QVariant data = getDirectData(pi_uiLevel, id);
     m_requestToDataMap[iRequestId] = data;
-//    m_requestToTimerMap[iRequestId] = new QTimer(this);
-    m_requestToTimeMap[iRequestId] = new QTime();
-//    auto timer = m_requestToTimerMap[iRequestId];
-    auto time = m_requestToTimeMap[iRequestId];
+//    emit progress(iRequestId, eRequestStatus::pending);
+    auto *worker = new Worker;
+    worker->moveToThread(&m_Thread);
+    QObject::connect(&m_Thread, &QThread::finished, worker, &QObject::deleteLater);
+    QObject::connect(&m_Thread, &QThread::started, worker, [=]() {
+        worker->sendSignalWithDelay(iRequestId);
+    });
 
-//    timer->setInterval(5000);
-    time->setHMS(0, 0, 30);
+    QObject::connect(worker, &Worker::sendProgress, this, [&](int requestId, int status){
+        emit progress(requestId, static_cast<medAbstractSource::eRequestStatus>(status));
+//        &medAbstractSource::progress);
+    });
+//    worker->sendSignalWithDelay(iRequestId);
+    m_Thread.start();
 
-//    std::unique_ptr<QMetaObject::Connection> pconn{new QMetaObject::Connection};
-//    QMetaObject::Connection &conn = *pconn;
-//    QObject::connect(&m_timer, &QTimer::timeout, this, [=, &conn]() {
-//                        time->setHMS(0, 0, time->addSecs(-5).second());
-//                        qDebug() << time->toString();
-//                        if (*time != QTime(0,0))
-//                        {
-//                            emit progress(iRequestId, eRequestStatus::pending);
-//                        }
-//                        else
-//                        {
-//                            emit progress(iRequestId, eRequestStatus::finish);
-////                            timer->stop();
-//                            QObject::disconnect(conn);
-//                        }
-//                        });
-//    timer->start();
+//    m_requestToTimeMap[iRequestId] = new QTime();
+//    auto time = m_requestToTimeMap[iRequestId];
+//    time->setHMS(0, 0, 30);
 
     return iRequestId;
 }
