@@ -384,8 +384,19 @@ void medDataHub::progress(const QString & sourceId, int rqstId, medAbstractSourc
                 }
                 else
                 {
-                    pModel->setData(pModel->toIndex(rqst.uri), DATASTATE_ROLE_DATASAVED, DATASTATE_ROLE);
-                    m_rqstToNotifMap[rqst]->update(notifLevel::info, -1, "Save succeed");
+                    QVariant data;
+                    m_sourcesHandler->getAsyncResults(sourceId, rqstId, data);
+                    if (data.canConvert<QString>())
+                    {
+                        auto key = data.toString();
+                        pModel->setData(pModel->toIndex(rqst.uri), DATASTATE_ROLE_DATASAVED, DATASTATE_ROLE);
+                        pModel->substituteTmpKey(rqst.uri, key);
+                        m_rqstToNotifMap[rqst]->update(notifLevel::info, -1, "Save succeed");
+                    }
+                    else
+                    {
+                        //TODO ERROR
+                    }
                 }
                 rqst.waiter.exit(WAITER_EXIT_CODE_SUCCESS);
                 break;

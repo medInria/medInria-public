@@ -836,6 +836,30 @@ bool medSourceItemModel::addEntry(QString pi_key, QString pi_name, QString pi_de
     return bRes;
 }
 
+bool medSourceItemModel::substituteTmpKey(QStringList uri, QString pi_key)
+{
+    bool bRes = pi_key.length()>0;
+
+    if (bRes)
+    {
+        auto *pItem = getItem(uri);
+        if (pItem)
+        {
+            pItem->setData(pi_key, 0);
+            uri.pop_back();
+            uri.push_back(pi_key);
+            auto parentIndex = toIndex(uri).parent();
+            emit dataChanged(parentIndex, parentIndex);
+        }
+        else
+        {
+            bRes = false;
+        }
+    }
+
+    return bRes;
+}
+
 bool medSourceItemModel::refresh(QModelIndex const &pi_index)
 {
     bool bRes = true;

@@ -45,13 +45,6 @@ public:
           QMap<QString, QVariant> values; // <keyName, value>
           QMap<QString, QString> tags;   // <keyName, tag value>    
     };
-    //enum asyncRequestType {getRqstType = 1, addRqstType = 2};
-	//struct asyncRequest
-	//{
-    //    asyncRequestType type;
-	//	QString tmpId;
-	//	QStringList uri;
-	//};
 
     medSourceItemModel(medDataHub *parent, QString const & sourceIntanceId);
     virtual ~medSourceItemModel();
@@ -118,6 +111,7 @@ public:
     bool        additionnalMetaData2(QModelIndex const & index, QString const & key, QVariant & value, QString & tag);
 
     bool addEntry(QString pi_key, QString pi_name, QString pi_description, unsigned int pi_uiLevel, QString pi_parentKey);
+    bool substituteTmpKey(QStringList uri, QString pi_key);
 
     bool refresh(QModelIndex const &pi_index = QModelIndex());
     //JU
