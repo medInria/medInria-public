@@ -30,7 +30,6 @@
 #define WAITER_EXIT_CODE_FAILD -2
 #define WAITER_EXIT_CODE_CONN_LOST -3
 #define WAITER_EXIT_CODE_TIMEOUT -4
-#define REQUEST_TIME_OUT 500
 
 medDataHub *medDataHub::s_instance = nullptr;
 medDataHub *medDataHub::instance(QObject *parent)
@@ -75,7 +74,7 @@ medDataHub::medDataHub(QObject *parent)
     connect(m_sourcesHandler, &medSourceHandler::sourceAdded,   this, &medDataHub::addSource);
     connect(m_sourcesHandler, &medSourceHandler::sourceRemoved, this, &medDataHub::removeSource);
     connect(m_sourcesHandler, &medSourceHandler::getAsyncStatus, this, &medDataHub::progress);
-    m_clock.setInterval(REQUEST_TIME_OUT);
+    m_clock.setInterval(REQUEST_TIME_OUT_PULLING);
     connect(&m_clock, &QTimer::timeout, this, &medDataHub::timeOutWatcher);
     m_clock.start();
 }
@@ -228,7 +227,7 @@ void medDataHub::getAsyncData(const medDataIndex & index, medAbstractData * &pDa
     {
         QString sourceId = index.sourceId();
         auto pModel = getModel(sourceId);
-        m_requestsMap[sourceId][rqstId] = rqst;
+        addRequest(sourceId, rqstId, rqst);
         pModel->setData(pModel->toIndex(index), DATASTATE_ROLE_DATALOADING, DATASTATE_ROLE);
         m_rqstToNotifMap[rqst] = medNotif::createNotif(notifLevel::info, QString("Download ") + rqst.dataName, "Data is downloading from " + index.sourceId());
         int iStatus = waitGetAsyncData(sourceId, rqstId);
@@ -242,7 +241,7 @@ void medDataHub::getAsyncData(const medDataIndex & index, medAbstractData * &pDa
         {
             pModel->setData(pModel->toIndex(index), "", DATASTATE_ROLE);
         }
-        removeRequest(sourceId, rqstId);
+        //removeRequest(sourceId, rqstId);
     }
 }
 // ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
@@ -300,13 +299,7 @@ int medDataHub::waitGetAsyncData(const QString &sourceId, int rqstId)
     if (m_requestsMap.contains(sourceId) && m_requestsMap[sourceId].contains(rqstId))
     {
         auto &rqst = m_requestsMap[sourceId][rqstId];
-        auto waiter = &rqst.waiter;
-
-        //rqst.timeOut.setSingleShot(true);
-        //auto timerConnexion = connect(&rqst.timeOut, &QTimer::timeout, waiter, [&]() { waiter->exit(WAITER_EXIT_CODE_TIMEOUT); });
-        //rqst.timeOut.start(REQUEST_TIME_OUT);
-
-        iRqstStatus = waiter->exec();
+        iRqstStatus = rqst.waiter.exec();
     }
 
     return iRqstStatus;
@@ -314,6 +307,7 @@ int medDataHub::waitGetAsyncData(const QString &sourceId, int rqstId)
 
 void medDataHub::progress(const QString & sourceId, int rqstId, medAbstractSource::eRequestStatus status)
 {
+    m_mapsRequestMutex.lock();
     if (m_requestsMap.contains(sourceId) && m_requestsMap[sourceId].contains(rqstId))
     {
         auto &rqst = m_requestsMap[sourceId][rqstId];
@@ -386,8 +380,7 @@ void medDataHub::progress(const QString & sourceId, int rqstId, medAbstractSourc
             case medAbstractSource::pending:
             {
                 m_rqstToNotifMap[rqst]->update(notifLevel::info, 101);
-                //rqst.timeOut.setInterval(REQUEST_TIME_OUT); //Timeout reset
-                rqst.stampTimeout = QDateTime::currentSecsSinceEpoch() + 100;
+                rqst.stampTimeout = QDateTime::currentSecsSinceEpoch() + REQUEST_TIME_OUT;
                 if (rqst.type == asyncRequestType::getRqstType)
                 {
                     pModel->setData(pModel->toIndex(rqst.uri), DATASTATE_ROLE_DATALOADING, DATASTATE_ROLE);
@@ -409,23 +402,41 @@ void medDataHub::progress(const QString & sourceId, int rqstId, medAbstractSourc
     {
         qDebug() << "Receive not expected source request update " << sourceId << " " << rqstId << " " << status;
     }
+    m_mapsRequestMutex.unlock();
 }
 
 void medDataHub::timeOutWatcher()
 {
-    for (auto &rqstsBySources : m_requestsMap)
+    m_mapsRequestMutex.lock();
+
+    for (auto source : m_requestsMap.keys())
     {
-        for (auto &rqst : rqstsBySources)
+        for (auto rqstId : m_requestsMap[source].keys())
         {
+            auto & rqst = m_requestsMap[source][rqstId];
             if (rqst.stampTimeout < QDateTime::currentSecsSinceEpoch())
             {
+                auto pModel = getModel(rqst.uri[0]);
+                pModel->setData(pModel->toIndex(rqst.uri), rqst.type==getRqstType? DATASTATE_ROLE_DATANOTLOADED : DATASTATE_ROLE_DATANOTSAVED, DATASTATE_ROLE);
+                if (m_rqstToNotifMap.contains(rqst))
+                {
+                    m_rqstToNotifMap[rqst]->update(notifLevel::warnning, -1, "Failed due to timeout");
+                }
+
                 if (rqst.waiter.isRunning())
                 {
                     rqst.waiter.exit(WAITER_EXIT_CODE_TIMEOUT);
                 }
+                else
+                {
+                    auto localRqst = m_requestsMap[source].take(rqstId);
+                    m_rqstToNotifMap.remove(localRqst);
+                }
             }
         }
     }
+
+    m_mapsRequestMutex.unlock();
 }
 
 void medDataHub::addSource(QString const & pi_sourceId)
@@ -909,7 +920,8 @@ bool medDataHub::fetchData(medDataIndex const & index)
             rqst.uri = index;
             rqst.type = getRqstType;
 
-            m_requestsMap[index.sourceId()][iRequestId] = rqst;
+            addRequest(sourceId, iRequestId, rqst);
+
             pModel->setData(pModel->toIndex(index), DATASTATE_ROLE_DATALOADING, DATASTATE_ROLE);
             m_rqstToNotifMap[rqst] = medNotif::createNotif(notifLevel::info, "Fetch data " + rqst.dataName, "The data " + rqst.dataName + " is fetch from " + m_sourcesHandler->getInstanceName(sourceId), -1, 0);
             mInfo << "Fetch data " << rqst.dataName << "have the Id of notification \r\n";
@@ -978,16 +990,44 @@ bool medDataHub::pushData(medDataIndex const & index)
 
 
 
+
+void medDataHub::addRequest(QString sourceId, int requestId, asyncRequest & rqst)
+{
+    m_mapsRequestMutex.lock();
+    m_requestsMap[sourceId][requestId] = rqst;
+    m_mapsRequestMutex.unlock();
+}
+
 void medDataHub::removeRequest(QString sourceId, int rqstId)
 {
-    //TODO mutex
-//    if (m_requestsMap.contains(sourceId) && m_requestsMap[sourceId].contains(rqstId))
-//    {
-//        m_rqstToNotifMap.remove(m_requestsMap[sourceId][rqstId]);
-//        m_requestsMap[sourceId].remove(rqstId);
-//        if (m_requestsMap[sourceId].isEmpty())
-//        {
-//            m_requestsMap.remove(sourceId);
-//        }
-//    }
+    m_mapsRequestMutex.lock();
+    if (m_requestsMap.contains(sourceId) && m_requestsMap[sourceId].contains(rqstId))
+    {
+        if (m_requestsMap[sourceId][rqstId].waiter.isRunning())
+        {
+            m_requestsMap[sourceId][rqstId].waiter.exit(WAITER_EXIT_CODE_ABORT);
+        }
+        m_rqstToNotifMap.remove(m_requestsMap[sourceId][rqstId]);
+        m_requestsMap[sourceId].remove(rqstId);
+        if (m_requestsMap[sourceId].isEmpty())
+        {
+            m_requestsMap.remove(sourceId);
+        }
+    }
+    m_mapsRequestMutex.unlock();
+}
+
+asyncRequest & medDataHub::holdRequest(QString sourceId, int requestId)
+{
+    m_mapsRequestMutex.lock();
+    if (m_requestsMap.contains(sourceId) && m_requestsMap[sourceId].contains(requestId))
+    {
+        return m_requestsMap[sourceId][requestId];
+    }
+    return asyncRequest();
+}
+
+void medDataHub::releaseRequest()
+{
+    m_mapsRequestMutex.unlock();
 }

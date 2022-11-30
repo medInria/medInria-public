@@ -35,6 +35,8 @@ public:
     medNotifWidget(medNotif *notif, medNotificationPaneWidget *paneContainer);
     ~medNotifWidget();
 
+    QSize minimumSizeHint() const override;
+
 public slots:
     void update(medNotif * notif);
 

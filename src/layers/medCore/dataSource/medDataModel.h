@@ -19,6 +19,7 @@
 #include <QMap>
 #include <QList>
 #include <QAbstractItemModelTester>
+#include <QMutex>
 
 #include <medDataIndex.h>
 #include <medAbstractData.h>
@@ -26,11 +27,13 @@
 
 #include <dtkCoreSupport/dtkSmartPointer.h>
 
+#define REQUEST_TIME_OUT 2
+#define REQUEST_TIME_OUT_PULLING constexpr (REQUEST_TIME_OUT/2 ? REQUEST_TIME_OUT/2 : 1)
 
 enum asyncRequestType { getRqstType = 1, addRqstType = 2 };
 struct asyncRequest
 {
-    asyncRequest() {stampTimeout = QDateTime::currentSecsSinceEpoch() + 100;}
+    asyncRequest() {stampTimeout = QDateTime::currentSecsSinceEpoch() + REQUEST_TIME_OUT;}
     asyncRequest(const asyncRequest &rqst) { *this = rqst; }
     asyncRequest & operator=(asyncRequest const & rqst) { type = rqst.type; tmpId = rqst.tmpId; uri = rqst.uri; stampTimeout = rqst.stampTimeout;  return *this; }
     asyncRequestType type;
@@ -40,7 +43,6 @@ struct asyncRequest
     QString dataName;
 
     qint64 stampTimeout;
-    //QTimer timeOut;
     QEventLoop waiter;
     bool needMedAbstractConversion;
 
@@ -122,13 +124,18 @@ private:
     static QString getTmpUuid();
     QString convertToPath(QStringList pi_uri);
 
+
+    void addRequest(QString sourceId, int requestId, asyncRequest & rqst);
     void removeRequest(QString sourceId, int rqstId);
+
+    asyncRequest & holdRequest(QString sourceId, int requestId);
+    void releaseRequest();
 
 private:
     medSourceHandler * m_sourcesHandler;
     QMap< QString, medSourceItemModel*> m_sourceIdToModelMap;
 
-
+    QMutex m_mapsRequestMutex;
     QMap< QString /*sourceId*/, QMap<int/*requestId*/, asyncRequest> > m_requestsMap;
     QMap< asyncRequest, std::shared_ptr<medNotif>> m_rqstToNotifMap;
 	

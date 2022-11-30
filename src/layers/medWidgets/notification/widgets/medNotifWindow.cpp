@@ -26,15 +26,21 @@
 
 #include <QPushButton>
 #include <QGraphicsOpacityEffect>
+#include <QVBoxLayout>
 
 medNotificationPaneWidget::medNotificationPaneWidget(medNotifSys * pi_pNotifSys, QMainWindow * pi_parent) : QWidget(pi_parent)
-{
+{    
+    auto layout = new QVBoxLayout(this);
+    layout->setContentsMargins(0, 0, 0, 0);
+
+    setLayout(layout);
+
     m_notificationsListWidget = new QListWidget(this);
+    layout->addWidget(m_notificationsListWidget);
 
     m_notificationsListWidget->setAcceptDrops(false);
     m_notificationsListWidget->setAutoScroll(true);
     m_notificationsListWidget->setResizeMode(QListView::Adjust);
-    m_notificationsListWidget->setMinimumWidth(400);
     m_notificationsListWidget->setStyleSheet("QListWidget::item:selected {background:gray;}");
     m_animation = new QPropertyAnimation(this, "geometry", this);
 
@@ -88,7 +94,6 @@ void medNotificationPaneWidget::addNotification(medNotif * notif)
 
     newNotifiWidgetPopup->setFixedSize(QSize(400, 75));
     newNotifiWidgetPopup->move(QPoint(10, 10));
-
     newNotifiWidgetPopup->setParent(m_parent);
     newNotifiWidgetPopup->show();
 

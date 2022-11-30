@@ -36,7 +36,6 @@ medNotifWidget::medNotifWidget(medNotif *notif, medNotificationPaneWidget * pane
 
     //--- Title area
     m_titleLayout = new QHBoxLayout;
-    //m_titleLayout->SetFixedSize(22);
     m_titleLayout->setAlignment(Qt::AlignTop);
 
     // Add criticality icons
@@ -96,6 +95,11 @@ medNotifWidget::medNotifWidget(medNotif *notif, medNotificationPaneWidget * pane
 
 medNotifWidget::~medNotifWidget()
 {
+}
+
+QSize medNotifWidget::minimumSizeHint() const
+{
+    return QSize(400, 100);
 }
 
 void medNotifWidget::update(medNotif * notif)
