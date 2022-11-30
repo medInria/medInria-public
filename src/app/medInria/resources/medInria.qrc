@@ -182,6 +182,8 @@
         <file>icons/check.svg</file>
         <file>icons/inbox.png</file>
         <file>icons/outbox.png</file>
+        <file>icons/icons8-download-16.png</file>
+        <file>icons/icons8-upload-16.png</file>
         <file>gif/icon.gif</file>
     </qresource>
 </RCC>

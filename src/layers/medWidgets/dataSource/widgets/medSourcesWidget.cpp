@@ -55,6 +55,8 @@ void medSourcesWidget::addSource(medDataHub *dataHub, QString sourceInstanceId)
 {
     auto                        *sourceModel = dataHub->getModel(sourceInstanceId);
     QString                      instanceName = medSourceHandler::instance()->getInstanceName(sourceInstanceId);
+    bool isOnline, isLocal, isWritable, isCached;
+    medSourceHandler::instance()->sourceGlobalInfo(sourceInstanceId,isOnline, isLocal, isWritable, isCached);
     medSourceItemModelPresenter *sourcePresenter = new medSourceItemModelPresenter(sourceModel);
 
     QPushButton *sourceTreeTitle = new QPushButton(instanceName);
@@ -99,7 +101,7 @@ void medSourcesWidget::addSource(medDataHub *dataHub, QString sourceInstanceId)
     QAction *saveAction    = new QAction(tr("Save on disk"),  pMenu);
     QAction *removeAction  = new QAction(tr("Remove"),        pMenu);
     QAction *fetchAction   = new QAction(tr("Fetch"),         pMenu);
-    QAction *preloadAction = new QAction(tr("Pre-Load"),      pMenu);
+//    QAction *preloadAction = new QAction(tr("Pre-Load"),      pMenu);
     QAction *readerAction  = new QAction(tr("Change reader"), pMenu);
     QAction *unloadAction  = new QAction(tr("Unload"),        pMenu);
     QAction *infoAction    = new QAction(tr("Information"),   pMenu);
@@ -108,7 +110,11 @@ void medSourcesWidget::addSource(medDataHub *dataHub, QString sourceInstanceId)
     pMenu->addAction(saveAction);
     pMenu->addAction(removeAction);
     pMenu->addAction(fetchAction);
-    pMenu->addAction(preloadAction);
+    if (isLocal)
+    {
+        fetchAction->setDisabled(true);
+    }
+//    pMenu->addAction(preloadAction);
     pMenu->addAction(readerAction);
     pMenu->addAction(unloadAction);
     pMenu->addAction(infoAction);
@@ -117,7 +123,14 @@ void medSourcesWidget::addSource(medDataHub *dataHub, QString sourceInstanceId)
     //connect(saveAction,    &QAction::triggered, [=]() {  emit infoActionSignal(this->itemFromMenu(pMenu)); });
     //connect(removeAction,  &QAction::triggered, [=]() {  emit infoActionSignal(this->itemFromMenu(pMenu)); });
     //connect(fetchAction,   &QAction::triggered, [=]() {  emit infoActionSignal(this->itemFromMenu(pMenu)); });
-    connect(preloadAction, &QAction::triggered, [=]() {  
+//    connect(preloadAction, &QAction::triggered, [=]() {
+//        QModelIndex index = this->indexFromMenu(pMenu);
+//        if (index.isValid())
+//        {
+//            const_cast<medSourceItemModel*>(static_cast<const medSourceItemModel*>(index.model()))->fetchData(index);
+//        }
+//    });
+    connect(fetchAction, &QAction::triggered, [=]() {
         QModelIndex index = this->indexFromMenu(pMenu);
         if (index.isValid())
         {

@@ -161,8 +161,9 @@ private:
     QMap<int, QTimer*> m_requestToTimerMap;
     QMap<int, QTime*> m_requestToTimeMap;
 
-    QTimer m_timer;
-    void timeManagement();
+    QThread m_Thread;
+//    QTimer m_timer;
+//    void timeManagement();
 };
 
 #include "medSQLite.txx"

@@ -142,7 +142,7 @@ QPixmap & medNotifWidget::criticalityImg(notifLevel criticalityLevel)
     {
         case notifLevel::info:     return bleuSpot;
         case notifLevel::success:  return greenSpot;
-        case notifLevel::warnning: return yellowSpot;
+        case notifLevel::warning: return yellowSpot;
         case notifLevel::error:    return redSpot;
         default: return redSpot;
     }

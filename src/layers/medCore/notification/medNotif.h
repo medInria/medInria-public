@@ -25,7 +25,7 @@ enum class notifLevel : char
 {
     info,
     success,
-    warnning,
+    warning,
     error
 };
 
