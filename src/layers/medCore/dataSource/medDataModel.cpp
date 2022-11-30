@@ -433,7 +433,7 @@ void medDataHub::timeOutWatcher()
                 pModel->setData(pModel->toIndex(rqst.uri), rqst.type==getRqstType? DATASTATE_ROLE_DATANOTLOADED : DATASTATE_ROLE_DATANOTSAVED, DATASTATE_ROLE);
                 if (m_rqstToNotifMap.contains(rqst))
                 {
-                    m_rqstToNotifMap[rqst]->update(notifLevel::warnning, -1, "Failed due to timeout");
+                    m_rqstToNotifMap[rqst]->update(notifLevel::warning, -1, "Failed due to timeout");
                 }
 
                 if (rqst.waiter.isRunning())
