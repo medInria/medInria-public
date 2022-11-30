@@ -80,7 +80,9 @@ struct medAPHPParametersPrivate
 
 medAPHP::medAPHP(QtDcmInterface *dicomLib, medAbstractAnnotation *annotationAPI) : d(new medAPHPParametersPrivate)
 {
-    timeout = 60000;
+    qRegisterMetaType<medAbstractSource::eRequestStatus>("medAbstractSource::eRequestStatus");
+
+//    timeout = 60000;
 
     d->levelNames << "PATIENTS"
                   << "STUDY"
@@ -885,43 +887,43 @@ QVariant medAPHP::getDirectData(unsigned int pi_uiLevel, QString key)
 {
     // return QVariant();
     QVariant iPath;
-    int iRequestId = getAssyncData(pi_uiLevel, key);
-
-    timer.setSingleShot(true);
-    QEventLoop loop;
-    QObject::connect(&timer, &QTimer::timeout, &loop, [&]()
-                     { loop.exit(-12); });
-    timer.start(timeout);
-
-    if (pi_uiLevel != 3)
-    {
-//        QObject::connect(d->qtdcm, &QtDcmInterface::pathToData, &loop, [&](int id, const QString &path)
+//    int iRequestId = getAssyncData(pi_uiLevel, key);
+//
+//    timer.setSingleShot(true);
+//    QEventLoop loop;
+//    QObject::connect(&timer, &QTimer::timeout, &loop, [&]()
+//                     { loop.exit(-12); });
+//    timer.start(timeout);
+//
+//    if (pi_uiLevel != 3)
+//    {
+////        QObject::connect(d->qtdcm, &QtDcmInterface::pathToData, &loop, [&](int id, const QString &path)
+////                         {
+////            if (iRequestId == id)
+////            {
+////                iPath = QVariant(path);
+////                loop.quit();
+////            } });
+//    }
+//    else
+//    {
+//        QObject::connect(d->restFulAPI, &medAbstractAnnotation::inProgress, &loop, [&](int requestId, medAbstractSource::eRequestStatus status, const QVariant &data)
 //                         {
-//            if (iRequestId == id)
+//            if (iRequestId == requestId)
 //            {
-//                iPath = QVariant(path);
+//                iPath = data;
 //                loop.quit();
 //            } });
-    }
-    else
-    {
-        QObject::connect(d->restFulAPI, &medAbstractAnnotation::pathToData, &loop, [&](int id, const QString &path)
-                         {
-            if (iRequestId == id)
-            {
-                iPath = QVariant(path);
-                loop.quit();
-            } });
-    }
-    int status = loop.exec();
-    if (status == 0)
-    {
-        qDebug() << "Ok path to Data = " << iPath.toString();
-    }
-    else
-    {
-        qDebug() << "no path to data " << status;
-    }
+//    }
+//    int status = loop.exec();
+//    if (status == 0)
+//    {
+//        qDebug() << "Ok path to Data = " << iPath.toString();
+//    }
+//    else
+//    {
+//        qDebug() << "no path to data " << status;
+//    }
     return iPath;
 }
 
@@ -970,21 +972,22 @@ int medAPHP::getAnnotationAsyncData(const QString &key)
     {
         iRes = s_RequestId;
 
-        QObject::connect(d->restFulAPI, &medAbstractAnnotation::pathToData, this, [&](int id, const QString &path)
-                         { d->requestIdToResultsMap[id] = QVariant(path); });
+//        QObject::connect(d->restFulAPI, &medAbstractAnnotation::pathToData, this, [&](int id, const QString &path)
+//                         { d->requestIdToResultsMap[id] = QVariant(path); });
 
         QObject::connect(
             d->restFulAPI, &medAbstractAnnotation::inProgress, this,
-            [=](int pi_requestId, eRequestStatus status)
+            [=](int pi_requestId, eRequestStatus status, const QVariant &data)
             {
                 switch (status)
                 {
                     case pending:
                     {
-                        timer.setInterval(timeout);
                         break;
                     }
                     case finish:
+                        d->requestIdToResultsMap[pi_requestId] = data;
+                        break;
                     case faild:
                     default:
                         break;
@@ -1039,7 +1042,7 @@ int medAPHP::getQtDcmAsyncData(unsigned int pi_uiLevel, const QString &key)
                 case 1: // moveStatus::PENDING
                 {
                     requestStatus = pending;
-                    timer.setInterval(timeout);
+//                    timer.setInterval(timeout);
                     break;
                 }
                 case -1: // moveStatus::KO
@@ -1055,34 +1058,6 @@ int medAPHP::getQtDcmAsyncData(unsigned int pi_uiLevel, const QString &key)
 
     return iRes;
 }
-
-//
-// QString medAPHP::addData(QVariant data, QStringList parentUri, QString name)
-//{
-//    QString keyRes;
-//
-//    int level  = parentUri.size() - 1;
-//
-//    switch (level)
-//    {
-//        case 0: //Patient
-//        case 1: //Study
-//        case 2://Series
-//            break;
-//        case 3:// Annotations
-//        {
-//            keyRes = d->restFulAPI->addData(data, name, parentUri.last());
-//
-//            break;
-//        }
-//        default: //Unknown level
-//        {
-//            break;
-//        }
-//    }
-//
-//    return keyRes;
-//}
 
 void medAPHP::abort(int pi_iRequest)
 {
@@ -1135,10 +1110,32 @@ int medAPHP::addAssyncData(QVariant data, medAbstractSource::levelMinimalEntries
     if (pi_uiLevel == 3)
     {
         s_RequestId++;
-        iRes = s_RequestId;
-        QString name = pio_minimalEntries.name;
-        QString key = d->restFulAPI->addData(data, name, parentKey);
-        d->requestIdToResultsMap[s_RequestId] = QVariant(key);
+        if (d->restFulAPI->addData(s_RequestId, data, pio_minimalEntries.name, parentKey))
+        {
+            iRes = s_RequestId;
+            QObject::connect(
+                    d->restFulAPI, &medAbstractAnnotation::inProgress, this,
+                    [=](int pi_requestId, eRequestStatus status, const QVariant &data)
+                    {
+                        switch (status)
+                        {
+                            case pending:
+                            {
+//                                timer.setInterval(timeout);
+                                break;
+                            }
+                            case finish:
+                                d->requestIdToResultsMap[pi_requestId] = data;
+                                break;
+                            case faild:
+                            default:
+                                break;
+                        }
+                        emit progress(pi_requestId, status);
+                    },
+                    Qt::UniqueConnection);
+
+        }
     }
     return iRes;
 }

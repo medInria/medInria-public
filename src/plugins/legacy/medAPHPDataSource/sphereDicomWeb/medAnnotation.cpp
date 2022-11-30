@@ -1,21 +1,18 @@
 
 
 #include "medAnnotation.h"
-#include "annotationDownloader.h"
 
-#include <dcmtk/dcmdata/dcuid.h>
 #include <QHttpMultiPart>
 
 medAnnotation::medAnnotation()
 {
-
 }
 
 medAnnotation::~medAnnotation()
 {
-    for (annotationDownloader *downloader : requestIdMap.values())
+    for (AnnotationRequest *request : requestIdMap.values())
     {
-        delete downloader;
+        delete request;
     }
     requestIdMap.clear();
 }
@@ -118,17 +115,13 @@ bool medAnnotation::getAnnotationData(int pi_requestId, const QString &annotatio
 {
     bool bRes = true;
     QString requestUrl = m_url + "/annotations/" + annotation_uid;
+    auto annotRequest = new AnnotationRequest(pi_requestId);
+//    annotRequest->moveToThread(m_Manager.thread());
+    annotRequest->getRequest(&m_Manager, requestUrl);
+    connect(&m_Manager, SIGNAL(finished(QNetworkReply *)), annotRequest, SLOT(finishDownload(QNetworkReply *)));
+    connect(annotRequest, &AnnotationRequest::progress, this, &medAbstractAnnotation::inProgress);
 
-    auto downloader = new annotationDownloader();
-    downloader->moveToThread(&workerThread);
-    connect(&workerThread, &QThread::finished, downloader, &QObject::deleteLater);
-    connect(this, &medAnnotation::operate, downloader, &annotationDownloader::doWork);
-    connect(downloader, &annotationDownloader::downloadProgress, this, &medAbstractAnnotation::inProgress);
-    connect(downloader, &annotationDownloader::pathToData, this, &medAbstractAnnotation::pathToData);
-    workerThread.start();
-
-    requestIdMap[pi_requestId] = downloader;
-    emit operate(requestUrl, pi_requestId);
+    requestIdMap[pi_requestId] = annotRequest;
 
     return bRes;
 }
@@ -136,113 +129,68 @@ bool medAnnotation::getAnnotationData(int pi_requestId, const QString &annotatio
 bool medAnnotation::isCachedDataPath(int requestId)
 {
     bool bRes = false;
-    auto downloader = requestIdMap[requestId];
-    if (downloader && (downloader->m_requestId == requestId) && (!downloader->m_path.isEmpty()))
+    auto request = requestIdMap[requestId];
+    if (request && (request->m_requestId == requestId) && (!request->m_path.isEmpty()))
     {
         bRes = true;
         // TODO move signal emission ?
-        emit downloader->pathToData(requestId, downloader->m_path);
+        emit request->progress(requestId, medAbstractSource::eRequestStatus::finish, request->m_path);
     }
     return bRes;
 }
 
-QString medAnnotation::addData(QVariant dataset, QString name, QString &seriesUid)
+bool medAnnotation::addData(int requestId, QVariant dataset, QString name, QString &seriesUid)
 {
-    QString res;
-    char uid[100];
-    dcmGenerateUniqueIdentifier(uid, SITE_SERIES_UID_ROOT);
-    QString annotationUid = QString(uid);
+    bool bRes = true;
+    QString requestUrl = m_url +
+                         "/annotations/series/" + seriesUid +
+                         "/annotation/";
+    auto annotationRequest = new AnnotationRequest(requestId);
+    annotationRequest->postRequest(&m_Manager, requestUrl, name, dataset);
+    connect(&m_Manager, SIGNAL(finished(QNetworkReply *)), annotationRequest, SLOT(finishUpload(QNetworkReply *)));
+    connect(annotationRequest, &AnnotationRequest::progress, this, &medAbstractAnnotation::inProgress);
 
-    auto manager = QNetworkAccessManager();
-    QNetworkRequest postRequest;
-    QUrl url(m_url +
-    "/annotations/series/" + seriesUid +
-    "/annotation/" + annotationUid);
-    QUrlQuery query;
-
-    query.addQueryItem("annotation_type", "mha");
-    query.addQueryItem("annotation_subtype", "");
-    query.addQueryItem("partner", "medInria");
-    QJsonObject obj;
-    obj["name"] = name;
-    QJsonDocument doc(obj);
-    auto data = doc.toJson(QJsonDocument::Compact);
-//    qDebug()<<"doc "<<doc.toJson(QJsonDocument::Compact);
-//    QByteArray data = doc.toJson(QJsonDocument::Compact).toBase64();
-    query.addQueryItem("annotation_meta", data);
-    url.setQuery(query.query());
-    postRequest.setUrl(url);
-
-
-//    QString request = m_url +"/annotations/series/" +
-//                      seriesUid +
-//                      "/annotation/" +
-//                      annotationUid +
-//                      R"(?annotation_type=mha&annotation_subtype=&partner=medInria&annotation_meta={name: foo})" ;//+
-//                      //name + R"(}")";
+//    QTimer timer;
+//    timer.setSingleShot(true);
+//    QEventLoop loop;
+//    QObject::connect(&timer, &QTimer::timeout, &loop, [&]() {
+//        loop.exit(-1);
+//    });
+//    timer.start(10000);
 //
-//    postRequest.setUrl(QUrl(request));
+//    QObject::connect(&manager, &QNetworkAccessManager::finished, &loop, [&](QNetworkReply *reply) {
+//
+////        qDebug()<<"reply "<<reply->errorString()<<" "<<reply->error();
+//        switch (reply->error())
+//        {
+//            case QNetworkReply::NoError:
+//            {
+//                QString strReply = (QString)reply->readAll();
+////                qDebug()<<"reply "<<strReply;
+//                res = annotationUid;
+//                loop.quit();
+//                break;
+//            }
+//            case QNetworkReply::ConnectionRefusedError:
+//            default:
+//                loop.exit(reply->error());
+//                break;
+//        }
+//
+//    });
+//    loop.exec();
 
-    auto postMultiPart = new QHttpMultiPart();
-    postMultiPart->setContentType(QHttpMultiPart::FormDataType);
-
-    postRequest.setRawHeader(QByteArray("Accept"), QByteArray("multipart/form-data; boundary=BoUnDaRyStRiNg"));
-
-    QHttpPart partData;
-    QString filename = annotationUid + ".mha";
-    QString header = R"(form-data; name="annotationData"; filename=")" + annotationUid + R"(.mha")";
-    partData.setHeader(QNetworkRequest::ContentDispositionHeader,
-                       QVariant(header));
-    partData.setHeader(QNetworkRequest::ContentTypeHeader, QVariant("application/octet-stream"));
-
-    auto mhaFile = new QFile(dataset.toString());
-    bool bOpen = mhaFile->open(QIODevice::ReadOnly);
-    partData.setBodyDevice(mhaFile);
-
-    postMultiPart->append(partData);
-    manager.post(postRequest, postMultiPart);
-
-    QTimer timer;
-    timer.setSingleShot(true);
-    QEventLoop loop;
-    QObject::connect(&timer, &QTimer::timeout, &loop, [&]() {
-        loop.exit(-1);
-    });
-    timer.start(10000);
-
-    QObject::connect(&manager, &QNetworkAccessManager::finished, &loop, [&](QNetworkReply *reply) {
-
-//        qDebug()<<"reply "<<reply->errorString()<<" "<<reply->error();
-        switch (reply->error())
-        {
-            case QNetworkReply::NoError:
-            {
-                QString strReply = (QString)reply->readAll();
-//                qDebug()<<"reply "<<strReply;
-                res = annotationUid;
-                loop.quit();
-                break;
-            }
-            case QNetworkReply::ConnectionRefusedError:
-            default:
-                loop.exit(reply->error());
-                break;
-        }
-
-    });
-    loop.exec();
-
-    return annotationUid;
+    return bRes;
 }
 
 void medAnnotation::abortDownload(int pi_requestId)
 {
     if (requestIdMap.contains(pi_requestId))
     {
-        auto downloader = requestIdMap[pi_requestId];
-        downloader->abort();
+        auto request = requestIdMap[pi_requestId];
+        request->abort();
         requestIdMap.remove(pi_requestId);
-        delete downloader;
+        delete request;
     }
 
 }

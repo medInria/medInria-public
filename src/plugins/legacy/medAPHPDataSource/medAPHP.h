@@ -153,8 +153,8 @@ private:
     static medIntParameter s_Port;
 
     // TODO : remove TimeOut & QTime it is a HACK
-    int timeout;
-    QTimer timer;
+//    int timeout;
+//    QTimer timer;
 
 };
 

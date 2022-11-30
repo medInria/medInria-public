@@ -12,6 +12,7 @@
 =========================================================================*/
 
 #include "medAbstractAnnotation.h"
+#include "annotationRequest.h"
 
 #include <QNetworkAccessManager>
 #include <QNetworkReply>
@@ -40,18 +41,16 @@ public:
     QList<QMap<QString, QString>> findAnnotationMinimalEntries(const QString &seriesInstanceUID) override;
     bool getAnnotationData(int pi_requestId, const QString &uid) override;
     bool isCachedDataPath(int requestId);
-    QString addData(QVariant dataset, QString name, QString &seriesUid) override;
+    bool addData(int requestId, QVariant dataset, QString name, QString &seriesUid) override;
 
     void abortDownload(int pi_requestId) override;
 
 public slots:
     void updateUrl(QString const &url) override;
-signals:
-    void operate(QString requestUrl, int requestId);
 
 private:
-    QMap<int, annotationDownloader*> requestIdMap;
-    QThread workerThread;
+    QMap<int, AnnotationRequest*> requestIdMap;
+    QNetworkAccessManager m_Manager;
     QString m_url;
 
 };

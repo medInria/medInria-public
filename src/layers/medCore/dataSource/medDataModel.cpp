@@ -246,13 +246,7 @@ void medDataHub::getAsyncData(const medDataIndex & index, medAbstractData * &pDa
             case WAITER_EXIT_CODE_CONN_LOST:
                 break;
             case WAITER_EXIT_CODE_TIMEOUT:
-            {
-                pModel->setData(pModel->toIndex(index), DATASTATE_ROLE_DATANOTLOADED, DATASTATE_ROLE);
-                medNotif::createNotif(notifLevel::info, QString("TimeOut ") + rqst.dataName,
-                                                               "Unable to Download data from source " + index.sourceId());
-                m_rqstToNotifMap[rqst]->update(notifLevel::warning, -1, QString("Error while downloading ") + rqst.dataName + QString(" from ") + index.sourceId());
                 break;
-            }
         }
         //removeRequest(sourceId, rqstId);
     }
@@ -745,6 +739,8 @@ bool medDataHub::warpAddAsync(medAbstractSource::levelMinimalEntries &minimalEnt
         m_IndexToData[request.uri] = pi_pData;
         rqstId = m_sourcesHandler->addAssyncData(pio_uri, data, minimalEntries);
         //TODO create request
+        QString sourceId = pModel->getSourceIntanceId();
+        addRequest(sourceId, rqstId, request);
         pModel->setData(pModel->toIndex(request.uri), DATASTATE_ROLE_DATACOMMITTED, DATASTATE_ROLE);
         if (rqstId > 0)
         {
@@ -1042,15 +1038,15 @@ void medDataHub::removeRequest(QString sourceId, int rqstId)
     m_mapsRequestMutex.unlock();
 }
 
-asyncRequest & medDataHub::holdRequest(QString sourceId, int requestId)
-{
-    m_mapsRequestMutex.lock();
-    if (m_requestsMap.contains(sourceId) && m_requestsMap[sourceId].contains(requestId))
-    {
-        return m_requestsMap[sourceId][requestId];
-    }
-    return asyncRequest();
-}
+//asyncRequest & medDataHub::holdRequest(QString sourceId, int requestId)
+//{
+//    m_mapsRequestMutex.lock();
+//    if (m_requestsMap.contains(sourceId) && m_requestsMap[sourceId].contains(requestId))
+//    {
+//        return m_requestsMap[sourceId][requestId];
+//    }
+//    return asyncRequest();
+//}
 
 void medDataHub::releaseRequest()
 {

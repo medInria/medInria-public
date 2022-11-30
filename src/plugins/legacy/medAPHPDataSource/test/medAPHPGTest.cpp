@@ -44,7 +44,7 @@ class FakeAnnotation : public medAbstractAnnotation
     MOCK_METHOD(entries, findAnnotationMinimalEntries, (const QString &));
     MOCK_METHOD(bool, getAnnotationData, (int, const QString &));
     MOCK_METHOD(bool, isCachedDataPath, (int));
-    MOCK_METHOD(QString, addData, (QVariant, QString, QString &));
+    MOCK_METHOD(bool, addData, (int, QVariant, QString, QString &));
     MOCK_METHOD(void, abortDownload, (int));
     MOCK_METHOD(void, updateUrl, (QString const &));
     

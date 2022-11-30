@@ -128,7 +128,7 @@ private:
     void addRequest(QString sourceId, int requestId, asyncRequest & rqst);
     void removeRequest(QString sourceId, int rqstId);
 
-    asyncRequest & holdRequest(QString sourceId, int requestId);
+//    asyncRequest & holdRequest(QString sourceId, int requestId);
     void releaseRequest();
 
 private:

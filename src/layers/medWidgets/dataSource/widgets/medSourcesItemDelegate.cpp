@@ -22,8 +22,8 @@ void medSourcesItemDelegate::paint(QPainter *painter, const QStyleOptionViewItem
 {
     QStyleOptionViewItem &opt = *const_cast<QStyleOptionViewItem*>(&option);
     initStyleOption(&opt, index);
-    opt.decorationSize = QSize(20,20);
-    opt.decorationPosition = QStyleOptionViewItem::Position::Left;
+    opt.decorationSize = QSize(16,16);
+//    opt.decorationPosition = QStyleOptionViewItem::Position::Left;
 //    opt.state &= ~QStyle::State_Selected;
 //    opt.decorationPosition = QStyleOptionViewItem::Left;
 //    opt.features &= QStyleOptionViewItem::HasDecoration;
@@ -36,23 +36,23 @@ void medSourcesItemDelegate::paint(QPainter *painter, const QStyleOptionViewItem
 
         if (value== DATASTATE_ROLE_DATALOADING)
         {
-            painter->drawPixmap(QRect(option.rect.x()-40, option.rect.y(), option.rect.height(), option.rect.height()), m_mov->currentPixmap());//QPixmap(":icons/yellow_spot.svg"));
+            painter->drawPixmap(QRect(option.rect.x()-40, option.rect.y(), option.decorationSize.width(), option.rect.height()), m_mov->currentPixmap());//QPixmap(":icons/yellow_spot.svg"));
         }
         else if (value == DATASTATE_ROLE_DATALOADED)
         {
             opt.font.setBold(true);
 //            opt.icon = QIcon(QPixmap(":icons/icons8-download-16.png"));
-            painter->drawPixmap(QRect(option.rect.x()-40, option.rect.y(), option.rect.height(), option.rect.height()), QPixmap(":icons/icons8-download-16.png"));//QPixmap(":icons/yellow_spot.svg"));
+            painter->drawPixmap(QRect(option.rect.x()-40, option.rect.y(), option.decorationSize.width(), option.rect.height()), QPixmap(":icons/icons8-download-16.png"));//QPixmap(":icons/yellow_spot.svg"));
         }
         else if (value == DATASTATE_ROLE_DATANOTLOADED)
         {
             opt.font.setStrikeOut(true);
-            painter->drawPixmap(QRect(option.rect.x()-20, option.rect.y(), option.rect.height(), option.rect.height()), QPixmap(":icons/exclamation.png"));//QPixmap(":icons/yellow_spot.svg"));
+            painter->drawPixmap(QRect(option.rect.x()-40, option.rect.y(), option.decorationSize.width(), option.rect.height()), QPixmap(":icons/icons8-error-16.png"));//QPixmap(":icons/yellow_spot.svg"));
         }
         else if (value == DATASTATE_ROLE_DATASAVED)
         {
             opt.font.setBold(true);
-            painter->drawPixmap(QRect(option.rect.x()-40, option.rect.y(), option.rect.height(), option.rect.height()), QPixmap(":icons/icons8-upload-16.png"));//QPixmap(":icons/yellow_spot.svg"));
+            painter->drawPixmap(QRect(option.rect.x()-40, option.rect.y(), option.decorationSize.width(), option.rect.height()), QPixmap(":icons/icons8-upload-16.png"));//QPixmap(":icons/yellow_spot.svg"));
         }
     }
     QStyledItemDelegate::paint(painter, opt, index);
