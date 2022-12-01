@@ -78,6 +78,7 @@ set(cmake_args
   -DBUILD_SHARED_LIBS=${BUILD_SHARED_LIBS_${ep}}
   -DUSE_DTKIMAGING:BOOL=${USE_DTKIMAGING}
   -DUSE_OSPRay:BOOL=${USE_OSPRay}
+  -DUSE_Python:BOOL=${USE_Python}
   -DmedInria_VERSION:STRING=${${PROJECT_NAME}_VERSION}
   -DBUILD_ALL_PLUGINS=OFF
   -DBUILD_COMPOSITEDATASET_PLUGIN=OFF
@@ -93,7 +94,6 @@ set(cmake_cache_args
   -DTTK_DIR:PATH=${TTK_DIR}
   -DVTK_DIR:PATH=${VTK_DIR}
   -DQt5_DIR:PATH=${Qt5_DIR}
-  -DPYNCPP_DIR:PATH=${PYNCPP_DIR}
   -DLogDemons_DIR:PATH=${LogDemons_DIR}
   -DBoost_INCLUDE_DIR:PATH=${Boost_INCLUDE_DIR}
   )
@@ -108,6 +108,12 @@ if (USE_DTKIMAGING)
     ${cmake_args}
     -DdtkImaging_DIR:PATH=${dtkImaging_DIR}
     )
+endif()
+
+if (USE_Python)
+  list(APPEND cmake_cache_args
+      -DPYNCPP_DIR:PATH=${PYNCPP_DIR}
+      )
 endif()
   
 ## #############################################################################

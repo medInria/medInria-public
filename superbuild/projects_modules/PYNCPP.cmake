@@ -22,7 +22,7 @@ function(PYNCPP_project)
         )
 
     if(USE_SYSTEM_${ep})
-        find_package(PYNCPP ${version_major}.${version_minor}.${version_patch}
+        find_package(PYNCPP
             REQUIRED COMPONENTS Qt5
             )
     else()
