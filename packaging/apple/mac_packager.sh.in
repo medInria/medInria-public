@@ -29,9 +29,6 @@ for i in $*; do
         injectDirs="$injectDirs -inject-dir=$i"
 done
 
-resourceLibsDir=@medInria_BINARY_DIR@/lib/resources
-injectDirs="$injectDirs -inject-dir=$resourceLibsDir"
-
 @dtk_DIR@/bin/dtkDeploy medInria.app $injectDirs &>/dev/null
 
 #Run fancy packaging apple script
