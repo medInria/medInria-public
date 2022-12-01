@@ -47,6 +47,8 @@ option(USE_DTKIMAGING "Use DTK imaging layer" OFF )
   
 option(USE_OSPRay "Use OSPRay for CPU VR" OFF )
 
+option(USE_Python "Build with Python support" ON)
+
 if (NOT WIN32)
   option(USE_FFmpeg "Build with FFmpeg video export support" OFF)
   if (${USE_FFmpeg})
@@ -68,6 +70,12 @@ list(APPEND external_projects
 if (USE_DTKIMAGING)
     list(APPEND external_projects
         dtkImaging
+        )
+endif()
+
+if (USE_Python)
+    list(APPEND external_projects
+        PYNCPP
         )
 endif()
 
