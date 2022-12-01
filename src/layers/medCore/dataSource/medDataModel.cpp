@@ -736,17 +736,15 @@ bool medDataHub::warpAddAsync(medAbstractSource::levelMinimalEntries &minimalEnt
     bRes = pModel->addEntry(minimalEntries.key, minimalEntries.name, minimalEntries.description, uiLevel, parentKey);
     if (bRes)
     {
+        QString sourceId = pModel->getSourceIntanceId();
         m_IndexToData[request.uri] = pi_pData;
         rqstId = m_sourcesHandler->addAssyncData(pio_uri, data, minimalEntries);
-        //TODO create request
-        QString sourceId = pModel->getSourceIntanceId();
-        addRequest(sourceId, rqstId, request);
-        pModel->setData(pModel->toIndex(request.uri), DATASTATE_ROLE_DATACOMMITTED, DATASTATE_ROLE);
         if (rqstId > 0)
         {
-            //m_IndexToData[pio_uri] = pi_pData;
+            addRequest(sourceId, rqstId, request);
+            pModel->setData(pModel->toIndex(request.uri), DATASTATE_ROLE_DATACOMMITTED, DATASTATE_ROLE);
+            m_rqstToNotifMap[request] = medNotif::createNotif(notifLevel::info, "Save data " + request.dataName, "The data " + request.dataName + " is saving on " + m_sourcesHandler->getInstanceName(sourceId), -1, 0);
             //TODO log
-            //TODO notify
         }
         else
         {
@@ -945,17 +943,18 @@ bool medDataHub::fetchData(medDataIndex const & index)
 
             pModel->setData(pModel->toIndex(index), DATASTATE_ROLE_DATALOADING, DATASTATE_ROLE);
             m_rqstToNotifMap[rqst] = medNotif::createNotif(notifLevel::info, "Fetch data " + rqst.dataName, "The data " + rqst.dataName + " is fetch from " + m_sourcesHandler->getInstanceName(sourceId), -1, 0);
-            mInfo << "Fetch data " << rqst.dataName << "have the Id of notification \r\n";
+            mInfo << "Fetch data " << rqst.dataName << "have the Id of notification \r\n" << iRequestId;
         }
         else
         {
-            medNotif::createNotif(notifLevel::info, "Fetch data " + getDataName(index), "The data " + getDataName(index) + " is fetch from " + m_sourcesHandler->getInstanceName(sourceId), -1, 0);
+            mInfo << "Fetch data " << getDataName(index) << " with the uri " << index << " is not possible";
+            medNotif::createNotif(notifLevel::info, "Fetch data " + getDataName(index), "The data " + getDataName(index) + " can't be fetch from " + m_sourcesHandler->getInstanceName(sourceId), -1, 0);
         }
     }
     else
     {
-        //TODO log
-        //TODO notify
+        mInfo << "Fetch data with the uri " << index << " is impossible with unknown source";
+        medNotif::createNotif(notifLevel::info, "Fetch data is not possible from unknown source", "Fetch data is not possible from unknown source");
     }
 
     return bRes;
@@ -978,21 +977,16 @@ bool medDataHub::pushData(medDataIndex const & index)
             request.type = addRqstType;
             request.uri = pItem->uri();
 
-            // TODO bRes = pModel->addRequest(iRequestId, request);
-            if (bRes)
-            {
-                pModel->setData(pModel->toIndex(index), DATASTATE_ROLE_DATAPUSHING, DATASTATE_ROLE);
 
-                //int  iNotif = medNotifSys::infoWithProgress( "Pushing data " + pItem->data(1).toString(), "The data " + pItem->data(1).toString() + " is pushing to " + m_sourcesHandler->getInstanceName(sourceId));
-                //mInfo << "Pushing data " << pItem->data(1).toString() << "have the Id of notification " << iNotif << "\r\n";
-                //TODO log
-                //TODO notify
-            }
-            else
-            {
-                //TODO log
-                //TODO notify
-            }
+            addRequest(sourceId, iRequestId, request);
+            pModel->setData(pModel->toIndex(index), DATASTATE_ROLE_DATAPUSHING, DATASTATE_ROLE);
+            m_rqstToNotifMap[request] = medNotif::createNotif(notifLevel::info, "Save data " + request.dataName, "The data " + request.dataName + " is saving on " + m_sourcesHandler->getInstanceName(sourceId), -1, 0);
+                
+
+            //int  iNotif = medNotifSys::infoWithProgress( "Pushing data " + pItem->data(1).toString(), "The data " + pItem->data(1).toString() + " is pushing to " + m_sourcesHandler->getInstanceName(sourceId));
+            //mInfo << "Pushing data " << pItem->data(1).toString() << "have the Id of notification " << iNotif << "\r\n";
+            //TODO log
+            //TODO notify
         }
         else
         {
