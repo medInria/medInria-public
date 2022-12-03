@@ -93,7 +93,7 @@ medNotifStatusbarWidget::~medNotifStatusbarWidget()
 }
 
 
-void medNotifStatusbarWidget::createSubPartWidget(medNotif * notif)
+void medNotifStatusbarWidget::createSubPartWidget(medUsrNotif notif)
 {    
     if (notif->getAchievement() > -1)
     {
@@ -106,7 +106,7 @@ void medNotifStatusbarWidget::createSubPartWidget(medNotif * notif)
             notifTBWidget->m_progressBar->setRange(0, 0);
             notifTBWidget->m_progressBar->setValue(0);
         }
-        d->notifToWidgetMap[notif] = notifTBWidget;
+        d->notifToWidgetMap[notif.get()] = notifTBWidget;
         if (d->displayed[0] == nullptr)
         {
             d->displayed[0] = notifTBWidget;
@@ -133,7 +133,7 @@ void medNotifStatusbarWidget::createSubPartWidget(medNotif * notif)
         {
             auto pAction = new QWidgetAction(this);
             d->fifoNotifSubWidget << notifTBWidget;
-            d->notifToWidgetActionMap[notif] = pAction;
+            d->notifToWidgetActionMap[notif.get()] = pAction;
             pAction->setDefaultWidget(notifTBWidget);
             notifTBWidget->setParent(d->extraList);
             d->extraList->addAction(pAction);
@@ -150,12 +150,12 @@ void medNotifStatusbarWidget::createSubPartWidget(medNotif * notif)
     }
 }
 
-void medNotifStatusbarWidget::removeNotification(medNotif * notif)
+void medNotifStatusbarWidget::removeNotification(medUsrNotif notif)
 {
     QMutexLocker(&d->mutex);
-    if (d->notifToWidgetMap.contains(notif))
+    if (d->notifToWidgetMap.contains(notif.get()))
     {
-        auto *pWidget = d->notifToWidgetMap.take(notif);
+        auto *pWidget = d->notifToWidgetMap.take(notif.get());
         int pos = -1;
 
         if (d->displayed[0] == pWidget) pos = 0;
@@ -208,7 +208,7 @@ void medNotifStatusbarWidget::removeNotification(medNotif * notif)
         }
         else
         {
-            auto * pActionFromList = d->notifToWidgetActionMap.take(notif);
+            auto * pActionFromList = d->notifToWidgetActionMap.take(notif.get());
             d->extraList->removeAction(pActionFromList);
         }
     }
@@ -220,18 +220,14 @@ void medNotifStatusbarWidget::removeNotification(medNotif * notif)
 }
 
 
-void medNotifStatusbarWidget::update(medNotif * notif)
+void medNotifStatusbarWidget::update(medUsrNotif notif)
 {
     if (notif)
     {
         QMutexLocker(&d->mutex);
-        if (!d->notifToWidgetMap.contains(notif))
+        if (!d->notifToWidgetMap.contains(notif.get()))
         {
             createSubPartWidget(notif);
-            //d->notifToWidgetMap[notif]->setFixedWidth(100);
-            //d->notifToWidgetMap[notif]->setFixedHeight(100);
-            //d->notifToWidgetMap[notif]->show();
-            //this->show();
         }
         int percentage = notif->getAchievement();
         if (notif->getCriticalityLevel() == notifLevel::info)

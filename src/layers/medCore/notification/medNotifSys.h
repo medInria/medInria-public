@@ -33,27 +33,30 @@ class MEDCORE_EXPORT medNotifSys : public QObject
 
 public:
     static medNotifSys* instance();
-    static bool registerNotif(medUsrNotif notif);
-    static bool unregisterNotif(medNotif *notif);
-    static void updateNotif(medNotif *notif);
+
+    static bool registerNotif  (medUsrNotif &notif);
+    static bool unregisterNotif(medUsrNotif const & notif);
 
     void setOperatingSystemNotification(bool pi_bOn);
-    void setOSNotifOnlyNonFocus(bool pi_bOn);
+    void setOSNotifOnlyNonFocus        (bool pi_bOn);
 
 signals:
-    void update(medNotif *);
-    void notification(medNotif *);
-    void removed(medNotif *);
+    void update       (medUsrNotif &);
+    void notification (medUsrNotif &);
+    void removed(medUsrNotif const &);
 
 public slots:
-    void remove(medNotif * pi_pNotif);
+    bool add(medUsrNotif &notif);
+    bool remove(medUsrNotif const &notif);
     void windowOnTop(bool pi_bOntop);
 
 private:    
     medNotifSys(QObject *parent = nullptr);
     ~medNotifSys();
-    void osNotif(medNotif *notif);
-    void debugWriteNotifications(medNotif *notif);//TODO remove after debug phase
+
+    medUsrNotif getUsrNotif(medNotif * notif);
+    void updateNotif(medUsrNotif &notif);
+    void osNotif(medUsrNotif &notif);
 
 private:
     friend medNotifSysPrivate;

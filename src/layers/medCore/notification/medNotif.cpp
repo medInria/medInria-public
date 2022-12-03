@@ -49,6 +49,37 @@ std::shared_ptr<medNotif> medNotif::createNotif(notifLevel pi_criticityLevel, QS
     return notifRes;
 }
 
+std::shared_ptr<medNotif> medNotif::createNotif(medNotifSys * sys, notifLevel pi_criticityLevel, QString pi_title, QString pi_message, int pi_time_ms, int pi_achivementPercentage)
+{
+    std::shared_ptr<medNotif> notifRes;
+
+    if (pi_criticityLevel >= notifLevel::info && pi_criticityLevel <= notifLevel::error && !pi_title.isEmpty() && pi_achivementPercentage >= -2 && pi_achivementPercentage <= 100)
+    {
+        notifRes = std::shared_ptr<medNotif>(new medNotif());
+
+        notifRes->d->criticalityLevel = pi_criticityLevel;
+        notifRes->d->title = pi_title;
+        notifRes->d->msg = pi_message;
+
+        notifRes->d->achievement = pi_achivementPercentage;
+        notifRes->d->displayTime = pi_time_ms;
+
+        if (!sys->add(notifRes))
+        {
+            notifRes.reset();
+        }
+    }
+
+    if (notifRes == nullptr)
+    {
+        mDebug << "medNotif can't create notification with : " << "critical level: " << (int)pi_criticityLevel << ", title: " << pi_title << ", message: " << pi_message << ", display time: " << pi_time_ms << ", percentage: " << pi_achivementPercentage;
+    }
+
+    return notifRes;
+}
+
+
+
 medNotif::medNotif()
 {
     d = new medNotifPrivate();
@@ -68,8 +99,7 @@ bool medNotif::update(notifLevel pi_criticityLevel, int pi_achivementPercentage)
     {
         d->criticalityLevel = pi_criticityLevel;
         d->achievement = pi_achivementPercentage;
-        medNotifSys::updateNotif(this);
-        emit notification();
+        emit updated();
     }
     else
     {
@@ -107,19 +137,19 @@ int medNotif::getDisplayTime()
 void medNotif::setExtraTrigger1Label(QString const & label)
 {
     d->extraTrigger1 = label;
-    emit notification();
+    emit updated();
 }
 
 void medNotif::setExtraTrigger2Label(QString const & label)
 {
     d->extraTrigger2 = label;
-    emit notification();
+    emit updated();
 }
 
 void medNotif::setExtraTrigger3Label(QString const & label)
 {
     d->extraTrigger3 = label;
-    emit notification();
+    emit updated();
 }
 
 QString medNotif::getExtraTrigger1Label()

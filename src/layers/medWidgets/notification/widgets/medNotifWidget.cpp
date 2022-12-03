@@ -22,7 +22,7 @@
 #include <QDebug>
 
 
-medNotifWidget::medNotifWidget(medNotif *notif, medNotificationPaneWidget * paneContainer)
+medNotifWidget::medNotifWidget(medUsrNotif &notif, medNotificationPaneWidget * paneContainer) : m_notif(notif)
 {
     auto * widgetLayout = new QVBoxLayout;
     setLayout(widgetLayout);
@@ -85,29 +85,30 @@ medNotifWidget::medNotifWidget(medNotif *notif, medNotificationPaneWidget * pane
 
     if (paneContainer)
     {
-        connect(m_removeNotifButton, &QPushButton::clicked, [=]() {paneContainer->notifWidgetAskDeletion(notif); });
+        connect(m_removeNotifButton, &QPushButton::clicked, [=]() {paneContainer->notifWidgetAskDeletion(this->m_notif); });
     }
     else
     {
         connect(m_removeNotifButton, &QPushButton::clicked, this, &medNotifWidget::deleteLater);
     }
-    connect(notif, &medNotif::notification, [=]() {this->update(notif); });    
+    connect(notif.get(), &medNotif::updated, this, &medNotifWidget::update);
 }
 
 medNotifWidget::~medNotifWidget()
 {
+    int i = 0;
 }
 
-void medNotifWidget::update(medNotif * notif)
+void medNotifWidget::update()
 {
-    m_imageLabel->setPixmap(criticalityImg(notif->getCriticalityLevel()));
+    m_imageLabel->setPixmap(criticalityImg(m_notif->getCriticalityLevel()));
 
-    if (notif->getAchievement() > -1 && notif->getAchievement() <= 100)
+    if (m_notif->getAchievement() > -1 && m_notif->getAchievement() <= 100)
     {
-        m_progressWidget->setValue(notif->getAchievement());
+        m_progressWidget->setValue(m_notif->getAchievement());
         m_progressWidget->show();
     }
-    else if (notif->getAchievement() == 101)
+    else if (m_notif->getAchievement() == 101)
     {
         m_progressWidget->setRange(0, 0);
         m_progressWidget->setValue(0);
@@ -118,9 +119,9 @@ void medNotifWidget::update(medNotif * notif)
         m_progressWidget->hide();
     }
 
-    extraTriggerUpdate(1, notif);
-    extraTriggerUpdate(2, notif);
-    extraTriggerUpdate(3, notif);
+    extraTriggerUpdate(1);
+    extraTriggerUpdate(2);
+    extraTriggerUpdate(3);
 }
 
 
@@ -142,7 +143,7 @@ QPixmap & medNotifWidget::criticalityImg(notifLevel criticalityLevel)
     }
 }
 
-void medNotifWidget::extraTriggerUpdate(int extraCount, medNotif * notif)
+void medNotifWidget::extraTriggerUpdate(int extraCount)
 {
     QString extraLabelText;
     QPushButton ** extraTriggerButton = nullptr;
@@ -150,19 +151,19 @@ void medNotifWidget::extraTriggerUpdate(int extraCount, medNotif * notif)
 
     if (extraCount == 1)
     {
-        extraLabelText = notif->getExtraTrigger1Label();
+        extraLabelText = m_notif->getExtraTrigger1Label();
         extraTriggerButton = &m_extraTrigger1Button;
         rebondSignal = &medNotif::extraTrigger1;
     }
     else if (extraCount == 2)
     {
-        extraLabelText = notif->getExtraTrigger2Label();
+        extraLabelText = m_notif->getExtraTrigger2Label();
         extraTriggerButton = &m_extraTrigger2Button;
         rebondSignal = &medNotif::extraTrigger2;
     }
     else if (extraCount == 3)
     {
-        extraLabelText = notif->getExtraTrigger2Label();
+        extraLabelText = m_notif->getExtraTrigger2Label();
         extraTriggerButton = &m_extraTrigger2Button;
         rebondSignal = &medNotif::extraTrigger2;
     }
@@ -174,7 +175,7 @@ void medNotifWidget::extraTriggerUpdate(int extraCount, medNotif * notif)
             m_extraLayout->removeWidget(*extraTriggerButton);
             *extraTriggerButton = new QPushButton(extraLabelText);            
             m_extraLayout->addWidget(*extraTriggerButton, 0, extraCount);
-            QObject::connect(*extraTriggerButton, &QPushButton::clicked, &(*notif), rebondSignal);
+            QObject::connect(*extraTriggerButton, &QPushButton::clicked, m_notif.get(), rebondSignal);
         }
         else
         {

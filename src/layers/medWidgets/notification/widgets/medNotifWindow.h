@@ -16,8 +16,8 @@
 
 #include <medWidgetsExport.h>
 
-class medNotifSys;
-class medNotif;
+#include <medNotifSys.h>
+
 class QListWidgetItem;
 class QPropertyAnimation;
 class QMainWindow;
@@ -33,12 +33,12 @@ public:
     void setParent(QMainWindow *pi_parent); 
 
 public slots:
-    void notifWidgetAskDeletion(medNotif *notif);
-    void removeNotification(medNotif * notif);
-    void addNotification(medNotif * notif);
+    void notifWidgetAskDeletion(medUsrNotif notif);
+    void removeNotification(medUsrNotif notif);
+    void addNotification(medUsrNotif notif);
     void showPane(bool show);
     void windowGeometryUpdate(QRect const & geo);
-    void showAndHigligth(medNotif * notif);
+    void showAndHigligth(medUsrNotif notif);
     void swithVisibility();
 
 protected:
