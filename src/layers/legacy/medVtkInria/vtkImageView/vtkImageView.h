@@ -505,6 +505,8 @@ protected:
 
     virtual void GetWithinBoundsPosition (double* pos1, double* dos2);
 
+    double getImageHalfMaximumSize();
+
 protected:
     /**
      Takes a vtkScalarsToColors pointer

@@ -1178,15 +1178,7 @@ void vtkImageView::SetZoom (double arg)
     vtkCamera *cam = this->GetRenderer() ? this->GetRenderer()->GetActiveCamera() : nullptr;
     if (cam)
     {
-        int* extent = this->GetMedVtkImageInfo()->extent;
-        double* spacing = this->GetMedVtkImageInfo()->spacing;
-        double xyz[3] = {0,0,0};
-
-        for (unsigned int i=0; i<3; i++)
-        {
-            xyz[i] = (extent [2*i +1] - extent [2*i]) * spacing[i] / 2.0;
-        }
-        double val = std::max (std::max (xyz[0], xyz[1]), xyz[2]);
+        double val = getImageHalfMaximumSize();
 
         // Just in case no data, avoid setting scale to zero.
         val = ( val == 0. ) ? 1. : val;
@@ -1201,37 +1193,45 @@ void vtkImageView::SetZoom (double arg)
 //----------------------------------------------------------------------------
 double vtkImageView::GetZoom()
 {
+    double res = 1.0;
     if (!this->GetMedVtkImageInfo() || !this->GetMedVtkImageInfo()->initialized)
     {
-        return 1.0;
+        return res;
     }
     if (!this->Get2DDisplayMapperInputAlgorithm() || !this->Get2DDisplayMapperInputAlgorithm()->GetOutputInformation(0))
     {
-        return 1.0;
+        return res;
     }
 
     vtkCamera *cam = this->GetRenderer() ? this->GetRenderer()->GetActiveCamera() : nullptr;
     if (cam)
     {
-        // Ensure that the spacing and dimensions are up-to-date.
-        int* extent = this->GetMedVtkImageInfo()->extent;
-        double* spacing = this->GetMedVtkImageInfo()->spacing;
-        double xyz[3] = {0,0,0};
-
-        for (unsigned int i=0; i<3; i++)
-        {
-            xyz[i] = (extent [2*i +1] - extent [2*i]) * spacing[i] / 2.0;
-        }
-        //xyz[i] = dimensions[i] * spacing[i] / 2.0;
-
-        double val = std::max (std::max (xyz[0], xyz[1]), xyz[2]);
-
-        return (val / cam->GetParallelScale());
+        res = getImageHalfMaximumSize() / cam->GetParallelScale();
     }
-    else
+
+    return res;
+}
+
+/**
+ * @brief Compute the maximum between both x and y size (divided by 2) of the image.
+ This is going to be used to compute a proper zoom for the camera.
+ * 
+ * @return double 
+ */
+double vtkImageView::getImageHalfMaximumSize()
+{
+    // Ensure that the spacing and dimensions are up-to-date.
+    int* extent = this->GetMedVtkImageInfo()->extent;
+    double* spacing = this->GetMedVtkImageInfo()->spacing;
+    double xy[2] = {0,0};
+
+    for (unsigned int i=0; i<2; i++)
     {
-        return 1.0;
+        xy[i] = (extent [2*i +1] - extent [2*i]) * spacing[i] / 2.0;
     }
+    //val = dimension * spacing / 2;
+
+    return std::max (xy[0], xy[1]);
 }
 
 //----------------------------------------------------------------------------
