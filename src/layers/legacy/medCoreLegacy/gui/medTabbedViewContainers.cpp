@@ -271,21 +271,23 @@ void medTabbedViewContainers::closeTab(int index)
     {
         this->addContainerInTabUnNamed();
     }
-
-    // Update the remaining tab indexes
-    d->containerSelectedForTabIndex.remove(index);
-    QHash <int, QList<QUuid> > copyHash;
-    for(auto currentTabIndex : d->containerSelectedForTabIndex.keys())
+    else
     {
-        auto previousTab = d->containerSelectedForTabIndex.take(currentTabIndex);
-        copyHash.insert(copyHash.count(), previousTab);
-    }
-    d->containerSelectedForTabIndex.clear();
-    d->containerSelectedForTabIndex = copyHash;
+        // Update the remaining tab indexes
+        d->containerSelectedForTabIndex.remove(index);
+        QHash <int, QList<QUuid> > copyHash;
+        for(auto currentTabIndex : d->containerSelectedForTabIndex.keys())
+        {
+            auto previousTab = d->containerSelectedForTabIndex.take(currentTabIndex);
+            copyHash.insert(copyHash.count(), previousTab);
+        }
+        d->containerSelectedForTabIndex.clear();
+        d->containerSelectedForTabIndex = copyHash;
     
-    // Update the current tab to the last one
-    setCurrentIndex(this->count()-1);
-    emit containersSelectedChanged();
+        // Update the current tab to the last one
+        setCurrentIndex(this->count()-1);
+        emit containersSelectedChanged();
+    }
 }
 
 void medTabbedViewContainers::tabBarDoubleClickedHandler(int index)
