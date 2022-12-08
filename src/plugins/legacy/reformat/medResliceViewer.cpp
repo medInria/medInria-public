@@ -736,7 +736,7 @@ void medResliceViewer::generateOutput(vtkImageReslice* reslicer, QString destTyp
     outputData->setData(filter->GetOutput());
 
     // Apply resampling in pix
-    if (reformaTlbx->findChild<QComboBox*>("bySpacingOrSize")->currentText() == "Dimension")
+    if (reformaTlbx->findChild<QComboBox*>("bySpacingOrSize")->currentText() == "Size")
     {
         applyResamplingPix();
     }
