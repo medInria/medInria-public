@@ -58,7 +58,7 @@ resliceToolBox::resliceToolBox (QWidget *parent) : medAbstractSelectableToolBox 
     d->bySpacingOrSize = new QComboBox(resliceToolBoxBody);
     d->bySpacingOrSize->setObjectName("bySpacingOrSize");
     d->bySpacingOrSize->addItem("Spacing");
-    d->bySpacingOrSize->addItem("Dimension");
+    d->bySpacingOrSize->addItem("Size");
     resampleLayout->addWidget(bySpacingOrSizeLabel);
     resampleLayout->addWidget(d->bySpacingOrSize);
     connect(d->bySpacingOrSize, SIGNAL(currentIndexChanged(const QString&)), this, SLOT(switchSpacingAndDimension(const QString&)));
