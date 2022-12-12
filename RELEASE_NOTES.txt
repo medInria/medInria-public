@@ -8,6 +8,7 @@ medInria 3.3:
 - Reslice, solve crashs after removing a data in view
 - PolygonROI, solve graphical/ergonomy pb and crashes (split, clear)
 - Variational Segmentation: enhance GUI, solve a spacing error on output masks
+- BUGFIX 3.3.1: [Four-views] solve crash closing the views
 
 medInria 3.2:
 - Add some tooltips in view navigator
