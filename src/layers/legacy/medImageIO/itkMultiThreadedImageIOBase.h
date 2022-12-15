@@ -78,5 +78,5 @@ namespace itk
     
   };
   
-  itkEventMacro (SliceReadEvent, AnyEvent)
+  itkEventMacroDeclaration(SliceReadEvent, itk::AnyEvent);
 } // end of namespace

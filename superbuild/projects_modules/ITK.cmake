@@ -39,7 +39,7 @@ if (NOT USE_SYSTEM_${ep})
 ## #############################################################################
 
 set(git_url ${GITHUB_PREFIX}InsightSoftwareConsortium/ITK.git)
-set(git_tag v5.1.1)
+set(git_tag v5.2.1)
 
 ## #############################################################################
 ## Add specific cmake arguments for configuration step of the project
