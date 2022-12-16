@@ -41,6 +41,7 @@ list_source_files(${TARGET_NAME}
   views/interactors
   views/navigators
   parameters
+  readers
   )
 
 list_header_directories_to_include(${TARGET_NAME}
