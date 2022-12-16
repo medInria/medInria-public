@@ -44,6 +44,8 @@
 
 #include <medVtkViewItkDataImageNavigator.h>
 
+#include <dicomRtImageWriter.h>
+
 #ifdef ITK_USE_SYSTEM_GDCM
 #include <itkGDCMDataImageReader.h>
 #endif
@@ -163,6 +165,8 @@ bool itkDataImagePlugin::initialize()
     if (!itkVTKDataImageWriter::registered())        { qWarning() << "Unable to register itkVTKDataImageWriter type";        }
     if (!itkGISDataImageWriter::registered())        { qWarning() << "Unable to register itkGISDataImageWriter type"; }
     if (!itkDicomDataImageWriter::registered())      { qWarning() << "Unable to register itkDicomDataImageWriter type"; }
+
+    if (!DicomRtImageWriter::registered())           { qWarning() << "Unable to register DicomRtImageWriter type"; }
 
     return true;
 }
