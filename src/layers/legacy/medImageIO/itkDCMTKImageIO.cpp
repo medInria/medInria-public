@@ -670,7 +670,6 @@ void DCMTKImageIO::DetermineOrientation()
     }
 }
 
-
 double DCMTKImageIO::GetPositionOnStackingAxisForImage (int index)
 {
     // Getting the unit vector of the closest axis
@@ -679,15 +678,6 @@ double DCMTKImageIO::GetPositionOnStackingAxisForImage (int index)
     closestAxis[0] = round(m_Direction[2][0]);
     closestAxis[1] = round(m_Direction[2][1]);
     closestAxis[2] = round(m_Direction[2][2]);
-    if (fabs(closestAxis[0] + closestAxis[1] + closestAxis[2]) != 1)
-    {
-        itkExceptionMacro (
-                    << "Ambiguous slice stack direction: "
-                    <<m_Direction[2][0]<<" "
-                    <<m_Direction[2][1]<<" "
-                    <<m_Direction[2][2]
-                );
-    }
 
     std::string s_position = this->GetMetaDataValueString("(0020,0032)", index);
     std::istringstream is_stream( s_position.c_str() );
