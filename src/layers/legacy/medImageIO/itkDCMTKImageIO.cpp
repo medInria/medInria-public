@@ -672,43 +672,15 @@ void DCMTKImageIO::DetermineOrientation()
 
 double DCMTKImageIO::GetPositionOnStackingAxisForImage (int index)
 {
-    // Getting the unit vector of the closest axis
-    // so we know which part of the image position to use
-    vnl_vector<double> closestAxis (3);
-    closestAxis[0] = round(m_Direction[2][0]);
-    closestAxis[1] = round(m_Direction[2][1]);
-    closestAxis[2] = round(m_Direction[2][2]);
-
-    std::string s_position = this->GetMetaDataValueString("(0020,0032)", index);
-    std::istringstream is_stream( s_position.c_str() );
-
-    double pos = 0.0;
-    bool foundAxis=false;
-
-    for (int i=0; i<3; i++)
+    // Get maximum absolute value, which is the closest to an axis
+    auto result = std::max_element(m_Direction[2].begin(), m_Direction[2].end(), [](int a, int b)
     {
-        if (!(is_stream >> pos) )
-        {
-            itkWarningMacro ( << "Cannot convert string to double: " << s_position.c_str() << std::endl );
-        }
-        else
-        {
-            if (fabs(closestAxis[i]) == 1)
-            {
-                foundAxis = true;
-                break;
-            }
-        }
-    }
+        return std::abs(a) < std::abs(b);
+    });
 
-    if (!foundAxis)
-    {
-        itkWarningMacro ( <<"Could not identify position on stacking axis, returning zero." << std::endl );
-    }
-
-    return pos;
+    // Index of the value in the vector
+    return std::distance(m_Direction[2].begin(), result);
 }
-
 
 double DCMTKImageIO::GetSliceLocation(std::string imagePosition)
 {
