@@ -673,7 +673,7 @@ void DCMTKImageIO::DetermineOrientation()
 double DCMTKImageIO::GetPositionOnStackingAxisForImage (int index)
 {
     // Get maximum absolute value, which is the closest to an axis
-    auto result = std::max_element(m_Direction[2].begin(), m_Direction[2].end(), [](int a, int b)
+    auto result = std::max_element(m_Direction[2].begin(), m_Direction[2].end(), [](double a, double b)
     {
         return std::abs(a) < std::abs(b);
     });
