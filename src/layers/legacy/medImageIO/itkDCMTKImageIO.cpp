@@ -679,7 +679,20 @@ double DCMTKImageIO::GetPositionOnStackingAxisForImage (int index)
     });
 
     // Index of the value in the vector
-    return std::distance(m_Direction[2].begin(), result);
+    auto principalAxisIndex = std::distance(m_Direction[2].begin(), result);
+
+    return GetPositionFromPrincipalAxisIndex(index, principalAxisIndex);
+}
+
+double DCMTKImageIO::GetPositionFromPrincipalAxisIndex(int index, int principalAxisIndex)
+{
+    std::string s_position = this->GetMetaDataValueString("(0020,0032)", index);
+
+    // Convert string metadata to vector of double
+    std::stringstream lineStream(s_position);
+    std::vector<double> positionVector(std::istream_iterator<double>(lineStream), {});
+
+    return positionVector[principalAxisIndex];
 }
 
 double DCMTKImageIO::GetSliceLocation(std::string imagePosition)
