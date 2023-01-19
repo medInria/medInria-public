@@ -158,6 +158,7 @@ bool medSQlite<T>::connect(bool pi_bEnable)
     {
         if (!m_DbPath->value().isEmpty())
         {
+            QDir().mkpath(m_DbPath->value());
             m_Engine = T::database(m_instanceId);
             if (!m_Engine.isValid())
             {
@@ -234,6 +235,9 @@ bool medSQlite<T>::connect(bool pi_bEnable)
         m_online = false;
         bRes = true;
     }
+
+    emit connectionStatus(bRes);
+
     return bRes;
 }
 
@@ -274,7 +278,7 @@ bool medSQlite<T>::isWritable()
 template <typename T>
 bool medSQlite<T>::isLocal()
 {
-    return true;
+    return false;
 }
 
 template <typename T>

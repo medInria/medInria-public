@@ -251,6 +251,7 @@ void medSourcesSettings::sourceCreated(medAbstractSource * pi_pSource)
     m_sourceListWidget->setCurrentItem(widgetItem);
 
     connect(newSourceWidgetItem, &medSourceSettingsWidget::sourceRename, m_sourceLoader, &medSourcesLoader::renameSource);
+    connect(pi_pSource, &medAbstractSource::connectionStatus, newSourceWidgetItem, &medSourceSettingsWidget::switchConnectionIcon);
     connect(m_sourceLoader, &medSourcesLoader::sourcesUpdated, newSourceWidgetItem, &medSourceSettingsWidget::titleChanged);
     connect(m_sourceListWidget, &QListWidget::currentItemChanged, newSourceWidgetItem, &medSourceSettingsWidget::currentItemChanged);
 }

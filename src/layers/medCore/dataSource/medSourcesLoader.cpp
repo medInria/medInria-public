@@ -286,7 +286,7 @@ medSourcesLoader::medSourcesLoader(QObject *parent)
 {
     setParent(parent);
     m_CnxParametersFile = MED_DATASOURCES_FILENAME;
-    m_CnxParametersPath = ".";
+    m_CnxParametersPath = QStandardPaths::writableLocation(QStandardPaths::GenericConfigLocation) + "/" + QCoreApplication::organizationName() + "/" + QCoreApplication::applicationName();
 
     auto cnxParametersSaved = medSettingsManager::instance()->value("Sources", "Conf dir", ".").toString();
     

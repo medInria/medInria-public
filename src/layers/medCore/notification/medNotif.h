@@ -20,6 +20,7 @@
 #include <medCoreExport.h>
 
 class medNotifPrivate;
+class medNotifSys;
 
 enum class notifLevel : char
 {
@@ -35,6 +36,7 @@ class MEDCORE_EXPORT medNotif : public QObject
 
 public:
     static std::shared_ptr<medNotif> createNotif(notifLevel pi_criticityLevel, QString pi_title, QString pi_message, int pi_time_ms = -1, int pi_achivementPercentage = -1);
+    static std::shared_ptr<medNotif> createNotif(medNotifSys * sys, notifLevel pi_criticityLevel, QString pi_title, QString pi_message, int pi_time_ms = -1, int pi_achivementPercentage = -1);
 
     ~medNotif();
     bool update(notifLevel pi_criticityLevel, int pi_achivementPercentage, QString newMessage = "");
@@ -55,7 +57,7 @@ public:
     QString toString();
 
 signals:
-    void notification();
+    void updated();
     void extraTrigger1();
     void extraTrigger2();
     void extraTrigger3();
@@ -64,3 +66,6 @@ private:
     medNotif();
     medNotifPrivate * d;
 };
+
+
+//Q_DECLARE_METATYPE(std::shared_ptr<medNotif>);

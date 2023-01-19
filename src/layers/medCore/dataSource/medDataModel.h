@@ -27,8 +27,8 @@
 
 #include <dtkCoreSupport/dtkSmartPointer.h>
 
-#define REQUEST_TIME_OUT 2
-#define REQUEST_TIME_OUT_PULLING constexpr (REQUEST_TIME_OUT/2 ? REQUEST_TIME_OUT/2 : 1)
+#define REQUEST_TIME_OUT 60
+#define REQUEST_TIME_OUT_PULLING constexpr (REQUEST_TIME_OUT/10 ? REQUEST_TIME_OUT/10 : 1)
 
 enum asyncRequestType { getRqstType = 1, addRqstType = 2 };
 struct asyncRequest

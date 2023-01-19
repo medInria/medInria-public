@@ -49,6 +49,6 @@ private:
 private:
     QVBoxLayout m_layout;
     QMap<QString, QWidget*>   m_treeMap; // sourceInstanceId, SubTreeWidget
-    QMap<QString, QWidget*>   m_titleMap;  // sourceInstanceId, source instance names
+    QMap<QString, QLayout*>   m_titleMap;  // sourceInstanceId, source instance names
     QMap<QMenu*,  QTreeView*> m_TreeviewByMenuMap;
 };

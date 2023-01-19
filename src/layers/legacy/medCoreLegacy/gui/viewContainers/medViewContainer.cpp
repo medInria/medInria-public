@@ -117,7 +117,7 @@ medViewContainer::medViewContainer(medViewContainerSplitter *parent): QFrame(par
 
     d->defaultWidget = new QWidget;
     d->defaultWidget->setObjectName("defaultWidget");
-    QLabel *defaultLabel = new QLabel(tr("Drag'n drop series/study here from the left panel or:"));
+    QLabel *defaultLabel = new QLabel(tr("Drag'n drop series/study here from the left panel:"));
     QPushButton *openButton  = new QPushButton(tr("Open a file from your system"));
     QPushButton *sceneButton = new QPushButton(tr("Open a scene from your system"));
     QVBoxLayout *defaultLayout = new QVBoxLayout(d->defaultWidget);
@@ -126,6 +126,9 @@ medViewContainer::medViewContainer(medViewContainerSplitter *parent): QFrame(par
     defaultLayout->addWidget(sceneButton);
     connect(openButton,  SIGNAL(clicked()), this, SLOT(openFromSystem()), Qt::UniqueConnection);
     connect(sceneButton, SIGNAL(clicked()), this, SLOT(loadScene()),      Qt::UniqueConnection);
+
+    openButton->hide();
+    sceneButton->hide();
 
     d->menuButton = new QPushButton(this);
     d->menuButton->setIcon(QIcon(":/pixmaps/tools.png"));
@@ -140,6 +143,8 @@ medViewContainer::medViewContainer(medViewContainerSplitter *parent): QFrame(par
     d->openAction->setToolTip(tr("Open a file from your system"));
     d->openAction->setIconVisibleInMenu(true);
     connect(d->openAction, SIGNAL(triggered()), this, SLOT(openFromSystem()), Qt::UniqueConnection);
+    d->openAction->setDisabled(true);
+    d->openAction->setVisible(false);
 
     d->closeContainerButton = new QPushButton(this);
     QIcon closeIcon;

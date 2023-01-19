@@ -14,7 +14,7 @@
 
 #include <medWidgetsExport.h>
 
-class medNotifSys;
+#include <medNotifSys.h>
 class medNotif;
 
 class medNotifStatusbarItemPrivate;
@@ -26,12 +26,12 @@ public:
     ~medNotifStatusbarWidget();
 
 public slots:
-    void removeNotification(medNotif * notif);
-    void createSubPartWidget(medNotif * notif);
-    void update(medNotif * notif);
+    void removeNotification (medUsrNotif notif);
+    void createSubPartWidget(medUsrNotif notif);
+    void update             (medUsrNotif *pNotif);
 
 signals:
-    void notifClicked(medNotif *);
+    void notifClicked(medUsrNotif);
 
 private:
     medNotifStatusbarItemPrivate *d;
