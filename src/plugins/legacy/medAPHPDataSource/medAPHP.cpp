@@ -13,7 +13,8 @@
 
 #include "medAPHP.h"
 
-#include <PluginAPHP/QtDcmAPHP.h>
+#include <PluginAPHP/QtDcmInterface.h>
+#include <dcmtk/dcmdata/dcdeftag.h>
 #include <medGroupParameter.h>
 #include <medIntParameter.h>
 #include <medStringListParameter.h>
