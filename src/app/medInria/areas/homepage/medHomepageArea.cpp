@@ -39,7 +39,7 @@ medHomepageArea::medHomepageArea ( QWidget * parent ) : QWidget ( parent ), d ( 
     QMenu *menuFile = menu_bar->addMenu("File");
 
     QAction *actionBrowser = new QAction(tr("&Import/export files"), parent);
-    actionBrowser->setIcon(QIcon(":/icons/open_white.svg"));
+    actionBrowser->setIcon(QIcon::fromTheme("open"));
     connect(actionBrowser, &QAction::triggered, this, &medHomepageArea::onShowBrowser);
     menuFile->addAction(actionBrowser);
 
@@ -143,7 +143,6 @@ medHomepageArea::medHomepageArea ( QWidget * parent ) : QWidget ( parent ), d ( 
     menuAbout->addSeparator();
 
     QAction *actionHelp = new QAction(tr("&Help"), parent);
-    actionHelp->setIcon(QIcon(":/icons/help_white.svg"));
     connect(actionHelp, &QAction::triggered, this, &medHomepageArea::onShowHelp);
     menuAbout->addAction(actionHelp);
 
@@ -153,8 +152,8 @@ medHomepageArea::medHomepageArea ( QWidget * parent ) : QWidget ( parent ), d ( 
 
     // --- Fullscreen checkable action
     QIcon fullscreenIcon;
-    fullscreenIcon.addPixmap(QPixmap(":icons/fullscreen_on_white.svg"),QIcon::Normal,QIcon::Off);
-    fullscreenIcon.addPixmap(QPixmap(":icons/fullscreen_off_white.svg"),QIcon::Normal,QIcon::On);
+    fullscreenIcon.addPixmap(QIcon::fromTheme("fullscreen_on").pixmap(24,24),QIcon::Normal,QIcon::Off);
+    fullscreenIcon.addPixmap(QIcon::fromTheme("fullscreen_off").pixmap(24,24),QIcon::Normal,QIcon::On);
 
     d->actionFullscreen = new QAction(parent);
     d->actionFullscreen->setIcon(fullscreenIcon);
@@ -246,7 +245,7 @@ void medHomepageArea::initPage()
 
     medHomepageButton * browserButton = new medHomepageButton ( this );
     browserButton->setToolButtonStyle ( Qt::ToolButtonTextBesideIcon );
-    browserButton->setIcon ( QIcon ( ":/icons/open_white.svg" ) );
+    browserButton->setIcon ( QIcon::fromTheme("open") );
     browserButton->setText ( " Import/export files" );
     browserButton->setMinimumHeight ( 40 );
     browserButton->setMaximumWidth ( 250 );
@@ -525,10 +524,10 @@ void medHomepageArea::switchOffOnFullscreenIcons(const bool checked)
 {
     if (checked)
     {
-        d->actionFullscreen->setIcon(QIcon(":icons/fullscreen_off_white.svg"));
+        d->actionFullscreen->setIcon(QIcon::fromTheme("fullscreen_off"));
     }
     else
     {
-        d->actionFullscreen->setIcon(QIcon(":icons/fullscreen_on_white.svg"));
+        d->actionFullscreen->setIcon(QIcon::fromTheme("fullscreen_on"));
     }
 }
