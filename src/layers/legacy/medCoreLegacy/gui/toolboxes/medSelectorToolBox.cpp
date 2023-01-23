@@ -83,7 +83,7 @@ medSelectorToolBox::medSelectorToolBox(QWidget *parent, QString tlbxId)
     // Help button
     d->helpButton = new QPushButton;
     QIcon helpIcon;
-    helpIcon.addPixmap(QPixmap(":icons/help_white.svg"),QIcon::Normal);
+    helpIcon.addPixmap(QIcon::fromTheme("help").pixmap(24,24),QIcon::Normal);
     helpIcon.addPixmap(QPixmap(":icons/help_grey.svg"), QIcon::Disabled);
     d->helpButton->setIcon(helpIcon);
     d->helpButton->setToolTip("Help for the selected toolbox");
