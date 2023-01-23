@@ -1139,11 +1139,6 @@ medTabbedViewContainers QPushButton::hover
     background: $VIEW_CONTAINER_BUTTON_HOVER_BACKGOUND;
 }
 
-QPushButton#addTabButton
-{
-    image: url(:icons/plus_white.png);
-}
-
 medViewContainer
 {
     border: $CONTAINER_BORDER;

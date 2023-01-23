@@ -102,9 +102,9 @@ void medHomepageArea::initPage()
     workspaceButtonsLayoutBasic->addLayout(workspaceButtonsLayoutBasicGrid);
 
     medHomepageButton * browserButton = new medHomepageButton ( this );
-    browserButton->setToolButtonStyle ( Qt::ToolButtonTextUnderIcon );
-    browserButton->setIcon ( QIcon ( ":/icons/folder.png" ) );
-    browserButton->setText ( "Import/export files" );
+    browserButton->setToolButtonStyle ( Qt::ToolButtonTextBesideIcon );
+    browserButton->setIcon ( QIcon::fromTheme("open") );
+    browserButton->setText ( " Import/export files" );
     browserButton->setMinimumHeight ( 40 );
     browserButton->setMaximumWidth ( 250 );
     browserButton->setMinimumWidth ( 250 );
@@ -235,3 +235,49 @@ void medHomepageArea::onShowWorkspace(QString workspace)
 {
     emit showWorkspace(workspace);
 }
+<<<<<<< HEAD
+=======
+
+void medHomepageArea::onSwitchToWorkspace()
+{
+    QAction* currentAction = qobject_cast<QAction*>(sender());
+    onShowWorkspace(currentAction->data().toString());
+}
+
+void medHomepageArea::openLogDirectory()
+{
+    QString path = QFileInfo(dtkLogPath(qApp)).path();
+    QDesktopServices::openUrl(QUrl::fromLocalFile(path));
+}
+
+void medHomepageArea::onShowPluginLogs()
+{
+    medPluginWidget dialog(this);
+    dialog.exec();
+}
+
+void medHomepageArea::onShowHelp()
+{
+    QDesktopServices::openUrl(QUrl("http://med.inria.fr/help/documentation"));
+}
+
+void medHomepageArea::onShowComposer()
+{
+    emit showComposer();
+}
+<<<<<<< HEAD
+=======
+
+void medHomepageArea::switchOffOnFullscreenIcons(const bool checked)
+{
+    if (checked)
+    {
+        d->actionFullscreen->setIcon(QIcon::fromTheme("fullscreen_off"));
+    }
+    else
+    {
+        d->actionFullscreen->setIcon(QIcon::fromTheme("fullscreen_on"));
+    }
+}
+>>>>>>> [Theme] introduce Qt setThemeName methods to handle themed icons (dark/light)
+>>>>>>> c8b98cd5e ([Theme] introduce Qt setThemeName methods to handle themed icons (dark/light))
