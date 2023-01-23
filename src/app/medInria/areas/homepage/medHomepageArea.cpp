@@ -245,7 +245,7 @@ void medHomepageArea::initPage()
 
     medHomepageButton * browserButton = new medHomepageButton ( this );
     browserButton->setToolButtonStyle ( Qt::ToolButtonTextBesideIcon );
-    browserButton->setIcon ( QIcon ( ":/icons/open_white.svg" ) );
+    browserButton->setIcon ( QIcon::fromTheme("open") );
     browserButton->setText ( " Import/export files" );
     browserButton->setMinimumHeight ( 40 );
     browserButton->setMaximumWidth ( 250 );
@@ -519,3 +519,18 @@ void medHomepageArea::onShowComposer()
 {
     emit showComposer();
 }
+<<<<<<< HEAD
+=======
+
+void medHomepageArea::switchOffOnFullscreenIcons(const bool checked)
+{
+    if (checked)
+    {
+        d->actionFullscreen->setIcon(QIcon::fromTheme("fullscreen_off"));
+    }
+    else
+    {
+        d->actionFullscreen->setIcon(QIcon::fromTheme("fullscreen_on"));
+    }
+}
+>>>>>>> [Theme] introduce Qt setThemeName methods to handle themed icons (dark/light)
