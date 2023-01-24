@@ -44,12 +44,9 @@ medNotificationPaneWidget::medNotificationPaneWidget(medNotifSys * pi_pNotifSys,
     m_notificationsListWidget->setStyleSheet("QListWidget::item:selected {background:gray;}");
     m_animation = new QPropertyAnimation(this, "geometry", this);
 
-    auto connA1 = connect(pi_pNotifSys, &medNotifSys::notification, this, &medNotificationPaneWidget::addNotification);
-
-    bool bconnA1 = connA1;
-
-
+    connect(pi_pNotifSys, &medNotifSys::notification, this, &medNotificationPaneWidget::addNotification);
     connect(pi_pNotifSys, &medNotifSys::removed, this, &medNotificationPaneWidget::removeNotification);
+
     setParent(pi_parent);
     showPane(false);
 
@@ -79,9 +76,8 @@ void medNotificationPaneWidget::removeNotification(medUsrNotif notif)
 }
 
 
-void medNotificationPaneWidget::addNotification(medUsrNotif *pNotif)
+void medNotificationPaneWidget::addNotification(medUsrNotif notif)
 {
-    medUsrNotif &notif = *pNotif;
     QListWidgetItem *widgetItem = new QListWidgetItem();
     medNotifWidget *newNotifiWidget = new medNotifWidget(notif, this);
     m_notificationsListWidget->addItem(widgetItem);
@@ -128,42 +124,6 @@ void medNotificationPaneWidget::addNotification(medUsrNotif *pNotif)
     animationGroup->addAnimation(m_alphaAnimation);
     
     animationGroup->start();
-
-    //medNotifWidget *newNotifiWidgetPopup = new medNotifWidget(notif, nullptr);
-    //
-    //newNotifiWidgetPopup->setFixedSize(QSize(600, 300));
-    //newNotifiWidgetPopup->move(QPoint(10, 10));
-    //
-    //newNotifiWidgetPopup->setParent(m_parent);
-    //newNotifiWidgetPopup->show();
-    //
-    //QAnimationGroup * animationGroup = new QSequentialAnimationGroup(newNotifiWidgetPopup);
-    //
-    //
-    //m_geoAnimation = new QPropertyAnimation(newNotifiWidgetPopup, "pos");
-    //QPoint point_A(10 - 600, 10);
-    //QPoint point_B(10 , 10);
-    //m_geoAnimation->setDuration(3000);
-    //m_geoAnimation->setStartValue(point_A);
-    //m_geoAnimation->setEndValue(point_B);
-    //
-    //QPauseAnimation *pauseAnimation = new QPauseAnimation(3000, this);
-    //
-    //int duration_ms = 3000;
-    //QGraphicsOpacityEffect * show_effect = new QGraphicsOpacityEffect(newNotifiWidgetPopup);
-    //show_effect->setOpacity(1);
-    //m_alphaAnimation = new QPropertyAnimation(show_effect, "opacity");
-    //newNotifiWidgetPopup->setGraphicsEffect(show_effect);
-    //m_alphaAnimation->setStartValue(1);
-    //m_alphaAnimation->setEndValue(0);
-    //m_alphaAnimation->setDuration(duration_ms);
-    //
-    //
-    //animationGroup->addAnimation(m_geoAnimation);
-    //animationGroup->addAnimation(pauseAnimation);
-    //animationGroup->addAnimation(m_alphaAnimation);
-    //
-    //animationGroup->start();
 }
 
 void medNotificationPaneWidget::showPane(bool show)

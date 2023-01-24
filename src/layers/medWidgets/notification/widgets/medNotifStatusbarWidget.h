@@ -28,7 +28,7 @@ public:
 public slots:
     void removeNotification (medUsrNotif notif);
     void createSubPartWidget(medUsrNotif notif);
-    void update             (medUsrNotif *pNotif);
+    void update             (medUsrNotif notif);
 
 signals:
     void notifClicked(medUsrNotif);

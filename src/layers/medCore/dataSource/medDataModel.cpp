@@ -248,7 +248,7 @@ void medDataHub::getAsyncData(const medDataIndex & index, medAbstractData * &pDa
             case WAITER_EXIT_CODE_TIMEOUT:
                 break;
         }
-        //removeRequest(sourceId, rqstId);
+        removeRequest(sourceId, rqstId);
     }
 }
 // ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
@@ -392,6 +392,7 @@ void medDataHub::progress(const QString & sourceId, int rqstId, medAbstractSourc
                         //TODO ERROR
                     }
                 }
+                rqst.noLongerValid = true;
                 rqst.waiter.exit(WAITER_EXIT_CODE_SUCCESS);
                 break;
             }
@@ -432,7 +433,7 @@ void medDataHub::timeOutWatcher()
         for (auto rqstId : m_requestsMap[source].keys())
         {
             auto & rqst = m_requestsMap[source][rqstId];
-            if (rqst.stampTimeout < QDateTime::currentSecsSinceEpoch())
+            if (!rqst.noLongerValid && rqst.stampTimeout < QDateTime::currentSecsSinceEpoch())
             {
                 auto pModel = getModel(rqst.uri[0]);
                 pModel->setData(pModel->toIndex(rqst.uri), rqst.type==getRqstType? DATASTATE_ROLE_DATANOTLOADED : DATASTATE_ROLE_DATANOTSAVED, DATASTATE_ROLE);
@@ -1031,16 +1032,6 @@ void medDataHub::removeRequest(QString sourceId, int rqstId)
     }
     m_mapsRequestMutex.unlock();
 }
-
-//asyncRequest & medDataHub::holdRequest(QString sourceId, int requestId)
-//{
-//    m_mapsRequestMutex.lock();
-//    if (m_requestsMap.contains(sourceId) && m_requestsMap[sourceId].contains(requestId))
-//    {
-//        return m_requestsMap[sourceId][requestId];
-//    }
-//    return asyncRequest();
-//}
 
 void medDataHub::releaseRequest()
 {

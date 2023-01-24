@@ -33,9 +33,9 @@
 enum asyncRequestType { getRqstType = 1, addRqstType = 2 };
 struct asyncRequest
 {
-    asyncRequest() {stampTimeout = QDateTime::currentSecsSinceEpoch() + REQUEST_TIME_OUT;}
+    asyncRequest() { stampTimeout = QDateTime::currentSecsSinceEpoch() + REQUEST_TIME_OUT; needMedAbstractConversion = false; noLongerValid = false; }
     asyncRequest(const asyncRequest &rqst) { *this = rqst; }
-    asyncRequest & operator=(asyncRequest const & rqst) { type = rqst.type; tmpId = rqst.tmpId; uri = rqst.uri; stampTimeout = rqst.stampTimeout;  return *this; }
+    asyncRequest & operator=(asyncRequest const & rqst) { type = rqst.type; tmpId = rqst.tmpId; uri = rqst.uri; stampTimeout = rqst.stampTimeout;  needMedAbstractConversion = rqst.needMedAbstractConversion; noLongerValid = rqst.noLongerValid; return *this; }
     asyncRequestType type;
     QString tmpId;
     QStringList uri;
@@ -45,6 +45,7 @@ struct asyncRequest
     qint64 stampTimeout;
     QEventLoop waiter;
     bool needMedAbstractConversion;
+    bool noLongerValid;
 
 public:
     friend bool operator< (asyncRequest const & a, asyncRequest const & b);

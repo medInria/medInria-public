@@ -36,7 +36,7 @@ public slots:
     void notifWidgetAskDeletion(medUsrNotif notif);
     void removeNotification(medUsrNotif notif);
 
-    void addNotification( medUsrNotif *pNotif);
+    void addNotification(medUsrNotif notif);
 
     void showPane(bool show);
     void windowGeometryUpdate(QRect const & geo);

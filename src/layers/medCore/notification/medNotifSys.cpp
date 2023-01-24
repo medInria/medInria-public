@@ -60,11 +60,11 @@ void medNotifSys::updateNotif()
     medNotif* notif = dynamic_cast<medNotif*>(sender());
     if (notif)
     {
-        for (auto & usrNotif : d->notifList)
+        for (auto usrNotif : d->notifList)
         {
             if (usrNotif.get() == notif)
             {
-                emit  update(&usrNotif);
+                emit  update(usrNotif);
             }
         }
     }
@@ -92,22 +92,20 @@ void medNotifSys::setOSNotifOnlyNonFocus(bool pi_bOn)
     d->sysTrayOnNonFocus = pi_bOn;
 }
 
-bool medNotifSys::add(medUsrNotif & notif)
+bool medNotifSys::add(medUsrNotif notif)
 {
     bool bRes = false;
 
     if (!d->notifList.contains(notif))
     {
-         d->notifList.push_back(notif);
+        d->notifList.push_back(notif);
         auto * pNotif = notif.get();
-        //auto conn1 = connect(pNotif, &medNotif::updated, [=]() {updateNotif(this->getUsrNotif(pNotif)); });
         auto conn1 = connect(pNotif, &medNotif::updated, this, &medNotifSys::updateNotif);
-        //auto conn2 = connect(pNotif, &medNotif::destroyed, [=]() {remove(this->getUsrNotif(pNotif)); });
         auto conn2 = connect(pNotif, &medNotif::destroyed, this, &medNotifSys::remove);
 
-        emit notification(&d->notifList.back());
-
+        emit notification(notif);
         osNotif(notif);
+
         if (notif->getDisplayTime() > 0)
         {
             QTimer::singleShot(notif->getDisplayTime(),  [&,this]() {unregisterNotif(notif); });
@@ -154,7 +152,7 @@ bool medNotifSys::remove()
     return bRes;
 }
 
-bool medNotifSys::remove2(medUsrNotif const & notif)
+bool medNotifSys::remove2(medUsrNotif notif)
 {
     bool bRes = false;
 
@@ -176,10 +174,10 @@ bool medNotifSys::remove2(medUsrNotif const & notif)
 
     if (bFound)
     {
-        bRes = d->notifList.removeOne(*it);
+        bRes = d->notifList.removeOne(notif);
         if (bRes)
         {
-            emit removed(*it);
+            emit removed(notif);
         }
     }
 

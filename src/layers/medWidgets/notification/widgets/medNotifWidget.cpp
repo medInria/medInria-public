@@ -22,7 +22,7 @@
 #include <QDebug>
 
 
-medNotifWidget::medNotifWidget(medUsrNotif &notif, medNotificationPaneWidget * paneContainer) : m_notif(notif)
+medNotifWidget::medNotifWidget(medUsrNotif &notif, medNotificationPaneWidget * paneContainer) : m_notif(notif), m_pPane(paneContainer)
 {
     auto * widgetLayout = new QVBoxLayout;
     setLayout(widgetLayout);
@@ -82,14 +82,7 @@ medNotifWidget::medNotifWidget(medUsrNotif &notif, medNotificationPaneWidget * p
     m_extraTrigger2Button = nullptr;
     m_extraTrigger3Button = nullptr;
 
-    if (paneContainer)
-    {
-        connect(m_removeNotifButton, &QPushButton::clicked, [=]() {paneContainer->notifWidgetAskDeletion(this->m_notif); });
-    }
-    else
-    {
-        connect(m_removeNotifButton, &QPushButton::clicked, this, &medNotifWidget::deleteLater);
-    }
+    connect(m_removeNotifButton, &QPushButton::clicked, this, &medNotifWidget::closeButton);
     connect(notif.get(), &medNotif::updated, this, &medNotifWidget::update);
 }
 
@@ -144,6 +137,18 @@ QPixmap & medNotifWidget::criticalityImg(notifLevel criticalityLevel)
         case notifLevel::warning: return yellowSpot;
         case notifLevel::error:    return redSpot;
         default: return redSpot;
+    }
+}
+
+void medNotifWidget::closeButton()
+{
+    if (m_pPane)
+    {
+        m_pPane->notifWidgetAskDeletion(this->m_notif);
+    }
+    else
+    {
+        deleteLater();
     }
 }
 

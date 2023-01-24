@@ -40,12 +40,14 @@ public:
 
 public slots:
     void update();
+    void closeButton();
 
 private:
     void extraTriggerUpdate(int extraCount);
     static QPixmap & criticalityImg(notifLevel criticalityLevel);
 
 private:
+    medNotificationPaneWidget *m_pPane;
     medUsrNotif    m_notif;
     QHBoxLayout  * m_titleLayout;
     QLabel       * m_titleLabel;

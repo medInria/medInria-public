@@ -220,27 +220,24 @@ void medNotifStatusbarWidget::removeNotification(medUsrNotif notif)
 }
 
 
-void medNotifStatusbarWidget::update(medUsrNotif *pNotif)
+void medNotifStatusbarWidget::update(medUsrNotif notif)
 {
-    auto &notif = *pNotif;
-    if (notif)
+    QMutexLocker(&d->mutex);
+    if (!d->notifToWidgetMap.contains(notif.get()))
     {
-        QMutexLocker(&d->mutex);
-        if (!d->notifToWidgetMap.contains(notif.get()))
-        {
-            createSubPartWidget(notif);
-        }
-        int percentage = notif->getAchievement();
-        if (notif->getCriticalityLevel() == notifLevel::info)
-        {
-            //d->notifToWidgetMap[notif]->m_progressBar->setValue(percentage);
-        }
+        createSubPartWidget(notif);
+    }
+    int percentage = notif->getAchievement();
+    if (notif->getCriticalityLevel() == notifLevel::info)
+    {
+        //d->notifToWidgetMap[notif]->m_progressBar->setValue(percentage);
+    }
 
-        if(notif->getCriticalityLevel() != notifLevel::info || percentage == 100)
-        {
-            QTimer::singleShot(50000, [=]()
-            {this->removeNotification(notif); }
-            );
-        }
+    if(notif->getCriticalityLevel() != notifLevel::info || percentage == 100)
+    {
+        //TODO REDO
+        //QTimer::singleShot(50000, [=]()
+        //{this->removeNotification(notif); }
+        //);
     }
 }

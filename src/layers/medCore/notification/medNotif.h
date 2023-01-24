@@ -66,6 +66,3 @@ private:
     medNotif();
     medNotifPrivate * d;
 };
-
-
-//Q_DECLARE_METATYPE(std::shared_ptr<medNotif>);
