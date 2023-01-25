@@ -26,6 +26,7 @@ class medNotifSysPrivate;
 class medNotif;
 using medUsrNotif = std::shared_ptr<medNotif>;
 
+Q_DECLARE_METATYPE(medUsrNotif);
 
 class MEDCORE_EXPORT medNotifSys : public QObject
 {
@@ -33,27 +34,31 @@ class MEDCORE_EXPORT medNotifSys : public QObject
 
 public:
     static medNotifSys* instance();
-    static bool registerNotif(medUsrNotif notif);
-    static bool unregisterNotif(medNotif *notif);
-    static void updateNotif(medNotif *notif);
+
+    static bool registerNotif  (medUsrNotif &notif);
+    static bool unregisterNotif(medUsrNotif const & notif);
 
     void setOperatingSystemNotification(bool pi_bOn);
-    void setOSNotifOnlyNonFocus(bool pi_bOn);
+    void setOSNotifOnlyNonFocus        (bool pi_bOn);
 
 signals:
-    void update(medNotif *);
-    void notification(medNotif *);
-    void removed(medNotif *);
+    void update       (medUsrNotif);
+    void notification (medUsrNotif);
+    void removed      (medUsrNotif);
 
 public slots:
-    void remove(medNotif * pi_pNotif);
+    bool add(medUsrNotif notif);
+    bool remove2(medUsrNotif notif);
     void windowOnTop(bool pi_bOntop);
 
 private:    
     medNotifSys(QObject *parent = nullptr);
     ~medNotifSys();
-    void osNotif(medNotif *notif);
-    void debugWriteNotifications(medNotif *notif);//TODO remove after debug phase
+
+    medUsrNotif getUsrNotif(medNotif * notif);
+    bool remove();
+    void updateNotif();
+    void osNotif(medUsrNotif &notif);
 
 private:
     friend medNotifSysPrivate;

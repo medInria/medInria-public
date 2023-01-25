@@ -28,7 +28,7 @@
 #include <QGraphicsOpacityEffect>
 #include <QVBoxLayout>
 
-medNotificationPaneWidget::medNotificationPaneWidget(medNotifSys * pi_pNotifSys, QMainWindow * pi_parent) : QWidget(pi_parent)
+medNotificationPaneWidget::medNotificationPaneWidget(medNotifSys * pi_pNotifSys, QMainWindow * pi_parent) : QWidget(pi_parent), m_notificationSystem(pi_pNotifSys)
 {    
     auto layout = new QVBoxLayout(this);
     layout->setContentsMargins(0, 0, 0, 0);
@@ -46,15 +46,16 @@ medNotificationPaneWidget::medNotificationPaneWidget(medNotifSys * pi_pNotifSys,
 
     connect(pi_pNotifSys, &medNotifSys::notification, this, &medNotificationPaneWidget::addNotification);
     connect(pi_pNotifSys, &medNotifSys::removed, this, &medNotificationPaneWidget::removeNotification);
+
     setParent(pi_parent);
     showPane(false);
 
     m_geoAnimation = nullptr;
 }
 
-void medNotificationPaneWidget::notifWidgetAskDeletion(medNotif *notif)
+void medNotificationPaneWidget::notifWidgetAskDeletion(medUsrNotif notif)
 {
-    m_notificationSystem->unregisterNotif(notif); //TODO this is static method, stupid call
+    medNotifSys::unregisterNotif(notif);
 }
 
 void medNotificationPaneWidget::setParent(QMainWindow * pi_parent)
@@ -67,28 +68,27 @@ void medNotificationPaneWidget::setParent(QMainWindow * pi_parent)
     }
 }
 
-void medNotificationPaneWidget::removeNotification(medNotif * notif)
+void medNotificationPaneWidget::removeNotification(medUsrNotif notif)
 {
-    auto *pItem = m_notificationToItem.take(notif);
+    auto *pItem = m_notificationToItem.take(notif.get());
     m_notificationsListWidget->removeItemWidget(pItem);
     delete pItem;
 }
 
-void medNotificationPaneWidget::addNotification(medNotif * notif)
+
+void medNotificationPaneWidget::addNotification(medUsrNotif notif)
 {
     QListWidgetItem *widgetItem = new QListWidgetItem();
     medNotifWidget *newNotifiWidget = new medNotifWidget(notif, this);
     m_notificationsListWidget->addItem(widgetItem);
     m_notificationsListWidget->setItemWidget(widgetItem, newNotifiWidget);
-    m_notificationToItem[notif] = widgetItem;
+    m_notificationToItem[notif.get()] = widgetItem;
 
     // Initial size of item
     QSize initialSize = newNotifiWidget->size();
     widgetItem->setSizeHint(initialSize);
 
     m_notificationsListWidget->setSpacing(2);
-
-
 
     medNotifWidget *newNotifiWidgetPopup = new medNotifWidget(notif, nullptr);
 
@@ -165,12 +165,12 @@ void medNotificationPaneWidget::windowGeometryUpdate(QRect const & geo)
     }
 }
 
-void medNotificationPaneWidget::showAndHigligth(medNotif * notif)
+void medNotificationPaneWidget::showAndHigligth(medUsrNotif notif)
 {
-    if (m_notificationToItem.contains(notif))
+    if (m_notificationToItem.contains(notif.get()))
     {
         showPane(true);
-        m_notificationsListWidget->setCurrentItem(m_notificationToItem[notif]);
+        m_notificationsListWidget->setCurrentItem(m_notificationToItem[notif.get()]);
     }
 }
 

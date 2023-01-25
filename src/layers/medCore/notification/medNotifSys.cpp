@@ -8,9 +8,6 @@
 #include <QSystemTrayIcon>
 #include <QApplication>
 
-//#include <medNewLogger.h>
-
-#include <QFile> //TODO remove after debug phase
 
 class medNotifSysPrivate
 {
@@ -20,8 +17,6 @@ public:
     QSystemTrayIcon *sysTray;
     bool sysTrayOnNonFocus;
     bool focus;
-
-    QFile debugFile;
 };
 
 medNotifSys* medNotifSysPrivate::instance = new medNotifSys();
@@ -35,72 +30,44 @@ medNotifSys* medNotifSys::instance()
 
 medNotifSys::medNotifSys(QObject * parent) : d(new medNotifSysPrivate())
 {
-    d->sysTray = nullptr;    
-    d->debugFile.setFileName("debugNotification.json");
-    d->debugFile.open(QIODevice::WriteOnly);
+    d->sysTray = nullptr;
     d->sysTrayOnNonFocus = true;
     d->focus = false;
-    connect(this, &medNotifSys::notification, this, &medNotifSys::debugWriteNotifications);
+
+    qRegisterMetaType<medUsrNotif>("medUsrNotif");
+
+    //connect(this, &medNotifSys::notification, this, &medNotifSys::debugWriteNotifications);
 }
 
 medNotifSys::~medNotifSys()
 {
-    d->debugFile.close();
 }
 
 
 
-bool medNotifSys::registerNotif(medUsrNotif notif)
+bool medNotifSys::registerNotif(medUsrNotif & notif)
 {
-    bool bRes = false;
-
-    if (!medNotifSysPrivate::instance->d->notifList.contains(notif))
-    {
-        medNotifSysPrivate::instance->d->notifList.push_back(notif);
-        emit medNotifSysPrivate::instance->notification(notif.get());
-        medNotifSysPrivate::instance->osNotif(notif.get());
-        if (notif->getDisplayTime() > 0)
-        {
-            auto *pRawNotif = notif.get();
-            QTimer::singleShot(notif->getDisplayTime(), medNotifSysPrivate::instance, [=]() {medNotifSysPrivate::instance->unregisterNotif(pRawNotif); });
-        }
-
-        bRes = true;
-    }    
-
-    return bRes;
+    return medNotifSysPrivate::instance->add(notif);
 }
 
-bool medNotifSys::unregisterNotif(medNotif *notif)
+bool medNotifSys::unregisterNotif(medUsrNotif const & notif)
 {
-    bool bRes = false;
+    return medNotifSysPrivate::instance->remove2(notif);
+}
 
-    medUsrNotif usrNotif;
-    auto &list = medNotifSysPrivate::instance->d->notifList;
-
-    for (auto &val : list)
+void medNotifSys::updateNotif()
+{
+    medNotif* notif = dynamic_cast<medNotif*>(sender());
+    if (notif)
     {
-        if (val.get() == notif)
+        for (auto usrNotif : d->notifList)
         {
-            usrNotif = val;
-            bRes = true;
+            if (usrNotif.get() == notif)
+            {
+                emit  update(usrNotif);
+            }
         }
     }
-
-    if (usrNotif != nullptr)
-    {
-        int nb1 = usrNotif.use_count();
-        list.removeOne(usrNotif);
-        emit medNotifSysPrivate::instance->removed(notif);
-        int nb2 = usrNotif.use_count();
-    }
-
-    return bRes;
-}
-
-void medNotifSys::updateNotif(medNotif *notif)
-{
-    emit  medNotifSysPrivate::instance->update(notif);
 }
 
 void medNotifSys::setOperatingSystemNotification(bool pi_bOn)
@@ -125,11 +92,97 @@ void medNotifSys::setOSNotifOnlyNonFocus(bool pi_bOn)
     d->sysTrayOnNonFocus = pi_bOn;
 }
 
-void medNotifSys::remove(medNotif * pi_pNotif)
+bool medNotifSys::add(medUsrNotif notif)
 {
-    //TODO remove after debug phase
-    d->debugFile.write("\r\nRemove notif:\r\n");
-    d->debugFile.write(pi_pNotif->toString().toUtf8());
+    bool bRes = false;
+
+    if (!d->notifList.contains(notif))
+    {
+        d->notifList.push_back(notif);
+        auto * pNotif = notif.get();
+        auto conn1 = connect(pNotif, &medNotif::updated, this, &medNotifSys::updateNotif);
+        auto conn2 = connect(pNotif, &medNotif::destroyed, this, &medNotifSys::remove);
+
+        emit notification(notif);
+        osNotif(notif);
+
+        if (notif->getDisplayTime() > 0)
+        {
+            QTimer::singleShot(notif->getDisplayTime(),  [&,this]() {unregisterNotif(notif); });
+        }
+
+        bRes = true;
+    }
+
+    return bRes;
+}
+
+bool medNotifSys::remove()
+{
+    bool bRes = false;
+
+    medNotif* notif = dynamic_cast<medNotif*>(sender());
+    if (notif)
+    {
+        bool bFound = false;
+        bool bContinue;
+        auto it = d->notifList.begin();
+        auto itEnd = d->notifList.end();
+
+        bContinue = it != itEnd;
+        while (bContinue)
+        {
+            if (it->get() == notif)
+            {
+                bFound = true;
+                bContinue = false;
+            }
+        }
+
+        if (bFound)
+        {
+            bRes = d->notifList.removeOne(*it);
+            if (bRes)
+            {
+                emit removed(*it);
+            }
+        }
+    }
+
+    return bRes;
+}
+
+bool medNotifSys::remove2(medUsrNotif notif)
+{
+    bool bRes = false;
+
+
+    bool bFound = false;
+    bool bContinue;
+    auto it = d->notifList.begin();
+    auto itEnd = d->notifList.end();
+
+    bContinue = it != itEnd;
+    while (bContinue)
+    {
+        if (it->get() == notif.get())
+        {
+            bFound = true;
+            bContinue = false;
+        }
+    }
+
+    if (bFound)
+    {
+        bRes = d->notifList.removeOne(notif);
+        if (bRes)
+        {
+            emit removed(notif);
+        }
+    }
+
+
+    return bRes;
 }
 
 void medNotifSys::windowOnTop(bool pi_bOntop)
@@ -137,18 +190,25 @@ void medNotifSys::windowOnTop(bool pi_bOntop)
     d->focus = pi_bOntop;
 }
 
-void medNotifSys::osNotif(medNotif * notif)
+void medNotifSys::osNotif(medUsrNotif & notif)
 {
     if (d->sysTray)
     {
         if (!d->sysTrayOnNonFocus || !d->focus)
         {
-            medNotifSysPrivate::instance->d->sysTray->showMessage(notif->getTitle(), notif->getMessage());
+            d->sysTray->showMessage(notif->getTitle(), notif->getMessage());
         }
     }
 }
 
-void medNotifSys::debugWriteNotifications(medNotif *notif)
+medUsrNotif medNotifSys::getUsrNotif(medNotif * notif)
 {
-    d->debugFile.write(notif->toString().toUtf8()); //TODO remove after debug phase
+    for (auto usrNotif : d->notifList)
+    {
+        if (usrNotif.get() == notif)
+        {
+            return usrNotif;
+        }
+    }
+    return medUsrNotif();
 }

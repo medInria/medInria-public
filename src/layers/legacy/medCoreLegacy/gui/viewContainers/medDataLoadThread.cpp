@@ -20,13 +20,11 @@
 
 medDataLoadThread::medDataLoadThread(medDataIndex const & index, medViewContainer * parent) : /*QThread(parent),*/ m_index(index), m_parent(parent)
 {
-    auto toto = connect(this, SIGNAL(dataReady(medAbstractData*)), m_parent, SLOT(addData(medAbstractData *)) );
-    toto = toto;
+    connect(this, SIGNAL(dataReady(medAbstractData*)), m_parent, SLOT(addData(medAbstractData *)) );
 }
 
 medDataLoadThread::~medDataLoadThread()
 {
-    int i = 10;
 }
 
 void medDataLoadThread::process()

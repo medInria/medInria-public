@@ -42,6 +42,7 @@ public:
 
 protected:
     void updateConnectButton(medAbstractSource * pi_pSource);
+    void updateConnectButtonText(bool pi_bConnect);
     void updateSourceInformation(medAbstractSource * pi_pSource);
 
 private:

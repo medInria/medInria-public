@@ -13,10 +13,11 @@
 #include <QFrame>
 
 #include <medNotif.h>
+#include <medNotifSys.h>
 #include <medWidgetsExport.h>
 
 
-class medNoti;
+
 class medNotificationPaneWidget;
 
 class QListWidgetItem;
@@ -32,19 +33,22 @@ class medNotifWidget : public QFrame
     Q_OBJECT
 
 public:
-    medNotifWidget(medNotif *notif, medNotificationPaneWidget *paneContainer);
+    medNotifWidget(medUsrNotif &notif, medNotificationPaneWidget *paneContainer);
     ~medNotifWidget();
 
     QSize minimumSizeHint() const override;
 
 public slots:
-    void update(medNotif * notif);
+    void update();
+    void closeButton();
 
 private:
-    void extraTriggerUpdate(int extraCount, medNotif * notif);
+    void extraTriggerUpdate(int extraCount);
     static QPixmap & criticalityImg(notifLevel criticalityLevel);
 
 private:
+    medNotificationPaneWidget *m_pPane;
+    medUsrNotif    m_notif;
     QHBoxLayout  * m_titleLayout;
     QLabel       * m_titleLabel;
 

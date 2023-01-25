@@ -113,9 +113,18 @@ void medSourcesSettingsHandlerWidget::updateConnectButton(medAbstractSource * pi
     if (pi_pSource)
     {
         m_connectButton->setText(pi_pSource->isOnline() ? "Disconnect" : "Connect");
-        m_qtConnections[0] = connect(pi_pSource, &medAbstractSource::connectionStatus, [=](bool pi_connected) {m_connectButton->setText(pi_connected ? "Disconnect" : "Connect"); });
+        m_qtConnections[0] = connect(pi_pSource, &medAbstractSource::connectionStatus, this, &medSourcesSettingsHandlerWidget::updateConnectButtonText);
         m_qtConnections[1] = connect(m_connectButton, &QPushButton::clicked, [=]() {pi_pSource->connect(!pi_pSource->isOnline()); });
     }
+}
+
+/**
+ * @brief This method update the connect button.
+ * @param [in] pi_bConnect is the boolean to determine if current source is connected or not.
+ */
+void medSourcesSettingsHandlerWidget::updateConnectButtonText(bool pi_bConnect)
+{
+    m_connectButton->setText(pi_bConnect ? "Disconnect" : "Connect");
 }
 
 /**

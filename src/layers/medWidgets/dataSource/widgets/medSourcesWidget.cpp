@@ -183,7 +183,7 @@ void medSourcesWidget::addSource(medDataHub *dataHub, QString sourceInstanceId)
     //});
 
     m_treeMap            [sourceInstanceId] = sourceTreeView;
-    m_titleMap           [sourceInstanceId] = sourceTreeTitle;
+    m_titleMap           [sourceInstanceId] = hLayout;
     delete sourcePresenter;
 }
 
@@ -192,7 +192,14 @@ void medSourcesWidget::removeSource(QString sourceInstanceId)
     if (m_treeMap.contains(sourceInstanceId))
     {
         auto widget = m_treeMap.take(sourceInstanceId);
-        auto label = m_titleMap.take(sourceInstanceId);
+        auto titleLayout = m_titleMap.take(sourceInstanceId);
+        
+        QLayoutItem *child;
+        while ((child = titleLayout->takeAt(0)) != nullptr)
+        {
+            delete child->widget(); // delete the widget
+            delete child;   // delete the layout item
+        }
 
         //m_layout.removeWidget(widget);
         //m_layout.removeWidget(label);
@@ -200,7 +207,7 @@ void medSourcesWidget::removeSource(QString sourceInstanceId)
         //TODO made disconnection here
         
         delete widget;
-        delete label;
+        delete titleLayout;
     }
 }
 
