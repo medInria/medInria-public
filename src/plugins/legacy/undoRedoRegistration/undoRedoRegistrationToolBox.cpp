@@ -158,7 +158,6 @@ void undoRedoRegistrationToolBox::addTransformationIntoList(int i, QString metho
         d->transformationStack->insertItem(d->currentStep,QString::number(d->transformationStack->count()+1)+ ". " + this->parentToolBox()->getNameOfCurrentAlgorithm().remove(" "));
         d->transformationStack->item(d->currentStep)->setToolTip(methodParameters);
         d->transformationStack->item(d->currentStep)->setIcon(d->arrowCurrentStep);
-        d->transformationStack->item(d->currentStep)->setForeground(QColor(0,200,0));
     }
     d->undoButton->setEnabled(true);
     d->resetButton->setEnabled(true);
@@ -173,13 +172,10 @@ void undoRedoRegistrationToolBox::updatePositionArrow(int newStep){
             d->transformationStack->item(d->currentStep)->setIcon(QIcon());
         }
         d->currentStep = newStep;
-        if (!(d->transformationStack->count()==d->currentStep)){
+        if (!(d->transformationStack->count()==d->currentStep))
+        {
             d->transformationStack->item(d->currentStep)->setIcon(d->arrowCurrentStep);
-            d->transformationStack->item(d->currentStep)->setForeground(QColor(0,200,0));
         }
-    }
-    for(int k = d->currentStep-1;k>=0;k--){
-        d->transformationStack->item(k)->setForeground(QColor(255,255,255));
     }
 }
 

@@ -78,7 +78,7 @@ $GRIDLINE_COLOR       = $GREY_MID_DARK; /*Example, Tools button in views -> Pres
 
 $HEADER_COLOR         = $GREY_VERY_LIGHT;
 
-$GROUP_BOX_COLOR      = $GREY_VERY_LIGHT;
+$GROUP_BOX_COLOR      = $BLUE_DARK;
 
 $HOMEPAGE_TEXT_COLOR  = $BLUE_DARK;
 
@@ -166,7 +166,7 @@ $TAB_PRESSED_BACKGROUND   = qlineargradient(x1: 0, y1: 0, x2: 0, y2: 1, stop: 0 
 $TAB_SELECTED_BACKGROUND  = $BLUE_ROI;
 
 $TAB_SELECTED_COLOR       = $WHITE;
-$TAB_COLOR                = $GREY_VERY_LIGHT;
+$TAB_COLOR                = $BLUE_DARK;
 $TAB_HOVER_COLOR          = $BLUE_DARK;
 
 $TAB_BODY_HOMEPAGE        = GREY_VERY_LIGHT;
@@ -616,7 +616,7 @@ QLabel#innerTitle
 QTableWidget
 {
     gridline-color: $GRIDLINE_COLOR;
-    background: $BLUE_LIGHT;
+    background: $BLUE_GREY_LIGHT;
     alternate-background-color: $ALT_LIST_BACKGROUND;
     color: $LIST_FONT_COLOR;
 }
@@ -679,6 +679,16 @@ QProgressBar::chunk
 {
     border-radius: $PROGRESS_BAR_RADIUS;
     background-color: $PROGRESS_BAR_COLOR;
+}
+
+QProgressBar::chunk[success = "true"]
+{
+    background: $GREEN;
+}
+
+QProgressBar::chunk[failure = "true"]
+{
+    background: $RED;
 }
 
 /*******************************************************************************
@@ -1211,18 +1221,8 @@ QWidget#layerWidget
 }
 
 /*******************************************************************************
-     medMessageProgress
+     QLabel
  *******************************************************************************/
-QProgressBar::chunk[success = "true"]
-{
-    background: $GREEN;
-}
-
-QProgressBar::chunk[failure = "true"]
-{
-    background: $RED;
-}
-
 /*added*/
 QLabel#medMessageLabel
 {
@@ -1248,7 +1248,7 @@ medDatabasePreview
 
 QLabel#previewLabel
 {
-    color: $TAB_COLOR;
+    color: $GREY_VERY_LIGHT;
     background: $TOOLBOX_HEADER_BACKGROUND;
     min-height: $STATUS_BAR_HEIGHT;
     border: 1px solid $GREY07;

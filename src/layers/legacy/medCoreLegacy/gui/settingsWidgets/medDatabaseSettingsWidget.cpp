@@ -31,7 +31,6 @@ medDatabaseSettingsWidget::medDatabaseSettingsWidget(QWidget *parent) :
     connect(btChooseDir, SIGNAL(clicked()), this, SLOT(selectDbDirectory())); 
 
     QWidget* databaseLocation = new QWidget(this);
-    databaseLocation->setContentsMargins(0,-8,0,0);
 
     QHBoxLayout* dbLayout = new QHBoxLayout;
     dbLayout->addWidget(dbPath);
