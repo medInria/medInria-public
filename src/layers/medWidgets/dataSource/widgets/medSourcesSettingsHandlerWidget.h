@@ -44,9 +44,9 @@ protected:
     void updateConnectButton(medAbstractSource * pi_pSource);
     void updateConnectButtonText(bool pi_bConnect);
     void updateSourceInformation(medAbstractSource * pi_pSource);
-
+    void updateDefaultButton(medAbstractSource *pi_pSource);
 private:
-    QMetaObject::Connection m_qtConnections[2]; /*!< Store internal connections to provide a simple and clear way to disconnect when source change. */
+    QMetaObject::Connection m_qtConnections[3]; /*!< Store internal connections to provide a simple and clear way to disconnect when source change. */
 
     QPushButton * m_setDefaultButton;  /*!< Widget button to define the default source. */
     QPushButton * m_connectButton;     /*!< Widget button to connect and disconnect source. */
