@@ -31,6 +31,7 @@ public:
     bool event(QEvent *event) override;
     bool notify(QObject *receiver, QEvent *e) override;
     void setMainWindow(medMainWindow *mw);
+    void initializeThemes();
 
 signals:
     void showMessage(const QString& message);
