@@ -28,6 +28,7 @@ public:
 
     bool event(QEvent *event);
     void setMainWindow(medMainWindow *mw);
+    void initializeThemes();
 
 signals:
     void showMessage(const QString& message);
