@@ -32,7 +32,6 @@ $OFFWHITE1  = hsv($HUE,$SATURATION,230);
 $OFFWHITE2  = hsv($HUE,$SATURATION,240);
 
 $GREY11      = #2E3A40;
-$GREY12      = #324156;
 $WHITE       = #FFFFFF;
 $ORANGE      = #EF4123;
 $DARK_ORANGE = #B03E2A;
@@ -40,6 +39,7 @@ $BLUE        = #B2DCFF;
 $BLUE_SKY    = #6EACFF;
 $BLUE_ROI    = #385b9f;
 $BLUE_DARK   = #203765;
+$BLUE_GREY   = #324156;
 
 $HIGHLIGHT_COLOR   = $DARK_ORANGE;
 $DARKGRAY          = $GREY01;
@@ -70,7 +70,7 @@ $DROP_SITE_BACKGROUND                  = $GREY01;
 $WIDGET_COLOR        = $GREY11;
 $DISABLE_COLOR       = $GREY10; /*Text of disabled widgets*/
 $GRIDLINE_COLOR      = $GREY09;
-$HEADER_COLOR        = $GREY12;
+$HEADER_COLOR        = $BLUE_GREY;
 $GROUP_BOX_COLOR     = $GREY11;
 $HOMEPAGE_TEXT_COLOR = $GREY06;
 
@@ -133,8 +133,7 @@ $ALT_LIST_BACKGROUND = $GREY03;
 /*******************************************************************************
     TAB COLOR
  *******************************************************************************/
-/*Tabs in homepage: settings, etc*/
-$TAB_BACKGROUND          = qlineargradient(x1: 0, y1: 0, x2: 1, y2: 0, stop: 0 $GREY03, stop: 1 $GREY01);
+$TAB_BACKGROUND          = qlineargradient(x1: 0, y1: 0, x2: 1, y2: 0, stop: 0 $GREY03, stop: 1 $GREY02);
 $TAB_HOVER_BACKGROUND    = qlineargradient(x1: 0, y1: 0, x2: 1, y2: 0, stop: 0 $GREY01, stop: 1 $GREY00);
 $TAB_PRESSED_BACKGROUND  = qlineargradient(x1: 0, y1: 0, x2: 1, y2: 0, stop: 0 $GREY05, stop: 1 $GREY04);
 $TAB_SELECTED_BACKGROUND = qlineargradient(x1: 0, y1: 0, x2: 1, y2: 0, stop: 0 $GREY05, stop: 1 $GREY04);
@@ -167,18 +166,16 @@ $SCROLL_BAR_VERTICAL_COLOR        = qradialgradient(cx: 0, cy: 0.5, fx: 0, fy: 0
     PROGRESS_BAR COLOR
  *******************************************************************************/
 $PROGRESS_BAR_BACKGROUND = $GREY03;
-$PROGRESS_BAR_COLOR      = $GREY07;
-$PROGRESS_BAR_COLOR      = $GREY12;
+$PROGRESS_BAR_COLOR      = $DARK_ORANGE;
 $PROGRESS_BAR_TEXT_COLOR = $GREY00;
 
 /*******************************************************************************
     TOOLBOX COLOR
  *******************************************************************************/
-$TOOLBOX_CONTAINER_BACKGROUND = $GREY01; /*does not seem to be visible*/
-$TOOLBOX_HEADER_BACKGROUND    = qlineargradient(x1: 0, y1: 0, x2: 0, y2: 1, stop: 0 $DARKGRAY, stop: 1 $MEDINRIA_DARKGRAY);
+$TOOLBOX_HEADER_BACKGROUND    = qlineargradient(x1: 0, y1: 0, x2: 0, y2: 1, stop: 0 $GREY06, stop: 1 $GREY07);
 $TOOLBOX_BODY_BACKGROUND      = qlineargradient(x1: 0, y1: 0, x2: 0, y2: 1, stop: 0 $GREY02, stop: 1 $GREY01);
 $TOOLBOX_BACKGROUND           = $GREY04;
-$TOOLBOX_HEADER_COLOR         = $GREY12;
+$TOOLBOX_HEADER_COLOR         = $BLUE_GREY;
 $TOOLBOX_INNER_TITLE          = $DARK_ORANGE;
 
 /*******************************************************************************
@@ -577,7 +574,7 @@ QLabel#innerTitle
 QTableWidget
 {
     gridline-color: $GRIDLINE_COLOR;
-    background: $GREY04;
+    background: $OFFWHITE1;
     alternate-background-color: $ALT_LIST_BACKGROUND;
 }
 
@@ -639,6 +636,16 @@ QProgressBar::chunk
 {
     border-radius: $PROGRESS_BAR_RADIUS;
     background-color: $PROGRESS_BAR_COLOR;
+}
+
+QProgressBar::chunk[success = "true"]
+{
+    background: $GREEN;
+}
+
+QProgressBar::chunk[failure = "true"]
+{
+    background: $RED;
 }
 
 /*******************************************************************************
@@ -1161,19 +1168,6 @@ QWidget#layerWidget
 }
 
 /*******************************************************************************
-     medMessageProgress
- *******************************************************************************/
-QProgressBar::chunk[success = "true"]
-{
-    background: $GREEN;
-}
-
-QProgressBar::chunk[failure = "true"]
-{
-    background: $RED;
-}
-
-/*******************************************************************************
      medDropSite
  *******************************************************************************/
 medDropSite
@@ -1192,7 +1186,7 @@ medDatabasePreview
 
 QLabel#previewLabel
 {
-    color: $TAB_COLOR;
+    color: $GREY11;
     background: $TOOLBOX_HEADER_BACKGROUND;
     min-height: $STATUS_BAR_HEIGHT;
     border: none;
@@ -1259,7 +1253,7 @@ QWidget#toolbarWidget
 /*******************************************************************************
      medLinkMenu
  *******************************************************************************/
- QWidget#internalSubPopWidget
+QWidget#internalSubPopWidget
 {
    background: $GREY06;
    border-radius: 3px;
