@@ -341,18 +341,59 @@ void medMainWindow::setWallScreen (const bool full )
 
 void medMainWindow::setFullScreen (const bool full)
 {
-    if ( full )
-        this->showFullScreen();
+    auto fullscreenAction = getCornerAction("Fullscreen");
+    if (full)
+    {
+        setFullscreenOn(fullscreenAction);
+    }
     else
-        this->showNormal();
+    {
+        setFullscreenOff(fullscreenAction);
+    }
 }
 
 void medMainWindow::toggleFullScreen()
 {
-    if ( !this->isFullScreen())
-        this->showFullScreen();
+    auto fullscreenAction = getCornerAction("Fullscreen");
+    if (!this->isFullScreen())
+    {
+        setFullscreenOn(fullscreenAction);
+    }
     else
-        this->showNormal();
+    {
+        setFullscreenOff(fullscreenAction);
+    }
+}
+
+void medMainWindow::setFullscreenOn(QAction* fullscreenAction)
+{
+    fullscreenAction->setIcon(QIcon::fromTheme("fullscreen_off"));
+    fullscreenAction->blockSignals(true);
+    fullscreenAction->setChecked(true);
+    fullscreenAction->blockSignals(false);
+    this->showFullScreen();
+}
+
+void medMainWindow::setFullscreenOff(QAction* fullscreenAction)
+{
+    fullscreenAction->setIcon(QIcon::fromTheme("fullscreen_on"));
+    fullscreenAction->blockSignals(true);
+    fullscreenAction->setChecked(false);
+    fullscreenAction->blockSignals(false);
+    this->showNormal();
+}
+
+QAction* medMainWindow::getCornerAction(QString actionName)
+{
+    QAction* fullscreenAction;
+    for(QAction *action : this->menuBar()->cornerWidget()->actions())
+    {
+        if (action->objectName() == actionName)
+        {
+            fullscreenAction = action;
+        }
+    }
+    return fullscreenAction;
 }
 
 void medMainWindow::captureScreenshot()

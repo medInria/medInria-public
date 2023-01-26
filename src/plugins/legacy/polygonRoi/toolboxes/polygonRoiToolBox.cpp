@@ -539,7 +539,7 @@ void polygonRoiToolBox::updateTableWidgetItems()
             secondOrientation = new medTableWidgetItem(QIcon(":/icons/SagittalIcon.png"),
                                                        QString("Sagittal view"),
                                                        medTableWidgetItem::SagittalType);
-            thirdOrientation = new medTableWidgetItem(QIcon::fromTheme("orientation_3d"),
+            thirdOrientation = new medTableWidgetItem(QIcon::fromTheme("orientation_3d").pixmap(75,75),
                                                       QString("3d view"),
                                                       medTableWidgetItem::ThreeDimType);
 
@@ -552,7 +552,7 @@ void polygonRoiToolBox::updateTableWidgetItems()
             secondOrientation =  new medTableWidgetItem(QIcon(":/icons/SagittalIcon.png"),
                                                         QString("Sagittal view"),
                                                         medTableWidgetItem::SagittalType);
-            thirdOrientation = new medTableWidgetItem(QIcon::fromTheme("orientation_3d"),
+            thirdOrientation = new medTableWidgetItem(QIcon::fromTheme("orientation_3d").pixmap(75,75),
                                                       QString("3d view"),
                                                       medTableWidgetItem::ThreeDimType);
 
@@ -565,7 +565,7 @@ void polygonRoiToolBox::updateTableWidgetItems()
             secondOrientation = new medTableWidgetItem(QIcon(":/icons/CoronalIcon.png"),
                                                        QString("Coronal view"),
                                                        medTableWidgetItem::CoronalType);
-            thirdOrientation = new medTableWidgetItem(QIcon::fromTheme("orientation_3d"),
+            thirdOrientation = new medTableWidgetItem(QIcon::fromTheme("orientation_3d").pixmap(75,75),
                                                       QString("3d view"),
                                                       medTableWidgetItem::ThreeDimType);
 
