@@ -59,13 +59,12 @@ medTabbedViewContainers::medTabbedViewContainers(medAbstractWorkspaceLegacy* own
     d->closeShortcut = new QShortcut(this);
     d->closeShortcut->setKey(Qt::ControlModifier + Qt::Key_W);
     
-    // ///////////////////////////////////////////////////////////////////////
-    // Connect for creation and remove tab
+    // Connect for creation, removal and move of tabs
     connect(d->addTabButton, SIGNAL(clicked()),    this, SLOT(addContainerInTabUnNamed()));
     connect(this, SIGNAL(tabCloseRequested(int)),  this, SLOT(closeTab(int)));
     connect(d->closeShortcut, SIGNAL(activated()), this, SLOT(closeCurrentTab()));
+    connect(tabBar(), SIGNAL(tabMoved(int,int)), this, SLOT(movedTabs(int,int)));
 
-    // ///////////////////////////////////////////////////////////////////////
     // Connect group of view handling
     connect(medViewContainerManager::instance(), SIGNAL(containerAboutToBeDestroyed(QUuid)), this, SLOT(removeContainerFromSelection(QUuid)));
     connect(this, SIGNAL(containersSelectedChanged()), this, SLOT(buildTemporaryPool()));
@@ -257,15 +256,38 @@ void medTabbedViewContainers::closeTab(int index)
         poMainSpliter->disconnect(this);
     }
     poTmp->deleteLater();
-
+    
     //Reset tab name if it follows the rule '<Workspace Name>###' is follows 
     for (int i = 0; i < this->count(); ++i)
+    {
         if (this->tabText(i).isEmpty() || this->tabText(i).startsWith(d->owningWorkspace->name(), Qt::CaseSensitive))
+        {
             this->setTabText(i, d->owningWorkspace->name() + " " + QString::number(i + 1));
+        }
+    }
 
     // If medTabbedViewContainers is empty and empty is not allowed, we recreate one tab
     if (d->bKeepLeastOne && (this->count() < 1))
+    {
         this->addContainerInTabUnNamed();
+    }
+    else
+    {
+        // Update the remaining tab indexes
+        d->containerSelectedForTabIndex.remove(index);
+        QHash <int, QList<QUuid> > copyHash;
+        for(auto currentTabIndex : d->containerSelectedForTabIndex.keys())
+        {
+            auto previousTab = d->containerSelectedForTabIndex.take(currentTabIndex);
+            copyHash.insert(copyHash.count(), previousTab);
+        }
+        d->containerSelectedForTabIndex.clear();
+        d->containerSelectedForTabIndex = copyHash;
+    
+        // Update the current tab to the last one
+        setCurrentIndex(this->count()-1);
+        emit containersSelectedChanged();
+    }
 }
 
 void medTabbedViewContainers::tabBarDoubleClickedHandler(int index)
@@ -455,4 +477,20 @@ void medTabbedViewContainers::minimizeSplitterContainers(QUuid containerMaximize
     {
         splitter->show();
     }
+}
+
+/**
+ * @brief Launched when a tab from the tabs bar is moved to a new position
+ * 
+ * @param from index tab before
+ * @param to index tab after
+ */
+void medTabbedViewContainers::movedTabs(int from, int to)
+{
+    auto previousFrom = d->containerSelectedForTabIndex.take(from);
+    auto previousTo   = d->containerSelectedForTabIndex.take(to);
+    d->containerSelectedForTabIndex.insert(from, previousTo);
+    d->containerSelectedForTabIndex.insert(to,   previousFrom);
+
+    emit containersSelectedChanged();
 }
