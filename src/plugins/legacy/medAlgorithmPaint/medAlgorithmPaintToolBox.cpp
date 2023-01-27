@@ -564,6 +564,41 @@ void AlgorithmPaintToolBox::activateStroke()
     addBrushSize_shortcut->setEnabled(true);
     reduceBrushSize_shortcut->setEnabled(true);
 
+    setCurrentView(currentView);
+
+    if (!m_imageData)
+    {
+        this->setData(currentView->layerData(0));
+    }
+    if (!m_imageData)
+    {
+        qWarning() << "Could not set data";
+        return;
+    }
+
+    if(!currentView->contains(m_maskAnnotationData))
+    {
+        m_maskAnnotationData->setMetaData("SeriesDescription", "mask");
+        currentView->addLayer(m_maskAnnotationData);
+        for(medAbstractInteractor* interactor : currentView->layerInteractors(getWorkspace()->getSelectedLayerIndices()[0]))
+        {
+            if (interactor->identifier() == "medAnnotationInteractor")
+            {
+                for(medAbstractParameterL* parameter : interactor->linkableParameters())
+                {
+                    if (parameter->name() == "Opacity")
+                    {
+                        qobject_cast<medDoubleParameterL*>(parameter)->setValue(0.4);
+                    }
+                }
+            }
+        }
+
+        // Update Mouse Interaction ToolBox
+        currentView->setCurrentLayer(0);
+        getWorkspace()->updateMouseInteractionToolBox();
+    }
+
     activateCustomedCursor(); // Add circular cursor for painting
 }
 
@@ -1232,23 +1267,12 @@ AlgorithmPaintToolBox::GenerateMinMaxValuesFromImage ()
 
 void AlgorithmPaintToolBox::updateStroke(ClickAndMoveEventFilter * filter, medAbstractImageView * view)
 {
-    setCurrentView(view);
     if ( !isMask2dOnSlice() )
     {
         return;
     }
 
     const double radius = m_brushSizeSlider->value(); // in image units.
-
-    if ( !m_imageData )
-    {
-        this->setData(view->layerData(0));
-    }
-    if (!m_imageData)
-    {
-        qWarning() << "Could not set data";
-        return;
-    }
 
     QVector3D newPoint = filter->points().back();
 
@@ -1354,29 +1378,6 @@ void AlgorithmPaintToolBox::updateStroke(ClickAndMoveEventFilter * filter, medAb
     m_itkMask->GetPixelContainer()->Modified();
     m_itkMask->SetPipelineMTime(m_itkMask->GetMTime());
 
-    if(!view->contains(m_maskAnnotationData))
-    {
-        m_maskAnnotationData->setMetaData("SeriesDescription", "mask");
-        view->addLayer(m_maskAnnotationData);
-        for(medAbstractInteractor* interactor : view->layerInteractors(getWorkspace()->getSelectedLayerIndices()[0]))
-        {
-            if (interactor->identifier() == "medAnnotationInteractor")
-            {
-                for(medAbstractParameterL* parameter : interactor->linkableParameters())
-                {
-                    if (parameter->name() == "Opacity")
-                    {
-                        qobject_cast<medDoubleParameterL*>(parameter)->setValue(0.4);
-                    }
-                }
-            }
-        }
-
-        // Update Mouse Interaction ToolBox
-        view->setCurrentLayer(0);
-        getWorkspace()->updateMouseInteractionToolBox();
-    }
-
     if ( slicingParameter )
     {
         slicingParameter->getSlider()->addTick(currentIdSlice);
@@ -1464,6 +1465,7 @@ void AlgorithmPaintToolBox::updateButtons()
         m_labelColorWidget->hide();
         m_strokeLabelSpinBox->hide();
         m_colorLabel->hide();
+        m_removeSeedButton->hide();
         return;
     }
     else
@@ -1480,6 +1482,7 @@ void AlgorithmPaintToolBox::updateButtons()
             m_wand3DRealTime->show();
             m_wandInfo->show();
             m_brushSizeSlider->hide();
+            m_removeSeedButton->show();
         }
         else if ( m_paintState == PaintState::Stroke )
         {
@@ -1488,6 +1491,7 @@ void AlgorithmPaintToolBox::updateButtons()
             m_wandUpperThresholdSlider->hide();
             m_wand3DCheckbox->hide();
             m_wand3DRealTime->hide();
+            m_removeSeedButton->hide();
         }
     }
 }
