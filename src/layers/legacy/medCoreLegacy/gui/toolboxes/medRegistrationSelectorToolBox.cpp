@@ -122,15 +122,17 @@ medAbstractData *medRegistrationSelectorToolBox::movingData(void)
 void medRegistrationSelectorToolBox::changeCurrentToolBox(int index)
 {
     medSelectorToolBox::changeCurrentToolBox(index);
-
-    connect (currentToolBox(), SIGNAL (success()),this,SLOT(enableSelectorToolBox()));
-    connect (currentToolBox(), SIGNAL (failure()),this,SLOT(enableSelectorToolBox()));
-
     d->nameOfCurrentAlgorithm = this->comboBox()->itemData(index).toString();
 
-    if (!d->undoRedoProcess && !d->undoRedoToolBox)
+    if (currentToolBox())
     {
-        connect(currentToolBox(), SIGNAL(success()), this, SLOT(handleOutput()));
+        connect (currentToolBox(), SIGNAL (success()),this,SLOT(enableSelectorToolBox()));
+        connect (currentToolBox(), SIGNAL (failure()),this,SLOT(enableSelectorToolBox()));
+
+        if (!d->undoRedoProcess && !d->undoRedoToolBox)
+        {
+            connect(currentToolBox(), SIGNAL(success()), this, SLOT(handleOutput()));
+        }
     }
 }
 
