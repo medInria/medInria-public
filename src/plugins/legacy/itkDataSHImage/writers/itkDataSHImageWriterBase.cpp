@@ -66,7 +66,7 @@ bool itkDataSHImageWriterBase::canWrite(const QString& path)
     if (this->io.IsNull())
         return false;
 
-    return this->io->CanWriteFile ( path.toLatin1().constData() );
+    return this->io->CanWriteFile ( path.toUtf8().constData() );
 }
 
 bool itkDataSHImageWriterBase::write(const QString& path)
@@ -116,7 +116,7 @@ bool itkDataSHImageWriterBase::write(const QString& path, PixelType dummyArgumen
 
     typedef typename itk::ImageFileWriter<SHImageType>::Pointer ImageFileWriterPointer;
     ImageFileWriterPointer myWriter = itk::ImageFileWriter<SHImageType>::New();
-    myWriter->SetFileName(path.toLatin1().constData());
+    myWriter->SetFileName(path.toUtf8().constData());
     myWriter->SetInput(/*mySH*/image);
     try
     {
