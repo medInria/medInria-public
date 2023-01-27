@@ -58,6 +58,7 @@ public slots:
     medViewContainer* insertNewTab(int index, const QString &name);
     void closeCurrentTab();
     void closeTab(int index);
+    void movedTabs(int from, int to);
 
 private slots :
     void tabBarDoubleClickedHandler(int  index);
