@@ -94,10 +94,10 @@ void medRunnableProcess::onProgressed (int value)
 }
 
 /**
-* Contrarily to success() and failure(), the cancel() method is called
+* Contrary to success() and failure(), the cancel() method is called
 * from outside this object (success and failure and emitted by the process
-* itself. This slot implements the expected behaviour when a cancel request
-* was made by calling the approrite onCanceled() slot of the running
+* itself). This slot implements the expected behaviour when a cancel request
+* was made by calling the appropriate onCanceled() slot of the running
 * dtkAbstractProcess
 */
 void medRunnableProcess::onCancel (QObject *sender)

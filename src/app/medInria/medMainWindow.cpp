@@ -727,13 +727,8 @@ void medMainWindow::closeEvent(QCloseEvent *event)
             // send cancel request to all running jobs, then wait for them
             // Note: most Jobs don't have the cancel method implemented, so this will be effectively the same as waitfordone.
             medJobManagerL::instance()->dispatchGlobalCancelEvent();
-            QThreadPool::globalInstance()->waitForDone();
         }
-        else
-        {
-            // just hide the window and wait
-            QThreadPool::globalInstance()->waitForDone();
-        }
+        QThreadPool::globalInstance()->waitForDone();
     }
 
     if(this->saveModifiedAndOrValidateClosing() != QDialog::Accepted)
