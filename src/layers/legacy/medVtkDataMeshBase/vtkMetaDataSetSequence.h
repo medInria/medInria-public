@@ -123,7 +123,7 @@ class MEDVTKDATAMESHBASE_EXPORT vtkMetaDataSetSequence: public vtkMetaDataSet
   */
   vtkGetMacro (SequenceDuration, double)
 
-  virtual const char* GetDataSetType() const override
+  const char* GetDataSetType() const override
   {
     return "Sequence";
   }

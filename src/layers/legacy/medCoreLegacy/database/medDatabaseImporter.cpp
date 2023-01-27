@@ -166,7 +166,9 @@ int medDatabaseImporter::getOrCreateStudy ( const medAbstractData* medData, QSql
     QString studyDate   = medMetaDataKeys::StudyDate.getFirstValue(medData);
 
     if( studyName=="EmptyStudy" && seriesName=="EmptySeries" )
+    {
         return studyDbId;
+    }
 
     query.prepare ( "SELECT id FROM study WHERE patient = :patient AND name = :studyName AND uid = :studyUid" );
     query.bindValue ( ":patient", patientDbId );

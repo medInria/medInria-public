@@ -24,7 +24,7 @@ class MESHMAPPINGPLUGIN_EXPORT meshMappingToolBox : public medAbstractSelectable
 {
     Q_OBJECT
     MED_TOOLBOX_INTERFACE("Mesh Mapping",
-                          "Map data on a mesh: keep the intersection of the mesh and data, and set these values to the mesh.",
+                          "Map data on a mesh: keep the intersection of the mesh and data, and set these values to the mesh",
                           <<"Meshing")
     
 public:
