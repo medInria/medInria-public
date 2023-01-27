@@ -140,7 +140,7 @@ medResliceViewer::medResliceViewer(medAbstractView *view, QWidget *parent): medA
     selectedView = 2;
 
     int *imageDims = view3d->GetMedVtkImageInfo()->dimensions;
-    outputSpacing  = view3d->GetMedVtkImageInfo()->spacing;
+    outputSpacingOrSize  = view3d->GetMedVtkImageInfo()->spacing;
 
     viewBody = new QWidget(parent);
 
@@ -382,9 +382,9 @@ void medResliceViewer::saveImage()
     reslicerTop->SetInterpolationModeToLinear();
 
     // Apply resampling in mm
-    if (reformaTlbx->findChild<QComboBox*>("bySpacingOrDimension")->currentText() == "Spacing")
+    if (reformaTlbx->findChild<QComboBox*>("bySpacingOrSize")->currentText() == "Spacing")
     {
-        reslicerTop->SetOutputSpacing(outputSpacing);
+        reslicerTop->SetOutputSpacing(outputSpacingOrSize);
     }
     reslicerTop->Update();
 
@@ -426,44 +426,48 @@ void medResliceViewer::saveImage()
     emit imageReformatedGenerated();
 }
 
-void medResliceViewer::thickSlabChanged(double val)
+void medResliceViewer::askedSpacingOrSizeChange(double val)
 {
     medDoubleParameterL * doubleParam = qobject_cast<medDoubleParameterL*>(QObject::sender());
-
     auto spinBoxSender = doubleParam? doubleParam->getSpinBox() : nullptr;
-
     if (spinBoxSender)
     {
-        double x, y, z;
-        riw[2]->GetResliceCursor()->GetThickness(x,y,z);
+        auto changeFormat = reformaTlbx->findChild<QComboBox*>("bySpacingOrSize")->currentText();
+        auto accessibleName = spinBoxSender->accessibleName();
 
-        if (spinBoxSender->accessibleName()=="SpacingX")
+        if (changeFormat == "Spacing")
         {
-            if (reformaTlbx->findChild<QComboBox*>("bySpacingOrDimension")->currentText() == "Spacing")
+            double x, y, z;
+            riw[2]->GetResliceCursor()->GetThickness(x,y,z);
+
+            // The three windows share the same reslice cursor
+            if (accessibleName == "SpacingOrSizeX")
             {
-                riw[0]->GetResliceCursor()->SetThickness(val,y,z); //the three windows share the same reslice cursor
+                riw[0]->GetResliceCursor()->SetThickness(val,y,z);
             }
-            outputSpacing[0] = val;
+            else if (accessibleName == "SpacingOrSizeY")
+            {
+                riw[0]->GetResliceCursor()->SetThickness(x,val,z);
+            }
+            else if (accessibleName == "SpacingOrSizeZ")
+            {
+                riw[0]->GetResliceCursor()->SetThickness(x,y,val);
+            }
         }
 
-        if (spinBoxSender->accessibleName()=="SpacingY")
+        // For spacing or size changes
+        if (accessibleName == "SpacingOrSizeX")
         {
-            if (reformaTlbx->findChild<QComboBox*>("bySpacingOrDimension")->currentText() == "Spacing")
-            {
-                riw[0]->GetResliceCursor()->SetThickness(x,val,z); //the three windows share the same reslice cursor
-            }
-            outputSpacing[1] = val;
+            outputSpacingOrSize[0] = val;
         }
-
-        if (spinBoxSender->accessibleName()=="SpacingZ")
+        else if (accessibleName == "SpacingOrSizeY")
         {
-            if (reformaTlbx->findChild<QComboBox*>("bySpacingOrDimension")->currentText() == "Spacing")
-            {
-                riw[0]->GetResliceCursor()->SetThickness(x,y,val); //the three windows share the same reslice cursor
-            }
-            outputSpacing[2] = val;
+            outputSpacingOrSize[1] = val;
         }
-        this->render();
+        else if (accessibleName == "SpacingOrSizeZ")
+        {
+            outputSpacingOrSize[2] = val;
+        }
     }
 }
 
@@ -732,7 +736,7 @@ void medResliceViewer::generateOutput(vtkImageReslice* reslicer, QString destTyp
     outputData->setData(filter->GetOutput());
 
     // Apply resampling in pix
-    if (reformaTlbx->findChild<QComboBox*>("bySpacingOrDimension")->currentText() == "Dimension")
+    if (reformaTlbx->findChild<QComboBox*>("bySpacingOrSize")->currentText() == "Size")
     {
         applyResamplingPix();
     }
@@ -753,9 +757,9 @@ void medResliceViewer::applyResamplingPix()
 {
     resampleProcess *resamplePr = new resampleProcess();
     resamplePr->setInput(outputData);
-    resamplePr->setParameter(outputSpacing[0], 0);
-    resamplePr->setParameter(outputSpacing[1], 1);
-    resamplePr->setParameter(outputSpacing[2], 2);
+    resamplePr->setParameter(outputSpacingOrSize[0], 0);
+    resamplePr->setParameter(outputSpacingOrSize[1], 1);
+    resamplePr->setParameter(outputSpacingOrSize[2], 2);
     resamplePr->update();
 
     outputData = resamplePr->output();

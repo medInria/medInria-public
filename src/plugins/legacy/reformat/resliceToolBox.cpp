@@ -28,9 +28,9 @@ class resliceToolBoxPrivate
 {
 public:
     QPushButton *b_startReslice, *b_stopReslice, *b_saveImage, *b_reset;
-    QComboBox *bySpacingOrDimension;
+    QComboBox *bySpacingOrSize;
     QLabel *helpBegin;
-    medDoubleParameterL *spacingX, *spacingY, *spacingZ;
+    medDoubleParameterL *spacingOrSizeX, *spacingOrSizeY, *spacingOrSizeZ;
     medAbstractLayeredView *currentView;
     medResliceViewer *resliceViewer;
     dtkSmartPointer<medAbstractData> reformatedImage;
@@ -54,14 +54,14 @@ resliceToolBox::resliceToolBox (QWidget *parent) : medAbstractSelectableToolBox 
 
     // User can choose pixel or millimeter resample
     QHBoxLayout * resampleLayout = new QHBoxLayout();
-    QLabel *bySpacingOrDimensionLabel = new QLabel("Select your resample parameter ", resliceToolBoxBody);
-    d->bySpacingOrDimension = new QComboBox(resliceToolBoxBody);
-    d->bySpacingOrDimension->setObjectName("bySpacingOrDimension");
-    d->bySpacingOrDimension->addItem("Spacing");
-    d->bySpacingOrDimension->addItem("Dimension");
-    resampleLayout->addWidget(bySpacingOrDimensionLabel);
-    resampleLayout->addWidget(d->bySpacingOrDimension);
-    connect(d->bySpacingOrDimension, SIGNAL(currentIndexChanged(const QString&)), this, SLOT(switchSpacingAndDimension(const QString&)));
+    QLabel *bySpacingOrSizeLabel = new QLabel("Select your resample parameter ", resliceToolBoxBody);
+    d->bySpacingOrSize = new QComboBox(resliceToolBoxBody);
+    d->bySpacingOrSize->setObjectName("bySpacingOrSize");
+    d->bySpacingOrSize->addItem("Spacing");
+    d->bySpacingOrSize->addItem("Size");
+    resampleLayout->addWidget(bySpacingOrSizeLabel);
+    resampleLayout->addWidget(d->bySpacingOrSize);
+    connect(d->bySpacingOrSize, SIGNAL(currentIndexChanged(const QString&)), this, SLOT(switchSpacingAndDimension(const QString&)));
 
     // Spinboxes of resample values
     QWidget *spinBoxes = new QWidget(resliceToolBoxBody);
@@ -69,38 +69,38 @@ resliceToolBox::resliceToolBox (QWidget *parent) : medAbstractSelectableToolBox 
 
     QHBoxLayout *spacingSpinBoxLayoutX = new QHBoxLayout();
     spacingSpinBoxLayoutX->setAlignment(Qt::AlignCenter);
-    d->spacingX = new medDoubleParameterL("X", this);
-    d->spacingX->getSpinBox()->setAccessibleName("SpacingX");
-    d->spacingX->setObjectName("SpacingX");
-    d->spacingX->setRange(0,100);
-    d->spacingX->getSpinBox()->setSuffix(" mm");
-    d->spacingX->setSingleStep(0.1f);
-    spacingSpinBoxLayoutX->addWidget(d->spacingX->getLabel());
-    spacingSpinBoxLayoutX->addWidget(d->spacingX->getSpinBox());
+    d->spacingOrSizeX = new medDoubleParameterL("X", this);
+    d->spacingOrSizeX->getSpinBox()->setAccessibleName("SpacingOrSizeX");
+    d->spacingOrSizeX->setObjectName("SpacingOrSizeX");
+    d->spacingOrSizeX->setRange(0,100);
+    d->spacingOrSizeX->getSpinBox()->setSuffix(" mm");
+    d->spacingOrSizeX->setSingleStep(0.1f);
+    spacingSpinBoxLayoutX->addWidget(d->spacingOrSizeX->getLabel());
+    spacingSpinBoxLayoutX->addWidget(d->spacingOrSizeX->getSpinBox());
     spacingSpinBoxLayout->addLayout(spacingSpinBoxLayoutX);
 
     QHBoxLayout *spacingSpinBoxLayoutY = new QHBoxLayout();
     spacingSpinBoxLayoutY->setAlignment(Qt::AlignCenter);
-    d->spacingY = new medDoubleParameterL("Y", this);
-    d->spacingY->getSpinBox()->setAccessibleName("SpacingY");
-    d->spacingY->setObjectName("SpacingY");
-    d->spacingY->setRange(0,100);
-    d->spacingY->getSpinBox()->setSuffix(" mm");
-    d->spacingY->setSingleStep(0.1f);
-    spacingSpinBoxLayoutY->addWidget(d->spacingY->getLabel());
-    spacingSpinBoxLayoutY->addWidget(d->spacingY->getSpinBox());
+    d->spacingOrSizeY = new medDoubleParameterL("Y", this);
+    d->spacingOrSizeY->getSpinBox()->setAccessibleName("SpacingOrSizeY");
+    d->spacingOrSizeY->setObjectName("SpacingOrSizeY");
+    d->spacingOrSizeY->setRange(0,100);
+    d->spacingOrSizeY->getSpinBox()->setSuffix(" mm");
+    d->spacingOrSizeY->setSingleStep(0.1f);
+    spacingSpinBoxLayoutY->addWidget(d->spacingOrSizeY->getLabel());
+    spacingSpinBoxLayoutY->addWidget(d->spacingOrSizeY->getSpinBox());
     spacingSpinBoxLayout->addLayout(spacingSpinBoxLayoutY);
 
     QHBoxLayout *spacingSpinBoxLayoutZ = new QHBoxLayout();
     spacingSpinBoxLayoutZ->setAlignment(Qt::AlignCenter);
-    d->spacingZ = new medDoubleParameterL("Z", this);
-    d->spacingZ->getSpinBox()->setAccessibleName("SpacingZ");
-    d->spacingZ->setObjectName("SpacingZ");
-    d->spacingZ->setRange(0,100);
-    d->spacingZ->getSpinBox()->setSuffix(" mm");
-    d->spacingZ->setSingleStep(0.1f);
-    spacingSpinBoxLayoutZ->addWidget(d->spacingZ->getLabel());
-    spacingSpinBoxLayoutZ->addWidget(d->spacingZ->getSpinBox());
+    d->spacingOrSizeZ = new medDoubleParameterL("Z", this);
+    d->spacingOrSizeZ->getSpinBox()->setAccessibleName("SpacingOrSizeZ");
+    d->spacingOrSizeZ->setObjectName("SpacingOrSizeZ");
+    d->spacingOrSizeZ->setRange(0,100);
+    d->spacingOrSizeZ->getSpinBox()->setSuffix(" mm");
+    d->spacingOrSizeZ->setSingleStep(0.1f);
+    spacingSpinBoxLayoutZ->addWidget(d->spacingOrSizeZ->getLabel());
+    spacingSpinBoxLayoutZ->addWidget(d->spacingOrSizeZ->getSpinBox());
     spacingSpinBoxLayout->addLayout(spacingSpinBoxLayoutZ);
 
     spinBoxes->setLayout(spacingSpinBoxLayout);
@@ -191,17 +191,22 @@ void resliceToolBox::startReformat()
                                                         getWorkspace()->tabbedViewContainers());
                 d->resliceViewer->setToolBox(this);
                 getWorkspace()->tabbedViewContainers()->setAcceptDrops(false);
-                connect(d->resliceViewer,SIGNAL(imageReformatedGenerated()),this,SLOT(saveReformatedImage()));
                 medViewContainer * container = getWorkspace()->tabbedViewContainers()->insertNewTab(0, "Reslice");
                 getWorkspace()->tabbedViewContainers()->setCurrentIndex(0);
                 container->setDefaultWidget(d->resliceViewer->viewWidget());
-                connect(container, SIGNAL(viewRemoved()),this, SLOT(stopReformat()), Qt::UniqueConnection);
 
-                connect(d->spacingX, SIGNAL(valueChanged(double)), d->resliceViewer, SLOT(thickSlabChanged(double)));
-                connect(d->spacingY, SIGNAL(valueChanged(double)), d->resliceViewer, SLOT(thickSlabChanged(double)));
-                connect(d->spacingZ, SIGNAL(valueChanged(double)), d->resliceViewer, SLOT(thickSlabChanged(double)));
-
-                connect(d->b_saveImage, SIGNAL(clicked()), d->resliceViewer, SLOT(saveImage()));
+                connect(d->resliceViewer,SIGNAL(imageReformatedGenerated()),
+                    this,SLOT(saveReformatedImage()), Qt::UniqueConnection);
+                connect(container, SIGNAL(viewRemoved()),
+                    this, SLOT(stopReformat()), Qt::UniqueConnection);
+                connect(d->spacingOrSizeX, SIGNAL(valueChanged(double)), 
+                    d->resliceViewer, SLOT(askedSpacingOrSizeChange(double)), Qt::UniqueConnection);
+                connect(d->spacingOrSizeY, SIGNAL(valueChanged(double)), 
+                    d->resliceViewer, SLOT(askedSpacingOrSizeChange(double)), Qt::UniqueConnection);
+                connect(d->spacingOrSizeZ, SIGNAL(valueChanged(double)), 
+                    d->resliceViewer, SLOT(askedSpacingOrSizeChange(double)), Qt::UniqueConnection);
+                connect(d->b_saveImage, SIGNAL(clicked()), 
+                    d->resliceViewer, SLOT(saveImage()), Qt::UniqueConnection);
 
                 d->reformatedImage = nullptr;
 
@@ -229,7 +234,7 @@ void resliceToolBox::stopReformat()
 {
     if (getWorkspace())
     {
-        d->bySpacingOrDimension->setCurrentIndex(0); // init resample parameter
+        d->bySpacingOrSize->setCurrentIndex(0); // init resample parameter
         d->helpBegin->show();
         d->reformatOptions->hide();
         d->b_startReslice->show();
@@ -282,19 +287,19 @@ void resliceToolBox::updateView()
 
 void resliceToolBox::displayInfoOnCurrentView()
 {
-    if (d->bySpacingOrDimension->currentIndex() == 0) // Spacing
+    if (d->bySpacingOrSize->currentIndex() == 0) // Spacing
     {
         double *spacing = d->imageInfo->spacing;
-        d->spacingX->setValue(spacing[0]);
-        d->spacingY->setValue(spacing[1]);
-        d->spacingZ->setValue(spacing[2]);
+        d->spacingOrSizeX->setValue(spacing[0]);
+        d->spacingOrSizeY->setValue(spacing[1]);
+        d->spacingOrSizeZ->setValue(spacing[2]);
     }
     else // Dimension
     {
         int *dimension = d->imageInfo->dimensions;
-        d->spacingX->setValue(dimension[0]);
-        d->spacingY->setValue(dimension[1]);
-        d->spacingZ->setValue(dimension[2]);
+        d->spacingOrSizeX->setValue(dimension[0]);
+        d->spacingOrSizeY->setValue(dimension[1]);
+        d->spacingOrSizeZ->setValue(dimension[2]);
     }
 }
 
@@ -319,27 +324,27 @@ void resliceToolBox::switchSpacingAndDimension(const QString & value)
 {
     if (value == "Spacing")
     {
-        d->spacingX->getSpinBox()->setSuffix(" mm");
-        d->spacingX->setRange(0, 100);
-        d->spacingX->setSingleStep(0.1f);
-        d->spacingY->getSpinBox()->setSuffix(" mm");
-        d->spacingY->setRange(0, 100);
-        d->spacingY->setSingleStep(0.1f);
-        d->spacingZ->getSpinBox()->setSuffix(" mm");
-        d->spacingZ->setRange(0, 100);
-        d->spacingZ->setSingleStep(0.1f);
+        d->spacingOrSizeX->getSpinBox()->setSuffix(" mm");
+        d->spacingOrSizeX->setRange(0, 100);
+        d->spacingOrSizeX->setSingleStep(0.1f);
+        d->spacingOrSizeY->getSpinBox()->setSuffix(" mm");
+        d->spacingOrSizeY->setRange(0, 100);
+        d->spacingOrSizeY->setSingleStep(0.1f);
+        d->spacingOrSizeZ->getSpinBox()->setSuffix(" mm");
+        d->spacingOrSizeZ->setRange(0, 100);
+        d->spacingOrSizeZ->setSingleStep(0.1f);
     }
     else // Dimension
     {
-        d->spacingX->getSpinBox()->setSuffix(" px");
-        d->spacingX->setRange(0, 10000);
-        d->spacingX->setSingleStep(10);
-        d->spacingY->getSpinBox()->setSuffix(" px");
-        d->spacingY->setRange(0, 10000);
-        d->spacingY->setSingleStep(10);
-        d->spacingZ->getSpinBox()->setSuffix(" px");
-        d->spacingZ->setRange(0, 10000);
-        d->spacingZ->setSingleStep(10);
+        d->spacingOrSizeX->getSpinBox()->setSuffix(" px");
+        d->spacingOrSizeX->setRange(0, 10000);
+        d->spacingOrSizeX->setSingleStep(10);
+        d->spacingOrSizeY->getSpinBox()->setSuffix(" px");
+        d->spacingOrSizeY->setRange(0, 10000);
+        d->spacingOrSizeY->setSingleStep(10);
+        d->spacingOrSizeZ->getSpinBox()->setSuffix(" px");
+        d->spacingOrSizeZ->setRange(0, 10000);
+        d->spacingOrSizeZ->setSingleStep(10);
     }
     displayInfoOnCurrentView();
 }
@@ -355,16 +360,16 @@ medAbstractData *resliceToolBox::processOutput()
 
 void resliceToolBox::changeButtonValue(QString buttonName, double value)
 {
-    if (buttonName == "SpacingX")
+    if (buttonName == "SpacingOrSizeX")
     {
-        d->spacingX->setValue(value);
+        d->spacingOrSizeX->setValue(value);
     }
-    else if (buttonName == "SpacingY")
+    else if (buttonName == "SpacingOrSizeY")
     {
-        d->spacingY->setValue(value);
+        d->spacingOrSizeY->setValue(value);
     }
-    else if (buttonName == "SpacingZ")
+    else if (buttonName == "SpacingOrSizeZ")
     {
-        d->spacingZ->setValue(value);
+        d->spacingOrSizeZ->setValue(value);
     }
 }
