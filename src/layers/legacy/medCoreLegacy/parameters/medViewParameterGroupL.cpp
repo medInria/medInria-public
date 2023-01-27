@@ -47,11 +47,6 @@ medViewParameterGroupL::~medViewParameterGroupL()
 {
     medParameterGroupManagerL::instance()->unregisterGroup(this);
 
-    for(medAbstractView *view : d->impactedViews)
-    {
-        removeImpactedView(view);
-    }
-
     d->pool->clear();
 
     delete d;
