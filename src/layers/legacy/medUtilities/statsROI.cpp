@@ -1,17 +1,13 @@
-/*=========================================================================
-
- medInria
-
- Copyright (c) INRIA 2013. All rights reserved.
-
- See LICENSE.txt for details in the root of the sources or:
- https://github.com/medInria/medInria-public/blob/master/LICENSE.txt
-
- This software is distributed WITHOUT ANY WARRANTY; without even
- the implied warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR
- PURPOSE.
-
-=========================================================================*/
+/*
+ * medInria
+ * Copyright (c) INRIA 2013. All rights reserved.
+ *
+ * medInria is under BSD-2-Clause license. See LICENSE.txt for details in the root of the sources or:
+ * https://github.com/medInria/medInria-public/blob/master/LICENSE.txt
+ *
+ * This software is distributed WITHOUT ANY WARRANTY; without even
+ * the implied warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.
+ */
 
 #include "statsROI.h"
 
@@ -222,11 +218,6 @@ statsROI::statsROI()
     outsideValue = 0;
 }
 
-statsROI::~statsROI()
-{
-    
-}
-
 void statsROI::setInput (medAbstractData *data, int channel)
 {
     if ( !data ) return;
@@ -313,5 +304,5 @@ int statsROI::update()
 
 std::vector<double> statsROI::output()
 {
-    return ( this->computedOutput );
+    return this->computedOutput;
 }
