@@ -279,6 +279,33 @@ void medUtilities::computeMeanAndVariance(QList<double> samples,
     *variance = tmpVar;
 }
 
+void medUtilities::computeMedian(QList<double> samples,
+                                 double* median)
+{
+    int size = samples.size();
+
+    if (size == 0)
+    {
+        *median = 0.0;  // Undefined, really.
+    }
+    else if (size == 1)
+    {
+        *median = samples[0];
+    }
+    else
+    {
+        qSort(samples.begin(), samples.end());
+        if (size % 2 == 0)
+        {
+            *median = (samples[size / 2 - 1] + samples[size / 2]) / 2.0;
+        }
+        else
+        {
+            *median = samples[size / 2];
+        }
+    }
+}
+
 int medUtilities::getDevicePixelRatio(QMouseEvent* mouseEvent)
 {
     int devicePixelRatio = 1;

@@ -23,16 +23,24 @@
 #include <medTabbedViewContainers.h>
 #include <medToolBoxFactory.h>
 
+#include <vtkDataArray.h>
+#include <vtkDataSet.h>
+#include <vtkFieldData.h>
+#include <vtkMetaDataSet.h>
+
 class iterativeClosestPointToolBoxPrivate
 {
 public:
-    
     medAbstractLayeredView *currentView;
     QComboBox *layerSource, *layerTarget;
     QDoubleSpinBox *ScaleFactor, *MaxMeanDistance;
     QSpinBox *MaxNumIterations, *MaxNumLandmarks;
-    QCheckBox *bStartByMatchingCentroids, *bCheckMeanDistance;
+    QCheckBox *bStartByMatchingCentroids, *bCheckMeanDistance, *exportTransferMatrix;
     QComboBox *bTransformationComboBox;
+    QLineEdit *pathExportMatrixLineEdit;
+    QLabel *meanText;
+    QLabel *stdDevText;
+    QLabel *medianText;
 
     dtkSmartPointer<iterativeClosestPointProcess> process;
 };
@@ -44,18 +52,34 @@ iterativeClosestPointToolBox::iterativeClosestPointToolBox(QWidget *parent)
 
     QVBoxLayout *parameters_layout = new QVBoxLayout;
 
+    QVBoxLayout *rfeLayout = new QVBoxLayout();
+    d->meanText = new QLabel("", this);
+    d->meanText->setStyleSheet("QLabel{color:#ED6639;}");
+    d->stdDevText = new QLabel("", this);
+    d->stdDevText->setStyleSheet("QLabel{color:#ED6639;}");
+    d->medianText = new QLabel("", this);
+    d->medianText->setStyleSheet("QLabel{color:#ED6639;}");
+    rfeLayout->addWidget(d->meanText);
+    rfeLayout->addWidget(d->stdDevText);
+    rfeLayout->addWidget(d->medianText);
+
     // Parameters widgets
     d->layerSource = new QComboBox;
-    d->layerSource->addItem("Select the source mesh", 0);
-    QLabel *layerSource_Label = new QLabel("Source mesh");
-    parameters_layout->addWidget(layerSource_Label);
-    parameters_layout->addWidget(d->layerSource);
-    
+    d->layerSource->addItem("Select the layer", 0);
+    QLabel *layerSource_Label = new QLabel("Select the source mesh:");
+
     d->layerTarget = new QComboBox;
-    d->layerTarget->addItem("Select the target mesh", 0);
-    QLabel *layerTarget_Label = new QLabel("Target mesh");
-    parameters_layout->addWidget(layerTarget_Label);
-    parameters_layout->addWidget(d->layerTarget);
+    d->layerTarget->addItem("Select the layer", 0);
+    QLabel *layerTarget_Label = new QLabel("Select the target mesh:");
+
+    // Choose scale factor to apply to Source mesh
+    d->ScaleFactor = new QDoubleSpinBox(widget);
+    d->ScaleFactor->setValue(1.0);
+    d->ScaleFactor->setToolTip("Apply isotropic scaling to the source according to this factor before ICP");
+    QHBoxLayout *ScaleFactor_layout = new QHBoxLayout;
+    QLabel *ScaleFactor_Label = new QLabel("Scale Factor");
+    ScaleFactor_layout->addWidget(ScaleFactor_Label);
+    ScaleFactor_layout->addWidget(d->ScaleFactor);
     
     d->bStartByMatchingCentroids = new QCheckBox(widget);
     d->bStartByMatchingCentroids->setText("Start by matching centroids");
@@ -79,16 +103,11 @@ iterativeClosestPointToolBox::iterativeClosestPointToolBox(QWidget *parent)
     d->bCheckMeanDistance = new QCheckBox(widget);
     d->bCheckMeanDistance->setText("Check mean distance");
     d->bCheckMeanDistance->setToolTip("Force the algorithm to check the mean distance between two iterations");
+    connect (d->bCheckMeanDistance, SIGNAL(toggled(bool)),
+             this, SLOT(onbCheckMeanDistanceCheckBoxToggled(bool)));
 
-    d->ScaleFactor = new QDoubleSpinBox(widget);
-    d->ScaleFactor->setValue(1.0);
-    d->ScaleFactor->setToolTip("Set a linear transformation according to this factor");
-    QHBoxLayout *ScaleFactor_layout = new QHBoxLayout;
-    QLabel *ScaleFactor_Label = new QLabel("Scale Factor");
-    ScaleFactor_layout->addWidget(ScaleFactor_Label);
-    ScaleFactor_layout->addWidget(d->ScaleFactor);
-    
     d->MaxMeanDistance = new QDoubleSpinBox(widget);
+    d->MaxMeanDistance->setEnabled(d->bCheckMeanDistance->isChecked());
     d->MaxMeanDistance->setDecimals(5);
     d->MaxMeanDistance->setValue(0.01);
     d->MaxMeanDistance->setToolTip("Set the maximum mean distance between two iterations");
@@ -115,21 +134,46 @@ iterativeClosestPointToolBox::iterativeClosestPointToolBox(QWidget *parent)
     MaxNumLandmarks_layout->addWidget(MaxNumLandmarks_Label);
     MaxNumLandmarks_layout->addWidget(d->MaxNumLandmarks);
 
+    d->exportTransferMatrix = new QCheckBox(tr("Export Transformation Matrix in a File"));
+    d->exportTransferMatrix->setToolTip("Write the Transformation Matrix to go from Source to Target");
+    connect (d->exportTransferMatrix, SIGNAL(toggled(bool)),
+             this, SLOT(onExportTransferMatrixCheckBoxToggled(bool)));
+
+    QDir dir;
+    QCompleter *fileCompleter = new QCompleter(this);
+    fileCompleter->setModel(new QDirModel(fileCompleter));
+    fileCompleter->setCompletionMode(QCompleter::PopupCompletion);
+
+    d->pathExportMatrixLineEdit = new QLineEdit(dir.absolutePath());
+    d->pathExportMatrixLineEdit->setCompleter(fileCompleter);
+    d->pathExportMatrixLineEdit->hide();
+
+    connect (d->pathExportMatrixLineEdit, SIGNAL(textChanged(QString)),
+             this, SLOT(editTransferMatrixPath(QString)));
+
     // Run button
     QPushButton *runButton = new QPushButton(tr("Run"), widget);
     connect(runButton, SIGNAL(clicked()), this, SLOT(run()));
 
+    parameters_layout->addLayout(rfeLayout);
+    parameters_layout->addWidget(layerSource_Label);
+    parameters_layout->addWidget(d->layerSource);
+    parameters_layout->addWidget(layerTarget_Label);
+    parameters_layout->addWidget(d->layerTarget);
+    parameters_layout->addLayout(ScaleFactor_layout);
     parameters_layout->addWidget(d->bStartByMatchingCentroids);
     parameters_layout->addLayout(transformation_layout);
     parameters_layout->addWidget(d->bCheckMeanDistance);
-    parameters_layout->addLayout(ScaleFactor_layout);
     parameters_layout->addLayout(MaxMeanDistance_layout);
     parameters_layout->addLayout(MaxNumIterations_layout);
     parameters_layout->addLayout(MaxNumLandmarks_layout);
+    parameters_layout->addWidget(d->exportTransferMatrix);
+    parameters_layout->addWidget(d->pathExportMatrixLineEdit);
     parameters_layout->addWidget(runButton);
 
     widget->setLayout(parameters_layout);
     this->addWidget(widget);
+    hideFRE();
 
     d->currentView = nullptr;
 }
@@ -168,11 +212,20 @@ void iterativeClosestPointToolBox::run()
             d->process->setParameter(d->MaxNumIterations->value(),4);
             d->process->setParameter(d->MaxNumLandmarks->value(),5);
             d->process->setParameter(d->ScaleFactor->value(),6);
+            d->process->setParameter(d->exportTransferMatrix->checkState(),7);
+            if (d->exportTransferMatrix->checkState() == 2)
+            {
+                d->process->setParameter(d->pathExportMatrixLineEdit->text(), 8);
+                d->process->setParameter(d->layerSource->currentText(), 9);
+                d->process->setParameter(d->layerTarget->currentText(), 10);
+            }
 
             medRunnableProcess *runProcess = new medRunnableProcess;
             runProcess->setProcess (d->process);
             connect (runProcess, SIGNAL(success(QObject*)), this, SLOT(displayOutput()));
+            connect (runProcess, SIGNAL(success(QObject *)), this, SLOT(displayFRE()));
             this->addConnectionsAndStartJob(runProcess);
+
         }
         else
         {
@@ -219,8 +272,8 @@ void iterativeClosestPointToolBox::resetComboBoxes()
 {
     d->layerSource->clear();
     d->layerTarget->clear();
-    d->layerSource->addItem("Select the source mesh");
-    d->layerTarget->addItem("Select the target mesh");
+    d->layerSource->addItem("Select a layer");
+    d->layerTarget->addItem("Select a layer");
 }
 
 void iterativeClosestPointToolBox::addLayer(unsigned int layer)
@@ -251,4 +304,59 @@ dtkPlugin* iterativeClosestPointToolBox::plugin()
     medPluginManager *pm = medPluginManager::instance();
     dtkPlugin *plugin = pm->plugin ( "Iterative Closest Point" );
     return plugin;
+}
+
+void iterativeClosestPointToolBox::onExportTransferMatrixCheckBoxToggled(bool toggle)
+{
+    d->pathExportMatrixLineEdit->setVisible(toggle);
+}
+
+void iterativeClosestPointToolBox::editTransferMatrixPath(QString newPath)
+{
+    d->pathExportMatrixLineEdit->setText(newPath);
+}
+
+void iterativeClosestPointToolBox::onbCheckMeanDistanceCheckBoxToggled(bool toggle)
+{
+    d->MaxMeanDistance->setEnabled(toggle);
+}
+
+void iterativeClosestPointToolBox::hideFRE()
+{
+    d->meanText->hide();
+    d->stdDevText->hide();
+    d->medianText->hide();
+}
+
+void iterativeClosestPointToolBox::showFRE(double &mean, double &stdDev, double &median)
+{
+    d->meanText->setText("Mean distance: " + QString::number(mean));
+    d->stdDevText->setText("Standard deviation: " + QString::number(stdDev));
+    d->medianText->setText("Median distance: " + QString::number(median));
+    d->meanText->show();
+    d->stdDevText->show();
+    d->medianText->show();
+}
+
+void iterativeClosestPointToolBox::displayFRE()
+{
+    if (d->process)
+    {
+        // retrieve the array that contains the mean,
+        // standard deviation and median
+        medAbstractData *data = this->processOutput();
+        if (data)
+        {
+            vtkMetaDataSet *metaDataSet = static_cast<vtkMetaDataSet *>(data->data());
+            vtkDataSet *mesh = metaDataSet->GetDataSet();
+            vtkDataArray *array = mesh->GetFieldData()->GetArray("FRE Stats");
+            if (array)
+            {
+                double stats[3] = { 0.0, 0.0, 0.0 };
+                array->GetTuple(0, stats);
+                // udpate text
+                showFRE(stats[0], stats[1], stats[2]);
+            }
+        }
+    }
 }

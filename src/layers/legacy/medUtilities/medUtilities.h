@@ -56,6 +56,8 @@ public:
 
     static void computeMeanAndVariance(QList<double> samples, double* mean, double* variance);
 
+    static void computeMedian(QList<double> samples, double* median);
+
     static int getDevicePixelRatio(QMouseEvent* mouseEvent);
 
     static int getDevicePixelRatio(medAbstractView *view);
