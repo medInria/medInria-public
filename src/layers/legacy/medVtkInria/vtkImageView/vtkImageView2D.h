@@ -96,9 +96,11 @@ public:
     ~vtkImageView2DQtSignals() {}
 
     void emitInterpolate(bool pi_bInterpolation, int pi_iLayer){emit interpolate(pi_bInterpolation, pi_iLayer);}
+    void emitSliceChanged(int slice, int sliceOrientation){emit sliceChanged(slice, sliceOrientation);}
 
 signals:
     void interpolate(bool, int);
+    void sliceChanged(int, int);
 
 private:
    

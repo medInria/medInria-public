@@ -37,13 +37,6 @@ medDatabaseNonPersistentImporter::medDatabaseNonPersistentImporter (medAbstractD
 }
 
 //-----------------------------------------------------------------------------------------------------------
-
-medDatabaseNonPersistentImporter::~medDatabaseNonPersistentImporter ()
-{
-
-}
-
-//-----------------------------------------------------------------------------------------------------------
 /**
 * Retrieves patientID. Checks if patient is already in the database
 * if so, reurns is Id, otherwise creates a new guid

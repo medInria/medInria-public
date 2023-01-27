@@ -254,7 +254,6 @@ void itkDicomDataImageWriter::fillDictionaryWithModalityDependentData(itk::MetaD
     {
         itk::EncapsulateMetaData<std::string>(dictionary, "0018|0060", data()->metadata("KVP").toStdString());
     }
-
 }
 
 template <class PixelType> void itkDicomDataImageWriter::fillDictionaryWithSharedData(itk::MetaDataDictionary &dictionary, bool studyUIDExistance,
@@ -392,11 +391,15 @@ template <class PixelType> bool itkDicomDataImageWriter::fillDictionaryAndWriteD
     extract->Update();
 
     itk::ImageRegionIterator<Image2DType> it( extract->GetOutput(), extract->GetOutput()->GetLargestPossibleRegion() );
-    typename Image2DType::PixelType minValue = itk::NumericTraits<typename Image2DType::PixelType>::max();
-    typename Image2DType::PixelType maxValue = itk::NumericTraits<typename Image2DType::PixelType>::min();
+    // Do not use the Image2DType::PixelType type, as it creates problems with
+    // char and uchar images. Furthermore, the Window center and width tags
+    // are coded as 'Decimal String' in the DICOM dictionary, so floating
+    // point value are fine.
+    double minValue = std::numeric_limits<double>::max();
+    double maxValue = std::numeric_limits<double>::lowest();
     for( it.GoToBegin(); !it.IsAtEnd(); ++it )
     {
-        typename Image2DType::PixelType p = it.Get();
+        double p = static_cast<double>(it.Get());
         if( p > maxValue )
         {
             maxValue = p;
@@ -406,8 +409,8 @@ template <class PixelType> bool itkDicomDataImageWriter::fillDictionaryAndWriteD
             minValue = p;
         }
     }
-    typename Image2DType::PixelType windowCenter = (minValue + maxValue) / 2;
-    typename Image2DType::PixelType windowWidth = (maxValue - minValue);
+    double windowCenter = (minValue + maxValue) / 2;
+    double windowWidth = std::max(1., maxValue - minValue);
 
     value.str("");
     value << windowCenter;

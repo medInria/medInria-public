@@ -39,7 +39,7 @@ public:
     */
     medDatabaseNonPersistentImporter(const QString& file, const QUuid &uuid);
     medDatabaseNonPersistentImporter(medAbstractData* medData, const QUuid& uuid);
-    ~medDatabaseNonPersistentImporter();
+    ~medDatabaseNonPersistentImporter() override = default;
 
 public:
 
