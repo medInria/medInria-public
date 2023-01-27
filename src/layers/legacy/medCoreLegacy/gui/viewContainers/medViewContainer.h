@@ -69,15 +69,11 @@ public:
     medViewContainer* splitHorizontally();
     medViewContainer* split(Qt::AlignmentFlag alignement = Qt::AlignRight);
 
+    void createdDefaultWidget();
+    void initializeDefaultWidget();
     void changeDefaultWidget(QWidget *newDefaultWidget);
-
-    /**
-     * @brief In a view, switch between default widget (text and buttons to open data)
-     * with the data widget
-     * @param displayDefault
-     */
-    void displayDefaultWidget(bool displayDefault = true);
     QWidget* defaultWidget() const;
+    void displayDefaultWidget(bool displayDefault = true);
 
     void addColorIndicator(QColor color, QString description="");
     void removeColorIndicator(QColor color);

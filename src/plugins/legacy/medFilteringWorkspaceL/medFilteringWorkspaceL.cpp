@@ -104,9 +104,10 @@ void medFilteringWorkspaceL::resetDefaultWidgetOutputContainer()
 {
     if(selectorToolBox()) //null when users close the software
     {
-        auto viewLayout = static_cast<QVBoxLayout*>(d->outputContainer->defaultWidget()->layout());
-        auto label = static_cast<QLabel*>(viewLayout->itemAt(0)->widget());
-        label->setText("OUTPUT");
+        // Do not keep open data buttons
+        QLabel *outputLabel = new QLabel("OUTPUT");
+        outputLabel->setAlignment(Qt::AlignCenter);
+        d->outputContainer->changeDefaultWidget(outputLabel);
         d->outputContainer->setClosingMode(medViewContainer::CLOSE_VIEW);
         d->outputContainer->setUserSplittable(false);
         d->outputContainer->setMultiLayered(false);
