@@ -39,10 +39,16 @@ public slots:
     
     //! Method to actually start the filter
     int update();
-    
+
     //! The output will be available through here
     medAbstractData *output();
-    
+
+    void onCanceled();
+
+protected:
+    template <class InputImageType>
+        int update(medAbstractData *inputData);
+
 private:
     medN4BiasCorrectionPrivate *d;
 };
