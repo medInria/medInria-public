@@ -1,0 +1,10 @@
+[Icon Theme]
+Name=Dark
+Comment=Dark theme for the application
+
+Directories=24x24
+
+[24x24]
+Size=24
+Type=Fixed
+

@@ -234,13 +234,14 @@ void medTimeLineParameterL::play(bool play)
     {
         d->timeLine->setCurrentTime(mapFrameToTime(d->currentFrame) * 1000);
         d->timeLine->resume();
-        d->playParameter->setIcon (QPixmap(":/icons/time_pause_white.svg"));
+        d->playParameter->setIcon(QIcon::fromTheme("time_pause"));
+        
         emit playing(play);
     }
     else if(d->timeLine->state() == QTimeLine::Running && !play)
     {
         d->timeLine->setPaused(true);
-        d->playParameter->setIcon (QPixmap(":/icons/time_play_white.svg"));
+        d->playParameter->setIcon(QIcon::fromTheme("time_play"));
     }
 
    this->lockTimeLine();
@@ -249,7 +250,7 @@ void medTimeLineParameterL::play(bool play)
 void medTimeLineParameterL::reset()
 {
     d->playParameter->setValue(false);
-    d->playParameter->setIcon (QPixmap(":/icons/time_play_white.svg"));
+    d->playParameter->setIcon(QIcon("time_play.svg"));
 }
 
 void medTimeLineParameterL::setNumberOfFrame(int numberOfFrame)
@@ -377,10 +378,10 @@ QWidget* medTimeLineParameterL::getWidget()
         QHBoxLayout *buttonsLayout = new QHBoxLayout;
         QHBoxLayout *indicatorLayout = new QHBoxLayout;
 
-        d->playParameter->setIcon(QIcon(":/icons/time_play_white.svg"));
+        d->playParameter->setIcon(QIcon::fromTheme("time_play"));
         connect(d->playParameter->getPushButton(), SIGNAL(clicked()), this, SLOT(unlockTimeLine()));
-        d->previousFrameParameter->getPushButton()->setIcon(QIcon(":/icons/time_backward_step_white.svg"));
-        d->nextFrameParameter->getPushButton()->setIcon(QIcon(":/icons/time_forward_step_white.svg"));
+        d->previousFrameParameter->getPushButton()->setIcon(QIcon::fromTheme("time_backward_step"));
+        d->nextFrameParameter->getPushButton()->setIcon(QIcon::fromTheme("time_forward_step"));
         d->speedFactorParameter->getSpinBox()->setSingleStep(10);
         d->timeParameter->getSlider()->setOrientation(Qt::Horizontal);
 

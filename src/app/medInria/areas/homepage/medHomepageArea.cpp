@@ -39,22 +39,23 @@ medHomepageArea::medHomepageArea ( QWidget * parent ) : QWidget ( parent ), d ( 
     QMenu *menuFile = menu_bar->addMenu("File");
 
     QAction *actionBrowser = new QAction(tr("&Import/export files"), parent);
-    actionBrowser->setIcon(QIcon(":/icons/open_white.svg"));
+    actionBrowser->setIcon(QIcon::fromTheme("open"));
     connect(actionBrowser, &QAction::triggered, this, &medHomepageArea::onShowBrowser);
     menuFile->addAction(actionBrowser);
 
+    // --- Settings menu
+    QMenu *menuSettings = menu_bar->addMenu("Settings");
+
     QAction *actionDatabase = new QAction(tr("&Database settings"), parent);
     connect(actionDatabase, &QAction::triggered, this, &medHomepageArea::onShowDatabase);
-    menuFile->addAction(actionDatabase);
-
-    // --- Area menu
-    QMenu *menuArea = menu_bar->addMenu("Switch to area");
+    menuSettings->addAction(actionDatabase);
 
     QAction *actionAreaSettings = new QAction(tr("&Startup settings"), parent);
     connect(actionAreaSettings, &QAction::triggered, this, &medHomepageArea::onShowAreaSettings);
-    menuArea->addAction(actionAreaSettings);
+    menuSettings->addAction(actionAreaSettings);
 
-    menuArea->addSeparator();
+    // --- Area menu
+    QMenu *menuArea = menu_bar->addMenu("Workspaces");
 
     QAction *actionHome = new QAction(tr("&Homepage"), parent);
     connect(actionHome, &QAction::triggered, mainWindow, &medMainWindow::switchToHomepageArea);
@@ -143,7 +144,6 @@ medHomepageArea::medHomepageArea ( QWidget * parent ) : QWidget ( parent ), d ( 
     menuAbout->addSeparator();
 
     QAction *actionHelp = new QAction(tr("&Help"), parent);
-    actionHelp->setIcon(QIcon(":/icons/help_white.svg"));
     connect(actionHelp, &QAction::triggered, this, &medHomepageArea::onShowHelp);
     menuAbout->addAction(actionHelp);
 
@@ -153,13 +153,13 @@ medHomepageArea::medHomepageArea ( QWidget * parent ) : QWidget ( parent ), d ( 
 
     // --- Fullscreen checkable action
     QIcon fullscreenIcon;
-    fullscreenIcon.addPixmap(QPixmap(":icons/fullscreen_on_white.svg"),QIcon::Normal,QIcon::Off);
-    fullscreenIcon.addPixmap(QPixmap(":icons/fullscreen_off_white.svg"),QIcon::Normal,QIcon::On);
+    fullscreenIcon.addPixmap(QIcon::fromTheme("fullscreen_on").pixmap(24,24), QIcon::Normal,QIcon::Off);
+    fullscreenIcon.addPixmap(QIcon::fromTheme("fullscreen_off").pixmap(24,24),QIcon::Normal,QIcon::On);
 
     d->actionFullscreen = new QAction(parent);
+    d->actionFullscreen->setObjectName("Fullscreen");
     d->actionFullscreen->setIcon(fullscreenIcon);
     d->actionFullscreen->setCheckable(true);
-    d->actionFullscreen->setChecked(false);
 #if defined(Q_OS_MAC)
     d->actionFullscreen->setShortcut(Qt::ControlModifier + Qt::Key_F);
     connect(d->actionFullscreen, &QAction::hovered, [=]{QToolTip::showText(QCursor::pos(), "Switch to fullscreen (cmd+f)", this);});
@@ -170,8 +170,6 @@ medHomepageArea::medHomepageArea ( QWidget * parent ) : QWidget ( parent ), d ( 
     connect(d->actionFullscreen, &QAction::hovered, [=]{QToolTip::showText(QCursor::pos(), "Switch to fullscreen (F11)", this);});
 #endif
     connect(d->actionFullscreen, &QAction::toggled, mainWindow, &medMainWindow::setFullScreen);
-    // On Qt5, QAction in menubar does not seem to show the Off and On icons, so we do it manually
-    connect(d->actionFullscreen, &QAction::toggled, this, &medHomepageArea::switchOffOnFullscreenIcons);
     rightMenuBar->addAction(d->actionFullscreen);
     
     // Setup the description widget: application logo and description
@@ -246,7 +244,7 @@ void medHomepageArea::initPage()
 
     medHomepageButton * browserButton = new medHomepageButton ( this );
     browserButton->setToolButtonStyle ( Qt::ToolButtonTextBesideIcon );
-    browserButton->setIcon ( QIcon ( ":/icons/open_white.svg" ) );
+    browserButton->setIcon ( QIcon::fromTheme("open") );
     browserButton->setText ( " Import/export files" );
     browserButton->setMinimumHeight ( 40 );
     browserButton->setMaximumWidth ( 250 );
@@ -519,16 +517,4 @@ void medHomepageArea::onShowHelp()
 void medHomepageArea::onShowComposer()
 {
     emit showComposer();
-}
-
-void medHomepageArea::switchOffOnFullscreenIcons(const bool checked)
-{
-    if (checked)
-    {
-        d->actionFullscreen->setIcon(QIcon(":icons/fullscreen_off_white.svg"));
-    }
-    else
-    {
-        d->actionFullscreen->setIcon(QIcon(":icons/fullscreen_on_white.svg"));
-    }
 }

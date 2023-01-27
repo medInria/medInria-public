@@ -41,11 +41,11 @@ contoursManagementToolBox::contoursManagementToolBox(QWidget *parent):
 
     specialities = new QComboBox();
 
-    plusButton = new QPushButton(QIcon(":/icons/plus_white.png"), "");
+    plusButton = new QPushButton(QIcon::fromTheme("plus"), "");
     plusButton->setMaximumSize(QSize(20,20));
     plusButton->hide();
 
-    minusButton = new QPushButton(QIcon(":/icons/minus_white.png"), "");
+    minusButton = new QPushButton(QIcon::fromTheme("minus"), "");
     minusButton->setMaximumSize(QSize(20,20));
     minusButton->hide();
 

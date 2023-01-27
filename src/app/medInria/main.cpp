@@ -89,9 +89,6 @@ int main(int argc,char* argv[])
 
     QSurfaceFormat::setDefaultFormat(fmt);
 
-    // this needs to be done before creating the QApplication object, as per the
-    // Qt doc, otherwise there are some edge cases where the style is not fully applied
-    //QApplication::setStyle("plastique");
     medApplication application(argc,argv);
     medSplashScreen splash(QPixmap(":/pixmaps/medInria-logo-homepage.png"));
 
