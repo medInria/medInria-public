@@ -295,16 +295,7 @@ void DCMTKImageIO::ReadImageInformation()
 
     double startLocation = *l;
     double endLocation   = *lle;
-    int locSign = endLocation>startLocation?1.0:-1.0;
-
-    // just check first volume
-    int startIndex = m_FilenameToIndexMap[ m_LocationToFilenamesMap.lower_bound ( *l )->second ];
-    int endIndex   = m_FilenameToIndexMap[ m_LocationToFilenamesMap.lower_bound ( *lle )->second ];
-
-    double startSlice = this->GetZPositionForImage ( startIndex );
-    double endSlice   = this->GetZPositionForImage ( endIndex );
-
-    int sliceDirection = endSlice>=startSlice?locSign:-locSign;
+    int sliceDirection = endLocation>startLocation?1.0:-1.0;
 
     /**
        Now order filenames such that we can read them sequentially and build the 3D/4D volume.
@@ -599,11 +590,11 @@ void DCMTKImageIO::DetermineOrigin()
     int startIndex = m_FilenameToIndexMap[ m_LocationToFilenamesMap.lower_bound ( *m_LocationSet.begin() )->second ];
     int endIndex   = m_FilenameToIndexMap[ m_LocationToFilenamesMap.lower_bound ( *m_LocationSet.rbegin() )->second ];
 
-    double startZ = this->GetZPositionForImage (startIndex);
-    double endZ   = this->GetZPositionForImage (endIndex);
+    double startPosition = this->GetPositionOnStackingAxisForImage (startIndex);
+    double endPosition   = this->GetPositionOnStackingAxisForImage (endIndex);
 
     int index = startIndex;
-    if (endZ<startZ)
+    if (endPosition<startPosition)
     {
         index = endIndex;
     }
@@ -679,27 +670,43 @@ void DCMTKImageIO::DetermineOrientation()
     }
 }
 
-
-double DCMTKImageIO::GetZPositionForImage (int index)
+double DCMTKImageIO::GetPositionOnStackingAxisForImage (int index)
 {
+    // Getting the unit vector of the closest axis
+    // so we know which part of the image position to use
+    vnl_vector<double> closestAxis (3);
+    closestAxis[0] = round(m_Direction[2][0]);
+    closestAxis[1] = round(m_Direction[2][1]);
+    closestAxis[2] = round(m_Direction[2][2]);
+
     std::string s_position = this->GetMetaDataValueString("(0020,0032)", index);
-    double zpos = 0.0;
-    double junk;
     std::istringstream is_stream( s_position.c_str() );
-    if (!(is_stream >> junk) )
+
+    double pos = 0.0;
+    bool foundAxis=false;
+
+    for (int i=0; i<3; i++)
     {
-        itkWarningMacro ( << "Cannot convert string to double: " << s_position.c_str() << std::endl );
-    }
-    if (!(is_stream >> junk) )
-    {
-        itkWarningMacro ( << "Cannot convert string to double: " << s_position.c_str() << std::endl );
-    }
-    if (!(is_stream >> zpos))
-    {
-        itkWarningMacro ( << "Cannot convert string to double: " << s_position.c_str() << std::endl );
+        if (!(is_stream >> pos) )
+        {
+            itkWarningMacro ( << "Cannot convert string to double: " << s_position.c_str() << std::endl );
+        }
+        else
+        {
+            if (fabs(closestAxis[i]) == 1)
+            {
+                foundAxis = true;
+                break;
+            }
+        }
     }
 
-    return zpos;
+    if (!foundAxis)
+    {
+        itkWarningMacro ( <<"Could not identify position on stacking axis, returning zero." << std::endl );
+    }
+
+    return pos;
 }
 
 
