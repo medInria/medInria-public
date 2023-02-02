@@ -184,7 +184,8 @@
         <file>icons/outbox.png</file>
         <file>icons/icons8-download-16.png</file>
         <file>icons/icons8-upload-16.png</file>
-        <file>icons/icons8-error-16.png</file>
+        <file>icons/icons8-download-error-16.png</file>
+        <file>icons/icons8-upload-error-16.png</file>
         <file>gif/icon.gif</file>
     </qresource>
 </RCC>

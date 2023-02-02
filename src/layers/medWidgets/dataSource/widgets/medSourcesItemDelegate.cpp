@@ -47,12 +47,17 @@ void medSourcesItemDelegate::paint(QPainter *painter, const QStyleOptionViewItem
         else if (value == DATASTATE_ROLE_DATANOTLOADED)
         {
             opt.font.setStrikeOut(true);
-            painter->drawPixmap(QRect(option.rect.x()-40, option.rect.y(), option.decorationSize.width(), option.rect.height()), QPixmap(":icons/icons8-error-16.png"));//QPixmap(":icons/yellow_spot.svg"));
+            painter->drawPixmap(QRect(option.rect.x()-40, option.rect.y(), option.decorationSize.width(), option.rect.height()), QPixmap(":icons/icons8-download-error-16.png"));//QPixmap(":icons/yellow_spot.svg"));
         }
         else if (value == DATASTATE_ROLE_DATASAVED)
         {
             opt.font.setBold(true);
             painter->drawPixmap(QRect(option.rect.x()-40, option.rect.y(), option.decorationSize.width(), option.rect.height()), QPixmap(":icons/icons8-upload-16.png"));//QPixmap(":icons/yellow_spot.svg"));
+        }
+        else if (value == DATASTATE_ROLE_DATANOTSAVED)
+        {
+            opt.font.setItalic(true);
+            painter->drawPixmap(QRect(option.rect.x()-40, option.rect.y(), option.decorationSize.width(), option.rect.height()), QPixmap(":icons/icons8-upload-error-16.png"));//QPixmap(":icons/yellow_spot.svg"));
         }
     }
     QStyledItemDelegate::paint(painter, opt, index);

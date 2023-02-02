@@ -116,6 +116,16 @@ void medSourcesSettingsHandlerWidget::sourceChange(medAbstractSource * pi_pSourc
     }
 }
 
+void medSourcesSettingsHandlerWidget::updateDefaultButton(medAbstractSource *pi_pSource)
+{
+    bool bLocal = pi_pSource->isLocal();
+    bool bWritable = pi_pSource->isWritable();
+    bool bCached = pi_pSource->isLocal();
+    bool bOnline = pi_pSource->isOnline();
+    bool enableDefault = bWritable && (bLocal || (!bLocal && bCached)) && bOnline;
+    m_setDefaultButton->setEnabled(enableDefault);
+}
+
 /**
  * @brief This method must be called when source online status change to update GUI.
  */

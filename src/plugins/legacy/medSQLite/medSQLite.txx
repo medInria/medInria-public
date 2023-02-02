@@ -236,7 +236,7 @@ bool medSQlite<T>::connect(bool pi_bEnable)
         bRes = true;
     }
 
-    emit connectionStatus(bRes);
+    emit connectionStatus(m_online);
 
     return bRes;
 }
@@ -278,7 +278,7 @@ bool medSQlite<T>::isWritable()
 template <typename T>
 bool medSQlite<T>::isLocal()
 {
-    return false;
+    return true;
 }
 
 template <typename T>

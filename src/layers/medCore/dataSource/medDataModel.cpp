@@ -643,7 +643,18 @@ QUuid medDataHub::writeResultsHackV3(medAbstractData &data, bool originSrc)
         }
         else
         {
-            pi_sourceId = m_sourcesHandler->getDefaultWorkingSource()->getInstanceId();
+            auto defaultSource = m_sourcesHandler->getDefaultWorkingSource();
+            if (defaultSource)
+            {
+                pi_sourceId = defaultSource->getInstanceId();
+            }
+            else
+            {
+                medNotif::createNotif(notifLevel::error, "No default source detected",
+                                      "Unable to save data in default source if not defined.\n"
+                                      "Please define default source in sources settings menu.");
+                return QUuid();
+            }
         }
 
         pi_writingPolicyData.baseName = data.metadata(medMetaDataKeys::SeriesDescription.key());
@@ -733,7 +744,7 @@ bool medDataHub::warpAddAsync(medAbstractSource::levelMinimalEntries &minimalEnt
     request.tmpId = minimalEntries.key;
     request.type = asyncRequestType::addRqstType;
     request.uri << pio_uri << minimalEntries.key;
-
+    request.dataName = minimalEntries.name;
     bRes = pModel->addEntry(minimalEntries.key, minimalEntries.name, minimalEntries.description, uiLevel, parentKey);
     if (bRes)
     {
@@ -977,7 +988,7 @@ bool medDataHub::pushData(medDataIndex const & index)
             request.tmpId = pItem->iid();
             request.type = addRqstType;
             request.uri = pItem->uri();
-
+            request.dataName = getDataName(index);
 
             addRequest(sourceId, iRequestId, request);
             pModel->setData(pModel->toIndex(index), DATASTATE_ROLE_DATAPUSHING, DATASTATE_ROLE);

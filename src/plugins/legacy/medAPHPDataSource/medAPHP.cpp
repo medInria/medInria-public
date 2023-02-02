@@ -326,6 +326,7 @@ bool medAPHP::connect(bool pi_bEnable)
         d->isOnline = false;
         bRes = true;
     }
+    emit connectionStatus(d->isOnline);
     return bRes;
 }
 

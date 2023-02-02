@@ -99,6 +99,7 @@ bool medNotif::update(notifLevel pi_criticityLevel, int pi_achivementPercentage,
     {
         d->criticalityLevel = pi_criticityLevel;
         d->achievement = pi_achivementPercentage;
+        d->msg = (!newMessage.isEmpty())?newMessage:d->msg;
         emit updated();
     }
     else
