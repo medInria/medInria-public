@@ -70,9 +70,8 @@ medSourcesSettingsHandlerWidget::medSourcesSettingsHandlerWidget(medSourcesSetti
 }
 
 /**
- * @brief Launch the creation of a new medAbstractSource.
+ * @brief This slot handle click on the default button.
  * @details This slot must be connected to m_setDefaultButton.
- * @details This is the slot to call by the create button.
  */
 void medSourcesSettingsHandlerWidget::setAsDefault()
 {
@@ -87,44 +86,62 @@ void medSourcesSettingsHandlerWidget::setAsDefault()
  */
 void medSourcesSettingsHandlerWidget::sourceChange(medAbstractSource * pi_pSource, bool p_default)
 {
+    disconnect(m_qtConnections[0]);
+
     if (pi_pSource != nullptr)
     {
+        m_bLocal = pi_pSource->isLocal();
+        m_bWritable = pi_pSource->isWritable();
+        m_bCached = pi_pSource->isLocal();
+        m_bOnline = pi_pSource->isOnline();
+        m_bDefault = p_default;
+
         updateSourceInformation(pi_pSource);
-        updateConnectButton(pi_pSource);
+        updateConnectButton();
+        updateDefaultButton();
         m_removeButton->setDisabled(p_default);
-        m_setDefaultButton->setDisabled(p_default);
+
+        m_qtConnections[0] = connect(pi_pSource, &medAbstractSource::connectionStatus, this, &medSourcesSettingsHandlerWidget::sourceConnectStatusChange);
     }
     else
     {
         m_connectButton->setDisabled(true);
         m_setDefaultButton->setDisabled(true);
         m_removeButton->setDisabled(true);
+
+        m_bLocal = false;
+        m_bWritable = false;
+        m_bCached = false;
+        m_bOnline = false;
     }
+}
+
+/**
+ * @brief This method must be called when source online status change to update GUI.
+ */
+void medSourcesSettingsHandlerWidget::sourceConnectStatusChange(bool p_status)
+{
+    m_bOnline = p_status;
+    updateConnectButton();
+    updateDefaultButton();
+}
+
+/**
+ * @brief This method update the default source button and its behavior.
+ */
+void medSourcesSettingsHandlerWidget::updateDefaultButton()
+{
+    bool enableDefault = !m_bDefault && m_bWritable && (m_bLocal || (!m_bLocal && m_bCached)) && m_bOnline;
+
+    m_setDefaultButton->setEnabled(enableDefault);
 }
 
 /**
  * @brief This method update the connect button and its behavior.
- * @param [in] pi_pSource is the source pointer to bind the connect button to current source.
  */
-void medSourcesSettingsHandlerWidget::updateConnectButton(medAbstractSource * pi_pSource)
+void medSourcesSettingsHandlerWidget::updateConnectButton()
 {
-    disconnect(m_qtConnections[0]);
-    disconnect(m_qtConnections[1]);    
-    if (pi_pSource)
-    {
-        m_connectButton->setText(pi_pSource->isOnline() ? "Disconnect" : "Connect");
-        m_qtConnections[0] = connect(pi_pSource, &medAbstractSource::connectionStatus, this, &medSourcesSettingsHandlerWidget::updateConnectButtonText);
-        m_qtConnections[1] = connect(m_connectButton, &QPushButton::clicked, [=]() {pi_pSource->connect(!pi_pSource->isOnline()); });
-    }
-}
-
-/**
- * @brief This method update the connect button.
- * @param [in] pi_bConnect is the boolean to determine if current source is connected or not.
- */
-void medSourcesSettingsHandlerWidget::updateConnectButtonText(bool pi_bConnect)
-{
-    m_connectButton->setText(pi_bConnect ? "Disconnect" : "Connect");
+    m_connectButton->setText(m_bOnline ? "Disconnect" : "Connect");
 }
 
 /**
