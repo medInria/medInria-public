@@ -13,7 +13,7 @@
 
 #include <medSourceItemModel.h>
 
-#include <medDataModel.h>
+#include <medDataHub.h>
 #include <medDataModelItem.h>
 
 #include <QVariantList>

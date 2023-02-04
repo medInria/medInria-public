@@ -14,7 +14,7 @@
 
 
 #include <medWidgetsExport.h>
-#include <medDataModel.h>
+#include <medDataHub.h>
 
 #include <QWidget>
 #include <QPushButton>

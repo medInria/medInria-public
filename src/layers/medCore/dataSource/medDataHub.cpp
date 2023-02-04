@@ -11,7 +11,7 @@
 
 =========================================================================*/
 
-#include <medDataModel.h>
+#include <medDataHub.h>
 #include <medDataImporter.h>
 #include <medDataExporter.h>
 #include <medMetaDataKeys.h>

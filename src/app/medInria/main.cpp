@@ -31,7 +31,7 @@
 #include <medStorage.h>
 
 #include <medSourcesLoader.h>
-#include <medDataModel.h>
+#include <medDataHub.h>
 #include <medSourceItemModelPresenter.h>
 #include <medSourceModelPresenter.h>
 

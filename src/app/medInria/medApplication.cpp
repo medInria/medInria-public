@@ -17,7 +17,7 @@
 
 #include <medAbstractDataFactory.h>
 #include <medCore.h>
-#include <medDataModel.h>
+#include <medDataHub.h>
 #include <medDatabaseSettingsWidget.h>
 #include <medDataManager.h>
 #include <medDiffusionWorkspace.h>
