@@ -96,8 +96,8 @@ public:
     //FLO
     QString           getDataName(const QModelIndex &index) const;
     QString           getDataName(QStringList const &uri) const;
-    medDataModelItem* getItem(const QModelIndex &index) const;
-    medDataModelItem* getItem(QStringList const &uri) const;
+    medSourceModelItem* getItem(const QModelIndex &index) const;
+    medSourceModelItem* getItem(QStringList const &uri) const;
     QModelIndex toIndex(QString uri) const;
     QModelIndex toIndex(QStringList uri) const;
     QString     toPath(QModelIndex const & index);
@@ -125,26 +125,26 @@ public slots:
 
 
 private:
-    //medDataModelItem* getItem(const QModelIndex &index) const;
-    medDataModelItem* getItem(int iLevel, QString id) const;
+    //medSourceModelItem* getItem(const QModelIndex &index) const;
+    medSourceModelItem* getItem(int iLevel, QString id) const;
     QModelIndex getIndex(QString iid, QModelIndex const &parent = QModelIndex()) const;
-    QModelIndex getIndex(medDataModelItem *pItem) const;
+    QModelIndex getIndex(medSourceModelItem *pItem) const;
     bool fetchColumnNames(const QModelIndex &index);
     void populateLevel(QModelIndex const &index);
 
 
-    bool itemStillExist(QList<QMap<QString, QString>> &entries, medDataModelItem * pItem);
-    void computeRowRangesToRemove(medDataModelItem * pItem, QList<QMap<QString, QString>> &entries, QVector<QPair<int, int>> &rangeToRemove);
+    bool itemStillExist(QList<QMap<QString, QString>> &entries, medSourceModelItem * pItem);
+    void computeRowRangesToRemove(medSourceModelItem * pItem, QList<QMap<QString, QString>> &entries, QVector<QPair<int, int>> &rangeToRemove);
     void removeRowRanges(QVector<QPair<int, int>> &rangeToRemove, const QModelIndex & index);
 
-    void computeRowRangesToAdd(medDataModelItem * pItem, QList<QMap<QString, QString>> &entries, QMap<int, QList<QMap<QString, QString>>> &entriesToAdd);
+    void computeRowRangesToAdd(medSourceModelItem * pItem, QList<QMap<QString, QString>> &entries, QMap<int, QList<QMap<QString, QString>>> &entriesToAdd);
     void addRowRanges(QMap<int, QList<QMap<QString, QString>>> &entriesToAdd, const QModelIndex & index);
 
-    bool currentLevelFetchable(medDataModelItem * pItemCurrent);
+    bool currentLevelFetchable(medSourceModelItem * pItemCurrent);
 
-    friend class medDataModelItem;
-    bool removeItem(medDataModelItem *pi_item);
-    bool registerItem(medDataModelItem *pi_item);
+    friend class medSourceModelItem;
+    bool removeItem(medSourceModelItem *pi_item);
+    bool registerItem(medSourceModelItem *pi_item);
 
 signals:
     void online(bool);

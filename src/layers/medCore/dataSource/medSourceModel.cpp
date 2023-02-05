@@ -32,15 +32,15 @@ struct medDataModelElementPrivate
 
 	//QMap<int, asyncRequest> requestsMap;
 
-    medDataModelItem *root;
-    QMap<int /*level*/, QList<medDataModelItem*> > itemsMapByLevel;
+    medSourceModelItem *root;
+    QMap<int /*level*/, QList<medSourceModelItem*> > itemsMapByLevel;
 };
 
 medSourceModel::medSourceModel(medDataHub *parent, QString const & sourceIntanceId) : d(new medDataModelElementPrivate)
 {
     d->parent = parent;
     d->sourceInstanceId = sourceIntanceId;
-    d->root = new medDataModelItem(this);
+    d->root = new medSourceModelItem(this);
 
     bool bOk = medSourceHandler::instance()->sourceGlobalInfo(sourceIntanceId, d->bOnline, d->bLocal, d->bWritable, d->bCache);
 
@@ -114,7 +114,7 @@ QVariant medSourceModel::data(const QModelIndex & index, int role) const
 //        }
         else
         {
-            medDataModelItem *item = getItem(index);
+            medSourceModelItem *item = getItem(index);
             int i = index.column();
             varDataRes = item->data(getColumnInsideLevel(item->iLevel, i), role);
         }
@@ -127,7 +127,7 @@ QModelIndex medSourceModel::index(int row, int column, const QModelIndex & paren
 {
     QModelIndex res;
 
-    medDataModelItem *childItem = getItem(parent)->child(row);
+    medSourceModelItem *childItem = getItem(parent)->child(row);
     if (childItem)
     {
         res = createIndex(row, column, childItem);
@@ -189,14 +189,14 @@ bool medSourceModel::insertRows(int row, int count, const QModelIndex &parent)
 {
     bool bRes;
 
-    medDataModelItem * pParent = getItem(parent);
+    medSourceModelItem * pParent = getItem(parent);
     bRes = row <= pParent->childCount() && row > -1;
     if (bRes)
     {
         beginInsertRows(parent, row, row + count - 1);
         for (int i = 0; i < count; ++i)
         {
-            pParent->insert(row + i, new medDataModelItem(pParent));
+            pParent->insert(row + i, new medSourceModelItem(pParent));
         }
         endInsertRows();
     }
@@ -208,7 +208,7 @@ bool medSourceModel::removeRows(int row, int count, const QModelIndex & parent)
 {
     bool bRes = true;
     
-    medDataModelItem *pItem = getItem(parent.siblingAtColumn(0));
+    medSourceModelItem *pItem = getItem(parent.siblingAtColumn(0));
 
     beginRemoveRows(parent.siblingAtColumn(0), row, row + count - 1);
 
@@ -276,13 +276,13 @@ QString medSourceModel::getDataName(QStringList const & uri) const
     return getDataName(toIndex(uri));
 }
 
-inline medDataModelItem * medSourceModel::getItem(const QModelIndex & index) const
+inline medSourceModelItem * medSourceModel::getItem(const QModelIndex & index) const
 {
-    medDataModelItem* itemRes = d->root;
+    medSourceModelItem* itemRes = d->root;
 
     if (index.isValid())
     {
-        medDataModelItem *item = static_cast<medDataModelItem*>(index.internalPointer());
+        medSourceModelItem *item = static_cast<medSourceModelItem*>(index.internalPointer());
         if (item)
         {
             itemRes = item;
@@ -292,9 +292,9 @@ inline medDataModelItem * medSourceModel::getItem(const QModelIndex & index) con
     return itemRes;
 }
 
-medDataModelItem* medSourceModel::getItem(QStringList const &uri) const
+medSourceModelItem* medSourceModel::getItem(QStringList const &uri) const
 {
-    medDataModelItem * itemRes = nullptr;
+    medSourceModelItem * itemRes = nullptr;
 
     if ((uri.size() > 1) && (uri[0] == d->sourceInstanceId))
     {
@@ -308,9 +308,9 @@ medDataModelItem* medSourceModel::getItem(QStringList const &uri) const
     return itemRes;
 }
 
-medDataModelItem * medSourceModel::getItem(int iLevel, QString id) const
+medSourceModelItem * medSourceModel::getItem(int iLevel, QString id) const
 {
-    medDataModelItem * pItemRes = nullptr;
+    medSourceModelItem * pItemRes = nullptr;
 
     if (d->itemsMapByLevel.contains(iLevel))
     {
@@ -344,7 +344,7 @@ QModelIndex medSourceModel::getIndex(QString iid, QModelIndex const &parent) con
     return indexRes;
 }
 
-QModelIndex medSourceModel::getIndex(medDataModelItem * pItem) const
+QModelIndex medSourceModel::getIndex(medSourceModelItem * pItem) const
 {
     QModelIndex indexRes;
 
@@ -534,7 +534,7 @@ medSourceModel::datasetAttributes medSourceModel::getMendatoriesMetaData(QModelI
 
     if (index.isValid())
     {
-        medDataModelItem *pItem = getItem(index);
+        medSourceModelItem *pItem = getItem(index);
         int iLevel = pItem->level();
         for (int i = 0; i < d->columnNameByLevel[iLevel].size(); ++i)
         {
@@ -553,7 +553,7 @@ QList<QMap<int, QString>> medSourceModel::getAdditionnalMetaData(QModelIndex con
     {
         QMap<int, QString> resEntryTmp;
 
-        medDataModelItem *pItem = getItem(index);
+        medSourceModelItem *pItem = getItem(index);
         for (auto entry : pItem->itemData)
         {
             if (entry.contains(1001) && entry.contains(1002))
@@ -581,7 +581,7 @@ bool medSourceModel::setAdditionnalMetaData(QModelIndex const & index, QList<QMa
     {
         QMap<int, QVariant> resEntryTmp;
 
-        medDataModelItem *pItem = getItem(index);
+        medSourceModelItem *pItem = getItem(index);
 
 
         for (auto entry : additionnalMetaData)
@@ -637,7 +637,7 @@ QModelIndex medSourceModel::toIndex(QStringList uri) const
 {
     QModelIndex indexRes;
 
-    medDataModelItem * itemTmp =  getItem(uri);
+    medSourceModelItem * itemTmp =  getItem(uri);
     if (itemTmp)
     {
         indexRes = createIndex(itemTmp->parent()->childItems.indexOf(itemTmp), 0, itemTmp);
@@ -684,7 +684,7 @@ QStringList medSourceModel::fromPath(QStringList humanUri)
 {
     QStringList uriRes;    
 
-    medDataModelItem *itemTmp = d->root;
+    medSourceModelItem *itemTmp = d->root;
     uriRes.push_back(d->sourceInstanceId);
 
     for (int i = 0; i < humanUri.size() && itemTmp; ++i)
@@ -737,7 +737,7 @@ bool medSourceModel::setAdditionnalMetaData2(QModelIndex const & index, datasetA
 
     if (index.isValid())
     {
-        medDataModelItem *pItem = getItem(index);
+        medSourceModelItem *pItem = getItem(index);
         if(pItem->model == this)
         {
             pItem->setMetaData(attributes.values, attributes.tags);
@@ -754,7 +754,7 @@ bool medSourceModel::setAdditionnalMetaData2(QModelIndex const & index, QString 
 
     if (index.isValid())
     {
-        medDataModelItem *pItem = getItem(index);
+        medSourceModelItem *pItem = getItem(index);
         if (pItem->model == this)
         {
             pItem->itemMeta[key] = value;
@@ -779,7 +779,7 @@ bool medSourceModel::additionnalMetaData2(QModelIndex const & index, datasetAttr
 
     if (index.isValid())
     {
-        medDataModelItem *pItem = getItem(index);
+        medSourceModelItem *pItem = getItem(index);
         if (pItem->model == this)
         {
             attributes.values = pItem->itemMeta;
@@ -797,7 +797,7 @@ bool medSourceModel::additionnalMetaData2(QModelIndex const & index, QString con
 
     if (index.isValid())
     {
-        medDataModelItem *pItem = getItem(index);
+        medSourceModelItem *pItem = getItem(index);
         if (pItem->model == this && pItem->itemMeta.contains(key))
         {
             value = pItem->itemMeta[key];
@@ -813,14 +813,14 @@ bool medSourceModel::addEntry(QString pi_key, QString pi_name, QString pi_descri
 {
     bool bRes = false;
 
-    medDataModelItem *pParentItem = getItem(pi_uiLevel-1, pi_parentKey);
+    medSourceModelItem *pParentItem = getItem(pi_uiLevel-1, pi_parentKey);
     if (pParentItem != nullptr)
     {
         QModelIndex parentIndex = getIndex(pParentItem);
         emit layoutAboutToBeChanged(); //this is useful to update arrow on the left if click is not inside
         beginInsertRows(parentIndex, pParentItem->childCount(), pParentItem->childCount());
 
-        medDataModelItem *pNewItem = new medDataModelItem(this);
+        medSourceModelItem *pNewItem = new medSourceModelItem(this);
         pNewItem->setData(pi_key, 0);
         pNewItem->setData(pi_name, 1);
         pNewItem->setData(pi_description, 3);
@@ -928,7 +928,7 @@ void medSourceModel::itemPressed(QModelIndex const &index)
 {
     if (index.isValid())
     {
-        medDataModelItem * pItemCurrent = getItem(index);
+        medSourceModelItem * pItemCurrent = getItem(index);
         if (currentLevelFetchable(pItemCurrent) && pItemCurrent->childCount() == 0 )
         {
             populateLevel(index);
@@ -957,7 +957,7 @@ bool medSourceModel::abortRequest(QModelIndex const & index)
     return bRes;
 }
 
-bool medSourceModel::currentLevelFetchable(medDataModelItem * pItemCurrent)
+bool medSourceModel::currentLevelFetchable(medSourceModelItem * pItemCurrent)
 {
     bool bRes = pItemCurrent->canHaveSubData();
     if (pItemCurrent->level()==-1)
@@ -977,7 +977,7 @@ bool medSourceModel::currentLevelFetchable(medDataModelItem * pItemCurrent)
     return bRes;
 }
 
-bool medSourceModel::removeItem(medDataModelItem * pi_item)
+bool medSourceModel::removeItem(medSourceModelItem * pi_item)
 {
     bool bRes = false;
 
@@ -990,7 +990,7 @@ bool medSourceModel::removeItem(medDataModelItem * pi_item)
     return bRes;
 }
 
-bool medSourceModel::registerItem(medDataModelItem * pi_item)
+bool medSourceModel::registerItem(medSourceModelItem * pi_item)
 {
     bool bRes = false;
 
@@ -1053,7 +1053,7 @@ void medSourceModel::populateLevel(QModelIndex const & index)
     //QVariantList entries; //QList<QList<QString>> list of entries of the given level, each entry has a list of 3 elements {key, name, description}. Key is never displayed, only used to fetch sub-level and used has unique key
     QString key = getItem(index)->iid();
     QList<QMap<QString, QString>> entries;
-    medDataModelItem *pItem = getItem(index);
+    medSourceModelItem *pItem = getItem(index);
     int iLevel = pItem->level() + 1;
 
 
@@ -1089,7 +1089,7 @@ void medSourceModel::populateLevel(QModelIndex const & index)
     }
 }
 
-bool medSourceModel::itemStillExist(QList<QMap<QString, QString>> &entries, medDataModelItem * pItem)
+bool medSourceModel::itemStillExist(QList<QMap<QString, QString>> &entries, medSourceModelItem * pItem)
 {
     bool bFind = false;
 
@@ -1106,7 +1106,7 @@ bool medSourceModel::itemStillExist(QList<QMap<QString, QString>> &entries, medD
     return bFind;
 }
 
-void medSourceModel::computeRowRangesToRemove(medDataModelItem * pItem, QList<QMap<QString, QString>> &entries, QVector<QPair<int, int>> &rangeToRemove)
+void medSourceModel::computeRowRangesToRemove(medSourceModelItem * pItem, QList<QMap<QString, QString>> &entries, QVector<QPair<int, int>> &rangeToRemove)
 {
     int iStartRemoveRange = -1;
     for (int i = 0; i < pItem->childCount(); ++i)
@@ -1168,7 +1168,7 @@ void medSourceModel::removeRowRanges(QVector<QPair<int, int>> &rangeToRemove, co
 
 
 
-void medSourceModel::computeRowRangesToAdd(medDataModelItem * pItem, QList<QMap<QString, QString>> &entries, QMap<int, QList<QMap<QString, QString>>> &entriesToAdd)
+void medSourceModel::computeRowRangesToAdd(medSourceModelItem * pItem, QList<QMap<QString, QString>> &entries, QMap<int, QList<QMap<QString, QString>>> &entriesToAdd)
 {
     int  iLastItemAlreadyPresent = -1;
     
@@ -1196,7 +1196,7 @@ void medSourceModel::addRowRanges(QMap<int, QList<QMap<QString, QString>>> &entr
 {
     int iOffsetRange = 0;
     auto startRangeList = entriesToAdd.keys();
-    medDataModelItem *pItem = getItem(index);
+    medSourceModelItem *pItem = getItem(index);
     int iLevel = pItem->level() + 1;
     for (int i = 0; i < startRangeList.size(); ++i)
     {
@@ -1208,7 +1208,7 @@ void medSourceModel::addRowRanges(QMap<int, QList<QMap<QString, QString>>> &entr
         // Populate data loop
         for (QMap<QString, QString> &var : entriesToAdd[startRangeList[i]])
         {
-            medDataModelItem *pItemTmp = new medDataModelItem(this);
+            medSourceModelItem *pItemTmp = new medSourceModelItem(this);
             for (QString k : var.keys())
             {
                 int iCol = d->columnNameByLevel[iLevel].indexOf(k);

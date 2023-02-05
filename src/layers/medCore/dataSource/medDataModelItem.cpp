@@ -7,7 +7,7 @@
 #include <QString>
 
 
-medDataModelItem::medDataModelItem(medSourceModel *model)
+medSourceModelItem::medSourceModelItem(medSourceModel *model)
 {
     this->model = model;
     parentItem = nullptr; //Invalid parent 
@@ -15,14 +15,14 @@ medDataModelItem::medDataModelItem(medSourceModel *model)
     bCanHaveSubData = true;
 }
 
-medDataModelItem::medDataModelItem(medDataModelItem *parent)
+medSourceModelItem::medSourceModelItem(medSourceModelItem *parent)
 {
     model = parent->model;
     bCanHaveSubData = true;
     setParent(parent);
 }
 
-medDataModelItem::~medDataModelItem()
+medSourceModelItem::~medSourceModelItem()
 {
     model->removeItem(this);
     for (auto &childItem : childItems)
@@ -35,19 +35,19 @@ medDataModelItem::~medDataModelItem()
 
 
 
-int medDataModelItem::row() const
+int medSourceModelItem::row() const
 {
     int iRowRes = 0;
 
     if (parentItem)
     {
-        iRowRes = parentItem->childItems.indexOf(const_cast<medDataModelItem*>(this)); // ??
+        iRowRes = parentItem->childItems.indexOf(const_cast<medSourceModelItem*>(this)); // ??
     }
 
     return iRowRes;
 }
 
-bool medDataModelItem::removeRows(int row, int count)
+bool medSourceModelItem::removeRows(int row, int count)
 {
     bool bRes = true;
 
@@ -64,9 +64,9 @@ bool medDataModelItem::removeRows(int row, int count)
     return bRes;
 }
 
-QList<medDataModelItem*> medDataModelItem::offspringList()
+QList<medSourceModelItem*> medSourceModelItem::offspringList()
 {
-    QList<medDataModelItem*> offspringRes = childItems;
+    QList<medSourceModelItem*> offspringRes = childItems;
     
     for (int i = 0; i < offspringRes.size(); ++i)
     {
@@ -76,11 +76,11 @@ QList<medDataModelItem*> medDataModelItem::offspringList()
     return offspringRes;
 }
 
-QStringList medDataModelItem::relativeUri()
+QStringList medSourceModelItem::relativeUri()
 {
     QStringList uriListRes;
 
-    medDataModelItem *pItem = this;
+    medSourceModelItem *pItem = this;
     while (pItem->parentItem)
     {
         uriListRes.push_front(pItem->iid());
@@ -90,14 +90,14 @@ QStringList medDataModelItem::relativeUri()
     return uriListRes;
 }
 
-QStringList medDataModelItem::uri()
+QStringList medSourceModelItem::uri()
 {
     QStringList uriRes = relativeUri();
     uriRes.push_front(model->getSourceIntanceId());
     return uriRes;
 }
 
-QString medDataModelItem::uriAsString()
+QString medSourceModelItem::uriAsString()
 {
     QString uriRes = model->getSourceIntanceId() + ":";
 
@@ -116,7 +116,7 @@ QString medDataModelItem::uriAsString()
     return uriRes;
 }
 
-QModelIndex medDataModelItem::index() //TODO finish or remove
+QModelIndex medSourceModelItem::index() //TODO finish or remove
 {
     QModelIndex indexRes;
 
@@ -135,7 +135,7 @@ QModelIndex medDataModelItem::index() //TODO finish or remove
 /* ***********************************************************************/
 /* *************** Data manipulation *************************************/
 /* ***********************************************************************/
-int medDataModelItem::childIndex(QString iid)
+int medSourceModelItem::childIndex(QString iid)
 {
     int iRes = -1;
     
@@ -154,9 +154,9 @@ int medDataModelItem::childIndex(QString iid)
     return iRes;
 }
 
-medDataModelItem * medDataModelItem::hasChildItemWithIID(QString iid)
+medSourceModelItem * medSourceModelItem::hasChildItemWithIID(QString iid)
 {
-    medDataModelItem* pItemRes = nullptr;
+    medSourceModelItem* pItemRes = nullptr;
 
     int iPos = childIndex(iid);
     if (iPos > -1)
@@ -167,14 +167,14 @@ medDataModelItem * medDataModelItem::hasChildItemWithIID(QString iid)
     return pItemRes;
 }
 
-void medDataModelItem::setParent(medDataModelItem * parent)
+void medSourceModelItem::setParent(medSourceModelItem * parent)
 {
     parentItem = parent;
     iLevel = parentItem->iLevel + 1;
     model->registerItem(this);
 }
 
-void medDataModelItem::setMetaData(QMap<QString, QVariant> const & attributes, QMap<QString, QString> const & tags)
+void medSourceModelItem::setMetaData(QMap<QString, QVariant> const & attributes, QMap<QString, QString> const & tags)
 {
 #if QT_VERSION < QT_VERSION_CHECK(5, 15, 0)
     for (auto const & key : attributes.keys())
@@ -191,7 +191,7 @@ void medDataModelItem::setMetaData(QMap<QString, QVariant> const & attributes, Q
 #endif
 }
 
-QString medDataModelItem::iid(QString displayValue)
+QString medSourceModelItem::iid(QString displayValue)
 {
     QString iidRes;
 
@@ -208,7 +208,7 @@ QString medDataModelItem::iid(QString displayValue)
     return iidRes;
 }
 
-//bool medDataModelItem::isAssociatedAbstractData()
+//bool medSourceModelItem::isAssociatedAbstractData()
 //{
 //    bool bRes = false;
 //
@@ -225,7 +225,7 @@ QString medDataModelItem::iid(QString displayValue)
 //    return bRes;
 //}
 
-bool medDataModelItem::containRoleValues(QMap<int , QVariantList> mapList)
+bool medSourceModelItem::containRoleValues(QMap<int , QVariantList> mapList)
 {
     bool bRes = false;
 
@@ -250,7 +250,7 @@ bool medDataModelItem::containRoleValues(QMap<int , QVariantList> mapList)
     return bRes;
 }
 
-QVariant medDataModelItem::data(int column, int role) const
+QVariant medSourceModelItem::data(int column, int role) const
 {
     QVariant varRes;
 

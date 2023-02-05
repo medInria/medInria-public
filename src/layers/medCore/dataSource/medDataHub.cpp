@@ -939,7 +939,7 @@ bool medDataHub::fetchData(medDataIndex const & index)
     auto sourceId = index.sourceId();
 
     medSourceModel *pModel = getModel(sourceId);
-    medDataModelItem *pItem = pModel->getItem(index);
+    medSourceModelItem *pItem = pModel->getItem(index);
     if (pModel)
     {
         int iRequestId = m_sourcesHandler->getAsyncData(index);
@@ -978,7 +978,7 @@ bool medDataHub::pushData(medDataIndex const & index)
 
     auto sourceId = index.sourceId();
     medSourceModel *pModel = getModel(sourceId);
-    medDataModelItem *pItem = pModel->getItem(index);
+    medSourceModelItem *pItem = pModel->getItem(index);
     if (pModel)
     {
         int iRequestId = m_sourcesHandler->push(index);
