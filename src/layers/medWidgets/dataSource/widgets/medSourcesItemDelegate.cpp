@@ -2,7 +2,7 @@
 #include <QDebug>
 #include <QMovie>
 #include <QPainter>
-#include <medDataModelItem.h>
+#include <medSourceModelItem.h>
 #include <medSourceModel.h>
 
 //medSourcesItemDelegate::medSourcesItemDelegate(QAbstractItemModel *model)

@@ -14,7 +14,7 @@
 
 #include <QAbstractItemModel>
 
-#include <medDataModelItem.h>
+#include <medSourceModelItem.h>
 
 #include <medCoreExport.h>
 

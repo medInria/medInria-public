@@ -14,7 +14,7 @@
 #include <medSourceModel.h>
 
 #include <medDataHub.h>
-#include <medDataModelItem.h>
+#include <medSourceModelItem.h>
 
 #include <QVariantList>
 #include <QSequentialIterable>
