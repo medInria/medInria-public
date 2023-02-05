@@ -3,7 +3,7 @@
 #include <QMovie>
 #include <QPainter>
 #include <medDataModelItem.h>
-#include <medSourceItemModel.h>
+#include <medSourceModel.h>
 
 //medSourcesItemDelegate::medSourcesItemDelegate(QAbstractItemModel *model)
 medSourcesItemDelegate::medSourcesItemDelegate(QTreeView *treeView)

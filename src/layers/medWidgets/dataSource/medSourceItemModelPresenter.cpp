@@ -2,7 +2,7 @@
 
 #include <QTreeView>
 #include <QSortFilterProxyModel>
-#include <medSourceItemModel.h>
+#include <medSourceModel.h>
 #include <medSourcesItemDelegate.h>
 
 class medSourceItemModelPresenterPrivate

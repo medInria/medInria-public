@@ -1,7 +1,7 @@
 #include "medSourcesWidget.h"
 
 #include <medDataHub.h>
-#include <medSourceItemModel.h>
+#include <medSourceModel.h>
 #include <medSourceItemModelPresenter.h>
 
 #include <medDataInfoWidget.h>

@@ -1,5 +1,5 @@
 #include <medDataModelItem.h>
-#include <medSourceItemModel.h>
+#include <medSourceModel.h>
 
 #include <QVariant>
 #include <QList>

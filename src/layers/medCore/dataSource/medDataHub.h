@@ -13,7 +13,7 @@
 =========================================================================*/
 
 #include <medSourceHandler.h>
-#include <medSourceItemModel.h>
+#include <medSourceModel.h>
 
 #include <medCoreExport.h>
 #include <QMap>

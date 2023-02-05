@@ -11,7 +11,7 @@
 
 =========================================================================*/
 
-#include <medSourceItemModel.h>
+#include <medSourceModel.h>
 
 #include <medDataHub.h>
 #include <medDataModelItem.h>
