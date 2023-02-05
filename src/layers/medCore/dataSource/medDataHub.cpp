@@ -106,7 +106,7 @@ medAbstractData * medDataHub::variantToMedAbstractData(QVariant &data, const med
 		if (pDataRes)
 		{
 			pDataRes->setDataIndex(index);
-            medSourceItemModel * pModel = getModel(index.sourceId());
+            medSourceModel * pModel = getModel(index.sourceId());
 			QModelIndex modelIndex = pModel->toIndex(index);
 			pModel->setData(modelIndex, DATASTATE_ROLE_DATALOADED, DATASTATE_ROLE); //Set information on tree about the data is already loaded
             pModel->setData(modelIndex, true, MEDDATA_ROLE);
@@ -159,9 +159,9 @@ medAbstractData * medDataHub::variantToMedAbstractData(QVariant &data, const med
 	return pDataRes;
 }
 
-QList<medSourceItemModel*> medDataHub::models()
+QList<medSourceModel*> medDataHub::models()
 {
-    QList<medSourceItemModel*> sourceItemModelListRes;
+    QList<medSourceModel*> sourceItemModelListRes;
 
     for (auto const & sourceId : medSourcesLoader::instance()->sourcesIdList())
     {
@@ -171,9 +171,9 @@ QList<medSourceItemModel*> medDataHub::models()
     return sourceItemModelListRes;
 }
 
-medSourceItemModel * medDataHub::getModel(QString const & pi_sourceIntanceId)
+medSourceModel * medDataHub::getModel(QString const & pi_sourceIntanceId)
 {
-    medSourceItemModel * res = nullptr;
+    medSourceModel * res = nullptr;
 
     if (m_sourceIdToModelMap.contains(pi_sourceIntanceId))
     {
@@ -460,7 +460,7 @@ void medDataHub::timeOutWatcher()
 
 void medDataHub::addSource(QString const & pi_sourceId)
 {
-    m_sourceIdToModelMap[pi_sourceId] = new medSourceItemModel(this, pi_sourceId);
+    m_sourceIdToModelMap[pi_sourceId] = new medSourceModel(this, pi_sourceId);
     emit sourceAdded(pi_sourceId);
 }
 
@@ -490,7 +490,7 @@ bool medDataHub::getChildrenNames(medDataIndex index, QStringList &names)
 
     if (!index.isV2())
     {
-        medSourceItemModel* pModel = getModel(index.sourceId());
+        medSourceModel* pModel = getModel(index.sourceId());
         if (pModel)
         {
             bRes = pModel->getChildrenNames(index, names);
@@ -671,7 +671,7 @@ bool medDataHub::saveData(medAbstractData *pi_pData, QString const &pi_baseName,
     if (!pio_uri.isEmpty())
     {
         QString sourceId = pio_uri[0];
-        medSourceItemModel* pModel = getModel(sourceId);
+        medSourceModel* pModel = getModel(sourceId);
 
         bool bOnline, bWritable, bLocal, bCache;
         if (m_sourcesHandler->sourceGlobalInfo(sourceId, bOnline, bLocal, bWritable, bCache))    
@@ -732,7 +732,7 @@ bool medDataHub::saveData(medAbstractData *pi_pData, QString const &pi_baseName,
     return bRes;
 }
 
-bool medDataHub::warpAddAsync(medAbstractSource::levelMinimalEntries &minimalEntries, QStringList & pio_uri, medSourceItemModel * pModel, unsigned int uiLevel, QString &parentKey, medAbstractData * pi_pData, QVariant &data)
+bool medDataHub::warpAddAsync(medAbstractSource::levelMinimalEntries &minimalEntries, QStringList & pio_uri, medSourceModel * pModel, unsigned int uiLevel, QString &parentKey, medAbstractData * pi_pData, QVariant &data)
 {
     bool bRes = false;
 
@@ -938,7 +938,7 @@ bool medDataHub::fetchData(medDataIndex const & index)
 
     auto sourceId = index.sourceId();
 
-    medSourceItemModel *pModel = getModel(sourceId);
+    medSourceModel *pModel = getModel(sourceId);
     medDataModelItem *pItem = pModel->getItem(index);
     if (pModel)
     {
@@ -977,7 +977,7 @@ bool medDataHub::pushData(medDataIndex const & index)
     bool bRes = false;
 
     auto sourceId = index.sourceId();
-    medSourceItemModel *pModel = getModel(sourceId);
+    medSourceModel *pModel = getModel(sourceId);
     medDataModelItem *pItem = pModel->getItem(index);
     if (pModel)
     {

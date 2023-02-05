@@ -7,7 +7,7 @@
 #include <QString>
 
 
-medDataModelItem::medDataModelItem(medSourceItemModel *model)
+medDataModelItem::medDataModelItem(medSourceModel *model)
 {
     this->model = model;
     parentItem = nullptr; //Invalid parent 

@@ -31,7 +31,7 @@ struct medDataModelElementPrivate;
 #define DATASTATE_ROLE_DATAPUSHING    "DataPushing"
 #define DATASTATE_ROLE_DATASAVED      "DataSaved"
 
-class MEDCORE_EXPORT medSourceItemModel : public QAbstractItemModel
+class MEDCORE_EXPORT medSourceModel : public QAbstractItemModel
 {
 
     Q_OBJECT
@@ -46,8 +46,8 @@ public:
           QMap<QString, QString> tags;   // <keyName, tag value>    
     };
 
-    medSourceItemModel(medDataHub *parent, QString const & sourceIntanceId);
-    virtual ~medSourceItemModel();
+    medSourceModel(medDataHub *parent, QString const & sourceIntanceId);
+    virtual ~medSourceModel();
 
     // ////////////////////////////////////////////////////////////////////////
     // Pure Virtual Override

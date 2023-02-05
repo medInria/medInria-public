@@ -55,7 +55,7 @@ public:
     bool isLevelWritable        (QString const & pi_sourceInstanceId, int pi_iLevel, bool & po_bWritable);
 	bool levelCount             (QString const & pi_sourceInstanceId, unsigned int &po_uiLevelMax);
     bool asyncResult            (QString const & pi_sourceInstanceId, int pi_iRequest);
-    bool abortRequest           (QString const & pi_sourceInstanceId, int pi_iRequest); //TODO call in medSourceItemModel
+    bool abortRequest           (QString const & pi_sourceInstanceId, int pi_iRequest); //TODO call in medSourceModel
     bool filteringParameters    (QString const & pi_sourceInstanceId, QList<medAbstractParameter*> & po_parameters);
     bool getIOInterface         (QString const & pi_sourceInstanceId, int &po_iInterface);
     bool getTypeAndFormat       (QString const & pi_sourceInstanceId, QMap<QString, QStringList> &po_TypeAndFormat);

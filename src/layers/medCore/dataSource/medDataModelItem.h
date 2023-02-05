@@ -15,12 +15,12 @@
 #include <QVariant>
 
 //class medDataModelItemPrivate;
-class medSourceItemModel;
+class medSourceModel;
 
 class medDataModelItem
 {
 public:
-    medSourceItemModel              *model;
+    medSourceModel              *model;
     medDataModelItem                *parentItem;
     QList<medDataModelItem *>        childItems;
     QMap<int, QMap<int, QVariant> >  itemData; //column, role, value
@@ -30,7 +30,7 @@ public:
     bool                             bCanHaveSubData;
 
 public:
-    medDataModelItem(medSourceItemModel *model);
+    medDataModelItem(medSourceModel *model);
     medDataModelItem(medDataModelItem *parent);
     ~medDataModelItem();
 
