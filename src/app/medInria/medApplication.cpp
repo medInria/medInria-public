@@ -31,6 +31,9 @@
 #include <medVisualizationWorkspace.h>
 #include <medWorkspaceFactory.h>
 
+#define VAL(str) #str
+#define TOSTRING(str) VAL(str)
+
 class medApplicationPrivate
 {
 public:
@@ -48,11 +51,11 @@ medApplication::medApplication(int & argc, char**argv) :
 {
     d->mainWindow = nullptr;
 
-    this->setApplicationName("medInria");
+    this->setApplicationName(TOSTRING(APPLICATION_NAME));
     this->setApplicationVersion(MEDINRIA_VERSION);
-    this->setOrganizationName("inria");
-    this->setOrganizationDomain("fr");
-    this->setWindowIcon(QIcon(":/medInria.ico"));
+    this->setOrganizationName(TOSTRING(ORGANIZATION_NAME));
+    this->setOrganizationDomain(TOSTRING(ORGANIZATION_DOMAIN));
+    this->setWindowIcon(QIcon(TOSTRING(WINDOW_ICON)));
 
     medLogger::initialize();
 
@@ -182,8 +185,6 @@ void medApplication::initializeThemes()
     }
     medStyleSheetParser parser(dtkReadFile(qssFile));
     this->setStyleSheet(parser.result());
-
-    this->setWindowIcon(QIcon(":medInria.png"));
 
     // Unblur icons for instance on retina screens
     QGuiApplication::setAttribute(Qt::AA_UseHighDpiPixmaps); 

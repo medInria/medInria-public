@@ -5,8 +5,12 @@
         <file>../../../../RELEASE_NOTES.txt</file>
         <file>../../../../DESCRIPTION.txt</file>
         <file>../../../../ABOUT.txt</file>
-        <file>medInria.ico</file>        
         <file>authors.txt</file>
+
+        <file>medInria-src/medInria.ico</file>
+        <file>medInria-src/medInria.png</file>
+        <file>medInria-src/medInria-logo-dark.png</file>
+        <file>medInria-src/medInria-logo-light.png</file>
 
         <file>dark.qss</file>
         <file>icons/dark/index.theme</file>
@@ -136,7 +140,6 @@
         <file>icons/radio-partial.png</file>
         <file>icons/SagittalIcon.png</file>
 
-        <file>pixmaps/medInria-logo-homepage.png</file>
         <file>pixmaps/scene.png</file>
         <file>pixmaps/composer_sc.png</file>
         <file>pixmaps/home_sc.png</file>
