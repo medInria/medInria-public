@@ -2,16 +2,16 @@
 
 #include <QTreeView>
 #include <QSortFilterProxyModel>
-#include <medSourceItemModel.h>
+#include <medSourceModel.h>
 #include <medSourcesItemDelegate.h>
 
 class medSourceItemModelPresenterPrivate
 {
 public:
-    medSourceItemModel    *sourceItemModel;
+    medSourceModel    *sourceItemModel;
 };
 
-medSourceItemModelPresenter::medSourceItemModelPresenter(medSourceItemModel *parent) : d( new medSourceItemModelPresenterPrivate())
+medSourceItemModelPresenter::medSourceItemModelPresenter(medSourceModel *parent) : d( new medSourceItemModelPresenterPrivate())
 {
     d->sourceItemModel = parent;
 }
@@ -29,7 +29,7 @@ QTreeView * medSourceItemModelPresenter::buildTree(QSortFilterProxyModel *proxy)
 {
     QTreeView *treeViewRes = new QTreeView();
     QAbstractItemModel *model = nullptr;
-    medSourceItemModel *inputModel = d->sourceItemModel; //Warning, we must pass by local variable, because lambda will capture by value (d) and presenter will be already deleted 
+    medSourceModel *inputModel = d->sourceItemModel; //Warning, we must pass by local variable, because lambda will capture by value (d) and presenter will be already deleted 
 
     if (proxy)
     {
@@ -41,7 +41,7 @@ QTreeView * medSourceItemModelPresenter::buildTree(QSortFilterProxyModel *proxy)
     }
     else
     {
-        QObject::connect(treeViewRes, &QTreeView::pressed, inputModel, &medSourceItemModel::itemPressed);
+        QObject::connect(treeViewRes, &QTreeView::pressed, inputModel, &medSourceModel::itemPressed);
         model = d->sourceItemModel;
     }
     treeViewRes->setModel(model);
@@ -61,7 +61,7 @@ QTreeView * medSourceItemModelPresenter::buildTree(QSortFilterProxyModel *proxy)
     return treeViewRes;
 }
 
-medSourceItemModel * medSourceItemModelPresenter::sourceModel() const
+medSourceModel * medSourceItemModelPresenter::sourceModel() const
 {
     return d->sourceItemModel;
 }

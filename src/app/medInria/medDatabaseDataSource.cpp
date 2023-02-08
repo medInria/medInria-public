@@ -24,7 +24,7 @@
 #include <medDataManager.h>
 
 #include <medSourcesLoader.h>
-#include <medDataModel.h>
+#include <medDataHub.h>
 #include <medSourceItemModelPresenter.h>
 #include <medSourceModelPresenter.h>
 #include <medSourcesWidget.h>

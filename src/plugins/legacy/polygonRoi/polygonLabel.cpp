@@ -709,7 +709,7 @@ void polygonLabel::changeContoursColor(QColor color)
 *  To move to medAbstractProcess medInria 4
 */
 
-#include <medDataModel.h>
+#include <medDataHub.h>
 
 
 medAbstractWritingPolicy * polygonLabel::getBestWPolicy(QString pi_sourceId)

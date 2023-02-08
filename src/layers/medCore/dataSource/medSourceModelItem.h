@@ -14,15 +14,14 @@
 
 #include <QVariant>
 
-//class medDataModelItemPrivate;
-class medSourceItemModel;
+class medSourceModel;
 
-class medDataModelItem
+class medSourceModelItem
 {
 public:
-    medSourceItemModel              *model;
-    medDataModelItem                *parentItem;
-    QList<medDataModelItem *>        childItems;
+    medSourceModel                  *model;
+    medSourceModelItem                *parentItem;
+    QList<medSourceModelItem *>        childItems;
     QMap<int, QMap<int, QVariant> >  itemData; //column, role, value
     QMap<QString, QVariant>          itemMeta;    //keyname, value
     QMap<QString, QString>           itemMetaTag; //keyname, Tag
@@ -30,35 +29,34 @@ public:
     bool                             bCanHaveSubData;
 
 public:
-    medDataModelItem(medSourceItemModel *model);
-    medDataModelItem(medDataModelItem *parent);
-    ~medDataModelItem();
+    medSourceModelItem(medSourceModel *model);
+    medSourceModelItem(medSourceModelItem *parent);
+    ~medSourceModelItem();
 
     /* ***********************************************************************/
     /* *************** Data manipulation *************************************/
     /* ***********************************************************************/
     int childIndex(QString iid);
-    medDataModelItem* hasChildItemWithIID(QString iid);
-    void setParent(medDataModelItem *parent);
+    medSourceModelItem* hasChildItemWithIID(QString iid);
+    void setParent(medSourceModelItem *parent);
     QVariant data  (int column,  int role = Qt::DisplayRole) const;
     void setMetaData(QMap<QString, QVariant> const &attributes, QMap<QString, QString> const &tags);
 
 
     inline void setData(QVariant value, int column = 0, int role = Qt::DisplayRole) { itemData[column][role] = value; }
     inline QString iid() {return itemData[0][0].toString(); }
-    inline medDataModelItem *child(int row) const { return childItems.value(row); };
-    inline void append(medDataModelItem *child) {childItems.append(child);}
-    inline void insert(int position, medDataModelItem *child) { childItems.insert(position, child); }
+    inline medSourceModelItem *child(int row) const { return childItems.value(row); };
+    inline void append(medSourceModelItem *child) {childItems.append(child);}
+    inline void insert(int position, medSourceModelItem *child) { childItems.insert(position, child); }
     QString iid(QString displayValue);
 
-    //bool isAssociatedAbstractData();
     bool containRoleValues(QMap<int /*role*/, QVariantList /*values*/> mapList);
 
 
     /* ***********************************************************************/
     /* *************** Data location functions *******************************/
     /* ***********************************************************************/
-    inline medDataModelItem *parent() const { return parentItem; };
+    inline medSourceModelItem *parent() const { return parentItem; };
     inline int childCount() const { return childItems.size(); };
     inline int level() const { return iLevel; };
     inline bool canHaveSubData() { return bCanHaveSubData; }
@@ -66,7 +64,7 @@ public:
     int row() const;
     bool removeRows(int row, int count);
 
-    QList<medDataModelItem *> offspringList();
+    QList<medSourceModelItem *> offspringList();
 
 
     /* ***********************************************************************/

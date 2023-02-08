@@ -2,8 +2,8 @@
 #include <QDebug>
 #include <QMovie>
 #include <QPainter>
-#include <medDataModelItem.h>
-#include <medSourceItemModel.h>
+#include <medSourceModelItem.h>
+#include <medSourceModel.h>
 
 //medSourcesItemDelegate::medSourcesItemDelegate(QAbstractItemModel *model)
 medSourcesItemDelegate::medSourcesItemDelegate(QTreeView *treeView)

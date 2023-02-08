@@ -13,7 +13,7 @@
 =========================================================================*/
 
 #include <medSourceHandler.h>
-#include <medSourceItemModel.h>
+#include <medSourceModel.h>
 
 #include <medCoreExport.h>
 #include <QMap>
@@ -92,8 +92,8 @@ public:
     // ////////////////////////////////////////////////////////////////////////////////////////////
     // Members functions for GUI    
     // ------------  Members functions to deal with datamodel                   Advanced Accessors
-    QList<medSourceItemModel*> models(); // rediscute de son nom
-    medSourceItemModel* getModel(QString const & pi_sourceInstanceId); //also used internally
+    QList<medSourceModel*> models(); // rediscute de son nom
+    medSourceModel* getModel(QString const & pi_sourceInstanceId); //also used internally
     void expandAll(const QString &sourceInstanceId);
     void sourceIsOnline(QString sourceIntanceId);
 
@@ -120,7 +120,7 @@ private:
 	medAbstractData * variantToMedAbstractData(QVariant &data, const medDataIndex & index);
 
     QVariant prepareDataToWrite(QString &sourceId, medAbstractData * &pi_pData, QStringList & pio_uri);
-    bool warpAddAsync(medAbstractSource::levelMinimalEntries &minimalEntries, QStringList & pio_uri, medSourceItemModel * pModel, unsigned int uiLevel, QString &parentKey, medAbstractData * pi_pData, QVariant &data);
+    bool warpAddAsync(medAbstractSource::levelMinimalEntries &minimalEntries, QStringList & pio_uri, medSourceModel * pModel, unsigned int uiLevel, QString &parentKey, medAbstractData * pi_pData, QVariant &data);
 
     void getDirectData(const medDataIndex & index, medAbstractData * &pDataRes);
     void getAsyncData (const medDataIndex & index, medAbstractData * &pDataRes);
@@ -136,7 +136,7 @@ private:
 
 private:
     medSourceHandler * m_sourcesHandler;
-    QMap< QString, medSourceItemModel*> m_sourceIdToModelMap;
+    QMap< QString, medSourceModel*> m_sourceIdToModelMap;
 
     QMutex m_mapsRequestMutex;
     QMap< QString /*sourceId*/, QMap<int/*requestId*/, asyncRequest> > m_requestsMap;

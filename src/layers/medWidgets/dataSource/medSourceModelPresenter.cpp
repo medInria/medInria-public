@@ -1,6 +1,6 @@
 #include "medSourceModelPresenter.h"
 
-#include <medDataModel.h>
+#include <medDataHub.h>
 #include <medSourcesWidget.h>
 #include <medSourceItemModelPresenter.h>
 

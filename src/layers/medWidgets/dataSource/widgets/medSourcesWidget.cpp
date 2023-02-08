@@ -1,7 +1,7 @@
 #include "medSourcesWidget.h"
 
-#include <medDataModel.h>
-#include <medSourceItemModel.h>
+#include <medDataHub.h>
+#include <medSourceModel.h>
 #include <medSourceItemModelPresenter.h>
 
 #include <medDataInfoWidget.h>
@@ -127,14 +127,14 @@ void medSourcesWidget::addSource(medDataHub *dataHub, QString sourceInstanceId)
 //        QModelIndex index = this->indexFromMenu(pMenu);
 //        if (index.isValid())
 //        {
-//            const_cast<medSourceItemModel*>(static_cast<const medSourceItemModel*>(index.model()))->fetchData(index);
+//            const_cast<medSourceModel*>(static_cast<const medSourceModel*>(index.model()))->fetchData(index);
 //        }
 //    });
     connect(fetchAction, &QAction::triggered, [=]() {
         QModelIndex index = this->indexFromMenu(pMenu);
         if (index.isValid())
         {
-            const_cast<medSourceItemModel*>(static_cast<const medSourceItemModel*>(index.model()))->fetchData(index);
+            const_cast<medSourceModel*>(static_cast<const medSourceModel*>(index.model()))->fetchData(index);
         }
     });
 
@@ -174,8 +174,8 @@ void medSourcesWidget::addSource(medDataHub *dataHub, QString sourceInstanceId)
     });
 
     connect(sourceTreeTitle, &QPushButton::clicked, [=]() {sourceTreeView->setVisible(!sourceTreeView->isVisible()); });
-    connect(sourceModel, &medSourceItemModel::online, sourceTreeView, &QTreeView::setEnabled);
-    //connect(sourceModel, &medSourceItemModel::columnCountChange, [&](int iColumnCount) {
+    connect(sourceModel, &medSourceModel::online, sourceTreeView, &QTreeView::setEnabled);
+    //connect(sourceModel, &medSourceModel::columnCountChange, [&](int iColumnCount) {
     //    for (int i = 1; i < iColumnCount; ++i)
     //    {
     //        sourceTreeView->setColumnHidden(i, true);

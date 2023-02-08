@@ -18,7 +18,7 @@
 class QWidget;
 class QTreeView;
 class QSortFilterProxyModel;
-class medSourceItemModel;
+class medSourceModel;
 class medSourceView;
 class medSourceItemModelPresenterPrivate;
 
@@ -26,14 +26,14 @@ class MEDWIDGETS_EXPORT medSourceItemModelPresenter : public QObject
 {
     Q_OBJECT
 public:
-    medSourceItemModelPresenter(medSourceItemModel *parent = nullptr);
+    medSourceItemModelPresenter(medSourceModel *parent = nullptr);
     virtual ~medSourceItemModelPresenter();
 
     virtual QWidget* buildWidget();
 
     virtual QTreeView* buildTree(QSortFilterProxyModel *proxy = nullptr);
 
-    virtual medSourceItemModel *sourceModel() const;
+    virtual medSourceModel *sourceModel() const;
 
 
 private:
