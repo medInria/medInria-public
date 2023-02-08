@@ -1,10 +1,8 @@
 medInria 3.4:
 - Fix an incorrect zoom for some data displayed in a view. The zoom is now calculated with x and y dims, and not z
-- Fix errors with view tabs if the user switch 2 of them, or remove some of them
 - N4 Bias Correction process can stop now if the user wants to quit the application, it will stop at some algorithm checkpoints
 - Reslice toolbox: changing the dimension of spacing parameters does not zoom one of the views
 - Paint toolbox: the first click on the view quickly displays the drawing, instead of waiting for the mask to be created
-- Fix: avoid corruption of exported/imported dcm with odd axis
 
 medInria 3.3:
 - Fix mirrored DICOM images problem
@@ -17,6 +15,9 @@ medInria 3.3:
 - PolygonROI, solve graphical/ergonomy pb and crashes (split, clear)
 - Variational Segmentation: enhance GUI, solve a spacing error on output masks
 - BUGFIX 3.3.1: [Four-views] solve crash closing the views
+- BUGFIX 3.3.2: 
+    * Avoid corruption of exported/imported dcm with odd axis
+    * Fix errors with view tabs if the user switch 2 of them, or remove some of them
 
 medInria 3.2:
 - Add some tooltips in view navigator
