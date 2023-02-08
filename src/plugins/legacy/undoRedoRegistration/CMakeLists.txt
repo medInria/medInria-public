@@ -13,7 +13,7 @@
 #
 ################################################################################
 
-cmake_minimum_required(VERSION 3.19)
+cmake_minimum_required(VERSION ${CMAKE_MINIMUM_REQUIRED_VERSION})
 
 set(TARGET_NAME undoRedoRegistrationPlugin)
 
