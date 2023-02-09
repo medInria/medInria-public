@@ -220,7 +220,6 @@ medHomepageArea::medHomepageArea ( QWidget * parent ) : QWidget ( parent ), d ( 
 
     // Setup the navigation widget with buttons to access workspaces
     d->navigationWidget = new QWidget(this);
-    d->navigationWidget->setProperty("pos", QPoint(20, this->height()/4));
 }
 
 medHomepageArea::~medHomepageArea()
@@ -234,7 +233,7 @@ void medHomepageArea::resizeEvent ( QResizeEvent * event )
     Q_UNUSED(event);
 
     // Recompute the widget position when the window is resized
-    d->navigationWidget->setProperty("pos", QPoint(20, height()/4));
+    d->navigationWidget->setProperty("pos", QPoint(20, height()/3));
 
     // The description text is resized when the window is resized
     int newTextSize = width() - 40;
@@ -407,6 +406,16 @@ void medHomepageArea::onShowAbout()
     QFile file(TOSTRING(ABOUT_FILE));
     file.open(QIODevice::ReadOnly | QIODevice::Text);
     QString text = file.readAll();
+
+    if (QString(TOSTRING(EXPIRATION_TIME)) != "0")
+    {
+        QDate expiryDate = QDate::fromString(QString(MEDINRIA_BUILD_DATE), "dd_MM_yyyy")
+                                            .addMonths(EXPIRATION_TIME);
+
+        text += "<br><b style='color: #ED6639;'> This binary is going to expire on ";
+        text += QLocale(QLocale::English).toString(expiryDate, "d MMMM yyyy");
+        text += "</b>";
+    }
 
     QMessageBox msgBox;
     msgBox.setText(text);

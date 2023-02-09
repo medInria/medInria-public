@@ -99,6 +99,9 @@ foreach(IDX RANGE 0)
 
     string(JSON welcomeFile GET ${MY_JSON_STRING} ${IDX} welcomeFile)
     set(WELCOME_FILE ${welcomeFile} CACHE STRING "settings" FORCE)
+
+    string(JSON expirationTime GET ${MY_JSON_STRING} ${IDX} expirationTime)
+    set(EXPIRATION_TIME ${expirationTime} CACHE STRING "settings" FORCE)
 endforeach()
 
 ## #############################################################################

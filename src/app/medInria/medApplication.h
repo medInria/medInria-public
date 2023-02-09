@@ -41,6 +41,7 @@ public slots:
 
 protected:
     void initialize();
+    void checkExpirationDate();
 
 private:
     medApplicationPrivate *d;
