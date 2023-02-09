@@ -1,7 +1,7 @@
 <RCC>
-    <qresource prefix="undoRedoRegistration">
-      <file>icons/ArrowDown.png</file>
-      <file>icons/ArrowUp.png</file>
-      <file>icons/BlueArrowRight.png</file>
+    <qresource prefix="/">
+      <file>icons/arrow_down.svg</file>
+      <file>icons/arrow_right.svg</file>
+      <file>icons/arrow_up.svg</file>
     </qresource>
 </RCC>

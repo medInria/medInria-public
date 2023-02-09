@@ -69,7 +69,23 @@ void medSliderL::paintEvent(QPaintEvent *event)
 
 QColor medSliderL::getTickColor()
 {
-    return QColor(239, 109, 59, 255);
+    //return QColor(239, 109, 59, 255);
+
+    // Theme
+    QVariant themeChosen = medSettingsManager::instance()->value("startup","theme");
+    int themeIndex = themeChosen.toInt();
+
+    switch (themeIndex)
+    {
+    case 0:
+    default:
+        return QColor(239, 109, 59, 255);
+        break;
+    case 1:
+    case 2:
+        return QColor("blue");
+        break;
+    }
 }
 
 void medSliderL::mousePressEvent(QMouseEvent *event)
