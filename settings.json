@@ -17,7 +17,7 @@
         // Add these resources to your qrc file also
         "largeLogoDarkTheme":  ":medInria-src/medInria-logo-dark.png",
         "largeLogoLightTheme": ":medInria-src/medInria-logo-light.png",
-        "windowIcon":          ":medInria-src/medInria.ico", // tester mettre windowIconPath à la place
+        "windowIcon":          ":medInria-src/medInria.ico",
         "aboutFile":           ":ABOUT.txt", 
         "releaseNotes":        ":RELEASE_NOTES.txt",
         "descriptionHomepage": ":DESCRIPTION.txt",
@@ -31,7 +31,9 @@
         "readmeFile":           "packaging/Readme.txt",
         "welcomeFile":          "packaging/Welcome.txt",
         "licenceFilePath":      "LICENSE.txt",
-        "windowIconPath":       "src/app/medInria/resources/medInria-src/medInria.ico"
+        "windowIconPath":       "src/app/medInria/resources/medInria-src/medInria.ico",
+
+        "expirationTime":       "0" // X months after the compilation this binary will expire. 0 = no expiration date"
     }
 ]
 // 3° Create a qrc file with your resources:

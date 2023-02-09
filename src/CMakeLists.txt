@@ -140,6 +140,7 @@ add_definitions(
   -DLICENSE_FILE_PATH=${LICENSE_FILE_PATH}
   -DREADME_FILE=${README_FILE}
   -DWELCOME_FILE=${WELCOME_FILE}
+  -DEXPIRATION_TIME=${EXPIRATION_TIME}
   )
 
 ## #############################################################################

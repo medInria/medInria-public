@@ -63,7 +63,8 @@ medApplication::medApplication(int & argc, char**argv) :
     qInfo() << "Version: "    << MEDINRIA_VERSION;
     qInfo() << "Build Date: " << MEDINRIA_BUILD_DATE;
 
-    this->initialize();
+    checkExpirationDate();
+    initialize();
 }
 
 medApplication::~medApplication(void)
@@ -188,4 +189,32 @@ void medApplication::initializeThemes()
 
     // Unblur icons for instance on retina screens
     QGuiApplication::setAttribute(Qt::AA_UseHighDpiPixmaps); 
+}
+
+/**
+ * @brief Check expiration date set in settings.json. If the binary is expired, 
+ * display a message box and stop the application starting.
+ * 
+ */
+void medApplication::checkExpirationDate()
+{
+    if (QString(TOSTRING(EXPIRATION_TIME)) != "0")
+    {
+        QDate expiryDate = QDate::fromString(QString(MEDINRIA_BUILD_DATE), "dd_MM_yyyy")
+                                            .addMonths(EXPIRATION_TIME);
+        qInfo() << "Expiration Date: " << qPrintable(expiryDate.toString());
+
+        if ( !expiryDate.isValid() || QDate::currentDate() > expiryDate)
+        {
+            QString expiredInfo = "This copy of ";
+            expiredInfo += TOSTRING(APPLICATION_NAME);
+            expiredInfo += " has expired, please contact ";
+            expiredInfo += TOSTRING(PROJECT_CONTACT);
+            expiredInfo += " for more information.";
+            QMessageBox msg;
+            msg.setText(expiredInfo);
+            msg.exec();
+            ::exit(1);
+        }
+    }
 }
