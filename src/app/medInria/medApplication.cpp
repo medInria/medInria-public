@@ -31,6 +31,9 @@
 #include <medVisualizationWorkspace.h>
 #include <medWorkspaceFactory.h>
 
+#define VAL(str) #str
+#define TOSTRING(str) VAL(str)
+
 class medApplicationPrivate
 {
 public:
@@ -48,11 +51,11 @@ medApplication::medApplication(int & argc, char**argv) :
 {
     d->mainWindow = nullptr;
 
-    this->setApplicationName("medInria");
+    this->setApplicationName(TOSTRING(APPLICATION_NAME));
     this->setApplicationVersion(MEDINRIA_VERSION);
-    this->setOrganizationName("inria");
-    this->setOrganizationDomain("fr");
-    this->setWindowIcon(QIcon(":/medInria.ico"));
+    this->setOrganizationName(TOSTRING(ORGANIZATION_NAME));
+    this->setOrganizationDomain(TOSTRING(ORGANIZATION_DOMAIN));
+    this->setWindowIcon(QIcon(TOSTRING(WINDOW_ICON)));
 
     medLogger::initialize();
 
@@ -60,11 +63,8 @@ medApplication::medApplication(int & argc, char**argv) :
     qInfo() << "Version: "    << MEDINRIA_VERSION;
     qInfo() << "Build Date: " << MEDINRIA_BUILD_DATE;
 
-    QApplication::setStyle(QStyleFactory::create("fusion"));
-    medStyleSheetParser parser(dtkReadFile(":/medInria.qss"));
-    this->setStyleSheet(parser.result());
-
-    this->initialize();
+    checkExpirationDate();
+    initialize();
 }
 
 medApplication::~medApplication(void)
@@ -116,6 +116,8 @@ void medApplication::open(QString path)
 
 void medApplication::initialize()
 {
+    initializeThemes();
+
     qRegisterMetaType<medDataIndex>("medDataIndex");
 
     //  Setting up database connection
@@ -153,4 +155,66 @@ void medApplication::initialize()
         medCore::pluginManager::initialize(pluginsPath);
     else
         medCore::pluginManager::initialize(defaultPath);
+}
+
+void medApplication::initializeThemes()
+{
+    QApplication::setStyle(QStyleFactory::create("fusion"));
+
+    QVariant themeChosen = medSettingsManager::instance()->value("startup","theme");
+    int themeIndex = themeChosen.toInt();
+
+    QString qssFile;
+    switch (themeIndex)
+    {
+    case 0:
+    default:
+        // Dark
+        qssFile = ":/dark.qss";
+        QIcon::setThemeName(QStringLiteral("dark"));
+        break;
+    case 1:
+        // Grey
+        qssFile = ":/grey.qss";
+        QIcon::setThemeName(QStringLiteral("light"));
+        break;
+    case 2:
+        // Light
+        qssFile = ":/light.qss";
+        QIcon::setThemeName(QStringLiteral("light"));
+        break;
+    }
+    medStyleSheetParser parser(dtkReadFile(qssFile));
+    this->setStyleSheet(parser.result());
+
+    // Unblur icons for instance on retina screens
+    QGuiApplication::setAttribute(Qt::AA_UseHighDpiPixmaps); 
+}
+
+/**
+ * @brief Check expiration date set in settings.json. If the binary is expired, 
+ * display a message box and stop the application starting.
+ * 
+ */
+void medApplication::checkExpirationDate()
+{
+    if (QString(TOSTRING(EXPIRATION_TIME)) != "0")
+    {
+        QDate expiryDate = QDate::fromString(QString(MEDINRIA_BUILD_DATE), "dd_MM_yyyy")
+                                            .addMonths(EXPIRATION_TIME);
+        qInfo() << "Expiration Date: " << qPrintable(expiryDate.toString());
+
+        if ( !expiryDate.isValid() || QDate::currentDate() > expiryDate)
+        {
+            QString expiredInfo = "This copy of ";
+            expiredInfo += TOSTRING(APPLICATION_NAME);
+            expiredInfo += " has expired, please contact ";
+            expiredInfo += TOSTRING(PROJECT_CONTACT);
+            expiredInfo += " for more information.";
+            QMessageBox msg;
+            msg.setText(expiredInfo);
+            msg.exec();
+            ::exit(1);
+        }
+    }
 }

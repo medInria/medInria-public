@@ -29,6 +29,9 @@
 #include <medSettingsManager.h>
 #include <medStorage.h>
 
+#define VAL(str) #str
+#define TOSTRING(str) VAL(str)
+
 void forceShow(medMainWindow& mainwindow )
 {
     //Idea and code taken from the OpenCOR project, Thanks Allan for the code!
@@ -89,11 +92,28 @@ int main(int argc,char* argv[])
 
     QSurfaceFormat::setDefaultFormat(fmt);
 
-    // this needs to be done before creating the QApplication object, as per the
-    // Qt doc, otherwise there are some edge cases where the style is not fully applied
-    //QApplication::setStyle("plastique");
     medApplication application(argc,argv);
-    medSplashScreen splash(QPixmap(":/pixmaps/medInria-logo-homepage.png"));
+
+    // Themes
+    QVariant themeChosen = medSettingsManager::instance()->value("startup","theme");
+    int themeIndex = themeChosen.toInt();
+    QPixmap splashLogo;
+    switch (themeIndex)
+    {
+        case 0:
+        default:
+        {
+            splashLogo.load(TOSTRING(LARGE_LOGO_DARK_THEME));
+            break;
+        }
+        case 1:
+        case 2:
+        {
+            splashLogo.load(TOSTRING(LARGE_LOGO_LIGHT_THEME));
+            break;
+        }
+    }
+    medSplashScreen splash(splashLogo);
 
     setlocale(LC_NUMERIC, "C");
     QLocale::setDefault(QLocale("C"));

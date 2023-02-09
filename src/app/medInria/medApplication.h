@@ -28,6 +28,7 @@ public:
 
     bool event(QEvent *event);
     void setMainWindow(medMainWindow *mw);
+    void initializeThemes();
 
 signals:
     void showMessage(const QString& message);
@@ -40,6 +41,7 @@ public slots:
 
 protected:
     void initialize();
+    void checkExpirationDate();
 
 private:
     medApplicationPrivate *d;
