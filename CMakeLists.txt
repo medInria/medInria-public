@@ -70,6 +70,9 @@ foreach(IDX RANGE 0)
     string(JSON windowIconPath GET ${MY_JSON_STRING} ${IDX} windowIconPath)
     set(WINDOW_ICON_PATH ${windowIconPath} CACHE STRING "settings" FORCE)
 
+    string(JSON macOSIconPath GET ${MY_JSON_STRING} ${IDX} macOSIconPath)
+    set(MACOS_ICON_PATH ${macOSIconPath} CACHE STRING "settings" FORCE)
+
     string(JSON aboutFile GET ${MY_JSON_STRING} ${IDX} aboutFile)
     set(ABOUT_FILE ${aboutFile} CACHE STRING "settings" FORCE)
 
