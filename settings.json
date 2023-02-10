@@ -32,6 +32,7 @@
         "welcomeFile":          "packaging/Welcome.txt",
         "licenceFilePath":      "LICENSE.txt",
         "windowIconPath":       "src/app/medInria/resources/medInria-src/medInria.ico",
+        "macOSIconPath":        "src/app/medInria/resources/medInria-src/medInria.icns",
 
         "expirationTime":       "0" // X months after the compilation this binary will expire. 0 = no expiration date"
     }
