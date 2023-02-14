@@ -28,28 +28,12 @@ class MEDCORE_EXPORT medAbstractSource : public QObject
     Q_OBJECT
 
 public:
-    /* ********  Julien tu peux choisir ou proposer d'autres representation ***********************************************/
-    /* */   using  datasetAttributes1 = QMap<QString, QPair<QVariant, QString> >; // <keyName , <value, tag>>
-    /* */   using  datasetAttributes2 = QMap<QString, QMap <QString, QVariant> >; // <keyName , <dataTypeName, value>, dataTypeName can be "value", "role", tag", ...
-    /* */   
-    /* */   struct datasetAttributes3_sub
-    /* */   {
-    /* */       QString                 value;  //value
-    /* */       QMap<QString, QVariant> option; //optional <dataTypeName, value>, dataTypeName can be "value", "role", tag", ...
-    /* */   };
-    /* */   using datasetAttributes3 = QMap<QString, datasetAttributes3_sub >; // <keyName , datasetAttributes3> equivalent to datasetAttributes2
-    /* */   
-    /* */   struct datasetAttributes4
-    /* */   {
-    /* */       QMap<QString, QString> values; // <keyName, value>
-    /* */       QMap<QString, QString> tags;   // <keyName, tag value>
-    /* */   };
-    /* */   
-    /* */   using  listAttributes1 = QList<datasetAttributes1>;
-    /* */   using  listAttributes2 = QList<datasetAttributes2>;
-    /* */   using  listAttributes3 = QList<datasetAttributes3>;
-    /* */   using  listAttributes4 = QList<datasetAttributes4>;
-    /* -------------------------------------------------------------------------------------------------------------------*/
+    struct datasetAttributes
+    {
+        QMap<QString, QString> values; // <keyName, value>
+        QMap<QString, QString> tags;   // <keyName, tag value>
+    };
+    using  listAttributes = QList<datasetAttributes>;
 
     #define IO_FILE 1
     #define IO_MEDABSTRACTDATA 2
@@ -134,7 +118,7 @@ public:
     /* ***********************************************************************/
     virtual QList<levelMinimalEntries>    getMinimalEntries      (unsigned int pi_uiLevel, QString parentKey) = 0; //id ou uid en int ou en QString si  int alors l'implémentation doit avoir une méthode bijective
     virtual QList<QMap<QString, QString>> getMandatoryAttributes (unsigned int pi_uiLevel, QString parentKey) = 0; //must contain all pairs key/value for mandatory attributes excluding minimal entries, except for minimal levelMinimalEntries.key || //must contain all pairs key/value for mandatory attributes including minimal entries. the third first values must match the values returning by getMandatoryMinimalEntries
-    virtual bool getAdditionalAttributes(unsigned int pi_uiLevel, QString key, datasetAttributes4 &po_attributes) = 0;
+    virtual bool getAdditionalAttributes(unsigned int pi_uiLevel, QString key, datasetAttributes &po_attributes) = 0;
     
     
     /* ***********************************************************************/
@@ -150,10 +134,10 @@ public:
     virtual bool addDirectData(QVariant data,  levelMinimalEntries &pio_minimalEntries, unsigned int pi_uiLevel, QString parentKey) = 0; //data ->(dataPath, pointer medAbstractData, pointer stream)
     virtual int  addAssyncData(QVariant data,  levelMinimalEntries &pio_minimalEntries, unsigned int pi_uiLevel, QString parentKey) = 0; //est-ce pertinent de passer un levelMinimalEntries incomplet qui ne sera probablement pas enrichi ?
 
-    virtual bool createPath(QList<levelMinimalEntries> &pio_path,      datasetAttributes4 const &pi_attributes, unsigned int pi_uiLevel = 0, QString parentKey = "") = 0;
-    virtual bool createFolder(levelMinimalEntries &pio_minimalEntries, datasetAttributes4 const &pi_attributes, unsigned int pi_uiLevel, QString parentKey) = 0;
+    virtual bool createPath(QList<levelMinimalEntries> &pio_path,      datasetAttributes const &pi_attributes, unsigned int pi_uiLevel = 0, QString parentKey = "") = 0;
+    virtual bool createFolder(levelMinimalEntries &pio_minimalEntries, datasetAttributes const &pi_attributes, unsigned int pi_uiLevel, QString parentKey) = 0;
 
-    virtual bool alterMetaData(datasetAttributes4 const &pi_attributes, unsigned int pi_uiLevel, QString key) = 0;
+    virtual bool alterMetaData(datasetAttributes const &pi_attributes, unsigned int pi_uiLevel, QString key) = 0;
 
     virtual bool getThumbnail(QPixmap &po_thumbnail, unsigned int pi_uiLevel, QString key) = 0;
     virtual bool setThumbnail(QPixmap &pi_thumbnail, unsigned int pi_uiLevel, QString key) = 0;

@@ -123,13 +123,13 @@ void medSourcesWidget::addSource(medDataHub *dataHub, QString sourceInstanceId)
     //connect(saveAction,    &QAction::triggered, [=]() {  emit infoActionSignal(this->itemFromMenu(pMenu)); });
     //connect(removeAction,  &QAction::triggered, [=]() {  emit infoActionSignal(this->itemFromMenu(pMenu)); });
     //connect(fetchAction,   &QAction::triggered, [=]() {  emit infoActionSignal(this->itemFromMenu(pMenu)); });
-//    connect(preloadAction, &QAction::triggered, [=]() {
-//        QModelIndex index = this->indexFromMenu(pMenu);
-//        if (index.isValid())
-//        {
-//            const_cast<medSourceModel*>(static_cast<const medSourceModel*>(index.model()))->fetchData(index);
-//        }
-//    });
+    //connect(preloadAction, &QAction::triggered, [=]() {
+    //    QModelIndex index = this->indexFromMenu(pMenu);
+    //    if (index.isValid())
+    //    {
+    //        const_cast<medSourceModel*>(static_cast<const medSourceModel*>(index.model()))->fetchData(index);
+    //    }
+    //});
     connect(fetchAction, &QAction::triggered, [=]() {
         QModelIndex index = this->indexFromMenu(pMenu);
         if (index.isValid())
@@ -141,13 +141,18 @@ void medSourcesWidget::addSource(medDataHub *dataHub, QString sourceInstanceId)
     //connect(readerAction,  &QAction::triggered, [=]() {  emit infoActionSignal(this->itemFromMenu(pMenu)); });
     //connect(unloadAction,  &QAction::triggered, [=]() {  emit infoActionSignal(this->itemFromMenu(pMenu)); });
     connect(infoAction,    &QAction::triggered, [=]() {
-        QMap<QString, QString> mandatoriesAttributes;
+        medSourceModel::datasetAttributes mandatoriesAttributes;
 
         QModelIndex index = this->indexFromMenu(pMenu);
         if (index.isValid())
         {
             mandatoriesAttributes = sourceModel->getMendatoriesMetaData(index);
-            auto popupDataInfo = new medDataInfoWidget(mandatoriesAttributes);
+            QMap<QString, QString> dataAttributes;
+            for (auto & key : mandatoriesAttributes.values.keys())
+            {
+                dataAttributes[key] = mandatoriesAttributes.values[key].toString();
+            }
+            auto popupDataInfo = new medDataInfoWidget(dataAttributes);
             popupDataInfo->show();
         }
 
@@ -182,8 +187,8 @@ void medSourcesWidget::addSource(medDataHub *dataHub, QString sourceInstanceId)
     //    }
     //});
 
-    m_treeMap            [sourceInstanceId] = sourceTreeView;
-    m_titleMap           [sourceInstanceId] = hLayout;
+    m_treeMap  [sourceInstanceId] = sourceTreeView;
+    m_titleMap [sourceInstanceId] = hLayout;
     delete sourcePresenter;
 }
 

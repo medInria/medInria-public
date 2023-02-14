@@ -116,18 +116,11 @@ void medSourcesSettingsHandlerWidget::sourceChange(medAbstractSource * pi_pSourc
     }
 }
 
-void medSourcesSettingsHandlerWidget::updateDefaultButton(medAbstractSource *pi_pSource)
-{
-    bool bLocal = pi_pSource->isLocal();
-    bool bWritable = pi_pSource->isWritable();
-    bool bCached = pi_pSource->isLocal();
-    bool bOnline = pi_pSource->isOnline();
-    bool enableDefault = bWritable && (bLocal || (!bLocal && bCached)) && bOnline;
-    m_setDefaultButton->setEnabled(enableDefault);
-}
 
 /**
  * @brief This method must be called when source online status change to update GUI.
+ * @param [in] p_status is a boolean to indicate if the current source in online (true) or not (false).
+ * @details This function must be connected to signal from medAbstractSource::connectionStatus into function sourceChange.
  */
 void medSourcesSettingsHandlerWidget::sourceConnectStatusChange(bool p_status)
 {

@@ -12,8 +12,6 @@
 
 =========================================================================*/
 
-
-//#include <medSourceItemModelPresenter.h>
 #include <medDataHub.h>
 
 #include <medSourceContextMenu.h>
@@ -43,7 +41,7 @@ public slots:
 
 
 private:
-    void onCustomContextMenu(QPoint const &, QMenu *pi_pMenu); //QTreeView *);
+    void onCustomContextMenu(QPoint const &point, QMenu *pi_pMenu);
     QModelIndex indexFromMenu(QMenu *pi_pMenu);
 
 private:

@@ -307,7 +307,7 @@ bool medSourceHandler::optionalAttributes(QString const & pi_sourceInstanceId, u
     medAbstractSource* pSource = m_sourceIdToInstanceMap.value(pi_sourceInstanceId);
     if (pSource)
     {
-        medAbstractSource::datasetAttributes4 tmp;
+        medAbstractSource::datasetAttributes tmp;
         bRes = pSource->getAdditionalAttributes(pi_uiLevel, key, tmp);
         if (bRes)
         {
@@ -359,7 +359,7 @@ bool medSourceHandler::addDirectData(QString const & pi_sourceInstanceId, unsign
     return bRes;
 }
 
-bool medSourceHandler::createFolder(QString const & pi_sourceInstanceId, unsigned int pi_uiLevel, QString const & parentKey, medAbstractSource::levelMinimalEntries & pio_minimalEntries, medAbstractSource::datasetAttributes4 const & pi_attributes)
+bool medSourceHandler::createFolder(QString const & pi_sourceInstanceId, unsigned int pi_uiLevel, QString const & parentKey, medAbstractSource::levelMinimalEntries & pio_minimalEntries, medAbstractSource::datasetAttributes const & pi_attributes)
 {
     bool bRes = false;
 

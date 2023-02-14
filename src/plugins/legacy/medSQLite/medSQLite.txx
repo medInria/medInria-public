@@ -683,7 +683,7 @@ QList<QMap<QString, QString>> medSQlite<T>::getSeriesMandatoriesAttributes(const
 }
 
 template <typename T>
-bool medSQlite<T>::getAdditionalAttributes(unsigned int pi_uiLevel, QString id, datasetAttributes4 &po_attributes)
+bool medSQlite<T>::getAdditionalAttributes(unsigned int pi_uiLevel, QString id, datasetAttributes &po_attributes)
 {
     bool bRes = false;
     // renommer id en parentId ?
@@ -706,7 +706,7 @@ bool medSQlite<T>::getAdditionalAttributes(unsigned int pi_uiLevel, QString id, 
 }
 
 template<typename T>
-bool medSQlite<T>::getSeriesAdditionalAttributes(const QString &key, medAbstractSource::datasetAttributes4 &po_attributes)
+bool medSQlite<T>::getSeriesAdditionalAttributes(const QString &key, medAbstractSource::datasetAttributes &po_attributes)
 {
     bool bRes;
     int id = key.toInt(&bRes);
@@ -1038,14 +1038,14 @@ int medSQlite<T>::addAssyncData(QVariant data, levelMinimalEntries &pio_minimalE
 }
 
 template <typename T>
-bool medSQlite<T>::createPath(QList<levelMinimalEntries> &pio_path, datasetAttributes4 const &pi_attributes, unsigned int pi_uiLevel, QString parentKey)
+bool medSQlite<T>::createPath(QList<levelMinimalEntries> &pio_path, datasetAttributes const &pi_attributes, unsigned int pi_uiLevel, QString parentKey)
 {
     // TODO
     return false;
 }
 
 template <typename T>
-bool medSQlite<T>::createFolder(levelMinimalEntries &pio_minimalEntries, datasetAttributes4 const &pi_attributes, unsigned int pi_uiLevel, QString parentKey)
+bool medSQlite<T>::createFolder(levelMinimalEntries &pio_minimalEntries, datasetAttributes const &pi_attributes, unsigned int pi_uiLevel, QString parentKey)
 {
     bool bRes = false;
     QSqlQuery query = m_Engine.exec();
@@ -1205,7 +1205,7 @@ QString medSQlite<T>::addDataToStudyLevel(QMap<QString, QString> mandatoryAttrib
     return keyRes;
 }
 template <typename T>
-bool medSQlite<T>::alterMetaData(datasetAttributes4 const &pi_attributes, unsigned int pi_uiLevel, QString key)
+bool medSQlite<T>::alterMetaData(datasetAttributes const &pi_attributes, unsigned int pi_uiLevel, QString key)
 {
     // TODO
     return false;

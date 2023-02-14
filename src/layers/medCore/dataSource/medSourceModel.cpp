@@ -30,8 +30,6 @@ struct medDataModelElementPrivate
     QMap<int, QStringList> columnNameByLevel;
     QStringList sectionNames;
 
-	//QMap<int, asyncRequest> requestsMap;
-
     medSourceModelItem *root;
     QMap<int /*level*/, QList<medSourceModelItem*> > itemsMapByLevel;
 };
@@ -538,7 +536,7 @@ medSourceModel::datasetAttributes medSourceModel::getMendatoriesMetaData(QModelI
         int iLevel = pItem->level();
         for (int i = 0; i < d->columnNameByLevel[iLevel].size(); ++i)
         {
-            res[d->columnNameByLevel[iLevel][i]] = pItem->data(i).toString();
+            res.values[d->columnNameByLevel[iLevel][i]] = pItem->data(i).toString();
         }
     }
 
@@ -731,7 +729,7 @@ bool medSourceModel::getChildrenNames(QStringList uri, QStringList &names)
     return pItem != nullptr;
 }
 
-bool medSourceModel::setAdditionnalMetaData2(QModelIndex const & index, datasetAttributes4 const & attributes)
+bool medSourceModel::setAdditionnalMetaData2(QModelIndex const & index, datasetAttributes const & attributes)
 {
     bool bRes = false;
 
@@ -773,7 +771,7 @@ bool medSourceModel::setAdditionnalMetaData2(QModelIndex const & index, QString 
     return bRes;
 }
 
-bool medSourceModel::additionnalMetaData2(QModelIndex const & index, datasetAttributes4 & attributes)
+bool medSourceModel::additionnalMetaData2(QModelIndex const & index, datasetAttributes & attributes)
 {
     bool bRes = false;
 

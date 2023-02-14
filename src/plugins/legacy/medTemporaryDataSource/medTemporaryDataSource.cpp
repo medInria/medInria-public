@@ -203,7 +203,7 @@ QList<QMap<QString, QString>> medTemporaryDataSource::getMandatoryAttributes(uns
     return res;
 }
 
-bool medTemporaryDataSource::getAdditionalAttributes(unsigned int pi_uiLevel, QString id, datasetAttributes4 &po_attributes)
+bool medTemporaryDataSource::getAdditionalAttributes(unsigned int pi_uiLevel, QString id, datasetAttributes &po_attributes)
 {
     bool bRes = false;
 
@@ -279,13 +279,13 @@ QVariant medTemporaryDataSource::getAsyncResults(int pi_iRequest)
     return QVariant();
 }
 
-bool medTemporaryDataSource::createPath(QList<levelMinimalEntries> &pio_path, datasetAttributes4 const &pi_attributes, unsigned int pi_uiLevel, QString parentKey)
+bool medTemporaryDataSource::createPath(QList<levelMinimalEntries> &pio_path, datasetAttributes const &pi_attributes, unsigned int pi_uiLevel, QString parentKey)
 {
     // TODO
     return false;
 }
 
-bool medTemporaryDataSource::createFolder(levelMinimalEntries &pio_minimalEntries, datasetAttributes4 const &pi_attributes, unsigned int pi_uiLevel, QString parentKey)
+bool medTemporaryDataSource::createFolder(levelMinimalEntries &pio_minimalEntries, datasetAttributes const &pi_attributes, unsigned int pi_uiLevel, QString parentKey)
 {
     bool bRes = true;
 
@@ -300,7 +300,7 @@ bool medTemporaryDataSource::createFolder(levelMinimalEntries &pio_minimalEntrie
     return bRes;
 }
 
-bool medTemporaryDataSource::alterMetaData(datasetAttributes4 const &pi_attributes, unsigned int pi_uiLevel, QString key)
+bool medTemporaryDataSource::alterMetaData(datasetAttributes const &pi_attributes, unsigned int pi_uiLevel, QString key)
 {
     // TODO
     return false;

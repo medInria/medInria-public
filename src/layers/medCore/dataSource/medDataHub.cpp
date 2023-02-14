@@ -478,7 +478,15 @@ medDataHub::datasetAttributes medDataHub::getMetaData(medDataIndex const & index
     if (pModel)
     {
         auto modelIndex = pModel->toIndex(index);
-        metaRes = pModel->getMendatoriesMetaData(modelIndex);
+        auto x = pModel->getMendatoriesMetaData(modelIndex);
+        for (auto & valueKey : x.values.keys())
+        {
+            metaRes.values[valueKey] = x.values[valueKey].toString();
+        }
+        for (auto & tagKey : x.tags.keys())
+        {
+            metaRes.tags[tagKey] = x.tags[tagKey];
+        }
     }
 
     return metaRes;
@@ -861,7 +869,7 @@ bool medDataHub::createPath(QString pi_sourceId, QStringList pi_folders, QString
                     if (keyTmp.isEmpty() && bWritable)
                     {
                         medAbstractSource::levelMinimalEntries lme;
-                        medAbstractSource::datasetAttributes4 dataSetAttributes;
+                        medAbstractSource::datasetAttributes dataSetAttributes;
                         lme.name = pi_folders[i];
                         bRes = m_sourcesHandler->createFolder(pi_sourceId, i, po_uri.last(), lme, dataSetAttributes);
                         if (bRes)

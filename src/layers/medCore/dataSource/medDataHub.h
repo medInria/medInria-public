@@ -65,9 +65,13 @@ class MEDCORE_EXPORT medDataHub : public QObject
 {
     Q_OBJECT
 
-public:
-    using datasetAttributes = QMap<QString, QString>;
-    using levelAttributes = QList<datasetAttributes>;
+public:    
+    struct datasetAttributes
+    {
+        QMap<QString, QString> values; // <keyName, value>
+        QMap<QString, QString> tags;   // <keyName, tag value>
+    };
+    using  listAttributes = QList<datasetAttributes>;
 
     static medDataHub* instance(QObject *parent = nullptr);
 	~medDataHub();

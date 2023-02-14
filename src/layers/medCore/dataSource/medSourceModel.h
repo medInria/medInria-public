@@ -38,9 +38,7 @@ class MEDCORE_EXPORT medSourceModel : public QAbstractItemModel
 
 public:
 
-    using datasetAttributes = QMap<QString, QString>;
-    using levelAttributes = QList<datasetAttributes>;
-    struct datasetAttributes4
+    struct datasetAttributes
     {
           QMap<QString, QVariant> values; // <keyName, value>
           QMap<QString, QString> tags;   // <keyName, tag value>    
@@ -105,9 +103,9 @@ public:
     QString     keyForPath(QStringList rootUri, QString folder);
     bool        getChildrenNames(QStringList uri, QStringList &names);
 
-    bool        setAdditionnalMetaData2(QModelIndex const & index, datasetAttributes4 const &attributes);
+    bool        setAdditionnalMetaData2(QModelIndex const & index, datasetAttributes const &attributes);
     bool        setAdditionnalMetaData2(QModelIndex const & index, QString const & key, QVariant const & value, QString const & tag = QString() );
-    bool        additionnalMetaData2(QModelIndex const & index, datasetAttributes4 & attributes);
+    bool        additionnalMetaData2(QModelIndex const & index, datasetAttributes & attributes);
     bool        additionnalMetaData2(QModelIndex const & index, QString const & key, QVariant & value, QString & tag);
 
     bool addEntry(QString pi_key, QString pi_name, QString pi_description, unsigned int pi_uiLevel, QString pi_parentKey);
