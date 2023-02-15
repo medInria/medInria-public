@@ -24,6 +24,7 @@ find_package(Qt5Test REQUIRED)
 list_source_files(${TARGET_NAME}
   ${CMAKE_CURRENT_SOURCE_DIR}
   data
+  source/settings
   source
   process
   process/arithmetic_operation

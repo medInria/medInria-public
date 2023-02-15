@@ -23,7 +23,7 @@
 
 #include <medWidgetsExport.h>
 
-class medSourceItemModelPresenter;
+class medSourceModelPresenter;
 
 class medSourcesWidget : public QWidget
 {

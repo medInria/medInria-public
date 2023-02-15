@@ -1,23 +1,19 @@
 #include "medSourceModelPresenter.h"
 
-#include <medDataHub.h>
-#include <medSourcesWidget.h>
-#include <medSourceItemModelPresenter.h>
-
-#include <medStringParameterPresenter.h>
-#include <QGroupBox>
-#include <QLabel>
+#include <QTreeView>
+#include <QSortFilterProxyModel>
+#include <medSourceModel.h>
+#include <medSourcesItemDelegate.h>
 
 class medSourceModelPresenterPrivate
 {
 public:
-    medDataHub *dataHub;
+    medSourceModel    *sourceItemModel;
 };
 
-
-medSourceModelPresenter::medSourceModelPresenter(medDataHub *parent) : d(new medSourceModelPresenterPrivate())
+medSourceModelPresenter::medSourceModelPresenter(medSourceModel *parent) : d( new medSourceModelPresenterPrivate())
 {
-    d->dataHub = parent;
+    d->sourceItemModel = parent;
 }
 
 medSourceModelPresenter::~medSourceModelPresenter()
@@ -29,97 +25,44 @@ QWidget * medSourceModelPresenter::buildWidget()
     return buildTree();
 }
 
-medSourcesWidget * medSourceModelPresenter::buildTree()
+QTreeView * medSourceModelPresenter::buildTree(QSortFilterProxyModel *proxy)
 {
-    auto widgetRes = new medSourcesWidget;
-    
-    widgetRes->addSources(d->dataHub);
+    QTreeView *treeViewRes = new QTreeView();
+    QAbstractItemModel *model = nullptr;
+    medSourceModel *inputModel = d->sourceItemModel; //Warning, we must pass by local variable, because lambda will capture by value (d) and presenter will be already deleted 
 
-    connect(d->dataHub, &medDataHub::sourceAdded, [=](QString sourceInstanceId) {widgetRes->addSource(d->dataHub, sourceInstanceId);});
-    connect(d->dataHub, &medDataHub::sourceRemoved, widgetRes, &medSourcesWidget::removeSource);
-
-    connect(this, SIGNAL(filterProxy(const QString &)), widgetRes, SLOT(filter(const QString &)));
-    return widgetRes;
-}
-
-QStackedWidget *medSourceModelPresenter::buildBrowser()
-{
-    auto browserRes = new QStackedWidget;
-    for (auto sourceModel : d->dataHub->models())
+    if (proxy)
     {
-        medSourceItemModelPresenter itemModelPresenter(sourceModel);
-        browserRes->addWidget(itemModelPresenter.buildTree());
-    }
-    return browserRes;
-}
+        proxy->setParent(treeViewRes);
+        proxy->setSourceModel(d->sourceItemModel);
+        QObject::connect(treeViewRes, &QTreeView::pressed, [=](const QModelIndex &proxyIndex) {inputModel->itemPressed(proxy->mapToSource(proxyIndex));});
+        model = proxy;
 
-QListWidget *medSourceModelPresenter::buildSourceList()
-{
-    QListWidget *listSourcesRes = new QListWidget;
-    for (auto sourceModel : d->dataHub->models())
+    }
+    else
     {
-        QString instanceName = medSourceHandler::instance()->getInstanceName(sourceModel->getSourceIntanceId());
-        listSourcesRes->addItem(instanceName);
+        QObject::connect(treeViewRes, &QTreeView::pressed, inputModel, &medSourceModel::itemPressed);
+        model = d->sourceItemModel;
     }
+    treeViewRes->setModel(model);
+    treeViewRes->setSortingEnabled(false);
+    //auto selectionModel = new QItemSelectionModel();
+    //selectionModel->setModel(model);
+    //treeViewRes->setSelectionModel(selectionModel);
+    //treeViewRes->setAlternatingRowColors(true);
+    treeViewRes->setAnimated(true);
+    //treeViewRes->sortByColumn(0, Qt::AscendingOrder);
+//    treeViewRes->setSelectionBehavior(QAbstractItemView::SelectRows);
+    treeViewRes->setSelectionMode(QAbstractItemView::ExtendedSelection);
 
-    return listSourcesRes;
+//    treeViewRes->setStyleSheet("QTreeView::item:selection{background-color:transparent}");
+    treeViewRes->setItemDelegateForColumn(0, new medSourcesItemDelegate(treeViewRes));
+
+    return treeViewRes;
 }
 
-QStackedWidget *medSourceModelPresenter::buildFilters()
+medSourceModel * medSourceModelPresenter::sourceModel() const
 {
-    QStackedWidget *filterRes = new QStackedWidget;
-    for (auto sourceModel : d->dataHub->models())
-    {
-        auto * pVLayout = new QVBoxLayout;
-        QList<medAbstractParameter*> filterParams;
-        medSourceHandler::instance()->filteringParameters(sourceModel->getSourceIntanceId(), filterParams);
-        for (auto * param : filterParams)
-        {
-            auto * pHLayout = new QHBoxLayout;
-            auto * pParamPresenter = medAbstractParameterPresenter::buildFromParameter(param);            
-            auto * pWidget = pParamPresenter->buildWidget();
-            if (dynamic_cast<QPushButton*>(pWidget) == nullptr && dynamic_cast<QGroupBox*>(pWidget) == nullptr)
-            {
-                auto * pLabel = pParamPresenter->buildLabel();
-                pHLayout->addWidget(pLabel);
-            }
-            pHLayout->addWidget(pWidget);
-
-            pVLayout->addLayout(pHLayout);
-        }
-
-        if (!filterParams.isEmpty())
-        {
-            QFrame *line;
-            line = new QFrame();
-            line->setFrameShape(QFrame::HLine);
-            line->setFrameShadow(QFrame::Sunken);
-            pVLayout->addWidget(line);
-
-            QPushButton *pApplyButton = new QPushButton("Apply");
-            pVLayout->addWidget(pApplyButton);
-            connect(pApplyButton, &QPushButton::clicked, [=]()
-                    {  sourceModel->refresh(); });
-        }
-        else
-        {
-            QLabel *noFilterLabel = new QLabel("The current selected source has no filters");
-            pVLayout->addWidget(noFilterLabel);
-        }
-
-        auto *pParamListWidget = new QWidget();
-        pParamListWidget->setLayout(pVLayout);
-        filterRes->addWidget(pParamListWidget);
-    }
-    return filterRes;
+    return d->sourceItemModel;
 }
-
-//medSourceHandler * medSourceModelPresenter::sourcesHandler() const
-//{
-//    return d->sourcesHandler;
-//}
-
-
-
-
 

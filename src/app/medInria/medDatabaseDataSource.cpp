@@ -25,8 +25,8 @@
 
 #include <medSourcesLoader.h>
 #include <medDataHub.h>
-#include <medSourceItemModelPresenter.h>
 #include <medSourceModelPresenter.h>
+#include <medDataHubPresenter.h>
 #include <medSourcesWidget.h>
 
 class medDatabaseDataSourcePrivate
@@ -47,7 +47,7 @@ public:
     medDatabaseSearchPanel *searchPanel;
     medDatabaseSearchPanel *compactSearchPanel;
     medActionsToolBox* actionsToolBox;
-    medSourceModelPresenter *multiSources_tree;
+    medDataHubPresenter *multiSources_tree;
     int currentSource;
 };
 
@@ -59,7 +59,7 @@ medDatabaseDataSource::medDatabaseDataSource( QWidget* parent ): medAbstractData
 
     d->compactProxy = new medDatabaseProxyModel(this);
     d->compactProxy->setSourceModel(d->model);
-    d->multiSources_tree = new medSourceModelPresenter(medDataHub::instance());
+    d->multiSources_tree = new medDataHubPresenter(medDataHub::instance());
     d->currentSource = 0;
 }
 

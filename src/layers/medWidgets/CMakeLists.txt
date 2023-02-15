@@ -21,8 +21,10 @@ set(TARGET_NAME medWidgets)
 
 list_source_files(${TARGET_NAME}
   ${CMAKE_CURRENT_SOURCE_DIR}
-  dataSource/widgets
-  dataSource
+  source/settings/widgets
+  source/settings
+  source/widgets
+  source
   notification/widgets
   notification
   process

@@ -3,7 +3,7 @@
 
  medInria
 
- Copyright (c) INRIA 2013 - 2020. All rights reserved.
+ Copyright (c) INRIA 2013 - 2021. All rights reserved.
  See LICENSE.txt for details.
 
   This software is distributed WITHOUT ANY WARRANTY; without even
@@ -12,37 +12,29 @@
 
 =========================================================================*/
 
-#include <QListWidget>
 #include <QObject>
-#include <QStackedWidget>
-
 #include <medWidgetsExport.h>
 
-class medDataHub;
-class medSourcesWidget;
+class QWidget;
+class QTreeView;
+class QSortFilterProxyModel;
+class medSourceModel;
+class medSourceView;
 class medSourceModelPresenterPrivate;
 
 class MEDWIDGETS_EXPORT medSourceModelPresenter : public QObject
 {
     Q_OBJECT
 public:
-    medSourceModelPresenter(medDataHub *parent = nullptr);
+    medSourceModelPresenter(medSourceModel *parent = nullptr);
     virtual ~medSourceModelPresenter();
 
-    virtual QWidget *buildWidget();
+    virtual QWidget* buildWidget();
 
-    virtual medSourcesWidget *buildTree();
+    virtual QTreeView* buildTree(QSortFilterProxyModel *proxy = nullptr);
 
-    virtual QStackedWidget *buildBrowser();
+    virtual medSourceModel *sourceModel() const;
 
-    virtual QListWidget *buildSourceList();
-
-    virtual  QStackedWidget *buildFilters();
-
-    //virtual medDataHub *dataHub() const;
-
-signals:
-    void filterProxy(const QString &);
 
 private:
     const QScopedPointer<medSourceModelPresenterPrivate> d;

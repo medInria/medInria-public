@@ -2,7 +2,7 @@
 
 #include <medDataHub.h>
 #include <medSourceModel.h>
-#include <medSourceItemModelPresenter.h>
+#include <medSourceModelPresenter.h>
 
 #include <medDataInfoWidget.h>
 
@@ -57,7 +57,7 @@ void medSourcesWidget::addSource(medDataHub *dataHub, QString sourceInstanceId)
     QString                      instanceName = medSourceHandler::instance()->getInstanceName(sourceInstanceId);
     bool isOnline, isLocal, isWritable, isCached;
     medSourceHandler::instance()->sourceGlobalInfo(sourceInstanceId,isOnline, isLocal, isWritable, isCached);
-    medSourceItemModelPresenter *sourcePresenter = new medSourceItemModelPresenter(sourceModel);
+    medSourceModelPresenter *sourcePresenter = new medSourceModelPresenter(sourceModel);
 
     QPushButton *sourceTreeTitle = new QPushButton(instanceName);
     QPushButton *plusButton = new QPushButton(QIcon(":/pixmaps/plus.png"), "");

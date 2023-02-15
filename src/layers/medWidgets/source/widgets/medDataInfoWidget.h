@@ -21,7 +21,7 @@
 #include <QMap>
 #include <QString>
 
-class medSourceItemModelPresenter;
+class medSourceModelPresenter;
 
 class medDataInfoWidget : public QDialog
 {
