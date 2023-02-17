@@ -44,8 +44,9 @@ if (APPLE)
     ${target}
     )
   set(MACOSX_BUNDLE_ICON_FILE
-    ${MACOS_ICON_PATH}
+    medInria.icns
     )
+  
   set(MACOSX_BUNDLE_SHORT_VERSION_STRING
     ${${target}_VERSION}
     )
@@ -58,9 +59,10 @@ if (APPLE)
   set(${target}_RESOURCE_DIR
     ${CMAKE_BINARY_DIR}/bin/${target}.app/Contents/Resources
     )
+
   add_custom_command(TARGET ${target} POST_BUILD
     COMMAND ${CMAKE_COMMAND} ARGS -E make_directory ${${target}_RESOURCE_DIR}
-    COMMAND ${CMAKE_COMMAND} ARGS -E copy ${MACOS_ICON_PATH} ${${target}_RESOURCE_DIR}
+    COMMAND ${CMAKE_COMMAND} ARGS -E copy ${CMAKE_SUPERBUILD_SOURCE}/${MACOS_ICON_PATH}/medInria.icns ${${target}_RESOURCE_DIR}
     )
 
   install(CODE "

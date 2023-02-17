@@ -24,7 +24,6 @@ set(CPACK_PACKAGE_FILE_NAME
   "${CPACK_PACKAGE_NAME}-${CPACK_PACKAGE_VERSION}-${CMAKE_SYSTEM_PROCESSOR}"
    )
 
-
 ## #############################################################################
 ## Add Apple packaging script
 ## #############################################################################

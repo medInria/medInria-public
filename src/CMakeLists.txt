@@ -118,6 +118,7 @@ endif()
 ## #############################################################################
 
 add_definitions(
+  -DCMAKE_SUPERBUILD_SOURCE=${CMAKE_SUPERBUILD_SOURCE}
   -DSETTINGS_QRC_DIRECTORY=${SETTINGS_QRC_DIRECTORY}
   -DAPPLICATION_NAME=${APPLICATION_NAME}
   -DORGANIZATION_NAME=${ORGANIZATION_NAME}

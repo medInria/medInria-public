@@ -29,6 +29,8 @@ project(MEDINRIA_SUPERBUILD VERSION ${MEDINRIA_SUPERBUILD_VERSION})
 ## External settings
 ## #############################################################################
 
+set(CMAKE_SUPERBUILD_SOURCE ${CMAKE_CURRENT_SOURCE_DIR} CACHE STRING "Main repository path" FORCE)
+
 # Read the JSON file
 file(READ ${CMAKE_CURRENT_SOURCE_DIR}/settings.json MY_JSON_STRING)
 
