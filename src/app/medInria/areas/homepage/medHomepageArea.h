@@ -90,11 +90,6 @@ public slots:
      */
     void onShowPluginLogs();
 
-    /**
-     * @brief Update the fullscreen icon if checked or not
-     */
-    void switchOffOnFullscreenIcons(const bool checked);
-
 signals:
     /**
      * @deprecated Doesn't use the medMainWindow's slots anymore.

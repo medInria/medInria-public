@@ -39,7 +39,6 @@ medHomepageArea::medHomepageArea ( QWidget * parent ) : QWidget ( parent ), d ( 
     QMenu *menuFile = menu_bar->addMenu("File");
 
     QAction *actionBrowser = new QAction(tr("&Import/export files"), parent);
-    actionBrowser->setIcon(QIcon(":/icons/open_white.svg"));
     connect(actionBrowser, &QAction::triggered, this, &medHomepageArea::onShowBrowser);
     menuFile->addAction(actionBrowser);
 
@@ -143,36 +142,36 @@ medHomepageArea::medHomepageArea ( QWidget * parent ) : QWidget ( parent ), d ( 
     menuAbout->addSeparator();
 
     QAction *actionHelp = new QAction(tr("&Help"), parent);
-    actionHelp->setIcon(QIcon(":/icons/help_white.svg"));
     connect(actionHelp, &QAction::triggered, this, &medHomepageArea::onShowHelp);
     menuAbout->addAction(actionHelp);
 
-    // --- Prepare right corner menu
-    QMenuBar *rightMenuBar = new QMenuBar(menu_bar);
-    menu_bar->setCornerWidget(rightMenuBar);
-
     // --- Fullscreen checkable action
-    QIcon fullscreenIcon;
-    fullscreenIcon.addPixmap(QPixmap(":icons/fullscreen_on_white.svg"),QIcon::Normal,QIcon::Off);
-    fullscreenIcon.addPixmap(QPixmap(":icons/fullscreen_off_white.svg"),QIcon::Normal,QIcon::On);
-
     d->actionFullscreen = new QAction(parent);
-    d->actionFullscreen->setIcon(fullscreenIcon);
     d->actionFullscreen->setCheckable(true);
-    d->actionFullscreen->setChecked(false);
 #if defined(Q_OS_MAC)
     d->actionFullscreen->setShortcut(Qt::ControlModifier + Qt::Key_F);
     connect(d->actionFullscreen, &QAction::hovered, [=]{QToolTip::showText(QCursor::pos(), "Switch to fullscreen (cmd+f)", this);});
+
+    // Corner widgets are not displayed on macOS native menubar for now, so we are using a classic menu
+    QMenu *menuActions = menu_bar->addMenu("Actions");
+    d->actionFullscreen->setText("Fullscreen");
+    menuActions->addAction(d->actionFullscreen);
 #else
+    // --- Prepare right corner menu 
+    QMenuBar *rightMenuBar = new QMenuBar(menu_bar);
+    menu_bar->setCornerWidget(rightMenuBar);
+
+    QIcon fullscreenIcon;
+    fullscreenIcon.addPixmap(QPixmap(":icons/fullscreen_on_white.svg"),QIcon::Normal,QIcon::Off);
+    fullscreenIcon.addPixmap(QPixmap(":icons/fullscreen_off_white.svg"),QIcon::Normal,QIcon::On);
+    d->actionFullscreen->setIcon(fullscreenIcon);
     d->actionFullscreen->setShortcut(Qt::Key_F11);
     // On Qt5, we can't use setToolTip on an action, without using setToolTipsVisible (by default to false) on the QMenu
     // Here we have a QAction directly on a QMenuBar without a QMenu, so we display manually the tooltip
     connect(d->actionFullscreen, &QAction::hovered, [=]{QToolTip::showText(QCursor::pos(), "Switch to fullscreen (F11)", this);});
+    rightMenuBar->addAction(d->actionFullscreen);
 #endif
     connect(d->actionFullscreen, &QAction::toggled, mainWindow, &medMainWindow::setFullScreen);
-    // On Qt5, QAction in menubar does not seem to show the Off and On icons, so we do it manually
-    connect(d->actionFullscreen, &QAction::toggled, this, &medHomepageArea::switchOffOnFullscreenIcons);
-    rightMenuBar->addAction(d->actionFullscreen);
     
     // Setup the description widget: application logo and description
     d->descriptionWidget = new QWidget(this);
@@ -519,16 +518,4 @@ void medHomepageArea::onShowHelp()
 void medHomepageArea::onShowComposer()
 {
     emit showComposer();
-}
-
-void medHomepageArea::switchOffOnFullscreenIcons(const bool checked)
-{
-    if (checked)
-    {
-        d->actionFullscreen->setIcon(QIcon(":icons/fullscreen_off_white.svg"));
-    }
-    else
-    {
-        d->actionFullscreen->setIcon(QIcon(":icons/fullscreen_on_white.svg"));
-    }
 }
