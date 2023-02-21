@@ -20,13 +20,14 @@
 #include <medDataManager.h>
 #include <medGlobalDefs.h>
 
+#include <QDrag>
 #include <QGraphicsScene>
 #include <QGraphicsPixmapItem>
 #include <QGraphicsSceneMouseEvent>
-#include <QDrag>
-#include <QPixmap>
-#include <QMouseEvent>
+#include <QIcon>
 #include <QLabel>
+#include <QMouseEvent>
+#include <QPixmap>
 
 class medDatabasePreviewStaticScenePrivate
 {
@@ -227,7 +228,7 @@ medDatabasePreview::medDatabasePreview(QWidget *parent): d(new medDatabasePrevie
     d->staticScene = nullptr;
 
     QGraphicsPixmapItem *pixmap = new QGraphicsPixmapItem;
-    pixmap->setPixmap(QPixmap(":/pixmaps/default_thumbnail.png"));
+    pixmap->setPixmap(QIcon::fromTheme("default_thumbnail").pixmap(320,320));
     this->fitInView(pixmap, Qt::KeepAspectRatio);
     scene->addItem(pixmap);
 

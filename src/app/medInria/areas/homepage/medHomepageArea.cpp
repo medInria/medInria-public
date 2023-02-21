@@ -18,6 +18,9 @@
 #include <medStartupSettingsWidget.h>
 #include <medWorkspaceFactory.h>
 
+#define VAL(str) #str
+#define TOSTRING(str) VAL(str)
+
 class medHomepageAreaPrivate
 {
 public:
@@ -39,22 +42,23 @@ medHomepageArea::medHomepageArea ( QWidget * parent ) : QWidget ( parent ), d ( 
     QMenu *menuFile = menu_bar->addMenu("File");
 
     QAction *actionBrowser = new QAction(tr("&Import/export files"), parent);
-    actionBrowser->setIcon(QIcon(":/icons/open_white.svg"));
+    actionBrowser->setIcon(QIcon::fromTheme("open"));
     connect(actionBrowser, &QAction::triggered, this, &medHomepageArea::onShowBrowser);
     menuFile->addAction(actionBrowser);
 
+    // --- Settings menu
+    QMenu *menuSettings = menu_bar->addMenu("Settings");
+
     QAction *actionDatabase = new QAction(tr("&Database settings"), parent);
     connect(actionDatabase, &QAction::triggered, this, &medHomepageArea::onShowDatabase);
-    menuFile->addAction(actionDatabase);
-
-    // --- Area menu
-    QMenu *menuArea = menu_bar->addMenu("Switch to area");
+    menuSettings->addAction(actionDatabase);
 
     QAction *actionAreaSettings = new QAction(tr("&Startup settings"), parent);
     connect(actionAreaSettings, &QAction::triggered, this, &medHomepageArea::onShowAreaSettings);
-    menuArea->addAction(actionAreaSettings);
+    menuSettings->addAction(actionAreaSettings);
 
-    menuArea->addSeparator();
+    // --- Area menu
+    QMenu *menuArea = menu_bar->addMenu("Workspaces");
 
     QAction *actionHome = new QAction(tr("&Homepage"), parent);
     connect(actionHome, &QAction::triggered, mainWindow, &medMainWindow::switchToHomepageArea);
@@ -143,7 +147,6 @@ medHomepageArea::medHomepageArea ( QWidget * parent ) : QWidget ( parent ), d ( 
     menuAbout->addSeparator();
 
     QAction *actionHelp = new QAction(tr("&Help"), parent);
-    actionHelp->setIcon(QIcon(":/icons/help_white.svg"));
     connect(actionHelp, &QAction::triggered, this, &medHomepageArea::onShowHelp);
     menuAbout->addAction(actionHelp);
 
@@ -153,13 +156,13 @@ medHomepageArea::medHomepageArea ( QWidget * parent ) : QWidget ( parent ), d ( 
 
     // --- Fullscreen checkable action
     QIcon fullscreenIcon;
-    fullscreenIcon.addPixmap(QPixmap(":icons/fullscreen_on_white.svg"),QIcon::Normal,QIcon::Off);
-    fullscreenIcon.addPixmap(QPixmap(":icons/fullscreen_off_white.svg"),QIcon::Normal,QIcon::On);
+    fullscreenIcon.addPixmap(QIcon::fromTheme("fullscreen_on").pixmap(24,24), QIcon::Normal,QIcon::Off);
+    fullscreenIcon.addPixmap(QIcon::fromTheme("fullscreen_off").pixmap(24,24),QIcon::Normal,QIcon::On);
 
     d->actionFullscreen = new QAction(parent);
+    d->actionFullscreen->setObjectName("Fullscreen");
     d->actionFullscreen->setIcon(fullscreenIcon);
     d->actionFullscreen->setCheckable(true);
-    d->actionFullscreen->setChecked(false);
 #if defined(Q_OS_MAC)
     d->actionFullscreen->setShortcut(Qt::ControlModifier + Qt::Key_F);
     connect(d->actionFullscreen, &QAction::hovered, [=]{QToolTip::showText(QCursor::pos(), "Switch to fullscreen (cmd+f)", this);});
@@ -170,38 +173,83 @@ medHomepageArea::medHomepageArea ( QWidget * parent ) : QWidget ( parent ), d ( 
     connect(d->actionFullscreen, &QAction::hovered, [=]{QToolTip::showText(QCursor::pos(), "Switch to fullscreen (F11)", this);});
 #endif
     connect(d->actionFullscreen, &QAction::toggled, mainWindow, &medMainWindow::setFullScreen);
-    // On Qt5, QAction in menubar does not seem to show the Off and On icons, so we do it manually
-    connect(d->actionFullscreen, &QAction::toggled, this, &medHomepageArea::switchOffOnFullscreenIcons);
     rightMenuBar->addAction(d->actionFullscreen);
     
     // Setup the description widget: application logo and description
     d->descriptionWidget = new QWidget(this);
     d->descriptionWidget->setProperty("pos", QPoint(10, this->height()/7));
 
-    QHBoxLayout *descriptionLayout = new QHBoxLayout(d->descriptionWidget);
+    QVBoxLayout *descriptionLayout = new QVBoxLayout(d->descriptionWidget);
+    QHBoxLayout *iconLayout = new QHBoxLayout();
+    descriptionLayout->addLayout(iconLayout);
 
+    // Themes
+    QVariant themeChosen = medSettingsManager::instance()->value("startup","theme");
+    int themeIndex = themeChosen.toInt();
+    QString qssLogoName;
+    switch (themeIndex)
+    {
+        case 0:
+        default:
+        {
+            qssLogoName = TOSTRING(LARGE_LOGO_DARK_THEME);
+            break;
+        }
+        case 1:
+        case 2:
+        {
+            qssLogoName = TOSTRING(LARGE_LOGO_LIGHT_THEME);
+            break;
+        }
+    }
+    QPixmap medLogo(qssLogoName);
     d->applicationLabel = new QLabel(this);
-    QPixmap applicationLogo( ":pixmaps/medInria-logo-homepage.png" );
-    d->applicationLabel->setPixmap(applicationLogo);
-    descriptionLayout->addWidget(d->applicationLabel);
-    descriptionLayout->addStretch();
+    d->applicationLabel->setPixmap(medLogo);
+    d->applicationLabel->setScaledContents(true);
+    d->applicationLabel->setFixedSize(353, 122);
+    iconLayout->addWidget(d->applicationLabel);
+
+    if(QString(TOSTRING(APPLICATION_NAME)) != "medInria")
+    {
+        iconLayout->addWidget(new QLabel("powered by"));
+        switch (themeIndex)
+        {
+            case 0:
+            default:
+            {
+                qssLogoName = ":medInria-src/medInria-logo-dark.svg";
+                break;
+            }
+            case 1:
+            case 2:
+            {
+                qssLogoName = ":medInria-src/medInria-logo-light.svg";
+                break;
+            }
+        }
+        QPixmap medInriaLogo(qssLogoName);
+        auto medInriaLogoLabel = new QLabel(this);
+        medInriaLogoLabel->setPixmap(medInriaLogo);
+        medInriaLogoLabel->setScaledContents(true);
+        medInriaLogoLabel->setFixedSize(176, 61);
+        iconLayout->addWidget(medInriaLogoLabel); 
+    }
+    iconLayout->addStretch(1);
 
     d->textEdit = new QTextEdit(this);
-    QFile descriptionFile(":DESCRIPTION.txt");
+    QFile descriptionFile(QString(TOSTRING(DESCRIPTION_HOMEPAGE)));
     descriptionFile.open(QIODevice::ReadOnly | QIODevice::Text);
     QTextStream descriptionStream(&descriptionFile);
     descriptionStream.setCodec("UTF-8");
     d->textEdit->setHtml(descriptionStream.readAll());
     d->textEdit->setReadOnly(true);
     d->textEdit->setFocusPolicy(Qt::NoFocus);
-    d->textEdit->setMinimumWidth(500);
-    d->textEdit->setMinimumHeight(150);
-    d->textEdit->setMaximumHeight(150);
+    d->textEdit->setMaximumHeight(70);
+    d->textEdit->setStyleSheet("background : transparent;");
     descriptionLayout->addWidget(d->textEdit);
 
     // Setup the navigation widget with buttons to access workspaces
     d->navigationWidget = new QWidget(this);
-    d->navigationWidget->setProperty("pos", QPoint(20, this->height()/4));
 }
 
 medHomepageArea::~medHomepageArea()
@@ -215,14 +263,12 @@ void medHomepageArea::resizeEvent ( QResizeEvent * event )
     Q_UNUSED(event);
 
     // Recompute the widget position when the window is resized
-    d->navigationWidget->setProperty("pos", QPoint(20, height()/4));
+    d->navigationWidget->setProperty("pos", QPoint(20, height()/3));
 
-    // The description text is resized when the window is resized:
-    // Total width of the app, minus the logo and the spacings
-    int newTextSize = width() - d->applicationLabel->pixmap()->width() - 40;
+    // The description text is resized when the window is resized
+    int newTextSize = width() - 40;
     d->textEdit->setMinimumWidth(newTextSize);
     d->textEdit->setMaximumWidth(newTextSize);
-    d->descriptionWidget->resize(width() - 30, d->applicationLabel->pixmap()->height());
 }
 
 void medHomepageArea::initPage()
@@ -246,7 +292,7 @@ void medHomepageArea::initPage()
 
     medHomepageButton * browserButton = new medHomepageButton ( this );
     browserButton->setToolButtonStyle ( Qt::ToolButtonTextBesideIcon );
-    browserButton->setIcon ( QIcon ( ":/icons/open_white.svg" ) );
+    browserButton->setIcon ( QIcon::fromTheme("open") );
     browserButton->setText ( " Import/export files" );
     browserButton->setMinimumHeight ( 40 );
     browserButton->setMaximumWidth ( 250 );
@@ -387,13 +433,40 @@ void medHomepageArea::onShowBrowser()
 
 void medHomepageArea::onShowAbout()
 {
-    QFile file(":ABOUT.txt");
+    QFile file(TOSTRING(ABOUT_FILE));
     file.open(QIODevice::ReadOnly | QIODevice::Text);
     QString text = file.readAll();
+
+    if (QString(TOSTRING(EXPIRATION_TIME)) != "0")
+    {
+        QDate expiryDate = QDate::fromString(QString(MEDINRIA_BUILD_DATE), "dd_MM_yyyy")
+                                            .addMonths(EXPIRATION_TIME);
+
+        text += "<br><b style='color: #ED6639;'> This binary is going to expire on ";
+        text += QLocale(QLocale::English).toString(expiryDate, "d MMMM yyyy");
+        text += "</b>";
+    }
 
     QMessageBox msgBox;
     msgBox.setText(text);
     msgBox.exec();
+}
+
+/**
+ * @brief Search the "Show Details..." button and click it to expand the text
+ * 
+ * @param msgBox 
+ */
+void medHomepageArea::expandDetailedText(QMessageBox *msgBox)
+{
+    foreach (auto *button, msgBox->buttons())
+    {
+        if (msgBox->buttonRole(button) == QMessageBox::ActionRole)
+        {
+            button->click();
+            break;
+        }
+    }
 }
 
 void medHomepageArea::onShowAuthors()
@@ -402,77 +475,59 @@ void medHomepageArea::onShowAuthors()
     file.open(QIODevice::ReadOnly | QIODevice::Text);
     QString text = file.readAll();
 
+    std::string str = TOSTRING(ADDITIONAL_AUTHORS_LIST);
+    str.erase(std::remove(str.begin(),str.end(),'\"'),str.end());
+    QString additionalAuthors = QString::fromStdString(str);
+    if (!additionalAuthors.isEmpty())
+    {   
+        additionalAuthors.replace(QString(","), QString("\n"));
+        text += "\n *** " + QString(TOSTRING(APPLICATION_NAME)) + " ***\n";
+        text += additionalAuthors;
+    }
+
     QMessageBox msgBox;
-    msgBox.setText(text);
+    msgBox.setText("List of the application authors:            ");
+    msgBox.setDetailedText(text);
+    expandDetailedText(&msgBox);
     msgBox.exec();
 }
 
 void medHomepageArea::onShowReleaseNotes()
 {
-    QFile file(":RELEASE_NOTES.txt");
+    QFile file(TOSTRING(RELEASE_NOTES));
     file.open(QIODevice::ReadOnly | QIODevice::Text);
     QString text = file.readAll();
 
     QMessageBox msgBox;
     msgBox.setText("Here is the release notes with the history of the application:            ");
     msgBox.setDetailedText(text);
-
-    // Search the "Show Details..." button
-    foreach (QAbstractButton *button, msgBox.buttons())
-    {
-        if (msgBox.buttonRole(button) == QMessageBox::ActionRole)
-        {
-            button->click(); // click it to expand the text
-            break;
-        }
-    }
-
+    expandDetailedText(&msgBox);
     msgBox.exec();
 }
 
 void medHomepageArea::onShowLicense()
 {
-    QFile file(":LICENSE.txt");
+    QFile file(TOSTRING(LICENSE_FILE));
     file.open(QIODevice::ReadOnly | QIODevice::Text);
     QString text = file.readAll();
 
     QMessageBox msgBox;
     msgBox.setText("Here is the application license:                           ");
     msgBox.setDetailedText(text);
-
-    // Search the "Show Details..." button
-    foreach (QAbstractButton *button, msgBox.buttons())
-    {
-        if (msgBox.buttonRole(button) == QMessageBox::ActionRole)
-        {
-            button->click(); // click it to expand the text
-            break;
-        }
-    }
-
+    expandDetailedText(&msgBox);
     msgBox.exec();
 }
 
 void medHomepageArea::onShowExtLicenses()
 {
-    QFile file(":LICENSES_EXT.txt");
+    QFile file(TOSTRING(LICENSE_EXTERNAL_FILE));
     file.open(QIODevice::ReadOnly | QIODevice::Text);
     QString text = file.readAll();
 
     QMessageBox msgBox;
     msgBox.setText("Here are the external library licenses:                           ");
     msgBox.setDetailedText(text);
-
-    // Search the "Show Details..." button
-    foreach (QAbstractButton *button, msgBox.buttons())
-    {
-        if (msgBox.buttonRole(button) == QMessageBox::ActionRole)
-        {
-            button->click(); // click it to expand the text
-            break;
-        }
-    }
-
+    expandDetailedText(&msgBox);
     msgBox.exec();
 }
 
@@ -512,23 +567,15 @@ void medHomepageArea::onShowPluginLogs()
 }
 
 void medHomepageArea::onShowHelp()
-{
-    QDesktopServices::openUrl(QUrl("http://med.inria.fr/help/documentation"));
+{   
+    // DOCUMENTATION_URL needs to be passed as a string in medInria.cmake 
+    //to avoid losing path after '/'
+    std::string str = TOSTRING(DOCUMENTATION_URL);
+    str.erase(std::remove(str.begin(),str.end(),'\"'),str.end());
+    QDesktopServices::openUrl(QUrl(QString::fromStdString(str)));
 }
 
 void medHomepageArea::onShowComposer()
 {
     emit showComposer();
-}
-
-void medHomepageArea::switchOffOnFullscreenIcons(const bool checked)
-{
-    if (checked)
-    {
-        d->actionFullscreen->setIcon(QIcon(":icons/fullscreen_off_white.svg"));
-    }
-    else
-    {
-        d->actionFullscreen->setIcon(QIcon(":icons/fullscreen_on_white.svg"));
-    }
 }

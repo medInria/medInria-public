@@ -13,7 +13,7 @@
 #
 ################################################################################
 
-cmake_minimum_required(VERSION 3.3)
+cmake_minimum_required(VERSION 3.19)
 
 if(NOT DEFINED ${medInria_VERSION})
     set(medInria_VERSION 4.0.0)
@@ -28,13 +28,6 @@ project(medInria VERSION ${medInria_VERSION})
 
 string(TOUPPER ${PROJECT_NAME} PROJECT_NAME_UP)
 add_definitions(-D${PROJECT_NAME_UP}_VERSION="${${PROJECT_NAME}_VERSION}")
-
-## #############################################################################
-## Macro
-## #############################################################################
-
-add_definitions( -DPROJECT_TEAM_NAME="medInria team" )
-add_definitions( -DPROJECT_CONTACT="medinria-userfeedback@inria.fr" )
 
 ## #############################################################################
 ## Options
@@ -120,7 +113,37 @@ if(APPLE)
   set(CMAKE_MACOSX_RPATH OFF)
 endif()
 
+## #############################################################################
+## External settings
+## #############################################################################
 
+add_definitions(
+  -DCMAKE_SUPERBUILD_SOURCE=${CMAKE_SUPERBUILD_SOURCE}
+  -DSETTINGS_QRC_DIRECTORY=${SETTINGS_QRC_DIRECTORY}
+  -DAPPLICATION_NAME=${APPLICATION_NAME}
+  -DORGANIZATION_NAME=${ORGANIZATION_NAME}
+  -DORGANIZATION_DOMAIN=${ORGANIZATION_DOMAIN}
+  -DPROJECT_CONTACT=${PROJECT_CONTACT}
+  -DPACKAGE_VENDOR=${PACKAGE_VENDOR}
+  -DDOCUMENTATION_URL=${DOCUMENTATION_URL}
+  -DPROJECT_DESCRIPTION=${PROJECT_DESCRIPTION}
+  -DLARGE_LOGO_DARK_THEME=${LARGE_LOGO_DARK_THEME}
+  -DLARGE_LOGO_LIGHT_THEME=${LARGE_LOGO_LIGHT_THEME}
+  -DWINDOW_ICON=${WINDOW_ICON}
+  -DWINDOW_ICON_PATH=${WINDOW_ICON_PATH}
+  -DMACOS_ICON_PATH=${MACOS_ICON_PATH}
+  -DABOUT_FILE=${ABOUT_FILE}
+  -DRELEASE_NOTES=${RELEASE_NOTES}
+  -DADDITIONAL_AUTHORS_LIST=${ADDITIONAL_AUTHORS_LIST}
+  -DDESCRIPTION_HOMEPAGE=${DESCRIPTION_HOMEPAGE}
+  -DDESCRIPTION_PACKAGING=${DESCRIPTION_PACKAGING}
+  -DLICENSE_FILE=${LICENSE_FILE}
+  -DLICENSE_EXTERNAL_FILE=${LICENSE_EXTERNAL_FILE}
+  -DLICENSE_FILE_PATH=${LICENSE_FILE_PATH}
+  -DREADME_FILE=${README_FILE}
+  -DWELCOME_FILE=${WELCOME_FILE}
+  -DEXPIRATION_TIME=${EXPIRATION_TIME}
+  )
 
 ## #############################################################################
 ## Qt Auto tools
@@ -173,7 +196,7 @@ if(${PROJECT_NAME}_BUILD_DOCUMENTATION)
   add_subdirectory(doc)
 endif()
 
-set_property(DIRECTORY ${CMAKE_CURRENT_SOURCE_DIR} PROPERTY VS_STARTUP_PROJECT medInria)
+set_property(DIRECTORY ${CMAKE_CURRENT_SOURCE_DIR} PROPERTY VS_STARTUP_PROJECT ${PROJECT_NAME})
 
 ################################################################################
 # Setup Configuration files

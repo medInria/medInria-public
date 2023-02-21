@@ -13,7 +13,18 @@
 #
 ################################################################################
 
-set(TARGET_NAME medInria)
+set(TARGET_NAME ${APPLICATION_NAME})
+
+## #############################################################################
+## External settings
+## #############################################################################
+
+if(DEFINED SETTINGS_QRC_DIRECTORY) 
+  if(SETTINGS_QRC_DIRECTORY STREQUAL "")
+  else()
+    set(SETTINGS_QRC_DIRECTORY_RELATIVE "../../../${SETTINGS_QRC_DIRECTORY}")
+  endif()
+endif()
 
 ## #############################################################################
 ## List Sources
@@ -39,6 +50,7 @@ list_source_files(${TARGET_NAME}
   areas/workspaces/registration
   areas/workspaces/segmentation
   areas/workspaces/visualization
+  ${SETTINGS_QRC_DIRECTORY_RELATIVE}
   )
 
 ##  see cmake/module/list_header_directories_to_include.cmake
