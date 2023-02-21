@@ -15,8 +15,8 @@
         "settingsQrcDirectory": "", 
         
         // Add these resources to your qrc file also
-        "largeLogoDarkTheme":  ":medInria-src/medInria-logo-dark.png",
-        "largeLogoLightTheme": ":medInria-src/medInria-logo-light.png",
+        "largeLogoDarkTheme":  ":medInria-src/medInria-logo-dark.svg", // recommended size for logos: multiple of 706x245
+        "largeLogoLightTheme": ":medInria-src/medInria-logo-light.svg",
         "windowIcon":          ":medInria-src/medInria.ico",
         "aboutFile":           ":ABOUT.txt", 
         "releaseNotes":        ":RELEASE_NOTES.txt",

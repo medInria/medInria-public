@@ -22,9 +22,10 @@ class medSplashScreenPrivate
 {
 public:
     QPixmap  pixmap;
+    QSize    pixmapSize;
     QString  message;
-    int   alignment;
-    QColor  color;
+    int      alignment;
+    QColor   color;
 };
 
 
@@ -57,7 +58,8 @@ medSplashScreen::medSplashScreen(const QPixmap& thePixmap)
 
     // Geometry
     d->alignment = Qt::AlignBottom|Qt::AlignLeft;
-    setFixedSize(d->pixmap.size());
+    d->pixmapSize = QSize(353, 122);
+    this->setFixedSize(d->pixmapSize.width(), d->pixmapSize.height()+20); // + 20 for text
 
     QRect r(0, 0, d->pixmap.size().width(), d->pixmap.size().height());
 
@@ -118,7 +120,6 @@ void medSplashScreen::repaint()
 }
 
 void medSplashScreen::finish(QWidget *mainWin)
-
 {
     if (mainWin)
     {
@@ -135,13 +136,16 @@ void medSplashScreen::paintEvent(QPaintEvent* pe)
     Q_UNUSED(pe);
 
     QRect aTextRect(rect());
-    aTextRect.setRect(aTextRect.x() + 120,
+    aTextRect.setRect(aTextRect.x() + 10,
                       aTextRect.y() + 5,
                       aTextRect.width() - 10,
                       aTextRect.height() - 10);
 
+    auto pixmapRect = rect();
+    pixmapRect.setHeight(d->pixmapSize.height());
+
     QPainter aPainter(this);
-    aPainter.drawPixmap(rect(), d->pixmap);
+    aPainter.drawPixmap(pixmapRect, d->pixmap);
     aPainter.setPen(d->color);
     aPainter.drawText(aTextRect, d->alignment, d->message);
 }

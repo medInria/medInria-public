@@ -180,6 +180,8 @@ medHomepageArea::medHomepageArea ( QWidget * parent ) : QWidget ( parent ), d ( 
     d->descriptionWidget->setProperty("pos", QPoint(10, this->height()/7));
 
     QVBoxLayout *descriptionLayout = new QVBoxLayout(d->descriptionWidget);
+    QHBoxLayout *iconLayout = new QHBoxLayout();
+    descriptionLayout->addLayout(iconLayout);
 
     // Themes
     QVariant themeChosen = medSettingsManager::instance()->value("startup","theme");
@@ -201,10 +203,38 @@ medHomepageArea::medHomepageArea ( QWidget * parent ) : QWidget ( parent ), d ( 
         }
     }
     QPixmap medLogo(qssLogoName);
-    medLogo = medLogo.scaled(356, 102, Qt::KeepAspectRatio, Qt::SmoothTransformation);
     d->applicationLabel = new QLabel(this);
     d->applicationLabel->setPixmap(medLogo);
-    descriptionLayout->addWidget(d->applicationLabel);
+    d->applicationLabel->setScaledContents(true);
+    d->applicationLabel->setFixedSize(353, 122);
+    iconLayout->addWidget(d->applicationLabel);
+
+    if(QString(TOSTRING(APPLICATION_NAME)) != "medInria")
+    {
+        iconLayout->addWidget(new QLabel("powered by"));
+        switch (themeIndex)
+        {
+            case 0:
+            default:
+            {
+                qssLogoName = ":medInria-src/medInria-logo-dark.svg";
+                break;
+            }
+            case 1:
+            case 2:
+            {
+                qssLogoName = ":medInria-src/medInria-logo-light.svg";
+                break;
+            }
+        }
+        QPixmap medInriaLogo(qssLogoName);
+        auto medInriaLogoLabel = new QLabel(this);
+        medInriaLogoLabel->setPixmap(medInriaLogo);
+        medInriaLogoLabel->setScaledContents(true);
+        medInriaLogoLabel->setFixedSize(176, 61);
+        iconLayout->addWidget(medInriaLogoLabel); 
+    }
+    iconLayout->addStretch(1);
 
     d->textEdit = new QTextEdit(this);
     QFile descriptionFile(QString(TOSTRING(DESCRIPTION_HOMEPAGE)));

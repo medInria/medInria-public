@@ -9,8 +9,8 @@
 
         <file>medInria-src/medInria.ico</file>
         <file>medInria-src/medInria.png</file>
-        <file>medInria-src/medInria-logo-dark.png</file>
-        <file>medInria-src/medInria-logo-light.png</file>
+        <file>medInria-src/medInria-logo-dark.svg</file>
+        <file>medInria-src/medInria-logo-light.svg</file>
 
         <file>dark.qss</file>
         <file>icons/dark/index.theme</file>
