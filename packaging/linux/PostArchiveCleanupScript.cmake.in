@@ -1,34 +1,21 @@
-set(DIR @CPACK_PACKAGE_DIRECTORY@/_CPack_Packages/Linux/@CPACK_GENERATOR@/@CPACK_PACKAGE_FILE_NAME@)
+set(DIR @CMAKE_BINARY_DIR@/_CPack_Packages/Linux/@CPACK_GENERATOR@/@CPACK_PACKAGE_FILE_NAME@/@CPACK_PACKAGING_INSTALL_PREFIX@)
 
-# Removing useless directories
+# Removing useless files and directories
 file(REMOVE_RECURSE ${DIR}/cmake)
 file(REMOVE_RECURSE ${DIR}/etc)
 file(REMOVE_RECURSE ${DIR}/include)
 file(REMOVE_RECURSE ${DIR}/share)
-
-# Cleaning up useless stuff in /lib
+file(REMOVE_RECURSE ${DIR}/plugins)
+file(REMOVE_RECURSE ${DIR}/wrp)
 file(REMOVE_RECURSE ${DIR}/lib/cmake)
 file(REMOVE_RECURSE ${DIR}/lib64/cmake)
-file(REMOVE_RECURSE ${DIR}/lib/vtk-8.0/CMake)
-file(REMOVE_RECURSE ${DIR}/lib/vtk-8.0/doc)
-file(REMOVE_RECURSE ${DIR}/lib/vtk-8.0/doxygen)
-file(REMOVE_RECURSE ${DIR}/lib/vtk-8.0/testing)
-file(GLOB LIB_JUNK ${DIR}/lib/*.cmake ${DIR}/lib/vtk-8.0/*.cmake)
 
-if (LIB_JUNK)
-  list(LENGTH LIB_JUNK LIB_JUNK_LENGTH)
+file(GLOB_RECURSE LIB_JUNK ${DIR}/lib/*.cmake ${DIR}/lib64/*.cmake)
+file(REMOVE ${LIB_JUNK})
 
-  if (LIB_JUNK_LENGTH GREATER 0)
-    file(REMOVE ${LIB_JUNK})
-  endif()
-endif()
-
-# Cleaning up binaries in /bin
-file(GLOB BINARIES RELATIVE ${DIR}/bin/ ${DIR}/bin/*)
-
-foreach(bin ${BINARIES})
-  if(NOT bin MATCHES "^med")
+file(GLOB BIN_JUNK RELATIVE ${DIR}/bin/ ${DIR}/bin/*)
+foreach(bin ${BIN_JUNK})
+  if((NOT bin MATCHES "^med") AND (NOT bin MATCHES "^plugins"))
     file(REMOVE ${DIR}/bin/${bin})
   endif()
 endforeach()
-

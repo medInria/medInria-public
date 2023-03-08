@@ -33,49 +33,34 @@ set(CPACK_PACKAGE_FILE_NAME
     "${CPACK_PACKAGE_NAME}-${CPACK_PACKAGE_VERSION}-${DISTRIBUTOR_ID}_${RELEASE}-${ARCH}")
  
 # Set the right package generator
-
 set(CPACK_GENERATOR DEB)
 if(${DISTRIBUTOR_ID} MATCHES fc|fedora|Fedora|Centos|centos|SUSE|Suse|suse)
     set(CPACK_GENERATOR RPM)
 endif()
 
-# For the 3.0 release, disable RPM/DEB as we're too far behind Ubuntu/Fedora
-# releases on the build farm, will re-enable if we ever manage to get up to date
-
-set(CPACK_GENERATOR "ZIP")
+set (CPACK_PACKAGING_INSTALL_PREFIX /opt/medInria CACHE STRING "Prefix where the package will be installed")
+mark_as_advanced(CPACK_PACKAGING_INSTALL_PREFIX)
 
 # Remember the linux packaging source dir
-
 set(CURRENT_SRC_DIR ${CMAKE_SOURCE_DIR}/packaging/linux)
 set(CURRENT_BIN_DIR ${CMAKE_BINARY_DIR}/packaging/linux)
 
-# Generate CPACK_PROJECT_CONFIG_FILE
-
-configure_file(${CURRENT_SRC_DIR}/GeneratorConfig.cmake.in
-               ${CURRENT_BIN_DIR}/GeneratorConfig.cmake
-               @ONLY)
-set(CPACK_PROJECT_CONFIG_FILE ${CURRENT_BIN_DIR}/GeneratorConfig.cmake)
-
-# Set directory where the package will be installed
-
-set (CPACK_PACKAGING_INSTALL_PREFIX /usr/local/medInria CACHE STRING "Prefix where the package will be installed")
-mark_as_advanced(CPACK_PACKAGING_INSTALL_PREFIX) 
-
-# Add postinst and prerm script
- 
-configure_file(${CURRENT_SRC_DIR}/postinst.in ${CURRENT_BIN_DIR}/postinst)
+# The postinst and prerm scripts are run at package installation for both, or uninstallation for prerm
 configure_file(${CURRENT_SRC_DIR}/prerm.in    ${CURRENT_BIN_DIR}/prerm)
+configure_file(${CURRENT_SRC_DIR}/postinst.in ${CURRENT_BIN_DIR}/postinst)
 
-# include settings specific to DEB and RPM
-
+# Include settings specific to DEB and RPM
 include(${CURRENT_SRC_DIR}/RPM.cmake)
 include(${CURRENT_SRC_DIR}/DEB.cmake)
 
-# Generate desktop file.
-
+# Generate desktop file
 configure_file(${CURRENT_SRC_DIR}/medInria.desktop.in ${CURRENT_BIN_DIR}/medInria.desktop @ONLY)
-install(FILES ${CURRENT_BIN_DIR}/medInria.desktop
-        DESTINATION share/applications)
+install(FILES ${CURRENT_BIN_DIR}/medInria.desktop DESTINATION .)
+install(FILES ${CMAKE_SOURCE_DIR}/src/app/medInria/resources/medInria.png DESTINATION .)
+
+# Configure a cleaning script run after the creation of the archive to be packaged
+configure_file(${CURRENT_SRC_DIR}/PostArchiveCleanupScript.cmake.in ${CURRENT_BIN_DIR}/PostArchiveCleanupScript.cmake @ONLY)
+install(CODE "include(${CURRENT_BIN_DIR}/PostArchiveCleanupScript.cmake)")
 
 # Add project to package
 
@@ -98,8 +83,6 @@ endforeach()
 foreach(dir ${PRIVATE_PLUGINS_LEGACY_DIRS})
     set(CPACK_INSTALL_CMAKE_PROJECTS ${CPACK_INSTALL_CMAKE_PROJECTS} ${dir} ${dir} ALL "/bin")
 endforeach()
-
-install(CODE "include(${CURRENT_BIN_DIR}/PostArchiveCleanupScript.cmake)")
 
 # force the medinria-superproject install target to run last so we can use it
 # to cleanup
