@@ -76,14 +76,6 @@ foreach(external_project ${external_projects})
 	endif()
 endforeach()
 
-foreach(dir ${PRIVATE_PLUGINS_DIRS})
-    set(CPACK_INSTALL_CMAKE_PROJECTS ${CPACK_INSTALL_CMAKE_PROJECTS} ${dir} ${dir} ALL "/bin")
-endforeach()
-
-foreach(dir ${PRIVATE_PLUGINS_LEGACY_DIRS})
-    set(CPACK_INSTALL_CMAKE_PROJECTS ${CPACK_INSTALL_CMAKE_PROJECTS} ${dir} ${dir} ALL "/bin")
-endforeach()
-
 # force the medinria-superproject install target to run last so we can use it
 # to cleanup
 set(CPACK_INSTALL_CMAKE_PROJECTS ${CPACK_INSTALL_CMAKE_PROJECTS} ${backup_CPACK_INSTALL_CMAKE_PROJECTS})
