@@ -66,8 +66,9 @@ set(cmake_args
   -DModule_ITKReview:BOOL=ON
   -DModule_ITKVtkGlue:BOOL=ON
   -DITK_LEGACY_REMOVE:BOOL=ON
+  -DITK_INSTALL_PACKAGE_DIR=${EP_PATH_BUILD}/${ep} # for itkeigen at packaging
   )
-  
+
 set(cmake_cache_args
   -DVTK_DIR:PATH=${VTK_DIR}
   )
@@ -76,7 +77,7 @@ set(cmake_cache_args
 ## Check if patch has to be applied
 ## #############################################################################
   
-ep_GeneratePatchCommand(${ep} ${ep}_PATCH_COMMAND ITK_Mac.patch)
+ep_GeneratePatchCommand(${ep} ${ep}_PATCH_COMMAND ITK.patch)
 
 ## #############################################################################
 ## Add external-project

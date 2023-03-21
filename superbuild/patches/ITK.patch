@@ -1,0 +1,41 @@
+From 95422e39c8ff0aff6b51da2998a2b20d3524fc73 Mon Sep 17 00:00:00 2001
+From: Mathilde Merle <mathilde.merle@ihu-liryc.fr>
+Date: Tue, 21 Mar 2023 13:24:22 +0100
+Subject: [PATCH] ITK
+
+---
+ CMake/itkExternal_Eigen3.cmake              | 2 +-
+ Modules/ThirdParty/KWSys/src/CMakeLists.txt | 4 +++-
+ 2 files changed, 4 insertions(+), 2 deletions(-)
+
+diff --git a/CMake/itkExternal_Eigen3.cmake b/CMake/itkExternal_Eigen3.cmake
+index 66fae44b51..9649b4c35d 100644
+--- a/CMake/itkExternal_Eigen3.cmake
++++ b/CMake/itkExternal_Eigen3.cmake
+@@ -21,7 +21,7 @@ else()
+   # _eigen3_cmake_install_prefix work also with relative CMAKE_INSTALL_PREFIX
+   get_filename_component(_eigen3_cmake_install_prefix
+     ${CMAKE_INSTALL_PREFIX} ABSOLUTE BASE_DIR ${PROJECT_BINARY_DIR})
+-  set(_eigen3_cmake_install_includedir ${ITK_INSTALL_INCLUDE_DIR})
++  set(_eigen3_cmake_install_includedir ${ITK_BINARY_DIR})
+   set(_eigen3_cmake_install_datadir ${ITK_INSTALL_PACKAGE_DIR}/Modules)
+   set(_eigen3_source_dir "${ITK_SOURCE_DIR}/Modules/ThirdParty/Eigen3/src/itkeigen")
+   set(_eigen3_build_dir "${ITK_BINARY_DIR}/ITKInternalEigen3-build")
+diff --git a/Modules/ThirdParty/KWSys/src/CMakeLists.txt b/Modules/ThirdParty/KWSys/src/CMakeLists.txt
+index 3c806d816d..6096ec57df 100644
+--- a/Modules/ThirdParty/KWSys/src/CMakeLists.txt
++++ b/Modules/ThirdParty/KWSys/src/CMakeLists.txt
+@@ -24,7 +24,9 @@ set(KWSYS_INSTALL_COMPONENT_NAME_DEVELOPMENT Development)
+ set(KWSYS_PROPERTIES_C WINDOWS_EXPORT_ALL_SYMBOLS FALSE)
+ set( _macosx_rpath 1)
+ if(DEFINED CMAKE_MACOSX_RPATH AND NOT "${CMAKE_MACOSX_RPATH}" STREQUAL "")
+-  set(_macosx_rpath ${CMAKE_MACOSX_RPATH})
++  if (NOT CMAKE_MACOSX_RPATH)
++    set(_macosx_rpath 0)
++  endif()
+ endif()
+ set(KWSYS_PROPERTIES_CXX MACOSX_RPATH ${_macosx_rpath} WINDOWS_EXPORT_ALL_SYMBOLS FALSE)
+ 
+-- 
+2.25.1
+
