@@ -483,6 +483,8 @@ void medDataManager::setWriterPriorities()
     QList<QString> writers = medAbstractDataFactory::instance()->writers();
     QMap<int, QString> writerPriorites;
 
+    writers.sort();
+
     // set vtkDataMeshWriter as a top priority writer
     if(writers.contains("vtkDataMeshWriter"))
     {
