@@ -46,11 +46,13 @@ meshMappingToolBox::meshMappingToolBox(QWidget *parent)
     QLabel *dataLabel = new QLabel("Data to map ", this);
     dataLabel->setToolTip(tr("Select the data from which to obtain values"));
     d->layersForData = new QComboBox;
+    d->layersForData->setSizeAdjustPolicy(QComboBox::AdjustToMinimumContentsLengthWithIcon);
     d->layersForData->addItem("Select the data to map", 0);
 
     QLabel *structureLabel = new QLabel("Mesh", this);
     structureLabel->setToolTip(tr("Select the mesh whose geometry will be used\nin determining positions to map"));
     d->layersForStructure = new QComboBox;
+    d->layersForStructure->setSizeAdjustPolicy(QComboBox::AdjustToMinimumContentsLengthWithIcon);
     d->layersForStructure->addItem("Select the mesh", 0);
     
     QPushButton *runButton = new QPushButton(tr("Run"), this);

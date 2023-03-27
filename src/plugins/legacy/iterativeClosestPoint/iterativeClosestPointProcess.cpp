@@ -44,20 +44,18 @@ public:
     dtkSmartPointer <medAbstractData> inputTarget;
     dtkSmartPointer <medAbstractData> output;
     
-    int StartByMatchingCentroids;
-    int Transformation;
-    int CheckMeanDistance;
-
-    double ScaleFactor;
-    int MaxNumIterations;
-    int MaxNumLandmarks;
-    double MaxMeanDistance;
+    int startByMatchingCentroids;
+    int transformation;
+    int checkMeanDistance;
+    double scaleFactor;
+    int maxNumIterations;
+    int maxNumLandmarks;
+    double maxMeanDistance;
     int exportMatrixState;
     QString exportMatrixFilePath;
     QString sourceName;
     QString targetName;
-
-    vtkSmartPointer<vtkMatrix4x4> TransformMatrix;
+    vtkSmartPointer<vtkMatrix4x4> transformMatrix;
     double mean, variance, median;
 };
 
@@ -72,13 +70,13 @@ iterativeClosestPointProcess::iterativeClosestPointProcess()
     d->inputTarget = nullptr;
     d->output = nullptr;
 
-    d->StartByMatchingCentroids = 1;
-    d->Transformation           = 0;
-    d->CheckMeanDistance        = 0;
-    d->ScaleFactor               = 1;
-    d->MaxNumIterations          = 100;
-    d->MaxNumLandmarks           = 1000;
-    d->MaxMeanDistance           = 1;
+    d->startByMatchingCentroids  = 1;
+    d->transformation            = 0;
+    d->checkMeanDistance         = 0;
+    d->scaleFactor               = 1;
+    d->maxNumIterations          = 100;
+    d->maxNumLandmarks           = 1000;
+    d->maxMeanDistance           = 1;
 }
 
 iterativeClosestPointProcess::~iterativeClosestPointProcess()
@@ -119,10 +117,10 @@ void iterativeClosestPointProcess::setParameter(double data, int channel)
     switch (channel)
     {
         case 3:
-            d->MaxMeanDistance = data;
+            d->maxMeanDistance = data;
             break;
         case 6:
-            d->ScaleFactor = data;
+            d->scaleFactor = data;
             break;
     }
 }
@@ -132,19 +130,19 @@ void iterativeClosestPointProcess::setParameter(int data, int channel)
     switch (channel)
     {
         case 0:
-            d->StartByMatchingCentroids = data;
+            d->startByMatchingCentroids = data;
             break;
         case 1:
-            d->Transformation = data;
+            d->transformation = data;
             break;
         case 2:
-            d->CheckMeanDistance = data;
+            d->checkMeanDistance = data;
             break;
         case 4:
-            d->MaxNumIterations = data;
+            d->maxNumIterations = data;
             break;
         case 5:
-            d->MaxNumLandmarks = data;
+            d->maxNumLandmarks = data;
             break;
         case 7:
             d->exportMatrixState = data;
@@ -184,16 +182,16 @@ int iterativeClosestPointProcess::update()
 
     ICPFilter->SetSource(static_cast<vtkPolyData*>(source_dataset->GetDataSet()));
     ICPFilter->SetTarget(static_cast<vtkPolyData*>(target_dataset->GetDataSet()));
-    ICPFilter->SetMaximumNumberOfIterations(d->MaxNumIterations);
-    ICPFilter->SetMaximumNumberOfLandmarks(d->MaxNumLandmarks);
-    ICPFilter->SetMaximumMeanDistance(d->MaxMeanDistance);
-    ICPFilter->SetScaleFactor(d->ScaleFactor);
+    ICPFilter->SetMaximumNumberOfIterations(d->maxNumIterations);
+    ICPFilter->SetMaximumNumberOfLandmarks(d->maxNumLandmarks);
+    ICPFilter->SetMaximumMeanDistance(d->maxMeanDistance);
+    ICPFilter->SetScaleFactor(d->scaleFactor);
 
-    if(d->CheckMeanDistance)
+    if(d->checkMeanDistance)
     {
         ICPFilter->CheckMeanDistanceOn();
     }
-    if(d->StartByMatchingCentroids)
+    if(d->startByMatchingCentroids)
     {
         ICPFilter->StartByMatchingCentroidsOn(); //align center of masses as first transformation
     }
@@ -203,7 +201,7 @@ int iterativeClosestPointProcess::update()
     //Similarity (VTK_LANDMARK_SIMILARITY): rotation, translation and isotropic scaling.
     //Affine (VTK_LANDMARK_AFFINE): collinearity is preserved. Ratios of distances along a line are preserved.
     //The default is similarity.
-    switch (d->Transformation)
+    switch (d->transformation)
     {
         case 0:
             ICPFilter->GetLandmarkTransform()->SetMode(VTK_LANDMARK_RIGIDBODY);
@@ -228,8 +226,8 @@ int iterativeClosestPointProcess::update()
 
     ICPFilter->GetFREStats(d->mean, d->variance, d->median);
 
-    d->TransformMatrix = vtkSmartPointer<vtkMatrix4x4>::New();
-    d->TransformMatrix->DeepCopy(ICPFilter->GetMatrix());
+    d->transformMatrix = vtkSmartPointer<vtkMatrix4x4>::New();
+    d->transformMatrix->DeepCopy(ICPFilter->GetMatrix());
 
     if (d->exportMatrixState == 2)
     {
@@ -242,7 +240,7 @@ int iterativeClosestPointProcess::update()
     icpTransformArray->SetNumberOfComponents(1);
     icpTransformArray->SetName("ICP_TransformMatrix");
     double* data = icpTransformArray->GetPointer(0);
-    double* mat  = d->TransformMatrix->GetData();
+    double* mat  = d->transformMatrix->GetData();
     std::memcpy(data, mat, 16 * sizeof(*data));
 
     vtkPolyData *output_polyData = TransformFilter2->GetOutput();
@@ -285,8 +283,8 @@ void iterativeClosestPointProcess::exportTransformMatrix()
     {
         QByteArray matrixStr;
         matrixStr += "# Transformation matrix from " + d->sourceName + " to " + d->targetName + "\n";
-        matrixStr += "# Scale Factor = " + QByteArray::number(d->ScaleFactor) + "\n";
-        if (d->StartByMatchingCentroids)
+        matrixStr += "# Scale Factor = " + QByteArray::number(d->scaleFactor) + "\n";
+        if (d->startByMatchingCentroids)
         {
             matrixStr += "# Start by matching centroids = True \n";
         }
@@ -294,7 +292,7 @@ void iterativeClosestPointProcess::exportTransformMatrix()
         {
             matrixStr += "# Start by matching centroids = False \n";
         }
-        switch (d->Transformation)
+        switch (d->transformation)
         {
             case 0:
                 matrixStr += "# Transformation = Rigid Body \n";
@@ -306,7 +304,7 @@ void iterativeClosestPointProcess::exportTransformMatrix()
                 matrixStr += "# Transformation = Affine \n";
                 break;
         }
-        if (d->CheckMeanDistance)
+        if (d->checkMeanDistance)
         {
             matrixStr += "# Check mean distance = True \n";
         }
@@ -314,9 +312,9 @@ void iterativeClosestPointProcess::exportTransformMatrix()
         {
             matrixStr += "# Check mean distance = False \n";
         }
-        matrixStr += "# Max Mean Distance = " + QByteArray::number(d->MaxMeanDistance) + "\n";
-        matrixStr += "# Max Num Iterations = " + QByteArray::number(d->MaxNumIterations) + "\n";
-        matrixStr += "# Max Num Landmarks = " + QByteArray::number(d->MaxNumLandmarks) + "\n";
+        matrixStr += "# Max Mean Distance = " + QByteArray::number(d->maxMeanDistance) + "\n";
+        matrixStr += "# Max Num Iterations = " + QByteArray::number(d->maxNumIterations) + "\n";
+        matrixStr += "# Max Num Landmarks = " + QByteArray::number(d->maxNumLandmarks) + "\n";
         matrixStr += "# Fiducial Registration Error = " + QByteArray::number(d->mean);
         matrixStr += " +- " + QByteArray::number(d->variance);
         matrixStr += ", Median = " + QByteArray::number(d->median) + "\n";
@@ -325,7 +323,7 @@ void iterativeClosestPointProcess::exportTransformMatrix()
         {
             for(int j = 0; j < 4; j++)
             {
-                matrixStr += QByteArray::number(d->TransformMatrix->GetElement(i, j)) + "\t";
+                matrixStr += QByteArray::number(d->transformMatrix->GetElement(i, j)) + "\t";
             }
             matrixStr += "\n";
         }
