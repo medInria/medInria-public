@@ -21,11 +21,11 @@
 
 #include <medImageIOExport.h>
 
+#include <iterator>
 #include <map>
 #include <vector>
 #include <set>
 #include <functional>
-
 
 class DcmElement;
 
@@ -185,7 +185,8 @@ protected:
     void DetermineOrigin();
     void DetermineOrientation();
 
-    double GetPositionOnStackingAxisForImage (int);
+    double GetPositionOnStackingAxisForImage(int);
+    double GetPositionFromPrincipalAxisIndex(int, int);
     double GetSliceLocation(std::string);
 
     void ReadHeader( const std::string& name, const int& fileIndex, const int& fileCount );
