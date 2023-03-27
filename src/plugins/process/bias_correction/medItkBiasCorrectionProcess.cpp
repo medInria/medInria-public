@@ -60,7 +60,7 @@ medItkBiasCorrectionProcess::medItkBiasCorrectionProcess(QObject *parent): medAb
 
     m_poSMaxIterations = new medStringParameter("Iterations", this);
     m_poSMaxIterations->setCaption("Rounds of iterations");
-    m_poSMaxIterations->setDescription("Number of round and number of iteration per round\n like 50x40x30");
+    m_poSMaxIterations->setDescription("Number of round and number of iteration per round\nlike 50x40x30");
     m_poSMaxIterations->setValidator(new QRegExpValidator(QRegExp("^[1-9][0-9]{0,2}(x[1-9][0-9]{0,2})*")));
     m_poSMaxIterations->setValue("50x40x30");
 

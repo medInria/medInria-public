@@ -180,7 +180,7 @@ medViewContainer::medViewContainer(medViewContainerSplitter *parent): QFrame(par
 
     // Scene
     d->saveSceneAction = new QAction(tr("Save scene"), d->toolBarMenu);
-    d->saveSceneAction->setToolTip(tr("Save container content as is."));
+    d->saveSceneAction->setToolTip(tr("Save container content as is"));
     d->saveSceneAction->setIcon(QIcon(":icons/save_scene_white.svg"));
     d->saveSceneAction->setIconVisibleInMenu(true);
     connect(d->saveSceneAction, SIGNAL(triggered()), this, SLOT(saveScene()), Qt::UniqueConnection);

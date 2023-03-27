@@ -53,7 +53,7 @@ medMaskApplicationToolBox::medMaskApplicationToolBox(QWidget *parent) :
     bundlingLayout->addWidget(d->maskDropSite);
 
     QPushButton *clearMaskButton = new QPushButton("Clear mask", widget);
-    clearMaskButton->setToolTip(tr("Clear previously loaded mask."));
+    clearMaskButton->setToolTip(tr("Clear previously loaded mask"));
     clearMaskButton->setFixedWidth(d->maskDropSite->sizeHint().width());
     connect (clearMaskButton, SIGNAL(clicked()), this, SLOT(clearMask()));
     bundlingLayout->addWidget(clearMaskButton);

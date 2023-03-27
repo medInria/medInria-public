@@ -49,8 +49,7 @@ meshMappingToolBox::meshMappingToolBox(QWidget *parent)
     d->layersForData->addItem("Select the data to map", 0);
 
     QLabel *structureLabel = new QLabel("Mesh", this);
-    structureLabel->setToolTip(tr("Select the mesh whose geometry will be used\n \
-                                  in determining positions to map"));
+    structureLabel->setToolTip(tr("Select the mesh whose geometry will be used\nin determining positions to map"));
     d->layersForStructure = new QComboBox;
     d->layersForStructure->addItem("Select the mesh", 0);
     

@@ -55,7 +55,7 @@ medN4BiasCorrectionToolBox::medN4BiasCorrectionToolBox(QWidget *parent)
 
     QLabel *widthLabel = new QLabel (tr("Bias Field Full Width at Half Maximum: "));
     widthLabel->setToolTip(
-        "Parameter characterizing the width of the Gaussian deconvolution.\n Zero implies use of the default value = 0.15.");
+        "Parameter characterizing the width of the Gaussian deconvolution.\nZero implies use of the default value = 0.15");
     d->widthSpinBox = new QDoubleSpinBox;
     d->widthSpinBox->setMaximum(10);
     d->widthSpinBox->setMinimum(0);
@@ -77,7 +77,7 @@ medN4BiasCorrectionToolBox::medN4BiasCorrectionToolBox(QWidget *parent)
 
     QLabel *convThresholdLabel = new QLabel (tr("Convergence threshold: "));
     convThresholdLabel->setToolTip(
-        "Convergence is determined by the coefficient of variation of the\ndifference image between the current bias field estimate and the previous estimate.\n If this value is less than the specified threshold, the algorithm\nproceeds to the next fitting level or terminates if it is at the last level. ");
+        "Convergence is determined by the coefficient of variation of the\ndifference image between the current bias field estimate and the previous estimate.\nIf this value is less than the specified threshold, the algorithm\nproceeds to the next fitting level or terminates if it is at the last level");
     d->convThresholdSpinBox = new QDoubleSpinBox;
     d->convThresholdSpinBox->setMaximum(1);
     d->convThresholdSpinBox->setMinimum(0);
@@ -90,7 +90,7 @@ medN4BiasCorrectionToolBox::medN4BiasCorrectionToolBox(QWidget *parent)
 
     QLabel *bsplineOrderLabel = new QLabel (tr("B-Spline Order: "));
     bsplineOrderLabel->setToolTip(
-        "Spline order defining the bias field estimate.\nCubic splines (order = 3) are typically used.");
+        "Spline order defining the bias field estimate.\nCubic splines (order = 3) are typically used");
     d->bsplineOrderSpinBox = new QSpinBox;
     d->bsplineOrderSpinBox->setMaximum(10);
     d->bsplineOrderSpinBox->setMinimum(0);
@@ -102,7 +102,7 @@ medN4BiasCorrectionToolBox::medN4BiasCorrectionToolBox(QWidget *parent)
 
     QLabel *shrinkFactorLabel = new QLabel (tr("Shrink Factor: "));
     shrinkFactorLabel->setToolTip(
-        "To lessen computation time, the input image can be resampled.\nThe shrink factor, specified as a single integer, describes\nthis resampling.  Shrink factors <= 4 are commonly used.");
+        "To lessen computation time, the input image can be resampled.\nThe shrink factor, specified as a single integer, describes\nthis resampling.  Shrink factors <= 4 are commonly used");
     d->shrinkFactorSpinBox = new QSpinBox;
     d->shrinkFactorSpinBox->setMaximum(10);
     d->shrinkFactorSpinBox->setMinimum(0);
@@ -114,7 +114,7 @@ medN4BiasCorrectionToolBox::medN4BiasCorrectionToolBox(QWidget *parent)
 
     QLabel *nbHistogramBinsLabel = new QLabel (tr("Number of Histogram Bins: "));
     nbHistogramBinsLabel->setToolTip(
-        "Number of bins defining the log input intensity histogram.\nZero implies use of the default value = 200.");
+        "Number of bins defining the log input intensity histogram.\nZero implies use of the default value = 200");
     d->nbHistogramBinsSpinBox = new QSpinBox;
     d->nbHistogramBinsSpinBox->setMaximum(1000);
     d->nbHistogramBinsSpinBox->setMinimum(0);
@@ -126,7 +126,7 @@ medN4BiasCorrectionToolBox::medN4BiasCorrectionToolBox(QWidget *parent)
 
     QLabel *wienerNoiseLabel = new QLabel (tr("Wiener Filter Noise: "));
     wienerNoiseLabel->setToolTip(
-        "Noise estimate defining the Wiener filter.\nZero implies use of the default value = 0.01.");
+        "Noise estimate defining the Wiener filter.\nZero implies use of the default value = 0.01");
     d->wienerNoiseSpinBox = new QDoubleSpinBox;
     d->wienerNoiseSpinBox->setMaximum(1);
     d->wienerNoiseSpinBox->setMinimum(0);

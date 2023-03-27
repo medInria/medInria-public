@@ -81,7 +81,7 @@ medRemeshingToolBox::medRemeshingToolBox(QWidget *parent)
     displayLayout->addLayout(layoutDecimate);
 
     d->topologyRadioButton = new QRadioButton(tr("Preserve topology during decimation"));
-    d->topologyRadioButton->setToolTip("Turn on/off whether to preserve the mesh topology.\n If on, splitting and hole elimination will not occur.\n Can limit the maximum reduction that may be achieved.");
+    d->topologyRadioButton->setToolTip("Turn on/off whether to preserve the mesh topology.\nIf on, splitting and hole elimination will not occur.\nCan limit the maximum reduction that may be achieved");
     d->topologyRadioButton->setChecked(true);
     d->topologyRadioButton->setObjectName("topologyRadioButton");
     displayLayout->addWidget(d->topologyRadioButton);

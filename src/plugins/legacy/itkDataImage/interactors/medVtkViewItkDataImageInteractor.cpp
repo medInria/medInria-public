@@ -289,7 +289,7 @@ void medVtkViewItkDataImageInteractor::initParameters(medAbstractImageData* data
     connect(d->enableWindowLevelParameter, SIGNAL(valueChanged(bool)), this, SLOT(enableWindowLevel(bool)));
 
     d->enableInterpolation = new medBoolParameterL("Interpolate", this);
-    d->enableInterpolation->setToolTip("Active interpolation\n shortcut is :\n key 'n'");
+    d->enableInterpolation->setToolTip("Active interpolation\n shortcut is :\nkey 'n'");
     d->enableInterpolation->setValue(true);
     connect(d->enableInterpolation, SIGNAL(valueChanged(bool)), this, SLOT(interpolation(bool)));
     connect(d->view2d->qtSignalHandler, SIGNAL(interpolate(bool, int)), this, SLOT(updateInterpolateStatus(bool, int)));

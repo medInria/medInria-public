@@ -63,7 +63,7 @@ diffeomorphicDemonsToolBox::diffeomorphicDemonsToolBox(QWidget *parent)
     d->maxStepLengthBox->setToolTip(tr(
                                         "Maximum length of an update vector (voxel units)."
                                         " Setting it to 0 implies no restrictions will be made"
-                                        " on the step length."));
+                                        " on the step length"));
 
     d->updateFieldStdDevBox = new QDoubleSpinBox();
     d->updateFieldStdDevBox->setMinimum(0);
@@ -73,7 +73,7 @@ diffeomorphicDemonsToolBox::diffeomorphicDemonsToolBox(QWidget *parent)
     d->updateFieldStdDevBox->setToolTip(tr(
                                             "Standard deviation of the Gaussian smoothing"
                                             " of the update field (voxel units). Setting it below 0.1"
-                                            " means no smoothing will be performed (default 0.0)."));
+                                            " means no smoothing will be performed (default 0.0)"));
 
     d->disFieldStdDevBox = new QDoubleSpinBox();
     d->disFieldStdDevBox->setMinimum(0);
@@ -83,7 +83,7 @@ diffeomorphicDemonsToolBox::diffeomorphicDemonsToolBox(QWidget *parent)
     d->disFieldStdDevBox->setToolTip(tr(
                                          "Standard deviation of the Gaussian smoothing of"
                                          " the displacement field (voxel units). Setting it below 0.1"
-                                         " means no smoothing will be performed (default 1.5)."));
+                                         " means no smoothing will be performed (default 1.5)"));
     d->updateRuleBox = new QComboBox();
     QStringList updateRules;
     updateRules<< tr("Diffeomorphic") << tr ("Additive") << tr("Compositive");
@@ -95,7 +95,7 @@ diffeomorphicDemonsToolBox::diffeomorphicDemonsToolBox(QWidget *parent)
 
     d->gradientTypeBox = new QComboBox();
     d->gradientTypeBox->setToolTip(tr(
-                                       "Type of gradient used for computing the demons force."));
+                                       "Type of gradient used for computing the demons force"));
     QStringList gradientTypes;
     gradientTypes<< tr("Symmetrized") << tr ("Fixed Image")
                  << tr("Warped Moving Image")
