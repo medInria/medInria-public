@@ -14,6 +14,7 @@
 #include <dtkCoreSupport/dtkAbstractProcessFactory.h>
 
 #include <itkConnectedThresholdImageFilter.h>
+#include <itkConfidenceConnectedImageFilter.h>
 #include <itkDanielssonDistanceMapImageFilter.h>
 #include <itkMacro.h>
 #include <itkExtractImageFilter.h>
@@ -326,7 +327,6 @@ AlgorithmPaintToolBox::AlgorithmPaintToolBox(QWidget *parent ) :
     m_wandUpperThresholdSlider->getSlider()->setOrientation(Qt::Horizontal);
     m_wandUpperThresholdSlider->getSpinBox()->setKeyboardTracking(false); //prevents undesired emissions of valueChanged()
     m_wandUpperThresholdSlider->getSpinBox()->setSingleStep(1);
-    m_wandUpperThresholdSlider->hide();
 
     m_wandLowerThresholdSlider = new medDoubleParameterL("Lower Threshold", this);
     m_wandLowerThresholdSlider->setObjectName("Lower Threshold");
@@ -337,13 +337,40 @@ AlgorithmPaintToolBox::AlgorithmPaintToolBox(QWidget *parent ) :
     m_wandLowerThresholdSlider->getSlider()->setOrientation(Qt::Horizontal);
     m_wandLowerThresholdSlider->getSpinBox()->setKeyboardTracking(false);
     m_wandLowerThresholdSlider->getSpinBox()->setSingleStep(1);
-    m_wandLowerThresholdSlider->hide();
 
     // Sliders connects are in updateMagicWandComputationSpeed() and depend on realTime parameter
     connect(m_wandUpperThresholdSlider->getSpinBox(),SIGNAL(valueChanged(double)),this,SLOT(updateMagicWandComputation()),Qt::UniqueConnection);
     connect(m_wandLowerThresholdSlider->getSpinBox(),SIGNAL(valueChanged(double)),this,SLOT(updateMagicWandComputation()),Qt::UniqueConnection);
 
     wandTimer = QTime();
+
+    QLabel* nbIterationsText = new QLabel(tr("Number of iterations:"), this);
+    nbIterations = new QSpinBox();
+    nbIterations->setObjectName("NbiterationSpinBox");
+    nbIterations->setFixedWidth(57);
+    nbIterations->setToolTip(tr("Change the number of iterations use in confidence filter"));
+    nbIterations->setValue(0);
+    nbIterations->setRange(0, 10000);
+    nbIterations->show();
+
+    QLabel* sizeNeighborhoodText = new QLabel(tr("Size of neighborhood:"), this);
+    sizeNeighborhood = new QSpinBox();
+    sizeNeighborhood->setObjectName("sizeNeighborhoodSpinBox:");
+    sizeNeighborhood->setFixedWidth(57);
+    sizeNeighborhood->setToolTip(tr("Mean and variance across a neighborhood (8-connected, 26-connected, etc.) are calculated for a seed"));
+    sizeNeighborhood->setValue(1);
+    sizeNeighborhood->setRange(0, 100);
+    sizeNeighborhood->show();
+
+    QLabel* multiplierText = new QLabel(tr("Multiplier:"), this);
+    multiplier = new QDoubleSpinBox();
+    multiplier->setObjectName("MultiplierSpinBox");
+    multiplier->setFixedWidth(57);
+    multiplier->setToolTip(tr("The confidence interval is the mean plus or minus the \"Multiplier\" times the standard deviation "));
+    multiplier->setValue(2.5);
+    multiplier->setRange(0, 10);
+    multiplier->show();
+
 
     // Remove seed button
     m_removeSeedButton = new QPushButton("Remove seed");
@@ -356,6 +383,13 @@ AlgorithmPaintToolBox::AlgorithmPaintToolBox(QWidget *parent ) :
     m_wand3DCheckbox->setObjectName("Activate 3D mode");
     m_wand3DCheckbox->setCheckState(Qt::Unchecked);
     m_wand3DCheckbox->hide();
+
+    m_wandStatCheckbox = new QCheckBox (tr("Use image statistic mode"));
+    m_wandStatCheckbox->setObjectName("Statistical mode");
+    m_wandStatCheckbox->setCheckState(Qt::Unchecked);
+    m_wandStatCheckbox->hide();
+    connect(m_wandStatCheckbox, SIGNAL(toggled(bool)),
+            this, SLOT(showConfident(bool)));
 
     m_wand3DRealTime = new QCheckBox (tr("RealTime Computation"));
     m_wand3DRealTime->setCheckState(Qt::Unchecked);
@@ -381,14 +415,49 @@ AlgorithmPaintToolBox::AlgorithmPaintToolBox(QWidget *parent ) :
     QHBoxLayout *magicWandLayout3 = new QHBoxLayout();
     magicWandLayout3->addWidget( m_removeSeedButton );
 
-    magicWandLayout = new QFormLayout();
-    magicWandLayout->addRow(m_wandInfo);
-    magicWandLayout->addRow(magicWandCheckboxes);
-    magicWandLayout->addRow(magicWandLayout1);
-    magicWandLayout->addRow(magicWandLayout2);
-    magicWandLayout->addRow(magicWandLayout3);
+    QVBoxLayout* thresholdLayout = new QVBoxLayout();
+    thresholdLayout->setContentsMargins(0, 0, 0, 0);
+    thresholdLayout->addLayout(magicWandLayout1);
+    thresholdLayout->addLayout(magicWandLayout2);
 
-    layout->addLayout(magicWandLayout);
+    thresholdWidget = new QWidget(this);
+    thresholdWidget->setLayout(thresholdLayout);
+    thresholdWidget->hide();
+
+    QHBoxLayout* nbIterationsLayout = new QHBoxLayout();
+    nbIterationsLayout->setContentsMargins(0, 0, 0, 0);
+    nbIterationsLayout->addWidget(nbIterationsText);
+    nbIterationsLayout->addStretch();
+    nbIterationsLayout->addWidget(nbIterations);
+
+    QHBoxLayout* sizeNeighborhoodLayout = new QHBoxLayout();
+    sizeNeighborhoodLayout->setContentsMargins(0, 0, 0, 0);
+    sizeNeighborhoodLayout->addWidget(sizeNeighborhoodText);
+    sizeNeighborhoodLayout->addStretch();
+    sizeNeighborhoodLayout->addWidget(sizeNeighborhood);
+
+    QHBoxLayout* multiplierLayout = new QHBoxLayout();
+    multiplierLayout->setContentsMargins(0, 0, 0, 0);
+    multiplierLayout->addWidget(multiplierText);
+    multiplierLayout->addStretch();
+    multiplierLayout->addWidget(multiplier);
+
+    QVBoxLayout* confidentLayout = new QVBoxLayout();
+    confidentLayout->setContentsMargins(0, 0, 0, 0);
+    confidentLayout->addLayout(nbIterationsLayout);
+    confidentLayout->addLayout(sizeNeighborhoodLayout);
+    confidentLayout->addLayout(multiplierLayout);
+
+    confidentWidget = new QWidget(this);
+    confidentWidget->setLayout(confidentLayout);
+    confidentWidget->hide();
+
+    layout->addWidget(m_wandInfo);
+    layout->addLayout(magicWandCheckboxes);
+    layout->addWidget(m_wandStatCheckbox);
+    layout->addWidget(thresholdWidget);
+    layout->addWidget(confidentWidget);
+    layout->addLayout(magicWandLayout3);
 
     this->generateLabelColorMap(24);
 
@@ -448,6 +517,7 @@ AlgorithmPaintToolBox::AlgorithmPaintToolBox(QWidget *parent ) :
     QHBoxLayout * dataButtonsLayout = new QHBoxLayout();
     dataButtonsLayout->addWidget(m_applyButton);
     dataButtonsLayout->addWidget(m_clearMaskButton);
+    layout->addSpacing(3);
     layout->addLayout(dataButtonsLayout);
 
     connect (m_strokeButton, SIGNAL(pressed()), this, SLOT(activateStroke ()));
@@ -824,6 +894,7 @@ void AlgorithmPaintToolBox::setButtonsDisabled(bool disable)
     {
         currentView = nullptr;
     }
+    updateButtons();
 }
 
 void AlgorithmPaintToolBox::setLabel(int newVal)
@@ -1098,6 +1169,7 @@ void
 AlgorithmPaintToolBox::RunConnectedFilter (MaskType::IndexType &index, unsigned int planeIndex)
 {
     IMAGE *tmpPtr = dynamic_cast<IMAGE *> ((itk::Object*)(m_imageData->data()));
+    MaskType::Pointer connectedOutput;
 
     MaskType::PixelType pxValue = m_strokeLabelSpinBox->value();
 
@@ -1109,14 +1181,20 @@ AlgorithmPaintToolBox::RunConnectedFilter (MaskType::IndexType &index, unsigned 
     typedef itk::ConnectedThresholdImageFilter<IMAGE, MaskType> ConnectedThresholdImageFilterType;
     typename ConnectedThresholdImageFilterType::Pointer ctiFilter = ConnectedThresholdImageFilterType::New();
 
+    typedef itk::ConfidenceConnectedImageFilter<IMAGE, MaskType> ConfidenceConnectedImageFilterType;
+    typename ConfidenceConnectedImageFilterType::Pointer cciFilter = ConfidenceConnectedImageFilterType::New();
+
     double value = tmpPtr->GetPixel(index);
     if (!seedPlanted)
     {
         setSeedPlanted(true,index,planeIndex,value);
     }
 
-    ctiFilter->SetUpper( m_wandUpperThresholdSlider->value() );
-    ctiFilter->SetLower( m_wandLowerThresholdSlider->value() );
+    if(m_wandStatCheckbox->checkState() == Qt::Unchecked)
+    {
+        ctiFilter->SetUpper( m_wandUpperThresholdSlider->value() );
+        ctiFilter->SetLower( m_wandLowerThresholdSlider->value() );
+    }
 
     MaskType::RegionType regionRequested = tmpPtr->GetLargestPossibleRegion();
     regionRequested.SetIndex(planeIndex, index[planeIndex]);
@@ -1151,13 +1229,30 @@ AlgorithmPaintToolBox::RunConnectedFilter (MaskType::IndexType &index, unsigned 
         addSliceToStack(currentView,planeIndex,listIdSlice);
         // -------------------------------------------------
 
-        ctiFilter->SetInput( workPtr );
-        index[planeIndex] = 0;
-        ctiFilter->AddSeed( index );
+        if(m_wandStatCheckbox->checkState() == Qt::Unchecked)
+        {
+            ctiFilter->SetInput( workPtr );
+            index[planeIndex] = 0;
+            ctiFilter->AddSeed( index );
+            ctiFilter->Update();
 
-        ctiFilter->Update();
+            connectedOutput = ctiFilter->GetOutput();
+        }
+        else
+        {
+            cciFilter->SetInput( workPtr );
+            index[planeIndex] = 0;
+            cciFilter->AddSeed( index );
+            cciFilter->SetNumberOfIterations(static_cast<unsigned int>(nbIterations->value()));
+            cciFilter->SetInitialNeighborhoodRadius(static_cast<unsigned int>(sizeNeighborhood->value()));
+            cciFilter->SetMultiplier(multiplier->value());
+            cciFilter->UpdateLargestPossibleRegion();
+            cciFilter->Update();
 
-        itk::ImageRegionConstIterator <MaskType> outFilterItr (ctiFilter->GetOutput(), outRegion);
+            connectedOutput = cciFilter->GetOutput();
+        }
+
+        itk::ImageRegionConstIterator <MaskType> outFilterItr (connectedOutput, outRegion);
         itk::ImageRegionIterator <MaskType> maskFilterItr (m_itkMask, regionRequested);
 
         while (!maskFilterItr.IsAtEnd())
@@ -1173,12 +1268,29 @@ AlgorithmPaintToolBox::RunConnectedFilter (MaskType::IndexType &index, unsigned 
     }
     else
     {
-        ctiFilter->SetInput( tmpPtr );
-        ctiFilter->AddSeed( index );
 
-        ctiFilter->Update();
+        if(m_wandStatCheckbox->checkState() == Qt::Unchecked)
+        {
+            ctiFilter->SetInput( tmpPtr );
+            ctiFilter->AddSeed( index );
+            ctiFilter->Update();
 
-        itk::ImageRegionConstIterator <MaskType> outFilterItr (ctiFilter->GetOutput(), tmpPtr->GetLargestPossibleRegion());
+            connectedOutput = ctiFilter->GetOutput();
+        }
+        else
+        {
+            cciFilter->SetInput( tmpPtr );
+            cciFilter->AddSeed( index );
+            cciFilter->SetNumberOfIterations(static_cast<unsigned int>(nbIterations->value()));
+            cciFilter->SetInitialNeighborhoodRadius(static_cast<unsigned int>(sizeNeighborhood->value()));
+            cciFilter->SetMultiplier(multiplier->value());
+            cciFilter->UpdateLargestPossibleRegion();
+            cciFilter->Update();
+
+            connectedOutput = cciFilter->GetOutput();
+        }
+
+        itk::ImageRegionConstIterator <MaskType> outFilterItr (connectedOutput, tmpPtr->GetLargestPossibleRegion());
         itk::ImageRegionIterator <MaskType> maskFilterItr (m_itkMask, tmpPtr->GetLargestPossibleRegion());
 
         // For undo/redo purposes ------------------------- Save the current states of slices that are going to be modified by the segmentation
@@ -1456,9 +1568,10 @@ void AlgorithmPaintToolBox::updateButtons()
 {
     if ( m_paintState == PaintState::None )
     {
-        m_wandLowerThresholdSlider->hide();
-        m_wandUpperThresholdSlider->hide();
+        thresholdWidget->hide();
+        confidentWidget->hide();
         m_wand3DCheckbox->hide();
+        m_wandStatCheckbox->hide();
         m_wand3DRealTime->hide();
         m_wandInfo->hide();
         m_brushSizeSlider->hide();
@@ -1476,9 +1589,18 @@ void AlgorithmPaintToolBox::updateButtons()
 
         if ( m_paintState == PaintState::Wand )
         {
-            m_wandLowerThresholdSlider->show();
-            m_wandUpperThresholdSlider->show();
+            if (m_wandStatCheckbox->checkState() == Qt::Checked)
+            {
+              thresholdWidget->hide();
+              confidentWidget->show();
+            }
+            else
+            {
+              thresholdWidget->show();
+              confidentWidget->hide();
+            }
             m_wand3DCheckbox->show();
+            m_wandStatCheckbox->show();
             m_wand3DRealTime->show();
             m_wandInfo->show();
             m_brushSizeSlider->hide();
@@ -1487,9 +1609,10 @@ void AlgorithmPaintToolBox::updateButtons()
         else if ( m_paintState == PaintState::Stroke )
         {
             m_brushSizeSlider->show();
-            m_wandLowerThresholdSlider->hide();
-            m_wandUpperThresholdSlider->hide();
+            thresholdWidget->hide();
+            confidentWidget->hide();
             m_wand3DCheckbox->hide();
+            m_wandStatCheckbox->hide();
             m_wand3DRealTime->hide();
             m_removeSeedButton->hide();
         }
@@ -2065,7 +2188,7 @@ void AlgorithmPaintToolBox::copySliceFromMask3D(itk::Image<unsigned char,2>::Poi
                                                 const char *direction, const unsigned int slice, bool becomesAMasterOne)
 {
     typedef itk::ImageLinearIteratorWithIndex< itk::Image<unsigned char,2> > LinearIteratorType;
-    typedef itk::ImageSliceIteratorWithIndex< MaskType> SliceIteratorType;
+    typedef itk::ImageSliceIteratorWithIndex< MaskType > SliceIteratorType;
 
     SliceIteratorType  It3d( m_itkMask, m_itkMask->GetLargestPossibleRegion() );
     LinearIteratorType It2d( copy,copy->GetRequestedRegion() );
@@ -2511,6 +2634,20 @@ void AlgorithmPaintToolBox::addViewEventFilter( medViewEventFilter *filter)
         {
             filter->installOnView(container->view());
         }
+    }
+}
+
+void AlgorithmPaintToolBox::showConfident(bool show)
+{
+    if(show)
+    {
+       confidentWidget->show();
+       thresholdWidget->hide();
+    }
+    else
+    {
+        confidentWidget->hide();
+        thresholdWidget->show();
     }
 }
 
