@@ -149,7 +149,11 @@ medAbstractView* medTabbedViewContainers::getFirstSelectedContainerView()
 QList<medAbstractView*> medTabbedViewContainers::viewsInTab(int index)
 {
     QList<medAbstractView*> views;
-    medViewContainerSplitter *splitter = dynamic_cast<medRootContainer*>(this->widget(index))->getSplitter();
+    medRootContainer *root = dynamic_cast<medRootContainer*>(this->widget(index));
+    if (!root)
+        return views;
+
+    medViewContainerSplitter *splitter = root->getSplitter();
 
     if (!splitter)
         return views;
@@ -168,7 +172,11 @@ QList<medAbstractView*> medTabbedViewContainers::viewsInTab(int index)
 
 QList<medViewContainer*> medTabbedViewContainers::containersInTab(int index)
 {
-    medViewContainerSplitter *splitter = static_cast<medRootContainer*>(this->widget(index))->getSplitter();
+    medRootContainer *root = dynamic_cast<medRootContainer*>(this->widget(index));
+    if (!root)
+        return QList<medViewContainer*>();
+
+    medViewContainerSplitter *splitter = root->getSplitter();
 
     if (!splitter)
         return QList<medViewContainer*>();

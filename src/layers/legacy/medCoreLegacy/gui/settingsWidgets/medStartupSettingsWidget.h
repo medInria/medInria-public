@@ -21,6 +21,8 @@
 #include <QComboBox>
 #include <QWidget>
 
+class medStartupSettingsWidgetPrivate;
+
 class MEDCORELEGACY_EXPORT medStartupSettingsWidget : public QDialog
 {
     Q_OBJECT
@@ -30,9 +32,14 @@ public :
 
 public slots:
     void read();
-    void write();
+
+protected:
+    bool validate();
+    bool write();
 
 private:
     QCheckBox *startInFullScreen;
     QComboBox *defaultStartingArea;
+
+    medStartupSettingsWidgetPrivate *d;
 };

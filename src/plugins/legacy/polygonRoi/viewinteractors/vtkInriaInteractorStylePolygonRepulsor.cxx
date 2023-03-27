@@ -10,10 +10,10 @@
   PURPOSE.
 
 =========================================================================*/
-#include <medTagRoiManager.h>
+#include <polygonLabel.h>
 
 #include <vtkCallbackCommand.h>
-#include <vtkContourOverlayRepresentation.h>
+#include <viewinteractors/vtkContourOverlayRepresentation.h>
 #include <vtkContourRepresentation.h>
 #include <vtkInriaInteractorStylePolygonRepulsor.h>
 #include <vtkMath.h>
@@ -137,12 +137,7 @@ void vtkInriaInteractorStylePolygonRepulsor::OnLeftButtonUp()
 }
 
 //----------------------------------------------------------------------------
-void vtkInriaInteractorStylePolygonRepulsor::SetCurrentView(medAbstractView *view)
-{
-    this->CurrentView = view;
-}
-
-void vtkInriaInteractorStylePolygonRepulsor::SetManager(medTagRoiManager *closestManagerInSlice)
+void vtkInriaInteractorStylePolygonRepulsor::SetManager(polygonLabel *closestManagerInSlice)
 {
     this->manager = closestManagerInSlice;
     OnLeftButtonUp();
