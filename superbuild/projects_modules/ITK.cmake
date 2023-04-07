@@ -51,6 +51,8 @@ if (UNIX)
   set(${ep}_cxx_flags "${${ep}_cxx_flags} -w -fpermissive")
 endif()
 
+set(CPACK_PACKAGING_INSTALL_PREFIX /opt/medInria)
+
 set(cmake_args
   ${ep_common_cache_args}
   -DCMAKE_BUILD_TYPE=${CMAKE_BUILD_TYPE_ExtProjs}
@@ -58,7 +60,6 @@ set(cmake_args
   -DCMAKE_CXX_FLAGS=${${ep}_cxx_flags}
   -DCMAKE_MACOSX_RPATH:BOOL=OFF
   -DCMAKE_SHARED_LINKER_FLAGS=${${ep}_shared_linker_flags}  
-  -DCMAKE_INSTALL_PREFIX=<INSTALL_DIR>
   -DBUILD_SHARED_LIBS=${BUILD_SHARED_LIBS_${ep}}
   -DBUILD_EXAMPLES:BOOL=OFF
   -DBUILD_TESTING:BOOL=OFF
@@ -66,8 +67,12 @@ set(cmake_args
   -DModule_ITKReview:BOOL=ON
   -DModule_ITKVtkGlue:BOOL=ON
   -DITK_LEGACY_REMOVE:BOOL=ON
+  # ThirdParty packaging
+  -DCMAKE_PREFIX_PATH=${EP_PATH_BUILD}/${ep}
+  -DCMAKE_INSTALL_PREFIX=${CPACK_PACKAGING_INSTALL_PREFIX}
+  -DITK_INSTALL_PACKAGE_DIR=${CPACK_PACKAGING_INSTALL_PREFIX}
   )
-  
+
 set(cmake_cache_args
   -DVTK_DIR:PATH=${VTK_DIR}
   )
