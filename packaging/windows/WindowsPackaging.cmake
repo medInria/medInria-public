@@ -65,27 +65,6 @@ set(CPACK_NSIS_DELETE_ICONS_EXTRA "
 	Delete '\$SMPROGRAMS\\\\$MUI_TEMP\\\\*.*'
 ")
 
-if (NOT PRIVATE_PLUGINS_DIRS STREQUAL "")
-    foreach(pluginpath ${PRIVATE_PLUGINS_DIRS})
-        file(TO_CMAKE_PATH ${pluginpath} pluginpath)
-# Add an extra slash, otherwise we copy the folder, not its content
-        set(pluginpath "${pluginpath}/")
-    	message("Adding ${pluginpath} to the plugins dirs...")
-        install(DIRECTORY ${pluginpath} DESTINATION bin/plugins COMPONENT Runtime FILES_MATCHING PATTERN "*${CMAKE_SHARED_LIBRARY_SUFFIX}")
-    endforeach()
-endif()
-
-if (NOT PRIVATE_PLUGINS_LEGACY_DIRS STREQUAL "")
-    foreach(pluginpath ${PRIVATE_PLUGINS_LEGACY_DIRS})
-        file(TO_CMAKE_PATH ${pluginpath} pluginpath)
-# Add an extra slash, otherwise we copy the folder, not its content
-        set(pluginpath "${pluginpath}/")
-        message("Adding ${pluginpath} to the dirs...")
-        install(DIRECTORY ${pluginpath} DESTINATION bin/plugins_legacy COMPONENT Runtime FILES_MATCHING PATTERN "*${CMAKE_SHARED_LIBRARY_SUFFIX}")
-    endforeach()
-endif()
-
-
 if (NOT EXTERNAL_PROJECT_PLUGINS_LEGACY_DIRS STREQUAL "")
     foreach(pluginpath ${EXTERNAL_PROJECT_PLUGINS_LEGACY_DIRS})
         file(TO_CMAKE_PATH ${pluginpath} pluginpath)
@@ -95,8 +74,6 @@ if (NOT EXTERNAL_PROJECT_PLUGINS_LEGACY_DIRS STREQUAL "")
         install(DIRECTORY ${pluginpath} DESTINATION bin/plugins_legacy COMPONENT Runtime FILES_MATCHING PATTERN "*${CMAKE_SHARED_LIBRARY_SUFFIX}")
     endforeach()
 endif()
-
-
 
 set(APP "\${CMAKE_INSTALL_PREFIX}/bin/medInria.exe")
 set(QT_BINARY_DIR "${Qt5_DIR}/../../../bin")
