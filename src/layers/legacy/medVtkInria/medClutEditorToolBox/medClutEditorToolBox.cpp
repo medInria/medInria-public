@@ -72,7 +72,7 @@ medClutEditorToolBox::medClutEditorToolBox(QWidget *parent) : medToolBox(parent)
     d->applyAction              = new QAction("Apply", this);
     d->toggleDirectUpdateAction = new QAction("Direct update", this);
     d->discreteModeAction = new QAction("Discrete Mode", this);
-    d->infoAction = new QAction(QPixmap(":icons/metadata_white.svg"), tr("About"), this);
+    d->infoAction = new QAction(QIcon::fromTheme("metadata"), tr("About"), this);
 
     d->loadTableAction->setEnabled( true );
     d->saveTableAction->setEnabled( true );

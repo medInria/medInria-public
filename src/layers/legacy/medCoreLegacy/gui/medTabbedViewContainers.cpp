@@ -52,7 +52,7 @@ medTabbedViewContainers::medTabbedViewContainers(medAbstractWorkspaceLegacy* own
     this->setMovable(true);
 
     d->addTabButton = new QPushButton(this);
-    d->addTabButton->setObjectName("addTabButton");
+    d->addTabButton->setIcon(QIcon::fromTheme("plus"));
     d->addTabButton->setToolTip("Add a tab");
     d->addTabButton->setShortcut(Qt::ControlModifier + Qt::Key_T);
     this->setCornerWidget(d->addTabButton);

@@ -25,7 +25,7 @@ medBoolParameterTestObject::medBoolParameterTestObject(void)
 {
     m_name = QString("testWithObjectName");
     m_text = QString("testWithObjectToolText");
-    m_icon = QIcon(":/icons/plus_white.png");
+    m_icon = QIcon::fromTheme("plus");
     m_iconSize = QSize(42,42);
     m_pushButton = nullptr;
     m_widget = nullptr;

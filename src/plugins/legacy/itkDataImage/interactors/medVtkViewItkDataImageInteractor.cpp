@@ -284,7 +284,7 @@ void medVtkViewItkDataImageInteractor::initParameters(medAbstractImageData* data
     createSlicingParam();
 
     d->enableWindowLevelParameter = new medBoolParameterL("Windowing", this);
-    d->enableWindowLevelParameter->setIcon(QIcon (":/icons/contrast_white.svg"));
+    d->enableWindowLevelParameter->setIcon(QIcon::fromTheme("contrast"));
     d->enableWindowLevelParameter->setToolTip (tr("Windowing"));
     connect(d->enableWindowLevelParameter, SIGNAL(valueChanged(bool)), this, SLOT(enableWindowLevel(bool)));
 
