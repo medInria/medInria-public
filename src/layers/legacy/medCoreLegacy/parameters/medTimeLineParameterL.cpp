@@ -250,7 +250,7 @@ void medTimeLineParameterL::play(bool play)
 void medTimeLineParameterL::reset()
 {
     d->playParameter->setValue(false);
-    d->playParameter->setIcon(QIcon("time_play.svg"));
+    d->playParameter->setIcon(QIcon::fromTheme("time_play"));
 }
 
 void medTimeLineParameterL::setNumberOfFrame(int numberOfFrame)

@@ -519,18 +519,3 @@ void medHomepageArea::onShowComposer()
 {
     emit showComposer();
 }
-<<<<<<< HEAD
-=======
-
-void medHomepageArea::switchOffOnFullscreenIcons(const bool checked)
-{
-    if (checked)
-    {
-        d->actionFullscreen->setIcon(QIcon::fromTheme("fullscreen_off"));
-    }
-    else
-    {
-        d->actionFullscreen->setIcon(QIcon::fromTheme("fullscreen_on"));
-    }
-}
->>>>>>> [Theme] introduce Qt setThemeName methods to handle themed icons (dark/light)
