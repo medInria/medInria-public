@@ -237,7 +237,6 @@ void medHomepageArea::initPage()
         delete workspaceLabelOther;
         delete workspaceButtonsLayoutOther;
     }
-
     for (int i = 0; i < static_cast<int>(oLayoutVect.size()); ++i)
     {
         workspaceButtonsLayout->addLayout(oLayoutVect[i], 0, i);
