@@ -359,17 +359,37 @@ void medHomepageArea::initPage()
     {
         oLayoutVect.push_back(workspaceButtonsLayoutBasic);
     }
+    else
+    {
+        delete workspaceLabelBasic;
+        delete workspaceButtonsLayoutBasic;
+    }
     if (workspaceButtonsLayoutMethodologyGrid->count() > 0)
     {
         oLayoutVect.push_back(workspaceButtonsLayoutMethodology);
+    }
+    else
+    {
+        delete workspaceLabelMethodology;
+        delete workspaceButtonsLayoutMethodology;
     }
     if (workspaceButtonsLayoutClinicalGrid->count() > 0)
     {
         oLayoutVect.push_back(workspaceButtonsLayoutClinical);
     }
+    else
+    {
+        delete workspaceLabelClinical;
+        delete workspaceButtonsLayoutClinical;
+    }
     if (workspaceButtonsLayoutOtherGrid->count() > 0)
     {
         oLayoutVect.push_back(workspaceButtonsLayoutOther);
+    }
+    else
+    {
+        delete workspaceLabelOther;
+        delete workspaceButtonsLayoutOther;
     }
     for (int i = 0; i < static_cast<int>(oLayoutVect.size()); ++i)
     {
