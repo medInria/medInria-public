@@ -193,6 +193,7 @@ void medLogger::finalizeTeeStreams()
     for (auto redirectedStreamDummy : d->redirectedStreamDummies)
     {
         delete redirectedStreamDummy;
+        d->redirectedStreams.takeFirst()->rdbuf(d->previousStreamBuffers.takeFirst());
     }
     d->redirectedStreamDummies.clear();
 
