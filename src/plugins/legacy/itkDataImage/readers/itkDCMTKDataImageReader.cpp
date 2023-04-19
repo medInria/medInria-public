@@ -41,7 +41,7 @@ namespace itk {
         itkTypeMacro(DCMTKDataImageReaderCommand, Command)
             itkNewMacro(Self)
 
-            void Execute(Object *caller, const EventObject &event);
+        void Execute(Object *caller, const EventObject &event);
         void Execute(const Object *caller, const EventObject &event);
 
         void SetDataImageReader(dtkAbstractDataReader* reader) { m_Reader = reader; }
@@ -160,6 +160,14 @@ void itkDCMTKDataImageReaderPrivate::threadDone(itk::DCMTKImageIO::Pointer io)
 
     if (ioThreads->size() == 0)
         ioPointers->clear();
+
+    delete ioThreads;
+    delete ioPointers;
+    QMutex *m_ptr = mutex.fetchAndStoreOrdered(nullptr);
+    if (m_ptr)
+    {
+        delete m_ptr;
+    }
 }
 
 void itkDCMTKDataImageReaderPrivate::initialiseStatic()
@@ -192,7 +200,7 @@ itkDCMTKDataImageReader::itkDCMTKDataImageReader() : dtkAbstractDataReader(), d(
 itkDCMTKDataImageReader::~itkDCMTKDataImageReader()
 {
     delete d;
-    d = 0;
+    d = nullptr;
 }
 
 
