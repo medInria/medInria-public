@@ -135,6 +135,13 @@ itkDCMTKDataImageReaderPrivate::itkDCMTKDataImageReaderPrivate()
 itkDCMTKDataImageReaderPrivate::~itkDCMTKDataImageReaderPrivate()
 {
     threadDone(io);
+
+    QMutex *m_ptr = mutex.fetchAndStoreOrdered(nullptr);
+    if (m_ptr)
+    {
+        m_ptr->unlock();
+        delete m_ptr;
+    }
 }
 
 itk::DCMTKImageIO::Pointer itkDCMTKDataImageReaderPrivate::getNewIO()
@@ -161,13 +168,11 @@ void itkDCMTKDataImageReaderPrivate::threadDone(itk::DCMTKImageIO::Pointer io)
     if (ioThreads->size() == 0)
         ioPointers->clear();
 
-    delete ioThreads;
     delete ioPointers;
-    QMutex *m_ptr = mutex.fetchAndStoreOrdered(nullptr);
-    if (m_ptr)
-    {
-        delete m_ptr;
-    }
+    ioPointers = nullptr;
+
+    delete ioThreads;
+    ioThreads = nullptr;
 }
 
 void itkDCMTKDataImageReaderPrivate::initialiseStatic()
