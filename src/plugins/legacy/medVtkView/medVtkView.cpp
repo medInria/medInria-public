@@ -205,6 +205,7 @@ medVtkView::~medVtkView()
         d->renWin->SetOffScreenRendering(0);
     d->renWin->Delete();
     delete d->viewWidget;
+    delete d->mainWindow;
 
     delete d;
 }
