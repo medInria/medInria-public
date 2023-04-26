@@ -42,6 +42,7 @@ public slots:
 
 protected:
     medParameterPoolManagerL();
+    ~medParameterPoolManagerL();
 
     static medParameterPoolManagerL *s_instance;
 

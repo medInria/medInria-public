@@ -66,6 +66,11 @@ public:
 
         if(numberOfFramesLabel)
             delete numberOfFramesLabel;
+
+        if (extensionShiftParameter)
+        {
+            delete extensionShiftParameter;
+        }
     }
 };
 
@@ -158,6 +163,7 @@ medTimeLineParameterL::medTimeLineParameterL(QString name, QObject *parent):
 medTimeLineParameterL::~medTimeLineParameterL()
 {
     delete d;
+    d = nullptr;
 }
 
 void medTimeLineParameterL::clear()
