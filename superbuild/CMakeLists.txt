@@ -80,7 +80,7 @@ endif()
 
 if (USE_Python)
     list(APPEND external_projects
-        PYNCPP
+        pyncpp
         )
 endif()
 

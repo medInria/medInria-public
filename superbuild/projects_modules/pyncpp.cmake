@@ -15,9 +15,9 @@ set(PYTHON_VERSION_MAJOR 3 CACHE STRING "Python major version")
 set(PYTHON_VERSION_MINOR 10 CACHE STRING "Python minor version")
 set(PYTHON_VERSION_PATCH 10 CACHE STRING "Python patch version")
 
-function(PYNCPP_project)
+function(pyncpp_project)
 
-    set(ep PYNCPP)
+    set(ep pyncpp)
 
     EP_Initialisation(${ep}
         USE_SYSTEM OFF
@@ -78,7 +78,7 @@ function(PYNCPP_project)
         ## #####################################################################
 
         set(${ep}_DIR ${build_path} PARENT_SCOPE)
-        set(PYNCPP_PYTHON_DIR "${PYNCPP_PYTHON_DIR}" PARENT_SCOPE)
+        set(${ep}_PYTHON_DIR "${PYNCPP_PYTHON_DIR}" PARENT_SCOPE)
 
     endif()
 

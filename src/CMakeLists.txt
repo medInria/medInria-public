@@ -86,7 +86,7 @@ find_package(dtk REQUIRED)
 include_directories(${dtk_INCLUDE_DIRS})
 
 if(USE_Python)
-    find_package(PYNCPP REQUIRED COMPONENTS CPP_API Qt5)
+    find_package(pyncpp REQUIRED COMPONENTS CPP_API Qt5)
 endif()
 
 ## #############################################################################

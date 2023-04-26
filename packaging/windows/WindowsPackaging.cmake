@@ -106,7 +106,7 @@ list(APPEND
   )
 
 set(CPACK_INSTALL_CMAKE_PROJECTS
-    ${PYNCPP_DIR} pyncpp Python "/"
+    ${pyncpp_DIR} pyncpp Python "/"
     ${CPACK_INSTALL_CMAKE_PROJECTS}
     )
 

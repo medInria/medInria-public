@@ -31,7 +31,7 @@ done
 
 @dtk_DIR@/bin/dtkDeploy medInria.app $injectDirs &>/dev/null
 
-@CMAKE_COMMAND@ -DCMAKE_INSTALL_PREFIX:STRING=python -DCMAKE_INSTALL_COMPONENT:STRING=Python -P @PYNCPP_DIR@/cmake_install.cmake
+@CMAKE_COMMAND@ -DCMAKE_INSTALL_PREFIX:STRING=python -DCMAKE_INSTALL_COMPONENT:STRING=Python -P @pyncpp_DIR@/cmake_install.cmake
 
 #Run fancy packaging apple script
 

@@ -152,12 +152,12 @@ target_link_libraries(${TARGET_NAME}
 ## #############################################################################
 
 if(USE_Python)
-    target_link_libraries(${TARGET_NAME} ${PYNCPP_CPP_API_LIBRARY})
+    target_link_libraries(${TARGET_NAME} ${pyncpp_CPP_API_LIBRARY})
 
     if(WIN32)
         set(python_home ".")
     else()
-        set(python_home_subdir "python${PYNCPP_PYTHON_VERSION_MAJOR}.${PYNCPP_PYTHON_VERSION_MINOR}")
+        set(python_home_subdir "python${pyncpp_PYTHON_VERSION_MAJOR}.${pyncpp_PYTHON_VERSION_MINOR}")
 
         if(APPLE)
             set(python_home "../Resources/${python_home_subdir}")
@@ -166,7 +166,7 @@ if(USE_Python)
         endif()
 
         add_custom_command(TARGET ${TARGET_NAME} POST_BUILD
-            COMMAND ${CMAKE_COMMAND} -E create_symlink "${PYNCPP_PYTHON_DIR}" "$<TARGET_FILE_DIR:${TARGET_NAME}>/${python_home}"
+            COMMAND ${CMAKE_COMMAND} -E create_symlink "${pyncpp_PYTHON_DIR}" "$<TARGET_FILE_DIR:${TARGET_NAME}>/${python_home}"
             )
     endif()
 
