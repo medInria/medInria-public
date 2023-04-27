@@ -72,6 +72,7 @@ void medSourcesWidget::addSource(medDataHub *dataHub, QString sourceInstanceId)
 
 
     QTreeView   *sourceTreeView  = sourcePresenter->buildTree(new medSortFilterProxyModel());
+    connect(sourceTreeView, &QTreeView::doubleClicked, this, &medSourcesWidget::onDoubleClick);
 
     connect(plusButton, &QPushButton::toggled, [=](bool checked) {
         if (checked)
@@ -226,6 +227,14 @@ void medSourcesWidget::filter(const QString &text)
         proxy->setFilterRegExp(regExp);
         proxy->setRecursiveFilteringEnabled(true);
     }
+}
+
+void medSourcesWidget::onDoubleClick(QModelIndex const & index)
+{
+    auto proxy = static_cast<const medSortFilterProxyModel*>(index.model());
+    auto sourceIndex = proxy->mapToSource(index);
+    medDataIndex medIndex = static_cast<const medSourceModel*>(sourceIndex.model())->toPath(sourceIndex);
+    emit openOnDoubleClick(medIndex);
 }
 
 void medSourcesWidget::onCustomContextMenu(QPoint const &point, QMenu *pi_pMenu)

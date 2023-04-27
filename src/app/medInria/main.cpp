@@ -22,17 +22,18 @@
 
 #include <dtkCoreSupport/dtkGlobal.h>
 #include <medApplication.h>
+#include <medApplicationContext.h>
 #include <medDataIndex.h>
 #include <medDataManager.h>
 #include <medMainWindow.h>
 #include <medPluginManager.h>
 #include <medSettingsManager.h>
 #include <medSplashScreen.h>
-#include <medStorage.h>
+//#include <medStorage.h>
 
 #include <medSourcesLoader.h>
 #include <medDataHub.h>
-#include <medSourceItemModelPresenter.h>
+#include <medVirtualRepresentation.h>
 #include <medSourceModelPresenter.h>
 
 
@@ -115,16 +116,11 @@ int main(int argc, char *argv[])
     parser.addHelpOption();
     parser.addOptions({
         // A boolean option with a single name (--fullscreen)
-        {"fullscreen",
-            QCoreApplication::translate("main", "Open application in fullscreen mode")},
-        {"no-fullscreen",
-            QCoreApplication::translate("main", "Open application in windowed mode")},
-        {"stereo",
-            QCoreApplication::translate("main", "Open application in opengl direct rendering")},
-       {"debug", 
-            QCoreApplication::translate("main", "Open application in debug mode")},
-        {{"remotedb", "psql"},
-            QCoreApplication::translate("main", "Connect application to a remote database controller (psql)")},
+        {"fullscreen", QCoreApplication::translate("main", "Open application in fullscreen mode")},
+        {"no-fullscreen", QCoreApplication::translate("main", "Open application in windowed mode")},
+        {"stereo", QCoreApplication::translate("main", "Open application in opengl direct rendering")},
+        {"debug",  QCoreApplication::translate("main", "Open application in debug mode")},
+        {{"remotedb", "psql"}, QCoreApplication::translate("main", "Connect application to a remote database controller (psql)")},
         // Options with a value
 #ifdef ACTIVATE_WALL_OPTION
        {{"wall", "tracker"
@@ -240,22 +236,33 @@ int main(int argc, char *argv[])
         //
         //const int status1 = application.exec();
         //return status1;
-  
+
         medSourcesLoader::instance(&application);     
-        medDataManager::instance()->setDatabaseLocation();
+        //medDataManager::instance()->setDatabaseLocation();
         medPluginManager::instance()->setVerboseLoading(true);
         medPluginManager::instance()->initialize();
         auto sourceHandler = medSourceHandler::instance(&application);
         auto model = medDataHub::instance(&application);
+        auto virtualRepresentation = new medVirtualRepresentation(&application);
         auto toto1 = QObject::connect(medSourcesLoader::instance(), SIGNAL(sourceAdded(medAbstractSource *)), sourceHandler, SLOT(addSource(medAbstractSource *)));
         auto toto2 = QObject::connect(medSourcesLoader::instance(), SIGNAL(sourceRemoved(medAbstractSource *)), sourceHandler, SLOT(removeSource(medAbstractSource *)));
         auto toto3 = QObject::connect(medSourcesLoader::instance(), &medSourcesLoader::defaultWorkingSource, sourceHandler, &medSourceHandler::setDefaultWorkingSource);
+        model->setVirtualRepresentation(virtualRepresentation);
         
         medSourcesLoader::instance()->loadFromDisk();
         
 
         auto notifSys = medNotifSys::instance();
  
+        medApplicationContext::instance()->setParent(&application);
+        medApplicationContext::instance()->setVirtualRepresentation(virtualRepresentation);
+        medApplicationContext::instance()->setDataHub(model);
+        medApplicationContext::instance()->setNotifSys(notifSys);
+        medApplicationContext::instance()->setSourceHandler(sourceHandler);
+        medApplicationContext::instance()->setPluginManager(medPluginManager::instance());
+        medApplicationContext::instance()->setDataManager(medDataManager::instance());
+
+
         //medMainWindow *mainwindow2 = new medMainWindow;
 
 
@@ -328,8 +335,7 @@ int main(int argc, char *argv[])
 
         mainwindow->setFullScreen(fullScreen);
 #ifdef WIN32
-        QWindowsWindowFunctions::setHasBorderInFullScreen(
-            mainwindow->windowHandle(), true);
+        QWindowsWindowFunctions::setHasBorderInFullScreen(mainwindow->windowHandle(), true);
 #endif
 
         if (parser.isSet("stereo"))

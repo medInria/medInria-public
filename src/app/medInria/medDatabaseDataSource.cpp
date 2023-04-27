@@ -14,20 +14,18 @@
 #include "medDatabaseDataSource.h"
 
 #include <medActionsToolBox.h>
-#include <medDatabaseCompactWidget.h>
+#include <medApplicationContext.h>
 #include <medDatabaseExporter.h>
 #include <medDatabaseModel.h>
-#include <medDatabasePreview.h>
 #include <medDatabaseProxyModel.h>
-#include <medDatabaseSearchPanel.h>
-#include <medDatabaseView.h>
 #include <medDataManager.h>
-
 #include <medSourcesLoader.h>
 #include <medDataHub.h>
 #include <medSourceModelPresenter.h>
 #include <medDataHubPresenter.h>
 #include <medSourcesWidget.h>
+
+#include <medVirtualRepresentationPresenter.h>
 
 class medDatabaseDataSourcePrivate
 {
@@ -35,17 +33,13 @@ public:
     QPointer<QWidget> mainWidget;
 
     medDatabaseModel *model;
-    QPointer<medDatabaseView> largeView;
     medSourcesWidget *compactView;
-
-    medDatabasePreview *compactPreview;
+    QTreeView *virtualTreeView;
 
     medDatabaseProxyModel *proxy;
     medDatabaseProxyModel *compactProxy;
 
     QList<medToolBox*> toolBoxes;
-    medDatabaseSearchPanel *searchPanel;
-    medDatabaseSearchPanel *compactSearchPanel;
     medActionsToolBox* actionsToolBox;
     medDataHubPresenter *multiSources_tree;
     int currentSource;
@@ -69,7 +63,7 @@ medDatabaseDataSource::~medDatabaseDataSource()
     d = nullptr;
 }
 
-QWidget* medDatabaseDataSource::mainViewWidget()
+QWidget* medDatabaseDataSource::buildSourcesBrowser()
 {
     auto *widget = new QWidget();
 
@@ -88,7 +82,7 @@ QWidget* medDatabaseDataSource::mainViewWidget()
     return widget;
 }
 
-QWidget* medDatabaseDataSource::compactViewWidget()
+QWidget* medDatabaseDataSource::buildSourcesTreeViewList()
 {
     QWidget *compactViewWidgetRes = new QWidget();
 
@@ -98,29 +92,37 @@ QWidget* medDatabaseDataSource::compactViewWidget()
     auto filterLineEdit = new QLineEdit();
 
     medDataManager::instance()->setIndexV2Handler([](medDataIndex const & dataIndex) -> medAbstractData* {return medDataHub::instance()->getData(dataIndex); },
-                                                  [](medAbstractData & data, bool originSrc) -> QUuid {return medDataHub::instance()->writeResultsHackV3(data, originSrc);});//TODO Remove ok c'est le truc le moins classe du monde (Part3)
+                                                  [](medAbstractData & data, bool originSrc) -> QUuid {return medDataHub::instance()->writeResultsHackV3(data, originSrc); },
+                                                  [](QString const & path, QUuid uuid) -> void {return medDataHub::instance()->loadDataFromLocalFileSystem(path, uuid); }
+                                                  );//TODO Remove ok c'est le truc le moins classe du monde (Part3)
+
     d->compactView = d->multiSources_tree->buildTree();
 
     connect(filterLineEdit, SIGNAL(textChanged(const QString &)), d->multiSources_tree, SIGNAL(filterProxy(const QString &)));
 
     d->compactView->setSizePolicy(QSizePolicy::MinimumExpanding, QSizePolicy::MinimumExpanding);
 
-    d->compactPreview = new medDatabasePreview(compactViewWidgetRes);
+    connect(d->compactView, SIGNAL(openOnDoubleClick(medDataIndex)), this, SIGNAL(openOnDoubleClick(medDataIndex)));
+
+    //d->compactPreview = new medDatabasePreview(compactViewWidgetRes);
 
     QVBoxLayout *filterLayout = new QVBoxLayout;
     filterLayout->addWidget(filterLabel, 0);
     filterLayout->addWidget(filterLineEdit, 1);
+    
+    d->virtualTreeView = medVirtualRepresentationPresenter(medApplicationContext::instance()->getVirtualRepresentation()).buildTree();
 
-    layout->addLayout(filterLayout, 0);
-    layout->addWidget(d->compactView, 1);
-    layout->addWidget(d->compactPreview);
+    layout->addWidget(d->virtualTreeView, 0);
+    layout->addLayout(filterLayout, 1);
+    layout->addWidget(d->compactView, 2);
+    //layout->addWidget(d->compactPreview);
 
     compactViewWidgetRes->setLayout(layout);
 
     return compactViewWidgetRes;
 }
 
-QWidget* medDatabaseDataSource::sourceSelectorWidget()
+QWidget* medDatabaseDataSource::buildSourceListSelectorWidget()
 {
     auto *widget = new QWidget();
 
@@ -132,19 +134,6 @@ QWidget* medDatabaseDataSource::sourceSelectorWidget()
     connect(listSources, SIGNAL(currentRowChanged(int)), this, SLOT(currentSourceChanged(int)));
 
     layout->addWidget(listSources);
-
-    // auto pRefreshButton = new QPushButton("R");
-    // connect(pRefreshButton, &QPushButton::clicked, [&]() 
-    // {
-    //     int i = d->currentSource; 
-    //     auto sourcesList = medSourcesLoader::instance()->sourcesList();
-    //     if (sourcesList.size()>i)
-    //     {
-    //         auto sourceId = sourcesList[i]->getInstanceId();
-    //         medDataHub::instance()->refresh(QStringList(sourceId));
-    //     }
-    // });
-    // layout->addWidget(pRefreshButton);
 
     widget->setLayout(layout);
 
@@ -164,11 +153,8 @@ QString medDatabaseDataSource::tabName()
 
 QList<medToolBox*> medDatabaseDataSource::getToolBoxes()
 {
-
-
     if(d->toolBoxes.isEmpty())
-    {
-        
+    {        
         auto * pToolBox = new medToolBox();
         auto * pFiltersStackBySource = d->multiSources_tree->buildFilters();
         connect(this, SIGNAL(changeSource(int)), pFiltersStackBySource, SLOT(setCurrentIndex(int)));
@@ -176,11 +162,6 @@ QList<medToolBox*> medDatabaseDataSource::getToolBoxes()
         d->toolBoxes.push_back(pToolBox);
     }
     return d->toolBoxes;
-}
-
-QString medDatabaseDataSource::description(void) const
-{
-    return tr("Browse the Data Sources");
 }
 
 void medDatabaseDataSource::onFilter( const QString &text, int column )
@@ -195,8 +176,17 @@ void medDatabaseDataSource::compactFilter( const QString &text, int column )
     d->compactProxy->setFilterRegExpWithColumn(QRegExp(text, Qt::CaseInsensitive, QRegExp::Wildcard), column);
 }
 
-void medDatabaseDataSource::onOpeningFailed(const medDataIndex& index, QUuid)
+QWidget * medDatabaseDataSource::mainViewWidget()
 {
-    d->largeView->onOpeningFailed(index);
+    return buildSourcesBrowser();
 }
 
+QWidget * medDatabaseDataSource::sourceSelectorWidget()
+{
+    return buildSourceListSelectorWidget();
+}
+
+QString medDatabaseDataSource::description() const
+{
+    return QString();
+}

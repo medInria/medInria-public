@@ -13,6 +13,9 @@
 
 #include "medTemporaryDataSource.h"
 
+#include <QUuid>
+#include <QDebug>
+
 #include <medBoolParameter.h>
 
 struct medTemporaryDataSourcePrivate

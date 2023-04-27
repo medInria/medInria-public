@@ -67,6 +67,7 @@ public:
     bool multiLayer;
     bool userPoolable;
     QList<QUuid> expectedUuids;
+    QList<QString> expectedPaths;
 
     QGridLayout* mainLayout;
     QHBoxLayout* toolBarLayout;
@@ -127,7 +128,6 @@ medViewContainer::medViewContainer(medViewContainerSplitter *parent): QFrame(par
     connect(openButton,  SIGNAL(clicked()), this, SLOT(openFromSystem()), Qt::UniqueConnection);
     connect(sceneButton, SIGNAL(clicked()), this, SLOT(loadScene()),      Qt::UniqueConnection);
 
-    openButton->hide();
     sceneButton->hide();
 
     d->menuButton = new QPushButton(this);
@@ -143,8 +143,8 @@ medViewContainer::medViewContainer(medViewContainerSplitter *parent): QFrame(par
     d->openAction->setToolTip(tr("Open a file from your system"));
     d->openAction->setIconVisibleInMenu(true);
     connect(d->openAction, SIGNAL(triggered()), this, SLOT(openFromSystem()), Qt::UniqueConnection);
-    d->openAction->setDisabled(true);
-    d->openAction->setVisible(false);
+    d->openAction->setDisabled(false);
+    d->openAction->setVisible(true);
 
     d->closeContainerButton = new QPushButton(this);
     QIcon closeIcon;
@@ -278,6 +278,9 @@ medViewContainer::medViewContainer(medViewContainerSplitter *parent): QFrame(par
     this->setSelected(false);
 
     d->defaultStyleSheet = this->styleSheet();
+
+    //Rigth drag and drop popup menu enable
+    setContextMenuPolicy(Qt::ContextMenuPolicy::CustomContextMenu);
 }
 
 medViewContainer::~medViewContainer()
@@ -725,10 +728,8 @@ void medViewContainer::dragLeaveEvent(QDragLeaveEvent *event)
 
 void medViewContainer::dropEvent(QDropEvent *event)
 {
-    if (!dropEventFromFile(event))
-    {
-        dropEventFromDataBase(event);
-    }
+    dropEventFromFile(event);
+    dropEventFromDataBase(event);
 }
 
 bool medViewContainer::dropEventFromDataBase(QDropEvent * event)
@@ -737,15 +738,18 @@ bool medViewContainer::dropEventFromDataBase(QDropEvent * event)
 
     const QMimeData *mimeData = event->mimeData();
     
-    if (mimeData->hasFormat("med/index2"))
+    if (mimeData->hasFormat("med/index2") || mimeData->hasUrls())
     {
         auto indexList = medDataIndex::readMimeDataMulti(mimeData);
+        QList<QUrl> urlList = mimeData->urls();
         if (d->mousseDragDropButton.testFlag(Qt::RightButton))
         {
-            QMenu *popupMenu = new QMenu();
+            QMenu *popupMenu = new QMenu(this);
             QAction *pAction1 = popupMenu->addAction("Open in multiple Tabs");
             QAction *pAction2 = popupMenu->addAction("Open in multiple views");
             QAction *pAction3 = popupMenu->addAction("Open in same view");
+            //medTabbedViewContainers::addContainerInTabUnNamed();
+            //medViewContainer()
             connect(pAction1, &QAction::triggered, [&]() {indexList; });
             connect(pAction2, &QAction::triggered, [&]() {indexList; });
             connect(pAction3, &QAction::triggered, [&]() {indexList; });
@@ -822,6 +826,7 @@ bool medViewContainer::dropEventFromFile(QDropEvent * event)
     const QMimeData *mimeData = event->mimeData();
     if (mimeData->hasUrls())
     {
+        auto *pSource = event->source();
         QStringList pathList;
         QList<QUrl> urlList = mimeData->urls();
         d->oArea4ExternalDrop = computeDropArea(event->pos().x(), event->pos().y());
@@ -993,26 +998,40 @@ void medViewContainer::openFromSystem()
 
 void medViewContainer::open(const QString & path)
 {
-    QUuid uuid = medDataManager::instance()->importPath(path, false);
-    d->expectedUuids.append(uuid);
-    connect(medDataManager::instance(), SIGNAL(dataImported(medDataIndex,QUuid)),
-            this, SLOT(open_waitForImportedSignal(medDataIndex,QUuid)));
+    d->expectedPaths.append(path);
+    connect(medDataManager::instance(), SIGNAL(dataImported(medDataIndex,QUuid)),  this, SLOT(open_waitForImportedSignal(medDataIndex,QUuid)));
+    medDataManager::instance()->importPath(path, false);
 
-    QEventLoop loop;
-    connect(this, SIGNAL(importFinished()), &loop, SLOT(quit()), Qt::UniqueConnection);
-    loop.exec();
+//    QEventLoop loop;
+//    connect(this, SIGNAL(importFinished()), &loop, SLOT(quit()), Qt::UniqueConnection);
+//    loop.exec();
 
     //  save last directory opened in settings.
     medSettingsManager::instance()->setValue("path", "medViewContainer", path);
 }
 
+QString indexToFileSysPath(QString &index)
+{
+    QString pathRes;
+
+    QString uri = index;
+    if (uri.startsWith("fs:"))
+    {
+        int sourceDelimterIndex = uri.indexOf(QString(":"));
+
+        QStringList uriAsList = uri.right(uri.size() - sourceDelimterIndex - 1).split(QString("\r\n"));
+        pathRes = uriAsList.join('/');
+    }
+
+    return pathRes;
+}
+
 void medViewContainer::open_waitForImportedSignal(medDataIndex index, QUuid uuid)
 {
-    if(d->expectedUuids.contains(uuid))
+    if(d->expectedPaths.contains(indexToFileSysPath(index.asString())))
     {
-        d->expectedUuids.removeAll(uuid);
-        disconnect(medDataManager::instance(),SIGNAL(dataImported(medDataIndex, QUuid)),
-                   this,SLOT(open_waitForImportedSignal(medDataIndex, QUuid)));
+        d->expectedPaths.removeAll(indexToFileSysPath(index.asString()));
+        disconnect(medDataManager::instance(),SIGNAL(dataImported(medDataIndex, QUuid)), this,SLOT(open_waitForImportedSignal(medDataIndex, QUuid)));
         if (index.isValid())
         {
             this->addData(index);

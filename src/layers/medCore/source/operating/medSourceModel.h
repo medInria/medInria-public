@@ -98,7 +98,7 @@ public:
     medSourceModelItem* getItem(QStringList const &uri) const;
     QModelIndex toIndex(QString uri) const;
     QModelIndex toIndex(QStringList uri) const;
-    QString     toPath(QModelIndex const & index);
+    QString     toPath(QModelIndex const & index) const;
     QStringList fromPath(QStringList humanUri);
     QString     keyForPath(QStringList rootUri, QString folder);
     bool        getChildrenNames(QStringList uri, QStringList &names);

@@ -114,6 +114,7 @@ QVariant medSourceModel::data(const QModelIndex & index, int role) const
         {
             medSourceModelItem *item = getItem(index);
             int i = index.column();
+            //varDataRes = item->data(i+1, role);
             varDataRes = item->data(getColumnInsideLevel(item->iLevel, i), role);
         }
     }
@@ -660,7 +661,7 @@ QModelIndex medSourceModel::toIndex(QStringList uri) const
 //    return uriRes;
 //}
 
-QString medSourceModel::toPath(QModelIndex const & index)
+QString medSourceModel::toPath(QModelIndex const & index) const
 {
     QStringList tmpNames;
 

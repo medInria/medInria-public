@@ -17,10 +17,14 @@
 #include <medSourceContextMenu.h>
 
 #include <QWidget>
+#include <QObject>
+
+#include <QModelIndex>
 #include <QPushButton>
 #include <QTreeView>
 #include <QVBoxLayout>
 
+#include <medDataIndex.h>
 #include <medWidgetsExport.h>
 
 class medSourceModelPresenter;
@@ -28,6 +32,7 @@ class medSourceModelPresenter;
 class medSourcesWidget : public QWidget
 {
     Q_OBJECT
+
 public:
     medSourcesWidget();
     ~medSourcesWidget();
@@ -39,10 +44,15 @@ public slots:
     void removeSource(QString sourceInstanceId);
     void filter(const QString &);
 
+    void onDoubleClick(QModelIndex const & index);
+
+signals:
+    void openOnDoubleClick(medDataIndex);
 
 private:
     void onCustomContextMenu(QPoint const &point, QMenu *pi_pMenu);
     QModelIndex indexFromMenu(QMenu *pi_pMenu);
+    
 
 private:
     QVBoxLayout m_layout;

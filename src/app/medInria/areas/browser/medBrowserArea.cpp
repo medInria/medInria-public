@@ -22,11 +22,11 @@
 #include <medJobManagerL.h>
 #include <medDataManager.h>
 
-#include <medStorage.h>
-
-#include <medDatabaseNonPersistentController.h>
-#include <medDatabaseExporter.h>
-#include <medDatabaseImporter.h>
+//#include <medStorage.h>
+//
+//#include <medDatabaseNonPersistentController.h>
+//#include <medDatabaseExporter.h>
+//#include <medDatabaseImporter.h>
 
 #include <medProgressionStack.h>
 #include <medToolBox.h>
@@ -78,14 +78,6 @@ medBrowserArea::medBrowserArea(QWidget *parent) : QWidget(parent), d(new medBrow
 
     // make toolboxes visible
     onSourceIndexChanged(d->stack->currentIndex());
-
-    //Check if there are already item in the database, otherwise, switch to File system datasource
-    QList<medDataIndex> indexes = medDatabaseNonPersistentController::instance()->availableItems();
-    QList<medDataIndex> patients = medDataManager::instance()->controller()->patients(); 
-    if (indexes.isEmpty() && patients.isEmpty())
-    {
-        d->sourceSelectorToolBox->setCurrentTab(1);
-    }
 
     // DataSources
     for(medAbstractDataSource *dataSource : medDataSourceManager::instance()->dataSources())

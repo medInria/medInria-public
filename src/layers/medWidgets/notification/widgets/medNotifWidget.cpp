@@ -88,7 +88,7 @@ medNotifWidget::medNotifWidget(medUsrNotif &notif, medNotificationPaneWidget * p
 
 medNotifWidget::~medNotifWidget()
 {
-    int i = 0;
+
 }
 
 QSize medNotifWidget::minimumSizeHint() const
@@ -128,14 +128,14 @@ QPixmap & medNotifWidget::criticalityImg(notifLevel criticalityLevel)
     //These variables are static into a static member function to avoid reload multiple-times
     static QPixmap redSpot = QPixmap::fromImage(QIcon(":/icons/red_spot.svg").pixmap(QSize(15, 15)).toImage());
     static QPixmap yellowSpot = QPixmap::fromImage(QIcon(":/icons/yellow_spot.svg").pixmap(QSize(15, 15)).toImage());
-    static QPixmap bleuSpot = QPixmap::fromImage(QIcon(":/icons/bleu_spot.svg").pixmap(QSize(15, 15)).toImage());
+    static QPixmap blueSpot = QPixmap::fromImage(QIcon(":/icons/bleu_spot.svg").pixmap(QSize(15, 15)).toImage());
     static QPixmap greenSpot = QPixmap::fromImage(QIcon(":/icons/green_spot.svg").pixmap(QSize(15, 15)).toImage());
 
     switch (criticalityLevel)
     {
-        case notifLevel::info:     return bleuSpot;
+        case notifLevel::info:     return blueSpot;
         case notifLevel::success:  return greenSpot;
-        case notifLevel::warning: return yellowSpot;
+        case notifLevel::warning:  return yellowSpot;
         case notifLevel::error:    return redSpot;
         default: return redSpot;
     }

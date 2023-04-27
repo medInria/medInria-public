@@ -24,6 +24,7 @@
 #include <medDataIndex.h>
 #include <medAbstractData.h>
 #include <medDefaultWritingPolicy.h>
+#include <medVirtualRepresentation.h>
 
 #include <dtkCoreSupport/dtkSmartPointer.h>
 
@@ -102,6 +103,10 @@ public:
     void sourceIsOnline(QString sourceIntanceId);
 
 
+    void setVirtualRepresentation(medVirtualRepresentation * virtRep) { m_virtualRepresentation = virtRep; }
+    medVirtualRepresentation * getVirtualRepresentation() { return m_virtualRepresentation; }
+
+
 public slots:
    void addSource(QString const & pi_sourceId);
    void removeSource(QString const & pi_sourceId);
@@ -112,6 +117,8 @@ public slots:
 
 
    void timeOutWatcher();
+
+   void loadDataFromLocalFileSystem(QString const path, QUuid uuid = QUuid());
 
 signals:
     void abortRequest  (int); //abort the requestId
@@ -148,7 +155,11 @@ private:
 	
     QTimer m_clock;
 
+    medVirtualRepresentation * m_virtualRepresentation;
     QMap<medDataIndex, dtkSmartPointer<medAbstractData> > m_IndexToData;
     static medDataHub * s_instance;
 };
 
+QString fileSysPathToIndex(const QString &path );
+
+QString indexToFileSysPath(QString &index);

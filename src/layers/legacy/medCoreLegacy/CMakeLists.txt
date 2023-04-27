@@ -31,7 +31,7 @@ list_source_files(${TARGET_NAME}
   data/annotationData
   gui
   gui/commonWidgets
-  gui/database
+  #gui/database
   gui/factories
   gui/lookUpTables
   gui/settingsWidgets

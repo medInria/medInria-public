@@ -12,9 +12,12 @@
 
 =========================================================================*/
 
+#include <QMutex>
+
+#include <tuple>
+
 #include <medAbstractSource.h>
 #include <medCoreExport.h>
-#include <tuple>
 
 class QStandardPaths;
 class QCryptographicHash;

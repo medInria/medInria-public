@@ -17,10 +17,15 @@
 #include <medMetaDataKeys.h>
 #include <medSettingsManager.h>
 
-
 #include <medNewLogger.h>
 #include <medNotif.h>
 #include <medNotifSys.h>
+
+#include <medVirtualRepresentation.h>
+
+// Pour le Hack
+#include <medDataManager.h>
+//TODO à viré dès que possible
 
 #include <QTemporaryDir>
 #include <QModelIndex>
@@ -456,6 +461,125 @@ void medDataHub::timeOutWatcher()
     }
 
     m_mapsRequestMutex.unlock();
+}
+
+
+QString fileSysPathToIndex(const QString &path)
+{
+    QString pathTmp = path;
+    pathTmp.replace('\\', '/');
+    pathTmp.replace('/', "\r\n");
+    pathTmp = "fs:" + pathTmp;
+    
+    return pathTmp;
+}
+
+QString indexToFileSysPath(QString &index)
+{
+    QString pathRes;
+
+    QString uri = index;
+    if (uri.startsWith("fs:"))
+    {
+        int sourceDelimterIndex = uri.indexOf(QString(":"));
+
+        QStringList uriAsList = uri.right(uri.size() - sourceDelimterIndex - 1).split(QString("\r\n"));
+        pathRes = uriAsList.join('/');
+    }
+
+    return pathRes;
+}
+
+
+class medConvertLocalFileInThread : public QRunnable
+{
+public:
+    medConvertLocalFileInThread(QString const path, QUuid uuid, QMap<medDataIndex, dtkSmartPointer<medAbstractData> > & indexToData) : m_IndexToData(indexToData)
+    {
+        m_path = path;
+        m_uuid = uuid;
+    }
+    
+    void run() override
+    {
+        medAbstractData * pDataRes = medDataImporter::convertSingleDataOnfly(m_path);
+        if (pDataRes)
+        {
+            QString index = fileSysPathToIndex(m_path);
+
+            pDataRes->setDataIndex(index);
+
+            m_IndexToData[index] = pDataRes;
+            m_IndexToData[index].data();
+
+            medDataHub::instance(nullptr)->getVirtualRepresentation()->addDataFromFile(m_path, pDataRes);
+
+            medDataManager::instance()->medDataHubRelay(index, m_uuid);
+        }
+        else
+        {
+            medNotif::createNotif(notifLevel::warning, QString("Converting file ") + m_path, " failed");
+        }
+
+    }
+
+    QString m_path;
+    QUuid   m_uuid;
+    QMap<medDataIndex, dtkSmartPointer<medAbstractData> > & m_IndexToData;
+};
+
+void medDataHub::loadDataFromLocalFileSystem(QString const path, QUuid uuid)
+{
+    auto runner = new medConvertLocalFileInThread(path, uuid, m_IndexToData);
+    runner->setAutoDelete(true);
+    int iMaxCount = QThreadPool::globalInstance()->maxThreadCount();
+    int iActiveCount = QThreadPool::globalInstance()->activeThreadCount();
+    QThreadPool::globalInstance()->reserveThread();
+    iMaxCount = QThreadPool::globalInstance()->maxThreadCount();
+    iActiveCount = QThreadPool::globalInstance()->activeThreadCount();
+    QThreadPool::globalInstance()->start(runner);
+    // medAbstractData * pDataRes = medDataImporter::convertSingleDataOnfly(path);
+    // if (pDataRes)
+    // {
+    // 
+    //     QString index = fileSysPathToIndex(path);
+    //     QString path = indexToFileSysPath(index);
+    // 
+    //     pDataRes->setDataIndex(index);
+    //     // medSourceModel * pModel = getModel(index.sourceId());
+    //     // QModelIndex modelIndex = pModel->toIndex(index);
+    //     // pModel->setData(modelIndex, DATASTATE_ROLE_DATALOADED, DATASTATE_ROLE); //Set information on tree about the data is already loaded
+    //     // pModel->setData(modelIndex, true, MEDDATA_ROLE);
+    //     // QModelIndex parentIndex = modelIndex.parent();
+    //     // while (parentIndex.isValid())
+    //     // {
+    //     //     pModel->setData(parentIndex, true, MEDDATA_ROLE);
+    //     //     parentIndex = parentIndex.parent();
+    //     // }
+    //     // 
+    //     // QString hruUri = pModel->toPath(modelIndex);
+    //     // QString name = hruUri.right(hruUri.size() - hruUri.lastIndexOf("\r\n") - 2);
+    //     // QStringList hruUriAsList = hruUri.split("\r\n", QString::SkipEmptyParts);
+    //     // pDataRes->setExpectedName(name);
+    //     // pDataRes->setMetaData(medMetaDataKeys::SeriesDescription.key(), name);
+    //        
+    //     // //Todo remove the next asap
+    //     // QString studyDesc;
+    //     // if (hruUriAsList.size() > 2)
+    //     // {
+    //     //     studyDesc = hruUriAsList.at(hruUriAsList.size() - 2);
+    //     // }
+    //     // pDataRes->setMetaData(medMetaDataKeys::StudyDescription.key(), studyDesc);
+    //     // //end todo
+    // 
+    //     m_IndexToData[index] = pDataRes;
+    //     m_IndexToData[index].data();
+    //     medDataManager::instance()->medDataHubRelay(index, uuid);
+    // }
+    // else
+    // {
+    //     medNotif::createNotif(notifLevel::warning, QString("Converting file ") + path, " failed");
+    // }
 }
 
 void medDataHub::addSource(QString const & pi_sourceId)

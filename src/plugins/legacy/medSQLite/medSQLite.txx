@@ -278,7 +278,7 @@ bool medSQlite<T>::isWritable()
 template <typename T>
 bool medSQlite<T>::isLocal()
 {
-    return true;
+    return false;
 }
 
 template <typename T>

@@ -16,7 +16,7 @@
 #include <QStringList>
 #include <QMap>
 #include <QList>
-#include <medAbstractData.h>
+//#include <medAbstractData.h>
 #include <medAbstractParameter.h>
 
 #include <medCoreExport.h>

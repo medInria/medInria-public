@@ -16,10 +16,8 @@
 #include <QPixmap>
 #include <QUuid>
 
-#include <medDatabasePersistentController.h>
 #include <dtkCoreSupport/dtkSmartPointer>
 #include <medCoreLegacyExport.h>
-#include <medDatabaseExporter.h>
 #include <medDataIndex.h>
 
 class medDataManagerPrivate;
@@ -34,7 +32,7 @@ class MEDCORELEGACY_EXPORT medDataManager : public QObject
 public:
     static medDataManager * instance();
 
-    void setIndexV2Handler(medAbstractData* (*f)(medDataIndex const &), QUuid (*f2)(medAbstractData &, bool));
+    void setIndexV2Handler(medAbstractData* (*f)(medDataIndex const &), QUuid (*f2)(medAbstractData &, bool), void(*f3)(QString const &, QUuid));
 
     medAbstractData* retrieveData(const medDataIndex& index);
     void loadData(const medDataIndex &index);
@@ -43,8 +41,6 @@ public:
 
     QUuid importData(medAbstractData* data, bool persistent = false);
     QUuid importPath(const QString& dataPath, bool indexWithoutCopying, bool persistent = false);
-    void fetchData(const QHash<QString, QHash<QString, QVariant> > &pData,
-                   const QHash<QString, QHash<QString, QVariant> > &sData);
 
     void exportData(dtkSmartPointer<medAbstractData> data);
     void exportDataToPath(dtkSmartPointer<medAbstractData> data, const QString& path, const QString& format = "");
@@ -52,7 +48,7 @@ public:
     QUuid makePersistent(medDataIndex index);
 
     QString getMetaData(const medDataIndex& index, const QString& key);
-    bool setMetadata(const medDataIndex& index, const QString& key, const QString& value);
+    bool    setMetadata(const medDataIndex& index, const QString& key, const QString& value);
 
     void removeData(const medDataIndex& index);
 
@@ -65,12 +61,8 @@ public:
     QList<medDataIndex> moveStudy(const medDataIndex& indexStudy, const medDataIndex& toPatient);
     medDataIndex moveSeries(const medDataIndex& indexSeries, const medDataIndex& toStudy);
 
-    // ------------------------- Compatibility code, to be removed -----------
 
-    medAbstractDbController* controllerForDataSource(int dataSourceId);
-    medDatabasePersistentController *controller();
-
-    void setDatabaseLocation();
+    void medDataHubRelay(medDataIndex index, QUuid uuid);
 
 signals:
     void metadataModified(const medDataIndex& index, const QString& key = "", const QString& value = "");
@@ -89,7 +81,6 @@ signals:
 private slots:
     void exportDialog_updateSuffix(int index);
     void garbageCollect();
-    void removeFromNonPersistent(medDataIndex,QUuid);
     void setWriterPriorities();
 
 protected:
@@ -100,7 +91,6 @@ private:
     virtual ~medDataManager();
 
     static medDataManager * s_instance;
-    void launchExporter(medDatabaseExporter* exporter, const QString & filename);
 
     Q_DECLARE_PRIVATE(medDataManager)
 };
