@@ -15,8 +15,9 @@
 cd @medInria_BINARY_DIR@/bin
 
 \rm -fr TmpInstall
-mkdir TmpInstall
-cp -r medInria.app TmpInstall
+mkdir -p TmpInstall/medInria.app/Contents
+cp -r medInria.app/Contents/MacOS TmpInstall/medInria.app/Contents
+cp medInria.app/Contents/Info.plist TmpInstall/medInria.app/Contents
 
 cd TmpInstall
 
@@ -31,7 +32,7 @@ done
 
 @dtk_DIR@/bin/dtkDeploy medInria.app $injectDirs &>/dev/null
 
-@CMAKE_COMMAND@ -DCMAKE_INSTALL_PREFIX:STRING=python -DCMAKE_INSTALL_COMPONENT:STRING=Python -P @pyncpp_DIR@/cmake_install.cmake
+@CMAKE_COMMAND@ -DCMAKE_INSTALL_PREFIX:STRING=medInria.app/Contents/Resources -DCMAKE_INSTALL_COMPONENT:STRING=Python -P @pyncpp_DIR@/cmake_install.cmake
 
 #Run fancy packaging apple script
 

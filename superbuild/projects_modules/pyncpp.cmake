@@ -29,8 +29,6 @@ function(pyncpp_project)
 
         epComputPath(${ep})
 
-        set(PYNCPP_PYTHON_DIR "${build_path}/python${PYTHON_VERSION_MAJOR}.${PYTHON_VERSION_MINOR}")
-
         set(project_args
             GIT_REPOSITORY ${GITHUB_PREFIX}LIRYC-IHU/pyncpp.git
             GIT_TAG origin/working
@@ -42,7 +40,6 @@ function(pyncpp_project)
             -D "PYNCPP_PYTHON_VERSION_MAJOR:STRING=${PYTHON_VERSION_MAJOR}"
             -D "PYNCPP_PYTHON_VERSION_MINOR:STRING=${PYTHON_VERSION_MINOR}"
             -D "PYNCPP_PYTHON_VERSION_PATCH:STRING=${PYTHON_VERSION_PATCH}"
-            -D "PYNCPP_PYTHON_DIR:PATH=${PYNCPP_PYTHON_DIR}"
             )
 
         if(UNIX)
@@ -78,7 +75,6 @@ function(pyncpp_project)
         ## #####################################################################
 
         set(${ep}_DIR ${build_path} PARENT_SCOPE)
-        set(${ep}_PYTHON_DIR "${PYNCPP_PYTHON_DIR}" PARENT_SCOPE)
 
     endif()
 

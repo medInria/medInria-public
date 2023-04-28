@@ -157,15 +157,16 @@ if(USE_Python)
     if(WIN32)
         set(python_home ".")
     else()
-        set(python_home_subdir "python${pyncpp_PYTHON_VERSION_MAJOR}.${pyncpp_PYTHON_VERSION_MINOR}")
-
         if(APPLE)
-            set(python_home "../Resources/${python_home_subdir}")
+            set(python_home "../Resources/${pyncpp_PYTHON_INSTALL_DESTINATION}")
         else()
-            set(python_home "../lib/${python_home_subdir}")
+            set(python_home "../${pyncpp_PYTHON_INSTALL_DESTINATION}")
         endif()
 
+        get_filename_component(python_home_base "${python_home}" DIRECTORY)
+
         add_custom_command(TARGET ${TARGET_NAME} POST_BUILD
+            COMMAND ${CMAKE_COMMAND} -E make_directory "$<TARGET_FILE_DIR:${TARGET_NAME}>/${python_home_base}"
             COMMAND ${CMAKE_COMMAND} -E create_symlink "${pyncpp_PYTHON_DIR}" "$<TARGET_FILE_DIR:${TARGET_NAME}>/${python_home}"
             )
     endif()
