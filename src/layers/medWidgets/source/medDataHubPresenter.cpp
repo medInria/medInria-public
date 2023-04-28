@@ -113,13 +113,3 @@ QStackedWidget *medDataHubPresenter::buildFilters()
     }
     return filterRes;
 }
-
-//medSourceHandler * medDataHubPresenter::sourcesHandler() const
-//{
-//    return d->sourcesHandler;
-//}
-
-
-
-
-

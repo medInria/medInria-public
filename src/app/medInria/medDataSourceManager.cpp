@@ -21,12 +21,10 @@
 #include <medDataManager.h>
 #include <medPacsWidget.h>
 #include <medMetaDataKeys.h>
-//#include <medStorage.h>
 #include <medMessageController.h>
 
 #include <medFileSystemDataSource.h>
 #include <medDatabaseDataSource.h>
-#include <medPacsDataSource.h>
 
 #include <medApplication.h>
 
@@ -37,7 +35,6 @@ public:
 
     medDatabaseDataSource *dbSource;
     medFileSystemDataSource *fsSource;
-    medPacsDataSource *pacsSource;
 };
 
 medDataSourceManager::medDataSourceManager(): d(new medDataSourceManagerPrivate)
@@ -53,7 +50,6 @@ medDataSourceManager::medDataSourceManager(): d(new medDataSourceManagerPrivate)
     connectDataSource(d->fsSource);
 
     // dynamic data sources (from plugins)
-
     //for(QString dataSourceName : medAbstractDataSourceFactory::instance()->dataSourcePlugins())
     //{
     //    dtkDebug()<< "factory creates dataSource:" << dataSourceName;

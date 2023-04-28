@@ -29,7 +29,6 @@
 #include <medPluginManager.h>
 #include <medSettingsManager.h>
 #include <medSplashScreen.h>
-//#include <medStorage.h>
 
 #include <medSourcesLoader.h>
 #include <medDataHub.h>
@@ -239,6 +238,10 @@ int main(int argc, char *argv[])
 
         medSourcesLoader::instance(&application);     
         //medDataManager::instance()->setDatabaseLocation();
+        medDataManager::instance()->setIndexV2Handler([](medDataIndex const & dataIndex) -> medAbstractData* {return medDataHub::instance()->getData(dataIndex); },
+                                                      [](medAbstractData & data, bool originSrc) -> QUuid {return medDataHub::instance()->writeResultsHackV3(data, originSrc); },
+                                                      [](QString const & path, QUuid uuid) -> void {return medDataHub::instance()->loadDataFromLocalFileSystem(path, uuid); }
+        );//TODO Remove ok c'est le truc le moins classe du monde (Part3)
         medPluginManager::instance()->setVerboseLoading(true);
         medPluginManager::instance()->initialize();
         auto sourceHandler = medSourceHandler::instance(&application);

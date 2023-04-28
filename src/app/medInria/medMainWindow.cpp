@@ -15,7 +15,7 @@
 
 #include <medBrowserArea.h>
 #include <medComposerArea.h>
-#include <medDatabaseNonPersistentController.h>
+//#include <medDatabaseNonPersistentController.h>
 #include <medDataManager.h>
 #include <medEmptyDbWarning.h>
 #include <medHomepageArea.h>
@@ -23,7 +23,7 @@
 #include <medLogger.h>
 #include <medMainWindow.h>
 #include <medQuickAccessMenu.h>
-#include <medSaveModifiedDialog.h>
+//#include <medSaveModifiedDialog.h>
 #include <medSearchToolboxDialog.h>
 #include <medSelectorToolBox.h>
 #include <medSelectorWorkspace.h>
@@ -639,24 +639,6 @@ void medMainWindow::switchToWorkspaceArea()
     d->movieButton->setEnabled(true);
     d->adjustSizeButton->setEnabled(true);
     d->stack->setCurrentWidget(d->workspaceArea);
-
-    // Dialog window to recall users if database is empty
-    // but only if the warning is enabled in medSettings
-    bool showWarning = medSettingsManager::instance()->value(
-                "system",
-                "showEmptyDbWarning",
-                QVariant(true)).toBool();
-    if ( showWarning )
-    {
-        QList<medDataIndex> indexes = medDatabaseNonPersistentController::instance()->availableItems();
-        QList<medDataIndex> patients = medDataManager::instance()->controller()->patients();
-        if( indexes.isEmpty() )
-            if( patients.isEmpty())
-            {
-                medEmptyDbWarning* msgBox = new medEmptyDbWarning(this);
-                msgBox->exec();
-            }
-    }
 }
 
 void medMainWindow::switchToComposerArea()
@@ -782,40 +764,6 @@ void medMainWindow::hideShortcutAccess()
     this->activateWindow();
 }
 
-int medMainWindow::saveModifiedAndOrValidateClosing()
-{
-    QList<medDataIndex> indexes = medDatabaseNonPersistentController::instance()->availableItems();
-
-    if(indexes.isEmpty())
-    {
-        // No data to save, pop-up window to validate the closing
-
-        QMessageBox msgBox(this);
-        msgBox.setWindowTitle("Closing");
-        msgBox.setText("Do you really want to exit?");
-        msgBox.setStandardButtons(QMessageBox::Yes);
-        msgBox.addButton(QMessageBox::No);
-        msgBox.setDefaultButton(QMessageBox::No);
-        if(msgBox.exec() == QMessageBox::Yes)
-        {
-            return QDialog::Accepted;
-        }
-        else
-        {
-            return QDialog::Rejected;
-        }
-    }
-    else
-    {
-        // User is asked to save, cancel or exit without saving temporary data
-
-        medSaveModifiedDialog *saveDialog = new medSaveModifiedDialog(this);
-        saveDialog->show();
-        saveDialog->exec();
-        return saveDialog->result();
-    }
-}
-
 void medMainWindow::dragEnterEvent(QDragEnterEvent *event)
 {
     event->acceptProposedAction();
@@ -900,11 +848,11 @@ void medMainWindow::closeEvent(QCloseEvent *event)
         }
     }
 
-    if(this->saveModifiedAndOrValidateClosing() != QDialog::Accepted)
-    {
-        event->ignore();
-        return;
-    }
+    //if(this->saveModifiedAndOrValidateClosing() != QDialog::Accepted)
+    //{
+    //    event->ignore();
+    //    return;
+    //}
 
     d->closeEventProcessed = true;
     this->saveSettings();

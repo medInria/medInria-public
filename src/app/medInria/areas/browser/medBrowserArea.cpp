@@ -22,12 +22,6 @@
 #include <medJobManagerL.h>
 #include <medDataManager.h>
 
-//#include <medStorage.h>
-//
-//#include <medDatabaseNonPersistentController.h>
-//#include <medDatabaseExporter.h>
-//#include <medDatabaseImporter.h>
-
 #include <medProgressionStack.h>
 #include <medToolBox.h>
 #include <medToolBoxFactory.h>

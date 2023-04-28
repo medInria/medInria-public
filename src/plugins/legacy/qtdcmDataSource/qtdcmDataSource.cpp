@@ -13,7 +13,7 @@
 
 #include <qtdcmDataSource.h>
 
-#include <medDatabaseImporter.h>
+//#include <medDatabaseImporter.h>
 #include <medJobManagerL.h>
 #include <medAbstractDataSourceFactory.h>
 #include <medToolBox.h>

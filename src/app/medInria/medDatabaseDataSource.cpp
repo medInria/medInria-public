@@ -13,17 +13,17 @@
 
 #include "medDatabaseDataSource.h"
 
-#include <medActionsToolBox.h>
+#include <QLabel>
+#include <QLineEdit>
+
 #include <medApplicationContext.h>
-#include <medDatabaseExporter.h>
-#include <medDatabaseModel.h>
-#include <medDatabaseProxyModel.h>
 #include <medDataManager.h>
 #include <medSourcesLoader.h>
 #include <medDataHub.h>
 #include <medSourceModelPresenter.h>
 #include <medDataHubPresenter.h>
 #include <medSourcesWidget.h>
+#include <medToolBox.h>
 
 #include <medVirtualRepresentationPresenter.h>
 
@@ -32,27 +32,16 @@ class medDatabaseDataSourcePrivate
 public:
     QPointer<QWidget> mainWidget;
 
-    medDatabaseModel *model;
     medSourcesWidget *compactView;
     QTreeView *virtualTreeView;
 
-    medDatabaseProxyModel *proxy;
-    medDatabaseProxyModel *compactProxy;
-
     QList<medToolBox*> toolBoxes;
-    medActionsToolBox* actionsToolBox;
     medDataHubPresenter *multiSources_tree;
     int currentSource;
 };
 
 medDatabaseDataSource::medDatabaseDataSource( QWidget* parent ): medAbstractDataSource(parent), d(new medDatabaseDataSourcePrivate)
 {
-    d->model = new medDatabaseModel (this);
-    d->proxy = new medDatabaseProxyModel(this);
-    d->proxy->setSourceModel(d->model);
-
-    d->compactProxy = new medDatabaseProxyModel(this);
-    d->compactProxy->setSourceModel(d->model);
     d->multiSources_tree = new medDataHubPresenter(medDataHub::instance());
     d->currentSource = 0;
 }
@@ -90,18 +79,10 @@ QWidget* medDatabaseDataSource::buildSourcesTreeViewList()
 
     auto filterLabel = new QLabel("Filter ");
     auto filterLineEdit = new QLineEdit();
-
-    medDataManager::instance()->setIndexV2Handler([](medDataIndex const & dataIndex) -> medAbstractData* {return medDataHub::instance()->getData(dataIndex); },
-                                                  [](medAbstractData & data, bool originSrc) -> QUuid {return medDataHub::instance()->writeResultsHackV3(data, originSrc); },
-                                                  [](QString const & path, QUuid uuid) -> void {return medDataHub::instance()->loadDataFromLocalFileSystem(path, uuid); }
-                                                  );//TODO Remove ok c'est le truc le moins classe du monde (Part3)
-
-    d->compactView = d->multiSources_tree->buildTree();
-
     connect(filterLineEdit, SIGNAL(textChanged(const QString &)), d->multiSources_tree, SIGNAL(filterProxy(const QString &)));
 
+    d->compactView = d->multiSources_tree->buildTree();
     d->compactView->setSizePolicy(QSizePolicy::MinimumExpanding, QSizePolicy::MinimumExpanding);
-
     connect(d->compactView, SIGNAL(openOnDoubleClick(medDataIndex)), this, SIGNAL(openOnDoubleClick(medDataIndex)));
 
     //d->compactPreview = new medDatabasePreview(compactViewWidgetRes);
@@ -162,18 +143,6 @@ QList<medToolBox*> medDatabaseDataSource::getToolBoxes()
         d->toolBoxes.push_back(pToolBox);
     }
     return d->toolBoxes;
-}
-
-void medDatabaseDataSource::onFilter( const QString &text, int column )
-{
-    // adding or overriding filter on column
-    d->proxy->setFilterRegExpWithColumn(QRegExp(text, Qt::CaseInsensitive, QRegExp::Wildcard), column);
-}
-
-void medDatabaseDataSource::compactFilter( const QString &text, int column )
-{
-    // adding or overriding filter on column
-    d->compactProxy->setFilterRegExpWithColumn(QRegExp(text, Qt::CaseInsensitive, QRegExp::Wildcard), column);
 }
 
 QWidget * medDatabaseDataSource::mainViewWidget()

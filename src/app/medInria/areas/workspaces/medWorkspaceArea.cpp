@@ -16,12 +16,12 @@
 
 #include <medAbstractData.h>
 #include <medAbstractDataFactory.h>
-#include <medAbstractDbController.h>
+//#include <medAbstractDbController.h>
 #include <medAbstractImageData.h>
 #include <medAbstractImageView.h>
 #include <medAbstractView.h>
 #include <medDatabaseDataSource.h>
-#include <medDatabaseNonPersistentController.h>
+//#include <medDatabaseNonPersistentController.h>
 #include <medDataIndex.h>
 #include <medDataManager.h>
 #include <medDataSourceManager.h>

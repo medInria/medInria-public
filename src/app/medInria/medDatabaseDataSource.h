@@ -45,8 +45,8 @@ signals:
     void changeSource(int current);
 
 protected slots:
-    void onFilter(const QString &text, int column);
-    void compactFilter(const QString &text, int column);
+    //void onFilter(const QString &text, int column);
+    //void compactFilter(const QString &text, int column);
 
 private:
     medDatabaseDataSourcePrivate* d;

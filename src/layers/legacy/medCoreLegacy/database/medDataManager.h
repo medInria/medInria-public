@@ -80,8 +80,6 @@ signals:
 
 private slots:
     void exportDialog_updateSuffix(int index);
-    void garbageCollect();
-    void setWriterPriorities();
 
 protected:
     medDataManagerPrivate * const d_ptr;
