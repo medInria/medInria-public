@@ -15,9 +15,10 @@
 cd @medInria_BINARY_DIR@/bin
 
 \rm -fr TmpInstall
-mkdir -p TmpInstall/medInria.app/Contents
+mkdir -p TmpInstall/medInria.app/Contents/Resources
 cp -r medInria.app/Contents/MacOS TmpInstall/medInria.app/Contents
 cp medInria.app/Contents/Info.plist TmpInstall/medInria.app/Contents
+cp medInria.app/Contents/Resources/medInria.icns TmpInstall/medInria.app/Contents/Resources
 
 cd TmpInstall
 

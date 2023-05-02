@@ -164,10 +164,15 @@ if(USE_Python)
         endif()
 
         get_filename_component(python_home_base "${python_home}" DIRECTORY)
+        get_filename_component(python_dir "${python_home}" NAME)
 
         add_custom_command(TARGET ${TARGET_NAME} POST_BUILD
             COMMAND ${CMAKE_COMMAND} -E make_directory "$<TARGET_FILE_DIR:${TARGET_NAME}>/${python_home_base}"
-            COMMAND ${CMAKE_COMMAND} -E create_symlink "${pyncpp_PYTHON_DIR}" "$<TARGET_FILE_DIR:${TARGET_NAME}>/${python_home}"
+            )
+
+        add_custom_command(TARGET ${TARGET_NAME} POST_BUILD
+            COMMAND ${CMAKE_COMMAND} -E create_symlink "${pyncpp_PYTHON_DIR}" "${python_dir}"
+            WORKING_DIRECTORY "$<TARGET_FILE_DIR:${TARGET_NAME}>/${python_home_base}"
             )
     endif()
 
