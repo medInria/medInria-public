@@ -148,6 +148,38 @@ target_link_libraries(${TARGET_NAME}
   )
 
 ## #############################################################################
+## Python
+## #############################################################################
+
+if(USE_Python)
+    target_link_libraries(${TARGET_NAME} ${pyncpp_CPP_API_LIBRARY})
+
+    if(WIN32)
+        set(python_home ".")
+    else()
+        if(APPLE)
+            set(python_home "../Resources/${pyncpp_PYTHON_INSTALL_DESTINATION}")
+        else()
+            set(python_home "../${pyncpp_PYTHON_INSTALL_DESTINATION}")
+        endif()
+
+        get_filename_component(python_home_base "${python_home}" DIRECTORY)
+        get_filename_component(python_dir "${python_home}" NAME)
+
+        add_custom_command(TARGET ${TARGET_NAME} POST_BUILD
+            COMMAND ${CMAKE_COMMAND} -E make_directory "$<TARGET_FILE_DIR:${TARGET_NAME}>/${python_home_base}"
+            )
+
+        add_custom_command(TARGET ${TARGET_NAME} POST_BUILD
+            COMMAND ${CMAKE_COMMAND} -E create_symlink "${pyncpp_PYTHON_DIR}" "${python_dir}"
+            WORKING_DIRECTORY "$<TARGET_FILE_DIR:${TARGET_NAME}>/${python_home_base}"
+            )
+    endif()
+
+    target_compile_definitions(${TARGET_NAME} PUBLIC PYTHON_HOME="${python_home}")
+endif()
+
+## #############################################################################
 ## install
 ## #############################################################################
 

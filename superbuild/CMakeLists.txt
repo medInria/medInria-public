@@ -30,6 +30,16 @@ find_package(Qt5 REQUIRED COMPONENTS
 
 find_package(Boost REQUIRED)
 
+if(USE_Python AND UNIX)
+    if(APPLE)
+        set(default_root_dir "/usr/local/opt/openssl@1.1")
+    else()
+        set(default_root_dir)
+    endif()
+    set(OPENSSL_ROOT_DIR ${default_root_dir} CACHE PATH "Root directory of OpenSSL.")
+    find_package(OpenSSL COMPONENTS SSL)
+endif()
+
 ## #############################################################################
 ## Add exteral projects
 ## #############################################################################
@@ -75,7 +85,7 @@ endif()
 
 if (USE_Python)
     list(APPEND external_projects
-        PYNCPP
+        pyncpp
         )
 endif()
 

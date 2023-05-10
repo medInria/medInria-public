@@ -11,25 +11,23 @@
 #
 ################################################################################
 
-function(PYNCPP_project)
+set(PYTHON_VERSION_MAJOR 3 CACHE STRING "Python major version")
+set(PYTHON_VERSION_MINOR 10 CACHE STRING "Python minor version")
+set(PYTHON_VERSION_PATCH 10 CACHE STRING "Python patch version")
 
-    set(ep PYNCPP)
+function(pyncpp_project)
+
+    set(ep pyncpp)
 
     EP_Initialisation(${ep}
         USE_SYSTEM OFF
         BUILD_SHARED_LIBS ON
-        REQUIRED_FOR_PLUGINS OFF
+        REQUIRED_FOR_PLUGINS ON
         )
 
-    if(USE_SYSTEM_${ep})
-        find_package(PYNCPP
-            REQUIRED COMPONENTS Qt5
-            )
-    else()
-        epComputPath(${ep})
+    if(NOT USE_SYSTEM_${ep})
 
-        set(source_dir ${EP_PATH_SOURCE}/${ep})
-        set(binary_dir ${build_path})
+        epComputPath(${ep})
 
         set(project_args
             GIT_REPOSITORY ${GITHUB_PREFIX}LIRYC-IHU/pyncpp.git
@@ -38,28 +36,45 @@ function(PYNCPP_project)
             GIT_PROGRESS True
             )
 
+        set(cmake_args
+            -D "PYNCPP_PYTHON_VERSION_MAJOR:STRING=${PYTHON_VERSION_MAJOR}"
+            -D "PYNCPP_PYTHON_VERSION_MINOR:STRING=${PYTHON_VERSION_MINOR}"
+            -D "PYNCPP_PYTHON_VERSION_PATCH:STRING=${PYTHON_VERSION_PATCH}"
+            )
+
+        if(UNIX)
+            list(APPEND cmake_args
+                -D Qt5_DIR:PATH=${Qt5_DIR}
+                -D OPENSSL_ROOT_DIR:PATH=${OPENSSL_ROOT_DIR}
+                )
+            if(APPLE)
+                list(APPEND cmake_args
+                    -D CMAKE_MACOSX_RPATH:BOOL=OFF
+                    )
+            endif()
+        endif()
+
         ## #####################################################################
         ## Add external project
         ## #####################################################################
 
         ExternalProject_Add(${ep}
             PREFIX ${EP_PATH_SOURCE}
-            SOURCE_DIR ${source_dir}
-            BINARY_DIR ${binary_dir}
+            SOURCE_DIR ${EP_PATH_SOURCE}/${ep}
+            BINARY_DIR ${build_path}
             TMP_DIR ${tmp_path}
             STAMP_DIR ${stamp_path}
             DEPENDS ${${ep}_dependencies}
+            CMAKE_ARGS ${cmake_args}
             INSTALL_COMMAND ""
             "${project_args}"
             )
-
-        ExternalProject_Get_Property(${ep} binary_dir)
 
         ## #####################################################################
         ## Export variables
         ## #####################################################################
 
-        set(${ep}_DIR ${binary_dir} PARENT_SCOPE)
+        set(${ep}_DIR ${build_path} PARENT_SCOPE)
 
     endif()
 

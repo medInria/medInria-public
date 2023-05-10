@@ -86,7 +86,7 @@ find_package(dtk REQUIRED)
 include_directories(${dtk_INCLUDE_DIRS})
 
 if(USE_Python)
-    find_package(PYNCPP REQUIRED COMPONENTS Qt5)
+    find_package(pyncpp REQUIRED COMPONENTS CPP_API Qt5)
 endif()
 
 ## #############################################################################
@@ -166,7 +166,7 @@ if(NOT ${CMAKE_BUILD_TYPE} STREQUAL "Debug")
   add_definitions(-DQT_NO_DEBUG)
 endif()
 
-add_compile_definitions("USE_PYTHON=$<BOOL:USE_PYTHON>")
+add_compile_definitions(USE_PYTHON)
 
 ## #############################################################################
 ## Windows specificity

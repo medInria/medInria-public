@@ -105,6 +105,11 @@ list(APPEND
   ${RPI_DIR}/bin/Release 
   )
 
+set(CPACK_INSTALL_CMAKE_PROJECTS
+    ${pyncpp_DIR} pyncpp Python "/"
+    ${CPACK_INSTALL_CMAKE_PROJECTS}
+    )
+
 install(CODE "
 
 file(GLOB_RECURSE itk_files LIST_DIRECTORIES true \"${ITK_DIR}/bin/*.dll\")
