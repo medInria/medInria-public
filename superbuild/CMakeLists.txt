@@ -30,9 +30,14 @@ find_package(Qt5 REQUIRED COMPONENTS
 
 find_package(Boost REQUIRED)
 
-if(USE_Python)
+if(USE_Python AND UNIX)
+    if(APPLE)
+        set(default_root_dir "/usr/local/opt/openssl@1.1")
+    else()
+        set(default_root_dir)
+    endif()
+    set(OPENSSL_ROOT_DIR ${default_root_dir} CACHE PATH "Root directory of OpenSSL.")
     find_package(OpenSSL COMPONENTS SSL)
-    set(OPENSSL_ROOT_DIR CACHE PATH "Root directory of OpenSSL.")
 endif()
 
 ## #############################################################################
