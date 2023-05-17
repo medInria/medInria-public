@@ -91,7 +91,7 @@ public:
 
     QList<QMap<QString, QString>> getMandatoryAttributes(unsigned int pi_uiLevel, QString parentId) override;
 
-    bool getAdditionalAttributes(unsigned int pi_uiLevel, QString id, datasetAttributes4 &po_attributes) override;
+    bool getAdditionalAttributes(unsigned int pi_uiLevel, QString id, datasetAttributes &po_attributes) override;
 
     /* ***********************************************************************/
     /* *************** Get data          *************************************/
@@ -106,12 +106,12 @@ public:
     int addAssyncData(QVariant data, levelMinimalEntries &pio_minimalEntries, unsigned int pi_uiLevel,
                       QString parentKey) override;
 
-    bool createFolder(levelMinimalEntries &pio_minimalEntries, const datasetAttributes4 &pi_attributes,
+    bool createFolder(levelMinimalEntries &pio_minimalEntries, const datasetAttributes &pi_attributes,
                       unsigned int pi_uiLevel, QString parentKey) override;
-    bool createPath(QList<levelMinimalEntries> &pio_path, const datasetAttributes4 &pi_attributes, unsigned int pi_uiLevel,
+    bool createPath(QList<levelMinimalEntries> &pio_path, const datasetAttributes &pi_attributes, unsigned int pi_uiLevel,
                QString parentKey) override;
 
-    bool alterMetaData(const datasetAttributes4 &pi_attributes, unsigned int pi_uiLevel, QString key) override;
+    bool alterMetaData(const datasetAttributes &pi_attributes, unsigned int pi_uiLevel, QString key) override;
 
     bool getThumbnail(QPixmap &po_thumbnail, unsigned int pi_uiLevel, QString key) override;
 

@@ -857,7 +857,7 @@ class addDataRunner : public QRunnable
 public:
     medViewContainer *view;
     medAbstractData *data;
-    // Hérité via QRunnable
+    // Herite via QRunnable
     virtual void run()
     {
         if (view->prepareView())
@@ -1078,7 +1078,7 @@ void medViewContainer::open(const QString & path)
     medSettingsManager::instance()->setValue("path", "medViewContainer", path);
 }
 
-QString indexToFileSysPath(QString &index)
+QString indexToFileSysPath(QString &&index)
 {
     QString pathRes;
 

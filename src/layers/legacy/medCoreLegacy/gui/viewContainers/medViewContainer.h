@@ -165,3 +165,5 @@ private:
     medViewContainerPrivate *d;
 
 };
+
+QString indexToFileSysPath(QString &&index);

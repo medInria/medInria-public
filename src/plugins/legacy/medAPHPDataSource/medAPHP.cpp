@@ -21,6 +21,7 @@
 #include <medStringParameter.h>
 #include <medTriggerParameter.h>
 
+#include <QDate>
 #include <QObject>
 
 std::atomic<int> medAPHP::s_RequestId = 0;
@@ -880,7 +881,7 @@ QList<QMap<QString, QString>> medAPHP::getSeriesMandatoryAttributes(QList<QMap<D
     return attributesRes;
 }
 
-bool medAPHP::getAdditionalAttributes(unsigned int pi_uiLevel, QString id, datasetAttributes4 &po_attributes)
+bool medAPHP::getAdditionalAttributes(unsigned int pi_uiLevel, QString id, datasetAttributes &po_attributes)
 {
     return false;
 }
@@ -1080,7 +1081,7 @@ void medAPHP::abort(int pi_iRequest)
     }
 }
 
-bool medAPHP::createPath(QList<levelMinimalEntries> &pio_path, const medAbstractSource::datasetAttributes4 &pi_attributes,
+bool medAPHP::createPath(QList<levelMinimalEntries> &pio_path, const medAbstractSource::datasetAttributes &pi_attributes,
                          unsigned int pi_uiLevel, QString parentKey)
 {
     return false;
@@ -1143,13 +1144,13 @@ int medAPHP::addAssyncData(QVariant data, medAbstractSource::levelMinimalEntries
 }
 
 bool medAPHP::createFolder(medAbstractSource::levelMinimalEntries &pio_minimalEntries,
-                           const medAbstractSource::datasetAttributes4 &pi_attributes, unsigned int pi_uiLevel,
+                           const medAbstractSource::datasetAttributes &pi_attributes, unsigned int pi_uiLevel,
                            QString parentKey)
 {
     return false;
 }
 
-bool medAPHP::alterMetaData(const medAbstractSource::datasetAttributes4 &pi_attributes, unsigned int pi_uiLevel, QString key)
+bool medAPHP::alterMetaData(const medAbstractSource::datasetAttributes &pi_attributes, unsigned int pi_uiLevel, QString key)
 {
     return false;
 }

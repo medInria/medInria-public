@@ -2,7 +2,14 @@
 
 #include "medAnnotation.h"
 
+#include <QEventLoop>
 #include <QHttpMultiPart>
+#include <QJsonArray>
+#include <QJsonDocument>
+#include <QJsonObject>
+#include <QJsonValue>
+#include <QTimer>
+
 
 medAnnotation::medAnnotation()
 {

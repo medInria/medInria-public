@@ -1,5 +1,9 @@
 #include "annotationRequest.h"
 #include <QHttpMultiPart>
+#include <QJsonDocument>
+#include <QJsonObject>
+#include <QSqlQuery>
+#include <QUrlQuery>
 #include <dcmtk/dcmdata/dcuid.h>
 
 AnnotationRequest::AnnotationRequest(int requestId)
