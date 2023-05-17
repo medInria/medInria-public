@@ -67,6 +67,7 @@ public:
     bool multiLayer;
     bool userPoolable;
     QList<QUuid> expectedUuids;
+    QList<QString> expectedPaths;
 
     QGridLayout* mainLayout;
     QHBoxLayout* toolBarLayout;
@@ -127,7 +128,6 @@ medViewContainer::medViewContainer(medViewContainerSplitter *parent): QFrame(par
     connect(openButton,  SIGNAL(clicked()), this, SLOT(openFromSystem()), Qt::UniqueConnection);
     connect(sceneButton, SIGNAL(clicked()), this, SLOT(loadScene()),      Qt::UniqueConnection);
 
-    openButton->hide();
     sceneButton->hide();
 
     d->menuButton = new QPushButton(this);
@@ -143,8 +143,8 @@ medViewContainer::medViewContainer(medViewContainerSplitter *parent): QFrame(par
     d->openAction->setToolTip(tr("Open a file from your system"));
     d->openAction->setIconVisibleInMenu(true);
     connect(d->openAction, SIGNAL(triggered()), this, SLOT(openFromSystem()), Qt::UniqueConnection);
-    d->openAction->setDisabled(true);
-    d->openAction->setVisible(false);
+    d->openAction->setDisabled(false);
+    d->openAction->setVisible(true);
 
     d->closeContainerButton = new QPushButton(this);
     QIcon closeIcon;
@@ -278,6 +278,9 @@ medViewContainer::medViewContainer(medViewContainerSplitter *parent): QFrame(par
     this->setSelected(false);
 
     d->defaultStyleSheet = this->styleSheet();
+
+    //Rigth drag and drop popup menu enable
+    setContextMenuPolicy(Qt::ContextMenuPolicy::CustomContextMenu);
 }
 
 medViewContainer::~medViewContainer()
@@ -725,10 +728,8 @@ void medViewContainer::dragLeaveEvent(QDragLeaveEvent *event)
 
 void medViewContainer::dropEvent(QDropEvent *event)
 {
-    if (!dropEventFromFile(event))
-    {
-        dropEventFromDataBase(event);
-    }
+    dropEventFromFile(event);
+    dropEventFromDataBase(event);
 }
 
 bool medViewContainer::dropEventFromDataBase(QDropEvent * event)
@@ -737,25 +738,29 @@ bool medViewContainer::dropEventFromDataBase(QDropEvent * event)
 
     const QMimeData *mimeData = event->mimeData();
     
-    if (mimeData->hasFormat("med/index2"))
+    if (mimeData->hasFormat("med/index2") || mimeData->hasUrls())
     {
         auto indexList = medDataIndex::readMimeDataMulti(mimeData);
+        QList<QUrl> urlList = mimeData->urls();
         if (d->mousseDragDropButton.testFlag(Qt::RightButton))
         {
-            QMenu *popupMenu = new QMenu();
+            QMenu *popupMenu = new QMenu(this);
             QAction *pAction1 = popupMenu->addAction("Open in multiple Tabs");
             QAction *pAction2 = popupMenu->addAction("Open in multiple views");
             QAction *pAction3 = popupMenu->addAction("Open in same view");
+            //medTabbedViewContainers::addContainerInTabUnNamed();
+            //medViewContainer()
             connect(pAction1, &QAction::triggered, [&]() {indexList; });
             connect(pAction2, &QAction::triggered, [&]() {indexList; });
             connect(pAction3, &QAction::triggered, [&]() {indexList; });
             popupMenu->exec(this->mapToGlobal(event->pos()));
         }
         else
-        {
+        {                
             for (auto &index : indexList)
             {
                 //this->addData(index);
+
                 QThread* thread = new QThread(this);
                 medDataLoadThread * pdataLoadThread = new medDataLoadThread(index, this);
                 thread->start();
@@ -764,6 +769,7 @@ bool medViewContainer::dropEventFromDataBase(QDropEvent * event)
                 connect(pdataLoadThread, &medDataLoadThread::finished, pdataLoadThread, &medDataLoadThread::deleteLater);
                 connect(thread, &QThread::finished, thread, &QThread::deleteLater);
                 pdataLoadThread->moveToThread(thread);
+
             }
 
             this->setStyleSheet(d->defaultStyleSheet);
@@ -822,6 +828,7 @@ bool medViewContainer::dropEventFromFile(QDropEvent * event)
     const QMimeData *mimeData = event->mimeData();
     if (mimeData->hasUrls())
     {
+        auto *pSource = event->source();
         QStringList pathList;
         QList<QUrl> urlList = mimeData->urls();
         d->oArea4ExternalDrop = computeDropArea(event->pos().x(), event->pos().y());
@@ -844,6 +851,23 @@ bool medViewContainer::dropEventFromFile(QDropEvent * event)
     return bRes;
 }
 
+
+class addDataRunner : public QRunnable
+{
+public:
+    medViewContainer *view;
+    medAbstractData *data;
+    // Hérité via QRunnable
+    virtual void run()
+    {
+        if (view->prepareView())
+        {
+            view->insertData(data);
+        }
+    }
+};
+
+
 void medViewContainer::addData(medAbstractData *data)
 {
     if(!d->expectedUuids.isEmpty())
@@ -853,23 +877,27 @@ void medViewContainer::addData(medAbstractData *data)
 
     if(!data)
         return;
+    //addDataRunner * pAddDataRunner = new addDataRunner();
+    //pAddDataRunner->view = this;
+    //pAddDataRunner->data = data;
+    //QThreadPool::globalInstance()->start(pAddDataRunner);
+    ////QThread* thread = new QThread(this);
+    ////medDataLoadThread * pdataLoadThread = new medDataLoadThread(index, this);
+    ////thread->start();
+    ////connect(thread, &QThread::started, pdataLoadThread, &medDataLoadThread::process);
+    ////connect(pdataLoadThread, &medDataLoadThread::finished, thread, &QThread::quit);
+    ////connect(pdataLoadThread, &medDataLoadThread::finished, pdataLoadThread, &medDataLoadThread::deleteLater);
+    ////connect(thread, &QThread::finished, thread, &QThread::deleteLater);
+    ////pdataLoadThread->moveToThread(thread);
 
-    if(!d->multiLayer)
-        this->removeView();
-
-    if(!d->view)
+    if (prepareView())
     {
-        //TODO find from data(factory?) which view have to be created - RDE
-        medAbstractLayeredView* view;
-        view = medViewFactory::instance()->createView<medAbstractLayeredView>("medVtkView", this);
-
-        if(!view)
-        {
-            dtkWarn() << "medViewContainer: Unable to create a medVtkView";
-            return;
-        }
-        this->setView(view);
+        insertData(data);
     }
+}
+
+void medViewContainer::insertData(medAbstractData * data)
+{
     //TODO bring a way to know how to add the data to the view.
     //     assuming by now that we always have at least layered views.
     //     this can be did by having a method that return the base abstract class (category)
@@ -881,6 +909,35 @@ void medViewContainer::addData(medAbstractData *data)
     emit dataAdded(data);
 }
 
+bool medViewContainer::prepareView()
+{
+    bool retflag = true;
+
+    if (!d->multiLayer)
+        this->removeView();
+
+    if (!d->view)
+    {
+        //TODO find from data(factory?) which view have to be created - RDE
+        medAbstractLayeredView* view = nullptr;
+        view = medViewFactory::instance()->createView<medAbstractLayeredView>("medVtkView", this);
+
+        if (!view)
+        {
+            dtkWarn() << "medViewContainer: Unable to create a medVtkView";
+            retflag = false;
+        }
+        else
+        {
+            this->setView(view);
+        }
+        view->setParent(this);
+    }
+
+    return retflag;
+
+}
+
 void medViewContainer::addData(medDataIndex const &index)
 {
     if(!d->expectedUuids.isEmpty())
@@ -888,32 +945,48 @@ void medViewContainer::addData(medDataIndex const &index)
         return; // we're already waiting for a import to finish, don't accept other data
     }
 
-    if (index.isValidForSeries() || index.isV2()) //TODO must be refactored
+    if (index.isV2()) //TODO must be refactored
     {
-        this->addData(medDataManager::instance()->retrieveData(index));
-    }
-    else if (index.isValidForStudy())
-    {
-        // We get the list of each series from that study index, and open it
-        QList<medDataIndex> seriesList = medDataManager::instance()->getSeriesListFromStudy(index);
-        if (seriesList.count() > 0)
+        int type = medDataManager::instance()->getDataType(index);
+        if (type == 0 || type == 2)
         {
-            bool userIsOk = true;
-
-            if (seriesList.count() > 10)
+            this->addData(medDataManager::instance()->retrieveData(index));
+        }
+        else if (type == 1)
+        {
+            auto clidrenList = medDataManager::instance()->getSubData(index);
+            for (auto & child : clidrenList)
             {
-                userIsOk = userValidationForStudyDrop();
-            }
-
-            if (userIsOk)
-            {
-                for(medDataIndex seriesIndex : seriesList)
-                {
-                    this->addData(medDataManager::instance()->retrieveData(seriesIndex));
-                }
+                addData(child);
             }
         }
+        else
+        {
+            qDebug() << "Type dataset or folder unkwon, try to load data as dataset for \"" << index.uri();
+        }
     }
+    //else if (index.isValidForStudy())
+    //{
+    //    // We get the list of each series from that study index, and open it
+    //    QList<medDataIndex> seriesList = medDataManager::instance()->getSeriesListFromStudy(index);
+    //    if (seriesList.count() > 0)
+    //    {
+    //        bool userIsOk = true;
+    //
+    //        if (seriesList.count() > 10)
+    //        {
+    //            userIsOk = userValidationForStudyDrop();
+    //        }
+    //
+    //        if (userIsOk)
+    //        {
+    //            for(medDataIndex seriesIndex : seriesList)
+    //            {
+    //                this->addData(medDataManager::instance()->retrieveData(seriesIndex));
+    //            }
+    //        }
+    //    }
+    //}
 }
 
 bool medViewContainer::userValidationForStudyDrop()
@@ -993,26 +1066,40 @@ void medViewContainer::openFromSystem()
 
 void medViewContainer::open(const QString & path)
 {
-    QUuid uuid = medDataManager::instance()->importPath(path, false);
-    d->expectedUuids.append(uuid);
-    connect(medDataManager::instance(), SIGNAL(dataImported(medDataIndex,QUuid)),
-            this, SLOT(open_waitForImportedSignal(medDataIndex,QUuid)));
+    d->expectedPaths.append(path);
+    connect(medDataManager::instance(), SIGNAL(dataImported(medDataIndex,QUuid)),  this, SLOT(open_waitForImportedSignal(medDataIndex,QUuid)));
+    medDataManager::instance()->importPath(path, false);
 
-    QEventLoop loop;
-    connect(this, SIGNAL(importFinished()), &loop, SLOT(quit()), Qt::UniqueConnection);
-    loop.exec();
+//    QEventLoop loop;
+//    connect(this, SIGNAL(importFinished()), &loop, SLOT(quit()), Qt::UniqueConnection);
+//    loop.exec();
 
     //  save last directory opened in settings.
     medSettingsManager::instance()->setValue("path", "medViewContainer", path);
 }
 
+QString indexToFileSysPath(QString &index)
+{
+    QString pathRes;
+
+    QString uri = index;
+    if (uri.startsWith("fs:"))
+    {
+        int sourceDelimterIndex = uri.indexOf(QString(":"));
+
+        QStringList uriAsList = uri.right(uri.size() - sourceDelimterIndex - 1).split(QString("\r\n"));
+        pathRes = uriAsList.join('/');
+    }
+
+    return pathRes;
+}
+
 void medViewContainer::open_waitForImportedSignal(medDataIndex index, QUuid uuid)
 {
-    if(d->expectedUuids.contains(uuid))
+    if(d->expectedPaths.contains(indexToFileSysPath(index.asString())))
     {
-        d->expectedUuids.removeAll(uuid);
-        disconnect(medDataManager::instance(),SIGNAL(dataImported(medDataIndex, QUuid)),
-                   this,SLOT(open_waitForImportedSignal(medDataIndex, QUuid)));
+        d->expectedPaths.removeAll(indexToFileSysPath(index.asString()));
+        disconnect(medDataManager::instance(),SIGNAL(dataImported(medDataIndex, QUuid)), this,SLOT(open_waitForImportedSignal(medDataIndex, QUuid)));
         if (index.isValid())
         {
             this->addData(index);

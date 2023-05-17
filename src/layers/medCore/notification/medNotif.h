@@ -35,11 +35,11 @@ class MEDCORE_EXPORT medNotif : public QObject
     Q_OBJECT
 
 public:
-    static std::shared_ptr<medNotif> createNotif(notifLevel pi_criticityLevel, QString pi_title, QString pi_message, int pi_time_ms = -1, int pi_achivementPercentage = -1);
-    static std::shared_ptr<medNotif> createNotif(medNotifSys * sys, notifLevel pi_criticityLevel, QString pi_title, QString pi_message, int pi_time_ms = -1, int pi_achivementPercentage = -1);
+    static std::shared_ptr<medNotif> createNotif(notifLevel pi_criticityLevel, QString pi_title, QString pi_message, int pi_time_ms = -1, int pi_achievementPercentage = -1);
+    static std::shared_ptr<medNotif> createNotif(medNotifSys * sys, notifLevel pi_criticityLevel, QString pi_title, QString pi_message, int pi_time_ms = -1, int pi_achievementPercentage = -1);
 
     ~medNotif();
-    bool update(notifLevel pi_criticityLevel, int pi_achivementPercentage, QString newMessage = "");
+    bool update(notifLevel pi_criticityLevel, int pi_achievementPercentage, QString newMessage = "");
     
     notifLevel getCriticalityLevel();
     QString getTitle();

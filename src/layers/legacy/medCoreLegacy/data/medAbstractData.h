@@ -58,8 +58,8 @@ public:
     QList<medAbstractData*> derivedData();
     void setExpectedName(QString name);
     QString getExpectedName();
-public slots:
 
+public slots:
     void clearAttachedData();
     void addAttachedData( medAttachedData * data );
     void removeAttachedData( medAttachedData * data );

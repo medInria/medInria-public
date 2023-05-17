@@ -18,7 +18,6 @@
 #include <medAbstractDataFactory.h>
 #include <medCore.h>
 #include <medDataHub.h>
-#include <medDatabaseSettingsWidget.h>
 #include <medDataManager.h>
 #include <medDiffusionWorkspace.h>
 #include <medFilteringWorkspace.h>
@@ -131,7 +130,7 @@ void medApplication::initialize()
     //Register settingsWidgets
     medSettingsWidgetFactory* settingsWidgetFactory = medSettingsWidgetFactory::instance();
     settingsWidgetFactory->registerSettingsWidget<medStartupSettingsWidget>();
-    settingsWidgetFactory->registerSettingsWidget<medDatabaseSettingsWidget>();
+    //settingsWidgetFactory->registerSettingsWidget<medDatabaseSettingsWidget>();
 
     //Register annotations
     medAbstractDataFactory * datafactory = medAbstractDataFactory::instance();

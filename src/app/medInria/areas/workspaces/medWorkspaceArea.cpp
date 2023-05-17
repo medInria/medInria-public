@@ -16,12 +16,12 @@
 
 #include <medAbstractData.h>
 #include <medAbstractDataFactory.h>
-#include <medAbstractDbController.h>
+//#include <medAbstractDbController.h>
 #include <medAbstractImageData.h>
 #include <medAbstractImageView.h>
 #include <medAbstractView.h>
 #include <medDatabaseDataSource.h>
-#include <medDatabaseNonPersistentController.h>
+//#include <medDatabaseNonPersistentController.h>
 #include <medDataIndex.h>
 #include <medDataManager.h>
 #include <medDataSourceManager.h>
@@ -424,7 +424,7 @@ void medWorkspaceArea::addDatabaseView(medDatabaseDataSource* dataSource)
     databaseViewLayout->setSpacing(0);
     databaseViewLayout->setContentsMargins(0,0,0,0);
 
-    auto *pCompactViewWidget = dataSource->compactViewWidget();
+    auto *pCompactViewWidget = dataSource->buildSourcesTreeViewList();
 
     databaseViewLayout->addWidget(pCompactViewWidget);
     d->navigatorContainer->setLayout(databaseViewLayout);
@@ -433,9 +433,8 @@ void medWorkspaceArea::addDatabaseView(medDatabaseDataSource* dataSource)
     //little tricks to force to recompute the stylesheet.
     pCompactViewWidget->setStyleSheet("/* */");
 
-    connect(pCompactViewWidget, SIGNAL(open(const medDataIndex&)),
-            this, SIGNAL(open(const medDataIndex&)),
-            Qt::UniqueConnection);
+    bool b1 = connect(dataSource, SIGNAL(openOnDoubleClick(medDataIndex)), this, SIGNAL(open(const medDataIndex&)), Qt::UniqueConnection);
+    //connect(pCompactViewWidget, SIGNAL(open(const medDataIndex&)), this, SIGNAL(open(const medDataIndex&)), Qt::UniqueConnection);
 }
 
 void medWorkspaceArea::switchToStackedViewContainers(medTabbedViewContainers* stack)

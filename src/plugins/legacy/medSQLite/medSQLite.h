@@ -20,7 +20,7 @@
 #include <medGroupParameter.h>
 #include <QSqlDatabase>
 
-
+class Worker;
 template <typename T>
 class medSQlite : public medAbstractSource
 {
@@ -91,7 +91,7 @@ public:
 
     QList<QMap<QString, QString>> getMandatoryAttributes(unsigned int pi_uiLevel, QString parentId) override;
 
-    bool getAdditionalAttributes(unsigned int pi_uiLevel, QString id, datasetAttributes4 &po_attributes) override;
+    bool getAdditionalAttributes(unsigned int pi_uiLevel, QString id, datasetAttributes &po_attributes) override;
 
     /* ***********************************************************************/
     /* *************** Get data          *************************************/
@@ -103,9 +103,9 @@ public:
     //    QString addData(QVariant data, QStringList parentUri, QString name) override;
     virtual bool addDirectData(QVariant data, levelMinimalEntries &pio_minimalEntries, unsigned int pi_uiLevel, QString parentKey) override;
     virtual int addAssyncData(QVariant data, levelMinimalEntries &pio_minimalEntries, unsigned int pi_uiLevel, QString parentKey) override;
-    virtual bool createPath(QList<levelMinimalEntries> &pio_path, datasetAttributes4 const &pi_attributes, unsigned int pi_uiLevel = 0, QString parentKey = "") override;
-    virtual bool createFolder(levelMinimalEntries &pio_minimalEntries, datasetAttributes4 const &pi_attributes, unsigned int pi_uiLevel, QString parentKey) override;
-    virtual bool alterMetaData(datasetAttributes4 const &pi_attributes, unsigned int pi_uiLevel, QString key) override;
+    virtual bool createPath(QList<levelMinimalEntries> &pio_path, datasetAttributes const &pi_attributes, unsigned int pi_uiLevel = 0, QString parentKey = "") override;
+    virtual bool createFolder(levelMinimalEntries &pio_minimalEntries, datasetAttributes const &pi_attributes, unsigned int pi_uiLevel, QString parentKey) override;
+    virtual bool alterMetaData(datasetAttributes const &pi_attributes, unsigned int pi_uiLevel, QString key) override;
     virtual bool getThumbnail(QPixmap &po_thumbnail, unsigned int pi_uiLevel, QString key) override;
     virtual bool setThumbnail(QPixmap &pi_thumbnail, unsigned int pi_uiLevel, QString key) override;
     virtual bool commitData(QVariant data, levelMinimalEntries &pio_minimalEntries, unsigned int pi_uiLevel, QString parentKey) override { return false; };
@@ -117,6 +117,8 @@ public slots:
     void abort(int pi_iRequest) override;
 
     void updateDatabaseName(QString const &path);
+
+
 
 private:
     // methods
@@ -133,7 +135,7 @@ private:
 
     QList<QMap<QString, QString>> getSeriesMandatoriesAttributes(const QString &key);
 
-    bool getSeriesAdditionalAttributes(const QString &key, datasetAttributes4 &po_attributes);
+    bool getSeriesAdditionalAttributes(const QString &key, datasetAttributes &po_attributes);
 
     QString addDataToPatientLevel(QMap<QString, QString> &mandatoryAttributes);
     QString addDataToStudyLevel(QMap<QString, QString> mandatoryAttributes);
@@ -162,6 +164,7 @@ private:
     QMap<int, QTime*> m_requestToTimeMap;
 
     QThread m_Thread;
+    Worker *m_pWorker;
 //    QTimer m_timer;
 //    void timeManagement();
 };

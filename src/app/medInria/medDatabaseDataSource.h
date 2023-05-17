@@ -29,29 +29,30 @@ public:
     medDatabaseDataSource(QWidget *parent = nullptr);
     ~medDatabaseDataSource();
 
-    QWidget* mainViewWidget();
-    QWidget* compactViewWidget();
+    QString  tabName();
+    QWidget* buildSourcesBrowser();
+    QWidget* buildSourceListSelectorWidget();
 
-    QWidget* sourceSelectorWidget();
-
-    QString tabName();
+    QWidget* buildSourcesTreeViewList();
 
     QList<medToolBox*> getToolBoxes();
 
-    QString description() const;
-
 public slots:
-    void onOpeningFailed(const medDataIndex& index, QUuid);
     void currentSourceChanged(int current);
 
 signals:
-    void open(const medDataIndex&);
+    void openOnDoubleClick(medDataIndex);
     void changeSource(int current);
 
 protected slots:
-    void onFilter(const QString &text, int column);
-    void compactFilter(const QString &text, int column);
+    //void onFilter(const QString &text, int column);
+    //void compactFilter(const QString &text, int column);
 
 private:
     medDatabaseDataSourcePrivate* d;
+
+    // Hérité via medAbstractDataSource
+    virtual QWidget * mainViewWidget() override;
+    virtual QWidget * sourceSelectorWidget() override;
+    virtual QString description() const override;
 };

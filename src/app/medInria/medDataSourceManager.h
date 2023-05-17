@@ -60,7 +60,6 @@ protected slots:
     void loadFromPath(QString path);
 
 private:
-
     static medDataSourceManager *s_instance;
     medDataSourceManagerPrivate *d;
 };

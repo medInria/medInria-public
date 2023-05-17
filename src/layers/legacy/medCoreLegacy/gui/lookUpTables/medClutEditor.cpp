@@ -23,7 +23,6 @@
 #include <medLoadLUTDialog.h>
 #include <medLUTToXMLWriter.h>
 #include <medSaveLUTDialog.h>
-#include <medStorage.h>
 #include <medXMLToLUTReader.h>
 
 // /////////////////////////////////////////////////////////////////

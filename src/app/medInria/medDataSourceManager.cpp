@@ -21,12 +21,10 @@
 #include <medDataManager.h>
 #include <medPacsWidget.h>
 #include <medMetaDataKeys.h>
-#include <medStorage.h>
 #include <medMessageController.h>
 
 #include <medFileSystemDataSource.h>
 #include <medDatabaseDataSource.h>
-#include <medPacsDataSource.h>
 
 #include <medApplication.h>
 
@@ -37,7 +35,6 @@ public:
 
     medDatabaseDataSource *dbSource;
     medFileSystemDataSource *fsSource;
-    medPacsDataSource *pacsSource;
 };
 
 medDataSourceManager::medDataSourceManager(): d(new medDataSourceManagerPrivate)
@@ -52,35 +49,18 @@ medDataSourceManager::medDataSourceManager(): d(new medDataSourceManagerPrivate)
     d->dataSources.push_back(d->fsSource);
     connectDataSource(d->fsSource);
 
-    // Pacs data source
-    medPacsDataSource *pacsDataSource = new medPacsDataSource;
-    medPacsWidget * mainPacsWidget = qobject_cast<medPacsWidget*> (pacsDataSource->mainViewWidget());
-    //make the widget hide if not functional (otehrwise it flickers in and out).
-    mainPacsWidget->hide();
-    if (mainPacsWidget->isServerFunctional())
-    {
-        d->pacsSource = new medPacsDataSource();
-        d->dataSources.push_back(d->pacsSource);
-        connectDataSource(d->pacsSource);
-    }
-    else mainPacsWidget->deleteLater();
-
     // dynamic data sources (from plugins)
+    //for(QString dataSourceName : medAbstractDataSourceFactory::instance()->dataSourcePlugins())
+    //{
+    //    dtkDebug()<< "factory creates dataSource:" << dataSourceName;
+    //    medAbstractDataSource *dataSource = medAbstractDataSourceFactory::instance()->create(dataSourceName, 0);
+    //    d->dataSources.push_back(dataSource);
+    //    connectDataSource(dataSource);
+    //}
 
-    for(QString dataSourceName : medAbstractDataSourceFactory::instance()->dataSourcePlugins())
-    {
-        dtkDebug()<< "factory creates dataSource:" << dataSourceName;
-        medAbstractDataSource *dataSource = medAbstractDataSourceFactory::instance()->create(dataSourceName, 0);
-        d->dataSources.push_back(dataSource);
-        connectDataSource(dataSource);
-    }
-
-    connect(d->fsSource, SIGNAL(open(QString)),
-            this, SLOT(openFromPath(QString)));
-    connect(d->fsSource, SIGNAL(load(QString)),
-            this, SLOT(loadFromPath(QString)));
-    connect(d->dbSource, SIGNAL(open(const medDataIndex &)),
-            this, SLOT(openFromIndex(medDataIndex)));
+    connect(d->fsSource, SIGNAL(open(QString)), this, SLOT(openFromPath(QString)));
+    connect(d->fsSource, SIGNAL(load(QString)), this, SLOT(loadFromPath(QString)));
+    connect(d->dbSource, SIGNAL(open(const medDataIndex &)), this, SLOT(openFromIndex(medDataIndex)));
 }
 
 void medDataSourceManager::connectDataSource(medAbstractDataSource *dataSource)
@@ -119,13 +99,13 @@ void medDataSourceManager::importData(medAbstractData *data)
     if ((s_patientName == "")||(s_studyName == "")||(s_seriesName == ""))
         return;
 
-    QFileInfo fileInfo (medStorage::dataLocation() + "/" + s_patientName + "/" + s_studyName + "/");
-
-    if (!fileInfo.dir().exists() && !medStorage::mkpath (fileInfo.dir().path()))
-    {
-        dtkDebug() << "Cannot create directory: " << fileInfo.dir().path();
-        return;
-    }
+    //QFileInfo fileInfo (medStorage::dataLocation() + "/" + s_patientName + "/" + s_studyName + "/");
+    //
+    //if (!fileInfo.dir().exists() && !medStorage::mkpath (fileInfo.dir().path()))
+    //{
+    //    dtkDebug() << "Cannot create directory: " << fileInfo.dir().path();
+    //    return;
+    //}
 
     medDataManager::instance()->importData(data, true);
 }
@@ -144,7 +124,7 @@ void medDataSourceManager::importFile(QString path)
 
 void medDataSourceManager::fetchData(QHash<QString, QHash<QString, QVariant> > pData, QHash<QString, QHash<QString, QVariant> > sData)
 {
-    medDataManager::instance()->fetchData(pData, sData);
+    //medDataManager::instance()->fetchData(pData, sData);
 }
 
 void medDataSourceManager::emitDataReceivingFailed(QString fileName)

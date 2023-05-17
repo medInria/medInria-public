@@ -89,6 +89,8 @@ public slots:
     void setView(medAbstractView* view);
     void removeView();
     void addData(medAbstractData* data);
+    void insertData(medAbstractData * data);
+    bool prepareView();
     void addData(medDataIndex const &index);
 
     void setSelected(bool selected);

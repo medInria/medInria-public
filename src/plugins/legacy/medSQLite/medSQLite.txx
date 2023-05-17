@@ -47,11 +47,11 @@ medSQlite<T>::medSQlite()
     m_DbPath = new medStringParameter("LocalDataBasePath", this);
 //    QObject::connect(m_DbPath, &medStringParameter::valueChanged, this, &medSQlite::updateDatabaseName);
 
-    m_MandatoryKeysByLevel["Patient"] = QStringList({"id", "name", "patientId",
+    m_MandatoryKeysByLevel["Patient"] = QStringList({"id", "name", "patientId", "type",
                                                      "birthdate", "gender"});
-    m_MandatoryKeysByLevel["Study"] = QStringList( {"id", "name", "uid", "patient"});
+    m_MandatoryKeysByLevel["Study"] = QStringList( {"id", "name", "uid", "type", "patient"});
     m_MandatoryKeysByLevel["Series"] = QStringList( {"id", "name", "uid", "study",
-                                                     "age", "modality", "protocol",
+                                                     "age", "modality", "type", "protocol",
                                                      "origin", "rows", "columns"}) ;
 
     m_PatientLevelAttributes[PatientIDKey] = "";
@@ -106,6 +106,15 @@ medSQlite<T>::medSQlite()
 //    m_timer.setInterval(5000);
 //    m_timer.start();
 //    QObject::connect(&m_timer, &QTimer::timeout, this, &medSQlite::timeManagement);
+
+    m_pWorker = new Worker();
+    m_pWorker->moveToThread(&m_Thread);
+    bool c1 = QObject::connect(m_pWorker, &Worker::signalWithDelay, m_pWorker, &Worker::sendSignalWithDelay);
+    bool c2 = QObject::connect(m_pWorker, &Worker::sendProgress, this, [&](int requestId, int status)
+    {
+        emit progress(requestId, (medAbstractSource::eRequestStatus)status);
+    });
+    m_Thread.start();
 }
 
 template<typename T>
@@ -278,7 +287,7 @@ bool medSQlite<T>::isWritable()
 template <typename T>
 bool medSQlite<T>::isLocal()
 {
-    return true;
+    return false;
 }
 
 template <typename T>
@@ -424,6 +433,7 @@ QList<medAbstractSource::levelMinimalEntries> medSQlite<T>::getPatientMinimalEnt
                 entry.key = query.value("db_id").toString();
                 entry.name = query.value("patient_name").toString();
                 entry.description = query.value("patient_id").toString();
+                entry.type = entryType::folder;
                 patientEntries.append(entry);
             }
         }
@@ -460,6 +470,7 @@ QList<medAbstractSource::levelMinimalEntries> medSQlite<T>::getStudyMinimalEntri
                 entry.key = query.value("db_id").toString();
                 entry.name = query.value("study_name").toString();
                 entry.description = query.value("study_instance_uid").toString();
+                entry.type = entryType::folder;
                 studyEntries.append(entry);
             }
             // TODO : call to success ?
@@ -502,6 +513,7 @@ QList<medAbstractSource::levelMinimalEntries> medSQlite<T>::getSeriesMinimalEntr
                 entry.key = query.value("db_id").toString();
                 entry.name = query.value("series_name").toString();
                 entry.description = query.value("series_instance_uid").toString();
+                entry.type = entryType::dataset;
                 seriesEntries.append(entry);
             }
             // TODO : call to success ?
@@ -551,7 +563,8 @@ QList<QMap<QString, QString>> medSQlite<T>::getPatientMandatoriesAttributes(cons
         QString selectQuery = "SELECT ";
         for (auto str : patientMandatoryKeys)
         {
-            selectQuery += str + " as " + str + ", ";
+            if(str!="type")
+                selectQuery += str + " as " + str + ", ";
         }
         selectQuery = selectQuery.left(selectQuery.size() - 2);
         if (key.isEmpty())
@@ -593,6 +606,7 @@ QList<QMap<QString, QString>> medSQlite<T>::getPatientMandatoriesAttributes(cons
                 {
                     patientMap[str] = query.value(str).toString();
                 }
+                patientMap["type"] = entryTypeToString(entryType::folder);
                 patientRes.append(patientMap);
             }
         }
@@ -613,7 +627,8 @@ QList<QMap<QString, QString>> medSQlite<T>::getStudyMandatoriesAttributes(const 
         QString selectQuery = "SELECT ";
         for (auto str : studyMandatoryKeys)
         {
-            selectQuery += str + " as " + str + ", ";
+            if (str != "type")
+                selectQuery += str + " as " + str + ", ";
         }
         selectQuery = selectQuery.left(selectQuery.size() - 2);
         selectQuery += " from study where patient = :patient";
@@ -634,6 +649,7 @@ QList<QMap<QString, QString>> medSQlite<T>::getStudyMandatoriesAttributes(const 
                 {
                     studyMap[str] = query.value(str).toString();
                 }
+                studyMap["type"] = entryTypeToString(entryType::folder);
                 studyRes.append(studyMap);
             }
         }
@@ -654,7 +670,8 @@ QList<QMap<QString, QString>> medSQlite<T>::getSeriesMandatoriesAttributes(const
         QString selectQuery = "SELECT ";
         for (auto str : seriesMandatoryKeys)
         {
-            selectQuery += str + " as " + str + ", ";
+            if (str != "type")
+                selectQuery += str + " as " + str + ", ";
         }
         selectQuery = selectQuery.left(selectQuery.size() - 2);
         selectQuery += " from series where study = :study";
@@ -675,6 +692,7 @@ QList<QMap<QString, QString>> medSQlite<T>::getSeriesMandatoriesAttributes(const
                 {
                     seriesMap[str] = query.value(str).toString();
                 }
+                seriesMap["type"] = entryTypeToString(entryType::dataset);
                 seriesRes.append(seriesMap);
             }
         }
@@ -683,7 +701,7 @@ QList<QMap<QString, QString>> medSQlite<T>::getSeriesMandatoriesAttributes(const
 }
 
 template <typename T>
-bool medSQlite<T>::getAdditionalAttributes(unsigned int pi_uiLevel, QString id, datasetAttributes4 &po_attributes)
+bool medSQlite<T>::getAdditionalAttributes(unsigned int pi_uiLevel, QString id, datasetAttributes &po_attributes)
 {
     bool bRes = false;
     // renommer id en parentId ?
@@ -706,7 +724,7 @@ bool medSQlite<T>::getAdditionalAttributes(unsigned int pi_uiLevel, QString id, 
 }
 
 template<typename T>
-bool medSQlite<T>::getSeriesAdditionalAttributes(const QString &key, medAbstractSource::datasetAttributes4 &po_attributes)
+bool medSQlite<T>::getSeriesAdditionalAttributes(const QString &key, medAbstractSource::datasetAttributes &po_attributes)
 {
     bool bRes;
     int id = key.toInt(&bRes);
@@ -788,24 +806,8 @@ int medSQlite<T>::getAssyncData(unsigned int pi_uiLevel, QString id)
     int iRequestId = ++s_RequestId;
     QVariant data = getDirectData(pi_uiLevel, id);
     m_requestToDataMap[iRequestId] = data;
-//    emit progress(iRequestId, eRequestStatus::pending);
-    auto *worker = new Worker;
-    worker->moveToThread(&m_Thread);
-    QObject::connect(&m_Thread, &QThread::finished, worker, &QObject::deleteLater);
-    QObject::connect(&m_Thread, &QThread::started, worker, [=]() {
-        worker->sendSignalWithDelay(iRequestId);
-    });
 
-    QObject::connect(worker, &Worker::sendProgress, this, [&](int requestId, int status){
-        emit progress(requestId, static_cast<medAbstractSource::eRequestStatus>(status));
-//        &medAbstractSource::progress);
-    });
-//    worker->sendSignalWithDelay(iRequestId);
-    m_Thread.start();
-
-//    m_requestToTimeMap[iRequestId] = new QTime();
-//    auto time = m_requestToTimeMap[iRequestId];
-//    time->setHMS(0, 0, 30);
+    m_pWorker->signalWithDelay(iRequestId);
 
     return iRequestId;
 }
@@ -1038,14 +1040,14 @@ int medSQlite<T>::addAssyncData(QVariant data, levelMinimalEntries &pio_minimalE
 }
 
 template <typename T>
-bool medSQlite<T>::createPath(QList<levelMinimalEntries> &pio_path, datasetAttributes4 const &pi_attributes, unsigned int pi_uiLevel, QString parentKey)
+bool medSQlite<T>::createPath(QList<levelMinimalEntries> &pio_path, datasetAttributes const &pi_attributes, unsigned int pi_uiLevel, QString parentKey)
 {
     // TODO
     return false;
 }
 
 template <typename T>
-bool medSQlite<T>::createFolder(levelMinimalEntries &pio_minimalEntries, datasetAttributes4 const &pi_attributes, unsigned int pi_uiLevel, QString parentKey)
+bool medSQlite<T>::createFolder(levelMinimalEntries &pio_minimalEntries, datasetAttributes const &pi_attributes, unsigned int pi_uiLevel, QString parentKey)
 {
     bool bRes = false;
     QSqlQuery query = m_Engine.exec();
@@ -1205,7 +1207,7 @@ QString medSQlite<T>::addDataToStudyLevel(QMap<QString, QString> mandatoryAttrib
     return keyRes;
 }
 template <typename T>
-bool medSQlite<T>::alterMetaData(datasetAttributes4 const &pi_attributes, unsigned int pi_uiLevel, QString key)
+bool medSQlite<T>::alterMetaData(datasetAttributes const &pi_attributes, unsigned int pi_uiLevel, QString key)
 {
     // TODO
     return false;

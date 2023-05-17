@@ -17,17 +17,20 @@
 #include <QObject>
 #include <medAbstractSource.h>
 
+#include <QDebug>
+#include <QRunnable>
+
 class Worker : public QObject
 {
     Q_OBJECT
 public:
-    Worker(){};
+    Worker() {};
+    virtual ~Worker() override { qDebug() << "########### Coucou \n"; }
 
 public slots:
     void sendSignalWithDelay(const int iRequestId);
 
 signals:
     void sendProgress(int po_iRequest, int status);
+    void signalWithDelay(const int iRequestId);
 };
-
-
