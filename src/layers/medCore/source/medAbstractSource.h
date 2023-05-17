@@ -23,11 +23,25 @@
 
 class medAbstractWritingPolicy;
 
+enum entryType { dataset = 0, folder, both };
+
 class MEDCORE_EXPORT medAbstractSource : public QObject
 {
     Q_OBJECT
 
 public:
+    enum entryType {dataset = 0, folder = 1, both = 2};
+    static constexpr const char* entryTypeToString(entryType e) throw()
+    {
+        switch (e)
+        {
+            case entryType::dataset: return "dataset";
+            case entryType::folder: return "folder";
+            case entryType::both: return "both";
+            default: throw std::invalid_argument("Unimplemented item");
+        }
+    }
+
     struct datasetAttributes
     {
         QMap<QString, QString> values; // <keyName, value>
@@ -47,6 +61,7 @@ public:
         QString key; // TODO : change
         QString name;
         QString description;
+        entryType type;
     };
 
     struct levelMinimalKeys
@@ -54,6 +69,7 @@ public:
         QString key;
         QString name;
         QString description;
+        QString type;
     };
 
 	

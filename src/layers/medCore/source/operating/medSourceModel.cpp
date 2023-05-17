@@ -407,7 +407,7 @@ Qt::ItemFlags medSourceModel::flags(const QModelIndex & index) const
 QStringList medSourceModel::mimeTypes() const
 {
     QStringList types;
-    types << "med/index2";
+    types << "med/index2" << "text/uri-list";
     return types;
 }
 
@@ -434,6 +434,72 @@ QMimeData * medSourceModel::mimeData(const QModelIndexList & indexes) const
     mimeData->setData("med/index2", encodedData);
     return mimeData;
 }
+
+bool medSourceModel::dropMimeData(const QMimeData * data, Qt::DropAction action, int row, int column, const QModelIndex & parent)
+{
+
+    bool bRes = false;
+
+    if (data->hasFormat("med/index2"))
+    {
+        auto indexList = medDataIndex::readMimeDataMulti(data);
+
+        for (auto & index : indexList)
+        {
+            switch (action)
+            {
+                case Qt::CopyAction:
+                case Qt::LinkAction:
+                    addDataFromSource(index, nullptr, parent); break;
+                case Qt::MoveAction:
+                    //TODO move
+                default:
+                    break;
+            }
+        }
+    }
+    else if (data->hasFormat("text/uri-list"))
+    {
+        for (const QUrl & url : data->urls())
+        {
+            addDataFromFile(url.toLocalFile(), nullptr, parent);
+        }
+    }
+
+    return bRes;
+}
+
+
+
+void medSourceModel::addDataFromSource(medDataIndex dataIndex, medAbstractData * data, const QModelIndex & parent)
+{
+    auto *pHub = d->parent;
+    auto destinationIndex = dataIndexFromModelIndex(parent);
+
+    if (!parent.isValid())
+    {        
+        destinationIndex.setUri(getSourceIntanceId() + ':');
+    }
+    
+    pHub->copyData(dataIndex, destinationIndex);
+
+}
+
+void medSourceModel::addDataFromFile(QString path, medAbstractData * data, const QModelIndex & parent)
+{
+    auto *pHub = d->parent;
+    auto destinationIndex = dataIndexFromModelIndex(parent);
+
+    if (!parent.isValid())
+    {
+        destinationIndex.setUri(getSourceIntanceId() + ':');
+    }
+
+    pHub->copyData(path, destinationIndex);
+
+}
+
+
 
 
 
@@ -495,7 +561,9 @@ bool medSourceModel::fetch(QStringList uri) //See populateLevelV2
     auto index = toIndex(uri);
     if (index.isValid() || uri.size()==1)
     {
+        beginResetModel();
         populateLevel(toIndex(uri));
+        endResetModel();
         bRes = true;
     }
 
@@ -623,6 +691,19 @@ bool medSourceModel::setAdditionnalMetaData(QModelIndex const & index, QList<QMa
 
     return bRes;
 }
+
+medDataIndex medSourceModel::dataIndexFromModelIndex(const QModelIndex &index) const
+{
+    medDataIndex dataIndexRes;
+
+    if (index.model() == this && index.isValid())
+    {
+        dataIndexRes = reinterpret_cast<medSourceModelItem*>(index.internalPointer())->uri();
+    }
+
+    return dataIndexRes;
+}
+
 QModelIndex medSourceModel::toIndex(QString uri) const
 {
     int sourceDelimterIndex = uri.indexOf(QString(":")); //TODO 06
@@ -1225,6 +1306,10 @@ void medSourceModel::addRowRanges(QMap<int, QList<QMap<QString, QString>>> &entr
                     }
                 }
                 pItemTmp->setData(var[k], iCol);
+                if (k == "type")
+                {
+                    pItemTmp->setData(var[k], 1, DATATYPE_ROLE);
+                }
             }
             pItemTmp->setParent(pItem);
             pItem->insert(first + iOffsetRange, pItemTmp);            
@@ -1251,3 +1336,23 @@ void medSourceModel::expandAll(QModelIndex index)
     }
 }
 
+int medSourceModel::getDataType(const QModelIndex & index)
+{
+    int iRes = -1;
+
+    auto value = data(index, DATATYPE_ROLE).toString();
+    if (value == "dataset")
+    {
+        iRes = DATATYPE_ROLE_DATASET;
+    }
+    else if (value == "folder")
+    {
+        iRes = DATATYPE_ROLE_FOLDER;
+    }
+    else if (value == "both")
+    {
+        iRes = DATATYPE_ROLE_BOTH;
+    }
+
+    return iRes;
+}

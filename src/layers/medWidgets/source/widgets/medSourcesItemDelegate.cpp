@@ -18,7 +18,7 @@ void medSourcesItemDelegate::paint(QPainter *painter, const QStyleOptionViewItem
     QStyleOptionViewItem opt = option;
     initStyleOption(&opt, getIndex(index));
     opt.decorationSize = QSize(16,16);
-
+    
     if (index.isValid())
     {
         auto value = getIndex(index).data(DATASTATE_ROLE).toString();
@@ -51,6 +51,7 @@ void medSourcesItemDelegate::paint(QPainter *painter, const QStyleOptionViewItem
         }
     }
     QStyledItemDelegate::paint(painter, opt, index);
+    //QStyledItemDelegate::paint(painter, option, index);
 
 }
 

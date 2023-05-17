@@ -20,7 +20,7 @@
 #include <medGroupParameter.h>
 #include <QSqlDatabase>
 
-
+class Worker;
 template <typename T>
 class medSQlite : public medAbstractSource
 {
@@ -118,6 +118,8 @@ public slots:
 
     void updateDatabaseName(QString const &path);
 
+
+
 private:
     // methods
     bool isValidDatabaseStructure();
@@ -162,6 +164,7 @@ private:
     QMap<int, QTime*> m_requestToTimeMap;
 
     QThread m_Thread;
+    Worker *m_pWorker;
 //    QTimer m_timer;
 //    void timeManagement();
 };

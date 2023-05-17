@@ -23,6 +23,7 @@
 
 #include <medDataIndex.h>
 #include <medAbstractData.h>
+#include <medAsyncRequest.h>
 #include <medDefaultWritingPolicy.h>
 #include <medVirtualRepresentation.h>
 
@@ -32,57 +33,23 @@
 #define REQUEST_TIME_OUT 120
 #define REQUEST_TIME_OUT_PULLING (REQUEST_TIME_OUT/20 ? REQUEST_TIME_OUT/20 : 1)
 
-
-enum asyncRequestType { getRqstType = 1, addRqstType = 2 };
-struct asyncRequest
-{
-    asyncRequest() { stampTimeout = QDateTime::currentSecsSinceEpoch() + REQUEST_TIME_OUT; needMedAbstractConversion = false; noLongerValid = false; }
-    asyncRequest(const asyncRequest &rqst) { *this = rqst; }
-    asyncRequest & operator=(asyncRequest const & rqst) { type = rqst.type; tmpId = rqst.tmpId; uri = rqst.uri; stampTimeout = rqst.stampTimeout;  needMedAbstractConversion = rqst.needMedAbstractConversion; noLongerValid = rqst.noLongerValid; return *this; }
-    asyncRequestType type;
-    QString tmpId;
-    QStringList uri;
-
-    QString dataName;
-
-    qint64 stampTimeout;
-    QEventLoop waiter;
-    bool needMedAbstractConversion;
-    bool noLongerValid;
-
-public:
-    friend bool operator< (asyncRequest const & a, asyncRequest const & b);
-    friend bool operator> (asyncRequest const & a, asyncRequest const & b);
-    friend bool operator==(asyncRequest const & a, asyncRequest const & b);
-};
-
-inline bool operator< (asyncRequest const & a, asyncRequest const & b) { return a.uri < b.uri; };
-inline bool operator> (asyncRequest const & a, asyncRequest const & b) { return a.uri > b.uri; };
-inline bool operator==(asyncRequest const & a, asyncRequest const & b) { return a.uri == b.uri && a.tmpId == b.tmpId && a.type == b.type; };
-
-
-
 class MEDCORE_EXPORT medDataHub : public QObject
 {
     Q_OBJECT
 
-public:    
-    struct datasetAttributes
-    {
-        QMap<QString, QString> values; // <keyName, value>
-        QMap<QString, QString> tags;   // <keyName, tag value>
-    };
-    using  listAttributes = QList<datasetAttributes>;
+public:
+    class datasetAttributes;
+
 
     static medDataHub* instance(QObject *parent = nullptr);
-	~medDataHub();
+    ~medDataHub();
 
-public:
-	// ////////////////////////////////////////////////////////////////////////////////////////////
-    // Members functions to get Data, metadata and informations                Datasets handling
     QString getDataName(medDataIndex const & index);
+
     medAbstractData * getData(medDataIndex const & index);
     datasetAttributes getMetaData(medDataIndex const & index);
+
+
     bool saveData(medAbstractData *pi_pData, QString const &pi_baseName, QStringList &pio_uri);
     bool getChildrenNames(medDataIndex index, QStringList &names);
     bool createPath(QString pi_sourceId, QStringList pi_folders, QStringList &po_uri, QMap<int, QString> pi_knownKeys = QMap<int, QString>());
@@ -90,9 +57,16 @@ public:
     bool writeResults(QString pi_sourceId, medAbstractData * pi_pData, QStringList pi_UriOfRelatedData, QString pi_basePath, medWritingPolicyData & pi_writingPolicyData, medAbstractWritingPolicy * pi_pWritingPolicy);
     QUuid writeResultsHackV3(medAbstractData &data, bool originSrc); //To Adapt
 
+    bool copyData(QString path, medDataIndex destinationIndex);
+    bool copyData(medDataIndex indexToCpy, medDataIndex destinationIndex);
 	bool fetchData(medDataIndex const & index);
 	bool pushData(medDataIndex const & index);
 
+
+    medAbstractData * loadDataFromPath(QString const path, QUuid uuid = QUuid());
+    //bool hasData(medDataIndex const & index);
+    QList< medDataIndex > getSubData(medDataIndex const & index);
+    int getDataType(medDataIndex const & index);
 
     // ////////////////////////////////////////////////////////////////////////////////////////////
     // Members functions for GUI    
@@ -105,6 +79,7 @@ public:
 
     void setVirtualRepresentation(medVirtualRepresentation * virtRep) { m_virtualRepresentation = virtRep; }
     medVirtualRepresentation * getVirtualRepresentation() { return m_virtualRepresentation; }
+
 
 
 public slots:
@@ -125,6 +100,8 @@ signals:
     void getAsyncStatus(medAbstractSource* , int, medAbstractSource::eRequestStatus);
     void sourceAdded   (QString /*sourceInstanceId*/);
     void sourceRemoved (QString /*sourceInstanceId*/);
+    void dataLoaded    (medDataIndex);
+    void dataExported  (medAbstractData *, QString);
 
 private:
     medDataHub(QObject *parent = nullptr);
@@ -158,8 +135,16 @@ private:
     medVirtualRepresentation * m_virtualRepresentation;
     QMap<medDataIndex, dtkSmartPointer<medAbstractData> > m_IndexToData;
     static medDataHub * s_instance;
+
+public:
+    struct datasetAttributes
+    {
+        QMap<QString, QString> values; // <keyName, value>
+        QMap<QString, QString> tags;   // <keyName, tag value>
+    };
+
+    using  listAttributes = QList<datasetAttributes>;
 };
 
 QString fileSysPathToIndex(const QString &path );
-
 QString indexToFileSysPath(QString &index);

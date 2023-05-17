@@ -26,9 +26,6 @@ public:
     QString                baseName;
     QString                prefix;
     QString                suffix;
-    //QStringList            relativeDirDstPath;
-    //QStringList            relativeDirDstUri;
-    //QMap<QString, QString> relativeDirDst;
     QMap<QString, QString> metaData;
 };
 

@@ -240,8 +240,11 @@ int main(int argc, char *argv[])
         //medDataManager::instance()->setDatabaseLocation();
         medDataManager::instance()->setIndexV2Handler([](medDataIndex const & dataIndex) -> medAbstractData* {return medDataHub::instance()->getData(dataIndex); },
                                                       [](medAbstractData & data, bool originSrc) -> QUuid {return medDataHub::instance()->writeResultsHackV3(data, originSrc); },
-                                                      [](QString const & path, QUuid uuid) -> void {return medDataHub::instance()->loadDataFromLocalFileSystem(path, uuid); }
+                                                      [](QString const & path, QUuid uuid) -> void {return medDataHub::instance()->loadDataFromLocalFileSystem(path, uuid); },
+                                                      [](medDataIndex const & dataIndex) -> int {return medDataHub::instance()->getDataType(dataIndex); },
+                                                      [](medDataIndex const & dataIndex) -> QList<medDataIndex> {return medDataHub::instance()->getSubData(dataIndex); }
         );//TODO Remove ok c'est le truc le moins classe du monde (Part3)
+
         medPluginManager::instance()->setVerboseLoading(true);
         medPluginManager::instance()->initialize();
         auto sourceHandler = medSourceHandler::instance(&application);

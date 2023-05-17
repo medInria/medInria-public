@@ -2,6 +2,7 @@
 
 #include <medDataHub.h>
 #include <medSourceModel.h>
+#include <medSourceModelItem.h>
 #include <medSourceModelPresenter.h>
 
 #include <medDataInfoWidget.h>
@@ -89,9 +90,10 @@ void medSourcesWidget::addSource(medDataHub *dataHub, QString sourceInstanceId)
     });
 
     sourceTreeView->setDragEnabled(true);
-    sourceTreeView->viewport()->setAcceptDrops(false);
+    sourceTreeView->viewport()->setAcceptDrops(true);
+    sourceTreeView->setAcceptDrops(true);
     //sourceTreeView->setDropIndicatorShown(true);
-    sourceTreeView->setDragDropMode(QAbstractItemView::DragOnly);
+    sourceTreeView->setDragDropMode(QAbstractItemView::DragDrop);
 
     //context menu code
     auto pMenu = new medSourceContextMenu(sourceTreeView);
@@ -233,7 +235,7 @@ void medSourcesWidget::onDoubleClick(QModelIndex const & index)
 {
     auto proxy = static_cast<const medSortFilterProxyModel*>(index.model());
     auto sourceIndex = proxy->mapToSource(index);
-    medDataIndex medIndex = static_cast<const medSourceModel*>(sourceIndex.model())->toPath(sourceIndex);
+    medDataIndex medIndex = static_cast<const medSourceModel*>(sourceIndex.model())->dataIndexFromModelIndex(sourceIndex);
     emit openOnDoubleClick(medIndex);
 }
 

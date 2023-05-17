@@ -31,6 +31,8 @@ public:
     medAbstractData *(*f)(medDataIndex const &); //TODO Remove ok c'est le truc le moins classe du monde (Part1)
     QUuid (*f2)(medAbstractData &, bool); //TODO Remove ok c'est le truc le moins classe du monde (Part1)
     void(*f3)(QString const &, QUuid); //TODO Remove ok c'est le truc le moins classe du monde (Part1)
+    int(*f4)(medDataIndex const &); //TODO Remove ok c'est le truc le moins classe du monde (Part1)
+    QList<medDataIndex>(*f5)(const medDataIndex & index); //TODO Remove ok c'est le truc le moins classe du monde (Part1)
 };
 
 // ------------------------- medDataManager -----------------------------------
@@ -46,11 +48,13 @@ medDataManager *medDataManager::instance()
     return s_instance;
 }
 
-void medDataManager::setIndexV2Handler(medAbstractData *(*f)(medDataIndex const &), QUuid (*f2)(medAbstractData &, bool), void(*f3)(QString const &, QUuid))
+void medDataManager::setIndexV2Handler(medAbstractData *(*f)(medDataIndex const &), QUuid (*f2)(medAbstractData &, bool), void(*f3)(QString const &, QUuid), int(*f4)(medDataIndex const &), QList<medDataIndex>(*f5)(const medDataIndex & index))
 {
     d_ptr->f = f;
     d_ptr->f2 = f2;
     d_ptr->f3 = f3;
+    d_ptr->f4 = f4;
+    d_ptr->f5 = f5;
 }
 
 medAbstractData *medDataManager::retrieveData(const medDataIndex &index)
@@ -111,6 +115,18 @@ QHash<QString, dtkAbstractDataWriter *> medDataManager::getPossibleWriters(medAb
 void medDataManager::exportData(dtkSmartPointer<medAbstractData> data) {}
 
 void medDataManager::exportDataToPath(dtkSmartPointer<medAbstractData> data, const QString & filename, const QString & writer) {}
+
+int medDataManager::getDataType(const medDataIndex & index)
+{
+    Q_D(medDataManager);
+    return d->f4(index);
+}
+
+QList<medDataIndex> medDataManager::getSubData(const medDataIndex & index)
+{
+    Q_D(medDataManager);
+    return d->f5(index);
+}
 
 QPixmap medDataManager::thumbnail(const medDataIndex & index)
 {

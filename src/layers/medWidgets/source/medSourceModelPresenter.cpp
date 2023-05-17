@@ -53,7 +53,12 @@ QTreeView * medSourceModelPresenter::buildTree(QSortFilterProxyModel *proxy)
     treeViewRes->setAnimated(true);
     //treeViewRes->sortByColumn(0, Qt::AscendingOrder);
 //    treeViewRes->setSelectionBehavior(QAbstractItemView::SelectRows);
+
+    treeViewRes->setDragDropMode(QAbstractItemView::DragDropMode::DragDrop);
     treeViewRes->setSelectionMode(QAbstractItemView::ExtendedSelection);
+    treeViewRes->setDragEnabled(true);
+    treeViewRes->setAcceptDrops(true);
+    treeViewRes->setDropIndicatorShown(true);
 
 //    treeViewRes->setStyleSheet("QTreeView::item:selection{background-color:transparent}");
     treeViewRes->setItemDelegateForColumn(0, new medSourcesItemDelegate(treeViewRes));

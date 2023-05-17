@@ -19,7 +19,7 @@
 void Worker::sendSignalWithDelay(const int iRequestId)
 {
     std::this_thread::sleep_for(std::chrono::seconds(1));
-    emit sendProgress(iRequestId, 1);
+    emit sendProgress(iRequestId, (int)medAbstractSource::eRequestStatus::pending);
     std::this_thread::sleep_for(std::chrono::seconds(1));
-    emit sendProgress(iRequestId, 0);
+    emit sendProgress(iRequestId, (int)medAbstractSource::eRequestStatus::finish);
 }

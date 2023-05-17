@@ -756,10 +756,11 @@ bool medViewContainer::dropEventFromDataBase(QDropEvent * event)
             popupMenu->exec(this->mapToGlobal(event->pos()));
         }
         else
-        {
+        {                
             for (auto &index : indexList)
             {
                 //this->addData(index);
+
                 QThread* thread = new QThread(this);
                 medDataLoadThread * pdataLoadThread = new medDataLoadThread(index, this);
                 thread->start();
@@ -768,6 +769,7 @@ bool medViewContainer::dropEventFromDataBase(QDropEvent * event)
                 connect(pdataLoadThread, &medDataLoadThread::finished, pdataLoadThread, &medDataLoadThread::deleteLater);
                 connect(thread, &QThread::finished, thread, &QThread::deleteLater);
                 pdataLoadThread->moveToThread(thread);
+
             }
 
             this->setStyleSheet(d->defaultStyleSheet);
@@ -849,6 +851,23 @@ bool medViewContainer::dropEventFromFile(QDropEvent * event)
     return bRes;
 }
 
+
+class addDataRunner : public QRunnable
+{
+public:
+    medViewContainer *view;
+    medAbstractData *data;
+    // Hérité via QRunnable
+    virtual void run()
+    {
+        if (view->prepareView())
+        {
+            view->insertData(data);
+        }
+    }
+};
+
+
 void medViewContainer::addData(medAbstractData *data)
 {
     if(!d->expectedUuids.isEmpty())
@@ -858,23 +877,27 @@ void medViewContainer::addData(medAbstractData *data)
 
     if(!data)
         return;
+    //addDataRunner * pAddDataRunner = new addDataRunner();
+    //pAddDataRunner->view = this;
+    //pAddDataRunner->data = data;
+    //QThreadPool::globalInstance()->start(pAddDataRunner);
+    ////QThread* thread = new QThread(this);
+    ////medDataLoadThread * pdataLoadThread = new medDataLoadThread(index, this);
+    ////thread->start();
+    ////connect(thread, &QThread::started, pdataLoadThread, &medDataLoadThread::process);
+    ////connect(pdataLoadThread, &medDataLoadThread::finished, thread, &QThread::quit);
+    ////connect(pdataLoadThread, &medDataLoadThread::finished, pdataLoadThread, &medDataLoadThread::deleteLater);
+    ////connect(thread, &QThread::finished, thread, &QThread::deleteLater);
+    ////pdataLoadThread->moveToThread(thread);
 
-    if(!d->multiLayer)
-        this->removeView();
-
-    if(!d->view)
+    if (prepareView())
     {
-        //TODO find from data(factory?) which view have to be created - RDE
-        medAbstractLayeredView* view;
-        view = medViewFactory::instance()->createView<medAbstractLayeredView>("medVtkView", this);
-
-        if(!view)
-        {
-            dtkWarn() << "medViewContainer: Unable to create a medVtkView";
-            return;
-        }
-        this->setView(view);
+        insertData(data);
     }
+}
+
+void medViewContainer::insertData(medAbstractData * data)
+{
     //TODO bring a way to know how to add the data to the view.
     //     assuming by now that we always have at least layered views.
     //     this can be did by having a method that return the base abstract class (category)
@@ -886,6 +909,35 @@ void medViewContainer::addData(medAbstractData *data)
     emit dataAdded(data);
 }
 
+bool medViewContainer::prepareView()
+{
+    bool retflag = true;
+
+    if (!d->multiLayer)
+        this->removeView();
+
+    if (!d->view)
+    {
+        //TODO find from data(factory?) which view have to be created - RDE
+        medAbstractLayeredView* view = nullptr;
+        view = medViewFactory::instance()->createView<medAbstractLayeredView>("medVtkView", this);
+
+        if (!view)
+        {
+            dtkWarn() << "medViewContainer: Unable to create a medVtkView";
+            retflag = false;
+        }
+        else
+        {
+            this->setView(view);
+        }
+        view->setParent(this);
+    }
+
+    return retflag;
+
+}
+
 void medViewContainer::addData(medDataIndex const &index)
 {
     if(!d->expectedUuids.isEmpty())
@@ -893,32 +945,48 @@ void medViewContainer::addData(medDataIndex const &index)
         return; // we're already waiting for a import to finish, don't accept other data
     }
 
-    if (index.isValidForSeries() || index.isV2()) //TODO must be refactored
+    if (index.isV2()) //TODO must be refactored
     {
-        this->addData(medDataManager::instance()->retrieveData(index));
-    }
-    else if (index.isValidForStudy())
-    {
-        // We get the list of each series from that study index, and open it
-        QList<medDataIndex> seriesList = medDataManager::instance()->getSeriesListFromStudy(index);
-        if (seriesList.count() > 0)
+        int type = medDataManager::instance()->getDataType(index);
+        if (type == 0 || type == 2)
         {
-            bool userIsOk = true;
-
-            if (seriesList.count() > 10)
+            this->addData(medDataManager::instance()->retrieveData(index));
+        }
+        else if (type == 1)
+        {
+            auto clidrenList = medDataManager::instance()->getSubData(index);
+            for (auto & child : clidrenList)
             {
-                userIsOk = userValidationForStudyDrop();
-            }
-
-            if (userIsOk)
-            {
-                for(medDataIndex seriesIndex : seriesList)
-                {
-                    this->addData(medDataManager::instance()->retrieveData(seriesIndex));
-                }
+                addData(child);
             }
         }
+        else
+        {
+            qDebug() << "Type dataset or folder unkwon, try to load data as dataset for \"" << index.uri();
+        }
     }
+    //else if (index.isValidForStudy())
+    //{
+    //    // We get the list of each series from that study index, and open it
+    //    QList<medDataIndex> seriesList = medDataManager::instance()->getSeriesListFromStudy(index);
+    //    if (seriesList.count() > 0)
+    //    {
+    //        bool userIsOk = true;
+    //
+    //        if (seriesList.count() > 10)
+    //        {
+    //            userIsOk = userValidationForStudyDrop();
+    //        }
+    //
+    //        if (userIsOk)
+    //        {
+    //            for(medDataIndex seriesIndex : seriesList)
+    //            {
+    //                this->addData(medDataManager::instance()->retrieveData(seriesIndex));
+    //            }
+    //        }
+    //    }
+    //}
 }
 
 bool medViewContainer::userValidationForStudyDrop()

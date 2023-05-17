@@ -14,6 +14,8 @@
 
 #include <QAbstractItemModel>
 
+#include <medDataIndex.h>
+
 #include <medSourceModelItem.h>
 
 #include <medCoreExport.h>
@@ -30,6 +32,12 @@ struct medDataModelElementPrivate;
 #define DATASTATE_ROLE_DATACOMMITTED  "DataCommited"
 #define DATASTATE_ROLE_DATAPUSHING    "DataPushing"
 #define DATASTATE_ROLE_DATASAVED      "DataSaved"
+#define DATATYPE_ROLE  103
+#define DATATYPE_ROLE_DATASET 0
+#define DATATYPE_ROLE_FOLDER 1
+#define DATATYPE_ROLE_BOTH  2
+
+class medAbstractData;
 
 class MEDCORE_EXPORT medSourceModel : public QAbstractItemModel
 {
@@ -38,11 +46,7 @@ class MEDCORE_EXPORT medSourceModel : public QAbstractItemModel
 
 public:
 
-    struct datasetAttributes
-    {
-          QMap<QString, QVariant> values; // <keyName, value>
-          QMap<QString, QString> tags;   // <keyName, tag value>    
-    };
+    struct datasetAttributes;
 
     medSourceModel(medDataHub *parent, QString const & sourceIntanceId);
     virtual ~medSourceModel();
@@ -71,11 +75,15 @@ public:
 
 	bool setData(const QModelIndex &index, const QVariant &value, int role = Qt::EditRole);
 
-    Qt::DropActions supportedDropActions() const override;
     Qt::ItemFlags flags(const QModelIndex &index) const override;
+
+    Qt::DropActions supportedDropActions() const override;
     QStringList mimeTypes() const override;
     QMimeData *mimeData(const QModelIndexList &indexes) const override;
+    bool dropMimeData(const QMimeData *data, Qt::DropAction action, int row, int column, const QModelIndex &parent) override;
 
+    void addDataFromSource(medDataIndex dataIndex, medAbstractData * data, const QModelIndex & parent);
+    void addDataFromFile(QString path, medAbstractData * data, const QModelIndex & parent);
 
     // ////////////////////////////////////////////////////////////////////////
     // Simple methods
@@ -96,6 +104,7 @@ public:
     QString           getDataName(QStringList const &uri) const;
     medSourceModelItem* getItem(const QModelIndex &index) const;
     medSourceModelItem* getItem(QStringList const &uri) const;
+    medDataIndex dataIndexFromModelIndex(const QModelIndex &index) const;
     QModelIndex toIndex(QString uri) const;
     QModelIndex toIndex(QStringList uri) const;
     QString     toPath(QModelIndex const & index) const;
@@ -112,6 +121,8 @@ public:
     bool substituteTmpKey(QStringList uri, QString pi_key);
 
     bool refresh(QModelIndex const &pi_index = QModelIndex());
+
+    int getDataType(const QModelIndex &index);
     //JU
     void expandAll(QModelIndex index = QModelIndex());
 
@@ -151,5 +162,12 @@ signals:
 private:
     medDataModelElementPrivate* d;
 
-
+public:
+    struct datasetAttributes
+    {
+        QMap<QString, QVariant> values; // <keyName, value>
+        QMap<QString, QString> tags;
+        bool dropMimeData(const QMimeData * data, Qt::DropAction action, int row, int column, const QModelIndex & parent);
+        // <keyName, tag value>    
+    };
 };
