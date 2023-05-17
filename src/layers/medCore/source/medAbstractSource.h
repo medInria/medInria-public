@@ -12,19 +12,37 @@
 
 =========================================================================*/
 
+#include <QList>
+#include <QMap>
 #include <QString>
 #include <QStringList>
-#include <QMap>
-#include <QList>
-//#include <medAbstractData.h>
+
 #include <medAbstractParameter.h>
 
 #include <medCoreExport.h>
 
 class medAbstractWritingPolicy;
 
-enum entryType { dataset = 0, folder, both };
+/*@ This is an enum class to indicate if a node in model and treeview represents a dataset, a folder or both (a dataset with children) */
+enum entryType { dataset = 0/*@< this is a dataset */, folder = 1/*@< this is a folder */, both = 2/*@< this is a dataset with children*/};
 
+/**
+ * @class medAbstractSource
+ * @brief medAbstractSource is pure virtual class which defines the general API for sources.
+ * @details 
+ * A source is a repository of datasets, for example a file system, a PACS, a database, etc.<br>
+ * A source is represented by a tree with a definite or infinite number of levels (-1).<br>
+ * A source can be local, with fast access and transfer times, or remote with non-guaranteed performance. There are two behaviors associated with this notion:
+ *   - For a local source medInria will favor synchronous access and requests
+ *   - For remote sources, asynchronous access will be preferred.
+ * 
+ * Three types of information can be exchanged between the source and medInria through this class:
+ *   - The minimalEntries which are absolutely necessary metadata to represent the source in a treeview.
+ *   - Optional metadata that provides additional information for a dataset or a node.
+ *   - A dataset which can itself be transferred in the form of a local file path, an instance of medAbstractData or a memory stream.
+ * 
+ * A source has settings for connecting to and accessing it.
+ */
 class MEDCORE_EXPORT medAbstractSource : public QObject
 {
     Q_OBJECT

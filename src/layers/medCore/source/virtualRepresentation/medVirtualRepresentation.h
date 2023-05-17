@@ -6,6 +6,19 @@
 #include <medAbstractData.h>
 #include <medDataIndex.h>
 
+#define DATAORIGIN_ROLE 200  //String defined as below
+#define DATAORIGIN_ROLE_FILESYSTEM "FS"
+#define DATAORIGIN_ROLE_SOURCE     "source"
+#define DATAORIGIN_ROLE_CACHE      "cache"
+
+#define DATAURI_ROLE    201  //String URI of the data
+#define DATAGARBAGEABLE_ROLE 202  //Boolean indicates if the data can be automatically removed (if longtime or too much data)
+//#define DATAISDIRECTORY_ROLE 203  //Boolean indicates if an item is a pure directory
+
+#define DATANAME_ROLE 300
+
+#define INVALID_ENTRY "invalidEntry.json"
+
 class medVirtualRepresentationPrivate;
 /**
  * @brief medVirtualRepresentation centralise toutes les données ouvertes dans medInria et elle assure aussi l'organization des données pour l'utilisateur.
@@ -34,6 +47,7 @@ public:
     
     QList<medAbstractParameter*> getParams();
 
+    QModelIndex getModelIndex(medDataIndex index);
 
 private:
     bool fetch(QString const &path = QString());
@@ -58,6 +72,7 @@ private:
     QModelIndex createFolderIndex(QStringList tree);
 
     void removeTooOldEntry();
+
 
 public slots:
     void dataSaved(medDataIndex index); //remove a cache data and replace it by an uri on the source

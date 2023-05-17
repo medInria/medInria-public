@@ -1327,12 +1327,20 @@ int  medDataHub::getDataType(medDataIndex const & index)
 {
     int iRes = -1;
 
-    medSourceModel * pModel = getModel(index.sourceId());
-    if (pModel)
+    QString sourceId = index.sourceId();
+    if (sourceId == "fs")
     {
-        QModelIndex modelIndex = pModel->toIndex(index);
-        iRes = pModel->getDataType(modelIndex);
+        QModelIndex modelIndex = m_virtualRepresentation->getModelIndex(index);
+        iRes = m_virtualRepresentation->data(modelIndex, DATATYPE_ROLE).toInt();
     }
-
+    else
+    {
+        medSourceModel * pModel = getModel(sourceId);
+        if (pModel)
+        {
+            QModelIndex modelIndex = pModel->toIndex(index);
+            iRes = pModel->getDataType(modelIndex);
+        }
+    }
     return iRes;
 }

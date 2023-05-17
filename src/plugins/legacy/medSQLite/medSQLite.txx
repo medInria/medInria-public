@@ -1013,28 +1013,8 @@ int medSQlite<T>::addAssyncData(QVariant data, levelMinimalEntries &pio_minimalE
     rqstRes = ++s_RequestId;
     QVariant dataKey = QVariant(pio_minimalEntries.key);
     m_requestToDataMap[rqstRes] = dataKey;
-    m_requestToTimerMap[rqstRes] = new QTimer(this);
-    m_requestToTimeMap[rqstRes] = new QTime();
-
-    auto timer = m_requestToTimerMap[rqstRes];
-    auto time = m_requestToTimeMap[rqstRes];
-
-    timer->setInterval(5000);
-    time->setHMS(0, 0, 55);
-    QObject::connect(timer, &QTimer::timeout, this, [=]() { 
-                        time->setHMS(0, 0, time->addSecs(-5).second());
-                        qDebug() << time->toString();
-                        if (*time > QTime(0,0))
-                        {
-                            emit progress(rqstRes, eRequestStatus::pending);
-                        }
-                        else
-                        {
-                            emit progress(s_RequestId, eRequestStatus::finish);
-                            timer->stop();
-                        }
-                        });
-    timer->start();
+    
+    m_pWorker->signalWithDelay(rqstRes);
 
     return rqstRes;
 }

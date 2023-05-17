@@ -27,20 +27,23 @@
 #define DATASTATE_ROLE_DATACOMMITTED  "DataCommited"
 #define DATASTATE_ROLE_DATAPUSHING    "DataPushing"
 #define DATASTATE_ROLE_DATASAVED      "DataSaved"
+#define DATATYPE_ROLE  103
+#define DATATYPE_ROLE_DATASET 0
+#define DATATYPE_ROLE_FOLDER 1
+#define DATATYPE_ROLE_BOTH  2
 
-
-#define DATAORIGIN_ROLE 200  //String defined as below
-#define DATAORIGIN_ROLE_FILESYSTEM "FS"
-#define DATAORIGIN_ROLE_SOURCE     "source"
-#define DATAORIGIN_ROLE_CACHE      "cache"
-
-#define DATAURI_ROLE    201  //String URI of the data
-#define DATAGARBAGEABLE_ROLE 202  //Boolean indicates if the data can be automatically removed (if longtime or too much data)
-#define DATAISDIRECTORY_ROLE 203  //Boolean indicates if an item is a pure directory
-
-#define DATANAME_ROLE 300
-
-#define INVALID_ENTRY "invalidEntry.json"
+//#define DATAORIGIN_ROLE 200  //String defined as below
+//#define DATAORIGIN_ROLE_FILESYSTEM "FS"
+//#define DATAORIGIN_ROLE_SOURCE     "source"
+//#define DATAORIGIN_ROLE_CACHE      "cache"
+//
+//#define DATAURI_ROLE    201  //String URI of the data
+//#define DATAGARBAGEABLE_ROLE 202  //Boolean indicates if the data can be automatically removed (if longtime or too much data)
+//#define DATAISDIRECTORY_ROLE 203  //Boolean indicates if an item is a pure directory
+//
+//#define DATANAME_ROLE 300
+//
+//#define INVALID_ENTRY "invalidEntry.json"
 
 struct conversionTask
 {
@@ -87,7 +90,7 @@ public:
 
     medStringParameter basePath;
     medIntParameter    dayBeforeRemove;
-    QMap<QString, QPair<QStringList, QStringList> > flatTree; //Path, Dirs list, files list
+    //QMap<QString, QPair<QStringList, QStringList> > flatTree; //Path, Dirs list, files list
 
     QMap<QString, medAbstractData *> jsonPathsToAbstractData;
     QMultiMap<QString, QString>      uriToJsonPaths;
@@ -199,7 +202,7 @@ bool medVirtualRepresentation::create(QModelIndex parent, QString dirName)
         pParentItem = invisibleRootItem();
     }
     auto ptrItem = new QStandardItem(dirName);
-    ptrItem->setData(true, DATAISDIRECTORY_ROLE);
+    ptrItem->setData(DATATYPE_ROLE_FOLDER, DATATYPE_ROLE);
     ptrItem->setData(dirName, DATANAME_ROLE);
     
     pParentItem->appendRow(ptrItem);
@@ -424,14 +427,15 @@ bool medVirtualRepresentation::fetch(QString const & pi_path)
                         newItem->setData(dataOrigine, DATAORIGIN_ROLE);
                         newItem->setData(dataURI, DATAURI_ROLE);
                         newItem->setData(dataGarbageable, DATAGARBAGEABLE_ROLE);
+                        newItem->setData(DATATYPE_ROLE_DATASET, DATATYPE_ROLE);
                         parentItem->insertRow(parentItem->rowCount(), newItem);
                     }
                     else
                     {
-
                         child->setData(dataOrigine, DATAORIGIN_ROLE);
                         child->setData(dataURI, DATAURI_ROLE);
                         child->setData(dataGarbageable, DATAGARBAGEABLE_ROLE);
+                        child->setData(DATATYPE_ROLE_BOTH, DATATYPE_ROLE);
                     }
 
                 }
@@ -583,6 +587,7 @@ void medVirtualRepresentation::addGeneratedData(medAbstractData * data, QString 
         newItem->setData(DATAORIGIN_ROLE_CACHE, DATAORIGIN_ROLE);
         newItem->setData(tmpName, DATAURI_ROLE);
         newItem->setData(false, DATAGARBAGEABLE_ROLE);
+        newItem->setData(DATATYPE_ROLE_DATASET, DATATYPE_ROLE);
 
         item->insertRow(indexPlace, newItem);
 
@@ -634,6 +639,7 @@ void medVirtualRepresentation::addDataFromSource(medDataIndex dataIndex, medAbst
     newItem->setData(DATAORIGIN_ROLE_SOURCE, DATAORIGIN_ROLE);
     newItem->setData(dataIndex.asString(), DATAURI_ROLE);
     newItem->setData(false, DATAGARBAGEABLE_ROLE);
+    newItem->setData(DATATYPE_ROLE_DATASET, DATATYPE_ROLE);
 
     item->insertRow(indexPlace, newItem);
     
@@ -680,6 +686,7 @@ void medVirtualRepresentation::addDataFromFile(QString path, medAbstractData * d
     newItem->setData(DATAORIGIN_ROLE_FILESYSTEM, DATAORIGIN_ROLE);
     newItem->setData(path, DATAURI_ROLE);
     newItem->setData(false, DATAGARBAGEABLE_ROLE);
+    newItem->setData(DATATYPE_ROLE_DATASET, DATATYPE_ROLE);
 
     item->insertRow(indexPlace, newItem);
 
@@ -756,14 +763,17 @@ QModelIndex medVirtualRepresentation::createFolderIndex(QStringList tree)
         {
             indexRes = indexLst[0];
             item = itemFromIndex(indexRes);
-            item->setData(true, DATAISDIRECTORY_ROLE);
+            if (item->data(DATATYPE_ROLE).toInt() == DATATYPE_ROLE_DATASET)
+            {
+                item->setData(DATATYPE_ROLE_BOTH, DATATYPE_ROLE);
+            }
         }
         else
         {
             QStandardItem * newItem = new QStandardItem();
             newItem->setData(tree[i], Qt::DisplayRole);
             newItem->setData(tree[i], DATANAME_ROLE);
-            newItem->setData(true, DATAISDIRECTORY_ROLE);
+            newItem->setData(DATATYPE_ROLE_FOLDER, DATATYPE_ROLE);
             item->insertRow(item->rowCount(), newItem);
             indexRes = indexFromItem(newItem);
         }
@@ -775,6 +785,19 @@ QModelIndex medVirtualRepresentation::createFolderIndex(QStringList tree)
 void medVirtualRepresentation::removeTooOldEntry()
 {
     //TODO
+}
+
+QModelIndex medVirtualRepresentation::getModelIndex(medDataIndex index)
+{
+    QModelIndex indexRes;
+    QString indexAsString = indexToFileSysPath(index.asString());
+    if (d->uriToJsonPaths.contains(indexAsString))
+    {
+        QString jsonPath = d->uriToJsonPaths.value(indexAsString);
+        indexRes = getIndex(jsonPath);
+    }
+
+    return indexRes;
 }
 
 
