@@ -33,6 +33,12 @@ vtkImage2DDisplay::vtkImage2DDisplay()
     this->UseLookupTable    = false;
 }
 
+vtkImage2DDisplay::~vtkImage2DDisplay()
+{
+    ImageActor->Delete();
+    WindowLevel->Delete();
+}
+
 void vtkImage2DDisplay::SetInputData(vtkImageData *pi_poVtkImage)
 {
     if (pi_poVtkImage)

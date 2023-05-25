@@ -603,7 +603,6 @@ void vtkImageView3D::InternalUpdate()
     Callback->Execute (BoxWidget, 0, bounds);
     PlaneWidget->SetInputConnection(appender->GetOutputPort());
     PlaneWidget->PlaceWidget(bounds);
-    UpdateDisplayExtent();
 
     appender->Delete();
 }

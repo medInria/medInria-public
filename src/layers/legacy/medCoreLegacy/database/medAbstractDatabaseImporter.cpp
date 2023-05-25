@@ -883,14 +883,12 @@ QString medAbstractDatabaseImporter::determineFutureImageExtensionByDataType ( c
 
     QList<QString> writers = medAbstractDataFactory::instance()->writers();
 
-    dtkSmartPointer<dtkAbstractDataWriter> dataWriter;
-
     // first let's try to retrieve extension for writer information
     for ( int i=0; i<writers.size(); i++ )
     {
-        dataWriter = medAbstractDataFactory::instance()->writerSmartPointer ( writers[i] );
+        auto dataWriter = medAbstractDataFactory::instance()->writerSmartPointer ( writers[i] );
 
-        if (dataWriter->handled().contains(medData->identifier()) )
+        if (dataWriter && dataWriter->handled().contains(medData->identifier()) )
         {
             QStringList extensions = dataWriter->supportedFileExtensions();
             if(!extensions.isEmpty())
