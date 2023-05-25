@@ -215,7 +215,20 @@ QImage medAbstractData::generateThumbnail(QSize size)
 
 QImage medAbstractData::generateThumbnailInGuiThread(QSize size)
 {
-    dtkSmartPointer<medAbstractImageView> view = medViewFactory::instance()->createView<medAbstractImageView>("medVtkView");
-    view->addLayer(this);
-    return view->generateThumbnail(size);
+    auto view = medViewFactory::instance()->createView<medAbstractLayeredView>("medVtkView");
+
+    QImage thumbnail;
+    if(view)
+    {
+        view->addLayer(this);
+        thumbnail = view->generateThumbnail(size);
+    }
+    else
+    {
+        qWarning() << "medViewContainer: unable to create a medVtkView";
+    }
+
+    delete view;
+
+    return thumbnail;
 }

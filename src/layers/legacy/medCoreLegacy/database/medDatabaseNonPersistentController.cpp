@@ -117,7 +117,7 @@ medDatabaseNonPersistentController::medDatabaseNonPersistentController(): d(new 
     d->seriesIndex  = nonPersistentDataStartingIndex();
 }
 
-medDatabaseNonPersistentController::~medDatabaseNonPersistentController(void)
+medDatabaseNonPersistentController::~medDatabaseNonPersistentController()
 {
     qDeleteAll(d->items);
 

@@ -202,7 +202,6 @@ bool medVtkViewItkDataImageInteractor::SetViewInput(medAbstractData* data, int l
 {
     bool bRes = true;
 
-    auto *poOldConv = m_poConv;
     m_poConv = vtkItkConversionInterface::createInstance(data);
 
     if (m_poConv)
@@ -220,14 +219,13 @@ bool medVtkViewItkDataImageInteractor::SetViewInput(medAbstractData* data, int l
                 d->view2d->SetInput(poVtkAlgoOutputPort, poMatrix, layer);
                 d->view3d->SetInput(poVtkAlgoOutputPort, poMatrix, layer);
             }
+            poMatrix->Delete();
         }
     }
     else
     {
         bRes = false;
     }
-
-    delete poOldConv;
 
     return bRes;
 }
