@@ -147,7 +147,6 @@ vtkImageView2D::~vtkImageView2D()
   this->Command->Delete();
   this->OrientationAnnotation->Delete();
 
-
   for (std::list<vtkDataSet2DWidget*>::iterator it3 = this->DataSetWidgets.begin();
       it3!=this->DataSetWidgets.end(); ++it3)
   {
@@ -1799,7 +1798,6 @@ void vtkImageView2D::SetInputCommon(vtkAlgorithmOutput* pi_poVtkAlgoOutput, int 
 
         this->SetCurrentLayer(layer);
         this->Slice = this->GetSliceForWorldCoordinates (this->CurrentPoint);
-        this->UpdateDisplayExtent();
         this->UpdateSlicePlane();
         this->InvokeEvent (vtkImageView2D::SliceChangedEvent);
 

@@ -57,7 +57,7 @@ public:
 
 protected:
   vtkImage2DDisplay();
-  ~vtkImage2DDisplay() = default;
+  ~vtkImage2DDisplay();
 
 private:
   vtkSmartPointer<vtkImageMapToColors>        WindowLevel;

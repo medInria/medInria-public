@@ -54,9 +54,6 @@
 class medVtkViewPrivate
 {
 public:
-    // internal state
-    vtkImageView *currentView; //2d or 3d depending on the navigator orientation.
-
     vtkInteractorStyle *interactorStyle2D;
 
     // views
@@ -81,7 +78,6 @@ medVtkView::medVtkView(QObject* parent): medAbstractImageView(parent),
     d(new medVtkViewPrivate)
 {
     // setup initial internal state of the view
-    d->currentView = nullptr;
     d->interactorStyle2D = nullptr;
 
     // construct render window
@@ -469,15 +465,12 @@ void medVtkView::displayDataInfo(uint layer)
 
 QImage medVtkView::buildThumbnail(const QSize &size)
 {
-    // We dont want to send things that would ending up on updating gui things.
-    this->blockSignals(true);
     int w(size.width()), h(size.height());
 
     QImage thumbnail = d->viewWidget->grabFramebuffer();
     thumbnail = thumbnail.scaledToHeight(h, Qt::SmoothTransformation);
     thumbnail = thumbnail.copy((thumbnail.width()-w)/2, 0, w, h);
 
-    this->blockSignals(false);
     return thumbnail;
 }
 
