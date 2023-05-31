@@ -28,12 +28,15 @@ public:
 
 };
 
+std::shared_ptr<medParameterGroupManagerL> medParameterGroupManagerL::s_instance = nullptr;
+
 medParameterGroupManagerL *medParameterGroupManagerL::instance()
 {
     if(!s_instance)
-        s_instance = new medParameterGroupManagerL();
-
-    return s_instance;
+    {
+        s_instance = std::shared_ptr<medParameterGroupManagerL>(new medParameterGroupManagerL());
+    }
+    return s_instance.get();
 }
 
 medParameterGroupManagerL::medParameterGroupManagerL(void) : d(new medParameterGroupManagerLPrivate)
@@ -41,10 +44,11 @@ medParameterGroupManagerL::medParameterGroupManagerL(void) : d(new medParameterG
     d->currentWorkspace = "";
 }
 
-medParameterGroupManagerL::~medParameterGroupManagerL(void)
+medParameterGroupManagerL::~medParameterGroupManagerL()
 {
     delete d;
     d = nullptr;
+    s_instance.reset();
 }
 
 void medParameterGroupManagerL::registerNewGroup(medAbstractParameterGroupL* group)
@@ -169,5 +173,3 @@ void medParameterGroupManagerL::setCurrentWorkspace(QString workspace)
 {
     d->currentWorkspace = workspace;
 }
-
-medParameterGroupManagerL *medParameterGroupManagerL::s_instance = nullptr;

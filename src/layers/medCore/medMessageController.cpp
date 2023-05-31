@@ -149,12 +149,15 @@ void medMessageProgress::paintEvent ( QPaintEvent * event)
 // medMessageController
 // /////////////////////////////////////////////////////////////////
 
+std::shared_ptr<medMessageController> medMessageController::s_instance = nullptr;
+
 medMessageController *medMessageController::instance(void)
 {
     if(!s_instance)
-        s_instance = new medMessageController;
-
-    return s_instance;
+    {
+        s_instance = std::shared_ptr<medMessageController>(new medMessageController());
+    }
+    return s_instance.get();
 }
 
 void medMessageController::showInfo(const QString& text,unsigned int timeout)
@@ -210,4 +213,7 @@ medMessageController::medMessageController(void) : QObject()
 {
 }
 
-medMessageController *medMessageController::s_instance = nullptr;
+medMessageController::~medMessageController()
+{
+    s_instance.reset();
+}

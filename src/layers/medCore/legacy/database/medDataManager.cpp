@@ -33,15 +33,15 @@ public:
 
 // ------------------------- medDataManager -----------------------------------
 
-medDataManager *medDataManager::s_instance = nullptr;
+std::unique_ptr<medDataManager> medDataManager::s_instance = nullptr;
 
-medDataManager *medDataManager::instance()
+medDataManager &medDataManager::instance()
 {
-    if (!s_instance)
+    if(!s_instance)
     {
-        s_instance = new medDataManager();
+        s_instance = std::unique_ptr<medDataManager>(new medDataManager());
     }
-    return s_instance;
+    return *s_instance.get();
 }
 
 medAbstractData* medDataManager::retrieveData(const medDataIndex &index)
@@ -101,7 +101,7 @@ QHash<QString, dtkAbstractDataWriter *> medDataManager::getPossibleWriters(medAb
             delete writer;
     }
     if (possibleWriters.isEmpty())
-        medMessageController::instance()->showError("Sorry, we have no exporter for this format.");
+        medMessageController::instance().showError("Sorry, we have no exporter for this format.");
 
     return possibleWriters;
 }
@@ -166,4 +166,7 @@ void medDataManager::medDataHubRelay(medDataIndex index, QUuid uuid)
     emit dataImported(index , uuid);
 }
 
-medDataManager::~medDataManager() {}
+medDataManager::~medDataManager()
+{
+    delete d_ptr;
+}

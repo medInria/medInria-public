@@ -16,6 +16,8 @@
 
 #include <medDataIndex.h>
 
+#include <memory>
+
 class medJobManagerLPrivate;
 class medJobItemL;
 
@@ -35,6 +37,8 @@ class MEDCORE_EXPORT medJobManagerL : public QObject
     Q_OBJECT
 
 public:
+    ~medJobManagerL();
+
     static medJobManagerL *instance();
 
     /**
@@ -67,10 +71,8 @@ signals:
 
 protected:
     medJobManagerL();
-    ~medJobManagerL();
 
-protected:
-    static medJobManagerL *s_instance;
+    static std::shared_ptr<medJobManagerL> s_instance;
 
 private:
     medJobManagerLPrivate *d;

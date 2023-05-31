@@ -16,6 +16,7 @@
 
 #include <medCoreExport.h>
 
+#include <memory>
 
 class QUuid;
 class medViewContainer;
@@ -27,6 +28,7 @@ class MEDCORE_EXPORT medViewContainerManager : public QObject
     Q_OBJECT
 
 public:
+    ~medViewContainerManager();
     static medViewContainerManager *instance();
 
     medViewContainer* container(QUuid uuid) const;
@@ -36,11 +38,9 @@ public slots:
     void unregisterContainer(medViewContainer *container);
 
 protected:
-     medViewContainerManager();
-    ~medViewContainerManager();
+    medViewContainerManager();
 
-protected:
-    static medViewContainerManager *s_instance;
+    static std::shared_ptr<medViewContainerManager> s_instance;
 
 signals:
     void containerAboutToBeDestroyed(QUuid uuid);

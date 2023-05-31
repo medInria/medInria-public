@@ -21,6 +21,8 @@
 
 #include <medDataIndex.h>
 
+#include <memory>
+
 class medDataManagerPrivate;
 class medAbstractData;
 class medAbstractDbController;
@@ -31,6 +33,7 @@ class MEDCORE_EXPORT medDataManager : public QObject
     Q_OBJECT
 
 public:
+    ~medDataManager();
     static medDataManager * instance();
 
     medAbstractData* retrieveData(const medDataIndex &index);
@@ -89,9 +92,7 @@ protected:
 
 private:
     medDataManager();
-    virtual ~medDataManager();
-
-    static medDataManager * s_instance;
+    static std::shared_ptr<medDataManager> s_instance;
 
     Q_DECLARE_PRIVATE(medDataManager)
 };

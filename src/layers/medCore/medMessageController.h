@@ -18,6 +18,8 @@
 
 #include <medCoreExport.h>
 
+#include <memory>
+
 class medMessageControllerPrivate;
 
 // /////////////////////////////////////////////////////////////////
@@ -105,6 +107,7 @@ class MEDCORE_EXPORT medMessageController : public QObject
     Q_OBJECT
 
 public:
+    ~medMessageController();
     static medMessageController *instance();
 
 public slots:
@@ -119,11 +122,9 @@ signals:
   void removeMessage(medMessage * message);
 
 protected:
-     medMessageController();
-    ~medMessageController() = default;
+    medMessageController();
 
-protected:
-    static medMessageController *s_instance;
+    static std::shared_ptr<medMessageController> s_instance;
 
 private:
     medMessageControllerPrivate *d;

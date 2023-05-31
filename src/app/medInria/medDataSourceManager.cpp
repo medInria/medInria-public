@@ -37,6 +37,17 @@ public:
     medFileSystemDataSource *fsSource;
 };
 
+std::shared_ptr<medDataSourceManager> medDataSourceManager::s_instance = nullptr;
+
+medDataSourceManager *medDataSourceManager::instance()
+{
+    if(!s_instance)
+    {
+        s_instance = std::shared_ptr<medDataSourceManager>(new medDataSourceManager());
+    }
+    return s_instance.get();
+}
+
 medDataSourceManager::medDataSourceManager(): d(new medDataSourceManagerPrivate)
 {
     // Data base data source
@@ -132,17 +143,11 @@ void medDataSourceManager::emitDataReceivingFailed(QString fileName)
     medMessageController::instance()->showError(tr("Unable to get from source the data named ") + fileName, 3000);
 }
 
-medDataSourceManager *medDataSourceManager::instance(void)
-{
-    if (!s_instance)
-        s_instance = new medDataSourceManager;
-    return s_instance;
-}
-
 medDataSourceManager::~medDataSourceManager()
 {
     delete d;
     d = nullptr;
+    s_instance.reset();
 }
 
 /**
@@ -165,15 +170,6 @@ void medDataSourceManager::loadFromPath(QString path)
     medDataManager::instance()->importPath(path, false);
 }
 
-void medDataSourceManager::destroy()
-{
-    if (s_instance)
-    {
-        delete s_instance;
-        s_instance = nullptr;
-    }
-}
-
 QList <medAbstractDataSource*> medDataSourceManager::dataSources()
 {
     return d->dataSources;
@@ -183,5 +179,3 @@ medDatabaseDataSource* medDataSourceManager::databaseDataSource()
 {
     return d->dbSource;
 }
-
-medDataSourceManager *medDataSourceManager::s_instance = nullptr;

@@ -17,7 +17,6 @@
 #include <medAbstractParameterL.h>
 #include <medParameterPoolL.h>
 
-
 class medParameterPoolManagerLPrivate
 {
 public:
@@ -25,12 +24,15 @@ public:
 
 };
 
-medParameterPoolManagerL *medParameterPoolManagerL::instance(void)
+std::shared_ptr<medParameterPoolManagerL> medParameterPoolManagerL::s_instance = nullptr;
+
+medParameterPoolManagerL *medParameterPoolManagerL::instance()
 {
     if(!s_instance)
-        s_instance = new medParameterPoolManagerL;
-
-    return s_instance;
+    {
+        s_instance = std::shared_ptr<medParameterPoolManagerL>(new medParameterPoolManagerL());
+    }
+    return s_instance.get();
 }
 
 medParameterPoolManagerL::medParameterPoolManagerL(void) : d(new medParameterPoolManagerLPrivate)
@@ -47,6 +49,8 @@ medParameterPoolManagerL::~medParameterPoolManagerL()
 
     delete d;
     d = nullptr;
+
+    s_instance.reset();
 }
 
 void medParameterPoolManagerL::removePool(QString poolId)
@@ -105,5 +109,3 @@ medParameterPoolL* medParameterPoolManagerL::pool(QString poolId)
 {
     return d->pools.value(poolId);
 }
-
-medParameterPoolManagerL *medParameterPoolManagerL::s_instance = nullptr;
