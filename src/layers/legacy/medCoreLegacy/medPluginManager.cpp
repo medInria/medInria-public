@@ -22,6 +22,8 @@ public:
     QStringList loadErrors;
 };
 
+std::shared_ptr<medPluginManager> medPluginManager::s_instance = nullptr;
+
 /**
  * @brief Gets an instance of the Plugin Manager.
  *
@@ -33,9 +35,9 @@ medPluginManager *medPluginManager::instance()
 {
     if(!s_instance)
     {
-        s_instance = new medPluginManager;
+        s_instance = std::shared_ptr<medPluginManager>(new medPluginManager());
     }
-    return s_instance;
+    return s_instance.get();
 }
 
 void medPluginManager::initialize()
@@ -155,14 +157,12 @@ medPluginManager::medPluginManager(void) : dtkPluginManager(), d(new medPluginMa
  *
  * @param void
 */
-medPluginManager::~medPluginManager(void)
+medPluginManager::~medPluginManager()
 {
     delete d;
     d = nullptr;
+    s_instance.reset();
 }
-
-medPluginManager *medPluginManager::s_instance = nullptr;
-
 
 void medPluginManager::onLoadError(const QString &errorMessage)
 {

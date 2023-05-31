@@ -23,15 +23,19 @@ public:
     QSettings settings;
 };
 
+std::shared_ptr<medSettingsManager> medSettingsManager::s_instance = nullptr;
+
 /**
 * instance - singleton access method, returns a singleViewContainer static instance of the manager
 * @return   medSettingsManager * - the manager
 */
-medSettingsManager * medSettingsManager::instance( void )
+medSettingsManager * medSettingsManager::instance()
 {
     if(!s_instance)
-        s_instance = new medSettingsManager;
-    return s_instance;
+    {
+        s_instance = std::shared_ptr<medSettingsManager>(new medSettingsManager());
+    }
+    return s_instance.get();
 }
 
 medSettingsManager::medSettingsManager( void ): d(new medSettingsManagerPrivate)
@@ -39,21 +43,11 @@ medSettingsManager::medSettingsManager( void ): d(new medSettingsManagerPrivate)
 
 }
 
-medSettingsManager::~medSettingsManager( void )
+medSettingsManager::~medSettingsManager()
 {
     delete d;
     d = nullptr;
-}
-
-/**
-* destroy - should be called on closing the application, to destroy the singleton
-*/
-void medSettingsManager::destroy( void )
-{
-    if (s_instance) {
-        delete s_instance;
-        s_instance = 0;
-    }
+    s_instance.reset();
 }
 
 /**
@@ -126,5 +120,3 @@ void medSettingsManager::remove (const QString & section, const QString & key)
     d->settings.remove(key);
     d->settings.endGroup();
 }
-
-medSettingsManager *medSettingsManager::s_instance = nullptr;

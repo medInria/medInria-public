@@ -20,19 +20,24 @@
 #include <medJobManagerL.h>
 #include <medMessageController.h>
 
-medLocalDbController *medLocalDbController::s_instance = NULL;
+std::shared_ptr<medLocalDbController> medLocalDbController::s_instance = nullptr;
 
 medLocalDbController *medLocalDbController::instance()
 {
-    if (!s_instance)
+    if(!s_instance)
     {
-        s_instance = new medLocalDbController();
+        s_instance = std::shared_ptr<medLocalDbController>(new medLocalDbController());
     }
-    return s_instance;
+    return s_instance.get();
 }
 
 medLocalDbController::medLocalDbController() : medDatabasePersistentController()
 {
+}
+
+medLocalDbController::~medLocalDbController()
+{
+    s_instance.reset();
 }
 
 bool medLocalDbController::createConnection(void)
