@@ -54,15 +54,15 @@ public:
 // medDataPacsController
 // /////////////////////////////////////////////////////////////////
 
-medDataPacsController *medDataPacsController::s_instance = nullptr;
+std::shared_ptr<medDataPacsController> medDataPacsController::s_instance = nullptr;
 
 medDataPacsController *medDataPacsController::instance()
 {
-    if (!s_instance)
+    if(!s_instance)
     {
-        s_instance = new medDataPacsController();
+        s_instance = std::shared_ptr<medDataPacsController>(new medDataPacsController());
     }
-    return s_instance;
+    return s_instance.get();
 }
 
 QList<medDatabaseNonPersistentItem *> medDataPacsController::items(void)
@@ -414,12 +414,12 @@ medDataPacsController::medDataPacsController() : d(new medDataPacsControllerPriv
 {
 }
 
-medDataPacsController::~medDataPacsController(void)
+medDataPacsController::~medDataPacsController()
 {
-    // qDeleteAll(d->items);
-
     delete d;
     d = nullptr;
+
+    s_instance.reset();
 }
 
 bool medDataPacsController::isConnected() const
@@ -670,8 +670,6 @@ medDataIndex medDataPacsController::getPatientIfEmpty(const medDataIndex studyIn
 
 void medDataPacsController::remove(const medDataIndex &index)
 {
-    typedef QSet<medDataIndex> medDataIndexSet;
-
     // Main index to remove
 
     if (d->items.contains(index))

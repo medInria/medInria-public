@@ -80,15 +80,15 @@ public:
 
 // ------------------------- medDataManager -----------------------------------
 
-medDataManager *medDataManager::s_instance = nullptr;
+std::shared_ptr<medDataManager> medDataManager::s_instance = nullptr;
 
 medDataManager *medDataManager::instance()
 {
-    if (!s_instance)
+    if(!s_instance)
     {
-        s_instance = new medDataManager();
+        s_instance = std::shared_ptr<medDataManager>(new medDataManager());
     }
-    return s_instance;
+    return s_instance.get();
 }
 
 medAbstractData* medDataManager::retrieveData(const medDataIndex& index)
@@ -831,4 +831,9 @@ void medDataManager::setDatabaseLocation()
     // END OF DATABASE INITIALISATION
 }
 
-medDataManager::~medDataManager() {}
+medDataManager::~medDataManager()
+{
+    delete d_ptr;
+
+    s_instance.reset();
+}

@@ -14,8 +14,6 @@
 #include <medJobManagerL.h>
 #include <medJobItemL.h>
 
-medJobManagerL *medJobManagerL::s_instance = nullptr;
-
 class medJobManagerLPrivate
 {
 public:
@@ -23,12 +21,15 @@ public:
     bool m_IsActive;
 };
 
-medJobManagerL *medJobManagerL::instance(void)
+std::shared_ptr<medJobManagerL> medJobManagerL::s_instance = nullptr;
+
+medJobManagerL *medJobManagerL::instance()
 {
     if(!s_instance)
-        s_instance = new medJobManagerL;
-
-    return s_instance;
+    {
+        s_instance = std::shared_ptr<medJobManagerL>(new medJobManagerL());
+    }
+    return s_instance.get();
 }
 
 medJobManagerL::medJobManagerL( void ) : d(new medJobManagerLPrivate)
@@ -41,6 +42,8 @@ medJobManagerL::~medJobManagerL( void )
     delete d;
 
     d = nullptr;
+
+    s_instance.reset();
 }
 
 bool medJobManagerL::registerJobItem( medJobItemL* item, QString jobName)
