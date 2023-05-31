@@ -19,6 +19,8 @@
 #include <medCoreLegacyExport.h>
 #include <medDataIndex.h>
 
+#include <memory>
+
 class medAbstractData;
 class medDatabaseNonPersistentItem;
 class medDatabaseNonPersistentControllerPrivate;
@@ -79,5 +81,5 @@ private:
     medDatabaseNonPersistentController();
 
     medDatabaseNonPersistentControllerPrivate *d;
-    static medDatabaseNonPersistentController* s_instance;
+    static std::shared_ptr<medDatabaseNonPersistentController> s_instance;
 };

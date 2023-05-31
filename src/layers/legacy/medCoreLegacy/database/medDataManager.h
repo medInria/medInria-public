@@ -20,6 +20,8 @@
 #include <medDatabaseExporter.h>
 #include <medDataIndex.h>
 
+#include <memory>
+
 class medDataManagerPrivate;
 class medAbstractData;
 class medAbstractDbController;
@@ -30,6 +32,8 @@ class MEDCORELEGACY_EXPORT medDataManager : public QObject
     Q_OBJECT
 
 public:
+    ~medDataManager();
+
     static void initialize();
     static medDataManager * instance();
 
@@ -84,9 +88,8 @@ protected:
 
 private:
     medDataManager();
-    virtual ~medDataManager();
 
-    static medDataManager * s_instance;
+    static std::shared_ptr<medDataManager> s_instance;
     void launchExporter(medDatabaseExporter* exporter, const QString & filename);
 
     Q_DECLARE_PRIVATE(medDataManager)

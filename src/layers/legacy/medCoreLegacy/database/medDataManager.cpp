@@ -79,14 +79,21 @@ public:
 
 // ------------------------- medDataManager -----------------------------------
 
-medDataManager * medDataManager::s_instance = nullptr;
+std::shared_ptr<medDataManager> medDataManager::s_instance = nullptr;
 
 // Not thread-safe, but should only be called once, at application start-up
 void medDataManager::initialize()
 {
-    if ( ! s_instance) {
-        s_instance = new medDataManager();
+    if(!s_instance)
+    {
+        s_instance = std::shared_ptr<medDataManager>(new medDataManager());
     }
+    return s_instance.get();
+}
+
+medAbstractData* medDataManager::retrieveData(const medDataIndex& index)
+{
+    return retrieveData(index, true);
 }
 
 medDataManager * medDataManager::instance()
@@ -526,4 +533,7 @@ medDataManager::medDataManager() : d_ptr(new medDataManagerPrivate(this))
 
 medDataManager::~medDataManager()
 {
+    delete d_ptr;
+
+    s_instance.reset();
 }

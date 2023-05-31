@@ -42,16 +42,18 @@ public:
 };
 
 // /////////////////////////////////////////////////////////////////
-// medDatabaseNonPersitentController
+// medDatabaseNonPersistentController
 // /////////////////////////////////////////////////////////////////
 
-medDatabaseNonPersistentController*  medDatabaseNonPersistentController::s_instance = nullptr;
+std::shared_ptr<medDatabaseNonPersistentController> medDatabaseNonPersistentController::s_instance = nullptr;
 
-medDatabaseNonPersistentController* medDatabaseNonPersistentController::instance() {
-    if ( ! s_instance) {
-        s_instance = new medDatabaseNonPersistentController();
+medDatabaseNonPersistentController* medDatabaseNonPersistentController::instance()
+{
+    if(!s_instance)
+    {
+        s_instance = std::shared_ptr<medDatabaseNonPersistentController>(new medDatabaseNonPersistentController());
     }
-    return s_instance;
+    return s_instance.get();
 }
 
 int medDatabaseNonPersistentController::patientId(bool increment)
@@ -123,6 +125,8 @@ medDatabaseNonPersistentController::~medDatabaseNonPersistentController()
 
     delete d;
     d = nullptr;
+
+    s_instance.reset();
 }
 
 bool medDatabaseNonPersistentController::isConnected() const
