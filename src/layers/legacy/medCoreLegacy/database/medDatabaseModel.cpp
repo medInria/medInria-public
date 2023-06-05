@@ -1047,7 +1047,7 @@ QStringList medDatabaseModel::columnNames() const
 
 QVariant medDatabaseModel::convertQStringToQVariant(QString keyName, QString value)
 {
-    const medMetaDataKeys::Key *key = medMetaDataKeys::Key::fromKeyName(keyName.toStdString().c_str());
+    const medMetaDataKeys::Key *key = medMetaDataKeys::Key::fromKeyName(keyName);
     QVariant res;
     QDate date;
 

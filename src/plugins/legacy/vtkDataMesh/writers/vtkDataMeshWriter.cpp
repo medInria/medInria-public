@@ -90,7 +90,9 @@ QStringList vtkDataMeshWriter::supportedFileExtensions() const
 
 bool vtkDataMeshWriter::registered()
 {
-  return medAbstractDataFactory::instance()->registerDataWriterType("vtkDataMeshWriter", vtkDataMeshWriter::s_handled(), createVtkDataMeshWriter);
+  return medAbstractDataFactory::instance()->registerDataWriterType(QString("vtkDataMeshWriter"), 
+                                                                    vtkDataMeshWriter::s_handled(), 
+                                                                    createVtkDataMeshWriter);
 }
 
 // /////////////////////////////////////////////////////////////////

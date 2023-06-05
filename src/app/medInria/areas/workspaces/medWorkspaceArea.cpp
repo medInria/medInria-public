@@ -326,9 +326,11 @@ bool medWorkspaceArea::setCurrentWorkspace(medAbstractWorkspaceLegacy *workspace
         }
     }
 
-    disconnect(this, SIGNAL(open(medDataIndex)), d->currentWorkspace, 0);
-    disconnect(d->currentWorkspace, nullptr, this, nullptr);
-
+    if (d->currentWorkspace)
+    {
+        disconnect(this, SIGNAL(open(medDataIndex)), d->currentWorkspace, 0);
+        disconnect(d->currentWorkspace, nullptr, this, nullptr);
+    }
     d->currentWorkspace = workspace;
     connect(this, SIGNAL(open(medDataIndex)), d->currentWorkspace, SLOT(open(medDataIndex)));
     connect(d->currentWorkspace, &medAbstractWorkspaceLegacy::toolBoxInserted, d->toolBoxContainer, &medToolBoxContainer::insertToolBox);

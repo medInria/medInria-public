@@ -664,7 +664,7 @@ void medDatabaseView::onEditRequested()
 
         for(QVariant attrib : attributes)
         {
-            const medMetaDataKeys::Key* key =  medMetaDataKeys::Key::fromKeyName(attrib.toString().toStdString().c_str());
+            const medMetaDataKeys::Key* key =  medMetaDataKeys::Key::fromKeyName(attrib.toString());
             if(key)
                 labels << key->label();
             else labels << "";

@@ -104,7 +104,7 @@ void itkDataImageWriterBase::encapsulateSharedMetaData(itk::MetaDataDictionary& 
 
     foreach (QString metaDataKey, data()->metaDataList())
     {
-        if (medMetaDataKeys::Key::fromKeyName(metaDataKey.toStdString().c_str()))
+        if (medMetaDataKeys::Key::fromKeyName(metaDataKey))
         {
             std::string key = convertMedKeyToItkKey(metaDataKey);
             itk::EncapsulateMetaData(metaDataDictionary, key, data()->metadata(metaDataKey).toStdString());

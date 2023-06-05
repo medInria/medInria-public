@@ -30,10 +30,13 @@ namespace medMetaDataKeys
     public:
         typedef std::vector<const Key*> Registery;
 
-        Key(const char* name, const char* label="",
+        Key(QString name, QString label="",
             QVariant::Type type=QVariant::String, bool isEditable = true): KEY(name), LABEL(label), TYPE(type), ISEDITABLE(isEditable)
         {
-            if(QString(label)=="") LABEL=QString(name);
+            if(label == "")
+            {
+                LABEL = name;
+            }
             registery.push_back(this);
         }
 
@@ -62,7 +65,7 @@ namespace medMetaDataKeys
 
         bool operator==(const Key& other){ return ( this->key() == other.key() ); }
 
-        static const Key* fromKeyName(const char* name)
+        static const Key* fromKeyName(QString name)
         {
             std::vector<const Key*>::iterator it;
             for ( it=registery.begin() ; it < registery.end(); it++ )
