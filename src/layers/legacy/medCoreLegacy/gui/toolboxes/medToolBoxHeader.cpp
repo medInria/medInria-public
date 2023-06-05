@@ -21,10 +21,8 @@ public:
     QPoint titleOffset;
     medButton* about;
     static QPixmap* png;
-    static const QString tooltip;
 };
 
-const QString medToolBoxHeaderPrivate::tooltip = QObject::tr("About this plugin");
 QPixmap * medToolBoxHeaderPrivate::png = nullptr;
 
 medToolBoxHeader::medToolBoxHeader(QWidget *parent) : QFrame(parent), d(new medToolBoxHeaderPrivate)
@@ -37,7 +35,7 @@ medToolBoxHeader::medToolBoxHeader(QWidget *parent) : QFrame(parent), d(new medT
     layout->setMargin(0);
 
     d->about = new medButton(this,*(d->png),
-                             medToolBoxHeaderPrivate::tooltip);
+                             "About this plugin");
     layout->addStretch();
     layout->addWidget(d->about);
     d->about->hide();
@@ -45,8 +43,9 @@ medToolBoxHeader::medToolBoxHeader(QWidget *parent) : QFrame(parent), d(new medT
 
 medToolBoxHeader::~medToolBoxHeader(void)
 {
+    delete d->png;
+    d->png = nullptr;
     delete d;
-
     d = nullptr;
 }
 

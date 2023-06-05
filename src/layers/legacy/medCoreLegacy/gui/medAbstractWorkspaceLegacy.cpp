@@ -93,7 +93,8 @@ medAbstractWorkspaceLegacy::medAbstractWorkspaceLegacy(QWidget *parent)
     d->layersToolBox = new medToolBox;
     d->layersToolBox->setTitle("Layer settings");
     d->layersToolBox->show();
-
+    addToolBox(d->layersToolBox);
+    
     d->layerListToolBox = new medToolBox;
     d->layerListToolBox->header()->hide();
     d->layersToolBox->addWidget(d->layerListToolBox);
@@ -101,8 +102,6 @@ medAbstractWorkspaceLegacy::medAbstractWorkspaceLegacy(QWidget *parent)
     d->interactorToolBox = new medToolBox;
     d->interactorToolBox->header()->hide();
     d->layersToolBox->addWidget(d->interactorToolBox);
-
-    addToolBox(d->layersToolBox);
 
     d->progressionStack = new medProgressionStack();
     d->progressionStackToolBox = new medToolBox;

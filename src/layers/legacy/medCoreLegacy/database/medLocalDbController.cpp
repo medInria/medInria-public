@@ -37,6 +37,8 @@ medLocalDbController::medLocalDbController() : medDatabasePersistentController()
 
 medLocalDbController::~medLocalDbController()
 {
+    m_database.close();
+
     s_instance.reset();
 }
 
