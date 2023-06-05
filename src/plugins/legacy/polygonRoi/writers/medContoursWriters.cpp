@@ -49,7 +49,7 @@ QStringList medContoursWriter::supportedFileExtensions() const
 
 bool medContoursWriter::registered()
 {
-    return medAbstractDataFactory::instance()->registerDataWriterType("medContoursWriter",
+    return medAbstractDataFactory::instance()->registerDataWriterType(QString("medContoursWriter"),
                                                                       medContoursWriter::s_handled(), createMedContoursWriter);
 }
 

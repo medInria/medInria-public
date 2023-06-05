@@ -33,11 +33,6 @@ public:
     ~medDataSourceManager();
     static medDataSourceManager *instance();
 
-<<<<<<< HEAD
-    static void destroy();
-
-=======
->>>>>>> 6adf3a185 ([mem leak] merge master medDataManager)
     QList<medAbstractDataSource *> dataSources();
     medDatabaseDataSource *databaseDataSource();
 
@@ -55,8 +50,6 @@ signals:
     void load(QString);
 
 protected:
-    void connectDataSource(medAbstractDataSource *dataSource);
-
     medDataSourceManager();
     void connectDataSource(medAbstractDataSource *dataSource);
 

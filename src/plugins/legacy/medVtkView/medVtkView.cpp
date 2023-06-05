@@ -265,7 +265,7 @@ QPointF medVtkView::mapWorldToDisplayCoordinates(const QVector3D & worldVec)
     // The following code is implemented without calling ren->SetWorldPoint,
     // because that generates an unnecessary modified event.
 
-    vtkRenderer * ren = d->currentView->GetRenderer();
+    vtkRenderer * ren = d->view2d->GetRenderer();
 
     // Get window for dimensions
     vtkWindow * win = ren->GetVTKWindow();

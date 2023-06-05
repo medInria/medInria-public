@@ -132,21 +132,14 @@ int main(int argc, char *argv[])
 
     // Process the actual command line arguments given by the user
     parser.process(application);
-	
 
-    if (parser.isSet("center"))
-    {
-        int center = parser.value("center").toInt();
-        medSettingsManager *mnger = medSettingsManager::instance();
-        mnger->setValue("database", "center", center, false);
-    }
+    medSettingsManager* mnger = medSettingsManager::instance();
 
-    const bool remoteDb = parser.isSet("remotedb");
-    if (remoteDb)
+    QStringList posargs;
+    for (int i=1;i<application.arguments().size();++i)
     {
-        medSettingsManager *mnger = medSettingsManager::instance();
-        mnger->setValue("database", "remotedb", remoteDb, false);
-        if (parser.isSet("host"))
+        const QString arg = application.arguments().at(i);
+        if (arg.startsWith("--"))
         {
             QString hostname = parser.value("host");
             mnger->setValue("database", "hostname", hostname, false);

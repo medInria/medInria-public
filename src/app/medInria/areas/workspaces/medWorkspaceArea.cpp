@@ -348,8 +348,11 @@ bool medWorkspaceArea::setCurrentWorkspace(medAbstractWorkspaceLegacy *workspace
         }
     }
 
-    this->disconnect(this, SIGNAL(open(medDataIndex)), d->currentWorkspace, 0);
-
+    if (d->currentWorkspace)
+    {
+        disconnect(this, SIGNAL(open(medDataIndex)), d->currentWorkspace, 0);
+        disconnect(d->currentWorkspace, nullptr, this, nullptr);
+    }
     d->currentWorkspace = workspace;
     connect(this, SIGNAL(open(medDataIndex)), d->currentWorkspace, SLOT(open(medDataIndex)));
 

@@ -99,8 +99,7 @@ medMainWindow::medMainWindow ( QWidget *parent ) : QMainWindow ( parent ), d ( n
     d->currentArea = nullptr;
 
     //  Browser area.
-    d->browserArea = new medBrowserArea(this);
-    d->browserArea->setObjectName("medBrowserArea");
+    d->browserArea = nullptr;
 
     //  Workspace area.
     d->workspaceArea = new medWorkspaceArea (this);
@@ -114,7 +113,6 @@ medMainWindow::medMainWindow ( QWidget *parent ) : QMainWindow ( parent ), d ( n
     //  Stack
     d->stack = new QStackedWidget(this);
     d->stack->addWidget(d->homepageArea);
-    d->stack->addWidget(d->browserArea);
     d->stack->addWidget(d->workspaceArea);
 
     // Shortcut to workspaces through CTRL+Space
@@ -407,10 +405,9 @@ void medMainWindow::mousePressEvent ( QMouseEvent* event )
 
 void medMainWindow::restoreSettings()
 {
-    medSettingsManager * mnger = medSettingsManager::instance();
-
-    this->restoreState(mnger->value("medMainWindow", "state").toByteArray());
-    this->restoreGeometry(mnger->value("medMainWindow", "geometry").toByteArray());
+    medSettingsManager &mnger = medSettingsManager::instance();
+    this->restoreState(mnger.value("medMainWindow", "state").toByteArray());
+    this->restoreGeometry(mnger.value("medMainWindow", "geometry").toByteArray());
 }
 
 void medMainWindow::saveSettings()
@@ -418,16 +415,16 @@ void medMainWindow::saveSettings()
     medSettingsManager *manager = medSettingsManager::instance();
     if(!this->isFullScreen())
     {
-        manager->setValue("medMainWindow", "state", this->saveState());
-        manager->setValue("medMainWindow", "geometry", this->saveGeometry());
+        manager.setValue("medMainWindow", "state", this->saveState());
+        manager.setValue("medMainWindow", "geometry", this->saveGeometry());
     }
     // Keep the current screen for multiple-screens display
-    manager->setValue("medMainWindow", "currentScreen", QApplication::desktop()->screenNumber(this));
+    manager.setValue("medMainWindow", "currentScreen", QApplication::desktop()->screenNumber(this));
 }
 
 void medMainWindow::switchToDefaultWorkSpace()
 {
-    QString startupWorkspace = medSettingsManager::instance()->value("startup", "default_starting_area").toString();
+    QString startupWorkspace = medSettingsManager::instance().value("startup", "default_starting_area").toString();
 
     if (startupWorkspace == "Homepage")
     {
@@ -508,11 +505,11 @@ void medMainWindow::open(const medDataIndex &index)
 void medMainWindow::open(const QString & path)
 {
     QEventLoop loop;
-    QUuid uuid = medDataManager::instance()->importPath(path, false);
+    QUuid uuid = medDataManager::instance().importPath(path, false);
     if (!uuid.isNull())
     {
         d->expectedUuids.append(uuid);
-        connect(medDataManager::instance(), SIGNAL(dataImported(medDataIndex,QUuid)), this, SLOT(open_waitForImportedSignal(medDataIndex,QUuid)));
+        connect(&medDataManager::instance(), SIGNAL(dataImported(medDataIndex,QUuid)), this, SLOT(open_waitForImportedSignal(medDataIndex,QUuid)));
         while( d->expectedUuids.contains(uuid))
         {
             loop.processEvents(QEventLoop::ExcludeUserInputEvents);
@@ -532,7 +529,7 @@ void medMainWindow::open_waitForImportedSignal(medDataIndex index, QUuid uuid)
     if(d->expectedUuids.contains(uuid))
     {
         d->expectedUuids.removeAll(uuid);
-        disconnect(medDataManager::instance(),SIGNAL(dataImported(medDataIndex,QUuid)), this,SLOT(open_waitForImportedSignal(medDataIndex,QUuid)));
+        disconnect(&medDataManager::instance(),SIGNAL(dataImported(medDataIndex,QUuid)), this,SLOT(open_waitForImportedSignal(medDataIndex,QUuid)));
         if (index.isValid())
         {
             this->showWorkspace(medVisualizationWorkspace::staticIdentifier());
@@ -552,13 +549,13 @@ void medMainWindow::openFromSystem()
 
     dialog.setFileMode(QFileDialog::ExistingFile);
     dialog.setViewMode(QFileDialog::Detail);
-    dialog.restoreState(medSettingsManager::instance()->value("state", "openFromSystem").toByteArray());
-    dialog.restoreGeometry(medSettingsManager::instance()->value("geometry", "openFromSystem").toByteArray());
+    dialog.restoreState(medSettingsManager::instance().value("state", "openFromSystem").toByteArray());
+    dialog.restoreGeometry(medSettingsManager::instance().value("geometry", "openFromSystem").toByteArray());
     if (dialog.exec())
         path = dialog.selectedFiles().first();
 
-    medSettingsManager::instance()->setValue("state", "openFromSystem", dialog.saveState());
-    medSettingsManager::instance()->setValue("geometry", "openFromSystem", dialog.saveGeometry());
+    medSettingsManager::instance().setValue("state", "openFromSystem", dialog.saveState());
+    medSettingsManager::instance().setValue("geometry", "openFromSystem", dialog.saveGeometry());
 
     if (!path.isEmpty())
     {
@@ -574,13 +571,13 @@ void medMainWindow::openDicomFromSystem()
 
     dialog.setFileMode(QFileDialog::Directory);
     dialog.setViewMode(QFileDialog::Detail);
-    dialog.restoreState(medSettingsManager::instance()->value("state", "openFromSystem").toByteArray());
-    dialog.restoreGeometry(medSettingsManager::instance()->value("geometry", "openFromSystem").toByteArray());
+    dialog.restoreState(medSettingsManager::instance().value("state", "openFromSystem").toByteArray());
+    dialog.restoreGeometry(medSettingsManager::instance().value("geometry", "openFromSystem").toByteArray());
     if (dialog.exec())
         path = dialog.selectedFiles().first();
 
-    medSettingsManager::instance()->setValue("state", "openFromSystem", dialog.saveState());
-    medSettingsManager::instance()->setValue("geometry", "openFromSystem", dialog.saveGeometry());
+    medSettingsManager::instance().setValue("state", "openFromSystem", dialog.saveState());
+    medSettingsManager::instance().setValue("geometry", "openFromSystem", dialog.saveGeometry());
 
     if (!path.isEmpty())
     {
@@ -982,6 +979,13 @@ void medMainWindow::switchToBrowserArea()
 {
     if(d->currentArea != d->browserArea)
     {
+        if (d->browserArea == nullptr)
+        {
+            d->browserArea = new medBrowserArea(this);
+            d->browserArea->setObjectName("medBrowserArea");
+            d->stack->addWidget(d->browserArea);
+        }
+        
         d->currentArea = d->browserArea;
 
         d->shortcutAccessWidget->updateSelected("Browse data");
@@ -1070,14 +1074,14 @@ void medMainWindow::switchToWorkspaceArea()
 
         // Dialog window to recall users if database is empty
         // but only if the warning is enabled in medSettings
-        // bool showWarning = medSettingsManager::instance()->value(
+        // bool showWarning = medSettingsManager::instance().value(
         //             "system",
         //             "showEmptyDbWarning",
         //             QVariant(true)).toBool();
         // if ( showWarning )
         // {
-        //     QList<medDataIndex> indexes = medDatabaseNonPersistentController::instance()->availableItems();
-        //     QList<medDataIndex> patients = medDatabaseController::instance()->patients();
+        //     QList<medDataIndex> indexes = medDatabaseNonPersistentController::instance().availableItems();
+        //     QList<medDataIndex> patients = medDatabaseController::instance().patients();
         //     if( indexes.isEmpty() )
         //     {
         //         if( patients.isEmpty())
