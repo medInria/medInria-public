@@ -77,7 +77,7 @@ QString medVtkFibersDataWriter::description() const {
 
 bool medVtkFibersDataWriter::registered()
 {
-  return medAbstractDataFactory::instance()->registerDataWriterType("medVtkFibersDataWriter",
+  return medAbstractDataFactory::instance()->registerDataWriterType(QString("medVtkFibersDataWriter"),
                                     QStringList() << "medVtkFibersData",
                                     create_medVtkFibersDataWriter);
 }

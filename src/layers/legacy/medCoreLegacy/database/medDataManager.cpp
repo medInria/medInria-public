@@ -88,17 +88,11 @@ void medDataManager::initialize()
     {
         s_instance = std::shared_ptr<medDataManager>(new medDataManager());
     }
-    return s_instance.get();
-}
-
-medAbstractData* medDataManager::retrieveData(const medDataIndex& index)
-{
-    return retrieveData(index, true);
 }
 
 medDataManager * medDataManager::instance()
 {
-    return s_instance;
+    return s_instance.get();
 }
 
 medAbstractData* medDataManager::retrieveData(const medDataIndex& index)

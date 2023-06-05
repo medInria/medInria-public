@@ -25,8 +25,8 @@ public:
     QString  message;
     int   alignment;
     QColor  color;
+    QRect aTextRect;
 };
-
 
 ////////////////////////////////////////////////////////////////////////////
 medSplashScreen::medSplashScreen(const QPixmap& thePixmap)
@@ -61,6 +61,13 @@ medSplashScreen::medSplashScreen(const QPixmap& thePixmap)
 
     // Move the Splash screen at the center of the chosen screen
     move(QApplication::desktop()->screenGeometry(currentScreen).center() - r.center());
+
+    // Compute once the right text rectangle
+    d->aTextRect = rect();
+    d->aTextRect.setRect(d->aTextRect.x() + 120,
+                         d->aTextRect.y() + 5,
+                         d->aTextRect.width() - 10,
+                         d->aTextRect.height() - 10);
 }
 
 medSplashScreen::~medSplashScreen()
@@ -70,16 +77,9 @@ medSplashScreen::~medSplashScreen()
 }
 
 ////////////////////////////////////////////////////////////////////////////
-void medSplashScreen::clearMessage()
-{
-    d->message.clear();
-    repaint();
-}
-
-////////////////////////////////////////////////////////////////////////////
 void medSplashScreen::showMessage(const QString& message)
 {
-    const dtkPlugin* plugin = medPluginManager::instance()->plugin(message);
+    auto plugin = medPluginManager::instance()->plugin(message);
     if (plugin)
     {
         d->message = QString("Loading: ") + plugin->name();
@@ -99,31 +99,12 @@ void medSplashScreen::repaint()
     qApp->processEvents(QEventLoop::AllEvents);
 }
 
-void medSplashScreen::finish(QWidget *mainWin)
-
-{
-    if (mainWin)
-    {
-#if defined(Q_OS_LINUX)
-        Q_UNUSED(QTest::qWaitForWindowExposed(mainWin));
-#endif
-    }
-    close();
-}
-
-////////////////////////////////////////////////////////////////////////////
 void medSplashScreen::paintEvent(QPaintEvent* pe)
 {
     Q_UNUSED(pe);
 
-    QRect aTextRect(rect());
-    aTextRect.setRect(aTextRect.x() + 120,
-                      aTextRect.y() + 5,
-                      aTextRect.width() - 10,
-                      aTextRect.height() - 10);
-
     QPainter aPainter(this);
     aPainter.drawPixmap(rect(), d->pixmap);
     aPainter.setPen(d->color);
-    aPainter.drawText(aTextRect, d->alignment, d->message);
+    aPainter.drawText(d->aTextRect, d->alignment, d->message);
 }

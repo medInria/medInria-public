@@ -39,31 +39,17 @@ public:
     ~medSplashScreen();
 
     /**
-     * @brief hides the splashscreen when w is shown.
-     *
-     * @param w
-     */
-    void finish(QWidget *w);
-
-    /**
      * @brief Repaints the widget without the need of an event loop;
      *
      */
     void repaint();
 
 public slots:
-    /**
-     * @brief Clears the message.
-     *
-     */
-    void clearMessage();
 
     /**
-     * @brief Shows a message with the desired alignment and color.
+     * @brief Shows a message on the splace screen, either the direct text or the linked plugin name.
      *
      * @param theMessage
-     * @param theAlignment
-     * @param theColor
      */
     void showMessage(const QString& theMessage);
 

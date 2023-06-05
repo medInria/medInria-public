@@ -91,8 +91,7 @@ medMainWindow::medMainWindow ( QWidget *parent ) : QMainWindow ( parent ), d ( n
     d->currentArea = nullptr;
 
     //  Browser area.
-    d->browserArea = new medBrowserArea(this);
-    d->browserArea->setObjectName("medBrowserArea");
+    d->browserArea = nullptr;
 
     //  Workspace area.
     d->workspaceArea = new medWorkspaceArea (this);
@@ -103,15 +102,12 @@ medMainWindow::medMainWindow ( QWidget *parent ) : QMainWindow ( parent ), d ( n
     d->homepageArea->setObjectName("medHomePageArea");
 
     //Composer
-    d->composerArea = new medComposerArea(this);
-    d->composerArea->setObjectName("medComposerArea");
+    d->composerArea = nullptr;
 
     //  Stack
     d->stack = new QStackedWidget(this);
     d->stack->addWidget(d->homepageArea);
-    d->stack->addWidget(d->browserArea);
     d->stack->addWidget(d->workspaceArea);
-    d->stack->addWidget(d->composerArea);
 
     // Shortcut to workspaces through CTRL+Space
     d->shortcutAccessWidget = new medQuickAccessMenu(this);
@@ -424,6 +420,13 @@ void medMainWindow::switchToBrowserArea()
 {
     if(d->currentArea != d->browserArea)
     {
+        if (d->browserArea == nullptr)
+        {
+            d->browserArea = new medBrowserArea(this);
+            d->browserArea->setObjectName("medBrowserArea");
+            d->stack->addWidget(d->browserArea);
+        }
+        
         d->currentArea = d->browserArea;
 
         d->shortcutAccessWidget->updateSelected("Import/export files");
@@ -539,6 +542,13 @@ void medMainWindow::switchToComposerArea()
 {
     if(d->currentArea != d->composerArea)
     {
+        if (d->composerArea == nullptr)
+        {
+            d->composerArea = new medComposerArea(this);
+            d->composerArea->setObjectName("medComposerArea");
+            d->stack->addWidget(d->composerArea);
+        }
+
         d->currentArea = d->composerArea;
 
         d->shortcutAccessWidget->updateSelected("Composer");

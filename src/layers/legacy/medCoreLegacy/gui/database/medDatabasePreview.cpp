@@ -211,6 +211,9 @@ public:
 
     QLabel *label;
     QString defaultText;
+
+    QGraphicsPixmapItem *pixmap;
+    QGraphicsScene *scene;
 };
 
 
@@ -220,16 +223,16 @@ medDatabasePreview::medDatabasePreview(QWidget *parent): d(new medDatabasePrevie
 
     this->setMouseTracking(true);
 
-    QGraphicsScene *scene = new QGraphicsScene;
-    this->setScene(scene);
+    d->scene = new QGraphicsScene;
+    this->setScene(d->scene);
 
     d->dynamicScene = nullptr;
     d->staticScene = nullptr;
 
-    QGraphicsPixmapItem *pixmap = new QGraphicsPixmapItem;
-    pixmap->setPixmap(QPixmap(":/pixmaps/default_thumbnail.png"));
-    this->fitInView(pixmap, Qt::KeepAspectRatio);
-    scene->addItem(pixmap);
+    d->pixmap = new QGraphicsPixmapItem;
+    d->pixmap->setPixmap(QPixmap(":/pixmaps/default_thumbnail.png"));
+    this->fitInView(d->pixmap, Qt::KeepAspectRatio);
+    d->scene->addItem(d->pixmap);
 
     d->label = new QLabel(this);
     d->label->setAlignment(Qt::AlignCenter);
@@ -246,6 +249,22 @@ medDatabasePreview::medDatabasePreview(QWidget *parent): d(new medDatabasePrevie
 
 medDatabasePreview::~medDatabasePreview()
 {
+    delete d->dynamicScene;
+    d->dynamicScene = nullptr;
+    delete d->staticScene;
+    d->staticScene = nullptr;
+
+    if (d->pixmap)
+    {
+        d->pixmap->pixmap().detach();
+        delete d->pixmap;
+        d->pixmap = nullptr;
+    }
+
+    d->scene->clear();
+    delete d->scene;
+    d->scene = nullptr;
+
     delete d;
     d = nullptr;
 }

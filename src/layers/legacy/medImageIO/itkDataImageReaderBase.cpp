@@ -299,7 +299,7 @@ QString itkDataImageReaderBase::convertItkKeyToMedKey(std::string& keyToConvert)
     }
     else
     {
-        const medMetaDataKeys::Key* medKey = medMetaDataKeys::Key::fromKeyName(keyToConvert.c_str());
+        const medMetaDataKeys::Key* medKey = medMetaDataKeys::Key::fromKeyName(itkKey);
         if (medKey)
         {
             convertedKey = medKey->key();

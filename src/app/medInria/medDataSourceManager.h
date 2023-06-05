@@ -48,8 +48,6 @@ signals:
     void load(QString);
 
 protected:
-    void connectDataSource(medAbstractDataSource* dataSource);
-
     medDataSourceManager();
     void connectDataSource(medAbstractDataSource *dataSource);
 

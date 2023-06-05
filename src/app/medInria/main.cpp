@@ -122,6 +122,8 @@ int main(int argc,char* argv[])
     bool show_splash = false;
     #endif
 
+    medSettingsManager* mnger = medSettingsManager::instance();
+
     QStringList posargs;
     for (int i=1;i<application.arguments().size();++i)
     {
@@ -255,7 +257,9 @@ int main(int argc,char* argv[])
     }
 
     if (show_splash)
-        splash.finish(mainwindow);
+    {
+        splash.close();
+    }
 
     if (medPluginManager::instance()->plugins().isEmpty()) {
         QMessageBox::warning(mainwindow,
