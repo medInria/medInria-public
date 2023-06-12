@@ -41,7 +41,8 @@ if (NOT USE_SYSTEM_${ep})
 ## #############################################################################
 
 set(git_url ${GITHUB_PREFIX}Inria-Asclepios/RPI.git)
-set(git_tag ITK5.1.1)
+set(git_tag ITK5.3rc04)
+
 ## #############################################################################
 ## Add specific cmake arguments for configuration step of the project
 ## #############################################################################
