@@ -948,7 +948,8 @@ vtkSmartPointer<vtkActor> vtkImageView3D::DataSetToActor(vtkPointSet* arg, vtkPr
     idFilter->PointIdsOn();
     idFilter->CellIdsOn();
     idFilter->FieldDataOn();
-    idFilter->SetIdsArrayName("vtkOriginalIds");
+    idFilter->SetCellIdsArrayName("vtkOriginalIds");
+    idFilter->SetPointIdsArrayName("vtkOriginalIds");
     idFilter->SetInputData(arg);
     idFilter->Update();
 
