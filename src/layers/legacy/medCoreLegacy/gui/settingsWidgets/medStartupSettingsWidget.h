@@ -32,14 +32,8 @@ public :
 
 public slots:
     void read();
-
-protected:
-    bool validate();
-    bool write();
+    void write();
 
 private:
-    QCheckBox *startInFullScreen;
-    QComboBox *defaultStartingArea;
-
     medStartupSettingsWidgetPrivate *d;
 };
