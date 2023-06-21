@@ -224,7 +224,10 @@ medAbstractData *medDatabaseReader::readFile( const QStringList& filenames )
         connect ( dataReader, SIGNAL ( progressed ( int ) ), this, SIGNAL ( progressed ( int ) ) );
         if ( dataReader->canRead ( filenames ) )
         {
-            dataReader->read ( filenames );
+            if (dataReader->read(filenames) == false)
+            {
+                break;
+            }
             dataReader->enableDeferredDeletion ( false );
             medData = dynamic_cast<medAbstractData*>(dataReader->data());
 
