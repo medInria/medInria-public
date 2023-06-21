@@ -10,30 +10,20 @@
   PURPOSE.
 
 =========================================================================*/
-#include <meshMapping.h>
+#include "meshMapping.h"
 
-#include <dtkCoreSupport/dtkAbstractProcess.h>
 #include <dtkCoreSupport/dtkAbstractProcessFactory.h>
-#include <dtkCoreSupport/dtkSmartPointer.h>
 
 #include <medAbstractDataFactory.h>
-#include <medMetaDataKeys.h>
 #include <medUtilities.h>
 
-#include <vtkImageCast.h>
-#include <vtkImageData.h>
-#include <vtkImageGradientMagnitude.h>
-#include <vtkMatrix4x4.h>
+#include <vtkDoubleArray.h>
 #include <vtkMetaDataSet.h>
 #include <vtkMetaSurfaceMesh.h>
 #include <vtkMetaVolumeMesh.h>
+#include <vtkPointData.h>
 #include <vtkPolyData.h>
 #include <vtkProbeFilter.h>
-#include <vtkSmartPointer.h>
-#include <vtkTransform.h>
-#include <vtkTransformFilter.h>
-
-#include <itkImageToVTKImageFilter.h>
 
 // /////////////////////////////////////////////////////////////////
 // meshMappingPrivate
@@ -48,77 +38,56 @@ public:
 
     template <class PixelType> int mapImageOnMesh()
     {
-        typedef itk::Image<PixelType, 3> ImageType;
-
         if ( !data ||!data->data() || !structure ||!structure->data())
         {
             return medAbstractProcessLegacy::FAILURE;
         }
 
-        //Converting the mesh
+        // Get the mesh polydata and create an output polydata
         if(!structure->identifier().contains("vtkDataMesh"))
         {
             return medAbstractProcessLegacy::MESH_TYPE;
         }
-
         vtkMetaDataSet *structureDataset = static_cast<vtkMetaDataSet*>(structure->data());
         vtkPolyData *structurePolydata = static_cast<vtkPolyData*>(structureDataset->GetDataSet());
+        vtkSmartPointer<vtkPolyData> structurePolydataCopy = vtkSmartPointer<vtkPolyData>::New();
+        structurePolydataCopy->DeepCopy(structurePolydata);
 
-        // Converting the image
-        typedef itk::ImageToVTKImageFilter<ImageType> FilterType;
-        typename FilterType::Pointer filter = FilterType::New();
+        // Get the ITK data
+        using ImageType = itk::Image<PixelType, 3>;
         typename ImageType::Pointer img = static_cast<ImageType *>(data->data());
-        filter->SetInput(img);
-        filter->Update();
 
-        // ----- Hack to keep the itkImages info (origin and orientation)
-        vtkMatrix4x4 *matrix = vtkMatrix4x4::New();
-        matrix->Identity();
-        for (unsigned int x=0; x<3; x++)
-        {
-            for (unsigned int y=0; y<3; y++)
+        // Create a new point data array for the interpolated values
+        vtkSmartPointer<vtkDoubleArray> interpolatedValues = vtkSmartPointer<vtkDoubleArray>::New();
+        interpolatedValues->SetName("MappedValues");
+        interpolatedValues->SetNumberOfComponents(1);
+        interpolatedValues->SetNumberOfTuples(structurePolydataCopy->GetNumberOfPoints());
+
+        // Fill the data array of points from the VTK with values from the ITK data
+        typename ImageType::IndexType itkIndex;
+        typename ImageType::PointType itkPoint;
+        double point[3];
+        vtkPoints* points = structurePolydataCopy->GetPoints();
+        for (vtkIdType i = 0; i < structurePolydataCopy->GetNumberOfPoints(); ++i)
+        {    
+            points->GetPoint(i, point);
+            for (int d = 0; d < 3; ++d)
             {
-                matrix->SetElement(x, y, img->GetDirection()[x][y]);
+                itkPoint[d] = point[d];
+            }
+            
+            img->TransformPhysicalPointToIndex(itkPoint, itkIndex);
+            typename ImageType::PixelType pixelValue = img->GetPixel(itkIndex);
+            if (!std::isnan(pixelValue))
+            {
+                interpolatedValues->SetValue(i, static_cast<double>(pixelValue));
             }
         }
-        typename itk::ImageBase<3>::PointType origin = img->GetOrigin();
-        double v_origin[4], v_origin2[4];
-        for (int i=0; i<3; i++)
-        {
-            v_origin[i] = origin[i];
-        }
-        v_origin[3] = 1.0;
-        matrix->MultiplyPoint (v_origin, v_origin2);
-        for (int i=0; i<3; i++)
-        {
-            matrix->SetElement (i, 3, v_origin[i]-v_origin2[i]);
-        }
-        //------------------------------------------------------
+        structurePolydataCopy->GetPointData()->SetScalars(interpolatedValues);
 
-        vtkImageData *vtkImage = filter->GetOutput();
-
-        vtkImageCast *cast = vtkImageCast::New();
-        cast->SetInputData(vtkImage);
-        cast->SetOutputScalarTypeToFloat();
-
-        //To get the itkImage infos back
-        vtkSmartPointer<vtkTransform> t = vtkSmartPointer<vtkTransform>::New();
-        t->SetMatrix(matrix);
-
-        vtkSmartPointer<vtkTransformFilter> transformFilter = vtkSmartPointer<vtkTransformFilter>::New();
-        transformFilter->SetInputConnection(cast->GetOutputPort());
-        transformFilter->SetTransform(t);
-
-        // Probe magnitude with iso-surface.
-        vtkProbeFilter *probe = vtkProbeFilter::New();
-        probe->SetInputData(structurePolydata);
-        probe->SetSourceConnection(transformFilter->GetOutputPort());
-        probe->SpatialMatchOn();
-        probe->Update();
-        vtkPolyData *polydata = probe->GetPolyDataOutput();
-
+        // Create output
         vtkMetaSurfaceMesh *smesh = vtkMetaSurfaceMesh::New();
-        smesh->SetDataSet(polydata);
+        smesh->SetDataSet(structurePolydataCopy);
 
         output = medAbstractDataFactory::instance()->createSmartPointer("vtkDataMesh");
         output->setData(smesh);
@@ -219,11 +188,6 @@ void meshMapping::setInput(medAbstractData *data, int channel)
     {
         d->data = data;
     }
-}
-
-void meshMapping::setParameter(double  data, int channel)
-{
-    // Here comes a switch over channel to handle parameters
 }
 
 int meshMapping::update()
