@@ -33,10 +33,10 @@ defaultLabelToolBox::defaultLabelToolBox(QWidget *parent):
     labels->setSelectionMode(QAbstractItemView::SingleSelection);
     labels->setContentsMargins(0,0,0,0);
 
-    plusButton = new QPushButton(QIcon(":/pixmaps/plus.png"), "");
+    plusButton = new QPushButton(QIcon(":/icons/plus_white.png"), "");
     plusButton->setMaximumSize(QSize(20,20));
 
-    minusButton = new QPushButton(QIcon(":/pixmaps/minus.png"), "");
+    minusButton = new QPushButton(QIcon(":/icons/minus_white.png"), "");
     minusButton->setMaximumSize(QSize(20,20));
 
     auto listLabelLayout = new QVBoxLayout();

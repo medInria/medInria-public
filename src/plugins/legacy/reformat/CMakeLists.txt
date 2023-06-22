@@ -36,8 +36,8 @@ include_directories(${dtk_INCLUDE_DIRS})
 find_package(ITK REQUIRED COMPONENTS ITKCommon ITKImageGrid ITKVtkGlue)
 include(${ITK_USE_FILE})
 
-find_package(VTK REQUIRED COMPONENTS vtkGUISupportQt vtkInteractionWidgets vtkInteractionImage)
-include(${VTK_USE_FILE})
+find_package(VTK REQUIRED COMPONENTS InteractionWidgets InteractionImage GUISupportQt)
+include_directories(${VTK_INCLUDE_DIRS})
 
 ## #############################################################################
 ## List Sources
@@ -79,10 +79,11 @@ target_link_libraries(${TARGET_NAME}
   medCore
   medVtkInria
   medUtilities
-  vtkInteractionImage
-  vtkGUISupportQt
-  vtkGUISupportQtOpenGL
+  VTK::InteractionImage
+  VTK::GUISupportQt
   )
+
+vtk_module_autoinit(TARGETS ${TARGET_NAME} MODULES ${VTK_LIBRARIES})
 
 set(CMAKE_RUNTIME_OUTPUT_DIRECTORY ${CMAKE_BINARY_DIR}/bin)
 

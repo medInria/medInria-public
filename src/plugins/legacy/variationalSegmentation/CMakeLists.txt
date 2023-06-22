@@ -37,8 +37,8 @@ find_package(ITK REQUIRED COMPONENTS ITKCommon ITKImageFilterBase ITKThresholdin
                                      ITKVtkGlue)
 include(${ITK_USE_FILE})
 
-find_package(VTK REQUIRED COMPONENTS vtkCommonCore vtkInteractionWidgets vtkRenderingCore)
-include(${VTK_USE_FILE})
+find_package(VTK REQUIRED COMPONENTS CommonCore InteractionWidgets RenderingCore)
+include_directories(${VTK_INCLUDE_DIRS})
 
 ## #############################################################################
 ## List Sources

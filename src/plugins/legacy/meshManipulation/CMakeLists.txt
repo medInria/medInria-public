@@ -36,9 +36,8 @@ include_directories(${dtk_INCLUDE_DIRS})
 find_package(ITK REQUIRED COMPONENTS ITKCommon)
 include(${ITK_USE_FILE})
 
-find_package(VTK REQUIRED COMPONENTS vtkCommonCore vtkRenderingCore vtkInteractionStyle
-                                     vtkInteractionWidgets)
-include(${VTK_USE_FILE})
+find_package(VTK REQUIRED COMPONENTS CommonCore RenderingCore InteractionStyle InteractionWidgets)
+include_directories(${VTK_INCLUDE_DIRS})
 
 ## #############################################################################
 ## List Sources
