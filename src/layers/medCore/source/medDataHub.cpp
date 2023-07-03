@@ -22,6 +22,7 @@
 #include <medNotif.h>
 #include <medNotifSys.h>
 
+#include <medDataStorage.h>
 #include <medVirtualRepresentation.h>
 
 // Pour le Hack
@@ -76,6 +77,7 @@ QString medDataHub::convertToPath(QStringList pi_uri)
 medDataHub::medDataHub(QObject *parent)
 {
     setParent(parent);
+    m_storage = new medDataStorage(this);
     m_sourcesHandler = medSourceHandler::instance();
     connect(m_sourcesHandler, &medSourceHandler::sourceAdded,   this, &medDataHub::addSource);
     connect(m_sourcesHandler, &medSourceHandler::sourceRemoved, this, &medDataHub::removeSource);
@@ -114,7 +116,8 @@ medAbstractData * medDataHub::variantToMedAbstractData(QVariant &data, const med
 			pDataRes->setDataIndex(index);
             medSourceModel * pModel = getModel(index.sourceId());
 			QModelIndex modelIndex = pModel->toIndex(index);
-			pModel->setData(modelIndex, DATASTATE_ROLE_DATALOADED, DATASTATE_ROLE); //Set information on tree about the data is already loaded
+			//pModel->setData(modelIndex, DATASTATE_ROLE_DATALOADED, DATASTATE_ROLE); //Set information on tree about the data is already loaded
+            alterDataStateRole(pModel, index, DATASTATE_ROLE_DATALOADED);
             pModel->setData(modelIndex, true, MEDDATA_ROLE);
             QModelIndex parentIndex = modelIndex.parent();
             while (parentIndex.isValid())
@@ -147,21 +150,20 @@ medAbstractData * medDataHub::variantToMedAbstractData(QVariant &data, const med
 	{
 		qDebug() << "Not implemented yet";
 	}
-
-	if (pDataRes)
+    
+    int x = pDataRes->count();
+	
+    if (pDataRes)
 	{
-		pDataRes->retain();
 		pDataRes->setDataIndex(index);
-		m_IndexToData[index] = pDataRes;
-		m_IndexToData[index].data();
-		connect(pDataRes, &QObject::destroyed, this, &medDataHub::unloadData);
+        m_storage->addData(index, pDataRes);
+        connect(pDataRes, &medAbstractData::medDataRemoved, this, &medDataHub::unloadData, Qt::DirectConnection);
 	}
     else
     {
         auto dataName = getDataName(index);
         medNotif::createNotif(notifLevel::warning, QString("Converting ") + dataName, " to load it failed");
     }
-
 	return pDataRes;
 }
 
@@ -210,13 +212,16 @@ void medDataHub::getDirectData(const medDataIndex & index, medAbstractData * &pD
 {
     QVariant data;
     auto pModel = getModel(index.sourceId());
-    pModel->setData(pModel->toIndex(index), DATASTATE_ROLE_DATALOADING, DATASTATE_ROLE);
+    //pModel->setData(pModel->toIndex(index), DATASTATE_ROLE_DATALOADING, DATASTATE_ROLE);
+    alterDataStateRole(pModel, index, DATASTATE_ROLE_DATALOADING);
     m_sourcesHandler->getDirectData(index.sourceId(), index.level() - 1, index.dataId(), data);
     pDataRes = variantToMedAbstractData(data, index);
     if(pDataRes)
-        pModel->setData(pModel->toIndex(index), DATASTATE_ROLE_DATALOADED, DATASTATE_ROLE);
+        //pModel->setData(pModel->toIndex(index), DATASTATE_ROLE_DATALOADED, DATASTATE_ROLE);
+        alterDataStateRole(pModel, index, DATASTATE_ROLE_DATALOADED);
     else
-        pModel->setData(pModel->toIndex(index), DATASTATE_ROLE_DATANOTLOADED, DATASTATE_ROLE);
+        //pModel->setData(pModel->toIndex(index), DATASTATE_ROLE_DATANOTLOADED, DATASTATE_ROLE);
+        alterDataStateRole(pModel, index, DATASTATE_ROLE_DATALOADED);
 
 }
 
@@ -234,7 +239,8 @@ void medDataHub::getAsyncData(const medDataIndex & index, medAbstractData * &pDa
         QString sourceId = index.sourceId();
         auto pModel = getModel(sourceId);
         addRequest(sourceId, rqstId, rqst);
-        pModel->setData(pModel->toIndex(index), DATASTATE_ROLE_DATALOADING, DATASTATE_ROLE);
+        //pModel->setData(pModel->toIndex(index), DATASTATE_ROLE_DATALOADING, DATASTATE_ROLE);
+        alterDataStateRole(pModel, index, DATASTATE_ROLE_DATALOADING);
         m_rqstToNotifMap[rqst] = medNotif::createNotif(notifLevel::info, QString("Download ") + rqst.dataName, "Data is downloading from " + index.sourceId());
         int iStatus = waitGetAsyncData(sourceId, rqstId);
         switch (iStatus)
@@ -247,7 +253,8 @@ void medDataHub::getAsyncData(const medDataIndex & index, medAbstractData * &pDa
                 break;
             }
             case WAITER_EXIT_CODE_ABORT:
-                pModel->setData(pModel->toIndex(index), "", DATASTATE_ROLE);
+                //pModel->setData(pModel->toIndex(index), "", DATASTATE_ROLE);
+                alterDataStateRole(pModel, index, "");
                 break;
             case WAITER_EXIT_CODE_CONN_LOST:
                 break;
@@ -277,13 +284,9 @@ QString medDataHub::getDataName(medDataIndex const & index)
 
 medAbstractData * medDataHub::getData(medDataIndex const & index)
 {
-    medAbstractData *pDataRes = nullptr;
+    medAbstractData *pDataRes = m_storage->getData(index);
 
-    if (m_IndexToData.contains(index))
-    {
-        pDataRes = m_IndexToData[index];
-    }
-    else
+    if (pDataRes ==  nullptr)
     {
         bool bOnline, bWritable, bLocal, bCache;   
         QString sourceId = index.sourceId();
@@ -331,11 +334,12 @@ void medDataHub::progress(const QString & sourceId, int rqstId, medAbstractSourc
                 m_rqstToNotifMap[rqst]->update(notifLevel::warning, -1, "Operation aborted by user");
                 if (rqst.type == asyncRequestType::getRqstType)
                 {
-                    pModel->setData(pModel->toIndex(rqst.uri), QVariant(), DATASTATE_ROLE);
+                    alterDataStateRole(pModel, rqst.uri, QVariant());
                 }
                 else
                 {
-                    pModel->setData(pModel->toIndex(rqst.uri), DATASTATE_ROLE_DATANOTSAVED, DATASTATE_ROLE);
+                    //pModel->setData(pModel->toIndex(rqst.uri), DATASTATE_ROLE_DATANOTSAVED, DATASTATE_ROLE);
+                    alterDataStateRole(pModel, rqst.uri, DATASTATE_ROLE_DATANOTSAVED);
                 }
                 rqst.waiter.exit(WAITER_EXIT_CODE_ABORT);
                 break;
@@ -345,11 +349,13 @@ void medDataHub::progress(const QString & sourceId, int rqstId, medAbstractSourc
                 m_rqstToNotifMap[rqst]->update(notifLevel::warning, -1, "Operation aborted because connexion to " + m_sourcesHandler->getInstanceName(sourceId) + " is lost");
                 if (rqst.type == asyncRequestType::getRqstType)
                 {
-                    pModel->setData(pModel->toIndex(rqst.uri), DATASTATE_ROLE_DATANOTLOADED, DATASTATE_ROLE);
+                    //pModel->setData(pModel->toIndex(rqst.uri), DATASTATE_ROLE_DATANOTLOADED, DATASTATE_ROLE);
+                    alterDataStateRole(pModel, rqst.uri, DATASTATE_ROLE_DATANOTLOADED);
                 }
                 else
                 {
-                    pModel->setData(pModel->toIndex(rqst.uri), DATASTATE_ROLE_DATANOTSAVED, DATASTATE_ROLE);
+                    //pModel->setData(pModel->toIndex(rqst.uri), DATASTATE_ROLE_DATANOTSAVED, DATASTATE_ROLE);
+                    alterDataStateRole(pModel, rqst.uri, DATASTATE_ROLE_DATANOTSAVED);
                 }
                 rqst.waiter.exit(WAITER_EXIT_CODE_CONN_LOST);
                 break;
@@ -359,11 +365,13 @@ void medDataHub::progress(const QString & sourceId, int rqstId, medAbstractSourc
                 m_rqstToNotifMap[rqst]->update(notifLevel::warning, -1, "Operation failed");
                 if (rqst.type == asyncRequestType::getRqstType)
                 {
-                    pModel->setData(pModel->toIndex(rqst.uri), DATASTATE_ROLE_DATANOTLOADED, DATASTATE_ROLE);
+                    //pModel->setData(pModel->toIndex(rqst.uri), DATASTATE_ROLE_DATANOTLOADED, DATASTATE_ROLE);
+                    alterDataStateRole(pModel, rqst.uri, DATASTATE_ROLE_DATANOTLOADED);
                 }
                 else
                 {
-                    pModel->setData(pModel->toIndex(rqst.uri), DATASTATE_ROLE_DATANOTSAVED, DATASTATE_ROLE);
+                    //pModel->setData(pModel->toIndex(rqst.uri), DATASTATE_ROLE_DATANOTSAVED, DATASTATE_ROLE);
+                    alterDataStateRole(pModel, rqst.uri, DATASTATE_ROLE_DATANOTSAVED);
                 }
                 rqst.waiter.exit(WAITER_EXIT_CODE_FAILD);
                 break;
@@ -372,7 +380,8 @@ void medDataHub::progress(const QString & sourceId, int rqstId, medAbstractSourc
             {
                 if (rqst.type == asyncRequestType::getRqstType)
                 {
-                    pModel->setData(pModel->toIndex(rqst.uri), DATASTATE_ROLE_DATALOADED, DATASTATE_ROLE);
+                    //pModel->setData(pModel->toIndex(rqst.uri), DATASTATE_ROLE_DATALOADED, DATASTATE_ROLE);
+                    alterDataStateRole(pModel, rqst.uri, DATASTATE_ROLE_DATALOADED);
                     m_rqstToNotifMap[rqst]->update(notifLevel::info, -1, "Download succeed");
                     if (rqst.needMedAbstractConversion)
                     {
@@ -388,7 +397,8 @@ void medDataHub::progress(const QString & sourceId, int rqstId, medAbstractSourc
                     if (data.canConvert<QString>())
                     {
                         auto key = data.toString();
-                        pModel->setData(pModel->toIndex(rqst.uri), DATASTATE_ROLE_DATASAVED, DATASTATE_ROLE);
+                        //pModel->setData(pModel->toIndex(rqst.uri), DATASTATE_ROLE_DATASAVED, DATASTATE_ROLE);
+                        alterDataStateRole(pModel, rqst.uri, DATASTATE_ROLE_DATASAVED);
                         pModel->substituteTmpKey(rqst.uri, key);
                         m_rqstToNotifMap[rqst]->update(notifLevel::info, -1, "Save succeed");
                     }
@@ -407,11 +417,13 @@ void medDataHub::progress(const QString & sourceId, int rqstId, medAbstractSourc
                 rqst.stampTimeout = QDateTime::currentSecsSinceEpoch() + REQUEST_TIME_OUT;
                 if (rqst.type == asyncRequestType::getRqstType)
                 {
-                    pModel->setData(pModel->toIndex(rqst.uri), DATASTATE_ROLE_DATALOADING, DATASTATE_ROLE);
+                    //pModel->setData(pModel->toIndex(rqst.uri), DATASTATE_ROLE_DATALOADING, DATASTATE_ROLE);
+                    alterDataStateRole(pModel, rqst.uri, DATASTATE_ROLE_DATALOADING);
                 }
                 else
                 {
-                    pModel->setData(pModel->toIndex(rqst.uri), DATASTATE_ROLE_DATAPUSHING, DATASTATE_ROLE);
+                    //pModel->setData(pModel->toIndex(rqst.uri), DATASTATE_ROLE_DATAPUSHING, DATASTATE_ROLE);
+                    alterDataStateRole(pModel, rqst.uri, DATASTATE_ROLE_DATAPUSHING);
                 }
                 break;
             }
@@ -429,6 +441,12 @@ void medDataHub::progress(const QString & sourceId, int rqstId, medAbstractSourc
     m_mapsRequestMutex.unlock();
 }
 
+void medDataHub::alterDataStateRole(medSourceModel * pModel, medDataIndex index, QVariant value)
+{
+    pModel->setData(pModel->toIndex(index), value, DATASTATE_ROLE);
+    emit dataSeteRoleChange(index, value);
+}
+
 void medDataHub::timeOutWatcher()
 {
     m_mapsRequestMutex.lock();
@@ -441,7 +459,8 @@ void medDataHub::timeOutWatcher()
             if (!rqst.noLongerValid && rqst.stampTimeout < QDateTime::currentSecsSinceEpoch())
             {
                 auto pModel = getModel(rqst.uri[0]);
-                pModel->setData(pModel->toIndex(rqst.uri), rqst.type==getRqstType? DATASTATE_ROLE_DATANOTLOADED : DATASTATE_ROLE_DATANOTSAVED, DATASTATE_ROLE);
+                //pModel->setData(pModel->toIndex(rqst.uri), rqst.type==getRqstType? DATASTATE_ROLE_DATANOTLOADED : DATASTATE_ROLE_DATANOTSAVED, DATASTATE_ROLE);
+                alterDataStateRole(pModel, rqst.uri, rqst.type == getRqstType ? DATASTATE_ROLE_DATANOTLOADED : DATASTATE_ROLE_DATANOTSAVED);
                 if (m_rqstToNotifMap.contains(rqst))
                 {
                     m_rqstToNotifMap[rqst]->update(notifLevel::warning, -1, "Failed due to timeout");
@@ -850,19 +869,22 @@ bool medDataHub::saveData(medAbstractData *pi_pData, QString const &pi_baseName,
                         pio_uri.push_back(minimalEntries.key);
                         if (bCache)
                         {
-                            pModel->setData(pModel->toIndex(pio_uri), DATASTATE_ROLE_DATACOMMITTED, DATASTATE_ROLE);
+                            //pModel->setData(pModel->toIndex(pio_uri), DATASTATE_ROLE_DATACOMMITTED, DATASTATE_ROLE);
+                            alterDataStateRole(pModel, pio_uri, DATASTATE_ROLE_DATACOMMITTED);
                             qDebug() << "Data " << pi_pData->name() << " committed on " << sourceId;
                         }
                         else
                         {
-                            pModel->setData(pModel->toIndex(pio_uri), DATASTATE_ROLE_DATASAVED, DATASTATE_ROLE);
+                            //pModel->setData(pModel->toIndex(pio_uri), DATASTATE_ROLE_DATASAVED, DATASTATE_ROLE);
+                            alterDataStateRole(pModel, pio_uri, DATASTATE_ROLE_DATASAVED);
                             qDebug() << "Data " << pi_pData->name() << " saved on " << sourceId;
                         }
                     }
                     else
                     {
                         qDebug() << "Data " << pi_pData->name() << " NOT saved on " << sourceId;
-                        pModel->setData(pModel->toIndex(pio_uri), DATASTATE_ROLE_DATANOTSAVED, DATASTATE_ROLE);
+                        //pModel->setData(pModel->toIndex(pio_uri), DATASTATE_ROLE_DATANOTSAVED, DATASTATE_ROLE);
+                        alterDataStateRole(pModel, pio_uri, DATASTATE_ROLE_DATANOTSAVED);
                         //TODO notif
                     }
                 }
@@ -906,12 +928,14 @@ bool medDataHub::warpAddAsync(medAbstractSource::levelMinimalEntries &minimalEnt
     if (bRes)
     {
         QString sourceId = pModel->getSourceIntanceId();
-        m_IndexToData[request.uri] = pi_pData;
+        //m_IndexToData[request.uri] = pi_pData;
+        m_storage->addData(request.uri, pi_pData);
         rqstId = m_sourcesHandler->addAssyncData(pio_uri, data, minimalEntries);
         if (rqstId > 0)
         {
             addRequest(sourceId, rqstId, request);
-            pModel->setData(pModel->toIndex(request.uri), DATASTATE_ROLE_DATACOMMITTED, DATASTATE_ROLE);
+            //pModel->setData(pModel->toIndex(request.uri), DATASTATE_ROLE_DATACOMMITTED, DATASTATE_ROLE);
+            alterDataStateRole(pModel, request.uri, DATASTATE_ROLE_DATACOMMITTED);
             m_rqstToNotifMap[request] = medNotif::createNotif(notifLevel::info, "Save data " + request.dataName, "The data " + request.dataName + " is saving on " + m_sourcesHandler->getInstanceName(sourceId), -1, 0);
             //TODO log
         }
@@ -1064,23 +1088,16 @@ void medDataHub::refresh(medDataIndex pi_index)
 }
 
 
-void medDataHub::unloadData(QObject * obj)
+void medDataHub::unloadData(medDataIndex index)
 {
-    medAbstractData* data = static_cast<medAbstractData*>(obj);
-    auto liste1 = m_IndexToData.values();
-    QList<medAbstractData*> liste2;
-    for (auto pData : liste1)
-    {
-        liste2.push_back(pData.data());
-    }
+    auto pModel = getModel(index.sourceId());
+    alterDataStateRole(pModel, index, "");
+}
 
-    if (liste2.contains(data))
-    {
-        dtkSmartPointer<medAbstractData> sptr(data);
-        
-        m_IndexToData.key(sptr);
-    }
-    //TODO Continue with non medAbstractData
+void medDataHub::dataUnloaded(medDataIndex index)
+{
+    m_storage->removeData(index);
+    unloadData(index);
 }
 
 
@@ -1184,7 +1201,8 @@ bool medDataHub::fetchData(medDataIndex const & index)
 
             addRequest(sourceId, iRequestId, rqst);
 
-            pModel->setData(pModel->toIndex(index), DATASTATE_ROLE_DATALOADING, DATASTATE_ROLE);
+            //pModel->setData(pModel->toIndex(index), DATASTATE_ROLE_DATALOADING, DATASTATE_ROLE);
+            alterDataStateRole(pModel, index, DATASTATE_ROLE_DATALOADING);
             m_rqstToNotifMap[rqst] = medNotif::createNotif(notifLevel::info, "Fetch data " + rqst.dataName, "The data " + rqst.dataName + " is fetch from " + m_sourcesHandler->getInstanceName(sourceId), -1, 0);
             mInfo << "Fetch data " << rqst.dataName << "have the Id of notification \r\n" << iRequestId;
         }
@@ -1222,7 +1240,8 @@ bool medDataHub::pushData(medDataIndex const & index)
             request.dataName = getDataName(index);
 
             addRequest(sourceId, iRequestId, request);
-            pModel->setData(pModel->toIndex(index), DATASTATE_ROLE_DATAPUSHING, DATASTATE_ROLE);
+            //pModel->setData(pModel->toIndex(index), DATASTATE_ROLE_DATAPUSHING, DATASTATE_ROLE);
+            alterDataStateRole(pModel, index, DATASTATE_ROLE_DATAPUSHING);
             m_rqstToNotifMap[request] = medNotif::createNotif(notifLevel::info, "Save data " + request.dataName, "The data " + request.dataName + " is saving on " + m_sourcesHandler->getInstanceName(sourceId), -1, 0);
                 
 
@@ -1290,8 +1309,9 @@ medAbstractData * medDataHub::loadDataFromPath(QString const path, QUuid uuid)
 
         pDataRes->setDataIndex(index);
 
-        m_IndexToData[index] = pDataRes;
-        m_IndexToData[index].data();
+        //m_IndexToData[index] = pDataRes;
+        //m_IndexToData[index].data();
+        m_storage->addData(index, pDataRes);
 
         getVirtualRepresentation()->addDataFromFile(path, pDataRes);
         emit dataLoaded(fileSysPathToIndex(path));

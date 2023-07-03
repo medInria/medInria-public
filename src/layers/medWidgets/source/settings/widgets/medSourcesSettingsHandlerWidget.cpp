@@ -12,6 +12,7 @@
 
 #include <medSourcesSettings.h>
 #include <medAbstractSource.h>
+#include <medSourcesLoader.h>
 
 #include <QHeaderView>
 #include <QLabel>
@@ -44,6 +45,10 @@ medSourcesSettingsHandlerWidget::medSourcesSettingsHandlerWidget(medSourcesSetti
     m_connectButton->setToolTip(tr("Switch ON or OFF the selected source"));
     sourceSettingsLayout->addWidget(m_connectButton);
 
+    m_hiddenButton = new QPushButton(tr("Hide"));
+    m_hiddenButton->setToolTip(tr("Switch visible or invisible the selected source"));
+    sourceSettingsLayout->addWidget(m_hiddenButton);
+
     m_sourceInformation = new QTreeWidget();
     m_sourceInformation->setColumnCount(2);
     m_sourceInformation->setAlternatingRowColors(true);
@@ -66,6 +71,7 @@ medSourcesSettingsHandlerWidget::medSourcesSettingsHandlerWidget(medSourcesSetti
 
     //--- Now that Qt widgets are set: create connections
     connect(m_setDefaultButton, &QPushButton::clicked, pi_parent, &medSourcesSettings::setAsDefault); // Change default source
+    connect(m_hiddenButton,     &QPushButton::clicked, pi_parent, &medSourcesSettings::setAsInvisible); // Change visibility of source
     connect(m_removeButton,     &QPushButton::clicked, pi_parent, &medSourcesSettings::removeSource); // Ask to remove source
 }
 
@@ -98,14 +104,17 @@ void medSourcesSettingsHandlerWidget::sourceChange(medAbstractSource * pi_pSourc
 
         updateSourceInformation(pi_pSource);
         updateConnectButton();
+        updateHideButton(pi_pSource);
         updateDefaultButton();
         m_removeButton->setDisabled(p_default);
 
+        m_qtConnections[0] = connect(pi_pSource, &medAbstractSource::connectionStatus, this, &medSourcesSettingsHandlerWidget::sourceConnectStatusChange);
         m_qtConnections[0] = connect(pi_pSource, &medAbstractSource::connectionStatus, this, &medSourcesSettingsHandlerWidget::sourceConnectStatusChange);
     }
     else
     {
         m_connectButton->setDisabled(true);
+        m_hiddenButton->setDisabled(true);
         m_setDefaultButton->setDisabled(true);
         m_removeButton->setDisabled(true);
 
@@ -145,6 +154,16 @@ void medSourcesSettingsHandlerWidget::updateDefaultButton()
 void medSourcesSettingsHandlerWidget::updateConnectButton()
 {
     m_connectButton->setText(m_bOnline ? "Disconnect" : "Connect");
+}
+
+/**
+ * @brief This method update the hide button and its behavior.
+ * @param [in] pi_pSource is the source pointer.
+ */
+void medSourcesSettingsHandlerWidget::updateHideButton(medAbstractSource * pi_pSource)
+{
+    bool bHide = medSourcesLoader::instance()->isInvisible(pi_pSource->getInstanceId());
+    m_hiddenButton->setText(bHide ? "show" : "hide");
 }
 
 /**

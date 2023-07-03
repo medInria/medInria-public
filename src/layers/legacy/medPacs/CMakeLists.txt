@@ -16,6 +16,13 @@
 set(TARGET_NAME medPacs)
 
 ## #############################################################################
+## find requireds
+## #############################################################################
+
+# find dtk
+find_package(dtk REQUIRED)
+
+## #############################################################################
 ## List Sources
 ## #############################################################################
 
@@ -63,7 +70,10 @@ target_link_libraries(${TARGET_NAME}
 ## #############################################################################
 
 target_include_directories(${TARGET_NAME}
-  PUBLIC ${${TARGET_NAME}_INCLUDE_DIRS}
+  PRIVATE ${dtk_INCLUDE_DIRS}
+  PUBLIC
+    "$<BUILD_INTERFACE:${${TARGET_NAME}_INCLUDE_DIRS}>"
+    "$<INSTALL_INTERFACE:include/${TARGET_NAME}>"
   )
 
 

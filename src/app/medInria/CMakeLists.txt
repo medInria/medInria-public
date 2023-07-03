@@ -23,7 +23,7 @@ add_subdirectory(QSingleApplication)
 add_subdirectory(resources)
 
 find_package(dtk REQUIRED)
-include_directories(${dtk_INCLUDE_DIRS})
+#include_directories(${dtk_INCLUDE_DIRS})
 
 find_package(Boost REQUIRED)
 
@@ -123,6 +123,7 @@ endif()
 
 target_include_directories(${TARGET_NAME}
   PRIVATE ${${TARGET_NAME}_INCLUDE_DIRS}
+  PRIVATE ${dtk_INCLUDE_DIRS}
   ${Boost_INCLUDE_DIR}
   )
 # PRIVATE beacause application is not supposed to be used somewhere else

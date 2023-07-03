@@ -38,6 +38,8 @@ public:
     void sourceChange(medAbstractSource * pi_pSource, bool p_default);
     void sourceConnectStatusChange(bool p_status);
 
+    void updateHideButton(medAbstractSource * pi_pSource);
+
   public slots:
     void setAsDefault();
 
@@ -51,6 +53,7 @@ private:
 
     QPushButton * m_setDefaultButton;  /*!< Widget button to define the default source. */
     QPushButton * m_connectButton;     /*!< Widget button to connect and disconnect source. */
+    QPushButton * m_hiddenButton;      /*!< Widget button to switch visible or invisible source. */
     QTreeWidget * m_sourceInformation; /*!< Widget display source status. */
     QPushButton * m_removeButton;      /*!< Widget button to remove the current source. */
 

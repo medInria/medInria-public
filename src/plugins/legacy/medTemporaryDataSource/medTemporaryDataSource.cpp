@@ -93,7 +93,7 @@ QList<medAbstractParameter *> medTemporaryDataSource::getCipherParameters()
     return {};
 }
 
-QList<medAbstractParameter *> medTemporaryDataSource::getVolatilParameters()
+QList<medAbstractParameter *> medTemporaryDataSource::getVolatileParameters()
 {
     return {};
 }

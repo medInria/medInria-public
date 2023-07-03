@@ -282,6 +282,13 @@ medAbstractSource* medSourcesLoader::createInstanceOfSource(QString const & type
     return pDataSource;
 }
 
+void medSourcesLoader::hideSource(QString sourceId, bool hide)
+{
+    m_instanceMapInvisibility[sourceId] = hide;
+    saveToDisk();
+    emit sourceHidden(sourceId, hide);
+}
+
 medSourcesLoader::medSourcesLoader(QObject *parent)
 {
     setParent(parent);
@@ -315,10 +322,11 @@ bool medSourcesLoader::saveToDisk() const
         entry.insert("sourceType", QJsonValue::fromVariant(m_instanceMapType[instance->getInstanceId()]));
         entry.insert("cnxId", QJsonValue::fromVariant(instance->getInstanceId()));
         entry.insert("cnxName", QJsonValue::fromVariant(instance->getInstanceName()));
+        entry.insert("hide", QJsonValue::fromVariant(m_instanceMapInvisibility[instanceId]));
         
         auto allParameters     = instance->getAllParameters();
         auto cipherParameters  = instance->getCipherParameters();
-        auto volatilParameters = instance->getVolatilParameters();
+        auto volatilParameters = instance->getVolatileParameters();
 
         for (auto paramToRemove : cipherParameters)
         {
@@ -365,6 +373,18 @@ bool medSourcesLoader::saveToDisk() const
     return bRes;
 }
 
+bool medSourcesLoader::isInvisible(QString sourceId)
+{
+    bool bRes = true;
+
+    if (m_instanceMapInvisibility.contains(sourceId))
+    {
+        bRes = m_instanceMapInvisibility[sourceId];
+    }
+
+    return bRes;
+}
+
 bool medSourcesLoader::loadFromDisk()
 {
     bool bRes = false;
@@ -394,6 +414,14 @@ bool medSourcesLoader::loadFromDisk()
                 obj.contains("cnxId") && obj["cnxId"].isString() && !obj["cnxId"].toString().isEmpty() &&
                 obj.contains("cnxName") && obj["cnxName"].isString() && !obj["cnxName"].toString().isEmpty())
             {
+                if (obj.contains("hide") && obj["hide"].isBool())
+                {
+                    m_instanceMapInvisibility[obj["cnxId"].toString()] = obj["hide"].toBool();
+                }
+                else
+                {
+                    m_instanceMapInvisibility[obj["cnxId"].toString()] = false;
+                }
                 if (m_sourcesMap.contains(obj["sourceType"].toString()))
                 {
                     reloadCnx(obj);
@@ -452,7 +480,7 @@ void medSourcesLoader::reloadCnx(QJsonObject &obj)
     pDataSource->setInstanceName(obj["cnxName"].toString());
     auto normalParameters = pDataSource->getAllParameters();
     auto cipherParameters = pDataSource->getCipherParameters();
-    auto volatilParameters = pDataSource->getVolatilParameters();
+    auto volatilParameters = pDataSource->getVolatileParameters();
 
     for (auto paramToRemove : cipherParameters)
     {
@@ -543,7 +571,7 @@ void medSourcesLoader::reloadCnx(QJsonObject &obj)
         }
     }
 
-    int iParamLakeCount = iAppliedParametersCount - (pDataSource->getAllParameters().size() - pDataSource->getVolatilParameters().size());
+    int iParamLakeCount = iAppliedParametersCount - (pDataSource->getAllParameters().size() - pDataSource->getVolatileParameters().size());
     if (iParamLakeCount < 0)
     {
         qWarning() << "[WARN] Source loading lake " << iParamLakeCount << " parameter detected for : "

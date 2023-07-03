@@ -41,18 +41,9 @@ list_source_files(${TARGET_NAME}
   ${CMAKE_CURRENT_SOURCE_DIR}
  )
 
-## #############################################################################
-## include directorie.
-## #############################################################################
-
 list_header_directories_to_include(${TARGET_NAME}
    ${${TARGET_NAME}_HEADERS}
    )
-
-include_directories(${${TARGET_NAME}_INCLUDE_DIRS}
-  ${MEDINRIA_INCLUDE_DIRS}
-  )
-
 
 ## #############################################################################
 ## Precompile headers
@@ -76,6 +67,15 @@ add_library(${TARGET_NAME} SHARED
   ${${TARGET_NAME}_CFILES}
   ${${TARGET_NAME}_QRC}
   )
+  
+## #############################################################################
+## include directories.
+## #############################################################################
+
+target_include_directories(${TARGET_NAME}
+  PRIVATE ${${TARGET_NAME}_INCLUDE_DIRS}
+  PRIVATE ${dtk_INCLUDE_DIRS}
+  )
 
 
 ## #############################################################################
@@ -84,6 +84,7 @@ add_library(${TARGET_NAME} SHARED
 target_link_libraries(${TARGET_NAME} PUBLIC
         medCore
         medCoreLegacy
+		dtkCoreSupport
   )
 
 

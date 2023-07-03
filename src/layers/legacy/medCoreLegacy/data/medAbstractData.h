@@ -13,12 +13,15 @@
 =========================================================================*/
 
 #include <dtkCoreSupport/dtkAbstractData.h>
+#include <dtkCoreSupport/dtkSmartPointer.h>
 
 #include <medCoreLegacyExport.h>
 
+#include <medDataIndex.h>
+
 class medAbstractDataPrivate;
 class medAttachedData;
-class medDataIndex;
+//class medDataIndex;
 
 /**
  * Extending dtkAbstractData class to hold more specific information
@@ -75,6 +78,9 @@ signals:
 
     //! Signal emitted when the data contents have been altered.
     void dataModified(medAbstractData *);
+
+    //! Signal emitted when the data is destroying.
+    void medDataRemoved(medDataIndex);
 
 protected slots:
 

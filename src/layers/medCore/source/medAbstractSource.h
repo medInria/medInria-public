@@ -23,8 +23,10 @@
 
 class medAbstractWritingPolicy;
 
-/*@ This is an enum class to indicate if a node in model and treeview represents a dataset, a folder or both (a dataset with children) */
-enum entryType { dataset = 0/*@< this is a dataset */, folder = 1/*@< this is a folder */, both = 2/*@< this is a dataset with children*/};
+/** @enum entryType
+ *  @brief This is an enum class to indicate if a node in model and treeview represents a dataset, a folder or both (a dataset with children)
+ */
+enum entryType { dataset = 0/**< this is a dataset */, folder = 1/**< this is a folder */, both = 2/**< this is a dataset with children*/};
 
 /**
  * @class medAbstractSource
@@ -107,25 +109,22 @@ public:
     virtual bool setInstanceName(QString const &pi_instanceName) = 0;
     virtual bool connect(bool pi_bEnable = true) = 0;
 
+
     virtual QList<medAbstractParameter*> getAllParameters() = 0;
     virtual QList<medAbstractParameter*> getCipherParameters() = 0;
-    virtual QList<medAbstractParameter*> getVolatilParameters() = 0;
+    virtual QList<medAbstractParameter*> getVolatileParameters() = 0;
     virtual QList<medAbstractParameter*> getFilteringParameters() = 0;
 
     /* ***********************************************************************/
     /* *************** Get source properties *********************************/
     /* ***********************************************************************/
+    
     virtual bool isWritable()  = 0;
     virtual bool isLocal()     = 0;
     virtual bool isCached()    = 0;
     virtual bool isOnline()    = 0;
     virtual bool isFetchByMinimalEntriesOrMandatoryAttributes() = 0; //true: minimalEntries, false: MandatoryAttributes
-    
-   // virtual bool isMedAbstractDataAccepted();
-    virtual int getIOInterface() = 0;
-    //{
-    //    return TOTO_FILE;// | TOTO_ABSDATA | TOTO_OTHER;
-    //}
+    virtual int getIOInterface() = 0; //return TOTO_FILE;// | TOTO_ABSDATA | TOTO_OTHER;
     virtual QMap<QString, QStringList> getTypeAndFormat() = 0; //<TypeOfData, ListOfSupportedFormat>
     
     /* ***********************************************************************/
@@ -196,6 +195,94 @@ signals:
 public slots:
     virtual void abort(int pi_iRequest) = 0;
 };
+
+
+///@{
+    /*! @fn bool medAbstractSource::initialization(QString const  &pi_instanceId)
+     *  @brief initialization is call by medInria to initialize a new instance.
+     *  @details This function must contain all code expected for a complete initialization. After calling of this function this source instance will be consider as operational by medInria.
+     *  @param pi_instanceId [in] is the identifier provide by medInria to the new source instance. This value must be store by this instance
+     *  @return Must return true if initialization is well done, false in other case.
+     */
+
+     /*! @fn bool medAbstractSource::setInstanceName(QString const &pi_instanceName)
+      *  @brief Set a human readable name to the instance of source.
+      *  @details This function register the humane readable name.
+      *  @param pi_instanceName [in] is the name source instance.
+      *  @return Must return true if the name registration is well done, false in other case.
+      */
+
+      /*! @fn bool medAbstractSource::connect(bool pi_bEnable = true)
+       *  @brief Connect or disconnect the source.
+       *  @param pi_bEnable [in] is the boolean to indicate if source must be connect (true) or disconnect (false).
+       *  @return Must return true if the connection or disconnection is well done, false in other case.
+       */
+///@}
+
+
+
+///@{
+/*! @fn bool medAbstractSource::isWritable()
+*  @brief Indicates if the source can be write at least at one level.
+*  @return True if the is writable, false if it is read only.
+*/
+
+/*! @fn bool medAbstractSource::isLocal()
+*  @brief Indicates if the source remote via a network or local on same computer of the medInria instance.
+*  @return True if the source is local (with very low latency) else false for remote (Hight latency).
+*/
+
+/*! @fn bool medAbstractSource::isCached()
+*  @brief Indicate if the source plugin handles a system of cache between the source and medInria.
+*  @details It is highly recommended to offer a mechanism of cache, with cache write back, only for a remote source.
+*  @return True if the source uses a cache mechanism, with cache write back. False otherwise.
+*/
+
+/*! @fn bool medAbstractSource::isOnline()
+*  @brief Indicates if the source plugin can communicate with the source.
+*  @details For a remote source it is the symbol of well establish network communication.<br>
+*  @details For a local source it is the symbol of well opening file, for example.
+*
+*  @details For a source with credentials it is the symbol of a good communication with a good identification.
+*  @return True if the source is online. False otherwise.
+*/
+
+/*! @fn bool medAbstractSource::isFetchByMinimalEntriesOrMandatoryAttributes()
+*  @brief Indicates if the source can be fetch by "minimal entries" or by "mandatory attributes".
+*  @return True if the source is fetch by minimalEntries. False otherwise.
+*/
+
+/*! @fn bool medAbstractSource::getIOInterface()
+*  @brief Indicates if the source can be fetch by "minimal entries" or by "mandatory attributes".
+*  @return True if the source is fetch by minimalEntries. False otherwise.
+*/
+///@}
+
+///@{
+/*! @fn QList<medAbstractParameter*> medAbstractSource::getAllParameters()
+ *  @brief Provides all the parameters necessary for the operation of the source.
+ *  @details This function do not contain filtering parameters.
+ *   The returned list can be empty if the source does not need parameters to operate.
+ *  @info These parameters will automatically be displayed in the sources settings.
+ *  @return a QList that contains all pointers on allocated and pre-initialized parameters.
+ */
+/*! @fn QList<medAbstractParameter*> medAbstractSource::getCipherParameters()
+*  @brief Provides only the parameters necessary for the operation of the source which must be cipher/encrypted inside the file when medInria is switched off.
+*  @details This function return parameters already contained in the medAbstractSource::getAllParameters() return.
+*  @return a QList that contains all pointers on allocated and pre-initialized cipher parameters.
+*/
+/*! @fn QList<medAbstractParameter*> medAbstractSource::getVolatileParameters()
+*  @brief Provides only the parameters necessary for the operation of the source which must be not saved inside the file when medInria is switched off.
+*  @details This function return parameters already contained in the medAbstractSource::getAllParameters() return.
+*  All parameters returned must have default value.
+*  @return a QList that contains all pointers on allocated and pre-initialized volatile parameters.
+*/
+/*! @fn QList<medAbstractParameter*> medAbstractSource::getFilteringParameters()
+*  @brief Provides parameters to filter the results when a source is fetch.
+*  @details For example filtering parameters can be implemented to limit the size of results when the source is fetch.
+*  @return a QList that contains all pointers on allocated and pre-initialized filtering parameters.
+*/
+///@}
 
 /*! @fn QStringList medAbstractSource::getMandatoryAttributesKeys(unsigned int pi_uiLevel)
  *  @brief getMandatoryAttributesKeys returns blablabla1 for the desired level.

@@ -341,7 +341,7 @@ QList<medAbstractParameter *> medAPHP::getCipherParameters()
     return {};
 }
 
-QList<medAbstractParameter *> medAPHP::getVolatilParameters()
+QList<medAbstractParameter *> medAPHP::getVolatileParameters()
 {
     return {};
 }

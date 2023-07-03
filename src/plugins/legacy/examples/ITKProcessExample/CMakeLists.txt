@@ -24,14 +24,14 @@ add_definitions(-D${TARGET_NAME_UP}_VERSION="${${TARGET_NAME}_VERSION}")
 
 set(CMAKE_COLOR_MAKEFILE ON)
 set(CMAKE_VERBOSE_MAKEFILE OFF)
-set(CMAKE_INCLUDE_CURRENT_DIR TRUE)
+set(CMAKE_INCLUDE_CURRENT_DIR FALSE)
 
 ## #################################################################
 ## Resolve dependencies
 ## #################################################################
 
 find_package(dtk REQUIRED)
-include_directories(${dtk_INCLUDE_DIRS})
+#include_directories(${dtk_INCLUDE_DIRS})
 
 # ITK
 find_package(ITK REQUIRED)

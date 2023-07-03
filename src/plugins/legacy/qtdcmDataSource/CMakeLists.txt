@@ -13,6 +13,7 @@
 #
 ################################################################################
 
+
 project(qtdcmDataSourcePlugin)
 
 ## #############################################################################
@@ -36,6 +37,8 @@ find_package(DCMTK REQUIRED NO_MODULE)
 
 find_package(QtDCM REQUIRED)
 
+find_package(QtDCM REQUIRED QNetwork)
+
 ## #############################################################################
 ## List Sources
 ## #############################################################################
@@ -44,20 +47,9 @@ list_source_files(${PROJECT_NAME}
   ${CMAKE_CURRENT_SOURCE_DIR}
   )
 
-## #############################################################################
-## include directorie.
-## #############################################################################
-
 list_header_directories_to_include(${PROJECT_NAME}
   ${${PROJECT_NAME}_HEADERS}
   )
-
-include_directories(${${PROJECT_NAME}_INCLUDE_DIRS}
-  ${MEDINRIA_INCLUDE_DIRS}
-  ${QTDCM_INCLUDE_DIRS}
-  ${QTDCM_DIR}
-  )
-
 
 ## #############################################################################
 ## Precompile headers
@@ -82,6 +74,16 @@ add_library(${PROJECT_NAME} SHARED
   ${${PROJECT_NAME}_PCH}
   ${${PROJECT_NAME}_CFILES}
   )
+  
+## #############################################################################
+## include directories.
+## #############################################################################
+
+target_include_directories(${PROJECT_NAME}
+  PRIVATE ${${PROJECT_NAME}_INCLUDE_DIRS}
+  PRIVATE ${dtk_INCLUDE_DIRS}
+  PRIVATE ${QTDCM_INCLUDE_DIRS}
+  )
 
 
 ## #############################################################################
@@ -95,10 +97,12 @@ if (WIN32)
 endif()
 
 target_link_libraries(${PROJECT_NAME}
+  PUBLIC
   ${QT_LIBRARIES}
   ${QTDCM_LIBRARIES}
   ${DCMTK_LIBRARIES}
   ${WIN_LINK_LIBRARIES}
+  dtkCoreSupport
   dtkCore
   dtkLog
   medCore

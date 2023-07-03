@@ -18,6 +18,7 @@ set(TARGET_NAME medCoreLegacy)
 #required for querying the GPU, can be removed once using Qt 5.3
 #using QOpenGLFunctions::glGetString(), as well as the {OPENGL_LIBRARIES} below.
 find_package(OpenGL REQUIRED)
+find_package(dtk REQUIRED)
 
 ## #############################################################################
 ## List Sources
@@ -53,24 +54,25 @@ list_header_directories_to_include(${TARGET_NAME}
 ## add library
 ## #############################################################################
 
+set(CMAKE_INCLUDE_CURRENT_DIR OFF)
 add_library(${TARGET_NAME} SHARED
   ${${TARGET_NAME}_CFILES}
   ${${TARGET_NAME}_QRC}
   )
 
 ## #############################################################################
-## include directorie.
+## include directories.
 ## #############################################################################
 
-target_include_directories(${TARGET_NAME}
-  PUBLIC ${${TARGET_NAME}_INCLUDE_DIRS}
-  )
+target_include_directories(${TARGET_NAME} PRIVATE ${dtk_INCLUDE_DIRS} PUBLIC "$<BUILD_INTERFACE:${${TARGET_NAME}_INCLUDE_DIRS}>" PUBLIC "$<INSTALL_INTERFACE:include/${TARGET_NAME}>")
+
 
 ## #############################################################################
 ## Link
 ## #############################################################################
 
 target_link_libraries(${TARGET_NAME}
+  PUBLIC
   Qt5::Core
   Qt5::Widgets
   Qt5::OpenGL
@@ -79,18 +81,20 @@ target_link_libraries(${TARGET_NAME}
   Qt5::Test
   Qt5::Xml
   ${OPENGL_LIBRARIES}
+  PRIVATE
   dtkCoreSupport
   dtkGuiSupport
   dtkLog
   )
 
 if (WIN32) #TODO is that for the memory management thing ?
-  target_link_libraries(${TARGET_NAME} psapi.lib Ws2_32.lib)
+  target_link_libraries(${TARGET_NAME} PUBLIC psapi.lib Ws2_32.lib)
 endif()
 
 ## #############################################################################
 ## install
 ## #############################################################################
+
 
 set_lib_install_rules(${TARGET_NAME}
   ${${TARGET_NAME}_HEADERS}
@@ -103,3 +107,9 @@ set_lib_install_rules(${TARGET_NAME}
 if(${PROJECT_NAME}_BUILD_TESTS)
   add_subdirectory(tests)
 endif()
+
+## #############################################################################
+## Export as cmake package
+## #############################################################################
+
+

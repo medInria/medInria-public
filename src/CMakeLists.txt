@@ -19,6 +19,8 @@ if(NOT DEFINED ${medInria_VERSION})
     set(medInria_VERSION 3.1.1)
 endif()
 
+include(CMakePackageConfigHelpers)
+
 project(medInria VERSION ${medInria_VERSION})
 
 cmake_policy(SET CMP0076 NEW)
@@ -80,7 +82,7 @@ find_package(Qt5 REQUIRED COMPONENTS
   )
 
 find_package(dtk REQUIRED)
-include_directories(${dtk_INCLUDE_DIRS})
+#include_directories(${dtk_INCLUDE_DIRS})
 
 ## #############################################################################
 ## enable c++ 17
@@ -127,10 +129,10 @@ set(CMAKE_AUTOMOC ON)
 set(CMAKE_AUTORCC ON)
 #   Find includes in corresponding build (and source) directories
 #   (nedded for generated files)
-if(CMAKE_VERSION VERSION_LESS "3.7.0")
-    set(CMAKE_INCLUDE_CURRENT_DIR ON)
-endif()
-
+#if(CMAKE_VERSION VERSION_LESS "3.7.0")
+#    set(CMAKE_INCLUDE_CURRENT_DIR ON)
+#endif()
+set(CMAKE_INCLUDE_CURRENT_DIR OFF)
 ## #############################################################################
 ## add definitions
 ## #############################################################################
@@ -187,22 +189,65 @@ set_property(DIRECTORY ${CMAKE_CURRENT_SOURCE_DIR} PROPERTY VS_STARTUP_PROJECT m
 # Setup Configuration files
 ################################################################################
 
-set_lib_properties_variables(
-    medCoreLegacy
-    medLog
-    medRegistration
-    medCore
-    medImageIO
-    medVtkInria
-    medWidgets
-    medUtilities
-    medVtkDataMeshBase
-    )
+#set_lib_properties_variables(
+#    medCoreLegacy
+#    medLog
+#    medRegistration
+#    medCore
+#    medImageIO
+#    medVtkInria
+#    medWidgets
+#    medUtilities
+#    medVtkDataMeshBase
+#    )
 
-if(EXISTS ${CMAKE_SOURCE_DIR}/cmake/${PROJECT_NAME}Config.cmake.in)
-  configure_file( ## Build tree configure file
-    ${CMAKE_SOURCE_DIR}/cmake/${PROJECT_NAME}Config.cmake.in
-    ${${PROJECT_NAME}_BINARY_DIR}/${PROJECT_NAME}Config.cmake
-    @ONLY IMMEDIATE
-    )
+#if(EXISTS ${CMAKE_SOURCE_DIR}/cmake/${PROJECT_NAME}Config.cmake.in)
+#  configure_file( ## Build tree configure file
+#    ${CMAKE_SOURCE_DIR}/cmake/${PROJECT_NAME}Config.cmake.in
+#    ${${PROJECT_NAME}_BINARY_DIR}/${PROJECT_NAME}Config.cmake
+#    @ONLY IMMEDIATE
+#    )
+#endif()
+
+#get_property(GENERATOR_MULTI_CONFIG GLOBAL PROPERTY GENERATOR_IS_MULTI_CONFIG)
+#
+#if(${GENERATOR_MULTI_CONFIG})
+#  set_target_properties( ${target} PROPERTIES RUNTIME_OUTPUT_DIRECTORY_DEBUG          ${dest}/${platformType}Debug/bin)
+#  set_target_properties( ${target} PROPERTIES RUNTIME_OUTPUT_DIRECTORY_RELEASE        ${dest}/${platformType}Release/bin)
+#  set_target_properties( ${target} PROPERTIES RUNTIME_OUTPUT_DIRECTORY_MINSIZEREL     ${dest}/${platformType}MinSizeRel/bin)
+#  set_target_properties( ${target} PROPERTIES RUNTIME_OUTPUT_DIRECTORY_RELWITHDEBINFO ${dest}/${platformType}RelWithDebInfo/bin)
+#                                                                                        
+#  set_target_properties( ${target} PROPERTIES ARCHIVE_OUTPUT_DIRECTORY_DEBUG          ${dest}/${platformType}Debug/lib)
+#  set_target_properties( ${target} PROPERTIES ARCHIVE_OUTPUT_DIRECTORY_RELEASE        ${dest}/${platformType}Release/lib)
+#  set_target_properties( ${target} PROPERTIES ARCHIVE_OUTPUT_DIRECTORY_MINSIZEREL     ${dest}/${platformType}MinSizeRel/lib)
+#  set_target_properties( ${target} PROPERTIES ARCHIVE_OUTPUT_DIRECTORY_RELWITHDEBINFO ${dest}/${platformType}RelWithDebInfo/lib)
+#                                                                                        
+#  set_target_properties( ${target} PROPERTIES LIBRARY_OUTPUT_DIRECTORY_DEBUG          ${dest}/${platformType}Debug/lib)
+#  set_target_properties( ${target} PROPERTIES LIBRARY_OUTPUT_DIRECTORY_RELEASE        ${dest}/${platformType}Release/lib)
+#  set_target_properties( ${target} PROPERTIES LIBRARY_OUTPUT_DIRECTORY_MINSIZEREL     ${dest}/${platformType}MinSizeRel/lib)
+#  set_target_properties( ${target} PROPERTIES LIBRARY_OUTPUT_DIRECTORY_RELWITHDEBINFO ${dest}/${platformType}RelWithDebInfo/lib)
+#else()                                                                                  
+#  set_target_properties( ${target} PROPERTIES RUNTIME_OUTPUT_DIRECTORY                ${dest}/bin)
+#  set_target_properties( ${target} PROPERTIES ARCHIVE_OUTPUT_DIRECTORY                ${dest}/lib)
+#  set_target_properties( ${target} PROPERTIES LIBRARY_OUTPUT_DIRECTORY                ${dest}/lib)
+#endif()
+
+set(PACKAGE_INIT "@PACKAGE_INIT@")
+if(EXISTS ${CMAKE_SOURCE_DIR}/cmake/${PROJECT_NAME}4Config.cmake.in)
+    #configure_file( ## Build tree configure file
+    #    ${CMAKE_SOURCE_DIR}/cmake/${PROJECT_NAME}4Config.cmake.in
+    #    ${${PROJECT_NAME}_BINARY_DIR}/${PROJECT_NAME}Config.cmake
+    #    @ONLY IMMEDIATE
+    #    )
+	
+    get_property(GENERATOR_MULTI_CONFIG GLOBAL PROPERTY GENERATOR_IS_MULTI_CONFIG)
+    if(${GENERATOR_MULTI_CONFIG})
+    	configure_package_config_file(${CMAKE_SOURCE_DIR}/cmake/${PROJECT_NAME}4Config.cmake.in "${CMAKE_CURRENT_BINARY_DIR}/Debug/lib/${PROJECT_NAME}/${PROJECT_NAME}Config.cmake" INSTALL_DESTINATION lib/cmake/${PROJECT_NAME})
+    	configure_package_config_file(${CMAKE_SOURCE_DIR}/cmake/${PROJECT_NAME}4Config.cmake.in "${CMAKE_CURRENT_BINARY_DIR}/Release/lib/${PROJECT_NAME}/${PROJECT_NAME}Config.cmake" INSTALL_DESTINATION lib/cmake/${PROJECT_NAME})
+    	configure_package_config_file(${CMAKE_SOURCE_DIR}/cmake/${PROJECT_NAME}4Config.cmake.in "${CMAKE_CURRENT_BINARY_DIR}/MinSizeRel/lib/${PROJECT_NAME}/${PROJECT_NAME}Config.cmake" INSTALL_DESTINATION lib/cmake/${PROJECT_NAME})
+    	configure_package_config_file(${CMAKE_SOURCE_DIR}/cmake/${PROJECT_NAME}4Config.cmake.in "${CMAKE_CURRENT_BINARY_DIR}/RelWithDebInfo/lib/${PROJECT_NAME}/${PROJECT_NAME}Config.cmake" INSTALL_DESTINATION lib/cmake/${PROJECT_NAME})
+    else()
+    	configure_package_config_file(${CMAKE_SOURCE_DIR}/cmake/${PROJECT_NAME}4Config.cmake.in "${CMAKE_CURRENT_BINARY_DIR}/lib/${PROJECT_NAME}/${PROJECT_NAME}Config.cmake" INSTALL_DESTINATION lib/cmake/${PROJECT_NAME})
+    endif()
 endif()
+

@@ -21,7 +21,7 @@ set(TARGET_NAME medLog)
 
 # find dtk
 find_package(dtk REQUIRED)
-include_directories(${dtk_INCLUDE_DIRS})
+#include_directories(${dtk_INCLUDE_DIRS})
 
 # find itk
 find_package(ITK REQUIRED COMPONENTS ITKCommon)
@@ -55,11 +55,14 @@ add_library(${TARGET_NAME} SHARED
 
 
 ## #############################################################################
-## include directorie.
+## include directories.
 ## #############################################################################
 
 target_include_directories(${TARGET_NAME}
-  PUBLIC ${${TARGET_NAME}_INCLUDE_DIRS}
+  PRIVATE ${dtk_INCLUDE_DIRS}
+  PUBLIC
+	"$<BUILD_INTERFACE:${${TARGET_NAME}_INCLUDE_DIRS}>"
+	"$<INSTALL_INTERFACE:include/${TARGET_NAME}>"
   )
 
 

@@ -45,6 +45,7 @@ public slots:
     void filter(const QString &);
 
     void onDoubleClick(QModelIndex const & index);
+    void hideSource(QString sourceInstanceId, bool hide);
 
 signals:
     void openOnDoubleClick(medDataIndex);

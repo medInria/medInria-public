@@ -30,38 +30,40 @@ namespace medMetaDataKeys
     public:
         typedef std::vector<const Key*> Registery;
 
-        Key(const char* name, const char* label="",
-            QVariant::Type type=QVariant::String, bool isEditable = true): KEY(name), LABEL(label), TYPE(type), ISEDITABLE(isEditable)
+        Key(const char* name, const char* label = "", QVariant::Type type = QVariant::String, bool isEditable = true) : KEY(name), LABEL(label), TYPE(type), ISEDITABLE(isEditable)
         {
-            if(QString(label)=="") LABEL=QString(name);
+            if (QString(label) == "") LABEL = QString(name);
             registery.push_back(this);
         }
 
         ~Key() { }
 
         const QString& key() const { return KEY; }
-        const QString& label() const { return LABEL; }
-        const QVariant::Type& type() const { return TYPE; }
-        bool isEditable() const { return ISEDITABLE; }
 
-        bool is_set_in(const medAbstractData *data) const { return data->hasMetaData(KEY) ; }
+        //const QString& label() const { return LABEL; }
 
-        const QStringList getValues(const medAbstractData *data) const { return data->metaDataValues(KEY); }
+        //const QVariant::Type& type() const { return TYPE; }
 
-        const QString getFirstValue(const medAbstractData *data, const QString defaultValue=QString("")) const
-        {
-            return  data->hasMetaData(KEY) ? data->metaDataValues(KEY)[0] : defaultValue;
-        }
+        //bool isEditable() const { return ISEDITABLE; }
+        //
+        //bool is_set_in(const medAbstractData *data) const { return data->hasMetaData(KEY) ; }
 
-        void add(medAbstractData* d,const QStringList& values) const { d->addMetaData(KEY,values); }
-        void add(medAbstractData* d,const QString& value)      const { d->addMetaData(KEY,value);  }
-        void set(medAbstractData* d,const QStringList& values) const { d->setMetaData(KEY,values); }
-        void set(medAbstractData* d,const QString& value)      const { d->setMetaData(KEY,value);  }
+        //const QStringList getValues(const medAbstractData *data) const { return data->metaDataValues(KEY); }
+        //
+        //const QString getFirstValue(const medAbstractData *data, const QString defaultValue=QString("")) const
+        //{
+        //    return  data->hasMetaData(KEY) ? data->metaDataValues(KEY)[0] : defaultValue;
+        //}
+        //
+        //void add(medAbstractData* d,const QStringList& values) const { d->addMetaData(KEY,values); }
+        //void add(medAbstractData* d,const QString& value)      const { d->addMetaData(KEY,value);  }
+        //void set(medAbstractData* d,const QStringList& values) const { d->setMetaData(KEY,values); }
+        //void set(medAbstractData* d,const QString& value)      const { d->setMetaData(KEY,value);  }
 
-        static const Registery& all() { return registery; }
-
-        bool operator==(const Key& other){ return ( this->key() == other.key() ); }
-
+        //static const Registery& all() { return registery; }
+        //
+        //bool operator==(const Key& other){ return ( this->key() == other.key() ); }
+        //
         static const Key* fromKeyName(const char* name)
         {
             std::vector<const Key*>::iterator it;
@@ -82,7 +84,6 @@ namespace medMetaDataKeys
         QVariant::Type TYPE;
         bool ISEDITABLE;
     };
-
 
     /** Define the actual keys to use */
 
@@ -168,7 +169,61 @@ namespace medMetaDataKeys
     extern MEDCORELEGACY_EXPORT const Key FlipAngle;
     extern MEDCORELEGACY_EXPORT const Key EchoTime;
     extern MEDCORELEGACY_EXPORT const Key RepetitionTime;
+
+
+
+    using keyConverter = bool(*)(QVariant const & inputData, QVariant & outputData);
+
+    class MEDCORELEGACY_EXPORT Key2
+    {
+    public:
+        typedef std::vector<const Key2*> Registery;
+
+        Key2(QString name, QString label = "", QString tag = "", QString medKey = "", QVariant::Type type = QVariant::String) : KEY(name), LABEL(label), TYPE(type)
+        {
+            if (QString(label) == "") LABEL = QString(name);
+            //registery.push_back(this);
+        }
+
+        ~Key2() { }
+
+        const QString& key() const { return KEY; }
+
+        const QVariant::Type& type() const { return TYPE; }
+
+    private:
+
+        const QString KEY;
+        QString LABEL;
+        QVariant::Type TYPE;
+    };
+
+    class medMetaDataKeys
+    {
+    
+    public:
+        medMetaDataKeys();
+        ~medMetaDataKeys();
+
+
+        QMap<QString /*medInriaKey*/, Key2*> medKeyMap;
+        QMap<QString /*chapter*/, Key2> medKeyMap2;
+    
+        void registerKey(QString key, QString label, QString medInriaKey, QVariant type);
+        void registerConverter(std::type_info inputType, std::type_info outputType, keyConverter converter, QString keyIn = "", QString keyOut = "");
+
+        bool convertKey(QString keyNameIn, QString keyNameOut, QVariant &valueIn, QVariant valueOut, QString chapterInName = "", QString chapterOutName = "");
+
+    private:
+        bool fectChapterDirectory(QString path);
+        bool loadChapter(QByteArray chapter);
+        bool readKey(QJsonObject keyAsJson, Key2 &key);
+        
+    };
 };
 
 
 
+
+    
+        //operator QStringList() const;

@@ -85,6 +85,8 @@ public slots:
     void unPinData (QModelIndex modelIndex);
     void removeData(QModelIndex modelIndex);
 
+    void updateDataStateRole(medDataIndex, QVariant);
+
 private slots:
     void renameByItem(QStandardItem * item);
 

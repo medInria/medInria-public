@@ -107,7 +107,9 @@ QVariant medSourceModel::data(const QModelIndex & index, int role) const
 //            auto value = data(index, 100).toString();
 ////            if (value == "DataLoading")
 ////            {
-////                varDataRes = QIcon(":icons/yellow_spot.svg");
+//                QPixmap pix(40, 40);                
+//                QIcon ico(pix);
+//                varDataRes = ico;
 ////            }
 //        }
         else

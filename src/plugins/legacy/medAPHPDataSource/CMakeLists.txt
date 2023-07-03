@@ -32,6 +32,7 @@ add_definitions(-D${TARGET_NAME_UP}_VERSION="${${TARGET_NAME}_VERSION}")
 #enable_testing(true)
 #FIND_PACKAGE(GTest REQUIRED)
 #FIND_PACKAGE(Qt5Test REQUIRED)
+find_package(dtk REQUIRED)
 
 find_package(DCMTK REQUIRED)
 
@@ -46,20 +47,12 @@ list_source_files(${TARGET_NAME}
   sphereDicomWeb
  )
 
-## #############################################################################
-## include directorie.
-## #############################################################################
-
-list_header_directories_to_include(${TARGET_NAME}
-   ${${TARGET_NAME}_HEADERS}
-   )
-
-include_directories(${${TARGET_NAME}_INCLUDE_DIRS}
-  ${MEDINRIA_INCLUDE_DIRS}
-  ${QTDCM_INCLUDE_DIRS}
-  ${QTDCM_DIR}
-  ${DCMTK_INCLUDE_DIR}
-  )
+#include_directories(${${TARGET_NAME}_INCLUDE_DIRS}
+#  ${MEDINRIA_INCLUDE_DIRS}
+#  ${QTDCM_INCLUDE_DIRS}
+#  ${QTDCM_DIR}
+#  ${DCMTK_INCLUDE_DIR}
+#  )
 
 
 ## #############################################################################
@@ -88,12 +81,30 @@ add_library(${TARGET_NAME} SHARED
 
 
 ## #############################################################################
+## include directorie.
+## #############################################################################
+
+list_header_directories_to_include(${TARGET_NAME}
+   ${${TARGET_NAME}_HEADERS}
+   )
+
+target_include_directories(${TARGET_NAME}
+  PUBLIC ${${TARGET_NAME}_INCLUDE_DIRS}
+  PRIVATE ${dtk_INCLUDE_DIRS}
+  PRIVATE ${MEDINRIA_INCLUDE_DIRS}
+  PRIVATE ${QTDCM_INCLUDE_DIRS}
+  PRIVATE ${QTDCM_DIR}
+  PRIVATE ${DCMTK_INCLUDE_DIR}
+  )
+
+## #############################################################################
 ## Link
 ## #############################################################################
 target_link_libraries(${TARGET_NAME}
   ${QTDCM_LIBRARIES}
   ${DCMTK_LIBRARIES}
-  medCore
+  medCore  
+  dtkCoreSupport
   )
 
 

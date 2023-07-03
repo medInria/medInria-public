@@ -56,11 +56,13 @@ public:
 
   public slots:
     void selectedSourceChange(int pi_index);
+    void hideSource(QString sourceId, bool hide);
     void sourceMoved(const QModelIndex & parent, int start, int end, const QModelIndex & destination, int row);
 
     void createSource();
     void removeSource();
     bool setAsDefault();
+    bool setAsInvisible();
 
     void sourceCreated(medAbstractSource *pi_pSource);
     void sourceRemoved(medAbstractSource *pi_pSource);
@@ -80,7 +82,7 @@ private:
     QTextEdit   * m_sourceDescriptionWidget; /*!< Text area that display a description for type selected in m_sourceTypeCombobox. */
                 
     QListWidget * m_sourceListWidget; /*!< Widget list of sources instances. It's left panel. */
-    medSourcesSettingsHandlerWidget * m_SettingsHandlerWidget; /*!< Sub-Widget to display and handle current selected source instance inside the m_sourceListWidget. It's right panel. */
+    medSourcesSettingsHandlerWidget * m_settingsHandlerWidget; /*!< Sub-Widget to display and handle current selected source instance inside the m_sourceListWidget. It's right panel. */
                 
     QLineEdit   * m_confPathLineEdit; /*!< Widget for directory path that contains sources description file */
     QPushButton * m_confOpenButton; /*!< Widget button to select the directory that contains sources description file */

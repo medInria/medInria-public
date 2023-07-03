@@ -15,6 +15,17 @@
 
 #include <medCoreLegacyExport.h>
 
+#define CHAPTER_NAME     "chapterName"
+#define CHAPTER_KEYS     "keys"
+#define KEY_NAME         "name"
+#define KEY_LABEL        "label"
+#define KEY_TAG          "tag"
+#define KEY_MEDKEY_PIVOT "medKey"
+#define KEY_TYPE         "type"
+
+#include <QDebug>
+
+
 namespace medMetaDataKeys
 {
     MEDCORELEGACY_EXPORT Key::Registery Key::registery;
@@ -103,5 +114,132 @@ namespace medMetaDataKeys
 
     // CT Image
     MEDCORELEGACY_EXPORT const Key KVP("KVP", "kVp", QVariant::UInt);
+
+
+
+
+
+    bool medMetaDataKeys::fectChapterDirectory(QString path)
+    {
+        bool bRes = false;
+
+        qDebug() << "medMetaDataKeys: Begin parsing metadata key directory to build a dictionary into : " << path;
+
+        QDirIterator it(path, QStringList() << "*.json", QDir::Files);
+        while (it.hasNext())
+        {
+            QString filePath = it.next();
+            QFile file(filePath);
+            file.open(QFile::ReadOnly);
+            if (!loadChapter(file.readAll()))
+            {
+                qDebug() << "File : " << filePath << " is a malformed json key file";
+            }
+
+        }
+
+        qDebug() << "medMetaDataKeys: Parsing ended into : " << path;
+
+        return bRes;
+    }
+
+    bool medMetaDataKeys::loadChapter(QByteArray chapter)
+    {
+        bool bRes = false;
+
+        QJsonDocument chapterDoc = QJsonDocument::fromJson(chapter);
+        if (chapterDoc.isObject())
+        {
+            QJsonObject chapterObj = chapterDoc.object();
+            if (chapterObj.contains(CHAPTER_NAME) && chapterObj[CHAPTER_NAME].isString() &&
+                chapterObj.contains(CHAPTER_KEYS) && chapterObj[CHAPTER_KEYS].isArray())
+            {
+                QString chapterName = chapterObj[CHAPTER_NAME].toString().trimmed();
+                QJsonArray keys = chapterObj[CHAPTER_KEYS].toArray();
+                if (!chapterName.isEmpty() && !keys.isEmpty())
+                {
+                    for (auto entry : keys)
+                    {
+                        //Key2 keyOut;
+                        if (entry.isObject())
+                        {
+                            QJsonObject key = entry.toObject();
+                            //if (readKey(key, keyOut))
+                            //{
+                            //    bRes = true;
+                            //}
+                            //else
+                            //{
+                            //    qDebug() << "Unable to read a key in " << chapterName;
+                            //}
+
+                            //TODO register the key
+                        }
+                    }
+                }
+                else
+                {
+                    qDebug() << "Both, " << CHAPTER_KEYS << " and " << CHAPTER_NAME << " must be not empty values " << chapterName;
+                }
+            }
+            else
+            {
+                qDebug() << "Both, " << CHAPTER_KEYS << " and " << CHAPTER_NAME << "are mandatories keys";
+            }
+        }
+
+        return bRes;
+    }
+
+
+    bool medMetaDataKeys::readKey(QJsonObject keyAsJson, Key2 & key)
+    {
+        bool bRes = false;
+
+        QString name;
+        QString label; 
+        QString tag; 
+        QString medKey; 
+        QVariant::Type type;
+
+        if (keyAsJson.contains(KEY_NAME) && keyAsJson[KEY_NAME].isString())
+        {
+            name = keyAsJson[KEY_NAME].toString();
+            bRes = !name.trimmed().isEmpty();
+
+            if (bRes)
+            {
+                if (keyAsJson.contains(KEY_LABEL) && keyAsJson[KEY_LABEL].isString())
+                {
+                    label = keyAsJson[KEY_LABEL].toString().trimmed();
+                }
+                if (keyAsJson.contains(KEY_TAG) && keyAsJson[KEY_TAG].isString())
+                {
+                    tag = keyAsJson[KEY_TAG].toString().trimmed();
+                }
+                if (keyAsJson.contains(KEY_MEDKEY_PIVOT) && keyAsJson[KEY_MEDKEY_PIVOT].isString())
+                {
+                    medKey = keyAsJson[KEY_MEDKEY_PIVOT].toString().trimmed();
+                }
+                if (keyAsJson.contains(KEY_TYPE) && keyAsJson[KEY_TYPE].isString())
+                {
+                    type = QVariant::nameToType(keyAsJson[KEY_TYPE].toString().toUtf8().data());
+                }
+
+                //key = Key2(name, label, tag, medKey, type);
+            }
+            else
+            {
+                qDebug() << "Key as invalid format. Name must be a non empty string.";
+            }
+
+        }
+        else
+        {
+            qDebug() << "Key as invalid format. Name is mandatory.";
+        }
+
+        return bRes;
+    }
 };
 

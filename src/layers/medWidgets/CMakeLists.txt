@@ -16,6 +16,13 @@
 set(TARGET_NAME medWidgets)
 
 ## #############################################################################
+## find requireds
+## #############################################################################
+
+# find dtk
+find_package(dtk REQUIRED)
+
+## #############################################################################
 ## List Sources
 ## #############################################################################
 
@@ -57,7 +64,10 @@ add_library(${TARGET_NAME} SHARED
 ## #############################################################################
 
 target_include_directories(${TARGET_NAME}
-  PUBLIC ${${TARGET_NAME}_INCLUDE_DIRS}
+  PRIVATE ${dtk_INCLUDE_DIRS}
+  PUBLIC
+	"$<BUILD_INTERFACE:${${TARGET_NAME}_INCLUDE_DIRS}>"
+	"$<INSTALL_INTERFACE:include/${TARGET_NAME}>"
   )
 
 

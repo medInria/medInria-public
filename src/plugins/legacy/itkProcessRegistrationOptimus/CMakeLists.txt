@@ -27,6 +27,9 @@ add_definitions(-D${TARGET_NAME_UP}_VERSION="${${TARGET_NAME}_VERSION}")
 ## find required
 ## #############################################################################
 
+# find dtk
+find_package(dtk REQUIRED)
+
 find_package(ITK REQUIRED  COMPONENTS ITKCommon ITKTransform  ITKRegistrationCommon ITKIOImageBase ITKIOMeta ITKTransformFactory ITKIOTransformBase ITKIOTransformInsightLegacy)
 include(${ITK_USE_FILE})
 
@@ -41,6 +44,15 @@ list_source_files(${TARGET_NAME}
   ${CMAKE_CURRENT_SOURCE_DIR}
   )
 
+## #################################################################
+## Build rules
+## #################################################################
+
+add_library(${TARGET_NAME} SHARED
+  ${${TARGET_NAME}_CFILES}
+  ${${TARGET_NAME}_QRC}
+  )
+
 ## #############################################################################
 ## include directories
 ## #############################################################################
@@ -49,17 +61,10 @@ list_header_directories_to_include(${TARGET_NAME}
   ${${TARGET_NAME}_HEADERS}
   )
 
-include_directories(${${TARGET_NAME}_INCLUDE_DIRS}
-  ${MEDINRIA_INCLUDE_DIRS}
-  )
-
-## #################################################################
-## Build rules
-## #################################################################
-
-add_library(${TARGET_NAME} SHARED
-  ${${TARGET_NAME}_CFILES}
-  ${${TARGET_NAME}_QRC}
+target_include_directories(${TARGET_NAME}
+  PUBLIC ${${TARGET_NAME}_INCLUDE_DIRS}
+  PRIVATE ${dtk_INCLUDE_DIRS}
+  PRIVATE ${MEDINRIA_INCLUDE_DIRS}
   )
 
 ## #############################################################################

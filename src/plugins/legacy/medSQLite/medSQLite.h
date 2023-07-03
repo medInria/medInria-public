@@ -42,7 +42,7 @@ public:
 
     QList<medAbstractParameter *> getCipherParameters() override;
 
-    QList<medAbstractParameter *> getVolatilParameters() override;
+    QList<medAbstractParameter *> getVolatileParameters() override;
 
     QList<medAbstractParameter*> getFilteringParameters() override;
 

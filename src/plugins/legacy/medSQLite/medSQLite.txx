@@ -267,7 +267,7 @@ QList<medAbstractParameter *> medSQlite<T>::getCipherParameters()
 }
 
 template<typename T>
-QList<medAbstractParameter *> medSQlite<T>::getVolatilParameters()
+QList<medAbstractParameter *> medSQlite<T>::getVolatileParameters()
 {
     return QList<medAbstractParameter *>();
 }

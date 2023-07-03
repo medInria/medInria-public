@@ -64,6 +64,12 @@ public:
     bool                      setDefaultWorkingSource(QString const &instanceId);
     bool                      renameSource(QString const & instanceId, QString const & name);
 	
+
+
+    /* ***********************************************************************/
+    /* *************** Others general methods ********************************/
+    /* ***********************************************************************/
+    bool isInvisible(QString sourceId);
 	bool loadFromDisk(); //call after each add or remove source instance, each call to the destructor. Must be encrypted
 
     bool setPath(QString path);
@@ -71,6 +77,7 @@ public:
 
 public slots:
     void changeSourceOrder(int oldPlace, int newPlace);
+    void hideSource(QString sourceId, bool hide);
 
 private:
     medSourcesLoader(QObject *parent = nullptr);
@@ -97,6 +104,7 @@ signals:
     void sourcesUpdated();
 
     void defaultWorkingSource(medAbstractSource*);
+    void sourceHidden(QString, bool);
 
 private:
 
@@ -111,6 +119,7 @@ private:
     QMutex m_mutexMap;
     QStringList m_sourcesIDs;
     QMap<QString, QString > m_instanceMapType; //instance, instanceId
+    QMap<QString, bool > m_instanceMapInvisibility; //instance, invisible
     QMap<QString, QSharedPointer<medAbstractSource> > m_instancesMap; //instanceId, instance
     QMap<QString, medSourceTool>      m_sourcesMap;  //Source connector type name, function pointer to instantiate a connection to the source object
     QList<QJsonObject> m_unresolvedSavedCnx;

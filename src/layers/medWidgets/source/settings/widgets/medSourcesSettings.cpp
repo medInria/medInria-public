@@ -102,13 +102,14 @@ medSourcesSettings::medSourcesSettings(medSourcesLoader * pi_pSourceLoader, QWid
         pWidget->setToDefault(true);
     }
 
-    m_SettingsHandlerWidget = new medSourcesSettingsHandlerWidget(this);
-    sourceLayout->addWidget(m_SettingsHandlerWidget);
+    m_settingsHandlerWidget = new medSourcesSettingsHandlerWidget(this);
+    sourceLayout->addWidget(m_settingsHandlerWidget);
     //--- Now that Qt widgets are set: create connections
     connect(m_sourceTypeCombobox, QOverload<int>::of(&QComboBox::currentIndexChanged), this, &medSourcesSettings::updateSelectedSourceDescription);
     connect(createButton,       &QPushButton::clicked, this, &medSourcesSettings::createSource);
     connect(m_sourceLoader,     &medSourcesLoader::sourceAdded,  this, &medSourcesSettings::sourceCreated);   // Signal to slot to indicate a new source
     connect(m_sourceLoader,     &medSourcesLoader::sourceRemoved, this, &medSourcesSettings::sourceRemoved);   // Signal to slot to indicate a new source
+    connect(m_sourceLoader,      &medSourcesLoader::sourceHidden, this, &medSourcesSettings::hideSource);
     connect(m_sourceListWidget, &QListWidget::currentRowChanged, this, &medSourcesSettings::selectedSourceChange);
     connect(m_sourceListWidget->model(), &QAbstractItemModel::rowsMoved, this, &medSourcesSettings::sourceMoved);
 
@@ -141,11 +142,24 @@ void medSourcesSettings::selectedSourceChange(int pi_index)
         auto *pSource = m_sourceToItem.key(pItem);
         bool bIsDefaultWorkingSource = pSource == m_sourceLoader->getDefaultWorkingSource();
 
-        m_SettingsHandlerWidget->sourceChange(pSource, bIsDefaultWorkingSource);
+        m_settingsHandlerWidget->sourceChange(pSource, bIsDefaultWorkingSource);
     }
     else
     {
-        m_SettingsHandlerWidget->sourceChange(nullptr, false);
+        m_settingsHandlerWidget->sourceChange(nullptr, false);
+    }
+}
+
+void medSourcesSettings::hideSource(QString sourceId, bool hide)
+{
+    auto * pItem = m_sourceListWidget->currentItem();
+    if (pItem)
+    {
+        auto *pSource = m_sourceToItem.key(pItem);
+        if (pSource->getInstanceId() == sourceId)
+        {
+            m_settingsHandlerWidget->updateHideButton(pSource);
+        }
     }
 }
 
@@ -220,8 +234,25 @@ bool medSourcesSettings::setAsDefault()
             auto *pItem = m_sourceToItem.value(currentSource);
             auto *pWidget = static_cast<medSourceSettingsWidget*>(m_sourceListWidget->itemWidget(pItem));
             pWidget->setToDefault(true);
-            m_SettingsHandlerWidget->setAsDefault();
+            m_settingsHandlerWidget->setAsDefault();
         }
+    }
+
+    return bRes;
+}
+
+bool medSourcesSettings::setAsInvisible()
+{
+    bool bRes = false;
+
+    auto sources = m_sourceLoader->sourcesList();
+    auto * currentSource = sources[m_sourceListWidget->currentRow()];
+    if (currentSource)
+    {
+        auto sourceId = currentSource->getInstanceId();
+        bool bHide = m_sourceLoader->isInvisible(sourceId);
+        m_sourceLoader->hideSource(sourceId, !bHide);  
+        bRes = true;
     }
 
     return bRes;

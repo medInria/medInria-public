@@ -65,6 +65,8 @@ medAbstractData::medAbstractData(const medAbstractData &other)
 
 medAbstractData::~medAbstractData( void )
 {
+    emit medDataRemoved(dataIndex());
+
     for (auto dData : d->derivedDataList)
     {
         dData->removeParentData(this);

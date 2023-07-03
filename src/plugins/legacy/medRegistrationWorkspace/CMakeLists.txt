@@ -24,14 +24,14 @@ set(${TARGET_NAME}_VERSION ${MEDINRIA_VERSION})
 string(TOUPPER ${TARGET_NAME} TARGET_NAME_UP)
 add_definitions(-D${TARGET_NAME_UP}_VERSION="${${TARGET_NAME}_VERSION}")
 
-set(CMAKE_INCLUDE_CURRENT_DIR TRUE)
+set(CMAKE_INCLUDE_CURRENT_DIR FALSE)
 
 ## #############################################################################
 ## Resolve dependencies
 ## #############################################################################
 
 find_package(dtk REQUIRED)
-include_directories(${dtk_INCLUDE_DIRS})
+#include_directories(${dtk_INCLUDE_DIRS})
 
 ## #############################################################################
 ## List Sources
@@ -41,16 +41,8 @@ list_source_files(${TARGET_NAME}
   ${CMAKE_CURRENT_SOURCE_DIR}
   )
 
-## #############################################################################
-## include directories
-## #############################################################################
-
 list_header_directories_to_include(${TARGET_NAME}
   ${${TARGET_NAME}_HEADERS}
-  )
-
-include_directories(${${TARGET_NAME}_INCLUDE_DIRS}
-  ${MEDINRIA_INCLUDE_DIRS}
   )
 
 ## #############################################################################
@@ -60,6 +52,15 @@ include_directories(${${TARGET_NAME}_INCLUDE_DIRS}
 add_library(${TARGET_NAME} SHARED
   ${${TARGET_NAME}_CFILES}
   ${${TARGET_NAME}_QRC}
+  )
+
+## #############################################################################
+## include directories
+## #############################################################################
+
+target_include_directories(${TARGET_NAME}
+  PRIVATE ${${TARGET_NAME}_INCLUDE_DIRS}
+  PRIVATE ${dtk_INCLUDE_DIRS}
   )
 
 ## #############################################################################

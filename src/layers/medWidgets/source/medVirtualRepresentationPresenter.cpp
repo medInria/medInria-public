@@ -1,5 +1,6 @@
 #include "medVirtualRepresentationPresenter.h"
 
+#include <medSourcesItemDelegate.h>
 #include <medVirtualRepresentation.h>
 
 #include <QAbstractItemView>
@@ -106,7 +107,9 @@ QTreeView * medVirtualRepresentationPresenter::buildTree()
         }
         pMenu->exec(translatedPoint);
     });
-	
+
+    widgetRes->setItemDelegateForColumn(0, new medSourcesItemDelegate(widgetRes));
+
     return widgetRes;
 }
 

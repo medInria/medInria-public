@@ -168,7 +168,9 @@ void meshMappingToolBox::addLayer(unsigned int layer)
     {
         medAbstractData *data = medView->layerData(layer);
 
-        QString name = medMetaDataKeys::SeriesDescription.getFirstValue(data,"<i>no name</i>");
+        //QString name = medMetaDataKeys::SeriesDescription.getFirstValue(data,"<i>no name</i>");
+        QString name = data->metadata(medMetaDataKeys::SeriesDescription.key());
+        if (name.isEmpty()) name = "<i>no name</i>";
 
         if(data && !data->identifier().contains("vtkDataMesh"))
         {

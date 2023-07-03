@@ -37,6 +37,7 @@ medSourcesWidget::medSourcesWidget()
 {
      this->setLayout(&m_layout);
      m_layout.setAlignment(Qt::AlignTop);
+     connect(medSourcesLoader::instance(), &medSourcesLoader::sourceHidden, this, &medSourcesWidget::hideSource);
 }
 
 medSourcesWidget::~medSourcesWidget()
@@ -142,7 +143,14 @@ void medSourcesWidget::addSource(medDataHub *dataHub, QString sourceInstanceId)
     });
 
     //connect(readerAction,  &QAction::triggered, [=]() {  emit infoActionSignal(this->itemFromMenu(pMenu)); });
-    //connect(unloadAction,  &QAction::triggered, [=]() {  emit infoActionSignal(this->itemFromMenu(pMenu)); });
+    connect(unloadAction,  &QAction::triggered, [=]() {
+
+        QModelIndex index = this->indexFromMenu(pMenu);
+        const medSourceModel * model = static_cast<const medSourceModel*>(index.model());
+
+        medDataIndex medIndex = model->dataIndexFromModelIndex(index);
+        dataHub->dataUnloaded(medIndex);
+    });
     connect(infoAction,    &QAction::triggered, [=]() {
         medSourceModel::datasetAttributes mandatoriesAttributes;
 
@@ -164,9 +172,15 @@ void medSourcesWidget::addSource(medDataHub *dataHub, QString sourceInstanceId)
 
 
     connect(sourceTreeView, &QTreeView::customContextMenuRequested, [=](QPoint const& point) { onCustomContextMenu(point, pMenu); });
-
-    m_layout.addLayout(hLayout);
-    m_layout.addWidget(sourceTreeView);
+    
+    QWidget * srcWidget = new QWidget();
+    QVBoxLayout * srcLayout = new QVBoxLayout();
+    srcWidget->setLayout(srcLayout);
+    srcLayout->addLayout(hLayout);
+    srcLayout->addWidget(sourceTreeView);
+    m_layout.addWidget(srcWidget);
+    
+    srcWidget->setHidden(medSourcesLoader::instance()->isInvisible(sourceInstanceId));
 
     connect(sourceTreeView, &QTreeView::clicked, [=]() {
         if (!sourceTreeView->isEnabled())
@@ -237,6 +251,15 @@ void medSourcesWidget::onDoubleClick(QModelIndex const & index)
     auto sourceIndex = proxy->mapToSource(index);
     medDataIndex medIndex = static_cast<const medSourceModel*>(sourceIndex.model())->dataIndexFromModelIndex(sourceIndex);
     emit openOnDoubleClick(medIndex);
+}
+
+void medSourcesWidget::hideSource(QString sourceInstanceId, bool hide)
+{
+    auto * pTreeView = m_treeMap.value(sourceInstanceId);
+    if (pTreeView)
+    {
+        pTreeView->parentWidget()->setHidden(hide);
+    }
 }
 
 void medSourcesWidget::onCustomContextMenu(QPoint const &point, QMenu *pi_pMenu)

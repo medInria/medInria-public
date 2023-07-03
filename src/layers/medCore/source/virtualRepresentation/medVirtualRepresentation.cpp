@@ -437,6 +437,7 @@ bool medVirtualRepresentation::fetch(QString const & pi_path)
                         child->setData(dataGarbageable, DATAGARBAGEABLE_ROLE);
                         child->setData(DATATYPE_ROLE_BOTH, DATATYPE_ROLE);
                     }
+                    d->uriToJsonPaths.insert(dataURI, aPath);
 
                 }
             }
@@ -733,6 +734,15 @@ void medVirtualRepresentation::removeData(QModelIndex modelIndex)
     //TODO
 }
 
+void medVirtualRepresentation::updateDataStateRole(medDataIndex index, QVariant value)
+{
+    auto modelIndex = getModelIndex(index);
+    if (modelIndex.isValid())
+    {
+        setData(modelIndex, value, DATASTATE_ROLE);
+    }
+}
+
 
 void medVirtualRepresentation::renameByItem(QStandardItem * item)
 {
@@ -790,12 +800,23 @@ void medVirtualRepresentation::removeTooOldEntry()
 QModelIndex medVirtualRepresentation::getModelIndex(medDataIndex index)
 {
     QModelIndex indexRes;
-    QString indexAsString = indexToFileSysPath(index.asString());
+
+    QString indexAsString;
+    if (index.sourceId() == "fs:")
+    {
+        indexAsString = indexToFileSysPath(index.asString());
+    }
+    else
+    {
+        indexAsString = index.asString();
+    }
+    
     if (d->uriToJsonPaths.contains(indexAsString))
     {
         QString jsonPath = d->uriToJsonPaths.value(indexAsString);
         indexRes = getIndex(jsonPath);
     }
+
 
     return indexRes;
 }
@@ -867,6 +888,11 @@ QString medVirtualRepresentation::getPath(QModelIndex index)
 QModelIndex medVirtualRepresentation::getIndex(QString path)
 {
     QModelIndex indexRes;
+
+    if (path.endsWith(".json"))
+    {
+        path = path.remove(path.size() - 5, 5);
+    }
 
     QString basePath = d->basePath.value();
     if (path.startsWith(basePath))

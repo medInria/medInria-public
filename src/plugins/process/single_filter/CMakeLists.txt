@@ -46,11 +46,12 @@ add_library(${TARGET_NAME} SHARED
 
 
 ## #############################################################################
-## include directorie.
+## include directories.
 ## #############################################################################
 
 target_include_directories(${TARGET_NAME}
   PRIVATE ${${TARGET_NAME}_INCLUDE_DIRS}
+  PRIVATE ${dtk_INCLUDE_DIRS}
   )
 # PRIVATE beacause plugins are not supposed to be used somewhere else
 

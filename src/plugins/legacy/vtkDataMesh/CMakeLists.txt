@@ -29,7 +29,7 @@ add_definitions(-D${TARGET_NAME_UP}_VERSION="${${TARGET_NAME}_VERSION}")
 ## #############################################################################
 
 find_package(dtk REQUIRED)
-include_directories(${dtk_INCLUDE_DIRS})
+#include_directories(${dtk_INCLUDE_DIRS})
 
 find_package(VTK REQUIRED COMPONENTS vtkCommonCore vtkCommonDataModel vtkRenderingCore vtkRenderingVolumeOpenGL2 vtkInteractionStyle vtkInteractionWidgets vtkIOParallelXML vtkIOImage vtkIOGeometry  vtkIOExport vtkRenderingContext2D)
 include(${VTK_USE_FILE})
@@ -51,17 +51,8 @@ list_source_files(${TARGET_NAME}
   writers
   )
 
-
-## #############################################################################
-## include directorie.
-## #############################################################################
-
 list_header_directories_to_include(${TARGET_NAME}
   ${${TARGET_NAME}_HEADERS}
-  )
-
-include_directories(${${TARGET_NAME}_INCLUDE_DIRS}
-  ${MEDINRIA_INCLUDE_DIRS}
   )
 
 
@@ -85,6 +76,16 @@ endif()
 add_library(${TARGET_NAME} SHARED
   ${${TARGET_NAME}_PCH}
   ${${TARGET_NAME}_CFILES}
+  )
+
+
+## #############################################################################
+## include directories.
+## #############################################################################
+
+target_include_directories(${TARGET_NAME}
+  PRIVATE ${${TARGET_NAME}_INCLUDE_DIRS}
+  PRIVATE ${dtk_INCLUDE_DIRS}
   )
 
 

@@ -29,6 +29,7 @@
 
 #include <dtkCoreSupport/dtkSmartPointer.h>
 
+class medDataStorage;
 
 #define REQUEST_TIME_OUT 120
 #define REQUEST_TIME_OUT_PULLING (REQUEST_TIME_OUT/20 ? REQUEST_TIME_OUT/20 : 1)
@@ -77,7 +78,7 @@ public:
     void sourceIsOnline(QString sourceIntanceId);
 
 
-    void setVirtualRepresentation(medVirtualRepresentation * virtRep) { m_virtualRepresentation = virtRep; }
+    void setVirtualRepresentation(medVirtualRepresentation * virtRep) { m_virtualRepresentation = virtRep; connect(this, &medDataHub::dataSeteRoleChange, virtRep, &medVirtualRepresentation::updateDataStateRole); }
     medVirtualRepresentation * getVirtualRepresentation() { return m_virtualRepresentation; }
 
 
@@ -86,9 +87,12 @@ public slots:
    void addSource(QString const & pi_sourceId);
    void removeSource(QString const & pi_sourceId);
    void refresh(medDataIndex pi_index); //TODO est-il utile  //uri -> sourceInstanceId/IdLevel1/IdLevel.../IdLevelN
-   void unloadData(QObject *obj); /* REDO */
+   void unloadData(medDataIndex index);
+   void dataUnloaded(medDataIndex index);
    int  waitGetAsyncData(const QString &sourceId, int rqstId);
    void progress(const QString &sourceId, int rqstId, medAbstractSource::eRequestStatus status);
+
+   void alterDataStateRole(medSourceModel * pModel, medDataIndex index, QVariant value);
 
 
    void timeOutWatcher();
@@ -96,12 +100,13 @@ public slots:
    void loadDataFromLocalFileSystem(QString const path, QUuid uuid = QUuid());
 
 signals:
-    void abortRequest  (int); //abort the requestId
-    void getAsyncStatus(medAbstractSource* , int, medAbstractSource::eRequestStatus);
-    void sourceAdded   (QString /*sourceInstanceId*/);
-    void sourceRemoved (QString /*sourceInstanceId*/);
-    void dataLoaded    (medDataIndex);
-    void dataExported  (medAbstractData *, QString);
+    void abortRequest      (int); //abort the requestId
+    void getAsyncStatus    (medAbstractSource* , int, medAbstractSource::eRequestStatus);
+    void sourceAdded       (QString /*sourceInstanceId*/);
+    void sourceRemoved     (QString /*sourceInstanceId*/);
+    void dataLoaded        (medDataIndex);
+    void dataExported      (medAbstractData *, QString);
+    void dataSeteRoleChange(medDataIndex, QVariant);
 
 private:
     medDataHub(QObject *parent = nullptr);
@@ -133,7 +138,8 @@ private:
     QTimer m_clock;
 
     medVirtualRepresentation * m_virtualRepresentation;
-    QMap<medDataIndex, dtkSmartPointer<medAbstractData> > m_IndexToData;
+    //QMap<medDataIndex, dtkSmartPointer<medAbstractData> > m_IndexToData;
+    medDataStorage * m_storage;
     static medDataHub * s_instance;
 
 public:

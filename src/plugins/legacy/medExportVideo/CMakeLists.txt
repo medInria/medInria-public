@@ -24,7 +24,7 @@ set(${TARGET_NAME}_VERSION ${MEDINRIA_VERSION})
 string(TOUPPER ${TARGET_NAME} TARGET_NAME_UP)
 add_definitions(-D${TARGET_NAME_UP}_VERSION="${${TARGET_NAME}_VERSION}")
 
-set(CMAKE_INCLUDE_CURRENT_DIR TRUE)
+set(CMAKE_INCLUDE_CURRENT_DIR FALSE)
 
 ## #############################################################################
 ## Resolve dependencies
@@ -36,7 +36,7 @@ if(${USE_FFmpeg})
 endif()
 
 find_package(dtk REQUIRED)
-include_directories(${dtk_INCLUDE_DIRS})
+#include_directories(${dtk_INCLUDE_DIRS})
 
 find_package(ITK REQUIRED COMPONENTS ITKCommon)
 include(${ITK_USE_FILE})
@@ -51,18 +51,7 @@ include(${VTK_USE_FILE})
 list_source_files(${TARGET_NAME}
     ${CMAKE_CURRENT_SOURCE_DIR}
     )
-
-## #############################################################################
-## include directorie.
-## #############################################################################
-
-list_header_directories_to_include(${TARGET_NAME}
-    ${${TARGET_NAME}_HEADERS}
-    )
-
-include_directories(${${TARGET_NAME}_INCLUDE_DIRS}
-    ${MEDINRIA_INCLUDE_DIRS}
-    )
+	
 
 ## #############################################################################
 ## add library
@@ -91,6 +80,24 @@ target_link_libraries(${TARGET_NAME}
     )
 
 set(CMAKE_RUNTIME_OUTPUT_DIRECTORY ${CMAKE_BINARY_DIR}/bin)
+
+
+
+## #############################################################################
+## include directories.
+## #############################################################################
+
+list_header_directories_to_include(${TARGET_NAME}
+    ${${TARGET_NAME}_HEADERS}
+    )
+
+
+target_include_directories(${TARGET_NAME}
+  PUBLIC ${${TARGET_NAME}_INCLUDE_DIRS}
+  PRIVATE ${dtk_INCLUDE_DIRS}
+  PRIVATE ${MEDINRIA_INCLUDE_DIRS}
+  )
+
 
 ## #############################################################################
 ## Install rules
