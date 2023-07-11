@@ -790,8 +790,7 @@ void medVirtualRepresentation::removeTooOldEntry()
 QModelIndex medVirtualRepresentation::getModelIndex(medDataIndex index)
 {
     QModelIndex indexRes;
-    QString indexString = index.asString();
-    QString indexAsString = indexToFileSysPath(indexString);
+    QString indexAsString = indexToFileSysPath(index.asString());
     if (d->uriToJsonPaths.contains(indexAsString))
     {
         QString jsonPath = d->uriToJsonPaths.value(indexAsString);
