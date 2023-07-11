@@ -270,7 +270,7 @@ bool medVirtualRepresentation::moveFSEntry(QString oldPath, QString newPath)
 
 
 
-//TODO regarder pour les 4 méthodes suivantes ce qui a été fait pour les medSourceModel
+//TODO regarder pour les 4 methodes suivantes ce qui a ete fait pour les medSourceModel
 bool medVirtualRepresentation::dropMimeData(const QMimeData * data, Qt::DropAction action, int row, int column, const QModelIndex & parent)
 {
     bool bRes = false;
@@ -557,7 +557,7 @@ void medVirtualRepresentation::addGeneratedData(medAbstractData * data, QString 
 {
     if (data)
     {
-        //Est-ce qu'il exist déjà ?
+        //Est-ce qu'il existe deja ?
         QString dataName;
 
         if (!name.isEmpty())
@@ -613,7 +613,7 @@ void medVirtualRepresentation::addGeneratedData(medAbstractData * data, QString 
 void medVirtualRepresentation::addDataFromSource(medDataIndex dataIndex, medAbstractData * data, const QModelIndex & parent)
 {
 
-    //Est-ce qu'il exist déjà ?
+    //Est-ce qu'il existe deja ?
 
     QStandardItem *item = nullptr;
 
@@ -660,7 +660,7 @@ void medVirtualRepresentation::addDataFromSource(medDataIndex dataIndex, medAbst
 void medVirtualRepresentation::addDataFromFile(QString path, medAbstractData * data, const QModelIndex & parent)
 {
 
-    //Est-ce qu'il exist déjà ?
+    //Est-ce qu'il existe deja ?
 
     QStandardItem *item = nullptr;
 
