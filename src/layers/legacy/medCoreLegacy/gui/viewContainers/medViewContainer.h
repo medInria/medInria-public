@@ -166,4 +166,4 @@ private:
 
 };
 
-QString indexToFileSysPath(QString &&index);
+QString indexToFileSysPath(const QString &&index);

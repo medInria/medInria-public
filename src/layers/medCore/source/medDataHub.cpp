@@ -26,7 +26,7 @@
 
 // Pour le Hack
 #include <medDataManager.h>
-//TODO à viré dès que possible
+//TODO a vire des que possible
 
 #include <QTemporaryDir>
 #include <QModelIndex>
@@ -474,7 +474,7 @@ QString fileSysPathToIndex(const QString &path)
     return pathTmp;
 }
 
-QString indexToFileSysPath(QString &index)
+QString indexToFileSysPath(const QString &index)
 {
     QString pathRes;
 
