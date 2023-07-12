@@ -13,13 +13,15 @@
 
 #include <medSourcesLoader.h>
 
+
+
 #include <QString>
 #include <QMap>
 
 #include <QFile>
 #include <QStandardPaths>
 #include <QCryptographicHash>
-//#include <QPasswordDigestor >
+
 #include <QJsonObject>
 #include <QJsonDocument>
 #include <QTimer>
@@ -301,7 +303,6 @@ medSourcesLoader::medSourcesLoader(QObject *parent)
         m_CnxParametersPath = cnxParametersSaved;
     }
 }
-
 bool medSourcesLoader::saveToDisk() const
 {
     bool bRes = true;
@@ -338,7 +339,7 @@ bool medSourcesLoader::saveToDisk() const
         for (auto medParam : cipherParameters)
         {
             QJsonObject paramAsJson;
-            convertCipherParamToJson(paramAsJson, medParam); //TODO Cipher
+            convertCipherParamToJson(paramAsJson, medParam); 
             entryParameters.insert(medParam->id(), paramAsJson);
         }
         entry.insert("parameters", entryParameters);
@@ -476,9 +477,9 @@ void medSourcesLoader::reloadCnx(QJsonObject &obj)
 
         if (bFind)
         {
-            if (normalParameters[i]->fromVariantMap(obj["parameters"].toObject()[paramId].toObject().toVariantMap()))
+		    if (normalParameters[i]->fromVariantMap(obj["parameters"].toObject()[paramId].toObject().toVariantMap()))
             {
-                iAppliedParametersCount++;
+               iAppliedParametersCount++;
             }
             else
             {
@@ -489,20 +490,24 @@ void medSourcesLoader::reloadCnx(QJsonObject &obj)
                     << "\nParameter Name  = " << normalParameters[i]->caption();
             }
             normalParameters.removeAt(i);
-        }
+        
+		}
         else
         {
             i = 0;
             while (!bFind && i < cipherParameters.size())
             {
-                bFind = paramId != cipherParameters[i]->id();
+                bFind = paramId == cipherParameters[i]->id();
                 if (!bFind) i++;
             }
             if (bFind)
             {
-                if (cipherParameters[i]->fromVariantMap(obj["parameters"].toObject()[paramId].toObject().toVariantMap())) //TODO Handle cipher param
+				//deciphering the ciphered value
+				QJsonObject decipheredParam = obj["parameters"].toObject()[paramId].toObject();
+				decipherJson(decipheredParam);
+                if (cipherParameters[i]->fromVariantMap(decipheredParam.toVariantMap())) 
                 {
-                    iAppliedParametersCount++;
+					iAppliedParametersCount++;
                 }
                 else
                 {
@@ -510,7 +515,7 @@ void medSourcesLoader::reloadCnx(QJsonObject &obj)
                         << "\nSource type     = " << obj["sourceType"]
                         << "\nConnection Id   = " << obj["cnxId"]
                         << "\nConnection name = " << obj["cnxName"]
-                        << "\nCipher Parameter Name  = " << normalParameters[i]->caption();
+                        << "\nCipher Parameter Name  = " << cipherParameters[i]->caption();
                 }
                 cipherParameters.removeAt(i);
             }
@@ -606,6 +611,33 @@ void medSourcesLoader::reparseUnresolvedCnx()
 
 void medSourcesLoader::convertCipherParamToJson(QJsonObject & po_oJson, medAbstractParameter * pi_pParam)
 {
-    po_oJson = QJsonObject::fromVariantMap(pi_pParam->toVariantMap());
+	po_oJson = QJsonObject::fromVariantMap(pi_pParam->toVariantMap());
+	QString cipherValue = po_oJson.value("value").toString();
+
+	int keyLength = ENCRYPTION_ITERATIONS * ceil(std::max(cipherValue.length(), 512 / 8) / QCryptographicHash::hashLength(ENCRYPTION_ALGORITHM)); 
+	auto derivedKey = QPasswordDigestor::deriveKeyPbkdf2(ENCRYPTION_ALGORITHM, PW, SALT, ENCRYPTION_ITERATIONS,keyLength );
+	auto data = cipherValue.toUtf8();
+	for (int i=0; i<data.size(); ++i)
+	{
+		data[i] = data[i] ^ derivedKey[i];
+	}
+
+	po_oJson.insert("value",  QJsonValue::fromVariant(data.toBase64()));
+}
+
+void medSourcesLoader::decipherJson(QJsonObject & po_oJson)
+{
+	QString cipheredValue = po_oJson.value("value").toString();
+	
+	int keyLength = ENCRYPTION_ITERATIONS * ceil(std::max(cipheredValue.length(), 512 / 8) / QCryptographicHash::hashLength(ENCRYPTION_ALGORITHM));
+
+	auto derivedKey = QPasswordDigestor::deriveKeyPbkdf2(ENCRYPTION_ALGORITHM, PW, SALT, ENCRYPTION_ITERATIONS, keyLength);
+	QByteArray data = QByteArray::fromBase64(cipheredValue.toUtf8());
+	for (int i = 0; i < data.size(); ++i)
+	{
+		data[i] = data[i] ^ derivedKey[i];
+	}
+	QString readableString = QString::fromUtf8(data);
+	po_oJson["value"] = readableString;
 }
 
