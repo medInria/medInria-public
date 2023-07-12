@@ -1,0 +1,15 @@
+{
+	"url": "https://shanoir.irisa.fr/auth/realms/shanoir-ng/protocol/openid-connect/token",
+	"headers":{
+		"Content-Type":"application/x-www-form-urlencoded"
+	},
+	"data-login":{
+		"client_id":"shanoir-uploader",
+		"grant_type":"password",
+		"scope":"offline_access"
+	},
+	"data-refresh":{
+		"grant_type" : "refresh_token",
+		"client_id" : "shanoir-uploader"
+	}
+}

@@ -18,10 +18,11 @@
 
 #include <medAbstractSource.h>
 #include <medCoreExport.h>
+#include <qpassworddigestor.h>
+
 
 class QStandardPaths;
 class QCryptographicHash;
-class QPasswordDigestor;
 class QJsonObject;
 class QJsonDocument;
 class QMutex;
@@ -84,7 +85,15 @@ private:
     bool generateUniqueSourceId(QString & Id, QString const & type) const;
     void reparseUnresolvedCnx();
 
+	//TODO: STORE THOSE VALUES IN A SECURE PLACE 
+	inline static QByteArray PW = "this_needs_to_be_changed";
+	inline static QByteArray SALT = "this_also_needs_to_be_changed";
+	inline static QCryptographicHash::Algorithm ENCRYPTION_ALGORITHM = QCryptographicHash::Sha3_512; //algorithm used for encryption
+	inline static int ENCRYPTION_ITERATIONS = 100;
+
     static void convertCipherParamToJson(QJsonObject & po_oJson, medAbstractParameter *pi_pParam);
+	static void decipherJson(QJsonObject & po_oJson);
+	
 	
     QString m_CnxParametersPath;
     QString m_CnxParametersFile;
