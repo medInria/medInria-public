@@ -161,8 +161,14 @@ bool             ShanoirPlugin::isLevelWritable(unsigned int pi_uiLevel) {
 
 QStringList      ShanoirPlugin::getMandatoryAttributesKeys(unsigned int pi_uiLevel)
 {
-	QStringList list;
-	return list;
+	if(pi_uiLevel < getLevelCount())
+	{
+		return { "key", "name", "description" };
+	}
+	else
+	{
+		return {};
+	}
 }
 
 

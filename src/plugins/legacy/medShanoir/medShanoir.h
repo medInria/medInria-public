@@ -1,4 +1,5 @@
 #pragma once
+#include <QStringList>
 #include <medAbstractSource.h>
 #include <medStringParameter.h>
 
