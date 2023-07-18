@@ -82,8 +82,9 @@ int Authenticater::autoRefreshAccessToken(int(*tokenDurationRefreshment)(int))
 }
 void Authenticater::disauthenticate()
 {
-	qDebug()<<"THE SESSION HAS ENDED";
 	SettingsManager::reset(ACCESS_TOKEN_KEY);
+	m_current_token = QJsonObject();
+	qDebug()<<"\nTHE SESSION HAS ENDED\n";
 }
 
 int Authenticater::twoThirds(int token_duration)
