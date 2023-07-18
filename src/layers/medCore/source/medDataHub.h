@@ -147,4 +147,4 @@ public:
 };
 
 QString fileSysPathToIndex(const QString &path );
-QString indexToFileSysPath(QString &index);
+QString indexToFileSysPath(const QString &index);

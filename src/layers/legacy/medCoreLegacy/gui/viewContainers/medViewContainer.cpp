@@ -1078,7 +1078,7 @@ void medViewContainer::open(const QString & path)
     medSettingsManager::instance()->setValue("path", "medViewContainer", path);
 }
 
-QString indexToFileSysPath(QString &&index)
+QString indexToFileSysPath(const QString &&index)
 {
     QString pathRes;
 
