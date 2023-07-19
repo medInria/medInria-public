@@ -81,8 +81,6 @@ public:
     void setVirtualRepresentation(medVirtualRepresentation * virtRep) { m_virtualRepresentation = virtRep; connect(this, &medDataHub::dataSeteRoleChange, virtRep, &medVirtualRepresentation::updateDataStateRole); }
     medVirtualRepresentation * getVirtualRepresentation() { return m_virtualRepresentation; }
 
-
-
 public slots:
    void addSource(QString const & pi_sourceId);
    void removeSource(QString const & pi_sourceId);
@@ -91,6 +89,7 @@ public slots:
    void dataUnloaded(medDataIndex index);
    int  waitGetAsyncData(const QString &sourceId, int rqstId);
    void progress(const QString &sourceId, int rqstId, medAbstractSource::eRequestStatus status);
+   void sourceOlineStatus(const QString &sourceId, bool status);
 
    void alterDataStateRole(medSourceModel * pModel, medDataIndex index, QVariant value);
 

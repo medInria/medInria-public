@@ -82,6 +82,7 @@ medDataHub::medDataHub(QObject *parent)
     connect(m_sourcesHandler, &medSourceHandler::sourceAdded,   this, &medDataHub::addSource);
     connect(m_sourcesHandler, &medSourceHandler::sourceRemoved, this, &medDataHub::removeSource);
     connect(m_sourcesHandler, &medSourceHandler::getAsyncStatus, this, &medDataHub::progress);
+    connect(m_sourcesHandler, &medSourceHandler::connectionDisconnection, this, &medDataHub::sourceOlineStatus);
     m_clock.setInterval(REQUEST_TIME_OUT_PULLING);
     connect(&m_clock, &QTimer::timeout, this, &medDataHub::timeOutWatcher);
     m_clock.start();
@@ -439,6 +440,20 @@ void medDataHub::progress(const QString & sourceId, int rqstId, medAbstractSourc
         qDebug() << "Receive not expected source request update " << sourceId << " " << rqstId << " " << status;
     }
     m_mapsRequestMutex.unlock();
+}
+
+void medDataHub::sourceOlineStatus(const QString & sourceId, bool status)
+{
+    auto *pModel = getModel(sourceId);
+
+    if (pModel)
+    {    
+        if (status && !pModel->currentOnlineStatus())
+        {
+            pModel->refresh();
+        }
+        pModel->setOnline(status);
+    }
 }
 
 void medDataHub::alterDataStateRole(medSourceModel * pModel, medDataIndex index, QVariant value)
