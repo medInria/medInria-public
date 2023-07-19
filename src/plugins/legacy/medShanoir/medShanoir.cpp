@@ -56,7 +56,7 @@ bool ShanoirPlugin::connect(bool pi_bEnable)
 	{
 		m_auth.disauthenticate();
 	}
-
+	emit connectionStatus(isOnline());
 	return  pi_bEnable==isOnline();
 }
 
@@ -364,10 +364,11 @@ QVariant ShanoirPlugin::getDirectData(unsigned int pi_uiLevel, QString parentKey
 {
 	QVariant variant;
 	QStringList parts = parentKey.split('.');
-	if(pi_uiLevel==5 && parts.size()==5) // dataset level
+	//TODO: understand why it works on level 4 and not on level 5 as expected
+	if(pi_uiLevel==4 && parts.size()==5) // dataset level
 	{
 		int id_ds = parts[4].toInt();
-		//TODO: le path renvoyé est le path d'un dossier. L'idée serait de plutôt renvoyer le path du fichier Niftii directement
+		//Le path renvoyé est le path d'un dossier contenant le nifiti. Cela fonctionne dans ce cadre mais il faut avoir en tête que ce n'est pas un path de fichier
 		QString path = m_rm.loadNiftiDataset(id_ds); //m_rm.loadDicomDataset(id_ds); 
 		variant = path;
 	}
