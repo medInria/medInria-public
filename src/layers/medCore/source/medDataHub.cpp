@@ -160,7 +160,7 @@ medAbstractData * medDataHub::variantToMedAbstractData(QVariant &data, const med
     else
     {
         auto dataName = getDataName(index);
-        medNotif::createNotif(notifLevel::warning, QString("Converting ") + dataName, " to load it failed");
+        medNotif::createNotif(notifLevel::warning, QString("Converting ") + dataName, "failed to load");
     }
 
 	return pDataRes;
@@ -290,6 +290,7 @@ medAbstractData * medDataHub::getData(medDataIndex const & index)
         QString sourceId = index.sourceId();
         if (m_sourcesHandler->sourceGlobalInfo(sourceId, bOnline, bLocal, bWritable, bCache))
         {
+            //FIXME: comment these lines and keep getDirectDataOnly for ShanoirSource debugging (the async part is not implemented yet)
             if (bLocal)
             {
                 getDirectData(index, pDataRes);
