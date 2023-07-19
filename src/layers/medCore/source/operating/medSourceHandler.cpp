@@ -415,6 +415,7 @@ void medSourceHandler::addSource(medAbstractSource * pi_source)
 
         //auto tester = new QAbstractItemModelTester(m_sourcesModelMap[pi_source], QAbstractItemModelTester::FailureReportingMode::Fatal, this);
         QObject::connect(pi_source, &medAbstractSource::progress, this, &medSourceHandler::progress);
+        QObject::connect(pi_source, &medAbstractSource::connectionStatus, this, &medSourceHandler::connectionStatus);
         emit sourceAdded(instanceId);
     }
 }
@@ -464,19 +465,6 @@ medAbstractSource * medSourceHandler::getSourceToWrite(QString pi_sourceIdDst)
 }
 
 
-void medSourceHandler::sourceIsOnline(QString sourceIntanceId)
-{
-    if (m_sourceIdToInstanceMap.contains(sourceIntanceId))
-    {
-        auto pSource = m_sourceIdToInstanceMap[sourceIntanceId];
-        bool bOnline = pSource->connect(true); //TODO remove when 256 will be applied
-        //m_sourcesModelMap[pSource]->setOnline(bOnline); //TODO remove when 256 will be applied
-        //pSource->connect(true);
-
-        //TODO REDO
-    }
-}
-
 void medSourceHandler::progress(int pi_iRequest, medAbstractSource::eRequestStatus status)
 {
     auto *pSource = static_cast<medAbstractSource*>(sender());
@@ -488,6 +476,20 @@ void medSourceHandler::progress(int pi_iRequest, medAbstractSource::eRequestStat
     else
     {
         qDebug() << "medSourceHandler::progress receives signal from unknown source or non source object";
+    }
+}
+
+void medSourceHandler::connectionStatus(bool status)
+{
+    auto *pSource = static_cast<medAbstractSource*>(sender());
+
+    if (pSource)
+    {
+        emit connectionDisconnection(pSource->getInstanceId(), status);
+    }
+    else
+    {
+        qDebug() << "medSourceHandler::connectionStatus receives signal from unknown source or non source object";
     }
 }
 

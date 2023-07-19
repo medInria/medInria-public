@@ -694,6 +694,11 @@ bool medSourceModel::setAdditionnalMetaData(QModelIndex const & index, QList<QMa
     return bRes;
 }
 
+bool medSourceModel::currentOnlineStatus()
+{
+    return d->bOnline;
+}
+
 medDataIndex medSourceModel::dataIndexFromModelIndex(const QModelIndex &index) const
 {
     medDataIndex dataIndexRes;
