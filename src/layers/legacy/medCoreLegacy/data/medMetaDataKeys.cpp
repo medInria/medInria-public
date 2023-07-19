@@ -102,7 +102,7 @@ namespace medMetaDataKeys
     MEDCORELEGACY_EXPORT const Key RepetitionTime("RepetitionTime", "Repetition Time");
 
     // CT Image
-    MEDCORELEGACY_EXPORT const Key KVP("KVP", "kVp", QVariant::UInt);
+    MEDCORELEGACY_EXPORT const Key KVP("KVP", "kVp", QVariant::UInt); //Kilovolt peak for CT image
 
     // EXPORT EXTRA DATA TO ATTACHED FILE
     MEDCORELEGACY_EXPORT const Key Toolbox("Toolbox", "Toolbox used to process image");

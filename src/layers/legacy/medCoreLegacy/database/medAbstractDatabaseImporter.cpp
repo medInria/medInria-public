@@ -878,7 +878,7 @@ QString medAbstractDatabaseImporter::determineFutureImageExtensionByDataType ( c
     {
         dataWriter = medAbstractDataFactory::instance()->writerSmartPointer ( writers[i] );
 
-        if (dataWriter->handled().contains(medData->identifier()) )
+        if (dataWriter->handled().contains(identifier))
         {
             QStringList extensions = dataWriter->supportedFileExtensions();
             if(!extensions.isEmpty())
