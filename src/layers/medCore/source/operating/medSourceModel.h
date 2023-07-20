@@ -99,6 +99,8 @@ public:
     QList<QMap<int, QString>> getAdditionnalMetaData(QModelIndex const & index);
     bool setAdditionnalMetaData(QModelIndex const & index, QList<QMap<int, QString>> &additionnalMetaData);
 
+    bool currentOnlineStatus();
+
     //FLO
     QString           getDataName(const QModelIndex &index) const;
     QString           getDataName(QStringList const &uri) const;

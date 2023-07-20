@@ -67,6 +67,7 @@ medSourcesSettingsHandlerWidget::medSourcesSettingsHandlerWidget(medSourcesSetti
     //--- Now that Qt widgets are set: create connections
     connect(m_setDefaultButton, &QPushButton::clicked, pi_parent, &medSourcesSettings::setAsDefault); // Change default source
     connect(m_removeButton,     &QPushButton::clicked, pi_parent, &medSourcesSettings::removeSource); // Ask to remove source
+    connect(m_connectButton, &QPushButton::clicked, pi_parent, &medSourcesSettings::updateSourceConnection); 
 }
 
 /**
