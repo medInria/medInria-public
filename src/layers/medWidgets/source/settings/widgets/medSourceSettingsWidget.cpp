@@ -82,20 +82,11 @@ medSourceSettingsWidget::medSourceSettingsWidget(medAbstractSource * pSource, QL
     widgetLayout->addWidget(m_parametersWidget);
 
     auto params = pSource->getAllParameters();
-	//auto cipherParams = pSource->getCipherParameters();
     for (auto * param : params)
     {
         auto * pHLayout = new QHBoxLayout;
         auto * pParamPresenter = medAbstractParameterPresenter::buildFromParameter(param);
         auto * pWidget = pParamPresenter->buildWidget();
-		//if (cipherParams.contains(param))
-		//{
-		//	auto *pLineEdit = dynamic_cast<QLineEdit*>(pWidget);
-		//	if (pLineEdit)
-		//	{
-		//		pLineEdit->setEchoMode(QLineEdit::Password);
-		//	}
-		//}
         if (dynamic_cast<QPushButton*>(pWidget) == nullptr && dynamic_cast<QGroupBox*>(pWidget) == nullptr)
         {
             auto * pLabel = pParamPresenter->buildLabel();
