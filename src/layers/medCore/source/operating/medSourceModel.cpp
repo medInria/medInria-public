@@ -617,6 +617,11 @@ bool medSourceModel::currentOnlineStatus()
     return d->bOnline;
 }
 
+bool medSourceModel::currentOnlineStatus()
+{
+    return d->bOnline;
+}
+
 medDataIndex medSourceModel::dataIndexFromModelIndex(const QModelIndex &index) const
 {
     medDataIndex dataIndexRes;

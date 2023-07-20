@@ -160,7 +160,7 @@ medAbstractData * medDataHub::variantToMedAbstractData(QVariant &data, const med
     else
     {
         auto dataName = getDataName(index);
-        medNotif::createNotif(notifLevel::warning, QString("Converting ") + dataName, "failed to load");
+        medNotif::createNotif(notifLevel::warning, QString("Converting ") + dataName, " to load it failed");
     }
 
 	return pDataRes;
