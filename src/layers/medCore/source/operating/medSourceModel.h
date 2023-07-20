@@ -92,41 +92,41 @@ public:
 	int  getSectionInsideLevel(int level, int column) const;
 	bool fetch(QStringList uri);
 	bool fetchData(QModelIndex index);
-	QString getSourceIntanceId();
-	void setOnline(bool pi_bOnline);
+    QString getSourceIntanceId();
+    void setOnline(bool pi_bOnline);
 
-	datasetAttributes getMendatoriesMetaData(QModelIndex const & index);
-	QList<QMap<int, QString>> getAdditionnalMetaData(QModelIndex const & index);
-	bool setAdditionnalMetaData(QModelIndex const & index, QList<QMap<int, QString>> &additionnalMetaData);
+    datasetAttributes getMendatoriesMetaData(QModelIndex const & index);
+    QList<QMap<int, QString>> getAdditionnalMetaData(QModelIndex const & index);
+    bool setAdditionnalMetaData(QModelIndex const & index, QList<QMap<int, QString>> &additionnalMetaData);
 
-	bool currentOnlineStatus();
+    bool currentOnlineStatus();
 
-	//FLO
-	QString           getDataName(const QModelIndex &index) const;
-	QString           getDataName(QStringList const &uri) const;
-	medSourceModelItem* getItem(const QModelIndex &index) const;
-	medSourceModelItem* getItem(QStringList const &uri) const;
-	medDataIndex dataIndexFromModelIndex(const QModelIndex &index) const;
-	QModelIndex toIndex(QString uri) const;
-	QModelIndex toIndex(QStringList uri) const;
-	QString     toPath(QModelIndex const & index) const;
-	QStringList fromPath(QStringList humanUri);
-	QString     keyForPath(QStringList rootUri, QString folder);
-	bool        getChildrenNames(QStringList uri, QStringList &names);
+    //FLO
+    QString           getDataName(const QModelIndex &index) const;
+    QString           getDataName(QStringList const &uri) const;
+    medSourceModelItem* getItem(const QModelIndex &index) const;
+    medSourceModelItem* getItem(QStringList const &uri) const;
+    medDataIndex dataIndexFromModelIndex(const QModelIndex &index) const;
+    QModelIndex toIndex(QString uri) const;
+    QModelIndex toIndex(QStringList uri) const;
+    QString     toPath(QModelIndex const & index) const;
+    QStringList fromPath(QStringList humanUri);
+    QString     keyForPath(QStringList rootUri, QString folder);
+    bool        getChildrenNames(QStringList uri, QStringList &names);
 
-	bool        setAdditionnalMetaData2(QModelIndex const & index, datasetAttributes const &attributes);
-	bool        setAdditionnalMetaData2(QModelIndex const & index, QString const & key, QVariant const & value, QString const & tag = QString());
-	bool        additionnalMetaData2(QModelIndex const & index, datasetAttributes & attributes);
-	bool        additionnalMetaData2(QModelIndex const & index, QString const & key, QVariant & value, QString & tag);
+    bool        setAdditionnalMetaData2(QModelIndex const & index, datasetAttributes const &attributes);
+    bool        setAdditionnalMetaData2(QModelIndex const & index, QString const & key, QVariant const & value, QString const & tag = QString() );
+    bool        additionnalMetaData2(QModelIndex const & index, datasetAttributes & attributes);
+    bool        additionnalMetaData2(QModelIndex const & index, QString const & key, QVariant & value, QString & tag);
 
-	bool addEntry(QString pi_key, QString pi_name, QString pi_description, unsigned int pi_uiLevel, QString pi_parentKey);
-	bool substituteTmpKey(QStringList uri, QString pi_key);
+    bool addEntry(QString pi_key, QString pi_name, QString pi_description, unsigned int pi_uiLevel, QString pi_parentKey);
+    bool substituteTmpKey(QStringList uri, QString pi_key);
 
-	bool refresh(QModelIndex const &pi_index = QModelIndex());
+    bool refresh(QModelIndex const &pi_index = QModelIndex());
 
-	int getDataType(const QModelIndex &index);
-	//JU
-	void expandAll(QModelIndex index = QModelIndex());
+    int getDataType(const QModelIndex &index);
+    //JU
+    void expandAll(QModelIndex index = QModelIndex());
 
 public slots:
 	void itemPressed(QModelIndex const &index);

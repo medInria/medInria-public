@@ -73,7 +73,7 @@ signals:
 	void getAsyncStatus(QString const /*sourceId*/, int /*requestId*/, medAbstractSource::eRequestStatus /*status*/);
 	void sourceAdded(QString const /*sourceId*/);
 	void sourceRemoved(QString const /*sourceId*/);
-	void connectionDisconnection(QString, bool);
+    void connectionDisconnection(QString, bool);	void connectionDisconnection(QString, bool);
 
 public:
 	// ////////////////////////////////////////////////////////////////////////////////////////////
@@ -90,11 +90,12 @@ public:
 
 
 public slots:
-	void addSource(medAbstractSource* pi_source);
-	void removeSource(medAbstractSource* pi_source);
+    void addSource(medAbstractSource* pi_source);
+    void removeSource(medAbstractSource* pi_source);
 
-	void progress(int pi_iRequest, medAbstractSource::eRequestStatus status);
-	void connectionStatus(bool status);
+    void sourceIsOnline(QString sourceIntanceId);/* REDO */
+    void progress(int pi_iRequest, medAbstractSource::eRequestStatus status);
+
 
 private:
 	medAbstractSource * getSource(QString const pi_sourceInstanceId);
