@@ -14,23 +14,18 @@
 #include <JsonReaderWriter.h>
 #include <SettingsManager.h>
 
-Authenticater::Authenticater(Network & network,const QString username, const QString password)
-	:Authenticater(network)
-{
-	initAuthentication(username, password);
-}
 
 Authenticater::Authenticater(Network & network)
-	:m_net(network)
+	:m_net(network), m_domain("")
 {
 	m_config = JsonReaderWriter::fileToJsonDocument("Config/auth_config.json").object();
 	m_current_token = SettingsManager::retrieveJson(ACCESS_TOKEN_KEY);
 }
 
-void Authenticater::initAuthentication(const QString username, const QString password)
+void Authenticater::initAuthentication(const QString domain, const QString username, const QString password)
 {
+	QString url = "https://"+domain+"/auth/realms/shanoir-ng/protocol/openid-connect/token";
 	/** CREATING THE POST REQUEST **/
-	QString url = m_config.value("url").toString();
 	QMap<QString, QString> headers = JsonReaderWriter::jsonObjectToQmap(m_config.value("headers").toObject());
 	QMap<QString, QString> data = JsonReaderWriter::jsonObjectToQmap(m_config.value("data-login").toObject());
 
@@ -56,7 +51,8 @@ void Authenticater::initAuthentication(const QString username, const QString pas
 	}
 	/** TOKEN RECOVERY **/
 	m_current_token = response;
-	medNotif::createNotif(notifLevel::success, "Authentication to Shanoir", "The authentication to Shanoir succeeded.");
+	m_domain = domain;
+	medNotif::createNotif(notifLevel::success, "Authentication to Shanoir", "The authentication to "+getCurrentDomain()+" is successful.");
 	/** TOKEN REFRESH AUTOMATION */
 	autoRefreshAccessToken();
 }
@@ -64,7 +60,7 @@ void Authenticater::initAuthentication(const QString username, const QString pas
 
 bool Authenticater::isAuthenticated()
 {
-	return !m_current_token.isEmpty() && !accessTokenExpired();
+	return !m_current_token.isEmpty() && m_domain.size()>0 && !accessTokenExpired();
 }
 
 bool Authenticater::accessTokenExpired()
@@ -95,7 +91,13 @@ void Authenticater::disauthenticate()
 {
 	SettingsManager::reset(ACCESS_TOKEN_KEY);
 	m_current_token = QJsonObject();
+	m_domain = "";
 	qDebug()<<"\nTHE SESSION HAS ENDED\n";
+}
+
+QString Authenticater::getCurrentDomain()
+{
+	return m_domain;
 }
 
 int Authenticater::twoThirds(int token_duration)
@@ -105,7 +107,7 @@ int Authenticater::twoThirds(int token_duration)
 
 void Authenticater::tokenUpdate()
 {
-	QString url = m_config.value("url").toString();
+	QString url = "https://" + m_domain + "/auth/realms/shanoir-ng/protocol/openid-connect/token";
 	QMap<QString, QString> headers = JsonReaderWriter::jsonObjectToQmap(m_config.value("headers").toObject());
 	QMap<QString, QString> data = JsonReaderWriter::jsonObjectToQmap(m_config.value("data-refresh").toObject());
 	data["refresh_token"] = m_current_token.value("refresh_token").toString();

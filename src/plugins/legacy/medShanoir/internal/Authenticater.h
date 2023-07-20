@@ -16,6 +16,7 @@ private:
 	QJsonObject m_config;
 	QJsonObject m_current_token;
 	QTimer m_timer;
+	QString m_domain; // domain the authenticater is currently connected on. Empty String if it is offline. 
 
 	const QString ACCESS_TOKEN_KEY = "AuthToken";
 	const QString ACCESS_TOKEN_EXPIRATION_KEY = "expiration_datetime";
@@ -28,10 +29,8 @@ private:
 
 public:
 	Authenticater(Network & net);
-
-	Authenticater(Network & net,const QString username, const QString password);
-
-	void initAuthentication(const QString username, const QString password);
+	
+	void initAuthentication(const QString domain, const QString username, const QString password);
 
 	bool isAuthenticated();
 
@@ -46,6 +45,8 @@ public:
 	int autoRefreshAccessToken(int(*tokenDurationRefreshment)(int)=twoThirds);
 
 	void disauthenticate();
+
+	QString getCurrentDomain();
 
 
 private slots:

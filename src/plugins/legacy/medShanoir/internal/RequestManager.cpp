@@ -33,13 +33,15 @@ RequestManager::RequestManager(Authenticater & authenticater, Network & network)
 
 }
 
-RequestManager::~RequestManager()
+
+QString RequestManager::getBaseURL() 
 {
-	
+	return "https://"+ m_auth.getCurrentDomain()+"/shanoir-ng/";
 }
 
-QList<StudyOverview>  RequestManager::getStudies() {
-	QString url = protdomain+ "studies/studies";
+QList<StudyOverview>  RequestManager::getStudies() 
+{
+	QString url = getBaseURL()+ "studies/studies";
 	QJsonArray studies_response = JsonReaderWriter::qbytearrayToQJsonArray(basicGetRequest(url));
 	QList<StudyOverview> studies;
 	for (const QJsonValue& value : studies_response) 
@@ -58,7 +60,7 @@ QList<StudyOverview>  RequestManager::getStudies() {
 
 Study RequestManager::getStudyById(int id)
 {
-	QString url = protdomain+ "studies/studies/" + QString::number(id);
+	QString url = getBaseURL()+ "studies/studies/" + QString::number(id);
 	QJsonObject study_response = JsonReaderWriter::qbytearrayToQJson(basicGetRequest(url));
 	Study study;
 	if (JsonReaderWriter::verifyKeys(study_response, {"subjectStudyList", "id", "name"}, {"Array", "Number", "String"}))
@@ -88,7 +90,7 @@ Study RequestManager::getStudyById(int id)
 
 QList<Examination> RequestManager::getExaminationsByStudySubjectId(int stud_id, int subj_id)
 {
-	QString url = protdomain+ "datasets/examinations/subject/"+QString::number(subj_id)+"/study/" + QString::number(stud_id);
+	QString url = getBaseURL()+ "datasets/examinations/subject/"+QString::number(subj_id)+"/study/" + QString::number(stud_id);
 	QJsonArray examinations_response = JsonReaderWriter::qbytearrayToQJsonArray(basicGetRequest(url));
 	QList<Examination> examinations;
 	for (const QJsonValue& value : examinations_response)
@@ -132,7 +134,7 @@ QList<Examination> RequestManager::getExaminationsByStudySubjectId(int stud_id, 
 
 void RequestManager::loadFile(int dataset_id, QString query_string, QByteArray &fileData, QString &filename)
 {
-    QString url = protdomain + "datasets/datasets/download/" + QString::number(dataset_id) + "?" + query_string;
+    QString url = getBaseURL() + "datasets/datasets/download/" + QString::number(dataset_id) + "?" + query_string;
     QNetworkReply *reply = m_net.httpGetFetch(url, {{"Authorization", "Bearer " + m_auth.getCurrentAccessToken()}});
     QJsonObject responseHeaders = m_net.replyHeaders(reply);
 	if(JsonReaderWriter::verifyKeys(responseHeaders,{"Content-Disposition"}))
