@@ -14,15 +14,15 @@ class RequestManager : public QObject
 {
 	Q_OBJECT
 private:
-	const QString protdomain = "https://shanoir.irisa.fr/shanoir-ng/";
 
 	Authenticater& m_auth;
 	Network & m_net;
 
 	QByteArray basicGetRequest(QString url);
 
-
 	QAtomicInteger<int> m_fetch_number;
+
+	QString getBaseURL();
 
 	/**
 	 * This function requests a file, and downloads it if it is big enough.
@@ -38,9 +38,9 @@ private:
 	void loadFile(int dataset_id, QString query_string, QByteArray &fileData, QString &filename);
 
 
+
 public :
 	RequestManager(Authenticater & authenticater, Network & network);
-	~RequestManager();
 
 	QList<StudyOverview>  getStudies();
 

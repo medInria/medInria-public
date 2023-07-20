@@ -26,6 +26,7 @@ private:
 	QString m_instance_name;
 	medStringParameter m_username;
 	medStringParameter m_password;
+	medStringParameter m_hostname;
 
 	/**
 	 * @return the minimalEntries of the available studies from the logged account. 

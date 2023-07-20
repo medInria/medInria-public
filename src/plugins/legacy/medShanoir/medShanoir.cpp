@@ -3,9 +3,10 @@
 #include <Levels.h>
 
 ShanoirPlugin::ShanoirPlugin()
-	:m_auth(m_net), m_username("username"), m_password("password"),m_rm(m_auth,m_net)
+	:m_auth(m_net), m_username("username"), m_password("password"), m_hostname("hostname"), m_rm(m_auth,m_net)
 {
 	m_password.setDefaultRepresentation(4);
+	m_hostname.setValue("shanoir.irisa.fr"); // default value for new instances
 }
 
 ShanoirPlugin::~ShanoirPlugin()
@@ -49,7 +50,8 @@ bool ShanoirPlugin::connect(bool pi_bEnable)
 		{ // THE TOKEN EXPIRED OR IT IS THE FIRST TIME WE CONNECT
 			QString username = m_username.value();
 			QString password = m_password.value();
-			m_auth.initAuthentication(username,password);
+			QString domain = m_hostname.value();
+			m_auth.initAuthentication(domain, username,password);
 		}
 	}
 	else 
@@ -62,7 +64,7 @@ bool ShanoirPlugin::connect(bool pi_bEnable)
 
 QList<medAbstractParameter*> ShanoirPlugin::getAllParameters()
 {
-	return  {&m_username, &m_password};
+	return  { &m_hostname, &m_username, &m_password};
 }
 
 QList<medAbstractParameter*> ShanoirPlugin::getCipherParameters() 
