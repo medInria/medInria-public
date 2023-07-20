@@ -80,6 +80,7 @@ medDataHub::medDataHub(QObject *parent)
     connect(m_sourcesHandler, &medSourceHandler::sourceAdded,   this, &medDataHub::addSource);
     connect(m_sourcesHandler, &medSourceHandler::sourceRemoved, this, &medDataHub::removeSource);
     connect(m_sourcesHandler, &medSourceHandler::getAsyncStatus, this, &medDataHub::progress);
+    connect(m_sourcesHandler, &medSourceHandler::connectionDisconnection, this, &medDataHub::sourceOnlineStatus);    
     m_clock.setInterval(REQUEST_TIME_OUT_PULLING);
     connect(&m_clock, &QTimer::timeout, this, &medDataHub::timeOutWatcher);
     m_clock.start();
@@ -159,7 +160,7 @@ medAbstractData * medDataHub::variantToMedAbstractData(QVariant &data, const med
     else
     {
         auto dataName = getDataName(index);
-        medNotif::createNotif(notifLevel::warning, QString("Converting ") + dataName, "failed to load");
+        medNotif::createNotif(notifLevel::warning, QString("Converting ") + dataName, " to load it failed");
     }
 
 	return pDataRes;
@@ -463,6 +464,19 @@ void medDataHub::timeOutWatcher()
     m_mapsRequestMutex.unlock();
 }
 
+void medDataHub::sourceOnlineStatus(const QString & sourceId, bool status)
+{
+    auto *pModel = getModel(sourceId);
+
+    if (pModel)
+    {    
+        if (status && !pModel->currentOnlineStatus())
+        {
+            pModel->refresh();
+        }
+        pModel->setOnline(status);
+    }
+}
 
 QString fileSysPathToIndex(const QString &path)
 {

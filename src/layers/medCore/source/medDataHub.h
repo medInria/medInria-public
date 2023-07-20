@@ -89,7 +89,7 @@ public slots:
    void unloadData(QObject *obj); /* REDO */
    int  waitGetAsyncData(const QString &sourceId, int rqstId);
    void progress(const QString &sourceId, int rqstId, medAbstractSource::eRequestStatus status);
-
+   void sourceOnlineStatus(const QString &sourceId, bool status);
 
    void timeOutWatcher();
 
