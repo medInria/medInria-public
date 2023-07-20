@@ -289,7 +289,6 @@ medAbstractData * medDataHub::getData(medDataIndex const & index)
         QString sourceId = index.sourceId();
         if (m_sourcesHandler->sourceGlobalInfo(sourceId, bOnline, bLocal, bWritable, bCache))
         {
-            //FIXME: comment these lines and keep getDirectDataOnly for ShanoirSource debugging (the async part is not implemented yet)
             if (bLocal)
             {
                 getDirectData(index, pDataRes);

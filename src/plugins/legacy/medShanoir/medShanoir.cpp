@@ -35,7 +35,7 @@ bool ShanoirPlugin::setInstanceName(QString const &pi_instanceName)
 	return instance_name_exists;
 }
 
-#include <qpassworddigestor.h>
+
 
 bool ShanoirPlugin::connect(bool pi_bEnable)
 {
@@ -90,7 +90,9 @@ bool ShanoirPlugin::isWritable()
 
 bool ShanoirPlugin::isLocal()
 {
-	return false;
+	
+    //FIXME: switch this value back to false when the async part will be implemented (getAsyncResults, addAssyncData)
+	return true;
 }
 
 bool ShanoirPlugin::isCached()
