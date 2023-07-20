@@ -8,6 +8,8 @@
 #include <QNetworkReply>
 #include <QNetworkRequest>
 
+#include <medNotif.h>
+
 #include "Authenticater.h"
 #include <JsonReaderWriter.h>
 #include <SettingsManager.h>
@@ -38,14 +40,23 @@ void Authenticater::initAuthentication(const QString username, const QString pas
 	/** SENDING THE POST REQUEST **/
 	QNetworkReply *reply = m_net.httpPostFetch(url, headers, data);
 	QJsonObject response = m_net.replyContentObject(reply);
+	int status = reply->attribute(QNetworkRequest::HttpStatusCodeAttribute).toInt();
 	if (!JsonReaderWriter::verifyKeys(response, ACCESS_TOKEN_KEYS_TO_VERIFY, ACCESS_TOKEN_KEY_TYPES_TO_VERIFY))
 	{
-		qDebug() << "AUTHENTICATION FAILED";
-		qDebug()<<"REQUEST RESPONSE STATUS : "<<reply->attribute(QNetworkRequest::HttpStatusCodeAttribute).toInt();
+		qDebug() << "AUTHENTICATION HAS FAILED";
+		qDebug()<<"REQUEST RESPONSE STATUS : "<<status;
+		QString notif_message = "The authentication to Shanoir failed.\n Request status : "+QString::number(status);
+		if(status==401)
+		{
+			notif_message="\nPlease check your username and password.";
+			qDebug() << response;
+		}
+		medNotif::createNotif(notifLevel::error, "Authentication to Shanoir", notif_message);
 		return;
 	}
 	/** TOKEN RECOVERY **/
 	m_current_token = response;
+	medNotif::createNotif(notifLevel::success, "Authentication to Shanoir", "The authentication to Shanoir succeeded.");
 	/** TOKEN REFRESH AUTOMATION */
 	autoRefreshAccessToken();
 }
@@ -116,5 +127,6 @@ void Authenticater::tokenUpdate()
 	else
 	{
 		qDebug() << "THE ACCESS TOKEN UPDATE HAS FAILED";
+		medNotif::createNotif(notifLevel::error, "Authentication to Shanoir", "Something went wrong while updating the access token. You will be disconnected.");
 	}
 }
