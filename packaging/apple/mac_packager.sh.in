@@ -12,13 +12,13 @@
 
 # The bundle medInria.app will contain all plugins and will be standalone, packaged into MedINRIA.dmg in the install dir
 
-cd @medInria_BINARY_DIR@/bin
+cd @PROJECT_BINARY_DIR@
 
 \rm -fr TmpInstall
 mkdir -p TmpInstall/medInria.app/Contents/Resources
-cp -r medInria.app/Contents/MacOS TmpInstall/medInria.app/Contents
-cp medInria.app/Contents/Info.plist TmpInstall/medInria.app/Contents
-cp medInria.app/Contents/Resources/medInria.icns TmpInstall/medInria.app/Contents/Resources
+cp -r @medInria_DIR@/bin/medInria.app/Contents/MacOS TmpInstall/medInria.app/Contents
+cp @medInria_DIR@/bin/medInria.app/Contents/Info.plist TmpInstall/medInria.app/Contents
+cp @medInria_DIR@/bin/medInria.app/Contents/Resources/medInria.icns TmpInstall/medInria.app/Contents/Resources
 
 cd TmpInstall
 
@@ -43,9 +43,10 @@ gunzip -f MedinriaPackage.sparseimage.gz
 
 devName=`hdiutil attach -readwrite -noverify -noautoopen MedinriaPackage.sparseimage | egrep '^/dev/' | sed 1q | awk '{print $1}'`
 diskutil rename "medInria base" "medInria @MEDINRIA_SUPERBUILD_VERSION@"
-\cp -rf @medInria_BINARY_DIR@/bin/TmpInstall/medInria.app /Volumes/"medInria @MEDINRIA_SUPERBUILD_VERSION@"/
+\cp -rf @PROJECT_BINARY_DIR@/TmpInstall/medInria.app /Volumes/"medInria @MEDINRIA_SUPERBUILD_VERSION@"/
 
 sync
 hdiutil detach $devName
 hdiutil convert MedinriaPackage.sparseimage -format UDZO -imagekey zlib-level=9 -o "medInria-@MEDINRIA_SUPERBUILD_VERSION@.dmg" 1>/dev/null 2>/dev/null
-\rm -fr MedinriaPackage.sparseimage @medInria_BINARY_DIR@/bin/TmpInstall
+\rm -fr MedinriaPackage.sparseimage @PROJECT_BINARY_DIR@/TmpInstall
+\mv medInria-@MEDINRIA_SUPERBUILD_VERSION@.dmg @CMAKE_BINARY_DIR@

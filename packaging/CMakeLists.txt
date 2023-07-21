@@ -11,6 +11,8 @@
 #
 ################################################################################
 
+project(MEDINRIA_PACKAGING VERSION ${MEDINRIA_SUPERBUILD_VERSION})
+
 # Set common CPACK variables
 
 set(CPACK_PACKAGE_NAME medInria CACHE STRING "Name of the package for the superproject")
@@ -29,10 +31,10 @@ set(CPACK_PACKAGE_VERSION_MINOR ${${PROJECT_NAME}_VERSION_MINOR})
 set(CPACK_PACKAGE_VERSION_PATCH ${${PROJECT_NAME}_VERSION_PATCH})
 set(CPACK_PACKAGE_VERSION ${${PROJECT_NAME}_VERSION})
 
-set(CPACK_PACKAGE_DESCRIPTION_FILE "${CMAKE_SOURCE_DIR}/packaging/Description.txt")
+set(CPACK_PACKAGE_DESCRIPTION_FILE "${PROJECT_SOURCE_DIR}/Description.txt")
 set(CPACK_RESOURCE_FILE_LICENSE "${CMAKE_SOURCE_DIR}/LICENSE.txt")
-set(CPACK_RESOURCE_FILE_README "${CMAKE_SOURCE_DIR}/packaging/Readme.txt")
-set(CPACK_RESOURCE_FILE_WELCOME "${CMAKE_SOURCE_DIR}/packaging/Welcome.txt")
+set(CPACK_RESOURCE_FILE_README "${PROJECT_SOURCE_DIR}/Readme.txt")
+set(CPACK_RESOURCE_FILE_WELCOME "${PROJECT_SOURCE_DIR}/Welcome.txt")
 
 set(CPACK_BINARY_STGZ OFF)
 set(CPACK_BINARY_TBZ2 OFF)
@@ -46,24 +48,22 @@ option(CPACK_SOURCE_TXZ  "Enable to build TXZ source packages"  OFF)
 option(CPACK_SOURCE_TZ   "Enable to build TZ source packages"   OFF)
 option(CPACK_SOURCE_ZIP  "Enable to build ZIP source packages"  OFF)
 
+set(CPACK_INSTALL_CMAKE_PROJECTS ${PROJECT_BINARY_DIR} ${PROJECT_NAME} ALL "/")
+
 # Set cpack variables specific to the plateform
 
 if (WIN32)
-    set(WIN_PACK_DIR ${CMAKE_SOURCE_DIR}/packaging/windows)
+    set(WIN_PACK_DIR ${PROJECT_SOURCE_DIR}/windows)
     include(${WIN_PACK_DIR}/WindowsLaunchers.cmake)
     include(${WIN_PACK_DIR}/WindowsPackaging.cmake)
 endif()
 
 if (APPLE)
-    include(${CMAKE_SOURCE_DIR}/packaging/apple/ApplePackaging.cmake)
+    include(${PROJECT_SOURCE_DIR}/apple/ApplePackaging.cmake)
 endif()
 
 if (${CMAKE_SYSTEM_NAME} STREQUAL "Linux")
-    include(${CMAKE_SOURCE_DIR}/packaging/linux/LinuxPackaging.cmake)
-endif()
-
-if (UNIX)
-    include(${CMAKE_SOURCE_DIR}/packaging/unix/Launchers.cmake)
+    include(${PROJECT_SOURCE_DIR}/linux/LinuxPackaging.cmake)
 endif()
 
 # Include cpack modules

@@ -26,3 +26,4 @@ SET(CMAKE_CXX_STANDARD 17)
 project(MEDINRIA_SUPERBUILD VERSION ${MEDINRIA_SUPERBUILD_VERSION})
 
 add_subdirectory(superbuild)
+add_subdirectory(packaging)

@@ -11,9 +11,6 @@
 #
 ################################################################################
 
-set(CURRENT_SRC_DIR ${CMAKE_SOURCE_DIR}/packaging/unix)
-set(CURRENT_BIN_DIR ${CMAKE_BINARY_DIR}/packaging/unix)
-
 # Install a launcher scripts for the application with right environment variable
 
 #   For developpers.
@@ -40,11 +37,11 @@ endif()
 set(MEDINRIA_PLUGINS_DIRS "${binary_dir}/bin/plugins:${DEV_PLUGINS_DIRS}")
 set(MEDINRIA_PLUGINS_LEGACY_DIRS "${binary_dir}/bin/plugins_legacy:${DEV_PLUGINS_LEGACY_DIRS}")
 
-configure_file(${CURRENT_SRC_DIR}/medInria.sh.in medInria.sh @ONLY)
+configure_file(${CMAKE_CURRENT_LIST_DIR}/medInria.sh.in ${CMAKE_BINARY_DIR}/medInria.sh @ONLY)
 
 #   For end users.
 
-file(READ "${CURRENT_SRC_DIR}/locate_bin.sh" LOCATE)
+file(READ "${CMAKE_CURRENT_LIST_DIR}/locate_bin.sh" LOCATE)
 set(MEDINRIA_DIR "$(locate)")
 
 if (APPLE)
@@ -56,6 +53,4 @@ endif()
 set(MEDINRIA_PLUGINS_DIRS "\${MEDINRIA_DIR}/plugins:\${MEDINRIA_DIR}/bin/plugins:\${MEDINRIA_USER_PLUGINS_DIRS}")
 set(MEDINRIA_PLUGINS_LEGACY_DIRS "\${MEDINRIA_DIR}/plugins_legacy:\${MEDINRIA_DIR}/bin/plugins_legacy:\${MEDINRIA_USER_PLUGINS_DIRS_LEGACY}")
 
-configure_file(${CURRENT_SRC_DIR}/medInria.sh.in ${CURRENT_BIN_DIR}/medInria_launcher.sh @ONLY)
-install(PROGRAMS ${CURRENT_BIN_DIR}/medInria_launcher.sh
-        DESTINATION bin)
+configure_file(${CMAKE_CURRENT_LIST_DIR}/medInria.sh.in ${CMAKE_CURRENT_BINARY_DIR}/medInria.sh @ONLY)

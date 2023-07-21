@@ -46,8 +46,8 @@ set(CPACK_GENERATOR "ZIP")
 
 # Remember the linux packaging source dir
 
-set(CURRENT_SRC_DIR ${CMAKE_SOURCE_DIR}/packaging/linux)
-set(CURRENT_BIN_DIR ${CMAKE_BINARY_DIR}/packaging/linux)
+set(CURRENT_SRC_DIR ${PROJECT_SOURCE_DIR}/linux)
+set(CURRENT_BIN_DIR ${PROJECT_BINARY_DIR}/linux)
 
 # Generate CPACK_PROJECT_CONFIG_FILE
 
@@ -79,8 +79,8 @@ install(FILES ${CURRENT_BIN_DIR}/medInria.desktop
 
 # Add project to package
 
-# save the medinria-superproject install target to add it last
-set(backup_CPACK_INSTALL_CMAKE_PROJECTS ${CPACK_INSTALL_CMAKE_PROJECTS} ${CMAKE_BINARY_DIR} ${CMAKE_PROJECT_NAME} ALL "/")
+# save the medinria-packaging install target to add it last
+set(backup_CPACK_INSTALL_CMAKE_PROJECTS ${CPACK_INSTALL_CMAKE_PROJECTS})
 
 #clear it
 set(CPACK_INSTALL_CMAKE_PROJECTS "")
@@ -99,8 +99,9 @@ foreach(dir ${PRIVATE_PLUGINS_LEGACY_DIRS})
     set(CPACK_INSTALL_CMAKE_PROJECTS ${CPACK_INSTALL_CMAKE_PROJECTS} ${dir} ${dir} ALL "/bin")
 endforeach()
 
+install(PROGRAMS ${CMAKE_BINARY_DIR}/superbuild/medInria.sh DESTINATION bin)
 install(CODE "include(${CURRENT_BIN_DIR}/PostArchiveCleanupScript.cmake)")
 
-# force the medinria-superproject install target to run last so we can use it
+# force the medinria-packaging install target to run last so we can use it
 # to cleanup
 set(CPACK_INSTALL_CMAKE_PROJECTS ${CPACK_INSTALL_CMAKE_PROJECTS} ${backup_CPACK_INSTALL_CMAKE_PROJECTS})
