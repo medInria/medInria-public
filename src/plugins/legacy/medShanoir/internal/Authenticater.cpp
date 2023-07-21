@@ -18,7 +18,6 @@
 Authenticater::Authenticater(Network & network)
 	:m_net(network), m_domain("")
 {
-	m_config = JsonReaderWriter::fileToJsonDocument("Config/auth_config.json").object();
 	m_current_token = SettingsManager::retrieveJson(ACCESS_TOKEN_KEY);
 }
 
@@ -26,8 +25,8 @@ void Authenticater::initAuthentication(const QString domain, const QString usern
 {
 	QString url = "https://"+domain+"/auth/realms/shanoir-ng/protocol/openid-connect/token";
 	/** CREATING THE POST REQUEST **/
-	QMap<QString, QString> headers = JsonReaderWriter::jsonObjectToQmap(m_config.value("headers").toObject());
-	QMap<QString, QString> data = JsonReaderWriter::jsonObjectToQmap(m_config.value("data-login").toObject());
+	QMap<QString, QString> headers = JsonReaderWriter::jsonObjectToQmap(AUTH_HEADERS);
+	QMap<QString, QString> data = JsonReaderWriter::jsonObjectToQmap(DATA_LOGIN);
 
 	data["username"] = username;
 	data["password"] = password;
@@ -52,7 +51,7 @@ void Authenticater::initAuthentication(const QString domain, const QString usern
 	/** TOKEN RECOVERY **/
 	m_current_token = response;
 	m_domain = domain;
-	medNotif::createNotif(notifLevel::success, "Authentication to Shanoir", "The authentication to "+getCurrentDomain()+" is successful.");
+	medNotif::createNotif(notifLevel::success, "Authentication to Shanoir", "Successfully connected to "+getCurrentDomain());
 	/** TOKEN REFRESH AUTOMATION */
 	autoRefreshAccessToken();
 }
@@ -91,8 +90,9 @@ void Authenticater::disauthenticate()
 {
 	SettingsManager::reset(ACCESS_TOKEN_KEY);
 	m_current_token = QJsonObject();
+	m_timer.stop();
+	medNotif::createNotif(notifLevel::info, "Authentication to Shanoir", "Successfully disconnected from "+getCurrentDomain());
 	m_domain = "";
-	qDebug()<<"\nTHE SESSION HAS ENDED\n";
 }
 
 QString Authenticater::getCurrentDomain()
@@ -108,8 +108,8 @@ int Authenticater::twoThirds(int token_duration)
 void Authenticater::tokenUpdate()
 {
 	QString url = "https://" + m_domain + "/auth/realms/shanoir-ng/protocol/openid-connect/token";
-	QMap<QString, QString> headers = JsonReaderWriter::jsonObjectToQmap(m_config.value("headers").toObject());
-	QMap<QString, QString> data = JsonReaderWriter::jsonObjectToQmap(m_config.value("data-refresh").toObject());
+	QMap<QString, QString> headers = JsonReaderWriter::jsonObjectToQmap(AUTH_HEADERS);
+	QMap<QString, QString> data = JsonReaderWriter::jsonObjectToQmap(DATA_REFRESH);
 	data["refresh_token"] = m_current_token.value("refresh_token").toString();
 
 	QDateTime fetching_datetime = QDateTime::currentDateTime();
