@@ -153,9 +153,10 @@ QString RequestManager::loadDicomDataset(int dataset_id)
 	QByteArray data;
 	QString filename;
 	loadFile(dataset_id, "format=dcm", data, filename);
-	QString zippath =  FileManager::saveFileData(data,filename);
+	QString filepath =SHANOIR_FILES_FOLDER + QString::number(dataset_id) + "/" + filename;
+	QString zippath =  FileManager::saveFileData(data, filepath);
 	QString folderpath = FileManager::extractZipFile(zippath,"dcm");
-	return zippath;
+	return folderpath;
 }
 
 QString RequestManager::loadNiftiDataset(int dataset_id, int converter_id)
@@ -163,11 +164,12 @@ QString RequestManager::loadNiftiDataset(int dataset_id, int converter_id)
 	QByteArray data;
 	QString filename;
 	loadFile(dataset_id, "format=nii", data, filename);
+	QString filepath = SHANOIR_FILES_FOLDER + QString::number(dataset_id) + "/" + filename;
 	if(data.size()<100) // the zip received is empty
 	{
-		loadFile(dataset_id,"format=nii&converterId="+QString::number(converter_id), data, filename);
+		loadFile(dataset_id,"format=nii&converterId="+QString::number(converter_id), data, filepath);
 	}
-	QString zippath =  FileManager::saveFileData(data, filename);
+	QString zippath =  FileManager::saveFileData(data, filepath);
 	QString folderpath =  FileManager::extractZipFile(zippath, "nii");
 	return folderpath;
 }

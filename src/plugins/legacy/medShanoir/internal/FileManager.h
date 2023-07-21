@@ -5,6 +5,15 @@
 
 class FileManager
 {
+private:
+
+	/**
+	 * @brief create folders for a file if they does not exist
+	 * @param filename a filename with a relative or absolute path from a file that aims to be created
+	 * @return true if folders needed to be created for that file
+	 */
+	static bool folderCreator(QString filename);
+
 public:
 
     /**
@@ -15,7 +24,6 @@ public:
     static QString saveFileData(const QByteArray& fileData, const QString& filename);
 
     /**
-	 * @warning requires the command 7zip to be installed 
 	 * @param zipPath the file path of the zip file
 	 * @param extension an extension filename (jpg, png, nii, dcm, etc)
 	 * @return the output folder where the files have been extracted. Empty string if something went wrong. 

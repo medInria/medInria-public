@@ -5,6 +5,8 @@
 #include <QThreadPool>
 #include <QJsonObject>
 #include <QList>
+#include <QStandardPaths>
+#include <QCoreApplication>
 
 #include <Authenticater.h>
 #include <Network.h>
@@ -18,11 +20,14 @@ private:
 	Authenticater& m_auth;
 	Network & m_net;
 
+	const QString SHANOIR_FILES_FOLDER = QStandardPaths::writableLocation(QStandardPaths::TempLocation) + "/" + QCoreApplication::organizationName() + "/" + QCoreApplication::applicationName()+"/shanoirfiles/";
+
 	QByteArray basicGetRequest(QString url);
 
 	QAtomicInteger<int> m_fetch_number;
 
 	QString getBaseURL();
+
 
 	/**
 	 * This function requests a file, and downloads it if it is big enough.
