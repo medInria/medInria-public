@@ -3,7 +3,7 @@
 #include <Levels.h>
 
 ShanoirPlugin::ShanoirPlugin()
-	:m_auth(m_net), m_username("username"), m_password("password"), m_hostname("hostname"), m_rm(m_auth,m_net)
+	:m_auth(m_net), m_username("username"), m_password("password"), m_hostname("hostname"), m_rm(m_auth, m_net)
 {
 	m_password.setDefaultRepresentation(4);
 	m_hostname.setValue("shanoir.irisa.fr"); // default value for new instances

@@ -13,11 +13,17 @@ class Authenticater	: public QObject
 
 private:
 	Network & m_net;
-	QJsonObject m_config;
 	QJsonObject m_current_token;
 	QTimer m_timer;
 	QString m_domain; // domain the authenticater is currently connected on. Empty String if it is offline. 
 
+	// request parameters for the authentication
+	const QJsonObject AUTH_HEADERS = { {"Content-Type", "application/x-www-form-urlencoded"} };
+	const QJsonObject DATA_LOGIN = { {"client_id", "shanoir-uploader"}, {"grant_type", "password"}, {"scope", "offline_access"} };
+	const QJsonObject DATA_REFRESH = { {"grant_type", "refresh_token"}, {"client_id", "shanoir-uploader"} };
+	
+
+	// keys for the json object containing the token
 	const QString ACCESS_TOKEN_KEY = "AuthToken";
 	const QString ACCESS_TOKEN_EXPIRATION_KEY = "expiration_datetime";
 	const QStringList ACCESS_TOKEN_KEYS_TO_VERIFY = { "access_token", "expires_in","refresh_token"};
