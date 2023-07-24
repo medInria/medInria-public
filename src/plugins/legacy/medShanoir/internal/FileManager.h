@@ -25,8 +25,7 @@ public:
 
     /**
 	 * @param zipPath the file path of the zip file
-	 * @param extension an extension filename (jpg, png, nii, dcm, etc)
 	 * @return the output folder where the files have been extracted. Empty string if something went wrong. 
 	*/
-    static QString extractZipFile(QString zipPath, QString extension);
+    static QString extractZipFile(QString zipPath);
 };

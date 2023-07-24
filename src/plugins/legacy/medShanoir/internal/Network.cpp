@@ -10,9 +10,6 @@
 
 #include "JsonReaderWriter.h"
 #include "Network.h"
-#include "Fetch.h"
-#include "FetchGet.h"
-#include "FetchPost.h"
 
 QJsonObject Network::replyContentObject(QNetworkReply * reply)
 {

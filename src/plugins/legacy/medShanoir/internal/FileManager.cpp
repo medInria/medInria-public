@@ -44,7 +44,8 @@ QString FileManager::saveFileData(const QByteArray& fileData, const QString& fil
     return absoluteFilePath;
  }
 
- QString FileManager::extractZipFile(QString zipPath, QString extension)
+
+ QString FileManager::extractZipFile(QString zipPath)
 {
 	QFileInfo fileInfo(zipPath);
 	QString outputfolder = fileInfo.absoluteDir().absolutePath() +  QDir::separator() + fileInfo.baseName();
@@ -70,7 +71,7 @@ QString FileManager::saveFileData(const QByteArray& fileData, const QString& fil
 	int exitCode = process.exitCode();
 	if (exitCode == 0)
 	{
-        qDebug().noquote().nospace()<<extension<<" files saved at "<<QDir(outputfolder).absolutePath()<<" directory";
+        qDebug().noquote().nospace()<<"Files have been unzipped at"<<QDir(outputfolder).absolutePath()<<" directory";
 		QFile::remove(fileInfo.absoluteFilePath());
 	}
     else

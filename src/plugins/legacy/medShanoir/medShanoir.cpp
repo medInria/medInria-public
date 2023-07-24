@@ -179,33 +179,6 @@ QStringList      ShanoirPlugin::getMandatoryAttributesKeys(unsigned int pi_uiLev
 /* ***********************************************************************/
 /* *************** Get elements data *************************************/
 /* ***********************************************************************/
-void ShanoirPlugin::printTreeView()
-{
-	QList<StudyOverview> studies =  m_rm.getStudies();
-	for(StudyOverview study_ovw : studies)
-	{
-		Study study = m_rm.getStudyById(study_ovw.id);
-		qDebug().nospace().noquote()<<study.name;
-		for(SubjectOverview subj_ovw : study.subjects)
-		{
-			qDebug().nospace().noquote()<<"	" <<subj_ovw.name << (subj_ovw.type.size() > 0 ? (" (" + subj_ovw.type + ")") : "");
-			QList<Examination> examinations = m_rm.getExaminationsByStudySubjectId(study.id,subj_ovw.id);
-			for(Examination exam : examinations)
-			{
-				qDebug().noquote().nospace()<<"		"<<exam.date.toString()<<", "<<exam.comment<<" (id="<<exam.id<<")";
-				for(DatasetAcquisition acq : exam.ds_acquisitions)
-				{
-					qDebug().noquote()<<"			"<<acq.name;
-					for(Dataset ds : acq.datasets)
-					{
-						qDebug().noquote()<<"				"<<ds.name;
-					}
-				}
-			}
-		}
-	}
-}
-
 
 QList<medAbstractSource::levelMinimalEntries>    ShanoirPlugin::getMinimalEntries(unsigned int pi_uiLevel, QString parentKey)
 {
@@ -373,7 +346,7 @@ QVariant ShanoirPlugin::getDirectData(unsigned int pi_uiLevel, QString parentKey
 	{
 		int id_ds = parts[4].toInt();
 		//Le path renvoyé est le path d'un dossier contenant le nifiti. Cela fonctionne dans ce cadre mais il faut avoir en tête que ce n'est pas un path de fichier
-		QString path = m_rm.loadNiftiDataset(id_ds); //m_rm.loadDicomDataset(id_ds); 
+		QString path = m_rm.loadNiftiDataset(id_ds); // m_rm.getAsyncExample(); // m_rm.loadNiftiDataset(id_ds); //m_rm.loadDicomDataset(id_ds); 
 		variant = path;
 	}
 	return variant;

@@ -135,10 +135,6 @@ public:
 	/* ***********************************************************************/
 
 	/**
-	 * Used for debug purposes. Represents the entire tree-view in the terminal.
-	 */
-	void printTreeView();
-	/**
 	 * @param pi_uiLevel integer indicating the level of entry you want to access to (Study, Examination, Dataset..). Min value : 0. Max value : 4
 	 * @param parentKey a key, based on the ids of the parents. For instance, we use key of the form studyId.subjectId.examinationId in order to retrieve an examination content.
 	 * @return the corresponding minimal entries that are contained in the element of the level.
