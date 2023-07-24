@@ -100,6 +100,11 @@ QString Authenticater::getCurrentDomain()
 	return m_domain;
 }
 
+QString Authenticater::getBaseURL()
+{
+	return  "https://" + getCurrentDomain() + "/shanoir-ng/";
+}
+
 int Authenticater::twoThirds(int token_duration)
 {
 	return (2 * ((int)token_duration / 3));

@@ -33,6 +33,7 @@ private:
 
 	static int twoThirds(int token_duration);
 
+
 public:
 	Authenticater(Network & net);
 	
@@ -53,6 +54,7 @@ public:
 	void disauthenticate();
 
 	QString getCurrentDomain();
+	QString getBaseURL();
 
 
 private slots:

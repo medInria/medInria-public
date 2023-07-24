@@ -12,7 +12,6 @@
 #include <QProcess>
 
 #include <Network.h>
-#include <FetchGet.h>
 #include <JsonReaderWriter.h>
 #include <FileManager.h>
 
@@ -34,14 +33,9 @@ RequestManager::RequestManager(Authenticater & authenticater, Network & network)
 }
 
 
-QString RequestManager::getBaseURL() 
-{
-	return "https://"+ m_auth.getCurrentDomain()+"/shanoir-ng/";
-}
-
 QList<StudyOverview>  RequestManager::getStudies() 
 {
-	QString url = getBaseURL()+ "studies/studies";
+	QString url = m_auth.getBaseURL()+ "studies/studies";
 	QJsonArray studies_response = JsonReaderWriter::qbytearrayToQJsonArray(basicGetRequest(url));
 	QList<StudyOverview> studies;
 	for (const QJsonValue& value : studies_response) 
@@ -60,7 +54,7 @@ QList<StudyOverview>  RequestManager::getStudies()
 
 Study RequestManager::getStudyById(int id)
 {
-	QString url = getBaseURL()+ "studies/studies/" + QString::number(id);
+	QString url = m_auth.getBaseURL()+ "studies/studies/" + QString::number(id);
 	QJsonObject study_response = JsonReaderWriter::qbytearrayToQJson(basicGetRequest(url));
 	Study study;
 	if (JsonReaderWriter::verifyKeys(study_response, {"subjectStudyList", "id", "name"}, {"Array", "Number", "String"}))
@@ -90,7 +84,7 @@ Study RequestManager::getStudyById(int id)
 
 QList<Examination> RequestManager::getExaminationsByStudySubjectId(int stud_id, int subj_id)
 {
-	QString url = getBaseURL()+ "datasets/examinations/subject/"+QString::number(subj_id)+"/study/" + QString::number(stud_id);
+	QString url = m_auth.getBaseURL()+ "datasets/examinations/subject/"+QString::number(subj_id)+"/study/" + QString::number(stud_id);
 	QJsonArray examinations_response = JsonReaderWriter::qbytearrayToQJsonArray(basicGetRequest(url));
 	QList<Examination> examinations;
 	for (const QJsonValue& value : examinations_response)
@@ -130,63 +124,85 @@ QList<Examination> RequestManager::getExaminationsByStudySubjectId(int stud_id, 
 	}
 	return examinations;
 }
-
-
-void RequestManager::loadFile(int dataset_id, QString query_string, QByteArray &fileData, QString &filename)
+#include <DataRetriever.h>
+class DicomRetriever : public DataRetriever
 {
-    QString url = getBaseURL() + "datasets/datasets/download/" + QString::number(dataset_id) + "?" + query_string;
-    QNetworkReply *reply = m_net.httpGetFetch(url, {{"Authorization", "Bearer " + m_auth.getCurrentAccessToken()}});
-    QJsonObject responseHeaders = m_net.replyHeaders(reply);
-	if(JsonReaderWriter::verifyKeys(responseHeaders,{"Content-Disposition"}))
+private:
+	int m_datasetId;
+public:
+
+	DicomRetriever(int datasetId, int requestId, Authenticater & auth, QString storagePath) :DataRetriever(requestId, auth, storagePath), m_datasetId(datasetId)
+	{}
+
+	void run() 
 	{
-    	filename = responseHeaders.value("Content-Disposition").toString().split("filename=")[1].split(";").first();
-		if(filename.length()>0)
-		{
-    		fileData = reply->readAll();
-		}
+		QByteArray data;
+		QString filename;
+		loadFile(m_datasetId, "format=dcm", data, filename);
+		QString zippath =  FileManager::saveFileData(data, m_storagePath);
+		QString folderpath = FileManager::extractZipFile(zippath);
 	}
-}
+};
+
+
+class NiftiRetriever : public DataRetriever
+{
+private:
+	int m_datasetId;
+	int m_converterId;
+
+public:
+
+	NiftiRetriever(int datasetId, int converterId, int requestId, Authenticater & auth, QString storagePath) :DataRetriever(requestId, auth, storagePath), m_datasetId(datasetId), m_converterId(converterId)
+	{}
+
+	void run()
+	{
+		QByteArray data;
+		QString filename;
+		loadFile(m_datasetId, "format=nii", data, filename);
+		int size = data.size();
+
+		if(data.size()<100) // the zip received is empty
+		{
+			loadFile(m_datasetId,"format=nii&converterId="+QString::number(m_converterId), data, filename);
+		}
+		QString filepath = m_storagePath + filename;
+		QString zippath =  FileManager::saveFileData(data, filepath);
+		m_dataPath =  FileManager::extractZipFile(zippath);
+	}
+};
+
+
 
 
 QString RequestManager::loadDicomDataset(int dataset_id)
 {
-	QByteArray data;
-	QString filename;
-	loadFile(dataset_id, "format=dcm", data, filename);
-	QString filepath =SHANOIR_FILES_FOLDER + QString::number(dataset_id) + "/" + filename;
-	QString zippath =  FileManager::saveFileData(data, filepath);
-	QString folderpath = FileManager::extractZipFile(zippath,"dcm");
-	return folderpath;
+	QString filepath = SHANOIR_FILES_FOLDER + QString::number(dataset_id) + "/";
+	DicomRetriever dr(dataset_id, -1, m_auth, filepath);
+	dr.run();
+	return dr.getDataPath();
 }
 
 QString RequestManager::loadNiftiDataset(int dataset_id, int converter_id)
 {
-	QByteArray data;
-	QString filename;
-	loadFile(dataset_id, "format=nii", data, filename);
-	QString filepath = SHANOIR_FILES_FOLDER + QString::number(dataset_id) + "/" + filename;
-	if(data.size()<100) // the zip received is empty
-	{
-		loadFile(dataset_id,"format=nii&converterId="+QString::number(converter_id), data, filepath);
-	}
-	QString zippath =  FileManager::saveFileData(data, filepath);
-	QString folderpath =  FileManager::extractZipFile(zippath, "nii");
-	return folderpath;
+	QString filepath = SHANOIR_FILES_FOLDER + QString::number(dataset_id) + "/";
+	NiftiRetriever nr(dataset_id, converter_id, -1, m_auth, filepath);
+	nr.run();
+	return nr.getDataPath();
 }
 
 
-int RequestManager::getAsyncExample()
+QString RequestManager::getAsyncExample()
 {
 	int fetch_id = ++m_fetch_number;
+	QString filepath = SHANOIR_FILES_FOLDER + QString::number(374303) + "/";
+	NiftiRetriever * niftiretriever = new NiftiRetriever(374303, 4, -1, m_auth, filepath);
+	niftiretriever->setAutoDelete(true);
+	m_threadPool->start(niftiretriever);
 
-	Fetch *f = new FetchGet(fetch_id, "https://apiexample/item");
-    f->setAutoDelete(true);
-
-	QObject::connect(f, &Fetch::fetchEnded, this, &RequestManager::responseFromFetch);
-
-	m_threadPool->start(f);
-
-	return fetch_id;
+	m_threadPool->waitForDone();
+	return niftiretriever->getDataPath();
 }
 
 
