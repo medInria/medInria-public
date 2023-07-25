@@ -14,6 +14,7 @@
 #include <Network.h>
 #include <JsonReaderWriter.h>
 #include <FileManager.h>
+#include <DataRetriever.h>
 
 #include "RequestManager.h"
 
@@ -27,7 +28,7 @@ QByteArray RequestManager::basicGetRequest(QString url)
 
 
 RequestManager::RequestManager(Authenticater & authenticater, Network & network)
-	:m_auth(authenticater),m_net(network),m_threadPool(QThreadPool::globalInstance()),m_fetch_number(0)
+	:m_auth(authenticater),m_net(network),m_threadPool(QThreadPool::globalInstance()),m_request_number(0)
 {
 
 }
@@ -124,7 +125,7 @@ QList<Examination> RequestManager::getExaminationsByStudySubjectId(int stud_id, 
 	}
 	return examinations;
 }
-#include <DataRetriever.h>
+
 class DicomRetriever : public DataRetriever
 {
 private:
@@ -154,7 +155,8 @@ private:
 public:
 
 	NiftiRetriever(int datasetId, int converterId, int requestId, Authenticater & auth, QString storagePath) :DataRetriever(requestId, auth, storagePath), m_datasetId(datasetId), m_converterId(converterId)
-	{}
+	{
+	}
 
 	void run()
 	{
@@ -170,6 +172,7 @@ public:
 		QString filepath = m_storagePath + filename;
 		QString zippath =  FileManager::saveFileData(data, filepath);
 		m_dataPath =  FileManager::extractZipFile(zippath);
+		emit dataRetrieved(getId(), getDataPath());
 	}
 };
 
@@ -193,21 +196,32 @@ QString RequestManager::loadNiftiDataset(int dataset_id, int converter_id)
 }
 
 
-QString RequestManager::getAsyncExample()
+int RequestManager::loadAsyncNiftiDataset(int dataset_id, int converter_id)
 {
-	int fetch_id = ++m_fetch_number;
-	QString filepath = SHANOIR_FILES_FOLDER + QString::number(374303) + "/";
-	NiftiRetriever * niftiretriever = new NiftiRetriever(374303, 4, -1, m_auth, filepath);
+	int request_id = ++m_request_number;
+	QString filepath = SHANOIR_FILES_FOLDER + QString::number(dataset_id) + "/";
+	DataRetriever *niftiretriever = new NiftiRetriever(dataset_id, converter_id, request_id, m_auth, filepath);
 	niftiretriever->setAutoDelete(true);
+	QObject::connect(niftiretriever, &DataRetriever::dataRetrieved, this, &RequestManager::dataResponseHandling);
 	m_threadPool->start(niftiretriever);
-
-	m_threadPool->waitForDone();
-	return niftiretriever->getDataPath();
+	return request_id;
 }
 
 
-
-void RequestManager::responseFromFetch(int id, QJsonObject jsondata)
+QString RequestManager::getAsyncResult(int requestId)
 {
-	qDebug() << "Data Received from fetch" << id << " size = "<< jsondata.size();
+	QString result = "";
+	if (m_asyncResults.contains(requestId))
+	{
+		result = m_asyncResults.value(requestId);
+	//	m_asyncResults.remove(requestId);
+	}
+	return result;
+}
+
+
+void RequestManager::dataResponseHandling(int id, QString data)
+{
+	m_asyncResults.insert(id, data);
+	emit loadedDataset(id);
 }

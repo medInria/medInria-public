@@ -22,12 +22,6 @@ DataRetriever::DataRetriever(int id, Authenticater & auth, QString storagePath, 
 {
 }
 
-
-bool DataRetriever::isFinished()
-{
-	return m_dataPath==m_storagePath;
-}
-
 QString DataRetriever::getDataPath()
 {
 	return m_dataPath;

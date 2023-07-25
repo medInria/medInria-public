@@ -7,6 +7,8 @@
 #include <QList>
 #include <QStandardPaths>
 #include <QCoreApplication>
+#include <QAtomicInteger>
+#include <QMap>
 
 #include <Authenticater.h>
 #include <Network.h>
@@ -24,9 +26,13 @@ private:
 
 	QByteArray basicGetRequest(QString url);
 
-	QAtomicInteger<int> m_fetch_number;
+	QAtomicInteger<int> m_request_number;
 
 	QThreadPool *m_threadPool; 
+
+	QMap<int, QString> m_asyncResults;
+
+
 
 
 public :
@@ -41,15 +47,19 @@ public :
 
     QString loadDicomDataset(int dataset_id);
 
-    QString loadNiftiDataset(int dataset_id,int converterId = 4);
+    QString loadNiftiDataset(int dataset_id, int converterId = 4);
 
+	int loadAsyncNiftiDataset(int dataset_id, int converterId = 4);
 
-	// temporary function, in order to understand the process of async requests
-	QString getAsyncExample();
+	QString getAsyncResult(int requestId);
+
+signals:
+	void loadedDataset(int idRequest);
+
 
 public slots:
 
-	void responseFromFetch(int id,QJsonObject jsondata);
+	void dataResponseHandling(int id, QString data);
 
 };
 
