@@ -65,6 +65,7 @@
 #include <itkVTKDataImageWriter.h>
 #include <itkGISDataImageWriter.h>
 #include <itkDicomDataImageWriter.h>
+#include <medDicomDirReader.h>
 
 #include <dtkLog/dtkLog.h>
 #include <itkLogForwarder.h>
@@ -158,7 +159,8 @@ bool itkDataImagePlugin::initialize()
     if (!itkGISDataImageWriter::registered())        { qWarning() << "Unable to register itkGISDataImageWriter type"; }
     if (!itkDicomDataImageWriter::registered())      { qWarning() << "Unable to register itkDicomDataImageWriter type"; }
 
-    if (!DicomRtImageWriter::registered())           { qWarning() << "Unable to register DicomRtImageWriter type"; }
+    if (!DicomRtImageWriter::registered()) {qWarning() << "Unable to register DicomRtImageWriter type";}
+    if (!medDicomDirReader::registered())  {qWarning() << "Unable to register medDicomDirReader type";}
 
     return true;
 }

@@ -121,6 +121,7 @@ add_library(${TARGET_NAME} SHARED
 
 target_include_directories(${TARGET_NAME}
   PRIVATE ${${TARGET_NAME}_INCLUDE_DIRS}
+  PRIVATE ${DCMTK_INCLUDE_DIRS}
   )
 
 ## #############################################################################
@@ -138,6 +139,7 @@ target_link_libraries(${TARGET_NAME}
   medImageIO
   medLog
   medVtkInria
+  ${DCMTK_LIBRARIES}
   )
 
 ## #############################################################################
@@ -145,7 +147,6 @@ target_link_libraries(${TARGET_NAME}
 ## #############################################################################
 
 set_plugin_install_rules_legacy(${TARGET_NAME})
-
 
 ## #############################################################################
 ## Build tests
