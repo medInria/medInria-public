@@ -1,4 +1,5 @@
 #include "medShanoir.h"
+#include <QObject>
 
 #include <Levels.h>
 
@@ -92,9 +93,7 @@ bool ShanoirPlugin::isWritable()
 
 bool ShanoirPlugin::isLocal()
 {
-	
-    //FIXME: switch this value back to false when the async part will be implemented (getAsyncResults, addAssyncData)
-	return true;
+	return false;
 }
 
 bool ShanoirPlugin::isCached()
@@ -346,15 +345,22 @@ QVariant ShanoirPlugin::getDirectData(unsigned int pi_uiLevel, QString parentKey
 	{
 		int id_ds = parts[4].toInt();
 		//Le path renvoyé est le path d'un dossier contenant le nifiti. Cela fonctionne dans ce cadre mais il faut avoir en tête que ce n'est pas un path de fichier
-		QString path = m_rm.loadNiftiDataset(id_ds); // m_rm.getAsyncExample(); // m_rm.loadNiftiDataset(id_ds); //m_rm.loadDicomDataset(id_ds); 
+		QString path = m_rm.loadNiftiDataset(id_ds); //m_rm.loadDicomDataset(id_ds); 
 		variant = path;
 	}
 	return variant;
 }
 
-int      ShanoirPlugin::getAssyncData(unsigned int pi_uiLevel, QString key)
+int      ShanoirPlugin::getAssyncData(unsigned int pi_uiLevel, QString parentKey)
 {
-	return 0;
+	int idRequest = -1;
+	QStringList parts = parentKey.split('.');
+	if (pi_uiLevel == 4 && parts.size() == 5) // dataset level
+	{
+		int id_ds = parts[4].toInt();
+		idRequest = m_rm.loadAsyncNiftiDataset(id_ds); 
+	}
+	return idRequest;
 }
 
 /* ***********************************************************************/
@@ -412,7 +418,14 @@ int  ShanoirPlugin::push(unsigned int pi_uiLevel, QString key)
 QVariant ShanoirPlugin::getAsyncResults(int pi_iRequest)
 {
 	QVariant variant;
+	QString path = m_rm.getAsyncResult(pi_iRequest);
+	variant = path;
 	return variant;
+}
+
+void ShanoirPlugin::dataReception(int idRequest)
+{
+	emit progress(idRequest, finish);
 }
 
 /* ***********************************************************************/

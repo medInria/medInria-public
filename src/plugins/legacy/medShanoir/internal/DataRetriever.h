@@ -1,9 +1,9 @@
+#ifndef DATARETRIEVER_H
+#define DATARETRIEVER_H
 #include <QRunnable>
 #include <QObject>
 #include <QJsonObject>
 #include <QString>
-
-
 #include <Network.h>
 #include <Authenticater.h>
 
@@ -36,9 +36,14 @@ public:
 
     virtual void run()=0;
 
-	bool isFinished();
-
 	QString getDataPath();
 
 	int getId();
+
+signals:
+	void startedRetrieving(int /*id*/);
+
+	void dataRetrieved(int /*id*/, QString /*datapath*/);
+	void failedRetrieving(int /*id*/);
 };
+#endif // DATARETRIEVER_H

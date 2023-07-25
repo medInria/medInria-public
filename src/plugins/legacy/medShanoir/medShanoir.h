@@ -13,11 +13,15 @@ class ShanoirPlugin : public medAbstractSource
 {
 	Q_OBJECT
 
+public: 
+// needs to be public for the connection of signals (data reception)
+	RequestManager m_rm;
+
 private:
 	// Local variables
 	Network m_net;
 	Authenticater m_auth;
-	RequestManager m_rm;
+	
 
 	const QStringList s_level_names = {"root", "study", "subject", "examination", "dataset-acquisition", "dataset"};
 
@@ -196,4 +200,7 @@ public:
 
 public slots:
 	void abort(int pi_iRequest) override;
+
+	void dataReception(int idRequest);
+
 };
