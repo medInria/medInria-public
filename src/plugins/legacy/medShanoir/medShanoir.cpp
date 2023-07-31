@@ -4,7 +4,7 @@
 #include <Levels.h>
 
 ShanoirPlugin::ShanoirPlugin()
-	:m_auth(m_net), m_username("username"), m_password("password"), m_hostname("hostname"), m_rm(m_auth, m_net)
+	:m_auth(m_net, m_settings), m_username("username"), m_password("password"), m_hostname("hostname"), m_rm(m_auth, m_net)
 {
 	m_password.setDefaultRepresentation(4);
 	m_hostname.setValue("shanoir.irisa.fr"); // default value for new instances
@@ -23,6 +23,8 @@ bool ShanoirPlugin::initialization(QString const  &pi_instanceId)
 	if(instance_id_exists)
 	{
 		m_instance_id = pi_instanceId;
+		m_settings.setInstanceName(m_instance_id);
+		m_auth.retrieveToken();
 	}
 	return instance_id_exists;
 }

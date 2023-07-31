@@ -6,7 +6,7 @@
 #include <Authenticater.h>
 #include <Network.h>
 #include <RequestManager.h>
-
+#include <SettingsManager.h>
 #include <Levels.h>
 
 class ShanoirPlugin : public medAbstractSource
@@ -20,6 +20,7 @@ public:
 private:
 	// Local variables
 	Network m_net;
+	SettingsManager m_settings;
 	Authenticater m_auth;
 	
 

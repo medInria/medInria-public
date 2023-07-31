@@ -15,10 +15,14 @@
 #include <SettingsManager.h>
 
 
-Authenticater::Authenticater(Network & network)
-	:m_net(network), m_domain("")
+Authenticater::Authenticater(Network & network, SettingsManager & settings)
+	:m_net(network), m_domain(""), m_settings(settings)
 {
-	m_current_token = SettingsManager::retrieveJson(ACCESS_TOKEN_KEY);
+}
+
+void Authenticater::retrieveToken()
+{
+	m_current_token = m_settings.retrieveJson(ACCESS_TOKEN_KEY);
 }
 
 void Authenticater::initAuthentication(const QString domain, const QString username, const QString password)
@@ -81,14 +85,14 @@ int Authenticater::autoRefreshAccessToken(int(*tokenDurationRefreshment)(int))
 	connect(&m_timer, &QTimer::timeout, this, &Authenticater::tokenUpdate);
 	// the timer will be called every time the token reaches the expiration time
 	int refresh_time = tokenDurationRefreshment(token_duration*1000); // in ms
-	qDebug().noquote() << "THE ACCESS TOKEN WILL BE UPDATED EVERY" << QTime(0, 0).addMSecs(refresh_time).toString("m'mins' s'secs'");
+	qDebug().noquote() << "THE ACCESS TOKEN OF "<<getCurrentDomain().toUpper()<<" WILL BE UPDATED EVERY" << QTime(0, 0).addMSecs(refresh_time).toString("m'mins' s'secs'");
 	m_timer.start(refresh_time);
 	tokenUpdate(); 
 	return refresh_time;
 }
 void Authenticater::disauthenticate()
 {
-	SettingsManager::reset(ACCESS_TOKEN_KEY);
+	m_settings.reset(ACCESS_TOKEN_KEY);
 	m_current_token = QJsonObject();
 	m_timer.stop();
 	medNotif::createNotif(notifLevel::info, "Authentication to Shanoir", "Successfully disconnected from "+getCurrentDomain());
@@ -126,14 +130,14 @@ void Authenticater::tokenUpdate()
 		int token_duration = m_current_token.value("expires_in").toInt();
 		QDateTime token_expiration_datetime = fetching_datetime.addSecs(token_duration);
 		m_current_token[ACCESS_TOKEN_EXPIRATION_KEY] = token_expiration_datetime.toString(Qt::ISODate);
-		SettingsManager::reset(ACCESS_TOKEN_KEY);
-		SettingsManager::storeJson(ACCESS_TOKEN_KEY, m_current_token);
+		m_settings.reset(ACCESS_TOKEN_KEY);
+		m_settings.storeJson(ACCESS_TOKEN_KEY, m_current_token);
 
-		qDebug().noquote() << QDateTime::currentDateTime().toString() << "--THE ACCESS TOKEN HAS BEEN UPDATED. IT IS NOW AVAILABLE UNTIL " << token_expiration_datetime.toString();
+		qDebug().noquote() << QDateTime::currentDateTime().toString() << "--THE ACCESS TOKEN OF"<< getCurrentDomain().toUpper()<<"HAS BEEN UPDATED. IT IS NOW AVAILABLE UNTIL " << token_expiration_datetime.toString();
 	}
 	else
 	{
 		qDebug() << "THE ACCESS TOKEN UPDATE HAS FAILED";
-		medNotif::createNotif(notifLevel::error, "Authentication to Shanoir", "Something went wrong while updating the access token. You will be disconnected.");
+		medNotif::createNotif(notifLevel::error, "Authentication to Shanoir", "Something went wrong while updating the access token of "+ getCurrentDomain() +". You will be disconnected.");
 	}
 }

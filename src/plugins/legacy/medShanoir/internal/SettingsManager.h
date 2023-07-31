@@ -1,21 +1,29 @@
 #pragma once
 #include <QSettings>
 #include <QJsonObject>
+#include <QString>
 
 class SettingsManager
 {
 private:
-	static QSettings& getPluginSettings();
+
+	QString m_instanceName;
+
 
 public:
-	static void store(QString key,QString value);
 
-	static QString retrieve(QString key);
+	SettingsManager();
 
-	static void reset(QString key);
+	void store(QString key,QString value);
 
-	static void storeJson(QString key, QJsonObject value);
+	QString retrieve(QString key);
 
-	static QJsonObject retrieveJson(QString key);
+	void reset(QString key);
+
+	void storeJson(QString key, QJsonObject value);
+
+	QJsonObject retrieveJson(QString key);
+
+	void setInstanceName(QString instanceName);
 };
 
