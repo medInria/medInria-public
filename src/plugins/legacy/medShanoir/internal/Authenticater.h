@@ -5,6 +5,7 @@
 #include <QObject>
 #include <QStringList>
 
+#include <SettingsManager.h>
 #include <Network.h>
 
 class Authenticater	: public QObject
@@ -16,6 +17,7 @@ private:
 	QJsonObject m_current_token;
 	QTimer m_timer;
 	QString m_domain; // domain the authenticater is currently connected on. Empty String if it is offline. 
+	SettingsManager & m_settings;
 
 	// request parameters for the authentication
 	const QJsonObject AUTH_HEADERS = { {"Content-Type", "application/x-www-form-urlencoded"} };
@@ -31,11 +33,12 @@ private:
 
 	bool accessTokenExpired();
 
-	static int twoThirds(int token_duration);
+	static int twoThirds(int token_duration); 
+
 
 
 public:
-	Authenticater(Network & net);
+	Authenticater(Network & net, SettingsManager & settings);
 	
 	void initAuthentication(const QString domain, const QString username, const QString password);
 
@@ -55,6 +58,8 @@ public:
 
 	QString getCurrentDomain();
 	QString getBaseURL();
+
+	void retrieveToken();
 
 
 private slots:

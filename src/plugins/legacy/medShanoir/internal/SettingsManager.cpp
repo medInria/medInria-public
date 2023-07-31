@@ -1,26 +1,41 @@
 #include <QJsonDocument>
 #include "SettingsManager.h"
 
-QSettings & SettingsManager::getPluginSettings()
+
+
+SettingsManager::SettingsManager()
 {
-	static QSettings plugin_settings("Medinria", "ShanoirPlugin");
-	return plugin_settings;
 }
+
+
+void SettingsManager::setInstanceName(QString instanceName)
+{
+	m_instanceName = instanceName;
+}
+
 
 void SettingsManager::store(QString key, QString value)
 {
-	QSettings& settings = SettingsManager::getPluginSettings();
-	settings.setValue(key, value);
+	QSettings("Medinria", "ShanoirPlugin_" + m_instanceName).setValue(key, value);
 }
 
 QString SettingsManager::retrieve(QString key)
 {
-	return SettingsManager::getPluginSettings().value(key).toString();
+	QSettings &setting = QSettings("Medinria", "ShanoirPlugin_" + m_instanceName);
+	if (setting.status() == QSettings::NoError)
+	{
+		return setting.value(key).toString();
+	}
+	return "";
 }
 
 void SettingsManager::reset(QString key)
 {
-	getPluginSettings().remove(key);
+	QSettings &setting = QSettings("Medinria", "ShanoirPlugin_" + m_instanceName);
+	if (setting.status() == QSettings::NoError)
+	{
+		setting.remove(key);
+	}
 }
 
 void SettingsManager::storeJson(QString key, QJsonObject value)
