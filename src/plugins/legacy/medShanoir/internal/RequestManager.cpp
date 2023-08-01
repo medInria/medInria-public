@@ -172,6 +172,19 @@ public:
 		QString filepath = m_storagePath + filename;
 		QString zippath =  FileManager::saveFileData(data, filepath);
 		m_dataPath =  FileManager::extractZipFile(zippath);
+		QDir folder(getDataPath());
+		// Find the nifti file in the folder
+		QStringList filters;
+		filters << "*.nii" << "*.nii.gz";
+		QStringList files = folder.entryList(filters, QDir::Files | QDir::NoDotAndDotDot);
+		if (files.size() > 0)
+		{
+			m_dataPath = folder.absoluteFilePath(files[0]);
+		}
+		else
+		{
+			m_dataPath = "";
+		}
 		emit dataRetrieved(getId(), getDataPath());
 	}
 };
