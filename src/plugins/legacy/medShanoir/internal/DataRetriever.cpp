@@ -5,9 +5,10 @@
 
 void DataRetriever::loadFile(int dataset_id, QString query_string, QByteArray & fileData, QString & filename)
 {
+	Network net;
 	QString url = m_auth.getBaseURL() + "datasets/datasets/download/" + QString::number(dataset_id) + "?" + query_string;
-	QNetworkReply *reply = m_net.httpGetFetch(url, { {"Authorization", "Bearer " + m_auth.getCurrentAccessToken()} });
-	QJsonObject responseHeaders = m_net.replyHeaders(reply);
+	QNetworkReply *reply = net.httpGetFetch(url, { {"Authorization", "Bearer " + m_auth.getCurrentAccessToken()} });
+	QJsonObject responseHeaders = net.replyHeaders(reply);
 	if (JsonReaderWriter::verifyKeys(responseHeaders, { "Content-Disposition" }))
 	{
 		filename = responseHeaders.value("Content-Disposition").toString().split("filename=")[1].split(";").first();

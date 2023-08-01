@@ -16,7 +16,6 @@ protected:
     Authenticater & m_auth;
 	QString m_storagePath; // where to store the data
 	QString m_dataPath; // where the data has been stored
-	Network m_net;
 
 	/**
 	 * This function requests a file, and downloads it if it is big enough.
