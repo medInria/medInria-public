@@ -439,9 +439,15 @@ QVariant ShanoirPlugin::getDirectData(unsigned int pi_uiLevel, QString parentKey
 {
 	QVariant variant;
 	QStringList parts = parentKey.split('.');
-	if(pi_uiLevel==4 && parts.size()==5) // dataset level
+	bool dataset_level = pi_uiLevel == 4 && parts.size() == 5;
+	bool ps_dataset_level = pi_uiLevel == 6 && parts.size() == 7;
+	if(dataset_level || ps_dataset_level) // dataset level or processed dataset
 	{
 		int id_ds = parts[4].toInt();
+		if (ps_dataset_level)
+		{
+			id_ds = parts[6].toInt();
+		}
 		//Le path renvoyé est le path d'un dossier contenant le nifiti. Cela fonctionne dans ce cadre mais il faut avoir en tête que ce n'est pas un path de fichier
 		QString path = m_rm.loadNiftiDataset(id_ds); //m_rm.loadDicomDataset(id_ds); 
 		variant = path;
@@ -453,9 +459,15 @@ int      ShanoirPlugin::getAssyncData(unsigned int pi_uiLevel, QString parentKey
 {
 	int idRequest = -1;
 	QStringList parts = parentKey.split('.');
-	if (pi_uiLevel == 4 && parts.size() == 5) // dataset level
+	bool dataset_level = pi_uiLevel == 4 && parts.size() == 5;
+	bool ps_dataset_level = pi_uiLevel == 6 && parts.size() == 7;
+	if (dataset_level || ps_dataset_level) // dataset level or processed dataset
 	{
 		int id_ds = parts[4].toInt();
+		if (ps_dataset_level)
+		{
+			id_ds = parts[6].toInt();
+		}
 		idRequest = m_rm.loadAsyncNiftiDataset(id_ds); 
 	}
 	return idRequest;
