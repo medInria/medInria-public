@@ -4,12 +4,42 @@
 #include <QString>
 #include <QList>
 #include <QDate>
+#include <QJsonObject>
+#include <QJsonArray>
 
+struct DatasetProcessing
+{
+    int id;
+    QString type;
+    QString date;
+    QList<int> inputDatasets; // ids of input datasets
+    QList<int> outputDatasets; // ids of output datasets (processedDatasets)
+    int studyId;
+};
+
+struct ProcessedDataset
+{
+    QString name;
+    QString type;
+    QString filepath; 
+};
+
+struct DatasetDetails
+{
+    int id;
+    QString name;
+    QString type;
+    int study_id;
+    int subject_id;
+    QString subject_name;
+};
 
 struct Dataset
 {
     int id;
     QString name;
+    QString type;
+    QList<DatasetProcessing>  processings; // list of processing datasets that already exist
 };
 
 struct DatasetAcquisition

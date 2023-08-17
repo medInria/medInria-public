@@ -15,115 +15,40 @@
 #include <JsonReaderWriter.h>
 #include <FileManager.h>
 #include <DataRetriever.h>
+#include <DataSender.h>
 
 #include "RequestManager.h"
 
-
-QByteArray RequestManager::basicGetRequest(QString url)
-{
-	QMap<QString, QString> headers {{"Authorization", "Bearer " + m_auth.getCurrentAccessToken()}};
-	return m_net.httpGetFetch(url, headers)->readAll();
-}
-
-
-
 RequestManager::RequestManager(Authenticater & authenticater, Network & network)
-	:m_auth(authenticater),m_net(network),m_threadPool(QThreadPool::globalInstance()),m_request_number(0)
+	:m_auth(authenticater),m_net(network), m_mloader(authenticater, network), m_threadPool(QThreadPool::globalInstance()),m_request_number(0)
 {
 
 }
 
+RequestManager::~RequestManager()
+{
+	m_threadPool->waitForDone();
+	m_threadPool->clear();
+}
 
 QList<StudyOverview>  RequestManager::getStudies() 
 {
-	QString url = m_auth.getBaseURL()+ "studies/studies";
-	QJsonArray studies_response = JsonReaderWriter::qbytearrayToQJsonArray(basicGetRequest(url));
-	QList<StudyOverview> studies;
-	for (const QJsonValue& value : studies_response) 
-	{
-		QJsonObject study_response = value.toObject();
-		if(JsonReaderWriter::verifyKeys(study_response,{"id", "name"},{"Number", "String"}))
-		{
-			int id = study_response.value("id").toInt();
-			QString name = study_response.value("name").toString();
-			StudyOverview study = {id,name};
-			studies.append(study);
-		}
-	}
-	return studies;
+	return m_mloader.getStudies();
 }
 
 Study RequestManager::getStudyById(int id)
 {
-	QString url = m_auth.getBaseURL()+ "studies/studies/" + QString::number(id);
-	QJsonObject study_response = JsonReaderWriter::qbytearrayToQJson(basicGetRequest(url));
-	Study study;
-	if (JsonReaderWriter::verifyKeys(study_response, {"subjectStudyList", "id", "name"}, {"Array", "Number", "String"}))
-	{
-		QJsonArray subjectlist = study_response.value("subjectStudyList").toArray();
-		QList<SubjectOverview> subjects;
-		for (const QJsonValue &value : subjectlist)
-		{
-			QJsonObject subject = value.toObject().value("subject").toObject();
-			if (JsonReaderWriter::verifyKeys(subject, {"id", "name"}, {"Number", "String"}))
-			{
-				int subj_id = subject.value("id").toInt();
-				QString subj_name = subject.value("name").toString();
-				QString type = value.toObject().value("subjectType").toString();
-				subjects.append({subj_id, subj_name, type});
-			}
-		}
-		// sorting subjects in order to have the same order as in the web version
-		std::sort(subjects.begin(), subjects.end(), [](const SubjectOverview &a, const SubjectOverview &b)
-				  { return QString::compare(a.name, b.name, Qt::CaseInsensitive) < 0; });
-		int studid = study_response.value("id").toInt();
-		QString studname = study_response.value("name").toString();
-		study = {studid, studname, subjects};
-	}
-	return study;
+	return m_mloader.getStudyById(id);
 }
 
 QList<Examination> RequestManager::getExaminationsByStudySubjectId(int stud_id, int subj_id)
 {
-	QString url = m_auth.getBaseURL()+ "datasets/examinations/subject/"+QString::number(subj_id)+"/study/" + QString::number(stud_id);
-	QJsonArray examinations_response = JsonReaderWriter::qbytearrayToQJsonArray(basicGetRequest(url));
-	QList<Examination> examinations;
-	for (const QJsonValue& value : examinations_response)
-	{ // EXAMINATIONS 
-		QJsonObject examination_response = value.toObject();
-		if (JsonReaderWriter::verifyKeys(examination_response, {"datasetAcquisitions","id","comment","examinationDate"}, {"Array", "Number", "String", "String"}))
-		{
-			QJsonArray dataset_acquisitions_response = examination_response.value("datasetAcquisitions").toArray();
-			QList<DatasetAcquisition> dataset_acquisitions;
-			for (const QJsonValue &value : dataset_acquisitions_response)
-			{ // DATASETS ACQUISITIONS
-				QJsonObject dataset_acquisition = value.toObject();
-				if(JsonReaderWriter::verifyKeys(dataset_acquisition, {"datasets","id","name"}, {"Array", "Number", "String"}))
-				{
-					QJsonArray datasets_response = dataset_acquisition.value("datasets").toArray();
-					QList<Dataset> datasets;
-					for (const QJsonValue &value : datasets_response)
-					{ // DATASETS
-						QJsonObject dataset_response = value.toObject();
-						if(JsonReaderWriter::verifyKeys(dataset_response,{"id","name"}, {"Number", "String"}))
-						{ 
-							int id = dataset_response.value("id").toInt();
-							QString name = dataset_response.value("name").toString();
-							datasets.append({id, name});
-						}
-					}
-					int id = dataset_acquisition.value("id").toInt();
-					QString name = dataset_acquisition.value("name").toString();
-					dataset_acquisitions.append({id, name, datasets});
-				}
-			}
-			int id = examination_response.value("id").toInt();
-			QString comment = examination_response.value("comment").toString();
-			QDate date = QDate::fromString(examination_response.value("examinationDate").toString(), "yyyy-MM-dd");
-			examinations.append({id, comment, date, dataset_acquisitions});
-		}
-	}
-	return examinations;
+	return m_mloader.getExaminationsByStudySubjectId(stud_id, subj_id);
+}
+
+DatasetDetails RequestManager::getDatasetById(int id)
+{
+	return m_mloader.getDatasetById(id);
 }
 
 class DicomRetriever : public DataRetriever
@@ -163,7 +88,6 @@ public:
 		QByteArray data;
 		QString filename;
 		loadFile(m_datasetId, "format=nii", data, filename);
-		int size = data.size();
 
 		if(data.size()<100) // the zip received is empty
 		{
@@ -190,8 +114,6 @@ public:
 };
 
 
-
-
 QString RequestManager::loadDicomDataset(int dataset_id)
 {
 	QString filepath = SHANOIR_FILES_FOLDER + QString::number(dataset_id) + "/";
@@ -215,7 +137,7 @@ int RequestManager::loadAsyncNiftiDataset(int dataset_id, int converter_id)
 	QString filepath = SHANOIR_FILES_FOLDER + QString::number(dataset_id) + "/";
 	DataRetriever *niftiretriever = new NiftiRetriever(dataset_id, converter_id, request_id, m_auth, filepath);
 	niftiretriever->setAutoDelete(true);
-	QObject::connect(niftiretriever, &DataRetriever::dataRetrieved, this, &RequestManager::dataResponseHandling);
+	QObject::connect(niftiretriever, &DataRetriever::dataRetrieved, this, &RequestManager::datasetFinishedDownload);
 	m_threadPool->start(niftiretriever);
 	return request_id;
 }
@@ -233,8 +155,69 @@ QString RequestManager::getAsyncResult(int requestId)
 }
 
 
-void RequestManager::dataResponseHandling(int id, QString data)
+void RequestManager::datasetFinishedDownload(int id, QString data)
 {
 	m_asyncResults.insert(id, data);
 	emit loadedDataset(id);
 }
+
+
+class ProcessedDatasetSender : public DataSender
+{
+private:
+	QString m_filepath;
+	Dataset m_dataset;
+	QString m_processingDate;
+	QString m_processingType;
+	QString m_subjectName;
+	StudyOverview m_study;
+	ProcessedDataset m_processedDataset;
+
+public:
+	ProcessedDatasetSender(int id, Authenticater & auth, StudyOverview study, QString subjectName, Dataset dataset, QString processingDate, QString processingType, ProcessedDataset processedDataset) :DataSender(id, auth), m_study(study),  m_subjectName(subjectName), m_dataset(dataset), m_processingDate(processingDate), m_processingType(processingType), m_processedDataset(processedDataset)
+	{
+	}
+
+	void ProcessedDatasetSender::run()
+	{
+		QString path = sendProcessedDataset(m_processedDataset.filepath);
+		QJsonObject datasetProcessing =  sendDatasetProcessing(m_study.id, m_dataset, m_processingDate, m_processingType);
+		m_processedDataset.filepath = path;
+		bool success = sendProcessedDatasetContext(m_processedDataset, m_study, m_subjectName, m_dataset.type, datasetProcessing);
+		emit dataSent(getId());
+	}
+	
+};	
+void RequestManager::sendProcessedDataset(int datasetId, QString processingDate, QString processingType, ProcessedDataset processedDataset)
+{
+	DatasetDetails ds_details = m_mloader.getDatasetById(datasetId);
+	Dataset dataset = { ds_details.id, ds_details.name, ds_details.type };
+	Study s =  m_mloader.getStudyById(ds_details.study_id);
+	StudyOverview study = { s.id, s.name };
+	QString subjectName = ds_details.subject_name;
+	
+	ProcessedDatasetSender pds(-1, m_auth, study, subjectName, dataset, processingDate, processingType, processedDataset);
+	pds.run();
+}
+
+void RequestManager::processedDatasetFinishedUpload(int id)
+{
+	m_asyncResults.insert(id, "success");
+	emit sentProcessedDataset(id);
+}
+
+void RequestManager::sendProcessedDatasetAsync(int datasetId, QString processingDate, QString processingType, ProcessedDataset processedDataset)
+{
+	int request_id = ++m_request_number;
+	DatasetDetails ds_details =  m_mloader.getDatasetById(datasetId);
+	Dataset dataset = { ds_details.id, ds_details.name, ds_details.type };
+	Study s =  m_mloader.getStudyById(ds_details.study_id);
+	StudyOverview study = { s.id, s.name };
+	QString subjectName = ds_details.subject_name;
+
+	ProcessedDatasetSender *pds = new ProcessedDatasetSender(request_id, m_auth, study, subjectName, dataset, processingDate, processingType, processedDataset);
+	pds->setAutoDelete(true);
+	QObject::connect(pds, &DataSender::dataSent, this, &RequestManager::processedDatasetFinishedUpload);
+	m_threadPool->start(pds);
+}
+

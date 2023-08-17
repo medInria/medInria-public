@@ -13,8 +13,8 @@ class ShanoirPlugin : public medAbstractSource
 {
 	Q_OBJECT
 
-public: 
-// needs to be public for the connection of signals (data reception)
+public:
+	// needs to be public for the connection of signals (data reception)
 	RequestManager m_rm;
 
 private:
@@ -22,9 +22,9 @@ private:
 	Network m_net;
 	SettingsManager m_settings;
 	Authenticater m_auth;
-	
 
-	const QStringList s_level_names = {"root", "study", "subject", "examination", "dataset-acquisition", "dataset"};
+
+	const QStringList s_level_names = { "study", "subject", "examination", "dataset-acquisition", "dataset", "processingDataset", "processedDataset" };
 
 	// Variables accessible via getter declared in medAbstractSource
 	QString m_instance_id;
@@ -58,6 +58,12 @@ private:
 	 * @return the minimalEntries of the datasets contained in the examination.
 	 */
 	QList<medAbstractSource::levelMinimalEntries> getDatasetAcquisitionMinimalEntries(QString keyParent);
+
+	/**
+	 * @param keyParent a string of the format studyId.subjectId.examinationId.datasetAcqId.datasetId representing the dataset key
+	 * @return the minimalEntries of the datasets contained in the examination.
+	 */
+	QList<medAbstractSource::levelMinimalEntries> getDatasetMinimalEntries(QString keyParent);
 
 	/**
 	 * converts a list of minimal entries to a list of QMap of the form {key,name,description,type}
@@ -175,6 +181,15 @@ public:
 	/* ***********************************************************************/
 	/* *************** Store data          ***********************************/
 	/* ***********************************************************************/
+
+	/**
+	 * 
+	 * @param data  a  QString of a path to a .nii file 
+	 * @param pio_minimalEntries
+	 * @param pi_uiLevel
+	 * @param parentKey
+	 * @return the success of the operation
+	 */
 	bool addDirectData(QVariant data, levelMinimalEntries &pio_minimalEntries, unsigned int pi_uiLevel, QString parentKey) override;
 	int addAssyncData(QVariant data, levelMinimalEntries &pio_minimalEntries, unsigned int pi_uiLevel, QString parentKey) override;
 
