@@ -171,10 +171,10 @@ private:
 	QString m_processingType;
 	QString m_subjectName;
 	StudyOverview m_study;
-	ProcessedDataset m_processedDataset;
+	ExportProcessedDataset m_processedDataset;
 
 public:
-	ProcessedDatasetSender(int id, Authenticater & auth, StudyOverview study, QString subjectName, Dataset dataset, QString processingDate, QString processingType, ProcessedDataset processedDataset) :DataSender(id, auth), m_study(study),  m_subjectName(subjectName), m_dataset(dataset), m_processingDate(processingDate), m_processingType(processingType), m_processedDataset(processedDataset)
+	ProcessedDatasetSender(int id, Authenticater & auth, StudyOverview study, QString subjectName, Dataset dataset, QString processingDate, QString processingType, ExportProcessedDataset processedDataset) :DataSender(id, auth), m_study(study),  m_subjectName(subjectName), m_dataset(dataset), m_processingDate(processingDate), m_processingType(processingType), m_processedDataset(processedDataset)
 	{
 	}
 
@@ -188,7 +188,7 @@ public:
 	}
 	
 };	
-void RequestManager::sendProcessedDataset(int datasetId, QString processingDate, QString processingType, ProcessedDataset processedDataset)
+void RequestManager::sendProcessedDataset(int datasetId, QString processingDate, QString processingType, ExportProcessedDataset processedDataset)
 {
 	DatasetDetails ds_details = m_mloader.getDatasetById(datasetId);
 	Dataset dataset = { ds_details.id, ds_details.name, ds_details.type };
@@ -206,7 +206,7 @@ void RequestManager::processedDatasetFinishedUpload(int id)
 	emit sentProcessedDataset(id);
 }
 
-void RequestManager::sendProcessedDatasetAsync(int datasetId, QString processingDate, QString processingType, ProcessedDataset processedDataset)
+void RequestManager::sendProcessedDatasetAsync(int datasetId, QString processingDate, QString processingType, ExportProcessedDataset processedDataset)
 {
 	int request_id = ++m_request_number;
 	DatasetDetails ds_details =  m_mloader.getDatasetById(datasetId);

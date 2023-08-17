@@ -2,6 +2,8 @@
 #include <QJsonObject>
 #include <QJsonArray>
 #include <JsonReaderWriter.h>
+#include <QJsonDocument>
+#include <QDateTime>
 
 #include "DataSender.h"
 
@@ -57,11 +59,8 @@ QJsonObject DataSender::sendDatasetProcessing(int studyId, Dataset dataset, QStr
     return JsonReaderWriter::qbytearrayToQJson(reply->readAll());
 }
 
-#include <QJsonDocument>
-#include <QDateTime>
 
-
-bool DataSender::sendProcessedDatasetContext(ProcessedDataset processedDataset, StudyOverview study, QString subjectName, QString datasetType, QJsonObject datasetProcessing)
+bool DataSender::sendProcessedDatasetContext(ExportProcessedDataset processedDataset, StudyOverview study, QString subjectName, QString datasetType, QJsonObject datasetProcessing)
 {
     QJsonObject data;
     data["subjectName"] =  subjectName;

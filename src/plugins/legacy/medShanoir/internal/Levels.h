@@ -7,17 +7,25 @@
 #include <QJsonObject>
 #include <QJsonArray>
 
+struct ProcessedDataset
+{
+    int id;
+    QString name;
+    QString type;
+};
+
 struct DatasetProcessing
 {
     int id;
     QString type;
     QString date;
     QList<int> inputDatasets; // ids of input datasets
-    QList<int> outputDatasets; // ids of output datasets (processedDatasets)
+    QList<ProcessedDataset> outputDatasets; // ids of output datasets (processedDatasets)
     int studyId;
 };
 
-struct ProcessedDataset
+
+struct ExportProcessedDataset
 {
     QString name;
     QString type;
