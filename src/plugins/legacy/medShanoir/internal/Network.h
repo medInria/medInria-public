@@ -9,8 +9,7 @@ class Network : public QObject
 {
 	Q_OBJECT
 
-private:
-
+private: 
 	QNetworkAccessManager m_manager;
 
 	QNetworkRequest initRequest(QString url, const QMap<QString, QString> & headers);
@@ -27,5 +26,9 @@ public:
 	QNetworkReply * httpGetFetch(QString url, const QMap<QString, QString>& headers= QMap<QString, QString>());
 
 	QNetworkReply * httpPostFetch(QString url, const QMap<QString, QString>& headers = QMap<QString, QString>(), const QMap<QString, QString>& formData= QMap<QString, QString>());
+
+	QNetworkReply * httpPostFileSender(QString url, const QMap<QString, QString>& headers, QString filepath);
+
+	QNetworkReply * httpPostFormDataSender(QString url, const QJsonObject& header, const QJsonObject &formData);
 
 };

@@ -147,7 +147,10 @@ unsigned int     ShanoirPlugin::getLevelCount()
 
 unsigned int    ShanoirPlugin::getLevelDesiredWritable()
 {
-	return s_level_names.size()-1;
+	// 6 is the index level of the processed datasets.
+	// it is this type of dataset that shanoir allows to create
+	// (if we have the necessary rights)
+	return 6; 
 }
 
 QStringList      ShanoirPlugin::getLevelNames()
@@ -200,6 +203,9 @@ QList<medAbstractSource::levelMinimalEntries>    ShanoirPlugin::getMinimalEntrie
 		break;
 	case 4:
 		entries = getDatasetAcquisitionMinimalEntries(parentKey);
+		break;
+	case 5:
+		entries = getDatasetMinimalEntries(parentKey);
 		break;
 	default:
 		qDebug()<<pi_uiLevel<<" is not an accurate level";
@@ -283,28 +289,68 @@ QList<medAbstractSource::levelMinimalEntries>  ShanoirPlugin::getDatasetAcquisit
 {
 	QList<levelMinimalEntries> entries;
 	QStringList parts = parentkey.split('.');
-	if(parts.size()==4)
+	if (parts.size() == 4)
 	{
 		int id_study = parts[0].toInt();
 		int id_subject = parts[1].toInt();
 		int id_exam = parts[2].toInt();
 		int id_acq = parts[3].toInt();
 		QList<Examination> examinations = m_rm.getExaminationsByStudySubjectId(id_study, id_subject);
-		auto exam_it = findLevelElement(examinations,id_exam);
-		if(exam_it!=examinations.end())
+		auto exam_it = findLevelElement(examinations, id_exam);
+		if (exam_it != examinations.end())
 		{
 			Examination exam = *exam_it;
 			QList<DatasetAcquisition> ds_acquisitions = exam.ds_acquisitions;
-			auto dsacq_it = findLevelElement(ds_acquisitions,id_acq);
-			if(dsacq_it!=ds_acquisitions.end())
+			auto dsacq_it = findLevelElement(ds_acquisitions, id_acq);
+			if (dsacq_it != ds_acquisitions.end())
 			{
 				DatasetAcquisition ds_acq = *dsacq_it;
 				QList<Dataset> datasets = ds_acq.datasets;
 				for (Dataset ds : datasets)
 				{
 					QString key = parentkey + "." + QString::number(ds.id);
-					QString description = "Dataset n°" + QString::number(ds.id);
-					entries.append({key, ds.name, description, entryType::dataset});
+					QString description = "Dataset n°" + QString::number(ds.id) + " of type " + ds.type + " with " + QString::number(ds.processings.size()) + " processings";
+					entries.append({ key, ds.name, description, entryType::both });
+				}
+			}
+		}
+	}
+	return entries;
+}
+
+QList<medAbstractSource::levelMinimalEntries> ShanoirPlugin::getDatasetMinimalEntries(QString parentkey)
+{
+	QList<levelMinimalEntries> entries;
+	QStringList parts = parentkey.split('.');
+	if (parts.size() == 5)
+	{
+		int id_study = parts[0].toInt();
+		int id_subject = parts[1].toInt();
+		int id_exam = parts[2].toInt();
+		int id_acq = parts[3].toInt();
+		int id_ds = parts[4].toInt();
+		QList<Examination> examinations = m_rm.getExaminationsByStudySubjectId(id_study, id_subject);
+		auto exam_it = findLevelElement(examinations, id_exam);
+		if (exam_it != examinations.end())
+		{
+			Examination exam = *exam_it;
+			QList<DatasetAcquisition> ds_acquisitions = exam.ds_acquisitions;
+			auto dsacq_it = findLevelElement(ds_acquisitions, id_acq);
+			if (dsacq_it != ds_acquisitions.end())
+			{
+				DatasetAcquisition ds_acq = *dsacq_it;
+				QList<Dataset> datasets = ds_acq.datasets;
+				auto ds_it = findLevelElement(datasets, id_ds);
+				if (ds_it != datasets.end())
+				{
+					Dataset ds = *ds_it;
+					QList<DatasetProcessing> processings = ds.processings;
+					for (auto processing : processings)
+					{
+						QString key = parentkey + "." + QString::number(processing.id);
+						QString description = "dataset processing with " + QString::number(processing.inputDatasets.size()) + " input datasets and " + QString::number(processing.outputDatasets.size()) + " output datasets";
+						entries.append({ key, processing.type, description, entryType::folder });
+					}
 				}
 			}
 		}
@@ -342,7 +388,6 @@ QVariant ShanoirPlugin::getDirectData(unsigned int pi_uiLevel, QString parentKey
 {
 	QVariant variant;
 	QStringList parts = parentKey.split('.');
-	//TODO: understand why it works on level 4 and not on level 5 as expected
 	if(pi_uiLevel==4 && parts.size()==5) // dataset level
 	{
 		int id_ds = parts[4].toInt();
@@ -370,7 +415,7 @@ int      ShanoirPlugin::getAssyncData(unsigned int pi_uiLevel, QString parentKey
 /* ***********************************************************************/
 bool ShanoirPlugin::addDirectData(QVariant data, levelMinimalEntries &pio_minimalEntries, unsigned int pi_uiLevel, QString parentKey)
 {
-	return false;
+	return true;
 }
 
 int  ShanoirPlugin::addAssyncData(QVariant data, levelMinimalEntries &pio_minimalEntries, unsigned int pi_uiLevel, QString parentKey)

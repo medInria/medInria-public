@@ -7,6 +7,12 @@
 #include <QJsonDocument>
 #include <QThread>
 #include <QJsonParseError>
+#include <QFile>
+#include <QHttpMultiPart>
+#include <QNetworkAccessManager>
+#include <QNetworkRequest>
+#include <QUrl>
+#include <QFileInfo>
 
 #include "JsonReaderWriter.h"
 #include "Network.h"
@@ -80,4 +86,60 @@ QNetworkReply * Network::httpPostFetch(QString url, const QMap<QString, QString>
 	return reply;
 }
 
+QNetworkReply * Network::httpPostFileSender(QString url, const QMap<QString, QString> & headers, const QString filepath)
+{
+	QNetworkRequest request = initRequest(url, headers);
 
+	QFile *file = new QFile(filepath);
+	file->open(QIODevice::ReadOnly);
+	QFileInfo fileInfo(filepath);
+
+	QHttpMultiPart *multiPart = new QHttpMultiPart(QHttpMultiPart::FormDataType);
+	QHttpPart imagePart;
+	imagePart.setHeader(QNetworkRequest::ContentDispositionHeader, QVariant(R"(form-data; name="image"; filename=")" + fileInfo.fileName() + R"(")"));
+	imagePart.setHeader(QNetworkRequest::ContentTypeHeader, QVariant("application/x-gzip"));
+	imagePart.setBodyDevice(file);
+	file->setParent(multiPart); // the multiPart will delete the file later (no need to delete the file manually)
+	multiPart->append(imagePart);
+
+
+	QNetworkReply *reply = m_manager.post(request, multiPart);
+
+	QEventLoop loop;
+	QObject::connect(reply, &QNetworkReply::finished, &loop, &QEventLoop::quit);
+	loop.exec();
+
+	reply->deleteLater();
+	multiPart->deleteLater();
+	return reply;
+}
+
+
+QNetworkReply * Network::httpPostFormDataSender(QString url, const QJsonObject& header, const QJsonObject &formData)
+{
+	QUrl urlObject(url);
+	QNetworkRequest request(urlObject);
+	
+	for(const QString& key : header.keys())
+	{
+		QString value = header.value(key).toString();
+		request.setRawHeader(key.toUtf8(), value.toUtf8());
+	}
+
+	QJsonDocument bodyDocument(formData);
+	QByteArray bodyData = bodyDocument.toJson();
+
+	
+	QNetworkReply* reply = m_manager.post(request, bodyData);
+
+    QEventLoop loop;
+    QObject::connect(reply, &QNetworkReply::finished, [&]() {
+        loop.quit();
+    });
+
+    loop.exec();
+
+	reply->deleteLater();
+
+	return reply;
+}
