@@ -114,16 +114,20 @@ QList<Examination> MetadataLoader::getExaminationsByStudySubjectId(int stud_id, 
 										}
 									}
 									QJsonArray output_datasets_response = processing_response.value("outputDatasets").toArray();
-									QList<int> output_datasets_ids;
-									for(auto output_dataset : output_datasets_response)
+									QList<ProcessedDataset> output_processed_datasets;
+									for(auto output_dataset_response : output_datasets_response)
 									{
-										if(JsonReaderWriter::verifyKeys(output_dataset.toObject(),{"id"}, {"Number"}))
+										if(JsonReaderWriter::verifyKeys(output_dataset_response.toObject(),{"id"}, {"Number"}))
 										{
-											output_datasets_ids.append(output_dataset.toObject().value("id").toInt());
+											QJsonObject output_dataset = output_dataset_response.toObject();
+											int id = output_dataset.value("id").toInt();
+											QString name = output_dataset.value("name").toString();
+											QString type = output_dataset.value("type").toString();
+											output_processed_datasets.append({id, name, type});
 										}
 									}
 									int study_id = processing_response.value("studyId").toInt();
-									processings.append({id, type, date, input_datasets_ids, output_datasets_ids, study_id});
+									processings.append({id, type, date, input_datasets_ids, output_processed_datasets, study_id});
 								}
 							}
 							datasets.append({id, name, type, processings});

@@ -42,6 +42,9 @@ public:
 	
 	void initAuthentication(const QString domain, const QString username, const QString password);
 
+	void setDomain(const QString domain);
+
+
 	bool isAuthenticated();
 
 	QString getCurrentAccessToken();

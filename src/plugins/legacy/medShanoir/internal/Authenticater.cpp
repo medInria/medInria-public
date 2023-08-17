@@ -20,6 +20,11 @@ Authenticater::Authenticater(Network & network, SettingsManager & settings)
 {
 }
 
+void Authenticater::setDomain(const QString domain)
+{
+	m_domain = domain;
+}
+
 void Authenticater::retrieveToken()
 {
 	m_current_token = m_settings.retrieveJson(ACCESS_TOKEN_KEY);
@@ -138,6 +143,7 @@ void Authenticater::tokenUpdate()
 	else
 	{
 		qDebug() << "THE ACCESS TOKEN UPDATE HAS FAILED";
-		medNotif::createNotif(notifLevel::error, "Authentication to Shanoir", "Something went wrong while updating the access token of "+ getCurrentDomain() +". You will be disconnected.");
+		m_current_token = QJsonObject();
+	    medNotif::createNotif(notifLevel::error, "Authentication to Shanoir", "Something went wrong while updating the access token of "+ getCurrentDomain() +". You will be disconnected.");
 	}
 }

@@ -66,6 +66,12 @@ private:
 	QList<medAbstractSource::levelMinimalEntries> getDatasetMinimalEntries(QString keyParent);
 
 	/**
+	 * @param keyParent a string of the format studyId.subjectId.examinationId.datasetAcqId.datasetId.processingDatasetId representing the processing dataset key
+	 * @return the minimalEntries of the datasets contained in the examination.
+	*/
+	QList<medAbstractSource::levelMinimalEntries> getProcessingDatasetMinimalEntries(QString keyParent);
+
+	/**
 	 * converts a list of minimal entries to a list of QMap of the form {key,name,description,type}
 	 */
 	static QList<QMap<QString, QString>> entriesToMandatoryAttributes(const QList<medAbstractSource::levelMinimalEntries> &entries);

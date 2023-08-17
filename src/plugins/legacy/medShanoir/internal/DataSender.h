@@ -17,7 +17,7 @@ protected:
 
     QJsonObject sendDatasetProcessing(int studyId, Dataset dataset,  QString processingDate, QString processingType);
 
-    bool sendProcessedDatasetContext(ProcessedDataset processedDataset, StudyOverview study, QString subjectName, QString datasetType, QJsonObject datasetProcessing);
+    bool sendProcessedDatasetContext(ExportProcessedDataset processedDataset, StudyOverview study, QString subjectName, QString datasetType, QJsonObject datasetProcessing);
 
 
 public:

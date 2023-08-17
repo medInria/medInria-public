@@ -207,6 +207,9 @@ QList<medAbstractSource::levelMinimalEntries>    ShanoirPlugin::getMinimalEntrie
 	case 5:
 		entries = getDatasetMinimalEntries(parentKey);
 		break;
+	case 6:
+		entries = getProcessingDatasetMinimalEntries(parentKey);
+		break;
 	default:
 		qDebug()<<pi_uiLevel<<" is not an accurate level";
 		break;
@@ -350,6 +353,54 @@ QList<medAbstractSource::levelMinimalEntries> ShanoirPlugin::getDatasetMinimalEn
 						QString key = parentkey + "." + QString::number(processing.id);
 						QString description = "dataset processing with " + QString::number(processing.inputDatasets.size()) + " input datasets and " + QString::number(processing.outputDatasets.size()) + " output datasets";
 						entries.append({ key, processing.type, description, entryType::folder });
+					}
+				}
+			}
+		}
+	}
+	return entries;
+}
+
+
+QList<medAbstractSource::levelMinimalEntries> ShanoirPlugin::getProcessingDatasetMinimalEntries(QString parentkey)
+{
+	QList<levelMinimalEntries> entries;
+	QStringList parts = parentkey.split('.');
+	if(parts.size()==6)
+	{
+		int id_study = parts[0].toInt();
+		int id_subject = parts[1].toInt();
+		int id_exam = parts[2].toInt();
+		int id_acq = parts[3].toInt();
+		int id_ds = parts[4].toInt();
+		int id_processing = parts[5].toInt();
+		QList<Examination> examinations = m_rm.getExaminationsByStudySubjectId(id_study, id_subject);
+		auto exam_it = findLevelElement(examinations,id_exam);
+		if(exam_it!=examinations.end())
+		{
+			Examination exam = *exam_it;
+			QList<DatasetAcquisition> ds_acquisitions = exam.ds_acquisitions;
+			auto dsacq_it = findLevelElement(ds_acquisitions,id_acq);
+			if(dsacq_it!=ds_acquisitions.end())
+			{
+				DatasetAcquisition ds_acq = *dsacq_it;
+				QList<Dataset> datasets = ds_acq.datasets;
+				auto ds_it = findLevelElement(datasets,id_ds);
+				if(ds_it!=datasets.end())
+				{
+					Dataset ds = *ds_it;
+					QList<DatasetProcessing> processings = ds.processings;
+					auto processing_it = findLevelElement(processings,id_processing);
+					if(processing_it!=processings.end())
+					{
+						DatasetProcessing processing = *processing_it;
+						QList<ProcessedDataset> outputDatasets = processing.outputDatasets;
+						for(auto outputDataset : outputDatasets)
+						{
+							QString key = parentkey + "." + QString::number(outputDataset.id);
+							QString description = "processed dataset of type " + outputDataset.type;
+							entries.append({key, outputDataset.name, description, entryType::dataset});
+						}
 					}
 				}
 			}
