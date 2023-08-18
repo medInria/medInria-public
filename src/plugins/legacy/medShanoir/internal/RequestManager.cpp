@@ -1,5 +1,3 @@
-#include <QMap>
-#include <QJsonObject>
 #include <QByteArray>
 #include <QDebug>
 #include <QJsonArray>
@@ -17,6 +15,7 @@
 #include <DicomRetriever.h>
 #include <NiftiRetriever.h>
 #include <ProcessedDatasetSender.h>
+#include <ProcessingDatasetSender.h>
 
 #include "RequestManager.h"
 
@@ -98,9 +97,17 @@ void RequestManager::datasetFinishedDownload(int id, QString data)
 	m_asyncResults.insert(id, data);
 	emit loadedDataset(id);
 }
-	
 
-bool RequestManager::sendProcessedDataset(int datasetId, QString processingDate, QString processingType, ExportProcessedDataset processedDataset)
+
+QJsonObject RequestManager::createProcessingDataset(DatasetProcessing in_dspsing)
+{
+	ProcessingDatasetSender psing_sender(-1, m_auth, in_dspsing);
+	psing_sender.run();	
+	return psing_sender.getResponse();
+}
+
+
+bool RequestManager::sendProcessedDataset(int datasetId, QString processingDate, QString processingType, ExportProcessedDataset processedDataset, QJsonObject datasetProcessing)
 {
 	DatasetDetails ds_details = m_mloader.getDatasetById(datasetId);
 	Dataset dataset = { ds_details.id, ds_details.name, ds_details.type };
@@ -108,7 +115,7 @@ bool RequestManager::sendProcessedDataset(int datasetId, QString processingDate,
 	StudyOverview study = { s.id, s.name };
 	QString subjectName = ds_details.subject_name;
 	
-	ProcessedDatasetSender pds(-1, m_auth, study, subjectName, dataset, processingDate, processingType, processedDataset);
+	ProcessedDatasetSender pds(-1, m_auth, study, subjectName, dataset, processingDate, processingType, processedDataset, datasetProcessing);
 	pds.run();
 	return pds.isSuccessful();
 }
@@ -121,15 +128,15 @@ void RequestManager::processedDatasetFinishedUpload(int id)
 
 void RequestManager::sendProcessedDatasetAsync(int datasetId, QString processingDate, QString processingType, ExportProcessedDataset processedDataset)
 {
-	int request_id = ++m_request_number;
-	DatasetDetails ds_details =  m_mloader.getDatasetById(datasetId);
-	Dataset dataset = { ds_details.id, ds_details.name, ds_details.type };
-	Study s =  m_mloader.getStudyById(ds_details.study_id);
-	StudyOverview study = { s.id, s.name };
-	QString subjectName = ds_details.subject_name;
+	//int request_id = ++m_request_number;
+	//DatasetDetails ds_details =  m_mloader.getDatasetById(datasetId);
+	//Dataset dataset = { ds_details.id, ds_details.name, ds_details.type };
+	//Study s =  m_mloader.getStudyById(ds_details.study_id);
+	//StudyOverview study = { s.id, s.name };
+	//QString subjectName = ds_details.subject_name;
 
-	ProcessedDatasetSender *pds = new ProcessedDatasetSender(request_id, m_auth, study, subjectName, dataset, processingDate, processingType, processedDataset);
-	pds->setAutoDelete(true);
-	QObject::connect(pds, &DataSender::dataSent, this, &RequestManager::processedDatasetFinishedUpload);
-	m_threadPool->start(pds);
+	//ProcessedDatasetSender *pds = new ProcessedDatasetSender(request_id, m_auth, study, subjectName, dataset, processingDate, processingType, processedDataset);
+	//pds->setAutoDelete(true);
+	//QObject::connect(pds, &DataSender::dataSent, this, &RequestManager::processedDatasetFinishedUpload);
+	//m_threadPool->start(pds);
 }

@@ -1,3 +1,6 @@
+#ifndef DATASENDER_H
+#define DATASENDER_H
+
 #include <QRunnable>
 #include <QObject>
 #include <QString>
@@ -13,13 +16,6 @@ protected:
     Authenticater & m_auth;
     int m_id;
 
-    QString sendProcessedDataset(QString filepath);
-
-    QJsonObject sendDatasetProcessing(int studyId, Dataset dataset,  QString processingDate, QString processingType);
-
-    bool sendProcessedDatasetContext(ExportProcessedDataset processedDataset, StudyOverview study, QString subjectName, QString datasetType, QJsonObject datasetProcessing);
-
-
 public:
     DataSender( int id, Authenticater & auth, QObject *parent = nullptr);
 
@@ -30,3 +26,5 @@ public:
 signals:
     void dataSent(int /*id*/);
 };
+
+#endif

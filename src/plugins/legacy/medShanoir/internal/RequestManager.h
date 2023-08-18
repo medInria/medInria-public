@@ -34,8 +34,6 @@ private:
 	QMap<int, QString> m_asyncResults;
 
 
-
-
 public :
 	RequestManager(Authenticater & authenticater, Network & network);
 
@@ -57,7 +55,11 @@ public :
 
 	QString getAsyncResult(int requestId);
 
-	bool sendProcessedDataset(int datasetId, QString processingDate, QString processingType, ExportProcessedDataset processedDataset);
+	QJsonObject createProcessingDataset(DatasetProcessing in_dspsing);
+
+	//TODO: void createAsyncProcessingDataset(DatasetProcessing in_dspsing);
+
+	bool sendProcessedDataset(int datasetId, QString processingDate, QString processingType, ExportProcessedDataset processedDataset, QJsonObject datasetProcessing);
 
 	void sendProcessedDatasetAsync(int datasetId, QString processingDate, QString processingType, ExportProcessedDataset processedDataset);
 
