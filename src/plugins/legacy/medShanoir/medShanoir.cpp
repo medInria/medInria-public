@@ -147,10 +147,10 @@ unsigned int     ShanoirPlugin::getLevelCount()
 
 unsigned int    ShanoirPlugin::getLevelDesiredWritable()
 {
-	// 6 is the index level of the processed datasets.
+	// 7 is the index level of the processed datasets.
 	// it is this type of dataset that shanoir allows to create
 	// (if we have the necessary rights)
-	return 6; 
+	return 7; 
 }
 
 QStringList      ShanoirPlugin::getLevelNames()
@@ -478,6 +478,10 @@ int      ShanoirPlugin::getAssyncData(unsigned int pi_uiLevel, QString parentKey
 /* ***********************************************************************/
 bool ShanoirPlugin::addDirectData(QVariant data, levelMinimalEntries &pio_minimalEntries, unsigned int pi_uiLevel, QString parentKey)
 {
+
+	QString path = data.toString(); // ISSUE FOR NOW : .nrrd file given and not a .nii (or .nii.gz) as it has been drag & dropped 
+	//ExportProcessedDataset pds = { "TEST_PS2", "RECONSTRUCTEDDATASET", path};
+	//return m_rm.sendProcessedDataset(374305, "2023-08-11", "SEGMENTATION", pds);
 	return true;
 }
 
