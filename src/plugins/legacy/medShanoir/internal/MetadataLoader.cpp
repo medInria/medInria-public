@@ -42,12 +42,16 @@ QList<DatasetProcessing> MetadataLoader::parseDatasetProcessings(QJsonArray proc
 			QString type = processing_response.value("datasetProcessingType").toString();
 			QString date = processing_response.value("processingDate").toString();
 			QJsonArray input_datasets_response = processing_response.value("inputDatasets").toArray();
-			QList<int> input_datasets_ids;
-			for (auto input_dataset : input_datasets_response)
+			QList<DatasetOverview> input_datasets;
+			for (auto input_dataset_response : input_datasets_response)
 			{
-				if (JsonReaderWriter::verifyKeys(input_dataset.toObject(), {"id"}, {"Number"}))
+				if (JsonReaderWriter::verifyKeys(input_dataset_response.toObject(), {"id", "name", "type"}, {"Number", "String", "String"}))
 				{
-					input_datasets_ids.append(input_dataset.toObject().value("id").toInt());
+					QJsonObject input_dataset = input_dataset_response.toObject();
+					int id = input_dataset.value("id").toInt();
+					QString name = input_dataset.value("name").toString();
+					QString type = input_dataset.value("type").toString();
+					input_datasets.append({id, name, type});
 				}
 			}
 			QJsonArray output_datasets_response = processing_response.value("outputDatasets").toArray();
@@ -64,7 +68,7 @@ QList<DatasetProcessing> MetadataLoader::parseDatasetProcessings(QJsonArray proc
 				}
 			}
 			int study_id = processing_response.value("studyId").toInt();
-			processings.append({id, type, date, input_datasets_ids, output_processed_datasets, study_id});
+			processings.append({id, type, date, input_datasets, output_processed_datasets, study_id});
 		}
 	}
 	return processings;

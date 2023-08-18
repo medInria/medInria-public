@@ -1,8 +1,7 @@
-#include <QString>
-
 #include <DataSender.h>
-#include <Levels.h>
-
+/**
+ * WORK IN PROGRESS FOR THIS CLASS. THINGS  WILL CHANGE SOON
+*/
 class ProcessedDatasetSender : public DataSender
 {
 private:
@@ -13,13 +12,20 @@ private:
 	QString m_subjectName;
 	StudyOverview m_study;
 	ExportProcessedDataset m_processedDataset;
+	QJsonObject m_datasetProcessing;
+
 	bool m_success;
 
+    QString sendProcessedDataset(QString filepath);
+	
+    bool sendProcessedDatasetContext(ExportProcessedDataset processedDataset, StudyOverview study, QString subjectName, QString datasetType, QJsonObject datasetProcessing);
+
 public:
-	ProcessedDatasetSender(int id, Authenticater & auth, StudyOverview study, QString subjectName, Dataset dataset, QString processingDate, QString processingType, ExportProcessedDataset processedDataset);
+	ProcessedDatasetSender(int id, Authenticater & auth, StudyOverview study, QString subjectName, Dataset dataset, QString processingDate, QString processingType, ExportProcessedDataset processedDataset, QJsonObject datasetProcessing);
 
 	void run();
 
 	bool isSuccessful();
+
 	
 };
