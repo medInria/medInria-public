@@ -11,7 +11,17 @@ private:
 	Network & m_net;
 	
 	QByteArray basicGetRequest(QString url);
-	
+
+	QList<StudyOverview> parseStudies(QJsonArray studies_response);
+
+	QList<DatasetProcessing> parseDatasetProcessings(QJsonArray processings_response);
+
+	QList<Dataset> parseDatasets(QJsonArray datasets_response);
+
+	QList<DatasetAcquisition> parseDatasetAcquisitions(QJsonArray dataset_acquisitions_response);
+
+	QList<Examination> parseExaminations(QJsonArray examinations_response);
+		
 public:
 
 

@@ -14,15 +14,15 @@
 #include <Network.h>
 #include <JsonReaderWriter.h>
 #include <FileManager.h>
-#include <DataRetriever.h>
-#include <DataSender.h>
+#include <DicomRetriever.h>
+#include <NiftiRetriever.h>
+#include <ProcessedDatasetSender.h>
 
 #include "RequestManager.h"
 
 RequestManager::RequestManager(Authenticater & authenticater, Network & network)
 	:m_auth(authenticater),m_net(network), m_mloader(authenticater, network), m_threadPool(QThreadPool::globalInstance()),m_request_number(0)
 {
-
 }
 
 RequestManager::~RequestManager()
@@ -50,68 +50,6 @@ DatasetDetails RequestManager::getDatasetById(int id)
 {
 	return m_mloader.getDatasetById(id);
 }
-
-class DicomRetriever : public DataRetriever
-{
-private:
-	int m_datasetId;
-public:
-
-	DicomRetriever(int datasetId, int requestId, Authenticater & auth, QString storagePath) :DataRetriever(requestId, auth, storagePath), m_datasetId(datasetId)
-	{}
-
-	void run() 
-	{
-		QByteArray data;
-		QString filename;
-		loadFile(m_datasetId, "format=dcm", data, filename);
-		QString zippath =  FileManager::saveFileData(data, m_storagePath);
-		QString folderpath = FileManager::extractZipFile(zippath);
-	}
-};
-
-
-class NiftiRetriever : public DataRetriever
-{
-private:
-	int m_datasetId;
-	int m_converterId;
-
-public:
-
-	NiftiRetriever(int datasetId, int converterId, int requestId, Authenticater & auth, QString storagePath) :DataRetriever(requestId, auth, storagePath), m_datasetId(datasetId), m_converterId(converterId)
-	{
-	}
-
-	void run()
-	{
-		QByteArray data;
-		QString filename;
-		loadFile(m_datasetId, "format=nii", data, filename);
-
-		if(data.size()<100) // the zip received is empty
-		{
-			loadFile(m_datasetId,"format=nii&converterId="+QString::number(m_converterId), data, filename);
-		}
-		QString filepath = m_storagePath + filename;
-		QString zippath =  FileManager::saveFileData(data, filepath);
-		m_dataPath =  FileManager::extractZipFile(zippath);
-		QDir folder(getDataPath());
-		// Find the nifti file in the folder
-		QStringList filters;
-		filters << "*.nii" << "*.nii.gz";
-		QStringList files = folder.entryList(filters, QDir::Files | QDir::NoDotAndDotDot);
-		if (files.size() > 0)
-		{
-			m_dataPath = folder.absoluteFilePath(files[0]);
-		}
-		else
-		{
-			m_dataPath = "";
-		}
-		emit dataRetrieved(getId(), getDataPath());
-	}
-};
 
 
 QString RequestManager::loadDicomDataset(int dataset_id)
@@ -160,35 +98,9 @@ void RequestManager::datasetFinishedDownload(int id, QString data)
 	m_asyncResults.insert(id, data);
 	emit loadedDataset(id);
 }
-
-
-class ProcessedDatasetSender : public DataSender
-{
-private:
-	QString m_filepath;
-	Dataset m_dataset;
-	QString m_processingDate;
-	QString m_processingType;
-	QString m_subjectName;
-	StudyOverview m_study;
-	ExportProcessedDataset m_processedDataset;
-
-public:
-	ProcessedDatasetSender(int id, Authenticater & auth, StudyOverview study, QString subjectName, Dataset dataset, QString processingDate, QString processingType, ExportProcessedDataset processedDataset) :DataSender(id, auth), m_study(study),  m_subjectName(subjectName), m_dataset(dataset), m_processingDate(processingDate), m_processingType(processingType), m_processedDataset(processedDataset)
-	{
-	}
-
-	void ProcessedDatasetSender::run()
-	{
-		QString path = sendProcessedDataset(m_processedDataset.filepath);
-		QJsonObject datasetProcessing =  sendDatasetProcessing(m_study.id, m_dataset, m_processingDate, m_processingType);
-		m_processedDataset.filepath = path;
-		bool success = sendProcessedDatasetContext(m_processedDataset, m_study, m_subjectName, m_dataset.type, datasetProcessing);
-		emit dataSent(getId());
-	}
 	
-};	
-void RequestManager::sendProcessedDataset(int datasetId, QString processingDate, QString processingType, ExportProcessedDataset processedDataset)
+
+bool RequestManager::sendProcessedDataset(int datasetId, QString processingDate, QString processingType, ExportProcessedDataset processedDataset)
 {
 	DatasetDetails ds_details = m_mloader.getDatasetById(datasetId);
 	Dataset dataset = { ds_details.id, ds_details.name, ds_details.type };
@@ -198,6 +110,7 @@ void RequestManager::sendProcessedDataset(int datasetId, QString processingDate,
 	
 	ProcessedDatasetSender pds(-1, m_auth, study, subjectName, dataset, processingDate, processingType, processedDataset);
 	pds.run();
+	return pds.isSuccessful();
 }
 
 void RequestManager::processedDatasetFinishedUpload(int id)
@@ -220,4 +133,3 @@ void RequestManager::sendProcessedDatasetAsync(int datasetId, QString processing
 	QObject::connect(pds, &DataSender::dataSent, this, &RequestManager::processedDatasetFinishedUpload);
 	m_threadPool->start(pds);
 }
-

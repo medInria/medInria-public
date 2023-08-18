@@ -57,7 +57,7 @@ public :
 
 	QString getAsyncResult(int requestId);
 
-	void sendProcessedDataset(int datasetId, QString processingDate, QString processingType, ExportProcessedDataset processedDataset);
+	bool sendProcessedDataset(int datasetId, QString processingDate, QString processingType, ExportProcessedDataset processedDataset);
 
 	void sendProcessedDatasetAsync(int datasetId, QString processingDate, QString processingType, ExportProcessedDataset processedDataset);
 
