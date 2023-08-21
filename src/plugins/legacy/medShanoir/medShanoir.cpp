@@ -123,6 +123,7 @@ int ShanoirPlugin::getIOInterface()
 QMap<QString, QStringList> ShanoirPlugin::getTypeAndFormat()
 {
 	QMap<QString, QStringList> map;
+	map["Image"] = QStringList({ ".nii.gz" }); // .nii ?
 	return map;
 }
 
@@ -480,29 +481,35 @@ bool ShanoirPlugin::addDirectData(QVariant data, levelMinimalEntries &pio_minima
 {
 	// the given  pi_uiLevel is the pi_uiLevel of the data. We will work here as if the given level was the parent one (it is easier for the understanding, the code will be closer to the getData methods)
 	int parent_level = pi_uiLevel - 1;
-	QString path = data.toString(); // ISSUE FOR NOW : .nrrd/.dim/.mha/.vtk file given and not a .nii (or .nii.gz) as it has been drag & dropped 
-
+	QString path = data.toString(); 
 	QStringList parts = parentKey.split('.');
 	bool dataset_level = parent_level == 4 && parts.size() == 5;
 	bool psing_dataset_level = parent_level == 5 && parts.size() == 6;
 	bool success = false;
 	if (dataset_level)
 	{ // creation of processing dataset
-		DatasetOverview input_dataset = { 374305, "tse_vfl_WIP607", "Mr" };
-		DatasetProcessing in_processing_ds = { -1, "RECONSTRUCTION", "2023-08-18",QList<DatasetOverview>() << input_dataset, QList<ProcessedDataset>(), 203 };
+		int studyId = parts[0].toInt();
+		int dsId = parts[4].toInt();
+		DatasetDetails details = m_rm.getDatasetById(dsId);
+		DatasetOverview input_dataset = { details.id, details.name, details.type };
+		QString processingDate = QDate::currentDate().toString("yyyy-MM-dd"); // on the web version, the user indicates this date
+		QString processingType = "SEGMENTATION"; // TODO: find how to retrieve the processing types list. 
+		DatasetProcessing in_processing_ds = { -1, processingType, processingDate,QList<DatasetOverview>() << input_dataset, QList<ProcessedDataset>(), studyId};
 		QJsonObject processing_ds_creation = m_rm.createProcessingDataset(in_processing_ds);
 		success = !processing_ds_creation.isEmpty();
 	}
-    if (psing_dataset_level)
+    else if (psing_dataset_level)
 	{	// upload of processed dataset, attached to the processing dataset given in parent
 		//// 1- retrieve the corrersponding dataset processing  (a qjsonobject)
-
-		//TODO: QJsonObject parent_datset_processing = ????;
+		int id = parts[5].toInt();
+		int dsId = parts[4].toInt();
+		QJsonObject parent_datset_processing = m_rm.getDatasetProcessingById(id);
 		//// 2- call the request manager for the creation of the processed dataset :
+		QString name = "MEDINRIA_TEST";
+		QString ps_ds_type = "RECONSTRUCTEDDATASET"; // For now, we will always indicate this value (it can be non reconstructed).
 		//// upload of the file + the metadata
-		//ExportProcessedDataset pds = { "BASIC_PSING_DS", "RECONSTRUCTEDDATASET", "C:/Users/lfiloche/draft/other/brain-tumor/frontend/public/example/BraTS2021_01572_seg.nii.gz" };
-		//success = m_rm.sendProcessedDataset(374305, "2023-08-11", "SEGMENTATION", pds, parent_datset_processing);
-		//qDebug() << success;
+		 ExportProcessedDataset pds = {name,ps_ds_type, path};
+	     success = m_rm.sendProcessedDataset(dsId, pds, parent_datset_processing);
 	}
 	
 	return success; 

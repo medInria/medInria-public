@@ -203,3 +203,12 @@ DatasetDetails MetadataLoader::getDatasetById(int id)
 	}
 	return dataset;
 }
+
+
+QJsonObject MetadataLoader::getDatasetProcessingById(int id)
+{
+	QString url = m_auth.getBaseURL() + "datasets/datasetProcessing/" + QString::number(id);
+	QJsonObject ds_psing_response = JsonReaderWriter::qbytearrayToQJson(basicGetRequest(url));
+	qDebug() << ds_psing_response;
+	return ds_psing_response;
+}

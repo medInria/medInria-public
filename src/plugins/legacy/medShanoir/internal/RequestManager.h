@@ -47,6 +47,8 @@ public :
 
 	DatasetDetails getDatasetById(int id);
 
+	QJsonObject getDatasetProcessingById(int id);
+
     QString loadDicomDataset(int dataset_id);
 
     QString loadNiftiDataset(int dataset_id, int converterId = 4);
@@ -59,7 +61,7 @@ public :
 
 	//TODO: void createAsyncProcessingDataset(DatasetProcessing in_dspsing);
 
-	bool sendProcessedDataset(int datasetId, QString processingDate, QString processingType, ExportProcessedDataset processedDataset, QJsonObject datasetProcessing);
+	bool sendProcessedDataset(int datasetId, ExportProcessedDataset processedDataset, QJsonObject datasetProcessing);
 
 	void sendProcessedDatasetAsync(int datasetId, QString processingDate, QString processingType, ExportProcessedDataset processedDataset);
 

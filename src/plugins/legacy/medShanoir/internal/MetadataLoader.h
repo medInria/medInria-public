@@ -34,4 +34,6 @@ public:
 	QList<Examination> getExaminationsByStudySubjectId(int stud_id, int subj_id);
 
 	DatasetDetails getDatasetById(int id);
+
+	QJsonObject getDatasetProcessingById(int id);
 };
