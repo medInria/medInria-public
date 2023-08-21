@@ -32,9 +32,6 @@ bool medShanoirPlugin::initialize()
         //&foo);
         []() -> medAbstractSource* {
 		ShanoirPlugin *shanoirInstance = new ShanoirPlugin(); 
-		// connect is a method of ShanoirPlugin, therefore, a connection of signals needs to be done outside of the class. It is not pretty, but it is the best solution I found.
-		QObject::connect(&shanoirInstance->m_rm, &RequestManager::loadedDataset, shanoirInstance, &ShanoirPlugin::dataReception);
-
 		return shanoirInstance;
 	});
 }

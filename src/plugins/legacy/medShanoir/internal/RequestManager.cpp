@@ -111,6 +111,21 @@ QJsonObject RequestManager::createProcessingDataset(DatasetProcessing in_dspsing
 	return psing_sender.getResponse();
 }
 
+int RequestManager::createAsyncProcessingDataset(DatasetProcessing in_dspsing)
+{
+	int request_id = ++m_request_number;
+	ProcessingDatasetSender * psing_sender = new ProcessingDatasetSender(request_id, m_auth, in_dspsing);
+	psing_sender->setAutoDelete(true);
+	QObject::connect(psing_sender, &DataSender::dataSent, this, &RequestManager::processingDatasetFinishedUpload);
+	m_threadPool->start(psing_sender);
+	return request_id;
+}
+void RequestManager::processingDatasetFinishedUpload(int id)
+{
+	m_asyncResults.insert(id, "success");
+	emit sentProcessingDataset(id);
+}
+
 
 bool RequestManager::sendProcessedDataset(int datasetId, ExportProcessedDataset processedDataset, QJsonObject datasetProcessing)
 {
@@ -131,17 +146,19 @@ void RequestManager::processedDatasetFinishedUpload(int id)
 	emit sentProcessedDataset(id);
 }
 
-void RequestManager::sendProcessedDatasetAsync(int datasetId, QString processingDate, QString processingType, ExportProcessedDataset processedDataset)
+int RequestManager::sendAsyncProcessedDataset(int datasetId, ExportProcessedDataset processedDataset, QJsonObject datasetProcessing)
 {
-	//int request_id = ++m_request_number;
-	//DatasetDetails ds_details =  m_mloader.getDatasetById(datasetId);
-	//Dataset dataset = { ds_details.id, ds_details.name, ds_details.type };
-	//Study s =  m_mloader.getStudyById(ds_details.study_id);
-	//StudyOverview study = { s.id, s.name };
-	//QString subjectName = ds_details.subject_name;
+	int request_id = ++m_request_number;
+	DatasetDetails ds_details = m_mloader.getDatasetById(datasetId);
+	Dataset dataset = { ds_details.id, ds_details.name, ds_details.type };
+	Study s = m_mloader.getStudyById(ds_details.study_id);
+	StudyOverview study = { s.id, s.name };
+	QString subjectName = ds_details.subject_name;
 
-	//ProcessedDatasetSender *pds = new ProcessedDatasetSender(request_id, m_auth, study, subjectName, dataset, processingDate, processingType, processedDataset);
-	//pds->setAutoDelete(true);
-	//QObject::connect(pds, &DataSender::dataSent, this, &RequestManager::processedDatasetFinishedUpload);
-	//m_threadPool->start(pds);
+	ProcessedDatasetSender *pds = new ProcessedDatasetSender(request_id, m_auth, study, subjectName, dataset, processedDataset, datasetProcessing);
+	pds->setAutoDelete(true);
+	QObject::connect(pds, &DataSender::dataSent, this, &RequestManager::processedDatasetFinishedUpload);
+	m_threadPool->start(pds);
+
+	return request_id;
 }

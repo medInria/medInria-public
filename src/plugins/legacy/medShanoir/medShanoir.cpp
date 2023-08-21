@@ -8,6 +8,13 @@ ShanoirPlugin::ShanoirPlugin()
 {
 	m_password.setDefaultRepresentation(4);
 	m_hostname.setValue("shanoir.irisa.fr"); // default value for new instances
+
+	// async connections
+	QObject::connect(&m_rm, &RequestManager::loadedDataset, this, &ShanoirPlugin::dataReception);
+
+	QObject::connect(&m_rm, &RequestManager::sentProcessingDataset, this, &ShanoirPlugin::dataReception);
+
+	QObject::connect(&m_rm, &RequestManager::sentProcessedDataset, this, &ShanoirPlugin::dataReception);
 }
 
 ShanoirPlugin::~ShanoirPlugin()
@@ -95,7 +102,7 @@ bool ShanoirPlugin::isWritable()
 
 bool ShanoirPlugin::isLocal()
 {
-	return true; //TODO: switch back to false when addDirectData will be ok
+	return false;
 }
 
 bool ShanoirPlugin::isCached()
@@ -517,6 +524,33 @@ bool ShanoirPlugin::addDirectData(QVariant data, levelMinimalEntries &pio_minima
 
 int  ShanoirPlugin::addAssyncData(QVariant data, levelMinimalEntries &pio_minimalEntries, unsigned int pi_uiLevel, QString parentKey)
 {
+	int parent_level = pi_uiLevel - 1;
+	QString path = data.toString();
+	QStringList parts = parentKey.split('.');
+	bool dataset_level = parent_level == 4 && parts.size() == 5;
+	bool psing_dataset_level = parent_level == 5 && parts.size() == 6;
+	int request_id = -1;
+	if (dataset_level)
+	{ // creation of processing dataset
+		int studyId = parts[0].toInt();
+		int dsId = parts[4].toInt();
+		DatasetDetails details = m_rm.getDatasetById(dsId);
+		DatasetOverview input_dataset = { details.id, details.name, details.type };
+		QString processingDate = QDate::currentDate().toString("yyyy-MM-dd"); 
+		QString processingType = "RECONSTRUCTION"; 
+		DatasetProcessing in_processing_ds = { -1, processingType, processingDate,QList<DatasetOverview>() << input_dataset, QList<ProcessedDataset>(), studyId };
+		request_id = m_rm.createAsyncProcessingDataset(in_processing_ds);
+	}
+	else if (psing_dataset_level)
+	{// creation of the processed dataset
+		int id = parts[5].toInt();
+		int dsId = parts[4].toInt();
+		QJsonObject parent_datset_processing = m_rm.getDatasetProcessingById(id);
+		QString name = "MEDINRIA_TEST";
+		QString ps_ds_type = "RECONSTRUCTEDDATASET"; 
+		ExportProcessedDataset pds = { name,ps_ds_type, path };
+		request_id = m_rm.sendAsyncProcessedDataset(dsId, pds, parent_datset_processing);
+	}
 	return 0;
 }
 
