@@ -50,6 +50,11 @@ DatasetDetails RequestManager::getDatasetById(int id)
 	return m_mloader.getDatasetById(id);
 }
 
+QJsonObject RequestManager::getDatasetProcessingById(int id)
+{
+	return m_mloader.getDatasetProcessingById(id);
+}
+
 
 QString RequestManager::loadDicomDataset(int dataset_id)
 {
@@ -107,7 +112,7 @@ QJsonObject RequestManager::createProcessingDataset(DatasetProcessing in_dspsing
 }
 
 
-bool RequestManager::sendProcessedDataset(int datasetId, QString processingDate, QString processingType, ExportProcessedDataset processedDataset, QJsonObject datasetProcessing)
+bool RequestManager::sendProcessedDataset(int datasetId, ExportProcessedDataset processedDataset, QJsonObject datasetProcessing)
 {
 	DatasetDetails ds_details = m_mloader.getDatasetById(datasetId);
 	Dataset dataset = { ds_details.id, ds_details.name, ds_details.type };
@@ -115,7 +120,7 @@ bool RequestManager::sendProcessedDataset(int datasetId, QString processingDate,
 	StudyOverview study = { s.id, s.name };
 	QString subjectName = ds_details.subject_name;
 	
-	ProcessedDatasetSender pds(-1, m_auth, study, subjectName, dataset, processingDate, processingType, processedDataset, datasetProcessing);
+	ProcessedDatasetSender pds(-1, m_auth, study, subjectName, dataset, processedDataset, datasetProcessing);
 	pds.run();
 	return pds.isSuccessful();
 }
