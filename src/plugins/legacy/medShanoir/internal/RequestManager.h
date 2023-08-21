@@ -59,22 +59,26 @@ public :
 
 	QJsonObject createProcessingDataset(DatasetProcessing in_dspsing);
 
-	//TODO: void createAsyncProcessingDataset(DatasetProcessing in_dspsing);
+	int createAsyncProcessingDataset(DatasetProcessing in_dspsing);
 
 	bool sendProcessedDataset(int datasetId, ExportProcessedDataset processedDataset, QJsonObject datasetProcessing);
 
-	void sendProcessedDatasetAsync(int datasetId, QString processingDate, QString processingType, ExportProcessedDataset processedDataset);
+	int sendAsyncProcessedDataset(int datasetId, ExportProcessedDataset processedDataset, QJsonObject datasetProcessing);
 
 signals:
 	void loadedDataset(int idRequest);
 
 	void sentProcessedDataset(int idRequest);
 
+	void sentProcessingDataset(int idRequest);
+
 public slots:
 
 	void datasetFinishedDownload(int id, QString data);
 
 	void processedDatasetFinishedUpload(int id);
+
+	void processingDatasetFinishedUpload(int id);
 
 };
 
