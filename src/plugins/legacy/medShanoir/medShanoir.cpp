@@ -486,9 +486,14 @@ int      ShanoirPlugin::getAssyncData(unsigned int pi_uiLevel, QString parentKey
 /* ***********************************************************************/
 bool ShanoirPlugin::addDirectData(QVariant data, levelMinimalEntries &pio_minimalEntries, unsigned int pi_uiLevel, QString parentKey)
 {
+	// In the future, when data will be a medAbstractData (and not a path)
+	//if (data.canConvert<medAbstractData *>())
+	//{
+	//	medAbstractData * pMedData = data.value<medAbstractData *>();
+	//}
 	// the given  pi_uiLevel is the pi_uiLevel of the data. We will work here as if the given level was the parent one (it is easier for the understanding, the code will be closer to the getData methods)
 	int parent_level = pi_uiLevel - 1;
-	QString path = data.toString(); 
+	QString path = data.toString();  // TODO: ajouter vérification qu'un .nii est donné en entrée 
 	QStringList parts = parentKey.split('.');
 	bool dataset_level = parent_level == 4 && parts.size() == 5;
 	bool psing_dataset_level = parent_level == 5 && parts.size() == 6;
@@ -512,7 +517,7 @@ bool ShanoirPlugin::addDirectData(QVariant data, levelMinimalEntries &pio_minima
 		int dsId = parts[4].toInt();
 		QJsonObject parent_datset_processing = m_rm.getDatasetProcessingById(id);
 		//// 2- call the request manager for the creation of the processed dataset :
-		QString name = "MEDINRIA_TEST";
+		QString name = pio_minimalEntries.name; 
 		QString ps_ds_type = "RECONSTRUCTEDDATASET"; // For now, we will always indicate this value (it can be non reconstructed).
 		//// upload of the file + the metadata
 		 ExportProcessedDataset pds = {name,ps_ds_type, path};
@@ -546,7 +551,7 @@ int  ShanoirPlugin::addAssyncData(QVariant data, levelMinimalEntries &pio_minima
 		int id = parts[5].toInt();
 		int dsId = parts[4].toInt();
 		QJsonObject parent_datset_processing = m_rm.getDatasetProcessingById(id);
-		QString name = "MEDINRIA_TEST";
+		QString name = pio_minimalEntries.name;
 		QString ps_ds_type = "RECONSTRUCTEDDATASET"; 
 		ExportProcessedDataset pds = { name,ps_ds_type, path };
 		request_id = m_rm.sendAsyncProcessedDataset(dsId, pds, parent_datset_processing);
@@ -561,6 +566,7 @@ bool ShanoirPlugin::createPath(QList<levelMinimalEntries> &pio_path, datasetAttr
 
 bool ShanoirPlugin::createFolder(levelMinimalEntries &pio_minimalEntries, datasetAttributes const &pi_attributes, unsigned int pi_uiLevel, QString parentKey)
 {
+	//TODO: placer la création des  psing dataset ici
 	return false;
 }
 

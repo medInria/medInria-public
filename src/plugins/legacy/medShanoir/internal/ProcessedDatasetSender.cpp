@@ -3,7 +3,7 @@
 #include "ProcessedDatasetSender.h"
 
 
-ProcessedDatasetSender::ProcessedDatasetSender(int id, Authenticater & auth, StudyOverview study, QString subjectName, Dataset dataset, ExportProcessedDataset processedDataset, QJsonObject datasetProcessing) :DataSender(id, auth), m_study(study),  m_subjectName(subjectName), m_dataset(dataset), m_processedDataset(processedDataset), m_datasetProcessing(datasetProcessing), m_success(false)
+ProcessedDatasetSender::ProcessedDatasetSender(int id, Authenticater & auth, StudyOverview study, QString subjectName, int subjectId, Dataset dataset, ExportProcessedDataset processedDataset, QJsonObject datasetProcessing) :DataSender(id, auth), m_study(study), m_subjectid(subjectId), m_subjectName(subjectName), m_dataset(dataset), m_processedDataset(processedDataset), m_datasetProcessing(datasetProcessing), m_success(false)
 {
 }
 
@@ -11,7 +11,7 @@ void ProcessedDatasetSender::ProcessedDatasetSender::run()
 {
     QString path = sendProcessedDataset(m_processedDataset.filepath);
     m_processedDataset.filepath = path;
-    m_success = sendProcessedDatasetContext(m_processedDataset, m_study, m_subjectName, m_dataset.type, m_datasetProcessing);
+    m_success = sendProcessedDatasetContext(m_processedDataset, m_study, m_subjectName, m_subjectid, m_dataset.type, m_datasetProcessing);
     emit dataSent(getId());
 }
 
@@ -20,9 +20,10 @@ bool ProcessedDatasetSender::isSuccessful()
     return m_success;
 }
 
-bool ProcessedDatasetSender::sendProcessedDatasetContext(ExportProcessedDataset processedDataset, StudyOverview study, QString subjectName, QString datasetType, QJsonObject datasetProcessing)
+bool ProcessedDatasetSender::sendProcessedDatasetContext(ExportProcessedDataset processedDataset, StudyOverview study, QString subjectName, int subjectId, QString datasetType, QJsonObject datasetProcessing)
 {
     QJsonObject data;
+	data["subjectId"] = subjectId;
     data["subjectName"] =  subjectName;
     data["studyName"] = study.name;
     data["studyId"] = study.id;
