@@ -1,13 +1,13 @@
 #include <DataSender.h>
-/**
- * WORK IN PROGRESS FOR THIS CLASS. THINGS  WILL CHANGE SOON
-*/
+
+
 class ProcessedDatasetSender : public DataSender
 {
 private:
 	QString m_filepath;
 	Dataset m_dataset;
 	QString m_subjectName;
+	int m_subjectid;
 	StudyOverview m_study;
 	ExportProcessedDataset m_processedDataset;
 	QJsonObject m_datasetProcessing;
@@ -16,10 +16,10 @@ private:
 
     QString sendProcessedDataset(QString filepath);
 	
-    bool sendProcessedDatasetContext(ExportProcessedDataset processedDataset, StudyOverview study, QString subjectName, QString datasetType, QJsonObject datasetProcessing);
+    bool sendProcessedDatasetContext(ExportProcessedDataset processedDataset, StudyOverview study, QString subjectName, int subjectId, QString datasetType, QJsonObject datasetProcessing);
 
 public:
-	ProcessedDatasetSender(int id, Authenticater & auth, StudyOverview study, QString subjectName, Dataset dataset, ExportProcessedDataset processedDataset, QJsonObject datasetProcessing);
+	ProcessedDatasetSender(int id, Authenticater & auth, StudyOverview study, QString subjectName, int subjectId, Dataset dataset, ExportProcessedDataset processedDataset, QJsonObject datasetProcessing);
 
 	void run();
 
