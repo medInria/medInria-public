@@ -3,7 +3,7 @@
 #include "ProcessedDatasetSender.h"
 
 
-ProcessedDatasetSender::ProcessedDatasetSender(int id, Authenticater & auth, StudyOverview study, QString subjectName, int subjectId, Dataset dataset, ExportProcessedDataset processedDataset, QJsonObject datasetProcessing) :DataSender(id, auth), m_study(study), m_subjectid(subjectId), m_subjectName(subjectName), m_dataset(dataset), m_processedDataset(processedDataset), m_datasetProcessing(datasetProcessing), m_success(false)
+ProcessedDatasetSender::ProcessedDatasetSender(int id, Authenticater & auth, StudyOverview study, DatasetDetails ds_details, ExportProcessedDataset processedDataset, QJsonObject datasetProcessing) :DataSender(id, auth), m_study(study), m_dsDetails(ds_details), m_processedDataset(processedDataset), m_datasetProcessing(datasetProcessing), m_success(false)
 {
 }
 
@@ -11,7 +11,7 @@ void ProcessedDatasetSender::ProcessedDatasetSender::run()
 {
     QString path = sendProcessedDataset(m_processedDataset.filepath);
     m_processedDataset.filepath = path;
-    m_success = sendProcessedDatasetContext(m_processedDataset, m_study, m_subjectName, m_subjectid, m_dataset.type, m_datasetProcessing);
+    m_success = sendProcessedDatasetContext(m_processedDataset, m_study, m_dsDetails.subject_name, m_dsDetails.subject_id, m_dsDetails.type, m_datasetProcessing);
     emit dataSent(getId());
 }
 
