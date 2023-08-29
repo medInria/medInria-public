@@ -85,6 +85,9 @@ public:
 	void addDataFromSource(medDataIndex dataIndex, medAbstractData * data, const QModelIndex & parent);
 	void addDataFromFile(QString path, medAbstractData * data, const QModelIndex & parent);
 
+
+	void createFolder(const QModelIndex &index);
+
 	// ////////////////////////////////////////////////////////////////////////
 	// Simple methods
 	QString getColumnNameByLevel(int iLevel, int iCol) const;

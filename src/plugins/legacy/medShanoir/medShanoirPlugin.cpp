@@ -31,7 +31,7 @@ bool medShanoirPlugin::initialize()
         "This type of datasource allows to handle data from Shanoir",
         //&foo);
         []() -> medAbstractSource* {
-		ShanoirPlugin *shanoirInstance = new ShanoirPlugin(); 
+		medShanoir *shanoirInstance = new medShanoir();
 		return shanoirInstance;
 	});
 }

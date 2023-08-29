@@ -3,82 +3,19 @@
 #include <medAbstractSource.h>
 #include <medStringParameter.h>
 
-#include <Authenticater.h>
-#include <Network.h>
-#include <RequestManager.h>
-#include <SettingsManager.h>
-#include <Levels.h>
+class Authenticator;
+class RequestManager;
+class LocalInfo;
+class SyncNetwork;
+class AsyncNetwork;
 
-class ShanoirPlugin : public medAbstractSource
+class medShanoir : public medAbstractSource
 {
 	Q_OBJECT
 
 public:
-	// needs to be public for the connection of signals (data reception)
-	RequestManager m_rm;
-
-private:
-	// Local variables
-	Network m_net;
-	SettingsManager m_settings;
-	Authenticater m_auth;
-
-
-	const QStringList s_level_names = { "study", "subject", "examination", "dataset-acquisition", "dataset", "processingDataset", "processedDataset" };
-
-	// Variables accessible via getter declared in medAbstractSource
-	QString m_instance_id;
-	QString m_instance_name;
-	medStringParameter m_username;
-	medStringParameter m_password;
-	medStringParameter m_hostname;
-
-	/**
-	 * @return the minimalEntries of the available studies from the logged account. 
-	*/
-	QList<medAbstractSource::levelMinimalEntries> getRootMinimalEntries();
-	/**
-	 * @param key is a string of an integer (the study id), representing the study key
-	 * @return the minimalEntries of the subjects contained in the study.
-	 */
-	QList<medAbstractSource::levelMinimalEntries> getStudyMinimalEntries(QString key);
-	/**
-	 * @param keyParent a string of the format studyId.subjectId representing the subject key
-	 * @return the minimalEntries of the examinations contained in the subject.
-	 */
-	QList<medAbstractSource::levelMinimalEntries> getSubjectMinimalEntries(QString keyParent);
-
-	/**
-	 * @param keyParent a string of the format studyId.subjectId.examinationId representing the examination key
-	 * @return the minimalEntries of the dataset-acquisitions contained in the examination.
-	 */
-	QList<medAbstractSource::levelMinimalEntries> getExaminationMinimalEntries(QString keyParent);
-	/**
-	 * @param keyParent a string of the format studyId.subjectId.examinationId.datasetAcqId representing the dataset-acquisition key
-	 * @return the minimalEntries of the datasets contained in the examination.
-	 */
-	QList<medAbstractSource::levelMinimalEntries> getDatasetAcquisitionMinimalEntries(QString keyParent);
-
-	/**
-	 * @param keyParent a string of the format studyId.subjectId.examinationId.datasetAcqId.datasetId representing the dataset key
-	 * @return the minimalEntries of the datasets contained in the examination.
-	 */
-	QList<medAbstractSource::levelMinimalEntries> getDatasetMinimalEntries(QString keyParent);
-
-	/**
-	 * @param keyParent a string of the format studyId.subjectId.examinationId.datasetAcqId.datasetId.processingDatasetId representing the processing dataset key
-	 * @return the minimalEntries of the datasets contained in the examination.
-	*/
-	QList<medAbstractSource::levelMinimalEntries> getProcessingDatasetMinimalEntries(QString keyParent);
-
-	/**
-	 * converts a list of minimal entries to a list of QMap of the form {key,name,description,type}
-	 */
-	static QList<QMap<QString, QString>> entriesToMandatoryAttributes(const QList<medAbstractSource::levelMinimalEntries> &entries);
-
-public:
-	ShanoirPlugin();
-	virtual ~ShanoirPlugin();
+	medShanoir();
+	virtual ~medShanoir();
 
 	/* ***********************************************************************/
 	/* *************** Init/set/ctrl source properties ***********************/
@@ -104,28 +41,28 @@ public:
 	bool connect(bool pi_bEnable = true) override;
 
 	/**
-	 * @return all the medAbstractParameter that are used by the source. 
+	 * @return all the medAbstractParameter that are used by the source.
 	*/
 	QList<medAbstractParameter *> getAllParameters() override;
-	
+
 	/**
-	 * @return the medAbstractParameter that need to be ciphered by the application. 
+	 * @return the medAbstractParameter that need to be ciphered by the application.
 	*/
 	QList<medAbstractParameter *> getCipherParameters() override;
-	
+
 	/**
 	 * @return the medAbstractParameter that can be forgotten on close of the app.
 	*/
-	QList<medAbstractParameter *> getVolatilParameters() override;
+	QList<medAbstractParameter *> getVolatilParameters()   override;
 	QList<medAbstractParameter *> getFilteringParameters() override;
 
 	/* ***********************************************************************/
 	/* *************** Get source properties *********************************/
 	/* ***********************************************************************/
 	bool isWritable() override;
-	bool isLocal() override;
-	bool isCached() override;
-	bool isOnline() override;
+	bool isLocal()    override;
+	bool isCached()   override;
+	bool isOnline()   override;
 	bool isFetchByMinimalEntriesOrMandatoryAttributes() override;
 
 	int getIOInterface() override;
@@ -168,7 +105,7 @@ public:
 	QList<QMap<QString, QString>> getMandatoryAttributes(unsigned int pi_uiLevel, QString parentKey) override;
 
 	/**
-	 * 
+	 *
 	 * has no effect for now. (returns false)
 	*/
 	bool getAdditionalAttributes(unsigned int pi_uiLevel, QString key, datasetAttributes &po_attributes) override;
@@ -178,8 +115,8 @@ public:
 	/* ***********************************************************************/
 
 	/**
-	 * For now, loads from Shanoir a zip file containing a .nii or .dcm and save it on the file system. 
-	 * The QVariant that is returned is the path of the zip file. 
+	 * For now, loads from Shanoir a zip file containing a .nii or .dcm and save it on the file system.
+	 * The QVariant that is returned is the path of the zip file.
 	*/
 	QVariant getDirectData(unsigned int pi_uiLevel, QString key) override;
 	int getAssyncData(unsigned int pi_uiLevel, QString key) override;
@@ -189,8 +126,8 @@ public:
 	/* ***********************************************************************/
 
 	/**
-	 * 
-	 * @param data  a  QString of a path to a .nii file 
+	 *
+	 * @param data  a  QString of a path to a .nii file
 	 * @param pio_minimalEntries
 	 * @param pi_uiLevel
 	 * @param parentKey
@@ -223,6 +160,11 @@ public:
 public slots:
 	void abort(int pi_iRequest) override;
 
-	void dataReception(int idRequest);
-
+private:
+	LocalInfo      * m_info;
+	SyncNetwork    * m_syncNet;
+	AsyncNetwork   * m_asyncNet;
+	RequestManager * m_requester;
+	Authenticator  * m_authent;
 };
+
