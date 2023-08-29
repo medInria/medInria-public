@@ -7,6 +7,7 @@
 #include <LocalInfo.h>
 #include <JsonHelper.h>
 #include <FileHelper.h>
+#include <ShanoirRequestWriterHelper.h>
 
 #include "SyncNetwork.h"
 
@@ -89,18 +90,17 @@ QVariant SyncNetwork::getDirectData(unsigned int pi_uiLevel, QString key)
 		}
 
 		// Perform request
-		QString url = m_info->getBaseURL() + "datasets/datasets/download/" + QString::number(id_ds) + "?format=nii";
-		QNetworkRequest req(url);
-		req.setRawHeader("Authorization", ("Bearer " + m_authent->getCurrentAccessToken()).toUtf8());
+		QNetworkRequest req;
+		writeNiftiDatasetRetrievingRequest(req, m_info->getBaseURL(), m_authent->getCurrentAccessToken(), id_ds);
 		QUuid netReqId = waitGetResult(req);
 
 		// receiving the response
 		RequestResponse res = m_requestMap[netReqId].second;
 		m_requestMap.remove(netReqId);
 
-		auto & code = res.code;
-		auto & headers = res.headers;
-		auto & fileData = res.payload;
+		int & code = res.code;
+		QJsonObject & headers = res.headers;
+		QByteArray & fileData = res.payload;
 
 		QString fileName;
 
@@ -167,16 +167,9 @@ bool SyncNetwork::addDirectData(QVariant data, levelMinimalEntries & pio_minimal
 		if (fileInfo.exists())
 		{
 			// construction of the request
-			QString url = m_info->getBaseURL() +"import/importer/upload_processed_dataset/";
-			QNetworkRequest req(url);
-			req.setRawHeader("Authorization", ("Bearer " + m_authent->getCurrentAccessToken()).toUtf8());
 			QHttpMultiPart *multiPart = new QHttpMultiPart(QHttpMultiPart::FormDataType);
-			QHttpPart imagePart;
-			imagePart.setHeader(QNetworkRequest::ContentDispositionHeader, QVariant(R"(form-data; name="image"; filename=")" + fileInfo.fileName() + R"(")"));
-			imagePart.setHeader(QNetworkRequest::ContentTypeHeader, QVariant("application/x-gzip"));
-			imagePart.setBodyDevice(file);
-			file->setParent(multiPart);
-			multiPart->append(imagePart);
+			QNetworkRequest req;
+			writeProcessedDatasetUploadRequest(req, multiPart, m_info->getBaseURL(), m_authent->getCurrentAccessToken(), file, fileInfo);
 
 			// sending the request
 			QUuid netReqId = waitPostMultiResult(req, multiPart);
@@ -207,25 +200,9 @@ bool SyncNetwork::addDirectData(QVariant data, levelMinimalEntries & pio_minimal
 			QJsonObject parentDatasetProcessing = getDatasetProcessing(psingId);
 
 			// construction of the request
-			QString url = m_info->getBaseURL() +"datasets/datasets/processedDataset";
-			QNetworkRequest req(url);
-			req.setRawHeader("Authorization", ("Bearer " + m_authent->getCurrentAccessToken()).toUtf8());
-			req.setRawHeader("Content-Type", "application/json");
-
-			QJsonObject data;
-			data["subjectId"] = ds_details.subject_id;
-			data["subjectName"] = ds_details.subject_name;
-			data["studyName"] = study.name;
-			data["studyId"] = study.id;
-			data["datasetType"] = ds_details.type;
-			data["processedDatasetFilePath"] = distant_path;
-			data["processedDatasetType"] = processedDatasetType;
-			data["processedDatasetName"] = processedDatasetName;
-			data["datasetProcessing"] = parentDatasetProcessing;
-			data["timestamp"] = QDateTime::currentMSecsSinceEpoch();
-
-			QJsonDocument bodyDocument(data);
-			QByteArray postData = bodyDocument.toJson();
+			QNetworkRequest req;
+			QByteArray postData;
+			writeProcessedDatasetUploadContextRequest(req, postData, m_info->getBaseURL(), m_authent->getCurrentAccessToken(), ds_details, study, distant_path, processedDatasetType, processedDatasetName, parentDatasetProcessing);
 
 			// sending the request
 			QUuid netReqId = waitPostResult(req, postData);
@@ -261,25 +238,9 @@ bool SyncNetwork::createFolder(levelMinimalEntries & pio_minimalEntries, dataset
  		DatasetProcessing in_processing_ds = { -1, processingType, processingDate,QList<DatasetOverview>() << input_dataset, QList<ProcessedDataset>(), studyId}; // -1 because it is not created
 
 		// construction of the request 
-		QString url = m_info->getBaseURL() + "datasets/datasetProcessing";
-		QNetworkRequest req(url);
-		req.setRawHeader("Authorization", ("Bearer " + m_authent->getCurrentAccessToken()).toUtf8());
-		req.setRawHeader("Content-Type", "application/json");
-
-		QJsonObject inputDatasets; // possibility to loop here for adding several inputDatasets
-		inputDatasets.insert("id", in_processing_ds.inputDatasets.first().id); 
-		inputDatasets.insert("type", in_processing_ds.inputDatasets.first().type);
-		inputDatasets.insert("processings", QJsonArray());
-
-		QJsonObject data;
-		data.insert("datasetProcessingType", in_processing_ds.type);
-		data.insert("inputDatasets", QJsonArray() << inputDatasets);
-		data.insert("outputDatasets", QJsonArray());
-		data.insert("processingDate", processingDate);
-		data.insert("studyId", studyId);
-
-		QJsonDocument bodyDocument(data);
-		QByteArray postData = bodyDocument.toJson();
+		QNetworkRequest req;
+		QByteArray postData;
+		writeProcessingDatasetUploadRequest(req, postData, m_info->getBaseURL(), m_authent->getCurrentAccessToken(), in_processing_ds, processingDate, studyId);
 
 		// sending the request
 		QUuid netReqId = waitPostResult(req, postData);
@@ -336,12 +297,13 @@ QUuid SyncNetwork::waitGetResult(QNetworkRequest &req)
 {
 	QUuid netReqId = QUuid::createUuid();
 
-	QEventLoop *waiter = new QEventLoop(this);
+	QEventLoop *waiter = new QEventLoop(nullptr);
 	m_requestMap[netReqId].first = waiter;
 
 	emit syncGet(netReqId, req);
 
 	waiter->exec();
+	waiter->deleteLater();
 
 	return netReqId;
 }
@@ -350,12 +312,13 @@ QUuid SyncNetwork::waitPostResult(QNetworkRequest &req, QByteArray &postData)
 {
 	QUuid netReqId = QUuid::createUuid();
 
-	QEventLoop *waiter = new QEventLoop(this);
+	QEventLoop *waiter = new QEventLoop(nullptr);
 	m_requestMap[netReqId].first = waiter;
 
 	emit syncPost(netReqId, req, postData);
 
 	waiter->exec();
+	waiter->deleteLater();
 
 	return netReqId;
 }
@@ -364,12 +327,13 @@ QUuid SyncNetwork::waitPostMultiResult(QNetworkRequest &req, QHttpMultiPart  *po
 {
 	QUuid netReqId = QUuid::createUuid();
 
-	QEventLoop *waiter = new QEventLoop(this);
+	QEventLoop *waiter = new QEventLoop(nullptr);
 	m_requestMap[netReqId].first = waiter;
 
 	emit syncPostMulti(netReqId, req, postData);
 
 	waiter->exec();
+	waiter->deleteLater();
 
 	return netReqId;
 }
@@ -378,12 +342,13 @@ QUuid SyncNetwork::waitPutResult(QNetworkRequest &req, QByteArray &postData)
 {
 	QUuid netReqId = QUuid::createUuid();
 
-	QEventLoop *waiter = new QEventLoop(this);
+	QEventLoop *waiter = new QEventLoop(nullptr);
 	m_requestMap[netReqId].first = waiter;
 
 	emit syncPut(netReqId, req, postData);
 
 	waiter->exec();
+	waiter->deleteLater();
 
 	return netReqId;
 }

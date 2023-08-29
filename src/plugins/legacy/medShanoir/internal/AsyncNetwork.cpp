@@ -8,6 +8,7 @@
 #include <Authenticator.h>
 #include <RequestManager.h>
 #include <SyncNetwork.h>
+#include <ShanoirRequestWriterHelper.h>
 
 #include <FileHelper.h>
 #include <JsonHelper.h>
@@ -50,8 +51,8 @@ int AsyncNetwork::getAssyncData(unsigned int pi_uiLevel, QString key)
 		m_requestIdMap[netReqId] = idRequest;
 
 		// Perform request
-		QNetworkRequest req(m_info->getBaseURL() + "datasets/datasets/download/" + QString::number(id_ds) + "?format=nii");
-		req.setRawHeader("Authorization", ("Bearer " + m_authent->getCurrentAccessToken()).toUtf8());
+		QNetworkRequest req;
+		writeNiftiDatasetRetrievingRequest(req, m_info->getBaseURL(), m_authent->getCurrentAccessToken(), id_ds);
 		emit asyncGet(netReqId, req);
  	}
 
@@ -87,16 +88,9 @@ int AsyncNetwork::sendProcessedDataset(QString &filepath, levelMinimalEntries & 
 	if (fileInfo.exists())
 	{
 		// construction of the request
-		QString url = m_info->getBaseURL() + "import/importer/upload_processed_dataset/";
-		QNetworkRequest req(url);
-		req.setRawHeader("Authorization", ("Bearer " + m_authent->getCurrentAccessToken()).toUtf8());
 		QHttpMultiPart *multiPart = new QHttpMultiPart(QHttpMultiPart::FormDataType);
-		QHttpPart imagePart;
-		imagePart.setHeader(QNetworkRequest::ContentDispositionHeader, QVariant(R"(form-data; name="image"; filename=")" + fileInfo.fileName() + R"(")"));
-		imagePart.setHeader(QNetworkRequest::ContentTypeHeader, QVariant("application/x-gzip"));
-		imagePart.setBodyDevice(file);
-		file->setParent(multiPart);
-		multiPart->append(imagePart);
+		QNetworkRequest req;
+		writeProcessedDatasetUploadRequest(req, multiPart, m_info->getBaseURL(), m_authent->getCurrentAccessToken(), file, fileInfo);
 
 		// sending the request
 		// Declare and register medId and http request Id
@@ -143,25 +137,9 @@ void AsyncNetwork::sendProcessedDatasetContext(int medId)
 		QJsonObject parentDatasetProcessing = m_syncNet->getDatasetProcessing(psingId);
 
 		// construction of the request
-		QString url = m_info->getBaseURL() + "datasets/datasets/processedDataset";
-		QNetworkRequest req(url);
-		req.setRawHeader("Authorization", ("Bearer " + m_authent->getCurrentAccessToken()).toUtf8());
-		req.setRawHeader("Content-Type", "application/json");
-
-		QJsonObject data;
-		data["subjectId"] = ds_details.subject_id;
-		data["subjectName"] = ds_details.subject_name;
-		data["studyName"] = study.name;
-		data["studyId"] = study.id;
-		data["datasetType"] = ds_details.type;
-		data["processedDatasetFilePath"] = distant_path;
-		data["processedDatasetType"] = processedDatasetType;
-		data["processedDatasetName"] = processedDatasetName;
-		data["datasetProcessing"] = parentDatasetProcessing;
-		data["timestamp"] = QDateTime::currentMSecsSinceEpoch();
-
-		QJsonDocument bodyDocument(data);
-		QByteArray postData = bodyDocument.toJson();
+		QNetworkRequest req;
+		QByteArray postData;
+		writeProcessedDatasetUploadContextRequest(req, postData, m_info->getBaseURL(), m_authent->getCurrentAccessToken(), ds_details, study, distant_path, processedDatasetType, processedDatasetName, parentDatasetProcessing);
 
 		// sending the request
 		// Declare and register medId and http request Id
@@ -175,10 +153,9 @@ void AsyncNetwork::sendProcessedDatasetContext(int medId)
 	}
 }
 
-void AsyncNetwork::sentDatasetInterpretation(int medId)
+void AsyncNetwork::sentDatasetInterpretation(QUuid netReqId)
 {
-	QUuid netReqId = m_requestIdMap.key(medId);
-
+	int medId = m_requestIdMap[netReqId];
 	RequestResponse res = m_requestResultMap[ASYNC_ADD_DATA_CONTEXT][netReqId];
 	if(res.code==200)
 	{
@@ -244,8 +221,9 @@ void AsyncNetwork::asyncPostSlot(QUuid netReqId, QByteArray payload, QJsonObject
 		}
 		else if (statusOrHttpCode == 200) // finiash ok
 		{
-			m_requestResultMap[ASYNC_ADD_DATA_CONTEXT][netReqId] = { statusOrHttpCode, headers, payload };
-			sentDatasetInterpretation(m_requestIdMap[netReqId]);
+			RequestResponse response = { statusOrHttpCode, headers, payload };
+			m_requestResultMap[ASYNC_ADD_DATA_CONTEXT][netReqId] = response;
+			sentDatasetInterpretation(netReqId);
 		}
 		else if (statusOrHttpCode / 100 == 4) // error
 		{
