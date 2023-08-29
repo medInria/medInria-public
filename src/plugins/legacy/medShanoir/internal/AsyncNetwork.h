@@ -63,7 +63,7 @@ private:
 
 	int sendProcessedDataset(QString &filepath, levelMinimalEntries & pio_minimalEntries, QStringList& parts);
 	void sendProcessedDatasetContext(int medId);
-	void sentDatasetInterpretation(int medId);
+	void sentDatasetInterpretation(QUuid netReqId);
 
 private:
 	medShanoir            * m_parent;
