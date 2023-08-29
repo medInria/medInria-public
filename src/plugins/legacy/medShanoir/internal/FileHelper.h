@@ -1,11 +1,12 @@
-#include "FileManager.h"
+#ifndef FILE_HELPER
+#define FILE_HELPER
 
 #include <QFileInfo>
 #include <QDebug>
 #include <QDir>
 #include <QProcess>
 
-bool FileManager::folderCreator(QString filename)
+inline bool  folderCreator(QString filename)
 {
 	QString outputfolder = QFileInfo(filename).absoluteDir().absolutePath();
     // create the path if it does not exist
@@ -18,7 +19,7 @@ bool FileManager::folderCreator(QString filename)
     return false;
 }
 
-QString FileManager::saveFileData(const QByteArray& fileData, const QString& filename)
+inline QString saveFileData(const QByteArray& fileData, const QString& filename)
  {
 		QFileInfo fileInfo = QFileInfo(filename);
         QString absoluteFilePath = fileInfo.absoluteFilePath();
@@ -45,7 +46,7 @@ QString FileManager::saveFileData(const QByteArray& fileData, const QString& fil
  }
 
 
- QString FileManager::extractZipFile(QString zipPath)
+inline QString extractZipFile(QString zipPath)
 {
 	QFileInfo fileInfo(zipPath);
 	QString outputfolder = fileInfo.absoluteDir().absolutePath() +  QDir::separator() + fileInfo.baseName();
@@ -80,3 +81,4 @@ QString FileManager::saveFileData(const QByteArray& fileData, const QString& fil
     }
 	return outputfolder;
 }
+#endif

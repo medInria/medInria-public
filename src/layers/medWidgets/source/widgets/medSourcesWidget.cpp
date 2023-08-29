@@ -108,6 +108,7 @@ void medSourcesWidget::addSource(medDataHub *dataHub, QString sourceInstanceId)
     QAction *readerAction  = new QAction(tr("Change reader"), pMenu);
     QAction *unloadAction  = new QAction(tr("Unload"),        pMenu);
     QAction *infoAction    = new QAction(tr("Information"),   pMenu);
+	QAction *createFolderAction = new QAction(tr("Create Folder"), pMenu);
     pMenu->addAction(pushAction);
     pMenu->addAction(refreshAction);
     pMenu->addAction(saveAction);
@@ -120,7 +121,9 @@ void medSourcesWidget::addSource(medDataHub *dataHub, QString sourceInstanceId)
 //    pMenu->addAction(preloadAction);
     pMenu->addAction(readerAction);
     pMenu->addAction(unloadAction);
-    pMenu->addAction(infoAction);
+	pMenu->addAction(infoAction);
+	pMenu->addAction(createFolderAction);
+
     //connect(pushAction,    &QAction::triggered, [=]() {  emit infoActionSignal(this->itemFromMenu(pMenu)); });
     //connect(refreshAction, &QAction::triggered, [=]() {  emit infoActionSignal(this->itemFromMenu(pMenu)); });
     //connect(saveAction,    &QAction::triggered, [=]() {  emit infoActionSignal(this->itemFromMenu(pMenu)); });
@@ -211,6 +214,16 @@ void medSourcesWidget::addSource(medDataHub *dataHub, QString sourceInstanceId)
     //    }
     //});
 
+	connect(createFolderAction, &QAction::triggered, [=]() {
+		QModelIndex index = this->indexFromMenu(pMenu);
+		if (index.isValid())
+		{
+			auto model = const_cast<medSourceModel*>(static_cast<const medSourceModel*>(index.model()));
+			//TODO create 
+
+		}
+	});
+
     m_treeMap  [sourceInstanceId] = sourceTreeView;
     m_titleMap [sourceInstanceId] = hLayout;
     delete sourcePresenter;
@@ -267,6 +280,7 @@ void medSourcesWidget::onCustomContextMenu(QPoint const &point, QMenu *pi_pMenu)
     if (index.isValid())
     {
         QPoint pos = pTreeView->viewport()->mapToGlobal(point);
+		//TODO Here Hide invalide action
         pi_pMenu->exec(pos);
     }
 }

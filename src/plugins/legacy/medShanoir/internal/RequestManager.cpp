@@ -1,161 +1,181 @@
-#include <QByteArray>
-#include <QDebug>
-#include <QJsonArray>
-#include <QThreadPool>
-#include <QFile>
-#include <QDir>
 #include <QNetworkReply>
-#include <QFileInfo>
-#include <QDate>
-#include <QProcess>
+#include <QHttpMultiPart>
+#include <QJsonObject>
 
-#include <Network.h>
-#include <JsonReaderWriter.h>
-#include <FileManager.h>
-#include <DicomRetriever.h>
-#include <NiftiRetriever.h>
-#include <ProcessedDatasetSender.h>
-#include <ProcessingDatasetSender.h>
-
+#include <JsonHelper.h>
 #include "RequestManager.h"
 
-RequestManager::RequestManager(Authenticater & authenticater, Network & network)
-	:m_auth(authenticater),m_net(network), m_mloader(authenticater, network), m_threadPool(QThreadPool::globalInstance()),m_request_number(0)
+
+
+RequestManager::RequestManager(QObject * parent):QObject(parent)
 {
+	m_qnam = new QNetworkAccessManager(this);
 }
 
 RequestManager::~RequestManager()
 {
-	m_threadPool->waitForDone();
-	m_threadPool->clear();
+
 }
 
-QList<StudyOverview>  RequestManager::getStudies() 
+void RequestManager::httpGet(QUuid netReqId, QNetworkRequest req)
 {
-	return m_mloader.getStudies();
+	QNetworkReply *reply = m_qnam->get(req);
+	handleReply(HTTTP_GET_VERBE, reply, netReqId);
 }
 
-Study RequestManager::getStudyById(int id)
+void RequestManager::httpPost(QUuid netReqId, QNetworkRequest req, QByteArray data)
 {
-	return m_mloader.getStudyById(id);
+	QNetworkReply *reply = m_qnam->post(req, data);
+	handleReply(HTTTP_POST_VERBE, reply, netReqId);
 }
 
-QList<Examination> RequestManager::getExaminationsByStudySubjectId(int stud_id, int subj_id)
+void RequestManager::httpPostMulti(QUuid netReqId, QNetworkRequest req, QHttpMultiPart *data)
 {
-	return m_mloader.getExaminationsByStudySubjectId(stud_id, subj_id);
+	QNetworkReply *reply = m_qnam->post(req, data);
+	handleReply(HTTTP_POST_VERBE, reply, netReqId);
 }
 
-DatasetDetails RequestManager::getDatasetById(int id)
+void RequestManager::httpPut(QUuid netReqId, QNetworkRequest req, QByteArray data)
 {
-	return m_mloader.getDatasetById(id);
+	QNetworkReply *reply = m_qnam->put(req, data); 
+	handleReply(HTTTP_PUT_VERBE, reply, netReqId);
 }
 
-QJsonObject RequestManager::getDatasetProcessingById(int id)
+void RequestManager::handleReply(int httpVerbe, QNetworkReply * &reply, const QUuid &netReqId)
 {
-	return m_mloader.getDatasetProcessingById(id);
-}
 
+	m_replyUuidMap[httpVerbe][reply] = netReqId;
 
-QString RequestManager::loadDicomDataset(int dataset_id)
-{
-	QString filepath = SHANOIR_FILES_FOLDER + QString::number(dataset_id) + "/";
-	DicomRetriever dr(dataset_id, -1, m_auth, filepath);
-	dr.run();
-	return dr.getDataPath();
-}
-
-QString RequestManager::loadNiftiDataset(int dataset_id, int converter_id)
-{
-	QString filepath = SHANOIR_FILES_FOLDER + QString::number(dataset_id) + "/";
-	NiftiRetriever nr(dataset_id, converter_id, -1, m_auth, filepath);
-	nr.run();
-	return nr.getDataPath();
+	QObject::connect(reply, SIGNAL(uploadProgress(qint64, qint64)), this, SLOT(slotUploadProgress(qint64, qint64)));
+	QObject::connect(reply, SIGNAL(downloadProgress(qint64, qint64)), this, SLOT(slotDownloadProgress(qint64, qint64)));
+	QObject::connect(reply, SIGNAL(finished()), this, SLOT(slotFinished()));
+	QObject::connect(reply, SIGNAL(error(QNetworkReply::NetworkError)), this, SLOT(slotError(QNetworkReply::NetworkError)));
 }
 
 
-int RequestManager::loadAsyncNiftiDataset(int dataset_id, int converter_id)
-{
-	int request_id = ++m_request_number;
-	QString filepath = SHANOIR_FILES_FOLDER + QString::number(dataset_id) + "/";
-	DataRetriever *niftiretriever = new NiftiRetriever(dataset_id, converter_id, request_id, m_auth, filepath);
-	niftiretriever->setAutoDelete(true);
-	QObject::connect(niftiretriever, &DataRetriever::dataRetrieved, this, &RequestManager::datasetFinishedDownload);
-	m_threadPool->start(niftiretriever);
-	return request_id;
-}
 
+//
+// THE REQUEST IS PENDING 
+//
 
-QString RequestManager::getAsyncResult(int requestId)
+void RequestManager::slotUploadProgress(qint64 bytesSent, qint64 bytesTotal)
 {
-	QString result = "";
-	if (m_asyncResults.contains(requestId))
+	QNetworkReply *reply = dynamic_cast<QNetworkReply*>(QObject::sender());
+	if (reply)
 	{
-		result = m_asyncResults.value(requestId);
-	//	m_asyncResults.remove(requestId);
+		if (m_replyUuidMap[HTTTP_GET_VERBE].contains(reply))
+		{
+			currentResponse(reply, HTTTP_GET_VERBE, 1, bytesSent, bytesTotal);
+		}
+		else if (m_replyUuidMap[HTTTP_POST_VERBE].contains(reply))
+		{
+			currentResponse(reply, HTTTP_POST_VERBE, 1, bytesSent, bytesTotal);
+		}
+		else if (m_replyUuidMap[HTTTP_PUT_VERBE].contains(reply))
+		{
+			currentResponse(reply, HTTTP_PUT_VERBE, 1, bytesSent, bytesTotal);
+		}
 	}
-	return result;
+}
+
+void RequestManager::slotDownloadProgress(qint64 bytesSent, qint64 bytesTotal)
+{
+	QNetworkReply *reply = dynamic_cast<QNetworkReply*>(QObject::sender());
+	if (reply)
+	{
+		if (m_replyUuidMap[HTTTP_GET_VERBE].contains(reply))
+		{
+			currentResponse(reply, HTTTP_GET_VERBE, 2, bytesSent, bytesTotal);
+		}
+		else if (m_replyUuidMap[HTTTP_POST_VERBE].contains(reply))
+		{
+			currentResponse(reply, HTTTP_POST_VERBE, 2, bytesSent, bytesTotal);
+		}
+		else if (m_replyUuidMap[HTTTP_PUT_VERBE].contains(reply))
+		{
+			currentResponse(reply, HTTTP_PUT_VERBE, 2, bytesSent, bytesTotal);
+		}
+	}
+}
+
+void RequestManager::currentResponse(QNetworkReply *reply, int httpVerbe, int status, qint64 bytesSent, qint64 bytesTotal)
+{
+	QByteArray payload = QByteArray();
+	QJsonObject headers;
+	headers.insert("bytesSent", bytesSent);
+	headers.insert("bytesTotal", bytesTotal);
+
+	switch (httpVerbe)
+	{
+	case HTTTP_GET_VERBE:  emit responseHttpGet(m_replyUuidMap[httpVerbe][reply], payload, headers, status);  break;
+	case HTTTP_POST_VERBE: emit responseHttpPost(m_replyUuidMap[httpVerbe][reply], payload, headers, status); break;
+	case HTTTP_PUT_VERBE:  emit responseHttpPut(m_replyUuidMap[httpVerbe][reply], payload, headers, status);  break;
+	default:
+		break;
+	}
 }
 
 
-void RequestManager::datasetFinishedDownload(int id, QString data)
+
+//
+// THE REQUEST FINISHED
+//
+void RequestManager::slotFinished()
 {
-	m_asyncResults.insert(id, data);
-	emit loadedDataset(id);
+	QNetworkReply *reply = dynamic_cast<QNetworkReply*>(QObject::sender());
+	if (reply)
+	{
+		auto httpCode =	reply->attribute(QNetworkRequest::HttpStatusCodeAttribute).toInt();
+		if (m_replyUuidMap[HTTTP_GET_VERBE].contains(reply))
+		{
+			lastResponse(reply, HTTTP_GET_VERBE, httpCode);
+		}
+		else if (m_replyUuidMap[HTTTP_POST_VERBE].contains(reply))
+		{
+			lastResponse(reply, HTTTP_POST_VERBE, httpCode);
+		}
+		else if (m_replyUuidMap[HTTTP_PUT_VERBE].contains(reply))
+		{
+			lastResponse(reply, HTTTP_PUT_VERBE, httpCode);
+		}
+	}
 }
 
-
-QJsonObject RequestManager::createProcessingDataset(DatasetProcessing in_dspsing)
+void RequestManager::slotError(QNetworkReply::NetworkError err)
 {
-	ProcessingDatasetSender psing_sender(-1, m_auth, in_dspsing);
-	psing_sender.run();	
-	return psing_sender.getResponse();
+	QNetworkReply *reply = dynamic_cast<QNetworkReply*>(QObject::sender());
+	if (reply)
+	{
+		auto httpCode = reply->attribute(QNetworkRequest::HttpStatusCodeAttribute).toInt();
+		if (m_replyUuidMap[HTTTP_GET_VERBE].contains(reply))
+		{
+			lastResponse(reply, HTTTP_GET_VERBE, httpCode);
+		}
+		else if (m_replyUuidMap[HTTTP_POST_VERBE].contains(reply))
+		{
+			lastResponse(reply, HTTTP_POST_VERBE, httpCode);
+		}
+		else if (m_replyUuidMap[HTTTP_PUT_VERBE].contains(reply))
+		{
+			lastResponse(reply, HTTTP_PUT_VERBE, httpCode);
+		}
+	}
 }
 
-int RequestManager::createAsyncProcessingDataset(DatasetProcessing in_dspsing)
+void RequestManager::lastResponse(QNetworkReply * reply, int httpVerbe, int statusOrHttpCode)
 {
-	int request_id = ++m_request_number;
-	ProcessingDatasetSender * psing_sender = new ProcessingDatasetSender(request_id, m_auth, in_dspsing);
-	psing_sender->setAutoDelete(true);
-	QObject::connect(psing_sender, &DataSender::dataSent, this, &RequestManager::processingDatasetFinishedUpload);
-	m_threadPool->start(psing_sender);
-	return request_id;
-}
-void RequestManager::processingDatasetFinishedUpload(int id)
-{
-	m_asyncResults.insert(id, "success");
-	emit sentProcessingDataset(id);
-}
+	auto payload = reply->readAll();
+	auto headers = qByteArrayPairListToJsonObject(reply->rawHeaderPairs());
 
-
-bool RequestManager::sendProcessedDataset(int datasetId, ExportProcessedDataset processedDataset, QJsonObject datasetProcessing)
-{
-	DatasetDetails ds_details = m_mloader.getDatasetById(datasetId);
-	Study s =  m_mloader.getStudyById(ds_details.study_id);
-	StudyOverview study = { s.id, s.name };
-	
-	ProcessedDatasetSender pds(-1, m_auth, study, ds_details, processedDataset, datasetProcessing);
-	pds.run();
-	return pds.isSuccessful();
-}
-
-void RequestManager::processedDatasetFinishedUpload(int id)
-{
-	m_asyncResults.insert(id, "success");
-	emit sentProcessedDataset(id);
-}
-
-int RequestManager::sendAsyncProcessedDataset(int datasetId, ExportProcessedDataset processedDataset, QJsonObject datasetProcessing)
-{
-	int request_id = ++m_request_number;
-	DatasetDetails ds_details = m_mloader.getDatasetById(datasetId);
-	Study s = m_mloader.getStudyById(ds_details.study_id);
-	StudyOverview study = { s.id, s.name };
-
-
-	ProcessedDatasetSender *pds = new ProcessedDatasetSender(request_id, m_auth, study, ds_details, processedDataset, datasetProcessing);
-	pds->setAutoDelete(true);
-	QObject::connect(pds, &DataSender::dataSent, this, &RequestManager::processedDatasetFinishedUpload);
-	m_threadPool->start(pds);
-
-	return request_id;
+	switch (httpVerbe)
+	{
+	case HTTTP_GET_VERBE:  emit responseHttpGet(m_replyUuidMap[httpVerbe][reply], payload, headers, statusOrHttpCode); m_replyUuidMap[httpVerbe].remove(reply); break;
+	case HTTTP_POST_VERBE: emit responseHttpPost(m_replyUuidMap[httpVerbe][reply], payload, headers, statusOrHttpCode); m_replyUuidMap[httpVerbe].remove(reply); break;
+	case HTTTP_PUT_VERBE:  emit responseHttpPut(m_replyUuidMap[httpVerbe][reply], payload, headers, statusOrHttpCode); m_replyUuidMap[httpVerbe].remove(reply); break;
+	default:
+		break;
+	}
+	// Deletion of  the reply object
+	m_replyUuidMap->remove(reply);
+	reply->deleteLater();
 }
