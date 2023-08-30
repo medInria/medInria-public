@@ -7,7 +7,7 @@
 #include <LocalInfo.h>
 #include <JsonHelper.h>
 #include <FileHelper.h>
-#include <ShanoirRequestWriterHelper.h>
+#include <ShanoirRequestPreparation.h>
 
 #include "SyncNetwork.h"
 
@@ -98,21 +98,30 @@ QVariant SyncNetwork::getDirectData(unsigned int pi_uiLevel, QString key)
 		RequestResponse res = m_requestMap[netReqId].second;
 		m_requestMap.remove(netReqId);
 
-		int & code = res.code;
-		QJsonObject & headers = res.headers;
-		QByteArray & fileData = res.payload;
+		//TODO: there is a lot of code in common with the method dataToFile of AsyncNetwork -> mind about a function in order to avoid code duplication;
+
+		// checking that the response is satisfactory
+		if (res.payload.size() < 100)
+		{
+			// The request is not the good one : it must be done again with a conversion index added in query parameter
+			writeNiftiDatasetRetrievingRequest(req, m_info->getBaseURL(), m_authent->getCurrentAccessToken(), id_ds, true);
+			netReqId = waitGetResult(req);
+			res = m_requestMap[netReqId].second;
+			m_requestMap.remove(netReqId);
+		}
+
 
 		QString fileName;
 
-		if (verifyJsonKeys(headers, { "Content-Disposition" }))
+		if (verifyJsonKeys(res.headers, { "Content-Disposition" }))
 		{
-			fileName = headers.value("Content-Disposition").toString().split("filename=")[1].split(";").first();
+			fileName = res.headers.value("Content-Disposition").toString().split("filename=")[1].split(";").first();
 		}
 
 		if (!fileName.isEmpty())
 		{
 			QString filePath = m_info->getStoragePath() + QString::number(id_ds) + "/" + fileName;
-			QString zipPath = saveFileData(fileData, filePath);
+			QString zipPath = saveFileData(res.payload, filePath);
 			QString extractionPath = extractZipFile(zipPath);
 			QDir folder(extractionPath);
 
@@ -131,12 +140,12 @@ QVariant SyncNetwork::getDirectData(unsigned int pi_uiLevel, QString key)
 			}
 			else
 			{
-				//TODO trace
+				//TODO: trace
 			}
 		}
 		else
 		{
-			//TODO trace
+			//TODO: trace
 		}
 	}
 

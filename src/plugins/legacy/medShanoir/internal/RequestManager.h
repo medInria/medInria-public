@@ -9,13 +9,12 @@
 #include <QNetworkAccessManager>
 #include <QNetworkRequest>
 #include <QNetworkReply>
-// #include <QUrlQuery>
 #include <QByteArray>
 
 
-#define HTTTP_GET_VERBE  0
-#define HTTTP_POST_VERBE 1
-#define HTTTP_PUT_VERBE  2
+#define HTTP_GET_VERB  0
+#define HTTP_POST_VERB 1
+#define HTTP_PUT_VERB  2
 
 struct RequestResponse
 {
