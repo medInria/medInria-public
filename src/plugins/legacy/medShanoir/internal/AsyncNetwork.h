@@ -9,9 +9,10 @@
 #include <medAbstractSource.h>
 #include <RequestManager.h>
 
-#define ASYNC_GET_DATA 0
-#define ASYNC_ADD_DATA_CONTEXT 1
-#define ASYNC_ADD_DATA_FILE 2
+// #define ASYNC_GET_DATA 0
+// #define ASYNC_GET_DATA_AGAIN 1
+// #define ASYNC_ADD_DATA_CONTEXT 2
+// #define ASYNC_ADD_DATA_FILE 3
 
 using levelMinimalEntries = medAbstractSource::levelMinimalEntries;
 using datasetAttributes = medAbstractSource::datasetAttributes;
@@ -58,12 +59,45 @@ signals:
 	void asyncPut(QUuid, QNetworkRequest, QByteArray);
 
 private:
-	void dataToFile(int medId);
+
+	// main interpretation methods 
+	// --they are called from the slots
+	void getAsyncDataInterpretation(QUuid netReqId, RequestResponse res);
+	void addAsyncDataInterpretation(QUuid netReqId, RequestResponse res);
+
+	// sub interpretation methods
+	// -- they are called from the main interpretation methods
+	// -- the given response is successful (the code worth 200)
+
+	/**
+	 * sends the dataset context if the file upload went well
+	 * @param netReqId
+	 * @param res 
+	 * @return a QVariant containing whether a bool with the false value or a QUuid of the context upload request if the file upload went well
+	*/
+	QVariant sentDatasetFileInterpretation   (QUuid netReqId, RequestResponse res);
+	void sentDatasetContextInterpretation(QUuid netReqId, RequestResponse res);
+
+	
+	QUuid  getDataset(int idRequest, int idDataset, bool conversion);
+	
+	/**
+	 * @param netReqId
+	 * @param res
+	 * @return a code : -1 fail, 0 success , 1 : retry necessary (not enough bytes to create the file)
+	*/
+	int dataToFile(QUuid netReqId, RequestResponse res);
+	
 	void cleaner(bool all = false); //Clean filesystem and m_idResultMap|m_filesToRemove
 
-	int sendProcessedDataset(QString &filepath, levelMinimalEntries & pio_minimalEntries, QStringList& parts);
-	void sendProcessedDatasetContext(int medId);
-	void sentDatasetInterpretation(QUuid netReqId);
+	/**
+	 * @param filepath
+	 * @param name
+	 * @param idDataset
+	 * @param idProcessing
+	 * @return a QVariant containing whether a bool with the false value or a QUuid of the request if the sending process went well
+	*/
+	QVariant sendProcessedDataset(QString &filepath, QString name, int idDataset, int idProcessing);
 
 private:
 	medShanoir            * m_parent;
@@ -72,7 +106,6 @@ private:
 	SyncNetwork           * m_syncNet;
 	QAtomicInt              m_medReqId;
 
-	QMap<QUuid, RequestResponse>     m_requestResultMap[3];
 	QMap<QUuid, int>                 m_requestIdMap;
 	QMap<int, QVariant>              m_idResultMap;
 	

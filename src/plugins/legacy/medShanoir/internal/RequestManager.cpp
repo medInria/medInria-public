@@ -20,25 +20,25 @@ RequestManager::~RequestManager()
 void RequestManager::httpGet(QUuid netReqId, QNetworkRequest req)
 {
 	QNetworkReply *reply = m_qnam->get(req);
-	handleReply(HTTTP_GET_VERBE, reply, netReqId);
+	handleReply(HTTP_GET_VERB, reply, netReqId);
 }
 
 void RequestManager::httpPost(QUuid netReqId, QNetworkRequest req, QByteArray data)
 {
 	QNetworkReply *reply = m_qnam->post(req, data);
-	handleReply(HTTTP_POST_VERBE, reply, netReqId);
+	handleReply(HTTP_POST_VERB, reply, netReqId);
 }
 
 void RequestManager::httpPostMulti(QUuid netReqId, QNetworkRequest req, QHttpMultiPart *data)
 {
 	QNetworkReply *reply = m_qnam->post(req, data);
-	handleReply(HTTTP_POST_VERBE, reply, netReqId);
+	handleReply(HTTP_POST_VERB, reply, netReqId);
 }
 
 void RequestManager::httpPut(QUuid netReqId, QNetworkRequest req, QByteArray data)
 {
 	QNetworkReply *reply = m_qnam->put(req, data); 
-	handleReply(HTTTP_PUT_VERBE, reply, netReqId);
+	handleReply(HTTP_PUT_VERB, reply, netReqId);
 }
 
 void RequestManager::handleReply(int httpVerbe, QNetworkReply * &reply, const QUuid &netReqId)
@@ -63,17 +63,17 @@ void RequestManager::slotUploadProgress(qint64 bytesSent, qint64 bytesTotal)
 	QNetworkReply *reply = dynamic_cast<QNetworkReply*>(QObject::sender());
 	if (reply)
 	{
-		if (m_replyUuidMap[HTTTP_GET_VERBE].contains(reply))
+		if (m_replyUuidMap[HTTP_GET_VERB].contains(reply))
 		{
-			currentResponse(reply, HTTTP_GET_VERBE, 1, bytesSent, bytesTotal);
+			currentResponse(reply, HTTP_GET_VERB, 1, bytesSent, bytesTotal);
 		}
-		else if (m_replyUuidMap[HTTTP_POST_VERBE].contains(reply))
+		else if (m_replyUuidMap[HTTP_POST_VERB].contains(reply))
 		{
-			currentResponse(reply, HTTTP_POST_VERBE, 1, bytesSent, bytesTotal);
+			currentResponse(reply, HTTP_POST_VERB, 1, bytesSent, bytesTotal);
 		}
-		else if (m_replyUuidMap[HTTTP_PUT_VERBE].contains(reply))
+		else if (m_replyUuidMap[HTTP_PUT_VERB].contains(reply))
 		{
-			currentResponse(reply, HTTTP_PUT_VERBE, 1, bytesSent, bytesTotal);
+			currentResponse(reply, HTTP_PUT_VERB, 1, bytesSent, bytesTotal);
 		}
 	}
 }
@@ -83,17 +83,17 @@ void RequestManager::slotDownloadProgress(qint64 bytesSent, qint64 bytesTotal)
 	QNetworkReply *reply = dynamic_cast<QNetworkReply*>(QObject::sender());
 	if (reply)
 	{
-		if (m_replyUuidMap[HTTTP_GET_VERBE].contains(reply))
+		if (m_replyUuidMap[HTTP_GET_VERB].contains(reply))
 		{
-			currentResponse(reply, HTTTP_GET_VERBE, 2, bytesSent, bytesTotal);
+			currentResponse(reply, HTTP_GET_VERB, 2, bytesSent, bytesTotal);
 		}
-		else if (m_replyUuidMap[HTTTP_POST_VERBE].contains(reply))
+		else if (m_replyUuidMap[HTTP_POST_VERB].contains(reply))
 		{
-			currentResponse(reply, HTTTP_POST_VERBE, 2, bytesSent, bytesTotal);
+			currentResponse(reply, HTTP_POST_VERB, 2, bytesSent, bytesTotal);
 		}
-		else if (m_replyUuidMap[HTTTP_PUT_VERBE].contains(reply))
+		else if (m_replyUuidMap[HTTP_PUT_VERB].contains(reply))
 		{
-			currentResponse(reply, HTTTP_PUT_VERBE, 2, bytesSent, bytesTotal);
+			currentResponse(reply, HTTP_PUT_VERB, 2, bytesSent, bytesTotal);
 		}
 	}
 }
@@ -107,9 +107,9 @@ void RequestManager::currentResponse(QNetworkReply *reply, int httpVerbe, int st
 
 	switch (httpVerbe)
 	{
-	case HTTTP_GET_VERBE:  emit responseHttpGet(m_replyUuidMap[httpVerbe][reply], payload, headers, status);  break;
-	case HTTTP_POST_VERBE: emit responseHttpPost(m_replyUuidMap[httpVerbe][reply], payload, headers, status); break;
-	case HTTTP_PUT_VERBE:  emit responseHttpPut(m_replyUuidMap[httpVerbe][reply], payload, headers, status);  break;
+	case HTTP_GET_VERB:  emit responseHttpGet(m_replyUuidMap[httpVerbe][reply], payload, headers, status);  break;
+	case HTTP_POST_VERB: emit responseHttpPost(m_replyUuidMap[httpVerbe][reply], payload, headers, status); break;
+	case HTTP_PUT_VERB:  emit responseHttpPut(m_replyUuidMap[httpVerbe][reply], payload, headers, status);  break;
 	default:
 		break;
 	}
@@ -126,17 +126,17 @@ void RequestManager::slotFinished()
 	if (reply)
 	{
 		auto httpCode =	reply->attribute(QNetworkRequest::HttpStatusCodeAttribute).toInt();
-		if (m_replyUuidMap[HTTTP_GET_VERBE].contains(reply))
+		if (m_replyUuidMap[HTTP_GET_VERB].contains(reply))
 		{
-			lastResponse(reply, HTTTP_GET_VERBE, httpCode);
+			lastResponse(reply, HTTP_GET_VERB, httpCode);
 		}
-		else if (m_replyUuidMap[HTTTP_POST_VERBE].contains(reply))
+		else if (m_replyUuidMap[HTTP_POST_VERB].contains(reply))
 		{
-			lastResponse(reply, HTTTP_POST_VERBE, httpCode);
+			lastResponse(reply, HTTP_POST_VERB, httpCode);
 		}
-		else if (m_replyUuidMap[HTTTP_PUT_VERBE].contains(reply))
+		else if (m_replyUuidMap[HTTP_PUT_VERB].contains(reply))
 		{
-			lastResponse(reply, HTTTP_PUT_VERBE, httpCode);
+			lastResponse(reply, HTTP_PUT_VERB, httpCode);
 		}
 	}
 }
@@ -147,17 +147,17 @@ void RequestManager::slotError(QNetworkReply::NetworkError err)
 	if (reply)
 	{
 		auto httpCode = reply->attribute(QNetworkRequest::HttpStatusCodeAttribute).toInt();
-		if (m_replyUuidMap[HTTTP_GET_VERBE].contains(reply))
+		if (m_replyUuidMap[HTTP_GET_VERB].contains(reply))
 		{
-			lastResponse(reply, HTTTP_GET_VERBE, httpCode);
+			lastResponse(reply, HTTP_GET_VERB, httpCode);
 		}
-		else if (m_replyUuidMap[HTTTP_POST_VERBE].contains(reply))
+		else if (m_replyUuidMap[HTTP_POST_VERB].contains(reply))
 		{
-			lastResponse(reply, HTTTP_POST_VERBE, httpCode);
+			lastResponse(reply, HTTP_POST_VERB, httpCode);
 		}
-		else if (m_replyUuidMap[HTTTP_PUT_VERBE].contains(reply))
+		else if (m_replyUuidMap[HTTP_PUT_VERB].contains(reply))
 		{
-			lastResponse(reply, HTTTP_PUT_VERBE, httpCode);
+			lastResponse(reply, HTTP_PUT_VERB, httpCode);
 		}
 	}
 }
@@ -169,9 +169,9 @@ void RequestManager::lastResponse(QNetworkReply * reply, int httpVerbe, int stat
 
 	switch (httpVerbe)
 	{
-	case HTTTP_GET_VERBE:  emit responseHttpGet(m_replyUuidMap[httpVerbe][reply], payload, headers, statusOrHttpCode); m_replyUuidMap[httpVerbe].remove(reply); break;
-	case HTTTP_POST_VERBE: emit responseHttpPost(m_replyUuidMap[httpVerbe][reply], payload, headers, statusOrHttpCode); m_replyUuidMap[httpVerbe].remove(reply); break;
-	case HTTTP_PUT_VERBE:  emit responseHttpPut(m_replyUuidMap[httpVerbe][reply], payload, headers, statusOrHttpCode); m_replyUuidMap[httpVerbe].remove(reply); break;
+	case HTTP_GET_VERB:  emit responseHttpGet(m_replyUuidMap[httpVerbe][reply], payload, headers, statusOrHttpCode); m_replyUuidMap[httpVerbe].remove(reply); break;
+	case HTTP_POST_VERB: emit responseHttpPost(m_replyUuidMap[httpVerbe][reply], payload, headers, statusOrHttpCode); m_replyUuidMap[httpVerbe].remove(reply); break;
+	case HTTP_PUT_VERB:  emit responseHttpPut(m_replyUuidMap[httpVerbe][reply], payload, headers, statusOrHttpCode); m_replyUuidMap[httpVerbe].remove(reply); break;
 	default:
 		break;
 	}

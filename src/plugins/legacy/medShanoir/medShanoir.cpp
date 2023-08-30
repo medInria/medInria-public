@@ -191,6 +191,7 @@ QVariant medShanoir::getDirectData(unsigned int pi_uiLevel, QString parentKey)
 
 int      medShanoir::getAssyncData(unsigned int pi_uiLevel, QString parentKey)
 {
+	//WARNING: we cannot download the freshly uploaded data, the returned parentKey worth 'true' and not the parentKey as expected. (reload medInria and it is fixed)
 	return m_asyncNet->getAssyncData(pi_uiLevel, parentKey);
 }
 
@@ -214,6 +215,8 @@ bool medShanoir::addDirectData(QVariant data, levelMinimalEntries &pio_minimalEn
 int  medShanoir::addAssyncData(QVariant data, levelMinimalEntries &pio_minimalEntries, unsigned int pi_uiLevel, QString parentKey)
 {
 	// mock for create folder (dev only)
+	//WARNING: to see and manipulate properly the created folder, you must reload medInria, otherwise the parentKey will be the instance name of the plugin
+	// by example you cannot add a processed dataset on a freshly created processing dataset. 
 	if (pi_uiLevel == 5)
 	{
 		datasetAttributes const &pi_attributes = {};
