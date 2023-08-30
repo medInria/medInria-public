@@ -372,9 +372,8 @@ QUuid SyncNetwork::waitPutResult(QNetworkRequest &req, QByteArray &postData)
 QList<StudyOverview>  SyncNetwork::getStudies()
 {
 	// creation of the request
-	QString url = m_info->getBaseURL() + "studies/studies";
-	QNetworkRequest req(url);
-	req.setRawHeader("Authorization", ("Bearer " + m_authent->getCurrentAccessToken()).toUtf8());
+	QNetworkRequest req;
+	writeGetStudiesRequest(req, m_info->getBaseURL(), m_authent->getCurrentAccessToken());
 
 	// sending the request
 	QUuid netReqId = waitGetResult(req);
@@ -392,9 +391,8 @@ QList<StudyOverview>  SyncNetwork::getStudies()
 Study SyncNetwork::getStudyDetails(int studyId)
 {
 	// creation of the request
-	QString url = m_info->getBaseURL() + "studies/studies/" + QString::number(studyId);
-	QNetworkRequest req(url);
-	req.setRawHeader("Authorization", ("Bearer " + m_authent->getCurrentAccessToken()).toUtf8());
+	QNetworkRequest req;
+	writeGetStudyDetailsRequest(req, m_info->getBaseURL(), m_authent->getCurrentAccessToken(), studyId);
 
 	// sending the request
 	QUuid netReqId = waitGetResult(req);
@@ -415,9 +413,8 @@ QList<Examination> SyncNetwork::getExaminations(int stud_id, int subj_id)
 	QList<Examination> examinations;
 
 	// creation of the request
-	QString url = m_info->getBaseURL() + "datasets/examinations/subject/" + QString::number(subj_id) + "/study/" + QString::number(stud_id);
-	QNetworkRequest req(url);
-	req.setRawHeader("Authorization", ("Bearer " + m_authent->getCurrentAccessToken()).toUtf8());
+	QNetworkRequest req;
+	writeGetExaminationsRequest(req, m_info->getBaseURL(), m_authent->getCurrentAccessToken(), stud_id, subj_id);
 
 	// sending the request
 	QUuid netReqId = waitGetResult(req);
@@ -436,9 +433,8 @@ DatasetDetails SyncNetwork::getDatasetDetails(int id)
 {
 
 	// creation of the request
-	QString url = m_info->getBaseURL() + "datasets/datasets/" + QString::number(id);
-	QNetworkRequest req(url);
-	req.setRawHeader("Authorization", ("Bearer " + m_authent->getCurrentAccessToken()).toUtf8());
+	QNetworkRequest req;
+	writeGetDatasetDetailsRequest(req, m_info->getBaseURL(), m_authent->getCurrentAccessToken(), id);
 
 	// sending the request
 	QUuid netReqId = waitGetResult(req);
@@ -456,9 +452,9 @@ DatasetDetails SyncNetwork::getDatasetDetails(int id)
 QJsonObject SyncNetwork::getDatasetProcessing(int id)
 {
 	// creation of the request
-	QString url = m_info->getBaseURL() + "datasets/datasetProcessing/" + QString::number(id);
-	QNetworkRequest req(url);
-	req.setRawHeader("Authorization", ("Bearer " + m_authent->getCurrentAccessToken()).toUtf8());
+	QNetworkRequest req;
+	writeGetDatasetProcessingRequest(req, m_info->getBaseURL(), m_authent->getCurrentAccessToken(), id);
+
 
 	// sending the request
 	QUuid netReqId = waitGetResult(req);

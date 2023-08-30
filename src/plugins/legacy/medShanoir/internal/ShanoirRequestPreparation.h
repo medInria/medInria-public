@@ -4,6 +4,9 @@
 
 #include <Levels.h>
 
+///
+/// COMMON FUNCTIONS TO SYNCNETWORK AND ASYNCNETWORK (get & add data from shanoir)
+///
 
 inline void writeNiftiDatasetRetrievingRequest(QNetworkRequest &req, QString baseUrl, QString token, int datasetId, bool conversion = false)
 {
@@ -47,6 +50,10 @@ inline void writeProcessedDatasetUploadContextRequest(QNetworkRequest &req, QByt
     postData = bodyDocument.toJson();
 }
 
+///
+/// FUNCTIONS ONLY USED IN SYNCNETWORK 
+///
+
 inline void writeProcessingDatasetUploadRequest(QNetworkRequest &req, QByteArray &postData, QString baseUrl, QString token, DatasetProcessing in_processing_ds, QString processingDate, int studyId)
 {
 	req.setUrl(baseUrl + "datasets/datasetProcessing");
@@ -69,5 +76,35 @@ inline void writeProcessingDatasetUploadRequest(QNetworkRequest &req, QByteArray
 	postData = bodyDocument.toJson();
 }
 
+// TREE-VIEW FUNCTIONS
 
-// TODO: add here the request of the getters (SyncNetwork)
+inline void writeGetStudiesRequest(QNetworkRequest &req, QString baseUrl, QString token)
+{
+	req.setUrl(baseUrl + "studies/studies");
+	req.setRawHeader("Authorization", ("Bearer " + token).toUtf8());
+}
+
+inline void writeGetStudyDetailsRequest(QNetworkRequest &req, QString baseUrl, QString token, int studyId)
+{
+	req.setUrl(baseUrl + "studies/studies/" + QString::number(studyId));
+	req.setRawHeader("Authorization", ("Bearer " + token).toUtf8());
+}
+
+inline void writeGetExaminationsRequest(QNetworkRequest &req, QString baseUrl, QString token, int studyId, int subjectId)
+{
+	req.setUrl(baseUrl + "datasets/examinations/subject/" + QString::number(subjectId) + "/study/" + QString::number(studyId));
+	req.setRawHeader("Authorization", ("Bearer " + token).toUtf8());
+}
+
+inline void writeGetDatasetDetailsRequest(QNetworkRequest &req, QString baseUrl, QString token, int datasetId)
+{
+	req.setUrl(baseUrl + "datasets/datasets/" + QString::number(datasetId));
+	req.setRawHeader("Authorization", ("Bearer " + token).toUtf8());
+}
+
+inline void writeGetDatasetProcessingRequest(QNetworkRequest &req, QString baseUrl, QString token, int datasetProcessingId)
+{
+	req.setUrl(baseUrl +  "datasets/datasetProcessing/" + QString::number(datasetProcessingId));
+	req.setRawHeader("Authorization", ("Bearer " + token).toUtf8());
+}
+
