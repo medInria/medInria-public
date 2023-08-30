@@ -110,43 +110,17 @@ QVariant SyncNetwork::getDirectData(unsigned int pi_uiLevel, QString key)
 			m_requestMap.remove(netReqId);
 		}
 
-
-		QString fileName;
-
-		if (verifyJsonKeys(res.headers, { "Content-Disposition" }))
-		{
-			fileName = res.headers.value("Content-Disposition").toString().split("filename=")[1].split(";").first();
+		pathRes = decompressNiftiiFromRequest(m_info->getStoragePath() + QString::number(id_ds) + "/", res.headers, res.payload, 5000);
+		if(pathRes.type() == QVariant::String)
+		{// everything went well, we receive the corresponding path
+			m_requestMap.remove(netReqId);
 		}
-
-		if (!fileName.isEmpty())
+		else if(pathRes.type() == QVariant::Int)
 		{
-			QString filePath = m_info->getStoragePath() + QString::number(id_ds) + "/" + fileName;
-			QString zipPath = saveFileData(res.payload, filePath);
-			QString extractionPath = extractZipFile(zipPath);
-			QDir folder(extractionPath);
-
-			// Find the nifti file in the folder
-			QStringList filters;
-			filters << "*.nii" << "*.nii.gz";
-			QStringList files = folder.entryList(filters, QDir::Files | QDir::NoDotAndDotDot);
-			if (files.size() > 0)
-			{
-				pathRes = folder.absoluteFilePath(files[0]);
-
-				m_requestMap.remove(netReqId);
-
-				m_filesToRemove.push_back(QPair<qint64, QString>({ QDateTime::currentSecsSinceEpoch(), extractionPath }));
-				//TODO: delete the file from the filesystem in a reasonnable time
-			}
-			else
-			{
-				//TODO: trace
-			}
+			qDebug()<<"DECOMPRESSION ERROR "<<pathRes.toInt();
+			m_requestMap.remove(netReqId);
 		}
-		else
-		{
-			//TODO: trace
-		}
+		
 	}
 
 	return  pathRes;
