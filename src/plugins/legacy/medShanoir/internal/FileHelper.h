@@ -92,7 +92,7 @@ inline QString extractZipFile(QString zipPath)
  * +0 :no filename found in the headers
  * +1 :there is not any niftii file in the decompressed file
  */
-inline QVariant decompressNiftiiFromRequest(QString prefix, QJsonObject headers, QByteArray payload, int deletionDelay = 3000)
+inline QVariant decompressNiftiiFromRequest(QString prefix, QJsonObject headers, QByteArray payload, QStringList &pendingDeletions, int deletionDelay = 3000)
 {
     QString fileName;
     if (verifyJsonKeys(headers, {"Content-Disposition"}))
@@ -114,12 +114,14 @@ inline QVariant decompressNiftiiFromRequest(QString prefix, QJsonObject headers,
         {
             if (deletionDelay != -1)
             {
+                  pendingDeletions.append(extractionPath); 
 				qDebug()  << extractionPath << "WILL BE DELETED IN "<<deletionDelay<<" ms";
                 // delete the folder containing the niftii from the filesystem in a reasonnable time
-                QTimer::singleShot(deletionDelay, [extractionPath]()
+                QTimer::singleShot(deletionDelay, [extractionPath, &pendingDeletions]()
                 { 
 					if (QDir(extractionPath).removeRecursively())
 					{
+				   	pendingDeletions.removeAll(extractionPath);  
 						qDebug() << "DELETION OF" << extractionPath << "SUCCESSFUL";
 					}
 					else
@@ -141,6 +143,34 @@ inline QVariant decompressNiftiiFromRequest(QString prefix, QJsonObject headers,
     { // no filename found in the headers
         return 0;
     }
+}
+
+inline bool deleteAllFolders(QStringList &folders)
+{
+    QStringList successfulDeletions;
+
+    for (const QString &path : folders)
+    {
+        if (QDir(path).removeRecursively())
+        {
+            qDebug() << "Deleted folder:" << path;
+            successfulDeletions.append(path);
+        }
+        else
+        {
+            qDebug() << "Failed to delete folder:" << path;
+        }
+    }
+
+    bool deletionSuccess = (successfulDeletions == folders);
+
+    // Remove successfully deleted paths from the main folders list
+    for (const QString &successfulPath : successfulDeletions)
+    {
+        folders.removeAll(successfulPath);
+    }
+
+    return deletionSuccess;
 }
 
 #endif
