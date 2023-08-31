@@ -13,5 +13,3 @@ CMakeLists.txt.user.*
 build
 build-*
 thirdparts
-src/plugins/legacy/medShanoir/medShanoir_old
-src/plugins/legacy/medShanoir/internal_old

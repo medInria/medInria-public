@@ -8,7 +8,7 @@
 #include <Authenticator.h>
 #include <RequestManager.h>
 #include <SyncNetwork.h>
-#include <ShanoirRequestPreparation.h>
+#include <RequestPreparation.h>
 
 #include <FileHelper.h>
 #include <JsonHelper.h>
@@ -83,13 +83,7 @@ QUuid AsyncNetwork::getDataset(int medId, int id_ds, bool conversion)
 void AsyncNetwork::getAsyncDataInterpretation(QUuid netReqId, RequestResponse res)
 {
 	int medId = m_requestIdMap[netReqId];
-	if (res.code == 1 || res.code == 2) // in progress
-	{
-		int bytesSent = res.headers["bytesSent"].toInt();
-		int bytesTotal = res.headers["bytesTotal"].toInt();
-		emit m_parent->progress(m_requestIdMap[netReqId], eRequestStatus::pending);
-	}
-	else if (res.code == 200) // finished with success
+	if (res.code == SUCCESS_CODE) // finished with success
 	{
 		// successCode is about success of the conversion of the retrieved data into a file
 		int successCode = dataToFile(netReqId, res);
@@ -115,6 +109,12 @@ void AsyncNetwork::getAsyncDataInterpretation(QUuid netReqId, RequestResponse re
 			emit m_parent->progress(medId, eRequestStatus::finish);
 		}
 		m_requestIdMap.remove(netReqId);
+	}
+	else if (res.code == UPLOAD_CODE || res.code == DOWNLOAD_CODE) // request in progress
+	{
+		int bytesSent = res.headers["bytesSent"].toInt();
+		int bytesTotal = res.headers["bytesTotal"].toInt();
+		emit m_parent->progress(m_requestIdMap[netReqId], eRequestStatus::pending);
 	}
 	else // an error occured 
 	{
@@ -229,7 +229,7 @@ QVariant AsyncNetwork::sentDatasetFileInterpretation(QUuid netReqIdFile, Request
 	int medId = m_requestIdMap[netReqIdFile];
 
 	QString distant_path;
-	if (res.code == 200 && !res.payload.isNull())
+	if (res.code == SUCCESS_CODE && !res.payload.isNull())
 	{
 		distant_path = QString::fromUtf8(res.payload);
 	}
@@ -279,20 +279,11 @@ void AsyncNetwork::sentDatasetContextInterpretation(QUuid netReqId, RequestRespo
 void AsyncNetwork::addAsyncDataInterpretation(QUuid netReqId, RequestResponse res)
 {
 	int medId = m_requestIdMap[netReqId];
-	if (res.code==0) // an error occured before sending the request
+	
+	if (res.code == SUCCESS_CODE) // finished with success
 	{
-		emit m_parent->progress(m_requestIdMap[netReqId], eRequestStatus::faild);
-		m_requestIdMap.remove(netReqId);
-	}
-	else if (res.code == 1 || res.code == 2) // in progress
-	{
-		int bytesSent = res.headers["bytesSent"].toInt();
-		int bytesTotal = res.headers["bytesTotal"].toInt();
-		emit m_parent->progress(m_requestIdMap[netReqId], eRequestStatus::pending);
-	}
-	else if (res.code == 200) // finished with success
-	{
-		// checking the add data step 
+		// checking the add data step : 
+		// the response from a dataset upload is a filepath starting with "/tmp/"
 		bool justSentDatasetFile = QString::fromUtf8(res.payload).startsWith("/tmp/");
 		if(justSentDatasetFile)
 		{
@@ -303,9 +294,18 @@ void AsyncNetwork::addAsyncDataInterpretation(QUuid netReqId, RequestResponse re
 			sentDatasetContextInterpretation(netReqId, res);
 		}
 	}
+	else if (res.code == UPLOAD_CODE || res.code == DOWNLOAD_CODE) //request in progress
+	{
+		int bytesSent = res.headers["bytesSent"].toInt();
+		int bytesTotal = res.headers["bytesTotal"].toInt();
+		emit m_parent->progress(m_requestIdMap[netReqId], eRequestStatus::pending);
+	}
 	else // an error occured during the request sending (http error)
 	{
-		emit m_parent->progress(m_requestIdMap[netReqId], eRequestStatus::faild);
+		// trace
+		qDebug() << "\nNETWORKERROR (code = " << res.code << ") WHILE ADDING DATA ( request number ="<< m_requestIdMap[netReqId] << ")\nLOOK AT https://doc.qt.io/qt-5/qnetworkreply.html#NetworkError-enum for more information\n";
+		// handling the error
+		emit m_parent->progress(medId, eRequestStatus::faild);
 		m_requestIdMap.remove(netReqId);
 		m_idResultMap[medId] = false;
 	}

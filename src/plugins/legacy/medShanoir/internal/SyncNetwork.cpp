@@ -7,7 +7,7 @@
 #include <LocalInfo.h>
 #include <JsonHelper.h>
 #include <FileHelper.h>
-#include <ShanoirRequestPreparation.h>
+#include <RequestPreparation.h>
 
 #include "SyncNetwork.h"
 
@@ -161,7 +161,7 @@ bool SyncNetwork::addDirectData(QVariant data, levelMinimalEntries & pio_minimal
 			m_requestMap.remove(netReqId);
 
 			// handling the response
-			if (res.code == 200 && !res.payload.isNull())
+			if (res.code == SUCCESS_CODE && !res.payload.isNull())
 			{
 				distant_path = QString::fromUtf8(res.payload);
 			}
@@ -193,7 +193,7 @@ bool SyncNetwork::addDirectData(QVariant data, levelMinimalEntries & pio_minimal
 			RequestResponse res = m_requestMap[netReqId].second;
 			m_requestMap.remove(netReqId);
 
-			success = res.code == 200;
+			success = res.code == SUCCESS_CODE;
 		}
 	}
 
@@ -232,7 +232,7 @@ bool SyncNetwork::createFolder(levelMinimalEntries & pio_minimalEntries, dataset
 		m_requestMap.remove(netReqId);
 
 		// handling the response
-		success = res.code == 200;
+		success = res.code == SUCCESS_CODE;
 	}
 
 	return success;
@@ -256,36 +256,29 @@ QJsonObject SyncNetwork::applySolrRequest()
 }
 
 
-void SyncNetwork::syncGetSlot(QUuid netReqId, QByteArray payload, QJsonObject headers, int statusOrHttpCode)
-{
-	syncPostSlot(netReqId, payload, headers, statusOrHttpCode);
-}
 
-void SyncNetwork::syncPostSlot(QUuid netReqId, QByteArray payload, QJsonObject headers, int statusOrHttpCode)
+void SyncNetwork::syncRequestSlot(QUuid netReqId, QByteArray payload, QJsonObject headers, int statusOrHttpCode)
 {
 	if (m_requestMap.contains(netReqId))
 	{
-		if (statusOrHttpCode == 0)
-		{ // The request failed
-
-		}
-		if (statusOrHttpCode < 100)
+		if (statusOrHttpCode == UPLOAD_CODE || statusOrHttpCode == DOWNLOAD_CODE)
 		{ // Request in progress
 			int bytesSent = headers["bytesSent"].toInt();
 			int bytesTotal = headers["bytesTotal"].toInt();
 		}
 		else
-		{ // Request ended
+		{ // Request ended -- it can be an error
 			RequestResponse res = { statusOrHttpCode, headers, payload};
 			m_requestMap[netReqId].second = res;
 			m_requestMap[netReqId].first->exit();
+
+			if (res.code != SUCCESS_CODE)
+			{
+				// trace if an error occured
+				qDebug() << "\nNETWORKERROR (code = " << res.code << ")\nLOOK AT https://doc.qt.io/qt-5/qnetworkreply.html#NetworkError-enum for more information\n";
+			}
 		}
 	}
-}
-
-void SyncNetwork::syncPutSlot(QUuid netReqId, QByteArray payload, QJsonObject headers, int statusOrHttpCode)
-{
-	syncPostSlot(netReqId, payload, headers, statusOrHttpCode);
 }
 
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////

@@ -70,7 +70,7 @@ private:
 
 	// sub interpretation methods
 	// -- they are called from the main interpretation methods
-	// -- the given response is successful (the code worth 200)
+	// -- the given response is successful (the code worth SUCCESS_CODE)
 
 	/**
 	 * sends the dataset context if the file upload went well
@@ -90,8 +90,6 @@ private:
 	 * @return a code : -1 fail, 0 success , 1 : retry necessary (not enough bytes to create the file)
 	*/
 	int dataToFile(QUuid netReqId, RequestResponse res);
-	
-	void cleaner(bool all = false); //Clean filesystem and m_idResultMap|m_filesToRemove
 
 	/**
 	 * @param filepath
