@@ -65,15 +65,15 @@ void RequestManager::slotUploadProgress(qint64 bytesSent, qint64 bytesTotal)
 	{
 		if (m_replyUuidMap[HTTP_GET_VERB].contains(reply))
 		{
-			currentResponse(reply, HTTP_GET_VERB, 1, bytesSent, bytesTotal);
+			currentResponse(reply, HTTP_GET_VERB, UPLOAD_CODE, bytesSent, bytesTotal);
 		}
 		else if (m_replyUuidMap[HTTP_POST_VERB].contains(reply))
 		{
-			currentResponse(reply, HTTP_POST_VERB, 1, bytesSent, bytesTotal);
+			currentResponse(reply, HTTP_POST_VERB, UPLOAD_CODE, bytesSent, bytesTotal);
 		}
 		else if (m_replyUuidMap[HTTP_PUT_VERB].contains(reply))
 		{
-			currentResponse(reply, HTTP_PUT_VERB, 1, bytesSent, bytesTotal);
+			currentResponse(reply, HTTP_PUT_VERB, UPLOAD_CODE, bytesSent, bytesTotal);
 		}
 	}
 }
@@ -85,15 +85,15 @@ void RequestManager::slotDownloadProgress(qint64 bytesSent, qint64 bytesTotal)
 	{
 		if (m_replyUuidMap[HTTP_GET_VERB].contains(reply))
 		{
-			currentResponse(reply, HTTP_GET_VERB, 2, bytesSent, bytesTotal);
+			currentResponse(reply, HTTP_GET_VERB, DOWNLOAD_CODE, bytesSent, bytesTotal);
 		}
 		else if (m_replyUuidMap[HTTP_POST_VERB].contains(reply))
 		{
-			currentResponse(reply, HTTP_POST_VERB, 2, bytesSent, bytesTotal);
+			currentResponse(reply, HTTP_POST_VERB, DOWNLOAD_CODE, bytesSent, bytesTotal);
 		}
 		else if (m_replyUuidMap[HTTP_PUT_VERB].contains(reply))
 		{
-			currentResponse(reply, HTTP_PUT_VERB, 2, bytesSent, bytesTotal);
+			currentResponse(reply, HTTP_PUT_VERB, DOWNLOAD_CODE, bytesSent, bytesTotal);
 		}
 	}
 }

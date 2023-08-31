@@ -1,8 +1,35 @@
 #include <QNetworkRequest>
 #include <QHttpMultiPart>
 #include <QJsonDocument>
+#include <QFile>
+#include <QFileInfo>
 
 #include <Levels.h>
+
+//
+// AUTHENTICATION FUNCTIONS
+//
+inline void writeInitAuthenticationRequest(QNetworkRequest &req, QByteArray &postData, const QString domain,  const QString username, const QString password)
+{
+	req.setUrl("https://"+domain+"/auth/realms/shanoir-ng/protocol/openid-connect/token");
+	req.setRawHeader("Content-Type", "application/x-www-form-urlencoded");
+
+	postData.append("client_id=" + QUrl::toPercentEncoding("shanoir-uploader"));
+	postData.append("&grant_type=" + QUrl::toPercentEncoding("password"));
+	postData.append("&scope=" + QUrl::toPercentEncoding("offline_access"));
+	postData.append("&username=" + QUrl::toPercentEncoding(username));
+	postData.append("&password=" + QUrl::toPercentEncoding(password));
+}
+
+inline void writeTokenUpdateRequest(QNetworkRequest &req, QByteArray &postData, const QString domain, const QString refreshToken)
+{
+	req.setUrl("https://" + domain + "/auth/realms/shanoir-ng/protocol/openid-connect/token");
+	req.setRawHeader("Content-Type", "application/x-www-form-urlencoded");
+	
+	postData.append("client_id="+QUrl::toPercentEncoding("shanoir-uploader"));
+	postData.append("&grant_type="+ QUrl::toPercentEncoding("refresh_token"));
+	postData.append("&refresh_token="+  QUrl::toPercentEncoding(refreshToken));
+}
 
 ///
 /// COMMON FUNCTIONS TO SYNCNETWORK AND ASYNCNETWORK (get & add data from shanoir)

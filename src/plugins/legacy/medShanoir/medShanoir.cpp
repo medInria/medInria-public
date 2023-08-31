@@ -24,9 +24,9 @@ medShanoir::medShanoir()
 
 	QObject::connect(m_requester, &RequestManager::responseHttpPost, m_authent, &Authenticator::authentPostSlot, Qt::QueuedConnection);
 	
-	QObject::connect(m_requester, &RequestManager::responseHttpGet,   m_syncNet, &SyncNetwork::syncGetSlot,   Qt::QueuedConnection);
-	QObject::connect(m_requester, &RequestManager::responseHttpPost,  m_syncNet, &SyncNetwork::syncPostSlot,  Qt::QueuedConnection);
-	QObject::connect(m_requester, &RequestManager::responseHttpPut,   m_syncNet, &SyncNetwork::syncPutSlot,   Qt::QueuedConnection);
+	QObject::connect(m_requester, &RequestManager::responseHttpGet,   m_syncNet, &SyncNetwork::syncRequestSlot,   Qt::QueuedConnection);
+	QObject::connect(m_requester, &RequestManager::responseHttpPost,  m_syncNet, &SyncNetwork::syncRequestSlot,  Qt::QueuedConnection);
+	QObject::connect(m_requester, &RequestManager::responseHttpPut,   m_syncNet, &SyncNetwork::syncRequestSlot,   Qt::QueuedConnection);
 	
 	QObject::connect(m_requester, &RequestManager::responseHttpGet,  m_asyncNet, &AsyncNetwork::asyncGetSlot,  Qt::QueuedConnection);
 	QObject::connect(m_requester, &RequestManager::responseHttpPost, m_asyncNet, &AsyncNetwork::asyncPostSlot, Qt::QueuedConnection);

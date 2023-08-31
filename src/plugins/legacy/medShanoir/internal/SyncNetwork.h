@@ -59,9 +59,7 @@ public:
 	//bool setThumbnail(QPixmap &pi_thumbnail, unsigned int pi_uiLevel, QString key);
 
 public slots:
-	void syncGetSlot(QUuid netReqId, QByteArray payload, QJsonObject headers, int statusOrHttpCode);
-	void syncPostSlot(QUuid netReqId, QByteArray payload, QJsonObject headers, int statusOrHttpCode);
-	void syncPutSlot(QUuid netReqId, QByteArray payload, QJsonObject headers, int statusOrHttpCode);
+	void syncRequestSlot(QUuid netReqId, QByteArray payload, QJsonObject headers, int statusOrHttpCode);
 
 signals:
 	void syncGet(QUuid, QNetworkRequest);

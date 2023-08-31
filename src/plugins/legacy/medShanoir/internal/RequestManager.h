@@ -11,6 +11,10 @@
 #include <QNetworkReply>
 #include <QByteArray>
 
+#define SUCCESS_CODE 200
+#define UPLOAD_CODE 1001
+#define DOWNLOAD_CODE 1002
+
 
 #define HTTP_GET_VERB  0
 #define HTTP_POST_VERB 1

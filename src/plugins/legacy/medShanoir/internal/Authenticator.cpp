@@ -6,6 +6,7 @@
 
 #include <LocalInfo.h>
 #include <JsonHelper.h>
+#include <RequestPreparation.h>
 
 #include "Authenticator.h"
 
@@ -43,17 +44,10 @@ bool Authenticator::connect(bool pi_bEnable)
 
 void Authenticator::initAuthentication(const QString domain, const QString username, const QString password)
 {
-    QString url = "https://"+domain+"/auth/realms/shanoir-ng/protocol/openid-connect/token";
     // construction of the qnetwork request
-    QNetworkRequest req(url);
-	req.setRawHeader("Content-Type", "application/x-www-form-urlencoded");
+	QNetworkRequest req;
 	QByteArray postData;
-	postData.append("client_id=" + QUrl::toPercentEncoding("shanoir-uploader"));
-	postData.append("&grant_type=" + QUrl::toPercentEncoding("password"));
-	postData.append("&scope=" + QUrl::toPercentEncoding("offline_access"));
-	postData.append("&username=" + QUrl::toPercentEncoding(username));
-	postData.append("&password=" + QUrl::toPercentEncoding(password));
-
+	writeInitAuthenticationRequest(req, postData, domain, username, password);
 
     // sending the request
 	QUuid netReqId = waitPostResult(req, postData);
@@ -68,11 +62,6 @@ void Authenticator::initAuthentication(const QString domain, const QString usern
 		qDebug() << "AUTHENTICATION HAS FAILED";
 		qDebug() << "REQUEST RESPONSE STATUS : " << res.code;
 		QString notif_message = "The authentication to Shanoir failed.\n Request status : " + QString::number(res.code);
-		if (res.code == 401)
-		{
-			notif_message = "\nPlease check your username and password.";
-			qDebug() << res.payload;
-		}
 		medNotif::createNotif(notifLevel::error, "Authentication to Shanoir", notif_message);
 		return;
 	}
@@ -149,16 +138,22 @@ void Authenticator::authentPostSlot(QUuid netReqId, QByteArray payload, QJsonObj
 {
 	if (m_requestMap.contains(netReqId))
 	{
-		if (httpOrStatusCode < 100)
+		if (httpOrStatusCode == UPLOAD_CODE || httpOrStatusCode == DOWNLOAD_CODE)
 		{ // Request in progress
 			int bytesSent = headers["bytesSent"].toInt();
 			int bytesTotal = headers["bytesTotal"].toInt();
 		}
 		else
-		{ // Request ended
+		{ // Request ended -- it can be an error
 			RequestResponse res = { httpOrStatusCode, headers, payload };
 			m_requestMap[netReqId].second = res;
 			m_requestMap[netReqId].first->exit();
+
+			if (res.code != SUCCESS_CODE)
+			{
+				// Trace the error if it is one
+				qDebug() << "\nNETWORKERROR (code = " << res.code << ") WHILE AUTHENTICATING. \nLOOK AT https://doc.qt.io/qt-5/qnetworkreply.html#NetworkError-enum for more information\n";
+			}
 		}
 	}
 }
@@ -167,14 +162,9 @@ void Authenticator::authentPostSlot(QUuid netReqId, QByteArray payload, QJsonObj
 void Authenticator::tokenUpdate()
 {
 	//// construction of the qnetworkrequest
-    QString url = "https://" + m_domain + "/auth/realms/shanoir-ng/protocol/openid-connect/token";
-	QNetworkRequest req(url);
-	req.setRawHeader("Content-Type", "application/x-www-form-urlencoded");
-
+	QNetworkRequest req;
 	QByteArray postData;
-	postData.append("client_id="+QUrl::toPercentEncoding("shanoir-uploader"));
-	postData.append("&grant_type="+ QUrl::toPercentEncoding("refresh_token"));
-	postData.append("&refresh_token="+  QUrl::toPercentEncoding(m_current_token.value("refresh_token").toString()));
+	writeTokenUpdateRequest(req, postData, m_domain, m_current_token.value("refresh_token").toString());
 
  	// sending the request
 	QUuid netReqId = waitPostResult(req, postData);
