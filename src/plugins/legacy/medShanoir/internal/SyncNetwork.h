@@ -114,5 +114,5 @@ private:
 	QMap<QUuid, QPair<QEventLoop*, RequestResponse>> m_requestMap;
 
 
-	QVector < QPair<qint64, QString> >  m_filesToRemove;
+	QStringList m_filesToRemove;
 };

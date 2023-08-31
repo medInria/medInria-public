@@ -21,6 +21,7 @@ SyncNetwork::SyncNetwork(medShanoir * parent,  LocalInfo *info, Authenticator * 
 
 SyncNetwork::~SyncNetwork()
 {
+	deleteAllFolders(m_filesToRemove);
 }
 
 
@@ -98,8 +99,6 @@ QVariant SyncNetwork::getDirectData(unsigned int pi_uiLevel, QString key)
 		RequestResponse res = m_requestMap[netReqId].second;
 		m_requestMap.remove(netReqId);
 
-		//TODO: there is a lot of code in common with the method dataToFile of AsyncNetwork -> mind about a function in order to avoid code duplication;
-
 		// checking that the response is satisfactory
 		if (res.payload.size() < 100)
 		{
@@ -110,7 +109,7 @@ QVariant SyncNetwork::getDirectData(unsigned int pi_uiLevel, QString key)
 			m_requestMap.remove(netReqId);
 		}
 
-		pathRes = decompressNiftiiFromRequest(m_info->getStoragePath() + QString::number(id_ds) + "/", res.headers, res.payload, 5000);
+		pathRes = decompressNiftiiFromRequest(m_info->getStoragePath() + QString::number(id_ds) + "/", res.headers, res.payload, m_filesToRemove, 5000);
 		if(pathRes.type() == QVariant::String)
 		{// everything went well, we receive the corresponding path
 			m_requestMap.remove(netReqId);
@@ -120,7 +119,7 @@ QVariant SyncNetwork::getDirectData(unsigned int pi_uiLevel, QString key)
 			qDebug()<<"DECOMPRESSION ERROR "<<pathRes.toInt();
 			m_requestMap.remove(netReqId);
 		}
-		
+
 	}
 
 	return  pathRes;

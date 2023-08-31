@@ -25,7 +25,7 @@ AsyncNetwork::AsyncNetwork(medShanoir * parent, LocalInfo *info, Authenticator *
 
 AsyncNetwork::~AsyncNetwork()
 {
-
+	deleteAllFolders(m_filesToRemove);
 }
 
 
@@ -140,48 +140,27 @@ QVariant AsyncNetwork::getAsyncResults(int pi_iRequest)
 	return qRes;
 }
 
-
-
 int AsyncNetwork::dataToFile(QUuid netReqId, RequestResponse res)
 {
-	int successCode = (res.payload.size() < 100)? 1 :-1;
+	int successCode = (res.payload.size() < 100) ? 1 : -1;
 	int medId = m_requestIdMap[netReqId];
-
-	QString fileName;
-
-	if (successCode!=1 && verifyJsonKeys(res.headers, { "Content-Disposition" }))
+	if (successCode != 1)
 	{
-		fileName = res.headers.value("Content-Disposition").toString().split("filename=")[1].split(";").first();
-	}
-
-	if (successCode!=1 && !fileName.isEmpty())
-	{
-		QString filePath = m_info->getStoragePath() + QString::number(medId) + "/" + fileName;
-		QString zipPath = saveFileData(res.payload, filePath);
-		QString extractionPath = extractZipFile(zipPath);
-		QDir folder(extractionPath);
-
-		// Find the nifti file in the folder
-		QStringList filters;
-		filters << "*.nii" << "*.nii.gz";
-		QStringList files = folder.entryList(filters, QDir::Files | QDir::NoDotAndDotDot);
-		if (files.size() > 0)
-		{
-			QString dataPath = folder.absoluteFilePath(files[0]);
-
-			m_idResultMap[medId] = dataPath;
-		
+		QVariant pathRes = decompressNiftiiFromRequest(m_info->getStoragePath() + QString::number(medId) + "/", res.headers, res.payload, m_filesToRemove, 5000);
+		if (pathRes.type() == QVariant::String)
+		{ // everything went well, we receive the corresponding path
+			m_idResultMap[medId] = pathRes;
 			m_requestIdMap.remove(netReqId);
-
-			successCode = 0; 
-
-			m_filesToRemove.push_back(QPair<qint64, QString>({ QDateTime::currentSecsSinceEpoch(), extractionPath }));
-			//TODO: delete the file from the filesystem in a reasonnable time and DON'T FORGET clean m_idResultMap (call cleaner)
+			successCode = 0;
+		}
+		else if (pathRes.type() == QVariant::Int)
+		{
+			qDebug() << "DECOMPRESSION ERROR " << pathRes.toInt();
+			m_idResultMap[medId];
 		}
 	}
 	return successCode;
 }
-
 
 /**
  * 

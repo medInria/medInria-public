@@ -109,6 +109,6 @@ private:
 	QMap<QUuid, int>                 m_requestIdMap;
 	QMap<int, QVariant>              m_idResultMap;
 	
-	QVector < QPair<qint64, QString> >  m_filesToRemove;
+	QStringList m_filesToRemove;
 };
 #endif // !ASYNC_NETWORK
