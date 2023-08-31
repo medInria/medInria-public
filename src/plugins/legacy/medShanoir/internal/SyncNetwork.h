@@ -87,7 +87,7 @@ public:
 	QJsonObject          getDatasetProcessing(int id); // not used for the tree-view but for the upload of data
 	/**
 	 *  not used for now. Everything is in place to recuperate a result from a solr request.
-	 * modify the signature to adapt to the request you want to make (see writeGetSolrRequest from FileHelper.h)
+	 * modify the signature to adapt to the request you want to make (see writeGetSolrRequest from ShanoirRequestPreparation.h)
 	 */
 	QJsonObject                 applySolrRequest();   
 

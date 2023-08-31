@@ -47,16 +47,19 @@ public:
 	/* ***********************************************************************/
 	QVariant getAsyncResults(int pi_iRequest);
 
+    void abort(int pi_iRequest); 
+
 public slots:
 	void asyncGetSlot (QUuid netReqId, QByteArray payload, QJsonObject headers, int statusOrHttpCode);
 	void asyncPostSlot(QUuid netReqId, QByteArray payload, QJsonObject headers, int statusOrHttpCode);
 	void asyncPutSlot (QUuid netReqId, QByteArray payload, QJsonObject headers, int statusOrHttpCode);
-
+	
 signals:
 	void asyncGet(QUuid, QNetworkRequest);
 	void asyncPost(QUuid, QNetworkRequest, QByteArray);
 	void asyncPostMulti(QUuid, QNetworkRequest, QHttpMultiPart *);
 	void asyncPut(QUuid, QNetworkRequest, QByteArray);
+	void asyncAbort(QUuid);
 
 private:
 

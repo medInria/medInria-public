@@ -36,6 +36,7 @@ public slots:
 	void httpPost(QUuid netReqId, QNetworkRequest req, QByteArray data);
 	void httpPostMulti(QUuid netReqId, QNetworkRequest req, QHttpMultiPart *data);
 	void httpPut(QUuid netReqId, QNetworkRequest req, QByteArray data);
+	void abort(QUuid idRequest);
     
 signals:
 	//payload & headers are empty if the status is not an http code 
@@ -50,9 +51,9 @@ private slots:
 	void slotError(QNetworkReply::NetworkError);
 
 private:
-	void handleReply(int httpVerbe, QNetworkReply * &reply, const QUuid &netReqId);
-	void lastResponse(QNetworkReply * reply, int httpVerbe, int statusOrHttpCode);
-	void currentResponse(QNetworkReply *reply, int httpVerbe, int status, qint64 bytesSent, qint64 bytesTotal);
+	void handleReply(int httpVerb, QNetworkReply * &reply, const QUuid &netReqId);
+	void lastResponse(QNetworkReply * reply, int httpVerb, int statusOrHttpCode);
+	void currentResponse(QNetworkReply *reply, int httpVerb, int status, qint64 bytesSent, qint64 bytesTotal);
 
 private:
 	QNetworkAccessManager * m_qnam;
