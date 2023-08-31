@@ -21,6 +21,9 @@ AsyncNetwork::AsyncNetwork(medShanoir * parent, LocalInfo *info, Authenticator *
 	QObject::connect(this, &AsyncNetwork::asyncPost, requester, &RequestManager::httpPost, Qt::ConnectionType::QueuedConnection);
 	QObject::connect(this, &AsyncNetwork::asyncPostMulti, requester, &RequestManager::httpPostMulti, Qt::ConnectionType::QueuedConnection);
 	QObject::connect(this, &AsyncNetwork::asyncPut, requester, &RequestManager::httpPut, Qt::ConnectionType::QueuedConnection);
+
+	QObject::connect(this, &AsyncNetwork::asyncAbort, requester, &RequestManager::abort, Qt::ConnectionType::QueuedConnection);
+
 }
 
 AsyncNetwork::~AsyncNetwork()
@@ -80,12 +83,7 @@ QUuid AsyncNetwork::getDataset(int medId, int id_ds, bool conversion)
 void AsyncNetwork::getAsyncDataInterpretation(QUuid netReqId, RequestResponse res)
 {
 	int medId = m_requestIdMap[netReqId];
-	if (res.code==0) // an error occured before sending the request
-	{
-		emit m_parent->progress(m_requestIdMap[netReqId], eRequestStatus::faild);
-		m_requestIdMap.remove(netReqId);
-	}
-	else if (res.code == 1 || res.code == 2) // in progress
+	if (res.code == 1 || res.code == 2) // in progress
 	{
 		int bytesSent = res.headers["bytesSent"].toInt();
 		int bytesTotal = res.headers["bytesTotal"].toInt();
@@ -118,8 +116,11 @@ void AsyncNetwork::getAsyncDataInterpretation(QUuid netReqId, RequestResponse re
 		}
 		m_requestIdMap.remove(netReqId);
 	}
-	else // an error occured during the request sending (http error)
+	else // an error occured 
 	{
+		// trace
+		qDebug() << "\nNETWORKERROR (code = " << res.code << ") WHILE GETTING DATA ( request number ="<< m_requestIdMap[netReqId] << ")\nLOOK AT https://doc.qt.io/qt-5/qnetworkreply.html#NetworkError-enum for more information\n";
+		// handling the error
 		emit m_parent->progress(m_requestIdMap[netReqId], eRequestStatus::faild);
 		m_requestIdMap.remove(netReqId);
 	}
@@ -324,5 +325,18 @@ void AsyncNetwork::asyncPutSlot(QUuid netReqId, QByteArray payload, QJsonObject 
 	{
 		// HERE call the interpretation(s) function that is/are based on PUT request 
 		// for now, none of them exist
+	}
+}
+
+void AsyncNetwork::abort(int medId)
+{
+	for (auto it = m_requestIdMap.begin(); it != m_requestIdMap.end(); ++it)
+	{
+		if (it.value() == medId)
+		{
+			QUuid netReqId = it.key();
+			emit asyncAbort(netReqId);
+			return;
+		}
 	}
 }

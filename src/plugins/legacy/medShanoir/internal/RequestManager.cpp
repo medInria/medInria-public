@@ -41,10 +41,10 @@ void RequestManager::httpPut(QUuid netReqId, QNetworkRequest req, QByteArray dat
 	handleReply(HTTP_PUT_VERB, reply, netReqId);
 }
 
-void RequestManager::handleReply(int httpVerbe, QNetworkReply * &reply, const QUuid &netReqId)
+void RequestManager::handleReply(int httpVerb, QNetworkReply * &reply, const QUuid &netReqId)
 {
 
-	m_replyUuidMap[httpVerbe][reply] = netReqId;
+	m_replyUuidMap[httpVerb][reply] = netReqId;
 
 	QObject::connect(reply, SIGNAL(uploadProgress(qint64, qint64)), this, SLOT(slotUploadProgress(qint64, qint64)));
 	QObject::connect(reply, SIGNAL(downloadProgress(qint64, qint64)), this, SLOT(slotDownloadProgress(qint64, qint64)));
@@ -98,21 +98,36 @@ void RequestManager::slotDownloadProgress(qint64 bytesSent, qint64 bytesTotal)
 	}
 }
 
-void RequestManager::currentResponse(QNetworkReply *reply, int httpVerbe, int status, qint64 bytesSent, qint64 bytesTotal)
+void RequestManager::currentResponse(QNetworkReply *reply, int httpVerb, int status, qint64 bytesSent, qint64 bytesTotal)
 {
 	QByteArray payload = QByteArray();
 	QJsonObject headers;
 	headers.insert("bytesSent", bytesSent);
 	headers.insert("bytesTotal", bytesTotal);
 
-	switch (httpVerbe)
+	switch (httpVerb)
 	{
-	case HTTP_GET_VERB:  emit responseHttpGet(m_replyUuidMap[httpVerbe][reply], payload, headers, status);  break;
-	case HTTP_POST_VERB: emit responseHttpPost(m_replyUuidMap[httpVerbe][reply], payload, headers, status); break;
-	case HTTP_PUT_VERB:  emit responseHttpPut(m_replyUuidMap[httpVerbe][reply], payload, headers, status);  break;
+	case HTTP_GET_VERB:  emit responseHttpGet(m_replyUuidMap[httpVerb][reply], payload, headers, status);  break;
+	case HTTP_POST_VERB: emit responseHttpPost(m_replyUuidMap[httpVerb][reply], payload, headers, status); break;
+	case HTTP_PUT_VERB:  emit responseHttpPut(m_replyUuidMap[httpVerb][reply], payload, headers, status);  break;
 	default:
 		break;
 	}
+}
+
+void RequestManager::abort(QUuid idRequest)
+{
+	for (int i = 0; i < 3; ++i) {
+        for (auto it = m_replyUuidMap[i].begin(); it != m_replyUuidMap[i].end(); ++it) {
+            if (it.value() == idRequest) {
+                QNetworkReply* reply = it.key();
+                reply->abort();
+				m_replyUuidMap[i].remove(reply);
+				qDebug() << reply->isFinished();
+				return;
+            }
+        }
+    }
 }
 
 
@@ -146,7 +161,7 @@ void RequestManager::slotError(QNetworkReply::NetworkError err)
 	QNetworkReply *reply = dynamic_cast<QNetworkReply*>(QObject::sender());
 	if (reply)
 	{
-		auto httpCode = reply->attribute(QNetworkRequest::HttpStatusCodeAttribute).toInt();
+		int httpCode = static_cast<int>(reply->error());
 		if (m_replyUuidMap[HTTP_GET_VERB].contains(reply))
 		{
 			lastResponse(reply, HTTP_GET_VERB, httpCode);
@@ -162,16 +177,16 @@ void RequestManager::slotError(QNetworkReply::NetworkError err)
 	}
 }
 
-void RequestManager::lastResponse(QNetworkReply * reply, int httpVerbe, int statusOrHttpCode)
+void RequestManager::lastResponse(QNetworkReply * reply, int httpVerb, int statusOrHttpCode)
 {
 	auto payload = reply->readAll();
 	auto headers = qByteArrayPairListToJsonObject(reply->rawHeaderPairs());
 
-	switch (httpVerbe)
+	switch (httpVerb)
 	{
-	case HTTP_GET_VERB:  emit responseHttpGet(m_replyUuidMap[httpVerbe][reply], payload, headers, statusOrHttpCode); m_replyUuidMap[httpVerbe].remove(reply); break;
-	case HTTP_POST_VERB: emit responseHttpPost(m_replyUuidMap[httpVerbe][reply], payload, headers, statusOrHttpCode); m_replyUuidMap[httpVerbe].remove(reply); break;
-	case HTTP_PUT_VERB:  emit responseHttpPut(m_replyUuidMap[httpVerbe][reply], payload, headers, statusOrHttpCode); m_replyUuidMap[httpVerbe].remove(reply); break;
+	case HTTP_GET_VERB:  emit responseHttpGet(m_replyUuidMap[httpVerb][reply], payload, headers, statusOrHttpCode); m_replyUuidMap[httpVerb].remove(reply); break;
+	case HTTP_POST_VERB: emit responseHttpPost(m_replyUuidMap[httpVerb][reply], payload, headers, statusOrHttpCode); m_replyUuidMap[httpVerb].remove(reply); break;
+	case HTTP_PUT_VERB:  emit responseHttpPut(m_replyUuidMap[httpVerb][reply], payload, headers, statusOrHttpCode); m_replyUuidMap[httpVerb].remove(reply); break;
 	default:
 		break;
 	}

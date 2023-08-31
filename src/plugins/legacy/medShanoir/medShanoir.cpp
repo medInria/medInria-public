@@ -274,4 +274,7 @@ QVariant medShanoir::getAsyncResults(int pi_iRequest)
 /* ***********************************************************************/
 
 
-void medShanoir::abort(int pi_iRequest){}
+void medShanoir::abort(int pi_iRequest)
+{
+	m_asyncNet->abort(pi_iRequest);
+}
