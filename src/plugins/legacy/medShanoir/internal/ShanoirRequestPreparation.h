@@ -108,3 +108,18 @@ inline void writeGetDatasetProcessingRequest(QNetworkRequest &req, QString baseU
 	req.setRawHeader("Authorization", ("Bearer " + token).toUtf8());
 }
 
+// SOLR REQUEST
+
+inline void writeGetSolrRequest(QNetworkRequest &req, QByteArray &postData, QString baseUrl, QString token, QString solrRequest = "", int pageSize = 50, int pageId = 0, QString sort = "id,ASC", bool expertMode = false)
+{
+	req.setUrl(baseUrl +  "datasets/solr?page=" + QString::number(pageId)+"&size="+ QString::number(pageSize) + "&sort="+sort);
+	req.setRawHeader("Authorization", ("Bearer " + token).toUtf8());
+  req.setRawHeader("Content-Type", "application/json");
+  
+  QJsonObject data;
+  data.insert("expertMode", expertMode);
+  data.insert("solrRequest", solrRequest);
+
+  QJsonDocument bodyDocument(data);
+	postData = bodyDocument.toJson();
+}

@@ -109,7 +109,7 @@ QVariant SyncNetwork::getDirectData(unsigned int pi_uiLevel, QString key)
 			m_requestMap.remove(netReqId);
 		}
 
-		pathRes = decompressNiftiiFromRequest(m_info->getStoragePath() + QString::number(id_ds) + "/", res.headers, res.payload, m_filesToRemove, 5000);
+		pathRes = decompressNiftiiFromRequest(m_info->getStoragePath() + QString::number(id_ds) + "/", res.headers, res.payload, m_filesToRemove, 5000); //5 seconds before deletion
 		if(pathRes.type() == QVariant::String)
 		{// everything went well, we receive the corresponding path
 			m_requestMap.remove(netReqId);
@@ -236,6 +236,23 @@ bool SyncNetwork::createFolder(levelMinimalEntries & pio_minimalEntries, dataset
 	}
 
 	return success;
+}
+
+QJsonObject SyncNetwork::applySolrRequest()
+{
+	// construction of the request
+	QNetworkRequest req;
+	QByteArray postData;
+	writeGetSolrRequest(req, postData, m_info->getBaseURL(), m_authent->getCurrentAccessToken(), "MR_DATASET");
+
+	// sending the request
+	QUuid netReqId = waitPostResult(req, postData);
+
+	//  receiving the response
+	RequestResponse res = m_requestMap[netReqId].second;
+	m_requestMap.remove(netReqId);
+
+	return qbytearrayToQJson(res.payload);
 }
 
 

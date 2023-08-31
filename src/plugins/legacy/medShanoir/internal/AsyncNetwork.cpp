@@ -146,7 +146,7 @@ int AsyncNetwork::dataToFile(QUuid netReqId, RequestResponse res)
 	int medId = m_requestIdMap[netReqId];
 	if (successCode != 1)
 	{
-		QVariant pathRes = decompressNiftiiFromRequest(m_info->getStoragePath() + QString::number(medId) + "/", res.headers, res.payload, m_filesToRemove, 5000);
+		QVariant pathRes = decompressNiftiiFromRequest(m_info->getStoragePath() + QString::number(medId) + "/", res.headers, res.payload, m_filesToRemove, 60000);//1 minute before deletion
 		if (pathRes.type() == QVariant::String)
 		{ // everything went well, we receive the corresponding path
 			m_idResultMap[medId] = pathRes;
