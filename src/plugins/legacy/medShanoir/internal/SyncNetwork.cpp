@@ -1,8 +1,10 @@
 #include <QJsonObject>
 #include <QHttpMultiPart>
 
-#include <Authenticator.h>
 #include <medShanoir.h>
+#include <medNotif.h>
+
+#include <Authenticator.h>
 #include <RequestManager.h>
 #include <LocalInfo.h>
 #include <JsonHelper.h>
@@ -17,6 +19,22 @@ SyncNetwork::SyncNetwork(medShanoir * parent,  LocalInfo *info, Authenticator * 
 	QObject::connect(this, &SyncNetwork::syncPost, requester, &RequestManager::httpPost, Qt::ConnectionType::QueuedConnection);
 	QObject::connect(this, &SyncNetwork::syncPostMulti, requester, &RequestManager::httpPostMulti, Qt::ConnectionType::QueuedConnection);
 	QObject::connect(this, &SyncNetwork::syncPut, requester, &RequestManager::httpPut, Qt::ConnectionType::QueuedConnection);
+
+	QObject::connect(this, &SyncNetwork::syncAbort, requester, &RequestManager::abort, Qt::ConnectionType::QueuedConnection);
+
+
+	requestsDurations[searchWithSolr]               = 1000;
+	requestsDurations[getTreeViewDatasetProcessing] = 1000;
+	requestsDurations[getTreeViewDatasetProcessing] = 1000;
+	requestsDurations[getTreeViewDatasetDetails]    = 1000;
+	requestsDurations[getTreeViewStudyDetail]       = 1000;
+	requestsDurations[getTreeViewExaminations]      = 1000;
+	requestsDurations[getTreeViewStudies]           = 1000;
+	requestsDurations[getData]                      = -1;
+	requestsDurations[addDataFile]                  = -1;
+	requestsDurations[addDataContext]               = -1;
+	requestsDurations[addFolder]                    = 5000;
+
 }
 
 SyncNetwork::~SyncNetwork()
@@ -93,32 +111,30 @@ QVariant SyncNetwork::getDirectData(unsigned int pi_uiLevel, QString key)
 		// Perform request
 		QNetworkRequest req;
 		writeNiftiDatasetRetrievingRequest(req, m_info->getBaseURL(), m_authent->getCurrentAccessToken(), id_ds);
-		QUuid netReqId = waitGetResult(req);
+		QUuid netReqId = waitGetResult(getData, req);
 
 		// receiving the response
-		RequestResponse res = m_requestMap[netReqId].second;
-		m_requestMap.remove(netReqId);
+		RequestResponse res = m_requestMap[netReqId].response;
 
 		// checking that the response is satisfactory
 		if (res.payload.size() < 100)
 		{
 			// The request is not the good one : it must be done again with a conversion index added in query parameter
 			writeNiftiDatasetRetrievingRequest(req, m_info->getBaseURL(), m_authent->getCurrentAccessToken(), id_ds, true);
-			netReqId = waitGetResult(req);
-			res = m_requestMap[netReqId].second;
-			m_requestMap.remove(netReqId);
+			netReqId = waitGetResult(getData, req);
+			res = m_requestMap[netReqId].response;
 		}
 
 		pathRes = decompressNiftiiFromRequest(m_info->getStoragePath() + QString::number(id_ds) + "/", res.headers, res.payload, m_filesToRemove, 5000); //5 seconds before deletion
 		if(pathRes.type() == QVariant::String)
 		{// everything went well, we receive the corresponding path
-			m_requestMap.remove(netReqId);
 		}
 		else if(pathRes.type() == QVariant::Int)
 		{
 			qDebug()<<"DECOMPRESSION ERROR "<<pathRes.toInt();
-			m_requestMap.remove(netReqId);
 		}
+
+		manageRequestDeath(netReqId);
 
 	}
 
@@ -154,10 +170,10 @@ bool SyncNetwork::addDirectData(QVariant data, levelMinimalEntries & pio_minimal
 			writeProcessedDatasetUploadRequest(req, multiPart, m_info->getBaseURL(), m_authent->getCurrentAccessToken(), file, fileInfo);
 
 			// sending the request
-			QUuid netReqId = waitPostMultiResult(req, multiPart);
+			QUuid netReqId = waitPostMultiResult(addDataFile, req, multiPart);
 
 			//  receiving the response
-			RequestResponse res = m_requestMap[netReqId].second;
+			RequestResponse res = m_requestMap[netReqId].response;
 			m_requestMap.remove(netReqId);
 
 			// handling the response
@@ -165,6 +181,7 @@ bool SyncNetwork::addDirectData(QVariant data, levelMinimalEntries & pio_minimal
 			{
 				distant_path = QString::fromUtf8(res.payload);
 			}
+			manageRequestDeath(netReqId);
 		}
 
 		//                    2nd step : sending the context 
@@ -187,11 +204,12 @@ bool SyncNetwork::addDirectData(QVariant data, levelMinimalEntries & pio_minimal
 			writeProcessedDatasetUploadContextRequest(req, postData, m_info->getBaseURL(), m_authent->getCurrentAccessToken(), ds_details, study, distant_path, processedDatasetType, processedDatasetName, parentDatasetProcessing);
 
 			// sending the request
-			QUuid netReqId = waitPostResult(req, postData);
+			QUuid netReqId = waitPostResult(addDataContext, req, postData);
 
 			//  receiving the response
-			RequestResponse res = m_requestMap[netReqId].second;
-			m_requestMap.remove(netReqId);
+			RequestResponse res = m_requestMap[netReqId].response;
+
+			manageRequestDeath(netReqId);
 
 			success = res.code == SUCCESS_CODE;
 		}
@@ -225,11 +243,12 @@ bool SyncNetwork::createFolder(levelMinimalEntries & pio_minimalEntries, dataset
 		writeProcessingDatasetUploadRequest(req, postData, m_info->getBaseURL(), m_authent->getCurrentAccessToken(), in_processing_ds, processingDate, studyId);
 
 		// sending the request
-		QUuid netReqId = waitPostResult(req, postData);
+		QUuid netReqId = waitPostResult(addFolder, req, postData);
 
 		// receiving the response
-		RequestResponse res = m_requestMap[netReqId].second;
-		m_requestMap.remove(netReqId);
+		RequestResponse res = m_requestMap[netReqId].response;
+
+		manageRequestDeath(netReqId);
 
 		// handling the response
 		success = res.code == SUCCESS_CODE;
@@ -246,11 +265,11 @@ QJsonObject SyncNetwork::applySolrRequest()
 	writeGetSolrRequest(req, postData, m_info->getBaseURL(), m_authent->getCurrentAccessToken(), "MR_DATASET");
 
 	// sending the request
-	QUuid netReqId = waitPostResult(req, postData);
+	QUuid netReqId = waitPostResult(searchWithSolr, req, postData);
 
 	//  receiving the response
-	RequestResponse res = m_requestMap[netReqId].second;
-	m_requestMap.remove(netReqId);
+	RequestResponse res = m_requestMap[netReqId].response;
+	manageRequestDeath(netReqId);
 
 	return qbytearrayToQJson(res.payload);
 }
@@ -261,23 +280,51 @@ void SyncNetwork::syncRequestSlot(QUuid netReqId, QByteArray payload, QJsonObjec
 {
 	if (m_requestMap.contains(netReqId))
 	{
+		RequestResponse res = { statusOrHttpCode, headers, payload };
+		m_requestMap[netReqId].response = res;
 		if (statusOrHttpCode == UPLOAD_CODE || statusOrHttpCode == DOWNLOAD_CODE)
 		{ // Request in progress
 			int bytesSent = headers["bytesSent"].toInt();
 			int bytesTotal = headers["bytesTotal"].toInt();
+			m_requestMap[netReqId].upToDate = true;
 		}
 		else
 		{ // Request ended -- it can be an error
-			RequestResponse res = { statusOrHttpCode, headers, payload};
-			m_requestMap[netReqId].second = res;
-			m_requestMap[netReqId].first->exit();
-
-			if (res.code != SUCCESS_CODE)
-			{
-				// trace if an error occured
-				qDebug() << "\nNETWORKERROR (code = " << res.code << ")\nLOOK AT https://doc.qt.io/qt-5/qnetworkreply.html#NetworkError-enum for more information\n";
-			}
+			m_requestMap[netReqId].waiter->exit();
 		}
+	}
+}
+
+void SyncNetwork::manageRequestDeath(QUuid netReqId)
+{
+	if (m_requestMap.contains(netReqId))
+	{
+		RequestResponse res = m_requestMap[netReqId].response;
+		if (res.code != SUCCESS_CODE)
+		{
+			// trace if an error occured
+			qDebug() << "\nNETWORKERROR (code = " << res.code << ") - SYNC REQUEST TYPE ID : " << m_requestMap[netReqId].type << "\nLOOK AT https://doc.qt.io/qt-5/qnetworkreply.html#NetworkError-enum for more information\n";
+			// notify
+			QString activity;
+			qDebug() << m_requestMap[netReqId].type;
+			switch (m_requestMap[netReqId].type)
+			{
+			case searchWithSolr: activity = "searchWithSolr"; break;
+			case getTreeViewDatasetProcessing: activity = "FETCHING Dataset Processing"; break;
+			case getTreeViewDatasetDetails: activity = "FETCHING Dataset Details"; break;
+			case getTreeViewStudyDetail: activity = "FETCHING Study Details"; break;
+			case getTreeViewExaminations: activity = "FETCHING Examinations"; break;
+			case getTreeViewStudies: activity = "FETCHING Studies"; break;
+			case getData: activity = "DOWNLOADING DATA"; break;
+			case addDataFile: activity = "ADDING A DATA FILE"; break;
+			case addDataContext: activity = "SENDING A DATA CONTEXT"; break;
+			case addFolder: activity = "CREATING A FOLDER"; break;
+			default:    break;
+			}
+			QString errorMessage = "ERROR WHILE " + activity + "\n NETWORK ERROR CODE :" + QString::number(res.code);
+			medNotif::createNotif(notifLevel::error, "SHANOIR PLUGIN", errorMessage);
+		}
+		m_requestMap.remove(netReqId);
 	}
 }
 
@@ -285,59 +332,100 @@ void SyncNetwork::syncRequestSlot(QUuid netReqId, QByteArray payload, QJsonObjec
 //--WAITERS-----////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
-QUuid SyncNetwork::waitGetResult(QNetworkRequest &req)
+QUuid SyncNetwork::waitGetResult(SyncRequestType type, QNetworkRequest &req)
 {
 	QUuid netReqId = QUuid::createUuid();
 
 	QEventLoop *waiter = new QEventLoop(nullptr);
-	m_requestMap[netReqId].first = waiter;
+	m_requestMap[netReqId].waiter = waiter;
+	m_requestMap[netReqId].type = type;
+	m_requestMap[netReqId].upToDate = false;
 
 	emit syncGet(netReqId, req);
 
+	updateRequestState(type, netReqId);
+
 	waiter->exec();
 	waiter->deleteLater();
 
 	return netReqId;
 }
 
-QUuid SyncNetwork::waitPostResult(QNetworkRequest &req, QByteArray &postData)
+void SyncNetwork::updateRequestState(SyncRequestType &type, const QUuid &netReqId)
+{
+	// aborts the request if it did not finished after 1 second of wait
+	int duration = requestsDurations[type];
+	if (duration > 0)
+	{
+		QTimer::singleShot(duration, [this, netReqId]() {
+			if (m_requestMap.contains(netReqId))
+			{
+				SyncRequest request = m_requestMap[netReqId];
+				if (request.upToDate)
+				{
+					m_requestMap[netReqId].upToDate = false;
+					updateRequestState(request.type, netReqId);
+				}
+				else if (request.response.code != SUCCESS_CODE)
+				{
+					emit syncAbort(netReqId);
+				}
+			}
+		});
+	}
+
+}
+
+QUuid SyncNetwork::waitPostResult(SyncRequestType type, QNetworkRequest &req, QByteArray &postData)
 {
 	QUuid netReqId = QUuid::createUuid();
 
 	QEventLoop *waiter = new QEventLoop(nullptr);
-	m_requestMap[netReqId].first = waiter;
+	m_requestMap[netReqId].waiter = waiter;
+	m_requestMap[netReqId].type = type;
+	m_requestMap[netReqId].upToDate = false;
 
 	emit syncPost(netReqId, req, postData);
 
+	updateRequestState(type, netReqId);
+
 	waiter->exec();
 	waiter->deleteLater();
 
 	return netReqId;
 }
 
-QUuid SyncNetwork::waitPostMultiResult(QNetworkRequest &req, QHttpMultiPart  *postData)
+QUuid SyncNetwork::waitPostMultiResult(SyncRequestType type, QNetworkRequest &req, QHttpMultiPart  *postData)
 {
 	QUuid netReqId = QUuid::createUuid();
 
 	QEventLoop *waiter = new QEventLoop(nullptr);
-	m_requestMap[netReqId].first = waiter;
+	m_requestMap[netReqId].waiter = waiter;
+	m_requestMap[netReqId].type = type;
+	m_requestMap[netReqId].upToDate = false;
 
 	emit syncPostMulti(netReqId, req, postData);
 
+	updateRequestState(type, netReqId);
+
 	waiter->exec();
 	waiter->deleteLater();
 
 	return netReqId;
 }
 
-QUuid SyncNetwork::waitPutResult(QNetworkRequest &req, QByteArray &postData)
+QUuid SyncNetwork::waitPutResult(SyncRequestType type, QNetworkRequest &req, QByteArray &postData)
 {
 	QUuid netReqId = QUuid::createUuid();
 
 	QEventLoop *waiter = new QEventLoop(nullptr);
-	m_requestMap[netReqId].first = waiter;
+	m_requestMap[netReqId].waiter = waiter;
+	m_requestMap[netReqId].type = type;
+	m_requestMap[netReqId].upToDate = false;
 
 	emit syncPut(netReqId, req, postData);
+
+	updateRequestState(type, netReqId);
 
 	waiter->exec();
 	waiter->deleteLater();
@@ -354,40 +442,54 @@ QUuid SyncNetwork::waitPutResult(QNetworkRequest &req, QByteArray &postData)
 
 QList<StudyOverview>  SyncNetwork::getStudies()
 {
+	QList<StudyOverview> studies;
+
 	// creation of the request
 	QNetworkRequest req;
 	writeGetStudiesRequest(req, m_info->getBaseURL(), m_authent->getCurrentAccessToken());
 
 	// sending the request
-	QUuid netReqId = waitGetResult(req);
+	QUuid netReqId = waitGetResult(getTreeViewStudies, req);
 
 	// receiving the response
-	RequestResponse res = m_requestMap[netReqId].second;
-	m_requestMap.remove(netReqId);
+	RequestResponse res = m_requestMap[netReqId].response;
 
-	// handling the results : parsing
-	QJsonArray studies_response = qbytearrayToQJsonArray(res.payload);
+	if (res.code == SUCCESS_CODE)
+	{
+		// handling the results : parsing
+		QJsonArray studies_response = qbytearrayToQJsonArray(res.payload);
+		studies = parseStudies(studies_response);
+	}
 
-	return parseStudies(studies_response);
+	manageRequestDeath(netReqId);
+
+	return studies;
 }
 
 Study SyncNetwork::getStudyDetails(int studyId)
 {
+	Study study;
+
 	// creation of the request
 	QNetworkRequest req;
 	writeGetStudyDetailsRequest(req, m_info->getBaseURL(), m_authent->getCurrentAccessToken(), studyId);
 
 	// sending the request
-	QUuid netReqId = waitGetResult(req);
+	QUuid netReqId = waitGetResult(getTreeViewStudyDetail, req);
 
 	// receiving the response
-	RequestResponse res = m_requestMap[netReqId].second;
-	m_requestMap.remove(netReqId);
+	RequestResponse res = m_requestMap[netReqId].response;
 
-	// handling the results : parsing
-	QJsonObject study_response = qbytearrayToQJson(res.payload);
+	if(res.code == SUCCESS_CODE)
+	{
+		// handling the results : parsing
+		QJsonObject study_response = qbytearrayToQJson(res.payload);
+		study = parseStudy(study_response);
+	}
 
-	return parseStudy(study_response);
+	manageRequestDeath(netReqId);
+
+	return study;
 }
 
 
@@ -400,53 +502,73 @@ QList<Examination> SyncNetwork::getExaminations(int stud_id, int subj_id)
 	writeGetExaminationsRequest(req, m_info->getBaseURL(), m_authent->getCurrentAccessToken(), stud_id, subj_id);
 
 	// sending the request
-	QUuid netReqId = waitGetResult(req);
+	QUuid netReqId = waitGetResult(getTreeViewExaminations, req);
 
 	// receiving the response
-	RequestResponse res = m_requestMap[netReqId].second;
-	m_requestMap.remove(netReqId);
+	RequestResponse res = m_requestMap[netReqId].response;
 
-	// handling the results : parsing
-	QJsonArray examinations_response = qbytearrayToQJsonArray(res.payload);
+	if(res.code == SUCCESS_CODE)
+	{
+		// handling the results : parsing
+		QJsonArray examinations_response = qbytearrayToQJsonArray(res.payload);
+		examinations = parseExaminations(examinations_response);
+	}
 
-	return parseExaminations(examinations_response);
+	manageRequestDeath(netReqId);
+
+	return examinations;
 }
 
 DatasetDetails SyncNetwork::getDatasetDetails(int id)
 {
+	DatasetDetails dsDetails;
 
 	// creation of the request
 	QNetworkRequest req;
 	writeGetDatasetDetailsRequest(req, m_info->getBaseURL(), m_authent->getCurrentAccessToken(), id);
 
 	// sending the request
-	QUuid netReqId = waitGetResult(req);
+	QUuid netReqId = waitGetResult(getTreeViewDatasetDetails, req);
 
 	// receiving the response
-	RequestResponse res = m_requestMap[netReqId].second;
-	m_requestMap.remove(netReqId);
+	RequestResponse res = m_requestMap[netReqId].response;
 
-	// handling the results (parsing the dataset details)
-	QJsonObject dataset_response = qbytearrayToQJson(res.payload);
-	return parseDatasetDetails(dataset_response);
+	if(res.code == SUCCESS_CODE)
+	{
+		// handling the results (parsing the dataset details)
+		QJsonObject dataset_response = qbytearrayToQJson(res.payload);
+		dsDetails =  parseDatasetDetails(dataset_response);
+	}
+
+	manageRequestDeath(netReqId);
+
+	return dsDetails;
 }
 
 
 QJsonObject SyncNetwork::getDatasetProcessing(int id)
 {
+	QJsonObject dsProcessing;
+	
 	// creation of the request
 	QNetworkRequest req;
 	writeGetDatasetProcessingRequest(req, m_info->getBaseURL(), m_authent->getCurrentAccessToken(), id);
 
 
 	// sending the request
-	QUuid netReqId = waitGetResult(req);
+	QUuid netReqId = waitGetResult(getTreeViewDatasetProcessing, req);
 
 	// receiving the response
-	RequestResponse res = m_requestMap[netReqId].second;
-	m_requestMap.remove(netReqId);
+	RequestResponse res = m_requestMap[netReqId].response;
 
-	return qbytearrayToQJson(res.payload);
+	if(res.code == SUCCESS_CODE)
+	{
+		dsProcessing =  qbytearrayToQJson(res.payload);
+	}
+
+	manageRequestDeath(netReqId);
+
+	return dsProcessing;
 }
 
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
@@ -555,7 +677,7 @@ QList<levelMinimalEntries> SyncNetwork::getDatasetAcquisitionMinimalEntries(QStr
 				for (Dataset ds : datasets)
 				{
 					QString key = id + "." + QString::number(ds.id);
-					QString description = "Dataset n�" + QString::number(ds.id) + " of type " + ds.type + " with " + QString::number(ds.processings.size()) + " processings";
+					QString description = "Dataset " + QString::number(ds.id) + " of type " + ds.type + " with " + QString::number(ds.processings.size()) + " processings";
 					entries.append({ key, ds.name, description, entryTypeLocal::both });
 				}
 			}

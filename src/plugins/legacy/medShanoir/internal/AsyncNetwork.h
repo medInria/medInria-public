@@ -4,15 +4,11 @@
 #include <QObject>
 #include <QUuid>
 #include <QVariant>
-#include <QVector>
+#include <QPair>
 
 #include <medAbstractSource.h>
 #include <RequestManager.h>
 
-// #define ASYNC_GET_DATA 0
-// #define ASYNC_GET_DATA_AGAIN 1
-// #define ASYNC_ADD_DATA_CONTEXT 2
-// #define ASYNC_ADD_DATA_FILE 3
 
 using levelMinimalEntries = medAbstractSource::levelMinimalEntries;
 using datasetAttributes = medAbstractSource::datasetAttributes;
@@ -63,6 +59,15 @@ signals:
 
 private:
 
+	enum AsyncRequestType : int
+	{
+		getData = 1,
+		addDataFile = 2,
+		addDataContext = 3
+	};
+
+private:
+
 	// main interpretation methods 
 	// --they are called from the slots
 	void getAsyncDataInterpretation(QUuid netReqId, RequestResponse res);
@@ -107,8 +112,8 @@ private:
 	SyncNetwork           * m_syncNet;
 	QAtomicInt              m_medReqId;
 
-	QMap<QUuid, int>                 m_requestIdMap;
-	QMap<int, QVariant>              m_idResultMap;
+	QMap<QUuid, QPair<int, AsyncRequestType>>   m_requestIdMap;
+	QMap<int, QVariant>                    m_idResultMap;
 	
 	QStringList m_filesToRemove;
 };
