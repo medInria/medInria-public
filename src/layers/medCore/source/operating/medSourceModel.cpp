@@ -629,9 +629,9 @@ void medSourceModel::setOnline(bool pi_bOnline)
     }
 }
 
-medSourceModel::datasetAttributes medSourceModel::getMendatoriesMetaData(QModelIndex const & index)
+medSourceHandler::datasetAttributes medSourceModel::getMendatoriesMetaData(QModelIndex const & index)
 {
-    datasetAttributes res;
+    medSourceHandler::datasetAttributes res;
 
     if (index.isValid())
     {
@@ -644,86 +644,6 @@ medSourceModel::datasetAttributes medSourceModel::getMendatoriesMetaData(QModelI
     }
 
     return res;
-}
-
-QList<QMap<int, QString>> medSourceModel::getAdditionnalMetaData(QModelIndex const & index)
-{
-    QList<QMap<int, QString>> res;
-
-    if (index.isValid())
-    {
-        QMap<int, QString> resEntryTmp;
-
-        medSourceModelItem *pItem = getItem(index);
-        for (auto entry : pItem->itemData)
-        {
-            if (entry.contains(1001) && entry.contains(1002))
-            {
-                resEntryTmp[1001] = entry[1001].toString();
-                resEntryTmp[1002] = entry[1002].toString();
-                if (entry.contains(1003))
-                {
-                    resEntryTmp[1003] = entry[1003].toString();
-                }
-                res.append(resEntryTmp);
-            }
-        }
-    }
-
-    return res;
-}
-
-bool medSourceModel::setAdditionnalMetaData(QModelIndex const & index, QList<QMap<int, QString>> &additionnalMetaData)
-{
-    bool bRes = true;
-
-
-    if (index.isValid())
-    {
-        QMap<int, QVariant> resEntryTmp;
-
-        medSourceModelItem *pItem = getItem(index);
-
-
-        for (auto entry : additionnalMetaData)
-        {
-            if (entry.contains(1001) && entry.contains(1002))
-            {
-                resEntryTmp[1001] = entry[1001];
-                resEntryTmp[1002] = entry[1002];
-                if (entry.contains(1003))
-                {
-                    resEntryTmp[1003] = entry[1003];
-                }
-
-                //
-                int i = 0;
-                bool bFound = false;
-                while (i < pItem->itemData.keys().size() && !bFound)
-                {
-                    if (pItem->itemData[i].contains(1001) && pItem->itemData[i][1001] == resEntryTmp[1001])
-                    {
-                        bFound = true;
-                    }
-                    else
-                    {
-                        ++i;
-                    }
-                }
-                pItem->itemData[i] = resEntryTmp;
-            }
-            else
-            {
-                qDebug()<< "[WARN] Try to insert bad additional metadata to " <<  d->sourceInstanceId << " at level " << pItem->level();
-            }
-        }
-    }
-    else
-    {
-        bRes = false;
-    }
-
-    return bRes;
 }
 
 bool medSourceModel::currentOnlineStatus()
@@ -850,7 +770,7 @@ bool medSourceModel::getChildrenNames(QStringList uri, QStringList &names)
     return pItem != nullptr;
 }
 
-bool medSourceModel::setAdditionnalMetaData2(QModelIndex const & index, datasetAttributes const & attributes)
+bool medSourceModel::setAdditionnalMetaData(QModelIndex const & index, medSourceHandler::datasetAttributes const & attributes)
 {
     bool bRes = false;
 
@@ -867,7 +787,7 @@ bool medSourceModel::setAdditionnalMetaData2(QModelIndex const & index, datasetA
     return bRes;
 }
 
-bool medSourceModel::setAdditionnalMetaData2(QModelIndex const & index, QString const & key, QVariant const & value, QString const & tag)
+bool medSourceModel::getAdditionnalMetaData(QModelIndex const & index, medSourceHandler::datasetAttributes & attributes)
 {
     bool bRes = false;
 
@@ -876,52 +796,14 @@ bool medSourceModel::setAdditionnalMetaData2(QModelIndex const & index, QString 
         medSourceModelItem *pItem = getItem(index);
         if (pItem->model == this)
         {
-            pItem->itemMeta[key] = value;
-            if (tag.isEmpty())
+            QMap<QString, QString> attr;
+            for (auto key: pItem->itemMeta.keys())
             {
-                pItem->itemMetaTag.remove(key);
+                attr[key] = pItem->itemMeta[key].toString();
             }
-            else
-            {
-                pItem->itemMetaTag[key] = tag;
-            }
-            bRes = true;
-        }
-    }
-
-    return bRes;
-}
-
-bool medSourceModel::additionnalMetaData2(QModelIndex const & index, datasetAttributes & attributes)
-{
-    bool bRes = false;
-
-    if (index.isValid())
-    {
-        medSourceModelItem *pItem = getItem(index);
-        if (pItem->model == this)
-        {
-            attributes.values = pItem->itemMeta;
+            attributes.values = attr;
             attributes.tags = pItem->itemMetaTag;
             bRes = true;
-        }
-    }
-
-    return bRes;
-}
-
-bool medSourceModel::additionnalMetaData2(QModelIndex const & index, QString const & key, QVariant & value, QString & tag)
-{
-    bool bRes = false;
-
-    if (index.isValid())
-    {
-        medSourceModelItem *pItem = getItem(index);
-        if (pItem->model == this && pItem->itemMeta.contains(key))
-        {
-            value = pItem->itemMeta[key];
-            tag   = pItem->itemMetaTag.value(key);
-            bRes  = true;
         }
     }
 
@@ -1171,7 +1053,8 @@ void medSourceModel::populateLevel(QModelIndex const & index)
 {
     //QVariantList entries; //QList<QList<QString>> list of entries of the given level, each entry has a list of 3 elements {key, name, description}. Key is never displayed, only used to fetch sub-level and used has unique key
     QString key = getItem(index)->iid();
-    QList<QMap<QString, QString>> entries;
+    // QList<QMap<QString, QString>> entries;
+    medSourceHandler::listAttributes entries;
     medSourceModelItem *pItem = getItem(index);
     int iLevel = pItem->level() + 1;
 
@@ -1191,7 +1074,7 @@ void medSourceModel::populateLevel(QModelIndex const & index)
     { 
         if (medSourceHandler::instance()->attributesForBuildTree(d->sourceInstanceId, iLevel, key, entries))
         {
-            emit layoutAboutToBeChanged(); //this is useful to update arrow on the left if click is not inside
+             emit layoutAboutToBeChanged(); //this is useful to update arrow on the left if click is not inside
             QVector<QPair<int, int> > rangeToRemove; // vector of ranges to delete, <beginRange, endRange>
             computeRowRangesToRemove(pItem, entries, rangeToRemove);
             removeRowRanges(rangeToRemove, index);
@@ -1208,7 +1091,7 @@ void medSourceModel::populateLevel(QModelIndex const & index)
     }
 }
 
-bool medSourceModel::itemStillExist(QList<QMap<QString, QString>> &entries, medSourceModelItem * pItem)
+bool medSourceModel::itemStillExist(medSourceHandler::listAttributes &entries, medSourceModelItem * pItem)
 {
     bool bFind = false;
 
@@ -1218,14 +1101,14 @@ bool medSourceModel::itemStillExist(QList<QMap<QString, QString>> &entries, medS
     auto end = entries.end();
     while ((it != end) && !bFind)
     {
-        bFind = pItem->iid() == (*it)[iidColName];
+        bFind = pItem->iid() == (*it).values[iidColName];
         ++it;
     }
 
     return bFind;
 }
 
-void medSourceModel::computeRowRangesToRemove(medSourceModelItem * pItem, QList<QMap<QString, QString>> &entries, QVector<QPair<int, int>> &rangeToRemove)
+void medSourceModel::computeRowRangesToRemove(medSourceModelItem * pItem, medSourceHandler::listAttributes &entries, QVector<QPair<int, int>> &rangeToRemove)
 {
     int iStartRemoveRange = -1;
     for (int i = 0; i < pItem->childCount(); ++i)
@@ -1287,20 +1170,20 @@ void medSourceModel::removeRowRanges(QVector<QPair<int, int>> &rangeToRemove, co
 
 
 
-void medSourceModel::computeRowRangesToAdd(medSourceModelItem * pItem, QList<QMap<QString, QString>> &entries, QMap<int, QList<QMap<QString, QString>>> &entriesToAdd)
+void medSourceModel::computeRowRangesToAdd(medSourceModelItem * pItem, medSourceHandler::listAttributes &entries, QMap<int, QList<QMap<QString, QString>>> &entriesToAdd)
 {
     int  iLastItemAlreadyPresent = -1;
     
     QString iidColName = getColumnNameByLevel(pItem->level()+1, 0);
     if (!iidColName.isEmpty())
     {    
-        for (QMap<QString, QString> &var : entries)
+        for (medSourceHandler::datasetAttributes &var : entries)
         {
-            int iTmpLastItemAlreadyPresent = pItem->childIndex(var[iidColName]);
+            int iTmpLastItemAlreadyPresent = pItem->childIndex(var.values[iidColName]);
 
             if (iTmpLastItemAlreadyPresent == -1)
             {
-                entriesToAdd[iLastItemAlreadyPresent + 1].append(var);
+                entriesToAdd[iLastItemAlreadyPresent + 1].append(var.values);
             }
             else
             {

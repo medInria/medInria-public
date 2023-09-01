@@ -17,6 +17,7 @@
 #include <medDataIndex.h>
 
 #include <medSourceModelItem.h>
+#include <medSourceHandler.h>
 
 #include <medCoreExport.h>
 
@@ -42,65 +43,62 @@ class medAbstractData;
 class MEDCORE_EXPORT medSourceModel : public QAbstractItemModel
 {
 
-	Q_OBJECT
+    Q_OBJECT
 
 public:
 
-	struct datasetAttributes;
 
-	medSourceModel(medDataHub *parent, QString const & sourceIntanceId);
-	virtual ~medSourceModel();
+    medSourceModel(medDataHub *parent, QString const & sourceIntanceId);
+    virtual ~medSourceModel();
 
-	// ////////////////////////////////////////////////////////////////////////
-	// Pure Virtual Override
-	QVariant	data(const QModelIndex &index, int role = Qt::DisplayRole) const override;
+    // ////////////////////////////////////////////////////////////////////////
+    // Pure Virtual Override
+    QVariant	data(const QModelIndex &index, int role = Qt::DisplayRole) const override;
 
-	QModelIndex	index(int row, int column, const QModelIndex &parent = QModelIndex()) const override;
-	QModelIndex	parent(const QModelIndex &index) const override;
+    QModelIndex	index(int row, int column, const QModelIndex &parent = QModelIndex()) const override;
+    QModelIndex	parent(const QModelIndex &index) const override;
 
-	int	columnCount(const QModelIndex &parent = QModelIndex()) const override;
-	int	rowCount(const QModelIndex &parent = QModelIndex()) const override;
-
-
-	// ////////////////////////////////////////////////////////////////////////
-	// Simple Virtual Override
-	bool insertRows(int row, int count, const QModelIndex &parent = QModelIndex()) override;
-	bool removeRows(int row, int count, const QModelIndex &parent = QModelIndex()) override;
+    int	columnCount(const QModelIndex &parent = QModelIndex()) const override;
+    int	rowCount(const QModelIndex &parent = QModelIndex()) const override;
 
 
-	bool canFetchMore(const QModelIndex& parent) const override;
-	void fetchMore(const QModelIndex& parent) override;
+    // ////////////////////////////////////////////////////////////////////////
+    // Simple Virtual Override
+    bool insertRows(int row, int count, const QModelIndex &parent = QModelIndex()) override;
+    bool removeRows(int row, int count, const QModelIndex &parent = QModelIndex()) override;
 
-	QVariant headerData(int section, Qt::Orientation orientation, int role) const override;
+
+    bool canFetchMore(const QModelIndex& parent) const override;
+    void fetchMore(const QModelIndex& parent) override;
+
+    QVariant headerData(int section, Qt::Orientation orientation, int role) const override;
 
 	bool setData(const QModelIndex &index, const QVariant &value, int role = Qt::EditRole);
 
-	Qt::ItemFlags flags(const QModelIndex &index) const override;
+    Qt::ItemFlags flags(const QModelIndex &index) const override;
 
-	Qt::DropActions supportedDropActions() const override;
-	QStringList mimeTypes() const override;
-	QMimeData *mimeData(const QModelIndexList &indexes) const override;
-	bool dropMimeData(const QMimeData *data, Qt::DropAction action, int row, int column, const QModelIndex &parent) override;
+    Qt::DropActions supportedDropActions() const override;
+    QStringList mimeTypes() const override;
+    QMimeData *mimeData(const QModelIndexList &indexes) const override;
+    bool dropMimeData(const QMimeData *data, Qt::DropAction action, int row, int column, const QModelIndex &parent) override;
 
-	void addDataFromSource(medDataIndex dataIndex, medAbstractData * data, const QModelIndex & parent);
-	void addDataFromFile(QString path, medAbstractData * data, const QModelIndex & parent);
+    void addDataFromSource(medDataIndex dataIndex, medAbstractData * data, const QModelIndex & parent);
+    void addDataFromFile(QString path, medAbstractData * data, const QModelIndex & parent);
 
 
 	void createFolder(const QModelIndex &index);
 
-	// ////////////////////////////////////////////////////////////////////////
-	// Simple methods
-	QString getColumnNameByLevel(int iLevel, int iCol) const;
-	int  getColumnInsideLevel(int level, int section) const;
-	int  getSectionInsideLevel(int level, int column) const;
-	bool fetch(QStringList uri);
+    // ////////////////////////////////////////////////////////////////////////
+    // Simple methods
+    QString getColumnNameByLevel(int iLevel, int iCol) const;
+    int  getColumnInsideLevel(int level, int section) const;
+    int  getSectionInsideLevel(int level, int column) const;
+    bool fetch(QStringList uri);
 	bool fetchData(QModelIndex index);
     QString getSourceIntanceId();
     void setOnline(bool pi_bOnline);
 
-    datasetAttributes getMendatoriesMetaData(QModelIndex const & index);
-    QList<QMap<int, QString>> getAdditionnalMetaData(QModelIndex const & index);
-    bool setAdditionnalMetaData(QModelIndex const & index, QList<QMap<int, QString>> &additionnalMetaData);
+    medSourceHandler::datasetAttributes getMendatoriesMetaData(QModelIndex const & index);
 
     bool currentOnlineStatus();
 
@@ -117,10 +115,8 @@ public:
     QString     keyForPath(QStringList rootUri, QString folder);
     bool        getChildrenNames(QStringList uri, QStringList &names);
 
-    bool        setAdditionnalMetaData2(QModelIndex const & index, datasetAttributes const &attributes);
-    bool        setAdditionnalMetaData2(QModelIndex const & index, QString const & key, QVariant const & value, QString const & tag = QString() );
-    bool        additionnalMetaData2(QModelIndex const & index, datasetAttributes & attributes);
-    bool        additionnalMetaData2(QModelIndex const & index, QString const & key, QVariant & value, QString & tag);
+    bool        setAdditionnalMetaData(QModelIndex const & index, medSourceHandler::datasetAttributes const &attributes);
+    bool        getAdditionnalMetaData(QModelIndex const & index, medSourceHandler::datasetAttributes & attributes);
 
     bool addEntry(QString pi_key, QString pi_name, QString pi_description, unsigned int pi_uiLevel, QString pi_parentKey);
     bool substituteTmpKey(QStringList uri, QString pi_key);
@@ -132,47 +128,39 @@ public:
     void expandAll(QModelIndex index = QModelIndex());
 
 public slots:
-	void itemPressed(QModelIndex const &index);
-	bool abortRequest(QModelIndex const &index); //abort the requestId
+    void itemPressed(QModelIndex const &index);
+    bool abortRequest(QModelIndex const &index); //abort the requestId
 
 
 
 
 private:
-	//medSourceModelItem* getItem(const QModelIndex &index) const;
-	medSourceModelItem* getItem(int iLevel, QString id) const;
-	QModelIndex getIndex(QString iid, QModelIndex const &parent = QModelIndex()) const;
-	QModelIndex getIndex(medSourceModelItem *pItem) const;
-	bool fetchColumnNames(const QModelIndex &index);
-	void populateLevel(QModelIndex const &index);
+    //medSourceModelItem* getItem(const QModelIndex &index) const;
+    medSourceModelItem* getItem(int iLevel, QString id) const;
+    QModelIndex getIndex(QString iid, QModelIndex const &parent = QModelIndex()) const;
+    QModelIndex getIndex(medSourceModelItem *pItem) const;
+    bool fetchColumnNames(const QModelIndex &index);
+    void populateLevel(QModelIndex const &index);
 
 
-	bool itemStillExist(QList<QMap<QString, QString>> &entries, medSourceModelItem * pItem);
-	void computeRowRangesToRemove(medSourceModelItem * pItem, QList<QMap<QString, QString>> &entries, QVector<QPair<int, int>> &rangeToRemove);
-	void removeRowRanges(QVector<QPair<int, int>> &rangeToRemove, const QModelIndex & index);
+    bool itemStillExist(medSourceHandler::listAttributes &entries, medSourceModelItem * pItem);
+    void computeRowRangesToRemove(medSourceModelItem * pItem, medSourceHandler::listAttributes &entries, QVector<QPair<int, int>> &rangeToRemove);
+    void removeRowRanges(QVector<QPair<int, int>> &rangeToRemove, const QModelIndex & index);
 
-	void computeRowRangesToAdd(medSourceModelItem * pItem, QList<QMap<QString, QString>> &entries, QMap<int, QList<QMap<QString, QString>>> &entriesToAdd);
-	void addRowRanges(QMap<int, QList<QMap<QString, QString>>> &entriesToAdd, const QModelIndex & index);
+    void computeRowRangesToAdd(medSourceModelItem * pItem, medSourceHandler::listAttributes &entries, QMap<int, QList<QMap<QString, QString>>> &entriesToAdd);
+    void addRowRanges(QMap<int, QList<QMap<QString, QString>>> &entriesToAdd, const QModelIndex & index);
 
-	bool currentLevelFetchable(medSourceModelItem * pItemCurrent);
+    bool currentLevelFetchable(medSourceModelItem * pItemCurrent);
 
-	friend class medSourceModelItem;
-	bool removeItem(medSourceModelItem *pi_item);
-	bool registerItem(medSourceModelItem *pi_item);
+    friend class medSourceModelItem;
+    bool removeItem(medSourceModelItem *pi_item);
+    bool registerItem(medSourceModelItem *pi_item);
 
 signals:
-	void online(bool);
-	void columnCountChange(int);
+    void online(bool);
+    void columnCountChange(int);
 
 private:
-	medDataModelElementPrivate* d;
+    medDataModelElementPrivate* d;
 
-public:
-	struct datasetAttributes
-	{
-		QMap<QString, QVariant> values; // <keyName, value>
-		QMap<QString, QString> tags;
-		bool dropMimeData(const QMimeData * data, Qt::DropAction action, int row, int column, const QModelIndex & parent);
-		// <keyName, tag value>    
-	};
 };

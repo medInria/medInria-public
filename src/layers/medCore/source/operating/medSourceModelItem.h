@@ -40,7 +40,7 @@ public:
     medSourceModelItem* hasChildItemWithIID(QString iid);
     void setParent(medSourceModelItem *parent);
     QVariant data  (int column,  int role = Qt::DisplayRole) const;
-    void setMetaData(QMap<QString, QVariant> const &attributes, QMap<QString, QString> const &tags);
+    void setMetaData(QMap<QString, QString> const &attributes, QMap<QString, QString> const &tags);
 
 
     inline void setData(QVariant value, int column = 0, int role = Qt::DisplayRole) { itemData[column][role] = value; }

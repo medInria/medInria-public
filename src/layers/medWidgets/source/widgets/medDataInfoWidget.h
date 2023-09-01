@@ -15,10 +15,10 @@
 
 #include <medWidgetsExport.h>
 
-
 #include <QWidget>
 #include <QDialog>
 #include <QMap>
+#include <QMultiMap>
 #include <QString>
 
 class medSourceModelPresenter;
@@ -27,6 +27,6 @@ class medDataInfoWidget : public QDialog
 {
     Q_OBJECT
 public:
-    medDataInfoWidget(QMap<QString, QString> dataAttributes, QWidget *parent = nullptr);
+    medDataInfoWidget(QMap<QString, QString> dataAttributes, QMultiMap<QString, QString> optionalAttributes, QWidget *parent = nullptr);
     virtual ~medDataInfoWidget();
 };

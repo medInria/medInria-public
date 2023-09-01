@@ -147,7 +147,7 @@ void medSourcesWidget::addSource(medDataHub *dataHub, QString sourceInstanceId)
     //connect(readerAction,  &QAction::triggered, [=]() {  emit infoActionSignal(this->itemFromMenu(pMenu)); });
     //connect(unloadAction,  &QAction::triggered, [=]() {  emit infoActionSignal(this->itemFromMenu(pMenu)); });
     connect(infoAction,    &QAction::triggered, [=]() {
-        medSourceModel::datasetAttributes mandatoriesAttributes;
+        medSourceHandler::datasetAttributes mandatoriesAttributes;
 
         QModelIndex index = this->indexFromMenu(pMenu);
         if (index.isValid())
@@ -156,9 +156,30 @@ void medSourcesWidget::addSource(medDataHub *dataHub, QString sourceInstanceId)
             QMap<QString, QString> dataAttributes;
             for (auto & key : mandatoriesAttributes.values.keys())
             {
-                dataAttributes[key] = mandatoriesAttributes.values[key].toString();
+                dataAttributes[key] = mandatoriesAttributes.values[key];
             }
-            auto popupDataInfo = new medDataInfoWidget(dataAttributes);
+            
+            medDataIndex medIndex = static_cast<const medSourceModel*>(index.model())->dataIndexFromModelIndex(index);
+            medSourceHandler::datasetAttributes optionalAttr = dataHub->getOptionalMetaData(medIndex);
+            QMultiMap<QString, QString> optionalMultiMap;
+
+            for (auto key: optionalAttr.values.keys())
+            {
+                if (optionalAttr.tags.contains(key))
+                {
+                    auto tag = optionalAttr.tags.take(key);
+                    optionalMultiMap.insert(key, tag);
+                }
+                optionalMultiMap.insert(key, optionalAttr.values[key]);
+            }
+
+            for (auto key: optionalAttr.tags.keys())
+            {
+                optionalMultiMap.insert(key, optionalAttr.tags[key]);
+                optionalMultiMap.insert(key, " ");
+            }
+
+            auto popupDataInfo = new medDataInfoWidget(dataAttributes, optionalMultiMap);
             popupDataInfo->show();
         }
 
