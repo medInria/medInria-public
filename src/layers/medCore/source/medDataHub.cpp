@@ -632,9 +632,9 @@ void medDataHub::removeSource(QString const & pi_sourceId)
     emit sourceRemoved(pi_sourceId);
 }
 
-medDataHub::datasetAttributes medDataHub::getMetaData(medDataIndex const & index)
+medSourceHandler::datasetAttributes medDataHub::getMetaData(medDataIndex const & index)
 {
-    datasetAttributes metaRes;
+    medSourceHandler::datasetAttributes metaRes;
 
     auto *pModel = getModel(index.sourceId());
     if (pModel)
@@ -643,7 +643,7 @@ medDataHub::datasetAttributes medDataHub::getMetaData(medDataIndex const & index
         auto x = pModel->getMendatoriesMetaData(modelIndex);
         for (auto & valueKey : x.values.keys())
         {
-            metaRes.values[valueKey] = x.values[valueKey].toString();
+            metaRes.values[valueKey] = x.values[valueKey];
         }
         for (auto & tagKey : x.tags.keys())
         {
@@ -651,6 +651,33 @@ medDataHub::datasetAttributes medDataHub::getMetaData(medDataIndex const & index
         }
     }
 
+    return metaRes;
+}
+
+medSourceHandler::datasetAttributes medDataHub::getOptionalMetaData(medDataIndex const & index)
+{
+    medSourceHandler::datasetAttributes metaRes;
+
+    auto *pModel = getModel(index.sourceId());
+    if (pModel)
+    {
+        auto modelIndex = pModel->toIndex(index);
+        medSourceHandler::datasetAttributes attributes;
+        bool ok = pModel->getAdditionnalMetaData(modelIndex, attributes);
+        if (ok)
+        {
+            if (attributes.values.isEmpty())
+            {
+                m_sourcesHandler->optionalAttributes(index.sourceId(),index.level()-1, index.dataId(), metaRes);
+                pModel->setAdditionnalMetaData(modelIndex, metaRes);
+            }
+            else
+            {
+                metaRes = attributes;
+            }
+        }
+
+    }   
     return metaRes;
 }
 

@@ -26,6 +26,7 @@
 #include <medAsyncRequest.h>
 #include <medDefaultWritingPolicy.h>
 #include <medVirtualRepresentation.h>
+#include <medSourceHandler.h>
 
 #include <dtkCoreSupport/dtkSmartPointer.h>
 
@@ -38,7 +39,6 @@ class MEDCORE_EXPORT medDataHub : public QObject
     Q_OBJECT
 
 public:
-    class datasetAttributes;
 
 
     static medDataHub* instance(QObject *parent = nullptr);
@@ -47,7 +47,8 @@ public:
     QString getDataName(medDataIndex const & index);
 
     medAbstractData * getData(medDataIndex const & index);
-    datasetAttributes getMetaData(medDataIndex const & index);
+    medSourceHandler::datasetAttributes getMetaData(medDataIndex const & index);
+    medSourceHandler::datasetAttributes getOptionalMetaData(medDataIndex const & index);
 
 
     bool saveData(medAbstractData *pi_pData, QString const &pi_baseName, QStringList &pio_uri);
@@ -136,14 +137,6 @@ private:
     QMap<medDataIndex, dtkSmartPointer<medAbstractData> > m_IndexToData;
     static medDataHub * s_instance;
 
-public:
-    struct datasetAttributes
-    {
-        QMap<QString, QString> values; // <keyName, value>
-        QMap<QString, QString> tags;   // <keyName, tag value>
-    };
-
-    using  listAttributes = QList<datasetAttributes>;
 };
 
 QString fileSysPathToIndex(const QString &path );

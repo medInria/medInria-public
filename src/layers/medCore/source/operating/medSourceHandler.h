@@ -33,9 +33,14 @@ class MEDCORE_EXPORT medSourceHandler : public QObject
     Q_OBJECT
 
 public:
-    using datasetAttributes = QMap<QString, QString>;
-    using levelAttributes = QList<datasetAttributes>;
+    struct datasetAttributes
+    {
+        QMap<QString, QString> values; // <keyName, value>
+        QMap<QString, QString> tags;   // <keyName, tag value>
+    };
+    using  listAttributes = QList<datasetAttributes>;
 
+ 
     static medSourceHandler* instance(QObject *parent = nullptr);
 	~medSourceHandler();
 
@@ -43,9 +48,9 @@ public:
     // Members functions to interrogate sources
     bool sourceGlobalInfo       (QString const & pi_sourceInstanceId, bool &po_bOnline, bool & po_bLocal, bool &po_bWritable, bool &po_bCache);
     bool mandatoryAttributesKeys(QString const & pi_sourceInstanceId, unsigned int pi_uiLevel, QStringList & po_attributes);
-    bool attributesForBuildTree (QString const & pi_sourceInstanceId, unsigned int pi_uiLevel, QString const & key, levelAttributes & po_entries);
-    bool mandatoriesAttributes  (QString const & pi_sourceInstanceId, unsigned int pi_uiLevel, QString const & parentKey, levelAttributes & po_entries);
-    bool optionalAttributes     (QString const & pi_sourceInstanceId, unsigned int pi_uiLevel, QString const & key, datasetAttributes & po_attributes, datasetAttributes & po_tags);
+    bool attributesForBuildTree (QString const & pi_sourceInstanceId, unsigned int pi_uiLevel, QString const & key, listAttributes & po_entries);
+    bool mandatoriesAttributes  (QString const & pi_sourceInstanceId, unsigned int pi_uiLevel, QString const & parentKey, listAttributes & po_entries);
+    bool optionalAttributes     (QString const & pi_sourceInstanceId, unsigned int pi_uiLevel, QString const & key, datasetAttributes & po_attributes);
     bool getDirectData          (QString const & pi_sourceInstanceId, unsigned int pi_uiLevel, QString const & key, QVariant & po_data);
     bool addDirectData          (QString const & pi_sourceInstanceId, unsigned int pi_uiLevel, QString const & parentKey, QVariant const & pi_data, medAbstractSource::levelMinimalEntries & pio_minimalEntries);
     bool createFolder           (QString const & pi_sourceInstanceId, unsigned int pi_uiLevel, QString const & parentKey, medAbstractSource::levelMinimalEntries & pio_minimalEntries, medAbstractSource::datasetAttributes const &pi_attributes);

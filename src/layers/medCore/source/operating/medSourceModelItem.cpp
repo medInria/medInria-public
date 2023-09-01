@@ -174,7 +174,7 @@ void medSourceModelItem::setParent(medSourceModelItem * parent)
     model->registerItem(this);
 }
 
-void medSourceModelItem::setMetaData(QMap<QString, QVariant> const & attributes, QMap<QString, QString> const & tags)
+void medSourceModelItem::setMetaData(QMap<QString, QString> const & attributes, QMap<QString, QString> const & tags)
 {
 #if QT_VERSION < QT_VERSION_CHECK(5, 15, 0)
     for (auto const & key : attributes.keys())
@@ -186,8 +186,13 @@ void medSourceModelItem::setMetaData(QMap<QString, QVariant> const & attributes,
         itemMetaTag[key] = tags[key];
     }
 #else
-        itemMeta.insert(attributes);
-        itemMetaTag.insert(tags);
+    QVariantMap map;
+    for (auto key: attributes.keys())
+    {
+        map[key] = QVariant(attributes[key]);
+    }
+    itemMeta.insert(map);
+    itemMetaTag.insert(tags);
 #endif
 }
 

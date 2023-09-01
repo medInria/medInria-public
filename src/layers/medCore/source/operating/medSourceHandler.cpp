@@ -91,7 +91,7 @@ bool medSourceHandler::sourceGlobalInfo(QString const & pi_sourceInstanceId, boo
     return bRes;
 }
 
-bool medSourceHandler::attributesForBuildTree(QString const & pi_sourceInstanceId, unsigned int pi_uiLevel, QString const & key, levelAttributes & po_entries)
+bool medSourceHandler::attributesForBuildTree(QString const & pi_sourceInstanceId, unsigned int pi_uiLevel, QString const & key, listAttributes & po_entries)
 {
     bool bRes = true;
 
@@ -106,16 +106,25 @@ bool medSourceHandler::attributesForBuildTree(QString const & pi_sourceInstanceI
             datasetAttributes entryTmp;
             for (auto &minimalEntry : listOfMinimalEntries)
             {
-                entryTmp[keys[0]] = minimalEntry.key;
-                entryTmp[keys[1]] = minimalEntry.name;
+                entryTmp.values[keys[0]] = minimalEntry.key;
+                entryTmp.values[keys[1]] = minimalEntry.name;
 
-                entryTmp[keys[2]] = minimalEntry.description;
+                entryTmp.values[keys[2]] = minimalEntry.description;
                 po_entries.push_back(entryTmp);
             }
         }
         else
         {
-            po_entries = pSource->getMandatoryAttributes(pi_uiLevel, key);
+            auto listOfMandatoriesAttr = pSource->getMandatoryAttributes(pi_uiLevel, key);
+            datasetAttributes entryTmp;
+            for (auto &mandatoryAttribute : listOfMandatoriesAttr)
+            {
+                for (auto key: mandatoryAttribute.keys())
+                {
+                    entryTmp.values[key] = mandatoryAttribute[key];
+                }
+                po_entries.push_back(entryTmp);
+            }
         }
     }
     else
@@ -125,14 +134,23 @@ bool medSourceHandler::attributesForBuildTree(QString const & pi_sourceInstanceI
     return bRes;
 }
 
-bool medSourceHandler::mandatoriesAttributes(QString const & pi_sourceInstanceId, unsigned int pi_uiLevel, QString const & parentKey, levelAttributes & po_entries)
+bool medSourceHandler::mandatoriesAttributes(QString const & pi_sourceInstanceId, unsigned int pi_uiLevel, QString const & parentKey, listAttributes & po_entries)
 {
     bool bRes = true;
 
     medAbstractSource* pSource = m_sourceIdToInstanceMap.value(pi_sourceInstanceId);
     if (pSource)
     {
-        po_entries = pSource->getMandatoryAttributes(pi_uiLevel, parentKey);
+        auto listOfMandatoriesAttr = pSource->getMandatoryAttributes(pi_uiLevel, parentKey);
+        datasetAttributes entryTmp;
+        for (auto &mandatoryAttribute : listOfMandatoriesAttr)
+        {
+            for (auto key: mandatoryAttribute.keys())
+            {
+                entryTmp.values[key] = mandatoryAttribute[key];
+                po_entries.push_back(entryTmp);
+            }
+        }
     }
     else
     {
@@ -300,22 +318,21 @@ bool medSourceHandler::connect(QString const & pi_sourceInstanceId, bool pi_bOnl
     return bRes;
 }
 
-bool medSourceHandler::optionalAttributes(QString const & pi_sourceInstanceId, unsigned int pi_uiLevel, QString const & key, datasetAttributes & po_attributes, datasetAttributes & po_tags)
+bool medSourceHandler::optionalAttributes(QString const & pi_sourceInstanceId, unsigned int pi_uiLevel, QString const & key, datasetAttributes & po_attributes)
 {
     bool bRes = false;
 
     medAbstractSource* pSource = m_sourceIdToInstanceMap.value(pi_sourceInstanceId);
     if (pSource)
-    {
+    {   
         medAbstractSource::datasetAttributes tmp;
         bRes = pSource->getAdditionalAttributes(pi_uiLevel, key, tmp);
         if (bRes)
         {
-            po_attributes = tmp.values;
-            po_tags = tmp.tags;
+            po_attributes.values = tmp.values;
+            po_attributes.tags = tmp.tags;
         }
     }
-
     return bRes;
 }
 
