@@ -66,13 +66,41 @@ signals:
 	void syncPost(QUuid, QNetworkRequest, QByteArray); 
 	void syncPostMulti(QUuid, QNetworkRequest, QHttpMultiPart *);
 	void syncPut(QUuid, QNetworkRequest, QByteArray);
+	void syncAbort(QUuid);
+
+private:
+
+	enum SyncRequestType : int
+	{
+		searchWithSolr = -6,
+		getTreeViewDatasetProcessing = -5,
+		getTreeViewDatasetDetails = -4,
+		getTreeViewStudyDetail = -3,
+		getTreeViewExaminations = -2,
+		getTreeViewStudies = -1,
+		getData = 1,
+		addDataFile = 2,
+		addDataContext = 3,
+		addFolder = 4
+	};
+
+	struct SyncRequest
+	{
+		QEventLoop* waiter;
+		SyncRequestType type;
+		RequestResponse response;
+		bool upToDate;
+	};
+
+	QMap<SyncRequestType, int> requestsDurations; // In ms. -1 if it should not have a timer
 
 private:
 	//     WAITERS
-	QUuid waitGetResult(QNetworkRequest &req);
-	QUuid waitPostResult(QNetworkRequest &req, QByteArray &postData);
-	QUuid waitPostMultiResult(QNetworkRequest &req, QHttpMultiPart *postData);
-	QUuid waitPutResult(QNetworkRequest &req, QByteArray &postData);
+	QUuid waitGetResult(SyncRequestType type, QNetworkRequest &req);
+	void updateRequestState(SyncRequestType &type, const QUuid &netReqId);
+	QUuid waitPostResult(SyncRequestType type, QNetworkRequest &req, QByteArray &postData);
+	QUuid waitPostMultiResult(SyncRequestType type, QNetworkRequest &req, QHttpMultiPart *postData);
+	QUuid waitPutResult(SyncRequestType type, QNetworkRequest &req, QByteArray &postData);
 
 	// TREE-VIEW RETRIEVING FUNCTIONS
 	//      GETTERS
@@ -109,12 +137,15 @@ private:
 	QList<levelMinimalEntries> getDatasetMinimalEntries				(QString id);
 	QList<levelMinimalEntries> getProcessingDatasetMinimalEntries	(QString id);
 
+
+	void manageRequestDeath(QUuid netReqId);
+
 private:
 	LocalInfo           * m_info;
 	Authenticator       * m_authent;
 	QAtomicInt            m_medReqId;
 
-	QMap<QUuid, QPair<QEventLoop*, RequestResponse>> m_requestMap;
+	QMap<QUuid, SyncRequest> m_requestMap;
 
 
 	QStringList m_filesToRemove;

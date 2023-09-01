@@ -115,6 +115,10 @@ static inline auto findLevelElement(const QList<T> &levels,int id)
     {
         return level.id == id;
     });
+	if (it == levels.end())
+	{
+		it = nullptr;
+	}
     return it;
 }
 

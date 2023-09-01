@@ -4,6 +4,8 @@
 #include <QHttpPart>
 
 #include <medShanoir.h>
+#include <medNotif.h>
+
 #include <LocalInfo.h>
 #include <Authenticator.h>
 #include <RequestManager.h>
@@ -55,7 +57,7 @@ int AsyncNetwork::getAssyncData(unsigned int pi_uiLevel, QString key)
  		}
 		int medIdRequest = ++m_medReqId;
 		QUuid netReqId = getDataset(medIdRequest, id_ds, false);
-		medId = m_requestIdMap[netReqId];
+		medId = m_requestIdMap[netReqId].first;
  	}
 
  	return medId;
@@ -67,7 +69,8 @@ QUuid AsyncNetwork::getDataset(int medId, int id_ds, bool conversion)
 	// generation of the requests id
 	QUuid netReqId = QUuid::createUuid();
 
-	m_requestIdMap[netReqId] = medId;
+	m_requestIdMap[netReqId].first = medId;
+	m_requestIdMap[netReqId].second = getData;
 	// saving temporarily the informations about the request in the result map 
 	m_idResultMap[medId] = QString::number(id_ds)+"."+ QString::number(conversion);
 
@@ -82,7 +85,7 @@ QUuid AsyncNetwork::getDataset(int medId, int id_ds, bool conversion)
 
 void AsyncNetwork::getAsyncDataInterpretation(QUuid netReqId, RequestResponse res)
 {
-	int medId = m_requestIdMap[netReqId];
+	int medId = m_requestIdMap[netReqId].first;
 	if (res.code == SUCCESS_CODE) // finished with success
 	{
 		// successCode is about success of the conversion of the retrieved data into a file
@@ -114,14 +117,17 @@ void AsyncNetwork::getAsyncDataInterpretation(QUuid netReqId, RequestResponse re
 	{
 		int bytesSent = res.headers["bytesSent"].toInt();
 		int bytesTotal = res.headers["bytesTotal"].toInt();
-		emit m_parent->progress(m_requestIdMap[netReqId], eRequestStatus::pending);
+		emit m_parent->progress(medId, eRequestStatus::pending);
 	}
 	else // an error occured 
 	{
+		// notify
+		QString errorMessage = "ERROR WHILE GETTING DATA \n NETWORK ERROR CODE :" + QString::number(res.code);
+		medNotif::createNotif(notifLevel::error, "SHANOIR PLUGIN", errorMessage);
 		// trace
-		qDebug() << "\nNETWORKERROR (code = " << res.code << ") WHILE GETTING DATA ( request number ="<< m_requestIdMap[netReqId] << ")\nLOOK AT https://doc.qt.io/qt-5/qnetworkreply.html#NetworkError-enum for more information\n";
+		qDebug() << "\nNETWORKERROR (code = " << res.code << ") WHILE GETTING DATA ( request number ="<< medId << ")\nLOOK AT https://doc.qt.io/qt-5/qnetworkreply.html#NetworkError-enum for more information\n";
 		// handling the error
-		emit m_parent->progress(m_requestIdMap[netReqId], eRequestStatus::faild);
+		emit m_parent->progress(medId, eRequestStatus::faild);
 		m_requestIdMap.remove(netReqId);
 	}
 }
@@ -144,7 +150,7 @@ QVariant AsyncNetwork::getAsyncResults(int pi_iRequest)
 int AsyncNetwork::dataToFile(QUuid netReqId, RequestResponse res)
 {
 	int successCode = (res.payload.size() < 100) ? 1 : -1;
-	int medId = m_requestIdMap[netReqId];
+	int medId = m_requestIdMap[netReqId].first;
 	if (successCode != 1)
 	{
 		QVariant pathRes = decompressNiftiiFromRequest(m_info->getStoragePath() + QString::number(medId) + "/", res.headers, res.payload, m_filesToRemove, 60000);//1 minute before deletion
@@ -184,7 +190,7 @@ int AsyncNetwork::addAssyncData(QVariant data, levelMinimalEntries & pio_minimal
 		if(sending.isValid() && sending.canConvert<QUuid>())
 		{
 			QUuid netReqId = sending.value<QUuid>();
-			medId =  m_requestIdMap[netReqId];
+			medId =  m_requestIdMap[netReqId].first;
 		}
 	}
 	return medId;
@@ -205,7 +211,9 @@ QVariant AsyncNetwork::sendProcessedDataset(QString &filepath, QString name, int
 		int medId = ++m_medReqId;
 		QUuid netReqId = QUuid::createUuid();
 
-		m_requestIdMap[netReqId] = medId;
+		m_requestIdMap[netReqId].first = medId;
+		m_requestIdMap[netReqId].second = addDataFile;
+
 		// saving temporarily the informations about the request in the result map 
 		m_idResultMap[medId] =  QString::number(idDataset) +"."+ QString::number(idProcessing)+"."+ name;
 
@@ -226,7 +234,7 @@ QVariant AsyncNetwork::sendProcessedDataset(QString &filepath, QString name, int
 
 QVariant AsyncNetwork::sentDatasetFileInterpretation(QUuid netReqIdFile, RequestResponse res)
 {
-	int medId = m_requestIdMap[netReqIdFile];
+	int medId = m_requestIdMap[netReqIdFile].first;
 
 	QString distant_path;
 	if (res.code == SUCCESS_CODE && !res.payload.isNull())
@@ -241,7 +249,8 @@ QVariant AsyncNetwork::sentDatasetFileInterpretation(QUuid netReqIdFile, Request
 		// generation of the request id
 		QUuid netReqIdContext = QUuid::createUuid();
 
-		m_requestIdMap[netReqIdContext] = medId;
+		m_requestIdMap[netReqIdContext].first = medId;
+		m_requestIdMap[netReqIdContext].second = addDataContext;
 
 		// preparation of the request
 		int dsId = parts[0].toInt();
@@ -270,7 +279,7 @@ QVariant AsyncNetwork::sentDatasetFileInterpretation(QUuid netReqIdFile, Request
 
 void AsyncNetwork::sentDatasetContextInterpretation(QUuid netReqId, RequestResponse res)
 {
-	int medId = m_requestIdMap[netReqId];
+	int medId = m_requestIdMap[netReqId].first;
 	m_idResultMap[medId] = true;
 	emit m_parent->progress(medId, eRequestStatus::finish);
 }
@@ -278,18 +287,17 @@ void AsyncNetwork::sentDatasetContextInterpretation(QUuid netReqId, RequestRespo
 
 void AsyncNetwork::addAsyncDataInterpretation(QUuid netReqId, RequestResponse res)
 {
-	int medId = m_requestIdMap[netReqId];
+	int medId = m_requestIdMap[netReqId].first;
 	
 	if (res.code == SUCCESS_CODE) // finished with success
 	{
-		// checking the add data step : 
-		// the response from a dataset upload is a filepath starting with "/tmp/"
-		bool justSentDatasetFile = QString::fromUtf8(res.payload).startsWith("/tmp/");
-		if(justSentDatasetFile)
+		// checking the add data step 
+		AsyncRequestType step = m_requestIdMap[netReqId].second;
+		if(step == addDataFile)
 		{
 			sentDatasetFileInterpretation(netReqId, res);
 		}
-		else 
+		else if(step == addDataContext)
 		{
 			sentDatasetContextInterpretation(netReqId, res);
 		}
@@ -298,12 +306,24 @@ void AsyncNetwork::addAsyncDataInterpretation(QUuid netReqId, RequestResponse re
 	{
 		int bytesSent = res.headers["bytesSent"].toInt();
 		int bytesTotal = res.headers["bytesTotal"].toInt();
-		emit m_parent->progress(m_requestIdMap[netReqId], eRequestStatus::pending);
+		emit m_parent->progress(medId, eRequestStatus::pending);
 	}
 	else // an error occured during the request sending (http error)
 	{
 		// trace
-		qDebug() << "\nNETWORKERROR (code = " << res.code << ") WHILE ADDING DATA ( request number ="<< m_requestIdMap[netReqId] << ")\nLOOK AT https://doc.qt.io/qt-5/qnetworkreply.html#NetworkError-enum for more information\n";
+		qDebug() << "\nNETWORKERROR (code = " << res.code << ") WHILE ADDING DATA ( request number ="<< medId << ")\nLOOK AT https://doc.qt.io/qt-5/qnetworkreply.html#NetworkError-enum for more information\n";
+		// notify
+		QString activity;
+		if(m_requestIdMap[netReqId].second == addDataFile)
+		{
+			activity = "UPLOADING A DATASET";
+		}
+		else 
+		{
+			activity = "UPLOADING A DATASET CONTEXT";
+		}
+		QString errorMessage =  "ERROR WHILE "+ activity +"\n NETWORK ERROR CODE :"+QString::number(res.code);
+		medNotif::createNotif(notifLevel::error, "SHANOIR PLUGIN", errorMessage);
 		// handling the error
 		emit m_parent->progress(medId, eRequestStatus::faild);
 		m_requestIdMap.remove(netReqId);
@@ -332,7 +352,7 @@ void AsyncNetwork::abort(int medId)
 {
 	for (auto it = m_requestIdMap.begin(); it != m_requestIdMap.end(); ++it)
 	{
-		if (it.value() == medId)
+		if (it.value().first == medId)
 		{
 			QUuid netReqId = it.key();
 			emit asyncAbort(netReqId);

@@ -3,6 +3,7 @@
 #include <QJsonObject>
 
 #include <JsonHelper.h>
+#include <QTimer>
 #include "RequestManager.h"
 
 
@@ -123,7 +124,6 @@ void RequestManager::abort(QUuid idRequest)
                 QNetworkReply* reply = it.key();
                 reply->abort();
 				m_replyUuidMap[i].remove(reply);
-				qDebug() << reply->isFinished();
 				return;
             }
         }
