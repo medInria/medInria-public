@@ -123,11 +123,15 @@ QStringList      LocalInfo::getLevelNames()
 
 QString          LocalInfo::getLevelName(unsigned int pi_uiLevel)
 {
-	return s_level_names[pi_uiLevel];
+	if(pi_uiLevel < s_level_names.size())
+	{
+		return s_level_names[pi_uiLevel];
+	}
+	return "";
 }
 
 bool             LocalInfo::isLevelWritable(unsigned int pi_uiLevel) {
-	return false;
+	return pi_uiLevel == 5 || pi_uiLevel == 6;
 }
 
 QStringList      LocalInfo::getMandatoryAttributesKeys(unsigned int pi_uiLevel)
