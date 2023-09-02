@@ -1,5 +1,5 @@
-#doxygen config.doxygen
-PROJECT_NAME           = "ShanoirSandboxPlugin"
+PROJECT_NAME           = "medShanoir"
+INPUT                  = ../internal ../.
 OUTPUT_DIRECTORY       = .
 BUILTIN_STL_SUPPORT    = YES
 EXTRACT_ALL            = YES

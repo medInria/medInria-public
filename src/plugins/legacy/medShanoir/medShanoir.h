@@ -111,7 +111,7 @@ public:
 	bool isCached()   override;
 
 	/**
-	 * @return whether the plugin is connected to the server or not.
+	 * @return whether the plugin instance is connected to the server or not.
 	*/
 	bool isOnline()   override;
 
