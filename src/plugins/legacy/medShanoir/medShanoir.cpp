@@ -8,14 +8,9 @@
 #include <SyncNetwork.h>
 #include <AsyncNetwork.h>
 
-// #include <QUrlQuery>
-
-// Q_DECLARE_METATYPE(QUrlQuery)
 
 medShanoir::medShanoir()
 {
-	// qRegisterMetaType<QUrlQuery>("qurlquery");
-
 	m_info      = new LocalInfo(this);
 	m_requester = new RequestManager(this);
 	m_authent   = new Authenticator (this, m_info, m_requester);
@@ -172,9 +167,9 @@ QList<medAbstractSource::levelMinimalEntries>    medShanoir::getMinimalEntries(u
 
 QList<QMap<QString, QString>> medShanoir::getMandatoryAttributes(unsigned int pi_uiLevel, QString parentKey)
 {
-	QList<QMap<QString, QString>> list;
-	return list;
+	return m_syncNet->getMandatoryAttributes(pi_uiLevel, parentKey);
 }
+
 bool  medShanoir::getAdditionalAttributes(unsigned int pi_uiLevel, QString key, datasetAttributes &po_attributes)
 {
 	return false;

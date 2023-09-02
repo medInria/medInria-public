@@ -234,7 +234,8 @@ bool SyncNetwork::createFolder(levelMinimalEntries & pio_minimalEntries, dataset
  		DatasetDetails details = getDatasetDetails(dsId);
  		DatasetOverview input_dataset = { details.id, details.name, details.type };
  		QString processingDate = QDate::currentDate().toString("yyyy-MM-dd"); // on the web version, the user indicates this date himself
- 		QString processingType = "SEGMENTATION"; //TODO: It is written in raw, but normaly there is a list, and the user chooses 1 valid processing type from that list
+ 		QString processingType = "SEGMENTATION"; //TODO: It is written in raw, but normaly there is a list, and the user chooses 1 valid processing type from that list -- think about using pi_attributes that could carry this information
+
  		DatasetProcessing in_processing_ds = { -1, processingType, processingDate,QList<DatasetOverview>() << input_dataset, QList<ProcessedDataset>(), studyId}; // -1 because it is not created
 
 		// construction of the request 
