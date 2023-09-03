@@ -7,9 +7,18 @@
 #include <QProcess>
 #include <JsonHelper.h>
 
-inline bool folderCreator(QString filename)
+/**
+ * @brief this file contains helper functions to deal with files and folders
+ * (decompressing, deleting, etc.)
+*/
+
+/**
+ * @param filepath the path of a file to create
+ * @return true if a folder was created for this path to exist, false otherwise
+*/
+inline bool folderCreator(QString filepath)
 {
-    QString outputfolder = QFileInfo(filename).absoluteDir().absolutePath();
+    QString outputfolder = QFileInfo(filepath).absoluteDir().absolutePath();
     // create the path if it does not exist
     QDir dir(outputfolder);
     if (!dir.exists())
@@ -20,9 +29,14 @@ inline bool folderCreator(QString filename)
     return false;
 }
 
-inline QString saveFileData(const QByteArray &fileData, const QString &filename)
+/**
+ * @param fileData the data of a file to save
+ * @param filepath the path (including the name) of the file to save. it can be relative or absolute, and may not exist yet
+ * @return the absolute path of the file if it was created, an empty string otherwise
+*/
+inline QString saveFileData(const QByteArray &fileData, const QString &filepath)
 {
-    QFileInfo fileInfo = QFileInfo(filename);
+    QFileInfo fileInfo = QFileInfo(filepath);
     QString absoluteFilePath = fileInfo.absoluteFilePath();
     QFile file(absoluteFilePath);
     // create the path if it does not exist
@@ -46,6 +60,13 @@ inline QString saveFileData(const QByteArray &fileData, const QString &filename)
     return absoluteFilePath;
 }
 
+
+/**
+ * @param zipPath the path of a zip file to extract
+ * @return the path of the folder where the files were extracted if everything went well, an empty string otherwise
+ * @note the zip file is deleted if the extraction was successful
+ * @note the function uses the system unzipper (for linux windows and mac)
+*/
 inline QString extractZipFile(QString zipPath)
 {
     QFileInfo fileInfo(zipPath);
@@ -84,8 +105,8 @@ inline QString extractZipFile(QString zipPath)
 
 /**
  * @param prefix the prefix of the path where to decompress the file 
- * @param headers
- * @param payload
+ * @param headers the headers of a request containing a filename
+ * @param payload the data of a request containing a zip file
  * @param deletionDelay time (ms) when the decompressed folder will be deleted. -1 it should not be deleted
  * @return a QVariant that is a string of the filepath if everything went well. Otherwise it returns a int that is an error code
  * The possible error codes are :
@@ -114,7 +135,7 @@ inline QVariant decompressNiftiiFromRequest(QString prefix, QJsonObject headers,
         {
             if (deletionDelay != -1)
             {
-                  pendingDeletions.append(extractionPath); 
+                pendingDeletions.append(extractionPath); 
 				qDebug()  << extractionPath << "WILL BE DELETED IN "<<deletionDelay<<" ms";
                 // delete the folder containing the niftii from the filesystem in a reasonnable time
                 QTimer::singleShot(deletionDelay, [extractionPath, &pendingDeletions]()
@@ -145,6 +166,10 @@ inline QVariant decompressNiftiiFromRequest(QString prefix, QJsonObject headers,
     }
 }
 
+/**
+ * @param folders a list of folders to delete
+ * @return true if all the folders were successfully deleted, false otherwise 
+*/
 inline bool deleteAllFolders(QStringList &folders)
 {
     QStringList successfulDeletions;

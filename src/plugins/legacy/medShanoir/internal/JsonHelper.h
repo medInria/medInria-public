@@ -7,6 +7,19 @@
 #include <QByteArray>
 #include <QJsonArray>
 
+/**
+ * @brief this file contains helper functions to deal with json
+ * (conversion, verification, etc.)
+*/
+
+
+/**
+ * @param jsobj the json object to verify
+ * @param listOfKeys the list of keys to verify
+ * @param listOfTypes the list of types to verify (String, Number, Bool, Array)
+ * @return true if the json object contains all the keys and the types are correct, false otherwise
+ * @note if listOfTypes hasn't the same size as listOfKeys, the verification of the types is not done
+*/
 inline bool verifyJsonKeys(const QJsonObject & jsobj, const QStringList & listOfKeys, QStringList listOfTypes = {})
 {
     bool type_verification = listOfKeys.size()==listOfTypes.size();
@@ -38,6 +51,14 @@ inline bool verifyJsonKeys(const QJsonObject & jsobj, const QStringList & listOf
 	return true; 
 }
 
+///////////////////////////
+// Conversion functions
+///////////////////////////
+
+/**
+ * @param list a list of QByteArray pairs of entry-value
+ * @return the QJsonObject corresponding to the list of the form {"entry1":"value1", "entry2":"value2", ...}
+*/
 inline QJsonObject qByteArrayPairListToJsonObject(const QList<QPair<QByteArray, QByteArray>> list)
 {
     QJsonObject jsonobj;
@@ -50,6 +71,10 @@ inline QJsonObject qByteArrayPairListToJsonObject(const QList<QPair<QByteArray, 
 	return jsonobj;
 }
 
+/**
+ * @param jsobj a json object
+ * @return a string-string map corresponding to the json object
+*/
 inline QMap<QString, QString> jsonObjectToQmap(QJsonObject jsobj)
 {
 	QMap<QString, QString> qmap;
@@ -61,11 +86,19 @@ inline QMap<QString, QString> jsonObjectToQmap(QJsonObject jsobj)
 	return qmap;
 }
 
+/**
+ * @param array a byte array containing a json object
+ * @return the json object corresponding to the byte array
+*/
 inline QJsonObject qbytearrayToQJson(QByteArray array)
 {
 	return QJsonDocument::fromJson(array).object();
 }
 
+/**
+ * @param array a byte array containing a json array
+ * @return the json array corresponding to the byte array
+*/
 inline QJsonArray qbytearrayToQJsonArray(QByteArray array)
 {
 	return  QJsonDocument::fromJson(array).array();

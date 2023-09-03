@@ -19,38 +19,51 @@ class medShanoir;
 class LocalInfo;
 class SyncNetwork;
 
+
+/**
+ * @class AsyncNetwork
+ * @brief This class is used to make all the operation that require a request to the shanoir server in an asynchronous way by the plugin. 
+ * @details 
+ * Asynchroneous means that the plugin will follow the execution of the requests using signals and slots with the request manager.
+*/
 class AsyncNetwork : public QObject
 {
 	Q_OBJECT
 public:
+//////////////////////////
+////  Constructor/Destructor
+//////////////////////////
+
 	AsyncNetwork(medShanoir * parent, LocalInfo *info, Authenticator * authent, SyncNetwork *syncNet, RequestManager * requestMgr);
+
 	~AsyncNetwork();
 
+//////////////////////////
+////  MedShanoir methods
+//////////////////////////  
 
-	/* ***********************************************************************/
-	/* *************** Get data          *************************************/
-	/* ***********************************************************************/
 	int getAssyncData(unsigned int pi_uiLevel, QString key);
 
-	/* ***********************************************************************/
-	/* *************** Store data          ***********************************/
-	/* ***********************************************************************/
 	int addAssyncData(QVariant data, levelMinimalEntries &pio_minimalEntries, unsigned int pi_uiLevel, QString parentKey);
-	//int  push(unsigned int pi_uiLevel, QString key);
 
-	/* ***********************************************************************/
-	/* *************** Handle async results   ********************************/
-	/* ***********************************************************************/
 	QVariant getAsyncResults(int pi_iRequest);
 
     void abort(int pi_iRequest); 
 
 public slots:
+//////////////////////////
+////  slots received from the request manager updating a request progression status
+//////////////////////////  
+
 	void asyncGetSlot (QUuid netReqId, QByteArray payload, QJsonObject headers, int statusOrHttpCode);
 	void asyncPostSlot(QUuid netReqId, QByteArray payload, QJsonObject headers, int statusOrHttpCode);
 	void asyncPutSlot (QUuid netReqId, QByteArray payload, QJsonObject headers, int statusOrHttpCode);
 	
 signals:
+//////////////////////////
+////  signals emitted for sending a request with the request manager
+//////////////////////////  
+
 	void asyncGet(QUuid, QNetworkRequest);
 	void asyncPost(QUuid, QNetworkRequest, QByteArray);
 	void asyncPostMulti(QUuid, QNetworkRequest, QHttpMultiPart *);
@@ -58,7 +71,11 @@ signals:
 	void asyncAbort(QUuid);
 
 private:
+//////////////////////////
+////  representation for asynchronous requests management
+//////////////////////////
 
+	// represents the type of request that can be made to the shanoir server
 	enum AsyncRequestType : int
 	{
 		getData = 1,
@@ -67,6 +84,9 @@ private:
 	};
 
 private:
+//////////////////////////
+//// methods for the interpretation of request progression
+//////////////////////////
 
 	// main interpretation methods 
 	// --they are called from the slots
@@ -87,15 +107,12 @@ private:
 	void sentDatasetContextInterpretation(QUuid netReqId, RequestResponse res);
 
 	
+//////////////////////////
+//// sending request methods
+//////////////////////////
+
 	QUuid  getDataset(int idRequest, int idDataset, bool conversion);
 	
-	/**
-	 * @param netReqId
-	 * @param res
-	 * @return a code : -1 fail, 0 success , 1 : retry necessary (not enough bytes to create the file)
-	*/
-	int dataToFile(QUuid netReqId, RequestResponse res);
-
 	/**
 	 * @param filepath
 	 * @param name
@@ -105,16 +122,39 @@ private:
 	*/
 	QVariant sendProcessedDataset(QString &filepath, QString name, int idDataset, int idProcessing);
 
-private:
-	medShanoir            * m_parent;
-	LocalInfo             * m_info;
-	Authenticator         * m_authent;
-	SyncNetwork           * m_syncNet;
-	QAtomicInt              m_medReqId;
+//////////////////////////
+//// handling request results methods
+//////////////////////////
 
-	QMap<QUuid, QPair<int, AsyncRequestType>>   m_requestIdMap;
-	QMap<int, QVariant>                    m_idResultMap;
+	/**
+	 * @param netReqId
+	 * @param res
+	 * @return a code : -1 fail, 0 success , 1 : retry necessary (not enough bytes to create the file)
+	*/
+	int dataToFile(QUuid netReqId, RequestResponse res);
+
+
+private:
+	medShanoir            * m_parent;   // pointer to the plugin instance
+	LocalInfo             * m_info;     // pointer to the plugin instance info
+	Authenticator         * m_authent;  // pointer to the plugin instance authenticator
+	SyncNetwork           * m_syncNet;  // pointer to the plugin instance tree-view retriever
+
+	QStringList m_filesToRemove; // list of the files to remove when the plugin instance is closed
 	
-	QStringList m_filesToRemove;
+//////////////////////////
+////  request management variables
+//////////////////////////
+/**
+ * Each request sent by the plugin instance is identified by a unique id. (QUuid)
+ * medInria identifies each asynchronous operation by an id (int).
+ * This separation of id is necessary because for some operations, multiple requests need to be done to the server.
+*/
+	QAtomicInt              m_medReqId; // id of the next async operation to be made by the plugin instance
+	
+	QMap<QUuid, QPair<int, AsyncRequestType>>   m_requestIdMap; // map of the active requests sent by the asyncNetwork object, pairing operation id with the request type
+
+	QMap<int, QVariant>                    m_idResultMap; // map of the results associated to each asynchronous operation id. Those results can be temporary, helping to build the final result of the operation after all the requests are done.
+	
 };
 #endif // !ASYNC_NETWORK
