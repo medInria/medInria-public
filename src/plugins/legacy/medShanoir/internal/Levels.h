@@ -36,27 +36,20 @@ struct DatasetDetails
 };
 
 
-struct ProcessedDataset
+struct DatasetOverview
 {
     int id;
     QString name;
     QString type;
 };
 
-struct DatasetOverview
-{
-	int id;
-	QString name;
-	QString type;
-};
-
-struct DatasetProcessing
+struct DatasetProcessingOverview
 {
     int id;
     QString type;
     QString date;
     QList<DatasetOverview> inputDatasets; 
-    QList<ProcessedDataset> outputDatasets; 
+    QList<DatasetOverview> outputDatasets; 
     int studyId;
 };
 
@@ -65,29 +58,29 @@ struct Dataset
     int id;
     QString name;
     QString type;
-    QList<DatasetProcessing>  processings; // list of processing datasets that already exist
+    QList<DatasetProcessingOverview>  processings; // list of processing datasets that already exist
 };
 
-struct DatasetAcquisition
+struct DatasetAcquisitionOverview
 {
     int id;
     QString name;
     QList<Dataset> datasets;
 };
 
-struct Examination
+struct ExaminationOverview
 {
     int id;
     QString comment;
     QDate date;
-    QList<DatasetAcquisition> ds_acquisitions;
+    QList<DatasetAcquisitionOverview> ds_acquisitions;
 };
 
-struct Subject
+struct SubjectDetails
 {
     int id;
     QString name;
-    QList<Examination> examinations;
+    QList<ExaminationOverview> examinations;
 };
 
 struct SubjectOverview
@@ -103,7 +96,7 @@ struct StudyOverview
     QString name;
 };
 
-struct Study
+struct StudyDetails
 {
     int id;
     QString name;

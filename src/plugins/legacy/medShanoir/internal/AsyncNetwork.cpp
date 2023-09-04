@@ -191,6 +191,10 @@ int AsyncNetwork::addAssyncData(QVariant data, levelMinimalEntries & pio_minimal
 		{
 			QUuid netReqId = sending.value<QUuid>();
 			medId =  m_requestIdMap[netReqId].first;
+			QJsonObject tmpResult = m_idResultMap[medId].toJsonObject();
+			tmpResult["parentKey"] = parentKey;
+			m_idResultMap[medId] = tmpResult;
+
 		}
 	}
 	return medId;
@@ -215,7 +219,11 @@ QVariant AsyncNetwork::sendProcessedDataset(QString &filepath, QString name, int
 		m_requestIdMap[netReqId].second = addDataFile;
 
 		// saving temporarily the informations about the request in the result map 
-		m_idResultMap[medId] =  QString::number(idDataset) +"."+ QString::number(idProcessing)+"."+ name;
+		QJsonObject tmpResult; 
+		tmpResult.insert("idDataset", idDataset);
+		tmpResult.insert("idProcessing", idProcessing);
+		tmpResult.insert("name", name);
+		m_idResultMap[medId] = tmpResult;
 
 		// sending the request
 		QHttpMultiPart *multiPart = new QHttpMultiPart(QHttpMultiPart::FormDataType);
@@ -241,10 +249,9 @@ QVariant AsyncNetwork::sentDatasetFileInterpretation(QUuid netReqIdFile, Request
 	{
 		distant_path = QString::fromUtf8(res.payload);
 	}
+	QJsonObject tmpResult = m_idResultMap[medId].toJsonObject();
 
-	QStringList parts = m_idResultMap[medId].toString().split('.');  // format idDs.idPsingDs.psDsname
-
-	if(distant_path.length()>0 && parts.size()==3)
+	if(distant_path.length()>0)
 	{
 		// generation of the request id
 		QUuid netReqIdContext = QUuid::createUuid();
@@ -253,18 +260,22 @@ QVariant AsyncNetwork::sentDatasetFileInterpretation(QUuid netReqIdFile, Request
 		m_requestIdMap[netReqIdContext].second = addDataContext;
 
 		// preparation of the request
-		int dsId = parts[0].toInt();
-		int psingId = parts[1].toInt();
-		QString name = parts[2];
+		int dsId = tmpResult["idDataset"].toInt();
+		int psingId = tmpResult["idProcessing"].toInt();
+		QString name = tmpResult["name"].toString();
 
 		// building the context of the processed dataset
 		DatasetDetails ds_details = m_syncNet->getDatasetDetails(dsId);
-		Study s = m_syncNet->getStudyDetails(ds_details.study_id);
+		StudyDetails s = m_syncNet->getStudyDetails(ds_details.study_id);
 		StudyOverview study = {s.id, s.name};
 		QString processedDatasetType = "RECONSTRUCTEDDATASET";
 		QString processedDatasetName = name;
 		QJsonObject parentDatasetProcessing = m_syncNet->getDatasetProcessing(psingId);
 
+		// update the temporary result by saving the current parent dataset Processing in order to compare it after the upload of the new dataset
+		tmpResult["parentDatasetProcessing"] = parentDatasetProcessing;
+		m_idResultMap[medId] = tmpResult;
+			
 		// sending the request
 		QNetworkRequest req;
 		QByteArray postData;
@@ -279,8 +290,36 @@ QVariant AsyncNetwork::sentDatasetFileInterpretation(QUuid netReqIdFile, Request
 
 void AsyncNetwork::sentDatasetContextInterpretation(QUuid netReqId, RequestResponse res)
 {
+	// check that the upload is successful and creation of the key for the new processed dataset
+
 	int medId = m_requestIdMap[netReqId].first;
-	m_idResultMap[medId] = true;
+	QJsonObject tmpResult = m_idResultMap[medId].toJsonObject();
+
+	QString parentKey = tmpResult["parentKey"].toString();
+	int dsId = tmpResult["idDataset"].toInt();
+	int psingId = tmpResult["idProcessing"].toInt();
+	QString name = tmpResult["name"].toString();
+	QJsonObject prevPsing = tmpResult["parentDatasetProcessing"].toObject();
+	QJsonObject currentPsing = m_syncNet->getDatasetProcessing(psingId);
+
+	int prevPsingSize = prevPsing.value("outputDatasets").toArray().size();
+	int currPsingSize = m_syncNet->getDatasetProcessing(psingId).value("outputDatasets").toArray().size();
+
+	
+
+	if (prevPsingSize + 1 == currPsingSize)
+	{
+		int newId = currentPsing.value("outputDatasets").toArray().last().toObject().value("id").toInt();
+		medNotif::createNotif(notifLevel::info, "SHANOIR PLUGIN", "dataset "+name+" successfuly uploaded");	
+		m_idResultMap[medId] = parentKey +"."+  QString::number(newId);
+	}
+	else
+	{
+		// we suppose it worked, but not in the usual way.
+		// therefore we do not send notification.
+		m_idResultMap[medId] = true;
+	}
+	
 	emit m_parent->progress(medId, eRequestStatus::finish);
 }
 

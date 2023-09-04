@@ -1,7 +1,11 @@
-# medShanoir : a medInria plugin for shanoir 
+# medShanoir : a medInria plugin for shanoir
+
 This plugin aims to connect a [shanoir NG](https://github.com/fli-iam/shanoir-ng) plateform to medInria.
 
-# Features
+## Features
+
+### Visible features
+
 * **Retrieve projects** and their tree-view
 
 * **Load files** directly into medInria
@@ -10,14 +14,48 @@ This plugin aims to connect a [shanoir NG](https://github.com/fli-iam/shanoir-ng
 
 * **Upload** processed datasets
 
-* **Connect** to several shanoir plateforms at the same time
+* **Connect** to several shanoir servers at the same time
 
+### Background features
 
-# Dependencies
+* **Automated deletions** of the datasets once they are downloaded and loaded in medInria.
+
+* **Automated unzipping** of the downloaded datasets using the system's default decompressor.
+
+* **Asynchronous processes** on heavy operations, such as data uploading and downloading.
+
+* **Ciphering** of each plugin instance's password.
+
+### Demos in Gifs
+
+<details>
+<summary>Tree-view Retrieving</summary>
+
+![Tree-view gif](demo/tree_view_retrieving.gif)
+
+</details>
+
+<details>
+<summary>Dataset loading</summary>
+
+![Data loading gif](demo/dataset_loading.gif)
+
+</details>
+
+<details>
+<summary>Multi server connexion</summary>
+
+![Multi Connect gif](demo/multiserver_connexion.gif)
+
+</details>
+
+## Dependencies
+
 This plugin doesn't use any additional dependencies beyond the pre-existing ones from medInria.
 Likewise the rest of the project, it is written in C++, with the [Qt5 framework](https://www.qt.io/download-qt-installer-oss). The compilation is done with [CMake](https://cmake.org/download/).
 
-# Structure
+## Structure
+
 ```bash
 medShanoir
 ├── doc                                    # Documentation
@@ -46,7 +84,8 @@ medShanoir
 └── CMakeLists.txt                         # Compilation 
 ```
 
-# Documentation
+## Documentation
+
 Generate automatic documentation with doxygen & graphviz.
 
 ```bash

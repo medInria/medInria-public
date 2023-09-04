@@ -140,8 +140,8 @@ public:
 
 	//      GETTERS : methods that send a request and parse the response to return the wanted data
 	QList<StudyOverview> getStudies();
-	QList<Examination>   getExaminations(int studyId, int subjectId);
-	Study                getStudyDetails(int studyId);
+	QList<ExaminationOverview>   getExaminations(int studyId, int subjectId);
+	StudyDetails                getStudyDetails(int studyId);
 	DatasetDetails       getDatasetDetails(int studyId);  
 	QJsonObject          getDatasetProcessing(int id); 
 
@@ -155,11 +155,11 @@ private:
 
 	//      PARSERS : methods that parse the response of a request to return the wanted data
 	QList<StudyOverview>      parseStudies(QJsonArray studies_response);
-	QList<Examination>        parseExaminations(QJsonArray examinations_response);
-	QList<DatasetAcquisition> parseDatasetAcquisitions(QJsonArray dataset_acquisitions_response);
+	QList<ExaminationOverview>        parseExaminations(QJsonArray examinations_response);
+	QList<DatasetAcquisitionOverview> parseDatasetAcquisitions(QJsonArray dataset_acquisitions_response);
 	QList<Dataset>            parseDatasets(QJsonArray datasets_response);
-	QList<DatasetProcessing>  parseDatasetProcessings(QJsonArray processings_response);
-	Study                     parseStudy(QJsonObject &study_response);
+	QList<DatasetProcessingOverview>  parseDatasetProcessings(QJsonArray processings_response);
+	StudyDetails                     parseStudy(QJsonObject &study_response);
 	DatasetDetails            parseDatasetDetails(QJsonObject &dataset_response);
 
 	//      CASTERS : methods that retrieve the tree-view children elements of a given parent id
