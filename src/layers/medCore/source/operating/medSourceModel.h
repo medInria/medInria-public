@@ -17,6 +17,7 @@
 #include <medDataIndex.h>
 
 #include <medSourceModelItem.h>
+#include <medSourceHandler.h>
 
 #include <medCoreExport.h>
 
@@ -46,7 +47,6 @@ class MEDCORE_EXPORT medSourceModel : public QAbstractItemModel
 
 public:
 
-    struct datasetAttributes;
 
     medSourceModel(medDataHub *parent, QString const & sourceIntanceId);
     virtual ~medSourceModel();
@@ -95,9 +95,7 @@ public:
     QString getSourceIntanceId();
     void setOnline(bool pi_bOnline);
 
-    datasetAttributes getMendatoriesMetaData(QModelIndex const & index);
-    QList<QMap<int, QString>> getAdditionnalMetaData(QModelIndex const & index);
-    bool setAdditionnalMetaData(QModelIndex const & index, QList<QMap<int, QString>> &additionnalMetaData);
+    medSourceHandler::datasetAttributes getMendatoriesMetaData(QModelIndex const & index);
 
     bool currentOnlineStatus();
 
@@ -114,10 +112,8 @@ public:
     QString     keyForPath(QStringList rootUri, QString folder);
     bool        getChildrenNames(QStringList uri, QStringList &names);
 
-    bool        setAdditionnalMetaData2(QModelIndex const & index, datasetAttributes const &attributes);
-    bool        setAdditionnalMetaData2(QModelIndex const & index, QString const & key, QVariant const & value, QString const & tag = QString() );
-    bool        additionnalMetaData2(QModelIndex const & index, datasetAttributes & attributes);
-    bool        additionnalMetaData2(QModelIndex const & index, QString const & key, QVariant & value, QString & tag);
+    bool        setAdditionnalMetaData(QModelIndex const & index, medSourceHandler::datasetAttributes const &attributes);
+    bool        getAdditionnalMetaData(QModelIndex const & index, medSourceHandler::datasetAttributes & attributes);
 
     bool addEntry(QString pi_key, QString pi_name, QString pi_description, unsigned int pi_uiLevel, QString pi_parentKey);
     bool substituteTmpKey(QStringList uri, QString pi_key);
@@ -144,11 +140,11 @@ private:
     void populateLevel(QModelIndex const &index);
 
 
-    bool itemStillExist(QList<QMap<QString, QString>> &entries, medSourceModelItem * pItem);
-    void computeRowRangesToRemove(medSourceModelItem * pItem, QList<QMap<QString, QString>> &entries, QVector<QPair<int, int>> &rangeToRemove);
+    bool itemStillExist(medSourceHandler::listAttributes &entries, medSourceModelItem * pItem);
+    void computeRowRangesToRemove(medSourceModelItem * pItem, medSourceHandler::listAttributes &entries, QVector<QPair<int, int>> &rangeToRemove);
     void removeRowRanges(QVector<QPair<int, int>> &rangeToRemove, const QModelIndex & index);
 
-    void computeRowRangesToAdd(medSourceModelItem * pItem, QList<QMap<QString, QString>> &entries, QMap<int, QList<QMap<QString, QString>>> &entriesToAdd);
+    void computeRowRangesToAdd(medSourceModelItem * pItem, medSourceHandler::listAttributes &entries, QMap<int, QList<QMap<QString, QString>>> &entriesToAdd);
     void addRowRanges(QMap<int, QList<QMap<QString, QString>>> &entriesToAdd, const QModelIndex & index);
 
     bool currentLevelFetchable(medSourceModelItem * pItemCurrent);
@@ -164,12 +160,4 @@ signals:
 private:
     medDataModelElementPrivate* d;
 
-public:
-    struct datasetAttributes
-    {
-        QMap<QString, QVariant> values; // <keyName, value>
-        QMap<QString, QString> tags;
-        bool dropMimeData(const QMimeData * data, Qt::DropAction action, int row, int column, const QModelIndex & parent);
-        // <keyName, tag value>    
-    };
 };
