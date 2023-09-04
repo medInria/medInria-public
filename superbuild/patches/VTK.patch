@@ -1,16 +1,3 @@
-From e048bf336f8c2efc1e6b6e57c5fc899b2e6f6402 Mon Sep 17 00:00:00 2001
-From: MERLE Mathilde <mathilde.merle@inria.fr>
-Date: Tue, 20 Sep 2022 16:11:42 +0200
-Subject: [PATCH] VTK
-
----
- CMake/VTKGenerateExportHeader.cmake       | 6 +++++-
- IO/Movie/module.cmake                     | 1 +
- IO/Movie/vtkOggTheoraWriter.cxx           | 4 +++-
- Rendering/Qt/vtkQtLabelRenderStrategy.cxx | 1 +
- Rendering/Qt/vtkQtStringToImage.cxx       | 1 +
- 5 files changed, 11 insertions(+), 2 deletions(-)
-
 diff --git a/CMake/VTKGenerateExportHeader.cmake b/CMake/VTKGenerateExportHeader.cmake
 index 9a7a76386e..f71969ae54 100644
 --- a/CMake/VTKGenerateExportHeader.cmake
@@ -86,6 +73,121 @@ index 549ffbe874..a7c726e4f9 100644
  #include <QPixmap>
  #include <QTextDocument>
  #include <QTextStream>
--- 
-2.25.1
-
+diff --git a/Wrapping/PythonCore/PyVTKMethodDescriptor.cxx b/Wrapping/PythonCore/PyVTKMethodDescriptor.cxx
+index 2b0d443537..e18525a470 100644
+--- a/Wrapping/PythonCore/PyVTKMethodDescriptor.cxx
++++ b/Wrapping/PythonCore/PyVTKMethodDescriptor.cxx
+@@ -186,7 +186,7 @@ PyTypeObject PyVTKMethodDescriptor_Type = {
+   sizeof(PyMethodDescrObject),           // tp_basicsize
+   0,                                     // tp_itemsize
+   PyVTKMethodDescriptor_Delete,          // tp_dealloc
+-  nullptr,                               // tp_print
++  0, // tp_print
+   nullptr,                               // tp_getattr
+   nullptr,                               // tp_setattr
+   nullptr,                               // tp_compare
+diff --git a/Wrapping/PythonCore/PyVTKNamespace.cxx b/Wrapping/PythonCore/PyVTKNamespace.cxx
+index 71ee2a3516..1c5f85c3d4 100644
+--- a/Wrapping/PythonCore/PyVTKNamespace.cxx
++++ b/Wrapping/PythonCore/PyVTKNamespace.cxx
+@@ -49,7 +49,7 @@ PyTypeObject PyVTKNamespace_Type = {
+   0,                                     // tp_basicsize
+   0,                                     // tp_itemsize
+   PyVTKNamespace_Delete,                 // tp_dealloc
+-  nullptr,                               // tp_print
++  0, // tp_print
+   nullptr,                               // tp_getattr
+   nullptr,                               // tp_setattr
+   nullptr,                               // tp_compare
+diff --git a/Wrapping/PythonCore/PyVTKReference.cxx b/Wrapping/PythonCore/PyVTKReference.cxx
+index 943ac71080..6f3e0130a8 100644
+--- a/Wrapping/PythonCore/PyVTKReference.cxx
++++ b/Wrapping/PythonCore/PyVTKReference.cxx
+@@ -1010,7 +1010,7 @@ PyTypeObject PyVTKReference_Type = {
+   sizeof(PyVTKReference),                // tp_basicsize
+   0,                                     // tp_itemsize
+   PyVTKReference_Delete,                 // tp_dealloc
+-  nullptr,                               // tp_print
++  0, // tp_print
+   nullptr,                               // tp_getattr
+   nullptr,                               // tp_setattr
+   nullptr,                               // tp_compare
+@@ -1067,7 +1067,7 @@ PyTypeObject PyVTKNumberReference_Type = {
+   sizeof(PyVTKReference),                // tp_basicsize
+   0,                                     // tp_itemsize
+   PyVTKReference_Delete,                 // tp_dealloc
+-  nullptr,                               // tp_print
++  0, // tp_print
+   nullptr,                               // tp_getattr
+   nullptr,                               // tp_setattr
+   nullptr,                               // tp_compare
+@@ -1124,7 +1124,7 @@ PyTypeObject PyVTKStringReference_Type = {
+   sizeof(PyVTKReference),                // tp_basicsize
+   0,                                     // tp_itemsize
+   PyVTKReference_Delete,                 // tp_dealloc
+-  nullptr,                               // tp_print
++  0, // tp_print
+   nullptr,                               // tp_getattr
+   nullptr,                               // tp_setattr
+   nullptr,                               // tp_compare
+@@ -1181,7 +1181,7 @@ PyTypeObject PyVTKTupleReference_Type = {
+   sizeof(PyVTKReference),                // tp_basicsize
+   0,                                     // tp_itemsize
+   PyVTKReference_Delete,                 // tp_dealloc
+-  nullptr,                               // tp_print
++  0, // tp_print
+   nullptr,                               // tp_getattr
+   nullptr,                               // tp_setattr
+   nullptr,                               // tp_compare
+diff --git a/Wrapping/PythonCore/PyVTKTemplate.cxx b/Wrapping/PythonCore/PyVTKTemplate.cxx
+index be200985b3..ebc236ad5f 100644
+--- a/Wrapping/PythonCore/PyVTKTemplate.cxx
++++ b/Wrapping/PythonCore/PyVTKTemplate.cxx
+@@ -268,7 +268,7 @@ PyTypeObject PyVTKTemplate_Type = {
+   0,                                     // tp_basicsize
+   0,                                     // tp_itemsize
+   nullptr,                               // tp_dealloc
+-  nullptr,                               // tp_print
++  0, // tp_print
+   nullptr,                               // tp_getattr
+   nullptr,                               // tp_setattr
+   nullptr,                               // tp_compare
+diff --git a/Wrapping/Tools/vtkWrapPythonClass.c b/Wrapping/Tools/vtkWrapPythonClass.c
+index 989101b2ee..9a8b465acd 100644
+--- a/Wrapping/Tools/vtkWrapPythonClass.c
++++ b/Wrapping/Tools/vtkWrapPythonClass.c
+@@ -527,7 +527,7 @@ void vtkWrapPython_GenerateObjectType(
+     "  sizeof(PyVTKObject), // tp_basicsize\n"
+     "  0, // tp_itemsize\n"
+     "  PyVTKObject_Delete, // tp_dealloc\n"
+-    "  nullptr, // tp_print\n"
++    "  0, // tp_print\n"
+     "  nullptr, // tp_getattr\n"
+     "  nullptr, // tp_setattr\n"
+     "  nullptr, // tp_compare\n"
+diff --git a/Wrapping/Tools/vtkWrapPythonEnum.c b/Wrapping/Tools/vtkWrapPythonEnum.c
+index b933702242..57c077490a 100644
+--- a/Wrapping/Tools/vtkWrapPythonEnum.c
++++ b/Wrapping/Tools/vtkWrapPythonEnum.c
+@@ -145,7 +145,7 @@ void vtkWrapPython_GenerateEnumType(
+     "  sizeof(PyIntObject), // tp_basicsize\n"
+     "  0, // tp_itemsize\n"
+     "  nullptr, // tp_dealloc\n"
+-    "  nullptr, // tp_print\n"
++    "  0, // tp_print\n"
+     "  nullptr, // tp_getattr\n"
+     "  nullptr, // tp_setattr\n"
+     "  nullptr, // tp_compare\n"
+diff --git a/Wrapping/Tools/vtkWrapPythonType.c b/Wrapping/Tools/vtkWrapPythonType.c
+index 744cb1b9d3..f6361bcb26 100644
+--- a/Wrapping/Tools/vtkWrapPythonType.c
++++ b/Wrapping/Tools/vtkWrapPythonType.c
+@@ -709,7 +709,7 @@ void vtkWrapPython_GenerateSpecialType(
+     "  sizeof(PyVTKSpecialObject), // tp_basicsize\n"
+     "  0, // tp_itemsize\n"
+     "  Py%s_Delete, // tp_dealloc\n"
+-    "  nullptr, // tp_print\n"
++    "  0, // tp_print\n"
+     "  nullptr, // tp_getattr\n"
+     "  nullptr, // tp_setattr\n"
+     "  nullptr, // tp_compare\n"

@@ -21,6 +21,10 @@ set(ep VTK)
 if(${USE_FFmpeg})
   list(APPEND ${ep}_dependencies ffmpeg)
 endif()
+
+if(USE_Python)
+  list(APPEND ${ep}_dependencies pyncpp)
+endif()
   
 ## #############################################################################
 ## Prepare the project
@@ -111,6 +115,24 @@ if(${USE_FFmpeg})
         -DFFMPEG_LIBSWRESAMPLE_LIBRARIES:STRING=${EP_PATH_BUILD}/ffmpeg/lib/libswresample.${extention}
         -DFFMPEG_LIBSWSCALE_LIBRARIES:STRING=${EP_PATH_BUILD}/ffmpeg/lib/libswscale.${extention}
     )
+endif()
+
+if(USE_Python)
+    set(python_version "${PYTHON_VERSION_MAJOR}.${PYTHON_VERSION_MINOR}")
+    if(UNIX)
+        set(python_executable "${pyncpp_DIR}/lib/python${python_version}/bin/python${python_version}")
+        set(python_include "${pyncpp_DIR}/lib/python${python_version}/include/python${python_version}")
+        set(python_library "${pyncpp_DIR}/lib/python${python_version}/lib/libpython${python_version}${CMAKE_SHARED_LIBRARY_SUFFIX}")
+    else()
+        # TODO
+    endif()
+    list(APPEND cmake_args
+        -DVTK_WRAP_PYTHON:BOOL=ON
+        -DVTK_PYTHON_VERSION:STRING=${python_version}
+        -DPYTHON_EXECUTABLE:PATH=${python_executable}
+        -DPYTHON_INCLUDE_DIR:PATH=${python_include}
+        -DPYTHON_LIBRARY:PATH=${python_library}
+        )
 endif()
 
 ## #############################################################################

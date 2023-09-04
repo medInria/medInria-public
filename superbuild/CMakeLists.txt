@@ -65,7 +65,13 @@ if (NOT WIN32)
       list(APPEND external_projects ffmpeg)
   endif()
 endif()
-  
+
+if (USE_Python)
+    list(APPEND external_projects
+        pyncpp
+        )
+endif()
+
 list(APPEND external_projects
   VTK 
   ITK 
@@ -80,12 +86,6 @@ list(APPEND external_projects
 if (USE_DTKIMAGING)
     list(APPEND external_projects
         dtkImaging
-        )
-endif()
-
-if (USE_Python)
-    list(APPEND external_projects
-        pyncpp
         )
 endif()
 
