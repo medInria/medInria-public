@@ -23,17 +23,17 @@ SyncNetwork::SyncNetwork(medShanoir * parent,  LocalInfo *info, Authenticator * 
 	QObject::connect(this, &SyncNetwork::syncAbort, requester, &RequestManager::abort, Qt::ConnectionType::QueuedConnection);
 
 
-	requestsDurations[searchWithSolr]               = 1000;
-	requestsDurations[getTreeViewDatasetProcessing] = 1000;
-	requestsDurations[getTreeViewDatasetProcessing] = 1000;
-	requestsDurations[getTreeViewDatasetDetails]    = 1000;
-	requestsDurations[getTreeViewStudyDetail]       = 1000;
-	requestsDurations[getTreeViewExaminations]      = 1000;
-	requestsDurations[getTreeViewStudies]           = 1000;
+	requestsDurations[searchWithSolr]               = 10000; // 10 seconds before considerating the request is lost
+	requestsDurations[getTreeViewDatasetProcessing] = 10000;
+	requestsDurations[getTreeViewDatasetProcessing] = 10000;
+	requestsDurations[getTreeViewDatasetDetails]    = 10000;
+	requestsDurations[getTreeViewStudyDetail]       = 10000;
+	requestsDurations[getTreeViewExaminations]      = 10000;
+	requestsDurations[getTreeViewStudies]           = 10000;
 	requestsDurations[getData]                      = -1;
 	requestsDurations[addDataFile]                  = -1;
 	requestsDurations[addDataContext]               = -1;
-	requestsDurations[addFolder]                    = 5000;
+	requestsDurations[addFolder]                    = 10000;
 
 }
 
@@ -192,7 +192,7 @@ bool SyncNetwork::addDirectData(QVariant data, levelMinimalEntries & pio_minimal
 			int dsId = parts[4].toInt();
 			// building the context of the processed dataset
 			DatasetDetails ds_details = getDatasetDetails(dsId);
-			Study s =  getStudyDetails(ds_details.study_id);
+			StudyDetails s =  getStudyDetails(ds_details.study_id);
 			StudyOverview study = { s.id, s.name };
  			QString processedDatasetType = "RECONSTRUCTEDDATASET"; 
 			QString processedDatasetName = pio_minimalEntries.name;
@@ -226,6 +226,8 @@ bool SyncNetwork::createFolder(levelMinimalEntries & pio_minimalEntries, dataset
  	bool dataset_level = parent_level == 4 && parts.size() == 5; 
  	bool success = false;
 
+	
+
 	if (dataset_level)
 	{   
 		// construction of the processing dataset to upload
@@ -236,7 +238,7 @@ bool SyncNetwork::createFolder(levelMinimalEntries & pio_minimalEntries, dataset
  		QString processingDate = QDate::currentDate().toString("yyyy-MM-dd"); // on the web version, the user indicates this date himself
  		QString processingType = "SEGMENTATION"; //TODO: It is written in raw, but normaly there is a list, and the user chooses 1 valid processing type from that list -- think about using pi_attributes that could carry this information
 
- 		DatasetProcessing in_processing_ds = { -1, processingType, processingDate,QList<DatasetOverview>() << input_dataset, QList<ProcessedDataset>(), studyId}; // -1 because it is not created
+ 		DatasetProcessingOverview in_processing_ds = { -1, processingType, processingDate,QList<DatasetOverview>() << input_dataset, QList<DatasetOverview>(), studyId}; // -1 because it is not created
 
 		// construction of the request 
 		QNetworkRequest req;
@@ -301,19 +303,29 @@ void SyncNetwork::manageRequestDeath(QUuid netReqId)
 	if (m_requestMap.contains(netReqId))
 	{
 		RequestResponse res = m_requestMap[netReqId].response;
-		if (res.code != SUCCESS_CODE)
+		SyncRequestType type = m_requestMap[netReqId].type;
+		int no_content_code = 204;
+		bool isTreeViewRequest = type == getTreeViewDatasetProcessing || type == getTreeViewDatasetDetails || type == getTreeViewExaminations || type == getTreeViewStudies;
+		if (res.code == no_content_code && isTreeViewRequest)
+		{
+			//204 stands for "no content found". 
+			//It is not an error in a tree-view context, 
+			// it only means that no children element is present in the parent. It is normal
+			medNotif::createNotif(notifLevel::info , "SHANOIR PLUGIN", "This tree-view element has no children");
+		}
+		else if (res.code != SUCCESS_CODE)
 		{
 			// trace if an error occured
 			qDebug() << "\nNETWORKERROR (code = " << res.code << ") - SYNC REQUEST TYPE ID : " << m_requestMap[netReqId].type << "\nLOOK AT https://doc.qt.io/qt-5/qnetworkreply.html#NetworkError-enum for more information\n";
 			// notify
 			QString activity;
-			qDebug() << m_requestMap[netReqId].type;
-			switch (m_requestMap[netReqId].type)
+			qDebug() << type;
+			switch (type)
 			{
 			case searchWithSolr: activity = "searchWithSolr"; break;
 			case getTreeViewDatasetProcessing: activity = "FETCHING Dataset Processing"; break;
 			case getTreeViewDatasetDetails: activity = "FETCHING Dataset Details"; break;
-			case getTreeViewStudyDetail: activity = "FETCHING Study Details"; break;
+			case getTreeViewStudyDetail: activity = "FETCHING StudyDetails Details"; break;
 			case getTreeViewExaminations: activity = "FETCHING Examinations"; break;
 			case getTreeViewStudies: activity = "FETCHING Studies"; break;
 			case getData: activity = "DOWNLOADING DATA"; break;
@@ -467,13 +479,13 @@ QList<StudyOverview>  SyncNetwork::getStudies()
 	return studies;
 }
 
-Study SyncNetwork::getStudyDetails(int studyId)
+StudyDetails SyncNetwork::getStudyDetails(int studyId)
 {
-	Study study;
+	StudyDetails study;
 
 	// creation of the request
 	QNetworkRequest req;
-	writeGetStudyDetailsRequest(req, m_info->getBaseURL(), m_authent->getCurrentAccessToken(), studyId);
+	writeGetStudyRequest(req, m_info->getBaseURL(), m_authent->getCurrentAccessToken(), studyId);
 
 	// sending the request
 	QUuid netReqId = waitGetResult(getTreeViewStudyDetail, req);
@@ -494,9 +506,9 @@ Study SyncNetwork::getStudyDetails(int studyId)
 }
 
 
-QList<Examination> SyncNetwork::getExaminations(int stud_id, int subj_id)
+QList<ExaminationOverview> SyncNetwork::getExaminations(int stud_id, int subj_id)
 {
-	QList<Examination> examinations;
+	QList<ExaminationOverview> examinations;
 
 	// creation of the request
 	QNetworkRequest req;
@@ -508,7 +520,8 @@ QList<Examination> SyncNetwork::getExaminations(int stud_id, int subj_id)
 	// receiving the response
 	RequestResponse res = m_requestMap[netReqId].response;
 
-	if(res.code == SUCCESS_CODE)
+
+	if(res.code == SUCCESS_CODE) 
 	{
 		// handling the results : parsing
 		QJsonArray examinations_response = qbytearrayToQJsonArray(res.payload);
@@ -526,7 +539,7 @@ DatasetDetails SyncNetwork::getDatasetDetails(int id)
 
 	// creation of the request
 	QNetworkRequest req;
-	writeGetDatasetDetailsRequest(req, m_info->getBaseURL(), m_authent->getCurrentAccessToken(), id);
+	writeGetDatasetRequest(req, m_info->getBaseURL(), m_authent->getCurrentAccessToken(), id);
 
 	// sending the request
 	QUuid netReqId = waitGetResult(getTreeViewDatasetDetails, req);
@@ -594,7 +607,7 @@ QList<levelMinimalEntries>  SyncNetwork::getRootMinimalEntries()
 QList<levelMinimalEntries>  SyncNetwork::getStudyMinimalEntries(QString id)
 {
 	QList<levelMinimalEntries> entries;
-	Study study = getStudyDetails(id.toInt());
+	StudyDetails study = getStudyDetails(id.toInt());
 	for (SubjectOverview subject : study.subjects)
 	{
 		QString key = QString::number(study.id) + "." + QString::number(subject.id);
@@ -613,8 +626,8 @@ QList<levelMinimalEntries>  SyncNetwork::getSubjectMinimalEntries(QString id)
 	{
 		int id_study = parts[0].toInt();
 		int id_subject = parts[1].toInt();
-		QList<Examination> examinations = getExaminations(id_study, id_subject);
-		for (Examination examination : examinations)
+		QList<ExaminationOverview> examinations = getExaminations(id_study, id_subject);
+		for (ExaminationOverview examination : examinations)
 		{
 			QString key = id + "." + QString::number(examination.id);
 			QString name = examination.date.toString("dd/MM/yyyy") + ", " + examination.comment + "(id=" + QString::number(examination.id) + ")";
@@ -635,13 +648,13 @@ QList<levelMinimalEntries> SyncNetwork::getExaminationMinimalEntries(QString id)
 		int id_study = parts[0].toInt();
 		int id_subject = parts[1].toInt();
 		int id_exam = parts[2].toInt();
-		QList<Examination> examinations = getExaminations(id_study, id_subject);
+		QList<ExaminationOverview> examinations = getExaminations(id_study, id_subject);
 		auto exam_it = findLevelElement(examinations, id_exam);
 		if (exam_it!=nullptr && exam_it != examinations.end())
 		{
-			Examination exam = *exam_it;
-			QList<DatasetAcquisition> ds_acq = exam.ds_acquisitions;
-			for (DatasetAcquisition acquisition : ds_acq)
+			ExaminationOverview exam = *exam_it;
+			QList<DatasetAcquisitionOverview> ds_acq = exam.ds_acquisitions;
+			for (DatasetAcquisitionOverview acquisition : ds_acq)
 			{
 				QString key = id + "." + QString::number(acquisition.id);
 				QString description = "Contains " + QString::number(acquisition.datasets.size()) + " datasets";
@@ -664,16 +677,16 @@ QList<levelMinimalEntries> SyncNetwork::getDatasetAcquisitionMinimalEntries(QStr
 		int id_subject = parts[1].toInt();
 		int id_exam = parts[2].toInt();
 		int id_acq = parts[3].toInt();
-		QList<Examination> examinations = getExaminations(id_study, id_subject);
+		QList<ExaminationOverview> examinations = getExaminations(id_study, id_subject);
 		auto exam_it = findLevelElement(examinations, id_exam);
 		if (exam_it !=nullptr && exam_it != examinations.end())
 		{
-			Examination exam = *exam_it;
-			QList<DatasetAcquisition> ds_acquisitions = exam.ds_acquisitions;
+			ExaminationOverview exam = *exam_it;
+			QList<DatasetAcquisitionOverview> ds_acquisitions = exam.ds_acquisitions;
 			auto dsacq_it = findLevelElement(ds_acquisitions, id_acq);
 			if (dsacq_it !=nullptr && dsacq_it != ds_acquisitions.end())
 			{
-				DatasetAcquisition ds_acq = *dsacq_it;
+				DatasetAcquisitionOverview ds_acq = *dsacq_it;
 				QList<Dataset> datasets = ds_acq.datasets;
 				for (Dataset ds : datasets)
 				{
@@ -700,22 +713,22 @@ QList<levelMinimalEntries> SyncNetwork::getDatasetMinimalEntries(QString id)
 		int id_exam = parts[2].toInt();
 		int id_acq = parts[3].toInt();
 		int id_ds = parts[4].toInt();
-		QList<Examination> examinations = getExaminations(id_study, id_subject);
+		QList<ExaminationOverview> examinations = getExaminations(id_study, id_subject);
 		auto exam_it = findLevelElement(examinations, id_exam);
 		if (exam_it !=nullptr && exam_it != examinations.end())
 		{
-			Examination exam = *exam_it;
-			QList<DatasetAcquisition> ds_acquisitions = exam.ds_acquisitions;
+			ExaminationOverview exam = *exam_it;
+			QList<DatasetAcquisitionOverview> ds_acquisitions = exam.ds_acquisitions;
 			auto dsacq_it = findLevelElement(ds_acquisitions, id_acq);
 			if (dsacq_it !=nullptr && dsacq_it != ds_acquisitions.end())
 			{
-				DatasetAcquisition ds_acq = *dsacq_it;
+				DatasetAcquisitionOverview ds_acq = *dsacq_it;
 				QList<Dataset> datasets = ds_acq.datasets;
 				auto ds_it = findLevelElement(datasets, id_ds);
 				if (ds_it !=nullptr && ds_it != datasets.end())
 				{
 					Dataset ds = *ds_it;
-					QList<DatasetProcessing> processings = ds.processings;
+					QList<DatasetProcessingOverview> processings = ds.processings;
 					for (auto processing : processings)
 					{
 						QString key = id + "." + QString::number(processing.id);
@@ -743,27 +756,27 @@ QList<levelMinimalEntries> SyncNetwork::getProcessingDatasetMinimalEntries(QStri
 		int id_acq = parts[3].toInt();
 		int id_ds = parts[4].toInt();
 		int id_processing = parts[5].toInt();
-		QList<Examination> examinations = getExaminations(id_study, id_subject);
+		QList<ExaminationOverview> examinations = getExaminations(id_study, id_subject);
 		auto exam_it = findLevelElement(examinations, id_exam);
 		if (exam_it !=nullptr && exam_it != examinations.end())
 		{
-			Examination exam = *exam_it;
-			QList<DatasetAcquisition> ds_acquisitions = exam.ds_acquisitions;
+			ExaminationOverview exam = *exam_it;
+			QList<DatasetAcquisitionOverview> ds_acquisitions = exam.ds_acquisitions;
 			auto dsacq_it = findLevelElement(ds_acquisitions, id_acq);
 			if (dsacq_it !=nullptr && dsacq_it != ds_acquisitions.end())
 			{
-				DatasetAcquisition ds_acq = *dsacq_it;
+				DatasetAcquisitionOverview ds_acq = *dsacq_it;
 				QList<Dataset> datasets = ds_acq.datasets;
 				auto ds_it = findLevelElement(datasets, id_ds);
 				if (ds_it!=nullptr && ds_it != datasets.end())
 				{
 					Dataset ds = *ds_it;
-					QList<DatasetProcessing> processings = ds.processings;
+					QList<DatasetProcessingOverview> processings = ds.processings;
 					auto processing_it = findLevelElement(processings, id_processing);
 					if (processing_it!=nullptr && processing_it != processings.end())
 					{
-						DatasetProcessing processing = *processing_it;
-						QList<ProcessedDataset> outputDatasets = processing.outputDatasets;
+						DatasetProcessingOverview processing = *processing_it;
+						QList<DatasetOverview> outputDatasets = processing.outputDatasets;
 						for (auto outputDataset : outputDatasets)
 						{
 							QString key = id + "." + QString::number(outputDataset.id);
@@ -784,9 +797,9 @@ QList<levelMinimalEntries> SyncNetwork::getProcessingDatasetMinimalEntries(QStri
 //--PARSERS-----////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
-Study SyncNetwork::parseStudy(QJsonObject &study_response)
+StudyDetails SyncNetwork::parseStudy(QJsonObject &study_response)
 {
-	Study studyRes;
+	StudyDetails studyRes;
 
 	if (verifyJsonKeys(study_response, { "subjectStudyList", "id", "name" }, { "Array", "Number", "String" }))
 	{
@@ -829,9 +842,9 @@ QList<StudyOverview> SyncNetwork::parseStudies(QJsonArray studies_response)
 	return studies;
 }
 
-QList<Examination> SyncNetwork::parseExaminations(QJsonArray examinations_response)
+QList<ExaminationOverview> SyncNetwork::parseExaminations(QJsonArray examinations_response)
 {
-	QList<Examination> examinations;
+	QList<ExaminationOverview> examinations;
 
 	for (const QJsonValue& value : examinations_response)
 	{ // EXAMINATIONS 
@@ -839,7 +852,7 @@ QList<Examination> SyncNetwork::parseExaminations(QJsonArray examinations_respon
 		if (verifyJsonKeys(examination_response, { "datasetAcquisitions","id","comment","examinationDate" }, { "Array", "Number", "String", "String" }))
 		{
 			QJsonArray dataset_acquisitions_response = examination_response.value("datasetAcquisitions").toArray();
-			QList<DatasetAcquisition> dataset_acquisitions = parseDatasetAcquisitions(dataset_acquisitions_response);
+			QList<DatasetAcquisitionOverview> dataset_acquisitions = parseDatasetAcquisitions(dataset_acquisitions_response);
 			int id = examination_response.value("id").toInt();
 			QString comment = examination_response.value("comment").toString();
 			QDate date = QDate::fromString(examination_response.value("examinationDate").toString(), "yyyy-MM-dd");
@@ -850,9 +863,9 @@ QList<Examination> SyncNetwork::parseExaminations(QJsonArray examinations_respon
 	return examinations;
 }
 
-QList<DatasetAcquisition> SyncNetwork::parseDatasetAcquisitions(QJsonArray dataset_acquisitions_response)
+QList<DatasetAcquisitionOverview> SyncNetwork::parseDatasetAcquisitions(QJsonArray dataset_acquisitions_response)
 {
-	QList<DatasetAcquisition> dataset_acquisitions;
+	QList<DatasetAcquisitionOverview> dataset_acquisitions;
 	for (const QJsonValue &value : dataset_acquisitions_response)
 	{ // DATASETS ACQUISITIONS
 		QJsonObject dataset_acquisition = value.toObject();
@@ -880,16 +893,16 @@ QList<Dataset> SyncNetwork::parseDatasets(QJsonArray datasets_response)
 			QString name = dataset_response.value("name").toString();
 			QString type = dataset_response.value("datasetAcquisition").toObject().value("type").toString();
 			QJsonArray processings_response = dataset_response.value("processings").toArray();
-			QList<DatasetProcessing> processings = parseDatasetProcessings(processings_response);
+			QList<DatasetProcessingOverview> processings = parseDatasetProcessings(processings_response);
 			datasets.append({ id, name, type, processings });
 		}
 	}
 	return datasets;
 }
 
-QList<DatasetProcessing> SyncNetwork::parseDatasetProcessings(QJsonArray processings_response)
+QList<DatasetProcessingOverview> SyncNetwork::parseDatasetProcessings(QJsonArray processings_response)
 {
-	QList<DatasetProcessing> processings;
+	QList<DatasetProcessingOverview> processings;
 	for (const QJsonValue &value : processings_response)
 	{ // DATASET PROCESSINGS
 		QJsonObject processing_response = value.toObject();
@@ -912,7 +925,7 @@ QList<DatasetProcessing> SyncNetwork::parseDatasetProcessings(QJsonArray process
 				}
 			}
 			QJsonArray output_datasets_response = processing_response.value("outputDatasets").toArray();
-			QList<ProcessedDataset> output_processed_datasets;
+			QList<DatasetOverview> output_processed_datasets;
 			for (auto output_dataset_response : output_datasets_response)
 			{
 				if (verifyJsonKeys(output_dataset_response.toObject(), { "id" }, { "Number" }))

@@ -84,11 +84,6 @@ private:
      */
     void disauthenticate();
 
-    /**
-     * @return the domain the authenticater is currently connected on. Empty String if it is offline.
-     */
-    QString getCurrentDomain();
-
     
     /**
      * @param token_duration the full duration of the token before it expires (in milliseconds).

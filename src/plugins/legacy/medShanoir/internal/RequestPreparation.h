@@ -81,7 +81,7 @@ inline void writeProcessedDatasetUploadContextRequest(QNetworkRequest &req, QByt
 /// FUNCTIONS ONLY USED IN SYNCNETWORK 
 ///
 
-inline void writeProcessingDatasetUploadRequest(QNetworkRequest &req, QByteArray &postData, QString baseUrl, QString token, DatasetProcessing in_processing_ds, QString processingDate, int studyId)
+inline void writeProcessingDatasetUploadRequest(QNetworkRequest &req, QByteArray &postData, QString baseUrl, QString token, DatasetProcessingOverview in_processing_ds, QString processingDate, int studyId)
 {
 	req.setUrl(baseUrl + "datasets/datasetProcessing");
 	req.setRawHeader("Authorization", ("Bearer " + token).toUtf8());
@@ -111,7 +111,7 @@ inline void writeGetStudiesRequest(QNetworkRequest &req, QString baseUrl, QStrin
 	req.setRawHeader("Authorization", ("Bearer " + token).toUtf8());
 }
 
-inline void writeGetStudyDetailsRequest(QNetworkRequest &req, QString baseUrl, QString token, int studyId)
+inline void writeGetStudyRequest(QNetworkRequest &req, QString baseUrl, QString token, int studyId)
 {
 	req.setUrl(baseUrl + "studies/studies/" + QString::number(studyId));
 	req.setRawHeader("Authorization", ("Bearer " + token).toUtf8());
@@ -123,7 +123,7 @@ inline void writeGetExaminationsRequest(QNetworkRequest &req, QString baseUrl, Q
 	req.setRawHeader("Authorization", ("Bearer " + token).toUtf8());
 }
 
-inline void writeGetDatasetDetailsRequest(QNetworkRequest &req, QString baseUrl, QString token, int datasetId)
+inline void writeGetDatasetRequest(QNetworkRequest &req, QString baseUrl, QString token, int datasetId)
 {
 	req.setUrl(baseUrl + "datasets/datasets/" + QString::number(datasetId));
 	req.setRawHeader("Authorization", ("Bearer " + token).toUtf8());
