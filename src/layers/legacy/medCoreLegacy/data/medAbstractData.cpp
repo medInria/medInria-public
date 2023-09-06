@@ -17,6 +17,7 @@
 #include <medAttachedData.h>
 #include <medDataIndex.h>
 #include <medGlobalDefs.h>
+#include <medSettingsManager.h>
 #include <medViewFactory.h>
 
 #include <dtkCoreSupport/dtkSmartPointer.h>
@@ -194,17 +195,21 @@ void medAbstractData::invokeModified()
 QImage medAbstractData::generateThumbnail(QSize size)
 {
     QImage thumbnail;
-    if (QThread::currentThread() != QApplication::instance()->thread())
+
+    if(medSettingsManager::instance()->value("Browser", "thumbnail_creation_setting").toBool())
     {
-        QMetaObject::invokeMethod(this,
-                                  "generateThumbnailInGuiThread",
-                                  Qt::BlockingQueuedConnection,
-                                  Q_RETURN_ARG(QImage, thumbnail),
-                                  Q_ARG(QSize, size));
-    }
-    else
-    {
-        thumbnail = this->generateThumbnailInGuiThread(size);
+        if (QThread::currentThread() != QApplication::instance()->thread())
+        {
+            QMetaObject::invokeMethod(this,
+                                    "generateThumbnailInGuiThread",
+                                    Qt::BlockingQueuedConnection,
+                                    Q_RETURN_ARG(QImage, thumbnail),
+                                    Q_ARG(QSize, size));
+        }
+        else
+        {
+            thumbnail = this->generateThumbnailInGuiThread(size);
+        }
     }
 
     return thumbnail;

@@ -64,6 +64,7 @@ public slots:
     void seriesSelected(const medDataIndex& index);
     void noPatientOrSeriesSelected();
     void selectedPathsChanged(const QStringList& paths);
+    void thumbnailSettingClicked(bool state);
 
 protected:
 
