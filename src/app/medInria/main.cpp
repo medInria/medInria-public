@@ -174,12 +174,7 @@ int main(int argc,char* argv[])
 
     if (show_splash)
     {
-        QObject::connect(medPluginManager::instance(),SIGNAL(loaded(QString)),
-                         &application,SLOT(redirectMessageToSplash(QString)) );
-        QObject::connect(&application,SIGNAL(showMessage(const QString&)),
-                         &splash,SLOT(showMessage(const QString&)) );
         splash.show();
-        splash.showMessage("Loading plugins...");
     }
 
     //  DATABASE INITIALISATION.
@@ -188,7 +183,6 @@ int main(int argc,char* argv[])
     QString currentLocation = medStorage::dataLocation();
 
     //  If the user configured a new location for the database in the settings editor, we'll need to move it
-
     QString newLocation = mnger->value("medDatabaseSettingsWidget", "new_database_location").toString();
     if (!newLocation.isEmpty()) {
 
@@ -256,8 +250,7 @@ int main(int argc,char* argv[])
        QGLFormat::setDefaultFormat(format);
     }
 
-    if (show_splash)
-        splash.finish(mainwindow);
+    splash.close();
 
     if (medPluginManager::instance()->plugins().isEmpty()) {
         QMessageBox::warning(mainwindow,
