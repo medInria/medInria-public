@@ -122,6 +122,8 @@ int main(int argc,char* argv[])
     bool show_splash = false;
     #endif
 
+    medSettingsManager* mnger = medSettingsManager::instance();
+
     QStringList posargs;
     for (int i=1;i<application.arguments().size();++i)
     {
@@ -181,7 +183,6 @@ int main(int argc,char* argv[])
     QString currentLocation = medStorage::dataLocation();
 
     //  If the user configured a new location for the database in the settings editor, we'll need to move it
-
     QString newLocation = mnger->value("medDatabaseSettingsWidget", "new_database_location").toString();
     if (!newLocation.isEmpty()) {
 
