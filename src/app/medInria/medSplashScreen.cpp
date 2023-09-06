@@ -22,11 +22,9 @@ class medSplashScreenPrivate
 {
 public:
     QPixmap  pixmap;
-    QString  message;
     int   alignment;
     QColor  color;
 };
-
 
 ////////////////////////////////////////////////////////////////////////////
 medSplashScreen::medSplashScreen(const QPixmap& thePixmap)
@@ -70,60 +68,11 @@ medSplashScreen::~medSplashScreen()
 }
 
 ////////////////////////////////////////////////////////////////////////////
-void medSplashScreen::clearMessage()
-{
-    d->message.clear();
-    repaint();
-}
-
-////////////////////////////////////////////////////////////////////////////
-void medSplashScreen::showMessage(const QString& message)
-{
-    const dtkPlugin* plugin = medPluginManager::instance()->plugin(message);
-    if (plugin)
-    {
-        d->message = QString("Loading: ") + plugin->name();
-    }
-    else
-    {
-        d->message = QString("Loading: ") + message;
-    }
-
-    repaint();
-}
-
-void medSplashScreen::repaint()
-{
-    QWidget::repaint();
-    QApplication::flush();
-    qApp->processEvents(QEventLoop::AllEvents);
-}
-
-void medSplashScreen::finish(QWidget *mainWin)
-
-{
-    if (mainWin)
-    {
-#if defined(Q_OS_LINUX)
-        Q_UNUSED(QTest::qWaitForWindowExposed(mainWin));
-#endif
-    }
-    close();
-}
-
-////////////////////////////////////////////////////////////////////////////
 void medSplashScreen::paintEvent(QPaintEvent* pe)
 {
     Q_UNUSED(pe);
 
-    QRect aTextRect(rect());
-    aTextRect.setRect(aTextRect.x() + 120,
-                      aTextRect.y() + 5,
-                      aTextRect.width() - 10,
-                      aTextRect.height() - 10);
-
     QPainter aPainter(this);
     aPainter.drawPixmap(rect(), d->pixmap);
     aPainter.setPen(d->color);
-    aPainter.drawText(aTextRect, d->alignment, d->message);
 }
