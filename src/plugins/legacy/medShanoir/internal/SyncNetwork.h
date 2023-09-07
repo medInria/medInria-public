@@ -153,7 +153,7 @@ public:
 
 private:
 
-	//      PARSERS : methods that parse the response of a request to return the wanted data
+	//      PARSERS : methods that parse the json returned by the shanoir server to return the wanted tree-view element in the plugin format
 	QList<StudyOverview>      parseStudies(QJsonArray studies_response);
 	QList<ExaminationOverview>        parseExaminations(QJsonArray examinations_response);
 	QList<DatasetAcquisitionOverview> parseDatasetAcquisitions(QJsonArray dataset_acquisitions_response);

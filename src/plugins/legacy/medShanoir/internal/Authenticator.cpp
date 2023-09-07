@@ -87,9 +87,11 @@ QUuid Authenticator::waitPostResult(QNetworkRequest &req, QByteArray &postData)
 	//creation of a unique id
 	QUuid netReqId = QUuid::createUuid();
 
-	// creating the waiter object and sending the request 
+	//creation of the waiter object 
 	QEventLoop *waiter = new QEventLoop(this);
 	m_requestMap[netReqId].first = waiter;
+
+	//sending the request 
 	emit authentPost(netReqId, req, postData);
 
 	// waiting for the request to end

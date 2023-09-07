@@ -15,6 +15,7 @@
 
 SyncNetwork::SyncNetwork(medShanoir * parent,  LocalInfo *info, Authenticator * authent, RequestManager * requester) :QObject(parent), m_info(info), m_authent(authent), m_rootPath(m_info->getStoragePath()+"default")
 {
+	// connecting the SyncNetwork object to the RequestManager object
 	QObject::connect(this, &SyncNetwork::syncGet, requester, &RequestManager::httpGet, Qt::ConnectionType::QueuedConnection);
 	QObject::connect(this, &SyncNetwork::syncPost, requester, &RequestManager::httpPost, Qt::ConnectionType::QueuedConnection);
 	QObject::connect(this, &SyncNetwork::syncPostMulti, requester, &RequestManager::httpPostMulti, Qt::ConnectionType::QueuedConnection);
@@ -22,7 +23,7 @@ SyncNetwork::SyncNetwork(medShanoir * parent,  LocalInfo *info, Authenticator * 
 
 	QObject::connect(this, &SyncNetwork::syncAbort, requester, &RequestManager::abort, Qt::ConnectionType::QueuedConnection);
 
-
+	// Setting up the maximum durations of the different types of requests
 	requestsDurations[searchWithSolr]               = 10000; // 10 seconds before considerating the request is lost
 	requestsDurations[getTreeViewDatasetProcessing] = 10000;
 	requestsDurations[getTreeViewDatasetProcessing] = 10000;
@@ -30,7 +31,7 @@ SyncNetwork::SyncNetwork(medShanoir * parent,  LocalInfo *info, Authenticator * 
 	requestsDurations[getTreeViewStudyDetail]       = 10000;
 	requestsDurations[getTreeViewExaminations]      = 10000;
 	requestsDurations[getTreeViewStudies]           = 10000;
-	requestsDurations[getData]                      = -1;
+	requestsDurations[getData]                      = -1;   // No maximum time
 	requestsDurations[addDataFile]                  = -1;
 	requestsDurations[addDataContext]               = -1;
 	requestsDurations[addFolder]                    = 10000;
@@ -50,6 +51,7 @@ SyncNetwork::~SyncNetwork()
 QList<levelMinimalEntries> SyncNetwork::getMinimalEntries(unsigned int pi_uiLevel, QString parentKey)
 {
 	QList<medAbstractSource::levelMinimalEntries> entries;
+	// selection of the function to apply considering the given level
 	switch (pi_uiLevel)
 	{
 	case 0:
@@ -84,8 +86,8 @@ QList<QMap<QString, QString>> SyncNetwork::getMandatoryAttributes(unsigned int p
 {
 	QList<QMap<QString, QString>> mandatories;
 
+	// conversion of the level minimal entries to mandatory attributes
 	QList<levelMinimalEntries> entries = getMinimalEntries(pi_uiLevel, parentKey);
-	
 	for(const levelMinimalEntries &entry : entries)
 	{
 		QString type = entry.type==entryType::folder?"folder":"dataset";
@@ -100,6 +102,7 @@ QVariant SyncNetwork::getDirectData(unsigned int pi_uiLevel, QString key)
 {
 	QVariant pathRes;
 
+	// checking the key is valid and that it makes sense to retrieve this data
 	QStringList parts = key.split('.');
 	bool dataset_level = pi_uiLevel == 4 && parts.size() == 5;
 	bool ps_dataset_level = pi_uiLevel == 6 && parts.size() == 7;
@@ -111,7 +114,7 @@ QVariant SyncNetwork::getDirectData(unsigned int pi_uiLevel, QString key)
 			id_ds = parts[6].toInt();
 		}
 
-		// Perform request
+		// Performing the request
 		QNetworkRequest req;
 		writeNiftiDatasetRetrievingRequest(req, m_info->getBaseURL(), m_authent->getCurrentAccessToken(), id_ds);
 		QUuid netReqId = waitGetResult(getData, req);
@@ -289,6 +292,7 @@ void SyncNetwork::syncRequestSlot(QUuid netReqId, QByteArray payload, QJsonObjec
 {
 	if (m_requestMap.contains(netReqId))
 	{
+		// storing the request response
 		RequestResponse res = { statusOrHttpCode, headers, payload };
 		m_requestMap[netReqId].response = res;
 		if (statusOrHttpCode == UPLOAD_CODE || statusOrHttpCode == DOWNLOAD_CODE)
@@ -353,20 +357,26 @@ void SyncNetwork::manageRequestDeath(QUuid netReqId)
 
 QUuid SyncNetwork::waitGetResult(SyncRequestType type, QNetworkRequest &req)
 {
+	//creation of a unique id
 	QUuid netReqId = QUuid::createUuid();
 
+	//creation of the waiter object 
 	QEventLoop *waiter = new QEventLoop(nullptr);
 	m_requestMap[netReqId].waiter = waiter;
 	m_requestMap[netReqId].type = type;
 	m_requestMap[netReqId].upToDate = false;
 
+	// sending the request 
 	emit syncGet(netReqId, req);
 
+	// adding a timer that will abort the request if it is too long
 	updateRequestState(type, netReqId);
 
+	// waiting for the request to end
 	waiter->exec();
 	waiter->deleteLater();
 
+	// returning the request id for retrieving the data
 	return netReqId;
 }
 
@@ -397,58 +407,76 @@ void SyncNetwork::updateRequestState(SyncRequestType &type, const QUuid &netReqI
 
 QUuid SyncNetwork::waitPostResult(SyncRequestType type, QNetworkRequest &req, QByteArray &postData)
 {
+	//creation of a unique id
 	QUuid netReqId = QUuid::createUuid();
 
+	//creation of the waiter object 
 	QEventLoop *waiter = new QEventLoop(nullptr);
 	m_requestMap[netReqId].waiter = waiter;
 	m_requestMap[netReqId].type = type;
 	m_requestMap[netReqId].upToDate = false;
 
+	// sending the request
 	emit syncPost(netReqId, req, postData);
 
+	// adding a timer that will abort the request if it is too long
 	updateRequestState(type, netReqId);
 
+	// waiting for the request to end
 	waiter->exec();
 	waiter->deleteLater();
 
+	// returning the request id for retrieving the data
 	return netReqId;
 }
 
 QUuid SyncNetwork::waitPostMultiResult(SyncRequestType type, QNetworkRequest &req, QHttpMultiPart  *postData)
 {
+	//creation of a unique id
 	QUuid netReqId = QUuid::createUuid();
 
+	// creation of the waiter object
 	QEventLoop *waiter = new QEventLoop(nullptr);
 	m_requestMap[netReqId].waiter = waiter;
 	m_requestMap[netReqId].type = type;
 	m_requestMap[netReqId].upToDate = false;
 
+	// sending the request
 	emit syncPostMulti(netReqId, req, postData);
 
+	// adding a timer that will abort the request if it is too long
 	updateRequestState(type, netReqId);
 
+	// waiting for the request to end
 	waiter->exec();
 	waiter->deleteLater();
 
+	// returning the request id for retrieving the data
 	return netReqId;
 }
 
 QUuid SyncNetwork::waitPutResult(SyncRequestType type, QNetworkRequest &req, QByteArray &postData)
 {
+	//creation of a unique id
 	QUuid netReqId = QUuid::createUuid();
 
+	// creation of the waiter object
 	QEventLoop *waiter = new QEventLoop(nullptr);
 	m_requestMap[netReqId].waiter = waiter;
 	m_requestMap[netReqId].type = type;
 	m_requestMap[netReqId].upToDate = false;
 
+	// sending the request
 	emit syncPut(netReqId, req, postData);
 
+	// adding a timer that will abort the request if it is too long
 	updateRequestState(type, netReqId);
 
+	// waiting for the request to end
 	waiter->exec();
 	waiter->deleteLater();
 
+	// returning the request id for retrieving the data
 	return netReqId;
 }
 
@@ -628,8 +656,9 @@ QList<levelMinimalEntries>  SyncNetwork::getSubjectMinimalEntries(QString id)
 	QList<levelMinimalEntries> entries;
 
 	QStringList parts = id.split('.');
-	if (parts.size() == 2)
+	if (parts.size() == 2) // checking the format idStudy.idSubject is respected
 	{
+		// retrieving the ids of the tree-view elements
 		int id_study = parts[0].toInt();
 		int id_subject = parts[1].toInt();
 		QList<ExaminationOverview> examinations = getExaminations(id_study, id_subject);
@@ -649,12 +678,14 @@ QList<levelMinimalEntries> SyncNetwork::getExaminationMinimalEntries(QString id)
 	QList<levelMinimalEntries> entries;
 
 	QStringList parts = id.split('.');
-	if (parts.size() == 3)
+	if (parts.size() == 3) // checking the format idStudy.idSubject.idExam is respected
 	{
+		// retrieving the ids of the tree-view elements
 		int id_study = parts[0].toInt();
 		int id_subject = parts[1].toInt();
 		int id_exam = parts[2].toInt();
 		QList<ExaminationOverview> examinations = getExaminations(id_study, id_subject);
+		// retrieving the examination element corresponding to the given id 
 		auto exam_it = findLevelElement(examinations, id_exam);
 		if (exam_it!=nullptr && exam_it != examinations.end())
 		{
@@ -677,18 +708,21 @@ QList<levelMinimalEntries> SyncNetwork::getDatasetAcquisitionMinimalEntries(QStr
 	QList<levelMinimalEntries> entries;
 
 	QStringList parts = id.split('.');
-	if (parts.size() == 4)
+	if (parts.size() == 4) // checking the format idStudy.idSubject.idExam.idAcq is respected
 	{
+		// retrieving the ids of the tree-view elements
 		int id_study = parts[0].toInt();
 		int id_subject = parts[1].toInt();
 		int id_exam = parts[2].toInt();
 		int id_acq = parts[3].toInt();
 		QList<ExaminationOverview> examinations = getExaminations(id_study, id_subject);
+		// retrieving the examination element corresponding to the given id 
 		auto exam_it = findLevelElement(examinations, id_exam);
 		if (exam_it !=nullptr && exam_it != examinations.end())
 		{
 			ExaminationOverview exam = *exam_it;
 			QList<DatasetAcquisitionOverview> ds_acquisitions = exam.ds_acquisitions;
+			// retrieving the dataset-acquisition element corresponding to the given id
 			auto dsacq_it = findLevelElement(ds_acquisitions, id_acq);
 			if (dsacq_it !=nullptr && dsacq_it != ds_acquisitions.end())
 			{
@@ -712,24 +746,28 @@ QList<levelMinimalEntries> SyncNetwork::getDatasetMinimalEntries(QString id)
 	QList<levelMinimalEntries> entries;
 
 	QStringList parts = id.split('.');
-	if (parts.size() == 5)
+	if (parts.size() == 5) // checking the format idStudy.idSubject.idExam.idAcq.idDataset is respected
 	{
+		// retrieving the ids of the tree-view elements
 		int id_study = parts[0].toInt();
 		int id_subject = parts[1].toInt();
 		int id_exam = parts[2].toInt();
 		int id_acq = parts[3].toInt();
 		int id_ds = parts[4].toInt();
 		QList<ExaminationOverview> examinations = getExaminations(id_study, id_subject);
+		// retrieving the examination element corresponding to the given id 
 		auto exam_it = findLevelElement(examinations, id_exam);
 		if (exam_it !=nullptr && exam_it != examinations.end())
 		{
 			ExaminationOverview exam = *exam_it;
 			QList<DatasetAcquisitionOverview> ds_acquisitions = exam.ds_acquisitions;
+			// retrieving the dataset-acquisition element corresponding to the given id
 			auto dsacq_it = findLevelElement(ds_acquisitions, id_acq);
 			if (dsacq_it !=nullptr && dsacq_it != ds_acquisitions.end())
 			{
 				DatasetAcquisitionOverview ds_acq = *dsacq_it;
 				QList<Dataset> datasets = ds_acq.datasets;
+				// retrieving the dataset element corresponding to the given id
 				auto ds_it = findLevelElement(datasets, id_ds);
 				if (ds_it !=nullptr && ds_it != datasets.end())
 				{
@@ -754,8 +792,9 @@ QList<levelMinimalEntries> SyncNetwork::getProcessingDatasetMinimalEntries(QStri
 	QList<levelMinimalEntries> entries;
 
 	QStringList parts = id.split('.');
-	if (parts.size() == 6)
+	if (parts.size() == 6) // checking the format idStudy.idSubject.idExam.idAcq.idDataset.idProcessingDataset is respected
 	{
+		// retrieving the ids of the tree-view elements
 		int id_study = parts[0].toInt();
 		int id_subject = parts[1].toInt();
 		int id_exam = parts[2].toInt();
@@ -763,21 +802,25 @@ QList<levelMinimalEntries> SyncNetwork::getProcessingDatasetMinimalEntries(QStri
 		int id_ds = parts[4].toInt();
 		int id_processing = parts[5].toInt();
 		QList<ExaminationOverview> examinations = getExaminations(id_study, id_subject);
+		// retrieving the examination element corresponding to the given id 
 		auto exam_it = findLevelElement(examinations, id_exam);
 		if (exam_it !=nullptr && exam_it != examinations.end())
 		{
 			ExaminationOverview exam = *exam_it;
 			QList<DatasetAcquisitionOverview> ds_acquisitions = exam.ds_acquisitions;
+			// retrieving the dataset-acquisition element corresponding to the given id
 			auto dsacq_it = findLevelElement(ds_acquisitions, id_acq);
 			if (dsacq_it !=nullptr && dsacq_it != ds_acquisitions.end())
 			{
 				DatasetAcquisitionOverview ds_acq = *dsacq_it;
 				QList<Dataset> datasets = ds_acq.datasets;
+				// retrieving the dataset element corresponding to the given id
 				auto ds_it = findLevelElement(datasets, id_ds);
 				if (ds_it!=nullptr && ds_it != datasets.end())
 				{
 					Dataset ds = *ds_it;
 					QList<DatasetProcessingOverview> processings = ds.processings;
+					// retrieving the dataset-processing element corresponding to the given id
 					auto processing_it = findLevelElement(processings, id_processing);
 					if (processing_it!=nullptr && processing_it != processings.end())
 					{

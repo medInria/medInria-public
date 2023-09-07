@@ -11,11 +11,14 @@
 
 medShanoir::medShanoir()
 {
+	// initializing the objects
 	m_info      = new LocalInfo(this);
 	m_requester = new RequestManager(this);
 	m_authent   = new Authenticator (this, m_info, m_requester);
 	m_syncNet   = new SyncNetwork   (this, m_info, m_authent, m_requester);
 	m_asyncNet  = new AsyncNetwork  (this, m_info, m_authent, m_syncNet, m_requester);
+
+	// connecting the network objects to the request manager
 
 	QObject::connect(m_requester, &RequestManager::responseHttpPost, m_authent, &Authenticator::authentPostSlot, Qt::QueuedConnection);
 	
@@ -212,11 +215,11 @@ int  medShanoir::addAssyncData(QVariant data, levelMinimalEntries &pio_minimalEn
 	// mock for create folder (dev only)
 	//WARNING: to see and manipulate properly the created folder, you must reload medInria, otherwise the parentKey will be the instance name of the plugin
 	// by example you cannot add a processed dataset on a freshly created processing dataset. 
-	if (pi_uiLevel == 5)
-	{
-		datasetAttributes const &pi_attributes = {};
-		m_syncNet->createFolder(pio_minimalEntries, pi_attributes , pi_uiLevel, parentKey);
-	}
+	// if (pi_uiLevel == 5)
+	// {
+	// 	datasetAttributes const &pi_attributes = {};
+	// 	m_syncNet->createFolder(pio_minimalEntries, pi_attributes , pi_uiLevel, parentKey);
+	// }
 	return m_asyncNet -> addAssyncData(data, pio_minimalEntries, pi_uiLevel, parentKey); 
 }
 
