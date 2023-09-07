@@ -140,7 +140,8 @@ private:
 	Authenticator         * m_authent;  // pointer to the plugin instance authenticator
 	SyncNetwork           * m_syncNet;  // pointer to the plugin instance tree-view retriever
 
-	QStringList m_filesToRemove; // list of the files to remove when the plugin instance is closed
+	QStringList m_filesToRemove; // list of the files that were created by async network, and that need to be automatically deleted
+	QString m_rootPath; // path where all the creation of the folders and files will be done by the object.
 	
 //////////////////////////
 ////  request management variables

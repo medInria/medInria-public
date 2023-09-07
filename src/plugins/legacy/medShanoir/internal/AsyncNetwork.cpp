@@ -17,7 +17,7 @@
 
 
 AsyncNetwork::AsyncNetwork(medShanoir * parent, LocalInfo *info, Authenticator * authent, SyncNetwork *syncNet, RequestManager * requester): 
-	QObject(parent), m_parent(parent), m_info(info), m_authent(authent), m_syncNet(syncNet), m_medReqId(0)
+	QObject(parent), m_parent(parent), m_info(info), m_authent(authent), m_syncNet(syncNet), m_medReqId(0), m_rootPath(m_info->getStoragePath())
 {
 	// connecting the AsyncNetwork object to the RequestManager object
 	QObject::connect(this, &AsyncNetwork::asyncGet, requester, &RequestManager::httpGet, Qt::ConnectionType::QueuedConnection);
@@ -31,7 +31,10 @@ AsyncNetwork::AsyncNetwork(medShanoir * parent, LocalInfo *info, Authenticator *
 
 AsyncNetwork::~AsyncNetwork()
 {
+	// deletion of all the folders that contain files that were created by async network
 	deleteAllFolders(m_filesToRemove);
+	// deletion of the folder that contains all those folders 
+	deleteAllFolders(QStringList() << m_rootPath);
 }
 
 /**
@@ -179,7 +182,6 @@ QVariant AsyncNetwork::getAsyncResults(int pi_iRequest)
 	if (m_idResultMap.contains(pi_iRequest)) 
 	{
 		qRes = m_idResultMap[pi_iRequest];
-		//TODO: remove the entry from the m_idResultMap ? For now the result is kept during the session. 
 	}
 	return qRes;
 }
@@ -190,7 +192,10 @@ int AsyncNetwork::dataToFile(QUuid netReqId, RequestResponse res)
 	int medId = m_requestIdMap[netReqId].first;
 	if (successCode != 1)
 	{
-		QVariant pathRes = decompressNiftiiFromRequest(m_info->getStoragePath() + QString::number(medId) + "/", res.headers, res.payload, m_filesToRemove, 60000);//1 minute before deletion
+		// updating the root path with the instance id
+		m_rootPath = m_info->getStoragePath() + m_info->getInstanceId() + "/";
+		// creation of the nifti file
+		QVariant pathRes = decompressNiftiiFromRequest(m_rootPath + QString::number(medId) + "/", res.headers, res.payload, m_filesToRemove, 60000);//1 minute before deletion
 		if (pathRes.type() == QVariant::String)
 		{ // everything went well, we receive the corresponding path
 			m_idResultMap[medId] = pathRes;
@@ -200,7 +205,7 @@ int AsyncNetwork::dataToFile(QUuid netReqId, RequestResponse res)
 		else if (pathRes.type() == QVariant::Int)
 		{
 			qDebug() << "DECOMPRESSION ERROR " << pathRes.toInt();
-			m_idResultMap[medId];
+			m_idResultMap[medId] = QVariant();
 		}
 	}
 	return successCode;

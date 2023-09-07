@@ -123,7 +123,8 @@ QStringList      LocalInfo::getLevelNames()
 
 QString          LocalInfo::getLevelName(unsigned int pi_uiLevel)
 {
-	if(pi_uiLevel < s_level_names.size())
+	// checking that the pi_uiLevel is valid 
+	if(pi_uiLevel < getLevelCount())
 	{
 		return s_level_names[pi_uiLevel];
 	}
@@ -131,13 +132,16 @@ QString          LocalInfo::getLevelName(unsigned int pi_uiLevel)
 }
 
 bool             LocalInfo::isLevelWritable(unsigned int pi_uiLevel) {
+	// we can write processing datasets and processed datasets
 	return pi_uiLevel == 5 || pi_uiLevel == 6;
 }
 
 QStringList      LocalInfo::getMandatoryAttributesKeys(unsigned int pi_uiLevel)
 {
+	// checking that the pi_uiLevel is valid
 	if(pi_uiLevel < getLevelCount())
 	{
+		// the keys are the same as the minimal entries. For now, nothing is added
 		return { "key", "name", "description" };
 	}
 	else
@@ -173,5 +177,6 @@ QString LocalInfo::getBaseURL()
 
 QString LocalInfo::getStoragePath()
 {
-	return QStandardPaths::writableLocation(QStandardPaths::TempLocation) + "/" + QCoreApplication::organizationName() + "/" + QCoreApplication::applicationName() + "/shanoirfiles/";
+	// the files are stored on a temporary folder, given that they aim to be loaded quickly after creation. 
+	return QStandardPaths::writableLocation(QStandardPaths::TempLocation) + "/" + QCoreApplication::applicationName() + "/shanoirfiles/";
 }

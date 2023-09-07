@@ -118,7 +118,7 @@ private slots:
 	void tokenUpdate(); 
 
 private:
-	LocalInfo * m_info;  // pointer to the plugin instance info
+	LocalInfo * m_info;  // pointer to the plugin instance info. Used for knowing the username, password and domain the users entered
 
     QMap<QUuid, QPair<QEventLoop*, RequestResponse>> m_requestMap; // map of the active requests sent for the authentication process
 

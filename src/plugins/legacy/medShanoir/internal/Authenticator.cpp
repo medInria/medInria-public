@@ -19,8 +19,7 @@ Authenticator::Authenticator(medShanoir * parent, LocalInfo * info, RequestManag
 
 Authenticator::~Authenticator()
 {
-	// nothing to delete
-	//TODO: maybe disauthenticate ?
+	disauthenticate();
 }
 
 
@@ -63,17 +62,22 @@ void Authenticator::initAuthentication(const QString domain, const QString usern
 	// handling the results
 	if (!verifyJsonKeys(qbytearrayToQJson(res.payload), { "access_token", "expires_in","refresh_token"}, {"String", "Number", "String"})) 
 	{
-		// the token has been well retrieved
+		// something wrong happened during the token recovery
 		qDebug() << "AUTHENTICATION HAS FAILED";
 		qDebug() << "REQUEST RESPONSE STATUS : " << res.code;
 		QString notif_message = "The authentication to Shanoir failed.\n Request status : " + QString::number(res.code);
-		medNotif::createNotif(notifLevel::error, "Authentication to Shanoir", notif_message);
+		if (res.code == 204)
+		{ // wrong credentials
+			// custom message in the notif
+			notif_message = "The authentication to Shanoir failed.\n Wrong credentials ";
+		}
+		medNotif::createNotif(notifLevel::error, "Authentication to "+domain, notif_message);
 		return;
 	}
 	/** TOKEN RECOVERY **/
 	m_current_token = qbytearrayToQJson(res.payload);
 	m_domain = domain;
-	medNotif::createNotif(notifLevel::success, "Authentication to Shanoir", "Successfully connected to " + m_info->getDomain());
+	medNotif::createNotif(notifLevel::success, "Authentication to Shanoir", "Successfully connected to " + m_domain);
 	/** TOKEN REFRESH AUTOMATION */
 	autoRefreshAccessToken();
 }
@@ -99,7 +103,8 @@ void Authenticator::disauthenticate()
 {
     m_current_token = QJsonObject();
 	m_timer.stop();
-	medNotif::createNotif(notifLevel::info, "Authentication to Shanoir", "Successfully disconnected from "+ m_info->getDomain());
+	medNotif::createNotif(notifLevel::info, "Authentication to Shanoir", "Successfully disconnected from "+ m_domain);
+	qDebug() << "Successfully disconnected from " << m_domain;
 	m_domain = "";
 }
 
@@ -122,7 +127,7 @@ int Authenticator::autoRefreshAccessToken(int(*tokenDurationRefreshment)(int))
 	QObject::connect(&m_timer, &QTimer::timeout, this, &Authenticator::tokenUpdate);
 	// the timer will be called every time the token reaches the expiration time
 	int refresh_time = tokenDurationRefreshment(token_duration*1000); // in ms
-	qDebug().noquote() << "THE ACCESS TOKEN OF "<< m_info->getDomain().toUpper()<<" WILL BE UPDATED EVERY" << QTime(0, 0).addMSecs(refresh_time).toString("m'mins' s'secs'");
+	qDebug().noquote() << "THE ACCESS TOKEN OF "<< m_domain.toUpper()<<" WILL BE UPDATED EVERY" << QTime(0, 0).addMSecs(refresh_time).toString("m'mins' s'secs'");
 	m_timer.start(refresh_time);
 	tokenUpdate(); 
 	return refresh_time;
@@ -190,12 +195,12 @@ void Authenticator::tokenUpdate()
 		QDateTime token_expiration_datetime = fetching_datetime.addSecs(token_duration);
 		m_current_token["expiration_datetime"] = token_expiration_datetime.toString(Qt::ISODate);
 
-		qDebug().noquote() << QDateTime::currentDateTime().toString() << "--THE ACCESS TOKEN OF" << m_info->getDomain().toUpper() << "HAS BEEN UPDATED. IT IS NOW AVAILABLE UNTIL " << token_expiration_datetime.toString();
+		qDebug().noquote() << QDateTime::currentDateTime().toString() << "--THE ACCESS TOKEN OF" << m_domain.toUpper() << "HAS BEEN UPDATED. IT IS NOW AVAILABLE UNTIL " << token_expiration_datetime.toString();
 	}
 	else // what has been retrieved is not in the expected format
 	{
 		qDebug() << "THE ACCESS TOKEN UPDATE HAS FAILED";
 		m_current_token = QJsonObject();
-		medNotif::createNotif(notifLevel::error, "Authentication to Shanoir", "Something went wrong while updating the access token of " + m_info->getDomain() + ". You will be disconnected.");
+		medNotif::createNotif(notifLevel::error, "Authentication to Shanoir", "Something went wrong while updating the access token of " + m_domain + ". You will be disconnected.");
 	}
 }
