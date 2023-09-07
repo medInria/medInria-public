@@ -156,7 +156,6 @@ file(APPEND ${${PROJECT_NAME}_CONFIG_FILE}
 
 set(CMAKE_MODULE_PATH
   ${CMAKE_CURRENT_SOURCE_DIR}/projects_modules
-  ${CMAKE_SOURCE_DIR}/packaging
   ${CMAKE_MODULE_PATH}
   )
 
@@ -189,7 +188,24 @@ include(EP_CheckEnvironment)
 include(ConfigureExternalProjects)
 
 ## #############################################################################
-## Package
+## Create launch scripts
 ## #############################################################################
 
-include(Packaging)
+if (UNIX)
+    include(${CMAKE_CURRENT_SOURCE_DIR}/launchers/Launchers.cmake)
+endif()
+
+## #############################################################################
+## Export variables
+## #############################################################################
+
+set(external_projects ${external_projects} PARENT_SCOPE)
+
+foreach(external_project ${external_projects})
+    if(NOT USE_SYSTEM_${external_project} AND BUILD_SHARED_LIBS_${external_project})
+        ExternalProject_Get_Property(${external_project} binary_dir)
+        ExternalProject_Get_Property(${external_project} source_dir)
+        set(${external_project}_DIR ${binary_dir} PARENT_SCOPE)
+        set(${external_project}_SOURCE_DIR ${source_dir} PARENT_SCOPE)
+    endif()
+endforeach()

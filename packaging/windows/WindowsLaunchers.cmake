@@ -11,7 +11,7 @@
 #
 ################################################################################
 
-set(CURRENT_SRC_DIR ${CMAKE_SOURCE_DIR}/packaging/windows)
+set(CURRENT_SRC_DIR ${PROJECT_SOURCE_DIR}/windows)
 
 foreach (dir ${PRIVATE_PLUGINS_DIRS})
     set(DEV_PLUGINS_DIRS "${DEV_PLUGINS_DIRS}:${dir}/plugins/%1")

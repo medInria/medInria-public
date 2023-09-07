@@ -29,20 +29,20 @@ set(CPACK_PACKAGE_FILE_NAME
 ## Add Apple packaging script
 ## #############################################################################
 
-configure_file(${CMAKE_SOURCE_DIR}/packaging/apple/ApplePackScript.cmake.in 
+configure_file(${PROJECT_SOURCE_DIR}/apple/ApplePackScript.cmake.in
   ${PROJECT_BINARY_DIR}/tmp.in
   )
   
 configure_file(
   ${PROJECT_BINARY_DIR}/tmp.in 
-  ${PROJECT_BINARY_DIR}/packaging/apple/ApplePackScript.cmake
+  ${PROJECT_BINARY_DIR}/apple/ApplePackScript.cmake
   )
   
-configure_file(${CMAKE_SOURCE_DIR}/packaging/apple/mac_packager.sh.in 
-  ${PROJECT_BINARY_DIR}/packaging/apple/mac_packager.sh
+configure_file(${PROJECT_SOURCE_DIR}/apple/mac_packager.sh.in
+  ${PROJECT_BINARY_DIR}/apple/mac_packager.sh
   @ONLY
   )
 
-set(CPACK_INSTALL_SCRIPT 
-  ${PROJECT_BINARY_DIR}/packaging/apple/ApplePackScript.cmake
+set(CPACK_INSTALL_SCRIPT
+  ${PROJECT_BINARY_DIR}/apple/ApplePackScript.cmake
   )
