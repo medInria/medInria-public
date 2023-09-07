@@ -199,6 +199,8 @@ endif()
 ## Export variables
 ## #############################################################################
 
+set(external_projects ${external_projects} PARENT_SCOPE)
+
 foreach(external_project ${external_projects})
     if(NOT USE_SYSTEM_${external_project} AND BUILD_SHARED_LIBS_${external_project})
         ExternalProject_Get_Property(${external_project} binary_dir)
