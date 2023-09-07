@@ -13,7 +13,7 @@
 
 #include "SyncNetwork.h"
 
-SyncNetwork::SyncNetwork(medShanoir * parent,  LocalInfo *info, Authenticator * authent, RequestManager * requester) :QObject(parent), m_info(info), m_authent(authent)
+SyncNetwork::SyncNetwork(medShanoir * parent,  LocalInfo *info, Authenticator * authent, RequestManager * requester) :QObject(parent), m_info(info), m_authent(authent), m_rootPath(m_info->getStoragePath()+"default")
 {
 	QObject::connect(this, &SyncNetwork::syncGet, requester, &RequestManager::httpGet, Qt::ConnectionType::QueuedConnection);
 	QObject::connect(this, &SyncNetwork::syncPost, requester, &RequestManager::httpPost, Qt::ConnectionType::QueuedConnection);
@@ -39,7 +39,10 @@ SyncNetwork::SyncNetwork(medShanoir * parent,  LocalInfo *info, Authenticator * 
 
 SyncNetwork::~SyncNetwork()
 {
+	// deletion of all the folders that contain files that were created by async network
 	deleteAllFolders(m_filesToRemove);
+	// deletion of the folder that contains all those folders 
+	deleteAllFolders(QStringList() << m_rootPath);
 }
 
 
@@ -125,7 +128,10 @@ QVariant SyncNetwork::getDirectData(unsigned int pi_uiLevel, QString key)
 			res = m_requestMap[netReqId].response;
 		}
 
-		pathRes = decompressNiftiiFromRequest(m_info->getStoragePath() + QString::number(id_ds) + "/", res.headers, res.payload, m_filesToRemove, 5000); //5 seconds before deletion
+		// updating the root path with the instance id
+		m_rootPath = m_info->getStoragePath() + m_info->getInstanceId() + "/";
+		// decompression
+		pathRes = decompressNiftiiFromRequest(m_rootPath + QString::number(id_ds) + "/", res.headers, res.payload, m_filesToRemove, 5000); //5 seconds before deletion
 		if(pathRes.type() == QVariant::String)
 		{// everything went well, we receive the corresponding path
 		}

@@ -203,4 +203,6 @@ private:
 	QMap<QUuid, SyncRequest> m_requestMap; // map of the active requests sent by the syncNetwork object.
 
 	QStringList m_filesToRemove; // list of the files to remove when the plugin instance is closed
+
+	QString m_rootPath; // path where all the creation of the folders and files will be done by the object.
 };

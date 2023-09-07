@@ -70,7 +70,8 @@ inline QString saveFileData(const QByteArray &fileData, const QString &filepath)
 inline QString extractZipFile(QString zipPath)
 {
     QFileInfo fileInfo(zipPath);
-    QString outputfolder = fileInfo.absoluteDir().absolutePath() + QDir::separator() + fileInfo.baseName();
+	// add fileInfo.baseName() if you want to extract in a folder that has the same name as the zip
+	QString outputfolder = fileInfo.absoluteDir().absolutePath();
     folderCreator(zipPath);
 
     // Extract files from a zip file using the system unzipper (for linux windows and mac)
@@ -121,9 +122,9 @@ inline QVariant decompressNiftiiFromRequest(QString prefix, QJsonObject headers,
         fileName = headers.value("Content-Disposition").toString().split("filename=")[1].split(";").first();
     }
 
-    if (!fileName.isEmpty())
+    if (!fileName.isEmpty() && fileName.endsWith(".zip"))
     {
-		QString filePath = prefix + fileName; 
+		QString filePath = prefix + fileName;  
         QString zipPath = saveFileData(payload, filePath);
         QString extractionPath = extractZipFile(zipPath);
         QDir folder(extractionPath);
