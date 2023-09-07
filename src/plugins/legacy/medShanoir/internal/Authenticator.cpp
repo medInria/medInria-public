@@ -13,12 +13,14 @@
 
 Authenticator::Authenticator(medShanoir * parent, LocalInfo * info, RequestManager * requester) :  QObject(parent), m_info(info), m_domain("")
 {
+	// Connecting the Authenticator object to the Request manager
 	QObject::connect(this, &Authenticator::authentPost, requester, &RequestManager::httpPost, Qt::ConnectionType::QueuedConnection);
 }
 
 Authenticator::~Authenticator()
 {
-
+	// nothing to delete
+	//TODO: maybe disauthenticate ?
 }
 
 
@@ -26,6 +28,7 @@ bool Authenticator::connect(bool pi_bEnable)
 {
 	if(pi_bEnable)
  	{
+		// we want to connect
  		if(isAuthenticated())
  		{ // THE TOKEN IS STILL EFFECTIVE : A REFRESH IS SUFFICIENT
  			autoRefreshAccessToken();
@@ -37,6 +40,7 @@ bool Authenticator::connect(bool pi_bEnable)
  	}
  	else 
  	{
+		// we want to disconnect
  		disauthenticate();
  	}
  	return  pi_bEnable== isAuthenticated();
@@ -57,8 +61,9 @@ void Authenticator::initAuthentication(const QString domain, const QString usern
 	m_requestMap.remove(netReqId);
 
 	// handling the results
-	if (!verifyJsonKeys(qbytearrayToQJson(res.payload), { "access_token", "expires_in","refresh_token"}, {"String", "Number", "String"}))
+	if (!verifyJsonKeys(qbytearrayToQJson(res.payload), { "access_token", "expires_in","refresh_token"}, {"String", "Number", "String"})) 
 	{
+		// the token has been well retrieved
 		qDebug() << "AUTHENTICATION HAS FAILED";
 		qDebug() << "REQUEST RESPONSE STATUS : " << res.code;
 		QString notif_message = "The authentication to Shanoir failed.\n Request status : " + QString::number(res.code);
@@ -75,14 +80,18 @@ void Authenticator::initAuthentication(const QString domain, const QString usern
 
 QUuid Authenticator::waitPostResult(QNetworkRequest &req, QByteArray &postData)
 {
+	//creation of a unique id
 	QUuid netReqId = QUuid::createUuid();
 
+	// creating the waiter object and sending the request 
 	QEventLoop *waiter = new QEventLoop(this);
 	m_requestMap[netReqId].first = waiter;
 	emit authentPost(netReqId, req, postData);
 
+	// waiting for the request to end
 	waiter->exec();
 
+	// returning the request id for retrieving the data
 	return netReqId;
 }
 
@@ -101,6 +110,8 @@ bool Authenticator::isAuthenticated()
 
 QString Authenticator::getCurrentAccessToken()
 {
+	// the token contains several keys, 
+	//we return here the raw string that is necessary for sending requests as an authenticated user
     return  m_current_token.value("access_token").toString();
 }
 
@@ -135,7 +146,8 @@ void Authenticator::authentPostSlot(QUuid netReqId, QByteArray payload, QJsonObj
 	if (m_requestMap.contains(netReqId))
 	{
 		if (httpOrStatusCode == UPLOAD_CODE || httpOrStatusCode == DOWNLOAD_CODE)
-		{ // Request in progress
+		{ // Request in progress 
+			// nothing is currently done in this status
 			int bytesSent = headers["bytesSent"].toInt();
 			int bytesTotal = headers["bytesTotal"].toInt();
 		}
@@ -157,7 +169,7 @@ void Authenticator::authentPostSlot(QUuid netReqId, QByteArray payload, QJsonObj
 
 void Authenticator::tokenUpdate()
 {
-	//// construction of the qnetworkrequest
+	// construction of the qnetworkrequest
 	QNetworkRequest req;
 	QByteArray postData;
 	writeTokenUpdateRequest(req, postData, m_domain, m_current_token.value("refresh_token").toString());
@@ -170,17 +182,17 @@ void Authenticator::tokenUpdate()
    
 	QJsonObject newToken = qbytearrayToQJson(m_requestMap[netReqId].second.payload);
 
-	if (verifyJsonKeys(newToken, { "access_token", "expires_in","refresh_token" }))
+	if (verifyJsonKeys(newToken, { "access_token", "expires_in","refresh_token" })) // the new token has been well retrieved
 	{
 		m_current_token = newToken;
 		// adding the datetime of expiration inside the object
 		int token_duration = m_current_token.value("expires_in").toInt();
 		QDateTime token_expiration_datetime = fetching_datetime.addSecs(token_duration);
-		 m_current_token["expiration_datetime"] = token_expiration_datetime.toString(Qt::ISODate);
+		m_current_token["expiration_datetime"] = token_expiration_datetime.toString(Qt::ISODate);
 
 		qDebug().noquote() << QDateTime::currentDateTime().toString() << "--THE ACCESS TOKEN OF" << m_info->getDomain().toUpper() << "HAS BEEN UPDATED. IT IS NOW AVAILABLE UNTIL " << token_expiration_datetime.toString();
 	}
-	else
+	else // what has been retrieved is not in the expected format
 	{
 		qDebug() << "THE ACCESS TOKEN UPDATE HAS FAILED";
 		m_current_token = QJsonObject();

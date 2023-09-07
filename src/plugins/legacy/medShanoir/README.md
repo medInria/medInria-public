@@ -24,7 +24,7 @@ This plugin aims to connect a [shanoir NG](https://github.com/fli-iam/shanoir-ng
 
 * **Asynchronous processes** on heavy operations, such as data uploading and downloading.
 
-* **Ciphering** of each plugin instance's password.
+* **Encryption** of each plugin instance's password.
 
 ### Demos in Gifs
 

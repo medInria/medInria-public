@@ -19,6 +19,7 @@
 AsyncNetwork::AsyncNetwork(medShanoir * parent, LocalInfo *info, Authenticator * authent, SyncNetwork *syncNet, RequestManager * requester): 
 	QObject(parent), m_parent(parent), m_info(info), m_authent(authent), m_syncNet(syncNet), m_medReqId(0)
 {
+	// connecting the AsyncNetwork object to the RequestManager object
 	QObject::connect(this, &AsyncNetwork::asyncGet, requester, &RequestManager::httpGet, Qt::ConnectionType::QueuedConnection);
 	QObject::connect(this, &AsyncNetwork::asyncPost, requester, &RequestManager::httpPost, Qt::ConnectionType::QueuedConnection);
 	QObject::connect(this, &AsyncNetwork::asyncPostMulti, requester, &RequestManager::httpPostMulti, Qt::ConnectionType::QueuedConnection);
@@ -31,6 +32,38 @@ AsyncNetwork::AsyncNetwork(medShanoir * parent, LocalInfo *info, Authenticator *
 AsyncNetwork::~AsyncNetwork()
 {
 	deleteAllFolders(m_filesToRemove);
+}
+
+/**
+ * 
+ * SLOTS
+ * 
+*/
+
+void AsyncNetwork::asyncGetSlot(QUuid netReqId, QByteArray payload, QJsonObject headers, int statusOrHttpCode)
+{
+	if (m_requestIdMap.contains(netReqId))
+	{
+		getAsyncDataInterpretation(netReqId , { statusOrHttpCode, headers, payload });
+	}
+}
+
+
+void AsyncNetwork::asyncPostSlot(QUuid netReqId, QByteArray payload, QJsonObject headers, int statusOrHttpCode)
+{
+	if(m_requestIdMap.contains(netReqId))
+	{
+		addAsyncDataInterpretation(netReqId , { statusOrHttpCode, headers, payload });
+	}
+}
+
+void AsyncNetwork::asyncPutSlot(QUuid netReqId, QByteArray payload, QJsonObject headers, int statusOrHttpCode)
+{
+	if(m_requestIdMap.contains(netReqId))
+	{
+		// HERE call the interpretation(s) function that is/are based on PUT request 
+		// for now, none of them exist
+	}
 }
 
 
@@ -71,7 +104,9 @@ QUuid AsyncNetwork::getDataset(int medId, int id_ds, bool conversion)
 
 	m_requestIdMap[netReqId].first = medId;
 	m_requestIdMap[netReqId].second = getData;
-	// saving temporarily the informations about the request in the result map 
+	// saving temporarily the information about the request in the result map 
+	// format idDataset.infoConversion 
+	// infoConversion worth 0 if conversion is false, and 1 if conversion is true
 	m_idResultMap[medId] = QString::number(id_ds)+"."+ QString::number(conversion);
 
 	// sending the request
@@ -93,13 +128,18 @@ void AsyncNetwork::getAsyncDataInterpretation(QUuid netReqId, RequestResponse re
 		QString tmpResult = m_idResultMap[medId].toString();
 		if(successCode == 1 && tmpResult.size()>0)
 		{
+			// successCode worth 1 : a retry is necessary
+			// the temporary saved information is retrieved (format idDataset.infoConversion)
 			QStringList parts = tmpResult.split('.');
 			if(parts.size()==2 && parts[1].toInt() == 0)
 			{
-				getDataset(medId,parts[0].toInt(), true);
+				// no conversion was done, therefore a retry of the request is made,
+				// asking for shanoir to make the convertion of the dataset to a niftii file
+				getDataset(medId, parts[0].toInt(), true);
 			}
 			else
 			{
+				// no retry will be done, we consider the request is finished
 				successCode = 0;
 			} 
 		}
@@ -132,18 +172,15 @@ void AsyncNetwork::getAsyncDataInterpretation(QUuid netReqId, RequestResponse re
 	}
 }
 
-void AsyncNetwork::asyncGetSlot(QUuid netReqId, QByteArray payload, QJsonObject headers, int statusOrHttpCode)
-{
-	if (m_requestIdMap.contains(netReqId))
-	{
-		getAsyncDataInterpretation(netReqId , { statusOrHttpCode, headers, payload });
-	}
-}
 
 QVariant AsyncNetwork::getAsyncResults(int pi_iRequest)
 {
 	QVariant qRes;
-	if (m_idResultMap.contains(pi_iRequest)) qRes = m_idResultMap[pi_iRequest];
+	if (m_idResultMap.contains(pi_iRequest)) 
+	{
+		qRes = m_idResultMap[pi_iRequest];
+		//TODO: remove the entry from the m_idResultMap ? For now the result is kept during the session. 
+	}
 	return qRes;
 }
 
@@ -187,10 +224,12 @@ int AsyncNetwork::addAssyncData(QVariant data, levelMinimalEntries & pio_minimal
 	if(psing_dataset_level && path.endsWith(".nii.gz"))
 	{
 		QVariant sending = sendProcessedDataset(path, pio_minimalEntries.name, parts[4].toInt(), parts[5].toInt());
+		// sending is wether a boolean with the false, or a QUuid
 		if(sending.isValid() && sending.canConvert<QUuid>())
 		{
 			QUuid netReqId = sending.value<QUuid>();
 			medId =  m_requestIdMap[netReqId].first;
+			// storing temporarily the parentKey, in order to help the next request-treating functions
 			QJsonObject tmpResult = m_idResultMap[medId].toJsonObject();
 			tmpResult["parentKey"] = parentKey;
 			m_idResultMap[medId] = tmpResult;
@@ -247,6 +286,8 @@ QVariant AsyncNetwork::sentDatasetFileInterpretation(QUuid netReqIdFile, Request
 	QString distant_path;
 	if (res.code == SUCCESS_CODE && !res.payload.isNull())
 	{
+		// retrieving the path returned by shanoir
+		// it has a format of "/tmp/.../filecreated.nii"
 		distant_path = QString::fromUtf8(res.payload);
 	}
 	QJsonObject tmpResult = m_idResultMap[medId].toJsonObject();
@@ -290,11 +331,13 @@ QVariant AsyncNetwork::sentDatasetFileInterpretation(QUuid netReqIdFile, Request
 
 void AsyncNetwork::sentDatasetContextInterpretation(QUuid netReqId, RequestResponse res)
 {
-	// check that the upload is successful and creation of the key for the new processed dataset
+	// check that the upload is successful and creation 
+	// if so, the tree-view key for the new processed dataset is created
 
 	int medId = m_requestIdMap[netReqId].first;
 	QJsonObject tmpResult = m_idResultMap[medId].toJsonObject();
 
+	// retrieving the metadata about this dataset with the temporary results
 	QString parentKey = tmpResult["parentKey"].toString();
 	int dsId = tmpResult["idDataset"].toInt();
 	int psingId = tmpResult["idProcessing"].toInt();
@@ -305,8 +348,8 @@ void AsyncNetwork::sentDatasetContextInterpretation(QUuid netReqId, RequestRespo
 	int prevPsingSize = prevPsing.value("outputDatasets").toArray().size();
 	int currPsingSize = m_syncNet->getDatasetProcessing(psingId).value("outputDatasets").toArray().size();
 
-	
-
+	// the state of the parent (processing dataset) is compared
+	// we check if the creation of the processed dataset has been done
 	if (prevPsingSize + 1 == currPsingSize)
 	{
 		int newId = currentPsing.value("outputDatasets").toArray().last().toObject().value("id").toInt();
@@ -370,25 +413,11 @@ void AsyncNetwork::addAsyncDataInterpretation(QUuid netReqId, RequestResponse re
 	}
 }
 
-void AsyncNetwork::asyncPostSlot(QUuid netReqId, QByteArray payload, QJsonObject headers, int statusOrHttpCode)
-{
-	if(m_requestIdMap.contains(netReqId))
-	{
-		addAsyncDataInterpretation(netReqId , { statusOrHttpCode, headers, payload });
-	}
-}
-
-void AsyncNetwork::asyncPutSlot(QUuid netReqId, QByteArray payload, QJsonObject headers, int statusOrHttpCode)
-{
-	if(m_requestIdMap.contains(netReqId))
-	{
-		// HERE call the interpretation(s) function that is/are based on PUT request 
-		// for now, none of them exist
-	}
-}
 
 void AsyncNetwork::abort(int medId)
 {
+	//m_requestIdMap associates Uuid to medIds
+	// here we need to retrieve a Uuid from a medId
 	for (auto it = m_requestIdMap.begin(); it != m_requestIdMap.end(); ++it)
 	{
 		if (it.value().first == medId)
