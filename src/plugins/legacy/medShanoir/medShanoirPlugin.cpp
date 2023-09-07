@@ -28,7 +28,7 @@ bool medShanoirPlugin::initialize()
     return medSourcesLoader::instance()->registerSourceType(
         "medShanoir",
         "Datasource of type Shanoir",
-        "This type of datasource allows to handle data from Shanoir"
+        "This type of datasource allows to handle data from Shanoir",
         []() -> medAbstractSource* {
 		medShanoir *shanoirInstance = new medShanoir();
 		return shanoirInstance;
