@@ -15,8 +15,10 @@
 #include <medStringParameterPresenter.h>
 
 #include <QWidget>
+#include <QHBoxLayout>
 #include <QLineEdit>
 #include <QDateEdit>
+#include <QPushButton>
 #include <QValidator>
 
 class medStringParameterPresenterPrivate
@@ -54,8 +56,12 @@ QWidget* medStringParameterPresenter::buildWidget()
     {
     case 1:
         poWidgetRes = this->buildDateEdit(); break;
-    case 2:
-        poWidgetRes = this->buildLineEditOnFinish(); break;
+	case 2:
+		poWidgetRes = this->buildLineEditOnFinish(); break;
+	case 3:
+		poWidgetRes = this->buildLineEditPassword(); break;
+	case 4:
+		poWidgetRes = this->buildLineEditPasswordEyes(); break;
     case 0:
     default:
         poWidgetRes = this->buildLineEdit(); break;
@@ -116,4 +122,45 @@ QDateEdit* medStringParameterPresenter::buildDateEdit()
     });
 
     return dateEdit;
+}
+
+QLineEdit * medStringParameterPresenter::buildLineEditPassword()
+{
+	auto * pLineEdit = buildLineEdit();
+	pLineEdit->setEchoMode(QLineEdit::Password);
+
+	return pLineEdit;
+}
+#include <QIcon>
+QWidget * medStringParameterPresenter::buildLineEditPasswordEyes()
+{
+	QWidget * pWidgetRes = new QWidget();
+
+	auto * pLayout = new QHBoxLayout();
+	auto * pLineEdit = buildLineEditPassword();
+	auto * pEyeButton = new QPushButton();
+
+	pLayout->addWidget(pLineEdit);
+	pLayout->addWidget(pEyeButton);
+	pWidgetRes->setLayout(pLayout);
+
+	pEyeButton->setCheckable(true);
+	pEyeButton->setIcon(QIcon(":/icons/eye_closed.png"));
+	
+	connect(pEyeButton, &QPushButton::toggled, [=](bool toggle) 
+	{
+		if (toggle)
+		{
+			pLineEdit->setEchoMode(QLineEdit::Normal);
+			pEyeButton->setIcon(QIcon(":/icons/eye_open.png"));
+		}
+		else
+		{
+			pLineEdit->setEchoMode(QLineEdit::Password);
+			pEyeButton->setIcon(QIcon(":/icons/eye_closed.png"));
+		}
+	});
+
+
+	return pWidgetRes;
 }

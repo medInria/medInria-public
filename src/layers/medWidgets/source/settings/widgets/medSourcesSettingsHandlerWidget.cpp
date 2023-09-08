@@ -168,4 +168,3 @@ void medSourcesSettingsHandlerWidget::updateSourceInformation(medAbstractSource 
     isWritable->setText(1, pi_pSource->isWritable() ? "true" : "false");
     m_sourceInformation->setVisible(true);
 }
-

@@ -499,6 +499,40 @@ void medSourceModel::addDataFromFile(QString path, medAbstractData * data, const
 
 }
 
+void medSourceModel::createFolder(const QModelIndex & index)
+{
+	//TODO
+
+	//Can be inspired by the folowing commented code from medVirtualRepresentation
+
+	//bool bRes = false;
+	//
+	//QStandardItem * pParentItem = nullptr;
+	//if (parent.isValid())
+	//{
+	//	pParentItem = itemFromIndex(parent);
+	//}
+	//else
+	//{
+	//	pParentItem = invisibleRootItem();
+	//}
+	//auto ptrItem = new QStandardItem(dirName);
+	//ptrItem->setData(DATATYPE_ROLE_FOLDER, DATATYPE_ROLE);
+	//ptrItem->setData(dirName, DATANAME_ROLE);
+	//
+	//pParentItem->appendRow(ptrItem);
+	//bRes = createFSDirectory(getPath(parent), dirName);
+	//
+	//emit expandData(parent, true);
+	//
+	//if (dirName == "tmp")
+	//{
+	//	emit editIndex(indexFromItem(ptrItem));
+	//}
+	//
+	//return bRes;
+}
+
 
 
 

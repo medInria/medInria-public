@@ -13,10 +13,24 @@
 #
 ################################################################################
 
-set(TARGET_NAME medCore)
+set(TARGET_NAME ShanoirPlugin)
 
-find_package(Qt5Test REQUIRED)
-find_package(Qt5 REQUIRED Network)
+## #############################################################################
+## Setup version numbering
+## #############################################################################
+
+set(${TARGET_NAME}_VERSION ${MEDINRIA_VERSION})
+
+string(TOUPPER ${TARGET_NAME} TARGET_NAME_UP)
+add_definitions(-D${TARGET_NAME_UP}_VERSION="${${TARGET_NAME}_VERSION}")
+
+
+## #############################################################################
+## Resolve dependencies
+## #############################################################################
+
+find_package(Qt5 REQUIRED Network Widgets )
+
 
 ## #############################################################################
 ## List Sources
@@ -24,29 +38,21 @@ find_package(Qt5 REQUIRED Network)
 
 list_source_files(${TARGET_NAME}
   ${CMAKE_CURRENT_SOURCE_DIR}
-  data
-  source/operating
-  source/settings
-  source/threadPool
-  source/virtualRepresentation
-  source
-  process
-  process/arithmetic_operation
-  process/diffusion_processes
-  process/morphomath_operation
-  process/mask_image
-  process/single_filter
-  parameter
-  parameter/tools
-  job
-  notification
-  log
-  )
+  ${CMAKE_CURRENT_SOURCE_DIR}/internal
+ )
 
+## #############################################################################
+## include directory
+## #############################################################################
 
 list_header_directories_to_include(${TARGET_NAME}
-  ${${TARGET_NAME}_HEADERS}
+   ${${TARGET_NAME}_HEADERS}
+   )
+
+include_directories(${${TARGET_NAME}_INCLUDE_DIRS}
+  ${MEDINRIA_INCLUDE_DIRS}
   )
+
 
 ## #############################################################################
 ## add library
@@ -59,34 +65,18 @@ add_library(${TARGET_NAME} SHARED
 
 
 ## #############################################################################
-## include directorie.
-## #############################################################################
-
-target_include_directories(${TARGET_NAME}
-  PUBLIC ${${TARGET_NAME}_INCLUDE_DIRS}
-  )
-
-
-## #############################################################################
 ## Link
 ## #############################################################################
-
-target_link_libraries(${TARGET_NAME}
-  medCoreLegacy
-  Qt5::Core
-  Qt5::Network
-  dtkCoreSupport
-  dtkGuiSupport
-  dtkLog
-  dtkComposer
-        Qt5::Test
+target_link_libraries(${TARGET_NAME} PUBLIC
+        Qt5::Network
+		Qt5::Widgets
+        medCore
+        medCoreLegacy
   )
 
+
 ## #############################################################################
-## install
+## Install rules
 ## #############################################################################
 
-set_lib_install_rules(${TARGET_NAME}
-  ${${TARGET_NAME}_HEADERS}
-  )
-  
+set_plugin_install_rules_legacy(${TARGET_NAME})

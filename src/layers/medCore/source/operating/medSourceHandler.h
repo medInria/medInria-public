@@ -46,7 +46,7 @@ public:
 
     // ////////////////////////////////////////////////////////////////////////////////////////////
     // Members functions to interrogate sources
-    bool sourceGlobalInfo       (QString const & pi_sourceInstanceId, bool &po_bOnline, bool & po_bLocal, bool &po_bWritable, bool &po_bCache);
+	bool sourceGlobalInfo(QString const & pi_sourceInstanceId, bool &po_bOnline, bool & po_bLocal, bool &po_bWritable, bool &po_bCache);
     bool mandatoryAttributesKeys(QString const & pi_sourceInstanceId, unsigned int pi_uiLevel, QStringList & po_attributes);
     bool attributesForBuildTree (QString const & pi_sourceInstanceId, unsigned int pi_uiLevel, QString const & key, listAttributes & po_entries);
     bool mandatoriesAttributes  (QString const & pi_sourceInstanceId, unsigned int pi_uiLevel, QString const & parentKey, listAttributes & po_entries);
@@ -57,27 +57,27 @@ public:
     bool commitData             (QString const & pi_sourceInstanceId, unsigned int pi_uiLevel, QString const & parentKey, QVariant const & pi_data, medAbstractSource::levelMinimalEntries & pio_minimalEntries);
     bool getAsyncData           (QString const & pi_sourceInstanceId, unsigned int pi_uiLevel, QString const & key);
     bool getLevelDesiredWritable(QString const & pi_sourceInstanceId, int & po_iLevel);
-    bool isLevelWritable        (QString const & pi_sourceInstanceId, int pi_iLevel, bool & po_bWritable);
-	bool levelCount             (QString const & pi_sourceInstanceId, unsigned int &po_uiLevelMax);
-    bool asyncResult            (QString const & pi_sourceInstanceId, int pi_iRequest);
-    bool abortRequest           (QString const & pi_sourceInstanceId, int pi_iRequest); //TODO call in medSourceModel
-    bool filteringParameters    (QString const & pi_sourceInstanceId, QList<medAbstractParameter*> & po_parameters);
-    bool getIOInterface         (QString const & pi_sourceInstanceId, int &po_iInterface);
-    bool getTypeAndFormat       (QString const & pi_sourceInstanceId, QMap<QString, QStringList> &po_TypeAndFormat);
-    bool connect                (QString const & pi_sourceInstanceId, bool pi_bOnline);
+	bool isLevelWritable(QString const & pi_sourceInstanceId, int pi_iLevel, bool & po_bWritable);
+	bool levelCount(QString const & pi_sourceInstanceId, unsigned int &po_uiLevelMax);
+	bool asyncResult(QString const & pi_sourceInstanceId, int pi_iRequest);
+	bool abortRequest(QString const & pi_sourceInstanceId, int pi_iRequest); //TODO call in medSourceModel
+	bool filteringParameters(QString const & pi_sourceInstanceId, QList<medAbstractParameter*> & po_parameters);
+	bool getIOInterface(QString const & pi_sourceInstanceId, int &po_iInterface);
+	bool getTypeAndFormat(QString const & pi_sourceInstanceId, QMap<QString, QStringList> &po_TypeAndFormat);
+	bool connect(QString const & pi_sourceInstanceId, bool pi_bOnline);
 
     // ////////////////////////////////////////////////////////////////////////////////////////////
     // Members functions to advance exchange with sources
-    int push                (medDataIndex const & pio_index);
-    int getAsyncData        (medDataIndex const & pio_index);
-    int addAssyncData      (medDataIndex const & pio_index, QVariant const & pi_data, medAbstractSource::levelMinimalEntries & pio_minimalEntries);
-    bool getAsyncResults    (QString const & pi_sourceInstanceId, int pi_request, QVariant & po_data);
-    QString getInstanceName (QString const & pi_sourceInstanceId); //Probably used in medSourceModelPresenter and medSourceWidget
+	int push(medDataIndex const & pio_index);
+	int getAsyncData(medDataIndex const & pio_index);
+	int addAssyncData(medDataIndex const & pio_index, QVariant const & pi_data, medAbstractSource::levelMinimalEntries & pio_minimalEntries);
+	bool getAsyncResults(QString const & pi_sourceInstanceId, int pi_request, QVariant & po_data);
+	QString getInstanceName(QString const & pi_sourceInstanceId); //Probably used in medSourceModelPresenter and medSourceWidget
 
 signals:
     void getAsyncStatus(QString const /*sourceId*/, int /*requestId*/, medAbstractSource::eRequestStatus /*status*/);
-    void sourceAdded   (QString const /*sourceId*/);
-    void sourceRemoved (QString const /*sourceId*/);
+	void sourceAdded(QString const /*sourceId*/);
+	void sourceRemoved(QString const /*sourceId*/);
     void connectionDisconnection(QString, bool);
 
 public:
@@ -90,7 +90,7 @@ public:
     // ////////////////////////////////////////////////////////////////////////////////////////////
     // Writing Policy
     medAbstractWritingPolicy* getSourceWPolicy(QString pi_sourceId);
-    medAbstractWritingPolicy* getGeneralWPolicy(){ return &m_generalWritingPolicy; }
+	medAbstractWritingPolicy* getGeneralWPolicy() { return &m_generalWritingPolicy; }
 
 
 
