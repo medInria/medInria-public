@@ -58,16 +58,11 @@ include(${ITK_USE_FILE})
 
 #WARNING USE VTK through ITKIOVTK and medLog, medVtkInria
 
-if (ITK_USE_SYSTEM_GDCM)
-  add_definitions(-DITK_USE_SYSTEM_GDCM)
-endif()
-
 if (USE_OSPRay)
   add_definitions(-DMED_USE_OSPRAY_4_VR_BY_CPU)
 endif()
 
 find_package(DCMTK REQUIRED NO_MODULE)
-
 
 ## #############################################################################
 ## List Sources
@@ -126,6 +121,7 @@ add_library(${TARGET_NAME} SHARED
 
 target_include_directories(${TARGET_NAME}
   PRIVATE ${${TARGET_NAME}_INCLUDE_DIRS}
+  PRIVATE ${DCMTK_INCLUDE_DIRS}
   )
 
 ## #############################################################################
@@ -143,6 +139,7 @@ target_link_libraries(${TARGET_NAME}
   medImageIO
   medLog
   medVtkInria
+  ${DCMTK_LIBRARIES}
   )
 
 ## #############################################################################
@@ -150,7 +147,6 @@ target_link_libraries(${TARGET_NAME}
 ## #############################################################################
 
 set_plugin_install_rules_legacy(${TARGET_NAME})
-
 
 ## #############################################################################
 ## Build tests

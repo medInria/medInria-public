@@ -27,7 +27,6 @@ include(${ITK_USE_FILE})
 
 find_package(DCMTK REQUIRED NO_MODULE)
 
-
 ## #############################################################################
 ## List Sources
 ## #############################################################################
@@ -56,7 +55,6 @@ target_include_directories(${TARGET_NAME}
   PUBLIC ${${TARGET_NAME}_INCLUDE_DIRS}
   PRIVATE ${DCMTK_INCLUDE_DIRS}
   )
-
 
 ## #############################################################################
 ## Link

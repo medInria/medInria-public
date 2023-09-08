@@ -46,9 +46,7 @@
 
 #include <dicomRtImageWriter.h>
 
-#ifdef ITK_USE_SYSTEM_GDCM
 #include <itkGDCMDataImageReader.h>
-#endif
 #include <itkMetaDataImageReader.h>
 #include <itkPNGDataImageReader.h>
 #include <itkBMPDataImageReader.h>
@@ -60,8 +58,6 @@
 #include <itkVTKDataImageReader.h>
 #include <itkPhilipsRECDataImageReader.h>
 #include <itkGISDataImageReader.h>
-#include <itkDCMTKDataImageReader.h>
-
 #include <itkMetaDataImageWriter.h>
 #include <itkNiftiDataImageWriter.h>
 #include <itkNrrdDataImageWriter.h>
@@ -69,6 +65,7 @@
 #include <itkVTKDataImageWriter.h>
 #include <itkGISDataImageWriter.h>
 #include <itkDicomDataImageWriter.h>
+#include <medDicomDirReader.h>
 
 #include <dtkLog/dtkLog.h>
 #include <itkLogForwarder.h>
@@ -143,9 +140,7 @@ bool itkDataImagePlugin::initialize()
     if(!medVtkViewItkDataImageNavigator::registered()) { qWarning() << "Unable to register medVtkViewItkDataImageNavigator"; }
 
     if (!itkMetaDataImageReader::registered())       { qWarning() << "Unable to register itkMetaDataImageReader type";       }
-#ifdef ITK_USE_SYSTEM_GDCM
     if (!itkGDCMDataImageReader::registered())       { qWarning() << "Unable to register  itkGDCMDataImageReader type";      }
-#endif
     if (!itkNiftiDataImageReader::registered())      { qWarning() << "Unable to register itkNiftiDataImageReader type";      }
     if (!itkNrrdDataImageReader::registered())       { qWarning() << "Unable to register itkNrrdDataImageReader type";       }
     if (!itkGiplDataImageReader::registered())       { qWarning() << "Unable to register itkGiplDataImageReader type";       }
@@ -156,8 +151,6 @@ bool itkDataImagePlugin::initialize()
     if (!itkTIFFDataImageReader::registered())       { qWarning() << "Unable to register itkTIFFDataImageReader type";       }
     if (!itkPhilipsRECDataImageReader::registered()) { qWarning() << "Unable to register itkPhilipsRECDataImageReader type"; }
     if (!itkGISDataImageReader::registered())        { qWarning() << "Unable to register itkGISDataImageReader type"; }
-    if (!itkDCMTKDataImageReader::registered())      { qWarning() << "Unable to register itkDCMTKDataImageReader type"; }
-
     if (!itkMetaDataImageWriter::registered())       { qWarning() << "Unable to register itkMetaDataImageWriter type";       }
     if (!itkNiftiDataImageWriter::registered())      { qWarning() << "Unable to register itkNiftiDataImageWriter type";      }
     if (!itkNrrdDataImageWriter::registered())       { qWarning() << "Unable to register itkNrrdDataImageWriter type";       }
@@ -166,7 +159,8 @@ bool itkDataImagePlugin::initialize()
     if (!itkGISDataImageWriter::registered())        { qWarning() << "Unable to register itkGISDataImageWriter type"; }
     if (!itkDicomDataImageWriter::registered())      { qWarning() << "Unable to register itkDicomDataImageWriter type"; }
 
-    if (!DicomRtImageWriter::registered())           { qWarning() << "Unable to register DicomRtImageWriter type"; }
+    if (!DicomRtImageWriter::registered()) {qWarning() << "Unable to register DicomRtImageWriter type";}
+    if (!medDicomDirReader::registered())  {qWarning() << "Unable to register medDicomDirReader type";}
 
     return true;
 }
