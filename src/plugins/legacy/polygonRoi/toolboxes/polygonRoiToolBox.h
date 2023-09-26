@@ -54,6 +54,7 @@ public:
     static bool registered();
     dtkPlugin* plugin() override;
     medAbstractData *processOutput() override;
+    QList<dtkSmartPointer<medAbstractData> > processOutputs() override;
     void drawCross(double *position);
     void eraseCross();
 
