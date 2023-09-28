@@ -33,10 +33,10 @@ class MEDCORELEGACY_EXPORT medDatabasePersistentController : public medAbstractD
 public:
     ~medDatabasePersistentController();
 
-    const QSqlDatabase &database() const;
-
     bool createConnection() = 0;
-    virtual bool closeConnection() = 0;
+    virtual QSqlDatabase getMainConnection() const = 0;
+    virtual QSqlDatabase getThreadSpecificConnection() const = 0;
+    virtual QMutex& getDatabaseMutex() const = 0;
 
     medDataIndex indexForPatient(int id);
     medDataIndex indexForStudy(int id);
@@ -57,8 +57,6 @@ public:
     bool moveDatabase(QString newLocation);
 
     QString stringForPath(const QString &name) const;
-
-    bool isConnected() const override;
 
     QList<medDataIndex> patients() const = 0;
     QList<medDataIndex> studies(const medDataIndex &index) const override;
@@ -82,7 +80,6 @@ public:
 
     QString attachedMetadataFileExists(const medDataIndex &index) override;
 protected:
-    void setConnected(bool flag);
     void reset();
 
 public slots:
@@ -109,7 +106,6 @@ protected slots:
 
 protected:
     medDatabasePersistentController();
-    QSqlDatabase m_database;
 
 private:
     medDatabasePersistentControllerPrivate *d;

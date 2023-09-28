@@ -21,6 +21,7 @@
 #include <medMessageController.h>
 
 std::unique_ptr<medLocalDbController> medLocalDbController::s_instance = nullptr;
+const char* medLocalDbController::mainConnectionName = "sqlite";
 
 medLocalDbController &medLocalDbController::instance()
 {
@@ -31,35 +32,33 @@ medLocalDbController &medLocalDbController::instance()
     return *s_instance.get();
 }
 
-medLocalDbController::medLocalDbController() : medDatabasePersistentController()
+medLocalDbController::medLocalDbController() :
+    medDatabasePersistentController(), databaseMutex(QMutex::Recursive)
 {
-}
+    databasePath = medStorage::dataLocation();
 
-medLocalDbController::~medLocalDbController()
-{
-    m_database.close();
+    if (medStorage::mkpath(databasePath))
+    {
+        databasePath += "/db";
+    }
+    else
+    {
+        qDebug() << "Cannot create database path: " << databasePath;
+    }
 }
 
 bool medLocalDbController::createConnection(void)
 {
-    medStorage::mkpath(medStorage::dataLocation() + "/");
+    QSqlDatabase database = createConnection(mainConnectionName);
 
-    m_database = QSqlDatabase::database("sqlite");
-    if (!m_database.isValid())
+    if (!database.open())
     {
-        m_database = QSqlDatabase::addDatabase("QSQLITE", "sqlite");
-    }
-    m_database.setDatabaseName(medStorage::dataLocation() + "/" + "db");
-
-    if (!m_database.open())
-    {
-        qDebug() << DTK_COLOR_FG_RED << "Cannot open database: unable to establish a database connection." << DTK_NO_COLOR;
+        qDebug() << DTK_COLOR_FG_RED << "Cannot open database: " << database.lastError().text() << DTK_NO_COLOR;
         return false;
     }
     else
     {
-        qDebug() << "Database opened at: " << qPrintable(m_database.databaseName());
-        setConnected(true);
+        qDebug() << "Database opened at: " << qPrintable(database.databaseName());
     }
 
     if (!createPatientTable() || !createStudyTable() || !createSeriesTable() || !updateFromNoVersionToVersion1())
@@ -68,7 +67,9 @@ bool medLocalDbController::createConnection(void)
     }
 
     // optimize speed of sqlite db
-    QSqlQuery query(m_database);
+    QSqlQuery query(database);
+    QMutexLocker mutexLocker(&getDatabaseMutex());
+
     if (!(query.prepare(QLatin1String("PRAGMA synchronous = 0")) && execQuery(query, __FILE__, __LINE__)))
     {
         qDebug() << "Could not set sqlite synchronous mode to asynchronous mode.";
@@ -81,17 +82,54 @@ bool medLocalDbController::createConnection(void)
     return true;
 }
 
-bool medLocalDbController::closeConnection(void)
+bool medLocalDbController::isConnected() const
 {
-    m_database.close();
-    QSqlDatabase::removeDatabase("QSQLITE");
-    setConnected(false);
-    return true;
+    return getMainConnection().isOpen();
+}
+
+QSqlDatabase medLocalDbController::createConnection(QString name) const
+{
+    QSqlDatabase database;
+
+    if (!databasePath.isEmpty())
+    {
+        database = QSqlDatabase::addDatabase("QSQLITE", name);
+        const_cast<medLocalDbController*>(this)->databaseConnections.setLocalData(database);
+
+        if (database.isValid())
+        {
+            database.setDatabaseName(databasePath);
+        }
+    }
+
+    return database;
+}
+
+QSqlDatabase medLocalDbController::getMainConnection() const
+{
+    return QSqlDatabase::database(mainConnectionName);
+}
+
+QSqlDatabase medLocalDbController::getThreadSpecificConnection() const
+{
+    if (!databaseConnections.hasLocalData())
+    {
+        QSqlDatabase database = createConnection(QUuid::createUuid().toString());
+        database.open();
+    }
+
+    return databaseConnections.localData();
+}
+
+QMutex& medLocalDbController::getDatabaseMutex() const
+{
+    return const_cast<medLocalDbController*>(this)->databaseMutex;
 }
 
 bool medLocalDbController::createPatientTable()
 {
-    QSqlQuery query(m_database);
+    QSqlDatabase dbConnection = getThreadSpecificConnection();
+    QSqlQuery query(dbConnection);
 
     if (!query.prepare(
             "CREATE TABLE IF NOT EXISTS patient ("
@@ -105,12 +143,16 @@ bool medLocalDbController::createPatientTable()
     {
         qDebug() << query.lastError();
     }
+
+    QMutexLocker mutexLocker(&getDatabaseMutex());
     return execQuery(query, __FILE__, __LINE__);
 }
 
 bool medLocalDbController::createStudyTable()
 {
-    QSqlQuery query(m_database);
+    QSqlDatabase dbConnection = getThreadSpecificConnection();
+    QSqlQuery query(dbConnection);
+    QMutexLocker mutexLocker(&getDatabaseMutex());
 
     query.prepare(
         "CREATE TABLE IF NOT EXISTS study ("
@@ -140,7 +182,9 @@ bool medLocalDbController::createStudyTable()
 
 bool medLocalDbController::createSeriesTable()
 {
-    QSqlQuery query(m_database);
+    QSqlDatabase dbConnection = getThreadSpecificConnection();
+    QSqlQuery query(dbConnection);
+    QMutexLocker mutexLocker(&getDatabaseMutex());
 
     query.prepare(
         "CREATE TABLE IF NOT EXISTS series ("
@@ -254,7 +298,9 @@ bool medLocalDbController::updateFromNoVersionToVersion1()
     // whatever reason the app/computer crashes, and we'll just try again on the
     // next launch.
 
-    QSqlQuery q(m_database);
+    QSqlDatabase dbConnection = getThreadSpecificConnection();
+    QSqlQuery q(dbConnection);
+    QMutexLocker mutexLocker(&getDatabaseMutex());
 
     if (!(q.exec("PRAGMA user_version") && q.first()))
     {
@@ -350,8 +396,10 @@ bool medLocalDbController::updateFromNoVersionToVersion1()
 QList<medDataIndex> medLocalDbController::patients() const
 {
     QList<medDataIndex> ret;
-    QSqlQuery query(m_database);
+    QSqlDatabase dbConnection = getThreadSpecificConnection();
+    QSqlQuery query(dbConnection);
     query.prepare("SELECT id FROM patient");
+    QMutexLocker mutexLocker(&getDatabaseMutex());
     execQuery(query, __FILE__, __LINE__);
 #if QT_VERSION > 0x0406FF
     ret.reserve(query.size());
@@ -376,9 +424,11 @@ void medLocalDbController::requestDatabaseForModel(QHash<int, QHash<QString, QVa
                     inner join study on patient.id = study.patient \
                     inner join series on study.id = series.study";
 
-    QSqlQuery query(m_database);
+    QSqlDatabase dbConnection = getThreadSpecificConnection();
+    QSqlQuery query(dbConnection);
     query.prepare(queryStr);
 
+    QMutexLocker mutexLocker(&getDatabaseMutex());
     execQuery(query, __FILE__, __LINE__);
     while (query.next())
     {
@@ -425,4 +475,3 @@ void medLocalDbController::requestDatabaseForModel(QHash<int, QHash<QString, QVa
     }
     return;
 }
-

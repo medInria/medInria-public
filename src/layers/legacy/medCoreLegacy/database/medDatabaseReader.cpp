@@ -63,7 +63,8 @@ medAbstractData* medDatabaseReader::run()
     QVariant   studyDbId = d->index.studyId();
     QVariant  seriesDbId = d->index.seriesId();
 
-    QSqlQuery query(medDataManager::instance().controller()->database());
+    QSqlDatabase dbConnection = medDataManager::instance().controller()->getThreadSpecificConnection();
+    QSqlQuery query(dbConnection);
 
     QString patientName, birthdate, gender, patientId;
     QString studyName, studyUid, studyId, studyTime, studyDate;
@@ -76,13 +77,20 @@ medAbstractData* medDatabaseReader::run()
 
     query.prepare ( "SELECT name, birthdate, gender, patientId FROM patient WHERE id = :id" );
     query.bindValue ( ":id", patientDbId );
+
+    QMutexLocker mutexLocker(&medDataManager::instance().controller()->getDatabaseMutex());
+
     if ( !query.exec() )
     {
+        query.finish();
+        mutexLocker.unlock();
         FAILURE(query.lastError());
     }
 
     if (! query.first() )
     {
+        query.finish();
+        mutexLocker.unlock();
         FAILURE("No record in patient table for id:" + patientDbId.toString());
     }
 
@@ -100,6 +108,8 @@ medAbstractData* medDatabaseReader::run()
 
     if (! query.first() )
     {
+        query.finish();
+        mutexLocker.unlock();
         FAILURE("No record in study table for id:" + studyDbId.toString());
     }
 
@@ -119,11 +129,15 @@ medAbstractData* medDatabaseReader::run()
 
     if ( !query.exec() )
     {
+        query.finish();
+        mutexLocker.unlock();
         FAILURE(query.lastError());
     }
 
     if ( ! query.first())
     {
+        query.finish();
+        mutexLocker.unlock();
         FAILURE("No record in series table for id:" + seriesDbId.toString());
     }
 
@@ -161,6 +175,9 @@ medAbstractData* medDatabaseReader::run()
     seriesTime = query.value ( 28 ).toString();
     seriesDate = query.value ( 29 ).toString();
     kvp = query.value ( 30 ).toString();
+
+    query.finish();
+    mutexLocker.unlock();
 
     QStringList filePaths = seriesPath.split(';', QString::SkipEmptyParts);
     for(int i = 0 ; i < filePaths.size(); i++)
