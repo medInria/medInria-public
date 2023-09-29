@@ -101,10 +101,10 @@ medActionsToolBox::medActionsToolBox( QWidget *parent /*= 0*/, bool FILE_SYSTEM 
         auto thumbnailCreationSetting = new QCheckBox("Generate a thumbnail at import");
         thumbnailCreationSetting->setToolTip("Generating a thumbnail uses RAM, so it can be useful to disable it "
                                               "if you're short of memory and have import crashes.");
-        auto thumbailValue = medSettingsManager::instance()->value("Browser", 
+        auto thumbnailValue = medSettingsManager::instance()->value("Browser", 
                                                                    "thumbnail_creation_setting", 
                                                                    true).toBool(); // Default value to true
-        thumbnailCreationSetting->setChecked(thumbailValue);
+        thumbnailCreationSetting->setChecked(thumbnailValue);
         connect(thumbnailCreationSetting, &QCheckBox::clicked, this, &medActionsToolBox::thumbnailSettingClicked);
         informationLayout->addWidget(thumbnailCreationSetting);
     }
