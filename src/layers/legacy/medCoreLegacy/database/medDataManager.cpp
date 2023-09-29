@@ -173,7 +173,7 @@ void medDataManager::loadData(const medDataIndex &index)
     return;
 }
 
-QUuid medDataManager::importData(medAbstractData *data, bool persistent)
+QUuid medDataManager::importData(medAbstractData *data, bool persistent, bool allowDuplicateSeriesName)
 {
     if (!data)
         return QUuid();
@@ -183,7 +183,15 @@ QUuid medDataManager::importData(medAbstractData *data, bool persistent)
     medAbstractDbController *controller =
         persistent ? d->dbController : d->nonPersDbController;
     qDebug() << "generated uuid " << uuid.toString();
-    controller->importData(data, uuid);
+
+    if (persistent)
+    {
+        d->dbController->importData(data, uuid, allowDuplicateSeriesName);
+    }
+    else
+    {
+        controller->importData(data, uuid);
+    }
     return uuid;
 }
 

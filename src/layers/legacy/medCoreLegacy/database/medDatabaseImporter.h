@@ -37,10 +37,12 @@ class MEDCORELEGACY_EXPORT medDatabaseImporter : public medAbstractDatabaseImpor
 
 public:
     medDatabaseImporter ( const QString& file, const QUuid& uuid, bool indexWithoutImporting = false);
-    medDatabaseImporter ( medAbstractData* medData, const QUuid& callerUuid );
+    medDatabaseImporter ( medAbstractData* medData, const QUuid& callerUuid, bool allowDuplicateSeriesName = false);
     ~medDatabaseImporter() override = default;
 
 private:
+    bool duplicateSeriesNamesEnabled;
+
     QString ensureUniqueSeriesName ( const QString seriesName, const QString studyId ) override;
 
     medDataIndex populateDatabaseAndGenerateThumbnails ( medAbstractData* medData, QString pathToStoreThumbnail ) override;

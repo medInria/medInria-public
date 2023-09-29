@@ -85,7 +85,7 @@ public:
 public slots:
     medAbstractData *retrieve(const medDataIndex &index, bool readFullData = true) const override;
 
-    void importData(medAbstractData *data, const QUuid &importUuid) override{};
+    void importData(medAbstractData *data, const QUuid &importUuid, bool allowDuplicateSeriesName = false) override{};
     void importPath(const QString &file, const QUuid &importUuid, bool indexWithoutCopying) override{};
     bool importMetaDataFromPacs(const QHash<QString, QHash<QString, QVariant> > &pData,
                                 const QHash<QString, QHash<QString, QVariant> > &sData) override;

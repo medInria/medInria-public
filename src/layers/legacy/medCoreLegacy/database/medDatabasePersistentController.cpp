@@ -185,9 +185,9 @@ void medDatabasePersistentController::importPath(const QString &file, const QUui
 * Import data into the db read from memory
 * @param medAbstractData * data dataObject
 */
-void medDatabasePersistentController::importData(medAbstractData *data, const QUuid &importUuid)
+void medDatabasePersistentController::importData(medAbstractData *data, const QUuid &importUuid, bool allowDuplicateSeriesName)
 {
-    medDatabaseImporter *importer = new medDatabaseImporter(data, importUuid);
+    medDatabaseImporter *importer = new medDatabaseImporter(data, importUuid, allowDuplicateSeriesName);
     medMessageProgress *message = medMessageController::instance().showProgress("Saving database item");
 
     connect(importer, SIGNAL(progressed(int)), message, SLOT(setProgress(int)));

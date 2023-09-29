@@ -28,15 +28,15 @@
 //-----------------------------------------------------------------------------------------------------------
 
 medDatabaseImporter::medDatabaseImporter ( const QString& file, const QUuid& uuid, bool indexWithoutImporting) :
-    medAbstractDatabaseImporter(file, uuid, indexWithoutImporting)
+    medAbstractDatabaseImporter(file, uuid, indexWithoutImporting), duplicateSeriesNamesEnabled(false)
 {
 
 }
 
 //-----------------------------------------------------------------------------------------------------------
 
-medDatabaseImporter::medDatabaseImporter ( medAbstractData* medData, const QUuid& uuid ) :
-    medAbstractDatabaseImporter(medData, uuid)
+medDatabaseImporter::medDatabaseImporter (medAbstractData* medData, const QUuid& uuid , bool allowDuplicateSeriesName) :
+    medAbstractDatabaseImporter(medData, uuid), duplicateSeriesNamesEnabled(allowDuplicateSeriesName)
 {
     
 }
@@ -91,10 +91,13 @@ medDataIndex medDatabaseImporter::populateDatabaseAndGenerateThumbnails ( medAbs
 
     int studyDbId = getOrCreateStudy ( medData, dbConnection, patientDbId );
 
-    // Update name of the series if a permanent data has this name already
-    QString seriesName = medData->metadata(medMetaDataKeys::SeriesDescription.key());
-    QString newSeriesName = ensureUniqueSeriesName(seriesName, QString::number(studyDbId));
-    medData->setMetaData(medMetaDataKeys::SeriesDescription.key(), newSeriesName);
+    if (!duplicateSeriesNamesEnabled)
+    {
+        // Update name of the series if a permanent data has this name already
+        QString seriesName = medData->metadata(medMetaDataKeys::SeriesDescription.key());
+        QString newSeriesName = ensureUniqueSeriesName(seriesName, QString::number(studyDbId));
+        medData->setMetaData(medMetaDataKeys::SeriesDescription.key(), newSeriesName);
+    }
 
     int seriesDbId = getOrCreateSeries ( medData, dbConnection, studyDbId );
 

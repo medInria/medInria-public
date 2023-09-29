@@ -44,7 +44,7 @@ public:
 
     QHash<QString, dtkAbstractDataWriter*> getPossibleWriters(medAbstractData* data);
 
-    QUuid importData(medAbstractData* data, bool persistent = false);
+    QUuid importData(medAbstractData* data, bool persistent = false, bool allowDuplicateSeriesName = false);
     QUuid importPath(const QString& dataPath, bool indexWithoutCopying, bool persistent = false);
     void fetchData(const QHash<QString, QHash<QString, QVariant> > &pData,
                    const QHash<QString, QHash<QString, QVariant> > &sData);
