@@ -18,7 +18,7 @@
 class medSplashScreenPrivate;
 
 /**
- * @brief create SplaScreen widget with translucent background.
+ * @brief create Splashcreen widget with translucent background.
  *
  * not based on QSplashScreen which does not support this feature.
  Almost all features from the QSplashscreen are replicated, including messages refreshed before a QApplication event loop is running.
@@ -38,41 +38,7 @@ public:
     medSplashScreen(const QPixmap& pixmap);
     ~medSplashScreen();
 
-    /**
-     * @brief hides the splashscreen when w is shown.
-     *
-     * @param w
-     */
-    void finish(QWidget *w);
-
-    /**
-     * @brief Repaints the widget without the need of an event loop;
-     *
-     */
-    void repaint();
-
-public slots:
-    /**
-     * @brief Clears the message.
-     *
-     */
-    void clearMessage();
-
-    /**
-     * @brief Shows a message with the desired alignment and color.
-     *
-     * @param theMessage
-     * @param theAlignment
-     * @param theColor
-     */
-    void showMessage(const QString& theMessage);
-
 private:
-    /**
-     * @brief
-     *
-     * @param pe
-     */
     void paintEvent(QPaintEvent* pe);
 
     medSplashScreenPrivate * d;
