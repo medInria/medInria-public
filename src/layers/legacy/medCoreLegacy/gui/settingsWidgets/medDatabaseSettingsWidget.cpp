@@ -30,16 +30,12 @@ medDatabaseSettingsWidget::medDatabaseSettingsWidget(QWidget *parent) :
     btChooseDir = new QPushButton(tr("Select dir..."), this);
     connect(btChooseDir, SIGNAL(clicked()), this, SLOT(selectDbDirectory())); 
 
-    QWidget* databaseLocation = new QWidget(this);
-    databaseLocation->setContentsMargins(0,-8,0,0);
-
     QHBoxLayout* dbLayout = new QHBoxLayout;
     dbLayout->addWidget(dbPath);
     dbLayout->addWidget(btChooseDir);
-    databaseLocation->setLayout(dbLayout);
 
     QFormLayout* formLayout = new QFormLayout(this);
-    formLayout->addRow(tr("Database location:"), databaseLocation);
+    formLayout->addRow(tr("Database location:"), dbLayout);
 
     // Display the current database location
     read();
