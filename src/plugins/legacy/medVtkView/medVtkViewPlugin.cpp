@@ -18,43 +18,22 @@
 
 #include <dtkLog/dtkLog.h>
 
-// /////////////////////////////////////////////////////////////////
-// medVtkViewPluginPrivate
-// /////////////////////////////////////////////////////////////////
-
-class medVtkViewPluginPrivate
-{
-public:
-    // Class variables go here.
-};
-
-// /////////////////////////////////////////////////////////////////
-// medVtkViewPlugin
-// /////////////////////////////////////////////////////////////////
-
 medVtkViewPlugin::medVtkViewPlugin(QObject *parent) :
-    dtkPlugin(parent), d(new medVtkViewPluginPrivate)
+    medPluginLegacy(parent)
 {
-
-}
-
-medVtkViewPlugin::~medVtkViewPlugin()
-{
-    delete d;
-    d = nullptr;
 }
 
 bool medVtkViewPlugin::initialize()
 {
-    if (!medVtkView::registered()) { qWarning() << "Unable to register medVtkView type"; }
+    if (!medVtkView::registered())
+    {
+        qWarning() << "Unable to register medVtkView type";
+    }
+    if (!medVtkViewNavigator::registered())
+    {
+        qWarning() << "Unable to register medVtkViewNavigator type";
+    }
 
-    if (!medVtkViewNavigator::registered()) { qWarning() << "Unable to register medVtkViewNavigator type"; }
-
-    return true;
-}
-
-bool medVtkViewPlugin::uninitialize()
-{
     return true;
 }
 
@@ -65,21 +44,13 @@ QString medVtkViewPlugin::name() const
 
 QString medVtkViewPlugin::contact() const
 {
-    return "medinria team";
+    return "medInria team";
 }
 
 QStringList medVtkViewPlugin::authors() const
 {
     QStringList list;
     list << QString::fromUtf8("rdebroiz");
-    return list;
-}
-
-QStringList medVtkViewPlugin::contributors() const
-{
-    QStringList list;
-    list << "rdebroiz";
-
     return list;
 }
 
@@ -91,15 +62,15 @@ QString medVtkViewPlugin::version() const
 QString medVtkViewPlugin::description() const
 {
     return tr("View Plugin\n<br/>"
-              "Bring a view based on medVtkinria");
+              "Create views based on medVtkinria");
 }
 
 QStringList medVtkViewPlugin::tags() const
 {
-    return QStringList() << "medVtk" << "view";
+    return types();
 }
 
 QStringList medVtkViewPlugin::types() const
 {
-    return QStringList() << medVtkView::s_identifier();
+    return QStringList() << "medVtkView";
 }

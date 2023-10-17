@@ -40,6 +40,17 @@ public:
     medPacsDataSource *pacsSource;
 };
 
+std::unique_ptr<medDataSourceManager> medDataSourceManager::s_instance = nullptr;
+
+medDataSourceManager &medDataSourceManager::instance()
+{
+    if(!s_instance)
+    {
+        s_instance = std::unique_ptr<medDataSourceManager>(new medDataSourceManager());
+    }
+    return *s_instance.get();
+}
+
 medDataSourceManager::medDataSourceManager(): d(new medDataSourceManagerPrivate)
 {
     // Data base data source
@@ -121,31 +132,24 @@ void medDataSourceManager::importData(medAbstractData *data)
         return;
     }
 
-    medDataManager::instance()->importData(data, true);
+    medDataManager::instance().importData(data, true);
 }
 
 void medDataSourceManager::exportData(const medDataIndex &index)
 {
     //TODO did it all from the medDataManager ? - RDE
-    dtkSmartPointer<medAbstractData> data = medDataManager::instance()->retrieveData(index);
-    medDataManager::instance()->exportData(data);
+    dtkSmartPointer<medAbstractData> data = medDataManager::instance().retrieveData(index);
+    medDataManager::instance().exportData(data);
 }
 
 void medDataSourceManager::importFile(QString path)
 {
-    medDataManager::instance()->importPath(path, false, true);
+    medDataManager::instance().importPath(path, false, true);
 }
 
 void medDataSourceManager::emitDataReceivingFailed(QString fileName)
 {
-  medMessageController::instance()->showError(tr("Unable to get from source the data named ") + fileName, 3000);
-}
-
-medDataSourceManager * medDataSourceManager::instance( void )
-{
-    if(!s_instance)
-        s_instance = new medDataSourceManager;
-    return s_instance;
+  medMessageController::instance().showError(tr("Unable to get from source the data named ") + fileName, 3000);
 }
 
 medDataSourceManager::~medDataSourceManager()
@@ -171,16 +175,7 @@ void medDataSourceManager::openFromIndex(medDataIndex index)
 
 void medDataSourceManager::loadFromPath(QString path)
 {
-    medDataManager::instance()->importPath(path, false);
-}
-
-void medDataSourceManager::destroy()
-{
-    if (s_instance)
-    {
-        delete s_instance;
-        s_instance = nullptr;
-    }
+    medDataManager::instance().importPath(path, false);
 }
 
 QList <medAbstractDataSource*> medDataSourceManager::dataSources()
@@ -192,5 +187,3 @@ medDatabaseDataSource* medDataSourceManager::databaseDataSource()
 {
     return d->dbSource;
 }
-
-medDataSourceManager *medDataSourceManager::s_instance = nullptr;

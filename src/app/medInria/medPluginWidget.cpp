@@ -44,9 +44,9 @@ void medPluginWidgetPrivate::resetPluginsTree()
     pluginsTree->clear();
 
     //get the list of plugins
-    medPluginManager* mpm = medPluginManager::instance();
+    medPluginManager &mpm = medPluginManager::instance();
 
-    for(dtkPlugin* plugin : mpm->plugins())
+    for(dtkPlugin* plugin : mpm.plugins())
     {
         QTreeWidgetItem * item = new QTreeWidgetItem(pluginsTree);
         item->setText(0,plugin->name());
@@ -143,9 +143,9 @@ void medPluginWidgetPrivate::resetFailedPluginsTree()
     errorTree->clear();
 
     //get the list of plugins
-    medPluginManager* mpm = medPluginManager::instance();
+    medPluginManager &mpm = medPluginManager::instance();
 
-    for(QString error : mpm->loadErrors())
+    for(QString error : mpm.loadErrors())
     {
         QTreeWidgetItem * item = new QTreeWidgetItem(errorTree);
         item->setText(0,error);

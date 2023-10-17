@@ -148,9 +148,7 @@ itkProcessRegistrationOptimusToolBox::~itkProcessRegistrationOptimusToolBox(void
 
 dtkPlugin * itkProcessRegistrationOptimusToolBox::plugin()
 {
-    medPluginManager* pm = medPluginManager::instance();
-    dtkPlugin* plugin = pm->plugin("itkProcessRegistrationOptimusPlugin");
-    return plugin;
+    return medPluginManager::instance().plugin("itkProcessRegistrationOptimusPlugin");
 }
 
 medAbstractData * itkProcessRegistrationOptimusToolBox::processOutput()
@@ -231,7 +229,7 @@ void itkProcessRegistrationOptimusToolBox::run(void)
 
         setToolBoxOnWaitStatus();
 
-        medJobManagerL::instance()->registerJobItem(runProcess, d->process->identifier());
+        medJobManagerL::instance().registerJobItem(runProcess, d->process->identifier());
 
         addConnectionsAndStartJob(runProcess);
         enableOnProcessSuccessImportOutput(runProcess, false);

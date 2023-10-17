@@ -12,13 +12,11 @@ PURPOSE.
 
 =========================================================================*/
 
-#include <dtkCoreSupport/dtkPlugin.h>
+#include <medPluginLegacy.h>
 
 #include <medVtkViewPluginExport.h>
 
-class medVtkViewPluginPrivate;
-
-class MEDVTKVIEWPLUGIN_EXPORT medVtkViewPlugin : public dtkPlugin
+class MEDVTKVIEWPLUGIN_EXPORT medVtkViewPlugin : public medPluginLegacy
 {
     Q_OBJECT
     Q_PLUGIN_METADATA(IID "fr.inria.medVtkViewPlugin" FILE "medVtkViewPlugin.json")
@@ -26,23 +24,14 @@ class MEDVTKVIEWPLUGIN_EXPORT medVtkViewPlugin : public dtkPlugin
 
 public:
      medVtkViewPlugin(QObject *parent = nullptr);
-    ~medVtkViewPlugin();
 
     virtual bool initialize();
-    virtual bool uninitialize();
 
     virtual QString name() const;
     virtual QString description() const;
     virtual QString version() const;
-
     virtual QStringList authors() const;
     virtual QString contact() const;
-    virtual QStringList contributors() const;
-
-
     virtual QStringList tags() const;
     virtual QStringList types() const;
-
-private:
-     medVtkViewPluginPrivate *d;
 };

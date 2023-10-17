@@ -119,12 +119,10 @@ void medApplication::initialize()
     qRegisterMetaType<medDataIndex>("medDataIndex");
 
     //  Setting up database connection
-    if ( ! medDatabaseController::instance()->createConnection())
+    if ( ! medDatabaseController::instance().createConnection())
     {
         qDebug() << "Unable to create a connection to the database";
     }
-
-    medDataManager::initialize();
 
     // Registering different workspaces
     medWorkspaceFactory * viewerWSpaceFactory = medWorkspaceFactory::instance();

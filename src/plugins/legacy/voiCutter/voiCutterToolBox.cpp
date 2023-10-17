@@ -272,9 +272,7 @@ void voiCutterToolBox::onViewClosed()
 
 dtkPlugin* voiCutterToolBox::plugin()
 {
-    medPluginManager *pm = medPluginManager::instance();
-    dtkPlugin *plugin = pm->plugin("VOI Cutter");
-    return plugin;
+    return medPluginManager::instance().plugin("VOI Cutter");
 }
 
 medAbstractData *voiCutterToolBox::processOutput()
@@ -399,7 +397,7 @@ void voiCutterToolBox::saveImage()
     if (d->resultData)
     {
         fillOutputMetaData();
-        medDataManager::instance()->importData(d->resultData, false);
+        medDataManager::instance().importData(d->resultData, false);
     }
 }
 

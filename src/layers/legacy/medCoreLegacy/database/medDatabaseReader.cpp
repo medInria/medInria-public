@@ -49,7 +49,7 @@ medAbstractData* medDatabaseReader::run()
     QVariant   studyDbId = d->index.studyId();
     QVariant  seriesDbId = d->index.seriesId();
 
-    QSqlQuery query(medDatabaseController::instance()->database());
+    QSqlQuery query(medDatabaseController::instance().database());
 
     QString patientName, birthdate, gender, patientId;
     QString studyName, studyUid, studyId;

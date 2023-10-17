@@ -17,6 +17,8 @@
 
 #include <medDataIndex.h>
 
+#include <memory>
+
 class medAbstractDataSource;
 class medDataSourceManagerPrivate;
 class medAbstractData;
@@ -28,12 +30,11 @@ class medDataSourceManager : public QObject
     Q_OBJECT
 
 public:
-    static medDataSourceManager *instance();
+    ~medDataSourceManager();
+    static medDataSourceManager &instance();
 
-    static void destroy();
-
-    QList<medAbstractDataSource*> dataSources();
-    medDatabaseDataSource* databaseDataSource();
+    QList<medAbstractDataSource *> dataSources();
+    medDatabaseDataSource *databaseDataSource();
 
 protected slots:
     void exportData(const medDataIndex &index);
@@ -47,10 +48,8 @@ signals:
     void load(QString);
 
 protected:
-    void connectDataSource(medAbstractDataSource* dataSource);
-
     medDataSourceManager();
-    ~medDataSourceManager();
+    void connectDataSource(medAbstractDataSource *dataSource);
 
 protected slots:
     void openFromPath(QString path);
@@ -58,7 +57,6 @@ protected slots:
     void loadFromPath(QString path);
 
 private:
-
-    static medDataSourceManager *s_instance;
+    static std::unique_ptr<medDataSourceManager> s_instance;
     medDataSourceManagerPrivate *d;
 };

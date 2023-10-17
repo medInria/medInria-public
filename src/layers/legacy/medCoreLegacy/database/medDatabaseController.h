@@ -18,7 +18,7 @@
 #include <medAbstractDbController.h>
 #include <medCoreLegacyExport.h>
 
-#define EXEC_QUERY(q) medDatabaseController::instance()->execQuery(q, __FILE__ , __LINE__ )
+#define EXEC_QUERY(q) medDatabaseController::instance().execQuery(q, __FILE__ , __LINE__ )
 
 class medAbstractData;
 class medDatabaseControllerPrivate;
@@ -32,7 +32,7 @@ class MEDCORELEGACY_EXPORT medDatabaseController: public medAbstractDbController
     Q_OBJECT
 
 public:
-    static medDatabaseController* instance();
+    static medDatabaseController &instance();
     ~medDatabaseController();
 
     const QSqlDatabase& database() const;
@@ -103,5 +103,5 @@ private:
     QSqlDatabase m_database;
 
     medDatabaseControllerPrivate * d;
-    static medDatabaseController * s_instance;
+    static std::unique_ptr<medDatabaseController> s_instance;
 };

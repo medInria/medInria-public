@@ -160,9 +160,7 @@ bool resliceToolBox::registered()
 
 dtkPlugin* resliceToolBox::plugin()
 {
-    medPluginManager* pm = medPluginManager::instance();
-    dtkPlugin* plugin = pm->plugin ( "Reformat" );
-    return plugin;
+    return medPluginManager::instance().plugin("Reformat");
 }
 
 void resliceToolBox::startReformat()
@@ -216,17 +214,17 @@ void resliceToolBox::startReformat()
             }
             else
             {
-                medMessageController::instance()->showError(tr("Drop a 3D volume in the view"), 3000);
+                medMessageController::instance().showError(tr("Drop a 3D volume in the view"), 3000);
             }
         }
         else
         {
-            medMessageController::instance()->showError(tr("Drop a 3D volume in the view"), 3000);
+            medMessageController::instance().showError(tr("Drop a 3D volume in the view"), 3000);
         }
     }
     else
     {
-        medMessageController::instance()->showError(tr("Drop a 3D volume in the view"), 3000);
+        medMessageController::instance().showError(tr("Drop a 3D volume in the view"), 3000);
     }
 }
 
@@ -308,7 +306,7 @@ void resliceToolBox::saveReformatedImage()
     generateReformatedImage();
     if (d->reformatedImage && d->reformatedImage->data())
     {
-        medDataManager::instance()->importData(d->reformatedImage, false);
+        medDataManager::instance().importData(d->reformatedImage, false);
     }
 }
 

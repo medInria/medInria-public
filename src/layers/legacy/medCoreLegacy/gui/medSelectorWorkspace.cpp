@@ -57,5 +57,5 @@ medSelectorToolBox* medSelectorWorkspace::selectorToolBox()
 void medSelectorWorkspace::importProcessOutput()
 {
     medAbstractData *output = selectorToolBox()->currentToolBox()->processOutput();
-    medDataManager::instance()->importData(output);
+    medDataManager::instance().importData(output);
 }

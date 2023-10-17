@@ -85,9 +85,7 @@ bool medMaskApplicationToolBox::registered()
 
 dtkPlugin* medMaskApplicationToolBox::plugin()
 {
-    medPluginManager* pm = medPluginManager::instance();
-    dtkPlugin* plugin = pm->plugin ( "Mask Application" );
-    return plugin;
+    return medPluginManager::instance().plugin("Mask Application");
 }
 
 medAbstractData* medMaskApplicationToolBox::processOutput()
@@ -125,8 +123,8 @@ void medMaskApplicationToolBox::run()
 
 void medMaskApplicationToolBox::importMask(const medDataIndex& index)
 {
-    d->mask = medDataManager::instance()->retrieveData(index);
-    d->maskDropSite->setPixmap(medDataManager::instance()->thumbnail(index).scaled(d->maskDropSite->sizeHint()));
+    d->mask = medDataManager::instance().retrieveData(index);
+    d->maskDropSite->setPixmap(medDataManager::instance().thumbnail(index).scaled(d->maskDropSite->sizeHint()));
     d->backgroundSpinBox->setValue(medUtilitiesITK::minimumValue(d->mask));
 }
 

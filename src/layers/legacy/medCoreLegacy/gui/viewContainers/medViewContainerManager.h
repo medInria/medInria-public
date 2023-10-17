@@ -16,6 +16,7 @@
 
 #include <medCoreLegacyExport.h>
 
+#include <memory>
 
 class QUuid;
 class medViewContainer;
@@ -27,7 +28,8 @@ class MEDCORELEGACY_EXPORT medViewContainerManager : public QObject
     Q_OBJECT
 
 public:
-    static medViewContainerManager *instance();
+    ~medViewContainerManager();
+    static medViewContainerManager &instance();
 
     medViewContainer* container(QUuid uuid) const;
 
@@ -36,11 +38,9 @@ public slots:
     void unregisterContainer(medViewContainer *container);
 
 protected:
-     medViewContainerManager();
-    ~medViewContainerManager();
+    medViewContainerManager();
 
-protected:
-    static medViewContainerManager *s_instance;
+    static std::unique_ptr<medViewContainerManager> s_instance;
 
 signals:
     void containerAboutToBeDestroyed(QUuid uuid);

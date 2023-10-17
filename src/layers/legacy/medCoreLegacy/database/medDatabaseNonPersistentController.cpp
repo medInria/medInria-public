@@ -42,16 +42,18 @@ public:
 };
 
 // /////////////////////////////////////////////////////////////////
-// medDatabaseNonPersitentController
+// medDatabaseNonPersistentController
 // /////////////////////////////////////////////////////////////////
 
-medDatabaseNonPersistentController*  medDatabaseNonPersistentController::s_instance = nullptr;
+std::unique_ptr<medDatabaseNonPersistentController> medDatabaseNonPersistentController::s_instance = nullptr;
 
-medDatabaseNonPersistentController* medDatabaseNonPersistentController::instance() {
-    if ( ! s_instance) {
-        s_instance = new medDatabaseNonPersistentController();
+medDatabaseNonPersistentController &medDatabaseNonPersistentController::instance()
+{
+    if(!s_instance)
+    {
+        s_instance = std::unique_ptr<medDatabaseNonPersistentController>(new medDatabaseNonPersistentController());
     }
-    return s_instance;
+    return *s_instance.get();
 }
 
 int medDatabaseNonPersistentController::patientId(bool increment)
@@ -91,7 +93,7 @@ void medDatabaseNonPersistentController::insert(medDataIndex index, medDatabaseN
 void medDatabaseNonPersistentController::importPath(const QString& file,const QUuid & importUuid, bool /*indexWithoutCopying*/)
 {
     medDatabaseNonPersistentImporter * importer = new medDatabaseNonPersistentImporter(file,importUuid);
-    medMessageProgress * message = medMessageController::instance()->showProgress(tr("Opening file item"));
+    medMessageProgress * message = medMessageController::instance().showProgress(tr("Opening file item"));
 
     connect(importer, SIGNAL(progressed(int)),    message, SLOT(setProgress(int)));
     connect(importer, SIGNAL(dataImported(medDataIndex,QUuid)), this, SIGNAL(dataImported(medDataIndex,QUuid)));
@@ -99,9 +101,9 @@ void medDatabaseNonPersistentController::importPath(const QString& file,const QU
     connect(importer, SIGNAL(success(QObject *)), message, SLOT(success()));
     connect(importer, SIGNAL(failure(QObject *)), message, SLOT(failure()));
     connect(importer, SIGNAL(showError(const QString&,unsigned int)),
-            medMessageController::instance(),SLOT(showError(const QString&,unsigned int)));
+            &medMessageController::instance(),SLOT(showError(const QString&,unsigned int)));
 
-    medJobManagerL::instance()->registerJobItem(importer);
+    medJobManagerL::instance().registerJobItem(importer);
     QThreadPool::globalInstance()->start(importer);
 }
 
@@ -117,7 +119,7 @@ medDatabaseNonPersistentController::medDatabaseNonPersistentController(): d(new 
     d->seriesIndex  = nonPersistentDataStartingIndex();
 }
 
-medDatabaseNonPersistentController::~medDatabaseNonPersistentController(void)
+medDatabaseNonPersistentController::~medDatabaseNonPersistentController()
 {
     qDeleteAll(d->items);
 
@@ -135,7 +137,7 @@ void medDatabaseNonPersistentController::importData(medAbstractData *data,
                                                     const QUuid & callerUuid)
 {
     medDatabaseNonPersistentImporter * importer = new medDatabaseNonPersistentImporter(data,callerUuid);
-    medMessageProgress * message = medMessageController::instance()->showProgress("Importing data item");
+    medMessageProgress * message = medMessageController::instance().showProgress("Importing data item");
 
     connect(importer, SIGNAL(progressed(int)),    message, SLOT(setProgress(int)));
     connect(importer, SIGNAL(dataImported(medDataIndex,QUuid)), this, SIGNAL(dataImported(medDataIndex,QUuid)));
@@ -143,9 +145,9 @@ void medDatabaseNonPersistentController::importData(medAbstractData *data,
     connect(importer, SIGNAL(success(QObject *)), message, SLOT(success()));
     connect(importer, SIGNAL(failure(QObject *)), message, SLOT(failure()));
     connect(importer, SIGNAL(showError(const QString&,unsigned int)),
-            medMessageController::instance(),SLOT(showError(const QString&,unsigned int)));
+            &medMessageController::instance(),SLOT(showError(const QString&,unsigned int)));
 
-    medJobManagerL::instance()->registerJobItem(importer);
+    medJobManagerL::instance().registerJobItem(importer);
     QThreadPool::globalInstance()->start(importer);
 }
 

@@ -104,7 +104,7 @@ void medAbstractImageViewNavigator::updateTimeLineParameter()
     double sequenceFrameRate = 0;
     for(medDataIndex index : d->view->dataList())
     {
-        medAbstractData *data = medDataManager::instance()->retrieveData(index);
+        medAbstractData *data = medDataManager::instance().retrieveData(index);
         if (!data)
             continue;
 

@@ -38,14 +38,14 @@ medViewParameterGroupL::medViewParameterGroupL(QString name, QObject *parent, QS
 {
     d->pool = new medParameterPoolL(this);
 
-    medParameterGroupManagerL::instance()->registerNewGroup(this);
+    medParameterGroupManagerL::instance().registerNewGroup(this);
 
     connect(this, SIGNAL(groupColorChanged(QColor,QColor)), this, SLOT(updateGroupIndicators(QColor,QColor)));
 }
 
 medViewParameterGroupL::~medViewParameterGroupL()
 {
-    medParameterGroupManagerL::instance()->unregisterGroup(this);
+    medParameterGroupManagerL::instance().unregisterGroup(this);
 
     d->pool->clear();
 

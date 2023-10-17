@@ -56,14 +56,12 @@ medEmptyDbWarning::~medEmptyDbWarning()
 
 void medEmptyDbWarning::accept()
 {
-    medSettingsManager* mng = medSettingsManager::instance();
-    mng->setValue("system","showEmptyDbWarning",d->showAgainBox->isChecked());
+    medSettingsManager::instance().setValue("system","showEmptyDbWarning",d->showAgainBox->isChecked());
     QDialog::accept();
 }
 
 void medEmptyDbWarning::reject()
 {
-    medSettingsManager* mng = medSettingsManager::instance();
-    mng->setValue("system","showEmptyDbWarning",d->showAgainBox->isChecked());
+    medSettingsManager::instance().setValue("system","showEmptyDbWarning",d->showAgainBox->isChecked());
     QDialog::reject();
 }

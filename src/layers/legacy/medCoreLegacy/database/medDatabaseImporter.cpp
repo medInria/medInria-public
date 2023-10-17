@@ -48,7 +48,7 @@ QString medDatabaseImporter::getPatientID(QString patientName, QString birthDate
 {
     QString patientID = "";
     //Let's see if the patient is already in the db
-    QSqlQuery query ( medDatabaseController::instance()->database() );
+    QSqlQuery query ( medDatabaseController::instance().database() );
 
     query.prepare ( "SELECT patientId FROM patient WHERE name = :name AND birthdate = :birthdate" );
     query.bindValue ( ":name", patientName );
@@ -76,7 +76,7 @@ QString medDatabaseImporter::getPatientID(QString patientName, QString birthDate
 **/
 medDataIndex medDatabaseImporter::populateDatabaseAndGenerateThumbnails ( medAbstractData* medData, QString pathToStoreThumbnail )
 {
-    QSqlDatabase db = medDatabaseController::instance()->database();
+    QSqlDatabase db = medDatabaseController::instance().database();
 
     generateThumbnail ( medData, pathToStoreThumbnail );
 
@@ -86,7 +86,7 @@ medDataIndex medDatabaseImporter::populateDatabaseAndGenerateThumbnails ( medAbs
 
     int seriesDbId = getOrCreateSeries ( medData, db, studyDbId );
 
-    medDataIndex index = medDataIndex ( medDatabaseController::instance()->dataSourceId(), patientDbId, studyDbId, seriesDbId );
+    medDataIndex index = medDataIndex ( medDatabaseController::instance().dataSourceId(), patientDbId, studyDbId, seriesDbId );
     return index;
 }
 
@@ -334,7 +334,7 @@ int medDatabaseImporter::getOrCreateSeries ( const medAbstractData* medData, QSq
 **/
 QString medDatabaseImporter::ensureUniqueSeriesName ( const QString seriesName )
 {
-    QSqlDatabase db = medDatabaseController::instance()->database();
+    QSqlDatabase db = medDatabaseController::instance().database();
 
     QSqlQuery query ( db );
     query.prepare ( "SELECT name FROM series WHERE name LIKE '" + seriesName + "%'" );

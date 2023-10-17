@@ -231,7 +231,7 @@ void medAbstractImageView::switchToFourViews()
 
     for(medDataIndex index : this->dataList())
     {
-        medAbstractData *data = medDataManager::instance()->retrieveData(index);
+        medAbstractData *data = medDataManager::instance().retrieveData(index);
         if (data)
         {
             topRightContainer->addData(data);
@@ -254,7 +254,7 @@ void medAbstractImageView::switchToFourViews()
     unsigned int linkGroupNumber = 1;
 
     QString linkGroupName = linkGroupBaseName + QString::number(linkGroupNumber);
-    while (medParameterGroupManagerL::instance()->viewGroup(linkGroupName))
+    while (medParameterGroupManagerL::instance().viewGroup(linkGroupName))
     {
         linkGroupNumber++;
         linkGroupName = linkGroupBaseName + QString::number(linkGroupNumber);

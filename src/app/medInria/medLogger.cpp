@@ -167,6 +167,8 @@ medLogger::~medLogger()
     QObject::disconnect(this, SIGNAL(newQtMessage(QtMsgType,QString)), this, SLOT(redirectQtMessage(QtMsgType,QString)));
     qInstallMessageHandler(nullptr);
     finalizeTeeStreams();
+
+    delete d;
 }
 
 void medLogger::initializeTeeStreams()
@@ -175,16 +177,28 @@ void medLogger::initializeTeeStreams()
     createTeeStream(&std::cerr);
 }
 
+/**
+ * @brief Delete TeeStreams and associated TeeDevices from memory
+ * 
+ */
 void medLogger::finalizeTeeStreams()
 {
-    for (int i = 0; i < d->redirectedStreams.length(); i++)
+    for (auto teeStream : d->teeStreams)
     {
-        d->teeStreams.first()->flush();
-        d->teeStreams.first()->close();
-        delete d->teeStreams.takeFirst();
-        delete d->redirectedStreamDummies.takeFirst();
+        teeStream->flush();
+        delete teeStream;
+    }
+    d->teeStreams.clear();
+
+    for (auto redirectedStreamDummy : d->redirectedStreamDummies)
+    {
+        delete redirectedStreamDummy;
         d->redirectedStreams.takeFirst()->rdbuf(d->previousStreamBuffers.takeFirst());
     }
+    d->redirectedStreamDummies.clear();
+
+    d->redirectedStreams.clear();
+    d->previousStreamBuffers.clear();
 }
 
 void medLogger::createTeeStream(std::ostream* targetStream)
@@ -192,8 +206,7 @@ void medLogger::createTeeStream(std::ostream* targetStream)
     d->redirectedStreams.append(targetStream);
     d->previousStreamBuffers.append(targetStream->rdbuf());
     d->redirectedStreamDummies.append(new std::ostream(targetStream->rdbuf()));
-    TeeDevice* teeDevice = new TeeDevice(*d->redirectedStreamDummies.last(), d->logFile);
-    d->teeStreams.append(new TeeStream(*teeDevice));
+    d->teeStreams.append(new TeeStream(TeeDevice(*d->redirectedStreamDummies.last(), d->logFile)));
     targetStream->rdbuf(d->teeStreams.last()->rdbuf());
 }
 

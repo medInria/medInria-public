@@ -319,9 +319,10 @@ void medAbstractView::setUpViewForThumbnail()
         QString msg = "Unable to find any current primary interactor for view "  + this->identifier();
         qWarning() << msg;
     }
-
     else
+    {
         this->primaryInteractor()->setUpViewForThumbnail();
+    }
 }
 
 /**

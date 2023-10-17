@@ -505,7 +505,7 @@ int medN4BiasCorrection::update(medAbstractData *inputData)
     {
         d->biasField->setData(biasFieldCropper->GetOutput());
         medUtilities::setDerivedMetaData(d->biasField, d->input, "bias");
-        medDataManager::instance()->importData(d->biasField, false);
+        medDataManager::instance().importData(d->biasField, false);
     }
 
     return medAbstractProcessLegacy::SUCCESS;

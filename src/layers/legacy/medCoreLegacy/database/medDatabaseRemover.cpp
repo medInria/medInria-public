@@ -41,7 +41,7 @@ const QString medDatabaseRemoverPrivate::T_SERIES = "series";
 medDatabaseRemover::medDatabaseRemover ( const medDataIndex &index_ ) : medJobItemL(), d ( new medDatabaseRemoverPrivate )
 {
     d->index = index_;
-    d->db = medDatabaseController::instance()->database();
+    d->db = medDatabaseController::instance().database();
     d->isCancelled = false;
 }
 
@@ -197,7 +197,7 @@ void medDatabaseRemover::removeStudy ( int patientDbId, int studyDbId )
 
     if ( query.next() )
     {
-        medAbstractDbController * dbc = medDataManager::instance()->controllerForDataSource(d->index.dataSourceId());
+        medAbstractDbController * dbc = medDataManager::instance().controllerForDataSource(d->index.dataSourceId());
         if (dbc->metaData(d->index,  medMetaDataKeys::StudyID.key()).toInt() == studyDbId)
         {
             removeThumbnailIfNeeded(query);

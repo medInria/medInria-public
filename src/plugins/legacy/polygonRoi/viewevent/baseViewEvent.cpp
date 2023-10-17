@@ -787,7 +787,7 @@ void baseViewEvent::saveAllContours()
         contourOutput->setData(&contoursData, 1);
         outputDataSet->Delete();
 
-        medDataManager::instance()->importData(contourOutput, false);
+        medDataManager::instance().importData(contourOutput, false);
     }
 }
 
@@ -1023,7 +1023,7 @@ void baseViewEvent::saveContour(polygonLabel *label)
     contourOutput->setData(&contoursData, 1);
     outputDataSet->Delete();
 
-    medDataManager::instance()->importData(contourOutput, false);
+    medDataManager::instance().importData(contourOutput, false);
 
 }
 

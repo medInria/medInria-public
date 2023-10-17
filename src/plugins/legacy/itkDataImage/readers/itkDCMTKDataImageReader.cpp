@@ -43,7 +43,7 @@ namespace itk {
         itkTypeMacro(DCMTKDataImageReaderCommand, Command)
             itkNewMacro(Self)
 
-            void Execute(Object *caller, const EventObject &event);
+        void Execute(Object *caller, const EventObject &event);
         void Execute(const Object *caller, const EventObject &event);
 
         void SetDataImageReader(dtkAbstractDataReader* reader) { m_Reader = reader; }
@@ -137,6 +137,13 @@ itkDCMTKDataImageReaderPrivate::itkDCMTKDataImageReaderPrivate()
 itkDCMTKDataImageReaderPrivate::~itkDCMTKDataImageReaderPrivate()
 {
     threadDone(io);
+
+    QMutex *m_ptr = mutex.fetchAndStoreOrdered(nullptr);
+    if (m_ptr)
+    {
+        m_ptr->unlock();
+        delete m_ptr;
+    }
 }
 
 itk::DCMTKImageIO::Pointer itkDCMTKDataImageReaderPrivate::getNewIO()
@@ -162,6 +169,12 @@ void itkDCMTKDataImageReaderPrivate::threadDone(itk::DCMTKImageIO::Pointer io)
 
     if (ioThreads->size() == 0)
         ioPointers->clear();
+
+    delete ioPointers;
+    ioPointers = nullptr;
+
+    delete ioThreads;
+    ioThreads = nullptr;
 }
 
 void itkDCMTKDataImageReaderPrivate::initialiseStatic()
@@ -194,13 +207,13 @@ itkDCMTKDataImageReader::itkDCMTKDataImageReader() : dtkAbstractDataReader(), d(
 itkDCMTKDataImageReader::~itkDCMTKDataImageReader()
 {
     delete d;
-    d = 0;
+    d = nullptr;
 }
 
 
 bool itkDCMTKDataImageReader::registered()
 {
-    return medAbstractDataFactory::instance()->registerDataReaderType("itkDCMTKDataImageReader", QStringList() << "itkDataImageDouble3"
+    return medAbstractDataFactory::instance()->registerDataReaderType(QString("itkDCMTKDataImageReader"), QStringList() << "itkDataImageDouble3"
         << "itkDataImageFloat3"
         << "itkDataImageULong3"
         << "itkDataImageLong3"

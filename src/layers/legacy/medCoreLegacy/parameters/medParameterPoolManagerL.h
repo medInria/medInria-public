@@ -17,6 +17,8 @@
 
 #include <medCoreLegacyExport.h>
 
+#include <memory>
+
 class medParameterPoolManagerLPrivate;
 
 class medParameterPoolManagerLToolBox;
@@ -29,10 +31,12 @@ class MEDCORELEGACY_EXPORT medParameterPoolManagerL : public QObject
     Q_OBJECT
 
 public:
-    static medParameterPoolManagerL *instance();
+    ~medParameterPoolManagerL();
 
-    QList<medParameterPoolL*> pools();
-    medParameterPoolL* pool(QString poolId);
+    static medParameterPoolManagerL &instance();
+
+    QList<std::shared_ptr<medParameterPoolL> > pools();
+    std::shared_ptr<medParameterPoolL> pool(QString poolId);
     QStringList pools(medAbstractParameterL *param);
 
 public slots:
@@ -43,10 +47,9 @@ public slots:
 protected:
     medParameterPoolManagerL();
 
-    static medParameterPoolManagerL *s_instance;
+    static std::unique_ptr<medParameterPoolManagerL> s_instance;
 
 private:
-    medParameterPoolManagerLPrivate *d;
-
+    const std::unique_ptr<medParameterPoolManagerLPrivate> d;
 };
 

@@ -107,8 +107,8 @@ QString  vtkDataMeshNavigator::s_identifier()
 bool vtkDataMeshNavigator::registered()
 {
     medViewFactory * factory = medViewFactory::instance();
-    return factory->registerAdditionalNavigator<vtkDataMeshNavigator>(vtkDataMeshNavigator::s_identifier(),
-                                                           QStringList() << "medVtkView");
+    return factory->registerAdditionalNavigator<vtkDataMeshNavigator>(vtkDataMeshNavigator::s_identifier(), 
+                                                                      QStringList() << "medVtkView");
 }
 
 QStringList vtkDataMeshNavigator::handled(void) const

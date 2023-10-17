@@ -268,7 +268,7 @@ void medToolBox::toXMLNode(QDomDocument *doc, QDomElement *currentNode)
 void medToolBox::displayMessageError(QString error)
 {
     qDebug() << qPrintable(name() + ": " + error);
-    medMessageController::instance()->showError(error, 3000);
+    medMessageController::instance().showError(error, 3000);
 }
 
 void medToolBox::handleDisplayError(int error)
@@ -351,7 +351,7 @@ void medToolBox::addConnectionsAndStartJob(medJobItemL *job)
 
     getProgressionStack()->addJobItem(job, "Progress "+this->name()+":");
 
-    medJobManagerL::instance()->registerJobItem(job);
+    medJobManagerL::instance().registerJobItem(job);
     QThreadPool::globalInstance()->start(dynamic_cast<QRunnable*>(job));
 }
 
