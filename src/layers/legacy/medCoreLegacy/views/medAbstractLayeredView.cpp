@@ -251,7 +251,7 @@ void medAbstractLayeredView::setDataList(QList<medDataIndex> dataList)
     {
         if (!dataList.contains(index))
         {
-            medAbstractData *data = medDataManager::instance()->retrieveData(index);
+            medAbstractData *data = medDataManager::instance().retrieveData(index);
             if (data)
             {
                 this->removeLayer(this->layer(data));
@@ -261,7 +261,7 @@ void medAbstractLayeredView::setDataList(QList<medDataIndex> dataList)
 
     for(medDataIndex index : dataList)
     {
-        medAbstractData *data = medDataManager::instance()->retrieveData(index);
+        medAbstractData *data = medDataManager::instance().retrieveData(index);
         if (!data || this->contains(data))
         {
             continue;
@@ -271,12 +271,12 @@ void medAbstractLayeredView::setDataList(QList<medDataIndex> dataList)
 
         unsigned int layerNumber = this->layer(data);
 
-        QList<medLayerParameterGroupL*> groupsLayer0 = medParameterGroupManagerL::instance()->layerGroups(this, this->layerData(0));
-        QList<medLayerParameterGroupL*> groupsLayeri = medParameterGroupManagerL::instance()->layerGroups(this, data);
+        QList<medLayerParameterGroupL*> groupsLayer0 = medParameterGroupManagerL::instance().layerGroups(this, this->layerData(0));
+        QList<medLayerParameterGroupL*> groupsLayeri = medParameterGroupManagerL::instance().layerGroups(this, data);
         if(!groupsLayer0.isEmpty() && layerNumber > 0 && groupsLayeri.isEmpty() )
         {
             QString newGroup = groupsLayer0[0]->name() + " Layer " + QString::number(layerNumber+1);
-            medLayerParameterGroupL* layerGroup = medParameterGroupManagerL::instance()->layerGroup(newGroup);
+            medLayerParameterGroupL* layerGroup = medParameterGroupManagerL::instance().layerGroup(newGroup);
             if(!layerGroup)
             {
                 layerGroup = new medLayerParameterGroupL(newGroup, this);
@@ -482,7 +482,7 @@ void medAbstractLayeredView::write(QString &path)
         // Getting a working file extension
         // 1. find suitable writers
         QList<QString> allWriters = medAbstractDataFactory::instance()->writers();
-        QHash<QString, dtkAbstractDataWriter *> possibleWriters = medDataManager::instance()->getPossibleWriters(layerData(i));
+        QHash<QString, dtkAbstractDataWriter *> possibleWriters = medDataManager::instance().getPossibleWriters(layerData(i));
 
         // 2. use these writers to get a suitable file extension
         QString fileExtension;

@@ -40,7 +40,7 @@ class MEDCORELEGACY_EXPORT medJobManagerL : public QObject
 public:
     ~medJobManagerL();
 
-    static medJobManagerL *instance();
+    static medJobManagerL &instance();
 
     /**
     * registerJobItem - register a job item if you want that the manager sends cancel events to them (highly suggested!)
@@ -73,7 +73,7 @@ signals:
 protected:
     medJobManagerL();
 
-    static std::shared_ptr<medJobManagerL> s_instance;
+    static std::unique_ptr<medJobManagerL> s_instance;
 
 private:
     medJobManagerLPrivate *d;

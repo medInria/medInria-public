@@ -141,9 +141,7 @@ bool medCreateMeshFromMaskToolBox::registered()
 
 dtkPlugin* medCreateMeshFromMaskToolBox::plugin()
 {
-    medPluginManager *pm = medPluginManager::instance();
-    dtkPlugin *plugin = pm->plugin("Create Mesh From Mask");
-    return plugin;
+    return medPluginManager::instance().plugin("Create Mesh From Mask");
 }
 
 medAbstractData* medCreateMeshFromMaskToolBox::processOutput()

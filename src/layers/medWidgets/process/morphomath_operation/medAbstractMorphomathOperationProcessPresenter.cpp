@@ -108,7 +108,7 @@ void medAbstractMorphomathOperationProcessPresenter::_importOutput(medAbstractJo
 {
     if(jobExitStatus == medAbstractJob::MED_JOB_EXIT_SUCCESS)
     {
-        medDataManager::instance()->importData(d->process->output());
+        medDataManager::instance().importData(d->process->output());
         emit _outputImported(d->process->output());
     }
 }

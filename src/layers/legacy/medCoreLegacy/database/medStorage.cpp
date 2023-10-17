@@ -52,7 +52,7 @@ QString medStorage::dataLocation()
     }
     else
     {
-        vDbLoc = medSettingsManager::instance()->value("database", "actual_database_location").toString();
+        vDbLoc = medSettingsManager::instance().value("database", "actual_database_location").toString();
 
         // if the location is still not set we return the default paths
         if ( vDbLoc.isEmpty() )
@@ -94,7 +94,7 @@ void medStorage::setDataLocation( QString newLocation)
 
     m_dataLocation = newLocation;
 
-    medSettingsManager::instance()->setValue("database", "actual_database_location", newLocation);
+    medSettingsManager::instance().setValue("database", "actual_database_location", newLocation);
 }
 
 

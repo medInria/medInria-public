@@ -31,7 +31,7 @@ class medDataSourceManager : public QObject
 
 public:
     ~medDataSourceManager();
-    static medDataSourceManager *instance();
+    static medDataSourceManager &instance();
 
     QList<medAbstractDataSource *> dataSources();
     medDatabaseDataSource *databaseDataSource();
@@ -59,6 +59,6 @@ protected slots:
     void loadFromPath(QString path);
 
 private:
-    static std::shared_ptr<medDataSourceManager> s_instance;
+    static std::unique_ptr<medDataSourceManager> s_instance;
     medDataSourceManagerPrivate *d;
 };

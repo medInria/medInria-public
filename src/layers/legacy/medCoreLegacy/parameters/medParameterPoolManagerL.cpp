@@ -23,25 +23,22 @@ public:
     QHash<QString, std::shared_ptr<medParameterPoolL> > pools;
 };
 
-std::shared_ptr<medParameterPoolManagerL> medParameterPoolManagerL::s_instance = nullptr;
+std::unique_ptr<medParameterPoolManagerL> medParameterPoolManagerL::s_instance = nullptr;
 
-medParameterPoolManagerL *medParameterPoolManagerL::instance()
+medParameterPoolManagerL &medParameterPoolManagerL::instance()
 {
     if(!s_instance)
     {
-        s_instance = std::shared_ptr<medParameterPoolManagerL>(new medParameterPoolManagerL());
+        s_instance = std::unique_ptr<medParameterPoolManagerL>(new medParameterPoolManagerL());
     }
-    return s_instance.get();
+    return *s_instance.get();
 }
 
 medParameterPoolManagerL::medParameterPoolManagerL(void) : d(new medParameterPoolManagerLPrivate)
 {
 }
 
-medParameterPoolManagerL::~medParameterPoolManagerL()
-{
-    s_instance.reset();
-}
+medParameterPoolManagerL::~medParameterPoolManagerL() = default; // For private class forward declaration
 
 void medParameterPoolManagerL::removePool(QString poolId)
 {

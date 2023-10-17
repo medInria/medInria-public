@@ -46,9 +46,9 @@ void medPluginWidgetPrivate::resetPluginsTree()
     pluginsTree->clear();
 
     //get the list of plugins
-    medPluginManager* mpm = medPluginManager::instance();
+    medPluginManager &mpm = medPluginManager::instance();
 
-    for(dtkPlugin* plugin : mpm->plugins())
+    for(dtkPlugin* plugin : mpm.plugins())
     {
         QTreeWidgetItem * item = new QTreeWidgetItem(pluginsTree);
         item->setText(0,plugin->name());
@@ -146,9 +146,9 @@ void medPluginWidgetPrivate::resetFailedPluginsTree()
     errorTree->clear();
 
     //get the list of plugins
-    medPluginManager* mpm = medPluginManager::instance();
+    medPluginManager &mpm = medPluginManager::instance();
 
-    for(QString error : mpm->loadErrors())
+    for(QString error : mpm.loadErrors())
     {
         QTreeWidgetItem * item = new QTreeWidgetItem(errorTree);
         item->setText(0,error);
@@ -240,7 +240,7 @@ void medPluginWidget::onPluginTreeItemActivated(QTreeWidgetItem *item, int colum
 {
     Q_UNUSED (column);
     QDialog * dial = new QDialog(this);
-    dtkPlugin * plugin = medPluginManager::instance()->plugin(item->text(0));
+    dtkPlugin * plugin = medPluginManager::instance().plugin(item->text(0));
     QString windowTitle = qApp->applicationName()+tr(": about ");
     windowTitle += plugin->name();
     dial->setWindowTitle(windowTitle);

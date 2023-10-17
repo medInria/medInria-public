@@ -42,10 +42,8 @@ medSplashScreen::medSplashScreen(const QPixmap& thePixmap)
     QRect r(0, 0, d->pixmap.size().width(), d->pixmap.size().height());
 
     // Get back the previous screen used to display the application
-    medSettingsManager *manager = medSettingsManager::instance();
     int currentScreen = 0;
-
-    QVariant currentScreenQV = manager->value("medMainWindow", "currentScreen");
+    QVariant currentScreenQV = medSettingsManager::instance().value("medMainWindow", "currentScreen");
     if (!currentScreenQV.isNull())
     {
         currentScreen = currentScreenQV.toInt();

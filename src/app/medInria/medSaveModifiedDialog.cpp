@@ -97,7 +97,7 @@ medSaveModifiedDialog::medSaveModifiedDialog(QWidget *parent) : QDialog(parent),
     layout->addWidget(d->treeWidget);
     layout->addLayout(hlayout);
 
-    for(medDatabaseNonPersistentItem *item : medDatabaseNonPersistentController::instance()->items())
+    for(medDatabaseNonPersistentItem *item : medDatabaseNonPersistentController::instance().items())
     {
         if ((item->studyName() != "") && (item->seriesName() != ""))
             new medSaveModifiedDialogCheckListItem(d->treeWidget->invisibleRootItem(), item->index(), item->name(), item->studyName(), item->seriesName(), item->file(), item->thumb());
@@ -109,7 +109,7 @@ medSaveModifiedDialog::medSaveModifiedDialog(QWidget *parent) : QDialog(parent),
     connect (d->cancelButton,SIGNAL(clicked()), this, SLOT(reject()));
     connect (d->quitButton,SIGNAL(clicked()), this, SLOT(accept()));
 
-    connect (medDataManager::instance(), SIGNAL(dataImported(medDataIndex,QUuid)),this, SLOT(updateCounter()));
+    connect (&medDataManager::instance(), SIGNAL(dataImported(medDataIndex,QUuid)),this, SLOT(updateCounter()));
 
     setModal(true);
 }
@@ -136,10 +136,10 @@ void medSaveModifiedDialog::saveAndQuit()
         }
     }
 
-    medDataManager * mdm = medDataManager::instance();
+    medDataManager &mdm = medDataManager::instance();
     for(medDataIndex index : list)
     {
-        mdm->makePersistent(index);
+        mdm.makePersistent(index);
     }
 
     if (d->counter != 0)
@@ -167,7 +167,7 @@ void medSaveModifiedDialog::onUpdateTree()
 {
     d->treeWidget->clear();
     
-    for(medDatabaseNonPersistentItem *item : medDatabaseNonPersistentController::instance()->items())
+    for(medDatabaseNonPersistentItem *item : medDatabaseNonPersistentController::instance().items())
     {
         d->treeWidget->insertTopLevelItem(0,new medSaveModifiedDialogCheckListItem(d->treeWidget->invisibleRootItem(),
                                                                                    item->index(), item->name(), item->studyName(),

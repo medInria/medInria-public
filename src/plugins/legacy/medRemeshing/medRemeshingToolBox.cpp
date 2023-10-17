@@ -267,9 +267,7 @@ bool medRemeshingToolBox::registered()
 
 dtkPlugin* medRemeshingToolBox::plugin()
 {
-    medPluginManager *pm = medPluginManager::instance();
-    dtkPlugin *plugin = pm->plugin("Remeshing");
-    return plugin;
+    return medPluginManager::instance().plugin("Remeshing");
 }
 
 void medRemeshingToolBox::updateView()
@@ -556,7 +554,7 @@ void medRemeshingToolBox::displayNewNumberOfCells(dtkSmartPointer<medAbstractDat
 
 void medRemeshingToolBox::cantDecimateMore()
 {
-    medMessageController::instance()->showError(tr("Not possible to decimate more without changing the mesh topology"), 5000);
+    medMessageController::instance().showError(tr("Not possible to decimate more without changing the mesh topology"), 5000);
     d->decimateButton->setEnabled(false);
 }
 

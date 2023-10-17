@@ -51,12 +51,6 @@ qtdcmDataSourceSerieToolBox::qtdcmDataSourceSerieToolBox(QWidget *parent) : medT
 
     this->addWidget(d->main);
     this->setTitle("Series preview and import");
-
-    // Add about plugin
-    medPluginManager *pm = medPluginManager::instance();
-    dtkPlugin *plugin = pm->plugin("qtdcmDataSourcePlugin");
-    setAboutPluginButton(plugin);
-    setAboutPluginVisibility(true);
 }
 
 qtdcmDataSourceSerieToolBox::~qtdcmDataSourceSerieToolBox()

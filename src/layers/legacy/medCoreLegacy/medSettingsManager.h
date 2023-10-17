@@ -27,7 +27,7 @@ class MEDCORELEGACY_EXPORT medSettingsManager : public QObject
 public:
     ~medSettingsManager();
 
-    static medSettingsManager *instance();
+    static medSettingsManager &instance();
 
     void setValue( const QString & section, const QString & key, const QVariant & value );
 
@@ -42,7 +42,7 @@ signals:
 private:
     medSettingsManager();
     
-    static std::shared_ptr<medSettingsManager> s_instance;
+    static std::unique_ptr<medSettingsManager> s_instance;
 
     medSettingsManagerPrivate *d;
 };

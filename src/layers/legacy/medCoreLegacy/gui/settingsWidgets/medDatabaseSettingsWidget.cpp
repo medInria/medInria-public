@@ -84,7 +84,6 @@ void medDatabaseSettingsWidget::read()
 
 bool medDatabaseSettingsWidget::write()
 {
-    medSettingsManager * mnger = medSettingsManager::instance();
-    mnger->setValue(this->identifier(),"new_database_location", d->dbPath->text());
+    medSettingsManager::instance().setValue(this->identifier(),"new_database_location", d->dbPath->text());
     return true;
 }
