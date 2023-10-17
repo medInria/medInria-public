@@ -35,8 +35,8 @@ public:
 
     static medParameterPoolManagerL *instance();
 
-    QList<medParameterPoolL*> pools();
-    medParameterPoolL* pool(QString poolId);
+    QList<std::shared_ptr<medParameterPoolL> > pools();
+    std::shared_ptr<medParameterPoolL> pool(QString poolId);
     QStringList pools(medAbstractParameterL *param);
 
 public slots:
@@ -50,7 +50,6 @@ protected:
     static std::shared_ptr<medParameterPoolManagerL> s_instance;
 
 private:
-    medParameterPoolManagerLPrivate *d;
-
+    const std::unique_ptr<medParameterPoolManagerLPrivate> d;
 };
 
