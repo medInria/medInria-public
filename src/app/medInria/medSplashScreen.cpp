@@ -25,7 +25,6 @@ public:
     QString  message;
     int   alignment;
     QColor  color;
-    QRect aTextRect;
 };
 
 ////////////////////////////////////////////////////////////////////////////
@@ -61,13 +60,6 @@ medSplashScreen::medSplashScreen(const QPixmap& thePixmap)
 
     // Move the Splash screen at the center of the chosen screen
     move(QApplication::desktop()->screenGeometry(currentScreen).center() - r.center());
-
-    // Compute once the right text rectangle
-    d->aTextRect = rect();
-    d->aTextRect.setRect(d->aTextRect.x() + 120,
-                         d->aTextRect.y() + 5,
-                         d->aTextRect.width() - 10,
-                         d->aTextRect.height() - 10);
 }
 
 medSplashScreen::~medSplashScreen()

@@ -20,8 +20,7 @@
 class medParameterPoolManagerLPrivate
 {
 public:
-    QHash<QString, medParameterPoolL *> pools;
-
+    QHash<QString, std::shared_ptr<medParameterPoolL> > pools;
 };
 
 std::shared_ptr<medParameterPoolManagerL> medParameterPoolManagerL::s_instance = nullptr;
@@ -41,53 +40,43 @@ medParameterPoolManagerL::medParameterPoolManagerL(void) : d(new medParameterPoo
 
 medParameterPoolManagerL::~medParameterPoolManagerL()
 {
-    for (auto it = d->pools.begin(); it != d->pools.end(); ++it)
-    {
-        delete it.value();
-    }
-    d->pools.clear();
-
-    delete d;
-    d = nullptr;
-
     s_instance.reset();
 }
 
 void medParameterPoolManagerL::removePool(QString poolId)
 {
-    medParameterPoolL *poolToRemove = d->pools.value(poolId);
+    auto poolToRemove = d->pools.value(poolId);
     if(poolToRemove)
     {
         poolToRemove->clear();
         d->pools.remove(poolId);
-        delete poolToRemove;
     }
 }
 
 void medParameterPoolManagerL::linkParameter(medAbstractParameterL* parameter , QString poolId)
 {
-    medParameterPoolL *selectedPool;
-
     if( !d->pools.keys().contains(poolId) )
     {
-        selectedPool = new medParameterPoolL(this);
+        std::shared_ptr<medParameterPoolL> selectedPool(new medParameterPoolL(this));
         selectedPool->setName(poolId);
         d->pools.insert(poolId, selectedPool);
+        selectedPool->append(parameter);
     }
-    else selectedPool = d->pools.value(poolId);
-
-    selectedPool->append(parameter);
+    else
+    {
+        d->pools.value(poolId)->append(parameter);
+    }
 }
 
 void medParameterPoolManagerL::unlinkParameter(medAbstractParameterL* param)
 {
-    for(medParameterPoolL *pool : d->pools.values() )
+    for(const auto& pool : d->pools.values() )
     {
         pool->remove(param);
     }
 }
 
-QList<medParameterPoolL*> medParameterPoolManagerL::pools()
+QList<std::shared_ptr<medParameterPoolL> > medParameterPoolManagerL::pools()
 {
     return d->pools.values();
 }
@@ -95,7 +84,7 @@ QList<medParameterPoolL*> medParameterPoolManagerL::pools()
 QStringList medParameterPoolManagerL::pools(medAbstractParameterL *param)
 {
     QStringList pools;
-    for(medParameterPoolL *pool: d->pools.values() )
+    for(const auto& pool : d->pools.values() )
     {
         if(pool->parameters().contains(param))
         {
@@ -105,7 +94,7 @@ QStringList medParameterPoolManagerL::pools(medAbstractParameterL *param)
     return pools;
 }
 
-medParameterPoolL* medParameterPoolManagerL::pool(QString poolId)
+std::shared_ptr<medParameterPoolL> medParameterPoolManagerL::pool(QString poolId)
 {
     return d->pools.value(poolId);
 }
