@@ -18,35 +18,17 @@
 #include <medPluginManager.h>
 #include <medSettingsManager.h>
 
-class medSplashScreenPrivate
-{
-public:
-    QPixmap  pixmap;
-    QString  message;
-    int   alignment;
-    QColor  color;
-};
 
-////////////////////////////////////////////////////////////////////////////
 medSplashScreen::medSplashScreen(const QPixmap& thePixmap)
     : QWidget(0, Qt::SplashScreen |Qt::FramelessWindowHint|Qt::WindowStaysOnTopHint)
-    , d(new medSplashScreenPrivate)
 {
-    // Graphic
-    d->pixmap = thePixmap;
-    d->color = Qt::white;
-
-    // Geometry
-    d->alignment = Qt::AlignBottom|Qt::AlignLeft;
-    setFixedSize(d->pixmap.size());
-
-    QRect r(0, 0, d->pixmap.size().width(), d->pixmap.size().height());
+    QPixmap pixmap = thePixmap;
+    setFixedSize(pixmap.size());
+    QRect r(0, 0, pixmap.size().width(), pixmap.size().height());
 
     // Get back the previous screen used to display the application
-    medSettingsManager *manager = medSettingsManager::instance();
     int currentScreen = 0;
-
-    QVariant currentScreenQV = manager->value("medMainWindow", "currentScreen");
+    QVariant currentScreenQV = medSettingsManager::instance().value("medMainWindow", "currentScreen");
     if (!currentScreenQV.isNull())
     {
         currentScreen = currentScreenQV.toInt();
@@ -60,43 +42,4 @@ medSplashScreen::medSplashScreen(const QPixmap& thePixmap)
 
     // Move the Splash screen at the center of the chosen screen
     move(QApplication::desktop()->screenGeometry(currentScreen).center() - r.center());
-}
-
-medSplashScreen::~medSplashScreen()
-{
-    delete d;
-    d = nullptr;
-}
-
-////////////////////////////////////////////////////////////////////////////
-void medSplashScreen::showMessage(const QString& message)
-{
-    auto plugin = medPluginManager::instance()->plugin(message);
-    if (plugin)
-    {
-        d->message = QString("Loading: ") + plugin->name();
-    }
-    else
-    {
-        d->message = QString("Loading: ") + message;
-    }
-
-    repaint();
-}
-
-void medSplashScreen::repaint()
-{
-    QWidget::repaint();
-    QApplication::flush();
-    qApp->processEvents(QEventLoop::AllEvents);
-}
-
-void medSplashScreen::paintEvent(QPaintEvent* pe)
-{
-    Q_UNUSED(pe);
-
-    QPainter aPainter(this);
-    aPainter.drawPixmap(rect(), d->pixmap);
-    aPainter.setPen(d->color);
-    aPainter.drawText(d->aTextRect, d->alignment, d->message);
 }

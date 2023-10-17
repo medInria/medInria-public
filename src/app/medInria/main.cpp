@@ -122,7 +122,7 @@ int main(int argc,char* argv[])
     bool show_splash = false;
     #endif
 
-    medSettingsManager* mnger = medSettingsManager::instance();
+    medSettingsManager &mnger = medSettingsManager::instance();
 
     QStringList posargs;
     for (int i=1;i<application.arguments().size();++i)
@@ -174,12 +174,11 @@ int main(int argc,char* argv[])
 
     if (show_splash)
     {
-        QObject::connect(medPluginManager::instance(),SIGNAL(loaded(QString)),
+        QObject::connect(&medPluginManager::instance(),SIGNAL(loaded(QString)),
                          &application,SLOT(redirectMessageToSplash(QString)) );
         QObject::connect(&application,SIGNAL(showMessage(const QString&)),
                          &splash,SLOT(showMessage(const QString&)) );
         splash.show();
-        splash.showMessage("Loading plugins...");
     }
 
     //  DATABASE INITIALISATION.
@@ -189,28 +188,28 @@ int main(int argc,char* argv[])
 
     //  If the user configured a new location for the database in the settings editor, we'll need to move it
 
-    QString newLocation = mnger->value("medDatabaseSettingsWidget", "new_database_location").toString();
+    QString newLocation = mnger.value("medDatabaseSettingsWidget", "new_database_location").toString();
     if (!newLocation.isEmpty()) {
 
         //  If the locations are different we need to move the db to the new location
 
         if (currentLocation.compare(newLocation)!=0) {
-            if (!medDatabaseController::instance()->moveDatabase(newLocation)) {
+            if (!medDatabaseController::instance().moveDatabase(newLocation)) {
                 qDebug() << "Failed to move the database from " << currentLocation << " to " << newLocation;
                 //  The new location is invalid so set it to zero
                 newLocation = "";
             }
-            mnger->setValue("medDatabaseSettingsWidget", "actual_database_location",newLocation);
+            mnger.setValue("medDatabaseSettingsWidget", "actual_database_location",newLocation);
 
             //  We need to reset the new Location to prevent doing it all the time
 
-            mnger->setValue("medDatabaseSettingsWidget", "new_database_location","");
+            mnger.setValue("medDatabaseSettingsWidget", "new_database_location","");
         }
     }
     // END OF DATABASE INITIALISATION
 
-    medPluginManager::instance()->setVerboseLoading(true);
-    medPluginManager::instance()->initialize();
+    medPluginManager::instance().setVerboseLoading(true);
+    medPluginManager::instance().initialize();
 
     //Use Qt::WA_DeleteOnClose attribute to be sure to always have only one closeEvent.
     medMainWindow *mainwindow = new medMainWindow;
@@ -219,7 +218,7 @@ int main(int argc,char* argv[])
     if (DirectView)
         mainwindow->setStartup(medMainWindow::WorkSpace,posargs);
 
-    bool fullScreen = medSettingsManager::instance()->value("startup", "fullscreen", false).toBool();
+    bool fullScreen = medSettingsManager::instance().value("startup", "fullscreen", false).toBool();
     
     const bool hasFullScreenArg   = application.arguments().contains("--fullscreen");
     const bool hasNoFullScreenArg = application.arguments().contains("--no-fullscreen");
@@ -261,7 +260,7 @@ int main(int argc,char* argv[])
         splash.close();
     }
 
-    if (medPluginManager::instance()->plugins().isEmpty()) {
+    if (medPluginManager::instance().plugins().isEmpty()) {
         QMessageBox::warning(mainwindow,
                              QObject::tr("No plugin loaded"),
                              QObject::tr("Warning : no plugin loaded successfully."));
@@ -280,7 +279,7 @@ int main(int argc,char* argv[])
     //  Start main loop.
     const int status = application.exec();
 
-    medPluginManager::instance()->uninitialize();
+    medPluginManager::instance().uninitialize();
 
     return status;
 }

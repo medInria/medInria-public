@@ -43,10 +43,7 @@ medDatabaseNonPersistentImporter::medDatabaseNonPersistentImporter (medAbstractD
 */
 QString medDatabaseNonPersistentImporter::getPatientID(QString patientName, QString birthDate)
 {
-    QPointer<medDatabaseNonPersistentController> npdc =
-            medDatabaseNonPersistentController::instance();
-
-    QList<medDatabaseNonPersistentItem*> items = npdc->items();
+    QList<medDatabaseNonPersistentItem*> items = medDatabaseNonPersistentController::instance().items();
 
     bool patientExists = false;
     QString patientID;
@@ -79,8 +76,8 @@ QString medDatabaseNonPersistentImporter::getPatientID(QString patientName, QStr
 medDataIndex medDatabaseNonPersistentImporter::populateDatabaseAndGenerateThumbnails ( medAbstractData* data, QString pathToStoreThumbnails )
 {
     Q_UNUSED(pathToStoreThumbnails);
-    QPointer<medDatabaseNonPersistentController> npdc =
-            medDatabaseNonPersistentController::instance();
+    medDatabaseNonPersistentController *npdc =
+            &medDatabaseNonPersistentController::instance();
 
     QList<medDatabaseNonPersistentItem*> items = npdc->items();
 
@@ -90,7 +87,7 @@ medDataIndex medDatabaseNonPersistentImporter::populateDatabaseAndGenerateThumbn
     QString birthdate = medMetaDataKeys::BirthDate.getFirstValue(data);
 
     // check if patient is already in the persistent database
-    medDataIndex databaseIndex = medDatabaseController::instance()->indexForPatient ( patientName );
+    medDataIndex databaseIndex = medDatabaseController::instance().indexForPatient ( patientName );
     medDatabaseNonPersistentItem *patientItem = nullptr;
 
     if ( databaseIndex.isValid() )
@@ -147,7 +144,7 @@ medDataIndex medDatabaseNonPersistentImporter::populateDatabaseAndGenerateThumbn
     if( studyName!="EmptyStudy" || seriesName!="EmptySeries" )
     {
         // check if study is already in the persistent database
-        databaseIndex = medDatabaseController::instance()->indexForStudy ( patientName, studyName );
+        databaseIndex = medDatabaseController::instance().indexForStudy ( patientName, studyName );
         medDatabaseNonPersistentItem *studyItem = nullptr;
 
         if ( databaseIndex.isValid() )
@@ -251,10 +248,7 @@ medDataIndex medDatabaseNonPersistentImporter::populateDatabaseAndGenerateThumbn
 **/
 QString medDatabaseNonPersistentImporter::ensureUniqueSeriesName ( const QString seriesName )
 {
-    QPointer<medDatabaseNonPersistentController> npdc =
-        medDatabaseNonPersistentController::instance();
-
-    QList<medDatabaseNonPersistentItem*> items = npdc->items();
+    QList<medDatabaseNonPersistentItem*> items = medDatabaseNonPersistentController::instance().items();
 
     QStringList seriesNames;
     for(medDatabaseNonPersistentItem* item : items)

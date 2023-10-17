@@ -76,7 +76,7 @@ medStartupSettingsWidget::medStartupSettingsWidget(QWidget *parent) :
 
 void medStartupSettingsWidget::read()
 {
-    medSettingsManager *mnger = medSettingsManager::instance();
+    medSettingsManager *mnger = &medSettingsManager::instance();
     startInFullScreen->setChecked(mnger->value("startup", "fullscreen").toBool());
 
     //if nothing is configured then Homepage is the default area
@@ -124,9 +124,9 @@ void medStartupSettingsWidget::read()
 
 bool medStartupSettingsWidget::write()
 {
-    medSettingsManager *mnger = medSettingsManager::instance();
-    mnger->setValue("startup", "fullscreen", d->startInFullScreen->isChecked());
-    mnger->setValue("startup", "default_starting_area", d->defaultStartingArea->currentText());
-    mnger->setValue("startup", "default_segmentation_speciality", d->defaultSegmentationSpeciality->currentText());
+    medSettingsManager &mnger = medSettingsManager::instance();
+    mnger.setValue("startup", "fullscreen", d->startInFullScreen->isChecked());
+    mnger.setValue("startup", "default_starting_area", d->defaultStartingArea->currentText());
+    mnger.setValue("startup", "default_segmentation_speciality", d->defaultSegmentationSpeciality->currentText());
     return true;
 }

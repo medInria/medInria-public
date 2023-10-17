@@ -21,15 +21,15 @@ public:
     bool m_IsActive;
 };
 
-std::shared_ptr<medJobManagerL> medJobManagerL::s_instance = nullptr;
+std::unique_ptr<medJobManagerL> medJobManagerL::s_instance = nullptr;
 
-medJobManagerL *medJobManagerL::instance()
+medJobManagerL &medJobManagerL::instance()
 {
     if(!s_instance)
     {
-        s_instance = std::shared_ptr<medJobManagerL>(new medJobManagerL());
+        s_instance = std::unique_ptr<medJobManagerL>(new medJobManagerL());
     }
-    return s_instance.get();
+    return *s_instance.get();
 }
 
 medJobManagerL::medJobManagerL( void ) : d(new medJobManagerLPrivate)
@@ -42,8 +42,6 @@ medJobManagerL::~medJobManagerL( void )
     delete d;
 
     d = nullptr;
-
-    s_instance.reset();
 }
 
 bool medJobManagerL::registerJobItem( medJobItemL* item, QString jobName)

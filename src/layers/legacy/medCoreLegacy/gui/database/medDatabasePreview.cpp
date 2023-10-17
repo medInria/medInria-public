@@ -63,7 +63,7 @@ void medDatabasePreviewStaticScene::setImage(const medDataIndex &index)
     d->currentDataIndex = index;
 
     QGraphicsPixmapItem *pixmap = new QGraphicsPixmapItem;
-    pixmap->setPixmap(medDataManager::instance()->thumbnail(index));
+    pixmap->setPixmap(medDataManager::instance().thumbnail(index));
     this->addItem(pixmap);
 
     if( ! this->views().isEmpty())
@@ -86,7 +86,7 @@ void medDatabasePreviewStaticScene::addImage(const medDataIndex &index)
         return;
 
     QGraphicsPixmapItem *pixmap = new QGraphicsPixmapItem;
-    pixmap->setPixmap(medDataManager::instance()->thumbnail(index));
+    pixmap->setPixmap(medDataManager::instance().thumbnail(index));
     this->addItem(pixmap);
 
     switch(nbItem)
@@ -147,7 +147,7 @@ void medDatabasePreviewStaticScene::mouseMoveEvent(QGraphicsSceneMouseEvent *eve
 {
     if(!d->isMulti && event->buttons() == Qt::LeftButton)
     {
-        QPixmap pixmap = medDataManager::instance()->thumbnail(d->currentDataIndex);
+        QPixmap pixmap = medDataManager::instance().thumbnail(d->currentDataIndex);
 
         QMimeData *data = d->currentDataIndex.createMimeData();
         data->setImageData(pixmap);
@@ -280,7 +280,7 @@ void medDatabasePreview::resizeEvent(QResizeEvent *event)
 void medDatabasePreview::showSeriesPreview(const medDataIndex &index)
 {
     d->currentDataType = medDatabasePreview::SERIES;
-    medAbstractDbController * dbc = medDataManager::instance()->controllerForDataSource(index.dataSourceId());
+    medAbstractDbController * dbc = medDataManager::instance().controllerForDataSource(index.dataSourceId());
 
     if (d->staticScene)
         delete d->staticScene;
@@ -300,7 +300,7 @@ void medDatabasePreview::showSeriesPreview(const medDataIndex &index)
 void medDatabasePreview::showStudyPreview(const medDataIndex &index)
 {
     d->currentDataType = medDatabasePreview::STUDY;
-    medAbstractDbController * dbc = medDataManager::instance()->controllerForDataSource(index.dataSourceId());
+    medAbstractDbController * dbc = medDataManager::instance().controllerForDataSource(index.dataSourceId());
 
     if (d->staticScene)
         delete d->staticScene;
@@ -338,7 +338,7 @@ void medDatabasePreview::showStudyPreview(const medDataIndex &index)
 void medDatabasePreview::showPatientPreview(const medDataIndex &index)
 {
     d->currentDataType = medDatabasePreview::PATIENT;
-    medAbstractDbController * dbc = medDataManager::instance()->controllerForDataSource(index.dataSourceId());
+    medAbstractDbController * dbc = medDataManager::instance().controllerForDataSource(index.dataSourceId());
 
     if (d->staticScene)
         delete d->staticScene;

@@ -33,8 +33,8 @@ public:
         : q_ptr(q)
         , mutex(QMutex::Recursive)
     {
-        dbController = medDatabaseController::instance();
-        nonPersDbController = medDatabaseNonPersistentController::instance();
+        dbController        = &medDatabaseController::instance();
+        nonPersDbController = &medDatabaseNonPersistentController::instance();
 
         if( ! dbController || ! nonPersDbController) {
             qCritical() << "One of the DB controllers could not be created !";
@@ -79,20 +79,15 @@ public:
 
 // ------------------------- medDataManager -----------------------------------
 
-std::shared_ptr<medDataManager> medDataManager::s_instance = nullptr;
+std::unique_ptr<medDataManager> medDataManager::s_instance = nullptr;
 
-// Not thread-safe, but should only be called once, at application start-up
-void medDataManager::initialize()
+medDataManager &medDataManager::instance()
 {
     if(!s_instance)
     {
-        s_instance = std::shared_ptr<medDataManager>(new medDataManager());
+        s_instance = std::unique_ptr<medDataManager>(new medDataManager());
     }
-}
-
-medDataManager * medDataManager::instance()
-{
-    return s_instance.get();
+    return *s_instance.get();
 }
 
 medAbstractData* medDataManager::retrieveData(const medDataIndex& index)
@@ -167,7 +162,7 @@ QHash<QString, dtkAbstractDataWriter*> medDataManager::getPossibleWriters(medAbs
             delete writer;
     }
     if (possibleWriters.isEmpty())
-        medMessageController::instance()->showError("Sorry, we have no exporter for this format.");
+        medMessageController::instance().showError("Sorry, we have no exporter for this format.");
 
     return possibleWriters;
 }
@@ -274,7 +269,7 @@ void medDataManager::exportDataToPath(medAbstractData *data, const QString & fil
 void medDataManager::launchExporter(medDatabaseExporter* exporter, const QString & filename)
 {
     QFileInfo info(filename);
-    medMessageProgress *message = medMessageController::instance()->showProgress("Exporting data to " + info.baseName());
+    medMessageProgress *message = medMessageController::instance().showProgress("Exporting data to " + info.baseName());
 
     connect(exporter, SIGNAL(progressed(int)), message, SLOT(setProgress(int)));
     connect(exporter, SIGNAL(success(QObject *)), message, SLOT(success()));
@@ -282,7 +277,7 @@ void medDataManager::launchExporter(medDatabaseExporter* exporter, const QString
     connect(exporter, SIGNAL(success(QObject *)), this, SIGNAL(exportFinished()));
     connect(exporter, SIGNAL(failure(QObject *)), this, SIGNAL(exportFinished()));
 
-    medJobManagerL::instance()->registerJobItem(exporter);
+    medJobManagerL::instance().registerJobItem(exporter);
     QThreadPool::globalInstance()->start(exporter);
 }
 
@@ -521,13 +516,11 @@ medDataManager::medDataManager() : d_ptr(new medDataManagerPrivate(this))
     connect(&(d->timer), SIGNAL(timeout()), this, SLOT(garbageCollect()));
     d->timer.start(5*1000);
 
-    connect(medPluginManager::instance(), SIGNAL(allPluginsLoaded()), this, SLOT(setWriterPriorities()));
+    connect(&medPluginManager::instance(), SIGNAL(allPluginsLoaded()), this, SLOT(setWriterPriorities()));
     connect(this, SIGNAL(dataImported(medDataIndex,QUuid)), this, SLOT(removeFromNonPersistent(medDataIndex,QUuid)));
 }
 
 medDataManager::~medDataManager()
 {
     delete d_ptr;
-
-    s_instance.reset();
 }

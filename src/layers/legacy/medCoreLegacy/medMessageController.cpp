@@ -60,7 +60,7 @@ void medMessage::stopTimer()
 
 void medMessage::remove()
 {
-    medMessageController::instance()->remove(this);
+    medMessageController::instance().remove(this);
 }
 
 // /////////////////////////////////////////////////////////////////
@@ -149,15 +149,15 @@ void medMessageProgress::paintEvent ( QPaintEvent * event)
 // medMessageController
 // /////////////////////////////////////////////////////////////////
 
-std::shared_ptr<medMessageController> medMessageController::s_instance = nullptr;
+std::unique_ptr<medMessageController> medMessageController::s_instance = nullptr;
 
-medMessageController *medMessageController::instance(void)
+medMessageController &medMessageController::instance(void)
 {
     if(!s_instance)
     {
-        s_instance = std::shared_ptr<medMessageController>(new medMessageController());
+        s_instance = std::unique_ptr<medMessageController>(new medMessageController());
     }
-    return s_instance.get();
+    return *s_instance.get();
 }
 
 void medMessageController::showInfo(const QString& text,unsigned int timeout)
@@ -211,9 +211,4 @@ void medMessageController::remove(medMessage *message)
 
 medMessageController::medMessageController(void) : QObject()
 {
-}
-
-medMessageController::~medMessageController()
-{
-    s_instance.reset();
 }

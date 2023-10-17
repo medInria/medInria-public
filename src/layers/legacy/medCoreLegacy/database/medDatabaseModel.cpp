@@ -135,9 +135,9 @@ medDatabaseModel::medDatabaseModel(QObject *parent, bool justBringStudies) : QAb
 
     populate(d->root);
 
-    connect(medDataManager::instance(), SIGNAL(dataImported(medDataIndex,QUuid)), this, SLOT(update(medDataIndex)), Qt::QueuedConnection);
-    connect(medDataManager::instance(), SIGNAL(dataRemoved(medDataIndex)), this, SLOT(update(medDataIndex)), Qt::QueuedConnection);
-    connect(medDataManager::instance(), SIGNAL(metadataModified(medDataIndex,QString,QString)), this, SLOT(update(medDataIndex)), Qt::QueuedConnection);
+    connect(&medDataManager::instance(), SIGNAL(dataImported(medDataIndex,QUuid)), this, SLOT(update(medDataIndex)), Qt::QueuedConnection);
+    connect(&medDataManager::instance(), SIGNAL(dataRemoved(medDataIndex)), this, SLOT(update(medDataIndex)), Qt::QueuedConnection);
+    connect(&medDataManager::instance(), SIGNAL(metadataModified(medDataIndex,QString,QString)), this, SLOT(update(medDataIndex)), Qt::QueuedConnection);
 }
 
 medDatabaseModel::~medDatabaseModel(void)
@@ -343,7 +343,7 @@ bool medDatabaseModel::setData(const QModelIndex& index, const QVariant& value, 
     QString attribute = item->attribute(index.column()).toString();
 
     //first, we try to set metadata
-    result = medDataManager::instance()->setMetadata( dataIndex, attribute, value.toString() );
+    result = medDataManager::instance().setMetadata( dataIndex, attribute, value.toString() );
 
     if ( !result )
     {
@@ -474,7 +474,9 @@ bool medDatabaseModel::dropMimeData(const QMimeData *data, Qt::DropAction action
             return false;
 
         for (int i = 0; i < data->urls().size(); ++i)
-            medDataManager::instance()->importPath(data->urls().at(i).path(),true);
+        {
+            medDataManager::instance().importPath(data->urls().at(i).path(),true);
+        }
 
         return true;
     } else if ( data->hasFormat("med/index") ) {
@@ -485,11 +487,11 @@ bool medDatabaseModel::dropMimeData(const QMimeData *data, Qt::DropAction action
 
         if( originDataIndex.isValidForSeries()) {
             if ( destinationDataIndex.isValidForSeries() || destinationDataIndex.isValidForStudy()) {
-                newIndexList << medDataManager::instance()->moveSeries(originDataIndex, destinationDataIndex);
+                newIndexList << medDataManager::instance().moveSeries(originDataIndex, destinationDataIndex);
             }
         }
         else if( originDataIndex.isValidForStudy() && destinationDataIndex.isValidForPatient()) {
-            newIndexList = medDataManager::instance()->moveStudy(originDataIndex, destinationDataIndex);
+            newIndexList = medDataManager::instance().moveStudy(originDataIndex, destinationDataIndex);
         }
 
         if( !newIndexList.isEmpty() && newIndexList[0].isValid()) {
@@ -536,12 +538,12 @@ void medDatabaseModel::populate(medAbstractDatabaseItem *root)
     typedef QList<medDataIndex> IndexList;
 
     IntList dataSources;
-    dataSources << medDatabaseController::instance()->dataSourceId()
-                << medDatabaseNonPersistentController::instance()->dataSourceId();
+    dataSources << medDatabaseController::instance().dataSourceId()
+                << medDatabaseNonPersistentController::instance().dataSourceId();
 
     for( const int dataSourceId : dataSources )
     {
-        medAbstractDbController * dbc = medDataManager::instance()->controllerForDataSource(dataSourceId);
+        medAbstractDbController * dbc = medDataManager::instance().controllerForDataSource(dataSourceId);
 
         IndexList patientsForSource = dbc->patients();
 
@@ -642,7 +644,7 @@ void medDatabaseModel::updateSeries(const medDataIndex& dataIndex)
 
     QModelIndex index = d->medIndexMap[dataIndex];
     medAbstractDatabaseItem *item = static_cast<medAbstractDatabaseItem *>(index.internalPointer());
-    medAbstractDbController * dbc = medDataManager::instance()->controllerForDataSource(dataIndex.dataSourceId());
+    medAbstractDbController * dbc = medDataManager::instance().controllerForDataSource(dataIndex.dataSourceId());
 
     if(!dbc->contains(dataIndex))
     {
@@ -744,7 +746,7 @@ void medDatabaseModel::updateStudy(const medDataIndex& dataIndex, bool updateChi
     //
     QModelIndex index = d->medIndexMap.value(dataIndex);
     medAbstractDatabaseItem *item = static_cast<medAbstractDatabaseItem *>(index.internalPointer());
-    medAbstractDbController * dbc = medDataManager::instance()->controllerForDataSource(dataIndex.dataSourceId());
+    medAbstractDbController * dbc = medDataManager::instance().controllerForDataSource(dataIndex.dataSourceId());
 
     if(!dbc->contains(dataIndex))
     {
@@ -859,7 +861,7 @@ void medDatabaseModel::updatePatient(const medDataIndex& dataIndex, bool updateC
     Q_UNUSED(updateChildren);
     QModelIndex index = d->medIndexMap.value(dataIndex);
     medAbstractDatabaseItem *item = static_cast<medAbstractDatabaseItem *>(index.internalPointer());
-    medAbstractDbController * dbc = medDataManager::instance()->controllerForDataSource(dataIndex.dataSourceId());
+    medAbstractDbController * dbc = medDataManager::instance().controllerForDataSource(dataIndex.dataSourceId());
 
     if(!dbc->contains(dataIndex))
     {

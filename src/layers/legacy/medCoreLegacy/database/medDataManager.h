@@ -34,8 +34,7 @@ class MEDCORELEGACY_EXPORT medDataManager : public QObject
 public:
     ~medDataManager();
 
-    static void initialize();
-    static medDataManager * instance();
+    static medDataManager &instance();
 
     medAbstractData* retrieveData(const medDataIndex& index);
 
@@ -89,7 +88,7 @@ protected:
 private:
     medDataManager();
 
-    static std::shared_ptr<medDataManager> s_instance;
+    static std::unique_ptr<medDataManager> s_instance;
     void launchExporter(medDatabaseExporter* exporter, const QString & filename);
 
     Q_DECLARE_PRIVATE(medDataManager)

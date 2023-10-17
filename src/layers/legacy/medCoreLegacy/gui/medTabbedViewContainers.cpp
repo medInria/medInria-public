@@ -67,7 +67,7 @@ medTabbedViewContainers::medTabbedViewContainers(medAbstractWorkspaceLegacy* own
     connect(tabBar(), SIGNAL(tabMoved(int,int)), this, SLOT(movedTabs(int,int)));
 
     // Connect group of view handling
-    connect(medViewContainerManager::instance(), SIGNAL(containerAboutToBeDestroyed(QUuid)), this, SLOT(removeContainerFromSelection(QUuid)));
+    connect(&medViewContainerManager::instance(), SIGNAL(containerAboutToBeDestroyed(QUuid)), this, SLOT(removeContainerFromSelection(QUuid)));
     connect(this, SIGNAL(containersSelectedChanged()), this, SLOT(buildTemporaryPool()));
     connect(this, SIGNAL(currentChanged(int)), this, SLOT(connectContainerSelectedForCurrentTab()));
 
@@ -127,7 +127,7 @@ medViewContainer* medTabbedViewContainers::getFirstSelectedContainer()
     if (listUuid.count() > 0)
     {
         // only keep the first selected container
-        view = medViewContainerManager::instance()->container(listUuid[0]);
+        view = medViewContainerManager::instance().container(listUuid[0]);
     }
 
     return view;
@@ -319,7 +319,7 @@ void medTabbedViewContainers::disconnectTabFromSplitter(int index)
 
 void medTabbedViewContainers::connectContainer(QUuid container)
 {
-    medViewContainer* cont = medViewContainerManager::instance()->container(container);
+    medViewContainer* cont = medViewContainerManager::instance().container(container);
     connect(cont, SIGNAL(containerSelected(QUuid)), this, SLOT(addContainerToSelection(QUuid)), Qt::UniqueConnection);
     connect(cont, SIGNAL(containerUnSelected(QUuid)), this, SLOT(removeContainerFromSelection(QUuid)), Qt::UniqueConnection);
     connect(cont, SIGNAL(maximized(QUuid,bool)), this, SLOT(minimizeOtherContainers(QUuid,bool)));
@@ -336,14 +336,14 @@ void medTabbedViewContainers::addContainerToSelection(QUuid container)
     {
         for(QUuid uuid : containersSelected)
         {
-            medViewContainerManager::instance()->container(uuid)->setSelected(false);
+            medViewContainerManager::instance().container(uuid)->setSelected(false);
         }
     }
     // containersSelected may have been modified in removeContainerFromSelection so
     // we have to get it back again
     containersSelected = d->containerSelectedForTabIndex.value(this->currentIndex());
     containersSelected.append(container);
-    medViewContainer *newSelectedContainer =  medViewContainerManager::instance()->container(container);
+    medViewContainer *newSelectedContainer =  medViewContainerManager::instance().container(container);
     d->containerSelectedForTabIndex.insert(this->currentIndex(), containersSelected);
 
     connect(newSelectedContainer, SIGNAL(viewRemoved()),        this, SIGNAL(containersSelectedChanged()), Qt::UniqueConnection);
@@ -360,7 +360,7 @@ void medTabbedViewContainers::removeContainerFromSelection(QUuid container)
         if(containersSelected.removeOne(container))
         {
             d->containerSelectedForTabIndex.insert(tabIndex, containersSelected);
-            medViewContainer *unSelectedContainer =  medViewContainerManager::instance()->container(container);
+            medViewContainer *unSelectedContainer =  medViewContainerManager::instance().container(container);
             this->disconnect(unSelectedContainer, SIGNAL(viewRemoved()), this, 0);
             this->disconnect(unSelectedContainer, SIGNAL(viewContentChanged()), this, 0);
             emit containersSelectedChanged();
@@ -374,7 +374,7 @@ void medTabbedViewContainers::buildTemporaryPool()
     d->pool->clear();
     for(QUuid uuid : this->containersSelected())
     {
-        medViewContainer *container = medViewContainerManager::instance()->container(uuid);
+        medViewContainer *container = medViewContainerManager::instance().container(uuid);
 
         if(!container->view())
         {
@@ -397,7 +397,7 @@ void medTabbedViewContainers::connectContainerSelectedForCurrentTab()
         {
             for(QUuid uuid : containersSelected)
             {
-                medViewContainer *container =  medViewContainerManager::instance()->container(uuid);
+                medViewContainer *container =  medViewContainerManager::instance().container(uuid);
                 connect(container, SIGNAL(viewRemoved()),        this, SIGNAL(containersSelectedChanged()), Qt::UniqueConnection);
                 connect(container, SIGNAL(viewContentChanged()), this, SIGNAL(containersSelectedChanged()), Qt::UniqueConnection);
             }
@@ -406,7 +406,7 @@ void medTabbedViewContainers::connectContainerSelectedForCurrentTab()
         {
             for(QUuid uuid : containersSelected)
             {
-                medViewContainer *container =  medViewContainerManager::instance()->container(uuid);
+                medViewContainer *container =  medViewContainerManager::instance().container(uuid);
                 this->disconnect(container, SIGNAL(viewRemoved()), this, 0);
                 this->disconnect(container, SIGNAL(viewContentChanged()), this, 0);
             }
@@ -427,7 +427,7 @@ void medTabbedViewContainers::minimizeOtherContainers(QUuid containerMaximized, 
 
     if(maximized)
     {
-        medViewContainer *container = medViewContainerManager::instance()->container(containerMaximized);
+        medViewContainer *container = medViewContainerManager::instance().container(containerMaximized);
 
         QWidget *parent = container->parentWidget();
 

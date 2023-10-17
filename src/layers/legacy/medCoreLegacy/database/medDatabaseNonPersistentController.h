@@ -31,7 +31,7 @@ class MEDCORELEGACY_EXPORT medDatabaseNonPersistentController: public medAbstrac
     Q_OBJECT
 
 public:
-    static medDatabaseNonPersistentController * instance();
+    static medDatabaseNonPersistentController &instance();
     ~medDatabaseNonPersistentController();
 
     int patientId(bool increment=false);
@@ -81,5 +81,5 @@ private:
     medDatabaseNonPersistentController();
 
     medDatabaseNonPersistentControllerPrivate *d;
-    static std::shared_ptr<medDatabaseNonPersistentController> s_instance;
+    static std::unique_ptr<medDatabaseNonPersistentController> s_instance;
 };

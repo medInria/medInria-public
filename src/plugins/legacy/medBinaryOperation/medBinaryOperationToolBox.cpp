@@ -112,9 +112,7 @@ bool medBinaryOperationToolBox::registered()
 
 dtkPlugin* medBinaryOperationToolBox::plugin()
 {
-    medPluginManager* pm = medPluginManager::instance();
-    dtkPlugin* plugin = pm->plugin ( "Binary Operation" );
-    return plugin;
+    return medPluginManager::instance().plugin("Binary Operation");
 }
 
 medAbstractData* medBinaryOperationToolBox::processOutput()
@@ -186,8 +184,8 @@ void medBinaryOperationToolBox::run()
 
 void medBinaryOperationToolBox::onSecondInputImported(const medDataIndex& index)
 {
-    dtkSmartPointer<medAbstractData> data = medDataManager::instance()->retrieveData(index);
-    d->dropsite->setPixmap(medDataManager::instance()->thumbnail(index).scaled(d->dropsite->sizeHint()));
+    dtkSmartPointer<medAbstractData> data = medDataManager::instance().retrieveData(index);
+    d->dropsite->setPixmap(medDataManager::instance().thumbnail(index).scaled(d->dropsite->sizeHint()));
     d->secondInput = data;
 }
 
@@ -204,8 +202,8 @@ void medBinaryOperationToolBox::onDropSiteClicked()
 
     if (!roiFileName.isEmpty())
     {
-        medDataManager* mdm = medDataManager::instance();
-        connect(mdm, SIGNAL(dataAdded(const medDataIndex &)), this, SLOT(onRoiImported(const medDataIndex &)));
-        mdm->importPath(roiFileName, true, false);
+        medDataManager &mdm = medDataManager::instance();
+        connect(&mdm, SIGNAL(dataAdded(const medDataIndex &)), this, SLOT(onRoiImported(const medDataIndex &)));
+        mdm.importPath(roiFileName, true, false);
     }
 }
