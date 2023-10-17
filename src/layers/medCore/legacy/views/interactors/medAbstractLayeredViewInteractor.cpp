@@ -52,7 +52,7 @@ medAbstractBoolParameterL* medAbstractLayeredViewInteractor::visibilityParameter
     {
         if(this->inputData())
         {
-            QPixmap thumbnail = medDataManager::instance()->thumbnail(this->inputData()->dataIndex());
+            QPixmap thumbnail = medDataManager::instance().thumbnail(this->inputData()->dataIndex());
             QPushButton* thumbnailButton = d->visibilityParameter->getPushButton();
             QIcon thumbnailIcon;
             // Set the off icon to the greyed out version of the regular icon

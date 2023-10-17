@@ -498,8 +498,7 @@ QVTKOpenGLNativeWidget * medVtkView::createQVTKOpenGLWidget()
 
 void medVtkView::buildMouseInteractionParamPool(uint layer)
 {
-    medSettingsManager * mnger = medSettingsManager::instance();
-    QString interaction = mnger->value("interactions","mouse", "Windowing").toString();
+    QString interaction = medSettingsManager::instance().value("interactions","mouse", "Windowing").toString();
 
     QList<medBoolParameterL*> params;
 
@@ -518,7 +517,7 @@ void medVtkView::buildMouseInteractionParamPool(uint layer)
     // add all mouse interaction params of the view in the "Mouse interaction" pool
     for(medBoolParameterL* param : params)
     {
-        medParameterPoolManagerL::instance()->linkParameter(param, "Mouse Interaction");
+        medParameterPoolManagerL::instance().linkParameter(param, "Mouse Interaction");
         connect(param, SIGNAL(valueChanged(bool)), this, SLOT(saveMouseInteractionSettings(bool)));
 
         // and activate the new inserted parameter according to what was activated in other views
@@ -527,7 +526,7 @@ void medVtkView::buildMouseInteractionParamPool(uint layer)
     }
 
     // Deal with rubber Zoom mode.
-    medParameterPoolManagerL::instance()->linkParameter(d->rubberBandZoomParameter, "Mouse Interaction");
+    medParameterPoolManagerL::instance().linkParameter(d->rubberBandZoomParameter, "Mouse Interaction");
 }
 
 void medVtkView::saveMouseInteractionSettings(bool parameterEnabled)
@@ -536,7 +535,9 @@ void medVtkView::saveMouseInteractionSettings(bool parameterEnabled)
     {
         medBoolParameterL *parameter = dynamic_cast<medBoolParameterL *>(this->sender());
         if(parameter)
-            medSettingsManager::instance()->setValue("interactions","mouse", parameter->name());
+        {
+            medSettingsManager::instance().setValue("interactions","mouse", parameter->name());
+        }
     }
 }
 
@@ -547,8 +548,7 @@ void medVtkView::enableRubberBandZoom(bool enable)
 
     if(enable)
     {
-        medSettingsManager * mnger = medSettingsManager::instance();
-        QString interaction = mnger->value("interactions","mouse", "Windowing").toString();
+        QString interaction = medSettingsManager::instance().value("interactions","mouse", "Windowing").toString();
 
         vtkInriaInteractorStyleRubberBandZoom * interactorStyle = vtkInriaInteractorStyleRubberBandZoom::New();
         interactorStyle->AddObserver( vtkImageView2DCommand::CameraZoomEvent,d->observer,0 );

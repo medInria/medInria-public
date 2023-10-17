@@ -29,7 +29,7 @@ class MEDCORE_EXPORT medViewContainerManager : public QObject
 
 public:
     ~medViewContainerManager();
-    static medViewContainerManager *instance();
+    static medViewContainerManager &instance();
 
     medViewContainer* container(QUuid uuid) const;
 
@@ -40,7 +40,7 @@ public slots:
 protected:
     medViewContainerManager();
 
-    static std::shared_ptr<medViewContainerManager> s_instance;
+    static std::unique_ptr<medViewContainerManager> s_instance;
 
 signals:
     void containerAboutToBeDestroyed(QUuid uuid);

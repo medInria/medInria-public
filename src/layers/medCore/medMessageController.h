@@ -107,8 +107,8 @@ class MEDCORE_EXPORT medMessageController : public QObject
     Q_OBJECT
 
 public:
-    ~medMessageController();
-    static medMessageController *instance();
+    ~medMessageController() = default;
+    static medMessageController &instance();
 
 public slots:
     void     showInfo(const QString& text,unsigned int timeout=0);
@@ -124,7 +124,7 @@ signals:
 protected:
     medMessageController();
 
-    static std::shared_ptr<medMessageController> s_instance;
+    static std::unique_ptr<medMessageController> s_instance;
 
 private:
     medMessageControllerPrivate *d;

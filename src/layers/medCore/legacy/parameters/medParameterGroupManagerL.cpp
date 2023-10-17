@@ -28,15 +28,15 @@ public:
 
 };
 
-std::shared_ptr<medParameterGroupManagerL> medParameterGroupManagerL::s_instance = nullptr;
+std::unique_ptr<medParameterGroupManagerL> medParameterGroupManagerL::s_instance = nullptr;
 
-medParameterGroupManagerL *medParameterGroupManagerL::instance()
+medParameterGroupManagerL &medParameterGroupManagerL::instance()
 {
     if(!s_instance)
     {
-        s_instance = std::shared_ptr<medParameterGroupManagerL>(new medParameterGroupManagerL());
+        s_instance = std::unique_ptr<medParameterGroupManagerL>(new medParameterGroupManagerL());
     }
-    return s_instance.get();
+    return *s_instance.get();
 }
 
 medParameterGroupManagerL::medParameterGroupManagerL(void) : d(new medParameterGroupManagerLPrivate)
@@ -48,7 +48,6 @@ medParameterGroupManagerL::~medParameterGroupManagerL()
 {
     delete d;
     d = nullptr;
-    s_instance.reset();
 }
 
 void medParameterGroupManagerL::registerNewGroup(medAbstractParameterGroupL* group)

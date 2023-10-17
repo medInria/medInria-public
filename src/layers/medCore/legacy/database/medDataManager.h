@@ -34,7 +34,7 @@ class MEDCORE_EXPORT medDataManager : public QObject
 
 public:
     ~medDataManager();
-    static medDataManager * instance();
+    static medDataManager &instance();
 
     medAbstractData* retrieveData(const medDataIndex &index);
     QList<medAbstractData*> retrieveDataList(const medDataIndex& index);
@@ -92,7 +92,7 @@ protected:
 
 private:
     medDataManager();
-    static std::shared_ptr<medDataManager> s_instance;
+    static std::unique_ptr<medDataManager> s_instance;
 
     Q_DECLARE_PRIVATE(medDataManager)
 };

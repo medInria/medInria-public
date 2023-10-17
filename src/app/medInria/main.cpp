@@ -133,7 +133,7 @@ int main(int argc, char *argv[])
     // Process the actual command line arguments given by the user
     parser.process(application);
 
-    medSettingsManager* mnger = medSettingsManager::instance();
+    medSettingsManager &mnger = medSettingsManager::instance();
 
     QStringList posargs;
     for (int i=1;i<application.arguments().size();++i)

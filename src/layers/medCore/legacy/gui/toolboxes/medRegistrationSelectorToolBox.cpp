@@ -91,9 +91,9 @@ medRegistrationSelectorToolBox::medRegistrationSelectorToolBox(QWidget *parent, 
 
     //Connect Message Controller:
     connect(this,SIGNAL(showError(const QString&,unsigned int)),
-            medMessageController::instance(),SLOT(showError(const QString&,unsigned int)));
+            &medMessageController::instance(),SLOT(showError(const QString&,unsigned int)));
     connect(this,SIGNAL(showInfo(const QString&,unsigned int)),
-            medMessageController::instance(),SLOT(showInfo(const QString&,unsigned int)));
+            &medMessageController::instance(),SLOT(showInfo(const QString&,unsigned int)));
 }
 
 medRegistrationSelectorToolBox::~medRegistrationSelectorToolBox(void)
@@ -353,7 +353,7 @@ void medRegistrationSelectorToolBox::handleOutput(typeOfOperation type, QString 
     output->setMetaData ( medMetaDataKeys::key("SeriesID"), generatedID );
 
     if (type==algorithm)
-        medDataManager::instance()->importData(output);
+        medDataManager::instance().importData(output);
 
     d->movingData = output;
     emit movingDataRegistered(output);

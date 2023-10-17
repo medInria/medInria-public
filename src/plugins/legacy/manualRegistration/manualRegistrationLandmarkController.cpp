@@ -221,7 +221,7 @@ void manualRegistrationLandmarkController::AddPoint(manualRegistrationLandmark* 
 
     if (size >= 128)
     {
-        medMessageController::instance()->showError("You cannot add any more landmarks.", 3000);
+        medMessageController::instance().showError("You cannot add any more landmarks.", 3000);
         return;
     }
 
@@ -278,13 +278,13 @@ int manualRegistrationLandmarkController::checkLandmarks()
 {
     if (Points_Fixed->size() != Points_Moving->size())
     {
-        medMessageController::instance()->showError("The number of landmarks is not the same on both views", 3000);
+        medMessageController::instance().showError("The number of landmarks is not the same on both views", 3000);
         return medAbstractProcessLegacy::FAILURE;
     }
 
     if (!Points_Fixed->size())
     {
-        medMessageController::instance()->showError("You didn't put any landmark!", 3000);
+        medMessageController::instance().showError("You didn't put any landmark!", 3000);
         return medAbstractProcessLegacy::FAILURE;
     }
 

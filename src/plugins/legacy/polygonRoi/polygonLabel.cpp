@@ -588,7 +588,7 @@ void polygonLabel::createMask(int label, QString &desc, bool originSrc)
     }
 
     medUtilities::setDerivedMetaData(output, inputData, desc, false, false);
-    medDataManager::instance()->importData(output, originSrc);
+    medDataManager::instance().importData(output, originSrc);
 }
 
 void polygonLabel::SetMasterRoi()

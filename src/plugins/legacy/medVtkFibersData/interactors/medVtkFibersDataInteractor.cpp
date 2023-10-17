@@ -592,7 +592,7 @@ void medVtkFibersDataInteractor::setBoxVisibility(bool visible)
 {
     if (d->view && d->view->orientation() != medImageView::VIEW_ORIENTATION_3D)
     {
-        medMessageController::instance()->showError("View must be in 3D mode to activate the bundling box", 3000);
+        medMessageController::instance().showError("View must be in 3D mode to activate the bundling box", 3000);
         d->manager->SetBoxWidget(false);
         return;
     }
@@ -846,7 +846,7 @@ void medVtkFibersDataInteractor::saveBundlesInDataBase()
         QString generatedID = QUuid::createUuid().toString().replace("{","").replace("}","");
         tmpBundle->setMetaData ( medMetaDataKeys::key("SeriesID"), generatedID );
 
-        medDataManager::instance()->importData(tmpBundle);
+        medDataManager::instance().importData(tmpBundle);
 
         ++it;
     }
@@ -1251,8 +1251,8 @@ void medVtkFibersDataInteractor::loadRoiFromFile()
     if (roiFileName.isEmpty())
         return;
 
-    d->roiImportUuid = medDataManager::instance()->importPath(roiFileName,false);
-    connect(medDataManager::instance(), SIGNAL(dataImported(medDataIndex,QUuid)),
+    d->roiImportUuid = medDataManager::instance().importPath(roiFileName,false);
+    connect(&medDataManager::instance(), SIGNAL(dataImported(medDataIndex,QUuid)),
             this, SLOT(importROI(medDataIndex,QUuid)), Qt::UniqueConnection);
 }
 
@@ -1266,7 +1266,7 @@ void medVtkFibersDataInteractor::importROI(const medDataIndex& index, QUuid uuid
 
 void medVtkFibersDataInteractor::importROI(const medDataIndex& index)
 {
-    dtkSmartPointer<medAbstractData> data = medDataManager::instance()->retrieveData(index);
+    dtkSmartPointer<medAbstractData> data = medDataManager::instance().retrieveData(index);
 
     // we accept only ROIs (itkDataImageUChar3)
     // TODO try dynamic_cast of medAbstractMaskData would be better - RDE
@@ -1280,11 +1280,11 @@ void medVtkFibersDataInteractor::importROI(const medDataIndex& index)
              data->identifier() != "itkDataImageFloat3" &&
              data->identifier() != "itkDataImageDouble3"))
     {
-        medMessageController::instance()->showError(tr("Unable to load ROI, format not supported yet"), 3000);
+        medMessageController::instance().showError(tr("Unable to load ROI, format not supported yet"), 3000);
         return;
     }
 
-    d->dropOrOpenRoi->setPixmap(medDataManager::instance()->thumbnail(index).scaled(d->dropOrOpenRoi->sizeHint()));
+    d->dropOrOpenRoi->setPixmap(medDataManager::instance().thumbnail(index).scaled(d->dropOrOpenRoi->sizeHint()));
 
     d->setROI<unsigned char>(data);
     d->setROI<char>(data);
@@ -1571,7 +1571,7 @@ void medVtkFibersDataInteractor::saveCurrentBundle()
     QString generatedID = QUuid::createUuid().toString().replace("{","").replace("}","");
     savedBundle->setMetaData ( medMetaDataKeys::key("SeriesID"), generatedID );
     
-    medDataManager::instance()->importData(savedBundle);
+    medDataManager::instance().importData(savedBundle);
 }
 
 void medVtkFibersDataInteractor::removeCurrentBundle()

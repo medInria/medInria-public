@@ -231,12 +231,12 @@ void iterativeClosestPointToolBox::run()
         }
         else
         {
-            medMessageController::instance()->showError(tr("Choose two meshes"), 3000);
+            medMessageController::instance().showError(tr("Choose two meshes"), 3000);
         }
     }
     else
     {
-        medMessageController::instance()->showError(tr("Drop two meshes in the view"), 3000);
+        medMessageController::instance().showError(tr("Drop two meshes in the view"), 3000);
     }
 }
 
@@ -304,9 +304,7 @@ medAbstractData* iterativeClosestPointToolBox::processOutput()
 
 dtkPlugin* iterativeClosestPointToolBox::plugin()
 {
-    medPluginManager *pm = medPluginManager::instance();
-    dtkPlugin *plugin = pm->plugin ( "Iterative Closest Point" );
-    return plugin;
+    return medPluginManager::instance().plugin("Iterative Closest Point");
 }
 
 void iterativeClosestPointToolBox::onExportTransferMatrixCheckBoxToggled(bool toggle)

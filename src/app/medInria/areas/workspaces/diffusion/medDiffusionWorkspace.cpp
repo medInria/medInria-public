@@ -167,7 +167,7 @@ void medDiffusionWorkspace::changeCurrentContainer()
         disconnect (d->diffusionContainer,SIGNAL(viewContentChanged()), this, SLOT(updateToolBoxesInputs()));
 
     // Now connect new container
-    d->diffusionContainer = medViewContainerManager::instance()->container(containersSelectedList.first());
+    d->diffusionContainer = medViewContainerManager::instance().container(containersSelectedList.first());
     if (!d->diffusionContainer.isNull())
     {
         d->diffusionContainer->setClosingMode(medViewContainer::CLOSE_CONTAINER);

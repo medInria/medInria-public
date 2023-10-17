@@ -34,7 +34,7 @@ class MEDCORE_EXPORT medParameterGroupManagerL : public QObject
 public:
     ~medParameterGroupManagerL();
 
-    static medParameterGroupManagerL *instance();
+    static medParameterGroupManagerL &instance();
 
     void registerNewGroup(medAbstractParameterGroupL* group);
     void unregisterGroup(medAbstractParameterGroupL* group);
@@ -53,7 +53,7 @@ public:
 protected:
     medParameterGroupManagerL();
 
-    static std::shared_ptr<medParameterGroupManagerL> s_instance;
+    static std::unique_ptr<medParameterGroupManagerL> s_instance;
 
 private:
     medParameterGroupManagerLPrivate *d;

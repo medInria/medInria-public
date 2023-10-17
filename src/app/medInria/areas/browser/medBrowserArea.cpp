@@ -71,7 +71,7 @@ medBrowserArea::medBrowserArea(QWidget *parent) : QWidget(parent), d(new medBrow
     onSourceIndexChanged(d->stack->currentIndex());
 
     // DataSources
-    for(medAbstractDataSource *dataSource : medDataSourceManager::instance()->dataSources())
+    for(medAbstractDataSource *dataSource : medDataSourceManager::instance().dataSources())
     {
         addDataSource(dataSource);
     }

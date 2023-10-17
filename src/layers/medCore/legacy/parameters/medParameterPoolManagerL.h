@@ -33,7 +33,7 @@ class MEDCORE_EXPORT medParameterPoolManagerL : public QObject
 public:
     ~medParameterPoolManagerL();
 
-    static medParameterPoolManagerL *instance();
+    static medParameterPoolManagerL &instance();
 
     QList<std::shared_ptr<medParameterPoolL> > pools();
     std::shared_ptr<medParameterPoolL> pool(QString poolId);
@@ -47,7 +47,7 @@ public slots:
 protected:
     medParameterPoolManagerL();
 
-    static std::shared_ptr<medParameterPoolManagerL> s_instance;
+    static std::unique_ptr<medParameterPoolManagerL> s_instance;
 
 private:
     const std::unique_ptr<medParameterPoolManagerLPrivate> d;

@@ -25,15 +25,15 @@ public:
     QHash<QUuid, medViewContainer*> containers;
 };
 
-std::shared_ptr<medViewContainerManager> medViewContainerManager::s_instance = nullptr;
+std::unique_ptr<medViewContainerManager> medViewContainerManager::s_instance = nullptr;
 
-medViewContainerManager *medViewContainerManager::instance()
+medViewContainerManager &medViewContainerManager::instance()
 {
     if(!s_instance)
     {
-        s_instance = std::shared_ptr<medViewContainerManager>(new medViewContainerManager());
+        s_instance = std::unique_ptr<medViewContainerManager>(new medViewContainerManager());
     }
-    return s_instance.get();
+    return *s_instance.get();
 }
 
 medViewContainerManager::medViewContainerManager(void) : d(new medViewContainerManagerPrivate)
@@ -44,7 +44,6 @@ medViewContainerManager::~medViewContainerManager()
 {
     delete d;
     d = nullptr;
-    s_instance.reset();
 }
 
 void medViewContainerManager::registerNewContainer(medViewContainer* newContainer)

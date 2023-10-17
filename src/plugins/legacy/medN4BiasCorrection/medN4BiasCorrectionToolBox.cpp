@@ -176,9 +176,7 @@ bool medN4BiasCorrectionToolBox::registered()
 
 dtkPlugin* medN4BiasCorrectionToolBox::plugin()
 {
-    medPluginManager *pm = medPluginManager::instance();
-    dtkPlugin *plugin = pm->plugin ( "N4 Bias Correction" );
-    return plugin;
+    return medPluginManager::instance().plugin("N4 Bias Correction");
 }
 
 medAbstractData* medN4BiasCorrectionToolBox::processOutput()

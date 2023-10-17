@@ -1106,7 +1106,7 @@ void medMainWindow::showWorkspace(QString workspace)
         if (!d->workspaceArea->setCurrentWorkspace(workspace))
         {
             QString message = QString("Cannot open workspace ") + details->name;
-            medMessageController::instance()->showError(message, 3000);
+            medMessageController::instance().showError(message, 3000);
             switchToHomepageArea();
         }
 
@@ -1228,7 +1228,7 @@ void medMainWindow::closeEvent(QCloseEvent *event)
         {
             // send cancel request to all running jobs, then wait for them
             // Note: most Jobs don't have the cancel method implemented, so this will be effectively the same as waitfordone.
-            medJobManagerL::instance()->dispatchGlobalCancelEvent();
+            medJobManagerL::instance().dispatchGlobalCancelEvent();
             QThreadPool::globalInstance()->waitForDone();
         }
         else

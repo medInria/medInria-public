@@ -85,9 +85,7 @@ bool meshMappingToolBox::registered()
 
 dtkPlugin* meshMappingToolBox::plugin()
 {
-    medPluginManager *pm = medPluginManager::instance();
-    dtkPlugin *plugin = pm->plugin("Mesh Mapping");
-    return plugin;
+    return medPluginManager::instance().plugin("Mesh Mapping");
 }
 
 medAbstractData* meshMappingToolBox::processOutput()

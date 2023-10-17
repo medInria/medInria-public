@@ -37,15 +37,15 @@ public:
     medFileSystemDataSource *fsSource;
 };
 
-std::shared_ptr<medDataSourceManager> medDataSourceManager::s_instance = nullptr;
+std::unique_ptr<medDataSourceManager> medDataSourceManager::s_instance = nullptr;
 
-medDataSourceManager *medDataSourceManager::instance()
+medDataSourceManager &medDataSourceManager::instance()
 {
     if(!s_instance)
     {
-        s_instance = std::shared_ptr<medDataSourceManager>(new medDataSourceManager());
+        s_instance = std::unique_ptr<medDataSourceManager>(new medDataSourceManager());
     }
-    return s_instance.get();
+    return *s_instance.get();
 }
 
 medDataSourceManager::medDataSourceManager(): d(new medDataSourceManagerPrivate)
@@ -118,19 +118,19 @@ void medDataSourceManager::importData(medAbstractData *data)
     //    return;
     //}
 
-    medDataManager::instance()->importData(data, true);
+    medDataManager::instance().importData(data, true);
 }
 
 void medDataSourceManager::exportData(const medDataIndex &index)
 {
     //TODO did it all from the medDataManager ? - RDE
-    dtkSmartPointer<medAbstractData> data = medDataManager::instance()->retrieveData(index);
-    medDataManager::instance()->exportData(data);
+    dtkSmartPointer<medAbstractData> data = medDataManager::instance().retrieveData(index);
+    medDataManager::instance().exportData(data);
 }
 
 void medDataSourceManager::importFile(QString path)
 {
-    medDataManager::instance()->importPath(path, false, true);
+    medDataManager::instance().importPath(path, false, true);
 }
 
 void medDataSourceManager::fetchData(QHash<QString, QHash<QString, QVariant> > pData, QHash<QString, QHash<QString, QVariant> > sData)
@@ -140,14 +140,13 @@ void medDataSourceManager::fetchData(QHash<QString, QHash<QString, QVariant> > p
 
 void medDataSourceManager::emitDataReceivingFailed(QString fileName)
 {
-    medMessageController::instance()->showError(tr("Unable to get from source the data named ") + fileName, 3000);
+    medMessageController::instance().showError(tr("Unable to get from source the data named ") + fileName, 3000);
 }
 
 medDataSourceManager::~medDataSourceManager()
 {
     delete d;
     d = nullptr;
-    s_instance.reset();
 }
 
 /**
@@ -167,7 +166,7 @@ void medDataSourceManager::openFromIndex(medDataIndex index)
 
 void medDataSourceManager::loadFromPath(QString path)
 {
-    medDataManager::instance()->importPath(path, false);
+    medDataManager::instance().importPath(path, false);
 }
 
 QList <medAbstractDataSource*> medDataSourceManager::dataSources()
