@@ -206,9 +206,9 @@ void medSettingsEditor::initialize()
 
     // connections
     connect(this,SIGNAL(showError(const        QString&,unsigned int)),
-        medMessageController::instance(),SLOT(showError (const QString&,unsigned int)));
+        &medMessageController::instance(),SLOT(showError (const QString&,unsigned int)));
     connect(this,SIGNAL(showInfo(const        QString&,unsigned int)),
-        medMessageController::instance(),SLOT(showInfo (const QString&,unsigned int)));
+        &medMessageController::instance(),SLOT(showInfo (const QString&,unsigned int)));
 
     d->isInitialized = true;
 }

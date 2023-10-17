@@ -179,7 +179,7 @@ int main(int argc,char* argv[])
         splash.show();
     }
 
-    medDataManager::instance()->setDatabaseLocation();
+    medDataManager::instance().setDatabaseLocation();
 
 #if(USE_PYTHON)
     pyncpp::Manager pythonManager;
@@ -199,8 +199,8 @@ int main(int argc,char* argv[])
     }
 #endif
 
-    medPluginManager::instance()->setVerboseLoading(true);
-    medPluginManager::instance()->initialize();
+    medPluginManager::instance().setVerboseLoading(true);
+    medPluginManager::instance().initialize();
 
     //Use Qt::WA_DeleteOnClose attribute to be sure to always have only one closeEvent.
     medMainWindow *mainwindow = new medMainWindow;
@@ -209,7 +209,7 @@ int main(int argc,char* argv[])
     if (DirectView)
         mainwindow->setStartup(medMainWindow::WorkSpace,posargs);
 
-    bool fullScreen = medSettingsManager::instance()->value("startup", "fullscreen", false).toBool();
+    bool fullScreen = medSettingsManager::instance().value("startup", "fullscreen", false).toBool();
     
     const bool hasFullScreenArg   = application.arguments().contains("--fullscreen");
     const bool hasNoFullScreenArg = application.arguments().contains("--no-fullscreen");
@@ -256,7 +256,7 @@ int main(int argc,char* argv[])
     }
 #endif
 
-    if (medPluginManager::instance()->plugins().isEmpty()) {
+    if (medPluginManager::instance().plugins().isEmpty()) {
         QMessageBox::warning(mainwindow,
                              QObject::tr("No plugin loaded"),
                              QObject::tr("Warning : no plugin loaded successfully."));
@@ -275,7 +275,7 @@ int main(int argc,char* argv[])
     //  Start main loop.
     const int status = application.exec();
 
-    medPluginManager::instance()->uninitialize();
+    medPluginManager::instance().uninitialize();
 
     return status;
 }

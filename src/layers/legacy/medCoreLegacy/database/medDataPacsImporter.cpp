@@ -42,9 +42,7 @@ medDataPacsImporter::~medDataPacsImporter()
 */
 QString medDataPacsImporter::getPatientID(QString patientName, QString birthDate)
 {
-    QPointer<medDataPacsController> ctrl = medDataPacsController::instance();
-
-    QList<medDatabaseNonPersistentItem *> items = ctrl->items();
+    QList<medDatabaseNonPersistentItem *> items = medDataPacsController::instance().items();
 
     bool patientExists = false;
     QString patientID;
@@ -78,14 +76,13 @@ medDataIndex medDataPacsImporter::populateDatabaseAndGenerateThumbnails(medAbstr
 {
     medDataIndex retIndex;
     Q_UNUSED(pathToStoreThumbnails);
-    QPointer<medDataPacsController> controller =
-        medDataPacsController::instance();
+    medDataPacsController &controller = medDataPacsController::instance();
 
     QString patientId = medMetaDataKeys::PatientID.getFirstValue(data);
     QString studyInstanceUID = medMetaDataKeys::StudyInstanceUID.getFirstValue(data);
     QString studyId = medMetaDataKeys::StudyID.getFirstValue(data);
 
-    medDatabaseNonPersistentItem *studyItem = controller->getStudyItem(patientId, studyInstanceUID);
+    medDatabaseNonPersistentItem *studyItem = controller.getStudyItem(patientId, studyInstanceUID);
     if (studyItem)
     {
         medAbstractData *medData = studyItem->data();
@@ -103,7 +100,7 @@ medDataIndex medDataPacsImporter::populateDatabaseAndGenerateThumbnails(medAbstr
     QString columns = medMetaDataKeys::Columns.getFirstValue(data);
 
     QFileInfo info(file());
-    medDatabaseNonPersistentItem *seriesItem = controller->getSeriesItem(patientId, studyInstanceUID, seriesInstanceUID);
+    medDatabaseNonPersistentItem *seriesItem = controller.getSeriesItem(patientId, studyInstanceUID, seriesInstanceUID);
     if (seriesItem)
     {
         QString patientName = medMetaDataKeys::PatientName.getFirstValue(data);
@@ -117,8 +114,8 @@ medDataIndex medDataPacsImporter::populateDatabaseAndGenerateThumbnails(medAbstr
             {
                 // seriesItem has already a medAbstractData";
                 // we have to check others attributes";
-                QList<medDataIndex> seriesIndexes = controller->series(medDataIndex::makeStudyIndex(controller->dataSourceId(), seriesItem->index().patientId(), seriesItem->index().studyId()));
-                QList<medDatabaseNonPersistentItem *> items = controller->items();
+                QList<medDataIndex> seriesIndexes = controller.series(medDataIndex::makeStudyIndex(controller.dataSourceId(), seriesItem->index().patientId(), seriesItem->index().studyId()));
+                QList<medDatabaseNonPersistentItem *> items = controller.items();
                 bool seriesFound = false;
                 int numberOfSeries = 0;
                 for (medDatabaseNonPersistentItem *item : items)
@@ -146,7 +143,7 @@ medDataIndex medDataPacsImporter::populateDatabaseAndGenerateThumbnails(medAbstr
                 if (!seriesFound)
                 {
                     // we have to create a new one";
-                    medDataIndex newIndex = medDataIndex::makeSeriesIndex(controller->dataSourceId(), seriesItem->index().patientId(), seriesItem->index().studyId(), controller->seriesId(true));
+                    medDataIndex newIndex = medDataIndex::makeSeriesIndex(controller.dataSourceId(), seriesItem->index().patientId(), seriesItem->index().studyId(), controller.seriesId(true));
                     medDatabaseNonPersistentItem *newItem = new medDatabaseNonPersistentItem;
                     newItem->setName(patientName);
                     newItem->setPatientId(patientId);
@@ -169,7 +166,7 @@ medDataIndex medDataPacsImporter::populateDatabaseAndGenerateThumbnails(medAbstr
                     newItem->setRows(rows);
                     newItem->setColumns(columns);
 
-                    controller->insert(newIndex, newItem);
+                    controller.insert(newIndex, newItem);
                     retIndex = newIndex;
                 }
             }
@@ -203,11 +200,7 @@ medDataIndex medDataPacsImporter::populateDatabaseAndGenerateThumbnails(medAbstr
 **/
 QString medDataPacsImporter::ensureUniqueSeriesName(const QString seriesName, const QString studyId)
 {
-    QPointer<medDataPacsController>
-        controller =
-            medDataPacsController::instance();
-
-    QStringList seriesNames = controller->series(seriesName, studyId);
+    QStringList seriesNames = medDataPacsController::instance().series(seriesName, studyId);
 
     QString originalSeriesName = seriesName;
     QString newSeriesName = seriesName;
@@ -225,7 +218,5 @@ QString medDataPacsImporter::ensureUniqueSeriesName(const QString seriesName, co
 
 void medDataPacsImporter::setNumberOfFilesInDirectory(int num)
 {
-    QPointer<medDataPacsController> controller =
-        medDataPacsController::instance();
-    controller->setNumberOfFilesInDir(num);
+    medDataPacsController::instance().setNumberOfFilesInDir(num);
 }

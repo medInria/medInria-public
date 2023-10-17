@@ -564,7 +564,7 @@ bool medVtkViewNavigator::setRotationAngle(double angle)
 
     foreach(medDataIndex index, d->parent->dataList())
     {
-        medAbstractData *data = medDataManager::instance()->retrieveData(index);
+        medAbstractData *data = medDataManager::instance().retrieveData(index);
 
         // We only apply rotation on meshes
         if (data && data->identifier().contains("vtkDataMesh") )

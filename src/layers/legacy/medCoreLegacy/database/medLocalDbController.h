@@ -29,7 +29,7 @@ class MEDCORELEGACY_EXPORT medLocalDbController : public medDatabasePersistentCo
 
 public:
     ~medLocalDbController();
-    static medLocalDbController *instance();
+    static medLocalDbController &instance();
 
     bool createConnection() override;
     bool closeConnection() override;
@@ -52,5 +52,5 @@ private:
 
     bool updateFromNoVersionToVersion1();
 
-    static std::shared_ptr<medLocalDbController> s_instance;
+    static std::unique_ptr<medLocalDbController> s_instance;
 };

@@ -52,8 +52,7 @@ QString medDatabaseImporter::getPatientID(QString patientName, QString birthDate
     QString patientID = "";
     //Let's see if the patient is already in the db
 
-    QSqlQuery query ( medDataManager::instance()->controller()->database() );
-    // QSqlQuery query (medDataManager::instance()->controller()->database() );
+    QSqlQuery query ( medDataManager::instance().controller()->database() );
     query.prepare ( "SELECT patientId FROM patient WHERE name = :name AND birthdate = :birthdate" );
     query.bindValue ( ":name", patientName );
     query.bindValue ( ":birthdate", birthDate );
@@ -81,7 +80,7 @@ QString medDatabaseImporter::getPatientID(QString patientName, QString birthDate
 medDataIndex medDatabaseImporter::populateDatabaseAndGenerateThumbnails ( medAbstractData* medData, QString pathToStoreThumbnail )
 {
 
-    QSqlDatabase db = medDataManager::instance()->controller()->database();
+    QSqlDatabase db = medDataManager::instance().controller()->database();
 
     generateThumbnail ( medData, pathToStoreThumbnail );
 
@@ -96,7 +95,7 @@ medDataIndex medDatabaseImporter::populateDatabaseAndGenerateThumbnails ( medAbs
 
     int seriesDbId = getOrCreateSeries ( medData, db, studyDbId );
 
-    medDataIndex index = medDataIndex ( medDataManager::instance()->controller()->dataSourceId() , patientDbId, studyDbId, seriesDbId );
+    medDataIndex index = medDataIndex ( medDataManager::instance().controller()->dataSourceId() , patientDbId, studyDbId, seriesDbId );
     return index;
 }
 
@@ -356,7 +355,7 @@ int medDatabaseImporter::getOrCreateSeries ( const medAbstractData* medData, QSq
 **/
 QString medDatabaseImporter::ensureUniqueSeriesName(const QString seriesName, const QString studyId)
 {
-    QStringList seriesNames = medDataManager::instance()->controller()->series(seriesName, studyId);
+    QStringList seriesNames = medDataManager::instance().controller()->series(seriesName, studyId);
 
     QString originalSeriesName = seriesName;
     QString newSeriesName = seriesName;
@@ -374,7 +373,7 @@ QString medDatabaseImporter::ensureUniqueSeriesName(const QString seriesName, co
 
 void medDatabaseImporter::createDBEntryForMetadataAttachedFile(medAbstractData *medData, int seriesDbId)
 {
-    QSqlDatabase db = medDataManager::instance()->controller()->database();
+    QSqlDatabase db = medDataManager::instance().controller()->database();
     QSqlQuery query ( db );
 
     query.exec("SELECT COUNT(*) as cpt FROM pragma_table_info('series') WHERE name='json_meta_path'");

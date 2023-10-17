@@ -33,7 +33,7 @@ class MEDCORELEGACY_EXPORT medPluginManager : public dtkPluginManager
 public:
     ~medPluginManager();
 
-    static medPluginManager *instance();
+    static medPluginManager &instance();
 
     void readSettings();
     void initialize();
@@ -56,7 +56,7 @@ signals:
 private:
     medPluginManager();
     
-    static std::shared_ptr<medPluginManager> s_instance;
+    static std::unique_ptr<medPluginManager> s_instance;
 
 private:
     medPluginManagerPrivate *d;

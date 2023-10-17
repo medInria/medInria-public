@@ -40,7 +40,7 @@ const QString medDatabaseRemoverPrivate::T_SERIES = "series";
 medDatabaseRemover::medDatabaseRemover ( const medDataIndex &index_ ) : medJobItemL(), d ( new medDatabaseRemoverPrivate )
 {
     d->index = index_;
-    d->db = medDataManager::instance()->controller()->database();
+    d->db = medDataManager::instance().controller()->database();
     d->isCancelled = false;
 }
 
@@ -67,7 +67,7 @@ void medDatabaseRemover::internalRun()
         ptQuery.prepare ( "SELECT id FROM " + d->T_PATIENT );
     }
 
-    medDataManager::instance()->controller()->execQuery(ptQuery);
+    medDataManager::instance().controller()->execQuery(ptQuery);
     while ( ptQuery.next() )
     {
         if ( d->isCancelled )
@@ -88,7 +88,7 @@ void medDatabaseRemover::internalRun()
         }
         stQuery.bindValue ( ":patient", patientDbId );
 
-        medDataManager::instance()->controller()->execQuery(stQuery);
+        medDataManager::instance().controller()->execQuery(stQuery);
         while ( stQuery.next() )
         {
             if ( d->isCancelled )
@@ -109,7 +109,7 @@ void medDatabaseRemover::internalRun()
             }
             seQuery.bindValue ( ":study", studyDbId );
 
-            medDataManager::instance()->controller()->execQuery(seQuery);
+            medDataManager::instance().controller()->execQuery(seQuery);
 
             while ( seQuery.next() )
             {
@@ -173,7 +173,7 @@ void medDatabaseRemover::removeSeries ( int patientDbId, int studyDbId, int seri
                 d->T_SERIES + " WHERE id = :series ");
     }
     query.bindValue ( ":series", seriesDbId );
-    medDataManager::instance()->controller()->execQuery(query);
+    medDataManager::instance().controller()->execQuery(query);
 
     if ( query.next() )
     {
@@ -204,7 +204,7 @@ bool medDatabaseRemover::isStudyEmpty ( int studyDbId )
 
     query.prepare ( "SELECT id FROM " + d->T_SERIES + " WHERE study = :study " );
     query.bindValue ( ":study", studyDbId );
-    medDataManager::instance()->controller()->execQuery(query);
+    medDataManager::instance().controller()->execQuery(query);
     return !query.next();
 }
 
@@ -216,11 +216,11 @@ void medDatabaseRemover::removeStudy ( int patientDbId, int studyDbId )
     query.prepare ( "SELECT thumbnail, name, uid FROM " + d->T_STUDY + " WHERE id = :id " );
     query.bindValue ( ":id", studyDbId );
 
-    medDataManager::instance()->controller()->execQuery(query);
+    medDataManager::instance().controller()->execQuery(query);
 
     if ( query.next() )
     {
-        medAbstractDbController * dbc = medDataManager::instance()->controllerForDataSource(d->index.dataSourceId());
+        medAbstractDbController * dbc = medDataManager::instance().controllerForDataSource(d->index.dataSourceId());
         if (dbc->metaData(d->index,  medMetaDataKeys::StudyID.key()).toInt() == studyDbId)
         {
             removeThumbnailIfNeeded(query);
@@ -238,7 +238,7 @@ bool medDatabaseRemover::isPatientEmpty ( int patientDbId )
 
     query.prepare ( "SELECT id FROM " + d->T_STUDY + " WHERE patient = :patient " );
     query.bindValue ( ":patient", patientDbId );
-    medDataManager::instance()->controller()->execQuery(query);    
+    medDataManager::instance().controller()->execQuery(query);
     return !query.next();
 }
 
@@ -251,7 +251,7 @@ void medDatabaseRemover::removePatient ( int patientDbId )
 
     query.prepare ( "SELECT thumbnail, patientId  FROM " + d->T_PATIENT + " WHERE id = :patient " );
     query.bindValue ( ":patient", patientDbId );
-    medDataManager::instance()->controller()->execQuery(query);
+    medDataManager::instance().controller()->execQuery(query);
     if ( query.next() )
     {
         removeThumbnailIfNeeded(query);
@@ -267,7 +267,7 @@ bool medDatabaseRemover::removeTableRow ( const QString &table, int id )
     QSqlQuery query ( db );
     query.prepare ( "DELETE FROM " + table + " WHERE id = :id" );
     query.bindValue ( ":id", id );
-    medDataManager::instance()->controller()->execQuery(query);
+    medDataManager::instance().controller()->execQuery(query);
 
     return (query.numRowsAffected()==1);
 }

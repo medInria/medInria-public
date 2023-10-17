@@ -29,7 +29,7 @@ int retrieveDefaultWorkSpace()
     bool bMatch = false;
     medWorkspaceFactory::Details *poDetail = nullptr;
     QList<medWorkspaceFactory::Details*> oListOfWorkspaceDetails = medWorkspaceFactory::instance()->workspaceDetailsSortedByName(true);
-    QVariant oStartupWorkspace = medSettingsManager::instance()->value("startup", "default_starting_area");
+    QVariant oStartupWorkspace = medSettingsManager::instance().value("startup", "default_starting_area");
 
     if (oStartupWorkspace.toString() == "Search")
     {

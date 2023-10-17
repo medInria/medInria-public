@@ -38,7 +38,7 @@ public:
         FAILURE
     };
 
-    static medDataPacsController *instance();
+    static medDataPacsController &instance();
     ~medDataPacsController();
 
     QList<medDatabaseNonPersistentItem *> items();
@@ -115,5 +115,5 @@ private:
     medDataIndex getPatientIfEmpty(const medDataIndex studyIndex);
 
     medDataPacsControllerPrivate *d;
-    static std::shared_ptr<medDataPacsController> s_instance;
+    static std::unique_ptr<medDataPacsController> s_instance;
 };

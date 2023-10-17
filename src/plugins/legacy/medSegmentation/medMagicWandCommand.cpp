@@ -75,7 +75,7 @@ void medMagicWandCommand::paint()
             (this->options()->data->identifier().contains("Vector"))||
             (this->options()->data->identifier().contains("2")))
     {
-        medMessageController::instance()->showError("Magic wand option is only available for 3D images",3000);
+        medMessageController::instance().showError("Magic wand option is only available for 3D images",3000);
         return;
     }
 

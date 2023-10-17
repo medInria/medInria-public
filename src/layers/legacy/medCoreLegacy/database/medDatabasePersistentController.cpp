@@ -164,7 +164,7 @@ void medDatabasePersistentController::importPath(const QString &file, const QUui
     QFileInfo info(file);
     qDebug() << "persistent import UUID " << importUuid;
     medDatabaseImporter *importer = new medDatabaseImporter(info.absoluteFilePath(), importUuid, indexWithoutCopying);
-    medMessageProgress *message = medMessageController::instance()->showProgress("Importing " + info.fileName());
+    medMessageProgress *message = medMessageController::instance().showProgress("Importing " + info.fileName());
 
     connect(importer, SIGNAL(progressed(int)), message, SLOT(setProgress(int)));
     // connect(importer, SIGNAL(dataImported(medDataIndex, QUuid)), this, SIGNAL(dataImported(medDataIndex, QUuid)));
@@ -176,9 +176,9 @@ void medDatabasePersistentController::importPath(const QString &file, const QUui
     connect(importer, SIGNAL(success(QObject *)), message, SLOT(success()));
     connect(importer, SIGNAL(failure(QObject *)), message, SLOT(failure()));
     connect(importer, SIGNAL(showError(const QString &, unsigned int)),
-            medMessageController::instance(), SLOT(showError(const QString &, unsigned int)));
+            &medMessageController::instance(), SLOT(showError(const QString &, unsigned int)));
 
-    medJobManagerL::instance()->registerJobItem(importer);
+    medJobManagerL::instance().registerJobItem(importer);
     QThreadPool::globalInstance()->start(importer);
 }
 
@@ -189,7 +189,7 @@ void medDatabasePersistentController::importPath(const QString &file, const QUui
 void medDatabasePersistentController::importData(medAbstractData *data, const QUuid &importUuid)
 {
     medDatabaseImporter *importer = new medDatabaseImporter(data, importUuid);
-    medMessageProgress *message = medMessageController::instance()->showProgress("Saving database item");
+    medMessageProgress *message = medMessageController::instance().showProgress("Saving database item");
 
     connect(importer, SIGNAL(progressed(int)), message, SLOT(setProgress(int)));
     connect(importer, SIGNAL(dataImported(medDataIndex, QUuid)), this, SIGNAL(dataImported(medDataIndex, QUuid)));
@@ -197,15 +197,15 @@ void medDatabasePersistentController::importData(medAbstractData *data, const QU
     connect(importer, SIGNAL(success(QObject *)), message, SLOT(success()));
     connect(importer, SIGNAL(failure(QObject *)), message, SLOT(failure()));
     connect(importer, SIGNAL(showError(const QString &, unsigned int)),
-            medMessageController::instance(), SLOT(showError(const QString &, unsigned int)));
+            &medMessageController::instance(), SLOT(showError(const QString &, unsigned int)));
 
-    medJobManagerL::instance()->registerJobItem(importer);
+    medJobManagerL::instance().registerJobItem(importer);
     QThreadPool::globalInstance()->start(importer);
 }
 
 void medDatabasePersistentController::showOpeningError(QObject *sender)
 {
-    medMessageController::instance()->showError("Opening item failed.", 3000);
+    medMessageController::instance().showError("Opening item failed.", 3000);
 }
 
 /**
@@ -233,14 +233,14 @@ bool medDatabasePersistentController::moveDatabase(QString newLocation)
 void medDatabasePersistentController::remove(const medDataIndex &index)
 {
     medDatabaseRemover *remover = new medDatabaseRemover(index);
-    medMessageProgress *message = medMessageController::instance()->showProgress("Removing item");
+    medMessageProgress *message = medMessageController::instance().showProgress("Removing item");
 
     connect(remover, SIGNAL(progressed(int)), message, SLOT(setProgress(int)));
     connect(remover, SIGNAL(success(QObject *)), message, SLOT(success()));
     connect(remover, SIGNAL(failure(QObject *)), message, SLOT(failure()));
     connect(remover, SIGNAL(removed(const medDataIndex &)), this, SIGNAL(dataRemoved(medDataIndex)));
 
-    medJobManagerL::instance()->registerJobItem(remover);
+    medJobManagerL::instance().registerJobItem(remover);
     QThreadPool::globalInstance()->start(remover);
 }
 
@@ -271,7 +271,7 @@ bool medDatabasePersistentController::isPersistent() const
 medAbstractData *medDatabasePersistentController::retrieve(const medDataIndex &index, bool readFullData) const
 {
     QScopedPointer<medDatabaseReader> reader(new medDatabaseReader(index));
-    medMessageProgress *message = medMessageController::instance()->showProgress("Opening database item");
+    medMessageProgress *message = medMessageController::instance().showProgress("Opening database item");
 
     connect(reader.data(), SIGNAL(progressed(int)), message, SLOT(setProgress(int)));
     connect(reader.data(), SIGNAL(success(QObject *)), message, SLOT(success()));
