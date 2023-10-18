@@ -48,6 +48,8 @@ public:
     QColor color();
     void setColor(QColor color);
 
+    medParameterPoolL(medParameterPoolL const &){};
+
 private slots:
     void triggerParams();
     void changeParamsValue(bool value);
