@@ -248,7 +248,8 @@ vtkMTimeType vtkImageView2D::GetMTime()
 //----------------------------------------------------------------------------
 void vtkImageView2D::GetSliceRange(int &min, int &max) const
 {
-    if (this->GetMedVtkImageInfo() && this->GetMedVtkImageInfo()->initialized)
+    auto imageInfo = this->GetMedVtkImageInfo();
+    if (imageInfo && imageInfo->initialized)
     {
         min = 0;
         max = 0;
@@ -277,9 +278,10 @@ void vtkImageView2D::GetSliceRange(int &min, int &max) const
 //----------------------------------------------------------------------------
 int* vtkImageView2D::GetSliceRange() const
 {
-  if (this->GetMedVtkImageInfo() && this->GetMedVtkImageInfo()->initialized)
+  auto imageInfo = this->GetMedVtkImageInfo();
+  if (imageInfo && imageInfo->initialized)
   {
-      int* w_ext = this->GetMedVtkImageInfo()->extent;
+      int* w_ext = imageInfo->extent;
       return w_ext + this->SliceOrientation * 2;
   }
   return nullptr;
@@ -321,7 +323,8 @@ int vtkImageView2D::GetSlice() const
 //----------------------------------------------------------------------------
 void vtkImageView2D::SetSlice(int slice)
 {
-  if (!this->GetMedVtkImageInfo() || !this->GetMedVtkImageInfo()->initialized)
+  auto imageInfo = this->GetMedVtkImageInfo();
+  if (!imageInfo || !imageInfo->initialized)
   {
     vtkWarningMacro (<<"Input should be set before setting a slice");
     return;
@@ -340,7 +343,7 @@ void vtkImageView2D::SetSlice(int slice)
 
   // Estimate the displacement
   double displacement[4] = {0,0,0,0};
-  double* spacing = this->GetMedVtkImageInfo()->spacing;
+  double* spacing = imageInfo->spacing;
   displacement[this->SliceOrientation] = (slice - old_slice) * spacing[this->SliceOrientation];
   this->GetOrientationMatrix()->MultiplyPoint (displacement, displacement);
 
@@ -456,8 +459,8 @@ void vtkImageView2D::UpdateDisplayExtent()
     return;
   }
 
-
-  int* w_ext = this->GetMedVtkImageInfo()->extent;
+  auto imageInfo = this->GetMedVtkImageInfo();
+  int* w_ext = imageInfo->extent;
 
   int slice = this->Slice;
   int *range = this->GetSliceRange();
@@ -520,7 +523,7 @@ void vtkImageView2D::UpdateDisplayExtent()
         for (int i=0; i<3; i++)
             distance += (pos[i]-position[i]) * -vn[i];
 
-        double avg_spacing = this->GetMedVtkImageInfo()->spacing[this->ViewOrientation] * 0.5;
+        double avg_spacing = imageInfo->spacing[this->ViewOrientation] * 0.5;
         cam->SetClippingRange(distance - avg_spacing, distance + avg_spacing);
     }
   }
@@ -770,8 +773,12 @@ int vtkImageView2D::GetViewOrientationFromSliceOrientation(int sliceorientation,
   double focaltoposition[3]={0,0,0};
   double origin[3] = {0,0,0};
 
-  if (this->GetMedVtkImageInfo() && this->GetMedVtkImageInfo()->initialized)
-    this->GetMedVtkImageInfo()->GetOrigin(origin);
+  auto imageInfo = this->GetMedVtkImageInfo();
+
+  if (imageInfo && imageInfo->initialized)
+  {
+    imageInfo->GetOrigin(origin);
+  }
 
   // At first, we initialize the cam focal point to {0,0,0}, so nothing to do
   // (after re-orientation, it will become the origin of the image)
@@ -1132,8 +1139,11 @@ or change orientation.
 */
 void vtkImageView2D::UpdateSlicePlane()
 {
-  if( !this->GetMedVtkImageInfo() || !this->GetMedVtkImageInfo()->initialized) // if input is not set yet, no way we can now the display bounds
+  auto imageInfo = this->GetMedVtkImageInfo();
+  if( !imageInfo || !imageInfo->initialized) // if input is not set yet, no way we can now the display bounds
+  {
     return;
+  }
 
   vtkPoints* oldpoints = vtkPoints::New();
   vtkPoints* points = vtkPoints::New();
@@ -1168,12 +1178,15 @@ visualization. (The ViewCenter is not used anywhere else).
 */
 void vtkImageView2D::UpdateCenter()
 {
-  if (!this->GetMedVtkImageInfo() || !this->GetMedVtkImageInfo()->initialized)
+  auto imageInfo = this->GetMedVtkImageInfo();
+  if (!imageInfo || !imageInfo->initialized)
+  {
     return;
+  }
   vtkCamera *cam = this->GetRenderer() ? this->GetRenderer()->GetActiveCamera() : nullptr;
   if (!cam)
     return;
-  int* dimensions = this->GetMedVtkImageInfo()->dimensions;
+  int* dimensions = imageInfo->dimensions;
 
   int indices[3] = {0,0,0};
   for (unsigned int i=0; i<3; i++)
@@ -1766,9 +1779,11 @@ void vtkImageView2D::SetInputLayer(vtkAlgorithmOutput* pi_poVtkAlgoOutput, vtkMa
         imageDisplay->SetInputProducer(pi_poVtkAlgoOutput);
         imageDisplay->SetInputData(static_cast<vtkImageAlgorithm*>(pi_poVtkAlgoOutput->GetProducer())->GetOutput());
         imageDisplay->GetImageActor()->SetUserMatrix (this->OrientationMatrix);
-        if(imageDisplay->GetMedVtkImageInfo())
+
+        auto imageInfo = imageDisplay->GetMedVtkImageInfo();
+        if(imageInfo)
         {
-            this->SetColorRange(imageDisplay->GetMedVtkImageInfo()->scalarRange, layer);
+            this->SetColorRange(imageInfo->scalarRange, layer);
         }
     }
 }
@@ -2022,7 +2037,8 @@ vtkActor* vtkImageView2D::AddDataSet(vtkPointSet* arg, vtkProperty* prop)
   this->DataSetWidgets.push_back( widget );
 
   // If this is the first widget to be added, reset camera
-  if ( (!this->GetMedVtkImageInfo() || !this->GetMedVtkImageInfo()->initialized) && (this->DataSetWidgets.size() == 1))
+  auto imageInfo = this->GetMedVtkImageInfo();
+  if ( (!imageInfo || !imageInfo->initialized) && (this->DataSetWidgets.size() == 1))
   {
       this->ResetCamera(arg);
   }
@@ -2176,22 +2192,18 @@ void vtkImageView2D::RemoveLayer(int layer)
         vtkMatrix4x4 *matrix  = nullptr;
         int    *imageSize     = nullptr;
         double *imageSpacing  = nullptr;
-        double *imageOrigin   = nullptr;    
+        double *imageOrigin   = nullptr;
     
-        medVtkImageInfo   sImgInfo;
-        medVtkImageInfo* psImgInfo  = GetMedVtkImageInfo();
         GetInputBounds(bounds);
   
+        auto psImgInfo = this->GetMedVtkImageInfo();
         if (psImgInfo)
         {
-            sImgInfo = *psImgInfo;
-
             matrix = GetOrientationMatrix();
-            imageSize = sImgInfo.dimensions;
-            imageSpacing = sImgInfo.spacing;
-            imageOrigin = sImgInfo.origin;
+            imageSize = psImgInfo->dimensions;
+            imageSpacing = psImgInfo->spacing;
+            imageOrigin = psImgInfo->origin;
         }
-
 
         // ////////////////////////////////////////////////////////////////////////
         // Remove layer
@@ -2212,7 +2224,6 @@ void vtkImageView2D::RemoveLayer(int layer)
 
         // Delete is handled by SmartPointers.
         this->LayerInfoVec.erase(this->LayerInfoVec.begin() + layer);
-
   
         // ////////////////////////////////////////////////////////////////////////
         // Rebuild a layer if necessary
@@ -2226,7 +2237,7 @@ void vtkImageView2D::RemoveLayer(int layer)
                 this->UpdateBounds(poWidget->GetSource()->GetBounds(), 0, matrix, imageSize, imageSpacing, imageOrigin);
                 this->Modified();
                 // If this is the first widget to be added, reset camera
-                if ((!this->GetMedVtkImageInfo() || !this->GetMedVtkImageInfo()->initialized) && (this->DataSetWidgets.size() == 1))
+                if ((!psImgInfo || !psImgInfo->initialized) && (this->DataSetWidgets.size() == 1))
                 {
                     this->ResetCamera(poWidget->GetSource());
                 }
