@@ -37,6 +37,18 @@ medParameterPoolManagerL::medParameterPoolManagerL(void) : d(new medParameterPoo
 {
 }
 
+medParameterPoolManagerL::~medParameterPoolManagerL()
+{
+    for (auto it = d->pools.begin(); it != d->pools.end(); ++it)
+    {
+        delete it.value();
+    }
+    d->pools.clear();
+
+    delete d;
+    d = nullptr;
+}
+
 void medParameterPoolManagerL::removePool(QString poolId)
 {
     medParameterPoolL *poolToRemove = d->pools.value(poolId);

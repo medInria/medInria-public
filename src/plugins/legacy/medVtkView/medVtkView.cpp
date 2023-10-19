@@ -194,6 +194,7 @@ medVtkView::~medVtkView()
         d->renWin->SetOffScreenRendering(0);
     d->renWin->Delete();
     delete d->viewWidget;
+    delete d->mainWindow;
 
     delete d;
 }
@@ -465,29 +466,11 @@ QImage medVtkView::buildThumbnail(const QSize &size)
     this->blockSignals(true);
     int w(size.width()), h(size.height());
 
-    // will cause crashes if any calls to renWin->Render() happened before this line
-    d->mainWindow->resize(w,h);
-    d->mainWindow->show();
-    d->renWin->SetSize(w,h);
-    render();
-
-#ifdef Q_OS_LINUX
-    // X11 likes to animate window creation, which means by the time we grab the
-    // widget, it might not be fully ready yet, in which case we get artefacts.
-    // Only necessary if rendering to an actual screen window.
-    if(d->renWin->GetOffScreenRendering() == 0)
-    {
-        Q_UNUSED(QTest::qWaitForWindowExposed(d->viewWidget));
-    }
-#endif
-
     QImage thumbnail = d->viewWidget->grabFramebuffer();
+    thumbnail = thumbnail.scaledToHeight(h, Qt::SmoothTransformation);
+    thumbnail = thumbnail.copy((thumbnail.width()-w)/2, 0, w, h);
 
-    d->mainWindow->hide();
     this->blockSignals(false);
-
-    thumbnail = thumbnail.copy(0, thumbnail.height() - h, w, h);
-
     return thumbnail;
 }
 
