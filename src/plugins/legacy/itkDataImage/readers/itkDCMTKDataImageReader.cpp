@@ -46,14 +46,14 @@ namespace itk {
             void Execute(Object *caller, const EventObject &event);
         void Execute(const Object *caller, const EventObject &event);
 
-        void SetDataImageReader(dtkAbstractDataReader* reader) { m_Reader = reader; }
+        void SetDataImageReader(medAbstractDataReader* reader) { m_Reader = reader; }
 
     protected:
         DCMTKDataImageReaderCommand() { m_Reader = nullptr; }
         virtual ~DCMTKDataImageReaderCommand() {}
 
     private:
-        dtkAbstractDataReader* m_Reader;
+        medAbstractDataReader* m_Reader;
     };
 
     void DCMTKDataImageReaderCommand::Execute(Object *caller, const EventObject &event)
@@ -188,7 +188,7 @@ void itkDCMTKDataImageReaderPrivate::initialiseStatic()
 
 const char itkDCMTKDataImageReader::ID[] = "itkDCMTKDataImageReader";
 
-itkDCMTKDataImageReader::itkDCMTKDataImageReader() : dtkAbstractDataReader(), d(new itkDCMTKDataImageReaderPrivate) { }
+itkDCMTKDataImageReader::itkDCMTKDataImageReader() : medAbstractDataReader(), d(new itkDCMTKDataImageReaderPrivate) { }
 
 
 itkDCMTKDataImageReader::~itkDCMTKDataImageReader()
@@ -373,12 +373,23 @@ bool itkDCMTKDataImageReader::readInformation(const QStringList& paths)
 
     if (medData)
     {
+        for (const auto & [key, values] : d->io->GetMetaData())
+        {
+            QStringList valueList;
+            for (auto val : values)
+            {
+                valueList << QString::fromStdString(val);
+            }
+
+            medData->setMetaData(QString::fromStdString(key), valueList);
+        }
         // PATIENT
         //PatientId
         medData->setMetaData(medMetaDataKeys::PatientName.key(), QString::fromLatin1(d->io->GetPatientName().c_str()));
         medData->setMetaData(medMetaDataKeys::Age.key(),         d->io->GetPatientAge().c_str());
         medData->setMetaData(medMetaDataKeys::BirthDate.key(),   d->io->GetPatientDOB().c_str());
         medData->setMetaData(medMetaDataKeys::Gender.key(),      d->io->GetPatientSex().c_str());
+        medData->setMetaData(medMetaDataKeys::PatientID.key(), QString::fromLatin1(d->io->GetPatientID().c_str()));
         medData->setMetaData(medMetaDataKeys::Description.key(), QString::fromLatin1(d->io->GetScanOptions().c_str()));
 
         // STUDY

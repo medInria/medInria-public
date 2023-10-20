@@ -18,189 +18,282 @@
 #include <medStartupSettingsWidget.h>
 #include <medWorkspaceFactory.h>
 
+#include <medSourcesLoader.h>
+#include <medSourcesLoaderPresenter.h>
+
 class medHomepageAreaPrivate
 {
 public:
-    QWidget *navigationWidget;
-    QWidget *descriptionWidget;
-    QLabel *applicationLabel;
-    QTextEdit *textEdit;
-
-    QAction *actionFullscreen;
+    QStackedWidget* stackedWidget;
+    QWidget * navigationWidget;
+    QWidget * userWidget;
+    QWidget * infoWidget;
+    QWidget * aboutWidget;
+    QTabWidget * aboutTabWidget;
+    QWidget * pluginWidget;
+    QWidget * settingsWidget;
+    QWidget * sourcesWidget;
+    medSettingsEditor* settingsEditor;
 };
 
 medHomepageArea::medHomepageArea ( QWidget * parent ) : QWidget ( parent ), d ( new medHomepageAreaPrivate )
 {
-    // Menu bar
-    medMainWindow *mainWindow = qobject_cast <medMainWindow *> (parent);
-    QMenuBar *menu_bar = mainWindow->menuBar();
+    //Setup navigation widget (with buttons for accessing available workspaces)
+    d->navigationWidget = new QWidget ( this );
 
-    // --- File menu
-    QMenu *menuFile = menu_bar->addMenu("File");
+    //Setup the widget where the general information are displayed
+    d->infoWidget = new QWidget ( this );
+    d->infoWidget->setMinimumSize(400, 400);
 
-    QAction *actionBrowser = new QAction(tr("&Import/export files"), parent);
-    connect(actionBrowser, &QAction::triggered, this, &medHomepageArea::onShowBrowser);
-    menuFile->addAction(actionBrowser);
+    //Setup the widget with about, settings, plugins and documentation buttons
+    d->userWidget = new QWidget ( this );
 
-    QAction *actionDatabase = new QAction(tr("&Database settings"), parent);
-    connect(actionDatabase, &QAction::triggered, this, &medHomepageArea::onShowDatabase);
-    menuFile->addAction(actionDatabase);
+    //Setup the about container widget (with a QTabWidget inside)
+    d->aboutWidget = new QWidget ( this );
+    d->aboutWidget->setMinimumSize(400, 400);
+    d->aboutWidget->hide();
 
-    // --- Area menu
-    QMenu *menuArea = menu_bar->addMenu("Switch to area");
+    //User widget content with settings, about and help buttons
+    QHBoxLayout * userButtonsLayout = new QHBoxLayout(d->userWidget);
+    medHomepageButton * helpButton = new medHomepageButton ( this );
+    helpButton->setText ( "Help" );
+    helpButton->setToolTip(tr("Open Online Documentation"));
+    helpButton->setMinimumHeight ( 30 );
+    helpButton->setMaximumWidth ( 150 );
+    helpButton->setMinimumWidth ( 150 );
+    helpButton->setFocusPolicy ( Qt::NoFocus );
+    helpButton->setIcon ( QIcon ( ":icons/help.svg" ) );
+    helpButton->setIconSize(QSize(16,16));
+    helpButton->setToolButtonStyle ( Qt::ToolButtonTextBesideIcon );
+    QObject::connect ( helpButton,SIGNAL ( clicked() ),this, SLOT ( onShowHelp() ) );
 
-    QAction *actionAreaSettings = new QAction(tr("&Startup settings"), parent);
-    connect(actionAreaSettings, &QAction::triggered, this, &medHomepageArea::onShowAreaSettings);
-    menuArea->addAction(actionAreaSettings);
+    medHomepageButton * aboutButton = new medHomepageButton ( this );
+    aboutButton->setText ( "About" );
+    aboutButton->setMinimumHeight ( 30 );
+    aboutButton->setMaximumWidth ( 150 );
+    aboutButton->setMinimumWidth ( 150 );
+    aboutButton->setToolTip(QString("About ")+qApp->applicationName());
+    aboutButton->setFocusPolicy ( Qt::NoFocus );
+    aboutButton->setIcon ( QIcon ( ":icons/about.png" ) );
+    aboutButton->setIconSize(QSize(16,16));
+    aboutButton->setToolButtonStyle ( Qt::ToolButtonTextBesideIcon );
+    QObject::connect ( aboutButton,SIGNAL ( clicked() ),this, SLOT ( onShowAbout() ) );
 
-    menuArea->addSeparator();
+    medHomepageButton * pluginButton = new medHomepageButton ( this );
+    pluginButton->setText ( "Plugins" );
+    pluginButton->setMinimumHeight ( 30 );
+    pluginButton->setMaximumWidth ( 150 );
+    pluginButton->setMinimumWidth ( 150 );
+    pluginButton->setToolTip(tr("Information on loaded plugins"));
+    pluginButton->setFocusPolicy ( Qt::NoFocus );
+    pluginButton->setIcon ( QIcon ( ":icons/medInriaPlugin.png" ) );
+    pluginButton->setToolButtonStyle ( Qt::ToolButtonTextBesideIcon );
+    QObject::connect ( pluginButton,SIGNAL ( clicked() ),this, SLOT ( onShowPlugin() ) );
 
-    QAction *actionHome = new QAction(tr("&Homepage"), parent);
-    connect(actionHome, &QAction::triggered, mainWindow, &medMainWindow::switchToHomepageArea);
-    menuArea->addAction(actionHome);
+    medHomepageButton * logButton = new medHomepageButton ( this );
+    logButton->setText ( "Log" );
+    logButton->setMinimumHeight ( 30 );
+    logButton->setMaximumWidth ( 150 );
+    logButton->setMinimumWidth ( 150 );
+    logButton->setToolTip(QString("Open Log Directory.\nThe log file is ")
+                             + QString(qApp->applicationName())
+                             + QString(".log"));
+    logButton->setFocusPolicy ( Qt::NoFocus );
+    logButton->setIcon ( QIcon ( ":icons/widget.png" ) );
+    logButton->setIconSize(QSize(16,16));
+    logButton->setToolButtonStyle ( Qt::ToolButtonTextBesideIcon );
+    QObject::connect ( logButton,SIGNAL ( clicked() ),this, SLOT ( openLogDirectory() ) );
 
-    QAction *actionComposer = new QAction(tr("&Composer"), parent);
-    connect(actionComposer, &QAction::triggered, this, &medHomepageArea::onShowComposer);
-    menuArea->addAction(actionComposer);
+    medHomepageButton * settingsButton = new medHomepageButton(this);
+    settingsButton->setText("Settings");
+    settingsButton->setMinimumHeight(30);
+    settingsButton->setMaximumWidth(150);
+    settingsButton->setMinimumWidth(150);
+    settingsButton->setToolTip(QString("Configure ") + qApp->applicationName());
+    settingsButton->setFocusPolicy(Qt::NoFocus);
+    settingsButton->setIcon(QIcon(":icons/settings.svg"));
+    settingsButton->setIconSize(QSize(16, 16));
+    settingsButton->setToolButtonStyle(Qt::ToolButtonTextBesideIcon);
+    QObject::connect(settingsButton, SIGNAL(clicked()), this, SLOT(onShowSettings()));
 
-    // Visualization workspace is a "Basic" area
-    QAction *actionVisu = new QAction("&Visualization", parent);
-    actionVisu->setData("medVisualizationWorkspace");
-    connect(actionVisu, &QAction::triggered, this, &medHomepageArea::onSwitchToWorkspace);
-    menuArea->addAction(actionVisu);
+    medHomepageButton * sourcesButton = new medHomepageButton(this);
+    sourcesButton->setText("Sources");
+    sourcesButton->setMinimumHeight(30);
+    sourcesButton->setMaximumWidth(150);
+    sourcesButton->setMinimumWidth(150);
+    sourcesButton->setToolTip("Add/Remove sources and change sources settings");
+    sourcesButton->setFocusPolicy(Qt::NoFocus);
+    sourcesButton->setIcon(QIcon(":icons/magnifier.svg"));
+    sourcesButton->setIconSize(QSize(16, 16));
+    sourcesButton->setToolButtonStyle(Qt::ToolButtonTextBesideIcon);
+    QObject::connect(sourcesButton, SIGNAL(clicked()), this, SLOT(onShowSources()));
 
-    menuArea->addSeparator();
+    userButtonsLayout->insertWidget ( 0, sourcesButton );
+    userButtonsLayout->insertWidget ( 1, settingsButton);
+    userButtonsLayout->insertWidget ( 2, pluginButton);
+    userButtonsLayout->insertWidget ( 3, aboutButton);
+    userButtonsLayout->insertWidget ( 4, logButton );
+    userButtonsLayout->insertWidget ( 5, helpButton );
 
-    QList<medWorkspaceFactory::Details*> workspaceDetails = medWorkspaceFactory::instance()->workspaceDetailsSortedByName(true);
-    for( medWorkspaceFactory::Details* detail : workspaceDetails)
-    {
-        if (detail->name != "Visualization")
-        {
-            QAction *actionWorkspace = new QAction(detail->name, parent);
-            actionWorkspace->setData(detail->identifier);
-            connect(actionWorkspace, &QAction::triggered, this, &medHomepageArea::onSwitchToWorkspace);
-            menuArea->addAction(actionWorkspace);
-        }
-    }
+    // Info widget: application logo, description, etc
+    QVBoxLayout * infoLayout = new QVBoxLayout(d->infoWidget);
+    QLabel * medInriaLabel = new QLabel ( this );
+    QPixmap medLogo( ":pixmaps/medInria-logo-homepage.png" );
+    medInriaLabel->setPixmap ( medLogo );
 
-    // --- View menu
-    QMenu *menuView = menu_bar->addMenu("Views");
+    QTextEdit * m_textEdit = new QTextEdit(this);
+    m_textEdit->setHtml ( tr("<b>medInria</b> is a cross-platform medical image "
+                           "processing and visualisation software, "
+                           "and it is <b>free</b>. Through an intuitive user "
+                           "interface, <b>medInria</b> offers from standard "
+                           "to cutting-edge processing functionalities for "
+                           "your medical images such as 2D/3D/4D image "
+                           "visualisation, image registration, or diffusion "
+                           "MR processing and tractography." ));
+    m_textEdit->setReadOnly ( true );
+    m_textEdit->setFocusPolicy ( Qt::NoFocus );
+    m_textEdit->setMaximumHeight(300);
+    m_textEdit->setMinimumHeight(250);
+    infoLayout->insertWidget ( 0,medInriaLabel );
+    infoLayout->insertWidget ( 1, m_textEdit );
+    infoLayout->addStretch();
 
-    QAction *actionAjust = new QAction(tr("&Ajust containers size"), parent);
-    connect(actionAjust, &QAction::triggered, mainWindow, &medMainWindow::adjustContainersSize);
-    menuView->addAction(actionAjust);
+    d->infoWidget->setMaximumHeight ( medInriaLabel->height() + m_textEdit->height() );
 
-    QAction *actionScreenshot = new QAction(tr("Capture screenshot"), parent);
-    connect(actionScreenshot, &QAction::triggered, mainWindow, &medMainWindow::captureScreenshot);
-    menuView->addAction(actionScreenshot);
+    //About widget
+    QVBoxLayout * aboutLayout = new QVBoxLayout(d->aboutWidget);
+    d->aboutTabWidget = new QTabWidget(this);
+    d->aboutTabWidget->setObjectName("aboutTabWidget");
 
-    QAction *actionMovie = new QAction(tr("Capture movie"), parent);
-    connect(actionMovie, &QAction::triggered, mainWindow, &medMainWindow::captureVideo);
-    menuView->addAction(actionMovie);
+    QLabel * medInriaLabel2 = new QLabel ( this );
+    medInriaLabel2->setPixmap ( medLogo );
 
-    // --- Tools menu
-    QMenu *menuTools = menu_bar->addMenu("Tools");
+    QTextEdit * aboutTextEdit = new QTextEdit(this);
 
-    QAction *actionSearch = new QAction(tr("&Search a toolbox"), parent);
-    connect(actionSearch, &QAction::triggered, mainWindow, &medMainWindow::switchToSearchArea);
-    menuTools->addAction(actionSearch);
+    QString aboutText = QString::fromUtf8(
+                "%1 (%2) is a medical imaging platform developed at "
+                "Inria.<br/>"
+                "<center>Inria, Copyright 2013</center>")
+            .arg(qApp->applicationName())
+            .arg(qApp->applicationVersion());
 
-    // --- Log menu
-    QMenu *menuLog = menu_bar->addMenu("Log");
+    aboutTextEdit->setHtml (aboutText);
+    aboutTextEdit->setFocusPolicy ( Qt::NoFocus );
 
-    QAction *actionLog = new QAction(tr("&Log File"), parent);
-    connect(actionLog, &QAction::triggered, this, &medHomepageArea::openLogDirectory);
-    menuLog->addAction(actionLog);
+    QTextBrowser * aboutAuthorTextBrowser = new QTextBrowser(this);
+    aboutAuthorTextBrowser->setSource(QUrl("qrc:authors.html" ));
+    aboutAuthorTextBrowser->setFocusPolicy ( Qt::NoFocus );
 
-    QAction *actionPluginLogs = new QAction(tr("&Plugin Logs"), parent);
-    connect(actionPluginLogs, &QAction::triggered, this, &medHomepageArea::onShowPluginLogs);
-    menuLog->addAction(actionPluginLogs);
+    QTextEdit * aboutLicenseTextEdit = new QTextEdit(this);
+    QFile license ( ":LICENSE.txt" );
+    license.open ( QIODevice::ReadOnly | QIODevice::Text );
+    QTextStream licenseContent(&license);
+    licenseContent.setCodec("UTF-8");
+    aboutLicenseTextEdit->setText ( licenseContent.readAll() );
+    aboutLicenseTextEdit->setFocusPolicy ( Qt::NoFocus );
+    license.close();
 
-    // --- About menu
-    QMenu *menuAbout = menu_bar->addMenu("Info");
+    QTextEdit * releaseNotesTextEdit = new QTextEdit(this);
+    QFile releaseNotes ( ":RELEASE_NOTES.txt" );
+    releaseNotes.open ( QIODevice::ReadOnly | QIODevice::Text );
+    QString releaseNotesContent = releaseNotes.readAll();
+    releaseNotes.close();
+    releaseNotesTextEdit->setText ( releaseNotesContent );
+    releaseNotesTextEdit->setFocusPolicy ( Qt::NoFocus );
 
-    QAction *actionAbout = new QAction(tr("&About"), parent);
-    connect(actionAbout, &QAction::triggered, this, &medHomepageArea::onShowAbout);
-    menuAbout->addAction(actionAbout);
+    //no parent, this layout is added to an other layout.
+    QHBoxLayout * aboutButtonLayout = new QHBoxLayout();
+    QPushButton * hideAboutButton = new QPushButton ( this );
+    hideAboutButton->setText ( tr("Hide") );
+    hideAboutButton->setFocusPolicy ( Qt::NoFocus );
+    hideAboutButton->setToolTip( tr("Hide the About section") );
+    QObject::connect ( hideAboutButton, SIGNAL ( clicked() ), this, SLOT ( onShowInfo() ) );
 
-    QAction *actionAuthors = new QAction(tr("Au&thors"), parent);
-    connect(actionAuthors, &QAction::triggered, this, &medHomepageArea::onShowAuthors);
-    menuAbout->addAction(actionAuthors);
+    aboutButtonLayout->addStretch();
+    aboutButtonLayout->addWidget ( hideAboutButton );
+    aboutButtonLayout->addStretch();
 
-    QAction *actionReleaseNotes = new QAction(tr("&Release Notes "), parent);
-    connect(actionReleaseNotes, &QAction::triggered, this, &medHomepageArea::onShowReleaseNotes);
-    menuAbout->addAction(actionReleaseNotes);
+    d->aboutTabWidget->addTab ( aboutTextEdit, tr("About") );
+    d->aboutTabWidget->addTab ( aboutAuthorTextBrowser, tr("Authors") );
+    d->aboutTabWidget->addTab ( releaseNotesTextEdit, tr("Release Notes") );
+    d->aboutTabWidget->addTab ( aboutLicenseTextEdit, tr("License") );
 
-    QAction *actionLicense = new QAction(tr("&License"), parent);
-    connect(actionLicense, &QAction::triggered, this, &medHomepageArea::onShowLicense);
-    menuAbout->addAction(actionLicense);
+    aboutLayout->addWidget ( medInriaLabel2 );
+    aboutLayout->addWidget ( d->aboutTabWidget );
+    aboutLayout->addLayout ( aboutButtonLayout );
 
-    QAction *actionExtLicense = new QAction(tr("&External Licenses"), parent);
-    connect(actionExtLicense, &QAction::triggered, this, &medHomepageArea::onShowExtLicenses);
-    menuAbout->addAction(actionExtLicense);
+    //Create the plugin widget.
+    d->pluginWidget = new QWidget(this);
+    QVBoxLayout * pluginLayout = new QVBoxLayout(d->pluginWidget);
+    QHBoxLayout * pluginHideButtonLayout = new QHBoxLayout();
+    QPushButton * hidePluginButton = new QPushButton ( this );
+    hidePluginButton->setText ( tr("Hide") );
+    hidePluginButton->setFocusPolicy ( Qt::NoFocus );
+    hidePluginButton->setToolTip( tr("Hide the Plugins section") );
+    QObject::connect ( hidePluginButton, SIGNAL ( clicked() ), this, SLOT ( onShowInfo() ) );
 
-    menuAbout->addSeparator();
+    pluginHideButtonLayout->addStretch();
+    pluginHideButtonLayout->addWidget ( hidePluginButton );
+    pluginHideButtonLayout->addStretch();
 
-    QAction *actionHelp = new QAction(tr("&Help"), parent);
-    connect(actionHelp, &QAction::triggered, this, &medHomepageArea::onShowHelp);
-    menuAbout->addAction(actionHelp);
+    QLabel * medInriaLabel3 = new QLabel ( this );
+    medInriaLabel3->setPixmap ( medLogo );
 
-    // --- Fullscreen checkable action
-    d->actionFullscreen = new QAction(parent);
-    d->actionFullscreen->setCheckable(true);
-#if defined(Q_OS_MAC)
-    d->actionFullscreen->setShortcut(Qt::ControlModifier + Qt::Key_F);
-    connect(d->actionFullscreen, &QAction::hovered, [=]{QToolTip::showText(QCursor::pos(), "Switch to fullscreen (cmd+f)", this);});
+    medPluginWidget * pWid = new medPluginWidget(d->pluginWidget);
 
-    // Corner widgets are not displayed on macOS native menubar for now, so we are using a classic menu
-    QMenu *menuActions = menu_bar->addMenu("Actions");
-    d->actionFullscreen->setText("Fullscreen");
-    menuActions->addAction(d->actionFullscreen);
-#else
-    // --- Prepare right corner menu 
-    QMenuBar *rightMenuBar = new QMenuBar(menu_bar);
-    menu_bar->setCornerWidget(rightMenuBar);
-
-    QIcon fullscreenIcon;
-    fullscreenIcon.addPixmap(QPixmap(":icons/fullscreen_on_white.svg"),QIcon::Normal,QIcon::Off);
-    fullscreenIcon.addPixmap(QPixmap(":icons/fullscreen_off_white.svg"),QIcon::Normal,QIcon::On);
-    d->actionFullscreen->setIcon(fullscreenIcon);
-    d->actionFullscreen->setShortcut(Qt::Key_F11);
-    // On Qt5, we can't use setToolTip on an action, without using setToolTipsVisible (by default to false) on the QMenu
-    // Here we have a QAction directly on a QMenuBar without a QMenu, so we display manually the tooltip
-    connect(d->actionFullscreen, &QAction::hovered, [=]{QToolTip::showText(QCursor::pos(), "Switch to fullscreen (F11)", this);});
-    rightMenuBar->addAction(d->actionFullscreen);
-#endif
-    connect(d->actionFullscreen, &QAction::toggled, mainWindow, &medMainWindow::setFullScreen);
+    pluginLayout->addWidget(medInriaLabel3);
+    pluginLayout->addWidget(pWid);
+    pluginLayout->addLayout(pluginHideButtonLayout);
     
-    // Setup the description widget: application logo and description
-    d->descriptionWidget = new QWidget(this);
-    d->descriptionWidget->setProperty("pos", QPoint(10, this->height()/7));
+    medSourcesLoaderPresenter sourcesLoaderPresenter(medSourcesLoader::instance());
+    d->sourcesWidget = sourcesLoaderPresenter.buildWidget();
 
-    QHBoxLayout *descriptionLayout = new QHBoxLayout(d->descriptionWidget);
+    //Create the setttings widget.
+    d->settingsWidget = new QWidget(this);
+    d->settingsWidget->setObjectName("settingsWidget");
+    QVBoxLayout * settingsLayout = new QVBoxLayout(d->settingsWidget);
+    QHBoxLayout * settingsHideButtonLayout = new QHBoxLayout();
+    QPushButton * hideSettingsButton = new QPushButton ( this );
+    hideSettingsButton->setText ( tr("Hide") );
+    hideSettingsButton->setFocusPolicy ( Qt::NoFocus );
+    hideSettingsButton->setToolTip( tr("Hide the Settings section") );
+    QObject::connect ( hideSettingsButton, SIGNAL ( clicked() ), this, SLOT ( onShowInfo() ) );
 
-    d->applicationLabel = new QLabel(this);
-    QPixmap applicationLogo( ":pixmaps/medInria-logo-homepage.png" );
-    d->applicationLabel->setPixmap(applicationLogo);
-    descriptionLayout->addWidget(d->applicationLabel);
-    descriptionLayout->addStretch();
+    settingsHideButtonLayout->addStretch();
+    settingsHideButtonLayout->addWidget ( hideSettingsButton );
+    settingsHideButtonLayout->addStretch();
 
-    d->textEdit = new QTextEdit(this);
-    QFile descriptionFile(":DESCRIPTION.txt");
-    descriptionFile.open(QIODevice::ReadOnly | QIODevice::Text);
-    QTextStream descriptionStream(&descriptionFile);
-    descriptionStream.setCodec("UTF-8");
-    d->textEdit->setHtml(descriptionStream.readAll());
-    d->textEdit->setReadOnly(true);
-    d->textEdit->setFocusPolicy(Qt::NoFocus);
-    d->textEdit->setMinimumWidth(500);
-    d->textEdit->setMinimumHeight(150);
-    d->textEdit->setMaximumHeight(150);
-    descriptionLayout->addWidget(d->textEdit);
+    QLabel * medInriaLabel4 = new QLabel ( this );
+    medInriaLabel4->setPixmap ( medLogo );
 
-    // Setup the navigation widget with buttons to access workspaces
-    d->navigationWidget = new QWidget(this);
-    d->navigationWidget->setProperty("pos", QPoint(20, this->height()/4));
+    d->settingsEditor = new medSettingsEditor(d->settingsWidget,true);
+    settingsLayout->addWidget(medInriaLabel4);
+    settingsLayout->addWidget(d->settingsEditor);
+    settingsLayout->addLayout(settingsHideButtonLayout);
+
+    //Set the position of the widgets
+    d->navigationWidget->setProperty ( "pos", QPoint ( 100 ,  this->height() / 4 ) );
+    d->userWidget->setProperty ( "pos", QPoint ( this->width() - 350 ,  this->height() - 90 ) );
+
+    //Create a Stacked Widget in which to put info widget, about widget and plugin Widget
+    d->stackedWidget = new QStackedWidget( this );
+    d->stackedWidget->setMinimumSize ( 400,300 );
+
+    d->stackedWidget->setProperty ( "pos", QPoint ( this->width() / 2 ,
+                                                    this->height() / 5) );
+    int stackedWidgetHeight = d->userWidget->pos().y() - d->stackedWidget->pos().y();
+    if (d->stackedWidget->minimumHeight() > stackedWidgetHeight)
+        stackedWidgetHeight = d->stackedWidget->minimumHeight();
+    d->stackedWidget->setMaximumHeight(stackedWidgetHeight);
+    d->stackedWidget->setMaximumWidth(this->width() / 2-50);
+    d->stackedWidget->addWidget(d->infoWidget);
+    d->stackedWidget->addWidget(d->aboutWidget);
+    d->stackedWidget->addWidget(d->pluginWidget);
+    d->stackedWidget->addWidget(d->settingsWidget);
+    d->stackedWidget->addWidget(d->sourcesWidget);
+
+    d->stackedWidget->setCurrentIndex(0);//d->infoWidget
+    d->stackedWidget->setSizePolicy(QSizePolicy::Maximum,QSizePolicy::Maximum);
 }
 
 medHomepageArea::~medHomepageArea()
@@ -216,12 +309,21 @@ void medHomepageArea::resizeEvent ( QResizeEvent * event )
     // Recompute the widget position when the window is resized
     d->navigationWidget->setProperty("pos", QPoint(20, height()/4));
 
-    // The description text is resized when the window is resized:
-    // Total width of the app, minus the logo and the spacings
-    int newTextSize = width() - d->applicationLabel->pixmap()->width() - 40;
-    d->textEdit->setMinimumWidth(newTextSize);
-    d->textEdit->setMaximumWidth(newTextSize);
-    d->descriptionWidget->resize(width() - 30, d->applicationLabel->pixmap()->height());
+    d->userWidget->setProperty ( "pos", QPoint ( this->width() / 2,  this->height() - 50 ) );
+
+    d->stackedWidget->setProperty ( "pos", QPoint ( this->width() / 2 ,  this->height() / 5 ) );
+
+    int stackedWidgetHeight = d->userWidget->pos().y() - d->stackedWidget->pos().y();
+    if (d->stackedWidget->minimumHeight() > stackedWidgetHeight)
+    {
+        stackedWidgetHeight = d->stackedWidget->minimumHeight();
+    }
+    d->stackedWidget->setMaximumHeight(stackedWidgetHeight);
+
+    int stackedWidgetWidth =  this->width() / 2 - 50 ;
+    d->stackedWidget->setMaximumWidth(stackedWidgetWidth);
+
+    d->stackedWidget->resize(stackedWidgetWidth,stackedWidgetHeight);
 }
 
 void medHomepageArea::initPage()
@@ -475,7 +577,12 @@ void medHomepageArea::onShowExtLicenses()
     msgBox.exec();
 }
 
-void medHomepageArea::onShowDatabase()
+void medHomepageArea::onShowSources()
+{
+    d->stackedWidget->setCurrentWidget(d->sourcesWidget);
+}
+
+void medHomepageArea::onShowSettings()
 {
     medDatabaseSettingsWidget dialog(this);
     dialog.exec();

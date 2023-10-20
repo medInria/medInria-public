@@ -17,12 +17,12 @@
 
 #include <medAbstractDataFactory.h>
 #include <medCore.h>
-#include <medDatabaseSettingsWidget.h>
+#include <medDataHub.h>
 #include <medDataManager.h>
-#include <medDatabaseController.h>
 #include <medDiffusionWorkspace.h>
 #include <medFilteringWorkspace.h>
 #include <medLogger.h>
+#include <medNewLogger.h>
 #include <medMainWindow.h>
 #include <medPluginManager.h>
 #include <medSeedPointAnnotationData.h>
@@ -54,7 +54,8 @@ medApplication::medApplication(int & argc, char**argv) :
     this->setOrganizationDomain("fr");
     this->setWindowIcon(QIcon(":/medInria.ico"));
 
-    medLogger::initialize();
+    //medLogger::initialize();
+    medNewLogger::initialize(&medNewLogger::mainInstance());
 
     qInfo() << "####################################";
     qInfo() << "Version: "    << MEDINRIA_VERSION;
@@ -63,7 +64,7 @@ medApplication::medApplication(int & argc, char**argv) :
     QApplication::setStyle(QStyleFactory::create("fusion"));
     medStyleSheetParser parser(dtkReadFile(":/medInria.qss"));
     this->setStyleSheet(parser.result());
-
+    
     this->initialize();
 }
 
@@ -118,19 +119,16 @@ void medApplication::initialize()
 {
     qRegisterMetaType<medDataIndex>("medDataIndex");
 
-    //  Setting up database connection
-    if ( ! medDatabaseController::instance()->createConnection())
-    {
-        qDebug() << "Unable to create a connection to the database";
-    }
-
-    medDataManager::initialize();
-
     // Registering different workspaces
     medWorkspaceFactory * viewerWSpaceFactory = medWorkspaceFactory::instance();
     viewerWSpaceFactory->registerWorkspace<medVisualizationWorkspace>();
     viewerWSpaceFactory->registerWorkspace<medDiffusionWorkspace>();
     viewerWSpaceFactory->registerWorkspace<medFilteringWorkspace>();
+
+    //Register settingsWidgets
+    medSettingsWidgetFactory* settingsWidgetFactory = medSettingsWidgetFactory::instance();
+    settingsWidgetFactory->registerSettingsWidget<medStartupSettingsWidget>();
+    //settingsWidgetFactory->registerSettingsWidget<medDatabaseSettingsWidget>();
 
     //Register annotations
     medAbstractDataFactory * datafactory = medAbstractDataFactory::instance();

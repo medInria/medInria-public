@@ -18,6 +18,8 @@
 #include <QSpinBox>
 #include <QProgressBar>
 
+#include <medSlider.h>
+
 class medIntParameterPresenterPrivate
 {
 public:
@@ -63,7 +65,18 @@ int medIntParameterPresenter::singleStep() const
 
 QWidget* medIntParameterPresenter::buildWidget()
 {
-    return this->buildSpinBox();
+    QWidget *poWidgetRes = nullptr;
+    switch (d->parameter->defaultRepresentation())
+    {
+    case 1:
+        poWidgetRes = this->buildProgressBar(); break;
+    case 2:
+        poWidgetRes = this->buildSlider(); break;
+    case 0:
+    default:
+        poWidgetRes = this->buildSpinBox(); break;
+    }
+    return poWidgetRes;
 }
 
 QSpinBox* medIntParameterPresenter::buildSpinBox()
@@ -103,4 +116,20 @@ QProgressBar* medIntParameterPresenter::buildProgressBar()
             progressBar, &QProgressBar::setRange);
 
     return progressBar;
+}
+
+medSlider* medIntParameterPresenter::buildSlider()
+{
+    medSlider *slider = new medSlider;
+
+    slider->setRange(d->parameter->minimum(), d->parameter->maximum());
+    slider->setValue(d->parameter->value());
+    slider->setToolTip(d->parameter->description());
+    slider->setStyleSheet("QSlider::handle:horizontal {width: 15px;}");
+
+    connect(slider,       &medSlider::valueChanged,       d->parameter,   &medIntParameter::setValue);
+    connect(d->parameter, &medIntParameter::rangeChanged, slider,         &medSlider::setRange);
+    connect(d->parameter, &medIntParameter::valueChanged, slider,         &medSlider::setValue);
+
+    return slider;
 }

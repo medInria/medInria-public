@@ -17,8 +17,11 @@
 
 class QWidget;
 class QCheckBox;
+class QRadioButton;
+class QPushButton;
 class QAbstractButton;
 class medBoolParameterPresenterPrivate;
+
 
 class MEDWIDGETS_EXPORT medBoolParameterPresenter : public medAbstractParameterPresenter
 {
@@ -31,8 +34,14 @@ public:
 
     virtual medBoolParameter *parameter() const;
 
-    virtual QWidget *buildWidget();
-    QCheckBox *buildCheckBox();
+    void setIcon(QIcon icon);
+    void setIconSize(QSize const & size);
+
+    virtual QWidget * buildWidget();
+    QPushButton *     buildPushButton();
+    QRadioButton *    buildRadioButton();
+    QCheckBox *       buildCheckBox();
+
 
 private:
     void _connectButton(QAbstractButton *button);

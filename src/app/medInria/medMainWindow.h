@@ -36,6 +36,7 @@ public:
     void restoreSettings();
     void saveSettings();
     QWidget* currentArea() const;
+    QToolButton* notifButton();
 
     void setStartup(const AreaType areaIndex,const QStringList& filenames);
 
@@ -43,6 +44,7 @@ signals:
     void sliceSelected(int slice);
     void mainWindowActivated();
     void mainWindowDeactivated();
+    void resized(QRect const &);
 
 public slots:
     void setWallScreen(const bool full);
@@ -114,7 +116,6 @@ private slots:
 protected:
     void closeEvent(QCloseEvent *event);
     void mousePressEvent(QMouseEvent * event);
-    int saveModifiedAndOrValidateClosing();
     bool event(QEvent * e);
     void dragEnterEvent(QDragEnterEvent *event);
     void dragLeaveEvent(QDragLeaveEvent *event);

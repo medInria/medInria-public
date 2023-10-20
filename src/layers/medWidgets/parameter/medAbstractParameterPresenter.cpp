@@ -14,6 +14,7 @@
 #include <medAbstractParameterPresenter.h>
 
 #include <QWidget>
+#include <QLabel>
 
 #include <dtkLog>
 
@@ -21,13 +22,18 @@
 #include <medBoolParameterPresenter.h>
 #include <medIntParameterPresenter.h>
 #include <medDoubleParameterPresenter.h>
+#include <medGroupParameterPresenter.h>
 #include <medStringParameterPresenter.h>
+#include <medStringListParameterPresenter.h>
+#include <medTimeLineParameterPresenter.h>
+#include <medTriggerParameterPresenter.h>
+#include <medVariantListParameterPresenter.h>
 
 class medAbstractParameterPresenterPrivate
 {
 public:
     bool visibility;
-    bool isEnable;
+    bool isEnabled;
     medAbstractParameter *parameter;
 };
 
@@ -42,12 +48,19 @@ medAbstractParameterPresenter::medAbstractParameterPresenter(medAbstractParamete
 
     d->parameter = parent;
     d->visibility = true;
-    d->isEnable = true;
+    d->isEnabled = true;
 }
 
 medAbstractParameterPresenter::~medAbstractParameterPresenter()
 {
 
+}
+
+QWidget * medAbstractParameterPresenter::buildLabel()
+{
+    QLabel *poLabelRes = new QLabel(d->parameter->caption());
+    _connectWidget(poLabelRes);
+    return poLabelRes;
 }
 
 void medAbstractParameterPresenter::setVisible(bool visibility)
@@ -61,15 +74,15 @@ bool medAbstractParameterPresenter::isVisible() const
     return d->visibility;
 }
 
-void medAbstractParameterPresenter::setEnable(bool enabled)
+void medAbstractParameterPresenter::setEnabled(bool enabled)
 {
-    d->isEnable = enabled;
-    emit _isEnabledChanged(d->isEnable);
+    d->isEnabled = enabled;
+    emit _isEnabledChanged(d->isEnabled);
 }
 
-bool medAbstractParameterPresenter::isEnable() const
+bool medAbstractParameterPresenter::isEnabled() const
 {
-    return d->isEnable;
+    return d->isEnabled;
 }
 
 void medAbstractParameterPresenter::_connectWidget(QWidget *widget)
@@ -87,14 +100,25 @@ medAbstractParameterPresenter* medAbstractParameterPresenter::buildFromParameter
     medAbstractParameterPresenter *presenter = nullptr;
     switch(parameter->type())
     {
+    case medParameterType::MED_PARAMETER_TRIGGER:
+        presenter = new medTriggerParameterPresenter(qobject_cast<medTriggerParameter*>(parameter)); break;
     case medParameterType::MED_PARAMETER_BOOL :
-        presenter = new medBoolParameterPresenter(qobject_cast<medBoolParameter*>(parameter));
+        presenter = new medBoolParameterPresenter(qobject_cast<medBoolParameter*>(parameter)); break;
     case medParameterType::MED_PARAMETER_INT :
-        presenter = new medIntParameterPresenter(qobject_cast<medIntParameter*>(parameter));
+        presenter = new medIntParameterPresenter(qobject_cast<medIntParameter*>(parameter)); break;
     case medParameterType::MED_PARAMETER_DOUBLE :
-        presenter = new medDoubleParameterPresenter(qobject_cast<medDoubleParameter*>(parameter));
+        presenter = new medDoubleParameterPresenter(qobject_cast<medDoubleParameter*>(parameter)); break;
     case medParameterType::MED_PARAMETER_STRING :
-        presenter = new medStringParameterPresenter(qobject_cast<medStringParameter*>(parameter));
+        presenter = new medStringParameterPresenter(qobject_cast<medStringParameter*>(parameter)); break;
+    case medParameterType::MED_PARAMETER_STRING_LIST:
+        presenter = new medStringListParameterPresenter(qobject_cast<medStringListParameter*>(parameter)); break;
+    case medParameterType::MED_PARAMETER_TIMELINE:
+        presenter = new medTimeLineParameterPresenter(qobject_cast<medTimeLineParameter*>(parameter)); break;
+    case medParameterType::MED_PARAMETER_VARIANT_LIST:
+        presenter = new medVariantListParameterPresenter(qobject_cast<medVariantListParameter*>(parameter)); break;
+    case medParameterType::MED_PARAMETER_GROUP:
+        presenter = new medGroupParameterPresenter(qobject_cast<medGroupParameter*>(parameter)) ; break;
+
     default:
         dtkDebug() << "Unable to build presenter for parameter of type" << parameter->type();
     }

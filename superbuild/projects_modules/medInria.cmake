@@ -90,6 +90,7 @@ set(cmake_cache_args
   -DRPI_DIR:PATH=${RPI_DIR}
   -DTTK_DIR:PATH=${TTK_DIR}
   -DVTK_DIR:PATH=${VTK_DIR}
+  #-DGTest_DIR:PATH=${GTEST_DIR}
   -DQt5_DIR:PATH=${Qt5_DIR}
   -DLogDemons_DIR:PATH=${LogDemons_DIR}
   -DBoost_INCLUDE_DIR:PATH=${Boost_INCLUDE_DIR}

@@ -93,7 +93,7 @@ ExternalProject_Add(${ep}
   CMAKE_CACHE_ARGS ${cmake_cache_args}
   DEPENDS ${${ep}_dependencies}
   INSTALL_COMMAND ""
-  BUILD_ALWAYS 0
+  BUILD_ALWAYS ${EP_BUILD_ALWAYS}
   ) 
   
 ## #############################################################################

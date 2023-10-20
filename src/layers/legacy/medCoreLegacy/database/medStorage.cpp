@@ -31,14 +31,16 @@ medStorage::~medStorage()
 {
 }
 
-bool medStorage::mkpath(const QString& dirPath)
+bool medStorage::mkpath(const QString &dirPath)
 {
-    QDir dir; return(dir.mkpath(dirPath));
+    QDir dir;
+    return (dir.mkpath(dirPath));
 }
 
-bool medStorage::rmpath(const QString& dirPath)
+bool medStorage::rmpath(const QString &dirPath)
 {
-    QDir dir; return(dir.rmpath(dirPath));
+    QDir dir;
+    return (dir.rmpath(dirPath));
 }
 
 QString medStorage::dataLocation()
@@ -52,19 +54,22 @@ QString medStorage::dataLocation()
     }
     else
     {
+        // APHP Hack : try to get path for remote db defined in commandline parameter
+        vDbLoc = medSettingsManager::instance()->value("database", "db_prefix_path", "", false).toString();
+        if (!vDbLoc.isEmpty())
+        {
+            return vDbLoc;
+        }
+
         vDbLoc = medSettingsManager::instance()->value("database", "actual_database_location").toString();
 
         // if the location is still not set we return the default paths
-        if ( vDbLoc.isEmpty() )
+        if (vDbLoc.isEmpty())
         {
 #ifdef Q_OS_MAC
-            vDbLoc = QStandardPaths::writableLocation(QStandardPaths::GenericDataLocation)
-                    + "/" + QCoreApplication::organizationName()
-                    + "/" + QCoreApplication::applicationName();
+            vDbLoc = QStandardPaths::writableLocation(QStandardPaths::GenericDataLocation) + "/" + QCoreApplication::organizationName() + "/" + QCoreApplication::applicationName();
 #else
-            vDbLoc = QStandardPaths::writableLocation(QStandardPaths::GenericDataLocation)
-                    + "/data/" + QCoreApplication::organizationName()
-                    + "/" + QCoreApplication::applicationName();
+            vDbLoc = QStandardPaths::writableLocation(QStandardPaths::GenericDataLocation) + "/data/" + QCoreApplication::organizationName() + "/" + QCoreApplication::applicationName();
 #endif
         }
         setDataLocation(vDbLoc);
@@ -75,18 +80,18 @@ QString medStorage::dataLocation()
 QString medStorage::configLocation()
 {
 #ifdef Q_OS_MAC
-    return(QDir::homePath() + "/Library/Preferences/" + "com" + "." + QCoreApplication::organizationName() + "." + QCoreApplication::applicationName() + "." + "plist");
+    return (QDir::homePath() + "/Library/Preferences/" + "com" + "." + QCoreApplication::organizationName() + "." + QCoreApplication::applicationName() + "." + "plist");
 #else
-    return(dataLocation());
+    return (dataLocation());
 #endif
 }
 
-void medStorage::setDataLocation( QString newLocation)
+void medStorage::setDataLocation(QString newLocation)
 {
     // return without writing if the location ist the same
-    if(m_dataLocation != nullptr)
+    if (m_dataLocation != nullptr)
     {
-        if(m_dataLocation.compare(newLocation) == 0)
+        if (m_dataLocation.compare(newLocation) == 0)
         {
             return;
         }
@@ -97,8 +102,7 @@ void medStorage::setDataLocation( QString newLocation)
     medSettingsManager::instance()->setValue("database", "actual_database_location", newLocation);
 }
 
-
-void medStorage::recurseAddDir(QDir d, QStringList & list)
+void medStorage::recurseAddDir(QDir d, QStringList &list)
 {
 
     QStringList qsl = d.entryList(QDir::NoDotAndDotDot | QDir::Dirs | QDir::Files);
@@ -110,19 +114,20 @@ void medStorage::recurseAddDir(QDir d, QStringList & list)
         if (finfo.isSymLink())
             return;
 
-        if (finfo.isDir()) {
+        if (finfo.isDir())
+        {
 
             QString dirname = finfo.fileName();
             QDir sd(finfo.filePath());
 
             recurseAddDir(sd, list);
-
-        } else
+        }
+        else
             list << QDir::toNativeSeparators(finfo.filePath());
     }
 }
 
-bool medStorage::createDestination(QStringList sourceList, QStringList& destList, QString sourceDir, QString destDir)
+bool medStorage::createDestination(QStringList sourceList, QStringList &destList, QString sourceDir, QString destDir)
 {
     bool res = true;
 
@@ -135,15 +140,15 @@ bool medStorage::createDestination(QStringList sourceList, QStringList& destList
     int trimCount = sourceDir.length();
     for (QString sourceFile : sourceList)
     {
-        sourceFile.remove(0,trimCount);
+        sourceFile.remove(0, trimCount);
 
         QString destination = destDir + sourceFile;
 
         // check if this is a directory
-        QFileInfo completeFile (destination);
+        QFileInfo completeFile(destination);
         QDir fileInfo(completeFile.path());
 
-        if (!fileInfo.exists() && !medStorage::mkpath (fileInfo.path()))
+        if (!fileInfo.exists() && !medStorage::mkpath(fileInfo.path()))
         {
             qWarning() << "Cannot create directory: " << fileInfo.path();
             res = false;
@@ -161,7 +166,8 @@ bool medStorage::copyFiles(QStringList sourceList, QStringList destList)
         return false;
 
     // just copy not using a dialog
-    for (int i = 0; i < sourceList.count(); i++) {
+    for (int i = 0; i < sourceList.count(); i++)
+    {
         // coping
         if (!QFile::copy(sourceList.at(i), destList.at(i)))
         {
@@ -178,16 +184,21 @@ bool medStorage::removeDir(QString dirName)
     bool result = true;
     QDir dir(dirName);
 
-    if (dir.exists(dirName)) {
-        Q_FOREACH(QFileInfo info, dir.entryInfoList(QDir::NoDotAndDotDot | QDir::System | QDir::Hidden  | QDir::AllDirs | QDir::Files, QDir::DirsFirst)) {
-            if (info.isDir()) {
+    if (dir.exists(dirName))
+    {
+        Q_FOREACH (QFileInfo info, dir.entryInfoList(QDir::NoDotAndDotDot | QDir::System | QDir::Hidden | QDir::AllDirs | QDir::Files, QDir::DirsFirst))
+        {
+            if (info.isDir())
+            {
                 result = removeDir(info.absoluteFilePath());
             }
-            else {
+            else
+            {
                 result = QFile::remove(info.absoluteFilePath());
             }
 
-            if (!result) {
+            if (!result)
+            {
                 return result;
             }
         }

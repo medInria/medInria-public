@@ -17,6 +17,7 @@
 
 class QWidget;
 class QLineEdit;
+class QDateEdit;
 class medStringParameterPresenterPrivate;
 
 class MEDWIDGETS_EXPORT medStringParameterPresenter : public medAbstractParameterPresenter
@@ -26,12 +27,16 @@ class MEDWIDGETS_EXPORT medStringParameterPresenter : public medAbstractParamete
 public:
     medStringParameterPresenter(medStringParameter *parent);
     medStringParameterPresenter(const QString & newParameterId);
-    virtual ~medStringParameterPresenter();
+    ~medStringParameterPresenter() override;
 
     virtual medStringParameter *parameter() const;
 
-    virtual QWidget *buildWidget();
+    QWidget *buildWidget() override;
     QLineEdit *buildLineEdit();
+    QLineEdit *buildLineEditOnFinish();
+    QDateEdit *buildDateEdit();
+	QLineEdit *buildLineEditPassword();
+	QWidget   *buildLineEditPasswordEyes();
 
 private:
     const QScopedPointer<medStringParameterPresenterPrivate> d;

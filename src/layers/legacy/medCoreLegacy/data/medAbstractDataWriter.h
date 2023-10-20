@@ -19,7 +19,7 @@ class dtkAbstractData;
 class medAbstractData;
 
 /**
- * Extending dtkAbstractDataWriter class to allow the export of a list of data
+ * Extending dtkAbstractDataWriter class 
  */
 class MEDCORELEGACY_EXPORT medAbstractDataWriter : public dtkAbstractDataWriter
 {
@@ -29,6 +29,7 @@ public:
     using dtkAbstractDataWriter::setData;
     virtual void setData(QList<medAbstractData*> data);
     virtual void setData(dtkAbstractData* data);
+
     QList<medAbstractData*> getDataList();
 
 private:

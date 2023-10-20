@@ -614,22 +614,22 @@ void medAbstractWorkspaceLegacy::open(const medDataIndex &index)
         return;
 
     medViewContainer *container = medViewContainerManager::instance()->container(containersSelected.first());
-    if(index.isValidForSeries())
-    {
-        container->addData(medDataManager::instance()->retrieveData(index));
-    }
-    else if(index.isValidForStudy())
-    {
-        // We get the list of each series from that study index, and open it
-        QList<medDataIndex> seriesList = medDataManager::instance()->getSeriesListFromStudy(index);
-        if (seriesList.count() > 0)
-        {
-            for(medDataIndex seriesIndex : seriesList)
-            {
-                container->addData(medDataManager::instance()->retrieveData(seriesIndex));
-            }
-        }
-    }
+    //if(index.isValidForSeries())
+    //{
+        container->addData(index);
+    //}
+    //else if(index.isValidForStudy())
+    //{
+    //    // We get the list of each series from that study index, and open it
+    //    QList<medDataIndex> seriesList = medDataManager::instance()->getSeriesListFromStudy(index);
+    //    if (seriesList.count() > 0)
+    //    {
+    //        for(medDataIndex seriesIndex : seriesList)
+    //        {
+    //            container->addData(medDataManager::instance()->retrieveData(seriesIndex));
+    //        }
+    //    }
+    //}
 }
 
 void medAbstractWorkspaceLegacy::setUserLayerPoolable(bool poolable)

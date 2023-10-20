@@ -38,8 +38,6 @@ protected:
     bool write();
 
 private:
-    QCheckBox *startInFullScreen;
-    QComboBox *defaultStartingArea;
 
     medStartupSettingsWidgetPrivate *d;
 };

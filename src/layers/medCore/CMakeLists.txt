@@ -15,6 +15,9 @@
 
 set(TARGET_NAME medCore)
 
+find_package(Qt5Test REQUIRED)
+find_package(Qt5 REQUIRED Network)
+
 ## #############################################################################
 ## List Sources
 ## #############################################################################
@@ -22,6 +25,11 @@ set(TARGET_NAME medCore)
 list_source_files(${TARGET_NAME}
   ${CMAKE_CURRENT_SOURCE_DIR}
   data
+  source/operating
+  source/settings
+  source/threadPool
+  source/virtualRepresentation
+  source
   process
   process/arithmetic_operation
   process/diffusion_processes
@@ -29,8 +37,12 @@ list_source_files(${TARGET_NAME}
   process/mask_image
   process/single_filter
   parameter
+  parameter/tools
   job
+  notification
+  log
   )
+
 
 list_header_directories_to_include(${TARGET_NAME}
   ${${TARGET_NAME}_HEADERS}
@@ -62,10 +74,12 @@ target_include_directories(${TARGET_NAME}
 target_link_libraries(${TARGET_NAME}
   medCoreLegacy
   Qt5::Core
+  Qt5::Network
   dtkCoreSupport
   dtkGuiSupport
   dtkLog
   dtkComposer
+        Qt5::Test
   )
 
 ## #############################################################################
@@ -75,3 +89,4 @@ target_link_libraries(${TARGET_NAME}
 set_lib_install_rules(${TARGET_NAME}
   ${${TARGET_NAME}_HEADERS}
   )
+  

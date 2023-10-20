@@ -36,24 +36,23 @@ medStartupSettingsWidgetPrivate::medStartupSettingsWidgetPrivate()
 {
 }
 
-medStartupSettingsWidget::medStartupSettingsWidget(QWidget *parent) :
-    QDialog(parent), d(new medStartupSettingsWidgetPrivate())
+medStartupSettingsWidget::medStartupSettingsWidget(QWidget *parent) : medSettingsWidget(parent), d(new medStartupSettingsWidgetPrivate())
 {
-    setWindowTitle(tr("Startup"));
-
-    startInFullScreen = new QCheckBox(this);
-    startInFullScreen->setToolTip(tr("Start application in full screen mode?"));
+    setTabName(tr("Startup"));
+    d->startInFullScreen = new QCheckBox(this);
+    d->startInFullScreen->setToolTip(tr("Start application in full screen mode?"));
 
     QList<medWorkspaceFactory::Details*> workspaceDetails = medWorkspaceFactory::instance()->workspaceDetailsSortedByName(true);
 
-    defaultStartingArea = new QComboBox(this);
-    defaultStartingArea->setItemData(0, 0, Qt::UserRole);
-    defaultStartingArea->addItem(tr("Homepage"));
-    defaultStartingArea->addItem(tr("Import/export files"));
-    defaultStartingArea->addItem(tr("Composer"));
+    d->defaultStartingArea = new QComboBox(this);
+    d->defaultStartingArea->addItem(tr("Search"));
+    d->defaultStartingArea->setItemData(0, 0, Qt::UserRole - 1); // Search is disabled
+    d->defaultStartingArea->addItem(tr("Homepage"));
+    d->defaultStartingArea->addItem(tr("Browser"));
+    d->defaultStartingArea->addItem(tr("Composer"));
     for(medWorkspaceFactory::Details* detail : workspaceDetails)
     {
-        defaultStartingArea->addItem(detail->name);
+        d->defaultStartingArea->addItem(detail->name);
     }
 
     d->defaultSegmentationSpeciality = new QComboBox(this);
@@ -61,17 +60,11 @@ medStartupSettingsWidget::medStartupSettingsWidget(QWidget *parent) :
     d->defaultSegmentationSpeciality->addItem(tr("Urology"));
 
     QFormLayout *layout = new QFormLayout;
-    layout->addRow(tr("Fullscreen"), startInFullScreen);
-    layout->addRow(tr("Starting area"), defaultStartingArea);
+    layout->addRow(tr("Fullscreen"), d->startInFullScreen);
+    layout->addRow(tr("Starting area"), d->defaultStartingArea);
     layout->addRow(tr("Segmentation speciality"), d->defaultSegmentationSpeciality);
 
-    // Display the current settings
-    read();
-
-    connect(startInFullScreen,   SIGNAL(stateChanged(int)),        this, SLOT(write()));
-    connect(defaultStartingArea, SIGNAL(currentIndexChanged(int)), this, SLOT(write()));
-    
-    setLayout(layout);
+    this->setLayout(layout);
 }
 
 void medStartupSettingsWidget::read()
@@ -100,6 +93,25 @@ void medStartupSettingsWidget::read()
     else
     {
         defaultStartingArea->setCurrentIndex(0);
+    }
+
+    QString osDefaultSegmentationSpecialityName = mnger->value("startup", "default_segmentation_speciality", "Default").toString();
+
+    i = 0;
+    bFind = false;
+    while (!bFind && i<d->defaultSegmentationSpeciality->count())
+    {
+        bFind = osDefaultSegmentationSpecialityName == d->defaultSegmentationSpeciality->itemText(i);
+        if (!bFind) ++i;
+    }
+
+    if (bFind)
+    {
+        d->defaultSegmentationSpeciality->setCurrentIndex(i);
+    }
+    else
+    {
+        d->defaultSegmentationSpeciality->setCurrentIndex(0);
     }
 
     QString osDefaultSegmentationSpecialityName = mnger->value("startup", "default_segmentation_speciality", "Default").toString();

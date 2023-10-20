@@ -31,6 +31,10 @@ public:
 
     medAbstractData( medAbstractData *parent = nullptr );
     medAbstractData( const medAbstractData &other );
+//    TODO Must be implemented as soon as possible
+//    medAbstractData& operator= (medAbstractData const & data);
+//    medAbstractData& operator= (medAbstractData const && data);
+//    medAbstractData( const medAbstractData &&other );
 
     virtual ~medAbstractData();
 
@@ -45,8 +49,17 @@ public:
 
     virtual QImage generateThumbnail(QSize size);
 
-public slots:
+    // FLO & JU
+    bool addParentData(medAbstractData * pi_parentData);
+    bool addDerivedData(medAbstractData * pi_derivedData);
+    bool removeParentData(medAbstractData * pi_parentData);
+    bool removeDerivedData(medAbstractData * pi_derivedData);
+    QList<medAbstractData*> parentData();
+    QList<medAbstractData*> derivedData();
+    void setExpectedName(QString name);
+    QString getExpectedName();
 
+public slots:
     void clearAttachedData();
     void addAttachedData( medAttachedData * data );
     void removeAttachedData( medAttachedData * data );

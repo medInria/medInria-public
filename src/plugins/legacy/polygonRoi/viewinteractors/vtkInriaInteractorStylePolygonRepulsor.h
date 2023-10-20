@@ -34,9 +34,10 @@ public:
     vtkTypeMacro(vtkInriaInteractorStylePolygonRepulsor, vtkInteractorStyleImageView2D)
     void PrintSelf(ostream& os, vtkIndent indent);
 
-    void OnMouseMove() override;
-    void OnLeftButtonDown() override;
-    void OnLeftButtonUp() override;
+    virtual void OnMouseMove();
+    virtual void OnLeftButtonDown();
+    virtual void OnLeftButtonUp();
+    void SetCurrentView(medAbstractView *view);
     void SetManager(polygonLabel *closestManagerInSlice);
     polygonLabel *GetManager(){ return manager;}
     bool IsInRepulsorDisk(double *pt);

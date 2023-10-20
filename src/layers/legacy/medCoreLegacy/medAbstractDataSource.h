@@ -61,6 +61,9 @@ signals:
     /** A source data may emit a signal to a file on disk when it successfully received the data and is ready for importing*/
     void dataToImportReceived(QString pathToData);
 
+    void dataToFetchReceived(QHash<QString, QHash<QString, QVariant> > patientData,
+                             QHash<QString, QHash<QString, QVariant> > seriesData);
+
     /** A source data may emit a signal to a medAbstractData in memory when it successfully received the data and is ready for importing*/
     void dataReceived(medAbstractData *data);
 
@@ -73,8 +76,14 @@ signals:
      * The medBrowserArea will treat the demand based on the medDataIndex.
      * @param index
     */
-    void exportData(const medDataIndex& index);
+    void exportData(const medDataIndex &index);
 
     /** emitted when the source is about to remove a data.*/
-    void dataRemoved(const medDataIndex& index);
+    void dataRemoved(const medDataIndex &index);
+
+    void updateProgress(int level);
+
+    void moveRequested(const QString &uid, const QString &queryLevel);
+
+    void moveState(int status, const QString &pathOrMessage);
 };

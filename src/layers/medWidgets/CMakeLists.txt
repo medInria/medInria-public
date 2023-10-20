@@ -21,6 +21,12 @@ set(TARGET_NAME medWidgets)
 
 list_source_files(${TARGET_NAME}
   ${CMAKE_CURRENT_SOURCE_DIR}
+  source/settings/widgets
+  source/settings
+  source/widgets
+  source
+  notification/widgets
+  notification
   process
   process/arithmetic_operation
   process/diffusion_processes
@@ -29,6 +35,7 @@ list_source_files(${TARGET_NAME}
   process/single_filter
   parameter
   toolboxes
+  widget
   )
 
 list_header_directories_to_include(${TARGET_NAME}
@@ -77,3 +84,4 @@ target_link_libraries(${TARGET_NAME}
 set_lib_install_rules(${TARGET_NAME}
   ${${TARGET_NAME}_HEADERS}
   )
+  

@@ -15,7 +15,10 @@
 #include <medStringParameterPresenter.h>
 
 #include <QWidget>
+#include <QHBoxLayout>
 #include <QLineEdit>
+#include <QDateEdit>
+#include <QPushButton>
 #include <QValidator>
 
 class medStringParameterPresenterPrivate
@@ -48,7 +51,22 @@ medStringParameter* medStringParameterPresenter::parameter() const
 
 QWidget* medStringParameterPresenter::buildWidget()
 {
-    return this->buildLineEdit();
+    QWidget *poWidgetRes = nullptr;
+    switch (d->parameter->defaultRepresentation())
+    {
+    case 1:
+        poWidgetRes = this->buildDateEdit(); break;
+	case 2:
+		poWidgetRes = this->buildLineEditOnFinish(); break;
+	case 3:
+		poWidgetRes = this->buildLineEditPassword(); break;
+	case 4:
+		poWidgetRes = this->buildLineEditPasswordEyes(); break;
+    case 0:
+    default:
+        poWidgetRes = this->buildLineEdit(); break;
+    }
+    return poWidgetRes;
 }
 
 QLineEdit* medStringParameterPresenter::buildLineEdit()
@@ -63,6 +81,86 @@ QLineEdit* medStringParameterPresenter::buildLineEdit()
     connect(d->parameter, &medStringParameter::validatorChanged, lineEdit, &QLineEdit::setValidator);
     connect(d->parameter, &medStringParameter::valueChanged, lineEdit, &QLineEdit::setText);
     connect(lineEdit, &QLineEdit::textEdited, d->parameter, &medStringParameter::setValue);
+    connect(lineEdit, &QLineEdit::editingFinished, d->parameter, &medStringParameter::edit);
 
     return lineEdit;
+}
+
+QLineEdit* medStringParameterPresenter::buildLineEditOnFinish()
+{
+    QLineEdit *lineEdit = new QLineEdit;
+
+    lineEdit->setToolTip(d->parameter->description());
+    lineEdit->setText(d->parameter->value());
+    lineEdit->setValidator(d->parameter->getValidator());
+
+    this->_connectWidget(lineEdit);
+    connect(d->parameter, &medStringParameter::validatorChanged, lineEdit, &QLineEdit::setValidator);
+    connect(d->parameter, &medStringParameter::valueChanged, lineEdit, &QLineEdit::setText);
+    auto *pParam = d->parameter;
+    connect(lineEdit, &QLineEdit::editingFinished, [=]() {pParam->setValue(lineEdit->text()); });
+
+    return lineEdit;
+}
+
+QDateEdit* medStringParameterPresenter::buildDateEdit()
+{
+    QDateEdit *dateEdit = new QDateEdit;
+
+    dateEdit->setToolTip(d->parameter->description());
+    dateEdit->setCalendarPopup(true);
+    QDate date = QDate::fromString( d->parameter->value(), "yyyyMMdd");
+    if (!date.isValid())
+    {
+        date = QDate::currentDate();
+    }
+    dateEdit->setDate(date);
+
+    this->_connectWidget(dateEdit);
+    connect(dateEdit, &QDateEdit::dateChanged, [&](QDate date){ 
+        emit d->parameter->setValue(date.toString("yyyyMMdd"));
+    });
+
+    return dateEdit;
+}
+
+QLineEdit * medStringParameterPresenter::buildLineEditPassword()
+{
+	auto * pLineEdit = buildLineEdit();
+	pLineEdit->setEchoMode(QLineEdit::Password);
+
+	return pLineEdit;
+}
+#include <QIcon>
+QWidget * medStringParameterPresenter::buildLineEditPasswordEyes()
+{
+	QWidget * pWidgetRes = new QWidget();
+
+	auto * pLayout = new QHBoxLayout();
+	auto * pLineEdit = buildLineEditPassword();
+	auto * pEyeButton = new QPushButton();
+
+	pLayout->addWidget(pLineEdit);
+	pLayout->addWidget(pEyeButton);
+	pWidgetRes->setLayout(pLayout);
+
+	pEyeButton->setCheckable(true);
+	pEyeButton->setIcon(QIcon(":/icons/eye_closed.png"));
+	
+	connect(pEyeButton, &QPushButton::toggled, [=](bool toggle) 
+	{
+		if (toggle)
+		{
+			pLineEdit->setEchoMode(QLineEdit::Normal);
+			pEyeButton->setIcon(QIcon(":/icons/eye_open.png"));
+		}
+		else
+		{
+			pLineEdit->setEchoMode(QLineEdit::Password);
+			pEyeButton->setIcon(QIcon(":/icons/eye_closed.png"));
+		}
+	});
+
+
+	return pWidgetRes;
 }

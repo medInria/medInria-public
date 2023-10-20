@@ -13,8 +13,7 @@
 
 #include <medBrowserArea.h>
 #include <medComposerArea.h>
-#include <medDatabaseController.h>
-#include <medDatabaseNonPersistentController.h>
+//#include <medDatabaseNonPersistentController.h>
 #include <medDataManager.h>
 #include <medEmptyDbWarning.h>
 #include <medHomepageArea.h>
@@ -22,7 +21,7 @@
 #include <medLogger.h>
 #include <medMainWindow.h>
 #include <medQuickAccessMenu.h>
-#include <medSaveModifiedDialog.h>
+//#include <medSaveModifiedDialog.h>
 #include <medSearchToolboxDialog.h>
 #include <medSelectorToolBox.h>
 #include <medSelectorWorkspace.h>
@@ -59,6 +58,14 @@ public:
     medHomepageArea*          homepageArea;
     QHBoxLayout*              statusBarLayout;
     medStatusBar*             statusBar;
+    medQuickAccessPushButton* quickAccessButton;
+
+    //QToolButton *quitButton;
+    QToolButton *notifButton;
+    QToolButton *fullscreenButton;
+    QToolButton *adjustSizeButton;
+    QToolButton *screenshotButton;
+    QToolButton *movieButton;
     
     medQuickAccessMenu *shortcutAccessWidget;
     bool shortcutAccessVisible;
@@ -125,6 +132,93 @@ medMainWindow::medMainWindow ( QWidget *parent ) : QMainWindow ( parent ), d ( n
     connect(d->shortcutAccessWidget, SIGNAL(workspaceSelected(QString)), this, SLOT(showWorkspace(QString)));
 
     d->shortcutAccessVisible = false;
+    d->controlPressed = false;
+
+    ////Add quit button
+    //QIcon quitIcon;
+    //quitIcon.addPixmap(QPixmap(":/icons/quit.png"), QIcon::Normal);
+    //d->quitButton = new QToolButton(this);
+    //d->quitButton->setIcon(quitIcon);
+    //d->quitButton->setObjectName("quitButton");
+    //connect(d->quitButton, SIGNAL( pressed()), this, SLOT (close()));
+    //d->quitButton->setToolTip(tr("Close medInria"));
+
+    //Add quit button
+    QIcon notifIcon;
+    notifIcon.addPixmap(QPixmap(":/icons/button-notifications.png"), QIcon::Normal);
+    d->notifButton = new QToolButton(this);
+    d->notifButton->setIcon(notifIcon);
+    d->notifButton->setObjectName("notifButton");
+    d->notifButton->setToolTip(tr("Show notification pane"));
+
+
+
+    //  Setup Fullscreen Button    medWorkspaceFactory::Details* details = medWorkspaceFactory::instance()->workspaceDetailsFromId(workspace);
+
+    QIcon fullscreenIcon ;
+    fullscreenIcon.addPixmap(QPixmap(":icons/fullscreenExpand.png"),QIcon::Normal,QIcon::Off);
+    fullscreenIcon.addPixmap(QPixmap(":icons/fullscreenReduce.png"),QIcon::Normal,QIcon::On);
+
+    //  Setting up shortcuts
+    //  we use a toolbutton, which has shorcuts,
+    //  so we don't need the application shortcut anymore.
+    d->fullscreenButton = new QToolButton(this);
+    d->fullscreenButton->setIcon(fullscreenIcon);
+    d->fullscreenButton->setCheckable(true);
+    d->fullscreenButton->setChecked(false);
+    d->fullscreenButton->setObjectName("fullScreenButton");
+#if defined(Q_OS_MAC)
+    d->fullscreenButton->setShortcut(Qt::ControlModifier + Qt::Key_F);
+    d->fullscreenButton->setToolTip(tr("Switch FullScreen state (Cmd+f)"));
+#else
+    d->fullscreenButton->setShortcut(Qt::Key_F11);
+    d->fullscreenButton->setToolTip(tr("Switch FullScreen state (F11)"));
+#endif
+    connect ( d->fullscreenButton, SIGNAL ( toggled(bool) ),
+                       this, SLOT ( setFullScreen(bool) ) );
+
+    QIcon cameraIcon;
+    cameraIcon.addPixmap(QPixmap(":icons/camera.png"),QIcon::Normal);
+    cameraIcon.addPixmap(QPixmap(":icons/camera_grey.png"),QIcon::Disabled);
+    d->screenshotButton = new QToolButton(this);
+    d->screenshotButton->setIcon(cameraIcon);
+    d->screenshotButton->setObjectName("screenshotButton");
+    d->screenshotButton->setShortcut(Qt::AltModifier + Qt::Key_S);
+    d->screenshotButton->setToolTip(tr("Capture screenshot"));
+    QObject::connect(d->screenshotButton, SIGNAL(clicked()), this, SLOT(captureScreenshot()));
+
+    QIcon movieIcon;
+    movieIcon.addPixmap(QPixmap(":icons/movie.png"),      QIcon::Normal);
+    movieIcon.addPixmap(QPixmap(":icons/movie_grey.png"), QIcon::Disabled);
+    d->movieButton = new QToolButton(this);
+    d->movieButton->setIcon(movieIcon);
+    d->movieButton->setObjectName("movieButton");
+    d->movieButton->setShortcut(Qt::AltModifier + Qt::Key_M);
+    d->movieButton->setToolTip(tr("Export 4D view(s) or mesh(s) as movie.\nShortcut Alt+M.\nBeware, do not hide view(s) during process."));
+    QObject::connect(d->movieButton, SIGNAL(clicked()), this, SLOT(captureVideo()));
+
+    QIcon adjustIcon;
+    adjustIcon.addPixmap(QPixmap(":icons/adjust_size.png"),      QIcon::Normal);
+    adjustIcon.addPixmap(QPixmap(":icons/adjust_size_grey.png"), QIcon::Disabled);
+    d->adjustSizeButton = new QToolButton(this);
+    d->adjustSizeButton->setIcon(adjustIcon);
+    d->adjustSizeButton->setObjectName("adjustSizeButton");
+    d->adjustSizeButton->setShortcut(Qt::AltModifier + Qt::Key_A);
+    d->adjustSizeButton->setToolTip(tr("Adjust containers size"));
+    QObject::connect(d->adjustSizeButton, SIGNAL(clicked()), this, SLOT(adjustContainersSize()));
+
+
+    //  QuitMessage and rightEndButtons will switch hidden and shown statuses.
+    d->rightEndButtons = new QWidget(this);
+    QHBoxLayout * rightEndButtonsLayout = new QHBoxLayout(d->rightEndButtons);
+    rightEndButtonsLayout->setContentsMargins ( 5, 0, 5, 0 );
+    rightEndButtonsLayout->setSpacing ( 5 );
+    rightEndButtonsLayout->addWidget( d->adjustSizeButton );
+    rightEndButtonsLayout->addWidget( d->screenshotButton );
+    rightEndButtonsLayout->addWidget( d->movieButton );
+    rightEndButtonsLayout->addWidget( d->fullscreenButton );
+    //rightEndButtonsLayout->addWidget(d->quitButton);
+    rightEndButtonsLayout->addWidget(d->notifButton);
 
     //  Setting up status bar
     d->statusBarLayout = new QHBoxLayout;
@@ -401,6 +495,11 @@ void medMainWindow::enableMenuBarItem(QString name, bool enabled)
     }
 }
 
+QToolButton * medMainWindow::notifButton()
+{
+    return d->notifButton;
+}
+
 void medMainWindow::switchToHomepageArea()
 {
     if(d->currentArea != d->homepageArea)
@@ -513,26 +612,10 @@ void medMainWindow::switchToWorkspaceArea()
 
         d->stack->setCurrentWidget(d->workspaceArea);
 
-        // Dialog window to recall users if database is empty
-        // but only if the warning is enabled in medSettings
-        bool showWarning = medSettingsManager::instance()->value(
-                    "system",
-                    "showEmptyDbWarning",
-                    QVariant(true)).toBool();
-        if ( showWarning )
-        {
-            QList<medDataIndex> indexes = medDatabaseNonPersistentController::instance()->availableItems();
-            QList<medDataIndex> patients = medDatabaseController::instance()->patients();
-            if( indexes.isEmpty() )
-            {
-                if( patients.isEmpty())
-                {
-                    medEmptyDbWarning* msgBox = new medEmptyDbWarning(this);
-                    msgBox->exec();
-                }
-            }
-        }
-    }
+    d->screenshotButton->setEnabled(true);
+    d->movieButton->setEnabled(true);
+    d->adjustSizeButton->setEnabled(true);
+    d->stack->setCurrentWidget(d->workspaceArea);
 }
 
 void medMainWindow::switchToComposerArea()
@@ -622,40 +705,6 @@ void medMainWindow::hideShortcutAccess()
     }
 }
 
-int medMainWindow::saveModifiedAndOrValidateClosing()
-{
-    QList<medDataIndex> indexes = medDatabaseNonPersistentController::instance()->availableItems();
-
-    if(indexes.isEmpty())
-    {
-        // No data to save, pop-up window to validate the closing
-
-        QMessageBox msgBox(this);
-        msgBox.setWindowTitle("Closing");
-        msgBox.setText("Do you really want to exit?");
-        msgBox.setStandardButtons(QMessageBox::Yes);
-        msgBox.addButton(QMessageBox::No);
-        msgBox.setDefaultButton(QMessageBox::No);
-        if(msgBox.exec() == QMessageBox::Yes)
-        {
-            return QDialog::Accepted;
-        }
-        else
-        {
-            return QDialog::Rejected;
-        }
-    }
-    else
-    {
-        // User is asked to save, cancel or exit without saving temporary data
-
-        medSaveModifiedDialog *saveDialog = new medSaveModifiedDialog(this);
-        saveDialog->show();
-        saveDialog->exec();
-        return saveDialog->result();
-    }
-}
-
 void medMainWindow::dragEnterEvent(QDragEnterEvent *event)
 {
     event->acceptProposedAction();
@@ -731,11 +780,11 @@ void medMainWindow::closeEvent(QCloseEvent *event)
         QThreadPool::globalInstance()->waitForDone();
     }
 
-    if(this->saveModifiedAndOrValidateClosing() != QDialog::Accepted)
-    {
-        event->ignore();
-        return;
-    }
+    //if(this->saveModifiedAndOrValidateClosing() != QDialog::Accepted)
+    //{
+    //    event->ignore();
+    //    return;
+    //}
 
     d->closeEventProcessed = true;
     this->saveSettings();

@@ -28,6 +28,7 @@ medDoubleParameter::medDoubleParameter(QString const& name,  QObject *parent)
     d->value = 0.0;
     d->min = 0.0;
     d->max = 100.0;
+    connect(this, &medDoubleParameter::valueChanged, this, &medDoubleParameter::triggered);
 }
 
 medDoubleParameter::~medDoubleParameter()
@@ -38,6 +39,18 @@ medDoubleParameter::~medDoubleParameter()
 double medDoubleParameter::value() const
 {
     return d->value;
+}
+
+bool medDoubleParameter::copyValueTo(medAbstractParameter & dest)
+{
+    bool bRes = typeid(dest) == typeid(*this);
+
+    if (bRes)
+    {
+        dynamic_cast<medDoubleParameter*>(&dest)->setValue(value());
+    }
+
+    return bRes;
 }
 
 void medDoubleParameter::setValue(double value)
@@ -83,4 +96,47 @@ double medDoubleParameter::maximum() const
 void medDoubleParameter::trigger()
 {
     emit valueChanged(d->value);
+}
+
+QVariantMap medDoubleParameter::toVariantMap() const
+{
+    QVariantMap varMapRes;
+
+    varMapRes.insert("id", id());
+    varMapRes.insert("caption", caption());
+    varMapRes.insert("description", description());
+
+    varMapRes.insert("value", d->value);
+    varMapRes.insert("min", d->min);
+    varMapRes.insert("max", d->max);
+
+    return varMapRes;
+}
+
+bool medDoubleParameter::fromVariantMap(QVariantMap const& pi_variantMap)
+{
+    bool bRes = true;
+
+    bRes &= pi_variantMap.contains("id");
+    bRes &= pi_variantMap.contains("caption");
+    bRes &= pi_variantMap.contains("description");
+    bRes &= pi_variantMap.contains("value");
+
+    if (bRes)
+    {
+        bRes &= pi_variantMap["value"].canConvert(QMetaType::Double);
+        bRes &= pi_variantMap["min"].canConvert(QMetaType::Double);
+        bRes &= pi_variantMap["max"].canConvert(QMetaType::Double);
+        if (bRes)
+        {
+            setCaption(pi_variantMap["caption"].toString());
+            setDescription(pi_variantMap["description"].toString());
+
+            d->value = pi_variantMap["value"].toDouble();
+            d->min = pi_variantMap["min"].toDouble();
+            d->max = pi_variantMap["max"].toDouble();
+        }
+    }
+
+    return bRes;
 }
