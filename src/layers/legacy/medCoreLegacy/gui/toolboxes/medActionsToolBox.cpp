@@ -14,6 +14,7 @@
 #include <medAbstractDbController.h>
 #include <medActionsToolBox.h>
 #include <medDataManager.h>
+#include <medSettingsManager.h>
 #include <medToolBoxBody.h>
 
 class medActionsToolBoxPrivate
@@ -54,15 +55,8 @@ medActionsToolBox::medActionsToolBox( QWidget *parent /*= 0*/, bool FILE_SYSTEM 
     d->buttonsWidget = new QWidget(this);
     d->noButtonsSelectedWidget = new QWidget(this);
 
-    // Information Widget for File System tab
+    // Information Widget
     d->informationWidget = new QWidget(this);
-    QLabel* informationLabel = new QLabel(tr("To import DICOMs, select the directory containing these files.\nDo not select them separately."),
-                                          d->informationWidget);
-    informationLabel->setObjectName("actionToolBoxLabel");
-    informationLabel->setSizePolicy(QSizePolicy::Ignored, QSizePolicy::Preferred);
-    informationLabel->setWordWrap(true);
-    QHBoxLayout* informationLayout = new QHBoxLayout(d->informationWidget);
-    informationLayout->addWidget(informationLabel, 0, Qt::AlignLeft);
     this->addWidget(d->informationWidget);
 
     initializeItemToActionsMap();
@@ -94,7 +88,25 @@ medActionsToolBox::medActionsToolBox( QWidget *parent /*= 0*/, bool FILE_SYSTEM 
         // The order of the buttons in this list determines the order used to place them in the grid layout
         d->buttonsList << d->viewBt << d->loadBt << d->importBt;
 
+        // Information and settings
         d->informationWidget->setVisible(true);
+
+        QLabel* informationLabel = new QLabel(tr("To import DICOM select the directory containing the files."), d->informationWidget);
+        informationLabel->setObjectName("actionToolBoxLabel");
+        informationLabel->setSizePolicy(QSizePolicy::Ignored, QSizePolicy::Preferred);
+        informationLabel->setWordWrap(true);
+        auto informationLayout = new QVBoxLayout(d->informationWidget);
+        informationLayout->addWidget(informationLabel, 0, Qt::AlignLeft);
+
+        auto thumbnailCreationSetting = new QCheckBox("Generate a thumbnail at import");
+        thumbnailCreationSetting->setToolTip("Generating a thumbnail uses RAM, so it can be useful to disable it "
+                                              "if you're short of memory and have import crashes.");
+        auto thumbnailValue = medSettingsManager::instance()->value("Browser", 
+                                                                   "thumbnail_creation_setting", 
+                                                                   true).toBool(); // Default value to true
+        thumbnailCreationSetting->setChecked(thumbnailValue);
+        connect(thumbnailCreationSetting, &QCheckBox::clicked, this, &medActionsToolBox::thumbnailSettingClicked);
+        informationLayout->addWidget(thumbnailCreationSetting);
     }
     else //IF DATABASE
     {
@@ -351,4 +363,9 @@ void medActionsToolBox::initializeItemToActionsMap()
     d->itemToActions.insert("Files & Folders", "Import");
     d->itemToActions.insert("Files & Folders", "Temporary Import");
     d->itemToActions.insert("Files & Folders", "View");
+}
+
+void medActionsToolBox::thumbnailSettingClicked(bool state)
+{
+    medSettingsManager::instance()->setValue("Browser", "thumbnail_creation_setting", state);
 }
