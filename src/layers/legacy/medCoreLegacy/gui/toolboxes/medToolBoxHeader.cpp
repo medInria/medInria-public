@@ -44,7 +44,7 @@ medToolBoxHeader::medToolBoxHeader(QWidget *parent) : QFrame(parent), d(new medT
 medToolBoxHeader::~medToolBoxHeader(void)
 {
     delete d->png;
-    d->png = nullptr;
+
     delete d;
     d = nullptr;
 }
