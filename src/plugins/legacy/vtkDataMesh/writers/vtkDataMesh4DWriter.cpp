@@ -98,9 +98,7 @@ QString vtkDataMesh4DWriter::identifier() const
 
 bool vtkDataMesh4DWriter::registered()
 {
-    return medAbstractDataFactory::instance()->registerDataWriterType(QString("vtkDataMesh4DWriter"), 
-                                                                      vtkDataMesh4DWriter::s_handled(), 
-                                                                      createVtkDataMesh4DWriter);
+    return medAbstractDataFactory::instance()->registerDataWriterType("vtkDataMesh4DWriter", vtkDataMesh4DWriter::s_handled(), createVtkDataMesh4DWriter);
 }
 
 QStringList vtkDataMesh4DWriter::supportedFileExtensions() const

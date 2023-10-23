@@ -27,7 +27,7 @@ namespace medMetaDataKeys
     // PATIENT
     MEDCORELEGACY_EXPORT const Key PatientID("PatientID");
     MEDCORELEGACY_EXPORT const Key PatientName("PatientName", "Patient Name");
-    MEDCORELEGACY_EXPORT const Key Age("Age"); // could be "00" format, or for instance "00Y"
+    MEDCORELEGACY_EXPORT const Key Age("Age", "Age"); // could be "00" format, or for instance "00Y"
     MEDCORELEGACY_EXPORT const Key BirthDate("BirthDate", "Birth Date"/*, QVariant::Date*/);
     MEDCORELEGACY_EXPORT const Key Gender("Gender", "Gender", QVariant::Char);
     MEDCORELEGACY_EXPORT const Key Description("Description"); // Used to add the app name and version
@@ -55,7 +55,7 @@ namespace medMetaDataKeys
     MEDCORELEGACY_EXPORT const Key SeriesThumbnail("SeriesThumbnail", "Series Thumbnail");
 
     // EQUIPEMENT
-    MEDCORELEGACY_EXPORT const Key Manufacturer("Manufacturer");
+    MEDCORELEGACY_EXPORT const Key Manufacturer("Manufacturer", "Manufacturer");
 
     // IMAGE
     MEDCORELEGACY_EXPORT const Key SOPInstanceUID("SOPInstanceUID", "SOP Instance UID");

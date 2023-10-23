@@ -34,7 +34,7 @@ itkMetaDataTensorImageWriter::~itkMetaDataTensorImageWriter()
 bool itkMetaDataTensorImageWriter::registered()
 {
   return medAbstractDataFactory::instance()->registerDataWriterType(
-              QString("itkMetaDataTensorImageWriter"),
+              "itkMetaDataTensorImageWriter",
               itkDataTensorImageWriterBase::s_handled(),
               create);
 }
