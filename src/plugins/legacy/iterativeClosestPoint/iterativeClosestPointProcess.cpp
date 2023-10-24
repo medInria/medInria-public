@@ -147,9 +147,6 @@ void iterativeClosestPointProcess::setParameter(int data, int channel)
         case 7:
             d->exportMatrixState = data;
             break;
-        case 7:
-            d->exportMatrixState = data;
-            break;
     }
 }
 
@@ -168,24 +165,6 @@ void iterativeClosestPointProcess::setParameter(QString data, int channel)
             break;
     }
 }
-
-void iterativeClosestPointProcess::setParameter(QString data, int channel)
-{
-    switch (channel)
-    {
-        case 8:
-            d->exportMatrixFilePath = data;
-            break;
-        case 9:
-            d->sourceName = data;
-            break;
-        case 10:
-            d->targetName = data;
-            break;
-    }
-}
-
-
 
 int iterativeClosestPointProcess::update()
 {

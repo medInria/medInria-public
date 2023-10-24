@@ -113,7 +113,8 @@ struct StudyDetails
 template <typename T> 
 static inline auto findLevelElement(const QList<T> &levels, int id)
 {
-    QList<T>::const_iterator it = std::find_if(levels.begin(), levels.end(), [id](const T& level) 
+    QList<typename T>::const_iterator it;
+    it = std::find_if(levels.begin(), levels.end(), [id](const T& level) 
     {
         return level.id == id;
     });

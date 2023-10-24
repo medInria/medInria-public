@@ -22,6 +22,7 @@ defaultLabelToolBox::defaultLabelToolBox(QWidget *parent):
                                });
 
     auto widget = new QWidget();
+
     auto layout = new QVBoxLayout;
     widget->setLayout(layout);
 
@@ -123,6 +124,7 @@ void defaultLabelToolBox::clear()
         delete item;
     }
     labels->clear();
+
 }
 
 void defaultLabelToolBox::clean()

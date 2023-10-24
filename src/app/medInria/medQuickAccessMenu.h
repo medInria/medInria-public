@@ -22,7 +22,7 @@ class medQuickAccessMenu : public QWidget
   Q_OBJECT
 
 public:
-    medQuickAccessMenu (QWidget* parent = nullptr, Qt::WindowFlags f = 0);
+    medQuickAccessMenu ( bool vertical, QWidget* parent = nullptr, Qt::WindowFlags f = 0 );
 
     void reset(bool optimizeLayout);
 
@@ -31,6 +31,8 @@ public:
     void updateSelected (QString workspace);
 
     void switchToCurrentlySelected ();
+
+    void manuallyClickOnWorkspaceButton(QString workspaceName);
 
 protected:
     void focusOutEvent(QFocusEvent * event);
@@ -41,7 +43,8 @@ protected:
     void keyReleaseEvent ( QKeyEvent * event );
 
     void createHorizontalQuickAccessMenu();
-    
+    void createVerticalQuickAccessMenu();
+
     void mouseSelectWidget(unsigned int identifier);
 
 signals:
@@ -51,6 +54,7 @@ signals:
     void composerSelected();
     void areaSelected(QString);
     void workspaceSelected(QString);
+    void searchSelected();
 
 private:
     int currentSelected;

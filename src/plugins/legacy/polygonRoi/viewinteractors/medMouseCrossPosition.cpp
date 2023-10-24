@@ -78,8 +78,4 @@ int medMouseCrossPosition::isEnabled()
 void medMouseCrossPosition::getWorldPosition(double *dPos, double *wPos)
 {
     handle2d->ComputeDisplayToWorld( handle2d->GetCurrentRenderer(), dPos[0], dPos[1], 0.0,  wPos);
-<<<<<<< HEAD
 }
-=======
-}
->>>>>>> origin/medDataSources

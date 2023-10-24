@@ -1,13 +1,15 @@
-/*
- * medInria
- * Copyright (c) INRIA 2013. All rights reserved.
- * 
- * medInria is under BSD-2-Clause license. See LICENSE.txt for details in the root of the sources or:
- * https://github.com/medInria/medInria-public/blob/master/LICENSE.txt
- * 
- * This software is distributed WITHOUT ANY WARRANTY; without even
- * the implied warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.
- */
+/*=========================================================================
+
+ medInria
+
+ Copyright (c) INRIA 2013 - 2019. All rights reserved.
+ See LICENSE.txt for details.
+
+  This software is distributed WITHOUT ANY WARRANTY; without even
+  the implied warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR
+  PURPOSE.
+
+=========================================================================*/
 
 #include <dtkComposerWidget.h>
 
@@ -25,6 +27,7 @@
 #include <medSearchToolboxDialog.h>
 #include <medSelectorToolBox.h>
 #include <medSelectorWorkspace.h>
+#include <medSettingsEditor.h>
 #include <medSettingsManager.h>
 #include <medStatusBar.h>
 #include <medTabbedViewContainers.h>
@@ -56,7 +59,9 @@ public:
     medBrowserArea*           browserArea;
     medWorkspaceArea*         workspaceArea;
     medHomepageArea*          homepageArea;
+    medSettingsEditor*        settingsEditor;
     QHBoxLayout*              statusBarLayout;
+    QWidget*                  rightEndButtons;
     medStatusBar*             statusBar;
     medQuickAccessPushButton* quickAccessButton;
 
@@ -67,6 +72,8 @@ public:
     QToolButton *screenshotButton;
     QToolButton *movieButton;
     
+    medQuickAccessMenu * quickAccessWidget;
+    bool controlPressed;
     medQuickAccessMenu *shortcutAccessWidget;
     bool shortcutAccessVisible;
     bool closeEventProcessed;
@@ -95,6 +102,8 @@ medMainWindow::medMainWindow ( QWidget *parent ) : QMainWindow ( parent ), d ( n
     d->closeEventProcessed = false;
 
     //  Setting up widgets
+
+    d->settingsEditor = nullptr;
     d->currentArea = nullptr;
 
     //  Browser area.
@@ -120,8 +129,29 @@ medMainWindow::medMainWindow ( QWidget *parent ) : QMainWindow ( parent ), d ( n
     d->stack->addWidget(d->workspaceArea);
     d->stack->addWidget(d->composerArea);
 
-    // Shortcut to workspaces through CTRL+Space
-    d->shortcutAccessWidget = new medQuickAccessMenu(this);
+    //  Setup quick access menu
+    d->quickAccessButton = new medQuickAccessPushButton ( this );
+    d->quickAccessButton->setFocusPolicy ( Qt::NoFocus );
+    d->quickAccessButton->setMinimumHeight(31);
+    d->quickAccessButton->setIcon(QIcon(":medInria.ico"));
+    d->quickAccessButton->setCursor(Qt::PointingHandCursor);
+    d->quickAccessButton->setText(tr("Workspaces access menu"));
+    connect(d->quickAccessButton, SIGNAL(clicked()), this, SLOT(toggleQuickAccessVisibility()));
+
+    d->quickAccessWidget = new medQuickAccessMenu(true, this);
+    d->quickAccessWidget->setFocusPolicy(Qt::ClickFocus);
+    d->quickAccessWidget->hide();
+    d->quickAccessWidget->setMinimumWidth(180);
+    d->quickAccessWidget->move(QPoint(0, this->height() - d->quickAccessWidget->height() - 30));
+
+    connect(d->quickAccessWidget, SIGNAL(menuHidden()), this, SLOT(hideQuickAccess()));
+    connect(d->quickAccessWidget, SIGNAL(searchSelected()), this, SLOT(switchToSearchArea()));
+    connect(d->quickAccessWidget, SIGNAL(homepageSelected()), this, SLOT(switchToHomepageArea()));
+    connect(d->quickAccessWidget, SIGNAL(browserSelected()), this, SLOT(switchToBrowserArea()));
+    connect(d->quickAccessWidget, SIGNAL(composerSelected()), this, SLOT(switchToComposerArea()));
+    connect(d->quickAccessWidget, SIGNAL(workspaceSelected(QString)), this, SLOT(showWorkspace(QString)));
+
+    d->shortcutAccessWidget = new medQuickAccessMenu( false, this );
     d->shortcutAccessWidget->setFocusPolicy(Qt::ClickFocus);
     d->shortcutAccessWidget->setProperty("pos", QPoint(0, -500));
 
@@ -224,18 +254,20 @@ medMainWindow::medMainWindow ( QWidget *parent ) : QMainWindow ( parent ), d ( n
     d->statusBarLayout = new QHBoxLayout;
     d->statusBarLayout->setMargin(0);
     d->statusBarLayout->setSpacing(5);
+    d->statusBarLayout->addWidget ( d->quickAccessButton );
     d->statusBarLayout->addStretch();
+    d->statusBarLayout->addWidget( d->rightEndButtons );
 
     //  Create a container widget for the status bar
     QWidget * statusBarWidget = new QWidget ( this );
-    statusBarWidget->setContentsMargins ( 5, 0, 0, 0 );
+    statusBarWidget->setContentsMargins ( 5, 0, 5, 0 );
     statusBarWidget->setLayout ( d->statusBarLayout );
 
     //  Setup status bar
     d->statusBar = new medStatusBar(this);
     d->statusBar->setStatusBarLayout(d->statusBarLayout);
     d->statusBar->setSizeGripEnabled(false);
-    d->statusBar->setContentsMargins(5, 0, 0, 0);
+    d->statusBar->setContentsMargins(5, 0, 5, 0);
     d->statusBar->setFixedHeight(31);
     d->statusBar->addPermanentWidget(statusBarWidget, 1);
 
@@ -247,6 +279,7 @@ medMainWindow::medMainWindow ( QWidget *parent ) : QMainWindow ( parent ), d ( n
     connect(d->homepageArea, SIGNAL(showBrowser()), this, SLOT(switchToBrowserArea()));
     connect(d->homepageArea, SIGNAL(showWorkspace(QString)), this, SLOT(showWorkspace(QString)));
     connect(d->homepageArea, SIGNAL(showComposer()), this, SLOT(showComposer()));
+
 
     this->setCentralWidget ( d->stack );
     this->setWindowTitle(qApp->applicationName());
@@ -262,9 +295,8 @@ medMainWindow::medMainWindow ( QWidget *parent ) : QMainWindow ( parent ), d ( n
                                                      Qt::ApplicationShortcut);
     this->restoreSettings();
 
-    // Switch to the default workspace at application start
-    switchToDefaultWorkSpace();
-
+    // medQuickAccessMenu loads default workspace to open, so we can switch to it now
+    d->quickAccessWidget->switchToCurrentlySelected();
     this->setAcceptDrops(true);
 }
 
@@ -277,6 +309,7 @@ medMainWindow::~medMainWindow()
 void medMainWindow::mousePressEvent ( QMouseEvent* event )
 {
     QWidget::mousePressEvent ( event );
+    this->hideQuickAccess();
     this->hideShortcutAccess();
 }
 
@@ -298,36 +331,6 @@ void medMainWindow::saveSettings()
 
         // Keep the current screen for multiple-screens display
         mnger->setValue("medMainWindow", "currentScreen", QApplication::desktop()->screenNumber(this));
-    }
-}
-
-void medMainWindow::switchToDefaultWorkSpace()
-{
-    QString startupWorkspace = medSettingsManager::instance()->value("startup", "default_starting_area").toString();
-
-    if (startupWorkspace == "Homepage")
-    {
-        switchToHomepageArea();
-    }
-    else if (startupWorkspace == "Import/export files")
-    {
-        switchToBrowserArea();
-    }
-    else if (startupWorkspace == "Composer")
-    {
-        switchToComposerArea();
-    }
-    else
-    {
-        QList<medWorkspaceFactory::Details*> workspaceDetails = medWorkspaceFactory::instance()->workspaceDetailsSortedByName(true);
-        for( medWorkspaceFactory::Details *detail : workspaceDetails )
-        {
-            if (startupWorkspace == detail->name)
-            {
-                showWorkspace(detail->identifier);
-                break;
-            }
-        }
     }
 }
 
@@ -420,6 +423,15 @@ void medMainWindow::open_waitForImportedSignal(medDataIndex index, QUuid uuid)
     }
 }
 
+void medMainWindow::resizeEvent ( QResizeEvent* event )
+{
+    QWidget::resizeEvent ( event );
+    d->quickAccessWidget->move(QPoint (0, this->height() - d->quickAccessWidget->height() - 30 ));
+    this->hideQuickAccess();
+    emit resized(geometry());
+}
+
+//TODO hide it, it is only usefull for immersive romm - RDE
 void medMainWindow::setWallScreen (const bool full )
 {
     if ( full )
@@ -461,7 +473,7 @@ void medMainWindow::captureScreenshot()
                                                         "Image files (*.png *.jpeg *.jpg);;All files (*.*)",
                                                         0);
 
-        QByteArray format = fileName.right(fileName.lastIndexOf('.')).toUpper().toUtf8();
+        QByteArray format = fileName.right(fileName.lastIndexOf('.')).toUpper().toLatin1();
         if ( ! QImageWriter::supportedImageFormats().contains(format) )
         {
             format = "PNG";
@@ -477,22 +489,34 @@ void medMainWindow::captureVideo()
     d->workspaceArea->grabVideo();
 }
 
+void medMainWindow::showFullScreen()
+{
+    d->fullscreenButton->blockSignals(true);
+    d->fullscreenButton->setChecked(true);
+    d->fullscreenButton->blockSignals(false);
+    QMainWindow::showFullScreen();
+    this->setAcceptDrops(true);
+}
+
+void medMainWindow::showNormal()
+{
+    d->fullscreenButton->blockSignals(true);
+    d->fullscreenButton->setChecked(false);
+    d->fullscreenButton->blockSignals(false);
+    QMainWindow::showNormal();
+}
+
+void medMainWindow::showMaximized()
+{
+    d->fullscreenButton->blockSignals(true);
+    d->fullscreenButton->setChecked(false);
+    d->fullscreenButton->blockSignals(false);
+    QMainWindow::showMaximized();
+}
+
 QWidget* medMainWindow::currentArea() const
 {
     return d->currentArea;
-}
-
-void medMainWindow::enableMenuBarItem(QString name, bool enabled)
-{
-    QList<QMenu*> menus = menuBar()->findChildren<QMenu*>();
-
-    for (QMenu *currentMenu : menus)
-    {
-        if (name == currentMenu->title())
-        {
-            currentMenu->setEnabled(enabled);
-        }
-    }
 }
 
 QToolButton * medMainWindow::notifButton()
@@ -502,43 +526,51 @@ QToolButton * medMainWindow::notifButton()
 
 void medMainWindow::switchToHomepageArea()
 {
-    if(d->currentArea != d->homepageArea)
-    {
-        d->currentArea = d->homepageArea;
+    if(d->currentArea == d->homepageArea)
+        return;
 
-        d->shortcutAccessWidget->updateSelected("Homepage");
-        if (d->shortcutAccessVisible)
-        {
-            this->hideShortcutAccess();
-        }
+    d->currentArea = d->homepageArea;
 
-        d->stack->setCurrentWidget(d->homepageArea);
+    d->shortcutAccessWidget->updateSelected("Homepage");
+    d->quickAccessWidget->updateSelected("Homepage");
+    d->quickAccessButton->setText(tr("Workspaces access menu"));
+    d->quickAccessButton->setMinimumWidth(170);
+    if (d->quickAccessWidget->isVisible())
+        this->hideQuickAccess();
 
-        // The View menu is dedicated to "view workspaces"
-        enableMenuBarItem("View", false);
-    }
+    if (d->shortcutAccessVisible)
+        this->hideShortcutAccess();
+
+    d->stack->setCurrentWidget(d->homepageArea);
+    d->homepageArea->onShowInfo();
+
+    d->screenshotButton->setEnabled(false);
+    d->movieButton->setEnabled(false);
+    d->adjustSizeButton->setEnabled(false);
 }
 
 void medMainWindow::switchToBrowserArea()
 {
-    if(d->currentArea != d->browserArea)
-    {
-        d->currentArea = d->browserArea;
+    if(d->currentArea == d->browserArea)
+        return;
 
-        d->shortcutAccessWidget->updateSelected("Import/export files");
-        if (d->shortcutAccessVisible)
-        {
-            this->hideShortcutAccess();
-        }
+    d->currentArea = d->browserArea;
 
-        d->stack->setCurrentWidget(d->browserArea);
+    d->shortcutAccessWidget->updateSelected("Browser");
+    d->quickAccessWidget->updateSelected("Browser");
 
-        // The View menu is dedicated to "view workspaces"
-        enableMenuBarItem("View", false);
+    d->quickAccessButton->setText(tr("Workspace: Browser"));
+    d->quickAccessButton->setMinimumWidth(170);
+    if (d->quickAccessWidget->isVisible())
+        this->hideQuickAccess();
 
-        // The Filesystem tab is by default opened
-        d->browserArea->switchToIndexTab(1);
-    }
+    if (d->shortcutAccessVisible)
+        this->hideShortcutAccess();
+
+    d->screenshotButton->setEnabled(false);
+    d->movieButton->setEnabled(false);
+    d->adjustSizeButton->setEnabled(false);
+    d->stack->setCurrentWidget(d->browserArea);
 }
 
 void medMainWindow::switchToSearchArea()
@@ -579,38 +611,29 @@ void medMainWindow::switchToSearchArea()
         // Get back workspace of toolbox chosen by user
         // Name, Description, Workspace, Internal Name
         QStringList chosenToolboxInfo = dialog.getFindText();
+        d->quickAccessWidget->manuallyClickOnWorkspaceButton(chosenToolboxInfo.at(2));
 
-        QList<medWorkspaceFactory::Details*> workspaceDetails = medWorkspaceFactory::instance()->workspaceDetailsSortedByName();
-        for( medWorkspaceFactory::Details *detail : workspaceDetails )
+        // Display asked toolbox
+        medSelectorToolBox *selector = static_cast<medSelectorWorkspace*>(d->workspaceArea->currentWorkspace())->selectorToolBox();
+        int toolboxIndex = selector->getIndexOfToolBox(chosenToolboxInfo.at(0));
+        if (toolboxIndex > 0)
         {
-            if (chosenToolboxInfo.at(2) == detail->name)
-            {
-                showWorkspace(detail->identifier);
-
-                // Display asked toolbox
-                medSelectorToolBox *selector = static_cast<medSelectorWorkspace*>(d->workspaceArea->currentWorkspace())->selectorToolBox();
-                int toolboxIndex = selector->getIndexOfToolBox(chosenToolboxInfo.at(0));
-                if (toolboxIndex > 0)
-                {
-                    selector->comboBox()->setCurrentIndex(toolboxIndex);
-                    selector->changeCurrentToolBox(toolboxIndex);
-                }
-
-                break;
-            }
+            selector->comboBox()->setCurrentIndex(toolboxIndex);
+            selector->changeCurrentToolBox(toolboxIndex);
         }
     }
 }
 
 void medMainWindow::switchToWorkspaceArea()
 {
-    if(d->currentArea != d->workspaceArea)
-    {
-        d->currentArea = d->workspaceArea;
 
-        this->hideShortcutAccess();
+    if(d->currentArea == d->workspaceArea)
+        return;
 
-        d->stack->setCurrentWidget(d->workspaceArea);
+    d->currentArea = d->workspaceArea;
+
+    this->hideQuickAccess();
+    this->hideShortcutAccess();
 
     d->screenshotButton->setEnabled(true);
     d->movieButton->setEnabled(true);
@@ -620,30 +643,37 @@ void medMainWindow::switchToWorkspaceArea()
 
 void medMainWindow::switchToComposerArea()
 {
-    if(d->currentArea != d->composerArea)
-    {
-        d->currentArea = d->composerArea;
+    if(d->currentArea == d->composerArea)
+        return;
 
-        d->shortcutAccessWidget->updateSelected("Composer");
+    d->currentArea = d->composerArea;
 
-        if (d->shortcutAccessVisible)
-        {
-            this->hideShortcutAccess();
-        }
+    d->shortcutAccessWidget->updateSelected("Composer");
+    d->quickAccessWidget->updateSelected("Composer");
 
-        d->stack->setCurrentWidget(d->composerArea);
+    d->quickAccessButton->setText(tr("Workspace: Composer"));
+    d->quickAccessButton->setMinimumWidth(170);
+    if (d->quickAccessWidget->isVisible())
+        this->hideQuickAccess();
 
-        // The View menu is dedicated to "view workspaces"
-        enableMenuBarItem("View", false);
-    }
+    if (d->shortcutAccessVisible)
+        this->hideShortcutAccess();
+
+    d->screenshotButton->setEnabled(false);
+    d->adjustSizeButton->setEnabled(false);
+    d->stack->setCurrentWidget(d->composerArea);
 }
 
 void medMainWindow::showWorkspace(QString workspace)
 {
-    switchToWorkspaceArea();
+    d->quickAccessButton->setMinimumWidth(170);
+
+    this->switchToWorkspaceArea();
     medWorkspaceFactory::Details* details = medWorkspaceFactory::instance()->workspaceDetailsFromId(workspace);
 
+    d->quickAccessButton->setText(tr("Workspace: ") + details->name);
     d->shortcutAccessWidget->updateSelected(workspace);
+    d->quickAccessWidget->updateSelected(workspace);
 
     if (!d->workspaceArea->setCurrentWorkspace(workspace))
     {
@@ -652,16 +682,45 @@ void medMainWindow::showWorkspace(QString workspace)
         switchToHomepageArea();
     }
 
-    // The View menu is dedicated to "view workspaces"
-    enableMenuBarItem("View", true);
-
+    this->hideQuickAccess();
     this->hideShortcutAccess();
 }
 
 void medMainWindow::showComposer()
 {
+    d->quickAccessButton->setMinimumWidth(170);
+
     this->switchToComposerArea();
+
+    this->hideQuickAccess();
     this->hideShortcutAccess();
+}
+
+/**
+ * Slot to show bottom left menu
+ */
+void medMainWindow::toggleQuickAccessVisibility()
+{
+    // Ensure one can toggle menu appearance/disapperance when it is clicked twice
+    if (d->quickAccessWidget->isVisible())
+    {
+        this->hideQuickAccess();
+        return;
+    }
+
+    d->quickAccessWidget->reset(false);
+    d->quickAccessWidget->setFocus();
+    d->quickAccessWidget->setMouseTracking(true);
+    d->quickAccessWidget->show();
+}
+
+/**
+ * Slot to hide bottom left menu
+ */
+void medMainWindow::hideQuickAccess()
+{
+    d->quickAccessWidget->hide();
+    d->quickAccessWidget->setMouseTracking(false);
 }
 
 /**
@@ -694,15 +753,15 @@ void medMainWindow::showShortcutAccess()
  */
 void medMainWindow::hideShortcutAccess()
 {
-    if (d->shortcutAccessVisible)
-    {
-        d->shortcutAccessWidget->releaseKeyboard();
-        d->shortcutAccessWidget->setMouseTracking(false);
-        d->shortcutAccessVisible = false;
-        d->shortcutAccessWidget->setProperty("pos", QPoint ( 0 , -500 ));
-        d->shortcutAccessWidget->hide();
-        this->activateWindow();
-    }
+    if (!d->shortcutAccessVisible)
+        return;
+
+    d->shortcutAccessWidget->releaseKeyboard();
+    d->shortcutAccessWidget->setMouseTracking(false);
+    d->shortcutAccessVisible = false;
+    d->shortcutAccessWidget->setProperty("pos", QPoint ( 0 , -500 ));
+    d->shortcutAccessWidget->hide();
+    this->activateWindow();
 }
 
 void medMainWindow::dragEnterEvent(QDragEnterEvent *event)
@@ -747,7 +806,11 @@ void medMainWindow::dropEvent(QDropEvent *event)
 
 void medMainWindow::availableSpaceOnStatusBar()
 {
-    d->statusBar->setAvailableSpace(width());
+    QPoint workspaceButton_topRight = d->quickAccessButton->mapTo(d->statusBar, d->quickAccessButton->rect().topRight());
+    QPoint screenshotButton_topLeft = d->screenshotButton->mapTo(d->statusBar, d->screenshotButton->rect().topLeft());
+    //Available space = space between the spacing after workspace button and the spacing before screenshot button
+    int space = (screenshotButton_topLeft.x()-d->statusBarLayout->spacing()) -  (workspaceButton_topRight.x()+d->statusBarLayout->spacing());
+    d->statusBar->setAvailableSpace(space);
 }
 
 void medMainWindow::closeEvent(QCloseEvent *event)
@@ -776,8 +839,13 @@ void medMainWindow::closeEvent(QCloseEvent *event)
             // send cancel request to all running jobs, then wait for them
             // Note: most Jobs don't have the cancel method implemented, so this will be effectively the same as waitfordone.
             medJobManagerL::instance()->dispatchGlobalCancelEvent();
+            QThreadPool::globalInstance()->waitForDone();
         }
-        QThreadPool::globalInstance()->waitForDone();
+        else
+        {
+            // just hide the window and wait
+            QThreadPool::globalInstance()->waitForDone();
+        }
     }
 
     //if(this->saveModifiedAndOrValidateClosing() != QDialog::Accepted)

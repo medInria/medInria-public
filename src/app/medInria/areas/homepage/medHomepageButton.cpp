@@ -13,6 +13,17 @@
 
 #include <medHomepageButton.h>
 
+//medHomepagePushButton in the quick access menu
+medQuickAccessPushButton::medQuickAccessPushButton ( QWidget * parent )
+{
+    QObject::connect ( this, SIGNAL ( clicked() ), this, SLOT ( onClick() ) );
+}
+
+void medQuickAccessPushButton::onClick(void)
+{
+    emit clicked (this->text());
+}
+
 medHomepagePushButton::medHomepagePushButton ( QWidget * parent ) : QPushButton ( parent )
 {
     QObject::connect ( this, SIGNAL ( clicked() ), this, SLOT ( onClick() ) );

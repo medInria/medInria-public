@@ -47,19 +47,21 @@ public:
 protected:
     vtkInriaInteractorStylePolygonRepulsor();
     ~vtkInriaInteractorStylePolygonRepulsor();
-    vtkInriaInteractorStylePolygonRepulsor(const vtkInriaInteractorStylePolygonRepulsor&) = delete;
-    void operator=(const vtkInriaInteractorStylePolygonRepulsor&) = delete;
 
     virtual void RedefinePolygons();
     void ReallyDeletePoint(vtkSmartPointer<vtkPoints> points, vtkIdList *idList);
-    void DisplayPointFromPolygon(double *displayPoint, QList<double*> list, int ind);
+    void  DisplayPointFromPolygon(double *displayPoint, QList<double*> list, int ind);
 
     int Position[2];
     int On;
     int Radius;
+    medAbstractView *CurrentView;
     vtkCircleActor2D *RepulsorActor;
     vtkProperty2D *RepulsorProperty;
     QList<polygonRoi*> ListPolygonsToSave;
     polygonLabel* manager;
 
+private:
+    vtkInriaInteractorStylePolygonRepulsor(const vtkInriaInteractorStylePolygonRepulsor&);  // Not implemented
+    void operator=(const vtkInriaInteractorStylePolygonRepulsor&);  // Not implemented
 };

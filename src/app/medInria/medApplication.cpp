@@ -27,6 +27,8 @@
 #include <medPluginManager.h>
 #include <medSeedPointAnnotationData.h>
 #include <medSettingsManager.h>
+#include <medSettingsWidgetFactory.h>
+#include <medStartupSettingsWidget.h>
 #include <medStyleSheetParser.h>
 #include <medVisualizationWorkspace.h>
 #include <medWorkspaceFactory.h>

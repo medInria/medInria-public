@@ -50,11 +50,6 @@ polygonRoiToolBox::polygonRoiToolBox(QWidget *parent ) :
     auto layout = new QVBoxLayout();
     displayWidget->setLayout(layout);
 
-    auto *explanation = new QLabel(tr("Drop a data in the view and activate:"));
-    explanation->setWordWrap(true);
-    explanation->setStyleSheet("font: italic");
-    layout->addWidget(explanation );
-
     activateTBButton = new QPushButton(tr("Activate Toolbox"));
     activateTBButton->setToolTip(tr("Activate closed polygon mode. You should only have one view."));
     activateTBButton->setCheckable(true);
@@ -100,13 +95,13 @@ polygonRoiToolBox::polygonRoiToolBox(QWidget *parent ) :
     auto saveLabel = new QLabel("Save segmentations as:");
     auto saveButtonsLayout = new QHBoxLayout();
     saveBinaryMaskButton = new QPushButton(tr("Mask(s)"));
-    saveBinaryMaskButton->setToolTip("<p>Import the current mask to the non persistent database</p>");
+    saveBinaryMaskButton->setToolTip("Import the current mask to the non persistent database");
     saveBinaryMaskButton->setObjectName(generateBinaryImageButtonName);
     connect(saveBinaryMaskButton,SIGNAL(clicked()),this,SLOT(saveBinaryImage()));
     saveButtonsLayout->addWidget(saveBinaryMaskButton);
 
     saveContourButton = new QPushButton("Contour(s)");
-    saveContourButton->setToolTip("<p>Export these contours as an .ctrb file loadable only in this application</p>");
+    saveContourButton->setToolTip("Export these contours as an .ctrb file loadable only in medInria.");
     saveContourButton->setMinimumSize(150, 20);
     saveContourButton->setMaximumSize(150, 20);
     saveContourButton->setObjectName("saveContoursButton");

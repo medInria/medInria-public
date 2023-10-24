@@ -1,13 +1,15 @@
-/*
- * medInria
- * Copyright (c) INRIA 2013. All rights reserved.
- * 
- * medInria is under BSD-2-Clause license. See LICENSE.txt for details in the root of the sources or:
- * https://github.com/medInria/medInria-public/blob/master/LICENSE.txt
- * 
- * This software is distributed WITHOUT ANY WARRANTY; without even
- * the implied warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.
- */
+/*=========================================================================
+
+ medInria
+
+ Copyright (c) INRIA 2013 - 2018. All rights reserved.
+ See LICENSE.txt for details.
+
+  This software is distributed WITHOUT ANY WARRANTY; without even
+  the implied warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR
+  PURPOSE.
+
+=========================================================================*/
 
 #pragma once
 
@@ -20,12 +22,9 @@ class medHomepageArea : public QWidget
 {
 Q_OBJECT
 public:
-    medHomepageArea(QWidget * parent = nullptr);
+    medHomepageArea(QWidget * parent = 0);
     virtual ~medHomepageArea();
 
-    /**
-     * @brief Display the workspace buttons on homepage
-     */
     void initPage();
 
     void resizeEvent( QResizeEvent * event );
@@ -38,62 +37,9 @@ public slots:
     void onShowAbout();
     void onShowPlugin();
     void onShowHelp();
+    void onShowInfo();
     void onShowComposer();
-
-    /**
-     * @brief Display an About window
-     */
-    void onShowAbout();
-
-    /**
-     * @brief Display a window with the authors list
-     */
-    void onShowAuthors();
-
-    /**
-     * @brief Display a window with the release notes
-     */
-    void onShowReleaseNotes();
-
-    /**
-     * @brief Display a license window
-     */
-    void onShowLicense();
-    
-    /**
-     * @brief Display a licenses window for external libraries
-     */
-    void onShowExtLicenses();
-
-    /**
-     * @brief Display a database window
-     */
-    void onShowDatabase();
-
-    /**
-     * @brief Display a settings window for the Area section
-     */
-    void onShowAreaSettings();
-
-    /**
-     * @brief Switch the application to the asked workspace
-     */
-    void onShowWorkspace(QString workspace);
-
-    /**
-     * @brief Switch the application to the current workspace name
-     */
-    void onSwitchToWorkspace();
-
-    /**
-     * @brief Open the log directory
-     */
     void openLogDirectory();
-
-    /**
-     * @brief Display a window with the plugins logs from the application start
-     */
-    void onShowPluginLogs();
 
 signals:
     /**
@@ -117,3 +63,5 @@ signals:
 private:
     medHomepageAreaPrivate * d;
 };
+
+

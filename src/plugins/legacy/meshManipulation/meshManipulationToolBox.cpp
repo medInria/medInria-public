@@ -111,7 +111,17 @@ meshManipulationToolBox::meshManipulationToolBox(QWidget *parent)
 {
     QWidget *w = new QWidget(this);
     this->addWidget(w);
-    w->setLayout(new QVBoxLayout);
+    QVBoxLayout* toolboxLayout = new QVBoxLayout();
+    w->setLayout(toolboxLayout);
+    
+    QLabel *explanation = new QLabel("Select one or multiple layers to manually adjust.\n\n"
+                                     "Scaling: hold <right-click> on the bounding box\n"
+                                     "Rotation: hold <left-click> on the sides of the bounding box\n"
+                                     "Translation: hold <mouse-wheel button>, or <left-click> on the central sphere of the bounding box\n\n", this);
+    explanation->setSizePolicy(QSizePolicy::Ignored, QSizePolicy::Preferred);
+    explanation->setWordWrap(true);
+    explanation->setStyleSheet("font: italic");
+    w->layout()->addWidget(explanation);
 
     // scaling
     _scalingCheckBox = new QCheckBox(tr("Enable scaling"));
@@ -129,7 +139,7 @@ meshManipulationToolBox::meshManipulationToolBox(QWidget *parent)
     w->layout()->addWidget(_translationCheckBox);
 
     _saveButton = new QPushButton("Save");
-    _saveButton->setToolTip("Current transform will be applied to all selected layers");
+    _saveButton->setToolTip("Current transform will be applied to all selected layers.");
     _saveButton->setEnabled(false);
     w->layout()->addWidget(_saveButton);
 
@@ -141,7 +151,6 @@ meshManipulationToolBox::meshManipulationToolBox(QWidget *parent)
     _redoButton->setShortcut(QKeySequence("Ctrl+Shift+Z"));
 
     _cancelButton = new QPushButton("Cancel");
-    _cancelButton->setToolTip("Cancel the current transformation");
     _cancelButton->setEnabled(false);
     undoLayout->addWidget(_undoButton);
     undoLayout->addWidget(_redoButton);
@@ -173,12 +182,10 @@ meshManipulationToolBox::meshManipulationToolBox(QWidget *parent)
 
     QHBoxLayout* exportLayout = new QHBoxLayout();
     _exportButton = new QPushButton("Export matrix");
-    _exportButton->setToolTip("Export the current transformation");
     _exportButton->setEnabled(false);
     exportLayout->addWidget(_exportButton);
 
     _importButton = new QPushButton("Import matrix");
-    _importButton->setToolTip("Import a transformation matrix from a file");
     _importButton->setEnabled(false);
     exportLayout->addWidget(_importButton);
 

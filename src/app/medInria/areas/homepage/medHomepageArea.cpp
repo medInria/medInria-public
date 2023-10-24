@@ -1,21 +1,21 @@
-/*
- * medInria
- * Copyright (c) INRIA 2013. All rights reserved.
- * 
- * medInria is under BSD-2-Clause license. See LICENSE.txt for details in the root of the sources or:
- * https://github.com/medInria/medInria-public/blob/master/LICENSE.txt
- * 
- * This software is distributed WITHOUT ANY WARRANTY; without even
- * the implied warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.
- */
+/*=========================================================================
+
+ medInria
+
+ Copyright (c) INRIA 2013 - 2019. All rights reserved.
+ See LICENSE.txt for details.
+
+  This software is distributed WITHOUT ANY WARRANTY; without even
+  the implied warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR
+  PURPOSE.
+
+=========================================================================*/
 
 #include <medHomepageArea.h>
 
-#include <medDatabaseSettingsWidget.h>
 #include <medHomepageButton.h>
-#include <medMainWindow.h>
 #include <medPluginWidget.h>
-#include <medStartupSettingsWidget.h>
+#include <medSettingsEditor.h>
 #include <medWorkspaceFactory.h>
 
 #include <medSourcesLoader.h>
@@ -306,8 +306,8 @@ void medHomepageArea::resizeEvent ( QResizeEvent * event )
 {
     Q_UNUSED(event);
 
-    // Recompute the widget position when the window is resized
-    d->navigationWidget->setProperty("pos", QPoint(20, height()/4));
+    //Recompute the widgets position when the window is resized
+    d->navigationWidget->setProperty ( "pos", QPoint ( 20 ,  this->height() / 4 ) );
 
     d->userWidget->setProperty ( "pos", QPoint ( this->width() / 2,  this->height() - 50 ) );
 
@@ -331,79 +331,64 @@ void medHomepageArea::initPage()
     //Initialization of the navigation widget with available workspaces
     QList<medWorkspaceFactory::Details*> workspaceDetails = medWorkspaceFactory::instance()->workspaceDetailsSortedByName(true);
 
-    //--- Basic grid
-    int spacingBetweenHeaderAndColumn = 10;
-    int spacingBetweenColumnButtons = 10;
-
     QVBoxLayout * workspaceButtonsLayoutBasic = new QVBoxLayout;
-    workspaceButtonsLayoutBasic->setSpacing(spacingBetweenHeaderAndColumn);
-    QGridLayout * workspaceButtonsLayoutBasicGrid = new QGridLayout;
-    workspaceButtonsLayoutBasicGrid->setSpacing(spacingBetweenColumnButtons);
-    QLabel * workspaceLabelBasic = new QLabel ( "<b>Basic Area</b>" );
+    workspaceButtonsLayoutBasic->setSpacing ( 10 );
+    QLabel * workspaceLabelBasic = new QLabel ( "<b>Basic</b>" );
     workspaceLabelBasic->setTextFormat(Qt::RichText);
-    workspaceLabelBasic->setAlignment(Qt::AlignLeft);
-    workspaceButtonsLayoutBasic->addWidget(workspaceLabelBasic);
-    workspaceButtonsLayoutBasic->addLayout(workspaceButtonsLayoutBasicGrid);
+    workspaceLabelBasic->setAlignment(Qt::AlignHCenter);
+    workspaceLabelBasic->setMargin(10);
+    workspaceButtonsLayoutBasic->addWidget ( workspaceLabelBasic );
 
     medHomepageButton * browserButton = new medHomepageButton ( this );
-    browserButton->setToolButtonStyle ( Qt::ToolButtonTextBesideIcon );
-    browserButton->setIcon ( QIcon ( ":/icons/open_white.svg" ) );
-    browserButton->setText ( " Import/export files" );
+    browserButton->setToolButtonStyle ( Qt::ToolButtonTextUnderIcon );
+    browserButton->setIcon ( QIcon ( ":/icons/folder.png" ) );
+    browserButton->setText ( "Browser" );
     browserButton->setMinimumHeight ( 40 );
     browserButton->setMaximumWidth ( 250 );
     browserButton->setMinimumWidth ( 250 );
     browserButton->setFocusPolicy ( Qt::NoFocus );
-    browserButton->setToolTip("Area to manage and import data");
-    workspaceButtonsLayoutBasicGrid->addWidget(browserButton, 0, 0);
+    browserButton->setToolTip("Workspace to manage and import data.");
+    workspaceButtonsLayoutBasic->addWidget ( browserButton );
+    workspaceButtonsLayoutBasic->addSpacing(10);
     QObject::connect ( browserButton, SIGNAL ( clicked() ),this, SLOT ( onShowBrowser() ) );
 
     medHomepageButton * composerButton = new medHomepageButton ( this );
-    composerButton->setText ("       Composer");
+    composerButton->setText ("Composer");
     composerButton->setFocusPolicy ( Qt::NoFocus );
-    composerButton->setToolButtonStyle(Qt::ToolButtonTextBesideIcon);
+    composerButton->setToolButtonStyle(Qt::ToolButtonTextUnderIcon);
     composerButton->setIcon(QIcon(":/icons/composer.png"));
     composerButton->setMinimumHeight ( 40 );
     composerButton->setMaximumWidth ( 250 );
     composerButton->setMinimumWidth ( 250 );
-    composerButton->setToolTip("Open the Composer workspace");
+    composerButton->setToolTip("Opens the composer workspace");
     composerButton->setIdentifier("composer");
-    workspaceButtonsLayoutBasicGrid->addWidget(composerButton, 1, 0);
+    workspaceButtonsLayoutBasic->addWidget ( composerButton );
+    workspaceButtonsLayoutBasic->addSpacing(10);
     QObject::connect ( composerButton, SIGNAL ( clicked ( QString ) ),this, SLOT ( onShowComposer() ) );
 
-    //--- Workspace grids
-
     QVBoxLayout * workspaceButtonsLayoutMethodology = new QVBoxLayout;
-    workspaceButtonsLayoutMethodology->setSpacing(spacingBetweenHeaderAndColumn);
-    QGridLayout * workspaceButtonsLayoutMethodologyGrid = new QGridLayout;
-    workspaceButtonsLayoutMethodologyGrid->setSpacing(spacingBetweenColumnButtons);
+    workspaceButtonsLayoutMethodology->setSpacing ( 10 );
     QLabel * workspaceLabelMethodology = new QLabel ( "<b>Methodology</b>" );
     workspaceLabelMethodology->setTextFormat(Qt::RichText);
-    workspaceLabelMethodology->setAlignment(Qt::AlignLeft);
-    workspaceButtonsLayoutMethodology->addWidget(workspaceLabelMethodology);
-    workspaceButtonsLayoutMethodology->addLayout(workspaceButtonsLayoutMethodologyGrid);
+    workspaceLabelMethodology->setAlignment(Qt::AlignHCenter);
+    workspaceLabelMethodology->setMargin(10);
+    workspaceButtonsLayoutMethodology->addWidget ( workspaceLabelMethodology );
 
     QVBoxLayout * workspaceButtonsLayoutClinical = new QVBoxLayout;
-    workspaceButtonsLayoutClinical->setSpacing(spacingBetweenHeaderAndColumn);
-    QGridLayout * workspaceButtonsLayoutClinicalGrid = new QGridLayout;
-    workspaceButtonsLayoutClinicalGrid->setSpacing(spacingBetweenColumnButtons);
+    workspaceButtonsLayoutClinical->setSpacing ( 10 );
     QLabel * workspaceLabelClinical = new QLabel ( "<b>Clinical</b>" );
     workspaceLabelClinical->setTextFormat(Qt::RichText);
-    workspaceLabelClinical->setAlignment(Qt::AlignLeft);
-    workspaceButtonsLayoutClinical->addWidget(workspaceLabelClinical);
-    workspaceButtonsLayoutClinical->addLayout(workspaceButtonsLayoutClinicalGrid);
+    workspaceLabelClinical->setAlignment(Qt::AlignHCenter);
+    workspaceLabelClinical->setMargin(10);
+    workspaceButtonsLayoutClinical->addWidget ( workspaceLabelClinical );
 
     QVBoxLayout * workspaceButtonsLayoutOther = new QVBoxLayout;
-    workspaceButtonsLayoutOther->setSpacing(spacingBetweenHeaderAndColumn);
-    QGridLayout * workspaceButtonsLayoutOtherGrid = new QGridLayout;
-    workspaceButtonsLayoutOtherGrid->setSpacing(spacingBetweenColumnButtons);
+    workspaceButtonsLayoutOther->setSpacing ( 10 );
     QLabel * workspaceLabelOther = new QLabel ( "<b>Other</b>" );
     workspaceLabelOther->setTextFormat(Qt::RichText);
-    workspaceLabelOther->setAlignment(Qt::AlignLeft);
-    workspaceButtonsLayoutOther->addWidget(workspaceLabelOther);
-    workspaceButtonsLayoutOther->addLayout(workspaceButtonsLayoutOtherGrid);
-
-    // If there are too many buttons in a category (more than maximumButtonsPerColumn), split them in several columns
-    int maximumButtonsPerColumn = 7;
+    workspaceLabelOther->setAlignment(Qt::AlignHCenter);
+    workspaceLabelOther->setMargin(10);
+    workspaceButtonsLayoutOther->addWidget ( workspaceLabelOther );
 
     for( medWorkspaceFactory::Details* detail : workspaceDetails)
     {
@@ -419,32 +404,27 @@ void medHomepageArea::initPage()
         if (!(medWorkspaceFactory::instance()->isUsable(detail->identifier)))
         {
             button->setDisabled(true);
-            button->setToolTip("No useful plugin has been found for this workspace");
+            button->setToolTip("No useful plugin has been found for this workspace.");
         }
         if(!detail->category.compare("Basic")) 
         {
-            // Workspaces as "Visualization"
-            int row    = workspaceButtonsLayoutBasicGrid->count() % maximumButtonsPerColumn;
-            int column = std::ceil(workspaceButtonsLayoutBasicGrid->count() / maximumButtonsPerColumn);
-            workspaceButtonsLayoutBasicGrid->addWidget(button, row, column);
+            workspaceButtonsLayoutBasic->addWidget ( button );
+            workspaceButtonsLayoutBasic->addSpacing(10);
         }
         else if(!detail->category.compare("Methodology")) 
         {
-            int row    = workspaceButtonsLayoutMethodologyGrid->count() % maximumButtonsPerColumn;
-            int column = std::ceil(workspaceButtonsLayoutMethodologyGrid->count() / maximumButtonsPerColumn);
-            workspaceButtonsLayoutMethodologyGrid->addWidget(button, row, column);
+            workspaceButtonsLayoutMethodology->addWidget ( button );
+            workspaceButtonsLayoutMethodology->addSpacing(10);
         }
         else if(!detail->category.compare("Clinical")) 
         {
-            int row    = workspaceButtonsLayoutClinicalGrid->count() % maximumButtonsPerColumn;
-            int column = std::ceil(workspaceButtonsLayoutClinicalGrid->count() / maximumButtonsPerColumn);
-            workspaceButtonsLayoutClinicalGrid->addWidget(button, row, column);
+            workspaceButtonsLayoutClinical->addWidget ( button );
+            workspaceButtonsLayoutClinical->addSpacing(10);
         }
-        else
+        else 
         {
-            int row    = workspaceButtonsLayoutOtherGrid->count() % maximumButtonsPerColumn;
-            int column = std::ceil(workspaceButtonsLayoutOtherGrid->count() / maximumButtonsPerColumn);
-            workspaceButtonsLayoutOtherGrid->addWidget(button, row, column);
+            workspaceButtonsLayoutOther->addWidget ( button );
+            workspaceButtonsLayoutOther->addSpacing(10);
         }
     }
     workspaceButtonsLayoutBasic->addStretch();
@@ -453,32 +433,21 @@ void medHomepageArea::initPage()
     workspaceButtonsLayoutOther->addStretch();
 
     QGridLayout* workspaceButtonsLayout = new QGridLayout;
-    workspaceButtonsLayout->setSpacing(40); // Spacing between categories
-
-    // Hide the empty categories 
     std::vector<QLayout*> oLayoutVect;
-    if (workspaceButtonsLayoutBasicGrid->count() > 0)
-    {
-        oLayoutVect.push_back(workspaceButtonsLayoutBasic);
-    }
-    if (workspaceButtonsLayoutMethodologyGrid->count() > 0)
-    {
-        oLayoutVect.push_back(workspaceButtonsLayoutMethodology);
-    }
-    if (workspaceButtonsLayoutClinicalGrid->count() > 0)
-    {
-        oLayoutVect.push_back(workspaceButtonsLayoutClinical);
-    }
-    if (workspaceButtonsLayoutOtherGrid->count() > 0)
-    {
-        oLayoutVect.push_back(workspaceButtonsLayoutOther);
-    }
+
+    if (workspaceButtonsLayoutBasic->count() > 2) oLayoutVect.push_back(workspaceButtonsLayoutBasic);
+    if (workspaceButtonsLayoutMethodology->count() > 2) oLayoutVect.push_back(workspaceButtonsLayoutMethodology);
+    if (workspaceButtonsLayoutClinical->count() > 2) oLayoutVect.push_back(workspaceButtonsLayoutClinical);
+    if (workspaceButtonsLayoutOther->count() > 2) oLayoutVect.push_back(workspaceButtonsLayoutOther);
+
     for (int i = 0; i < static_cast<int>(oLayoutVect.size()); ++i)
     {
+        workspaceButtonsLayout->setColumnMinimumWidth(i, 120);
         workspaceButtonsLayout->addLayout(oLayoutVect[i], 0, i);
     }
 
-    d->navigationWidget->setLayout(workspaceButtonsLayout);
+    workspaceButtonsLayout->setSpacing(40);
+    d->navigationWidget->setLayout ( workspaceButtonsLayout );
 }
 
 void medHomepageArea::onShowBrowser()
@@ -486,95 +455,33 @@ void medHomepageArea::onShowBrowser()
     emit showBrowser();
 }
 
+void medHomepageArea::onShowWorkspace ( QString workspace )
+{
+    emit showWorkspace ( workspace );
+}
+
 void medHomepageArea::onShowAbout()
 {
-    QFile file(":ABOUT.txt");
-    file.open(QIODevice::ReadOnly | QIODevice::Text);
-    QString text = file.readAll();
-
-    QMessageBox msgBox;
-    msgBox.setText(text);
-    msgBox.exec();
+    d->stackedWidget->setCurrentWidget(d->aboutWidget);
+    d->aboutWidget->setFocus();
 }
 
-void medHomepageArea::onShowAuthors()
+void medHomepageArea::onShowPlugin()
 {
-    QFile file(":authors.txt");
-    file.open(QIODevice::ReadOnly | QIODevice::Text);
-    QString text = file.readAll();
+    d->stackedWidget->setCurrentWidget(d->pluginWidget);
 
-    QMessageBox msgBox;
-    msgBox.setText(text);
-    msgBox.exec();
+    d->pluginWidget->setFocus();
 }
 
-void medHomepageArea::onShowReleaseNotes()
+void medHomepageArea::onShowInfo()
 {
-    QFile file(":RELEASE_NOTES.txt");
-    file.open(QIODevice::ReadOnly | QIODevice::Text);
-    QString text = file.readAll();
-
-    QMessageBox msgBox;
-    msgBox.setText("Here is the release notes with the history of the application:            ");
-    msgBox.setDetailedText(text);
-
-    // Search the "Show Details..." button
-    foreach (QAbstractButton *button, msgBox.buttons())
-    {
-        if (msgBox.buttonRole(button) == QMessageBox::ActionRole)
-        {
-            button->click(); // click it to expand the text
-            break;
-        }
-    }
-
-    msgBox.exec();
+    d->stackedWidget->setCurrentWidget(d->infoWidget);
+    d->infoWidget->setFocus();
 }
 
-void medHomepageArea::onShowLicense()
+void medHomepageArea::onShowHelp()
 {
-    QFile file(":LICENSE.txt");
-    file.open(QIODevice::ReadOnly | QIODevice::Text);
-    QString text = file.readAll();
-
-    QMessageBox msgBox;
-    msgBox.setText("Here is the application license:                           ");
-    msgBox.setDetailedText(text);
-
-    // Search the "Show Details..." button
-    foreach (QAbstractButton *button, msgBox.buttons())
-    {
-        if (msgBox.buttonRole(button) == QMessageBox::ActionRole)
-        {
-            button->click(); // click it to expand the text
-            break;
-        }
-    }
-
-    msgBox.exec();
-}
-
-void medHomepageArea::onShowExtLicenses()
-{
-    QFile file(":LICENSES_EXT.txt");
-    file.open(QIODevice::ReadOnly | QIODevice::Text);
-    QString text = file.readAll();
-
-    QMessageBox msgBox;
-    msgBox.setText("Here are the external library licenses:                           ");
-    msgBox.setDetailedText(text);
-
-    // Search the "Show Details..." button
-    foreach (QAbstractButton *button, msgBox.buttons())
-    {
-        if (msgBox.buttonRole(button) == QMessageBox::ActionRole)
-        {
-            button->click(); // click it to expand the text
-            break;
-        }
-    }
-
-    msgBox.exec();
+    QDesktopServices::openUrl(QUrl("http://med.inria.fr/help/documentation"));
 }
 
 void medHomepageArea::onShowSources()
@@ -584,45 +491,21 @@ void medHomepageArea::onShowSources()
 
 void medHomepageArea::onShowSettings()
 {
-    medDatabaseSettingsWidget dialog(this);
-    dialog.exec();
+    d->settingsEditor->setTabPosition(QTabWidget::North);
+    d->settingsEditor->initialize();
+    d->settingsEditor->queryWidgets();
+    d->stackedWidget->setCurrentWidget(d->settingsWidget);
+
+    d->settingsWidget->setFocus();
 }
 
-void medHomepageArea::onShowAreaSettings()
+void medHomepageArea::onShowComposer()
 {
-    medStartupSettingsWidget dialog(this);
-    dialog.exec();
-}
-
-void medHomepageArea::onShowWorkspace(QString workspace)
-{
-    emit showWorkspace(workspace);
-}
-
-void medHomepageArea::onSwitchToWorkspace()
-{
-    QAction* currentAction = qobject_cast<QAction*>(sender());
-    onShowWorkspace(currentAction->data().toString());
+    emit showComposer();
 }
 
 void medHomepageArea::openLogDirectory()
 {
     QString path = QFileInfo(dtkLogPath(qApp)).path();
     QDesktopServices::openUrl(QUrl::fromLocalFile(path));
-}
-
-void medHomepageArea::onShowPluginLogs()
-{
-    medPluginWidget dialog(this);
-    dialog.exec();
-}
-
-void medHomepageArea::onShowHelp()
-{
-    QDesktopServices::openUrl(QUrl("http://med.inria.fr/help/documentation"));
-}
-
-void medHomepageArea::onShowComposer()
-{
-    emit showComposer();
 }

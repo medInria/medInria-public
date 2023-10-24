@@ -23,7 +23,7 @@ class medHomepagePushButton : public QPushButton
     Q_PROPERTY(bool selected READ isSelected WRITE setSelected)
     
 public:
-    medHomepagePushButton ( QWidget * parent = nullptr );
+    medHomepagePushButton ( QWidget * parent = 0 );
 
     void setIdentifier(const QString & id);
     QString identifier ();
@@ -47,11 +47,27 @@ private:
     bool m_selected;
 };
 
+class medQuickAccessPushButton : public QPushButton
+{
+    Q_OBJECT
+
+public:
+    medQuickAccessPushButton ( QWidget * parent = 0 );
+
+public slots:
+    void onClick();
+
+signals:
+    void clicked ( QString text );
+};
+
+
+
 class medHomepageButton : public QToolButton
 {
     Q_OBJECT
 public:
-    medHomepageButton ( QWidget * parent = nullptr );
+    medHomepageButton ( QWidget * parent = 0 );
 
     void setIdentifier(const QString & id);
     QString identifier ();

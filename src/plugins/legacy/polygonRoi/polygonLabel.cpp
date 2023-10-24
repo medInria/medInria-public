@@ -16,7 +16,6 @@
 #include <medAbstractDataFactory.h>
 #include <medAbstractImageData.h>
 #include <medDataManager.h>
-#include <medMetaDataKeys.h>
 #include <medTagContours.h>
 #include <medIntParameterL.h>
 #include <medUtilities.h>

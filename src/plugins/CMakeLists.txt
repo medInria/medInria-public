@@ -69,7 +69,7 @@ set(PLUGIN_LIST
   legacy/meshManipulation                                                ON
   legacy/meshMapping                                                     ON
   legacy/polygonRoi                                                      ON
-  legacy/qtdcmDataSource                                                 ON
+  # legacy/qtdcmDataSource                                                 OFF
   legacy/reformat                                                        ON
   legacy/undoRedoRegistration                                            ON
   legacy/variationalSegmentation                                         ON
@@ -77,7 +77,7 @@ set(PLUGIN_LIST
   legacy/vtkDataMesh                                                     ON
   legacy/medExportVideo                                                  ON
   legacy/medSQLite                                                       ON
-  legacy/medShanoir                                                      ON
+  # legacy/medShanoir                                                      OFF
   legacy/medAPHPDataSource                                               ON
   legacy/medTemporaryDataSource                                          ON
   process/arithmetic_operation                                           ON

@@ -14,11 +14,12 @@
 =========================================================================*/
 
 #include <medStartupSettingsWidget.h>
+#include <QtWidgets>
+#include <QtGui>
+#include <QtCore>
 
 #include <medSettingsManager.h>
 #include <medWorkspaceFactory.h>
-
-#include <QFormLayout>
 
 class medStartupSettingsWidgetPrivate
 {
@@ -33,6 +34,10 @@ public:
 };
 
 medStartupSettingsWidgetPrivate::medStartupSettingsWidgetPrivate()
+{
+}
+
+medStartupSettingsWidgetPrivate::~medStartupSettingsWidgetPrivate()
 {
 }
 
@@ -67,51 +72,40 @@ medStartupSettingsWidget::medStartupSettingsWidget(QWidget *parent) : medSetting
     this->setLayout(layout);
 }
 
+/**
+ * @brief Performs the validation of each control inside the widget.
+ *
+ * @param void
+ * @return true is the validation is successful, false otherwise.
+*/
+bool medStartupSettingsWidget::validate()
+{
+    return true;
+}
+
 void medStartupSettingsWidget::read()
 {
     medSettingsManager *mnger = medSettingsManager::instance();
-    startInFullScreen->setChecked(mnger->value("startup", "fullscreen").toBool());
+    d->startInFullScreen->setChecked(mnger->value("startup", "fullscreen").toBool());
 
     //if nothing is configured then Homepage is the default area
     QString osDefaultStartingAreaName = mnger->value("startup", "default_starting_area", "Homepage").toString();
 
     int i = 0;
     bool bFind = false;
-    while (!bFind && i<defaultStartingArea->count())
+    while (!bFind && i<d->defaultStartingArea->count())
     {
-        bFind = osDefaultStartingAreaName == defaultStartingArea->itemText(i);
-        if (!bFind)
-        {
-            ++i;
-        }
-    }
-
-    if (bFind)
-    {
-        defaultStartingArea->setCurrentIndex(i);
-    }
-    else
-    {
-        defaultStartingArea->setCurrentIndex(0);
-    }
-
-    QString osDefaultSegmentationSpecialityName = mnger->value("startup", "default_segmentation_speciality", "Default").toString();
-
-    i = 0;
-    bFind = false;
-    while (!bFind && i<d->defaultSegmentationSpeciality->count())
-    {
-        bFind = osDefaultSegmentationSpecialityName == d->defaultSegmentationSpeciality->itemText(i);
+        bFind = osDefaultStartingAreaName == d->defaultStartingArea->itemText(i);
         if (!bFind) ++i;
     }
 
     if (bFind)
     {
-        d->defaultSegmentationSpeciality->setCurrentIndex(i);
+        d->defaultStartingArea->setCurrentIndex(i);
     }
     else
     {
-        d->defaultSegmentationSpeciality->setCurrentIndex(0);
+        d->defaultStartingArea->setCurrentIndex(0);
     }
 
     QString osDefaultSegmentationSpecialityName = mnger->value("startup", "default_segmentation_speciality", "Default").toString();
