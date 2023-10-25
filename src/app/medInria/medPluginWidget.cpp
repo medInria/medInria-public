@@ -247,7 +247,7 @@ void medPluginWidget::onPluginTreeItemActivated(QTreeWidgetItem *item, int colum
     QString windowTitle = qApp->applicationName()+tr(": about ");
     windowTitle += plugin->name();
     dial->setWindowTitle(windowTitle);
-    dtkAboutPlugin * apWidget = new dtkAboutPlugin(plugin,dial);
+    // dtkAboutPlugin * apWidget = new dtkAboutPlugin(plugin,dial);
 
     QVBoxLayout * layout = new QVBoxLayout(dial);
 
@@ -261,7 +261,7 @@ void medPluginWidget::onPluginTreeItemActivated(QTreeWidgetItem *item, int colum
     butLayout->addWidget(okBut);
     butLayout->addStretch();
 
-    layout->addWidget(apWidget);
+    // layout->addWidget(apWidget);
     layout->addLayout(butLayout);
 
     dial->setLayout(layout);

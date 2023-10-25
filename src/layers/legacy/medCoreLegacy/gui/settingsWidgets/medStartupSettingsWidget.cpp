@@ -81,31 +81,31 @@ void medStartupSettingsWidget::read()
         defaultStartingArea->setCurrentIndex(0);
     }
 
-    QString osDefaultSegmentationSpecialityName = mnger->value("startup", "default_segmentation_speciality", "Default").toString();
+    // QString osDefaultSegmentationSpecialityName = mnger->value("startup", "default_segmentation_speciality", "Default").toString();
 
-    i = 0;
-    bFind = false;
-    while (!bFind && i<d->defaultSegmentationSpeciality->count())
-    {
-        bFind = osDefaultSegmentationSpecialityName == d->defaultSegmentationSpeciality->itemText(i);
-        if (!bFind) ++i;
-    }
+    // i = 0;
+    // bFind = false;
+    // while (!bFind && i<d->defaultSegmentationSpeciality->count())
+    // {
+    //     bFind = osDefaultSegmentationSpecialityName == d->defaultSegmentationSpeciality->itemText(i);
+    //     if (!bFind) ++i;
+    // }
 
-    if (bFind)
-    {
-        d->defaultSegmentationSpeciality->setCurrentIndex(i);
-    }
-    else
-    {
-        d->defaultSegmentationSpeciality->setCurrentIndex(0);
-    }
+    // if (bFind)
+    // {
+    //     d->defaultSegmentationSpeciality->setCurrentIndex(i);
+    // }
+    // else
+    // {
+    //     d->defaultSegmentationSpeciality->setCurrentIndex(0);
+    // }
 }
 
 void medStartupSettingsWidget::write()
 {
     medSettingsManager *mnger = medSettingsManager::instance();
-    mnger->setValue("startup", "fullscreen", d->startInFullScreen->isChecked());
-    mnger->setValue("startup", "default_starting_area", d->defaultStartingArea->currentText());
-    mnger->setValue("startup", "default_segmentation_speciality", d->defaultSegmentationSpeciality->currentText());
+    mnger->setValue("startup", "fullscreen", startInFullScreen->isChecked());
+    mnger->setValue("startup", "default_starting_area", defaultStartingArea->currentText());
+    // mnger->setValue("startup", "default_segmentation_speciality", d->defaultSegmentationSpeciality->currentText());
     return;
 }

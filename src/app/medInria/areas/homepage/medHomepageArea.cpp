@@ -11,7 +11,7 @@
 
 #include <medHomepageArea.h>
 
-#include <medDatabaseSettingsWidget.h>
+// #include <medDatabaseSettingsWidget.h>
 #include <medHomepageButton.h>
 #include <medMainWindow.h>
 #include <medPluginWidget.h>
@@ -45,9 +45,9 @@ medHomepageArea::medHomepageArea ( QWidget * parent ) : QWidget ( parent ), d ( 
     connect(actionBrowser, &QAction::triggered, this, &medHomepageArea::onShowBrowser);
     menuFile->addAction(actionBrowser);
 
-    QAction *actionDatabase = new QAction(tr("&Database settings"), parent);
-    connect(actionDatabase, &QAction::triggered, this, &medHomepageArea::onShowDatabase);
-    menuFile->addAction(actionDatabase);
+    // QAction *actionDatabase = new QAction(tr("&Database settings"), parent);
+    // connect(actionDatabase, &QAction::triggered, this, &medHomepageArea::onShowDatabase);
+    // menuFile->addAction(actionDatabase);
 
     // --- Area menu
     QMenu *menuArea = menu_bar->addMenu("Switch to area");
@@ -448,11 +448,11 @@ void medHomepageArea::onShowLicense()
     msgBox.exec();
 }
 
-void medHomepageArea::onShowDatabase()
-{
-    medDatabaseSettingsWidget dialog(this);
-    dialog.exec();
-}
+// void medHomepageArea::onShowDatabase()
+// {
+//     medDatabaseSettingsWidget dialog(this);
+//     dialog.exec();
+// }
 
 void medHomepageArea::onShowAreaSettings()
 {

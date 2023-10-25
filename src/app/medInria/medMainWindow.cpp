@@ -402,7 +402,7 @@ void medMainWindow::enableMenuBarItem(QString name, bool enabled)
 
 QToolButton * medMainWindow::notifButton()
 {
-    return d->notifButton;
+    return nullptr; //d->notifButton;
 }
 
 void medMainWindow::switchToHomepageArea()

@@ -58,7 +58,7 @@ public slots:
     /**
      * @brief Display a database window
      */
-    void onShowDatabase();
+    // void onShowDatabase();
 
     /**
      * @brief Display a settings window for the Area section
