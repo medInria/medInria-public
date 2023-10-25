@@ -26,8 +26,7 @@ public:
      {
          HomePage,
          Browser,
-         WorkSpace,
-         Composer
+         WorkSpace
      };
 
      medMainWindow(QWidget *parent = nullptr);
@@ -100,11 +99,9 @@ public slots:
 private slots:
 
     void showWorkspace(QString workspace);
-    void showComposer();
 
     void switchToBrowserArea();
     void switchToWorkspaceArea();
-    void switchToComposerArea();
 
     void showShortcutAccess();
     void hideShortcutAccess();

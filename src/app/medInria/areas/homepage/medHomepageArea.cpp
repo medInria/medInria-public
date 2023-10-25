@@ -62,10 +62,6 @@ medHomepageArea::medHomepageArea ( QWidget * parent ) : QWidget ( parent ), d ( 
     connect(actionHome, &QAction::triggered, mainWindow, &medMainWindow::switchToHomepageArea);
     menuArea->addAction(actionHome);
 
-    QAction *actionComposer = new QAction(tr("&Composer"), parent);
-    connect(actionComposer, &QAction::triggered, this, &medHomepageArea::onShowComposer);
-    menuArea->addAction(actionComposer);
-
     // Visualization workspace is a "Basic" area
     QAction *actionVisu = new QAction("&Visualization", parent);
     actionVisu->setData("medVisualizationWorkspace");
@@ -250,19 +246,6 @@ void medHomepageArea::initPage()
     browserButton->setToolTip("Area to manage and import data");
     workspaceButtonsLayoutBasicGrid->addWidget(browserButton, 0, 0);
     QObject::connect ( browserButton, SIGNAL ( clicked() ),this, SLOT ( onShowBrowser() ) );
-
-    medHomepageButton * composerButton = new medHomepageButton ( this );
-    composerButton->setText ("Composer");
-    composerButton->setFocusPolicy ( Qt::NoFocus );
-    composerButton->setToolButtonStyle(Qt::ToolButtonTextUnderIcon);
-    composerButton->setIcon(QIcon(":/icons/composer.png"));
-    composerButton->setMinimumHeight ( 40 );
-    composerButton->setMaximumWidth ( 250 );
-    composerButton->setMinimumWidth ( 250 );
-    composerButton->setToolTip("Open the Composer workspace");
-    composerButton->setIdentifier("composer");
-    workspaceButtonsLayoutBasicGrid->addWidget(composerButton, 1, 0);
-    QObject::connect ( composerButton, SIGNAL ( clicked ( QString ) ),this, SLOT ( onShowComposer() ) );
 
     //--- Workspace grids
 
@@ -486,11 +469,6 @@ void medHomepageArea::onShowPluginLogs()
 void medHomepageArea::onShowHelp()
 {
     QDesktopServices::openUrl(QUrl("http://med.inria.fr/help/documentation"));
-}
-
-void medHomepageArea::onShowComposer()
-{
-    emit showComposer();
 }
 
 void medHomepageArea::switchOffOnFullscreenIcons(const bool checked)

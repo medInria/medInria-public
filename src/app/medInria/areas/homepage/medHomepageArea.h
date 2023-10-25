@@ -33,7 +33,6 @@ public:
 public slots:
     void onShowBrowser();
     void onShowHelp();
-    void onShowComposer();
 
     /**
      * @brief Display an About window

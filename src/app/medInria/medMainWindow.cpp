@@ -9,10 +9,8 @@
  * the implied warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.
  */
 
-#include <dtkComposerWidget.h>
 
 #include <medBrowserArea.h>
-#include <medComposerArea.h>
 //#include <medDatabaseNonPersistentController.h>
 #include <medDataManager.h>
 #include <medEmptyDbWarning.h>
@@ -52,7 +50,6 @@ public:
     QWidget *currentArea;
 
     QStackedWidget*           stack;
-    medComposerArea*          composerArea;
     medBrowserArea*           browserArea;
     medWorkspaceArea*         workspaceArea;
     medHomepageArea*          homepageArea;
@@ -101,16 +98,12 @@ medMainWindow::medMainWindow ( QWidget *parent ) : QMainWindow ( parent ), d ( n
     d->homepageArea = new medHomepageArea( this );
     d->homepageArea->setObjectName("medHomePageArea");
 
-    //Composer
-    d->composerArea = new medComposerArea(this);
-    d->composerArea->setObjectName("medComposerArea");
 
     //  Stack
     d->stack = new QStackedWidget(this);
     d->stack->addWidget(d->homepageArea);
     d->stack->addWidget(d->browserArea);
     d->stack->addWidget(d->workspaceArea);
-    d->stack->addWidget(d->composerArea);
 
     // Shortcut to workspaces through CTRL+Space
     d->shortcutAccessWidget = new medQuickAccessMenu(this);
@@ -120,7 +113,6 @@ medMainWindow::medMainWindow ( QWidget *parent ) : QMainWindow ( parent ), d ( n
     connect(d->shortcutAccessWidget, SIGNAL(menuHidden()), this, SLOT(hideShortcutAccess()));
     connect(d->shortcutAccessWidget, SIGNAL(homepageSelected()), this, SLOT(switchToHomepageArea()));
     connect(d->shortcutAccessWidget, SIGNAL(browserSelected()), this, SLOT(switchToBrowserArea()));
-    connect(d->shortcutAccessWidget, SIGNAL(composerSelected()), this, SLOT(switchToComposerArea()));
     connect(d->shortcutAccessWidget, SIGNAL(workspaceSelected(QString)), this, SLOT(showWorkspace(QString)));
 
     d->shortcutAccessVisible = false;
@@ -151,7 +143,6 @@ medMainWindow::medMainWindow ( QWidget *parent ) : QMainWindow ( parent ), d ( n
     d->homepageArea->initPage();
     connect(d->homepageArea, SIGNAL(showBrowser()), this, SLOT(switchToBrowserArea()));
     connect(d->homepageArea, SIGNAL(showWorkspace(QString)), this, SLOT(showWorkspace(QString)));
-    connect(d->homepageArea, SIGNAL(showComposer()), this, SLOT(showComposer()));
 
     this->setCentralWidget ( d->stack );
     this->setWindowTitle(qApp->applicationName());
@@ -218,10 +209,6 @@ void medMainWindow::switchToDefaultWorkSpace()
     {
         switchToBrowserArea();
     }
-    else if (startupWorkspace == "Composer")
-    {
-        switchToComposerArea();
-    }
     else
     {
         QList<medWorkspaceFactory::Details*> workspaceDetails = medWorkspaceFactory::instance()->workspaceDetailsSortedByName(true);
@@ -271,10 +258,6 @@ void medMainWindow::switchToArea(const AreaType areaIndex)
 
     case medMainWindow::WorkSpace:
         this->switchToWorkspaceArea();
-        break;
-
-    case medMainWindow::Composer:
-        this->switchToComposerArea();
         break;
 
     default:
@@ -539,26 +522,6 @@ void medMainWindow::switchToWorkspaceArea()
     }
 }
 
-void medMainWindow::switchToComposerArea()
-{
-    if(d->currentArea != d->composerArea)
-    {
-        d->currentArea = d->composerArea;
-
-        d->shortcutAccessWidget->updateSelected("Composer");
-
-        if (d->shortcutAccessVisible)
-        {
-            this->hideShortcutAccess();
-        }
-
-        d->stack->setCurrentWidget(d->composerArea);
-
-        // The View menu is dedicated to "view workspaces"
-        enableMenuBarItem("View", false);
-    }
-}
-
 void medMainWindow::showWorkspace(QString workspace)
 {
     switchToWorkspaceArea();
@@ -576,12 +539,6 @@ void medMainWindow::showWorkspace(QString workspace)
     // The View menu is dedicated to "view workspaces"
     enableMenuBarItem("View", true);
 
-    this->hideShortcutAccess();
-}
-
-void medMainWindow::showComposer()
-{
-    this->switchToComposerArea();
     this->hideShortcutAccess();
 }
 
