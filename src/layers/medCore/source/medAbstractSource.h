@@ -49,7 +49,7 @@ class MEDCORE_EXPORT medAbstractSource : public QObject
 
 public:
     enum entryType {dataset = 0, folder = 1, both = 2};
-    static constexpr const char* entryTypeToString(entryType e) throw()
+    static constexpr const char* entryTypeToString(entryType e) throw(...)
     {
         switch (e)
         {

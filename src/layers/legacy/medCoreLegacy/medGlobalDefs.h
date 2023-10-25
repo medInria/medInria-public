@@ -21,7 +21,7 @@ namespace med
 {
     MEDCORELEGACY_EXPORT QString smartBaseName(const QString & fileName);
 
-    MEDCORELEGACY_EXPORT struct GPUInfo
+    struct GPUInfo
     {
         QString renderer;
         QString version;

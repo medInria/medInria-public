@@ -55,8 +55,8 @@ qtdcmDataSourceSerieToolBox::qtdcmDataSourceSerieToolBox(QWidget *parent) : medT
     // Add about plugin
     medPluginManager *pm = medPluginManager::instance();
     dtkPlugin *plugin = pm->plugin("qtdcmDataSourcePlugin");
-    setAboutPluginButton(plugin);
-    setAboutPluginVisibility(true);
+    //setAboutPluginButton(plugin);
+    //setAboutPluginVisibility(true);
 }
 
 qtdcmDataSourceSerieToolBox::~qtdcmDataSourceSerieToolBox()
