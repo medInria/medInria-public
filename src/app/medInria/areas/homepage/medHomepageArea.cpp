@@ -45,10 +45,6 @@ medHomepageArea::medHomepageArea ( QWidget * parent ) : QWidget ( parent ), d ( 
     connect(actionBrowser, &QAction::triggered, this, &medHomepageArea::onShowBrowser);
     menuFile->addAction(actionBrowser);
 
-    // QAction *actionDatabase = new QAction(tr("&Database settings"), parent);
-    // connect(actionDatabase, &QAction::triggered, this, &medHomepageArea::onShowDatabase);
-    // menuFile->addAction(actionDatabase);
-
     // --- Area menu
     QMenu *menuArea = menu_bar->addMenu("Switch to area");
 
@@ -139,6 +135,13 @@ medHomepageArea::medHomepageArea ( QWidget * parent ) : QWidget ( parent ), d ( 
     QAction *actionHelp = new QAction(tr("&Help"), parent);
     connect(actionHelp, &QAction::triggered, this, &medHomepageArea::onShowHelp);
     menuAbout->addAction(actionHelp);
+
+    // --- File menu
+    QMenu *menuSettings = menu_bar->addMenu("Settings");
+
+    QAction *actionDataSources = new QAction(tr("&Data Sources"), parent);
+    connect(actionDataSources, &QAction::triggered, this, &medHomepageArea::onShowDataSources);
+    menuSettings->addAction(actionDataSources);
 
     // --- Prepare right corner menu
     QMenuBar *rightMenuBar = new QMenuBar(menu_bar);
@@ -363,6 +366,17 @@ void medHomepageArea::onShowBrowser()
     emit showBrowser();
 }
 
+void medHomepageArea::onShowDataSources()
+{
+    QDialog *dialog = new QDialog();
+    medSourcesLoaderPresenter presenter(medSourcesLoader::instance());
+    auto wgt = presenter.buildWidget();
+    auto layout = new QVBoxLayout();
+    layout->addWidget(wgt);
+    dialog->setLayout(layout);
+    dialog->exec();
+}
+
 void medHomepageArea::onShowAbout()
 {
     QFile file(":ABOUT.txt");
@@ -430,12 +444,6 @@ void medHomepageArea::onShowLicense()
 
     msgBox.exec();
 }
-
-// void medHomepageArea::onShowDatabase()
-// {
-//     medDatabaseSettingsWidget dialog(this);
-//     dialog.exec();
-// }
 
 void medHomepageArea::onShowAreaSettings()
 {

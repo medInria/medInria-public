@@ -32,6 +32,7 @@ public:
 
 public slots:
     void onShowBrowser();
+    void onShowDataSources();
     void onShowHelp();
 
     /**
