@@ -17,6 +17,8 @@
 #include <medCoreLegacyExport.h>
 #include <medDataIndex.h>
 
+#include <memory>
+
 class medJobManagerLPrivate;
 class medJobItemL;
 
@@ -36,7 +38,9 @@ class MEDCORELEGACY_EXPORT medJobManagerL : public QObject
     Q_OBJECT
 
 public:
-    static medJobManagerL *instance();
+    ~medJobManagerL();
+
+    static medJobManagerL &instance();
 
     /**
     * registerJobItem - register a job item if you want that the manager sends cancel events to them (highly suggested!)
@@ -68,10 +72,8 @@ signals:
 
 protected:
     medJobManagerL();
-    ~medJobManagerL();
 
-protected:
-    static medJobManagerL *s_instance;
+    static std::unique_ptr<medJobManagerL> s_instance;
 
 private:
     medJobManagerLPrivate *d;

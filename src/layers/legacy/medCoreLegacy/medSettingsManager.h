@@ -16,6 +16,8 @@
 
 #include <medCoreLegacyExport.h>
 
+#include <memory>
+
 class medSettingsManagerPrivate;
 
 class MEDCORELEGACY_EXPORT medSettingsManager : public QObject
@@ -23,9 +25,9 @@ class MEDCORELEGACY_EXPORT medSettingsManager : public QObject
     Q_OBJECT
 
 public:
-    static medSettingsManager *instance();
+    ~medSettingsManager();
 
-    static void destroy();
+    static medSettingsManager &instance();
 
     void setValue( const QString & section, const QString & key, const QVariant & value );
 
@@ -37,12 +39,10 @@ public:
 signals:
     void settingsChanged( const QString & );
 
-protected:
-    medSettingsManager();
-    ~medSettingsManager();
-
 private:
-    static medSettingsManager *s_instance;
+    medSettingsManager();
+    
+    static std::unique_ptr<medSettingsManager> s_instance;
 
     medSettingsManagerPrivate *d;
 };

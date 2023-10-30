@@ -152,7 +152,7 @@ medCropToolBox::~medCropToolBox()
 
 dtkPlugin* medCropToolBox::plugin()
 {
-    return medPluginManager::instance()->plugin("Reformat");
+    return medPluginManager::instance().plugin("Reformat");
 }
 
 medAbstractData* medCropToolBox::processOutput()
@@ -471,7 +471,7 @@ void medCropToolBoxPrivate::generateOutput()
         }
         else
         {
-            medMessageController::instance()->showError("Drop a 3D volume in the view", 3000);
+            medMessageController::instance().showError("Drop a 3D volume in the view", 3000);
             qDebug()<<__FILE__<<":"<<__LINE__<<imageData->identifier();
         }
     }
@@ -541,6 +541,6 @@ void medCropToolBoxPrivate::importOutput()
 {
     for(medAbstractData *output : outputData)
     {
-        medDataManager::instance()->importData(output, false);
+        medDataManager::instance().importData(output, false);
     }
 }

@@ -20,8 +20,8 @@
 #include <medAbstractDbController.h>
 #include <medCoreLegacyExport.h>
 
-// class medAbstractData;
-// class medJobItemL;
+#include <memory>
+
 class medDatabaseNonPersistentItem;
 class medDataPacsControllerPrivate;
 
@@ -38,7 +38,7 @@ public:
         FAILURE
     };
 
-    static medDataPacsController *instance();
+    static medDataPacsController &instance();
     ~medDataPacsController();
 
     QList<medDatabaseNonPersistentItem *> items();
@@ -113,6 +113,7 @@ private:
     void onImportFinished(const QString &path, QEventLoop &loop, QUuid &uuid, QTimer &timer);
     medDataIndex getStudyIfEmpty(const medDataIndex seriesIndex);
     medDataIndex getPatientIfEmpty(const medDataIndex studyIndex);
+
     medDataPacsControllerPrivate *d;
-    static medDataPacsController *s_instance;
+    static std::unique_ptr<medDataPacsController> s_instance;
 };

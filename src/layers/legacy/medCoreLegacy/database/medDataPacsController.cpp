@@ -54,15 +54,15 @@ public:
 // medDataPacsController
 // /////////////////////////////////////////////////////////////////
 
-medDataPacsController *medDataPacsController::s_instance = nullptr;
+std::unique_ptr<medDataPacsController> medDataPacsController::s_instance = nullptr;
 
-medDataPacsController *medDataPacsController::instance()
+medDataPacsController &medDataPacsController::instance()
 {
-    if (!s_instance)
+    if(!s_instance)
     {
-        s_instance = new medDataPacsController();
+        s_instance = std::unique_ptr<medDataPacsController>(new medDataPacsController());
     }
-    return s_instance;
+    return *s_instance.get();
 }
 
 QList<medDatabaseNonPersistentItem *> medDataPacsController::items(void)
@@ -190,7 +190,7 @@ medDataIndex medDataPacsController::storeSeriesMetaDataFromPacs(medDataIndex &pt
     QString studyInstanceUID = stItem->studyUid();
     medDataIndex index;
 
-    medDataIndex databaseIndex = medDataManager::instance()->controller()->indexForSeriesUID(patientName, studyInstanceUID, seriesInstanceUID);
+    medDataIndex databaseIndex = medDataManager::instance().controller()->indexForSeriesUID(patientName, studyInstanceUID, seriesInstanceUID);
     if (databaseIndex.isValid())
     {
         qDebug() << "Series exists in the database, We do not want to fetch this data";
@@ -260,8 +260,8 @@ medDataIndex medDataPacsController::storeStudyMetaDataFromPacs(medDataIndex &ptI
     if (studyDescription != "EmptyStudy")
     {
         // check if study is already in the persistent database
-        medDataIndex databaseIndex = medDataManager::instance()->controller()->indexForStudyUID(patientName, studyInstanceUID);
-        medDatabaseNonPersistentItem *studyItem = NULL;
+        medDataIndex databaseIndex = medDataManager::instance().controller()->indexForStudyUID(patientName, studyInstanceUID);
+        medDatabaseNonPersistentItem *studyItem = nullptr;
 
         if (databaseIndex.isValid())
         {
@@ -331,7 +331,7 @@ medDataIndex medDataPacsController::storePatientMetaDataFromPacs(QString &patien
         patientName = "John Doe";
     }
     // check if patient is already in the persistent database
-    medDataIndex databaseIndex = medDataManager::instance()->controller()->indexForPatient(patientName);
+    medDataIndex databaseIndex = medDataManager::instance().controller()->indexForPatient(patientName);
     medDatabaseNonPersistentItem *patientItem = nullptr;
     medDataIndex ptIndex;
     if (databaseIndex.isValid())
@@ -414,10 +414,8 @@ medDataPacsController::medDataPacsController() : d(new medDataPacsControllerPriv
 {
 }
 
-medDataPacsController::~medDataPacsController(void)
+medDataPacsController::~medDataPacsController()
 {
-    // qDeleteAll(d->items);
-
     delete d;
     d = nullptr;
 }
@@ -670,8 +668,6 @@ medDataIndex medDataPacsController::getPatientIfEmpty(const medDataIndex studyIn
 
 void medDataPacsController::remove(const medDataIndex &index)
 {
-    typedef QSet<medDataIndex> medDataIndexSet;
-
     // Main index to remove
 
     if (d->items.contains(index))
@@ -860,7 +856,7 @@ bool medDataPacsController::loadData(const medDataIndex &index)
     }
     else
     {
-        message = medMessageController::instance()->showProgress(tr("Request data from PACS (C-Move Request)"));
+        message = medMessageController::instance().showProgress(tr("Request data from PACS (C-Move Request)"));
         message->setProgress(0);
         QString instanceUID, queryLevel;
         if (index.isValidForSeries())
@@ -880,7 +876,7 @@ bool medDataPacsController::loadData(const medDataIndex &index)
         }
         uuid = d->uuids.value(index);
         emit moveRequested(instanceUID, queryLevel);
-        connect(medDataManager::instance(), SIGNAL(updateProgress(int)), message, SLOT(setProgress(int)));
+        connect(&medDataManager::instance(), SIGNAL(updateProgress(int)), message, SLOT(setProgress(int)));
     }
     QTimer timer;
     timer.setSingleShot(true);
@@ -890,7 +886,7 @@ bool medDataPacsController::loadData(const medDataIndex &index)
     });
     timer.start(d->timeout);
 
-    connect(medDataManager::instance(), &medDataManager::moveState, &loop, [&](int status, const QString &pathOrMessage) {
+    connect(&medDataManager::instance(), &medDataManager::moveState, &loop, [&](int status, const QString &pathOrMessage) {
         switch (status)
         {
         case 0: //OK
@@ -948,7 +944,7 @@ void medDataPacsController::onImportFinished(const QString &path, QEventLoop &lo
         }
     }
     medDataPacsImporter *importer = new medDataPacsImporter(info.absoluteFilePath(), uuid);
-    medMessageProgress *message = medMessageController::instance()->showProgress("Importing " + name);
+    medMessageProgress *message = medMessageController::instance().showProgress("Importing " + name);
 
     connect(importer, SIGNAL(progressed(int)), message, SLOT(setProgress(int)), Qt::UniqueConnection);
     connect(importer, &medDataPacsImporter::progressed, &timer, [&](int p) {
@@ -996,9 +992,9 @@ void medDataPacsController::onImportFinished(const QString &path, QEventLoop &lo
     connect(importer, SIGNAL(success(QObject *)), message, SLOT(success()));
     connect(importer, SIGNAL(failure(QObject *)), message, SLOT(failure()));
     connect(importer, SIGNAL(showError(const QString &, unsigned int)),
-            medMessageController::instance(), SLOT(showError(const QString &, unsigned int)));
+            &medMessageController::instance(), SLOT(showError(const QString &, unsigned int)));
 
-    medJobManagerL::instance()->registerJobItem(importer);
+    medJobManagerL::instance().registerJobItem(importer);
     QThreadPool::globalInstance()->start(importer);
 }
 

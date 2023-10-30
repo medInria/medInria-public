@@ -80,15 +80,15 @@ public:
 
 // ------------------------- medDataManager -----------------------------------
 
-medDataManager *medDataManager::s_instance = nullptr;
+std::unique_ptr<medDataManager> medDataManager::s_instance = nullptr;
 
-medDataManager *medDataManager::instance()
+medDataManager &medDataManager::instance()
 {
-    if (!s_instance)
+    if(!s_instance)
     {
-        s_instance = new medDataManager();
+        s_instance = std::unique_ptr<medDataManager>(new medDataManager());
     }
-    return s_instance;
+    return *s_instance.get();
 }
 
 medAbstractData* medDataManager::retrieveData(const medDataIndex& index)
@@ -229,7 +229,7 @@ QHash<QString, dtkAbstractDataWriter *> medDataManager::getPossibleWriters(
             delete writer;
     }
     if (possibleWriters.isEmpty())
-        medMessageController::instance()->showError(
+        medMessageController::instance().showError(
             "Sorry, we have no exporter for this format.");
 
     return possibleWriters;
@@ -355,7 +355,7 @@ void medDataManager::exportData(dtkSmartPointer<medAbstractData> data)
         }
         else if (!jsonPath.isEmpty())
         {
-            jsonPath.prepend(medSettingsManager::instance()->value("database", "actual_database_location").toString());
+            jsonPath.prepend(medSettingsManager::instance().value("database", "actual_database_location").toString());
             if (!QDir(exportPath).exists())
             {
                 QDir().mkpath(exportPath);
@@ -473,7 +473,7 @@ void medDataManager::launchExporter(medDatabaseExporter *exporter,
                                     const QString &filename)
 {
     QFileInfo info(filename);
-    medMessageProgress *message = medMessageController::instance()->showProgress(
+    medMessageProgress *message = medMessageController::instance().showProgress(
         "Exporting data to " + info.baseName());
 
     connect(exporter, SIGNAL(progressed(int)), message, SLOT(setProgress(int)));
@@ -482,7 +482,7 @@ void medDataManager::launchExporter(medDatabaseExporter *exporter,
     connect(exporter, SIGNAL(success(QObject *)), this, SIGNAL(exportFinished()));
     connect(exporter, SIGNAL(failure(QObject *)), this, SIGNAL(exportFinished()));
 
-    medJobManagerL::instance()->registerJobItem(exporter);
+    medJobManagerL::instance().registerJobItem(exporter);
     QThreadPool::globalInstance()->start(exporter);
 }
 
@@ -634,7 +634,7 @@ QUuid medDataManager::makePersistent(medDataIndex index)
         if (data->metadata(medMetaDataKeys::Toolbox.key())=="PolygonROI")
         {
             // Save json file associated to data (APHP/incepto requirement)
-            QString path = medSettingsManager::instance()->value("database", "actual_database_location").toString();
+            QString path = medSettingsManager::instance().value("database", "actual_database_location").toString();
             path += QDir::separator() + data->metadata(medMetaDataKeys::PatientID.key()) +
                     QDir::separator() + data->metadata(medMetaDataKeys::SeriesID.key()) ;
             saveAttachedMetadataToFile(data, path);
@@ -760,10 +760,10 @@ medDataManager::medDataManager() : d_ptr(new medDataManagerPrivate(this))
 {
     Q_D(medDataManager);
 
-    d->nonPersDbController = medDatabaseNonPersistentController::instance();
-    d->pacsController = medDataPacsController::instance();
+    d->nonPersDbController = &medDatabaseNonPersistentController::instance();
+    d->pacsController = &medDataPacsController::instance();
     // Setting up database connection
-    d->dbController = medLocalDbController::instance();
+    d->dbController = &medLocalDbController::instance();
 
     if (!d->dbController->createConnection())
     {
@@ -788,7 +788,7 @@ medDataManager::medDataManager() : d_ptr(new medDataManagerPrivate(this))
     connect(&(d->timer), SIGNAL(timeout()), this, SLOT(garbageCollect()));
     d->timer.start(5 * 1000);
 
-    connect(medPluginManager::instance(), SIGNAL(allPluginsLoaded()), this,
+    connect(&medPluginManager::instance(), SIGNAL(allPluginsLoaded()), this,
             SLOT(setWriterPriorities()));
     connect(this, SIGNAL(dataImported(medDataIndex, QUuid)), this,
             SLOT(removeFromNonPersistent(medDataIndex, QUuid)));
@@ -802,7 +802,7 @@ void medDataManager::setDatabaseLocation()
     //  If the user configured a new location for the database in the settings
     //  editor, we'll need to move it
 
-    medSettingsManager *mnger = medSettingsManager::instance();
+    medSettingsManager *mnger = &medSettingsManager::instance();
     QString newLocation =
         mnger->value("medDatabaseSettingsWidget", "new_database_location")
             .toString();
@@ -831,4 +831,7 @@ void medDataManager::setDatabaseLocation()
     // END OF DATABASE INITIALISATION
 }
 
-medDataManager::~medDataManager() {}
+medDataManager::~medDataManager()
+{
+    delete d_ptr;
+}

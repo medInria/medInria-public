@@ -43,7 +43,7 @@ medAbstractParameterGroupL::medAbstractParameterGroupL(QString name, QObject *pa
 
 medAbstractParameterGroupL::~medAbstractParameterGroupL()
 {
-    medParameterGroupManagerL::instance()->unregisterGroup(this);
+    medParameterGroupManagerL::instance().unregisterGroup(this);
 
     delete d;
 }

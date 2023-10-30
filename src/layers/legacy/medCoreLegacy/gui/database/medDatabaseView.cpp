@@ -69,7 +69,7 @@ void NoFocusDelegate::paint(QPainter* painter, const QStyleOptionViewItem & opti
                 // items that failed to open will have a pinkish background               
                 painter->fillRect(option.rect, QColor("#FF3333"));
 
-            medAbstractDbController * dbc = medDataManager::instance()->controllerForDataSource(item->dataIndex().dataSourceId());
+            medAbstractDbController * dbc = medDataManager::instance().controllerForDataSource(item->dataIndex().dataSourceId());
             if ( dbc ) {
                 if(!dbc->isPersistent())
                 {
@@ -262,7 +262,7 @@ void medDatabaseView::updateContextMenu(const QPoint& point)
                 d->contextMenu->addAction(d->exportAction);
                 d->contextMenu->addAction(d->metadataAction);
                 d->contextMenu->addAction(d->removeAction);
-                if (!(medDataManager::instance()->controllerForDataSource(item->dataIndex().dataSourceId())->isPersistent()))
+                if (!(medDataManager::instance().controllerForDataSource(item->dataIndex().dataSourceId())->isPersistent()))
                 {
                     d->contextMenu->addAction(d->saveAction);
                 }
@@ -276,7 +276,7 @@ void medDatabaseView::updateContextMenu(const QPoint& point)
                 d->contextMenu->addAction(d->editAction);
                 d->editAction->setIcon(QIcon(":icons/page_edit.png"));
                 d->contextMenu->addAction(d->removeAction);
-                if (!(medDataManager::instance()->controllerForDataSource(item->dataIndex().dataSourceId())->isPersistent()))
+                if (!(medDataManager::instance().controllerForDataSource(item->dataIndex().dataSourceId())->isPersistent()))
                 {
                     d->contextMenu->addAction(d->saveAction);
                 }
@@ -291,7 +291,7 @@ void medDatabaseView::updateContextMenu(const QPoint& point)
                 d->contextMenu->addAction(d->editAction);
                 d->editAction->setIcon(QIcon(":icons/user_edit.png"));
                 d->contextMenu->addAction(d->removeAction);
-                if (!(medDataManager::instance()->controllerForDataSource(item->dataIndex().dataSourceId())->isPersistent()))
+                if (!(medDataManager::instance().controllerForDataSource(item->dataIndex().dataSourceId())->isPersistent()))
                 {
                     d->contextMenu->addAction(d->saveAction);
                 }
@@ -450,7 +450,7 @@ void medDatabaseView::onRemoveSelectedItemRequested( void )
             {
                 // Copy the data index, because the data item may cease to be valid.
                 medDataIndex index = item->dataIndex();
-                medDataManager::instance()->removeData(index);
+                medDataManager::instance().removeData(index);
             }
         }
     }
@@ -474,7 +474,7 @@ void medDatabaseView::onSaveSelectedItemRequested(void)
     {
         // Copy the data index, because the data item may cease to be valid.
         medDataIndex index = item->dataIndex();
-        medDataManager::instance()->makePersistent(index);
+        medDataManager::instance().makePersistent(index);
         qDebug() << "onMenuSaveClicked() after storeNonPersistentSingleDataToDatabase";
         qDebug() << "index" << index;
     }
@@ -497,7 +497,7 @@ void medDatabaseView::onRetrieveDataRequested()
     {
         // Copy the data index, because the data item may cease to be valid.
         medDataIndex index = item->dataIndex();
-        medDataManager::instance()->loadData(index);
+        medDataManager::instance().loadData(index);
         qDebug() << "onRetrieveDataRequested()";
         qDebug() << "index" << index;
     }
@@ -522,7 +522,7 @@ void medDatabaseView::onCreatePatientRequested(void)
         if (item)
         {
             dataSourceId = item->dataIndex().dataSourceId();
-            isPersistent = medDataManager::instance()->controllerForDataSource(dataSourceId)->isPersistent();
+            isPersistent = medDataManager::instance().controllerForDataSource(dataSourceId)->isPersistent();
         }
     }
 
@@ -566,7 +566,7 @@ void medDatabaseView::onCreatePatientRequested(void)
         medData->setMetaData ( medMetaDataKeys::BirthDate.key(), QStringList() << birthdate );
         medData->setMetaData ( medMetaDataKeys::Gender.key(), QStringList() << gender );
 
-        medDataManager::instance()->importData(medData, editDialog.isPersistent());
+        medDataManager::instance().importData(medData, editDialog.isPersistent());
     }
 }
 
@@ -586,7 +586,7 @@ void medDatabaseView::onCreateStudyRequested()
 
     if (item)
     {
-        bool isPersistent = medDataManager::instance()->controllerForDataSource(
+        bool isPersistent = medDataManager::instance().controllerForDataSource(
                                 item->dataIndex().dataSourceId() )->isPersistent();
 
         int patientNameIndex = item->attributes().indexOf(medMetaDataKeys::PatientName.key());
@@ -627,7 +627,7 @@ void medDatabaseView::onCreateStudyRequested()
             medData->setMetaData(medMetaDataKeys::StudyID.key(), QStringList() << "0");
             medData->setMetaData(medMetaDataKeys::StudyInstanceUID.key(), QStringList() << "");
 
-            medDataManager::instance()->importData(medData, editDialog.isPersistent());
+            medDataManager::instance().importData(medData, editDialog.isPersistent());
         }
     }
 }
@@ -664,7 +664,7 @@ void medDatabaseView::onEditRequested()
 
         for(QVariant attrib : attributes)
         {
-            const medMetaDataKeys::Key* key =  medMetaDataKeys::Key::fromKeyName(attrib.toString().toStdString().c_str());
+            const medMetaDataKeys::Key* key =  medMetaDataKeys::Key::fromKeyName(attrib.toString());
             if(key)
                 labels << key->label();
             else labels << "";
@@ -688,7 +688,7 @@ void medDatabaseView::onEditRequested()
             {
                 QVariant data = editDialog.value(label);
                 QVariant variant = item->attribute(i);
-                medDataManager::instance()->setMetadata(index, variant.toString(), data.toString());
+                medDataManager::instance().setMetadata(index, variant.toString(), data.toString());
                 i++;
             }
         }
@@ -730,7 +730,7 @@ void medDatabaseView::onMetadataRequested(void)
             // Get back keys and metadata from the selected data
             for(const medMetaDataKeys::Key* key : medMetaDataKeys::Key::all())
             {
-                metadata = medDataManager::instance()->getMetaData(item->dataIndex(), key->key());
+                metadata = medDataManager::instance().getMetaData(item->dataIndex(), key->key());
 
                 keyList.push_back(key->key());
                 metadataList.push_back(metadata);

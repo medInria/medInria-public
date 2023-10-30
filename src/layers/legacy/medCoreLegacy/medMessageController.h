@@ -18,6 +18,8 @@
 
 #include <medCoreLegacyExport.h>
 
+#include <memory>
+
 class medMessageControllerPrivate;
 
 // /////////////////////////////////////////////////////////////////
@@ -105,7 +107,8 @@ class MEDCORELEGACY_EXPORT medMessageController : public QObject
     Q_OBJECT
 
 public:
-    static medMessageController *instance();
+    ~medMessageController() = default;
+    static medMessageController &instance();
 
 public slots:
     void     showInfo(const QString& text,unsigned int timeout=0);
@@ -119,11 +122,9 @@ signals:
   void removeMessage(medMessage * message);
 
 protected:
-     medMessageController();
-    ~medMessageController() = default;
+    medMessageController();
 
-protected:
-    static medMessageController *s_instance;
+    static std::unique_ptr<medMessageController> s_instance;
 
 private:
     medMessageControllerPrivate *d;

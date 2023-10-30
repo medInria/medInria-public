@@ -147,7 +147,6 @@ vtkImageView2D::~vtkImageView2D()
   this->Command->Delete();
   this->OrientationAnnotation->Delete();
 
-
   for (std::list<vtkDataSet2DWidget*>::iterator it3 = this->DataSetWidgets.begin();
       it3!=this->DataSetWidgets.end(); ++it3)
   {
@@ -155,6 +154,8 @@ vtkImageView2D::~vtkImageView2D()
     (*it3)->SetImageView (nullptr);
     (*it3)->Delete();
   }
+
+  delete qtSignalHandler;
 }
 
 //----------------------------------------------------------------------------

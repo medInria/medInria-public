@@ -18,10 +18,6 @@
 
 #include <itkNiftiImageIO.h>
 
-static QString s_identifier() {
-    return "itkNiftiDataImageWriter";
-}
-
 static QStringList s_handled() {
     return QStringList()  << "itkDataImageChar3" << "itkDataImageChar4"
                           << "itkDataImageUChar3" << "itkDataImageUChar4"
@@ -51,12 +47,16 @@ QStringList itkNiftiDataImageWriter::supportedFileExtensions() const
                          << ".nia" << ".img" << ".img.gz";
 }
 
-bool itkNiftiDataImageWriter::registered() {
-    return medAbstractDataFactory::instance()->registerDataWriterType(s_identifier(), s_handled(), create);
+bool itkNiftiDataImageWriter::registered()
+{
+    return medAbstractDataFactory::instance()->registerDataWriterType(QString("itkNiftiDataImageWriter"), 
+                                                                      s_handled(), 
+                                                                      create);
 }
 
-QString itkNiftiDataImageWriter::identifier() const {
-    return s_identifier();
+QString itkNiftiDataImageWriter::identifier() const
+{
+    return "itkNiftiDataImageWriter";
 }
 
 QString itkNiftiDataImageWriter::description() const {

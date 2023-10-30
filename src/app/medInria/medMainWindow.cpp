@@ -106,8 +106,7 @@ medMainWindow::medMainWindow ( QWidget *parent ) : QMainWindow ( parent ), d ( n
     d->currentArea = nullptr;
 
     //  Browser area.
-    d->browserArea = new medBrowserArea(this);
-    d->browserArea->setObjectName("medBrowserArea");
+    d->browserArea = nullptr;
 
     //  Workspace area.
     d->workspaceArea = new medWorkspaceArea (this);
@@ -118,15 +117,12 @@ medMainWindow::medMainWindow ( QWidget *parent ) : QMainWindow ( parent ), d ( n
     d->homepageArea->setObjectName("medHomePageArea");
 
     //Composer
-    d->composerArea = new medComposerArea(this);
-    d->composerArea->setObjectName("medComposerArea");
+    d->composerArea = nullptr;
 
     //  Stack
     d->stack = new QStackedWidget(this);
     d->stack->addWidget(d->homepageArea);
-    d->stack->addWidget(d->browserArea);
     d->stack->addWidget(d->workspaceArea);
-    d->stack->addWidget(d->composerArea);
 
     //  Setup quick access menu
     d->quickAccessButton = new medQuickAccessPushButton ( this );
@@ -273,8 +269,8 @@ medMainWindow::medMainWindow ( QWidget *parent ) : QMainWindow ( parent ), d ( n
     this->setWindowTitle(qApp->applicationName());
 
     //  Connect the messageController with the status for notification messages management
-    connect(medMessageController::instance(), SIGNAL(addMessage(medMessage*)), d->statusBar, SLOT(addMessage(medMessage*)));
-    connect(medMessageController::instance(), SIGNAL(removeMessage(medMessage*)), d->statusBar, SLOT(removeMessage(medMessage*)));
+    connect(&medMessageController::instance(), SIGNAL(addMessage(medMessage*)), d->statusBar, SLOT(addMessage(medMessage*)));
+    connect(&medMessageController::instance(), SIGNAL(removeMessage(medMessage*)), d->statusBar, SLOT(removeMessage(medMessage*)));
 
     d->shortcutShortcut = new QShortcut(QKeySequence(tr(CONTROL_KEY "+Space")),
                                                      this,
@@ -303,22 +299,21 @@ void medMainWindow::mousePressEvent ( QMouseEvent* event )
 
 void medMainWindow::restoreSettings()
 {
-    medSettingsManager * mnger = medSettingsManager::instance();
-
-    this->restoreState(mnger->value("medMainWindow", "state").toByteArray());
-    this->restoreGeometry(mnger->value("medMainWindow", "geometry").toByteArray());
+    medSettingsManager &mnger = medSettingsManager::instance();
+    this->restoreState(mnger.value("medMainWindow", "state").toByteArray());
+    this->restoreGeometry(mnger.value("medMainWindow", "geometry").toByteArray());
 }
 
 void medMainWindow::saveSettings()
 {
     if(!this->isFullScreen())
     {
-        medSettingsManager * mnger = medSettingsManager::instance();
-        mnger->setValue("medMainWindow", "state", this->saveState());
-        mnger->setValue("medMainWindow", "geometry", this->saveGeometry());
+        medSettingsManager &mnger = medSettingsManager::instance();
+        mnger.setValue("medMainWindow", "state", this->saveState());
+        mnger.setValue("medMainWindow", "geometry", this->saveGeometry());
 
         // Keep the current screen for multiple-screens display
-        mnger->setValue("medMainWindow", "currentScreen", QApplication::desktop()->screenNumber(this));
+        mnger.setValue("medMainWindow", "currentScreen", QApplication::desktop()->screenNumber(this));
     }
 }
 
@@ -378,11 +373,11 @@ void medMainWindow::open(const medDataIndex &index)
 void medMainWindow::open(const QString & path)
 {
     QEventLoop loop;
-    QUuid uuid = medDataManager::instance()->importPath(path, false);
+    QUuid uuid = medDataManager::instance().importPath(path, false);
     if (!uuid.isNull())
     {
         d->expectedUuids.append(uuid);
-        connect(medDataManager::instance(), SIGNAL(dataImported(medDataIndex,QUuid)), this, SLOT(open_waitForImportedSignal(medDataIndex,QUuid)));
+        connect(&medDataManager::instance(), SIGNAL(dataImported(medDataIndex,QUuid)), this, SLOT(open_waitForImportedSignal(medDataIndex,QUuid)));
         while( d->expectedUuids.contains(uuid))
         {
             loop.processEvents(QEventLoop::ExcludeUserInputEvents);
@@ -402,7 +397,7 @@ void medMainWindow::open_waitForImportedSignal(medDataIndex index, QUuid uuid)
     if(d->expectedUuids.contains(uuid))
     {
         d->expectedUuids.removeAll(uuid);
-        disconnect(medDataManager::instance(),SIGNAL(dataImported(medDataIndex,QUuid)), this,SLOT(open_waitForImportedSignal(medDataIndex,QUuid)));
+        disconnect(&medDataManager::instance(),SIGNAL(dataImported(medDataIndex,QUuid)), this,SLOT(open_waitForImportedSignal(medDataIndex,QUuid)));
         if (index.isValid())
         {
             this->showWorkspace(medVisualizationWorkspace::staticIdentifier());
@@ -533,26 +528,35 @@ void medMainWindow::switchToHomepageArea()
 
 void medMainWindow::switchToBrowserArea()
 {
-    if(d->currentArea == d->browserArea)
-        return;
+    if(d->currentArea != d->browserArea)
+    {
+        if (d->browserArea == nullptr)
+        {
+            d->browserArea = new medBrowserArea(this);
+            d->browserArea->setObjectName("medBrowserArea");
+            d->stack->addWidget(d->browserArea);
+        }
 
-    d->currentArea = d->browserArea;
+        d->currentArea = d->browserArea;
 
-    d->shortcutAccessWidget->updateSelected("Browser");
-    d->quickAccessWidget->updateSelected("Browser");
+        d->shortcutAccessWidget->updateSelected("Browser");
+        d->quickAccessWidget->updateSelected("Browser");
 
-    d->quickAccessButton->setText(tr("Workspace: Browser"));
-    d->quickAccessButton->setMinimumWidth(170);
-    if (d->quickAccessWidget->isVisible())
-        this->hideQuickAccess();
-
-    if (d->shortcutAccessVisible)
-        this->hideShortcutAccess();
-
-    d->screenshotButton->setEnabled(false);
-    d->movieButton->setEnabled(false);
-    d->adjustSizeButton->setEnabled(false);
-    d->stack->setCurrentWidget(d->browserArea);
+        d->quickAccessButton->setText(tr("Workspace: Browser"));
+        d->quickAccessButton->setMinimumWidth(170);
+        if (d->quickAccessWidget->isVisible())
+        {
+            this->hideQuickAccess();
+        }
+        if (d->shortcutAccessVisible)
+        {
+            this->hideShortcutAccess();
+        }
+        d->screenshotButton->setEnabled(false);
+        d->movieButton->setEnabled(false);
+        d->adjustSizeButton->setEnabled(false);
+        d->stack->setCurrentWidget(d->browserArea);
+    }
 }
 
 void medMainWindow::switchToSearchArea()
@@ -608,7 +612,6 @@ void medMainWindow::switchToSearchArea()
 
 void medMainWindow::switchToWorkspaceArea()
 {
-
     if(d->currentArea == d->workspaceArea)
         return;
 
@@ -624,14 +627,14 @@ void medMainWindow::switchToWorkspaceArea()
 
     // Dialog window to recall users if database is empty
     // but only if the warning is enabled in medSettings
-    bool showWarning = medSettingsManager::instance()->value(
+    bool showWarning = medSettingsManager::instance().value(
                 "system",
                 "showEmptyDbWarning",
                 QVariant(true)).toBool();
     if ( showWarning )
     {
-        QList<medDataIndex> indexes = medDatabaseNonPersistentController::instance()->availableItems();
-        QList<medDataIndex> patients = medDataManager::instance()->controller()->patients();
+        QList<medDataIndex> indexes = medDatabaseNonPersistentController::instance().availableItems();
+        QList<medDataIndex> patients = medDataManager::instance().controller()->patients();
         if( indexes.isEmpty() )
             if( patients.isEmpty())
             {
@@ -643,25 +646,34 @@ void medMainWindow::switchToWorkspaceArea()
 
 void medMainWindow::switchToComposerArea()
 {
-    if(d->currentArea == d->composerArea)
-        return;
+    if(d->currentArea != d->composerArea)
+    {
+        if (d->composerArea == nullptr)
+        {
+            d->composerArea = new medComposerArea(this);
+            d->composerArea->setObjectName("medComposerArea");
+            d->stack->addWidget(d->composerArea);
+        }
 
-    d->currentArea = d->composerArea;
+        d->currentArea = d->composerArea;
 
-    d->shortcutAccessWidget->updateSelected("Composer");
-    d->quickAccessWidget->updateSelected("Composer");
+        d->shortcutAccessWidget->updateSelected("Composer");
+        d->quickAccessWidget->updateSelected("Composer");
 
-    d->quickAccessButton->setText(tr("Workspace: Composer"));
-    d->quickAccessButton->setMinimumWidth(170);
-    if (d->quickAccessWidget->isVisible())
-        this->hideQuickAccess();
-
-    if (d->shortcutAccessVisible)
-        this->hideShortcutAccess();
-
-    d->screenshotButton->setEnabled(false);
-    d->adjustSizeButton->setEnabled(false);
-    d->stack->setCurrentWidget(d->composerArea);
+        d->quickAccessButton->setText(tr("Workspace: Composer"));
+        d->quickAccessButton->setMinimumWidth(170);
+        if (d->quickAccessWidget->isVisible())
+        {
+            this->hideQuickAccess();
+        }
+        if (d->shortcutAccessVisible)
+        {
+            this->hideShortcutAccess();
+        }
+        d->screenshotButton->setEnabled(false);
+        d->adjustSizeButton->setEnabled(false);
+        d->stack->setCurrentWidget(d->composerArea);
+    }
 }
 
 void medMainWindow::showWorkspace(QString workspace)
@@ -678,7 +690,7 @@ void medMainWindow::showWorkspace(QString workspace)
     if (!d->workspaceArea->setCurrentWorkspace(workspace))
     {
         QString message = QString("Cannot open workspace ") + details->name;
-        medMessageController::instance()->showError(message, 3000);
+        medMessageController::instance().showError(message, 3000);
         switchToHomepageArea();
     }
 
@@ -766,7 +778,7 @@ void medMainWindow::hideShortcutAccess()
 
 int medMainWindow::saveModifiedAndOrValidateClosing()
 {
-    QList<medDataIndex> indexes = medDatabaseNonPersistentController::instance()->availableItems();
+    QList<medDataIndex> indexes = medDatabaseNonPersistentController::instance().availableItems();
 
     if(indexes.isEmpty())
     {
@@ -872,7 +884,7 @@ void medMainWindow::closeEvent(QCloseEvent *event)
         {
             // send cancel request to all running jobs, then wait for them
             // Note: most Jobs don't have the cancel method implemented, so this will be effectively the same as waitfordone.
-            medJobManagerL::instance()->dispatchGlobalCancelEvent();
+            medJobManagerL::instance().dispatchGlobalCancelEvent();
         }
         QThreadPool::globalInstance()->waitForDone();
     }

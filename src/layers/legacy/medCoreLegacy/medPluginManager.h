@@ -18,6 +18,8 @@
 
 #include <medCoreLegacyExport.h>
 
+#include <memory>
+
 class medPluginManagerPrivate;
 
 /**
@@ -29,7 +31,9 @@ class MEDCORELEGACY_EXPORT medPluginManager : public dtkPluginManager
     Q_OBJECT
 
 public:
-    static medPluginManager *instance();
+    ~medPluginManager();
+
+    static medPluginManager &instance();
 
     void readSettings();
     void initialize();
@@ -43,10 +47,6 @@ public:
 public slots:
     void onPluginLoaded(const QString& name);
 
-protected:
-     medPluginManager();
-    ~medPluginManager();
-
 protected slots:
      void onLoadError(const QString& errorMessage);
 
@@ -54,7 +54,9 @@ signals:
      void allPluginsLoaded();
 
 private:
-    static medPluginManager *s_instance;
+    medPluginManager();
+    
+    static std::unique_ptr<medPluginManager> s_instance;
 
 private:
     medPluginManagerPrivate *d;

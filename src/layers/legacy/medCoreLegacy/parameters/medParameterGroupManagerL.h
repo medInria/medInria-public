@@ -16,6 +16,8 @@
 
 #include <medCoreLegacyExport.h>
 
+#include <memory>
+
 class medAbstractView;
 class medAbstractLayeredView;
 class medAbstractParameterGroupL;
@@ -30,7 +32,9 @@ class MEDCORELEGACY_EXPORT medParameterGroupManagerL : public QObject
     Q_OBJECT
 
 public:
-    static medParameterGroupManagerL *instance();
+    ~medParameterGroupManagerL();
+
+    static medParameterGroupManagerL &instance();
 
     void registerNewGroup(medAbstractParameterGroupL* group);
     void unregisterGroup(medAbstractParameterGroupL* group);
@@ -48,9 +52,8 @@ public:
 
 protected:
     medParameterGroupManagerL();
-    ~medParameterGroupManagerL();
 
-    static medParameterGroupManagerL *s_instance;
+    static std::unique_ptr<medParameterGroupManagerL> s_instance;
 
 private:
     medParameterGroupManagerLPrivate *d;

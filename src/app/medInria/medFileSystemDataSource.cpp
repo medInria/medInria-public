@@ -36,7 +36,7 @@ medFileSystemDataSource::medFileSystemDataSource( QWidget* parent ): medAbstract
     d->filesystemWidget = new QWidget();
 
     // Get previous path or default one
-    QString defaultPath = medSettingsManager::instance()->value("Browser", "default_pipeline_import_path").toString();
+    QString defaultPath = medSettingsManager::instance().value("Browser", "default_pipeline_import_path").toString();
 
     if (defaultPath.isEmpty())
     {
@@ -145,9 +145,9 @@ medFileSystemDataSource::medFileSystemDataSource( QWidget* parent ): medAbstract
     connect (d->toolbar, SIGNAL(showHiddenFiles(bool)), this, SLOT(saveHiddenFilesSettings(bool)));
 
     // set default values
-    medSettingsManager* mng = medSettingsManager::instance();
-    bool showHiddenFiles = mng->value("medFileSystemDataSource", "showHiddenFiles", false).toBool();
-    bool listViewOn = mng->value("medFileSystemDataSource", "listView", true).toBool();
+    medSettingsManager &mng = medSettingsManager::instance();
+    bool showHiddenFiles = mng.value("medFileSystemDataSource", "showHiddenFiles", false).toBool();
+    bool listViewOn = mng.value("medFileSystemDataSource", "listView", true).toBool();
 
     d->toolbar->onShowHiddenFiles(showHiddenFiles);
 
@@ -272,7 +272,7 @@ void medFileSystemDataSource::onFileClicked(const QFileInfo& info)
         d->infoText->setText("<b>" + info.fileName() + "</b> selected - <i>" + this->formatByteSize(info.size()) + "</i>");
     }
 
-    medSettingsManager::instance()->setValue("Browser", "default_pipeline_import_path", info.path());
+    medSettingsManager::instance().setValue("Browser", "default_pipeline_import_path", info.path());
 }
 
 QString medFileSystemDataSource::formatByteSize(qint64 bytes)
@@ -300,18 +300,15 @@ void medFileSystemDataSource::onNothingSelected(void)
 
 void medFileSystemDataSource::saveHiddenFilesSettings(bool show)
 {
-    medSettingsManager* mng = medSettingsManager::instance();
-    mng->setValue("medFileSystemDataSource", "showHiddenFiles", show);
+    medSettingsManager::instance().setValue("medFileSystemDataSource", "showHiddenFiles", show);
 }
 
 void medFileSystemDataSource::saveListViewSettings()
 {
-    medSettingsManager* mng = medSettingsManager::instance();
-    mng->setValue("medFileSystemDataSource", "listView", false);
+    medSettingsManager::instance().setValue("medFileSystemDataSource", "listView", false);
 }
 
 void medFileSystemDataSource::saveTreeViewSettings()
 {
-    medSettingsManager* mng = medSettingsManager::instance();
-    mng->setValue("medFileSystemDataSource", "listView", true);
+    medSettingsManager::instance().setValue("medFileSystemDataSource", "listView", true);
 }
