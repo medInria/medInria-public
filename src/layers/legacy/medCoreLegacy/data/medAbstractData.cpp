@@ -194,7 +194,7 @@ QImage medAbstractData::generateThumbnail(QSize size)
 {
     QImage thumbnail;
 
-    if(medSettingsManager::instance()->value("Browser", "thumbnail_creation_setting").toBool())
+    if(medSettingsManager::instance().value("Browser", "thumbnail_creation_setting").toBool())
     {
         if (QThread::currentThread() != QApplication::instance()->thread())
         {
