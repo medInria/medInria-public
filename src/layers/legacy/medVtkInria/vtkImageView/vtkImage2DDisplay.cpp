@@ -58,7 +58,7 @@ void vtkImage2DDisplay::SetInputData(vtkImageData *pi_poVtkImage)
     }
     else
     {
-        m_sVtkImageInfo = medVtkImageInfo();
+        memset(reinterpret_cast<void*>(&m_sVtkImageInfo), 0, sizeof(m_sVtkImageInfo));
     }
 }
 
