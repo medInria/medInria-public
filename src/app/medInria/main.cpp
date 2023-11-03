@@ -29,6 +29,10 @@
 #include <medSettingsManager.h>
 #include <medStorage.h>
 
+#ifdef Q_WS_MAC
+extern void qt_set_sequence_auto_mnemonic(bool b);
+#endif
+
 void forceShow(medMainWindow& mainwindow )
 {
     //Idea and code taken from the OpenCOR project, Thanks Allan for the code!
@@ -68,6 +72,13 @@ void forceShow(medMainWindow& mainwindow )
 
 int main(int argc,char* argv[])
 {
+    // As described in QShortcut documentation, on macOS, shortcuts are disabled by default. 
+    // To enable them we need to set qt_set_sequence_auto_mnemonic.
+    // On Linux & Windows the classic shortcut key is ALT. 
+#ifdef Q_WS_MAC
+    qt_set_sequence_auto_mnemonic(true);
+#endif
+
     // Setup openGL surface compatible with QVTKOpenGLNativeWidget required by medVtkView.
     // We could have used "SurfaceFormat::setDefaultFormat(QVTKOpenGLNativeWidget::defaultFormat())"
     // directly, but in order to avoid a link to VTK here, here is a copy of
