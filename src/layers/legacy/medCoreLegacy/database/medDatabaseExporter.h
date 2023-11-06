@@ -28,6 +28,7 @@ class MEDCORELEGACY_EXPORT medDatabaseExporter : public medJobItemL
 
 public:
      medDatabaseExporter(dtkSmartPointer<medAbstractData> data, const QString & filename, const QString & writer);
+     medDatabaseExporter(QList<medAbstractData *> data, const QString & filename, const QString & writer);
     ~medDatabaseExporter();
 
 protected:

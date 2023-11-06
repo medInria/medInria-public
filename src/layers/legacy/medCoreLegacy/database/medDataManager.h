@@ -51,6 +51,7 @@ public:
 
     void exportData(dtkSmartPointer<medAbstractData> data);
     void exportDataToPath(dtkSmartPointer<medAbstractData> data, const QString& path, const QString& format = "");
+    void exportDataToPath(QList<medAbstractData *> dataList, const QString& path, const QString& format = "");
 
     QUuid makePersistent(medDataIndex index);
 
