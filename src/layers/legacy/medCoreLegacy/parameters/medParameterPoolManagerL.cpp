@@ -20,7 +20,6 @@
 class medParameterPoolManagerLPrivate
 {
 public:
-    //QHash<QString, std::shared_ptr<medParameterPoolL> > pools;
     QHash<QString, medParameterPoolL> pools;
 };
 
@@ -49,26 +48,14 @@ void medParameterPoolManagerL::removePool(QString poolId)
         poolRef.clear();
         d->pools.remove(poolId);
     }
-    // auto poolToRemove = d->pools.value(poolId);
-    // if(poolToRemove)
-    // {
-    //     poolToRemove->clear();
-    //     d->pools.remove(poolId);
-    // }
 }
 
 void medParameterPoolManagerL::linkParameter(medAbstractParameterL* parameter , QString poolId)
 {
     if( !d->pools.keys().contains(poolId) )
     {
-        medParameterPoolL &poolRef = d->pools[poolId];
-        poolRef.setName(poolId);
-        poolRef.setParent(this);
-
-        // std::shared_ptr<medParameterPoolL> selectedPool(new medParameterPoolL(this));
-        // selectedPool->setName(poolId);
-        // d->pools.insert(poolId, selectedPool);
-        // selectedPool->append(parameter);
+        d->pools[poolId].setName(poolId);
+        d->pools[poolId].setParent(this);
     }
 
     d->pools[poolId].append(parameter);
@@ -80,10 +67,6 @@ void medParameterPoolManagerL::unlinkParameter(medAbstractParameterL* param)
     {
         d->pools[key].remove(param);
     }
-    // for(const auto& pool : d->pools.values() )
-    // {
-    //     pool->remove(param);
-    // }
 }
 
 QList<medParameterPoolL *> medParameterPoolManagerL::pools()
@@ -95,19 +78,11 @@ QList<medParameterPoolL *> medParameterPoolManagerL::pools()
         poolsPointers.push_back(&d->pools[key]);
     }
     return poolsPointers;
-    //return d->pools.values();
 }
 
 QStringList medParameterPoolManagerL::pools(medAbstractParameterL *param)
 {
     QStringList pools;
-    // for(const auto& pool : d->pools.values() )
-    // {
-    //     if(pool->parameters().contains(param))
-    //     {
-    //         pools << pool->name();
-    //     }
-    // }
     
     for(auto &key : d->pools.keys() )
     {
@@ -122,8 +97,6 @@ QStringList medParameterPoolManagerL::pools(medAbstractParameterL *param)
 
 medParameterPoolL* medParameterPoolManagerL::pool(QString poolId)
 {
-    //return d->pools.value(poolId);
-
     medParameterPoolL *poolPointer = nullptr;
 
     if(d->pools.keys().contains(poolId))

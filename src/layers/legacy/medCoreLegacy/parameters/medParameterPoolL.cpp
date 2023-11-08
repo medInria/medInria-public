@@ -37,6 +37,18 @@ medParameterPoolL::medParameterPoolL(QObject* parent): d(new medParameterPoolLPr
     d->color = QColor("black");
 }
 
+medParameterPoolL::medParameterPoolL(medParameterPoolL && rParamPool)
+{
+    d = std::move(rParamPool.d);
+}
+
+medParameterPoolL::medParameterPoolL(medParameterPoolL const &paramPoolBase) : d(new medParameterPoolLPrivate)
+{
+    d->color = paramPoolBase.d->color;
+    d->name = paramPoolBase.d->name;
+    d->pool = paramPoolBase.d->pool;
+}
+
 medParameterPoolL::~medParameterPoolL()
 {
     delete d;

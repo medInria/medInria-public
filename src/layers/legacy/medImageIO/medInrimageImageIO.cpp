@@ -391,9 +391,9 @@ void InrimageImageIO::GetRotationAnglesFromMatrix(const vnl_matrix <double> &rot
             r[2] *= -1;
 
         // determine wether r = +/- theta*n
-        sin_r[0] = ( rotationMatrix(2,1) - rotationMatrix(1,2) );
-        sin_r[1] = ( rotationMatrix(0,2) - rotationMatrix(2,0) );
-        sin_r[2] = ( rotationMatrix(1,0) - rotationMatrix(0,1) );
+        sin_r.push_back( rotationMatrix(2,1) - rotationMatrix(1,2) );
+        sin_r.push_back( rotationMatrix(0,2) - rotationMatrix(2,0) );
+        sin_r.push_back( rotationMatrix(1,0) - rotationMatrix(0,1) );
 
         // determine the most significant term
         unsigned int k = 0;

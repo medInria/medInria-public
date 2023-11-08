@@ -29,6 +29,8 @@ class MEDCORELEGACY_EXPORT medParameterPoolL : public QObject
 
 public:
     medParameterPoolL(QObject* parent = nullptr);
+    medParameterPoolL(medParameterPoolL &&);
+    medParameterPoolL(medParameterPoolL const &);
     virtual ~medParameterPoolL();
 
     void append(medAbstractParameterL *parameter);
@@ -47,8 +49,6 @@ public:
 
     QColor color();
     void setColor(QColor color);
-
-    medParameterPoolL(medParameterPoolL const &){};
 
 private slots:
     void triggerParams();
