@@ -66,7 +66,7 @@ QStringList itkINRDataImageWriter::handled() const {
 
 QStringList itkINRDataImageWriter::supportedFileExtensions() const
 {
-    return QStringList() << ".inr" << ".inr.gz";
+    return QStringList() << ".inr.gz";
 }
 
 QString itkINRDataImageWriter::identifier() const {
