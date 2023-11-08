@@ -17,6 +17,7 @@
 
 #include <medAbstractData.h>
 #include <medAbstractDataFactory.h>
+#include <medAbstractImageData.h>
 #include <medAbstractLayeredView.h>
 #include <medAbstractProcessLegacy.h>
 #include <medDataManager.h>
@@ -281,7 +282,8 @@ void VarSegToolBox::updateView()
             medAbstractData *data = d->currentView->layerData(i);
             if(!data || data->identifier().contains("vtkDataMesh")
                     || !data->identifier().contains("itkDataImage") //avoid medVtkFibersData also
-                    || data->identifier().contains("itkDataImageVector"))
+                    || data->identifier().contains("itkDataImageVector")
+                    || (qobject_cast<medAbstractImageData*>(data)->Dimension() != 3))
             {
                 handleDisplayError(medAbstractProcessLegacy::DIMENSION_3D);
                 d->currentView = nullptr;

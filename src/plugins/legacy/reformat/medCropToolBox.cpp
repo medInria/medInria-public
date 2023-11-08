@@ -15,6 +15,7 @@
 #include <itkRegionOfInterestImageFilter.h>
 
 #include <medAbstractDataFactory.h>
+#include <medAbstractImageData.h>
 #include <medAbstractLayeredView.h>
 #include <medDataManager.h>
 #include <medMessageController.h>
@@ -66,7 +67,6 @@ public:
     void normalizedViewportToWorld(double *viewportPoint, double *worldPoint);
     void applyOrientationMatrix(double *worldPointIn, double *WorldPointOut);
     void applyInverseOrientationMatrix(double *worldPointIn, double *worldPointOut);
-    void generateOutput();
     template <typename ImageType> int extractCroppedImage(medAbstractData *input, int *minIndices, int *maxIndices, medAbstractData **output);
     void replaceViewWithOutputData(medAbstractWorkspaceLegacy &workspace);
     void importOutput();
@@ -143,6 +143,7 @@ medCropToolBox::medCropToolBox(QWidget* parent)
     d->view   = nullptr;
     d->view2D = nullptr;
     d->view3D = nullptr;
+    enableButtons(false);
 }
 
 medCropToolBox::~medCropToolBox()
@@ -157,10 +158,10 @@ dtkPlugin* medCropToolBox::plugin()
 
 medAbstractData* medCropToolBox::processOutput()
 {
-    if (d->view)
-    {
-        d->generateOutput();
-    }
+    applyCrop();
+
+    // This value can be tested in pipelines to check if the process went well.
+    // We'll retrieve all the output data directly from the view.
     return d->outputData.value(0);
 }
 
@@ -188,12 +189,14 @@ void medCropToolBox::updateView()
             medAbstractData *data = view->layerData(i);
             if(!data || data->identifier().contains("vtkDataMesh")
                     || !data->identifier().contains("itkDataImage") //avoid medVtkFibersData also
-                    || data->identifier().contains("itkDataImageVector"))
+                    || data->identifier().contains("itkDataImageVector")
+                    || (qobject_cast<medAbstractImageData*>(data)->Dimension() != 3))
             {
                 handleDisplayError(medAbstractProcessLegacy::DIMENSION_3D);
                 d->view   = nullptr;
                 d->view2D = nullptr;
                 d->view3D = nullptr;
+                enableButtons(false);
                 return;
             }
         }
@@ -216,6 +219,8 @@ void medCropToolBox::updateView()
             d->inverseOrientationMatrix->Invert();
 
             d->view2D->GetInteractorStyle()->AddObserver(vtkImageView2DCommand::CameraMoveEvent, d->cropCallback);
+
+            enableButtons(true);
         }
         d->updateBorderWidgetIfVisible();
 
@@ -227,15 +232,24 @@ void medCropToolBox::updateView()
         d->view   = nullptr;
         d->view2D = nullptr;
         d->view3D = nullptr;
+        enableButtons(false);
     }
+}
+
+void medCropToolBox::enableButtons(bool wantToEnable)
+{
+    d->applyButton->setEnabled(wantToEnable);
+    d->saveButton->setEnabled(wantToEnable);
 }
 
 void medCropToolBox::applyCrop()
 {
     if (d->view)
     {
-        d->generateOutput();
-        d->replaceViewWithOutputData(*getWorkspace());
+        if (generateOutput() == medAbstractProcessLegacy::SUCCESS)
+        {
+            d->replaceViewWithOutputData(*getWorkspace());
+        }
     }
 }
 
@@ -445,36 +459,39 @@ void medCropToolBoxPrivate::applyInverseOrientationMatrix(double *worldPointIn, 
     std::copy(homogeneousVector, homogeneousVector + 3, worldPointOut);
 }
 
-void medCropToolBoxPrivate::generateOutput()
+int medCropToolBox::generateOutput()
 {
+    int res = medAbstractProcessLegacy::FAILURE;
+
     double minBoxCorner[3], maxBoxCorner[3];
     int minIndices[3], maxIndices[3];
 
-    getMinAndMaxBoxCorners(minBoxCorner, maxBoxCorner);
-    applyOrientationMatrix(minBoxCorner, minBoxCorner);
-    applyOrientationMatrix(maxBoxCorner, maxBoxCorner);
-    view3D->GetImageCoordinatesFromWorldCoordinates(minBoxCorner, minIndices);
-    view3D->GetImageCoordinatesFromWorldCoordinates(maxBoxCorner, maxIndices);
+    d->getMinAndMaxBoxCorners(minBoxCorner, maxBoxCorner);
+    d->applyOrientationMatrix(minBoxCorner, minBoxCorner);
+    d->applyOrientationMatrix(maxBoxCorner, maxBoxCorner);
+    d->view3D->GetImageCoordinatesFromWorldCoordinates(minBoxCorner, minIndices);
+    d->view3D->GetImageCoordinatesFromWorldCoordinates(maxBoxCorner, maxIndices);
 
-    outputData.clear();
+    d->outputData.clear();
 
-    for (unsigned int layer = 0; layer < view->layersCount(); layer++)
+    for (unsigned int layer = 0; layer < d->view->layersCount(); layer++)
     {
-        medAbstractData *imageData = view->layerData(layer);
+        medAbstractData *imageData = d->view->layerData(layer);
         medAbstractData *output = nullptr;
 
-        if (DISPATCH_ON_3D_PIXEL_TYPE(&medCropToolBoxPrivate::extractCroppedImage,
-                                      this, imageData, minIndices, maxIndices, &output)
-                == medAbstractProcessLegacy::SUCCESS)
+        res = DISPATCH_ON_3D_PIXEL_TYPE(&medCropToolBoxPrivate::extractCroppedImage,
+                                        d, imageData, minIndices, maxIndices, &output);
+        if (res == medAbstractProcessLegacy::SUCCESS)
         {
-            outputData.append(output);
+            d->outputData.append(output);
         }
         else
         {
-            medMessageController::instance().showError("Drop a 3D volume in the view", 3000);
-            qDebug()<<__FILE__<<":"<<__LINE__<<imageData->identifier();
+            handleDisplayError(res);
+            break;
         }
     }
+    return res;
 }
 
 template <typename ImageType>
