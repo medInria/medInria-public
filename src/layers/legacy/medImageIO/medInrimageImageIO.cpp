@@ -391,9 +391,9 @@ void InrimageImageIO::GetRotationAnglesFromMatrix(const vnl_matrix <double> &rot
             r[2] *= -1;
 
         // determine wether r = +/- theta*n
-        sin_r[0] = ( rotationMatrix(2,1) - rotationMatrix(1,2) );
-        sin_r[1] = ( rotationMatrix(0,2) - rotationMatrix(2,0) );
-        sin_r[2] = ( rotationMatrix(1,0) - rotationMatrix(0,1) );
+        sin_r.push_back( rotationMatrix(2,1) - rotationMatrix(1,2) );
+        sin_r.push_back( rotationMatrix(0,2) - rotationMatrix(2,0) );
+        sin_r.push_back( rotationMatrix(1,0) - rotationMatrix(0,1) );
 
         // determine the most significant term
         unsigned int k = 0;
@@ -941,7 +941,7 @@ InrimageImageIO
         vz = 1.0;
 
     /* write header information */
-    sprintf(buf, "#INRIMAGE-4#{\nXDIM=%lu\nYDIM=%lu\nZDIM=%lu\nVDIM=%d\nTYPE=%s\nPIXSIZE=%i bits\n%sCPU=%s\nVX=%f\nVY=%f\nVZ=%f\nTX=%f\nTY=%f\nTZ=%f\nRX=%f\nRY=%f\nRZ=%f\n#GEOMETRY=CARTESIAN\n",
+    sprintf(buf, "#INRIMAGE-4#{\nXDIM=%llu\nYDIM=%llu\nZDIM=%llu\nVDIM=%d\nTYPE=%s\nPIXSIZE=%i bits\n%sCPU=%s\nVX=%f\nVY=%f\nVZ=%f\nTX=%f\nTY=%f\nTZ=%f\nRX=%f\nRY=%f\nRZ=%f\n#GEOMETRY=CARTESIAN\n",
             this->GetDimensions(0), this->GetDimensions(1), this->GetDimensions(2), this->GetNumberOfComponents(),
             type.c_str(), pixsize, scale, endianness.c_str(),
             vx, vy, vz,
