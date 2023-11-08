@@ -496,7 +496,7 @@ int medCropToolBoxPrivate::extractCroppedImage(medAbstractData* input, int* minI
         }
         if (maxIndices[i] < 0 || minIndices[i] >= static_cast<int>(imageSize[i]))
         {
-            return 0;
+            return medAbstractProcessLegacy::FAILURE;
         }
         desiredStart[i] = std::max(minIndices[i], 0);
         desiredSize[i] = std::min(maxIndices[i] + 1, static_cast<int>(imageSize[i])) - desiredStart[i];
