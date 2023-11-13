@@ -30,8 +30,8 @@ add_definitions(-D${TARGET_NAME_UP}_VERSION="${${TARGET_NAME}_VERSION}")
 find_package(ITK REQUIRED  COMPONENTS ITKCommon ITKTransform  ITKRegistrationCommon ITKIOImageBase ITKIOMeta ITKTransformFactory ITKIOTransformBase ITKIOTransformInsightLegacy)
 include(${ITK_USE_FILE})
 
-find_package(RPI REQUIRED)
-include(${RPI_USE_FILE})
+find_package(RPI REQUIRED COMPONENTS common)
+#include(${RPI_USE_FILE})
 
 ## #############################################################################
 ## List Sources
@@ -100,6 +100,7 @@ target_link_libraries(${TARGET_NAME}
   ITKOptimizers
   ITKSmoothing
   medRegistration
+  RPI::common
 )
 
 set(CMAKE_RUNTIME_OUTPUT_DIRECTORY ${CMAKE_BINARY_DIR}/bin)

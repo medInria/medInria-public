@@ -32,8 +32,8 @@ include_directories(${dtk_INCLUDE_DIRS})
 find_package(ITK REQUIRED COMPONENTS ITKCommon ITKTransform ITKRegistrationCommon ITKImageGrid ITKImageFilterBase  ITKIOImageBase ITKTransformFactory ITKIOTransformBase ITKIOMeta ITKIOTransformInsightLegacy ITKPDEDeformableRegistration ITKReview)
 include(${ITK_USE_FILE})
 
-find_package(RPI REQUIRED)
-include(${RPI_USE_FILE})
+find_package(RPI REQUIRED COMPONENTS common)
+#include(${RPI_USE_FILE})
 
 ## #############################################################################
 ## List Sources
@@ -103,7 +103,8 @@ target_link_libraries(${TARGET_NAME}
   dtkLog
   dtkCoreSupport
   medCoreLegacy
-  medRegistration  
+  medRegistration
+  RPI::common
 )
 
 set(CMAKE_RUNTIME_OUTPUT_DIRECTORY ${CMAKE_BINARY_DIR}/bin)

@@ -41,7 +41,7 @@ if (NOT USE_SYSTEM_${ep})
 ## #############################################################################
 
 set(git_url ${GITHUB_PREFIX}Inria-Asclepios/RPI.git)
-set(git_tag ITK5.1.1)
+set(git_tag RPI_INTERFACE)
 ## #############################################################################
 ## Add specific cmake arguments for configuration step of the project
 ## #############################################################################
@@ -64,11 +64,17 @@ set(cmake_args
   -DCMAKE_SHARED_LINKER_FLAGS=${${ep}_shared_linker_flags}  
   -DCMAKE_INSTALL_PREFIX=<INSTALL_DIR>
   -DBUILD_SHARED_LIBS=${BUILD_SHARED_LIBS_${ep}}
-  -DRPI_BUILD_EXAMPLES=OFF
+  -DRPI_BUILD_EXAMPLES=OFF      
   )
   
 set(cmake_cache_args
-  -DITK_DIR:FILEPATH=${ITK_DIR}
+  -DITK_DIR:FILEPATH=${ITK_DIR}     
+  -DBUILD_ConvertLinearToDF:BOOL=OFF
+  -DBUILD_ConvertLinearToSVF:BOOL=OFF
+  -DBUILD_FuseTransformations:BOOL=OFF
+  -DBUILD_ResampleImage:BOOL=OFF      
+  -DBUILD_RegistrationAddOn:BOOL=OFF
+  -DBUILD_examples:BOOL=OFF
   )
 
 
@@ -101,8 +107,9 @@ ExternalProject_Add(${ep}
 ## #############################################################################
 
 ExternalProject_Get_Property(${ep} binary_dir)
-set(${ep}_DIR ${binary_dir} PARENT_SCOPE)
+#set(${ep}_DIR ${binary_dir} PARENT_SCOPE)
 
+set(${ep}_DIR ${binary_dir}/lib/cmake/RPI PARENT_SCOPE)
 
 endif() #NOT USE_SYSTEM_ep
 
