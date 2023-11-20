@@ -13,7 +13,7 @@
 =========================================================================*/
 
 #include <dtkCoreSupport/dtkAbstractDataReader.h>
-#include <medCoreLegacyExport.h>
+#include <medCoreExport.h>
 
 class dtkAbstractData;
 class medAbstractData;
@@ -21,7 +21,7 @@ class medAbstractData;
 /**
  * Extending dtkAbstractDataReader class
  */
-class MEDCORELEGACY_EXPORT medAbstractDataReader : public dtkAbstractDataReader
+class MEDCORE_EXPORT medAbstractDataReader : public dtkAbstractDataReader
 {
     Q_OBJECT
 

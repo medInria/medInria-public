@@ -86,7 +86,7 @@ void medDatabaseSettingsWidget::read()
     d->dbPath->setText(medStorage::dataLocation());
 }
 
-bool medDatabaseSettingsWidget::write()
+void medDatabaseSettingsWidget::write()
 {
     medSettingsManager * mnger = medSettingsManager::instance();
     mnger->setValue(this->identifier(),"new_database_location", d->dbPath->text());

@@ -50,7 +50,7 @@ public:
      * @param void
      * @return bool true if saving worked, false otherwise.
     */
-    virtual bool write() = 0;
+    virtual void write() = 0;
 
 public slots:
     /**

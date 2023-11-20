@@ -24,6 +24,10 @@ class MEDCORE_EXPORT medSettingsManager : public QObject
 {
     Q_OBJECT
 
+public:
+
+  static medSettingsManager * instance();
+
   static void destroy();
 
   void setValue(const QString &section, const QString &key,

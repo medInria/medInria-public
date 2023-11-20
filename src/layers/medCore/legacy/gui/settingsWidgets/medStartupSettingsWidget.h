@@ -23,7 +23,7 @@
 
 class medStartupSettingsWidgetPrivate;
 
-class MEDCORE_EXPORT medStartupSettingsWidget : public medSettingsWidget
+class MEDCORE_EXPORT medStartupSettingsWidget : public QDialog
 {
     Q_OBJECT
 

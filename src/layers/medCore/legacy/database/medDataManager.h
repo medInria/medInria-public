@@ -16,7 +16,8 @@
 #include <QPixmap>
 #include <QUuid>
 
-#include <medDatabaseExporter.h>
+#include <dtkSmartPointer.h>
+
 #include <medDataIndex.h>
 
 class medDataManagerPrivate;

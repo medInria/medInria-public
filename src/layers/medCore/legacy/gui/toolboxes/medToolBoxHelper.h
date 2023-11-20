@@ -10,7 +10,7 @@
  * the implied warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.
  */
 
-#include <medCoreLegacyExport.h>
+#include <medCoreExport.h>
 
 #include <QDialog>
 #include <QVBoxLayout>
@@ -20,7 +20,7 @@
  * Inputs are a list of QString: the first is the main text documentation in html.
  * The second is the joined list of authors. The third is the plugin version. 
  */
-class MEDCORELEGACY_EXPORT medToolBoxHelper : public QDialog
+class MEDCORE_EXPORT medToolBoxHelper : public QDialog
 {
     Q_OBJECT
 

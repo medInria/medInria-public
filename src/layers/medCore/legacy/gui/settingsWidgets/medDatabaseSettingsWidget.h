@@ -33,7 +33,7 @@ private slots:
 protected:
     bool validate();
 
-    bool write();
+    void write();
 private:
     medDatabaseSettingsWidgetPrivate *d;
 

@@ -15,11 +15,11 @@
 #include <QString>
 #include <QSize>
 
-#include <medCoreLegacyExport.h>
+#include <medCoreExport.h>
 
 namespace med
 {
-    MEDCORELEGACY_EXPORT QString smartBaseName(const QString & fileName);
+    MEDCORE_EXPORT QString smartBaseName(const QString & fileName);
 
     struct GPUInfo
     {
@@ -28,7 +28,7 @@ namespace med
         QString vendor;
     };
 
-    MEDCORELEGACY_EXPORT GPUInfo gpuModel();
+    MEDCORE_EXPORT GPUInfo gpuModel();
 
     static const QSize defaultThumbnailSize = QSize(320,320);
 

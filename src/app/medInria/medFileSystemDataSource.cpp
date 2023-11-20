@@ -15,7 +15,6 @@
 
 #include <dtkGuiSupport/dtkFinder.h>
 
-//#include <medActionsToolBox.h>
 #include <medSettingsManager.h>
 
 class medFileSystemDataSourcePrivate
