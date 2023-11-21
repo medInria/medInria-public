@@ -9,6 +9,26 @@
         <file>medInria.qss</file>
         <file>authors.txt</file>
 
+        <file>icons/eye_white.svg</file>
+        <file>icons/settings_white.svg</file>
+        <file>icons/open_white.svg</file>
+        <file>icons/maximize_on_white.svg</file>
+        <file>icons/maximize_off_white.svg</file>
+        <file>icons/save_scene_white.svg</file>
+        <file>icons/cross.svg</file>
+        <file>icons/import_temporary_white.svg</file>
+        <file>icons/import_permanent_white.svg</file>
+        <file>icons/magnifier_white.svg</file>
+        <file>icons/pan_white.svg</file>
+        <file>icons/stack_white.svg</file>
+        <file>icons/ruler_white.svg</file>
+        <file>icons/contrast_white.svg</file>
+        <file>icons/time_play_white.svg</file>
+        <file>icons/time_backward_step_white.svg</file>
+        <file>icons/time_forward_step_white.svg</file>
+        <file>icons/link_white.svg</file>
+        <file>icons/cross_red.svg</file>
+
         <file>icons/AxialIcon.png</file>
         <file>icons/CoronalIcon.png</file>
         <file>icons/SagittalIcon.png</file>
@@ -100,43 +120,43 @@
         <file>icons/user_add.png</file>
         <file>icons/user_edit.png</file>
         <file>medInria.qss</file>
-        <file>pixmaps/unknown.jpg</file>
-        <file>pixmaps/checkbox.png</file>
-        <file>pixmaps/checkbox-checked.png</file>
-        <file>pixmaps/checkbox-partial.png</file>
-        <file>pixmaps/radio.png</file>
-        <file>pixmaps/radio-checked.png</file>
-        <file>pixmaps/radio-partial.png</file>
-        <file>pixmaps/drop-down.png</file>
-        <file>pixmaps/treeview-branch-closed.png</file>
-        <file>pixmaps/treeview-branch-open.png</file>
-        <file>pixmaps/database_navigator_item_checker_checked.png</file>
-        <file>pixmaps/database_navigator_item_checker_unchecked.png</file>
-        <file>pixmaps/medInria-logo-homepage.png</file>
-        <!-- <file>pixmaps/default_thumbnail.png</file> -->
-        <file>pixmaps/default_thumbnail-lightbackground.png</file>
-        <file>pixmaps/scene.png</file>
-        <file>pixmaps/composer_sc.png</file>
-        <file>pixmaps/home_sc.png</file>
-        <file>pixmaps/database.png</file>
-        <file>pixmaps/workspace_Diffusion.png</file>
-        <file>pixmaps/workspace_Visualization.png</file>
-        <file>pixmaps/workspace_Registration.png</file>
-        <file>pixmaps/workspace_Filtering.png</file>
-        <file>pixmaps/workspace_Segmentation.png</file>
-        <file>pixmaps/workspace_Filtering dtk2.png</file>
-        <file>pixmaps/workspace_Meshing.png</file>
-        <file>pixmaps/workspace_Reformat.png</file>
-        <file>pixmaps/checkbox-disabled.png</file>
-        <file>pixmaps/checkbox-checked-disabled.png</file>
-        <file>pixmaps/arrow-top-disabled.png</file>
-        <file>pixmaps/arrow-top.png</file>
-        <file>pixmaps/arrow-right-disabled.png</file>
-        <file>pixmaps/arrow-right.png</file>
-        <file>pixmaps/arrow-left-disabled.png</file>
-        <file>pixmaps/arrow-left.png</file>
-        <file>pixmaps/arrow-bot-disabled.png</file>
-        <file>pixmaps/arrow-bot.png</file>
+        <file>icons/unknown.jpg</file>
+        <file>icons/checkbox.png</file>
+        <file>icons/checkbox-checked.png</file>
+        <file>icons/checkbox-partial.png</file>
+        <file>icons/radio.png</file>
+        <file>icons/radio-checked.png</file>
+        <file>icons/radio-partial.png</file>
+        <file>icons/drop-down.png</file>
+        <file>icons/treeview-branch-closed.png</file>
+        <file>icons/treeview-branch-open.png</file>
+        <file>icons/database_navigator_item_checker_checked.png</file>
+        <file>icons/database_navigator_item_checker_unchecked.png</file>
+        <file>icons/medInria-logo-homepage.png</file>
+        <!-- <file>icons/default_thumbnail.png</file> -->
+        <file>icons/default_thumbnail-lightbackground.png</file>
+        <file>icons/scene.png</file>
+        <file>icons/composer_sc.png</file>
+        <file>icons/home_sc.png</file>
+        <file>icons/database.png</file>
+        <file>icons/workspace_Diffusion.png</file>
+        <file>icons/workspace_Visualization.png</file>
+        <file>icons/workspace_Registration.png</file>
+        <file>icons/workspace_Filtering.png</file>
+        <file>icons/workspace_Segmentation.png</file>
+        <file>icons/workspace_Filtering dtk2.png</file>
+        <file>icons/workspace_Meshing.png</file>
+        <file>icons/workspace_Reformat.png</file>
+        <file>icons/checkbox-disabled.png</file>
+        <file>icons/checkbox-checked-disabled.png</file>
+        <file>icons/arrow-top-disabled.png</file>
+        <file>icons/arrow-top.png</file>
+        <file>icons/arrow-right-disabled.png</file>
+        <file>icons/arrow-right.png</file>
+        <file>icons/arrow-left-disabled.png</file>
+        <file>icons/arrow-left.png</file>
+        <file>icons/arrow-bot-disabled.png</file>
+        <file>icons/arrow-bot.png</file>
         <file>icons/adjust_size.png</file>
         <file>icons/adjust_size_grey.png</file>
         <file>icons/movie.png</file>
