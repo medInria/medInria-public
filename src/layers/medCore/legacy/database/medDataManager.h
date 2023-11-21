@@ -16,7 +16,7 @@
 #include <QPixmap>
 #include <QUuid>
 
-#include <dtkSmartPointer.h>
+#include <dtkCoreSupport/dtkSmartPointer.h>
 
 #include <medDataIndex.h>
 

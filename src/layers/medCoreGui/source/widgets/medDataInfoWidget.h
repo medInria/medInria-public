@@ -13,7 +13,6 @@
 =========================================================================*/
 
 
-#include <medWidgetsExport.h>
 
 #include <QWidget>
 #include <QDialog>

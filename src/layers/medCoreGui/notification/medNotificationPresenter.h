@@ -13,10 +13,11 @@
 #include <QObject>
 
 #include <medNotifSys.h>
-#include <medWidgetsExport.h>
+#include <medCoreGuiExport.h>
+
 class QWidget;
 class medNotifSysPresenterPrivate;
-class MEDWIDGETS_EXPORT medNotifSysPresenter : public QObject
+class MEDCOREGUI_EXPORT medNotifSysPresenter : public QObject
 {
     Q_OBJECT
 

@@ -22,7 +22,6 @@
 #include <QWidgetAction>
 
 #include <medNotif.h>
-#include <medWidgetsExport.h>
 
 class medNotifStatusbarSubpart : public QWidget
 {

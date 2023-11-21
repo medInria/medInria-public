@@ -16,14 +16,14 @@
 #include <QObject>
 #include <QStackedWidget>
 
-#include <medWidgetsExport.h>
+#include <medCoreGuiExport.h>
 
 class QWidget;
 class QTreeView;
 class medVirtualRepresentation;
 class medVirtualRepresentationPresenterPrivate;
 
-class MEDWIDGETS_EXPORT medVirtualRepresentationPresenter : public QObject
+class MEDCOREGUI_EXPORT medVirtualRepresentationPresenter : public QObject
 {
     Q_OBJECT
 public:

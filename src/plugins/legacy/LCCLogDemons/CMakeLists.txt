@@ -104,7 +104,7 @@ target_link_libraries(${TARGET_NAME}
   dtkCoreSupport
   medCore
   medRegistration  
-  RPILCClogDemons
+  # RPILCClogDemons
 )
 
 set(CMAKE_RUNTIME_OUTPUT_DIRECTORY ${CMAKE_BINARY_DIR}/bin)

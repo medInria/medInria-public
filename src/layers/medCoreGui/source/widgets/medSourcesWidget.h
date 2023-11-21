@@ -25,7 +25,6 @@
 #include <QVBoxLayout>
 
 #include <medDataIndex.h>
-#include <medWidgetsExport.h>
 
 class medSourceModelPresenter;
 

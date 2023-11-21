@@ -13,7 +13,6 @@
 =========================================================================*/
 
 
-#include <medWidgetsExport.h>
 #include <medDataHub.h>
 
 #include <QWidget>

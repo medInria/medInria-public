@@ -2,7 +2,7 @@
 // Created by Julien Castelneau on 11/10/2021.
 //
 
-#include <PluginAPHP/QtDcmAPHP.h>
+#include <QtDcmAPHP.h>
 #include <gmock/gmock.h>
 #include <gtest/gtest.h>
 #include <sphereDicomWeb/medAnnotation.h>

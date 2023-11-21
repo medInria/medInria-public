@@ -10,7 +10,7 @@
  * the implied warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.
  */
 
-#include <medWidgetsExport.h>
+#include <medCoreGuiExport.h>
 
 #include <QMap>              // for QMap
 #include <QWidget>           // for QWidget
@@ -46,7 +46,7 @@ class QListWidgetItem;
  *     - You can specified a configuration file with different name directly in line edit.
  *     - If path to directory is invalid after software reboot, it will assume to use current directory.
  */
-class MEDWIDGETS_EXPORT medSourcesSettings : public QWidget
+class MEDCOREGUI_EXPORT medSourcesSettings : public QWidget
 {
     Q_OBJECT
 

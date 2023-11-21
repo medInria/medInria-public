@@ -13,7 +13,7 @@
 #include <QTreeWidget>
 
 #include <medSourcesSettings.h>
-#include <medWidgetsExport.h>
+#include <medCoreGuiExport.h>
 
 
  /**
@@ -27,7 +27,7 @@
   *   - set current source as the default.
   *   - remove the current source.
   */
-class MEDWIDGETS_EXPORT medSourcesSettingsHandlerWidget : public QWidget
+class MEDCOREGUI_EXPORT medSourcesSettingsHandlerWidget : public QWidget
 {
     Q_OBJECT
 

@@ -13,12 +13,12 @@
 =========================================================================*/
 
 
-#include <medWidgetsExport.h>
+#include <medCoreGuiExport.h>
 
 #include <QWidget>
 
 class medSpoilerWidgetPrivate;
-class MEDWIDGETS_EXPORT medSpoilerWidget : public QWidget
+class MEDCOREGUI_EXPORT medSpoilerWidget : public QWidget
 {
     Q_OBJECT
 public:

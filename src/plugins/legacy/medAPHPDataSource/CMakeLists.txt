@@ -37,6 +37,8 @@ find_package(DCMTK REQUIRED)
 
 find_package(QtDCM REQUIRED)
 
+find_package(ITK REQUIRED)
+
 ## #############################################################################
 ## List Sources
 ## #############################################################################

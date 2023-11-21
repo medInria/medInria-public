@@ -16,13 +16,13 @@
 #include <QObject>
 #include <QStackedWidget>
 
-#include <medWidgetsExport.h>
+#include <medCoreGuiExport.h>
 
 class medDataHub;
 class medSourcesWidget;
 class medDataHubPresenterPrivate;
 
-class MEDWIDGETS_EXPORT medDataHubPresenter : public QObject
+class MEDCOREGUI_EXPORT medDataHubPresenter : public QObject
 {
     Q_OBJECT
 public:

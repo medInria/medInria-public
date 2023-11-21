@@ -12,7 +12,6 @@
 
 #include <QWidget>
 
-#include <medWidgetsExport.h>
 
 #include <medNotifSys.h>
 class medNotif;

@@ -21,7 +21,7 @@ class QVBoxLayout;
 
 class medGroupParameterPresenterPrivate;
 
-class MEDWIDGETS_EXPORT medGroupParameterPresenter : public medAbstractParameterPresenter
+class MEDCOREGUI_EXPORT medGroupParameterPresenter : public medAbstractParameterPresenter
 {
     Q_OBJECT
 

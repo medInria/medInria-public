@@ -2,7 +2,7 @@
 #include <QSignalSpy>
 
 #include <medAPHP.h>
-#include <PluginAPHP/QtDcmAPHP.h>
+#include <QtDcmAPHP.h>
 #include <sphereDicomWeb/medAnnotation.h>
 #include <medGroupParameter.h>
 #include <medStringParameter.h>

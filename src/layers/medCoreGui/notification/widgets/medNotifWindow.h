@@ -14,15 +14,14 @@
 #include <QMap>
 #include <QListWidget>
 
-#include <medWidgetsExport.h>
-
+#include <medCoreGuiExport.h>
 #include <medNotifSys.h>
 
 class QListWidgetItem;
 class QPropertyAnimation;
 class QMainWindow;
 
-class MEDWIDGETS_EXPORT medNotificationPaneWidget : public QWidget
+class MEDCOREGUI_EXPORT medNotificationPaneWidget : public QWidget
 {
     Q_OBJECT
 

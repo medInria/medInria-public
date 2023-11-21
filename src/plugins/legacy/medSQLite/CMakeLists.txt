@@ -87,7 +87,6 @@ add_library(${TARGET_NAME} SHARED
 target_link_libraries(${TARGET_NAME} PUBLIC
         Qt5::Sql
         medCore
-        medCoreLegacy
   )
 
 
@@ -107,7 +106,6 @@ target_link_libraries(${TARGET_NAME} PUBLIC
 #		Qt5::Core
 #        Qt5::Sql
 #        medCore
-#        medCoreLegacy
 #        ${TARGET_NAME})
 #
 #

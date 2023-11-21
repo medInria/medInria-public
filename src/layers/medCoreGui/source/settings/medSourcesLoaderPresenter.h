@@ -13,10 +13,10 @@
 #include <QObject>
 
 #include <medSourcesLoader.h>
-#include <medWidgetsExport.h>
+#include <medCoreGuiExport.h>
 
 class medSourcesLoaderPresenterPrivate;
-class MEDWIDGETS_EXPORT medSourcesLoaderPresenter : public QObject
+class MEDCOREGUI_EXPORT medSourcesLoaderPresenter : public QObject
 {
     Q_OBJECT
 

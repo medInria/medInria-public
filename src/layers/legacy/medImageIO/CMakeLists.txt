@@ -25,7 +25,7 @@ include(${ITK_USE_FILE})
 
 #WARNING USE VTK through ITKVtkGlue and medLog
 
-find_package(DCMTK REQUIRED NO_MODULE)
+find_package(DCMTK REQUIRED)
 
 
 ## #############################################################################

@@ -13,7 +13,7 @@
 =========================================================================*/
 
 #include <QObject>
-#include <medWidgetsExport.h>
+#include <medCoreGuiExport.h>
 
 class QWidget;
 class QTreeView;
@@ -22,7 +22,7 @@ class medSourceModel;
 class medSourceView;
 class medSourceModelPresenterPrivate;
 
-class MEDWIDGETS_EXPORT medSourceModelPresenter : public QObject
+class MEDCOREGUI_EXPORT medSourceModelPresenter : public QObject
 {
     Q_OBJECT
 public:

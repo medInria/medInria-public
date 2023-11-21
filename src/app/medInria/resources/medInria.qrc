@@ -113,7 +113,7 @@
         <file>pixmaps/database_navigator_item_checker_checked.png</file>
         <file>pixmaps/database_navigator_item_checker_unchecked.png</file>
         <file>pixmaps/medInria-logo-homepage.png</file>
-        <file>pixmaps/default_thumbnail.png</file>
+        <!-- <file>pixmaps/default_thumbnail.png</file> -->
         <file>pixmaps/default_thumbnail-lightbackground.png</file>
         <file>pixmaps/scene.png</file>
         <file>pixmaps/composer_sc.png</file>

@@ -83,7 +83,6 @@ add_library(${TARGET_NAME} SHARED
 ## #############################################################################
 target_link_libraries(${TARGET_NAME} PUBLIC
         medCore
-        medCoreLegacy
   )
 
 
@@ -101,7 +100,6 @@ target_link_libraries(${TARGET_NAME} PUBLIC
 #		GTest::gmock
 #		Qt5::Core
 #        medCore
-#        medCoreLegacy
 #        ${TARGET_NAME})
 #
 #project(medTmpDataSourceIntegrationQTest LANGUAGES CXX)

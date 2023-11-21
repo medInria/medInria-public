@@ -18,10 +18,10 @@
 
 #include <medAbstractSource.h>
 #include <medSourcesLoader.h>
-#include <medWidgetsExport.h>
+#include <medCoreGuiExport.h>
 
 class QHBoxLayout;
-class MEDWIDGETS_EXPORT medSourceSettingsWidget : public QFrame
+class MEDCOREGUI_EXPORT medSourceSettingsWidget : public QFrame
 {
     Q_OBJECT
     
