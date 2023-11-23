@@ -160,12 +160,6 @@ void itkDCMTKDataImageReaderPrivate::threadDone(itk::DCMTKImageIO::Pointer io)
 
     if (ioThreads->size() == 0)
         ioPointers->clear();
-
-    delete ioPointers;
-    ioPointers = nullptr;
-
-    delete ioThreads;
-    ioThreads = nullptr;
 }
 
 void itkDCMTKDataImageReaderPrivate::initialiseStatic()
