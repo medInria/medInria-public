@@ -37,6 +37,7 @@ class medApplicationPrivate
 public:
     medMainWindow *mainWindow;
     QStringList systemOpenInstructions;
+    QSplashScreen *splashScreen;
 };
 
 // /////////////////////////////////////////////////////////////////
@@ -48,6 +49,11 @@ medApplication::medApplication(int & argc, char**argv) :
     d(new medApplicationPrivate)
 {
     d->mainWindow = nullptr;
+
+    d->splashScreen = new QSplashScreen(QPixmap(":/pixmaps/medInria-splash.png"),
+        Qt::WindowStaysOnTopHint | Qt::X11BypassWindowManagerHint);
+    d->splashScreen->show();
+    this->processEvents();
 
     this->setApplicationName("medInria");
     this->setApplicationVersion(MEDINRIA_VERSION);
@@ -98,6 +104,12 @@ void medApplication::setMainWindow(medMainWindow *mw)
     QVariant var = QVariant::fromValue((QObject*)d->mainWindow);
     this->setProperty("MainWindow",var);
     d->systemOpenInstructions.clear();
+
+    // Wait until the app is displayed to close itself
+    if (d->splashScreen)
+    {
+        d->splashScreen->finish(d->mainWindow);
+    }
 }
 
 void medApplication::redirectMessageToSplash(const QString &message)
