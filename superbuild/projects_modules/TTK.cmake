@@ -41,7 +41,7 @@ if (NOT USE_SYSTEM_${ep})
 ## #############################################################################
 
 set(git_url ${GITHUB_PREFIX}medInria/TTK.git)
-set(git_tag ITK5.1.1)
+set(git_tag ModernCMake)
 
 ## #############################################################################
 ## Add specific cmake arguments for configuration step of the project
@@ -103,7 +103,7 @@ ExternalProject_Add(${ep}
 ## #############################################################################
 
 ExternalProject_Get_Property(${ep} binary_dir)
-set(${ep}_DIR ${binary_dir} PARENT_SCOPE)
+set(${ep}_DIR ${binary_dir}/lib/cmake/TTK PARENT_SCOPE)
   
 endif() #NOT USE_SYSTEM_ep
 
