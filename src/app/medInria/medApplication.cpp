@@ -106,10 +106,7 @@ void medApplication::setMainWindow(medMainWindow *mw)
     d->systemOpenInstructions.clear();
 
     // Wait until the app is displayed to close itself
-    if (d->splashScreen)
-    {
-        d->splashScreen->finish(d->mainWindow);
-    }
+    d->splashScreen->finish(d->mainWindow);
 }
 
 void medApplication::redirectMessageToSplash(const QString &message)
