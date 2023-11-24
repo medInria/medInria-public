@@ -45,7 +45,7 @@ void vtkImageViewCornerAnnotation::SetImageView(vtkImageView* arg)
 }
 
 void vtkImageViewCornerAnnotation::TextReplace(vtkImageActor *imageActor,
-                                               vtkImageMapToWindowLevelColors */*wl*/)
+                                               vtkImageMapToWindowLevelColors * /*wl*/)
 {
     int slice = 0, slice_max = 0;
     double window = 0, level = 0;

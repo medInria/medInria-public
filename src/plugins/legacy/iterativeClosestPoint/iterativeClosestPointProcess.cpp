@@ -166,8 +166,6 @@ void iterativeClosestPointProcess::setParameter(QString data, int channel)
     }
 }
 
-
-
 int iterativeClosestPointProcess::update()
 {
     if ( !d->inputSource || !d->inputTarget )

@@ -12,14 +12,13 @@
 
 =========================================================================*/
 
-#include <dtkCoreSupport/dtkAbstractDataReader.h>
+#include <medAbstractDataReader.h>
 
 #include <medImageIOExport.h>
 
 #include <itkImageIOBase.h>
 
-class MEDIMAGEIO_EXPORT itkDataImageReaderBase:
-        public dtkAbstractDataReader
+class MEDIMAGEIO_EXPORT itkDataImageReaderBase: public medAbstractDataReader
 {
     Q_OBJECT
 

@@ -12,12 +12,12 @@ PURPOSE.
 
 =========================================================================*/
 
-#include <dtkCoreSupport/dtkAbstractDataReader.h>
+#include <medAbstractDataReader.h>
 #include <medVtkFibersDataPluginExport.h>
 
 class medVtkFibersDataReaderPrivate;
 
-class MEDVTKFIBERSDATAPLUGIN_EXPORT medVtkFibersDataReader: public dtkAbstractDataReader
+class MEDVTKFIBERSDATAPLUGIN_EXPORT medVtkFibersDataReader: public medAbstractDataReader
 {
     Q_OBJECT
 

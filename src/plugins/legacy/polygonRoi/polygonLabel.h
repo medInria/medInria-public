@@ -17,10 +17,14 @@
 #include <itkImage.h>
 #include <medWorldPosContours.h>
 #include <viewinteractors/polygonRoi.h>
+#include <medAbstractWritingPolicy.h>
 
 class medLabelPolygonsPrivate;
 class baseViewEvent;
 class medLabelProperty;
+
+class medAbstractWritingPolicy;
+class medAbstractSource;
 
 typedef itk::Image<unsigned char, 3> UChar3ImageType;
 
@@ -60,7 +64,7 @@ public:
     void deleteNode(double X, double Y);
     void deleteContour();
     void removeAllTick();
-    void createMask(int label, QString &desc);
+    void createMask(int label, QString &desc, bool originSrc);
     void SetMasterRoi();
 
     vtkSmartPointer<vtkPolyData> getContoursAsPolyData(int label);
@@ -80,6 +84,16 @@ public:
     medLabelProperty & getState();
     void updateContourProperty(QString &name, QColor &color, bool isSelected, bool hasScore, bool checkState);
     void changeContoursColor(QColor color);
+
+
+    /*!
+     *  To move to medAbstractProcess medInria 4
+     */
+    medAbstractWritingPolicy* getBestWPolicy(QString pi_sourceId);
+    bool writeResults(QString pi_sourceId, medAbstractData * pi_pData, QStringList pi_UriOfRelatedData, QString pi_basePath, medWritingPolicyData & pi_writingPolicyData);
+    /*!
+     *  To move to medAbstractProcess medInria 4
+     */
 
 public slots:
     void interpolateIfNeeded();

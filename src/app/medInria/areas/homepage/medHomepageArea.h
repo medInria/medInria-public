@@ -32,8 +32,8 @@ public:
 
 public slots:
     void onShowBrowser();
+    void onShowDataSources();
     void onShowHelp();
-    void onShowComposer();
 
     /**
      * @brief Display an About window
@@ -54,16 +54,11 @@ public slots:
      * @brief Display a license window
      */
     void onShowLicense();
-    
-    /**
-     * @brief Display a licenses window for external libraries
-     */
-    void onShowExtLicenses();
 
     /**
      * @brief Display a database window
      */
-    void onShowDatabase();
+    // void onShowDatabase();
 
     /**
      * @brief Display a settings window for the Area section
@@ -89,6 +84,11 @@ public slots:
      * @brief Display a window with the plugins logs from the application start
      */
     void onShowPluginLogs();
+
+    /**
+     * @brief Update the fullscreen icon if checked or not
+     */
+    void switchOffOnFullscreenIcons(const bool checked);
 
 signals:
     /**

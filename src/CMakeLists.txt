@@ -21,13 +21,16 @@ endif()
 
 project(medInria VERSION ${medInria_VERSION})
 
-
-## #############################################################################
-## Set version
-## #############################################################################
+cmake_policy(SET CMP0076 NEW)
 
 string(TOUPPER ${PROJECT_NAME} PROJECT_NAME_UP)
-add_definitions(-D${PROJECT_NAME_UP}_VERSION="${${PROJECT_NAME}_VERSION}")
+
+set(${PROJECT_NAME}_IDENTIFIER fr.inria.${PROJECT_NAME})
+
+add_compile_definitions(
+  ${PROJECT_NAME_UP}_VERSION="${${PROJECT_NAME}_VERSION}"
+  ${PROJECT_NAME_UP}_IDENTIFIER="${${PROJECT_NAME}_IDENTIFIER}"
+  )
 
 ## #############################################################################
 ## Macro
@@ -114,6 +117,7 @@ include(set_exe_install_rules)
 include(set_lib_install_rules)
 include(set_lib_properties_variables)
 include(set_plugin_install_rules)
+include(add_external_resources)
 
 include(add_plugins)
 if(APPLE)
@@ -162,6 +166,17 @@ if (WIN32)
 endif()
 
 ## #############################################################################
+## Setup resources directory (for Windows and Linux)
+## #############################################################################
+
+if (NOT APPLE)
+  set(${PROJECT_NAME}_RESOURCES_DIR "${CMAKE_BINARY_DIR}/resources")
+  add_custom_target(make_resource_dir ALL
+    COMMAND ${CMAKE_COMMAND} -E make_directory "${${PROJECT_NAME}_RESOURCES_DIR}"
+    )
+endif()
+
+## #############################################################################
 ## Add subdirectory
 ## #############################################################################
 
@@ -180,13 +195,12 @@ set_property(DIRECTORY ${CMAKE_CURRENT_SOURCE_DIR} PROPERTY VS_STARTUP_PROJECT m
 ################################################################################
 
 set_lib_properties_variables(
-    medCoreLegacy
+    medCore
+	medCoreGui
     medLog
     medRegistration
-    medCore
     medImageIO
     medVtkInria
-    medWidgets
     medUtilities
     medVtkDataMeshBase
     )

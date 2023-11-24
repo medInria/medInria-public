@@ -27,7 +27,7 @@
 #include <itkObjectFactoryBase.h>
 #include <itkMetaDataObject.h>
 
-itkDataImageReaderBase::itkDataImageReaderBase() : dtkAbstractDataReader()
+itkDataImageReaderBase::itkDataImageReaderBase() : medAbstractDataReader()
 {
     this->io = 0;
     this->itkKeyToMedKey["intent_name"] = medAbstractImageData::PixelMeaningMetaData;
@@ -270,7 +270,7 @@ template <unsigned DIM,typename T>
 bool itkDataImageReaderBase::read_image(const QString& path,const char* type)
 {
     medAbstractData* medData = dynamic_cast<medAbstractData*>(this->data());
-    if (medData && medData->identifier()!=type)
+    if ((medData && medData->identifier()!=type) || medData==nullptr)
         return false;
 
     typedef itk::Image<T,DIM> Image;

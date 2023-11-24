@@ -11,12 +11,15 @@
 
 #include <medHomepageArea.h>
 
-#include <medDatabaseSettingsWidget.h>
+// #include <medDatabaseSettingsWidget.h>
 #include <medHomepageButton.h>
 #include <medMainWindow.h>
 #include <medPluginWidget.h>
 #include <medStartupSettingsWidget.h>
 #include <medWorkspaceFactory.h>
+
+#include <medSourcesLoader.h>
+#include <medSourcesLoaderPresenter.h>
 
 class medHomepageAreaPrivate
 {
@@ -42,10 +45,6 @@ medHomepageArea::medHomepageArea ( QWidget * parent ) : QWidget ( parent ), d ( 
     connect(actionBrowser, &QAction::triggered, this, &medHomepageArea::onShowBrowser);
     menuFile->addAction(actionBrowser);
 
-    QAction *actionDatabase = new QAction(tr("&Database settings"), parent);
-    connect(actionDatabase, &QAction::triggered, this, &medHomepageArea::onShowDatabase);
-    menuFile->addAction(actionDatabase);
-
     // --- Area menu
     QMenu *menuArea = menu_bar->addMenu("Switch to area");
 
@@ -58,10 +57,6 @@ medHomepageArea::medHomepageArea ( QWidget * parent ) : QWidget ( parent ), d ( 
     QAction *actionHome = new QAction(tr("&Homepage"), parent);
     connect(actionHome, &QAction::triggered, mainWindow, &medMainWindow::switchToHomepageArea);
     menuArea->addAction(actionHome);
-
-    QAction *actionComposer = new QAction(tr("&Composer"), parent);
-    connect(actionComposer, &QAction::triggered, this, &medHomepageArea::onShowComposer);
-    menuArea->addAction(actionComposer);
 
     // Visualization workspace is a "Basic" area
     QAction *actionVisu = new QAction("&Visualization", parent);
@@ -84,7 +79,7 @@ medHomepageArea::medHomepageArea ( QWidget * parent ) : QWidget ( parent ), d ( 
     }
 
     // --- View menu
-    QMenu *menuView = menu_bar->addMenu("Views");
+    QMenu *menuView = menu_bar->addMenu("View");
 
     QAction *actionAjust = new QAction(tr("&Ajust containers size"), parent);
     connect(actionAjust, &QAction::triggered, mainWindow, &medMainWindow::adjustContainersSize);
@@ -119,7 +114,7 @@ medHomepageArea::medHomepageArea ( QWidget * parent ) : QWidget ( parent ), d ( 
     // --- About menu
     QMenu *menuAbout = menu_bar->addMenu("Info");
 
-    QAction *actionAbout = new QAction(tr("&About"), parent);
+    QAction *actionAbout = new QAction(tr("&About the application"), parent);
     connect(actionAbout, &QAction::triggered, this, &medHomepageArea::onShowAbout);
     menuAbout->addAction(actionAbout);
 
@@ -127,7 +122,7 @@ medHomepageArea::medHomepageArea ( QWidget * parent ) : QWidget ( parent ), d ( 
     connect(actionAuthors, &QAction::triggered, this, &medHomepageArea::onShowAuthors);
     menuAbout->addAction(actionAuthors);
 
-    QAction *actionReleaseNotes = new QAction(tr("&Release Notes "), parent);
+    QAction *actionReleaseNotes = new QAction(tr("&Release Notes"), parent);
     connect(actionReleaseNotes, &QAction::triggered, this, &medHomepageArea::onShowReleaseNotes);
     menuAbout->addAction(actionReleaseNotes);
 
@@ -135,43 +130,43 @@ medHomepageArea::medHomepageArea ( QWidget * parent ) : QWidget ( parent ), d ( 
     connect(actionLicense, &QAction::triggered, this, &medHomepageArea::onShowLicense);
     menuAbout->addAction(actionLicense);
 
-    QAction *actionExtLicense = new QAction(tr("&External Licenses"), parent);
-    connect(actionExtLicense, &QAction::triggered, this, &medHomepageArea::onShowExtLicenses);
-    menuAbout->addAction(actionExtLicense);
-
     menuAbout->addSeparator();
 
     QAction *actionHelp = new QAction(tr("&Help"), parent);
     connect(actionHelp, &QAction::triggered, this, &medHomepageArea::onShowHelp);
     menuAbout->addAction(actionHelp);
 
-    // --- Fullscreen checkable action
-    d->actionFullscreen = new QAction(parent);
-    d->actionFullscreen->setCheckable(true);
-#if defined(Q_OS_MAC)
-    d->actionFullscreen->setShortcut(Qt::ControlModifier + Qt::Key_F);
-    connect(d->actionFullscreen, &QAction::hovered, [=]{QToolTip::showText(QCursor::pos(), "Switch to fullscreen (cmd+f)", this);});
+    // --- File menu
+    QMenu *menuSettings = menu_bar->addMenu("Settings");
 
-    // Corner widgets are not displayed on macOS native menubar for now, so we are using a classic menu
-    QMenu *menuActions = menu_bar->addMenu("Actions");
-    d->actionFullscreen->setText("Fullscreen");
-    menuActions->addAction(d->actionFullscreen);
-#else
-    // --- Prepare right corner menu 
+    QAction *actionDataSources = new QAction(tr("&Data Sources"), parent);
+    connect(actionDataSources, &QAction::triggered, this, &medHomepageArea::onShowDataSources);
+    menuSettings->addAction(actionDataSources);
+
+    // --- Prepare right corner menu
     QMenuBar *rightMenuBar = new QMenuBar(menu_bar);
     menu_bar->setCornerWidget(rightMenuBar);
 
+    // --- Fullscreen checkable action
     QIcon fullscreenIcon;
-    fullscreenIcon.addPixmap(QPixmap(":icons/fullscreen_on_white.svg"),QIcon::Normal,QIcon::Off);
-    fullscreenIcon.addPixmap(QPixmap(":icons/fullscreen_off_white.svg"),QIcon::Normal,QIcon::On);
+    fullscreenIcon.addPixmap(QPixmap(":icons/fullscreenExpand.png"),QIcon::Normal,QIcon::Off);
+    fullscreenIcon.addPixmap(QPixmap(":icons/fullscreenReduce.png"),QIcon::Normal,QIcon::On);
+
+    d->actionFullscreen = new QAction(parent);
     d->actionFullscreen->setIcon(fullscreenIcon);
+    d->actionFullscreen->setCheckable(true);
+    d->actionFullscreen->setChecked(false);
+#if defined(Q_OS_MAC)
+    d->actionFullscreen->setShortcut(Qt::ControlModifier + Qt::Key_F);
+    d->actionFullscreen->setToolTip(tr("Switch to fullscreen (cmd+f)"));
+#else
     d->actionFullscreen->setShortcut(Qt::Key_F11);
-    // On Qt5, we can't use setToolTip on an action, without using setToolTipsVisible (by default to false) on the QMenu
-    // Here we have a QAction directly on a QMenuBar without a QMenu, so we display manually the tooltip
-    connect(d->actionFullscreen, &QAction::hovered, [=]{QToolTip::showText(QCursor::pos(), "Switch to fullscreen (F11)", this);});
-    rightMenuBar->addAction(d->actionFullscreen);
+    d->actionFullscreen->setToolTip(tr("Switch to fullscreen (F11)"));
 #endif
     connect(d->actionFullscreen, &QAction::toggled, mainWindow, &medMainWindow::setFullScreen);
+    // On Qt5, QAction in menubar does not seem to show the Off and On icons, so we do it manually
+    connect(d->actionFullscreen, &QAction::toggled, this, &medHomepageArea::switchOffOnFullscreenIcons);
+    rightMenuBar->addAction(d->actionFullscreen);
     
     // Setup the description widget: application logo and description
     d->descriptionWidget = new QWidget(this);
@@ -244,9 +239,9 @@ void medHomepageArea::initPage()
     workspaceButtonsLayoutBasic->addLayout(workspaceButtonsLayoutBasicGrid);
 
     medHomepageButton * browserButton = new medHomepageButton ( this );
-    browserButton->setToolButtonStyle ( Qt::ToolButtonTextBesideIcon );
-    browserButton->setIcon ( QIcon ( ":/icons/open_white.svg" ) );
-    browserButton->setText ( " Import/export files" );
+    browserButton->setToolButtonStyle ( Qt::ToolButtonTextUnderIcon );
+    browserButton->setIcon ( QIcon ( ":/icons/folder.png" ) );
+    browserButton->setText ( "Import/export files" );
     browserButton->setMinimumHeight ( 40 );
     browserButton->setMaximumWidth ( 250 );
     browserButton->setMinimumWidth ( 250 );
@@ -254,19 +249,6 @@ void medHomepageArea::initPage()
     browserButton->setToolTip("Area to manage and import data");
     workspaceButtonsLayoutBasicGrid->addWidget(browserButton, 0, 0);
     QObject::connect ( browserButton, SIGNAL ( clicked() ),this, SLOT ( onShowBrowser() ) );
-
-    medHomepageButton * composerButton = new medHomepageButton ( this );
-    composerButton->setText ("       Composer");
-    composerButton->setFocusPolicy ( Qt::NoFocus );
-    composerButton->setToolButtonStyle(Qt::ToolButtonTextBesideIcon);
-    composerButton->setIcon(QIcon(":/icons/composer.png"));
-    composerButton->setMinimumHeight ( 40 );
-    composerButton->setMaximumWidth ( 250 );
-    composerButton->setMinimumWidth ( 250 );
-    composerButton->setToolTip("Open the Composer workspace");
-    composerButton->setIdentifier("composer");
-    workspaceButtonsLayoutBasicGrid->addWidget(composerButton, 1, 0);
-    QObject::connect ( composerButton, SIGNAL ( clicked ( QString ) ),this, SLOT ( onShowComposer() ) );
 
     //--- Workspace grids
 
@@ -317,7 +299,7 @@ void medHomepageArea::initPage()
         if (!(medWorkspaceFactory::instance()->isUsable(detail->identifier)))
         {
             button->setDisabled(true);
-            button->setToolTip("No useful plugin has been found for this workspace");
+            button->setToolTip("No useful plugin has been found for this workspace.");
         }
         if(!detail->category.compare("Basic")) 
         {
@@ -384,6 +366,17 @@ void medHomepageArea::onShowBrowser()
     emit showBrowser();
 }
 
+void medHomepageArea::onShowDataSources()
+{
+    QDialog *dialog = new QDialog();
+    medSourcesLoaderPresenter presenter(medSourcesLoader::instance());
+    auto wgt = presenter.buildWidget();
+    auto layout = new QVBoxLayout();
+    layout->addWidget(wgt);
+    dialog->setLayout(layout);
+    dialog->exec();
+}
+
 void medHomepageArea::onShowAbout()
 {
     QFile file(":ABOUT.txt");
@@ -436,7 +429,7 @@ void medHomepageArea::onShowLicense()
     QString text = file.readAll();
 
     QMessageBox msgBox;
-    msgBox.setText("Here is the application license:                           ");
+    msgBox.setText("Here is the application License:                           ");
     msgBox.setDetailedText(text);
 
     // Search the "Show Details..." button
@@ -450,35 +443,6 @@ void medHomepageArea::onShowLicense()
     }
 
     msgBox.exec();
-}
-
-void medHomepageArea::onShowExtLicenses()
-{
-    QFile file(":LICENSES_EXT.txt");
-    file.open(QIODevice::ReadOnly | QIODevice::Text);
-    QString text = file.readAll();
-
-    QMessageBox msgBox;
-    msgBox.setText("Here are the external library licenses:                           ");
-    msgBox.setDetailedText(text);
-
-    // Search the "Show Details..." button
-    foreach (QAbstractButton *button, msgBox.buttons())
-    {
-        if (msgBox.buttonRole(button) == QMessageBox::ActionRole)
-        {
-            button->click(); // click it to expand the text
-            break;
-        }
-    }
-
-    msgBox.exec();
-}
-
-void medHomepageArea::onShowDatabase()
-{
-    medDatabaseSettingsWidget dialog(this);
-    dialog.exec();
 }
 
 void medHomepageArea::onShowAreaSettings()
@@ -515,7 +479,14 @@ void medHomepageArea::onShowHelp()
     QDesktopServices::openUrl(QUrl("http://med.inria.fr/help/documentation"));
 }
 
-void medHomepageArea::onShowComposer()
+void medHomepageArea::switchOffOnFullscreenIcons(const bool checked)
 {
-    emit showComposer();
+    if (checked)
+    {
+        d->actionFullscreen->setIcon(QIcon(":icons/fullscreenReduce.png"));
+    }
+    else
+    {
+        d->actionFullscreen->setIcon(QIcon(":icons/fullscreenExpand.png"));
+    }
 }

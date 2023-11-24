@@ -114,7 +114,7 @@ ExternalProject_Add(${ep}
   CMAKE_ARGS ${cmake_args}
   DEPENDS ${${ep}_dependencies}
   INSTALL_COMMAND ""
-  BUILD_ALWAYS 1
+  BUILD_ALWAYS ${EP_BUILD_ALWAYS}
   )
 
 ## #############################################################################

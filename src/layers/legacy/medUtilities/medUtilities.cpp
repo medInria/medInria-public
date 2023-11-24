@@ -60,6 +60,8 @@ void medUtilities::setDerivedMetaData(medAbstractData* derived, medAbstractData*
     }
 
     generateSeriesAndSOPInstanceId(derived);
+
+    derived->addParentData(original);
 }
 
 void medUtilities::copyMetaDataIfEmpty(medAbstractData* derived, medAbstractData* original, QList<QString> metaDataKeys)

@@ -27,7 +27,7 @@ public:
 
 public slots:
     void onErrorTreeItemActivated(QTreeWidgetItem* item,int column);
-
+    void onPluginTreeItemActivated(QTreeWidgetItem *item, int column);
 protected:
     void reset();
 

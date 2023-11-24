@@ -31,8 +31,8 @@ add_definitions(-D${TARGET_NAME_UP}_VERSION="${${TARGET_NAME}_VERSION}")
 find_package(dtk REQUIRED)
 include_directories(${dtk_INCLUDE_DIRS})
 
-find_package(RPI REQUIRED)
-include(${RPI_USE_FILE})
+find_package(RPI REQUIRED COMPONENTS common)
+#include(${RPI_USE_FILE})
 
 find_package(ITK REQUIRED COMPONENTS ITKCommon ITKIOTransformBase ITKIOTransformInsightLegacy ITKTransform ITKTransformFactory ITKRegistrationCommon ITKIOMeta ITKIOImageBase ITKPDEDeformableRegistration ITKIOTransformBase)
 include(${ITK_USE_FILE})
@@ -91,6 +91,7 @@ target_link_libraries(${TARGET_NAME}
   ITKPDEDeformableRegistration
   medCore
   medRegistration
+  RPI::common
   )
 
 ## #############################################################################

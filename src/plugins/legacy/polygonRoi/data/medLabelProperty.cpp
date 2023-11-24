@@ -35,3 +35,10 @@ void medLabelProperty::setAdditionalNameAndColor(QString &name, QColor &color)
     secondName = name;
     secondColor = color;
 }
+
+//void medLabelProperty::setScoreInfo(bool state)
+//{
+//    scoreState = state;
+//}
+
+

@@ -26,8 +26,7 @@ public:
      {
          HomePage,
          Browser,
-         WorkSpace,
-         Composer
+         WorkSpace
      };
 
      medMainWindow(QWidget *parent = nullptr);
@@ -36,6 +35,7 @@ public:
     void restoreSettings();
     void saveSettings();
     QWidget* currentArea() const;
+    QToolButton* notifButton();
 
     void setStartup(const AreaType areaIndex,const QStringList& filenames);
 
@@ -43,6 +43,7 @@ signals:
     void sliceSelected(int slice);
     void mainWindowActivated();
     void mainWindowDeactivated();
+    void resized(QRect const &);
 
 public slots:
     void setWallScreen(const bool full);
@@ -98,11 +99,9 @@ public slots:
 private slots:
 
     void showWorkspace(QString workspace);
-    void showComposer();
 
     void switchToBrowserArea();
     void switchToWorkspaceArea();
-    void switchToComposerArea();
 
     void showShortcutAccess();
     void hideShortcutAccess();
@@ -114,7 +113,6 @@ private slots:
 protected:
     void closeEvent(QCloseEvent *event);
     void mousePressEvent(QMouseEvent * event);
-    int saveModifiedAndOrValidateClosing();
     bool event(QEvent * e);
     void dragEnterEvent(QDragEnterEvent *event);
     void dragLeaveEvent(QDragLeaveEvent *event);

@@ -9,12 +9,9 @@
  * the implied warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.
  */
 
-#include <dtkComposerWidget.h>
 
 #include <medBrowserArea.h>
-#include <medComposerArea.h>
-#include <medDatabaseController.h>
-#include <medDatabaseNonPersistentController.h>
+//#include <medDatabaseNonPersistentController.h>
 #include <medDataManager.h>
 #include <medEmptyDbWarning.h>
 #include <medHomepageArea.h>
@@ -22,7 +19,7 @@
 #include <medLogger.h>
 #include <medMainWindow.h>
 #include <medQuickAccessMenu.h>
-#include <medSaveModifiedDialog.h>
+//#include <medSaveModifiedDialog.h>
 #include <medSearchToolboxDialog.h>
 #include <medSelectorToolBox.h>
 #include <medSelectorWorkspace.h>
@@ -53,7 +50,6 @@ public:
     QWidget *currentArea;
 
     QStackedWidget*           stack;
-    medComposerArea*          composerArea;
     medBrowserArea*           browserArea;
     medWorkspaceArea*         workspaceArea;
     medHomepageArea*          homepageArea;
@@ -102,16 +98,12 @@ medMainWindow::medMainWindow ( QWidget *parent ) : QMainWindow ( parent ), d ( n
     d->homepageArea = new medHomepageArea( this );
     d->homepageArea->setObjectName("medHomePageArea");
 
-    //Composer
-    d->composerArea = new medComposerArea(this);
-    d->composerArea->setObjectName("medComposerArea");
 
     //  Stack
     d->stack = new QStackedWidget(this);
     d->stack->addWidget(d->homepageArea);
     d->stack->addWidget(d->browserArea);
     d->stack->addWidget(d->workspaceArea);
-    d->stack->addWidget(d->composerArea);
 
     // Shortcut to workspaces through CTRL+Space
     d->shortcutAccessWidget = new medQuickAccessMenu(this);
@@ -121,7 +113,6 @@ medMainWindow::medMainWindow ( QWidget *parent ) : QMainWindow ( parent ), d ( n
     connect(d->shortcutAccessWidget, SIGNAL(menuHidden()), this, SLOT(hideShortcutAccess()));
     connect(d->shortcutAccessWidget, SIGNAL(homepageSelected()), this, SLOT(switchToHomepageArea()));
     connect(d->shortcutAccessWidget, SIGNAL(browserSelected()), this, SLOT(switchToBrowserArea()));
-    connect(d->shortcutAccessWidget, SIGNAL(composerSelected()), this, SLOT(switchToComposerArea()));
     connect(d->shortcutAccessWidget, SIGNAL(workspaceSelected(QString)), this, SLOT(showWorkspace(QString)));
 
     d->shortcutAccessVisible = false;
@@ -152,7 +143,6 @@ medMainWindow::medMainWindow ( QWidget *parent ) : QMainWindow ( parent ), d ( n
     d->homepageArea->initPage();
     connect(d->homepageArea, SIGNAL(showBrowser()), this, SLOT(switchToBrowserArea()));
     connect(d->homepageArea, SIGNAL(showWorkspace(QString)), this, SLOT(showWorkspace(QString)));
-    connect(d->homepageArea, SIGNAL(showComposer()), this, SLOT(showComposer()));
 
     this->setCentralWidget ( d->stack );
     this->setWindowTitle(qApp->applicationName());
@@ -219,10 +209,6 @@ void medMainWindow::switchToDefaultWorkSpace()
     {
         switchToBrowserArea();
     }
-    else if (startupWorkspace == "Composer")
-    {
-        switchToComposerArea();
-    }
     else
     {
         QList<medWorkspaceFactory::Details*> workspaceDetails = medWorkspaceFactory::instance()->workspaceDetailsSortedByName(true);
@@ -272,10 +258,6 @@ void medMainWindow::switchToArea(const AreaType areaIndex)
 
     case medMainWindow::WorkSpace:
         this->switchToWorkspaceArea();
-        break;
-
-    case medMainWindow::Composer:
-        this->switchToComposerArea();
         break;
 
     default:
@@ -367,7 +349,7 @@ void medMainWindow::captureScreenshot()
                                                         "Image files (*.png *.jpeg *.jpg);;All files (*.*)",
                                                         0);
 
-        QByteArray format = fileName.right(fileName.lastIndexOf('.')).toUpper().toUtf8();
+        QByteArray format = fileName.right(fileName.lastIndexOf('.')).toUpper().toLatin1();
         if ( ! QImageWriter::supportedImageFormats().contains(format) )
         {
             format = "PNG";
@@ -399,6 +381,11 @@ void medMainWindow::enableMenuBarItem(QString name, bool enabled)
             currentMenu->setEnabled(enabled);
         }
     }
+}
+
+QToolButton * medMainWindow::notifButton()
+{
+    return nullptr; //d->notifButton;
 }
 
 void medMainWindow::switchToHomepageArea()
@@ -515,43 +502,23 @@ void medMainWindow::switchToWorkspaceArea()
 
         // Dialog window to recall users if database is empty
         // but only if the warning is enabled in medSettings
-        bool showWarning = medSettingsManager::instance()->value(
-                    "system",
-                    "showEmptyDbWarning",
-                    QVariant(true)).toBool();
-        if ( showWarning )
-        {
-            QList<medDataIndex> indexes = medDatabaseNonPersistentController::instance()->availableItems();
-            QList<medDataIndex> patients = medDatabaseController::instance()->patients();
-            if( indexes.isEmpty() )
-            {
-                if( patients.isEmpty())
-                {
-                    medEmptyDbWarning* msgBox = new medEmptyDbWarning(this);
-                    msgBox->exec();
-                }
-            }
-        }
-    }
-}
-
-void medMainWindow::switchToComposerArea()
-{
-    if(d->currentArea != d->composerArea)
-    {
-        d->currentArea = d->composerArea;
-
-        d->shortcutAccessWidget->updateSelected("Composer");
-
-        if (d->shortcutAccessVisible)
-        {
-            this->hideShortcutAccess();
-        }
-
-        d->stack->setCurrentWidget(d->composerArea);
-
-        // The View menu is dedicated to "view workspaces"
-        enableMenuBarItem("View", false);
+        // bool showWarning = medSettingsManager::instance()->value(
+        //             "system",
+        //             "showEmptyDbWarning",
+        //             QVariant(true)).toBool();
+        // if ( showWarning )
+        // {
+        //     QList<medDataIndex> indexes = medDatabaseNonPersistentController::instance()->availableItems();
+        //     QList<medDataIndex> patients = medDatabaseController::instance()->patients();
+        //     if( indexes.isEmpty() )
+        //     {
+        //         if( patients.isEmpty())
+        //         {
+        //             medEmptyDbWarning* msgBox = new medEmptyDbWarning(this);
+        //             msgBox->exec();
+        //         }
+        //     }
+        // }
     }
 }
 
@@ -572,12 +539,6 @@ void medMainWindow::showWorkspace(QString workspace)
     // The View menu is dedicated to "view workspaces"
     enableMenuBarItem("View", true);
 
-    this->hideShortcutAccess();
-}
-
-void medMainWindow::showComposer()
-{
-    this->switchToComposerArea();
     this->hideShortcutAccess();
 }
 
@@ -619,40 +580,6 @@ void medMainWindow::hideShortcutAccess()
         d->shortcutAccessWidget->setProperty("pos", QPoint ( 0 , -500 ));
         d->shortcutAccessWidget->hide();
         this->activateWindow();
-    }
-}
-
-int medMainWindow::saveModifiedAndOrValidateClosing()
-{
-    QList<medDataIndex> indexes = medDatabaseNonPersistentController::instance()->availableItems();
-
-    if(indexes.isEmpty())
-    {
-        // No data to save, pop-up window to validate the closing
-
-        QMessageBox msgBox(this);
-        msgBox.setWindowTitle("Closing");
-        msgBox.setText("Do you really want to exit?");
-        msgBox.setStandardButtons(QMessageBox::Yes);
-        msgBox.addButton(QMessageBox::No);
-        msgBox.setDefaultButton(QMessageBox::No);
-        if(msgBox.exec() == QMessageBox::Yes)
-        {
-            return QDialog::Accepted;
-        }
-        else
-        {
-            return QDialog::Rejected;
-        }
-    }
-    else
-    {
-        // User is asked to save, cancel or exit without saving temporary data
-
-        medSaveModifiedDialog *saveDialog = new medSaveModifiedDialog(this);
-        saveDialog->show();
-        saveDialog->exec();
-        return saveDialog->result();
     }
 }
 
@@ -727,15 +654,20 @@ void medMainWindow::closeEvent(QCloseEvent *event)
             // send cancel request to all running jobs, then wait for them
             // Note: most Jobs don't have the cancel method implemented, so this will be effectively the same as waitfordone.
             medJobManagerL::instance()->dispatchGlobalCancelEvent();
+            QThreadPool::globalInstance()->waitForDone();
         }
-        QThreadPool::globalInstance()->waitForDone();
+        else
+        {
+            // just hide the window and wait
+            QThreadPool::globalInstance()->waitForDone();
+        }
     }
 
-    if(this->saveModifiedAndOrValidateClosing() != QDialog::Accepted)
-    {
-        event->ignore();
-        return;
-    }
+    //if(this->saveModifiedAndOrValidateClosing() != QDialog::Accepted)
+    //{
+    //    event->ignore();
+    //    return;
+    //}
 
     d->closeEventProcessed = true;
     this->saveSettings();

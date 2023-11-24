@@ -12,12 +12,12 @@
 
 =========================================================================*/
 
-#include <dtkCoreSupport/dtkAbstractDataWriter.h>
+#include <medAbstractDataWriter.h>
 
 #include <itkDataTensorImagePluginExport.h>
 #include <itkImageIOBase.h>
 
-class ITKDATATENSORIMAGEPLUGIN_EXPORT itkDataTensorImageWriterBase : public dtkAbstractDataWriter
+class ITKDATATENSORIMAGEPLUGIN_EXPORT itkDataTensorImageWriterBase : public medAbstractDataWriter
 {
     Q_OBJECT
 
