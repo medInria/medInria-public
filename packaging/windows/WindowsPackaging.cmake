@@ -65,6 +65,8 @@ set(CPACK_NSIS_DELETE_ICONS_EXTRA "
 	Delete '\$SMPROGRAMS\\\\$MUI_TEMP\\\\*.*'
 ")
 
+
+
 if (NOT PRIVATE_PLUGINS_DIRS STREQUAL "")
     foreach(pluginpath ${PRIVATE_PLUGINS_DIRS})
         file(TO_CMAKE_PATH ${pluginpath} pluginpath)
@@ -113,10 +115,12 @@ list(APPEND
   ${DCMTK_DIR}/bin/Release 
   ${VTK_DIR}/bin/Release 
   ${QtDCM_DIR}/bin/Release 
-  ${TTK_DIR}/bin/Release 
+  ${TTK_DIR}/bin
   ${dtk_DIR}/bin/Release 
   ${RPI_DIR}/bin/Release 
   )
+
+
 
 install(CODE "
 
@@ -124,11 +128,13 @@ file(GLOB_RECURSE itk_files LIST_DIRECTORIES true \"${ITK_DIR}/bin/*.dll\")
 file(GLOB_RECURSE vtk_files LIST_DIRECTORIES true \"${VTK_DIR}/bin/*.dll\")
 file(GLOB_RECURSE dtk_files LIST_DIRECTORIES true \"${dtk_DIR}/bin/*.dll\")
 file(GLOB_RECURSE dcm_files LIST_DIRECTORIES true \"${QtDCM_DIR}/bin/*.dll\")
+file(GLOB_RECURSE ttk_files LIST_DIRECTORIES true \"${TTK_DIR}/bin/*.dll\")
 file(GLOB_RECURSE qt5_files LIST_DIRECTORIES true \"${QT_BINARY_DIR}/*.dll\")
 list(APPEND files \${itk_files})
 list(APPEND files \${vtk_files})
 list(APPEND files \${dtk_files})
 list(APPEND files \${dcm_files})
+list(APPEND files \${ttk_files})
 list(APPEND files \${qt5_files})
 
 foreach(file \${files})
