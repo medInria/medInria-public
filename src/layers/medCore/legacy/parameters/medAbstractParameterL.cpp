@@ -26,8 +26,6 @@ public:
     QString toolTip;
 
     bool hide;
-
-    ~medAbstractParameterLPrivate() {delete label;}
 };
 
 medAbstractParameterL::medAbstractParameterL(QString name, QObject *parent):

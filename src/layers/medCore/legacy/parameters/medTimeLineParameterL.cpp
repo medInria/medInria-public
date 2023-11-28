@@ -286,7 +286,6 @@ void medTimeLineParameterL::setDuration(const double& timeDuration)
         d->timeBetweenFrames = 0;
 
     d->timeLine->setDuration(timeDuration*1000);
-
 }
 
 void medTimeLineParameterL::setFrame(int frame)
