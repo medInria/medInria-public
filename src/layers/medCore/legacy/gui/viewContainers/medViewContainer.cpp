@@ -148,8 +148,8 @@ medViewContainer::medViewContainer(medViewContainerSplitter *parent): QFrame(par
 
     d->closeContainerButton = new QPushButton(this);
     QIcon closeIcon;
-    closeIcon.addPixmap(QPixmap(":/icons/closebutton.png"),         QIcon::Normal);
-    closeIcon.addPixmap(QPixmap(":/icons/closebutton-disabled.png"),QIcon::Disabled);
+    closeIcon.addPixmap(QPixmap(":/pixmaps/closebutton.png"),         QIcon::Normal);
+    closeIcon.addPixmap(QPixmap(":/pixmaps/closebutton-disabled.png"),QIcon::Disabled);
     d->closeContainerButton->setIcon(closeIcon);
     d->closeContainerButton->setSizePolicy(QSizePolicy::Minimum, QSizePolicy::Fixed);
     d->closeContainerButton->setToolTip(tr("Close"));
