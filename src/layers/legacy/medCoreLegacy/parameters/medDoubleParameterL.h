@@ -48,6 +48,7 @@ protected:
 private slots:
     void removeInternSpinBox();
     void removeInternSlider();
+    void removeInternLabel();
 
     void setSliderIntValue(int value);
 
