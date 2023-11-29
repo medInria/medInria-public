@@ -52,6 +52,7 @@ medApplication::medApplication(int & argc, char**argv) :
 
     d->splashScreen = new QSplashScreen(QPixmap(":/pixmaps/medInria-splash.png"),
         Qt::WindowStaysOnTopHint | Qt::X11BypassWindowManagerHint);
+    d->splashScreen->setAttribute(Qt::WA_DeleteOnClose, true);
     d->splashScreen->show();
     this->processEvents();
 
