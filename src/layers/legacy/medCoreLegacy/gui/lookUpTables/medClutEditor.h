@@ -26,11 +26,9 @@ class medAbstractImageView;
 
 class medClutEditorVertexPrivate;
 
-// TODO use QGraphicsObjectItem noobs.
-class MEDCORELEGACY_EXPORT medClutEditorVertex : public QObject, public QGraphicsItem
+class MEDCORELEGACY_EXPORT medClutEditorVertex : public QGraphicsObject
 {
     Q_OBJECT
-    Q_INTERFACES(QGraphicsItem)
 
 public:
     medClutEditorVertex(QPointF value, QPointF coord, QColor color = Qt::white, QGraphicsItem *parent = nullptr);
@@ -82,10 +80,9 @@ private :
 // /////////////////////////////////////////////////////////////////
 class medClutEditorTablePrivate;
 
-class MEDCORELEGACY_EXPORT medClutEditorTable : public QObject, public QGraphicsItem
+class MEDCORELEGACY_EXPORT medClutEditorTable : public QGraphicsObject
 {
     Q_OBJECT
-    Q_INTERFACES(QGraphicsItem)
 
 public:
     medClutEditorTable(const medClutEditorTable & table);
