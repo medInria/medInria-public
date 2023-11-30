@@ -30,6 +30,14 @@ public:
      };
 
      medMainWindow(QWidget *parent = nullptr);
+     void initMenuBar(QWidget * parent);
+     void menuNotif(QMenuBar * menu_bar);
+     void menuAbout(QMenuBar * menu_bar);
+     void menuSettings(QMenuBar * menu_bar);
+     void menuCapture(QMenuBar * menu_bar);
+     void menuWindow(QMenuBar * menu_bar);
+     void menuWorkspace(QMenuBar * menu_bar);
+     void menuFile(QMenuBar * menu_bar);
     ~medMainWindow();
 
     void restoreSettings();
@@ -181,7 +189,7 @@ private slots:
     void switchOffOnFullscreenIcons(const bool checked);
 
 
-
+    void filterWSMenu(QString text);
 
 
 protected:

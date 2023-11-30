@@ -22,6 +22,7 @@
 #include <QPauseAnimation>
 #include <QSequentialAnimationGroup>
 #include <QMainWindow>
+#include <QMenuBar>
 #include <QStatusBar>
 
 #include <QPushButton>
@@ -129,22 +130,24 @@ void medNotificationPaneWidget::addNotification(medUsrNotif notif)
 void medNotificationPaneWidget::showPane(bool show)
 {
     auto paneWidth = std::max(300, m_winSize.width() / 4);
+    int menuBarHeight = 0;
     int statusBarHeight = 0;
     if (m_parent)
     {
+        menuBarHeight = m_parent->menuBar()->height();
         statusBarHeight = m_parent->statusBar()->height();
     }
-    QRect rect_A(m_winSize.width(), 0, 0, m_winSize.height() - statusBarHeight);
-    QRect rect_B(m_winSize.width() - paneWidth, 0, paneWidth, m_winSize.height() - statusBarHeight);
+    QRect startGeometry(m_winSize.width(), menuBarHeight, 0, m_winSize.height() - menuBarHeight - statusBarHeight );
+    QRect finalGeometry(m_winSize.width() - paneWidth, menuBarHeight, paneWidth, m_winSize.height() - menuBarHeight - statusBarHeight);
     if (show)
     {
-        m_animation->setStartValue(rect_A);
-        m_animation->setEndValue(rect_B);
+        m_animation->setStartValue(startGeometry);
+        m_animation->setEndValue(finalGeometry);
     }
     else
     {
-        m_animation->setStartValue(rect_B);
-        m_animation->setEndValue(rect_A);
+        m_animation->setStartValue(finalGeometry);
+        m_animation->setEndValue(startGeometry);
     }
     m_animation->start();
 }

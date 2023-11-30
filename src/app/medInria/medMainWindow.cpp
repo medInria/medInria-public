@@ -75,6 +75,9 @@ public:
     QList<QUuid> expectedUuids;
 
     QAction *actionFullscreen;
+    
+    QVector<QAction *> wsActions;
+    QMap<QMenu*, QVector<QAction*>> wsMenuActionsMap;
 };
 
 medMainWindow::medMainWindow ( QWidget *parent ) : QMainWindow ( parent ), d ( new medMainWindowPrivate )
@@ -166,117 +169,14 @@ void medMainWindow::initMenuBar(QWidget * parent)
 {
     // Menu bar
     QMenuBar *menu_bar = this->menuBar();
+    menuFile(menu_bar);
+    menuWorkspace(menu_bar);
+    menuWindow(menu_bar);
+    menuCapture(menu_bar);
+    menuSettings(menu_bar);
+    menuNotif(menu_bar);
+    menuAbout(menu_bar);
 
-    // --- File menu
-    QMenu *menuFile = menu_bar->addMenu("File");
-
-    QAction *actionBrowser = new QAction(tr("&Import/export files"), parent);
-    connect(actionBrowser, &QAction::triggered, this, &medMainWindow::switchToBrowserArea);
-    menuFile->addAction(actionBrowser);
-
-    // --- Area menu
-    QMenu *menuArea = menu_bar->addMenu("Switch to area");
-
-    QAction *actionAreaSettings = new QAction(tr("&Startup settings"), parent);
-    connect(actionAreaSettings, &QAction::triggered, this, &medMainWindow::onShowAreaSettings);
-    menuArea->addAction(actionAreaSettings);
-
-    menuArea->addSeparator();
-
-    QAction *actionHome = new QAction(tr("&Homepage"), parent);
-    connect(actionHome, &QAction::triggered, this, &medMainWindow::switchToHomepageArea);
-    menuArea->addAction(actionHome);
-
-    // Visualization workspace is a "Basic" area
-    QAction *actionVisu = new QAction("&Visualization", parent);
-    actionVisu->setData("medVisualizationWorkspace");
-    connect(actionVisu, &QAction::triggered, [this]() {this->showWorkspace("medVisualizationWorkspace"); });
-    menuArea->addAction(actionVisu);
-
-    menuArea->addSeparator();
-
-    QList<medWorkspaceFactory::Details*> workspaceDetails = medWorkspaceFactory::instance()->workspaceDetailsSortedByName(true);
-    for (medWorkspaceFactory::Details* detail : workspaceDetails)
-    {
-        if (detail->name != "Visualization")
-        {
-            QAction *actionWorkspace = new QAction(detail->name, parent);
-            actionWorkspace->setData(detail->identifier);
-            connect(actionWorkspace, &QAction::triggered, this, &medMainWindow::onSwitchToWorkspace);
-            menuArea->addAction(actionWorkspace);
-        }
-    }
-
-    // --- View menu
-    QMenu *menuView = menu_bar->addMenu("View");
-
-    QAction *actionAjust = new QAction(tr("&Ajust containers size"), parent);
-    connect(actionAjust, &QAction::triggered, this, &medMainWindow::adjustContainersSize);
-    menuView->addAction(actionAjust);
-
-    QAction *actionScreenshot = new QAction(tr("Capture screenshot"), parent);
-    connect(actionScreenshot, &QAction::triggered, this, &medMainWindow::captureScreenshot);
-    menuView->addAction(actionScreenshot);
-
-    QAction *actionMovie = new QAction(tr("Capture movie"), parent);
-    connect(actionMovie, &QAction::triggered, this, &medMainWindow::captureVideo);
-    menuView->addAction(actionMovie);
-
-    // --- Tools menu
-    QMenu *menuTools = menu_bar->addMenu("Tools");
-
-    QAction *actionSearch = new QAction(tr("&Search a toolbox"), parent);
-    connect(actionSearch, &QAction::triggered, this, &medMainWindow::switchToSearchArea);
-    menuTools->addAction(actionSearch);
-
-    // --- Log menu
-    QMenu *menuLog = menu_bar->addMenu("Log");
-
-    QAction *actionLog = new QAction(tr("&Log File"), parent);
-    connect(actionLog, &QAction::triggered, this, &medMainWindow::openLogDirectory);
-    menuLog->addAction(actionLog);
-
-    QAction *actionPluginLogs = new QAction(tr("&Plugin Logs"), parent);
-    connect(actionPluginLogs, &QAction::triggered, this, &medMainWindow::onShowPluginLogs);
-    menuLog->addAction(actionPluginLogs);
-
-    // --- About menu
-    QMenu *menuAbout = menu_bar->addMenu("Info");
-
-    QAction *actionAbout = new QAction(tr("&About the application"), parent);
-    connect(actionAbout, &QAction::triggered, this, &medMainWindow::onShowAbout);
-    menuAbout->addAction(actionAbout);
-
-    QAction *actionAuthors = new QAction(tr("Au&thors"), parent);
-    connect(actionAuthors, &QAction::triggered, this, &medMainWindow::onShowAuthors);
-    menuAbout->addAction(actionAuthors);
-
-    QAction *actionReleaseNotes = new QAction(tr("&Release Notes"), parent);
-    connect(actionReleaseNotes, &QAction::triggered, this, &medMainWindow::onShowReleaseNotes);
-    menuAbout->addAction(actionReleaseNotes);
-
-    QAction *actionLicense = new QAction(tr("&License"), parent);
-    connect(actionLicense, &QAction::triggered, this, &medMainWindow::onShowLicense);
-    menuAbout->addAction(actionLicense);
-
-    menuAbout->addSeparator();
-
-    QAction *actionHelp = new QAction(tr("&Help"), parent);
-    connect(actionHelp, &QAction::triggered, this, &medMainWindow::onShowHelp);
-    menuAbout->addAction(actionHelp);
-
-    // --- File menu
-    QMenu *menuSettings = menu_bar->addMenu("Settings");
-
-    QAction *actionDataSources = new QAction(tr("&Data Sources"), parent);
-    connect(actionDataSources, &QAction::triggered, this, &medMainWindow::onShowDataSources);
-    menuSettings->addAction(actionDataSources);
-
-    // --- Notif Action
-    QMenu* menuNotif = menu_bar->addMenu("Notif");
-    QAction* showHideNotifs = menuNotif->addAction("Show / Hide");
-    QAction* clearNotifs = menuNotif->addAction("Clear all notifications");
-    connect(showHideNotifs, &QAction::triggered, this, &medMainWindow::toggleNotificationPanel);
 
     // --- Prepare right corner menu
     QMenuBar *rightMenuBar = new QMenuBar(menu_bar);
@@ -286,9 +186,12 @@ void medMainWindow::initMenuBar(QWidget * parent)
     actionNotif->setIcon(QIcon(":/icons/button-notifications - withe.png"));
     connect(actionNotif, &QAction::triggered, this, &medMainWindow::toggleNotificationPanel);
 
-    //QAction *actionNotif = new QAction(tr("&Data Sources"), parent);
-    connect(actionDataSources, &QAction::triggered, this, &medMainWindow::onShowDataSources);
-    menuSettings->addAction(actionDataSources);
+
+
+
+
+
+
 
     // --- Fullscreen checkable action
     QIcon fullscreenIcon;
@@ -310,7 +213,161 @@ void medMainWindow::initMenuBar(QWidget * parent)
     // On Qt5, QAction in menubar does not seem to show the Off and On icons, so we do it manually
     connect(d->actionFullscreen, &QAction::toggled, this, &medMainWindow::switchOffOnFullscreenIcons);
     rightMenuBar->addAction(d->actionFullscreen);
+
+
+
+
+
+    //QAction *actionAreaSettings = new QAction(tr("&Startup settings"), parent);
+    //connect(actionAreaSettings, &QAction::triggered, this, &medMainWindow::onShowAreaSettings);
+    //menuArea->addAction(actionAreaSettings);
 }
+
+void medMainWindow::menuFile(QMenuBar * menu_bar)
+{
+    // --- File menu
+    QMenu *menuFile = menu_bar->addMenu("File");
+    auto *actionOpenFiles = menuFile->addAction("Open File(s)");
+    auto *actionOpenDicom = menuFile->addAction("Open Dicom");
+    auto *actionSaveOnDisk = menuFile->addAction("Save on disk");
+    auto *actionBrowse     = menuFile->addAction("Browse files");
+    auto *actionSeparator1 = menuFile->addSeparator();
+    auto *actionGoHome = menuFile->addAction("Go to Welcome Page");
+    auto *actionSeparator2 = menuFile->addSeparator();
+    auto *subMenuRecentFiles = menuFile->addMenu("Recent files");
+    auto *actionSeparator3 = menuFile->addSeparator();
+    auto *actionQuit = menuFile->addAction("Quit");
+
+    connect(actionBrowse, &QAction::triggered, this, &medMainWindow::switchToBrowserArea);
+    connect(actionGoHome, &QAction::triggered, this, &medMainWindow::switchToHomepageArea);
+}
+
+void medMainWindow::menuWorkspace(QMenuBar * menu_bar)
+{
+    // --- Area menu
+    QMenu *menuWorkspaces = menu_bar->addMenu("Workspaces");
+
+    //auto searchLabel = new QWidgetAction(menuWorkspaces);
+    auto searchEdit = new QWidgetAction(menuWorkspaces);
+    //searchLabel->setDefaultWidget(new QLabel("Search features you want below"));
+    QLineEdit * researchWorkSpace = new QLineEdit("Search here ...");
+    searchEdit->setDefaultWidget(researchWorkSpace);
+    //menuWorkspaces->addAction(searchLabel);
+    menuWorkspaces->addAction(searchEdit);
+    menuWorkspaces->addSeparator();
+
+    connect(researchWorkSpace, &QLineEdit::textEdited, this, &medMainWindow::filterWSMenu);
+
+
+    medToolBoxFactory *tbFactory = medToolBoxFactory::instance();
+    QList<medWorkspaceFactory::Details*> workspaceDetails = medWorkspaceFactory::instance()->workspaceDetailsSortedByName(true);
+    for (medWorkspaceFactory::Details* detail : workspaceDetails)
+    {
+        if (tbFactory->toolBoxesFromCategory(detail->name).size() > 1)
+        {
+            QMenu *menuActionTmp = menuWorkspaces->addMenu(detail->name);
+            QAction * openAction = menuActionTmp->addAction("Open " + detail->name);
+            openAction->setData(detail->identifier);
+            bool b1 = connect(openAction, &QAction::triggered, this, &medMainWindow::onSwitchToWorkspace);
+
+            menuActionTmp->addSeparator();
+            for (QString toolboxName : tbFactory->toolBoxesFromCategory(detail->name))
+            {
+                QAction * subWorkSpaceAction = menuActionTmp->addAction(toolboxName);
+                subWorkSpaceAction->setData(detail->identifier);
+                bool b1 = connect(subWorkSpaceAction, &QAction::triggered, this, &medMainWindow::onSwitchToWorkspace);
+
+                d->wsMenuActionsMap[menuActionTmp].push_back(subWorkSpaceAction);
+            }
+        }
+        else
+        {
+            QAction *openAction = menuWorkspaces->addAction(detail->name);
+            openAction->setData(detail->identifier);
+            bool b1 = connect(openAction, &QAction::triggered, this, &medMainWindow::onSwitchToWorkspace);
+
+            d->wsActions.push_back(openAction);
+        }
+    }
+}
+
+void medMainWindow::menuWindow(QMenuBar * menu_bar)
+{
+    // --- Window menu
+    QMenu *menuWindow = menu_bar->addMenu("Window");
+
+    auto *actionMaximise = menuWindow->addAction("Maximize");
+    auto *actionSeparator1 = menuWindow->addSeparator();
+    auto *actionAjust = menuWindow->addAction(tr("Adjust containers size"));
+    auto *actionVSplit = menuWindow->addAction(tr("Vertical split"));
+    auto *actionHSplit = menuWindow->addAction(tr("Horizontal split"));
+    auto *action4Split = menuWindow->addAction(tr("4 split"));
+
+    connect(actionAjust, &QAction::triggered, this, &medMainWindow::adjustContainersSize);
+}
+
+void medMainWindow::menuCapture(QMenuBar * menu_bar)
+{
+    QMenu *menuCapture = menu_bar->addMenu("Capture");
+
+    QAction *actionScreenshot = menuCapture->addAction(tr("Screenshot"));
+    QAction *actionMovie = menuCapture->addAction(tr("Movie"));
+
+    connect(actionScreenshot, &QAction::triggered, this, &medMainWindow::captureScreenshot);
+    connect(actionMovie, &QAction::triggered, this, &medMainWindow::captureVideo);
+
+}
+
+void medMainWindow::menuSettings(QMenuBar * menu_bar)
+{
+    // --- Settings menu
+    QMenu *menuSettings = menu_bar->addMenu("Settings");
+
+    QAction *actionGeneral = menuSettings->addAction(tr("General"));
+    QAction *actionSeparator = menuSettings->addSeparator();
+    QAction *actionDataSources = menuSettings->addAction(tr("Data Sources"));
+
+    connect(actionDataSources, &QAction::triggered, this, &medMainWindow::onShowDataSources);
+}
+
+
+void medMainWindow::menuAbout(QMenuBar * menu_bar)
+{
+
+    // --- About menu
+    QMenu *menuAbout = menu_bar->addMenu("?");
+
+    QAction *actionAbout = menuAbout->addAction(tr("About the application"));
+    QAction *actionAuthors = menuAbout->addAction(tr("Au&thors"));
+    QAction *actionReleaseNotes = menuAbout->addAction(tr("&Release Notes"));
+    QAction *actionLicense = menuAbout->addAction(tr("&License"));
+    QAction *actionSeparator = menuAbout->addSeparator();
+    QAction *actionHelp = menuAbout->addAction(tr("&Help"));
+
+
+    connect(actionAbout, &QAction::triggered, this, &medMainWindow::onShowAbout);
+    connect(actionAuthors, &QAction::triggered, this, &medMainWindow::onShowAuthors);
+    connect(actionReleaseNotes, &QAction::triggered, this, &medMainWindow::onShowReleaseNotes);
+    connect(actionLicense, &QAction::triggered, this, &medMainWindow::onShowLicense);
+    connect(actionHelp, &QAction::triggered, this, &medMainWindow::onShowHelp);
+}
+
+void medMainWindow::menuNotif(QMenuBar * menu_bar)
+{
+    // --- Notif Action
+    QMenu   *menuNotif = menu_bar->addMenu("Notif");
+    QAction *actionShowHideNotifs = menuNotif->addAction("Show / Hide");
+    QAction *actionClearNotifs = menuNotif->addAction("Clear all");
+    QAction *actionSeparator = menuNotif->addSeparator();
+    QMenu   *menuLog = menuNotif->addMenu("Logs");
+    QAction *actionLog = menuLog->addAction(tr("Show"));
+    QAction *actionPluginLogs = menuLog->addAction(tr("Plugins"));
+
+    connect(actionShowHideNotifs, &QAction::triggered, this, &medMainWindow::toggleNotificationPanel);
+    connect(actionLog, &QAction::triggered, this, &medMainWindow::openLogDirectory);
+    connect(actionPluginLogs, &QAction::triggered, this, &medMainWindow::onShowPluginLogs);
+}
+
 
 medMainWindow::~medMainWindow()
 {
@@ -494,7 +551,7 @@ void medMainWindow::onShowBrowser()
 
 void medMainWindow::onShowDataSources()
 {
-    QDialog *dialog = new QDialog();
+    QDialog *dialog = new QDialog(this);
     medSourcesLoaderPresenter presenter(medSourcesLoader::instance());
     auto wgt = presenter.buildWidget();
     auto layout = new QVBoxLayout();
@@ -620,6 +677,73 @@ void medMainWindow::switchOffOnFullscreenIcons(const bool checked)
     else
     {
         d->actionFullscreen->setIcon(QIcon(":icons/fullscreenExpand.png"));
+    }
+}
+
+void medMainWindow::filterWSMenu(QString text)
+{
+    if (text.isEmpty())
+    {
+        for (auto action : d->wsActions)
+        {
+            action->setEnabled(true);
+        }
+        for (auto menu : d->wsMenuActionsMap.keys())
+        {
+            menu->setEnabled(true);
+            for (auto action : d->wsMenuActionsMap[menu])
+            {
+                action->setEnabled(true);
+            }
+        }
+    }
+    else
+    {
+        auto textSplited = text.toLower().split(" ", QString::SkipEmptyParts);
+        for (auto action : d->wsActions)
+        {
+            bool bActionVisible = false;
+
+            QString id = action->data().toString().toLower();
+            QString name = action->text().toLower();
+
+            for (QString & const keyword : textSplited)
+            {
+                bActionVisible = bActionVisible || id.contains(keyword) || name.contains(keyword);
+            }
+
+            action->setEnabled(bActionVisible);
+        }
+
+        for (auto menu : d->wsMenuActionsMap.keys())
+        {
+            bool bMenuVisible = false;
+            QString menuName = menu->title().toLower();
+            
+            for (QString & const keyword : textSplited)
+            {
+                bMenuVisible = bMenuVisible || menuName.contains(keyword);
+            }
+
+            for (auto action : d->wsMenuActionsMap[menu])
+            {
+                bool bActionVisible = false;
+
+                QString id = action->data().toString().toLower();
+                QString name = action->text().toLower();
+
+                for (QString & const keyword : textSplited)
+                {
+                    bActionVisible = bActionVisible || id.contains(keyword) || name.contains(keyword);
+                }
+
+                action->setEnabled(bActionVisible);
+
+                bMenuVisible = bMenuVisible || bActionVisible;
+            }
+
+            menu->setEnabled(bMenuVisible);
+        }
     }
 }
 

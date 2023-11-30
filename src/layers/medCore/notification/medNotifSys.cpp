@@ -170,6 +170,7 @@ bool medNotifSys::remove2(medUsrNotif notif)
             bFound = true;
             bContinue = false;
         }
+        it++;
     }
 
     if (bFound)
