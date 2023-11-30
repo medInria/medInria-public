@@ -32,82 +32,15 @@ public:
 
 public slots:
     void onShowBrowser();
-    void onShowDataSources();
-    void onShowHelp();
-
-    /**
-     * @brief Display an About window
-     */
-    void onShowAbout();
-
-    /**
-     * @brief Display a window with the authors list
-     */
-    void onShowAuthors();
-
-    /**
-     * @brief Display a window with the release notes
-     */
-    void onShowReleaseNotes();
-
-    /**
-     * @brief Display a license window
-     */
-    void onShowLicense();
-
-    /**
-     * @brief Display a database window
-     */
-    // void onShowDatabase();
-
-    /**
-     * @brief Display a settings window for the Area section
-     */
-    void onShowAreaSettings();
 
     /**
      * @brief Switch the application to the asked workspace
      */
     void onShowWorkspace(QString workspace);
 
-    /**
-     * @brief Switch the application to the current workspace name
-     */
-    void onSwitchToWorkspace();
-
-    /**
-     * @brief Open the log directory
-     */
-    void openLogDirectory();
-
-    /**
-     * @brief Display a window with the plugins logs from the application start
-     */
-    void onShowPluginLogs();
-
-    /**
-     * @brief Update the fullscreen icon if checked or not
-     */
-    void switchOffOnFullscreenIcons(const bool checked);
-
 signals:
-    /**
-     * @deprecated Doesn't use the medMainWindow's slots anymore.
-     */
-    void showSettings();
-    /**
-     * @deprecated Doesn't use the medMainWindow's slots anymore.
-     */
-    void showAbout();
-    /**
-     * @deprecated Doesn't use the medMainWindow's slots anymore.
-     */
-    void showHelp();
-
     void showBrowser();
-    void showViewer();
     void showWorkspace(QString workspace);
-    void showComposer();
 
 private:
     medHomepageAreaPrivate * d;

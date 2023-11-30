@@ -31,6 +31,16 @@
 #include <medWorkspaceArea.h>
 #include <medWorkspaceFactory.h>
 
+#include <medApplicationContext.h>
+#include <medNotificationPresenter.h>
+#include <medNotifWindow.h>
+
+#include <medSourcesLoader.h>
+#include <medSourcesLoaderPresenter.h>
+
+#include <medStartupSettingsWidget.h>
+#include <medPluginWidget.h>
+
 #include <QtGui>
 #include <QtWidgets>
 
@@ -49,12 +59,13 @@ public:
     //  Interface elements.
     QWidget *currentArea;
 
-    QStackedWidget*           stack;
-    medBrowserArea*           browserArea;
-    medWorkspaceArea*         workspaceArea;
-    medHomepageArea*          homepageArea;
-    QHBoxLayout*              statusBarLayout;
-    medStatusBar*             statusBar;
+    QStackedWidget*            stack;
+    medBrowserArea*            browserArea;
+    medWorkspaceArea*          workspaceArea;
+    medHomepageArea*           homepageArea;
+    QHBoxLayout*               statusBarLayout;
+    medStatusBar*              statusBar;
+    medNotificationPaneWidget* notifWindow;
     
     medQuickAccessMenu *shortcutAccessWidget;
     bool shortcutAccessVisible;
@@ -63,6 +74,8 @@ public:
 
     QList<QString> importUuids;
     QList<QUuid> expectedUuids;
+
+    QAction *actionFullscreen;
 };
 
 medMainWindow::medMainWindow ( QWidget *parent ) : QMainWindow ( parent ), d ( new medMainWindowPrivate )
@@ -162,6 +175,172 @@ medMainWindow::medMainWindow ( QWidget *parent ) : QMainWindow ( parent ), d ( n
     switchToDefaultWorkSpace();
 
     this->setAcceptDrops(true);
+
+    auto * notifSys = medApplicationContext::instance()->getNotifSys();
+    d->notifWindow = static_cast<medNotificationPaneWidget*>(medNotifSysPresenter(notifSys).buildNotificationWindow());
+    d->notifWindow->setParent(this);
+    QObject::connect(this, &medMainWindow::resized, d->notifWindow, &medNotificationPaneWidget::windowGeometryUpdate);
+    //QObject::connect(mainwindow->notifButton(), &QToolButton::clicked, notifBanner, &medNotificationPaneWidget::swithVisibility);
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+        // Menu bar
+    medMainWindow *mainWindow = qobject_cast <medMainWindow *> (parent);
+    QMenuBar *menu_bar = this->menuBar();
+
+    // --- File menu
+    QMenu *menuFile = menu_bar->addMenu("File");
+
+    QAction *actionBrowser = new QAction(tr("&Import/export files"), parent);
+    connect(actionBrowser, &QAction::triggered, this, &medMainWindow::switchToBrowserArea);
+    menuFile->addAction(actionBrowser);
+
+    // --- Area menu
+    QMenu *menuArea = menu_bar->addMenu("Switch to area");
+
+    QAction *actionAreaSettings = new QAction(tr("&Startup settings"), parent);
+    connect(actionAreaSettings, &QAction::triggered, this, &medMainWindow::onShowAreaSettings);
+    menuArea->addAction(actionAreaSettings);
+
+    menuArea->addSeparator();
+
+    QAction *actionHome = new QAction(tr("&Homepage"), parent);
+    connect(actionHome, &QAction::triggered, this, &medMainWindow::switchToHomepageArea);
+    menuArea->addAction(actionHome);
+
+    // Visualization workspace is a "Basic" area
+    QAction *actionVisu = new QAction("&Visualization", parent);
+    actionVisu->setData("medVisualizationWorkspace");
+    connect(actionVisu, &QAction::triggered, [this]() {this->showWorkspace("medVisualizationWorkspace"); });
+    menuArea->addAction(actionVisu);
+
+    menuArea->addSeparator();
+
+    QList<medWorkspaceFactory::Details*> workspaceDetails = medWorkspaceFactory::instance()->workspaceDetailsSortedByName(true);
+    for (medWorkspaceFactory::Details* detail : workspaceDetails)
+    {
+        if (detail->name != "Visualization")
+        {
+            QAction *actionWorkspace = new QAction(detail->name, parent);
+            actionWorkspace->setData(detail->identifier);
+            connect(actionWorkspace, &QAction::triggered, this, &medMainWindow::onSwitchToWorkspace);
+            menuArea->addAction(actionWorkspace);
+        }
+    }
+
+    // --- View menu
+    QMenu *menuView = menu_bar->addMenu("View");
+
+    QAction *actionAjust = new QAction(tr("&Ajust containers size"), parent);
+    connect(actionAjust, &QAction::triggered, this, &medMainWindow::adjustContainersSize);
+    menuView->addAction(actionAjust);
+
+    QAction *actionScreenshot = new QAction(tr("Capture screenshot"), parent);
+    connect(actionScreenshot, &QAction::triggered, this, &medMainWindow::captureScreenshot);
+    menuView->addAction(actionScreenshot);
+
+    QAction *actionMovie = new QAction(tr("Capture movie"), parent);
+    connect(actionMovie, &QAction::triggered, this, &medMainWindow::captureVideo);
+    menuView->addAction(actionMovie);
+
+    // --- Tools menu
+    QMenu *menuTools = menu_bar->addMenu("Tools");
+
+    QAction *actionSearch = new QAction(tr("&Search a toolbox"), parent);
+    connect(actionSearch, &QAction::triggered, this, &medMainWindow::switchToSearchArea);
+    menuTools->addAction(actionSearch);
+
+    // --- Log menu
+    QMenu *menuLog = menu_bar->addMenu("Log");
+
+    QAction *actionLog = new QAction(tr("&Log File"), parent);
+    connect(actionLog, &QAction::triggered, this, &medMainWindow::openLogDirectory);
+    menuLog->addAction(actionLog);
+
+    QAction *actionPluginLogs = new QAction(tr("&Plugin Logs"), parent);
+    connect(actionPluginLogs, &QAction::triggered, this, &medMainWindow::onShowPluginLogs);
+    menuLog->addAction(actionPluginLogs);
+
+    // --- About menu
+    QMenu *menuAbout = menu_bar->addMenu("Info");
+
+    QAction *actionAbout = new QAction(tr("&About the application"), parent);
+    connect(actionAbout, &QAction::triggered, this, &medMainWindow::onShowAbout);
+    menuAbout->addAction(actionAbout);
+
+    QAction *actionAuthors = new QAction(tr("Au&thors"), parent);
+    connect(actionAuthors, &QAction::triggered, this, &medMainWindow::onShowAuthors);
+    menuAbout->addAction(actionAuthors);
+
+    QAction *actionReleaseNotes = new QAction(tr("&Release Notes"), parent);
+    connect(actionReleaseNotes, &QAction::triggered, this, &medMainWindow::onShowReleaseNotes);
+    menuAbout->addAction(actionReleaseNotes);
+
+    QAction *actionLicense = new QAction(tr("&License"), parent);
+    connect(actionLicense, &QAction::triggered, this, &medMainWindow::onShowLicense);
+    menuAbout->addAction(actionLicense);
+
+    menuAbout->addSeparator();
+
+    QAction *actionHelp = new QAction(tr("&Help"), parent);
+    connect(actionHelp, &QAction::triggered, this, &medMainWindow::onShowHelp);
+    menuAbout->addAction(actionHelp);
+
+    // --- File menu
+    QMenu *menuSettings = menu_bar->addMenu("Settings");
+
+    QAction *actionDataSources = new QAction(tr("&Data Sources"), parent);
+    connect(actionDataSources, &QAction::triggered, this, &medMainWindow::onShowDataSources);
+    menuSettings->addAction(actionDataSources);
+
+    // --- Notif Action
+    QAction* actionNotif = menu_bar->addAction("Notif");
+    connect(actionNotif, &QAction::triggered, this, &medMainWindow::toggleNotificationPanel);
+
+    // --- Prepare right corner menu
+    QMenuBar *rightMenuBar = new QMenuBar(menu_bar);
+    menu_bar->setCornerWidget(rightMenuBar);
+
+    //QAction *actionNotif = new QAction(tr("&Data Sources"), parent);
+    connect(actionDataSources, &QAction::triggered, this, &medMainWindow::onShowDataSources);
+    menuSettings->addAction(actionDataSources);
+
+    // --- Fullscreen checkable action
+    QIcon fullscreenIcon;
+    fullscreenIcon.addPixmap(QPixmap(":icons/fullscreenExpand.png"), QIcon::Normal, QIcon::Off);
+    fullscreenIcon.addPixmap(QPixmap(":icons/fullscreenReduce.png"), QIcon::Normal, QIcon::On);
+
+    d->actionFullscreen = new QAction(parent);
+    d->actionFullscreen->setIcon(fullscreenIcon);
+    d->actionFullscreen->setCheckable(true);
+    d->actionFullscreen->setChecked(false);
+#if defined(Q_OS_MAC)
+    d->actionFullscreen->setShortcut(Qt::ControlModifier + Qt::Key_F);
+    d->actionFullscreen->setToolTip(tr("Switch to fullscreen (cmd+f)"));
+#else
+    d->actionFullscreen->setShortcut(Qt::Key_F11);
+    d->actionFullscreen->setToolTip(tr("Switch to fullscreen (F11)"));
+#endif
+    connect(d->actionFullscreen, &QAction::toggled, this, &medMainWindow::setFullScreen);
+    // On Qt5, QAction in menubar does not seem to show the Off and On icons, so we do it manually
+    connect(d->actionFullscreen, &QAction::toggled, this, &medMainWindow::switchOffOnFullscreenIcons);
+    rightMenuBar->addAction(d->actionFullscreen);
 }
 
 medMainWindow::~medMainWindow()
@@ -221,6 +400,11 @@ void medMainWindow::switchToDefaultWorkSpace()
             }
         }
     }
+}
+
+void medMainWindow::toggleNotificationPanel()
+{
+    d->notifWindow->swithVisibility();
 }
 
 /**
@@ -307,6 +491,158 @@ void medMainWindow::open_waitForImportedSignal(medDataIndex index, QUuid uuid)
         }
     }
 }
+
+
+
+
+
+
+
+
+
+
+
+void medMainWindow::onShowBrowser()
+{
+    switchToBrowserArea();
+}
+
+void medMainWindow::onShowDataSources()
+{
+    QDialog *dialog = new QDialog();
+    medSourcesLoaderPresenter presenter(medSourcesLoader::instance());
+    auto wgt = presenter.buildWidget();
+    auto layout = new QVBoxLayout();
+    layout->addWidget(wgt);
+    dialog->setLayout(layout);
+    dialog->exec();
+}
+
+
+//void medMainWindow::onShowNotifPanel()
+//{
+//    d->notifWindow->swithVisibility();
+//}
+
+void medMainWindow::onShowAbout()
+{
+    QFile file(":ABOUT.txt");
+    file.open(QIODevice::ReadOnly | QIODevice::Text);
+    QString text = file.readAll();
+
+    QMessageBox msgBox;
+    msgBox.setText(text);
+    msgBox.exec();
+}
+
+void medMainWindow::onShowAuthors()
+{
+    QFile file(":authors.txt");
+    file.open(QIODevice::ReadOnly | QIODevice::Text);
+    QString text = file.readAll();
+
+    QMessageBox msgBox;
+    msgBox.setText(text);
+    msgBox.exec();
+}
+
+void medMainWindow::onShowReleaseNotes()
+{
+    QFile file(":RELEASE_NOTES.txt");
+    file.open(QIODevice::ReadOnly | QIODevice::Text);
+    QString text = file.readAll();
+
+    QMessageBox msgBox;
+    msgBox.setText("Here is the release notes with the history of the application:            ");
+    msgBox.setDetailedText(text);
+
+    // Search the "Show Details..." button
+    foreach(QAbstractButton *button, msgBox.buttons())
+    {
+        if (msgBox.buttonRole(button) == QMessageBox::ActionRole)
+        {
+            button->click(); // click it to expand the text
+            break;
+        }
+    }
+
+    msgBox.exec();
+}
+
+void medMainWindow::onShowLicense()
+{
+    QFile file(":LICENSE.txt");
+    file.open(QIODevice::ReadOnly | QIODevice::Text);
+    QString text = file.readAll();
+
+    QMessageBox msgBox;
+    msgBox.setText("Here is the application License:                           ");
+    msgBox.setDetailedText(text);
+
+    // Search the "Show Details..." button
+    foreach(QAbstractButton *button, msgBox.buttons())
+    {
+        if (msgBox.buttonRole(button) == QMessageBox::ActionRole)
+        {
+            button->click(); // click it to expand the text
+            break;
+        }
+    }
+
+    msgBox.exec();
+}
+
+void medMainWindow::onShowAreaSettings()
+{
+    medStartupSettingsWidget dialog(this);
+    dialog.exec();
+}
+
+void medMainWindow::onShowWorkspace(QString workspace)
+{
+    emit showWorkspace(workspace);
+}
+
+void medMainWindow::onSwitchToWorkspace()
+{
+    QAction* currentAction = qobject_cast<QAction*>(sender());
+    onShowWorkspace(currentAction->data().toString());
+}
+
+void medMainWindow::openLogDirectory()
+{
+    QString path = QFileInfo(dtkLogPath(qApp)).path();
+    QDesktopServices::openUrl(QUrl::fromLocalFile(path));
+}
+
+void medMainWindow::onShowPluginLogs()
+{
+    medPluginWidget dialog(this);
+    dialog.exec();
+}
+
+void medMainWindow::onShowHelp()
+{
+    QDesktopServices::openUrl(QUrl("http://med.inria.fr/help/documentation"));
+}
+
+void medMainWindow::switchOffOnFullscreenIcons(const bool checked)
+{
+    if (checked)
+    {
+        d->actionFullscreen->setIcon(QIcon(":icons/fullscreenReduce.png"));
+    }
+    else
+    {
+        d->actionFullscreen->setIcon(QIcon(":icons/fullscreenExpand.png"));
+    }
+}
+
+
+
+
+
+
 
 void medMainWindow::setWallScreen (const bool full )
 {
@@ -527,19 +863,22 @@ void medMainWindow::showWorkspace(QString workspace)
     switchToWorkspaceArea();
     medWorkspaceFactory::Details* details = medWorkspaceFactory::instance()->workspaceDetailsFromId(workspace);
 
-    d->shortcutAccessWidget->updateSelected(workspace);
-
-    if (!d->workspaceArea->setCurrentWorkspace(workspace))
+    if (details)
     {
-        QString message = QString("Cannot open workspace ") + details->name;
-        medMessageController::instance()->showError(message, 3000);
-        switchToHomepageArea();
+        d->shortcutAccessWidget->updateSelected(workspace);
+
+        if (!d->workspaceArea->setCurrentWorkspace(workspace))
+        {
+            QString message = QString("Cannot open workspace ") + details->name;
+            medMessageController::instance()->showError(message, 3000);
+            switchToHomepageArea();
+        }
+
+        // The View menu is dedicated to "view workspaces"
+        enableMenuBarItem("View", true);
+
+        this->hideShortcutAccess();
     }
-
-    // The View menu is dedicated to "view workspaces"
-    enableMenuBarItem("View", true);
-
-    this->hideShortcutAccess();
 }
 
 /**
