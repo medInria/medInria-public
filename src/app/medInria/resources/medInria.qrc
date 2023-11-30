@@ -8,7 +8,6 @@
         <file>medInria.ico</file>
         <file>medInria.qss</file>
         <file>authors.txt</file>
-
         <file>icons/eye_white.svg</file>
         <file>icons/settings_white.svg</file>
         <file>icons/open_white.svg</file>
@@ -28,7 +27,6 @@
         <file>icons/time_forward_step_white.svg</file>
         <file>icons/link_white.svg</file>
         <file>icons/cross_red.svg</file>
-
         <file>icons/AxialIcon.png</file>
         <file>icons/CoronalIcon.png</file>
         <file>icons/SagittalIcon.png</file>
@@ -46,8 +44,8 @@
         <file>icons/exclamation.png</file>
         <file>icons/eye.png</file>
         <file>icons/eye_crossed.png</file>
-         <file>icons/eye_open.png</file>
-          <file>icons/eye_closed.png</file>
+        <file>icons/eye_open.png</file>
+        <file>icons/eye_closed.png</file>
         <file>icons/Gaussian_Filter.png</file>
         <file>icons/help.png</file>
         <file>icons/help.svg</file>
@@ -133,8 +131,6 @@
         <file>pixmaps/database_navigator_item_checker_checked.png</file>
         <file>pixmaps/database_navigator_item_checker_unchecked.png</file>
         <file>pixmaps/medInria-logo-homepage.png</file>
-        <!-- <file>pixmaps/medInria-splash.png</file> -->
-        <!-- <file>pixmaps/delete.png</file> -->
         <file>icons/unknown.jpg</file>
         <file>icons/checkbox.png</file>
         <file>icons/checkbox-checked.png</file>
@@ -148,7 +144,6 @@
         <file>icons/database_navigator_item_checker_checked.png</file>
         <file>icons/database_navigator_item_checker_unchecked.png</file>
         <file>icons/medInria-logo-homepage.png</file>
-        <!-- <file>icons/default_thumbnail.png</file> -->
         <file>icons/default_thumbnail-lightbackground.png</file>
         <file>icons/scene.png</file>
         <file>icons/composer_sc.png</file>
@@ -176,9 +171,6 @@
         <file>pixmaps/radio-disabled.png</file>
         <file>pixmaps/radio-checked-disabled.png</file>
         <file>icons/plus_white.png</file>
-        <!-- <file>pixmaps/plus-button.png</file> -->
-        <!-- <file>pixmaps/plus.png</file> -->
-        <!-- <file>pixmaps/minus.png</file> -->
         <file>pixmaps/checkbox-disabled.png</file>
         <file>pixmaps/checkbox-checked-disabled.png</file>
         <file>pixmaps/arrow-top-disabled.png</file>
@@ -218,5 +210,6 @@
         <file>icons/icons8-download-error-16.png</file>
         <file>icons/icons8-upload-error-16.png</file>
         <file>gif/icon.gif</file>
+        <file>icons/button-notifications - withe.png</file>
     </qresource>
 </RCC>

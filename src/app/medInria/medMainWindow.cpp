@@ -64,7 +64,6 @@ public:
     medWorkspaceArea*          workspaceArea;
     medHomepageArea*           homepageArea;
     QHBoxLayout*               statusBarLayout;
-    medStatusBar*              statusBar;
     medNotificationPaneWidget* notifWindow;
     
     medQuickAccessMenu *shortcutAccessWidget;
@@ -130,27 +129,8 @@ medMainWindow::medMainWindow ( QWidget *parent ) : QMainWindow ( parent ), d ( n
 
     d->shortcutAccessVisible = false;
 
-    //  Setting up status bar
-    d->statusBarLayout = new QHBoxLayout;
-    d->statusBarLayout->setMargin(0);
-    d->statusBarLayout->setSpacing(5);
-    d->statusBarLayout->addStretch();
-
-    //  Create a container widget for the status bar
-    QWidget * statusBarWidget = new QWidget ( this );
-    statusBarWidget->setContentsMargins ( 5, 0, 0, 0 );
-    statusBarWidget->setLayout ( d->statusBarLayout );
-
-    //  Setup status bar
-    d->statusBar = new medStatusBar(this);
-    d->statusBar->setStatusBarLayout(d->statusBarLayout);
-    d->statusBar->setSizeGripEnabled(false);
-    d->statusBar->setContentsMargins(5, 0, 0, 0);
-    d->statusBar->setFixedHeight(31);
-    d->statusBar->addPermanentWidget(statusBarWidget, 1);
-
-    this->setStatusBar(d->statusBar);
-    connect(d->statusBar, SIGNAL(initializeAvailableSpace()), this,  SLOT(availableSpaceOnStatusBar()));
+    statusBar()->setVisible(false);
+    statusBar()->setMaximumHeight(false);
 
     //  Init homepage with workspace buttons
     d->homepageArea->initPage();
@@ -159,10 +139,6 @@ medMainWindow::medMainWindow ( QWidget *parent ) : QMainWindow ( parent ), d ( n
 
     this->setCentralWidget ( d->stack );
     this->setWindowTitle(qApp->applicationName());
-
-    //  Connect the messageController with the status for notification messages management
-    connect(medMessageController::instance(), SIGNAL(addMessage(medMessage*)), d->statusBar, SLOT(addMessage(medMessage*)));
-    connect(medMessageController::instance(), SIGNAL(removeMessage(medMessage*)), d->statusBar, SLOT(removeMessage(medMessage*)));
 
     d->shortcutShortcut = new QShortcut(QKeySequence(tr(CONTROL_KEY "+Space")),
                                                      this,
@@ -180,28 +156,15 @@ medMainWindow::medMainWindow ( QWidget *parent ) : QMainWindow ( parent ), d ( n
     d->notifWindow = static_cast<medNotificationPaneWidget*>(medNotifSysPresenter(notifSys).buildNotificationWindow());
     d->notifWindow->setParent(this);
     QObject::connect(this, &medMainWindow::resized, d->notifWindow, &medNotificationPaneWidget::windowGeometryUpdate);
-    //QObject::connect(mainwindow->notifButton(), &QToolButton::clicked, notifBanner, &medNotificationPaneWidget::swithVisibility);
 
+    initMenuBar(parent);
 
+    //installEventFilter(this);
+}
 
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-        // Menu bar
-    medMainWindow *mainWindow = qobject_cast <medMainWindow *> (parent);
+void medMainWindow::initMenuBar(QWidget * parent)
+{
+    // Menu bar
     QMenuBar *menu_bar = this->menuBar();
 
     // --- File menu
@@ -310,12 +273,18 @@ medMainWindow::medMainWindow ( QWidget *parent ) : QMainWindow ( parent ), d ( n
     menuSettings->addAction(actionDataSources);
 
     // --- Notif Action
-    QAction* actionNotif = menu_bar->addAction("Notif");
-    connect(actionNotif, &QAction::triggered, this, &medMainWindow::toggleNotificationPanel);
+    QMenu* menuNotif = menu_bar->addMenu("Notif");
+    QAction* showHideNotifs = menuNotif->addAction("Show / Hide");
+    QAction* clearNotifs = menuNotif->addAction("Clear all notifications");
+    connect(showHideNotifs, &QAction::triggered, this, &medMainWindow::toggleNotificationPanel);
 
     // --- Prepare right corner menu
     QMenuBar *rightMenuBar = new QMenuBar(menu_bar);
     menu_bar->setCornerWidget(rightMenuBar);
+
+    QAction* actionNotif = rightMenuBar->addAction("");
+    actionNotif->setIcon(QIcon(":/icons/button-notifications - withe.png"));
+    connect(actionNotif, &QAction::triggered, this, &medMainWindow::toggleNotificationPanel);
 
     //QAction *actionNotif = new QAction(tr("&Data Sources"), parent);
     connect(actionDataSources, &QAction::triggered, this, &medMainWindow::onShowDataSources);
@@ -427,6 +396,22 @@ void medMainWindow::setStartup(const AreaType areaIndex,const QStringList& filen
     for (QStringList::const_iterator i= filenames.constBegin();i!=filenames.constEnd();++i)
         open(i->toLocal8Bit().constData());
 }
+
+// bool medMainWindow::eventFilter(QObject * object, QEvent * event)
+// {
+//     auto mouseEvent = dynamic_cast<QMouseEvent*>(event);
+//     if (mouseEvent)
+//     {
+//         auto type = event->type();
+//         if (type == QEvent::MouseButtonRelease)
+//         {
+//             QPoint pos = mouseEvent->pos();
+//             qDebug() << "GGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGG" << pos;
+//         }
+//     }
+// 
+//     return false;
+// }
 
 void medMainWindow::switchToArea(const AreaType areaIndex)
 {
@@ -962,10 +947,10 @@ void medMainWindow::dropEvent(QDropEvent *event)
     }
 }
 
-void medMainWindow::availableSpaceOnStatusBar()
-{
-    d->statusBar->setAvailableSpace(width());
-}
+// void medMainWindow::availableSpaceOnStatusBar()
+// {
+//     d->statusBar->setAvailableSpace(width());
+// }
 
 void medMainWindow::closeEvent(QCloseEvent *event)
 {

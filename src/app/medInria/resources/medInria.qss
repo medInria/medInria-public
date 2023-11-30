@@ -186,7 +186,7 @@ $QUICK_ACCESS_PUSH_BUTTON_BORDER    = 0PX;
 /*******************************************************************************
     SIZES
  *******************************************************************************/
-$STATUS_BAR_HEIGHT              = 34px;
+$STATUS_BAR_HEIGHT              = 0px;
 
 $PROGRESS_BAR_HEIGHT            = 12px;
 
@@ -825,11 +825,6 @@ QPushButton:flat:pressed
     background-color: none;
 }
 
-QPushButton::menu-indicator:flat
-{
-    image: none;
-}
-
 QPushButton:disabled
 {
    background-color: $PUSH_BUTTON_DISABLED_BACKGROUND;
@@ -1159,12 +1154,13 @@ medViewContainer [selected = "true"]
 
 QTabBar::close-button
 {
-    image: url(:icons/cross_red.svg)
+    image: url(:/pixmaps/closebutton.png)
 }
 
 QTabBar::close-button:hover
 {
     background: $VIEW_CONTAINER_BUTTON_HOVER_BACKGOUND
+/*	image: url(:icons/closebutton_blue.png) */
 }
 
 QWidget#defaultWidget

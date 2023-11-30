@@ -39,6 +39,8 @@ public:
 
     void setStartup(const AreaType areaIndex,const QStringList& filenames);
 
+    //bool eventFilter(QObject *object, QEvent * event) override;
+
 signals:
     void sliceSelected(int slice);
     void mainWindowActivated();
@@ -112,7 +114,7 @@ private slots:
     void showShortcutAccess();
     void hideShortcutAccess();
 
-    void availableSpaceOnStatusBar();
+    //void availableSpaceOnStatusBar();
 
     void open_waitForImportedSignal(medDataIndex,QUuid);
 
