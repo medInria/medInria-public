@@ -30,6 +30,8 @@ public:
      };
 
      medMainWindow(QWidget *parent = nullptr);
+    ~medMainWindow();
+
      void initMenuBar(QWidget * parent);
      void menuNotif(QMenuBar * menu_bar);
      void menuAbout(QMenuBar * menu_bar);
@@ -38,7 +40,6 @@ public:
      void menuWindow(QMenuBar * menu_bar);
      void menuWorkspace(QMenuBar * menu_bar);
      void menuFile(QMenuBar * menu_bar);
-    ~medMainWindow();
 
     void restoreSettings();
     void saveSettings();
@@ -46,8 +47,6 @@ public:
     QToolButton* notifButton();
 
     void setStartup(const AreaType areaIndex,const QStringList& filenames);
-
-    //bool eventFilter(QObject *object, QEvent * event) override;
 
 signals:
     void sliceSelected(int slice);

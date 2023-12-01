@@ -141,6 +141,7 @@ void medNotificationPaneWidget::showPane(bool show)
     QRect finalGeometry(m_winSize.width() - paneWidth, menuBarHeight, paneWidth, m_winSize.height() - menuBarHeight - statusBarHeight);
     if (show)
     {
+
         m_animation->setStartValue(startGeometry);
         m_animation->setEndValue(finalGeometry);
     }
@@ -150,6 +151,7 @@ void medNotificationPaneWidget::showPane(bool show)
         m_animation->setEndValue(startGeometry);
     }
     m_animation->start();
+    emit expanded(show);
 }
 
 void medNotificationPaneWidget::windowGeometryUpdate(QRect const & geo)
@@ -180,5 +182,16 @@ void medNotificationPaneWidget::showAndHigligth(medUsrNotif notif)
 void medNotificationPaneWidget::swithVisibility()
 {
     showPane(!(bool)width());
+}
+
+void medNotificationPaneWidget::clicked(QPoint point)
+{
+    QPoint origin     = mapToGlobal(rect().topLeft());
+    QPoint originPlus = QPoint(origin.x() + width(), origin.y() + height());
+    bool bInPanel = ((point.x() >= origin.x()) && (point.x() < originPlus.x())) && ((point.y() >= origin.y()) && (point.y() < originPlus.y()));
+    if (!bInPanel)
+    {
+        showPane(false);
+    }
 }
 

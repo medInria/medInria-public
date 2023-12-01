@@ -38,6 +38,8 @@ public:
     QStringList systemOpenInstructions;
     QtLocalPeer *peer;
     QWidget *actWin;
+
+    bool listenClick;
 };
 
 // /////////////////////////////////////////////////////////////////
@@ -49,6 +51,8 @@ medApplication::medApplication(int & argc, char**argv) :
     QApplication(argc, argv),
     d(new medApplicationPrivate)
 {
+    d->listenClick = false;
+
     d->actWin = 0;
     d->peer = new QtLocalPeer(this, "");
     connect(d->peer, SIGNAL(messageReceived(const QString&)), SIGNAL(messageReceived(const QString&)));
@@ -83,39 +87,35 @@ medApplication::~medApplication(void)
 
 bool medApplication::event(QEvent *event)
 {
-    auto mouseEvent = dynamic_cast<QMouseEvent*>(event);
-    if (mouseEvent)
-    {
-        if (event->type() == QEvent::MouseButtonRelease)
-        {
-            QPoint pos = mouseEvent->pos();
-            qDebug() << "GGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGG" << pos;            
-        }
-    }
-
-    switch (event->type())
+    auto type = event->type();
+    switch (type)
     {
         // Handle file system open requests, but only if the main window has been created and set
         case QEvent::FileOpen:
+        {
             if (d->mainWindow)
                 emit messageReceived(QString("/open ") + static_cast<QFileOpenEvent *>(event)->file());
             else
                 d->systemOpenInstructions.append(QString("/open ") + static_cast<QFileOpenEvent *>(event)->file());
 
             return true;
-        case QEvent::MouseButtonRelease:
-        {
-            QPoint pos = ((QMouseEvent*)event)->pos();
-            qDebug() << "GGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGG" << pos;
-            return QApplication::event(event);
-            break;
         }
         default:
         {
-            //return QtSingleApplication::event(event);
             return QApplication::event(event);
         }
     }
+}
+
+bool medApplication::notify(QObject * receiver, QEvent * e)
+{
+    if (d->listenClick && e->type() == QEvent::MouseButtonRelease)
+    {
+        auto *mouseEvent = static_cast<QMouseEvent*>(e);
+        emit mouseGlobalClick(mouseEvent->globalPos());
+    }
+
+    return QApplication::notify(receiver, e);
 }
 
 void medApplication::setMainWindow(medMainWindow *mw)
@@ -158,6 +158,11 @@ void medApplication::open(const medDataIndex & index)
 void medApplication::open(QString path)
 {
     d->mainWindow->open(path);
+}
+
+void medApplication::listenClick(bool listen)
+{
+    d->listenClick = listen;
 }
 
 void medApplication::initialize()

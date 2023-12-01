@@ -159,11 +159,18 @@ medMainWindow::medMainWindow ( QWidget *parent ) : QMainWindow ( parent ), d ( n
     d->notifWindow = static_cast<medNotificationPaneWidget*>(medNotifSysPresenter(notifSys).buildNotificationWindow());
     d->notifWindow->setParent(this);
     QObject::connect(this, &medMainWindow::resized, d->notifWindow, &medNotificationPaneWidget::windowGeometryUpdate);
+    QObject::connect(d->notifWindow, &medNotificationPaneWidget::expanded, medApplicationContext::instance()->getApp(), &medApplication::listenClick);
+    QObject::connect(medApplicationContext::instance()->getApp(), &medApplication::mouseGlobalClick, d->notifWindow, &medNotificationPaneWidget::clicked);
 
     initMenuBar(parent);
-
-    //installEventFilter(this);
 }
+
+medMainWindow::~medMainWindow()
+{
+    delete d;
+    d = nullptr;
+}
+
 
 void medMainWindow::initMenuBar(QWidget * parent)
 {
@@ -213,9 +220,6 @@ void medMainWindow::initMenuBar(QWidget * parent)
     // On Qt5, QAction in menubar does not seem to show the Off and On icons, so we do it manually
     connect(d->actionFullscreen, &QAction::toggled, this, &medMainWindow::switchOffOnFullscreenIcons);
     rightMenuBar->addAction(d->actionFullscreen);
-
-
-
 
 
     //QAction *actionAreaSettings = new QAction(tr("&Startup settings"), parent);
@@ -330,7 +334,6 @@ void medMainWindow::menuSettings(QMenuBar * menu_bar)
     connect(actionDataSources, &QAction::triggered, this, &medMainWindow::onShowDataSources);
 }
 
-
 void medMainWindow::menuAbout(QMenuBar * menu_bar)
 {
 
@@ -369,11 +372,6 @@ void medMainWindow::menuNotif(QMenuBar * menu_bar)
 }
 
 
-medMainWindow::~medMainWindow()
-{
-    delete d;
-    d = nullptr;
-}
 
 void medMainWindow::mousePressEvent ( QMouseEvent* event )
 {
@@ -453,22 +451,6 @@ void medMainWindow::setStartup(const AreaType areaIndex,const QStringList& filen
     for (QStringList::const_iterator i= filenames.constBegin();i!=filenames.constEnd();++i)
         open(i->toLocal8Bit().constData());
 }
-
-// bool medMainWindow::eventFilter(QObject * object, QEvent * event)
-// {
-//     auto mouseEvent = dynamic_cast<QMouseEvent*>(event);
-//     if (mouseEvent)
-//     {
-//         auto type = event->type();
-//         if (type == QEvent::MouseButtonRelease)
-//         {
-//             QPoint pos = mouseEvent->pos();
-//             qDebug() << "GGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGG" << pos;
-//         }
-//     }
-// 
-//     return false;
-// }
 
 void medMainWindow::switchToArea(const AreaType areaIndex)
 {

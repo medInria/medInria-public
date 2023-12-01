@@ -29,11 +29,14 @@ public:
     ~medApplication();
 
     bool event(QEvent *event) override;
+    bool notify(QObject *receiver, QEvent *e) override;
     void setMainWindow(medMainWindow *mw);
 
 signals:
     void showMessage(const QString& message);
     void messageReceived(const QString &message);
+
+    void mouseGlobalClick(QPoint point);
 
 public slots:
     void redirectMessageToSplash(const QString& message);
@@ -41,6 +44,8 @@ public slots:
 
     void open(const medDataIndex & index);
     void open(QString path);
+
+    void listenClick(bool listen);
 
 protected:
     void initialize();
