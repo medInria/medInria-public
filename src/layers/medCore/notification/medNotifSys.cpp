@@ -191,6 +191,15 @@ void medNotifSys::windowOnTop(bool pi_bOntop)
     d->focus = pi_bOntop;
 }
 
+void medNotifSys::clear()
+{
+    auto notifs = d->notifList;
+    for (auto notif : notifs)
+    {
+        remove2(notif);
+    }
+}
+
 void medNotifSys::osNotif(medUsrNotif & notif)
 {
     if (d->sysTray)

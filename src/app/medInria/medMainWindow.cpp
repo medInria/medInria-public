@@ -242,8 +242,10 @@ void medMainWindow::menuFile(QMenuBar * menu_bar)
     auto *actionSeparator3 = menuFile->addSeparator();
     auto *actionQuit = menuFile->addAction("Quit");
 
-    connect(actionBrowse, &QAction::triggered, this, &medMainWindow::switchToBrowserArea);
-    connect(actionGoHome, &QAction::triggered, this, &medMainWindow::switchToHomepageArea);
+    connect(actionOpenFiles, &QAction::triggered, this, &medMainWindow::openFromSystem);
+    connect(actionOpenDicom, &QAction::triggered, this, &medMainWindow::openDicomFromSystem);
+    connect(actionBrowse,    &QAction::triggered, this, &medMainWindow::switchToBrowserArea);
+    connect(actionGoHome,    &QAction::triggered, this, &medMainWindow::switchToHomepageArea);
 }
 
 void medMainWindow::menuWorkspace(QMenuBar * menu_bar)
@@ -367,6 +369,7 @@ void medMainWindow::menuNotif(QMenuBar * menu_bar)
     QAction *actionPluginLogs = menuLog->addAction(tr("Plugins"));
 
     connect(actionShowHideNotifs, &QAction::triggered, this, &medMainWindow::toggleNotificationPanel);
+    connect(actionClearNotifs, &QAction::triggered, medNotifSys::instance(), &medNotifSys::clear);
     connect(actionLog, &QAction::triggered, this, &medMainWindow::openLogDirectory);
     connect(actionPluginLogs, &QAction::triggered, this, &medMainWindow::onShowPluginLogs);
 }
@@ -525,6 +528,50 @@ void medMainWindow::open_waitForImportedSignal(medDataIndex index, QUuid uuid)
 
 
 
+
+void medMainWindow::openFromSystem()
+{
+    //  get last directory opened in settings.
+    QString path;
+    QFileDialog dialog(this);
+
+    dialog.setFileMode(QFileDialog::ExistingFile);
+    dialog.setViewMode(QFileDialog::Detail);
+    dialog.restoreState(medSettingsManager::instance()->value("state", "openFromSystem").toByteArray());
+    dialog.restoreGeometry(medSettingsManager::instance()->value("geometry", "openFromSystem").toByteArray());
+    if (dialog.exec())
+        path = dialog.selectedFiles().first();
+
+    medSettingsManager::instance()->setValue("state", "openFromSystem", dialog.saveState());
+    medSettingsManager::instance()->setValue("geometry", "openFromSystem", dialog.saveGeometry());
+
+    if (!path.isEmpty())
+    {
+        open(path);
+    }
+}
+
+void medMainWindow::openDicomFromSystem()
+{
+    //  get last directory opened in settings.
+    QString path;
+    QFileDialog dialog(this);
+
+    dialog.setFileMode(QFileDialog::Directory);
+    dialog.setViewMode(QFileDialog::Detail);
+    dialog.restoreState(medSettingsManager::instance()->value("state", "openFromSystem").toByteArray());
+    dialog.restoreGeometry(medSettingsManager::instance()->value("geometry", "openFromSystem").toByteArray());
+    if (dialog.exec())
+        path = dialog.selectedFiles().first();
+
+    medSettingsManager::instance()->setValue("state", "openFromSystem", dialog.saveState());
+    medSettingsManager::instance()->setValue("geometry", "openFromSystem", dialog.saveGeometry());
+
+    if (!path.isEmpty())
+    {
+        open(path);
+    }
+}
 
 void medMainWindow::onShowBrowser()
 {

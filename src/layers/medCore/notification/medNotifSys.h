@@ -50,6 +50,7 @@ public slots:
     bool add(medUsrNotif notif);
     bool remove2(medUsrNotif notif);
     void windowOnTop(bool pi_bOntop);
+    void clear();
 
 private:    
     medNotifSys(QObject *parent = nullptr);
