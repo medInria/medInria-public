@@ -20,6 +20,9 @@ set(TARGET_NAME medImageIO)
 ## find requireds
 ## #############################################################################
 
+# find dtk
+find_package(dtk REQUIRED)
+
 find_package(ITK REQUIRED COMPONENTS ITKVtkGlue ITKIOImageBase ITKIOMeta ITKZLIB)
 include(${ITK_USE_FILE})
 
@@ -53,8 +56,11 @@ add_library(${TARGET_NAME} SHARED
 ## #############################################################################
 
 target_include_directories(${TARGET_NAME}
-  PUBLIC ${${TARGET_NAME}_INCLUDE_DIRS}
+  PRIVATE ${dtk_INCLUDE_DIRS}
   PRIVATE ${DCMTK_INCLUDE_DIRS}
+  PUBLIC
+	"$<BUILD_INTERFACE:${${TARGET_NAME}_INCLUDE_DIRS}>"
+	"$<INSTALL_INTERFACE:include/${TARGET_NAME}>"
   )
 
 

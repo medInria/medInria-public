@@ -19,6 +19,9 @@ set(TARGET_NAME itkDWIBrainMaskCalculatorProcessPlugin)
 ## Resolve dependencies
 ## #############################################################################
 
+find_package(dtk REQUIRED)
+include_directories(${dtk_INCLUDE_DIRS})
+
 find_package(TTK REQUIRED Registration ttkAlgorithms)
 
 find_package(ITK REQUIRED COMPONENTS ITKCommon ITKImageStatistics ITKImageIntensity ITKSmoothing ITKThresholding ITKMathematicalMorphology ITKBinaryMathematicalMorphology ITKLabelVoting)

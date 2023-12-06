@@ -16,6 +16,13 @@
 set(TARGET_NAME medCoreGui)
 
 ## #############################################################################
+## find requireds
+## #############################################################################
+
+# find dtk
+find_package(dtk REQUIRED)
+
+## #############################################################################
 ## List Sources
 ## #############################################################################
 
@@ -57,7 +64,10 @@ add_library(${TARGET_NAME} SHARED
 ## #############################################################################
 
 target_include_directories(${TARGET_NAME}
-  PUBLIC ${${TARGET_NAME}_INCLUDE_DIRS}
+  PRIVATE ${dtk_INCLUDE_DIRS}
+  PUBLIC
+	"$<BUILD_INTERFACE:${${TARGET_NAME}_INCLUDE_DIRS}>"
+	"$<INSTALL_INTERFACE:include/${TARGET_NAME}>"
   )
 
 
@@ -68,6 +78,8 @@ target_include_directories(${TARGET_NAME}
 target_link_libraries(${TARGET_NAME}
   Qt5::Core
   Qt5::Widgets
+  Qt5::Test
+  Qt5::Xml
   medCore
   dtkCore
   dtkLog

@@ -19,6 +19,8 @@ if(NOT DEFINED ${medInria_VERSION})
     set(medInria_VERSION 4.0.0)
 endif()
 
+include(CMakePackageConfigHelpers)
+
 project(medInria VERSION ${medInria_VERSION})
 
 cmake_policy(SET CMP0076 NEW)
@@ -87,7 +89,6 @@ find_package(Qt5 REQUIRED COMPONENTS
   )
 
 find_package(dtk REQUIRED)
-include_directories(${dtk_INCLUDE_DIRS})
 
 ## #############################################################################
 ## enable c++ 17
@@ -132,12 +133,7 @@ endif()
 
 set(CMAKE_AUTOMOC ON)
 set(CMAKE_AUTORCC ON)
-#   Find includes in corresponding build (and source) directories
-#   (nedded for generated files)
-if(CMAKE_VERSION VERSION_LESS "3.7.0")
-    set(CMAKE_INCLUDE_CURRENT_DIR ON)
-endif()
-
+set(CMAKE_INCLUDE_CURRENT_DIR OFF)
 ## #############################################################################
 ## add definitions
 ## #############################################################################
@@ -194,21 +190,23 @@ set_property(DIRECTORY ${CMAKE_CURRENT_SOURCE_DIR} PROPERTY VS_STARTUP_PROJECT m
 # Setup Configuration files
 ################################################################################
 
-set_lib_properties_variables(
-    medCore
-	medCoreGui
-    medLog
-    medRegistration
-    medImageIO
-    medVtkInria
-    medUtilities
-    medVtkDataMeshBase
-    )
+#set_lib_properties_variables(
+#    medCore
+#    medCoreGui
+#    medLog
+#    medRegistration
+#    medImageIO
+#    medVtkInria
+#    medUtilities
+#    medVtkDataMeshBase
+#    )
 
-if(EXISTS ${CMAKE_SOURCE_DIR}/cmake/${PROJECT_NAME}Config.cmake.in)
-  configure_file( ## Build tree configure file
-    ${CMAKE_SOURCE_DIR}/cmake/${PROJECT_NAME}Config.cmake.in
-    ${${PROJECT_NAME}_BINARY_DIR}/${PROJECT_NAME}Config.cmake
-    @ONLY IMMEDIATE
-    )
+set(PACKAGE_INIT "@PACKAGE_INIT@")
+if(EXISTS ${CMAKE_SOURCE_DIR}/cmake/${PROJECT_NAME}4Config.cmake.in)
+	
+    configure_package_config_file(${CMAKE_SOURCE_DIR}/cmake/${PROJECT_NAME}4Config.cmake.in "${CMAKE_BINARY_DIR}/medInria/lib/cmake/${PROJECT_NAME}/${PROJECT_NAME}Config.cmake" INSTALL_DESTINATION lib/cmake/${PROJECT_NAME})
+    CONFIGURE_FILE(${CMAKE_SOURCE_DIR}/cmake/${PROJECT_NAME}ModuleLocation.cmake ${CMAKE_BINARY_DIR}/lib/cmake/${PROJECT_NAME} COPYONLY)
+    INSTALL(FILES "${CMAKE_BINARY_DIR}/lib/cmake/${PROJECT_NAME}/${PROJECT_NAME}Config.cmake" DESTINATION lib/cmake/${PROJECT_NAME})
+    INSTALL(FILES ${CMAKE_SOURCE_DIR}/cmake/${PROJECT_NAME}ModuleLocation.cmake DESTINATION  lib/cmake/${PROJECT_NAME})
+
 endif()

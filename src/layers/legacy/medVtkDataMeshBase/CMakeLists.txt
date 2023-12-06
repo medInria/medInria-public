@@ -20,7 +20,7 @@ set(TARGET_NAME medVtkDataMeshBase)
 ## #############################################################################
 
 find_package(dtk REQUIRED)
-include_directories(${dtk_INCLUDE_DIRS})
+#include_directories(${dtk_INCLUDE_DIRS})
 
 
 find_package(VTK REQUIRED COMPONENTS vtkCommonCore vtkCommonDataModel vtkRenderingCore vtkRenderingVolumeOpenGL2 vtkInteractionStyle vtkInteractionWidgets vtkIOParallelXML vtkIOImage vtkIOGeometry  vtkIOExport vtkRenderingContext2D vtkIOInfovis)
@@ -55,7 +55,8 @@ add_library(${TARGET_NAME} SHARED
 
 target_include_directories(${TARGET_NAME}
   PUBLIC
-  ${${TARGET_NAME}_INCLUDE_DIRS}
+	"$<BUILD_INTERFACE:${${TARGET_NAME}_INCLUDE_DIRS}>"
+	"$<INSTALL_INTERFACE:include/${TARGET_NAME}>"
   )
 
 ## #############################################################################
