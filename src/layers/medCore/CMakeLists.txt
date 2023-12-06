@@ -15,11 +15,16 @@
 
 set(TARGET_NAME medCore)
 
+## #############################################################################
+## find requireds
+## #############################################################################
+
+# find dtk
+find_package(dtk REQUIRED)
+include_directories(${dtk_INCLUDE_DIRS})
+
 find_package(Qt5Test REQUIRED)
 find_package(Qt5 REQUIRED Network)
-#required for querying the GPU, can be removed once using Qt 5.3
-#using QOpenGLFunctions::glGetString(), as well as the {OPENGL_LIBRARIES} below.
-find_package(OpenGL REQUIRED)
 
 ## #############################################################################
 ## List Sources
@@ -78,12 +83,16 @@ add_library(${TARGET_NAME} SHARED
   ${${TARGET_NAME}_QRC}
   )
 
+
 ## #############################################################################
-## include directorie.
+## include directories.
 ## #############################################################################
 
 target_include_directories(${TARGET_NAME}
-  PUBLIC ${${TARGET_NAME}_INCLUDE_DIRS}
+  PRIVATE ${dtk_INCLUDE_DIRS}
+  PUBLIC
+	"$<BUILD_INTERFACE:${${TARGET_NAME}_INCLUDE_DIRS}>"
+	"$<INSTALL_INTERFACE:include/${TARGET_NAME}>"
   )
 
 ## #############################################################################
@@ -91,25 +100,24 @@ target_include_directories(${TARGET_NAME}
 ## #############################################################################
 
 target_link_libraries(${TARGET_NAME}
+  PUBLIC
+  dtkCore
+  dtkCoreSupport
+  dtkGuiSupport
+
   Qt5::Core
-  Qt5::Network
+  Qt5::Xml
   Qt5::Widgets
   Qt5::OpenGL
   Qt5::Gui
   Qt5::Sql
   Qt5::Test
-  Qt5::Xml
   ${OPENGL_LIBRARIES}
-  dtkCoreSupport
-  dtkGuiSupport
-  dtkLog
-  dtkComposer
-        Qt5::Test
-  )
 
-if (WIN32) #TODO is that for the memory management thing ?
-  target_link_libraries(${TARGET_NAME} psapi.lib)
-endif()
+  PRIVATE
+  dtkLog
+  Qt5::Network
+  )
 
 ## #############################################################################
 ## install

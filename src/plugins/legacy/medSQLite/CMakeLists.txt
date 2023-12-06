@@ -29,8 +29,10 @@ add_definitions(-D${TARGET_NAME_UP}_VERSION="${${TARGET_NAME}_VERSION}")
 ## Resolve dependencies
 ## #############################################################################
 
-#enable_testing(true)
-#FIND_PACKAGE(GTest REQUIRED)
+find_package(Qt5 REQUIRED Core)
+
+find_package(dtk REQUIRED)
+include_directories(${dtk_INCLUDE_DIRS})
 
 
 
@@ -45,7 +47,7 @@ list_source_files(${TARGET_NAME}
  )
 
 ## #############################################################################
-## include directorie.
+## include directories.
 ## #############################################################################
 
 list_header_directories_to_include(${TARGET_NAME}
@@ -85,6 +87,7 @@ add_library(${TARGET_NAME} SHARED
 ## Link
 ## #############################################################################
 target_link_libraries(${TARGET_NAME} PUBLIC
+        Qt5::Core
         Qt5::Sql
         medCore
   )

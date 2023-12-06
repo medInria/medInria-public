@@ -4,6 +4,9 @@ set(TARGET_NAME ttkTensorEstimationProcessPlugin)
 ## Resolve dependencies
 ## #############################################################################
 
+find_package(dtk REQUIRED)
+include_directories(${dtk_INCLUDE_DIRS})
+
 find_package(ITK REQUIRED COMPONENTS ITKCommon ITKFiniteDifference)
 include(${ITK_USE_FILE})
 

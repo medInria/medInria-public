@@ -19,6 +19,9 @@ set(TARGET_NAME medItkDWIBasicThresholdingProcessPlugin)
 ## Resolve dependencies
 ## #############################################################################
 
+find_package(dtk REQUIRED)
+include_directories(${dtk_INCLUDE_DIRS})
+
 find_package(ITK REQUIRED COMPONENTS ITKMathematicalMorphology)
 include(${ITK_USE_FILE})
 

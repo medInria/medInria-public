@@ -20,7 +20,7 @@ set(TARGET_NAME medUtilities)
 ## #############################################################################
 
 find_package(dtk REQUIRED)
-include_directories(${dtk_INCLUDE_DIRS})
+#include_directories(${dtk_INCLUDE_DIRS})
 
 find_package(VTK REQUIRED COMPONENTS vtkInteractionWidgets )
 include(${VTK_USE_FILE})
@@ -56,8 +56,10 @@ ${${TARGET_NAME}_CFILES})
 ## #############################################################################
 
 target_include_directories(${TARGET_NAME}
+  PRIVATE ${dtk_INCLUDE_DIRS}
   PUBLIC
-  ${${TARGET_NAME}_INCLUDE_DIRS}
+	"$<BUILD_INTERFACE:${${TARGET_NAME}_INCLUDE_DIRS}>"
+	"$<INSTALL_INTERFACE:include/${TARGET_NAME}>"
   )
 
 ## #############################################################################

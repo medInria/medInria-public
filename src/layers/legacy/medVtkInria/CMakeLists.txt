@@ -19,6 +19,9 @@ set(TARGET_NAME medVtkInria)
 ## Find required
 ## #############################################################################
 
+# find dtk
+find_package(dtk REQUIRED)
+
 find_package(VTK REQUIRED COMPONENTS vtkRenderingVolumeOpenGL2 vtkInteractionWidgets vtkRenderingAnnotation vtkInteractionStyle vtkImagingStatistics vtkIOLegacy )
 include(${VTK_USE_FILE})
 
@@ -62,8 +65,10 @@ add_library(${TARGET_NAME} SHARED
 ## #############################################################################
 
 target_include_directories(${TARGET_NAME}
+  PRIVATE ${dtk_INCLUDE_DIRS}
   PUBLIC
-  ${${TARGET_NAME}_INCLUDE_DIRS}
+	"$<BUILD_INTERFACE:${${TARGET_NAME}_INCLUDE_DIRS}>"
+	"$<INSTALL_INTERFACE:include/${TARGET_NAME}>"
   )
 
 ## #############################################################################
@@ -73,7 +78,8 @@ target_include_directories(${TARGET_NAME}
 target_link_libraries(${TARGET_NAME}
   ${OPENGL_LIBRARIES}
   Qt5::Core
-  Qt5::Widgets
+  Qt5::Widgets  
+  dtkCoreSupport
   medCore
   vtkCommonCore
   vtkCommonSystem

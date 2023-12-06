@@ -26,6 +26,9 @@ add_definitions(-D${TARGET_NAME_UP}_VERSION="${${TARGET_NAME}_VERSION}")
 ## Resolve dependencies
 ## #############################################################################
 
+find_package(dtk REQUIRED)
+include_directories(${dtk_INCLUDE_DIRS})
+
 find_package(VTK REQUIRED vtkCommonCore vtkCommonDataModel)
 include(${VTK_USE_FILE})
 
