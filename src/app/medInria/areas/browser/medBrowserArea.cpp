@@ -26,8 +26,6 @@
 #include <medToolBox.h>
 #include <medToolBoxFactory.h>
 #include <medToolBoxContainer.h>
-#include <medPacsMover.h>
-#include <medPacsWidget.h>
 #include <medCompositeDataSetImporterSelectorToolBox.h>
 #include <medAbstractDataSource.h>
 #include <medDataSourceManager.h>
