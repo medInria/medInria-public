@@ -107,6 +107,8 @@ signals:
     */
     void failure();
 
+    void memoryFull();
+
 public slots:
     virtual void clear(){}
     void switchMinimize();
@@ -134,6 +136,11 @@ public slots:
     void addToolBoxConnections(medJobItemL *job);
 
     virtual void updateView(){}
+
+    void startMemoryCheckTimer();
+    void stopMemoryCheckTimer();
+    void checkMemoryUsage();
+    float getPercentageUsedRAM();
 
 protected slots:
     void onAboutButtonClicked();

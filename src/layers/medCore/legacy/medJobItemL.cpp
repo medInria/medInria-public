@@ -59,4 +59,3 @@ void medJobItemL::onProgress( QObject* sender, int prog )
     Q_UNUSED(sender);
     emit progressed(prog);
 }
-

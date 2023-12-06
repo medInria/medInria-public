@@ -103,11 +103,19 @@ void medRunnableProcess::onProgressed (int value)
 void medRunnableProcess::onCancel (QObject *sender)
 {
     Q_UNUSED(sender)
+    applyCancel();
+}
+
+void medRunnableProcess::applyCancel()
+{
+    // TODO: this code doesn't work since years, 
+    // that's why the cancel button of processes had been removed.
+    // For now, the process SEEMS to be cancelled. However when we want to quit the application, 
+    // a "Running background job detected! Quit anyway?" pop-up appears, which freezes the app.
 
     if (d->process)
     {
         d->process->cancel();
+        emit (cancelled (this));
     }
-
-    emit (cancelled (this));
 }
