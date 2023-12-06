@@ -267,8 +267,18 @@ void medMainWindow::menuWorkspace(QMenuBar * menu_bar)
 
     medToolBoxFactory *tbFactory = medToolBoxFactory::instance();
     QList<medWorkspaceFactory::Details*> workspaceDetails = medWorkspaceFactory::instance()->workspaceDetailsSortedByName(true);
+   
+    QAction *visuAction = menuWorkspaces->addAction("Visualization");
+    visuAction->setData(medVisualizationWorkspace::staticIdentifier());
+    bool b1 = connect(visuAction, &QAction::triggered, this, &medMainWindow::onSwitchToWorkspace);
+    d->wsActions.push_back(visuAction);
+
     for (medWorkspaceFactory::Details* detail : workspaceDetails)
     {
+        if (detail->name == "Visualization")
+        {
+            continue;
+        }
         if (tbFactory->toolBoxesFromCategory(detail->name).size() > 1)
         {
             QMenu *menuActionTmp = menuWorkspaces->addMenu(detail->name);
@@ -942,8 +952,8 @@ void medMainWindow::switchToBrowserArea()
         // The View menu is dedicated to "view workspaces"
         enableMenuBarItem("View", false);
 
-        // The Filesystem tab is by default opened
-        d->browserArea->switchToIndexTab(1);
+        // The DataSource tab is by default opened
+        d->browserArea->switchToIndexTab(0);
     }
 }
 

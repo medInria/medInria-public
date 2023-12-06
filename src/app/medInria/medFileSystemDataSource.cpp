@@ -16,6 +16,7 @@
 #include <dtkGuiSupport/dtkFinder.h>
 
 #include <medSettingsManager.h>
+#include <medDataManager.h>
 
 class medFileSystemDataSourcePrivate
 {
@@ -66,25 +67,19 @@ medFileSystemDataSource::medFileSystemDataSource( QWidget* parent ): medAbstract
 
     d->side = new dtkFinderSideView;
 
-    QAction *viewAction = new QAction(tr("View"), this);
-    viewAction->setIconVisibleInMenu(true);
-    viewAction->setIcon(QIcon(":icons/eye_white.svg"));
-
-    QAction *tempoImportAction = new QAction(tr("Temporary Import"), this);
-    tempoImportAction->setIconVisibleInMenu(true);
-    tempoImportAction->setIcon(QIcon(":icons/import_temporary_white.svg"));
-
     QAction *importAction = new QAction(tr("Import"), this);
     importAction->setIconVisibleInMenu(true);
     importAction->setIcon(QIcon(":icons/import_permanent_white.svg"));
 
-    d->finder->addContextMenuAction(viewAction);
-    d->finder->addContextMenuAction(tempoImportAction);
-    d->finder->addContextMenuAction(importAction);
+    QAction *viewAction = new QAction(tr("View"), this);
+    viewAction->setIconVisibleInMenu(true);
+    viewAction->setIcon(QIcon(":icons/eye_white.svg"));
 
-    connect(viewAction,        SIGNAL(triggered()), this, SLOT(onFileSystemViewRequested()));
-    connect(tempoImportAction, SIGNAL(triggered()), this, SLOT(onFileSystemLoadRequested()));
+    d->finder->addContextMenuAction(importAction);
+    d->finder->addContextMenuAction(viewAction);
+    
     connect(importAction,      SIGNAL(triggered()), this, SLOT(onFileSystemImportRequested()));
+    connect(viewAction,        SIGNAL(triggered()), this, SLOT(onFileSystemViewRequested()));
 
     QVBoxLayout *filesystem_layout = new QVBoxLayout(d->filesystemWidget);
     QHBoxLayout *toolbar_layout = new QHBoxLayout();
@@ -193,8 +188,7 @@ void medFileSystemDataSource::onFileSystemImportRequested()
 
     for(QString path : purgedList)
     {
-        QFileInfo info(path);
-        emit dataToImportReceived(info.absoluteFilePath());
+        QUuid uuid = medDataManager::instance()->importPath(path, false);
     }
 }
 
@@ -224,12 +218,9 @@ void medFileSystemDataSource::onFileSystemViewRequested()
 
 void medFileSystemDataSource::onFileDoubleClicked(const QString& filename)
 {
-    QFileInfo info(filename);
-    if (info.isFile())
-    {
-        emit open(info.absoluteFilePath());
-    }
+    QUuid uuid = medDataManager::instance()->importPath(filename, false);
 }
+
 
 QStringList medFileSystemDataSource::removeNestedPaths(const QStringList& paths)
 {
