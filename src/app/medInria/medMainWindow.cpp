@@ -736,7 +736,7 @@ void medMainWindow::filterWSMenu(QString text)
             QString id = action->data().toString().toLower();
             QString name = action->text().toLower();
 
-            for (QString & const keyword : textSplited)
+            for (QString & keyword : textSplited)
             {
                 bActionVisible = bActionVisible || id.contains(keyword) || name.contains(keyword);
             }
@@ -749,7 +749,7 @@ void medMainWindow::filterWSMenu(QString text)
             bool bMenuVisible = false;
             QString menuName = menu->title().toLower();
             
-            for (QString & const keyword : textSplited)
+            for (QString & keyword : textSplited)
             {
                 bMenuVisible = bMenuVisible || menuName.contains(keyword);
             }
@@ -761,7 +761,7 @@ void medMainWindow::filterWSMenu(QString text)
                 QString id = action->data().toString().toLower();
                 QString name = action->text().toLower();
 
-                for (QString & const keyword : textSplited)
+                for (QString & keyword : textSplited)
                 {
                     bActionVisible = bActionVisible || id.contains(keyword) || name.contains(keyword);
                 }
