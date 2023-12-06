@@ -277,11 +277,16 @@ void medMainWindow::menuWorkspace(QMenuBar * menu_bar)
             bool b1 = connect(openAction, &QAction::triggered, this, &medMainWindow::onSwitchToWorkspace);
 
             menuActionTmp->addSeparator();
-            for (QString toolboxName : tbFactory->toolBoxesFromCategory(detail->name))
+            auto toolboxHashTable = tbFactory->toolBoxDetailsFromCategory(detail->name);
+            for (QString toolboxId : toolboxHashTable.keys())
             {
-                QAction * subWorkSpaceAction = menuActionTmp->addAction(toolboxName);
-                subWorkSpaceAction->setData(detail->identifier);
-                bool b1 = connect(subWorkSpaceAction, &QAction::triggered, this, &medMainWindow::onSwitchToWorkspace);
+                medToolBoxDetails *toolboxDetails = toolboxHashTable[toolboxId];
+                QAction * subWorkSpaceAction = menuActionTmp->addAction(toolboxDetails->name);
+                QStringList infos;
+                infos << detail->identifier << toolboxId << toolboxDetails->name;
+                QVariant varData = QVariant(infos);
+                subWorkSpaceAction->setData(varData);
+                bool b1 = connect(subWorkSpaceAction, &QAction::triggered, this, &medMainWindow::onSwitchToProcess);
 
                 d->wsMenuActionsMap[menuActionTmp].push_back(subWorkSpaceAction);
             }
@@ -678,6 +683,45 @@ void medMainWindow::onSwitchToWorkspace()
 {
     QAction* currentAction = qobject_cast<QAction*>(sender());
     onShowWorkspace(currentAction->data().toString());
+}
+
+void medMainWindow::onSwitchToProcess()
+{
+    qDebug()<<"onSwithToProcess";
+    QAction* currentAction = qobject_cast<QAction*>(sender());
+    QStringList data = currentAction->data().toStringList();
+    QString workspaceName = data[0];
+    QString processIdentifier = data[1];
+    QString processName = data[2];
+
+    switchToWorkspaceArea();
+    medWorkspaceFactory::Details* details = medWorkspaceFactory::instance()->workspaceDetailsFromId(workspaceName);
+
+    if (details)
+    {
+        d->shortcutAccessWidget->updateSelected(workspaceName);
+
+        if (!d->workspaceArea->setCurrentWorkspace(workspaceName))
+        {
+            QString message = QString("Cannot open workspace ") + details->name;
+            medMessageController::instance()->showError(message, 3000);
+            switchToHomepageArea();
+        }
+        else
+        {
+            auto * workspace = dynamic_cast<medSelectorWorkspace *>(d->workspaceArea->currentWorkspace());
+            medSelectorToolBox * selectorTb = workspace->selectorToolBox();
+            medComboBox *comboBox = selectorTb->comboBox();
+            comboBox->setCurrentIndex(selectorTb->getIndexOfToolBox(processName));
+            selectorTb->changeCurrentToolBox(processIdentifier);
+        }
+        // The View menu is dedicated to "view workspaces"
+        enableMenuBarItem("View", true);
+
+        this->hideShortcutAccess();
+    }
+
+
 }
 
 void medMainWindow::openLogDirectory()

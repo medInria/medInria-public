@@ -175,6 +175,11 @@ private slots:
     void onSwitchToWorkspace();
 
     /**
+     * @brief Switch the application to the current process (toolbox) name
+     */
+    void onSwitchToProcess();
+
+    /**
      * @brief Open the log directory
      */
     void openLogDirectory();
