@@ -21,8 +21,6 @@
 add_subdirectory(medCore)
 add_subdirectory(medCoreGui)
 
-add_subdirectory(legacy/medPacs)
-
 add_subdirectory(legacy/medLog)
 add_subdirectory(legacy/medImageIO)
 add_subdirectory(legacy/medRegistration)

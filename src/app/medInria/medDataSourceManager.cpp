@@ -19,7 +19,6 @@
 #include <medAbstractDataSource.h>
 #include <medAbstractDataSourceFactory.h>
 #include <medDataManager.h>
-#include <medPacsWidget.h>
 #include <medMetaDataKeys.h>
 #include <medMessageController.h>
 
