@@ -47,12 +47,12 @@ medAbstractImageViewNavigator::medAbstractImageViewNavigator(medAbstractView *pa
     }
 
     connect(this, SIGNAL(currentTimeChanged(double)), d->view, SIGNAL(currentTimeChanged(double)));
-    connect(d->view, SIGNAL(layerAdded(uint)), this, SLOT(updateTimeLineParameter()));
-    connect(d->view, SIGNAL(layerRemoved(uint)), this, SLOT(updateTimeLineParameter()));
+    connect(d->view, SIGNAL(currentLayerChanged()), this, SLOT(updateTimeLineParameter()), Qt::UniqueConnection);
 }
 
 medAbstractImageViewNavigator::~medAbstractImageViewNavigator()
 {
+    delete d->timeLineParameter;
     delete d;
 }
 
@@ -98,36 +98,42 @@ void medAbstractImageViewNavigator::setCurrentTime (const double &time)
 
 void medAbstractImageViewNavigator::updateTimeLineParameter()
 {
-    bool viewHasTemporalData = false;
-
-    double sequenceDuration = 0;
-    double sequenceFrameRate = 0;
-    for(medDataIndex index : d->view->dataList())
+    if (d->timeLineParameter)
     {
-        medAbstractData *data = medDataManager::instance().retrieveData(index);
-        if (!data)
-            continue;
+        bool viewHasTemporalData = false;
 
-        if(data->hasMetaData("SequenceDuration") && data->hasMetaData("SequenceFrameRate"))
+        double sequenceDuration = 0;
+        double sequenceFrameRate = 0;
+
+        for(medDataIndex index : d->view->dataList())
         {
-            double sd = data->metadata("SequenceDuration").toDouble();
-            sequenceDuration = (sequenceDuration < sd) ? sd : sequenceDuration;
+            medAbstractData *data = medDataManager::instance().retrieveData(index);
+            if (!data)
+                continue;
 
-            double sf = data->metadata("SequenceFrameRate").toDouble();
-            sequenceFrameRate = (sequenceFrameRate < sf) ? sf : sequenceFrameRate;
+            if(data->hasMetaData("SequenceDuration") && data->hasMetaData("SequenceFrameRate"))
+            {
+                double sd = data->metadata("SequenceDuration").toDouble();
+                sequenceDuration = (sequenceDuration < sd) ? sd : sequenceDuration;
 
-            viewHasTemporalData = true;
+                double sf = data->metadata("SequenceFrameRate").toDouble();
+                sequenceFrameRate = (sequenceFrameRate < sf) ? sf : sequenceFrameRate;
+
+                viewHasTemporalData = true;
+            }
+        }
+        if(viewHasTemporalData)
+        {
+            unsigned int numFrames = (unsigned int)round(sequenceDuration * sequenceFrameRate);
+            d->timeLineParameter->setNumberOfFrame(numFrames);
+            d->timeLineParameter->setDuration(sequenceDuration);
+            d->timeLineParameter->show();
+        }
+        else
+        {
+            d->timeLineParameter->hide();
         }
     }
-    if(viewHasTemporalData)
-    {
-        unsigned int numFrames = (unsigned int)round(sequenceDuration * sequenceFrameRate);
-        d->timeLineParameter->setNumberOfFrame(numFrames);
-        d->timeLineParameter->setDuration(sequenceDuration);
-        d->timeLineParameter->show();
-    }
-    else
-        d->timeLineParameter->hide();
 }
 
 void medAbstractImageViewNavigator::toXMLNode(QDomDocument *doc, QDomElement *currentNode)

@@ -147,6 +147,7 @@ medTimeLineParameterL::medTimeLineParameterL(QString name, QObject *parent):
 
 medTimeLineParameterL::~medTimeLineParameterL()
 {
+    emit aboutToBeDestroyed();
     delete d;
 }
 
