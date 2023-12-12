@@ -92,6 +92,9 @@ private slots:
 signals:
     void editIndex(QModelIndex const &);
     void expandData(QModelIndex const &, bool);
+    void visibility ();
+    void visibled(bool state);
+
 
 private:
     medVirtualRepresentationPrivate *d;

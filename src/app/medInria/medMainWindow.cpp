@@ -240,6 +240,24 @@ void medMainWindow::menuFile(QMenuBar * menu_bar)
     auto *actionSeparator2 = menuFile->addSeparator();
     auto *subMenuRecentFiles = menuFile->addMenu("Recent files");
     auto *actionSeparator3 = menuFile->addSeparator();
+    auto *subMenuVisibilitySource = menuFile->addMenu("Source Visibility");
+    
+    QAction *virtualReprAction = subMenuVisibilitySource->addAction("Quick Access");
+    medVirtualRepresentation *virtualRepresentation = medApplicationContext::instance()->getVirtualRepresentation();
+    virtualReprAction->setCheckable(true);
+    virtualReprAction->setChecked(true);
+    connect(virtualReprAction, &QAction::triggered, virtualRepresentation, &medVirtualRepresentation::visibled);
+
+    for (QString sourceId : medSourcesLoader::instance()->sourcesIdList())
+    {
+        auto *sourceAction = subMenuVisibilitySource->addAction(sourceId);
+        sourceAction->setCheckable(true);
+        sourceAction->setChecked(true);
+        sourceAction->setData(sourceId);
+        connect(sourceAction, &QAction::toggled, this, &medMainWindow::setSourceVisibility);
+    }
+ 
+    auto *actionSeparator4 = menuFile->addSeparator();
     auto *actionQuit = menuFile->addAction("Quit");
 
     connect(actionOpenFiles, &QAction::triggered, this, &medMainWindow::openFromSystem);
@@ -586,6 +604,14 @@ void medMainWindow::openDicomFromSystem()
     {
         open(path);
     }
+}
+
+void medMainWindow::setSourceVisibility(bool checked)
+{
+    QAction* currentAction = qobject_cast<QAction*>(sender());
+    QString sourceInstanceId = currentAction->data().toString();
+ 
+    emit medDataHub::instance()->sourceVisibled(sourceInstanceId, checked);
 }
 
 void medMainWindow::onShowBrowser()

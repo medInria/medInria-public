@@ -128,7 +128,8 @@ private slots:
 
     void openFromSystem();
     void openDicomFromSystem();
-
+    void setSourceVisibility(bool checked);
+    
     void onShowBrowser();
     void onShowDataSources();
     //void onShowNotifPanel();

@@ -101,6 +101,8 @@ signals:
     void getAsyncStatus(medAbstractSource* , int, medAbstractSource::eRequestStatus);
     void sourceAdded   (QString /*sourceInstanceId*/);
     void sourceRemoved (QString /*sourceInstanceId*/);
+    void sourceVisibled (QString /*sourceInstanceId*/, bool checked);    
+    void sourceVisibility (QString /*sourceInstanceId*/);
     void dataLoaded    (medDataIndex);
     void dataExported  (medAbstractData *, QString);
 

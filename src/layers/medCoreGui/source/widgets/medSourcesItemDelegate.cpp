@@ -18,13 +18,11 @@ void medSourcesItemDelegate::paint(QPainter *painter, const QStyleOptionViewItem
     QStyleOptionViewItem opt = option;
     initStyleOption(&opt, getIndex(index));
     opt.decorationSize = QSize(16,16);
-    
+    // opt.state &= ~QStyle::State_Selected;
     if (index.isValid())
     {
         auto value = getIndex(index).data(DATASTATE_ROLE).toString();
-        
-        std::string val = value.toStdString();
-    
+   
         if (value== DATASTATE_ROLE_DATALOADING)
         {
             painter->drawPixmap(QRect(opt.rect.x()-40, opt.rect.y(), opt.decorationSize.width(), opt.rect.height()), m_mov->currentPixmap());//QPixmap(":icons/yellow_spot.svg"));
