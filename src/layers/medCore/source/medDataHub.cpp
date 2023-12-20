@@ -155,6 +155,7 @@ medAbstractData * medDataHub::variantToMedAbstractData(QVariant &data, const med
 		pDataRes->setDataIndex(index);
 		m_IndexToData[index] = pDataRes;
 		m_IndexToData[index].data();
+        getVirtualRepresentation()->addDataFromSource(index, pDataRes);
 		connect(pDataRes, &QObject::destroyed, this, &medDataHub::unloadData);
 	}
     else
@@ -948,6 +949,7 @@ bool medDataHub::warpAddAsync(medAbstractSource::levelMinimalEntries &minimalEnt
     {
         QString sourceId = pModel->getSourceIntanceId();
         m_IndexToData[request.uri] = pi_pData;
+        getVirtualRepresentation()->addGeneratedData(pi_pData, request.dataName);
         rqstId = m_sourcesHandler->addAssyncData(pio_uri, data, minimalEntries);
         if (rqstId > 0)
         {
