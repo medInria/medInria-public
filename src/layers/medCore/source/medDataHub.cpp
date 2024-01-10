@@ -375,7 +375,7 @@ void medDataHub::progress(const QString & sourceId, int rqstId, medAbstractSourc
                 if (rqst.type == asyncRequestType::getRqstType)
                 {
                     pModel->setData(pModel->toIndex(rqst.uri), DATASTATE_ROLE_DATALOADED, DATASTATE_ROLE);
-                    m_rqstToNotifMap[rqst]->update(notifLevel::info, -1, "Download succeed");
+                    m_rqstToNotifMap[rqst]->update(notifLevel::success, -1, "Download succeed");
                     if (rqst.needMedAbstractConversion)
                     {
                         QVariant data;
@@ -392,7 +392,7 @@ void medDataHub::progress(const QString & sourceId, int rqstId, medAbstractSourc
                         auto key = data.toString();
                         pModel->setData(pModel->toIndex(rqst.uri), DATASTATE_ROLE_DATASAVED, DATASTATE_ROLE);
                         pModel->substituteTmpKey(rqst.uri, key);
-                        m_rqstToNotifMap[rqst]->update(notifLevel::info, -1, "Save succeed");
+                        m_rqstToNotifMap[rqst]->update(notifLevel::success, -1, "Save succeed");
                     }
                     else
                     {
@@ -1326,6 +1326,7 @@ void medDataHub::releaseRequest()
 
 medAbstractData * medDataHub::loadDataFromPath(QString const path, QUuid uuid)
 {
+    std::shared_ptr<medNotif> notif = medNotif::createNotif(notifLevel::info , QString("Load File ") + path, " from local file system", -1, -1);
     medAbstractData * pDataRes = medDataImporter::convertSingleDataOnfly(path);
     if (pDataRes)
     {
@@ -1340,10 +1341,13 @@ medAbstractData * medDataHub::loadDataFromPath(QString const path, QUuid uuid)
         emit dataLoaded(fileSysPathToIndex(path));
 
         medDataManager::instance()->medDataHubRelay(index, uuid);
+        notif->update(notifLevel::success, -1, QString("Success"));
+
     }
     else
     {
-        medNotif::createNotif(notifLevel::warning, QString("Converting file ") + path, " failed");
+        notif->update(notifLevel::warning, -2, QString("Failure"));
+        // medNotif::createNotif(notifLevel::warning, QString("Converting file ") + path, " failed");
     }
     return pDataRes;
 }
