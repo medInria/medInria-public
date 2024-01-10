@@ -82,33 +82,21 @@ QVariant medSourceModel::data(const QModelIndex & index, int role) const
         {
             varDataRes = Qt::AlignHCenter;
         }
-//        else if (role == Qt::ForegroundRole)
+       else if (role == Qt::ForegroundRole)
+       {
+            auto value = data(index, DATASTATE_ROLE).toString();
+            if (value == DATASTATE_ROLE_DATALOADED)
+            {
+                varDataRes = QColor(14, 191, 239);
+            }
+       }
+ //        else if (role == Qt::DecorationRole)
 //        {
 //            auto value = data(index, 100).toString();
-//            if (value == "DataLoading")
-//            {
-//                varDataRes = QColor(Qt::red);
-//            }
-//            else if (value == "DataLoaded")
-//            {
-//                varDataRes = QColor(Qt::blue);
-//            }
-//            else if (value == "DataPushing")
-//            {
-//                varDataRes = QColor(Qt::yellow);
-//            }
-//            else if (value == "DataCommited")
-//            {
-//                varDataRes = QColor(Qt::cyan);
-//            }
-//        }
-//        else if (role == Qt::DecorationRole)
-//        {
-//            auto value = data(index, 100).toString();
-////            if (value == "DataLoading")
-////            {
-////                varDataRes = QIcon(":icons/yellow_spot.svg");
-////            }
+// //            if (value == "DataLoading")
+// //            {
+// //                varDataRes = QIcon(":icons/yellow_spot.svg");
+// //            }
 //        }
         else
         {

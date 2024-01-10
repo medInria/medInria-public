@@ -498,8 +498,11 @@ QCheckBox::indicator:disabled:checked
  *******************************************************************************/
 QTreeView
 {
-     alternate-background-color: $ALT_LIST_BACKGROUND;
+     /* alternate-background-color: $ALT_LIST_BACKGROUND; */
      background: $LIST_BACKGROUND;
+     /* background-color: $COMBO_BOX_ITEM_BACKGROUND; */
+     selection-background-color: $COMBO_BOX_ITEM_SELECTED_BACKGROUND;
+     selection-color: $COMBO_BOX_ITEM_SELECTED_COLOR;
 }
 
 QTreeView::item
