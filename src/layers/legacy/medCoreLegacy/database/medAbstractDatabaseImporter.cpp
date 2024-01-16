@@ -699,10 +699,7 @@ QString medAbstractDatabaseImporter::generateThumbnail ( medAbstractData* medDat
         qWarning("medAbstractDatabaseImporter: Cannot create directory: %s", qPrintable(pathToStoreThumbnail));
     }
 
-    if ( ! thumbnail.save ( fullThumbnailPath, "PNG" ))
-    {
-        qWarning("medAbstractDatabaseImporter: Saving thumbnail to %s failed.", qPrintable(fullThumbnailPath));
-    }
+    thumbnail.save(fullThumbnailPath, "PNG");
 
     medData->addMetaData ( medMetaDataKeys::ThumbnailPath.key(), thumbnailPath );
 

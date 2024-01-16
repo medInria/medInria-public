@@ -184,10 +184,6 @@ medAbstractData* medDatabaseReader::run()
 
     QString fullThumbnailPath(medStorage::dataLocation() + thumbnailPath);
     QFileInfo fullThumbnailPathInfo(fullThumbnailPath);
-    if (!fullThumbnailPathInfo.exists())
-    {
-        qWarning("No thumbnail found at path: %s", qPrintable(fullThumbnailPath));
-    }
     medMetaDataKeys::SeriesThumbnail.add (medData, fullThumbnailPath);
 
     medMetaDataKeys::PatientID.set ( medData, patientId );
