@@ -27,7 +27,6 @@ class medAbstractImageView;
 
 class medClutEditorVertexPrivate;
 
-// TODO use QGraphicsObjectItem noobs.
 class MEDCORE_EXPORT medClutEditorVertex : public QGraphicsObject
 {
     Q_OBJECT
