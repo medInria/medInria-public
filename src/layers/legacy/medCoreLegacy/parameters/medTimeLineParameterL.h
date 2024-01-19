@@ -73,6 +73,8 @@ signals:
     void playing(bool isPlaying);
     void timeChanged(double time);
 
+    void aboutToBeDestroyed();
+
 private slots:
     void updateTime(double time);
     void updateFrameLabel();

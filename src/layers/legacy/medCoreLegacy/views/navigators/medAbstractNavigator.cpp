@@ -46,6 +46,7 @@ medAbstractNavigator::medAbstractNavigator(medAbstractView *parent):
 
 medAbstractNavigator::~medAbstractNavigator()
 {
+    delete d->toolBoxWidget;
     delete d;
 }
 
