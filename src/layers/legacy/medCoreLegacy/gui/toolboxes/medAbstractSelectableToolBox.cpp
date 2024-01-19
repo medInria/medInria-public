@@ -14,6 +14,7 @@
 #include <medAbstractSelectableToolBox.h>
 #include <medSelectorToolBox.h>
 #include <medTabbedViewContainers.h>
+#include <medAbstractData.h>
 
 class medAbstractSelectableToolBoxPrivate
 {
