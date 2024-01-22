@@ -1466,16 +1466,10 @@ bool AlgorithmPaintToolBox::isMask2dOnSlice()
 
 void AlgorithmPaintToolBox::showButtons( bool value )
 {
-    if (value)
-    {
-        m_applyButton->show();
-        m_clearMaskButton->show();
-    }
-    else
-    {
-        m_applyButton->hide();
-        m_clearMaskButton->hide();
-    }
+    bool forceHide = m_applyButton->property("forceHide").toBool();
+    m_applyButton->setVisible(value && !forceHide);
+
+    m_clearMaskButton->setVisible(value);
 }
 
 void AlgorithmPaintToolBox::updateButtons()
