@@ -124,10 +124,10 @@ public:
 public slots:
     void updateView();
 
-    void activateStroke();
+    void activateStroke(bool checked);
     void activateCustomedCursor();
     void deactivateCustomedCursor();
-    void activateMagicWand();
+    void activateMagicWand(bool checked);
     void updateMagicWandComputationSpeed();
 
     void copyMetaData(medAbstractData *output,

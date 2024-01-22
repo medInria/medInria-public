@@ -450,8 +450,8 @@ AlgorithmPaintToolBox::AlgorithmPaintToolBox(QWidget *parent ) :
     dataButtonsLayout->addWidget(m_clearMaskButton);
     layout->addLayout(dataButtonsLayout);
 
-    connect (m_strokeButton, SIGNAL(pressed()), this, SLOT(activateStroke ()));
-    connect (m_magicWandButton, SIGNAL(pressed()),this,SLOT(activateMagicWand()));
+    connect (m_strokeButton,    SIGNAL(toggled(bool)), this, SLOT(activateStroke(bool)));
+    connect (m_magicWandButton, SIGNAL(toggled(bool)), this, SLOT(activateMagicWand(bool)));
     connect (m_clearMaskButton, SIGNAL(pressed()), this, SLOT(clear()));
     connect (m_applyButton, SIGNAL(pressed()),this, SLOT(import()));
 
@@ -545,61 +545,63 @@ void AlgorithmPaintToolBox::updateMagicWandComputation()
     }
 }
 
-void AlgorithmPaintToolBox::activateStroke()
+void AlgorithmPaintToolBox::activateStroke(bool checked)
 {
     m_wandInfo->hide();
 
-    if ( this->m_strokeButton->isChecked() )
+    if (!checked)
     {
         deactivateCustomedCursor(); // Deactivate painting cursor
         this->m_viewFilter->removeFromAllViews();
         m_paintState = (PaintState::None);
         updateButtons();
-        return;
     }
-    setPaintState(PaintState::Stroke);
-    updateButtons();
-    this->m_magicWandButton->setChecked(false);
-    addViewEventFilter(m_viewFilter);
-    addBrushSize_shortcut->setEnabled(true);
-    reduceBrushSize_shortcut->setEnabled(true);
-
-    setCurrentView(currentView);
-
-    if (!m_imageData)
+    else
     {
-        this->setData(currentView->layerData(0));
-    }
-    if (!m_imageData)
-    {
-        qWarning() << "Could not set data";
-        return;
-    }
+        this->m_magicWandButton->setChecked(false);
+        setPaintState(PaintState::Stroke);
+        updateButtons();
+        addViewEventFilter(m_viewFilter);
+        addBrushSize_shortcut->setEnabled(true);
+        reduceBrushSize_shortcut->setEnabled(true);
 
-    if(!currentView->contains(m_maskAnnotationData))
-    {
-        m_maskAnnotationData->setMetaData("SeriesDescription", "mask");
-        currentView->addLayer(m_maskAnnotationData);
-        for(medAbstractInteractor* interactor : currentView->layerInteractors(getWorkspace()->getSelectedLayerIndices()[0]))
+        setCurrentView(currentView);
+
+        if (!m_imageData)
         {
-            if (interactor->identifier() == "medAnnotationInteractor")
+            this->setData(currentView->layerData(0));
+        }
+        if (!m_imageData)
+        {
+            qWarning() << "Could not set data";
+            return;
+        }
+
+        if(!currentView->contains(m_maskAnnotationData))
+        {
+            m_maskAnnotationData->setMetaData("SeriesDescription", "mask");
+            currentView->addLayer(m_maskAnnotationData);
+            for(medAbstractInteractor* interactor : currentView->layerInteractors(getWorkspace()->getSelectedLayerIndices()[0]))
             {
-                for(medAbstractParameterL* parameter : interactor->linkableParameters())
+                if (interactor->identifier() == "medAnnotationInteractor")
                 {
-                    if (parameter->name() == "Opacity")
+                    for(medAbstractParameterL* parameter : interactor->linkableParameters())
                     {
-                        qobject_cast<medDoubleParameterL*>(parameter)->setValue(0.4);
+                        if (parameter->name() == "Opacity")
+                        {
+                            qobject_cast<medDoubleParameterL*>(parameter)->setValue(0.4);
+                        }
                     }
                 }
             }
+
+            // Update Mouse Interaction ToolBox
+            currentView->setCurrentLayer(0);
+            getWorkspace()->updateMouseInteractionToolBox();
         }
 
-        // Update Mouse Interaction ToolBox
-        currentView->setCurrentLayer(0);
-        getWorkspace()->updateMouseInteractionToolBox();
+        activateCustomedCursor(); // Add circular cursor for painting
     }
-
-    activateCustomedCursor(); // Add circular cursor for painting
 }
 
 void AlgorithmPaintToolBox::activateCustomedCursor()
@@ -656,21 +658,23 @@ void AlgorithmPaintToolBox::deactivateCustomedCursor()
     currentView->viewWidget()->setCursor(Qt::CrossCursor);
 }
 
-void AlgorithmPaintToolBox::activateMagicWand()
+void AlgorithmPaintToolBox::activateMagicWand(bool checked)
 {
-    if ( this->m_magicWandButton->isChecked() )
+    if (!checked)
     {
         this->m_viewFilter->removeFromAllViews();
         m_paintState = (PaintState::None);
         newSeed(); // accept the current growth
         updateButtons();
-        return;
     }
-    setPaintState(PaintState::Wand);
-    updateButtons();
-    this->m_strokeButton->setChecked(false);
-    addViewEventFilter(m_viewFilter);
-    deactivateCustomedCursor();
+    else
+    {
+        this->m_strokeButton->setChecked(false);
+        setPaintState(PaintState::Wand);
+        updateButtons();
+        addViewEventFilter(m_viewFilter);
+        deactivateCustomedCursor();
+    }
 }
 
 void AlgorithmPaintToolBox::updateMagicWandComputationSpeed()
@@ -829,6 +833,10 @@ void AlgorithmPaintToolBox::updateView()
                 }
             }
         }
+    }
+    else
+    {
+        showButtons(false);
     }
 }
 
@@ -1484,7 +1492,6 @@ void AlgorithmPaintToolBox::updateButtons()
         m_strokeLabelSpinBox->hide();
         m_colorLabel->hide();
         m_removeSeedButton->hide();
-        return;
     }
     else
     {
@@ -1832,8 +1839,17 @@ void AlgorithmPaintToolBox::clearMask()
         m_redoStacks->remove(currentView);
     }
 
-    showButtons(false);
     resetToolbox();
+
+    if (m_addButton->isVisible())
+    {
+        m_addButton->setEnabled(false);
+    }
+
+    if (m_eraseButton->isVisible())
+    {
+        m_eraseButton->setEnabled(false);
+    }
 }
 
 void AlgorithmPaintToolBox::resetToolbox()
@@ -1842,15 +1858,10 @@ void AlgorithmPaintToolBox::resetToolbox()
 
     if ( this->m_strokeButton->isChecked() )
     {
-        m_paintState = (PaintState::None);
-        updateButtons();
         m_strokeButton->setChecked(false);
     }
     else if ( this->m_magicWandButton->isChecked() )
     {
-        m_paintState = (PaintState::None);
-        newSeed(); // accept the current growth
-        updateButtons();
         m_magicWandButton->setChecked(false);
     }
 
