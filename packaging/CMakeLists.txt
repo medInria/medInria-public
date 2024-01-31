@@ -50,6 +50,16 @@ option(CPACK_SOURCE_ZIP  "Enable to build ZIP source packages"  OFF)
 
 set(CPACK_INSTALL_CMAKE_PROJECTS ${PROJECT_BINARY_DIR} ${PROJECT_NAME} ALL "/")
 
+if(USE_Python)
+    set(PYTHON_PLUGINS_DIR "${medInria_ROOT}/bin/python_plugins")
+    make_directory("${PYTHON_PLUGINS_DIR}")
+
+    install(DIRECTORY "${PYTHON_PLUGINS_DIR}"
+        DESTINATION bin
+        COMPONENT Runtime
+        )
+endif()
+
 # Set cpack variables specific to the plateform
 
 if (WIN32)
@@ -58,12 +68,12 @@ if (WIN32)
     include(${WIN_PACK_DIR}/WindowsPackaging.cmake)
 endif()
 
-if (APPLE)
-    include(${PROJECT_SOURCE_DIR}/apple/ApplePackaging.cmake)
-endif()
-
-if (${CMAKE_SYSTEM_NAME} STREQUAL "Linux")
-    include(${PROJECT_SOURCE_DIR}/linux/LinuxPackaging.cmake)
+if (UNIX)
+    if(APPLE)
+        include(${PROJECT_SOURCE_DIR}/apple/ApplePackaging.cmake)
+    else()
+        include(${PROJECT_SOURCE_DIR}/linux/LinuxPackaging.cmake)
+    endif()
 endif()
 
 # Include cpack modules

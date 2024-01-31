@@ -31,15 +31,17 @@ function(pyncpp_project)
 
         set(project_args
             GIT_REPOSITORY ${GITHUB_PREFIX}LIRYC-IHU/pyncpp.git
-            GIT_TAG origin/working
+            GIT_TAG working
             GIT_SHALLOW True
             GIT_PROGRESS True
             )
 
         set(cmake_args
+            ${ep_common_cache_args}
             -D "PYNCPP_PYTHON_VERSION_MAJOR:STRING=${PYTHON_VERSION_MAJOR}"
             -D "PYNCPP_PYTHON_VERSION_MINOR:STRING=${PYTHON_VERSION_MINOR}"
             -D "PYNCPP_PYTHON_VERSION_PATCH:STRING=${PYTHON_VERSION_PATCH}"
+            -D "CMAKE_BUILD_TYPE=${CMAKE_BUILD_TYPE_externals_projects}"
             )
 
         if(UNIX)
@@ -74,7 +76,7 @@ function(pyncpp_project)
         ## Export variables
         ## #####################################################################
 
-        set(${ep}_DIR ${build_path} PARENT_SCOPE)
+        set(${ep}_ROOT "${build_path}" PARENT_SCOPE)
 
     endif()
 

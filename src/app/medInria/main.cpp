@@ -19,7 +19,7 @@
 #include <QtPlatformHeaders/QWindowsWindowFunctions>
 #endif
 
-#if(USE_PYTHON)
+#ifdef USE_PYTHON
 #include <pyncpp.h>
 #endif
 
@@ -159,13 +159,30 @@ int main(int argc,char* argv[])
 
     medDataManager::instance().setDatabaseLocation();
 
-#if(USE_PYTHON)
+#ifdef USE_PYTHON
     pyncpp::Manager pythonManager;
+    QString pythonHomePath = PYTHON_HOME;
     QDir pythonHome = qApp->applicationDirPath();
     QDir pythonPluginPath = pythonHome;
+    bool pythonHomeFound = false;
+    bool pythonPluginsFound = false;
     QString pythonErrorMessage;
 
-    if (!pythonHome.cd(PYTHON_HOME))
+    if (pythonHome.cd(PYTHON_HOME))
+    {
+        pythonHomeFound = true;
+        pythonPluginsFound = pythonPluginPath.cd(PYTHON_PLUGIN_PATH);
+    }
+    else
+    {
+        if (pythonHome.cd(BUILD_PYTHON_HOME))
+        {
+            pythonHomeFound = true;
+            pythonPluginsFound = pythonPluginPath.cd(BUILD_PYTHON_PLUGIN_PATH);
+        }
+    }
+
+    if (!pythonHomeFound)
     {
         pythonErrorMessage = "The embedded Python could not be found ";
     }
@@ -177,18 +194,12 @@ int main(int argc,char* argv[])
         }
         else
         {
-#ifdef Q_OS_MACOS
-            if(!pythonPluginPath.cd("../Plugins/python"))
+            if (pythonPluginsFound)
             {
-                pythonPluginPath.cd("../../../plugins/python");
+                pyncpp::Module sysModule = pyncpp::Module::import("sys");
+                sysModule.attribute("path").append(pyncpp::Object(pythonPluginPath.absolutePath()));
+                qInfo() << "Added Python plugin path: " << pythonPluginPath.path();
             }
-#else
-#ifdef Q_OS_LINUX
-            pythonPluginPath.cd("../plugins/python");
-#endif
-#endif
-            pyncpp::Module sysModule = pyncpp::Module::import("sys");
-            sysModule.attribute("path").append(pyncpp::Object(pythonPluginPath.absolutePath()));
         }
     }
 #endif
@@ -240,7 +251,7 @@ int main(int argc,char* argv[])
        QGLFormat::setDefaultFormat(format);
     }
 
-#if(USE_PYTHON)
+#ifdef USE_PYTHON
     if(!pythonErrorMessage.isEmpty())
     {
         QMessageBox::warning(mainwindow, "Python", pythonErrorMessage);

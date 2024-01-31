@@ -111,8 +111,6 @@ set(CMAKE_BUILD_TYPE_medInria Debug CACHE STRING "Build type configuration speci
 ## #############################################################################
 set(medInria_SOURCE_DIR ${CMAKE_SOURCE_DIR}/src)
 set(medInria_BINARY_DIR ${CMAKE_BINARY_DIR}/medInria-build)
-set(medInria_STAMP_DIR ${CMAKE_BINARY_DIR}/medInria-stamp)
-
 
 ## #############################################################################
 ## Add modules
@@ -202,10 +200,9 @@ endif()
 set(external_projects ${external_projects} PARENT_SCOPE)
 
 foreach(external_project ${external_projects})
-    if(NOT USE_SYSTEM_${external_project} AND BUILD_SHARED_LIBS_${external_project})
-        ExternalProject_Get_Property(${external_project} binary_dir)
-        ExternalProject_Get_Property(${external_project} source_dir)
-        set(${external_project}_DIR ${binary_dir} PARENT_SCOPE)
-        set(${external_project}_SOURCE_DIR ${source_dir} PARENT_SCOPE)
+    if(DEFINED ${external_project}_ROOT)
+        set(${external_project}_ROOT ${${external_project}_ROOT} PARENT_SCOPE)
     endif()
 endforeach()
+
+set(medInria_SOURCE_DIR ${medInria_SOURCE_DIR} PARENT_SCOPE)

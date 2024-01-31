@@ -69,8 +69,8 @@ set(cmake_args
   )
   
 set(cmake_cache_args
-  -DVTK_DIR:FILEPATH=${VTK_DIR}
-  -DITK_DIR:FILEPATH=${ITK_DIR}
+  -DVTK_ROOT:FILEPATH=${VTK_ROOT}
+  -DITK_ROOT:FILEPATH=${ITK_ROOT}
   )
 
 
@@ -95,7 +95,6 @@ ExternalProject_Add(${ep}
   CMAKE_CACHE_ARGS ${cmake_cache_args}
   DEPENDS ${${ep}_dependencies}
   INSTALL_COMMAND ""
-  BUILD_ALWAYS 1
   )
  
 ## #############################################################################
@@ -103,7 +102,7 @@ ExternalProject_Add(${ep}
 ## #############################################################################
 
 ExternalProject_Get_Property(${ep} binary_dir)
-set(${ep}_DIR ${binary_dir} PARENT_SCOPE)
+set(${ep}_ROOT ${binary_dir} PARENT_SCOPE)
   
 endif() #NOT USE_SYSTEM_ep
 
