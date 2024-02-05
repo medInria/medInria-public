@@ -59,6 +59,7 @@ polygonRoiToolBox::polygonRoiToolBox(QWidget *parent ) :
     activateTBButton->setCheckable(true);
     activateTBButton->setObjectName("closedPolygonButton");
     connect(activateTBButton,SIGNAL(toggled(bool)),this,SLOT(clickClosePolygon(bool)));
+    connect(activateTBButton, &QAbstractButton::toggled, [=] (bool state) { explanation->setVisible(!state); });
 
     interpolate = new QCheckBox(tr("Interpolate between contours"));
     interpolate->setToolTip("Interpolate between master ROIs");
