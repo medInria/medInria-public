@@ -47,10 +47,13 @@ baseViewEvent::baseViewEvent(medAbstractImageView *iView, polygonRoiToolBox *too
 
     // interactors
     interactorStyleRepulsor = vtkInriaInteractorStylePolygonRepulsor::New();
+    originalInteractor = view2d->GetInteractor();
 }
 
 baseViewEvent::~baseViewEvent()
 {
+    activateRepulsor(false);
+
     delete crossPosition;
     removeViewInteractor();
     manageTickVisibility(false);
@@ -59,13 +62,7 @@ baseViewEvent::~baseViewEvent()
         delete label;
     }
     labelList.clear();
-    cursorState = CURSORSTATE::CS_DEFAULT;
-    isRepulsorActivated = false;
-    if (interactorStyleRepulsor)
-    {
-        interactorStyleRepulsor->Delete();
-        interactorStyleRepulsor = nullptr;
-    }
+
     currentLabel = nullptr;
     currentView = nullptr;
 }
@@ -701,14 +698,14 @@ void baseViewEvent::activateRepulsor(bool state)
             }
         }
     }
-    else
+    else if (cursorState == CURSORSTATE::CS_REPULSOR)
     {
         cursorState = CURSORSTATE::CS_DEFAULT;
         vtkInteractorStyleImageView2D *interactorStyle2D = vtkInteractorStyleImageView2D::New();
         globalVtkLeftButtonBehaviour = view2d->GetLeftButtonInteractionStyle();
         interactorStyle2D->SetLeftButtonInteraction(vtkInteractorStyleImageView2D::InteractionTypeNull);
         view2d->SetInteractorStyle(interactorStyle2D);
-        view2d->SetupInteractor(view2d->GetInteractor()); // to reinstall vtkImageView2D pipeline
+        view2d->SetupInteractor(originalInteractor);
         interactorStyle2D->Delete();
     }
 }

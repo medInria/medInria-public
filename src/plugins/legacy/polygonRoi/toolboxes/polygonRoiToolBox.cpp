@@ -395,6 +395,10 @@ void polygonRoiToolBox::clickClosePolygon(bool state)
         {
             viewEventHash[activeDataIndex]->onSelectContainer();
         }
+        else if (!viewEventHash.empty())
+        {
+            viewEventHash.values().first()->getCurrentView()->selectedRequest(true);
+        }
     }
     saveBinaryMaskButton->setEnabled(state);
     saveContourButton->setEnabled(state);
@@ -465,7 +469,6 @@ void polygonRoiToolBox::clear()
 
     pMedToolBox->clear();
     pMedToolBox->setEnabled(false);
-
 }
 
 QList<medAbstractData *> polygonRoiToolBox::getITKImageDataInSelectedView(medAbstractView *view)

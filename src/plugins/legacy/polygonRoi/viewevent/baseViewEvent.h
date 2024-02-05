@@ -120,6 +120,7 @@ private:
     QList<medDisplayPosContours> copyNodesList;
     double savedMousePosition[2];
     dtkSmartPointer<medAbstractData> contourOutput;
+    vtkRenderWindowInteractor* originalInteractor;
 
     void leftButtonBehaviour(medAbstractView *view);
     bool rightButtonBehaviour(medAbstractView *view, QMouseEvent *mouseEvent);

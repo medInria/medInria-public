@@ -302,7 +302,7 @@ void polygonRoi::manageVisibility()
     }
     else
     {
-        if (d->view->GetSlice() == getIdSlice())
+        if (isInCurrentSlice())
         {
             On();
         }
@@ -520,7 +520,7 @@ bool polygonRoi::pasteContour(QVector<QVector2D> &nodes)
 
 bool polygonRoi::isInCurrentSlice()
 {
-    return (d->view->GetSlice() == getIdSlice());
+    return (static_cast<unsigned int>(d->view->GetSlice()) == getIdSlice());
 }
 
 void polygonRoi::setCurrentSlice()
