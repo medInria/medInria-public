@@ -566,15 +566,18 @@ void polygonLabel::createMask(int label, QString &desc)
         {
             for(int j=(int)bounds[by]; j<=(int)bounds[by+1]; j++)
             {
-                QRgb val = imagePolygon.pixel(i,j);
-
-                if (val==qRgb(255,255,255))
+                if (i>=0 && i<dimX && j>=0 && j<dimY)
                 {
-                    UChar3ImageType::IndexType index;
-                    index[x]=i;
-                    index[y]=j;
-                    index[z]=polygon.second;
-                    m_itkMask->SetPixel(index,label+1);
+                    QRgb val = imagePolygon.pixel(i,j);
+
+                    if (val==qRgb(255,255,255))
+                    {
+                        UChar3ImageType::IndexType index;
+                        index[x]=i;
+                        index[y]=j;
+                        index[z]=polygon.second;
+                        m_itkMask->SetPixel(index,label+1);
+                }
                 }
             }
         }
