@@ -14,7 +14,7 @@
 
 #include <medCoreLegacyExport.h>
 #include <medToolBox.h>
-#include <dtkCoreSupport/dtkSmartPointer>
+#include <dtkCoreSupport/dtkSmartPointer.h>
 
 class medAbstractData;
 class medSelectorToolBox;
