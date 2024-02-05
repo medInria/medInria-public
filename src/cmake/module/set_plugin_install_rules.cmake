@@ -13,76 +13,48 @@
 
 
 ################################################################################
-############################## NOT LEGACY ######################################
+##############################   LEGACY   ######################################
+macro(set_plugin_install_rules_generic target dest legacy)
+get_property(GENERATOR_MULTI_CONFIG GLOBAL PROPERTY GENERATOR_IS_MULTI_CONFIG)
 
-macro(set_plugin_install_rules target)
+if(${GENERATOR_MULTI_CONFIG})
+  set_target_properties( ${target} PROPERTIES RUNTIME_OUTPUT_DIRECTORY_DEBUG          ${dest}/bin/plugins${legacy})
+  set_target_properties( ${target} PROPERTIES RUNTIME_OUTPUT_DIRECTORY_RELEASE        ${dest}/bin/plugins${legacy})
+  set_target_properties( ${target} PROPERTIES RUNTIME_OUTPUT_DIRECTORY_MINSIZEREL     ${dest}/bin/plugins${legacy})
+  set_target_properties( ${target} PROPERTIES RUNTIME_OUTPUT_DIRECTORY_RELWITHDEBINFO ${dest}/bin/plugins${legacy})
+
+  set_target_properties( ${target} PROPERTIES ARCHIVE_OUTPUT_DIRECTORY_DEBUG          ${dest}/lib/plugins${legacy})
+  set_target_properties( ${target} PROPERTIES ARCHIVE_OUTPUT_DIRECTORY_RELEASE        ${dest}/lib/plugins${legacy})
+  set_target_properties( ${target} PROPERTIES ARCHIVE_OUTPUT_DIRECTORY_MINSIZEREL     ${dest}/lib/plugins${legacy})
+  set_target_properties( ${target} PROPERTIES ARCHIVE_OUTPUT_DIRECTORY_RELWITHDEBINFO ${dest}/lib/plugins${legacy})
+
+  set_target_properties( ${target} PROPERTIES LIBRARY_OUTPUT_DIRECTORY_DEBUG          ${dest}/bin/plugins${legacy})
+  set_target_properties( ${target} PROPERTIES LIBRARY_OUTPUT_DIRECTORY_RELEASE        ${dest}/bin/plugins${legacy})
+  set_target_properties( ${target} PROPERTIES LIBRARY_OUTPUT_DIRECTORY_MINSIZEREL     ${dest}/bin/plugins${legacy})
+  set_target_properties( ${target} PROPERTIES LIBRARY_OUTPUT_DIRECTORY_RELWITHDEBINFO ${dest}/bin/plugins${legacy})
+else()
+  set_target_properties( ${target} PROPERTIES RUNTIME_OUTPUT_DIRECTORY                ${dest}/bin/plugins${legacy})
+  set_target_properties( ${target} PROPERTIES ARCHIVE_OUTPUT_DIRECTORY                ${dest}/lib/plugins${legacy})
+  set_target_properties( ${target} PROPERTIES LIBRARY_OUTPUT_DIRECTORY                ${dest}/bin/plugins${legacy})
+endif()
+
+install(TARGETS ${target}
+  RUNTIME DESTINATION bin/plugins${legacy}
+  LIBRARY DESTINATION bin/plugins${legacy}
+  ARCHIVE DESTINATION lib/plugins${legacy}
+  )
+endmacro()
+
+
+
 ################################################################################
 #
 # Usage: set_plugin_install_rules(target)
 # set rules for the plugin designed by the target
 #
 ################################################################################
-get_property(GENERATOR_MULTI_CONFIG GLOBAL PROPERTY GENERATOR_IS_MULTI_CONFIG)
-
-if(${GENERATOR_MULTI_CONFIG})
-  set_target_properties( ${target} PROPERTIES RUNTIME_OUTPUT_DIRECTORY_DEBUG          ${CMAKE_BINARY_DIR}/medInria/bin/plugins)
-  set_target_properties( ${target} PROPERTIES RUNTIME_OUTPUT_DIRECTORY_RELEASE        ${CMAKE_BINARY_DIR}/medInria/bin/plugins)
-  set_target_properties( ${target} PROPERTIES RUNTIME_OUTPUT_DIRECTORY_MINSIZEREL     ${CMAKE_BINARY_DIR}/medInria/bin/plugins)
-  set_target_properties( ${target} PROPERTIES RUNTIME_OUTPUT_DIRECTORY_RELWITHDEBINFO ${CMAKE_BINARY_DIR}/medInria/bin/plugins)
-
-  set_target_properties( ${target} PROPERTIES ARCHIVE_OUTPUT_DIRECTORY_DEBUG          ${CMAKE_BINARY_DIR}/medInria/bin/plugins)
-  set_target_properties( ${target} PROPERTIES ARCHIVE_OUTPUT_DIRECTORY_RELEASE        ${CMAKE_BINARY_DIR}/medInria/bin/plugins)
-  set_target_properties( ${target} PROPERTIES ARCHIVE_OUTPUT_DIRECTORY_MINSIZEREL     ${CMAKE_BINARY_DIR}/medInria/bin/plugins)
-  set_target_properties( ${target} PROPERTIES ARCHIVE_OUTPUT_DIRECTORY_RELWITHDEBINFO ${CMAKE_BINARY_DIR}/medInria/bin/plugins)
-
-  set_target_properties( ${target} PROPERTIES LIBRARY_OUTPUT_DIRECTORY_DEBUG          ${CMAKE_BINARY_DIR}/medInria/bin/plugins)
-  set_target_properties( ${target} PROPERTIES LIBRARY_OUTPUT_DIRECTORY_RELEASE        ${CMAKE_BINARY_DIR}/medInria/bin/plugins)
-  set_target_properties( ${target} PROPERTIES LIBRARY_OUTPUT_DIRECTORY_MINSIZEREL     ${CMAKE_BINARY_DIR}/medInria/bin/plugins)
-  set_target_properties( ${target} PROPERTIES LIBRARY_OUTPUT_DIRECTORY_RELWITHDEBINFO ${CMAKE_BINARY_DIR}/medInria/bin/plugins)
-else()
-  set_target_properties( ${target} PROPERTIES RUNTIME_OUTPUT_DIRECTORY                ${CMAKE_BINARY_DIR}/medInria/bin/plugins)
-  set_target_properties( ${target} PROPERTIES ARCHIVE_OUTPUT_DIRECTORY                ${CMAKE_BINARY_DIR}/medInria/bin/plugins)
-  set_target_properties( ${target} PROPERTIES LIBRARY_OUTPUT_DIRECTORY                ${CMAKE_BINARY_DIR}/medInria/bin/plugins)
-endif()
-
-install(TARGETS ${target}
-  RUNTIME DESTINATION bin/plugins
-  LIBRARY DESTINATION bin/plugins
-  )
-
-endmacro()
-
-
-################################################################################
-##############################   LEGACY   ######################################
-macro(set_plugin_install_rules_legacy_generic target dest)
-get_property(GENERATOR_MULTI_CONFIG GLOBAL PROPERTY GENERATOR_IS_MULTI_CONFIG)
-
-if(${GENERATOR_MULTI_CONFIG})
-  set_target_properties( ${target} PROPERTIES RUNTIME_OUTPUT_DIRECTORY_DEBUG          ${dest}/medInria/bin/plugins_legacy)
-  set_target_properties( ${target} PROPERTIES RUNTIME_OUTPUT_DIRECTORY_RELEASE        ${dest}/medInria/bin/plugins_legacy)
-  set_target_properties( ${target} PROPERTIES RUNTIME_OUTPUT_DIRECTORY_MINSIZEREL     ${dest}/medInria/bin/plugins_legacy)
-  set_target_properties( ${target} PROPERTIES RUNTIME_OUTPUT_DIRECTORY_RELWITHDEBINFO ${dest}/medInria/bin/plugins_legacy)
-                                                                                              
-  set_target_properties( ${target} PROPERTIES ARCHIVE_OUTPUT_DIRECTORY_DEBUG          ${dest}/medInria/bin/plugins_legacy)
-  set_target_properties( ${target} PROPERTIES ARCHIVE_OUTPUT_DIRECTORY_RELEASE        ${dest}/medInria/bin/plugins_legacy)
-  set_target_properties( ${target} PROPERTIES ARCHIVE_OUTPUT_DIRECTORY_MINSIZEREL     ${dest}/medInria/bin/plugins_legacy)
-  set_target_properties( ${target} PROPERTIES ARCHIVE_OUTPUT_DIRECTORY_RELWITHDEBINFO ${dest}/medInria/bin/plugins_legacy)
-
-  set_target_properties( ${target} PROPERTIES LIBRARY_OUTPUT_DIRECTORY_DEBUG          ${dest}/medInria/bin/plugins_legacy)
-  set_target_properties( ${target} PROPERTIES LIBRARY_OUTPUT_DIRECTORY_RELEASE        ${dest}/medInria/bin/plugins_legacy)
-  set_target_properties( ${target} PROPERTIES LIBRARY_OUTPUT_DIRECTORY_MINSIZEREL     ${dest}/medInria/bin/plugins_legacy)
-  set_target_properties( ${target} PROPERTIES LIBRARY_OUTPUT_DIRECTORY_RELWITHDEBINFO ${dest}/medInria/bin/plugins_legacy)
-else()
-  set_target_properties( ${target} PROPERTIES RUNTIME_OUTPUT_DIRECTORY                ${dest}/medInria/bin/plugins_legacy)
-  set_target_properties( ${target} PROPERTIES ARCHIVE_OUTPUT_DIRECTORY                ${dest}/medInria/bin/plugins_legacy)
-  set_target_properties( ${target} PROPERTIES LIBRARY_OUTPUT_DIRECTORY                ${dest}/medInria/bin/plugins_legacy)
-endif()
-
-install(TARGETS ${target}
-  RUNTIME DESTINATION bin/plugins_legacy
-  LIBRARY DESTINATION bin/plugins_legacy
-  )
+macro(set_plugin_install_rules target)
+  set_plugin_install_rules_generic(${target} ${MEDINRIA_PATH} "")
 endmacro()
 
 ################################################################################
@@ -92,7 +64,7 @@ endmacro()
 #
 ################################################################################
 macro(set_plugin_install_rules_legacy target)
-  set_plugin_install_rules_legacy_generic(${target} ${CMAKE_BINARY_DIR}) 
+  set_plugin_install_rules_generic(${target} ${MEDINRIA_PATH} "_legacy") 
 endmacro()
 
 ################################################################################
@@ -102,5 +74,6 @@ endmacro()
 #
 ################################################################################
 macro(set_plugin_install_rules_legacy_external target)
-  set_plugin_install_rules_legacy_generic(${target} ${medInria_DIR})
+  set_plugin_install_rules_generic(${target} ${MEDINRIA_PATH} "_legacy")
 endmacro()
+

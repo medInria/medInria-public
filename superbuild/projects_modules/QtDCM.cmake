@@ -78,8 +78,10 @@ set(cmake_args
   
 set(cmake_cache_args
   -DQt5_DIR:FILEPATH=${Qt5_DIR}
+  -DITK_ROOT:FILEPATH=${ITK_ROOT}
   -DITK_DIR:FILEPATH=${ITK_DIR}
   -DDCMTK_DIR:FILEPATH=${DCMTK_DIR}
+  -DDCMTK_ROOT:FILEPATH=${DCMTK_ROOT}
   )
 
   
@@ -105,6 +107,7 @@ ExternalProject_Add(${ep}
   DEPENDS ${${ep}_dependencies}
   INSTALL_COMMAND ""
   BUILD_ALWAYS ${EP_BUILD_ALWAYS}
+  ${EP_INSTAL_COMMAND}
   )  
 
 ## #############################################################################
@@ -112,7 +115,8 @@ ExternalProject_Add(${ep}
 ## #############################################################################
 
 ExternalProject_Get_Property(${ep} binary_dir)
-set(${ep}_DIR ${binary_dir} PARENT_SCOPE)
+set(${ep}_ROOT ${binary_dir} PARENT_SCOPE)
+set(${ep}_DIR ${binary_dir}  PARENT_SCOPE)
 
 endif() #NOT USE_SYSTEM_ep
 

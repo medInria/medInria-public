@@ -53,10 +53,10 @@ list_header_directories_to_include(${TARGET_NAME}
 ## add library
 ## #############################################################################
 
-add_library(${TARGET_NAME} SHARED
-  ${${TARGET_NAME}_CFILES}
-  ${${TARGET_NAME}_QRC}
-  )
+add_library(${TARGET_NAME} SHARED)
+target_sources(${TARGET_NAME} PRIVATE ${${TARGET_NAME}_CFILES} ${${TARGET_NAME}_QRC} )
+target_sources(${TARGET_NAME} PRIVATE ${RELATIVE_${TARGET_NAME}_HEADERS})
+set_target_properties(${TARGET_NAME} PROPERTIES PUBLIC_HEADER "${RELATIVE_${TARGET_NAME}_HEADERS}")
 
 
 ## #############################################################################
@@ -75,12 +75,15 @@ target_include_directories(${TARGET_NAME}
 ## Link
 ## #############################################################################
 
-target_link_libraries(${TARGET_NAME}
+target_link_libraries(${TARGET_NAME} PUBLIC
   Qt5::Core
   Qt5::Widgets
   Qt5::Test
   Qt5::Xml
-  medCore
+  
+  med::Core
+  
+  # dtk
   dtkCore
   dtkLog
   # Legacy
@@ -92,7 +95,16 @@ target_link_libraries(${TARGET_NAME}
 ## install
 ## #############################################################################
 
-set_lib_install_rules(${TARGET_NAME}
-  ${${TARGET_NAME}_HEADERS}
-  )
+#set_lib_install_rules(${TARGET_NAME})
   
+set_lib_install_rules(${TARGET_NAME}
+    NAMESPACE                  med
+    VERSION                    4.0    
+    LIBRARY_OUTPUT_NAME_PREFIX med
+    DESTINATION                ${MEDINRIA_PATH}
+    
+    PUBLIC_DEPENDENCIES    
+      "medInria REQUIRED COMPONENTS Core"
+      "dtk      REQUIRED COMPONENTS dtkCore dtkLog dtkCoreSupport dtkGuiSupport"
+      "Qt5      REQUIRED COMPONENTS Core Xml Widgets Test"
+    )

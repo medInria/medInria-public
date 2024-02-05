@@ -101,8 +101,8 @@ ExternalProject_Add(${ep}
 ## #############################################################################
 
 ExternalProject_Get_Property(GTEST binary_dir)
+set(${ep}_ROOT ${binary_dir} PARENT_SCOPE)
 set(${ep}_DIR  ${binary_dir}/lib/cmake/GTest PARENT_SCOPE)
-#set(${ep}_ROOT ${binary_dir} PARENT_SCOPE)
 
 
 endif() #NOT USE_SYSTEM_ep

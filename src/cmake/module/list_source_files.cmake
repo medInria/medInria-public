@@ -36,6 +36,11 @@ foreach(dir ${ARGV})
     ${dir}/*.hpp
     ${dir}/*.hxx
     )
+    
+  foreach(header_file ${HEADERS})
+      file(RELATIVE_PATH relative_path_to_file ${CMAKE_CURRENT_SOURCE_DIR} ${header_file})
+      list(APPEND RELATIVE_${project_name}_HEADERS ${relative_path_to_file})
+  endforeach()  
   set(${project_name}_HEADERS
     ${HEADERS}
     ${${project_name}_HEADERS}
@@ -64,6 +69,7 @@ foreach(dir ${ARGV})
     ${dir}/*.txx
     ${dir}/*.tpp
     )
+    
   set(${project_name}_TEMPLATES
     ${TEMPLATES}
     ${${project_name}_TEMPLATES}
@@ -112,4 +118,34 @@ endif()
 
 list(REMOVE_DUPLICATES ${project_name}_CFILES)
 
+endmacro()
+
+
+
+macro(to_flat files_list)
+    foreach(a_path ${ARGN})
+        cmake_path(GET a_path FILENAME a_file_name)
+        list(APPEND ${files_list} ${a_file_name})
+    endforeach()
+    list(REMOVE_DUPLICATES ${files_list})
+endmacro()
+
+
+
+macro(to_relative relative_path_list base_dir)
+    foreach(a_path ${ARGN})
+        cmake_path(RELATIVE_PATH relative_path_to_file ${base_dir} a_path)
+        list(APPEND ${relative_path_list} ${relative_path_to_file})
+    endforeach()
+    list(REMOVE_DUPLICATES ${relative_path_list})
+endmacro()
+
+
+
+macro(to_full full_path_list base_dir)
+    foreach(relative_path_to_file ${ARGN})
+        cmake_path(SET a_path NORMALIZE "${base_dir}/${relative_path_to_file}")
+        list(APPEND ${full_path_list} ${a_path})
+    endforeach()
+    list(REMOVE_DUPLICATES ${full_path_list})
 endmacro()

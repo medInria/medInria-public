@@ -86,7 +86,8 @@ endif()
 ## #############################################################################
 
 ExternalProject_Get_Property(${ep} binary_dir)
-set(${ep}_DIR ${binary_dir} PARENT_SCOPE)
+set(${ep}_ROOT ${binary_dir} PARENT_SCOPE)
+set(${ep}_DIR ${binary_dir}  PARENT_SCOPE)
 
 endif() #NOT USE_SYSTEM_ep
 

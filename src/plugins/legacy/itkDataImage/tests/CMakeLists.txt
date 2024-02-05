@@ -38,8 +38,8 @@ create_test_sourcelist(${PROJECT_NAME}_TESTS ${PROJECT_NAME}.cxx
   ${${PROJECT_NAME}_TESTS_FILENAME}
   )
 
-if(ITK_DIR)
-  set(ITK_DATA_ROOT ${ITK_DIR}/Examples/Data)
+if(ITK_ROOT)
+  set(ITK_DATA_ROOT ${ITK_ROOT}/Examples/Data)
 endif()
 
 if(MSVC_IDE)
@@ -74,7 +74,7 @@ target_link_libraries(${PROJECT_NAME}
   ${QT_LIBRARIES}
   dtkCore
   dtkLog
-  medCore
+  medInria::medCore
   ITKCommon
   )
 
