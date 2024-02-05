@@ -14,6 +14,7 @@
 
 #include <medCoreLegacyExport.h>
 #include <medToolBox.h>
+#include <dtkCoreSupport/dtkSmartPointer.h>
 
 class medAbstractData;
 class medSelectorToolBox;
@@ -31,7 +32,7 @@ public:
     virtual dtkPlugin* plugin();
 
     virtual medAbstractData *processOutput() = 0;
-
+    virtual QList<dtkSmartPointer<medAbstractData>> processOutputs();
     void setSelectorToolBox(medSelectorToolBox *toolbox);
 
 public slots:

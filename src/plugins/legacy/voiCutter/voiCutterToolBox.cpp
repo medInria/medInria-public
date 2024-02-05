@@ -15,6 +15,7 @@
 #include <voiCutterToolBox.h>
 
 #include <medAbstractDataFactory.h>
+#include <medAbstractImageData.h>
 #include <medAbstractImageView.h>
 #include <medAbstractParameterL.h>
 #include <medBoolGroupParameterL.h>
@@ -181,7 +182,8 @@ void voiCutterToolBox::updateView()
             medAbstractData *data = d->currentView->layerData(i);
             if(!data || data->identifier().contains("vtkDataMesh")
                     || !data->identifier().contains("itkDataImage") //avoid medVtkFibersData also
-                    || data->identifier().contains("itkDataImageVector"))
+                    || data->identifier().contains("itkDataImageVector")
+                    || (qobject_cast<medAbstractImageData*>(data)->Dimension() != 3))
             {
                 handleDisplayError(medAbstractProcessLegacy::DIMENSION_3D);
                 d->currentView = nullptr;
@@ -275,13 +277,12 @@ dtkPlugin* voiCutterToolBox::plugin()
 
 medAbstractData *voiCutterToolBox::processOutput()
 {
-    if (!d->resultData)
+    if (d->resultData)
     {
-        return d->currentView->layerData(d->currentView->currentLayer());
+        fillOutputMetaData();
+        return d->resultData;
     }
-
-    fillOutputMetaData();
-    return d->resultData;
+    return nullptr;
 }
 
 void voiCutterToolBox::activateButtons(bool param)

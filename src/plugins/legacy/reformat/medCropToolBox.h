@@ -49,6 +49,8 @@ public slots:
 protected:
     void showEvent(QShowEvent *event);
     virtual void clear();
+    int generateOutput();
+    void enableButtons(bool wantToEnable);
 
 private:
     medCropToolBoxPrivate* const d;
