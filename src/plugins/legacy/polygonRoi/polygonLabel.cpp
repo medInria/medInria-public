@@ -415,11 +415,11 @@ QVector<medWorldPosContours> polygonLabel::getContoursAsNodes()
     return contours;
 }
 
-void polygonLabel::createMask(int label, QString &desc)
+medAbstractData *polygonLabel::createMask(int label, QString &desc)
 {
     vtkImageView2D *view2d = getView2D();
     if (!view2d)
-        return;
+        return nullptr;
 
     QList<QPair<vtkPolygon *, int>> polygons;
     for (polygonRoi *roi : d->rois)
@@ -587,7 +587,7 @@ void polygonLabel::createMask(int label, QString &desc)
     output->setMetaData(medMetaDataKeys::Toolbox.key(), "PolygonROI");
     output->setMetaData(medMetaDataKeys::OriginalDataUID.key(), inputData->metadata(medMetaDataKeys::SeriesInstanceUID.key()));
     output->setMetaData(medMetaDataKeys::OriginalDataDesc.key(), inputData->metadata(medMetaDataKeys::SeriesDescription.key()));
-    medDataManager::instance().importData(output, false);
+    return output;
 }
 
 void polygonLabel::SetMasterRoi()

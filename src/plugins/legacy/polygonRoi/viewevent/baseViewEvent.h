@@ -57,7 +57,7 @@ public:
     void updatePosition(QString name, int position);
     void setEnableInterpolation(bool state);
     void activateRepulsor(bool state);
-    void saveMask();
+    QList<dtkSmartPointer<medAbstractData> > saveMasks();
     void saveAllContours();
 
     void removeViewFromList(medAbstractImageView *iView);
@@ -91,7 +91,7 @@ protected slots:
 private slots:
     void deleteNode(polygonLabel *manager, const double *mousePos);
     void deleteContour(polygonLabel *manager);
-    void saveMask(polygonLabel *manager);
+    dtkSmartPointer<medAbstractData> saveMask(polygonLabel *manager);
     void saveContour(polygonLabel *label);
     void copyContour(polygonLabel *manager);
 

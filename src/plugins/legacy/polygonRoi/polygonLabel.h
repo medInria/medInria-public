@@ -60,7 +60,7 @@ public:
     void deleteNode(double X, double Y);
     void deleteContour();
     void removeAllTick();
-    void createMask(int label, QString &desc);
+    medAbstractData *createMask(int label, QString &desc);
     void SetMasterRoi();
 
     vtkSmartPointer<vtkPolyData> getContoursAsPolyData(int label);
