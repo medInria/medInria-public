@@ -507,6 +507,11 @@ AlgorithmPaintToolBox::AlgorithmPaintToolBox(QWidget *parent ) :
 AlgorithmPaintToolBox::~AlgorithmPaintToolBox()
 {
     setOfPaintBrushRois.clear();
+
+    if (m_imageData && m_maskAnnotationData)
+    {
+        m_imageData->removeAttachedData(m_maskAnnotationData);
+    }
 }
 
 medAbstractData* AlgorithmPaintToolBox::processOutput()
