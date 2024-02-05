@@ -11,6 +11,7 @@
 
 =========================================================================*/
 #include "resliceToolBox.h"
+#include "medResliceViewer.h"
 
 #include <medAbstractImageData.h>
 #include <medAbstractLayeredView.h>
@@ -18,7 +19,6 @@
 #include <medDoubleParameterL.h>
 #include <medMessageController.h>
 #include <medPluginManager.h>
-#include <medResliceViewer.h>
 #include <medTabbedViewContainers.h>
 #include <medToolBoxFactory.h>
 #include <medViewContainer.h>
@@ -31,31 +31,38 @@ public:
     QComboBox *bySpacingOrSize;
     QLabel *helpBegin;
     medDoubleParameterL *spacingOrSizeX, *spacingOrSizeY, *spacingOrSizeZ;
-    medAbstractLayeredView *currentView;
     medResliceViewer *resliceViewer;
     dtkSmartPointer<medAbstractData> reformatedImage;
     QWidget *reformatOptions;
-    medVtkImageInfo* imageInfo;
+    std::array<double, 3> spacing;
+    std::array<int, 3> dimensions;
+    medAbstractData *originalImage;
 };
 
 resliceToolBox::resliceToolBox (QWidget *parent) : medAbstractSelectableToolBox (parent), d(new resliceToolBoxPrivate)
 {
-    // Fill the toolBox
-    QWidget *resliceToolBoxBody = new QWidget(this);
-    d->b_startReslice = new QPushButton("Start Reslice", resliceToolBoxBody);
+    QWidget *resliceToolBoxBody = new QWidget();
+    this->addWidget(resliceToolBoxBody);
+
+    QVBoxLayout *resliceToolBoxLayout =  new QVBoxLayout(resliceToolBoxBody);
+
+    d->b_startReslice = new QPushButton("Start Reslice");
     d->b_startReslice->setCheckable(false);
     d->b_startReslice->setObjectName("startReformatButton");
-    d->b_stopReslice = new QPushButton("Stop Reslice", resliceToolBoxBody);
+    resliceToolBoxLayout->addWidget(d->b_startReslice);
+
+    d->b_stopReslice = new QPushButton("Stop Reslice");
     d->b_stopReslice->setCheckable(false);
     d->b_stopReslice->setObjectName("stopReformatButton");
-    d->b_saveImage = new QPushButton("Save Image", resliceToolBoxBody);
+
+    d->b_saveImage = new QPushButton("Save Image");
     d->b_saveImage->setCheckable(false);
     d->b_saveImage->setObjectName("saveImageButton");
 
     // User can choose pixel or millimeter resample
     QHBoxLayout * resampleLayout = new QHBoxLayout();
-    QLabel *bySpacingOrSizeLabel = new QLabel("Select your resample parameter ", resliceToolBoxBody);
-    d->bySpacingOrSize = new QComboBox(resliceToolBoxBody);
+    QLabel *bySpacingOrSizeLabel = new QLabel("Select your resample parameter ");
+    d->bySpacingOrSize = new QComboBox();
     d->bySpacingOrSize->setObjectName("bySpacingOrSize");
     d->bySpacingOrSize->addItem("Spacing");
     d->bySpacingOrSize->addItem("Size");
@@ -64,8 +71,7 @@ resliceToolBox::resliceToolBox (QWidget *parent) : medAbstractSelectableToolBox 
     connect(d->bySpacingOrSize, SIGNAL(currentIndexChanged(const QString&)), this, SLOT(switchSpacingAndDimension(const QString&)));
 
     // Spinboxes of resample values
-    QWidget *spinBoxes = new QWidget(resliceToolBoxBody);
-    QVBoxLayout *spacingSpinBoxLayout = new QVBoxLayout(resliceToolBoxBody);
+    QVBoxLayout *spacingSpinBoxLayout = new QVBoxLayout();
 
     QHBoxLayout *spacingSpinBoxLayoutX = new QHBoxLayout();
     spacingSpinBoxLayoutX->setAlignment(Qt::AlignCenter);
@@ -102,52 +108,43 @@ resliceToolBox::resliceToolBox (QWidget *parent) : medAbstractSelectableToolBox 
     spacingSpinBoxLayoutZ->addWidget(d->spacingOrSizeZ->getLabel());
     spacingSpinBoxLayoutZ->addWidget(d->spacingOrSizeZ->getSpinBox());
     spacingSpinBoxLayout->addLayout(spacingSpinBoxLayoutZ);
-
-    spinBoxes->setLayout(spacingSpinBoxLayout);
-
-    QVBoxLayout *resliceToolBoxLayout =  new QVBoxLayout(resliceToolBoxBody);
-    d->helpBegin = new QLabel("Drop a data in the view and click on 'Start Reslice'.", resliceToolBoxBody);
+    
+    d->helpBegin = new QLabel("Drop a data in the view and click on 'Start Reslice'.");
     d->helpBegin->setObjectName("helpBegin");
     d->helpBegin->setStyleSheet("font: italic");
     resliceToolBoxLayout->addWidget(d->helpBegin);
 
-    QLabel *help1 = new QLabel("To change the windowing left click on a 2D view.", resliceToolBoxBody);
-    QLabel *help2 = new QLabel("To reset axes in a view press 'o'.",               resliceToolBoxBody);
-    QLabel *help3 = new QLabel("To reset windowing in a view press 'r'.\n",        resliceToolBoxBody);
+    QLabel *help1 = new QLabel("To change the windowing left click on a 2D view.\n"
+                               "To reset axes in a view press 'o'.\n"
+                               "To reset windowing in a view press 'r'.\n"
+                                );
     help1->setStyleSheet("font: italic");
-    help2->setStyleSheet("font: italic");
-    help3->setStyleSheet("font: italic");
 
-    resliceToolBoxLayout->addWidget(d->b_startReslice);
-
-    d->reformatOptions = new QWidget(resliceToolBoxBody);
+    d->reformatOptions = new QWidget();
     QVBoxLayout *reformatOptionsLayout = new QVBoxLayout(d->reformatOptions);
     d->reformatOptions->setLayout(reformatOptionsLayout);
     d->reformatOptions->hide();
 
     resliceToolBoxLayout->addWidget(d->reformatOptions);
     reformatOptionsLayout->addWidget(help1);
-    reformatOptionsLayout->addWidget(help2);
-    reformatOptionsLayout->addWidget(help3);
     reformatOptionsLayout->addLayout(resampleLayout);
-    reformatOptionsLayout->addWidget(spinBoxes);
+    reformatOptionsLayout->addLayout(spacingSpinBoxLayout);
     reformatOptionsLayout->addWidget(d->b_saveImage);
     reformatOptionsLayout->addWidget(d->b_stopReslice);
     resliceToolBoxBody->setLayout(resliceToolBoxLayout);
-    this->addWidget(resliceToolBoxBody);
 
     // Connections
     connect(d->b_startReslice,SIGNAL(clicked()),this,SLOT(startReformat()));
     connect(d->b_stopReslice,SIGNAL(clicked()),this,SLOT(stopReformat()));
 
     d->resliceViewer = nullptr;
-    d->currentView   = nullptr;
+    d->originalImage = nullptr;
 }
 resliceToolBox::~resliceToolBox()
 {
     delete d->resliceViewer;
     d->resliceViewer = nullptr;
-    d->currentView = nullptr;
+    d->originalImage = nullptr;
 
     delete d;
     d = nullptr;
@@ -165,52 +162,55 @@ dtkPlugin* resliceToolBox::plugin()
 
 void resliceToolBox::startReformat()
 {
-    if (d->currentView && getWorkspace())
+    if (getWorkspace())
     {
-        medAbstractData* data = d->currentView->layerData(d->currentView->currentLayer());
-        bool is3D = false;
+        auto tabbedContainers = getWorkspace()->tabbedViewContainers();
+        auto container = tabbedContainers->getFirstSelectedContainer();
+        auto view = qobject_cast<medAbstractLayeredView*>(tabbedContainers->getFirstSelectedContainerView());
 
-        // Toolbox does not work with meshes or vector images
-        if (data->identifier().contains("itkDataImage") &&
-                !data->identifier().contains("Vector"))
+        if (view)
         {
-            if (dynamic_cast<medAbstractImageData *>(data)->Dimension() == 3)
+            medAbstractData* data = view->layerData(view->currentLayer());
+            bool is3D = false;
+
+            // Toolbox does not work with meshes or vector images
+            if (data->identifier().contains("itkDataImage") &&
+                    !data->identifier().contains("Vector"))
             {
-                is3D = true;
-            }
+                if (dynamic_cast<medAbstractImageData *>(data)->Dimension() == 3)
+                {
+                    is3D = true;
+                }
 
-            if (d->currentView->layersCount() && is3D)
-            {
-                d->helpBegin->hide();
-                d->reformatOptions->show();
-                d->b_startReslice->hide();
+                if (view->layersCount() && is3D)
+                {
+                    d->helpBegin->hide();
+                    d->reformatOptions->show();
+                    d->b_startReslice->hide();
 
-                d->resliceViewer = new medResliceViewer(d->currentView,
-                                                        getWorkspace()->tabbedViewContainers());
-                d->resliceViewer->setToolBox(this);
-                getWorkspace()->tabbedViewContainers()->setAcceptDrops(false);
-                medViewContainer * container = getWorkspace()->tabbedViewContainers()->insertNewTab(0, "Reslice");
-                getWorkspace()->tabbedViewContainers()->setCurrentIndex(0);
-                container->setDefaultWidget(d->resliceViewer->viewWidget());
+                    d->resliceViewer = new medResliceViewer(view, container);
+                    d->resliceViewer->setToolBox(this);
 
-                connect(d->resliceViewer,SIGNAL(imageReformatedGenerated()),
-                    this,SLOT(saveReformatedImage()), Qt::UniqueConnection);
-                connect(container, SIGNAL(viewRemoved()),
-                    this, SLOT(stopReformat()), Qt::UniqueConnection);
-                connect(d->spacingOrSizeX, SIGNAL(valueChanged(double)), 
-                    d->resliceViewer, SLOT(askedSpacingOrSizeChange(double)), Qt::UniqueConnection);
-                connect(d->spacingOrSizeY, SIGNAL(valueChanged(double)), 
-                    d->resliceViewer, SLOT(askedSpacingOrSizeChange(double)), Qt::UniqueConnection);
-                connect(d->spacingOrSizeZ, SIGNAL(valueChanged(double)), 
-                    d->resliceViewer, SLOT(askedSpacingOrSizeChange(double)), Qt::UniqueConnection);
-                connect(d->b_saveImage, SIGNAL(clicked()), 
-                    d->resliceViewer, SLOT(saveImage()), Qt::UniqueConnection);
+                    container->removeView();
+                    container->setDefaultWidget(d->resliceViewer->viewWidget());
 
-                d->reformatedImage = nullptr;
+                    connect(d->resliceViewer,SIGNAL(imageReformatedGenerated()),
+                        this,SLOT(saveReformatedImage()), Qt::UniqueConnection);
+                    connect(d->spacingOrSizeX, SIGNAL(valueChanged(double)), 
+                        d->resliceViewer, SLOT(askedSpacingOrSizeChange(double)), Qt::UniqueConnection);
+                    connect(d->spacingOrSizeY, SIGNAL(valueChanged(double)), 
+                        d->resliceViewer, SLOT(askedSpacingOrSizeChange(double)), Qt::UniqueConnection);
+                    connect(d->spacingOrSizeZ, SIGNAL(valueChanged(double)), 
+                        d->resliceViewer, SLOT(askedSpacingOrSizeChange(double)), Qt::UniqueConnection);
+                    connect(d->b_saveImage, SIGNAL(clicked()), 
+                        d->resliceViewer, SLOT(saveImage()), Qt::UniqueConnection);
 
-                // close the initial tab which is not needed anymore
-                getWorkspace()->tabbedViewContainers()->removeTab(1);
-                updateView();
+                    d->reformatedImage = nullptr;
+                }
+                else
+                {
+                    medMessageController::instance().showError(tr("Drop a 3D volume in the view"), 3000);
+                }
             }
             else
             {
@@ -222,34 +222,30 @@ void resliceToolBox::startReformat()
             medMessageController::instance().showError(tr("Drop a 3D volume in the view"), 3000);
         }
     }
-    else
-    {
-        medMessageController::instance().showError(tr("Drop a 3D volume in the view"), 3000);
-    }
 }
 
 void resliceToolBox::stopReformat()
 {
-    if (getWorkspace())
+    if (getWorkspace() && d->resliceViewer)
     {
         d->bySpacingOrSize->setCurrentIndex(0); // init resample parameter
         d->helpBegin->show();
         d->reformatOptions->hide();
         d->b_startReslice->show();
 
-        getWorkspace()->tabbedViewContainers()->removeTab(0);
-        getWorkspace()->tabbedViewContainers()->insertNewTab(0, getWorkspace()->name());
-        getWorkspace()->tabbedViewContainers()->setCurrentIndex(0);
+        auto tabbedContainers = getWorkspace()->tabbedViewContainers();
+        auto container = tabbedContainers->getFirstSelectedContainer();
+        container->initializeDefaultWidget();
 
-        if (d->currentView)
+        if (d->originalImage)
         {
-            getWorkspace()->tabbedViewContainers()->getFirstSelectedContainer()->addData(d->currentView->layerData(0));
+            container->addData(d->originalImage);
         }
 
         disconnect(d->resliceViewer);
         delete d->resliceViewer;
-
         d->resliceViewer = nullptr;
+
         QList<medToolBox*> toolBoxes = getWorkspace()->toolBoxes();
         for (int i = 0; i < toolBoxes.length(); i++)
         {
@@ -265,20 +261,26 @@ void resliceToolBox::clear()
 
 void resliceToolBox::updateView()
 {
+    // Even if updateView is called because of an empty view, we want to keep the original data,
+    // so the toolbox can be reset to the original one.
     medAbstractView* view = this->getWorkspace()->tabbedViewContainers()->getFirstSelectedContainerView();
-
-    d->currentView = nullptr;
     if (view)
     {
         medAbstractLayeredView *layeredView = qobject_cast<medAbstractLayeredView*>(view);
-        if (dynamic_cast<medAbstractImageData*>(layeredView->layerData(layeredView->currentLayer())))
+        if (auto data = dynamic_cast<medAbstractImageData*>(layeredView->layerData(layeredView->currentLayer())))
         {
-            d->currentView = layeredView;
+            if (data->Dimension() == 3)
+            {
+                d->originalImage = data;
 
-            // Get the original image information and display it
-            vtkImageView2D *view2d = static_cast<medVtkViewBackend*>(d->currentView->backend())->view2D;
-            d->imageInfo = view2d->GetMedVtkImageInfo();
-            displayInfoOnCurrentView();
+                // Copy original image information and display them
+                vtkImageView2D *view2d = static_cast<medVtkViewBackend*>(layeredView->backend())->view2D;
+                auto imageInfo = view2d->GetMedVtkImageInfo();
+                memcpy(d->spacing.data(),    imageInfo->spacing,    3*sizeof(double));
+                memcpy(d->dimensions.data(), imageInfo->dimensions, 3*sizeof(int));
+
+                displayInfoOnCurrentView();
+            }
         }
     }
 }
@@ -287,17 +289,15 @@ void resliceToolBox::displayInfoOnCurrentView()
 {
     if (d->bySpacingOrSize->currentIndex() == 0) // Spacing
     {
-        double *spacing = d->imageInfo->spacing;
-        d->spacingOrSizeX->setValue(spacing[0]);
-        d->spacingOrSizeY->setValue(spacing[1]);
-        d->spacingOrSizeZ->setValue(spacing[2]);
+        d->spacingOrSizeX->setValue(d->spacing[0]);
+        d->spacingOrSizeY->setValue(d->spacing[1]);
+        d->spacingOrSizeZ->setValue(d->spacing[2]);
     }
     else // Dimension
     {
-        int *dimension = d->imageInfo->dimensions;
-        d->spacingOrSizeX->setValue(dimension[0]);
-        d->spacingOrSizeY->setValue(dimension[1]);
-        d->spacingOrSizeZ->setValue(dimension[2]);
+        d->spacingOrSizeX->setValue(d->dimensions[0]);
+        d->spacingOrSizeY->setValue(d->dimensions[1]);
+        d->spacingOrSizeZ->setValue(d->dimensions[2]);
     }
 }
 

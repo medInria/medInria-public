@@ -23,10 +23,10 @@ class resliceToolBoxPrivate;
  * "startReformatButton" : QPushButton\n
  * "stopReformatButton" : QPushButton\n
  * "saveImageButton" : QPushButton\n
- * "bySpacingOrDimension" : medComboBox\n
- * "SpacingX" : QDoubleSpinBox\n
- * "SpacingY" : QDoubleSpinBox\n
- * "SpacingZ" : QDoubleSpinBox\n
+ * "bySpacingOrDimension" : QComboBox\n
+ * "SpacingOrSizeX" : medDoubleParameterL\n
+ * "SpacingOrSizeY" : medDoubleParameterL\n
+ * "SpacingOrSizeZ" : medDoubleParameterL\n
  * "helpBegin" : QLabel
  */
 class REFORMATPLUGIN_EXPORT resliceToolBox : public medAbstractSelectableToolBox
