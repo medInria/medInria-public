@@ -78,7 +78,7 @@ set(PLUGIN_LIST
   legacy/medExportVideo                                                  ON
   legacy/medSQLite                                                       ON
   # legacy/medShanoir                                                      ON
-  legacy/medAPHPDataSource                                               ON
+  # legacy/medAPHPDataSource                                               ON
   legacy/medTemporaryDataSource                                          ON
   process/arithmetic_operation                                           ON
   process/bias_correction                                                ON

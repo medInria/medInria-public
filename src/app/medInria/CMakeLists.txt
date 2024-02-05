@@ -130,7 +130,7 @@ target_include_directories(${TARGET_NAME}
 ## Links.
 ## #############################################################################
 
-target_link_libraries(${TARGET_NAME}
+target_link_libraries(${TARGET_NAME} PRIVATE
   Qt5::Core
   Qt5::Widgets
   Qt5::Gui
@@ -138,9 +138,9 @@ target_link_libraries(${TARGET_NAME}
   dtkCoreSupport
   dtkGuiSupport
   dtkVrSupport
-  medCore
-  medCoreGui
-  medPacs
+  med::Core
+  med::CoreGui
+  med::Pacs
   )
 
 

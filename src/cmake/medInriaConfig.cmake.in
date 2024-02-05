@@ -1,49 +1,131 @@
-################################################################################
-#
-# medInria
-#
-# Copyright (c) INRIA 2013 - 2018. All rights reserved.
-# See LICENSE.txt for details.
-# 
-#  This software is distributed WITHOUT ANY WARRANTY; without even
-#  the implied warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR
-#  PURPOSE.
-#
-################################################################################
+@PACKAGE_INIT@
 
-set(medInria_VERSION @medInria_VERSION@)
 
-add_library(medCore UNKNOWN IMPORTED)
-find_library(medCore_LIBRARY NAMES medCore PATHS @medCore_LIBRARY_DIR@ @medCore_LIBRARY_DIR_DEBUG@ @medCore_LIBRARY_DIR_RELEASE@ @medCore_LIBRARY_DIR_MINSIZEREL@ @medCore_LIBRARY_DIR_RELWITHDEBINFO@)
-set_target_properties(medCore PROPERTIES INTERFACE_INCLUDE_DIRECTORIES "@medCore_INCLUDE_DIRS@" IMPORTED_LOCATION ${medCore_LIBRARY})
+if (CMAKE_VERSION VERSION_LESS @CMAKE_VERSION@)
+    message(FATAL_ERROR "medInria requires at least CMake version @CMAKE_VERSION@")
+endif()
 
-add_library(medLog UNKNOWN IMPORTED)
-find_library(medLog_LIBRARY NAMES medLog PATHS @medLog_LIBRARY_DIR@ @medLog_LIBRARY_DIR_DEBUG@ @medLog_LIBRARY_DIR_RELEASE@ @medLog_LIBRARY_DIR_MINSIZEREL@ @medLog_LIBRARY_DIR_RELWITHDEBINFO@)
-set_target_properties(medLog PROPERTIES INTERFACE_INCLUDE_DIRECTORIES "@medLog_INCLUDE_DIRS@" IMPORTED_LOCATION ${medLog_LIBRARY})
+if (NOT medInria_FIND_COMPONENTS)
+    set(medInria_NOT_FOUND_MESSAGE "The medInria package requires at least one component")
+    set(medInria_FOUND False)
+    return()
+endif()
 
-add_library(medRegistration UNKNOWN IMPORTED)
-find_library(medRegistration_LIBRARY NAMES medRegistration PATHS @medRegistration_LIBRARY_DIR@ @medRegistration_LIBRARY_DIR_DEBUG@ @medRegistration_LIBRARY_DIR_RELEASE@ @medRegistration_LIBRARY_DIR_MINSIZEREL@ @medRegistration_LIBRARY_DIR_RELWITHDEBINFO@)
-set_target_properties(medRegistration PROPERTIES INTERFACE_INCLUDE_DIRECTORIES "@medRegistration_INCLUDE_DIRS@" IMPORTED_LOCATION ${medRegistration_LIBRARY})
 
-add_library(medImageIO UNKNOWN IMPORTED)
-find_library(medImageIO_LIBRARY NAMES medImageIO PATHS @medImageIO_LIBRARY_DIR@ @medImageIO_LIBRARY_DIR_DEBUG@ @medImageIO_LIBRARY_DIR_RELEASE@ @medImageIO_LIBRARY_DIR_MINSIZEREL@ @medImageIO_LIBRARY_DIR_RELWITHDEBINFO@)
-set_target_properties(medImageIO PROPERTIES INTERFACE_INCLUDE_DIRECTORIES "@medImageIO_INCLUDE_DIRS@" IMPORTED_LOCATION ${medImageIO_LIBRARY})
 
-add_library(medVtkInria UNKNOWN IMPORTED)
-find_library(medVtkInria_LIBRARY NAMES medVtkInria PATHS @medVtkInria_LIBRARY_DIR@ @medVtkInria_LIBRARY_DIR_DEBUG@ @medVtkInria_LIBRARY_DIR_RELEASE@ @medVtkInria_LIBRARY_DIR_MINSIZEREL@ @medVtkInria_LIBRARY_DIR_RELWITHDEBINFO@)
-set_target_properties(medVtkInria PROPERTIES INTERFACE_INCLUDE_DIRECTORIES "@medVtkInria_INCLUDE_DIRS@" IMPORTED_LOCATION ${medVtkInria_LIBRARY})
+set(_medInria_FIND_PARTS_REQUIRED)
+if (medInria_FIND_REQUIRED)
+    set(_medInria_FIND_PARTS_REQUIRED REQUIRED)
+endif()
 
-add_library(medCoreGui UNKNOWN IMPORTED)
-find_library(medCoreGui_LIBRARY NAMES medCoreGui PATHS @medCoreGui_LIBRARY_DIR@ @medCoreGui_LIBRARY_DIR_DEBUG@ @medCoreGui_LIBRARY_DIR_RELEASE@ @medCoreGui_LIBRARY_DIR_MINSIZEREL@ @medCoreGui_LIBRARY_DIR_RELWITHDEBINFO@)
-set_target_properties(medCoreGui PROPERTIES INTERFACE_INCLUDE_DIRECTORIES "@medCoreGui_INCLUDE_DIRS@" IMPORTED_LOCATION ${medCoreGui_LIBRARY})
+set(_medInria_FIND_PARTS_QUIET)
+if (medInria_FIND_QUIETLY)
+    set(_medInria_FIND_PARTS_QUIET QUIET)
+endif()
 
-add_library(medUtilities UNKNOWN IMPORTED)
-find_library(medUtilities_LIBRARY NAMES medUtilities PATHS @medUtilities_LIBRARY_DIR@ @medUtilities_LIBRARY_DIR_DEBUG@ @medUtilities_LIBRARY_DIR_RELEASE@ @medUtilities_LIBRARY_DIR_MINSIZEREL@ @medUtilities_LIBRARY_DIR_RELWITHDEBINFO@)
-set_target_properties(medUtilities PROPERTIES INTERFACE_INCLUDE_DIRECTORIES "@medUtilities_INCLUDE_DIRS@" IMPORTED_LOCATION ${medUtilities_LIBRARY})
+get_filename_component(_medInria_install_prefix "${CMAKE_CURRENT_LIST_DIR}/.." ABSOLUTE)
 
-add_library(medVtkDataMeshBase UNKNOWN IMPORTED)
-find_library(medVtkDataMeshBase_LIBRARY NAMES medVtkDataMeshBase PATHS @medVtkDataMeshBase_LIBRARY_DIR@ @medVtkDataMeshBase_LIBRARY_DIR_DEBUG@ @medVtkDataMeshBase_LIBRARY_DIR_RELEASE@ @medVtkDataMeshBase_LIBRARY_DIR_MINSIZEREL@ @medVtkDataMeshBase_LIBRARY_DIR_RELWITHDEBINFO@)
-set_target_properties(medVtkDataMeshBase PROPERTIES INTERFACE_INCLUDE_DIRECTORIES "@medVtkDataMeshBase_INCLUDE_DIRS@" IMPORTED_LOCATION ${medVtkDataMeshBase_LIBRARY})
+set(_medInria_NOTFOUND_MESSAGE)
 
-set(medInria_CMAKE_DIR @medInria_CMAKE_DIR@)
-set(CMAKE_MODULE_PATH ${CMAKE_MODULE_PATH} "${medInria_CMAKE_DIR}")
+########################################################################################
+############################ Bolc for external dependencies ############################
+
+cmake_policy(SET CMP0074 NEW)
+cmake_policy(SET CMP0076 NEW)
+
+cmake_path(SET MEDINRIA_PATH         NORMALIZE "${_medInria_install_prefix}/../../medInria")
+cmake_path(SET medinria_cmake        NORMALIZE "${_medInria_install_prefix}/../../cmake")
+cmake_path(SET medinria_cmake_module NORMALIZE "${_medInria_install_prefix}/../../cmake/module")
+
+
+set(medInria_CMAKE_DIR
+  ${medinria_cmake}
+  ${medinria_cmake_module}
+  )
+
+set(CMAKE_MODULE_PATH
+  ${medInria_CMAKE_DIR}
+  ${CMAKE_MODULE_PATH}
+  )
+
+include(list_source_files)
+include(list_header_directories_to_include)
+include(set_exe_install_rules)
+include(set_lib_install_rules)
+include(set_lib_properties_variables)
+include(set_plugin_install_rules)
+include(add_external_resources)
+
+include(add_plugins)
+
+if (NOT DEFINED ITK_ROOT AND NOT DEFINED VTK_ROOT AND NOT DEFINED dtk_ROOT AND NOT DEFINED TTK_ROOT AND NOT DEFINED RPI_ROOT)
+    message("medInria attempts to set the following paths")
+endif()
+
+if (NOT DEFINED ITK_ROOT)
+    cmake_path(SET ITK_ROOT NORMALIZE ${_medInria_install_prefix}/../../dependencies/ITK)
+    message("ITK_ROOT ${ITK_ROOT}")
+endif()
+
+if (NOT DEFINED VTK_ROOT)
+    cmake_path(SET VTK_ROOT NORMALIZE ${_medInria_install_prefix}/../../dependencies/VTK)
+    message("VTK_ROOT ${VTK_ROOT}")
+endif()
+
+if (NOT DEFINED dtk_ROOT)
+    cmake_path(SET dtk_ROOT NORMALIZE ${_medInria_install_prefix}/../../dependencies/dtk)
+    message("dtk_ROOT ${dtk_ROOT}")
+endif()
+
+if (NOT DEFINED TTK_ROOT)
+    cmake_path(SET TTK_ROOT NORMALIZE ${_medInria_install_prefix}/../../dependencies/TTK)
+    message("TTK_ROOT ${TTK_ROOT}")
+endif()
+
+if (NOT DEFINED RPI_ROOT)
+    cmake_path(SET RPI_ROOT NORMALIZE ${_medInria_install_prefix}/../../dependencies/RPI)
+    message("RPI_ROOT ${RPI_ROOT}")
+endif()
+
+######################## End of Bolc for external dependencies #########################
+########################################################################################
+
+include(${CMAKE_CURRENT_LIST_DIR}/medInriaModuleLocation.cmake)
+
+if(NOT ${PROJECT_NAME} STREQUAL "medInria")
+
+    foreach(medInriaPakageDependency ${PackagesNames})
+        find_package(${medInriaPakageDependency} COMPONENTS ${medInriaPakageDependencyModulesFor${medInriaPakageDependency}})
+    endforeach()
+
+    foreach(module ${medInria_FIND_COMPONENTS})
+        find_package(med${module}
+            ${_medInria_FIND_PARTS_QUIET}
+            ${_medInria_FIND_PARTS_REQUIRED}
+            PATHS ${_med_module_paths} NO_DEFAULT_PATH
+        )
+        if (NOT med${module}_FOUND)
+            string(CONFIGURE ${_med_module_location_template} _expected_module_location @ONLY)
+    
+            if (medInria_FIND_REQUIRED_${module})
+                set(_medInria_NOTFOUND_MESSAGE "${_medInria_NOTFOUND_MESSAGE}Failed to find medInria component \"${module}\" config file at \"${_expected_module_location}\"\n")
+            elseif(NOT medInria_FIND_QUIETLY)
+                message(WARNING "Failed to find medInria component \"${module}\" config file at \"${_expected_module_location}\"")
+            endif()
+    
+            unset(_expected_module_location)
+        endif()
+    endforeach()
+    
+    if (_medInria_NOTFOUND_MESSAGE)
+        set(medInria_NOTFOUND_MESSAGE "${_medInria_NOTFOUND_MESSAGE}")
+        set(medInria_FOUND False)
+    endif()
+else()
+    set(medInria_FOUND True)
+    foreach(module ${medInria_FIND_COMPONENTS})
+        if (NOT TARGET med${module})
+            message(" Warnning: No target med${module} found")
+        endif()
+    endforeach()
+endif()

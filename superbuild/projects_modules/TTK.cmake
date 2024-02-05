@@ -1,4 +1,4 @@
-##############################################################################
+################################################################################
 #
 # medInria
 #
@@ -9,11 +9,10 @@
 #  the implied warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR
 #  PURPOSE.
 #
-##############################################################################
+################################################################################
 
 function(TTK_project)
 set(ep TTK)
-
 
 ## #############################################################################
 ## List the dependencies of the project
@@ -23,12 +22,12 @@ list(APPEND ${ep}_dependencies
   VTK
   ITK 
   )
-  
+
 ## #############################################################################
 ## Prepare the project
 ## #############################################################################
 
-EP_Initialisation(${ep} 
+EP_Initialisation(${ep}
   USE_SYSTEM OFF 
   BUILD_SHARED_LIBS ON
   REQUIRED_FOR_PLUGINS ON
@@ -69,8 +68,9 @@ set(cmake_args
   )
   
 set(cmake_cache_args
-  -DVTK_DIR:FILEPATH=${VTK_DIR}
-  -DITK_DIR:FILEPATH=${ITK_DIR}
+  -DVTK_ROOT:FILEPATH=${VTK_ROOT}
+  -DITK_ROOT:FILEPATH=${ITK_ROOT}
+  -DCMAKE_INSTALL_PREFIX:PATH=${EP_INSTALL_PREFIX}/${ep}
   )
 
 
@@ -86,6 +86,7 @@ ExternalProject_Add(${ep}
   BINARY_DIR ${build_path}
   TMP_DIR ${tmp_path}
   STAMP_DIR ${stamp_path}
+  INSTALL_DIR ${EP_INSTALL_PREFIX}/${ep}
   
   GIT_REPOSITORY ${git_url}
   GIT_TAG ${git_tag}
@@ -94,17 +95,18 @@ ExternalProject_Add(${ep}
   CMAKE_ARGS ${cmake_args}
   CMAKE_CACHE_ARGS ${cmake_cache_args}
   DEPENDS ${${ep}_dependencies}
-  INSTALL_COMMAND ""
   BUILD_ALWAYS ${EP_BUILD_ALWAYS}
+  ${EP_INSTAL_COMMAND}
   )
- 
+
 ## #############################################################################
 ## Set variable to provide infos about the project
 ## #############################################################################
 
 ExternalProject_Get_Property(${ep} binary_dir)
-set(${ep}_DIR ${binary_dir}/lib/cmake/TTK PARENT_SCOPE)
-  
+set(${ep}_ROOT ${binary_dir}  PARENT_SCOPE)
+set(${ep}_DIR  ${binary_dir}/lib/cmake/TTK PARENT_SCOPE)
+
 endif() #NOT USE_SYSTEM_ep
 
 endfunction()

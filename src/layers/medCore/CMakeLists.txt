@@ -16,7 +16,7 @@
 set(TARGET_NAME medCore)
 
 ## #############################################################################
-## find requireds
+## find required
 ## #############################################################################
 
 # find dtk
@@ -77,12 +77,10 @@ list_header_directories_to_include(${TARGET_NAME}
 ## #############################################################################
 ## add library
 ## #############################################################################
-
-add_library(${TARGET_NAME} SHARED
-  ${${TARGET_NAME}_CFILES}
-  ${${TARGET_NAME}_QRC}
-  )
-
+add_library(${TARGET_NAME} SHARED)
+target_sources(${TARGET_NAME} PRIVATE ${${TARGET_NAME}_CFILES} ${${TARGET_NAME}_QRC} )
+target_sources(${TARGET_NAME} PRIVATE ${RELATIVE_${TARGET_NAME}_HEADERS})
+set_target_properties(${TARGET_NAME} PROPERTIES PUBLIC_HEADER "${RELATIVE_${TARGET_NAME}_HEADERS}")
 
 ## #############################################################################
 ## include directories.
@@ -92,7 +90,7 @@ target_include_directories(${TARGET_NAME}
   PRIVATE ${dtk_INCLUDE_DIRS}
   PUBLIC
 	"$<BUILD_INTERFACE:${${TARGET_NAME}_INCLUDE_DIRS}>"
-	"$<INSTALL_INTERFACE:include/${TARGET_NAME}>"
+	"$<INSTALL_INTERFACE:$<INSTALL_PREFIX>/include/${TARGET_NAME}>"
   )
 
 ## #############################################################################
@@ -118,12 +116,18 @@ target_link_libraries(${TARGET_NAME}
   dtkLog
   Qt5::Network
   )
-
+  
 ## #############################################################################
 ## install
 ## #############################################################################
 
 set_lib_install_rules(${TARGET_NAME}
-  ${${TARGET_NAME}_HEADERS}
-  )
-  
+    NAMESPACE                  med
+    VERSION                    4.0    
+    LIBRARY_OUTPUT_NAME_PREFIX med
+    DESTINATION                ${MEDINRIA_PATH}
+    
+    PUBLIC_DEPENDENCIES        
+      "dtk REQUIRED COMPONENTS dtkCore dtkCoreSupport dtkGuiSupport"
+      "Qt5 REQUIRED COMPONENTS Core Xml Widgets OpenGL Gui Sql Test"
+    )

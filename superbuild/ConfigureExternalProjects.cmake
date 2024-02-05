@@ -20,7 +20,7 @@ set(ep_prefix_comment      "A root directory used to compute other non-specified
 set(ep_path_base_comment   "Specifies the common part of the build and source paths of externals projects")
 set(ep_dir_name_comment    "Directory name of external-projects")
 set(ep_path_source_comment "Sources path of the externals projects")
-set(ep_path_build_comment  "Sources path of the Externals projects")
+set(ep_path_build_comment  "Build path of the Externals projects")
 
 option(EP_CHECKBOX_CUSTOM_DIRS  "Allow to specify manually paths of externals projects " OFF)
 CMAKE_DEPENDENT_OPTION(EP_CHECKBOX_SIDE_BY_SIDE "Put build source and build directories of externals projects side by side" OFF "NOT EP_CHECKBOX_CUSTOM_DIRS" OFF)
@@ -114,8 +114,8 @@ endfunction()
 ## Add common variables for all external-projects
 ## #############################################################################
 
-set(CMAKE_INSTALL_PREFIX "" )  
-mark_as_advanced(CMAKE_INSTALL_PREFIX)
+set(EP_INSTALL_PREFIX ${SDK_DIR}/dependencies CACHE INTERNAL "") 
+mark_as_advanced(EP_INSTALL_PREFIX)
 
 set(ep_common_c_flags 
   "${CMAKE_C_FLAGS} ${CMAKE_C_FLAGS_INIT} ${ADDITIONAL_C_FLAGS}"
@@ -134,7 +134,16 @@ set(ep_common_cache_args
   -DCMAKE_CXX_COMPILER:=${CMAKE_CXX_COMPILER}
   -DCMAKE_MAKE_PROGRAM=${CMAKE_MAKE_PROGRAM}
   -DCMAKE_CXX_STANDARD:STRING=${CMAKE_CXX_STANDARD}
+  -DCMAKE_DEBUG_POSTFIX:STRING=d
   )
+
+if(${SDK_GENERATION})
+  set(EP_INSTAL_COMMAND "")
+else()
+  list(APPEND EP_INSTAL_COMMAND 
+  INSTALL_COMMAND
+  "")
+endif()
 
 if(CMAKE_EXTRA_GENERATOR)
   set(gen "${CMAKE_EXTRA_GENERATOR} -G ${CMAKE_GENERATOR}")
