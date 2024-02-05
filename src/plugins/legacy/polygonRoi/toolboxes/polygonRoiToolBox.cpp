@@ -161,7 +161,7 @@ dtkPlugin* polygonRoiToolBox::plugin()
 
 medAbstractData *polygonRoiToolBox::processOutput()
 {
-    return nullptr;
+    return processOutputs().value(0);
 }
 
 void polygonRoiToolBox::updateView()
