@@ -162,6 +162,7 @@ int main(int argc,char* argv[])
 #if(USE_PYTHON)
     pyncpp::Manager pythonManager;
     QDir pythonHome = qApp->applicationDirPath();
+    QDir pythonPluginPath = pythonHome;
     QString pythonErrorMessage;
 
     if (!pythonHome.cd(PYTHON_HOME))
@@ -173,6 +174,21 @@ int main(int argc,char* argv[])
         if(!pythonManager.initialize(qUtf8Printable(pythonHome.absolutePath())))
         {
             pythonErrorMessage = "Initialization of the embedded Python failed.";
+        }
+        else
+        {
+#ifdef Q_OS_MACOS
+            if(!pythonPluginPath.cd("../Plugins/python"))
+            {
+                pythonPluginPath.cd("../../../plugins/python");
+            }
+#else
+#ifdef Q_OS_LINUX
+            pythonPluginPath.cd("../plugins/python");
+#endif
+#endif
+            pyncpp::Module sysModule = pyncpp::Module::import("sys");
+            sysModule.attribute("path").append(pyncpp::Object(pythonPluginPath.absolutePath()));
         }
     }
 #endif

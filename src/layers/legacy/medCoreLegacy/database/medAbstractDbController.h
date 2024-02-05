@@ -60,7 +60,7 @@ signals:
 public slots:
     virtual medAbstractData* retrieve(const medDataIndex& index, bool readFullData = true) const = 0;
 
-    virtual void importData(medAbstractData *data, const QUuid &importUuid) = 0;
+    virtual void importData(medAbstractData *data, const QUuid &importUuid, bool allowDuplicateSeriesName = false) = 0;
     virtual void importPath(const QString &file, const QUuid &importUuid, bool indexWithoutCopying) = 0;
     virtual bool importMetaDataFromPacs(const QHash<QString, QHash<QString, QVariant> > &pData,
                                         const QHash<QString, QHash<QString, QVariant> > &sData) = 0;

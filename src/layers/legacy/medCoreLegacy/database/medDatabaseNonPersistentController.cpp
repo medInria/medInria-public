@@ -134,7 +134,7 @@ bool medDatabaseNonPersistentController::isConnected() const
 }
 
 void medDatabaseNonPersistentController::importData(medAbstractData *data,
-                                                    const QUuid & callerUuid)
+                                                    const QUuid & callerUuid, bool allowDuplicateSeriesName)
 {
     medDatabaseNonPersistentImporter * importer = new medDatabaseNonPersistentImporter(data,callerUuid);
     medMessageProgress * message = medMessageController::instance().showProgress("Importing data item");
