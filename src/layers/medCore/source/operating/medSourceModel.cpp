@@ -428,9 +428,13 @@ bool medSourceModel::dropMimeData(const QMimeData * data, Qt::DropAction action,
 
     bool bRes = false;
 
-    if (data->hasFormat("med/index2"))
+    if (data->hasFormat("med/index2") || data->hasUrls())
     {
         auto indexList = medDataIndex::readMimeDataMulti(data);
+        for (const QUrl & url : data->urls())
+        {
+            indexList.append(fileSysPathToIndex(url.toLocalFile()));
+        }
 
         for (auto & index : indexList)
         {
@@ -438,19 +442,12 @@ bool medSourceModel::dropMimeData(const QMimeData * data, Qt::DropAction action,
             {
                 case Qt::CopyAction:
                 case Qt::LinkAction:
-                    addDataFromSource(index, nullptr, parent); break;
+                    addData(index, nullptr, parent); break;
                 case Qt::MoveAction:
                     //TODO move
                 default:
                     break;
             }
-        }
-    }
-    else if (data->hasFormat("text/uri-list"))
-    {
-        for (const QUrl & url : data->urls())
-        {
-            addDataFromFile(url.toLocalFile(), nullptr, parent);
         }
     }
 
@@ -459,7 +456,7 @@ bool medSourceModel::dropMimeData(const QMimeData * data, Qt::DropAction action,
 
 
 
-void medSourceModel::addDataFromSource(medDataIndex dataIndex, medAbstractData * data, const QModelIndex & parent)
+void medSourceModel::addData(medDataIndex dataIndex, medAbstractData * data, const QModelIndex & parent)
 {
     auto *pHub = d->parent;
     auto destinationIndex = dataIndexFromModelIndex(parent);
@@ -470,20 +467,6 @@ void medSourceModel::addDataFromSource(medDataIndex dataIndex, medAbstractData *
     }
     
     pHub->copyData(dataIndex, destinationIndex);
-
-}
-
-void medSourceModel::addDataFromFile(QString path, medAbstractData * data, const QModelIndex & parent)
-{
-    auto *pHub = d->parent;
-    auto destinationIndex = dataIndexFromModelIndex(parent);
-
-    if (!parent.isValid())
-    {
-        destinationIndex.setUri(getSourceIntanceId() + ':');
-    }
-
-    pHub->copyData(path, destinationIndex);
 
 }
 

@@ -289,7 +289,11 @@ medAbstractData * medDataHub::getData(medDataIndex const & index)
     {
         bool bOnline, bWritable, bLocal, bCache;   
         QString sourceId = index.sourceId();
-        if (m_sourcesHandler->sourceGlobalInfo(sourceId, bOnline, bLocal, bWritable, bCache))
+        if (sourceId == "fs") 
+        {
+            pDataRes = loadDataFromPathAsIndex(index);
+        }
+        else if (m_sourcesHandler->sourceGlobalInfo(sourceId, bOnline, bLocal, bWritable, bCache))
         {
             if (bLocal)
             {
@@ -299,6 +303,10 @@ medAbstractData * medDataHub::getData(medDataIndex const & index)
             {
                 getAsyncData(index, pDataRes);
             }
+        }
+        else
+        {
+            medNotif::createNotif(notifLevel::error, "Data can't be retrieved", QString("Unable to retrieve data from source ") + sourceId + QString(" for data index ") + index.asString());
         }
     }
 
@@ -505,46 +513,6 @@ QString indexToFileSysPath(const QString &index)
     return pathRes;
 }
 
-
-//class medConvertLocalFileInThread : public QRunnable
-//{
-//public:
-//    medConvertLocalFileInThread(QString const path, QUuid uuid, QMap<medDataIndex, dtkSmartPointer<medAbstractData> > & indexToData) : m_IndexToData(indexToData)
-//    {
-//        m_path = path;
-//        m_uuid = uuid;
-//    }
-//    
-//    void run() override
-//    {
-//        medAbstractData * pDataRes = medDataImporter::convertSingleDataOnfly(m_path);
-//        if (pDataRes)
-//        {
-//            QString index = fileSysPathToIndex(m_path);
-//
-//            pDataRes->setDataIndex(index);
-//
-//            m_IndexToData[index] = pDataRes;
-//            m_IndexToData[index].data();
-//
-//            medDataHub::instance(nullptr)->getVirtualRepresentation()->addDataFromFile(m_path, pDataRes);
-//            emit medDataHub::instance(nullptr)->dataLoaded(fileSysPathToIndex(m_path));
-//            
-//            medDataManager::instance()->medDataHubRelay(index, m_uuid);
-//        }
-//        else
-//        {
-//            medNotif::createNotif(notifLevel::warning, QString("Converting file ") + m_path, " failed");
-//        }
-//    }
-//
-//    QString m_path;
-//    QUuid   m_uuid;
-//    QMap<medDataIndex, dtkSmartPointer<medAbstractData> > & m_IndexToData;
-//};
-
-
-
 class medConvertLocalFileInThread : public QRunnable
 {
 public:
@@ -568,9 +536,9 @@ public:
 class medCopyLocalFileInThread : public QRunnable
 {
 public:
-    medCopyLocalFileInThread(QString const path, medDataIndex destinationIndex, medDataHub * hub)
+    medCopyLocalFileInThread(medDataIndex srcIndex, medDataIndex destinationIndex, medDataHub * hub)
     {
-        m_path = path;
+        m_index = srcIndex;
         m_destinationIndex = destinationIndex;
         m_pHub = hub;
     }
@@ -579,11 +547,13 @@ public:
     {
         auto dstSourceId = m_destinationIndex.sourceId();
         medSourceModel *pModelDst = m_pHub->getModel(dstSourceId);
-        medAbstractData * data = m_pHub->loadDataFromPath(m_path);
+        medAbstractData * data = m_pHub->getData(m_index);
         if (data)
         {
-            QString index = fileSysPathToIndex(m_path);
-            QString name = med::smartBaseName(m_path);
+            QString name = (m_index.sourceId()=="fs") ? 
+                med::smartBaseName(indexToFileSysPath(m_index.asString())) :
+                m_pHub->getDataName(m_index);
+
 
             auto dstSourceId = m_destinationIndex.sourceId();
             medSourceModel *pModelDst = m_pHub->getModel(dstSourceId);
@@ -595,7 +565,7 @@ public:
                 QString sugestedPath;
                 medWritingPolicyData writingPolicyData;
                 writingPolicyData.baseName = name;
-                m_pHub->writeResults(dstSourceId, data, medDataIndex(index), sugestedPath, writingPolicyData, nullptr);
+                m_pHub->writeResults(dstSourceId, data, m_index, sugestedPath, writingPolicyData, nullptr);
             }
             else
             {
@@ -605,12 +575,12 @@ public:
         }
         else
         {
-            medNotif::createNotif(notifLevel::warning, QString("Converting file ") + m_path, " failed");
+            medNotif::createNotif(notifLevel::warning, QString("Converting file ") + m_index.asString(), " failed");
         }
     }
 
     medDataHub * m_pHub;
-    QString m_path;
+    medDataIndex m_index;
     medDataIndex m_destinationIndex;
 };
 
@@ -1130,80 +1100,13 @@ void medDataHub::unloadData(QObject * obj)
 /*----------------------------------------------------------------------------------------------------------------------*/
 /*----------------------------------------------------------------------------------------------------------------------*/
 /*----------------------------------------------------------------------------------------------------------------------*/
-
-
-bool medDataHub::copyData(QString path, medDataIndex destinationIndex)
+bool medDataHub::copyData(medDataIndex indexToCpy, medDataIndex destinationIndex)
 {
-    auto runner = new medCopyLocalFileInThread(path, destinationIndex, this);
+    auto runner = new medCopyLocalFileInThread(indexToCpy, destinationIndex, this);
     runner->setAutoDelete(true);
     QThreadPool::globalInstance()->start(runner);
 
-    bool bRes = true;
-
-    //medAbstractData * data = loadDataFromPath(path);
-    //if(data)
-    //{
-    //    QString index = fileSysPathToIndex(path);
-    //    QString name = med::smartBaseName(path);
-    //
-    //    auto dstSourceId = destinationIndex.sourceId();
-    //    medSourceModel *pModelDst = getModel(dstSourceId);
-    //    auto indexDst = pModelDst->toIndex(destinationIndex);
-    //    auto pathDst = pModelDst->toPath(indexDst);
-    //
-    //    if (pathDst.isEmpty())
-    //    {
-    //        QString sugestedPath;
-    //        medWritingPolicyData writingPolicyData;
-    //        writingPolicyData.baseName = name;
-    //        writeResults(dstSourceId, data, medDataIndex(index), sugestedPath, writingPolicyData, nullptr);
-    //    }
-    //    else
-    //    {
-    //        QStringList destinationIndexAsLst = destinationIndex;
-    //        saveData(data, name, destinationIndexAsLst);
-    //    }
-    //}
-    //else
-    //{
-    //    medNotif::createNotif(notifLevel::warning, QString("Converting file ") + path, " failed");
-    //}
-    //
-    return bRes;
-}
-
-bool medDataHub::copyData(medDataIndex indexToCpy, medDataIndex destinationIndex)
-{
-    bool bRes = true;
-
-    medAbstractData * data = getData(indexToCpy);
-    if (data)
-    {
-        auto srcSourceId = indexToCpy.sourceId();
-        medSourceModel *pModelSrc = getModel(srcSourceId);
-        auto indexSrc = pModelSrc->toIndex(indexToCpy);
-        auto pathSrc  = pModelSrc->toPath(indexSrc);
-
-        auto dstSourceId = destinationIndex.sourceId();
-        medSourceModel *pModelDst = getModel(dstSourceId);
-        auto indexDst = pModelDst->toIndex(destinationIndex);
-        auto pathDst  = pModelDst->toPath(indexDst);
-
-        if (pathDst.isEmpty())
-        {
-            QString sugestedPath;
-            medWritingPolicyData writingPolicyData;
-            writingPolicyData.baseName = getDataName(indexToCpy);
-            writeResults(dstSourceId, data, indexToCpy, sugestedPath, writingPolicyData, nullptr);
-        }
-        else
-        {
-            QStringList destinationIndexAsLst = destinationIndex;
-            saveData(data, getDataName(indexToCpy), destinationIndexAsLst);
-        }
-    }
-
-    return bRes;
+    return true;
 }
 
 bool medDataHub::fetchData(medDataIndex const & index)
@@ -1326,11 +1229,57 @@ void medDataHub::releaseRequest()
 
 medAbstractData * medDataHub::loadDataFromPath(QString const path, QUuid uuid)
 {
+    medDataIndex index = fileSysPathToIndex(path);
+    return loadDataFromPathAsIndex(index, uuid);
+    // if (m_IndexToData.contains(index))
+    // {
+    //     medAbstractData * pDataRes = m_IndexToData[index];
+    //     emit dataLoaded(fileSysPathToIndex(path));
+    //     medDataManager::instance()->medDataHubRelay(index, uuid);
+    //     return pDataRes;
+    // }
+
+    // std::shared_ptr<medNotif> notif = medNotif::createNotif(notifLevel::info , QString("Load File ") + path, " from local file system", -1, -1);
+    // medAbstractData * pDataRes = medDataImporter::convertSingleDataOnfly(path);
+    // if (pDataRes)
+    // {
+    //     QString index = fileSysPathToIndex(path);
+
+    //     pDataRes->setDataIndex(index);
+
+    //     m_IndexToData[index] = pDataRes;
+    //     m_IndexToData[index].data();
+
+    //     getVirtualRepresentation()->addDataFromFile(path, pDataRes);
+    //     emit dataLoaded(fileSysPathToIndex(path));
+
+    //     medDataManager::instance()->medDataHubRelay(index, uuid);
+    //     notif->update(notifLevel::success, -1, QString("Success"));
+
+    // }
+    // else
+    // {
+    //     notif->update(notifLevel::warning, -2, QString("Failure"));
+    //     // medNotif::createNotif(notifLevel::warning, QString("Converting file ") + path, " failed");
+    // }
+    // return pDataRes;
+}
+
+medAbstractData * medDataHub::loadDataFromPathAsIndex(medDataIndex index, QUuid uuid)
+{
+    if (m_IndexToData.contains(index))
+    {
+        medAbstractData * pDataRes = m_IndexToData[index];
+        emit dataLoaded(index);
+        medDataManager::instance()->medDataHubRelay(index, uuid);
+        return pDataRes;
+    }
+    QString path = indexToFileSysPath(index.asString());
     std::shared_ptr<medNotif> notif = medNotif::createNotif(notifLevel::info , QString("Load File ") + path, " from local file system", -1, -1);
     medAbstractData * pDataRes = medDataImporter::convertSingleDataOnfly(path);
     if (pDataRes)
     {
-        QString index = fileSysPathToIndex(path);
+        // QString index = fileSysPathToIndex(path);
 
         pDataRes->setDataIndex(index);
 
@@ -1338,7 +1287,7 @@ medAbstractData * medDataHub::loadDataFromPath(QString const path, QUuid uuid)
         m_IndexToData[index].data();
 
         getVirtualRepresentation()->addDataFromFile(path, pDataRes);
-        emit dataLoaded(fileSysPathToIndex(path));
+        emit dataLoaded(index);
 
         medDataManager::instance()->medDataHubRelay(index, uuid);
         notif->update(notifLevel::success, -1, QString("Success"));

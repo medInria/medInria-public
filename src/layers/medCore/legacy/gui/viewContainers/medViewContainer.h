@@ -141,9 +141,6 @@ protected:
     void dragMoveEvent(QDragMoveEvent *event);
     void dropEvent(QDropEvent *event);
 
-    bool dropEventFromDataBase(QDropEvent * event);
-    bool dropEventFromFile(QDropEvent * event);
-
     void closeEvent(QCloseEvent * event);
 
     void open(const QString & path);
