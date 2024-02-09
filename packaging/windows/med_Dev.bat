@@ -32,7 +32,9 @@ if defined MED_VS_FOUND ( @echo off ) else (
 
 
 set PATH=%script_path%\dependencies\dtk\lib;%script_path%\dependencies\ITK\bin;%script_path%dependencies\ITK\lib;%script_path%\dependencies\TTK\bin;%script_path%dependencies\TTK\lib;%script_path%\dependencies\VTK\bin;%script_path%dependencies\VTK\lib;%script_path%\bin;%script_path%\bin\plugins;%script_path%\bin\plugins_legacy;%PATH%
-start %script_path%\bin\medInria.exe
+
+cd "%script_path%\bin"
+start .\medInria.exe"
 start devenv.exe 
 cmd /k
 exit
