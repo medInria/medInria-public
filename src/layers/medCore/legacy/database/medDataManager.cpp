@@ -13,6 +13,7 @@
 
 #include <medAbstractDataFactory.h>
 #include <medDataManager.h>
+#include <medDataHub.h>
 #include <medGlobalDefs.h>
 #include <medMessageController.h>
 #include <medPluginManager.h>
@@ -28,11 +29,6 @@ public:
 
     medDataManager *const q_ptr;
     
-    medAbstractData *(*f)(medDataIndex const &); //TODO Remove ok c'est le truc le moins classe du monde (Part1)
-    QUuid (*f2)(medAbstractData &, bool); //TODO Remove ok c'est le truc le moins classe du monde (Part1)
-    void(*f3)(QString const &, QUuid); //TODO Remove ok c'est le truc le moins classe du monde (Part1)
-    int(*f4)(medDataIndex const &); //TODO Remove ok c'est le truc le moins classe du monde (Part1)
-    QList<medDataIndex>(*f5)(const medDataIndex & index); //TODO Remove ok c'est le truc le moins classe du monde (Part1)
 };
 
 // ------------------------- medDataManager -----------------------------------
@@ -48,19 +44,11 @@ medDataManager *medDataManager::instance()
     return s_instance;
 }
 
-void medDataManager::setIndexV2Handler(medAbstractData *(*f)(medDataIndex const &), QUuid (*f2)(medAbstractData &, bool), void(*f3)(QString const &, QUuid), int(*f4)(medDataIndex const &), QList<medDataIndex>(*f5)(const medDataIndex & index))
-{
-    d_ptr->f = f;
-    d_ptr->f2 = f2;
-    d_ptr->f3 = f3;
-    d_ptr->f4 = f4;
-    d_ptr->f5 = f5;
-}
-
 medAbstractData *medDataManager::retrieveData(const medDataIndex &index)
 {
     Q_D(medDataManager);
-    return d->f(index); //TODO Remove ok c'est le truc le moins classe du monde (Part2)
+ 
+    return medDataHub::instance()->getData(index);
 }
 
 void medDataManager::loadData(const medDataIndex &index) {}
@@ -70,7 +58,7 @@ void medDataManager::loadData(const medDataIndex &index) {}
 QUuid medDataManager::importData(medAbstractData *data, bool persistent)
 {
     Q_D(medDataManager);
-    return d->f2(*data, persistent); //TODO Remove ok c'est le truc le moins classe du monde (Part2)
+    return medDataHub::instance()->writeResultsHackV3(*data, persistent); 
 }
 
 
@@ -82,9 +70,8 @@ QUuid medDataManager::importPath(const QString &dataPath, bool indexWithoutCopyi
     if (!QFile::exists(dataPath))
         return QUuid();    
 
-    QUuid uuid = QUuid::createUuid();    
-    d->f3(dataPath, uuid);
-
+    QUuid uuid = QUuid::createUuid();   
+    medDataHub::instance()->loadDataFromLocalFileSystem(dataPath, uuid);
     return uuid;
 }
 
@@ -119,13 +106,13 @@ void medDataManager::exportDataToPath(dtkSmartPointer<medAbstractData> data, con
 int medDataManager::getDataType(const medDataIndex & index)
 {
     Q_D(medDataManager);
-    return d->f4(index);
+    return medDataHub::instance()->getDataType(index);
 }
 
 QList<medDataIndex> medDataManager::getSubData(const medDataIndex & index)
 {
     Q_D(medDataManager);
-    return d->f5(index);
+    return medDataHub::instance()->getSubData(index);
 }
 
 QPixmap medDataManager::thumbnail(const medDataIndex & index)

@@ -32,8 +32,6 @@ class MEDCORE_EXPORT medDataManager : public QObject
 public:
     static medDataManager * instance();
 
-    void setIndexV2Handler(medAbstractData* (*f)(medDataIndex const &), QUuid (*f2)(medAbstractData &, bool), void(*f3)(QString const &, QUuid), int(*f4)(medDataIndex const &), QList<medDataIndex>(*f5)(const medDataIndex & index) );
-
     medAbstractData* retrieveData(const medDataIndex& index);
     void loadData(const medDataIndex &index);
 

@@ -82,33 +82,21 @@ QVariant medSourceModel::data(const QModelIndex & index, int role) const
         {
             varDataRes = Qt::AlignHCenter;
         }
-//        else if (role == Qt::ForegroundRole)
+       else if (role == Qt::ForegroundRole)
+       {
+            auto value = data(index, DATASTATE_ROLE).toString();
+            if (value == DATASTATE_ROLE_DATALOADED)
+            {
+                varDataRes = QColor(14, 191, 239);
+            }
+       }
+ //        else if (role == Qt::DecorationRole)
 //        {
 //            auto value = data(index, 100).toString();
-//            if (value == "DataLoading")
-//            {
-//                varDataRes = QColor(Qt::red);
-//            }
-//            else if (value == "DataLoaded")
-//            {
-//                varDataRes = QColor(Qt::blue);
-//            }
-//            else if (value == "DataPushing")
-//            {
-//                varDataRes = QColor(Qt::yellow);
-//            }
-//            else if (value == "DataCommited")
-//            {
-//                varDataRes = QColor(Qt::cyan);
-//            }
-//        }
-//        else if (role == Qt::DecorationRole)
-//        {
-//            auto value = data(index, 100).toString();
-////            if (value == "DataLoading")
-////            {
-////                varDataRes = QIcon(":icons/yellow_spot.svg");
-////            }
+// //            if (value == "DataLoading")
+// //            {
+// //                varDataRes = QIcon(":icons/yellow_spot.svg");
+// //            }
 //        }
         else
         {
@@ -440,9 +428,13 @@ bool medSourceModel::dropMimeData(const QMimeData * data, Qt::DropAction action,
 
     bool bRes = false;
 
-    if (data->hasFormat("med/index2"))
+    if (data->hasFormat("med/index2") || data->hasUrls())
     {
         auto indexList = medDataIndex::readMimeDataMulti(data);
+        for (const QUrl & url : data->urls())
+        {
+            indexList.append(fileSysPathToIndex(url.toLocalFile()));
+        }
 
         for (auto & index : indexList)
         {
@@ -450,19 +442,12 @@ bool medSourceModel::dropMimeData(const QMimeData * data, Qt::DropAction action,
             {
                 case Qt::CopyAction:
                 case Qt::LinkAction:
-                    addDataFromSource(index, nullptr, parent); break;
+                    addData(index, nullptr, parent); break;
                 case Qt::MoveAction:
                     //TODO move
                 default:
                     break;
             }
-        }
-    }
-    else if (data->hasFormat("text/uri-list"))
-    {
-        for (const QUrl & url : data->urls())
-        {
-            addDataFromFile(url.toLocalFile(), nullptr, parent);
         }
     }
 
@@ -471,7 +456,7 @@ bool medSourceModel::dropMimeData(const QMimeData * data, Qt::DropAction action,
 
 
 
-void medSourceModel::addDataFromSource(medDataIndex dataIndex, medAbstractData * data, const QModelIndex & parent)
+void medSourceModel::addData(medDataIndex dataIndex, medAbstractData * data, const QModelIndex & parent)
 {
     auto *pHub = d->parent;
     auto destinationIndex = dataIndexFromModelIndex(parent);
@@ -482,20 +467,6 @@ void medSourceModel::addDataFromSource(medDataIndex dataIndex, medAbstractData *
     }
     
     pHub->copyData(dataIndex, destinationIndex);
-
-}
-
-void medSourceModel::addDataFromFile(QString path, medAbstractData * data, const QModelIndex & parent)
-{
-    auto *pHub = d->parent;
-    auto destinationIndex = dataIndexFromModelIndex(parent);
-
-    if (!parent.isValid())
-    {
-        destinationIndex.setUri(getSourceIntanceId() + ':');
-    }
-
-    pHub->copyData(path, destinationIndex);
 
 }
 

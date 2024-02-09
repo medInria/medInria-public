@@ -82,8 +82,8 @@ public:
     QMimeData *mimeData(const QModelIndexList &indexes) const override;
     bool dropMimeData(const QMimeData *data, Qt::DropAction action, int row, int column, const QModelIndex &parent) override;
 
-    void addDataFromSource(medDataIndex dataIndex, medAbstractData * data, const QModelIndex & parent);
-    void addDataFromFile(QString path, medAbstractData * data, const QModelIndex & parent);
+    void addData(medDataIndex dataIndex, medAbstractData * data, const QModelIndex & parent);
+    // void addDataFromFile(QString path, medAbstractData * data, const QModelIndex & parent);
 
 
 	void createFolder(const QModelIndex &index);

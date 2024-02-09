@@ -58,13 +58,15 @@ public:
     bool writeResults(QString pi_sourceId, medAbstractData * pi_pData, QStringList pi_UriOfRelatedData, QString pi_basePath, medWritingPolicyData & pi_writingPolicyData, medAbstractWritingPolicy * pi_pWritingPolicy);
     QUuid writeResultsHackV3(medAbstractData &data, bool originSrc); //To Adapt
 
-    bool copyData(QString path, medDataIndex destinationIndex);
+    // bool copyData(QString path, medDataIndex destinationIndex);
     bool copyData(medDataIndex indexToCpy, medDataIndex destinationIndex);
 	bool fetchData(medDataIndex const & index);
 	bool pushData(medDataIndex const & index);
 
 
+    medAbstractData * loadDataFromPathAsIndex(medDataIndex index, QUuid uuid = QUuid());
     medAbstractData * loadDataFromPath(QString const path, QUuid uuid = QUuid());
+    
     //bool hasData(medDataIndex const & index);
     QList< medDataIndex > getSubData(medDataIndex const & index);
     int getDataType(medDataIndex const & index);
@@ -101,6 +103,8 @@ signals:
     void getAsyncStatus(medAbstractSource* , int, medAbstractSource::eRequestStatus);
     void sourceAdded   (QString /*sourceInstanceId*/);
     void sourceRemoved (QString /*sourceInstanceId*/);
+    void sourceVisibled (QString /*sourceInstanceId*/, bool checked);    
+    void sourceVisibility (QString /*sourceInstanceId*/);
     void dataLoaded    (medDataIndex);
     void dataExported  (medAbstractData *, QString);
 

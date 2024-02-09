@@ -227,15 +227,17 @@ QList<medDataIndex> medDataIndex::readMimeDataMulti(const QMimeData * mimeData)
     QList<medDataIndex> dataIndexListRes;
 
     auto rawData = mimeData->data("med/index2");
-    auto uris = rawData.split('\0');
-
-    for (auto uri : uris)
+    if (!rawData.isEmpty())
     {
-        medDataIndex dataIndexTmp;
-        dataIndexTmp.setUri(QString::fromUtf8(uri));
-        dataIndexListRes << dataIndexTmp;
-    }
+        auto uris = rawData.split('\0');
 
+        for (auto uri : uris)
+        {
+            medDataIndex dataIndexTmp;
+            dataIndexTmp.setUri(QString::fromUtf8(uri));
+            dataIndexListRes << dataIndexTmp;
+        }
+    }
     return dataIndexListRes;
 }
 

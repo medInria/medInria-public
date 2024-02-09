@@ -1,11 +1,9 @@
 #include "medVirtualRepresentationPresenter.h"
 
 #include <medVirtualRepresentation.h>
+#include <medVirtualRepresentationWidget.h>
 
-#include <QAbstractItemView>
-#include <QAction>
-#include <QMenu>
-#include <QTreeView>
+
 
 class medVirtualRepresentationPresenterPrivate
 {
@@ -13,15 +11,15 @@ public:
     medVirtualRepresentation *virtualRepresentation;
 };
 
-QModelIndex menuGetIndexHelper(QTreeView *pTreeView, QMenu *pMenu)
-{
-    QModelIndex indexRes;
+// QModelIndex menuGetIndexHelper(QTreeView *pTreeView, QMenu *pMenu)
+// {
+//     QModelIndex indexRes;
 
-    auto pos = pTreeView->viewport()->mapFromGlobal(pMenu->pos());
-    indexRes = pTreeView->indexAt(pos);
+//     auto pos = pTreeView->viewport()->mapFromGlobal(pMenu->pos());
+//     indexRes = pTreeView->indexAt(pos);
 
-    return indexRes;
-}	
+//     return indexRes;
+// }	
 	
 medVirtualRepresentationPresenter::medVirtualRepresentationPresenter(medVirtualRepresentation *parent) : d(new medVirtualRepresentationPresenterPrivate())
 {
@@ -37,76 +35,17 @@ QWidget * medVirtualRepresentationPresenter::buildWidget()
     return buildTree();
 }
 
-QTreeView * medVirtualRepresentationPresenter::buildTree()
+medVirtualRepresentationWidget * medVirtualRepresentationPresenter::buildTree()
 {
-    auto widgetRes = new QTreeView();
+    auto widgetRes = new medVirtualRepresentationWidget();
     
-    widgetRes->setModel(d->virtualRepresentation);
-    widgetRes->setEnabled(true);
-    widgetRes->setVisible(true);
-	
-    widgetRes->setDragDropMode(QAbstractItemView::DragDropMode::DragDrop);
-    widgetRes->setSelectionMode(QAbstractItemView::ExtendedSelection);
-    widgetRes->setDragEnabled(true);
-    widgetRes->setAcceptDrops(true);
-    widgetRes->setDropIndicatorShown(true);
-	
-	
-	
-	 //context menu code
-    auto pMenu = new QMenu(widgetRes);
-    widgetRes->setContextMenuPolicy(Qt::CustomContextMenu);
-	
-    QAction *pinUnpinAction     = new QAction(tr("pin / unpin"),   pMenu);
-    QAction *createFolderAction = new QAction(tr("Create Folder"), pMenu);
-    QAction *removeAction       = new QAction(tr("Remove"),        pMenu);
-    QAction *fetchAction        = new QAction(tr("Fetch"),         pMenu);
-    QAction *infoAction         = new QAction(tr("Information"),   pMenu);
-    pMenu->addAction(pinUnpinAction);
-    pMenu->addAction(createFolderAction);
-    pMenu->addAction(removeAction);
-    pMenu->addAction(fetchAction);
-    pMenu->addAction(infoAction);
-	
+    widgetRes->create(d->virtualRepresentation);
 
-    auto * pVirt = d->virtualRepresentation;
-    bool con1 = connect(pVirt, &medVirtualRepresentation::expandData, widgetRes, &QTreeView::setExpanded);
-    bool con2 = connect(pVirt, SIGNAL(editIndex(QModelIndex const &)), widgetRes, SLOT(edit(const QModelIndex &)));
-    connect(pinUnpinAction,    &QAction::triggered, [=]() {  pVirt->pinData(menuGetIndexHelper(widgetRes, pMenu)); });
-    connect(createFolderAction, &QAction::triggered, [=]() {  pVirt->create(menuGetIndexHelper(widgetRes, pMenu), "tmp"); });
-    connect(removeAction,  &QAction::triggered, [=]() {  pVirt->remove(menuGetIndexHelper(widgetRes, pMenu));  });
+    connect(d->virtualRepresentation, &medVirtualRepresentation::visibled, widgetRes, &medVirtualRepresentationWidget::setVisible);
+    connect(d->virtualRepresentation, &medVirtualRepresentation::expandData, widgetRes->getVirtualTree(), &QTreeView::setExpanded);
+    connect(d->virtualRepresentation, SIGNAL(editIndex(QModelIndex const &)), widgetRes->getVirtualTree(), SLOT(edit(const QModelIndex &)));
 
-
-    connect(widgetRes, &QTreeView::customContextMenuRequested, [=](const QPoint & point)
-    {
-        QPoint translatedPoint = widgetRes->viewport()->mapToGlobal(point);
-        //QModelIndex index = menuGetIndexHelper(widgetRes, pMenu);
-        QModelIndex index = widgetRes->indexAt(point);
-
-        int iCol = index.column();
-
-        if (index.isValid())
-        {            
-            pinUnpinAction->setVisible(true);
-            if (index.parent().isValid())
-            {
-                pinUnpinAction->setDisabled(true);
-            }
-            createFolderAction->setVisible(true);
-            removeAction->setVisible(true);
-            fetchAction->setVisible(true);
-            infoAction->setVisible(true);
-        }
-        else
-        {
-            pinUnpinAction->setVisible(false);
-            removeAction->setVisible(false);
-            fetchAction->setVisible(false);
-            infoAction->setVisible(false);
-        }
-        pMenu->exec(translatedPoint);
-    });
-	
     return widgetRes;
+
 }
 

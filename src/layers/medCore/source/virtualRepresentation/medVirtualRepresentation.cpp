@@ -106,6 +106,7 @@ public:
 medVirtualRepresentation::medVirtualRepresentation(QObject *parent): QStandardItemModel(parent), d(new medVirtualRepresentationPrivate(this))
 {    
     setColumnCount(1);
+    setHorizontalHeaderLabels(QStringList("description"));
     d->basePath.setValue(QStandardPaths::writableLocation(QStandardPaths::GenericConfigLocation) + "/" + QCoreApplication::organizationName() + "/" + QCoreApplication::applicationName() + "/virtualRepresentation");
     connect(&d->basePath, &medStringParameter::valueChanged, this, &medVirtualRepresentation::fetch);
     connect(this, &QStandardItemModel::itemChanged, this, &medVirtualRepresentation::renameByItem);

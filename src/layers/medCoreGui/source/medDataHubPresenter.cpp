@@ -37,6 +37,7 @@ medSourcesWidget * medDataHubPresenter::buildTree()
 
     connect(d->dataHub, &medDataHub::sourceAdded, [=](QString sourceInstanceId) {widgetRes->addSource(d->dataHub, sourceInstanceId);});
     connect(d->dataHub, &medDataHub::sourceRemoved, widgetRes, &medSourcesWidget::removeSource);
+    connect(d->dataHub, &medDataHub::sourceVisibled, widgetRes, &medSourcesWidget::setSourceVisible);
 
     connect(this, SIGNAL(filterProxy(const QString &)), widgetRes, SLOT(filter(const QString &)));
     return widgetRes;

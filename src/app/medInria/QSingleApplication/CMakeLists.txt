@@ -15,16 +15,16 @@
 
 set(${TARGET_NAME}_HEADERS
   QSingleApplication/qtlocalpeer.h
-  QSingleApplication/qtsingleapplication.h
-  QSingleApplication/qtsinglecoreapplication.h
+  #QSingleApplication/qtsingleapplication.h
+  #QSingleApplication/qtsinglecoreapplication.h
   ${${TARGET_NAME}_HEADERS}
   PARENT_SCOPE
   )
 
 set(${TARGET_NAME}_SOURCES
   QSingleApplication/qtlocalpeer.cpp
-  QSingleApplication/qtsingleapplication.cpp
-  QSingleApplication/qtsinglecoreapplication.cpp
+  #QSingleApplication/qtsingleapplication.cpp
+  #QSingleApplication/qtsinglecoreapplication.cpp
   ${${TARGET_NAME}_H}
   ${${TARGET_NAME}_SOURCES}
   PARENT_SCOPE

@@ -32,6 +32,15 @@ public:
      medMainWindow(QWidget *parent = nullptr);
     ~medMainWindow();
 
+     void initMenuBar(QWidget * parent);
+     void menuNotif(QMenuBar * menu_bar);
+     void menuAbout(QMenuBar * menu_bar);
+     void menuSettings(QMenuBar * menu_bar);
+     void menuCapture(QMenuBar * menu_bar);
+     void menuWindow(QMenuBar * menu_bar);
+     void menuWorkspace(QMenuBar * menu_bar);
+     void menuFile(QMenuBar * menu_bar);
+
     void restoreSettings();
     void saveSettings();
     QWidget* currentArea() const;
@@ -112,12 +121,15 @@ private slots:
     void showShortcutAccess();
     void hideShortcutAccess();
 
-    void availableSpaceOnStatusBar();
+    //void availableSpaceOnStatusBar();
 
     void open_waitForImportedSignal(medDataIndex,QUuid);
 
 
-
+    void openFromSystem();
+    void openDicomFromSystem();
+    void setSourceVisibility(bool checked);
+    
     void onShowBrowser();
     void onShowDataSources();
     //void onShowNotifPanel();
@@ -164,6 +176,11 @@ private slots:
     void onSwitchToWorkspace();
 
     /**
+     * @brief Switch the application to the current process (toolbox) name
+     */
+    void onSwitchToProcess();
+
+    /**
      * @brief Open the log directory
      */
     void openLogDirectory();
@@ -179,7 +196,7 @@ private slots:
     void switchOffOnFullscreenIcons(const bool checked);
 
 
-
+    void filterWSMenu(QString text);
 
 
 protected:

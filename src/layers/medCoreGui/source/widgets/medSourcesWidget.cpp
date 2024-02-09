@@ -8,8 +8,10 @@
 #include <medDataInfoWidget.h>
 
 #include <QPushButton>
+#include <QToolButton>
 #include <QTreeView>
 #include <QAction>
+#include <QLabel>
 
 class medSortFilterProxyModel : public QSortFilterProxyModel
 {
@@ -60,31 +62,41 @@ void medSourcesWidget::addSource(medDataHub *dataHub, QString sourceInstanceId)
     medSourceHandler::instance()->sourceGlobalInfo(sourceInstanceId,isOnline, isLocal, isWritable, isCached);
     medSourceModelPresenter *sourcePresenter = new medSourceModelPresenter(sourceModel);
 
-    QPushButton *sourceTreeTitle = new QPushButton(instanceName);
-    QPushButton *plusButton = new QPushButton(QIcon(":/pixmaps/plus.png"), "");
+    QToolButton *sourceTreeBttn = new QToolButton();
+    auto *treeButtonAction = new QAction(QIcon(":/pixmaps/drop-down.png"), QString("arrow"));
+    treeButtonAction->setData(sourceInstanceId);
+    sourceTreeBttn->setDefaultAction(treeButtonAction);
+    QLabel      *sourceTreeTitle = new QLabel(instanceName);
+    QPushButton *plusButton = new QPushButton(QIcon(":/icons/plus_white.png"), "");
+
+    sourceTreeBttn->setToolTip("Show/Hide Source");
+    sourceTreeBttn->setMaximumSize(QSize(20,20));
+ 
     plusButton->setToolTip("Expand All");
     plusButton->setMaximumSize(QSize(20,20));
     plusButton->setCheckable(true);
     plusButton->setFlat(true);
 
     QHBoxLayout *hLayout = new QHBoxLayout;
+    hLayout->addWidget(sourceTreeBttn);
     hLayout->addWidget(sourceTreeTitle);
     hLayout->addWidget(plusButton, 0, Qt::AlignRight);
 
 
     QTreeView   *sourceTreeView  = sourcePresenter->buildTree(new medSortFilterProxyModel());
     connect(sourceTreeView, &QTreeView::doubleClicked, this, &medSourcesWidget::onDoubleClick);
-
+    
+    connect(sourceTreeBttn, &QToolButton::triggered, this, &medSourcesWidget::expandSourceTree);
     connect(plusButton, &QPushButton::toggled, [=](bool checked) {
         if (checked)
         {
-            plusButton->setIcon(QIcon(":/pixmaps/minus.png"));
+            plusButton->setIcon(QIcon(":/icons/minus_white.png"));
             dataHub->expandAll(sourceInstanceId);
             sourceTreeView->expandAll();
         }
         else
         {
-            plusButton->setIcon(QIcon(":/pixmaps/plus.png"));
+            plusButton->setIcon(QIcon(":/icons/plus_white.png"));
             sourceTreeView->collapseAll();
         }
     });
@@ -198,22 +210,9 @@ void medSourcesWidget::addSource(medDataHub *dataHub, QString sourceInstanceId)
             dataHub->sourceIsOnline(sourceInstanceId);
         }
     });
-    connect(sourceTreeTitle, &QPushButton::clicked, [=]() {
-        if (!sourceTreeView->isEnabled())
-        {
-            dataHub->sourceIsOnline(sourceInstanceId);
-        }
-    });
-
-    connect(sourceTreeTitle, &QPushButton::clicked, [=]() {sourceTreeView->setVisible(!sourceTreeView->isVisible()); });
+    
     connect(sourceModel, &medSourceModel::online, sourceTreeView, &QTreeView::setEnabled);
-    //connect(sourceModel, &medSourceModel::columnCountChange, [&](int iColumnCount) {
-    //    for (int i = 1; i < iColumnCount; ++i)
-    //    {
-    //        sourceTreeView->setColumnHidden(i, true);
-    //    }
-    //});
-
+ 
 	connect(createFolderAction, &QAction::triggered, [=]() {
 		QModelIndex index = this->indexFromMenu(pMenu);
 		if (index.isValid())
@@ -223,7 +222,7 @@ void medSourcesWidget::addSource(medDataHub *dataHub, QString sourceInstanceId)
 
 		}
 	});
-
+    
     m_treeMap  [sourceInstanceId] = sourceTreeView;
     m_titleMap [sourceInstanceId] = hLayout;
     delete sourcePresenter;
@@ -250,6 +249,55 @@ void medSourcesWidget::removeSource(QString sourceInstanceId)
         
         delete widget;
         delete titleLayout;
+    }
+}
+
+void medSourcesWidget::setSourceVisible(QString sourceInstanceId, bool checked)
+{
+    if (m_titleMap.contains(sourceInstanceId) && m_treeMap.contains(sourceInstanceId))
+    {
+        auto widget = m_treeMap.value(sourceInstanceId);
+        auto title = m_titleMap.value(sourceInstanceId);
+        
+        for (int i=0; i<title->count(); i++)
+        {
+            QLayoutItem *child = title->itemAt(i);
+            QWidget *wgt = child->widget();
+            wgt->setVisible(checked);
+        }
+        widget->setVisible(checked); 
+        auto button = dynamic_cast<QToolButton *>(title->itemAt(0)->widget());
+        if (widget->isVisible())
+        {
+            button->setIcon(QIcon(":/pixmaps/drop-down.png"));            
+        }
+        else
+        {
+            button->setIcon(QIcon(":/pixmaps/arrow-right.png"));
+        }
+ 
+    }
+
+}
+
+void medSourcesWidget::expandSourceTree(QAction *action)
+{
+    QString sourceInstanceId = action->data().toString();
+    if (m_titleMap.contains(sourceInstanceId) && m_treeMap.contains(sourceInstanceId))
+    {
+        auto widget = m_treeMap.value(sourceInstanceId);
+        auto layout = m_titleMap.value(sourceInstanceId);
+        auto button = dynamic_cast<QToolButton *>(layout->itemAt(0)->widget());
+        if (widget->isVisible())
+        {
+            button->setIcon(QIcon(":/pixmaps/arrow-right.png"));
+            
+        }
+        else
+        {
+            button->setIcon(QIcon(":/pixmaps/drop-down.png"));
+        }
+        widget->setVisible(!widget->isVisible()); 
     }
 }
 

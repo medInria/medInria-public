@@ -42,6 +42,11 @@ public slots:
     void showAndHigligth(medUsrNotif notif);
     void swithVisibility();
 
+    void clicked(QPoint);
+
+signals:
+    void expanded(bool);
+
 protected:
 
 private:

@@ -36,6 +36,10 @@ class medApplicationPrivate
 public:
     medMainWindow *mainWindow;
     QStringList systemOpenInstructions;
+    QtLocalPeer *peer;
+    QWidget *actWin;
+
+    bool listenClick;
 };
 
 // /////////////////////////////////////////////////////////////////
@@ -43,9 +47,16 @@ public:
 // /////////////////////////////////////////////////////////////////
 
 medApplication::medApplication(int & argc, char**argv) :
-    QtSingleApplication(argc,argv),
+    //QtSingleApplication(argc,argv),
+    QApplication(argc, argv),
     d(new medApplicationPrivate)
 {
+    d->listenClick = false;
+
+    d->actWin = 0;
+    d->peer = new QtLocalPeer(this, "");
+    connect(d->peer, SIGNAL(messageReceived(const QString&)), SIGNAL(messageReceived(const QString&)));
+
     d->mainWindow = nullptr;
 
     this->setApplicationName("medInria");
@@ -76,19 +87,35 @@ medApplication::~medApplication(void)
 
 bool medApplication::event(QEvent *event)
 {
-    switch (event->type())
+    auto type = event->type();
+    switch (type)
     {
         // Handle file system open requests, but only if the main window has been created and set
         case QEvent::FileOpen:
+        {
             if (d->mainWindow)
                 emit messageReceived(QString("/open ") + static_cast<QFileOpenEvent *>(event)->file());
             else
                 d->systemOpenInstructions.append(QString("/open ") + static_cast<QFileOpenEvent *>(event)->file());
 
             return true;
+        }
         default:
-            return QtSingleApplication::event(event);
+        {
+            return QApplication::event(event);
+        }
     }
+}
+
+bool medApplication::notify(QObject * receiver, QEvent * e)
+{
+    if (d->listenClick && e->type() == QEvent::MouseButtonRelease)
+    {
+        auto *mouseEvent = static_cast<QMouseEvent*>(e);
+        emit mouseGlobalClick(mouseEvent->globalPos());
+    }
+
+    return QApplication::notify(receiver, e);
 }
 
 void medApplication::setMainWindow(medMainWindow *mw)
@@ -105,6 +132,24 @@ void medApplication::redirectMessageToSplash(const QString &message)
     emit showMessage(message);
 }
 
+/*!
+    Tries to send the text \a message to the currently running
+    instance. The QtSingleApplication object in the running instance
+    will emit the messageReceived() signal when it receives the
+    message.
+
+    This function returns true if the message has been sent to, and
+    processed by, the current instance. If there is no instance
+    currently running, or if the running instance fails to process the
+    message within \a timeout milliseconds, this function return false.
+
+    \sa isRunning(), messageReceived()
+*/
+bool medApplication::sendMessage(const QString &message, int timeout)
+{
+    return d->peer->sendMessage(message, timeout);
+}
+
 void medApplication::open(const medDataIndex & index)
 {
     d->mainWindow->open(index);
@@ -113,6 +158,11 @@ void medApplication::open(const medDataIndex & index)
 void medApplication::open(QString path)
 {
     d->mainWindow->open(path);
+}
+
+void medApplication::listenClick(bool listen)
+{
+    d->listenClick = listen;
 }
 
 void medApplication::initialize()

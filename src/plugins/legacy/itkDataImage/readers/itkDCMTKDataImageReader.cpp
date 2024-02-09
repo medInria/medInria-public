@@ -263,10 +263,15 @@ bool itkDCMTKDataImageReader::canRead(const QString& path)
 
 bool itkDCMTKDataImageReader::canRead(const QStringList& paths)
 {
+    int count = 0;
     for (int i = 0; i < paths.size(); i++)
-        if (!d->io->CanReadFile(paths[i].toUtf8()))
-            return false;
-    return true;
+    {
+        if (d->io->CanReadFile(paths[i].toUtf8()))
+        {
+            count++;
+        }
+    }
+    return count > (paths.size() >> 1);
 }
 
 bool itkDCMTKDataImageReader::readInformation(const QString& path)

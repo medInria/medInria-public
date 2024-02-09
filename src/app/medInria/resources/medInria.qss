@@ -186,7 +186,7 @@ $QUICK_ACCESS_PUSH_BUTTON_BORDER    = 0PX;
 /*******************************************************************************
     SIZES
  *******************************************************************************/
-$STATUS_BAR_HEIGHT              = 34px;
+$STATUS_BAR_HEIGHT              = 0px;
 
 $PROGRESS_BAR_HEIGHT            = 12px;
 
@@ -498,8 +498,11 @@ QCheckBox::indicator:disabled:checked
  *******************************************************************************/
 QTreeView
 {
-     alternate-background-color: $ALT_LIST_BACKGROUND;
+     /* alternate-background-color: $ALT_LIST_BACKGROUND; */
      background: $LIST_BACKGROUND;
+     /* background-color: $COMBO_BOX_ITEM_BACKGROUND; */
+     selection-background-color: $COMBO_BOX_ITEM_SELECTED_BACKGROUND;
+     selection-color: $COMBO_BOX_ITEM_SELECTED_COLOR;
 }
 
 QTreeView::item
@@ -823,11 +826,6 @@ QPushButton:flat:pressed
 {
     border: none;
     background-color: none;
-}
-
-QPushButton::menu-indicator:flat
-{
-    image: none;
 }
 
 QPushButton:disabled
@@ -1159,12 +1157,13 @@ medViewContainer [selected = "true"]
 
 QTabBar::close-button
 {
-    image: url(:icons/cross_red.svg)
+    image: url(:/pixmaps/closebutton.png)
 }
 
 QTabBar::close-button:hover
 {
     background: $VIEW_CONTAINER_BUTTON_HOVER_BACKGOUND
+/*	image: url(:icons/closebutton_blue.png) */
 }
 
 QWidget#defaultWidget

@@ -41,6 +41,8 @@ public:
 public slots:
     void addSource(medDataHub *dataHub, QString sourceInstanceId);
     void removeSource(QString sourceInstanceId);
+    void setSourceVisible(QString sourceInstanceId, bool checked);
+    void expandSourceTree(QAction *action);
     void filter(const QString &);
 
     void onDoubleClick(QModelIndex const & index);

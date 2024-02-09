@@ -24,6 +24,7 @@
 #include <medDataHubPresenter.h>
 #include <medSourcesWidget.h>
 #include <medToolBox.h>
+#include <medVirtualRepresentationWidget.h>
 
 #include <medVirtualRepresentationPresenter.h>
 
@@ -33,7 +34,7 @@ public:
     QPointer<QWidget> mainWidget;
 
     medSourcesWidget *compactView;
-    QTreeView *virtualTreeView;
+    medVirtualRepresentationWidget *virtualWidget;
 
     QList<medToolBox*> toolBoxes;
     medDataHubPresenter *multiSources_tree;
@@ -77,26 +78,20 @@ QWidget* medDatabaseDataSource::buildSourcesTreeViewList()
 
     QVBoxLayout *layout = new QVBoxLayout();
 
-    auto filterLabel = new QLabel("Filter ");
-    auto filterLineEdit = new QLineEdit();
+    auto filterLineEdit = new QLineEdit("Search...");
+    filterLineEdit->setMaximumHeight(20);
     connect(filterLineEdit, SIGNAL(textChanged(const QString &)), d->multiSources_tree, SIGNAL(filterProxy(const QString &)));
 
     d->compactView = d->multiSources_tree->buildTree();
     d->compactView->setSizePolicy(QSizePolicy::MinimumExpanding, QSizePolicy::MinimumExpanding);
     connect(d->compactView, SIGNAL(openOnDoubleClick(medDataIndex)), this, SIGNAL(openOnDoubleClick(medDataIndex)));
+   
+    d->virtualWidget = medVirtualRepresentationPresenter(medApplicationContext::instance()->getVirtualRepresentation()).buildTree();
 
-    //d->compactPreview = new medDatabasePreview(compactViewWidgetRes);
-
-    QVBoxLayout *filterLayout = new QVBoxLayout;
-    filterLayout->addWidget(filterLabel, 0);
-    filterLayout->addWidget(filterLineEdit, 1);
-    
-    d->virtualTreeView = medVirtualRepresentationPresenter(medApplicationContext::instance()->getVirtualRepresentation()).buildTree();
-
-    layout->addWidget(d->virtualTreeView, 0);
-    layout->addLayout(filterLayout, 1);
-    layout->addWidget(d->compactView, 2);
-    //layout->addWidget(d->compactPreview);
+    layout->addWidget(d->virtualWidget , 0, Qt::AlignTop);
+    layout->addWidget(filterLineEdit, 0, Qt::AlignTop);
+    layout->addWidget(d->compactView, 0, Qt::AlignTop);
+    layout->addStretch(2);
 
     compactViewWidgetRes->setLayout(layout);
 

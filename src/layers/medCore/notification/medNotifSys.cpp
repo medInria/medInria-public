@@ -170,6 +170,7 @@ bool medNotifSys::remove2(medUsrNotif notif)
             bFound = true;
             bContinue = false;
         }
+        it++;
     }
 
     if (bFound)
@@ -188,6 +189,15 @@ bool medNotifSys::remove2(medUsrNotif notif)
 void medNotifSys::windowOnTop(bool pi_bOntop)
 {
     d->focus = pi_bOntop;
+}
+
+void medNotifSys::clear()
+{
+    auto notifs = d->notifList;
+    for (auto notif : notifs)
+    {
+        remove2(notif);
+    }
 }
 
 void medNotifSys::osNotif(medUsrNotif & notif)

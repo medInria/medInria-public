@@ -29,6 +29,7 @@
 #include <medAbstractLayeredView.h>
 #include <medAbstractView.h>
 #include <medBoolParameterL.h>
+#include <medDataHub.h>
 #include <medDataIndex.h>
 #include <medDataManager.h>
 #include <medMessageController.h>
@@ -778,20 +779,16 @@ void medViewContainer::dragLeaveEvent(QDragLeaveEvent *event)
 
 void medViewContainer::dropEvent(QDropEvent *event)
 {
-    dropEventFromFile(event);
-    dropEventFromDataBase(event);
-}
-
-bool medViewContainer::dropEventFromDataBase(QDropEvent * event)
-{
-    bool bRes = false;
-
     const QMimeData *mimeData = event->mimeData();
     
     if (mimeData->hasFormat("med/index2") || mimeData->hasUrls())
     {
         auto indexList = medDataIndex::readMimeDataMulti(mimeData);
         QList<QUrl> urlList = mimeData->urls();
+        for (QUrl url : urlList) 
+        {
+            indexList.append(fileSysPathToIndex(url.toLocalFile()));
+        }
         if (d->mousseDragDropButton.testFlag(Qt::RightButton))
         {
             QMenu *popupMenu = new QMenu(this);
@@ -827,80 +824,46 @@ bool medViewContainer::dropEventFromDataBase(QDropEvent * event)
                 this->highlight(d->highlightColor);
 
             event->acceptProposedAction();
-            bRes = true;
         }
 
     }
-    else if (mimeData->hasFormat("med/index"))
-    {
-        medDataIndex index = medDataIndex::readMimeData(mimeData);
+    // else if (mimeData->hasFormat("med/index"))
+    // {
+    //     medDataIndex index = medDataIndex::readMimeData(mimeData);
 
-        // User can drop a study or a series into the view
-        if (index.isValidForSeries() || index.isValidForStudy())
-        {
-            if (d->userSplittable)
-            {
-                DropArea area = computeDropArea(event->pos().x(), event->pos().y());
+    //     // User can drop a study or a series into the view
+    //     if (index.isValidForSeries() || index.isValidForStudy())
+    //     {
+    //         if (d->userSplittable)
+    //         {
+    //             DropArea area = computeDropArea(event->pos().x(), event->pos().y());
 
-                if (area == AREA_TOP)
-                    emit splitRequest(index, Qt::AlignTop);
-                else if (area == AREA_RIGHT)
-                    emit splitRequest(index, Qt::AlignRight);
-                else if (area == AREA_BOTTOM)
-                    emit splitRequest(index, Qt::AlignBottom);
-                else if (area == AREA_LEFT)
-                    emit splitRequest(index, Qt::AlignLeft);
-                else if (area == AREA_CENTER)
-                    this->addData(index);
-            }
-            else
-            {
-                this->addData(index);
-            }
+    //             if (area == AREA_TOP)
+    //                 emit splitRequest(index, Qt::AlignTop);
+    //             else if (area == AREA_RIGHT)
+    //                 emit splitRequest(index, Qt::AlignRight);
+    //             else if (area == AREA_BOTTOM)
+    //                 emit splitRequest(index, Qt::AlignBottom);
+    //             else if (area == AREA_LEFT)
+    //                 emit splitRequest(index, Qt::AlignLeft);
+    //             else if (area == AREA_CENTER)
+    //                 this->addData(index);
+    //         }
+    //         else
+    //         {
+    //             this->addData(index);
+    //         }
 
-            this->setStyleSheet(d->defaultStyleSheet);
-            if (d->selected)
-                this->highlight(d->highlightColor);
+    //         this->setStyleSheet(d->defaultStyleSheet);
+    //         if (d->selected)
+    //             this->highlight(d->highlightColor);
 
-            event->acceptProposedAction();
-            bRes = true;
-        }
-    }
+    //         event->acceptProposedAction();
+    //         bRes = true;
+    //     }
+    // }
     d->mousseDragDropButton = Qt::NoButton;
-
-    return bRes;
 }
-
-bool medViewContainer::dropEventFromFile(QDropEvent * event)
-{
-    bool bRes = false;
-
-    const QMimeData *mimeData = event->mimeData();
-    if (mimeData->hasUrls())
-    {
-        auto *pSource = event->source();
-        QStringList pathList;
-        QList<QUrl> urlList = mimeData->urls();
-        d->oArea4ExternalDrop = computeDropArea(event->pos().x(), event->pos().y());
-        // extract the local paths of the files
-        for (int i = 0; i < urlList.size() && i < 8; ++i)
-        {
-            pathList.append(urlList.at(i).toLocalFile());
-        }
-        connect(medDataManager::instance(), SIGNAL(dataImported(medDataIndex, QUuid)), this, SLOT(droppedDataReady(medDataIndex, QUuid)), Qt::UniqueConnection);
-        d->oQuuidVect.resize(pathList.size());
-        for (int i = 0; i < pathList.size(); ++i)
-        {
-            d->oQuuidVect[i].second = false;
-            d->oQuuidVect[i].first = medDataManager::instance()->importPath(pathList[i], true, false);
-        }
-        event->acceptProposedAction();
-        bRes = true;
-    }
-
-    return bRes;
-}
-
 
 class addDataRunner : public QRunnable
 {

@@ -17,11 +17,13 @@
 #include <QStackedWidget>
 
 #include <medCoreGuiExport.h>
+#include <medVirtualRepresentationWidget.h>
 
 class QWidget;
 class QTreeView;
 class medVirtualRepresentation;
 class medVirtualRepresentationPresenterPrivate;
+
 
 class MEDCOREGUI_EXPORT medVirtualRepresentationPresenter : public QObject
 {
@@ -32,9 +34,7 @@ public:
 
     virtual QWidget *buildWidget();
 
-    virtual QTreeView *buildTree();
-
-signals:
+    virtual medVirtualRepresentationWidget *buildTree();
 
 private:
     const QScopedPointer<medVirtualRepresentationPresenterPrivate> d;

@@ -38,5 +38,6 @@ private:
     QMovie *m_mov;
     QPixmap m_currentPixmap;
     QSortFilterProxyModel *m_proxy;
+    QTreeView *m_treeView;
 };
 
