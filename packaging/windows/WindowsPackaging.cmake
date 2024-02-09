@@ -46,7 +46,7 @@ set(CPACK_NSIS_MODIFY_PATH "ON")
 set(CPACK_PACKAGE_EXECUTABLES "medInria" "medInria")
 
 # Add a link to the application website in the Startup menu.
-set(CPACK_NSIS_MENU_LINKS "http://med.inria.fr/" "Homepage for medInria" "medDevEnv" ".\\sdk\med_Dev.bat") 
+set(CPACK_NSIS_MENU_LINKS "http://med.inria.fr/" "Homepage for medInria" "medDevEnv" ".\\sdk\\med_Dev.bat") 
 
 # Run medInria after installation
 set(CPACK_NSIS_MUI_FINISHPAGE_RUN "medInria.exe")
@@ -160,8 +160,25 @@ fixup_bundle(\"${APP}\"   \"\${MED_LIBRARIES}\"   \"${libSearchDirs};\${CMAKE_IN
 
 if(${SDK_PACKAGING} )
     if(EXISTS ${SDK_DIR} )
-        INSTALL(DIRECTORY ${SDK_DIR} DESTINATION . COMPONENT Dev)
-        file(INSTALL      ${CMAKE_SOURCE_DIR}/packaging/windows/med_Dev.bat DESTINATION ./sdk/ COMPONENT Dev)
+        file(GLOB_RECURSE QT_DEBUG_DLL ${QT_BINARY_DIR}/*d.dll)
+        
+        INSTALL(DIRECTORY ${SDK_DIR}                                        DESTINATION .                       COMPONENT Dev)
+        INSTALL(FILES     ${CMAKE_SOURCE_DIR}/packaging/windows/med_Dev.bat DESTINATION ./sdk/                  COMPONENT Dev)
+        INSTALL(FILES     ${QT_DEBUG_DLL}                                   DESTINATION ./sdk/bin/              COMPONENT Dev)
+        INSTALL(FILES     ${QT_PLUGINS_DIR}/imageformats/qgif.dll           DESTINATION ./sdk/bin/imageformats/ COMPONENT Dev)
+        INSTALL(FILES     ${QT_PLUGINS_DIR}/imageformats/qicns.dll          DESTINATION ./sdk/bin/imageformats/ COMPONENT Dev)
+        INSTALL(FILES     ${QT_PLUGINS_DIR}/imageformats/qico.dll           DESTINATION ./sdk/bin/imageformats/ COMPONENT Dev)
+        INSTALL(FILES     ${QT_PLUGINS_DIR}/imageformats/qjpeg.dll          DESTINATION ./sdk/bin/imageformats/ COMPONENT Dev)
+        INSTALL(FILES     ${QT_PLUGINS_DIR}/imageformats/qsvg.dll           DESTINATION ./sdk/bin/imageformats/ COMPONENT Dev)
+        INSTALL(FILES     ${QT_PLUGINS_DIR}/imageformats/qtga.dll           DESTINATION ./sdk/bin/imageformats/ COMPONENT Dev) #is it really used
+        INSTALL(FILES     ${QT_PLUGINS_DIR}/imageformats/qtiff.dll          DESTINATION ./sdk/bin/imageformats/ COMPONENT Dev)
+        INSTALL(FILES     ${QT_PLUGINS_DIR}/imageformats/qwbmp.dll          DESTINATION ./sdk/bin/imageformats/ COMPONENT Dev) #is it really used
+        INSTALL(FILES     ${QT_PLUGINS_DIR}/imageformats/qwebp.dll          DESTINATION ./sdk/bin/imageformats/ COMPONENT Dev) #is it really used
+        INSTALL(FILES     ${QT_PLUGINS_DIR}/platforms/qdirect2d.dll         DESTINATION ./sdk/bin/platforms/    COMPONENT Dev) #is it really used
+        INSTALL(FILES     ${QT_PLUGINS_DIR}/platforms/qminimal.dll          DESTINATION ./sdk/bin/platforms/    COMPONENT Dev)
+        INSTALL(FILES     ${QT_PLUGINS_DIR}/platforms/qoffscreen.dll        DESTINATION ./sdk/bin/platforms/    COMPONENT Dev) #is it really used
+        INSTALL(FILES     ${QT_PLUGINS_DIR}/platforms/qwindows.dll          DESTINATION ./sdk/bin/platforms/    COMPONENT Dev)
+        INSTALL(FILES     ${QT_PLUGINS_DIR}/sqldrivers/qsqlite.dll          DESTINATION ./sdk/bin/sqldrivers/   COMPONENT Dev)
     else()
         message("No folder  ${SDK_DIR} exists. SDK will not be installed.")
     endif()
