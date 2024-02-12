@@ -386,13 +386,8 @@ void polygonRoiToolBox::clickClosePolygon(bool state)
 {
     if (!state)
     {
-        pMedToolBox->hide();
-        for (baseViewEvent *event : viewEventHash.values())
-        {
-            event->removeViewInteractor();
-            disconnect(event->getCurrentView(), SIGNAL(selectedRequest(bool)), this, SLOT(onDataIndexActivated()));
-            disconnect(event->getCurrentView(), SIGNAL(layerRemoved(medAbstractData *)), this, SLOT(onLayerRemoved(medAbstractData *)));
-        }
+        clear();
+        updateView();
     }
     else
     {
@@ -413,13 +408,13 @@ void polygonRoiToolBox::clickClosePolygon(bool state)
         {
             viewEventHash.values().first()->getCurrentView()->selectedRequest(true);
         }
+        saveBinaryMaskButton->setEnabled(state);
+        saveContourButton->setEnabled(state);
+        saveLabel->setEnabled(state);
+        interpolate->setEnabled(state);
+        repulsorTool->setEnabled(state);
+        repulsorLabel->setEnabled(state);
     }
-    saveBinaryMaskButton->setEnabled(state);
-    saveContourButton->setEnabled(state);
-    saveLabel->setEnabled(state);
-    interpolate->setEnabled(state);
-    repulsorTool->setEnabled(state);
-    repulsorLabel->setEnabled(state);
 }
 
 void polygonRoiToolBox::activateRepulsor(bool state)
