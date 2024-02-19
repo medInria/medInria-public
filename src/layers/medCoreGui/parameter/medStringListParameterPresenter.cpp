@@ -57,7 +57,7 @@ QComboBox * medStringListParameterPresenter::buildComboBox()
     poComboBoxRes->addItems(d->parameter->items());
     
     connect(poComboBoxRes, SIGNAL(currentIndexChanged(int)),                         d->parameter,  SLOT(setIndex(int)));
-    connect(d->parameter,  SIGNAL(medStringListParameter::valueChanged(int const&)), poComboBoxRes, SLOT(setCurrentIndex(int)));
+    connect(d->parameter,  SIGNAL(valueChanged(int const&)), poComboBoxRes, SLOT(setCurrentIndex(int)));
     connect(d->parameter, &medStringListParameter::compositionChanged, [=]() {poComboBoxRes->clear();  poComboBoxRes->addItems(d->parameter->items()); poComboBoxRes->setCurrentIndex(d->parameter->getIndex()); });
     this->_connectWidget(poComboBoxRes);
 

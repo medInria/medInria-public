@@ -1088,7 +1088,7 @@ void medSourceModel::computeRowRangesToRemove(medSourceModelItem * pItem, medSou
         bool bNotOnSource = !itemStillExist(entries, pChild);
         bool bNoMedDataAssociated = !pChild->containRoleValues( QMap<int, QVariantList>({ { MEDDATA_ROLE, QVariantList() } }) );
 
-        if (bNotOnSource && bNoMedDataAssociated)
+        if (bNoMedDataAssociated)
         {
             //Here pChild is no longer present inside refreshed entries
             if (iStartRemoveRange == -1)
