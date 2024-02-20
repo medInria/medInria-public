@@ -35,8 +35,9 @@ public:
     QLineEdit *buildLineEdit();
     QLineEdit *buildLineEditOnFinish();
     QDateEdit *buildDateEdit();
-	QLineEdit *buildLineEditPassword();
-	QWidget   *buildLineEditPasswordEyes();
+    QLineEdit *buildLineEditPassword();
+    QWidget   *buildLineEditPasswordEyes();
+    QWidget   *buildLineEditFileImport();
 
 private:
     const QScopedPointer<medStringParameterPresenterPrivate> d;

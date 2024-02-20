@@ -20,6 +20,8 @@
 #include <QDateEdit>
 #include <QPushButton>
 #include <QValidator>
+#include <QFileDialog>
+#include <QDir>
 
 class medStringParameterPresenterPrivate
 {
@@ -56,12 +58,14 @@ QWidget* medStringParameterPresenter::buildWidget()
     {
     case 1:
         poWidgetRes = this->buildDateEdit(); break;
-	case 2:
-		poWidgetRes = this->buildLineEditOnFinish(); break;
-	case 3:
-		poWidgetRes = this->buildLineEditPassword(); break;
-	case 4:
-		poWidgetRes = this->buildLineEditPasswordEyes(); break;
+    case 2:
+        poWidgetRes = this->buildLineEditOnFinish(); break;
+    case 3:
+        poWidgetRes = this->buildLineEditPassword(); break;
+    case 4:
+        poWidgetRes = this->buildLineEditPasswordEyes(); break;
+    case 5:
+        poWidgetRes = this->buildLineEditFileImport(); break;
     case 0:
     default:
         poWidgetRes = this->buildLineEdit(); break;
@@ -121,6 +125,10 @@ QDateEdit* medStringParameterPresenter::buildDateEdit()
         emit d->parameter->setValue(date.toString("yyyyMMdd"));
     });
 
+    connect(d->parameter, &medStringParameter::valueChanged, [=](QString value){
+        dateEdit->setDate(QDate::fromString(value, "yyyyMMdd"));
+    });
+
     return dateEdit;
 }
 
@@ -163,4 +171,30 @@ QWidget * medStringParameterPresenter::buildLineEditPasswordEyes()
 
 
 	return pWidgetRes;
+}
+
+QWidget * medStringParameterPresenter::buildLineEditFileImport()
+{
+    QWidget *widget = new QWidget();
+    QHBoxLayout *searchFilePath = new QHBoxLayout();
+
+    QLineEdit *displayPath = buildLineEdit();
+    QPushButton *searchButton = new QPushButton("...");
+    this->_connectWidget(searchButton);
+
+    auto *pParam = d->parameter;
+    connect(searchButton, &QPushButton::clicked, [=]()
+    {
+        QString sourceFile = QFileDialog::getOpenFileName(nullptr, tr("Select JSON file with filtering DICOM keys"), QDir::homePath(), tr("JSON file (*.json)"));
+        if(!sourceFile.isEmpty()){
+            displayPath->setText(QDir::toNativeSeparators(sourceFile));
+            pParam->setValue(displayPath->text());
+        }
+    });
+
+    searchFilePath->addWidget(displayPath);
+    searchFilePath->addWidget(searchButton);
+    widget->setLayout(searchFilePath);
+
+    return widget;
 }

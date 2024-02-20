@@ -78,7 +78,6 @@ QPushButton* medTriggerParameterPresenter::buildPushButton()
 
         this->_connectWidget(poButtonRes);
         connect(poButtonRes, &QPushButton::pressed, [=]() {emit d->parameter->pushed(true);  } );
-        connect(poButtonRes, &QPushButton::pressed, [=]() {emit d->parameter->pushed(false); } );
         connect(poButtonRes, &QPushButton::clicked, d->parameter, &medTriggerParameter::trigger);
 
         connect(d->parameter, &medTriggerParameter::pushed, poButtonRes, &QPushButton::setDown);
