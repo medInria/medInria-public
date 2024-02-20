@@ -34,7 +34,8 @@ struct medPACSParametersPrivate;
 
 class medPACS: public medAbstractSource
 {
-Q_OBJECT
+    Q_OBJECT
+
 public:
     explicit medPACS(dcmPACS *dicomLib);
 
@@ -164,9 +165,10 @@ private:
     int getDicomWebAsyncData(unsigned int pi_uiLevel, const QString &key);
     
 
-   private:
+private:
     medPACSParametersPrivate* d;
 
+    // each plugin instance shares the same local server parameters
     static std::atomic<int> s_RequestId;
     static medStringParameter s_Aetitle;
     static medStringParameter s_Hostname;

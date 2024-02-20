@@ -34,16 +34,16 @@ dcmMoveScu::~dcmMoveScu()
 
 void dcmMoveScu::setLocalParameters(const QString &aetitle, const QString &hostName, const int &port)
 {
-    localAetitle = aetitle;
-    localHostName = hostName;
-    localPort = port;
+    m_localAetitle = aetitle;
+    m_localHostName = hostName;
+    m_localPort = port;
 }
 
 void dcmMoveScu::setRemoteParameters(const QString &aetitle, const QString &hostName, const int &port)
 {
-    remoteAetitle = aetitle;
-    remoteHostName = hostName;
-    remotePort = port;
+    m_remoteAetitle = aetitle;
+    m_remoteHostName = hostName;
+    m_remotePort = port;
 }
 
 QString dcmMoveScu::getOutputDir()
@@ -64,7 +64,8 @@ void dcmMoveScu::run()
 
         m_outputDirectory = subDir.absolutePath().toUtf8().constData();
 
-        qDebug() << m_outputDirectory.c_str();
+        // Notif ?
+        // qDebug() << m_outputDirectory.c_str();
 
         OFCondition cond = moveRequest(m_data.at(i));
         if(cond.good())
@@ -436,13 +437,51 @@ OFCondition dcmMoveScu::moveSCU(T_ASC_Association *assoc)
     return cond;
 }
 
+const char *
+DU_cmoveStatusString(Uint16 statusCode)
+{
+    const char *s = NULL;
+
+    switch(statusCode)
+    {
+        case STATUS_Success:
+            s = "Success";
+            break;
+        case STATUS_Pending:
+            s = "Pending";
+            break;
+        case STATUS_MOVE_Refused_OutOfResourcesNumberOfMatches:
+            s = "Refused: OutOfResourcesNumberOfMatches";
+            break;
+        case STATUS_MOVE_Refused_OutOfResourcesSubOperations:
+            s = "Refused: OutOfResourcesSubOperations";
+            break;
+        case STATUS_MOVE_Refused_SOPClassNotSupported:
+            s = "Refused: SOPClassNotSupported";
+            break;
+        case STATUS_MOVE_Refused_MoveDestinationUnknown:
+            s = "Refused: MoveDestinationUnknown";
+            break;
+        case STATUS_MOVE_Error_DataSetDoesNotMatchSOPClass:
+            s = "Error: DataSetDoesNotMatchSOPClass";
+            break;
+        case STATUS_MOVE_Cancel_SubOperationsTerminatedDueToCancelIndication:
+            s = "Cancel: SubOperationsTerminatedDueToCancelIndication";
+            break;
+        case STATUS_MOVE_Warning_SubOperationsCompleteOneOrMoreFailures:
+            s = "Warning: SubOperationsCompleteOneOrMoreFailures";
+            break;
+    }
+    
+    return s;
+}
+
 OFCondition dcmMoveScu::moveRequest(const QString &uid)
 {
     m_assoc = NULL;
     m_net = NULL;
     m_params = NULL;
 
-    qDebug()<<"-- Move request at level"<< m_queryLevel <<"with uid" <<uid;
     if(m_queryLevel == "PATIENT")
     {
         addOverrideKey(QString("QueryRetrieveLevel=" + m_queryLevel));
@@ -462,7 +501,7 @@ OFCondition dcmMoveScu::moveRequest(const QString &uid)
     
     }  
     
-    OFCondition cond = ASC_initializeNetwork(NET_ACCEPTORREQUESTOR, localPort, 60, &m_net);
+    OFCondition cond = ASC_initializeNetwork(NET_ACCEPTORREQUESTOR, m_localPort, 60, &m_net);
     if(cond.bad())
     {
         qDebug() << "Network initialization error : " << cond.text();
@@ -476,14 +515,14 @@ OFCondition dcmMoveScu::moveRequest(const QString &uid)
         return cond;
     }
 
-    cond = ASC_setAPTitles(m_params, localAetitle.toUtf8().data(), remoteAetitle.toUtf8().data(), NULL);
+    cond = ASC_setAPTitles(m_params, m_localAetitle.toUtf8().data(), m_remoteAetitle.toUtf8().data(), NULL);
     if(cond.bad())
     {
         qDebug() << "set APTitles error : " << cond.text();
         return cond;
     }
 
-    cond = ASC_setPresentationAddresses(m_params, localHostName.toUtf8().data(), QString(remoteHostName + QString(":") + QString::number(remotePort)).toUtf8().data());
+    cond = ASC_setPresentationAddresses(m_params, m_localHostName.toUtf8().data(), QString(m_remoteHostName + QString(":") + QString::number(m_remotePort)).toUtf8().data());
     if(cond.bad())
     {
         qDebug() << "Presentation addresses error: " << cond.text();
@@ -587,46 +626,4 @@ void dcmMoveScu::stopMoveNetwork()
     {
         ASC_dropNetwork(&m_net);
     }
-}
-
-
-
-
-const char *
-DU_cmoveStatusString(Uint16 statusCode)
-{
-    const char *s = NULL;
-
-    switch(statusCode)
-    {
-        case STATUS_Success:
-            s = "Success";
-            break;
-        case STATUS_Pending:
-            s = "Pending";
-            break;
-        case STATUS_MOVE_Refused_OutOfResourcesNumberOfMatches:
-            s = "Refused: OutOfResourcesNumberOfMatches";
-            break;
-        case STATUS_MOVE_Refused_OutOfResourcesSubOperations:
-            s = "Refused: OutOfResourcesSubOperations";
-            break;
-        case STATUS_MOVE_Refused_SOPClassNotSupported:
-            s = "Refused: SOPClassNotSupported";
-            break;
-        case STATUS_MOVE_Refused_MoveDestinationUnknown:
-            s = "Refused: MoveDestinationUnknown";
-            break;
-        case STATUS_MOVE_Error_DataSetDoesNotMatchSOPClass:
-            s = "Error: DataSetDoesNotMatchSOPClass";
-            break;
-        case STATUS_MOVE_Cancel_SubOperationsTerminatedDueToCancelIndication:
-            s = "Cancel: SubOperationsTerminatedDueToCancelIndication";
-            break;
-        case STATUS_MOVE_Warning_SubOperationsCompleteOneOrMoreFailures:
-            s = "Warning: SubOperationsCompleteOneOrMoreFailures";
-            break;
-    }
-    
-    return s;
 }

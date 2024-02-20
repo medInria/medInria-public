@@ -151,8 +151,6 @@ QList<QMap<DcmTagKey, QString>> dcmWeb::patientSearchService(const QMap<DcmTagKe
         }
     }
 
-    qDebug() << requestUrl;
-
     // send request
     QNetworkRequest request;
     request.setUrl(QUrl(requestUrl));
@@ -230,8 +228,6 @@ QList<QMap<DcmTagKey, QString>> dcmWeb::studySearchService(const QMap<DcmTagKey,
             requestUrl += tag.getTagName() + QString("=") + tags.value(tagKey) + QString("&");
         }
     }
-
-    qDebug() << requestUrl;
     
     // send request
     QNetworkRequest request;
@@ -307,8 +303,6 @@ QList<QMap<DcmTagKey, QString>> dcmWeb::seriesSearchService(const QMap<DcmTagKey
             requestUrl += tag.getTagName() + QString("=") + tags.value(tagKey) + QString("&");
         }
     }
-
-    qDebug() << requestUrl;
 
     // send request
     QNetworkRequest request;

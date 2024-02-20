@@ -58,12 +58,12 @@ QWidget* medStringParameterPresenter::buildWidget()
     {
     case 1:
         poWidgetRes = this->buildDateEdit(); break;
-	case 2:
-		poWidgetRes = this->buildLineEditOnFinish(); break;
-	case 3:
-		poWidgetRes = this->buildLineEditPassword(); break;
-	case 4:
-		poWidgetRes = this->buildLineEditPasswordEyes(); break;
+    case 2:
+        poWidgetRes = this->buildLineEditOnFinish(); break;
+    case 3:
+        poWidgetRes = this->buildLineEditPassword(); break;
+    case 4:
+        poWidgetRes = this->buildLineEditPasswordEyes(); break;
     case 5:
         poWidgetRes = this->buildLineEditFileImport(); break;
     case 0:
@@ -173,7 +173,8 @@ QWidget * medStringParameterPresenter::buildLineEditPasswordEyes()
 	return pWidgetRes;
 }
 
-QWidget * medStringParameterPresenter::buildLineEditFileImport(){
+QWidget * medStringParameterPresenter::buildLineEditFileImport()
+{
     QWidget *widget = new QWidget();
     QHBoxLayout *searchFilePath = new QHBoxLayout();
 
@@ -184,7 +185,7 @@ QWidget * medStringParameterPresenter::buildLineEditFileImport(){
     auto *pParam = d->parameter;
     connect(searchButton, &QPushButton::clicked, [=]()
     {
-        QString sourceFile = QFileDialog::getOpenFileName(nullptr, tr("Select JSON file with filtering DICOM keys"), "/home", tr("JSON file (*.json)"));
+        QString sourceFile = QFileDialog::getOpenFileName(nullptr, tr("Select JSON file with filtering DICOM keys"), QDir::homePath(), tr("JSON file (*.json)"));
         if(!sourceFile.isEmpty()){
             displayPath->setText(QDir::toNativeSeparators(sourceFile));
             pParam->setValue(displayPath->text());

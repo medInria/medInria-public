@@ -35,9 +35,6 @@ void dcmFindCallbacks::callback(T_DIMSE_C_FindRQ *request, int &responseCount, T
     {
         responseIdentifiers->findAndGetOFString(key, value);
         responses.insert(key, value.c_str());
-        
-        // Display values retrieved by C-FIND for DICOM tags
-        // qDebug() << key.toString().c_str() << "=" << value.c_str();
     }
 
     responsesList.append(responses);

@@ -81,7 +81,6 @@ bool dcmRetrieveData::retrieveDataService(int pi_requestId, unsigned int pi_uiLe
 
 void dcmRetrieveData::asyncGetSlot(QUuid netReqId, QByteArray payload, QList<QPair<QByteArray, QByteArray>> headers, int statusOrHttpCode)
 {
-    //qDebug() << "dcmRetrieveData::asyncGetSlot :" << QJsonDocument::fromJson(payload);
     if(m_requestIdMap.contains(netReqId))
     {
         // retrieve response elements
@@ -92,7 +91,6 @@ void dcmRetrieveData::asyncGetSlot(QUuid netReqId, QByteArray payload, QList<QPa
 
 void dcmRetrieveData::getData(QUuid netReqId)
 {
-    //qDebug() << "getData";
     if(m_requestIdMap[netReqId].response.code == DOWNLOAD_CODE)
     {
         emit inProgress(m_requestIdMap[netReqId].m_requestId, medAbstractSource::eRequestStatus::pending);
@@ -101,8 +99,6 @@ void dcmRetrieveData::getData(QUuid netReqId)
     {
         QByteArray payload = m_requestIdMap[netReqId].response.payload;
         QList<QPair<QByteArray, QByteArray>> headers = m_requestIdMap[netReqId].response.headers;
-
-        //qDebug() << "getData SUCCESS_CODE :" << QJsonDocument::fromJson(payload);
 
         // analyze response main header and data to extract each part (instance) of the response data
         httpResponse httpResp(payload, headers);
@@ -121,8 +117,6 @@ void dcmRetrieveData::getData(QUuid netReqId)
             {
                 dirPath = dir.filePath(QString::number(m_requestIdMap[netReqId].m_requestId));
                 QString filePath = dir.filePath(QString::number(m_requestIdMap[netReqId].m_requestId) + "/tmpData" + QString::number(i));
-
-                //qDebug() << filePath;
 
                 QFile fileHeader(filePath);
                 fileHeader.open(QIODevice::WriteOnly);

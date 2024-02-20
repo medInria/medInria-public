@@ -62,7 +62,6 @@ struct medPACSParametersPrivate
     /* ***********************************************************************/
     medGroupParameter *localSettings;
 
-    /* ***********************************************************************/
     /* ***************************** Server **********************************/
     /* ***********************************************************************/
     medGroupParameter *remoteSettings;
@@ -70,19 +69,19 @@ struct medPACSParametersPrivate
     medStringParameter *remoteHostname;
     medIntParameter *remotePort;
 
-    /* ***********************************************************************/
-    /* ********************** DICOMweb API Settings *******************/
-    /* ***********************************************************************/
 
-    medGroupParameter *webAPISettings;
-    medStringParameter *webAPIUrl;
-
+    /* ***********************************************************************/
     /* ***************************** PACS Communication protocol *************/
     /* ***********************************************************************/
-
     medGroupParameter *protocolSettings;
     medStringListParameter *protocols;
     bool isDcmtkProtocol;
+
+    /* ********************** DICOMweb API Settings **************************/
+    /* ***********************************************************************/
+    medGroupParameter *webAPISettings;
+    medStringParameter *webAPIUrl;
+
 
     /* ***********************************************************************/
     /* ************************* Filtering Parameters ************************/
@@ -315,7 +314,6 @@ medPACS::medPACS(dcmPACS *dicomLib) : d(new medPACSParametersPrivate)
     d->seriesFilter->addParameter(modality);
 
     QObject::connect(d->resetFilterParameters, &medTriggerParameter::pushed, [&]{
-        qDebug() << "reset Filter Parameter Values * 2 ?";
         resetFilterParameterValues(d->patientFilter->value(), d->patientLevelAttributes);
         resetFilterParameterValues(d->studyFilter->value(), d->studyLevelAttributes);
         resetFilterParameterValues(d->seriesFilter->value(), d->seriesLevelAttributes);
@@ -348,7 +346,6 @@ bool medPACS::initialization(const QString &pi_instanceId)
 
 void medPACS::onSettingsSaved()
 {
-    qDebug() << "onSettingsSaved * 2 ?";
     // WARn : Is it usefull ?
     d->pacs->updateLocalParameters(s_Aetitle.value(), s_Hostname.value(), s_Port.value());
     d->pacs->updateRemoteParameters(d->remoteAet->value(), d->remoteHostname->value(), d->remotePort->value());
@@ -620,7 +617,6 @@ void medPACS::readJsonFile(const QString &filePath)
         if(!content.isEmpty())
         {
             // Add filter parameters from json file
-            qDebug() << "Add filter parameters from json file";
             QJsonDocument jsonDoc = QJsonDocument::fromJson(content.toUtf8());
             QJsonObject jsonFilterObj = jsonDoc.object();
 
@@ -1006,6 +1002,9 @@ QList<QMap<QString, QString>> medPACS::getMandatoryAttributes(unsigned int pi_ui
 {
     QList<QMap<QString, QString>> attributesRes;
     QString parentKey;
+
+    qDebug() << "getMandatoryAttributes(" << parentId << ")";
+
     if (parentId.contains("/"))
     {
         QStringList splittedUri = parentId.split("/");
@@ -1124,11 +1123,6 @@ QList<QMap<DcmTagKey, QString>> medPACS::cFindPatient(const QString &patientID)
         tags[DCM_PatientBirthDate] = "";
     }
 
-    for(auto key : tags.keys())
-    {
-        qDebug() << key.toString().c_str() << "=" << tags.value(key);
-    }
-
     if(d->isDcmtkProtocol)
     {
         patientsRes = d->pacs->cFind(tags);
@@ -1160,12 +1154,6 @@ QList<QMap<DcmTagKey, QString>> medPACS::cFindStudy(const QString &studyInstance
         tags[DCM_StudyInstanceUID] = studyInstanceUID;
     }
 
-
-    for(auto key : tags.keys())
-    {
-        qDebug() << key.toString().c_str() << "=" << tags.value(key);
-    }
-
     if(d->isDcmtkProtocol)
     {
         studyRes = d->pacs->cFind(tags);
@@ -1190,7 +1178,8 @@ QList<QMap<DcmTagKey, QString>> medPACS::cFindSeries(const QString &studyInstanc
         tags.insert(key, d->seriesLevelAttributes.value(key));
     }
     
-    if(!studyInstanceUID.isEmpty())
+    //qDebug() << studyInstanceUID << "vs" << tags[DCM_StudyInstanceUID];
+    if (!studyInstanceUID.isEmpty())
     {
         tags[DCM_StudyInstanceUID] = studyInstanceUID;
     }
@@ -1213,9 +1202,8 @@ QList<QMap<DcmTagKey, QString>> medPACS::cFindSeries(const QString &studyInstanc
         tags[DCM_NumberOfSeriesRelatedInstances] = "";
     }
 
-    qDebug() << "----- findSeries";
-    for(auto key : tags.keys())
-    {
+    qDebug() << "cFindSeries(" << studyInstanceUID << ")";
+    for(auto key : tags.keys()){
         qDebug() << key.toString().c_str() << "=" << tags.value(key);
     }
 
@@ -1287,6 +1275,7 @@ QList<QMap<QString, QString>> medPACS::getStudyMandatoryAttributes(QList<QMap<Dc
         {
             QMap<QString, QString> attributes;
             attributes["id"] = info[DCM_StudyInstanceUID];
+            qDebug() << "getStudyMandatoryAttributes ->" << attributes["id"];
             attributes["description"] = info[DCM_StudyDescription];
             attributes["uid"] = info[DCM_StudyInstanceUID];
             attributes["study date"] = info[DCM_StudyDate];
@@ -1461,7 +1450,6 @@ int medPACS::getPACSAsyncData(unsigned int pi_uiLevel, const QString &key)
 
 int medPACS::getDicomWebAsyncData(unsigned int pi_uiLevel, const QString &key)
 {
-    qDebug() << "----- getDicomWebAsyncData";
     int iRes = -1;
     if (d->retrieveData->retrieveDataService(s_RequestId, pi_uiLevel, key))
     {

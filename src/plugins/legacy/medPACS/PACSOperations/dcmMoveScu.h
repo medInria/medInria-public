@@ -106,14 +106,14 @@ private:
     OFString m_outputDirectory = ".";
 
     // local
-    QString localAetitle;
-    QString localHostName;
-    int localPort;
+    QString m_localAetitle;
+    QString m_localHostName;
+    int m_localPort;
 
     // remote
-    QString remoteAetitle;
-    QString remoteHostName;
-    int remotePort;
+    QString m_remoteAetitle;
+    QString m_remoteHostName;
+    int m_remotePort;
 };
 
 
@@ -216,6 +216,13 @@ private:
  * @details display information on request and response details
  * @param assoc [in] containing association specific information
  * @return a condition resulting from the MOVE DIMSE command
+*/
+
+/**
+ * @fn const char *DU_cmoveStatusString(Uint16 statusCode)
+ * @brief translate the status code received by the request response into a human-readable text
+ * @param statusCode [in] MOVE request status
+ * @return a string that translates the received code
 */
 
 /**

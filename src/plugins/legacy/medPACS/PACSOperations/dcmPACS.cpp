@@ -211,6 +211,11 @@ QList<QMap<DcmTagKey, QString>> dcmPACS::cFind(const QMap<DcmTagKey, QString> &f
             keysRQ.push_back(QString(key.toString().c_str() + QString("=") + filters.value(key)).toUtf8().data());
         }
 
+        qDebug() << "Dans cFind de dcmPACS";
+        for(auto elem : keysRQ){
+            qDebug() << elem.c_str();
+        }
+
         DcmFindSCU findscu;
         OFCondition cond = findscu.initializeNetwork(30);
         if(cond.good())

@@ -26,8 +26,8 @@ bool medPACSPlugin::initialize()
 {
     return medSourcesLoader::instance()->registerSourceType(
         "medPACS",
-        "Datasource de type PACS",
-        "Ce type de datasource permet l'exploitation des anciennes base medInria 3",
+        "Datasource of type PACS",
+        "This type of datasource enables communication with PACS servers using DCMTK or DICOMweb requests",
         //&foo);
         []() -> medAbstractSource* {return new medPACS(new dcmPACS()); });
 }

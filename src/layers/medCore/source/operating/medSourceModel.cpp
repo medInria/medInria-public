@@ -901,7 +901,8 @@ void medSourceModel::itemPressed(QModelIndex const &index)
     if (index.isValid())
     {
         medSourceModelItem * pItemCurrent = getItem(index);
-        if (currentLevelFetchable(pItemCurrent) && pItemCurrent->childCount() == 0 )
+        // TODO : to remove when solved refresh issues after unfiltering source
+        if (currentLevelFetchable(pItemCurrent) /*&& pItemCurrent->childCount() == 0*/ )
         {
             populateLevel(index);
         }
@@ -1045,7 +1046,7 @@ void medSourceModel::populateLevel(QModelIndex const & index)
     { 
         if (medSourceHandler::instance()->attributesForBuildTree(d->sourceInstanceId, iLevel, key, entries))
         {
-             emit layoutAboutToBeChanged(); //this is useful to update arrow on the left if click is not inside
+            emit layoutAboutToBeChanged(); //this is useful to update arrow on the left if click is not inside
             QVector<QPair<int, int> > rangeToRemove; // vector of ranges to delete, <beginRange, endRange>
             computeRowRangesToRemove(pItem, entries, rangeToRemove);
             removeRowRanges(rangeToRemove, index);
@@ -1088,35 +1089,42 @@ void medSourceModel::computeRowRangesToRemove(medSourceModelItem * pItem, medSou
         bool bNotOnSource = !itemStillExist(entries, pChild);
         bool bNoMedDataAssociated = !pChild->containRoleValues( QMap<int, QVariantList>({ { MEDDATA_ROLE, QVariantList() } }) );
 
-        if (bNoMedDataAssociated)
+        if (bNotOnSource)
         {
-            //Here pChild is no longer present inside refreshed entries
-            if (iStartRemoveRange == -1)
+            if (bNoMedDataAssociated)
             {
-                //Here a new range starting
-                iStartRemoveRange = i;
-            }
-        }
-        else
-        {
-            //Here pChild is still present inside refreshed entries
-            if (iStartRemoveRange > -1)
-            {
-                //Here the current range end
-                rangeToRemove.push_back({ iStartRemoveRange, i - 1 });
-                iStartRemoveRange = -1; //clean iStartRemoveRange for a future range
-            }
-
-            //Here if pChild is not present into the source, all of offspring will be mark as not present
-            pChild->setData(bNotOnSource, 0, 101);
-            if (bNotOnSource)
-            {
-                for (auto *pItemTmp : pChild->offspringList())
+                //Here pChild is no longer present inside refreshed entries
+                if (iStartRemoveRange == -1)
                 {
-                    pItemTmp->setData(true, 0, 101);
+                    //Here a new range starting
+                    iStartRemoveRange = i;
+                }
+            }
+            else
+            {
+                //Here pChild is still present inside refreshed entries
+                if (iStartRemoveRange > -1)
+                {
+                    //Here the current range end
+                    rangeToRemove.push_back({ iStartRemoveRange, i - 1 });
+                    iStartRemoveRange = -1; //clean iStartRemoveRange for a future range
+                }
+
+                //Here if pChild is not present into the source, all of offspring will be mark as not present
+                pChild->setData(bNotOnSource, 0, 101);
+                if (bNotOnSource)
+                {
+                    for (auto *pItemTmp : pChild->offspringList())
+                    {
+                        pItemTmp->setData(true, 0, 101);
+                    }
                 }
             }
         }
+        // else
+        // {
+
+        // }
     }
 
     if (iStartRemoveRange > -1)
