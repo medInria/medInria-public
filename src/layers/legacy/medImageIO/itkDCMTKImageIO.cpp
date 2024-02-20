@@ -688,6 +688,12 @@ double DCMTKImageIO::GetPositionFromPrincipalAxisIndex(int index, int principalA
 {
     std::string s_position = this->GetMetaDataValueString("(0020,0032)", index);
 
+    if (s_position.empty())
+    {
+        itkWarningMacro( << "Tag (0020, 0032) (ImageOrigin) was not found, assuming 0.0/0.0/0.0" << std::endl);
+        return 0.0;
+    }
+
     // Convert string metadata to vector of double
     std::stringstream lineStream(s_position);
     std::vector<double> positionVector(std::istream_iterator<double>(lineStream), {});
