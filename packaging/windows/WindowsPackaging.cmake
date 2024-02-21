@@ -46,7 +46,7 @@ set(CPACK_NSIS_MODIFY_PATH "ON")
 set(CPACK_PACKAGE_EXECUTABLES "medInria" "medInria")
 
 # Add a link to the application website in the Startup menu.
-set(CPACK_NSIS_MENU_LINKS "http://med.inria.fr/" "Homepage for medInria" "medDevEnv" ".\\sdk\\med_Dev.bat") 
+set(CPACK_NSIS_MENU_LINKS "http://med.inria.fr/" "Homepage for medInria") 
 
 # Run medInria after installation
 set(CPACK_NSIS_MUI_FINISHPAGE_RUN "medInria.exe")
@@ -160,6 +160,8 @@ fixup_bundle(\"${APP}\"   \"\${MED_LIBRARIES}\"   \"${libSearchDirs};\${CMAKE_IN
 
 if(${SDK_PACKAGING} )
     if(EXISTS ${SDK_DIR} )
+        set(CPACK_NSIS_Dev_INSTALL_DIRECTORY "$PROFILE\\\\AppData\\\\Local\\\\inria\\\\${CPACK_PACKAGE_INSTALL_DIRECTORY}")
+
         file(GLOB_RECURSE QT_DEBUG_DLL ${QT_BINARY_DIR}/*d.dll)
         
         INSTALL(DIRECTORY ${SDK_DIR}                                        DESTINATION .                       COMPONENT Dev)
@@ -179,6 +181,12 @@ if(${SDK_PACKAGING} )
         INSTALL(FILES     ${QT_PLUGINS_DIR}/platforms/qoffscreen.dll        DESTINATION ./sdk/bin/platforms/    COMPONENT Dev) #is it really used
         INSTALL(FILES     ${QT_PLUGINS_DIR}/platforms/qwindows.dll          DESTINATION ./sdk/bin/platforms/    COMPONENT Dev)
         INSTALL(FILES     ${QT_PLUGINS_DIR}/sqldrivers/qsqlite.dll          DESTINATION ./sdk/bin/sqldrivers/   COMPONENT Dev)
+        
+        LIST(APPEND CPACK_NSIS_CREATE_ICONS_EXTRA "  CreateShortCut '$SMPROGRAMS\\\\medInria\\\\medDevEnv.lnk' '$APPDATA\\\\Local\\\\inria\\\\${CPACK_PACKAGE_INSTALL_DIRECTORY}\\\\sdk\\\\medDevEnv.bat'")
+        LIST(APPEND CPACK_NSIS_DELETE_ICONS_EXTRA "  Delete '$SMPROGRAMS\\\\medInria\\\\medDevEnv.lnk'")
+        
+        LIST(APPEND CPACK_NSIS_CREATE_ICONS_EXTRA  "  CreateShortCut '$DESKTOP\\\\medDevEnv.lnk' '$APPDATA\\\\Local\\\\inria\\\\${CPACK_PACKAGE_INSTALL_DIRECTORY}\\\\sdk\\\\medDevEnv.bat'")
+        LIST(APPEND CPACK_NSIS_DELETE_ICONS_EXTRA  "  Delete '$DESKTOP\\\\medDevEnv.lnk'")
     else()
         message("No folder  ${SDK_DIR} exists. SDK will not be installed.")
     endif()
