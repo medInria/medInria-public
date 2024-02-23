@@ -108,7 +108,6 @@ list(APPEND
   ${dtk_ROOT}/bin/${CONFIG_MODE} 
   ${RPI_ROOT}/bin/${CONFIG_MODE} 
   ${DCMTK_ROOT}/bin/${CONFIG_MODE}
-  ${QtDCM_ROOT}/bin/${CONFIG_MODE} 
   )
 
 install(CODE "
@@ -117,13 +116,11 @@ file(GLOB_RECURSE itk_files LIST_DIRECTORIES true \"${ITK_ROOT}/bin/*.dll\")
 file(GLOB_RECURSE vtk_files LIST_DIRECTORIES true \"${VTK_ROOT}/bin/*.dll\")
 file(GLOB_RECURSE dtk_files LIST_DIRECTORIES true \"${dtk_ROOT}/bin/*.dll\")
 file(GLOB_RECURSE ttk_files LIST_DIRECTORIES true \"${TTK_ROOT}/bin/*.dll\")
-file(GLOB_RECURSE dcm_files LIST_DIRECTORIES true \"${QtDCM_ROOT}/bin/*.dll\")
 file(GLOB_RECURSE qt5_files LIST_DIRECTORIES true \"${QT_BINARY_DIR}/*.dll\")
 list(APPEND files \${itk_files})
 list(APPEND files \${vtk_files})
 list(APPEND files \${dtk_files})
 list(APPEND files \${ttk_files})
-list(APPEND files \${dcm_files})
 list(APPEND files \${qt5_files})
 
 foreach(file \${files})

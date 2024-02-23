@@ -78,7 +78,7 @@ set(cmake_cache_args
 ## Check if patch has to be applied
 ## #############################################################################
   
-ep_GeneratePatchCommand(${ep} ${ep}_PATCH_COMMAND ITK_Mac.patch)
+ep_GeneratePatchCommand(${ep} ${ep}_PATCH_COMMAND ITK.patch)
 
 ## #############################################################################
 ## Add external-project

@@ -11,8 +11,11 @@
 
 =========================================================================*/
 #include <medSourcesLoader.h>
-#include "medPACSPlugin.h"
+
+#include <dcmtk/config/osconfig.h>
+
 #include "medPACS.h"
+#include "medPACSPlugin.h"
 
 medPACSPlugin::medPACSPlugin(QObject *parent) : medPluginLegacy(parent)
 {

@@ -24,8 +24,7 @@ list(APPEND ${ep}_dependencies
   DCMTK 
   ITK 
   VTK 
-  TTK 
-  QtDCM
+  TTK
   RPI
   )
 
@@ -84,7 +83,6 @@ set(cmake_cache_args
   -DDCMTK_ROOT:PATH=${DCMTK_ROOT}
   -Ddtk_ROOT:PATH=${dtk_ROOT}
   -DITK_ROOT:PATH=${ITK_ROOT}
-  -DQtDCM_ROOT:PATH=${QtDCM_ROOT}
   -DRPI_ROOT:PATH=${RPI_ROOT}
   -DTTK_ROOT:PATH=${TTK_ROOT}
   -DVTK_ROOT:PATH=${VTK_ROOT}
@@ -94,7 +92,6 @@ set(cmake_cache_args
   -DDCMTK_DIR:PATH=${DCMTK_DIR}
   -Ddtk_DIR:PATH=${dtk_DIR}
   -DITK_DIR:PATH=${ITK_DIR}
-  -DQtDCM_DIR:PATH=${QtDCM_DIR}
   -DRPI_DIR:PATH=${RPI_DIR}
   -DTTK_DIR:PATH=${TTK_DIR}
   -DVTK_DIR:PATH=${VTK_DIR}
@@ -156,7 +153,6 @@ if (WIN32)
   file(TO_NATIVE_PATH ${VTK_ROOT}                VTK_BIN_BASE)
   file(TO_NATIVE_PATH ${TTK_ROOT}                TTK_BIN_BASE)
   file(TO_NATIVE_PATH ${dtk_ROOT}                DTK_BIN_BASE)
-  file(TO_NATIVE_PATH ${QtDCM_ROOT}              DCM_BIN_BASE)
   file(TO_NATIVE_PATH ${_qt5Core_install_prefix} QT5_BIN_BASE)
   file(TO_NATIVE_PATH ${medInria_BINARY_DIR}     MED_BIN_BASE)
 
@@ -169,7 +165,6 @@ if (WIN32)
         COMMAND for %%I in ( ${ITK_BIN_BASE}\\bin\\${CONFIG_MODE}\\*.dll ) do (if EXIST ${MED_BIN_BASE}\\%%~nxI (del /S ${MED_BIN_BASE}\\%%~nxI & mklink /H ${MED_BIN_BASE}\\%%~nxI %%~fI) else mklink /H ${MED_BIN_BASE}\\%%~nxI %%~fI) 
         COMMAND for %%I in ( ${VTK_BIN_BASE}\\bin\\${CONFIG_MODE}\\*.dll ) do (if EXIST ${MED_BIN_BASE}\\%%~nxI (del /S ${MED_BIN_BASE}\\%%~nxI & mklink /H ${MED_BIN_BASE}\\%%~nxI %%~fI) else mklink /H ${MED_BIN_BASE}\\%%~nxI %%~fI) 
         COMMAND for %%I in ( ${DTK_BIN_BASE}\\bin\\${CONFIG_MODE}\\*.dll ) do (if EXIST ${MED_BIN_BASE}\\%%~nxI (del /S ${MED_BIN_BASE}\\%%~nxI & mklink /H ${MED_BIN_BASE}\\%%~nxI %%~fI) else mklink /H ${MED_BIN_BASE}\\%%~nxI %%~fI) 
-        COMMAND for %%I in ( ${DCM_BIN_BASE}\\bin\\${CONFIG_MODE}\\*.dll ) do (if EXIST ${MED_BIN_BASE}\\%%~nxI (del /S ${MED_BIN_BASE}\\%%~nxI & mklink /H ${MED_BIN_BASE}\\%%~nxI %%~fI) else mklink /H ${MED_BIN_BASE}\\%%~nxI %%~fI) 
         COMMAND for %%I in ( ${TTK_BIN_BASE}\\bin\\*.dll                 ) do (if EXIST ${MED_BIN_BASE}\\%%~nxI (del /S ${MED_BIN_BASE}\\%%~nxI & mklink /H ${MED_BIN_BASE}\\%%~nxI %%~fI) else mklink /H ${MED_BIN_BASE}\\%%~nxI %%~fI) 
         COMMAND for %%I in ( ${QT5_BIN_BASE}\\bin\\*.dll                 ) do (if EXIST ${MED_BIN_BASE}\\%%~nxI (del /S ${MED_BIN_BASE}\\%%~nxI & mklink /H ${MED_BIN_BASE}\\%%~nxI %%~fI) else mklink /H ${MED_BIN_BASE}\\%%~nxI %%~fI) 
         #COMMAND ${CMAKE_COMMAND} -E copy ${medInria_SOURCE_DIR}/cmake/dtkConfig.cmake.in ${EP_INSTALL_PREFIX}/dtk/lib/cmake/dtk/dtkConfig.cmake

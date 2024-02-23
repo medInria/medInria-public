@@ -59,8 +59,7 @@ list(APPEND external_projects
   ITK 
   RPI 
   TTK 
-  DCMTK 
-  QtDCM 
+  DCMTK
   dtk
   )
 

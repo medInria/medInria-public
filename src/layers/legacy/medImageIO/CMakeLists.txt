@@ -101,12 +101,41 @@ target_link_libraries(${TARGET_NAME} PUBLIC
   ITKVTK
   vtkIOImage
   ${ITKIOPhilipsREC_LIBRARIES}
-  ${DCMTK_LIBRARIES}
+  
   
   # dtk
   dtkLog
   # Legacy
   dtkCoreSupport
+  
+PRIVATE
+  DCMTK::ofstd
+  DCMTK::oflog
+  DCMTK::dcmdata
+  DCMTK::i2d
+  DCMTK::dcmimgle
+  DCMTK::dcmimage
+  DCMTK::dcmjpeg
+  DCMTK::ijg8
+  DCMTK::ijg12
+  DCMTK::ijg16
+  DCMTK::dcmjpls
+  DCMTK::dcmtkcharls
+  DCMTK::dcmtls
+  DCMTK::dcmnet
+  DCMTK::dcmsr
+  DCMTK::cmr
+  DCMTK::dcmdsig
+  DCMTK::dcmwlm
+  DCMTK::dcmqrdb
+  DCMTK::dcmpstat
+  DCMTK::dcmrt
+  DCMTK::dcmiod
+  DCMTK::dcmfg
+  DCMTK::dcmseg
+  DCMTK::dcmtract
+  DCMTK::dcmpmap
+  DCMTK::dcmect
   )
 
 ## #############################################################################

@@ -58,7 +58,7 @@ include(add_external_resources)
 
 include(add_plugins)
 
-if (NOT DEFINED ITK_ROOT AND NOT DEFINED VTK_ROOT AND NOT DEFINED dtk_ROOT AND NOT DEFINED TTK_ROOT AND NOT DEFINED RPI_ROOT)
+if (NOT DEFINED ITK_ROOT AND NOT DEFINED VTK_ROOT AND NOT DEFINED dtk_ROOT AND NOT DEFINED TTK_ROOT AND NOT DEFINED RPI_ROOT AND NOT DEFINED DCMTK_ROOT)
     message("medInria attempts to set the following paths")
 endif()
 
@@ -85,6 +85,11 @@ endif()
 if (NOT DEFINED RPI_ROOT)
     cmake_path(SET RPI_ROOT NORMALIZE ${_medInria_install_prefix}/../../dependencies/RPI)
     message("RPI_ROOT ${RPI_ROOT}")
+endif()
+
+if (NOT DEFINED DCMTK_ROOT)
+    cmake_path(SET DCMTK_ROOT NORMALIZE ${_medInria_install_prefix}/../../dependencies/DCMTK)
+    message("DCMTK_ROOT ${DCMTK_ROOT}")
 endif()
 
 ######################## End of Bolc for external dependencies #########################
