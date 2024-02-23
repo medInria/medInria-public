@@ -60,7 +60,6 @@ set(cmake_args
   -DCMAKE_CXX_FLAGS=${${ep}_cxx_flags}
   -DCMAKE_MACOSX_RPATH:BOOL=OFF
   -DCMAKE_SHARED_LINKER_FLAGS=${${ep}_shared_linker_flags}  
-  -DCMAKE_INSTALL_PREFIX=<INSTALL_DIR>
   -DBUILD_SHARED_LIBS=${BUILD_SHARED_LIBS_${ep}}
   -DBUILD_EXAMPLES:BOOL=OFF
   -DBUILD_TESTING:BOOL=OFF
@@ -71,18 +70,15 @@ set(cmake_args
   )
   
 set(cmake_cache_args
-  -DVTK_DIR:PATH=${VTK_DIR}
-  )
-  
-set(cmake_cache_args
-  -DVTK_DIR:PATH=${VTK_DIR}
+  -DVTK_ROOT:PATH=${VTK_ROOT}
+  -DCMAKE_INSTALL_PREFIX:PATH=${EP_INSTALL_PREFIX}/${ep}
   )
 
 ## #############################################################################
 ## Check if patch has to be applied
 ## #############################################################################
   
-ep_GeneratePatchCommand(${ep} ${ep}_PATCH_COMMAND ITK_Mac.patch)
+ep_GeneratePatchCommand(${ep} ${ep}_PATCH_COMMAND ITK.patch)
 
 ## #############################################################################
 ## Add external-project
@@ -96,25 +92,27 @@ ExternalProject_Add(${ep}
   BINARY_DIR ${build_path}
   TMP_DIR ${tmp_path}
   STAMP_DIR ${stamp_path}
+  INSTALL_DIR ${EP_INSTALL_PREFIX}/${ep}
   
   GIT_REPOSITORY ${git_url}
   GIT_TAG ${git_tag}
   PATCH_COMMAND ${${ep}_PATCH_COMMAND}
   CMAKE_GENERATOR ${gen}
   CMAKE_GENERATOR_PLATFORM ${CMAKE_GENERATOR_PLATFORM}
-  CMAKE_ARGS ${cmake_args}  
+  CMAKE_ARGS ${cmake_args}
   CMAKE_CACHE_ARGS ${cmake_cache_args}
   DEPENDS ${${ep}_dependencies}
-  INSTALL_COMMAND ""
   BUILD_ALWAYS ${EP_BUILD_ALWAYS}
+  ${EP_INSTAL_COMMAND}
   )
 
 ## #############################################################################
 ## Set variable to provide infos about the project
 ## #############################################################################
 
-ExternalProject_Get_Property(ITK binary_dir)
-set(${ep}_DIR ${binary_dir} PARENT_SCOPE)
+ExternalProject_Get_Property(${ep} binary_dir)
+set(${ep}_ROOT ${binary_dir} PARENT_SCOPE)
+set(${ep}_DIR  ${binary_dir} PARENT_SCOPE)
 
 endif() #NOT USE_SYSTEM_ep
 

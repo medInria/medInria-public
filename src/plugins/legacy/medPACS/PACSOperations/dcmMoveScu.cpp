@@ -437,45 +437,6 @@ OFCondition dcmMoveScu::moveSCU(T_ASC_Association *assoc)
     return cond;
 }
 
-const char *
-DU_cmoveStatusString(Uint16 statusCode)
-{
-    const char *s = NULL;
-
-    switch(statusCode)
-    {
-        case STATUS_Success:
-            s = "Success";
-            break;
-        case STATUS_Pending:
-            s = "Pending";
-            break;
-        case STATUS_MOVE_Refused_OutOfResourcesNumberOfMatches:
-            s = "Refused: OutOfResourcesNumberOfMatches";
-            break;
-        case STATUS_MOVE_Refused_OutOfResourcesSubOperations:
-            s = "Refused: OutOfResourcesSubOperations";
-            break;
-        case STATUS_MOVE_Refused_SOPClassNotSupported:
-            s = "Refused: SOPClassNotSupported";
-            break;
-        case STATUS_MOVE_Refused_MoveDestinationUnknown:
-            s = "Refused: MoveDestinationUnknown";
-            break;
-        case STATUS_MOVE_Error_DataSetDoesNotMatchSOPClass:
-            s = "Error: DataSetDoesNotMatchSOPClass";
-            break;
-        case STATUS_MOVE_Cancel_SubOperationsTerminatedDueToCancelIndication:
-            s = "Cancel: SubOperationsTerminatedDueToCancelIndication";
-            break;
-        case STATUS_MOVE_Warning_SubOperationsCompleteOneOrMoreFailures:
-            s = "Warning: SubOperationsCompleteOneOrMoreFailures";
-            break;
-    }
-    
-    return s;
-}
-
 OFCondition dcmMoveScu::moveRequest(const QString &uid)
 {
     m_assoc = NULL;

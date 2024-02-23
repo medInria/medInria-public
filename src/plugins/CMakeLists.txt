@@ -69,7 +69,6 @@ set(PLUGIN_LIST
   legacy/meshManipulation                                                ON
   legacy/meshMapping                                                     ON
   legacy/polygonRoi                                                      ON
-  # legacy/qtdcmDataSource                                                 ON
   legacy/reformat                                                        ON
   legacy/undoRedoRegistration                                            ON
   legacy/variationalSegmentation                                         ON

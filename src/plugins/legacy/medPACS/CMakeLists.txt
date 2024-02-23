@@ -33,6 +33,9 @@ add_definitions(-D${TARGET_NAME_UP}_VERSION="${${TARGET_NAME}_VERSION}")
 #FIND_PACKAGE(GTest REQUIRED)
 #FIND_PACKAGE(Qt5Test REQUIRED)
 
+find_package(dtk REQUIRED)
+include_directories(${dtk_INCLUDE_DIRS})
+
 find_package(DCMTK REQUIRED)
 
 find_package(ITK REQUIRED)
@@ -48,7 +51,7 @@ list_source_files(${TARGET_NAME}
  )
 
 ## #############################################################################
-## include directorie.
+## include directories.
 ## #############################################################################
 
 list_header_directories_to_include(${TARGET_NAME}
@@ -89,8 +92,35 @@ add_library(${TARGET_NAME} SHARED
 ## Link
 ## #############################################################################
 target_link_libraries(${TARGET_NAME}
-  ${DCMTK_LIBRARIES}
   medCore
+
+  DCMTK::ofstd
+  DCMTK::oflog
+  DCMTK::dcmdata
+  DCMTK::i2d
+  DCMTK::dcmimgle
+  DCMTK::dcmimage
+  DCMTK::dcmjpeg
+  DCMTK::ijg8
+  DCMTK::ijg12
+  DCMTK::ijg16
+  DCMTK::dcmjpls
+  DCMTK::dcmtkcharls
+  DCMTK::dcmtls
+  DCMTK::dcmnet
+  DCMTK::dcmsr
+  DCMTK::cmr
+  DCMTK::dcmdsig
+  DCMTK::dcmwlm
+  DCMTK::dcmqrdb
+  DCMTK::dcmpstat
+  DCMTK::dcmrt
+  DCMTK::dcmiod
+  DCMTK::dcmfg
+  DCMTK::dcmseg
+  DCMTK::dcmtract
+  DCMTK::dcmpmap
+  DCMTK::dcmect
   )
 
 ## #############################################################################

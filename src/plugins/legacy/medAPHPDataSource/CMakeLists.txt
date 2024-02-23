@@ -39,6 +39,9 @@ find_package(QtDCM REQUIRED)
 
 find_package(ITK REQUIRED)
 
+find_package(dtk REQUIRED)
+include_directories(${dtk_INCLUDE_DIRS})
+
 ## #############################################################################
 ## List Sources
 ## #############################################################################

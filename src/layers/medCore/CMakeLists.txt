@@ -15,11 +15,16 @@
 
 set(TARGET_NAME medCore)
 
+## #############################################################################
+## find required
+## #############################################################################
+
+# find dtk
+find_package(dtk REQUIRED)
+include_directories(${dtk_INCLUDE_DIRS})
+
 find_package(Qt5Test REQUIRED)
 find_package(Qt5 REQUIRED Network)
-#required for querying the GPU, can be removed once using Qt 5.3
-#using QOpenGLFunctions::glGetString(), as well as the {OPENGL_LIBRARIES} below.
-find_package(OpenGL REQUIRED)
 
 ## #############################################################################
 ## List Sources
@@ -72,18 +77,20 @@ list_header_directories_to_include(${TARGET_NAME}
 ## #############################################################################
 ## add library
 ## #############################################################################
-
-add_library(${TARGET_NAME} SHARED
-  ${${TARGET_NAME}_CFILES}
-  ${${TARGET_NAME}_QRC}
-  )
+add_library(${TARGET_NAME} SHARED)
+target_sources(${TARGET_NAME} PRIVATE ${${TARGET_NAME}_CFILES} ${${TARGET_NAME}_QRC} )
+target_sources(${TARGET_NAME} PRIVATE ${RELATIVE_${TARGET_NAME}_HEADERS})
+set_target_properties(${TARGET_NAME} PROPERTIES PUBLIC_HEADER "${RELATIVE_${TARGET_NAME}_HEADERS}")
 
 ## #############################################################################
-## include directorie.
+## include directories.
 ## #############################################################################
 
 target_include_directories(${TARGET_NAME}
-  PUBLIC ${${TARGET_NAME}_INCLUDE_DIRS}
+  PRIVATE ${dtk_INCLUDE_DIRS}
+  PUBLIC
+	"$<BUILD_INTERFACE:${${TARGET_NAME}_INCLUDE_DIRS}>"
+	"$<INSTALL_INTERFACE:$<INSTALL_PREFIX>/include/${TARGET_NAME}>"
   )
 
 ## #############################################################################
@@ -91,31 +98,36 @@ target_include_directories(${TARGET_NAME}
 ## #############################################################################
 
 target_link_libraries(${TARGET_NAME}
+  PUBLIC
+  dtkCore
+  dtkCoreSupport
+  dtkGuiSupport
+
   Qt5::Core
-  Qt5::Network
+  Qt5::Xml
   Qt5::Widgets
   Qt5::OpenGL
   Qt5::Gui
   Qt5::Sql
   Qt5::Test
-  Qt5::Xml
   ${OPENGL_LIBRARIES}
-  dtkCoreSupport
-  dtkGuiSupport
+
+  PRIVATE
   dtkLog
-  dtkComposer
-        Qt5::Test
+  Qt5::Network
   )
-
-if (WIN32) #TODO is that for the memory management thing ?
-  target_link_libraries(${TARGET_NAME} psapi.lib)
-endif()
-
+  
 ## #############################################################################
 ## install
 ## #############################################################################
 
 set_lib_install_rules(${TARGET_NAME}
-  ${${TARGET_NAME}_HEADERS}
-  )
-  
+    NAMESPACE                  med
+    VERSION                    4.0    
+    LIBRARY_OUTPUT_NAME_PREFIX med
+    DESTINATION                ${MEDINRIA_PATH}
+    
+    PUBLIC_DEPENDENCIES        
+      "dtk REQUIRED COMPONENTS dtkCore dtkCoreSupport dtkGuiSupport"
+      "Qt5 REQUIRED COMPONENTS Core Xml Widgets OpenGL Gui Sql Test"
+    )

@@ -27,6 +27,9 @@ add_definitions(-D${TARGET_NAME_UP}_VERSION="${${TARGET_NAME}_VERSION}")
 ## find required
 ## #############################################################################
 
+find_package(dtk REQUIRED)
+include_directories(${dtk_INCLUDE_DIRS})
+
 find_package(ITK REQUIRED  COMPONENTS ITKCommon ITKTransform  ITKRegistrationCommon ITKIOImageBase ITKIOMeta ITKTransformFactory ITKIOTransformBase ITKIOTransformInsightLegacy)
 include(${ITK_USE_FILE})
 

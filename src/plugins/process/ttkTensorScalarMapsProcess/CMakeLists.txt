@@ -4,6 +4,9 @@ set(TARGET_NAME ttkTensorScalarMapsProcessPlugin)
 ## Resolve dependencies
 ## #############################################################################
 
+find_package(dtk REQUIRED)
+include_directories(${dtk_INCLUDE_DIRS})
+
 find_package(TTK REQUIRED COMPONENTS ITKTensor ttkAlgorithms)
 
 find_package(VTK REQUIRED COMPONENTS vtkRenderingCore)

@@ -29,9 +29,13 @@ add_definitions(-D${TARGET_NAME_UP}_VERSION="${${TARGET_NAME}_VERSION}")
 ## Resolve dependencies
 ## #############################################################################
 
+
+#find_package(Qt5 REQUIRED Core)
+
 #enable_testing(true)
 #FIND_PACKAGE(GTest REQUIRED)
-
+find_package(dtk REQUIRED)
+include_directories(${dtk_INCLUDE_DIRS})
 
 ## #############################################################################
 ## List Sources
@@ -52,7 +56,6 @@ list_header_directories_to_include(${TARGET_NAME}
 include_directories(${${TARGET_NAME}_INCLUDE_DIRS}
   ${MEDINRIA_INCLUDE_DIRS}
   )
-
 
 ## #############################################################################
 ## Precompile headers
@@ -82,7 +85,9 @@ add_library(${TARGET_NAME} SHARED
 ## Link
 ## #############################################################################
 target_link_libraries(${TARGET_NAME} PUBLIC
-        medCore
+    Qt5::Core
+    Qt5::Widgets
+    medCore
   )
 
 

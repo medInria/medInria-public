@@ -21,13 +21,12 @@ set(TARGET_NAME medRegistration)
 ## #############################################################################
 
 find_package(dtk REQUIRED)
-include_directories(${dtk_INCLUDE_DIRS})
+#include_directories(${dtk_INCLUDE_DIRS})
 
 find_package(ITK REQUIRED COMPONENTS ITKIOImageBase ITKTransform ITKIOTransformBase ITKIOTransformInsightLegacy ITKRegistrationCommon ITKIOMeta)#ITKCommon ITKTransformFactory
 include(${ITK_USE_FILE})
 
 find_package(RPI REQUIRED COMPONENTS common)
-#include(${RPI_USE_FILE})
 
 
 ## #############################################################################
@@ -47,9 +46,10 @@ list_header_directories_to_include(${TARGET_NAME}
 ## add library
 ## #############################################################################
 
-add_library(${TARGET_NAME} SHARED
-  ${${TARGET_NAME}_CFILES}
-  )
+add_library(${TARGET_NAME} SHARED)
+target_sources(${TARGET_NAME} PRIVATE ${${TARGET_NAME}_CFILES} ${${TARGET_NAME}_QRC} )
+target_sources(${TARGET_NAME} PRIVATE ${RELATIVE_${TARGET_NAME}_HEADERS})
+set_target_properties(${TARGET_NAME} PROPERTIES PUBLIC_HEADER "${RELATIVE_${TARGET_NAME}_HEADERS}")
 
 
 ## #############################################################################
@@ -57,7 +57,10 @@ add_library(${TARGET_NAME} SHARED
 ## #############################################################################
 
 target_include_directories(${TARGET_NAME}
-  PUBLIC ${${TARGET_NAME}_INCLUDE_DIRS}
+  PRIVATE ${dtk_INCLUDE_DIRS}
+  PUBLIC
+    "$<BUILD_INTERFACE:${${TARGET_NAME}_INCLUDE_DIRS}>"
+    "$<INSTALL_INTERFACE:include/${TARGET_NAME}>"
   )
 
 
@@ -65,12 +68,12 @@ target_include_directories(${TARGET_NAME}
 ## Link
 ## #############################################################################
 
-target_link_libraries(${TARGET_NAME}
+target_link_libraries(${TARGET_NAME} PUBLIC
   Qt5::Core
   Qt5::Widgets
-  dtkCoreSupport
-  medCore
-  dtkLog
+  
+  med::Core
+
   ITKCommon
   ITKIOImageBase
   ITKIOBMP
@@ -100,6 +103,11 @@ target_link_libraries(${TARGET_NAME}
   ITKIOTransformInsightLegacy
   ITKIOMRC
   RPI::common
+
+  # dtk
+  dtkLog
+  # Legacy
+  dtkCoreSupport
   )
 
 
@@ -107,6 +115,21 @@ target_link_libraries(${TARGET_NAME}
 ## install
 ## #############################################################################
 
+# set_lib_install_rules(${TARGET_NAME}
+#   ${${TARGET_NAME}_HEADERS}
+#   )
+
+
 set_lib_install_rules(${TARGET_NAME}
-  ${${TARGET_NAME}_HEADERS}
-  )
+    NAMESPACE                  med
+    VERSION                    4.0    
+    LIBRARY_OUTPUT_NAME_PREFIX med
+    DESTINATION                ${MEDINRIA_PATH}
+    
+    PUBLIC_DEPENDENCIES      
+      "medInria REQUIRED COMPONENTS Core"  
+      "dtk      REQUIRED"
+      "Qt5      REQUIRED COMPONENTS Core Widgets"
+      "ITK      REQUIRED COMPONENTS ITKIOImageBase ITKTransform ITKIOTransformBase ITKIOTransformInsightLegacy ITKRegistrationCommon ITKIOMeta"
+      "RPI      REQUIRED COMPONENTS Common"
+    )

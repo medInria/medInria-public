@@ -1,5 +1,4 @@
-diff --git a/Modules/ThirdParty/KWSys/src/CMakeLists.txt b/Modules/ThirdParty/KWSys/src/CMakeLists.txt
-index 3c806d816d..6096ec57df 100644
+unchanged:
 --- a/Modules/ThirdParty/KWSys/src/CMakeLists.txt
 +++ b/Modules/ThirdParty/KWSys/src/CMakeLists.txt
 @@ -24,7 +24,9 @@ set(KWSYS_INSTALL_COMPONENT_NAME_DEVELOPMENT Development)
@@ -12,4 +11,17 @@ index 3c806d816d..6096ec57df 100644
 +  endif()
  endif()
  set(KWSYS_PROPERTIES_CXX MACOSX_RPATH ${_macosx_rpath} WINDOWS_EXPORT_ALL_SYMBOLS FALSE)
+ 
+only in patch2:
+unchanged:
+--- a/Modules/ThirdParty/GDCM/src/gdcm/Source/MediaStorageAndFileFormat/gdcmImageChangePhotometricInterpretation.h
++++ b/Modules/ThirdParty/GDCM/src/gdcm/Source/MediaStorageAndFileFormat/gdcmImageChangePhotometricInterpretation.h
+@@ -14,6 +14,8 @@
+ #ifndef GDCMIMAGECHANGEPHOTOMETRICINTERPRETATION_H
+ #define GDCMIMAGECHANGEPHOTOMETRICINTERPRETATION_H
+ 
++#include <limits>
++
+ #include "gdcmImageToImageFilter.h"
+ #include "gdcmPhotometricInterpretation.h"
  

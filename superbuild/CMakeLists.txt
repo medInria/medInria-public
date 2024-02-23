@@ -59,8 +59,7 @@ list(APPEND external_projects
   ITK 
   RPI 
   TTK 
-  DCMTK 
-  QtDCM 
+  DCMTK
   dtk
   )
 
@@ -78,6 +77,14 @@ if (USE_OSPRay)
   SET(ospray_DIR CACHE PATH "The directory containing a CMAKE configuration file for OSPRay")
   SET(OSPRAY_INSTALL_DIR CACHE PATH "Install location of OSPRay")
 endif()
+
+## #############################################################################
+## SDK Options
+## #############################################################################
+option(SDK_GENERATION "Generate the SDK directory" OFF )
+option(SDK_PACKAGING  "Include the SDK into the packaging" OFF )
+set(SDK_DIR ${CMAKE_BINARY_DIR}/../sdk CACHE FILEPATH "Path of the SDK directory") 
+mark_as_advanced(SDK_DIR)
 
 ## #############################################################################
 ## Setup build configuration
