@@ -1,0 +1,8 @@
+@PACKAGE_INIT@
+
+@_FIND_DEPENDENCY_CMD@
+
+include("${CMAKE_CURRENT_LIST_DIR}/@TARGET_NAME@Targets.cmake")
+
+@_ALIAS@
+#check_required_components(@TARGET_NAME@)
