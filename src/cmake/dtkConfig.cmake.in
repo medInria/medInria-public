@@ -1,0 +1,34 @@
+get_filename_component(_dtk_install_prefix "${CMAKE_CURRENT_LIST_DIR}/.." ABSOLUTE)
+
+
+MACRO(SUBDIRLIST result curdir)
+  FILE(GLOB_RECURSE  dirs LIST_DIRECTORIES true ${curdir})
+  
+  SET(dirlist "")
+  FOREACH(dir ${dirs})
+    IF(IS_DIRECTORY ${dir})
+      LIST(APPEND dirlist ${dir})
+    ENDIF()
+  ENDFOREACH()
+  SET(${result} ${dirlist})
+ENDMACRO()
+
+include("${_dtk_install_prefix}/dtkDepends.cmake")
+
+get_filename_component(dtk_INCLUDE_DIRS "${_dtk_install_prefix}/../../../include" ABSOLUTE)
+set(dtk_INCLUDE_DIRS_tmp "")
+SUBDIRLIST(dtk_INCLUDE_DIRS_tmp ${dtk_INCLUDE_DIRS$})
+list(APPEND dtk_INCLUDE_DIRS ${dtk_INCLUDE_DIRS_tmp})
+unset(dtk_INCLUDE_DIRS_tmp)
+
+set_target_properties(dtkCore           PROPERTIES INTERFACE_INCLUDE_DIRECTORIES "${dtk_INCLUDE_DIRS}")
+set_target_properties(dtkComposer       PROPERTIES INTERFACE_INCLUDE_DIRECTORIES "${dtk_INCLUDE_DIRS}")
+set_target_properties(dtkDistributed    PROPERTIES INTERFACE_INCLUDE_DIRECTORIES "${dtk_INCLUDE_DIRS}")
+set_target_properties(dtkLog            PROPERTIES INTERFACE_INCLUDE_DIRECTORIES "${dtk_INCLUDE_DIRS}")
+set_target_properties(dtkMath           PROPERTIES INTERFACE_INCLUDE_DIRECTORIES "${dtk_INCLUDE_DIRS}")
+set_target_properties(dtkMeta           PROPERTIES INTERFACE_INCLUDE_DIRECTORIES "${dtk_INCLUDE_DIRS}")
+set_target_properties(dtkWidgets        PROPERTIES INTERFACE_INCLUDE_DIRECTORIES "${dtk_INCLUDE_DIRS}")
+set_target_properties(dtkCoreSupport    PROPERTIES INTERFACE_INCLUDE_DIRECTORIES "${dtk_INCLUDE_DIRS}")
+set_target_properties(dtkGuiSupport     PROPERTIES INTERFACE_INCLUDE_DIRECTORIES "${dtk_INCLUDE_DIRS}")
+set_target_properties(dtkMathSupport    PROPERTIES INTERFACE_INCLUDE_DIRECTORIES "${dtk_INCLUDE_DIRS}")
+set_target_properties(dtkVrSupport      PROPERTIES INTERFACE_INCLUDE_DIRECTORIES "${dtk_INCLUDE_DIRS}")

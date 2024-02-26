@@ -179,10 +179,10 @@ if(${SDK_PACKAGING} )
         INSTALL(FILES     ${QT_PLUGINS_DIR}/platforms/qwindows.dll          DESTINATION ./sdk/bin/platforms/    COMPONENT Dev)
         INSTALL(FILES     ${QT_PLUGINS_DIR}/sqldrivers/qsqlite.dll          DESTINATION ./sdk/bin/sqldrivers/   COMPONENT Dev)
         
-        LIST(APPEND CPACK_NSIS_CREATE_ICONS_EXTRA "  CreateShortCut '$SMPROGRAMS\\\\medInria\\\\medDevEnv.lnk' '$APPDATA\\\\Local\\\\inria\\\\${CPACK_PACKAGE_INSTALL_DIRECTORY}\\\\sdk\\\\medDevEnv.bat'")
+        LIST(APPEND CPACK_NSIS_CREATE_ICONS_EXTRA "  CreateShortCut '$SMPROGRAMS\\\\medInria\\\\medDevEnv.lnk' '$APPDATA\\\\Local\\\\inria\\\\${CPACK_PACKAGE_INSTALL_DIRECTORY}\\\\sdk\\\\med_Dev.bat'")
         LIST(APPEND CPACK_NSIS_DELETE_ICONS_EXTRA "  Delete '$SMPROGRAMS\\\\medInria\\\\medDevEnv.lnk'")
         
-        LIST(APPEND CPACK_NSIS_CREATE_ICONS_EXTRA  "  CreateShortCut '$DESKTOP\\\\medDevEnv.lnk' '$APPDATA\\\\Local\\\\inria\\\\${CPACK_PACKAGE_INSTALL_DIRECTORY}\\\\sdk\\\\medDevEnv.bat'")
+        LIST(APPEND CPACK_NSIS_CREATE_ICONS_EXTRA  "  CreateShortCut '$DESKTOP\\\\medDevEnv.lnk' '$APPDATA\\\\Local\\\\inria\\\\${CPACK_PACKAGE_INSTALL_DIRECTORY}\\\\sdk\\\\med_Dev.bat'")
         LIST(APPEND CPACK_NSIS_DELETE_ICONS_EXTRA  "  Delete '$DESKTOP\\\\medDevEnv.lnk'")
     else()
         message("No folder  ${SDK_DIR} exists. SDK will not be installed.")
