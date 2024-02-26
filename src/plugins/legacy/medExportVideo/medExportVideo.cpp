@@ -85,7 +85,7 @@ ExportVideo::ExportVideo() : medAbstractProcessLegacy(), d(new ExportVideoPrivat
     // User parameters
     d->format = OGGVORBIS;
     d->filename = "";
-    d->frameRate = 1;
+    d->frameRate = 24;
     d->subsampling = false;
     d->quality = 2;
 }
