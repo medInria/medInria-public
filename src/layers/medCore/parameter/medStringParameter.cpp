@@ -23,7 +23,8 @@ public:
 medStringParameter::medStringParameter(QString const& name,  QObject *parent)
     : medAbstractParameter(name, parent), d(new medStringParameterPrivate)
 {
-
+    d->poValidator = nullptr;
+    connect(this, &medStringParameter::valueChanged, this, &medStringParameter::triggered);
 }
 
 medStringParameter::~medStringParameter()
@@ -36,18 +37,35 @@ QString medStringParameter::value() const
     return d->value;
 }
 
-void medStringParameter::setValue( QString const& value)
+bool medStringParameter::copyValueTo(medAbstractParameter & dest)
 {
+    bool bRes = typeid(dest) == typeid(*this);
+
+    if (bRes)
+    {
+        setValue(dynamic_cast<medStringParameter*>(&dest)->value());
+    }
+
+    return bRes;
+}
+
+bool medStringParameter::setValue( QString const& value)
+{
+    bool bRes = true;
+
     if(value != d->value)
     {
        int i = -1;
        QString tmpVal = value;
-       if (d->poValidator == nullptr || d->poValidator->validate(tmpVal, i) == QValidator::Acceptable)
+       bRes = (d->poValidator == nullptr) || (d->poValidator->validate(tmpVal, i) == QValidator::Acceptable);
+       if (bRes)
        {
           d->value = value;
           emit valueChanged(d->value);
        }
     }
+
+    return bRes;
 }
 
 void medStringParameter::setValidator(QValidator *pi_poValidator)
@@ -75,4 +93,46 @@ QValidator *medStringParameter::getValidator() const
 void medStringParameter::trigger()
 {
     emit valueChanged(d->value);
+}
+
+void medStringParameter::edit()
+{
+    emit valueEdited(d->value);
+}
+
+QVariantMap medStringParameter::toVariantMap() const
+{
+    QVariantMap varMapRes;
+
+    varMapRes.insert("id", id());
+    varMapRes.insert("caption", caption());
+    varMapRes.insert("description", description());
+
+    varMapRes.insert("value", d->value);
+
+    return varMapRes;
+}
+
+bool medStringParameter::fromVariantMap(QVariantMap const& pi_variantMap)
+{
+    bool bRes = true;
+
+    bRes = bRes && pi_variantMap.contains("id");
+    bRes = bRes && pi_variantMap.contains("caption");
+    bRes = bRes && pi_variantMap.contains("description");
+    bRes = bRes && pi_variantMap.contains("value");
+
+    if (bRes)
+    {
+        bRes = pi_variantMap["value"].canConvert(QMetaType::QString);
+        if (bRes)
+        {
+            setCaption(pi_variantMap["caption"].toString());
+            setDescription(pi_variantMap["description"].toString());
+
+            d->value = pi_variantMap["value"].toString();
+        }
+    }
+
+    return bRes;
 }

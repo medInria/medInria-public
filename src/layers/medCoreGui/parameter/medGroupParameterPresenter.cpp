@@ -1,0 +1,94 @@
+/*=========================================================================
+
+ medInria
+
+ Copyright (c) INRIA 2013 - 2020. All rights reserved.
+ See LICENSE.txt for details.
+
+  This software is distributed WITHOUT ANY WARRANTY; without even
+  the implied warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR
+  PURPOSE.
+
+=========================================================================*/
+
+#include <medGroupParameterPresenter.h>
+
+#include <QWidget>
+#include <QGroupBox>
+#include <QPushButton>
+#include <QHBoxLayout>
+#include <QVBoxLayout>
+
+class medGroupParameterPresenterPrivate
+{
+public:
+    medGroupParameter *parameter;
+};
+
+medGroupParameterPresenter::medGroupParameterPresenter(medGroupParameter *parent)
+    :medAbstractParameterPresenter(parent), d(new medGroupParameterPresenterPrivate)
+{
+    d->parameter = parent;
+}
+
+medGroupParameterPresenter::medGroupParameterPresenter(QString const & newParameterId)
+    : medGroupParameterPresenter(new medGroupParameter(newParameterId))
+{
+
+}
+
+medGroupParameterPresenter::~medGroupParameterPresenter()
+{
+
+}
+
+medGroupParameter * medGroupParameterPresenter::parameter() const
+{
+    return d->parameter;
+}
+
+QWidget * medGroupParameterPresenter::buildWidget()
+{
+    QWidget *poWidgetRes = nullptr;
+    switch (d->parameter->defaultRepresentation())
+    {
+    case 0:
+    default:
+        poWidgetRes = this->buildGroupButton(); break;
+    }
+    return poWidgetRes;
+}
+
+QGroupBox * medGroupParameterPresenter::buildGroupButton()
+{
+    QGroupBox * groupBoxRes = new QGroupBox();
+
+    auto * pVLayout = new QVBoxLayout;
+    for (auto * param : d->parameter->value())
+    {
+        addParam(param, pVLayout);
+    }
+    connect(d->parameter, &medGroupParameter::parameterAdded, [=](medAbstractParameter * paramAdded) {addParam(paramAdded, pVLayout); });
+    groupBoxRes->setLayout(pVLayout);
+    groupBoxRes->setTitle(d->parameter->caption());
+    groupBoxRes->setAlignment(Qt::AlignTop);
+    groupBoxRes->setToolTip(d->parameter->description());
+
+    return groupBoxRes;
+}
+
+void medGroupParameterPresenter::addParam(medAbstractParameter * param, QVBoxLayout * pVLayout)
+{
+    auto * pHLayout = new QHBoxLayout;
+    auto * pParamPresenter = medAbstractParameterPresenter::buildFromParameter(param);
+    auto * pWidget = pParamPresenter->buildWidget();
+    if (dynamic_cast<QPushButton*>(pWidget) == nullptr && dynamic_cast<QGroupBox*>(pWidget) == nullptr)
+    {
+        auto * pLabel = pParamPresenter->buildLabel();
+        pHLayout->addWidget(pLabel);
+        //connect(param, &medAbstractParameter::captionChanged, pLabel,)
+    }
+    pHLayout->addWidget(pWidget);
+    pVLayout->addLayout(pHLayout);
+    connect(d->parameter, &medGroupParameter::parameterRemoved, [=](medAbstractParameter * paramRemoved) {if (param == paramRemoved) { pVLayout->removeItem(pHLayout); delete pHLayout; }});
+}

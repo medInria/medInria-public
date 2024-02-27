@@ -35,8 +35,8 @@ include_directories(${dtk_INCLUDE_DIRS})
 find_package(ITK REQUIRED COMPONENTS ITKCommon ITKTransform ITKIOTransformBase ITKIOTransformInsightLegacy ITKIOMeta ITKIOImageBase)
 include(${ITK_USE_FILE})
 
-find_package(RPI REQUIRED)
-include(${RPI_USE_FILE})
+find_package(RPI REQUIRED COMPONENTS common)
+#include(${RPI_USE_FILE})
 
 
 ## #############################################################################
@@ -82,6 +82,7 @@ target_link_libraries(${TARGET_NAME}
   dtkCore
   medCore
   medRegistration
+  RPI::common
   )
 
 

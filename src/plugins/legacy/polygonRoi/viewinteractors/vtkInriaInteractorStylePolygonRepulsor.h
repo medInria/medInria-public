@@ -34,9 +34,10 @@ public:
     vtkTypeMacro(vtkInriaInteractorStylePolygonRepulsor, vtkInteractorStyleImageView2D)
     void PrintSelf(ostream& os, vtkIndent indent);
 
-    void OnMouseMove() override;
-    void OnLeftButtonDown() override;
-    void OnLeftButtonUp() override;
+    virtual void OnMouseMove();
+    virtual void OnLeftButtonDown();
+    virtual void OnLeftButtonUp();
+    void SetCurrentView(medAbstractView *view);
     void SetManager(polygonLabel *closestManagerInSlice);
     polygonLabel *GetManager(){ return manager;}
     bool IsInRepulsorDisk(double *pt);
@@ -46,19 +47,21 @@ public:
 protected:
     vtkInriaInteractorStylePolygonRepulsor();
     ~vtkInriaInteractorStylePolygonRepulsor();
-    vtkInriaInteractorStylePolygonRepulsor(const vtkInriaInteractorStylePolygonRepulsor&) = delete;
-    void operator=(const vtkInriaInteractorStylePolygonRepulsor&) = delete;
 
     virtual void RedefinePolygons();
     void ReallyDeletePoint(vtkSmartPointer<vtkPoints> points, vtkIdList *idList);
-    void DisplayPointFromPolygon(double *displayPoint, QList<double*> list, int ind);
+    void  DisplayPointFromPolygon(double *displayPoint, QList<double*> list, int ind);
 
     int Position[2];
     int On;
     int Radius;
+    medAbstractView *CurrentView;
     vtkCircleActor2D *RepulsorActor;
     vtkProperty2D *RepulsorProperty;
     QList<polygonRoi*> ListPolygonsToSave;
     polygonLabel* manager;
 
+private:
+    vtkInriaInteractorStylePolygonRepulsor(const vtkInriaInteractorStylePolygonRepulsor&);  // Not implemented
+    void operator=(const vtkInriaInteractorStylePolygonRepulsor&);  // Not implemented
 };

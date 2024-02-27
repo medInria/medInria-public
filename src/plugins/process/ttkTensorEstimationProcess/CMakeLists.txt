@@ -7,8 +7,7 @@ set(TARGET_NAME ttkTensorEstimationProcessPlugin)
 find_package(ITK REQUIRED COMPONENTS ITKCommon ITKFiniteDifference)
 include(${ITK_USE_FILE})
 
-find_package(TTK REQUIRED)
-include(${TTK_USE_FILE})
+find_package(TTK REQUIRED COMPONENTS ITKTensor ttkAlgorithms)
 
 ## #############################################################################
 ## List Sources
@@ -50,10 +49,10 @@ target_link_libraries(${TARGET_NAME}
   dtkCore
   dtkCoreSupport
   dtkLog
-  ITKTensor
-  medCoreLegacy
+  TTK::ITKTensor
+  TTK::ttkAlgorithms
   medCore
-  medWidgets
+  medCoreGui
   )
 
 ## #################################################################

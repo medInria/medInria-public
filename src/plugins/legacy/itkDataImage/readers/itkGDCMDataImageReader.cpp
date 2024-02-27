@@ -140,7 +140,7 @@ itkGDCMDataImageReaderPrivate::itkGDCMDataImageReaderPrivate()
     io = itk::GDCMImageIO::New();
 }
 
-itkGDCMDataImageReader::itkGDCMDataImageReader() : dtkAbstractDataReader(), d(new itkGDCMDataImageReaderPrivate)
+itkGDCMDataImageReader::itkGDCMDataImageReader() : medAbstractDataReader(), d(new itkGDCMDataImageReaderPrivate)
 {
     this->m_Scanner.AddTag( gdcm::Tag(0x0010,0x0010) );
     this->m_Scanner.AddTag( gdcm::Tag(0x0008,0x0130) );
@@ -348,6 +348,7 @@ bool itkGDCMDataImageReader::readInformation(const QStringList &paths)
     if (medData)
     {
         QStringList patientName;
+        QStringList patientID;
         QStringList studyName;
         QStringList seriesName;
         QStringList studyId;
@@ -360,36 +361,37 @@ bool itkGDCMDataImageReader::readInformation(const QStringList &paths)
         QStringList columns;
         QStringList filePaths;
 
-        patientName    << this->m_Scanner.GetValue(firstfilename.c_str(), gdcm::Tag(0x0010,0x0010));
-        studyName      << this->m_Scanner.GetValue(firstfilename.c_str(), gdcm::Tag(0x0008,0x0130));
-        seriesName     << this->m_Scanner.GetValue(firstfilename.c_str(), gdcm::Tag(0x0008,0x103e));
-        studyId        << this->m_Scanner.GetValue(firstfilename.c_str(), gdcm::Tag(0x0020,0x000d));
-        seriesId       << this->m_Scanner.GetValue(firstfilename.c_str(), gdcm::Tag(0x0020,0x000e));
-        orientation    << this->m_Scanner.GetValue(firstfilename.c_str(), gdcm::Tag(0x0020,0x0037));
-        seriesNumber   << this->m_Scanner.GetValue(firstfilename.c_str(), gdcm::Tag(0x0020,0x0011));
-        sequenceName   << this->m_Scanner.GetValue(firstfilename.c_str(), gdcm::Tag(0x0018,0x0024));
-        sliceThickness << this->m_Scanner.GetValue(firstfilename.c_str(), gdcm::Tag(0x0018,0x0050));
-        rows           << this->m_Scanner.GetValue(firstfilename.c_str(), gdcm::Tag(0x0028,0x0010));
-        columns        << this->m_Scanner.GetValue(firstfilename.c_str(), gdcm::Tag(0x0028,0x0011));
+        patientName << this->m_Scanner.GetValue(firstfilename.c_str(), gdcm::Tag(0x0010, 0x0010));
+        patientID << this->m_Scanner.GetValue(firstfilename.c_str(), gdcm::Tag(0x0010, 0x0020));
+        studyName << this->m_Scanner.GetValue(firstfilename.c_str(), gdcm::Tag(0x0008, 0x0130));
+        seriesName << this->m_Scanner.GetValue(firstfilename.c_str(), gdcm::Tag(0x0008, 0x103e));
+        studyId << this->m_Scanner.GetValue(firstfilename.c_str(), gdcm::Tag(0x0020, 0x000d));
+        seriesId << this->m_Scanner.GetValue(firstfilename.c_str(), gdcm::Tag(0x0020, 0x000e));
+        orientation << this->m_Scanner.GetValue(firstfilename.c_str(), gdcm::Tag(0x0020, 0x0037));
+        seriesNumber << this->m_Scanner.GetValue(firstfilename.c_str(), gdcm::Tag(0x0020, 0x0011));
+        sequenceName << this->m_Scanner.GetValue(firstfilename.c_str(), gdcm::Tag(0x0018, 0x0024));
+        sliceThickness << this->m_Scanner.GetValue(firstfilename.c_str(), gdcm::Tag(0x0018, 0x0050));
+        rows << this->m_Scanner.GetValue(firstfilename.c_str(), gdcm::Tag(0x0028, 0x0010));
+        columns << this->m_Scanner.GetValue(firstfilename.c_str(), gdcm::Tag(0x0028, 0x0011));
 
-        medData->setMetaData(medMetaDataKeys::PatientName.key(),patientName);
-        medData->setMetaData(medMetaDataKeys::StudyDescription.key(),studyName);
-        medData->setMetaData(medMetaDataKeys::SeriesDescription.key(),seriesName);
-        medData->setMetaData(medMetaDataKeys::StudyID.key(),studyId);
-        medData->setMetaData(medMetaDataKeys::SeriesID.key(),seriesId);
-        medData->setMetaData(medMetaDataKeys::Orientation.key(),orientation);
-        medData->setMetaData(medMetaDataKeys::SeriesNumber.key(),seriesNumber);
-        medData->setMetaData(medMetaDataKeys::SequenceName.key(),sequenceName);
-        medData->setMetaData(medMetaDataKeys::SliceThickness.key(),sliceThickness);
-        medData->setMetaData(medMetaDataKeys::Rows.key(),rows);
-        medData->setMetaData(medMetaDataKeys::Columns.key(),columns);
+        medData->setMetaData(medMetaDataKeys::PatientName.key(), patientName);
+        medData->setMetaData(medMetaDataKeys::PatientID.key(), patientName);
+        medData->setMetaData(medMetaDataKeys::StudyDescription.key(), studyName);
+        medData->setMetaData(medMetaDataKeys::SeriesDescription.key(), seriesName);
+        medData->setMetaData(medMetaDataKeys::StudyID.key(), studyId);
+        medData->setMetaData(medMetaDataKeys::SeriesID.key(), seriesId);
+        medData->setMetaData(medMetaDataKeys::Orientation.key(), orientation);
+        medData->setMetaData(medMetaDataKeys::SeriesNumber.key(), seriesNumber);
+        medData->setMetaData(medMetaDataKeys::SequenceName.key(), sequenceName);
+        medData->setMetaData(medMetaDataKeys::SliceThickness.key(), sliceThickness);
+        medData->setMetaData(medMetaDataKeys::Rows.key(), rows);
+        medData->setMetaData(medMetaDataKeys::Columns.key(), columns);
 
         FileList orderedfilelist = this->unfoldMap(map);
         for (unsigned int i=0; i<orderedfilelist.size(); i++)
             filePaths << orderedfilelist[i].c_str();
 
         medData->addMetaData(medMetaDataKeys::FilePaths.key(),filePaths);
-
     }
 
     return true;

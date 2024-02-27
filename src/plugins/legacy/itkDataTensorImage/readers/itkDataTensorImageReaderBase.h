@@ -12,12 +12,12 @@
 
 =========================================================================*/
 
-#include <dtkCoreSupport/dtkAbstractDataReader.h>
+#include <medAbstractDataReader.h>
 
 #include <itkDataTensorImagePluginExport.h>
 #include <itkImageIOBase.h>
 
-class ITKDATATENSORIMAGEPLUGIN_EXPORT itkDataTensorImageReaderBase : public dtkAbstractDataReader
+class ITKDATATENSORIMAGEPLUGIN_EXPORT itkDataTensorImageReaderBase : public medAbstractDataReader
 {
     Q_OBJECT
 

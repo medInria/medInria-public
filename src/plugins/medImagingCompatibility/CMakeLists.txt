@@ -68,8 +68,6 @@ target_link_libraries(${TARGET_NAME}
   dtkComposer
   dtkCore
   dtkImaging
-  # Legacy
-  medCoreLegacy
   )
 
 

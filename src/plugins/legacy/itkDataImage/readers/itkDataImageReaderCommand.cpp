@@ -15,7 +15,7 @@
 
 #include <itkImageIOBase.h>
 
-#include <dtkCoreSupport/dtkAbstractDataReader.h>
+#include <medAbstractDataReader.h>
 
 namespace itk
 {

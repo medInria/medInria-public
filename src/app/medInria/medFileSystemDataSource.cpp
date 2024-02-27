@@ -15,7 +15,6 @@
 
 #include <dtkGuiSupport/dtkFinder.h>
 
-#include <medActionsToolBox.h>
 #include <medSettingsManager.h>
 
 class medFileSystemDataSourcePrivate
@@ -27,7 +26,7 @@ public:
     dtkFinderSideView *side;
     dtkFinderToolBar *toolbar;
     QList<medToolBox*> toolBoxes;
-    medActionsToolBox* actionsToolBox;
+    //medActionsToolBox* actionsToolBox;
     QLabel * infoText;
 };
 
@@ -62,8 +61,8 @@ medFileSystemDataSource::medFileSystemDataSource( QWidget* parent ): medAbstract
     d->infoText->setTextFormat(Qt::RichText);
 
 
-    d->actionsToolBox = new medActionsToolBox(0, true);
-    d->toolBoxes.push_back(d->actionsToolBox);
+    //d->actionsToolBox = new medActionsToolBox(0, true);
+    //d->toolBoxes.push_back(d->actionsToolBox);
 
     d->side = new dtkFinderSideView;
 
@@ -134,12 +133,12 @@ medFileSystemDataSource::medFileSystemDataSource( QWidget* parent ): medAbstract
     connect (d->toolbar, SIGNAL(treeView()), d->finder, SLOT(switchToTreeView()));
     connect (d->toolbar, SIGNAL(listView()), d->finder, SLOT(switchToListView()));
 
-    connect(d->finder, SIGNAL(selectionChanged(const QStringList&)), d->actionsToolBox, SLOT(selectedPathsChanged(const QStringList&)));
-
-    connect(d->actionsToolBox, SIGNAL(bookmarkClicked()), d->finder, SLOT(onBookmarkSelectedItemsRequested()));
-    connect(d->actionsToolBox, SIGNAL(viewClicked()),   this, SLOT(onFileSystemViewRequested()));
-    connect(d->actionsToolBox, SIGNAL(importClicked()), this, SLOT(onFileSystemImportRequested()));
-    connect(d->actionsToolBox, SIGNAL(loadClicked()),   this, SLOT(onFileSystemLoadRequested()));
+    //connect(d->finder, SIGNAL(selectionChanged(const QStringList&)), d->actionsToolBox, SLOT(selectedPathsChanged(const QStringList&)));
+    //
+    //connect(d->actionsToolBox, SIGNAL(bookmarkClicked()), d->finder, SLOT(onBookmarkSelectedItemsRequested()));
+    //connect(d->actionsToolBox, SIGNAL(viewClicked()),   this, SLOT(onFileSystemViewRequested()));
+    //connect(d->actionsToolBox, SIGNAL(importClicked()), this, SLOT(onFileSystemImportRequested()));
+    //connect(d->actionsToolBox, SIGNAL(loadClicked()),   this, SLOT(onFileSystemLoadRequested()));
 
     connect (d->toolbar, SIGNAL(showHiddenFiles(bool)), d->finder, SLOT(onShowHiddenFiles(bool)));
     connect (d->toolbar, SIGNAL(showHiddenFiles(bool)), this, SLOT(saveHiddenFilesSettings(bool)));

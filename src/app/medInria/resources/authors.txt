@@ -1,4 +1,8 @@
-Developers:<br/><br/>
+<!DOCTYPE html>
+<html>
+<body>
+
+<h3>Developers</h3>
 
 Alexandre Abadie (medInria)<br/>
 Benoit Bleuze (medInria)<br/>
@@ -29,3 +33,6 @@ Rene-Paul Debroize (medInria)<br/>
 Sergio Medina (medInria)<br/>
 Theodore Papadopoulo (medInria)<br/>
 Stephan Schmitt (medInria)<br/>
+
+</body>
+</html>

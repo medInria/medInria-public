@@ -26,8 +26,8 @@ include_directories(${dtk_INCLUDE_DIRS})
 find_package(ITK REQUIRED COMPONENTS ITKIOImageBase ITKTransform ITKIOTransformBase ITKIOTransformInsightLegacy ITKRegistrationCommon ITKIOMeta)#ITKCommon ITKTransformFactory
 include(${ITK_USE_FILE})
 
-find_package(RPI REQUIRED)
-include(${RPI_USE_FILE})
+find_package(RPI REQUIRED COMPONENTS common)
+#include(${RPI_USE_FILE})
 
 
 ## #############################################################################
@@ -69,7 +69,7 @@ target_link_libraries(${TARGET_NAME}
   Qt5::Core
   Qt5::Widgets
   dtkCoreSupport
-  medCoreLegacy
+  medCore
   dtkLog
   ITKCommon
   ITKIOImageBase
@@ -99,6 +99,7 @@ target_link_libraries(${TARGET_NAME}
   ITKIOTransformMatlab
   ITKIOTransformInsightLegacy
   ITKIOMRC
+  RPI::common
   )
 
 

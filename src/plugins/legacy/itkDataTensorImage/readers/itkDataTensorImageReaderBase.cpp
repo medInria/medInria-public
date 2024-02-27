@@ -26,7 +26,7 @@
 // itkDataTensorImageReader
 // /////////////////////////////////////////////////////////////////
 
-itkDataTensorImageReaderBase::itkDataTensorImageReaderBase() : dtkAbstractDataReader()
+itkDataTensorImageReaderBase::itkDataTensorImageReaderBase() : medAbstractDataReader()
 {
     this->io = nullptr;
 }

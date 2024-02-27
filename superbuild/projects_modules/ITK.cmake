@@ -38,8 +38,10 @@ if (NOT USE_SYSTEM_${ep})
 ## Set up versioning control
 ## #############################################################################
 
+
 set(git_url ${GITHUB_PREFIX}InsightSoftwareConsortium/ITK.git)
 set(git_tag v5.1.1)
+
 
 ## #############################################################################
 ## Add specific cmake arguments for configuration step of the project
@@ -66,6 +68,10 @@ set(cmake_args
   -DModule_ITKReview:BOOL=ON
   -DModule_ITKVtkGlue:BOOL=ON
   -DITK_LEGACY_REMOVE:BOOL=ON
+  )
+  
+set(cmake_cache_args
+  -DVTK_DIR:PATH=${VTK_DIR}
   )
   
 set(cmake_cache_args
@@ -100,7 +106,7 @@ ExternalProject_Add(${ep}
   CMAKE_CACHE_ARGS ${cmake_cache_args}
   DEPENDS ${${ep}_dependencies}
   INSTALL_COMMAND ""
-  BUILD_ALWAYS 1
+  BUILD_ALWAYS ${EP_BUILD_ALWAYS}
   )
 
 ## #############################################################################

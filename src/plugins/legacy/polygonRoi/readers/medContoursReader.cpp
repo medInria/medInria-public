@@ -32,7 +32,7 @@ public:
 // ---------------------------- Contour Reader ------------------------------ //
 // ------------------------------------------------------------------------- //
 medContoursReader::medContoursReader()
-    : dtkAbstractDataReader(),
+    : medAbstractDataReader(),
       d(new ContoursReaderPrivate())
 {
     d->isBinary = true;

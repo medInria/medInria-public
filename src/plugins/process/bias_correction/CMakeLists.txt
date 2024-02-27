@@ -66,7 +66,7 @@ target_link_libraries(${TARGET_NAME}
   dtkCore
   dtkLog
   medCore
-  medWidgets
+  medCoreGui
   )
 
 
@@ -76,3 +76,4 @@ target_link_libraries(${TARGET_NAME}
 
 set_plugin_install_rules(${TARGET_NAME})
 
+ 

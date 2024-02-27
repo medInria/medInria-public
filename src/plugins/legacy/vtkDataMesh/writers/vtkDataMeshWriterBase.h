@@ -14,10 +14,10 @@ PURPOSE.
 
 #include "vtkDataMeshPluginExport.h"
 
-#include <dtkCoreSupport/dtkAbstractDataWriter.h>
+#include <medAbstractDataWriter.h>
 #include <vtkMetaDataSet.h>
 
-class VTKDATAMESHPLUGIN_EXPORT vtkDataMeshWriterBase : public dtkAbstractDataWriter
+class VTKDATAMESHPLUGIN_EXPORT vtkDataMeshWriterBase : public medAbstractDataWriter
 {
     Q_OBJECT
 

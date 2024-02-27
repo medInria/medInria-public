@@ -12,12 +12,12 @@
 
 =========================================================================*/
 
-#include <dtkCoreSupport/dtkAbstractDataReader.h>
+#include <medAbstractDataReader.h>
 
 #include <itkDataSHImagePluginExport.h>
 #include <itkImageIOBase.h>
 
-class ITKDATASHIMAGEPLUGIN_EXPORT itkDataSHImageReader : public dtkAbstractDataReader
+class ITKDATASHIMAGEPLUGIN_EXPORT itkDataSHImageReader : public medAbstractDataReader
 {
     Q_OBJECT
 

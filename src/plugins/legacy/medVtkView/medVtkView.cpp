@@ -90,6 +90,20 @@ medVtkView::medVtkView(QObject* parent): medAbstractImageView(parent),
     // construct render window
     // renWin
     d->renWin = vtkGenericOpenGLRenderWindow::New();
+    //if (QThread::currentThread() != QApplication::instance()->thread())
+    //{
+    //    //QObject::moveToThread(QApplication::instance()->thread());
+    //    bool bRes = QMetaObject::invokeMethod(this,
+    //                              "createVtkGenericOpenGLRenderWindow",
+    //                              Qt::BlockingQueuedConnection,
+    //                              Q_RETURN_ARG(vtkGenericOpenGLRenderWindow*, d->renWin));
+    //    qDebug() << "########################## invoke " << bRes << "\r\n";
+    //}
+    //else
+    //{
+    //    d->renWin = vtkGenericOpenGLRenderWindow::New();
+    //}
+
     d->renWin->StereoCapableWindowOn();
     d->renWin->SetStereoTypeToCrystalEyes();
     d->renWin->SetAlphaBitPlanes(1);
@@ -132,6 +146,17 @@ medVtkView::medVtkView(QObject* parent): medAbstractImageView(parent),
     interactorStyle->Delete();
 
     d->viewWidget = new QVTKOpenGLWidget();
+    //if (QThread::currentThread() != QApplication::instance()->thread())
+    //{
+    //    QMetaObject::invokeMethod(this,
+    //                              "createQVTKOpenGLWidget",
+    //                              Qt::BlockingQueuedConnection,
+    //                              Q_RETURN_ARG(QVTKOpenGLWidget*, d->viewWidget));
+    //}
+    //else
+    //{
+    //    d->viewWidget = new QVTKOpenGLWidget();
+    //}
     d->viewWidget->setEnableHiDPI(true);
     d->viewWidget->SetRenderWindow(d->renWin);
 
@@ -486,6 +511,28 @@ QImage medVtkView::buildThumbnail(const QSize &size)
 
     return thumbnail;
 }
+
+vtkGenericOpenGLRenderWindow * medVtkView::createVtkGenericOpenGLRenderWindow()
+{
+    return vtkGenericOpenGLRenderWindow::New();
+}
+
+QVTKOpenGLWidget * medVtkView::createQVTKOpenGLWidget()
+{
+    //QVTKOpenGLWidget * pPidgetRes = nullptr;
+    //QMetaObject::invokeMethod(this,
+    //                          "createQVTKOpenGLWidgetInternal",
+    //                          Qt::BlockingQueuedConnection,
+    //                          Q_RETURN_ARG(QVTKOpenGLWidget*, pPidgetRes));
+    //return pPidgetRes;
+    return new QVTKOpenGLWidget();
+}
+
+//QVTKOpenGLWidget * medVtkView::createQVTKOpenGLWidgetInternal()
+//{
+//    //d->renWin = vtkGenericOpenGLRenderWindow::New();
+//    return new QVTKOpenGLWidget();
+//}
 
 void medVtkView::buildMouseInteractionParamPool(uint layer)
 {

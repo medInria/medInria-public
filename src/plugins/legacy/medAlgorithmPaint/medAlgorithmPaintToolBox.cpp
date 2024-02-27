@@ -603,6 +603,7 @@ bool AlgorithmPaintToolBox::registered()
 void AlgorithmPaintToolBox::updateMagicWandComputation()
 {
     if (seedPlanted && currentView)
+    if (seedPlanted && currentView)
     {
         if (m_wand3DCheckbox->isChecked() && wandTimer.elapsed()<600) // 1000/24 (24 images per second)
         {
@@ -610,6 +611,7 @@ void AlgorithmPaintToolBox::updateMagicWandComputation()
         }
 
         undo();
+        updateWandRegion(currentView, m_seed);
         updateWandRegion(currentView, m_seed);
         wandTimer.start();
     }
@@ -810,6 +812,22 @@ void AlgorithmPaintToolBox::import()
     medAbstractData *output = dynamic_cast<medAbstractData*>(m_maskData->clone());
 
     copyMetaData(output, m_imageData);
+
+    // if (m_imageData->dataIndex().isV2())
+    // {
+    //     QStringList desturi = m_imageData->dataIndex().uri();
+    //     if (desturi.first().contains("medSQLite"))
+    //     {
+    //         desturi.pop_back();
+    //     }
+
+    //     output->setDataIndex(desturi);
+    //     output->addParentData(m_imageData);
+    //     QString desc = m_imageData->getExpectedName() + "_painted";
+    //     output->setExpectedName(desc);
+    //     output->setMetaData(medMetaDataKeys::SeriesDescription.key(), desc);
+    // }
+    // medDataManager::instance()->importData(output, false);
     medDataManager::instance()->importData(output, false);
 
     maskHasBeenSaved = true;

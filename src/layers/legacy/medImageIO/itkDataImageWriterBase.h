@@ -12,13 +12,13 @@
 
 =========================================================================*/
 
-#include <dtkCoreSupport/dtkAbstractDataWriter.h>
+#include <medAbstractDataWriter.h>
 
 #include <medImageIOExport.h>
 
 #include <itkImageIOBase.h>
 
-class MEDIMAGEIO_EXPORT itkDataImageWriterBase: public dtkAbstractDataWriter
+class MEDIMAGEIO_EXPORT itkDataImageWriterBase: public medAbstractDataWriter
 {
     Q_OBJECT
 

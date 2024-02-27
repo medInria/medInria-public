@@ -2,7 +2,7 @@
 
 #include <polygonRoiPluginExport.h>
 
-#include <dtkCoreSupport/dtkAbstractDataReader.h>
+#include <medAbstractDataReader.h>
 
 #include <medAbstractData.h>
 #include <vtkDataSetReader.h>
@@ -15,7 +15,7 @@ class ContoursReaderPrivate;
  * Reads internal EP map files. Those file have the *.map file
  * extension.
  */
-class medContoursReader: public dtkAbstractDataReader
+class medContoursReader: public medAbstractDataReader
 {
     Q_OBJECT
 

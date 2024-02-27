@@ -74,7 +74,7 @@ target_link_libraries(${TARGET_NAME}
   ${OPENGL_LIBRARIES}
   Qt5::Core
   Qt5::Widgets
-  medCoreLegacy
+  medCore
   vtkCommonCore
   vtkCommonSystem
   vtkImagingColor

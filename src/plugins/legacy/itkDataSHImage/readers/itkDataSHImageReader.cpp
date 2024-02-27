@@ -25,7 +25,7 @@
 // itkDataSHImageReader
 // /////////////////////////////////////////////////////////////////
 
-itkDataSHImageReader::itkDataSHImageReader() : dtkAbstractDataReader()
+itkDataSHImageReader::itkDataSHImageReader() : medAbstractDataReader()
 {
 }
 

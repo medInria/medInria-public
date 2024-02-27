@@ -65,7 +65,7 @@ target_link_libraries(${TARGET_NAME}
   dtkCore
   dtkLog
   medCore
-  medWidgets
+  medCoreGui
   )
 
 

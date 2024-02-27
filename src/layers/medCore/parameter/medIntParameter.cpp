@@ -28,6 +28,7 @@ medIntParameter::medIntParameter(QString const& name,  QObject *parent)
     d->value = 0;
     d->min = 0;
     d->max = 100;
+    connect(this, &medIntParameter::valueChanged, this, &medIntParameter::triggered);
 }
 
 medIntParameter::~medIntParameter()
@@ -38,6 +39,18 @@ medIntParameter::~medIntParameter()
 int medIntParameter::value() const
 {
     return d->value;
+}
+
+bool medIntParameter::copyValueTo(medAbstractParameter & dest)
+{
+    bool bRes = typeid(dest) == typeid(*this);
+
+    if (bRes)
+    {
+        dynamic_cast<medIntParameter*>(&dest)->setValue(value());
+    }
+
+    return bRes;
 }
 
 void medIntParameter::setValue(int value)
@@ -83,4 +96,47 @@ int medIntParameter::maximum() const
 void medIntParameter::trigger()
 {
     emit valueChanged(d->value);
+}
+
+QVariantMap medIntParameter::toVariantMap() const
+{
+    QVariantMap varMapRes;
+
+    varMapRes.insert("id", id());
+    varMapRes.insert("caption", caption());
+    varMapRes.insert("description", description());
+
+    varMapRes.insert("value", d->value);
+    varMapRes.insert("min", d->min);
+    varMapRes.insert("max", d->max);
+
+    return varMapRes;
+}
+
+bool medIntParameter::fromVariantMap(QVariantMap const& pi_variantMap)
+{
+    bool bRes = true;
+
+    bRes = bRes && pi_variantMap.contains("id");
+    bRes = bRes && pi_variantMap.contains("caption");
+    bRes = bRes && pi_variantMap.contains("description");
+    bRes = bRes && pi_variantMap.contains("value");
+
+    if (bRes)
+    {
+        bRes = bRes && pi_variantMap["value"].canConvert(QMetaType::Int);
+        bRes = bRes && pi_variantMap["min"].canConvert(QMetaType::Int);
+        bRes = bRes && pi_variantMap["max"].canConvert(QMetaType::Int);
+        if (bRes)
+        {
+            setCaption(pi_variantMap["caption"].toString());
+            setDescription(pi_variantMap["description"].toString());
+
+            d->value = pi_variantMap["value"].toInt();
+            d->min = pi_variantMap["min"].toInt();
+            d->max = pi_variantMap["max"].toInt();
+        }
+    }
+
+    return bRes;
 }

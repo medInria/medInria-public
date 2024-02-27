@@ -1,6 +1,6 @@
 <!DOCTYPE RCC><RCC version="1.0">
     <qresource prefix="/dtitrack/">
-        <file>icons/adc.png</file>
+    <file>icons/adc.png</file>
 	<file>icons/fa.png</file>
 	<file>icons/cl.png</file>
 	<file>icons/cp.png</file>

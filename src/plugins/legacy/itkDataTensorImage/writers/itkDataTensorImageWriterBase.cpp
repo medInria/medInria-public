@@ -24,7 +24,7 @@
 #include <itkVectorImage.h>
 #include <itkVector.h>
 
-itkDataTensorImageWriterBase::itkDataTensorImageWriterBase() : dtkAbstractDataWriter()
+itkDataTensorImageWriterBase::itkDataTensorImageWriterBase() : medAbstractDataWriter()
 {
     this->io = nullptr;
 }

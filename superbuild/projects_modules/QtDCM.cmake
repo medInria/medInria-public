@@ -41,7 +41,7 @@ if (NOT USE_SYSTEM_${ep})
 ## #############################################################################
 
 set(git_url ${GITHUB_PREFIX}medInria/qtdcm.git)
-set(git_tag APHP)
+set(git_tag PluginAPI)
 
 ## #############################################################################
 ## Add specific cmake arguments for configuration step of the project
@@ -104,7 +104,7 @@ ExternalProject_Add(${ep}
   CMAKE_CACHE_ARGS ${cmake_cache_args}
   DEPENDS ${${ep}_dependencies}
   INSTALL_COMMAND ""
-  BUILD_ALWAYS 1
+  BUILD_ALWAYS ${EP_BUILD_ALWAYS}
   )  
 
 ## #############################################################################

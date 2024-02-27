@@ -39,8 +39,8 @@ include(${ITK_USE_FILE})
 find_package(VTK REQUIRED COMPONENTS vtkCommonCore vtkInteractionWidgets)
 include(${VTK_USE_FILE})
 
-find_package(RPI REQUIRED)
-include(${RPI_USE_FILE})
+find_package(RPI REQUIRED COMPONENTS common)
+#include(${RPI_USE_FILE})
 
 ## #############################################################################
 ## List Sources
@@ -83,6 +83,7 @@ target_link_libraries(${TARGET_NAME}
   medCore
   medRegistration
   medVtkInria
+  RPI::common
   )
 
 set(CMAKE_RUNTIME_OUTPUT_DIRECTORY ${CMAKE_BINARY_DIR}/bin)

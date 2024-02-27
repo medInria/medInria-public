@@ -81,6 +81,7 @@ public:
     void Write(const void* buffer) override;
 
     // DICOM related stuff
+    std::map<std::string , std::vector<std::string>> GetMetaData() const;
     std::string GetPatientName() const;
     std::string GetPatientID() const;
     std::string GetPatientSex() const;

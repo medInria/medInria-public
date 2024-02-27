@@ -23,6 +23,9 @@ class medAbstractImageData;
 class medVtkViewObserver;
 class medBoolParameterL;
 
+class QVTKOpenGLWidget;
+class vtkGenericOpenGLRenderWindow;
+
 class MEDVTKVIEWPLUGIN_EXPORT medVtkView : public medAbstractImageView
 {
     Q_OBJECT
@@ -64,6 +67,9 @@ public slots:
     virtual void reset();
     virtual void render();
     virtual void showHistogram(bool checked);
+
+    vtkGenericOpenGLRenderWindow * createVtkGenericOpenGLRenderWindow();
+    QVTKOpenGLWidget * createQVTKOpenGLWidget();
 
 private slots:
     void displayDataInfo(uint layer);

@@ -12,7 +12,7 @@
 
 =========================================================================*/
 
-#include <dtkCoreSupport/dtkAbstractDataReader.h>
+#include <medAbstractDataReader.h>
 #include <itkDataImagePluginExport.h>
 #include <medAbstractData.h>
 
@@ -22,7 +22,8 @@ namespace itk {
     class SliceReadCommand;
 }
 
-class ITKDATAIMAGEPLUGIN_EXPORT itkDCMTKDataImageReader: public dtkAbstractDataReader {
+class ITKDATAIMAGEPLUGIN_EXPORT itkDCMTKDataImageReader: public medAbstractDataReader
+{
     Q_OBJECT
 
 public:

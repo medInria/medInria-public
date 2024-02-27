@@ -13,11 +13,11 @@ PURPOSE.
 =========================================================================*/
 #include "vtkDataMeshPluginExport.h"
 
-#include <dtkCoreSupport/dtkAbstractDataReader.h>
+#include <medAbstractDataReader.h>
 
 class vtkMetaDataSet;
 
-class VTKDATAMESHPLUGIN_EXPORT vtkDataMeshReaderBase: public dtkAbstractDataReader
+class VTKDATAMESHPLUGIN_EXPORT vtkDataMeshReaderBase: public medAbstractDataReader
 {
     Q_OBJECT
 

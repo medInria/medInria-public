@@ -26,7 +26,6 @@
 #include <medCore/medRunnableProcess.h>
 #include <medCore/medJobManager.h>
 #include <medCore/medDataReaderWriter.h>
-#include <medDatabaseController.h>
 
 #include <medDropSite.h>
 #include <medToolBoxFactory.h>
@@ -118,7 +117,7 @@ bool medDiffusionSequenceCompositeDataToolBox::import(const bool persistent) {
     const QString& uuid = QUuid::createUuid().toString().replace("{","").replace("}","")+".cds";
     medDataReaderWriter::write(uuid,cds);
 
-    medDatabaseController::instance()->import(uuid,!persistent);
+    medDataManager::instance()->controller()->import(uuid,!persistent);
     reset();
 
     return true;

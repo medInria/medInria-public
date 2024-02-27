@@ -941,7 +941,7 @@ InrimageImageIO
         vz = 1.0;
 
     /* write header information */
-    sprintf(buf, "#INRIMAGE-4#{\nXDIM=%lu\nYDIM=%lu\nZDIM=%lu\nVDIM=%d\nTYPE=%s\nPIXSIZE=%i bits\n%sCPU=%s\nVX=%f\nVY=%f\nVZ=%f\nTX=%f\nTY=%f\nTZ=%f\nRX=%f\nRY=%f\nRZ=%f\n#GEOMETRY=CARTESIAN\n",
+    sprintf(buf, "#INRIMAGE-4#{\nXDIM=%llu\nYDIM=%llu\nZDIM=%llu\nVDIM=%d\nTYPE=%s\nPIXSIZE=%i bits\n%sCPU=%s\nVX=%f\nVY=%f\nVZ=%f\nTX=%f\nTY=%f\nTZ=%f\nRX=%f\nRY=%f\nRZ=%f\n#GEOMETRY=CARTESIAN\n",
             this->GetDimensions(0), this->GetDimensions(1), this->GetDimensions(2), this->GetNumberOfComponents(),
             type.c_str(), pixsize, scale, endianness.c_str(),
             vx, vy, vz,

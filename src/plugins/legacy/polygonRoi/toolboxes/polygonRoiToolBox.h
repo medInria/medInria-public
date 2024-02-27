@@ -58,6 +58,7 @@ public:
     void eraseCross();
 
     QPushButton *repulsorTool;
+    QRadioButton *dataDestButton;
 
 public slots:
 
@@ -89,8 +90,6 @@ private:
     QCheckBox *interpolate;
     QPushButton *saveContourButton;
     QPushButton *helpButton;
-    QLabel *repulsorLabel;
-    QLabel *saveLabel;
     void createAndConnectEventFilter(const medAbstractData *data, medAbstractImageView *imageView);
     QList<medAbstractData *> getITKImageDataInSelectedView(medAbstractView *view);
     QList<medContours *> getContoursInSelectedView(medAbstractView *view);

@@ -27,9 +27,14 @@ public:
 
     int value() const;
 
+    bool copyValueTo(medAbstractParameter &dest) override;
+
     void setRange(int min, int max);
     int minimum() const;
     int maximum() const;
+
+    QVariantMap toVariantMap() const override;
+    bool fromVariantMap(QVariantMap const& pi_variantMap) override;
 
 public slots:
     void setValue(int value);

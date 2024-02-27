@@ -21,7 +21,7 @@
 #include <vtkStringArray.h>
 #include <vtkSmartPointer.h>
 
-vtkDataMeshReaderBase::vtkDataMeshReaderBase() : dtkAbstractDataReader()
+vtkDataMeshReaderBase::vtkDataMeshReaderBase() : medAbstractDataReader()
 {
 }
 

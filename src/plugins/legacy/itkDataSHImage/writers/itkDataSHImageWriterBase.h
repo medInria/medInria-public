@@ -12,12 +12,12 @@
 
 =========================================================================*/
 
-#include <dtkCoreSupport/dtkAbstractDataWriter.h>
+#include <medAbstractDataWriter.h>
 
 #include <itkDataSHImagePluginExport.h>
 #include <itkImageIOBase.h>
 
-class ITKDATASHIMAGEPLUGIN_EXPORT itkDataSHImageWriterBase : public dtkAbstractDataWriter
+class ITKDATASHIMAGEPLUGIN_EXPORT itkDataSHImageWriterBase : public medAbstractDataWriter
 {
     Q_OBJECT
 

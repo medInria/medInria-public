@@ -1212,13 +1212,6 @@ QWidget#settingsWidget QTabWidget::pane
     border: 2px solid $EDITION_BACKGROUND;
 }
 
-/*******************************************************************************
-     medDatabasePreview
- *******************************************************************************/
-medDatabasePreview
-{
-    border: 1px solid $GREY07;
-}
 
 QLabel#previewLabel
 {
@@ -1227,6 +1220,15 @@ QLabel#previewLabel
     min-height: $STATUS_BAR_HEIGHT;
     border: 1px solid $GREY07;
     border-top: none;
+}
+
+/*******************************************************************************
+     medViewContainer
+ *******************************************************************************/
+
+QWidget#defaultWidget
+{
+    background: none;
 }
 
 /*******************************************************************************

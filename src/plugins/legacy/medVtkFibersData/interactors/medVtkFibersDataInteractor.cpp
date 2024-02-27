@@ -44,7 +44,6 @@
 #include <medAbstractImageView.h>
 #include <medVtkViewBackend.h>
 #include <medAbstractDataFactory.h>
-#include <medAbstractDbController.h>
 #include <medBoolParameterL.h>
 #include <medBoolGroupParameterL.h>
 #include <medTriggerParameterL.h>

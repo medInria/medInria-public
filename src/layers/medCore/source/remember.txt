@@ -1,0 +1,8 @@
+On eu des problème de méthode const (columCount et getLevelColumnCount)
+On a sallement contourné le problème avec un Dpointer
+
+On est partie du postula que medDataModelItem représente une seule cellule (x,y) en réalité cel "REPRESENTERAIT" une line du model
+
+En prenant cela en compte on pourrait abandonner le salle contournement et corrigé le pb de const en redévellopent columCount et/ou getLevelColumnCount en utilisant le future dev de medDataModelItem
+
+CF medDataBaseItem QList<QVariant> attrData,  QList<QVariant> itemData. 
