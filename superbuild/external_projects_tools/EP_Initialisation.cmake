@@ -11,11 +11,18 @@
 #
 ################################################################################
 
-macro(ep_Initialisation ep
-  USE_SYSTEM use_system_def 
-  BUILD_SHARED_LIBS build_shared_libs_def
-  REQUIRED_FOR_PLUGINS required_for_plugins
-  )
+macro(ep_Initialisation ep)
+
+cmake_parse_arguments(ep_Initialisation
+    "NO_CONFIG_FILE"
+    "USE_SYSTEM;BUILD_SHARED_LIBS;REQUIRED_FOR_PLUGINS;PACKAGE_NAME"
+    ""
+    ${ARGN}
+    )
+
+if (NOT ep_Initialisation_PACKAGE_NAME)
+    set(ep_Initialisation_PACKAGE_NAME ${ep})
+endif()
   
 ## #############################################################################
 ## Add variable : do we want use the system version ?
@@ -23,48 +30,29 @@ macro(ep_Initialisation ep
 
 option(USE_SYSTEM_${ep} 
   "Use system installed version of ${ep}" 
-  ${use_system_def}
+  ${ep_Initialisation_USE_SYSTEM}
   )
 
 if (USE_SYSTEM_${ep})
-  find_package(${ep} REQUIRED)
 
-if (WIN32)
-  if (DEFINED ${ep}_DIR)
-    file(TO_CMAKE_PATH ${${ep}_DIR} ${ep}_DIR)
-  endif()
-  
-  if (DEFINED EP_PREFIX)
-    file(TO_CMAKE_PATH ${EP_PREFIX} EP_PREFIX)
-  endif()
-  
-  if (DEFINED ${ep}_BINARY_DIR)
-    file(TO_CMAKE_PATH ${${ep}_BINARY_DIR} ${ep}_BINARY_DIR)
-  endif()
-  
-  if (DEFINED EP_PATH_SOURCE)
-    file(TO_CMAKE_PATH ${EP_PATH_SOURCE} EP_PATH_SOURCE)
-  endif()
-  
-  if (DEFINED EP_PATH_BUILD)
-    file(TO_CMAKE_PATH ${EP_PATH_BUILD} EP_PATH_BUILD)
-  endif()
-endif()
+    if(NOT ep_Initialisation_NO_CONFIG_FILE)
+        find_package(${ep_Initialisation_PACKAGE_NAME} REQUIRED
+            PATH_SUFFIXES install build
+            )
 
 ## #############################################################################
 ## Complete superProjectConfig.cmake
 ## #############################################################################
 
-  if(${required_for_plugins})  
-  #  provide path of project needeed for Asclepios and visages plugins 
-  file(APPEND ${${PROJECT_NAME}_CONFIG_FILE}
-    "find_package(${ep} REQUIRED
-      PATHS \"${${ep}_DIR}\"
-      NO_CMAKE_BUILDS_PATH
-      )\n"
-    )
-  endif()
-
+        if(ep_Initialisation_REQUIRED_FOR_PLUGINS)
+            #  provide path of project needeed for Asclepios and visages plugins
+            file(APPEND ${${PROJECT_NAME}_CONFIG_FILE}
+                "find_package(${ep_Initialisation_PACKAGE_NAME} REQUIRED
+                    PATHS \"${${ep_Initialisation_PACKAGE_NAME}_DIR}\"
+                    )\n"
+                )
+        endif()
+    endif()
 
 else()
 ## ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
@@ -73,13 +61,12 @@ else()
 ## ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 ## ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
   
-  if (${required_for_plugins})
+  if (ep_Initialisation_REQUIRED_FOR_PLUGINS)
     if (DEFINED ${ep}_BINARY_DIR)
       file(APPEND ${${PROJECT_NAME}_CONFIG_FILE}
-      "find_package(${ep} REQUIRED
-        PATHS \"${${ep}_BINARY_DIR}\" 
+      "find_package(${ep_Initialisation_PACKAGE_NAME} REQUIRED
+        PATHS \"${${ep_Initialisation_PACKAGE_NAME}_BINARY_DIR}\"
         PATH_SUFFIXES install build
-        NO_CMAKE_BUILDS_PATH
         )\n"
       )
     else()
@@ -93,7 +80,6 @@ else()
         "find_package(${ep} REQUIRED
           PATHS \"${build_dir}\" 
           PATH_SUFFIXES install build
-          NO_CMAKE_BUILDS_PATH
           )\n"
         )
     endif()
@@ -106,7 +92,7 @@ else()
   
   option(BUILD_SHARED_LIBS_${ep} 
     "Build shared libs for ${ep}" 
-    ${build_shared_libs_def}
+    ${ep_Initialisation_BUILD_SHARED_LIBS}
     )
   mark_as_advanced(BUILD_SHARED_LIBS_${ep})
   

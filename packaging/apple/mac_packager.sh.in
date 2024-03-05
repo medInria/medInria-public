@@ -16,9 +16,9 @@ cd @PROJECT_BINARY_DIR@
 
 \rm -fr TmpInstall
 mkdir -p TmpInstall/medInria.app/Contents/Resources
-cp -r @medInria_DIR@/bin/medInria.app/Contents/MacOS TmpInstall/medInria.app/Contents
-cp @medInria_DIR@/bin/medInria.app/Contents/Info.plist TmpInstall/medInria.app/Contents
-cp @medInria_DIR@/bin/medInria.app/Contents/Resources/medInria.icns TmpInstall/medInria.app/Contents/Resources
+cp -r @medInria_ROOT@/bin/medInria.app/Contents/MacOS TmpInstall/medInria.app/Contents
+cp @medInria_ROOT@/bin/medInria.app/Contents/Info.plist TmpInstall/medInria.app/Contents
+cp @medInria_ROOT@/bin/medInria.app/Contents/Resources/medInria.icns TmpInstall/medInria.app/Contents/Resources
 
 cd TmpInstall
 
@@ -33,7 +33,27 @@ done
 
 @dtk_DIR@/bin/dtkDeploy medInria.app $injectDirs &>/dev/null
 
-@CMAKE_COMMAND@ -DCMAKE_INSTALL_PREFIX:STRING=medInria.app/Contents/Resources -DCMAKE_INSTALL_COMPONENT:STRING=Python -P @pyncpp_DIR@/cmake_install.cmake
+python_libs=''
+for python_lib in @medInria_ROOT@/bin/python_plugins/*; do
+    lib=${python_lib##*/}
+    libname=${lib%.so}
+    cp $python_lib python_plugins/$libname.dylib
+    python_libs="$python_libs $libname"
+done
+
+@dtk_ROOT@/bin/dtkDeploy medInria.app $injectDirs &>/dev/null
+
+mkdir medInria.app/Contents/Plugins/python
+if [ -n "${python_libs}" ]
+then
+    for python_lib in $python_libs; do
+        mv medInria.app/Contents/Plugins/$python_lib.dylib medInria.app/Contents/Plugins/python/$python_lib.so
+    done
+fi
+
+@CMAKE_COMMAND@ --install @pyncpp_ROOT@ --prefix . --component Runtime
+mkdir medInria.app/Contents/Resources/lib
+mv lib/python@PYTHON_VERSION_MAJOR@.@PYTHON_VERSION_MINOR@ medInria.app/Contents/Resources/lib
 
 #Run fancy packaging apple script
 

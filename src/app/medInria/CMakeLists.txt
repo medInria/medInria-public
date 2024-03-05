@@ -154,29 +154,27 @@ target_link_libraries(${TARGET_NAME}
 if(USE_Python)
     target_link_libraries(${TARGET_NAME} ${pyncpp_CPP_API_LIBRARY})
 
-    if(WIN32)
-        set(python_home ".")
+    if(APPLE)
+        set(python_home "../Resources")
     else()
-        if(APPLE)
-            set(python_home "../Resources/${pyncpp_PYTHON_INSTALL_DESTINATION}")
-        else()
-            set(python_home "../${pyncpp_PYTHON_INSTALL_DESTINATION}")
-        endif()
-
-        get_filename_component(python_home_base "${python_home}" DIRECTORY)
-        get_filename_component(python_dir "${python_home}" NAME)
-
-        add_custom_command(TARGET ${TARGET_NAME} POST_BUILD
-            COMMAND ${CMAKE_COMMAND} -E make_directory "$<TARGET_FILE_DIR:${TARGET_NAME}>/${python_home_base}"
-            )
-
-        add_custom_command(TARGET ${TARGET_NAME} POST_BUILD
-            COMMAND ${CMAKE_COMMAND} -E create_symlink "${pyncpp_PYTHON_DIR}" "${python_dir}"
-            WORKING_DIRECTORY "$<TARGET_FILE_DIR:${TARGET_NAME}>/${python_home_base}"
-            )
+        set(python_home "..")
     endif()
 
-    target_compile_definitions(${TARGET_NAME} PUBLIC PYTHON_HOME="${python_home}")
+    set(python_home "${python_home}/${pyncpp_PYTHON_INSTALL_DESTINATION}")
+
+    if(APPLE)
+        set(python_plugin_path "../Plugins/python")
+    else()
+        set(python_plugin_path "python_plugins")
+    endif()
+
+    target_compile_definitions(${TARGET_NAME} PUBLIC
+        USE_PYTHON
+        PYTHON_HOME="${python_home}"
+        PYTHON_PLUGIN_PATH="${python_plugin_path}"
+        BUILD_PYTHON_HOME="${pyncpp_PYTHON_DIR}"
+        BUILD_PYTHON_PLUGIN_PATH="${CMAKE_BINARY_DIR}/bin/python_plugins"
+        )
 endif()
 
 ## #############################################################################
