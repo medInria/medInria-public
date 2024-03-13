@@ -238,8 +238,8 @@ QString urologyViewEvent::createMaskDescription(polygonLabel *label)
 {
     QString name = (label->getOptName() == QString()) ? QString(label->getName()) : QString("%1_%2").arg(label->getName()).arg(label->getOptName());
     medAbstractData * data = currentView->layerData(0);
-    QString seriesDesc = data->metadata(medMetaDataKeys::SeriesDescription.key());
-    QString patientName = data->metadata(medMetaDataKeys::PatientName.key());
+    QString seriesDesc = data->metadata(medMetaDataKeys::key("SeriesDescription"));
+    QString patientName = data->metadata(medMetaDataKeys::key("PatientName"));
     if (seriesDesc.contains("T2"))
     {
         seriesDesc = "T2";
