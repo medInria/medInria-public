@@ -196,7 +196,7 @@ void itkDicomDataImageWriter::fillDictionaryFromMetaDataKey(itk::MetaDataDiction
             // Institution Name
             itk::EncapsulateMetaData<std::string>(dictionary, "0008|0080", data()->metadata(metaDataKey).toStdString());
         }
-        if (metaDataKey == medMetaDataKeys::AcquisitionNumber.key())
+        if (metaDataKey == medMetaDataKeys::key("AcquisitionNumber"))
         {
             itk::EncapsulateMetaData<std::string>(dictionary, "0020|0012", data()->metadata(metaDataKey).toStdString());
         }
@@ -215,26 +215,26 @@ void itkDicomDataImageWriter::fillDictionaryFromMetaDataKey(itk::MetaDataDiction
             // Sequence Name
             itk::EncapsulateMetaData<std::string>(dictionary, "0018|0024", data()->metadata(metaDataKey).toStdString());
         }
-        if (metaDataKey == medMetaDataKeys::PatientPosition.key())
+        if (metaDataKey == medMetaDataKeys::key("PatientPosition"))
         {
             // Patient Position
             itk::EncapsulateMetaData<std::string>(dictionary, "0018|5100", data()->metadata(metaDataKey).toStdString());
         }
-        if (metaDataKey == medMetaDataKeys::PatientOrientation.key())
+        if (metaDataKey == medMetaDataKeys::key("PatientOrientation"))
         {
             // Patient Orientation
             itk::EncapsulateMetaData<std::string>(dictionary, "0020|0020", data()->metadata(metaDataKey).toStdString());
         }
-        if (metaDataKey == medMetaDataKeys::ImageType.key())
+        if (metaDataKey == medMetaDataKeys::key("ImageType"))
         {
             // Image type
             itk::EncapsulateMetaData<std::string>(dictionary, "0008|0008", data()->metadata(metaDataKey).toStdString());
         }
-        if (metaDataKey == medMetaDataKeys::PositionReferenceIndicator.key())
+        if (metaDataKey == medMetaDataKeys::key("PositionReferenceIndicator"))
         {
             itk::EncapsulateMetaData<std::string>(dictionary, "0020|1040", data()->metadata(metaDataKey).toStdString());
         }
-        if (metaDataKey == medMetaDataKeys::Manufacturer.key())
+        if (metaDataKey == medMetaDataKeys::key("Manufacturer"))
         {
             itk::EncapsulateMetaData<std::string>(dictionary, "0008|0070", data()->metadata(metaDataKey).toStdString());
         }
@@ -243,7 +243,7 @@ void itkDicomDataImageWriter::fillDictionaryFromMetaDataKey(itk::MetaDataDiction
 
 void itkDicomDataImageWriter::fillDictionaryWithModalityDependentData(itk::MetaDataDictionary& dictionary)
 {
-    QString modality = data()->metadata(medMetaDataKeys::Modality.key());
+    QString modality = data()->metadata(medMetaDataKeys::key("Modality"));
     if (modality.contains("MR"))
     {
         itk::EncapsulateMetaData<std::string>(dictionary, "0018|0081", data()->metadata("EchoTime").toStdString());
@@ -327,7 +327,7 @@ template <class PixelType> void itkDicomDataImageWriter::fillDictionaryWithShare
         itk::EncapsulateMetaData<std::string>(dictionary,"0020|000e", seriesUID);
 
         // Frame of Reference
-        std::string frameOfRef = data()->metadata(medMetaDataKeys::FrameOfReferenceUID.key()).toStdString();
+        std::string frameOfRef = data()->metadata(medMetaDataKeys::key("FrameOfReferenceUID")).toStdString();
         if (frameOfRef.empty())
         {
             // create a new frame of reference UID
