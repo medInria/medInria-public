@@ -40,18 +40,18 @@ void medUtilities::setDerivedMetaData(medAbstractData* derived, medAbstractData*
         QString newSeriesDescription;
         if (outputSchema)
         {
-            newSeriesDescription = original->fecthMetaData("SeriesDescription");
+            newSeriesDescription = original->metadata(medMetaDataKeys::key("SeriesDescription"));
             newSeriesDescription += " (" + derivationDescription + ")";
         }
         else
         {
             newSeriesDescription = derivationDescription;
         }
-        derived->setMetaData(medMetaDataKeys::key("SeriesDescription").medPivot(), newSeriesDescription);
+        derived->setMetaData(medMetaDataKeys::key("SeriesDescription"), newSeriesDescription);
     }
     else
     {
-        derived->setMetaData(medMetaDataKeys::key("SeriesDescription").medPivot(), original->fecthMetaData("SeriesDescription"));
+        derived->setMetaData(medMetaDataKeys::key("SeriesDescription"), original->metadata(medMetaDataKeys::key("SeriesDescription")));
     }
 
     if (queryForDescription)
@@ -76,7 +76,7 @@ void medUtilities::copyMetaDataIfEmpty(medAbstractData* derived, medAbstractData
 {
     if (!derived->hasMetaData(metaDataKey) && original->hasMetaData(metaDataKey))
     {
-        derived->setMetaData(metaDataKey, original->fecthMetaData(metaDataKey));
+        derived->setMetaData(metaDataKey, original->metadata(metaDataKey));
     }
 }
 
@@ -147,28 +147,28 @@ void medUtilities::generateStudyIdAndInstanceUid(medAbstractData* data)
 {
     gdcm::UIDGenerator uidGenerator;
     QString generatedStudyId = QString::fromStdString(uidGenerator.Generate());
-    data->setMetaData(medMetaDataKeys::key("StudyID").medPivot(), generatedStudyId);
+    data->setMetaData(medMetaDataKeys::key("StudyID"), generatedStudyId);
 
     QString generatedStudyInstanceUid = QString::fromStdString(uidGenerator.Generate());
-    data->setMetaData(medMetaDataKeys::key("StudyInstanceUID").medPivot(), generatedStudyInstanceUid);
+    data->setMetaData(medMetaDataKeys::key("StudyInstanceUID"), generatedStudyInstanceUid);
 }
 
 void medUtilities::generateSeriesAndSOPInstanceId(medAbstractData* data)
 {
     gdcm::UIDGenerator uidGenerator;
     QString generatedSeriesID = QString::fromStdString(uidGenerator.Generate());
-    data->setMetaData(medMetaDataKeys::key("SeriesID").medPivot(), generatedSeriesID);
+    data->setMetaData(medMetaDataKeys::key("SeriesID"), generatedSeriesID);
 
     QString generatedSOPInstanceID = QString::fromStdString(uidGenerator.Generate());
-    data->setMetaData(medMetaDataKeys::key("SOPInstanceUID").medPivot(), generatedSOPInstanceID);
+    data->setMetaData(medMetaDataKeys::key("SOPInstanceUID"), generatedSOPInstanceID);
 
     QString generatedSeriesInstanceUID = QString::fromStdString(uidGenerator.Generate());
-    data->setMetaData(medMetaDataKeys::key("SeriesInstanceUID").medPivot(), generatedSeriesInstanceUID);
+    data->setMetaData(medMetaDataKeys::key("SeriesInstanceUID"), generatedSeriesInstanceUID);
 }
 
 void medUtilities::querySeriesDescription(medAbstractData* data)
 {
-    QString currentDescription = data->fecthMetaData("SeriesDescription");
+    QString currentDescription = data->metadata(medMetaDataKeys::key("SeriesDescription"));
     QString queriedDescription = QInputDialog::getText(nullptr, "Series description", "Enter the name of the series:",
                                                        QLineEdit::Normal, currentDescription);
     if (!queriedDescription.isEmpty())
@@ -176,7 +176,7 @@ void medUtilities::querySeriesDescription(medAbstractData* data)
         currentDescription = queriedDescription;
     }
 
-    data->setMetaData(medMetaDataKeys::key("SeriesDescription").medPivot(), currentDescription);
+    data->setMetaData(medMetaDataKeys::key("SeriesDescription"), currentDescription);
 }
 
 void medUtilities::applyOrientationMatrix(medAbstractView* view, double* inPoint, double* outPoint, bool withTranslation)
