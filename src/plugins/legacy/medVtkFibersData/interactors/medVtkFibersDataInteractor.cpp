@@ -825,10 +825,10 @@ void medVtkFibersDataInteractor::saveBundlesInDataBase()
 
         tmpBundle->setData(bundle);
 
-        QString newSeriesDescription = d->data->metadata ( medMetaDataKeys::SeriesDescription.key() );
+        QString newSeriesDescription = d->data->metadata ( medMetaDataKeys::key("SeriesDescription") );
         newSeriesDescription += " ";
         newSeriesDescription += (*it).first.c_str();
-        tmpBundle->setMetaData ( medMetaDataKeys::SeriesDescription.key(), newSeriesDescription );
+        tmpBundle->setMetaData ( medMetaDataKeys::key("SeriesDescription"), newSeriesDescription );
 
         for( QString metaData : d->data->metaDataList() )
         {
@@ -844,7 +844,7 @@ void medVtkFibersDataInteractor::saveBundlesInDataBase()
         }
 
         QString generatedID = QUuid::createUuid().toString().replace("{","").replace("}","");
-        tmpBundle->setMetaData ( medMetaDataKeys::SeriesID.key(), generatedID );
+        tmpBundle->setMetaData ( medMetaDataKeys::key("SeriesID"), generatedID );
 
         medDataManager::instance()->importData(tmpBundle);
 
@@ -1545,10 +1545,10 @@ void medVtkFibersDataInteractor::saveCurrentBundle()
     
     savedBundle->setData(bundle);
     
-    QString newSeriesDescription = d->data->metadata ( medMetaDataKeys::SeriesDescription.key() );
+    QString newSeriesDescription = d->data->metadata ( medMetaDataKeys::key("SeriesDescription") );
     newSeriesDescription += " ";
     newSeriesDescription += (*it).first.c_str();
-    savedBundle->setMetaData ( medMetaDataKeys::SeriesDescription.key(), newSeriesDescription );
+    savedBundle->setMetaData ( medMetaDataKeys::key("SeriesDescription"), newSeriesDescription );
         
     for( QString metaData : d->data->metaDataList() )
     {
@@ -1569,7 +1569,7 @@ void medVtkFibersDataInteractor::saveCurrentBundle()
     }
     
     QString generatedID = QUuid::createUuid().toString().replace("{","").replace("}","");
-    savedBundle->setMetaData ( medMetaDataKeys::SeriesID.key(), generatedID );
+    savedBundle->setMetaData ( medMetaDataKeys::key("SeriesID"), generatedID );
     
     medDataManager::instance()->importData(savedBundle);
 }
