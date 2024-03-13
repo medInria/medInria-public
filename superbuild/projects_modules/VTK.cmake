@@ -80,6 +80,7 @@ set(cmake_args
 set(cmake_cache_args
   -DQt5_DIR:FILEPATH=${Qt5_DIR}
   -DCMAKE_INSTALL_PREFIX:PATH=${EP_INSTALL_PREFIX}/${ep}
+  -DCOMPILER_HAS_HIDDEN_VISIBILITY:INTERNAL=ON
   )
 
 if(USE_OSPRay)
