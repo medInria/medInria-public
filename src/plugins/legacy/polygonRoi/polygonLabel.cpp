@@ -606,7 +606,7 @@ void polygonLabel::createMask(int label, QString &desc, bool originSrc)
     //    output->addParentData(inputData);
     //    QString desc = inputData->getExpectedName() + "_segmented";
     //    output->setExpectedName(desc);
-    //    output->setMetaData(medMetaDataKeys::SeriesDescription.key(), desc);
+    //    output->setMetaData(medMetaDataKeys::key("SeriesDescription"), desc);
     //}
     //
     medDataManager::instance()->importData(output, originSrc);
