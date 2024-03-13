@@ -13,6 +13,7 @@
 =========================================================================*/
 
 #include <vector>
+#include <medAbstractData.h>
 
 #include <medCoreExport.h>
 
@@ -22,8 +23,6 @@
 
 #include<QString>
 #include<QVariant>
-#include<QTimer>
-#include<QMutex>
 
 #include <utility>
 
@@ -59,31 +58,10 @@ public:
 
     ~Key2() { }
 
-    Key2& operator=(Key2 && k)
-    {
-        this->m_name     = k.m_name;
-        this->m_label    = k.m_label;
-        this->m_tag      = k.m_tag;
-        this->m_medPivot = k.m_medPivot;
-        this->m_type     = k.m_type;
+    Key2& Key2::operator=(Key2 &&) = default;
+    Key2& Key2::operator=(Key2 const &) = default;
 
-        return *this;
-    }
-
-    Key2& operator=(Key2 const & k)
-    {
-        this->m_name =     k.m_name;
-        this->m_label =    k.m_label;
-        this->m_tag =      k.m_tag;
-        this->m_medPivot = k.m_medPivot;
-        this->m_type =     k.m_type;
-
-        return *this;
-    }
-
-    friend MEDCORE_EXPORT bool operator==(Key2 const & k1, Key2 const & k2);
-    friend MEDCORE_EXPORT bool operator==(QString const & s, Key2 const & k);
-    friend MEDCORE_EXPORT bool operator==(Key2 const & k, QString const & s);
+    friend bool operator==(Key2 & k1, Key2 & k2);
 
     operator QString() const { return m_name; }
     //operator char const *() const { return m_name.toUtf8(); };
@@ -98,8 +76,6 @@ public:
     void setTag(QString tag) { m_tag = tag; }
     void setMedPivot(QString pivot) { m_medPivot = pivot; }
     void setLabel(QString label) { m_label = label; }
-
-    bool isValid() { return ! m_medPivot.isEmpty(); }
 
 private:
 
@@ -125,15 +101,20 @@ public:
     static bool addKeyToChapter(Key2 key, QString chapter = "default");
     static bool addKeyByTagToChapter(QString tag, QString keyLabel = "", QString keyName = "", QString chapter = "default");
 
-    static Key2    key(QString word);
-    static Key2    keyFromPivot(QString pivot);
+    //static bool registerKey(QString key, QString label, QString medInriaKey, QVariant type);
+    //static void registerConverter(std::type_info inputType, std::type_info outputType, keyConverter converter, QString keyIn = "", QString keyOut = "");
+
+    //static bool convertKey(QString keyNameIn, QString keyNameOut, QVariant &valueIn, QVariant valueOut, QString chapterInName = "", QString chapterOutName = "");
+
+    //static Key2  getKeyFromChapterAndPivot(QString chapter, QString pivot);
+    //static Key2  getKeyFromKeyOnOtherChapter(QString chapter, QString keyName);
+    static Key2    key(QString pivot);
     static Key2    keyFromName(QString keyName, QString chapter = "");
-    static Key2    keyFromTag(QString keyTag, QString chapter = "");
     static QString pivot(QString keyName, QString chapter = "");
 
-    static bool    keyExist(Key2 const & key);
+    //static QString getValue(Key2, QMap<QString, QString> metaDataList);
+    //static QVariant getValue(Key2, QMap<QString, QVariant> metaDataList);
 
-    static QString getValue(Key2 &key, QMap<QString, QString> metaDataList);
 private:
     medMetaDataKeys();
 
@@ -146,20 +127,17 @@ private:
     bool writeKey(Key2 const &key, QJsonObject &keyAsJson);
 
 
-    bool registerKeyInternal(Key2 &key, QString& chapter);
-    bool addKeyToChapterInternal(Key2 &key, QString &chapter);
+    bool    registerKeyInternal(Key2 &key, QString& chapter);
+    bool    addKeyToChapterInternal(Key2 &key, QString &chapter);
 
     bool updateKey(Key2 &key, QList<QVector<Key2 *>*> oldKeysLists);
 
     void strongKeyEval(Key2 const & key, bool &keyTagStrong, bool &keyMedPivotStrong, bool &keyNameStrong, bool &keyLabelStrong);
 
-    Key2    keyInternal(QString &word);
-    Key2    keyFromPivotInternal(QString &pivot);
+    Key2    keyInternal(QString &pivot);
     Key2    keyFromNameInternal(QString &keyName, QString chapter = "");
-    Key2    keyFromTagInternal(QString &keyTag, QString chapter = "");
     QString pivotInternal(QString &keyName, QString chapter = "");
 
-    bool    keyExistInternal(Key2 const & key);
 
     void scheduleUpdate(QString &chapter);
     void delegateWriting();
@@ -169,11 +147,12 @@ private:
 
     QString m_path;
 
-    QMap<QString /*medInriaKey*/, QList<Key2*>*>                  m_medKeyByPivotMap;
-    QMap<QString /*chapter*/,     QList<Key2 >*>                  m_medKeyByChapterMap;
-    QMap<QString /*chapter*/,     QList<QString> /*file name*/ >  m_chapterToFileMap;
+    QMap<QString /*medInriaKey*/, QVector<Key2*>*>                  m_medKeyByPivotMap;
+    QMap<QString /*chapter*/, QVector<Key2 >*>                  m_medKeyByChapterMap;
+    QMap<QString /*chapter*/, QVector<QString> /*file name*/ >  m_chapterToFileMap;
 
     QVector<QString> m_chaptersToUpdate;
     QTimer m_saveSheduler;
     QMutex m_mutex;
+
 };

@@ -243,7 +243,7 @@ void itkDicomDataImageWriter::fillDictionaryFromMetaDataKey(itk::MetaDataDiction
 
 void itkDicomDataImageWriter::fillDictionaryWithModalityDependentData(itk::MetaDataDictionary& dictionary)
 {
-    QString modality = data()->metadata("Modality");
+    QString modality = data()->metadata(medMetaDataKeys::key("Modality"));
     if (modality.contains("MR"))
     {
         itk::EncapsulateMetaData<std::string>(dictionary, "0018|0081", data()->metadata("EchoTime").toStdString());
@@ -327,7 +327,7 @@ template <class PixelType> void itkDicomDataImageWriter::fillDictionaryWithShare
         itk::EncapsulateMetaData<std::string>(dictionary,"0020|000e", seriesUID);
 
         // Frame of Reference
-        std::string frameOfRef = data()->metadata("FrameOfReferenceUID").toStdString();
+        std::string frameOfRef = data()->metadata(medMetaDataKeys::key("FrameOfReferenceUID")).toStdString();
         if (frameOfRef.empty())
         {
             // create a new frame of reference UID

@@ -157,16 +157,16 @@ public:
     {
         typename ImageType::Pointer outputImage = static_cast<ImageType*>(outputData->data());
 
-        outputData->setMetaData(medMetaDataKeys::key("Columns").medPivot(),
+        outputData->setMetaData(medMetaDataKeys::key("Columns"),
                                 QString::number(outputImage->GetLargestPossibleRegion().GetSize()[0]));
-        outputData->setMetaData(medMetaDataKeys::key("Rows").medPivot(),
+        outputData->setMetaData(medMetaDataKeys::key("Rows"),
                                 QString::number(outputImage->GetLargestPossibleRegion().GetSize()[1]));
-        outputData->setMetaData(medMetaDataKeys::key("Size").medPivot(),
+        outputData->setMetaData(medMetaDataKeys::key("Size"),
                                 QString::number(outputImage->GetLargestPossibleRegion().GetSize()[2]));
-        outputData->setMetaData(medMetaDataKeys::key("SliceThickness").medPivot(),
+        outputData->setMetaData(medMetaDataKeys::key("SliceThickness"),
                                 QString::number(outputImage->GetSpacing()[2]));
 
-        outputData->setMetaData(medMetaDataKeys::key("Orientation").medPivot(),
+        outputData->setMetaData(medMetaDataKeys::key("Orientation"),
                 QString::number(outputImage->GetDirection()[0][0]) +
                 QString(" ") +
                 QString::number(outputImage->GetDirection()[0][1]) +
@@ -179,7 +179,7 @@ public:
                 QString(" ") +
                 QString::number(outputImage->GetDirection()[1][2]));
 
-        outputData->setMetaData(medMetaDataKeys::key("Origin").medPivot(),
+        outputData->setMetaData(medMetaDataKeys::key("Origin"),
                 QString::number(outputImage->GetOrigin()[0]) +
                 QString(" ") +
                 QString::number(outputImage->GetOrigin()[1]) +
