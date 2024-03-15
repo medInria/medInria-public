@@ -74,11 +74,11 @@ void medDiffusionModelEstimationMetaProcess::setOutput(medAbstractDiffusionModel
 {
     d->output = data;
 
-    QString newSeriesDescription = d->input->metadata ( medMetaDataKeys::SeriesDescription.key() );
+    QString newSeriesDescription = d->input->metadata ( medMetaDataKeys::key("SeriesDescription") );
     newSeriesDescription += " " + this->outputNameAddon();
 
-    if (!d->output->hasMetaData(medMetaDataKeys::SeriesDescription.key()))
-        d->output->setMetaData ( medMetaDataKeys::SeriesDescription.key(), newSeriesDescription );
+    if (!d->output->hasMetaData(medMetaDataKeys::key("SeriesDescription")))
+        d->output->setMetaData ( medMetaDataKeys::key("SeriesDescription"), newSeriesDescription );
 
     for( QString metaData : d->input->metaDataList() )
     {

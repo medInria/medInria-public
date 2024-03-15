@@ -274,9 +274,9 @@ void polygonRoiToolBox::onLayerRemoveOnOrientedViews(medAbstractData *data)
 
 void polygonRoiToolBox::createAndConnectEventFilter(const medAbstractData *data, medAbstractImageView *imageView)
 {
-    QString toolBoxName = data->metaDataValues(medMetaDataKeys::StudyDescription.key())[0] +
+    QString toolBoxName = data->metaDataValues(medMetaDataKeys::key("StudyDescription"))[0] +
                             " - " +
-                            data->metaDataValues(medMetaDataKeys::SeriesDescription.key())[0];
+                            data->metaDataValues(medMetaDataKeys::key("SeriesDescription"))[0];
 
     if (specialityPreference==1)
     {

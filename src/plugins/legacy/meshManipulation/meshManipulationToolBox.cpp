@@ -272,7 +272,7 @@ void meshManipulationToolBox::retrieveRegistrationMatricesFromLayers()
                     QVector<double> matrixAsVector = retrieveMatrixFromArray(array);
 
                     QString arrayName(array->GetName());
-                    arrayName += " (" + abstractData->metadata(medMetaDataKeys::SeriesDescription.key()) + ")";
+                    arrayName += " (" + abstractData->metadata(medMetaDataKeys::key("SeriesDescription")) + ")";
                     tryAddingRegistrationMatrix(matrixAsVector, arrayName);
                 }
             }

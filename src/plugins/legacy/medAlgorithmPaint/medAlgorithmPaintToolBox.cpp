@@ -825,7 +825,7 @@ void AlgorithmPaintToolBox::import()
     //     output->addParentData(m_imageData);
     //     QString desc = m_imageData->getExpectedName() + "_painted";
     //     output->setExpectedName(desc);
-    //     output->setMetaData(medMetaDataKeys::SeriesDescription.key(), desc);
+    //     output->setMetaData(medMetaDataKeys::key("SeriesDescription"), desc);
     // }
     // medDataManager::instance()->importData(output, false);
     medDataManager::instance()->importData(output, false);

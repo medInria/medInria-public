@@ -71,7 +71,7 @@ void DicomRtImageWriter::fillDictionaryFromMetaDataKey(itk::MetaDataDictionary& 
         QStringList metaDataList = this->data()->metaDataList();
 
         // Image Type
-        if (!metaDataList.contains(medMetaDataKeys::ImageType.key()))
+        if (!metaDataList.contains(medMetaDataKeys::key("ImageType")))
         {
             // our data did not have an Image Type, create a default one:
             // DERIVED: pixel values have been derived from one or more
@@ -82,10 +82,10 @@ void DicomRtImageWriter::fillDictionaryFromMetaDataKey(itk::MetaDataDictionary& 
         }
 
         // Patient's gender
-        if (metaDataList.contains(medMetaDataKeys::Gender.key()))
+        if (metaDataList.contains(medMetaDataKeys::key("Gender")))
         {
             // check the value
-            QString gender = this->data()->metaDataValues(medMetaDataKeys::Gender.key()).first();
+            QString gender = this->data()->metaDataValues(medMetaDataKeys::key("Gender")).first();
             if (gender != "M" && gender != "F" && gender != "O")
             {
                 // Anonymized or invalid gender, use default
