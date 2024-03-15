@@ -61,7 +61,9 @@ public:
     Key2& Key2::operator=(Key2 &&) = default;
     Key2& Key2::operator=(Key2 const &) = default;
 
-    friend bool operator==(Key2 & k1, Key2 const & k2);
+    friend bool operator==(Key2 const & k1, Key2 const & k2);
+    friend bool operator==(QString const & s, Key2 const & k);
+    friend bool operator==(Key2 const & k, QString const & s);
 
     operator QString() const { return m_name; }
     //operator char const *() const { return m_name.toUtf8(); };
