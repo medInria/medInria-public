@@ -67,8 +67,9 @@ bool medMetaDataKeys::addKeyByTagToChapter(QString tag, QString keyLabel, QStrin
     {
         if (keyLabel.isEmpty()) keyLabel = keyName;
     }
-
-    return medMetaDataKeys::instance()->addKeyToChapterInternal(Key2(keyName, keyLabel, tag), chapter);
+    
+    Key2 key(keyName, keyLabel, tag);
+    return medMetaDataKeys::instance()->addKeyToChapterInternal(key, chapter);
 
 }
 
@@ -570,11 +571,21 @@ void medMetaDataKeys::delegateWriting()
 }
 
 
-bool operator==(Key2 &  k1, Key2 const & k2)
+bool operator==(Key2 const & k1, Key2 const & k2)
 {
     bool bRes = k1.m_medPivot.isEmpty() || k2.m_medPivot.isEmpty() || k1.m_medPivot == k2.m_medPivot;
 
     bRes = bRes && k1.m_name == k2.m_name;
 
     return bRes;
+}
+
+bool operator==(QString const & s, Key2 const & k)
+{
+    return s == k.m_name;
+}
+
+bool operator==(Key2 const & k, QString const & s)
+{
+    return s == k.m_name;
 }
