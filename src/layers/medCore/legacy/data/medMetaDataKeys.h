@@ -58,8 +58,8 @@ public:
 
     ~Key2() { }
 
-    Key2& Key2::operator=(Key2 &&) = default;
-    Key2& Key2::operator=(Key2 const &) = default;
+    Key2& operator=(Key2 &&) = default;
+    Key2& operator=(Key2 const &) = default;
 
     friend bool operator==(Key2 const & k1, Key2 const & k2);
     friend bool operator==(QString const & s, Key2 const & k);
