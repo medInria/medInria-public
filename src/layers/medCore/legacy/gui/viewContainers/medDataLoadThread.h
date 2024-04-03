@@ -37,11 +37,11 @@ signals:
     void finished();
     void dataReady(medAbstractData *);
 
-//protected:
-//    virtual void run() override;
+private:
+    void internalProcess(int deep);
 
 private:
     medDataIndex m_index;
     medViewContainer *m_parent;
-    medAbstractData *m_pAbsData;
+    QList<medAbstractData *> m_pAbsDataList;
 };
