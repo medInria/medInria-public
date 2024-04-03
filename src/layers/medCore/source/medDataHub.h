@@ -47,6 +47,7 @@ public:
     QString getDataName(medDataIndex const & index);
 
     medAbstractData * getData(medDataIndex const & index);
+    QList<medAbstractData *> getDataList(medDataIndex const & index);
     medSourceHandler::datasetAttributes getMetaData(medDataIndex const & index);
     medSourceHandler::datasetAttributes getOptionalMetaData(medDataIndex const & index);
 
@@ -64,8 +65,8 @@ public:
 	bool pushData(medDataIndex const & index);
 
 
-    medAbstractData * loadDataFromPathAsIndex(medDataIndex index, QUuid uuid = QUuid());
-    medAbstractData * loadDataFromPath(QString const path, QUuid uuid = QUuid());
+    //medAbstractData * loadDataFromPathAsIndex(medDataIndex index, QUuid uuid = QUuid());
+    QList<medAbstractData *> loadDataFromPathAsIndex(medDataIndex index, QUuid uuid = QUuid());
     
     //bool hasData(medDataIndex const & index);
     QList< medDataIndex > getSubData(medDataIndex const & index);

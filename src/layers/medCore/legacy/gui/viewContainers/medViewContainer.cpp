@@ -887,18 +887,6 @@ void medViewContainer::addData(medAbstractData *data)
 
     if(!data)
         return;
-    //addDataRunner * pAddDataRunner = new addDataRunner();
-    //pAddDataRunner->view = this;
-    //pAddDataRunner->data = data;
-    //QThreadPool::globalInstance()->start(pAddDataRunner);
-    ////QThread* thread = new QThread(this);
-    ////medDataLoadThread * pdataLoadThread = new medDataLoadThread(index, this);
-    ////thread->start();
-    ////connect(thread, &QThread::started, pdataLoadThread, &medDataLoadThread::process);
-    ////connect(pdataLoadThread, &medDataLoadThread::finished, thread, &QThread::quit);
-    ////connect(pdataLoadThread, &medDataLoadThread::finished, pdataLoadThread, &medDataLoadThread::deleteLater);
-    ////connect(thread, &QThread::finished, thread, &QThread::deleteLater);
-    ////pdataLoadThread->moveToThread(thread);
 
     if (prepareView())
     {
@@ -975,28 +963,6 @@ void medViewContainer::addData(medDataIndex const &index)
             qDebug() << "Type dataset or folder unkwon, try to load data as dataset for \"" << index.uri();
         }
     }
-    //else if (index.isValidForStudy())
-    //{
-    //    // We get the list of each series from that study index, and open it
-    //    QList<medDataIndex> seriesList = medDataManager::instance()->getSeriesListFromStudy(index);
-    //    if (seriesList.count() > 0)
-    //    {
-    //        bool userIsOk = true;
-    //
-    //        if (seriesList.count() > 10)
-    //        {
-    //            userIsOk = userValidationForStudyDrop();
-    //        }
-    //
-    //        if (userIsOk)
-    //        {
-    //            for(medDataIndex seriesIndex : seriesList)
-    //            {
-    //                this->addData(medDataManager::instance()->retrieveData(seriesIndex));
-    //            }
-    //        }
-    //    }
-    //}
 }
 
 bool medViewContainer::userValidationForStudyDrop()
