@@ -44,11 +44,18 @@ medDataManager *medDataManager::instance()
     return s_instance;
 }
 
-medAbstractData *medDataManager::retrieveData(const medDataIndex &index)
+medAbstractData* medDataManager::retrieveData(const medDataIndex &index)
 {
     Q_D(medDataManager);
- 
+
     return medDataHub::instance()->getData(index);
+}
+
+QList<medAbstractData*> medDataManager::retrieveDataList(const medDataIndex &index)
+{
+    Q_D(medDataManager);
+
+    return medDataHub::instance()->getDataList(index);
 }
 
 void medDataManager::loadData(const medDataIndex &index) {}

@@ -15,6 +15,7 @@
 #include <QObject>
 #include <QPixmap>
 #include <QUuid>
+#include <QList>
 
 #include <dtkCoreSupport/dtkSmartPointer.h>
 
@@ -32,7 +33,8 @@ class MEDCORE_EXPORT medDataManager : public QObject
 public:
     static medDataManager * instance();
 
-    medAbstractData* retrieveData(const medDataIndex& index);
+    medAbstractData* retrieveData(const medDataIndex &index);
+    QList<medAbstractData*> retrieveDataList(const medDataIndex& index);
     void loadData(const medDataIndex &index);
 
     QHash<QString, dtkAbstractDataWriter*> getPossibleWriters(medAbstractData* data);

@@ -100,6 +100,7 @@ private:
     int m_seriesId;
     QStringList m_uriAsList;
     QString m_humanRedableUri;
+    QList<medDataIndex> m_childrens;
 };
 
 // /////////////////////////////////////////////////////////////////
