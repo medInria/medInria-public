@@ -571,7 +571,7 @@ void medMetaDataKeys::delegateWriting()
 }
 
 
-bool operator==(Key2 &  k1, Key2 const & k2)
+bool operator==(Key2 const & k1, Key2 const & k2)
 {
     bool bRes = k1.m_medPivot.isEmpty() || k2.m_medPivot.isEmpty() || k1.m_medPivot == k2.m_medPivot;
 

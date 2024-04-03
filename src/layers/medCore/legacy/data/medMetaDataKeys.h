@@ -61,7 +61,7 @@ public:
     Key2& operator=(Key2 &&) = default;
     Key2& operator=(Key2 const &) = default;
 
-    friend bool operator==(Key2 & k1, Key2 const & k2);
+    friend bool operator==(Key2 const & k1, Key2 const & k2);
     friend bool operator==(QString const & s, Key2 const & k);
     friend bool operator==(Key2 const & k, QString const & s);
 
