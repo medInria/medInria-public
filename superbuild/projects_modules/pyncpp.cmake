@@ -74,7 +74,7 @@ function(pyncpp_project)
         ## Export variables
         ## #####################################################################
 
-        set(${ep}_DIR ${build_path} PARENT_SCOPE)
+        set(${ep}_ROOT "${build_path}" PARENT_SCOPE)
 
     endif()
 
