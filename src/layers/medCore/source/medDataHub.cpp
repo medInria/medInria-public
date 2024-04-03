@@ -277,6 +277,43 @@ QString medDataHub::getDataName(medDataIndex const & index)
     return nameRes;
 }
 
+//QList<medAbstractData *> medDataHub::getData(medDataIndex const & index)
+//{
+//    QList<medAbstractData *> dataListRes;
+//    //medAbstractData *pDataRes = nullptr;
+//
+//    if (m_IndexToData.contains(index))
+//    {
+//        dataListRes << m_IndexToData[index];
+//    }
+//    else
+//    {
+//        bool bOnline, bWritable, bLocal, bCache;   
+//        QString sourceId = index.sourceId();
+//        if (sourceId == "fs") 
+//        {
+//            dataListRes = loadDataFromPathAsIndex(index);
+//        }
+//        else if (m_sourcesHandler->sourceGlobalInfo(sourceId, bOnline, bLocal, bWritable, bCache))
+//        {
+//            if (bLocal)
+//            {
+//                getDirectData(index, dataListRes);
+//            }
+//            else
+//            {
+//                getAsyncData(index, dataListRes);
+//            }
+//        }
+//        else
+//        {
+//            medNotif::createNotif(notifLevel::error, "Data can't be retrieved", QString("Unable to retrieve data from source ") + sourceId + QString(" for data index ") + index.asString());
+//        }
+//    }
+//
+//    return dataListRes;
+//}
+
 medAbstractData * medDataHub::getData(medDataIndex const & index)
 {
     medAbstractData *pDataRes = nullptr;
@@ -287,11 +324,15 @@ medAbstractData * medDataHub::getData(medDataIndex const & index)
     }
     else
     {
-        bool bOnline, bWritable, bLocal, bCache;
+        bool bOnline, bWritable, bLocal, bCache;   
         QString sourceId = index.sourceId();
         if (sourceId == "fs") 
         {
-            pDataRes = loadDataFromPathAsIndex(index);
+            auto dataList = loadDataFromPathAsIndex(index);
+            if (!dataList.isEmpty())
+            {
+                pDataRes = dataList[0];
+            }
         }
         else if (m_sourcesHandler->sourceGlobalInfo(sourceId, bOnline, bLocal, bWritable, bCache))
         {
@@ -314,6 +355,30 @@ medAbstractData * medDataHub::getData(medDataIndex const & index)
     return pDataRes;
 }
 
+QList<medAbstractData*> medDataHub::getDataList(medDataIndex const & index)
+{
+    QList<medAbstractData *> dataResList;
+
+    if (m_IndexToData.contains(index))
+    {
+        dataResList << m_IndexToData[index];
+    }
+    else
+    {
+       
+        QString sourceId = index.sourceId();
+        if (sourceId == "fs")
+        {
+            dataResList << loadDataFromPathAsIndex(index);
+        }
+        else 
+        {
+            //TODO
+        }
+    }
+
+    return dataResList;
+}
 
 int medDataHub::waitGetAsyncData(const QString &sourceId, int rqstId)
 {
@@ -526,7 +591,8 @@ public:
 
     void run() override
     {
-        m_pHub->loadDataFromPath(m_path, m_uuid);
+        medDataIndex index = fileSysPathToIndex(m_path);
+        m_pHub->loadDataFromPathAsIndex(index, m_uuid);
     }
 
     medDataHub * m_pHub;
@@ -721,8 +787,9 @@ bool medDataHub::writeResults(QString pi_sourceId, medAbstractData * pi_pData, Q
     }
     // ////////////////////////////////////////////////////////////////////////////////////////
 
+
     // ////////////////////////////////////////////////////////////////////////////////////////
-    // Check consistency of the proposal with URI
+    // Check la coherence de la proposition par rapport a l'URI
     auto limite = std::min(originPath.size(), sugestedPath.size());
     for (int i = 0; i < limite; ++i)
     {
@@ -1226,65 +1293,34 @@ void medDataHub::releaseRequest()
     m_mapsRequestMutex.unlock();
 }
 
-
-medAbstractData * medDataHub::loadDataFromPath(QString const path, QUuid uuid)
+QList<medAbstractData *> medDataHub::loadDataFromPathAsIndex(medDataIndex index, QUuid uuid)
 {
-    medDataIndex index = fileSysPathToIndex(path);
-    return loadDataFromPathAsIndex(index, uuid);
-    // if (m_IndexToData.contains(index))
-    // {
-    //     medAbstractData * pDataRes = m_IndexToData[index];
-    //     emit dataLoaded(fileSysPathToIndex(path));
-    //     medDataManager::instance()->medDataHubRelay(index, uuid);
-    //     return pDataRes;
-    // }
+    QList<medAbstractData *> dataResList;
 
-    // std::shared_ptr<medNotif> notif = medNotif::createNotif(notifLevel::info , QString("Load File ") + path, " from local file system", -1, -1);
-    // medAbstractData * pDataRes = medDataImporter::convertSingleDataOnfly(path);
-    // if (pDataRes)
-    // {
-    //     QString index = fileSysPathToIndex(path);
-
-    //     pDataRes->setDataIndex(index);
-
-    //     m_IndexToData[index] = pDataRes;
-    //     m_IndexToData[index].data();
-
-    //     getVirtualRepresentation()->addDataFromFile(path, pDataRes);
-    //     emit dataLoaded(fileSysPathToIndex(path));
-
-    //     medDataManager::instance()->medDataHubRelay(index, uuid);
-    //     notif->update(notifLevel::success, -1, QString("Success"));
-
-    // }
-    // else
-    // {
-    //     notif->update(notifLevel::warning, -2, QString("Failure"));
-    //     // medNotif::createNotif(notifLevel::warning, QString("Converting file ") + path, " failed");
-    // }
-    // return pDataRes;
-}
-
-medAbstractData * medDataHub::loadDataFromPathAsIndex(medDataIndex index, QUuid uuid)
-{
     if (m_IndexToData.contains(index))
     {
-        medAbstractData * pDataRes = m_IndexToData[index];
+        dataResList << m_IndexToData[index];
         emit dataLoaded(index);
         medDataManager::instance()->medDataHubRelay(index, uuid);
-        return pDataRes;
+        return dataResList;
     }
     QString path = indexToFileSysPath(index.asString());
     std::shared_ptr<medNotif> notif = medNotif::createNotif(notifLevel::info , QString("Load File ") + QFileInfo(path).fileName(), " from local file system", -1, -1);
-    medAbstractData * pDataRes = medDataImporter::convertSingleDataOnfly(path);
-    if (pDataRes)
+    
+    QFileInfo fi(path);
+    if (fi.exists())
     {
-        pDataRes->setDataIndex(index);
+        if (fi.isFile())
+        {
+            dataResList << medDataImporter::convertSingleDataOnfly(path);
+            if (dataResList[0])
+            {
+                dataResList[0]->setDataIndex(index);
 
-        m_IndexToData[index] = pDataRes;
+                m_IndexToData[index] = dataResList[0];
         m_IndexToData[index].data();
 
-        getVirtualRepresentation()->addDataFromFile(path, pDataRes);
+                getVirtualRepresentation()->addDataFromFile(path, dataResList[0]);
         emit dataLoaded(index);
 
         medDataManager::instance()->medDataHubRelay(index, uuid);
@@ -1295,7 +1331,31 @@ medAbstractData * medDataHub::loadDataFromPathAsIndex(medDataIndex index, QUuid 
     {
         notif->update(notifLevel::warning, -2, QString("Failure"));
     }
-    return pDataRes;
+        }
+        else if (fi.isDir())
+        {
+            medDataImporter importer;
+            dataResList << importer.convertMultipData(path);
+
+            for (auto & data : dataResList)
+            {
+                auto index = fileSysPathToIndex(importer.getPaths(data)[0]);
+                data->setDataIndex(index);
+
+                m_IndexToData[index] = data;
+                m_IndexToData[index].data();
+
+                getVirtualRepresentation()->addDataFromFile(path, data);
+                emit dataLoaded(index);
+
+                medDataManager::instance()->medDataHubRelay(index, uuid);
+                notif->update(notifLevel::success, -1, QString("Success"));
+            }
+
+        }
+    }
+
+    return dataResList;
 }
 
 QList< medDataIndex > medDataHub::getSubData(medDataIndex const & index)

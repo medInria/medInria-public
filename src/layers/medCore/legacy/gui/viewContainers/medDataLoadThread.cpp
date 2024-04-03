@@ -16,44 +16,26 @@
 #include <medDataLoadThread.h>
 
 #include <medDataHub.h>
-#include <medDataImporter.h>
 #include <medDataManager.h>
 #include <medAbstractData.h>
 
-
-medDataLoadThread::medDataLoadThread(QList<medDataIndex> const & index, QList<QUrl> const & urls, medViewContainer *parent) : m_indexList(index), m_urlList(urls), m_parent(parent)
+medDataLoadThread::medDataLoadThread(medDataIndex const & index, medViewContainer * parent) : m_index(index), m_parent(parent)
 {
-    connect(this, SIGNAL(dataReady(medAbstractData*)), m_parent, SLOT(addData(medAbstractData *)));
+    connect(this, SIGNAL(dataReady(medAbstractData*)), m_parent, SLOT(addData(medAbstractData *)) );
+}
+
+medDataLoadThread::~medDataLoadThread()
+{
 }
 
 void medDataLoadThread::process()
 {
-    QStringList paths;
-    for (auto & url : m_urlList)
-    {
-        //QDirIterator it(url.toLocalFile(), QDir::Files, QDirIterator::Subdirectories);
-        //while(it.hasNext())
-        //{
-        //    paths << it.next();
-        //}
-        paths << url.toLocalFile();
-    }
-    if (!paths.isEmpty())
-    {
-        QStringList files;
-        QString path = computeRootPathOfListPath(paths, files);
-        m_indexList << fileSysPathToIndex(path, files);
-    }
-
-    for (medDataIndex index : m_indexList)
-    {
-        internalProcess(index, 3);
-    }
+    internalProcess(3);
     emit finished();
     deleteLater();
 }
 
-void medDataLoadThread::internalProcess(medDataIndex &index, int deep)
+void medDataLoadThread::internalProcess(int deep)
 {
     if (deep < 0)
     {
@@ -63,29 +45,61 @@ void medDataLoadThread::internalProcess(medDataIndex &index, int deep)
     }
     else
     {
-        int type = medDataHub::instance()->getDataType(index);
-        if (type == DATATYPE_ROLE_DATASET || type == DATATYPE_ROLE_BOTH)
+        if (m_index.sourceId() == "fs")
         {
-            m_pAbsDataList << medDataManager::instance()->retrieveDataList(index);
-            for (auto absData : m_pAbsDataList)
+            QString path = indexToFileSysPath(m_index.asString());
+            QFileInfo fi(path);
+            if (fi.exists())
             {
-                if (absData)
+                if (fi.isFile())
                 {
-                    emit dataReady(absData);
+                    m_pAbsDataList << medDataManager::instance()->retrieveData(m_index);
+                    if (m_pAbsDataList[0])
+                    {
+                        emit dataReady(m_pAbsDataList[0]);
+                    }
                 }
-            }
-        }
-        else if (type == DATATYPE_ROLE_FOLDER)
-        {
-            auto clidrenList = medDataManager::instance()->getSubData(index);
-            for (auto & child : clidrenList)
-            {
-                internalProcess(child, deep - 1);
+                else if (fi.isDir())
+                {
+                    //TODO Handle subdir
+                    m_pAbsDataList << medDataManager::instance()->retrieveDataList(m_index);
+                    for (auto absData : m_pAbsDataList)
+                    {
+                        if (absData)
+                        {
+                            emit dataReady(absData);
+                        }
+                    }
+                }
+                else
+                {
+                    //todo faire une notif d'erreur de non prise en charge
+                }
             }
         }
         else
         {
-            //todo faire une notif d'erreur de non prise en charge
+            int type = medDataHub::instance()->getDataType(m_index);
+            if (type == DATATYPE_ROLE_DATASET || type == DATATYPE_ROLE_BOTH)
+            {
+                m_pAbsDataList << medDataManager::instance()->retrieveData(m_index);
+                if (m_pAbsDataList.last())
+                {
+                    emit dataReady(m_pAbsDataList.last());
+                }
+            }
+            else if (type == DATATYPE_ROLE_FOLDER)
+            {
+                auto clidrenList = medDataManager::instance()->getSubData(m_index);
+                for (auto & child : clidrenList)
+                {
+                    internalProcess(deep - 1);
+                }
+            }
+            else
+            {
+                //todo faire une notif d'erreur de non prise en charge
+            }
         }
     }
 }
