@@ -23,19 +23,17 @@ foreach (dir ${PRIVATE_PLUGINS_LEGACY_DIRS})
 	set(DEV_PLUGINS_LEGACY_DIRS "${DEV_PLUGINS_LEGACY_DIRS}:${dir}/bin/plugins_legacy")
 endforeach()
 
-ExternalProject_Get_Property(medInria binary_dir)
-
 set(LOCATE "")
-set(MEDINRIA_DIR ${CMAKE_BINARY_DIR})
+set(MEDINRIA_DIR ${medInria_ROOT})
 
 if (APPLE)
-  set(MEDINRIA_BIN ${binary_dir}/bin/medInria.app/Contents/MacOS/medInria)
+  set(MEDINRIA_BIN ${medInria_ROOT}/bin/medInria.app/Contents/MacOS/medInria)
 else()
-  set(MEDINRIA_BIN ${binary_dir}/bin/medInria)
+  set(MEDINRIA_BIN ${medInria_ROOT}/bin/medInria)
 endif()
 
-set(MEDINRIA_PLUGINS_DIRS "${binary_dir}/bin/plugins:${DEV_PLUGINS_DIRS}")
-set(MEDINRIA_PLUGINS_LEGACY_DIRS "${binary_dir}/bin/plugins_legacy:${DEV_PLUGINS_LEGACY_DIRS}")
+set(MEDINRIA_PLUGINS_DIRS "${medInria_ROOT}/bin/plugins:${DEV_PLUGINS_DIRS}")
+set(MEDINRIA_PLUGINS_LEGACY_DIRS "${medInria_ROOT}/bin/plugins_legacy:${DEV_PLUGINS_LEGACY_DIRS}")
 
 configure_file(${CMAKE_CURRENT_LIST_DIR}/medInria.sh.in ${CMAKE_BINARY_DIR}/medInria.sh @ONLY)
 

@@ -105,5 +105,5 @@ endmacro()
 #
 ################################################################################
 macro(set_plugin_install_rules_legacy_external target)
-  set_plugin_install_rules_legacy_generic(${target} ${medInria_DIR})
+  set_plugin_install_rules_legacy_generic(${target} ${medInria_ROOT})
 endmacro()

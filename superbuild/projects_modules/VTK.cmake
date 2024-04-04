@@ -120,9 +120,9 @@ endif()
 if(USE_Python)
     set(python_version "${PYTHON_VERSION_MAJOR}.${PYTHON_VERSION_MINOR}")
     if(UNIX)
-        set(python_executable "${pyncpp_DIR}/lib/python${python_version}/bin/python${python_version}")
-        set(python_include "${pyncpp_DIR}/lib/python${python_version}/include/python${python_version}")
-        set(python_library "${pyncpp_DIR}/lib/python${python_version}/lib/libpython${python_version}${CMAKE_SHARED_LIBRARY_SUFFIX}")
+        set(python_executable "${pyncpp_ROOT}/lib/python${python_version}/bin/python${python_version}")
+        set(python_include "${pyncpp_ROOT}/lib/python${python_version}/include/python${python_version}")
+        set(python_library "${pyncpp_ROOT}/lib/python${python_version}/lib/libpython${python_version}${CMAKE_SHARED_LIBRARY_SUFFIX}")
     else()
         # TODO
     endif()
@@ -171,7 +171,7 @@ ExternalProject_Add(${ep}
 ## #############################################################################
 
 ExternalProject_Get_Property(${ep} binary_dir)
-set(${ep}_DIR ${binary_dir} PARENT_SCOPE)
+set(${ep}_ROOT ${binary_dir} PARENT_SCOPE)
 
 endif() #NOT USE_SYSTEM_ep
 

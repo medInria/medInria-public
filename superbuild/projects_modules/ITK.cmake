@@ -68,11 +68,7 @@ set(cmake_args
   -DModule_ITKReview:BOOL=ON
   -DModule_ITKVtkGlue:BOOL=ON
   -DITK_LEGACY_REMOVE:BOOL=ON
-  -DVTK_DIR:PATH=${VTK_DIR}
-  )
-  
-set(cmake_cache_args
-  -DVTK_DIR:PATH=${VTK_DIR}
+  -DVTK_ROOT:PATH=${VTK_ROOT}
   )
 
 ## #############################################################################
@@ -111,7 +107,7 @@ ExternalProject_Add(${ep}
 ## #############################################################################
 
 ExternalProject_Get_Property(ITK binary_dir)
-set(${ep}_DIR ${binary_dir} PARENT_SCOPE)
+set(${ep}_ROOT ${binary_dir} PARENT_SCOPE)
 
 endif() #NOT USE_SYSTEM_ep
 
