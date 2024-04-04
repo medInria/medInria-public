@@ -44,8 +44,6 @@ public:
     bool isMutlipart();
     QVector<partChunck> getParts();
 
-    // possible ajout ici
-
 private:
     void init();
     void addPart(QByteArray & part);
@@ -122,6 +120,3 @@ private:
  * @param delim [in] delimiter that indicates, by its first occurrence, the position from which the data must be separated
  * @return a pair in which each element corresponds respectively to the beginning and the end of the data
 */
-
-
-

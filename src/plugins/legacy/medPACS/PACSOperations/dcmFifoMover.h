@@ -61,5 +61,4 @@ private:
  * @brief indicate that the process should stop
 */
 
-
 #endif //DCMFIFOMOVER_H

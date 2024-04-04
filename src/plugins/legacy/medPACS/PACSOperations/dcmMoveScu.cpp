@@ -11,8 +11,10 @@
 
 =========================================================================*/
 
-#include <QDebug>
 #include <QDir>
+
+#include <medNotif.h>
+#include <medNewLogger.h>
 
 #include <dcmMoveScu.h>
 #include <medAbstractSource.h>
@@ -63,19 +65,15 @@ void dcmMoveScu::run()
         }
 
         m_outputDirectory = subDir.absolutePath().toUtf8().constData();
-
-        // Notif ?
-        // qDebug() << m_outputDirectory.c_str();
+        mInfo << "Path where DICOM files had to be downloaded : " << m_outputDirectory.c_str();
 
         OFCondition cond = moveRequest(m_data.at(i));
         if(cond.good())
         {
-            qDebug() << "Successful Move operation";
             emit moveFinished(subDir.absolutePath(), m_data.at(i), i);
         }
         else
         {
-            qDebug() << "Move operation failed : " << cond.text();
             emit moveFailed();
         }
     }
@@ -129,7 +127,7 @@ void dcmMoveScu::addOverrideKey(const QString &key)
             // not found in dictionary
             msg = "Bad key format or dictionary name not found in dictionary: ";
             msg += levelParameter.toUtf8().data();
-            qDebug() << msg.c_str();
+            mWarning << "[addOverrideKey] " << msg.c_str();
         }
     }
     else
@@ -144,23 +142,23 @@ void dcmMoveScu::addOverrideKey(const QString &key)
     if(tag.error() != EC_Normal)
     {
         sprintf(msg2, "unknown tag: (%04x,%04x)", g, e);
-        qDebug() << msg2;
+        mWarning << "[addOverrideKey] " << msg2;
     }
 
     DcmElement *elem = DcmItem::newDicomElement(tag);
     if(elem == NULL)
     {
         sprintf(msg2, "cannot create element for tag: (%04x,%04x)", g, e);
-        qDebug() << msg2;
+        mWarning << "[addOverrideKey] " << msg2;
     }
     if(!levelValue.isEmpty())
     {
-        if (elem->putString(levelValue.toUtf8().data()).bad())
+        if(elem->putString(levelValue.toUtf8().data()).bad())
         {
             sprintf(msg2, "cannot put tag value: (%04x,%04x)=", g, e);
             msg = msg2;
             msg += levelValue.toUtf8().data();
-            qDebug() << msg.c_str();
+            mWarning << "[addOverrideKey] " << msg.c_str();
         }
     }
 
@@ -172,7 +170,7 @@ void dcmMoveScu::addOverrideKey(const QString &key)
     if(overrideKeys->insert(elem, OFTrue).bad())
     {
         sprintf(msg2, "cannot insert tag: (%04x,%04x)", g, e);
-        qDebug() << msg2;
+        mWarning << "[addOverrideKey] " << msg2;
     }
 }
 
@@ -185,7 +183,6 @@ void dcmMoveScu::substituteOverrideKeys(DcmDataset *dataset)
 
     DcmDataset overKeys(*overrideKeys);
 
-    // MODIF : <= au lieu de <
     for(unsigned long i=0; i <= overKeys.card(); i++)
     {
         DcmElement *elem = overKeys.remove(OFstatic_cast(unsigned long, 0));
@@ -210,14 +207,14 @@ void dcmMoveScu::storeSCPCallback(void *storeCallback, T_DIMSE_StoreProgress *pr
             OFStandard::combineDirAndFilename(dcmFileName, storeCbData->outputDirectory, storeCbData->imageFileName, OFTrue);
             if(OFStandard::fileExists(dcmFileName))
             {
-                qDebug() << "DICOM file already exists, overwriting" << dcmFileName.c_str();
+                mWarning << "[STORE SCP] DICOM file already downloaded, Overwriting " << dcmFileName.c_str();
             }
 
             E_TransferSyntax xfer = (*imageDataset)->getOriginalXfer();
             OFCondition cond = storeCbData->dcmFile->saveFile(dcmFileName.c_str(), xfer, EET_ExplicitLength, EGL_recalcGL, EPD_withoutPadding, OFstatic_cast(Uint32, 0), OFstatic_cast(Uint32, 0), EWM_createNewMeta);
             if(cond.bad())
             {
-               qDebug() << "Cannot save Dicom file" << dcmFileName.c_str(); 
+                mCritical << "[STORE SCP] Download error, Cannot save DICOM file" << dcmFileName.c_str();
             }
 
             DIC_UI sopClass;
@@ -269,10 +266,11 @@ OFCondition dcmMoveScu::storeSCP(void *subOpCallback, T_ASC_Association *assoc, 
     }
 
     DcmDataset *dcmSet = file.getDataset();
+    // perform C-STORE SCP response
     cond = DIMSE_storeProvider(assoc, pcId, rq, NULL, OFTrue, &dcmSet, storeSCPCallback, OFreinterpret_cast(void*, &callbackData), DIMSE_BLOCKING, 0);
     if(cond.bad())
     {
-        qDebug() << "Store SCP Failed";
+        mCritical << "STORE SCP Response Status : Failed";
     }
 
     return cond;
@@ -280,10 +278,11 @@ OFCondition dcmMoveScu::storeSCP(void *subOpCallback, T_ASC_Association *assoc, 
 
 OFCondition dcmMoveScu::echoSCP(T_ASC_Association *assoc, T_DIMSE_Message *msg, T_ASC_PresentationContextID pcId)
 {
+    // perform C-ECHO SCP response
     OFCondition cond = DIMSE_sendEchoResponse(assoc, pcId, &msg->msg.CEchoRQ, STATUS_Success, NULL);
     if(cond.bad())
     {
-        qDebug() << "Echo SCP Failed";
+        mCritical << "ECHO SCP Response Status : Failed";
     }
 
     return cond;
@@ -299,7 +298,7 @@ void dcmMoveScu::subOperationCallback(void *subCallback, T_ASC_Network *subNet, 
     }
 
     if(*subAssoc == NULL)
-    { //negotiate association
+    { // negotiate association
         const char *abstractSyntaxes[] = {UID_VerificationSOPClass};
         const char *transferSyntaxes[] = {NULL, NULL, NULL};
         if(gLocalByteOrder == EBO_LittleEndian)
@@ -336,7 +335,7 @@ void dcmMoveScu::subOperationCallback(void *subCallback, T_ASC_Network *subNet, 
         }
     }
     else
-    { //SCP request
+    { // SCP response
         T_DIMSE_Message msg;
         T_ASC_PresentationContextID pcId;
 
@@ -383,7 +382,7 @@ void dcmMoveScu::moveCallback(void *callbackData, T_DIMSE_C_MoveRQ *request, int
 {
     OFString str;
     DIMSE_dumpMessage(str, *response, DIMSE_INCOMING);
-    qDebug() << "Move response" << responseCount << ":" << str.c_str();
+    mInfo << "C-MOVE response" << responseCount << ":" << str.c_str();
 }
 
 
@@ -396,7 +395,7 @@ OFCondition dcmMoveScu::moveSCU(T_ASC_Association *assoc)
     substituteOverrideKeys(file.getDataset());
     
     T_ASC_PresentationContextID pcId = ASC_findAcceptedPresentationContextID(assoc, UID_MOVEPatientRootQueryRetrieveInformationModel);
-    if (pcId == 0)
+    if(pcId == 0)
     {
         return DIMSE_NOVALIDPRESENTATIONCONTEXTID;
     }
@@ -409,20 +408,29 @@ OFCondition dcmMoveScu::moveSCU(T_ASC_Association *assoc)
 
     ASC_getAPTitles(assoc->params, rq.MoveDestination, sizeof(rq.MoveDestination), NULL, 0, NULL, 0);
 
-    // C-MOVE RQ
+    // C-MOVE request message
     OFString temp_str;
-    qDebug() << DIMSE_dumpMessage(temp_str, rq, DIMSE_OUTGOING, NULL, pcId).c_str();
+    mInfo << "C-MOVE request message :" << DIMSE_dumpMessage(temp_str, rq, DIMSE_OUTGOING, NULL, pcId).c_str();
 
-    // DIMSE move
+
     DcmDataset *statusDetail = NULL;
     responseIdentifiers = NULL;
+    // perform C-MOVE request
     OFCondition cond = DIMSE_moveUser(assoc, pcId, &rq, file.getDataset(), moveCallback, (void*) this, DIMSE_BLOCKING, 60, m_net, subOperationCallback, (void*) this, &rsp, &statusDetail, &responseIdentifiers, OFTrue);    
 
-    // C-MOVE RSP
-    qDebug() << DIMSE_dumpMessage(temp_str, rsp, DIMSE_INCOMING).c_str();
+    // C-MOVE response message
+    mInfo << "C-MOVE response message :" << DIMSE_dumpMessage(temp_str, rsp, DIMSE_INCOMING).c_str();
 
-    // C-MOVE status
-    qDebug() << "C-MOVE status :"<< DU_cmoveStatusString(rsp.DimseStatus);
+
+    // C-MOVE operation status
+    if(rsp.DimseStatus == STATUS_Success)
+    {
+        medNotif::createNotif(notifLevel::success, "C-MOVE Request", "Status : " + QString(DU_cmoveStatusString(rsp.DimseStatus)));
+    }
+    else
+    {
+        medNotif::createNotif(notifLevel::error, "C-MOVE Request", "Status : " + QString(DU_cmoveStatusString(rsp.DimseStatus)));
+    }
 
     if(statusDetail != NULL)
     {
@@ -465,28 +473,28 @@ OFCondition dcmMoveScu::moveRequest(const QString &uid)
     OFCondition cond = ASC_initializeNetwork(NET_ACCEPTORREQUESTOR, m_localPort, 60, &m_net);
     if(cond.bad())
     {
-        qDebug() << "Network initialization error : " << cond.text();
+        medNotif::createNotif(notifLevel::error, "C-MOVE Request Error", "Network Initialization : " + QString(cond.text()));
         return cond;
     }
 
     cond = ASC_createAssociationParameters(&m_params, ASC_DEFAULTMAXPDU);
     if(cond.bad())
     {
-        qDebug() << "Create parameters association error : " << cond.text();
+        mCritical << "[C-MOVE Request Error] Create Parameters Association : " << cond.text();
         return cond;
     }
 
     cond = ASC_setAPTitles(m_params, m_localAetitle.toUtf8().data(), m_remoteAetitle.toUtf8().data(), NULL);
     if(cond.bad())
     {
-        qDebug() << "set APTitles error : " << cond.text();
+        medNotif::createNotif(notifLevel::error, "C-MOVE Request Error", "Set AETitles : " + QString(cond.text()));
         return cond;
     }
 
     cond = ASC_setPresentationAddresses(m_params, m_localHostName.toUtf8().data(), QString(m_remoteHostName + QString(":") + QString::number(m_remotePort)).toUtf8().data());
     if(cond.bad())
     {
-        qDebug() << "Presentation addresses error: " << cond.text();
+        mCritical << "[C-MOVE Request Error] Set Presentation Addresses : " << cond.text();
         return cond;
     }
 
@@ -507,31 +515,30 @@ OFCondition dcmMoveScu::moveRequest(const QString &uid)
     cond = ASC_addPresentationContext(m_params, 3, UID_MOVEPatientRootQueryRetrieveInformationModel, transferSyntaxes, 3);
     if(cond.bad())
     {
-        qDebug() << "Add presentation context error : " << cond.text();
+        mCritical << "[C-MOVE Request Error] Add Presentation Context : " << cond.text();
         return cond;
     }
 
     cond = ASC_requestAssociation(m_net, m_params, &m_assoc);
     if(cond.bad())
     {
-        qDebug() << "Request association error : " << cond.text();
+        mCritical << "[C-MOVE Request Error] Request Association : " << cond.text();
         return cond;
     }
 
     if(ASC_countAcceptedPresentationContexts(m_params) == 0)
     {
-        qDebug() << "Count accepted presentation contexts error : " << cond.text();
+        mCritical << "[C-MOVE Request Error] Count Accepted Presentation Contexts : " << cond.text();
         return cond;
     }
 
-    // Move operation
     cond = moveSCU(m_assoc);
     if(cond == EC_Normal)
     {
         cond = ASC_releaseAssociation(m_assoc);
         if(cond.bad())
         {
-            qDebug() << "Release association error : " << cond.text();
+            mCritical << "[C-MOVE Request Error] Release Association : " << cond.text();
             return cond;
         }
     }
@@ -540,21 +547,20 @@ OFCondition dcmMoveScu::moveRequest(const QString &uid)
         ASC_abortAssociation(m_assoc);
         if(cond.bad())
         {
-            qDebug() << "Abort association error (peer request release): " << cond.text();
+            mCritical << "[C-MOVE Request Error] Abort Association (Peer Requested Release) : " << cond.text();
             return cond;
         }
     }
     else if(cond == DUL_PEERABORTEDASSOCIATION)
     {
-        qDebug() << "Peer aborted association";
+        mWarning << "[C-MOVE Request] Peer Aborted Association : " << cond.text();
     }
     else
     {
-        qDebug() << "Move operation failed";
         ASC_abortAssociation(m_assoc);
         if(cond.bad())
         {
-            qDebug() << "Abort association error (peer request release): " << cond.text();
+            mCritical << "[C-MOVE Request Error] Abort Association (Peer Requested Release) : " << cond.text();
             return cond;
         }
     }
@@ -564,14 +570,14 @@ OFCondition dcmMoveScu::moveRequest(const QString &uid)
     cond = ASC_destroyAssociation(&m_assoc);
     if(cond.bad())
     {
-        qDebug() << "Destroy association error : " << cond.text();
+        mCritical << "[C-MOVE Request Error] Destroy Association : " << cond.text();
         return cond;
     }
 
     cond = ASC_dropNetwork(&m_net);
     if(cond.bad())
     {
-        qDebug() << "Drop network error : " << cond.text();
+        mCritical << "[C-MOVE Request Error] Drop Network : " << cond.text();
         return cond;
     }
 

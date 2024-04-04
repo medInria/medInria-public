@@ -13,28 +13,35 @@
 
 #include <memory>
 
-#include <QDebug>
-#include <QTcpSocket>
-#include <QThread>
-
 #include "dcmPACS.h"
 #include "dcmFindCallbacks.h"
 
+#include <medNotif.h>
+#include <medNewLogger.h>
+
+#include <dcmtk/dcmnet/dimse.h>
+#include <dcmtk/dcmnet/dfindscu.h>
 #include <dcmtk/dcmnet/dimse.h>
 #include <dcmtk/dcmdata/dcdeftag.h>
 #include <dcmtk/dcmdata/dcuid.h>
+#include <dcmtk/dcmnet/diutil.h>
 
-dcmPACS::dcmPACS(){
+#include <QTcpSocket>
+#include <QThread>
+
+dcmPACS::dcmPACS()
+{
     m_FifoMover = new dcmFifoMover;
     m_FifoMover->moveToThread(&m_Thread);
     connect(&m_Thread, &QThread::finished, m_FifoMover, &QObject::deleteLater);
     connect(&m_Thread, &QThread::started, m_FifoMover, &dcmFifoMover::processing);
-    connect(m_FifoMover, SIGNAL(sendPending(const int, const int)), this, SLOT(sendPending(const int, const int)));
+    connect(m_FifoMover, SIGNAL(sendPending(const int, medAbstractSource::eRequestStatus)), this, SLOT(sendPending(const int, medAbstractSource::eRequestStatus)));
     
     m_Thread.start();
 }
 
-dcmPACS::~dcmPACS(){
+dcmPACS::~dcmPACS()
+{
     m_FifoMover->stopProcessing();
     m_Thread.quit();
     m_Thread.wait();
@@ -42,20 +49,23 @@ dcmPACS::~dcmPACS(){
 }
 
 
-void dcmPACS::updateLocalParameters(const QString &aet, const QString &hostname, int port){
+void dcmPACS::updateLocalParameters(const QString &aet, const QString &hostname, int port)
+{
     m_localServer.aetitle = aet;
     m_localServer.hostname = hostname;
     m_localServer.port = port;
 }
 
-void dcmPACS::updateRemoteParameters(const QString &aet, const QString &hostname, int port){
+void dcmPACS::updateRemoteParameters(const QString &aet, const QString &hostname, int port)
+{
     m_remoteServer.name = "TEST";
     m_remoteServer.aetitle = aet;
     m_remoteServer.hostname = hostname;
     m_remoteServer.port = port;
 }
 
-bool dcmPACS::isCachedDataPath(int pi_requestId){
+bool dcmPACS::isCachedDataPath(int pi_requestId)
+{
     bool bRes = false;
     auto mover = m_RequestIdMap[pi_requestId];
     QString outputPath = mover->getOutputDir();
@@ -89,11 +99,12 @@ bool dcmPACS::isServerAvailable(const QString &hostName, const int port)
 
 
 
-int dcmPACS::cEcho(){
+int dcmPACS::cEcho()
+{
     OFCondition cond = ASC_initializeNetwork(NET_REQUESTOR, 0, 30, &m_net);
     if(cond.bad())
     {
-        qDebug() << "Network initialization error : " << cond.text();
+        medNotif::createNotif(notifLevel::error, "C-ECHO Request Error", "Network Initialization : " + QString(cond.text()));
         return -1;
     }
 
@@ -102,21 +113,21 @@ int dcmPACS::cEcho(){
         cond = ASC_createAssociationParameters(&m_params, ASC_DEFAULTMAXPDU);
         if(cond.bad())
         {
-            qDebug() << "Create parameters association error : " << cond.text();
+            mCritical << "[C-ECHO Request Error] Create Parameters Association : " << cond.text();
             return -1;
         }
 
         cond = ASC_setAPTitles(m_params, m_localServer.aetitle.toUtf8().data(), m_remoteServer.aetitle.toUtf8().data(), NULL);
         if(cond.bad())
         {
-            qDebug() << "set APTitles error : " << cond.text();
+            medNotif::createNotif(notifLevel::error, "C-ECHO Request Error", "Set AETitles : " + QString(cond.text()));
             return -1;
         }
 
         cond = ASC_setPresentationAddresses(m_params, m_localServer.hostname.toUtf8().data(), QString(m_remoteServer.hostname + QString(":") + QString::number(m_remoteServer.port)).toUtf8().data());
         if(cond.bad())
         {
-            qDebug() << "Presentation addresses error: " << cond.text();
+            mCritical << "[C-ECHO Request Error] Set Presentation Addresses : " << cond.text();
             return -1;
         }
 
@@ -124,32 +135,34 @@ int dcmPACS::cEcho(){
         cond = ASC_addPresentationContext(m_params, 1, UID_VerificationSOPClass, transferSyntax, 1);
         if(cond.bad())
         {
-            qDebug() << "Add presentation context error : " << cond.text();
+            mCritical << "[C-ECHO Request Error] Add Presentation Context : " << cond.text();
             return -1;
         }
 
         cond = ASC_requestAssociation(m_net, m_params, &m_assoc);
         if(cond.bad())
         {
-            qDebug() << "Request association error : " << cond.text();
+            mCritical << "[C-ECHO Request Error] Request Association : " << cond.text();
             return -1;
         }
 
         if(ASC_countAcceptedPresentationContexts(m_params) == 0)
         {
-            qDebug() << "Count accepted presentation contexts error : " << cond.text();
+            mCritical << "[C-ECHO Request Error] Count Accepted Presentation Contexts : " << cond.text();
             return -1;
         }
 
         DIC_US id = m_assoc->nextMsgID++;
         DIC_US status;
+        // perform C-ECHO request
         cond = DIMSE_echoUser(m_assoc, id, DIMSE_BLOCKING, 0, &status, NULL);
+        QString echoStatus(DU_cechoStatusString(status));
         if(cond == EC_Normal)
         {
             cond = ASC_releaseAssociation(m_assoc);
             if(cond.bad())
             {
-                qDebug() << "Release association error : " << cond.text();
+                mCritical << "[C-ECHO Request" << echoStatus << "] Release Association : " << cond.text();
                 return -1;
             }
         }
@@ -158,21 +171,21 @@ int dcmPACS::cEcho(){
             ASC_abortAssociation(m_assoc);
             if(cond.bad())
             {
-                qDebug() << "Abort association error (peer request release): " << cond.text();
+                mCritical << "[C-ECHO Request" << echoStatus << "] Abort Association (Peer Requested Release) : " << cond.text();
                 return -1;
             }
         }
         else if(cond == DUL_PEERABORTEDASSOCIATION)
         {
-            qDebug() << "Peer aborted association";
+            mWarning << "[C-ECHO Request] Peer Aborted Association : " << cond.text();
         }
         else
         {
-            qDebug() << "Echo operation failed";
+            medNotif::createNotif(notifLevel::error, "C-ECHO Operation Failed", echoStatus + " " + QString(cond.text()));
             ASC_abortAssociation(m_assoc);
             if(cond.bad())
             {
-                qDebug() << "Abort association error (peer request release): " << cond.text();
+                mCritical << "[C-ECHO Request" << echoStatus << "] Abort Association (Peer Requested Release) : " << cond.text();
                 return -1;
             }
         }
@@ -180,22 +193,22 @@ int dcmPACS::cEcho(){
         cond = ASC_destroyAssociation(&m_assoc);
         if(cond.bad())
         {
-            qDebug() << "Destroy association error : " << cond.text();
+            mCritical << "[C-ECHO Request" << echoStatus << "] Destroy Association : " << cond.text();
             return -1;
         }
 
         cond = ASC_dropNetwork(&m_net);
         if(cond.bad())
         {
-            qDebug() << "Drop network error : " << cond.text();
+            mCritical << "[C-ECHO Request" << echoStatus << "] Drop Network : " << cond.text();
             return -1;
         }
 
-        qDebug() << "Successful Echo operation";
+        medNotif::createNotif(notifLevel::success, "C-ECHO Request " + echoStatus, "Connected to the server hostname " + m_remoteServer.hostname + " on port " + QString::number(m_remoteServer.port));
         return 0;
     }
 
-    qDebug() << "Server unavailable";
+    medNotif::createNotif(notifLevel::error, "Remote Server PACS Status", "Server hostname " + m_remoteServer.hostname + " unavailable on port " + QString::number(m_remoteServer.port));
     return -1;
 }
 
@@ -204,16 +217,10 @@ QList<QMap<DcmTagKey, QString>> dcmPACS::cFind(const QMap<DcmTagKey, QString> &f
     dcmFindCallbacks callb(filters); 
     if(isServerAvailable(m_remoteServer.hostname, m_remoteServer.port))
     {
-        // patientLevelAttributes transmis dans la requête, même key dont value vide
         OFList<OFString> keysRQ;
-        for (DcmTagKey key : filters.keys())
+        for(DcmTagKey key : filters.keys())
         {
             keysRQ.push_back(QString(key.toString().c_str() + QString("=") + filters.value(key)).toUtf8().data());
-        }
-
-        qDebug() << "Dans cFind de dcmPACS";
-        for(auto elem : keysRQ){
-            qDebug() << elem.c_str();
         }
 
         DcmFindSCU findscu;
@@ -221,6 +228,7 @@ QList<QMap<DcmTagKey, QString>> dcmPACS::cFind(const QMap<DcmTagKey, QString> &f
         if(cond.good())
         {
             QString queryInfoModel = UID_FINDPatientRootQueryRetrieveInformationModel;
+            // perform C-FIND request
             cond = findscu.performQuery(m_remoteServer.hostname.toUtf8().data(),
                                         m_remoteServer.port,
                                         m_localServer.aetitle.toUtf8().data(),
@@ -228,11 +236,15 @@ QList<QMap<DcmTagKey, QString>> dcmPACS::cFind(const QMap<DcmTagKey, QString> &f
                                         queryInfoModel.toStdString().c_str(),
                                         EXS_Unknown, DIMSE_BLOCKING, 0, ASC_DEFAULTMAXPDU,
                                         false, false, 1, FEM_none, -1, &keysRQ, &callb);
+
+            if(cond.bad()){
+                medNotif::createNotif(notifLevel::error, "C-FIND Request Error", "Error in DICOM objects search" + QString(cond.text()));
+            }
             
             cond = findscu.dropNetwork();
             if(cond.bad())
             {
-                qDebug() << "Drop network error";
+                mCritical << "[C-FIND Request] Drop Network : " << cond.text();
             }
         }
     }
@@ -296,5 +308,3 @@ void dcmPACS::stopMove(int pi_requestId)
         delete mover;
     }
 }
-
-

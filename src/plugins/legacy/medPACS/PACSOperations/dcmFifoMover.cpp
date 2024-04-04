@@ -45,13 +45,13 @@ void dcmFifoMover::processing()
 
             while(mover->isRunning() && m_MustRun)
             {
-                for (auto other : m_RequestIdMap.keys())
+                for(auto other : m_RequestIdMap.keys())
                 {
                     emit sendPending(other, medAbstractSource::eRequestStatus::pending);
                 }
                 std::this_thread::sleep_for(std::chrono::seconds(1));
             }
-            if (mover->isRunning())
+            if(mover->isRunning())
             {
                 mover->quit();
                 mover->wait();
@@ -59,7 +59,7 @@ void dcmFifoMover::processing()
             mover->deleteLater();
         }
     }
-    for (auto mover : m_RequestIdMap)
+    for(auto mover : m_RequestIdMap)
     {
         mover->quit();
         mover->wait();

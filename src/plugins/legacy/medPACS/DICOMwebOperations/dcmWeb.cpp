@@ -13,7 +13,10 @@
 
 #include "dcmWeb.h"
 
-#include <QDebug>
+#include <medNotif.h>
+
+#include <dcmtk/dcmdata/dctag.h>
+#include <dcmtk/dcmdata/dcdeftag.h>
 
 dcmWeb::dcmWeb(QObject *parent, RequestManager *rqManager) : QObject(parent)
 {
@@ -47,7 +50,6 @@ bool dcmWeb::hasUrl()
 
 
 
-// MODIF
 void dcmWeb::updateRequestState(const QUuid &netReqId)
 {
     // execution after 1s
@@ -123,6 +125,11 @@ int dcmWeb::isServerAvailable()
     if(m_requestMap[netReqId].response.code == SUCCESS_CODE)
     {
         respCode = m_requestMap[netReqId].waiterCode;
+        medNotif::createNotif(notifLevel::success, "DICOMweb RESTful services", "Connected to " + m_url);
+    }
+    else
+    {
+        medNotif::createNotif(notifLevel::error, "DICOMweb RESTful services", "Unable to connect to " + m_url);
     }
 
     if(m_requestMap.contains(netReqId))
@@ -201,8 +208,12 @@ QList<QMap<DcmTagKey, QString>> dcmWeb::patientSearchService(const QMap<DcmTagKe
             infos.append(patientInfos);
         }
     }
+    else
+    {
+        medNotif::createNotif(notifLevel::error, "QIDO-RS (Query Service) request", "Error in DICOM objects search at patient level");
+    }
 
-        // once the request has been prcessed, deletes it from the QMap using the associated uuid
+    // once the request has been processed, deletes it from the QMap using the associated uuid
     if(m_requestMap.contains(netReqId))
     {
         m_requestMap.remove(netReqId);
@@ -269,8 +280,12 @@ QList<QMap<DcmTagKey, QString>> dcmWeb::studySearchService(const QMap<DcmTagKey,
             infos.append(studyInfos);
         }
     }
+    else
+    {
+        medNotif::createNotif(notifLevel::error, "QIDO-RS (Query Service) request", "Error in DICOM objects search at study level");
+    }
 
-    // once the request has been prcessed, deletes it from the QMap using the associated uuid
+    // once the request has been processed, deletes it from the QMap using the associated uuid
     if(m_requestMap.contains(netReqId))
     {
         m_requestMap.remove(netReqId);
@@ -329,7 +344,7 @@ QList<QMap<DcmTagKey, QString>> dcmWeb::seriesSearchService(const QMap<DcmTagKey
                 if(tagKey != DCM_QueryRetrieveLevel)
                 {
                     QString dcmKey = QString(tagKey.toString().c_str()).mid(1,9);
-                    QString dcmUpperKey = dcmKey.remove(",").toUpper(); // toUpper() for tags with letters
+                    QString dcmUpperKey = dcmKey.remove(",").toUpper(); // toUpper() for tags with letters : (0008,103e)
 
                     // if defined in the json, retrieve their value
                     if(seriesTags.contains(dcmUpperKey))
@@ -344,8 +359,12 @@ QList<QMap<DcmTagKey, QString>> dcmWeb::seriesSearchService(const QMap<DcmTagKey
             infos.append(seriesInfos);
         }
     }
+    else
+    {
+        medNotif::createNotif(notifLevel::error, "QIDO-RS (Query Service) request", "Error in DICOM objects search at series level");
+    }
 
-    // once the request has been prcessed, deletes it from the QMap using the associated uuid
+    // once the request has been processed, deletes it from the QMap using the associated uuid
     if(m_requestMap.contains(netReqId))
     {
         m_requestMap.remove(netReqId);
@@ -353,8 +372,3 @@ QList<QMap<DcmTagKey, QString>> dcmWeb::seriesSearchService(const QMap<DcmTagKey
 
     return infos;
 }
-
-
-
-
-

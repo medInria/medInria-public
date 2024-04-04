@@ -12,17 +12,11 @@
 =========================================================================*/
 #pragma once
 
-#include "PACSOperations/dcmPACS.h"
-
-#include "DICOMwebOperations/dcmWeb.h"
-#include "DICOMwebOperations/dcmRetrieveData.h"
-#include "DICOMwebOperations/RequestManager.h"
-
 #include <medAbstractSource.h>
 #include "medPACSPluginExport.h"
 
-#include <dcmtk/dcmdata/dcdeftag.h>
-#include <dcmtk/dcmdata/dctagkey.h>
+#include "PACSOperations/dcmPACS.h"
+
 #include <dcmtk/dcmdata/dcdict.h>
 #include <dcmtk/dcmdata/dcdicent.h>
 
@@ -175,6 +169,8 @@ private:
     static medIntParameter s_Port;
 
 };
+
+// definitions of functions that are specific to this plugin, in addition to those related to mandatoryAttributes
 
 /**
  * @fn void medPACS::computeDateRange()
