@@ -31,9 +31,30 @@ for i in $*; do
         injectDirs="$injectDirs -inject-dir=$i"
 done
 
+mkdir python_plugins
+injectDirs="$injectDirs -inject-dir=@PROJECT_BINARY_DIR@/TmpInstall/python_plugins"
+
+python_libs=''
+for python_lib in @medInria_ROOT@/bin/python_plugins/*; do
+    lib=${python_lib##*/}
+    libname=${lib%.so}
+    cp $python_lib python_plugins/$libname.dylib
+    python_libs="$python_libs $libname"
+done
+
 @dtk_ROOT@/bin/dtkDeploy medInria.app $injectDirs &>/dev/null
 
-@CMAKE_COMMAND@ -DCMAKE_INSTALL_PREFIX:STRING=medInria.app/Contents/Resources -DCMAKE_INSTALL_COMPONENT:STRING=Python -P @pyncpp_ROOT@/cmake_install.cmake
+mkdir medInria.app/Contents/Plugins/python
+if [ -n "${python_libs}" ]
+then
+    for python_lib in $python_libs; do
+        mv medInria.app/Contents/Plugins/$python_lib.dylib medInria.app/Contents/Plugins/python/$python_lib.so
+    done
+fi
+
+@CMAKE_COMMAND@ --install @pyncpp_ROOT@ --prefix . --component Runtime
+mkdir medInria.app/Contents/Resources/lib
+mv lib/python@PYTHON_VERSION_MAJOR@.@PYTHON_VERSION_MINOR@ medInria.app/Contents/Resources/lib
 
 #Run fancy packaging apple script
 

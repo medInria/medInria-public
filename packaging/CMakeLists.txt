@@ -50,6 +50,16 @@ option(CPACK_SOURCE_ZIP  "Enable to build ZIP source packages"  OFF)
 
 set(CPACK_INSTALL_CMAKE_PROJECTS ${PROJECT_BINARY_DIR} ${PROJECT_NAME} ALL "/")
 
+if(USE_Python)
+    set(PYTHON_PLUGINS_DIR "${medInria_ROOT}/bin/python_plugins")
+    make_directory("${PYTHON_PLUGINS_DIR}")
+
+    install(DIRECTORY "${PYTHON_PLUGINS_DIR}"
+        DESTINATION bin
+        COMPONENT Runtime
+        )
+endif()
+
 # Set cpack variables specific to the plateform
 
 if (WIN32)
