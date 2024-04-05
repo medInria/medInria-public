@@ -33,8 +33,8 @@ public:
   //! This function pointer designates functions allocating memory
   typedef medSettingsWidget*(*medSettingsWidgetCreator)(QWidget *);
 
-  //! Type designating the internal has table containing the creator functions.
-  typedef QHash<QString, medSettingDetails*> medSettingsWidgetCreatorHash;
+  //! Type designating the internal list containing the creator functions.
+  typedef QList<medSettingDetails*> medSettingsWidgetCreatorList;
 
   static medSettingsWidgetFactory * instance();
   /**
@@ -96,12 +96,13 @@ private:
  *
  */
 struct MEDCORELEGACY_EXPORT medSettingDetails{
+    QString type;
     QString name; /** Readable name*/
     QString description; /** (tooltip) short description */
     medSettingsWidgetFactory::medSettingsWidgetCreator creator; /** function pointer allocating memory for the widget*/
-    medSettingDetails(QString name,QString description,
+    medSettingDetails(QString type, QString name,QString description,
                      medSettingsWidgetFactory::medSettingsWidgetCreator creator):
-        name(name),description(description),
+        type(type), name(name),description(description),
         creator(creator){}
 };
 

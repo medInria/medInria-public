@@ -18,7 +18,7 @@
 class medSettingsWidgetFactoryPrivate
 {
 public:
-    medSettingsWidgetFactory::medSettingsWidgetCreatorHash creators;
+    medSettingsWidgetFactory::medSettingsWidgetCreatorList creators;
 };
 
 /**
@@ -40,15 +40,27 @@ bool medSettingsWidgetFactory::registerSettingsWidget(const QString& type,
                                                       QString description,
                                                       medSettingsWidgetCreator func)
 {
-    if(!d->creators.contains(type))
+    bool typeFound = false;
+
+    foreach(medSettingDetails* creatorDetails, d->creators)
     {
-        medSettingDetails* holder = new medSettingDetails(name,
+        if(creatorDetails->type == type)
+        {
+            typeFound = true;
+            break;
+        }
+    }
+
+    if(!typeFound)
+    {
+        medSettingDetails* holder = new medSettingDetails(type,
+                                                          name,
                                                           description,
                                                           func);
-        d->creators.insert( type,
-                            holder);
+        d->creators.append(holder);
         return true;
     }
+
     return false;
 }
 
@@ -59,7 +71,14 @@ bool medSettingsWidgetFactory::registerSettingsWidget(const QString& type,
 */
 QList<QString> medSettingsWidgetFactory::settingsWidgets(void)
 {
-    return d->creators.keys();
+    QList<QString> typeNames;
+
+    foreach(medSettingDetails* creatorDetails, d->creators)
+    {
+        typeNames.append(creatorDetails->type);
+    }
+
+    return typeNames;
 }
 
 /**
@@ -70,12 +89,16 @@ QList<QString> medSettingsWidgetFactory::settingsWidgets(void)
 */
 medSettingsWidget *medSettingsWidgetFactory::createSettingsWidget(QString type,QWidget * parent)
 {
-    if(!d->creators.contains(type))
-        return nullptr;
+    foreach(medSettingDetails* creatorDetails, d->creators)
+    {
+        if(creatorDetails->type == type)
+        {
+            medSettingsWidget* widget = creatorDetails->creator(parent);
+            return widget;
+        }
+    }
 
-    medSettingsWidget *conf = d->creators[type]->creator(parent);
-
-    return conf;
+    return nullptr;
 }
 
 /**
@@ -85,7 +108,15 @@ medSettingsWidget *medSettingsWidgetFactory::createSettingsWidget(QString type,Q
 medSettingDetails * medSettingsWidgetFactory::settingDetailsFromId(
         const QString &id) const
 {
-    return d->creators.value(id);
+    foreach(medSettingDetails* creatorDetails, d->creators)
+    {
+        if(creatorDetails->type == id)
+        {
+            return creatorDetails;
+        }
+    }
+
+    return nullptr;
 }
 
 /**
