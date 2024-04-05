@@ -89,7 +89,13 @@ medDataIndex medDatabaseNonPersistentImporter::populateDatabaseAndGenerateThumbn
     QString birthdate = medMetaDataKeys::BirthDate.getFirstValue(data);
 
     // check if patient is already in the persistent database
-    medDataIndex databaseIndex = medDataManager::instance().controller()->indexForPatient(patientName);
+    medDataIndex databaseIndex = medDataManager::instance().controller()->indexForPatientID(patientId);
+
+    if (!databaseIndex.isValidForPatient())
+    {
+        databaseIndex = medDataManager::instance().controller()->indexForPatient(patientName);
+    }
+
     medDatabaseNonPersistentItem *patientItem = nullptr;
 
     if ( databaseIndex.isValid() )
@@ -101,8 +107,8 @@ medDataIndex medDatabaseNonPersistentImporter::populateDatabaseAndGenerateThumbn
     {
         // check if patient is already in the non persistent database
         for ( int i=0; i<items.count(); i++ )
-            //if ( items[i]->name() ==patientName )
-            if ( medMetaDataKeys::PatientName.getFirstValue(items[i]->data()) == patientName )
+            if ((!patientId.isEmpty() && medMetaDataKeys::PatientID.getFirstValue(items[i]->data()) == patientId)
+                || medMetaDataKeys::PatientName.getFirstValue(items[i]->data()) == patientName)
             {
                 patientDbId = items[i]->index().patientId();
                 patientItem = items[i];

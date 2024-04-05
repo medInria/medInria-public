@@ -43,6 +43,7 @@ public:
     medDataIndex indexForSeries(int id);
 
     medDataIndex indexForPatient(const QString &patientName);
+    medDataIndex indexForPatientID(const QString &patientId);
     medDataIndex indexForStudy(const QString &patientName,
                                const QString &studyName);
     medDataIndex indexForStudyUID(const QString &patientName,
