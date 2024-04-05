@@ -12,6 +12,20 @@
 ################################################################################
 
 ## #############################################################################
+## Options
+## #############################################################################
+
+option(USE_DTKIMAGING "Use DTK imaging layer" OFF )
+
+option(USE_OSPRay "Use OSPRay for CPU VR" OFF )
+
+option(USE_Python "Build with Python support" ON)
+
+if (NOT WIN32)
+  option(USE_FFmpeg "Build with FFmpeg video export support" OFF)
+endif()
+
+## #############################################################################
 ## Add packages
 ## #############################################################################
 
@@ -53,14 +67,7 @@ endif()
 #   * otherwise use download and compile locally the package as an external 
 #     module.
 
-option(USE_DTKIMAGING "Use DTK imaging layer" OFF )
-  
-option(USE_OSPRay "Use OSPRay for CPU VR" OFF )
-
-option(USE_Python "Build with Python support" ON)
-
 if (NOT WIN32)
-  option(USE_FFmpeg "Build with FFmpeg video export support" OFF)
   if (${USE_FFmpeg})
       list(APPEND external_projects ffmpeg)
   endif()
