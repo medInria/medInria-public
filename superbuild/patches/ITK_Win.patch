@@ -1,0 +1,37 @@
+diff --git a/Modules/ThirdParty/KWSys/src/CMakeLists.txt b/Modules/ThirdParty/KWSys/src/CMakeLists.txt
+index 3c806d816d..6096ec57df 100644
+--- a/Modules/ThirdParty/KWSys/src/CMakeLists.txt
++++ b/Modules/ThirdParty/KWSys/src/CMakeLists.txt
+@@ -24,7 +24,9 @@ set(KWSYS_INSTALL_COMPONENT_NAME_DEVELOPMENT Development)
+ set(KWSYS_PROPERTIES_C WINDOWS_EXPORT_ALL_SYMBOLS FALSE)
+ set( _macosx_rpath 1)
+ if(DEFINED CMAKE_MACOSX_RPATH AND NOT "${CMAKE_MACOSX_RPATH}" STREQUAL "")
+-  set(_macosx_rpath ${CMAKE_MACOSX_RPATH})
++  if (NOT CMAKE_MACOSX_RPATH)
++    set(_macosx_rpath 0)
++  endif()
+ endif()
+ set(KWSYS_PROPERTIES_CXX MACOSX_RPATH ${_macosx_rpath} WINDOWS_EXPORT_ALL_SYMBOLS FALSE)
+ 
+diff --git a/Modules/ThirdParty/OpenJPEG/src/openjpeg/opj_includes.h b/Modules/ThirdParty/OpenJPEG/src/openjpeg/opj_includes.h
+index e75a220d4d..60d185e233 100644
+--- a/Modules/ThirdParty/OpenJPEG/src/openjpeg/opj_includes.h
++++ b/Modules/ThirdParty/OpenJPEG/src/openjpeg/opj_includes.h
+@@ -92,7 +92,7 @@ Most compilers implement their own version of this keyword ...
+ 
+ /* MSVC 64bits doesn't support _asm */
+ #if !defined(_WIN64)
+-static INLINE long lrintf(float f){
++static INLINE long opj_lrintf(float f){
+   int i;
+ 
+   _asm{
+@@ -103,7 +103,7 @@ static INLINE long lrintf(float f){
+   return i;
+ }
+ #else
+-static INLINE long lrintf(float x){
++static INLINE long opj_lrintf(float x){
+   long r;
+   if (x>=0.f)
+   {
