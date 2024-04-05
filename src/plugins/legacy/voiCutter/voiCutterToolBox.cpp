@@ -21,6 +21,7 @@
 #include <medBoolGroupParameterL.h>
 #include <medCompositeParameterL.h>
 #include <medDataManager.h>
+#include <medDoubleParameterL.h>
 #include <medPluginManager.h>
 #include <medStringListParameterL.h>
 #include <medTabbedViewContainers.h>
@@ -55,8 +56,9 @@ public:
     medAbstractBoolParameterL *orientation3DParam;
     
     // Rendering parameters
-    QHash<QString, QVariant> windowingParams;
     QString lut;
+    double minIntensity;
+    double maxIntensity;
 };
 
 class vtkCutterObserver : public vtkCommand
@@ -77,22 +79,22 @@ public:
 
         vtkRenderWindowInteractor *iren = static_cast<medVtkViewBackend*>
                 (tb->d->currentView->backend())->renWin->GetInteractor();
-        char keycode = iren->GetKeyCode();
-
-        // enter => keep only VOI defined
-        // tab => restore VOI defined
-        // backspace => delete VOI defined
-        switch(keycode)
+        auto key = iren->GetKeySym();
+        
+        if ((key == vtkStdString("Delete")) || (key == vtkStdString("BackSpace")))
         {
-            case '\b': // backspace
-                tb->launchTheCutting(Remove);
-                break;
-            case '\r': // return
-                tb->launchTheCutting(Keep);
-                break;
-            case '\t': // tab
-                tb->launchTheCutting(Restore);
-                break;
+            // Delete VOI defined
+            tb->launchTheCutting(Remove);
+        }
+        else if (key == vtkStdString("Return"))
+        {
+            // Keep only VOI defined
+            tb->launchTheCutting(Keep);
+        }
+        else if (key == vtkStdString("Tab"))
+        {
+            // Restore VOI defined
+            tb->launchTheCutting(Restore);
         }
     }
 
@@ -155,6 +157,9 @@ voiCutterToolBox::voiCutterToolBox(QWidget *parent) :
     d->orientation3DParam = 0;
 
     activateButtons(false);
+
+    d->minIntensity = std::numeric_limits<double>::min();
+    d->maxIntensity = std::numeric_limits<double>::max();
 }
 
 voiCutterToolBox::~voiCutterToolBox()
@@ -404,11 +409,15 @@ void voiCutterToolBox::launchTheCutting(MODE m)
 {
     if (d->currentView && d->scissorOn)
     {
+        this->setToolBoxOnWaitStatusForNonRunnableProcess();
+
         vtkImageView3D *view3D =  static_cast<medVtkViewBackend*>(d->currentView->backend())->view3D;
         std::vector<vtkVector2i> polygonPoints = static_cast<vtkInriaInteractorStyleDrawPolygon*>(view3D->GetInteractor()->GetInteractorStyle())->GetPolygonPoints();
         definePolygonsImage(polygonPoints, m);
         d->interactorStyleDrawPolygon->ResetPolygon();
         view3D->GetInteractor()->SetInteractorStyle(d->interactorStyleDrawPolygon);
+
+        this->setToolBoxOnReadyToUse();
     }
 }
 
@@ -428,17 +437,16 @@ void voiCutterToolBox::saveRenderingParameters()
                 {
                     d->lut = qobject_cast<medStringListParameterL*>(parameters[j])->value();
                 }
+                else if (parameters[j]->name() == "Min Intensity")
+                {
+                    d->minIntensity = qobject_cast<medDoubleParameterL*>(parameters[j])->value();
+                }
+                else if (parameters[j]->name() == "Max Intensity")
+                {
+                    d->maxIntensity = qobject_cast<medDoubleParameterL*>(parameters[j])->value();
+                }
             }
         }
-    }
-
-    // Synchronize Window/Level
-    medCompositeParameterL *windowLevelParameter1 = d->currentView->windowLevelParameter(0);
-    QList<QVariant> windowLevel = windowLevelParameter1->values();
-    if (windowLevel.size() == 2)
-    {
-        d->windowingParams.insert("Level",  windowLevel[0]);
-        d->windowingParams.insert("Window", windowLevel[1]);
     }
 }
 
@@ -457,12 +465,17 @@ void voiCutterToolBox::applyRenderingParameters()
                 {
                     qobject_cast<medStringListParameterL*>(parameters[j])->setValue(d->lut);
                 }
+                else if (parameters[j]->name() == "Min Intensity")
+                {
+                    qobject_cast<medDoubleParameterL*>(parameters[j])->setValue(d->minIntensity);
+                }
+                else if (parameters[j]->name() == "Max Intensity")
+                {
+                    qobject_cast<medDoubleParameterL*>(parameters[j])->setValue(d->maxIntensity);
+                }
             }
         }
     }
-
-    medCompositeParameterL *windowLevelParameter = d->currentView->windowLevelParameter(0);
-    windowLevelParameter->setValues(d->windowingParams);
 }
 
 // intersect3D_SegmentPlane(): intersect a segment and a plane
