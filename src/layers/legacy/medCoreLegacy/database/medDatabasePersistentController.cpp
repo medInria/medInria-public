@@ -326,6 +326,35 @@ medDataIndex medDatabasePersistentController::indexForPatient(
     return medDataIndex();
 }
 
+medDataIndex medDatabasePersistentController::indexForPatientID(const QString& patientId)
+{
+    medDataIndex dataIndex;
+
+    if (!patientId.isEmpty())
+    {
+        QSqlDatabase dbConnection = getThreadSpecificConnection();
+        QSqlQuery query(dbConnection);
+
+        query.prepare("SELECT id FROM patient WHERE patientId = :patientId");
+        query.bindValue(":patientId", patientId);
+
+        QMutexLocker mutexLocker(&getDatabaseMutex());
+
+        if (!execQuery(query, __FILE__, __LINE__))
+        {
+            qDebug() << DTK_COLOR_FG_RED << query.lastError() << DTK_NO_COLOR;
+        }
+
+        if (query.first())
+        {
+            QVariant patientDbId = query.value(0);
+            dataIndex = medDataIndex::makePatientIndex(this->dataSourceId(), patientDbId.toInt());
+        }
+    }
+
+    return dataIndex;
+}
+
 medDataIndex medDatabasePersistentController::indexForStudy(int id)
 {
     QSqlDatabase dbConnection = getThreadSpecificConnection();

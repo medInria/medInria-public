@@ -120,9 +120,38 @@ int medDatabaseImporter::getOrCreatePatient ( const medAbstractData* medData, QS
     QString birthDate = medMetaDataKeys::BirthDate.getFirstValue(medData);
     QString patientId = medMetaDataKeys::PatientID.getFirstValue(medData);
 
-    query.prepare ( "SELECT id FROM patient WHERE name = :name AND birthdate = :birthdate" );
-    query.bindValue ( ":name", patientName );
-    query.bindValue ( ":birthdate", birthDate );
+    QString queryText = "SELECT id FROM patient WHERE patientId = :patientId";
+
+    if (patientName.isEmpty())
+    {
+        queryText += " AND (name = '' OR name IS NULL)";
+    }
+    else
+    {
+        queryText += " AND name = :patientName";
+    }
+
+    if (birthDate.isEmpty())
+    {
+        queryText += " AND (birthdate = '' OR birthdate IS NULL)";
+    }
+    else
+    {
+        queryText += " AND birthdate = :birthdate";
+    }
+
+    query.prepare(queryText);
+    query.bindValue(":patientId", patientId);
+
+    if (!patientName.isEmpty())
+    {
+        query.bindValue(":patientName", patientName);
+    }
+
+    if (!birthDate.isEmpty())
+    {
+        query.bindValue(":birthdate", birthDate);
+    }
 
     QMutexLocker mutexLocker(&medDataManager::instance().controller()->getDatabaseMutex());
 
@@ -137,13 +166,12 @@ int medDatabaseImporter::getOrCreatePatient ( const medAbstractData* medData, QS
     }
     else
     {
-        QString birthdate      = medMetaDataKeys::BirthDate.getFirstValue(medData);
-        QString gender         = medMetaDataKeys::Gender.getFirstValue(medData);
+        QString gender = medMetaDataKeys::Gender.getFirstValue(medData);
 
         query.prepare ( "INSERT INTO patient (name, thumbnail, birthdate, gender, patientId) VALUES (:name, :thumbnail, :birthdate, :gender, :patientId)" );
         query.bindValue ( ":name", patientName );
         query.bindValue ( ":thumbnail", QString("") );
-        query.bindValue ( ":birthdate", birthdate );
+        query.bindValue ( ":birthdate", birthDate );
         query.bindValue ( ":gender",    gender );
         query.bindValue ( ":patientId", patientId);
         query.exec();
@@ -168,19 +196,55 @@ int medDatabaseImporter::getOrCreateStudy ( const medAbstractData* medData, QSql
     QString studyName   = medMetaDataKeys::StudyDescription.getFirstValue(medData).simplified();
     QString studyUid    = medMetaDataKeys::StudyInstanceUID.getFirstValue(medData);
     QString studyId     = medMetaDataKeys::StudyID.getFirstValue(medData);
-    QString seriesName  = medMetaDataKeys::SeriesDescription.getFirstValue(medData).simplified();
     QString studyTime   = medMetaDataKeys::StudyTime.getFirstValue(medData);
     QString studyDate   = medMetaDataKeys::StudyDate.getFirstValue(medData);
 
-    if( studyName=="EmptyStudy" && seriesName=="EmptySeries" )
+    QString queryText = "SELECT id FROM study WHERE patient = :patient";
+
+    if (studyUid.isEmpty())
     {
-        return studyDbId;
+        queryText += " AND (uid = '' OR uid IS NULL)";
+    }
+    else
+    {
+        queryText += " AND uid = :studyUid";
     }
 
-    query.prepare ( "SELECT id FROM study WHERE patient = :patient AND name = :studyName AND uid = :studyUid" );
-    query.bindValue ( ":patient", patientDbId );
-    query.bindValue ( ":studyName", studyName );
-    query.bindValue ( ":studyUid", studyUid );
+    if (studyId.isEmpty())
+    {
+        queryText += " AND (studyId = '' OR studyId IS NULL)";
+    }
+    else
+    {
+        queryText += " AND studyId = :studyId";
+    }
+
+    if (studyName.isEmpty())
+    {
+        queryText += " AND (name = '' OR name IS NULL)";
+    }
+    else
+    {
+        queryText += " AND name = :studyName";
+    }
+
+    query.prepare(queryText);
+    query.bindValue(":patient", patientDbId);
+
+    if(!studyUid.isEmpty())
+    {
+        query.bindValue(":studyUid", studyUid);
+    }
+
+    if (!studyId.isEmpty())
+    {
+        query.bindValue(":studyId", studyId);
+    }
+
+    if (!studyName.isEmpty())
+    {
+        query.bindValue(":studyName", studyName);
+    }
 
     QMutexLocker mutexLocker(&medDataManager::instance().controller()->getDatabaseMutex());
 
