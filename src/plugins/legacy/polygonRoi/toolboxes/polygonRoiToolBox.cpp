@@ -32,7 +32,7 @@
 const char *polygonRoiToolBox::generateBinaryImageButtonName = "generateBinaryImageButton";
 
 polygonRoiToolBox::polygonRoiToolBox(QWidget *parent ) :
-    medAbstractSelectableToolBox(parent), activeDataIndex()
+    medAbstractSelectableToolBox(parent)
 {
     medSettingsManager &manager = medSettingsManager::instance();
     QString speciality = manager.value("startup", "default_segmentation_speciality", "Default").toString();
@@ -132,6 +132,8 @@ polygonRoiToolBox::polygonRoiToolBox(QWidget *parent ) :
 
     // buttons initialisation: view has no data
     disableButtons();
+
+    activeData = nullptr;
 }
 
 polygonRoiToolBox::~polygonRoiToolBox()
@@ -200,9 +202,9 @@ void polygonRoiToolBox::updateView()
         {
             // attached view event with the first image data we found in view
             medAbstractData *data = dataList[0];
-            if (viewEventHash.contains(data->dataIndex()))
+            if (viewEventHash.contains(data))
             {
-                baseViewEvent *event = viewEventHash[data->dataIndex()];
+                baseViewEvent *event = viewEventHash[data];
                 // check if we have an event view attached to this data but in another container/view
                 if (imageView != event->getCurrentView())
                 {
@@ -269,9 +271,9 @@ void polygonRoiToolBox::updateView()
 void polygonRoiToolBox::onLayerRemoveOnOrientedViews(medAbstractData *data)
 {
     auto view = dynamic_cast<medAbstractImageView *>(sender());
-    if (viewEventHash.contains(data->dataIndex()))
+    if (viewEventHash.contains(data))
     {
-        baseViewEvent *event = viewEventHash[data->dataIndex()];
+        baseViewEvent *event = viewEventHash[data];
         if (event->getCurrentView() != view)
         {
             event->removeViewFromList(view);
@@ -289,13 +291,13 @@ void polygonRoiToolBox::createAndConnectEventFilter(const medAbstractData *data,
     {
         auto eventFilter = new urologyViewEvent(imageView, this);
         eventFilter->initialize(pMedToolBox, dataName);
-        viewEventHash[data->dataIndex()] = eventFilter;
+        viewEventHash[data] = eventFilter;
     }
     else
     {
         auto eventFilter = new defaultViewEvent(imageView, this);
         eventFilter->initialize(pMedToolBox, dataName);
-        viewEventHash[data->dataIndex()] = eventFilter;
+        viewEventHash[data] = eventFilter;
     }
 
     connect(imageView, SIGNAL(selectedRequest(bool)), this, SLOT(onDataIndexActivated()), Qt::UniqueConnection);
@@ -308,9 +310,9 @@ void polygonRoiToolBox::createAndConnectEventFilter(const medAbstractData *data,
 
 void polygonRoiToolBox::onLayerRemoved(medAbstractData *data)
 {
-    if (viewEventHash.contains(data->dataIndex()))
+    if (viewEventHash.contains(data))
     {
-        baseViewEvent *pViewEvent = viewEventHash[data->dataIndex()];
+        baseViewEvent *pViewEvent = viewEventHash[data];
         disconnect(pViewEvent->getCurrentView(), SIGNAL(selectedRequest(bool)), this, SLOT(onDataIndexActivated()));
 
         // check if this data is in another view. If yes, we have to disconnect signals
@@ -335,10 +337,10 @@ void polygonRoiToolBox::onLayerRemoved(medAbstractData *data)
             }
         }
 
-        viewEventHash.remove(data->dataIndex());
-        if (activeDataIndex == data->dataIndex())
+        viewEventHash.remove(data);
+        if (activeData == data)
         {
-            activeDataIndex = medDataIndex();
+            activeData = nullptr;
         }
         delete pViewEvent;
 
@@ -356,7 +358,7 @@ void polygonRoiToolBox::onDataIndexActivated()
         auto view = dynamic_cast<medAbstractImageView *>(sender());
         for (medAbstractData *data : getITKImageDataInSelectedView(view))
         {
-            if (data->dataIndex() == activeDataIndex)
+            if (data == activeData)
             {
                 return;
             }
@@ -367,14 +369,14 @@ void polygonRoiToolBox::onDataIndexActivated()
         }
         for (medAbstractData *data : getITKImageDataInSelectedView(view))
         {
-            if (viewEventHash.contains(data->dataIndex()))
+            if (viewEventHash.contains(data))
             {
-                baseViewEvent *event = viewEventHash.value(data->dataIndex());
+                baseViewEvent *event = viewEventHash.value(data);
 
                 event->onSelectContainer();
                 event->activateRepulsor(repulsorTool->isChecked());
                 event->setEnableInterpolation(interpolate->isChecked());
-                activeDataIndex = data->dataIndex();
+                activeData = data;
                 highLightContainer(event->getCurrentView());
                 return;
             }
@@ -400,9 +402,9 @@ void polygonRoiToolBox::clickClosePolygon(bool state)
             connect(event->getCurrentView(), SIGNAL(layerRemoved(medAbstractData * )), this,
                     SLOT(onLayerRemoved(medAbstractData *)), Qt::UniqueConnection);
         }
-        if (activeDataIndex.isValid() && viewEventHash[activeDataIndex])
+        if(activeData && viewEventHash[activeData])
         {
-            viewEventHash[activeDataIndex]->onSelectContainer();
+            viewEventHash[activeData]->onSelectContainer();
         }
         else if (!viewEventHash.empty())
         {
@@ -419,17 +421,17 @@ void polygonRoiToolBox::clickClosePolygon(bool state)
 
 void polygonRoiToolBox::activateRepulsor(bool state)
 {
-    if (viewEventHash.contains(activeDataIndex))
+    if (viewEventHash.contains(activeData))
     {
-        viewEventHash.value(activeDataIndex)->activateRepulsor(state);
+        viewEventHash.value(activeData)->activateRepulsor(state);
     }
 }
 
 void polygonRoiToolBox::interpolateCurve(bool state)
 {
-    if (viewEventHash.contains(activeDataIndex))
+    if (viewEventHash.contains(activeData))
     {
-        viewEventHash.value(activeDataIndex)->setEnableInterpolation(state);
+        viewEventHash.value(activeData)->setEnableInterpolation(state);
     }
 }
 
@@ -468,8 +470,7 @@ void polygonRoiToolBox::clear()
 {
     disableButtons();
     activateTBButton->setText("Activate Toolbox");
-    activeDataIndex = medDataIndex();
-    // Switching to a new toolbox, we can clean the main container behavior
+    activeData = nullptr;
 
     for (baseViewEvent *event : viewEventHash)
     {

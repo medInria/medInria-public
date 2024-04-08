@@ -9,6 +9,13 @@ medInria 3.4:
 - Solve some graphical problem with settings widgets
 - Add a setting in Browser to deactivate or activate the computation of thumbnail at import. Deactivation uses less RAM, if needed
 - Avoid a crash importing wrong version of VTK files
+- Fix Paint toolbox widgets when the user switches from Paint/Erase to Magic Wand or clear the view.
+- Fix a freeze in PolygonROI toolbox if the user contours outside the image borders.
+- Fix the "clear" button to effectivaly clear the view.
+- Stop some toolboxes compatible with 3D data if the user is using 4D data.
+- Video: default frame rate a 24.
+- DICOM: handle if the origin is missing.
+- Switch to Fedora 37.
 
 medInria 3.3:
 - Fix mirrored DICOM images problem
