@@ -127,13 +127,6 @@ list(APPEND files \${dtk_files})
 list(APPEND files \${dcm_files})
 list(APPEND files \${qt5_files})
 
-foreach(file \${files})
-  get_filename_component(file2delete \${file} NAME)
-  if(EXISTS \"${MEDINRIA_FILES}/\${file2delete}\")
-    file(REMOVE \"${MEDINRIA_FILES}/\${file2delete}\")
-  endif()
-endforeach()
-
 file(INSTALL ${MEDINRIA_FILES}/
     DESTINATION \${CMAKE_INSTALL_PREFIX}/bin/
     FILES_MATCHING
@@ -141,6 +134,13 @@ file(INSTALL ${MEDINRIA_FILES}/
     PATTERN \"*${CMAKE_SHARED_LIBRARY_SUFFIX}\"
     PATTERN \"*.pyd\"
     )
+
+foreach(file \${files})
+  get_filename_component(file2delete \${file} NAME)
+  if(EXISTS \"\${CMAKE_INSTALL_PREFIX}/bin/\${file2delete}\")
+    file(REMOVE \"${MEDINRIA_FILES}/\${file2delete}\")
+  endif()
+endforeach()
 
 file(INSTALL ${QT_PLUGINS_DIR}/imageformats/qgif.dll    DESTINATION \${CMAKE_INSTALL_PREFIX}/bin/imageformats/ FILES_MATCHING PATTERN \"*${CMAKE_SHARED_LIBRARY_SUFFIX}\")
 file(INSTALL ${QT_PLUGINS_DIR}/imageformats/qicns.dll   DESTINATION \${CMAKE_INSTALL_PREFIX}/bin/imageformats/ FILES_MATCHING PATTERN \"*${CMAKE_SHARED_LIBRARY_SUFFIX}\")
