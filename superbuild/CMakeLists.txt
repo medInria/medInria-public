@@ -80,12 +80,12 @@ if (USE_Python)
 endif()
 
 list(APPEND external_projects
-  VTK 
-  ITK 
-  RPI 
-  TTK 
-  DCMTK 
-  QtDCM 
+  VTK
+  ITK
+  RPI
+  TTK
+  DCMTK
+  QtDCM
   dtk
   LogDemons
   )
@@ -129,12 +129,12 @@ set(CMAKE_MODULE_PATH
   ${CMAKE_CURRENT_SOURCE_DIR}
   ${CMAKE_CURRENT_SOURCE_DIR}/external_projects_tools
   ${CMAKE_MODULE_PATH}
-    )
+  )
 
 option(USE_GITHUB_SSH 
   "Use by default Git SSH addresses, requires public key set on github" OFF
   )
-  
+
 option(USE_GITLAB_INRIA_SSH 
   "Use by default Git SSH addresses, requires public key set on Inria gitlab" OFF
   )
@@ -143,7 +143,7 @@ option(USE_GITLAB_INRIA_SSH
 # Asclepios and visages plugins
 set(${PROJECT_NAME}_CONFIG_FILE "${CMAKE_BINARY_DIR}/${PROJECT_NAME}Config.cmake")
 file(WRITE ${${PROJECT_NAME}_CONFIG_FILE}
-  "set(CMAKE_MODULE_PATH 
+  "set(CMAKE_MODULE_PATH
     ${CMAKE_MODULE_PATH}
     \${CMAKE_MODULE_PATH}
     )\n\n
@@ -155,7 +155,7 @@ file(WRITE ${${PROJECT_NAME}_CONFIG_FILE}
 file(APPEND ${${PROJECT_NAME}_CONFIG_FILE}
   "set(USE_GITLAB_INRIA_SSH ${USE_GITLAB_INRIA_SSH})\n"
   )
-  
+
 # Add Qt dir
 file(APPEND ${${PROJECT_NAME}_CONFIG_FILE}
   "set(Qt5_DIR ${Qt5_DIR})\n\n"
@@ -174,10 +174,10 @@ set(PRIVATE_PLUGINS_LEGACY_DIRS "" CACHE PATH "Folders containing legacy private
 ## #############################################################################
 
 set(global_targets 
-  configure  
+  configure
   install
   )
-  
+
 # This adds targets that will be run in each external-projects
 set_property(DIRECTORY PROPERTY EP_STEP_TARGETS ${global_targets})
 

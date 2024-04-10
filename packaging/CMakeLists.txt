@@ -66,14 +66,12 @@ if (WIN32)
     set(WIN_PACK_DIR ${PROJECT_SOURCE_DIR}/windows)
     include(${WIN_PACK_DIR}/WindowsLaunchers.cmake)
     include(${WIN_PACK_DIR}/WindowsPackaging.cmake)
-endif()
-
-if (APPLE)
-    include(${PROJECT_SOURCE_DIR}/apple/ApplePackaging.cmake)
-endif()
-
-if (${CMAKE_SYSTEM_NAME} STREQUAL "Linux")
-    include(${PROJECT_SOURCE_DIR}/linux/LinuxPackaging.cmake)
+elseif (UNIX)
+    if(APPLE)
+        include(${PROJECT_SOURCE_DIR}/apple/ApplePackaging.cmake)
+    else()
+        include(${PROJECT_SOURCE_DIR}/linux/LinuxPackaging.cmake)
+    endif()
 endif()
 
 # Include cpack modules
