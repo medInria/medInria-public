@@ -347,7 +347,7 @@ bool medMetaDataKeys::writeKey(Key2 const & key, QJsonObject & keyAsJson)
 bool medMetaDataKeys::registerKeyInternal(Key2 &key, QString &chapter)
 {
     bool bRes = false;
-    if (m_medKeyByChapterMap[chapter] == nullptr) m_medKeyByChapterMap[chapter] = new QVector<Key2>();
+    if (m_medKeyByChapterMap[chapter] == nullptr) m_medKeyByChapterMap[chapter] = new QList<Key2>();
     if (!m_medKeyByChapterMap[chapter]->contains(key.name()))
     {
 
@@ -379,7 +379,7 @@ bool medMetaDataKeys::registerKeyInternal(Key2 &key, QString &chapter)
         key.setMedPivot(key.medPivot().trimmed().toLower());
 
         m_medKeyByChapterMap[chapter]->push_back(key);
-        if (m_medKeyByPivotMap[key.medPivot()] == nullptr) m_medKeyByPivotMap[key.medPivot()] = new QVector<Key2*>();
+        if (m_medKeyByPivotMap[key.medPivot()] == nullptr) m_medKeyByPivotMap[key.medPivot()] = new QList<Key2*>();
         m_medKeyByPivotMap[key.medPivot()]->push_back(&m_medKeyByChapterMap[chapter]->last());
 
         bRes = true;
@@ -405,7 +405,7 @@ bool medMetaDataKeys::addKeyToChapterInternal(Key2 &key, QString &chapter)
 
     if (m_medKeyByChapterMap[chapter] == nullptr)
     {
-        m_medKeyByChapterMap[chapter] = new QVector<Key2 >();
+        m_medKeyByChapterMap[chapter] = new QList<Key2 >();
         m_medKeyByChapterMap[chapter]->push_back(key);
         needUpdate = true;
     }
@@ -455,15 +455,10 @@ bool medMetaDataKeys::addKeyToChapterInternal(Key2 &key, QString &chapter)
         //scheduleUpdate(chapter);
     }
 
-    //}
-    //else
-    //{
-        //m_medKeyByPivotMap.insertMulti(key.medPivot(), &m_medKeyByChapterMap[chapter].last());
     if (needUpdate)
     {
         scheduleUpdate(chapter);
     }
-    //}
 
     return bRes;
 }
@@ -527,7 +522,7 @@ Key2 medMetaDataKeys::keyFromNameInternal(QString &keyName, QString chapter)
     int pos = -1;
     if (m_medKeyByChapterMap.contains(chapter))
     {
-        QVector<Key2>* keys = m_medKeyByChapterMap[chapter];
+        QList<Key2>* keys = m_medKeyByChapterMap[chapter];
         pos = keys->indexOf(keyName);
         if (pos != -1)
         {
