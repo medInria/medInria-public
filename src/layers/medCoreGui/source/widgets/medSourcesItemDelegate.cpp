@@ -32,10 +32,13 @@ void medSourcesItemDelegate::paint(QPainter *painter, const QStyleOptionViewItem
         else if (value == DATASTATE_ROLE_DATALOADED)
         {
             auto list = m_treeView->selectionModel()->selectedIndexes();
-            if (list[0] == index)
-                m_treeView->setStyleSheet("QTreeView { selection-color: #0EBFEF;}");
-            else
-                m_treeView->setStyleSheet("QTreeView { selection-color: #FF8833;}");
+            if(!list.empty())
+            {
+                if (list[0] == index)
+                    m_treeView->setStyleSheet("QTreeView { selection-color: #0EBFEF;}");
+                else
+                    m_treeView->setStyleSheet("QTreeView { selection-color: #FF8833;}");
+            }
             opt.font.setBold(true);
             painter->drawPixmap(QRect(opt.rect.x()-40, opt.rect.y(), opt.decorationSize.width(), opt.rect.height()), QPixmap(":icons/icons8-download-16.png"));//QPixmap(":icons/yellow_spot.svg"));
         }

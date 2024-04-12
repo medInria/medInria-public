@@ -178,6 +178,11 @@ void medSourcesSettings::createSource()
     {
         qDebug()<<"A problem occurred creating a new source.";
     }
+
+    if(m_sourceToItem.size() == 1)
+    {
+        emit createdSource();
+    }
 }
 
 /**

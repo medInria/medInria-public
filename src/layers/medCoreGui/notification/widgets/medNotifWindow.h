@@ -38,7 +38,7 @@ public slots:
     void addNotification(medUsrNotif notif);
 
     void showPane(bool show);
-    void windowGeometryUpdate(QRect const & geo);
+    void windowGeometryUpdate(QSize const & size);
     void showAndHigligth(medUsrNotif notif);
     void swithVisibility();
 

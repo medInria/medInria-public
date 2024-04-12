@@ -154,9 +154,9 @@ void medNotificationPaneWidget::showPane(bool show)
     emit expanded(show);
 }
 
-void medNotificationPaneWidget::windowGeometryUpdate(QRect const & geo)
+void medNotificationPaneWidget::windowGeometryUpdate(QSize const & size)
 {
-    m_winSize = geo.size();
+    m_winSize = size;
     if (width())
     {
         int statusBarHeight = 0;

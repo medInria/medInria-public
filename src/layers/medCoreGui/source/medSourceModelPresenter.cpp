@@ -63,6 +63,8 @@ QTreeView * medSourceModelPresenter::buildTree(QSortFilterProxyModel *proxy)
 //    treeViewRes->setStyleSheet("QTreeView::item:selection{background-color:transparent}");
     treeViewRes->setItemDelegateForColumn(0, new medSourcesItemDelegate(treeViewRes));
 
+    connect(model, &QObject::destroyed, treeViewRes, &QObject::deleteLater);
+
     return treeViewRes;
 }
 

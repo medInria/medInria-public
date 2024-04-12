@@ -51,6 +51,15 @@ QStackedWidget *medDataHubPresenter::buildBrowser()
         medSourceModelPresenter itemModelPresenter(sourceModel);
         browserRes->addWidget(itemModelPresenter.buildTree());
     }
+
+    auto dataHub = d->dataHub;
+    connect(dataHub, &medDataHub::sourceAdded, [=](QString SourceInstanceId)
+    {
+        auto sourceModel = dataHub->getModel(SourceInstanceId);
+        medSourceModelPresenter itemModelPresenter(sourceModel);
+        browserRes->addWidget(itemModelPresenter.buildTree());
+    });
+
     return browserRes;
 }
 
@@ -60,8 +69,33 @@ QListWidget *medDataHubPresenter::buildSourceList()
     for (auto sourceModel : d->dataHub->models())
     {
         QString instanceName = medSourceHandler::instance()->getInstanceName(sourceModel->getSourceIntanceId());
-        listSourcesRes->addItem(instanceName);
+        QListWidgetItem *newItem = new QListWidgetItem(instanceName);
+        newItem->setData(1000, sourceModel->getSourceIntanceId());
+        listSourcesRes->addItem(newItem);
     }
+
+    connect(d->dataHub, &medDataHub::sourceAdded, [=](QString SourceInstanceId)
+    {
+        QString instanceName = medSourceHandler::instance()->getInstanceName(SourceInstanceId);
+        QListWidgetItem *newItem = new QListWidgetItem(instanceName);
+        newItem->setData(1000, SourceInstanceId);
+        listSourcesRes->addItem(newItem);
+    });
+    connect(d->dataHub, &medDataHub::sourceRemoved, [=](QString SourceInstanceId)
+    {
+        int i=0;
+        bool bFound = false;
+        while(!bFound && i < listSourcesRes->count())
+        {
+            bFound = listSourcesRes->item(i)->data(1000) == SourceInstanceId;
+            i++;
+        }
+
+        if(bFound)
+        {
+            listSourcesRes->takeItem(i-1);
+        }
+    });
 
     return listSourcesRes;
 }

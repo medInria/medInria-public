@@ -69,6 +69,9 @@ public:
 protected:
     void updateSelectedSourceDescription(int pi_index);
     QWidget * createConfPathWidget();
+
+signals:
+    void createdSource();
     
 private:
     //Data

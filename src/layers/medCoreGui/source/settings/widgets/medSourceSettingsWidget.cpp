@@ -277,15 +277,18 @@ bool medSourceSettingsWidget::eventFilter(QObject * watched, QEvent * event)
 
 void medSourceSettingsWidget::currentItemChanged(QListWidgetItem * current, QListWidgetItem * previous)
 {
-    auto *pListWidget = current->listWidget();
-    if (pListWidget->itemWidget(current) == this)
+    if(current)
     {
-        m_sourceSelected = true;
-        repaint();
-    }
-    else if (pListWidget->itemWidget(previous) == this)
-    {
-        m_sourceSelected = false;
-        repaint();
+        auto *pListWidget = current->listWidget();
+        if (pListWidget->itemWidget(current) == this)
+        {
+            m_sourceSelected = true;
+            repaint();
+        }
+        else if (pListWidget->itemWidget(previous) == this)
+        {
+            m_sourceSelected = false;
+            repaint();
+        }
     }
 }
