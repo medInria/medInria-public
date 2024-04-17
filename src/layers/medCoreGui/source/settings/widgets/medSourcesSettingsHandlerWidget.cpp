@@ -69,7 +69,7 @@ medSourcesSettingsHandlerWidget::medSourcesSettingsHandlerWidget(medSourcesSetti
     connect(m_removeButton,     &QPushButton::clicked, pi_parent, &medSourcesSettings::removeSource); // Ask to remove source
     connect(m_connectButton, &QPushButton::clicked, pi_parent, &medSourcesSettings::updateSourceConnection); 
 
-    connect(pi_parent, &medSourcesSettings::createdSource, [&]
+    connect(pi_parent, &medSourcesSettings::firstCreatedSource, [&]
     {
         m_connectButton->setDisabled(false);
     });

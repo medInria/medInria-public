@@ -71,7 +71,7 @@ protected:
     QWidget * createConfPathWidget();
 
 signals:
-    void createdSource();
+    void firstCreatedSource();
     
 private:
     //Data

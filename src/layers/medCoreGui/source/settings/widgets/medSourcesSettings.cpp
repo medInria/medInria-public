@@ -181,7 +181,7 @@ void medSourcesSettings::createSource()
 
     if(m_sourceToItem.size() == 1)
     {
-        emit createdSource();
+        emit firstCreatedSource();
     }
 }
 
