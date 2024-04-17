@@ -185,7 +185,7 @@ QWidget * medStringParameterPresenter::buildLineEditFileImport()
     auto *pParam = d->parameter;
     connect(searchButton, &QPushButton::clicked, [=]()
     {
-        QString sourceFile = QFileDialog::getOpenFileName(nullptr, tr("Select JSON file with filtering DICOM keys"), QDir::homePath(), tr("JSON file (*.json)"));
+        QString sourceFile = QFileDialog::getOpenFileName(nullptr, pParam->caption(), QDir::homePath(), tr("JSON file (*.json)"));
         if(!sourceFile.isEmpty()){
             displayPath->setText(QDir::toNativeSeparators(sourceFile));
             pParam->setValue(displayPath->text());

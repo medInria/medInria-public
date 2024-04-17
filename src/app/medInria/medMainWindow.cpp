@@ -158,7 +158,6 @@ medMainWindow::medMainWindow ( QWidget *parent ) : QMainWindow ( parent ), d ( n
     auto * notifSys = medApplicationContext::instance()->getNotifSys();
     d->notifWindow = static_cast<medNotificationPaneWidget*>(medNotifSysPresenter(notifSys).buildNotificationWindow());
     d->notifWindow->setParent(this);
-    QObject::connect(this, &medMainWindow::resized, d->notifWindow, &medNotificationPaneWidget::windowGeometryUpdate);
     QObject::connect(d->notifWindow, &medNotificationPaneWidget::expanded, medApplicationContext::instance()->getApp(), &medApplication::listenClick);
     QObject::connect(medApplicationContext::instance()->getApp(), &medApplication::mouseGlobalClick, d->notifWindow, &medNotificationPaneWidget::clicked);
 
@@ -1257,6 +1256,11 @@ bool medMainWindow::event(QEvent * e)
         break;
     } ;
     return QMainWindow::event(e) ;
+}
+
+void medMainWindow::resizeEvent(QResizeEvent *event)
+{
+    d->notifWindow->windowGeometryUpdate(this->size());
 }
 
 void medMainWindow::adjustContainersSize()

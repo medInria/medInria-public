@@ -13,6 +13,8 @@
 
 #include <medStringParameter.h>
 
+#include <QLineEdit>
+
 class medStringParameterPrivate
 {
 public:
@@ -51,7 +53,13 @@ bool medStringParameter::copyValueTo(medAbstractParameter & dest)
 
 bool medStringParameter::setValue( QString const& value)
 {
+    QLineEdit *line = qobject_cast<QLineEdit*>(QObject::sender());
+
     bool bRes = true;
+    
+    int cursorPos;
+    if(line)
+        cursorPos = line->cursorPosition();
 
     if(value != d->value)
     {
@@ -64,6 +72,9 @@ bool medStringParameter::setValue( QString const& value)
           emit valueChanged(d->value);
        }
     }
+
+    if(line)
+        line->setCursorPosition(cursorPos);
 
     return bRes;
 }
