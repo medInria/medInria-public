@@ -39,7 +39,7 @@ if (NOT USE_SYSTEM_${ep})
 ## Set up versioning control
 ## #############################################################################
 
-set(git_url git://git.dcmtk.org/dcmtk.git)
+set(git_url ${GITHUB_PREFIX}DCMTK/dcmtk.git)
 set(git_tag DCMTK-3.6.2)
 
 
