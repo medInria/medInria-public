@@ -35,9 +35,7 @@ include_directories(${dtk_INCLUDE_DIRS})
 find_package(ITK REQUIRED COMPONENTS ITKCommon)
 include(${ITK_USE_FILE})
 
-find_package(TTK REQUIRED)
-include(${TTK_USE_FILE})
-
+find_package(TTK REQUIRED COMPONENTS ITKTensor)
 
 ## #############################################################################
 ## List Sources
@@ -91,7 +89,7 @@ target_link_libraries(${TARGET_NAME}
   ${QT_LIBRARIES}
   dtkLog
   dtkCore
-  ITKTensor
+  TTK::ITKTensor
   medCore
   medLog
   )

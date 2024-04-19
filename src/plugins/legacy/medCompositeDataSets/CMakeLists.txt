@@ -35,8 +35,7 @@ find_package(dtk REQUIRED)
 include(${dtk_USE_FILE})
 include(dtkPlugin)
 
-find_package(TTK REQUIRED)
-include(${TTK_USE_FILE})
+find_package(TTK REQUIRED COMPONENTS ITKTensor)
 
 ## #################################################################
 ## Input
@@ -71,7 +70,7 @@ target_link_libraries(${PROJECT_NAME}
   dtkCore 
   dtkLog
   dtkZip
-  ITKTensor
+  TTK::ITKTensor
   ITKCommon  
   medCore
   medGui
