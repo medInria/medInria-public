@@ -50,8 +50,6 @@ public:
 
     virtual QImage generateThumbnail(QSize size);
 
-    
-
     // FLO & JU
     bool addParentData(medAbstractData * pi_parentData);
     bool addDerivedData(medAbstractData * pi_derivedData);
@@ -61,6 +59,27 @@ public:
     QList<medAbstractData*> derivedData();
     void setExpectedName(QString name);
     QString getExpectedName();
+
+
+    // //void addMetaData(const QString& key, const QStringList& values);
+    // //void addMetaData(const QString& key, const QString& value);
+    // void setMetaData(const QString& key, const QStringList& values) { setMetaData(Key2(key), values); }
+    // void setMetaData(const QString& key, const QString& value)      { setMetaData(Key2(key), value); }
+    // 
+    // QStringList metaDataList(void) const;
+    // QStringList metaDataValues(const QString& key) const { return metadatas(key); }
+    // QString metadata(const QString& key) const { return metadata(Key2(key)); }
+    // QStringList metadatas(const QString& key) const { return metadatas(Key2(key)); }
+    // 
+    // 
+    // QStringList metadatas(Key2 const &key);
+    // QString     metadata(Key2 const &key) { auto resLst = metadatas(key); return resLst.size() == 0 ? QString() : resLst[0]; }
+    // void        setMetaData(Key2 const &key, QStringList value);
+    // void        setMetaData(Key2 const &key, QString value);
+    QString fecthMetaData(QString word);
+
+    QMap<QString, QString> getMetaDataMap() const;
+
 
 
     // //void addMetaData(const QString& key, const QStringList& values);
