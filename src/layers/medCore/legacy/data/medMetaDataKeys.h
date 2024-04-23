@@ -13,7 +13,6 @@
 =========================================================================*/
 
 #include <vector>
-#include <medAbstractData.h>
 
 #include <medCoreExport.h>
 
@@ -23,6 +22,8 @@
 
 #include<QString>
 #include<QVariant>
+#include<QTimer>
+#include<QMutex>
 
 #include <utility>
 
@@ -98,6 +99,8 @@ public:
     void setMedPivot(QString pivot) { m_medPivot = pivot; }
     void setLabel(QString label) { m_label = label; }
 
+    bool isValid() { return ! m_medPivot.isEmpty(); }
+
 private:
 
     QString        m_name;
@@ -122,11 +125,15 @@ public:
     static bool addKeyToChapter(Key2 key, QString chapter = "default");
     static bool addKeyByTagToChapter(QString tag, QString keyLabel = "", QString keyName = "", QString chapter = "default");
 
-
-    static Key2    key(QString pivot);
+    static Key2    key(QString word);
+    static Key2    keyFromPivot(QString pivot);
     static Key2    keyFromName(QString keyName, QString chapter = "");
+    static Key2    keyFromTag(QString keyTag, QString chapter = "");
     static QString pivot(QString keyName, QString chapter = "");
 
+    static bool    keyExist(Key2 const & key);
+
+    static QString getValue(Key2 &key, QMap<QString, QString> &metaDataList);
 private:
     medMetaDataKeys();
 
@@ -146,10 +153,13 @@ private:
 
     void strongKeyEval(Key2 const & key, bool &keyTagStrong, bool &keyMedPivotStrong, bool &keyNameStrong, bool &keyLabelStrong);
 
-    Key2    keyInternal(QString &pivot);
+    Key2    keyInternal(QString &word);
+    Key2    keyFromPivotInternal(QString &pivot);
     Key2    keyFromNameInternal(QString &keyName, QString chapter = "");
+    Key2    keyFromTagInternal(QString &keyTag, QString chapter = "");
     QString pivotInternal(QString &keyName, QString chapter = "");
 
+    bool    keyExistInternal(Key2 const & key);
 
     void scheduleUpdate(QString &chapter);
     void delegateWriting();

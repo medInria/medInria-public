@@ -36,6 +36,8 @@ public:
     QList<medAbstractData * > parentDataList;
     QList<medAbstractData * > derivedDataList;
     QString expectedName;
+    //QMap <Key2, QStringList> metaDataMap;
+
 };
 
 medAbstractData::medAbstractData( medAbstractData *parent )
@@ -166,6 +168,38 @@ void medAbstractData::clearAttachedData()
     d->attachedData.clear();
 }
 
+QString medAbstractData::fecthMetaData(QString word)
+{
+    QString metaDataRes;
+
+    if (hasMetaData(word))
+    {
+        metaDataRes = metadata(word);
+    }
+    else
+    {
+        Key2 key = medMetaDataKeys::key(word);
+        if (key.isValid())
+        {
+            metaDataRes = medMetaDataKeys::getValue(key, getMetaDataMap());
+        }
+    }
+
+    return metaDataRes;
+}
+
+QMap<QString, QString> medAbstractData::getMetaDataMap() const
+{
+    QMap<QString, QString> metaDataListRes;
+
+    for (QString k : this->metaDataList())
+    {
+        metaDataListRes[k] = metaDataValues(k).join(';');
+    }
+
+    return metaDataListRes;
+}
+
 /**
  * @brief add attached data
  *
@@ -283,6 +317,38 @@ QString medAbstractData::getExpectedName()
 {
     return d->expectedName;
 }
+
+// QStringList medAbstractData::metaDataList(void) const
+// {
+//     QStringList res;
+// 
+//     auto key2Lst = d->metaDataMap.keys();
+//     for (auto key : key2Lst)
+//     {
+//         res << key.medPivot();
+//     }
+// 
+//     return res;
+// }
+// 
+// QStringList medAbstractData::metadatas(Key2 const &key)
+// {
+//     return d->metaDataMap.value(key);    
+// }
+// 
+// void medAbstractData::setMetaData(Key2 const &key, QStringList value)
+// {
+//     if (!medMetaDataKeys::keyExist(key))
+//     {
+//         medMetaDataKeys::registerKey(key);
+//     }
+//     d->metaDataMap[key] = value;
+// }
+// 
+// void medAbstractData::setMetaData(Key2 const & key, QString value)
+// {
+//     setMetaData(key, QStringList() << value);
+// }
 
 void medAbstractData::setExpectedName(QString name)
 {
