@@ -16,6 +16,7 @@
 
 #include <QList>
 #include <QUuid>
+#include <medAbstractData.h>
 #include <medAbstractDataSource.h>
 #include <medAbstractDataSourceFactory.h>
 #include <medDataManager.h>

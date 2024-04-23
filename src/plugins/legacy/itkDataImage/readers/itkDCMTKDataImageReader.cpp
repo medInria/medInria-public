@@ -385,66 +385,20 @@ bool itkDCMTKDataImageReader::readInformation(const QStringList& paths)
             {
                 valueList << QString::fromStdString(val);
             }
-
-            medData->setMetaData(QString::fromStdString(key), valueList);
+            int x = 0;
+            if (key == "(0008,103E)" | key == "(0010,0010)" | key == "(0010,0020)" | key == "(0008,103e)")
+            {
+                x = 200;
+            }
+            QString s = valueList[0];
+            if (s.toLower().trimmed().contains("phil"))
+            {
+                x = 300;
+            }
+            Key2 k = medMetaDataKeys::keyFromTag(QString::fromStdString(key), "dicom");
+            medData->setMetaData(k, valueList);
         }
-        // PATIENT
-        //PatientId
-        medData->setMetaData(medMetaDataKeys::key("PatientName"), QString::fromLatin1(d->io->GetPatientName().c_str()));
-        medData->setMetaData(medMetaDataKeys::key("Age"),         d->io->GetPatientAge().c_str());
-        medData->setMetaData(medMetaDataKeys::key("BirthDate"),   d->io->GetPatientDOB().c_str());
-        medData->setMetaData(medMetaDataKeys::key("Gender"),      d->io->GetPatientSex().c_str());
-        medData->setMetaData(medMetaDataKeys::key("PatientID"), QString::fromLatin1(d->io->GetPatientID().c_str()));
-        medData->setMetaData(medMetaDataKeys::key("Description"), QString::fromLatin1(d->io->GetScanOptions().c_str()));
 
-        // STUDY
-        //StudyId
-        medData->setMetaData(medMetaDataKeys::key("StudyID"),          QString::fromLatin1(d->io->GetStudyID().c_str()));
-        medData->setMetaData(medMetaDataKeys::key("StudyInstanceUID"), d->io->GetStudyInstanceUID().c_str());
-        medData->setMetaData(medMetaDataKeys::key("StudyDescription"), QString::fromLatin1(d->io->GetStudyDescription().c_str()));
-        medData->setMetaData(medMetaDataKeys::key("Institution"),      QString::fromLatin1(d->io->GetInstitution().c_str()));
-        medData->setMetaData(medMetaDataKeys::key("Referee"),          QString::fromLatin1(d->io->GetReferringPhysicianName().c_str()));
-        //StudyDate
-        //StudyTime
-
-        // SERIES
-        //SeriesID
-        medData->setMetaData(medMetaDataKeys::key("SeriesInstanceUID"), d->io->GetSeriesInstanceUID().c_str());
-        medData->setMetaData(medMetaDataKeys::key("SeriesNumber"),      d->io->GetSeriesNumber().c_str());
-        medData->setMetaData(medMetaDataKeys::key("Modality"),          d->io->GetModality().c_str());
-        medData->setMetaData(medMetaDataKeys::key("Performer"),         QString::fromLatin1(d->io->GetPerformingPhysicianName().c_str()));
-        medData->setMetaData(medMetaDataKeys::key("Report"), "");
-        medData->setMetaData(medMetaDataKeys::key("Protocol"),          QString::fromLatin1(d->io->GetProtocolName().c_str()));
-        medData->setMetaData(medMetaDataKeys::key("SeriesDescription"), QString::fromLatin1(d->io->GetSeriesDescription().c_str()));
-        //SeriesDate
-        //SeriesTime
-        //SeriesThumbnail
-
-        // IMAGE
-        //SOPInstanceUID
-        medData->setMetaData(medMetaDataKeys::key("Columns"),         d->io->GetColumns().c_str());
-        medData->setMetaData(medMetaDataKeys::key("Rows"),            d->io->GetRows().c_str());
-        //Dimensions
-        //NumberOfDimensions
-        medData->setMetaData(medMetaDataKeys::key("Orientation"),     d->io->GetOrientation().c_str());
-
-        // Patient position
-        std::string patientPos = d->io->GetMetaDataValueString("(0018,5100)", 0);
-        medData->setMetaData(medMetaDataKeys::key("PatientPosition"), patientPos.c_str());
-        // Patient orientation
-        std::string patientOrient = d->io->GetMetaDataValueString("(0020,0020)", 0);
-        medData->setMetaData(medMetaDataKeys::key("PatientOrientation"), patientOrient.c_str());
-
-        // Image Type
-        QString imageType = QString::fromStdString(d->io->GetMetaDataValueString("(0008,0008)", 0));
-        // it seems '\' characters are replaced by whitespaces. This is not correct
-        // for this tag.
-        imageType = imageType.replace(' ', "\\");
-        medData->setMetaData(medMetaDataKeys::key("ImageType"), imageType.toStdString().c_str());
-
-        // Acquisition number
-        std::string acquisitionNumber = d->io->GetMetaDataValueString("(0020,0012)", 0);
-        medData->setMetaData(medMetaDataKeys::key("AcquisitionNumber"), acquisitionNumber.c_str());
 
         // Add Origin
         QString origin = "";
@@ -454,12 +408,7 @@ bool itkDCMTKDataImageReader::readInformation(const QStringList& paths)
         }
         medData->setMetaData(medMetaDataKeys::key("Origin"), origin.trimmed());
 
-        medData->setMetaData(medMetaDataKeys::key("SliceThickness"),  d->io->GetSliceThickness().c_str());
-        //ImportationDate
-        medData->setMetaData(medMetaDataKeys::key("AcquisitionDate"), d->io->GetAcquisitionDate().c_str());
-        medData->setMetaData(medMetaDataKeys::key("AcquisitionTime"), d->io->GetAcquisitionTime().c_str());
-        medData->setMetaData(medMetaDataKeys::key("Comments"),        QString::fromLatin1(d->io->GetAcquisitionComments().c_str()));
-
+       
         QStringList filePaths;
         for (unsigned int i = 0; i < d->io->GetOrderedFileNames().size(); i++)
         {
@@ -470,46 +419,6 @@ bool itkDCMTKDataImageReader::readInformation(const QStringList& paths)
         }
 
         medData->addMetaData(medMetaDataKeys::key("FilePaths"), filePaths);
-
-        medData->setMetaData(medMetaDataKeys::key("Status"),          d->io->GetPatientStatus().c_str());
-        medData->setMetaData(medMetaDataKeys::key("SequenceName"),    QString::fromLatin1(d->io->GetSequenceName().c_str()));
-        //Size
-        //VolumeUID
-        //Spacing
-        //XSpacing
-        //YSpacing
-        //ZSpacing
-        //NumberOfComponents
-        //ComponentType
-        //PixelType
-        //medDataType
-        //PreferredDataReader
-        //ImageID
-        //ThumbnailPath
-
-        QString modality = medData->metadata(medMetaDataKeys::key("Modality"));
-        if (modality.contains("CT"))
-        {
-            std::string kvp = d->io->GetMetaDataValueString("(0018,0060)", 0 );
-            medData->setMetaData(medMetaDataKeys::key("KVP"), kvp.c_str());
-        }
-        else if (modality.contains("MR"))
-        {
-            // MR Image
-            medData->setMetaData(medMetaDataKeys::key("FlipAngle"), d->io->GetFlipAngle().c_str());
-            medData->setMetaData(medMetaDataKeys::key("EchoTime"), d->io->GetEchoTime().c_str());
-            medData->setMetaData(medMetaDataKeys::key("RepetitionTime"), d->io->GetRepetitionTime().c_str());
-        }
-
-        // Frame of reference
-        std::string frameOfRef = d->io->GetMetaDataValueString("(0020,0052)", 0);
-        medData->setMetaData(medMetaDataKeys::key("FrameOfReferenceUID"), frameOfRef.c_str());
-        std::string posRefIndicator = d->io->GetMetaDataValueString("(0020,1040)", 0);
-        medData->setMetaData(medMetaDataKeys::key("PositionReferenceIndicator"), posRefIndicator.c_str());
-
-        // Equipement
-        std::string manufacturer = d->io->GetMetaDataValueString("(0008,0070)", 0);
-        medData->setMetaData(medMetaDataKeys::key("Manufacturer"), manufacturer.c_str());
     }
     else
     {
