@@ -36,8 +36,10 @@ public:
     QList<medAbstractData * > parentDataList;
     QList<medAbstractData * > derivedDataList;
     QString expectedName;
+
     //QMap <Key2, QStringList> metaDataMap;
 
+    QImage thumbnail;
 };
 
 medAbstractData::medAbstractData( medAbstractData *parent )
@@ -168,7 +170,7 @@ void medAbstractData::clearAttachedData()
     d->attachedData.clear();
 }
 
-QString medAbstractData::fecthMetaData(QString word) const
+QString medAbstractData::fecthMetaData(QString word)
 {
     QString metaDataRes;
 
