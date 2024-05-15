@@ -15,7 +15,7 @@
 
 #include <itkConnectedThresholdImageFilter.h>
 #include <itkDanielssonDistanceMapImageFilter.h>
-#include <itkExceptionObject.h>
+#include <itkMacro.h>
 #include <itkExtractImageFilter.h>
 #include <itkImageLinearIteratorWithIndex.h>
 #include <itkImageSliceIteratorWithIndex.h>

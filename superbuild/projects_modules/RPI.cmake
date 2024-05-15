@@ -40,8 +40,8 @@ if (NOT USE_SYSTEM_${ep})
 ## Set up versioning control
 ## #############################################################################
 
-set(git_url ${GITHUB_PREFIX}Inria-Asclepios/RPI.git)
-set(git_tag ITK5.0)
+set(git_url ${GITHUB_PREFIX}medInria/RPI.git)
+set(git_tag ITK5.1.1)
 
 ## #############################################################################
 ## Add specific cmake arguments for configuration step of the project

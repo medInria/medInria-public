@@ -32,8 +32,7 @@ include(${VTK_USE_FILE})
 find_package(ITK REQUIRED ITKCommon ITKTransform ITKImageFunction)
 include(${ITK_USE_FILE})
 
-find_package(TTK REQUIRED)
-include(${TTK_USE_FILE})
+find_package(TTK REQUIRED COMPONENTS ITKTensor ttkAlgorithms)
 ## #############################################################################
 ## List Sources
 ## #############################################################################
@@ -74,7 +73,8 @@ target_link_libraries(${TARGET_NAME}
   dtkCore
   dtkCoreSupport
   dtkLog
-  ITKTensor
+  TTK::ITKTensor
+  TTK::ttkAlgorithms
   ITKIOTransformBase
   medCore
   medCoreLegacy

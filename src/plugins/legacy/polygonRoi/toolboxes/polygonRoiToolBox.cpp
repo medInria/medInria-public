@@ -55,13 +55,27 @@ polygonRoiToolBox::polygonRoiToolBox(QWidget *parent ) :
     explanation->setStyleSheet("font: italic");
     layout->addWidget(explanation );
 
+    // Activation button
     activateTBButton = new QPushButton(tr("Activate Toolbox"));
     activateTBButton->setToolTip(tr("Activate closed polygon mode. You should only have one view."));
     activateTBButton->setCheckable(true);
     activateTBButton->setObjectName("closedPolygonButton");
     connect(activateTBButton,SIGNAL(toggled(bool)),this,SLOT(clickClosePolygon(bool)));
     connect(activateTBButton, &QAbstractButton::toggled, [=] (bool state) { explanation->setVisible(!state); });
+    auto activateTBLayout = new QHBoxLayout();
+    layout->addLayout(activateTBLayout);
+    activateTBLayout->addWidget(activateTBButton);
 
+    // Add label management tool
+    QString identifier = speciality.toLower() + QString("LabelToolBox");
+    pMedToolBox = medToolBoxFactory::instance()->createToolBox(identifier);
+    pMedToolBox->header()->hide();
+    pMedToolBox->hide();
+    pMedToolBox->setObjectName("labelTool");
+    layout->addWidget(pMedToolBox);
+    connect(activateTBButton, SIGNAL(toggled(bool)), pMedToolBox, SLOT(setEnabled(bool)), Qt::UniqueConnection);
+
+    // Actions on contours
     interpolate = new QCheckBox(tr("Interpolate between contours"));
     interpolate->setToolTip("Interpolate between master ROIs");
     interpolate->setObjectName("interpolateButton");
@@ -69,7 +83,7 @@ polygonRoiToolBox::polygonRoiToolBox(QWidget *parent ) :
     connect(interpolate,SIGNAL(clicked(bool)) ,this,SLOT(interpolateCurve(bool)));
 
     auto repulsorLayout = new QHBoxLayout();
-    repulsorLabel = new QLabel("Correct contours");
+    repulsorLabel = new QLabel("Correct contours:");
     repulsorLayout->addWidget(repulsorLabel);
 
     repulsorTool = new QPushButton(tr("Repulsor"));
@@ -79,23 +93,12 @@ polygonRoiToolBox::polygonRoiToolBox(QWidget *parent ) :
     connect(repulsorTool,SIGNAL(clicked(bool)),this,SLOT(activateRepulsor(bool)));
     repulsorLayout->addWidget(repulsorTool);
 
-    auto activateTBLayout = new QHBoxLayout();
-    layout->addLayout(activateTBLayout );
-    activateTBLayout->addWidget(activateTBButton);
-
-    // Add Contour Management Toolbox
-    QString identifier = speciality.toLower() + QString("LabelToolBox");
-    pMedToolBox = medToolBoxFactory::instance()->createToolBox(identifier);
-    pMedToolBox->header()->hide();
-    pMedToolBox->hide();
-    layout->addWidget(pMedToolBox);
-    connect(activateTBButton, SIGNAL(toggled(bool)), pMedToolBox, SLOT(setEnabled(bool)), Qt::UniqueConnection);
-
     auto contoursActionLayout = new QVBoxLayout();
     layout->addLayout(contoursActionLayout );
     contoursActionLayout->addWidget(interpolate);
     contoursActionLayout->addLayout(repulsorLayout);
 
+    // Export widgets
     saveLabel = new QLabel("Save segmentations as:");
     saveLabel->setObjectName("saveLabel");
     auto saveButtonsLayout = new QHBoxLayout();

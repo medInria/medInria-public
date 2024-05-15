@@ -392,6 +392,9 @@ QMenu *baseViewEvent::changeLabelActions(polygonLabel* closestLabel)
                 roiToAdd->pasteContour(nodes);
                 setLabelActivationState();
                 deleteContour(closestLabel);
+                // Re-render the ROI
+                roiToAdd->Off();
+                roiToAdd->On();
             });
             changeMenu->addAction(action);
         }

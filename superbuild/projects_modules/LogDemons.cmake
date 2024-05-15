@@ -39,8 +39,8 @@ if (NOT USE_SYSTEM_${ep})
 ## Set up versioning control
 ## #############################################################################
 
-  set(git_url ${GITHUB_PREFIX}Inria-Asclepios/LCC-LogDemons.git)
-  set(git_tag master)
+set(git_url ${GITHUB_PREFIX}Inria-Asclepios/LCC-LogDemons.git)
+set(git_tag ITK5.1.1)
 
 ## #############################################################################
 ## Add specific cmake arguments for configuration step of the project

@@ -1,6 +1,7 @@
 #include "defaultLabelToolBox.h"
 
 #include <medDataManager.h>
+#include <medSettingsManager.h>
 #include <medTabbedViewContainers.h>
 #include <medToolBoxFactory.h>
 #include <medUtilities.h>
@@ -34,11 +35,36 @@ defaultLabelToolBox::defaultLabelToolBox(QWidget *parent):
     labels->setContentsMargins(0,0,0,0);
     labels->setObjectName("labels");
 
-    plusButton = new QPushButton(QIcon(":/pixmaps/plus.png"), "");
+    // Themes
+    QVariant themeChosen = medSettingsManager::instance().value("startup","theme");
+    int themeIndex = themeChosen.toInt();
+    QIcon labelIconPlus;
+    QIcon labelIconMinus;
+    switch (themeIndex)
+    {
+        case 0:
+        case 1:
+        case 2:
+        case 4:
+        default:
+        {
+            labelIconPlus  = QIcon(":/pixmaps/plus_white.png");
+            labelIconMinus = QIcon(":/pixmaps/minus_white.png");
+            break;
+        }
+        case 3:
+        {
+            labelIconPlus  = QIcon(":/pixmaps/plus_black.png");
+            labelIconMinus = QIcon(":/pixmaps/minus_black.png");
+            break;
+        }
+    }
+
+    plusButton = new QPushButton(labelIconPlus, "");
     plusButton->setMaximumSize(QSize(20,20));
     plusButton->setObjectName("plusBttn");
 
-    minusButton = new QPushButton(QIcon(":/pixmaps/minus.png"), "");
+    minusButton = new QPushButton(labelIconMinus, "");
     minusButton->setMaximumSize(QSize(20,20));
     minusButton->setObjectName("minBttn");
 

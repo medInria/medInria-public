@@ -16,6 +16,8 @@ medInria 3.4:
 - Video: default frame rate a 24.
 - DICOM: handle if the origin is missing.
 - Switch to Fedora 37.
+- Switch to Ubuntu 22.
+- PolygonROI: update icons, fix a glitch when users change ROI label, hide label panel in pipelines.
 
 medInria 3.3:
 - Fix mirrored DICOM images problem
