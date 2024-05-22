@@ -77,6 +77,8 @@ public:
     QString                 getVolumeId(medAbstractData *data);
 
 
+    // /*static*/ void detectVolume(QStringList paths, QMap<QString, QString> & volumePathsMap);
+
 private:
     // ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
     // Private Static functions to:             list files,   getReaders,   readFiles,         opt find volumes
@@ -108,27 +110,4 @@ private:
     QMap <QString, medAbstractDataReader*> m_currentReaderVolumesMap;
 };
 
-/*
-template<typename T>
-inline T medDataImporter::get(QString volumeId, const QMap<QString, T>& map)
-{
-    T *res = nullptr;
-    
-    if (volumeId.isEmpty() && !map.isEmpty())
-    {
-        res = map.first();
-    }
-    else if (map.contains(volumeId))
-    {
-        res = map[volumeId];
-    }
-
-    return res;
-}
-
-medAbstractDataReader*  medDataImporter::getCurrentReaderInstance(QString volumeId) { return get(volumeId, m_currentReaderVolumesMap); }
-QString                 medDataImporter::getCurrentReader(QString volumeId)         { return get(volumeId, m_currentReaderVolumesMap)->identifier(); }
-QStringList             medDataImporter::getAvailableReader(QString volumeId)       { return get(volumeId, m_availablesReadersVolumesMap); }
-QStringList             medDataImporter::getPaths(QString volumeId)                 { return get(volumeId, m_pathsVolumesMap); }
-*/
 
