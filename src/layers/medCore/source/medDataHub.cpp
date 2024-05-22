@@ -529,7 +529,10 @@ QString fileSysPathToIndex(const QString &path, QStringList files)
     
     if (!files.isEmpty())
     {
-        pathTmp += "\r\n";
+        if (!pathTmp.endsWith("\r\n"))
+        {
+            pathTmp += "\r\n";
+        }
         for (QString fileName : files)
         {
             pathTmp += fileName + "|";
