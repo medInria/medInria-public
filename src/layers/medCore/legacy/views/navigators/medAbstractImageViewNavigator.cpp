@@ -110,10 +110,10 @@ void medAbstractImageViewNavigator::updateTimeLineParameter()
 
         if(data->hasMetaData("SequenceDuration") && data->hasMetaData("SequenceFrameRate"))
         {
-            double sd = data->metadata("SequenceDuration").toDouble();
+            double sd = data->fecthMetaData("SequenceDuration").toDouble();
             sequenceDuration = (sequenceDuration < sd) ? sd : sequenceDuration;
 
-            double sf = data->metadata("SequenceFrameRate").toDouble();
+            double sf = data->fecthMetaData("SequenceFrameRate").toDouble();
             sequenceFrameRate = (sequenceFrameRate < sf) ? sf : sequenceFrameRate;
 
             viewHasTemporalData = true;

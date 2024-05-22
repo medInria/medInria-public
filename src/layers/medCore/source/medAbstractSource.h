@@ -60,6 +60,12 @@ public:
         }
     }
 
+    static const entryType stringToEntryType(QString const type)
+    {
+        static QMap<QString, entryType> map = { { "dataset", dataset }, {"folder", folder}, {"both", both} };
+        return map[type];       
+    }
+
     struct datasetAttributes
     {
         QMap<QString, QString> values; // <keyName, value>

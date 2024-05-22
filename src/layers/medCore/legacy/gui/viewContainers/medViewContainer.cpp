@@ -782,10 +782,7 @@ void medViewContainer::dropEvent(QDropEvent *event)
     {
         auto indexList = medDataIndex::readMimeDataMulti(mimeData);
         QList<QUrl> urlList = mimeData->urls();
-        for (QUrl url : urlList) 
-        {
-            indexList.append(fileSysPathToIndex(url.toLocalFile()));
-        }
+
         if (d->mousseDragDropButton.testFlag(Qt::RightButton))
         {
             QMenu *popupMenu = new QMenu(this);
@@ -800,21 +797,15 @@ void medViewContainer::dropEvent(QDropEvent *event)
             popupMenu->exec(this->mapToGlobal(event->pos()));
         }
         else
-        {                
-            for (auto &index : indexList)
-            {
-                //this->addData(index);
-
-                QThread* thread = new QThread(this);
-                medDataLoadThread * pdataLoadThread = new medDataLoadThread(index, this);
-                thread->start();
-                connect(thread, &QThread::started, pdataLoadThread, &medDataLoadThread::process);
-                connect(pdataLoadThread, &medDataLoadThread::finished, thread, &QThread::quit);
-                connect(pdataLoadThread, &medDataLoadThread::finished, pdataLoadThread, &medDataLoadThread::deleteLater);
-                connect(thread, &QThread::finished, thread, &QThread::deleteLater);
-                pdataLoadThread->moveToThread(thread);
-
-            }
+        {
+            QThread* thread = new QThread(this);
+            medDataLoadThread * pdataLoadThread = new medDataLoadThread(indexList, urlList, this);
+            thread->start();
+            connect(thread, &QThread::started, pdataLoadThread, &medDataLoadThread::process);
+            connect(pdataLoadThread, &medDataLoadThread::finished, thread, &QThread::quit);
+            connect(pdataLoadThread, &medDataLoadThread::finished, pdataLoadThread, &medDataLoadThread::deleteLater);
+            connect(thread, &QThread::finished, thread, &QThread::deleteLater);
+            pdataLoadThread->moveToThread(thread);
 
             this->setStyleSheet(d->defaultStyleSheet);
             if (d->selected)
@@ -960,7 +951,7 @@ void medViewContainer::addData(medDataIndex const &index)
         }
         else
         {
-            qDebug() << "Type dataset or folder unkwon, try to load data as dataset for \"" << index.uri();
+            qDebug() << "Type dataset or folder unkwon type, try to load data as dataset for \"" << index.uri();
         }
     }
 }
@@ -1054,7 +1045,7 @@ void medViewContainer::open(const QString & path)
     medSettingsManager::instance()->setValue("path", "medViewContainer", path);
 }
 
-QString indexToFileSysPath(const QString &&index)
+QString indexToFileSysPath_local(const QString &&index)
 {
     QString pathRes;
 
@@ -1072,9 +1063,9 @@ QString indexToFileSysPath(const QString &&index)
 
 void medViewContainer::open_waitForImportedSignal(medDataIndex index, QUuid uuid)
 {
-    if(d->expectedPaths.contains(indexToFileSysPath(index.asString())))
+    if(d->expectedPaths.contains(indexToFileSysPath_local(index.asString())))
     {
-        d->expectedPaths.removeAll(indexToFileSysPath(index.asString()));
+        d->expectedPaths.removeAll(indexToFileSysPath_local(index.asString()));
         disconnect(medDataManager::instance(),SIGNAL(dataImported(medDataIndex, QUuid)), this,SLOT(open_waitForImportedSignal(medDataIndex, QUuid)));
         if (index.isValid())
         {
@@ -1309,9 +1300,9 @@ QString medViewContainer::saveScene()
 
 void medViewContainer::addMetadataToQDomElement(medAbstractData *data, QDomElement patientInfo, QString metadata)
 {
-    if (data->hasMetaData(metadata) && data->metadata(metadata) != "")
+    if (data->hasMetaData(metadata) && data->fecthMetaData(metadata) != "")
     {
-        patientInfo.setAttribute(metadata, data->metadata(metadata));
+        patientInfo.setAttribute(metadata, data->fecthMetaData(metadata));
     }
 }
 

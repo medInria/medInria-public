@@ -94,6 +94,7 @@ public:
     int  getColumnInsideLevel(int level, int section) const;
     int  getSectionInsideLevel(int level, int column) const;
     bool fetch(QStringList uri);
+    bool recursiveFetch(QStringList uri);
 	bool fetchData(QModelIndex index);
     QString getSourceIntanceId();
     void setOnline(bool pi_bOnline);

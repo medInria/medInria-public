@@ -355,8 +355,8 @@ void medAbstractWorkspaceLegacy::updateLayersToolBox()
                 QWidget *layerWidget = new QWidget;
                 layerWidget->setObjectName("layerWidget");
 
-                //QString name = data->metadata(medMetaDataKeys::key("SeriesDescription"));
-                QString name = data->metadata("seriesdescription");
+                //QString name = data->fecthMetaData("SeriesDescription"));
+                QString name = data->fecthMetaData("seriesdescription");
 
                 if (name.isEmpty()) name = "<i>no name</i>";
 
