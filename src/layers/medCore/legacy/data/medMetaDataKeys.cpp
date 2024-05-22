@@ -114,7 +114,7 @@ QString medMetaDataKeys::getValue(Key2 &key, QMap<QString, QString>& metaDataLis
 
     auto keys = metaDataList.keys();
 
-    if (keys.contains(key.name))
+    if (keys.contains(key.name()))
     {
         valRes = metaDataList[key.name()];
     }

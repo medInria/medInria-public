@@ -304,7 +304,7 @@ void medRegistrationSelectorToolBox::handleOutput(typeOfOperation type, QString 
     QString newDescription = "";
     if(d->movingData)
     {
-        newDescription = d->movingData->metadata(medMetaDataKeys::key("SeriesDescription"));
+        newDescription = d->movingData->fecthMetaData("SeriesDescription");
     }
 
     if (type==algorithm || type==redo)

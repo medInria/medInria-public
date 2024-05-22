@@ -49,9 +49,11 @@ public:
     // ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
     // Conversion functions from path to medAbstractData
     // ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
-    static medAbstractData * convertSingleDataOnfly(QString path);
-    medAbstractData *        convertSingleData(QString path);
-    QList<medAbstractData*>  convertMultipData(QString path);
+    static medAbstractData * convertSingleDataOnfly(QString path); //One path on file or directory represents one data
+    medAbstractData *        convertSingleData(QString path);      //One path on file or directory represents one data
+    QList<medAbstractData*>  convertMultipData(QString path);      //One path on file or directory represents multiple data
+    medAbstractData *        convertSingleData(QStringList paths); //Many paths on files represent one data
+    QList<medAbstractData *> convertMultipData(QStringList paths); //Many paths on files represent multiple data
 
     // ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
     // Control functions 
@@ -72,6 +74,7 @@ public:
     QStringList             getAvailableReader(medAbstractData *data = nullptr);
     QStringList             getPaths(QString volumeId = QString());
     QStringList             getPaths(medAbstractData *data = nullptr);
+    QString                 getVolumeId(medAbstractData *data);
 
 
 private:
@@ -81,6 +84,7 @@ private:
     static QStringList listFilesOfData(QString &path);
     static QList<medAbstractDataReader*> getSuitableReader(QStringList filename, QStringList *readersId = nullptr);
     static medAbstractData * readFiles(QList<medAbstractDataReader *> &readers, QStringList &fileList, medAbstractDataReader **usedReader = nullptr);
+    void findVolumesInFiles(QStringList &fileList);
     void findVolumesInDirectory(QString &path);
 
     // ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////

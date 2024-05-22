@@ -23,7 +23,7 @@ public:
 
     virtual const QString PixelMeaning() const {
         if (hasMetaData(medAbstractImageData::PixelMeaningMetaData))
-            return metadata(medAbstractImageData::PixelMeaningMetaData);
+            return fecthMetaData(medAbstractImageData::PixelMeaningMetaData);
         return "";
     }
 };

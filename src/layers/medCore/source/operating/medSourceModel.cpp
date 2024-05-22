@@ -575,6 +575,21 @@ bool medSourceModel::fetch(QStringList uri) //See populateLevelV2
     return bRes;   
 }
 
+bool medSourceModel::recursiveFetch(QStringList uri)
+{
+    bool bRes = true;
+
+    QStringList uriTmp;
+
+    for (int i = 0; (i < uri.size()) && bRes; ++i)
+    {
+        uriTmp.append(uri[i]);
+        bRes = fetch(uriTmp);
+    }
+
+    return bRes;
+}
+
 bool medSourceModel::fetchData(QModelIndex index)
 {
 	bool bRes = true;
