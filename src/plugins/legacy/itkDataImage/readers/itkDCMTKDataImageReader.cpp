@@ -396,7 +396,7 @@ bool itkDCMTKDataImageReader::readInformation(const QStringList& paths)
                 x = 300;
             }
             Key2 k = medMetaDataKeys::keyFromTag(QString::fromStdString(key), "dicom");
-            medData->setMetaData(k, valueList);
+            medData->setMetaData(QString::fromStdString(key), valueList[0]);
         }
 
 
@@ -497,7 +497,11 @@ bool itkDCMTKDataImageReader::read(const QStringList& paths)
                 const StringVectorType &values = metaData->GetMetaDataObjectValue();
                 for (unsigned int i = 0; i < values.size(); i++)
                 {
-                    medData->addMetaData(it->first.c_str(), values[i].c_str());
+                    bool bHasMetaData = medData->hasMetaData(it->first.c_str());
+                    if (!bHasMetaData || bHasMetaData && medData->metadata(it->first.c_str()).isEmpty())
+                    {
+                        medData->setMetaData(it->first.c_str(), values[i].c_str());
+                    }
                 }
             }
             ++it;

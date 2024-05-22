@@ -123,7 +123,7 @@ medAbstractJob::medJobExitStatus ttkTensorScalarMapsProcess::_run()
             return medAbstractJob::MED_JOB_EXIT_CANCELLED;
         }
 
-        output->setMetaData(medMetaDataKeys::key("SeriesDescription"), this->input()->metadata(medMetaDataKeys::key("SeriesDescription")) + " " + m_scalarMapRequested);
+        output->setMetaData(medMetaDataKeys::key("SeriesDescription"), this->input()->fecthMetaData("SeriesDescription") + " " + m_scalarMapRequested);
         this->setOutput(output);
         return medAbstractJob::MED_JOB_EXIT_SUCCESS;
     }
@@ -184,7 +184,7 @@ medAbstractJob::medJobExitStatus ttkTensorScalarMapsProcess::_run()
         output = qobject_cast <medAbstractImageData *> (medAbstractDataFactory::instance()->create ("itkDataImageFloat3"));
 
     output->setData(filter->GetOutput());
-    output->setMetaData(medMetaDataKeys::key("SeriesDescription"), this->input()->metadata(medMetaDataKeys::key("SeriesDescription")) + " " + m_scalarMapRequested);
+    output->setMetaData(medMetaDataKeys::key("SeriesDescription"), this->input()->fecthMetaData("SeriesDescription") + " " + m_scalarMapRequested);
 
     this->setOutput(output);
 

@@ -30,9 +30,6 @@ public:
     medVirtualRepresentation(QObject *parent = nullptr);
     ~medVirtualRepresentation();
 
-    bool readFileEntry(QString filePath, QString &dataOrigine, QString &dataURI, bool &dataGarbadgeable);
-    bool writeFileEntry(QJsonObject const & entry, QString filePath, QString fileName);
-
 
     bool remove(QModelIndex index);
     bool rename(QModelIndex index, QString newName);
@@ -51,6 +48,9 @@ public:
 
 private:
     bool fetch(QString const &path = QString());
+
+    bool readFileEntry(QString filePath, QString &dataOrigine, QString &dataURI, bool &dataGarbadgeable);
+    bool writeFileEntry(QJsonObject const & entry, QString filePath, QString fileName);
 
     bool writeJson(const QModelIndex  & index, QJsonObject &json);
     bool readJson (const QByteArray   & array, QString &dataOrigine, QString &dataURI, bool &dataGarbadgeable);
@@ -74,12 +74,14 @@ private:
     void removeTooOldEntry();
 
 
+    void insertData(medAbstractData * data, QString &uri, QString &dataPath, QString &tmpName);
+
+
 public slots:
     void dataSaved(medDataIndex index); //remove a cache data and replace it by an uri on the source
 
     void addGeneratedData(medAbstractData * data, QString name = "");
-    void addDataFromSource(medDataIndex index, medAbstractData * data = nullptr, const QModelIndex & parent = QModelIndex());
-    void addDataFromFile(QString path, medAbstractData * data = nullptr, const QModelIndex & parent = QModelIndex());
+    void addData(medDataIndex medIndex, QString volumeName = "", medAbstractData * data = nullptr, const QModelIndex & parent = QModelIndex());
 
     void pinData   (QModelIndex modelIndex);
     void unPinData (QModelIndex modelIndex);

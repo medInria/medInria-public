@@ -21,6 +21,6 @@ medAbstractDiffusionModelImageData::medAbstractDiffusionModelImageData() : medAb
 const QString medAbstractDiffusionModelImageData::PixelMeaning() const
 {
     if (hasMetaData(medAbstractImageData::PixelMeaningMetaData))
-        return metadata(medAbstractImageData::PixelMeaningMetaData);
+        return fecthMetaData(medAbstractImageData::PixelMeaningMetaData);
     return "";
 }

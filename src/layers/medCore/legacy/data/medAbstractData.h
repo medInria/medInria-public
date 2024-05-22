@@ -78,11 +78,11 @@ public:
     // QString     metadata(Key2 const &key) { auto resLst = metadatas(key); return resLst.size() == 0 ? QString() : resLst[0]; }
     // void        setMetaData(Key2 const &key, QStringList value);
     // void        setMetaData(Key2 const &key, QString value);
-    QString fecthMetaData(QString word);
+    QString fecthMetaData(QString word) const;
 
     QMap<QString, QString> getMetaDataMap() const;
 
-
+    //virtual QByteArray serialise() const = 0 ;
 public slots:
     void clearAttachedData();
     void addAttachedData( medAttachedData * data );

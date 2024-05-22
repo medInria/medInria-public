@@ -32,19 +32,6 @@
 #define DATATYPE_ROLE_FOLDER 1
 #define DATATYPE_ROLE_BOTH  2
 
-//#define DATAORIGIN_ROLE 200  //String defined as below
-//#define DATAORIGIN_ROLE_FILESYSTEM "FS"
-//#define DATAORIGIN_ROLE_SOURCE     "source"
-//#define DATAORIGIN_ROLE_CACHE      "cache"
-//
-//#define DATAURI_ROLE    201  //String URI of the data
-//#define DATAGARBAGEABLE_ROLE 202  //Boolean indicates if the data can be automatically removed (if longtime or too much data)
-//#define DATAISDIRECTORY_ROLE 203  //Boolean indicates if an item is a pure directory
-//
-//#define DATANAME_ROLE 300
-//
-//#define INVALID_ENTRY "invalidEntry.json"
-
 struct conversionTask
 {
     bool readWrite;
@@ -54,34 +41,6 @@ struct conversionTask
 };
 
 
-class conversionWorker : public QRunnable
-{
-public:
-    void run()
-    {
-        while (!conversionQueue->empty())
-        {
-            conversionTask conv = conversionQueue->dequeue();
-            if (conv.readWrite)
-            {
-                medDataImporter::convertSingleDataOnfly(conv.path);
-                //TODO
-            }
-            else
-            {
-                QString filePath = conv.path + QDir::separator() + conv.name;
-                if (medDataExporter::convertSingleDataOnfly(conv.data, filePath))
-                {
-                    //TODO
-                }
-            }
-        }
-        QThread::currentThread()->wait(1000);
-    }
-
-    QQueue<conversionTask> *conversionQueue;
-};
-
 class medVirtualRepresentationPrivate
 {
 public:
@@ -90,9 +49,7 @@ public:
 
     medStringParameter basePath;
     medIntParameter    dayBeforeRemove;
-    //QMap<QString, QPair<QStringList, QStringList> > flatTree; //Path, Dirs list, files list
 
-    QMap<QString, medAbstractData *> jsonPathsToAbstractData;
     QMultiMap<QString, QString>      uriToJsonPaths;
     QMap<QString, medAbstractData *> uriToAbstractData;
 
@@ -222,6 +179,11 @@ bool medVirtualRepresentation::create(QModelIndex parent, QString dirName)
 
 
 
+// ///////////////////////////////////////////////////////////////////////////
+// ///////////////////////////////////////////////////////////////////////////
+// //////////////  File system handling                                ///////
+// ///////////////////////////////////////////////////////////////////////////
+// ///////////////////////////////////////////////////////////////////////////
 bool medVirtualRepresentation::createFSDirectory(QString path, QString dirName)
 {
     bool bRes = false;
@@ -238,6 +200,7 @@ bool medVirtualRepresentation::createFSDirectory(QString path, QString dirName)
 
 bool medVirtualRepresentation::renameFSEntry(QString path)
 {
+    //TODO
     return false;
 }
 
@@ -265,13 +228,17 @@ bool medVirtualRepresentation::removeFSFile(QString path)
 
 bool medVirtualRepresentation::moveFSEntry(QString oldPath, QString newPath)
 {
+    //TODO
     return false;
 }
 
 
 
-
-//TODO regarder pour les 4 methodes suivantes ce qui a ete fait pour les medSourceModel
+// ///////////////////////////////////////////////////////////////////////////
+// ///////////////////////////////////////////////////////////////////////////
+// //////////////  Drag and drop section                               ///////
+// ///////////////////////////////////////////////////////////////////////////
+// ///////////////////////////////////////////////////////////////////////////
 bool medVirtualRepresentation::dropMimeData(const QMimeData * data, Qt::DropAction action, int row, int column, const QModelIndex & parent)
 {
     bool bRes = false;
@@ -286,7 +253,7 @@ bool medVirtualRepresentation::dropMimeData(const QMimeData * data, Qt::DropActi
             {
                 case Qt::CopyAction:
                 case Qt::LinkAction:
-                    addDataFromSource(index, nullptr, parent); break;
+                    addData(index, "", nullptr, parent); break;
                 case Qt::MoveAction:
                     //TODO move
                 default:
@@ -298,7 +265,7 @@ bool medVirtualRepresentation::dropMimeData(const QMimeData * data, Qt::DropActi
     {
         for (const QUrl & url : data->urls())
         {
-            addDataFromFile(url.toLocalFile(), nullptr, parent);
+            addData(fileSysPathToIndex(url.toLocalFile()), "", nullptr, parent);
         }
     }
 
@@ -329,7 +296,12 @@ QMimeData * medVirtualRepresentation::mimeData(const QModelIndexList & indexes) 
             }
             else if (origin == DATAORIGIN_ROLE_FILESYSTEM)
             {
-                urls.append(QUrl::fromLocalFile(dataUri));
+                //urls.append(QUrl::fromLocalFile(dataUri));
+                if (!encodedData.isEmpty())
+                {
+                    encodedData.append('\0');
+                }
+                encodedData.append(dataUri);
             }
             else if (origin == DATAORIGIN_ROLE_CACHE)
             {
@@ -355,6 +327,8 @@ Qt::DropActions medVirtualRepresentation::supportedDropActions() const
     return Qt::CopyAction | Qt::MoveAction | Qt::LinkAction;
 }
 
+
+
 QList<medAbstractParameter*> medVirtualRepresentation::getParams()
 {
     return {& d->basePath, & d->dayBeforeRemove};
@@ -364,6 +338,11 @@ QList<medAbstractParameter*> medVirtualRepresentation::getParams()
 
 
 
+// ///////////////////////////////////////////////////////////////////////////
+// ///////////////////////////////////////////////////////////////////////////
+// //////////////  JSon handling section                               ///////
+// ///////////////////////////////////////////////////////////////////////////
+// ///////////////////////////////////////////////////////////////////////////
 bool medVirtualRepresentation::fetch(QString const & pi_path)
 {
     bool bRes = true;
@@ -439,6 +418,8 @@ bool medVirtualRepresentation::fetch(QString const & pi_path)
                         child->setData(DATATYPE_ROLE_BOTH, DATATYPE_ROLE);
                     }
 
+                    d->uriToJsonPaths.insert(dataURI, aPath);
+
                 }
             }
         }
@@ -450,7 +431,6 @@ bool medVirtualRepresentation::fetch(QString const & pi_path)
 
     return bRes;
 }
-
 
 bool medVirtualRepresentation::writeJson(const QModelIndex & index, QJsonObject &json)
 {
@@ -464,12 +444,12 @@ bool medVirtualRepresentation::writeJson(const QModelIndex & index, QJsonObject 
 
         if (dataOrigine == DATAORIGIN_ROLE_FILESYSTEM)
         {
-            if (QFile::exists(dataURI))
-            {
+            //if (QFile::exists(dataURI))
+            //{
                 json.insert("uriType", QJsonValue::fromVariant(DATAORIGIN_ROLE_FILESYSTEM));
                 json.insert("uri", QJsonValue::fromVariant(dataURI));
                 json.insert("garbageable", QJsonValue::fromVariant(dataGarbadgeable));
-            }
+            //}
         }
         else if (dataOrigine == DATAORIGIN_ROLE_SOURCE)
         {
@@ -549,6 +529,8 @@ bool medVirtualRepresentation::readJson(const QByteArray & array, QString &dataO
 }
 
 
+
+
 void medVirtualRepresentation::dataSaved(medDataIndex index)
 {
     //TODO OK
@@ -600,20 +582,12 @@ void medVirtualRepresentation::addGeneratedData(medAbstractData * data, QString 
         }
 
         QString uri = dataName;
-        if (data)
-        {
-            if (!d->uriToAbstractData.contains(uri))
-            {
-                d->uriToAbstractData[uri] = data;
-            }
-        }
-        d->uriToJsonPaths.insert(uri, dataPath + '/' + tmpName);
+        insertData(data, uri, dataPath, tmpName);
     }
 }
 
-void medVirtualRepresentation::addDataFromSource(medDataIndex dataIndex, medAbstractData * data, const QModelIndex & parent)
+void medVirtualRepresentation::addData(medDataIndex medDataIndex, QString volumeName, medAbstractData * data, const QModelIndex & parent)
 {
-
     //Est-ce qu'il existe deja ?
 
     QStandardItem *item = nullptr;
@@ -627,78 +601,72 @@ void medVirtualRepresentation::addDataFromSource(medDataIndex dataIndex, medAbst
         item = invisibleRootItem();
     }
 
-    QString dataName = medDataHub::instance()->getDataName(dataIndex);
+    QString dataName;
+    QString datOriginRole;
+    if (medDataIndex.sourceId() == "fs")
+    {
+        datOriginRole = DATAORIGIN_ROLE_FILESYSTEM;
+        if (!volumeName.isEmpty())
+        {
+            dataName = volumeName;
+        }
+        else
+        {
+            QStringList paths = indexToFileSysPath(medDataIndex.asString());
+            if (paths.size() == 1)
+            {
+                dataName = QFileInfo(paths[0]).fileName();
+            }
+            else if (paths.size() > 1)
+            {
+                QStringList pathAsList = paths[0].split('/', QString::SkipEmptyParts);
+                dataName = pathAsList[pathAsList.size() - 2]; //the name is the name of last folder
+            }
+        }
+
+    }
+    else
+    {
+        datOriginRole = DATAORIGIN_ROLE_SOURCE;
+        dataName = medDataHub::instance()->getDataName(medDataIndex);
+    }
+
+
+
+
     QString tmpName = dataName;
     QString dataPath = getPath(parent);
     int  indexPlace = 0;
 
-    computeNameAndPlace(item, dataIndex.asString(), dataName, indexPlace, tmpName);
+    computeNameAndPlace(item, medDataIndex.asString(), dataName, indexPlace, tmpName);
 
-
-    QStandardItem *newItem = new QStandardItem(tmpName);
-    newItem->setData(tmpName, DATANAME_ROLE);
-    newItem->setData(DATAORIGIN_ROLE_SOURCE, DATAORIGIN_ROLE);
-    newItem->setData(dataIndex.asString(), DATAURI_ROLE);
-    newItem->setData(false, DATAGARBAGEABLE_ROLE);
-    newItem->setData(DATATYPE_ROLE_DATASET, DATATYPE_ROLE);
-
-    item->insertRow(indexPlace, newItem);
-    
-    
-    auto modelIndex = newItem->index();
-    QJsonObject jsonObj;
-    if (writeJson(modelIndex, jsonObj))
+    QString uri = medDataIndex.asString();
+    if (!d->uriToJsonPaths.contains(uri))
     {
-        writeFileEntry(jsonObj, dataPath, dataName);
+
+        QStandardItem *newItem = new QStandardItem(tmpName);
+        newItem->setData(tmpName, DATANAME_ROLE);
+        newItem->setData(datOriginRole, DATAORIGIN_ROLE);
+        newItem->setData(medDataIndex.asString(), DATAURI_ROLE);
+        newItem->setData(false, DATAGARBAGEABLE_ROLE);
+        newItem->setData(DATATYPE_ROLE_DATASET, DATATYPE_ROLE);
+
+        item->insertRow(indexPlace, newItem);
+
+
+        auto modelIndex = newItem->index();
+        QJsonObject jsonObj;
+        if (writeJson(modelIndex, jsonObj))
+        {
+            writeFileEntry(jsonObj, dataPath, dataName);
+        }
+
+        insertData(data, uri, dataPath, tmpName);
     }
-
-
-    QString uri = dataIndex.asString();
-
-    d->uriToJsonPaths.insert(uri, dataPath + '/' + tmpName);
 }
 
-void medVirtualRepresentation::addDataFromFile(QString path, medAbstractData * data, const QModelIndex & parent)
+void medVirtualRepresentation::insertData(medAbstractData * data, QString &uri, QString &dataPath, QString &tmpName)
 {
-
-    //Est-ce qu'il existe deja ?
-
-    QStandardItem *item = nullptr;
-
-    if (parent.isValid() && parent.model() == this)
-    {
-        item = itemFromIndex(parent);
-    }
-    else
-    {
-        item = invisibleRootItem();
-    }
-
-    QString dataName = QFileInfo(path).fileName();
-    QString tmpName = dataName;
-    QString dataPath = getPath(parent);
-    int     indexPlace = 0;
-
-    computeNameAndPlace(item, path, dataName, indexPlace, tmpName);
-
-
-    QStandardItem *newItem = new QStandardItem(tmpName);
-    newItem->setData(tmpName, DATANAME_ROLE);
-    newItem->setData(DATAORIGIN_ROLE_FILESYSTEM, DATAORIGIN_ROLE);
-    newItem->setData(path, DATAURI_ROLE);
-    newItem->setData(false, DATAGARBAGEABLE_ROLE);
-    newItem->setData(DATATYPE_ROLE_DATASET, DATATYPE_ROLE);
-
-    item->insertRow(indexPlace, newItem);
-
-    auto index = newItem->index();
-    QJsonObject jsonObj;
-    if (writeJson(index, jsonObj))
-    {
-        writeFileEntry(jsonObj, dataPath, dataName);
-    }
-
-    QString uri = path;
     if (data)
     {
         if (!d->uriToAbstractData.contains(uri))
@@ -742,13 +710,22 @@ void medVirtualRepresentation::renameByItem(QStandardItem * item)
 
     rename(index, name);
 }
+
+
+// ///////////////////////////////////////////////////////////////////////////
+// ///////////////////////////////////////////////////////////////////////////
+// //////////////  Cache section                                       ///////
+// ///////////////////////////////////////////////////////////////////////////
+// ///////////////////////////////////////////////////////////////////////////
 bool medVirtualRepresentation::writeCacheData(medAbstractData * data, QString path, QString name)
 {
+    //TODO
     return false;
 }
 
 bool medVirtualRepresentation::readCacheData(medAbstractData *& data, QString path, QString name)
 {
+    //TODO
     return false;
 }
 
@@ -783,15 +760,16 @@ QModelIndex medVirtualRepresentation::createFolderIndex(QStringList tree)
     return indexRes;
 }
 
-void medVirtualRepresentation::removeTooOldEntry()
-{
-    //TODO
-}
 
+// ///////////////////////////////////////////////////////////////////////////
+// ///////////////////////////////////////////////////////////////////////////
+// //////////////  Cache section                                       ///////
+// ///////////////////////////////////////////////////////////////////////////
+// ///////////////////////////////////////////////////////////////////////////
 QModelIndex medVirtualRepresentation::getModelIndex(medDataIndex index)
 {
     QModelIndex indexRes;
-    QString indexAsString = indexToFileSysPath(index.asString());
+    QString indexAsString = index.asString();
     if (d->uriToJsonPaths.contains(indexAsString))
     {
         QString jsonPath = d->uriToJsonPaths.value(indexAsString);
@@ -888,4 +866,10 @@ QModelIndex medVirtualRepresentation::getIndex(QString path)
     }
 
     return indexRes;
+}
+
+
+void medVirtualRepresentation::removeTooOldEntry()
+{
+    //TODO
 }

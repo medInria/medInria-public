@@ -301,8 +301,8 @@ void medDiffusionSelectorToolBox::addInputImage(medAbstractImageData *data)
     this->setEnabled(true);
 
     d->inputsMap[dataId.toString()] = data;
-    d->chooseInput->addItem(data->metadata(medMetaDataKeys::key("SeriesDescription")),dataId.toString());
-    d->chooseInput->setToolTip(data->metadata(medMetaDataKeys::key("SeriesDescription")));
+    d->chooseInput->addItem(data->fecthMetaData("SeriesDescription"), dataId.toString());
+    d->chooseInput->setToolTip(data->fecthMetaData("SeriesDescription"));
     d->chooseInput->setCurrentIndex(d->chooseInput->count() - 1);
 }
 
