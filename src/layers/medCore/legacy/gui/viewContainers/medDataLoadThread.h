@@ -27,11 +27,8 @@ class medDataLoadThread : public QObject
 {
     Q_OBJECT
 public:
-    medDataLoadThread(medDataIndex         const & index, medViewContainer *parent);
-    medDataLoadThread(QList<medDataIndex>  const & index, medViewContainer *parent);
-    medDataLoadThread(QList<QUrl>          const & urls,  medViewContainer *parent);
     medDataLoadThread(QList<medDataIndex>  const & index, QList<QUrl> const & urls, medViewContainer *parent);
-    virtual ~medDataLoadThread() override;
+    virtual ~medDataLoadThread() override = default ;
 
 public slots:
     void process();

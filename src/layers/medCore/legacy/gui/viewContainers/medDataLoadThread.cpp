@@ -20,30 +20,9 @@
 #include <medDataManager.h>
 #include <medAbstractData.h>
 
-medDataLoadThread::medDataLoadThread(medDataIndex const & index, medViewContainer * parent) : m_parent(parent)
-{
-    m_indexList << index;
-    connect(this, SIGNAL(dataReady(medAbstractData*)), m_parent, SLOT(addData(medAbstractData *)) );
-}
-
-medDataLoadThread::medDataLoadThread(QList<medDataIndex> const & index, medViewContainer * parent) : m_indexList(index), m_parent(parent)
-{
-    connect(this, SIGNAL(dataReady(medAbstractData*)), m_parent, SLOT(addData(medAbstractData *)) );
-}
-
-medDataLoadThread::medDataLoadThread(QList<QUrl> const & urls, medViewContainer *parent) : m_urlList(urls), m_parent(parent)
-{
-    connect(this, SIGNAL(dataReady(medAbstractData*)), m_parent, SLOT(addData(medAbstractData *)) );
-}
-
 medDataLoadThread::medDataLoadThread(QList<medDataIndex> const & index, QList<QUrl> const & urls, medViewContainer *parent) : m_indexList(index), m_urlList(urls), m_parent(parent)
 {
     connect(this, SIGNAL(dataReady(medAbstractData*)), m_parent, SLOT(addData(medAbstractData *)));
-}
-
-
-medDataLoadThread::~medDataLoadThread()
-{
 }
 
 void medDataLoadThread::process()
@@ -52,18 +31,8 @@ void medDataLoadThread::process()
     for (auto & url : m_urlList)
     {
         QString path = url.toLocalFile();
-        QFileInfo fi(path);
-
-        //int type = medDataHub::instance()->getDataType(path);
-
-        if (fi.isDir())
+        if (QFileInfo(path).isDir())
         {
-            //auto fiLst = QDir(path).entryInfoList(QDir::NoDotAndDotDot | QDir::AllEntries);
-            //for (auto fi : fiLst)
-            //{
-            //    paths << fi.canonicalFilePath();
-            //}
-
             m_indexList << fileSysPathToIndex(path);
         }
         else
@@ -74,7 +43,9 @@ void medDataLoadThread::process()
 
     detectVolume(paths, m_volumePathsMap);
     for (auto indexTmp : m_volumePathsMap.values())
+    {
         m_indexList << indexTmp;
+    }
     for (medDataIndex index : m_indexList)
     {
         internalProcess(index, 3);
