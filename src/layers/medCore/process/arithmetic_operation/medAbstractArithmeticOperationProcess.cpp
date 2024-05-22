@@ -61,7 +61,7 @@ void medAbstractArithmeticOperationProcess::setOutput(medAbstractImageData *data
 {
     d->output = data;
 
-    QString newSeriesDescription = d->input1->metadata ( medMetaDataKeys::key("SeriesDescription") );
+    QString newSeriesDescription = d->input1->fecthMetaData("SeriesDescription");
     newSeriesDescription += " " + this->outputNameAddon();
 
     if (!d->output->hasMetaData(medMetaDataKeys::key("SeriesDescription")))
