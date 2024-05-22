@@ -39,8 +39,6 @@ class MEDCORE_EXPORT medDataHub : public QObject
     Q_OBJECT
 
 public:
-
-
     static medDataHub* instance(QObject *parent = nullptr);
     ~medDataHub();
 
@@ -71,6 +69,8 @@ public:
     //bool hasData(medDataIndex const & index);
     QList< medDataIndex > getSubData(medDataIndex const & index);
     int getDataType(medDataIndex const & index);
+
+    void getDataTypeFS(const medDataIndex & index, int &iRes);
 
     // ////////////////////////////////////////////////////////////////////////////////////////////
     // Members functions for GUI    
@@ -144,5 +144,8 @@ private:
 
 };
 
-QString fileSysPathToIndex(const QString &path );
-QString indexToFileSysPath(const QString &index);
+QString     fileSysPathToIndex(const QString &path, QStringList files = {});
+QStringList indexToFileSysPath(const QString &index);
+
+QString computeRootPathOfListPath(QStringList &fileList, QStringList &relativePathList);
+void detectVolume(QStringList paths, QMap<QString, QString> & volumePathsMap);

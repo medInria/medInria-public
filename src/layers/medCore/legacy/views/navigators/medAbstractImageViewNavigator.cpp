@@ -100,38 +100,37 @@ void medAbstractImageViewNavigator::updateTimeLineParameter()
 {
     if (d->timeLineParameter)
     {
-        bool viewHasTemporalData = false;
+    bool viewHasTemporalData = false;
 
-        double sequenceDuration = 0;
-        double sequenceFrameRate = 0;
+    double sequenceDuration = 0;
+    double sequenceFrameRate = 0;
+    for(medDataIndex index : d->view->dataList())
+    {
+        medAbstractData *data = medDataManager::instance()->retrieveData(index);
+        if (!data)
+            continue;
 
-        for(medDataIndex index : d->view->dataList())
+        if(data->hasMetaData("SequenceDuration") && data->hasMetaData("SequenceFrameRate"))
         {
-            medAbstractData *data = medDataManager::instance()->retrieveData(index);
-            if (!data)
-                continue;
+            double sd = data->fecthMetaData("SequenceDuration").toDouble();
+            sequenceDuration = (sequenceDuration < sd) ? sd : sequenceDuration;
 
-            if(data->hasMetaData("SequenceDuration") && data->hasMetaData("SequenceFrameRate"))
-            {
-                double sd = data->metadata("SequenceDuration").toDouble();
-                sequenceDuration = (sequenceDuration < sd) ? sd : sequenceDuration;
+            double sf = data->fecthMetaData("SequenceFrameRate").toDouble();
+            sequenceFrameRate = (sequenceFrameRate < sf) ? sf : sequenceFrameRate;
 
-                double sf = data->metadata("SequenceFrameRate").toDouble();
-                sequenceFrameRate = (sequenceFrameRate < sf) ? sf : sequenceFrameRate;
-
-                viewHasTemporalData = true;
-            }
+            viewHasTemporalData = true;
         }
-        if(viewHasTemporalData)
+    }
+    if(viewHasTemporalData)
+    {
+        unsigned int numFrames = (unsigned int)round(sequenceDuration * sequenceFrameRate);
+        d->timeLineParameter->setNumberOfFrame(numFrames);
+        d->timeLineParameter->setDuration(sequenceDuration);
+        d->timeLineParameter->show();
+    }
+    else
         {
-            unsigned int numFrames = (unsigned int)round(sequenceDuration * sequenceFrameRate);
-            d->timeLineParameter->setNumberOfFrame(numFrames);
-            d->timeLineParameter->setDuration(sequenceDuration);
-            d->timeLineParameter->show();
-        }
-        else
-        {
-            d->timeLineParameter->hide();
+        d->timeLineParameter->hide();
         }
     }
 }

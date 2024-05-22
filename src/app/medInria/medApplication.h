@@ -13,14 +13,13 @@
 =========================================================================*/
 
 #include <QApplication>
-//#include <QtSingleApplication>
 #include <medDataIndex.h>
 #include "QSingleApplication/qtlocalpeer.h"
 
 class medApplicationPrivate;
 class medMainWindow;
 
-class medApplication : public QApplication //QtSingleApplication
+class medApplication : public QApplication
 {
     Q_OBJECT
 

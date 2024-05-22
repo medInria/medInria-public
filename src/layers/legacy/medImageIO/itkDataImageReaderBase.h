@@ -52,5 +52,5 @@ protected:
 private:
     template <unsigned DIM,typename T>
     bool read_image(const QString& path,const char* type);
-    void extractMetaData();
+    bool extractMetaData();
 };

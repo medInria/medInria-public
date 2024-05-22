@@ -54,7 +54,7 @@ void medAbstractDiffusionScalarMapsProcess::setOutput(medAbstractImageData *data
 {
     d->output = data;
 
-    QString newSeriesDescription = d->input->metadata ( medMetaDataKeys::key("SeriesDescription") );
+    QString newSeriesDescription = d->input->fecthMetaData("SeriesDescription");
     newSeriesDescription += " " + this->outputNameAddon();
 
     if (!d->output->hasMetaData(medMetaDataKeys::key("SeriesDescription")))

@@ -256,26 +256,32 @@ bool itkDataImageReaderBase::read_image(const QString& path, const char* type)
     typename Image::Pointer im = TReader->GetOutput();
     medData->setData(im);
 
-    extractMetaData();
-
-    return true;
+    return extractMetaData();
 }
 
-void itkDataImageReaderBase::extractMetaData()
+bool itkDataImageReaderBase::extractMetaData()
 {
     itk::Object* itkImage = static_cast<itk::Object*>(data()->data());
-    itk::MetaDataDictionary& metaDataDictionary = itkImage->GetMetaDataDictionary();
-    std::vector<std::string> keys = metaDataDictionary.GetKeys();
-
-    for (unsigned int i = 0; i < keys.size(); i++)
+    if (itkImage)
     {
-        QString key = QString::fromStdString(keys[i]);
-        std::string value;
-        itk::ExposeMetaData(metaDataDictionary, keys[i], value);
+        itk::MetaDataDictionary& metaDataDictionary = itkImage->GetMetaDataDictionary();
+        std::vector<std::string> keys = metaDataDictionary.GetKeys();
 
-        medMetaDataKeys::addKeyToChapter(key, "itk");
-        QString metaDataKey = medMetaDataKeys::pivot(key, "itk");
-        data()->setMetaData(metaDataKey, QString::fromStdString(value));
+        for (unsigned int i = 0; i < keys.size(); i++)
+        {
+            QString key = QString::fromStdString(keys[i]);
+            std::string value;
+            itk::ExposeMetaData(metaDataDictionary, keys[i], value);
+
+            medMetaDataKeys::addKeyToChapter(key, "itk");
+            QString metaDataKey = medMetaDataKeys::pivot(key, "itk");
+            data()->setMetaData(metaDataKey, QString::fromStdString(value));
+        }
+        return true;
+    }
+    else
+    {
+        return false;
     }
 }
 
