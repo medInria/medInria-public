@@ -76,10 +76,8 @@ public:
     QStringList             getPaths(medAbstractData *data = nullptr);
     QString                 getVolumeId(medAbstractData *data);
 
-    medAbstractDataReader* getReaderForFile(QList<medAbstractDataReader*> &readers, QString file, int &index);
 
-    //void detectVolumes(QStringList paths, QMap<QString, QString> & volumePathsMap, QMap<QString, QString> & volumeNameMap);
-    void detectVolumes(QStringList pathsIn, QString & rootDir, QMap<QString /*volumeId*/, QString /*index*/> & volumeIndexMap, QMap<QString /*volumeId*/, QPair<QString /*name*/, QString /*relPaths*/>> & volumeRelativeMap);
+    // /*static*/ void detectVolume(QStringList paths, QMap<QString, QString> & volumePathsMap);
 
 private:
     // ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
@@ -107,13 +105,9 @@ signals:
 
 private:
     QMap <QString, QStringList>            m_pathsVolumesMap;
-    QMap <QString, QString>                m_nameVolumesMap;
     QMap <QString, QStringList>            m_availablesReadersVolumesMap;
     QMap <QString, medAbstractData*>       m_meddataVolumesMap;
     QMap <QString, medAbstractDataReader*> m_currentReaderVolumesMap;
 };
-
-QString fileSysPathToIndex2(const QString &path, QStringList files = {});
-QString computeRootPathOfListPath2(QStringList &fileList, QStringList &relativePathList);
 
 
