@@ -402,7 +402,7 @@ bool itkDCMTKDataImageReader::readInformation(const QStringList& paths)
                 x = 300;
             }
             Key2 k = medMetaDataKeys::keyFromTag(QString::fromStdString(key), "dicom");
-            medData->setMetaData(k, valueList);
+            medData->setMetaData(QString::fromStdString(key), valueList[0]);
         }
 
 

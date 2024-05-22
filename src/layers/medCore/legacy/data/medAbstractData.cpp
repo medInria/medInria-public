@@ -170,7 +170,7 @@ void medAbstractData::clearAttachedData()
     d->attachedData.clear();
 }
 
-QString medAbstractData::fecthMetaData(QString word)
+QString medAbstractData::fecthMetaData(QString word) const
 {
     QString metaDataRes;
 
