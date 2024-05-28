@@ -661,6 +661,18 @@ void itkGDCMDataImageReader::setProgress (int value)
     emit progressed (value);
 }
 
+QString itkGDCMDataImageReader::getVolumeId(const QString& path)
+{
+    this->readInformation(path.toUtf8().data());
+    return this->m_Scanner.GetValue(path.toUtf8().data(), gdcm::Tag(0x0020, 0x000e));
+}
+    
+QString itkGDCMDataImageReader::getVolumeName(const QString& path)
+{
+    this->readInformation(path.toUtf8().data());
+    return this->m_Scanner.GetValue(path.toUtf8().data(), gdcm::Tag(0x0008, 0x103e));
+}
+
 // /////////////////////////////////////////////////////////////////
 // Type instantiation
 // /////////////////////////////////////////////////////////////////
