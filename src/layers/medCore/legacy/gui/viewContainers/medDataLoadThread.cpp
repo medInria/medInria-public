@@ -20,28 +20,40 @@
 #include <medDataManager.h>
 #include <medAbstractData.h>
 
+
 medDataLoadThread::medDataLoadThread(QList<medDataIndex> const & index, QList<QUrl> const & urls, medViewContainer *parent) : m_indexList(index), m_urlList(urls), m_parent(parent)
 {
     connect(this, SIGNAL(dataReady(medAbstractData*)), m_parent, SLOT(addData(medAbstractData *)));
 }
 
+#include <QDebug>
 void medDataLoadThread::process()
 {
     QStringList paths;
     for (auto & url : m_urlList)
     {
         QString path = url.toLocalFile();
-        if (QFileInfo(path).isDir())
+        // if (QFileInfo(path).isDir())
+        // {
+        //     m_indexList << fileSysPathToIndex(path);
+        // }
+        // else
+        // {
+        //     paths << path;
+        // }
+        QDirIterator it(path, QDir::Files, QDirIterator::Subdirectories);
+        while(it.hasNext())
         {
-            m_indexList << fileSysPathToIndex(path);
+            qDebug() << it.next();
+            paths << it.next();
         }
-        else
-        {
-            paths << path;
-        }
+        // paths << url.toLocalFile();
     }
 
-    detectVolume(paths, m_volumePathsMap);
+    qDebug() << "medDataLoadThread" << paths.size() << m_urlList.size();
+    medDataImporter importer;
+    importer.detectVolumes(paths, m_volumePathsMap, m_volumeNameMap);
+    //detectVolume(paths, m_volumePathsMap);
     for (auto indexTmp : m_volumePathsMap.values())
     {
         m_indexList << indexTmp;

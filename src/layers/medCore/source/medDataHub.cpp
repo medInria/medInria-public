@@ -1389,6 +1389,7 @@ QString computeRootPathOfListPath(QStringList &fileList, QStringList &relativePa
     return  rootPath;
 }
 
+#include <QDebug>
 QList< medDataIndex > medDataHub::getSubData(medDataIndex const & index)
 {
     QList< medDataIndex > listRes; 
@@ -1408,17 +1409,20 @@ QList< medDataIndex > medDataHub::getSubData(medDataIndex const & index)
         }
 
         QMap<QString, QString> volumePathsMap;
+        QMap<QString, QString> volumeNameMap;
         for (QString dirPath : dirPaths)
         {
             QFileInfo fi(dirPath);
             if (fi.isDir())
             {
+                medDataImporter importer;
                 QDir dir(dirPath);
                 QStringList subPathsFiles = dir.entryList(QDir::Files | QDir::NoDotAndDotDot);
                 QStringList subPathsDirs  = dir.entryList(QDir::Dirs  | QDir::NoDotAndDotDot);
                 for (int i = 0; i < subPathsFiles.size(); ++i) { subPathsFiles[i] = dirPath + '/' + subPathsFiles[i]; }
                 for (int i = 0; i < subPathsDirs.size(); ++i) { subPathsDirs[i] = dirPath + '/' + subPathsDirs[i]; }
-                detectVolume(subPathsFiles, volumePathsMap);
+                importer.detectVolumes(subPathsFiles, volumePathsMap, volumeNameMap);
+                //detectVolume(subPathsFiles, volumePathsMap);
                 for (QString const & index : volumePathsMap)
                 {
                     listRes.append(index);
