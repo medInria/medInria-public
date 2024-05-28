@@ -108,7 +108,7 @@ bool medMetaDataKeys::keyExist(Key2 const & key)
     return medMetaDataKeys::instance()->keyExistInternal(key);
 }
 
-QString medMetaDataKeys::getValue(Key2 &key, QMap<QString, QString>& metaDataList)
+QString medMetaDataKeys::getValue(Key2 &key, QMap<QString, QString> metaDataList)
 {
     QString valRes;
 

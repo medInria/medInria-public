@@ -301,8 +301,34 @@ medAbstractData * medDataImporter::readFiles(QList<medAbstractDataReader *> &rea
     return medDataRes;
 }
 
+/**
+ * @fn  medAbstractDataReader* medDataImporter::getReaderForFile(QList<medAbstractDataReader*> &readers, QString file, int &index)
+ * @brief   Searches for a reader able to read the file
+ * @param [in]  readers List of possible readers.
+ * @param [in]  file File to be read.
+ * @param [in,out]  index Position in the list of the reader selected to read the file.
+ */
+medAbstractDataReader* medDataImporter::getReaderForFile(QList<medAbstractDataReader*> &readers, QString file, int &index)
+{
+    for (int i=0; i<readers.size(); ++i)
+    {
+        if (readers[i]->canRead(file) && readers[i]->readInformation(file))
+        {
+            index = i;
+            return readers[i];
+        }
+    }
+
+    index = -1;
+    return nullptr;
+}
+
+#include <QDebug>
 void medDataImporter::findVolumesInFiles(QStringList &fileList)
 {
+    static int count = 0;
+    count ++;
+    qDebug() << "count = " << count << "\n\n";
     QStringList readersID = medAbstractDataFactory::instance()->readers();
     QList<medAbstractDataReader*>  readers;
     for (auto reader : readersID)
@@ -310,15 +336,34 @@ void medDataImporter::findVolumesInFiles(QStringList &fileList)
         readers.push_back(static_cast<medAbstractDataReader*>(medAbstractDataFactory::instance()->reader(reader)));
     }
 
+    qDebug() << readers.size();
+
+    medAbstractDataReader* mainReader = nullptr;
+    int readerIndex = -1;
+    if(!readers.isEmpty())
+    {
+        mainReader = readers[0];
+        readerIndex = 0;
+    }
+
     for (auto file : fileList)
     {
-        for (int i = 0; i<readers.size(); ++i)
+        qDebug() << file;
+        if(!mainReader->canRead(file) || !mainReader->readInformation(file))
         {
-            if (readers[i]->canRead(file) && readers[i]->readInformation(file))
+            mainReader = getReaderForFile(readers, file, readerIndex); // return an index instead ? 
+        }
+
+        if(mainReader)
+        {
+            //QString volume = createVolumeId(dynamic_cast<medAbstractData*>(mainReader->data()));
+            auto volumeId = mainReader->getVolumeId(file);
+            auto volumeName = mainReader->getVolumeName(file);
+            m_pathsVolumesMap[volumeId] << file;
+            m_nameVolumesMap[volumeId] << volumeName;
+            if(!m_availablesReadersVolumesMap[volumeId].contains(readersID[readerIndex])) // reduce while condition of readFiles function
             {
-                QString volume = createVolumeId(dynamic_cast<medAbstractData*>(readers[i]->data()));
-                m_pathsVolumesMap[volume] << file;
-                m_availablesReadersVolumesMap[volume] << readersID[i];
+                m_availablesReadersVolumesMap[volumeId] << readersID[readerIndex];
             }
         }
     }
@@ -631,6 +676,125 @@ QStringList medDataImporter::getPaths(medAbstractData * data)
 QString medDataImporter::getVolumeId(medAbstractData * data)
 {
     return m_meddataVolumesMap.key(data);
+}
+
+
+QString fileSysPathToIndex2(const QString &path, QStringList files)
+{
+    QString pathTmp = path;
+    pathTmp.replace('\\', '/');
+    pathTmp.replace('/', "\r\n");
+    pathTmp = "fs:" + pathTmp;
+
+    if (!files.isEmpty())
+    {
+        if (!pathTmp.endsWith("\r\n"))
+        {
+            pathTmp += "\r\n";
+        }
+        for (QString fileName : files)
+        {
+            pathTmp += fileName + "|";
+        }
+        if (pathTmp.endsWith("|"))
+        {
+            pathTmp = pathTmp.left(pathTmp.size() - 1);
+        }
+    }
+    
+    return pathTmp;
+}
+
+int findFirstDifference2(const QString& str1, const QString& str2)
+{
+    // Iterate through the shorter of the two strings
+    for (int i = 0; i < std::min(str1.size(), str2.size()); ++i)
+    {
+        if (str1[i] != str2[i])
+        {
+            return i;
+        }
+    }
+
+    // If no difference is found within the shorter string's length
+    // the longer string has extra characters at the end
+    if (str1.size() != str2.size())
+    {
+        return std::min(str1.size(), str2.size());
+    }
+
+    // Strings are equal
+    return std::min(str1.size(), str2.size());
+}
+
+QString computeRootPathOfListPath2(QStringList &fileList, QStringList &relativePathList)
+{
+    QString rootPath = fileList[0];
+
+    int x = 0;
+    if(!fileList.isEmpty())
+    {
+        for (int i = 1; i < fileList.size(); i++)
+        {
+            x = findFirstDifference2(rootPath, fileList[i]);
+            rootPath = rootPath.left(x);
+        }
+
+        if (rootPath[rootPath.size() - 1] != '/')
+        {
+            x = rootPath.lastIndexOf('/') + 1;
+            rootPath = rootPath.left(x);
+        }
+
+        for (auto aFilePath : fileList)
+        {
+            relativePathList << aFilePath.right(aFilePath.size() - x);
+        }
+    }
+
+    return  rootPath;
+}
+
+#include <QDebug>
+void medDataImporter::detectVolumes(QStringList paths, QMap<QString, QString> & volumePathsMap, QMap<QString, QString> & volumeNameMap)
+{
+    findVolumesInFiles(paths);
+    QString rootPath;
+    QStringList volumePaths;
+    QMap<QString /*volumeId*/, QString /*relativePath*/> relativePathMap;
+    qDebug() << "detectVolumes3 : " << m_pathsVolumesMap.size();
+
+    for (auto volumeId : m_pathsVolumesMap.keys())
+    {
+        QStringList relFileList;
+        QString volumeBasePath = computeRootPathOfListPath2(m_pathsVolumesMap[volumeId], relFileList);
+        volumePaths << volumeBasePath;
+
+        auto index = fileSysPathToIndex2(volumeBasePath, relFileList);
+
+        volumePathsMap[volumeId] = index;
+        qDebug() << volumeId;
+    }
+
+    /* Compréhension : 
+    toto/tata/test
+    toto/tata/1
+    volumeBasePath : toto/tata
+
+    */
+    // TODO : faire un lien entre relPathList et les volumeId identifiés
+    QStringList relPathList;
+    rootPath = computeRootPathOfListPath2(volumePaths, relPathList);
+    qDebug() << "rootPath =" << rootPath;
+
+    for (auto volumeId : m_pathsVolumesMap.keys())
+    {
+        QStringList relFileList;
+        QString commonPath = computeRootPathOfListPath2(m_pathsVolumesMap[volumeId], relFileList);
+        auto index = fileSysPathToIndex2(commonPath, relFileList);
+
+        volumePathsMap[volumeId] = index;
+    }
 }
 
 
