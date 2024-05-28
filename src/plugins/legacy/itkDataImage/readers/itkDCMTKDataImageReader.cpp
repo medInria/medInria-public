@@ -519,6 +519,18 @@ void itkDCMTKDataImageReader::setProgress(int value)
     emit progressed(value); qApp->processEvents();
 }
 
+QString itkDCMTKDataImageReader::getVolumeId(const QString& path)
+{
+    this->readInformation(path);
+    return QString::fromStdString(d->io->GetSeriesInstanceUID());
+}
+    
+QString itkDCMTKDataImageReader::getVolumeName(const QString& path)
+{
+    this->readInformation(path);
+    return QString::fromStdString(d->io->GetSeriesDescription());
+}
+
 // /////////////////////////////////////////////////////////////////
 // Type instantiation
 // /////////////////////////////////////////////////////////////////

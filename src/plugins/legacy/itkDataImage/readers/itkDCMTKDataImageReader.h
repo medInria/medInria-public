@@ -50,6 +50,9 @@ public slots:
 
     void setProgress (int value);
 
+    QString getVolumeId(const QString& path);
+    QString getVolumeName(const QString& path);
+
 private:
 
     itkDCMTKDataImageReaderPrivate *d;
