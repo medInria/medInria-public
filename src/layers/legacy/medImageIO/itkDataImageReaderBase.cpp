@@ -255,6 +255,7 @@ bool itkDataImageReaderBase::read_image(const QString& path,const char* type)
 
     typename Image::Pointer im = TReader->GetOutput();
     medData->setData(im);
+    medData->setMetaData("seriesdescription", QFileInfo(path).baseName());
 
     return extractMetaData();
 }
