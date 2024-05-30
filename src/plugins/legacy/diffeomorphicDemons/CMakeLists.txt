@@ -29,7 +29,9 @@ add_definitions(-D${TARGET_NAME_UP}_VERSION="${${TARGET_NAME}_VERSION}")
 ## #############################################################################
 find_package(Qt5 REQUIRED COMPONENTS Quick Xml Test)
 
-find_package(medInria REQUIRED COMPONENTS Core Registration)
+if(NOT TARGET medCore)
+  find_package(medInria REQUIRED COMPONENTS Core Registration)
+endif()
 
 find_package(dtk REQUIRED)
 include_directories(${dtk_INCLUDE_DIRS})
