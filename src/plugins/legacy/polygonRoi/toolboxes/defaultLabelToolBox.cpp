@@ -35,30 +35,8 @@ defaultLabelToolBox::defaultLabelToolBox(QWidget *parent):
     labels->setContentsMargins(0,0,0,0);
     labels->setObjectName("labels");
 
-    // Themes
-    QVariant themeChosen = medSettingsManager::instance().value("startup","theme");
-    int themeIndex = themeChosen.toInt();
-    QIcon labelIconPlus;
-    QIcon labelIconMinus;
-    switch (themeIndex)
-    {
-        case 0:
-        case 1:
-        case 2:
-        case 4:
-        default:
-        {
-            labelIconPlus  = QIcon(":/pixmaps/plus_white.png");
-            labelIconMinus = QIcon(":/pixmaps/minus_white.png");
-            break;
-        }
-        case 3:
-        {
-            labelIconPlus  = QIcon(":/pixmaps/plus_black.png");
-            labelIconMinus = QIcon(":/pixmaps/minus_black.png");
-            break;
-        }
-    }
+    QIcon labelIconPlus  = QIcon(":/pixmaps/plus_white.png");
+    QIcon labelIconMinus = QIcon(":/pixmaps/minus_white.png");
 
     plusButton = new QPushButton(labelIconPlus, "");
     plusButton->setMaximumSize(QSize(20,20));
