@@ -114,8 +114,8 @@ void vtkFiberPickerCallback::DeletePickedCell()
     }
 
     realLines->InitTraversal();
-    vtkIdType rnpts;
-    vtkIdType const *rpto;
+    vtkIdType rnpts = 0;
+    vtkIdType const *rpto = nullptr;
 
     vtkIdType test = realLines->GetNextCell (rnpts, rpto);
     int cellid = 0;
@@ -132,7 +132,7 @@ void vtkFiberPickerCallback::DeletePickedCell()
             if( i==npts && pto[i-1]==rpto[i-1])
             {
                 // Avoid const*
-                vtkIdType *nonConstRpto;
+                vtkIdType *nonConstRpto = nullptr;
                 for (int j=0; j<npts; ++j)
                 {
                     nonConstRpto[j]  = rpto[j];
