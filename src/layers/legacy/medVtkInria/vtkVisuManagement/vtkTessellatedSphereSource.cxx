@@ -185,7 +185,7 @@ void TesselateTriangles(vtkPoints* oldVertices,vtkCellArray* oldTriangles,
     MidPointIds ids;
 
     vtkIdType numCellPts = 0;
-    vtkIdType const * pts;
+    vtkIdType const *pts = nullptr;
     oldTriangles->InitTraversal();
     for (int current2P=oldPoints;oldTriangles->GetNextCell(numCellPts,pts);) {
 

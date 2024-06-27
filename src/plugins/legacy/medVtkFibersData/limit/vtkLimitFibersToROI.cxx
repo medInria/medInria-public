@@ -166,7 +166,7 @@ int vtkLimitFibersToROI::RequestData (vtkInformation *vtkNotUsed(request),
   lines->InitTraversal();
   
   vtkIdType  npts  = 0;
-  vtkIdType const* ptids = 0;
+  vtkIdType const *ptids = nullptr;
   vtkIdType   test = lines->GetNextCell (npts, ptids);
   int cellId = 0;
 
