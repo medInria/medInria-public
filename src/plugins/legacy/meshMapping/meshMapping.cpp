@@ -76,7 +76,7 @@ public:
                 itkPoint[d] = point[d];
             }
             
-            img->TransformPhysicalPointToIndex(itkPoint, itkIndex);
+            itkIndex = img->TransformPhysicalPointToIndex(itkPoint);
             typename ImageType::PixelType pixelValue = img->GetPixel(itkIndex);
             if (!std::isnan(static_cast<double>(pixelValue)))
             {
