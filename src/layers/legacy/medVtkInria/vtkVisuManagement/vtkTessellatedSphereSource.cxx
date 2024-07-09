@@ -220,26 +220,20 @@ void TesselateTriangles(vtkPoints* oldVertices,vtkCellArray* oldTriangles,
                 vertices->SetPoint(current2P++,midPoint);
             }
 
-        //  Add the triangles.
+        //  Add the triangles
+        vtkIdType tmpPts[3];
+        std::copy(pts, pts + 3, tmpPts);
 
         const vtkIdType c3 = 3;
         triangles->InsertNextCell(c3,triPointsIds);
         std::swap(triPointsIds[0],triPointsIds[1]);
+        std::swap(tmpPts[0], tmpPts[1]);
 
-        // Avoid const*
-        vtkIdType *tmpPts;
-        for (int j=0; j<3; ++j)
+        for (int j=0;j<3;++j)
         {
-            tmpPts[j]  = pts[j];
-        }
-        
-        std::swap(tmpPts[0],tmpPts[1]);
-
-        for (int j=0;j<3;++j) 
-        {
-            std::swap(triPointsIds[j],tmpPts[j]);
-            triangles->InsertNextCell(c3,triPointsIds);
-            std::swap(triPointsIds[j],tmpPts[j]);
+            std::swap(triPointsIds[j], tmpPts[j]);
+            triangles->InsertNextCell(c3, triPointsIds);
+            std::swap(triPointsIds[j], tmpPts[j]);
         }
     }
 }
