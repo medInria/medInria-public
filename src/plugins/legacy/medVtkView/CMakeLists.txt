@@ -33,7 +33,6 @@ find_package(dtk REQUIRED)
 include_directories(${dtk_INCLUDE_DIRS})
 
 find_package(VTK REQUIRED COMPONENTS InteractionWidgets GUISupportQt)
-include_directories(${VTK_INCLUDE_DIRS})
 
 find_package(ITK REQUIRED COMPONENTS ITKCommon)
 include(${ITK_USE_FILE})
@@ -82,8 +81,7 @@ target_link_libraries(${TARGET_NAME}
   medCore
   medVtkInria
   medVtkDataMeshBase
-  VTK::GUISupportQt
-  VTK::RenderingGL2PSOpenGL2
+  ${VTK_LIBRARIES}
   )
 
 vtk_module_autoinit(TARGETS ${TARGET_NAME} MODULES ${VTK_LIBRARIES})

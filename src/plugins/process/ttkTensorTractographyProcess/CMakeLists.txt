@@ -81,7 +81,7 @@ target_link_libraries(${TARGET_NAME}
   medCore
   medCoreGui
   medVtkInria
-  VTK::RenderingCore
+  ${VTK_LIBRARIES}
   )
 
 vtk_module_autoinit(TARGETS ${TARGET_NAME} MODULES ${VTK_LIBRARIES})

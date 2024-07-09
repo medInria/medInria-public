@@ -37,7 +37,6 @@ find_package(ITK REQUIRED COMPONENTS ITKCommon)
 include(${ITK_USE_FILE})
 
 find_package(VTK REQUIRED COMPONENTS CommonCore RenderingCore InteractionStyle InteractionWidgets)
-include_directories(${VTK_INCLUDE_DIRS})
 
 ## #############################################################################
 ## List Sources
@@ -77,6 +76,7 @@ target_link_libraries(${TARGET_NAME}
   medCore
   medVtkInria
   medUtilities
+  ${VTK_LIBRARIES}
   )
 
 set(CMAKE_RUNTIME_OUTPUT_DIRECTORY ${CMAKE_BINARY_DIR}/bin)

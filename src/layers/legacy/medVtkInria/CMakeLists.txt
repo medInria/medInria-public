@@ -23,7 +23,7 @@ set(TARGET_NAME medVtkInria)
 find_package(dtk REQUIRED)
 
 find_package(VTK REQUIRED COMPONENTS RenderingVolumeOpenGL2 InteractionWidgets RenderingAnnotation 
-  InteractionStyle ImagingStatistics IOLegacy)
+  InteractionStyle ImagingStatistics IOLegacy RenderingVolume IOImage FiltersGeometry ImagingColor)
 
 find_package(OpenGL REQUIRED)
 
@@ -80,33 +80,9 @@ target_link_libraries(${TARGET_NAME} PUBLIC
   ${OPENGL_LIBRARIES}
   Qt5::Core
   Qt5::Widgets
-  
   med::Core
-  
-  VTK::CommonCore
-  VTK::CommonSystem
-  VTK::ImagingColor
-  VTK::ImagingGeneral
-  VTK::ImagingHybrid
-  VTK::IOCore
-  VTK::IOGeometry
-  VTK::IOImage
-  VTK::IOLegacy
-  VTK::IOXML
-  VTK::RenderingAnnotation
-  VTK::RenderingCore
-  VTK::RenderingOpenGL2
-  VTK::RenderingVolumeOpenGL2
   ${VTK_OSPRAY_RENDERING_LIBRARY}
-  VTK::InteractionWidgets
-  VTK::InteractionStyle
-  VTK::FiltersExtraction
-  VTK::FiltersModeling
-  VTK::ImagingStencil
-  VTK::FiltersGeometry
-  VTK::vtksys
-  
-  
+  ${VTK_LIBRARIES}
   # dtk
   # Legacy
   dtkCoreSupport
