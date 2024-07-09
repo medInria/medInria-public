@@ -32,8 +32,8 @@ add_definitions(-D${TARGET_NAME_UP}_VERSION="${${TARGET_NAME}_VERSION}")
 find_package(dtk REQUIRED)
 include_directories(${dtk_INCLUDE_DIRS})
 
-find_package(VTK REQUIRED COMPONENTS ImagingCore IOLegacy IOXML RenderingCore RenderingOpenGL2 InteractionWidgets CommonDataModel) 
-include_directories(${VTK_INCLUDE_DIRS})
+find_package(VTK REQUIRED COMPONENTS ImagingCore IOLegacy IOXML RenderingCore RenderingOpenGL2
+    InteractionWidgets CommonDataModel FiltersParallel)
 
 find_package(ITK REQUIRED COMPONENTS ITKCommon ITKVtkGlue)
 include(${ITK_USE_FILE})
@@ -109,7 +109,7 @@ target_link_libraries(${TARGET_NAME}
   ttkAlgorithms
   ITKCommon
   ITKVtkGlue
-  VTK::CommonDataModel
+  ${VTK_LIBRARIES}
   )
 
 vtk_module_autoinit(TARGETS ${TARGET_NAME} MODULES ${VTK_LIBRARIES})

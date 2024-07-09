@@ -42,8 +42,7 @@ include_directories(${dtk_INCLUDE_DIRS})
 find_package(ITK REQUIRED COMPONENTS ITKCommon)
 include(${ITK_USE_FILE})
 
-find_package(VTK REQUIRED COMPONENTS CommonCore ImagingSources ${VTK_FFmpeg_MODULE} IOImage RenderingQt IOMovie ImagingSources IOOggTheora)
-include_directories(${VTK_INCLUDE_DIRS})
+find_package(VTK REQUIRED COMPONENTS CommonCore ImagingSources ${VTK_FFmpeg_MODULE} IOImage RenderingQt IOMovie)
 
 ## #############################################################################
 ## List Sources
@@ -84,11 +83,7 @@ target_link_libraries(${TARGET_NAME}
     medCore
     medVtkInria
     medUtilities
-    VTK::ImagingSources
-    VTK::IOImage
-    VTK::IOMovie
-    VTK::IOOggTheora
-    VTK::RenderingQt
+    ${VTK_LIBRARIES}
     ${VTK_FFmpeg_MODULE_LIB}
     )
 

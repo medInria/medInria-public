@@ -37,7 +37,6 @@ find_package(ITK REQUIRED COMPONENTS ITKCommon ITKImageGrid ITKVtkGlue)
 include(${ITK_USE_FILE})
 
 find_package(VTK REQUIRED COMPONENTS InteractionWidgets InteractionImage GUISupportQt)
-include_directories(${VTK_INCLUDE_DIRS})
 
 ## #############################################################################
 ## List Sources
@@ -79,8 +78,7 @@ target_link_libraries(${TARGET_NAME}
   medCore
   medVtkInria
   medUtilities
-  VTK::InteractionImage
-  VTK::GUISupportQt
+  ${VTK_LIBRARIES}
   )
 
 vtk_module_autoinit(TARGETS ${TARGET_NAME} MODULES ${VTK_LIBRARIES})

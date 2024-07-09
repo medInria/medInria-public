@@ -37,7 +37,6 @@ find_package(ITK REQUIRED COMPONENTS ITKCommon)
 include(${ITK_USE_FILE})
 
 find_package(VTK REQUIRED COMPONENTS CommonCore CommonDataModel FiltersGeneral)
-include_directories(${VTK_INCLUDE_DIRS})
 
 ## #############################################################################
 ## List Sources
@@ -77,9 +76,7 @@ target_link_libraries(${TARGET_NAME}
   medCore
   medVtkInria
   medUtilities
-  VTK::CommonCore
-  VTK::CommonDataModel
-  VTK::FiltersGeneral
+  ${VTK_LIBRARIES}
   )
 
 vtk_module_autoinit(TARGETS ${TARGET_NAME} MODULES ${VTK_LIBRARIES})

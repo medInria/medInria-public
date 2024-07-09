@@ -36,7 +36,6 @@ find_package(ITK REQUIRED COMPONENTS ITKIOImageBase ITKIOMeta )
 include(${ITK_USE_FILE})
 
 find_package(VTK REQUIRED COMPONENTS CommonExecutionModel RenderingCore InteractionWidgets)
-include_directories(${VTK_INCLUDE_DIRS})
 
 if (APPLE OR WIN32)
     find_package(Boost REQUIRED)
@@ -107,6 +106,7 @@ target_link_libraries(${TARGET_NAME}
   medLog
   medVtkInria
   medImageIO
+  ${VTK_LIBRARIES}
   )
 
 

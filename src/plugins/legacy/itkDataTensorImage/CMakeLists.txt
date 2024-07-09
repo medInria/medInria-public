@@ -34,9 +34,8 @@ include_directories(${dtk_INCLUDE_DIRS})
 
 find_package(ITK REQUIRED  COMPONENTS ITKIOImageBase ITKIOMeta ITKIONRRD ITKIONIFTI)
 include(${ITK_USE_FILE})
-    
+
 find_package(VTK REQUIRED COMPONENTS CommonCore CommonExecutionModel RenderingCore ImagingCore InteractionStyle InteractionWidgets)
-include_directories(${VTK_INCLUDE_DIRS})
 
 find_package(TTK REQUIRED)
 include(${TTK_USE_FILE})
@@ -122,8 +121,8 @@ target_link_libraries(${TARGET_NAME}
   medCore
   medLog
   medVtkInria
+  ${VTK_LIBRARIES}
   )
-
 
 ## #############################################################################
 ## Install rules

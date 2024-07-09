@@ -8,7 +8,6 @@ find_package(TTK REQUIRED)
 include(${TTK_USE_FILE})
 
 find_package(VTK REQUIRED COMPONENTS RenderingCore)
-include_directories(${VTK_INCLUDE_DIRS})
 
 find_package(ITK REQUIRED COMPONENTS ITKCommon)
 include(${ITK_USE_FILE})

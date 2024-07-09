@@ -40,7 +40,6 @@ find_package(ITK REQUIRED COMPONENTS ITKCommon ITKImageLabel ITKVtkGlue ITKIOIma
 include(${ITK_USE_FILE})
 
 find_package(VTK REQUIRED COMPONENTS GUISupportQt CommonCore IOLegacy)
-include_directories(${VTK_INCLUDE_DIRS})
 
 find_package(Qt5 REQUIRED COMPONENTS Gui)
 
@@ -93,7 +92,7 @@ target_link_libraries(${TARGET_NAME}
   medRegistration
   medVtkInria
   medUtilities
-  VTK::CommonComputationalGeometry
+  ${VTK_LIBRARIES}
   )
 
 vtk_module_autoinit(TARGETS ${TARGET_NAME} MODULES ${VTK_LIBRARIES})

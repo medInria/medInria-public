@@ -37,7 +37,6 @@ find_package(ITK REQUIRED COMPONENTS ITKIOImageBase ITKTransform ITKIOTransformB
 include(${ITK_USE_FILE})
 
 find_package(VTK REQUIRED COMPONENTS CommonCore InteractionWidgets)
-include_directories(${VTK_INCLUDE_DIRS})
 
 find_package(RPI REQUIRED)
 include(${RPI_USE_FILE})
@@ -83,6 +82,7 @@ target_link_libraries(${TARGET_NAME}
   medCore
   medRegistration
   medVtkInria
+  ${VTK_LIBRARIES}
   )
 
 set(CMAKE_RUNTIME_OUTPUT_DIRECTORY ${CMAKE_BINARY_DIR}/bin)
