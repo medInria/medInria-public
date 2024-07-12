@@ -39,7 +39,6 @@ find_package(VTK REQUIRED COMPONENTS CommonCore CommonExecutionModel RenderingCo
 
 find_package(TTK REQUIRED COMPONENTS ITKTensor ttkAlgorithms)
 
-
 ## #############################################################################
 ## List Sources
 ## #############################################################################
