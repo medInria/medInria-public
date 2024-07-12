@@ -40,8 +40,8 @@ if (NOT USE_SYSTEM_${ep})
 ## Set up versioning control
 ## #############################################################################
 
-set(git_url ${GITHUB_PREFIX}mathildemerle/TTK.git)
-set(git_tag ITK5+VTK9)
+set(git_url ${GITHUB_PREFIX}medInria/TTK.git)
+set(git_tag ITK5.4rc04+VTK9)
 
 ## #############################################################################
 ## Add specific cmake arguments for configuration step of the project

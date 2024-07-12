@@ -67,19 +67,13 @@ set(cmake_args
   -DCMAKE_SHARED_LINKER_FLAGS=${${ep}_shared_linker_flags}  
   -DCMAKE_INSTALL_PREFIX=<INSTALL_DIR>  
   -DBUILD_SHARED_LIBS=${BUILD_SHARED_LIBS_${ep}}
-
-  # Generic parameters 
   -DVTK_BUILD_TESTING=OFF
   -DVTK_BUILD_DOCUMENTATION=OFF
   -DVTK_BUILD_EXAMPLES=OFF
   -DVTK_RENDERING_BACKEND=OpenGL2
-
-  # Qt
-  -DVTK_GROUP_ENABLE_Qt=YES
-  -DVTK_MODULE_ENABLE_VTK_GUISupportQt=YES
   -DVTK_QT_VERSION=5
-
-  # OGV Export
+  -DVTK_MODULE_ENABLE_VTK_GUISupportQt=YES
+  -DVTK_MODULE_ENABLE_VTK_RenderingQt=YES
   -DVTK_USE_OGGTHEORA_ENCODER:BOOL=ON
   )
   
@@ -141,7 +135,6 @@ ExternalProject_Add(${ep}
   CMAKE_CACHE_ARGS ${cmake_cache_args}
   DEPENDS ${${ep}_dependencies}
   INSTALL_COMMAND ""
-  BUILD_ALWAYS 1
   )
 ## #############################################################################
 ## Set variable to provide infos about the project
