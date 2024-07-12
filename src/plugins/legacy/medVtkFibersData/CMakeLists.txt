@@ -38,8 +38,7 @@ find_package(VTK REQUIRED COMPONENTS ImagingCore IOLegacy IOXML RenderingCore Re
 find_package(ITK REQUIRED COMPONENTS ITKCommon ITKVtkGlue)
 include(${ITK_USE_FILE})
 
-find_package(TTK REQUIRED)
-include(${TTK_USE_FILE})
+find_package(TTK REQUIRED COMPONENTS ttkAlgorithms ITKTensor)
 
 ## #############################################################################
 ## List Sources
@@ -106,7 +105,8 @@ target_link_libraries(${TARGET_NAME}
   medCore
   medLog
   medVtkInria
-  ttkAlgorithms
+  TTK::ttkAlgorithms
+  TTK::ITKTensor
   ITKCommon
   ITKVtkGlue
   ${VTK_LIBRARIES}

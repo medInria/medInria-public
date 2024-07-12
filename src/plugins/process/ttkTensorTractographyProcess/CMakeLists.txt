@@ -73,7 +73,8 @@ target_link_libraries(${TARGET_NAME}
   dtkCore
   dtkCoreSupport
   dtkLog
-  ITKTensor
+  TTK::ITKTensor
+  TTK::ttkAlgorithms
   ITKIOTransformBase
   medCore
   medCoreLegacy

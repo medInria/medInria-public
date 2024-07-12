@@ -113,7 +113,7 @@ list(APPEND
   ${DCMTK_DIR}/bin/Release 
   ${VTK_DIR}/bin/Release 
   ${QtDCM_DIR}/bin/Release 
-  ${TTK_DIR}/bin/Release 
+  ${TTK_DIR}/bin
   ${dtk_DIR}/bin/Release 
   ${RPI_DIR}/bin/Release 
   )
