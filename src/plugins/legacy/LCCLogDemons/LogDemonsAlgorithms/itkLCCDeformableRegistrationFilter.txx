@@ -304,8 +304,10 @@ LCCDeformableRegistrationFilter<TFixedImage,TMovingImage,TField>
 ::SetStandardDeviationsWorldUnit( double value )
 {
     double tmp[ImageDimension];
-    for( int i=0; i<ImageDimension; i++ )
+    for( int i=0; i<static_cast<int>(ImageDimension); i++ )
+    {
         tmp[i] = value;
+    }
     SetStandardDeviationsWorldUnit( tmp );
 }
 
@@ -348,8 +350,10 @@ LCCDeformableRegistrationFilter<TFixedImage,TMovingImage,TField>
 ::SetStandardDeviationsVoxelUnit( double value )
 {
     double tmp[ImageDimension];
-    for( int i=0; i<ImageDimension; i++ )
+    for( int i=0; i<static_cast<int>(ImageDimension); i++ )
+    {
         tmp[i] = value;
+    }
     SetStandardDeviationsVoxelUnit( tmp );
 }
 
@@ -422,8 +426,10 @@ LCCDeformableRegistrationFilter<TFixedImage,TMovingImage,TField>
 ::SetUpdateFieldStandardDeviationsWorldUnit( double value )
 {
     double tmp[ImageDimension];
-    for( int i=0; i<ImageDimension; i++ )
+    for( int i=0; i<static_cast<int>(ImageDimension); i++ )
+    {
         tmp[i] = value;
+    }
     SetUpdateFieldStandardDeviationsWorldUnit( tmp );
 }
 
@@ -466,8 +472,10 @@ LCCDeformableRegistrationFilter<TFixedImage,TMovingImage,TField>
 ::SetUpdateFieldStandardDeviationsVoxelUnit( double value )
 {
     double tmp[ImageDimension];
-    for( int i=0; i<ImageDimension; i++ )
+    for( int i=0; i<static_cast<int>(ImageDimension); i++ )
+    {
         tmp[i] = value;
+    }
     SetUpdateFieldStandardDeviationsVoxelUnit( tmp );
 }
 
@@ -541,8 +549,10 @@ LCCDeformableRegistrationFilter<TFixedImage,TMovingImage,TField>
 ::SetSimilarityCriteriaStandardDeviationsWorldUnit( double value )
 {
     double tmp[ImageDimension];
-    for( int i=0; i<ImageDimension; i++ )
+    for( int i=0; i<static_cast<int>(ImageDimension); i++ )
+    {
         tmp[i] = value;
+    }
     SetSimilarityCriteriaStandardDeviationsWorldUnit( tmp );
 }
 
@@ -585,8 +595,10 @@ LCCDeformableRegistrationFilter<TFixedImage,TMovingImage,TField>
 ::SetSimilarityCriteriaStandardDeviationsVoxelUnit( double value )
 {
     double tmp[ImageDimension];
-    for( int i=0; i<ImageDimension; i++ )
+    for( int i=0; i<static_cast<int>(ImageDimension); i++ )
+    {
         tmp[i] = value;
+    }
     SetSimilarityCriteriaStandardDeviationsVoxelUnit( tmp );
 }
 

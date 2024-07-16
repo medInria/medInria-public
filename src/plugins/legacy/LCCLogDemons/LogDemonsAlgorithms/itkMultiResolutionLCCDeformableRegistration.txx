@@ -281,8 +281,10 @@ MultiResolutionLCCDeformableRegistration<TFixedImage,TMovingImage,TField,TRealTy
 ::SetStandardDeviationsWorldUnit( double value )
 {
     double tmp[ImageDimension];
-    for( int i=0; i<ImageDimension; i++ )
+    for( int i=0; i<static_cast<int>(ImageDimension); i++ )
+    {
         tmp[i] = value;
+    }
     SetStandardDeviationsWorldUnit( tmp );
 }
 
@@ -325,8 +327,10 @@ MultiResolutionLCCDeformableRegistration<TFixedImage,TMovingImage,TField,TRealTy
 ::SetStandardDeviationsVoxelUnit( double value )
 {
     double tmp[ImageDimension];
-    for( int i=0; i<ImageDimension; i++ )
+    for( int i=0; i<static_cast<int>(ImageDimension); i++ )
+    {
         tmp[i] = value;
+    }
     SetStandardDeviationsVoxelUnit( tmp );
 }
 
@@ -369,8 +373,10 @@ MultiResolutionLCCDeformableRegistration<TFixedImage,TMovingImage,TField,TRealTy
 ::SetUpdateFieldStandardDeviationsWorldUnit( double value )
 {
     double tmp[ImageDimension];
-    for( int i=0; i<ImageDimension; i++ )
+    for( int i=0; i<static_cast<int>(ImageDimension); i++ )
+    {
         tmp[i] = value;
+    }
     SetUpdateFieldStandardDeviationsWorldUnit( tmp );
 }
 
@@ -413,8 +419,10 @@ MultiResolutionLCCDeformableRegistration<TFixedImage,TMovingImage,TField,TRealTy
 ::SetUpdateFieldStandardDeviationsVoxelUnit( double value )
 {
     double tmp[ImageDimension];
-    for( int i=0; i<ImageDimension; i++ )
+    for( int i=0; i<static_cast<int>(ImageDimension); i++ )
+    {
         tmp[i] = value;
+    }
     SetUpdateFieldStandardDeviationsVoxelUnit( tmp );
 }
 
@@ -456,8 +464,10 @@ MultiResolutionLCCDeformableRegistration<TFixedImage,TMovingImage,TField,TRealTy
 ::SetSimilarityCriteriaStandardDeviationsWorldUnit( double value )
 {
     double tmp[ImageDimension];
-    for( int i=0; i<ImageDimension; i++ )
+    for( int i=0; i<static_cast<int>(ImageDimension); i++ )
+    {
         tmp[i] = value;
+    }
     SetSimilarityCriteriaStandardDeviationsWorldUnit( tmp );
 }
 
@@ -498,8 +508,10 @@ MultiResolutionLCCDeformableRegistration<TFixedImage,TMovingImage,TField,TRealTy
 ::SetSimilarityCriteriaStandardDeviationsVoxelUnit( double value )
 {
     double tmp[ImageDimension];
-    for( int i=0; i<ImageDimension; i++ )
+    for( int i=0; i<static_cast<int>(ImageDimension); i++ )
+    {
         tmp[i] = value;
+    }
     SetSimilarityCriteriaStandardDeviationsVoxelUnit( tmp );
 }
 
@@ -812,7 +824,7 @@ MultiResolutionLCCDeformableRegistration<TFixedImage,TMovingImage,TField,TRealTy
 
         // Resolution
         double resolution = 1;
-        for (int i=0; i<ImageDimension; i++)
+        for (int i=0; i<static_cast<int>(ImageDimension); i++)
         {
             double s1  = fixedImage->GetLargestPossibleRegion().GetSize()[i];
             double s2  = m_FixedImagePyramid->GetOutput(movingLevel)->GetLargestPossibleRegion().GetSize()[i];
@@ -824,9 +836,10 @@ MultiResolutionLCCDeformableRegistration<TFixedImage,TMovingImage,TField,TRealTy
         if ( m_StandardDeviationWorldUnit )
         {
             double sd[ImageDimension];
-            for (int i=0; i<ImageDimension; i++)
+            for (int i=0; i<static_cast<int>(ImageDimension); i++)
+            {
               sd[i] = m_StandardDeviations[i];
-
+            }
             m_RegistrationFilter->SetStandardDeviationsWorldUnit( sd );
         }
 
@@ -835,9 +848,10 @@ MultiResolutionLCCDeformableRegistration<TFixedImage,TMovingImage,TField,TRealTy
         if ( m_StandardDeviationWorldUnit )
         {
             double sd[ImageDimension];
-            for (int i=0; i<ImageDimension; i++)
+            for (int i=0; i<static_cast<int>(ImageDimension); i++)
+            {
               sd[i] = m_UpdateFieldStandardDeviations[i];
-
+            }
             m_RegistrationFilter->SetUpdateFieldStandardDeviationsWorldUnit( sd );
         }
 
@@ -845,9 +859,10 @@ MultiResolutionLCCDeformableRegistration<TFixedImage,TMovingImage,TField,TRealTy
         if ( m_StandardDeviationWorldUnit )
         {
             double sd[ImageDimension];
-            for (int i=0; i<ImageDimension; i++)
+            for (int i=0; i<static_cast<int>(ImageDimension); i++)
+            {
                 sd[i] = m_SimilarityCriteriaStandardDeviations[i] * resolution;
-
+            }
             m_RegistrationFilter->SetSimilarityCriteriaStandardDeviationsWorldUnit( sd );
         }
 

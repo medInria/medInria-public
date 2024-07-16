@@ -16,10 +16,7 @@
 #include <QHash>
 #include <QTest>
 #include <QWidget>
-
-#include <QVTKOpenGLNativeWidget.h>
 #include <QGLFramebufferObject>
-
 #include <QVTKInteractorAdapter.h>
 #include <QVTKInteractor.h>
 #include <vtkEventQtSlotConnect.h>
@@ -506,7 +503,7 @@ vtkGenericOpenGLRenderWindow * medVtkView::createVtkGenericOpenGLRenderWindow()
     return vtkGenericOpenGLRenderWindow::New();
 }
 
-QVTKOpenGLWidget * medVtkView::createQVTKOpenGLWidget()
+QVTKOpenGLNativeWidget * medVtkView::createQVTKOpenGLWidget()
 {
     //QVTKOpenGLWidget * pPidgetRes = nullptr;
     //QMetaObject::invokeMethod(this,
@@ -514,7 +511,7 @@ QVTKOpenGLWidget * medVtkView::createQVTKOpenGLWidget()
     //                          Qt::BlockingQueuedConnection,
     //                          Q_RETURN_ARG(QVTKOpenGLWidget*, pPidgetRes));
     //return pPidgetRes;
-    return new QVTKOpenGLWidget();
+    return new QVTKOpenGLNativeWidget();
 }
 
 //QVTKOpenGLWidget * medVtkView::createQVTKOpenGLWidgetInternal()
