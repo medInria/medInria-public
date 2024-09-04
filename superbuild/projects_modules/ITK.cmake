@@ -40,7 +40,7 @@ if (NOT USE_SYSTEM_${ep})
 
 
 set(git_url ${GITHUB_PREFIX}InsightSoftwareConsortium/ITK.git)
-set(git_tag v5.0.0)
+set(git_tag v5.2.1)
 
 
 ## #############################################################################

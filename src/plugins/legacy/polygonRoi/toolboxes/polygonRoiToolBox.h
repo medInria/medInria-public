@@ -81,10 +81,10 @@ private slots:
     void clear() override;
 
 private:
-    QHash<medDataIndex, baseViewEvent *> viewEventHash;
+    QHash<const medAbstractData*, baseViewEvent *> viewEventHash;
+    medAbstractData* activeData;
     qint32 specialityPreference;
     medToolBox *pMedToolBox;
-    medDataIndex activeDataIndex;
     QPushButton *activateTBButton;
     QPushButton *saveBinaryMaskButton;
     QCheckBox *interpolate;

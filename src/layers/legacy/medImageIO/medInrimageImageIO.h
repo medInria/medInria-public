@@ -71,7 +71,7 @@ public:
     virtual void ReadImageInformation();
 
     /** Convert to type_info */
-    const std::type_info& ConvertToTypeInfo(IOPixelType) const;
+    const std::type_info& ConvertToTypeInfo(itk::IOComponentEnum) const;
 
     /** Reads the data from disk into the memory buffer provided. */
     virtual void Read(void* buffer);

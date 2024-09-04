@@ -50,7 +50,7 @@ set(ITK_IMAGES_DEPENDENCIES
     ITKIOPhilipsREC
 )
 
-find_package(ITK REQUIRED COMPONENTS ITKIOImageBase ITKIOGDCM ITKIOVTK ITKVtkGlue ${ITK_IMAGES_DEPENDENCIES})
+find_package(ITK REQUIRED COMPONENTS ITKIOImageBase ITKGDCM ITKIOGDCM ITKIOVTK ITKVtkGlue ${ITK_IMAGES_DEPENDENCIES})
 include(${ITK_USE_FILE})
 
 # itkLogForwarder used through medLog
@@ -137,7 +137,8 @@ target_link_libraries(${TARGET_NAME}
   Qt5::Widgets
   dtkCore
   dtkLog
-  ITKStatistics
+  gdcmCommon
+  ${ITK_LIBRARIES}
   medCore
   medImageIO
   medLog

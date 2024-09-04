@@ -131,6 +131,8 @@ if(USE_Python)
     endif()
     list(APPEND cmake_args
         -DVTK_WRAP_PYTHON:BOOL=ON
+        -DModule_vtkPython:BOOL=ON
+        -DModule_vtkWrappingTools:BOOL=ON
         -DVTK_PYTHON_VERSION:STRING=${python_version}
         -DPYTHON_EXECUTABLE:PATH=${python_executable}
         -DPYTHON_INCLUDE_DIR:PATH=${python_include}

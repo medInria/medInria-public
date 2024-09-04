@@ -104,7 +104,7 @@ list(APPEND
   ${DCMTK_ROOT}/bin/Release
   ${VTK_ROOT}/bin/Release
   ${QtDCM_ROOT}/bin/Release
-  ${TTK_ROOT}/bin/Release
+  ${TTK_ROOT}/bin
   ${dtk_ROOT}/bin/Release
   ${RPI_ROOT}/bin/Release
   )
@@ -120,11 +120,13 @@ file(GLOB_RECURSE itk_files LIST_DIRECTORIES true \"${ITK_ROOT}/bin/*.dll\")
 file(GLOB_RECURSE vtk_files LIST_DIRECTORIES true \"${VTK_ROOT}/bin/*.dll\")
 file(GLOB_RECURSE dtk_files LIST_DIRECTORIES true \"${dtk_ROOT}/bin/*.dll\")
 file(GLOB_RECURSE dcm_files LIST_DIRECTORIES true \"${QtDCM_ROOT}/bin/*.dll\")
+file(GLOB_RECURSE ttk_files LIST_DIRECTORIES true \"${TTK_DIR}/bin/*.dll\")
 file(GLOB_RECURSE qt5_files LIST_DIRECTORIES true \"${QT_BINARY_DIR}/*.dll\")
 list(APPEND files \${itk_files})
 list(APPEND files \${vtk_files})
 list(APPEND files \${dtk_files})
 list(APPEND files \${dcm_files})
+list(APPEND files \${ttk_files})
 list(APPEND files \${qt5_files})
 
 file(INSTALL ${MEDINRIA_FILES}/
