@@ -38,6 +38,7 @@ list_source_files(${TARGET_NAME}
   areas/workspaces/registration
   areas/workspaces/segmentation
   areas/workspaces/visualization
+  FirstStart
   )
 
 ##  see cmake/module/list_header_directories_to_include.cmake

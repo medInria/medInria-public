@@ -139,6 +139,22 @@
         <file>icons/arrow-left-disabled.svg</file>
         <file>icons/arrow-right-disabled.svg</file>
         <file>icons/arrow-top-disabled.svg</file>
+        <!-- <file>medInria.qss</file> -->
+        <file>pixmaps/unknown.jpg</file>
+        <file>pixmaps/checkbox.png</file>
+        <file>pixmaps/checkbox-checked.png</file>
+        <file>pixmaps/checkbox-partial.png</file>
+        <file>pixmaps/radio.png</file>
+        <file>pixmaps/radio-checked.png</file>
+        <file>pixmaps/radio-partial.png</file>
+        <file>pixmaps/drop-down.png</file>
+        <file>pixmaps/treeview-branch-closed.png</file>
+        <file>pixmaps/treeview-branch-open.png</file>
+        <file>pixmaps/database_navigator_item_checker_checked.png</file>
+        <file>pixmaps/database_navigator_item_checker_unchecked.png</file>
+        <file>pixmaps/medInria-logo-homepage.png</file>
+        <file>icons/unknown.jpg</file>
+        <file>icons/checkbox.png</file>
         <file>icons/checkbox-partial.png</file>
         <file>icons/chevron_down_disabled.svg</file>
         <file>icons/chevron_up_disabled.svg</file>
@@ -181,5 +197,6 @@
         <!-- Gifs -->
         <file>gif/icon.gif</file>
 
+        <file>configs/DataSourcesDefault.json</file>
     </qresource>
 </RCC>

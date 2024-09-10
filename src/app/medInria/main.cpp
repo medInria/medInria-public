@@ -15,6 +15,7 @@
 #include <QtGui>
 #include <QtOpenGL>
 #include <QMainWindow>
+#include <QNetworkAccessManager>
 
 #ifdef WIN32
 #include <QtPlatformHeaders/QWindowsWindowFunctions>
@@ -39,6 +40,8 @@
 #include<medNotificationPresenter.h>
 
 #include<medNotifWindow.h>
+
+#include <medFirstStart.h>
 
 void forceShow(medMainWindow &mainwindow)
 {
@@ -83,7 +86,6 @@ int main(int argc, char *argv[])
 {
     QCoreApplication::setAttribute(Qt::AA_EnableHighDpiScaling);
     // Setup openGL surface compatible with QVTKOpenGLWidget,
-    // required by medVtkView
     QSurfaceFormat fmt;
     fmt.setRenderableType(QSurfaceFormat::OpenGL);
     fmt.setVersion(3, 2);
@@ -98,6 +100,7 @@ int main(int argc, char *argv[])
     fmt.setStereo(false);
     fmt.setSamples(0); // we never need multisampling in the context since the FBO can support
                        // multisamples independently
+
     QSurfaceFormat::setDefaultFormat(fmt);
 
     medApplication application(argc, argv);
@@ -180,8 +183,7 @@ int main(int argc, char *argv[])
         int runningMedInria = 0;
         if (DirectView)
         {
-            for (QStringList::const_iterator i = viewPaths.constBegin();
-                 i != viewPaths.constEnd(); ++i)
+        for (QStringList::const_iterator i = viewPaths.constBegin(); i != viewPaths.constEnd(); ++i)
             {
                 const QString &message = QString("/open ") + *i;
                 runningMedInria = application.sendMessage(message);
@@ -194,19 +196,25 @@ int main(int argc, char *argv[])
         if (runningMedInria)
             return 0;
 
+
+
+
+
+
+
+
+
+
+
+    QNetworkAccessManager  *qnam = new QNetworkAccessManager(&application);
+    medFirstStart firstStart(qnam);
         //auto testWindow = new QMainWindow();
         //auto w = new medSpoilerWidget();
-        //QHBoxLayout * lay1 = new QHBoxLayout();
-        //QVBoxLayout * lay2 = new QVBoxLayout();
-        //lay2->addWidget(new QPushButton("TATA BUTTON"));
-        //lay2->addWidget(new QPushButton("TOTO BUTTON"));
-        //w->setContentLayout(*lay2);
-        //testWindow->setCentralWidget(w);
-        //testWindow->show();
-        //
-        //
-        //const int status1 = application.exec();
-        //return status1;
+    
+    firstStart.pushPathToCheck(medSourcesLoader::path(), ":/configs/DataSourcesDefault.json", "dataSourceLoader", "",
+                               medSourcesLoader::initSourceLoaderCfg);
+    firstStart.checkAndUpdate();
+
 
         medSourcesLoader::instance(&application);     
 
@@ -215,9 +223,9 @@ int main(int argc, char *argv[])
         auto sourceHandler = medSourceHandler::instance(&application);
         auto model = medDataHub::instance(&application);
         auto virtualRepresentation = new medVirtualRepresentation(&application);
-        auto toto1 = QObject::connect(medSourcesLoader::instance(), SIGNAL(sourceAdded(medAbstractSource *)), sourceHandler, SLOT(addSource(medAbstractSource *)));
-        auto toto2 = QObject::connect(medSourcesLoader::instance(), SIGNAL(sourceRemoved(medAbstractSource *)), sourceHandler, SLOT(removeSource(medAbstractSource *)));
-        auto toto3 = QObject::connect(medSourcesLoader::instance(), &medSourcesLoader::defaultWorkingSource, sourceHandler, &medSourceHandler::setDefaultWorkingSource);
+    QObject::connect(medSourcesLoader::instance(), SIGNAL(sourceAdded(medAbstractSource *)), sourceHandler, SLOT(addSource(medAbstractSource *)));
+    QObject::connect(medSourcesLoader::instance(), SIGNAL(sourceRemoved(medAbstractSource *)), sourceHandler, SLOT(removeSource(medAbstractSource *)));
+    QObject::connect(medSourcesLoader::instance(), &medSourcesLoader::defaultWorkingSource, sourceHandler, &medSourceHandler::setDefaultWorkingSource);
         model->setVirtualRepresentation(virtualRepresentation);
         
         medSourcesLoader::instance()->loadFromDisk();
@@ -232,19 +240,6 @@ int main(int argc, char *argv[])
         medApplicationContext::instance()->setSourceHandler(sourceHandler);
         medApplicationContext::instance()->setPluginManager(medPluginManager::instance());
         medApplicationContext::instance()->setDataManager(medDataManager::instance());
-
-
-        //medMainWindow *mainwindow2 = new medMainWindow;
-
-
-        //auto status2 = new QStatusBar(mainwindow2);
-        //status2->setContentsMargins(0, 0, 0, 0);
-        //mainwindow2->setStatusBar(status2); 
-        //auto stBarW = medNotifSysPresenter(notifSys).buildWidgetForStatusBar();
-        //status2->addPermanentWidget(stBarW);
-        //mainwindow2->show();
-        //status2->show();
-        //stBarW->show();
 
         notifSys->setOperatingSystemNotification(true);
         notifSys->setOperatingSystemNotification(true);
@@ -286,8 +281,9 @@ int main(int argc, char *argv[])
                              static_cast<int>(hasWallArg);
 
         if (conflict > 1)
-            dtkWarn() << "Conflicting command line parameters between "
-                         "--fullscreen, --no-fullscreen and -wall. Ignoring.";
+    {
+        dtkWarn() << "Conflicting command line parameters between " "--fullscreen, --no-fullscreen and -wall. Ignoring.";
+    }
         else
         {
             if (hasWallArg)

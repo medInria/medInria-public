@@ -98,6 +98,7 @@ set(CONFIG_MODE $<$<CONFIG:debug>:Debug>$<$<CONFIG:release>:Release>$<$<CONFIG:M
 set(APP "\${CMAKE_INSTALL_PREFIX}/bin/medInria.exe")
 set(QT_BINARY_DIR "${Qt5_DIR}/../../../bin")
 set(QT_PLUGINS_DIR "${Qt5_DIR}/../../../plugins")
+set(QT_TOOLS_DIR "${Qt5_DIR}/../../../../../Tools")
 set(MEDINRIA_FILES "${medInria_DIR}/bin")
 
 list(APPEND 
@@ -151,6 +152,13 @@ file(INSTALL ${QT_PLUGINS_DIR}/platforms/qoffscreen.dll DESTINATION \${CMAKE_INS
 file(INSTALL ${QT_PLUGINS_DIR}/platforms/qwindows.dll   DESTINATION \${CMAKE_INSTALL_PREFIX}/bin/platforms/    FILES_MATCHING PATTERN \"*${CMAKE_SHARED_LIBRARY_SUFFIX}\")
 file(INSTALL ${QT_PLUGINS_DIR}/sqldrivers/qsqlite.dll   DESTINATION \${CMAKE_INSTALL_PREFIX}/bin/sqldrivers/   FILES_MATCHING PATTERN \"*${CMAKE_SHARED_LIBRARY_SUFFIX}\")
 
+file(INSTALL ${QT_TOOLS_DIR}/OpenSSL/Win_x64/bin/libcrypto-1_1-x64.dll DESTINATION \${CMAKE_INSTALL_PREFIX}/bin FILES_MATCHING PATTERN \"*${CMAKE_SHARED_LIBRARY_SUFFIX}\")
+file(INSTALL ${QT_TOOLS_DIR}/OpenSSL/Win_x64/bin/libssl-1_1-x64.dll    DESTINATION \${CMAKE_INSTALL_PREFIX}/bin FILES_MATCHING PATTERN \"*${CMAKE_SHARED_LIBRARY_SUFFIX}\")
+file(INSTALL ${QT_TOOLS_DIR}/OpenSSLv3/Win_x64/bin/libcrypto-3-x64.dll DESTINATION \${CMAKE_INSTALL_PREFIX}/bin FILES_MATCHING PATTERN \"*${CMAKE_SHARED_LIBRARY_SUFFIX}\")
+file(INSTALL ${QT_TOOLS_DIR}/OpenSSLv3/Win_x64/bin/libssl-3-x64.dll    DESTINATION \${CMAKE_INSTALL_PREFIX}/bin FILES_MATCHING PATTERN \"*${CMAKE_SHARED_LIBRARY_SUFFIX}\")
+
+
+
 file(GLOB_RECURSE MED_LIBRARIES
     \${CMAKE_INSTALL_PREFIX}/bin/*${CMAKE_SHARED_LIBRARY_SUFFIX}
     \${CMAKE_INSTALL_PREFIX}/plugins/*${CMAKE_SHARED_LIBRARY_SUFFIX}
@@ -181,7 +189,13 @@ if(${SDK_PACKAGING} )
         INSTALL(FILES     ${QT_PLUGINS_DIR}/platforms/qminimal.dll          DESTINATION ./sdk/bin/platforms/    COMPONENT Dev)
         INSTALL(FILES     ${QT_PLUGINS_DIR}/platforms/qoffscreen.dll        DESTINATION ./sdk/bin/platforms/    COMPONENT Dev) #is it really used
         INSTALL(FILES     ${QT_PLUGINS_DIR}/platforms/qwindows.dll          DESTINATION ./sdk/bin/platforms/    COMPONENT Dev)
-        INSTALL(FILES     ${QT_PLUGINS_DIR}/sqldrivers/qsqlite.dll          DESTINATION ./sdk/bin/sqldrivers/   COMPONENT Dev)
+        INSTALL(FILES     ${QT_PLUGINS_DIR}/sqldrivers/qsqlite.dll          DESTINATION ./sdk/bin/sqldrivers/   COMPONENT Dev)		
+		
+        INSTALL(FILES ${QT_TOOLS_DIR}/OpenSSL/Win_x64/bin/libcrypto-1_1-x64.dll DESTINATION ./sdk/bin/ COMPONENT Dev)
+        INSTALL(FILES ${QT_TOOLS_DIR}/OpenSSL/Win_x64/bin/libssl-1_1-x64.dll    DESTINATION ./sdk/bin/ COMPONENT Dev)
+        INSTALL(FILES ${QT_TOOLS_DIR}/OpenSSLv3/Win_x64/bin/libcrypto-3-x64.dll DESTINATION ./sdk/bin/ COMPONENT Dev)
+        INSTALL(FILES ${QT_TOOLS_DIR}/OpenSSLv3/Win_x64/bin/libssl-3-x64.dll    DESTINATION ./sdk/bin/ COMPONENT Dev)
+		
         
         LIST(APPEND CPACK_NSIS_CREATE_ICONS_EXTRA "  CreateShortCut '$SMPROGRAMS\\\\medInria\\\\medDevEnv.lnk' '$APPDATA\\\\Local\\\\inria\\\\${CPACK_PACKAGE_INSTALL_DIRECTORY}\\\\sdk\\\\med_Dev.bat'")
         LIST(APPEND CPACK_NSIS_DELETE_ICONS_EXTRA "  Delete '$SMPROGRAMS\\\\medInria\\\\medDevEnv.lnk'")
