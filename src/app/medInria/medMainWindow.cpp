@@ -162,6 +162,7 @@ medMainWindow::medMainWindow ( QWidget *parent ) : QMainWindow ( parent ), d ( n
     QObject::connect(medApplicationContext::instance()->getApp(), &medApplication::mouseGlobalClick, d->notifWindow, &medNotificationPaneWidget::clicked);
 
     initMenuBar(parent);
+
 }
 
 medMainWindow::~medMainWindow()
@@ -191,12 +192,6 @@ void medMainWindow::initMenuBar(QWidget * parent)
     QAction* actionNotif = rightMenuBar->addAction("");
     actionNotif->setIcon(QIcon(":/icons/button-notifications - withe.png"));
     connect(actionNotif, &QAction::triggered, this, &medMainWindow::toggleNotificationPanel);
-
-
-
-
-
-
 
 
     // --- Fullscreen checkable action
