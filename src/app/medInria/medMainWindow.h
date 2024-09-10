@@ -155,11 +155,6 @@ private slots:
      */
     void onShowLicense();
 
-    /**
-     * @brief Display a database window
-     */
-     // void onShowDatabase();
-
      /**
       * @brief Display a settings window for the Area section
       */

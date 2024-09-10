@@ -13,8 +13,10 @@ PURPOSE.
 =========================================================================*/
 
 #include <medPluginLegacy.h>
-#include "medShanoirPluginExport.h"
 
+#include "medShanoirPluginExport.h"
+#include <QObject>
+//#include <>
 class MEDSHANOIRPLUGIN_EXPORT medShanoirPlugin : public medPluginLegacy
 {
     Q_OBJECT
