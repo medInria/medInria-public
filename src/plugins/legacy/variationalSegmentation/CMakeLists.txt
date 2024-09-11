@@ -37,8 +37,7 @@ find_package(ITK REQUIRED COMPONENTS ITKCommon ITKImageFilterBase ITKThresholdin
                                      ITKVtkGlue)
 include(${ITK_USE_FILE})
 
-find_package(VTK REQUIRED COMPONENTS vtkCommonCore vtkInteractionWidgets vtkRenderingCore)
-include(${VTK_USE_FILE})
+find_package(VTK REQUIRED COMPONENTS CommonCore InteractionWidgets RenderingCore)
 
 ## #############################################################################
 ## List Sources
@@ -80,6 +79,7 @@ target_link_libraries(${TARGET_NAME}
   medUtilities
   ITKVTK
   ITKTransform
+  ${VTK_LIBRARIES}
   )
 
 set(CMAKE_RUNTIME_OUTPUT_DIRECTORY ${CMAKE_BINARY_DIR}/bin)

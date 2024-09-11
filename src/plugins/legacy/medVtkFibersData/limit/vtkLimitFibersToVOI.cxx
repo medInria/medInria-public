@@ -94,7 +94,7 @@ int vtkLimitFibersToVOI::RequestData (vtkInformation *vtkNotUsed(request),
 
 
   vtkIdType npt  = 0;
-  vtkIdType *pto = 0;
+  vtkIdType const *pto = nullptr;
 
   vtkIdType test = lines->GetNextCell (npt, pto);
   vtkIdType cellId = 0;

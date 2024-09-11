@@ -99,7 +99,7 @@ target_link_libraries(${TARGET_NAME} PUBLIC
   ITKIOMRC
   ITKIOTIFF
   ITKVTK
-  vtkIOImage
+  VTK::IOImage
   ${ITKIOPhilipsREC_LIBRARIES}
   
   

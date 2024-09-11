@@ -22,8 +22,7 @@ set(TARGET_NAME medUtilities)
 find_package(dtk REQUIRED)
 #include_directories(${dtk_INCLUDE_DIRS})
 
-find_package(VTK REQUIRED COMPONENTS vtkInteractionWidgets )
-include(${VTK_USE_FILE})
+find_package(VTK REQUIRED COMPONENTS InteractionWidgets)
 
 find_package(ITK REQUIRED COMPONENTS ITKCommon ITKGDCM ITKIOGDCM ITKThresholding)
 include(${ITK_USE_FILE})
@@ -72,6 +71,7 @@ target_link_libraries(${TARGET_NAME} PUBLIC
   med::Core
   med::VtkInria
   med::VtkDataMeshBase
+  VTK::InteractionWidgets
   )
 
 

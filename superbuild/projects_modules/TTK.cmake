@@ -40,7 +40,7 @@ if (NOT USE_SYSTEM_${ep})
 ## #############################################################################
 
 set(git_url ${GITHUB_PREFIX}medInria/TTK.git)
-set(git_tag ModernCMake)
+set(git_tag ITK5.4rc04+VTK9)
 
 ## #############################################################################
 ## Add specific cmake arguments for configuration step of the project

@@ -13,6 +13,7 @@ PURPOSE.
 =========================================================================*/
 
 #include <QMainWindow>
+#include <QVTKOpenGLNativeWidget.h>
 
 #include <medAbstractImageView.h>
 #include <medVtkViewPluginExport.h>
@@ -23,7 +24,6 @@ class medAbstractImageData;
 class medVtkViewObserver;
 class medBoolParameterL;
 
-class QVTKOpenGLWidget;
 class vtkGenericOpenGLRenderWindow;
 
 class MEDVTKVIEWPLUGIN_EXPORT medVtkView : public medAbstractImageView
@@ -69,7 +69,7 @@ public slots:
     virtual void showHistogram(bool checked);
 
     vtkGenericOpenGLRenderWindow * createVtkGenericOpenGLRenderWindow();
-    QVTKOpenGLWidget * createQVTKOpenGLWidget();
+    QVTKOpenGLNativeWidget * createQVTKOpenGLWidget();
 
 private slots:
     void displayDataInfo(uint layer);

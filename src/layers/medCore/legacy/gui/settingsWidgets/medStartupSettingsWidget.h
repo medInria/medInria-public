@@ -35,6 +35,5 @@ public slots:
     void write();
 
 private:
-    QCheckBox *startInFullScreen;
-    QComboBox *defaultStartingArea;
+    medStartupSettingsWidgetPrivate *d;
 };
