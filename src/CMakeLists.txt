@@ -16,7 +16,7 @@
 cmake_minimum_required(VERSION 3.19)
 
 if(NOT DEFINED ${medInria_VERSION})
-    set(medInria_VERSION 3.4.0)
+    set(medInria_VERSION 4.0.0)
 endif()
 
 project(medInria VERSION ${medInria_VERSION})
