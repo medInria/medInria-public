@@ -1,4 +1,4 @@
-medInria 3.4:
+medInria 4.0:
 - INFORMATION: this version of medInria is NOT packaged with Anima plugins. We apologize for the inconvenience, we're working on adding them in a near release.
 - Fix an incorrect zoom for some data displayed in a view. The zoom is now calculated with x and y dims, and not z
 - N4 Bias Correction process can stop now if the user wants to quit the application, it will stop at some algorithm checkpoints
