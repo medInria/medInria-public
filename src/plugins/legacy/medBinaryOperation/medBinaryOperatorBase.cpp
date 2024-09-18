@@ -246,7 +246,7 @@ template <class ImageType, class ImageType2> int medBinaryOperatorBase::runProce
     m_output = medAbstractDataFactory::instance()->createSmartPointer("itkDataImageUChar3");
     m_output->setData(filter->GetOutput());
 
-    QString derivedDescription = description() + " " + m_inputB->metadata(medMetaDataKeys::SeriesDescription.key());
+    QString derivedDescription = description() + " " + m_inputB->metadata(medMetaDataKeys::key("SeriesDescription"));
     medUtilities::setDerivedMetaData(m_output, m_inputA, derivedDescription);
 
     return medAbstractProcessLegacy::SUCCESS;

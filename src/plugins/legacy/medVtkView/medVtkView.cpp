@@ -443,23 +443,23 @@ void medVtkView::displayDataInfo(uint layer)
     medAbstractData *data = layerData(layer);
     if ( data )
     {
-        if ( data->hasMetaData ( medMetaDataKeys::PatientName.key() ) )
+        if ( data->hasMetaData ( medMetaDataKeys::key("PatientName") ) )
         {
-            const QString patientName = data->metaDataValues ( medMetaDataKeys::PatientName.key() ) [0];
+            const QString patientName = data->metaDataValues ( medMetaDataKeys::key("PatientName") ) [0];
             d->view2d->SetPatientName ( patientName.toLatin1().constData() );
             d->view3d->SetPatientName ( patientName.toLatin1().constData() );
         }
 
-        if ( data->hasMetaData ( medMetaDataKeys::StudyDescription.key() ) )
+        if ( data->hasMetaData ( medMetaDataKeys::key("StudyDescription") ) )
         {
-            const QString studyName = data->metaDataValues ( medMetaDataKeys::StudyDescription.key() ) [0];
+            const QString studyName = data->metaDataValues ( medMetaDataKeys::key("StudyDescription") ) [0];
             d->view2d->SetStudyName ( studyName.toLatin1().constData() );
             d->view3d->SetStudyName ( studyName.toLatin1().constData() );
         }
 
-        if ( data->hasMetaData ( medMetaDataKeys::SeriesDescription.key() ) )
+        if ( data->hasMetaData ( medMetaDataKeys::key("SeriesDescription") ) )
         {
-            const QString seriesName = data->metaDataValues ( medMetaDataKeys::SeriesDescription.key() ) [0];
+            const QString seriesName = data->metaDataValues ( medMetaDataKeys::key("SeriesDescription") ) [0];
             d->view2d->SetSeriesName ( seriesName.toLatin1().constData() );
             d->view3d->SetSeriesName ( seriesName.toLatin1().constData() );
         }

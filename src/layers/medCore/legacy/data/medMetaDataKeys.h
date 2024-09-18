@@ -15,164 +15,155 @@
 #include <vector>
 #include <medAbstractData.h>
 
-namespace medMetaDataKeys
+#include <medCoreExport.h>
+
+#include<QMap>
+#include<QMultiMap>
+#include<QVector>
+
+#include<QString>
+#include<QVariant>
+
+#include <utility>
+
+using keyConverter = bool(*)(QVariant const & inputData, QVariant & outputData);
+
+class MEDCORE_EXPORT Key2
 {
-    /**
-    * @class Key
-    * @author John Stark, modified by papadop
-    * It allows compile-time verification that the keyword is correct.
-    */
-
-    class MEDCORE_EXPORT Key
+public:
+    Key2() = default;
+    Key2(QString const & name, QString const & label = "", QString const & tag = "", QString const & medKey = "", QVariant::Type type = QVariant::String) :
+        m_name(name), m_label(label), m_tag(tag), m_medPivot(medKey), m_type(type)
     {
-    public:
-        typedef std::vector<const Key*> Registery;
+        if (label == "") m_label = name;
+    }
 
-        Key(const char* name, const char* label="",
-            QVariant::Type type=QVariant::String, bool isEditable = true): KEY(name), LABEL(label), TYPE(type), ISEDITABLE(isEditable)
-        {
-            if(QString(label)=="") LABEL=QString(name);
-            registery.push_back(this);
-        }
+    Key2(Key2 const & key)
+    {
+        m_name = key.m_name;
+        m_label = key.m_label;
+        m_tag = key.m_tag;
+        m_medPivot = key.m_medPivot;
+        m_type = key.m_type;
+    }
 
-        ~Key() { }
+    Key2(Key2 const && key) noexcept :
 
-        const QString& key() const { return KEY; }
-        const QString& label() const { return LABEL; }
-        const QVariant::Type& type() const { return TYPE; }
-        bool isEditable() const { return ISEDITABLE; }
+        m_name(std::move(key.m_name)),
+        m_label(std::move(key.m_label)),
+        m_tag(std::move(key.m_tag)),
+        m_medPivot(std::move(key.m_medPivot)),
+        m_type(std::move(key.m_type))
+    {}
 
-        bool is_set_in(const medAbstractData *data) const { return data->hasMetaData(KEY) ; }
+    ~Key2() { }
 
-        const QStringList getValues(const medAbstractData *data) const { return data->metaDataValues(KEY); }
+    Key2& operator=(Key2 && k)
+    {
+        this->m_name     = k.m_name;
+        this->m_label    = k.m_label;
+        this->m_tag      = k.m_tag;
+        this->m_medPivot = k.m_medPivot;
+        this->m_type     = k.m_type;
 
-        const QString getFirstValue(const medAbstractData *data, const QString defaultValue=QString("")) const
-        {
-            return  data->hasMetaData(KEY) ? data->metaDataValues(KEY)[0] : defaultValue;
-        }
+        return *this;
+    }
 
-        void add(medAbstractData* d,const QStringList& values) const { d->addMetaData(KEY,values); }
-        void add(medAbstractData* d,const QString& value)      const { d->addMetaData(KEY,value);  }
-        void set(medAbstractData* d,const QStringList& values) const { d->setMetaData(KEY,values); }
-        void set(medAbstractData* d,const QString& value)      const { d->setMetaData(KEY,value);  }
+    Key2& operator=(Key2 const & k)
+    {
+        this->m_name =     k.m_name;
+        this->m_label =    k.m_label;
+        this->m_tag =      k.m_tag;
+        this->m_medPivot = k.m_medPivot;
+        this->m_type =     k.m_type;
 
-        static const Registery& all() { return registery; }
+        return *this;
+    }
 
-        bool operator==(const Key& other){ return ( this->key() == other.key() ); }
+    friend MEDCORE_EXPORT bool operator==(Key2 const & k1, Key2 const & k2);
+    friend MEDCORE_EXPORT bool operator==(QString const & s, Key2 const & k);
+    friend MEDCORE_EXPORT bool operator==(Key2 const & k, QString const & s);
 
-        static const Key* fromKeyName(const char* name)
-        {
-            std::vector<const Key*>::iterator it;
-            for ( it=registery.begin() ; it < registery.end(); it++ )
-            {
-                if( (*it)->key() == name )
-                    return *it;
-            }
-            return nullptr;
-        }
+    operator QString() const { return m_name; }
+    //operator char const *() const { return m_name.toUtf8(); };
 
-    private:
+    const QString& name()        const { return m_name; }
+    const QString& label()       const { return m_label; }
+    const QString& tag()         const { return m_tag; }
+    const QString& medPivot()    const { return m_medPivot; }
+    const QVariant::Type& type() const { return m_type; }
 
-        static Registery registery;
+    void setName(QString name) { m_name = name; }
+    void setTag(QString tag) { m_tag = tag; }
+    void setMedPivot(QString pivot) { m_medPivot = pivot; }
+    void setLabel(QString label) { m_label = label; }
 
-        const QString KEY;
-        QString LABEL;
-        QVariant::Type TYPE;
-        bool ISEDITABLE;
-    };
+private:
 
-
-    /** Define the actual keys to use */
-
-    extern MEDCORE_EXPORT const Key TransferSyntaxUID;
-    extern MEDCORE_EXPORT const Key ContainsBasicInfo;
-
-    // PATIENT
-    extern MEDCORE_EXPORT const Key PatientID;
-    extern MEDCORE_EXPORT const Key PatientName;
-    extern MEDCORE_EXPORT const Key Age;
-    extern MEDCORE_EXPORT const Key BirthDate;
-    extern MEDCORE_EXPORT const Key Gender;
-    extern MEDCORE_EXPORT const Key Description;
-
-    // STUDY
-    extern MEDCORE_EXPORT const Key StudyID;
-    extern MEDCORE_EXPORT const Key StudyInstanceUID;
-    extern MEDCORE_EXPORT const Key StudyDescription;
-    extern MEDCORE_EXPORT const Key Institution;
-    extern MEDCORE_EXPORT const Key Referee;
-    extern MEDCORE_EXPORT const Key StudyDate;
-    extern MEDCORE_EXPORT const Key StudyTime;
-
-    // SERIES
-    extern MEDCORE_EXPORT const Key SeriesID;
-    extern MEDCORE_EXPORT const Key SeriesInstanceUID;
-    extern MEDCORE_EXPORT const Key SeriesStoreId;
-    extern MEDCORE_EXPORT const Key SeriesNumber;
-    extern MEDCORE_EXPORT const Key Modality;
-    extern MEDCORE_EXPORT const Key Performer;
-    extern MEDCORE_EXPORT const Key Report;
-    extern MEDCORE_EXPORT const Key Protocol;
-    extern MEDCORE_EXPORT const Key SeriesDescription;
-    extern MEDCORE_EXPORT const Key SeriesDate;
-    extern MEDCORE_EXPORT const Key SeriesTime;
-    extern MEDCORE_EXPORT const Key SeriesThumbnail;
-
-    // IMAGE
-    extern MEDCORE_EXPORT const Key SOPInstanceUID;
-    extern MEDCORE_EXPORT const Key Columns;
-    extern MEDCORE_EXPORT const Key Rows;
-    extern MEDCORE_EXPORT const Key Dimensions;
-    extern MEDCORE_EXPORT const Key NumberOfDimensions;
-    extern MEDCORE_EXPORT const Key Orientation;
-    extern MEDCORE_EXPORT const Key Origin;
-    extern MEDCORE_EXPORT const Key SliceThickness;
-    extern MEDCORE_EXPORT const Key PatientOrientation;
-    extern MEDCORE_EXPORT const Key PatientPosition;
-    extern MEDCORE_EXPORT const Key ImportationDate;
-    extern MEDCORE_EXPORT const Key AcquisitionDate;
-    extern MEDCORE_EXPORT const Key AcquisitionTime;
-    extern MEDCORE_EXPORT const Key Comments;
-    extern MEDCORE_EXPORT const Key FilePaths;
-    extern MEDCORE_EXPORT const Key Status;
-    extern MEDCORE_EXPORT const Key SequenceName;
-    extern MEDCORE_EXPORT const Key Size;
-    extern MEDCORE_EXPORT const Key VolumeUID;
-    extern MEDCORE_EXPORT const Key Spacing;
-    extern MEDCORE_EXPORT const Key XSpacing;
-    extern MEDCORE_EXPORT const Key YSpacing;
-    extern MEDCORE_EXPORT const Key ZSpacing;
-    extern MEDCORE_EXPORT const Key NumberOfComponents;
-    extern MEDCORE_EXPORT const Key ComponentType;
-    extern MEDCORE_EXPORT const Key PixelType;
-    extern MEDCORE_EXPORT const Key medDataType;
-    extern MEDCORE_EXPORT const Key PreferredDataReader;
-    extern MEDCORE_EXPORT const Key ImageID;
-    extern MEDCORE_EXPORT const Key ImageType;
-    extern MEDCORE_EXPORT const Key ThumbnailPath;
-    extern MEDCORE_EXPORT const Key AcquisitionNumber;
-
-    // Frame of reference
-    extern MEDCORE_EXPORT const Key FrameOfReferenceUID;
-    extern MEDCORE_EXPORT const Key PositionReferenceIndicator;
-
-    // EQUIPEMENT
-    extern MEDCORE_EXPORT const Key Manufacturer;
-
-    // CT
-    extern MEDCORE_EXPORT const Key KVP;
-
-    // MR Image
-
-    // EXPORT EXTRA DATA TO ATTACHED FILE
-    // extern MEDCORE_EXPORT const Key Toolbox;
-    // extern MEDCORE_EXPORT const Key OriginalDataUID;
-    // extern MEDCORE_EXPORT const Key OriginalDataDesc;
-    // extern MEDCORE_EXPORT const Key FileMetadataPath;
-    extern MEDCORE_EXPORT const Key FlipAngle;
-    extern MEDCORE_EXPORT const Key EchoTime;
-    extern MEDCORE_EXPORT const Key RepetitionTime;
+    QString        m_name;
+    QString        m_label;
+    QString        m_tag;
+    QString        m_medPivot;
+    QVariant::Type m_type;
 };
 
 
 
+
+class MEDCORE_EXPORT medMetaDataKeys : public QObject
+{
+    Q_OBJECT
+public:
+    ~medMetaDataKeys() = default;
+
+    static medMetaDataKeys * instance();
+
+    static bool registerKey(Key2 key, QString chapter = "default");
+    static bool addKeyToChapter(Key2 key, QString chapter = "default");
+    static bool addKeyByTagToChapter(QString tag, QString keyLabel = "", QString keyName = "", QString chapter = "default");
+
+
+    static Key2    key(QString pivot);
+    static Key2    keyFromName(QString keyName, QString chapter = "");
+    static QString pivot(QString keyName, QString chapter = "");
+
+private:
+    medMetaDataKeys();
+
+    bool fetchChapterDirectory(QString path);
+    QString loadChapter(QByteArray chapter); //return chapter name or empty if it fails
+    bool readKey(QJsonObject keyAsJson, Key2 &key);
+
+    bool updateChapterDirectory(QString path);
+    bool writeChapter(QString chapterName, QJsonDocument &chapter);
+    bool writeKey(Key2 const &key, QJsonObject &keyAsJson);
+
+
+    bool registerKeyInternal(Key2 &key, QString& chapter);
+    bool addKeyToChapterInternal(Key2 &key, QString &chapter);
+
+    bool updateKey(Key2 &key, QList<QVector<Key2 *>*> oldKeysLists);
+
+    void strongKeyEval(Key2 const & key, bool &keyTagStrong, bool &keyMedPivotStrong, bool &keyNameStrong, bool &keyLabelStrong);
+
+    Key2    keyInternal(QString &pivot);
+    Key2    keyFromNameInternal(QString &keyName, QString chapter = "");
+    QString pivotInternal(QString &keyName, QString chapter = "");
+
+
+    void scheduleUpdate(QString &chapter);
+    void delegateWriting();
+
+private:
+    static medMetaDataKeys * s_instance;
+
+    QString m_path;
+
+    QMap<QString /*medInriaKey*/, QList<Key2*>*>                  m_medKeyByPivotMap;
+    QMap<QString /*chapter*/,     QList<Key2 >*>                  m_medKeyByChapterMap;
+    QMap<QString /*chapter*/,     QList<QString> /*file name*/ >  m_chapterToFileMap;
+
+    QVector<QString> m_chaptersToUpdate;
+    QTimer m_saveSheduler;
+    QMutex m_mutex;
+};

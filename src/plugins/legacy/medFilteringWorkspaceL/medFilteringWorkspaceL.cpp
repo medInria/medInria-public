@@ -127,11 +127,11 @@ void medFilteringWorkspaceL::importProcessOutput()
         {
             medAbstractData *inputData(selectorToolBox()->data());
 
-            if (! d->filterOutput->hasMetaData(medMetaDataKeys::SeriesDescription.key()))
+            if (! d->filterOutput->hasMetaData(medMetaDataKeys::key("SeriesDescription")))
             {
-                QString newSeriesDescription = inputData->metadata ( medMetaDataKeys::SeriesDescription.key() );
+                QString newSeriesDescription = inputData->metadata ( medMetaDataKeys::key("SeriesDescription") );
                 newSeriesDescription += " filtered";
-                d->filterOutput->setMetaData ( medMetaDataKeys::SeriesDescription.key(), newSeriesDescription );
+                d->filterOutput->setMetaData ( medMetaDataKeys::key("SeriesDescription"), newSeriesDescription );
             }
 
             for( QString metaData : inputData->metaDataList() )
@@ -148,7 +148,7 @@ void medFilteringWorkspaceL::importProcessOutput()
             }
 
             QString generatedID = QUuid::createUuid().toString().replace("{","").replace("}","");
-            d->filterOutput->setMetaData ( medMetaDataKeys::SeriesID.key(), generatedID );
+            d->filterOutput->setMetaData ( medMetaDataKeys::key("SeriesID"), generatedID );
 
             medDataManager::instance()->importData(d->filterOutput);
 

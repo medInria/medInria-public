@@ -13,6 +13,7 @@
 
 #include <medDataImporter.h>
 
+#include <medMetaDataKeys.h>
 #include <medAbstractDataFactory.h>
 
 // ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
@@ -103,11 +104,19 @@ QList<medAbstractData*>  medDataImporter::convertMultipData(QString path)
     auto volumes = m_pathsVolumesMap.keys();
     for (auto &volume : volumes)
     {
-        auto readers = getSuitableReader(m_pathsVolumesMap[volume], &m_availablesReadersVolumesMap[volume]);
+        //auto readers = getSuitableReader(m_pathsVolumesMap[volume], &m_availablesReadersVolumesMap[volume]);
+        QList<medAbstractDataReader*>  readers;
+        for (auto reader : m_availablesReadersVolumesMap[volume])
+        {
+            readers.push_back(static_cast<medAbstractDataReader*>(medAbstractDataFactory::instance()->reader(reader)));
+        }
         auto medData = readFiles(readers, m_pathsVolumesMap[volume], &m_currentReaderVolumesMap[volume]);
 
-        m_meddataVolumesMap[volume] = medData;
-        listRes.push_back(medData);
+        if (medData)
+        {
+            m_meddataVolumesMap[volume] = medData;
+            listRes.push_back(medData);
+        }
     }
 
     return listRes;
@@ -574,7 +583,7 @@ QStringList medDataImporter::getPaths(medAbstractData * data)
  */
 QString medDataImporter::createVolumeId(medAbstractData * data)
 {
-    return QString(); //TODO
+    return data->metadata(medMetaDataKeys::key("seriesinstanceuid").tag()); //TODO move the creation of volumeId on the reader
 }
 
 /**
