@@ -924,8 +924,8 @@ void AlgorithmPaintToolBox::setLabel(int newVal)
 void AlgorithmPaintToolBox::setLabelColor()
 {
     QColor currentColor = m_labelColorMap[m_strokeLabelSpinBox->value() - 1].second;
-    QColor newColor = QColorDialog::getColor(currentColor,this);
-
+    QColor newColor = QColorDialog::getColor(currentColor, this, "Select color", QColorDialog::DontUseNativeDialog);
+    
     if (newColor.isValid())
     {
         m_labelColorMap[m_strokeLabelSpinBox->value() - 1].second = newColor;

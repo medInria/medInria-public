@@ -11,9 +11,9 @@
 
 =========================================================================*/
 
-#include <QDebug>
-
 #include "dcmFindCallbacks.h"
+
+#include <medNewLogger.h>
 
 #include <dcmtk/dcmdata/dcdeftag.h>
 
@@ -26,12 +26,12 @@ void dcmFindCallbacks::callback(T_DIMSE_C_FindRQ *request, int &responseCount, T
 {
     OFString str;
     DIMSE_dumpMessage(str, *rsp, DIMSE_INCOMING);
-    qDebug() << "Find response" << responseCount << ":" << str.c_str();
+    mInfo << "C-FIND response" << responseCount << ":" << str.c_str();
     
     OFString value;
     QMap<DcmTagKey, QString> responses;
 
-    for (DcmTagKey key : tags.keys())
+    for(DcmTagKey key : tags.keys())
     {
         responseIdentifiers->findAndGetOFString(key, value);
         responses.insert(key, value.c_str());

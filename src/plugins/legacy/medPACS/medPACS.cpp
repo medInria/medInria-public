@@ -14,6 +14,16 @@
 #include "medPACS.h"
 
 #include "PACSOperations/dcmPACS.h"
+
+#include "DICOMwebOperations/dcmWeb.h"
+#include "DICOMwebOperations/dcmRetrieveData.h"
+#include "DICOMwebOperations/RequestManager.h"
+#include <medNotif.h>
+
+#include <dcmtk/dcmdata/dcdeftag.h>
+#include <dcmtk/dcmdata/dctagkey.h>
+#include <dcmtk/dcmdata/dcdict.h>
+
 #include <medGroupParameter.h>
 #include <medIntParameter.h>
 #include <medStringListParameter.h>
@@ -110,8 +120,6 @@ medPACS::medPACS(dcmPACS *dicomLib) : d(new medPACSParametersPrivate)
 {
     qRegisterMetaType<medAbstractSource::eRequestStatus>("medAbstractSource::eRequestStatus");
 
-//    timeout = 60000;
-
     d->levelNames << "PATIENTS"
                   << "STUDY"
                   << "SERIES"
@@ -171,7 +179,7 @@ medPACS::medPACS(dcmPACS *dicomLib) : d(new medPACSParametersPrivate)
     d->filterFileSettings->setCaption("Settings related to a filter parameter file");
     d->filterFileSettings->setDescription("Settings related to a filter parameter file");
     d->selectJsonFile = new medStringParameter("Filtering parameters", this);
-    d->selectJsonFile->setCaption("Select filter file");
+    d->selectJsonFile->setCaption("Select a file with filtering DICOM keys");
     d->selectJsonFile->setDefaultRepresentation(5);
     d->filterFileSettings->addParameter(d->selectJsonFile);
     d->jsonFilePath = "";
@@ -190,7 +198,7 @@ medPACS::medPACS(dcmPACS *dicomLib) : d(new medPACSParametersPrivate)
     patientID->setCaption("PatientID");
     QObject::connect(patientID, &medStringParameter::valueEdited, [&](QString const &value)
     {
-        if (value.isEmpty()) 
+        if(value.isEmpty()) 
         {
             d->patientLevelAttributes[DCM_PatientID] = "";
         }
@@ -203,7 +211,7 @@ medPACS::medPACS(dcmPACS *dicomLib) : d(new medPACSParametersPrivate)
     patientName->setCaption("PatientName");
     QObject::connect(patientName, &medStringParameter::valueEdited, [&](QString const &value)
     {
-        if (value.isEmpty()) 
+        if(value.isEmpty()) 
         {
             d->patientLevelAttributes[DCM_PatientName] = "";
         }
@@ -217,7 +225,7 @@ medPACS::medPACS(dcmPACS *dicomLib) : d(new medPACSParametersPrivate)
     gender->setCaption("Gender");
     QObject::connect(gender, &medStringListParameter::valueChanged, [&, gender](int const &value)
     {
-        if (value == 0) 
+        if(value == 0) 
         {
             d->patientLevelAttributes[DCM_PatientSex] = "";
         }
@@ -233,7 +241,7 @@ medPACS::medPACS(dcmPACS *dicomLib) : d(new medPACSParametersPrivate)
     studyDescription->setCaption("StudyDescription");
     QObject::connect(studyDescription, &medStringParameter::valueEdited, [&](QString const &value)
     {
-        if (value == 0) 
+        if(value == 0) 
         {
             d->studyLevelAttributes[DCM_StudyDescription] = "";
         }
@@ -264,7 +272,7 @@ medPACS::medPACS(dcmPACS *dicomLib) : d(new medPACSParametersPrivate)
 
     QObject::connect(seriesDescription, &medStringParameter::valueEdited, [&](QString const &value)
     {
-        if (value.isEmpty()) 
+        if(value.isEmpty()) 
         {
             d->seriesLevelAttributes[DCM_SeriesDescription] = "";
         }
@@ -279,7 +287,7 @@ medPACS::medPACS(dcmPACS *dicomLib) : d(new medPACSParametersPrivate)
     modality->setCaption("Modality");
     QObject::connect(modality, &medStringListParameter::valueChanged, [&, modality](int const &value)
     {
-        if (value == 0) 
+        if(value == 0) 
         {
             d->seriesLevelAttributes[DCM_Modality] = "";
         }
@@ -313,7 +321,8 @@ medPACS::medPACS(dcmPACS *dicomLib) : d(new medPACSParametersPrivate)
     d->seriesFilter->addParameter(seriesDescription);
     d->seriesFilter->addParameter(modality);
 
-    QObject::connect(d->resetFilterParameters, &medTriggerParameter::pushed, [&]{
+    QObject::connect(d->resetFilterParameters, &medTriggerParameter::pushed, [&]
+    {
         resetFilterParameterValues(d->patientFilter->value(), d->patientLevelAttributes);
         resetFilterParameterValues(d->studyFilter->value(), d->studyLevelAttributes);
         resetFilterParameterValues(d->seriesFilter->value(), d->seriesLevelAttributes);
@@ -332,12 +341,14 @@ medPACS::~medPACS()
 {
     delete d->pacs;
     delete d->dicomWeb;
+    delete d->retrieveData;
+    delete d->rqManager;
 }
 
 bool medPACS::initialization(const QString &pi_instanceId)
 {
     bool bRes = !pi_instanceId.isEmpty();
-    if (bRes)
+    if(bRes)
     {
         d->instanceId = pi_instanceId;
     }
@@ -373,11 +384,11 @@ void medPACS::computeDateRange()
 {
     QDate startDate = QDate::fromString(d->startDate->value(), "yyyyMMdd");
     QDate endDate = QDate::fromString(d->endDate->value(), "yyyyMMdd");
-    if (startDate > endDate)
+    if(startDate > endDate)
     {
         d->studyLevelAttributes[DCM_StudyDate] = "";
     }
-    else if (startDate == endDate)
+    else if(startDate == endDate)
     {
         d->studyLevelAttributes[DCM_StudyDate] = d->startDate->value();
     }
@@ -391,7 +402,7 @@ void medPACS::computeDateRange()
 bool medPACS::setInstanceName(const QString &pi_instanceName)
 {
     bool bRes = !pi_instanceName.isEmpty();
-    if (bRes)
+    if(bRes)
     {
         d->instanceName = pi_instanceName;
     }
@@ -427,11 +438,11 @@ void medPACS::computeBirthDateRange(const DcmTagKey &tagKey, const QString &star
 {
     QDate startDate = QDate::fromString(start, "yyyyMMdd");
     QDate endDate = QDate::fromString(end, "yyyyMMdd");
-    if (startDate > endDate)
+    if(startDate > endDate)
     {
         d->patientLevelAttributes[tagKey] = "";
     }
-    else if (startDate == endDate)
+    else if(startDate == endDate)
     {
         d->patientLevelAttributes[tagKey] = start;
     }
@@ -493,7 +504,9 @@ void medPACS::addPatientFilterParameters(const QJsonObject &patientObject)
                         if(value.isEmpty())
                         {
                             d->patientLevelAttributes[dcmTagKey] = "";
-                        }else{
+                        }
+                        else
+                        {
                             d->patientLevelAttributes[dcmTagKey] = value;
                         } 
                     });
@@ -502,12 +515,14 @@ void medPACS::addPatientFilterParameters(const QJsonObject &patientObject)
             }
             else
             {
-                qDebug() << "Dicom tag" << dcmTag.getTagName() << "already exists as a filter key";
+                QString message("[Patient level] dicom tag " + QString(dcmTag.getTagName()) + " already exists as a default filter key");
+                medNotif::createNotif(notifLevel::info, "Filtering file : dicom tag already exists", message);
             }
         }
         else
         {
-            qDebug() << "Wrong Dicom tag key:" << key;
+            QString message("[Patient level] wrong dicom tag key : " + key);
+            medNotif::createNotif(notifLevel::warning, "Filtering file : wrong dicom tag key", message);
         }
     }
 }
@@ -546,12 +561,14 @@ void medPACS::addStudyFilterParameters(const QJsonObject &studyObject)
             }
             else
             {
-                qDebug() << "Dicom tag" << dcmTag.getTagName() << "already exists as a filter key";            
+                QString message("[Study level] dicom tag " + QString(dcmTag.getTagName()) + " already exists as a default filter key");
+                medNotif::createNotif(notifLevel::info, "Filtering file : dicom tag already exists", message);
             }
         }
         else
         {
-            qDebug() << "Wrong Dicom tag key:" << key;
+            QString message("[Study level] wrong dicom tag key : " + key);
+            medNotif::createNotif(notifLevel::warning, "Filtering file : wrong dicom tag key", message);
         }
     }
 }
@@ -579,7 +596,9 @@ void medPACS::addSeriesFilterParameters(const QJsonObject &seriesObject)
                     if(value.isEmpty())
                     {
                         d->seriesLevelAttributes[dcmTagKey] = "";
-                    }else{
+                    }
+                    else
+                    {
                         d->seriesLevelAttributes[dcmTagKey] = value;
                     } 
                 });
@@ -588,12 +607,14 @@ void medPACS::addSeriesFilterParameters(const QJsonObject &seriesObject)
             }
             else
             {
-                qDebug() << "Dicom tag" << dcmTag.getTagName() << "already exists as a filter key";
+                QString message("[Series level] dicom tag " + QString(dcmTag.getTagName()) + " already exists as a default filter key");
+                medNotif::createNotif(notifLevel::info, "Filtering file : dicom tag already exists", message);
             }
         }
         else
         {
-            qDebug() << "Wrong Dicom tag key:" << key;
+            QString message("[Series level] wrong dicom tag key : " + key);
+            medNotif::createNotif(notifLevel::warning, "Filtering file : wrong dicom tag key", message);
         }
     }
 }
@@ -603,7 +624,8 @@ void medPACS::readJsonFile(const QString &filePath)
     QFile file(filePath);
     if(!file.open(QIODevice::ReadOnly))
     {
-        qDebug() << "Cannot read file" << file.fileName();
+        QString message("Cannot read file " + file.fileName() + ". Maybe check the file path");
+        medNotif::createNotif(notifLevel::error, "Read filtering file", message);
         return;
     }
 
@@ -637,14 +659,16 @@ void medPACS::readJsonFile(const QString &filePath)
                 }
                 else
                 {
-                    qDebug() << "Invalid Level Name:" << levelKey;
+                    QString message("Invalid level name " + levelKey + " in your filter parameter file");
+                    medNotif::createNotif(notifLevel::warning, "Filtering file : invalid level name", message);
                 }
             }
         }
     }
     else
     {
-        qDebug() << "File filter keys already loaded : " << filePath; 
+        QString message("Filter parameter file " + filePath + " already loaded");
+        medNotif::createNotif(notifLevel::info, "Filtering file already loaded", message);
     }
 }
 
@@ -674,7 +698,7 @@ void medPACS::resetFilterParameterValues(QList<medAbstractParameter*> levelFilte
             {
                 // set the value to " " before, otherwise the connect that resets the interface won't run
                 strParam->setValue(" ");
-                // remove space to avoid altering filters
+                // remove space to avoid altering the following filters
                 strParam->setValue("");
             }
         }
@@ -689,7 +713,7 @@ void medPACS::resetFilterParameterValues(QList<medAbstractParameter*> levelFilte
 bool medPACS::connect(bool pi_bEnable)
 {
     bool bRes = false;
-    if (pi_bEnable)
+    if(pi_bEnable)
     {
         // update parameters
         d->pacs->updateLocalParameters(s_Aetitle.value(), s_Hostname.value(), s_Port.value());
@@ -727,6 +751,8 @@ bool medPACS::connect(bool pi_bEnable)
                 bRes = !respCode;
             }
         }
+        QString dcmProtocol = d->isDcmtkProtocol ? "DCMTK" : "DICOMweb";
+        medNotif::createNotif(notifLevel::info, "PACS Communication", "Protocol used : " + dcmProtocol);
 
         d->isOnline = bRes;
     }
@@ -812,7 +838,7 @@ QStringList medPACS::getLevelNames()
 QString medPACS::getLevelName(unsigned int pi_uiLevel)
 {
     QString retVal = "Invalid Level Name";
-    if (pi_uiLevel >= 0 && pi_uiLevel < static_cast<unsigned int>(d->levelNames.size()))
+    if(pi_uiLevel >= 0 && pi_uiLevel < static_cast<unsigned int>(d->levelNames.size()))
     {
         retVal = d->levelNames.value((int)pi_uiLevel);
     }
@@ -826,7 +852,7 @@ bool medPACS::isLevelWritable(unsigned int pi_uiLevel)
 
 QStringList medPACS::getMandatoryAttributesKeys(unsigned int pi_uiLevel)
 {
-    switch (pi_uiLevel)
+    switch(pi_uiLevel)
     {
         case 0:
             return {"id", "description", "patientID", "gender", "birthdate"};
@@ -846,7 +872,7 @@ QList<medAbstractSource::levelMinimalEntries> medPACS::getMinimalEntries(unsigne
 {
     QList<levelMinimalEntries> entries;
     QString key;
-    if (parentId.contains("/"))
+    if(parentId.contains("/"))
     {
         QStringList splittedUri = parentId.split("/");
         key = splittedUri[(int)pi_uiLevel - 1];
@@ -862,25 +888,25 @@ QList<medAbstractSource::levelMinimalEntries> medPACS::getMinimalEntries(unsigne
     studyLevelValues.removeAll("");
 
     QList<QMap<QString, QString>> infos;
-    switch (pi_uiLevel)
+    switch(pi_uiLevel)
     {
         case 0:
         {
-            if (seriesLevelValues.isEmpty() && studyLevelValues.isEmpty())
+            if(seriesLevelValues.isEmpty() && studyLevelValues.isEmpty())
             {
                 auto infosPatient = cFindPatient(key);
                 entries = getPatientMinimalEntries(infosPatient);
             }
             else
             {
-                if (seriesLevelValues.isEmpty())
+                if(seriesLevelValues.isEmpty())
                 {
                     auto infosStudy = cFindStudy("");
                     QStringList patientIDs;
-                    for (const auto &infoStudy : infosStudy)
+                    for(const auto &infoStudy : infosStudy)
                     {
                         auto currentPatientID = infoStudy[DCM_PatientID];
-                        if (!patientIDs.contains(currentPatientID))
+                        if(!patientIDs.contains(currentPatientID))
                         {
                             auto infosPatient = cFindPatient(currentPatientID);
                             entries.append(getPatientMinimalEntries(infosPatient));
@@ -894,19 +920,22 @@ QList<medAbstractSource::levelMinimalEntries> medPACS::getMinimalEntries(unsigne
                     QStringList studyInstanceUIDs;
                     QStringList patientIDs;
 
-                    for (const auto &infoSeries : infosSeries)
+                    for(const auto &infoSeries : infosSeries)
                     {
                         auto currentStudyUID = infoSeries[DCM_StudyInstanceUID];
-                        if (!studyInstanceUIDs.contains(currentStudyUID))
+                        if(!studyInstanceUIDs.contains(currentStudyUID))
                         {
                             auto infosStudy = cFindStudy(currentStudyUID);
-                            auto currentPatientID = infosStudy.first()[DCM_PatientID];
-                            if (!patientIDs.contains(currentPatientID))
+                            if(!infosStudy.isEmpty())
                             {
-                                auto infosPatient = cFindPatient(currentPatientID);
-                                entries.append(getPatientMinimalEntries(infosPatient));
+                                auto currentPatientID = infosStudy.first()[DCM_PatientID];
+                                if(!patientIDs.contains(currentPatientID))
+                                {
+                                    auto infosPatient = cFindPatient(currentPatientID);
+                                    entries.append(getPatientMinimalEntries(infosPatient));
+                                }
+                                patientIDs.append(currentPatientID);
                             }
-                            patientIDs.append(currentPatientID);
                         }
                         studyInstanceUIDs.append(currentStudyUID);
                     }
@@ -940,7 +969,7 @@ QList<medAbstractSource::levelMinimalEntries> medPACS::getMinimalEntries(unsigne
 QList<medAbstractSource::levelMinimalEntries> medPACS::getPatientMinimalEntries(const QList<QMap<DcmTagKey, QString>> &infosMap)
 {
     QList<levelMinimalEntries> entries;
-    for (const auto &info : infosMap)
+    for(const auto &info : infosMap)
     {
         levelMinimalEntries entry;
         entry.key = info[DCM_PatientID];
@@ -954,12 +983,12 @@ QList<medAbstractSource::levelMinimalEntries> medPACS::getPatientMinimalEntries(
 QList<medAbstractSource::levelMinimalEntries> medPACS::getStudyMinimalEntries(const QList<QMap<DcmTagKey, QString>> &infosMap, bool isSeriesFiltered)
 {
     QList<levelMinimalEntries> entries;
-    if (isSeriesFiltered)
+    if(isSeriesFiltered)
     {
-        for (const auto &info : infosMap)
+        for(const auto &info : infosMap)
         {
             auto infosSeries = cFindSeries(info[DCM_StudyInstanceUID]);
-            if (!infosSeries.empty())
+            if(!infosSeries.empty())
             {
                 levelMinimalEntries entry;
                 entry.key = info[DCM_StudyInstanceUID];
@@ -971,7 +1000,7 @@ QList<medAbstractSource::levelMinimalEntries> medPACS::getStudyMinimalEntries(co
     }
     else
     {
-        for (const auto &info : infosMap)
+        for(const auto &info : infosMap)
         {
             levelMinimalEntries entry;
             entry.key = info[DCM_StudyInstanceUID];
@@ -987,7 +1016,7 @@ QList<medAbstractSource::levelMinimalEntries> medPACS::getSeriesMinimalEntries(c
 {
     QList<levelMinimalEntries> entries;
 
-    for (const auto &info : infosMap)
+    for(const auto &info : infosMap)
     {
         levelMinimalEntries entry;
         entry.key = info[DCM_SeriesInstanceUID];
@@ -1003,9 +1032,7 @@ QList<QMap<QString, QString>> medPACS::getMandatoryAttributes(unsigned int pi_ui
     QList<QMap<QString, QString>> attributesRes;
     QString parentKey;
 
-    qDebug() << "getMandatoryAttributes(" << parentId << ")";
-
-    if (parentId.contains("/"))
+    if(parentId.contains("/"))
     {
         QStringList splittedUri = parentId.split("/");
         parentKey = splittedUri[(int)pi_uiLevel - 1];
@@ -1028,28 +1055,37 @@ QList<QMap<QString, QString>> medPACS::getMandatoryAttributes(unsigned int pi_ui
     bool isPatientFiltered = !patientLevelValues.isEmpty();
 
     QMap<DcmTagKey, QString> tags;
-    switch (pi_uiLevel)
+    switch(pi_uiLevel)
     {
         case 0:
         {
-            if (!isSeriesFiltered && !isStudiesFiltered)
+            if(!isSeriesFiltered && !isStudiesFiltered)
             {
                 auto infosPatient = cFindPatient(parentKey);
                 attributesRes = getPatientMandatoryAttributes(infosPatient);
             }
             else
             {
-                if (!isSeriesFiltered)
+                if(!isSeriesFiltered)
                 {
                     auto infosStudy = cFindStudy("");
                     QStringList patientIDs;
-                    for (const auto &infoStudy : infosStudy)
+                    for(const auto &infoStudy : infosStudy)
                     {
                         auto currentPatientID = infoStudy[DCM_PatientID];
-                        if (!patientIDs.contains(currentPatientID))
+                        if(!patientIDs.contains(currentPatientID))
                         {
                             auto infosPatient = cFindPatient(currentPatientID);
-                            attributesRes.append(getPatientMandatoryAttributes(infosPatient));
+                            auto patientAttributes = getPatientMandatoryAttributes(infosPatient);
+                            for(auto patient : patientAttributes)
+                            {
+                                if(patient["patientID"] != currentPatientID)
+                                {
+                                    patientAttributes.removeOne(patient);
+                                }
+                            }
+
+                            attributesRes.append(patientAttributes);
                         }
                         patientIDs.append(currentPatientID);
                     }
@@ -1060,19 +1096,31 @@ QList<QMap<QString, QString>> medPACS::getMandatoryAttributes(unsigned int pi_ui
                     QStringList studyInstanceUIDs;
                     QStringList patientIDs;
 
-                    for (const auto &infoSeries : infosSeries)
+                    for(const auto &infoSeries : infosSeries)
                     {
                         auto currentStudyUID = infoSeries[DCM_StudyInstanceUID];
-                        if (!studyInstanceUIDs.contains(currentStudyUID))
+                        if(!studyInstanceUIDs.contains(currentStudyUID))
                         {
                             auto infosStudy = cFindStudy(currentStudyUID);
-                            auto currentPatientID = infosStudy.first()[DCM_PatientID];
-                            if (!patientIDs.contains(currentPatientID))
+                            if(!infosStudy.isEmpty())
                             {
-                                auto infosPatient = cFindPatient(currentPatientID);
-                                attributesRes.append(getPatientMandatoryAttributes(infosPatient));
+                                auto currentPatientID = infosStudy.first()[DCM_PatientID];
+                                if(!patientIDs.contains(currentPatientID))
+                                {
+                                    auto infosPatient = cFindPatient(currentPatientID);
+                                    auto patientAttributes = getPatientMandatoryAttributes(infosPatient);
+                                    for(auto patient : patientAttributes)
+                                    {
+                                        if(patient["patientID"] != currentPatientID)
+                                        {
+                                            patientAttributes.removeOne(patient);
+                                        }
+                                    }
+
+                                    attributesRes.append(patientAttributes);
+                                }
+                                patientIDs.append(currentPatientID);
                             }
-                            patientIDs.append(currentPatientID);
                         }
                         studyInstanceUIDs.append(currentStudyUID);
                     }
@@ -1105,14 +1153,16 @@ QList<QMap<QString, QString>> medPACS::getMandatoryAttributes(unsigned int pi_ui
 QList<QMap<DcmTagKey, QString>> medPACS::cFindPatient(const QString &patientID)
 {
     QList<QMap<DcmTagKey, QString>> patientsRes;
+
+    // set DICOM tags with possible filter values
     QMap<DcmTagKey, QString> tags;
     tags[DCM_QueryRetrieveLevel] = "PATIENT";
-    for (auto key : d->patientLevelAttributes.keys())
+    for(auto key : d->patientLevelAttributes.keys())
     {
         tags.insert(key, d->patientLevelAttributes.value(key));
     }
 
-    if (!patientID.isEmpty())
+    if(!tags.contains(DCM_PatientID) || tags[DCM_PatientID].isEmpty())
     {
         tags[DCM_PatientID] = patientID;
     }
@@ -1123,13 +1173,13 @@ QList<QMap<DcmTagKey, QString>> medPACS::cFindPatient(const QString &patientID)
         tags[DCM_PatientBirthDate] = "";
     }
 
+    // search with DCMTK
     if(d->isDcmtkProtocol)
     {
         patientsRes = d->pacs->cFind(tags);
     }
-    else
+    else // search with DICOMweb
     {
-        qDebug() << "Find patient DICOMweb";
         patientsRes = d->dicomWeb->patientSearchService(tags);
     }
 
@@ -1139,28 +1189,32 @@ QList<QMap<DcmTagKey, QString>> medPACS::cFindPatient(const QString &patientID)
 QList<QMap<DcmTagKey, QString>> medPACS::cFindStudy(const QString &studyInstanceUID, const QString &patientID)
 {
     QList<QMap<DcmTagKey, QString>> studyRes;
-    QMap<DcmTagKey, QString> tags;
 
+    // set DICOM tags with possible filter values
+    QMap<DcmTagKey, QString> tags;
     tags[DCM_QueryRetrieveLevel] = "STUDY";
-    for (auto key : d->studyLevelAttributes.keys())
+    for(auto key : d->studyLevelAttributes.keys())
     {
         tags.insert(key, d->studyLevelAttributes.value(key));
     }
 
-    tags[DCM_PatientID] = patientID;
+    if(!tags.contains(DCM_PatientID) || tags[DCM_PatientID].isEmpty())
+    {
+        tags[DCM_PatientID] = patientID;
+    }
 
-    if(!studyInstanceUID.isEmpty())
+    if(!tags.contains(DCM_StudyInstanceUID) || tags[DCM_StudyInstanceUID].isEmpty())
     {
         tags[DCM_StudyInstanceUID] = studyInstanceUID;
     }
 
+    // search with DCMTK
     if(d->isDcmtkProtocol)
     {
         studyRes = d->pacs->cFind(tags);
     }
-    else
+    else // search with DICOMweb
     {
-        qDebug() << "Find study DICOMweb";
         studyRes = d->dicomWeb->studySearchService(tags);
     }
 
@@ -1170,16 +1224,16 @@ QList<QMap<DcmTagKey, QString>> medPACS::cFindStudy(const QString &studyInstance
 QList<QMap<DcmTagKey, QString>> medPACS::cFindSeries(const QString &studyInstanceUID)
 {
     QList<QMap<DcmTagKey, QString>> seriesRes;
-    QMap<DcmTagKey, QString> tags;
 
+    // set DICOM tags with possible filter values
+    QMap<DcmTagKey, QString> tags;
     tags[DCM_QueryRetrieveLevel] = "SERIES";
-    for (auto key : d->seriesLevelAttributes.keys())
+    for(auto key : d->seriesLevelAttributes.keys())
     {
         tags.insert(key, d->seriesLevelAttributes.value(key));
     }
     
-    //qDebug() << studyInstanceUID << "vs" << tags[DCM_StudyInstanceUID];
-    if (!studyInstanceUID.isEmpty())
+    if(!tags.contains(DCM_StudyInstanceUID) || tags[DCM_StudyInstanceUID].isEmpty())
     {
         tags[DCM_StudyInstanceUID] = studyInstanceUID;
     }
@@ -1202,18 +1256,13 @@ QList<QMap<DcmTagKey, QString>> medPACS::cFindSeries(const QString &studyInstanc
         tags[DCM_NumberOfSeriesRelatedInstances] = "";
     }
 
-    qDebug() << "cFindSeries(" << studyInstanceUID << ")";
-    for(auto key : tags.keys()){
-        qDebug() << key.toString().c_str() << "=" << tags.value(key);
-    }
-
+    // search with DCMTK
     if(d->isDcmtkProtocol)
     {
         seriesRes = d->pacs->cFind(tags);
     }
-    else
+    else // search with DICOMweb
     {
-        qDebug() << "Find series DICOMweb";
         seriesRes = d->dicomWeb->seriesSearchService(tags);
     }
 
@@ -1223,7 +1272,7 @@ QList<QMap<DcmTagKey, QString>> medPACS::cFindSeries(const QString &studyInstanc
 QList<QMap<QString, QString>> medPACS::getPatientMandatoryAttributes(const QList<QMap<DcmTagKey, QString>> &infosMap)
 {
     QList<QMap<QString, QString>> attributesRes;
-    for (const auto &info : infosMap)
+    for(const auto &info : infosMap)
     {
         QMap<QString, QString> attributes;
         attributes["id"] = info[DCM_PatientID];
@@ -1240,25 +1289,25 @@ QList<QMap<QString, QString>> medPACS::getStudyMandatoryAttributes(QList<QMap<Dc
 {
     QList<QMap<QString, QString>> attributesRes;
 
-    if (isPatientFiltered)
+    if(isPatientFiltered)
     {
         QList<QMap<DcmTagKey, QString>> infosStudy = infosMap;
-        for (const auto &info : infosStudy)
+        for(const auto &info : infosStudy)
         {
             auto infosPatient = cFindPatient(info[DCM_PatientID]);
-            if (infosPatient.empty())
+            if(infosPatient.empty())
             {
                 infosMap.removeOne(info);
             }
         }
     }
 
-    if (isSeriesFiltered)
+    if(isSeriesFiltered)
     {
-        for (const auto &info : infosMap)
+        for(const auto &info : infosMap)
         {
             auto infosSeries = cFindSeries(info[DCM_StudyInstanceUID]);
-            if (!infosSeries.empty())
+            if(!infosSeries.empty())
             {
                 QMap<QString, QString> attributes;
                 attributes["id"] = info[DCM_StudyInstanceUID];
@@ -1271,11 +1320,10 @@ QList<QMap<QString, QString>> medPACS::getStudyMandatoryAttributes(QList<QMap<Dc
     }
     else
     {
-        for (const auto &info : infosMap)
+        for(const auto &info : infosMap)
         {
             QMap<QString, QString> attributes;
             attributes["id"] = info[DCM_StudyInstanceUID];
-            qDebug() << "getStudyMandatoryAttributes ->" << attributes["id"];
             attributes["description"] = info[DCM_StudyDescription];
             attributes["uid"] = info[DCM_StudyInstanceUID];
             attributes["study date"] = info[DCM_StudyDate];
@@ -1290,22 +1338,22 @@ QList<QMap<QString, QString>> medPACS::getSeriesMandatoryAttributes(QList<QMap<D
 {
     QList<QMap<QString, QString>> attributesRes;
 
-    if (isStudiesFiltered || isPatientFiltered)
+    if(isStudiesFiltered || isPatientFiltered)
     {
         QList<QMap<DcmTagKey, QString>> infosSeries = infosMap;
-        for (const auto &info : infosSeries)
+        for(const auto &info : infosSeries)
         {
             auto infosStudy = cFindStudy(info[DCM_StudyInstanceUID]);
-            if (infosStudy.empty())
+            if(infosStudy.empty())
             {
                 infosMap.removeOne(info);
             }
             else
             {
-                for (const auto &infoS : infosStudy)
+                for(const auto &infoS : infosStudy)
                 {
                     auto infosPatient = cFindPatient(infoS[DCM_PatientID]);
-                    if (infosPatient.empty())
+                    if(infosPatient.empty())
                     {
                         infosMap.removeOne(info);
                     }
@@ -1327,7 +1375,7 @@ QList<QMap<QString, QString>> medPACS::getSeriesMandatoryAttributes(QList<QMap<D
     }
     else
     {
-        for (const auto &info : infosMap)
+        for(const auto &info : infosMap)
         {
             QMap<QString, QString> attributes;
             attributes["id"] = info[DCM_SeriesInstanceUID];
@@ -1360,14 +1408,14 @@ int medPACS::getAssyncData(unsigned int pi_uiLevel, QString key)
     int iRes = -1;
     s_RequestId++;
     QString levelKey = QString::number(pi_uiLevel) + ":" + key;
-    if (d->levelKeyToRequestIdMap.contains(levelKey))
+    if(d->levelKeyToRequestIdMap.contains(levelKey))
     {
         int requestId = d->levelKeyToRequestIdMap[levelKey];
-        if (pi_uiLevel > 0 && pi_uiLevel < 3)
+        if(pi_uiLevel > 0 && pi_uiLevel < 3)
         {
             if(d->isDcmtkProtocol)
             {
-                if (d->pacs->isCachedDataPath(requestId))
+                if(d->pacs->isCachedDataPath(requestId))
                 {
                     iRes = requestId;
                 }
@@ -1384,15 +1432,17 @@ int medPACS::getAssyncData(unsigned int pi_uiLevel, QString key)
             }
         }
     }
-    if (iRes == -1)
+
+    if(iRes == -1)
     {
         d->levelKeyToRequestIdMap[levelKey] = s_RequestId;
-        if (pi_uiLevel > 0 && pi_uiLevel < 3)
+        if(pi_uiLevel > 0 && pi_uiLevel < 3)
         {
             if(d->isDcmtkProtocol)
             {
                 iRes = getPACSAsyncData(pi_uiLevel, key);
-            }else
+            }
+            else
             {
                 if(!d->webAPIUrl->value().isEmpty())
                 {
@@ -1408,7 +1458,7 @@ int medPACS::getPACSAsyncData(unsigned int pi_uiLevel, const QString &key)
 {
     int iRes = -1;
     QString queryLevel;
-    switch (pi_uiLevel)
+    switch(pi_uiLevel)
     {
         case 0:
             queryLevel = "PATIENT";
@@ -1423,24 +1473,24 @@ int medPACS::getPACSAsyncData(unsigned int pi_uiLevel, const QString &key)
             return iRes;
     }
 
-    if (d->pacs->cMove(s_RequestId, queryLevel, key))
+    if(d->pacs->cMove(s_RequestId, queryLevel, key))
     {
         iRes = s_RequestId;
 
         QObject::connect(d->pacs, &dcmPACS::moveProgress, this, [=](int pi_requestId, eRequestStatus status, const QString &path)
         {
-            switch (status)
+            switch(status)
             {
-                case 0:
+                case finish:
                     d->requestIdToResultsMap[pi_requestId] = QVariant(path);
                     break;
                 case pending:
                     break;
                 case faild:
-                    default:
+                default:
                     break;
             }
-            emit progress(pi_requestId, status); 
+            emit progress(pi_requestId, status);
         },
         Qt::UniqueConnection);
     }
@@ -1451,13 +1501,13 @@ int medPACS::getPACSAsyncData(unsigned int pi_uiLevel, const QString &key)
 int medPACS::getDicomWebAsyncData(unsigned int pi_uiLevel, const QString &key)
 {
     int iRes = -1;
-    if (d->retrieveData->retrieveDataService(s_RequestId, pi_uiLevel, key))
+    if(d->retrieveData->retrieveDataService(s_RequestId, pi_uiLevel, key))
     {
         iRes = s_RequestId;
 
         QObject::connect(d->retrieveData, &dcmRetrieveData::inProgress, this, [=](int pi_requestId, eRequestStatus status, const QString &path)
         {
-            switch (status)
+            switch(status)
             {
                 case finish:
                     d->requestIdToResultsMap[pi_requestId] = QVariant(path);
@@ -1480,12 +1530,13 @@ void medPACS::abort(int pi_iRequest)
 {
     auto keyLevel = d->levelKeyToRequestIdMap.key(pi_iRequest);
     int level = -1;
-    if (!keyLevel.isEmpty())
+    if(!keyLevel.isEmpty())
     {
         int size = keyLevel.indexOf(":");
         level = keyLevel.left(size).toInt();
     }
-    if (level > 0 && level < 3)
+
+    if(level > 0 && level < 3)
     {
         if(d->isDcmtkProtocol)
         {
@@ -1563,7 +1614,7 @@ QVariant medPACS::getAsyncResults(int pi_iRequest)
 {
     QVariant dataRes;
 
-    if (d->requestIdToResultsMap.contains(pi_iRequest))
+    if(d->requestIdToResultsMap.contains(pi_iRequest))
     {
         dataRes = d->requestIdToResultsMap[pi_iRequest];
     }

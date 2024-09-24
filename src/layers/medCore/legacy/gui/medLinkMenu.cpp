@@ -895,7 +895,7 @@ void medGroupWidget::setColor(QColor color)
 
 void medGroupWidget::setGroupColor()
 {
-    QColor newColor = QColorDialog::getColor(m_color);
+    QColor newColor = QColorDialog::getColor(m_color, this, "Select color", QColorDialog::DontUseNativeDialog);
 
     if (newColor.isValid() && newColor!=m_color)
         setColor(newColor);

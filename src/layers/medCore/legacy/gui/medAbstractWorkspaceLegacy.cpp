@@ -921,6 +921,16 @@ void medAbstractWorkspaceLegacy::removeLayersFromGroup(QString group)
 
 void medAbstractWorkspaceLegacy::removeViewGroup(QString group)
 {
+    medViewParameterGroupL *paramGroup = medParameterGroupManagerL::instance()->viewGroup(group, this->identifier());
+
+    for(auto view : d->viewContainerStack->viewsInTab())
+    {
+        if(view)
+        {
+            paramGroup->removeImpactedView(view);
+        }
+    }
+
     delete medParameterGroupManagerL::instance()->viewGroup(group, this->identifier());
 }
 

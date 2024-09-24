@@ -48,17 +48,17 @@ void RequestManager::slotDownloadProgress(qint64 bytesSent, qint64 bytesTotal)
 	QNetworkReply *reply = dynamic_cast<QNetworkReply*>(QObject::sender());
 
 	//handling the reply progression information
-	if (reply)
+	if(reply)
 	{
-		if (m_replyUuidMap[HTTP_GET_VERB].contains(reply))
+		if(m_replyUuidMap[HTTP_GET_VERB].contains(reply))
 		{
 			currentResponse(reply, HTTP_GET_VERB, DOWNLOAD_CODE, bytesSent, bytesTotal);
 		}
-		else if (m_replyUuidMap[HTTP_POST_VERB].contains(reply))
+		else if(m_replyUuidMap[HTTP_POST_VERB].contains(reply))
 		{
 			currentResponse(reply, HTTP_POST_VERB, DOWNLOAD_CODE, bytesSent, bytesTotal);
 		}
-		else if (m_replyUuidMap[HTTP_PUT_VERB].contains(reply))
+		else if(m_replyUuidMap[HTTP_PUT_VERB].contains(reply))
 		{
 			currentResponse(reply, HTTP_PUT_VERB, DOWNLOAD_CODE, bytesSent, bytesTotal);
 		}
@@ -73,7 +73,7 @@ void RequestManager::currentResponse(QNetworkReply *reply, int httpVerb, int sta
 	QList<QPair<QByteArray, QByteArray>> headers;
 
 	// sending the signal for the network classes to handle the reply information 
-	switch (httpVerb)
+	switch(httpVerb)
 	{
         case HTTP_GET_VERB:  
             emit responseHttpGet(m_replyUuidMap[httpVerb][reply], payload, headers, status);  
@@ -95,18 +95,18 @@ void RequestManager::slotFinished()
 	QNetworkReply *reply = dynamic_cast<QNetworkReply*>(QObject::sender());
 
 	//handling the reply finish information
-	if (reply)
+	if(reply)
 	{
 		auto httpCode =	reply->attribute(QNetworkRequest::HttpStatusCodeAttribute).toInt();
-		if (m_replyUuidMap[HTTP_GET_VERB].contains(reply))
+		if(m_replyUuidMap[HTTP_GET_VERB].contains(reply))
 		{
 			lastResponse(reply, HTTP_GET_VERB, httpCode);
 		}
-		else if (m_replyUuidMap[HTTP_POST_VERB].contains(reply))
+		else if(m_replyUuidMap[HTTP_POST_VERB].contains(reply))
 		{
 			lastResponse(reply, HTTP_POST_VERB, httpCode);
 		}
-		else if (m_replyUuidMap[HTTP_PUT_VERB].contains(reply))
+		else if(m_replyUuidMap[HTTP_PUT_VERB].contains(reply))
 		{
 			lastResponse(reply, HTTP_PUT_VERB, httpCode);
 		}
@@ -118,18 +118,18 @@ void RequestManager::slotError(QNetworkReply::NetworkError err)
 	// retrieving the reply object who sent an error signal
 	QNetworkReply *reply = dynamic_cast<QNetworkReply*>(QObject::sender());
 	//handling the reply error information
-	if (reply)
+	if(reply)
 	{
 		int httpCode = static_cast<int>(reply->error());
-		if (m_replyUuidMap[HTTP_GET_VERB].contains(reply))
+		if(m_replyUuidMap[HTTP_GET_VERB].contains(reply))
 		{
 			lastResponse(reply, HTTP_GET_VERB, httpCode);
 		}
-		else if (m_replyUuidMap[HTTP_POST_VERB].contains(reply))
+		else if(m_replyUuidMap[HTTP_POST_VERB].contains(reply))
 		{
 			lastResponse(reply, HTTP_POST_VERB, httpCode);
 		}
-		else if (m_replyUuidMap[HTTP_PUT_VERB].contains(reply))
+		else if(m_replyUuidMap[HTTP_PUT_VERB].contains(reply))
 		{
 			lastResponse(reply, HTTP_PUT_VERB, httpCode);
 		}
@@ -142,7 +142,7 @@ void RequestManager::lastResponse(QNetworkReply * reply, int httpVerb, int statu
 	auto headers = reply->rawHeaderPairs();
 
 	// sending the signal for the network classes to handle the reply information 
-	switch (httpVerb)
+	switch(httpVerb)
 	{
         case HTTP_GET_VERB:  
             emit responseHttpGet(m_replyUuidMap[httpVerb][reply], payload, headers, statusOrHttpCode); 
@@ -171,9 +171,9 @@ void RequestManager::abort(QUuid idRequest)
 	// retrieving the reply object with the idRequest  
 	for(int i = 0; i < 3; ++i)
     {
-        for (auto it = m_replyUuidMap[i].begin(); it != m_replyUuidMap[i].end(); ++it)
+        for(auto it = m_replyUuidMap[i].begin(); it != m_replyUuidMap[i].end(); ++it)
         {
-            if (it.value() == idRequest)
+            if(it.value() == idRequest)
             {
                 QNetworkReply* reply = it.key();
                 reply->abort();

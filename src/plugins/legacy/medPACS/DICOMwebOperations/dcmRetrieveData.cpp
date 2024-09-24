@@ -12,8 +12,12 @@
 =========================================================================*/
 
 #include "dcmRetrieveData.h"
+#include "dcmWeb.h"
 
-#include <QDebug>
+#include <medNotif.h>
+#include <medNewLogger.h>
+
+#include <dcmtk/dcmdata/dcdeftag.h>
 
 dcmRetrieveData::dcmRetrieveData(QObject *parent, RequestManager *rqManager, dcmWeb *dicomWeb) : QObject(parent), m_dicomWeb(dicomWeb)
 {
@@ -111,8 +115,7 @@ void dcmRetrieveData::getData(QUuid netReqId)
             QDir dir(m_temporaryDir.path());
             dir.mkdir(QString::number(m_requestIdMap[netReqId].m_requestId));
 
-            qDebug() << "Number of instances :" << httpResp.getParts().size();
-            // create a file for an instance and saves it in the temporary directory
+            // create a file for each instance and saves it in the temporary directory
             for(auto &part : httpResp.getParts())
             {
                 dirPath = dir.filePath(QString::number(m_requestIdMap[netReqId].m_requestId));
@@ -127,7 +130,7 @@ void dcmRetrieveData::getData(QUuid netReqId)
             }
 
             // store path to the files and send finish status
-            qDebug() << "file download path :" << dirPath;
+            mInfo << "Path where DICOM files had to be downloaded : " << dirPath;
             m_requestIdMap[netReqId].m_path = dirPath;
             emit inProgress(m_requestIdMap[netReqId].m_requestId, medAbstractSource::eRequestStatus::finish, dirPath);
         }
@@ -136,6 +139,7 @@ void dcmRetrieveData::getData(QUuid netReqId)
     }
     else
     {
+        medNotif::createNotif(notifLevel::error, "WADO-RS (Retrieve Service) request", "DICOM object retrieval error");
         emit inProgress(m_requestIdMap[netReqId].m_requestId, medAbstractSource::eRequestStatus::faild);
         m_requestIdMap.remove(netReqId);
     }
