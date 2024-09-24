@@ -114,6 +114,7 @@ void medNotificationPaneWidget::addNotification(medUsrNotif notif)
     QGraphicsOpacityEffect * show_effect = new QGraphicsOpacityEffect(newNotifiWidgetPopup);
     show_effect->setOpacity(1);
     m_alphaAnimation = new QPropertyAnimation(show_effect, "opacity");
+    connect(m_alphaAnimation, &QPropertyAnimation::finished, newNotifiWidgetPopup, &QObject::deleteLater);
     newNotifiWidgetPopup->setGraphicsEffect(show_effect);
     m_alphaAnimation->setStartValue(1);
     m_alphaAnimation->setEndValue(0);
