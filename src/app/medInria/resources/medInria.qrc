@@ -34,6 +34,7 @@
         <file>icons/dark/24x24/minus.png</file>
         <file>icons/dark/24x24/movie_off.svg</file>
         <file>icons/dark/24x24/movie_on.svg</file>
+        <file>icons/dark/24x24/notifications.png</file>
         <file>icons/dark/24x24/open.svg</file>
         <file>icons/dark/24x24/orientation_3d.svg</file>
         <file>icons/dark/24x24/pan.svg</file>
@@ -80,6 +81,7 @@
         <file>icons/light/24x24/minus.png</file>
         <file>icons/light/24x24/movie_off.svg</file>
         <file>icons/light/24x24/movie_on.svg</file>
+        <file>icons/light/24x24/notifications.png</file>
         <file>icons/light/24x24/open.svg</file>
         <file>icons/light/24x24/orientation_3d.svg</file>
         <file>icons/light/24x24/pan.svg</file>
@@ -103,60 +105,30 @@
 
         <file>icons/3DIcon.png</file>
         <file>icons/AxialIcon.png</file>
-        <file>icons/composer.png</file>
+        <file>icons/connect_on.svg</file>
+        <file>icons/connect_off.svg</file>
         <file>icons/CoronalIcon.png</file>
         <file>icons/cross_disabled.svg</file>
         <file>icons/cross_red.svg</file>
         <file>icons/error.png</file>
+        <file>icons/eye_closed.png</file>
+        <file>icons/eye_open.png</file>
         <file>icons/help_grey.svg</file>
+        <file>icons/icons8-download-16.png</file>
+        <file>icons/icons8-upload-16.png</file>
+        <file>icons/icons8-download-error-16.png</file>
+        <file>icons/icons8-upload-error-16.png</file>
         <file>icons/information_blue.png</file>
         <file>icons/information_blue.svg</file>
         <file>icons/medInriaPlugin.svg</file>
         <file>icons/SagittalIcon.png</file>
 
-        <file>pixmaps/medInria-logo-homepage.png</file>
-        <file>icons/unknown.jpg</file>
-        <file>icons/checkbox.png</file>
-        <file>icons/checkbox-checked.png</file>
-        <file>icons/checkbox-partial.png</file>
-        <file>icons/radio.png</file>
-        <file>icons/radio-checked.png</file>
-        <file>icons/radio-partial.png</file>
-        <file>icons/drop-down.png</file>
-        <file>icons/treeview-branch-closed.png</file>
-        <file>icons/treeview-branch-open.png</file>
-        <file>icons/database_navigator_item_checker_checked.png</file>
-        <file>icons/database_navigator_item_checker_unchecked.png</file>
-        <file>icons/medInria-logo-homepage.png</file>
-        <file>icons/default_thumbnail-lightbackground.png</file>
-        <file>icons/scene.png</file>
-        <file>icons/composer_sc.png</file>
-        <file>icons/home_sc.png</file>
-        <file>icons/database.png</file>
-        <file>icons/workspace_Diffusion.png</file>
-        <file>icons/workspace_Visualization.png</file>
-        <file>icons/workspace_Registration.png</file>
-        <file>icons/workspace_Filtering.png</file>
-        <file>icons/workspace_Segmentation.png</file>
-        <file>icons/workspace_Filtering dtk2.png</file>
-        <file>icons/workspace_Meshing.png</file>
-        <file>icons/workspace_Reformat.png</file>
-        <file>icons/checkbox-disabled.png</file>
-        <file>icons/checkbox-checked-disabled.png</file>
-        <file>icons/arrow-top-disabled.png</file>
-        <file>icons/arrow-top.png</file>
-        <file>icons/arrow-right-disabled.png</file>
-        <file>icons/arrow-right.png</file>
-        <file>icons/arrow-left-disabled.png</file>
-        <file>icons/arrow-left.png</file>
-        <file>icons/arrow-bot-disabled.png</file>
-        <file>icons/arrow-bot.png</file>
-        <file>icons/un_maximize.svg</file>
-        <file>pixmaps/radio-disabled.png</file>
-        <file>pixmaps/radio-checked-disabled.png</file>
-        <file>icons/plus_white.png</file>
-        <file>pixmaps/checkbox-disabled.png</file>
-        <file>pixmaps/checkbox-checked-disabled.png</file>
+        <file>icons/bleu_spot.svg</file>
+        <file>icons/green_spot.svg</file>
+        <file>icons/orange_spot.svg</file>
+        <file>icons/red_spot.svg</file>
+        <file>icons/yellow_spot.svg</file>
+
         <file>pixmaps/arrow-top-disabled.png</file>
         <file>pixmaps/arrow-top.png</file>
         <file>pixmaps/arrow-right-disabled.png</file>
@@ -165,35 +137,33 @@
         <file>pixmaps/arrow-left.png</file>
         <file>pixmaps/arrow-bot-disabled.png</file>
         <file>pixmaps/arrow-bot.png</file>
-        <file>icons/adjust_size.png</file>
-        <file>icons/adjust_size_grey.png</file>
-        <file>icons/movie.png</file>
-        <file>icons/movie_grey.png</file>
-        <file>icons/saveScene.png</file>
-        <file>icons/saveScene_grey.png</file>
-        <file>icons/scene.png</file>
-        <file>icons/connect_on.svg</file>
-        <file>icons/connect_off.svg</file>
-        <file>icons/close.svg</file>
-        <file>icons/close_gray.svg</file>
-        <file>icons/minimize_on_gray.svg</file>
-        <file>icons/minimize_on_white.svg</file>
-        <file>icons/minimize_off_gray.svg</file>
-        <file>icons/minimize_off_white.svg</file>
-        <file>icons/bleu_spot.svg</file>
-        <file>icons/green_spot.svg</file>
-        <file>icons/orange_spot.svg</file>
-        <file>icons/red_spot.svg</file>
-        <file>icons/yellow_spot.svg</file>
-        <file>icons/button-notifications.png</file>
-        <file>icons/check.svg</file>
-        <file>icons/inbox.png</file>
-        <file>icons/outbox.png</file>
-        <file>icons/icons8-download-16.png</file>
-        <file>icons/icons8-upload-16.png</file>
-        <file>icons/icons8-download-error-16.png</file>
-        <file>icons/icons8-upload-error-16.png</file>
+        <file>pixmaps/checkbox.png</file>
+        <file>pixmaps/checkbox-checked.png</file>
+        <file>pixmaps/checkbox-partial.png</file>
+        <file>pixmaps/checkbox-disabled.png</file>
+        <file>pixmaps/checkbox-checked-disabled.png</file>
+        <file>pixmaps/database.png</file>
+        <file>pixmaps/default_thumbnail.png</file>
+        <file>pixmaps/default_thumbnail-lightbackground.png</file>
+        <file>pixmaps/drop-down.png</file>
+        <file>pixmaps/home_sc.png</file>
+        <file>pixmaps/medInria-logo-homepage.png</file>
+        <file>pixmaps/radio.png</file>
+        <file>pixmaps/radio-disabled.png</file>
+        <file>pixmaps/radio-checked-disabled.png</file>
+        <file>pixmaps/radio-checked.png</file>
+        <file>pixmaps/radio-partial.png</file>
+        <file>pixmaps/scene.png</file>
+        <file>pixmaps/workspace_Diffusion.png</file>
+        <file>pixmaps/workspace_Visualization.png</file>
+        <file>pixmaps/workspace_Registration.png</file>
+        <file>pixmaps/workspace_Filtering.png</file>
+        <file>pixmaps/workspace_Segmentation.png</file>
+        <file>pixmaps/workspace_Filtering dtk2.png</file>
+        <file>pixmaps/workspace_Meshing.png</file>
+        <file>pixmaps/workspace_Reformat.png</file>
+
         <file>gif/icon.gif</file>
-        <file>icons/button-notifications - withe.png</file>
+
     </qresource>
 </RCC>
