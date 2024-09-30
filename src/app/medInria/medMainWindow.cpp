@@ -183,26 +183,18 @@ void medMainWindow::initMenuBar(QWidget * parent)
     menuNotif(menu_bar);
     menuAbout(menu_bar);
 
-
     // --- Prepare right corner menu
     QMenuBar *rightMenuBar = new QMenuBar(menu_bar);
     menu_bar->setCornerWidget(rightMenuBar);
 
     QAction* actionNotif = rightMenuBar->addAction("");
-    actionNotif->setIcon(QIcon(":/icons/button-notifications - withe.png"));
+    actionNotif->setIcon(QIcon::fromTheme("notifications"));
     connect(actionNotif, &QAction::triggered, this, &medMainWindow::toggleNotificationPanel);
-
-
-
-
-
-
-
 
     // --- Fullscreen checkable action
     QIcon fullscreenIcon;
-    fullscreenIcon.addPixmap(QPixmap(":icons/fullscreenExpand.png"), QIcon::Normal, QIcon::Off);
-    fullscreenIcon.addPixmap(QPixmap(":icons/fullscreenReduce.png"), QIcon::Normal, QIcon::On);
+    fullscreenIcon.addPixmap(QIcon::fromTheme("fullscreen_off").pixmap(24,24), QIcon::Normal, QIcon::Off);
+    fullscreenIcon.addPixmap(QIcon::fromTheme("fullscreen_on").pixmap(24,24),  QIcon::Normal, QIcon::On);
 
     d->actionFullscreen = new QAction(parent);
     d->actionFullscreen->setIcon(fullscreenIcon);
@@ -232,13 +224,13 @@ void medMainWindow::menuFile(QMenuBar * menu_bar)
     QMenu *menuFile = menu_bar->addMenu("File");
     auto *actionOpenFiles = menuFile->addAction("Open File(s)");
     auto *actionOpenDicom = menuFile->addAction("Open Dicom");
-    auto *actionSaveOnDisk = menuFile->addAction("Save on disk");
+    menuFile->addAction("Save on disk");
     auto *actionBrowse     = menuFile->addAction("Browse files");
-    auto *actionSeparator1 = menuFile->addSeparator();
+    menuFile->addSeparator();
     auto *actionGoHome = menuFile->addAction("Go to Welcome Page");
-    auto *actionSeparator2 = menuFile->addSeparator();
-    auto *subMenuRecentFiles = menuFile->addMenu("Recent files");
-    auto *actionSeparator3 = menuFile->addSeparator();
+    menuFile->addSeparator();
+    menuFile->addMenu("Recent files");
+    menuFile->addSeparator();
     auto *subMenuVisibilitySource = menuFile->addMenu("Source Visibility");
     
     QAction *virtualReprAction = subMenuVisibilitySource->addAction("Quick Access");
@@ -256,8 +248,8 @@ void medMainWindow::menuFile(QMenuBar * menu_bar)
         connect(sourceAction, &QAction::toggled, this, &medMainWindow::setSourceVisibility);
     }
  
-    auto *actionSeparator4 = menuFile->addSeparator();
-    auto *actionQuit = menuFile->addAction("Quit");
+    menuFile->addSeparator();
+    menuFile->addAction("Quit");
 
     connect(actionOpenFiles, &QAction::triggered, this, &medMainWindow::openFromSystem);
     connect(actionOpenDicom, &QAction::triggered, this, &medMainWindow::openDicomFromSystem);
@@ -334,12 +326,12 @@ void medMainWindow::menuWindow(QMenuBar * menu_bar)
     // --- Window menu
     QMenu *menuWindow = menu_bar->addMenu("Window");
 
-    auto *actionMaximise = menuWindow->addAction("Maximize");
-    auto *actionSeparator1 = menuWindow->addSeparator();
+    menuWindow->addAction("Maximize");
+    menuWindow->addSeparator();
     auto *actionAjust = menuWindow->addAction(tr("Adjust containers size"));
-    auto *actionVSplit = menuWindow->addAction(tr("Vertical split"));
-    auto *actionHSplit = menuWindow->addAction(tr("Horizontal split"));
-    auto *action4Split = menuWindow->addAction(tr("4 split"));
+    menuWindow->addAction(tr("Vertical split"));
+    menuWindow->addAction(tr("Horizontal split"));
+    menuWindow->addAction(tr("4 split"));
 
     connect(actionAjust, &QAction::triggered, this, &medMainWindow::adjustContainersSize);
 }
@@ -361,8 +353,8 @@ void medMainWindow::menuSettings(QMenuBar * menu_bar)
     // --- Settings menu
     QMenu *menuSettings = menu_bar->addMenu("Settings");
 
-    QAction *actionGeneral = menuSettings->addAction(tr("General"));
-    QAction *actionSeparator = menuSettings->addSeparator();
+    menuSettings->addAction(tr("General"));
+    menuSettings->addSeparator();
     QAction *actionDataSources = menuSettings->addAction(tr("Data Sources"));
 
     connect(actionDataSources, &QAction::triggered, this, &medMainWindow::onShowDataSources);
@@ -378,9 +370,8 @@ void medMainWindow::menuAbout(QMenuBar * menu_bar)
     QAction *actionAuthors = menuAbout->addAction(tr("Au&thors"));
     QAction *actionReleaseNotes = menuAbout->addAction(tr("&Release Notes"));
     QAction *actionLicense = menuAbout->addAction(tr("&License"));
-    QAction *actionSeparator = menuAbout->addSeparator();
+    menuAbout->addSeparator();
     QAction *actionHelp = menuAbout->addAction(tr("&Help"));
-
 
     connect(actionAbout, &QAction::triggered, this, &medMainWindow::onShowAbout);
     connect(actionAuthors, &QAction::triggered, this, &medMainWindow::onShowAuthors);
@@ -395,7 +386,7 @@ void medMainWindow::menuNotif(QMenuBar * menu_bar)
     QMenu   *menuNotif = menu_bar->addMenu("Notif");
     QAction *actionShowHideNotifs = menuNotif->addAction("Show / Hide");
     QAction *actionClearNotifs = menuNotif->addAction("Clear all");
-    QAction *actionSeparator = menuNotif->addSeparator();
+    menuNotif->addSeparator();
     QMenu   *menuLog = menuNotif->addMenu("Logs");
     QAction *actionLog = menuLog->addAction(tr("Show"));
     QAction *actionPluginLogs = menuLog->addAction(tr("Plugins"));
@@ -780,11 +771,11 @@ void medMainWindow::switchOffOnFullscreenIcons(const bool checked)
 {
     if (checked)
     {
-        d->actionFullscreen->setIcon(QIcon(":icons/fullscreenReduce.png"));
+        d->actionFullscreen->setIcon(QIcon::fromTheme("fullscreen_off"));
     }
     else
     {
-        d->actionFullscreen->setIcon(QIcon(":icons/fullscreenExpand.png"));
+        d->actionFullscreen->setIcon(QIcon::fromTheme("fullscreen_on"));
     }
 }
 

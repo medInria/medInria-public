@@ -102,9 +102,9 @@ void medHomepageArea::initPage()
     workspaceButtonsLayoutBasic->addLayout(workspaceButtonsLayoutBasicGrid);
 
     medHomepageButton * browserButton = new medHomepageButton ( this );
-    browserButton->setToolButtonStyle ( Qt::ToolButtonTextUnderIcon );
-    browserButton->setIcon ( QIcon ( ":/icons/folder.png" ) );
-    browserButton->setText ( "Import/export files" );
+    browserButton->setToolButtonStyle ( Qt::ToolButtonTextBesideIcon );
+    browserButton->setIcon ( QIcon::fromTheme("open") );
+    browserButton->setText ( " Import/export files" );
     browserButton->setMinimumHeight ( 40 );
     browserButton->setMaximumWidth ( 250 );
     browserButton->setMinimumWidth ( 250 );
@@ -223,8 +223,6 @@ void medHomepageArea::initPage()
 
     d->navigationWidget->setLayout(workspaceButtonsLayout);
 }
-
-
 
 void medHomepageArea::onShowBrowser()
 {

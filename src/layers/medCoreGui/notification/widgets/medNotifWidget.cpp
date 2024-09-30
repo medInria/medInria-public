@@ -52,7 +52,7 @@ medNotifWidget::medNotifWidget(medUsrNotif &notif, medNotificationPaneWidget * p
 
     // Add remove button
     m_removeNotifButton = new QPushButton();
-    m_removeNotifButton->setIcon(QIcon(":/icons/cross.svg"));
+    m_removeNotifButton->setIcon(QIcon(":/icons/cross_red.svg"));
     m_removeNotifButton->setIconSize(QSize(15, 15));
     m_removeNotifButton->setFixedSize(20, 20);
     m_titleLayout->addWidget(m_removeNotifButton);
