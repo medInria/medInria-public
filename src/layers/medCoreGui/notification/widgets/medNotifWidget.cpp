@@ -126,10 +126,10 @@ void medNotifWidget::update()
 QPixmap & medNotifWidget::criticalityImg(notifLevel criticalityLevel)
 {
     //These variables are static into a static member function to avoid reload multiple-times
-    static QPixmap redSpot = QPixmap::fromImage(QIcon(":/icons/red_spot.svg").pixmap(QSize(15, 15)).toImage());
-    static QPixmap yellowSpot = QPixmap::fromImage(QIcon(":/icons/yellow_spot.svg").pixmap(QSize(15, 15)).toImage());
-    static QPixmap blueSpot = QPixmap::fromImage(QIcon(":/icons/bleu_spot.svg").pixmap(QSize(15, 15)).toImage());
-    static QPixmap greenSpot = QPixmap::fromImage(QIcon(":/icons/green_spot.svg").pixmap(QSize(15, 15)).toImage());
+    static QPixmap redSpot    = QPixmap::fromImage(QIcon(":/icons/spot_red.svg").pixmap(QSize(15, 15)).toImage());
+    static QPixmap yellowSpot = QPixmap::fromImage(QIcon(":/icons/spot_yellow.svg").pixmap(QSize(15, 15)).toImage());
+    static QPixmap blueSpot   = QPixmap::fromImage(QIcon(":/icons/spot_blue.svg").pixmap(QSize(15, 15)).toImage());
+    static QPixmap greenSpot  = QPixmap::fromImage(QIcon(":/icons/spot_green.svg").pixmap(QSize(15, 15)).toImage());
 
     switch (criticalityLevel)
     {

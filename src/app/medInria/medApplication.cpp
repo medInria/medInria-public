@@ -36,6 +36,7 @@ class medApplicationPrivate
 public:
     medMainWindow *mainWindow;
     QStringList systemOpenInstructions;
+    QSplashScreen *splashScreen;
     QtLocalPeer *peer;
     QWidget *actWin;
 
@@ -51,6 +52,8 @@ medApplication::medApplication(int & argc, char**argv) :
     QApplication(argc, argv),
     d(new medApplicationPrivate)
 {
+    initializeSplashScreen();
+
     d->listenClick = false;
 
     d->actWin = 0;
@@ -121,11 +124,9 @@ void medApplication::setMainWindow(medMainWindow *mw)
     QVariant var = QVariant::fromValue((QObject*)d->mainWindow);
     this->setProperty("MainWindow",var);
     d->systemOpenInstructions.clear();
-}
 
-void medApplication::redirectMessageToSplash(const QString &message)
-{
-    emit showMessage(message);
+    // Wait until the app is displayed to close itself
+    d->splashScreen->finish(d->mainWindow);
 }
 
 /*!
@@ -196,29 +197,42 @@ void medApplication::initialize()
         medCore::pluginManager::initialize(defaultPath);
 }
 
+/**
+ * @brief Set the Qt splash screen to the logo associated to the type of theme.
+ * 
+ */
+void medApplication::initializeSplashScreen()
+{
+    d->splashScreen = new QSplashScreen(QPixmap(":/pixmaps/medInria-splash.png"),
+        Qt::WindowStaysOnTopHint | Qt::X11BypassWindowManagerHint);
+    d->splashScreen->setAttribute(Qt::WA_DeleteOnClose, true);
+    d->splashScreen->show();
+    this->processEvents();
+    QCoreApplication::processEvents();
+}
+
+/**
+ * @brief Parse the theme file chosen by user in settings.
+ * 
+ */
 void medApplication::initializeThemes()
 {
     QApplication::setStyle(QStyleFactory::create("fusion"));
 
-    QVariant themeChosen = medSettingsManager::instance()->value("startup","theme");
-    int themeIndex = themeChosen.toInt();
-
+    int themeIndex = medSettingsManager::instance()->value("startup","theme").toInt();
     QString qssFile;
     switch (themeIndex)
     {
     case 0:
     default:
-        // Dark
         qssFile = ":/dark.qss";
         QIcon::setThemeName(QStringLiteral("dark"));
         break;
     case 1:
-        // Grey
         qssFile = ":/grey.qss";
         QIcon::setThemeName(QStringLiteral("light"));
         break;
     case 2:
-        // Light
         qssFile = ":/light.qss";
         QIcon::setThemeName(QStringLiteral("light"));
         break;

@@ -27,7 +27,7 @@ void medSourcesItemDelegate::paint(QPainter *painter, const QStyleOptionViewItem
    
         if (value== DATASTATE_ROLE_DATALOADING)
         {
-            painter->drawPixmap(QRect(opt.rect.x()-40, opt.rect.y(), opt.decorationSize.width(), opt.rect.height()), m_mov->currentPixmap());//QPixmap(":icons/yellow_spot.svg"));
+            painter->drawPixmap(QRect(opt.rect.x()-40, opt.rect.y(), opt.decorationSize.width(), opt.rect.height()), m_mov->currentPixmap());
         }
         else if (value == DATASTATE_ROLE_DATALOADED)
         {
@@ -40,23 +40,23 @@ void medSourcesItemDelegate::paint(QPainter *painter, const QStyleOptionViewItem
                     m_treeView->setStyleSheet("QTreeView { selection-color: #FF8833;}");
             }
             opt.font.setBold(true);
-            painter->drawPixmap(QRect(opt.rect.x()-40, opt.rect.y(), opt.decorationSize.width(), opt.rect.height()), QPixmap(":icons/icons8-download-16.png"));//QPixmap(":icons/yellow_spot.svg"));
+            painter->drawPixmap(QRect(opt.rect.x()-40, opt.rect.y(), opt.decorationSize.width(), opt.rect.height()), QPixmap(":icons/icons8-download-16.png"));
         }
         else if (value == DATASTATE_ROLE_DATANOTLOADED)
         {
             opt.font.setStrikeOut(true);
-            painter->drawPixmap(QRect(opt.rect.x()-40, opt.rect.y(), opt.decorationSize.width(), opt.rect.height()), QPixmap(":icons/icons8-download-error-16.png"));//QPixmap(":icons/yellow_spot.svg"));
+            painter->drawPixmap(QRect(opt.rect.x()-40, opt.rect.y(), opt.decorationSize.width(), opt.rect.height()), QPixmap(":icons/icons8-download-error-16.png"));
         }
         else if (value == DATASTATE_ROLE_DATASAVED)
         {
             //opt.font.setBold(true);
             
-            painter->drawPixmap(QRect(opt.rect.x()-40, opt.rect.y(), opt.decorationSize.width(), opt.rect.height()), QPixmap(":icons/icons8-upload-16.png"));//QPixmap(":icons/yellow_spot.svg"));
+            painter->drawPixmap(QRect(opt.rect.x()-40, opt.rect.y(), opt.decorationSize.width(), opt.rect.height()), QPixmap(":icons/icons8-upload-16.png"));
         }
         else if (value == DATASTATE_ROLE_DATANOTSAVED)
         {
             opt.font.setItalic(true);
-            painter->drawPixmap(QRect(opt.rect.x()-40, opt.rect.y(), opt.decorationSize.width(), opt.rect.height()), QPixmap(":icons/icons8-upload-error-16.png"));//QPixmap(":icons/yellow_spot.svg"));
+            painter->drawPixmap(QRect(opt.rect.x()-40, opt.rect.y(), opt.decorationSize.width(), opt.rect.height()), QPixmap(":icons/icons8-upload-error-16.png"));
         }
 
     }

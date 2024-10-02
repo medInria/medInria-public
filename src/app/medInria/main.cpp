@@ -28,7 +28,6 @@
 #include <medMainWindow.h>
 #include <medPluginManager.h>
 #include <medSettingsManager.h>
-#include <medSplashScreen.h>
 
 #include <medSourcesLoader.h>
 #include <medDataHub.h>
@@ -99,11 +98,9 @@ int main(int argc, char *argv[])
     fmt.setStereo(false);
     fmt.setSamples(0); // we never need multisampling in the context since the FBO can support
                        // multisamples independently
-
     QSurfaceFormat::setDefaultFormat(fmt);
 
     medApplication application(argc, argv);
-    medSplashScreen splash(QPixmap(":/pixmaps/medInria-logo-homepage.png"));
 
     setlocale(LC_NUMERIC, "C");
     QLocale::setDefault(QLocale("C"));
@@ -146,16 +143,6 @@ int main(int argc, char *argv[])
         // Process the actual command line arguments given by the user
         parser.process(application);
 
-        // Do not show the splash screen in debug builds because it hogs the
-        // foreground, hiding all other windows. This makes debugging the startup
-        // operations difficult.
-
-#if !defined(_DEBUG)
-        bool show_splash = true;
-#else
-    bool show_splash = false;
-#endif
-
         if (parser.isSet("center"))
         {
             int center = parser.value("center").toInt();
@@ -193,7 +180,6 @@ int main(int argc, char *argv[])
         int runningMedInria = 0;
         if (DirectView)
         {
-            show_splash = false;
             for (QStringList::const_iterator i = viewPaths.constBegin();
                  i != viewPaths.constEnd(); ++i)
             {
@@ -207,17 +193,6 @@ int main(int argc, char *argv[])
         }
         if (runningMedInria)
             return 0;
-
-        if (show_splash)
-        {
-            QObject::connect(medPluginManager::instance(),
-                             SIGNAL(loaded(QString)), &application,
-                             SLOT(redirectMessageToSplash(QString)));
-            QObject::connect(&application, SIGNAL(showMessage(const QString &)),
-                             &splash, SLOT(showMessage(const QString &)));
-            splash.show();
-            splash.showMessage("Loading plugins...");
-        }
 
         //auto testWindow = new QMainWindow();
         //auto w = new medSpoilerWidget();
@@ -342,9 +317,6 @@ int main(int argc, char *argv[])
             format.setDirectRendering(true);
             QGLFormat::setDefaultFormat(format);
         }
-
-        if (show_splash)
-            splash.finish(mainwindow);
 
         if (medPluginManager::instance()->plugins().isEmpty())
         {

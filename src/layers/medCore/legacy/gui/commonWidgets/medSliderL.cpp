@@ -67,11 +67,14 @@ void medSliderL::paintEvent(QPaintEvent *event)
     }
 }
 
+/**
+ * @brief Return the color of the small lines displayed on view sliders in some toolboxes,
+ * according to the application theme.
+ * 
+ * @return QColor 
+ */
 QColor medSliderL::getTickColor()
 {
-    //return QColor(239, 109, 59, 255);
-
-    // Theme
     QVariant themeChosen = medSettingsManager::instance()->value("startup","theme");
     int themeIndex = themeChosen.toInt();
 

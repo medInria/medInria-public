@@ -1093,13 +1093,12 @@ medViewContainer [selected = "true"]
 
 QTabBar::close-button
 {
-    image: url(:/pixmaps/closebutton.png)
+    image: url(:icons/cross_red.svg)
 }
 
 QTabBar::close-button:hover
 {
     background: $VIEW_CONTAINER_BUTTON_HOVER_BACKGOUND
-/*	image: url(:icons/closebutton_blue.png) */
 }
 
 QWidget#defaultWidget

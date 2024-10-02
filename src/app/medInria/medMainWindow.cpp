@@ -175,6 +175,7 @@ void medMainWindow::initMenuBar(QWidget * parent)
 {
     // Menu bar
     QMenuBar *menu_bar = this->menuBar();
+    menu_bar->setStyleSheet("QMenuBar { margin: 3px; }");
     menuFile(menu_bar);
     menuWorkspace(menu_bar);
     menuWindow(menu_bar);
@@ -197,6 +198,7 @@ void medMainWindow::initMenuBar(QWidget * parent)
     fullscreenIcon.addPixmap(QIcon::fromTheme("fullscreen_on").pixmap(24,24),  QIcon::Normal, QIcon::On);
 
     d->actionFullscreen = new QAction(parent);
+    d->actionFullscreen->setObjectName("Fullscreen");
     d->actionFullscreen->setIcon(fullscreenIcon);
     d->actionFullscreen->setCheckable(true);
     d->actionFullscreen->setChecked(false);
@@ -208,14 +210,7 @@ void medMainWindow::initMenuBar(QWidget * parent)
     d->actionFullscreen->setToolTip(tr("Switch to fullscreen (F11)"));
 #endif
     connect(d->actionFullscreen, &QAction::toggled, this, &medMainWindow::setFullScreen);
-    // On Qt5, QAction in menubar does not seem to show the Off and On icons, so we do it manually
-    connect(d->actionFullscreen, &QAction::toggled, this, &medMainWindow::switchOffOnFullscreenIcons);
     rightMenuBar->addAction(d->actionFullscreen);
-
-
-    //QAction *actionAreaSettings = new QAction(tr("&Startup settings"), parent);
-    //connect(actionAreaSettings, &QAction::triggered, this, &medMainWindow::onShowAreaSettings);
-    //menuArea->addAction(actionAreaSettings);
 }
 
 void medMainWindow::menuFile(QMenuBar * menu_bar)
@@ -279,7 +274,7 @@ void medMainWindow::menuWorkspace(QMenuBar * menu_bar)
    
     QAction *visuAction = menuWorkspaces->addAction("Visualization");
     visuAction->setData(medVisualizationWorkspace::staticIdentifier());
-    bool b1 = connect(visuAction, &QAction::triggered, this, &medMainWindow::onSwitchToWorkspace);
+    connect(visuAction, &QAction::triggered, this, &medMainWindow::onSwitchToWorkspace);
     d->wsActions.push_back(visuAction);
 
     for (medWorkspaceFactory::Details* detail : workspaceDetails)
@@ -293,7 +288,7 @@ void medMainWindow::menuWorkspace(QMenuBar * menu_bar)
             QMenu *menuActionTmp = menuWorkspaces->addMenu(detail->name);
             QAction * openAction = menuActionTmp->addAction("Open " + detail->name);
             openAction->setData(detail->identifier);
-            bool b1 = connect(openAction, &QAction::triggered, this, &medMainWindow::onSwitchToWorkspace);
+            connect(openAction, &QAction::triggered, this, &medMainWindow::onSwitchToWorkspace);
 
             menuActionTmp->addSeparator();
             auto toolboxHashTable = tbFactory->toolBoxDetailsFromCategory(detail->name);
@@ -305,7 +300,7 @@ void medMainWindow::menuWorkspace(QMenuBar * menu_bar)
                 infos << detail->identifier << toolboxId << toolboxDetails->name;
                 QVariant varData = QVariant(infos);
                 subWorkSpaceAction->setData(varData);
-                bool b1 = connect(subWorkSpaceAction, &QAction::triggered, this, &medMainWindow::onSwitchToProcess);
+                connect(subWorkSpaceAction, &QAction::triggered, this, &medMainWindow::onSwitchToProcess);
 
                 d->wsMenuActionsMap[menuActionTmp].push_back(subWorkSpaceAction);
             }
@@ -314,7 +309,7 @@ void medMainWindow::menuWorkspace(QMenuBar * menu_bar)
         {
             QAction *openAction = menuWorkspaces->addAction(detail->name);
             openAction->setData(detail->identifier);
-            bool b1 = connect(openAction, &QAction::triggered, this, &medMainWindow::onSwitchToWorkspace);
+            connect(openAction, &QAction::triggered, this, &medMainWindow::onSwitchToWorkspace);
 
             d->wsActions.push_back(openAction);
         }
@@ -348,30 +343,34 @@ void medMainWindow::menuCapture(QMenuBar * menu_bar)
 
 }
 
+/**
+ * @brief The Settings menu holds application settings such as start-up or data sources settings
+ * 
+ * @param menu_bar 
+ */
 void medMainWindow::menuSettings(QMenuBar * menu_bar)
 {
-    // --- Settings menu
     QMenu *menuSettings = menu_bar->addMenu("Settings");
 
-    menuSettings->addAction(tr("General"));
-    menuSettings->addSeparator();
     QAction *actionDataSources = menuSettings->addAction(tr("Data Sources"));
-
     connect(actionDataSources, &QAction::triggered, this, &medMainWindow::onShowDataSources);
+
+    QAction *actionAreaSettings = menuSettings->addAction(tr("&Startup"));
+    connect(actionAreaSettings, &QAction::triggered, this, &medMainWindow::onShowAreaSettings);
 }
 
 void medMainWindow::menuAbout(QMenuBar * menu_bar)
 {
 
     // --- About menu
-    QMenu *menuAbout = menu_bar->addMenu("?");
+    QMenu *menuAbout = menu_bar->addMenu("Help");
 
     QAction *actionAbout = menuAbout->addAction(tr("About the application"));
     QAction *actionAuthors = menuAbout->addAction(tr("Au&thors"));
     QAction *actionReleaseNotes = menuAbout->addAction(tr("&Release Notes"));
     QAction *actionLicense = menuAbout->addAction(tr("&License"));
     menuAbout->addSeparator();
-    QAction *actionHelp = menuAbout->addAction(tr("&Help"));
+    QAction *actionHelp = menuAbout->addAction(tr("&Documentation"));
 
     connect(actionAbout, &QAction::triggered, this, &medMainWindow::onShowAbout);
     connect(actionAuthors, &QAction::triggered, this, &medMainWindow::onShowAuthors);
@@ -383,7 +382,7 @@ void medMainWindow::menuAbout(QMenuBar * menu_bar)
 void medMainWindow::menuNotif(QMenuBar * menu_bar)
 {
     // --- Notif Action
-    QMenu   *menuNotif = menu_bar->addMenu("Notif");
+    QMenu   *menuNotif = menu_bar->addMenu("Notifications");
     QAction *actionShowHideNotifs = menuNotif->addAction("Show / Hide");
     QAction *actionClearNotifs = menuNotif->addAction("Clear all");
     menuNotif->addSeparator();
@@ -764,19 +763,7 @@ void medMainWindow::onShowPluginLogs()
 
 void medMainWindow::onShowHelp()
 {
-    QDesktopServices::openUrl(QUrl("http://med.inria.fr/help/documentation"));
-}
-
-void medMainWindow::switchOffOnFullscreenIcons(const bool checked)
-{
-    if (checked)
-    {
-        d->actionFullscreen->setIcon(QIcon::fromTheme("fullscreen_off"));
-    }
-    else
-    {
-        d->actionFullscreen->setIcon(QIcon::fromTheme("fullscreen_on"));
-    }
+    QDesktopServices::openUrl(QUrl("https://med.inria.fr/documentation"));
 }
 
 void medMainWindow::filterWSMenu(QString text)
@@ -845,12 +832,6 @@ void medMainWindow::filterWSMenu(QString text)
         }
     }
 }
-
-
-
-
-
-
 
 void medMainWindow::setWallScreen (const bool full )
 {

@@ -5,7 +5,8 @@
         <file>../../../../RELEASE_NOTES.txt</file>
         <file>../../../../DESCRIPTION.txt</file>
         <file>../../../../ABOUT.txt</file>
-        <file>medInria.ico</file>        
+        <file>medInria.ico</file>
+        <file>medInria.png</file>
         <file>authors.txt</file>
 
         <file>dark.qss</file>
@@ -144,14 +145,15 @@
         <file>icons/medInriaPlugin.svg</file>
         <file>icons/radio-partial.png</file>
         <file>icons/SagittalIcon.png</file>
+        <file>icons/spot_blue.svg</file>
+        <file>icons/spot_green.svg</file>
+        <file>icons/spot_orange.svg</file>
+        <file>icons/spot_red.svg</file>
+        <file>icons/spot_yellow.svg</file>
 
-        <file>icons/bleu_spot.svg</file>
-        <file>icons/green_spot.svg</file>
-        <file>icons/orange_spot.svg</file>
-        <file>icons/red_spot.svg</file>
-        <file>icons/yellow_spot.svg</file>
-
-        <file>pixmaps/medInria-logo-homepage.png</file>
+        <file>pixmaps/medInria-logo-theme-dark.png</file>
+        <file>pixmaps/medInria-logo-theme-light.png</file>
+        <file>pixmaps/medInria-splash.png</file>
         <file>pixmaps/scene.png</file>
         <file>pixmaps/home_sc.png</file>
         <file>pixmaps/database.png</file>

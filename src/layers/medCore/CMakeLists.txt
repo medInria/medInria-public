@@ -49,7 +49,6 @@ list_source_files(${TARGET_NAME}
   legacy/views/interactors
   legacy/views/navigators
   legacy/parameters
-  legacy/resources
   data
   source/operating
   source/settings

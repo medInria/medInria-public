@@ -190,14 +190,7 @@ private slots:
      */
     void onShowPluginLogs();
 
-    /**
-     * @brief Update the fullscreen icon if checked or not
-     */
-    void switchOffOnFullscreenIcons(const bool checked);
-
-
     void filterWSMenu(QString text);
-
 
 protected:
     void closeEvent(QCloseEvent *event);

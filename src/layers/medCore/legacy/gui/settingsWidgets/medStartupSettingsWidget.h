@@ -14,7 +14,7 @@
 
 =========================================================================*/
 
-#include <medCoreLegacyExport.h>
+#include <medCoreExport.h>
 #include <medSettingsManager.h>
 
 #include <QCheckBox>
@@ -39,11 +39,9 @@ public slots:
 protected:
     void readFullscreenSettings(medSettingsManager *);
     void readDefaultStartingArea(medSettingsManager *);
+    void readDefaultSegmentationSpeciality(medSettingsManager *);
     void readDefaultTheme(medSettingsManager *);
 
 private:
     medStartupSettingsWidgetPrivate *d;
-    QCheckBox *startInFullScreen;
-    QComboBox *defaultStartingArea;
-    QComboBox* theme;
 };
