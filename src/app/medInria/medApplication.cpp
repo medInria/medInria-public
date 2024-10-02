@@ -208,7 +208,6 @@ void medApplication::initializeSplashScreen()
     d->splashScreen->setAttribute(Qt::WA_DeleteOnClose, true);
     d->splashScreen->show();
     this->processEvents();
-    QCoreApplication::processEvents();
 }
 
 /**
