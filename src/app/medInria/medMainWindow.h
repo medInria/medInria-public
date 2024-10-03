@@ -105,7 +105,6 @@ public slots:
      */
     void switchToDefaultWorkSpace();
 
-
     /**
      * @brief Switch visibility of notification panel
      */

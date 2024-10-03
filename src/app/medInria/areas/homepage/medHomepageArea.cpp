@@ -101,7 +101,7 @@ void medHomepageArea::initPage()
     medHomepageButton * browserButton = new medHomepageButton ( this );
     browserButton->setToolButtonStyle ( Qt::ToolButtonTextBesideIcon );
     browserButton->setIcon ( QIcon::fromTheme("open") );
-    browserButton->setText ( " Import/export files" );
+    browserButton->setText ( " Browse files" );
     browserButton->setMinimumHeight ( 40 );
     browserButton->setMaximumWidth ( 250 );
     browserButton->setMinimumWidth ( 250 );
