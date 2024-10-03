@@ -11,10 +11,10 @@
 
         <file>dark.qss</file>
         <file>icons/dark/index.theme</file>
-        <file>icons/dark/24x24/arrow-bot.png</file>
-        <file>icons/dark/24x24/arrow-left.png</file>
-        <file>icons/dark/24x24/arrow-right.png</file>
-        <file>icons/dark/24x24/arrow-top.png</file>
+        <file>icons/dark/24x24/arrow-bot.svg</file>
+        <file>icons/dark/24x24/arrow-left.svg</file>
+        <file>icons/dark/24x24/arrow-right.svg</file>
+        <file>icons/dark/24x24/arrow-top.svg</file>
         <file>icons/dark/24x24/camera_off.svg</file>
         <file>icons/dark/24x24/camera_on.svg</file>
         <file>icons/dark/24x24/checkbox.png</file>
@@ -26,7 +26,8 @@
         <file>icons/dark/24x24/default_thumbnail.png</file>
         <file>icons/dark/24x24/edit.svg</file>
         <file>icons/dark/24x24/export.svg</file>
-        <file>icons/dark/24x24/eye.svg</file>
+        <file>icons/dark/24x24/eye_closed.svg</file>
+        <file>icons/dark/24x24/eye_opened.svg</file>
         <file>icons/dark/24x24/fourViews.png</file>
         <file>icons/dark/24x24/fullscreen_on.svg</file>
         <file>icons/dark/24x24/fullscreen_off.svg</file>
@@ -69,10 +70,10 @@
         <file>grey.qss</file>
         <file>light.qss</file>
         <file>icons/light/index.theme</file>
-        <file>icons/light/24x24/arrow-bot.png</file>
-        <file>icons/light/24x24/arrow-left.png</file>
-        <file>icons/light/24x24/arrow-right.png</file>
-        <file>icons/light/24x24/arrow-top.png</file>
+        <file>icons/light/24x24/arrow-bot.svg</file>
+        <file>icons/light/24x24/arrow-left.svg</file>
+        <file>icons/light/24x24/arrow-right.svg</file>
+        <file>icons/light/24x24/arrow-top.svg</file>
         <file>icons/light/24x24/camera_off.svg</file>
         <file>icons/light/24x24/camera_on.svg</file>
         <file>icons/light/24x24/checkbox.png</file>
@@ -84,7 +85,8 @@
         <file>icons/light/24x24/default_thumbnail.png</file>
         <file>icons/light/24x24/edit.svg</file>
         <file>icons/light/24x24/export.svg</file>
-        <file>icons/light/24x24/eye.svg</file>
+        <file>icons/light/24x24/eye_closed.svg</file>
+        <file>icons/light/24x24/eye_opened.svg</file>
         <file>icons/light/24x24/fourViews.png</file>
         <file>icons/light/24x24/fullscreen_on.svg</file>
         <file>icons/light/24x24/fullscreen_off.svg</file>
@@ -125,6 +127,10 @@
         <file>icons/light/24x24/user_add.svg</file>
 
         <file>icons/3DIcon.png</file>
+        <file>icons/arrow-bot-disabled.svg</file>
+        <file>icons/arrow-left-disabled.svg</file>
+        <file>icons/arrow-right-disabled.svg</file>
+        <file>icons/arrow-top-disabled.svg</file>
         <file>icons/AxialIcon.png</file>
         <file>icons/checkbox-partial.png</file>
         <file>icons/connect_on.svg</file>
@@ -133,8 +139,6 @@
         <file>icons/cross_disabled.svg</file>
         <file>icons/cross_red.svg</file>
         <file>icons/error.png</file>
-        <file>icons/eye_closed.png</file>
-        <file>icons/eye_open.png</file>
         <file>icons/help_grey.svg</file>
         <file>icons/icons8-download-16.png</file>
         <file>icons/icons8-upload-16.png</file>

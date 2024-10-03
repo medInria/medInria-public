@@ -53,9 +53,6 @@ public slots:
     void currentItemChanged(QListWidgetItem *current, QListWidgetItem *previous);
     void titleChanged();
 
-protected:
-    void paintEvent(QPaintEvent *event);
-
 signals:
     void minimizationAsked(bool);               // Signal to indicate a [un]minimization is done
     void sourceRename(QString, QString);

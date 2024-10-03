@@ -43,8 +43,8 @@ public:
 undoRedoRegistrationToolBox::undoRedoRegistrationToolBox(QWidget *parent) : medRegistrationAbstractToolBox(parent), d(new undoRedoRegistrationToolBoxPrivate)
 {
     // Undo/redo Buttons
-    d->undoButton = new QPushButton(QIcon(":/icons/arrow_down.svg"),tr("Undo"),this);
-    d->redoButton = new QPushButton(QIcon(":/icons/arrow_up.svg"),tr("Redo"),this);
+    d->undoButton = new QPushButton(QIcon::fromTheme("arrow_bot"),tr("Undo"),this);
+    d->redoButton = new QPushButton(QIcon::fromTheme("arrow_top"),tr("Redo"),this);
     d->undoButton->setEnabled(false);
     d->redoButton->setEnabled(false);
     d->resetButton = new QPushButton(tr("Reset"),this);
@@ -54,7 +54,7 @@ undoRedoRegistrationToolBox::undoRedoRegistrationToolBox(QWidget *parent) : medR
     connect(d->redoButton,SIGNAL(clicked()),this,SLOT(onRedo()));
     connect(d->resetButton,SIGNAL(clicked()),registrationFactory::instance(),SLOT(reset()));
 
-    d->arrowCurrentStep = QIcon(":/icons/arrow_right.svg");
+    d->arrowCurrentStep = QIcon::fromTheme("arrow_right");
     d->currentStep = -1;
 
     d->m_UndoRedo = new undoRedoRegistration();

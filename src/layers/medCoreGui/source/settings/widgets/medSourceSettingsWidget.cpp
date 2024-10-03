@@ -29,9 +29,6 @@ medSourceSettingsWidget::medSourceSettingsWidget(medAbstractSource * pSource, QL
     setLayout(widgetLayout);
     widgetLayout->setAlignment(Qt::AlignTop);
 
-    // Transparent background for round corners  
-    setAttribute(Qt::WA_TranslucentBackground);
-
     //--- Title area
     m_titleLayout = new QHBoxLayout;
     widgetLayout->addLayout(m_titleLayout);
@@ -67,8 +64,8 @@ medSourceSettingsWidget::medSourceSettingsWidget(medAbstractSource * pSource, QL
     // Minimize button
     m_minimizeSourceButton = new QPushButton("");
     QIcon minimizeIcon;
-    minimizeIcon.addPixmap(QPixmap(":/icons/minimize_off_white.svg"), QIcon::Normal);
-    minimizeIcon.addPixmap(QPixmap(":/icons/minimize_off_gray.svg"), QIcon::Disabled);
+    minimizeIcon.addPixmap(QIcon::fromTheme("arrow-bot").pixmap(24,24), QIcon::Normal);
+    minimizeIcon.addPixmap(QIcon(":/arrow-bot-disabled.svg").pixmap(24,24), QIcon::Disabled);
     m_minimizeSourceButton->setIcon(minimizeIcon);
     m_minimizeSourceButton->setFixedWidth(25);
     m_minimizeSourceButton->setToolTip(tr("Show or hide the body of this source item"));
@@ -139,55 +136,22 @@ void medSourceSettingsWidget::switchMinimization()
     if (m_parametersWidget->isHidden())
     {
         m_parametersWidget->show();
-        newIcon = QIcon(":/icons/minimize_off_white.svg");
-
-        m_pItem->setSizeHint(getInitialSize());
+        newIcon = QIcon::fromTheme("arrow-bot");
     }
     else
     {
-        auto g = m_titleStack.mapToGlobal(m_titleStack.geometry().topLeft());
-        auto k = QGuiApplication::screenAt(g)->devicePixelRatio();
-        auto t1 = m_titleStack.frameSize().height()*1;
         m_parametersWidget->hide();
-        newIcon =  QIcon(":/icons/minimize_on_white.svg");
-        m_pItem->setSizeHint(QSize(getInitialSize().width(), t1));
+        newIcon =  QIcon::fromTheme("arrow-right");
     }
     m_minimizeSourceButton->setIcon(newIcon);
     emit(minimizationAsked(m_parametersWidget->isHidden()));
+    resize(size().width(), sizeHint().height());  // Adjust the new height of the QFrame
 }
 
 void medSourceSettingsWidget::titleChanged()
 {
     m_titleLabel->setText(m_pSource->getInstanceName());
 }
-
-/**
- * @brief Define the graphic behavior when the widget needs to be updated
- * 
- * @param event
- */
-void medSourceSettingsWidget::paintEvent(QPaintEvent *event)
-{
-    Q_UNUSED(event)
-
-    auto backgroundColor = "#3C464D"; // non selected
-    if (m_sourceSelected)
-    {
-        backgroundColor = "#7B797D"; // selected
-    }
-
-    QPainter painter(this);
-    painter.setRenderHint(QPainter::Antialiasing); // smooth borders
-    painter.setBrush(QBrush(backgroundColor));     // visible color of background
-    painter.setPen(Qt::transparent);               // thin border color
-
-    // Change border radius
-    QRect rect = this->rect();
-    rect.setWidth(rect.width()-1);
-    rect.setHeight(rect.height()-1);
-    painter.drawRoundedRect(rect, 8, 8);
-}
-
 
 /**
  * @brief Change the visualisation of the source item if selected or not

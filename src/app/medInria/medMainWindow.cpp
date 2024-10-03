@@ -264,17 +264,14 @@ void medMainWindow::menuWorkspace(QMenuBar * menu_bar)
     // --- Area menu
     QMenu *menuWorkspaces = menu_bar->addMenu("Workspaces");
 
-    //auto searchLabel = new QWidgetAction(menuWorkspaces);
     auto searchEdit = new QWidgetAction(menuWorkspaces);
-    //searchLabel->setDefaultWidget(new QLabel("Search features you want below"));
-    QLineEdit * researchWorkSpace = new QLineEdit("Search here ...");
+    QLineEdit * researchWorkSpace = new QLineEdit();
+    researchWorkSpace->setPlaceholderText("Search...");
     searchEdit->setDefaultWidget(researchWorkSpace);
-    //menuWorkspaces->addAction(searchLabel);
     menuWorkspaces->addAction(searchEdit);
     menuWorkspaces->addSeparator();
 
     connect(researchWorkSpace, &QLineEdit::textEdited, this, &medMainWindow::filterWSMenu);
-
 
     medToolBoxFactory *tbFactory = medToolBoxFactory::instance();
     QList<medWorkspaceFactory::Details*> workspaceDetails = medWorkspaceFactory::instance()->workspaceDetailsSortedByName(true);

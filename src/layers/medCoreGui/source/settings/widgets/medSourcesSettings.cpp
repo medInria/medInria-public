@@ -75,7 +75,6 @@ medSourcesSettings::medSourcesSettings(medSourcesLoader * pi_pSourceLoader, QWid
     auto * sourceLayout = new QHBoxLayout();
     pMainLayout->addLayout(sourceLayout);
 
-
     // The drag&drop area handles the creation and move of source item widgets
     m_sourceListWidget = new QListWidget(this);
     sourceLayout->setAlignment(Qt::AlignTop);
@@ -85,7 +84,7 @@ medSourcesSettings::medSourcesSettings(medSourcesLoader * pi_pSourceLoader, QWid
     m_sourceListWidget->setDragDropMode(QAbstractItemView::InternalMove);
     m_sourceListWidget->setAutoScroll(true);
     m_sourceListWidget->setResizeMode(QListView::Adjust);
-    m_sourceListWidget->setMinimumWidth(400);
+    m_sourceListWidget->setMinimumWidth(550);
     // Change the color of the background when an item is selected to drag&drop
     m_sourceListWidget->setStyleSheet("QListWidget::item:selected {background:gray;}");
 
@@ -246,10 +245,13 @@ void medSourcesSettings::sourceCreated(medAbstractSource * pi_pSource)
     m_sourceListWidget->addItem(widgetItem);
     m_sourceListWidget->setItemWidget(widgetItem, newSourceWidgetItem);
 
-    // Initial size of item
-    QSize initialSize = newSourceWidgetItem->size();
-    newSourceWidgetItem->saveInitialSize(initialSize);
-    widgetItem->setSizeHint(initialSize);
+    // Set initial size, and handle resize from minimization of the QFrame
+    widgetItem->setSizeHint(newSourceWidgetItem->sizeHint());
+    QObject::connect(newSourceWidgetItem, &medSourceSettingsWidget::minimizationAsked, [=](bool isHidden)
+    {
+        widgetItem->setSizeHint(newSourceWidgetItem->sizeHint());
+        m_sourceListWidget->updateGeometry();
+    });
 
     m_sourceListWidget->setSpacing(2);
 
