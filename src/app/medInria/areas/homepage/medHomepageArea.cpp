@@ -231,6 +231,10 @@ void medHomepageArea::onShowWorkspace(QString workspace)
     emit showWorkspace(workspace);
 }
 
+/**
+ * @brief Get the homepage logo associated to the type of theme for better contrast.
+ * 
+ */
 QPixmap medHomepageArea::getApplicationLogoPixmap()
 {
     QPixmap applicationLogo;

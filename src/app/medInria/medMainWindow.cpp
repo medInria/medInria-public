@@ -361,7 +361,6 @@ void medMainWindow::menuSettings(QMenuBar * menu_bar)
 
 void medMainWindow::menuAbout(QMenuBar * menu_bar)
 {
-
     // --- About menu
     QMenu *menuAbout = menu_bar->addMenu("Help");
 
@@ -370,7 +369,7 @@ void medMainWindow::menuAbout(QMenuBar * menu_bar)
     QAction *actionReleaseNotes = menuAbout->addAction(tr("&Release Notes"));
     QAction *actionLicense = menuAbout->addAction(tr("&License"));
     menuAbout->addSeparator();
-    QAction *actionHelp = menuAbout->addAction(tr("&Documentation"));
+    QAction *actionHelp = menuAbout->addAction(tr("&Online Documentation"));
 
     connect(actionAbout, &QAction::triggered, this, &medMainWindow::onShowAbout);
     connect(actionAuthors, &QAction::triggered, this, &medMainWindow::onShowAuthors);

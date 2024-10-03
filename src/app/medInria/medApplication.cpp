@@ -198,7 +198,7 @@ void medApplication::initialize()
 }
 
 /**
- * @brief Set the Qt splash screen to the logo associated to the type of theme.
+ * @brief Set the Qt splash screen to the application logo.
  * 
  */
 void medApplication::initializeSplashScreen()
