@@ -10,6 +10,7 @@
  */
 #include "medSourceSettingsWidget.h"
 
+#include <QDebug>
 #include <QGroupBox>
 #include <QPainter>
 #include <QVBoxLayout>
@@ -55,21 +56,14 @@ medSourceSettingsWidget::medSourceSettingsWidget(medAbstractSource * pSource, QL
     m_defaultLabel->setStyleSheet("font: italic");
     m_titleLayout->addWidget(m_defaultLabel);
 
-    // should be in medInria.qss, in order to allow other themes to change colors or styles.
-    QString buttonStyle = "QPushButton {"
-                          " background-color: none; }"
-                          "QPushButton:hover {"
-                          " background-color: grey; }";
-
     // Minimize button
     m_minimizeSourceButton = new QPushButton("");
     QIcon minimizeIcon;
     minimizeIcon.addPixmap(QIcon::fromTheme("arrow-bot").pixmap(24,24), QIcon::Normal);
-    minimizeIcon.addPixmap(QIcon(":/arrow-bot-disabled.svg").pixmap(24,24), QIcon::Disabled);
+    minimizeIcon.addPixmap(QIcon(":/icons/arrow-bot-disabled.svg").pixmap(24,24), QIcon::Disabled);
     m_minimizeSourceButton->setIcon(minimizeIcon);
     m_minimizeSourceButton->setFixedWidth(25);
     m_minimizeSourceButton->setToolTip(tr("Show or hide the body of this source item"));
-    m_minimizeSourceButton->setStyleSheet(buttonStyle);
     m_titleLayout->addWidget(m_minimizeSourceButton);
 
     //--- Fill parameters in body
@@ -151,6 +145,28 @@ void medSourceSettingsWidget::switchMinimization()
 void medSourceSettingsWidget::titleChanged()
 {
     m_titleLabel->setText(m_pSource->getInstanceName());
+}
+
+/**
+ * @brief Define the graphic behavior when the widget needs to be updated
+ * 
+ * @param event
+ */
+void medSourceSettingsWidget::paintEvent(QPaintEvent *event)
+{
+    Q_UNUSED(event)
+
+    QColor borderColor = m_sourceSelected ? QColor("#FF8844") : QColor("#3C464D");
+
+    QPainter painter(this);
+    painter.setRenderHint(QPainter::Antialiasing);
+    painter.setBrush(Qt::transparent);
+    QRect rect = this->rect();
+    painter.drawRect(rect);
+
+    // Draw updated contour
+    painter.setPen(QPen(borderColor, 1));
+    painter.drawRect(rect.adjusted(1, 1, -1, -1));
 }
 
 /**

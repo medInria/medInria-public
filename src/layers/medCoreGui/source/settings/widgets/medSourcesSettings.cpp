@@ -77,16 +77,14 @@ medSourcesSettings::medSourcesSettings(medSourcesLoader * pi_pSourceLoader, QWid
 
     // The drag&drop area handles the creation and move of source item widgets
     m_sourceListWidget = new QListWidget(this);
-    sourceLayout->setAlignment(Qt::AlignTop);
-    sourceLayout->addWidget(m_sourceListWidget);
-
     m_sourceListWidget->setAcceptDrops(true);
-    m_sourceListWidget->setDragDropMode(QAbstractItemView::InternalMove);
+    m_sourceListWidget->setDragDropMode(QAbstractItemView::NoDragDrop);
     m_sourceListWidget->setAutoScroll(true);
     m_sourceListWidget->setResizeMode(QListView::Adjust);
     m_sourceListWidget->setMinimumWidth(550);
-    // Change the color of the background when an item is selected to drag&drop
-    m_sourceListWidget->setStyleSheet("QListWidget::item:selected {background:gray;}");
+
+    sourceLayout->setAlignment(Qt::AlignTop);
+    sourceLayout->addWidget(m_sourceListWidget);
 
     for (auto pSource : pi_pSourceLoader->sourcesList())
     {
@@ -103,11 +101,12 @@ medSourcesSettings::medSourcesSettings(medSourcesLoader * pi_pSourceLoader, QWid
 
     m_SettingsHandlerWidget = new medSourcesSettingsHandlerWidget(this);
     sourceLayout->addWidget(m_SettingsHandlerWidget);
+
     //--- Now that Qt widgets are set: create connections
     connect(m_sourceTypeCombobox, QOverload<int>::of(&QComboBox::currentIndexChanged), this, &medSourcesSettings::updateSelectedSourceDescription);
     connect(createButton,       &QPushButton::clicked, this, &medSourcesSettings::createSource);
     connect(m_sourceLoader,     &medSourcesLoader::sourceAdded,  this, &medSourcesSettings::sourceCreated);   // Signal to slot to indicate a new source
-    connect(m_sourceLoader,     &medSourcesLoader::sourceRemoved, this, &medSourcesSettings::sourceRemoved);   // Signal to slot to indicate a new source
+    connect(m_sourceLoader,     &medSourcesLoader::sourceRemoved, this, &medSourcesSettings::sourceRemoved);
     connect(m_sourceListWidget, &QListWidget::currentRowChanged, this, &medSourcesSettings::selectedSourceChange);
     connect(m_sourceListWidget->model(), &QAbstractItemModel::rowsMoved, this, &medSourcesSettings::sourceMoved);
 
@@ -125,8 +124,6 @@ medSourcesSettings::medSourcesSettings(medSourcesLoader * pi_pSourceLoader, QWid
     pMainLayout->addWidget(createConfPathWidget());
 }
 
-
-
 /**
  * @brief Slot to handle a change selected source.
  * @details This slot must be connected to m_sourceListWidget.
@@ -139,8 +136,13 @@ void medSourcesSettings::selectedSourceChange(int pi_index)
     {
         auto *pSource = m_sourceToItem.key(pItem);
         bool bIsDefaultWorkingSource = pSource == m_sourceLoader->getDefaultWorkingSource();
-
         m_SettingsHandlerWidget->sourceChange(pSource, bIsDefaultWorkingSource);
+
+        auto *settingsWidget = qobject_cast<medSourceSettingsWidget*>(m_sourceListWidget->itemWidget(pItem));
+        if (settingsWidget)
+        {
+            settingsWidget->setSelectedVisualisation(true);
+        }
     }
     else
     {
@@ -162,8 +164,6 @@ void medSourcesSettings::sourceMoved(const QModelIndex &parent, int start, int e
 {
     m_sourceLoader->changeSourceOrder(start, row);
 }
-
-
 
 /**
  * @brief Launch the creation of a new medAbstractSource.
@@ -190,7 +190,7 @@ void medSourcesSettings::createSource()
 */
 void medSourcesSettings::removeSource()
 {
-    auto * pItem = m_sourceListWidget->currentItem();    
+    auto * pItem = m_sourceListWidget->currentItem();
     if (pItem)
     {
         auto *pSource = m_sourceToItem.key(pItem);
@@ -230,8 +230,6 @@ bool medSourcesSettings::setAsDefault()
 
     return bRes;
 }
-
-
 
 /**
  * @brief Display a new source and select it.
@@ -286,8 +284,6 @@ void medSourcesSettings::updateSourceConnection()
     }
 }
 
-
-
 /**
  * @brief Display the description of the chosen source type in the GUI.
  * @param [in] pi_index of current selected type of source.
@@ -338,3 +334,32 @@ QWidget * medSourcesSettings::createConfPathWidget()
     return pConfFileWidget;
 }
 
+/**
+ * @brief Move up the current source item.
+ * 
+ */
+void medSourcesSettings::moveSourceItemUp()
+{
+    int currentRow = m_sourceListWidget->currentRow();
+    if (currentRow > 0)
+    {
+        QListWidgetItem *item = m_sourceListWidget->takeItem(currentRow);
+        m_sourceListWidget->insertItem(currentRow - 1, item);
+        m_sourceListWidget->setCurrentRow(currentRow - 1);
+    }
+}
+
+/**
+ * @brief Move down the current source item.
+ * 
+ */
+void medSourcesSettings::moveSourceItemDown()
+{
+    int currentRow = m_sourceListWidget->currentRow();
+    if (currentRow < m_sourceListWidget->count() - 1)
+    {
+        QListWidgetItem *item = m_sourceListWidget->takeItem(currentRow);
+        m_sourceListWidget->insertItem(currentRow + 1, item);
+        m_sourceListWidget->setCurrentRow(currentRow + 1);
+    }
+}

@@ -19,6 +19,8 @@
         <file>icons/dark/24x24/camera_on.svg</file>
         <file>icons/dark/24x24/checkbox.png</file>
         <file>icons/dark/24x24/checkbox-checked.png</file>
+        <file>icons/dark/24x24/chevron_down.svg</file>
+        <file>icons/dark/24x24/chevron_up.svg</file>
         <file>icons/dark/24x24/clock.svg</file>
         <file>icons/dark/24x24/contrast.svg</file>
         <file>icons/dark/24x24/cropping.svg</file>
@@ -78,6 +80,8 @@
         <file>icons/light/24x24/camera_on.svg</file>
         <file>icons/light/24x24/checkbox.png</file>
         <file>icons/light/24x24/checkbox-checked.png</file>
+        <file>icons/light/24x24/chevron_down.svg</file>
+        <file>icons/light/24x24/chevron_up.svg</file>
         <file>icons/light/24x24/clock.svg</file>
         <file>icons/light/24x24/contrast.svg</file>
         <file>icons/light/24x24/cropping.svg</file>
@@ -133,6 +137,8 @@
         <file>icons/arrow-top-disabled.svg</file>
         <file>icons/AxialIcon.png</file>
         <file>icons/checkbox-partial.png</file>
+        <file>icons/chevron_down_disabled.svg</file>
+        <file>icons/chevron_up_disabled.svg</file>
         <file>icons/connect_on.svg</file>
         <file>icons/connect_off.svg</file>
         <file>icons/CoronalIcon.png</file>
