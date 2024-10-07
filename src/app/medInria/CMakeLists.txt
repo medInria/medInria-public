@@ -135,6 +135,7 @@ target_link_libraries(${TARGET_NAME} PRIVATE
   Qt5::Widgets
   Qt5::Gui
   Qt5::OpenGL
+  Qt5::Svg
   dtkCoreSupport
   dtkGuiSupport
   dtkVrSupport

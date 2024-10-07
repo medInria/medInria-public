@@ -63,11 +63,15 @@ $PUSH_BUTTON_DISABLED_BACKGROUND        = qlineargradient(x1: 0, y1: 0, x2: 0, y
 $PUSH_BUTTON_HOVER_BACKGROUND           = qlineargradient(x1: 0, y1: 0, x2: 0, y2: 1, stop: 0 $GREY07, stop: 1 $GREY06);
 $PUSH_BUTTON_CHECKED_BACKGROUND         = $GREY00;
 $PUSH_BUTTON_PRESSED_BACKGROUND         = qlineargradient(x1: 0, y1: 0, x2: 0, y2: 1, stop: 0 $GREY02, stop: 1 $GREY01);
+$PUSH_BUTTON_HOVER_COLOR                = $GREY00;
+$PUSH_BUTTON_CHECKED_COLOR              = $GREY04;
+$PUSH_BUTTON_PRESSED_COLOR              = $GREY11;
 
 $COMBO_BOX_BACKGROUND                   = qlineargradient(x1: 0, y1: 0, x2: 0, y2: 1, stop: 0 $GREY02, stop: 1 $GREY01);
 $COMBO_BOX_HOVER_BACKGROUND             = qlineargradient(x1: 0, y1: 0, x2: 0, y2: 1, stop: 0 $GREY07, stop: 1 $GREY06);
 $COMBO_BOX_ITEM_BACKGROUND              = qlineargradient(x1: 0, y1: 0, x2: 0, y2: 1, stop: 0 $GREY07, stop: 1 $GREY06);
 $COMBO_BOX_ITEM_SELECTED_BACKGROUND     = $GREY00;
+$COMBO_BOX_ITEM_DISABLED                = $GREY11;
 
 $TAB_BACKGROUND                         = qlineargradient(x1: 0, y1: 0, x2: 1, y2: 0, stop: 0 $GREY02, stop: 1 $GREY01);
 $TAB_HOVER_BACKGROUND                   = qlineargradient(x1: 0, y1: 0, x2: 1, y2: 0, stop: 0 $GREY07, stop: 1 $GREY06);
@@ -80,7 +84,6 @@ $SCROLL_BAR_VERTICAL_BACKGROUND         = $GREY04;
 $HOME_PAGE_BUTTON_BACKGROUND            = $GREY03;
 $HOME_PAGE_BUTTON_HOVER_BACKGROUND      = $GREY00;
 
-$TOOLBOX_CONTAINER_BACKGROUND           = $GREY01;
 $TOOLBOX_HEADER_BACKGROUND              = qlineargradient(x1: 0, y1: 0, x2: 0, y2: 1, stop: 0 $GREY02, stop: 1 $GREY00);
 $TOOLBOX_BODY_BACKGROUND                = qlineargradient(x1: 0, y1: 0, x2: 0, y2: 1, stop: 0 $GREY02, stop: 1 $GREY01);
 $TOOLBOX_BACKGROUND                     = $GREY04;
@@ -95,7 +98,7 @@ $FINDER_PATH_BAR_BACKGROUND             = qlineargradient(x1: 0, y1: 0, x2: 1, y
 $CONTAINER_BACKGROUND                   = $GREY04;
 $VIEW_CONTAINER_BUTTON_HOVER_BACKGOUND  = $GREY10;
 
-$MENU_ITEM_HOVER_BACKGROUND             = qlineargradient(x1: 0, y1: 0, x2: 0, y2: 1, stop: 0 $GREY00, stop: 1 $GREY01);
+$MENU_ITEM_HOVER_BACKGROUND             = $GREY05;
 $MENU_ITEM_BACKGROUND                   = $GREY05;
 $MENU_ITEM_SELECTED_BACKGROUND          = $GREY00;
 
@@ -112,7 +115,6 @@ $DROP_SITE_BACKGROUND                   = $GREY01;
 $QUICK_ACCESS_MENU_HEADER_BACKGROUND     = qlineargradient(x1: 0, y1: 0, x2: 0, y2: 1, stop: 0 $GREY00, stop: 1 $GREY01);
 
 $QUICK_ACCESS_MENU_BACKGROUND            = rgba(200,200,200,150);
-
 
 /*******************************************************************************
     WIDGET COLOR
@@ -159,128 +161,80 @@ $VIEW_PROPERTY_ITEM_SELECTED_COLOR  = $COMBO_BOX_ITEM_SELECTED_COLOR;
 
 $HOME_PAGE_BUTTON_COLOR            = $HIGHLIGHT_COLOR;
 
-
 /*******************************************************************************
     BORDER
  *******************************************************************************/
 $WIDGET_BORDER                      = 0px;
-
 $GROUP_BOX_BORDER                   = 1px solid $GREY10;
-
 $CONTAINER_BORDER                   = 1px solid $GREY09;
-
 $CONTAINER_SELECTED_BORDER          = 1px solid $HIGHLIGHT_COLOR;
-
 $MENU_SEPARATOR_BORDER              = 2px solid $GREY10;
-
 $PROGRESS_BAR_BORDER                = 1px solid $GREY01;
-
 $BROWSER_CONTAINER_BORDER           = 2px solid $GREY06;
-
 $DROP_SITE_BORDER                   = 1px solid $GREY06;
-
 $DATABASE_PREVIEW_BORDER            = $CONTAINER_BORDER;
-
 $QUICK_ACCESS_PUSH_BUTTON_BORDER    = 0PX;
 
 /*******************************************************************************
     SIZES
  *******************************************************************************/
-$STATUS_BAR_HEIGHT              = 0px;
-
+$STATUS_BAR_HEIGHT              = 34px;
 $PROGRESS_BAR_HEIGHT            = 12px;
-
 $CHECKBOX_SIZE                  = 15px;
-
 $RADIO_BUTTON_SIZE              = 15px;
-
 $SLIDER_SIZE                    = 8px;
-
 $PUSH_BUTTON_SIZE               = 20px;
-
 $COMBO_BOX_SIZE                 = 20px;
-
 $SCROLL_BAR_WIDTH               = 9px;
 $SCROLL_BAR_MIN_SIZE            = 28px;
-
 $TAB_HEIGHT                     = 28px;
-
 $HEADER_HEIGHT                  = 26px;
-
 $TOOLBOX_HEADER_HEIGHT          = 28px;
-
 $VIEW_PROPERTY_MIN_HEIGHT       = 250px;
-
 $FINDER_PATH_BAR_HEIGHT         = 28px;
-
 $LAYOUT_BUTTON_MIN_HEIGHT       = 32px;
-
 
 /*******************************************************************************
     FONT
  *******************************************************************************/
 $WIDGET_FONTSIZE                = 11px;
-
 $GROUP_BOX_FONTSIZE             = 9px;
-
 
 /*******************************************************************************
     RADIUS
  *******************************************************************************/
 $LINE_EDIT_RADIUS               = 3px;
-
 $PROGRESS_BAR_RADIUS            = 5px;
-
 $SLIDER_RADIUS                  = 4px;
-
 $PUSH_BUTTON_RADIUS             = 3px;
-
 $GROUP_BOX_RADIUS               = 3px;
-
 $SCROLL_BAR_RADIUS              = 4px;
-
 $COMBO_BOX_RADIUS               = 3px;
 $VIEW_PROPERTY_COMBO_BOX_RADIUS = 2px;
-
 $FINDER_TOOLBAR_RADIUS          = 2px;
-
 $VIEW_CONTAINER_BUTTON_RADIUS   = 2px;
-
 $QUICK_ACCESS_MENU_RADIUS       = 10px;
-
 
 /*******************************************************************************
     MARGIN
  *******************************************************************************/
 $GROUP_BOX_MARGIN               = 1ex;
-
 $VIEW_CONTAINER_BUTTON_MARGIN   = 1px 2px;
-
 
 /*******************************************************************************
     PADDING
  *******************************************************************************/
 $TAB_PADDING                    = 12px;
-
 $HEADER_PADDING                 = 1px;
 $HEADER_LEFT_PADDING            = 12px;
 $HEADER_RIGHT_PADDING           = 28px;
-
 $COMBO_BOX_PADDING              = 12px;
-
 $PUSH_BUTTON_PADDING            = 6px;
-
 $VIEW_PROPERTY_ITEM_PADDING     = 4px;
-
 $TREE_VIEW_ITEM_PADDING         = 3px;
-
 $VIEW_CONTAINER_BUTTON_PADDING  = 4px 2px;
-
 $TOOLBOX_HEADER_PADDING         = 0px 8px;
-
 $FILE_SYSTEM_INFO_TEXT_PADDING  = 2px 5px;
-
-
 
 /*******************************************************************************
     QWidget
@@ -289,6 +243,7 @@ QWidget:disabled
 {
     color: $DISABLE_COLOR;
 }
+
 QWidget
 {
     color: $WIDGET_COLOR;
@@ -296,7 +251,6 @@ QWidget
     border: $WIDGET_BORDER;
     outline: 0px;
 }
-
 
 /*******************************************************************************
     QToolTip
@@ -306,8 +260,8 @@ QToolTip
     color: $TOOLTIP_COLOR;
     background: $TOOLTIP_BACKGROUND;
     padding: 1px;
+    border: none;
 }
-
 
 /*******************************************************************************
     QTableView
@@ -319,7 +273,6 @@ QTableView
     alternate-background-color: $ALT_LIST_BACKGROUND;
 }
 
-
 /*******************************************************************************
     QListView
  *******************************************************************************/
@@ -330,7 +283,6 @@ QListView
     alternate-background-color: $ALT_LIST_BACKGROUND;
 }
 
-
 /*******************************************************************************
     QTextEdit
  *******************************************************************************/
@@ -339,7 +291,6 @@ QTextEdit
     color: $EDITION_COLOR;
     background: $EDITION_BACKGROUND;
 }
-
 
 /*******************************************************************************
     QDateEdit
@@ -352,9 +303,8 @@ QDateEdit
 
 QDateEdit::down-arrow
 {
-    image: url(:/pixmaps/arrow-bot.png);
+    image: url(:/icons/dark/24x24/arrow-bot.png);
 }
-
 
 /*******************************************************************************
      QSpinBox QDoubleSpinBox
@@ -381,12 +331,12 @@ QSpinBox::up-button:hover, QDoubleSpinBox::up-button:hover
 
 QSpinBox::up-arrow, QDoubleSpinBox::up-arrow
 {
-    image: url(:/pixmaps/arrow-top.png);
+    image: url(:/icons/dark/24x24/arrow-top.png);
 }
 
 QSpinBox::up-arrow:disabled, QDoubleSpinBox::up-arrow:disabled
 {
-    image: url(:/pixmaps/arrow-top-disabled.png);
+    image: url(:/icons/light/24x24/arrow-top.png);
 }
 
 QSpinBox::down-button, QDoubleSpinBox::down-button
@@ -404,19 +354,17 @@ QSpinBox::down-button:hover, QDoubleSpinBox::down-button:hover
 
 QSpinBox::down-arrow, QDoubleSpinBox::down-arrow
 {
-    image: url(:/pixmaps/arrow-bot.png);
+    image: url(:/icons/dark/24x24/arrow-bot.png);
 }
 
 QSpinBox::down-arrow:disabled, QDoubleSpinBox::down-arrow::disabled
 {
-    image: url(:/pixmaps/arrow-bot-disabled.png);
+    image: url(:/icons/light/24x24/arrow-bot.png);
 }
-
 
 /*******************************************************************************
      QComboBox
  *******************************************************************************/
-
 QComboBox
 {
     border-radius: $COMBO_BOX_RADIUS;
@@ -429,7 +377,7 @@ QComboBox
 QComboBox::drop-down
 {
     padding-right: $COMBO_BOX_PADDING;
-    image: url(:/pixmaps/arrow-bot.png);
+    image: url(:/icons/dark/24x24/arrow-bot.png);
     subcontrol-origin: padding;
     subcontrol-position: center right;
 }
@@ -453,6 +401,11 @@ QComboBox:item:selected
     selection-color: $COMBO_BOX_ITEM_SELECTED_COLOR;
 }
 
+QComboBox QAbstractItemView::disabled
+{
+    color:$COMBO_BOX_ITEM_DISABLED;
+}
+
 /*******************************************************************************
      QCheckBox
  *******************************************************************************/
@@ -469,29 +422,28 @@ QCheckBox::indicator
 
 QCheckBox::indicator:unchecked
 {
-    image: url(:/pixmaps/checkbox.png);
+    image: url(:icons/dark/24x24/checkbox.png);
 }
 
 QCheckBox::indicator:checked
 {
-    image: url(:/pixmaps/checkbox-checked.png);
+    image: url(:icons/dark/24x24/checkbox-checked.png);
 }
 
 QCheckBox::indicator:indeterminate
 {
-    image: url(:/pixmaps/checkbox-partial.png);
+    image: url(:/icons/checkbox-partial.png); /*same icon in dark or light icon themes*/
 }
 
 QCheckBox::indicator:disabled:unchecked
 {
-    image: url(:/pixmaps/checkbox-disabled.png);
+    image: url(:icons/light/24x24/checkbox.png);
 }
 
 QCheckBox::indicator:disabled:checked
 {
-    image: url(:/pixmaps/checkbox-checked-disabled.png);
+    image: url(:icons/light/24x24/checkbox-checked.png);
 }
-
 
 /*******************************************************************************
      QTreeView
@@ -512,16 +464,16 @@ QTreeView::item
 
 QTreeView::indicator:indeterminate
 {
-    image: url(:/pixmaps/checkbox-partial.png);
+    image: url(:/icons/checkbox-partial.png); /*same icon in dark or light icon themes*/
 }
 QTreeView::indicator:checked
 {
-    background: url(:/pixmaps/checkbox-checked.png);
+    background: url(:icons/dark/24x24/checkbox-checked.png);
 }
 
 QTreeView::indicator:unchecked
 {
-    image: url(:/pixmaps/checkbox.png);
+    image: url(:icons/dark/24x24/checkbox.png);
 }
 
 QTreeView::branch:has-siblings:!adjoins-item
@@ -543,16 +495,15 @@ QTreeView::branch:has-children:!has-siblings:closed,
 QTreeView::branch:closed:has-children:has-siblings
 {
     border-image: none;
-    image: url(:pixmaps/arrow-right.png);
+    image: url(:/icons/dark/24x24/arrow-right.png);
 }
 
 QTreeView::branch:open:has-children:!has-siblings,
 QTreeView::branch:open:has-children:has-siblings
 {
     border-image: none;
-    image: url(:pixmaps/arrow-bot.png);
+    image: url(:/icons/dark/24x24/arrow-bot.png);
 }
-
 
 /*******************************************************************************
      QLabel
@@ -579,7 +530,6 @@ QTableWidget
     alternate-background-color: $ALT_LIST_BACKGROUND;
 }
 
-
 /*******************************************************************************
      QHeaderView
  *******************************************************************************/
@@ -603,14 +553,13 @@ QHeaderView::section
 
 QHeaderView::down-arrow
 {
-    image: url(:/pixmaps/arrow-bot.png);
+    image: url(:/icons/dark/24x24/arrow-bot.png);
 }
 
 QHeaderView::up-arrow
 {
-    image: url(:/pixmaps/arrow-top.png);
+    image: url(:/icons/dark/24x24/arrow-top.png);
 }
-
 
 /*******************************************************************************
      QLineEdit
@@ -621,7 +570,6 @@ QLineEdit
     background: $EDITION_BACKGROUND;
     border-radius: $LINE_EDIT_RADIUS;
 }
-
 
 /*******************************************************************************
      QProgressBar
@@ -642,6 +590,15 @@ QProgressBar::chunk
     background-color: $PROGRESS_BAR_COLOR;
 }
 
+QProgressBar::chunk[success = "true"]
+{
+    background: $GREEN;
+}
+
+QProgressBar::chunk[failure = "true"]
+{
+    background: $RED;
+}
 
 /*******************************************************************************
      QStatusBar
@@ -663,7 +620,6 @@ QStatusBar::item
     background: $STATUS_BAR_BACKGROUND;
 }
 
-
 /*******************************************************************************
      QRadioButton
  *******************************************************************************/
@@ -681,29 +637,28 @@ QRadioButton::indicator
 
 QRadioButton::indicator:unchecked
 {
-    image: url(:/pixmaps/radio.png);
+    image: url(:icons/dark/24x24/radio.png);
 }
 
 QRadioButton::indicator:checked
 {
-    image: url(:/pixmaps/radio-checked.png);
+    image: url(:icons/dark/24x24/radio-checked.png);
 }
 
 QRadioButton::indicator:indeterminate
 {
-    image: url(:/pixmaps/radio-partial.png);
+    image: url(:/icons/radio-partial.png); /*same icon in dark or light icon themes*/
 }
 
 QRadioButton::indicator:disabled:unchecked
 {
-    image: url(:/pixmaps/radio-disabled.png);
+    image: url(:icons/light/24x24/radio.png);
 }
 
 QRadioButton::indicator:disabled:checked
 {
-    image: url(:/pixmaps/radio-checked-disabled.png);
+    image: url(:icons/light/24x24/radio-checked.png);
 }
-
 
 /*******************************************************************************
      QSlider
@@ -765,7 +720,6 @@ QSlider::handle:vertical:disabled
     background: $SLIDER_DISABLED_COLOR;
 }
 
-
 /*******************************************************************************
      QPushButton QToolButton
  *******************************************************************************/
@@ -782,22 +736,24 @@ QPushButton, QPushButton:flat, QToolButton
 QPushButton:hover, QToolButton:hover
 {
     background-color: $PUSH_BUTTON_HOVER_BACKGROUND;
+    color: $PUSH_BUTTON_HOVER_COLOR;
 }
 
 QPushButton:pressed, QToolButton:pressed
 {
     background-color: $PUSH_BUTTON_PRESSED_BACKGROUND;
+    color: $PUSH_BUTTON_PRESSED_COLOR;
 }
 
 QPushButton:checked, QToolButton:checked
 {
     background-color: $PUSH_BUTTON_CHECKED_BACKGROUND;
+    color: $PUSH_BUTTON_CHECKED_COLOR;
 }
-
 
 QPushButton::menu-indicator
 {
-    image: url(:/pixmaps/drop-down.png);
+    image: url(:/icons/dark/24x24/arrow-bot.png);
     subcontrol-origin: padding;
     subcontrol-position: center right;
 }
@@ -807,14 +763,12 @@ QPushButton::menu-indicator:flat
     image: none;
 }
 
-
 QPushButton:flat
 {
     border: none;
     background-color: none;
     height: $LAYOUT_BUTTON_MIN_HEIGHT;
 }
-
 
 QPushButton:flat:hover
 {
@@ -840,7 +794,6 @@ QToolButton#quitButton:hover
     background-color: $HOME_PAGE_BUTTON_HOVER_BACKGROUND;
 }
 
-
 /*******************************************************************************
      QSplitter
  *******************************************************************************/
@@ -853,7 +806,6 @@ QSplitter::handle:vertical
 {
     border: none;
 }
-
 
 /*******************************************************************************
      QGroupBox
@@ -876,14 +828,13 @@ QGroupBox::title
 
 QGroupBox::indicator::checked
 {
-    image: url(:/pixmaps/checkbox-checked.png);
+    image: url(:icons/dark/24x24/checkbox-checked.png);
 }
 
 QGroupBox::indicator::unchecked
 {
-    image: url(:/pixmaps/checkbox.png);
+    image: url(:icons/dark/24x24/checkbox.png);
 }
-
 
 /*******************************************************************************
      QTabBar
@@ -913,7 +864,6 @@ QTabBar::tab:selected
     background: $TAB_SELECTED_BACKGROUND;
     color: $TAB_SELECTED_COLOR;
 }
-
 
 /*******************************************************************************
      QScrollBar
@@ -982,7 +932,6 @@ QScrollBar::sub-line:vertical
     border: none;
 }
 
-
 /*******************************************************************************
       QMenu
  *******************************************************************************/
@@ -993,22 +942,22 @@ QMenu
 
 QMenu::indicator:non-exclusive:unchecked
 {
-    image: url(:/pixmaps/checkbox.png);
+    image: url(:icons/dark/24x24/checkbox.png);
 }
 
 QMenu::indicator:non-exclusive:checked
 {
-    image: url(:/pixmaps/checkbox-checked.png);
+    image: url(:icons/dark/24x24/checkbox-checked.png);
 }
 
 QMenu::indicator:exclusive:unchecked
 {
-    image: url(:/pixmaps/radio.png);
+    image: url(:icons/dark/24x24/radio.png);
 }
 
 QMenu::indicator:exclusive:checked
 {
-    image: url(:/pixmaps/radio-checked.png);
+    image: url(:icons/dark/24x24/radio-checked.png);
 }
 
 QMenu::item:checked 
@@ -1058,7 +1007,6 @@ medHomepagePushButton[selected="true"]
     border: 2px solid $HIGHLIGHT_COLOR;
 }
 
-
 /*******************************************************************************
     medHomepageButton
  *******************************************************************************/
@@ -1073,11 +1021,9 @@ medHomepageButton:hover
     color: $HOME_PAGE_BUTTON_COLOR;
 }
 
-
 /*******************************************************************************
     medQuickAccessMenu
  *******************************************************************************/
-
 medQuickAccessMenu
 {
     background-color: $QUICK_ACCESS_MENU_BACKGROUND;
@@ -1092,7 +1038,6 @@ medToolBox .QWidget
     background: $TOOLBOX_BACKGROUND;
 }
 
-
 /*******************************************************************************
       medToolBoxBody
  *******************************************************************************/
@@ -1100,7 +1045,6 @@ medToolBoxBody
 {
     background: $TOOLBOX_BODY_BACKGROUND;
 }
-
 
 /*******************************************************************************
       medToolBoxHeader
@@ -1113,7 +1057,6 @@ medToolBoxHeader
     padding: $TOOLBOX_HEADER_PADDING;
 }
 
-
 /*******************************************************************************
      dtkFinderPathBar
  *******************************************************************************/
@@ -1123,11 +1066,9 @@ dtkFinderPathBar
     min-height: $FINDER_PATH_BAR_HEIGHT;
 }
 
-
 /*******************************************************************************
      medTabbedViewContainers
  *******************************************************************************/
-
 medTabbedViewContainers QPushButton
 {
     margin: $VIEW_CONTAINER_BUTTON_MARGIN;
@@ -1152,13 +1093,12 @@ medViewContainer [selected = "true"]
 
 QTabBar::close-button
 {
-    image: url(:/pixmaps/closebutton.png)
+    image: url(:icons/cross_red.svg)
 }
 
 QTabBar::close-button:hover
 {
     background: $VIEW_CONTAINER_BUTTON_HOVER_BACKGOUND
-/*	image: url(:icons/closebutton_blue.png) */
 }
 
 QWidget#defaultWidget
@@ -1169,25 +1109,10 @@ QWidget#defaultWidget
 /*******************************************************************************
      layerWidget
  *******************************************************************************/
-
 QWidget#layerWidget
 {
     background: none;
 }
-
-/*******************************************************************************
-     medMessageProgress
- *******************************************************************************/
-QProgressBar::chunk[success = "true"]
-{
-    background: $GREEN;
-}
-
-QProgressBar::chunk[failure = "true"]
-{
-    background: $RED;
-}
-
 
 /*******************************************************************************
      medDropSite
@@ -1206,6 +1131,13 @@ QWidget#settingsWidget QTabWidget::pane
     border: 2px solid $EDITION_BACKGROUND;
 }
 
+/*******************************************************************************
+     medDatabasePreview
+ *******************************************************************************/
+medDatabasePreview
+{
+    border: 1px solid $GREY07;
+}
 
 QLabel#previewLabel
 {
@@ -1278,7 +1210,6 @@ QWidget#toolbarWidget
 /*******************************************************************************
      medLinkMenu
  *******************************************************************************/
-
 QWidget#internalSubPopWidget
 {
    background: $GREY06;
@@ -1300,4 +1231,14 @@ medLinkMenu QListWidget::item:selected
     border: none;
     background: $MENU_ITEM_HOVER_BACKGROUND;
     color: $MENU_ITEM_SELECTED_COLOR;
+}
+
+/*******************************************************************************
+     QGraphicsView
+ *******************************************************************************/
+/* Border of thumbnail in DB column */
+QGraphicsView
+{
+    background: transparent;
+    border: transparent;
 }

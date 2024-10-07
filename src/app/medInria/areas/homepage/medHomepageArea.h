@@ -30,6 +30,8 @@ public:
 
     void resizeEvent( QResizeEvent * event );
 
+    QPixmap getApplicationLogoPixmap();
+
 public slots:
     void onShowBrowser();
 

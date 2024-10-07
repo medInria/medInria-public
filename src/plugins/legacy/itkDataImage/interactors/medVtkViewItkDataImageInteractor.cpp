@@ -497,8 +497,12 @@ void medVtkViewItkDataImageInteractor::setMaxIntensity(double max)
 
 QWidget* medVtkViewItkDataImageInteractor::buildToolBarWidget()
 {
+    QWidget* toolbar = new QWidget();
+    QHBoxLayout* toolbarLayout = new QHBoxLayout(toolbar);
+    toolbarLayout->setContentsMargins(5, 0, 0, 0);
     d->slicingParameter->getSlider()->setOrientation(Qt::Horizontal);
-    return d->slicingParameter->getSlider();
+    toolbarLayout->addWidget(d->slicingParameter->getSlider());
+    return toolbar;
 }
 
 QWidget* medVtkViewItkDataImageInteractor::buildToolBoxWidget()

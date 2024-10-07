@@ -6,16 +6,24 @@
         <file>../../../../DESCRIPTION.txt</file>
         <file>../../../../ABOUT.txt</file>
         <file>medInria.ico</file>
-        <file>medInria.qss</file>
+        <file>medInria.png</file>
         <file>authors.txt</file>
 
+        <file>dark.qss</file>
         <file>icons/dark/index.theme</file>
+        <file>icons/dark/24x24/arrow-bot.png</file>
+        <file>icons/dark/24x24/arrow-left.png</file>
+        <file>icons/dark/24x24/arrow-right.png</file>
+        <file>icons/dark/24x24/arrow-top.png</file>
         <file>icons/dark/24x24/camera_off.svg</file>
         <file>icons/dark/24x24/camera_on.svg</file>
+        <file>icons/dark/24x24/checkbox.png</file>
+        <file>icons/dark/24x24/checkbox-checked.png</file>
         <file>icons/dark/24x24/clock.svg</file>
         <file>icons/dark/24x24/contrast.svg</file>
         <file>icons/dark/24x24/cropping.svg</file>
         <file>icons/dark/24x24/cross.svg</file>
+        <file>icons/dark/24x24/default_thumbnail.png</file>
         <file>icons/dark/24x24/edit.svg</file>
         <file>icons/dark/24x24/export.svg</file>
         <file>icons/dark/24x24/eye.svg</file>
@@ -39,6 +47,8 @@
         <file>icons/dark/24x24/orientation_3d.svg</file>
         <file>icons/dark/24x24/pan.svg</file>
         <file>icons/dark/24x24/plus.png</file>
+        <file>icons/dark/24x24/radio.png</file>
+        <file>icons/dark/24x24/radio-checked.png</file>
         <file>icons/dark/24x24/ruler.svg</file>
         <file>icons/dark/24x24/save.svg</file>
         <file>icons/dark/24x24/save_scene.svg</file>
@@ -56,13 +66,22 @@
         <file>icons/dark/24x24/time_play.svg</file>
         <file>icons/dark/24x24/user_add.svg</file>
 
+        <file>grey.qss</file>
+        <file>light.qss</file>
         <file>icons/light/index.theme</file>
+        <file>icons/light/24x24/arrow-bot.png</file>
+        <file>icons/light/24x24/arrow-left.png</file>
+        <file>icons/light/24x24/arrow-right.png</file>
+        <file>icons/light/24x24/arrow-top.png</file>
         <file>icons/light/24x24/camera_off.svg</file>
         <file>icons/light/24x24/camera_on.svg</file>
+        <file>icons/light/24x24/checkbox.png</file>
+        <file>icons/light/24x24/checkbox-checked.png</file>
         <file>icons/light/24x24/clock.svg</file>
         <file>icons/light/24x24/contrast.svg</file>
         <file>icons/light/24x24/cropping.svg</file>
         <file>icons/light/24x24/cross.svg</file>
+        <file>icons/light/24x24/default_thumbnail.png</file>
         <file>icons/light/24x24/edit.svg</file>
         <file>icons/light/24x24/export.svg</file>
         <file>icons/light/24x24/eye.svg</file>
@@ -86,6 +105,8 @@
         <file>icons/light/24x24/orientation_3d.svg</file>
         <file>icons/light/24x24/pan.svg</file>
         <file>icons/light/24x24/plus.png</file>
+        <file>icons/light/24x24/radio.png</file>
+        <file>icons/light/24x24/radio-checked.png</file>
         <file>icons/light/24x24/ruler.svg</file>
         <file>icons/light/24x24/save.svg</file>
         <file>icons/light/24x24/save_scene.svg</file>
@@ -105,6 +126,7 @@
 
         <file>icons/3DIcon.png</file>
         <file>icons/AxialIcon.png</file>
+        <file>icons/checkbox-partial.png</file>
         <file>icons/connect_on.svg</file>
         <file>icons/connect_off.svg</file>
         <file>icons/CoronalIcon.png</file>
@@ -121,39 +143,20 @@
         <file>icons/information_blue.png</file>
         <file>icons/information_blue.svg</file>
         <file>icons/medInriaPlugin.svg</file>
+        <file>icons/radio-partial.png</file>
         <file>icons/SagittalIcon.png</file>
+        <file>icons/spot_blue.svg</file>
+        <file>icons/spot_green.svg</file>
+        <file>icons/spot_orange.svg</file>
+        <file>icons/spot_red.svg</file>
+        <file>icons/spot_yellow.svg</file>
 
-        <file>icons/bleu_spot.svg</file>
-        <file>icons/green_spot.svg</file>
-        <file>icons/orange_spot.svg</file>
-        <file>icons/red_spot.svg</file>
-        <file>icons/yellow_spot.svg</file>
-
-        <file>pixmaps/arrow-top-disabled.png</file>
-        <file>pixmaps/arrow-top.png</file>
-        <file>pixmaps/arrow-right-disabled.png</file>
-        <file>pixmaps/arrow-right.png</file>
-        <file>pixmaps/arrow-left-disabled.png</file>
-        <file>pixmaps/arrow-left.png</file>
-        <file>pixmaps/arrow-bot-disabled.png</file>
-        <file>pixmaps/arrow-bot.png</file>
-        <file>pixmaps/checkbox.png</file>
-        <file>pixmaps/checkbox-checked.png</file>
-        <file>pixmaps/checkbox-partial.png</file>
-        <file>pixmaps/checkbox-disabled.png</file>
-        <file>pixmaps/checkbox-checked-disabled.png</file>
-        <file>pixmaps/database.png</file>
-        <file>pixmaps/default_thumbnail.png</file>
-        <file>pixmaps/default_thumbnail-lightbackground.png</file>
-        <file>pixmaps/drop-down.png</file>
-        <file>pixmaps/home_sc.png</file>
-        <file>pixmaps/medInria-logo-homepage.png</file>
-        <file>pixmaps/radio.png</file>
-        <file>pixmaps/radio-disabled.png</file>
-        <file>pixmaps/radio-checked-disabled.png</file>
-        <file>pixmaps/radio-checked.png</file>
-        <file>pixmaps/radio-partial.png</file>
+        <file>pixmaps/medInria-logo-theme-dark.png</file>
+        <file>pixmaps/medInria-logo-theme-light.png</file>
+        <file>pixmaps/medInria-splash.png</file>
         <file>pixmaps/scene.png</file>
+        <file>pixmaps/home_sc.png</file>
+        <file>pixmaps/database.png</file>
         <file>pixmaps/workspace_Diffusion.png</file>
         <file>pixmaps/workspace_Visualization.png</file>
         <file>pixmaps/workspace_Registration.png</file>
