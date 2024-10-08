@@ -1324,7 +1324,7 @@ medLinkMenu QListWidget::item
     border: none;
 }
 
-medLinkMenu QListWidget::item:selected
+QListWidget::item:selected
 {
     border: none;
     background: $MENU_ITEM_HOVER_BACKGROUND;

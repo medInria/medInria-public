@@ -54,7 +54,7 @@ public:
      medSourcesSettings(medSourcesLoader * pi_pSourceLoader, QWidget *pi_parent = nullptr);
     ~medSourcesSettings() = default;
 
-  public slots:
+public slots:
     void selectedSourceChange(int pi_index);
     void sourceMoved(const QModelIndex & parent, int start, int end, const QModelIndex & destination, int row);
 
@@ -65,6 +65,9 @@ public:
     void sourceCreated(medAbstractSource *pi_pSource);
     void sourceRemoved(medAbstractSource *pi_pSource);
     void updateSourceConnection();
+
+    void moveSourceItemUp();
+    void moveSourceItemDown();
 
 protected:
     void updateSelectedSourceDescription(int pi_index);

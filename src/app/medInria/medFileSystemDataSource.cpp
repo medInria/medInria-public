@@ -73,7 +73,7 @@ medFileSystemDataSource::medFileSystemDataSource( QWidget* parent ): medAbstract
 
     QAction *viewAction = new QAction(tr("View"), this);
     viewAction->setIconVisibleInMenu(true);
-    viewAction->setIcon(QIcon::fromTheme("eye"));
+    viewAction->setIcon(QIcon::fromTheme("eye_opened"));
 
     d->finder->addContextMenuAction(importAction);
     d->finder->addContextMenuAction(viewAction);
