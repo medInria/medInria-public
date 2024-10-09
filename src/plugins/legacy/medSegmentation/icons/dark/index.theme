@@ -1,10 +1,11 @@
 [Icon Theme]
 Name=Dark
 Comment=Dark theme for the application
+Directories=svg
 
-Directories=24x24
-
-[24x24]
+[svg]
 Size=24
-Type=Fixed
-
+Context=Applications
+MinSize=24
+MaxSize=24
+Type=Scalable

@@ -125,12 +125,6 @@ QStackedWidget *medDataHubPresenter::buildFilters()
 
         if (!filterParams.isEmpty())
         {
-            QFrame *line;
-            line = new QFrame();
-            line->setFrameShape(QFrame::HLine);
-            line->setFrameShadow(QFrame::Sunken);
-            pVLayout->addWidget(line);
-
             QPushButton *pApplyButton = new QPushButton("Apply");
             pVLayout->addWidget(pApplyButton);
             connect(pApplyButton, &QPushButton::clicked, [=]()

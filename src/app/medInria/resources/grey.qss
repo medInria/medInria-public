@@ -352,7 +352,7 @@ QDateEdit
 
 QDateEdit::down-arrow
 {
-    image: url(:/icons/dark/24x24/arrow-bot.png);
+    image: url(:/icons/dark/svg/arrow-bot.svg);
 }
 
 /*******************************************************************************
@@ -380,12 +380,16 @@ QSpinBox::up-button:hover, QDoubleSpinBox::up-button:hover
 
 QSpinBox::up-arrow, QDoubleSpinBox::up-arrow
 {
-    image: url(:/icons/light/24x24/arrow-top.png);
+    image: url(:/icons/light/svg/arrow-top.svg);
+    width: 12px;
+    height: 12px;
 }
 
 QSpinBox::up-arrow:disabled, QDoubleSpinBox::up-arrow:disabled
 {
-    image: url(:/icons/dark/24x24/arrow-top.png);
+    image: url(:/icons/arrow-top-disabled.svg);
+    width: 12px;
+    height: 12px;
 }
 
 QSpinBox::down-button, QDoubleSpinBox::down-button
@@ -403,12 +407,16 @@ QSpinBox::down-button:hover, QDoubleSpinBox::down-button:hover
 
 QSpinBox::down-arrow, QDoubleSpinBox::down-arrow
 {
-    image: url(:/icons/light/24x24/arrow-bot.png);
+    image: url(:/icons/light/svg/arrow-bot.svg);
+    width: 12px;
+    height: 12px;
 }
 
 QSpinBox::down-arrow:disabled, QDoubleSpinBox::down-arrow::disabled
 {
-    image: url(:/icons/dark/24x24/arrow-bot.png);
+    image: url(:/icons/arrow-bot-disabled.svg);
+    width: 12px;
+    height: 12px;
 }
 
 /*******************************************************************************
@@ -426,9 +434,11 @@ QComboBox
 QComboBox::drop-down
 {
     padding-right: $COMBO_BOX_PADDING;
-    image: url(:/icons/light/24x24/arrow-bot.png);
+    image: url(:/icons/light/svg/arrow-bot.svg);
     subcontrol-origin: padding;
     subcontrol-position: center right;
+    width: 16px;
+    height: 16px;
 }
 
 QComboBox::hover
@@ -473,12 +483,12 @@ QCheckBox::indicator
 /*all checkboxes switched*/
 QCheckBox::indicator:unchecked
 {
-    image: url(:icons/light/24x24/checkbox.png); 
+    image: url(:icons/light/png/checkbox.png); 
 }
 
 QCheckBox::indicator:checked
 {
-    image: url(:icons/light/24x24/checkbox-checked.png);
+    image: url(:icons/light/png/checkbox-checked.png);
 }
 
 QCheckBox::indicator:indeterminate
@@ -488,12 +498,12 @@ QCheckBox::indicator:indeterminate
 
 QCheckBox::indicator:disabled:unchecked
 {
-    image: url(:icons/dark/24x24/checkbox.png);
+    image: url(:icons/dark/png/checkbox.png);
 }
 
 QCheckBox::indicator:disabled:checked
 {
-    image: url(:icons/dark/24x24/checkbox-checked.png);
+    image: url(:icons/dark/png/checkbox-checked.png);
 }
 
 /*******************************************************************************
@@ -516,12 +526,12 @@ QTreeView::indicator:indeterminate
 }
 QTreeView::indicator:checked
 {
-    background: url(:icons/dark/24x24/checkbox-checked.png);
+    background: url(:icons/dark/png/checkbox-checked.png);
 }
 
 QTreeView::indicator:unchecked
 {
-    image: url(:icons/dark/24x24/checkbox.png);
+    image: url(:icons/dark/png/checkbox.png);
 }
 
 QTreeView::branch:has-siblings:!adjoins-item
@@ -543,14 +553,14 @@ QTreeView::branch:has-children:!has-siblings:closed,
 QTreeView::branch:closed:has-children:has-siblings
 {
     border-image: none;
-    image: url(:/icons/dark/24x24/arrow-right.png);
+    image: url(:/icons/dark/svg/arrow-right.svg);
 }
 
 QTreeView::branch:open:has-children:!has-siblings,
 QTreeView::branch:open:has-children:has-siblings
 {
     border-image: none;
-    image: url(:/icons/dark/24x24/arrow-bot.png);
+    image: url(:/icons/dark/svg/arrow-bot.svg);
 }
 
 /*******************************************************************************
@@ -601,12 +611,12 @@ QHeaderView::section
 
 QHeaderView::down-arrow
 {
-    image: url(:/icons/dark/24x24/arrow-bot.png);
+    image: url(:/icons/dark/svg/arrow-bot.svg);
 }
 
 QHeaderView::up-arrow
 {
-    image: url(:/icons/dark/24x24/arrow-top.png);
+    image: url(:/icons/dark/svg/arrow-top.svg);
 }
 
 /*******************************************************************************
@@ -686,12 +696,12 @@ QRadioButton::indicator
 
 QRadioButton::indicator:unchecked
 {
-    image: url(:icons/dark/24x24/radio.png);
+    image: url(:icons/dark/png/radio.png);
 }
 
 QRadioButton::indicator:checked
 {
-    image: url(:icons/dark/24x24/radio-checked.png);
+    image: url(:icons/dark/png/radio-checked.png);
 }
 
 QRadioButton::indicator:indeterminate
@@ -701,12 +711,12 @@ QRadioButton::indicator:indeterminate
 
 QRadioButton::indicator:disabled:unchecked
 {
-    image: url(:icons/light/24x24/radio.png);
+    image: url(:icons/light/png/radio.png);
 }
 
 QRadioButton::indicator:disabled:checked
 {
-    image: url(:icons/light/24x24/radio-checked.png);
+    image: url(:icons/light/png/radio-checked.png);
 }
 
 /*******************************************************************************
@@ -798,7 +808,7 @@ QPushButton:checked, QToolButton:checked
 
 QPushButton::menu-indicator
 {
-    image: url(:/icons/dark/24x24/arrow-bot.png);
+    image: url(:/icons/dark/svg/arrow-bot.svg);
     subcontrol-origin: padding;
     subcontrol-position: center right;
 }
@@ -878,12 +888,12 @@ QGroupBox::title
 
 QGroupBox::indicator::checked
 {
-    image: url(:icons/dark/24x24/checkbox-checked.png);
+    image: url(:icons/dark/png/checkbox-checked.png);
 }
 
 QGroupBox::indicator::unchecked
 {
-    image: url(:icons/dark/24x24/checkbox.png);
+    image: url(:icons/dark/png/checkbox.png);
 }
 
 /*******************************************************************************
@@ -992,27 +1002,22 @@ QMenu
 
 QMenu::indicator:non-exclusive:unchecked
 {
-    image: url(:icons/dark/24x24/checkbox.png);
+    image: url(:icons/dark/png/checkbox.png);
 }
 
 QMenu::indicator:non-exclusive:checked
 {
-    image: url(:icons/dark/24x24/checkbox-checked.png);
+    image: url(:icons/dark/png/checkbox-checked.png);
 }
 
 QMenu::indicator:exclusive:unchecked
 {
-    image: url(:icons/dark/24x24/radio.png);
+    image: url(:icons/dark/png/radio.png);
 }
 
 QMenu::indicator:exclusive:checked
 {
-    image: url(:icons/dark/24x24/radio-checked.png);
-}
-
-QMenu::item:checked 
-{
-    background: $MENU_ITEM_SELECTED_BACKGROUND;
+    image: url(:icons/dark/png/radio-checked.png);
 }
 
 QMenu::separator
@@ -1023,8 +1028,10 @@ QMenu::separator
 QMenu::item
 {
     border: none;
-    margin-left: 8px;
-    margin-right: 22px;
+    padding-right: 24px;
+    padding-left: 4px;
+    margin-left: 4px;
+    margin-right: 4px;
     margin-top: 4px;
     margin-bottom: 4px;
 }
