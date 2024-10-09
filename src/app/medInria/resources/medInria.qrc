@@ -9,164 +9,166 @@
         <file>medInria.png</file>
         <file>authors.txt</file>
 
+        <!-- Icons for dark themes -->
         <file>dark.qss</file>
         <file>icons/dark/index.theme</file>
-        <file>icons/dark/24x24/arrow-bot.svg</file>
-        <file>icons/dark/24x24/arrow-left.svg</file>
-        <file>icons/dark/24x24/arrow-right.svg</file>
-        <file>icons/dark/24x24/arrow-top.svg</file>
-        <file>icons/dark/24x24/camera_off.svg</file>
-        <file>icons/dark/24x24/camera_on.svg</file>
-        <file>icons/dark/24x24/checkbox.png</file>
-        <file>icons/dark/24x24/checkbox-checked.png</file>
-        <file>icons/dark/24x24/chevron_down.svg</file>
-        <file>icons/dark/24x24/chevron_up.svg</file>
-        <file>icons/dark/24x24/clock.svg</file>
-        <file>icons/dark/24x24/contrast.svg</file>
-        <file>icons/dark/24x24/cropping.svg</file>
-        <file>icons/dark/24x24/cross.svg</file>
-        <file>icons/dark/24x24/default_thumbnail.png</file>
-        <file>icons/dark/24x24/edit.svg</file>
-        <file>icons/dark/24x24/export.svg</file>
-        <file>icons/dark/24x24/eye_closed.svg</file>
-        <file>icons/dark/24x24/eye_opened.svg</file>
-        <file>icons/dark/24x24/fourViews.png</file>
-        <file>icons/dark/24x24/fullscreen_on.svg</file>
-        <file>icons/dark/24x24/fullscreen_off.svg</file>
-        <file>icons/dark/24x24/gaussian_filter.png</file>
-        <file>icons/dark/24x24/help.svg</file>
-        <file>icons/dark/24x24/import_permanent.svg</file>
-        <file>icons/dark/24x24/import_temporary.svg</file>
-        <file>icons/dark/24x24/link.svg</file>
-        <file>icons/dark/24x24/magnifier.svg</file>
-        <file>icons/dark/24x24/maximize_off.svg</file>
-        <file>icons/dark/24x24/maximize_on.svg</file>
-        <file>icons/dark/24x24/metadata.svg</file>
-        <file>icons/dark/24x24/minus.png</file>
-        <file>icons/dark/24x24/movie_off.svg</file>
-        <file>icons/dark/24x24/movie_on.svg</file>
-        <file>icons/dark/24x24/notifications.png</file>
-        <file>icons/dark/24x24/open.svg</file>
-        <file>icons/dark/24x24/orientation_3d.svg</file>
-        <file>icons/dark/24x24/pan.svg</file>
-        <file>icons/dark/24x24/plus.png</file>
-        <file>icons/dark/24x24/radio.png</file>
-        <file>icons/dark/24x24/radio-checked.png</file>
-        <file>icons/dark/24x24/ruler.svg</file>
-        <file>icons/dark/24x24/save.svg</file>
-        <file>icons/dark/24x24/save_scene.svg</file>
-        <file>icons/dark/24x24/settings.svg</file>
-        <file>icons/dark/24x24/split_horizontal.png</file>
-        <file>icons/dark/24x24/splitPresets.png</file>
-        <file>icons/dark/24x24/split_vertical.png</file>
-        <file>icons/dark/24x24/stack.svg</file>
-        <file>icons/dark/24x24/study_add.svg</file>
-        <file>icons/dark/24x24/time_backward.svg</file>
-        <file>icons/dark/24x24/time_backward_step.svg</file>
-        <file>icons/dark/24x24/time_forward.svg</file>
-        <file>icons/dark/24x24/time_forward_step.svg</file>
-        <file>icons/dark/24x24/time_pause.svg</file>
-        <file>icons/dark/24x24/time_play.svg</file>
-        <file>icons/dark/24x24/user_add.svg</file>
+        <file>icons/dark/png/checkbox.png</file>
+        <file>icons/dark/png/checkbox-checked.png</file>
+        <file>icons/dark/png/default_thumbnail.png</file>
+        <file>icons/dark/png/fourViews.png</file>
+        <file>icons/dark/png/gaussian_filter.png</file>
+        <file>icons/dark/png/minus.png</file>
+        <file>icons/dark/png/notifications.png</file>
+        <file>icons/dark/png/plus.png</file>
+        <file>icons/dark/png/radio.png</file>
+        <file>icons/dark/png/radio-checked.png</file>
+        <file>icons/dark/png/split_horizontal.png</file>
+        <file>icons/dark/png/splitPresets.png</file>
+        <file>icons/dark/png/split_vertical.png</file>
+        <file>icons/dark/svg/arrow-bot.svg</file>
+        <file>icons/dark/svg/arrow-left.svg</file>
+        <file>icons/dark/svg/arrow-right.svg</file>
+        <file>icons/dark/svg/arrow-top.svg</file>
+        <file>icons/dark/svg/camera_off.svg</file>
+        <file>icons/dark/svg/camera_on.svg</file>
+        <file>icons/dark/svg/chevron_down.svg</file>
+        <file>icons/dark/svg/chevron_up.svg</file>
+        <file>icons/dark/svg/clock.svg</file>
+        <file>icons/dark/svg/contrast.svg</file>
+        <file>icons/dark/svg/cropping.svg</file>
+        <file>icons/dark/svg/cross.svg</file>
+        <file>icons/dark/svg/download.svg</file>
+        <file>icons/dark/svg/download_fail.svg</file>
+        <file>icons/dark/svg/edit.svg</file>
+        <file>icons/dark/svg/eye_closed.svg</file>
+        <file>icons/dark/svg/eye_opened.svg</file>
+        <file>icons/dark/svg/fullscreen_on.svg</file>
+        <file>icons/dark/svg/fullscreen_off.svg</file>
+        <file>icons/dark/svg/help.svg</file>
+        <file>icons/dark/svg/link.svg</file>
+        <file>icons/dark/svg/magnifier.svg</file>
+        <file>icons/dark/svg/maximize_off.svg</file>
+        <file>icons/dark/svg/maximize_on.svg</file>
+        <file>icons/dark/svg/metadata.svg</file>
+        <file>icons/dark/svg/movie_off.svg</file>
+        <file>icons/dark/svg/movie_on.svg</file>
+        <file>icons/dark/svg/open.svg</file>
+        <file>icons/dark/svg/orientation_3d.svg</file>
+        <file>icons/dark/svg/pan.svg</file>
+        <file>icons/dark/svg/ruler.svg</file>
+        <file>icons/dark/svg/save.svg</file>
+        <file>icons/dark/svg/save_scene.svg</file>
+        <file>icons/dark/svg/settings.svg</file>
+        <file>icons/dark/svg/stack.svg</file>
+        <file>icons/dark/svg/study_add.svg</file>
+        <file>icons/dark/svg/time_backward.svg</file>
+        <file>icons/dark/svg/time_backward_step.svg</file>
+        <file>icons/dark/svg/time_forward.svg</file>
+        <file>icons/dark/svg/time_forward_step.svg</file>
+        <file>icons/dark/svg/time_pause.svg</file>
+        <file>icons/dark/svg/time_play.svg</file>
+        <file>icons/dark/svg/upload.svg</file>
+        <file>icons/dark/svg/upload_fail.svg</file>
+        <file>icons/dark/svg/user_add.svg</file>
 
+        <!-- Icons for light themes -->
         <file>grey.qss</file>
         <file>light.qss</file>
         <file>icons/light/index.theme</file>
-        <file>icons/light/24x24/arrow-bot.svg</file>
-        <file>icons/light/24x24/arrow-left.svg</file>
-        <file>icons/light/24x24/arrow-right.svg</file>
-        <file>icons/light/24x24/arrow-top.svg</file>
-        <file>icons/light/24x24/camera_off.svg</file>
-        <file>icons/light/24x24/camera_on.svg</file>
-        <file>icons/light/24x24/checkbox.png</file>
-        <file>icons/light/24x24/checkbox-checked.png</file>
-        <file>icons/light/24x24/chevron_down.svg</file>
-        <file>icons/light/24x24/chevron_up.svg</file>
-        <file>icons/light/24x24/clock.svg</file>
-        <file>icons/light/24x24/contrast.svg</file>
-        <file>icons/light/24x24/cropping.svg</file>
-        <file>icons/light/24x24/cross.svg</file>
-        <file>icons/light/24x24/default_thumbnail.png</file>
-        <file>icons/light/24x24/edit.svg</file>
-        <file>icons/light/24x24/export.svg</file>
-        <file>icons/light/24x24/eye_closed.svg</file>
-        <file>icons/light/24x24/eye_opened.svg</file>
-        <file>icons/light/24x24/fourViews.png</file>
-        <file>icons/light/24x24/fullscreen_on.svg</file>
-        <file>icons/light/24x24/fullscreen_off.svg</file>
-        <file>icons/light/24x24/gaussian_filter.png</file>
-        <file>icons/light/24x24/help.svg</file>
-        <file>icons/light/24x24/import_permanent.svg</file>
-        <file>icons/light/24x24/import_temporary.svg</file>
-        <file>icons/light/24x24/link.svg</file>
-        <file>icons/light/24x24/magnifier.svg</file>
-        <file>icons/light/24x24/maximize_off.svg</file>
-        <file>icons/light/24x24/maximize_on.svg</file>
-        <file>icons/light/24x24/metadata.svg</file>
-        <file>icons/light/24x24/minus.png</file>
-        <file>icons/light/24x24/movie_off.svg</file>
-        <file>icons/light/24x24/movie_on.svg</file>
-        <file>icons/light/24x24/notifications.png</file>
-        <file>icons/light/24x24/open.svg</file>
-        <file>icons/light/24x24/orientation_3d.svg</file>
-        <file>icons/light/24x24/pan.svg</file>
-        <file>icons/light/24x24/plus.png</file>
-        <file>icons/light/24x24/radio.png</file>
-        <file>icons/light/24x24/radio-checked.png</file>
-        <file>icons/light/24x24/ruler.svg</file>
-        <file>icons/light/24x24/save.svg</file>
-        <file>icons/light/24x24/save_scene.svg</file>
-        <file>icons/light/24x24/settings.svg</file>
-        <file>icons/light/24x24/split_horizontal.png</file>
-        <file>icons/light/24x24/splitPresets.png</file>
-        <file>icons/light/24x24/split_vertical.png</file>
-        <file>icons/light/24x24/stack.svg</file>
-        <file>icons/light/24x24/study_add.svg</file>
-        <file>icons/light/24x24/time_backward.svg</file>
-        <file>icons/light/24x24/time_backward_step.svg</file>
-        <file>icons/light/24x24/time_forward.svg</file>
-        <file>icons/light/24x24/time_forward_step.svg</file>
-        <file>icons/light/24x24/time_pause.svg</file>
-        <file>icons/light/24x24/time_play.svg</file>
-        <file>icons/light/24x24/user_add.svg</file>
+        <file>icons/light/png/checkbox.png</file>
+        <file>icons/light/png/checkbox-checked.png</file>
+        <file>icons/light/png/default_thumbnail.png</file>
+        <file>icons/light/png/fourViews.png</file>
+        <file>icons/light/png/gaussian_filter.png</file>
+        <file>icons/light/png/minus.png</file>
+        <file>icons/light/png/notifications.png</file>
+        <file>icons/light/png/plus.png</file>
+        <file>icons/light/png/radio.png</file>
+        <file>icons/light/png/radio-checked.png</file>
+        <file>icons/light/png/split_horizontal.png</file>
+        <file>icons/light/png/splitPresets.png</file>
+        <file>icons/light/png/split_vertical.png</file>
+        <file>icons/light/svg/arrow-bot.svg</file>
+        <file>icons/light/svg/arrow-left.svg</file>
+        <file>icons/light/svg/arrow-right.svg</file>
+        <file>icons/light/svg/arrow-top.svg</file>
+        <file>icons/light/svg/camera_off.svg</file>
+        <file>icons/light/svg/camera_on.svg</file>
+        <file>icons/light/svg/chevron_down.svg</file>
+        <file>icons/light/svg/chevron_up.svg</file>
+        <file>icons/light/svg/clock.svg</file>
+        <file>icons/light/svg/contrast.svg</file>
+        <file>icons/light/svg/cropping.svg</file>
+        <file>icons/light/svg/cross.svg</file>
+        <file>icons/light/svg/download.svg</file>
+        <file>icons/light/svg/download_fail.svg</file>
+        <file>icons/light/svg/edit.svg</file>
+        <file>icons/light/svg/eye_closed.svg</file>
+        <file>icons/light/svg/eye_opened.svg</file>
+        <file>icons/light/svg/fullscreen_on.svg</file>
+        <file>icons/light/svg/fullscreen_off.svg</file>
+        <file>icons/light/svg/help.svg</file>
+        <file>icons/light/svg/link.svg</file>
+        <file>icons/light/svg/magnifier.svg</file>
+        <file>icons/light/svg/maximize_off.svg</file>
+        <file>icons/light/svg/maximize_on.svg</file>
+        <file>icons/light/svg/metadata.svg</file>
+        <file>icons/light/svg/movie_off.svg</file>
+        <file>icons/light/svg/movie_on.svg</file>
+        <file>icons/light/svg/open.svg</file>
+        <file>icons/light/svg/orientation_3d.svg</file>
+        <file>icons/light/svg/pan.svg</file>
+        <file>icons/light/svg/ruler.svg</file>
+        <file>icons/light/svg/save.svg</file>
+        <file>icons/light/svg/save_scene.svg</file>
+        <file>icons/light/svg/settings.svg</file>
+        <file>icons/light/svg/stack.svg</file>
+        <file>icons/light/svg/study_add.svg</file>
+        <file>icons/light/svg/time_backward.svg</file>
+        <file>icons/light/svg/time_backward_step.svg</file>
+        <file>icons/light/svg/time_forward.svg</file>
+        <file>icons/light/svg/time_forward_step.svg</file>
+        <file>icons/light/svg/time_pause.svg</file>
+        <file>icons/light/svg/time_play.svg</file>
+        <file>icons/light/svg/upload.svg</file>
+        <file>icons/light/svg/upload_fail.svg</file>
+        <file>icons/light/svg/user_add.svg</file>
 
-        <file>icons/3DIcon.png</file>
+        <!-- Colored icons -->
         <file>icons/arrow-bot-disabled.svg</file>
         <file>icons/arrow-left-disabled.svg</file>
         <file>icons/arrow-right-disabled.svg</file>
         <file>icons/arrow-top-disabled.svg</file>
-        <file>icons/AxialIcon.png</file>
         <file>icons/checkbox-partial.png</file>
         <file>icons/chevron_down_disabled.svg</file>
         <file>icons/chevron_up_disabled.svg</file>
         <file>icons/connect_on.svg</file>
         <file>icons/connect_off.svg</file>
-        <file>icons/CoronalIcon.png</file>
         <file>icons/cross_disabled.svg</file>
         <file>icons/cross_red.svg</file>
         <file>icons/error.png</file>
         <file>icons/help_grey.svg</file>
-        <file>icons/icons8-download-16.png</file>
-        <file>icons/icons8-upload-16.png</file>
-        <file>icons/icons8-download-error-16.png</file>
-        <file>icons/icons8-upload-error-16.png</file>
         <file>icons/information_blue.png</file>
         <file>icons/information_blue.svg</file>
         <file>icons/medInriaPlugin.svg</file>
         <file>icons/radio-partial.png</file>
-        <file>icons/SagittalIcon.png</file>
         <file>icons/spot_blue.svg</file>
         <file>icons/spot_green.svg</file>
         <file>icons/spot_orange.svg</file>
         <file>icons/spot_red.svg</file>
         <file>icons/spot_yellow.svg</file>
 
+        <!-- Images -->
+        <file>pixmaps/3DIcon.png</file>
+        <file>pixmaps/database.png</file>
+        <file>pixmaps/home_sc.png</file>
         <file>pixmaps/medInria-logo-theme-dark.png</file>
         <file>pixmaps/medInria-logo-theme-light.png</file>
         <file>pixmaps/medInria-splash.png</file>
+        <file>pixmaps/orientationAxial.png</file>
+        <file>pixmaps/orientationCoronal.png</file>
+        <file>pixmaps/orientationSagittal.png</file>
         <file>pixmaps/scene.png</file>
-        <file>pixmaps/home_sc.png</file>
-        <file>pixmaps/database.png</file>
         <file>pixmaps/workspace_Diffusion.png</file>
         <file>pixmaps/workspace_Visualization.png</file>
         <file>pixmaps/workspace_Registration.png</file>
@@ -176,6 +178,7 @@
         <file>pixmaps/workspace_Meshing.png</file>
         <file>pixmaps/workspace_Reformat.png</file>
 
+        <!-- Gifs -->
         <file>gif/icon.gif</file>
 
     </qresource>

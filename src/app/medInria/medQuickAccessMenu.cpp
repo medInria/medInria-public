@@ -35,7 +35,7 @@ int retrieveDefaultWorkSpace()
     {
         iRes = homepageDefaultWorkspaceNumber;
     }
-    else if (oStartupWorkspace.toString() == "Browse files")
+    else if (oStartupWorkspace.toString() == "Browse data")
     {
         iRes = 1;
     }
@@ -363,7 +363,7 @@ void medQuickAccessMenu::createHorizontalQuickAccessMenu()
     smallBrowserButton->setFixedHeight ( 100 );
     smallBrowserButton->setFixedWidth ( 160 );
     smallBrowserButton->setFocusPolicy ( Qt::NoFocus );
-    smallBrowserButton->setText("Browse files");
+    smallBrowserButton->setText("Browse data");
     smallBrowserButton->setIdentifier("Browser");
     shortcutAccessLayout->addWidget ( smallBrowserButton );
     QObject::connect ( smallBrowserButton, SIGNAL ( clicked() ), this, SIGNAL ( browserSelected()) );

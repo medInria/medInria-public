@@ -454,6 +454,7 @@ QWidget* medAbstractView::mouseInteractionWidget()
     }
 
     d->mouseInteractionWidget = groupParam->getPushButtonGroup();
+    d->mouseInteractionWidget->setContentsMargins(4, 4, 4, 4);
 
     return d->mouseInteractionWidget;
 }
