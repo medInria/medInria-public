@@ -60,6 +60,7 @@ medNotifWidget::medNotifWidget(medUsrNotif &notif, medNotificationPaneWidget * p
     widgetLayout->addLayout(m_titleLayout);
     
     m_msgLabel = new QLabel(notif->getMessage());
+    m_msgLabel->setWordWrap(true);
     widgetLayout->addWidget(m_msgLabel);
 
     m_progressWidget = new QProgressBar();

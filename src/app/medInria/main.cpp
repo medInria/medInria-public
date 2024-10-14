@@ -264,7 +264,7 @@ int main(int argc, char *argv[])
 
         auto notifBanner = static_cast<medNotificationPaneWidget*>(medNotifSysPresenter(notifSys).buildNotificationWindow());
         notifBanner->setParent(mainwindow);
-        QObject::connect(mainwindow->notifButton(), &QToolButton::clicked, notifBanner, &medNotificationPaneWidget::swithVisibility);
+        QObject::connect(mainwindow->notifButton(), &QToolButton::clicked, notifBanner, &medNotificationPaneWidget::switchVisibility);
 
         mainwindow->setAttribute(Qt::WA_DeleteOnClose, true);
 

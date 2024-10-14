@@ -452,7 +452,7 @@ void medMainWindow::switchToDefaultWorkSpace()
 
 void medMainWindow::toggleNotificationPanel()
 {
-    d->notifWindow->swithVisibility();
+    d->notifWindow->switchVisibility();
 }
 
 /**
@@ -617,12 +617,6 @@ void medMainWindow::onShowDataSources()
     dialog->setLayout(layout);
     dialog->exec();
 }
-
-
-//void medMainWindow::onShowNotifPanel()
-//{
-//    d->notifWindow->swithVisibility();
-//}
 
 void medMainWindow::onShowAbout()
 {
@@ -1270,9 +1264,14 @@ bool medMainWindow::event(QEvent * e)
     return QMainWindow::event(e) ;
 }
 
+/**
+ * @brief Run after application resize through resize buttons.
+ * 
+ * @param event 
+ */
 void medMainWindow::resizeEvent(QResizeEvent *event)
 {
-    d->notifWindow->windowGeometryUpdate(this->size());
+    d->notifWindow->windowGeometryUpdate();
 }
 
 void medMainWindow::adjustContainersSize()

@@ -287,7 +287,7 @@ medAbstractData * medDataHub::getData(medDataIndex const & index)
     }
     else
     {
-        bool bOnline, bWritable, bLocal, bCache;   
+        bool bOnline, bWritable, bLocal, bCache;
         QString sourceId = index.sourceId();
         if (sourceId == "fs") 
         {
@@ -306,7 +306,8 @@ medAbstractData * medDataHub::getData(medDataIndex const & index)
         }
         else
         {
-            medNotif::createNotif(notifLevel::error, "Data can't be retrieved", QString("Unable to retrieve data from source ") + sourceId + QString(" for data index ") + index.asString());
+            medNotif::createNotif(notifLevel::error, "Data can't be retrieved",
+                QString("Unable to retrieve data from source ") + sourceId + QString(" for data index ") + index.asString());
         }
     }
 
@@ -720,9 +721,8 @@ bool medDataHub::writeResults(QString pi_sourceId, medAbstractData * pi_pData, Q
     }
     // ////////////////////////////////////////////////////////////////////////////////////////
 
-
     // ////////////////////////////////////////////////////////////////////////////////////////
-    // Check la coherence de la proposition par rapport a l'URI
+    // Check consistency of the proposal with URI
     auto limite = std::min(originPath.size(), sugestedPath.size());
     for (int i = 0; i < limite; ++i)
     {
@@ -1275,12 +1275,10 @@ medAbstractData * medDataHub::loadDataFromPathAsIndex(medDataIndex index, QUuid 
         return pDataRes;
     }
     QString path = indexToFileSysPath(index.asString());
-    std::shared_ptr<medNotif> notif = medNotif::createNotif(notifLevel::info , QString("Load File ") + path, " from local file system", -1, -1);
+    std::shared_ptr<medNotif> notif = medNotif::createNotif(notifLevel::info , QString("Load File ") + QFileInfo(path).fileName(), " from local file system", -1, -1);
     medAbstractData * pDataRes = medDataImporter::convertSingleDataOnfly(path);
     if (pDataRes)
     {
-        // QString index = fileSysPathToIndex(path);
-
         pDataRes->setDataIndex(index);
 
         m_IndexToData[index] = pDataRes;
@@ -1296,7 +1294,6 @@ medAbstractData * medDataHub::loadDataFromPathAsIndex(medDataIndex index, QUuid 
     else
     {
         notif->update(notifLevel::warning, -2, QString("Failure"));
-        // medNotif::createNotif(notifLevel::warning, QString("Converting file ") + path, " failed");
     }
     return pDataRes;
 }
