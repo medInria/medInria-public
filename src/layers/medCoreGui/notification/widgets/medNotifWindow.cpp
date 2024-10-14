@@ -10,23 +10,21 @@
  */
 
 #include "medNotifWindow.h"
-
 #include <medNotifSys.h>
 #include <medNotif.h>
-
 #include <medNotifWidget.h>
 
 #include <algorithm>
 
-#include <QPropertyAnimation>
-#include <QPauseAnimation>
-#include <QSequentialAnimationGroup>
+#include <QGraphicsOpacityEffect>
 #include <QMainWindow>
 #include <QMenuBar>
-#include <QStatusBar>
-
+#include <QPainter>
+#include <QPauseAnimation>
+#include <QPropertyAnimation>
 #include <QPushButton>
-#include <QGraphicsOpacityEffect>
+#include <QSequentialAnimationGroup>
+#include <QStatusBar>
 #include <QVBoxLayout>
 
 medNotificationPaneWidget::medNotificationPaneWidget(medNotifSys * pi_pNotifSys, QMainWindow * pi_parent) : QWidget(pi_parent), m_notificationSystem(pi_pNotifSys)
@@ -49,7 +47,9 @@ medNotificationPaneWidget::medNotificationPaneWidget(medNotifSys * pi_pNotifSys,
     connect(pi_pNotifSys, &medNotifSys::removed, this, &medNotificationPaneWidget::removeNotification);
 
     setParent(pi_parent);
-    showPane(false);
+
+    isDisplayed = false;
+    showPane(isDisplayed);
 
     m_geoAnimation = nullptr;
 }
@@ -128,18 +128,58 @@ void medNotificationPaneWidget::addNotification(medUsrNotif notif)
     animationGroup->start();
 }
 
+/**
+ * @brief After manual application resize, refresh the new size of the notification widget.
+ * 
+ * @param event 
+ */
+void medNotificationPaneWidget::paintEvent(QPaintEvent *event)
+{
+    QWidget::paintEvent(event);
+    windowGeometryUpdate();
+}
+
+/**
+ * @brief Update the new size of the notification widget.
+ * 
+ */
+void medNotificationPaneWidget::windowGeometryUpdate()
+{
+    if (isDisplayed && m_parent)
+    {
+        m_winSize = m_parent->size();
+
+        auto paneWidth = std::max(300, m_winSize.width() / 4);
+        int menuBarHeight = m_parent->menuBar()->height();
+        QRect finalGeometry(m_winSize.width() - paneWidth, menuBarHeight, paneWidth, m_winSize.height() - menuBarHeight);
+
+        if (m_animation->currentValue() != finalGeometry)
+        {
+            this->setGeometry(finalGeometry);
+        }
+    }
+}
+
+/**
+ * @brief Display or hide the notification widget with an animation.
+ * 
+ * @param show 
+ */
 void medNotificationPaneWidget::showPane(bool show)
 {
+    if (isDisplayed != show)
+    {
+        isDisplayed = show;
+    }
+
     auto paneWidth = std::max(300, m_winSize.width() / 4);
     int menuBarHeight = 0;
-    int statusBarHeight = 0;
     if (m_parent)
     {
         menuBarHeight = m_parent->menuBar()->height();
-        statusBarHeight = m_parent->statusBar()->height();
     }
-    QRect startGeometry(m_winSize.width(), menuBarHeight, 0, m_winSize.height() - menuBarHeight - statusBarHeight );
-    QRect finalGeometry(m_winSize.width() - paneWidth, menuBarHeight, paneWidth, m_winSize.height() - menuBarHeight - statusBarHeight);
+    QRect startGeometry(m_winSize.width(), menuBarHeight, 0, m_winSize.height() - menuBarHeight);
+    QRect finalGeometry(m_winSize.width() - paneWidth, menuBarHeight, paneWidth, m_winSize.height() - menuBarHeight);
     if (show)
     {
 
@@ -155,22 +195,6 @@ void medNotificationPaneWidget::showPane(bool show)
     emit expanded(show);
 }
 
-void medNotificationPaneWidget::windowGeometryUpdate(QSize const & size)
-{
-    m_winSize = size;
-    if (width())
-    {
-        int statusBarHeight = 0;
-        if (m_parent)
-        {
-            statusBarHeight = m_parent->statusBar()->height();
-        }
-        auto paneWidth = std::max(300, m_winSize.width() / 4);
-        QRect rect_B(m_winSize.width() - paneWidth, 0, paneWidth, m_winSize.height() - statusBarHeight);
-        setGeometry(rect_B);
-    }
-}
-
 void medNotificationPaneWidget::showAndHigligth(medUsrNotif notif)
 {
     if (m_notificationToItem.contains(notif.get()))
@@ -180,7 +204,7 @@ void medNotificationPaneWidget::showAndHigligth(medUsrNotif notif)
     }
 }
 
-void medNotificationPaneWidget::swithVisibility()
+void medNotificationPaneWidget::switchVisibility()
 {
     showPane(!(bool)width());
 }

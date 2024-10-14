@@ -125,14 +125,12 @@ private slots:
 
     void open_waitForImportedSignal(medDataIndex,QUuid);
 
-
     void openFromSystem();
     void openDicomFromSystem();
     void setSourceVisibility(bool checked);
     
     void onShowBrowser();
     void onShowDataSources();
-    //void onShowNotifPanel();
     void onShowHelp();
 
     /**
