@@ -1477,10 +1477,4 @@ void vtkImageOrientedPointWidget::SetPropW(vtkProp* prop)
   this->SetViewProp(prop);
 }
 # endif
-void vtkImageOrientedPointWidget::SetProp(vtkProp* prop)
-{
-  VTK_LEGACY_REPLACED_BODY(vtkImageOrientedPointWidget::SetProp, "VTK 5.0",
-                           vtkImageOrientedPointWidget::SetViewProp);
-  this->SetViewProp(prop);
-}
 #endif
