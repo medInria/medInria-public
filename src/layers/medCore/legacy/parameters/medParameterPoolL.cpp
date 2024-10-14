@@ -106,13 +106,14 @@ void medParameterPoolL::remove(medAbstractParameterL* parameter)
 
     disconnectParam(parameter);
 
-    QHashIterator<QString, medAbstractParameterL*> it(d->pool);
-
+    QMutableHashIterator<QString, medAbstractParameterL*> it(d->pool);
     while(it.hasNext())
     {
         it.next();
-        if(it.value() == parameter)
-            d->pool.remove(it.key(), it.value());
+        if(it.value() && it.value() == parameter)
+        {
+            it.remove();
+        }
     }
 }
 

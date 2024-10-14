@@ -114,6 +114,11 @@ medVtkViewItkDataImageNavigator::medVtkViewItkDataImageNavigator(medAbstractView
 
 medVtkViewItkDataImageNavigator::~medVtkViewItkDataImageNavigator()
 {
+    for(medAbstractParameterL *parameter : d->parameters)
+    {
+        delete parameter->getLabel();
+    }
+
     delete d;
 }
 
