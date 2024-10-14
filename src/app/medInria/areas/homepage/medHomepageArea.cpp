@@ -192,32 +192,52 @@ void medHomepageArea::initPage()
     workspaceButtonsLayoutClinical->addStretch();
     workspaceButtonsLayoutOther->addStretch();
 
-    QGridLayout* workspaceButtonsLayout = new QGridLayout;
-    workspaceButtonsLayout->setSpacing(40); // Spacing between categories
-
     // Hide the empty categories 
+    QGridLayout* workspaceButtonsLayout = new QGridLayout;
     std::vector<QLayout*> oLayoutVect;
     if (workspaceButtonsLayoutBasicGrid->count() > 0)
     {
         oLayoutVect.push_back(workspaceButtonsLayoutBasic);
     }
+    else
+    {
+        delete workspaceLabelBasic;
+        delete workspaceButtonsLayoutBasic;
+    }
     if (workspaceButtonsLayoutMethodologyGrid->count() > 0)
     {
         oLayoutVect.push_back(workspaceButtonsLayoutMethodology);
+    }
+    else
+    {
+        delete workspaceLabelMethodology;
+        delete workspaceButtonsLayoutMethodology;
     }
     if (workspaceButtonsLayoutClinicalGrid->count() > 0)
     {
         oLayoutVect.push_back(workspaceButtonsLayoutClinical);
     }
+    else
+    {
+        delete workspaceLabelClinical;
+        delete workspaceButtonsLayoutClinical;
+    }
     if (workspaceButtonsLayoutOtherGrid->count() > 0)
     {
         oLayoutVect.push_back(workspaceButtonsLayoutOther);
     }
+    else
+    {
+        delete workspaceLabelOther;
+        delete workspaceButtonsLayoutOther;
+    }
+
     for (int i = 0; i < static_cast<int>(oLayoutVect.size()); ++i)
     {
         workspaceButtonsLayout->addLayout(oLayoutVect[i], 0, i);
     }
 
+    workspaceButtonsLayout->setSpacing(40); // Spacing between categories
     d->navigationWidget->setLayout(workspaceButtonsLayout);
 }
 
