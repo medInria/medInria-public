@@ -36,6 +36,38 @@ medSourcesSettingsHandlerWidget::medSourcesSettingsHandlerWidget(medSourcesSetti
     auto * detailsLabel = new QLabel("\nSelect a source to use actions:\n");
     sourceSettingsLayout->addWidget(detailsLabel);
 
+    // Move source buttons
+    auto *moveLayout = new QHBoxLayout();
+    moveLayout->setAlignment(Qt::AlignLeft);
+    auto *moveUpButton = new QPushButton("");
+    QIcon moveUpIcon;
+    moveUpIcon.addPixmap(QIcon::fromTheme("chevron_up").pixmap(24,24), QIcon::Normal);
+    moveUpIcon.addPixmap(QIcon(":/icons/chevron_up_disabled.svg").pixmap(24,24), QIcon::Disabled);
+    moveUpButton->setIcon(moveUpIcon);
+    moveUpButton->setFixedWidth(25);
+    moveUpButton->setToolTip(tr("Move up the source"));
+    moveLayout->addWidget(moveUpButton);
+
+    auto *moveDownButton = new QPushButton("");
+    QIcon moveDownIcon;
+    moveDownIcon.addPixmap(QIcon::fromTheme("chevron_down").pixmap(24,24), QIcon::Normal);
+    moveDownIcon.addPixmap(QIcon(":/icons/chevron_down_disabled.svg").pixmap(24,24), QIcon::Disabled);
+    moveDownButton->setIcon(moveDownIcon);
+    moveDownButton->setFixedWidth(25);
+    moveDownButton->setToolTip(tr("Move down the source"));
+    moveLayout->addWidget(moveDownButton);
+    sourceSettingsLayout->addLayout(moveLayout);
+
+    // Due to a bug solved in qt 5.15.14 minimum https://bugreports.qt.io/browse/QTBUG-100128
+    // move or drag&drop of customed items in QListWidget like we do are bugged.
+    // So the moving of sources is temporarily disabled.
+    moveUpButton->setDisabled(true);
+    moveDownButton->setDisabled(true);
+
+    connect(moveUpButton,   &QPushButton::clicked, pi_parent, &medSourcesSettings::moveSourceItemUp);
+    connect(moveDownButton, &QPushButton::clicked, pi_parent, &medSourcesSettings::moveSourceItemDown);
+
+    // Sources actions
     m_setDefaultButton = new QPushButton(tr("Set as default"));
     m_setDefaultButton->setToolTip(tr("Set the selected source as default"));
     sourceSettingsLayout->addWidget(m_setDefaultButton);
@@ -121,7 +153,6 @@ void medSourcesSettingsHandlerWidget::sourceChange(medAbstractSource * pi_pSourc
         m_bOnline = false;
     }
 }
-
 
 /**
  * @brief This method must be called when source online status change to update GUI.

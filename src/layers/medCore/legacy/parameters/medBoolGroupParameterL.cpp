@@ -161,6 +161,7 @@ QWidget* medBoolGroupParameterL::getPushButtonGroup()
     {
         d->pushButtonGroupWidget = new QWidget;
         d->pushButtonLayout = new QBoxLayout(d->pushButtonDirection, d->pushButtonGroupWidget);
+        d->pushButtonLayout->setContentsMargins(0, 0, 0, 0);
         d->pushButtonGroup = new QButtonGroup;
         d->pushButtonGroup->setExclusive(true);
 

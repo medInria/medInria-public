@@ -16,6 +16,7 @@ medVirtualRepresentationWidget::medVirtualRepresentationWidget()
 {
     this->setLayout(&m_layout);
     m_layout.setAlignment(Qt::AlignTop);
+    m_layout.setContentsMargins(0, 0, 0, 0);
 }
 
 medVirtualRepresentationWidget::~medVirtualRepresentationWidget()
@@ -27,7 +28,7 @@ medVirtualRepresentationWidget::~medVirtualRepresentationWidget()
 void medVirtualRepresentationWidget::create(medVirtualRepresentation *virtualRepresentation)
 {
     QToolButton *arrowButton = new QToolButton();
-    arrowButton->setIcon(QIcon(":/pixmaps/drop-down.png"));
+    arrowButton->setIcon(QIcon::fromTheme("arrow-bot"));
     QLabel      *title = new QLabel("Quick Access");
 
     arrowButton->setToolTip("Show/Hide");
@@ -36,7 +37,6 @@ void medVirtualRepresentationWidget::create(medVirtualRepresentation *virtualRep
     titleLayout = new QHBoxLayout;
     titleLayout->addWidget(arrowButton);
     titleLayout->addWidget(title);
-
 
     virtualTree = new QTreeView();
     
@@ -109,11 +109,11 @@ void medVirtualRepresentationWidget::create(medVirtualRepresentation *virtualRep
     virtualTree->setVisible(!state);
     if (state)
     {
-         arrowButton->setIcon(QIcon(":/pixmaps/arrow-right.png")); 
+         arrowButton->setIcon(QIcon::fromTheme("arrow-right")); 
     }
     else
     {
-        arrowButton->setIcon(QIcon(":/pixmaps/drop-down.png"));
+        arrowButton->setIcon(QIcon::fromTheme("arrow-bot"));
     }
     connect(arrowButton, &QToolButton::clicked, this, &medVirtualRepresentationWidget::expandTree);
     
@@ -131,12 +131,12 @@ void medVirtualRepresentationWidget::expandTree()
         auto button = dynamic_cast<QToolButton *>(titleLayout->itemAt(0)->widget());
         if (virtualTree->isVisible())
         {
-            button->setIcon(QIcon(":/pixmaps/arrow-right.png"));
+            button->setIcon(QIcon::fromTheme("arrow-right"));
             
         }
         else
         {
-            button->setIcon(QIcon(":/pixmaps/drop-down.png"));
+            button->setIcon(QIcon::fromTheme("arrow-bot"));
         }
         virtualTree->setVisible(!virtualTree->isVisible()); 
     }

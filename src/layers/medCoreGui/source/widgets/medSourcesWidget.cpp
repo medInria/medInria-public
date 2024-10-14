@@ -39,6 +39,7 @@ medSourcesWidget::medSourcesWidget()
 {
      this->setLayout(&m_layout);
      m_layout.setAlignment(Qt::AlignTop);
+     m_layout.setContentsMargins(0, 0, 0, 0);
 }
 
 medSourcesWidget::~medSourcesWidget()
@@ -63,11 +64,11 @@ void medSourcesWidget::addSource(medDataHub *dataHub, QString sourceInstanceId)
     medSourceModelPresenter *sourcePresenter = new medSourceModelPresenter(sourceModel);
 
     QToolButton *sourceTreeBttn = new QToolButton();
-    auto *treeButtonAction = new QAction(QIcon(":/pixmaps/drop-down.png"), QString("arrow"));
+    auto *treeButtonAction = new QAction(QIcon::fromTheme("arrow-bot"), QString("arrow"));
     treeButtonAction->setData(sourceInstanceId);
     sourceTreeBttn->setDefaultAction(treeButtonAction);
     QLabel      *sourceTreeTitle = new QLabel(instanceName);
-    QPushButton *plusButton = new QPushButton(QIcon(":/icons/plus_white.png"), "");
+    QPushButton *plusButton = new QPushButton(QIcon::fromTheme("plus"), "");
 
     sourceTreeBttn->setToolTip("Show/Hide Source");
     sourceTreeBttn->setMaximumSize(QSize(20,20));
@@ -90,13 +91,13 @@ void medSourcesWidget::addSource(medDataHub *dataHub, QString sourceInstanceId)
     connect(plusButton, &QPushButton::toggled, [=](bool checked) {
         if (checked)
         {
-            plusButton->setIcon(QIcon(":/icons/minus_white.png"));
+            plusButton->setIcon(QIcon::fromTheme("minus"));
             dataHub->expandAll(sourceInstanceId);
             sourceTreeView->expandAll();
         }
         else
         {
-            plusButton->setIcon(QIcon(":/icons/plus_white.png"));
+            plusButton->setIcon(QIcon::fromTheme("plus"));
             sourceTreeView->collapseAll();
         }
     });
@@ -269,11 +270,11 @@ void medSourcesWidget::setSourceVisible(QString sourceInstanceId, bool checked)
         auto button = dynamic_cast<QToolButton *>(title->itemAt(0)->widget());
         if (widget->isVisible())
         {
-            button->setIcon(QIcon(":/pixmaps/drop-down.png"));            
+            button->setIcon(QIcon::fromTheme("arrow-bot"));
         }
         else
         {
-            button->setIcon(QIcon(":/pixmaps/arrow-right.png"));
+            button->setIcon(QIcon::fromTheme("arrow-right"));
         }
  
     }
@@ -290,12 +291,12 @@ void medSourcesWidget::expandSourceTree(QAction *action)
         auto button = dynamic_cast<QToolButton *>(layout->itemAt(0)->widget());
         if (widget->isVisible())
         {
-            button->setIcon(QIcon(":/pixmaps/arrow-right.png"));
+            button->setIcon(QIcon::fromTheme("arrow-right"));
             
         }
         else
         {
-            button->setIcon(QIcon(":/pixmaps/drop-down.png"));
+            button->setIcon(QIcon::fromTheme("arrow-bot"));
         }
         widget->setVisible(!widget->isVisible()); 
     }

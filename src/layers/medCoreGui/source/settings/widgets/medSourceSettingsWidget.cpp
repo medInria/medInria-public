@@ -10,6 +10,7 @@
  */
 #include "medSourceSettingsWidget.h"
 
+#include <QDebug>
 #include <QGroupBox>
 #include <QPainter>
 #include <QVBoxLayout>
@@ -28,9 +29,6 @@ medSourceSettingsWidget::medSourceSettingsWidget(medAbstractSource * pSource, QL
     auto * widgetLayout = new QVBoxLayout;
     setLayout(widgetLayout);
     widgetLayout->setAlignment(Qt::AlignTop);
-
-    // Transparent background for round corners  
-    setAttribute(Qt::WA_TranslucentBackground);
 
     //--- Title area
     m_titleLayout = new QHBoxLayout;
@@ -58,21 +56,14 @@ medSourceSettingsWidget::medSourceSettingsWidget(medAbstractSource * pSource, QL
     m_defaultLabel->setStyleSheet("font: italic");
     m_titleLayout->addWidget(m_defaultLabel);
 
-    // should be in medInria.qss, in order to allow other themes to change colors or styles.
-    QString buttonStyle = "QPushButton {"
-                          " background-color: none; }"
-                          "QPushButton:hover {"
-                          " background-color: grey; }";
-
     // Minimize button
     m_minimizeSourceButton = new QPushButton("");
     QIcon minimizeIcon;
-    minimizeIcon.addPixmap(QPixmap(":/icons/minimize_off_white.svg"), QIcon::Normal);
-    minimizeIcon.addPixmap(QPixmap(":/icons/minimize_off_gray.svg"), QIcon::Disabled);
+    minimizeIcon.addPixmap(QIcon::fromTheme("arrow-bot").pixmap(24,24), QIcon::Normal);
+    minimizeIcon.addPixmap(QIcon(":/icons/arrow-bot-disabled.svg").pixmap(24,24), QIcon::Disabled);
     m_minimizeSourceButton->setIcon(minimizeIcon);
     m_minimizeSourceButton->setFixedWidth(25);
     m_minimizeSourceButton->setToolTip(tr("Show or hide the body of this source item"));
-    m_minimizeSourceButton->setStyleSheet(buttonStyle);
     m_titleLayout->addWidget(m_minimizeSourceButton);
 
     //--- Fill parameters in body
@@ -139,21 +130,16 @@ void medSourceSettingsWidget::switchMinimization()
     if (m_parametersWidget->isHidden())
     {
         m_parametersWidget->show();
-        newIcon = QIcon(":/icons/minimize_off_white.svg");
-
-        m_pItem->setSizeHint(getInitialSize());
+        newIcon = QIcon::fromTheme("arrow-bot");
     }
     else
     {
-        auto g = m_titleStack.mapToGlobal(m_titleStack.geometry().topLeft());
-        auto k = QGuiApplication::screenAt(g)->devicePixelRatio();
-        auto t1 = m_titleStack.frameSize().height()*1;
         m_parametersWidget->hide();
-        newIcon =  QIcon(":/icons/minimize_on_white.svg");
-        m_pItem->setSizeHint(QSize(getInitialSize().width(), t1));
+        newIcon =  QIcon::fromTheme("arrow-right");
     }
     m_minimizeSourceButton->setIcon(newIcon);
     emit(minimizationAsked(m_parametersWidget->isHidden()));
+    resize(size().width(), sizeHint().height());  // Adjust the new height of the QFrame
 }
 
 void medSourceSettingsWidget::titleChanged()
@@ -170,24 +156,18 @@ void medSourceSettingsWidget::paintEvent(QPaintEvent *event)
 {
     Q_UNUSED(event)
 
-    auto backgroundColor = "#3C464D"; // non selected
-    if (m_sourceSelected)
-    {
-        backgroundColor = "#7B797D"; // selected
-    }
+    QColor borderColor = m_sourceSelected ? QColor("#FF8844") : QColor("#3C464D");
 
     QPainter painter(this);
-    painter.setRenderHint(QPainter::Antialiasing); // smooth borders
-    painter.setBrush(QBrush(backgroundColor));     // visible color of background
-    painter.setPen(Qt::transparent);               // thin border color
-
-    // Change border radius
+    painter.setRenderHint(QPainter::Antialiasing);
+    painter.setBrush(Qt::transparent);
     QRect rect = this->rect();
-    rect.setWidth(rect.width()-1);
-    rect.setHeight(rect.height()-1);
-    painter.drawRoundedRect(rect, 8, 8);
-}
+    painter.drawRect(rect);
 
+    // Draw updated contour
+    painter.setPen(QPen(borderColor, 1));
+    painter.drawRect(rect.adjusted(1, 1, -1, -1));
+}
 
 /**
  * @brief Change the visualisation of the source item if selected or not

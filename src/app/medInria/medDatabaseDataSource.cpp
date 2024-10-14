@@ -78,8 +78,9 @@ QWidget* medDatabaseDataSource::buildSourcesTreeViewList()
 
     QVBoxLayout *layout = new QVBoxLayout();
 
-    auto filterLineEdit = new QLineEdit("Search...");
+    auto filterLineEdit = new QLineEdit();
     filterLineEdit->setMaximumHeight(20);
+    filterLineEdit->setPlaceholderText("Search...");
     connect(filterLineEdit, SIGNAL(textChanged(const QString &)), d->multiSources_tree, SIGNAL(filterProxy(const QString &)));
 
     d->compactView = d->multiSources_tree->buildTree();
