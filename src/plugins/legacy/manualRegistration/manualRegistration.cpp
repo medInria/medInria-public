@@ -165,7 +165,7 @@ template <typename PixelType, typename TransformType> int manualRegistrationPriv
     resampler->SetOutputOrigin( proc->fixedImage()->GetOrigin() );
     resampler->SetOutputSpacing( proc->fixedImage()->GetSpacing() );
     resampler->SetOutputDirection( proc->fixedImage()->GetDirection() );
-    resampler->SetDefaultPixelValue( 0 );
+    resampler->SetDefaultPixelValue(0);
 
     try
     {

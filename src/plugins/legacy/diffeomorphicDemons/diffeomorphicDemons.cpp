@@ -15,7 +15,7 @@
 
 #include <dtkCoreSupport/dtkAbstractProcessFactory.h>
 #include <DiffeomorphicDemons/rpiDiffeomorphicDemons.hxx>
-#include <itkChangeInformationImageFilter.h>
+#include <itkResampleImageFilter.h>
 #include <rpiCommonTools.hxx>
 
 // /////////////////////////////////////////////////////////////////
@@ -93,33 +93,29 @@ int diffeomorphicDemonsPrivate::update()
 {
     typedef itk::Image< PixelType, 3 >  FixedImageType;
     typedef itk::Image< PixelType, 3 >  MovingImageType;
-
     typedef itk::Image< float, 3 > RegImageType;
     typedef double TransformScalarType;
-
-    int testResult = proc->testInputs();
-    if (testResult != medAbstractProcessLegacy::SUCCESS)
-    {
-        return testResult;
-    }
 
     FixedImageType  *inputFixed  = (FixedImageType*)  proc->fixedImage().GetPointer();
     MovingImageType *inputMoving = (MovingImageType*) proc->movingImages()[0].GetPointer();
 
-    // The output volume is going to located at the origin/direction of the fixed input. Needed for rpi::DiffeomorphicDemons
-    typedef itk::ChangeInformationImageFilter< FixedImageType > FilterType;
-    typename FilterType::Pointer filter = FilterType::New();
-    filter->SetOutputOrigin(inputFixed->GetOrigin());
-    filter->ChangeOriginOn();
-    filter->SetOutputDirection(inputFixed->GetDirection());
-    filter->ChangeDirectionOn();
-    filter->SetInput(inputMoving);
+    // Cast spacing, origin, direction and size from the moving data to the fixed one
+    typedef itk::ResampleImageFilter<MovingImageType, MovingImageType> ResampleFilterType;
+    typename ResampleFilterType::Pointer resampleFilter = ResampleFilterType::New();
+    resampleFilter->SetOutputSpacing(inputFixed->GetSpacing());
+    resampleFilter->SetOutputOrigin(inputFixed->GetOrigin());
+    resampleFilter->SetOutputDirection(inputFixed->GetDirection());
+    resampleFilter->SetSize(inputFixed->GetLargestPossibleRegion().GetSize());
+    resampleFilter->SetInput(inputMoving);
+    resampleFilter->Update();
+    inputMoving = resampleFilter->GetOutput();
 
+    // Register the fixed and moving data
     typedef rpi::DiffeomorphicDemons< RegImageType, RegImageType, TransformScalarType > RegistrationType;
     RegistrationType *registration = new RegistrationType;
     registrationMethod = registration;
     registration->SetFixedImage(inputFixed);
-    registration->SetMovingImage(filter->GetOutput());
+    registration->SetMovingImage(inputMoving);
     registration->SetNumberOfIterations(iterations);
     registration->SetMaximumUpdateStepLength(maximumUpdateStepLength);
     registration->SetUpdateFieldStandardDeviation(updateFieldStandardDeviation);
@@ -160,7 +156,6 @@ int diffeomorphicDemonsPrivate::update()
 
     // Print method parameters
     QString methodParameters = proc->getTitleAndParameters();
-
     qDebug() << "METHOD PARAMETERS";
     qDebug() << methodParameters;
 
@@ -181,19 +176,15 @@ int diffeomorphicDemonsPrivate::update()
 
     emit proc->progressed(80);
 
-    typedef itk::ResampleImageFilter< MovingImageType,MovingImageType,TransformScalarType >    ResampleFilterType;
-    typename ResampleFilterType::Pointer resampler = ResampleFilterType::New();
-    resampler->SetTransform(registration->GetTransformation());
-    resampler->SetInput((const MovingImageType*) inputMoving);
-    resampler->SetSize( proc->fixedImage()->GetLargestPossibleRegion().GetSize() );
-    resampler->SetOutputOrigin( proc->fixedImage()->GetOrigin() );
-    resampler->SetOutputSpacing( proc->fixedImage()->GetSpacing() );
-    resampler->SetOutputDirection( proc->fixedImage()->GetDirection() );
-    resampler->SetDefaultPixelValue( 0 );
-
+    // Cast new transformation
+    typedef itk::ResampleImageFilter< MovingImageType,MovingImageType,TransformScalarType > ResampleTransformation;
+    typename ResampleTransformation::Pointer resampleTransformation = ResampleTransformation::New();
+    resampleTransformation->SetTransform(registration->GetTransformation());
+    resampleTransformation->SetInput(inputMoving);
+    resampleTransformation->SetDefaultPixelValue(0);
     try
     {
-        resampler->Update();
+        resampleTransformation->Update();
     }
     catch (itk::ExceptionObject & err)
     {
@@ -201,30 +192,10 @@ int diffeomorphicDemonsPrivate::update()
         return medAbstractProcessLegacy::FAILURE;
     }
 
-    itk::ImageBase<3>::Pointer result = resampler->GetOutput();
-    result->DisconnectPipeline();
-
     if (proc->output())
     {
-        proc->output()->setData (result);
+        proc->output()->setData(resampleTransformation->GetOutput());
     }
-    return medAbstractProcessLegacy::SUCCESS;
-}
-
-medAbstractProcessLegacy::DataError diffeomorphicDemons::testInputs()
-{
-    if (d->proc->fixedImage()->GetLargestPossibleRegion().GetSize()
-            != d->proc->movingImages()[0]->GetLargestPossibleRegion().GetSize())
-    {
-        return medAbstractProcessLegacy::MISMATCHED_DATA_SIZE;
-    }
-
-    if (d->proc->fixedImage()->GetSpacing()
-            != d->proc->movingImages()[0]->GetSpacing())
-    {
-        return medAbstractProcessLegacy::MISMATCHED_DATA_SPACING;
-    }
-
     return medAbstractProcessLegacy::SUCCESS;
 }
 

@@ -70,9 +70,10 @@ manualRegistrationToolBox::manualRegistrationToolBox(QWidget *parent)
     d->b_startManualRegistration->setObjectName("startManualRegistrationButton");
 
     d->explanation = new QLabel("To add a landmark: \n\tShift + left mouse button\nTo remove a pair of landmarks: \n\tBackspace + left mouse button", widget);
+    d->explanation->setStyleSheet("font: italic");
 
-    d->numberOfLdInLeftContainer = new QLabel("Number of landmarks in left container: 0", widget);
-    d->numberOfLdInRightContainer = new QLabel("Number of landmarks in right container: 0", widget);
+    d->numberOfLdInLeftContainer = new QLabel("Number of landmarks in left container: <b>0</b>", widget);
+    d->numberOfLdInRightContainer = new QLabel("Number of landmarks in right container: <b>0</b>", widget);
 
     // Choice between transformations
     QHBoxLayout* transformationLayout = new QHBoxLayout;
@@ -564,8 +565,8 @@ void manualRegistrationToolBox::displayButtons(bool show)
 
 void manualRegistrationToolBox::updateGUI(int left, int right)
 {
-    d->numberOfLdInLeftContainer->setText( "Number of landmarks in left container: " + QString::number(left));
-    d->numberOfLdInRightContainer->setText("Number of landmarks in right container: " + QString::number(right));
+    d->numberOfLdInLeftContainer->setText(QString("Number of landmarks in left container: <b>%1</b>").arg(left));
+    d->numberOfLdInRightContainer->setText(QString("Number of landmarks in right container: <b>%1</b>").arg(right));
 
     if (left == right)
     {
