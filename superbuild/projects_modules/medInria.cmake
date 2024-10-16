@@ -11,6 +11,16 @@
 #
 ################################################################################
 
+get_cmake_property(_variableNames VARIABLES)
+list (SORT _variableNames)
+foreach (_variableName ${_variableNames})
+    message(STATUS "${_variableName}=${${_variableName}}")
+endforeach()
+
+
+
+
+
 function(medInria_project)
 
 set(ep medInria)
@@ -87,7 +97,7 @@ set(cmake_cache_args
   -DTTK_ROOT:PATH=${TTK_ROOT}
   -DVTK_ROOT:PATH=${VTK_ROOT}
   #-DGTest_ROOT:PATH=${GTEST_ROOT}
-  -DQt5_ROOT:PATH=${Qt5_ROOT}  
+  -DQt${QT_VERSION_MAJOR}_ROOT:PATH=${Qt${QT_VERSION_MAJOR}_ROOT}  
   
   -DDCMTK_DIR:PATH=${DCMTK_DIR}
   -Ddtk_DIR:PATH=${dtk_DIR}
@@ -96,12 +106,12 @@ set(cmake_cache_args
   -DTTK_DIR:PATH=${TTK_DIR}
   -DVTK_DIR:PATH=${VTK_DIR}
   #-DGTest_DIR:PATH=${GTEST_DIR}
-  -DQt5_DIR:PATH=${Qt5_DIR}
+  -DQt${QT_VERSION_MAJOR}_DIR:PATH=${Qt${QT_VERSION_MAJOR}_DIR}
   
-  -DBoost_INCLUDE_DIR:PATH=${Boost_INCLUDE_DIR}
   -DCMAKE_INSTALL_PREFIX:PATH=${SDK_DIR}
   #-DSDK_GENERATION:BOOL=${SDK_GENERATION}
   #-DSDK_PACKAGING:BOOL=${SDK_PACKAGING}
+  -DCMAKE_BUILD_PARALLEL_LEVEL:STRING=8
   )
 
 if (${USE_FFmpeg})
@@ -146,15 +156,28 @@ set(${ep}_DIR ${binary_dir}  PARENT_SCOPE)
 
 ExternalProject_Get_Property(${ep} source_dir)
 set(${ep}_SOURCE_DIR ${source_dir} PARENT_SCOPE)
-  
-  
+
+find_package(Qt5 REQUIRED Core)
+
+function(dump_cmake_variables)
+    get_cmake_property(_variableNames VARIABLES)
+    list (SORT _variableNames)
+    foreach (_variableName ${_variableNames})
+        if ((NOT DEFINED ARGV0) OR _variableName MATCHES ${ARGV0})
+            message(STATUS "${_variableName}=${${_variableName}}")
+        endif()
+    endforeach()
+endfunction()
+
+
 if (WIN32)
-  file(TO_NATIVE_PATH ${ITK_ROOT}                ITK_BIN_BASE)
-  file(TO_NATIVE_PATH ${VTK_ROOT}                VTK_BIN_BASE)
-  file(TO_NATIVE_PATH ${TTK_ROOT}                TTK_BIN_BASE)
-  file(TO_NATIVE_PATH ${dtk_ROOT}                DTK_BIN_BASE)
-  file(TO_NATIVE_PATH ${_qt5Core_install_prefix} QT5_BIN_BASE)
-  file(TO_NATIVE_PATH ${medInria_BINARY_DIR}     MED_BIN_BASE)
+  file(TO_NATIVE_PATH ${ITK_ROOT}                           ITK_BIN_BASE)
+  file(TO_NATIVE_PATH ${VTK_ROOT}                           VTK_BIN_BASE)
+  file(TO_NATIVE_PATH ${TTK_ROOT}                           TTK_BIN_BASE)
+  file(TO_NATIVE_PATH ${dtk_ROOT}                           DTK_BIN_BASE)
+  file(TO_NATIVE_PATH ${Qt${QT_VERSION_MAJOR}_DIR}/../../.. QTX_BIN_BASE)
+  file(TO_NATIVE_PATH ${medInria_BINARY_DIR}                MED_BIN_BASE)
+
 
   set(CONFIG_MODE $<$<CONFIG:debug>:Debug>$<$<CONFIG:release>:Release>$<$<CONFIG:MinSizeRel>:MinSizeRel>$<$<CONFIG:RelWithDebInfo>:RelWithDebInfo>)
   
@@ -166,7 +189,7 @@ if (WIN32)
         COMMAND for %%I in ( ${VTK_BIN_BASE}\\bin\\${CONFIG_MODE}\\*.dll ) do (if EXIST ${MED_BIN_BASE}\\%%~nxI (del /S ${MED_BIN_BASE}\\%%~nxI & mklink /H ${MED_BIN_BASE}\\%%~nxI %%~fI) else mklink /H ${MED_BIN_BASE}\\%%~nxI %%~fI) 
         COMMAND for %%I in ( ${DTK_BIN_BASE}\\bin\\${CONFIG_MODE}\\*.dll ) do (if EXIST ${MED_BIN_BASE}\\%%~nxI (del /S ${MED_BIN_BASE}\\%%~nxI & mklink /H ${MED_BIN_BASE}\\%%~nxI %%~fI) else mklink /H ${MED_BIN_BASE}\\%%~nxI %%~fI) 
         COMMAND for %%I in ( ${TTK_BIN_BASE}\\bin\\*.dll                 ) do (if EXIST ${MED_BIN_BASE}\\%%~nxI (del /S ${MED_BIN_BASE}\\%%~nxI & mklink /H ${MED_BIN_BASE}\\%%~nxI %%~fI) else mklink /H ${MED_BIN_BASE}\\%%~nxI %%~fI) 
-        COMMAND for %%I in ( ${QT5_BIN_BASE}\\bin\\*.dll                 ) do (if EXIST ${MED_BIN_BASE}\\%%~nxI (del /S ${MED_BIN_BASE}\\%%~nxI & mklink /H ${MED_BIN_BASE}\\%%~nxI %%~fI) else mklink /H ${MED_BIN_BASE}\\%%~nxI %%~fI) 
+        COMMAND for %%I in ( ${QTX_BIN_BASE}\\bin\\*.dll                 ) do (if EXIST ${MED_BIN_BASE}\\%%~nxI (del /S ${MED_BIN_BASE}\\%%~nxI & mklink /H ${MED_BIN_BASE}\\%%~nxI %%~fI) else mklink /H ${MED_BIN_BASE}\\%%~nxI %%~fI) 
         #COMMAND ${CMAKE_COMMAND} -E copy ${medInria_SOURCE_DIR}/cmake/dtkConfig.cmake.in ${EP_INSTALL_PREFIX}/dtk/lib/cmake/dtk/dtkConfig.cmake
     )
 endif()

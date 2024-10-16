@@ -74,7 +74,7 @@ add_library(${TARGET_NAME} SHARED
 target_link_libraries(${TARGET_NAME}
   PRIVATE
   ${QT_LIBRARIES}
-  Qt5::Core
+  Qt${QT_VERSION_MAJOR}::Core
   ITKCommon
   ITKTransform
   medCore

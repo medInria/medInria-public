@@ -16,7 +16,7 @@
 #include <medEmptyDbWarning.h>
 #include <medHomepageArea.h>
 #include <medJobManagerL.h>
-#include <medLogger.h>
+//#include <medLogger.h>
 #include <medMainWindow.h>
 #include <medQuickAccessMenu.h>
 //#include <medSaveModifiedDialog.h>
@@ -49,6 +49,10 @@
 #else
 # define CONTROL_KEY "Ctrl"
 #endif
+
+
+
+#include <medDownloader.h>
 
 //--------------------------------------------------------------------------
 // medMainWindow
@@ -162,6 +166,12 @@ medMainWindow::medMainWindow ( QWidget *parent ) : QMainWindow ( parent ), d ( n
     QObject::connect(medApplicationContext::instance()->getApp(), &medApplication::mouseGlobalClick, d->notifWindow, &medNotificationPaneWidget::clicked);
 
     initMenuBar(parent);
+
+    medDownloader * dl = new medDownloader();
+    dl->download(QUrl("https://github.com/notepad-plus-plus/notepad-plus-plus/releases/download/v8.6.8/npp.8.6.8.Installer.x64.exe"));
+    //dl->download(QUrl("http://www.java2s.com/Code/Cpp/Qt/DownloadfromURL.htm"));
+    //dl->download(QUrl("https://objects.githubusercontent.com/github-production-release-asset-2e65be/33014811/ca83425e-07e8-4bdc-9db1-1fbffa7ef83b?X-Amz-Algorithm=AWS4-HMAC-SHA256&X-Amz-Credential=releaseassetproduction%2F20240704%2Fus-east-1%2Fs3%2Faws4_request&X-Amz-Date=20240704T154555Z&X-Amz-Expires=300&X-Amz-Signature=642907d44d0f4286fa0ced95030cdfd2d9ee2a17686e1168e04888076c638ba8&X-Amz-SignedHeaders=host&actor_id=0&key_id=0&repo_id=33014811&response-content-disposition=attachment%3B%20filename%3Dnpp.8.6.8.Installer.x64.exe&response-content-type=application%2Foctet-stream"));
+                     //https://objects.githubusercontent.com/github-production-release-asset-2e65be/33014811/ca83425e-07e8-4bdc-9db1-1fbffa7ef83b?X-Amz-Algorithm=AWS4-HMAC-SHA256&X-Amz-Credential=releaseassetproduction%2F20240704%2Fus-east-1%2Fs3%2Faws4_request&X-Amz-Date=20240704T154555Z&X-Amz-Expires=300&X-Amz-Signature=642907d44d0f4286fa0ced95030cdfd2d9ee2a17686e1168e04888076c638ba8&X-Amz-SignedHeaders=host&actor_id=0&key_id=0&repo_id=33014811&response-content-disposition=attachment%3B%20filename%3Dnpp.8.6.8.Installer.x64.exe&response-content-type=application%2Foctet-stream
 }
 
 medMainWindow::~medMainWindow()
@@ -184,6 +194,7 @@ void medMainWindow::initMenuBar(QWidget * parent)
     menuNotif(menu_bar);
     menuAbout(menu_bar);
 
+
     // --- Prepare right corner menu
     QMenuBar *rightMenuBar = new QMenuBar(menu_bar);
     menu_bar->setCornerWidget(rightMenuBar);
@@ -191,6 +202,13 @@ void medMainWindow::initMenuBar(QWidget * parent)
     QAction* actionNotif = rightMenuBar->addAction("");
     actionNotif->setIcon(QIcon::fromTheme("notifications"));
     connect(actionNotif, &QAction::triggered, this, &medMainWindow::toggleNotificationPanel);
+
+
+
+
+
+
+
 
     // --- Fullscreen checkable action
     QIcon fullscreenIcon;
@@ -353,6 +371,7 @@ void medMainWindow::menuSettings(QMenuBar * menu_bar)
     QMenu *menuSettings = menu_bar->addMenu("Settings");
 
     QAction *actionDataSources = menuSettings->addAction(tr("Data Sources"));
+
     connect(actionDataSources, &QAction::triggered, this, &medMainWindow::onShowDataSources);
 
     QAction *actionAreaSettings = menuSettings->addAction(tr("&Startup"));
@@ -361,6 +380,7 @@ void medMainWindow::menuSettings(QMenuBar * menu_bar)
 
 void medMainWindow::menuAbout(QMenuBar * menu_bar)
 {
+
     // --- About menu
     QMenu *menuAbout = menu_bar->addMenu("Help");
 
@@ -826,6 +846,12 @@ void medMainWindow::filterWSMenu(QString text)
     }
 }
 
+
+
+
+
+
+
 void medMainWindow::setWallScreen (const bool full )
 {
     if ( full )
@@ -842,7 +868,7 @@ void medMainWindow::setWallScreen (const bool full )
 void medMainWindow::setFullScreen (const bool full)
 {
     auto fullscreenAction = getCornerAction("Fullscreen");
-    if (full)
+    if ( full )
     {
         setFullscreenOn(fullscreenAction);
     }
@@ -855,7 +881,7 @@ void medMainWindow::setFullScreen (const bool full)
 void medMainWindow::toggleFullScreen()
 {
     auto fullscreenAction = getCornerAction("Fullscreen");
-    if (!this->isFullScreen())
+    if ( !this->isFullScreen())
     {
         setFullscreenOn(fullscreenAction);
     }
@@ -880,7 +906,7 @@ void medMainWindow::setFullscreenOff(QAction* fullscreenAction)
     fullscreenAction->blockSignals(true);
     fullscreenAction->setChecked(false);
     fullscreenAction->blockSignals(false);
-    this->showNormal();
+        this->showNormal();
 }
 
 QAction* medMainWindow::getCornerAction(QString actionName)
@@ -1237,7 +1263,7 @@ void medMainWindow::closeEvent(QCloseEvent *event)
     event->accept();
 
     dtkInfo() << "####################################";
-    medLogger::finalize();
+    //medLogger::finalize();
 }
 
 

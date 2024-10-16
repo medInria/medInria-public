@@ -46,5 +46,6 @@ private:
     medViewContainer *m_parent;
     QList<medAbstractData *> m_pAbsDataList;
     QMap<QString, QString> m_volumePathsMap;
-    QMap<QString, QString> m_volumeNameMap;
+    QMap<QString, QPair<QString, QString>> m_volumeRelMap;
+    QString m_rootDir;
 };

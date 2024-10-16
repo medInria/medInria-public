@@ -24,7 +24,7 @@ if (UNIX AND NOT APPLE)
   set(CMAKE_SHARED_LINKER_FLAGS "${CMAKE_SHARED_LINKER_FLAGS} -Wl,--exclude-libs,ALL")
 endif()
 
-#find_package(Qt5 COMPONENTS REQUIRED Core)
+#find_package(Qt${QT_VERSION_MAJOR} COMPONENTS REQUIRED Core)
 
 find_package(dtk REQUIRED)
 include_directories(${dtk_INCLUDE_DIRS})
@@ -99,7 +99,7 @@ SET(ITKIO_LIBRARIES
 target_link_libraries(${TARGET_NAME}
   ${ITKIO_LIBRARIES}
   ITKPDEDeformableRegistration
-  Qt5::Core
+  Qt${QT_VERSION_MAJOR}::Core
   dtkLog
   dtkCoreSupport
   medCore

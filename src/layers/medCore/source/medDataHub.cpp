@@ -327,8 +327,7 @@ QList<medAbstractData*> medDataHub::getDataList(medDataIndex const & index)
         dataResList << m_IndexToData[index];
     }
     else
-    {
-       
+    {       
         QString sourceId = index.sourceId();
         if (sourceId == "fs")
         {
@@ -445,16 +444,16 @@ void medDataHub::progress(const QString & sourceId, int rqstId, medAbstractSourc
             {
                 if (m_rqstToNotifMap.contains(rqst))
                 {
-                m_rqstToNotifMap[rqst]->update(notifLevel::info, 101);
-                rqst.stampTimeout = QDateTime::currentSecsSinceEpoch() + REQUEST_TIME_OUT;
-                if (rqst.type == asyncRequestType::getRqstType)
-                {
-                    pModel->setData(pModel->toIndex(rqst.uri), DATASTATE_ROLE_DATALOADING, DATASTATE_ROLE);
-                }
-                else
-                {
-                    pModel->setData(pModel->toIndex(rqst.uri), DATASTATE_ROLE_DATAPUSHING, DATASTATE_ROLE);
-                }
+                    m_rqstToNotifMap[rqst]->update(notifLevel::info, 101);
+                    rqst.stampTimeout = QDateTime::currentSecsSinceEpoch() + REQUEST_TIME_OUT;
+                    if (rqst.type == asyncRequestType::getRqstType)
+                    {
+                        pModel->setData(pModel->toIndex(rqst.uri), DATASTATE_ROLE_DATALOADING, DATASTATE_ROLE);
+                    }
+                    else
+                    {
+                        pModel->setData(pModel->toIndex(rqst.uri), DATASTATE_ROLE_DATAPUSHING, DATASTATE_ROLE);
+                    }
                 }
                 break;
             }
@@ -526,7 +525,7 @@ QString fileSysPathToIndex(const QString &path, QStringList files)
     pathTmp.replace('\\', '/');
     pathTmp.replace('/', "\r\n");
     pathTmp = "fs:" + pathTmp;
-    
+
     if (!files.isEmpty())
     {
         if (!pathTmp.endsWith("\r\n"))
@@ -1312,60 +1311,121 @@ QList<medAbstractData *> medDataHub::loadDataFromPathAsIndex(medDataIndex index,
 {
     QList<medAbstractData *> dataResList;
 
-    if (m_IndexToData.contains(index))
-    {
-        dataResList << m_IndexToData[index];
-        emit dataLoaded(index);
-        medDataManager::instance()->medDataHubRelay(index, uuid);
-        return dataResList;
-    }
-    
+    medDataImporter importer;
+    QMap<QString, QString> volumePathsMap;
+    QMap<QString, QPair<QString, QString>> volumeRelMap;
+    QString rootDir;
     std::shared_ptr<medNotif> notif = medNotif::createNotif(notifLevel::info, QString("Load File ") + path, " from local file system", -1, -1);
     
 
+    //detectVolume
     QStringList paths = indexToFileSysPath(index.asString());
     if (QFileInfo(paths[0]).exists())
+    {
+        importer.detectVolumes(paths, rootDir, volumePathsMap, volumeRelMap);
+        //for each volume
+        for (auto volumeId : volumePathsMap.keys())
         {
-        std::shared_ptr<medNotif> notif = medNotif::createNotif(notifLevel::info, QString("Load File ") + paths[0], " from local file system", -1, -1);
-
-        medDataImporter importer;
-        dataResList << (paths.size()==1 ? importer.convertMultipData(paths[0]) : importer.convertMultipData(paths));
-
-        if (!dataResList.isEmpty())
-        {
-            for (auto & data : dataResList)
+            //Si volume connue
+            auto volumeIndex = volumePathsMap[volumeId];
+            if (m_IndexToData.contains(volumeIndex))
             {
-                auto fileList = importer.getPaths(data);
-                QStringList relFileList;
-
-                QString commonPath = computeRootPathOfListPath(fileList, relFileList);
-                auto index = fileSysPathToIndex(commonPath, relFileList);
-
-                data->setDataIndex(index);
-                m_IndexToData[index] = data;
-                m_IndexToData[index].data();
-
-                getVirtualRepresentation()->addData(index, importer.getVolumeId(data), data);
-                emit dataLoaded(index);
-
-                if (dataResList.size() > 1) medNotif::createNotif(notifLevel::success, importer.getVolumeId(data) + " is loaded", " from local file system", -1);
-
-                medDataManager::instance()->medDataHubRelay(index, uuid);
+                dataResList << m_IndexToData[volumeIndex];
+                emit dataLoaded(volumeIndex);
+                medDataManager::instance()->medDataHubRelay(volumeIndex, uuid);
+                return dataResList;
             }
-                notif->update(notifLevel::success, -1, QString("Success"));
-            }
-            else
+            else //sinon on itère sur les volumes détectés
             {
-                notif->update(notifLevel::warning, -2, QString("Failure"));
+                std::shared_ptr<medNotif> notif = medNotif::createNotif(notifLevel::info, QString("Load File ") + paths[0], " from local file system", -1, -1);
+
+                auto data = importer.convertMultipData(indexToFileSysPath(volumeIndex))[0];
+                data->setDataIndex(volumeIndex);
+                m_IndexToData[volumeIndex] = data;
+                m_IndexToData[volumeIndex].data();
+
+                //getVirtualRepresentation()->addData(volumeIndex, volumeRelMap[volumeId].first, data, rootDir);
+                getVirtualRepresentation()->addData(volumeIndex, volumeRelMap[volumeId].first, data);
+                //getVirtualRepresentation()->addData(volumeIndex, importer.getVolumeId(data), data);
+                emit dataLoaded(volumeIndex);
+
+                dataResList << data;
+                medDataManager::instance()->medDataHubRelay(volumeIndex, uuid);
             }
         }
+    }
     else
-        {
+    {
         medNotif::createNotif(notifLevel::warning, QString("Load unexist file ") + paths[0], " is impossible.", -2);
     }
 
     return dataResList;
 }
+//QList<medAbstractData *> medDataHub::loadDataFromPathAsIndex(medDataIndex index, QUuid uuid)
+//{
+//    QList<medAbstractData *> dataResList;
+//
+//    //medDataImporter importer;
+//    //detectVolume
+//
+//
+//    //for each volume
+//
+//    //Si volume connue
+//    if (m_IndexToData.contains(index))
+//    {
+//        dataResList << m_IndexToData[index];
+//        emit dataLoaded(index);
+//        medDataManager::instance()->medDataHubRelay(index, uuid);
+//        return dataResList;
+//    }
+//
+//    //sinon on itère sur les volumes détectés
+//    QStringList paths = indexToFileSysPath(index.asString());
+//    if (QFileInfo(paths[0]).exists())
+//    {
+//        std::shared_ptr<medNotif> notif = medNotif::createNotif(notifLevel::info, QString("Load File ") + paths[0], " from local file system", -1, -1);
+//
+//        medDataImporter importer;
+//        dataResList << (paths.size()==1 ? importer.convertMultipData(paths[0]) : importer.convertMultipData(paths));
+//
+//        if (!dataResList.isEmpty())
+//        {
+//            for (auto & data : dataResList)
+//            {
+////sinon
+//                auto fileList = importer.getPaths(data);
+//                QStringList relFileList;
+//
+//                QString commonPath = computeRootPathOfListPath(fileList, relFileList);
+//                auto index = fileSysPathToIndex(commonPath, relFileList);
+//
+//                data->setDataIndex(index);
+//                m_IndexToData[index] = data;
+//                m_IndexToData[index].data();
+//
+//                //getVirtualRepresentation()->addData(index, nom affichable de la donnee, data, l'abroressance);
+//                getVirtualRepresentation()->addData(index, importer.getVolumeId(data), data);
+//                emit dataLoaded(index);
+//
+//                if (dataResList.size() > 1) medNotif::createNotif(notifLevel::success, importer.getVolumeId(data) + " is loaded", " from local file system", -1);
+//
+//                medDataManager::instance()->medDataHubRelay(index, uuid);
+//            }
+//            notif->update(notifLevel::success, -1, QString("Success"));
+//        }
+//        else
+//        {
+//            notif->update(notifLevel::warning, -2, QString("Failure"));
+//        }
+//    }
+//    else
+//    {
+//        medNotif::createNotif(notifLevel::warning, QString("Load unexist file ") + paths[0], " is impossible.", -2);
+//    }
+//
+//    return dataResList;
+//}
 
 
 QString computeRootPathOfListPath(QStringList &fileList, QStringList &relativePathList)
@@ -1377,13 +1437,13 @@ QString computeRootPathOfListPath(QStringList &fileList, QStringList &relativePa
     {
         x = findFirstDifference(rootPath, fileList[i]);
         rootPath = rootPath.left(x);
-            }
+    }
 
     if (rootPath[rootPath.size() - 1] != '/')
     {
         x = rootPath.lastIndexOf('/') + 1;
         rootPath = rootPath.left(x);
-        }
+    }
 
     for (auto aFilePath : fileList)
     {
@@ -1393,10 +1453,9 @@ QString computeRootPathOfListPath(QStringList &fileList, QStringList &relativePa
     return  rootPath;
 }
 
-#include <QDebug>
 QList< medDataIndex > medDataHub::getSubData(medDataIndex const & index)
 {
-    QList< medDataIndex > listRes;
+    QList< medDataIndex > listRes; 
     QString sourceId = index.sourceId();
 
     if (sourceId == "fs")
@@ -1413,7 +1472,8 @@ QList< medDataIndex > medDataHub::getSubData(medDataIndex const & index)
         }
 
         QMap<QString, QString> volumePathsMap;
-        QMap<QString, QString> volumeNameMap;
+        QMap<QString, QPair<QString, QString>> volumeRelMap;
+        QString rootDir;
         for (QString dirPath : dirPaths)
         {
             QFileInfo fi(dirPath);
@@ -1425,7 +1485,7 @@ QList< medDataIndex > medDataHub::getSubData(medDataIndex const & index)
                 QStringList subPathsDirs  = dir.entryList(QDir::Dirs  | QDir::NoDotAndDotDot);
                 for (int i = 0; i < subPathsFiles.size(); ++i) { subPathsFiles[i] = dirPath + '/' + subPathsFiles[i]; }
                 for (int i = 0; i < subPathsDirs.size(); ++i) { subPathsDirs[i] = dirPath + '/' + subPathsDirs[i]; }
-                importer.detectVolumes(subPathsFiles, volumePathsMap, volumeNameMap);
+                importer.detectVolumes(subPathsFiles, rootDir, volumePathsMap, volumeRelMap);
                 //detectVolume(subPathsFiles, volumePathsMap);
                 for (QString const & index : volumePathsMap)
                 {
@@ -1441,15 +1501,15 @@ QList< medDataIndex > medDataHub::getSubData(medDataIndex const & index)
     else
     {
         medSourceModel * pModel = getModel(sourceId);
-    if (pModel)
-    {
-        QModelIndex modelIndexParent = pModel->toIndex(index);
-        for (int i = 0; i < pModel->rowCount(modelIndexParent); ++i)
+        if (pModel)
         {
-            auto sonIndex = pModel->index(i, 0, modelIndexParent);
-            listRes << pModel->dataIndexFromModelIndex(sonIndex);
-        }        
-    }
+            QModelIndex modelIndexParent = pModel->toIndex(index);
+            for (int i = 0; i < pModel->rowCount(modelIndexParent); ++i)
+            {
+                auto sonIndex = pModel->index(i, 0, modelIndexParent);
+                listRes << pModel->dataIndexFromModelIndex(sonIndex);
+            }
+        }
     }
 
     return listRes;
@@ -1465,8 +1525,8 @@ int  medDataHub::getDataType(medDataIndex const & index)
         QModelIndex modelIndex = m_virtualRepresentation->getModelIndex(index);
         if (modelIndex.isValid()) // is into virtual representation
         {
-        iRes = m_virtualRepresentation->data(modelIndex, DATATYPE_ROLE).toInt();
-    }
+            iRes = m_virtualRepresentation->data(modelIndex, DATATYPE_ROLE).toInt();
+        }
         else // is not into the virtual representation, supposed is directly in file system
         {
             getDataTypeFS(index, iRes);
@@ -1489,9 +1549,9 @@ int  medDataHub::getDataType(medDataIndex const & index)
                     QModelIndex modelIndex = pModel->toIndex(index);
                     if (modelIndex.isValid())
                     {
-            iRes = pModel->getDataType(modelIndex);
-        }
-    }
+                        iRes = pModel->getDataType(modelIndex);
+                    }
+                }
             }
         }
     }

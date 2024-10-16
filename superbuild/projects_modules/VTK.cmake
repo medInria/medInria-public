@@ -39,7 +39,12 @@ if (NOT USE_SYSTEM_${ep})
 ## #############################################################################
 
 set(git_url ${GITHUB_PREFIX}Kitware/VTK.git)
-set(git_tag v9.2.6)
+if(${USE_LASTEST_VTK})
+  set(git_tag master)
+else()
+  #set(git_tag v8.1.2)
+  set(git_tag v9.2.6)
+endif()
 
 ## #############################################################################
 ## Add specific cmake arguments for configuration step of the project
@@ -77,7 +82,7 @@ set(cmake_args
   )
   
 set(cmake_cache_args
-  -DQt5_DIR:FILEPATH=${Qt5_DIR}
+  -DQt${QT_VERSION_MAJOR}_DIR:FILEPATH=${Qt${QT_VERSION_MAJOR}_DIR}
   -DCMAKE_INSTALL_PREFIX:PATH=${EP_INSTALL_PREFIX}/${ep}
   -DCOMPILER_HAS_HIDDEN_VISIBILITY:INTERNAL=ON
   )
@@ -115,6 +120,12 @@ if(${USE_FFmpeg})
 endif()
 
 ## #############################################################################
+## Check if patch has to be applied
+## #############################################################################
+
+# ep_GeneratePatchCommand(${ep} ${ep}_PATCH_COMMAND VTK.patch)
+
+## #############################################################################
 ## Add external-project
 ## #############################################################################
 
@@ -139,6 +150,7 @@ ExternalProject_Add(${ep}
   BUILD_ALWAYS ${EP_BUILD_ALWAYS}
   ${EP_INSTAL_COMMAND}
   )
+  
 ## #############################################################################
 ## Set variable to provide infos about the project
 ## #############################################################################

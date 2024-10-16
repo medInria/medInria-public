@@ -95,7 +95,7 @@ SET(ITKIO_LIBRARIES
 )
 
 target_link_libraries(${TARGET_NAME}
-  Qt5::Core
+  Qt${QT_VERSION_MAJOR}::Core
   dtkLog
   dtkCoreSupport
   medCore

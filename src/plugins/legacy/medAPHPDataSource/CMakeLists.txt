@@ -31,7 +31,7 @@ add_definitions(-D${TARGET_NAME_UP}_VERSION="${${TARGET_NAME}_VERSION}")
 
 #enable_testing(true)
 #FIND_PACKAGE(GTest REQUIRED)
-#FIND_PACKAGE(Qt5Test REQUIRED)
+#FIND_PACKAGE(Qt${QT_VERSION_MAJOR}Test REQUIRED)
 
 find_package(DCMTK REQUIRED)
 
@@ -134,7 +134,7 @@ target_link_libraries(${TARGET_NAME}
 #target_sources(${TARGET_NAME_QTEST} PUBLIC medAPHP.cpp sphereDicomWeb/medAnnotation.cpp test/medAPHPQTest.cpp)
 #target_include_directories(${TARGET_NAME_QTEST} PUBLIC "." "./test/")
 #target_link_libraries(${TARGET_NAME_QTEST} PUBLIC
-#        Qt5::Test
+#        Qt${QT_VERSION_MAJOR}::Test
 #        medCore
 #        ${TARGET_NAME}
 #        ${QTDCM_LIBRARIES}

@@ -30,7 +30,7 @@ add_definitions(-D${TARGET_NAME_UP}_VERSION="${${TARGET_NAME}_VERSION}")
 ## #############################################################################
 
 
-#find_package(Qt5 REQUIRED Core)
+#find_package(Qt${QT_VERSION_MAJOR} REQUIRED Core)
 
 #enable_testing(true)
 #FIND_PACKAGE(GTest REQUIRED)
@@ -85,8 +85,8 @@ add_library(${TARGET_NAME} SHARED
 ## Link
 ## #############################################################################
 target_link_libraries(${TARGET_NAME} PUBLIC
-    Qt5::Core
-    Qt5::Widgets
+    Qt${QT_VERSION_MAJOR}::Core
+    Qt${QT_VERSION_MAJOR}::Widgets
     medCore
   )
 
@@ -103,13 +103,13 @@ target_link_libraries(${TARGET_NAME} PUBLIC
 #        GTest::gtest
 #		GTest::gmock_main
 #		GTest::gmock
-#		Qt5::Core
+#		Qt${QT_VERSION_MAJOR}::Core
 #        medCore
 #        ${TARGET_NAME})
 #
 #project(medTmpDataSourceIntegrationQTest LANGUAGES CXX)
 #
-#find_package(Qt5Test REQUIRED)
+#find_package(Qt${QT_VERSION_MAJOR}Test REQUIRED)
 #
 ##set(CMAKE_INCLUDE_CURRENT_DIR ON)
 #
@@ -120,7 +120,7 @@ target_link_libraries(${TARGET_NAME} PUBLIC
 #add_executable(medTmpDataSourceIntegrationQTest ${CMAKE_CURRENT_SOURCE_DIR}/test/medTmpDataSourceIntegrationQTest.cpp)
 #add_test(NAME medTmpDataSourceIntegrationQTest COMMAND medTmpDataSourceIntegrationQTest)
 #
-#target_link_libraries(medTmpDataSourceIntegrationQTest PRIVATE Qt5::Test Qt5::Sql medCore)
+#target_link_libraries(medTmpDataSourceIntegrationQTest PRIVATE Qt${QT_VERSION_MAJOR}::Test Qt${QT_VERSION_MAJOR}::Sql medCore)
 
 ## #############################################################################
 ## Install rules

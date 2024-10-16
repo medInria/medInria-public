@@ -223,6 +223,7 @@ int main(int argc, char *argv[])
         medSourcesLoader::instance()->loadFromDisk();
         
 
+
         auto notifSys = medNotifSys::instance();
  
         medApplicationContext::instance()->setParent(&application);

@@ -24,13 +24,14 @@ set(${TARGET_NAME}_VERSION ${MEDINRIA_VERSION})
 string(TOUPPER ${TARGET_NAME} TARGET_NAME_UP)
 add_definitions(-D${TARGET_NAME_UP}_VERSION="${${TARGET_NAME}_VERSION}")
 
-
 ## #############################################################################
 ## Resolve dependencies
 ## #############################################################################
 
-find_package(Qt5 REQUIRED Network Widgets )
+find_package(Qt${QT_VERSION_MAJOR} REQUIRED Network Widgets )
 
+find_package(dtk REQUIRED)
+include_directories(${dtk_INCLUDE_DIRS})
 
 ## #############################################################################
 ## List Sources
@@ -69,15 +70,16 @@ add_library(${TARGET_NAME} SHARED
 ## #############################################################################
 
 target_link_libraries(${TARGET_NAME}
-  Qt5::Core
-  Qt5::Gui
-  Qt5::Widgets
-  Qt5::Network
+  Qt${QT_VERSION_MAJOR}::Core
+  Qt${QT_VERSION_MAJOR}::Gui
+  Qt${QT_VERSION_MAJOR}::Widgets
+  Qt${QT_VERSION_MAJOR}::Network
   medCore
   medCoreGui
   dtkLog
-  dtkComposer
-  dtkCore
+  #dtkComposer
+  #dtkCore
+  dtkCoreSupport
   )
 
 

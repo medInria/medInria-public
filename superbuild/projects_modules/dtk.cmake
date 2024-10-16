@@ -81,7 +81,7 @@ set(cmake_args
   )
   
 set(cmake_cache_args
-  -DQt5_DIR:FILEPATH=${Qt5_DIR}
+  -DQt${QT_VERSION_MAJOR}_DIR:FILEPATH=${Qt${QT_VERSION_MAJOR}_DIR}
   -DCMAKE_INSTALL_PREFIX:PATH=${EP_INSTALL_PREFIX}/${ep}
   )
 
