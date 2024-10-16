@@ -1,3 +1,33 @@
+medInria 4.0:
+- INFORMATION: this version of medInria is NOT packaged with Anima plugins. We apologize for the inconvenience, we're working on adding them in a near release.
+- PYTHON: An embedded Python interpreter (currently 3.10) has been added. Plugins can create their own bindings (using any generator) to extend the application in Python.
+  (official bindings to the medInria API will be added soon)
+- Fix an incorrect zoom for some data displayed in a view. The zoom is now calculated with x and y dims, and not z
+- N4 Bias Correction process can stop now if the user wants to quit the application, it will stop at some algorithm checkpoints
+- Reslice toolbox: changing the dimension of spacing parameters does not zoom one of the views
+- Paint toolbox: the first click on the view quickly displays the drawing, instead of waiting for the mask to be created
+- Update loading window logo at application start, and speed up the start removing text display
+- Fix a bug with inrimage data type
+- We have done some work to avoid memory leaks to get a more stable application
+- Solve some graphical problem with settings widgets
+- Add a setting in Browser to deactivate or activate the computation of thumbnail at import. Deactivation uses less RAM, if needed
+- Avoid a crash importing wrong version of VTK files
+- Fix Paint toolbox widgets when the user switches from Paint/Erase to Magic Wand or clear the view.
+- Fix a freeze in PolygonROI toolbox if the user contours outside the image borders.
+- Fix the "clear" button to effectivaly clear the view.
+- Stop some toolboxes compatible with 3D data if the user is using 4D data.
+- Video: default frame rate a 24.
+- DICOM: handle if the origin is missing.
+- Switch to Fedora 37.
+- Switch to Ubuntu 22.
+- PolygonROI: update icons, fix a glitch when users change ROI label, hide label panel in pipelines.
+- Fix some plugins wrongly loaded on Windows.
+- BUGFIX 4.0.1:
+    * Fix the path to the online documentation.
+    * Allow to use data with different size or spacing in LCCLogDemons and DiffeomorphicDemons.
+    * Manual Registration: enhance landmark numbers for better user understanding.
+    * Fix Histogram Analysis width problem displaying multi-results.
+
 medInria 3.3:
 - Fix mirrored DICOM images problem
 - Fix a bug in Paint toolbox with Retina screens
