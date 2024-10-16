@@ -166,8 +166,8 @@ QString LCCLogDemons::description() const
 template <typename PixelType>
 int LCCLogDemonsPrivate::update()
 {
-    RegImageType *inputFixed  = (RegImageType*) proc->fixedImage().GetPointer();
-    RegImageType *inputMoving = (RegImageType*) proc->movingImages()[0].GetPointer();
+    RegImageType *inputFixed  = static_cast<RegImageType*>(proc->fixedImage().GetPointer());
+    RegImageType *inputMoving = static_cast<RegImageType*>(proc->movingImages()[0].GetPointer());
 
     // Cast spacing, origin, direction and size from the moving data to the fixed one
     typedef itk::ResampleImageFilter<RegImageType, RegImageType> ResampleFilterType;
