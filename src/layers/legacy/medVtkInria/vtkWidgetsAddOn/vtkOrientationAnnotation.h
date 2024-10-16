@@ -32,7 +32,7 @@ protected:
 
   // Description:
   // Set text actor positions given a viewport size and justification
-  virtual void SetTextActorsPosition(const int vsize[2]);
+  void SetTextActorsPosition(const int vsize[2]) override;
   virtual void SetTextActorsJustification();
 
 private:
