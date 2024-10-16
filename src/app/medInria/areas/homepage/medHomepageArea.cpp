@@ -491,7 +491,7 @@ void medHomepageArea::onShowInfo()
 
 void medHomepageArea::onShowHelp()
 {
-    QDesktopServices::openUrl(QUrl("http://med.inria.fr/help/documentation"));
+    QDesktopServices::openUrl(QUrl("http://med.inria.fr/documentation"));
 }
 
 void medHomepageArea::onShowSettings()
