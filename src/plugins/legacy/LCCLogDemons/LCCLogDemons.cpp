@@ -19,7 +19,6 @@
 // /////////////////////////////////////////////////////////////////
 
 #include <itkImageRegistrationMethod.h>
-
 #include <itkImage.h>
 #include <itkResampleImageFilter.h>
 #include <itkCastImageFilter.h>
@@ -167,17 +166,24 @@ QString LCCLogDemons::description() const
 template <typename PixelType>
 int LCCLogDemonsPrivate::update()
 {
-    int testResult = proc->testInputs();
-    if (testResult != medAbstractProcessLegacy::SUCCESS)
-    {
-        return testResult;
-    }
+    RegImageType *inputFixed  = static_cast<RegImageType*>(proc->fixedImage().GetPointer());
+    RegImageType *inputMoving = static_cast<RegImageType*>(proc->movingImages()[0].GetPointer());
 
+    // Cast spacing, origin, direction and size from the moving data to the fixed one
+    typedef itk::ResampleImageFilter<RegImageType, RegImageType> ResampleFilterType;
+    typename ResampleFilterType::Pointer resampleFilter = ResampleFilterType::New();
+    resampleFilter->SetOutputSpacing(inputFixed->GetSpacing());
+    resampleFilter->SetOutputOrigin(inputFixed->GetOrigin());
+    resampleFilter->SetOutputDirection(inputFixed->GetDirection());
+    resampleFilter->SetSize(inputFixed->GetLargestPossibleRegion().GetSize());
+    resampleFilter->SetInput(inputMoving);
+    resampleFilter->Update();
+    inputMoving = resampleFilter->GetOutput();
+
+    // Register the fixed and moving data
     registrationMethod = new rpi::LCClogDemons<RegImageType,RegImageType,double> ();
-
-    registrationMethod->SetFixedImage((const RegImageType*) proc->fixedImage().GetPointer());
-    registrationMethod->SetMovingImage((const RegImageType*) proc->movingImages()[0].GetPointer());
-
+    registrationMethod->SetFixedImage(inputFixed);
+    registrationMethod->SetMovingImage(inputMoving);
     registrationMethod->SetUpdateRule(updateRule);
     registrationMethod->SetVerbosity(verbose);
 
@@ -219,12 +225,8 @@ int LCCLogDemonsPrivate::update()
     typedef itk::ResampleImageFilter< RegImageType,RegImageType, double> ResampleFilterType;
     typename ResampleFilterType::Pointer resampler = ResampleFilterType::New();
     resampler->SetTransform(registrationMethod->GetDisplacementFieldTransformation());
-    resampler->SetInput((const RegImageType*)proc->movingImages()[0].GetPointer());
-    resampler->SetSize( proc->fixedImage()->GetLargestPossibleRegion().GetSize() );
-    resampler->SetOutputOrigin( proc->fixedImage()->GetOrigin() );
-    resampler->SetOutputSpacing( proc->fixedImage()->GetSpacing() );
-    resampler->SetOutputDirection( proc->fixedImage()->GetDirection() );
-    resampler->SetDefaultPixelValue( 0 );
+    resampler->SetInput(inputMoving);
+    resampler->SetDefaultPixelValue(0);
     
     // Set the image interpolator
     switch(interpolatorType)
@@ -266,31 +268,11 @@ int LCCLogDemonsPrivate::update()
         qDebug() << "ExceptionObject caught (resampler): " << err.GetDescription();
         return medAbstractProcessLegacy::FAILURE;
     }
-    
-    itk::ImageBase<3>::Pointer result = resampler->GetOutput();
-    result->DisconnectPipeline();
-    
+
     if (proc->output())
     {
-        proc->output()->setData (result);
+        proc->output()->setData(resampler->GetOutput());
     }
-    return medAbstractProcessLegacy::SUCCESS;
-}
-
-medAbstractProcessLegacy::DataError LCCLogDemons::testInputs()
-{
-    if (d->proc->fixedImage()->GetLargestPossibleRegion().GetSize()
-            != d->proc->movingImages()[0]->GetLargestPossibleRegion().GetSize())
-    {
-        return medAbstractProcessLegacy::MISMATCHED_DATA_SIZE;
-    }
-
-    if (d->proc->fixedImage()->GetSpacing()
-            != d->proc->movingImages()[0]->GetSpacing())
-    {
-        return medAbstractProcessLegacy::MISMATCHED_DATA_SPACING;
-    }
-
     return medAbstractProcessLegacy::SUCCESS;
 }
 

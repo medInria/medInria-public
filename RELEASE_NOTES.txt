@@ -22,7 +22,11 @@ medInria 4.0:
 - Switch to Ubuntu 22.
 - PolygonROI: update icons, fix a glitch when users change ROI label, hide label panel in pipelines.
 - Fix some plugins wrongly loaded on Windows.
-- BUGFIX 4.0.1: fix the path to the online documentation.
+- BUGFIX 4.0.1:
+    * Fix the path to the online documentation.
+    * Allow to use data with different size or spacing in LCCLogDemons and DiffeomorphicDemons.
+    * Manual Registration: enhance landmark numbers for better user understanding.
+    * Fix Histogram Analysis width problem displaying multi-results.
 
 medInria 3.3:
 - Fix mirrored DICOM images problem
