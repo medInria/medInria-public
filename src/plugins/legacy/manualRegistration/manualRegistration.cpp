@@ -160,8 +160,8 @@ template <typename PixelType, typename TransformType> int manualRegistrationPriv
     typedef itk::ResampleImageFilter< MovingImageType,MovingImageType,TransformScalarType >    ResampleFilterType;
     typename ResampleFilterType::Pointer resampler = ResampleFilterType::New();
     resampler->SetTransform(transform);
-    resampler->SetInput((const MovingImageType*)proc->movingImages()[0].GetPointer());
-    resampler->SetSize( proc->fixedImage()->GetLargestPossibleRegion().GetSize() );
+    resampler->SetInput(static_cast<const MovingImageType*>(proc->movingImages()[0].GetPointer()));
+    resampler->SetSize(proc->fixedImage()->GetLargestPossibleRegion().GetSize());
     resampler->SetOutputOrigin( proc->fixedImage()->GetOrigin() );
     resampler->SetOutputSpacing( proc->fixedImage()->GetSpacing() );
     resampler->SetOutputDirection( proc->fixedImage()->GetDirection() );

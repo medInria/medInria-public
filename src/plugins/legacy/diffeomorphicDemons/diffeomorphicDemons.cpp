@@ -96,8 +96,8 @@ int diffeomorphicDemonsPrivate::update()
     typedef itk::Image< float, 3 > RegImageType;
     typedef double TransformScalarType;
 
-    FixedImageType  *inputFixed  = (FixedImageType*)  proc->fixedImage().GetPointer();
-    MovingImageType *inputMoving = (MovingImageType*) proc->movingImages()[0].GetPointer();
+    FixedImageType  *inputFixed  = static_cast<FixedImageType*>(proc->fixedImage().GetPointer());
+    MovingImageType *inputMoving = static_cast<MovingImageType*>(proc->movingImages()[0].GetPointer());
 
     // Cast spacing, origin, direction and size from the moving data to the fixed one
     typedef itk::ResampleImageFilter<MovingImageType, MovingImageType> ResampleFilterType;
