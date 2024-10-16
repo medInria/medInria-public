@@ -96,8 +96,8 @@ set(CONFIG_MODE $<$<CONFIG:debug>:Debug>$<$<CONFIG:release>:Release>$<$<CONFIG:M
  
 
 set(APP "\${CMAKE_INSTALL_PREFIX}/bin/medInria.exe")
-set(QT_BINARY_DIR "${Qt5_DIR}/../../../bin")
-set(QT_PLUGINS_DIR "${Qt5_DIR}/../../../plugins")
+set(QT_BINARY_DIR "${Qt${QT_VERSION_MAJOR}_DIR}/../../../bin")
+set(QT_PLUGINS_DIR "${Qt${QT_VERSION_MAJOR}_DIR}/../../../plugins")
 set(QT_TOOLS_DIR "${Qt5_DIR}/../../../../../Tools")
 set(MEDINRIA_FILES "${medInria_DIR}/bin")
 
@@ -189,7 +189,7 @@ if(${SDK_PACKAGING} )
         INSTALL(FILES     ${QT_PLUGINS_DIR}/platforms/qminimal.dll          DESTINATION ./sdk/bin/platforms/    COMPONENT Dev)
         INSTALL(FILES     ${QT_PLUGINS_DIR}/platforms/qoffscreen.dll        DESTINATION ./sdk/bin/platforms/    COMPONENT Dev) #is it really used
         INSTALL(FILES     ${QT_PLUGINS_DIR}/platforms/qwindows.dll          DESTINATION ./sdk/bin/platforms/    COMPONENT Dev)
-        INSTALL(FILES     ${QT_PLUGINS_DIR}/sqldrivers/qsqlite.dll          DESTINATION ./sdk/bin/sqldrivers/   COMPONENT Dev)		
+        INSTALL(FILES     ${QT_PLUGINS_DIR}/sqldrivers/qsqlite.dll          DESTINATION ./sdk/bin/sqldrivers/   COMPONENT Dev)
 		
         INSTALL(FILES ${QT_TOOLS_DIR}/OpenSSL/Win_x64/bin/libcrypto-1_1-x64.dll DESTINATION ./sdk/bin/ COMPONENT Dev)
         INSTALL(FILES ${QT_TOOLS_DIR}/OpenSSL/Win_x64/bin/libssl-1_1-x64.dll    DESTINATION ./sdk/bin/ COMPONENT Dev)

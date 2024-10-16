@@ -23,8 +23,8 @@ set(TARGET_NAME medCore)
 find_package(dtk REQUIRED)
 include_directories(${dtk_INCLUDE_DIRS})
 
-find_package(Qt5Test REQUIRED)
-find_package(Qt5 REQUIRED Network)
+find_package(Qt${QT_VERSION_MAJOR}Test REQUIRED)
+find_package(Qt${QT_VERSION_MAJOR} REQUIRED Network)
 
 ## #############################################################################
 ## List Sources
@@ -102,18 +102,18 @@ target_link_libraries(${TARGET_NAME}
   dtkCoreSupport
   dtkGuiSupport
 
-  Qt5::Core
-  Qt5::Xml
-  Qt5::Widgets
-  Qt5::OpenGL
-  Qt5::Gui
-  Qt5::Sql
-  Qt5::Test
+  Qt${QT_VERSION_MAJOR}::Core
+  Qt${QT_VERSION_MAJOR}::Xml
+  Qt${QT_VERSION_MAJOR}::Widgets
+  Qt${QT_VERSION_MAJOR}::OpenGL
+  Qt${QT_VERSION_MAJOR}::Gui
+  Qt${QT_VERSION_MAJOR}::Sql
+  Qt${QT_VERSION_MAJOR}::Test
   ${OPENGL_LIBRARIES}
 
   PRIVATE
   dtkLog
-  Qt5::Network
+  Qt${QT_VERSION_MAJOR}::Network
   )
   
 ## #############################################################################
@@ -128,5 +128,5 @@ set_lib_install_rules(${TARGET_NAME}
     
     PUBLIC_DEPENDENCIES        
       "dtk REQUIRED COMPONENTS dtkCore dtkCoreSupport dtkGuiSupport"
-      "Qt5 REQUIRED COMPONENTS Core Xml Widgets OpenGL Gui Sql Test"
+      "Qt${QT_VERSION_MAJOR} REQUIRED COMPONENTS Core Xml Widgets OpenGL Gui Sql Test"
     )

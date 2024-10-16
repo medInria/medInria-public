@@ -41,6 +41,9 @@ if (NOT USE_SYSTEM_${ep})
 ## #############################################################################
 
 set(git_url ${GITHUB_PREFIX}medInria/RPI.git)
+if(${USE_LASTEST_RPI})
+  set(git_tag master)
+else()
 set(git_tag RPI_INTERFACE)
 
 ## #############################################################################

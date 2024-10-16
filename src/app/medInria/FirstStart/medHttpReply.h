@@ -13,26 +13,23 @@
 =========================================================================*/
 
 #include <QObject>
-#include <QString>
-#include <QUrl>
 
-class medFirstStartPrivate;
-class medFirstStart : public QObject
+#include <QString>
+
+#include <QUrl>
+#include <QNetworkAccessManager>
+#include <QNetworkRequest>
+#include <QNetworkReply>
+
+class medHttpReply
 {
 public:
-    medFirstStart();
-    ~medFirstStart();
+    medHttpReply();
+    ~medHttpReply();
+    
 
-    void pushPathToCheck(QString pathToCheck, QString pathRessourceBase, QUrl urlDL);
-    void checkAndUpdate();
 
-private:
-    void askNewVersion();
-    bool readUpdatedFile();
-    bool writeUpdatedFile();
-    bool copy(QString const & pathSource, QString const & pathDest);
 
 private:
-    medFirstStartPrivate *d;
+    QNetworkAccessManager * m_qnam;
 };
-

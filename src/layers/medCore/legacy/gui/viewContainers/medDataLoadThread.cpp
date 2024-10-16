@@ -26,38 +26,28 @@ medDataLoadThread::medDataLoadThread(QList<medDataIndex> const & index, QList<QU
     connect(this, SIGNAL(dataReady(medAbstractData*)), m_parent, SLOT(addData(medAbstractData *)));
 }
 
-#include <QDebug>
 void medDataLoadThread::process()
 {
     QStringList paths;
     for (auto & url : m_urlList)
     {
-        QString path = url.toLocalFile();
-        // if (QFileInfo(path).isDir())
-        // {
-        //     m_indexList << fileSysPathToIndex(path);
-        // }
-        // else
-        // {
-        //     paths << path;
-        // }
-        QDirIterator it(path, QDir::Files, QDirIterator::Subdirectories);
+        QDirIterator it(url.toLocalFile(), QDir::Files, QDirIterator::Subdirectories);
         while(it.hasNext())
         {
-            qDebug() << it.next();
             paths << it.next();
         }
-        // paths << url.toLocalFile();
     }
+    QStringList files;
+    QString path     = computeRootPathOfListPath(paths, files);
+    m_indexList << fileSysPathToIndex(path, files);
 
-    qDebug() << "medDataLoadThread" << paths.size() << m_urlList.size();
-    medDataImporter importer;
-    importer.detectVolumes(paths, m_volumePathsMap, m_volumeNameMap);
-    //detectVolume(paths, m_volumePathsMap);
-    for (auto indexTmp : m_volumePathsMap.values())
-    {
-        m_indexList << indexTmp;
-    }
+    //medDataImporter importer;
+    //importer.etectVolumes(paths, m_rootDir,  m_volumePathsMap, m_volumeRelMap);
+    ////detectVolume(paths, m_volumePathsMap);
+    //for (auto indexTmp : m_volumePathsMap.values())
+    //{
+    //    m_indexList << indexTmp;
+    //}
     for (medDataIndex index : m_indexList)
     {
         internalProcess(index, 3);
@@ -79,7 +69,6 @@ void medDataLoadThread::internalProcess(medDataIndex &index, int deep)
         int type = medDataHub::instance()->getDataType(index);
         if (type == DATATYPE_ROLE_DATASET || type == DATATYPE_ROLE_BOTH)
         {
-
             m_pAbsDataList << medDataManager::instance()->retrieveDataList(index);
             for (auto absData : m_pAbsDataList)
             {
