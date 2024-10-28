@@ -168,5 +168,6 @@
 
         <file>gif/icon.gif</file>
 
+        <file>configs/DataSourcesDefault.json</file>
     </qresource>
 </RCC>

@@ -9,13 +9,15 @@
  * the implied warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.
  */
 
-#include<medApplicationContext.h>
+#include <medApplicationContext.h>
 #include <medHomepageArea.h>
 #include <medHomepageButton.h>
 #include <medMainWindow.h>
 #include <medPluginWidget.h>
 #include <medSettingsManager.h>
 #include <medWorkspaceFactory.h>
+
+#include <QtGlobal>
 
 class medHomepageAreaPrivate
 {
@@ -75,7 +77,11 @@ void medHomepageArea::resizeEvent ( QResizeEvent * event )
     d->navigationWidget->setProperty("pos", QPoint(20, height()/4));
 
     // The description text is resized when the window is resized
-    QPixmap pixmap = d->applicationLabel->pixmap(Qt::ReturnByValue);
+#if QT_VERSION < 0x060000
+    QPixmap pixmap = *d->applicationLabel->pixmap();
+#else
+    QPixmap pixmap = d->applicationLabel->pixmap();
+#endif
     d->descriptionWidget->resize(width() - 20, pixmap.height());
 }
 

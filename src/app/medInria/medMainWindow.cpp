@@ -16,7 +16,6 @@
 #include <medEmptyDbWarning.h>
 #include <medHomepageArea.h>
 #include <medJobManagerL.h>
-//#include <medLogger.h>
 #include <medMainWindow.h>
 #include <medQuickAccessMenu.h>
 //#include <medSaveModifiedDialog.h>
@@ -49,10 +48,6 @@
 #else
 # define CONTROL_KEY "Ctrl"
 #endif
-
-
-
-#include <medDownloader.h>
 
 //--------------------------------------------------------------------------
 // medMainWindow
@@ -167,11 +162,6 @@ medMainWindow::medMainWindow ( QWidget *parent ) : QMainWindow ( parent ), d ( n
 
     initMenuBar(parent);
 
-    medDownloader * dl = new medDownloader();
-    dl->download(QUrl("https://github.com/notepad-plus-plus/notepad-plus-plus/releases/download/v8.6.8/npp.8.6.8.Installer.x64.exe"));
-    //dl->download(QUrl("http://www.java2s.com/Code/Cpp/Qt/DownloadfromURL.htm"));
-    //dl->download(QUrl("https://objects.githubusercontent.com/github-production-release-asset-2e65be/33014811/ca83425e-07e8-4bdc-9db1-1fbffa7ef83b?X-Amz-Algorithm=AWS4-HMAC-SHA256&X-Amz-Credential=releaseassetproduction%2F20240704%2Fus-east-1%2Fs3%2Faws4_request&X-Amz-Date=20240704T154555Z&X-Amz-Expires=300&X-Amz-Signature=642907d44d0f4286fa0ced95030cdfd2d9ee2a17686e1168e04888076c638ba8&X-Amz-SignedHeaders=host&actor_id=0&key_id=0&repo_id=33014811&response-content-disposition=attachment%3B%20filename%3Dnpp.8.6.8.Installer.x64.exe&response-content-type=application%2Foctet-stream"));
-                     //https://objects.githubusercontent.com/github-production-release-asset-2e65be/33014811/ca83425e-07e8-4bdc-9db1-1fbffa7ef83b?X-Amz-Algorithm=AWS4-HMAC-SHA256&X-Amz-Credential=releaseassetproduction%2F20240704%2Fus-east-1%2Fs3%2Faws4_request&X-Amz-Date=20240704T154555Z&X-Amz-Expires=300&X-Amz-Signature=642907d44d0f4286fa0ced95030cdfd2d9ee2a17686e1168e04888076c638ba8&X-Amz-SignedHeaders=host&actor_id=0&key_id=0&repo_id=33014811&response-content-disposition=attachment%3B%20filename%3Dnpp.8.6.8.Installer.x64.exe&response-content-type=application%2Foctet-stream
 }
 
 medMainWindow::~medMainWindow()
@@ -1263,7 +1253,6 @@ void medMainWindow::closeEvent(QCloseEvent *event)
     event->accept();
 
     dtkInfo() << "####################################";
-    //medLogger::finalize();
 }
 
 

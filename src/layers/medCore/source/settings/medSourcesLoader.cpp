@@ -29,6 +29,7 @@
 #include <QSharedPointer>
 
 #include <medSettingsManager.h>
+#include<medStorage.h>
 
 medSourcesLoader *medSourcesLoader::s_instance = nullptr;
 
@@ -257,6 +258,95 @@ bool medSourcesLoader::setPath(QString path)
 QString medSourcesLoader::getPath()
 {
     return m_CnxParametersFile == MED_DATASOURCES_FILENAME ? m_CnxParametersPath : m_CnxParametersPath + "/" + m_CnxParametersFile;
+}
+
+QString medSourcesLoader::path()
+{
+    QString cnxParametersFile = MED_DATASOURCES_FILENAME;
+    QString cnxParametersPath = QStandardPaths::writableLocation(QStandardPaths::GenericConfigLocation) + "/" + QCoreApplication::organizationName() + "/" + QCoreApplication::applicationName();
+
+    auto cnxParametersSaved = medSettingsManager::instance()->value("Sources", "Conf dir", ".").toString();
+
+    QFileInfo info(cnxParametersSaved);
+    if (info.isFile())
+    {
+        cnxParametersFile = info.fileName();
+        cnxParametersPath = info.dir().path();
+    }
+    else if (QDir(cnxParametersSaved).exists())
+    {
+        cnxParametersPath = cnxParametersSaved;
+    }
+
+    return cnxParametersPath + '/' + cnxParametersFile;
+}
+
+bool medSourcesLoader::initSourceLoaderCfg(QString src, QString dst)
+{
+    bool bRes = true;
+
+    QFile file(src);
+
+    if (!file.open(QFile::ReadOnly | QIODevice::Text))
+    {
+        bRes = false;
+    }
+    else
+    {
+        int iCnxOk = 0;
+        int iCnxWithoutPlugin = 0;
+        int iCnxInvalid = 0;
+
+        file.setPermissions(QFileDevice::ReadOwner | QFileDevice::WriteOwner);
+        QString content = file.readAll();
+        file.close();
+
+
+        qWarning() << content;
+        QJsonDocument jsonSaveDoc = QJsonDocument::fromJson(content.toUtf8());
+        QJsonArray entries = jsonSaveDoc.array();
+        for (QJsonValueRef & entry : entries)
+        {
+            auto obj = entry.toObject();
+
+            if (obj.contains("sourceType") && obj["sourceType"].isString() && !obj["sourceType"].toString().isEmpty() &&
+                obj.contains("cnxId") && obj["cnxId"].isString() && !obj["cnxId"].toString().isEmpty() &&
+                obj.contains("cnxName") && obj["cnxName"].isString() && !obj["cnxName"].toString().isEmpty())
+            {
+                if (obj["sourceType"].toString() == "medSQLite" && obj["cnxId"].toString() == "medSQLite_default")
+                {
+                    if (obj.contains("parameters") && obj["parameters"].isObject())
+                    {
+                        QJsonObject params = obj["parameters"].toObject();
+                        if (params.contains("LocalDataBasePath") && params["LocalDataBasePath"].isObject())
+                        {
+                            QJsonObject localDataBasePath = params["LocalDataBasePath"].toObject();
+                            localDataBasePath["value"] = medStorage::dataLocation();
+
+                            params["LocalDataBasePath"] = localDataBasePath;
+                            obj["parameters"] = params;
+
+                            entry = obj;
+
+                            jsonSaveDoc.setArray(entries);
+                        }
+                    }
+                }
+            }
+        }
+
+
+        if (!file.open(QFile::WriteOnly | QIODevice::Text))
+        {
+            bRes = false;
+        }
+        else
+        {
+            file.write(jsonSaveDoc.toJson());
+        }
+    }
+
+    return bRes;
 }
 
 

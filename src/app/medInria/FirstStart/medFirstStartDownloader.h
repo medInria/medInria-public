@@ -14,34 +14,25 @@
 
 #include <QObject>
 #include <QString>
-#include <QUrl>
-#include <QNetworkRequest>
 #include <QNetworkReply>
 
+class QNetworkAccessManager;
+
+class medFirstStartDownloaderPrivate;
 class medFirstStartDownloader : public QObject
 {
     Q_OBJECT
 public:
-    medFirstStartDownloader();
+    medFirstStartDownloader(QNetworkAccessManager * qnam);
     ~medFirstStartDownloader();
 
-    void askNewVersion();
-
-    void setDownload(QMap<QString, QPair<QString, QUrl>> downloadMap);
-    QMap<QString, QPair<QString, QUrl>> getDownloadedMap();
-    QStringList getDownloadFailed();
+    bool download(QString url, QString path);
 
 private slots:
-    //void toto();
-    void slotDownloadProgress(qint64 bytesSent, qint64 bytesTotal);
-    void currentResponse(QNetworkReply *reply, int httpVerb, int status, qint64 bytesSent, qint64 bytesTotal);
-    void slotFinished();
     void slotError(QNetworkReply::NetworkError err);
+    void slotDownloadProgress(qint64 bytesSent, qint64 bytesTotal);
+    void slotFinished();
 
 private:
-    QMap<QString, QPair<QString, QUrl>> m_downloadMap;
-    QMap<QString, QPair<QString, QUrl>> m_downloadedMap;
-    QStringList m_downloadFailed;
-
-
+    medFirstStartDownloaderPrivate *d;
 };
