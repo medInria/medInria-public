@@ -43,7 +43,8 @@ set(git_url git@github.com:DCMTK/dcmtk.git)
 if(${USE_LASTEST_DCMTK})
   set(git_tag master)
 else()
-set(git_tag DCMTK-3.6.7)
+  set(git_tag DCMTK-3.6.7)
+endif()
 
 
 

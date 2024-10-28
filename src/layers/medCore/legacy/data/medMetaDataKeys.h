@@ -59,7 +59,7 @@ public:
 
     ~Key2() { }
 
-    Key2& operator=(Key2 && k)
+    Key2& operator=(Key2 && k) noexcept
     {
         this->m_name     = k.m_name;
         this->m_label    = k.m_label;

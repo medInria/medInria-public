@@ -11,53 +11,73 @@
 
 =========================================================================*/
 
-#include <medFirstStart.h>
+/**
+ * @file medFirstStart.cpp
+ * @brief Implementation file for the medFirstStart class.
+ * @copyright Copyright (c) INRIA 2013 - 2020. All rights reserved.
+ * @see LICENSE.txt for details.
+ *
+ * This software is distributed WITHOUT ANY WARRANTY; without even
+ * the implied warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR
+ * PURPOSE.
+ */
+#include "medFirstStart.h"
 
-#include <medFirstStartDownloader.h>
-#include <medFirstStartJSonIO.h>
+#include "medFirstStartUpdateFile.h"
+#include "medFirstStartClient.h"
 
-
-#include <QCoreApplication>
-#include <QStandardPaths>
-#include <QDir>
-#include <QDirIterator>
-#include <QFile>
 #include <QFileInfo>
+#include <QVector>
+#include <QRunnable>
+#include <QThreadPool>
 
-#include <QMap>
-#include <QPair>
-
-
-class medFirstStartPrivate : public QObject
+class medFirstStartPrivate
 {
 public:
-    medFirstStartPrivate();
+    medFirstStartPrivate() = default;
     ~medFirstStartPrivate() = default;
 
+    /**
+     * @struct st_fileInfoUpdate
+     * @brief Internal structure to store information about a file to check and update.
+     */
+    struct st_fileInfoUpdate
+    {
+        QString pathToCheck;
+        QString pathRessourceBase;
+        QString featureName;
+        QString fileName;
+        QString urlDL;
+        std::function<bool(QString, QString)> init;
+        std::function<bool(QString, QString)> update;
+    };
 
-
-    QMap <QString, QPair <QString, QUrl> > registerdMap;
-    QMap <QString, QPair <QString, QUrl> > updateMap;
-    QMap <QString, QPair <QString, QUrl> > updatedMap;
-
-    QString baseUpdatedPath;
-    QString confiPath;
-
-    medFirstStartDownloader downloader;
-    medFirstStartJSonIO     confReadWriter;
-
+    /**
+     * @brief List of files to check install or update.
+     */
+    QVector<struct st_fileInfoUpdate> listFilesToCheckAndUpdate;
+    QNetworkAccessManager *qnam;
+    
 };
 
-medFirstStartPrivate::medFirstStartPrivate() : QObject(), confReadWriter("")
+class medUpdateReferencesFilesThread : public QRunnable
 {
+public:
+    medUpdateReferencesFilesThread(medFirstStart * parent) : m_parent(parent) {};
+    virtual ~medUpdateReferencesFilesThread() = default;
 
-}
+    void run() override
+    {
+        m_parent->updates();
+    }
 
-medFirstStart::medFirstStart()
+    medFirstStart * m_parent;
+};
+
+medFirstStart::medFirstStart(QNetworkAccessManager *qnam)
 {
     d = new medFirstStartPrivate();
-    d->baseUpdatedPath = QStandardPaths::writableLocation(QStandardPaths::GenericConfigLocation) + "/" + QCoreApplication::organizationName() + "/" + QCoreApplication::applicationName() + "/resources/conf/";
-    d->confiPath = "updatedBaseConfigs.json";
+    d->qnam = qnam;
 }
 
 medFirstStart::~medFirstStart()
@@ -65,111 +85,35 @@ medFirstStart::~medFirstStart()
     delete d;
 }
 
-void medFirstStart::pushPathToCheck(QString pathToCheck, QString pathRessourceBase, QUrl urlDL)
+
+
+
+void medFirstStart::pushPathToCheck(QString pathToCheck, QString pathRessourceBase, QString featureName,  QString url, std::function<bool(QString, QString)> init, std::function<bool(QString, QString)> update)
 {
-    d->registerdMap[pathToCheck] = QPair<QString, QUrl>(pathRessourceBase, urlDL);
+    d->listFilesToCheckAndUpdate.push_back({ pathToCheck, pathRessourceBase, featureName, QFileInfo(pathToCheck).fileName(), url, init, update });
 }
 
 void medFirstStart::checkAndUpdate()
 {
-    for (QString const & aPath : d->registerdMap.keys())
-    {
-        if (!QFileInfo::exists(aPath))
-        {
-            if (!copy(d->registerdMap[aPath].first, aPath))
-            {
-                d->updateMap[aPath] = d->registerdMap[aPath];
-            }
-        }
-    }
+    checks();
+    medUpdateReferencesFilesThread * updateThread = new medUpdateReferencesFilesThread(this);
+    QThreadPool::globalInstance()->start(updateThread);
+}
 
-    askNewVersion();
-
-    for (QString const & aPath : d->updatedMap.keys())
+void medFirstStart::checks()
+{
+    for (auto & fileToCheckAndUpdate : d->listFilesToCheckAndUpdate)
     {
-        copy(d->updatedMap[aPath].first, aPath);
+        medFirstStartUpdateFile fileUpdater(fileToCheckAndUpdate.pathToCheck, fileToCheckAndUpdate.featureName, fileToCheckAndUpdate.pathRessourceBase, fileToCheckAndUpdate.update, fileToCheckAndUpdate.init);
+        fileUpdater.installFile();
     }
 }
 
-void medFirstStart::askNewVersion()
+void medFirstStart::updates()
 {
-    bool bRes = true;
-
-    bRes = readUpdatedFile();
-    for (auto const & key : d->updateMap.keys())
+    for (auto & fileToCheckAndUpdate : d->listFilesToCheckAndUpdate)
     {
-        auto & url = d->updateMap[key].second;
-        if (!url.isEmpty())
-        {
-            //d->updateMap[key] = ;
-        }
+        medFirstStartClient fileClientDL(fileToCheckAndUpdate.featureName, fileToCheckAndUpdate.fileName, fileToCheckAndUpdate.urlDL, d->qnam);
+        fileClientDL.updateReferenceFile();
     }
-    //d->downloader.setDownload();
-}
-
-
-
-
-
-bool medFirstStart::copy(QString const & pathSource, QString const & pathDest)
-{
-    bool bRes = true;
-
-    QFileInfo fiSource(pathSource);
-    if (fiSource.isFile())
-    {
-        QDir destDir = QFileInfo(pathDest).dir();
-        destDir.mkpath(destDir.absolutePath());
-        bRes = bRes && QFile::copy(pathSource, pathDest);
-    }
-    else if (fiSource.isDir())
-    {
-        QDirIterator it(pathSource, QDir::NoDotAndDotDot, QDirIterator::Subdirectories);
-        QDir dir(pathSource);
-        const int srcPathLength = dir.canonicalPath().length();
-
-        while (it.hasNext())
-        {
-            it.next();
-
-            const auto fi = it.fileInfo();
-            const QString relPath = fi.canonicalPath().mid(srcPathLength);
-            const QString absDstPath = pathDest + relPath;
-
-            if (fi.isFile())
-            {
-                bRes = bRes && QFile::copy(fi.canonicalPath(), absDstPath);
-            }
-            else if (fi.isDir())
-            {
-                bRes = bRes && dir.mkpath(absDstPath);
-            } 
-        }
-    }
-    else
-    {
-        bRes = false;
-    }
-
-    return bRes;
-}
-
-bool medFirstStart::readUpdatedFile()
-{
-    bool bRes = d->confReadWriter.readJsonUpdatedFile();
-    if (bRes)
-    {
-        auto updatedMap = d->confReadWriter.getUpdatedMap();
-        for (auto const & key : updatedMap.keys())
-        {
-            d->registerdMap[key] = updatedMap[key];
-        }
-    }
-
-    return bRes;
-}
-
-bool medFirstStart::writeUpdatedFile()
-{
-    return false;
 }

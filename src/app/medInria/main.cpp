@@ -101,7 +101,6 @@ int main(int argc, char *argv[])
     fmt.setStereo(false);
     fmt.setSamples(0); // we never need multisampling in the context since the FBO can support
                        // multisamples independently
-
     QSurfaceFormat::setDefaultFormat(fmt);
 
     // this needs to be done before creating the QApplication object, as per the
@@ -134,9 +133,6 @@ int main(int argc, char *argv[])
         {{"r", "role"},
             QCoreApplication::translate("main", "Open database with defined role <junior/expert/coordinateur>."),
             QCoreApplication::translate("main", "junior/expert/coordinateur")},
-        {{"c", "center"},
-            QCoreApplication::translate("main", "Open database for a specific center <center>."),
-            QCoreApplication::translate("main", "center")},
     });
 
         // Process the actual command line arguments given by the user
@@ -183,14 +179,12 @@ int main(int argc, char *argv[])
         const bool DirectView = parser.isSet("view");
         QStringList viewPaths = parser.values("view");
 
-        // const bool DirectView =
-        // dtkApplicationArgumentsContain(&application,"--view") ||
-        // posargs.size()!=0;
         int runningMedInria = 0;
         if (DirectView)
         {
             show_splash = false;
-        for (QStringList::const_iterator i = viewPaths.constBegin(); i != viewPaths.constEnd(); ++i)
+            for (QStringList::const_iterator i = viewPaths.constBegin();
+                 i != viewPaths.constEnd(); ++i)
             {
                 const QString &message = QString("/open ") + *i;
                 runningMedInria = application.sendMessage(message);
@@ -203,17 +197,9 @@ int main(int argc, char *argv[])
         if (runningMedInria)
             return 0;
 
-        if (show_splash)
-        {
-            QObject::connect(medPluginManager::instance(),
-                             SIGNAL(loaded(QString)), &application,
-                             SLOT(redirectMessageToSplash(QString)));
-            QObject::connect(&application, SIGNAL(showMessage(const QString &)),
-                             &splash, SLOT(showMessage(const QString &)));
-            splash.show();
-            splash.showMessage("Loading plugins...");
-        }
-                               medSourcesLoader::initSourceLoaderCfg);
+    QNetworkAccessManager  *qnam = new QNetworkAccessManager(&application);
+    medFirstStart firstStart(qnam);    
+    firstStart.pushPathToCheck(medSourcesLoader::path(), ":/configs/DataSourcesDefault.json", "dataSourceLoader", "", medSourcesLoader::initSourceLoaderCfg);
     firstStart.checkAndUpdate();
 
 
@@ -268,9 +254,7 @@ int main(int argc, char *argv[])
         if (DirectView)
             mainwindow->setStartup(medMainWindow::WorkSpace, viewPaths);
 
-        bool fullScreen = medSettingsManager::instance()
-                              ->value("startup", "fullscreen", false)
-                              .toBool();
+    bool fullScreen = medSettingsManager::instance()->value("startup", "fullscreen", false).toBool();
         const bool hasFullScreenArg = parser.isSet("fullscreen");
         const bool hasNoFullScreenArg = parser.isSet("no-fullscreen");
         const bool hasWallArg = false;

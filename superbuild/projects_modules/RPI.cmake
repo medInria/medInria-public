@@ -44,7 +44,8 @@ set(git_url ${GITHUB_PREFIX}medInria/RPI.git)
 if(${USE_LASTEST_RPI})
   set(git_tag master)
 else()
-set(git_tag RPI_INTERFACE)
+  set(git_tag RPI_INTERFACE)
+endif()
 
 ## #############################################################################
 ## Add specific cmake arguments for configuration step of the project
