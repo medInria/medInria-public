@@ -33,11 +33,11 @@ defaultLabelToolBox::defaultLabelToolBox(QWidget *parent):
 //    labels->hide();
 
 
-    plusButton = new QPushButton(QIcon(":/pixmaps/plus.png"), "");
+    plusButton = new QPushButton(QIcon(":/icons/plus_white.png"), "");
     plusButton->setMaximumSize(QSize(20,20));
 //    plusButton->hide();
 
-    minusButton = new QPushButton(QIcon(":/pixmaps/minus.png"), "");
+    minusButton = new QPushButton(QIcon(":/icons/minus_white.png"), "");
     minusButton->setMaximumSize(QSize(20,20));
 //    minusButton->hide();
 

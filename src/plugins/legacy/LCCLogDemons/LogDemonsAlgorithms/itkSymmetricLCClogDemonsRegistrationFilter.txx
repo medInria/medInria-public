@@ -209,11 +209,7 @@ SymmetricLCClogDemonsRegistrationFilter<TFixedImage,TMovingImage,TField>::TimeSt
 SymmetricLCClogDemonsRegistrationFilter<TFixedImage,TMovingImage,TField>
 ::ThreadedCalculateChange(const ThreadRegionType &regionToProcess, ThreadIdType)
 {
-  typedef typename VelocityFieldType::RegionType      RegionType;
   typedef typename VelocityFieldType::SizeType        SizeType;
-  typedef typename VelocityFieldType::SizeValueType   SizeValueType;
-  typedef typename VelocityFieldType::IndexType       IndexType;
-  typedef typename VelocityFieldType::IndexValueType  IndexValueType;
   typedef typename 
     FiniteDifferenceFunctionType::NeighborhoodType    NeighborhoodIteratorType;
   typedef ImageRegionIterator<VelocityFieldType>      UpdateIteratorType;

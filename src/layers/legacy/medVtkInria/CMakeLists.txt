@@ -22,8 +22,8 @@ set(TARGET_NAME medVtkInria)
 # find dtk
 find_package(dtk REQUIRED)
 
-find_package(VTK REQUIRED COMPONENTS vtkRenderingVolumeOpenGL2 vtkInteractionWidgets vtkRenderingAnnotation vtkInteractionStyle vtkImagingStatistics vtkIOLegacy )
-include(${VTK_USE_FILE})
+find_package(VTK REQUIRED COMPONENTS RenderingVolumeOpenGL2 InteractionWidgets RenderingAnnotation 
+  InteractionStyle ImagingStatistics IOLegacy RenderingVolume IOImage FiltersGeometry ImagingColor)
 
 find_package(OpenGL REQUIRED)
 
@@ -80,40 +80,15 @@ target_link_libraries(${TARGET_NAME} PUBLIC
   ${OPENGL_LIBRARIES}
   Qt5::Core
   Qt5::Widgets
-  
   med::Core
-  
-  vtkCommonCore
-  vtkCommonSystem
-  vtkImagingColor
-  vtkImagingGeneral
-  vtkImagingHybrid
-  vtkIOCore
-  vtkIOExportOpenGL2
-  vtkIOGeometry
-  vtkIOImage
-  vtkIOLegacy
-  vtkIOXML
-  vtkRenderingAnnotation
-  vtkRenderingCore
-  vtkRenderingOpenGL2
-  vtkRenderingVolumeOpenGL2
-  vtkRenderingContextOpenGL2
   ${VTK_OSPRAY_RENDERING_LIBRARY}
-  vtkInteractionWidgets
-  vtkInteractionStyle
-  vtkFiltersExtraction
-  vtkFiltersModeling
-  vtkImagingStencil
-  vtkFiltersGeometry
-  vtksys
-  
-  
+  ${VTK_LIBRARIES}
   # dtk
   # Legacy
   dtkCoreSupport
   )
 
+vtk_module_autoinit(TARGETS ${TARGET_NAME} MODULES ${VTK_LIBRARIES})
 
 ## #############################################################################
 ## install

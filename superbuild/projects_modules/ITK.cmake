@@ -40,7 +40,7 @@ if (NOT USE_SYSTEM_${ep})
 
 
 set(git_url ${GITHUB_PREFIX}InsightSoftwareConsortium/ITK.git)
-set(git_tag v5.1.1)
+set(git_tag v5.4rc04)
 
 
 ## #############################################################################
@@ -73,12 +73,6 @@ set(cmake_cache_args
   -DVTK_ROOT:PATH=${VTK_ROOT}
   -DCMAKE_INSTALL_PREFIX:PATH=${EP_INSTALL_PREFIX}/${ep}
   )
-
-## #############################################################################
-## Check if patch has to be applied
-## #############################################################################
-  
-ep_GeneratePatchCommand(${ep} ${ep}_PATCH_COMMAND ITK.patch)
 
 ## #############################################################################
 ## Add external-project

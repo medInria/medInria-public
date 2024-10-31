@@ -43,17 +43,17 @@ meshMappingToolBox::meshMappingToolBox(QWidget *parent)
 {
     QWidget *widget = new QWidget(this);
 
-    QLabel *dataLabel = new QLabel("Data to map ", this);
-    dataLabel->setToolTip(tr("Select the data from which to obtain values"));
+    QLabel *dataLabel = new QLabel("Data or mesh with values:", this);
+    dataLabel->setToolTip(tr("Select the data or mesh from which to obtain values"));
     d->layersForData = new QComboBox;
     d->layersForData->setSizeAdjustPolicy(QComboBox::AdjustToMinimumContentsLengthWithIcon);
-    d->layersForData->addItem("Select the data to map", 0);
+    d->layersForData->addItem("Select the data or mesh to map", 0);
 
-    QLabel *structureLabel = new QLabel("Mesh", this);
+    QLabel *structureLabel = new QLabel("Mesh to be mapped on:", this);
     structureLabel->setToolTip(tr("Select the mesh whose geometry will be used\nin determining positions to map"));
     d->layersForStructure = new QComboBox;
     d->layersForStructure->setSizeAdjustPolicy(QComboBox::AdjustToMinimumContentsLengthWithIcon);
-    d->layersForStructure->addItem("Select the mesh", 0);
+    d->layersForStructure->addItem("Select the geometry mesh", 0);
     
     QPushButton *runButton = new QPushButton(tr("Run"), this);
     connect(runButton, SIGNAL(clicked()), this, SLOT(run()));
@@ -156,8 +156,8 @@ void meshMappingToolBox::resetComboBoxes()
 {
     d->layersForStructure->clear();
     d->layersForData->clear();
-    d->layersForStructure->addItem("Select the mesh");
-    d->layersForData->addItem("Select the data to map");
+    d->layersForStructure->addItem("Select the geometry mesh");
+    d->layersForData->addItem("Select the data or mesh to map");
     d->nbOfMeshLayers = 0;
     d->nbOfImageLayers = 0;
 }

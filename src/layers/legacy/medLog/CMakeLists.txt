@@ -28,9 +28,7 @@ find_package(ITK REQUIRED COMPONENTS ITKCommon)
 include(${ITK_USE_FILE})
 
 # find vtk
-find_package(VTK REQUIRED COMPONENTS vtkCommonCore)
-include(${VTK_USE_FILE})
-
+find_package(VTK REQUIRED COMPONENTS CommonCore)
 
 ## #############################################################################
 ## List Sources
@@ -75,13 +73,14 @@ target_link_libraries(${TARGET_NAME} PUBLIC
   Qt5::Core
   Qt5::Widgets
   ITKCommon
-  vtkCommonCore
-  
+  VTK::CommonCore
   # dtk
   dtkLog
   # Legacy
   dtkCoreSupport
   )
+
+vtk_module_autoinit(TARGETS ${TARGET_NAME} MODULES VTK::CommonCore)
 
 ## #############################################################################
 ## install

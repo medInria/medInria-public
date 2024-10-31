@@ -104,7 +104,13 @@ class ITK_EXPORT LocalCriteriaOptimizer :
         typedef WarpImageFilter<MovingImageType,MovingImageType,VectorImageType> WarperType;
 
 
-		void SetSigma(const double Sigma[FixedImageDimension] ){for (int i=0;i<FixedImageDimension;++i) m_Sigma[i]=Sigma[i];};
+        void SetSigma(const double Sigma[FixedImageDimension] )
+        {
+            for (int i=0; i<static_cast<int>(FixedImageDimension); ++i)
+            {
+                m_Sigma[i]=Sigma[i];
+            }
+        };
 
 
 		void SetMaskImage(FixedImageConstPointer Mask )
