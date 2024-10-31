@@ -122,7 +122,6 @@ int main(int argc, char *argv[])
         {"no-fullscreen", QCoreApplication::translate("main", "Open application in windowed mode")},
         {"stereo", QCoreApplication::translate("main", "Open application in opengl direct rendering")},
         {"debug",  QCoreApplication::translate("main", "Open application in debug mode")},
-        {{"remotedb", "psql"}, QCoreApplication::translate("main", "Connect application to a remote database controller (psql)")},
         // Options with a value
 #ifdef ACTIVATE_WALL_OPTION
        {{"wall", "tracker"
@@ -138,15 +137,6 @@ int main(int argc, char *argv[])
         {{"c", "center"},
             QCoreApplication::translate("main", "Open database for a specific center <center>."),
             QCoreApplication::translate("main", "center")},
-        {"host",
-            QCoreApplication::translate("main", "database server host or socket directory (default: \"local socket\"). \nThis parameter is taken into account only when remotedb parameter is defined"),
-            QCoreApplication::translate("main", "HOSTNAME")},
-        {{"port","p"},
-            QCoreApplication::translate("main", "database server port (default: \"5432\"). \nThis parameter is taken into account only when remotedb parameter is defined"),
-            QCoreApplication::translate("main", "PORT")},
-       {"db_prefix_path",
-            QCoreApplication::translate("main", "set database prefix path. \nThis parameter is taken into account only when remotedb parameter is defined"),
-            QCoreApplication::translate("main", "<db_prefix_path>")},
     });
 
     // Process the actual command line arguments given by the user
@@ -224,23 +214,9 @@ int main(int argc, char *argv[])
         splash.showMessage("Loading plugins...");
     }
 
-
-
-
-
-
-
-
-
-
-
     QNetworkAccessManager  *qnam = new QNetworkAccessManager(&application);
-    medFirstStart firstStart(qnam);
-    //firstStart.pushPathToCheck(medSourcesLoader::path(), "C:/Users/fleray/Desktop/TOTO.json", "dataSourceLoader", "https://github.com/notepad-plus-plus/notepad-plus-plus/releases/download/v8.6.9/npp.8.6.9.Installer.x64.exe",
-    //                           medSourcesLoader::initSourceLoaderCfg);
-    
-    firstStart.pushPathToCheck(medSourcesLoader::path(), ":/configs/DataSourcesDefault.json", "dataSourceLoader", "",
-                               medSourcesLoader::initSourceLoaderCfg);
+    medFirstStart firstStart(qnam);    
+    firstStart.pushPathToCheck(medSourcesLoader::path(), ":/configs/DataSourcesDefault.json", "dataSourceLoader", "", medSourcesLoader::initSourceLoaderCfg);
     firstStart.checkAndUpdate();
 
 
@@ -304,8 +280,8 @@ int main(int argc, char *argv[])
 #endif
 
     const int conflict = static_cast<int>(hasFullScreenArg) +
-                            static_cast<int>(hasNoFullScreenArg) +
-                            static_cast<int>(hasWallArg);
+                         static_cast<int>(hasNoFullScreenArg) +
+                         static_cast<int>(hasWallArg);
 
     if (conflict > 1)
     {
@@ -347,8 +323,8 @@ int main(int argc, char *argv[])
     if (medPluginManager::instance()->plugins().isEmpty())
     {
         QMessageBox::warning(
-            mainwindow, QObject::tr("No plugin loaded"),
-            QObject::tr("Warning : no plugin loaded successfully."));
+        mainwindow, QObject::tr("No plugin loaded"),
+        QObject::tr("Warning : no plugin loaded successfully."));
     }
 
     // Handle file associations open requests that were not handled in the
