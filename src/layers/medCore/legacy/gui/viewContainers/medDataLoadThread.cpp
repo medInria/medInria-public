@@ -31,23 +31,20 @@ void medDataLoadThread::process()
     QStringList paths;
     for (auto & url : m_urlList)
     {
-        QDirIterator it(url.toLocalFile(), QDir::Files, QDirIterator::Subdirectories);
-        while(it.hasNext())
-        {
-            paths << it.next();
-        }
-    }
-    QStringList files;
-    QString path     = computeRootPathOfListPath(paths, files);
-    m_indexList << fileSysPathToIndex(path, files);
 
-    //medDataImporter importer;
-    //importer.etectVolumes(paths, m_rootDir,  m_volumePathsMap, m_volumeRelMap);
     ////detectVolume(paths, m_volumePathsMap);
     //for (auto indexTmp : m_volumePathsMap.values())
     //{
     //    m_indexList << indexTmp;
     //}
+        paths << url.toLocalFile();
+    }
+    if (!paths.isEmpty())
+    {
+        QStringList files;
+        QString path = computeRootPathOfListPath(paths, files);
+        m_indexList << fileSysPathToIndex(path, files);
+    }
     for (medDataIndex index : m_indexList)
     {
         internalProcess(index, 3);
