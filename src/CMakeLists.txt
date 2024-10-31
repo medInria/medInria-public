@@ -136,14 +136,6 @@ endif()
 
 
 
-# ## #############################################################################
-# ## SDK Options
-# ## #############################################################################
-# option(SDK_GENERATION "Generate the SDK directory" OFF )
-# option(SDK_PACKAGING  "Include the SDK into the packaging" OFF )
-# set(SDK_DIR ${CMAKE_BINARY_DIR}/../sdk CACHE FILEPATH "Path of the SDK directory") 
-# mark_as_advanced(SDK_DIR)
-
 ## #############################################################################
 ## Qt Auto tools
 ## #############################################################################
