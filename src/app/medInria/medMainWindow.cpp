@@ -194,12 +194,6 @@ void medMainWindow::initMenuBar(QWidget * parent)
     connect(actionNotif, &QAction::triggered, this, &medMainWindow::toggleNotificationPanel);
 
 
-
-
-
-
-
-
     // --- Fullscreen checkable action
     QIcon fullscreenIcon;
     fullscreenIcon.addPixmap(QIcon::fromTheme("fullscreen_off").pixmap(24,24), QIcon::Normal, QIcon::Off);

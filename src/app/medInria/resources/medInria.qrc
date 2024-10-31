@@ -125,6 +125,7 @@
         <file>icons/light/24x24/user_add.svg</file>
 
         <file>icons/3DIcon.png</file>
+
         <file>icons/AxialIcon.png</file>
         <file>icons/checkbox-partial.png</file>
         <file>icons/connect_on.svg</file>
@@ -167,7 +168,6 @@
         <file>pixmaps/workspace_Reformat.png</file>
 
         <file>gif/icon.gif</file>
-
         <file>configs/DataSourcesDefault.json</file>
     </qresource>
 </RCC>

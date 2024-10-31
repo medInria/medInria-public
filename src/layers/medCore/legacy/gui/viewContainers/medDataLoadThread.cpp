@@ -31,12 +31,6 @@ void medDataLoadThread::process()
     QStringList paths;
     for (auto & url : m_urlList)
     {
-
-    ////detectVolume(paths, m_volumePathsMap);
-    //for (auto indexTmp : m_volumePathsMap.values())
-    //{
-    //    m_indexList << indexTmp;
-    //}
         paths << url.toLocalFile();
     }
     if (!paths.isEmpty())
@@ -45,6 +39,7 @@ void medDataLoadThread::process()
         QString path = computeRootPathOfListPath(paths, files);
         m_indexList << fileSysPathToIndex(path, files);
     }
+
     for (medDataIndex index : m_indexList)
     {
         internalProcess(index, 3);

@@ -568,6 +568,8 @@ QStringList indexToFileSysPath(const QString &index)
     return pathsRes;
 }
 
+
+
 class medConvertLocalFileInThread : public QRunnable
 {
 public:
@@ -646,6 +648,10 @@ void medDataHub::loadDataFromLocalFileSystem(QString const path, QUuid uuid)
     runner->setAutoDelete(true);
     QThreadPool::globalInstance()->start(runner);
 }
+
+
+
+
 
 void medDataHub::addSource(QString const & pi_sourceId)
 {
@@ -1306,7 +1312,6 @@ int findFirstDifference(const QString& str1, const QString& str2)
 
 
 
-
 QList<medAbstractData *> medDataHub::loadDataFromPathAsIndex(medDataIndex index, QUuid uuid)
 {
     QList<medAbstractData *> dataResList;
@@ -1315,8 +1320,8 @@ QList<medAbstractData *> medDataHub::loadDataFromPathAsIndex(medDataIndex index,
     QMap<QString, QString> volumePathsMap;
     QMap<QString, QPair<QString, QString>> volumeRelMap;
     QString rootDir;
+
     std::shared_ptr<medNotif> notif = medNotif::createNotif(notifLevel::info, QString("Load File ") + index.asString(), " from local file system", -1, -1);
-    
 
     //detectVolume
     QStringList paths = indexToFileSysPath(index.asString());
@@ -1335,7 +1340,7 @@ QList<medAbstractData *> medDataHub::loadDataFromPathAsIndex(medDataIndex index,
                 medDataManager::instance()->medDataHubRelay(volumeIndex, uuid);
                 return dataResList;
             }
-            else //sinon on itère sur les volumes détectés
+            else //sinon on itÃ¨re sur les volumes dÃ©tectÃ©s
             {
                 std::shared_ptr<medNotif> notif = medNotif::createNotif(notifLevel::info, QString("Load File ") + paths[0], " from local file system", -1, -1);
 

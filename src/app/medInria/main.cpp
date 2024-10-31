@@ -85,8 +85,7 @@ void forceShow(medMainWindow &mainwindow)
 int main(int argc, char *argv[])
 {
     QCoreApplication::setAttribute(Qt::AA_EnableHighDpiScaling);
-    // Setup openGL surface compatible with QVTKOpenGLWidget,
-    // required by medVtkView
+    // Setup openGL surface compatible with QVTKOpenGLWidget, required by medVtkView
     QSurfaceFormat fmt;
     fmt.setRenderableType(QSurfaceFormat::OpenGL);
     fmt.setVersion(3, 2);
@@ -164,6 +163,7 @@ int main(int argc, char *argv[])
     const bool DirectView = parser.isSet("view");
     QStringList viewPaths = parser.values("view");
 
+
     int runningMedInria = 0;
     if (DirectView)
     {
@@ -179,6 +179,7 @@ int main(int argc, char *argv[])
     }
     if (runningMedInria)
         return 0;
+
 
     QNetworkAccessManager  *qnam = new QNetworkAccessManager(&application);
     medFirstStart firstStart(qnam);    
@@ -199,8 +200,6 @@ int main(int argc, char *argv[])
     model->setVirtualRepresentation(virtualRepresentation);
     
     medSourcesLoader::instance()->loadFromDisk();
-    
-
 
     auto notifSys = medNotifSys::instance();
  
@@ -230,6 +229,7 @@ int main(int argc, char *argv[])
 
     auto notifBanner = static_cast<medNotificationPaneWidget*>(medNotifSysPresenter(notifSys).buildNotificationWindow());
     notifBanner->setParent(mainwindow);
+
     QObject::connect(mainwindow->notifButton(), &QToolButton::clicked, notifBanner, &medNotificationPaneWidget::switchVisibility);
 
     mainwindow->setAttribute(Qt::WA_DeleteOnClose, true);
@@ -238,6 +238,7 @@ int main(int argc, char *argv[])
         mainwindow->setStartup(medMainWindow::WorkSpace, viewPaths);
 
     bool fullScreen = medSettingsManager::instance()->value("startup", "fullscreen", false).toBool();
+
     const bool hasFullScreenArg = parser.isSet("fullscreen");
     const bool hasNoFullScreenArg = parser.isSet("no-fullscreen");
     const bool hasWallArg = false;
@@ -282,6 +283,7 @@ int main(int argc, char *argv[])
         format.setDirectRendering(true);
         QGLFormat::setDefaultFormat(format);
     }
+
 
     if (medPluginManager::instance()->plugins().isEmpty())
     {

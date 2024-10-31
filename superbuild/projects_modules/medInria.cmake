@@ -64,6 +64,12 @@ if(CMAKE_COMPILER_IS_GNUCXX)
   set(${ep}_cxx_flags "${${ep}_cxx_flags} -fpermissive")
 endif()
 
+if(${SDK_GENERATION})
+  set(MEDINRIA_INSTALL_PREFIX ${SDK_DIR}) 
+else()
+  set(MEDINRIA_INSTALL_PREFIX "") 
+endif()
+
 set(cmake_args
    ${ep_common_cache_args}
   -DCMAKE_BUILD_TYPE=${CMAKE_BUILD_TYPE_medInria}
@@ -88,6 +94,7 @@ set(cmake_cache_args
   -DVTK_ROOT:PATH=${VTK_ROOT}
   #-DGTest_ROOT:PATH=${GTEST_ROOT}
   -DQt${QT_VERSION_MAJOR}_ROOT:PATH=${Qt${QT_VERSION_MAJOR}_ROOT}  
+
   
   -DDCMTK_DIR:PATH=${DCMTK_DIR}
   -Ddtk_DIR:PATH=${dtk_DIR}
@@ -95,12 +102,8 @@ set(cmake_cache_args
   -DRPI_DIR:PATH=${RPI_DIR}
   -DTTK_DIR:PATH=${TTK_DIR}
   -DVTK_DIR:PATH=${VTK_DIR}
-  #-DGTest_DIR:PATH=${GTEST_DIR}
+  -DCMAKE_INSTALL_PREFIX:PATH=${MEDINRIA_INSTALL_PREFIX}
   -DQt${QT_VERSION_MAJOR}_DIR:PATH=${Qt${QT_VERSION_MAJOR}_DIR}
-  
-  -DCMAKE_INSTALL_PREFIX:PATH=${SDK_DIR}
-  #-DSDK_GENERATION:BOOL=${SDK_GENERATION}
-  #-DSDK_PACKAGING:BOOL=${SDK_PACKAGING}
   -DCMAKE_BUILD_PARALLEL_LEVEL:STRING=8
   )
 
@@ -124,7 +127,7 @@ ExternalProject_Add(${ep}
   SOURCE_DIR ${medInria_SOURCE_DIR}
   BINARY_DIR ${medInria_BINARY_DIR}
   STAMP_DIR ${medinria_Stamp_DIR}
-  INSTALL_DIR ${SDK_DIR}
+  INSTALL_DIR ${MEDINRIA_INSTALL_PREFIX}
   
   UPDATE_COMMAND ""
   CMAKE_GENERATOR ${gen}
@@ -180,7 +183,6 @@ if (WIN32)
         COMMAND for %%I in ( ${DTK_BIN_BASE}\\bin\\${CONFIG_MODE}\\*.dll ) do (if EXIST ${MED_BIN_BASE}\\%%~nxI (del /S ${MED_BIN_BASE}\\%%~nxI & mklink /H ${MED_BIN_BASE}\\%%~nxI %%~fI) else mklink /H ${MED_BIN_BASE}\\%%~nxI %%~fI) 
         COMMAND for %%I in ( ${TTK_BIN_BASE}\\bin\\*.dll                 ) do (if EXIST ${MED_BIN_BASE}\\%%~nxI (del /S ${MED_BIN_BASE}\\%%~nxI & mklink /H ${MED_BIN_BASE}\\%%~nxI %%~fI) else mklink /H ${MED_BIN_BASE}\\%%~nxI %%~fI) 
         COMMAND for %%I in ( ${QTX_BIN_BASE}\\bin\\*.dll                 ) do (if EXIST ${MED_BIN_BASE}\\%%~nxI (del /S ${MED_BIN_BASE}\\%%~nxI & mklink /H ${MED_BIN_BASE}\\%%~nxI %%~fI) else mklink /H ${MED_BIN_BASE}\\%%~nxI %%~fI) 
-        #COMMAND ${CMAKE_COMMAND} -E copy ${medInria_SOURCE_DIR}/cmake/dtkConfig.cmake.in ${EP_INSTALL_PREFIX}/dtk/lib/cmake/dtk/dtkConfig.cmake
     )
 endif()
 
