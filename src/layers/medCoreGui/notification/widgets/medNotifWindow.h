@@ -29,19 +29,17 @@ public:
     medNotificationPaneWidget(medNotifSys * pi_pNotification, QMainWindow *pi_parent = nullptr);
     ~medNotificationPaneWidget() = default;
 
-    void setParent(QMainWindow *pi_parent); 
+    void setParent(QMainWindow *pi_parent);
+    void paintEvent(QPaintEvent *event);
 
 public slots:
     void notifWidgetAskDeletion(medUsrNotif notif);
     void removeNotification(medUsrNotif notif);
-
     void addNotification(medUsrNotif notif);
-
     void showPane(bool show);
-    void windowGeometryUpdate(QSize const & size);
+    void windowGeometryUpdate();
     void showAndHigligth(medUsrNotif notif);
-    void swithVisibility();
-
+    void switchVisibility();
     void clicked(QPoint);
 
 signals:
@@ -59,4 +57,5 @@ private:
     QPropertyAnimation                * m_alphaAnimation;
     QMainWindow                       * m_parent;
     QSize                               m_winSize;
+    bool                                isDisplayed;
 };

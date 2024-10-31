@@ -23,9 +23,6 @@
 #include "dcmFifoMover.h"
 #include <medAbstractSource.h>
 
-#include <dcmtk/dcmnet/dimse.h>
-#include <dcmtk/dcmnet/dfindscu.h>
-
 class DcmDataset;
 class DcmTransportLayer;
 class OFConsoleApplication;
@@ -36,6 +33,7 @@ struct T_ASC_Parameters;
 class dcmPACS : public QObject
 {
     Q_OBJECT
+
 public:
     dcmPACS();
     ~dcmPACS();

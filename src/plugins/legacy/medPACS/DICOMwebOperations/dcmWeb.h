@@ -20,6 +20,8 @@
 
 #include <medAbstractSource.h>
 
+#include <dcmtk/dcmdata/dctagkey.h>
+
 #include <QNetworkAccessManager>
 #include <QNetworkRequest>
 #include <QNetworkReply>
@@ -36,10 +38,6 @@
 #include <QJsonDocument>
 #include <QJsonArray>
 #include <QJsonObject>
-
-#include <dcmtk/dcmdata/dctag.h>
-#include <dcmtk/dcmdata/dctagkey.h>
-#include <dcmtk/dcmdata/dcdeftag.h>
 
 class dcmWeb : public QObject
 {
@@ -59,7 +57,6 @@ public:
     QList<QMap<DcmTagKey, QString>> seriesSearchService(const QMap<DcmTagKey, QString> &tags);
 
 private:
-    // MODIF
     struct requestParams
     {
         QEventLoop *waiter; // loop

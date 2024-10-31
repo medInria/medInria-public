@@ -76,22 +76,20 @@ QWidget * medTimeLineParameterPresenter::buildWidget()
     QDoubleSpinBox *shiftSpinBox = timeShiftPresenter.buildSpinBox();
     QComboBox      *timeExt      = extensionShiftPresenter.buildComboBox();
 
-
-    playButton->setIcon(QIcon(":/icons/play.png"));
-    prevButton->setIcon(QIcon(":/icons/backward.png"));
-    nextButton->setIcon(QIcon(":/icons/forward.png"));
+    playButton->setIcon(QIcon::fromTheme("time_play"));
+    prevButton->setIcon(QIcon::fromTheme("time_backward"));
+    nextButton->setIcon(QIcon::fromTheme("time_forward"));
     speedSpinBox->setSingleStep(10);
-
 
     auto handlePlayButtonIcon = [=](bool isPlaying)
     {
         if (isPlaying)
         {
-            playButton->setIcon(QPixmap(":/icons/pause.png"));
+            playButton->setIcon(QIcon::fromTheme("time_pause"));
         }
         else
         {
-            playButton->setIcon(QPixmap(":/icons/play.png"));
+            playButton->setIcon(QIcon::fromTheme("time_play"));
         }
     };
     connect(d->parameter, &medTimeLineParameter::playing, handlePlayButtonIcon);

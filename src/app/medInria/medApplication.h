@@ -30,6 +30,8 @@ public:
     bool event(QEvent *event) override;
     bool notify(QObject *receiver, QEvent *e) override;
     void setMainWindow(medMainWindow *mw);
+    void initializeSplashScreen();
+    void initializeThemes();
 
 signals:
     void showMessage(const QString& message);
@@ -38,7 +40,6 @@ signals:
     void mouseGlobalClick(QPoint point);
 
 public slots:
-    void redirectMessageToSplash(const QString& message);
     bool sendMessage(const QString &message, int timeout = 5000);
 
     void open(const medDataIndex & index);

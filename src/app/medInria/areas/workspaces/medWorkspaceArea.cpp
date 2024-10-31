@@ -433,7 +433,7 @@ void medWorkspaceArea::addDatabaseView(medDatabaseDataSource* dataSource)
     //little tricks to force to recompute the stylesheet.
     pCompactViewWidget->setStyleSheet("/* */");
 
-    bool b1 = connect(dataSource, SIGNAL(openOnDoubleClick(medDataIndex)), this, SIGNAL(open(const medDataIndex&)), Qt::UniqueConnection);
+    connect(dataSource, SIGNAL(openOnDoubleClick(medDataIndex)), this, SIGNAL(open(const medDataIndex&)), Qt::UniqueConnection);
     //connect(pCompactViewWidget, SIGNAL(open(const medDataIndex&)), this, SIGNAL(open(const medDataIndex&)), Qt::UniqueConnection);
 }
 

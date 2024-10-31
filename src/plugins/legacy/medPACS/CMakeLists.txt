@@ -31,7 +31,7 @@ add_definitions(-D${TARGET_NAME_UP}_VERSION="${${TARGET_NAME}_VERSION}")
 
 #enable_testing(true)
 #FIND_PACKAGE(GTest REQUIRED)
-#FIND_PACKAGE(Qt5Test REQUIRED)
+#FIND_PACKAGE(Qt${QT_VERSION_MAJOR}Test REQUIRED)
 
 find_package(dtk REQUIRED)
 include_directories(${dtk_INCLUDE_DIRS})

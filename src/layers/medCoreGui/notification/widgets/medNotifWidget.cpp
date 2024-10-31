@@ -52,7 +52,7 @@ medNotifWidget::medNotifWidget(medUsrNotif &notif, medNotificationPaneWidget * p
 
     // Add remove button
     m_removeNotifButton = new QPushButton();
-    m_removeNotifButton->setIcon(QIcon(":/icons/cross.svg"));
+    m_removeNotifButton->setIcon(QIcon(":/icons/cross_red.svg"));
     m_removeNotifButton->setIconSize(QSize(15, 15));
     m_removeNotifButton->setFixedSize(20, 20);
     m_titleLayout->addWidget(m_removeNotifButton);
@@ -60,6 +60,7 @@ medNotifWidget::medNotifWidget(medUsrNotif &notif, medNotificationPaneWidget * p
     widgetLayout->addLayout(m_titleLayout);
     
     m_msgLabel = new QLabel(notif->getMessage());
+    m_msgLabel->setWordWrap(true);
     widgetLayout->addWidget(m_msgLabel);
 
     m_progressWidget = new QProgressBar();
@@ -126,10 +127,10 @@ void medNotifWidget::update()
 QPixmap & medNotifWidget::criticalityImg(notifLevel criticalityLevel)
 {
     //These variables are static into a static member function to avoid reload multiple-times
-    static QPixmap redSpot = QPixmap::fromImage(QIcon(":/icons/red_spot.svg").pixmap(QSize(15, 15)).toImage());
-    static QPixmap yellowSpot = QPixmap::fromImage(QIcon(":/icons/yellow_spot.svg").pixmap(QSize(15, 15)).toImage());
-    static QPixmap blueSpot = QPixmap::fromImage(QIcon(":/icons/bleu_spot.svg").pixmap(QSize(15, 15)).toImage());
-    static QPixmap greenSpot = QPixmap::fromImage(QIcon(":/icons/green_spot.svg").pixmap(QSize(15, 15)).toImage());
+    static QPixmap redSpot    = QPixmap::fromImage(QIcon(":/icons/spot_red.svg").pixmap(QSize(15, 15)).toImage());
+    static QPixmap yellowSpot = QPixmap::fromImage(QIcon(":/icons/spot_yellow.svg").pixmap(QSize(15, 15)).toImage());
+    static QPixmap blueSpot   = QPixmap::fromImage(QIcon(":/icons/spot_blue.svg").pixmap(QSize(15, 15)).toImage());
+    static QPixmap greenSpot  = QPixmap::fromImage(QIcon(":/icons/spot_green.svg").pixmap(QSize(15, 15)).toImage());
 
     switch (criticalityLevel)
     {

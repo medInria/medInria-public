@@ -21,7 +21,6 @@
 #include <medDataManager.h>
 #include <medDiffusionWorkspace.h>
 #include <medFilteringWorkspace.h>
-#include <medLogger.h>
 #include <medNewLogger.h>
 #include <medMainWindow.h>
 #include <medPluginManager.h>
@@ -36,6 +35,7 @@ class medApplicationPrivate
 public:
     medMainWindow *mainWindow;
     QStringList systemOpenInstructions;
+    QSplashScreen *splashScreen;
     QtLocalPeer *peer;
     QWidget *actWin;
 
@@ -51,6 +51,8 @@ medApplication::medApplication(int & argc, char**argv) :
     QApplication(argc, argv),
     d(new medApplicationPrivate)
 {
+    initializeSplashScreen();
+
     d->listenClick = false;
 
     d->actWin = 0;
@@ -72,10 +74,6 @@ medApplication::medApplication(int & argc, char**argv) :
     qInfo() << "Version: "    << MEDINRIA_VERSION;
     qInfo() << "Build Date: " << MEDINRIA_BUILD_DATE;
 
-    QApplication::setStyle(QStyleFactory::create("fusion"));
-    medStyleSheetParser parser(dtkReadFile(":/medInria.qss"));
-    this->setStyleSheet(parser.result());
-    
     this->initialize();
 }
 
@@ -125,11 +123,9 @@ void medApplication::setMainWindow(medMainWindow *mw)
     QVariant var = QVariant::fromValue((QObject*)d->mainWindow);
     this->setProperty("MainWindow",var);
     d->systemOpenInstructions.clear();
-}
 
-void medApplication::redirectMessageToSplash(const QString &message)
-{
-    emit showMessage(message);
+    // Wait until the app is displayed to close itself
+    d->splashScreen->finish(d->mainWindow);
 }
 
 /*!
@@ -167,6 +163,8 @@ void medApplication::listenClick(bool listen)
 
 void medApplication::initialize()
 {
+    initializeThemes();
+
     qRegisterMetaType<medDataIndex>("medDataIndex");
 
     // Registering different workspaces
@@ -196,4 +194,52 @@ void medApplication::initialize()
         medCore::pluginManager::initialize(pluginsPath);
     else
         medCore::pluginManager::initialize(defaultPath);
+}
+
+/**
+ * @brief Set the Qt splash screen to the application logo.
+ * 
+ */
+void medApplication::initializeSplashScreen()
+{
+    d->splashScreen = new QSplashScreen(QPixmap(":/pixmaps/medInria-splash.png"),
+        Qt::WindowStaysOnTopHint | Qt::X11BypassWindowManagerHint);
+    d->splashScreen->setAttribute(Qt::WA_DeleteOnClose, true);
+    d->splashScreen->show();
+    this->processEvents();
+}
+
+/**
+ * @brief Parse the theme file chosen by user in settings.
+ * 
+ */
+void medApplication::initializeThemes()
+{
+    QApplication::setStyle(QStyleFactory::create("fusion"));
+
+    int themeIndex = medSettingsManager::instance()->value("startup","theme").toInt();
+    QString qssFile;
+    switch (themeIndex)
+    {
+    case 0:
+    default:
+        qssFile = ":/dark.qss";
+        QIcon::setThemeName(QStringLiteral("dark"));
+        break;
+    case 1:
+        qssFile = ":/grey.qss";
+        QIcon::setThemeName(QStringLiteral("light"));
+        break;
+    case 2:
+        qssFile = ":/light.qss";
+        QIcon::setThemeName(QStringLiteral("light"));
+        break;
+    }
+    medStyleSheetParser parser(dtkReadFile(qssFile));
+    this->setStyleSheet(parser.result());
+
+    this->setWindowIcon(QIcon(":medInria.png"));
+
+    // Unblur icons for instance on retina screens
+    QGuiApplication::setAttribute(Qt::AA_UseHighDpiPixmaps); 
 }

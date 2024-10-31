@@ -9,16 +9,15 @@
  * the implied warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.
  */
 
+#include <medApplicationContext.h>
 #include <medHomepageArea.h>
-
-// #include <medDatabaseSettingsWidget.h>
 #include <medHomepageButton.h>
 #include <medMainWindow.h>
 #include <medPluginWidget.h>
-#include <medStartupSettingsWidget.h>
+#include <medSettingsManager.h>
 #include <medWorkspaceFactory.h>
 
-#include<medApplicationContext.h>
+#include <QtGlobal>
 
 class medHomepageAreaPrivate
 {
@@ -36,12 +35,13 @@ medHomepageArea::medHomepageArea ( QWidget * parent ) : QWidget ( parent ), d ( 
     d->descriptionWidget->setProperty("pos", QPoint(10, this->height()/7));
 
     QHBoxLayout *descriptionLayout = new QHBoxLayout(d->descriptionWidget);
+    descriptionLayout->setContentsMargins(0, 0, 0, 0);
 
     d->applicationLabel = new QLabel(this);
-    QPixmap applicationLogo( ":pixmaps/medInria-logo-homepage.png" );
+    QPixmap applicationLogo = getApplicationLogoPixmap();
     d->applicationLabel->setPixmap(applicationLogo);
     descriptionLayout->addWidget(d->applicationLabel);
-    descriptionLayout->addStretch();
+    descriptionLayout->setSpacing(13);
 
     d->textEdit = new QTextEdit(this);
     QFile descriptionFile(":DESCRIPTION.txt");
@@ -51,9 +51,11 @@ medHomepageArea::medHomepageArea ( QWidget * parent ) : QWidget ( parent ), d ( 
     d->textEdit->setHtml(descriptionStream.readAll());
     d->textEdit->setReadOnly(true);
     d->textEdit->setFocusPolicy(Qt::NoFocus);
-    d->textEdit->setMinimumWidth(500);
+    d->textEdit->setMinimumWidth(520);
     d->textEdit->setMinimumHeight(150);
     d->textEdit->setMaximumHeight(150);
+    d->textEdit->setStyleSheet("QTextEdit { padding: 5px; }");
+    d->textEdit->setAlignment(Qt::AlignLeft);
     descriptionLayout->addWidget(d->textEdit);
 
     // Setup the navigation widget with buttons to access workspaces
@@ -74,12 +76,13 @@ void medHomepageArea::resizeEvent ( QResizeEvent * event )
     // Recompute the widget position when the window is resized
     d->navigationWidget->setProperty("pos", QPoint(20, height()/4));
 
-    // The description text is resized when the window is resized:
-    // Total width of the app, minus the logo and the spacings
-    int newTextSize = width() - d->applicationLabel->pixmap()->width() - 40;
-    d->textEdit->setMinimumWidth(newTextSize);
-    d->textEdit->setMaximumWidth(newTextSize);
-    d->descriptionWidget->resize(width() - 30, d->applicationLabel->pixmap()->height());
+    // The description text is resized when the window is resized
+#if QT_VERSION < 0x060000
+    QPixmap pixmap = *d->applicationLabel->pixmap();
+#else
+    QPixmap pixmap = d->applicationLabel->pixmap();
+#endif
+    d->descriptionWidget->resize(width() - 20, pixmap.height());
 }
 
 void medHomepageArea::initPage()
@@ -102,9 +105,9 @@ void medHomepageArea::initPage()
     workspaceButtonsLayoutBasic->addLayout(workspaceButtonsLayoutBasicGrid);
 
     medHomepageButton * browserButton = new medHomepageButton ( this );
-    browserButton->setToolButtonStyle ( Qt::ToolButtonTextUnderIcon );
-    browserButton->setIcon ( QIcon ( ":/icons/folder.png" ) );
-    browserButton->setText ( "Import/export files" );
+    browserButton->setToolButtonStyle ( Qt::ToolButtonTextBesideIcon );
+    browserButton->setIcon ( QIcon::fromTheme("open") );
+    browserButton->setText ( " Import/export files" );
     browserButton->setMinimumHeight ( 40 );
     browserButton->setMaximumWidth ( 250 );
     browserButton->setMinimumWidth ( 250 );
@@ -224,8 +227,6 @@ void medHomepageArea::initPage()
     d->navigationWidget->setLayout(workspaceButtonsLayout);
 }
 
-
-
 void medHomepageArea::onShowBrowser()
 {
     emit showBrowser();
@@ -234,4 +235,27 @@ void medHomepageArea::onShowBrowser()
 void medHomepageArea::onShowWorkspace(QString workspace)
 {
     emit showWorkspace(workspace);
+}
+
+/**
+ * @brief Get the homepage logo associated to the type of theme for better contrast.
+ * 
+ */
+QPixmap medHomepageArea::getApplicationLogoPixmap()
+{
+    QPixmap applicationLogo;
+    int themeIndex = medSettingsManager::instance()->value("startup","theme").toInt();
+
+    switch (themeIndex)
+    {
+    case 0:
+    default:
+        applicationLogo = QPixmap(":pixmaps/medInria-logo-theme-dark.png");
+        break;
+    case 1:
+    case 2:
+        applicationLogo = QPixmap(":pixmaps/medInria-logo-theme-light.png");
+        break;
+    }
+    return applicationLogo;
 }

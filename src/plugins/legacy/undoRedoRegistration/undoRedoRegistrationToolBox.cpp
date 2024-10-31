@@ -43,8 +43,8 @@ public:
 undoRedoRegistrationToolBox::undoRedoRegistrationToolBox(QWidget *parent) : medRegistrationAbstractToolBox(parent), d(new undoRedoRegistrationToolBoxPrivate)
 {
     // Undo/redo Buttons
-    d->undoButton = new QPushButton(QIcon(":undoRedoRegistration/icons/ArrowDown.png"),tr("Undo"),this);
-    d->redoButton = new QPushButton(QIcon(":undoRedoRegistration/icons/ArrowUp.png"),tr("Redo"),this);
+    d->undoButton = new QPushButton(QIcon(":/icons/arrow_down.svg"),tr("Undo"),this);
+    d->redoButton = new QPushButton(QIcon(":/icons/arrow_up.svg"),tr("Redo"),this);
     d->undoButton->setEnabled(false);
     d->redoButton->setEnabled(false);
     d->resetButton = new QPushButton(tr("Reset"),this);
@@ -54,7 +54,7 @@ undoRedoRegistrationToolBox::undoRedoRegistrationToolBox(QWidget *parent) : medR
     connect(d->redoButton,SIGNAL(clicked()),this,SLOT(onRedo()));
     connect(d->resetButton,SIGNAL(clicked()),registrationFactory::instance(),SLOT(reset()));
 
-    d->arrowCurrentStep = QIcon(":undoRedoRegistration/icons/BlueArrowRight.png");
+    d->arrowCurrentStep = QIcon(":/icons/arrow_right.svg");
     d->currentStep = -1;
 
     d->m_UndoRedo = new undoRedoRegistration();
@@ -158,7 +158,6 @@ void undoRedoRegistrationToolBox::addTransformationIntoList(int i, QString metho
         d->transformationStack->insertItem(d->currentStep,QString::number(d->transformationStack->count()+1)+ ". " + this->parentToolBox()->getNameOfCurrentAlgorithm().remove(" "));
         d->transformationStack->item(d->currentStep)->setToolTip(methodParameters);
         d->transformationStack->item(d->currentStep)->setIcon(d->arrowCurrentStep);
-        d->transformationStack->item(d->currentStep)->setForeground(QColor(0,200,0));
     }
     d->undoButton->setEnabled(true);
     d->resetButton->setEnabled(true);
@@ -173,13 +172,10 @@ void undoRedoRegistrationToolBox::updatePositionArrow(int newStep){
             d->transformationStack->item(d->currentStep)->setIcon(QIcon());
         }
         d->currentStep = newStep;
-        if (!(d->transformationStack->count()==d->currentStep)){
+        if (!(d->transformationStack->count()==d->currentStep))
+        {
             d->transformationStack->item(d->currentStep)->setIcon(d->arrowCurrentStep);
-            d->transformationStack->item(d->currentStep)->setForeground(QColor(0,200,0));
         }
-    }
-    for(int k = d->currentStep-1;k>=0;k--){
-        d->transformationStack->item(k)->setForeground(QColor(255,255,255));
     }
 }
 

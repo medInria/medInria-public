@@ -310,7 +310,8 @@ medAbstractData * medDataHub::getData(medDataIndex const & index)
         }
         else
         {
-            medNotif::createNotif(notifLevel::error, "Data can't be retrieved", QString("Unable to retrieve data from source ") + sourceId + QString(" for data index ") + index.asString());
+            medNotif::createNotif(notifLevel::error, "Data can't be retrieved",
+                QString("Unable to retrieve data from source ") + sourceId + QString(" for data index ") + index.asString());
         }
     }
 
@@ -517,10 +518,6 @@ void medDataHub::sourceOnlineStatus(const QString & sourceId, bool status)
         pModel->setOnline(status);
     }
 }
-
-
-
-
 
 QString fileSysPathToIndex(const QString &path, QStringList files)
 {
@@ -1324,6 +1321,8 @@ QList<medAbstractData *> medDataHub::loadDataFromPathAsIndex(medDataIndex index,
     QMap<QString, QPair<QString, QString>> volumeRelMap;
     QString rootDir;
 
+    std::shared_ptr<medNotif> notif = medNotif::createNotif(notifLevel::info, QString("Load File ") + index.asString(), " from local file system", -1, -1);
+
     //detectVolume
     QStringList paths = indexToFileSysPath(index.asString());
     if (QFileInfo(paths[0]).exists())
@@ -1341,7 +1340,7 @@ QList<medAbstractData *> medDataHub::loadDataFromPathAsIndex(medDataIndex index,
                 medDataManager::instance()->medDataHubRelay(volumeIndex, uuid);
                 return dataResList;
             }
-            else //sinon on itère sur les volumes détectés
+            else //sinon on itÃ¨re sur les volumes dÃ©tectÃ©s
             {
                 std::shared_ptr<medNotif> notif = medNotif::createNotif(notifLevel::info, QString("Load File ") + paths[0], " from local file system", -1, -1);
 

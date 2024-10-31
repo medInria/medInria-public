@@ -1503,7 +1503,7 @@ void medVtkFibersDataInteractor::bundlingListCustomContextMenu(const QPoint &poi
     QMenu *menu = new QMenu;
     
     QAction *saveAction = new QAction(tr("Save"), this);
-    saveAction->setIcon(QIcon(":icons/save_white.svg"));
+    saveAction->setIcon(QIcon::fromTheme("save"));
     connect(saveAction, SIGNAL(triggered()), this, SLOT(saveCurrentBundle()));
     menu->addAction(saveAction);
     

@@ -280,9 +280,7 @@ AlgorithmPaintToolBox::AlgorithmPaintToolBox(QWidget *parent ) :
 
     m_magicWandButton = new QPushButton(tr("Magic Wand"));
     m_magicWandButton->setObjectName("Magic Wand");
-    QPixmap pixmap(":medSegmentation/pixmaps/magic_wand_white.svg");
-    QIcon buttonIcon(pixmap);
-    m_magicWandButton->setIcon(buttonIcon);
+    m_magicWandButton->setIcon(QIcon::fromTheme("magic_wand"));
     m_magicWandButton->setToolTip(tr("Magic wand to automatically paint similar voxels"));
     m_magicWandButton->setCheckable(true);
 
@@ -924,8 +922,8 @@ void AlgorithmPaintToolBox::setLabel(int newVal)
 void AlgorithmPaintToolBox::setLabelColor()
 {
     QColor currentColor = m_labelColorMap[m_strokeLabelSpinBox->value() - 1].second;
-    QColor newColor = QColorDialog::getColor(currentColor,this);
-
+    QColor newColor = QColorDialog::getColor(currentColor, this, "Select color", QColorDialog::DontUseNativeDialog);
+    
     if (newColor.isValid())
     {
         m_labelColorMap[m_strokeLabelSpinBox->value() - 1].second = newColor;

@@ -125,14 +125,12 @@ private slots:
 
     void open_waitForImportedSignal(medDataIndex,QUuid);
 
-
     void openFromSystem();
     void openDicomFromSystem();
     void setSourceVisibility(bool checked);
     
     void onShowBrowser();
     void onShowDataSources();
-    //void onShowNotifPanel();
     void onShowHelp();
 
     /**
@@ -185,14 +183,7 @@ private slots:
      */
     void onShowPluginLogs();
 
-    /**
-     * @brief Update the fullscreen icon if checked or not
-     */
-    void switchOffOnFullscreenIcons(const bool checked);
-
-
     void filterWSMenu(QString text);
-
 
 protected:
     void closeEvent(QCloseEvent *event);
@@ -203,6 +194,10 @@ protected:
     void dragLeaveEvent(QDragLeaveEvent *event);
     void dragMoveEvent(QDragMoveEvent *event);
     void dropEvent(QDropEvent *event);
+
+    QAction* getCornerAction(QString);
+    void setFullscreenOn(QAction*);
+    void setFullscreenOff(QAction*);
 
 private:
     medMainWindowPrivate *d;

@@ -39,8 +39,14 @@ if (NOT USE_SYSTEM_${ep})
 ## Set up versioning control
 ## #############################################################################
 
-set(git_url ${GITHUB_PREFIX}DCMTK/dcmtk.git)
-set(git_tag DCMTK-3.6.7)
+set(git_url git@github.com:DCMTK/dcmtk.git)
+if(${USE_LASTEST_DCMTK})
+  set(git_tag master)
+else()
+  set(git_tag DCMTK-3.6.7)
+endif()
+
+
 
 ## #############################################################################
 ## Check if patch has to be applied

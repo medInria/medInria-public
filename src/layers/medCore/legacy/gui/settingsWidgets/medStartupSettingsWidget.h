@@ -14,11 +14,11 @@
 
 =========================================================================*/
 
-#include <medSettingsWidget.h>
+#include <medCoreExport.h>
+#include <medSettingsManager.h>
 
-#include <QCheckBox>
 #include <QDialog>
-#include <QComboBox>
+#include <QLabel>
 #include <QWidget>
 
 class medStartupSettingsWidgetPrivate;
@@ -28,11 +28,17 @@ class MEDCORE_EXPORT medStartupSettingsWidget : public QDialog
     Q_OBJECT
 
 public :
-    medStartupSettingsWidget(QWidget *parent = nullptr);
+    medStartupSettingsWidget(QWidget *);
 
 public slots:
     void read();
     void write();
+
+protected:
+    void readFullscreenSettings(medSettingsManager *);
+    void readDefaultStartingArea(medSettingsManager *);
+    void readDefaultSegmentationSpeciality(medSettingsManager *);
+    void readDefaultTheme(medSettingsManager *);
 
 private:
     medStartupSettingsWidgetPrivate *d;

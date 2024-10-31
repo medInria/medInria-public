@@ -41,7 +41,7 @@ public :
 
 medLinkMenu::medLinkMenu(QWidget * parent) : QPushButton(parent), d(new medLinkMenuPrivate)
 {
-    this->setIcon(QIcon(":icons/link_white.svg"));
+    this->setIcon(QIcon::fromTheme("link"));
     setToolTip("Link parameters");
     this->setFixedSize(QSize(height()-3, height()-3));
     this->setIconSize(QSize(height()-6, height()-6));
@@ -895,7 +895,7 @@ void medGroupWidget::setColor(QColor color)
 
 void medGroupWidget::setGroupColor()
 {
-    QColor newColor = QColorDialog::getColor(m_color);
+    QColor newColor = QColorDialog::getColor(m_color, this, "Select color", QColorDialog::DontUseNativeDialog);
 
     if (newColor.isValid() && newColor!=m_color)
         setColor(newColor);

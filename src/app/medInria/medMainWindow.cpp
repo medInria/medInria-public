@@ -16,7 +16,6 @@
 #include <medEmptyDbWarning.h>
 #include <medHomepageArea.h>
 #include <medJobManagerL.h>
-#include <medLogger.h>
 #include <medMainWindow.h>
 #include <medQuickAccessMenu.h>
 //#include <medSaveModifiedDialog.h>
@@ -176,6 +175,7 @@ void medMainWindow::initMenuBar(QWidget * parent)
 {
     // Menu bar
     QMenuBar *menu_bar = this->menuBar();
+    menu_bar->setStyleSheet("QMenuBar { margin: 3px; }");
     menuFile(menu_bar);
     menuWorkspace(menu_bar);
     menuWindow(menu_bar);
@@ -190,16 +190,17 @@ void medMainWindow::initMenuBar(QWidget * parent)
     menu_bar->setCornerWidget(rightMenuBar);
 
     QAction* actionNotif = rightMenuBar->addAction("");
-    actionNotif->setIcon(QIcon(":/icons/button-notifications - withe.png"));
+    actionNotif->setIcon(QIcon::fromTheme("notifications"));
     connect(actionNotif, &QAction::triggered, this, &medMainWindow::toggleNotificationPanel);
 
 
     // --- Fullscreen checkable action
     QIcon fullscreenIcon;
-    fullscreenIcon.addPixmap(QPixmap(":icons/fullscreenExpand.png"), QIcon::Normal, QIcon::Off);
-    fullscreenIcon.addPixmap(QPixmap(":icons/fullscreenReduce.png"), QIcon::Normal, QIcon::On);
+    fullscreenIcon.addPixmap(QIcon::fromTheme("fullscreen_off").pixmap(24,24), QIcon::Normal, QIcon::Off);
+    fullscreenIcon.addPixmap(QIcon::fromTheme("fullscreen_on").pixmap(24,24),  QIcon::Normal, QIcon::On);
 
     d->actionFullscreen = new QAction(parent);
+    d->actionFullscreen->setObjectName("Fullscreen");
     d->actionFullscreen->setIcon(fullscreenIcon);
     d->actionFullscreen->setCheckable(true);
     d->actionFullscreen->setChecked(false);
@@ -211,14 +212,7 @@ void medMainWindow::initMenuBar(QWidget * parent)
     d->actionFullscreen->setToolTip(tr("Switch to fullscreen (F11)"));
 #endif
     connect(d->actionFullscreen, &QAction::toggled, this, &medMainWindow::setFullScreen);
-    // On Qt5, QAction in menubar does not seem to show the Off and On icons, so we do it manually
-    connect(d->actionFullscreen, &QAction::toggled, this, &medMainWindow::switchOffOnFullscreenIcons);
     rightMenuBar->addAction(d->actionFullscreen);
-
-
-    //QAction *actionAreaSettings = new QAction(tr("&Startup settings"), parent);
-    //connect(actionAreaSettings, &QAction::triggered, this, &medMainWindow::onShowAreaSettings);
-    //menuArea->addAction(actionAreaSettings);
 }
 
 void medMainWindow::menuFile(QMenuBar * menu_bar)
@@ -227,13 +221,13 @@ void medMainWindow::menuFile(QMenuBar * menu_bar)
     QMenu *menuFile = menu_bar->addMenu("File");
     auto *actionOpenFiles = menuFile->addAction("Open File(s)");
     auto *actionOpenDicom = menuFile->addAction("Open Dicom");
-    auto *actionSaveOnDisk = menuFile->addAction("Save on disk");
+    menuFile->addAction("Save on disk");
     auto *actionBrowse     = menuFile->addAction("Browse files");
-    auto *actionSeparator1 = menuFile->addSeparator();
+    menuFile->addSeparator();
     auto *actionGoHome = menuFile->addAction("Go to Welcome Page");
-    auto *actionSeparator2 = menuFile->addSeparator();
-    auto *subMenuRecentFiles = menuFile->addMenu("Recent files");
-    auto *actionSeparator3 = menuFile->addSeparator();
+    menuFile->addSeparator();
+    menuFile->addMenu("Recent files");
+    menuFile->addSeparator();
     auto *subMenuVisibilitySource = menuFile->addMenu("Source Visibility");
     
     QAction *virtualReprAction = subMenuVisibilitySource->addAction("Quick Access");
@@ -251,8 +245,8 @@ void medMainWindow::menuFile(QMenuBar * menu_bar)
         connect(sourceAction, &QAction::toggled, this, &medMainWindow::setSourceVisibility);
     }
  
-    auto *actionSeparator4 = menuFile->addSeparator();
-    auto *actionQuit = menuFile->addAction("Quit");
+    menuFile->addSeparator();
+    menuFile->addAction("Quit");
 
     connect(actionOpenFiles, &QAction::triggered, this, &medMainWindow::openFromSystem);
     connect(actionOpenDicom, &QAction::triggered, this, &medMainWindow::openDicomFromSystem);
@@ -282,7 +276,7 @@ void medMainWindow::menuWorkspace(QMenuBar * menu_bar)
    
     QAction *visuAction = menuWorkspaces->addAction("Visualization");
     visuAction->setData(medVisualizationWorkspace::staticIdentifier());
-    bool b1 = connect(visuAction, &QAction::triggered, this, &medMainWindow::onSwitchToWorkspace);
+    connect(visuAction, &QAction::triggered, this, &medMainWindow::onSwitchToWorkspace);
     d->wsActions.push_back(visuAction);
 
     for (medWorkspaceFactory::Details* detail : workspaceDetails)
@@ -296,7 +290,7 @@ void medMainWindow::menuWorkspace(QMenuBar * menu_bar)
             QMenu *menuActionTmp = menuWorkspaces->addMenu(detail->name);
             QAction * openAction = menuActionTmp->addAction("Open " + detail->name);
             openAction->setData(detail->identifier);
-            bool b1 = connect(openAction, &QAction::triggered, this, &medMainWindow::onSwitchToWorkspace);
+            connect(openAction, &QAction::triggered, this, &medMainWindow::onSwitchToWorkspace);
 
             menuActionTmp->addSeparator();
             auto toolboxHashTable = tbFactory->toolBoxDetailsFromCategory(detail->name);
@@ -308,7 +302,7 @@ void medMainWindow::menuWorkspace(QMenuBar * menu_bar)
                 infos << detail->identifier << toolboxId << toolboxDetails->name;
                 QVariant varData = QVariant(infos);
                 subWorkSpaceAction->setData(varData);
-                bool b1 = connect(subWorkSpaceAction, &QAction::triggered, this, &medMainWindow::onSwitchToProcess);
+                connect(subWorkSpaceAction, &QAction::triggered, this, &medMainWindow::onSwitchToProcess);
 
                 d->wsMenuActionsMap[menuActionTmp].push_back(subWorkSpaceAction);
             }
@@ -317,7 +311,7 @@ void medMainWindow::menuWorkspace(QMenuBar * menu_bar)
         {
             QAction *openAction = menuWorkspaces->addAction(detail->name);
             openAction->setData(detail->identifier);
-            bool b1 = connect(openAction, &QAction::triggered, this, &medMainWindow::onSwitchToWorkspace);
+            connect(openAction, &QAction::triggered, this, &medMainWindow::onSwitchToWorkspace);
 
             d->wsActions.push_back(openAction);
         }
@@ -329,12 +323,12 @@ void medMainWindow::menuWindow(QMenuBar * menu_bar)
     // --- Window menu
     QMenu *menuWindow = menu_bar->addMenu("Window");
 
-    auto *actionMaximise = menuWindow->addAction("Maximize");
-    auto *actionSeparator1 = menuWindow->addSeparator();
+    menuWindow->addAction("Maximize");
+    menuWindow->addSeparator();
     auto *actionAjust = menuWindow->addAction(tr("Adjust containers size"));
-    auto *actionVSplit = menuWindow->addAction(tr("Vertical split"));
-    auto *actionHSplit = menuWindow->addAction(tr("Horizontal split"));
-    auto *action4Split = menuWindow->addAction(tr("4 split"));
+    menuWindow->addAction(tr("Vertical split"));
+    menuWindow->addAction(tr("Horizontal split"));
+    menuWindow->addAction(tr("4 split"));
 
     connect(actionAjust, &QAction::triggered, this, &medMainWindow::adjustContainersSize);
 }
@@ -351,31 +345,35 @@ void medMainWindow::menuCapture(QMenuBar * menu_bar)
 
 }
 
+/**
+ * @brief The Settings menu holds application settings such as start-up or data sources settings
+ * 
+ * @param menu_bar 
+ */
 void medMainWindow::menuSettings(QMenuBar * menu_bar)
 {
-    // --- Settings menu
     QMenu *menuSettings = menu_bar->addMenu("Settings");
 
-    QAction *actionGeneral = menuSettings->addAction(tr("General"));
-    QAction *actionSeparator = menuSettings->addSeparator();
     QAction *actionDataSources = menuSettings->addAction(tr("Data Sources"));
 
     connect(actionDataSources, &QAction::triggered, this, &medMainWindow::onShowDataSources);
+
+    QAction *actionAreaSettings = menuSettings->addAction(tr("&Startup"));
+    connect(actionAreaSettings, &QAction::triggered, this, &medMainWindow::onShowAreaSettings);
 }
 
 void medMainWindow::menuAbout(QMenuBar * menu_bar)
 {
 
     // --- About menu
-    QMenu *menuAbout = menu_bar->addMenu("?");
+    QMenu *menuAbout = menu_bar->addMenu("Help");
 
     QAction *actionAbout = menuAbout->addAction(tr("About the application"));
     QAction *actionAuthors = menuAbout->addAction(tr("Au&thors"));
     QAction *actionReleaseNotes = menuAbout->addAction(tr("&Release Notes"));
     QAction *actionLicense = menuAbout->addAction(tr("&License"));
-    QAction *actionSeparator = menuAbout->addSeparator();
-    QAction *actionHelp = menuAbout->addAction(tr("&Help"));
-
+    menuAbout->addSeparator();
+    QAction *actionHelp = menuAbout->addAction(tr("&Online Documentation"));
 
     connect(actionAbout, &QAction::triggered, this, &medMainWindow::onShowAbout);
     connect(actionAuthors, &QAction::triggered, this, &medMainWindow::onShowAuthors);
@@ -387,10 +385,10 @@ void medMainWindow::menuAbout(QMenuBar * menu_bar)
 void medMainWindow::menuNotif(QMenuBar * menu_bar)
 {
     // --- Notif Action
-    QMenu   *menuNotif = menu_bar->addMenu("Notif");
+    QMenu   *menuNotif = menu_bar->addMenu("Notifications");
     QAction *actionShowHideNotifs = menuNotif->addAction("Show / Hide");
     QAction *actionClearNotifs = menuNotif->addAction("Clear all");
-    QAction *actionSeparator = menuNotif->addSeparator();
+    menuNotif->addSeparator();
     QMenu   *menuLog = menuNotif->addMenu("Logs");
     QAction *actionLog = menuLog->addAction(tr("Show"));
     QAction *actionPluginLogs = menuLog->addAction(tr("Plugins"));
@@ -458,7 +456,7 @@ void medMainWindow::switchToDefaultWorkSpace()
 
 void medMainWindow::toggleNotificationPanel()
 {
-    d->notifWindow->swithVisibility();
+    d->notifWindow->switchVisibility();
 }
 
 /**
@@ -624,12 +622,6 @@ void medMainWindow::onShowDataSources()
     dialog->exec();
 }
 
-
-//void medMainWindow::onShowNotifPanel()
-//{
-//    d->notifWindow->swithVisibility();
-//}
-
 void medMainWindow::onShowAbout()
 {
     QFile file(":ABOUT.txt");
@@ -768,19 +760,7 @@ void medMainWindow::onShowPluginLogs()
 
 void medMainWindow::onShowHelp()
 {
-    QDesktopServices::openUrl(QUrl("http://med.inria.fr/help/documentation"));
-}
-
-void medMainWindow::switchOffOnFullscreenIcons(const bool checked)
-{
-    if (checked)
-    {
-        d->actionFullscreen->setIcon(QIcon(":icons/fullscreenReduce.png"));
-    }
-    else
-    {
-        d->actionFullscreen->setIcon(QIcon(":icons/fullscreenExpand.png"));
-    }
+    QDesktopServices::openUrl(QUrl("https://med.inria.fr/documentation"));
 }
 
 void medMainWindow::filterWSMenu(QString text)
@@ -871,18 +851,59 @@ void medMainWindow::setWallScreen (const bool full )
 
 void medMainWindow::setFullScreen (const bool full)
 {
+    auto fullscreenAction = getCornerAction("Fullscreen");
     if ( full )
-        this->showFullScreen();
+    {
+        setFullscreenOn(fullscreenAction);
+    }
     else
-        this->showNormal();
+    {
+        setFullscreenOff(fullscreenAction);
+    }
 }
 
 void medMainWindow::toggleFullScreen()
 {
+    auto fullscreenAction = getCornerAction("Fullscreen");
     if ( !this->isFullScreen())
-        this->showFullScreen();
+    {
+        setFullscreenOn(fullscreenAction);
+    }
     else
+    {
+        setFullscreenOff(fullscreenAction);
+    }
+}
+
+void medMainWindow::setFullscreenOn(QAction* fullscreenAction)
+{
+    fullscreenAction->setIcon(QIcon::fromTheme("fullscreen_off"));
+    fullscreenAction->blockSignals(true);
+    fullscreenAction->setChecked(true);
+    fullscreenAction->blockSignals(false);
+    this->showFullScreen();
+}
+
+void medMainWindow::setFullscreenOff(QAction* fullscreenAction)
+{
+    fullscreenAction->setIcon(QIcon::fromTheme("fullscreen_on"));
+    fullscreenAction->blockSignals(true);
+    fullscreenAction->setChecked(false);
+    fullscreenAction->blockSignals(false);
         this->showNormal();
+}
+
+QAction* medMainWindow::getCornerAction(QString actionName)
+{
+    QAction* fullscreenAction;
+    for(QAction *action : this->menuBar()->cornerWidget()->actions())
+    {
+        if (action->objectName() == actionName)
+        {
+            fullscreenAction = action;
+        }
+    }
+    return fullscreenAction;
 }
 
 void medMainWindow::captureScreenshot()
@@ -1226,7 +1247,6 @@ void medMainWindow::closeEvent(QCloseEvent *event)
     event->accept();
 
     dtkInfo() << "####################################";
-    medLogger::finalize();
 }
 
 
@@ -1253,9 +1273,14 @@ bool medMainWindow::event(QEvent * e)
     return QMainWindow::event(e) ;
 }
 
+/**
+ * @brief Run after application resize through resize buttons.
+ * 
+ * @param event 
+ */
 void medMainWindow::resizeEvent(QResizeEvent *event)
 {
-    d->notifWindow->windowGeometryUpdate(this->size());
+    d->notifWindow->windowGeometryUpdate();
 }
 
 void medMainWindow::adjustContainersSize()

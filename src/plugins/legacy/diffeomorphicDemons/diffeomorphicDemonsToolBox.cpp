@@ -42,14 +42,7 @@ diffeomorphicDemonsToolBox::diffeomorphicDemonsToolBox(QWidget *parent)
     : medAbstractSelectableToolBox(parent), d(new diffeomorphicDemonsToolBoxPrivate)
 {
     QWidget *widget = new QWidget(this);
-
     QVBoxLayout *layout = new QVBoxLayout();
-
-    QLabel *explanation = new QLabel("Drop 2 datasets with same size and spacing.\n");
-    explanation->setSizePolicy(QSizePolicy::Ignored, QSizePolicy::Preferred);
-    explanation->setWordWrap(true);
-    explanation->setStyleSheet("font: italic");
-    layout->addWidget(explanation);
 
     d->iterationsBox = new QLineEdit();
     d->iterationsBox->setText("15x10x5");

@@ -27,6 +27,10 @@ set(CPACK_PACKAGE_FILE_NAME "${CPACK_PACKAGE_NAME}-${CPACK_PACKAGE_VERSION}-${MS
 
 set(ICON_PATH "${PROJECT_SOURCE_DIR}/src/app/medInria/resources/medInria.ico")
 
+# Used on pinned on taskbar
+set(CPACK_PACKAGE_ICON ${ICON_PATH})
+string(REGEX REPLACE "/" "\\\\\\\\" CPACK_PACKAGE_ICON "${CPACK_PACKAGE_ICON}")
+
 # The icon to install the application.
 set(CPACK_NSIS_MUI_ICON ${ICON_PATH})
 
@@ -92,9 +96,11 @@ set(CONFIG_MODE $<$<CONFIG:debug>:Debug>$<$<CONFIG:release>:Release>$<$<CONFIG:M
  
 
 set(APP "\${CMAKE_INSTALL_PREFIX}/bin/medInria.exe")
-set(QT_BINARY_DIR "${Qt5_DIR}/../../../bin")
-set(QT_PLUGINS_DIR "${Qt5_DIR}/../../../plugins")
-set(QT_TOOLS_DIR "${Qt5_DIR}/../../../../../Tools")
+
+set(QT_BINARY_DIR "${Qt${QT_VERSION_MAJOR}_DIR}/../../../bin")
+set(QT_PLUGINS_DIR "${Qt${QT_VERSION_MAJOR}_DIR}/../../../plugins")
+set(QT_TOOLS_DIR "${Qt${QT_VERSION_MAJOR}_DIR}/../../../../../Tools")
+
 set(MEDINRIA_FILES "${medInria_DIR}/bin")
 
 list(APPEND 

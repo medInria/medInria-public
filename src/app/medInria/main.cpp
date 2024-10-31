@@ -29,7 +29,6 @@
 #include <medMainWindow.h>
 #include <medPluginManager.h>
 #include <medSettingsManager.h>
-#include <medSplashScreen.h>
 
 #include <medSourcesLoader.h>
 #include <medDataHub.h>
@@ -42,7 +41,7 @@
 
 #include<medNotifWindow.h>
 
-#include <medFirstStart.h>
+#include<medFirstStart.h>
 
 void forceShow(medMainWindow &mainwindow)
 {
@@ -101,15 +100,9 @@ int main(int argc, char *argv[])
     fmt.setStereo(false);
     fmt.setSamples(0); // we never need multisampling in the context since the FBO can support
                        // multisamples independently
-
     QSurfaceFormat::setDefaultFormat(fmt);
 
-    // this needs to be done before creating the QApplication object, as per the
-    // Qt doc, otherwise there are some edge cases where the style is not fully
-    // applied
-    // QApplication::setStyle("plastique");
     medApplication application(argc, argv);
-    medSplashScreen splash(QPixmap(":/pixmaps/medInria-logo-homepage.png"));
 
     setlocale(LC_NUMERIC, "C");
     QLocale::setDefault(QLocale("C"));
@@ -134,23 +127,10 @@ int main(int argc, char *argv[])
         {{"r", "role"},
             QCoreApplication::translate("main", "Open database with defined role <junior/expert/coordinateur>."),
             QCoreApplication::translate("main", "junior/expert/coordinateur")},
-        {{"c", "center"},
-            QCoreApplication::translate("main", "Open database for a specific center <center>."),
-            QCoreApplication::translate("main", "center")},
     });
 
     // Process the actual command line arguments given by the user
     parser.process(application);
-
-    // Do not show the splash screen in debug builds because it hogs the
-    // foreground, hiding all other windows. This makes debugging the startup
-    // operations difficult.
-
-#if !defined(_DEBUG)
-    bool show_splash = true;
-#else
-    bool show_splash = false;
-#endif
 
     if (parser.isSet("center"))
     {
@@ -183,13 +163,10 @@ int main(int argc, char *argv[])
     const bool DirectView = parser.isSet("view");
     QStringList viewPaths = parser.values("view");
 
-    // const bool DirectView =
-    // dtkApplicationArgumentsContain(&application,"--view") ||
-    // posargs.size()!=0;
+
     int runningMedInria = 0;
     if (DirectView)
     {
-        show_splash = false;
         for (QStringList::const_iterator i = viewPaths.constBegin(); i != viewPaths.constEnd(); ++i)
         {
             const QString &message = QString("/open ") + *i;
@@ -203,16 +180,6 @@ int main(int argc, char *argv[])
     if (runningMedInria)
         return 0;
 
-    if (show_splash)
-    {
-        QObject::connect(medPluginManager::instance(),
-                            SIGNAL(loaded(QString)), &application,
-                            SLOT(redirectMessageToSplash(QString)));
-        QObject::connect(&application, SIGNAL(showMessage(const QString &)),
-                            &splash, SLOT(showMessage(const QString &)));
-        splash.show();
-        splash.showMessage("Loading plugins...");
-    }
 
     QNetworkAccessManager  *qnam = new QNetworkAccessManager(&application);
     medFirstStart firstStart(qnam);    
@@ -231,7 +198,7 @@ int main(int argc, char *argv[])
     QObject::connect(medSourcesLoader::instance(), SIGNAL(sourceRemoved(medAbstractSource *)), sourceHandler, SLOT(removeSource(medAbstractSource *)));
     QObject::connect(medSourcesLoader::instance(), &medSourcesLoader::defaultWorkingSource, sourceHandler, &medSourceHandler::setDefaultWorkingSource);
     model->setVirtualRepresentation(virtualRepresentation);
-        
+    
     medSourcesLoader::instance()->loadFromDisk();
 
     auto notifSys = medNotifSys::instance();
@@ -248,10 +215,10 @@ int main(int argc, char *argv[])
     notifSys->setOperatingSystemNotification(true);
     notifSys->setOSNotifOnlyNonFocus(true);
     QObject::connect(&application, &QGuiApplication::focusWindowChanged,
-                        [=](QWindow *focusWindow)
-                        {
-                            notifSys->windowOnTop(focusWindow != nullptr);
-                        }
+                     [=](QWindow *focusWindow)
+                     {
+                         notifSys->windowOnTop(focusWindow != nullptr);
+                     }
     );
 
 
@@ -262,16 +229,16 @@ int main(int argc, char *argv[])
 
     auto notifBanner = static_cast<medNotificationPaneWidget*>(medNotifSysPresenter(notifSys).buildNotificationWindow());
     notifBanner->setParent(mainwindow);
-    QObject::connect(mainwindow->notifButton(), &QToolButton::clicked, notifBanner, &medNotificationPaneWidget::swithVisibility);
+
+    QObject::connect(mainwindow->notifButton(), &QToolButton::clicked, notifBanner, &medNotificationPaneWidget::switchVisibility);
 
     mainwindow->setAttribute(Qt::WA_DeleteOnClose, true);
 
     if (DirectView)
         mainwindow->setStartup(medMainWindow::WorkSpace, viewPaths);
 
-    bool fullScreen = medSettingsManager::instance()
-                            ->value("startup", "fullscreen", false)
-                            .toBool();
+    bool fullScreen = medSettingsManager::instance()->value("startup", "fullscreen", false).toBool();
+
     const bool hasFullScreenArg = parser.isSet("fullscreen");
     const bool hasNoFullScreenArg = parser.isSet("no-fullscreen");
     const bool hasWallArg = false;
@@ -317,21 +284,19 @@ int main(int argc, char *argv[])
         QGLFormat::setDefaultFormat(format);
     }
 
-    if (show_splash)
-        splash.finish(mainwindow);
 
     if (medPluginManager::instance()->plugins().isEmpty())
     {
         QMessageBox::warning(
-        mainwindow, QObject::tr("No plugin loaded"),
-        QObject::tr("Warning : no plugin loaded successfully."));
+            mainwindow, QObject::tr("No plugin loaded"),
+            QObject::tr("Warning : no plugin loaded successfully."));
     }
 
     // Handle file associations open requests that were not handled in the
     // application
     QObject::connect(&application, SIGNAL(messageReceived(const QString &)),
-                        mainwindow,
-                        SLOT(processNewInstanceMessage(const QString &)));
+                     mainwindow,
+                     SLOT(processNewInstanceMessage(const QString &)));
 
     application.setMainWindow(mainwindow);
 

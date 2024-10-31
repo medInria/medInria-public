@@ -153,6 +153,7 @@ medResliceViewer::medResliceViewer(medAbstractView *view, QWidget *parent): medA
         vtkNew<vtkGenericOpenGLRenderWindow> renderWindow;
         riw[i]->SetRenderWindow(renderWindow);
     }
+    riw[selectedView]->GetRenderer()->SetBackground(0.3,0,0);
 
     // Build views
     for (int i = 0; i < 4; i++)
@@ -471,18 +472,15 @@ bool medResliceViewer::eventFilter(QObject *object, QEvent *event)
     {
         for(int i=0; i<3; i++)
         {
+            riw[i]->GetRenderer()->SetBackground(0,0,0);
             if (views[i]==object)
             {
                 selectedView = i;
             }
         }
-        return false;
+        riw[selectedView]->GetRenderer()->SetBackground(0.3,0,0);
     }
-
-    if (event->type() == QEvent::FocusOut)
-    {
-        return false;
-    }
+    
     return false;
 }
 

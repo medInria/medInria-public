@@ -69,8 +69,8 @@ target_include_directories(${TARGET_NAME}
 ## #############################################################################
 
 target_link_libraries(${TARGET_NAME} PUBLIC
-  Qt5::Core
-  Qt5::Widgets
+  Qt${QT_VERSION_MAJOR}::Core
+  Qt${QT_VERSION_MAJOR}::Widgets
   
   med::Core
 
@@ -129,7 +129,7 @@ set_lib_install_rules(${TARGET_NAME}
     PUBLIC_DEPENDENCIES      
       "medInria REQUIRED COMPONENTS Core"  
       "dtk      REQUIRED"
-      "Qt5      REQUIRED COMPONENTS Core Widgets"
+      "Qt${QT_VERSION_MAJOR}      REQUIRED COMPONENTS Core Widgets"
       "ITK      REQUIRED COMPONENTS ITKIOImageBase ITKTransform ITKIOTransformBase ITKIOTransformInsightLegacy ITKRegistrationCommon ITKIOMeta"
       "RPI      REQUIRED COMPONENTS Common"
     )

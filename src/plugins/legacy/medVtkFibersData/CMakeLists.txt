@@ -54,9 +54,6 @@ list_source_files(${TARGET_NAME}
   writers
   )
 
-set(${TARGET_NAME}_QRC medVtkFibersData.qrc)
-
-
 ## #############################################################################
 ## include directorie.
 ## #############################################################################

@@ -90,14 +90,6 @@ QVariant medSourceModel::data(const QModelIndex & index, int role) const
                 varDataRes = QColor(14, 191, 239);
             }
        }
- //        else if (role == Qt::DecorationRole)
-//        {
-//            auto value = data(index, 100).toString();
-// //            if (value == "DataLoading")
-// //            {
-// //                varDataRes = QIcon(":icons/yellow_spot.svg");
-// //            }
-//        }
         else
         {
             medSourceModelItem *item = getItem(index);

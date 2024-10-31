@@ -13,7 +13,6 @@
 
 #include "httpResponse.h"
 
-#include <QDebug>
 #include <QRegExp>
 
 
@@ -79,25 +78,25 @@ void httpResponse::init()
 {
     d->multi = false;
     // read response main header for information on the response data
-    for (auto head : d->headers) 
+    for(auto head : d->headers) 
     {
-        if (head.first == "Content-Type")
+        if(head.first == "Content-Type")
         {
             auto values = splitHeaderValues(head.second);
-            for (int i =0; i< values.size(); ++i)
+            for(int i =0; i< values.size(); ++i)
             {
-                if (i == 0)
+                if(i == 0)
                 {
                     d->multi = values[i].startsWith("multipart");
                     d->contentType = values[i];
                 }
 
-                if (values[i].startsWith("boundary="))
+                if(values[i].startsWith("boundary="))
                 {
                     d->boundary = subSplitHeaderValues(values[i]).toLatin1();
                 }
                 
-                if (values[i].startsWith("type="))
+                if(values[i].startsWith("type="))
                 {
                     d->type = subSplitHeaderValues(values[i]).toLatin1();
                 }
@@ -106,7 +105,7 @@ void httpResponse::init()
     }
 
     // if multipart, instances are delimited by boundaries
-    if (d->multi)
+    if(d->multi)
     {
         auto const sep = "--" + d->boundary;
         auto pos = d->payload.indexOf(sep)+sep.size();
@@ -131,7 +130,7 @@ void httpResponse::init()
     }
     else
     {
-        if (d->payload.endsWith(HTTP_SEP))
+        if(d->payload.endsWith(HTTP_SEP))
         {
             d->payload.chop(2);
         }
@@ -144,7 +143,7 @@ void httpResponse::addPart(QByteArray & part)
     
     // make a vector containing each of the parts (instances), keeping only the payload
     separateHeaderAndPayload(part, p.payload, p.headers);
-    if (p.payload.endsWith(HTTP_SEP))
+    if(p.payload.endsWith(HTTP_SEP))
     {
         p.payload.chop(2);
     }
@@ -164,7 +163,7 @@ void httpResponse::separateHeaderAndPayload(QByteArray & data, QByteArray & main
 
     // go through the values in a header to identify fields and values
     QStringList headerList = headers.split(QRegExp("[" HTTP_SEP "]"), QString::SkipEmptyParts);
-    for (auto headerEntry : headerList)
+    for(auto headerEntry : headerList)
     {
         auto entrySplited = splitByteArray(headerEntry.toLatin1(), ":");
         treatedHeaders.push_back(entrySplited);
@@ -179,9 +178,9 @@ int httpResponse::getContentSize(QByteArray &data)
     separateHeaderAndPayload(data, payload, headers);
 
     // from header parameters, retrieve the value of the "Content-Length" field corresponding to the payload size
-    for (auto head : headers) 
+    for(auto head : headers) 
     {
-        if (head.first == "Content-Length")
+        if(head.first == "Content-Length")
         {
             return QString(head.second).trimmed().toInt();
         }
@@ -197,7 +196,7 @@ QStringList httpResponse::splitHeaderValues(QByteArray & headerValues)
     // identifies all key-value pairs from a main header field
     listRes = QString(headerValues).split(";", QString::SplitBehavior::SkipEmptyParts);
 
-    for (auto & str : listRes)
+    for(auto & str : listRes)
     {
         str = str.trimmed();
     }
@@ -220,10 +219,10 @@ QPair<QByteArray, QByteArray> httpResponse::splitByteArray(QByteArray data, QByt
     // identify the separation position according to the delimiter before splitting
     int pos = data.indexOf(delimiter);
 
-    if (pos != -1)
+    if(pos != -1)
     {
         res.first = data.left(pos);
-        if (pos + delimLen < data.size() - 1)
+        if(pos + delimLen < data.size() - 1)
         {
             res.second = data.mid(pos + delimLen);
         }

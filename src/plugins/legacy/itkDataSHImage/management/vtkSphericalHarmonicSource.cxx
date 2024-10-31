@@ -11,45 +11,23 @@
 
 =========================================================================*/
 
-#include <vector>
-#include <complex>
 #include <cmath>
 
 #include <vtkSphericalHarmonicSource.h>
 
-#include <vtkPolyDataNormals.h>
-#include <vtkCellArray.h>
 #include <vtkFloatArray.h>
 #include <vtkInformation.h>
 #include <vtkInformationVector.h>
-#include <vtkMath.h>
 #include <vtkObjectFactory.h>
 #include <vtkPointData.h>
 #include <vtkPoints.h>
 #include <vtkPolyData.h>
 #include <vtkMatrix4x4.h>
-#include <vtkStreamingDemandDrivenPipeline.h>
 
-// Compute spherical associated Legendre function
-#if (defined __APPLE__ || defined WIN32 || defined CLANG)
-#include <boost/math/special_functions/legendre.hpp>
-#else
-#include <tr1/cmath>
-#endif //WIN32
-
-#if (defined __APPLE__ || defined WIN32 || defined CLANG)
-double sphLegendre(const int l,const int m,const double theta) {
-    const unsigned lmm = l-m;
-    const unsigned lpm = l+m;
-    const double fact   = boost::math::factorial<double>(lmm)/boost::math::factorial<double>(lpm);
-    const double factor = static_cast<double>(2*l+1) * fact / (4.0 * vtkMath::Pi());
-    return sqrt(factor)*boost::math::legendre_p(l,m,cos(theta));
+double sphLegendre(const int l,const int m,const double theta)
+{
+    return std::sph_legendre(l,m,theta);
 }
-#else
-double sphLegendre(const int l,const int m,const double theta) {
-    return std::tr1::sph_legendre(l,m,theta);
-}
-#endif //WIN32
 
 typedef itk::Vector<double,3> itkVector3;
 

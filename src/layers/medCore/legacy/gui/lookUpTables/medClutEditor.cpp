@@ -777,7 +777,7 @@ void medClutEditorTable::deleteAllVertices()
 
 void medClutEditorTable::setColorOfSelection( const QColor & color )
 {
-    QColor newColor = QColorDialog::getColor( color, 0 );
+    QColor newColor = QColorDialog::getColor(color, 0, "Select color", QColorDialog::DontUseNativeDialog);
 
     if ( newColor.isValid() )
     {

@@ -31,11 +31,6 @@ void medDataLoadThread::process()
     QStringList paths;
     for (auto & url : m_urlList)
     {
-        //QDirIterator it(url.toLocalFile(), QDir::Files, QDirIterator::Subdirectories);
-        //while(it.hasNext())
-        //{
-        //    paths << it.next();
-        //}
         paths << url.toLocalFile();
     }
     if (!paths.isEmpty())
