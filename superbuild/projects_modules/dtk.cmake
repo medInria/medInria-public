@@ -66,7 +66,7 @@ set(cmake_args
   -DCMAKE_CXX_FLAGS:STRING=${${ep}_cxx_flags}   
   -DCMAKE_SHARED_LINKER_FLAGS:STRING=${${ep}_shared_linker_flags}
   -DBUILD_SHARED_LIBS:BOOL=${BUILD_SHARED_LIBS_${ep}}
-  -DDTK_BUILD_COMPOSER=ON                                                                                                                                                                                                                                                                                        
+  -DDTK_BUILD_COMPOSER=OFF                                                                                                                                                                                                                                                                                        
   -DDTK_BUILD_DISTRIBUTED=ON                                                                                                                                                                                                                                                                                        
   -DDTK_BUILD_SCRIPT=OFF                                                                                                                                                                                                                                                                                       
   -DDTK_BUILD_SUPPORT_COMPOSER=OFF                                                                                                                                                                                                                                                                                       

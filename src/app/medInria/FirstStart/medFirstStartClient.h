@@ -13,23 +13,23 @@
 =========================================================================*/
 
 #include <QObject>
-
 #include <QString>
-
 #include <QUrl>
-#include <QNetworkAccessManager>
-#include <QNetworkRequest>
-#include <QNetworkReply>
 
-class medHttpReply
+class QNetworkAccessManager;
+class medFirstStartClientPrivate;
+class medFirstStartClient : public QObject
 {
 public:
-    medHttpReply();
-    ~medHttpReply();
-    
+    medFirstStartClient(QString featureName, QString fileName, QString uri, QNetworkAccessManager *qnam);
+    ~medFirstStartClient();
 
-
+    bool updateReferenceFile ();
 
 private:
-    QNetworkAccessManager * m_qnam;
+    QString getNextArchiveFolderName();
+
+private:
+    medFirstStartClientPrivate *d;
 };
+
