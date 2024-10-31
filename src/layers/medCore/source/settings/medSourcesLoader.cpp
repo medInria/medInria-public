@@ -126,8 +126,7 @@ bool medSourcesLoader::removeCnx(QString const & instanceId)
         saveToDisk();
         emit sourceRemoved(&(*oldCnx));
         QTimer::singleShot(5*60*1000, this, [oldCnx]() 
-        {
-            //Do nothing into the lambda because oldCnx is a shared pointer copied by value passing. Then it will be automatically deleted at the end of lambda execution/scope.
+        {   //Do nothing into the lambda because oldCnx is a shared pointer copied by value passing. Then it will be automatically deleted at the end of lambda execution/scope.
             //Solution to avoid this timer is to used only QSharedPointer when used a source instance.
         }); //the removed connection will be deleted after 5 min of secured time gap
     }
@@ -393,6 +392,7 @@ medSourcesLoader::medSourcesLoader(QObject *parent)
         m_CnxParametersPath = cnxParametersSaved;
     }
 }
+
 bool medSourcesLoader::saveToDisk() const
 {
     bool bRes = true;
@@ -539,7 +539,7 @@ void medSourcesLoader::reloadCnx(QJsonObject &obj)
     int iAppliedParametersCount = 0;
     auto pDataSource = createInstanceOfSource(obj["sourceType"].toString());
 
-    pDataSource->initialization(obj["cnxId"].toString());
+    pDataSource->initialization(obj["cnxId"].toString()); //TODO HANDLE return (especily when SQLDriver is not loaded)
     pDataSource->setInstanceName(obj["cnxName"].toString());
     auto normalParameters = pDataSource->getAllParameters();
     auto cipherParameters = pDataSource->getCipherParameters();
