@@ -22,12 +22,9 @@ class medAbstractParameterLPrivate
 public:
     QString name;
     QList <QWidget *> internWidget;
-    QLabel *label;
+    QPointer<QLabel> label;
     QString toolTip;
-
     bool hide;
-
-    ~medAbstractParameterLPrivate() {delete label;}
 };
 
 medAbstractParameterL::medAbstractParameterL(QString name, QObject *parent):
