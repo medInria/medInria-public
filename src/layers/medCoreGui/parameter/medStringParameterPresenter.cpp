@@ -153,19 +153,19 @@ QWidget * medStringParameterPresenter::buildLineEditPasswordEyes()
 	pWidgetRes->setLayout(pLayout);
 
 	pEyeButton->setCheckable(true);
-	pEyeButton->setIcon(QIcon(":/icons/eye_closed.png"));
+	pEyeButton->setIcon(QIcon::fromTheme("eye_closed"));
 	
 	connect(pEyeButton, &QPushButton::toggled, [=](bool toggle) 
 	{
 		if (toggle)
 		{
 			pLineEdit->setEchoMode(QLineEdit::Normal);
-			pEyeButton->setIcon(QIcon(":/icons/eye_open.png"));
+			pEyeButton->setIcon(QIcon::fromTheme("eye_opened"));
 		}
 		else
 		{
 			pLineEdit->setEchoMode(QLineEdit::Password);
-			pEyeButton->setIcon(QIcon(":/icons/eye_closed.png"));
+			pEyeButton->setIcon(QIcon::fromTheme("eye_closed"));
 		}
 	});
 

@@ -39,7 +39,6 @@ public:
     void saveInitialSize(QSize initialSize);
     QSize getInitialSize();
 
-
     /**
      * @brief Get the abstract source associated with this widget
      *

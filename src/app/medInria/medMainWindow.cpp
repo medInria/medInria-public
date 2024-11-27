@@ -113,7 +113,6 @@ medMainWindow::medMainWindow ( QWidget *parent ) : QMainWindow ( parent ), d ( n
     d->homepageArea = new medHomepageArea( this );
     d->homepageArea->setObjectName("medHomePageArea");
 
-
     //  Stack
     d->stack = new QStackedWidget(this);
     d->stack->addWidget(d->homepageArea);
@@ -170,7 +169,6 @@ medMainWindow::~medMainWindow()
     d = nullptr;
 }
 
-
 void medMainWindow::initMenuBar(QWidget * parent)
 {
     // Menu bar
@@ -217,15 +215,28 @@ void medMainWindow::menuFile(QMenuBar * menu_bar)
 {
     // --- File menu
     QMenu *menuFile = menu_bar->addMenu("File");
+    menuFile->setToolTipsVisible(true);
+
     auto *actionOpenFiles = menuFile->addAction("Open File(s)");
-    auto *actionOpenDicom = menuFile->addAction("Open Dicom");
+    connect(actionOpenFiles, &QAction::triggered, this, &medMainWindow::openFromSystem);
+
+    auto *actionOpenDicom = menuFile->addAction("Open DICOM");
+    actionOpenDicom->setToolTip(tr("Choose a DICOM directory to import"));
+    connect(actionOpenDicom, &QAction::triggered, this, &medMainWindow::openDicomFromSystem);
+
     menuFile->addAction("Save on disk");
+
     auto *actionBrowse     = menuFile->addAction("Browse files");
+    connect(actionBrowse,    &QAction::triggered, this, &medMainWindow::switchToBrowserArea);
+
     menuFile->addSeparator();
-    auto *actionGoHome = menuFile->addAction("Go to Welcome Page");
+    auto *actionGoHome = menuFile->addAction("Go to homepage");
+    connect(actionGoHome,    &QAction::triggered, this, &medMainWindow::switchToHomepageArea);
+
     menuFile->addSeparator();
     menuFile->addMenu("Recent files");
     menuFile->addSeparator();
+
     auto *subMenuVisibilitySource = menuFile->addMenu("Source Visibility");
     
     QAction *virtualReprAction = subMenuVisibilitySource->addAction("Quick Access");
@@ -244,12 +255,8 @@ void medMainWindow::menuFile(QMenuBar * menu_bar)
     }
  
     menuFile->addSeparator();
-    menuFile->addAction("Quit");
-
-    connect(actionOpenFiles, &QAction::triggered, this, &medMainWindow::openFromSystem);
-    connect(actionOpenDicom, &QAction::triggered, this, &medMainWindow::openDicomFromSystem);
-    connect(actionBrowse,    &QAction::triggered, this, &medMainWindow::switchToBrowserArea);
-    connect(actionGoHome,    &QAction::triggered, this, &medMainWindow::switchToHomepageArea);
+    QAction *actionQuit = menuFile->addAction(tr("Quit"));
+    connect(actionQuit, &QAction::triggered, qApp, &QApplication::quit);
 }
 
 void medMainWindow::menuWorkspace(QMenuBar * menu_bar)
@@ -257,17 +264,14 @@ void medMainWindow::menuWorkspace(QMenuBar * menu_bar)
     // --- Area menu
     QMenu *menuWorkspaces = menu_bar->addMenu("Workspaces");
 
-    //auto searchLabel = new QWidgetAction(menuWorkspaces);
     auto searchEdit = new QWidgetAction(menuWorkspaces);
-    //searchLabel->setDefaultWidget(new QLabel("Search features you want below"));
-    QLineEdit * researchWorkSpace = new QLineEdit("Search here ...");
+    QLineEdit * researchWorkSpace = new QLineEdit();
+    researchWorkSpace->setPlaceholderText("Search...");
     searchEdit->setDefaultWidget(researchWorkSpace);
-    //menuWorkspaces->addAction(searchLabel);
     menuWorkspaces->addAction(searchEdit);
     menuWorkspaces->addSeparator();
 
     connect(researchWorkSpace, &QLineEdit::textEdited, this, &medMainWindow::filterWSMenu);
-
 
     medToolBoxFactory *tbFactory = medToolBoxFactory::instance();
     QList<medWorkspaceFactory::Details*> workspaceDetails = medWorkspaceFactory::instance()->workspaceDetailsSortedByName(true);
@@ -432,7 +436,7 @@ void medMainWindow::switchToDefaultWorkSpace()
     {
         switchToHomepageArea();
     }
-    else if (startupWorkspace == "Import/export files")
+    else if (startupWorkspace == "Browse files")
     {
         switchToBrowserArea();
     }
@@ -629,61 +633,79 @@ void medMainWindow::onShowAbout()
     msgBox.exec();
 }
 
+/**
+ * @brief Display the application authors list in a widget.
+ * 
+ */
 void medMainWindow::onShowAuthors()
 {
     QFile file(":authors.txt");
     file.open(QIODevice::ReadOnly | QIODevice::Text);
     QString text = file.readAll();
 
-    QMessageBox msgBox;
-    msgBox.setText(text);
-    msgBox.exec();
+    QDialog dialog;
+    dialog.setWindowTitle("Authors");
+
+    QVBoxLayout *layout = new QVBoxLayout(&dialog);
+    QTextEdit *textEdit = new QTextEdit(&dialog);
+    textEdit->setText(text);
+    textEdit->setReadOnly(true);
+    textEdit->setLineWrapMode(QTextEdit::WidgetWidth);
+    textEdit->setVerticalScrollBarPolicy(Qt::ScrollBarAsNeeded);
+    layout->addWidget(textEdit);
+
+    dialog.resize(400, 300);
+    dialog.exec();
 }
 
+/**
+ * @brief Display the current release notes of the application in a widget.
+ * 
+ */
 void medMainWindow::onShowReleaseNotes()
 {
     QFile file(":RELEASE_NOTES.txt");
     file.open(QIODevice::ReadOnly | QIODevice::Text);
     QString text = file.readAll();
 
-    QMessageBox msgBox;
-    msgBox.setText("Here is the release notes with the history of the application:            ");
-    msgBox.setDetailedText(text);
+    QDialog dialog;
+    dialog.setWindowTitle("Release Notes");
 
-    // Search the "Show Details..." button
-    foreach(QAbstractButton *button, msgBox.buttons())
-    {
-        if (msgBox.buttonRole(button) == QMessageBox::ActionRole)
-        {
-            button->click(); // click it to expand the text
-            break;
-        }
-    }
+    QVBoxLayout *layout = new QVBoxLayout(&dialog);
+    QTextEdit *textEdit = new QTextEdit(&dialog);
+    textEdit->setText(text);
+    textEdit->setReadOnly(true);
+    textEdit->setLineWrapMode(QTextEdit::WidgetWidth);
+    textEdit->setVerticalScrollBarPolicy(Qt::ScrollBarAsNeeded);
+    layout->addWidget(textEdit);
 
-    msgBox.exec();
+    dialog.resize(400, 300);
+    dialog.exec();
 }
 
+/**
+ * @brief Display the current license of the application in a widget.
+ * 
+ */
 void medMainWindow::onShowLicense()
 {
     QFile file(":LICENSE.txt");
     file.open(QIODevice::ReadOnly | QIODevice::Text);
     QString text = file.readAll();
 
-    QMessageBox msgBox;
-    msgBox.setText("Here is the application License:                           ");
-    msgBox.setDetailedText(text);
+    QDialog dialog;
+    dialog.setWindowTitle("License");
 
-    // Search the "Show Details..." button
-    foreach(QAbstractButton *button, msgBox.buttons())
-    {
-        if (msgBox.buttonRole(button) == QMessageBox::ActionRole)
-        {
-            button->click(); // click it to expand the text
-            break;
-        }
-    }
+    QVBoxLayout *layout = new QVBoxLayout(&dialog);
+    QTextEdit *textEdit = new QTextEdit(&dialog);
+    textEdit->setText(text);
+    textEdit->setReadOnly(true);
+    textEdit->setLineWrapMode(QTextEdit::WidgetWidth);
+    textEdit->setVerticalScrollBarPolicy(Qt::ScrollBarAsNeeded);
+    layout->addWidget(textEdit);
 
-    msgBox.exec();
+    dialog.resize(400, 300);
+    dialog.exec();
 }
 
 void medMainWindow::onShowAreaSettings()
@@ -972,7 +994,7 @@ void medMainWindow::switchToBrowserArea()
     {
         d->currentArea = d->browserArea;
 
-        d->shortcutAccessWidget->updateSelected("Import/export files");
+        d->shortcutAccessWidget->updateSelected("Browse files");
         if (d->shortcutAccessVisible)
         {
             this->hideShortcutAccess();

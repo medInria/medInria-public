@@ -32,6 +32,7 @@ $GREEN      = #64FF32;
 $RED        = #FF3333;
 $YELLOW     = #FFFF99;
 $ORANGE     = #ED6639;
+$WHITE      = #F5F5F5;
 
 $HIGHLIGHT_COLOR = #FF8833;
 
@@ -40,7 +41,7 @@ $HIGHLIGHT_COLOR = #FF8833;
  *******************************************************************************/
 $WIDGET_BACKGROUND                      = $GREY01;
 
-$TOOLTIP_BACKGROUND                     = $YELLOW;
+$TOOLTIP_BACKGROUND                     = $WHITE;
 
 $LIST_BACKGROUND                        = $GREY02;
 $ALT_LIST_BACKGROUND                    = $GREY03;
@@ -450,11 +451,8 @@ QCheckBox::indicator:disabled:checked
  *******************************************************************************/
 QTreeView
 {
-     /* alternate-background-color: $ALT_LIST_BACKGROUND; */
+     alternate-background-color: $ALT_LIST_BACKGROUND;
      background: $LIST_BACKGROUND;
-     /* background-color: $COMBO_BOX_ITEM_BACKGROUND; */
-     selection-background-color: $COMBO_BOX_ITEM_SELECTED_BACKGROUND;
-     selection-color: $COMBO_BOX_ITEM_SELECTED_COLOR;
 }
 
 QTreeView::item
@@ -1226,7 +1224,7 @@ medLinkMenu QListWidget::item
     border: none;
 }
 
-medLinkMenu QListWidget::item:selected
+QListWidget::item:selected
 {
     border: none;
     background: $MENU_ITEM_HOVER_BACKGROUND;

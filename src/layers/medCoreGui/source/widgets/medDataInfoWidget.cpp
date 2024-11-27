@@ -22,7 +22,7 @@ medDataInfoWidget::medDataInfoWidget(QMap<QString, QString> dataAttributes, QMul
     QLabel* explanation = new QLabel(tr("You can copy/paste a selected item with regular shortcuts from your OS.\n"));
     dialogLayout->addWidget(explanation);
 
-    QPushButton *plusButton = new QPushButton(QIcon(":/pixmaps/plus.png"), "");
+    QPushButton *plusButton = new QPushButton(QIcon::fromTheme("plus"), "");
     plusButton->setToolTip("Show Optional Meta Data");
     plusButton->setMaximumSize(QSize(20,20));
     plusButton->setCheckable(true);
@@ -81,12 +81,12 @@ medDataInfoWidget::medDataInfoWidget(QMap<QString, QString> dataAttributes, QMul
     connect(plusButton, &QPushButton::toggled, [=](bool checked) {
         if (checked)
         {
-            plusButton->setIcon(QIcon(":/pixmaps/minus.png"));
+            plusButton->setIcon(QIcon::fromTheme("minus"));
             optionalTree->setHidden(false);
         }
         else
         {
-            plusButton->setIcon(QIcon(":/pixmaps/plus.png"));
+            plusButton->setIcon(QIcon::fromTheme("plus"));
             optionalTree->setHidden(true);
         }
     });

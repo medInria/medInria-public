@@ -35,7 +35,7 @@ int retrieveDefaultWorkSpace()
     {
         iRes = homepageDefaultWorkspaceNumber;
     }
-    else if (oStartupWorkspace.toString() == "Import/export files")
+    else if (oStartupWorkspace.toString() == "Browse files")
     {
         iRes = 1;
     }
@@ -363,7 +363,7 @@ void medQuickAccessMenu::createHorizontalQuickAccessMenu()
     smallBrowserButton->setFixedHeight ( 100 );
     smallBrowserButton->setFixedWidth ( 160 );
     smallBrowserButton->setFocusPolicy ( Qt::NoFocus );
-    smallBrowserButton->setText("Import/export files");
+    smallBrowserButton->setText("Browse files");
     smallBrowserButton->setIdentifier("Browser");
     shortcutAccessLayout->addWidget ( smallBrowserButton );
     QObject::connect ( smallBrowserButton, SIGNAL ( clicked() ), this, SIGNAL ( browserSelected()) );
