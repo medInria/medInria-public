@@ -43,7 +43,7 @@ namespace itk {
         itkTypeMacro(DCMTKDataImageReaderCommand, Command)
             itkNewMacro(Self)
 
-            void Execute(Object *caller, const EventObject &event);
+        void Execute(Object *caller, const EventObject &event);
         void Execute(const Object *caller, const EventObject &event);
 
         void SetDataImageReader(medAbstractDataReader* reader) { m_Reader = reader; }
@@ -162,6 +162,12 @@ void itkDCMTKDataImageReaderPrivate::threadDone(itk::DCMTKImageIO::Pointer io)
 
     if (ioThreads->size() == 0)
         ioPointers->clear();
+
+    delete ioPointers;
+    ioPointers = nullptr;
+
+    delete ioThreads;
+    ioThreads = nullptr;
 }
 
 void itkDCMTKDataImageReaderPrivate::initialiseStatic()
@@ -194,7 +200,7 @@ itkDCMTKDataImageReader::itkDCMTKDataImageReader() : medAbstractDataReader(), d(
 itkDCMTKDataImageReader::~itkDCMTKDataImageReader()
 {
     delete d;
-    d = 0;
+    d = nullptr;
 }
 
 
