@@ -226,15 +226,13 @@ void medMainWindow::menuFile(QMenuBar * menu_bar)
 
     menuFile->addAction("Save on disk");
 
-    auto *actionBrowse     = menuFile->addAction("Browse files");
+    auto *actionBrowse     = menuFile->addAction("Browse data");
     connect(actionBrowse,    &QAction::triggered, this, &medMainWindow::switchToBrowserArea);
 
     menuFile->addSeparator();
     auto *actionGoHome = menuFile->addAction("Go to homepage");
     connect(actionGoHome,    &QAction::triggered, this, &medMainWindow::switchToHomepageArea);
 
-    menuFile->addSeparator();
-    menuFile->addMenu("Recent files");
     menuFile->addSeparator();
 
     auto *subMenuVisibilitySource = menuFile->addMenu("Source Visibility");
@@ -436,7 +434,7 @@ void medMainWindow::switchToDefaultWorkSpace()
     {
         switchToHomepageArea();
     }
-    else if (startupWorkspace == "Browse files")
+    else if (startupWorkspace == "Browse data")
     {
         switchToBrowserArea();
     }
@@ -994,7 +992,7 @@ void medMainWindow::switchToBrowserArea()
     {
         d->currentArea = d->browserArea;
 
-        d->shortcutAccessWidget->updateSelected("Browse files");
+        d->shortcutAccessWidget->updateSelected("Browse data");
         if (d->shortcutAccessVisible)
         {
             this->hideShortcutAccess();
@@ -1004,9 +1002,6 @@ void medMainWindow::switchToBrowserArea()
 
         // The View menu is dedicated to "view workspaces"
         enableMenuBarItem("View", false);
-
-        // The DataSource tab is by default opened
-        d->browserArea->switchToIndexTab(0);
     }
 }
 

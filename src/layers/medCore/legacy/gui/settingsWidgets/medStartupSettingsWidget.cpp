@@ -46,7 +46,7 @@ medStartupSettingsWidget::medStartupSettingsWidget(QWidget *parent) :
     d->defaultStartingArea = new QComboBox(this);
     d->defaultStartingArea->setItemData(0, 0, Qt::UserRole);
     d->defaultStartingArea->addItem(tr("Homepage"));
-    d->defaultStartingArea->addItem(tr("Browse files"));
+    d->defaultStartingArea->addItem(tr("Browse data"));
     for(medWorkspaceFactory::Details* detail : workspaceDetails)
     {
         d->defaultStartingArea->addItem(detail->name);

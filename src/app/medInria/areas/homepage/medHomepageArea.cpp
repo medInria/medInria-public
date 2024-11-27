@@ -101,7 +101,7 @@ void medHomepageArea::initPage()
     medHomepageButton * browserButton = new medHomepageButton ( this );
     browserButton->setToolButtonStyle ( Qt::ToolButtonTextBesideIcon );
     browserButton->setIcon ( QIcon::fromTheme("open") );
-    browserButton->setText ( " Browse files" );
+    browserButton->setText ( " Browse data" );
     browserButton->setMinimumHeight ( 40 );
     browserButton->setMaximumWidth ( 250 );
     browserButton->setMinimumWidth ( 250 );

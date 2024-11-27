@@ -48,7 +48,6 @@ public:
 
 medBrowserArea::medBrowserArea(QWidget *parent) : QWidget(parent), d(new medBrowserAreaPrivate)
 {
-
     d->stack = new QStackedWidget(this);
 
     // Source toolbox
@@ -77,8 +76,8 @@ medBrowserArea::medBrowserArea(QWidget *parent) : QWidget(parent), d(new medBrow
         addDataSource(dataSource);
     }
 
-    // Switch to default "File system" tab
-    d->sourceSelectorToolBox->setCurrentTab(1);
+    // Default tab is "Data sources"
+    d->sourceSelectorToolBox->setCurrentTab(0);
 }
 
 medBrowserArea::~medBrowserArea()
