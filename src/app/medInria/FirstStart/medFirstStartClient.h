@@ -14,7 +14,6 @@
 
 #include <QObject>
 #include <QString>
-#include <QUrl>
 
 class QNetworkAccessManager;
 class medFirstStartClientPrivate;

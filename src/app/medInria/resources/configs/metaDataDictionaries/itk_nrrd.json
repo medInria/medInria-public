@@ -1,0 +1,455 @@
+{
+    "chapterName": "itk_nrrd",
+    "keys": [
+        {
+            "label": "ITK_InputFilterName",
+            "medKey": "itk_inputfiltername",
+            "name": "ITK_InputFilterName"
+        },
+        {
+            "label": "NRRD_kinds[0]",
+            "medKey": "nrrd_kinds[0]",
+            "name": "NRRD_kinds[0]"
+        },
+        {
+            "label": "NRRD_kinds[1]",
+            "medKey": "nrrd_kinds[1]",
+            "name": "NRRD_kinds[1]"
+        },
+        {
+            "label": "NRRD_kinds[2]",
+            "medKey": "nrrd_kinds[2]",
+            "name": "NRRD_kinds[2]"
+        },
+        {
+            "label": "NRRD_space",
+            "medKey": "nrrd_space",
+            "name": "NRRD_space"
+        },
+        {
+            "label": "DWMRI_b-value",
+            "medKey": "dwmri_b-value",
+            "name": "DWMRI_b-value"
+        },
+        {
+            "label": "DWMRI_gradient_0000",
+            "medKey": "dwmri_gradient_0000",
+            "name": "DWMRI_gradient_0000"
+        },
+        {
+            "label": "DWMRI_gradient_0001",
+            "medKey": "dwmri_gradient_0001",
+            "name": "DWMRI_gradient_0001"
+        },
+        {
+            "label": "DWMRI_gradient_0002",
+            "medKey": "dwmri_gradient_0002",
+            "name": "DWMRI_gradient_0002"
+        },
+        {
+            "label": "DWMRI_gradient_0003",
+            "medKey": "dwmri_gradient_0003",
+            "name": "DWMRI_gradient_0003"
+        },
+        {
+            "label": "DWMRI_gradient_0004",
+            "medKey": "dwmri_gradient_0004",
+            "name": "DWMRI_gradient_0004"
+        },
+        {
+            "label": "DWMRI_gradient_0005",
+            "medKey": "dwmri_gradient_0005",
+            "name": "DWMRI_gradient_0005"
+        },
+        {
+            "label": "DWMRI_gradient_0006",
+            "medKey": "dwmri_gradient_0006",
+            "name": "DWMRI_gradient_0006"
+        },
+        {
+            "label": "DWMRI_gradient_0007",
+            "medKey": "dwmri_gradient_0007",
+            "name": "DWMRI_gradient_0007"
+        },
+        {
+            "label": "DWMRI_gradient_0008",
+            "medKey": "dwmri_gradient_0008",
+            "name": "DWMRI_gradient_0008"
+        },
+        {
+            "label": "DWMRI_gradient_0009",
+            "medKey": "dwmri_gradient_0009",
+            "name": "DWMRI_gradient_0009"
+        },
+        {
+            "label": "DWMRI_gradient_0010",
+            "medKey": "dwmri_gradient_0010",
+            "name": "DWMRI_gradient_0010"
+        },
+        {
+            "label": "DWMRI_gradient_0011",
+            "medKey": "dwmri_gradient_0011",
+            "name": "DWMRI_gradient_0011"
+        },
+        {
+            "label": "DWMRI_gradient_0012",
+            "medKey": "dwmri_gradient_0012",
+            "name": "DWMRI_gradient_0012"
+        },
+        {
+            "label": "DWMRI_gradient_0013",
+            "medKey": "dwmri_gradient_0013",
+            "name": "DWMRI_gradient_0013"
+        },
+        {
+            "label": "DWMRI_gradient_0014",
+            "medKey": "dwmri_gradient_0014",
+            "name": "DWMRI_gradient_0014"
+        },
+        {
+            "label": "DWMRI_gradient_0015",
+            "medKey": "dwmri_gradient_0015",
+            "name": "DWMRI_gradient_0015"
+        },
+        {
+            "label": "DWMRI_gradient_0016",
+            "medKey": "dwmri_gradient_0016",
+            "name": "DWMRI_gradient_0016"
+        },
+        {
+            "label": "DWMRI_gradient_0017",
+            "medKey": "dwmri_gradient_0017",
+            "name": "DWMRI_gradient_0017"
+        },
+        {
+            "label": "DWMRI_gradient_0018",
+            "medKey": "dwmri_gradient_0018",
+            "name": "DWMRI_gradient_0018"
+        },
+        {
+            "label": "DWMRI_gradient_0019",
+            "medKey": "dwmri_gradient_0019",
+            "name": "DWMRI_gradient_0019"
+        },
+        {
+            "label": "DWMRI_gradient_0020",
+            "medKey": "dwmri_gradient_0020",
+            "name": "DWMRI_gradient_0020"
+        },
+        {
+            "label": "DWMRI_gradient_0021",
+            "medKey": "dwmri_gradient_0021",
+            "name": "DWMRI_gradient_0021"
+        },
+        {
+            "label": "DWMRI_gradient_0022",
+            "medKey": "dwmri_gradient_0022",
+            "name": "DWMRI_gradient_0022"
+        },
+        {
+            "label": "DWMRI_gradient_0023",
+            "medKey": "dwmri_gradient_0023",
+            "name": "DWMRI_gradient_0023"
+        },
+        {
+            "label": "DWMRI_gradient_0024",
+            "medKey": "dwmri_gradient_0024",
+            "name": "DWMRI_gradient_0024"
+        },
+        {
+            "label": "DWMRI_gradient_0025",
+            "medKey": "dwmri_gradient_0025",
+            "name": "DWMRI_gradient_0025"
+        },
+        {
+            "label": "DWMRI_gradient_0026",
+            "medKey": "dwmri_gradient_0026",
+            "name": "DWMRI_gradient_0026"
+        },
+        {
+            "label": "DWMRI_gradient_0027",
+            "medKey": "dwmri_gradient_0027",
+            "name": "DWMRI_gradient_0027"
+        },
+        {
+            "label": "DWMRI_gradient_0028",
+            "medKey": "dwmri_gradient_0028",
+            "name": "DWMRI_gradient_0028"
+        },
+        {
+            "label": "DWMRI_gradient_0029",
+            "medKey": "dwmri_gradient_0029",
+            "name": "DWMRI_gradient_0029"
+        },
+        {
+            "label": "DWMRI_gradient_0030",
+            "medKey": "dwmri_gradient_0030",
+            "name": "DWMRI_gradient_0030"
+        },
+        {
+            "label": "DWMRI_gradient_0031",
+            "medKey": "dwmri_gradient_0031",
+            "name": "DWMRI_gradient_0031"
+        },
+        {
+            "label": "DWMRI_gradient_0032",
+            "medKey": "dwmri_gradient_0032",
+            "name": "DWMRI_gradient_0032"
+        },
+        {
+            "label": "DWMRI_gradient_0033",
+            "medKey": "dwmri_gradient_0033",
+            "name": "DWMRI_gradient_0033"
+        },
+        {
+            "label": "DWMRI_gradient_0034",
+            "medKey": "dwmri_gradient_0034",
+            "name": "DWMRI_gradient_0034"
+        },
+        {
+            "label": "DWMRI_gradient_0035",
+            "medKey": "dwmri_gradient_0035",
+            "name": "DWMRI_gradient_0035"
+        },
+        {
+            "label": "DWMRI_gradient_0036",
+            "medKey": "dwmri_gradient_0036",
+            "name": "DWMRI_gradient_0036"
+        },
+        {
+            "label": "DWMRI_gradient_0037",
+            "medKey": "dwmri_gradient_0037",
+            "name": "DWMRI_gradient_0037"
+        },
+        {
+            "label": "DWMRI_gradient_0038",
+            "medKey": "dwmri_gradient_0038",
+            "name": "DWMRI_gradient_0038"
+        },
+        {
+            "label": "DWMRI_gradient_0039",
+            "medKey": "dwmri_gradient_0039",
+            "name": "DWMRI_gradient_0039"
+        },
+        {
+            "label": "DWMRI_gradient_0040",
+            "medKey": "dwmri_gradient_0040",
+            "name": "DWMRI_gradient_0040"
+        },
+        {
+            "label": "DWMRI_gradient_0041",
+            "medKey": "dwmri_gradient_0041",
+            "name": "DWMRI_gradient_0041"
+        },
+        {
+            "label": "DWMRI_gradient_0042",
+            "medKey": "dwmri_gradient_0042",
+            "name": "DWMRI_gradient_0042"
+        },
+        {
+            "label": "DWMRI_gradient_0043",
+            "medKey": "dwmri_gradient_0043",
+            "name": "DWMRI_gradient_0043"
+        },
+        {
+            "label": "DWMRI_gradient_0044",
+            "medKey": "dwmri_gradient_0044",
+            "name": "DWMRI_gradient_0044"
+        },
+        {
+            "label": "DWMRI_gradient_0045",
+            "medKey": "dwmri_gradient_0045",
+            "name": "DWMRI_gradient_0045"
+        },
+        {
+            "label": "DWMRI_gradient_0046",
+            "medKey": "dwmri_gradient_0046",
+            "name": "DWMRI_gradient_0046"
+        },
+        {
+            "label": "DWMRI_gradient_0047",
+            "medKey": "dwmri_gradient_0047",
+            "name": "DWMRI_gradient_0047"
+        },
+        {
+            "label": "DWMRI_gradient_0048",
+            "medKey": "dwmri_gradient_0048",
+            "name": "DWMRI_gradient_0048"
+        },
+        {
+            "label": "DWMRI_gradient_0049",
+            "medKey": "dwmri_gradient_0049",
+            "name": "DWMRI_gradient_0049"
+        },
+        {
+            "label": "DWMRI_gradient_0050",
+            "medKey": "dwmri_gradient_0050",
+            "name": "DWMRI_gradient_0050"
+        },
+        {
+            "label": "DWMRI_gradient_0051",
+            "medKey": "dwmri_gradient_0051",
+            "name": "DWMRI_gradient_0051"
+        },
+        {
+            "label": "DWMRI_gradient_0052",
+            "medKey": "dwmri_gradient_0052",
+            "name": "DWMRI_gradient_0052"
+        },
+        {
+            "label": "DWMRI_gradient_0053",
+            "medKey": "dwmri_gradient_0053",
+            "name": "DWMRI_gradient_0053"
+        },
+        {
+            "label": "DWMRI_gradient_0054",
+            "medKey": "dwmri_gradient_0054",
+            "name": "DWMRI_gradient_0054"
+        },
+        {
+            "label": "DWMRI_gradient_0055",
+            "medKey": "dwmri_gradient_0055",
+            "name": "DWMRI_gradient_0055"
+        },
+        {
+            "label": "DWMRI_gradient_0056",
+            "medKey": "dwmri_gradient_0056",
+            "name": "DWMRI_gradient_0056"
+        },
+        {
+            "label": "DWMRI_gradient_0057",
+            "medKey": "dwmri_gradient_0057",
+            "name": "DWMRI_gradient_0057"
+        },
+        {
+            "label": "DWMRI_gradient_0058",
+            "medKey": "dwmri_gradient_0058",
+            "name": "DWMRI_gradient_0058"
+        },
+        {
+            "label": "DWMRI_gradient_0059",
+            "medKey": "dwmri_gradient_0059",
+            "name": "DWMRI_gradient_0059"
+        },
+        {
+            "label": "DWMRI_gradient_0060",
+            "medKey": "dwmri_gradient_0060",
+            "name": "DWMRI_gradient_0060"
+        },
+        {
+            "label": "DWMRI_gradient_0061",
+            "medKey": "dwmri_gradient_0061",
+            "name": "DWMRI_gradient_0061"
+        },
+        {
+            "label": "DWMRI_gradient_0062",
+            "medKey": "dwmri_gradient_0062",
+            "name": "DWMRI_gradient_0062"
+        },
+        {
+            "label": "DWMRI_gradient_0063",
+            "medKey": "dwmri_gradient_0063",
+            "name": "DWMRI_gradient_0063"
+        },
+        {
+            "label": "DWMRI_gradient_0064",
+            "medKey": "dwmri_gradient_0064",
+            "name": "DWMRI_gradient_0064"
+        },
+        {
+            "label": "DWMRI_gradient_0065",
+            "medKey": "dwmri_gradient_0065",
+            "name": "DWMRI_gradient_0065"
+        },
+        {
+            "label": "DWMRI_gradient_0066",
+            "medKey": "dwmri_gradient_0066",
+            "name": "DWMRI_gradient_0066"
+        },
+        {
+            "label": "DWMRI_gradient_0067",
+            "medKey": "dwmri_gradient_0067",
+            "name": "DWMRI_gradient_0067"
+        },
+        {
+            "label": "DWMRI_gradient_0068",
+            "medKey": "dwmri_gradient_0068",
+            "name": "DWMRI_gradient_0068"
+        },
+        {
+            "label": "DWMRI_gradient_0069",
+            "medKey": "dwmri_gradient_0069",
+            "name": "DWMRI_gradient_0069"
+        },
+        {
+            "label": "DWMRI_gradient_0070",
+            "medKey": "dwmri_gradient_0070",
+            "name": "DWMRI_gradient_0070"
+        },
+        {
+            "label": "DWMRI_gradient_0071",
+            "medKey": "dwmri_gradient_0071",
+            "name": "DWMRI_gradient_0071"
+        },
+        {
+            "label": "DWMRI_gradient_0072",
+            "medKey": "dwmri_gradient_0072",
+            "name": "DWMRI_gradient_0072"
+        },
+        {
+            "label": "DWMRI_gradient_0073",
+            "medKey": "dwmri_gradient_0073",
+            "name": "DWMRI_gradient_0073"
+        },
+        {
+            "label": "DWMRI_gradient_0074",
+            "medKey": "dwmri_gradient_0074",
+            "name": "DWMRI_gradient_0074"
+        },
+        {
+            "label": "DWMRI_gradient_0075",
+            "medKey": "dwmri_gradient_0075",
+            "name": "DWMRI_gradient_0075"
+        },
+        {
+            "label": "DWMRI_gradient_0076",
+            "medKey": "dwmri_gradient_0076",
+            "name": "DWMRI_gradient_0076"
+        },
+        {
+            "label": "DWMRI_gradient_0077",
+            "medKey": "dwmri_gradient_0077",
+            "name": "DWMRI_gradient_0077"
+        },
+        {
+            "label": "DWMRI_gradient_0078",
+            "medKey": "dwmri_gradient_0078",
+            "name": "DWMRI_gradient_0078"
+        },
+        {
+            "label": "DWMRI_gradient_0079",
+            "medKey": "dwmri_gradient_0079",
+            "name": "DWMRI_gradient_0079"
+        },
+        {
+            "label": "DWMRI_gradient_0080",
+            "medKey": "dwmri_gradient_0080",
+            "name": "DWMRI_gradient_0080"
+        },
+        {
+            "label": "DWMRI_gradient_0081",
+            "medKey": "dwmri_gradient_0081",
+            "name": "DWMRI_gradient_0081"
+        },
+        {
+            "label": "NRRD_kinds[3]",
+            "medKey": "nrrd_kinds[3]",
+            "name": "NRRD_kinds[3]"
+        },
+        {
+            "label": "modality",
+            "medKey": "modality",
+            "name": "modality"
+        }
+    ]
+}

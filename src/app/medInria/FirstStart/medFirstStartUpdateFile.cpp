@@ -69,7 +69,7 @@ bool medFirstStartUpdateFile::installFile()
 {
     bool bRes = prepareFile();
 
-    if (curentFileOutdated())
+    if (currentFileOutdated())
     {
         if (d->init)
         {
@@ -100,7 +100,7 @@ bool medFirstStartUpdateFile::prepareFile()
     return bRes;
 }
 
-bool medFirstStartUpdateFile::curentFileOutdated()
+bool medFirstStartUpdateFile::currentFileOutdated()
 {
     bool bRes = false;
 

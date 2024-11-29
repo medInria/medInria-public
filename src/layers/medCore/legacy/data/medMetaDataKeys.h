@@ -134,6 +134,8 @@ public:
     static bool    keyExist(Key2 const & key);
 
     static QString getValue(Key2 &key, QMap<QString, QString> metaDataList);
+
+    static QString path();
 private:
     medMetaDataKeys();
 

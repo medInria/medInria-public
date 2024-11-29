@@ -15,6 +15,8 @@
 
 #include <medCoreExport.h>
 
+#define MED_METADATAKEYDICT_DIRNAME "keysDictionnaries"
+
 #define CHAPTER_NAME     "chapterName"
 #define CHAPTER_KEYS     "keys"
 #define KEY_NAME         "name"
@@ -45,8 +47,8 @@ medMetaDataKeys *medMetaDataKeys::instance()
     if (!s_instance)
     {
         s_instance = new medMetaDataKeys();
-        s_instance->m_path = QStandardPaths::writableLocation(QStandardPaths::GenericConfigLocation) + "/" + QCoreApplication::organizationName() + "/" + QCoreApplication::applicationName() + "/keysDictionnaries";
-        s_instance->fetchChapterDirectory(QStandardPaths::writableLocation(QStandardPaths::GenericConfigLocation) + "/" + QCoreApplication::organizationName() + "/" + QCoreApplication::applicationName() + "/keysDictionnaries");
+        s_instance->m_path = medMetaDataKeys::path();
+        s_instance->fetchChapterDirectory(s_instance->m_path);
     }
     return s_instance;
 }
@@ -128,6 +130,11 @@ QString medMetaDataKeys::getValue(Key2 &key, QMap<QString, QString> metaDataList
     }
 
     return valRes;
+}
+
+QString medMetaDataKeys::path()
+{
+    return QStandardPaths::writableLocation(QStandardPaths::GenericConfigLocation) + "/" + QCoreApplication::organizationName() + "/" + QCoreApplication::applicationName() + "/" + MED_METADATAKEYDICT_DIRNAME;
 }
 
 

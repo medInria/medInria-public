@@ -29,7 +29,7 @@ public:
 
 private:
     bool prepareFile();
-    bool curentFileOutdated();
+    bool currentFileOutdated();
 
 private:
     medFirstStartUpdateFilePrivate *d;
