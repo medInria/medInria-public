@@ -23,14 +23,14 @@
 
 medDataLoadThread::medDataLoadThread(QList<medDataIndex> const & index, QList<QUrl> const & urls, medViewContainer *parent) : m_indexList(index), m_urlList(urls), m_parent(parent)
 {
-    connect(this, SIGNAL(dataReady(medAbstractData*)), m_parent, SLOT(addData(medAbstractData *)));
+    connect(this, SIGNAL(dataReady(medAbstractData*)), m_parent, SLOT(addData(medAbstractData *)) );
 }
 
 void medDataLoadThread::process()
 {
     QStringList paths;
     for (auto & url : m_urlList)
-    {
+{
 
     ////detectVolume(paths, m_volumePathsMap);
     //for (auto indexTmp : m_volumePathsMap.values())
@@ -40,11 +40,12 @@ void medDataLoadThread::process()
         paths << url.toLocalFile();
     }
     if (!paths.isEmpty())
-    {
+{
         QStringList files;
         QString path = computeRootPathOfListPath(paths, files);
         m_indexList << fileSysPathToIndex(path, files);
     }
+
     for (medDataIndex index : m_indexList)
     {
         internalProcess(index, 3);

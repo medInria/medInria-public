@@ -93,6 +93,7 @@ set(cmake_cache_args
   -DTTK_ROOT:PATH=${TTK_ROOT}
   -DVTK_ROOT:PATH=${VTK_ROOT}
   -DQt${QT_VERSION_MAJOR}_ROOT:PATH=${Qt${QT_VERSION_MAJOR}_ROOT}  
+
   
   -DDCMTK_DIR:PATH=${DCMTK_DIR}
   -Ddtk_DIR:PATH=${dtk_DIR}
@@ -101,7 +102,6 @@ set(cmake_cache_args
   -DTTK_DIR:PATH=${TTK_DIR}
   -DVTK_DIR:PATH=${VTK_DIR}
   -DQt${QT_VERSION_MAJOR}_DIR:PATH=${Qt${QT_VERSION_MAJOR}_DIR}
-  
   -DCMAKE_INSTALL_PREFIX:PATH=${MEDINRIA_INSTALL_PREFIX}
   -DCMAKE_BUILD_PARALLEL_LEVEL:STRING=8
   )
@@ -176,11 +176,11 @@ if (WIN32)
   
   add_custom_command(TARGET ${ep}
         POST_BUILD
-        COMMAND for %%I in ( ${ITK_BIN_BASE}\\bin\\${CONFIG_MODE}\\*.dll   ) do (if EXIST ${MED_BIN_BASE}\\%%~nxI (del /S ${MED_BIN_BASE}\\%%~nxI & mklink /H ${MED_BIN_BASE}\\%%~nxI %%~fI) else mklink /H ${MED_BIN_BASE}\\%%~nxI %%~fI) 
-        COMMAND for %%I in ( ${VTK_BIN_BASE}\\bin\\${CONFIG_MODE}\\*.dll   ) do (if EXIST ${MED_BIN_BASE}\\%%~nxI (del /S ${MED_BIN_BASE}\\%%~nxI & mklink /H ${MED_BIN_BASE}\\%%~nxI %%~fI) else mklink /H ${MED_BIN_BASE}\\%%~nxI %%~fI) 
-        COMMAND for %%I in ( ${DTK_BIN_BASE}\\bin\\${CONFIG_MODE}\\*.dll   ) do (if EXIST ${MED_BIN_BASE}\\%%~nxI (del /S ${MED_BIN_BASE}\\%%~nxI & mklink /H ${MED_BIN_BASE}\\%%~nxI %%~fI) else mklink /H ${MED_BIN_BASE}\\%%~nxI %%~fI) 
-        COMMAND for %%I in ( ${TTK_BIN_BASE}\\bin\\*.dll                   ) do (if EXIST ${MED_BIN_BASE}\\%%~nxI (del /S ${MED_BIN_BASE}\\%%~nxI & mklink /H ${MED_BIN_BASE}\\%%~nxI %%~fI) else mklink /H ${MED_BIN_BASE}\\%%~nxI %%~fI) 
-        COMMAND for %%I in ( ${QTX_BIN_BASE}\\bin\\*.dll                   ) do (if EXIST ${MED_BIN_BASE}\\%%~nxI (del /S ${MED_BIN_BASE}\\%%~nxI & mklink /H ${MED_BIN_BASE}\\%%~nxI %%~fI) else mklink /H ${MED_BIN_BASE}\\%%~nxI %%~fI) 
+        COMMAND for %%I in ( ${ITK_BIN_BASE}\\bin\\${CONFIG_MODE}\\*.dll ) do (if EXIST ${MED_BIN_BASE}\\%%~nxI (del /S ${MED_BIN_BASE}\\%%~nxI & mklink /H ${MED_BIN_BASE}\\%%~nxI %%~fI) else mklink /H ${MED_BIN_BASE}\\%%~nxI %%~fI) 
+        COMMAND for %%I in ( ${VTK_BIN_BASE}\\bin\\${CONFIG_MODE}\\*.dll ) do (if EXIST ${MED_BIN_BASE}\\%%~nxI (del /S ${MED_BIN_BASE}\\%%~nxI & mklink /H ${MED_BIN_BASE}\\%%~nxI %%~fI) else mklink /H ${MED_BIN_BASE}\\%%~nxI %%~fI) 
+        COMMAND for %%I in ( ${DTK_BIN_BASE}\\bin\\${CONFIG_MODE}\\*.dll ) do (if EXIST ${MED_BIN_BASE}\\%%~nxI (del /S ${MED_BIN_BASE}\\%%~nxI & mklink /H ${MED_BIN_BASE}\\%%~nxI %%~fI) else mklink /H ${MED_BIN_BASE}\\%%~nxI %%~fI) 
+        COMMAND for %%I in ( ${TTK_BIN_BASE}\\bin\\*.dll                 ) do (if EXIST ${MED_BIN_BASE}\\%%~nxI (del /S ${MED_BIN_BASE}\\%%~nxI & mklink /H ${MED_BIN_BASE}\\%%~nxI %%~fI) else mklink /H ${MED_BIN_BASE}\\%%~nxI %%~fI) 
+        COMMAND for %%I in ( ${QTX_BIN_BASE}\\bin\\*.dll                 ) do (if EXIST ${MED_BIN_BASE}\\%%~nxI (del /S ${MED_BIN_BASE}\\%%~nxI & mklink /H ${MED_BIN_BASE}\\%%~nxI %%~fI) else mklink /H ${MED_BIN_BASE}\\%%~nxI %%~fI) 
         
 		COMMAND for %%I in ( ${QTX_BIN_BASE}\\plugins\\iconengines\\*.dll  ) do (if EXIST ${MED_BIN_BASE}\\iconengines\\%%~nxI  (del /S ${MED_BIN_BASE}\\iconengines\\%%~nxI  & mklink /H ${MED_BIN_BASE}\\iconengines\\%%~nxI %%~fI)  else mklink /H ${MED_BIN_BASE}\\iconengines\\%%~nxI %%~fI) 
         COMMAND for %%I in ( ${QTX_BIN_BASE}\\plugins\\sqldrivers\\*.dll   ) do (if EXIST ${MED_BIN_BASE}\\sqldrivers\\%%~nxI   (del /S ${MED_BIN_BASE}\\sqldrivers\\%%~nxI   & mklink /H ${MED_BIN_BASE}\\sqldrivers\\%%~nxI %%~fI)   else mklink /H ${MED_BIN_BASE}\\sqldrivers\\%%~nxI %%~fI) 

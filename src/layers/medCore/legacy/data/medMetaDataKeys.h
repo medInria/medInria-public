@@ -30,14 +30,14 @@
 using keyConverter = bool(*)(QVariant const & inputData, QVariant & outputData);
 
 class MEDCORE_EXPORT Key2
-{
-public:
+    {
+    public:
     Key2() = default;
     Key2(QString const & name, QString const & label = "", QString const & tag = "", QString const & medKey = "", QVariant::Type type = QVariant::String) :
         m_name(name), m_label(label), m_tag(tag), m_medPivot(medKey), m_type(type)
-    {
+        {
         if (label == "") m_label = name;
-    }
+        }
 
     Key2(Key2 const & key)
     {
@@ -71,7 +71,7 @@ public:
     }
 
     Key2& operator=(Key2 const & k)
-    {
+        {
         this->m_name =     k.m_name;
         this->m_label =    k.m_label;
         this->m_tag =      k.m_tag;
@@ -79,7 +79,7 @@ public:
         this->m_type =     k.m_type;
 
         return *this;
-    }
+        }
 
     friend MEDCORE_EXPORT bool operator==(Key2 const & k1, Key2 const & k2);
     friend MEDCORE_EXPORT bool operator==(QString const & s, Key2 const & k);
@@ -108,7 +108,7 @@ private:
     QString        m_tag;
     QString        m_medPivot;
     QVariant::Type m_type;
-};
+    };
 
 
 

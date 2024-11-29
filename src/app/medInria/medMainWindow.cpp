@@ -184,6 +184,7 @@ void medMainWindow::initMenuBar(QWidget * parent)
     menuNotif(menu_bar);
     menuAbout(menu_bar);
 
+
     // --- Prepare right corner menu
     QMenuBar *rightMenuBar = new QMenuBar(menu_bar);
     menu_bar->setCornerWidget(rightMenuBar);
@@ -191,6 +192,7 @@ void medMainWindow::initMenuBar(QWidget * parent)
     QAction* actionNotif = rightMenuBar->addAction("");
     actionNotif->setIcon(QIcon::fromTheme("notifications"));
     connect(actionNotif, &QAction::triggered, this, &medMainWindow::toggleNotificationPanel);
+
 
     // --- Fullscreen checkable action
     QIcon fullscreenIcon;
@@ -354,6 +356,7 @@ void medMainWindow::menuSettings(QMenuBar * menu_bar)
     QMenu *menuSettings = menu_bar->addMenu("Settings");
 
     QAction *actionDataSources = menuSettings->addAction(tr("Data Sources"));
+
     connect(actionDataSources, &QAction::triggered, this, &medMainWindow::onShowDataSources);
 
     QAction *actionAreaSettings = menuSettings->addAction(tr("&Startup"));
@@ -362,6 +365,7 @@ void medMainWindow::menuSettings(QMenuBar * menu_bar)
 
 void medMainWindow::menuAbout(QMenuBar * menu_bar)
 {
+
     // --- About menu
     QMenu *menuAbout = menu_bar->addMenu("Help");
 
@@ -845,6 +849,12 @@ void medMainWindow::filterWSMenu(QString text)
     }
 }
 
+
+
+
+
+
+
 void medMainWindow::setWallScreen (const bool full )
 {
     if ( full )
@@ -861,7 +871,7 @@ void medMainWindow::setWallScreen (const bool full )
 void medMainWindow::setFullScreen (const bool full)
 {
     auto fullscreenAction = getCornerAction("Fullscreen");
-    if (full)
+    if ( full )
     {
         setFullscreenOn(fullscreenAction);
     }
@@ -874,7 +884,7 @@ void medMainWindow::setFullScreen (const bool full)
 void medMainWindow::toggleFullScreen()
 {
     auto fullscreenAction = getCornerAction("Fullscreen");
-    if (!this->isFullScreen())
+    if ( !this->isFullScreen())
     {
         setFullscreenOn(fullscreenAction);
     }
@@ -899,7 +909,7 @@ void medMainWindow::setFullscreenOff(QAction* fullscreenAction)
     fullscreenAction->blockSignals(true);
     fullscreenAction->setChecked(false);
     fullscreenAction->blockSignals(false);
-    this->showNormal();
+        this->showNormal();
 }
 
 QAction* medMainWindow::getCornerAction(QString actionName)

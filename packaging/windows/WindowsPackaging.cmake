@@ -96,9 +96,10 @@ set(CONFIG_MODE $<$<CONFIG:debug>:Debug>$<$<CONFIG:release>:Release>$<$<CONFIG:M
  
 
 set(APP "\${CMAKE_INSTALL_PREFIX}/bin/medInria.exe")
+
 set(QT_BINARY_DIR "${Qt${QT_VERSION_MAJOR}_DIR}/../../../bin")
 set(QT_PLUGINS_DIR "${Qt${QT_VERSION_MAJOR}_DIR}/../../../plugins")
-set(QT_TOOLS_DIR "${Qt5_DIR}/../../../../../Tools")
+set(QT_TOOLS_DIR "${Qt${QT_VERSION_MAJOR}_DIR}/../../../../../Tools")
 set(MEDINRIA_FILES "${medInria_DIR}/bin")
 
 list(APPEND 
@@ -136,22 +137,22 @@ foreach(file \${files})
   endif()
 endforeach()
 
-file(INSTALL ${MEDINRIA_FILES}/                          DESTINATION \${CMAKE_INSTALL_PREFIX}/bin/              FILES_MATCHING PATTERN \"*${CMAKE_EXECUTABLE_SUFFIX}\")
-file(INSTALL ${MEDINRIA_FILES}/                          DESTINATION \${CMAKE_INSTALL_PREFIX}/bin/              FILES_MATCHING PATTERN \"*${CMAKE_SHARED_LIBRARY_SUFFIX}\")
-file(INSTALL ${QT_PLUGINS_DIR}/imageformats/qgif.dll     DESTINATION \${CMAKE_INSTALL_PREFIX}/bin/imageformats/ FILES_MATCHING PATTERN \"*${CMAKE_SHARED_LIBRARY_SUFFIX}\")
-file(INSTALL ${QT_PLUGINS_DIR}/imageformats/qicns.dll    DESTINATION \${CMAKE_INSTALL_PREFIX}/bin/imageformats/ FILES_MATCHING PATTERN \"*${CMAKE_SHARED_LIBRARY_SUFFIX}\")
-file(INSTALL ${QT_PLUGINS_DIR}/imageformats/qico.dll     DESTINATION \${CMAKE_INSTALL_PREFIX}/bin/imageformats/ FILES_MATCHING PATTERN \"*${CMAKE_SHARED_LIBRARY_SUFFIX}\")
-file(INSTALL ${QT_PLUGINS_DIR}/imageformats/qjpeg.dll    DESTINATION \${CMAKE_INSTALL_PREFIX}/bin/imageformats/ FILES_MATCHING PATTERN \"*${CMAKE_SHARED_LIBRARY_SUFFIX}\")
-file(INSTALL ${QT_PLUGINS_DIR}/imageformats/qsvg.dll     DESTINATION \${CMAKE_INSTALL_PREFIX}/bin/imageformats/ FILES_MATCHING PATTERN \"*${CMAKE_SHARED_LIBRARY_SUFFIX}\")
-file(INSTALL ${QT_PLUGINS_DIR}/imageformats/qtga.dll     DESTINATION \${CMAKE_INSTALL_PREFIX}/bin/imageformats/ FILES_MATCHING PATTERN \"*${CMAKE_SHARED_LIBRARY_SUFFIX}\") #is it really used
-file(INSTALL ${QT_PLUGINS_DIR}/imageformats/qtiff.dll    DESTINATION \${CMAKE_INSTALL_PREFIX}/bin/imageformats/ FILES_MATCHING PATTERN \"*${CMAKE_SHARED_LIBRARY_SUFFIX}\")
-file(INSTALL ${QT_PLUGINS_DIR}/imageformats/qwbmp.dll    DESTINATION \${CMAKE_INSTALL_PREFIX}/bin/imageformats/ FILES_MATCHING PATTERN \"*${CMAKE_SHARED_LIBRARY_SUFFIX}\") #is it really used
-file(INSTALL ${QT_PLUGINS_DIR}/imageformats/qwebp.dll    DESTINATION \${CMAKE_INSTALL_PREFIX}/bin/imageformats/ FILES_MATCHING PATTERN \"*${CMAKE_SHARED_LIBRARY_SUFFIX}\") #is it really used
-file(INSTALL ${QT_PLUGINS_DIR}/platforms/qdirect2d.dll   DESTINATION \${CMAKE_INSTALL_PREFIX}/bin/platforms/    FILES_MATCHING PATTERN \"*${CMAKE_SHARED_LIBRARY_SUFFIX}\") #is it really used
-file(INSTALL ${QT_PLUGINS_DIR}/platforms/qminimal.dll    DESTINATION \${CMAKE_INSTALL_PREFIX}/bin/platforms/    FILES_MATCHING PATTERN \"*${CMAKE_SHARED_LIBRARY_SUFFIX}\")
-file(INSTALL ${QT_PLUGINS_DIR}/platforms/qoffscreen.dll  DESTINATION \${CMAKE_INSTALL_PREFIX}/bin/platforms/    FILES_MATCHING PATTERN \"*${CMAKE_SHARED_LIBRARY_SUFFIX}\") #is it really used
-file(INSTALL ${QT_PLUGINS_DIR}/platforms/qwindows.dll    DESTINATION \${CMAKE_INSTALL_PREFIX}/bin/platforms/    FILES_MATCHING PATTERN \"*${CMAKE_SHARED_LIBRARY_SUFFIX}\")
-file(INSTALL ${QT_PLUGINS_DIR}/sqldrivers/qsqlite.dll    DESTINATION \${CMAKE_INSTALL_PREFIX}/bin/sqldrivers/   FILES_MATCHING PATTERN \"*${CMAKE_SHARED_LIBRARY_SUFFIX}\")
+file(INSTALL ${MEDINRIA_FILES}/                         DESTINATION \${CMAKE_INSTALL_PREFIX}/bin/              FILES_MATCHING PATTERN \"*${CMAKE_EXECUTABLE_SUFFIX}\")
+file(INSTALL ${MEDINRIA_FILES}/                         DESTINATION \${CMAKE_INSTALL_PREFIX}/bin/              FILES_MATCHING PATTERN \"*${CMAKE_SHARED_LIBRARY_SUFFIX}\")
+file(INSTALL ${QT_PLUGINS_DIR}/imageformats/qgif.dll    DESTINATION \${CMAKE_INSTALL_PREFIX}/bin/imageformats/ FILES_MATCHING PATTERN \"*${CMAKE_SHARED_LIBRARY_SUFFIX}\")
+file(INSTALL ${QT_PLUGINS_DIR}/imageformats/qicns.dll   DESTINATION \${CMAKE_INSTALL_PREFIX}/bin/imageformats/ FILES_MATCHING PATTERN \"*${CMAKE_SHARED_LIBRARY_SUFFIX}\")
+file(INSTALL ${QT_PLUGINS_DIR}/imageformats/qico.dll    DESTINATION \${CMAKE_INSTALL_PREFIX}/bin/imageformats/ FILES_MATCHING PATTERN \"*${CMAKE_SHARED_LIBRARY_SUFFIX}\")
+file(INSTALL ${QT_PLUGINS_DIR}/imageformats/qjpeg.dll   DESTINATION \${CMAKE_INSTALL_PREFIX}/bin/imageformats/ FILES_MATCHING PATTERN \"*${CMAKE_SHARED_LIBRARY_SUFFIX}\")
+file(INSTALL ${QT_PLUGINS_DIR}/imageformats/qsvg.dll    DESTINATION \${CMAKE_INSTALL_PREFIX}/bin/imageformats/ FILES_MATCHING PATTERN \"*${CMAKE_SHARED_LIBRARY_SUFFIX}\")
+file(INSTALL ${QT_PLUGINS_DIR}/imageformats/qtga.dll    DESTINATION \${CMAKE_INSTALL_PREFIX}/bin/imageformats/ FILES_MATCHING PATTERN \"*${CMAKE_SHARED_LIBRARY_SUFFIX}\") #is it really used
+file(INSTALL ${QT_PLUGINS_DIR}/imageformats/qtiff.dll   DESTINATION \${CMAKE_INSTALL_PREFIX}/bin/imageformats/ FILES_MATCHING PATTERN \"*${CMAKE_SHARED_LIBRARY_SUFFIX}\")
+file(INSTALL ${QT_PLUGINS_DIR}/imageformats/qwbmp.dll   DESTINATION \${CMAKE_INSTALL_PREFIX}/bin/imageformats/ FILES_MATCHING PATTERN \"*${CMAKE_SHARED_LIBRARY_SUFFIX}\") #is it really used
+file(INSTALL ${QT_PLUGINS_DIR}/imageformats/qwebp.dll   DESTINATION \${CMAKE_INSTALL_PREFIX}/bin/imageformats/ FILES_MATCHING PATTERN \"*${CMAKE_SHARED_LIBRARY_SUFFIX}\") #is it really used
+file(INSTALL ${QT_PLUGINS_DIR}/platforms/qdirect2d.dll  DESTINATION \${CMAKE_INSTALL_PREFIX}/bin/platforms/    FILES_MATCHING PATTERN \"*${CMAKE_SHARED_LIBRARY_SUFFIX}\") #is it really used
+file(INSTALL ${QT_PLUGINS_DIR}/platforms/qminimal.dll   DESTINATION \${CMAKE_INSTALL_PREFIX}/bin/platforms/    FILES_MATCHING PATTERN \"*${CMAKE_SHARED_LIBRARY_SUFFIX}\")
+file(INSTALL ${QT_PLUGINS_DIR}/platforms/qoffscreen.dll DESTINATION \${CMAKE_INSTALL_PREFIX}/bin/platforms/    FILES_MATCHING PATTERN \"*${CMAKE_SHARED_LIBRARY_SUFFIX}\") #is it really used
+file(INSTALL ${QT_PLUGINS_DIR}/platforms/qwindows.dll   DESTINATION \${CMAKE_INSTALL_PREFIX}/bin/platforms/    FILES_MATCHING PATTERN \"*${CMAKE_SHARED_LIBRARY_SUFFIX}\")
+file(INSTALL ${QT_PLUGINS_DIR}/sqldrivers/qsqlite.dll   DESTINATION \${CMAKE_INSTALL_PREFIX}/bin/sqldrivers/   FILES_MATCHING PATTERN \"*${CMAKE_SHARED_LIBRARY_SUFFIX}\")
 file(INSTALL ${QT_PLUGINS_DIR}/iconengines/qsvgicon.dll  DESTINATION \${CMAKE_INSTALL_PREFIX}/bin/iconengines/  FILES_MATCHING PATTERN \"*${CMAKE_SHARED_LIBRARY_SUFFIX}\")
 
 file(INSTALL ${QT_TOOLS_DIR}/OpenSSL/Win_x64/bin/libcrypto-1_1-x64.dll DESTINATION \${CMAKE_INSTALL_PREFIX}/bin FILES_MATCHING PATTERN \"*${CMAKE_SHARED_LIBRARY_SUFFIX}\")
@@ -192,7 +193,6 @@ if(${SDK_PACKAGING} )
         INSTALL(FILES     ${QT_PLUGINS_DIR}/platforms/qoffscreen.dll        DESTINATION ./sdk/bin/platforms/    COMPONENT Dev) #is it really used
         INSTALL(FILES     ${QT_PLUGINS_DIR}/platforms/qwindows.dll          DESTINATION ./sdk/bin/platforms/    COMPONENT Dev)
         INSTALL(FILES     ${QT_PLUGINS_DIR}/sqldrivers/qsqlite.dll          DESTINATION ./sdk/bin/sqldrivers/   COMPONENT Dev)
-		INSTALL(FILES     ${QT_PLUGINS_DIR}/iconengines/qsvgicond.dll       DESTINATION ./sdk/bin/iconengines/  COMPONENT Dev)
 		
         INSTALL(FILES ${QT_TOOLS_DIR}/OpenSSL/Win_x64/bin/libcrypto-1_1-x64.dll DESTINATION ./sdk/bin/ COMPONENT Dev)
         INSTALL(FILES ${QT_TOOLS_DIR}/OpenSSL/Win_x64/bin/libssl-1_1-x64.dll    DESTINATION ./sdk/bin/ COMPONENT Dev)

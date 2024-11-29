@@ -8,6 +8,7 @@
         <file>medInria.ico</file>
         <file>medInria.png</file>
         <file>authors.txt</file>
+
         <file>dark.qss</file>
         <file>icons/dark/index.theme</file>
         <file>icons/dark/png/checkbox.png</file>
@@ -131,6 +132,7 @@
         <file>icons/light/svg/user_add.svg</file>
         <file>icons/arrow-bot-disabled.svg</file>
         <file>icons/arrow-left-disabled.svg</file>
+
         <file>icons/arrow-right-disabled.svg</file>
         <file>icons/arrow-top-disabled.svg</file>
         <file>icons/checkbox-partial.png</file>
@@ -169,6 +171,7 @@
         <file>pixmaps/workspace_Filtering dtk2.png</file>
         <file>pixmaps/workspace_Meshing.png</file>
         <file>pixmaps/workspace_Reformat.png</file>
+
         <file>gif/icon.gif</file>
         <file>configs/DataSourcesDefault.json</file>
         <file>configs/metaDataDictionaries/dicom.json</file>

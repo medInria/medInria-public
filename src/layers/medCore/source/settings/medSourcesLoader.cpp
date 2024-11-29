@@ -31,6 +31,8 @@
 #include <medSettingsManager.h>
 #include <medStorage.h>
 
+#include <medStorage.h>
+
 medSourcesLoader *medSourcesLoader::s_instance = nullptr;
 
 medSourcesLoader *medSourcesLoader::instance(QObject *parent)
