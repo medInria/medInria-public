@@ -30,14 +30,14 @@
 using keyConverter = bool(*)(QVariant const & inputData, QVariant & outputData);
 
 class MEDCORE_EXPORT Key2
-    {
+{
     public:
     Key2() = default;
     Key2(QString const & name, QString const & label = "", QString const & tag = "", QString const & medKey = "", QVariant::Type type = QVariant::String) :
         m_name(name), m_label(label), m_tag(tag), m_medPivot(medKey), m_type(type)
-        {
+    {
         if (label == "") m_label = name;
-        }
+    }
 
     Key2(Key2 const & key)
     {
@@ -86,7 +86,6 @@ class MEDCORE_EXPORT Key2
     friend MEDCORE_EXPORT bool operator==(Key2 const & k, QString const & s);
 
     operator QString() const { return m_name; }
-    //operator char const *() const { return m_name.toUtf8(); };
 
     const QString& name()        const { return m_name; }
     const QString& label()       const { return m_label; }

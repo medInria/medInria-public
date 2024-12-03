@@ -11,14 +11,12 @@
 
 
 #include <medBrowserArea.h>
-//#include <medDatabaseNonPersistentController.h>
 #include <medDataManager.h>
 #include <medEmptyDbWarning.h>
 #include <medHomepageArea.h>
 #include <medJobManagerL.h>
 #include <medMainWindow.h>
 #include <medQuickAccessMenu.h>
-//#include <medSaveModifiedDialog.h>
 #include <medSearchToolboxDialog.h>
 #include <medSelectorToolBox.h>
 #include <medSelectorWorkspace.h>
@@ -343,7 +341,6 @@ void medMainWindow::menuCapture(QMenuBar * menu_bar)
 
     connect(actionScreenshot, &QAction::triggered, this, &medMainWindow::captureScreenshot);
     connect(actionMovie, &QAction::triggered, this, &medMainWindow::captureVideo);
-
 }
 
 /**
@@ -544,13 +541,6 @@ void medMainWindow::open_waitForImportedSignal(medDataIndex index, QUuid uuid)
         }
     }
 }
-
-
-
-
-
-
-
 
 
 
@@ -852,9 +842,6 @@ void medMainWindow::filterWSMenu(QString text)
 
 
 
-
-
-
 void medMainWindow::setWallScreen (const bool full )
 {
     if ( full )
@@ -909,7 +896,7 @@ void medMainWindow::setFullscreenOff(QAction* fullscreenAction)
     fullscreenAction->blockSignals(true);
     fullscreenAction->setChecked(false);
     fullscreenAction->blockSignals(false);
-        this->showNormal();
+    this->showNormal();
 }
 
 QAction* medMainWindow::getCornerAction(QString actionName)

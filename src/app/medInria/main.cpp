@@ -102,12 +102,8 @@ int main(int argc, char *argv[])
                        // multisamples independently
     QSurfaceFormat::setDefaultFormat(fmt);
 
-    // this needs to be done before creating the QApplication object, as per the
-    // Qt doc, otherwise there are some edge cases where the style is not fully
-    // applied
-    // QApplication::setStyle("plastique");
+
     medApplication application(argc, argv);
-    //medSplashScreen splash(QPixmap(":/pixmaps/medInria-logo-homepage.png"));
 
     setlocale(LC_NUMERIC, "C");
     QLocale::setDefault(QLocale("C"));
@@ -134,66 +130,56 @@ int main(int argc, char *argv[])
             QCoreApplication::translate("main", "junior/expert/coordinateur")},
     });
 
-        // Process the actual command line arguments given by the user
-        parser.process(application);
+    // Process the actual command line arguments given by the user
+    parser.process(application);
+	
 
-    // Do not show the splash screen in debug builds because it hogs the
-    // foreground, hiding all other windows. This makes debugging the startup
-    // operations difficult.
+    if (parser.isSet("center"))
+    {
+        int center = parser.value("center").toInt();
+        medSettingsManager *mnger = medSettingsManager::instance();
+        mnger->setValue("database", "center", center, false);
+    }
 
-#if !defined(_DEBUG)
-    bool show_splash = true;
-#else
-    bool show_splash = false;
-#endif
-
-        if (parser.isSet("center"))
+    const bool remoteDb = parser.isSet("remotedb");
+    if (remoteDb)
+    {
+        medSettingsManager *mnger = medSettingsManager::instance();
+        mnger->setValue("database", "remotedb", remoteDb, false);
+        if (parser.isSet("host"))
         {
-            int center = parser.value("center").toInt();
-            medSettingsManager *mnger = medSettingsManager::instance();
-            mnger->setValue("database", "center", center, false);
+            QString hostname = parser.value("host");
+            mnger->setValue("database", "hostname", hostname, false);
         }
+        if (parser.isSet("port"))
+        {
+            int port = parser.value("port").toInt();
+            mnger->setValue("database", "port", port, false);
+        }
+        if (parser.isSet("db_prefix_path"))
+        {
+            QString db_prefix_path = parser.value("db_prefix_path");
+            mnger->setValue("database", "db_prefix_path", db_prefix_path, false);
+        }
+    }
+    const bool DirectView = parser.isSet("view");
+    QStringList viewPaths = parser.values("view");
 
-        const bool remoteDb = parser.isSet("remotedb");
-        if (remoteDb)
+    int runningMedInria = 0;
+    if (DirectView)
+    {
+    for (QStringList::const_iterator i = viewPaths.constBegin(); i != viewPaths.constEnd(); ++i)
         {
-            medSettingsManager *mnger = medSettingsManager::instance();
-            mnger->setValue("database", "remotedb", remoteDb, false);
-            if (parser.isSet("host"))
-            {
-                QString hostname = parser.value("host");
-                mnger->setValue("database", "hostname", hostname, false);
-            }
-            if (parser.isSet("port"))
-            {
-                int port = parser.value("port").toInt();
-                mnger->setValue("database", "port", port, false);
-            }
-            if (parser.isSet("db_prefix_path"))
-            {
-                QString db_prefix_path = parser.value("db_prefix_path");
-                mnger->setValue("database", "db_prefix_path", db_prefix_path, false);
-            }
+            const QString &message = QString("/open ") + *i;
+            runningMedInria = application.sendMessage(message);
         }
-        const bool DirectView = parser.isSet("view");
-        QStringList viewPaths = parser.values("view");
-
-        int runningMedInria = 0;
-        if (DirectView)
-        {
-        show_splash = false;
-        for (QStringList::const_iterator i = viewPaths.constBegin(); i != viewPaths.constEnd(); ++i)
-            {
-                const QString &message = QString("/open ") + *i;
-                runningMedInria = application.sendMessage(message);
-            }
-        }
-        else
-        {
-            runningMedInria = application.sendMessage("");
-        }
-        if (runningMedInria)
-            return 0;
+    }
+    else
+    {
+        runningMedInria = application.sendMessage("");
+    }
+    if (runningMedInria)
+        return 0;
 
     QNetworkAccessManager  *qnam = new QNetworkAccessManager(&application);
     medFirstStart firstStart(qnam);
@@ -211,128 +197,123 @@ int main(int argc, char *argv[])
     firstStart.checkAndUpdate();
 
 
-        medSourcesLoader::instance(&application);     
+    medSourcesLoader::instance(&application);     
 
-        medPluginManager::instance()->setVerboseLoading(true);
-        medPluginManager::instance()->initialize();
-        auto sourceHandler = medSourceHandler::instance(&application);
-        auto model = medDataHub::instance(&application);
-        auto virtualRepresentation = new medVirtualRepresentation(&application);
+    medPluginManager::instance()->setVerboseLoading(true);
+    medPluginManager::instance()->initialize();
+    auto sourceHandler = medSourceHandler::instance(&application);
+    auto model = medDataHub::instance(&application);
+    auto virtualRepresentation = new medVirtualRepresentation(&application);
     QObject::connect(medSourcesLoader::instance(), SIGNAL(sourceAdded(medAbstractSource *)), sourceHandler, SLOT(addSource(medAbstractSource *)));
     QObject::connect(medSourcesLoader::instance(), SIGNAL(sourceRemoved(medAbstractSource *)), sourceHandler, SLOT(removeSource(medAbstractSource *)));
     QObject::connect(medSourcesLoader::instance(), &medSourcesLoader::defaultWorkingSource, sourceHandler, &medSourceHandler::setDefaultWorkingSource);
-        model->setVirtualRepresentation(virtualRepresentation);
-        
-        medSourcesLoader::instance()->loadFromDisk();
-        
+    model->setVirtualRepresentation(virtualRepresentation);
+    
+    medSourcesLoader::instance()->loadFromDisk();
+    
 
-        auto notifSys = medNotifSys::instance();
+    auto notifSys = medNotifSys::instance();
  
-        medApplicationContext::instance()->setParent(&application);
-        medApplicationContext::instance()->setVirtualRepresentation(virtualRepresentation);
-        medApplicationContext::instance()->setDataHub(model);
-        medApplicationContext::instance()->setNotifSys(notifSys);
-        medApplicationContext::instance()->setSourceHandler(sourceHandler);
-        medApplicationContext::instance()->setPluginManager(medPluginManager::instance());
-        medApplicationContext::instance()->setDataManager(medDataManager::instance());
+    medApplicationContext::instance()->setParent(&application);
+    medApplicationContext::instance()->setVirtualRepresentation(virtualRepresentation);
+    medApplicationContext::instance()->setDataHub(model);
+    medApplicationContext::instance()->setNotifSys(notifSys);
+    medApplicationContext::instance()->setSourceHandler(sourceHandler);
+    medApplicationContext::instance()->setPluginManager(medPluginManager::instance());
+    medApplicationContext::instance()->setDataManager(medDataManager::instance());
 
-        notifSys->setOperatingSystemNotification(true);
-        notifSys->setOperatingSystemNotification(true);
-        notifSys->setOSNotifOnlyNonFocus(true);
-        QObject::connect(&application, &QGuiApplication::focusWindowChanged,
-                         [=](QWindow *focusWindow)
-                         {
-                             notifSys->windowOnTop(focusWindow != nullptr);
-                         }
-        );
+    notifSys->setOperatingSystemNotification(true);
+    notifSys->setOperatingSystemNotification(true);
+    notifSys->setOSNotifOnlyNonFocus(true);
+    QObject::connect(&application, &QGuiApplication::focusWindowChanged,
+                     [=](QWindow *focusWindow)
+                     {
+                         notifSys->windowOnTop(focusWindow != nullptr);
+                     }
+    );
 
 
 
-        // Use Qt::WA_DeleteOnClose attribute to be sure to always have only one
-        // closeEvent.
-        medMainWindow *mainwindow = new medMainWindow;
+    // Use Qt::WA_DeleteOnClose attribute to be sure to always have only one closeEvent.
+    medMainWindow *mainwindow = new medMainWindow;
 
-        auto notifBanner = static_cast<medNotificationPaneWidget*>(medNotifSysPresenter(notifSys).buildNotificationWindow());
-        notifBanner->setParent(mainwindow);
+    auto notifBanner = static_cast<medNotificationPaneWidget*>(medNotifSysPresenter(notifSys).buildNotificationWindow());
+    notifBanner->setParent(mainwindow);
 
-    //QObject::connect(mainwindow->notifButton(), &QToolButton::clicked, notifBanner, &medNotificationPaneWidget::swithVisibility);
+    mainwindow->setAttribute(Qt::WA_DeleteOnClose, true);
 
-        mainwindow->setAttribute(Qt::WA_DeleteOnClose, true);
+    if (DirectView)
+        mainwindow->setStartup(medMainWindow::WorkSpace, viewPaths);
 
-        if (DirectView)
-            mainwindow->setStartup(medMainWindow::WorkSpace, viewPaths);
-
-        bool fullScreen = medSettingsManager::instance()->value("startup", "fullscreen", false).toBool();
-        const bool hasFullScreenArg = parser.isSet("fullscreen");
-        const bool hasNoFullScreenArg = parser.isSet("no-fullscreen");
-        const bool hasWallArg = false;
+    bool fullScreen = medSettingsManager::instance()->value("startup", "fullscreen", false).toBool();
+    const bool hasFullScreenArg = parser.isSet("fullscreen");
+    const bool hasNoFullScreenArg = parser.isSet("no-fullscreen");
+    const bool hasWallArg = false;
 #ifdef ACTIVATE_WALL_OPTION
-        hasWallArg = parser.isSet("wall");
+    hasWallArg = parser.isSet("wall");
 #endif
 
-        const int conflict = static_cast<int>(hasFullScreenArg) +
-                             static_cast<int>(hasNoFullScreenArg) +
-                             static_cast<int>(hasWallArg);
+    const int conflict = static_cast<int>(hasFullScreenArg) +
+                         static_cast<int>(hasNoFullScreenArg) +
+                         static_cast<int>(hasWallArg);
 
-        if (conflict > 1)
+    if (conflict > 1)
     {
         dtkWarn() << "Conflicting command line parameters between " "--fullscreen, --no-fullscreen and -wall. Ignoring.";
     }
-        else
+    else
+    {
+        if (hasWallArg)
         {
-            if (hasWallArg)
-            {
-                mainwindow->setWallScreen(true);
-                fullScreen = false;
-            }
-
-            if (hasFullScreenArg)
-                fullScreen = true;
-
-            if (hasNoFullScreenArg)
-                fullScreen = false;
+            mainwindow->setWallScreen(true);
+            fullScreen = false;
         }
 
-        mainwindow->setFullScreen(fullScreen);
+        if (hasFullScreenArg)
+            fullScreen = true;
+
+        if (hasNoFullScreenArg)
+            fullScreen = false;
+    }
+
+    mainwindow->setFullScreen(fullScreen);
 #ifdef WIN32
-        QWindowsWindowFunctions::setHasBorderInFullScreen(mainwindow->windowHandle(), true);
+    QWindowsWindowFunctions::setHasBorderInFullScreen(mainwindow->windowHandle(), true);
 #endif
 
-        if (parser.isSet("stereo"))
-        {
-            QGLFormat format;
-            format.setAlpha(true);
-            format.setDoubleBuffer(true);
-            format.setStereo(true);
-            format.setDirectRendering(true);
-            QGLFormat::setDefaultFormat(format);
-        }
+    if (parser.isSet("stereo"))
+    {
+        QGLFormat format;
+        format.setAlpha(true);
+        format.setDoubleBuffer(true);
+        format.setStereo(true);
+        format.setDirectRendering(true);
+        QGLFormat::setDefaultFormat(format);
+    }
 
-    //    splash.finish(mainwindow);
+    if (medPluginManager::instance()->plugins().isEmpty())
+    {
+        QMessageBox::warning(
+            mainwindow, QObject::tr("No plugin loaded"),
+            QObject::tr("Warning : no plugin loaded successfully."));
+    }
 
-        if (medPluginManager::instance()->plugins().isEmpty())
-        {
-            QMessageBox::warning(
-                mainwindow, QObject::tr("No plugin loaded"),
-                QObject::tr("Warning : no plugin loaded successfully."));
-        }
+    // Handle file associations open requests that were not handled in the
+    // application
+    QObject::connect(&application, SIGNAL(messageReceived(const QString &)),
+                     mainwindow,
+                     SLOT(processNewInstanceMessage(const QString &)));
 
-        // Handle file associations open requests that were not handled in the
-        // application
-        QObject::connect(&application, SIGNAL(messageReceived(const QString &)),
-                         mainwindow,
-                         SLOT(processNewInstanceMessage(const QString &)));
+    application.setMainWindow(mainwindow);
 
-        application.setMainWindow(mainwindow);
+    forceShow(*mainwindow);
 
-        forceShow(*mainwindow);
+    qInfo() << "### Application is running...";
 
-        qInfo() << "### Application is running...";
+    //  Start main loop.
+    const int status = application.exec();
 
-        //  Start main loop.
-        const int status = application.exec();
+    medPluginManager::instance()->uninitialize();
 
-        medPluginManager::instance()->uninitialize();
-
-        return status;
+    return status;
 }

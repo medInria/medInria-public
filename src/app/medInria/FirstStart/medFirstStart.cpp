@@ -16,20 +16,16 @@
  * @brief Implementation file for the medFirstStart class.
  * @copyright Copyright (c) INRIA 2013 - 2020. All rights reserved.
  * @see LICENSE.txt for details.
- *
- * This software is distributed WITHOUT ANY WARRANTY; without even
- * the implied warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR
- * PURPOSE.
  */
 #include "medFirstStart.h"
 
-#include "medFirstStartUpdateFile.h"
 #include "medFirstStartClient.h"
+#include "medFirstStartUpdateFile.h"
 
 #include <QFileInfo>
-#include <QVector>
 #include <QRunnable>
 #include <QThreadPool>
+#include <QVector>
 
 class medFirstStartPrivate
 {

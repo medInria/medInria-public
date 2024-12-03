@@ -67,7 +67,7 @@ bool medFirstStartClient::updateReferenceFile()
         QDir(d->tmpDirPath).mkpath(".");
         if (d->dl.download(d->uri, d->tmpFilePath))
         {
-            if (!medFirstStartCommon::comparerFiles(d->lastFilePath, d->tmpFilePath))
+            if (!medFirstStartCommon::compareFiles(d->lastFilePath, d->tmpFilePath))
             {
                 if (QFile::exists(d->lastDirPath))
                 {

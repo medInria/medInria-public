@@ -49,9 +49,9 @@ medMetaDataKeys *medMetaDataKeys::instance()
         s_instance = new medMetaDataKeys();
         s_instance->m_path = medMetaDataKeys::path();
         s_instance->fetchChapterDirectory(s_instance->m_path);
-}
-    return s_instance;
     }
+    return s_instance;
+}
     
 
 bool medMetaDataKeys::registerKey(Key2 key, QString chapter)
@@ -67,18 +67,18 @@ bool medMetaDataKeys::addKeyToChapter(Key2 key, QString chapter)
 bool medMetaDataKeys::addKeyByTagToChapter(QString tag, QString keyLabel, QString keyName, QString chapter)
 {
     if (keyName.isEmpty())
-{
+    {
         keyName = tag;
-}
+    }
     else
-{
+    {
         if (keyLabel.isEmpty()) keyLabel = keyName;
-}
+    }
 
     Key2 key(keyName, keyLabel, tag);
     return medMetaDataKeys::instance()->addKeyToChapterInternal(key, chapter);
 
-    }
+}
 
 Key2 medMetaDataKeys::key(QString word)
 {
@@ -157,7 +157,7 @@ bool medMetaDataKeys::fetchChapterDirectory(QString path)
 
     QDirIterator it(path, QStringList() << "*.json", QDir::Files);
     while (it.hasNext())
-        {
+    {
         QString filePath = it.next();
         QFile file(filePath);
         file.open(QFile::ReadOnly);
@@ -170,8 +170,7 @@ bool medMetaDataKeys::fetchChapterDirectory(QString path)
         {
             qDebug() << "File : " << filePath << " is a malformed json key file";
         }
-
-}
+    }
 
     qDebug() << "medMetaDataKeys: Parsing ended into : " << path;
     return bRes;
@@ -184,7 +183,7 @@ QString medMetaDataKeys::loadChapter(QByteArray chapter)
 
     QJsonDocument chapterDoc = QJsonDocument::fromJson(chapter);
     if (chapterDoc.isObject())
-                        {
+    {
         QJsonObject chapterObj = chapterDoc.object();
         if (chapterObj.contains(CHAPTER_NAME) && chapterObj[CHAPTER_NAME].isString() &&
             chapterObj.contains(CHAPTER_KEYS) && chapterObj[CHAPTER_KEYS].isArray())
@@ -216,8 +215,8 @@ QString medMetaDataKeys::loadChapter(QByteArray chapter)
             else
             {
                 qDebug() << "Both, " << CHAPTER_KEYS << " and " << CHAPTER_NAME << " must be not empty values " << chapterName;
+            }
         }
-}
         else
         {
             qDebug() << "Both, " << CHAPTER_KEYS << " and " << CHAPTER_NAME << "are mandatories keys";
@@ -260,7 +259,7 @@ bool medMetaDataKeys::readKey(QJsonObject keyAsJson, Key2 & key)
             if (keyAsJson.contains(KEY_TYPE) && keyAsJson[KEY_TYPE].isString())
             {
                 type = QVariant::nameToType(keyAsJson[KEY_TYPE].toString().toUtf8().data());
-        }
+            }
 
             key = Key2(name, label, tag, medKey, type);
         }
@@ -279,7 +278,6 @@ bool medMetaDataKeys::readKey(QJsonObject keyAsJson, Key2 & key)
 }
 
 
-    // IMAGE
 // write part to file system
 bool medMetaDataKeys::updateChapterDirectory(QString path)
 {
@@ -309,9 +307,9 @@ bool medMetaDataKeys::updateChapterDirectory(QString path)
             else
             {
                 qDebug() << "meta data system can't create or update " << filePath;
+            }
         }
     }
-}
 
     return bRes;
 }
@@ -374,10 +372,6 @@ bool medMetaDataKeys::writeKey(Key2 const & key, QJsonObject & keyAsJson)
         {
             keyAsJson.insert(KEY_MEDKEY_PIVOT, key.medPivot().trimmed().toLower());
         }
-        //if (key.type() != QVariant::Type::Invalid)
-        //{
-        //    keyAsJson.insert(KEY_TYPE, key.type().typeName());
-    // Frame of reference
     }
     else
     {
@@ -391,10 +385,6 @@ bool medMetaDataKeys::writeKey(Key2 const & key, QJsonObject & keyAsJson)
 
 
 
-
-
-// ////////////////////////////////////////////////////////////////////////////
-    // MR Image
 bool medMetaDataKeys::registerKeyInternal(Key2 &key, QString &chapter)
 {
     bool bRes = false;
@@ -404,7 +394,6 @@ bool medMetaDataKeys::registerKeyInternal(Key2 &key, QString &chapter)
 
         if (key.medPivot() == "")
         {
-    // CT Image
             // We try to find an other similar key to determine the pivot
             auto name = key.name().trimmed().toLower();
             for (auto keysOfChapter : m_medKeyByChapterMap.values())
@@ -421,12 +410,10 @@ bool medMetaDataKeys::registerKeyInternal(Key2 &key, QString &chapter)
 
             if (key.medPivot() == "")
             {
-    // EXPORT EXTRA DATA TO ATTACHED FILE
                 key.setMedPivot(key.name());
             }
         }
 
-    // MEDCORE_EXPORT const Key Toolbox("Toolbox", "Toolbox used to process image");
         key.setMedPivot(key.medPivot().trimmed().toLower());
 
         m_medKeyByChapterMap[chapter]->push_back(key);
@@ -496,14 +483,11 @@ bool medMetaDataKeys::addKeyToChapterInternal(Key2 &key, QString &chapter)
         {
             m_medKeyByChapterMap[chapter]->push_back(key);
             needUpdate = true;
-    // MEDCORE_EXPORT const Key OriginalDataUID("OriginalDataUID", "UID of original data used to generate new data");
         }
         else
         {
             needUpdate = updateKey(key, { &oldKeysByTag , &oldKeysByPivot , &oldKeysByName });
-    // MEDCORE_EXPORT const Key OriginalDataDesc("OriginalDataDesc", "Description of original data used to generate new data");
         }
-    // MEDCORE_EXPORT const Key FileMetadataPath("FileMetadataPath", "Path to attached metadata file");
     }
 
     if (needUpdate)
@@ -539,7 +523,7 @@ bool medMetaDataKeys::updateKey(Key2 &key, QList<QVector<Key2 *>*> oldKeysLists)
             if (!oldKeyMedPivotStrong && keyMedPivotStrong) { bRes = true; oldKey->setMedPivot(key.medPivot()); }
             if (!oldKeyNameStrong     && keyNameStrong) { bRes = true; oldKey->setName(key.name()); }
             if (!oldKeyLabelStrong    && keyLabelStrong) { bRes = true; oldKey->setLabel(key.label()); }
-    }
+        }
     }
 
     return bRes;
@@ -555,9 +539,8 @@ void medMetaDataKeys::strongKeyEval(Key2 const & key, bool &keyTagStrong, bool &
 
 
 Key2 medMetaDataKeys::keyInternal(QString &word)
-    {
+{
     Key2 keyRes;
-
 
     keyRes = keyFromPivotInternal(word);
     if (!keyRes.isValid())
@@ -642,12 +625,12 @@ Key2 medMetaDataKeys::keyFromTagInternal(QString & keyTag, QString chapter)
 
 
 QString medMetaDataKeys::pivotInternal(QString &keyName, QString chapter)
-        {
+{
     return keyFromName(keyName, chapter).medPivot();
-    }
+}
 
 bool medMetaDataKeys::keyExistInternal(Key2 const & key)
-            {
+{
     return m_medKeyByPivotMap.contains(key.medPivot());
 }
 
@@ -661,7 +644,7 @@ void medMetaDataKeys::scheduleUpdate(QString &chapter)
     }
     m_mutex.unlock();
     m_saveSheduler.start(5000);
-        }
+}
 
 void medMetaDataKeys::delegateWriting()
 {
@@ -671,9 +654,9 @@ void medMetaDataKeys::delegateWriting()
         this->m_chaptersToUpdate.clear();
     }
     else
-{
+    {
         qDebug() << "medMetaDataKeys: Unable to update chapters at path " << this->m_path;
-}
+    }
     this->m_mutex.unlock();
 }
 

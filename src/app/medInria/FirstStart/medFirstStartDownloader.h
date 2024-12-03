@@ -19,6 +19,15 @@
 class QNetworkAccessManager;
 
 class medFirstStartDownloaderPrivate;
+
+/**
+ * @class medFirstStartDownloader
+ * @brief Downloads files during the first application start.
+ *
+ * This class handles the download of files necessary for the first application
+ * start. It uses a `QNetworkAccessManager` to perform the download and emits
+ * signals to notify the user about the progress and errors.
+ */
 class medFirstStartDownloader : public QObject
 {
     Q_OBJECT

@@ -25,18 +25,18 @@
  * @param path2 Path to the second file.
  * @return True if the files have the same content, false otherwise.
  */
-bool medFirstStartCommon::comparerFiles(const QString & path1, const QString & path2)
+bool medFirstStartCommon::compareFiles(const QString & path1, const QString & path2)
 {
-    // Ouvrir les deux fichiers en lecture binaire
+    // Open both files
     QFile file1(path1);
     QFile file2(path2);
 
     if (!file1.open(QIODevice::ReadOnly) || !file2.open(QIODevice::ReadOnly))
     {
-        return false; // Si l'ouverture d'un des fichiers échoue, les fichiers sont considérés comme différents
+        return false; // If file opening failed, files are files are considered different
     }
 
-    // Comparer les fichiers bloc par bloc
+    // Compare both files block by block
     QByteArray block1, block2;
     block1 = file1.readAll();
     block2 = file2.readAll();

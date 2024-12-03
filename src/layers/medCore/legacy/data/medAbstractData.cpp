@@ -375,38 +375,6 @@ QString medAbstractData::getExpectedName()
     return d->expectedName;
 }
 
-// QStringList medAbstractData::metaDataList(void) const
-// {
-//     QStringList res;
-// 
-//     auto key2Lst = d->metaDataMap.keys();
-//     for (auto key : key2Lst)
-//     {
-//         res << key.medPivot();
-//     }
-// 
-//     return res;
-// }
-// 
-// QStringList medAbstractData::metadatas(Key2 const &key)
-// {
-//     return d->metaDataMap.value(key);    
-// }
-// 
-// void medAbstractData::setMetaData(Key2 const &key, QStringList value)
-// {
-//     if (!medMetaDataKeys::keyExist(key))
-//     {
-//         medMetaDataKeys::registerKey(key);
-//     }
-//     d->metaDataMap[key] = value;
-// }
-// 
-// void medAbstractData::setMetaData(Key2 const & key, QString value)
-// {
-//     setMetaData(key, QStringList() << value);
-// }
-
 void medAbstractData::setExpectedName(QString name)
 {
     d->expectedName = name;

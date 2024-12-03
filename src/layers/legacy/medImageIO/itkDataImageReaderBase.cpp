@@ -30,12 +30,6 @@
 itkDataImageReaderBase::itkDataImageReaderBase() : medAbstractDataReader()
 {
     this->io = 0;
-    // retrocompatibility
-    // this->itkKeyToMedKey["MED_MODALITY"] = medMetaDataKeys::key("Modality");
-    // this->itkKeyToMedKey["MED_ORIENTATION"] = medMetaDataKeys::key("Orientation");
-    // // retrocompatibility
-    // this->itkKeyToMedKey["SeriesDicomID"] = medMetaDataKeys::key("SeriesInstanceUID");
-    // this->itkKeyToMedKey["StudyDicomID"] = medMetaDataKeys::key("StudyInstanceUID");
 }
 
 
@@ -265,23 +259,23 @@ bool itkDataImageReaderBase::extractMetaData()
     itk::Object* itkImage = static_cast<itk::Object*>(data()->data());
     if (itkImage)
     {
-    itk::MetaDataDictionary& metaDataDictionary = itkImage->GetMetaDataDictionary();
-    std::vector<std::string> keys = metaDataDictionary.GetKeys();
-
-    for (unsigned int i = 0; i < keys.size(); i++)
-    {
+        itk::MetaDataDictionary& metaDataDictionary = itkImage->GetMetaDataDictionary();
+        std::vector<std::string> keys = metaDataDictionary.GetKeys();
+	    
+        for (unsigned int i = 0; i < keys.size(); i++)
+        {
             QString key = QString::fromStdString(keys[i]);
-        std::string value;
+            std::string value;
             itk::ExposeMetaData(metaDataDictionary, keys[i], value);
-
+	    
             medMetaDataKeys::addKeyToChapter(key, "itk");
             QString metaDataKey = medMetaDataKeys::pivot(key, "itk");
             data()->setMetaData(metaDataKey, QString::fromStdString(value));
         }
         return true;
-        }
-        else
-        {
+    }
+    else
+    {
         return false;
     }
 }

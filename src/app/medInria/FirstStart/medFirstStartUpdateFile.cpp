@@ -110,12 +110,12 @@ bool medFirstStartUpdateFile::currentFileOutdated()
     {
         if (QFile::exists(d->filePath))
         {
-            if (!medFirstStartCommon::comparerFiles(d->lastFilePath, d->filePath))
+            if (!medFirstStartCommon::compareFiles(d->lastFilePath, d->filePath))
             {
                 auto subDirs = updateDir.entryList(QDir::NoDotAndDotDot  | QDir::AllDirs);
                 for (auto subDir : subDirs)
                 {
-                    bRes |= medFirstStartCommon::comparerFiles(d->filePath, d->updateDirPath + '/' + subDir + '/' + d->fileName);
+                    bRes |= medFirstStartCommon::compareFiles(d->filePath, d->updateDirPath + '/' + subDir + '/' + d->fileName);
                 }
             }
         }

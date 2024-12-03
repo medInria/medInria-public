@@ -16,7 +16,7 @@
 
 namespace medFirstStartCommon
 {
-    bool comparerFiles(const QString & path1, const QString & path2);
+    bool compareFiles(const QString & path1, const QString & path2);
     bool copy(QString const & pathSource, QString const & pathDest);
 };
 

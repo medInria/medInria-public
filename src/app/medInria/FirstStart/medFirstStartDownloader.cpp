@@ -36,19 +36,33 @@ public:
     QNetworkAccessManager * qnam;
 };
 
+/**
+ * Constructs a new `medFirstStartDownloader` object.
+ *
+ * @param qnam The `QNetworkAccessManager` to use for the download. It's provide by medInria as a unique global instance.
+ */
 medFirstStartDownloader::medFirstStartDownloader(QNetworkAccessManager * qnam)
 {
     d = new medFirstStartDownloaderPrivate();
     d->qnam = qnam;
 }
 
+/**
+ * Destructs the `medFirstStartDownloader` object.
+ */
 medFirstStartDownloader::~medFirstStartDownloader()
 {
     delete d;
 }
 
 
-
+/**
+ * Downloads a file from the specified URL and saves it to the specified path.
+ *
+ * @param url The URL of the file to download.
+ * @param path The path to save the downloaded file.
+ * @return `true` if the download is successful, `false` otherwise.
+ */
 bool medFirstStartDownloader::download(QString url, QString path)
 {
     bool bRes = false;
@@ -88,7 +102,11 @@ bool medFirstStartDownloader::download(QString url, QString path)
 
 
 //--------------------------------------------------------------------------------------------------------------------------
-
+/**
+* Handles network errors during the download.
+*
+* @param err The network error that occurred.
+*/
 void medFirstStartDownloader::slotError(QNetworkReply::NetworkError err)
 {
     QNetworkReply *reply = dynamic_cast<QNetworkReply*>(QObject::sender());    // retrieving the reply object who sent an error signal
@@ -98,12 +116,20 @@ void medFirstStartDownloader::slotError(QNetworkReply::NetworkError err)
     }
 }
 
+/**
+ * Handles download progress updates.
+ *
+ * @param bytesSent The number of bytes sent so far.
+ * @param bytesTotal The total number of bytes to be sent.
+ */
 void medFirstStartDownloader::slotDownloadProgress(qint64 bytesSent, qint64 bytesTotal)
 {    
     QNetworkReply *reply = dynamic_cast<QNetworkReply*>(QObject::sender());  // retrieving the reply object who sent a download signal
-    //TODO Log
 }
 
+/**
+ * Handles the completion of the download.
+ */
 void medFirstStartDownloader::slotFinished()
 {    
     QNetworkReply *reply = dynamic_cast<QNetworkReply*>(QObject::sender()); // retrieving the reply object who sent a finish signal
