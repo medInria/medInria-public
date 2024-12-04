@@ -33,6 +33,7 @@ public:
     void setMainWindow(medMainWindow *mw);
     void initializeSplashScreen();
     void initializeThemes();
+    QScreen* getPreviousScreen();
 
 signals:
     void showMessage(const QString& message);
