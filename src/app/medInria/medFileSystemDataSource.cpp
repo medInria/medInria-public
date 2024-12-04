@@ -188,7 +188,7 @@ void medFileSystemDataSource::onFileSystemImportRequested()
 
     for(QString path : purgedList)
     {
-        QUuid uuid = medDataManager::instance()->importPath(path, false);
+        medDataManager::instance().importPath(path, false);
     }
 }
 
@@ -218,7 +218,7 @@ void medFileSystemDataSource::onFileSystemViewRequested()
 
 void medFileSystemDataSource::onFileDoubleClicked(const QString& filename)
 {
-    QUuid uuid = medDataManager::instance()->importPath(filename, false);
+    medDataManager::instance().importPath(filename, false);
 }
 
 

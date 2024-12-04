@@ -91,9 +91,9 @@ void medDataSourceManager::connectDataSource(medAbstractDataSource *dataSource)
     connect(dataSource, SIGNAL(dataToFetchReceived(QHash<QString, QHash<QString, QVariant> >, QHash<QString, QHash<QString, QVariant> >)),
             this, SLOT(fetchData(QHash<QString, QHash<QString, QVariant> >, QHash<QString, QHash<QString, QVariant> >)));
 
-    connect(dataSource, SIGNAL(updateProgress(int)), medDataManager::instance(), SIGNAL(updateProgress(int)));
-    connect(dataSource, SIGNAL(moveState(int, const QString &)), medDataManager::instance(), SIGNAL(moveState(int, const QString &)));
-    connect(medDataManager::instance(), SIGNAL(moveRequested(const QString &, const QString &)), dataSource, SIGNAL(moveRequested(const QString &, const QString &)));
+    connect(dataSource, SIGNAL(updateProgress(int)), &medDataManager::instance(), SIGNAL(updateProgress(int)));
+    connect(dataSource, SIGNAL(moveState(int, const QString &)), &medDataManager::instance(), SIGNAL(moveState(int, const QString &)));
+    connect(&medDataManager::instance(), SIGNAL(moveRequested(const QString &, const QString &)), dataSource, SIGNAL(moveRequested(const QString &, const QString &)));
 }
 
 //TODO: Maybe it is not the best place to put it (medDataManager?)

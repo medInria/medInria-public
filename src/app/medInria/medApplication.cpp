@@ -246,7 +246,7 @@ void medApplication::initializeThemes()
 {
     QApplication::setStyle(QStyleFactory::create("fusion"));
 
-    int themeIndex = medSettingsManager::instance()->value("startup","theme").toInt();
+    int themeIndex = medSettingsManager::instance().value("startup","theme").toInt();
     QString qssFile;
     switch (themeIndex)
     {

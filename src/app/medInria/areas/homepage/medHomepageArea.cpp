@@ -263,7 +263,7 @@ void medHomepageArea::onShowWorkspace(QString workspace)
 QPixmap medHomepageArea::getApplicationLogoPixmap()
 {
     QPixmap applicationLogo;
-    int themeIndex = medSettingsManager::instance()->value("startup","theme").toInt();
+    int themeIndex = medSettingsManager::instance().value("startup","theme").toInt();
 
     switch (themeIndex)
     {

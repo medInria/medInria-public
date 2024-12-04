@@ -731,7 +731,7 @@ void medMainWindow::onSwitchToProcess()
         if (!d->workspaceArea->setCurrentWorkspace(workspaceName))
         {
             QString message = QString("Cannot open workspace ") + details->name;
-            medMessageController::instance()->showError(message, 3000);
+            medMessageController::instance().showError(message, 3000);
             switchToHomepageArea();
         }
         else

@@ -42,7 +42,7 @@ void medConversionTask::run()
 
             medDataHub::instance(nullptr)->getVirtualRepresentation()->addData(m_path, "", pDataRes);
 
-            if(!m_uuid.isNull()) medDataManager::instance()->medDataHubRelay(index, m_uuid); //TODO Remove when compatibility with medDataManager will be deprecated
+            if(!m_uuid.isNull()) medDataManager::instance().medDataHubRelay(index, m_uuid); //TODO Remove when compatibility with medDataManager will be deprecated
             emit medDataHub::instance(nullptr)->dataLoaded(m_path);
         }
         else

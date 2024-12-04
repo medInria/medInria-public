@@ -52,8 +52,6 @@ medDatabaseDataSource::~medDatabaseDataSource()
     qDeleteAll(d->toolBoxes.begin(), d->toolBoxes.end());
     d->toolBoxes.clear();
 
-    delete d->model;
-
     delete d;
     d = nullptr;
 }
