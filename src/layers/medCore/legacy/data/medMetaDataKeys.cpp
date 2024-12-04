@@ -144,8 +144,8 @@ QString medMetaDataKeys::path()
 // ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 medMetaDataKeys::medMetaDataKeys()
 {
-    m_saveSheduler.setSingleShot(true);
-    m_saveSheduler.callOnTimeout(this, &medMetaDataKeys::delegateWriting);
+    m_saveScheduler.setSingleShot(true);
+    m_saveScheduler.callOnTimeout(this, &medMetaDataKeys::delegateWriting);
 }
 
 // ////////////////////////////////////////////////////////////////////////////
@@ -177,7 +177,7 @@ bool medMetaDataKeys::fetchChapterDirectory(QString path)
 }
 
 QString medMetaDataKeys::loadChapter(QByteArray chapter)
-        {
+{
     bool bRes = false;
     QString chapterRes;
 
@@ -228,7 +228,7 @@ QString medMetaDataKeys::loadChapter(QByteArray chapter)
 
 
 bool medMetaDataKeys::readKey(QJsonObject keyAsJson, Key2 & key)
-            {
+{
     bool bRes = false;
 
     QString name;
@@ -402,7 +402,7 @@ bool medMetaDataKeys::registerKeyInternal(Key2 &key, QString &chapter)
                 {
                     if (aKey.name().trimmed().toLower() == name)
                     {
-                        key.setMedPivot(aKey.medPivot()); //
+                        key.setMedPivot(aKey.medPivot());
                         break;
                     }
                 }
@@ -417,7 +417,10 @@ bool medMetaDataKeys::registerKeyInternal(Key2 &key, QString &chapter)
         key.setMedPivot(key.medPivot().trimmed().toLower());
 
         m_medKeyByChapterMap[chapter]->push_back(key);
-        if (m_medKeyByPivotMap[key.medPivot()] == nullptr) m_medKeyByPivotMap[key.medPivot()] = new QList<Key2*>();
+        if (m_medKeyByPivotMap[key.medPivot()] == nullptr)
+        {
+            m_medKeyByPivotMap[key.medPivot()] = new QList<Key2*>();
+        }
         m_medKeyByPivotMap[key.medPivot()]->push_back(&m_medKeyByChapterMap[chapter]->last());
 
         bRes = true;
@@ -637,13 +640,13 @@ bool medMetaDataKeys::keyExistInternal(Key2 const & key)
 void medMetaDataKeys::scheduleUpdate(QString &chapter)
 {
     m_mutex.lock();
-    m_saveSheduler.stop();
+    m_saveScheduler.stop();
     if (!m_chaptersToUpdate.contains(chapter))
     {
         m_chaptersToUpdate.push_back(chapter);
     }
     m_mutex.unlock();
-    m_saveSheduler.start(5000);
+    m_saveScheduler.start(5000);
 }
 
 void medMetaDataKeys::delegateWriting()

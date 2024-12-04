@@ -175,6 +175,6 @@ private:
     QMap<QString /*chapter*/,     QList<QString> /*file name*/ >  m_chapterToFileMap;
 
     QVector<QString> m_chaptersToUpdate;
-    QTimer m_saveSheduler;
+    QTimer m_saveScheduler;
     QMutex m_mutex;
 };

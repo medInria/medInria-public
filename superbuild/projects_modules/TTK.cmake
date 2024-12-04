@@ -44,7 +44,6 @@ if(${USE_LASTEST_TTK})
   set(git_tag master)
 else()
   set(git_tag ITK5.4rc04+VTK9)
-  #set(git_tag ModernCMake)
 endif()
 
 ## #############################################################################
