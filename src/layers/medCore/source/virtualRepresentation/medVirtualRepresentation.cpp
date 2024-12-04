@@ -918,10 +918,10 @@ bool medVirtualRepresentation::removeFSFile(QString path)
 {
     bool bRes = true;
 
-    auto pathAsLst = path.split('/');
-    QString fileNameFilter = pathAsLst.last() + ".*";
-    pathAsLst.pop_back();
-    path = pathAsLst.join('/');
+    auto pathAsList = path.split('/');
+    QString fileNameFilter = pathAsList.last() + ".*";
+    pathAsList.pop_back();
+    path = pathAsList.join('/');
     QDir dir(path, fileNameFilter, QDir::Name | QDir::IgnoreCase, QDir::Files);
     for (const QString & filename : dir.entryList())
     {
@@ -1087,10 +1087,10 @@ QModelIndex medVirtualRepresentation::createFolderIndex(QStringList tree)
     QStandardItem *item = invisibleRootItem();
     for (int i = 0; i < tree.size(); ++i)
     {
-        auto indexLst = match(index(0, 0, indexRes), Qt::DisplayRole, tree[i], 1, Qt::MatchExactly);
-        if (!indexLst.isEmpty())
+        auto indexList = match(index(0, 0, indexRes), Qt::DisplayRole, tree[i], 1, Qt::MatchExactly);
+        if (!indexList.isEmpty())
         {
-            indexRes = indexLst[0];
+            indexRes = indexList[0];
             item = itemFromIndex(indexRes);
             if (item->data(DATATYPE_ROLE).toInt() == DATATYPE_ROLE_DATASET)
             {

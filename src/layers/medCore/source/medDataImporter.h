@@ -78,7 +78,6 @@ public:
 
     medAbstractDataReader* getReaderForFile(QList<medAbstractDataReader*> &readers, QString file, int &index);
 
-    //void detectVolumes(QStringList paths, QMap<QString, QString> & volumePathsMap, QMap<QString, QString> & volumeNameMap);
     void detectVolumes(QStringList pathsIn, QString & rootDir, QMap<QString /*volumeId*/, QString /*index*/> & volumeIndexMap, QMap<QString /*volumeId*/, QPair<QString /*name*/, QString /*relPaths*/>> & volumeRelativeMap);
 
 private:

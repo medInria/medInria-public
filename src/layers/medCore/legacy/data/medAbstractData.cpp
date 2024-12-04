@@ -30,14 +30,12 @@ class medAbstractDataPrivate
 {
 public:
     medDataIndex index;
-    // TODO Remove attachedData
+
     QList< dtkSmartPointer<medAttachedData> > attachedData;
 
     QList<medAbstractData * > parentDataList;
     QList<medAbstractData * > derivedDataList;
     QString expectedName;
-
-    //QMap <Key2, QStringList> metaDataMap;
 
     QImage thumbnail;
 };

@@ -683,8 +683,7 @@ void medDataImporter::detectVolumes(QStringList pathsIn, QString & rootDir, QMap
         auto index = fileSysPathToIndex(volumeBasePath, relFileList);
 
         volumeIndexMap[volumeId] = index;
-        volumeRelativeMap[volumeId].first = m_nameVolumesMap[volumeId]; // segfault
-        qDebug() << "test5";
+        volumeRelativeMap[volumeId].first = m_nameVolumesMap[volumeId];
     }
 
     QStringList relPathList;

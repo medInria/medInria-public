@@ -149,19 +149,6 @@ set(${ep}_DIR ${binary_dir}  PARENT_SCOPE)
 ExternalProject_Get_Property(${ep} source_dir)
 set(${ep}_SOURCE_DIR ${source_dir} PARENT_SCOPE)
   
-find_package(Qt5 REQUIRED Core)
-
-function(dump_cmake_variables)
-    get_cmake_property(_variableNames VARIABLES)
-    list (SORT _variableNames)
-    foreach (_variableName ${_variableNames})
-        if ((NOT DEFINED ARGV0) OR _variableName MATCHES ${ARGV0})
-            message(STATUS "${_variableName}=${${_variableName}}")
-        endif()
-    endforeach()
-endfunction()
-
-  
 if (WIN32)
   file(TO_NATIVE_PATH ${ITK_ROOT}                ITK_BIN_BASE)
   file(TO_NATIVE_PATH ${VTK_ROOT}                VTK_BIN_BASE)

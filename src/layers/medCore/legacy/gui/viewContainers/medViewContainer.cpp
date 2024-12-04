@@ -951,7 +951,7 @@ void medViewContainer::addData(medDataIndex const &index)
         }
         else
         {
-            qDebug() << "Type dataset or folder unkwon type, try to load data as dataset for \"" << index.uri();
+            qDebug() << "Type dataset or folder unknown type, try to load data as dataset for \"" << index.uri();
         }
     }
 }

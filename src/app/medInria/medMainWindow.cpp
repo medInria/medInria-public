@@ -839,9 +839,6 @@ void medMainWindow::filterWSMenu(QString text)
     }
 }
 
-
-
-
 void medMainWindow::setWallScreen (const bool full )
 {
     if ( full )
