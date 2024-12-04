@@ -14,7 +14,6 @@
 #include <medSourcesLoader.h>
 
 
-
 #include <QString>
 #include <QMap>
 
@@ -29,8 +28,6 @@
 #include <QSharedPointer>
 
 #include <medSettingsManager.h>
-#include <medStorage.h>
-
 #include <medStorage.h>
 
 medSourcesLoader *medSourcesLoader::s_instance = nullptr;
@@ -303,7 +300,6 @@ bool medSourcesLoader::initSourceLoaderCfg(QString src, QString dst)
         file.close();
 
 
-        qWarning() << content;
         QJsonDocument jsonSaveDoc = QJsonDocument::fromJson(content.toUtf8());
         QJsonArray entries = jsonSaveDoc.array();
         for (QJsonValueRef const & entry : entries)
@@ -349,14 +345,6 @@ bool medSourcesLoader::initSourceLoaderCfg(QString src, QString dst)
 
     return bRes;
 }
-
-
-
-
-
-
-
-
 
 
 medAbstractSource* medSourcesLoader::createInstanceOfSource(QString const & type) const

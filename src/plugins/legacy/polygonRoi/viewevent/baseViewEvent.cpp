@@ -774,7 +774,7 @@ void baseViewEvent::saveAllContours()
             description = QString("%1 contours").arg(contoursData.size());
         }
         medAbstractData * data = currentView->layerData(0);
-        description += " (" + data->fecthMetaData("SeriesDescription") + ")";
+        description += " (" + data->fetchMetaData("SeriesDescription") + ")";
         medUtilities::setDerivedMetaData(contourOutput, data, description, false, false);
 
         contourOutput->setData(outputDataSet);
@@ -960,7 +960,7 @@ QString baseViewEvent::createMaskDescription(polygonLabel *label)
 {
     QString name = QString(label->getName());
     medAbstractData * data = currentView->layerData(0);
-    QString desc = QString("mask ") + name + " (" + data->fecthMetaData("SeriesDescription") + ")";
+    QString desc = QString("mask ") + name + " (" + data->fetchMetaData("SeriesDescription") + ")";
     return desc;
 }
 
@@ -1009,7 +1009,7 @@ void baseViewEvent::saveContour(polygonLabel *label)
         description = QString("%1 contours ").arg(contoursData.size());
     }
     medAbstractData * data = currentView->layerData(0);
-    description += " (" + data->fecthMetaData("SeriesDescription") + ")";
+    description += " (" + data->fetchMetaData("SeriesDescription") + ")";
 
     medUtilities::setDerivedMetaData(contourOutput, data, description, false, false);
 

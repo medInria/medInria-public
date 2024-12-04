@@ -29,11 +29,6 @@ add_definitions(-D${TARGET_NAME_UP}_VERSION="${${TARGET_NAME}_VERSION}")
 ## Resolve dependencies
 ## #############################################################################
 
-
-#find_package(Qt${QT_VERSION_MAJOR} REQUIRED Core)
-
-#enable_testing(true)
-#FIND_PACKAGE(GTest REQUIRED)
 find_package(dtk REQUIRED)
 include_directories(${dtk_INCLUDE_DIRS})
 
@@ -90,37 +85,6 @@ target_link_libraries(${TARGET_NAME} PUBLIC
     medCore
   )
 
-
-#set(TARGET_NAME_TEST ${TARGET_NAME}Test)
-#
-#
-#add_executable(${TARGET_NAME_TEST})
-#target_sources(${TARGET_NAME_TEST} PUBLIC ${CMAKE_CURRENT_SOURCE_DIR}/medTemporaryDataSource.cpp ${CMAKE_CURRENT_SOURCE_DIR}/test/medTmpDataSourceTest.cpp)
-#target_include_directories(${TARGET_NAME_TEST} PUBLIC "." "./test/")
-#set_target_properties(${TARGET_NAME_TEST} PROPERTIES COMPILE_DEFINITIONS "GTEST_LINKED_AS_SHARED_LIBRARY=1")
-#target_link_libraries(${TARGET_NAME_TEST} PUBLIC
-#		GTest::gtest_main
-#        GTest::gtest
-#		GTest::gmock_main
-#		GTest::gmock
-#		Qt${QT_VERSION_MAJOR}::Core
-#        medCore
-#        ${TARGET_NAME})
-#
-#project(medTmpDataSourceIntegrationQTest LANGUAGES CXX)
-#
-#find_package(Qt${QT_VERSION_MAJOR}Test REQUIRED)
-#
-##set(CMAKE_INCLUDE_CURRENT_DIR ON)
-#
-#set(CMAKE_AUTOMOC ON)
-#
-#enable_testing(true)
-#
-#add_executable(medTmpDataSourceIntegrationQTest ${CMAKE_CURRENT_SOURCE_DIR}/test/medTmpDataSourceIntegrationQTest.cpp)
-#add_test(NAME medTmpDataSourceIntegrationQTest COMMAND medTmpDataSourceIntegrationQTest)
-#
-#target_link_libraries(medTmpDataSourceIntegrationQTest PRIVATE Qt${QT_VERSION_MAJOR}::Test Qt${QT_VERSION_MAJOR}::Sql medCore)
 
 ## #############################################################################
 ## Install rules

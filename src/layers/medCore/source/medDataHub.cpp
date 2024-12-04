@@ -31,6 +31,8 @@
 #include <QTemporaryDir>
 #include <QModelIndex>
 
+#include "medUtilitiesFiles.h"
+
 #define WAITER_EXIT_CODE_SUCCESS 0
 #define WAITER_EXIT_CODE_ABORT -1
 #define WAITER_EXIT_CODE_FAILD -2
@@ -335,7 +337,6 @@ QList<medAbstractData*> medDataHub::getDataList(medDataIndex const & index)
         }
         else 
         {
-            //TODO
             dataResList << getData(index);
         }
     }
@@ -444,16 +445,16 @@ void medDataHub::progress(const QString & sourceId, int rqstId, medAbstractSourc
             {
                 if (m_rqstToNotifMap.contains(rqst))
                 {
-                m_rqstToNotifMap[rqst]->update(notifLevel::info, 101);
-                rqst.stampTimeout = QDateTime::currentSecsSinceEpoch() + REQUEST_TIME_OUT;
-                if (rqst.type == asyncRequestType::getRqstType)
-                {
-                    pModel->setData(pModel->toIndex(rqst.uri), DATASTATE_ROLE_DATALOADING, DATASTATE_ROLE);
-                }
-                else
-                {
-                    pModel->setData(pModel->toIndex(rqst.uri), DATASTATE_ROLE_DATAPUSHING, DATASTATE_ROLE);
-                }
+                    m_rqstToNotifMap[rqst]->update(notifLevel::info, 101);
+                    rqst.stampTimeout = QDateTime::currentSecsSinceEpoch() + REQUEST_TIME_OUT;
+                    if (rqst.type == asyncRequestType::getRqstType)
+                    {
+                        pModel->setData(pModel->toIndex(rqst.uri), DATASTATE_ROLE_DATALOADING, DATASTATE_ROLE);
+                    }
+                    else
+                    {
+                        pModel->setData(pModel->toIndex(rqst.uri), DATASTATE_ROLE_DATAPUSHING, DATASTATE_ROLE);
+                    }
                 }
                 break;
             }
@@ -517,55 +518,6 @@ void medDataHub::sourceOnlineStatus(const QString & sourceId, bool status)
         }
         pModel->setOnline(status);
     }
-}
-
-QString fileSysPathToIndex(const QString &path, QStringList files)
-{
-    QString pathTmp = path;
-    pathTmp.replace('\\', '/');
-    pathTmp.replace('/', "\r\n");
-    pathTmp = "fs:" + pathTmp;
-    
-    if (!files.isEmpty())
-    {
-        if (!pathTmp.endsWith("\r\n"))
-        {
-            pathTmp += "\r\n";
-        }
-        for (QString fileName : files)
-        {
-            pathTmp += fileName + "|";
-        }
-        if (pathTmp.endsWith("|"))
-        {
-            pathTmp = pathTmp.left(pathTmp.size() - 1);
-        }
-    }
-    
-    return pathTmp;
-}
-
-QStringList indexToFileSysPath(const QString &index)
-{
-    QStringList pathsRes;
-    QString basePath;
-
-    QString uri = index;
-    if (uri.startsWith("fs:"))
-    {
-        int sourceDelimterIndex = uri.indexOf(QString(":"));
-
-        QStringList uriAsList = uri.right(uri.size() - sourceDelimterIndex - 1).split(QString("\r\n"));
-        QString lastElement = uriAsList.takeLast();
-        QStringList files = lastElement.split('|',QString::SkipEmptyParts);
-        basePath = uriAsList.join('/');
-        for (QString fileName : files)
-        {
-            pathsRes << basePath + "/" + fileName;
-        }
-    }
-
-    return pathsRes;
 }
 
 class medConvertLocalFileInThread : public QRunnable
@@ -880,7 +832,7 @@ QUuid medDataHub::writeResultsHackV3(medAbstractData &data, bool originSrc)
             }
         }
 
-        pi_writingPolicyData.baseName = data.fecthMetaData("SeriesDescription");
+        pi_writingPolicyData.baseName = data.fetchMetaData("SeriesDescription");
 
         writeResults(pi_sourceId, pi_pData, pi_UriOfRelatedData, pi_sugestedPath, pi_writingPolicyData, nullptr);
     }
@@ -1281,34 +1233,9 @@ void medDataHub::releaseRequest()
     m_mapsRequestMutex.unlock();
 }
 
-int findFirstDifference(const QString& str1, const QString& str2)
+QList<medAbstractData*> medDataHub::loadDataFromPathAsIndex(medDataIndex index, QUuid uuid)
 {
-    // }
-    for (int i = 0; i < std::min(str1.size(), str2.size()); ++i)
-    {
-        if (str1[i] != str2[i])
-        {
-            return i;
-        }
-    }
-
-    // std::shared_ptr<medNotif> notif = medNotif::createNotif(notifLevel::info , QString("Load File ") + path, " from local file system", -1, -1);
-    // medAbstractData * pDataRes = medDataImporter::convertSingleDataOnfly(path);
-    if (str1.size() != str2.size())
-    {
-        return std::min(str1.size(), str2.size());
-    }
-
-    //     pDataRes->setDataIndex(index);
-    return std::min(str1.size(), str2.size());
-}
-
-
-
-
-QList<medAbstractData *> medDataHub::loadDataFromPathAsIndex(medDataIndex index, QUuid uuid)
-{
-    QList<medAbstractData *> dataResList;
+    QList<medAbstractData*> dataResList;
 
     medDataImporter importer;
     QMap<QString, QString> volumePathsMap;
@@ -1316,17 +1243,15 @@ QList<medAbstractData *> medDataHub::loadDataFromPathAsIndex(medDataIndex index,
     QString rootDir;
 
     std::shared_ptr<medNotif> notif = medNotif::createNotif(notifLevel::info, QString("Load File ") + index.asString(), " from local file system", -1, -1);
-    
 
-    // }
+
     QStringList paths = indexToFileSysPath(index.asString());
     if (QFileInfo(paths[0]).exists())
     {
         importer.detectVolumes(paths, rootDir, volumePathsMap, volumeRelMap);
-    // else
         for (auto volumeId : volumePathsMap.keys())
         {
-    // {
+
             auto volumeIndex = volumePathsMap[volumeId];
             if (m_IndexToData.contains(volumeIndex))
             {
@@ -1335,23 +1260,21 @@ QList<medAbstractData *> medDataHub::loadDataFromPathAsIndex(medDataIndex index,
                 medDataManager::instance()->medDataHubRelay(volumeIndex, uuid);
                 return dataResList;
             }
-            else //sinon on itère sur les volumes détectés
+            else //we iterate on detected volumes
             {
                 std::shared_ptr<medNotif> notif = medNotif::createNotif(notifLevel::info, QString("Load File ") + paths[0], " from local file system", -1, -1);
 
-                auto data = importer.convertMultipData(indexToFileSysPath(volumeIndex))[0];
+                auto data = importer.convertMultipleData(indexToFileSysPath(volumeIndex))[0];
                 data->setDataIndex(volumeIndex);
                 m_IndexToData[volumeIndex] = data;
                 m_IndexToData[volumeIndex].data();
 
-    //     notif->update(notifLevel::warning, -2, QString("Failure"));
                 getVirtualRepresentation()->addData(volumeIndex, volumeRelMap[volumeId].first, data);
-    //     // medNotif::createNotif(notifLevel::warning, QString("Converting file ") + path, " failed");
                 emit dataLoaded(volumeIndex);
 
                 dataResList << data;
                 medDataManager::instance()->medDataHubRelay(volumeIndex, uuid);
-    }
+            }
         }
     }
     else
@@ -1360,31 +1283,6 @@ QList<medAbstractData *> medDataHub::loadDataFromPathAsIndex(medDataIndex index,
     }
 
     return dataResList;
-}
-
-QString computeRootPathOfListPath(QStringList &fileList, QStringList &relativePathList)
-{
-    QString rootPath = fileList[0];
-
-    int x = 0;
-    for (int i = 1; i < fileList.size(); i++)
-    {
-        x = findFirstDifference(rootPath, fileList[i]);
-        rootPath = rootPath.left(x);
-    }
-
-    if (rootPath[rootPath.size() - 1] != '/')
-    {
-        x = rootPath.lastIndexOf('/') + 1;
-        rootPath = rootPath.left(x);
-    }
-
-    for (auto aFilePath : fileList)
-    {
-        relativePathList << aFilePath.right(aFilePath.size() - x);
-    }
-
-    return  rootPath;
 }
 
 QList< medDataIndex > medDataHub::getSubData(medDataIndex const & index)
@@ -1420,7 +1318,6 @@ QList< medDataIndex > medDataHub::getSubData(medDataIndex const & index)
                 for (int i = 0; i < subPathsFiles.size(); ++i) { subPathsFiles[i] = dirPath + '/' + subPathsFiles[i]; }
                 for (int i = 0; i < subPathsDirs.size(); ++i) { subPathsDirs[i] = dirPath + '/' + subPathsDirs[i]; }
                 importer.detectVolumes(subPathsFiles, rootDir, volumePathsMap, volumeRelMap);
-                //detectVolume(subPathsFiles, volumePathsMap);
                 for (QString const & index : volumePathsMap)
                 {
                     listRes.append(index);
@@ -1449,7 +1346,7 @@ QList< medDataIndex > medDataHub::getSubData(medDataIndex const & index)
     return listRes;
 }
 
-int  medDataHub::getDataType(medDataIndex const & index)
+int  medDataHub::getDataType(medDataIndex const& index)
 {
     int iRes = -1;
 
@@ -1459,8 +1356,8 @@ int  medDataHub::getDataType(medDataIndex const & index)
         QModelIndex modelIndex = m_virtualRepresentation->getModelIndex(index);
         if (modelIndex.isValid()) // is into virtual representation
         {
-        iRes = m_virtualRepresentation->data(modelIndex, DATATYPE_ROLE).toInt();
-    }
+            iRes = m_virtualRepresentation->data(modelIndex, DATATYPE_ROLE).toInt();
+        }
         else // is not into the virtual representation, supposed is directly in file system
         {
             getDataTypeFS(index, iRes);
@@ -1468,7 +1365,7 @@ int  medDataHub::getDataType(medDataIndex const & index)
     }
     else
     {
-        medSourceModel * pModel = getModel(sourceId);
+        medSourceModel* pModel = getModel(sourceId);
         if (pModel)
         {
             QModelIndex modelIndex = pModel->toIndex(index);
@@ -1549,23 +1446,5 @@ void medDataHub::getDataTypeFS(const medDataIndex & index, int &iRes)
         if (!isFolder &&  isDataset) iRes = DATATYPE_ROLE_DATASET;
         if ( isFolder && !isDataset) iRes = DATATYPE_ROLE_FOLDER;
         if ( isFolder &&  isDataset) iRes = DATATYPE_ROLE_BOTH;
-    }
-}
-
-void detectVolume(QStringList paths, QMap<QString, QString> & volumePathsMap)
-{
-    medDataImporter importer;
-
-    auto dataList = importer.convertMultipData(paths);
-    for (auto & data : dataList)
-    {
-        auto volumeId = importer.getVolumeId(data);
-        auto pathsList = importer.getPaths(data);
-
-        QStringList relFileList;
-        QString commonPath = computeRootPathOfListPath(pathsList, relFileList);
-        auto index = fileSysPathToIndex(commonPath, relFileList);
-
-        volumePathsMap[volumeId] = index;
     }
 }

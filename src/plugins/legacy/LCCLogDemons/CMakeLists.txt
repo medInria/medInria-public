@@ -24,8 +24,6 @@ if (UNIX AND NOT APPLE)
   set(CMAKE_SHARED_LINKER_FLAGS "${CMAKE_SHARED_LINKER_FLAGS} -Wl,--exclude-libs,ALL")
 endif()
 
-#find_package(Qt${QT_VERSION_MAJOR} COMPONENTS REQUIRED Core)
-
 find_package(dtk REQUIRED)
 include_directories(${dtk_INCLUDE_DIRS})
 
@@ -33,7 +31,6 @@ find_package(ITK REQUIRED COMPONENTS ITKCommon ITKTransform ITKRegistrationCommo
 include(${ITK_USE_FILE})
 
 find_package(RPI REQUIRED COMPONENTS common)
-#include(${RPI_USE_FILE})
 
 ## #############################################################################
 ## List Sources

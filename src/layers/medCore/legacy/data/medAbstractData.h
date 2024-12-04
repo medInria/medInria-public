@@ -62,7 +62,7 @@ public:
     void setExpectedName(QString name);
     QString getExpectedName();
 	
-    QString fecthMetaData(QString word) const;
+    QString fetchMetaData(QString word) const;
     QMap<QString, QString> getMetaDataMap() const;
 
     //virtual QByteArray serialise() const = 0 ;

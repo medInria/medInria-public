@@ -16,7 +16,7 @@ PURPOSE.
 
 #include "medShanoirPluginExport.h"
 #include <QObject>
-//#include <>
+
 class MEDSHANOIRPLUGIN_EXPORT medShanoirPlugin : public medPluginLegacy
 {
     Q_OBJECT

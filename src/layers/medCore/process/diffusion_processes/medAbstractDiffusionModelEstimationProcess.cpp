@@ -128,7 +128,7 @@ void medAbstractDiffusionModelEstimationProcess::setOutput(medAbstractDiffusionM
 {
     d->output = data;
 
-    QString newSeriesDescription = d->input->fecthMetaData("SeriesDescription");
+    QString newSeriesDescription = d->input->fetchMetaData("SeriesDescription");
     newSeriesDescription += " " + this->outputNameAddon();
 
     if (!d->output->hasMetaData(medMetaDataKeys::key("SeriesDescription")))

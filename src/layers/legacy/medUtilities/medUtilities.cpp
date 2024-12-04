@@ -40,7 +40,7 @@ void medUtilities::setDerivedMetaData(medAbstractData* derived, medAbstractData*
         QString newSeriesDescription;
         if (outputSchema)
         {
-            newSeriesDescription = original->fecthMetaData("SeriesDescription");
+            newSeriesDescription = original->fetchMetaData("SeriesDescription");
             newSeriesDescription += " (" + derivationDescription + ")";
         }
         else
@@ -51,7 +51,7 @@ void medUtilities::setDerivedMetaData(medAbstractData* derived, medAbstractData*
     }
     else
     {
-        derived->setMetaData(medMetaDataKeys::key("SeriesDescription").medPivot(), original->fecthMetaData("SeriesDescription"));
+        derived->setMetaData(medMetaDataKeys::key("SeriesDescription").medPivot(), original->fetchMetaData("SeriesDescription"));
     }
 
     if (queryForDescription)
@@ -76,7 +76,7 @@ void medUtilities::copyMetaDataIfEmpty(medAbstractData* derived, medAbstractData
 {
     if (!derived->hasMetaData(metaDataKey) && original->hasMetaData(metaDataKey))
     {
-        derived->setMetaData(metaDataKey, original->fecthMetaData(metaDataKey));
+        derived->setMetaData(metaDataKey, original->fetchMetaData(metaDataKey));
     }
 }
 
@@ -168,7 +168,7 @@ void medUtilities::generateSeriesAndSOPInstanceId(medAbstractData* data)
 
 void medUtilities::querySeriesDescription(medAbstractData* data)
 {
-    QString currentDescription = data->fecthMetaData("SeriesDescription");
+    QString currentDescription = data->fetchMetaData("SeriesDescription");
     QString queriedDescription = QInputDialog::getText(nullptr, "Series description", "Enter the name of the series:",
                                                        QLineEdit::Normal, currentDescription);
     if (!queriedDescription.isEmpty())

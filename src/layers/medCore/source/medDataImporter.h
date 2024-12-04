@@ -29,14 +29,14 @@
  *          These functions are:
  *           \li convertSingleDataOnfly
  *           \li convertSingleData
- *           \li convertMultipData \n
+ *           \li convertMultipleData \n
  *           
  * 
  *          \b convertSingleDataOnfly use only static mechanism to provide pure imperative and simple conversion.\n
  *          \b convertSingleData is the classic convert for one data.\n
  *          Give the path of the data's main file or of the directory if the data is based on directory representation.\n
  *          The instance of medDataImporter will keep a pointer to the data, the reader instance, list of available readers id, etc\n
- *          \b convertMultipData \n
+ *          \b convertMultipleData \n
  */
 class MEDCORE_EXPORT medDataImporter : public QObject
 {
@@ -51,9 +51,9 @@ public:
     // ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
     static medAbstractData * convertSingleDataOnfly(QString path); //One path on file or directory represents one data
     medAbstractData *        convertSingleData(QString path);      //One path on file or directory represents one data
-    QList<medAbstractData*>  convertMultipData(QString path);      //One path on file or directory represents multiple data
+    QList<medAbstractData*>  convertMultipleData(QString path);      //One path on file or directory represents multiple data
     medAbstractData *        convertSingleData(QStringList paths); //Many paths on files represent one data
-    QList<medAbstractData *> convertMultipData(QStringList paths); //Many paths on files represent multiple data
+    QList<medAbstractData *> convertMultipleData(QStringList paths); //Many paths on files represent multiple data
 
     // ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
     // Control functions 
@@ -112,8 +112,3 @@ private:
     QMap <QString, medAbstractData*>       m_meddataVolumesMap;
     QMap <QString, medAbstractDataReader*> m_currentReaderVolumesMap;
 };
-
-QString fileSysPathToIndex2(const QString &path, QStringList files = {});
-QString computeRootPathOfListPath2(QStringList &fileList, QStringList &relativePathList);
-
-

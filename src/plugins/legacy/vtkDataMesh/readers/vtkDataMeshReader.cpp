@@ -105,7 +105,7 @@ bool vtkDataMeshReader::read(const QString& path)
         }
 
         // Use filename as series description if no meta data could be found
-        if (medData->fecthMetaData("SeriesDescription").isEmpty())
+        if (medData->fetchMetaData("SeriesDescription").isEmpty())
         {
             QFileInfo file(path);
             medData->setMetaData(medMetaDataKeys::key("SeriesDescription"), file.baseName());

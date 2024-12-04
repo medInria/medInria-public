@@ -825,7 +825,7 @@ void medVtkFibersDataInteractor::saveBundlesInDataBase()
 
         tmpBundle->setData(bundle);
 
-        QString newSeriesDescription = d->data->fecthMetaData("SeriesDescription");
+        QString newSeriesDescription = d->data->fetchMetaData("SeriesDescription");
         newSeriesDescription += " ";
         newSeriesDescription += (*it).first.c_str();
         tmpBundle->setMetaData ( medMetaDataKeys::key("SeriesDescription"), newSeriesDescription );
@@ -1545,7 +1545,7 @@ void medVtkFibersDataInteractor::saveCurrentBundle()
     
     savedBundle->setData(bundle);
     
-    QString newSeriesDescription = d->data->fecthMetaData("SeriesDescription");
+    QString newSeriesDescription = d->data->fetchMetaData("SeriesDescription");
     newSeriesDescription += " ";
     newSeriesDescription += (*it).first.c_str();
     savedBundle->setMetaData ( medMetaDataKeys::key("SeriesDescription"), newSeriesDescription );

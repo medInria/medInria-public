@@ -39,7 +39,7 @@ public:
     static bool convertSingleDataOnfly(medAbstractData * data, QString &path);
     static bool convertSingleDataOnfly(medAbstractData * data, QString &path, QStringList fileExts);
     //medAbstractData *        convertSingleData(QString path);
-    //QList<medAbstractData*>  convertMultipData(QString path);
+    //QList<medAbstractData*>  convertMultipleData(QString path);
 
     // ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
     // Control functions 

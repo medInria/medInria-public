@@ -129,7 +129,7 @@ void medFilteringWorkspaceL::importProcessOutput()
 
             if (! d->filterOutput->hasMetaData(medMetaDataKeys::key("SeriesDescription")))
             {
-                QString newSeriesDescription = inputData->fecthMetaData("SeriesDescription");
+                QString newSeriesDescription = inputData->fetchMetaData("SeriesDescription");
                 newSeriesDescription += " filtered";
                 d->filterOutput->setMetaData ( medMetaDataKeys::key("SeriesDescription"), newSeriesDescription );
             }

@@ -282,7 +282,7 @@ void iterativeClosestPointToolBox::addLayer(unsigned int layer)
 {
     medAbstractData *data = d->currentView->layerData(layer);
 
-    QString name = data->fecthMetaData("SeriesDescription");
+    QString name = data->fetchMetaData("SeriesDescription");
     if (name.isEmpty()) name = "<i>no name</i>";
 
     if(data && (data->identifier().contains("vtkDataMesh") ||

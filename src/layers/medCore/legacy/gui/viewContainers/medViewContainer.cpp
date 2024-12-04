@@ -1300,9 +1300,9 @@ QString medViewContainer::saveScene()
 
 void medViewContainer::addMetadataToQDomElement(medAbstractData *data, QDomElement patientInfo, QString metadata)
 {
-    if (data->hasMetaData(metadata) && data->fecthMetaData(metadata) != "")
+    if (data->hasMetaData(metadata) && data->fetchMetaData(metadata) != "")
     {
-        patientInfo.setAttribute(metadata, data->fecthMetaData(metadata));
+        patientInfo.setAttribute(metadata, data->fetchMetaData(metadata));
     }
 }
 

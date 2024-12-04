@@ -30,7 +30,7 @@ template <class T> class QSharedPointer;
 
 #ifndef MED_DATASOURCES_FILENAME
 #define MED_DATASOURCES_FILENAME "DataSources.json"
-#endif // !ED_DATASOURCES_FILENAME
+#endif // MED_DATASOURCES_FILENAME
 
 
 class MEDCORE_EXPORT medSourcesLoader : public QObject

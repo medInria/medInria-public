@@ -265,13 +265,13 @@ bool medMetaDataKeys::readKey(QJsonObject keyAsJson, Key2 & key)
         }
         else
         {
-            qDebug() << "Key as invalid format. Name must be a non empty string.";
+            qDebug() << "Key has invalid format. Name must be a non empty string.";
         }
 
     }
     else
     {
-        qDebug() << "Key as invalid format. Name is mandatory.";
+        qDebug() << "Key has invalid format. Name is mandatory.";
     }
 
     return bRes;

@@ -30,17 +30,11 @@ void medDataLoadThread::process()
 {
     QStringList paths;
     for (auto & url : m_urlList)
-{
-
-    ////detectVolume(paths, m_volumePathsMap);
-    //for (auto indexTmp : m_volumePathsMap.values())
-    //{
-    //    m_indexList << indexTmp;
-    //}
+    {
         paths << url.toLocalFile();
     }
     if (!paths.isEmpty())
-{
+    {
         QStringList files;
         QString path = computeRootPathOfListPath(paths, files);
         m_indexList << fileSysPathToIndex(path, files);
@@ -78,15 +72,15 @@ void medDataLoadThread::internalProcess(medDataIndex &index, int deep)
         }
         else if (type == DATATYPE_ROLE_FOLDER)
         {
-            auto clidrenList = medDataManager::instance()->getSubData(index);
-            for (auto & child : clidrenList)
+            auto childrenList = medDataManager::instance()->getSubData(index);
+            for (auto & child : childrenList)
             {
                 internalProcess(child, deep - 1);
             }
         }
         else
         {
-            //todo faire une notif d'erreur de non prise en charge
+            //todo made error notif not handle
         }
     }
 }

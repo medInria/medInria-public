@@ -4,6 +4,7 @@
 #include <medDataExporter.h>
 
 #include <medDataHub.h>
+#include <medUtilitiesFiles.h>
 
 #include <medStringParameter.h>
 #include <medIntParameter.h>
@@ -183,7 +184,6 @@ bool medVirtualRepresentation::dropMimeData(const QMimeData * data, Qt::DropActi
                 case Qt::LinkAction:
                     addData(index, "", nullptr, parent); break;
                 case Qt::MoveAction:
-                    //TODO move
                 default:
                     break;
             }
@@ -242,7 +242,6 @@ QMimeData * medVirtualRepresentation::mimeData(const QModelIndexList & indexes) 
             }
             else if (origin == DATAORIGIN_ROLE_FILESYSTEM)
             {
-                //urls.append(QUrl::fromLocalFile(dataUri));
                 if (!encodedData.isEmpty())
                 {
                     encodedData.append('\0');
@@ -361,7 +360,6 @@ void medVirtualRepresentation::addGeneratedData(medAbstractData * data, QString 
 {
     if (data)
     {
-        //Est-ce qu'il existe deja ?
         QString dataName;
 
         if (!name.isEmpty())
@@ -428,10 +426,10 @@ void medVirtualRepresentation::addData(medDataIndex medDataIndex, QString volume
     }
 
     QString dataName;
-    QString datOriginRole;
+    QString dataOriginRole;
     if (medDataIndex.sourceId() == "fs")
     {
-        datOriginRole = DATAORIGIN_ROLE_FILESYSTEM;
+        dataOriginRole = DATAORIGIN_ROLE_FILESYSTEM;
         if (!volumeName.isEmpty())
         {
             dataName = volumeName;
@@ -453,7 +451,7 @@ void medVirtualRepresentation::addData(medDataIndex medDataIndex, QString volume
     }
     else
     {
-        datOriginRole = DATAORIGIN_ROLE_SOURCE;
+        dataOriginRole = DATAORIGIN_ROLE_SOURCE;
         dataName = medDataHub::instance()->getDataName(medDataIndex);
     }
 
@@ -470,7 +468,7 @@ void medVirtualRepresentation::addData(medDataIndex medDataIndex, QString volume
 
         QStandardItem *newItem = new QStandardItem(tmpName);
         newItem->setData(tmpName, DATANAME_ROLE);
-        newItem->setData(datOriginRole, DATAORIGIN_ROLE);
+        newItem->setData(dataOriginRole, DATAORIGIN_ROLE);
         newItem->setData(medDataIndex.asString(), DATAURI_ROLE);
         newItem->setData(false, DATAGARBAGEABLE_ROLE);
         newItem->setData(DATATYPE_ROLE_DATASET, DATATYPE_ROLE);
@@ -503,7 +501,6 @@ void medVirtualRepresentation::pinData(QModelIndex modelIndex)
     if (ptrItem)
     {
         ptrItem->setData(false, DATAGARBAGEABLE_ROLE);
-        //TODO save new state to filesystem
     }
 }
 
@@ -520,7 +517,6 @@ void medVirtualRepresentation::unPinData(QModelIndex modelIndex)
     if (ptrItem)
     {
         ptrItem->setData(true, DATAGARBAGEABLE_ROLE);
-        //TODO save new state to filesystem
     }
 }
 
@@ -533,7 +529,7 @@ void medVirtualRepresentation::unPinData(QModelIndex modelIndex)
  */
 void medVirtualRepresentation::removeData(QModelIndex modelIndex)
 {
-    //TODO
+
 }
 
 /**
@@ -546,7 +542,7 @@ void medVirtualRepresentation::removeData(QModelIndex modelIndex)
  */
 void medVirtualRepresentation::dataSaved(medDataIndex index)
 {
-    //TODO OK
+
 }
 
 // ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
@@ -879,8 +875,6 @@ bool medVirtualRepresentation::createFSDirectory(QString path, QString dirName)
  */
 bool medVirtualRepresentation::renameFSEntry(QString path)
 {
-    //TODO
-
     QFileInfo fi(path);
     if (fi.exists())
     {
@@ -949,7 +943,6 @@ bool medVirtualRepresentation::removeFSFile(QString path)
  */
 bool medVirtualRepresentation::moveFSEntry(QString oldPath, QString newPath)
 {
-    //TODO
     return false;
 }
 
@@ -973,7 +966,6 @@ bool medVirtualRepresentation::moveFSEntry(QString oldPath, QString newPath)
  */
 bool medVirtualRepresentation::writeCacheData(medAbstractData * data, QString path, QString name)
 {
-    //TODO
     return false;
 }
 
@@ -990,7 +982,6 @@ bool medVirtualRepresentation::writeCacheData(medAbstractData * data, QString pa
  */
 bool medVirtualRepresentation::readCacheData(medAbstractData *& data, QString path, QString name)
 {
-    //TODO
     return false;
 }
 
@@ -1190,7 +1181,7 @@ QModelIndex medVirtualRepresentation::getIndex(QString jsonPath)
  */
 void medVirtualRepresentation::removeTooOldEntry()
 {
-    //TODO
+    return;
 }
 
 /**
