@@ -302,7 +302,7 @@ bool medSourcesLoader::initSourceLoaderCfg(QString src, QString dst)
 
         QJsonDocument jsonSaveDoc = QJsonDocument::fromJson(content.toUtf8());
         QJsonArray entries = jsonSaveDoc.array();
-        for (QJsonValueRef const & entry : entries)
+        for (QJsonValueRef & entry : entries)
         {
             auto obj = entry.toObject();
 

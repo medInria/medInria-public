@@ -28,6 +28,7 @@
 #include <medVirtualRepresentation.h>
 #include <medSourceHandler.h>
 
+#include <medUtilitiesFiles.h>
 #include <dtkCoreSupport/dtkSmartPointer.h>
 
 
