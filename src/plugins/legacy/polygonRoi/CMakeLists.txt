@@ -41,7 +41,7 @@ include(${ITK_USE_FILE})
 
 find_package(VTK REQUIRED COMPONENTS GUISupportQt CommonCore IOLegacy)
 
-find_package(Qt5 REQUIRED COMPONENTS Gui)
+find_package(Qt${QT_VERSION_MAJOR} REQUIRED COMPONENTS Gui)
 
 ## #############################################################################
 ## List Sources

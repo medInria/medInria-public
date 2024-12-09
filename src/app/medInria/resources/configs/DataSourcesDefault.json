@@ -1,0 +1,28 @@
+[
+    {
+        "cnxId": "medTemporaryDataSource_210824",
+        "cnxName": "Temporary",
+        "parameters": {
+            "Flat Source": {
+                "caption": "Flat Source",
+                "description": "",
+                "id": "Flat Source",
+                "value": true
+            }
+        },
+        "sourceType": "medTemporaryDataSource"
+    },
+    {
+        "cnxId": "medSQLite_default",
+        "cnxName": "medSQLite_default",
+        "parameters": {
+            "LocalDataBasePath": {
+                "caption": "LocalDataBasePath",
+                "description": "",
+                "id": "LocalDataBasePath",
+                "value": ""
+            }
+        },
+        "sourceType": "medSQLite"
+    }
+]

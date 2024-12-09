@@ -29,3 +29,13 @@ QList<medAbstractData*> medAbstractDataReader::getDataList()
 {
 	return dataList;
 }
+ 
+QString medAbstractDataReader::getVolumeId(const QString& path)
+{
+    return QFileInfo(path).baseName(); // Maybe considering a hash function for the file to generate the serial number
+}
+    
+QString medAbstractDataReader::getVolumeName(const QString& path)
+{
+    return QFileInfo(path).baseName();
+}

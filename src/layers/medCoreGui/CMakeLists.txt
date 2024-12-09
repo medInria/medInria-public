@@ -76,10 +76,10 @@ target_include_directories(${TARGET_NAME}
 ## #############################################################################
 
 target_link_libraries(${TARGET_NAME} PUBLIC
-  Qt5::Core
-  Qt5::Widgets
-  Qt5::Test
-  Qt5::Xml
+  Qt${QT_VERSION_MAJOR}::Core
+  Qt${QT_VERSION_MAJOR}::Widgets
+  Qt${QT_VERSION_MAJOR}::Test
+  Qt${QT_VERSION_MAJOR}::Xml
   
   med::Core
   
@@ -106,5 +106,5 @@ set_lib_install_rules(${TARGET_NAME}
     PUBLIC_DEPENDENCIES    
       "medInria REQUIRED COMPONENTS Core"
       "dtk      REQUIRED COMPONENTS dtkCore dtkLog dtkCoreSupport dtkGuiSupport"
-      "Qt5      REQUIRED COMPONENTS Core Xml Widgets Test"
+      "Qt${QT_VERSION_MAJOR}      REQUIRED COMPONENTS Core Xml Widgets Test"
     )

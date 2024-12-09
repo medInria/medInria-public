@@ -304,7 +304,7 @@ void medRegistrationSelectorToolBox::handleOutput(typeOfOperation type, QString 
     QString newDescription = "";
     if(d->movingData)
     {
-        newDescription = d->movingData->metadata(medMetaDataKeys::SeriesDescription.key());
+        newDescription = d->movingData->fetchMetaData("SeriesDescription");
     }
 
     if (type==algorithm || type==redo)
@@ -347,10 +347,10 @@ void medRegistrationSelectorToolBox::handleOutput(typeOfOperation type, QString 
         output->addProperty(property,d->fixedData->propertyValues(property));
     }
 
-    output->setMetaData(medMetaDataKeys::SeriesDescription.key(), newDescription);
+    output->setMetaData(medMetaDataKeys::key("SeriesDescription"), newDescription);
 
     QString generatedID = QUuid::createUuid().toString().replace("{","").replace("}","");
-    output->setMetaData ( medMetaDataKeys::SeriesID.key(), generatedID );
+    output->setMetaData ( medMetaDataKeys::key("SeriesID"), generatedID );
 
     if (type==algorithm)
         medDataManager::instance()->importData(output);

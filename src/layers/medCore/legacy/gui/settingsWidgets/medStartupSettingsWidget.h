@@ -17,8 +17,6 @@
 #include <medCoreExport.h>
 #include <medSettingsManager.h>
 
-#include <QCheckBox>
-#include <QComboBox>
 #include <QDialog>
 #include <QLabel>
 #include <QWidget>

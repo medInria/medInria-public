@@ -16,19 +16,19 @@
 
 #include <QObject>
 #include <QThread>
+#include <QUrl>
 
 #include <medDataIndex.h>
 #include <medViewContainer.h>
 
 class medAbstractData;
 
-class medDataLoadThread : public QObject //QThread
+class medDataLoadThread : public QObject
 {
     Q_OBJECT
 public:
-    medDataLoadThread(medDataIndex const & index, medViewContainer *parent);
-//    medDataLoadThread(medDataIndex const & index);
-    virtual ~medDataLoadThread() override;
+    medDataLoadThread(QList<medDataIndex>  const & index, QList<QUrl> const & urls, medViewContainer *parent);
+    virtual ~medDataLoadThread() override = default ;
 
 public slots:
     void process();
@@ -37,11 +37,15 @@ signals:
     void finished();
     void dataReady(medAbstractData *);
 
-//protected:
-//    virtual void run() override;
+private:
+    void internalProcess(medDataIndex &index, int deep);
 
 private:
-    medDataIndex m_index;
+    QList<QUrl> m_urlList;
+    QList<medDataIndex> m_indexList;
     medViewContainer *m_parent;
-    medAbstractData *m_pAbsData;
+    QList<medAbstractData *> m_pAbsDataList;
+    QMap<QString, QString> m_volumePathsMap;
+    QMap<QString, QPair<QString, QString>> m_volumeRelMap;
+    QString m_rootDir;
 };

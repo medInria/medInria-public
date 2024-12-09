@@ -13,7 +13,10 @@
 
 #include <medDataImporter.h>
 
+#include <medMetaDataKeys.h>
 #include <medAbstractDataFactory.h>
+
+#include "medUtilitiesFiles.h"
 
 // ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 // ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
@@ -93,7 +96,7 @@ medAbstractData * medDataImporter::convertSingleData(QString path)
 * @param  path to a folder or a file that contains data.
 * @return A list of pointers to medAbstractData.
 */
-QList<medAbstractData*>  medDataImporter::convertMultipData(QString path)
+QList<medAbstractData*>  medDataImporter::convertMultipleData(QString path)
 {
     reset();
 
@@ -103,11 +106,67 @@ QList<medAbstractData*>  medDataImporter::convertMultipData(QString path)
     auto volumes = m_pathsVolumesMap.keys();
     for (auto &volume : volumes)
     {
-        auto readers = getSuitableReader(m_pathsVolumesMap[volume], &m_availablesReadersVolumesMap[volume]);
+        QList<medAbstractDataReader*>  readers;
+        for (auto reader : m_availablesReadersVolumesMap[volume])
+        {
+            readers.push_back(static_cast<medAbstractDataReader*>(medAbstractDataFactory::instance()->reader(reader)));
+        }
         auto medData = readFiles(readers, m_pathsVolumesMap[volume], &m_currentReaderVolumesMap[volume]);
 
-        m_meddataVolumesMap[volume] = medData;
-        listRes.push_back(medData);
+        if (medData)
+        {
+            m_meddataVolumesMap[volume] = medData;
+            listRes.push_back(medData);
+        }
+    }
+
+    return listRes;
+}
+
+/**
+* @brief  Convert a data from files to a medAbstractData, and keep conversion context.
+* @param  paths of files that contains parts of a same data.
+* @return A pointer to the medAbstractData if conversion was successful, nullptr otherwise.
+*/
+medAbstractData * medDataImporter::convertSingleData(QStringList paths)
+{
+    reset();
+
+    medAbstractData *medDataRes = nullptr;
+    QString volume; //default volume is empty because here you used only one volume
+
+    QStringList &fileList = paths;
+    auto readers = getSuitableReader(fileList, &m_availablesReadersVolumesMap[volume]);
+    medDataRes = readFiles(readers, fileList, &m_currentReaderVolumesMap[volume]);
+
+    m_pathsVolumesMap[volume] = fileList;
+    m_meddataVolumesMap[volume] = medDataRes;
+
+    return medDataRes;
+}
+
+QList<medAbstractData*> medDataImporter::convertMultipleData(QStringList paths)
+{
+    reset();
+
+    QList<medAbstractData*> listRes;
+
+    findVolumesInFiles(paths);
+    auto volumes = m_pathsVolumesMap.keys();
+    for (auto &volume : volumes)
+    {
+        QList<medAbstractDataReader*>  readers;
+        for (auto reader : m_availablesReadersVolumesMap[volume])
+        {
+            readers.push_back(static_cast<medAbstractDataReader*>(medAbstractDataFactory::instance()->reader(reader)));
+        }
+        auto medData = readFiles(readers, m_pathsVolumesMap[volume], &m_currentReaderVolumesMap[volume]);
+
+        if (medData)
+        {
+            m_meddataVolumesMap[volume] = medData;
+            listRes.push_back(medData);
+        }
     }
 
     return listRes;
@@ -243,29 +302,60 @@ medAbstractData * medDataImporter::readFiles(QList<medAbstractDataReader *> &rea
 }
 
 /**
- * @fn  void medDataImporter::findVolumesInDirectory(QString &path)
- * @brief   Searches volumes/data in directory or a file
- * @param [in]  path Full pathname of the file.
+ * @fn  medAbstractDataReader* medDataImporter::getReaderForFile(QList<medAbstractDataReader*> &readers, QString file, int &index)
+ * @brief   Searches for a reader able to read the file
+ * @param [in]  readers List of possible readers.
+ * @param [in]  file File to be read.
+ * @param [in,out]  index Position in the list of the reader selected to read the file.
  */
-void medDataImporter::findVolumesInDirectory(QString &path)
+medAbstractDataReader* medDataImporter::getReaderForFile(QList<medAbstractDataReader*> &readers, QString file, int &index)
+{
+    for (int i=0; i<readers.size(); ++i)
+    {
+        if (readers[i]->canRead(file) && readers[i]->readInformation(file))
+        {
+            index = i;
+            return readers[i];
+        }
+    }
+
+    index = -1;
+    return nullptr;
+}
+
+void medDataImporter::findVolumesInFiles(QStringList &fileList)
 {
     QStringList readersID = medAbstractDataFactory::instance()->readers();
-    QStringList fileList = listFilesOfData(path);
     QList<medAbstractDataReader*>  readers;
     for (auto reader : readersID)
     {
         readers.push_back(static_cast<medAbstractDataReader*>(medAbstractDataFactory::instance()->reader(reader)));
     }
 
+    medAbstractDataReader* mainReader = nullptr;
+    int readerIndex = -1;
+    if (!readers.isEmpty())
+    {
+        mainReader = readers[0];
+        readerIndex = 0;
+    }
+
     for (auto file : fileList)
     {
-        for (int i=0; i<readers.size(); ++i)
+        if (!mainReader->canRead(file) || !mainReader->readInformation(file))
         {
-            if (readers[i]->canRead(file) && readers[i]->readInformation(file))
+            mainReader = getReaderForFile(readers, file, readerIndex);
+        }
+
+        if (mainReader)
+        {
+            auto volumeId = mainReader->getVolumeId(file);
+            m_pathsVolumesMap[volumeId] << file;
+            auto volumeName = mainReader->getVolumeName(file).isEmpty() ? volumeId : mainReader->getVolumeName(file);
+            m_nameVolumesMap[volumeId] = volumeName;
+            if (!m_availablesReadersVolumesMap[volumeId].contains(readersID[readerIndex])) // reduce while condition of readFiles function
             {
-                QString volume = createVolumeId(dynamic_cast<medAbstractData*>(readers[i]->data()));
-                m_pathsVolumesMap[volume] << file;
-                m_availablesReadersVolumesMap[volume] << readersID[i];
+                m_availablesReadersVolumesMap[volumeId] << readersID[readerIndex];
             }
         }
     }
@@ -274,6 +364,17 @@ void medDataImporter::findVolumesInDirectory(QString &path)
     {
         delete reader;
     }
+}
+
+/**
+ * @fn  void medDataImporter::findVolumesInDirectory(QString &path)
+ * @brief   Searches volumes/data in directory or a file
+ * @param [in]  path Full pathname of the file.
+ */
+void medDataImporter::findVolumesInDirectory(QString &path)
+{
+    QStringList fileList = listFilesOfData(path);
+    findVolumesInFiles(fileList);
 }
 
 /**
@@ -558,6 +659,46 @@ QStringList medDataImporter::getPaths(medAbstractData * data)
     return pathsRes;
 }
 
+/**
+ * @fn  QString medDataImporter::getVolumeId(medAbstractData * data)
+ * @brief   Gets volumeId for a medAbstractData.
+ * @param   [in] data pointer to the data converted by this instance.
+ * @returns VolumeId.
+ */
+QString medDataImporter::getVolumeId(medAbstractData * data)
+{
+    return m_meddataVolumesMap.key(data);
+}
+
+void medDataImporter::detectVolumes(QStringList pathsIn, QString & rootDir, QMap<QString /*volumeId*/, QString /*index*/> & volumeIndexMap, QMap<QString /*volumeId*/, QPair<QString /*name*/, QString /*relPaths*/>> & volumeRelativeMap)
+{
+    findVolumesInFiles(pathsIn);
+    QStringList volumePaths;
+    for (auto volumeId : m_pathsVolumesMap.keys())
+    {
+        QStringList relFileList;
+        QString volumeBasePath = computeRootPathOfListPath(m_pathsVolumesMap[volumeId], relFileList);
+        volumePaths << volumeBasePath;
+
+        auto index = fileSysPathToIndex(volumeBasePath, relFileList);
+
+        volumeIndexMap[volumeId] = index;
+        volumeRelativeMap[volumeId].first = m_nameVolumesMap[volumeId];
+    }
+
+    QStringList relPathList;
+    qDebug() << "avant rootDir";    if (!volumePaths.isEmpty())
+    {
+        auto rootList = computeRootPathOfListPath(volumePaths, relPathList).split('/', QString::SkipEmptyParts);
+        rootDir = rootList.last();
+    }
+ 
+    for (int i = 0; i < m_pathsVolumesMap.size(); ++i)
+    {
+        volumeRelativeMap[m_pathsVolumesMap.keys()[i]].second = relPathList[i];
+    }
+}
+
 
 // ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 // ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
@@ -574,7 +715,7 @@ QStringList medDataImporter::getPaths(medAbstractData * data)
  */
 QString medDataImporter::createVolumeId(medAbstractData * data)
 {
-    return QString(); //TODO
+    return data->fetchMetaData("SeriesInstanceuid"); //TODO move the creation of volumeId on the reader
 }
 
 /**

@@ -28,6 +28,7 @@
 #include <medVirtualRepresentation.h>
 #include <medSourceHandler.h>
 
+#include <medUtilitiesFiles.h>
 #include <dtkCoreSupport/dtkSmartPointer.h>
 
 
@@ -39,14 +40,13 @@ class MEDCORE_EXPORT medDataHub : public QObject
     Q_OBJECT
 
 public:
-
-
     static medDataHub* instance(QObject *parent = nullptr);
     ~medDataHub();
 
     QString getDataName(medDataIndex const & index);
 
     medAbstractData * getData(medDataIndex const & index);
+    QList<medAbstractData *> getDataList(medDataIndex const & index);
     medSourceHandler::datasetAttributes getMetaData(medDataIndex const & index);
     medSourceHandler::datasetAttributes getOptionalMetaData(medDataIndex const & index);
 
@@ -64,12 +64,12 @@ public:
 	bool pushData(medDataIndex const & index);
 
 
-    medAbstractData * loadDataFromPathAsIndex(medDataIndex index, QUuid uuid = QUuid());
-    medAbstractData * loadDataFromPath(QString const path, QUuid uuid = QUuid());
+    QList<medAbstractData *> loadDataFromPathAsIndex(medDataIndex index, QUuid uuid = QUuid());
     
-    //bool hasData(medDataIndex const & index);
     QList< medDataIndex > getSubData(medDataIndex const & index);
     int getDataType(medDataIndex const & index);
+
+    void getDataTypeFS(const medDataIndex & index, int &iRes);
 
     // ////////////////////////////////////////////////////////////////////////////////////////////
     // Members functions for GUI    
@@ -88,7 +88,7 @@ public:
 public slots:
    void addSource(QString const & pi_sourceId);
    void removeSource(QString const & pi_sourceId);
-   void refresh(medDataIndex pi_index); //TODO est-il utile  //uri -> sourceInstanceId/IdLevel1/IdLevel.../IdLevelN
+   void refresh(medDataIndex pi_index); //TODO is it utile  //uri -> sourceInstanceId/IdLevel1/IdLevel.../IdLevelN
    void unloadData(QObject *obj); /* REDO */
    int  waitGetAsyncData(const QString &sourceId, int rqstId);
    void progress(const QString &sourceId, int rqstId, medAbstractSource::eRequestStatus status);
@@ -124,7 +124,6 @@ private:
     void addRequest(QString sourceId, int requestId, asyncRequest & rqst);
     void removeRequest(QString sourceId, int rqstId);
 
-//    asyncRequest & holdRequest(QString sourceId, int requestId);
     void releaseRequest();
 
 private:
@@ -142,6 +141,3 @@ private:
     static medDataHub * s_instance;
 
 };
-
-QString fileSysPathToIndex(const QString &path );
-QString indexToFileSysPath(const QString &index);

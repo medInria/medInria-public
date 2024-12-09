@@ -66,7 +66,7 @@ set(cmake_args
   -DCMAKE_CXX_FLAGS:STRING=${${ep}_cxx_flags}   
   -DCMAKE_SHARED_LINKER_FLAGS:STRING=${${ep}_shared_linker_flags}
   -DBUILD_SHARED_LIBS:BOOL=${BUILD_SHARED_LIBS_${ep}}
-  -DDTK_BUILD_COMPOSER=ON                                                                                                                                                                                                                                                                                        
+  -DDTK_BUILD_COMPOSER=OFF                                                                                                                                                                                                                                                                                        
   -DDTK_BUILD_DISTRIBUTED=ON                                                                                                                                                                                                                                                                                        
   -DDTK_BUILD_SCRIPT=OFF                                                                                                                                                                                                                                                                                       
   -DDTK_BUILD_SUPPORT_COMPOSER=OFF                                                                                                                                                                                                                                                                                       
@@ -81,7 +81,7 @@ set(cmake_args
   )
   
 set(cmake_cache_args
-  -DQt5_DIR:FILEPATH=${Qt5_DIR}
+  -DQt${QT_VERSION_MAJOR}_DIR:FILEPATH=${Qt${QT_VERSION_MAJOR}_DIR}
   -DCMAKE_INSTALL_PREFIX:PATH=${EP_INSTALL_PREFIX}/${ep}
   )
 

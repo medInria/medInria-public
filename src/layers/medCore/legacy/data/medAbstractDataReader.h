@@ -31,6 +31,9 @@ public:
     virtual void setData(dtkAbstractData* data);
     QList<medAbstractData*> getDataList();
 
+    virtual QString getVolumeId(const QString& path);
+    virtual QString getVolumeName(const QString& path);
+
 private:
     QList<medAbstractData*> dataList;
 };

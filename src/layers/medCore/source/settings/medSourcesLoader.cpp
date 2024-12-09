@@ -14,7 +14,6 @@
 #include <medSourcesLoader.h>
 
 
-
 #include <QString>
 #include <QMap>
 
@@ -29,6 +28,7 @@
 #include <QSharedPointer>
 
 #include <medSettingsManager.h>
+#include <medStorage.h>
 
 medSourcesLoader *medSourcesLoader::s_instance = nullptr;
 
@@ -125,8 +125,7 @@ bool medSourcesLoader::removeCnx(QString const & instanceId)
         saveToDisk();
         emit sourceRemoved(&(*oldCnx));
         QTimer::singleShot(5*60*1000, this, [oldCnx]() 
-        {
-            //Do nothing into the lambda because oldCnx is a shared pointer copied by value passing. Then it will be automatically deleted at the end of lambda execution/scope.
+        {   //Do nothing into the lambda because oldCnx is a shared pointer copied by value passing. Then it will be automatically deleted at the end of lambda execution/scope.
             //Solution to avoid this timer is to used only QSharedPointer when used a source instance.
         }); //the removed connection will be deleted after 5 min of secured time gap
     }
@@ -259,13 +258,93 @@ QString medSourcesLoader::getPath()
     return m_CnxParametersFile == MED_DATASOURCES_FILENAME ? m_CnxParametersPath : m_CnxParametersPath + "/" + m_CnxParametersFile;
 }
 
+QString medSourcesLoader::path()
+{
+    QString cnxParametersFile = MED_DATASOURCES_FILENAME;
+    QString cnxParametersPath = QStandardPaths::writableLocation(QStandardPaths::GenericConfigLocation) + "/" + QCoreApplication::organizationName() + "/" + QCoreApplication::applicationName();
+
+    auto cnxParametersSaved = medSettingsManager::instance()->value("Sources", "Conf dir", ".").toString();
+
+    QFileInfo info(cnxParametersSaved);
+    if (info.isFile())
+    {
+        cnxParametersFile = info.fileName();
+        cnxParametersPath = info.dir().path();
+    }
+    else if (QDir(cnxParametersSaved).exists())
+    {
+        cnxParametersPath = cnxParametersSaved;
+    }
+
+    return cnxParametersPath + '/' + cnxParametersFile;
+}
+
+bool medSourcesLoader::initSourceLoaderCfg(QString src, QString dst)
+{
+    bool bRes = true;
+
+    QFile file(src);
+
+    if (!file.open(QFile::ReadOnly | QIODevice::Text))
+    {
+        bRes = false;
+    }
+    else
+    {
+        int iCnxOk = 0;
+        int iCnxWithoutPlugin = 0;
+        int iCnxInvalid = 0;
+
+        file.setPermissions(QFileDevice::ReadOwner | QFileDevice::WriteOwner);
+        QString content = file.readAll();
+        file.close();
 
 
+        QJsonDocument jsonSaveDoc = QJsonDocument::fromJson(content.toUtf8());
+        QJsonArray entries = jsonSaveDoc.array();
+        for (QJsonValueRef & entry : entries)
+        {
+            auto obj = entry.toObject();
+
+            if (obj.contains("sourceType") && obj["sourceType"].isString() && !obj["sourceType"].toString().isEmpty() &&
+                obj.contains("cnxId") && obj["cnxId"].isString() && !obj["cnxId"].toString().isEmpty() &&
+                obj.contains("cnxName") && obj["cnxName"].isString() && !obj["cnxName"].toString().isEmpty())
+            {
+                if (obj["sourceType"].toString() == "medSQLite" && obj["cnxId"].toString() == "medSQLite_default")
+                {
+                    if (obj.contains("parameters") && obj["parameters"].isObject())
+                    {
+                        QJsonObject params = obj["parameters"].toObject();
+                        if (params.contains("LocalDataBasePath") && params["LocalDataBasePath"].isObject())
+                        {
+                            QJsonObject localDataBasePath = params["LocalDataBasePath"].toObject();
+                            localDataBasePath["value"] = medStorage::dataLocation();
+
+                            params["LocalDataBasePath"] = localDataBasePath;
+                            obj["parameters"] = params;
+
+                            entry = obj;
+
+                            jsonSaveDoc.setArray(entries);
+                        }
+                    }
+                }
+            }
+        }
 
 
+        if (!file.open(QFile::WriteOnly | QIODevice::Text))
+        {
+            bRes = false;
+        }
+        else
+        {
+            file.write(jsonSaveDoc.toJson());
+        }
+    }
 
-
-
+    return bRes;
+}
 
 
 medAbstractSource* medSourcesLoader::createInstanceOfSource(QString const & type) const
@@ -303,6 +382,7 @@ medSourcesLoader::medSourcesLoader(QObject *parent)
         m_CnxParametersPath = cnxParametersSaved;
     }
 }
+
 bool medSourcesLoader::saveToDisk() const
 {
     bool bRes = true;
@@ -449,7 +529,7 @@ void medSourcesLoader::reloadCnx(QJsonObject &obj)
     int iAppliedParametersCount = 0;
     auto pDataSource = createInstanceOfSource(obj["sourceType"].toString());
 
-    pDataSource->initialization(obj["cnxId"].toString());
+    pDataSource->initialization(obj["cnxId"].toString()); //TODO HANDLE return (especily when SQLDriver is not loaded)
     pDataSource->setInstanceName(obj["cnxName"].toString());
     auto normalParameters = pDataSource->getAllParameters();
     auto cipherParameters = pDataSource->getCipherParameters();

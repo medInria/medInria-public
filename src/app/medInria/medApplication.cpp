@@ -21,7 +21,6 @@
 #include <medDataManager.h>
 #include <medDiffusionWorkspace.h>
 #include <medFilteringWorkspace.h>
-#include <medLogger.h>
 #include <medNewLogger.h>
 #include <medMainWindow.h>
 #include <medPluginManager.h>

@@ -100,7 +100,7 @@ target_include_directories(${TARGET_NAME}
 ## #############################################################################
 
 target_link_libraries(${TARGET_NAME}
-  Qt5::Core
+  Qt${QT_VERSION_MAJOR}::Core
   ITKCommon
   ${ITKIO_LIBRARIES}
   medImageIO

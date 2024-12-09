@@ -29,7 +29,7 @@ add_definitions(-D${TARGET_NAME_UP}_VERSION="${${TARGET_NAME}_VERSION}")
 ## Resolve dependencies
 ## #############################################################################
 
-find_package(Qt5 REQUIRED Core)
+find_package(Qt${QT_VERSION_MAJOR} REQUIRED Core)
 
 find_package(dtk REQUIRED)
 include_directories(${dtk_INCLUDE_DIRS})
@@ -80,6 +80,7 @@ add_library(${TARGET_NAME} SHARED
   ${${TARGET_NAME}_PCH}
   ${${TARGET_NAME}_CFILES}
   ${${TARGET_NAME}_QRC}
+  ${${TARGET_NAME}_TEMPLATES}
   )
 
 
@@ -87,47 +88,10 @@ add_library(${TARGET_NAME} SHARED
 ## Link
 ## #############################################################################
 target_link_libraries(${TARGET_NAME} PUBLIC
-        Qt5::Core
-        Qt5::Sql
+        Qt${QT_VERSION_MAJOR}::Core
+        Qt${QT_VERSION_MAJOR}::Sql
         medCore
   )
-
-
-#set(TARGET_NAME_TEST ${TARGET_NAME}Test)
-#
-#
-#add_executable(${TARGET_NAME_TEST})
-#target_sources(${TARGET_NAME_TEST} PUBLIC ${CMAKE_CURRENT_SOURCE_DIR}/medSQLite.txx ${CMAKE_CURRENT_SOURCE_DIR}/test/medSQLiteRequestTest.cpp
-#        ${CMAKE_CURRENT_SOURCE_DIR}/test/medSQLiteTest.cpp ${CMAKE_CURRENT_SOURCE_DIR}/test/medSQLiteTest.h)
-#target_include_directories(${TARGET_NAME_TEST} PUBLIC "." "./test/")
-#set_target_properties(${TARGET_NAME_TEST} PROPERTIES COMPILE_DEFINITIONS "GTEST_LINKED_AS_SHARED_LIBRARY=1")
-#target_link_libraries(${TARGET_NAME_TEST} PUBLIC
-#		GTest::gtest_main
-#        GTest::gtest
-#		GTest::gmock_main
-#		GTest::gmock
-#		Qt5::Core
-#        Qt5::Sql
-#        medCore
-#        ${TARGET_NAME})
-#
-#
-#
-#
-#project(medSQLiteIntegrationQTest LANGUAGES CXX)
-#
-#find_package(Qt5Test REQUIRED)
-#
-##set(CMAKE_INCLUDE_CURRENT_DIR ON)
-#
-#set(CMAKE_AUTOMOC ON)
-#
-#enable_testing(true)
-#
-#add_executable(medSQLiteIntegrationQTest ${CMAKE_CURRENT_SOURCE_DIR}/test/medSQLiteIntegrationQTest.cpp)
-#add_test(NAME medSQLiteIntegrationQTest COMMAND medSQLiteIntegrationQTest)
-#
-#target_link_libraries(medSQLiteIntegrationQTest PRIVATE Qt5::Test Qt5::Sql medCore)
 
 ## #############################################################################
 ## Install rules

@@ -16,6 +16,7 @@
 
 #include <QList>
 #include <QUuid>
+#include <medAbstractData.h>
 #include <medAbstractDataSource.h>
 #include <medAbstractDataSourceFactory.h>
 #include <medDataManager.h>
@@ -87,9 +88,9 @@ void medDataSourceManager::connectDataSource(medAbstractDataSource *dataSource)
 //TODO: Maybe it is not the best place to put it (medDataManager?)
 void medDataSourceManager::importData(medAbstractData *data)
 {
-    QString patientName = data->metaDataValues(medMetaDataKeys::PatientName.key())[0];
-    QString studyName = data->metaDataValues(medMetaDataKeys::StudyDescription.key())[0];
-    QString seriesName = data->metaDataValues(medMetaDataKeys::SeriesDescription.key())[0];
+    QString patientName = data->metaDataValues(medMetaDataKeys::key("PatientName"))[0];
+    QString studyName = data->metaDataValues(medMetaDataKeys::key("StudyDescription"))[0];
+    QString seriesName = data->metaDataValues(medMetaDataKeys::key("SeriesDescription"))[0];
 
     QString s_patientName = patientName.simplified();
     QString s_studyName = studyName.simplified();

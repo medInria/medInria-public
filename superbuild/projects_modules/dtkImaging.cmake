@@ -69,7 +69,7 @@ set(cmake_args
   )
   
 set(cmake_cache_args
-  -DQt5_DIR=${Qt5_DIR}
+  -DQt${QT_VERSION_MAJOR}_DIR=${Qt${QT_VERSION_MAJOR}_DIR}
   )
 
 

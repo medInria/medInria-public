@@ -15,6 +15,8 @@
 
 cmake_minimum_required(VERSION 3.19)
 
+set(QT_VERSION_MAJOR 5)
+
 if(NOT DEFINED ${medInria_VERSION})
     set(medInria_VERSION 5.0.0)
 endif()
@@ -25,6 +27,8 @@ project(medInria VERSION ${medInria_VERSION})
 
 cmake_policy(SET CMP0074 NEW)
 cmake_policy(SET CMP0076 NEW)
+
+SET(CMAKE_BUILD_PARALLEL_LEVEL 8 CACHE INTERNAL "" FORCE)
 
 string(TOUPPER ${PROJECT_NAME} PROJECT_NAME_UP)
 
@@ -83,7 +87,7 @@ endif()
 ## Find package
 ## #############################################################################
 
-find_package(Qt5 REQUIRED COMPONENTS
+find_package(Qt${QT_VERSION_MAJOR} REQUIRED COMPONENTS
   Concurrent
   Core
   Gui
@@ -135,14 +139,6 @@ if(APPLE)
 endif()
 
 
-
-# ## #############################################################################
-# ## SDK Options
-# ## #############################################################################
-# option(SDK_GENERATION "Generate the SDK directory" OFF )
-# option(SDK_PACKAGING  "Include the SDK into the packaging" OFF )
-# set(SDK_DIR ${CMAKE_BINARY_DIR}/../sdk CACHE FILEPATH "Path of the SDK directory") 
-# mark_as_advanced(SDK_DIR)
 
 ## #############################################################################
 ## Qt Auto tools

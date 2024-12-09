@@ -40,7 +40,11 @@ if (NOT USE_SYSTEM_${ep})
 ## #############################################################################
 
 set(git_url ${GITHUB_PREFIX}medInria/TTK.git)
-set(git_tag ITK5.4rc04+VTK9)
+if(${USE_LASTEST_TTK})
+  set(git_tag master)
+else()
+  set(git_tag ITK5.4rc04+VTK9)
+endif()
 
 ## #############################################################################
 ## Add specific cmake arguments for configuration step of the project

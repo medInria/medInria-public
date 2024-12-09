@@ -30,12 +30,6 @@
 itkDataImageReaderBase::itkDataImageReaderBase() : medAbstractDataReader()
 {
     this->io = 0;
-    this->itkKeyToMedKey["intent_name"] = medAbstractImageData::PixelMeaningMetaData;
-    this->itkKeyToMedKey["MED_MODALITY"] = medMetaDataKeys::Modality.key();
-    this->itkKeyToMedKey["MED_ORIENTATION"] = medMetaDataKeys::Orientation.key();
-    // retrocompatibility
-    this->itkKeyToMedKey["SeriesDicomID"] = medMetaDataKeys::SeriesInstanceUID.key();
-    this->itkKeyToMedKey["StudyDicomID"] = medMetaDataKeys::StudyInstanceUID.key();
 }
 
 
@@ -219,38 +213,11 @@ bool itkDataImageReaderBase::readInformation (const QString& path)
         return false;
     }
 
-    // [HACK] : Some data have informations in their header but itk was not able to read them at this stage.
-    // the itk::readImageInformation method read only default tag defined by itk
-    // In case data was produced in MUSICardio for instance, a lot of tags are added (for identification purpose)
-    // A not exhaustive list of added tags :
-    // ContainsBasicInfo Description FilePaths ITK_InputFilterName PatientID PatientName SOPInstanceUID
-    // SeriesDescription SeriesDicomID SeriesID SeriesInstanceUID SeriesThumbnail Size StudyDescription StudyID
-    // We decide to read all available tags here  if possible
-    itk::MetaDataDictionary& metaDataDictionary = this->io->GetMetaDataDictionary();
-    std::vector<std::string> keys = metaDataDictionary.GetKeys();
-
-    for (unsigned int i = 0; i < keys.size(); i++)
-    {
-        std::string key = keys[i];
-        std::string value;
-        itk::ExposeMetaData(metaDataDictionary, key, value);
-
-        QString metaDataKey = convertItkKeyToMedKey(key);
-        if (!metaDataKey.isEmpty())
-        {
-            medData->setMetaData(metaDataKey, QString(value.c_str()));
-        }
-        else
-        {
-            qDebug() << metaObject()->className() << ":: found unknown key:" << QString::fromStdString(key);
-        }
-    }
-    // [END OF HACK]
-
     if (medData)
     {
         this->setData(medData);
         medData->addMetaData ("FilePath", QStringList() << path);
+        extractMetaData();
         return true;
     }
     else
@@ -282,54 +249,34 @@ bool itkDataImageReaderBase::read_image(const QString& path,const char* type)
 
     typename Image::Pointer im = TReader->GetOutput();
     medData->setData(im);
+    medData->setMetaData("seriesdescription", QFileInfo(path).baseName());
 
-    extractMetaData();
-
-    return true;
+    return extractMetaData();
 }
 
-QString itkDataImageReaderBase::convertItkKeyToMedKey(std::string& keyToConvert)
+bool itkDataImageReaderBase::extractMetaData()
 {
-    QString convertedKey = "";
-
-    QString itkKey = QString::fromStdString(keyToConvert);
-    if (this->itkKeyToMedKey.contains(itkKey))
+    itk::Object* itkImage = static_cast<itk::Object*>(data()->data());
+    if (itkImage)
     {
-        convertedKey = this->itkKeyToMedKey[itkKey];
+        itk::MetaDataDictionary& metaDataDictionary = itkImage->GetMetaDataDictionary();
+        std::vector<std::string> keys = metaDataDictionary.GetKeys();
+	    
+        for (unsigned int i = 0; i < keys.size(); i++)
+        {
+            QString key = QString::fromStdString(keys[i]);
+            std::string value;
+            itk::ExposeMetaData(metaDataDictionary, keys[i], value);
+	    
+            medMetaDataKeys::addKeyToChapter(key, "itk");
+            QString metaDataKey = medMetaDataKeys::pivot(key, "itk");
+            data()->setMetaData(metaDataKey, QString::fromStdString(value));
+        }
+        return true;
     }
     else
     {
-        const medMetaDataKeys::Key* medKey = medMetaDataKeys::Key::fromKeyName(keyToConvert.c_str());
-        if (medKey)
-        {
-            convertedKey = medKey->key();
-        }
-    }
-
-    return convertedKey;
-}
-
-void itkDataImageReaderBase::extractMetaData()
-{
-    itk::Object* itkImage = static_cast<itk::Object*>(data()->data());
-    itk::MetaDataDictionary& metaDataDictionary = itkImage->GetMetaDataDictionary();
-    std::vector<std::string> keys = metaDataDictionary.GetKeys();
-
-    for (unsigned int i = 0; i < keys.size(); i++)
-    {
-        std::string key = keys[i];
-        std::string value;
-        itk::ExposeMetaData(metaDataDictionary, key, value);
-
-        QString metaDataKey = convertItkKeyToMedKey(key);
-        if (!metaDataKey.isEmpty())
-        {
-            data()->setMetaData(metaDataKey, QString(value.c_str()));
-        }
-        else
-        {
-            qDebug() << metaObject()->className() << ":: found unknown key:" << QString::fromStdString(key);
-        }
+        return false;
     }
 }
 

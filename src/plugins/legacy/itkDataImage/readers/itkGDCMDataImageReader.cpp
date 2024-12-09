@@ -374,24 +374,24 @@ bool itkGDCMDataImageReader::readInformation(const QStringList &paths)
         rows << this->m_Scanner.GetValue(firstfilename.c_str(), gdcm::Tag(0x0028, 0x0010));
         columns << this->m_Scanner.GetValue(firstfilename.c_str(), gdcm::Tag(0x0028, 0x0011));
 
-        medData->setMetaData(medMetaDataKeys::PatientName.key(), patientName);
-        medData->setMetaData(medMetaDataKeys::PatientID.key(), patientName);
-        medData->setMetaData(medMetaDataKeys::StudyDescription.key(), studyName);
-        medData->setMetaData(medMetaDataKeys::SeriesDescription.key(), seriesName);
-        medData->setMetaData(medMetaDataKeys::StudyID.key(), studyId);
-        medData->setMetaData(medMetaDataKeys::SeriesID.key(), seriesId);
-        medData->setMetaData(medMetaDataKeys::Orientation.key(), orientation);
-        medData->setMetaData(medMetaDataKeys::SeriesNumber.key(), seriesNumber);
-        medData->setMetaData(medMetaDataKeys::SequenceName.key(), sequenceName);
-        medData->setMetaData(medMetaDataKeys::SliceThickness.key(), sliceThickness);
-        medData->setMetaData(medMetaDataKeys::Rows.key(), rows);
-        medData->setMetaData(medMetaDataKeys::Columns.key(), columns);
+        medData->setMetaData(medMetaDataKeys::key("PatientName"), patientName);
+        medData->setMetaData(medMetaDataKeys::key("PatientID"), patientName);
+        medData->setMetaData(medMetaDataKeys::key("StudyDescription"), studyName);
+        medData->setMetaData(medMetaDataKeys::key("SeriesDescription"), seriesName);
+        medData->setMetaData(medMetaDataKeys::key("StudyID"), studyId);
+        medData->setMetaData(medMetaDataKeys::key("SeriesID"), seriesId);
+        medData->setMetaData(medMetaDataKeys::key("Orientation"), orientation);
+        medData->setMetaData(medMetaDataKeys::key("SeriesNumber"), seriesNumber);
+        medData->setMetaData(medMetaDataKeys::key("SequenceName"), sequenceName);
+        medData->setMetaData(medMetaDataKeys::key("SliceThickness"), sliceThickness);
+        medData->setMetaData(medMetaDataKeys::key("Rows"), rows);
+        medData->setMetaData(medMetaDataKeys::key("Columns"), columns);
 
         FileList orderedfilelist = this->unfoldMap(map);
         for (unsigned int i=0; i<orderedfilelist.size(); i++)
             filePaths << orderedfilelist[i].c_str();
 
-        medData->addMetaData(medMetaDataKeys::FilePaths.key(),filePaths);
+        medData->addMetaData(medMetaDataKeys::key("FilePaths"),filePaths);
     }
 
     return true;
@@ -659,6 +659,18 @@ itkGDCMDataImageReader::FileList itkGDCMDataImageReader::unfoldMap (FileListMapT
 void itkGDCMDataImageReader::setProgress (int value)
 {
     emit progressed (value);
+}
+
+QString itkGDCMDataImageReader::getVolumeId(const QString& path)
+{
+    this->readInformation(path.toUtf8().data());
+    return this->m_Scanner.GetValue(path.toUtf8().data(), gdcm::Tag(0x0020, 0x000e));
+}
+    
+QString itkGDCMDataImageReader::getVolumeName(const QString& path)
+{
+    this->readInformation(path.toUtf8().data());
+    return this->m_Scanner.GetValue(path.toUtf8().data(), gdcm::Tag(0x0008, 0x103e));
 }
 
 // /////////////////////////////////////////////////////////////////

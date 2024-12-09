@@ -64,6 +64,12 @@ if(CMAKE_COMPILER_IS_GNUCXX)
   set(${ep}_cxx_flags "${${ep}_cxx_flags} -fpermissive")
 endif()
 
+if(${SDK_GENERATION})
+  set(MEDINRIA_INSTALL_PREFIX ${SDK_DIR}) 
+else()
+  set(MEDINRIA_INSTALL_PREFIX "") 
+endif()
+
 set(cmake_args
    ${ep_common_cache_args}
   -DCMAKE_BUILD_TYPE=${CMAKE_BUILD_TYPE_medInria}
@@ -86,8 +92,8 @@ set(cmake_cache_args
   -DRPI_ROOT:PATH=${RPI_ROOT}
   -DTTK_ROOT:PATH=${TTK_ROOT}
   -DVTK_ROOT:PATH=${VTK_ROOT}
-  #-DGTest_ROOT:PATH=${GTEST_ROOT}
-  -DQt5_ROOT:PATH=${Qt5_ROOT}  
+  -DQt${QT_VERSION_MAJOR}_ROOT:PATH=${Qt${QT_VERSION_MAJOR}_ROOT}  
+
   
   -DDCMTK_DIR:PATH=${DCMTK_DIR}
   -Ddtk_DIR:PATH=${dtk_DIR}
@@ -95,13 +101,9 @@ set(cmake_cache_args
   -DRPI_DIR:PATH=${RPI_DIR}
   -DTTK_DIR:PATH=${TTK_DIR}
   -DVTK_DIR:PATH=${VTK_DIR}
-  #-DGTest_DIR:PATH=${GTEST_DIR}
-  -DQt5_DIR:PATH=${Qt5_DIR}
-  
-  -DBoost_INCLUDE_DIR:PATH=${Boost_INCLUDE_DIR}
-  -DCMAKE_INSTALL_PREFIX:PATH=${SDK_DIR}
-  #-DSDK_GENERATION:BOOL=${SDK_GENERATION}
-  #-DSDK_PACKAGING:BOOL=${SDK_PACKAGING}
+  -DQt${QT_VERSION_MAJOR}_DIR:PATH=${Qt${QT_VERSION_MAJOR}_DIR}
+  -DCMAKE_INSTALL_PREFIX:PATH=${MEDINRIA_INSTALL_PREFIX}
+  -DCMAKE_BUILD_PARALLEL_LEVEL:STRING=8
   )
 
 if (${USE_FFmpeg})
@@ -124,7 +126,7 @@ ExternalProject_Add(${ep}
   SOURCE_DIR ${medInria_SOURCE_DIR}
   BINARY_DIR ${medInria_BINARY_DIR}
   STAMP_DIR ${medinria_Stamp_DIR}
-  INSTALL_DIR ${SDK_DIR}
+  INSTALL_DIR ${MEDINRIA_INSTALL_PREFIX}
   
   UPDATE_COMMAND ""
   CMAKE_GENERATOR ${gen}
@@ -147,13 +149,12 @@ set(${ep}_DIR ${binary_dir}  PARENT_SCOPE)
 ExternalProject_Get_Property(${ep} source_dir)
 set(${ep}_SOURCE_DIR ${source_dir} PARENT_SCOPE)
   
-  
 if (WIN32)
   file(TO_NATIVE_PATH ${ITK_ROOT}                ITK_BIN_BASE)
   file(TO_NATIVE_PATH ${VTK_ROOT}                VTK_BIN_BASE)
   file(TO_NATIVE_PATH ${TTK_ROOT}                TTK_BIN_BASE)
   file(TO_NATIVE_PATH ${dtk_ROOT}                DTK_BIN_BASE)
-  file(TO_NATIVE_PATH ${_qt5Core_install_prefix} QT5_BIN_BASE)
+  file(TO_NATIVE_PATH ${Qt${QT_VERSION_MAJOR}_DIR}/../../.. QTX_BIN_BASE)
   file(TO_NATIVE_PATH ${medInria_BINARY_DIR}     MED_BIN_BASE)
 
   set(CONFIG_MODE $<$<CONFIG:debug>:Debug>$<$<CONFIG:release>:Release>$<$<CONFIG:MinSizeRel>:MinSizeRel>$<$<CONFIG:RelWithDebInfo>:RelWithDebInfo>)
@@ -166,8 +167,12 @@ if (WIN32)
         COMMAND for %%I in ( ${VTK_BIN_BASE}\\bin\\${CONFIG_MODE}\\*.dll ) do (if EXIST ${MED_BIN_BASE}\\%%~nxI (del /S ${MED_BIN_BASE}\\%%~nxI & mklink /H ${MED_BIN_BASE}\\%%~nxI %%~fI) else mklink /H ${MED_BIN_BASE}\\%%~nxI %%~fI) 
         COMMAND for %%I in ( ${DTK_BIN_BASE}\\bin\\${CONFIG_MODE}\\*.dll ) do (if EXIST ${MED_BIN_BASE}\\%%~nxI (del /S ${MED_BIN_BASE}\\%%~nxI & mklink /H ${MED_BIN_BASE}\\%%~nxI %%~fI) else mklink /H ${MED_BIN_BASE}\\%%~nxI %%~fI) 
         COMMAND for %%I in ( ${TTK_BIN_BASE}\\bin\\*.dll                 ) do (if EXIST ${MED_BIN_BASE}\\%%~nxI (del /S ${MED_BIN_BASE}\\%%~nxI & mklink /H ${MED_BIN_BASE}\\%%~nxI %%~fI) else mklink /H ${MED_BIN_BASE}\\%%~nxI %%~fI) 
-        COMMAND for %%I in ( ${QT5_BIN_BASE}\\bin\\*.dll                 ) do (if EXIST ${MED_BIN_BASE}\\%%~nxI (del /S ${MED_BIN_BASE}\\%%~nxI & mklink /H ${MED_BIN_BASE}\\%%~nxI %%~fI) else mklink /H ${MED_BIN_BASE}\\%%~nxI %%~fI) 
-        #COMMAND ${CMAKE_COMMAND} -E copy ${medInria_SOURCE_DIR}/cmake/dtkConfig.cmake.in ${EP_INSTALL_PREFIX}/dtk/lib/cmake/dtk/dtkConfig.cmake
+        COMMAND for %%I in ( ${QTX_BIN_BASE}\\bin\\*.dll                 ) do (if EXIST ${MED_BIN_BASE}\\%%~nxI (del /S ${MED_BIN_BASE}\\%%~nxI & mklink /H ${MED_BIN_BASE}\\%%~nxI %%~fI) else mklink /H ${MED_BIN_BASE}\\%%~nxI %%~fI) 
+        
+		COMMAND for %%I in ( ${QTX_BIN_BASE}\\plugins\\iconengines\\*.dll  ) do (if EXIST ${MED_BIN_BASE}\\iconengines\\%%~nxI  (del /S ${MED_BIN_BASE}\\iconengines\\%%~nxI  & mklink /H ${MED_BIN_BASE}\\iconengines\\%%~nxI %%~fI)  else mklink /H ${MED_BIN_BASE}\\iconengines\\%%~nxI %%~fI) 
+        COMMAND for %%I in ( ${QTX_BIN_BASE}\\plugins\\sqldrivers\\*.dll   ) do (if EXIST ${MED_BIN_BASE}\\sqldrivers\\%%~nxI   (del /S ${MED_BIN_BASE}\\sqldrivers\\%%~nxI   & mklink /H ${MED_BIN_BASE}\\sqldrivers\\%%~nxI %%~fI)   else mklink /H ${MED_BIN_BASE}\\sqldrivers\\%%~nxI %%~fI) 
+        COMMAND for %%I in ( ${QTX_BIN_BASE}\\plugins\\imageformats\\*.dll ) do (if EXIST ${MED_BIN_BASE}\\imageformats\\%%~nxI (del /S ${MED_BIN_BASE}\\imageformats\\%%~nxI & mklink /H ${MED_BIN_BASE}\\imageformats\\%%~nxI %%~fI) else mklink /H ${MED_BIN_BASE}\\imageformats\\%%~nxI %%~fI) 
+        COMMAND for %%I in ( ${QTX_BIN_BASE}\\plugins\\platforms\\*.dll    ) do (if EXIST ${MED_BIN_BASE}\\platforms\\%%~nxI    (del /S ${MED_BIN_BASE}\\platforms\\%%~nxI    & mklink /H ${MED_BIN_BASE}\\platforms\\%%~nxI %%~fI)    else mklink /H ${MED_BIN_BASE}\\platforms\\%%~nxI %%~fI) 
     )
 endif()
 

@@ -28,9 +28,9 @@ class QJsonDocument;
 class QMutex;
 template <class T> class QSharedPointer;
 
-#ifndef ED_DATASOURCES_FILENAME
+#ifndef MED_DATASOURCES_FILENAME
 #define MED_DATASOURCES_FILENAME "DataSources.json"
-#endif // !ED_DATASOURCES_FILENAME
+#endif // MED_DATASOURCES_FILENAME
 
 
 class MEDCORE_EXPORT medSourcesLoader : public QObject
@@ -69,6 +69,9 @@ public:
 
     bool setPath(QString path);
     QString getPath();
+
+    static QString path();
+    static bool initSourceLoaderCfg(QString src, QString dst);
 
 public slots:
     void changeSourceOrder(int oldPlace, int newPlace);

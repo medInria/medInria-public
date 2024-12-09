@@ -18,6 +18,8 @@
 #include <medSettingsManager.h>
 #include <medWorkspaceFactory.h>
 
+#include <QCheckBox>
+#include <QComboBox>
 #include <QFormLayout>
 
 class medStartupSettingsWidgetPrivate

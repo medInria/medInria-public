@@ -9,7 +9,6 @@
         <file>medInria.png</file>
         <file>authors.txt</file>
 
-        <!-- Icons for dark themes -->
         <file>dark.qss</file>
         <file>icons/dark/index.theme</file>
         <file>icons/dark/png/checkbox.png</file>
@@ -70,8 +69,6 @@
         <file>icons/dark/svg/upload.svg</file>
         <file>icons/dark/svg/upload_fail.svg</file>
         <file>icons/dark/svg/user_add.svg</file>
-
-        <!-- Icons for light themes -->
         <file>grey.qss</file>
         <file>light.qss</file>
         <file>icons/light/index.theme</file>
@@ -133,10 +130,9 @@
         <file>icons/light/svg/upload.svg</file>
         <file>icons/light/svg/upload_fail.svg</file>
         <file>icons/light/svg/user_add.svg</file>
-
-        <!-- Colored icons -->
         <file>icons/arrow-bot-disabled.svg</file>
         <file>icons/arrow-left-disabled.svg</file>
+
         <file>icons/arrow-right-disabled.svg</file>
         <file>icons/arrow-top-disabled.svg</file>
         <file>icons/checkbox-partial.png</file>
@@ -157,8 +153,6 @@
         <file>icons/spot_orange.svg</file>
         <file>icons/spot_red.svg</file>
         <file>icons/spot_yellow.svg</file>
-
-        <!-- Images -->
         <file>pixmaps/3DIcon.png</file>
         <file>pixmaps/database.png</file>
         <file>pixmaps/home_sc.png</file>
@@ -178,8 +172,15 @@
         <file>pixmaps/workspace_Meshing.png</file>
         <file>pixmaps/workspace_Reformat.png</file>
 
-        <!-- Gifs -->
         <file>gif/icon.gif</file>
-
+        <file>configs/DataSourcesDefault.json</file>
+        <file>configs/metaDataDictionaries/dicom.json</file>
+        <file>configs/metaDataDictionaries/itk.json</file>
+        <file>configs/metaDataDictionaries/itk_mha.json</file>
+        <file>configs/metaDataDictionaries/itk_mhd.json</file>
+        <file>configs/metaDataDictionaries/itk_nhdr.json</file>
+        <file>configs/metaDataDictionaries/itk_nii.gz.json</file>
+        <file>configs/metaDataDictionaries/itk_nii.json</file>
+        <file>configs/metaDataDictionaries/itk_nrrd.json</file>
     </qresource>
 </RCC>

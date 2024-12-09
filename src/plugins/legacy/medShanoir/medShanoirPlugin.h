@@ -13,7 +13,9 @@ PURPOSE.
 =========================================================================*/
 
 #include <medPluginLegacy.h>
+
 #include "medShanoirPluginExport.h"
+#include <QObject>
 
 class MEDSHANOIRPLUGIN_EXPORT medShanoirPlugin : public medPluginLegacy
 {

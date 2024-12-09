@@ -29,14 +29,14 @@
  *          These functions are:
  *           \li convertSingleDataOnfly
  *           \li convertSingleData
- *           \li convertMultipData \n
+ *           \li convertMultipleData \n
  *           
  * 
  *          \b convertSingleDataOnfly use only static mechanism to provide pure imperative and simple conversion.\n
  *          \b convertSingleData is the classic convert for one data.\n
  *          Give the path of the data's main file or of the directory if the data is based on directory representation.\n
  *          The instance of medDataImporter will keep a pointer to the data, the reader instance, list of available readers id, etc\n
- *          \b convertMultipData \n
+ *          \b convertMultipleData \n
  */
 class MEDCORE_EXPORT medDataImporter : public QObject
 {
@@ -49,9 +49,11 @@ public:
     // ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
     // Conversion functions from path to medAbstractData
     // ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
-    static medAbstractData * convertSingleDataOnfly(QString path);
-    medAbstractData *        convertSingleData(QString path);
-    QList<medAbstractData*>  convertMultipData(QString path);
+    static medAbstractData * convertSingleDataOnfly(QString path); //One path on file or directory represents one data
+    medAbstractData *        convertSingleData(QString path);      //One path on file or directory represents one data
+    QList<medAbstractData*>  convertMultipleData(QString path);      //One path on file or directory represents multiple data
+    medAbstractData *        convertSingleData(QStringList paths); //Many paths on files represent one data
+    QList<medAbstractData *> convertMultipleData(QStringList paths); //Many paths on files represent multiple data
 
     // ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
     // Control functions 
@@ -72,7 +74,11 @@ public:
     QStringList             getAvailableReader(medAbstractData *data = nullptr);
     QStringList             getPaths(QString volumeId = QString());
     QStringList             getPaths(medAbstractData *data = nullptr);
+    QString                 getVolumeId(medAbstractData *data);
 
+    medAbstractDataReader* getReaderForFile(QList<medAbstractDataReader*> &readers, QString file, int &index);
+
+    void detectVolumes(QStringList pathsIn, QString & rootDir, QMap<QString /*volumeId*/, QString /*index*/> & volumeIndexMap, QMap<QString /*volumeId*/, QPair<QString /*name*/, QString /*relPaths*/>> & volumeRelativeMap);
 
 private:
     // ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
@@ -81,6 +87,7 @@ private:
     static QStringList listFilesOfData(QString &path);
     static QList<medAbstractDataReader*> getSuitableReader(QStringList filename, QStringList *readersId = nullptr);
     static medAbstractData * readFiles(QList<medAbstractDataReader *> &readers, QStringList &fileList, medAbstractDataReader **usedReader = nullptr);
+    void findVolumesInFiles(QStringList &fileList);
     void findVolumesInDirectory(QString &path);
 
     // ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
@@ -99,32 +106,8 @@ signals:
 
 private:
     QMap <QString, QStringList>            m_pathsVolumesMap;
+    QMap <QString, QString>                m_nameVolumesMap;
     QMap <QString, QStringList>            m_availablesReadersVolumesMap;
     QMap <QString, medAbstractData*>       m_meddataVolumesMap;
     QMap <QString, medAbstractDataReader*> m_currentReaderVolumesMap;
 };
-
-/*
-template<typename T>
-inline T medDataImporter::get(QString volumeId, const QMap<QString, T>& map)
-{
-    T *res = nullptr;
-    
-    if (volumeId.isEmpty() && !map.isEmpty())
-    {
-        res = map.first();
-    }
-    else if (map.contains(volumeId))
-    {
-        res = map[volumeId];
-    }
-
-    return res;
-}
-
-medAbstractDataReader*  medDataImporter::getCurrentReaderInstance(QString volumeId) { return get(volumeId, m_currentReaderVolumesMap); }
-QString                 medDataImporter::getCurrentReader(QString volumeId)         { return get(volumeId, m_currentReaderVolumesMap)->identifier(); }
-QStringList             medDataImporter::getAvailableReader(QString volumeId)       { return get(volumeId, m_availablesReadersVolumesMap); }
-QStringList             medDataImporter::getPaths(QString volumeId)                 { return get(volumeId, m_pathsVolumesMap); }
-*/
-

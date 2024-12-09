@@ -29,7 +29,7 @@ set(CMAKE_INCLUDE_CURRENT_DIR TRUE)
 ## #################################################################
 ## Resolve dependencies
 ## #################################################################
-find_package(Qt5 REQUIRED COMPONENTS Quick Xml Test)
+find_package(Qt${QT_VERSION_MAJOR} REQUIRED COMPONENTS Quick Xml Test)
 
 find_package(medInria REQUIRED COMPONENTS Core)
 

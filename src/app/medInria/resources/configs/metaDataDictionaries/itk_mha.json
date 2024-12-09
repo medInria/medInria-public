@@ -1,0 +1,120 @@
+{
+    "chapterName": "itk_mha",
+    "keys": [
+        {
+            "label": "BirthDate",
+            "medKey": "birthdate",
+            "name": "BirthDate"
+        },
+        {
+            "label": "Columns",
+            "medKey": "columns",
+            "name": "Columns"
+        },
+        {
+            "label": "ContainsBasicInfo",
+            "medKey": "containsbasicinfo",
+            "name": "ContainsBasicInfo"
+        },
+        {
+            "label": "FilePaths",
+            "medKey": "filepaths",
+            "name": "FilePaths"
+        },
+        {
+            "label": "Gender",
+            "medKey": "gender",
+            "name": "Gender"
+        },
+        {
+            "label": "ITK_InputFilterName",
+            "medKey": "itk_inputfiltername",
+            "name": "ITK_InputFilterName"
+        },
+        {
+            "label": "MED_MODALITY",
+            "medKey": "med_modality",
+            "name": "MED_MODALITY"
+        },
+        {
+            "label": "MED_ORIENTATION",
+            "medKey": "med_orientation",
+            "name": "MED_ORIENTATION"
+        },
+        {
+            "label": "PatientID",
+            "medKey": "patientid",
+            "name": "PatientID"
+        },
+        {
+            "label": "PatientName",
+            "medKey": "patientname",
+            "name": "PatientName"
+        },
+        {
+            "label": "Rows",
+            "medKey": "rows",
+            "name": "Rows"
+        },
+        {
+            "label": "SeriesDescription",
+            "medKey": "seriesdescription",
+            "name": "SeriesDescription"
+        },
+        {
+            "label": "SeriesDicomID",
+            "medKey": "seriesdicomid",
+            "name": "SeriesDicomID"
+        },
+        {
+            "label": "SeriesID",
+            "medKey": "seriesid",
+            "name": "SeriesID"
+        },
+        {
+            "label": "SeriesNumber",
+            "medKey": "seriesnumber",
+            "name": "SeriesNumber"
+        },
+        {
+            "label": "SeriesThumbnail",
+            "medKey": "seriesthumbnail",
+            "name": "SeriesThumbnail"
+        },
+        {
+            "label": "Size",
+            "medKey": "size",
+            "name": "Size"
+        },
+        {
+            "label": "SliceThickness",
+            "medKey": "slicethickness",
+            "name": "SliceThickness"
+        },
+        {
+            "label": "StudyDescription",
+            "medKey": "studydescription",
+            "name": "StudyDescription"
+        },
+        {
+            "label": "StudyDicomID",
+            "medKey": "studydicomid",
+            "name": "StudyDicomID"
+        },
+        {
+            "label": "StudyID",
+            "medKey": "studyid",
+            "name": "StudyID"
+        },
+        {
+            "label": "ITK_original_direction",
+            "medKey": "itk_original_direction",
+            "name": "ITK_original_direction"
+        },
+        {
+            "label": "ITK_original_spacing",
+            "medKey": "itk_original_spacing",
+            "name": "ITK_original_spacing"
+        }
+    ]
+}

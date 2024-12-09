@@ -6,6 +6,9 @@
 #include <medAbstractData.h>
 #include <medDataIndex.h>
 
+/**
+ * @brief Defines several constants used throughout the class.
+ */
 #define DATAORIGIN_ROLE 200  //String defined as below
 #define DATAORIGIN_ROLE_FILESYSTEM "FS"
 #define DATAORIGIN_ROLE_SOURCE     "source"
@@ -13,15 +16,13 @@
 
 #define DATAURI_ROLE    201  //String URI of the data
 #define DATAGARBAGEABLE_ROLE 202  //Boolean indicates if the data can be automatically removed (if longtime or too much data)
-//#define DATAISDIRECTORY_ROLE 203  //Boolean indicates if an item is a pure directory
 
 #define DATANAME_ROLE 300
 
-#define INVALID_ENTRY "invalidEntry.json"
-
 class medVirtualRepresentationPrivate;
+
 /**
- * @brief medVirtualRepresentation centralise toutes les données ouvertes dans medInria et elle assure aussi l'organization des données pour l'utilisateur.
+ * @brief The medVirtualRepresentation class centralizes all data opened in medInria and also ensures the organization of data for the user.
  */
 class MEDCORE_EXPORT medVirtualRepresentation : public QStandardItemModel
 {
@@ -30,14 +31,10 @@ public:
     medVirtualRepresentation(QObject *parent = nullptr);
     ~medVirtualRepresentation();
 
-    bool readFileEntry(QString filePath, QString &dataOrigine, QString &dataURI, bool &dataGarbadgeable);
-    bool writeFileEntry(QJsonObject const & entry, QString filePath, QString fileName);
-
 
     bool remove(QModelIndex index);
     bool rename(QModelIndex index, QString newName);
     bool create(QModelIndex parent, QString dirName);
-
 
     
     bool dropMimeData(const QMimeData *data, Qt::DropAction action, int row, int column, const QModelIndex &parent) override;
@@ -45,54 +42,75 @@ public:
     QStringList	mimeTypes() const override;
     Qt::DropActions	supportedDropActions() const override;
     
-    QList<medAbstractParameter*> getParams();
-
     QModelIndex getModelIndex(medDataIndex index);
-
-private:
-    bool fetch(QString const &path = QString());
-
-    bool writeJson(const QModelIndex  & index, QJsonObject &json);
-    bool readJson (const QByteArray   & array, QString &dataOrigine, QString &dataURI, bool &dataGarbadgeable);
-
-    void computeNameAndPlace(QStandardItem * item, const QString indexAsString, const QString &dataName, int &indexPlace, QString &tmpName);
-
-    QString getPath(QModelIndex index = QModelIndex());
-    QModelIndex getIndex(QString path);
-
-    bool createFSDirectory(QString path, QString dirName);
-    bool renameFSEntry    (QString path);
-    bool removeFSDir      (QString path);
-    bool removeFSFile     (QString path);
-    bool moveFSEntry      (QString oldPath, QString newPath);
-
-    bool writeCacheData(medAbstractData *  data, QString path, QString name);
-    bool readCacheData (medAbstractData *& data, QString path, QString name);
-
-    QModelIndex createFolderIndex(QStringList tree);
-
-    void removeTooOldEntry();
+    QList<medAbstractParameter*> getParams();
 
 
 public slots:
-    void dataSaved(medDataIndex index); //remove a cache data and replace it by an uri on the source
-
     void addGeneratedData(medAbstractData * data, QString name = "");
-    void addDataFromSource(medDataIndex index, medAbstractData * data = nullptr, const QModelIndex & parent = QModelIndex());
-    void addDataFromFile(QString path, medAbstractData * data = nullptr, const QModelIndex & parent = QModelIndex());
+    void addData(medDataIndex medIndex, QString volumeName = "", medAbstractData * data = nullptr, const QModelIndex & parent = QModelIndex());
 
     void pinData   (QModelIndex modelIndex);
     void unPinData (QModelIndex modelIndex);
     void removeData(QModelIndex modelIndex);
 
+    void dataSaved(medDataIndex index); //remove a cache data and replace it by an uri on the source
+
+private:
+    // JSon handling section
+    bool fetch(QString const &path = QString());
+    bool readFileEntry(QString filePath, QString &dataOrigine, QString &dataURI, bool &dataGarbadgeable);
+    bool writeFileEntry(QJsonObject const & entry, QString filePath, QString fileName);
+    bool writeJson(const QModelIndex  & index, QJsonObject &json);
+    bool readJson (const QByteArray   & array, QString &dataOrigine, QString &dataURI, bool &dataGarbadgeable);
+
+
+    // File system handling for json section
+    bool createFSDirectory(QString path, QString dirName);
+    bool renameFSEntry    (QString path);
+    bool removeFSDir      (QString path);
+    bool removeFSFile     (QString path);
+    bool moveFSEntry      (QString oldPath, QString newPath);
+    
+    // Cache section
+    bool writeCacheData(medAbstractData *  data, QString path, QString name);
+    bool readCacheData (medAbstractData *& data, QString path, QString name);
+
+    // Internal routines section
+    void computeNameAndPlace(QStandardItem * item, const QString indexAsString, const QString &dataName, int &indexPlace, QString &tmpName);
+    void insertData(medAbstractData * data, QString &uri, QString &dataPath, QString &tmpName);
+    QModelIndex createFolderIndex(QStringList tree);
+    QString getPath(QModelIndex index = QModelIndex());
+    QModelIndex getIndex(QString jsonPath);
+
+    void removeTooOldEntry();
+
 private slots:
     void renameByItem(QStandardItem * item);
 
-
 signals:
+    /**
+     * @brief Signal emitted when an index is edited.
+     * @param index The edited index.
+     */
     void editIndex(QModelIndex const &);
+
+    /**
+     * @brief Signal emitted when data is expanded.
+     * @param index The index of the expanded data.
+     * @param state The expansion state (true for expanded, false for collapsed).
+     */
     void expandData(QModelIndex const &, bool);
-    void visibility ();
+    
+    /**
+     * @brief Signal emitted when the visibility changes.
+     */
+    void visibility();
+    
+    /**
+     * @brief Signal emitted when the visibility state changes.
+     * @param state The new visibility state.
+     */
     void visibled(bool state);
 
 

@@ -506,7 +506,7 @@ void medAbstractLayeredView::write(QString &path)
         layerDescription.setAttribute("id", i);
 
         // Generating filename
-        QString currentFile = layerData(i)->metadata("SeriesDescription") + fileExtension;
+        QString currentFile = layerData(i)->fetchMetaData("SeriesDescription") + fileExtension;
 
         // Cleaning filename
         currentFile = currentFile.replace('/', '_').replace('\\', '_');

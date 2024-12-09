@@ -15,6 +15,7 @@
 #include <dtkCoreSupport/dtkAbstractData.h>
 
 #include <medCoreExport.h>
+#include <medMetaDataKeys.h>
 
 class medAbstractDataPrivate;
 class medAttachedData;
@@ -49,6 +50,8 @@ public:
 
     virtual QImage generateThumbnail(QSize size);
 
+    
+
     // FLO & JU
     bool addParentData(medAbstractData * pi_parentData);
     bool addDerivedData(medAbstractData * pi_derivedData);
@@ -58,7 +61,11 @@ public:
     QList<medAbstractData*> derivedData();
     void setExpectedName(QString name);
     QString getExpectedName();
+	
+    QString fetchMetaData(QString word) const;
+    QMap<QString, QString> getMetaDataMap() const;
 
+    //virtual QByteArray serialise() const = 0 ;
 public slots:
     void clearAttachedData();
     void addAttachedData( medAttachedData * data );

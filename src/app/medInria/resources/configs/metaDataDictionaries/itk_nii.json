@@ -1,0 +1,275 @@
+{
+    "chapterName": "itk_nii",
+    "keys": [
+        {
+            "label": "ITK_FileNotes",
+            "medKey": "itk_filenotes",
+            "name": "ITK_FileNotes"
+        },
+        {
+            "label": "aux_file",
+            "medKey": "aux_file",
+            "name": "aux_file"
+        },
+        {
+            "label": "bitpix",
+            "medKey": "bitpix",
+            "name": "bitpix"
+        },
+        {
+            "label": "cal_max",
+            "medKey": "cal_max",
+            "name": "cal_max"
+        },
+        {
+            "label": "cal_min",
+            "medKey": "cal_min",
+            "name": "cal_min"
+        },
+        {
+            "label": "datatype",
+            "medKey": "datatype",
+            "name": "datatype"
+        },
+        {
+            "label": "descrip",
+            "medKey": "descrip",
+            "name": "descrip"
+        },
+        {
+            "label": "dim[0]",
+            "medKey": "dim[0]",
+            "name": "dim[0]"
+        },
+        {
+            "label": "dim[1]",
+            "medKey": "dim[1]",
+            "name": "dim[1]"
+        },
+        {
+            "label": "dim[2]",
+            "medKey": "dim[2]",
+            "name": "dim[2]"
+        },
+        {
+            "label": "dim[3]",
+            "medKey": "dim[3]",
+            "name": "dim[3]"
+        },
+        {
+            "label": "dim[4]",
+            "medKey": "dim[4]",
+            "name": "dim[4]"
+        },
+        {
+            "label": "dim[5]",
+            "medKey": "dim[5]",
+            "name": "dim[5]"
+        },
+        {
+            "label": "dim[6]",
+            "medKey": "dim[6]",
+            "name": "dim[6]"
+        },
+        {
+            "label": "dim[7]",
+            "medKey": "dim[7]",
+            "name": "dim[7]"
+        },
+        {
+            "label": "dim_info",
+            "medKey": "dim_info",
+            "name": "dim_info"
+        },
+        {
+            "label": "intent_code",
+            "medKey": "intent_code",
+            "name": "intent_code"
+        },
+        {
+            "label": "intent_name",
+            "medKey": "intent_name",
+            "name": "intent_name"
+        },
+        {
+            "label": "intent_p1",
+            "medKey": "intent_p1",
+            "name": "intent_p1"
+        },
+        {
+            "label": "intent_p2",
+            "medKey": "intent_p2",
+            "name": "intent_p2"
+        },
+        {
+            "label": "intent_p3",
+            "medKey": "intent_p3",
+            "name": "intent_p3"
+        },
+        {
+            "label": "nifti_type",
+            "medKey": "nifti_type",
+            "name": "nifti_type"
+        },
+        {
+            "label": "pixdim[0]",
+            "medKey": "pixdim[0]",
+            "name": "pixdim[0]"
+        },
+        {
+            "label": "pixdim[1]",
+            "medKey": "pixdim[1]",
+            "name": "pixdim[1]"
+        },
+        {
+            "label": "pixdim[2]",
+            "medKey": "pixdim[2]",
+            "name": "pixdim[2]"
+        },
+        {
+            "label": "pixdim[3]",
+            "medKey": "pixdim[3]",
+            "name": "pixdim[3]"
+        },
+        {
+            "label": "pixdim[4]",
+            "medKey": "pixdim[4]",
+            "name": "pixdim[4]"
+        },
+        {
+            "label": "pixdim[5]",
+            "medKey": "pixdim[5]",
+            "name": "pixdim[5]"
+        },
+        {
+            "label": "pixdim[6]",
+            "medKey": "pixdim[6]",
+            "name": "pixdim[6]"
+        },
+        {
+            "label": "pixdim[7]",
+            "medKey": "pixdim[7]",
+            "name": "pixdim[7]"
+        },
+        {
+            "label": "qform_code",
+            "medKey": "qform_code",
+            "name": "qform_code"
+        },
+        {
+            "label": "qform_code_name",
+            "medKey": "qform_code_name",
+            "name": "qform_code_name"
+        },
+        {
+            "label": "qoffset_x",
+            "medKey": "qoffset_x",
+            "name": "qoffset_x"
+        },
+        {
+            "label": "qoffset_y",
+            "medKey": "qoffset_y",
+            "name": "qoffset_y"
+        },
+        {
+            "label": "qoffset_z",
+            "medKey": "qoffset_z",
+            "name": "qoffset_z"
+        },
+        {
+            "label": "quatern_b",
+            "medKey": "quatern_b",
+            "name": "quatern_b"
+        },
+        {
+            "label": "quatern_c",
+            "medKey": "quatern_c",
+            "name": "quatern_c"
+        },
+        {
+            "label": "quatern_d",
+            "medKey": "quatern_d",
+            "name": "quatern_d"
+        },
+        {
+            "label": "scl_inter",
+            "medKey": "scl_inter",
+            "name": "scl_inter"
+        },
+        {
+            "label": "scl_slope",
+            "medKey": "scl_slope",
+            "name": "scl_slope"
+        },
+        {
+            "label": "sform_code",
+            "medKey": "sform_code",
+            "name": "sform_code"
+        },
+        {
+            "label": "sform_code_name",
+            "medKey": "sform_code_name",
+            "name": "sform_code_name"
+        },
+        {
+            "label": "slice_code",
+            "medKey": "slice_code",
+            "name": "slice_code"
+        },
+        {
+            "label": "slice_duration",
+            "medKey": "slice_duration",
+            "name": "slice_duration"
+        },
+        {
+            "label": "slice_end",
+            "medKey": "slice_end",
+            "name": "slice_end"
+        },
+        {
+            "label": "slice_start",
+            "medKey": "slice_start",
+            "name": "slice_start"
+        },
+        {
+            "label": "srow_x",
+            "medKey": "srow_x",
+            "name": "srow_x"
+        },
+        {
+            "label": "srow_y",
+            "medKey": "srow_y",
+            "name": "srow_y"
+        },
+        {
+            "label": "srow_z",
+            "medKey": "srow_z",
+            "name": "srow_z"
+        },
+        {
+            "label": "toffset",
+            "medKey": "toffset",
+            "name": "toffset"
+        },
+        {
+            "label": "vox_offset",
+            "medKey": "vox_offset",
+            "name": "vox_offset"
+        },
+        {
+            "label": "xyzt_units",
+            "medKey": "xyzt_units",
+            "name": "xyzt_units"
+        },
+        {
+            "label": "ITK_original_direction",
+            "medKey": "itk_original_direction",
+            "name": "ITK_original_direction"
+        },
+        {
+            "label": "ITK_original_spacing",
+            "medKey": "itk_original_spacing",
+            "name": "ITK_original_spacing"
+        }
+    ]
+}

@@ -67,7 +67,7 @@ target_link_libraries(${TARGET_NAME}
   ITKSmoothing
   TTK::Registration
   TTK::ttkAlgorithms
-  Qt5::Core
+  Qt${QT_VERSION_MAJOR}::Core
   dtkCore
   dtkCoreSupport
   dtkLog
