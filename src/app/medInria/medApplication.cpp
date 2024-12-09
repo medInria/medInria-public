@@ -51,7 +51,12 @@ medApplication::medApplication(int & argc, char**argv) :
     QApplication(argc, argv),
     d(new medApplicationPrivate)
 {
+    // Do not show the splash screen in debug builds because it hogs the
+    // foreground, hiding all other windows. This makes debugging the startup
+    // operations difficult.
+#ifdef NDEBUG
     initializeSplashScreen();
+#endif
 
     d->listenClick = false;
 
@@ -67,7 +72,6 @@ medApplication::medApplication(int & argc, char**argv) :
     this->setOrganizationDomain("fr");
     this->setWindowIcon(QIcon(":/medInria.ico"));
 
-    //medLogger::initialize();
     medNewLogger::initialize(&medNewLogger::mainInstance());
 
     qInfo() << "####################################";
@@ -124,8 +128,10 @@ void medApplication::setMainWindow(medMainWindow *mw)
     this->setProperty("MainWindow",var);
     d->systemOpenInstructions.clear();
 
+#ifdef NDEBUG
     // Wait until the app is displayed to close itself
     d->splashScreen->finish(d->mainWindow);
+#endif
 }
 
 /*!
@@ -197,12 +203,35 @@ void medApplication::initialize()
 }
 
 /**
+ * @brief Get back the previous screen used to display the application
+ * 
+ * @return QScreen 
+ */
+QScreen* medApplication::getPreviousScreen()
+{
+    medSettingsManager *manager = medSettingsManager::instance();
+    int currentScreen = 0;
+    QVariant currentScreenQV = manager->value("medMainWindow", "currentScreen");
+    if (!currentScreenQV.isNull())
+    {
+        currentScreen = currentScreenQV.toInt();
+
+        // If the previous used screen has been removed, initialization
+        if (currentScreen >= QApplication::desktop()->screenCount())
+        {
+            currentScreen = 0;
+        }
+    }
+    return screens().at(currentScreen);
+}
+
+/**
  * @brief Set the Qt splash screen to the application logo.
  * 
  */
 void medApplication::initializeSplashScreen()
 {
-    d->splashScreen = new QSplashScreen(QPixmap(":/pixmaps/medInria-splash.png"),
+    d->splashScreen = new QSplashScreen(getPreviousScreen(), QPixmap(":/pixmaps/medInria-splash.png"),
         Qt::WindowStaysOnTopHint | Qt::X11BypassWindowManagerHint);
     d->splashScreen->setAttribute(Qt::WA_DeleteOnClose, true);
     d->splashScreen->show();

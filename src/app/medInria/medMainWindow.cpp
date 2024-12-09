@@ -415,15 +415,14 @@ void medMainWindow::restoreSettings()
 
 void medMainWindow::saveSettings()
 {
+    medSettingsManager *manager = medSettingsManager::instance();
     if(!this->isFullScreen())
     {
-        medSettingsManager * mnger = medSettingsManager::instance();
-        mnger->setValue("medMainWindow", "state", this->saveState());
-        mnger->setValue("medMainWindow", "geometry", this->saveGeometry());
-
-        // Keep the current screen for multiple-screens display
-        mnger->setValue("medMainWindow", "currentScreen", QApplication::desktop()->screenNumber(this));
+        manager->setValue("medMainWindow", "state", this->saveState());
+        manager->setValue("medMainWindow", "geometry", this->saveGeometry());
     }
+    // Keep the current screen for multiple-screens display
+    manager->setValue("medMainWindow", "currentScreen", QApplication::desktop()->screenNumber(this));
 }
 
 void medMainWindow::switchToDefaultWorkSpace()
