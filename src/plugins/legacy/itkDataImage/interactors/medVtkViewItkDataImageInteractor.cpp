@@ -202,6 +202,7 @@ bool medVtkViewItkDataImageInteractor::SetViewInput(medAbstractData* data, int l
 {
     bool bRes = true;
 
+    auto *poOldConv = m_poConv;
     m_poConv = vtkItkConversionInterface::createInstance(data);
 
     if (m_poConv)
@@ -226,6 +227,8 @@ bool medVtkViewItkDataImageInteractor::SetViewInput(medAbstractData* data, int l
     {
         bRes = false;
     }
+
+    delete poOldConv;
 
     return bRes;
 }
