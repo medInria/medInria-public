@@ -128,7 +128,7 @@ medAbstractData * medDataHub::variantToMedAbstractData(QVariant &data, const med
 
 			QString hruUri = pModel->toPath(modelIndex);
 			QString name = hruUri.right(hruUri.size() - hruUri.lastIndexOf("\r\n") - 2);
-			QStringList hruUriAsList = hruUri.split("\r\n", QString::SkipEmptyParts);
+			QStringList hruUriAsList = hruUri.split("\r\n", Qt::SkipEmptyParts);
 			pDataRes->setExpectedName(name);
 			pDataRes->setMetaData(medMetaDataKeys::key("SeriesDescription"), name);
 
@@ -709,8 +709,8 @@ bool medDataHub::writeResults(QString pi_sourceId, medAbstractData * pi_pData, Q
     QMap<int, QString> knownKeys;
 
 
-    auto originPath = pathOfRelatedData.split("\r\n", QString::SkipEmptyParts);
-    auto sugestedPath = pi_sugestedPath.split("\r\n", QString::SkipEmptyParts);
+    auto originPath = pathOfRelatedData.split("\r\n", Qt::SkipEmptyParts);
+    auto sugestedPath = pi_sugestedPath.split("\r\n", Qt::SkipEmptyParts);
 
     QString suggestedSourceId;
     // ////////////////////////////////////////////////////////////////////////////////////////
@@ -762,7 +762,7 @@ bool medDataHub::writeResults(QString pi_sourceId, medAbstractData * pi_pData, Q
         {
             path = pWp->computePath(pi_sourceId, path, metaData);
         }
-        bRes = createPath(pi_sourceId, path.split("\r\n", QString::SkipEmptyParts), uri, knownKeys);
+        bRes = createPath(pi_sourceId, path.split("\r\n", Qt::SkipEmptyParts), uri, knownKeys);
         // ////////////////////////////////////////////////////////////////////////////////////////
 
         // ////////////////////////////////////////////////////////////////////////////////////////
@@ -1257,7 +1257,7 @@ QList<medAbstractData*> medDataHub::loadDataFromPathAsIndex(medDataIndex index, 
             {
                 dataResList << m_IndexToData[volumeIndex];
                 emit dataLoaded(volumeIndex);
-                medDataManager::instance()->medDataHubRelay(volumeIndex, uuid);
+                medDataManager::instance().medDataHubRelay(volumeIndex, uuid);
                 return dataResList;
             }
             else //we iterate on detected volumes
@@ -1273,7 +1273,7 @@ QList<medAbstractData*> medDataHub::loadDataFromPathAsIndex(medDataIndex index, 
                 emit dataLoaded(volumeIndex);
 
                 dataResList << data;
-                medDataManager::instance()->medDataHubRelay(volumeIndex, uuid);
+                medDataManager::instance().medDataHubRelay(volumeIndex, uuid);
             }
         }
     }

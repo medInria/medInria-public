@@ -205,7 +205,7 @@ int medN4BiasCorrection::update(medAbstractData *inputData)
     }
     else
     {
-        qDebug() << "N4 Bias Correction: mask not read, creating Otsu mask." << endl;
+        qDebug() << "N4 Bias Correction: mask not read, creating Otsu mask.";
         typedef itk::OtsuThresholdImageFilter<OutputImageType, MaskImageType>
             ThresholderType;
         ThresholderType::Pointer otsu = ThresholderType::New();
@@ -398,7 +398,7 @@ int medN4BiasCorrection::update(medAbstractData *inputData)
     }
     catch( ... )
     {
-        qDebug() << "Unknown exception caught." << endl;
+        qDebug() << "Unknown exception caught.";
         return medAbstractProcessLegacy::FAILURE;
     }
     

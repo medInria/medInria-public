@@ -412,7 +412,7 @@ void medMainWindow::restoreSettings()
 
 void medMainWindow::saveSettings()
 {
-    medSettingsManager *manager = medSettingsManager::instance();
+    medSettingsManager &manager = medSettingsManager::instance();
     if(!this->isFullScreen())
     {
         manager.setValue("medMainWindow", "state", this->saveState());
@@ -787,7 +787,7 @@ void medMainWindow::filterWSMenu(QString text)
     }
     else
     {
-        auto textSplited = text.toLower().split(" ", QString::SkipEmptyParts);
+        auto textSplited = text.toLower().split(" ", Qt::SkipEmptyParts);
         for (auto action : d->wsActions)
         {
             bool bActionVisible = false;

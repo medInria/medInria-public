@@ -135,38 +135,30 @@ int main(int argc, char *argv[])
 
     medSettingsManager &manager = medSettingsManager::instance();
 
-    QStringList posargs;
-    for (int i=1;i<application.arguments().size();++i)
+    if (parser.isSet("center"))
     {
-        const QString arg = application.arguments().at(i);
-        if (arg.startsWith("--"))
+        int center = parser.value("center").toInt();
+        manager.setValue("database", "center", center, false);
+    }
+
+    const bool remoteDb = parser.isSet("remotedb");
+    if (remoteDb)
+    {
+        manager.setValue("database", "remotedb", remoteDb, false);
+        if (parser.isSet("host"))
         {
             QString hostname = parser.value("host");
-            manager->setValue("database", "hostname", hostname, false);
+            manager.setValue("database", "hostname", hostname, false);
         }
         if (parser.isSet("port"))
         {
-            manager.setValue("database", "remotedb", remoteDb, false);
-            if (parser.isSet("host"))
-            {
-                QString hostname = parser.value("host");
-                manager.setValue("database", "hostname", hostname, false);
-            }
-            if (parser.isSet("port"))
-            {
-                int port = parser.value("port").toInt();
-                manager.setValue("database", "port", port, false);
-            }
-            if (parser.isSet("db_prefix_path"))
-            {
-                QString db_prefix_path = parser.value("db_prefix_path");
-                manager.setValue("database", "db_prefix_path", db_prefix_path, false);
-            }
+            int port = parser.value("port").toInt();
+            manager.setValue("database", "port", port, false);
         }
         if (parser.isSet("db_prefix_path"))
         {
             QString db_prefix_path = parser.value("db_prefix_path");
-            manager->setValue("database", "db_prefix_path", db_prefix_path, false);
+            manager.setValue("database", "db_prefix_path", db_prefix_path, false);
         }
     }
     const bool DirectView = parser.isSet("view");
@@ -206,8 +198,8 @@ int main(int argc, char *argv[])
 
     medSourcesLoader::instance(&application);     
 
-    medPluginManager::instance()->setVerboseLoading(true);
-    medPluginManager::instance()->initialize();
+    medPluginManager::instance().setVerboseLoading(true);
+    medPluginManager::instance().initialize();
     auto sourceHandler = medSourceHandler::instance(&application);
     auto model = medDataHub::instance(&application);
     auto virtualRepresentation = new medVirtualRepresentation(&application);

@@ -263,7 +263,7 @@ QString medSourcesLoader::path()
     QString cnxParametersFile = MED_DATASOURCES_FILENAME;
     QString cnxParametersPath = QStandardPaths::writableLocation(QStandardPaths::GenericConfigLocation) + "/" + QCoreApplication::organizationName() + "/" + QCoreApplication::applicationName();
 
-    auto cnxParametersSaved = medSettingsManager::instance()->value("Sources", "Conf dir", ".").toString();
+    auto cnxParametersSaved = medSettingsManager::instance().value("Sources", "Conf dir", ".").toString();
 
     QFileInfo info(cnxParametersSaved);
     if (info.isFile())
@@ -302,7 +302,7 @@ bool medSourcesLoader::initSourceLoaderCfg(QString src, QString dst)
 
         QJsonDocument jsonSaveDoc = QJsonDocument::fromJson(content.toUtf8());
         QJsonArray entries = jsonSaveDoc.array();
-        for (QJsonValueRef & entry : entries)
+        for (auto entry : entries)
         {
             auto obj = entry.toObject();
 

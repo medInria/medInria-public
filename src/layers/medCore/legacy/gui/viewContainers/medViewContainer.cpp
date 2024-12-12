@@ -1064,7 +1064,7 @@ void medViewContainer::open_waitForImportedSignal(medDataIndex index, QUuid uuid
 {
     if(d->expectedPaths.contains(indexToFileSysPath_local(index.asString())))
     {
-        d->expectedPaths.removeAll(indexToFileSysPath(index.asString()));
+        d->expectedPaths.removeAll(indexToFileSysPath_local(index.asString()));
         disconnect(&medDataManager::instance(),SIGNAL(dataImported(medDataIndex, QUuid)), this,SLOT(open_waitForImportedSignal(medDataIndex, QUuid)));
         if (index.isValid())
         {
