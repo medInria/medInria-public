@@ -169,6 +169,11 @@ if (WIN32)
         COMMAND for %%I in ( ${TTK_BIN_BASE}\\bin\\*.dll                 ) do (if EXIST ${MED_BIN_BASE}\\%%~nxI (del /S ${MED_BIN_BASE}\\%%~nxI & mklink /H ${MED_BIN_BASE}\\%%~nxI %%~fI) else mklink /H ${MED_BIN_BASE}\\%%~nxI %%~fI) 
         COMMAND for %%I in ( ${QTX_BIN_BASE}\\bin\\*.dll                 ) do (if EXIST ${MED_BIN_BASE}\\%%~nxI (del /S ${MED_BIN_BASE}\\%%~nxI & mklink /H ${MED_BIN_BASE}\\%%~nxI %%~fI) else mklink /H ${MED_BIN_BASE}\\%%~nxI %%~fI) 
         
+		COMMAND if NOT EXIST ${MED_BIN_BASE}\\iconengines\\  (mkdir ${MED_BIN_BASE}\\iconengines\\)
+		COMMAND if NOT EXIST ${MED_BIN_BASE}\\sqldrivers\\   (mkdir ${MED_BIN_BASE}\\sqldrivers\\)
+		COMMAND if NOT EXIST ${MED_BIN_BASE}\\imageformats\\ (mkdir ${MED_BIN_BASE}\\imageformats\\)
+		COMMAND if NOT EXIST ${MED_BIN_BASE}\\platforms\\    (mkdir ${MED_BIN_BASE}\\platforms\\)
+		
 		COMMAND for %%I in ( ${QTX_BIN_BASE}\\plugins\\iconengines\\*.dll  ) do (if EXIST ${MED_BIN_BASE}\\iconengines\\%%~nxI  (del /S ${MED_BIN_BASE}\\iconengines\\%%~nxI  & mklink /H ${MED_BIN_BASE}\\iconengines\\%%~nxI %%~fI)  else mklink /H ${MED_BIN_BASE}\\iconengines\\%%~nxI %%~fI) 
         COMMAND for %%I in ( ${QTX_BIN_BASE}\\plugins\\sqldrivers\\*.dll   ) do (if EXIST ${MED_BIN_BASE}\\sqldrivers\\%%~nxI   (del /S ${MED_BIN_BASE}\\sqldrivers\\%%~nxI   & mklink /H ${MED_BIN_BASE}\\sqldrivers\\%%~nxI %%~fI)   else mklink /H ${MED_BIN_BASE}\\sqldrivers\\%%~nxI %%~fI) 
         COMMAND for %%I in ( ${QTX_BIN_BASE}\\plugins\\imageformats\\*.dll ) do (if EXIST ${MED_BIN_BASE}\\imageformats\\%%~nxI (del /S ${MED_BIN_BASE}\\imageformats\\%%~nxI & mklink /H ${MED_BIN_BASE}\\imageformats\\%%~nxI %%~fI) else mklink /H ${MED_BIN_BASE}\\imageformats\\%%~nxI %%~fI) 
