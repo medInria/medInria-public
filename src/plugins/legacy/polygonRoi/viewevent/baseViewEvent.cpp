@@ -781,7 +781,7 @@ void baseViewEvent::saveAllContours()
         contourOutput->setData(&contoursData, 1);
         outputDataSet->Delete();
         bool originSrc = pToolBox->dataDestButton->isChecked();
-        medDataManager::instance()->importData(contourOutput, originSrc);
+        medDataManager::instance().importData(contourOutput, originSrc);
     }
 }
 
@@ -1017,7 +1017,7 @@ void baseViewEvent::saveContour(polygonLabel *label)
     contourOutput->setData(&contoursData, 1);
     outputDataSet->Delete();
     bool originSrc = pToolBox->dataDestButton->isChecked();
-    medDataManager::instance()->importData(contourOutput, originSrc);
+    medDataManager::instance().importData(contourOutput, originSrc);
 }
 
 void baseViewEvent::onContourFinished(CURSORSTATE state)

@@ -150,7 +150,7 @@ void medFilteringWorkspaceL::importProcessOutput()
             QString generatedID = QUuid::createUuid().toString().replace("{","").replace("}","");
             d->filterOutput->setMetaData ( medMetaDataKeys::key("SeriesID"), generatedID );
 
-            medDataManager::instance()->importData(d->filterOutput);
+            medDataManager::instance().importData(d->filterOutput);
 
             d->outputContainer->addData(d->filterOutput);
         }
@@ -174,5 +174,5 @@ void medFilteringWorkspaceL::open(const medDataIndex &index)
     {
         return;
     }
-    d->inputContainer->addData(medDataManager::instance()->retrieveData(index));
+    d->inputContainer->addData(medDataManager::instance().retrieveData(index));
 }

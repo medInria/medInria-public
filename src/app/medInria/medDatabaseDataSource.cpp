@@ -49,6 +49,9 @@ medDatabaseDataSource::medDatabaseDataSource( QWidget* parent ): medAbstractData
 
 medDatabaseDataSource::~medDatabaseDataSource()
 {
+    qDeleteAll(d->toolBoxes.begin(), d->toolBoxes.end());
+    d->toolBoxes.clear();
+
     delete d;
     d = nullptr;
 }

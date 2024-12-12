@@ -88,10 +88,10 @@ medWorkspaceArea::medWorkspaceArea(QWidget *parent) : QWidget(parent), d(new med
     d->splitter->addWidget(d->viewContainer);
     d->splitter->addWidget(d->toolBoxContainer);
 
-    this->addDatabaseView(medDataSourceManager::instance()->databaseDataSource());
-    connect(medDataSourceManager::instance(), SIGNAL(open(medDataIndex)), this, SIGNAL(open(medDataIndex)));
+    this->addDatabaseView(medDataSourceManager::instance().databaseDataSource());
+    connect(&medDataSourceManager::instance(), SIGNAL(open(medDataIndex)), this, SIGNAL(open(medDataIndex)));
 
-    if (!d->splitter->restoreState(medSettingsManager::instance()->value("medWorkspaceArea", "splitterState").toByteArray()))
+    if (!d->splitter->restoreState(medSettingsManager::instance().value("medWorkspaceArea", "splitterState").toByteArray()))
     {
         d->splitter->setOrientation(Qt::Horizontal);
         //viewcontainer size
@@ -106,7 +106,7 @@ medWorkspaceArea::medWorkspaceArea(QWidget *parent) : QWidget(parent), d(new med
 
 medWorkspaceArea::~medWorkspaceArea()
 {
-    medSettingsManager::instance()->setValue("workspaceAreaSplitter", "state", d->splitter->saveState());
+    medSettingsManager::instance().setValue("workspaceAreaSplitter", "state", d->splitter->saveState());
     delete d;
     d = nullptr;
 }
@@ -348,8 +348,11 @@ bool medWorkspaceArea::setCurrentWorkspace(medAbstractWorkspaceLegacy *workspace
         }
     }
 
-    this->disconnect(this, SIGNAL(open(medDataIndex)), d->currentWorkspace, 0);
-
+    if (d->currentWorkspace)
+    {
+        disconnect(this, SIGNAL(open(medDataIndex)), d->currentWorkspace, 0);
+        disconnect(d->currentWorkspace, nullptr, this, nullptr);
+    }
     d->currentWorkspace = workspace;
     connect(this, SIGNAL(open(medDataIndex)), d->currentWorkspace, SLOT(open(medDataIndex)));
 
@@ -372,7 +375,7 @@ bool medWorkspaceArea::setCurrentWorkspace(medAbstractWorkspaceLegacy *workspace
     }
     d->toolBoxContainer->setVisible(workspace->areToolBoxesVisible());
 
-    medParameterGroupManagerL::instance()->setCurrentWorkspace(workspace->identifier());
+    medParameterGroupManagerL::instance().setCurrentWorkspace(workspace->identifier());
 
     return true;
 }

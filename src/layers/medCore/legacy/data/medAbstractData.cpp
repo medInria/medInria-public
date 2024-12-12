@@ -258,64 +258,22 @@ QImage medAbstractData::generateThumbnail(QSize size)
 
 QImage medAbstractData::generateThumbnailInGuiThread(QSize size)
 {
-    // Hack: some drivers crash on offscreen rendering, so we detect which one
-    // we're currently using, and if it is one of the crashy ones, render to a
-    // proper window instead, that we try to hide behind the main one.
+    auto view = medViewFactory::instance()->createView<medAbstractLayeredView>("medVtkView");
 
-    bool offscreenCapable = false;
-    med::GPUInfo gpu = med::gpuModel();
-
-#if defined(Q_OS_MAC)
-    // all drivers work so far
-    offscreenCapable = true;
-#elif defined(Q_OS_WIN32)
-    // doesn't work on Intel drivers
-    if ( ! gpu.vendor.toLower().contains("intel"))
-        offscreenCapable = true;
-#elif defined(Q_OS_LINUX)
-    if (gpu.vendor.toLower().contains("nvidia")
-            || gpu.vendor.toLower().contains("intel")
-            || gpu.vendor.toLower().contains("mesa/x.org"))
+    QImage thumbnail;
+    if(view)
     {
-        offscreenCapable = true;
-    }
-#endif
-
-    dtkSmartPointer<medAbstractImageView> view = medViewFactory::instance()->createView<medAbstractImageView>("medVtkView");
-
-    if(offscreenCapable)
-    {
-        view->setOffscreenRendering(true);
+        view->addLayer(this);
+        thumbnail = view->generateThumbnail(size);
     }
     else
     {
-        // We need to get a handle to the main window, so we can A) find its position, and B) ensure it is drawn over the temporary window
-        const QVariant property = QApplication::instance()->property("MainWindow");
-        QObject* qObject = property.value<QObject*>();
-
-        if (qObject)
-        {
-            QMainWindow* aMainWindow = dynamic_cast<QMainWindow*>(qObject);
-            QWidget * viewWidget = view->viewWidget();
-
-            // Show our view in a separate, temporary window
-            viewWidget->show();
-            // position the temporary window behind the main application
-            viewWidget->move(aMainWindow->geometry().x(), aMainWindow->geometry().y());
-            // and raise the main window above the temporary
-            aMainWindow->raise();
-
-            // We need to wait for the window manager to finish animating before we can continue.
-#ifdef Q_OS_LINUX
-            Q_UNUSED(QTest::qWaitForWindowExposed(viewWidget));
-#endif
-        }
+        qWarning() << "medViewContainer: unable to create a medVtkView";
     }
 
-    view->addLayer(this);
+    delete view;
 
-    // We're rendering here, to the temporary window, and will then use the resulting image
-    return view->generateThumbnail(size);
+    return thumbnail;
 }
 
 bool medAbstractData::addParentData(medAbstractData *pi_parentData)

@@ -205,9 +205,7 @@ LCCLogDemonsToolBox::~LCCLogDemonsToolBox()
 
 dtkPlugin * LCCLogDemonsToolBox::plugin()
 {
-	medPluginManager* pm = medPluginManager::instance();
-	dtkPlugin* plugin = pm->plugin("LCCLogDemonsPlugin");
-	return plugin;
+    return medPluginManager::instance().plugin("LCCLogDemonsPlugin");
 }
 
 medAbstractData * LCCLogDemonsToolBox::processOutput()

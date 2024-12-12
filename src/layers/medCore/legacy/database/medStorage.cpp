@@ -55,13 +55,13 @@ QString medStorage::dataLocation()
     else
     {
         // APHP Hack : try to get path for remote db defined in commandline parameter
-        vDbLoc = medSettingsManager::instance()->value("database", "db_prefix_path", "", false).toString();
+        vDbLoc = medSettingsManager::instance().value("database", "db_prefix_path", "", false).toString();
         if (!vDbLoc.isEmpty())
         {
             return vDbLoc;
         }
 
-        vDbLoc = medSettingsManager::instance()->value("database", "actual_database_location").toString();
+        vDbLoc = medSettingsManager::instance().value("database", "actual_database_location").toString();
 
         // if the location is still not set we return the default paths
         if (vDbLoc.isEmpty())
@@ -99,7 +99,7 @@ void medStorage::setDataLocation(QString newLocation)
 
     m_dataLocation = newLocation;
 
-    medSettingsManager::instance()->setValue("database", "actual_database_location", newLocation);
+    medSettingsManager::instance().setValue("database", "actual_database_location", newLocation);
 }
 
 void medStorage::recurseAddDir(QDir d, QStringList &list)

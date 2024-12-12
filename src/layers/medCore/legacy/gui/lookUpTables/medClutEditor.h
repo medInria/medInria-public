@@ -30,6 +30,7 @@ class medClutEditorVertexPrivate;
 class MEDCORE_EXPORT medClutEditorVertex : public QGraphicsObject
 {
     Q_OBJECT
+    Q_INTERFACES(QGraphicsItem)
 
 public:
     medClutEditorVertex(QPointF value, QPointF coord, QColor color = Qt::white, QGraphicsItem *parent = nullptr);
@@ -84,6 +85,7 @@ class medClutEditorTablePrivate;
 class MEDCORE_EXPORT medClutEditorTable : public QGraphicsObject
 {
     Q_OBJECT
+    Q_INTERFACES(QGraphicsItem)
 
 public:
     medClutEditorTable(const medClutEditorTable & table);

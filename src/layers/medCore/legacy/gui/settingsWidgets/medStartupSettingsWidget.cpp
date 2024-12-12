@@ -95,7 +95,7 @@ medStartupSettingsWidget::medStartupSettingsWidget(QWidget *parent) :
 
 void medStartupSettingsWidget::read()
 {
-    medSettingsManager *manager = medSettingsManager::instance();
+    medSettingsManager *manager = &medSettingsManager::instance();
 
     readFullscreenSettings(manager);
     readDefaultStartingArea(manager);
@@ -187,9 +187,9 @@ void medStartupSettingsWidget::readDefaultTheme(medSettingsManager *manager)
 
 void medStartupSettingsWidget::write()
 {
-    medSettingsManager *manager = medSettingsManager::instance();
-    manager->setValue("startup", "fullscreen",            d->startInFullScreen->isChecked());
-    manager->setValue("startup", "default_starting_area", d->defaultStartingArea->currentText());
-    manager->setValue("startup", "default_segmentation_speciality", d->defaultSegmentationSpeciality->currentText());
-    manager->setValue("startup", "theme",                 d->theme->currentIndex());
+    medSettingsManager &manager = medSettingsManager::instance();
+    manager.setValue("startup", "fullscreen",            d->startInFullScreen->isChecked());
+    manager.setValue("startup", "default_starting_area", d->defaultStartingArea->currentText());
+    manager.setValue("startup", "default_segmentation_speciality", d->defaultSegmentationSpeciality->currentText());
+    manager.setValue("startup", "theme",                 d->theme->currentIndex());
 }

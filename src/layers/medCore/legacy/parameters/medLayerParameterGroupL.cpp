@@ -34,12 +34,12 @@ medLayerParameterGroupL::medLayerParameterGroupL(QString name, QObject *parent, 
 {
     d->pool = new medParameterPoolL(this);
 
-    medParameterGroupManagerL::instance()->registerNewGroup(this);
+    medParameterGroupManagerL::instance().registerNewGroup(this);
 }
 
 medLayerParameterGroupL::~medLayerParameterGroupL()
 {
-    medParameterGroupManagerL::instance()->unregisterGroup(this);
+    medParameterGroupManagerL::instance().unregisterGroup(this);
 
     QHashIterator<medAbstractLayeredView*, medAbstractData*> iter(d->impactedLayers);
     while(iter.hasNext())

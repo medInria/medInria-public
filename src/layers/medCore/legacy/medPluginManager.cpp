@@ -22,20 +22,22 @@ public:
     QStringList loadErrors;
 };
 
+std::unique_ptr<medPluginManager> medPluginManager::s_instance = nullptr;
+
 /**
  * @brief Gets an instance of the Plugin Manager.
  *
  *
  * @param void
- * @return medPluginManager * a pointer to an instance of the singleton.
+ * @return medPluginManager & a reference to an instance of the singleton.
 */
-medPluginManager *medPluginManager::instance()
+medPluginManager &medPluginManager::instance()
 {
     if(!s_instance)
     {
-        s_instance = new medPluginManager;
+        s_instance = std::unique_ptr<medPluginManager>(new medPluginManager());
     }
-    return s_instance;
+    return *s_instance.get();
 }
 
 void medPluginManager::initialize()
@@ -155,14 +157,11 @@ medPluginManager::medPluginManager(void) : dtkPluginManager(), d(new medPluginMa
  *
  * @param void
 */
-medPluginManager::~medPluginManager(void)
+medPluginManager::~medPluginManager()
 {
     delete d;
     d = nullptr;
 }
-
-medPluginManager *medPluginManager::s_instance = nullptr;
-
 
 void medPluginManager::onLoadError(const QString &errorMessage)
 {

@@ -237,7 +237,6 @@ void medHomepageArea::initPage()
         delete workspaceLabelOther;
         delete workspaceButtonsLayoutOther;
     }
-
     for (int i = 0; i < static_cast<int>(oLayoutVect.size()); ++i)
     {
         workspaceButtonsLayout->addLayout(oLayoutVect[i], 0, i);
@@ -264,7 +263,7 @@ void medHomepageArea::onShowWorkspace(QString workspace)
 QPixmap medHomepageArea::getApplicationLogoPixmap()
 {
     QPixmap applicationLogo;
-    int themeIndex = medSettingsManager::instance()->value("startup","theme").toInt();
+    int themeIndex = medSettingsManager::instance().value("startup","theme").toInt();
 
     switch (themeIndex)
     {

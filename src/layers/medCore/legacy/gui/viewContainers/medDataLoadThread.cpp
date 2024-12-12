@@ -61,7 +61,7 @@ void medDataLoadThread::internalProcess(medDataIndex &index, int deep)
         int type = medDataHub::instance()->getDataType(index);
         if (type == DATATYPE_ROLE_DATASET || type == DATATYPE_ROLE_BOTH)
         {
-            m_pAbsDataList << medDataManager::instance()->retrieveDataList(index);
+            m_pAbsDataList << medDataManager::instance().retrieveDataList(index);
             for (auto absData : m_pAbsDataList)
             {
                 if (absData)
@@ -72,7 +72,7 @@ void medDataLoadThread::internalProcess(medDataIndex &index, int deep)
         }
         else if (type == DATATYPE_ROLE_FOLDER)
         {
-            auto childrenList = medDataManager::instance()->getSubData(index);
+            auto childrenList = medDataManager::instance().getSubData(index);
             for (auto & child : childrenList)
             {
                 internalProcess(child, deep - 1);

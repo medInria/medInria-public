@@ -209,9 +209,9 @@ void medApplication::initialize()
  */
 QScreen* medApplication::getPreviousScreen()
 {
-    medSettingsManager *manager = medSettingsManager::instance();
+    medSettingsManager &manager = medSettingsManager::instance();
     int currentScreen = 0;
-    QVariant currentScreenQV = manager->value("medMainWindow", "currentScreen");
+    QVariant currentScreenQV = manager.value("medMainWindow", "currentScreen");
     if (!currentScreenQV.isNull())
     {
         currentScreen = currentScreenQV.toInt();
@@ -246,7 +246,7 @@ void medApplication::initializeThemes()
 {
     QApplication::setStyle(QStyleFactory::create("fusion"));
 
-    int themeIndex = medSettingsManager::instance()->value("startup","theme").toInt();
+    int themeIndex = medSettingsManager::instance().value("startup","theme").toInt();
     QString qssFile;
     switch (themeIndex)
     {

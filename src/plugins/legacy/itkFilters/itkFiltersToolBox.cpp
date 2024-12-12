@@ -1157,9 +1157,7 @@ void itkFiltersToolBox::onViewClosed()
 
 dtkPlugin* itkFiltersToolBox::plugin()
 {
-    medPluginManager *pm = medPluginManager::instance();
-    dtkPlugin *plugin = pm->plugin ( "ITK Filters" );
-    return plugin;
+    return medPluginManager::instance().plugin("ITK Filters");
 }
 
 medToolBox *createitkFiltersToolBox(QWidget *parent)
