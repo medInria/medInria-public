@@ -42,7 +42,7 @@ set(git_url ${GITHUB_PREFIX}Kitware/VTK.git)
 if(${USE_LASTEST_VTK})
   set(git_tag master)
 else()
-  set(git_tag v9.3.1)
+  set(git_tag v9.2.6)
 endif()
 
 ## #############################################################################

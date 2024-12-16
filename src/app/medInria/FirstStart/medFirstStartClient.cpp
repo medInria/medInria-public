@@ -89,7 +89,7 @@ QString medFirstStartClient::getNextArchiveFolderName()
 {
     int iMax = 0;
     QDir updateDir(d->updateDirPath);
-    auto subDirs = updateDir.entryList(QDir::NoDotAndDotDot  & QDir::Dirs);
+    auto subDirs = updateDir.entryList(QDir::NoDotAndDotDot | QDir::Dirs);
     for (auto subDir : subDirs)
     {
         bool ok;
