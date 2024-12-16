@@ -20,6 +20,20 @@ public:
     QString extraTrigger3;
 };
 
+/**
+ * @brief Creates a new notification.
+ *
+ * This function creates a new notification with the specified parameters. If the creation
+ * is successful, the new notification is registered with the notification system.
+ *
+ * @param pi_criticityLevel The criticality level of the notification.
+ * @param pi_title The title of the notification.
+ * @param pi_message The message of the notification.
+ * @param pi_time_ms The display time of the notification in milliseconds.
+ * @param pi_achivementPercentage The achievement percentage of the notification.
+ *
+ * @return A shared pointer to the newly created notification, or nullptr if an error occurred.
+ */
 std::shared_ptr<medNotif> medNotif::createNotif(notifLevel pi_criticityLevel, QString pi_title, QString pi_message, int pi_time_ms, int pi_achivementPercentage)
 {
     std::shared_ptr<medNotif> notifRes;    
@@ -49,6 +63,21 @@ std::shared_ptr<medNotif> medNotif::createNotif(notifLevel pi_criticityLevel, QS
     return notifRes;
 }
 
+/**
+ * @brief Creates a new notification.
+ *
+ * This function creates a new notification with the specified parameters. If the creation
+ * is successful, the new notification is registered with the notification system.
+ *
+ * @param sys The med.
+ * @param pi_criticityLevel The criticality level of the notification.
+ * @param pi_title The title of the notification.
+ * @param pi_message The message of the notification.
+ * @param pi_time_ms The display time of the notification in milliseconds.
+ * @param pi_achivementPercentage The achievement percentage of the notification.
+ *
+ * @return A shared pointer to the newly created notification, or nullptr if an error occurred.
+ */
 std::shared_ptr<medNotif> medNotif::createNotif(medNotifSys * sys, notifLevel pi_criticityLevel, QString pi_title, QString pi_message, int pi_time_ms, int pi_achivementPercentage)
 {
     std::shared_ptr<medNotif> notifRes;

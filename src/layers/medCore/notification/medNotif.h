@@ -30,6 +30,13 @@ enum class notifLevel : char
     error
 };
 
+/**
+ * @class medNotif
+ * @brief Represents a notification.
+ *
+ * This class encapsulates the information related to a notification, such as its
+ * criticality level, title, message, and display time.
+ */
 class MEDCORE_EXPORT medNotif : public QObject
 {
     Q_OBJECT

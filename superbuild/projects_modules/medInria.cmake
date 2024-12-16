@@ -156,6 +156,8 @@ if (WIN32)
   file(TO_NATIVE_PATH ${dtk_ROOT}                DTK_BIN_BASE)
   file(TO_NATIVE_PATH ${Qt${QT_VERSION_MAJOR}_DIR}/../../.. QTX_BIN_BASE)
   file(TO_NATIVE_PATH ${medInria_BINARY_DIR}     MED_BIN_BASE)
+  
+  file(TO_NATIVE_PATH "${QTX_BIN_BASE}/../../Tools" QT_TOOLS_DIR )
 
   set(CONFIG_MODE $<$<CONFIG:debug>:Debug>$<$<CONFIG:release>:Release>$<$<CONFIG:MinSizeRel>:MinSizeRel>$<$<CONFIG:RelWithDebInfo>:RelWithDebInfo>)
   
@@ -177,7 +179,10 @@ if (WIN32)
         COMMAND for %%I in ( ${QTX_BIN_BASE}\\plugins\\iconengines\\*.dll  ) do (if EXIST ${MED_BIN_BASE}\\iconengines\\%%~nxI  (del /S ${MED_BIN_BASE}\\iconengines\\%%~nxI  & mklink /H ${MED_BIN_BASE}\\iconengines\\%%~nxI %%~fI)  else mklink /H ${MED_BIN_BASE}\\iconengines\\%%~nxI %%~fI) 
         COMMAND for %%I in ( ${QTX_BIN_BASE}\\plugins\\sqldrivers\\*.dll   ) do (if EXIST ${MED_BIN_BASE}\\sqldrivers\\%%~nxI   (del /S ${MED_BIN_BASE}\\sqldrivers\\%%~nxI   & mklink /H ${MED_BIN_BASE}\\sqldrivers\\%%~nxI %%~fI)   else mklink /H ${MED_BIN_BASE}\\sqldrivers\\%%~nxI %%~fI) 
         COMMAND for %%I in ( ${QTX_BIN_BASE}\\plugins\\imageformats\\*.dll ) do (if EXIST ${MED_BIN_BASE}\\imageformats\\%%~nxI (del /S ${MED_BIN_BASE}\\imageformats\\%%~nxI & mklink /H ${MED_BIN_BASE}\\imageformats\\%%~nxI %%~fI) else mklink /H ${MED_BIN_BASE}\\imageformats\\%%~nxI %%~fI) 
-        COMMAND for %%I in ( ${QTX_BIN_BASE}\\plugins\\platforms\\*.dll    ) do (if EXIST ${MED_BIN_BASE}\\platforms\\%%~nxI    (del /S ${MED_BIN_BASE}\\platforms\\%%~nxI    & mklink /H ${MED_BIN_BASE}\\platforms\\%%~nxI %%~fI)    else mklink /H ${MED_BIN_BASE}\\platforms\\%%~nxI %%~fI) 
+        COMMAND for %%I in ( ${QTX_BIN_BASE}\\plugins\\platforms\\*.dll    ) do (if EXIST ${MED_BIN_BASE}\\platforms\\%%~nxI    (del /S ${MED_BIN_BASE}\\platforms\\%%~nxI    & mklink /H ${MED_BIN_BASE}\\platforms\\%%~nxI %%~fI)    else mklink /H ${MED_BIN_BASE}\\platforms\\%%~nxI %%~fI)
+		
+        COMMAND for %%I in ( ${QT_TOOLS_DIR}\\OpenSSLv3\\Win_x64\\bin\\*.dll) do (if EXIST ${MED_BIN_BASE}\\%%~nxI (del /S ${MED_BIN_BASE}\\%%~nxI & mklink /H ${MED_BIN_BASE}\\%%~nxI %%~fI) else mklink /H ${MED_BIN_BASE}\\%%~nxI %%~fI)
+
     )
 endif()
 
