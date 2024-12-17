@@ -64,12 +64,6 @@ if(CMAKE_COMPILER_IS_GNUCXX)
   set(${ep}_cxx_flags "${${ep}_cxx_flags} -fpermissive")
 endif()
 
-if(${SDK_GENERATION})
-  set(MEDINRIA_INSTALL_PREFIX ${SDK_DIR}) 
-else()
-  set(MEDINRIA_INSTALL_PREFIX "") 
-endif()
-
 set(cmake_args
    ${ep_common_cache_args}
   -DCMAKE_BUILD_TYPE=${CMAKE_BUILD_TYPE_medInria}
@@ -92,19 +86,15 @@ set(cmake_cache_args
   -DRPI_ROOT:PATH=${RPI_ROOT}
   -DTTK_ROOT:PATH=${TTK_ROOT}
   -DVTK_ROOT:PATH=${VTK_ROOT}
-  -DQt${QT_VERSION_MAJOR}_ROOT:PATH=${Qt${QT_VERSION_MAJOR}_ROOT}  
-
-  
-  -DDCMTK_DIR:PATH=${DCMTK_DIR}
-  -Ddtk_DIR:PATH=${dtk_DIR}
-  -DITK_DIR:PATH=${ITK_DIR}
-  -DRPI_DIR:PATH=${RPI_DIR}
-  -DTTK_DIR:PATH=${TTK_DIR}
-  -DVTK_DIR:PATH=${VTK_DIR}
-  -DQt${QT_VERSION_MAJOR}_DIR:PATH=${Qt${QT_VERSION_MAJOR}_DIR}
-  -DCMAKE_INSTALL_PREFIX:PATH=${MEDINRIA_INSTALL_PREFIX}
+  -DQt${QT_VERSION_MAJOR}_ROOT:PATH=${Qt${QT_VERSION_MAJOR}_ROOT}
   -DCMAKE_BUILD_PARALLEL_LEVEL:STRING=8
   )
+
+if(${SDK_GENERATION})
+  list(APPEND cmake_cache_args -DCMAKE_INSTALL_PREFIX:PATH=${SDK_DIR})
+else()
+  list(APPEND cmake_cache_args -DCMAKE_INSTALL_PREFIX:PATH=<INSTALL_DIR>)
+endif()
 
 if (${USE_FFmpeg})
   list(APPEND cmake_args
