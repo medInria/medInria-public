@@ -1,0 +1,30 @@
+{
+    "chapterName": "itk_nhdr",
+    "keys": [
+        {
+            "label": "ITK_InputFilterName",
+            "medKey": "itk_inputfiltername",
+            "name": "ITK_InputFilterName"
+        },
+        {
+            "label": "NRRD_kinds[0]",
+            "medKey": "nrrd_kinds[0]",
+            "name": "NRRD_kinds[0]"
+        },
+        {
+            "label": "NRRD_kinds[1]",
+            "medKey": "nrrd_kinds[1]",
+            "name": "NRRD_kinds[1]"
+        },
+        {
+            "label": "NRRD_kinds[2]",
+            "medKey": "nrrd_kinds[2]",
+            "name": "NRRD_kinds[2]"
+        },
+        {
+            "label": "NRRD_space",
+            "medKey": "nrrd_space",
+            "name": "NRRD_space"
+        }
+    ]
+}

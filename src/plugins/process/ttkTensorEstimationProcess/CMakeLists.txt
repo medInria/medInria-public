@@ -4,11 +4,13 @@ set(TARGET_NAME ttkTensorEstimationProcessPlugin)
 ## Resolve dependencies
 ## #############################################################################
 
+find_package(dtk REQUIRED)
+include_directories(${dtk_INCLUDE_DIRS})
+
 find_package(ITK REQUIRED COMPONENTS ITKCommon ITKFiniteDifference)
 include(${ITK_USE_FILE})
 
-find_package(TTK REQUIRED)
-include(${TTK_USE_FILE})
+find_package(TTK REQUIRED COMPONENTS ITKTensor ttkAlgorithms)
 
 ## #############################################################################
 ## List Sources
@@ -46,14 +48,14 @@ target_include_directories(${TARGET_NAME}
 
 target_link_libraries(${TARGET_NAME}
   ITKCommon
-  Qt5::Core
+  Qt${QT_VERSION_MAJOR}::Core
   dtkCore
   dtkCoreSupport
   dtkLog
-  ITKTensor
-  medCoreLegacy
+  TTK::ITKTensor
+  TTK::ttkAlgorithms
   medCore
-  medWidgets
+  medCoreGui
   )
 
 ## #################################################################

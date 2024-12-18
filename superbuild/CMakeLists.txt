@@ -15,7 +15,7 @@
 ## Add packages
 ## #############################################################################
 
-find_package(Qt5 REQUIRED COMPONENTS
+find_package(Qt${QT_VERSION_MAJOR} REQUIRED COMPONENTS
   Core
   Designer
   Gui
@@ -27,8 +27,6 @@ find_package(Qt5 REQUIRED COMPONENTS
   Test
   Quick
   )
-
-find_package(Boost REQUIRED)
 
 ## #############################################################################
 ## Add exteral projects
@@ -43,9 +41,13 @@ find_package(Boost REQUIRED)
 #   * otherwise use download and compile locally the package as an external 
 #     module.
 
-option(USE_DTKIMAGING "Use DTK imaging layer" OFF )
-  
+option(USE_DTKIMAGING "Use DTK imaging layer" OFF )  
 option(USE_OSPRay "Use OSPRay for CPU VR" OFF )
+option(USE_LASTEST_ITK   "Try to use the lastest ..ITK on master branch" OFF)
+option(USE_LASTEST_VTK   "Try to use the lastest ..VTK on master branch" OFF)
+option(USE_LASTEST_TTK   "Try to use the lastest ..TTK on master branch" OFF)
+option(USE_LASTEST_RPI   "Try to use the lastest ..RPI on master branch" OFF)
+option(USE_LASTEST_DCMTK "Try to use the lastest DCMTK on master branch" OFF)
 
 if (NOT WIN32)
   option(USE_FFmpeg "Build with FFmpeg video export support" OFF)
@@ -59,10 +61,8 @@ list(APPEND external_projects
   ITK 
   RPI 
   TTK 
-  DCMTK 
-  QtDCM 
+  DCMTK
   dtk
-  LogDemons
   )
 
 if (USE_DTKIMAGING)
@@ -79,6 +79,14 @@ if (USE_OSPRay)
   SET(ospray_DIR CACHE PATH "The directory containing a CMAKE configuration file for OSPRay")
   SET(OSPRAY_INSTALL_DIR CACHE PATH "Install location of OSPRay")
 endif()
+
+## #############################################################################
+## SDK Options
+## #############################################################################
+option(SDK_GENERATION "Generate the SDK directory" OFF )
+option(SDK_PACKAGING  "Include the SDK into the packaging" OFF )
+set(SDK_DIR ${CMAKE_BINARY_DIR}/../sdk CACHE FILEPATH "Path of the SDK directory") 
+mark_as_advanced(SDK_DIR)
 
 ## #############################################################################
 ## Setup build configuration
@@ -134,7 +142,7 @@ file(APPEND ${${PROJECT_NAME}_CONFIG_FILE}
   
 # Add Qt dir
 file(APPEND ${${PROJECT_NAME}_CONFIG_FILE}
-  "set(Qt5_DIR ${Qt5_DIR})\n\n"
+  "set(Qt${QT_VERSION_MAJOR}_DIR ${Qt${QT_VERSION_MAJOR}_DIR})\n\n"
   )
 
 set(CMAKE_MODULE_PATH

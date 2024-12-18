@@ -178,24 +178,6 @@ public:
   // Is the path closed or open?
   int IsClosed();
 
-#ifdef VTK_WORKAROUND_WINDOWS_MANGLE
-# define SetPropA SetProp
-# define SetPropW SetProp
-#endif
-
-  // Description:
-  // @deprecated Replaced by vtkImageOrientedPointWidget::SetViewProp() as of VTK 5.0.
-  VTK_LEGACY(void SetProp(vtkProp* prop));
-
-#ifdef VTK_WORKAROUND_WINDOWS_MANGLE
-# undef SetPropA
-# undef SetPropW
-  //BTX
-  VTK_LEGACY(void SetPropA(vtkProp*));
-  VTK_LEGACY(void SetPropW(vtkProp*));
-  //ETX
-#endif
-
 protected:
   vtkImageOrientedPointWidget();
   ~vtkImageOrientedPointWidget();

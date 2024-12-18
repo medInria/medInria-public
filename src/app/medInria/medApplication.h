@@ -12,13 +12,14 @@
 
 =========================================================================*/
 
-#include <QtSingleApplication>
+#include <QApplication>
 #include <medDataIndex.h>
+#include "QSingleApplication/qtlocalpeer.h"
 
 class medApplicationPrivate;
 class medMainWindow;
 
-class medApplication : public QtSingleApplication
+class medApplication : public QApplication
 {
     Q_OBJECT
 
@@ -26,17 +27,26 @@ public:
     medApplication(int & argc, char **argv);
     ~medApplication();
 
-    bool event(QEvent *event);
+    bool event(QEvent *event) override;
+    bool notify(QObject *receiver, QEvent *e) override;
     void setMainWindow(medMainWindow *mw);
+    void initializeSplashScreen();
+    void initializeThemes();
+    QScreen* getPreviousScreen();
 
 signals:
     void showMessage(const QString& message);
+    void messageReceived(const QString &message);
+
+    void mouseGlobalClick(QPoint point);
 
 public slots:
-    void redirectMessageToSplash(const QString& message);
+    bool sendMessage(const QString &message, int timeout = 5000);
 
     void open(const medDataIndex & index);
     void open(QString path);
+
+    void listenClick(bool listen);
 
 protected:
     void initialize();

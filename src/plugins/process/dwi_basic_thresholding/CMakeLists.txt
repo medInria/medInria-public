@@ -19,6 +19,9 @@ set(TARGET_NAME medItkDWIBasicThresholdingProcessPlugin)
 ## Resolve dependencies
 ## #############################################################################
 
+find_package(dtk REQUIRED)
+include_directories(${dtk_INCLUDE_DIRS})
+
 find_package(ITK REQUIRED COMPONENTS ITKMathematicalMorphology)
 include(${ITK_USE_FILE})
 
@@ -58,11 +61,11 @@ target_include_directories(${TARGET_NAME}
 
 target_link_libraries(${TARGET_NAME}
   ITKCommon
-  Qt5::Core
+  Qt${QT_VERSION_MAJOR}::Core
   dtkCore
   dtkLog
   medCore
-  medWidgets
+  medCoreGui
   )
 
 ## #############################################################################

@@ -105,10 +105,10 @@ bool vtkDataMeshReader::read(const QString& path)
         }
 
         // Use filename as series description if no meta data could be found
-        if (medData->metadata(medMetaDataKeys::SeriesDescription.key()).isEmpty())
+        if (medData->fetchMetaData("SeriesDescription").isEmpty())
         {
             QFileInfo file(path);
-            medData->setMetaData(medMetaDataKeys::SeriesDescription.key(), file.baseName());
+            medData->setMetaData(medMetaDataKeys::key("SeriesDescription"), file.baseName());
         }
 
         setProgress(100);
@@ -159,8 +159,8 @@ bool vtkDataMeshReader::extractCartoMetaData(vtkMetaDataSet* dataSet)
 
     if (dataSet->GetMetaData("PatientName", patientName) && dataSet->GetMetaData("PatientID", patientID))
     {
-        data()->setMetaData(medMetaDataKeys::PatientName.key(), QString::fromStdString(patientName));
-        data()->setMetaData(medMetaDataKeys::PatientID.key(), QString::fromStdString(patientID));
+        data()->setMetaData(medMetaDataKeys::key("PatientName"), QString::fromStdString(patientName));
+        data()->setMetaData(medMetaDataKeys::key("PatientID"), QString::fromStdString(patientID));
 
         result = true;
     }

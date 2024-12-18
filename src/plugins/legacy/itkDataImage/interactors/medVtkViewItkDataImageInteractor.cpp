@@ -284,7 +284,7 @@ void medVtkViewItkDataImageInteractor::initParameters(medAbstractImageData* data
     createSlicingParam();
 
     d->enableWindowLevelParameter = new medBoolParameterL("Windowing", this);
-    d->enableWindowLevelParameter->setIcon(QIcon (":/icons/contrast_white.svg"));
+    d->enableWindowLevelParameter->setIcon(QIcon::fromTheme("contrast"));
     d->enableWindowLevelParameter->setToolTip (tr("Windowing"));
     connect(d->enableWindowLevelParameter, SIGNAL(valueChanged(bool)), this, SLOT(enableWindowLevel(bool)));
 
@@ -497,8 +497,12 @@ void medVtkViewItkDataImageInteractor::setMaxIntensity(double max)
 
 QWidget* medVtkViewItkDataImageInteractor::buildToolBarWidget()
 {
+    QWidget* toolbar = new QWidget();
+    QHBoxLayout* toolbarLayout = new QHBoxLayout(toolbar);
+    toolbarLayout->setContentsMargins(5, 0, 0, 0);
     d->slicingParameter->getSlider()->setOrientation(Qt::Horizontal);
-    return d->slicingParameter->getSlider();
+    toolbarLayout->addWidget(d->slicingParameter->getSlider());
+    return toolbar;
 }
 
 QWidget* medVtkViewItkDataImageInteractor::buildToolBoxWidget()

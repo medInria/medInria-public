@@ -4,11 +4,12 @@ set(TARGET_NAME ttkTensorScalarMapsProcessPlugin)
 ## Resolve dependencies
 ## #############################################################################
 
-find_package(TTK REQUIRED)
-include(${TTK_USE_FILE})
+find_package(dtk REQUIRED)
+include_directories(${dtk_INCLUDE_DIRS})
 
-find_package(VTK REQUIRED COMPONENTS vtkRenderingCore)
-include(${VTK_USE_FILE})
+find_package(TTK REQUIRED COMPONENTS ITKTensor ttkAlgorithms)
+
+find_package(VTK REQUIRED COMPONENTS RenderingCore)
 
 find_package(ITK REQUIRED COMPONENTS ITKCommon)
 include(${ITK_USE_FILE})
@@ -49,17 +50,19 @@ target_include_directories(${TARGET_NAME}
 
 target_link_libraries(${TARGET_NAME}
   ITKCommon
-  Qt5::Core
+  Qt${QT_VERSION_MAJOR}::Core
   dtkCore
   dtkCoreSupport
   dtkLog
-  ITKTensor
+  TTK::ITKTensor
+  TTK::ttkAlgorithms
   medCore
-  medCoreLegacy
+  medCoreGui
   medVtkInria
-  medWidgets
-  vtkRenderingCore
+  VTK::RenderingCore
   )
+
+vtk_module_autoinit(TARGETS ${TARGET_NAME} MODULES ${VTK_LIBRARIES})
 
 ## #################################################################
 ## Install rules

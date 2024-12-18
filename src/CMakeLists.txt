@@ -15,20 +15,38 @@
 
 cmake_minimum_required(VERSION 3.19)
 
+set(QT_VERSION_MAJOR 5)
+
 if(NOT DEFINED ${medInria_VERSION})
-    set(medInria_VERSION 4.0.0)
+    set(medInria_VERSION 5.0.0)
 endif()
+
+include(CMakePackageConfigHelpers)
 
 project(medInria VERSION ${medInria_VERSION})
 
+cmake_policy(SET CMP0074 NEW)
+cmake_policy(SET CMP0076 NEW)
 
-## #############################################################################
-## Set version
-## #############################################################################
+SET(CMAKE_BUILD_PARALLEL_LEVEL 8 CACHE INTERNAL "" FORCE)
 
 string(TOUPPER ${PROJECT_NAME} PROJECT_NAME_UP)
-add_definitions(-D${PROJECT_NAME_UP}_VERSION="${${PROJECT_NAME}_VERSION}")
 
+set(${PROJECT_NAME}_IDENTIFIER fr.inria.${PROJECT_NAME})
+
+add_compile_definitions(
+  ${PROJECT_NAME_UP}_VERSION="${${PROJECT_NAME}_VERSION}"
+  ${PROJECT_NAME_UP}_IDENTIFIER="${${PROJECT_NAME}_IDENTIFIER}"
+  )
+
+set(medInria_ROOT ${CMAKE_BINARY_DIR})
+set(PACKAGE_INIT "@PACKAGE_INIT@")
+if(EXISTS ${CMAKE_SOURCE_DIR}/cmake/${PROJECT_NAME}Config.cmake.in)
+    configure_package_config_file(${CMAKE_SOURCE_DIR}/cmake/${PROJECT_NAME}Config.cmake.in     "${CMAKE_BINARY_DIR}/lib/cmake/${PROJECT_NAME}/${PROJECT_NAME}Config.cmake"         INSTALL_DESTINATION lib/cmake/${PROJECT_NAME})
+                   CONFIGURE_FILE(${CMAKE_SOURCE_DIR}/cmake/${PROJECT_NAME}ModuleLocation.cmake ${CMAKE_BINARY_DIR}/lib/cmake/${PROJECT_NAME}/${PROJECT_NAME}ModuleLocation.cmake  COPYONLY)
+endif()
+
+set(${PROJECT_NAME_UP}_PATH ${CMAKE_BINARY_DIR})
 ## #############################################################################
 ## Macro
 ## #############################################################################
@@ -69,7 +87,7 @@ endif()
 ## Find package
 ## #############################################################################
 
-find_package(Qt5 REQUIRED COMPONENTS
+find_package(Qt${QT_VERSION_MAJOR} REQUIRED COMPONENTS
   Concurrent
   Core
   Gui
@@ -84,7 +102,6 @@ find_package(Qt5 REQUIRED COMPONENTS
   )
 
 find_package(dtk REQUIRED)
-include_directories(${dtk_INCLUDE_DIRS})
 
 ## #############################################################################
 ## enable c++ 17
@@ -114,6 +131,7 @@ include(set_exe_install_rules)
 include(set_lib_install_rules)
 include(set_lib_properties_variables)
 include(set_plugin_install_rules)
+include(add_external_resources)
 
 include(add_plugins)
 if(APPLE)
@@ -125,14 +143,9 @@ endif()
 ## #############################################################################
 ## Qt Auto tools
 ## #############################################################################
-
 set(CMAKE_AUTOMOC ON)
 set(CMAKE_AUTORCC ON)
-#   Find includes in corresponding build (and source) directories
-#   (nedded for generated files)
-if(CMAKE_VERSION VERSION_LESS "3.7.0")
-    set(CMAKE_INCLUDE_CURRENT_DIR ON)
-endif()
+set(CMAKE_INCLUDE_CURRENT_DIR OFF)
 
 ## #############################################################################
 ## add definitions
@@ -162,6 +175,17 @@ if (WIN32)
 endif()
 
 ## #############################################################################
+## Setup resources directory (for Windows and Linux)
+## #############################################################################
+
+if (NOT APPLE)
+  set(${PROJECT_NAME}_RESOURCES_DIR "${CMAKE_BINARY_DIR}/resources")
+  add_custom_target(make_resource_dir ALL
+    COMMAND ${CMAKE_COMMAND} -E make_directory "${${PROJECT_NAME}_RESOURCES_DIR}"
+    )
+endif()
+
+## #############################################################################
 ## Add subdirectory
 ## #############################################################################
 
@@ -173,28 +197,23 @@ if(${PROJECT_NAME}_BUILD_DOCUMENTATION)
   add_subdirectory(doc)
 endif()
 
+################################################################################
+# Setup Startup project
+################################################################################
+
 set_property(DIRECTORY ${CMAKE_CURRENT_SOURCE_DIR} PROPERTY VS_STARTUP_PROJECT medInria)
 
 ################################################################################
 # Setup Configuration files
 ################################################################################
 
-set_lib_properties_variables(
-    medCoreLegacy
-    medLog
-    medRegistration
-    medCore
-    medImageIO
-    medVtkInria
-    medWidgets
-    medUtilities
-    medVtkDataMeshBase
-    )
-
+set(PACKAGE_INIT "@PACKAGE_INIT@")
 if(EXISTS ${CMAKE_SOURCE_DIR}/cmake/${PROJECT_NAME}Config.cmake.in)
-  configure_file( ## Build tree configure file
-    ${CMAKE_SOURCE_DIR}/cmake/${PROJECT_NAME}Config.cmake.in
-    ${${PROJECT_NAME}_BINARY_DIR}/${PROJECT_NAME}Config.cmake
-    @ONLY IMMEDIATE
-    )
+    configure_package_config_file(${CMAKE_SOURCE_DIR}/cmake/${PROJECT_NAME}Config.cmake.in     "${CMAKE_BINARY_DIR}/lib/cmake/${PROJECT_NAME}/${PROJECT_NAME}Config.cmake"         INSTALL_DESTINATION lib/cmake/${PROJECT_NAME})
+                   CONFIGURE_FILE(${CMAKE_SOURCE_DIR}/cmake/${PROJECT_NAME}ModuleLocation.cmake ${CMAKE_BINARY_DIR}/lib/cmake/${PROJECT_NAME}/${PROJECT_NAME}ModuleLocation.cmake  COPYONLY)
+    INSTALL(FILES "${CMAKE_BINARY_DIR}/lib/cmake/${PROJECT_NAME}/${PROJECT_NAME}Config.cmake"  DESTINATION          lib/cmake/${PROJECT_NAME}/)
+    INSTALL(FILES  ${CMAKE_SOURCE_DIR}/cmake/${PROJECT_NAME}ModuleLocation.cmake                        DESTINATION          lib/cmake/${PROJECT_NAME}/)
+    INSTALL(DIRECTORY   ${CMAKE_SOURCE_DIR}/cmake/module                        DESTINATION          cmake/)
 endif()
+
+

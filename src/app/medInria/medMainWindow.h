@@ -26,16 +26,25 @@ public:
      {
          HomePage,
          Browser,
-         WorkSpace,
-         Composer
+         WorkSpace
      };
 
      medMainWindow(QWidget *parent = nullptr);
     ~medMainWindow();
 
+     void initMenuBar(QWidget * parent);
+     void menuNotif(QMenuBar * menu_bar);
+     void menuAbout(QMenuBar * menu_bar);
+     void menuSettings(QMenuBar * menu_bar);
+     void menuCapture(QMenuBar * menu_bar);
+     void menuWindow(QMenuBar * menu_bar);
+     void menuWorkspace(QMenuBar * menu_bar);
+     void menuFile(QMenuBar * menu_bar);
+
     void restoreSettings();
     void saveSettings();
     QWidget* currentArea() const;
+    QToolButton* notifButton();
 
     void setStartup(const AreaType areaIndex,const QStringList& filenames);
 
@@ -43,6 +52,7 @@ signals:
     void sliceSelected(int slice);
     void mainWindowActivated();
     void mainWindowDeactivated();
+    void resized(QRect const &);
 
 public slots:
     void setWallScreen(const bool full);
@@ -95,31 +105,98 @@ public slots:
      */
     void switchToDefaultWorkSpace();
 
+    /**
+     * @brief Switch visibility of notification panel
+     */
+    void toggleNotificationPanel();
+
 private slots:
 
     void showWorkspace(QString workspace);
-    void showComposer();
 
     void switchToBrowserArea();
     void switchToWorkspaceArea();
-    void switchToComposerArea();
 
     void showShortcutAccess();
     void hideShortcutAccess();
 
-    void availableSpaceOnStatusBar();
+    //void availableSpaceOnStatusBar();
 
     void open_waitForImportedSignal(medDataIndex,QUuid);
+
+    void openFromSystem();
+    void openDicomFromSystem();
+    void setSourceVisibility(bool checked);
+    
+    void onShowBrowser();
+    void onShowDataSources();
+    void onShowHelp();
+
+    /**
+     * @brief Display an About window
+     */
+    void onShowAbout();
+
+    /**
+     * @brief Display a window with the authors list
+     */
+    void onShowAuthors();
+
+    /**
+     * @brief Display a window with the release notes
+     */
+    void onShowReleaseNotes();
+
+    /**
+     * @brief Display a license window
+     */
+    void onShowLicense();
+
+     /**
+      * @brief Display a settings window for the Area section
+      */
+    void onShowAreaSettings();
+
+    /**
+     * @brief Switch the application to the asked workspace
+     */
+    void onShowWorkspace(QString workspace);
+
+    /**
+     * @brief Switch the application to the current workspace name
+     */
+    void onSwitchToWorkspace();
+
+    /**
+     * @brief Switch the application to the current process (toolbox) name
+     */
+    void onSwitchToProcess();
+
+    /**
+     * @brief Open the log directory
+     */
+    void openLogDirectory();
+
+    /**
+     * @brief Display a window with the plugins logs from the application start
+     */
+    void onShowPluginLogs();
+
+    void filterWSMenu(QString text);
 
 protected:
     void closeEvent(QCloseEvent *event);
     void mousePressEvent(QMouseEvent * event);
-    int saveModifiedAndOrValidateClosing();
     bool event(QEvent * e);
+    void resizeEvent(QResizeEvent *event);
     void dragEnterEvent(QDragEnterEvent *event);
     void dragLeaveEvent(QDragLeaveEvent *event);
     void dragMoveEvent(QDragMoveEvent *event);
     void dropEvent(QDropEvent *event);
+
+    QAction* getCornerAction(QString);
+    void setFullscreenOn(QAction*);
+    void setFullscreenOff(QAction*);
 
 private:
     medMainWindowPrivate *d;

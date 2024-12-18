@@ -22,19 +22,10 @@
 #include <medJobManagerL.h>
 #include <medDataManager.h>
 
-#include <medStorage.h>
-
-#include <medDatabaseController.h>
-#include <medDatabaseNonPersistentController.h>
-#include <medDatabaseExporter.h>
-#include <medDatabaseImporter.h>
-
 #include <medProgressionStack.h>
 #include <medToolBox.h>
 #include <medToolBoxFactory.h>
 #include <medToolBoxContainer.h>
-#include <medPacsMover.h>
-#include <medPacsWidget.h>
 #include <medCompositeDataSetImporterSelectorToolBox.h>
 #include <medAbstractDataSource.h>
 #include <medDataSourceManager.h>
@@ -57,7 +48,6 @@ public:
 
 medBrowserArea::medBrowserArea(QWidget *parent) : QWidget(parent), d(new medBrowserAreaPrivate)
 {
-
     d->stack = new QStackedWidget(this);
 
     // Source toolbox
@@ -86,8 +76,8 @@ medBrowserArea::medBrowserArea(QWidget *parent) : QWidget(parent), d(new medBrow
         addDataSource(dataSource);
     }
 
-    // Switch to default "File system" tab
-    d->sourceSelectorToolBox->setCurrentTab(1);
+    // Default tab is "Data sources"
+    d->sourceSelectorToolBox->setCurrentTab(0);
 }
 
 medBrowserArea::~medBrowserArea()

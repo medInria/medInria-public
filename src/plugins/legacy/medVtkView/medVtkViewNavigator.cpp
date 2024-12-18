@@ -115,32 +115,32 @@ medVtkViewNavigator::medVtkViewNavigator(medAbstractView *parent) :
     d->orientationParameter->getLabel()->hide();
 
     d->oAxialParameter = new medBoolParameterL("axial", this);
-    d->oAxialParameter->setIcon(QIcon(":/icons/AxialIcon.png"));
-    d->oAxialParameter->setIconSize(QSize(40,40));
+    d->oAxialParameter->setIcon(QIcon(":/pixmaps/orientationAxial.png"));
+    d->oAxialParameter->setIconSize(QSize(50,50));
     d->oAxialParameter->setToolTip("Axial");
     d->oAxialParameter->getPushButton()->setMinimumSize(64,64);
     connect(d->oAxialParameter, SIGNAL(valueChanged(bool)),
             this, SLOT(setAxial(bool)));
 
     d->oCoronalParameter = new medBoolParameterL("coronal", this);
-    d->oCoronalParameter->setIcon(QIcon(":/icons/CoronalIcon.png"));
-    d->oCoronalParameter->setIconSize(QSize(40,40));
+    d->oCoronalParameter->setIcon(QIcon(":/pixmaps/orientationCoronal.png"));
+    d->oCoronalParameter->setIconSize(QSize(50,50));
     d->oCoronalParameter->setToolTip("Coronal");
     d->oCoronalParameter->getPushButton()->setMinimumSize(64,64);
     connect(d->oCoronalParameter, SIGNAL(valueChanged(bool)),
             this, SLOT(setCoronal(bool)));
 
     d->oSagittalParameter = new medBoolParameterL("sagittal", this);
-    d->oSagittalParameter->setIcon(QIcon(":/icons/SagittalIcon.png"));
-    d->oSagittalParameter->setIconSize(QSize(40,40));
+    d->oSagittalParameter->setIcon(QIcon(":/pixmaps/orientationSagittal.png"));
+    d->oSagittalParameter->setIconSize(QSize(50,50));
     d->oSagittalParameter->setToolTip("Sagittal");
     d->oSagittalParameter->getPushButton()->setMinimumSize(64,64);
     connect(d->oSagittalParameter, SIGNAL(valueChanged(bool)),
             this, SLOT(setSagittal(bool)));
 
     d->o3dParameter = new medBoolParameterL("3d", this);
-    d->o3dParameter->setIcon(QIcon(":/icons/orientation_3d_white.svg"));
-    d->o3dParameter->setIconSize(QSize(40,40));
+    d->o3dParameter->setIcon(QIcon::fromTheme("orientation_3d"));
+    d->o3dParameter->setIconSize(QSize(50,50));
     d->o3dParameter->setToolTip("3D");
     d->o3dParameter->getPushButton()->setMinimumSize(64,64);
     connect(d->o3dParameter, SIGNAL(valueChanged(bool)),
@@ -177,22 +177,22 @@ medVtkViewNavigator::medVtkViewNavigator(medAbstractView *parent) :
     d->showAnnotatedCubeParameter->setValue(true);
 
     d->enableZooming = new medBoolParameterL("Zooming", this);
-    d->enableZooming->setIcon(QIcon (":/icons/magnifier_white.svg"));
+    d->enableZooming->setIcon(QIcon::fromTheme("magnifier"));
     d->enableZooming->setToolTip(tr("Zooming"));
     connect(d->enableZooming, SIGNAL(valueChanged(bool)), this, SLOT(enableZooming(bool)));
     
     d->enablePanning = new medBoolParameterL("Pan",this);
-    d->enablePanning->setIcon(QIcon (":/icons/pan_white.svg"));
+    d->enablePanning->setIcon(QIcon::fromTheme("pan"));
     d->enablePanning->setToolTip(tr("Pan"));
     connect(d->enablePanning, SIGNAL(valueChanged(bool)), this, SLOT(enablePanning(bool)));
 
     d->enableSlicing = new medBoolParameterL("Slicing", this);
-    d->enableSlicing->setIcon(QIcon (":/icons/stack_white.svg"));
+    d->enableSlicing->setIcon(QIcon::fromTheme("stack"));
     d->enableSlicing->setToolTip(tr("Slicing"));
     connect(d->enableSlicing, SIGNAL(valueChanged(bool)), this, SLOT(enableSlicing(bool)));
 
     d->enableMeasuring = new medBoolParameterL("Measuring", this);
-    d->enableMeasuring->setIcon (QIcon (":/icons/ruler_white.svg"));
+    d->enableMeasuring->setIcon (QIcon::fromTheme("ruler"));
     d->enableMeasuring->setToolTip(tr("Measuring"));
     connect(d->enableMeasuring, SIGNAL(valueChanged(bool)), this, SLOT(enableMeasuring(bool)));
 

@@ -53,17 +53,17 @@ QString qtdcmDataSourcePlugin::description() const
 
 QStringList qtdcmDataSourcePlugin::authors() const
 {
-  return QStringList() << "Alexandre Abadie";
+  return QStringList() << "Alexandre Abadie <Alexandre.Abadie@inria.fr>";
 }
 
 QString qtdcmDataSourcePlugin::contact() const
 {
-  return "Alexandre.Abadie@inria.fr";
+  return "Alexandre Abadie <Alexandre.Abadie@inria.fr>";
 }
 
 QStringList qtdcmDataSourcePlugin::contributors() const
 {
-  return QStringList() << "Olivier Commowick";
+  return QStringList() << "Olivier Commowick <Olivier.Commowick@inria.fr>";
 }
 
 QStringList qtdcmDataSourcePlugin::dependencies() const

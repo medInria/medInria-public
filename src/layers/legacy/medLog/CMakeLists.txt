@@ -21,16 +21,14 @@ set(TARGET_NAME medLog)
 
 # find dtk
 find_package(dtk REQUIRED)
-include_directories(${dtk_INCLUDE_DIRS})
+#include_directories(${dtk_INCLUDE_DIRS})
 
 # find itk
 find_package(ITK REQUIRED COMPONENTS ITKCommon)
 include(${ITK_USE_FILE})
 
 # find vtk
-find_package(VTK REQUIRED COMPONENTS vtkCommonCore)
-include(${VTK_USE_FILE})
-
+find_package(VTK REQUIRED COMPONENTS CommonCore)
 
 ## #############################################################################
 ## List Sources
@@ -49,17 +47,21 @@ list_header_directories_to_include(${TARGET_NAME}
 ## add library
 ## #############################################################################
 
-add_library(${TARGET_NAME} SHARED
-  ${${TARGET_NAME}_CFILES}
-  )
+add_library(${TARGET_NAME} SHARED)
+target_sources(${TARGET_NAME} PRIVATE ${${TARGET_NAME}_CFILES} ${${TARGET_NAME}_QRC} )
+target_sources(${TARGET_NAME} PRIVATE ${RELATIVE_${TARGET_NAME}_HEADERS})
+set_target_properties(${TARGET_NAME} PROPERTIES PUBLIC_HEADER "${RELATIVE_${TARGET_NAME}_HEADERS}")
 
 
 ## #############################################################################
-## include directorie.
+## include directories.
 ## #############################################################################
 
 target_include_directories(${TARGET_NAME}
-  PUBLIC ${${TARGET_NAME}_INCLUDE_DIRS}
+  PRIVATE ${dtk_INCLUDE_DIRS}
+  PUBLIC
+	"$<BUILD_INTERFACE:${${TARGET_NAME}_INCLUDE_DIRS}>"
+	"$<INSTALL_INTERFACE:include/${TARGET_NAME}>"
   )
 
 
@@ -67,19 +69,34 @@ target_include_directories(${TARGET_NAME}
 ## Link
 ## #############################################################################
 
-target_link_libraries(${TARGET_NAME}
-  Qt5::Core
-  Qt5::Widgets
-  dtkCoreSupport
-  dtkLog
+target_link_libraries(${TARGET_NAME} PUBLIC
+  Qt${QT_VERSION_MAJOR}::Core
+  Qt${QT_VERSION_MAJOR}::Widgets
   ITKCommon
-  vtkCommonCore
+  VTK::CommonCore
+  # dtk
+  dtkLog
+  # Legacy
+  dtkCoreSupport
   )
+
+vtk_module_autoinit(TARGETS ${TARGET_NAME} MODULES VTK::CommonCore)
 
 ## #############################################################################
 ## install
 ## #############################################################################
 
+#set_lib_install_rules(${TARGET_NAME})
+
 set_lib_install_rules(${TARGET_NAME}
-  ${${TARGET_NAME}_HEADERS}
-  )
+    NAMESPACE                  med
+    VERSION                    4.0    
+    LIBRARY_OUTPUT_NAME_PREFIX med
+    DESTINATION                ${MEDINRIA_PATH}
+    
+    PUBLIC_DEPENDENCIES      
+      "medInria REQUIRED COMPONENTS Core"  
+      "dtk      REQUIRED COMPONENTS dtkLog dtkCoreSupport "
+      "Qt${QT_VERSION_MAJOR}      REQUIRED COMPONENTS Core Widgets"
+      "ITK      REQUIRED COMPONENTS ITKCommon"
+    )

@@ -16,10 +16,7 @@
 #include <QHash>
 #include <QTest>
 #include <QWidget>
-
-#include <QVTKOpenGLWidget.h>
 #include <QGLFramebufferObject>
-
 #include <QVTKInteractorAdapter.h>
 #include <QVTKInteractor.h>
 #include <vtkEventQtSlotConnect.h>
@@ -67,7 +64,7 @@ public:
     vtkImageView3D *view3d;
 
     vtkGenericOpenGLRenderWindow *renWin;
-    QVTKOpenGLWidget *viewWidget;
+    QVTKOpenGLNativeWidget *viewWidget;
 
     medVtkViewObserver *observer;
 
@@ -90,6 +87,20 @@ medVtkView::medVtkView(QObject* parent): medAbstractImageView(parent),
     // construct render window
     // renWin
     d->renWin = vtkGenericOpenGLRenderWindow::New();
+    //if (QThread::currentThread() != QApplication::instance()->thread())
+    //{
+    //    //QObject::moveToThread(QApplication::instance()->thread());
+    //    bool bRes = QMetaObject::invokeMethod(this,
+    //                              "createVtkGenericOpenGLRenderWindow",
+    //                              Qt::BlockingQueuedConnection,
+    //                              Q_RETURN_ARG(vtkGenericOpenGLRenderWindow*, d->renWin));
+    //    qDebug() << "########################## invoke " << bRes << "\r\n";
+    //}
+    //else
+    //{
+    //    d->renWin = vtkGenericOpenGLRenderWindow::New();
+    //}
+
     d->renWin->StereoCapableWindowOn();
     d->renWin->SetStereoTypeToCrystalEyes();
     d->renWin->SetAlphaBitPlanes(1);
@@ -131,9 +142,9 @@ medVtkView::medVtkView(QObject* parent): medAbstractImageView(parent),
     d->view3d->SetInteractorStyle(interactorStyle);
     interactorStyle->Delete();
 
-    d->viewWidget = new QVTKOpenGLWidget();
+    d->viewWidget = new QVTKOpenGLNativeWidget();
     d->viewWidget->setEnableHiDPI(true);
-    d->viewWidget->SetRenderWindow(d->renWin);
+    d->viewWidget->setRenderWindow(d->renWin);
 
     // Event filter used to know if the view is selected or not
     d->viewWidget->installEventFilter(this);
@@ -194,6 +205,7 @@ medVtkView::~medVtkView()
         d->renWin->SetOffScreenRendering(0);
     d->renWin->Delete();
     delete d->viewWidget;
+    delete d->mainWindow;
 
     delete d;
 }
@@ -432,23 +444,23 @@ void medVtkView::displayDataInfo(uint layer)
     medAbstractData *data = layerData(layer);
     if ( data )
     {
-        if ( data->hasMetaData ( medMetaDataKeys::PatientName.key() ) )
+        if ( data->hasMetaData ( medMetaDataKeys::key("PatientName") ) )
         {
-            const QString patientName = data->metaDataValues ( medMetaDataKeys::PatientName.key() ) [0];
+            const QString patientName = data->metaDataValues ( medMetaDataKeys::key("PatientName") ) [0];
             d->view2d->SetPatientName ( patientName.toLatin1().constData() );
             d->view3d->SetPatientName ( patientName.toLatin1().constData() );
         }
 
-        if ( data->hasMetaData ( medMetaDataKeys::StudyDescription.key() ) )
+        if ( data->hasMetaData ( medMetaDataKeys::key("StudyDescription") ) )
         {
-            const QString studyName = data->metaDataValues ( medMetaDataKeys::StudyDescription.key() ) [0];
+            const QString studyName = data->metaDataValues ( medMetaDataKeys::key("StudyDescription") ) [0];
             d->view2d->SetStudyName ( studyName.toLatin1().constData() );
             d->view3d->SetStudyName ( studyName.toLatin1().constData() );
         }
 
-        if ( data->hasMetaData ( medMetaDataKeys::SeriesDescription.key() ) )
+        if ( data->hasMetaData ( medMetaDataKeys::key("SeriesDescription") ) )
         {
-            const QString seriesName = data->metaDataValues ( medMetaDataKeys::SeriesDescription.key() ) [0];
+            const QString seriesName = data->metaDataValues ( medMetaDataKeys::key("SeriesDescription") ) [0];
             d->view2d->SetSeriesName ( seriesName.toLatin1().constData() );
             d->view3d->SetSeriesName ( seriesName.toLatin1().constData() );
         }
@@ -461,31 +473,35 @@ QImage medVtkView::buildThumbnail(const QSize &size)
     this->blockSignals(true);
     int w(size.width()), h(size.height());
 
-    // will cause crashes if any calls to renWin->Render() happened before this line
-    d->mainWindow->resize(w,h);
-    d->mainWindow->show();
-    d->renWin->SetSize(w,h);
-    render();
-
-#ifdef Q_OS_LINUX
-    // X11 likes to animate window creation, which means by the time we grab the
-    // widget, it might not be fully ready yet, in which case we get artefacts.
-    // Only necessary if rendering to an actual screen window.
-    if(d->renWin->GetOffScreenRendering() == 0)
-    {
-        Q_UNUSED(QTest::qWaitForWindowExposed(d->viewWidget));
-    }
-#endif
-
     QImage thumbnail = d->viewWidget->grabFramebuffer();
+    thumbnail = thumbnail.scaledToHeight(h, Qt::SmoothTransformation);
+    thumbnail = thumbnail.copy((thumbnail.width()-w)/2, 0, w, h);
 
-    d->mainWindow->hide();
     this->blockSignals(false);
-
-    thumbnail = thumbnail.copy(0, thumbnail.height() - h, w, h);
-
     return thumbnail;
 }
+
+vtkGenericOpenGLRenderWindow * medVtkView::createVtkGenericOpenGLRenderWindow()
+{
+    return vtkGenericOpenGLRenderWindow::New();
+}
+
+QVTKOpenGLNativeWidget * medVtkView::createQVTKOpenGLWidget()
+{
+    //QVTKOpenGLWidget * pPidgetRes = nullptr;
+    //QMetaObject::invokeMethod(this,
+    //                          "createQVTKOpenGLWidgetInternal",
+    //                          Qt::BlockingQueuedConnection,
+    //                          Q_RETURN_ARG(QVTKOpenGLWidget*, pPidgetRes));
+    //return pPidgetRes;
+    return new QVTKOpenGLNativeWidget();
+}
+
+//QVTKOpenGLWidget * medVtkView::createQVTKOpenGLWidgetInternal()
+//{
+//    //d->renWin = vtkGenericOpenGLRenderWindow::New();
+//    return new QVTKOpenGLWidget();
+//}
 
 void medVtkView::buildMouseInteractionParamPool(uint layer)
 {

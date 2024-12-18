@@ -12,7 +12,7 @@
 
 =========================================================================*/
 
-#include <dtkCoreSupport/dtkAbstractDataReader.h>
+#include <medAbstractDataReader.h>
 
 #include <itkDataImagePluginExport.h>
 #include <itkGDCMImageIO.h>
@@ -32,7 +32,7 @@ namespace itk
   class SliceReadCommand;
 }
 
-class ITKDATAIMAGEPLUGIN_EXPORT itkGDCMDataImageReader: public dtkAbstractDataReader
+class ITKDATAIMAGEPLUGIN_EXPORT itkGDCMDataImageReader: public medAbstractDataReader
 {
     Q_OBJECT
 
@@ -66,6 +66,9 @@ public slots:
     bool read (const QStringList &paths);
 
     void setProgress (int value);
+
+    QString getVolumeId(const QString& path);
+    QString getVolumeName(const QString& path);
 
 private:  
 

@@ -44,7 +44,6 @@
 #include <medAbstractImageView.h>
 #include <medVtkViewBackend.h>
 #include <medAbstractDataFactory.h>
-#include <medAbstractDbController.h>
 #include <medBoolParameterL.h>
 #include <medBoolGroupParameterL.h>
 #include <medTriggerParameterL.h>
@@ -826,10 +825,10 @@ void medVtkFibersDataInteractor::saveBundlesInDataBase()
 
         tmpBundle->setData(bundle);
 
-        QString newSeriesDescription = d->data->metadata ( medMetaDataKeys::SeriesDescription.key() );
+        QString newSeriesDescription = d->data->fetchMetaData("SeriesDescription");
         newSeriesDescription += " ";
         newSeriesDescription += (*it).first.c_str();
-        tmpBundle->setMetaData ( medMetaDataKeys::SeriesDescription.key(), newSeriesDescription );
+        tmpBundle->setMetaData ( medMetaDataKeys::key("SeriesDescription"), newSeriesDescription );
 
         for( QString metaData : d->data->metaDataList() )
         {
@@ -845,7 +844,7 @@ void medVtkFibersDataInteractor::saveBundlesInDataBase()
         }
 
         QString generatedID = QUuid::createUuid().toString().replace("{","").replace("}","");
-        tmpBundle->setMetaData ( medMetaDataKeys::SeriesID.key(), generatedID );
+        tmpBundle->setMetaData ( medMetaDataKeys::key("SeriesID"), generatedID );
 
         medDataManager::instance()->importData(tmpBundle);
 
@@ -912,7 +911,7 @@ void medVtkFibersDataInteractor::bundleImageStatistics (const QString &bundleNam
             continue;
 
         vtkIdType  npts  = 0;
-        vtkIdType* ptids = 0;
+        vtkIdType const *ptids = nullptr;
         vtkIdType test = lines->GetNextCell (npts, ptids);
 
         double sumData = 0;
@@ -992,7 +991,7 @@ void medVtkFibersDataInteractor::computeBundleLengthStatistics (const QString &n
 
     lines->InitTraversal();
     vtkIdType  npts  = 0;
-    vtkIdType* ptids = 0;
+    vtkIdType const *ptids = nullptr;
     vtkIdType test = lines->GetNextCell (npts, ptids);
 
     double sumData = 0;
@@ -1504,7 +1503,7 @@ void medVtkFibersDataInteractor::bundlingListCustomContextMenu(const QPoint &poi
     QMenu *menu = new QMenu;
     
     QAction *saveAction = new QAction(tr("Save"), this);
-    saveAction->setIcon(QIcon(":icons/save_white.svg"));
+    saveAction->setIcon(QIcon::fromTheme("save"));
     connect(saveAction, SIGNAL(triggered()), this, SLOT(saveCurrentBundle()));
     menu->addAction(saveAction);
     
@@ -1546,10 +1545,10 @@ void medVtkFibersDataInteractor::saveCurrentBundle()
     
     savedBundle->setData(bundle);
     
-    QString newSeriesDescription = d->data->metadata ( medMetaDataKeys::SeriesDescription.key() );
+    QString newSeriesDescription = d->data->fetchMetaData("SeriesDescription");
     newSeriesDescription += " ";
     newSeriesDescription += (*it).first.c_str();
-    savedBundle->setMetaData ( medMetaDataKeys::SeriesDescription.key(), newSeriesDescription );
+    savedBundle->setMetaData ( medMetaDataKeys::key("SeriesDescription"), newSeriesDescription );
         
     for( QString metaData : d->data->metaDataList() )
     {
@@ -1570,7 +1569,7 @@ void medVtkFibersDataInteractor::saveCurrentBundle()
     }
     
     QString generatedID = QUuid::createUuid().toString().replace("{","").replace("}","");
-    savedBundle->setMetaData ( medMetaDataKeys::SeriesID.key(), generatedID );
+    savedBundle->setMetaData ( medMetaDataKeys::key("SeriesID"), generatedID );
     
     medDataManager::instance()->importData(savedBundle);
 }

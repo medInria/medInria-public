@@ -45,7 +45,7 @@ void vtkImageViewCornerAnnotation::SetImageView(vtkImageView* arg)
 }
 
 void vtkImageViewCornerAnnotation::TextReplace(vtkImageActor *imageActor,
-                                               vtkImageMapToWindowLevelColors */*wl*/)
+                                               vtkImageMapToWindowLevelColors * /*wl*/)
 {
     int slice = 0, slice_max = 0;
     double window = 0, level = 0;
@@ -448,7 +448,7 @@ int vtkImageViewCornerAnnotation::RenderOpaqueGeometry(vtkViewport *viewport)
             tprop_has_changed ||
             this->GetMTime() > this->BuildTime)
         {
-            // Rebuid text props.
+            // Rebuild text props.
             // Perform shallow copy here since each individual corner has a
             // different aligment/size but they share the other this->TextProperty
             // attributes.
@@ -588,9 +588,7 @@ int vtkImageViewCornerAnnotation::RenderOpaqueGeometry(vtkViewport *viewport)
             }
 
             // Now set the position of the TextActors
-
             this->SetTextActorsPosition(vSize);
-
             for (i = 0; i < 4; i++)
             {
                 this->TextActor[i]->SetProperty(this->GetProperty());

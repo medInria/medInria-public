@@ -19,8 +19,10 @@ set(TARGET_NAME itkDWIBrainMaskCalculatorProcessPlugin)
 ## Resolve dependencies
 ## #############################################################################
 
-find_package(TTK REQUIRED)
-include(${TTK_USE_FILE})
+find_package(dtk REQUIRED)
+include_directories(${dtk_INCLUDE_DIRS})
+
+find_package(TTK REQUIRED COMPONENTS Registration ttkAlgorithms)
 
 find_package(ITK REQUIRED COMPONENTS ITKCommon ITKImageStatistics ITKImageIntensity ITKSmoothing ITKThresholding ITKMathematicalMorphology ITKBinaryMathematicalMorphology ITKLabelVoting)
 include(${ITK_USE_FILE})
@@ -63,13 +65,14 @@ target_link_libraries(${TARGET_NAME}
   ITKCommon
   ITKStatistics
   ITKSmoothing
-  Qt5::Core
+  TTK::Registration
+  TTK::ttkAlgorithms
+  Qt${QT_VERSION_MAJOR}::Core
   dtkCore
   dtkCoreSupport
   dtkLog
-  medCoreLegacy
   medCore
-  medWidgets
+  medCoreGui
   )
 
 ## #############################################################################

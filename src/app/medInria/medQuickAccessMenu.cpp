@@ -35,7 +35,7 @@ int retrieveDefaultWorkSpace()
     {
         iRes = homepageDefaultWorkspaceNumber;
     }
-    else if (oStartupWorkspace.toString() == "Import/export files")
+    else if (oStartupWorkspace.toString() == "Browse data")
     {
         iRes = 1;
     }
@@ -346,7 +346,7 @@ void medQuickAccessMenu::createHorizontalQuickAccessMenu()
     medHomepagePushButton *smallHomeButton = new medHomepagePushButton ( this );
     smallHomeButton->setFixedHeight ( 100 );
     smallHomeButton->setFixedWidth ( 160 );
-    smallHomeButton->setStyleSheet("border-radius: 5px;font-size:12px;font:bold;color: #ffffff;background-image: url(:pixmaps/home_sc.png) no-repeat;");
+    smallHomeButton->setStyleSheet("border-radius: 5px;font-size:12px;color: #ffffff;background-image: url(:pixmaps/home_sc.png) no-repeat;");
     smallHomeButton->setFocusPolicy ( Qt::NoFocus );
     smallHomeButton->setCursor(Qt::PointingHandCursor);
     smallHomeButton->setIdentifier("Homepage");
@@ -359,28 +359,15 @@ void medQuickAccessMenu::createHorizontalQuickAccessMenu()
     //Setup browser access button
     medHomepagePushButton *smallBrowserButton = new medHomepagePushButton ( this );
     smallBrowserButton->setCursor(Qt::PointingHandCursor);
-    smallBrowserButton->setStyleSheet("border-radius: 5px;font-size:12px;font:bold;color: #ffffff;background-image: url(:pixmaps/database.png) no-repeat;");
+    smallBrowserButton->setStyleSheet("border-radius: 5px;font-size:12px;color: #ffffff;background-image: url(:pixmaps/database.png) no-repeat;");
     smallBrowserButton->setFixedHeight ( 100 );
     smallBrowserButton->setFixedWidth ( 160 );
     smallBrowserButton->setFocusPolicy ( Qt::NoFocus );
-    smallBrowserButton->setText("Import/export files");
+    smallBrowserButton->setText("Browse data");
     smallBrowserButton->setIdentifier("Browser");
     shortcutAccessLayout->addWidget ( smallBrowserButton );
     QObject::connect ( smallBrowserButton, SIGNAL ( clicked() ), this, SIGNAL ( browserSelected()) );
     buttonsList.push_back(smallBrowserButton);
-
-    //Setup composer access button
-    medHomepagePushButton *smallComposerButton = new medHomepagePushButton(this);
-    smallComposerButton->setCursor(Qt::PointingHandCursor);
-    smallComposerButton->setStyleSheet("border-radius: 5px;font-size:12px;font:bold;color: #ffffff;background-image: url(:pixmaps/composer_sc.png) no-repeat;");
-    smallComposerButton->setFixedHeight(100);
-    smallComposerButton->setFixedWidth(160);
-    smallComposerButton->setFocusPolicy(Qt::NoFocus);
-    smallComposerButton->setText("Composer");
-    smallComposerButton->setIdentifier("Composer");
-    shortcutAccessLayout->addWidget(smallComposerButton);
-    QObject::connect(smallComposerButton, SIGNAL(clicked()), this, SIGNAL(composerSelected()));
-    buttonsList.push_back(smallComposerButton);
 
     QList<medWorkspaceFactory::Details*> workspaceDetails = medWorkspaceFactory::instance()->workspaceDetailsSortedByName();
     unsigned int numActiveWorkspaces = 0;
@@ -396,7 +383,7 @@ void medQuickAccessMenu::createHorizontalQuickAccessMenu()
         button->setCursor(Qt::PointingHandCursor);
         button->setFixedHeight ( 100 );
         button->setFixedWidth ( 160 );
-        button->setStyleSheet("border-radius: 5px;font-size:12px;font:bold;color: #ffffff;background-image: url(:pixmaps/workspace_" + detail->name + ".png) no-repeat;");
+        button->setStyleSheet("border-radius: 5px;font-size:12px;color: #ffffff;background-image: url(:pixmaps/workspace_" + detail->name + ".png) no-repeat;");
         button->setIdentifier(detail->identifier);
         shortcutAccessLayout->addWidget ( button );
         QObject::connect ( button, SIGNAL ( clicked ( QString ) ), this, SIGNAL ( workspaceSelected ( QString ) ) );

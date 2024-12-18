@@ -16,7 +16,6 @@
 #include <medAbstractDataFactory.h>
 #include <medAbstractImageData.h>
 #include <medDataManager.h>
-#include <medMetaDataKeys.h>
 #include <medTagContours.h>
 #include <medIntParameterL.h>
 #include <medUtilities.h>
@@ -27,6 +26,7 @@
 
 // vtk
 #include <vtkAppendPolyData.h>
+#include <vtkIdTypeArray.h>
 #include <vtkMetaDataSet.h>
 #include <vtkMetaSurfaceMesh.h>
 #include <vtkParametricSpline.h>
@@ -34,6 +34,11 @@
 #include <vtkPolyDataMapper.h>
 #include <vtkPolyLine.h>
 #include <vtkPointData.h>
+
+//To remove
+#include <medAbstractWritingPolicy.h>
+#include <medAbstractSource.h>
+
 
 class medLabelPolygonsPrivate
 {
@@ -50,6 +55,7 @@ public:
     baseViewEvent *eventCursor;
     medLabelProperty property;
     bool enableInterpolation;
+    medAbstractWritingPolicy *writePolicy;
 };
 
 medLabelPolygonsPrivate::medLabelPolygonsPrivate(medAbstractImageView *view, baseViewEvent *eventCursor,
@@ -62,6 +68,7 @@ medLabelPolygonsPrivate::medLabelPolygonsPrivate(medAbstractImageView *view, bas
 
     this->orientation = view2d->GetViewOrientation();
     this->sliceOrientation = view2d->GetSliceOrientation();
+    this->writePolicy = nullptr;
 }
 
 void medLabelPolygonsPrivate::clearRois()
@@ -415,7 +422,7 @@ QVector<medWorldPosContours> polygonLabel::getContoursAsNodes()
     return contours;
 }
 
-void polygonLabel::createMask(int label, QString &desc)
+void polygonLabel::createMask(int label, QString &desc, bool originSrc)
 {
     vtkImageView2D *view2d = getView2D();
     if (!view2d)
@@ -579,12 +586,9 @@ void polygonLabel::createMask(int label, QString &desc)
             }
         }
     }
-    medUtilities::setDerivedMetaData(output, inputData, desc, false, false);
 
-    output->setMetaData(medMetaDataKeys::Toolbox.key(), "PolygonROI");
-    output->setMetaData(medMetaDataKeys::OriginalDataUID.key(), inputData->metadata(medMetaDataKeys::SeriesInstanceUID.key()));
-    output->setMetaData(medMetaDataKeys::OriginalDataDesc.key(), inputData->metadata(medMetaDataKeys::SeriesDescription.key()));
-    medDataManager::instance()->importData(output, false);
+    medUtilities::setDerivedMetaData(output, inputData, desc, false, false);
+    medDataManager::instance()->importData(output, originSrc);
 }
 
 void polygonLabel::SetMasterRoi()
@@ -680,6 +684,37 @@ void polygonLabel::changeContoursColor(QColor color)
         roi->updateColor(color, d->property.selected);
     }
 }
+
+/*!
+*  To move to medAbstractProcess medInria 4
+*/
+
+#include <medDataHub.h>
+
+
+medAbstractWritingPolicy * polygonLabel::getBestWPolicy(QString pi_sourceId)
+{
+    medAbstractWritingPolicy* writePolicyRes = d->writePolicy;
+
+    if (writePolicyRes == nullptr)
+    {
+        writePolicyRes = medSourceHandler::instance()->getSourceWPolicy(pi_sourceId);
+
+        if (writePolicyRes == nullptr)
+        {
+            writePolicyRes = medSourceHandler::instance()->getGeneralWPolicy();
+        }
+    }
+
+    return writePolicyRes;
+}
+
+bool polygonLabel::writeResults(QString pi_sourceId, medAbstractData * pi_pData, QStringList pi_UriOfRelatedData, QString pi_basePath, medWritingPolicyData & pi_writingPolicyData)
+{
+    return medDataHub::instance()->writeResults(pi_sourceId, pi_pData, pi_UriOfRelatedData, pi_basePath, pi_writingPolicyData, d->writePolicy);
+}
+
+
 
 QColor polygonLabel::switchColor()
 {
@@ -907,7 +942,7 @@ QList<polygonRoi *> polygonLabel::interpolateBetween2Slices(polygonRoi *firstRoi
     unsigned int maxSlice = secondRoi->getIdSlice();
     // Compute intermediate ROIs between two successive ROIs
     QList<QVector<QVector3D>> listOfNodes = generateIntermediateCurves(maxContour,minContour,maxSlice-minSlice-1);
-    if ( listOfNodes.size() != static_cast<int>(maxSlice-minSlice-1) )
+    if ( listOfNodes.size() != (maxSlice-minSlice-1) )
     {
         emit sendErrorMessage(getName() + ": Unable to interpolate between slice: " + QString::number(minSlice+1) + " and " + QString::number(maxSlice-1) + ". Operation aborted");
     }

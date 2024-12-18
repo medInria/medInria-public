@@ -29,6 +29,9 @@ set(CMAKE_INCLUDE_CURRENT_DIR TRUE)
 ## #################################################################
 ## Resolve dependencies
 ## #################################################################
+find_package(Qt${QT_VERSION_MAJOR} REQUIRED COMPONENTS Quick Xml Test)
+
+find_package(medInria REQUIRED COMPONENTS Core)
 
 find_package(dtk REQUIRED)
 include_directories(${dtk_INCLUDE_DIRS})
@@ -87,7 +90,7 @@ target_link_libraries(${TARGET_NAME}
   dtkCore
   dtkLog
   ITKCommon
-  medCore
+  medInria::medCore
 )
 
 set(CMAKE_RUNTIME_OUTPUT_DIRECTORY ${CMAKE_BINARY_DIR}/bin)

@@ -35,6 +35,9 @@ add_definitions(-D${TARGET_NAME_UP}_VERSION="${${TARGET_NAME}_VERSION}")
 ## Resolve dependencies
 ## #################################################################
 
+find_package(dtk REQUIRED)
+include_directories(${dtk_INCLUDE_DIRS})
+
 find_package(ITK REQUIRED)
 include(${ITK_USE_FILE})
 
@@ -97,13 +100,13 @@ target_include_directories(${TARGET_NAME}
 ## #############################################################################
 
 target_link_libraries(${TARGET_NAME}
-  Qt5::Core
+  Qt${QT_VERSION_MAJOR}::Core
   ITKCommon
   ${ITKIO_LIBRARIES}
   medImageIO
   dtkCoreSupport
   dtkLog
-  medCoreLegacy)
+  medCore)
 
 ## #################################################################
 ## Install rules

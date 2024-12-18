@@ -40,8 +40,13 @@ if (NOT USE_SYSTEM_${ep})
 ## Set up versioning control
 ## #############################################################################
 
-set(git_url ${GITHUB_PREFIX}Inria-Asclepios/RPI.git)
-set(git_tag ITK5.1.1)
+set(git_url ${GITHUB_PREFIX}medInria/RPI.git)
+if(${USE_LASTEST_RPI})
+  set(git_tag master)
+else()
+  set(git_tag RPI_INTERFACE)
+endif()
+
 ## #############################################################################
 ## Add specific cmake arguments for configuration step of the project
 ## #############################################################################
@@ -68,7 +73,13 @@ set(cmake_args
   )
   
 set(cmake_cache_args
-  -DITK_DIR:FILEPATH=${ITK_DIR}
+  -DITK_ROOT:FILEPATH=${ITK_ROOT}
+  -DBUILD_ConvertLinearToDF:BOOL=OFF
+  -DBUILD_ConvertLinearToSVF:BOOL=OFF
+  -DBUILD_FuseTransformations:BOOL=OFF
+  -DBUILD_ResampleImage:BOOL=OFF      
+  -DBUILD_RegistrationAddOn:BOOL=OFF
+  -DBUILD_examples:BOOL=OFF
   )
 
 
@@ -93,7 +104,8 @@ ExternalProject_Add(${ep}
   CMAKE_CACHE_ARGS ${cmake_cache_args}
   DEPENDS ${${ep}_dependencies}
   INSTALL_COMMAND ""
-  BUILD_ALWAYS 0
+  BUILD_ALWAYS ${EP_BUILD_ALWAYS}
+  ${EP_INSTAL_COMMAND}
   ) 
   
 ## #############################################################################
@@ -101,8 +113,8 @@ ExternalProject_Add(${ep}
 ## #############################################################################
 
 ExternalProject_Get_Property(${ep} binary_dir)
-set(${ep}_DIR ${binary_dir} PARENT_SCOPE)
-
+set(${ep}_ROOT ${binary_dir} PARENT_SCOPE)
+set(${ep}_DIR ${binary_dir}/lib/cmake/RPI PARENT_SCOPE)
 
 endif() #NOT USE_SYSTEM_ep
 

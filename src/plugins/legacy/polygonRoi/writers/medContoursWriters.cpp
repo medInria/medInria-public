@@ -24,7 +24,7 @@ const QString medContoursWriter::metaDataFieldPrefix = "medMetaData::";
 const QString medContoursWriter::header = "medInria contours";
 
 medContoursWriter::medContoursWriter()
-    : dtkAbstractDataWriter()
+    : medAbstractDataWriter()
 {
 }
 

@@ -40,18 +40,18 @@ void medUtilities::setDerivedMetaData(medAbstractData* derived, medAbstractData*
         QString newSeriesDescription;
         if (outputSchema)
         {
-            newSeriesDescription = original->metadata(medMetaDataKeys::SeriesDescription.key());
+            newSeriesDescription = original->fetchMetaData("SeriesDescription");
             newSeriesDescription += " (" + derivationDescription + ")";
         }
         else
         {
             newSeriesDescription = derivationDescription;
         }
-        derived->setMetaData(medMetaDataKeys::SeriesDescription.key(), newSeriesDescription);
+        derived->setMetaData(medMetaDataKeys::key("SeriesDescription").medPivot(), newSeriesDescription);
     }
     else
     {
-        derived->setMetaData(medMetaDataKeys::SeriesDescription.key(), original->metadata(medMetaDataKeys::SeriesDescription.key()));
+        derived->setMetaData(medMetaDataKeys::key("SeriesDescription").medPivot(), original->fetchMetaData("SeriesDescription"));
     }
 
     if (queryForDescription)
@@ -60,6 +60,8 @@ void medUtilities::setDerivedMetaData(medAbstractData* derived, medAbstractData*
     }
 
     generateSeriesAndSOPInstanceId(derived);
+
+    derived->addParentData(original);
 }
 
 void medUtilities::copyMetaDataIfEmpty(medAbstractData* derived, medAbstractData* original, QList<QString> metaDataKeys)
@@ -74,7 +76,7 @@ void medUtilities::copyMetaDataIfEmpty(medAbstractData* derived, medAbstractData
 {
     if (!derived->hasMetaData(metaDataKey) && original->hasMetaData(metaDataKey))
     {
-        derived->setMetaData(metaDataKey, original->metadata(metaDataKey));
+        derived->setMetaData(metaDataKey, original->fetchMetaData(metaDataKey));
     }
 }
 
@@ -82,54 +84,54 @@ QStringList medUtilities::metaDataKeysToCopyForDerivedData(medAbstractData* deri
 {
     QStringList keys;
 
-    keys << medMetaDataKeys::PatientID.key()
-         << medMetaDataKeys::PatientName.key()
-         << medMetaDataKeys::Age.key()
-         << medMetaDataKeys::BirthDate.key()
-         << medMetaDataKeys::Gender.key()
-         << medMetaDataKeys::Description.key()
-         << medMetaDataKeys::StudyID.key()
-         << medMetaDataKeys::StudyInstanceUID.key()
-         << medMetaDataKeys::StudyDescription.key()
-         << medMetaDataKeys::Institution.key()
-         << medMetaDataKeys::Referee.key()
-         << medMetaDataKeys::StudyDate.key()
-         << medMetaDataKeys::StudyTime.key()
-         << medMetaDataKeys::Modality.key()
-         << medMetaDataKeys::Performer.key()
-         << medMetaDataKeys::Report.key()
-         << medMetaDataKeys::Protocol.key()
-         << medMetaDataKeys::Orientation.key()
-         << medMetaDataKeys::Origin.key()
-         << medMetaDataKeys::AcquisitionDate.key()
-         << medMetaDataKeys::AcquisitionTime.key();
+    keys << medMetaDataKeys::key("PatientID")
+         << medMetaDataKeys::key("PatientName")
+         << medMetaDataKeys::key("Age")
+         << medMetaDataKeys::key("BirthDate")
+         << medMetaDataKeys::key("Gender")
+         << medMetaDataKeys::key("Description")
+         << medMetaDataKeys::key("StudyID")
+         << medMetaDataKeys::key("StudyInstanceUID")
+         << medMetaDataKeys::key("StudyDescription")
+         << medMetaDataKeys::key("Institution")
+         << medMetaDataKeys::key("Referee")
+         << medMetaDataKeys::key("StudyDate")
+         << medMetaDataKeys::key("StudyTime")
+         << medMetaDataKeys::key("Modality")
+         << medMetaDataKeys::key("Performer")
+         << medMetaDataKeys::key("Report")
+         << medMetaDataKeys::key("Protocol")
+         << medMetaDataKeys::key("Orientation")
+         << medMetaDataKeys::key("Origin")
+         << medMetaDataKeys::key("AcquisitionDate")
+         << medMetaDataKeys::key("AcquisitionTime");
 
     if (qobject_cast<medAbstractImageData*>(derived))
     {
-        keys << medMetaDataKeys::Columns.key()
-             << medMetaDataKeys::Rows.key()
-             << medMetaDataKeys::Dimensions.key()
-             << medMetaDataKeys::NumberOfDimensions.key()
-             << medMetaDataKeys::SliceThickness.key()
-             << medMetaDataKeys::Spacing.key()
-             << medMetaDataKeys::XSpacing.key()
-             << medMetaDataKeys::YSpacing.key()
-             << medMetaDataKeys::ZSpacing.key()
-             << medMetaDataKeys::NumberOfComponents.key()
-             << medMetaDataKeys::ComponentType.key()
-             << medMetaDataKeys::PixelType.key()
-             << medMetaDataKeys::PatientPosition.key()
-             << medMetaDataKeys::PatientOrientation.key()
-             << medMetaDataKeys::ImageType.key()
-             << medMetaDataKeys::AcquisitionNumber.key()
-             << medMetaDataKeys::FrameOfReferenceUID.key()
-             << medMetaDataKeys::PositionReferenceIndicator.key()
-             << medMetaDataKeys::FrameOfReferenceUID.key()
-             << medMetaDataKeys::Manufacturer.key()
-             << medMetaDataKeys::KVP.key()
-             << medMetaDataKeys::FlipAngle.key()
-             << medMetaDataKeys::EchoTime.key()
-             << medMetaDataKeys::RepetitionTime.key();
+        keys << medMetaDataKeys::key("Columns")
+             << medMetaDataKeys::key("Rows")
+             << medMetaDataKeys::key("Dimensions")
+             << medMetaDataKeys::key("NumberOfDimensions")
+             << medMetaDataKeys::key("SliceThickness")
+             << medMetaDataKeys::key("Spacing")
+             << medMetaDataKeys::key("XSpacing")
+             << medMetaDataKeys::key("YSpacing")
+             << medMetaDataKeys::key("ZSpacing")
+             << medMetaDataKeys::key("NumberOfComponents")
+             << medMetaDataKeys::key("ComponentType")
+             << medMetaDataKeys::key("PixelType")
+             << medMetaDataKeys::key("PatientPosition")
+             << medMetaDataKeys::key("PatientOrientation")
+             << medMetaDataKeys::key("ImageType")
+             << medMetaDataKeys::key("AcquisitionNumber")
+             << medMetaDataKeys::key("FrameOfReferenceUID")
+             << medMetaDataKeys::key("PositionReferenceIndicator")
+             << medMetaDataKeys::key("FrameOfReferenceUID")
+             << medMetaDataKeys::key("Manufacturer")
+             << medMetaDataKeys::key("KVP")
+             << medMetaDataKeys::key("FlipAngle")
+             << medMetaDataKeys::key("EchoTime")
+             << medMetaDataKeys::key("RepetitionTime");
     }
 
     return keys;
@@ -145,28 +147,28 @@ void medUtilities::generateStudyIdAndInstanceUid(medAbstractData* data)
 {
     gdcm::UIDGenerator uidGenerator;
     QString generatedStudyId = QString::fromStdString(uidGenerator.Generate());
-    data->setMetaData(medMetaDataKeys::StudyID.key(), generatedStudyId);
+    data->setMetaData(medMetaDataKeys::key("StudyID").medPivot(), generatedStudyId);
 
     QString generatedStudyInstanceUid = QString::fromStdString(uidGenerator.Generate());
-    data->setMetaData(medMetaDataKeys::StudyInstanceUID.key(), generatedStudyInstanceUid);
+    data->setMetaData(medMetaDataKeys::key("StudyInstanceUID").medPivot(), generatedStudyInstanceUid);
 }
 
 void medUtilities::generateSeriesAndSOPInstanceId(medAbstractData* data)
 {
     gdcm::UIDGenerator uidGenerator;
     QString generatedSeriesID = QString::fromStdString(uidGenerator.Generate());
-    data->setMetaData(medMetaDataKeys::SeriesID.key(), generatedSeriesID);
+    data->setMetaData(medMetaDataKeys::key("SeriesID").medPivot(), generatedSeriesID);
 
     QString generatedSOPInstanceID = QString::fromStdString(uidGenerator.Generate());
-    data->setMetaData(medMetaDataKeys::SOPInstanceUID.key(), generatedSOPInstanceID);
+    data->setMetaData(medMetaDataKeys::key("SOPInstanceUID").medPivot(), generatedSOPInstanceID);
 
     QString generatedSeriesInstanceUID = QString::fromStdString(uidGenerator.Generate());
-    data->setMetaData(medMetaDataKeys::SeriesInstanceUID.key(), generatedSeriesInstanceUID);
+    data->setMetaData(medMetaDataKeys::key("SeriesInstanceUID").medPivot(), generatedSeriesInstanceUID);
 }
 
 void medUtilities::querySeriesDescription(medAbstractData* data)
 {
-    QString currentDescription = data->metadata(medMetaDataKeys::SeriesDescription.key());
+    QString currentDescription = data->fetchMetaData("SeriesDescription");
     QString queriedDescription = QInputDialog::getText(nullptr, "Series description", "Enter the name of the series:",
                                                        QLineEdit::Normal, currentDescription);
     if (!queriedDescription.isEmpty())
@@ -174,7 +176,7 @@ void medUtilities::querySeriesDescription(medAbstractData* data)
         currentDescription = queriedDescription;
     }
 
-    data->setMetaData(medMetaDataKeys::SeriesDescription.key(), currentDescription);
+    data->setMetaData(medMetaDataKeys::key("SeriesDescription").medPivot(), currentDescription);
 }
 
 void medUtilities::applyOrientationMatrix(medAbstractView* view, double* inPoint, double* outPoint, bool withTranslation)

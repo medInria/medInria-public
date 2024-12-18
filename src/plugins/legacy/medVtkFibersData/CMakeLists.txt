@@ -32,14 +32,13 @@ add_definitions(-D${TARGET_NAME_UP}_VERSION="${${TARGET_NAME}_VERSION}")
 find_package(dtk REQUIRED)
 include_directories(${dtk_INCLUDE_DIRS})
 
-find_package(VTK REQUIRED COMPONENTS  vtkImagingCore vtkIOLegacy vtkIOXML vtkRenderingCore vtkRenderingOpenGL2 vtkInteractionWidgets) 
-include(${VTK_USE_FILE})
+find_package(VTK REQUIRED COMPONENTS ImagingCore IOLegacy IOXML RenderingCore RenderingOpenGL2
+    InteractionWidgets CommonDataModel FiltersParallel)
 
 find_package(ITK REQUIRED COMPONENTS ITKCommon ITKVtkGlue)
 include(${ITK_USE_FILE})
 
-find_package(TTK REQUIRED)
-include(${TTK_USE_FILE})
+find_package(TTK REQUIRED COMPONENTS ttkAlgorithms ITKTensor)
 
 ## #############################################################################
 ## List Sources
@@ -54,9 +53,6 @@ list_source_files(${TARGET_NAME}
   readers
   writers
   )
-
-set(${TARGET_NAME}_QRC medVtkFibersData.qrc)
-
 
 ## #############################################################################
 ## include directorie.
@@ -106,11 +102,14 @@ target_link_libraries(${TARGET_NAME}
   medCore
   medLog
   medVtkInria
-  ttkAlgorithms
+  TTK::ttkAlgorithms
+  TTK::ITKTensor
   ITKCommon
   ITKVtkGlue
+  ${VTK_LIBRARIES}
   )
 
+vtk_module_autoinit(TARGETS ${TARGET_NAME} MODULES ${VTK_LIBRARIES})
 
 ## #############################################################################
 ## Install rules

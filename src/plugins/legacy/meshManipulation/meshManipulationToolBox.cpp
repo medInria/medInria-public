@@ -14,6 +14,8 @@
 #include <medAbstractProcessLegacy.h>
 #include <medDataManager.h>
 #include <meshManipulationToolBox.h>
+#include <medMetaDataKeys.h>
+#include <medMessageController.h>
 #include <medPluginManager.h>
 #include <medTabbedViewContainers.h>
 #include <medToolBoxBody.h>
@@ -28,10 +30,13 @@
 #include <vtkActor.h>
 #include <vtkBoxWidget.h>
 #include <vtkCommand.h>
-#include <vtkTransform.h>
+#include <vtkDoubleArray.h>
+#include <vtkFieldData.h>
+#include <vtkMatrix4x4.h>
 #include <vtkMetaDataSet.h>
 #include <vtkMetaDataSetSequence.h>
 #include <vtkPointSet.h>
+#include <vtkTransform.h>
 #include <vtkTransformFilter.h>
 
 class ManipulationCallback : public vtkCommand
@@ -42,19 +47,28 @@ public:
         return new ManipulationCallback;
     }
 
-    virtual void Execute(vtkObject *caller, unsigned long, void*)
+    virtual void Execute(vtkObject *caller, unsigned long eventId, void*)
     {
-        vtkSmartPointer<vtkTransform> t = vtkSmartPointer<vtkTransform>::New();
         vtkBoxWidget *widget = reinterpret_cast<vtkBoxWidget*>(caller);
+        vtkSmartPointer<vtkTransform> t = vtkSmartPointer<vtkTransform>::New();
         widget->GetTransform(t);
 
-        for(vtkMetaDataSet *metadata : datasets)
+        if (eventId == vtkCommand::InteractionEvent)
         {
-            for(unsigned int i = 0; i < metadata->GetNumberOfActors(); i++)
+            for(vtkMetaDataSet *metadata : datasets)
             {
-                metadata->GetActor(i)->SetUserTransform(t);
+                for(unsigned int i = 0; i < metadata->GetNumberOfActors(); i++)
+                {
+                    metadata->GetActor(i)->SetUserTransform(t);
+                }
             }
         }
+        else if(eventId == vtkCommand::EndInteractionEvent)
+        {
+            // save the transformation in the
+            toolbox->addTransformationMatrixToUndoStack(t->GetMatrix());
+        }
+
     }
 
     void addDataSet(vtkMetaDataSet *dataset)
@@ -70,8 +84,26 @@ public:
        datasets.clear();
     }
 
-private:
+    void applyExternalMatrix(vtkSmartPointer<vtkMatrix4x4> matrix)
+    {
+        vtkSmartPointer<vtkTransform> t = vtkSmartPointer<vtkTransform>::New();
+        t->SetMatrix(matrix);
+
+        for(vtkMetaDataSet *metadata : datasets)
+        {
+            for(unsigned int i = 0; i < metadata->GetNumberOfActors(); i++)
+            {
+                metadata->GetActor(i)->SetUserTransform(t);
+            }
+        }
+
+        boxWidget->SetTransform(t);
+    }
+
+public:
     QList<vtkMetaDataSet*> datasets;
+    meshManipulationToolBox* toolbox = nullptr;
+    vtkBoxWidget* boxWidget = nullptr;
 };
 
 meshManipulationToolBox::meshManipulationToolBox(QWidget *parent)
@@ -79,7 +111,17 @@ meshManipulationToolBox::meshManipulationToolBox(QWidget *parent)
 {
     QWidget *w = new QWidget(this);
     this->addWidget(w);
-    w->setLayout(new QVBoxLayout);
+    QVBoxLayout* toolboxLayout = new QVBoxLayout();
+    w->setLayout(toolboxLayout);
+    
+    QLabel *explanation = new QLabel("Select one or multiple layers to manually adjust.\n\n"
+                                     "Scaling: hold <right-click> on the bounding box\n"
+                                     "Rotation: hold <left-click> on the sides of the bounding box\n"
+                                     "Translation: hold <mouse-wheel button>, or <left-click> on the central sphere of the bounding box\n\n", this);
+    explanation->setSizePolicy(QSizePolicy::Ignored, QSizePolicy::Preferred);
+    explanation->setWordWrap(true);
+    explanation->setStyleSheet("font: italic");
+    w->layout()->addWidget(explanation);
 
     // scaling
     _scalingCheckBox = new QCheckBox(tr("Enable scaling"));
@@ -97,24 +139,57 @@ meshManipulationToolBox::meshManipulationToolBox(QWidget *parent)
     w->layout()->addWidget(_translationCheckBox);
 
     _saveButton = new QPushButton("Save");
-    _saveButton->setToolTip("Current transform will be applied to all selected layers");
+    _saveButton->setToolTip("Current transform will be applied to all selected layers.");
     _saveButton->setEnabled(false);
     w->layout()->addWidget(_saveButton);
 
-    _cancelButton = new QPushButton("Cancel");
-    _cancelButton->setToolTip("Cancel the current transformation");
-    _cancelButton->setEnabled(false);
-    w->layout()->addWidget(_cancelButton);
+    QHBoxLayout* undoLayout = new QHBoxLayout();
 
+    _undoButton = new QPushButton("Undo", this);
+    _undoButton->setShortcut(QKeySequence("Ctrl+Z"));
+    _redoButton = new QPushButton("Redo", this);
+    _redoButton->setShortcut(QKeySequence("Ctrl+Shift+Z"));
+
+    _cancelButton = new QPushButton("Cancel");
+    _cancelButton->setEnabled(false);
+    undoLayout->addWidget(_undoButton);
+    undoLayout->addWidget(_redoButton);
+    undoLayout->addWidget(_cancelButton);
+
+    toolboxLayout->addLayout(undoLayout);
+
+    QLabel* registrationListText = new QLabel("Imported transformation matrices");
+    registrationListText->setStyleSheet("QLabel{color:#ED6639;}");
+    toolboxLayout->addWidget(registrationListText);
+
+    _availableMatricesWidget = new QListWidget(this);
+    _availableMatricesWidget->setToolTip("Lists all the imported registration matrices.");
+    _availableMatricesWidget->setObjectName("availableMatricesWidget");
+    _availableMatricesWidget->setMaximumHeight(96);
+    _availableMatricesWidget->setSelectionMode(QAbstractItemView::SingleSelection);
+    toolboxLayout->addWidget(_availableMatricesWidget);
+
+    QHBoxLayout* applyLayout = new QHBoxLayout();
+    _applyButton = new QPushButton("Apply", this);
+    _applyButton->setToolTip("Apply selected transformation.");
+
+    _applyInverseButton = new QPushButton("Apply inverse", this);
+    _applyInverseButton->setToolTip("Apply the inverse transformation");
+
+    applyLayout->addWidget(_applyButton);
+    applyLayout->addWidget(_applyInverseButton);
+    toolboxLayout->addLayout(applyLayout);
+
+    QHBoxLayout* exportLayout = new QHBoxLayout();
     _exportButton = new QPushButton("Export matrix");
-    _exportButton->setToolTip("Export the current transformation");
     _exportButton->setEnabled(false);
-    w->layout()->addWidget(_exportButton);
+    exportLayout->addWidget(_exportButton);
 
     _importButton = new QPushButton("Import matrix");
-    _importButton->setToolTip("Import a transformation matrix from a file");
     _importButton->setEnabled(false);
-    w->layout()->addWidget(_importButton);
+    exportLayout->addWidget(_importButton);
+
+    toolboxLayout->addLayout(exportLayout);
 
     connect(_scalingCheckBox,     SIGNAL(toggled(bool)), this, SLOT(enableScaling(bool)));
     connect(_rotationCheckBox,    SIGNAL(toggled(bool)), this, SLOT(enableRotation(bool)));
@@ -123,10 +198,19 @@ meshManipulationToolBox::meshManipulationToolBox(QWidget *parent)
     connect(_cancelButton, SIGNAL(clicked()), this, SLOT(cancel()));
     connect(_exportButton, SIGNAL(clicked()), this, SLOT(exportTransform()));
     connect(_importButton, SIGNAL(clicked()), this, SLOT(importTransform()));
+    connect(_undoButton, &QPushButton::clicked, this, &meshManipulationToolBox::undo);
+    connect(_redoButton, &QPushButton::clicked, this, &meshManipulationToolBox::redo);
+    connect(_applyButton, &QPushButton::clicked, this, &meshManipulationToolBox::applySelectedTransformation);
+    connect(_applyInverseButton, &QPushButton::clicked, this, &meshManipulationToolBox::applySelectedTransformationInverted);
 
     _boxWidget = vtkSmartPointer<vtkBoxWidget>::New();
     _callback = vtkSmartPointer<ManipulationCallback>::New();
+    _callback->toolbox = this;
+    _callback->boxWidget = _boxWidget;
+    _boxWidget->AddObserver(vtkCommand::EndInteractionEvent, _callback);
     _boxWidget->AddObserver(vtkCommand::InteractionEvent, _callback);
+
+    initializeUndoStack();
 }
 
 bool meshManipulationToolBox::registered()
@@ -157,9 +241,111 @@ void meshManipulationToolBox::updateView()
 
             medUtilities::switchTo3D(_view, medUtilities::MSR);
 
+            retrieveRegistrationMatricesFromLayers();
             handleLayerChange();
         }
     }
+}
+
+void meshManipulationToolBox::retrieveRegistrationMatricesFromLayers()
+{
+    _availableMatricesWidget->clear();
+    _availableMatricesWidget->addItem("Current transform");
+
+    _registrationMatrices.clear();
+
+    unsigned int nbLayers = _view->layersCount();
+    for (unsigned int i = 0; i < nbLayers; ++i)
+    {
+        medAbstractData* abstractData = _view->layerData(i);
+        QString identifier = abstractData->identifier();
+        if (identifier.contains("vtkDataMesh") || identifier.contains("EPMap"))
+        {
+            // check if the vtk dataset has matrices stored
+            vtkMetaDataSet* metaData = static_cast<vtkMetaDataSet*>(abstractData->data());
+            vtkFieldData* fieldData = metaData->GetDataSet()->GetFieldData();
+            for (int j = 0; j < fieldData->GetNumberOfArrays(); ++j)
+            {
+                vtkDataArray* array = fieldData->GetArray(j);
+                if (arrayHoldsRegistrationMatrix(array))
+                {
+                    QVector<double> matrixAsVector = retrieveMatrixFromArray(array);
+
+                    QString arrayName(array->GetName());
+                    arrayName += " (" + abstractData->metadata(medMetaDataKeys::key("SeriesDescription")) + ")";
+                    tryAddingRegistrationMatrix(matrixAsVector, arrayName);
+                }
+            }
+        }
+    }
+}
+
+bool meshManipulationToolBox::arrayHoldsRegistrationMatrix(vtkDataArray* array)
+{
+    bool isNumeric = static_cast<bool>(array->IsNumeric());
+    bool has1Component = (array->GetNumberOfComponents() == 1);
+    bool has16Tuples = (array->GetNumberOfTuples() == 16);
+
+    return isNumeric && has1Component && has16Tuples;
+}
+
+QVector<double> meshManipulationToolBox::retrieveMatrixFromArray(vtkDataArray* array)
+{
+    constexpr int stride = 16;
+    QVector<double> flatMatrix(stride);
+    // this code assumes row major ordering
+    for (int i = 0; i < stride; ++i)
+    {
+        flatMatrix[i] = array->GetTuple1(i);
+    }
+
+    return flatMatrix;
+}
+
+void meshManipulationToolBox::tryAddingRegistrationMatrix(const QVector<double>& matrixAsVector,
+                                                          QString registrationName)
+{
+    auto essentiallyEqual = [](double x1, double x2)
+    {
+        return std::fabs(x2 - x1) < 1e-15;
+    };
+
+    QString matrixName = registrationName;
+    if (_registrationMatrices.contains(matrixName))
+    {
+        // already a registration matrix with this name, check if
+        // its the same matrix
+        bool sameRegistration = true;
+        auto& oldMatrix = _registrationMatrices[matrixName];
+        for (int i = 0; i < 16; ++i)
+        {
+            if (!essentiallyEqual(oldMatrix[i], matrixAsVector[i]))
+            {
+                // not the same transformation, exit early
+                sameRegistration = false;
+                break;
+            }
+        }
+
+        if (sameRegistration)
+        {
+            return;
+        }
+        else
+        {
+            // assign a new name
+            int index = 1;
+            QString suffix = "_" + QString::number(index);
+            while (_registrationMatrices.contains(matrixName + suffix))
+            {
+                suffix  = "_" + QString::number(++index);
+            }
+            matrixName += suffix;
+        }
+    }
+
+    _registrationMatrices[matrixName] = matrixAsVector;
+    _availableMatricesWidget->addItem(matrixName);
 }
 
 void meshManipulationToolBox::checkLayer()
@@ -176,10 +362,7 @@ void meshManipulationToolBox::checkLayer()
 
 void meshManipulationToolBox::handleLayerChange()
 {
-    if (_callback)
-    {
-        _callback->clearDataSet();
-    }
+    reset();
 
     // Check if current layer is a mesh
     if (!_view.isNull() && _view->layersCount() > 0)
@@ -212,12 +395,32 @@ void meshManipulationToolBox::setupModificationBox()
         _boxWidget->SetInteractor(static_cast<medVtkViewBackend*>(_view->backend())->view3D->GetInteractor());
         _boxWidget->SetPlaceFactor(1.25);
 
-        // Give box size and position throught bounds
-        double bounds[6] = {}; // init to zero
-        medAbstractData *data = _selectedData.at(0);
-        vtkDataSet *dataset = (static_cast<vtkMetaDataSet*>(data->data()))->GetDataSet();
-        vtkPointSet *pointset = dynamic_cast<vtkPointSet*>(dataset);
-        pointset->GetBounds(bounds);
+        // Give box size and position throught bounds: take all the
+        // selected data into account
+        double min = std::numeric_limits<double>::lowest();
+        double max = std::numeric_limits<double>::max();
+        // xmin, xmax, ymin, ymax, zmin, zmax
+        double bounds[6] = {max, min, max, min, max, min};
+        for (auto* data : _selectedData)
+        {
+            vtkDataSet *dataset = (static_cast<vtkMetaDataSet*>(data->data()))->GetDataSet();
+            vtkPointSet *pointset = dynamic_cast<vtkPointSet*>(dataset);
+            double* localBounds = pointset->GetBounds();
+            for (int i = 0; i < 6; i += 2)
+            {
+                // minima
+                if (localBounds[i] < bounds[i])
+                {
+                    bounds[i] = localBounds[i];
+                }
+                // maxima
+                if (localBounds[i + 1] > bounds[i+1])
+                {
+                    bounds[i + 1] = localBounds[i + 1];
+                }
+            }
+        }
+
         _boxWidget->PlaceWidget(bounds);
 
         // Add datasets to the callback
@@ -320,6 +523,18 @@ vtkPointSet* meshManipulationToolBox::transformDataSet(vtkMetaDataSet *dataset,
     vtkPointSet *newPointset = pointset->NewInstance();
     newPointset->DeepCopy(transformFilter->GetOutput());
 
+    // save the transformation matrix
+    vtkMatrix4x4* m = t->GetMatrix();
+    auto mArray = vtkSmartPointer<vtkDoubleArray>::New();
+    mArray->SetNumberOfTuples(16);
+    mArray->SetNumberOfComponents(1);
+    mArray->SetName("TransformMatrix");
+    double* data = mArray->GetPointer(0);
+    double* mat  = m->GetData();
+    std::memcpy(data, mat, 16 * sizeof(*data));
+
+    newPointset->GetFieldData()->AddArray(mArray);
+
     return newPointset;
 }
 
@@ -335,12 +550,6 @@ medAbstractData *meshManipulationToolBox::processOutput()
         return _outputs.at(0);
     }
     return nullptr;
-}
-
-void meshManipulationToolBox::cancel()
-{
-    reset();
-    setupModificationBox();
 }
 
 void meshManipulationToolBox::clear()
@@ -385,6 +594,8 @@ void meshManipulationToolBox::reset()
             _boxWidget->Off();
         }
     }
+
+    initializeUndoStack();
 }
 
 void meshManipulationToolBox::resetToolbox()
@@ -401,18 +612,28 @@ void meshManipulationToolBox::exportTransform()
 {
     if (_boxWidget && _boxWidget->GetEnabled())
     {
-        vtkSmartPointer<vtkTransform> t = vtkSmartPointer<vtkTransform>::New();
-        _boxWidget->GetTransform(t);
-
-        vtkSmartPointer<vtkMatrix4x4> m = vtkSmartPointer<vtkMatrix4x4>::New();
-        m->DeepCopy(t->GetMatrix());
+        // export select transform
+        std::array<double, 16> matrixAsArray;
+        auto selectedTransform = _availableMatricesWidget->selectedItems();
+        if (selectedTransform.size() == 0 || selectedTransform[0]->text() == "Current transform")
+        {
+            // user is exporting the current transform
+            auto transform = vtkSmartPointer<vtkTransform>::New();
+            _boxWidget->GetTransform(transform);
+            std::memcpy(matrixAsArray.data(), transform->GetMatrix()->GetData(), 16 * sizeof(double));
+        }
+        else
+        {
+            QString name = selectedTransform[0]->text();
+            std::memcpy(matrixAsArray.data(), _registrationMatrices[name].data(), 16 * sizeof(double));
+        }
 
         QByteArray matrixStr;
         for(int i = 0; i < 4; i++)
         {
             for(int j = 0; j < 4; j++)
             {
-                matrixStr += QByteArray::number(m->GetElement(i, j)) + "\t";
+                matrixStr += QByteArray::number(matrixAsArray[i * 4 + j]) + "\t";
             }
             matrixStr += "\n";
         }
@@ -439,7 +660,7 @@ void meshManipulationToolBox::exportTransform()
 
 void meshManipulationToolBox::importTransform()
 {
-    QString filePath = QFileDialog::getOpenFileName(0, "Import the matrix file");
+    QString filePath = QFileDialog::getOpenFileName(this, "Import the matrix file");
     if (!filePath.isEmpty())
     {
         QFile f(filePath);
@@ -449,30 +670,48 @@ void meshManipulationToolBox::importTransform()
         }
         else
         {
-            QByteArray matrixStr = f.readAll();
-            f.close();
+            QTextStream stream(&f);
 
-            vtkSmartPointer<vtkMatrix4x4> m = vtkSmartPointer<vtkMatrix4x4>::New();
-            int i = 0, j = 0;
-            for(QByteArray line : matrixStr.split('\n'))
+            int nbLinesRead = 0;
+            QVector<double> m(16);
+            while (!stream.atEnd())
             {
-                for(QByteArray num : line.split('\t'))
+                QString line = stream.readLine();
+                if (line[0] == '#')
                 {
-                    m->SetElement(i, j, num.toDouble());
-                    j++;
+                    // skip commentary
+                    continue;
                 }
-                i++;j = 0;
+
+                std::stringstream tokenizer(line.toStdString());
+                int i = 0;
+                for (; i < 4 && tokenizer.good(); ++i)
+                {
+                    tokenizer >> m[nbLinesRead * 4 + i];
+                }
+
+                if (i != 4)
+                {
+                    // the line does not contain 4 values
+                    medToolBox::displayMessageError("Matrix has wrong formatting.");
+                    f.close();
+                    return;
+                }
+
+                nbLinesRead++;
             }
 
-            vtkSmartPointer<vtkTransform> t = vtkSmartPointer<vtkTransform>::New();
-            t->SetMatrix(m);
+            if (nbLinesRead == 4)
+            {
+                tryAddingRegistrationMatrix(m, QFileInfo(filePath).baseName());
+            }
+            else
+            {
+                medToolBox::displayMessageError("Not a 4x4 matrix.");
+            }
 
-            _boxWidget->SetTransform(t);
-            _boxWidget->InvokeEvent(vtkCommand::InteractionEvent);
-
-            medAbstractView *view = this->getWorkspace()->tabbedViewContainers()->getFirstSelectedContainerView();
-            view->render();
         }
+        f.close();
     }
 }
 
@@ -496,4 +735,143 @@ void meshManipulationToolBox::enableRotation(bool state)
 void meshManipulationToolBox::enableTranslation(bool state)
 {
     _boxWidget->SetTranslationEnabled(static_cast<int>(state));
+}
+
+void meshManipulationToolBox::initializeUndoStack()
+{
+    _undoStack.clear();
+    std::array<double, 16> identity = {1.0, 0.0, 0.0, 0.0,
+                                       0.0, 1.0, 0.0, 0.0,
+                                       0.0, 0.0, 1.0, 0.0,
+                                       0.0, 0.0, 0.0, 1.0};
+    _undoStack.push_back(identity);
+    _undoStackPos = _undoStack.end();
+
+    // this item is always visible and points on the top of the undo stack
+    if (_availableMatricesWidget->count() == 0)
+    {
+        _availableMatricesWidget->addItem("Current transform");
+    }
+}
+
+void meshManipulationToolBox::addTransformationMatrixToUndoStack(vtkMatrix4x4* matrix)
+{
+    // remove any transformation that are after the current position
+    if (_undoStackPos != _undoStack.end())
+    {
+         // there are elements that need to be removed
+        _undoStack.erase(_undoStackPos, _undoStack.end());
+        _undoStackPos = _undoStack.end();
+    }
+
+    // allow a maximum of 64 transformations in the undo stack
+    if (_undoStack.size() >= 64)
+    {
+        _undoStack.pop_front();
+    }
+
+    std::array<double, 16> matrixAsArray;
+    std::memcpy(matrixAsArray.data(), matrix->GetData(), 16 * sizeof(double));
+    _undoStack.insert(_undoStackPos, matrixAsArray);
+}
+
+void meshManipulationToolBox::undo()
+{
+    auto pos = _undoStackPos;
+    if (_undoStackPos != _undoStack.begin())
+    {
+        --pos;
+        if(pos != _undoStack.begin())
+        {
+            _undoStackPos--;
+            pos--;
+        }
+        auto matrix = vtkSmartPointer<vtkMatrix4x4>::New();
+        auto& matrixAsVector = *pos;
+        std::memcpy(matrix->GetData(), matrixAsVector.data(), 16 * sizeof(double));
+        _callback->applyExternalMatrix(matrix);
+    }
+
+    if (_view)
+    {
+        _view->render();
+    }
+}
+
+void meshManipulationToolBox::redo()
+{
+    if (_undoStackPos != _undoStack.end())
+    {
+        auto& matrixAsVector = *_undoStackPos;
+        _undoStackPos++;
+        auto matrix = vtkSmartPointer<vtkMatrix4x4>::New();
+        std::memcpy(matrix->GetData(), matrixAsVector.data(), 16 * sizeof(double));
+        _callback->applyExternalMatrix(matrix);
+    }
+
+    if (_view)
+    {
+        _view->render();
+    }
+}
+
+void meshManipulationToolBox::cancel()
+{
+    reset();
+    setupModificationBox();
+}
+
+void meshManipulationToolBox::applySelectedTransformation()
+{
+    auto matrix = vtkSmartPointer<vtkMatrix4x4>::New();
+    if (buildMatrixFromSelectedTransform(matrix))
+    {
+        applyTransformationMatrix(matrix);
+    }
+}
+
+void meshManipulationToolBox::applySelectedTransformationInverted()
+{
+    auto matrix = vtkSmartPointer<vtkMatrix4x4>::New();
+    if (buildMatrixFromSelectedTransform(matrix))
+    {
+        matrix->Invert();
+        applyTransformationMatrix(matrix);
+    }
+}
+
+void meshManipulationToolBox::applyTransformationMatrix(vtkSmartPointer<vtkMatrix4x4> matrix)
+{
+    addTransformationMatrixToUndoStack(matrix);
+    _callback->applyExternalMatrix(matrix);
+    if (_view)
+    {
+        _view->render();
+    }
+}
+
+bool meshManipulationToolBox::buildMatrixFromSelectedTransform(vtkSmartPointer<vtkMatrix4x4> matrix)
+{
+    auto selectedItems = _availableMatricesWidget->selectedItems();
+    if (selectedItems.size())
+    {
+        // only one item can be selected so this is safe
+        auto* item = selectedItems.first();
+        QString name = item->text();
+        if (name == "Current transform" && _boxWidget)
+        {
+            // special item that points to the current transform
+            auto transform = vtkSmartPointer<vtkTransform>::New();
+            _boxWidget->GetTransform(transform);
+            matrix->DeepCopy(transform->GetMatrix());
+        }
+        else if (_registrationMatrices.contains(name))
+        {
+            QVector<double>& matrixAsVector = _registrationMatrices[name];
+            std::memcpy(matrix->GetData(), matrixAsVector.data(), 16 * sizeof(double));
+            return true;
+        }
+    }
+
+    return false;
 }

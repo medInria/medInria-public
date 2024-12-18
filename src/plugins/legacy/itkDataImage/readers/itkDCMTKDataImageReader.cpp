@@ -46,14 +46,14 @@ namespace itk {
             void Execute(Object *caller, const EventObject &event);
         void Execute(const Object *caller, const EventObject &event);
 
-        void SetDataImageReader(dtkAbstractDataReader* reader) { m_Reader = reader; }
+        void SetDataImageReader(medAbstractDataReader* reader) { m_Reader = reader; }
 
     protected:
         DCMTKDataImageReaderCommand() { m_Reader = nullptr; }
         virtual ~DCMTKDataImageReaderCommand() {}
 
     private:
-        dtkAbstractDataReader* m_Reader;
+        medAbstractDataReader* m_Reader;
     };
 
     void DCMTKDataImageReaderCommand::Execute(Object *caller, const EventObject &event)
@@ -162,6 +162,12 @@ void itkDCMTKDataImageReaderPrivate::threadDone(itk::DCMTKImageIO::Pointer io)
 
     if (ioThreads->size() == 0)
         ioPointers->clear();
+
+    delete ioPointers;
+    ioPointers = nullptr;
+
+    delete ioThreads;
+    ioThreads = nullptr;
 }
 
 void itkDCMTKDataImageReaderPrivate::initialiseStatic()
@@ -188,13 +194,13 @@ void itkDCMTKDataImageReaderPrivate::initialiseStatic()
 
 const char itkDCMTKDataImageReader::ID[] = "itkDCMTKDataImageReader";
 
-itkDCMTKDataImageReader::itkDCMTKDataImageReader() : dtkAbstractDataReader(), d(new itkDCMTKDataImageReaderPrivate) { }
+itkDCMTKDataImageReader::itkDCMTKDataImageReader() : medAbstractDataReader(), d(new itkDCMTKDataImageReaderPrivate) { }
 
 
 itkDCMTKDataImageReader::~itkDCMTKDataImageReader()
 {
     delete d;
-    d = 0;
+    d = nullptr;
 }
 
 
@@ -263,10 +269,15 @@ bool itkDCMTKDataImageReader::canRead(const QString& path)
 
 bool itkDCMTKDataImageReader::canRead(const QStringList& paths)
 {
+    int count = 0;
     for (int i = 0; i < paths.size(); i++)
-        if (!d->io->CanReadFile(paths[i].toUtf8()))
-            return false;
-    return true;
+    {
+        if (d->io->CanReadFile(paths[i].toUtf8()))
+        {
+            count++;
+        }
+    }
+    return count > (paths.size() >> 1);
 }
 
 bool itkDCMTKDataImageReader::readInformation(const QString& path)
@@ -373,62 +384,27 @@ bool itkDCMTKDataImageReader::readInformation(const QStringList& paths)
 
     if (medData)
     {
-        // PATIENT
-        //PatientId
-        medData->setMetaData(medMetaDataKeys::PatientName.key(), QString::fromLatin1(d->io->GetPatientName().c_str()));
-        medData->setMetaData(medMetaDataKeys::Age.key(),         d->io->GetPatientAge().c_str());
-        medData->setMetaData(medMetaDataKeys::BirthDate.key(),   d->io->GetPatientDOB().c_str());
-        medData->setMetaData(medMetaDataKeys::Gender.key(),      d->io->GetPatientSex().c_str());
-        medData->setMetaData(medMetaDataKeys::Description.key(), QString::fromLatin1(d->io->GetScanOptions().c_str()));
+        for (const auto & [key, values] : d->io->GetMetaData())
+        {
+            QStringList valueList;
+            for (auto val : values)
+            {
+                valueList << QString::fromStdString(val);
+            }
+            int x = 0;
+            if (key == "(0008,103E)" | key == "(0010,0010)" | key == "(0010,0020)" | key == "(0008,103e)")
+            {
+                x = 200;
+            }
+            QString s = valueList[0];
+            if (s.toLower().trimmed().contains("phil"))
+            {
+                x = 300;
+            }
+            Key2 k = medMetaDataKeys::keyFromTag(QString::fromStdString(key), "dicom");
+            medData->setMetaData(QString::fromStdString(key), valueList[0]);
+        }
 
-        // STUDY
-        //StudyId
-        medData->setMetaData(medMetaDataKeys::StudyID.key(),          QString::fromLatin1(d->io->GetStudyID().c_str()));
-        medData->setMetaData(medMetaDataKeys::StudyInstanceUID.key(), d->io->GetStudyInstanceUID().c_str());
-        medData->setMetaData(medMetaDataKeys::StudyDescription.key(), QString::fromLatin1(d->io->GetStudyDescription().c_str()));
-        medData->setMetaData(medMetaDataKeys::Institution.key(),      QString::fromLatin1(d->io->GetInstitution().c_str()));
-        medData->setMetaData(medMetaDataKeys::Referee.key(),          QString::fromLatin1(d->io->GetReferringPhysicianName().c_str()));
-        //StudyDate
-        //StudyTime
-
-        // SERIES
-        //SeriesID
-        medData->setMetaData(medMetaDataKeys::SeriesInstanceUID.key(), d->io->GetSeriesInstanceUID().c_str());
-        medData->setMetaData(medMetaDataKeys::SeriesNumber.key(),      d->io->GetSeriesNumber().c_str());
-        medData->setMetaData(medMetaDataKeys::Modality.key(),          d->io->GetModality().c_str());
-        medData->setMetaData(medMetaDataKeys::Performer.key(),         QString::fromLatin1(d->io->GetPerformingPhysicianName().c_str()));
-        medData->setMetaData(medMetaDataKeys::Report.key(), "");
-        medData->setMetaData(medMetaDataKeys::Protocol.key(),          QString::fromLatin1(d->io->GetProtocolName().c_str()));
-        medData->setMetaData(medMetaDataKeys::SeriesDescription.key(), QString::fromLatin1(d->io->GetSeriesDescription().c_str()));
-        //SeriesDate
-        //SeriesTime
-        //SeriesThumbnail
-
-        // IMAGE
-        //SOPInstanceUID
-        medData->setMetaData(medMetaDataKeys::Columns.key(),         d->io->GetColumns().c_str());
-        medData->setMetaData(medMetaDataKeys::Rows.key(),            d->io->GetRows().c_str());
-        //Dimensions
-        //NumberOfDimensions
-        medData->setMetaData(medMetaDataKeys::Orientation.key(),     d->io->GetOrientation().c_str());
-
-        // Patient position
-        std::string patientPos = d->io->GetMetaDataValueString("(0018,5100)", 0);
-        medData->setMetaData(medMetaDataKeys::PatientPosition.key(), patientPos.c_str());
-        // Patient orientation
-        std::string patientOrient = d->io->GetMetaDataValueString("(0020,0020)", 0);
-        medData->setMetaData(medMetaDataKeys::PatientOrientation.key(), patientOrient.c_str());
-
-        // Image Type
-        QString imageType = QString::fromStdString(d->io->GetMetaDataValueString("(0008,0008)", 0));
-        // it seems '\' characters are replaced by whitespaces. This is not correct
-        // for this tag.
-        imageType = imageType.replace(' ', "\\");
-        medData->setMetaData(medMetaDataKeys::ImageType.key(), imageType.toStdString().c_str());
-
-        // Acquisition number
-        std::string acquisitionNumber = d->io->GetMetaDataValueString("(0020,0012)", 0);
-        medData->setMetaData(medMetaDataKeys::AcquisitionNumber.key(), acquisitionNumber.c_str());
 
         // Add Origin
         QString origin = "";
@@ -436,13 +412,8 @@ bool itkDCMTKDataImageReader::readInformation(const QStringList& paths)
         {
             origin += QString::number(d->io->GetOrigin(i)) + QString(" ");
         }
-        medData->setMetaData(medMetaDataKeys::Origin.key(), origin.trimmed());
+        medData->setMetaData(medMetaDataKeys::key("Origin"), origin.trimmed());
 
-        medData->setMetaData(medMetaDataKeys::SliceThickness.key(),  d->io->GetSliceThickness().c_str());
-        //ImportationDate
-        medData->setMetaData(medMetaDataKeys::AcquisitionDate.key(), d->io->GetAcquisitionDate().c_str());
-        medData->setMetaData(medMetaDataKeys::AcquisitionTime.key(), d->io->GetAcquisitionTime().c_str());
-        medData->setMetaData(medMetaDataKeys::Comments.key(),        QString::fromLatin1(d->io->GetAcquisitionComments().c_str()));
 
         QStringList filePaths;
         for (unsigned int i = 0; i < d->io->GetOrderedFileNames().size(); i++)
@@ -453,47 +424,7 @@ bool itkDCMTKDataImageReader::readInformation(const QStringList& paths)
             }
         }
 
-        medData->addMetaData(medMetaDataKeys::FilePaths.key(), filePaths);
-
-        medData->setMetaData(medMetaDataKeys::Status.key(),          d->io->GetPatientStatus().c_str());
-        medData->setMetaData(medMetaDataKeys::SequenceName.key(),    QString::fromLatin1(d->io->GetSequenceName().c_str()));
-        //Size
-        //VolumeUID
-        //Spacing
-        //XSpacing
-        //YSpacing
-        //ZSpacing
-        //NumberOfComponents
-        //ComponentType
-        //PixelType
-        //medDataType
-        //PreferredDataReader
-        //ImageID
-        //ThumbnailPath
-
-        QString modality = medData->metadata(medMetaDataKeys::Modality.key());
-        if (modality.contains("CT"))
-        {
-            std::string kvp = d->io->GetMetaDataValueString("(0018,0060)", 0 );
-            medData->setMetaData(medMetaDataKeys::KVP.key(), kvp.c_str());
-        }
-        else if (modality.contains("MR"))
-        {
-            // MR Image
-            medData->setMetaData(medMetaDataKeys::FlipAngle.key(), d->io->GetFlipAngle().c_str());
-            medData->setMetaData(medMetaDataKeys::EchoTime.key(), d->io->GetEchoTime().c_str());
-            medData->setMetaData(medMetaDataKeys::RepetitionTime.key(), d->io->GetRepetitionTime().c_str());
-        }
-
-        // Frame of reference
-        std::string frameOfRef = d->io->GetMetaDataValueString("(0020,0052)", 0);
-        medData->setMetaData(medMetaDataKeys::FrameOfReferenceUID.key(), frameOfRef.c_str());
-        std::string posRefIndicator = d->io->GetMetaDataValueString("(0020,1040)", 0);
-        medData->setMetaData(medMetaDataKeys::PositionReferenceIndicator.key(), posRefIndicator.c_str());
-
-        // Equipement
-        std::string manufacturer = d->io->GetMetaDataValueString("(0008,0070)", 0);
-        medData->setMetaData(medMetaDataKeys::Manufacturer.key(), manufacturer.c_str());
+        medData->addMetaData(medMetaDataKeys::key("FilePaths"), filePaths);
     }
     else
     {
@@ -572,7 +503,11 @@ bool itkDCMTKDataImageReader::read(const QStringList& paths)
                 const StringVectorType &values = metaData->GetMetaDataObjectValue();
                 for (unsigned int i = 0; i < values.size(); i++)
                 {
-                    medData->addMetaData(it->first.c_str(), values[i].c_str());
+                    bool bHasMetaData = medData->hasMetaData(it->first.c_str());
+                    if (!bHasMetaData || bHasMetaData && medData->metadata(it->first.c_str()).isEmpty())
+                    {
+                        medData->setMetaData(it->first.c_str(), values[i].c_str());
+                    }
                 }
             }
             ++it;
@@ -588,6 +523,18 @@ bool itkDCMTKDataImageReader::read(const QStringList& paths)
 void itkDCMTKDataImageReader::setProgress(int value)
 {
     emit progressed(value); qApp->processEvents();
+}
+
+QString itkDCMTKDataImageReader::getVolumeId(const QString& path)
+{
+    this->readInformation(path);
+    return QString::fromStdString(d->io->GetSeriesInstanceUID());
+}
+    
+QString itkDCMTKDataImageReader::getVolumeName(const QString& path)
+{
+    this->readInformation(path);
+    return QString::fromStdString(d->io->GetSeriesDescription());
 }
 
 // /////////////////////////////////////////////////////////////////

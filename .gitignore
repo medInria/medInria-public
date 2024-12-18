@@ -7,6 +7,10 @@
 *.DS_Store
 *.aps
 *.autosave
+*.idea
+*.vscode
 CMakeLists.txt.user.*
 build
+build-*
 thirdparts
+sdk

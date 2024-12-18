@@ -65,11 +65,11 @@ set(cmake_args
   -DCMAKE_SHARED_LINKER_FLAGS:STRING=${${ep}_shared_linker_flags}  
   -DCMAKE_INSTALL_PREFIX:PATH=<INSTALL_DIR>
   -DBUILD_SHARED_LIBS:BOOL=${BUILD_SHARED_LIBS_${ep}}
-  -Ddtk_DIR:PATH=${dtk_DIR}
+  -Ddtk_ROOT:PATH=${dtk_ROOT}
   )
   
 set(cmake_cache_args
-  -DQt5_DIR=${Qt5_DIR}
+  -DQt${QT_VERSION_MAJOR}_DIR=${Qt${QT_VERSION_MAJOR}_DIR}
   )
 
 
@@ -94,7 +94,7 @@ ExternalProject_Add(${ep}
   CMAKE_CACHE_ARGS ${cmake_cache_args}
   DEPENDS ${${ep}_dependencies}
   INSTALL_COMMAND ""
-  BUILD_ALWAYS 1
+  BUILD_ALWAYS ${EP_BUILD_ALWAYS}
   )
 
 ## #############################################################################
@@ -102,7 +102,8 @@ ExternalProject_Add(${ep}
 ## #############################################################################
 
 ExternalProject_Get_Property(${ep} binary_dir)
-set(${ep}_DIR ${binary_dir} PARENT_SCOPE)
+set(${ep}_ROOT ${binary_dir} PARENT_SCOPE)
+set(${ep}_DIR ${binary_dir}  PARENT_SCOPE)
 
 
 endif() #NOT USE_SYSTEM_ep

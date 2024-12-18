@@ -24,19 +24,13 @@ if (UNIX AND NOT APPLE)
   set(CMAKE_SHARED_LINKER_FLAGS "${CMAKE_SHARED_LINKER_FLAGS} -Wl,--exclude-libs,ALL")
 endif()
 
-#find_package(Qt5 COMPONENTS REQUIRED Core)
-
 find_package(dtk REQUIRED)
 include_directories(${dtk_INCLUDE_DIRS})
 
 find_package(ITK REQUIRED COMPONENTS ITKCommon ITKTransform ITKRegistrationCommon ITKImageGrid ITKImageFilterBase  ITKIOImageBase ITKTransformFactory ITKIOTransformBase ITKIOMeta ITKIOTransformInsightLegacy ITKPDEDeformableRegistration ITKReview)
 include(${ITK_USE_FILE})
 
-find_package(RPI REQUIRED)
-include(${RPI_USE_FILE})
-
-find_package(LogDemons REQUIRED)
-include(${LogDemons_USE_FILE})
+find_package(RPI REQUIRED COMPONENTS common)
 
 ## #############################################################################
 ## List Sources
@@ -44,7 +38,8 @@ include(${LogDemons_USE_FILE})
 
 list_source_files(${TARGET_NAME}
   ${CMAKE_CURRENT_SOURCE_DIR}
-  )
+  ${CMAKE_CURRENT_SOURCE_DIR}/LogDemonsAlgorithms
+)
 
 ## #############################################################################
 ## include directories
@@ -52,10 +47,12 @@ list_source_files(${TARGET_NAME}
 
 list_header_directories_to_include(${TARGET_NAME}
   ${${TARGET_NAME}_HEADERS}
+  ${CMAKE_CURRENT_SOURCE_DIR}/LogDemonsAlgorithms
   )
 
 include_directories(${${TARGET_NAME}_INCLUDE_DIRS}
   ${MEDINRIA_INCLUDE_DIRS}
+  ${CMAKE_CURRENT_SOURCE_DIR}/LogDemonsAlgorithms
   )
 
 ## #################################################################
@@ -99,12 +96,12 @@ SET(ITKIO_LIBRARIES
 target_link_libraries(${TARGET_NAME}
   ${ITKIO_LIBRARIES}
   ITKPDEDeformableRegistration
-  Qt5::Core
+  Qt${QT_VERSION_MAJOR}::Core
   dtkLog
   dtkCoreSupport
-  medCoreLegacy
+  medCore
   medRegistration  
-  RPILCClogDemons
+  # RPILCClogDemons
 )
 
 set(CMAKE_RUNTIME_OUTPUT_DIRECTORY ${CMAKE_BINARY_DIR}/bin)

@@ -1,6 +1,6 @@
 #pragma once
 
-#include <dtkCoreSupport/dtkAbstractDataWriter.h>
+#include <medAbstractDataWriter.h>
 
 #include <medContours.h>
 #include <vtkMetaDataSet.h>
@@ -18,7 +18,7 @@
  * qint64 labelPos = 0;
  * qint64 endFilePos = 0;
  */
-class  medContoursWriter : public dtkAbstractDataWriter
+class  medContoursWriter : public medAbstractDataWriter
 {
     Q_OBJECT
 

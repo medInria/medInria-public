@@ -19,6 +19,9 @@ set(TARGET_NAME medItkSingleFilterOperationPlugin)
 ## Resolve dependencies
 ## #############################################################################
 
+find_package(dtk REQUIRED)
+include_directories(${dtk_INCLUDE_DIRS})
+
 find_package(ITK REQUIRED COMPONENTS ITKCommon ITKImageIntensity ITKSmoothing)
 include(${ITK_USE_FILE})
 
@@ -62,11 +65,11 @@ target_include_directories(${TARGET_NAME}
 target_link_libraries(${TARGET_NAME}
   ITKCommon
   ITKSmoothing
-  Qt5::Core
+  Qt${QT_VERSION_MAJOR}::Core
   dtkCore
   dtkLog
   medCore
-  medWidgets
+  medCoreGui
   )
 
 

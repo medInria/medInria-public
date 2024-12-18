@@ -18,6 +18,7 @@
 
 namespace itk
 {
+  itkEventMacroDefinition(SliceReadEvent, itk::AnyEvent);
 
   MultiThreadedImageIOBase::MultiThreadedImageIOBase() :
     m_NumberOfThreads(0)

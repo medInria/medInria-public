@@ -27,11 +27,14 @@ add_definitions(-D${TARGET_NAME_UP}_VERSION="${${TARGET_NAME}_VERSION}")
 ## find required
 ## #############################################################################
 
+find_package(dtk REQUIRED)
+include_directories(${dtk_INCLUDE_DIRS})
+
 find_package(ITK REQUIRED  COMPONENTS ITKCommon ITKTransform  ITKRegistrationCommon ITKIOImageBase ITKIOMeta ITKTransformFactory ITKIOTransformBase ITKIOTransformInsightLegacy)
 include(${ITK_USE_FILE})
 
-find_package(RPI REQUIRED)
-include(${RPI_USE_FILE})
+find_package(RPI REQUIRED COMPONENTS common)
+#include(${RPI_USE_FILE})
 
 ## #############################################################################
 ## List Sources
@@ -92,14 +95,15 @@ SET(ITKIO_LIBRARIES
 )
 
 target_link_libraries(${TARGET_NAME}
-  Qt5::Core
+  Qt${QT_VERSION_MAJOR}::Core
   dtkLog
   dtkCoreSupport
-  medCoreLegacy
+  medCore
   ${ITKIO_LIBRARIES}
   ITKOptimizers
   ITKSmoothing
   medRegistration
+  RPI::common
 )
 
 set(CMAKE_RUNTIME_OUTPUT_DIRECTORY ${CMAKE_BINARY_DIR}/bin)

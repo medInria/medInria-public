@@ -12,14 +12,13 @@
 
 =========================================================================*/
 
-#include <dtkCoreSupport/dtkAbstractDataReader.h>
+#include <medAbstractDataReader.h>
 
 #include <medImageIOExport.h>
 
 #include <itkImageIOBase.h>
 
-class MEDIMAGEIO_EXPORT itkDataImageReaderBase:
-        public dtkAbstractDataReader
+class MEDIMAGEIO_EXPORT itkDataImageReaderBase: public medAbstractDataReader
 {
     Q_OBJECT
 
@@ -53,5 +52,5 @@ protected:
 private:
     template <unsigned DIM,typename T>
     bool read_image(const QString& path,const char* type);
-    void extractMetaData();
+    bool extractMetaData();
 };

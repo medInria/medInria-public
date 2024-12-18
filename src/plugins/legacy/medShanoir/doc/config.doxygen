@@ -1,0 +1,13 @@
+PROJECT_NAME           = "medShanoir"
+INPUT                  = ../internal ../.
+OUTPUT_DIRECTORY       = .
+BUILTIN_STL_SUPPORT    = YES
+EXTRACT_ALL            = YES
+RECURSIVE              = YES
+GENERATE_LATEX         = NO
+HIDE_UNDOC_RELATIONS   = NO
+HAVE_DOT               = YES
+UML_LOOK               = YES
+CALL_GRAPH             = YES
+CALLER_GRAPH           = YES
+COLLABORATION_GRAPH  = YES

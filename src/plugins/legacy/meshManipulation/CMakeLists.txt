@@ -19,7 +19,7 @@ set(TARGET_NAME meshManipulationPlugin)
 ## Setup version numbering
 ## #############################################################################
 
-set(${TARGET_NAME}_VERSION ${${PROJECT_NAME}_VERSION})
+set(${TARGET_NAME}_VERSION ${MEDINRIA_VERSION})
 
 string(TOUPPER ${TARGET_NAME} TARGET_NAME_UP)
 add_definitions(-D${TARGET_NAME_UP}_VERSION="${${TARGET_NAME}_VERSION}")
@@ -36,9 +36,7 @@ include_directories(${dtk_INCLUDE_DIRS})
 find_package(ITK REQUIRED COMPONENTS ITKCommon)
 include(${ITK_USE_FILE})
 
-find_package(VTK REQUIRED COMPONENTS vtkCommonCore vtkRenderingCore vtkInteractionStyle
-                                     vtkInteractionWidgets)
-include(${VTK_USE_FILE})
+find_package(VTK REQUIRED COMPONENTS CommonCore RenderingCore InteractionStyle InteractionWidgets)
 
 ## #############################################################################
 ## List Sources
@@ -78,6 +76,7 @@ target_link_libraries(${TARGET_NAME}
   medCore
   medVtkInria
   medUtilities
+  ${VTK_LIBRARIES}
   )
 
 set(CMAKE_RUNTIME_OUTPUT_DIRECTORY ${CMAKE_BINARY_DIR}/bin)

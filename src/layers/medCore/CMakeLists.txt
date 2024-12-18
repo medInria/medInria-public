@@ -16,12 +16,45 @@
 set(TARGET_NAME medCore)
 
 ## #############################################################################
+## find required
+## #############################################################################
+
+# find dtk
+find_package(dtk REQUIRED)
+include_directories(${dtk_INCLUDE_DIRS})
+
+find_package(Qt${QT_VERSION_MAJOR}Test REQUIRED)
+find_package(Qt${QT_VERSION_MAJOR} REQUIRED Network)
+
+## #############################################################################
 ## List Sources
 ## #############################################################################
 
 list_source_files(${TARGET_NAME}
   ${CMAKE_CURRENT_SOURCE_DIR}
+  legacy
+  legacy/data
+  legacy/database
+  legacy/data/annotationData
+  legacy/gui
+  legacy/gui/commonWidgets
+  legacy/gui/database
+  legacy/gui/factories
+  legacy/gui/lookUpTables
+  legacy/gui/settingsWidgets
+  legacy/gui/toolboxes
+  legacy/gui/viewContainers
+  legacy/process
+  legacy/views
+  legacy/views/interactors
+  legacy/views/navigators
+  legacy/parameters
   data
+  source/operating
+  source/settings
+  source/threadPool
+  source/virtualRepresentation
+  source
   process
   process/arithmetic_operation
   process/diffusion_processes
@@ -29,8 +62,12 @@ list_source_files(${TARGET_NAME}
   process/mask_image
   process/single_filter
   parameter
+  parameter/tools
   job
+  notification
+  log
   )
+
 
 list_header_directories_to_include(${TARGET_NAME}
   ${${TARGET_NAME}_HEADERS}
@@ -39,39 +76,57 @@ list_header_directories_to_include(${TARGET_NAME}
 ## #############################################################################
 ## add library
 ## #############################################################################
-
-add_library(${TARGET_NAME} SHARED
-  ${${TARGET_NAME}_CFILES}
-  ${${TARGET_NAME}_QRC}
-  )
-
+add_library(${TARGET_NAME} SHARED)
+target_sources(${TARGET_NAME} PRIVATE ${${TARGET_NAME}_CFILES} ${${TARGET_NAME}_QRC} )
+target_sources(${TARGET_NAME} PRIVATE ${RELATIVE_${TARGET_NAME}_HEADERS})
+set_target_properties(${TARGET_NAME} PROPERTIES PUBLIC_HEADER "${RELATIVE_${TARGET_NAME}_HEADERS}")
 
 ## #############################################################################
-## include directorie.
+## include directories.
 ## #############################################################################
 
 target_include_directories(${TARGET_NAME}
-  PUBLIC ${${TARGET_NAME}_INCLUDE_DIRS}
+  PRIVATE ${dtk_INCLUDE_DIRS}
+  PUBLIC
+	"$<BUILD_INTERFACE:${${TARGET_NAME}_INCLUDE_DIRS}>"
+	"$<INSTALL_INTERFACE:$<INSTALL_PREFIX>/include/${TARGET_NAME}>"
   )
-
 
 ## #############################################################################
 ## Link
 ## #############################################################################
 
 target_link_libraries(${TARGET_NAME}
-  medCoreLegacy
-  Qt5::Core
+  PUBLIC
+  dtkCore
   dtkCoreSupport
   dtkGuiSupport
-  dtkLog
-  dtkComposer
-  )
 
+  Qt${QT_VERSION_MAJOR}::Core
+  Qt${QT_VERSION_MAJOR}::Xml
+  Qt${QT_VERSION_MAJOR}::Widgets
+  Qt${QT_VERSION_MAJOR}::OpenGL
+  Qt${QT_VERSION_MAJOR}::Gui
+  Qt${QT_VERSION_MAJOR}::Sql
+  Qt${QT_VERSION_MAJOR}::Test
+  ${OPENGL_LIBRARIES}
+
+  PRIVATE
+  dtkLog
+  Qt${QT_VERSION_MAJOR}::Network
+  )
+  
 ## #############################################################################
 ## install
 ## #############################################################################
 
 set_lib_install_rules(${TARGET_NAME}
-  ${${TARGET_NAME}_HEADERS}
-  )
+    NAMESPACE                  med
+    VERSION                    4.0    
+    LIBRARY_OUTPUT_NAME_PREFIX med
+    DESTINATION                ${MEDINRIA_PATH}
+    
+    PUBLIC_DEPENDENCIES        
+      "dtk REQUIRED COMPONENTS dtkCore dtkCoreSupport dtkGuiSupport"
+      "Qt${QT_VERSION_MAJOR} REQUIRED COMPONENTS Core Xml Widgets OpenGL Gui Sql Test"
+    )

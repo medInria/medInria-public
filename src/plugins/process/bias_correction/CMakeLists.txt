@@ -19,6 +19,9 @@ set(TARGET_NAME medItkBiasCorrectionProcessPlugin)
 ## Resolve dependencies
 ## #############################################################################
 
+find_package(dtk REQUIRED)
+include_directories(${dtk_INCLUDE_DIRS})
+
 find_package(ITK REQUIRED COMPONENTS ITKBiasCorrection ITKKLMRegionGrowing ITKMathematicalMorphology)
 include(${ITK_USE_FILE})
 
@@ -62,11 +65,11 @@ target_include_directories(${TARGET_NAME}
 target_link_libraries(${TARGET_NAME}
   ITKCommon
   ITKStatistics
-  Qt5::Core
+  Qt${QT_VERSION_MAJOR}::Core
   dtkCore
   dtkLog
   medCore
-  medWidgets
+  medCoreGui
   )
 
 
@@ -76,3 +79,4 @@ target_link_libraries(${TARGET_NAME}
 
 set_plugin_install_rules(${TARGET_NAME})
 
+ 

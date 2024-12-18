@@ -280,9 +280,7 @@ AlgorithmPaintToolBox::AlgorithmPaintToolBox(QWidget *parent ) :
 
     m_magicWandButton = new QPushButton(tr("Magic Wand"));
     m_magicWandButton->setObjectName("Magic Wand");
-    QPixmap pixmap(":medSegmentation/pixmaps/magic_wand_white.svg");
-    QIcon buttonIcon(pixmap);
-    m_magicWandButton->setIcon(buttonIcon);
+    m_magicWandButton->setIcon(QIcon::fromTheme("magic_wand"));
     m_magicWandButton->setToolTip(tr("Magic wand to automatically paint similar voxels"));
     m_magicWandButton->setCheckable(true);
 
@@ -603,6 +601,7 @@ bool AlgorithmPaintToolBox::registered()
 void AlgorithmPaintToolBox::updateMagicWandComputation()
 {
     if (seedPlanted && currentView)
+    if (seedPlanted && currentView)
     {
         if (m_wand3DCheckbox->isChecked() && wandTimer.elapsed()<600) // 1000/24 (24 images per second)
         {
@@ -610,6 +609,7 @@ void AlgorithmPaintToolBox::updateMagicWandComputation()
         }
 
         undo();
+        updateWandRegion(currentView, m_seed);
         updateWandRegion(currentView, m_seed);
         wandTimer.start();
     }
@@ -810,6 +810,7 @@ void AlgorithmPaintToolBox::import()
     medAbstractData *output = dynamic_cast<medAbstractData*>(m_maskData->clone());
 
     copyMetaData(output, m_imageData);
+
     medDataManager::instance()->importData(output, false);
 
     maskHasBeenSaved = true;
@@ -906,8 +907,8 @@ void AlgorithmPaintToolBox::setLabel(int newVal)
 void AlgorithmPaintToolBox::setLabelColor()
 {
     QColor currentColor = m_labelColorMap[m_strokeLabelSpinBox->value() - 1].second;
-    QColor newColor = QColorDialog::getColor(currentColor,this);
-
+    QColor newColor = QColorDialog::getColor(currentColor, this, "Select color", QColorDialog::DontUseNativeDialog);
+    
     if (newColor.isValid())
     {
         m_labelColorMap[m_strokeLabelSpinBox->value() - 1].second = newColor;

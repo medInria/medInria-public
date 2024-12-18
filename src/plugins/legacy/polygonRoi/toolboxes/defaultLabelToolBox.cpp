@@ -22,21 +22,19 @@ defaultLabelToolBox::defaultLabelToolBox(QWidget *parent):
                                });
 
     auto widget = new QWidget();
+
     auto layout = new QVBoxLayout;
     widget->setLayout(layout);
 
     dataName = new QLabel("No Data");
-    dataName->setWordWrap(true);
-    dataName->setSizePolicy(QSizePolicy::Ignored, QSizePolicy::Preferred);
-
     labels = new QListWidget;
     labels->setSelectionMode(QAbstractItemView::SingleSelection);
     labels->setContentsMargins(0,0,0,0);
 
-    plusButton = new QPushButton(QIcon(":/pixmaps/plus.png"), "");
+    plusButton = new QPushButton(QIcon::fromTheme("plus"), "");
     plusButton->setMaximumSize(QSize(20,20));
 
-    minusButton = new QPushButton(QIcon(":/pixmaps/minus.png"), "");
+    minusButton = new QPushButton(QIcon::fromTheme("minus"), "");
     minusButton->setMaximumSize(QSize(20,20));
 
     auto listLabelLayout = new QVBoxLayout();
@@ -94,8 +92,10 @@ void defaultLabelToolBox::addDefaultItem(QListWidgetItem *item)
 {
     labels->addItem(item);
 
-    item->setFlags(item->flags() | Qt::ItemIsSelectable | Qt::ItemIsEditable);
-    item->setFlags(item->flags() & (~Qt::ItemIsUserCheckable));
+    labels->setDragDropMode(QAbstractItemView::InternalMove);
+    labels->setDragEnabled(true);
+    labels->setAcceptDrops(true);
+    labels->setDropIndicatorShown(true);
 
     labels->setMaximumHeight((20 * labels->count()) + 5);
 }
@@ -120,6 +120,7 @@ void defaultLabelToolBox::clear()
         delete item;
     }
     labels->clear();
+
 }
 
 void defaultLabelToolBox::clean()
@@ -238,11 +239,15 @@ void defaultLabelToolBox::updateItem(medLabelProperty &info)
     {
         item = createWidgetItem(info.mainName, info.mainColor);
         labels->insertItem(info.position, item);
+        labels->setDragDropMode(QAbstractItemView::InternalMove);
+        labels->setDragEnabled(true);
+        labels->setAcceptDrops(true);
+        labels->setDropIndicatorShown(true);
         labels->setMaximumHeight((20 * labels->count()) + 5);
     }
     else if (item->text() != info.mainName)
     {
-        info.mainName = item->text();
+        rename(labels->row(item), info.mainName);
     }
 
     item->setFlags(item->flags() | Qt::ItemIsSelectable | Qt::ItemIsEditable);
@@ -336,19 +341,16 @@ void defaultLabelToolBox::unselectAll()
     }
 }
 
-void defaultLabelToolBox::forceItemSelection()
+void defaultLabelToolBox::forceItemClickIfNeeded(int selectedLabel)
 {
-    int selectedItem = -1;
-    for (int iRow=0; iRow <labels->count(); iRow++)
+    if (labels->row(labels->currentItem()) < 0)
+        return;
+
+    if (selectedLabel!=labels->row(labels->currentItem()))
     {
-        QListWidgetItem *item = labels->item(iRow);
-        if (item->isSelected())
-        {
-            selectedItem = iRow;
-        }
-    }
-    if (selectedItem!=-1)
-    {
-        emit labels->itemClicked(labels->item(selectedItem));
+        emit labels->itemClicked(labels->currentItem());
     }
 }
+
+
+

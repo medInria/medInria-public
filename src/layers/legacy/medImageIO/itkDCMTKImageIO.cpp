@@ -367,7 +367,7 @@ void DCMTKImageIO::DetermineNumberOfPixelComponents()
 
 void DCMTKImageIO::DeterminePixelType()
 {
-    OFFilename dcmFileName(m_FileName, OFTrue);
+    OFFilename dcmFileName(m_FileName.c_str(), OFTrue);
     DcmFileFormat dicomFile;
     OFCondition condition = dicomFile.loadFile(dcmFileName);
     
@@ -687,6 +687,11 @@ double DCMTKImageIO::GetPositionOnStackingAxisForImage (int index)
 double DCMTKImageIO::GetPositionFromPrincipalAxisIndex(int index, int principalAxisIndex)
 {
     std::string s_position = this->GetMetaDataValueString("(0020,0032)", index);
+    if (s_position.empty())
+    {
+        itkWarningMacro ( << "Tag (0020,0032) (ImageOrigin) was not found, assuming 0.0/0.0/0.0" << std::endl);
+        return 0.0;
+    }
 
     // Convert string metadata to vector of double
     std::stringstream lineStream(s_position);
@@ -743,7 +748,7 @@ void DCMTKImageIO::InternalRead (void* buffer, int slice, unsigned long pixelCou
     std::string filename;
     filename = m_OrderedFileNames[slice];
 
-    OFFilename dcmFileName(filename, OFTrue);
+    OFFilename dcmFileName(filename.c_str(), OFTrue);
     DcmFileFormat dicomFile;
 
     OFCondition cond = dicomFile.loadFile(dcmFileName, EXS_Unknown, EGL_noChange, DCM_MaxReadLength, ERM_autoDetect);
@@ -851,6 +856,31 @@ void DCMTKImageIO::InternalRead (void* buffer, int slice, unsigned long pixelCou
     }
 }
 
+std::map<std::string, std::vector<std::string>> DCMTKImageIO::GetMetaData() const
+{
+    std::map<std::string, std::vector<std::string>> metaDataMap;
+
+    const itk::MetaDataDictionary & dictionary = this->GetMetaDataDictionary();
+
+    using MetaDataStringType = itk::MetaDataObject<std::string>;
+    auto itr = dictionary.Begin();
+    auto end = dictionary.End();
+
+    while (itr != end)
+    {
+        itk::MetaDataObjectBase::Pointer entry = itr->second;
+
+        MetaDataVectorStringType::Pointer entryvalue = dynamic_cast<MetaDataVectorStringType*>(entry.GetPointer());
+
+        if (entryvalue)
+        {
+            metaDataMap[itr->first] = entryvalue->GetMetaDataObjectValue();
+        }
+        ++itr;
+    }
+
+    return metaDataMap;
+}
 
 std::string DCMTKImageIO::GetPatientName() const
 {
@@ -1060,7 +1090,7 @@ DCMTKImageIO
 
 void DCMTKImageIO::ReadHeader(const std::string& name, const int& fileIndex, const int& fileCount )
 {
-    OFFilename dcmFileName(name, OFTrue);
+    OFFilename dcmFileName(name.c_str(), OFTrue);
     DcmFileFormat dicomFile;
     OFCondition condition = dicomFile.loadFile(dcmFileName);
 

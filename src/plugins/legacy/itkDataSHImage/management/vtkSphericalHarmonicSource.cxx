@@ -11,45 +11,89 @@
 
 =========================================================================*/
 
-#include <vector>
-#include <complex>
-#include <cmath>
+#include <qmath.h>
 
 #include <vtkSphericalHarmonicSource.h>
 
-#include <vtkPolyDataNormals.h>
-#include <vtkCellArray.h>
 #include <vtkFloatArray.h>
 #include <vtkInformation.h>
 #include <vtkInformationVector.h>
-#include <vtkMath.h>
 #include <vtkObjectFactory.h>
 #include <vtkPointData.h>
 #include <vtkPoints.h>
 #include <vtkPolyData.h>
 #include <vtkMatrix4x4.h>
-#include <vtkStreamingDemandDrivenPipeline.h>
 
-// Compute spherical associated Legendre function
-#if (defined __APPLE__ || defined WIN32 || defined CLANG)
-#include <boost/math/special_functions/legendre.hpp>
-#else
-#include <tr1/cmath>
-#endif //WIN32
+/**
+ * @brief Computes the associated Legendre function P_l^m(cos(theta)).
+ * 
+ * The associated Legendre functions are solutions to Legendre's differential
+ * equation and are used in applications such as spherical harmonics.
+ * This implementation uses a recurrence relation for efficient computation.
+ * 
+ * @param l The degree (l >= 0).
+ * @param m The order (|m| <= l).
+ * @param theta The polar angle in radians (0 <= theta <= π).
+ * @return The value of the associated Legendre function P_l^m(cos(theta)).
+ * 
+ * @throws std::invalid_argument if l < 0, |m| > l, or theta is out of range.
+ * 
+ * @note This function assumes double precision for floating-point computations.
+ */
+double sphLegendre(const int l, const int m, const double theta)
+{
+    //when we will used macOs that support std::sph_legendre, we can use std::sph_legendre
+    if (l < 0 || std::abs(m) > l || theta < 0.0 || theta > M_PI)
+    {
+        throw std::invalid_argument("Invalid arguments for Legendre function");
+    }
 
-#if (defined __APPLE__ || defined WIN32 || defined CLANG)
-double sphLegendre(const int l,const int m,const double theta) {
-    const unsigned lmm = l-m;
-    const unsigned lpm = l+m;
-    const double fact   = boost::math::factorial<double>(lmm)/boost::math::factorial<double>(lpm);
-    const double factor = static_cast<double>(2*l+1) * fact / (4.0 * vtkMath::Pi());
-    return sqrt(factor)*boost::math::legendre_p(l,m,cos(theta));
+    // Compute cos(theta) and sin(theta)
+    const double x = std::cos(theta);
+    const double sinTheta = std::sin(theta);
+
+    // Base case: P_0^0(x) = 1
+    if (l == 0)
+    {
+        return 1.0;
+    }
+
+    // Base case: P_1^0(x) = x
+    if (l == 1 && m == 0)
+    {
+        return x;
+    }
+
+    // Compute P_m^m(x) (diagonal terms)
+    double pmm = 1.0;
+    for (int i = 1; i <= std::abs(m); ++i)
+    {
+        pmm *= -1.0 * (2.0 * i - 1.0) * sinTheta;
+    }
+
+    if (l == m)
+    {
+        return pmm;
+    }
+
+    // Compute P_{m+1}^m(x)
+    double pmmp1 = x * (2.0 * m + 1.0) * pmm;
+    if (l == m + 1)
+    {
+        return pmmp1;
+    }
+
+    // Compute P_l^m(x) using recurrence relation
+    double pll = 0.0;
+    for (int ll = m + 2; ll <= l; ++ll)
+    {
+        pll = ((2.0 * ll - 1.0) * x * pmmp1 - (ll + m - 1.0) * pmm) / (ll - m);
+        pmm = pmmp1;
+        pmmp1 = pll;
+    }
+
+    return pll;
 }
-#else
-double sphLegendre(const int l,const int m,const double theta) {
-    return std::tr1::sph_legendre(l,m,theta);
-}
-#endif //WIN32
 
 typedef itk::Vector<double,3> itkVector3;
 

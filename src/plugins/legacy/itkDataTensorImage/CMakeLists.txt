@@ -34,13 +34,10 @@ include_directories(${dtk_INCLUDE_DIRS})
 
 find_package(ITK REQUIRED  COMPONENTS ITKIOImageBase ITKIOMeta ITKIONRRD ITKIONIFTI)
 include(${ITK_USE_FILE})
-    
-find_package(VTK REQUIRED  COMPONENTS vtkCommonCore vtkCommonExecutionModel vtkRenderingCore vtkImagingCore vtkInteractionStyle vtkInteractionWidgets)
-include(${VTK_USE_FILE})
 
-find_package(TTK REQUIRED)
-include(${TTK_USE_FILE})
+find_package(VTK REQUIRED COMPONENTS CommonCore CommonExecutionModel RenderingCore ImagingCore InteractionStyle InteractionWidgets)
 
+find_package(TTK REQUIRED COMPONENTS ITKTensor ttkAlgorithms)
 
 ## #############################################################################
 ## List Sources
@@ -118,12 +115,13 @@ target_link_libraries(${TARGET_NAME}
   ITKIOPNG
   ITKIOStimulate
   ITKIOVTK
-  ITKTensor
+  TTK::ITKTensor
+  TTK::ttkAlgorithms
   medCore
   medLog
   medVtkInria
+  ${VTK_LIBRARIES}
   )
-
 
 ## #############################################################################
 ## Install rules

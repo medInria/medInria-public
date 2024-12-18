@@ -34,12 +34,9 @@
 baseViewEvent::baseViewEvent(medAbstractImageView *iView, polygonRoiToolBox *toolBox) :
         medViewEventFilter(),
         currentLabel(nullptr), enableInterpolation(true),
-        pToolBox(toolBox), cursorState(CURSORSTATE::CS_DEFAULT), isRepulsorActivated(false)
+        pToolBox(toolBox), cursorState(CURSORSTATE::CS_DEFAULT), isRepulsorActivated(false), globalVtkLeftButtonBehaviour(-1)
 {
     currentView = iView;
-
-    vtkImageView2D *view2d = static_cast<medVtkViewBackend*>(currentView->backend())->view2D;
-    globalVtkLeftButtonBehaviour = view2d->GetLeftButtonInteractionStyle();
 
     crossPosition = new medMouseCrossPosition(iView);
 
@@ -113,6 +110,13 @@ bool baseViewEvent::eventFilter(QObject *obj, QEvent *event)
                 break;
             case Qt::Key::Key_S:
                 switchContourColor(savedMousePosition);
+                break;
+            case Qt::Key::Key_D:
+                double percentPos[2];
+                double wPos[4];
+                crossPosition->getWorldPosition(savedMousePosition, wPos);
+                pToolBox->drawCross(wPos);
+                pToolBox->drawCross(percentPos);
                 break;
             case Qt::Key::Key_E:
                 pToolBox->eraseCross();
@@ -225,7 +229,7 @@ bool baseViewEvent::mousePressEvent(medAbstractView * view, QMouseEvent *mouseEv
             pToolBox->drawCross(wPos);
             vtkImageView2D *view2d = static_cast<medVtkViewBackend*>(currentView->backend())->view2D;
             globalVtkLeftButtonBehaviour = view2d->GetLeftButtonInteractionStyle();
-            view2d->SetLeftButtonInteractionStyle(vtkInteractorStyleImageView2D::InteractionTypeNull);
+            view2d->SetLeftButtonInteractionStyle(-1);
         }
         else if (mouseEvent->modifiers() == Qt::ShiftModifier)
         {
@@ -239,20 +243,6 @@ bool baseViewEvent::mousePressEvent(medAbstractView * view, QMouseEvent *mouseEv
                 }
             }
             leftButtonBehaviour(view);
-        }
-        else if (mouseEvent->modifiers()==Qt::NoModifier)
-        {
-            if (!isRepulsorActivated )
-            {
-                vtkImageView2D *view2d = static_cast<medVtkViewBackend*>(currentView->backend())->view2D;
-                int currentLeftButtonBehaviour = view2d->GetLeftButtonInteractionStyle();
-                if (currentLeftButtonBehaviour != globalVtkLeftButtonBehaviour &&
-                currentLeftButtonBehaviour != vtkInteractorStyleImageView2D::InteractionTypeNull)
-                {
-                    globalVtkLeftButtonBehaviour = currentLeftButtonBehaviour;
-                }
-                view2d->SetLeftButtonInteractionStyle(globalVtkLeftButtonBehaviour);
-            }
         }
     }
     else if (mouseEvent->button()==Qt::RightButton)
@@ -290,13 +280,12 @@ void baseViewEvent::leftButtonBehaviour(medAbstractView *view)
             if (!currentLabel)
             {
                 pToolBox->displayMessageError(QString("Select a label in list to be able to use repulsor tool."));
-                return;
             }
-            if (!interactorStyleRepulsor)
+            if (interactorStyleRepulsor == nullptr)
             {
-                pToolBox->displayMessageError(QString("Repulsor tool is not activated"));
-                return;
+                interactorStyleRepulsor = vtkInriaInteractorStylePolygonRepulsor::New();
             }
+            interactorStyleRepulsor->SetCurrentView(view);
             interactorStyleRepulsor->SetManager(currentLabel);
             break;
         }
@@ -658,15 +647,12 @@ void baseViewEvent::updateContourProperty(QString &name, QColor &color, int posi
         labelList.append(currentLabel);
     }
     currentLabel->setRoisSelectedState();
-
-    interactorStyleRepulsor->SetManager(currentLabel);
-
     currentView->render();
 }
 
 void baseViewEvent::activateRepulsor(bool state)
 {
-    if (!currentView || !interactorStyleRepulsor)
+    if (!currentView)
         return;
 
     vtkImageView2D *view2d = static_cast<medVtkViewBackend*>(currentView->backend())->view2D;
@@ -677,6 +663,11 @@ void baseViewEvent::activateRepulsor(bool state)
     {
         cursorState = CURSORSTATE::CS_REPULSOR;
         vtkInteractorStyleImageView2D *interactorStyle2D = vtkInteractorStyleImageView2D::SafeDownCast(view2d->GetInteractor()->GetInteractorStyle());
+        if (!interactorStyleRepulsor)
+        {
+            interactorStyleRepulsor = vtkInriaInteractorStylePolygonRepulsor::New();
+        }
+        interactorStyleRepulsor->SetCurrentView(currentView);
         interactorStyleRepulsor->SetManager(currentLabel);
         interactorStyleRepulsor->SetLeftButtonInteraction(interactorStyle2D->GetLeftButtonInteraction());
         view2d->SetInteractorStyle(interactorStyleRepulsor);
@@ -705,7 +696,10 @@ void baseViewEvent::activateRepulsor(bool state)
     {
         cursorState = CURSORSTATE::CS_DEFAULT;
         vtkInteractorStyleImageView2D *interactorStyle2D = vtkInteractorStyleImageView2D::New();
-        globalVtkLeftButtonBehaviour = view2d->GetLeftButtonInteractionStyle();
+        if (!interactorStyleRepulsor)
+        {
+            interactorStyleRepulsor = vtkInriaInteractorStylePolygonRepulsor::New();
+        }
         interactorStyle2D->SetLeftButtonInteraction(vtkInteractorStyleImageView2D::InteractionTypeNull);
         view2d->SetInteractorStyle(interactorStyle2D);
         view2d->SetupInteractor(view2d->GetInteractor()); // to reinstall vtkImageView2D pipeline
@@ -780,14 +774,14 @@ void baseViewEvent::saveAllContours()
             description = QString("%1 contours").arg(contoursData.size());
         }
         medAbstractData * data = currentView->layerData(0);
-        description += " (" + data->metadata(medMetaDataKeys::SeriesDescription.key()) + ")";
+        description += " (" + data->fetchMetaData("SeriesDescription") + ")";
         medUtilities::setDerivedMetaData(contourOutput, data, description, false, false);
 
         contourOutput->setData(outputDataSet);
         contourOutput->setData(&contoursData, 1);
         outputDataSet->Delete();
-
-        medDataManager::instance()->importData(contourOutput, false);
+        bool originSrc = pToolBox->dataDestButton->isChecked();
+        medDataManager::instance()->importData(contourOutput, originSrc);
     }
 }
 
@@ -846,7 +840,6 @@ int baseViewEvent::activateContourBase(double *mousePosition)
     if (pLabel && pLabel->getMinimumDistanceFromNodesToMouse(mousePosition, true) < 10. )
     {
         currentLabel = pLabel;
-        interactorStyleRepulsor->SetManager(currentLabel);
         pLabel->getState().selected = true;
         pLabel->setRoisSelectedState();
         position = pLabel->getPosition();
@@ -959,14 +952,15 @@ void baseViewEvent::saveMask(polygonLabel *manager)
 {
     int label = labelList.indexOf(manager);
     QString desc = createMaskDescription(manager);
-    manager->createMask(label, desc);
+    bool originSrc = pToolBox->dataDestButton->isChecked();
+    manager->createMask(label, desc, originSrc);
 }
 
 QString baseViewEvent::createMaskDescription(polygonLabel *label)
 {
     QString name = QString(label->getName());
     medAbstractData * data = currentView->layerData(0);
-    QString desc = QString("mask ") + name + " (" + data->metadata(medMetaDataKeys::SeriesDescription.key()) + ")";
+    QString desc = QString("mask ") + name + " (" + data->fetchMetaData("SeriesDescription") + ")";
     return desc;
 }
 
@@ -1015,16 +1009,15 @@ void baseViewEvent::saveContour(polygonLabel *label)
         description = QString("%1 contours ").arg(contoursData.size());
     }
     medAbstractData * data = currentView->layerData(0);
-    description += " (" + data->metadata(medMetaDataKeys::SeriesDescription.key()) + ")";
+    description += " (" + data->fetchMetaData("SeriesDescription") + ")";
 
     medUtilities::setDerivedMetaData(contourOutput, data, description, false, false);
 
     contourOutput->setData(outputDataSet);
     contourOutput->setData(&contoursData, 1);
     outputDataSet->Delete();
-
-    medDataManager::instance()->importData(contourOutput, false);
-
+    bool originSrc = pToolBox->dataDestButton->isChecked();
+    medDataManager::instance()->importData(contourOutput, originSrc);
 }
 
 void baseViewEvent::onContourFinished(CURSORSTATE state)

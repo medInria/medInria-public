@@ -67,8 +67,8 @@ target_link_libraries(${PROJECT_NAME}
   ${QT_LIBRARIES}
   dtkCore
   dtkLog
-  medCore
-  ITKTensor
+  medInria::medCore
+  TTK::ITKTensor
   medSql
   )
 

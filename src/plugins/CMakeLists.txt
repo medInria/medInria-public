@@ -69,13 +69,17 @@ set(PLUGIN_LIST
   legacy/meshManipulation                                                ON
   legacy/meshMapping                                                     ON
   legacy/polygonRoi                                                      ON
-  legacy/qtdcmDataSource                                                 ON
   legacy/reformat                                                        ON
   legacy/undoRedoRegistration                                            ON
   legacy/variationalSegmentation                                         ON
   legacy/voiCutter                                                       ON
   legacy/vtkDataMesh                                                     ON
   legacy/medExportVideo                                                  ON
+  legacy/medSQLite                                                       ON
+  legacy/medShanoir                                                      ON
+  # legacy/medAPHPDataSource                                               ON
+  legacy/medPACS                                                         ON
+  legacy/medTemporaryDataSource                                          ON
   process/arithmetic_operation                                           ON
   process/bias_correction                                                ON
   process/dwi_basic_thresholding                                         ON
