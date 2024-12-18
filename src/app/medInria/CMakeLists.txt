@@ -141,6 +141,41 @@ target_link_libraries(${TARGET_NAME} PRIVATE
   med::CoreGui
   )
 
+## #############################################################################
+## Python
+## #############################################################################
+
+if(USE_Python)
+    target_link_libraries(${TARGET_NAME} PUBLIC ${pyncpp_CPP_API_LIBRARY})
+
+    if(APPLE)
+        set(python_home "../Resources")
+    else()
+        set(python_home "..")
+    endif()
+
+    set(python_home "${python_home}/${pyncpp_PYTHON_INSTALL_DESTINATION}")
+
+    if(APPLE)
+        set(python_plugin_path "../Plugins/python")
+    else()
+        set(python_plugin_path "python_plugins")
+    endif()
+
+    target_compile_definitions(${TARGET_NAME} PUBLIC
+        USE_PYTHON
+        PYTHON_HOME="${python_home}"
+        PYTHON_PLUGIN_PATH="${python_plugin_path}"
+        BUILD_PYTHON_HOME="${pyncpp_PYTHON_DIR}"
+        BUILD_PYTHON_PLUGIN_PATH="${CMAKE_BINARY_DIR}/bin/python_plugins"
+        )
+
+    if(WIN32)
+        target_compile_definitions(${TARGET_NAME} PUBLIC
+            PLUGINS_LEGACY_PATH="plugins_legacy"
+            )
+    endif()
+endif()
 
 ## #############################################################################
 ## install

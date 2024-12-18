@@ -11,6 +11,8 @@
 #
 ################################################################################
 
+option(USE_Python "Build with Python support" ON)
+
 ## #############################################################################
 ## Add packages
 ## #############################################################################
@@ -27,6 +29,16 @@ find_package(Qt${QT_VERSION_MAJOR} REQUIRED COMPONENTS
   Test
   Quick
   )
+
+if (USE_Python AND UNIX)
+    if(APPLE)
+        set(default_root_dir "/usr/local/opt/openssl")
+    else()
+        set(default_root_dir)
+    endif()
+    set(OPENSSL_ROOT_DIR ${default_root_dir} CACHE PATH "Root directory of OpenSSL.")
+    find_package(OpenSSL COMPONENTS SSL)
+endif()
 
 ## #############################################################################
 ## Add exteral projects
@@ -68,6 +80,12 @@ list(APPEND external_projects
 if (USE_DTKIMAGING)
     list(APPEND external_projects
         dtkImaging
+        )
+endif()
+
+if (USE_Python)
+    list(APPEND external_projects
+        pyncpp
         )
 endif()
 

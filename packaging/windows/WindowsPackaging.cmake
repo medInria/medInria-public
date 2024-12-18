@@ -117,6 +117,11 @@ list(APPEND
   ${DCMTK_ROOT}/bin/${CONFIG_MODE}
   )
 
+set(CPACK_INSTALL_CMAKE_PROJECTS
+    ${pyncpp_ROOT} pyncpp Runtime "/"
+    ${CPACK_INSTALL_CMAKE_PROJECTS}
+    )
+
 install(CODE "
 
 file(GLOB_RECURSE itk_files LIST_DIRECTORIES true \"${ITK_ROOT}/bin/*.dll\")
@@ -139,6 +144,7 @@ endforeach()
 
 file(INSTALL ${MEDINRIA_FILES}/                         DESTINATION \${CMAKE_INSTALL_PREFIX}/bin/              FILES_MATCHING PATTERN \"*${CMAKE_EXECUTABLE_SUFFIX}\")
 file(INSTALL ${MEDINRIA_FILES}/                         DESTINATION \${CMAKE_INSTALL_PREFIX}/bin/              FILES_MATCHING PATTERN \"*${CMAKE_SHARED_LIBRARY_SUFFIX}\")
+file(INSTALL ${MEDINRIA_FILES}/                         DESTINATION \${CMAKE_INSTALL_PREFIX}/bin/              FILES_MATCHING PATTERN \"*.pyd\")
 file(INSTALL ${QT_PLUGINS_DIR}/imageformats/qgif.dll    DESTINATION \${CMAKE_INSTALL_PREFIX}/bin/imageformats/ FILES_MATCHING PATTERN \"*${CMAKE_SHARED_LIBRARY_SUFFIX}\")
 file(INSTALL ${QT_PLUGINS_DIR}/imageformats/qicns.dll   DESTINATION \${CMAKE_INSTALL_PREFIX}/bin/imageformats/ FILES_MATCHING PATTERN \"*${CMAKE_SHARED_LIBRARY_SUFFIX}\")
 file(INSTALL ${QT_PLUGINS_DIR}/imageformats/qico.dll    DESTINATION \${CMAKE_INSTALL_PREFIX}/bin/imageformats/ FILES_MATCHING PATTERN \"*${CMAKE_SHARED_LIBRARY_SUFFIX}\")
