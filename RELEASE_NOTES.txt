@@ -1,3 +1,23 @@
+medInria 5.0:
+- Replace old system of database with new system of data sources:
+  * Possibility to add new external sources of data, such as Shanoir, PACS, temporary database, SQL-lite retrocompatible with medInria 3/4.
+  * New data management GUI.
+  * Clear and simple data source API to create your own source, "via medAbstractDataSource.h".
+- Add Windows SDK.
+- Remove boost dependency.
+- Add Openssl and Git LFS prerequisites to compile.
+- Switch to Qt5.15, VTK 9.2.6 (witch fix an issue with fiber file format), and ITK v5.4rc04.
+- Clean resources files and switch most of the icons from png to svg files.
+- Add theme system with Dark, Grey and Light theme, which can be chosen in Settings menu.
+- New notification system.
+- New log system.
+- New metadata key system: now users can create or customize their own metadata keys throught json files.
+- GUI changes to adopt menu paradigm.
+- Modernize splash screen.
+- Registration workspace: automatic cast of data in LCC and Diffeomorphic toolboxes.
+- Enhance memory management of the application to avoid memory leaks.
+- Add DicomRT writer.
+
 medInria 4.0:
 - INFORMATION: this version of medInria is NOT packaged with Anima plugins. We apologize for the inconvenience, we're working on adding them in a near release.
 - PYTHON: An embedded Python interpreter (currently 3.10) has been added. Plugins can create their own bindings (using any generator) to extend the application in Python.
