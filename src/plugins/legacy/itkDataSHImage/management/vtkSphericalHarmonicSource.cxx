@@ -11,7 +11,7 @@
 
 =========================================================================*/
 
-#include <cmath>
+#include <qmath.h>
 
 #include <vtkSphericalHarmonicSource.h>
 
