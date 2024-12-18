@@ -42,6 +42,7 @@
  */
 double sphLegendre(const int l, const int m, const double theta)
 {
+    //when we will used macOs that support std::sph_legendre, we can use std::sph_legendre
     if (l < 0 || std::abs(m) > l || theta < 0.0 || theta > M_PI)
     {
         throw std::invalid_argument("Invalid arguments for Legendre function");
