@@ -33,6 +33,12 @@ if (USE_DTKIMAGING)
        dtkImaging
        )
 endif()
+
+if (USE_Python)
+  list(APPEND ${ep}_dependencies
+      pyncpp
+      )
+endif()
   
 ## #############################################################################
 ## Prepare the project
@@ -106,6 +112,12 @@ if (USE_DTKIMAGING)
     ${cmake_args}
     -DdtkImaging_DIR:PATH=${dtkImaging_DIR}
     )
+endif()
+
+if (USE_Python)
+  list(APPEND cmake_cache_args
+      -Dpyncpp_ROOT:PATH=${pyncpp_ROOT}
+      )
 endif()
   
 ## #############################################################################

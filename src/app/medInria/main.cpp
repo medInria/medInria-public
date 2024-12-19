@@ -43,6 +43,10 @@
 
 #include<medFirstStart.h>
 
+#ifdef USE_PYTHON
+#include <pyncpp.h>
+#endif
+
 void forceShow(medMainWindow &mainwindow)
 {
     // Idea and code taken from the OpenCOR project, Thanks Allan for the code!
@@ -181,6 +185,89 @@ int main(int argc, char *argv[])
     if (runningMedInria)
         return 0;
 
+#ifdef USE_PYTHON
+    pyncpp::Manager pythonManager;
+    QString pythonHomePath = PYTHON_HOME;
+    QDir applicationPath = qApp->applicationDirPath();
+    QDir pythonHome = applicationPath;
+    QDir pythonPluginPath = pythonHome;
+    bool pythonHomeFound = false;
+    bool pythonPluginsFound = false;
+    QString pythonErrorMessage;
+
+    if (pythonHome.cd(PYTHON_HOME))
+    {
+        pythonHomeFound = true;
+        pythonPluginsFound = pythonPluginPath.cd(PYTHON_PLUGIN_PATH);
+    }
+    else
+    {
+        if (pythonHome.cd(BUILD_PYTHON_HOME))
+        {
+            pythonHomeFound = true;
+            pythonPluginsFound = pythonPluginPath.cd(BUILD_PYTHON_PLUGIN_PATH);
+        }
+    }
+
+    if (!pythonHomeFound)
+    {
+        pythonErrorMessage = "The embedded Python could not be found ";
+    }
+    else
+    {
+        if(!pythonManager.initialize(qUtf8Printable(pythonHome.absolutePath())))
+        {
+            pythonErrorMessage = "Initialization of the embedded Python failed.";
+        }
+        else
+        {
+            if (pythonPluginsFound)
+            {
+                try
+                {
+                    pyncpp::Module sysModule = pyncpp::Module::import("sys");
+                    pyncpp::Object sysPath = sysModule.attribute("path");
+                    sysPath.append(pyncpp::Object(pythonPluginPath.absolutePath()));
+                    qInfo() << "Added Python plugin path: " << pythonPluginPath.path();
+
+#ifdef Q_OS_WIN
+                    QDir sitePackages = pythonHome;
+
+                    if (sitePackages.cd("lib/site-packages"))
+                    {
+                        sysPath.append(pyncpp::Object(sitePackages.absolutePath()));
+                    }
+                    else
+                    {
+                        pythonErrorMessage = "Cannot find site directory.";
+                    }
+
+                    pyncpp::Module osModule = pyncpp::Module::import("os");
+                    osModule.callMethod("add_dll_directory", applicationPath.absolutePath());
+                    qInfo() << "Added Python DLL path: " << applicationPath.path();
+
+                    QDir pluginsLegacyPath = applicationPath;
+
+                    if (pluginsLegacyPath.cd(PLUGINS_LEGACY_PATH))
+                    {
+                        osModule.callMethod("add_dll_directory", pluginsLegacyPath.absolutePath());
+                        qInfo() << "Added Python DLL path: " << pluginsLegacyPath.path();
+                    }
+                    else
+                    {
+                        pythonErrorMessage = "Could not find legacy plugins path.";
+                    }
+#endif // Q_OS_WIN
+                }
+                catch (pyncpp::Exception& e)
+                {
+                    pythonErrorMessage = e.what();
+                }
+            }
+        }
+    }
+#endif // USE_PYTHON
+
     QNetworkAccessManager  *qnam = new QNetworkAccessManager(&application);
     medFirstStart firstStart(qnam);
     firstStart.pushPathToCheck(medSourcesLoader::path(), ":/configs/DataSourcesDefault.json", "dataSourceLoader", "", medSourcesLoader::initSourceLoaderCfg);
@@ -290,6 +377,14 @@ int main(int argc, char *argv[])
         format.setDirectRendering(true);
         QGLFormat::setDefaultFormat(format);
     }
+
+#ifdef USE_PYTHON
+    if(!pythonErrorMessage.isEmpty())
+    {
+        qWarning() << "(Python error) " << pythonErrorMessage;
+        QMessageBox::warning(mainwindow, "Python error", pythonErrorMessage);
+    }
+#endif
 
     if (medPluginManager::instance()->plugins().isEmpty())
     {

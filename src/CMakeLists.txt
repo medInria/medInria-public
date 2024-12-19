@@ -83,6 +83,11 @@ option(USE_FFmpeg
   )
 endif()
 
+option(USE_Python
+  "Build with Python support"
+  ON
+  )
+
 ## #############################################################################
 ## Find package
 ## #############################################################################
@@ -102,6 +107,10 @@ find_package(Qt${QT_VERSION_MAJOR} REQUIRED COMPONENTS
   )
 
 find_package(dtk REQUIRED)
+
+if(USE_Python)
+    find_package(pyncpp REQUIRED COMPONENTS CPP_API Qt5)
+endif()
 
 ## #############################################################################
 ## enable c++ 17
