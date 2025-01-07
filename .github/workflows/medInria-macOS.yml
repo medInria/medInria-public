@@ -1,0 +1,72 @@
+# This starter workflow is for a CMake project running on a single platform. There is a different starter workflow if you need cross-platform coverage.
+# See: https://github.com/actions/starter-workflows/blob/main/ci/cmake-multi-platform.yml
+name: medInria on macOS
+
+on:
+  push:
+    branches: [ "dev" ]
+  pull_request:
+    branches: [ "dev" ]
+  workflow_dispatch:  
+  schedule:
+    - cron: '0 0 * * 1'  # Each monday at 0h00, MIN HOUR DAY_IN_MONTH MONTH WEEK_DAY
+
+env:
+  BUILD_TYPE: Release
+  #QT5_DIR: "/opt/homebrew/opt/qt@5/lib/cmake/Qt5" for Qt 14 #"/usr/local/opt/qt@5/lib/cmake/Qt5" for Qt 13 for instance
+
+jobs:
+  build:
+    # https://docs.github.com/en/actions/using-jobs/choosing-the-runner-for-a-job#standard-github-hosted-runners-for-public-repositories
+    runs-on: macos-13
+
+    steps:
+    - name: Checkout repository
+      uses: actions/checkout@v4
+      with:
+          ref: dev
+
+    - name: Install dependencies
+      run: |
+        brew install qt@5
+        echo "QT5_DIR=$(brew --prefix qt@5)/lib/cmake/Qt5" >> $GITHUB_ENV
+        # brew info cmake
+        # brew info swig
+        # brew info git-lfs
+
+    - name: Configure CMake
+      run: |
+        cmake -B ${{github.workspace}}/build \
+          -DCMAKE_BUILD_TYPE_medInria:STRING=$BUILD_TYPE \
+          -DEP_CHECKBOX_CUSTOM_DIRS:BOOL=ON \
+          -DEP_CHECKBOX_ON_TOP_LEVEL:BOOL=OFF \
+          -DEP_CHECKBOX_SIDE_BY_SIDE:BOOL=OFF \
+          -DQt5_DIR=$QT5_DIR \
+          -DUSE_FFmpeg=OFF
+          
+    - name: Build
+      run: | 
+        CORES_TO_USE=$(($(sysctl -n hw.ncpu) - 1)) # Limit the number of used core otherwise the compilation crashes sometimes
+        echo "Using $CORES_TO_USE cores for the build"
+        cmake --build ${{github.workspace}}/build --config $BUILD_TYPE --parallel $CORES_TO_USE
+
+    - name: Package
+      run: |
+        cd ${{github.workspace}}/build
+        cpack -C $BUILD_TYPE
+
+    - name: Find .dmg file
+      run: |
+        FILE=$(find ${{github.workspace}}/build -name "*.dmg" -print -quit)
+        if [ -z "$FILE" ]; then
+          echo "No .dmg file found in build directory."
+          exit 1
+        fi
+        echo "FILE=$FILE" >> $GITHUB_ENV
+        
+    - name: Upload asset to GitHub Release
+      uses: svenstaro/upload-release-action@v2
+      with:
+        repo_token: ${{ secrets.GITHUB_TOKEN }}
+        file: ${{ env.FILE }}
+        tag: medInria-weekly
