@@ -1,0 +1,63 @@
+# This starter workflow is for a CMake project running on a single platform. There is a different starter workflow if you need cross-platform coverage.
+# See: https://github.com/actions/starter-workflows/blob/main/ci/cmake-multi-platform.yml
+name: medInria 4 on Windows
+
+on:
+  push:
+    branches: [ "medInria4.0.x" ]
+  pull_request:
+    branches: [ "medInria4.0.x" ]
+  workflow_dispatch:  
+  schedule:
+    - cron: '0 0 * * 2'  # Each tuesday at 0h00, MIN HOUR DAY_IN_MONTH MONTH WEEK_DAY
+
+env:
+  BUILD_TYPE: Release
+
+jobs:
+  build:
+    # https://docs.github.com/en/actions/using-jobs/choosing-the-runner-for-a-job#standard-github-hosted-runners-for-public-repositories
+    runs-on: windows-2022
+
+    steps:
+    - name: Checkout repository
+      uses: actions/checkout@v4
+      with:
+          ref: medInria4.0.x
+       
+    - name: Install Qt
+      uses: jurplel/install-qt-action@v4
+
+    - name: Install Boost
+      run: |
+        choco install boost-msvc-14.1
+
+    - name: Configure CMake
+      run: >
+        cmake -B ${{github.workspace}}/b 
+        -DEP_PATH_BASE:PATH="${{github.workspace}}/e" 
+        -DEP_CHECKBOX_CUSTOM_DIRS:BOOL=OFF -DEP_CHECKBOX_ON_TOP_LEVEL=ON -DEP_CHECKBOX_SIDE_BY_SIDE:BOOL=OFF -DEP_CHECKBOX_ON_TOP_LEVEL_PREVIOUS=ON
+        -DCMAKE_GENERATOR_PLATFORM=x64 
+        -DCMAKE_BUILD_TYPE_medInria=${{env.BUILD_TYPE}} -DCMAKE_BUILD_TYPE_externals_projects=${{env.BUILD_TYPE}} -DmedInria_BUILD_TYPE=${{env.BUILD_TYPE}}
+          
+    - name: Build & Package
+      run: | 
+        cmake --build ${{github.workspace}}/b --config ${{env.BUILD_TYPE}} --target package -j 3
+
+    - name: Find binary file
+      run: |
+        $FILE = Get-ChildItem -Path "${{github.workspace}}\b" -Filter "*.exe" -Recurse | Select-Object -First 1
+        if (-Not $FILE) {
+          Write-Host "No .exe file found in build directory."
+          exit 1
+        }
+        Write-Host "Found file: $($FILE.FullName)"
+        echo "FILE=$($FILE.FullName)" | Out-File -FilePath $env:GITHUB_ENV -Append
+      shell: pwsh
+        
+    - name: Upload asset to GitHub Release
+      uses: svenstaro/upload-release-action@v2
+      with:
+        repo_token: ${{secrets.GITHUB_TOKEN}}
+        file: ${{env.FILE}}
+        tag: V4.0.1
