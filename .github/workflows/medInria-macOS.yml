@@ -1,6 +1,6 @@
 # This starter workflow is for a CMake project running on a single platform. There is a different starter workflow if you need cross-platform coverage.
 # See: https://github.com/actions/starter-workflows/blob/main/ci/cmake-multi-platform.yml
-name: medInria on macOS
+name: medInria dev on macOS
 
 on:
   push:
@@ -70,3 +70,4 @@ jobs:
         repo_token: ${{ secrets.GITHUB_TOKEN }}
         file: ${{ env.FILE }}
         tag: medInria-weekly
+        overwrite: true
