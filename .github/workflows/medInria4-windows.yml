@@ -54,18 +54,6 @@ jobs:
         Write-Host "Found file: $($FILE.FullName)"
         echo "FILE=$($FILE.FullName)" | Out-File -FilePath $env:GITHUB_ENV -Append
       shell: pwsh
-
-    - name: Delete existing asset
-      run: |
-        ASSET_ID=$(curl -s -H "Authorization: Bearer ${{secrets.GITHUB_TOKEN}}" \
-          "https://api.github.com/repos/medInria/medInria-public/releases/tags/V4.0.1" | \
-          jq -r '.assets[] | select(.name == ${{env.FILE}}) | .id')
-        if [ -n "$ASSET_ID" ]; then
-          curl -X DELETE -H "Authorization: Bearer ${{secrets.GITHUB_TOKEN}}" \
-            "https://api.github.com/repos/medInria/medInria-public/releases/assets/$ASSET_ID"
-          echo "Previous asset ${{env.FILE}} deleted."
-        fi
-      shell: bash
         
     - name: Upload asset to GitHub Release
       uses: svenstaro/upload-release-action@v2
@@ -73,3 +61,5 @@ jobs:
         repo_token: ${{secrets.GITHUB_TOKEN}}
         file: ${{env.FILE}}
         tag: V4.0.1
+        overwrite: true
+        target_commit: medInria4.0.x
