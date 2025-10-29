@@ -64,10 +64,10 @@ signals:
     void dataImported ( const medDataIndex& index, const QUuid& uuid );
 
 public slots:
-    void onCancel ( QObject* );
+    void onCancel ( QObject* ) override;
 
 protected:
-    virtual void internalRun ( void ) ;
+    virtual void internalRun ( void ) override;
 
     QString file ( void );
     bool isCancelled ( void );
@@ -84,13 +84,13 @@ protected:
 
     QStringList getAllFilesToBeProcessed ( QString fileOrDirectory );
 
-    medAbstractData *tryReadImages ( const QStringList& filesPath,const bool readOnlyImageInformation );
+    medAbstractData *tryReadImages (const QStringList& filesPath, const bool readOnlyImageInformation , QString *nameReader=nullptr);
     bool tryWriteImage ( QString filePath, medAbstractData* medData );
 
     QString determineFutureImageFileName ( const medAbstractData* medData, int volumeNumber );
     QString determineFutureImageExtensionByDataType ( const medAbstractData* medData );
 
-    bool isDicomName(const QString & fileName);
+    bool isDicomReaderUsed(const QString & readerName);
     QString generateUniqueVolumeId (const medAbstractData* medData , bool isDicom=false);
     QString generateThumbnail(medAbstractData* medData, QString pathToStoreThumbnail );
 
