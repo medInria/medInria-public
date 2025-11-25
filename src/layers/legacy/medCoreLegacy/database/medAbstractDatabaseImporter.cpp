@@ -207,7 +207,9 @@ void medAbstractDatabaseImporter::importFile ( void )
 
             // 2.1) Try reading file information, just the header not the whole file
             bool readOnlyImageInformation = true;
-            medData = tryReadImages ( QStringList ( fileInfo.filePath() ), readOnlyImageInformation );
+            QString nameReader("");
+
+            medData = tryReadImages ( QStringList ( fileInfo.filePath() ), readOnlyImageInformation, &nameReader );
 
             if ( !medData )
             {
@@ -238,7 +240,7 @@ void medAbstractDatabaseImporter::importFile ( void )
 
             // 2.3) Generate an unique id for each volume
             // all images of the same volume should share the same id
-            bool isdicom = isDicomName(fileInfo.fileName());
+            bool isdicom = isDicomReaderUsed(nameReader);
             QString volumeId = generateUniqueVolumeId ( medData, isdicom );
 
             // check whether the image belongs to a new volume
@@ -806,7 +808,7 @@ QStringList medAbstractDatabaseImporter::getAllFilesToBeProcessed ( QString file
 * @param readOnlyImageInformation - if true only image header is read, otherwise the full image
 * @return a @medAbstractData containing the read data
 **/
-medAbstractData* medAbstractDatabaseImporter::tryReadImages ( const QStringList& filesPaths,const bool readOnlyImageInformation )
+medAbstractData* medAbstractDatabaseImporter::tryReadImages ( const QStringList& filesPaths, const bool readOnlyImageInformation,  QString *nameReader)
 {
     medAbstractData *medData = nullptr;
 
@@ -816,6 +818,12 @@ medAbstractData* medAbstractDatabaseImporter::tryReadImages ( const QStringList&
     if ( dataReader )
     {
         bool readSuccessful = false;
+
+        if (nameReader)
+        {
+            *nameReader = dataReader->identifier();
+        }
+
         if ( readOnlyImageInformation )
         {
             readSuccessful = dataReader->readInformation ( filesPaths );
@@ -1045,8 +1053,7 @@ QString medAbstractDatabaseImporter::generateUniqueVolumeId ( const medAbstractD
 * @param fileName - name of the file that we try to import
 * @return  true if dicom file, false otherwise
 **/
-bool medAbstractDatabaseImporter::isDicomName(const QString & fileName)
+bool medAbstractDatabaseImporter::isDicomReaderUsed(const QString & readerName)
 {
-    QFileInfo info(fileName);
-    return info.suffix().toLower() == "dcm";
+    return (readerName == "itkDCMTKDataImageReader") || (readerName == "itkGDCMDataImageReader");
 }
