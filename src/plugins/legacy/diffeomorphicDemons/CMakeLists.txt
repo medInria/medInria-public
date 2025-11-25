@@ -88,6 +88,7 @@ target_link_libraries(${TARGET_NAME}
   dtkCore
   dtkLog
   ITKCommon
+  ITKPDEDeformableRegistration
   medCore
   medRegistration
   )

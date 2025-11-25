@@ -40,8 +40,8 @@ if (NOT USE_SYSTEM_${ep})
 ## Set up versioning control
 ## #############################################################################
 
-set(git_url ${GITHUB_PREFIX}Inria-Asclepios/TTK-Public.git)
-set(git_tag master)
+set(git_url ${GITHUB_PREFIX}medInria/TTK.git)
+set(git_tag ITK5.4rc04)
 
 ## #############################################################################
 ## Add specific cmake arguments for configuration step of the project
@@ -95,7 +95,6 @@ ExternalProject_Add(${ep}
   CMAKE_CACHE_ARGS ${cmake_cache_args}
   DEPENDS ${${ep}_dependencies}
   INSTALL_COMMAND ""
-  BUILD_ALWAYS 1
   )
  
 ## #############################################################################
@@ -103,7 +102,7 @@ ExternalProject_Add(${ep}
 ## #############################################################################
 
 ExternalProject_Get_Property(${ep} binary_dir)
-set(${ep}_DIR ${binary_dir} PARENT_SCOPE)
+set(${ep}_DIR ${binary_dir}/lib/cmake/TTK PARENT_SCOPE)
   
 endif() #NOT USE_SYSTEM_ep
 
