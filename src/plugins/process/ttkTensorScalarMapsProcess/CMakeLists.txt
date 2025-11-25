@@ -4,8 +4,7 @@ set(TARGET_NAME ttkTensorScalarMapsProcessPlugin)
 ## Resolve dependencies
 ## #############################################################################
 
-find_package(TTK REQUIRED)
-include(${TTK_USE_FILE})
+find_package(TTK REQUIRED COMPONENTS ITKTensor ttkAlgorithms)
 
 find_package(VTK REQUIRED COMPONENTS vtkRenderingCore)
 include(${VTK_USE_FILE})
@@ -53,7 +52,8 @@ target_link_libraries(${TARGET_NAME}
   dtkCore
   dtkCoreSupport
   dtkLog
-  ITKTensor
+  TTK::ITKTensor
+  TTK::ttkAlgorithms
   medCore
   medCoreLegacy
   medVtkInria

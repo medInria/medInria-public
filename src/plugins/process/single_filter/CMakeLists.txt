@@ -61,6 +61,7 @@ target_include_directories(${TARGET_NAME}
 
 target_link_libraries(${TARGET_NAME}
   ITKCommon
+  ITKSmoothing
   Qt5::Core
   dtkCore
   dtkLog
