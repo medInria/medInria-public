@@ -12,6 +12,10 @@ medInria 3.3:
 - BUGFIX 3.3.2: 
     * Avoid corruption of exported/imported dcm with odd axis
     * Fix errors with view tabs if the user switch 2 of them, or remove some of them
+- BUGFIX 3.3.3: fix import of DICOMs without origin metadata.
+- BUGFIX 3.3.4:
+    * Switch to ITK v5.4.5.
+    * Fix import of DICOMs without dcm extension.
 
 medInria 3.2:
 - Add some tooltips in view navigator
