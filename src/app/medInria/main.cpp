@@ -47,6 +47,9 @@
 #include <pyncpp.h>
 #endif
 
+#define VAL(str) #str
+#define TOSTRING(str) VAL(str)
+
 void forceShow(medMainWindow &mainwindow)
 {
     // Idea and code taken from the OpenCOR project, Thanks Allan for the code!
@@ -105,7 +108,6 @@ int main(int argc, char *argv[])
     fmt.setSamples(0); // we never need multisampling in the context since the FBO can support
                        // multisamples independently
     QSurfaceFormat::setDefaultFormat(fmt);
-
 
     medApplication application(argc, argv);
 

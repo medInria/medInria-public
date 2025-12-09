@@ -47,6 +47,9 @@
 # define CONTROL_KEY "Ctrl"
 #endif
 
+#define VAL(str) #str
+#define TOSTRING(str) VAL(str)
+
 //--------------------------------------------------------------------------
 // medMainWindow
 
@@ -614,13 +617,30 @@ void medMainWindow::onShowDataSources()
 
 void medMainWindow::onShowAbout()
 {
-    QFile file(":ABOUT.txt");
+    QFile file(TOSTRING(ABOUT_FILE));
     file.open(QIODevice::ReadOnly | QIODevice::Text);
     QString text = file.readAll();
 
     QMessageBox msgBox;
     msgBox.setText(text);
     msgBox.exec();
+}
+
+/**
+ * @brief Search the "Show Details..." button and click it to expand the text
+ * 
+ * @param msgBox 
+ */
+void medMainWindow::expandDetailedText(QMessageBox *msgBox)
+{
+    foreach (auto *button, msgBox->buttons())
+    {
+        if (msgBox->buttonRole(button) == QMessageBox::ActionRole)
+        {
+            button->click();
+            break;
+        }
+    }
 }
 
 /**
@@ -633,19 +653,21 @@ void medMainWindow::onShowAuthors()
     file.open(QIODevice::ReadOnly | QIODevice::Text);
     QString text = file.readAll();
 
-    QDialog dialog;
-    dialog.setWindowTitle("Authors");
+    std::string str = TOSTRING(ADDITIONAL_AUTHORS_LIST);
+    str.erase(std::remove(str.begin(),str.end(),'\"'),str.end());
+    QString additionalAuthors = QString::fromStdString(str);
+    if (!additionalAuthors.isEmpty())
+    {   
+        additionalAuthors.replace(QString(","), QString("\n"));
+        text += "\n *** " + QString(TOSTRING(APPLICATION_NAME)) + " ***\n";
+        text += additionalAuthors;
+    }
 
-    QVBoxLayout *layout = new QVBoxLayout(&dialog);
-    QTextEdit *textEdit = new QTextEdit(&dialog);
-    textEdit->setText(text);
-    textEdit->setReadOnly(true);
-    textEdit->setLineWrapMode(QTextEdit::WidgetWidth);
-    textEdit->setVerticalScrollBarPolicy(Qt::ScrollBarAsNeeded);
-    layout->addWidget(textEdit);
-
-    dialog.resize(400, 300);
-    dialog.exec();
+    QMessageBox msgBox;
+    msgBox.setText("List of the application authors:            ");
+    msgBox.setDetailedText(text);
+    expandDetailedText(&msgBox);
+    msgBox.exec();
 }
 
 /**
@@ -654,23 +676,15 @@ void medMainWindow::onShowAuthors()
  */
 void medMainWindow::onShowReleaseNotes()
 {
-    QFile file(":RELEASE_NOTES.txt");
+    QFile file(TOSTRING(RELEASE_NOTES));
     file.open(QIODevice::ReadOnly | QIODevice::Text);
     QString text = file.readAll();
 
-    QDialog dialog;
-    dialog.setWindowTitle("Release Notes");
-
-    QVBoxLayout *layout = new QVBoxLayout(&dialog);
-    QTextEdit *textEdit = new QTextEdit(&dialog);
-    textEdit->setText(text);
-    textEdit->setReadOnly(true);
-    textEdit->setLineWrapMode(QTextEdit::WidgetWidth);
-    textEdit->setVerticalScrollBarPolicy(Qt::ScrollBarAsNeeded);
-    layout->addWidget(textEdit);
-
-    dialog.resize(400, 300);
-    dialog.exec();
+    QMessageBox msgBox;
+    msgBox.setText("Here is the release notes with the history of the application:            ");
+    msgBox.setDetailedText(text);
+    expandDetailedText(&msgBox);
+    msgBox.exec();
 }
 
 /**
@@ -679,24 +693,29 @@ void medMainWindow::onShowReleaseNotes()
  */
 void medMainWindow::onShowLicense()
 {
-    QFile file(":LICENSE.txt");
+    QFile file(TOSTRING(LICENSE_FILE));
     file.open(QIODevice::ReadOnly | QIODevice::Text);
     QString text = file.readAll();
 
-    QDialog dialog;
-    dialog.setWindowTitle("License");
-
-    QVBoxLayout *layout = new QVBoxLayout(&dialog);
-    QTextEdit *textEdit = new QTextEdit(&dialog);
-    textEdit->setText(text);
-    textEdit->setReadOnly(true);
-    textEdit->setLineWrapMode(QTextEdit::WidgetWidth);
-    textEdit->setVerticalScrollBarPolicy(Qt::ScrollBarAsNeeded);
-    layout->addWidget(textEdit);
-
-    dialog.resize(400, 300);
-    dialog.exec();
+    QMessageBox msgBox;
+    msgBox.setText("Here is the application license:                           ");
+    msgBox.setDetailedText(text);
+    expandDetailedText(&msgBox);
+    msgBox.exec();
 }
+
+// void medMainWindow::onShowExtLicenses()
+// {
+//     QFile file(TOSTRING(LICENSE_EXTERNAL_FILE));
+//     file.open(QIODevice::ReadOnly | QIODevice::Text);
+//     QString text = file.readAll();
+
+//     QMessageBox msgBox;
+//     msgBox.setText("Here are the external library licenses:                           ");
+//     msgBox.setDetailedText(text);
+//     expandDetailedText(&msgBox);
+//     msgBox.exec();
+// }
 
 void medMainWindow::onShowAreaSettings()
 {
@@ -768,7 +787,11 @@ void medMainWindow::onShowPluginLogs()
 
 void medMainWindow::onShowHelp()
 {
-    QDesktopServices::openUrl(QUrl("https://med.inria.fr/documentation"));
+    // DOCUMENTATION_URL needs to be passed as a string in medInria.cmake 
+    //to avoid losing path after '/'
+    std::string str = TOSTRING(DOCUMENTATION_URL);
+    str.erase(std::remove(str.begin(),str.end(),'\"'),str.end());
+    QDesktopServices::openUrl(QUrl(QString::fromStdString(str)));
 }
 
 void medMainWindow::filterWSMenu(QString text)

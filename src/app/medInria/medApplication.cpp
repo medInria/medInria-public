@@ -30,6 +30,9 @@
 #include <medVisualizationWorkspace.h>
 #include <medWorkspaceFactory.h>
 
+#define VAL(str) #str
+#define TOSTRING(str) VAL(str)
+
 class medApplicationPrivate
 {
 public:
@@ -66,11 +69,11 @@ medApplication::medApplication(int & argc, char**argv) :
 
     d->mainWindow = nullptr;
 
-    this->setApplicationName("medInria");
+    this->setApplicationName(TOSTRING(APPLICATION_NAME));
     this->setApplicationVersion(MEDINRIA_VERSION);
-    this->setOrganizationName("inria");
-    this->setOrganizationDomain("fr");
-    this->setWindowIcon(QIcon(":/medInria.ico"));
+    this->setOrganizationName(TOSTRING(ORGANIZATION_NAME));
+    this->setOrganizationDomain(TOSTRING(ORGANIZATION_DOMAIN));
+    this->setWindowIcon(QIcon(TOSTRING(WINDOW_ICON)));
 
     medNewLogger::initialize(&medNewLogger::mainInstance());
 
@@ -231,6 +234,26 @@ QScreen* medApplication::getPreviousScreen()
  */
 void medApplication::initializeSplashScreen()
 {
+    // Themes
+    QVariant themeChosen = medSettingsManager::instance()->value("startup","theme");
+    int themeIndex = themeChosen.toInt();
+    QPixmap splashLogo;
+    switch (themeIndex)
+    {
+        case 0:
+        default:
+        {
+            splashLogo.load(TOSTRING(LARGE_LOGO_DARK_THEME));
+            break;
+        }
+        case 1:
+        case 2:
+        {
+            splashLogo.load(TOSTRING(LARGE_LOGO_LIGHT_THEME));
+            break;
+        }
+    }
+
     d->splashScreen = new QSplashScreen(getPreviousScreen(), QPixmap(":/pixmaps/medInria-splash.png"),
         Qt::WindowStaysOnTopHint | Qt::X11BypassWindowManagerHint);
     d->splashScreen->setAttribute(Qt::WA_DeleteOnClose, true);
@@ -266,8 +289,6 @@ void medApplication::initializeThemes()
     }
     medStyleSheetParser parser(dtkReadFile(qssFile));
     this->setStyleSheet(parser.result());
-
-    this->setWindowIcon(QIcon(":medInria.png"));
 
     // Unblur icons for instance on retina screens
     QGuiApplication::setAttribute(Qt::AA_UseHighDpiPixmaps); 

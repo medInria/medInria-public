@@ -19,6 +19,9 @@
 
 #include <QtGlobal>
 
+#define VAL(str) #str
+#define TOSTRING(str) VAL(str)
+
 class medHomepageAreaPrivate
 {
 public:
@@ -37,6 +40,27 @@ medHomepageArea::medHomepageArea ( QWidget * parent ) : QWidget ( parent ), d ( 
     QHBoxLayout *descriptionLayout = new QHBoxLayout(d->descriptionWidget);
     descriptionLayout->setContentsMargins(0, 0, 0, 0);
 
+    // Themes
+    QVariant themeChosen = medSettingsManager::instance()->value("startup","theme");
+    int themeIndex = themeChosen.toInt();
+    QString qssLogoName;
+    switch (themeIndex)
+    {
+        case 0:
+        default:
+        {
+            qssLogoName = TOSTRING(LARGE_LOGO_DARK_THEME);
+            break;
+        }
+        case 1:
+        case 2:
+        {
+            qssLogoName = TOSTRING(LARGE_LOGO_LIGHT_THEME);
+            break;
+        }
+    }
+    QPixmap medLogo(qssLogoName);
+    medLogo = medLogo.scaled(356, 102, Qt::KeepAspectRatio, Qt::SmoothTransformation);
     d->applicationLabel = new QLabel(this);
     QPixmap applicationLogo = getApplicationLogoPixmap();
     d->applicationLabel->setPixmap(applicationLogo);
@@ -44,18 +68,15 @@ medHomepageArea::medHomepageArea ( QWidget * parent ) : QWidget ( parent ), d ( 
     descriptionLayout->setSpacing(13);
 
     d->textEdit = new QTextEdit(this);
-    QFile descriptionFile(":DESCRIPTION.txt");
+    QFile descriptionFile(QString(TOSTRING(DESCRIPTION_HOMEPAGE)));
     descriptionFile.open(QIODevice::ReadOnly | QIODevice::Text);
     QTextStream descriptionStream(&descriptionFile);
     descriptionStream.setCodec("UTF-8");
     d->textEdit->setHtml(descriptionStream.readAll());
     d->textEdit->setReadOnly(true);
     d->textEdit->setFocusPolicy(Qt::NoFocus);
-    d->textEdit->setMinimumWidth(520);
-    d->textEdit->setMinimumHeight(150);
-    d->textEdit->setMaximumHeight(150);
-    d->textEdit->setStyleSheet("QTextEdit { padding: 5px; }");
-    d->textEdit->setAlignment(Qt::AlignLeft);
+    d->textEdit->setMaximumHeight(70);
+    d->textEdit->setStyleSheet("background : transparent;");
     descriptionLayout->addWidget(d->textEdit);
 
     // Setup the navigation widget with buttons to access workspaces

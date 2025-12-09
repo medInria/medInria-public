@@ -1,0 +1,55 @@
+// This configuration file allows to set up the application: name, logo, 
+// descriptions, licenses, project information.
+// 
+// 1° Update the parameters in this configuration file:
+[
+    {
+        "applicationName":       "medInria", // beware, it changes the default database path
+        "organizationName":      "inria",    // beware, it changes the default database path
+        "organizationDomain":    "fr",
+        "projectContact":        "medinria-userfeedback@inria.fr",
+        "documentationURL":      "https://med.inria.fr/help/documentation",
+        "additionalAuthorsList": "", // additional names separated by ','
+
+        // Set the directory including your qrc file and resources, added at medInria-public root
+        "settingsQrcDirectory": "", 
+        
+        // Add these resources to your qrc file also
+        "largeLogoDarkTheme":  ":medInria-src/medInria-logo-dark.png",
+        "largeLogoLightTheme": ":medInria-src/medInria-logo-light.png",
+        "windowIcon":          ":medInria-src/medInria.ico",
+        "aboutFile":           ":ABOUT.txt", 
+        "releaseNotes":        ":RELEASE_NOTES.txt",
+        "descriptionHomepage": ":DESCRIPTION.txt",
+        "licenseFile":         ":LICENSE.txt",
+        "licenseExternalFile": ":LICENSES_EXT.txt",
+
+        // Packaging
+        "packageVendor":        "https://med.inria.fr/",
+        "projectDescription":   "medInria is a medical image visualization and processing tool developed at Inria by the teams Asclepios, Athena, Parietal and Visages.",
+        "descriptionPackaging": "packaging/Description.txt",
+        "readmeFile":           "packaging/Readme.txt",
+        "welcomeFile":          "packaging/Welcome.txt",
+        "licenceFilePath":      "LICENSE.txt",
+        "windowIconPath":       "src/app/medInria/resources/medInria-src/medInria.ico"
+    }
+]
+// 3° Create a qrc file with your resources:
+//
+// <RCC>
+//     <qresource prefix="/">
+//            <file>my-brand-logo-theme-dark.png</file>
+//            <file>my-brand-logo-theme-light.png</file>
+//            <file>my-window-icon.ico</file>
+//            <file>my-about.txt</file>
+//            <file>my-release-notes.txt</file>
+//            <file>my-description.txt</file>
+//            <file>my-license.txt</file>
+//            <file>my-license-external.txt</file>
+//     </qresource>
+// </RCC>
+// You settings.json file + your files (readme, description, icons, etc) + your qrc file can be add to a git repo.
+// You'll need to: "git clone your-parameter-repo" at the root of medInria, and just replace the settings.json file
+// from the repo directory to the medInria root one.
+
+// 4° Compile medInria

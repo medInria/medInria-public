@@ -13,6 +13,9 @@
 
 #include <medPluginLegacy.h>
 
+#define VAL(str) #str
+#define TOSTRING(str) VAL(str)
+
 medPluginLegacy::medPluginLegacy(QObject* parent) : dtkPlugin(parent)
 {
 }
@@ -24,7 +27,7 @@ bool medPluginLegacy::uninitialize()
 
 QString medPluginLegacy::contact() const
 {
-    return PROJECT_CONTACT;
+    return TOSTRING(PROJECT_CONTACT);
 }
 
 QString medPluginLegacy::description() const
@@ -44,7 +47,7 @@ QString medPluginLegacy::version() const
 
 QStringList medPluginLegacy::authors() const
 {
-    return QStringList(PROJECT_TEAM_NAME);
+    return QStringList("medInria team");
 }
 
 QStringList medPluginLegacy::contributors() const
