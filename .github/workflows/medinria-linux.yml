@@ -4,7 +4,7 @@ name: medInria on Linux
 
 on:
   push:
-    branches: [ "testCImed" ]
+    branches: [ "medInria6.0.x" ]
 
   # Parameters displayed for users for manual runs in Github Action GUI
   workflow_dispatch:
@@ -12,7 +12,7 @@ on:
       BRANCH:
         description: 'Branch to checkout'
         required: true
-        default: 'testCImed'
+        default: 'medInria6.0.x'
         type: string
       RELEASE:
         description: 'Github release tag to send to'
@@ -26,7 +26,7 @@ on:
       BRANCH:
         required: true
         type: string
-        default: 'testCImed'
+        default: 'medInria6.0.x'
       RELEASE:
         required: true
         type: string

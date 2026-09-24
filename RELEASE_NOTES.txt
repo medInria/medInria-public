@@ -1,5 +1,5 @@
 medInria 6.0
-- Based on medInria 4.x, aims to fuse updates on the core and some functionalities from medInria 5.0-beta progressively.
+- Based on medInria 4.x, aims at fusing updates on the core and some functionalities from medInria 5.0-beta progressively.
 - Switch to Github Action for continuous integration.
 - Compatibility with CMake 4.
 - On Linux now we generate AppImages, instead of ZIP packages for Ubuntu and Fedora.

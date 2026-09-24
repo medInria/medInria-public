@@ -1,6 +1,6 @@
 {
   "title": "medInria",
-  "background": "../../../src/app/medInria/resources/pixmaps/medInria-logo-dmg.png",
+  "background": "builtin-arrow",
   "icon": "../../../src/app/medInria/resources/pixmaps/medInria_dmg_mountedimage.icns",
   "format": "UDZO",
   "compression-level": 9,
@@ -11,13 +11,13 @@
   "contents": [
     {
       "x": 140,
-      "y": 165,
+      "y": 120,
       "type": "file",
       "path": "medInria.app"
     },
     {
-      "x": 480,
-      "y": 165,
+      "x": 500,
+      "y": 120,
       "type": "link",
       "path": "/Applications"
     }

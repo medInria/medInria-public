@@ -62,17 +62,17 @@ echo "# Deploy Qt libs"
 @Qt5_DIR@/../../../bin/macdeployqt ${BUNDLE}.app -appstore-compliant
 
 # Due to Qt installed by homebrew, update QtConcurrent Qt dependencies
-QT_CONCURRENT_BINARY="${QT_CONCURRENT_DIR}/Versions/$QT_VERSION/QtConcurrent"
-install_name_tool -id "@executable_path/../Frameworks/QtConcurrent.framework/Versions/$QT_VERSION/QtConcurrent" "$QT_CONCURRENT_BINARY"
-otool -L "$QT_CONCURRENT_BINARY" | tail -n +2 | while read -r line; do
-    dep=$(echo "$line" | awk '{print $1}')
-    if [[ "$dep" == "/usr/local/opt/"* ]] || [[ "$dep" == *"qt@5"* ]]; then
-        dep_name=$(basename "$dep")
-        new_path="@executable_path/../Frameworks/${dep_name}.framework/Versions/$QT_VERSION/${dep_name}"
-        echo "Changing: $dep -> $new_path"
-        install_name_tool -change "$dep" "$new_path" "$QT_CONCURRENT_BINARY"
-    fi
-done
+# QT_CONCURRENT_BINARY="${QT_CONCURRENT_DIR}/Versions/$QT_VERSION/QtConcurrent"
+# install_name_tool -id "@executable_path/../Frameworks/QtConcurrent.framework/Versions/$QT_VERSION/QtConcurrent" "$QT_CONCURRENT_BINARY"
+# otool -L "$QT_CONCURRENT_BINARY" | tail -n +2 | while read -r line; do
+#     dep=$(echo "$line" | awk '{print $1}')
+#     if [[ "$dep" == "/usr/local/opt/"* ]] || [[ "$dep" == *"qt@5"* ]]; then
+#         dep_name=$(basename "$dep")
+#         new_path="@executable_path/../Frameworks/${dep_name}.framework/Versions/$QT_VERSION/${dep_name}"
+#         echo "Changing: $dep -> $new_path"
+#         install_name_tool -change "$dep" "$new_path" "$QT_CONCURRENT_BINARY"
+#     fi
+# done
 
 # Run sub-packagers
 echo "# Run sub-packager"
