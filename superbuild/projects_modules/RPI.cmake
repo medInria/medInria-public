@@ -41,16 +41,14 @@ if (NOT USE_SYSTEM_${ep})
 ## #############################################################################
 
 set(git_url ${GITHUB_PREFIX}Inria-Asclepios/RPI.git)
-set(git_tag ITK5.4rc04)
+set(git_tag V2.0.0)
 
 ## #############################################################################
 ## Add specific cmake arguments for configuration step of the project
 ## #############################################################################
 
-# set compilation flags
 if (UNIX)
-  set(${ep}_c_flags "${${ep}_c_flags} -Wall")
-  set(${ep}_cxx_flags "${${ep}_cxx_flags} -Wall")
+    set(${ep}_cxx_flags "${${ep}_cxx_flags} -Wall")
 endif()
 
 if(CMAKE_CXX_COMPILER_ID MATCHES "Clang")

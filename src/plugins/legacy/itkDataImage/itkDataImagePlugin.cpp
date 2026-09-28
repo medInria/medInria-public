@@ -44,9 +44,7 @@
 
 #include <medVtkViewItkDataImageNavigator.h>
 
-#ifdef ITK_USE_SYSTEM_GDCM
 #include <itkGDCMDataImageReader.h>
-#endif
 #include <itkMetaDataImageReader.h>
 #include <itkPNGDataImageReader.h>
 #include <itkBMPDataImageReader.h>
@@ -58,8 +56,6 @@
 #include <itkVTKDataImageReader.h>
 #include <itkPhilipsRECDataImageReader.h>
 #include <itkGISDataImageReader.h>
-#include <itkDCMTKDataImageReader.h>
-
 #include <itkMetaDataImageWriter.h>
 #include <itkNiftiDataImageWriter.h>
 #include <itkNrrdDataImageWriter.h>
@@ -141,9 +137,7 @@ bool itkDataImagePlugin::initialize()
     if(!medVtkViewItkDataImageNavigator::registered()) { qWarning() << "Unable to register medVtkViewItkDataImageNavigator"; }
 
     if (!itkMetaDataImageReader::registered())       { qWarning() << "Unable to register itkMetaDataImageReader type";       }
-#ifdef ITK_USE_SYSTEM_GDCM
     if (!itkGDCMDataImageReader::registered())       { qWarning() << "Unable to register  itkGDCMDataImageReader type";      }
-#endif
     if (!itkNiftiDataImageReader::registered())      { qWarning() << "Unable to register itkNiftiDataImageReader type";      }
     if (!itkNrrdDataImageReader::registered())       { qWarning() << "Unable to register itkNrrdDataImageReader type";       }
     if (!itkGiplDataImageReader::registered())       { qWarning() << "Unable to register itkGiplDataImageReader type";       }
@@ -154,8 +148,6 @@ bool itkDataImagePlugin::initialize()
     if (!itkTIFFDataImageReader::registered())       { qWarning() << "Unable to register itkTIFFDataImageReader type";       }
     if (!itkPhilipsRECDataImageReader::registered()) { qWarning() << "Unable to register itkPhilipsRECDataImageReader type"; }
     if (!itkGISDataImageReader::registered())        { qWarning() << "Unable to register itkGISDataImageReader type"; }
-    if (!itkDCMTKDataImageReader::registered())      { qWarning() << "Unable to register itkDCMTKDataImageReader type"; }
-
     if (!itkMetaDataImageWriter::registered())       { qWarning() << "Unable to register itkMetaDataImageWriter type";       }
     if (!itkNiftiDataImageWriter::registered())      { qWarning() << "Unable to register itkNiftiDataImageWriter type";      }
     if (!itkNrrdDataImageWriter::registered())       { qWarning() << "Unable to register itkNrrdDataImageWriter type";       }

@@ -21,7 +21,6 @@
 add_subdirectory(legacy/medCoreLegacy)
 add_subdirectory(medCore)
 add_subdirectory(medWidgets)
-add_subdirectory(medComposer)
 
 add_subdirectory(legacy/medPacs)
 

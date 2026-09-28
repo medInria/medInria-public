@@ -1,73 +1,251 @@
 #!/bin/bash
 
-# Usage:
-# - mac_packager.sh path_to_plugins1 path_to_plugins2...
+check_certificate()
+{
+    local certificate_name="$1"
+    local identities=$(security find-identity -v -p codesigning 2>/dev/null) || return 1 # either the identity succeeds or we return an error code
+    printf '%s\n' "$identities" | grep -F -q "$certificate_name" # certificate found we send grep output
+}
 
-# To build a stand-alone mac version of the application, do the following:
+# Cleaning step
+echo "# Clean previous dmg in build"
+dmgs_found=$(find . -maxdepth 1 -type f -name "*.dmg")
+if [[ -n "$dmgs_found" ]]; then
+    # We only remove .dmg files
+    find . -maxdepth 1 -type f -name "*.dmg" -exec rm -f {} +
+fi
 
-# 1. build medInria
-# 2. build medInria-plugins as well as your desired own plugins
-# 3. chmod u+x mac_pacakger.sh
-# 4. run mac_pacakger.sh with each argument being a script to package your plugins, e.g. : ./mac_packager.sh ${Plugins_Build_Dir}/mac_visages_plugins_packager.sh
-
-# The bundle medInria.app will contain all plugins and will be standalone, packaged into MedINRIA.dmg in the install dir
+# Preparation of the new bundle in TmpInstall
+echo "# Prepare the bundle"
+BUNDLE="medInria"
+APP_EXE="${BUNDLE}.app/Contents/MacOS/${BUNDLE}"
+PLUGIN_DIR="${BUNDLE}.app/Contents/PlugIns"
+FRAMEWORK_DIR="${BUNDLE}.app/Contents/Frameworks"
+CERT_NAME="MDS-certificate"
+QT_VERSION="5"
 
 cd @PROJECT_BINARY_DIR@
-
-\rm -fr TmpInstall
-mkdir -p TmpInstall/medInria.app/Contents/Resources
-cp -r @medInria_ROOT@/bin/medInria.app/Contents/MacOS TmpInstall/medInria.app/Contents
-cp @medInria_ROOT@/bin/medInria.app/Contents/Info.plist TmpInstall/medInria.app/Contents
-cp @medInria_ROOT@/bin/medInria.app/Contents/Resources/medInria.icns TmpInstall/medInria.app/Contents/Resources
-
+rm -fr TmpInstall
+mkdir -p TmpInstall/${BUNDLE}.app/Contents/{MacOS,Resources,Frameworks}
 cd TmpInstall
 
-@Qt5_DIR@/../../../bin/macdeployqt medInria.app -appstore-compliant
+@CMAKE_COMMAND@ -E copy \
+    "@medInria_ROOT@/bin/${BUNDLE}.app/Contents/MacOS/${BUNDLE}" \
+    "${BUNDLE}.app/Contents/MacOS/"
 
-#Run sub-packagers
+@CMAKE_COMMAND@ -E copy \
+    "@medInria_ROOT@/bin/${BUNDLE}.app/Contents/Info.plist" \
+    "${BUNDLE}.app/Contents"
+
+@CMAKE_COMMAND@ -E copy \
+    "@medInria_ROOT@/bin/${BUNDLE}.app/Contents/Resources/${BUNDLE}.icns" \
+    "${BUNDLE}.app/Contents/Resources"
+
+echo "# Configuration of RPATH"
+install_name_tool -add_rpath "@executable_path/../Frameworks" "$APP_EXE"
+install_name_tool -add_rpath "@executable_path/../PlugIns" "$APP_EXE"
+
+if [[ "@USE_SYSTEM_ZLIB@" == "OFF" ]]; then
+    echo "# Copy ZLIB library"
+    # Copy real files and symbolic links correctly
+    rsync -av --links --no-relative \
+            --include="libz*.dylib" \
+            --exclude="*" \
+            "@ZLIB_ROOT@/lib/" "${FRAMEWORK_DIR}/" 2>/dev/null
+fi
+
+echo "# Copy DCMTK libraries"
+rsync -av --links --no-relative "@DCMTK_ROOT@/lib/" "${FRAMEWORK_DIR}/" 2>/dev/null
+
+# Deploy Qt libraries using their tool
+echo "# Deploy Qt libs"
+@Qt5_DIR@/../../../bin/macdeployqt ${BUNDLE}.app -appstore-compliant
+
+# Due to Qt installed by homebrew, update QtConcurrent Qt dependencies
+# QT_CONCURRENT_BINARY="${QT_CONCURRENT_DIR}/Versions/$QT_VERSION/QtConcurrent"
+# install_name_tool -id "@executable_path/../Frameworks/QtConcurrent.framework/Versions/$QT_VERSION/QtConcurrent" "$QT_CONCURRENT_BINARY"
+# otool -L "$QT_CONCURRENT_BINARY" | tail -n +2 | while read -r line; do
+#     dep=$(echo "$line" | awk '{print $1}')
+#     if [[ "$dep" == "/usr/local/opt/"* ]] || [[ "$dep" == *"qt@5"* ]]; then
+#         dep_name=$(basename "$dep")
+#         new_path="@executable_path/../Frameworks/${dep_name}.framework/Versions/$QT_VERSION/${dep_name}"
+#         echo "Changing: $dep -> $new_path"
+#         install_name_tool -change "$dep" "$new_path" "$QT_CONCURRENT_BINARY"
+#     fi
+# done
+
+# Run sub-packagers
+echo "# Run sub-packager"
 injectDirs=''
 for i in $*; do
-        echo $i
-        injectDirs="$injectDirs -inject-dir=$i"
+    echo $i
+    injectDirs="$injectDirs -inject-dir=$i"
 done
 
-mkdir python_plugins
+mkdir -p python_plugins
 injectDirs="$injectDirs -inject-dir=@PROJECT_BINARY_DIR@/TmpInstall/python_plugins"
 
 python_libs=''
 for python_lib in @medInria_ROOT@/bin/python_plugins/*; do
     lib=${python_lib##*/}
     libname=${lib%.so}
-    cp $python_lib python_plugins/$libname.dylib
+    @CMAKE_COMMAND@ -E copy "$python_lib" "python_plugins/${libname}.dylib"
     python_libs="$python_libs $libname"
 done
 
-@dtk_ROOT@/bin/dtkDeploy medInria.app $injectDirs &>/dev/null
+# Deploy libs with dtk tool
+echo "# DTK Deploy"
+@dtk_ROOT@/bin/dtkDeploy ${BUNDLE}.app $injectDirs &>/dev/null
 
-mkdir medInria.app/Contents/Plugins/python
-if [ -n "${python_libs}" ]
-then
-    for python_lib in $python_libs; do
-        mv medInria.app/Contents/Plugins/$python_lib.dylib medInria.app/Contents/Plugins/python/$python_lib.so
+# Correct library paths, it's needed to load plugins and also for the signature
+echo "# Correct library paths for plugins"
+OLD_PREFIX="@medInria_ROOT@/bin/plugins_legacy" # absolute path before
+NEW_PREFIX='@executable_path/../PlugIns'        # new relative path
+find "$PLUGIN_DIR" -type f -name "*.dylib" | while read -r lib; do
+    otool -L "$lib" 2>/dev/null | tail -n +2 | while read -r line; do
+        dep=$(echo "$line" | awk '{print $1}')
+
+        if [[ "@USE_SYSTEM_ZLIB@" == "OFF" ]]; then
+            # Solving libz wrong paths
+            if [[ "$dep" =~ ^/ ]] && ( [[ "$dep" == *"/libz."*".dylib" ]] || [[ "$dep" == *"/libz.dylib" ]] ); then
+                basename_dep=$(basename "$dep")
+                new_path="@executable_path/../Frameworks/${basename_dep}"
+                install_name_tool -change "$dep" "$new_path" "$lib"
+            fi
+        fi
+
+        # Solving absolute paths in plugins
+        if [[ "$dep" == "$OLD_PREFIX"* ]]; then
+            new_path="${NEW_PREFIX}/$(basename "$dep")"
+            install_name_tool -change "$dep" "$new_path" "$lib"
+        fi
+    done
+done
+
+echo "# Correct identifier of plugins"
+find "$PLUGIN_DIR" -type f \( -name "*.dylib" -o -name "*.so" \) | while read -r plugin_file; do
+    current_id=$(otool -D "$plugin_file" 2>/dev/null | tail -n +2) # get the id
+    relative_path="${plugin_file#$PLUGIN_DIR/}"                    # remove PLUGIN_DIR path from plugin_file
+    expected_id="@executable_path/../PlugIns/${relative_path}"
+
+    echo "Check ID: $plugin_file"
+
+    # Solve the id (mostly absolute paths)
+    if [[ "$current_id" != "$expected_id" ]]; then
+        echo "Correcting ID: $current_id -> $expected_id"
+        if ! install_name_tool -id "$expected_id" "$plugin_file"; then
+            echo "Error fixing identifier for $plugin_file"
+        fi
+    fi
+done
+
+if [[ "@USE_SYSTEM_ZLIB@" == "OFF" ]]; then
+    echo "# Correct libs for zlib dependencies"
+    # Search all libs finishing with dylib, or beginning by Qt but not finishing with dylib (as for Qt bundles)
+    find "$FRAMEWORK_DIR" -type f \( -name "*.dylib" -o \( -name "Qt*" ! -name "*.dylib" \) \) | while read -r dylib; do
+        # don't change our own embedded zlib 
+        if [[ "$(basename "$dylib")" == libz* ]]; then
+            continue
+        fi
+
+        system_z=$(otool -L "$dylib" 2>/dev/null | grep -F "/usr/lib/libz" || true)
+        if [[ -n "$system_z" ]]; then
+            echo "Found system zlib dependency in: $(basename "$dylib")"
+            while IFS= read -r line; do
+                bad_path=$(echo "$line" | awk '{print $1}')
+                if [[ "$bad_path" =~ ^/usr/lib/libz.*\.dylib$ ]]; then
+                    basename_dep=$(basename "$bad_path")
+                    new_path="@executable_path/../Frameworks/${basename_dep}"
+
+                    echo "Fixing: $bad_path to: $new_path"
+
+                    install_name_tool -change "$bad_path" "$new_path" "$dylib" 2>/dev/null || true
+                else
+                    echo "Skipping non-zlib path: $bad_path"
+                fi
+            done <<< "$system_z"
+        fi
     done
 fi
 
-@CMAKE_COMMAND@ --install @pyncpp_ROOT@ --prefix . --component Runtime
-mkdir medInria.app/Contents/Resources/lib
-mv lib/python@PYTHON_VERSION_MAJOR@.@PYTHON_VERSION_MINOR@ medInria.app/Contents/Resources/lib
+# Python libs preparation
+echo "# Installation of Python libraries"
+mkdir -p ${BUNDLE}.app/Contents/PlugIns/python
+if [ -n "${python_libs}" ]
+then
+    for python_lib in $python_libs; do
+        mv ${BUNDLE}.app/Contents/PlugIns/$python_lib.dylib ${BUNDLE}.app/Contents/PlugIns/python/$python_lib.so
+    done
+fi
 
-#Run fancy packaging apple script
+@CMAKE_COMMAND@ --install @pyncpp_ROOT@ --prefix . --component Runtime &>/dev/null
 
-\cp -f @medInria_SOURCE_DIR@/utils/osx_packaging/BaseMedinriaPackage.sparseimage.gz @PROJECT_BINARY_DIR@/MedinriaPackage.sparseimage.gz
-cd @PROJECT_BINARY_DIR@
-gunzip -f MedinriaPackage.sparseimage.gz
+mkdir -p ${BUNDLE}.app/Contents/Resources/lib
+mv lib/python@PYTHON_VERSION_MAJOR@.@PYTHON_VERSION_MINOR@ ${BUNDLE}.app/Contents/Resources/lib
 
-devName=`hdiutil attach -readwrite -noverify -noautoopen MedinriaPackage.sparseimage | egrep '^/dev/' | sed 1q | awk '{print $1}'`
-diskutil rename "medInria base" "medInria @MEDINRIA_SUPERBUILD_VERSION@"
-\cp -rf @PROJECT_BINARY_DIR@/TmpInstall/medInria.app /Volumes/"medInria @MEDINRIA_SUPERBUILD_VERSION@"/
+# Signature if the right certificate is found
+if check_certificate "$CERT_NAME"; then
+    echo "# Sign the libraries and plugins"
 
-sync
-hdiutil detach $devName
-hdiutil convert MedinriaPackage.sparseimage -format UDZO -imagekey zlib-level=9 -o "medInria-@MEDINRIA_SUPERBUILD_VERSION@.dmg" 1>/dev/null 2>/dev/null
-\rm -fr MedinriaPackage.sparseimage @PROJECT_BINARY_DIR@/TmpInstall
-\mv medInria-@MEDINRIA_SUPERBUILD_VERSION@.dmg @CMAKE_BINARY_DIR@
+    # Sign framework libs
+    find "$FRAMEWORK_DIR" -type f -name "*.dylib" -exec \
+        codesign --force --timestamp --sign "$CERT_NAME" --options runtime {} \;
+
+    # Sign Qt frameworks
+    find "$FRAMEWORK_DIR" -name "*.framework" -type d | while read -r framework; do
+        echo "Signing $(basename "$framework")"
+
+        # binary
+        framework_binary="${framework}/$(basename "$framework" .framework)"
+        if [[ -f "$framework_binary" ]]; then
+            codesign --force --timestamp --sign "$CERT_NAME" --options runtime --verbose "$framework_binary"
+        fi
+
+        # versions
+        find "$framework/Versions" -type f -name "$(basename "$framework" .framework)" 2>/dev/null | while read -r version_binary; do
+            codesign --force --timestamp --sign "$CERT_NAME" --options runtime --verbose "$version_binary"
+        done
+
+        # sign the framework
+        codesign --force --timestamp --sign "$CERT_NAME" --verbose "$framework"
+    done
+
+    # Sign plugins
+    find "$PLUGIN_DIR" -type f \( -name "*.dylib" -o -name "*.so" \) | while read -r plugin_file; do
+        echo "Signing plugin: $(basename "$plugin_file")"
+        if ! codesign --force --timestamp --sign "$CERT_NAME" --options runtime --verbose "$plugin_file"; then
+            echo "ERROR: Failed to sign $plugin_file"
+        fi
+    done
+
+    # Sign the application
+    echo "# Sign the executable with entitlements and the full application"
+    codesign --force --timestamp --sign "$CERT_NAME" "${BUNDLE}.app"
+    codesign --force --timestamp --sign "$CERT_NAME" --options runtime --entitlements ../../../src/cmake/entitlements.plist "$APP_EXE"
+
+    # Checking
+    echo "# Check the signature"
+    codesign --verify --deep --strict --verbose=2 "${BUNDLE}.app"
+    if spctl -a -vv "${BUNDLE}.app"; then
+        echo "SUCCESS: spctl accepted."
+    else
+        echo "WARNING: spctl rejected (which is normal for self-signed certification)."
+    fi
+    echo "# Check entitlements"
+    codesign --display --entitlements - ${BUNDLE}.app
+else
+    echo "# No certificate found for the application, we do not sign it"
+fi
+
+# Create the DMG
+echo "# Create the DMG"
+DMG_NAME="@CPACK_PACKAGE_FILE_NAME@.dmg"
+dmgbuild -s "../../../packaging/apple/settings.json" "${BUNDLE}" "${DMG_NAME}"
+
+# Sign the DMG
+if check_certificate "$CERT_NAME"; then
+    echo "# Sign the DMG"
+    codesign --sign "${CERT_NAME}" --timestamp --options runtime "${DMG_NAME}"
+fi
+
+mv "${DMG_NAME}" @CMAKE_BINARY_DIR@/

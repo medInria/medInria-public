@@ -1,0 +1,12 @@
+[Desktop Entry]
+Type=Application
+Name=@CPACK_PACKAGE_NAME@
+GenericName=Medical Imaging Platform
+Comment=@CPACK_PACKAGE_DESCRIPTION_SUMMARY@
+Icon=medinria
+Exec=@CPACK_PACKAGE_NAME@
+Terminal=false
+Categories=Science;Qt;Viewer;
+MimeType=application/dicom;image/mha;image/nifti;image/vtk;
+StartupWMClass=@CPACK_PACKAGE_NAME@
+Version=1.1

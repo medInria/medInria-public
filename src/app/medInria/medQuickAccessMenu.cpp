@@ -43,10 +43,6 @@ int retrieveDefaultWorkSpace()
     {
         iRes = 2;
     }
-    else if (oStartupWorkspace.toString() == "Composer")
-    {
-        iRes = 3;
-    }
     else
     {
         for (int i = 0; i < oListOfWorkspaceDetails.size() && !bMatch; ++i)
@@ -55,7 +51,7 @@ int retrieveDefaultWorkSpace()
             bMatch = poDetail->name == oStartupWorkspace.toString();
             if (bMatch)
             {
-                iRes = i+4;
+                iRes = i+3;
             }
         }
     }
@@ -207,13 +203,7 @@ void medQuickAccessMenu::switchToCurrentlySelected()
         return;
     }
 
-    if (currentSelected == 3)
-    {
-        emit composerSelected();
-        return;
-    }
-
-    if (currentSelected >= 4)
+    if (currentSelected >= 3)
     {
         emit workspaceSelected(buttonsList[currentSelected]->identifier());
         return;
@@ -418,21 +408,6 @@ void medQuickAccessMenu::createVerticalQuickAccessMenu()
     QObject::connect(browserButton, SIGNAL(clicked()), this, SIGNAL(browserSelected()));
     buttonsList.push_back(browserButton);
 
-    //Setup composer access button
-    medHomepagePushButton *composerButton = new medHomepagePushButton(this);
-    composerButton->setCursor(Qt::PointingHandCursor);
-    composerButton->setStyleSheet("border: 0px;");
-    composerButton->setIcon(QIcon(":/icons/composer.png"));
-    composerButton->setText("Composer");
-    composerButton->setFixedHeight(40);
-    composerButton->setMaximumWidth(250);
-    composerButton->setMinimumWidth(250);
-    composerButton->setIdentifier("Composer");
-    composerButton->setFocusPolicy(Qt::NoFocus);
-    workspaceButtonsLayout->addWidget(composerButton);
-    QObject::connect(composerButton, SIGNAL(clicked()), this, SIGNAL(composerSelected()));
-    buttonsList.push_back(composerButton);
-
     //Dynamically setup workspaces access button
     QList<medWorkspaceFactory::Details*> workspaceDetails = medWorkspaceFactory::instance()->workspaceDetailsSortedByName();
     unsigned int numActiveWorkspaces = 0;
@@ -501,19 +476,6 @@ void medQuickAccessMenu::createHorizontalQuickAccessMenu()
     shortcutAccessLayout->addWidget ( smallBrowserButton );
     QObject::connect ( smallBrowserButton, SIGNAL ( clicked() ), this, SIGNAL ( browserSelected()) );
     buttonsList.push_back(smallBrowserButton);
-
-    //Setup composer access button
-    medHomepagePushButton *smallComposerButton = new medHomepagePushButton(this);
-    smallComposerButton->setCursor(Qt::PointingHandCursor);
-    smallComposerButton->setStyleSheet("border-radius: 5px;font-size:12px;color: #ffffff;background-image: url(:icons/composer_sc.png) no-repeat;");
-    smallComposerButton->setFixedHeight(100);
-    smallComposerButton->setFixedWidth(160);
-    smallComposerButton->setFocusPolicy(Qt::NoFocus);
-    smallComposerButton->setText("Composer");
-    smallComposerButton->setIdentifier("Composer");
-    shortcutAccessLayout->addWidget(smallComposerButton);
-    QObject::connect(smallComposerButton, SIGNAL(clicked()), this, SIGNAL(composerSelected()));
-    buttonsList.push_back(smallComposerButton);
 
     QList<medWorkspaceFactory::Details*> workspaceDetails = medWorkspaceFactory::instance()->workspaceDetailsSortedByName();
     unsigned int numActiveWorkspaces = 0;

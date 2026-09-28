@@ -41,23 +41,18 @@ if (NOT USE_SYSTEM_${ep})
 ## #############################################################################
 
 set(git_url ${GITHUB_PREFIX}medInria/qtdcm.git)
-set(git_tag APHP)
+set(git_tag DCMTK-3.6.9)
 
 ## #############################################################################
 ## Add specific cmake arguments for configuration step of the project
 ## #############################################################################
 
-# set compilation flags
-if (WIN32)
-  set(BUILD_SHARED_LIBS_${ep} OFF)
-  set(DCMTK_WIDE_CHAR_FILE_IO_FUNCTIONS ON)
-else()
-  set(DCMTK_WIDE_CHAR_FILE_IO_FUNCTIONS OFF)
+if (UNIX)
+    set(${ep}_cxx_flags "${${ep}_cxx_flags} -Wall")
 endif()
 
-if (UNIX)
-  set(${ep}_c_flags "${${ep}_c_flags} -Wall")
-  set(${ep}_cxx_flags "${${ep}_cxx_flags} -Wall")
+if (MSVC)
+    set(${ep}_cxx_flags "${${ep}_cxx_flags} /Zc:__cplusplus")
 endif()
 
 if(CMAKE_CXX_COMPILER_ID MATCHES "Clang")
@@ -71,17 +66,13 @@ set(cmake_args
   -DCMAKE_CXX_FLAGS=${${ep}_cxx_flags}
   -DCMAKE_SHARED_LINKER_FLAGS=${${ep}_shared_linker_flags}  
   -DCMAKE_INSTALL_PREFIX=<INSTALL_DIR>
-  -DBUILD_SHARED_LIBS=${BUILD_SHARED_LIBS_${ep}}
-  -DDCMTK_FIND_PACKAGE_USE_CONFIG_ONLY=ON
-  -DDCMTK_WIDE_CHAR_FILE_IO_FUNCTIONS:BOOL=${DCMTK_WIDE_CHAR_FILE_IO_FUNCTIONS}
-  )
-  
-set(cmake_cache_args
+  -DBUILD_SHARED_LIBS:BOOL=${BUILD_SHARED_LIBS_${ep}}
+  -DCMAKE_MSVC_RUNTIME_LIBRARY=MultiThreaded$<$<CONFIG:Debug>:Debug>DLL
+  -DDCMTK_SOURCE_DIR=${EP_PATH_SOURCE}/DCMTK
   -DQt5_DIR:FILEPATH=${Qt5_DIR}
   -DITK_ROOT:FILEPATH=${ITK_ROOT}
   -DDCMTK_ROOT:FILEPATH=${DCMTK_ROOT}
   )
-
   
 ## #############################################################################
 ## Add external-project

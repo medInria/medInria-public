@@ -145,7 +145,7 @@ void medPluginGeneratorTest::testCompile()
     args.clear();
     args << QString("-DMEDINRIA_DIR:PATH=%1").arg(CMAKE_BINARY_DIR)
          << QString("-Ddtk_ROOT:PATH=%1").arg(CMAKE_DTK_DIR)
-         << QString("-DITK_ROOT:PATH=%1").arg(CMAKE_ITK_DIR)
+         << QString("-DITK_ROOT:PATH=%1").arg(DCMAKE_ITK_ROOT)
          << QString("-DRPI_ROOT:PATH=%1").arg(CMAKE_RPI_DIR)
          << _tmpPath.absoluteFilePath(nameFirstLower);
     pGen.setWorkingDirectory(buildDir.absolutePath());

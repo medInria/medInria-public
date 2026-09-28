@@ -109,7 +109,7 @@ void vtkMetaSurfaceMesh::ReadVtkFile (const char* filename)
       else
       {
           vtkErrorMacro(<< "Can not read file with version > " << vtkLegacyReaderMajorVersion
-                        << "." << vtkLegacyReaderMinorVersion << ": " << filename << endl)
+                        << "." << vtkLegacyReaderMinorVersion << ": " << filename << endl);
           throw vtkErrorCode::FileFormatError;
       }
     }
@@ -193,7 +193,7 @@ void vtkMetaSurfaceMesh::Read (const char* filename)
                 this->ReadOBJFile (filename);
                 break;
             default :
-                vtkErrorMacro(<<"unknown dataset type : "<<filename<<endl)
+                vtkErrorMacro(<<"unknown dataset type : "<<filename<<endl);
                 throw vtkErrorCode::UnrecognizedFileTypeError;
         }
     }
@@ -211,14 +211,14 @@ void vtkMetaSurfaceMesh::WriteVtkFile (const char* filename)
 {
   if (!this->DataSet)
   {
-    vtkErrorMacro(<<"No DataSet to write"<<endl)
+    vtkErrorMacro(<<"No DataSet to write"<<endl);
     throw vtkErrorCode::UserError;
   }
 
   vtkPolyData* c_mesh = vtkPolyData::SafeDownCast (this->DataSet);
   if (!c_mesh)
   {
-    vtkErrorMacro(<<"DataSet is not a polydata object"<<endl)
+    vtkErrorMacro(<<"DataSet is not a polydata object"<<endl);
     throw vtkErrorCode::UserError;
   }
   
@@ -245,14 +245,14 @@ void vtkMetaSurfaceMesh::WriteVtpFile (const char* filename)
 {
     if (!this->DataSet)
     {
-        vtkErrorMacro(<<"No DataSet to write"<<endl)
+        vtkErrorMacro(<<"No DataSet to write"<<endl);
         throw vtkErrorCode::UserError;
     }
     
     vtkPolyData* c_mesh = vtkPolyData::SafeDownCast (this->DataSet);
     if (!c_mesh)
     {
-        vtkErrorMacro(<<"DataSet is not a polydata object"<<endl)
+        vtkErrorMacro(<<"DataSet is not a polydata object"<<endl);
         throw vtkErrorCode::UserError;
     }
     
@@ -276,7 +276,7 @@ void vtkMetaSurfaceMesh::WriteVtpFile (const char* filename)
 void vtkMetaSurfaceMesh::WriteOBJFile (const char* filename)
 {
     Q_UNUSED(filename)
-    vtkErrorMacro(<<"Not yet implemented"<<endl)
+    vtkErrorMacro(<<"Not yet implemented"<<endl);
 }
 
 
@@ -419,10 +419,10 @@ void vtkMetaSurfaceMesh::ReadMeshFile (const char* filename)
         return result;
     };
 
-    ifstream fileInput(filename );
+    std::ifstream fileInput(filename );
     if(fileInput.fail())
     {
-        vtkErrorMacro("File not found\n")
+        vtkErrorMacro("File not found\n");
         throw vtkErrorCode::FileNotFoundError;
     }
 

@@ -14,6 +14,8 @@
 
 #include <dtkCoreSupport/dtkAbstractDataReader.h>
 
+#include <medAbstractData.h>
+
 #include <itkDataImagePluginExport.h>
 #include <itkGDCMImageIO.h>
 #include <itkImageSeriesReader.h>
@@ -67,8 +69,9 @@ public slots:
 
     void setProgress (int value);
 
-private:  
-
+private:
+    void setMetaData(QString key, medAbstractData* medData, 
+                     std::string firstfilename, uint16_t groupe, uint16_t element);
     FileListMapType sort (FileList filelist);
     FileList unfoldMap (FileListMapType map);
 

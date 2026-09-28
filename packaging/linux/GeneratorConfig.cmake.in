@@ -11,16 +11,12 @@
 #
 ################################################################################
 
-
 # This file gets re-included as CPack iterates through its generator list
 # setting CPACK_GENERATOR to the current generator
 # 
 # For more details see : http://www.cmake.org/cmake/help/v2.8.9/cmake.html#module:CPack
 
-if (CPACK_GENERATOR STREQUAL "ZIP")
-    # we install everything at the root of the archive
-    set(CPACK_PACKAGING_INSTALL_PREFIX "")
-endif()
+set(CPACK_PACKAGING_INSTALL_PREFIX "")
 
 # we prepare the archive cleanup script
 configure_file(@CURRENT_SRC_DIR@/PostArchiveCleanupScript.cmake.in @CURRENT_BIN_DIR@/PostArchiveCleanupScript.cmake @ONLY)

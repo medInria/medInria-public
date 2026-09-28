@@ -30,19 +30,13 @@ set(CMAKE_INCLUDE_CURRENT_DIR TRUE)
 ## Resolve dependencies
 ## #############################################################################
 
-if(${USE_FFmpeg})
-  set (VTK_FFmpeg_MODULE vtkIOFFMPEG)
-  add_definitions(-DMED_USE_FFmpeg)
-endif()
-
 find_package(dtk REQUIRED)
 include_directories(${dtk_INCLUDE_DIRS})
 
 find_package(ITK REQUIRED COMPONENTS ITKCommon)
 include(${ITK_USE_FILE})
 
-find_package(VTK REQUIRED COMPONENTS vtkCommonCore vtkImagingSources ${VTK_FFmpeg_MODULE} vtkIOImage vtkRenderingQt vtkIOMovie)
-include(${VTK_USE_FILE})
+find_package(VTK REQUIRED COMPONENTS CommonCore ImagingSources IOImage RenderingQt IOMovie)
 
 ## #############################################################################
 ## List Sources
@@ -83,12 +77,10 @@ target_link_libraries(${TARGET_NAME}
     medCore
     medVtkInria
     medUtilities
-    vtkImagingSources
-    vtkIOImage
-    vtkIOMovie
-    vtkRenderingQt
-    ${VTK_FFmpeg_MODULE}
+    ${VTK_LIBRARIES}
     )
+
+vtk_module_autoinit(TARGETS ${TARGET_NAME} MODULES ${VTK_LIBRARIES})
 
 set(CMAKE_RUNTIME_OUTPUT_DIRECTORY ${CMAKE_BINARY_DIR}/bin)
 

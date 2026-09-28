@@ -24,22 +24,10 @@
 class medStartupSettingsWidgetPrivate
 {
 public:
-    QWidget *parent;
     QCheckBox *startInFullScreen;
     QComboBox *defaultStartingArea;
     QComboBox *defaultSegmentationSpeciality;
-
-    medStartupSettingsWidgetPrivate();
-    ~medStartupSettingsWidgetPrivate();
 };
-
-medStartupSettingsWidgetPrivate::medStartupSettingsWidgetPrivate()
-{
-}
-
-medStartupSettingsWidgetPrivate::~medStartupSettingsWidgetPrivate()
-{
-}
 
 medStartupSettingsWidget::medStartupSettingsWidget(QWidget *parent) : medSettingsWidget(parent), d(new medStartupSettingsWidgetPrivate())
 {
@@ -54,7 +42,6 @@ medStartupSettingsWidget::medStartupSettingsWidget(QWidget *parent) : medSetting
     d->defaultStartingArea->setItemData(0, 0, Qt::UserRole - 1); // Search is disabled
     d->defaultStartingArea->addItem(tr("Homepage"));
     d->defaultStartingArea->addItem(tr("Browser"));
-    d->defaultStartingArea->addItem(tr("Composer"));
     for(medWorkspaceFactory::Details* detail : workspaceDetails)
     {
         d->defaultStartingArea->addItem(detail->name);

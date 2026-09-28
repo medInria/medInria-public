@@ -26,13 +26,13 @@ add_definitions(-D${TARGET_NAME_UP}_VERSION="${${TARGET_NAME}_VERSION}")
 ## Resolve dependencies
 ## #############################################################################
 
-find_package(VTK REQUIRED vtkCommonCore vtkCommonDataModel)
-include(${VTK_USE_FILE})
+find_package(VTK REQUIRED CommonCore CommonDataModel)
 
 find_package(ITK REQUIRED ITKCommon ITKTransform ITKImageFunction)
 include(${ITK_USE_FILE})
 
 find_package(TTK REQUIRED COMPONENTS ITKTensor ttkAlgorithms)
+
 ## #############################################################################
 ## List Sources
 ## #############################################################################
@@ -80,8 +80,10 @@ target_link_libraries(${TARGET_NAME}
   medCoreLegacy
   medVtkInria
   medWidgets
-  vtkRenderingCore
+  ${VTK_LIBRARIES}
   )
+
+vtk_module_autoinit(TARGETS ${TARGET_NAME} MODULES ${VTK_LIBRARIES})
 
 ## #################################################################
 ## Install rules

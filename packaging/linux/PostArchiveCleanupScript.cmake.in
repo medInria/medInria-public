@@ -9,12 +9,15 @@ file(REMOVE_RECURSE ${DIR}/share)
 # Cleaning up useless stuff in /lib
 file(REMOVE_RECURSE ${DIR}/lib/cmake)
 file(REMOVE_RECURSE ${DIR}/lib64/cmake)
-file(REMOVE_RECURSE ${DIR}/lib/vtk-8.0/CMake)
-file(REMOVE_RECURSE ${DIR}/lib/vtk-8.0/doc)
-file(REMOVE_RECURSE ${DIR}/lib/vtk-8.0/doxygen)
-file(REMOVE_RECURSE ${DIR}/lib/vtk-8.0/testing)
-file(GLOB LIB_JUNK ${DIR}/lib/*.cmake ${DIR}/lib/vtk-8.0/*.cmake)
+file(REMOVE_RECURSE ${DIR}/lib/pkgconfig)
+file(REMOVE_RECURSE ${DIR}/lib/gdcmopenjpeg-2.3)
 
+file(GLOB VTK_DIRS ${DIR}/lib/vtk-*)
+foreach(vtk_dir ${VTK_DIRS})
+    file(REMOVE_RECURSE "${vtk_dir}")
+endforeach()
+
+file(GLOB LIB_JUNK ${DIR}/lib/*.cmake)
 if (LIB_JUNK)
   list(LENGTH LIB_JUNK LIB_JUNK_LENGTH)
 

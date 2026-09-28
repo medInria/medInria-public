@@ -62,10 +62,10 @@ target_include_directories(${TARGET_NAME}
 target_link_libraries(${TARGET_NAME}
   medCoreLegacy
   Qt5::Core
+  dtkCore
   dtkCoreSupport
   dtkGuiSupport
   dtkLog
-  dtkComposer
   )
 
 ## #############################################################################

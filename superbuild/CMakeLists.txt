@@ -21,10 +21,6 @@ option(USE_OSPRay "Use OSPRay for CPU VR" OFF )
 
 option(USE_Python "Build with Python support" ON)
 
-if (NOT WIN32)
-  option(USE_FFmpeg "Build with FFmpeg video export support" OFF)
-endif()
-
 ## #############################################################################
 ## Add packages
 ## #############################################################################
@@ -44,14 +40,18 @@ find_package(Qt5 REQUIRED COMPONENTS
 
 find_package(Boost REQUIRED)
 
-if(USE_Python AND UNIX)
+if(UNIX)
     if(APPLE)
-        set(default_root_dir "/usr/local/opt/openssl")
+        if(CMAKE_SYSTEM_PROCESSOR STREQUAL "arm64")
+            set(default_root_dir "/opt/homebrew/opt/openssl") # macOS Apple ship (M1/M2/M3...)
+        else()
+            set(default_root_dir "/usr/local/opt/openssl") # macOS Intel
+        endif()
     else()
         set(default_root_dir)
     endif()
     set(OPENSSL_ROOT_DIR ${default_root_dir} CACHE PATH "Root directory of OpenSSL.")
-    find_package(OpenSSL COMPONENTS SSL)
+    find_package(OpenSSL COMPONENTS SSL REQUIRED)
 endif()
 
 ## #############################################################################
@@ -67,12 +67,6 @@ endif()
 #   * otherwise use download and compile locally the package as an external 
 #     module.
 
-if (NOT WIN32)
-  if (${USE_FFmpeg})
-      list(APPEND external_projects ffmpeg)
-  endif()
-endif()
-
 if (USE_Python)
     list(APPEND external_projects
         pyncpp
@@ -80,6 +74,7 @@ if (USE_Python)
 endif()
 
 list(APPEND external_projects
+  ZLIB
   VTK
   ITK
   RPI

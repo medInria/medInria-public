@@ -11,9 +11,9 @@
 #
 ################################################################################
 
-set(PYTHON_VERSION_MAJOR 3 CACHE STRING "Python major version")
-set(PYTHON_VERSION_MINOR 10 CACHE STRING "Python minor version")
-set(PYTHON_VERSION_PATCH 10 CACHE STRING "Python patch version")
+set(PYTHON_VERSION_MAJOR 3  CACHE STRING "Python major version")
+set(PYTHON_VERSION_MINOR 12 CACHE STRING "Python minor version")
+set(PYTHON_VERSION_PATCH 14 CACHE STRING "Python patch version")
 
 function(pyncpp_project)
 
@@ -29,12 +29,8 @@ function(pyncpp_project)
 
         epComputPath(${ep})
 
-        set(project_args
-            GIT_REPOSITORY ${GITHUB_PREFIX}LIRYC-IHU/pyncpp.git
-            GIT_TAG 0.1.x
-            GIT_SHALLOW True
-            GIT_PROGRESS True
-            )
+        set(git_url ${GITHUB_PREFIX}LIRYC-IHU/pyncpp.git)
+        set(git_tag working)
 
         set(cmake_args
             ${ep_common_cache_args}
@@ -61,11 +57,38 @@ function(pyncpp_project)
             BINARY_DIR ${build_path}
             TMP_DIR ${tmp_path}
             STAMP_DIR ${stamp_path}
+
+            GIT_REPOSITORY ${git_url}
+            GIT_TAG ${git_tag}
+            GIT_SHALLOW True
+            GIT_PROGRESS True
+
             DEPENDS ${${ep}_dependencies}
             CMAKE_ARGS ${cmake_args}
             INSTALL_COMMAND ""
-            "${project_args}"
             )
+
+        ExternalProject_Get_Property(${ep} BINARY_DIR)
+        if(WIN32)
+            set(PYTHON_EXE "${BINARY_DIR}/python${PYTHON_VERSION_MAJOR}${PYTHON_VERSION_MINOR}/python.exe")
+
+            ExternalProject_Add_Step(${ep} install_dependencies_windows
+                # setuptools needed for Python > 3.12 on Windows
+                COMMAND ${PYTHON_EXE} -m pip install numpy vtk SimpleITK scipy setuptools
+                DEPENDEES install
+                COMMENT "Installing Python dependencies on Windows"
+                WORKING_DIRECTORY ${BINARY_DIR}
+            )
+        else()
+            set(PYTHON_EXE "${BINARY_DIR}/lib/python${PYTHON_VERSION_MAJOR}.${PYTHON_VERSION_MINOR}/bin/python${PYTHON_VERSION_MAJOR}.${PYTHON_VERSION_MINOR}")
+
+            ExternalProject_Add_Step(${ep} install_dependencies_unix
+                COMMAND ${PYTHON_EXE} -m pip install numpy vtk SimpleITK scipy
+                DEPENDEES install
+                COMMENT "Installing Python dependencies on Unix"
+                WORKING_DIRECTORY ${BINARY_DIR}
+            )
+        endif()
 
         ## #####################################################################
         ## Export variables

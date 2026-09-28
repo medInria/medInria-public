@@ -30,7 +30,6 @@ find_package(Boost REQUIRED)
 list_source_files(${TARGET_NAME}
   ${CMAKE_CURRENT_SOURCE_DIR}
   areas/browser
-  areas/composer
   areas/homepage
   areas/workspaces
   areas/workspaces/diffusion
@@ -113,7 +112,12 @@ add_executable(${TARGET_NAME} ${DEPLOYMENT_SYSTEM} # Empty for Linux
   )
 
 if (APPLE)
-  set_target_properties(${TARGET_NAME} PROPERTIES MACOSX_BUNDLE_INFO_PLIST "${CMAKE_SOURCE_DIR}/cmake/MedInriaOSXBundleInfo.plist.in")
+  set_target_properties(${TARGET_NAME} PROPERTIES
+      MACOSX_BUNDLE_INFO_PLIST               "${CMAKE_SOURCE_DIR}/cmake/MedInriaOSXBundleInfo.plist.in"
+      XCODE_ATTRIBUTE_CODE_SIGN_ENTITLEMENTS "${CMAKE_SOURCE_DIR}/cmake/entitlements.plist"
+      XCODE_ATTRIBUTE_HARDENED_RUNTIME YES
+  )
+
   import_external_resources(${TARGET_NAME} FILES "${CMAKE_CURRENT_SOURCE_DIR}/resources/${TARGET_NAME}.icns")
 endif()
 
@@ -138,10 +142,7 @@ target_link_libraries(${TARGET_NAME}
   Qt5::OpenGL
   dtkCoreSupport
   dtkGuiSupport
-  dtkVrSupport
-  dtkComposer
   medCore
-  medComposer
   medWidgets
   medCoreLegacy
   medPacs

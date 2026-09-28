@@ -48,10 +48,8 @@ set(git_tag 1.7.1)
 ## Add specific cmake arguments for configuration step of the project
 ## #############################################################################
 
-# set compilation flags
- if (UNIX)
-  set(${ep}_c_flags "${${ep}_c_flags} -Wall")
-  set(${ep}_cxx_flags "${${ep}_cxx_flags} -Wall")
+if (UNIX)
+    set(${ep}_cxx_flags "${${ep}_cxx_flags} -w") # remove warnings
 endif()
 
 if(CMAKE_CXX_COMPILER_ID MATCHES "Clang")
@@ -66,18 +64,19 @@ set(cmake_args
   -DCMAKE_SHARED_LINKER_FLAGS:STRING=${${ep}_shared_linker_flags}  
   -DCMAKE_INSTALL_PREFIX:PATH=<INSTALL_DIR>
   -DBUILD_SHARED_LIBS:BOOL=${BUILD_SHARED_LIBS_${ep}}
-  -DDTK_BUILD_COMPOSER=ON                                                                                                                                                                                                                                                                                        
-  -DDTK_BUILD_DISTRIBUTED=ON                                                                                                                                                                                                                                                                                        
-  -DDTK_BUILD_SCRIPT=OFF                                                                                                                                                                                                                                                                                       
-  -DDTK_BUILD_SUPPORT_COMPOSER=OFF                                                                                                                                                                                                                                                                                       
-  -DDTK_BUILD_SUPPORT_CONTAINER=OFF                                                                                                                                                                                                                                                                                       
-  -DDTK_BUILD_SUPPORT_CORE=ON                                                                                                                                                                                                                                                                                        
-  -DDTK_BUILD_SUPPORT_DISTRIBUTED=OFF                                                                                                                                                                                                                                                                                       
-  -DDTK_BUILD_SUPPORT_GUI=ON                                                                                                                                                                                                                                                                                        
-  -DDTK_BUILD_SUPPORT_MATH=ON                                                                                                                                                                                                                                                                                        
-  -DDTK_BUILD_SUPPORT_PLOT=OFF                                                                                                                                                                                                                                                                                       
-  -DDTK_BUILD_SUPPORT_VR=ON                                                                                                                                                                                                                                                                                        
+  -DDTK_BUILD_COMPOSER=OFF
+  -DDTK_BUILD_DISTRIBUTED=OFF
+  -DDTK_BUILD_SCRIPT=OFF
+  -DDTK_BUILD_SUPPORT_COMPOSER=OFF
+  -DDTK_BUILD_SUPPORT_CONTAINER=OFF
+  -DDTK_BUILD_SUPPORT_CORE=ON
+  -DDTK_BUILD_SUPPORT_DISTRIBUTED=OFF
+  -DDTK_BUILD_SUPPORT_GUI=ON
+  -DDTK_BUILD_SUPPORT_MATH=ON
+  -DDTK_BUILD_SUPPORT_PLOT=OFF
+  -DDTK_BUILD_SUPPORT_VR=OFF
   -DDTK_BUILD_WRAPPERS=OFF
+  -DDTK_BUILD_WIDGETS=OFF
   )
   
 set(cmake_cache_args
@@ -87,6 +86,8 @@ set(cmake_cache_args
 ## #############################################################################
 ## Add external-project
 ## #############################################################################
+
+ep_GeneratePatchCommand(${ep} DTK_PATCH_COMMAND dtk.patch)
 
 epComputPath(${ep})
 
@@ -99,11 +100,15 @@ ExternalProject_Add(${ep}
   
   GIT_REPOSITORY ${git_url}
   GIT_TAG ${git_tag}
+  GIT_SHALLOW True
+  GIT_PROGRESS True
+
   CMAKE_GENERATOR ${gen}
   CMAKE_GENERATOR_PLATFORM ${CMAKE_GENERATOR_PLATFORM}
   CMAKE_ARGS ${cmake_args}
   CMAKE_CACHE_ARGS ${cmake_cache_args}
   DEPENDS ${${ep}_dependencies}
+  PATCH_COMMAND ${DTK_PATCH_COMMAND}
   INSTALL_COMMAND ""
   )
 

@@ -11,10 +11,7 @@
 
 =========================================================================*/
 
-#include <dtkComposerWidget.h>
-
 #include <medBrowserArea.h>
-#include <medComposerArea.h>
 #include <medDatabaseNonPersistentController.h>
 #include <medDataManager.h>
 #include <medEmptyDbWarning.h>
@@ -55,7 +52,6 @@ public:
     QWidget *currentArea;
 
     QStackedWidget*           stack;
-    medComposerArea*          composerArea;
     medBrowserArea*           browserArea;
     medWorkspaceArea*         workspaceArea;
     medHomepageArea*          homepageArea;
@@ -116,9 +112,6 @@ medMainWindow::medMainWindow ( QWidget *parent ) : QMainWindow ( parent ), d ( n
     d->homepageArea = new medHomepageArea( this );
     d->homepageArea->setObjectName("medHomePageArea");
 
-    //Composer
-    d->composerArea = nullptr;
-
     //  Stack
     d->stack = new QStackedWidget(this);
     d->stack->addWidget(d->homepageArea);
@@ -143,7 +136,6 @@ medMainWindow::medMainWindow ( QWidget *parent ) : QMainWindow ( parent ), d ( n
     connect(d->quickAccessWidget, SIGNAL(searchSelected()), this, SLOT(switchToSearchArea()));
     connect(d->quickAccessWidget, SIGNAL(homepageSelected()), this, SLOT(switchToHomepageArea()));
     connect(d->quickAccessWidget, SIGNAL(browserSelected()), this, SLOT(switchToBrowserArea()));
-    connect(d->quickAccessWidget, SIGNAL(composerSelected()), this, SLOT(switchToComposerArea()));
     connect(d->quickAccessWidget, SIGNAL(workspaceSelected(QString)), this, SLOT(showWorkspace(QString)));
 
     d->shortcutAccessWidget = new medQuickAccessMenu( false, this );
@@ -153,7 +145,6 @@ medMainWindow::medMainWindow ( QWidget *parent ) : QMainWindow ( parent ), d ( n
     connect(d->shortcutAccessWidget, SIGNAL(menuHidden()), this, SLOT(hideShortcutAccess()));
     connect(d->shortcutAccessWidget, SIGNAL(homepageSelected()), this, SLOT(switchToHomepageArea()));
     connect(d->shortcutAccessWidget, SIGNAL(browserSelected()), this, SLOT(switchToBrowserArea()));
-    connect(d->shortcutAccessWidget, SIGNAL(composerSelected()), this, SLOT(switchToComposerArea()));
     connect(d->shortcutAccessWidget, SIGNAL(workspaceSelected(QString)), this, SLOT(showWorkspace(QString)));
 
     d->shortcutAccessVisible = false;
@@ -262,8 +253,6 @@ medMainWindow::medMainWindow ( QWidget *parent ) : QMainWindow ( parent ), d ( n
     d->homepageArea->initPage();
     connect(d->homepageArea, SIGNAL(showBrowser()), this, SLOT(switchToBrowserArea()));
     connect(d->homepageArea, SIGNAL(showWorkspace(QString)), this, SLOT(showWorkspace(QString)));
-    connect(d->homepageArea, SIGNAL(showComposer()), this, SLOT(showComposer()));
-
 
     this->setCentralWidget ( d->stack );
     this->setWindowTitle(qApp->applicationName());
@@ -352,10 +341,6 @@ void medMainWindow::switchToArea(const AreaType areaIndex)
 
     case medMainWindow::WorkSpace:
         this->switchToWorkspaceArea();
-        break;
-
-    case medMainWindow::Composer:
-        this->switchToComposerArea();
         break;
 
     default:
@@ -644,38 +629,6 @@ void medMainWindow::switchToWorkspaceArea()
     }
 }
 
-void medMainWindow::switchToComposerArea()
-{
-    if(d->currentArea != d->composerArea)
-    {
-        if (d->composerArea == nullptr)
-        {
-            d->composerArea = new medComposerArea(this);
-            d->composerArea->setObjectName("medComposerArea");
-            d->stack->addWidget(d->composerArea);
-        }
-
-        d->currentArea = d->composerArea;
-
-        d->shortcutAccessWidget->updateSelected("Composer");
-        d->quickAccessWidget->updateSelected("Composer");
-
-        d->quickAccessButton->setText(tr("Workspace: Composer"));
-        d->quickAccessButton->setMinimumWidth(170);
-        if (d->quickAccessWidget->isVisible())
-        {
-            this->hideQuickAccess();
-        }
-        if (d->shortcutAccessVisible)
-        {
-            this->hideShortcutAccess();
-        }
-        d->screenshotButton->setEnabled(false);
-        d->adjustSizeButton->setEnabled(false);
-        d->stack->setCurrentWidget(d->composerArea);
-    }
-}
-
 void medMainWindow::showWorkspace(QString workspace)
 {
     d->quickAccessButton->setMinimumWidth(170);
@@ -693,16 +646,6 @@ void medMainWindow::showWorkspace(QString workspace)
         medMessageController::instance().showError(message, 3000);
         switchToHomepageArea();
     }
-
-    this->hideQuickAccess();
-    this->hideShortcutAccess();
-}
-
-void medMainWindow::showComposer()
-{
-    d->quickAccessButton->setMinimumWidth(170);
-
-    this->switchToComposerArea();
 
     this->hideQuickAccess();
     this->hideShortcutAccess();

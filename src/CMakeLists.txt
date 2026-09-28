@@ -13,10 +13,10 @@
 #
 ################################################################################
 
-cmake_minimum_required(VERSION 3.19)
+cmake_minimum_required(VERSION 3.24)
 
 if(NOT DEFINED ${medInria_VERSION})
-    set(medInria_VERSION 4.0.2)
+    set(medInria_VERSION 6.0.0)
 endif()
 
 project(medInria VERSION ${medInria_VERSION})
@@ -51,13 +51,6 @@ option(USE_OSPRay
   "Build with OSPRay support"
   OFF
   )
-
-if (NOT WIN32)
-option(USE_FFmpeg
-  "Build with FFmpeg video export support"
-  OFF
-  )
-endif()
 
 option(USE_Python
   "Build with Python support"

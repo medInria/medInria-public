@@ -36,7 +36,7 @@
 #include <vtkCamera.h>
 #include <vtkMath.h>
 #include <vtkRenderer.h>
-
+#include <vtkUnsignedCharArray.h>
 
 vtkStandardNewMacro(vtkAxes2DWidget);
 

@@ -127,7 +127,7 @@ public:
     /** Set FlipVector On/Off If On, x direction is flipped in the
       * reconstruction directions defining the basis function*/
 
-    vtkSetVector3Macro(FlipVector,const bool);
+    vtkSetVector3Macro(FlipVector, bool);
 
     /** Get FlipVector On/Off If On, x direction is flipped in the reconstruction
       * directions defining the basis function*/

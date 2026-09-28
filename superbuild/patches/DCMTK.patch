@@ -1,0 +1,25 @@
+From f25e965e9e44b45f5843e0a81b5708ecc709d197 Mon Sep 17 00:00:00 2001
+From: Mathilde Merle <mathilde.merle@ihu-liryc.fr>
+Date: Mon, 28 Jul 2025 11:21:10 +0200
+Subject: [PATCH] DCMTK
+
+---
+ oflog/libsrc/oflog.cc | 2 +-
+ 1 file changed, 1 insertion(+), 1 deletion(-)
+
+diff --git a/oflog/libsrc/oflog.cc b/oflog/libsrc/oflog.cc
+index fa91f4cf1..551c37e94 100644
+--- a/oflog/libsrc/oflog.cc
++++ b/oflog/libsrc/oflog.cc
+@@ -66,7 +66,7 @@ static void OFLog_init()
+ 
+     console->setLayout(OFmove(layout));
+     rootLogger.addAppender(console);
+-    rootLogger.setLogLevel(dcmtk::log4cplus::INFO_LOG_LEVEL);
++    rootLogger.setLogLevel(dcmtk::log4cplus::FATAL_LOG_LEVEL);
+ }
+ 
+ // private class, this class's constructor makes sure that OFLog_init() is
+-- 
+2.39.5 (Apple Git-154)
+

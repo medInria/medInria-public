@@ -1,0 +1,36 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<component type="desktop-application">
+  <id>fr.med.medInria</id>
+  
+  <name>@CPACK_PACKAGE_NAME@</name>
+  <summary>@CPACK_PACKAGE_DESCRIPTION_SUMMARY@</summary>
+  
+  <metadata_license>FSFAP</metadata_license>
+  <project_license>BSD-4-Clause</project_license>
+
+  <url type="homepage">https://med.inria.fr</url>
+
+  <developer id="fr.med.medinria">
+    <name>Inria</name>
+  </developer>
+  
+  <description>
+    <p>
+      medInria is a multi-platform medical image processing and visualization software. It is free and open-source. Through an intuitive user interface, medInria offers from standard to cutting-edge processing functionalities for your medical images such as 2D/3D/4D image visualization, image registration, diffusion MR processing and tractography.
+    </p>
+  </description>
+
+  <content_rating type="oars-1.0" />
+  
+  <launchable type="desktop-id">fr.med.medInria.desktop</launchable>
+
+  <screenshots>
+    <screenshot type="default">
+      <image>https://med.inria.fr/files/2025/05/reformat.png</image>
+    </screenshot>
+    <screenshot>
+      <image>https://med.inria.fr/files/2025/05/meshing.png</image>
+    </screenshot>
+  </screenshots>
+
+</component>

@@ -99,11 +99,6 @@ set(cmake_cache_args
   -DBoost_INCLUDE_DIR:PATH=${Boost_INCLUDE_DIR}
   )
 
-if (${USE_FFmpeg})
-  list(APPEND cmake_args
-  -DUSE_FFmpeg=${USE_FFmpeg})
-endif()
-
 if (USE_DTKIMAGING)
   set(cmake_args
     ${cmake_args}

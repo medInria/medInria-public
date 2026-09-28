@@ -1,6 +1,7 @@
 <RCC>
     <qresource prefix="/">
         <file>../../../../LICENSE.txt</file>
+        <file>../../../../LICENSES_EXT.txt</file>
         <file>../../../../RELEASE_NOTES.txt</file>
         <file>medInria.ico</file>
         <file>icons/AxialIcon.png</file>
@@ -14,7 +15,6 @@
         <file>icons/camera_grey.png</file>
         <file>icons/cropping.png</file>
         <file>icons/database.png</file>
-        <file>icons/composer_sc.png</file>
         <file>icons/home_sc.png</file>
         <file>icons/workspace_Diffusion.png</file>
         <file>icons/workspace_Visualization.png</file>
@@ -26,7 +26,6 @@
         <file>icons/workspace_Reformat.png</file>
         <file>icons/folder.png</file>
         <file>icons/home.png</file>
-        <file>icons/composer.png</file>
         <file>icons/error.png</file>
         <file>icons/error_add.png</file>
         <file>icons/error_delete.png</file>

@@ -32,7 +32,7 @@ add_definitions(-D${PROJECT_NAME_UP}_VERSION="${${PROJECT_NAME}_VERSION}")
 find_package(dtk REQUIRED)
 include_directories(${dtk_INCLUDE_DIRS})
 
-find_package(DCMTK REQUIRED NO_MODULE)
+find_package(DCMTK CONFIG REQUIRED ofstd)
 
 find_package(QtDCM REQUIRED)
 
@@ -97,7 +97,7 @@ endif()
 target_link_libraries(${PROJECT_NAME}
   ${QT_LIBRARIES}
   ${QTDCM_LIBRARIES}
-  ${DCMTK_LIBRARIES}
+  DCMTK::ofstd
   ${WIN_LINK_LIBRARIES}
   dtkCore
   dtkLog

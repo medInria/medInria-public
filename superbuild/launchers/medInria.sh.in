@@ -1,4 +1,4 @@
-#!/bin/bash
+#!/usr/bin/env bash
 
 usage() {
     local ret="$1"
@@ -20,13 +20,24 @@ if [ "$1" == "--prefix" ]; then
 fi
 
 if [ "$1" == "--debug" ]; then
-    med_prefix="gdb --args"
+    case "$OSTYPE" in
+        linux*)   med_prefix="gdb --args" ;;
+        darwin*)  med_prefix="lldb" ;;
+        *)        echo "unknown: $OSTYPE" ;;
+    esac
 fi
 
 #   Locate the directory containing this script.
 
 MEDINRIA_DIR="@MEDINRIA_DIR@"
 MEDINRIA_BIN="@MEDINRIA_BIN@"
+
+# TensorFlow (at least) can be installed by users in our own Python.
+# It can creates conflicts between the SQLite system used by Qt and the one from TensorFlow.
+# This line forces the SQLite system one. Does not occur on macOS.
+if [[ "$OSTYPE" == linux* ]]; then
+    export LD_PRELOAD=/usr/lib/x86_64-linux-gnu/libsqlite3.so.0
+fi
 
 #   Set the plugins and library paths.
 export MEDINRIA_PLUGINS_DIR="@MEDINRIA_PLUGINS_DIRS@"

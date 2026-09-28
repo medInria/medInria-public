@@ -24,10 +24,6 @@
 #include <vtkQImageToImageSource.h>
 #include <vtkSmartPointer.h>
 
-#ifdef MED_USE_FFmpeg
-#include <vtkFFMPEGWriter.h>
-#endif
-
 // Qt
 #include <QApplication>
 #include <QComboBox>
@@ -185,7 +181,7 @@ int ExportVideo::update()
                 res = this->exportAsVideo();
             }
 
-            qDebug() << metaObject()->className() <<" END OF ENCODING -- "<<res;
+            qDebug() << metaObject()->className() <<" END OF ENCODING.";
             QApplication::restoreOverrideCursor();
 
             return res;
@@ -249,17 +245,6 @@ int ExportVideo::exportAsVideo()
 
         writerVideo = writerVideoTmp;
     }
-#ifdef MED_USE_FFmpeg
-    else if (d->format == FFMPEG)
-    {
-        vtkSmartPointer<vtkFFMPEGWriter> writerVideoTmp = vtkSmartPointer<vtkFFMPEGWriter>::New();
-        writerVideoTmp->SetInputConnection(source->GetOutputPort());
-        writerVideoTmp->SetFileName(d->filename.toStdString().c_str());
-        writerVideoTmp->SetRate(d->frameRate);
-        writerVideoTmp->SetQuality(d->quality);
-        writerVideo = writerVideoTmp;
-    }
-#endif
     else
     {
         return medAbstractProcessLegacy::FAILURE;
@@ -304,17 +289,8 @@ int ExportVideo::displayFileDialog()
 
     // Add user widgets: Video Format
     d->formatComboBox = new QComboBox(d->exportDialog);
-    // Free, opensource, no patent.
-    // "Before 2007, the .ogg filename extension was used for all files whose content used the Ogg container
-    // format. Since 2007, the Xiph.Org Foundation recommends that .ogg only be used for Ogg Vorbis audio files.
-    // The Xiph.Org Foundation decided to create a new set of file extensions and media types to describe different
-    // types of content such as .oga for audio only files, .ogv for video with or without sound (including Theora),
-    // and .ogx for multiplexed Ogg."
     d->formatComboBox->addItem("Ogg Vorbis (.ogv)", OGGVORBIS);
     d->formatComboBox->addItem("JPEG (.jpg .jpeg)", JPGBATCH);
-#ifdef MED_USE_FFmpeg
-    d->formatComboBox->addItem("FFMPEG (.mp4)", FFMPEG);
-#endif
     d->formatComboBox->setCurrentIndex(d->format);
     gridbox->addWidget(new QLabel("Format", d->exportDialog), gridbox->rowCount()-1, 0);
     gridbox->addWidget(d->formatComboBox, gridbox->rowCount()-1, 1);
@@ -352,7 +328,7 @@ int ExportVideo::displayFileDialog()
     gridbox->addWidget(d->qualityComboBox, gridbox->rowCount()-1, 1);
 
     // Video explanation of conversion (default: ogv txt)
-    d->explanationLabel = new QLabel("\nYou can convert OGV to MP4 for instance at https://anyconv.com/fr/convertisseur-de-ogv-en-mp4/ or with your own tools.");
+    d->explanationLabel = new QLabel("\nYou can convert OGV to MP4 with https://handbrake.fr or any tool you want.");
     d->explanationLabel->setWordWrap(true);
     d->explanationLabel->setStyleSheet("font: italic");
     gridbox->addWidget(d->explanationLabel, gridbox->rowCount()+3, 0, 3, 0);
@@ -394,7 +370,7 @@ void ExportVideo::handleWidgetDisplayAccordingToType(int index)
             d->subsamplingLabel->show();
             d->qualityComboBox->show();
             d->qualityLabel->show();
-            d->explanationLabel->setText("\nYou can convert OGV to MP4 for instance at https://anyconv.com/fr/convertisseur-de-ogv-en-mp4/ or with your own tools.");
+            d->explanationLabel->setText("\nYou can convert OGV to MP4 with https://handbrake.fr or any tool you want.");
             break;
         }
         case JPGBATCH:
@@ -408,19 +384,6 @@ void ExportVideo::handleWidgetDisplayAccordingToType(int index)
             d->qualityComboBox->hide();
             d->qualityLabel->hide();
             d->explanationLabel->setText("\n You can convert a batch of jpeg into movies through your own tools.");
-            break;
-        }
-        case FFMPEG:
-        {
-            // Video
-            d->exportDialog->selectFile("video.mp4");
-            d->frameRateSpinBox->show();
-            d->frameRateLabel->show();
-            d->subsamplingComboBox->hide();
-            d->subsamplingLabel->hide();
-            d->qualityComboBox->show();
-            d->qualityLabel->show();
-            d->explanationLabel->setText("\nIf needed, you can switch to the OGV export and convert it to MP4 or other formats through your own tools.");
             break;
         }
     }

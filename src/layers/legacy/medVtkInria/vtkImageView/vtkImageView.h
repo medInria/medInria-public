@@ -61,7 +61,7 @@ class vtkImageAlgorithm;
    It inherits is inspired from vtkImageViewer2 class, which is initially designed for 2D scene
    visualization. However, vtkImageView generalizes its purpose to 2D AND 3D scene visualization.
 
-   As a high-level class, it provides the user with convinient functionalities
+   As a high-level class, it provides the user with convenient functionalities
    such as a colormap (SetLookupTable()), a scalar bar (ScalarBarActor), some corner annotations
    (CornerAnnotation), access to the background color (SetBackground()), the
    annotation text properties (SetTextProperty()), or a call for reseting to default values

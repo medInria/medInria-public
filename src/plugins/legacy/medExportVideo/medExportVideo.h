@@ -38,8 +38,7 @@ public:
     enum VideoFormat
     {
         OGGVORBIS,
-        JPGBATCH,
-        FFMPEG
+        JPGBATCH
     };
 
 public slots:

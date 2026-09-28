@@ -1,3 +1,42 @@
+medInria 6.0
+- Based on medInria 4.x, aims at fusing updates on the core and some functionalities from medInria 5.0-beta progressively.
+- Switch to Github Action for continuous integration.
+- Compatibility with CMake 4.
+- On Linux now we generate AppImages, instead of ZIP packages for Ubuntu and Fedora.
+- macOS DMGs are signed with self-signed certificate.
+- Enhance DMG packaging for recent macOS (15/26 at least) for signed binaries.
+- Switch to VTK 9.0.3, Python 3.12.14, LCC-LogDemons version 1.3, RPI V2.0.0, DCMTK to 3.6.9, QtDCM to 'DCMTK-3.6.9' branch, TTK to 'ITK5.4rc04+VTK9' branch.
+- Remove Composer workspace.
+- Add ZLIB as external project.
+- Removes FFMPEG to only keep OGV video export which is natively used by VTK.
+- Add a LICENSES_EXT file for external project licenses.
+- DICOM reader has been updated to be more robust.
+
+FOR INFO medInria 5.0-beta
+- - Replace old system of database with new system of data sources:
+  * Possibility to add new external sources of data, such as Shanoir, PACS, temporary database, SQL-lite retrocompatible with medInria 3/4.
+  * New data management GUI.
+  * Clear and simple data source API to create your own source, "via medAbstractDataSource.h".
+- Add Windows SDK.
+- Remove boost dependency.
+- Add Openssl and Git LFS prerequisites to compile.
+- Switch to Qt5.15, VTK 9.2.6 (which fix an issue with fiber file format), and ITK v5.4rc04.
+- Clean resources files and switch most of the icons from png to svg files.
+- Add theme system with Dark, Grey and Light theme, which can be chosen in Settings menu.
+- New notification system.
+- New log system.
+- New metadata key system: now users can create or customize their own metadata keys throught json files.
+- GUI changes to adopt menu paradigm.
+- Modernize splash screen.
+- Registration workspace: automatic cast of data in LCC and Diffeomorphic toolboxes.
+- Enhance memory management of the application to avoid memory leaks.
+- Add DicomRT writer.
+- RELEASE 5.0.1:
+    * Compilation on Ubuntu 24.
+    * Switch to ITK v5.4.5.
+    * Python integration.
+    * Fix DICOM import.
+
 medInria 4.0:
 - INFORMATION: this version of medInria is NOT packaged with Anima plugins. We apologize for the inconvenience, we're working on adding them in a near release.
 - PYTHON: An embedded Python interpreter (currently 3.10) has been added. Plugins can create their own bindings (using any generator) to extend the application in Python.

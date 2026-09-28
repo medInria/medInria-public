@@ -1,0 +1,7 @@
+#!/usr/bin/env bash
+
+APPDIR=$(readlink -f $(dirname "$0"))
+export LD_LIBRARY_PATH="${APPDIR}/lib:${MEDINRIA_DIR}/lib64:${APPDIR}/plugins_legacy:${APPDIR}/lib/python3.12/lib/python3.12/site-packages/scipy.libs:${LD_LIBRARY_PATH}"
+
+# Execute the binary
+exec "${APPDIR}/bin/medInria" "$@"
