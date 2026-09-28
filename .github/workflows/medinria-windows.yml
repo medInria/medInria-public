@@ -1,0 +1,109 @@
+# This starter workflow is for a CMake project running on a single platform. There is a different starter workflow if you need cross-platform coverage.
+# See: https://github.com/actions/starter-workflows/blob/main/ci/cmake-multi-platform.yml
+name: medInria on Windows
+
+on:
+  push:
+    branches: [ "medInria6.0.x" ]
+
+  # Parameters displayed for users for manual runs in Github Action GUI
+  workflow_dispatch:
+    inputs:
+      BRANCH:
+        description: 'Branch to checkout'
+        required: true
+        default: 'medInria6.0.x'
+        type: string
+      RELEASE:
+        description: 'Github release tag to send to'
+        required: true
+        default: 'V6.0.0'
+        type: string
+
+  # Reusable workflow from other scripts (weekly, monthly, etc)
+  workflow_call:
+    inputs:
+      BRANCH:
+        required: true
+        type: string
+        default: 'medInria6.0.x'
+      RELEASE:
+        required: true
+        type: string
+        default: 'V6.0.0'
+
+env:
+  BUILD_TYPE: Release
+  _WIN32_WINNT: 0x0A00
+
+jobs:
+  build:
+    # https://docs.github.com/en/actions/using-jobs/choosing-the-runner-for-a-job#standard-github-hosted-runners-for-public-repositories
+    runs-on: windows-2022
+
+    steps:
+    - name: Checkout repository
+      uses: actions/checkout@v7
+      with:
+          ref: ${{ inputs.BRANCH }}
+
+    - name: Save in environment variable in case of automatic runs
+      shell: bash
+      run: |
+        echo "RELEASE=${{ inputs.RELEASE || 'V6.0.0' }}" >> $GITHUB_ENV
+
+    # Dependencies, already on the runner: CMake 3, git, Visual Studio Enterprise, 7zip
+
+    # https://github.com/marketplace/actions/download-and-install-boost
+    - name: Install boost
+      uses: MarkusJx/install-boost@v2
+      id: install-boost
+      with:
+        # A list of supported versions can be found here:
+        # https://github.com/MarkusJx/prebuilt-boost/blob/main/versions-manifest.json
+        boost_version: 1.91.0
+        toolset: msvc
+        platform_version: 2022
+
+    # https://github.com/marketplace/actions/install-qt
+    # https://ddalcino.github.io/aqt-list-server/
+    - name: Install Qt
+      uses: jurplel/install-qt-action@v4
+      with:
+        version: '5.15.2'
+        host: 'windows'
+        target: 'desktop'
+        arch: 'win64_msvc2019_64'
+
+    - name: Test dependencies
+      run: |
+        cmake --version
+
+    - name: Configure CMake
+      run: |
+        cmake -B D:\b -G "Visual Studio 17 2022" -DCMAKE_C_FLAGS="/D_WIN32_WINNT=0x0A00" -DCMAKE_CXX_FLAGS="/D_WIN32_WINNT=0x0A00" -DUSE_GITHUB_SSH:BOOL=FALSE -DmedInria_BUILD_TYPE:STRING=${{env.BUILD_TYPE}} -DEP_CHECKBOX_CUSTOM_DIRS:BOOL=ON -DEP_CHECKBOX_ON_TOP_LEVEL:BOOL=OFF -DEP_CHECKBOX_SIDE_BY_SIDE:BOOL=OFF -DCMAKE_GENERATOR_PLATFORM=x64 -DBOOST_ROOT=${{ steps.install-boost.outputs.BOOST_ROOT }}
+
+    - name: Build
+      run: | 
+        cmake --build D:\b --config ${{env.BUILD_TYPE}} --parallel 4
+
+    - name: Package
+      run: |
+        cd D:\b
+        cpack -C ${{env.BUILD_TYPE}}
+
+    - name: Get binary name
+      shell: bash
+      run: |
+        cd D:\b
+        binary=$(ls *.exe | head -n 1)
+        echo "BINARY_NAME=$binary" >> $GITHUB_ENV
+        echo "The current package: $binary"
+    
+    - name: Upload binaries to release
+      uses: svenstaro/upload-release-action@v2
+      with:
+        file: D:\b\${{env.BINARY_NAME}}
+        asset_name: ${{env.BINARY_NAME}}
+        tag: ${{env.RELEASE}}
+        overwrite: true
