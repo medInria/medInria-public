@@ -87,6 +87,7 @@ injectDirs="$injectDirs -inject-dir=@PROJECT_BINARY_DIR@/TmpInstall/python_plugi
 
 python_libs=''
 for python_lib in @medInria_ROOT@/bin/python_plugins/*; do
+    [ -e "$python_lib" ] || continue # check if exist
     lib=${python_lib##*/}
     libname=${lib%.so}
     @CMAKE_COMMAND@ -E copy "$python_lib" "python_plugins/${libname}.dylib"
